@@ -758,8 +758,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : TODOPIN_BOOM_PGOOD_IN_Pin PIN_GPS_PPS_IN_Pin */
-  GPIO_InitStruct.Pin = TODOPIN_BOOM_PGOOD_IN_Pin|PIN_GPS_PPS_IN_Pin;
+  /*Configure GPIO pins : PIN_BOOM_PGOOD_IN_TBC_Pin PIN_GPS_PPS_IN_Pin */
+  GPIO_InitStruct.Pin = PIN_BOOM_PGOOD_IN_TBC_Pin|PIN_GPS_PPS_IN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
