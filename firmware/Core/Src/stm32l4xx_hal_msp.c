@@ -171,18 +171,17 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* hi2c)
       Error_Handler();
     }
 
-    __HAL_RCC_GPIOG_CLK_ENABLE();
-    HAL_PWREx_EnableVddIO2();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
     /**I2C3 GPIO Configuration
-    PG7     ------> I2C3_SCL
-    PG8     ------> I2C3_SDA
+    PC0     ------> I2C3_SCL
+    PC1     ------> I2C3_SDA
     */
     GPIO_InitStruct.Pin = PIN_ANTENNA_B_I2C3_SCL_Pin|PIN_ANTENNA_B_I2C3_SDA_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF4_I2C3;
-    HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
     /* Peripheral clock enable */
     __HAL_RCC_I2C3_CLK_ENABLE();
@@ -283,8 +282,8 @@ void HAL_I2C_MspDeInit(I2C_HandleTypeDef* hi2c)
     __HAL_RCC_I2C3_CLK_DISABLE();
 
     /**I2C3 GPIO Configuration
-    PG7     ------> I2C3_SCL
-    PG8     ------> I2C3_SDA
+    PC0     ------> I2C3_SCL
+    PC1     ------> I2C3_SDA
     */
     HAL_GPIO_DeInit(PIN_ANTENNA_B_I2C3_SCL_GPIO_Port, PIN_ANTENNA_B_I2C3_SCL_Pin);
 
@@ -345,17 +344,18 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
     /* Peripheral clock enable */
     __HAL_RCC_LPUART1_CLK_ENABLE();
 
-    __HAL_RCC_GPIOC_CLK_ENABLE();
+    __HAL_RCC_GPIOG_CLK_ENABLE();
+    HAL_PWREx_EnableVddIO2();
     /**LPUART1 GPIO Configuration
-    PC0     ------> LPUART1_RX
-    PC1     ------> LPUART1_TX
+    PG7     ------> LPUART1_TX
+    PG8     ------> LPUART1_RX
     */
-    GPIO_InitStruct.Pin = PIN_DEBUG_MISO_LPUART1_RX_Pin|PIN_DEBUG_MOSI_LPUART1_TX_Pin;
+    GPIO_InitStruct.Pin = PIN_DEBUG_MOSI_LPUART1_TX_Pin|PIN_DEBUG_MISO_LPUART1_RX_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF8_LPUART1;
-    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+    HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
 
   /* USER CODE BEGIN LPUART1_MspInit 1 */
 
@@ -559,10 +559,10 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* huart)
     __HAL_RCC_LPUART1_CLK_DISABLE();
 
     /**LPUART1 GPIO Configuration
-    PC0     ------> LPUART1_RX
-    PC1     ------> LPUART1_TX
+    PG7     ------> LPUART1_TX
+    PG8     ------> LPUART1_RX
     */
-    HAL_GPIO_DeInit(GPIOC, PIN_DEBUG_MISO_LPUART1_RX_Pin|PIN_DEBUG_MOSI_LPUART1_TX_Pin);
+    HAL_GPIO_DeInit(GPIOG, PIN_DEBUG_MOSI_LPUART1_TX_Pin|PIN_DEBUG_MISO_LPUART1_RX_Pin);
 
   /* USER CODE BEGIN LPUART1_MspDeInit 1 */
 

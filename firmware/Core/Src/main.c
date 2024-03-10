@@ -23,6 +23,10 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+#include "debug_tools/debug_i2c.h"
+#include "debug_tools/debug_uart.h"
+#include "rtos_tasks/rtos_tasks.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -64,6 +68,16 @@ const osThreadAttr_t defaultTask_attributes = {
 };
 /* USER CODE BEGIN PV */
 
+// For CTS-SAT-1, please create threads here (and not in the IOC file):
+
+osThreadId_t TASK_debug_print_heartbeat_Handle;
+const osThreadAttr_t TASK_debug_print_heartbeat_Attributes = {
+  .name = "TASK_debug_print_heartbeat",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -71,7 +85,6 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_I2C2_Init(void);
-static void MX_I2C3_Init(void);
 static void MX_I2C4_Init(void);
 static void MX_LPUART1_UART_Init(void);
 static void MX_UART4_Init(void);
@@ -80,6 +93,7 @@ static void MX_USART1_UART_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_SPI1_Init(void);
+static void MX_I2C3_Init(void);
 void StartDefaultTask(void *argument);
 
 /* USER CODE BEGIN PFP */
@@ -121,7 +135,6 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C1_Init();
   MX_I2C2_Init();
-  MX_I2C3_Init();
   MX_I2C4_Init();
   MX_LPUART1_UART_Init();
   MX_UART4_Init();
@@ -130,6 +143,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_USART3_UART_Init();
   MX_SPI1_Init();
+  MX_I2C3_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -158,7 +172,8 @@ int main(void)
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
-  /* add threads, ... */
+  TASK_debug_print_heartbeat_Handle = osThreadNew(TASK_debug_print_heartbeat, NULL, &TASK_debug_print_heartbeat_Attributes);
+  
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
@@ -173,6 +188,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    debug_uart_print_str("This superloop point should never be reached, because the FreeRTOS Kernel is running...\n");
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -782,7 +798,7 @@ static void MX_GPIO_Init(void)
                           |PIN_NRST_LORA_US_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(PIN_UHF_CTL_OUT_GPIO_Port, PIN_UHF_CTL_OUT_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, PIN_UHF_CTL_OUT_Pin|PIN_DEVKIT_LD2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(PIN_NRST_LORA_EU_OUT_GPIO_Port, PIN_NRST_LORA_EU_OUT_Pin, GPIO_PIN_RESET);
@@ -827,12 +843,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PIN_UHF_CTL_OUT_Pin */
-  GPIO_InitStruct.Pin = PIN_UHF_CTL_OUT_Pin;
+  /*Configure GPIO pins : PIN_UHF_CTL_OUT_Pin PIN_DEVKIT_LD2_Pin */
+  GPIO_InitStruct.Pin = PIN_UHF_CTL_OUT_Pin|PIN_DEVKIT_LD2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(PIN_UHF_CTL_OUT_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PIN_NRST_LORA_EU_OUT_Pin */
   GPIO_InitStruct.Pin = PIN_NRST_LORA_EU_OUT_Pin;
@@ -905,6 +921,8 @@ void Error_Handler(void)
   __disable_irq();
   while (1)
   {
+    // TODO: make this flight-ready
+    debug_uart_print_str("Error_Handler() called\n");
   }
   /* USER CODE END Error_Handler_Debug */
 }

@@ -37,6 +37,21 @@ extern "C" {
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
 
+// These externs expose peripherals for use across the project.
+extern I2C_HandleTypeDef hi2c1;
+extern I2C_HandleTypeDef hi2c2;
+extern I2C_HandleTypeDef hi2c3;
+extern I2C_HandleTypeDef hi2c4;
+
+extern UART_HandleTypeDef hlpuart1;
+extern UART_HandleTypeDef huart4;
+extern UART_HandleTypeDef huart5;
+extern UART_HandleTypeDef huart1;
+extern UART_HandleTypeDef huart2;
+extern UART_HandleTypeDef huart3;
+
+extern SPI_HandleTypeDef hspi1;
+
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -71,10 +86,10 @@ void Error_Handler(void);
 #define PIN_ANTENNA_A_I2C2_SCL_GPIO_Port GPIOF
 #define PIN_PH0_OSC_IN_Pin GPIO_PIN_0
 #define PIN_PH0_OSC_IN_GPIO_Port GPIOH
-#define PIN_DEBUG_MISO_LPUART1_RX_Pin GPIO_PIN_0
-#define PIN_DEBUG_MISO_LPUART1_RX_GPIO_Port GPIOC
-#define PIN_DEBUG_MOSI_LPUART1_TX_Pin GPIO_PIN_1
-#define PIN_DEBUG_MOSI_LPUART1_TX_GPIO_Port GPIOC
+#define PIN_ANTENNA_B_I2C3_SCL_Pin GPIO_PIN_0
+#define PIN_ANTENNA_B_I2C3_SCL_GPIO_Port GPIOC
+#define PIN_ANTENNA_B_I2C3_SDA_Pin GPIO_PIN_1
+#define PIN_ANTENNA_B_I2C3_SDA_GPIO_Port GPIOC
 #define PIN_CAMERA_MOSI_UART4_TX_Pin GPIO_PIN_0
 #define PIN_CAMERA_MOSI_UART4_TX_GPIO_Port GPIOA
 #define PIN_CAMERA_MISO_UART4_RX_Pin GPIO_PIN_1
@@ -127,10 +142,10 @@ void Error_Handler(void);
 #define PIN_MISO_MPI_RX_NEN_OUT_GPIO_Port GPIOG
 #define PIN_MOSI_MPI_TX_EN_OUT_Pin GPIO_PIN_5
 #define PIN_MOSI_MPI_TX_EN_OUT_GPIO_Port GPIOG
-#define PIN_ANTENNA_B_I2C3_SCL_Pin GPIO_PIN_7
-#define PIN_ANTENNA_B_I2C3_SCL_GPIO_Port GPIOG
-#define PIN_ANTENNA_B_I2C3_SDA_Pin GPIO_PIN_8
-#define PIN_ANTENNA_B_I2C3_SDA_GPIO_Port GPIOG
+#define PIN_DEBUG_MOSI_LPUART1_TX_Pin GPIO_PIN_7
+#define PIN_DEBUG_MOSI_LPUART1_TX_GPIO_Port GPIOG
+#define PIN_DEBUG_MISO_LPUART1_RX_Pin GPIO_PIN_8
+#define PIN_DEBUG_MISO_LPUART1_RX_GPIO_Port GPIOG
 #define PIN_MPI_MOSI_USART1_TX_Pin GPIO_PIN_9
 #define PIN_MPI_MOSI_USART1_TX_GPIO_Port GPIOA
 #define PIN_MPI_MISO_USART1_RX_Pin GPIO_PIN_10
@@ -157,6 +172,8 @@ void Error_Handler(void);
 #define PIN_STACK_I2C1_SCL_GPIO_Port GPIOG
 #define PIN_SWO_Pin GPIO_PIN_3
 #define PIN_SWO_GPIO_Port GPIOB
+#define PIN_DEVKIT_LD2_Pin GPIO_PIN_7
+#define PIN_DEVKIT_LD2_GPIO_Port GPIOB
 #define PIN_BOOT0_Pin GPIO_PIN_3
 #define PIN_BOOT0_GPIO_Port GPIOH
 
