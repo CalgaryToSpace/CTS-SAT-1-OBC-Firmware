@@ -15,6 +15,11 @@ Firmware for the CTS-SAT-1 ("FrontierSat") mission. Runs on the STM32-based Onbo
 7. Plug in an STM32 dev kit, and flash the project using the "Flash STM32" button.
 8. Optional: setup the Codeium extension by creating an account. Codeium is a free GitHub Copilot-like extension which can boost productivity when used effectively.
 
+### Updating the IOC File/Regenerating Boilerplate
+
+* The IOC file must be updated using CubeMX instead of STM32CubeIDE now. This is a fair tradeoff, as it allows us to use VS Code.
+* IOC file updates should be very going forward. This repo uses the OBC Rev 1.3 IOC file.
+
 ## Debugging Setup
 * Connect to the STM32 debug serial port at baud=1152000.
 * Use Breakpoints in VS Code to pause execution and explore the stack. Breakpoint are obeyed when you use the "Flash STM32" button.
@@ -25,4 +30,3 @@ Firmware for the CTS-SAT-1 ("FrontierSat") mission. Runs on the STM32-based Onbo
 python3 -m pip install pyserial
 python3 -m serial.tools.miniterm - 115200
 ```
-
