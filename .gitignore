@@ -1,4 +1,6 @@
-# Eclipse/CubeIDE
+######################
+# Eclipse/CubeIDE    #
+######################
 **/.metadata/
 **/.settings/
 **/[Rr]elease/
@@ -10,8 +12,16 @@
 # DO NOT gitignore .cproject and .project files.
 # They are very important for CubeIDE to work properly.
 
+######################
+# STM32 for VSCode   #
+######################
+**/build/
+**/STM32Make.make
+**/.vscode/settings.json
+**/.vscode/c_cpp_properties.json
 
 
+######################
 # OS generated files #
 ######################
 .DS_Store
