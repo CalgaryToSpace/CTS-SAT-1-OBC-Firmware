@@ -11,3 +11,12 @@ void TASK_debug_print_heartbeat(void *argument) {
 		osDelay(1000);
 	}
 }
+
+
+void TASK_handle_uart_telecommands(void *argument) {
+	while (1) {
+		debug_uart_print_str("TASK_handle_uart_telecommands()\n");
+		HAL_GPIO_TogglePin(PIN_DEVKIT_LD2_GPIO_Port, PIN_DEVKIT_LD2_Pin);
+		osDelay(1000);
+	}
+}

@@ -77,6 +77,13 @@ const osThreadAttr_t TASK_debug_print_heartbeat_Attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 
+osThreadId_t TASK_handle_uart_telecommands_Handle;
+const osThreadAttr_t TASK_handle_uart_telecommands_Attributes = {
+  .name = "TASK_handle_uart_telecommands",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+
 
 /* USER CODE END PV */
 
@@ -173,6 +180,8 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_THREADS */
   TASK_debug_print_heartbeat_Handle = osThreadNew(TASK_debug_print_heartbeat, NULL, &TASK_debug_print_heartbeat_Attributes);
+
+  TASK_handle_uart_telecommands_Handle = osThreadNew(TASK_handle_uart_telecommands, NULL, &TASK_handle_uart_telecommands_Attributes);
   
   /* USER CODE END RTOS_THREADS */
 
