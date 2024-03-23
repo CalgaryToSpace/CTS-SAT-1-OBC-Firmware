@@ -12,6 +12,7 @@ Firmware for the CTS-SAT-1 ("FrontierSat") mission. Runs on the STM32-based Onbo
 ![VS Code initial opening options](/docs/media/vs-code-startup-instructions.png)
 
 6. Install the recommended VS Code extensions when prompted.
+	* If you're not prompted, use Ctrl+Shift+P to navigate to ">Extensions: Show Recommended Extensions".
 7. Navigate to the "ST" extension in the extension pane. Select the option to install the build toolchain (appears for first use).
 8. In the "ST" extension pane, use the "Build" button to build the repo; or, use Ctrl+Shift+P to open the command palate, search for STM32, and select the Build option.
 9. Plug in an STM32 dev kit, and flash the project using the "Flash STM32" button/command palate option.
@@ -29,7 +30,7 @@ Firmware for the CTS-SAT-1 ("FrontierSat") mission. Runs on the STM32-based Onbo
 
 ## Debugging Setup
 * Connect to the STM32 debug serial port at baud=1152000.
-* Use Breakpoints in VS Code to pause execution and explore the stack. Breakpoint are obeyed when you use the "Flash STM32" button.
+* Use Breakpoints in VS Code to pause execution and explore the stack. Breakpoint are obeyed when you use the "Debug STM32" button to flash the chip.
 
 ### Python Serial Terminal
 
