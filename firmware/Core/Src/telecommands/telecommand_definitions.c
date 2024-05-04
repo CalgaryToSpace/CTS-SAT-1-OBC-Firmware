@@ -1,20 +1,31 @@
 
 #include "telecommands/telecommand_definitions.h"
 
-TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+
+// extern
+const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "hello_world",
         .tcmd_func = TCMDEXEC_hello_world,
+        .number_of_args = 0,
     },
     {
         .tcmd_name = "core_system_stats",
         .tcmd_func = TCMDEXEC_core_system_stats,
+        .number_of_args = 0,
     },
     {
         .tcmd_name = "echo_back_args",
         .tcmd_func = TCMDEXEC_echo_back_args,
+        .number_of_args = 1, // TODO: support more than 1 arg
     }
 };
+
+// extern
+const int16_t TCMD_NUM_TELECOMMANDS = sizeof(TCMD_telecommand_definitions) / sizeof(TCMD_TelecommandDefinition_t);
 
 // each telecommand function must have the following signature:
 // uint8_t <function_name>(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
