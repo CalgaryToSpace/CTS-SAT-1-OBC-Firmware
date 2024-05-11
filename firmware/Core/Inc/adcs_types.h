@@ -7,7 +7,6 @@
 
 #include "main.h"
 #include "adcs_ids.h"
-#include <string.h>
 #include <stdbool.h>
 
 #ifndef INC_ADCS_TYPES_H_
@@ -200,6 +199,17 @@ typedef struct ADCS_Set_Unix_Time_Save_Mode_Struct{
 	uint8_t period;
 } ADCS_Set_Unix_Time_Save_Mode_Struct;
 
+typedef struct ADCS_Orbit_Params_Struct {
+    double inclination;
+    double eccentricity;
+    double ascending_node_right_ascension;
+    double perigee_argument;
+    double b_star_drag_term;
+    double mean_motion;
+    double mean_anomaly;
+    double epoch;
+} ADCS_Orbit_Params_Struct;
+
 /* Function Definitions */
 
 #define ADCS_I2C_HANDLE &hi2c1
@@ -269,5 +279,6 @@ void ADCS_Set_Unix_Time_Save_Mode(I2C_HandleTypeDef *hi2c, bool save_now, bool s
 void ADCS_Get_Unix_Time_Save_Mode(I2C_HandleTypeDef *hi2c);
 void ADCS_Set_SGP4_Orbit_Params(I2C_HandleTypeDef *hi2c, double inclination, double eccentricity, double ascending_node_right_ascension, double perigee_argument, double b_star_drag_term, double mean_motion, double mean_anomaly, double epoch);
 void ADCS_Get_SGP4_Orbit_Params(I2C_HandleTypeDef *hi2c);
+void ADCS_Save_Orbit_Params(I2C_HandleTypeDef *hi2c);
 
 #endif /* INC_ADCS_TYPES_H_ */

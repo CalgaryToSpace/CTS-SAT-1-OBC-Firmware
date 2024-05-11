@@ -5,18 +5,19 @@
  *      Author: Nadeem Moosa, Saksham Puri, Zachary Uy
  */
 
-#include <adcs_types.h>
-#include <adcs_ids.h>
+#include "adcs_types.h"
+#include "adcs_ids.h"
+#include <string.h>
 
 /*
  * Summary list of required command IDs:
 
-	TODO:
-	Commands: 64
-	Telemetry: 155, 156, 157, 170, 201, 204, 207
+	TODO: (Commands to write)
+	Commands: 
+	Telemetry: 155, 156, 157, 170, 201, 204
 
 	Done:
-	Untested: 7, 9, 145, 45 [next to make: 155]
+	Untested: 7, 9, 145, 45, 207, 64 [next to make: 155]
 	Tested: 10, 11, 13, 14, 17, 26, 63, 147, 150, 197, 240
 
 	- within a byte, use the opposite endian-ness (first towards the end, last towards the beginning of the byte)
@@ -259,6 +260,11 @@ void ADCS_Save_Config(I2C_HandleTypeDef *hi2c) {
 	I2C_telecommand_wrapper(hi2c, TC_SAVE_CONFIG, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 }
 
+void ADCS_Save_Orbit_Params(I2C_HandleTypeDef *hi2c) {
+	uint8_t data_send[0]; // 0-byte data (from manual)
+	I2C_telecommand_wrapper(hi2c, TC_SAVE_ORBIT_PARAMS, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+}
+
 void ADCS_Estimate_Angular_Rates(I2C_HandleTypeDef *hi2c) {
 	// gets estimated angular rates of the ADCS (Table 103)
 	ADCS_Angular_Rates_Struct rates;
@@ -343,7 +349,23 @@ void ADCS_Set_SGP4_Orbit_Params(I2C_HandleTypeDef *hi2c, double inclination, dou
 }
 
 void ADCS_Get_SGP4_Orbit_Params(I2C_HandleTypeDef *hi2c) {
+	ADCS_Orbit_Params_Struct params;
+	uint8_t data_length = 64;
+	uint8_t data_received[data_length]; // define temp buffer
 
+	I2C_telemetry_wrapper(hi2c, TLF_CUBEACP_GET_SGP4_ORBIT_PARAMETERS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+	// map temp buffer to orbit params struct
+	memcpy(&params.inclination, &data_received[0] ,sizeof(double));
+	memcpy(&params.eccentricity, &data_received[8] ,sizeof(double));
+	memcpy(&params.ascending_node_right_ascension, &data_received[16] ,sizeof(double));
+	memcpy(&params.perigee_argument, &data_received[24] ,sizeof(double));
+	memcpy(&params.b_star_drag_term, &data_received[32] ,sizeof(double));
+	memcpy(&params.mean_motion, &data_received[40] ,sizeof(double));
+	memcpy(&params.mean_anomaly, &data_received[48] ,sizeof(double));
+	memcpy(&params.epoch, &data_received[56] ,sizeof(double));
+
+	WRITE_STRUCT_TO_MEMORY(params) // memory module function
 }
 
 
