@@ -14,14 +14,16 @@
 
 	TODO: (Commands to write)
 	Commands: 
-	Telemetry: 155, 156, 157, 170, 201, 204
+	Telemetry: 204
 
 	Done:
-	Untested: 7, 9, 145, 45, 207, 64 [next to make: 155]
+	Untested: 7, 9, 145, 45, 207, 64, 155, 156, 157, 170, 201, 
 	Tested: 10, 11, 13, 14, 17, 26, 63, 147, 150, 197, 240
 
+	TODO: additionally
 	- within a byte, use the opposite endian-ness (first towards the end, last towards the beginning of the byte)
 	- check INT vs UINT (int is signed, uint is unsigned)!
+	- make sure all input (TC) / output (TLM) values are __actual__ values, NOT raw values!
  *  */
 
 ADCS_TC_Ack_Struct ADCS_TC_Ack(I2C_HandleTypeDef *hi2c) {
@@ -150,15 +152,15 @@ void ADCS_Set_Magnetometer_Mode(I2C_HandleTypeDef *hi2c, ADCS_Magnetometer_Mode 
 	I2C_telecommand_wrapper(hi2c, TC_SET_MODE_OF_MAGNETOMETER_OPERATION, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 }
 
-void ADCS_Set_Magnetorquer_Output(I2C_HandleTypeDef *hi2c, uint16_t x_duty, uint16_t y_duty, uint16_t z_duty) {
+void ADCS_Set_Magnetorquer_Output(I2C_HandleTypeDef *hi2c, double x_duty, double y_duty, double z_duty) {
 	// only valid after ADCS_Enable_Manual_Control is run
 	// for the duty equations, raw parameter value is obtained using the formula: (raw parameter) = (formatted value)*1000.0
 	// duty >> 8 gives upper byte, duty & 0x00FF gives lower byte
 	uint8_t data_send[6];
 	// swap low and high bytes and populate data_send
-	switch_order(data_send, x_duty, 0);
-	switch_order(data_send, y_duty, 2);
-	switch_order(data_send, z_duty, 4);
+	switch_order(data_send, ((uint16_t) (x_duty * 1000)), 0);
+	switch_order(data_send, ((uint16_t) (y_duty * 1000)), 2);
+	switch_order(data_send, ((uint16_t) (z_duty * 1000)), 4);
 	I2C_telecommand_wrapper(hi2c, TC_SET_MAGNETORQUER_OUTPUT, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 }
 
@@ -212,21 +214,21 @@ void ADCS_Get_Power_Control(I2C_HandleTypeDef *hi2c) {
 }
 
 void ADCS_Set_Magnetometer_Config(I2C_HandleTypeDef *hi2c,
-		uint16_t mounting_transform_alpha_angle,
-        uint16_t mounting_transform_beta_angle,
-        uint16_t mounting_transform_gamma_angle,
-        uint16_t channel_1_offset,
-        uint16_t channel_2_offset,
-        uint16_t channel_3_offset,
-        uint16_t sensitivity_matrix_s11,
-        uint16_t sensitivity_matrix_s22,
-        uint16_t sensitivity_matrix_s33,
-        uint16_t sensitivity_matrix_s12,
-        uint16_t sensitivity_matrix_s13,
-        uint16_t sensitivity_matrix_s21,
-        uint16_t sensitivity_matrix_s23,
-        uint16_t sensitivity_matrix_s31,
-        uint16_t sensitivity_matrix_s32) {
+		double mounting_transform_alpha_angle,
+        double mounting_transform_beta_angle,
+        double mounting_transform_gamma_angle,
+        double channel_1_offset,
+        double channel_2_offset,
+        double channel_3_offset,
+        double sensitivity_matrix_s11,
+        double sensitivity_matrix_s22,
+        double sensitivity_matrix_s33,
+        double sensitivity_matrix_s12,
+        double sensitivity_matrix_s13,
+        double sensitivity_matrix_s21,
+        double sensitivity_matrix_s23,
+        double sensitivity_matrix_s31,
+        double sensitivity_matrix_s32) {
 
 	uint8_t data_send[30]; // 30-byte data (from manual)
 
@@ -235,21 +237,21 @@ void ADCS_Set_Magnetometer_Config(I2C_HandleTypeDef *hi2c,
 	// and raw value divided by 1000 for everything else
 	// these are all INT, not UINT! 
 	// TODO: change this after testing
-	switch_order(data_send, mounting_transform_alpha_angle, 0);
-	switch_order(data_send, mounting_transform_beta_angle, 2);
-	switch_order(data_send, mounting_transform_gamma_angle, 4);
-	switch_order(data_send, channel_1_offset, 6);
-	switch_order(data_send, channel_2_offset, 8);
-	switch_order(data_send, channel_3_offset, 10);
-	switch_order(data_send, sensitivity_matrix_s11, 12);
-	switch_order(data_send, sensitivity_matrix_s22, 14);
-	switch_order(data_send, sensitivity_matrix_s33, 16);
-	switch_order(data_send, sensitivity_matrix_s12, 18);
-	switch_order(data_send, sensitivity_matrix_s13, 20);
-	switch_order(data_send, sensitivity_matrix_s21, 22);
-	switch_order(data_send, sensitivity_matrix_s23, 24);
-	switch_order(data_send, sensitivity_matrix_s31, 26);
-	switch_order(data_send, sensitivity_matrix_s32, 28);
+	switch_order(data_send, ((uint16_t) mounting_transform_alpha_angle * 100), 0);
+	switch_order(data_send, ((uint16_t) mounting_transform_beta_angle * 100), 2);
+	switch_order(data_send, ((uint16_t) mounting_transform_gamma_angle * 100), 4);
+	switch_order(data_send, ((uint16_t) channel_1_offset * 1000), 6);
+	switch_order(data_send, ((uint16_t) channel_2_offset * 1000), 8);
+	switch_order(data_send, ((uint16_t) channel_3_offset * 1000), 10);
+	switch_order(data_send, ((uint16_t) sensitivity_matrix_s11 * 1000), 12);
+	switch_order(data_send, ((uint16_t) sensitivity_matrix_s22 * 1000), 14);
+	switch_order(data_send, ((uint16_t) sensitivity_matrix_s33 * 1000), 16);
+	switch_order(data_send, ((uint16_t) sensitivity_matrix_s12 * 1000), 18);
+	switch_order(data_send, ((uint16_t) sensitivity_matrix_s13 * 1000), 20);
+	switch_order(data_send, ((uint16_t) sensitivity_matrix_s21 * 1000), 22);
+	switch_order(data_send, ((uint16_t) sensitivity_matrix_s23 * 1000), 24);
+	switch_order(data_send, ((uint16_t) sensitivity_matrix_s31 * 1000), 26);
+	switch_order(data_send, ((uint16_t) sensitivity_matrix_s32 * 1000), 28);
 
 	I2C_telecommand_wrapper(hi2c, TC_CUBEACP_SET_MAGNETOMETER_CONFIG, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 
@@ -276,9 +278,9 @@ void ADCS_Estimate_Angular_Rates(I2C_HandleTypeDef *hi2c) {
 
 	// map to struct
 	// Formatted value is obtained using the formula: (formatted value) [deg/s] = RAWVAL*0.01
-	rates.x_rate = data_received[1] << 8 | data_received[0]; // uint16_t
-	rates.y_rate = data_received[3] << 8 | data_received[2]; // uint16_t
-	rates.z_rate = data_received[5] << 8 | data_received[4]; // uint16_t
+	rates.x_rate = (double) (data_received[1] << 8 | data_received[0]) * 0.01; 
+	rates.y_rate = (double) (data_received[3] << 8 | data_received[2]) * 0.01; 
+	rates.z_rate = (double) (data_received[5] << 8 | data_received[4]) * 0.01; 
 
 	WRITE_STRUCT_TO_MEMORY(rates) // memory module function
 }
@@ -294,9 +296,9 @@ void ADCS_Get_LLH_Position(I2C_HandleTypeDef *hi2c) {
 
 	// map to struct
 	// Formatted value is obtained using the formula: (formatted value) [deg] or [km] = RAWVAL*0.01
-	pos.latitude = data_received[1] << 8 | data_received[0]; // int16_t (signed)
-	pos.longitude = data_received[3] << 8 | data_received[2]; // int16_t (signed)
-	pos.altitude = data_received[5] << 8 | data_received[4]; // uint16_t (unsigned)
+	pos.latitude = (double) (data_received[1] << 8 | data_received[0]) * 0.01; 
+	pos.longitude = (double) (data_received[3] << 8 | data_received[2]) * 0.01; 
+	pos.altitude = (double) (data_received[5] << 8 | data_received[4]) * 0.01; 
 
 	WRITE_STRUCT_TO_MEMORY(rates) // memory module function
 }
@@ -368,6 +370,122 @@ void ADCS_Get_SGP4_Orbit_Params(I2C_HandleTypeDef *hi2c) {
 	WRITE_STRUCT_TO_MEMORY(params) // memory module function
 }
 
+void ADCS_Rate_Sensor_Rates(I2C_HandleTypeDef *hi2c) {
+	ADCS_Rated_Sensor_Rates_Struct rates;
+	
+	uint8_t data_length = 6;
+	uint8_t data_received[data_length]; // define temp buffer
+
+	I2C_telemetry_wrapper(hi2c, TLF_CUBEACP_RATE_SENSOR_RATES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+	// map temp buffer to struct
+	// formatted value (deg/s) = raw value * 0.01
+	rates.x = ((double) (data_received[1] << 8 | data_received[0])) * 0.01;
+	rates.y = ((double) (data_received[3] << 8 | data_received[2])) * 0.01; 
+	rates.z = ((double) (data_received[5] << 8 | data_received[4])) * 0.01; 
+
+	WRITE_STRUCT_TO_MEMORY(params) // memory module function
+}
+
+void ADCS_Get_Wheel_Speed(I2C_HandleTypeDef *hi2c) {
+	ADCS_Wheel_Speed_Struct speeds;
+	
+	uint8_t data_length = 6;
+	uint8_t data_received[data_length]; // define temp buffer
+
+	I2C_telemetry_wrapper(hi2c, TLF_CUBEACP_WHEEL_SPEED, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+	// map temp buffer to struct
+	// all values in rpm
+	speeds.x = data_received[1] << 8 | data_received[0];
+	speeds.y = data_received[3] << 8 | data_received[2]; 
+	speeds.z = data_received[5] << 8 | data_received[4]; 
+
+	WRITE_STRUCT_TO_MEMORY(params) // memory module function
+}
+
+void ADCS_Get_Magnetorquer_Command_Time(I2C_HandleTypeDef *hi2c) {
+	ADCS_Magnetorquer_Command_Struct time;
+	
+	uint8_t data_length = 6;
+	uint8_t data_received[data_length]; // define temp buffer
+
+	I2C_telemetry_wrapper(hi2c, TLF_CUBEACP_MAGNETORQUER_COMMAND, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+	// map temp buffer to struct
+	// formatted value (sec) = raw value * 0.01
+	time.x = ((double) (data_received[1] << 8 | data_received[0])) * 0.01;
+	time.y = ((double) (data_received[3] << 8 | data_received[2])) * 0.01; 
+	time.z = ((double) (data_received[5] << 8 | data_received[4])) * 0.01; 
+
+	WRITE_STRUCT_TO_MEMORY(params) // memory module function
+}
+
+void ADCS_Get_Raw_Magnetometer_Values(I2C_HandleTypeDef *hi2c) {
+	ADCS_Wheel_Speed_Struct mag_vals;
+	
+	uint8_t data_length = 6;
+	uint8_t data_received[data_length]; // define temp buffer
+
+	I2C_telemetry_wrapper(hi2c, TLF_CUBEACP_RAW_MAGNETOMETER, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+	// map temp buffer to struct
+	// all values in rpm
+	mag_vals.x = data_received[1] << 8 | data_received[0];
+	mag_vals.y = data_received[3] << 8 | data_received[2]; 
+	mag_vals.z = data_received[5] << 8 | data_received[4]; 
+
+	WRITE_STRUCT_TO_MEMORY(params) // memory module function
+}
+
+void ADCS_Estimate_Fine_Angular_Rates(I2C_HandleTypeDef *hi2c) {
+	ADCS_Fine_Angular_Rates_Struct rates;
+	
+	uint8_t data_length = 6;
+	uint8_t data_received[data_length]; // define temp buffer
+
+	I2C_telemetry_wrapper(hi2c, TLF_CUBEACP_FINE_ESTIMATED_ANGULAR_RATES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+	// map temp buffer to struct
+	// formatted value (deg/s) = raw value * 0.01
+	rates.x = ((double) (data_received[1] << 8 | data_received[0])) * 0.01;
+	rates.y = ((double) (data_received[3] << 8 | data_received[2])) * 0.01; 
+	rates.z = ((double) (data_received[5] << 8 | data_received[4])) * 0.01; 
+
+	WRITE_STRUCT_TO_MEMORY(params) // memory module function
+}
+
+void ADCS_Get_Magnetometer_Config(I2C_HandleTypeDef *hi2c) {
+	ADCS_Magnetometer_Config_Struct config;
+	
+	uint8_t data_length = 6;
+	uint8_t data_received[data_length]; // define temp buffer
+
+	I2C_telemetry_wrapper(hi2c, TLF_CUBEACP_GET_MAGNETOMETER_CONFIG, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+	// map temp buffer to struct
+	// formatted value for mounting transform angles (deg/s) = raw value * 0.01
+	// formatted value (deg/s) = raw value * 0.001
+	config.mounting_transform_alpha_angle = ((double) (data_received[1] << 8 | data_received[0])) * 0.01; 
+	config.mounting_transform_beta_angle = ((double) (data_received[3] << 8 | data_received[2])) * 0.01; 
+	config.mounting_transform_gamma_angle = ((double) (data_received[5] << 8 | data_received[4])) * 0.01; 
+	config.channel_1_offset = ((double) (data_received[7] << 8 | data_received[6])) * 0.001; 
+	config.channel_2_offset = ((double) (data_received[9] << 8 | data_received[8])) * 0.001; 
+	config.channel_3_offset = ((double) (data_received[11] << 8 | data_received[10])) * 0.001; 
+	config.sensitivity_matrix_s11 = ((double) (data_received[13] << 8 | data_received[12])) * 0.001; 
+	config.sensitivity_matrix_s22 = ((double) (data_received[15] << 8 | data_received[14])) * 0.001; 
+	config.sensitivity_matrix_s33 = ((double) (data_received[17] << 8 | data_received[16])) * 0.001; 
+	config.sensitivity_matrix_s12 = ((double) (data_received[19] << 8 | data_received[18])) * 0.001; 
+	config.sensitivity_matrix_s13 = ((double) (data_received[21] << 8 | data_received[20])) * 0.001; 
+	config.sensitivity_matrix_s21 = ((double) (data_received[23] << 8 | data_received[22])) * 0.001; 
+	config.sensitivity_matrix_s23 = ((double) (data_received[25] << 8 | data_received[24])) * 0.001; 
+	config.sensitivity_matrix_s31 = ((double) (data_received[27] << 8 | data_received[26])) * 0.001; 
+	config.sensitivity_matrix_s32 = ((double) (data_received[29] << 8 | data_received[28])) * 0.001; 
+
+	WRITE_STRUCT_TO_MEMORY(params) // memory module function
+}
+
+// TODO: jump here
 
 /**
  * I2C_telecommand_wrapper
