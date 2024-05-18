@@ -38,3 +38,8 @@ Firmware for the CTS-SAT-1 ("FrontierSat") mission. Runs on the STM32-based Onbo
 python3 -m pip install pyserial
 python3 -m serial.tools.miniterm - 115200
 ```
+
+## Notes
+* Lower NVIC priority number means higher priority.
+* For UART, FIFO Mode must be enabled.
+* When starting a new FreeRTOS project, you must manually increase the heap size. Hard faults may mean a thread is running out of stack memory.
