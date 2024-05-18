@@ -61,6 +61,7 @@ void TASK_handle_uart_telecommands(void *argument) {
 		}
 
 		// FIXME: replace this if(1) with a check to see if a full telecommand has been received yet
+		// TODO: lots of this should be factored out when we get the comms module going (inside this block, basically)
 		if (1) {
 
 			// optionally, echo back the command
@@ -79,22 +80,28 @@ void TASK_handle_uart_telecommands(void *argument) {
 			// execute/queue the command
 			// process the telecommand
 			int32_t tcmd_idx = TCMD_parse_telecommand_get_index((char *)latest_tcmd, latest_tcmd_len);
-			debug_uart_print_str("Telecommand index: ");
-			debug_uart_print_int32(tcmd_idx);
-			debug_uart_print_str("\n");
 
 			// get the telecommand definition
+			debug_uart_print_str("======= Telecommand ======\n");
 			if (tcmd_idx >= 0) {
-				debug_uart_print_str("Telecommand found: ");
+				debug_uart_print_str("Received telecommand '");
 				debug_uart_print_str(TCMD_telecommand_definitions[tcmd_idx].tcmd_name);
-				debug_uart_print_str("\n");
+				debug_uart_print_str("'\n");
+				// TODO: maybe log/print args too
 			} else {
-				debug_uart_print_str("Telecommand not found.\n");
+				debug_uart_print_str("Telecommand not found (code ");
+				debug_uart_print_int32(tcmd_idx);
+				debug_uart_print_str(").\n");
 				continue;
 			}
 
-			// handle the telecommand by calling the appropriate function
-			// null-terminate the args string
+			// TODO: parse out the timestamp and see if it should be run immediately or queued (and add a queue system)
+			// TODO: add a queue system for telecommands, maybe to flash
+			// TODO: read out the hash and validate it
+
+
+			// Handle the telecommand by calling the appropriate function.
+			// Null-terminate the args string.
 			latest_tcmd[latest_tcmd_len] = '\0';
 			TCMD_TelecommandDefinition_t tcmd_def = TCMD_telecommand_definitions[tcmd_idx];
 			char response_buf[512];
@@ -106,9 +113,9 @@ void TASK_handle_uart_telecommands(void *argument) {
 				sizeof(response_buf));
 
 			// print back the response
-			debug_uart_print_str("====== Response ======\n");
+			debug_uart_print_str("======== Response ========\n");
 			debug_uart_print_str(response_buf);
-			debug_uart_print_str("======================\n");
+			debug_uart_print_str("\n==========================\n");
 			
 			// TODO: in the future, if the buffer content was longer than the telecommand, we _could_ shift the remaining bytes to the front of the buffer
 		}

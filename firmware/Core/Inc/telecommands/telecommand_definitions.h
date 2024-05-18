@@ -12,7 +12,7 @@ typedef enum {
 
 typedef uint8_t (*TCMD_TCMDEXEC_Function_Ptr)(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                          char *response_output_buf, uint16_t response_output_buf_len);
-                                         
+
 typedef struct {
 	char* tcmd_name;
 	TCMD_TCMDEXEC_Function_Ptr tcmd_func;
