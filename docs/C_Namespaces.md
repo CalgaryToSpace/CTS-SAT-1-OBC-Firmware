@@ -17,6 +17,8 @@ region of code it belongs to.
 	* Note that functions implemented in the LittleFS library will be prefixed with `lfs_` (lowercase).
 	* The uppercase `LFS_` prefix indicates that the function is implemented by the CTS team.
 * `UART_`: related to low-level UART drivers, written by the CTS team
+* `TEST_`: unit testing and integration testing infrastructure
+* `TEST_EXEC_`: unit test and integration test functions
 
 ## Satellite Subsystems
 

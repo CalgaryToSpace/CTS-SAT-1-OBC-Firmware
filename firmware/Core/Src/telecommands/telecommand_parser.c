@@ -8,15 +8,15 @@
 /// @brief Returns whether a character is alphanumeric (0-9, A-Z, a-z).
 /// @param c The character to check.
 /// @return 1 if the character is alphanumeric, 0 otherwise.
-uint8_t is_char_alphanumeric(char c) {
+uint8_t TCMD_is_char_alphanumeric(char c) {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
 }
 
 /// @brief Returns whether a character is a valid character in a telecommand name.
 /// @param c The character to check.
 /// @return 1 if the character is valid, 0 otherwise.
-uint8_t is_char_valid_telecommand_name_char(char c) {
-    return is_char_alphanumeric(c) || c == '_';
+uint8_t TCMD_is_char_valid_telecommand_name_char(char c) {
+    return TCMD_is_char_alphanumeric(c) || c == '_';
 }
 
 /// @brief Finds an index into TCMD_telecommand_definitions for the given telecommand string.
@@ -29,7 +29,7 @@ int32_t TCMD_parse_telecommand_get_index(const char *tcmd_str, uint32_t tcmd_str
     // Find the length of the telecommand name part of the "tcmd_str"
     int32_t tcmd_str_telecommand_name_len = tcmd_str_len;
     for (int32_t i = 0; i < tcmd_str_len; i++) {
-        if (!is_char_valid_telecommand_name_char(tcmd_str[i])) {
+        if (!TCMD_is_char_valid_telecommand_name_char(tcmd_str[i])) {
             tcmd_str_telecommand_name_len = i;
             break;
         }

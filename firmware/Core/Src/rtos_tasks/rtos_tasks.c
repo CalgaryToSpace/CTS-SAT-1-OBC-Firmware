@@ -106,9 +106,9 @@ void TASK_handle_uart_telecommands(void *argument) {
 				sizeof(response_buf));
 
 			// print back the response
-			debug_uart_print_str("Response: ");
+			debug_uart_print_str("====== Response ======\n");
 			debug_uart_print_str(response_buf);
-			debug_uart_print_str("\n");
+			debug_uart_print_str("======================\n");
 			
 			// TODO: in the future, if the buffer content was longer than the telecommand, we _could_ shift the remaining bytes to the front of the buffer
 		}
