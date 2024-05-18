@@ -26,24 +26,31 @@ uint8_t is_char_valid_telecommand_name_char(char c) {
 /// @param tcmd_str The telecommand string to search for.
 /// @return The index into TCMD_telecommand_definitions for the given telecommand string, or -1 if not found.
 int32_t TCMD_parse_telecommand_get_index(const char *tcmd_str, uint32_t tcmd_str_len) {
-    // handles cases where one telecommand is a prefix/substring of another
-    int32_t longest_match_idx = -1;
-    int32_t longest_match_len = 0;
+    // Find the length of the telecommand name part of the "tcmd_str"
+    int32_t tcmd_str_telecommand_name_len = tcmd_str_len;
+    for (int32_t i = 0; i < tcmd_str_len; i++) {
+        if (!is_char_valid_telecommand_name_char(tcmd_str[i])) {
+            tcmd_str_telecommand_name_len = i;
+            break;
+        }
+    }
 
     for (int32_t check_cmd_idx = 0; check_cmd_idx < TCMD_NUM_TELECOMMANDS; check_cmd_idx++) {
-        for (int32_t str_idx = 0; str_idx < tcmd_str_len; str_idx++) {
-            if (tcmd_str[str_idx] != TCMD_telecommand_definitions[check_cmd_idx].tcmd_name[str_idx]) {
+        if (tcmd_str_telecommand_name_len != strlen(TCMD_telecommand_definitions[check_cmd_idx].tcmd_name)) {
+            continue;
+        }
+        for (int32_t str_idx = 0; str_idx < tcmd_str_telecommand_name_len; str_idx++) {
+            char rxd_char = tcmd_str[str_idx];
+            char real_tcmd_name_char = TCMD_telecommand_definitions[check_cmd_idx].tcmd_name[str_idx];
+            if (rxd_char != real_tcmd_name_char) {
                 break;
             }
-            // read up to the first non-alphanumeric character
-            if (!is_char_valid_telecommand_name_char(tcmd_str[str_idx])) {
-                if (str_idx > longest_match_len && str_idx == strlen(TCMD_telecommand_definitions[check_cmd_idx].tcmd_name)) {
-                    longest_match_idx = check_cmd_idx;
-                    longest_match_len = str_idx;
-                }
-                break;
+
+            // if we've checked against the whole telecommand name
+            if (str_idx == (strlen(TCMD_telecommand_definitions[check_cmd_idx].tcmd_name) - 1)) {
+                return check_cmd_idx;
             }
         }
     }
-    return longest_match_idx;
+    return (-1);
 }

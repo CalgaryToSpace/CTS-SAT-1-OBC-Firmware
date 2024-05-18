@@ -10,11 +10,13 @@ region of code it belongs to.
 	* These telecommands will all be documented in the operations manual.
 * `TASK_`: functions which are FreeRTOS threads/tasks
 * `TASK_HELP_`: functions, etc. which are directly related to FreeRTOS threads, which represent logic factored out of individual threads
+	* For example, a function which runs at the boot-up of every thread.
 * `DEBUG_UART_`: related to debugging via UART, and debugging UART communications
 * `DEBUG_I2C_`: related to I2C
 * `LFS_`: related to LittleFS, the satellite's filesystem
 	* Note that functions implemented in the LittleFS library will be prefixed with `lfs_` (lowercase).
 	* The uppercase `LFS_` prefix indicates that the function is implemented by the CTS team.
+* `UART_`: related to low-level UART drivers, written by the CTS team
 
 ## Satellite Subsystems
 

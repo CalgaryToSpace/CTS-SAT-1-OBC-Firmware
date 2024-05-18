@@ -28,10 +28,9 @@ void TASK_handle_uart_telecommands(void *argument) {
 	TASK_HELP_start_of_task();
 
 	// CONFIGURATION PARAMETER
-	uint32_t timeout_duration_ms = 250;
+	uint32_t timeout_duration_ms = 100;
 
 	uint8_t latest_tcmd[UART_telecommand_buffer_len];
-	memset(latest_tcmd, 0, sizeof(latest_tcmd));
 	uint16_t latest_tcmd_len = 0;
 
 	while (1) {
@@ -40,15 +39,16 @@ void TASK_handle_uart_telecommands(void *argument) {
 
 		debug_uart_print_str("TASK_handle_uart_telecommands -> top of while(1)\n");
 
+		memset(latest_tcmd, 0, UART_telecommand_buffer_len);
 		latest_tcmd_len = 0; // 0 means no telecommand available
 
 		// log the status
-		char msg[256];
-		snprintf(msg, sizeof(msg), "UART telecommand buffer: write_index=%d, last_time=%lums\n", UART_telecommand_buffer_write_idx, UART_telecommand_last_write_time_ms);
-		debug_uart_print_str(msg);
+		// char msg[256];
+		// snprintf(msg, sizeof(msg), "UART telecommand buffer: write_index=%d, last_time=%lums\n", UART_telecommand_buffer_write_idx, UART_telecommand_last_write_time_ms);
+		// debug_uart_print_str(msg);
 
 		if ((HAL_GetTick() - UART_telecommand_last_write_time_ms > timeout_duration_ms) && (UART_telecommand_buffer_write_idx > 0)) {
-			debug_uart_print_str("UART telecommand received (timeout occurred, buffer has data)\n");
+			// debug_uart_print_str("UART telecommand received (timeout occurred, buffer has data)\n");
 			
 			// copy the buffer to the latest_tcmd buffer
 			latest_tcmd_len = UART_telecommand_buffer_write_idx;
@@ -72,7 +72,7 @@ void TASK_handle_uart_telecommands(void *argument) {
 				debug_uart_print_str("'\n");
 			}
 			else {
-				debug_uart_print_str("No telecommand received.\n");
+				// debug_uart_print_str("No telecommand received.\n");
 				continue;
 			}
 
@@ -98,8 +98,9 @@ void TASK_handle_uart_telecommands(void *argument) {
 			latest_tcmd[latest_tcmd_len] = '\0';
 			TCMD_TelecommandDefinition_t tcmd_def = TCMD_telecommand_definitions[tcmd_idx];
 			char response_buf[512];
+			memset(response_buf, 0, sizeof(response_buf));
 			tcmd_def.tcmd_func(
-				&latest_tcmd[strlen(tcmd_def.tcmd_name)],
+				&latest_tcmd[strlen(tcmd_def.tcmd_name)], // pointer to the first character of the args
 				TCMD_TelecommandChannel_DEBUG_UART,
 				response_buf,
 				sizeof(response_buf));
@@ -109,11 +110,6 @@ void TASK_handle_uart_telecommands(void *argument) {
 			debug_uart_print_str(response_buf);
 			debug_uart_print_str("\n");
 			
-
-			// clear the buffer and reset the write pointer
-			memset(latest_tcmd, 0, sizeof(latest_tcmd));
-			latest_tcmd_len = 0;
-
 			// TODO: in the future, if the buffer content was longer than the telecommand, we _could_ shift the remaining bytes to the front of the buffer
 		}
 		else {

@@ -81,7 +81,7 @@ const osThreadAttr_t TASK_debug_print_heartbeat_Attributes = {
 osThreadId_t TASK_handle_uart_telecommands_Handle;
 const osThreadAttr_t TASK_handle_uart_telecommands_Attributes = {
   .name = "TASK_handle_uart_telecommands",
-  .stack_size = 1024,
+  .stack_size = 2048,
   .priority = (osPriority_t) osPriorityNormal,
 };
 

@@ -5,7 +5,6 @@
 #include <stdint.h>
 #include "telecommands/telecommand_definitions.h"
 
-
 typedef enum {
     TCMD_TelecommandChannel_DEBUG_UART,
     TCMD_TelecommandChannel_RADIO1
