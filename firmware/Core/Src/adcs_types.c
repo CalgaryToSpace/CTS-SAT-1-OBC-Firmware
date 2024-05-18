@@ -13,11 +13,11 @@
  * Summary list of required command IDs:
 
 	TODO: (Commands to write)
-	Commands: 
-	Telemetry: 204
+	Commands: 15, 27, 28, 55
+	Telemetry: 138, 146, 151, 153, 154, 158, 159, 163, 161, 162, 166, 167, 168, 169, 172, 176, 177, 178, 179, 180, 191, 199, 200, 223
 
 	Done:
-	Untested: 7, 9, 145, 45, 207, 64, 155, 156, 157, 170, 201, 
+	Untested: 7, 9, 45, 64, 145, 155, 156, 157, 170, 201, 204, 207 
 	Tested: 10, 11, 13, 14, 17, 26, 63, 147, 150, 197, 240
 
 	TODO: additionally
@@ -458,7 +458,7 @@ void ADCS_Estimate_Fine_Angular_Rates(I2C_HandleTypeDef *hi2c) {
 void ADCS_Get_Magnetometer_Config(I2C_HandleTypeDef *hi2c) {
 	ADCS_Magnetometer_Config_Struct config;
 	
-	uint8_t data_length = 6;
+	uint8_t data_length = 30;
 	uint8_t data_received[data_length]; // define temp buffer
 
 	I2C_telemetry_wrapper(hi2c, TLF_CUBEACP_GET_MAGNETOMETER_CONFIG, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
