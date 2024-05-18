@@ -132,6 +132,8 @@ typedef enum ADCS_Magnetometer_Mode {
 	ADCS_Magnetometer_Mode_None
 } ADCS_Magnetometer_Mode;
 
+// TODO: enums
+
 /* Structs */
 
 typedef struct ADCS_TC_Ack_Struct {
@@ -258,6 +260,33 @@ typedef struct ADCS_Magnetometer_Config_Struct {
     double sensitivity_matrix_s32;
 } ADCS_Magnetometer_Config_Struct;
 
+typedef struct ADCS_Commanded_Angles_Struct {
+	double x; 
+	double y;
+	double z; 
+} ADCS_Commanded_Angles_Struct;
+
+typedef struct ADCS_Estimation_Params_Struct {
+    float magnetometer_rate_filter_system_noise;
+    float ekf_system_noise;
+    float css_measurement_noise;
+    float sun_sensor_measurement_noise;
+    float nadir_sensor_measurement_noise;
+    float magnetometer_measurement_noise;
+    float star_tracker_measurement_noise;
+    bool use_sun_sensor;
+    bool use_nadir_sensor;
+    bool use_css;
+    bool use_star_tracker;
+    bool nadir_sensor_terminator_test;
+    bool automatic_magnetometer_recovery;
+    ADCS_Magnetometer_Mode magnetometer_mode;
+    ADCS_Magnetometer_Mode magnetometer_selection_for_raw_mtm_tlm;
+    bool automatic_estimation_transition_due_to_rate_sensor_errors;
+    bool wheel_30s_power_up_delay;
+    uint8_t cam1_and_cam2_sampling_period;
+} ADCS_Estimation_Params_Struct;
+
 // TODO: structs
 
 /* Function Definitions */
@@ -267,6 +296,7 @@ typedef struct ADCS_Magnetometer_Config_Struct {
 #define ADCS_NO_CHECKSUM 0
 #define WRITE_STRUCT_TO_MEMORY(struct_to_write) // memory module function: write struct to memory
 void switch_order(uint8_t *array, uint16_t value, int index);
+void reverse_uint32(uint8_t *array, uint32_t value, int index);
 
 // TC/TLM functions (basic communication)
 void I2C_telecommand_wrapper(I2C_HandleTypeDef *hi2c, uint8_t id, uint8_t* data, uint32_t data_length, uint8_t include_checksum);
@@ -336,6 +366,27 @@ void ADCS_Get_Raw_Magnetometer_Values(I2C_HandleTypeDef *hi2c);
 void ADCS_Fine_Angular_Rates(I2C_HandleTypeDef *hi2c);
 void ADCS_Estimate_Fine_Angular_Rates(I2C_HandleTypeDef *hi2c);
 void ADCS_Get_Magnetometer_Config(I2C_HandleTypeDef *hi2c);
-
+void ADCS_Get_Commanded_Attitude_Angles(I2C_HandleTypeDef *hi2c);
+void ADCS_Set_Commanded_Attitude_Angles(I2C_HandleTypeDef *hi2c, double x, double y, double z);
+void ADCS_Set_Estimation_Params(I2C_HandleTypeDef *hi2c, 
+								float magnetometer_rate_filter_system_noise, 
+                                float ekf_system_noise, 
+                                float css_measurement_noise, 
+                                float sun_sensor_measurement_noise, 
+                                float nadir_sensor_measurement_noise, 
+                                float magnetometer_measurement_noise, 
+                                float star_tracker_measurement_noise, 
+                                bool use_sun_sensor, 
+                                bool use_nadir_sensor, 
+                                bool use_css, 
+                                bool use_star_tracker, 
+                                bool nadir_sensor_terminator_test, 
+                                bool automatic_magnetometer_recovery, 
+                                ADCS_Magnetometer_Mode magnetometer_mode, // this is actually the same one as for ID 56!
+                                ADCS_Magnetometer_Mode magnetometer_selection_for_raw_mtm_tlm, // and so is this, actually!
+                                bool automatic_estimation_transition_due_to_rate_sensor_errors, 
+								bool wheel_30s_power_up_delay, // present in CubeSupport but not in the manual -- need to test
+                                uint8_t cam1_and_cam2_sampling_period);
+void ADCS_Get_Estimation_Params(I2C_HandleTypeDef *hi2c);
 // TODO: prototypes
 #endif /* INC_ADCS_TYPES_H_ */

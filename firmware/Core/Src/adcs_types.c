@@ -13,11 +13,11 @@
  * Summary list of required command IDs:
 
 	TODO: (Commands to write)
-	Commands: 15, 27, 28, 55
-	Telemetry: 138, 146, 151, 153, 154, 158, 159, 163, 161, 162, 166, 167, 168, 169, 172, 176, 177, 178, 179, 180, 191, 199, 200, 223
+	Commands: 28, 55
+	Telemetry: 138, 146, 151, 153, 154, 158, 159, 163, 161, 162, 166, 167, 168, 169, 172, 176, 177, 178, 179, 180, 191, 200
 
-	Done:
-	Untested: 7, 9, 45, 64, 145, 155, 156, 157, 170, 201, 204, 207 
+	Done: (see test logs for more info)
+	Untested: 7, 9, 15, 27, 45, 64, 145, 155, 156, 157, 170, 199, 201, 204, 207, 223
 	Tested: 10, 11, 13, 14, 17, 26, 63, 147, 150, 197, 240
 
 	TODO: additionally
@@ -485,6 +485,108 @@ void ADCS_Get_Magnetometer_Config(I2C_HandleTypeDef *hi2c) {
 	WRITE_STRUCT_TO_MEMORY(params) // memory module function
 }
 
+void ADCS_Get_Commanded_Attitude_Angles(I2C_HandleTypeDef *hi2c) {
+	// gets commanded attitude angles of the ADCS (Table 186)
+	ADCS_Commanded_Angles_Struct angles;
+
+	uint8_t data_length = 6;
+	uint8_t data_received[data_length]; // define temp buffer
+
+	I2C_telemetry_wrapper(hi2c, TLF_CUBEACP_GET_COMMANDED_ATTITUDE_ANGLES, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
+
+	// map to struct
+	// Formatted value is obtained using the formula: (formatted value) [deg] = RAWVAL*0.01
+	angles.x = (double) (data_received[1] << 8 | data_received[0]) * 0.01; 
+	angles.y = (double) (data_received[3] << 8 | data_received[2]) * 0.01; 
+	angles.z = (double) (data_received[5] << 8 | data_received[4]) * 0.01; 
+
+	WRITE_STRUCT_TO_MEMORY(rates) // memory module function
+}
+
+void ADCS_Set_Commanded_Attitude_Angles(I2C_HandleTypeDef *hi2c, double x, double y, double z) {
+	// raw parameter value is obtained using the formula: (raw parameter) = (formatted value)*100.0
+	// angle >> 8 gives upper byte, angle & 0x00FF gives lower byte
+	uint8_t data_send[6];
+	// swap low and high bytes and populate data_send
+	switch_order(data_send, ((uint16_t) (x * 100)), 0);
+	switch_order(data_send, ((uint16_t) (y * 100)), 2);
+	switch_order(data_send, ((uint16_t) (z * 100)), 4);
+	I2C_telecommand_wrapper(hi2c, TC_CUBEACP_SET_COMMANDED_ATTITUDE_ANGLES, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+}
+
+void ADCS_Set_Estimation_Params(I2C_HandleTypeDef *hi2c, 
+								float magnetometer_rate_filter_system_noise, 
+                                float ekf_system_noise, 
+                                float css_measurement_noise, 
+                                float sun_sensor_measurement_noise, 
+                                float nadir_sensor_measurement_noise, 
+                                float magnetometer_measurement_noise, 
+                                float star_tracker_measurement_noise, 
+                                bool use_sun_sensor, 
+                                bool use_nadir_sensor, 
+                                bool use_css, 
+                                bool use_star_tracker, 
+                                bool nadir_sensor_terminator_test, 
+                                bool automatic_magnetometer_recovery, 
+                                ADCS_Magnetometer_Mode magnetometer_mode, // this is actually the same one as for ID 56!
+                                ADCS_Magnetometer_Mode magnetometer_selection_for_raw_mtm_tlm, // and so is this, actually!
+                                bool automatic_estimation_transition_due_to_rate_sensor_errors, 
+								bool wheel_30s_power_up_delay, // present in CubeSupport but not in the manual -- need to test
+                                uint8_t cam1_and_cam2_sampling_period) { // the manual calls it this, but CubeSupport calls it "error counter reset period" -- need to test
+	// float uses IEEE 754 float32, with all bytes reversed, so eg. 1.1 becomes [0xCD, 0xCC, 0x8C, 0x3F]
+	// the float type should already be reversed, but need to test in implementation
+	uint8_t data_send[31] = {};
+
+	// convert floats to reversed arrays of uint8_t
+	memcpy(&data_send[0],  &magnetometer_rate_filter_system_noise, sizeof(magnetometer_rate_filter_system_noise));
+	memcpy(&data_send[4],  &ekf_system_noise, sizeof(ekf_system_noise));
+	memcpy(&data_send[8],  &css_measurement_noise, sizeof(css_measurement_noise));
+	memcpy(&data_send[12], &sun_sensor_measurement_noise, sizeof(sun_sensor_measurement_noise));
+	memcpy(&data_send[16], &nadir_sensor_measurement_noise, sizeof(nadir_sensor_measurement_noise));
+	memcpy(&data_send[20], &magnetometer_measurement_noise, sizeof(magnetometer_measurement_noise));
+	memcpy(&data_send[24], &star_tracker_measurement_noise, sizeof(star_tracker_measurement_noise));
+
+	// convert bools to uint8
+	data_send[28] = (magnetometer_mode << 6) | (automatic_magnetometer_recovery << 5) | (nadir_sensor_terminator_test << 4) | (use_star_tracker << 3) | (use_css << 2) | (use_nadir_sensor << 1) | (use_sun_sensor);
+	data_send[29] = (wheel_30s_power_up_delay << 3) | (automatic_estimation_transition_due_to_rate_sensor_errors << 2) | (magnetometer_selection_for_raw_mtm_tlm);
+
+	data_send[30] = cam1_and_cam2_sampling_period; // lower four bits are for cam1 and upper four are for cam2 if the manual is correct, not CubeSupport
+
+	I2C_telecommand_wrapper(hi2c, TC_CUBEACP_SET_ESTIMATION_PARAMETERS, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+}
+
+void ADCS_Get_Estimation_Params(I2C_HandleTypeDef *hi2c) {
+	ADCS_Estimation_Params_Struct params;
+	
+	uint8_t data_length = 31;
+	uint8_t data_received[data_length]; // define temp buffer
+
+	I2C_telemetry_wrapper(hi2c, TLF_CUBEACP_GET_ESTIMATION_PARAMETERS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+	// map temp buffer to struct
+	memcpy(&params.magnetometer_rate_filter_system_noise, &data_received[0], 4);
+	memcpy(&params.ekf_system_noise, &data_received[4], 4);
+	memcpy(&params.css_measurement_noise, &data_received[8], 4);
+	memcpy(&params.sun_sensor_measurement_noise, &data_received[12], 4);
+	memcpy(&params.nadir_sensor_measurement_noise, &data_received[16], 4);
+	memcpy(&params.magnetometer_measurement_noise, &data_received[20], 4);
+	memcpy(&params.star_tracker_measurement_noise, &data_received[24], 4);
+	params.use_sun_sensor = (data_received[28] & 0b00000001);
+	params.use_nadir_sensor = (data_received[28] & 0b00000010) >> 1;
+	params.use_css = (data_received[28] & 0b00000100) >> 2;
+	params.use_star_tracker = (data_received[28] & 0b00001000) >> 3;
+	params.nadir_sensor_terminator_test = (data_received[28] & 0b00010000) >> 4;
+	params.automatic_magnetometer_recovery = (data_received[28] & 0b00100000) >> 5;
+	params.magnetometer_mode = (data_received[28] & 0b11000000) >> 6;
+	params.magnetometer_selection_for_raw_mtm_tlm = (data_received[29] & 0b00000011);
+	params.automatic_estimation_transition_due_to_rate_sensor_errors = (data_received[29] & 0b00000100) >> 2;
+	params.wheel_30s_power_up_delay = (data_received[29] & 0b00001000) >> 3;
+	params.cam1_and_cam2_sampling_period = data_received[30];
+
+	WRITE_STRUCT_TO_MEMORY(params) // memory module function
+}
+
+
 // TODO: jump here
 
 /**
@@ -718,7 +820,6 @@ void switch_order(uint8_t *array, uint16_t value, int index) {
     array[index] = (uint8_t)(value & 0xFF); // Insert the low byte of the value into the array at the specified index
     array[index + 1] = (uint8_t)(value >> 8); // Insert the high byte of the value into the array at the next index
 }
-
 
 /***************************************************************************//**
 * Calculates an 8-bit CRC value
