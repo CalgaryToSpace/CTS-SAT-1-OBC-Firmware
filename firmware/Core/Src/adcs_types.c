@@ -13,11 +13,11 @@
  * Summary list of required command IDs:
 
 	TODO: (Commands to write)
-	Commands: 28, 55
-	Telemetry: 138, 146, 151, 153, 154, 158, 159, 163, 161, 162, 166, 167, 168, 169, 172, 176, 177, 178, 179, 180, 191, 200
+	Commands:
+	Telemetry: 138, 146, 151, 153, 154, 158, 159, 163, 161, 162, 166, 167, 168, 169, 172, 176, 177, 178, 179, 180, 191
 
 	Done: (see test logs for more info)
-	Untested: 7, 9, 15, 27, 45, 64, 145, 155, 156, 157, 170, 199, 201, 204, 207, 223
+	Untested: 7, 9, 15, 23, 27, 28, 45, 55, 64, 145, 155, 156, 157, 170, 199, 200, 201, 204, 207, 223, 227
 	Tested: 10, 11, 13, 14, 17, 26, 63, 147, 150, 197, 240
 
 	TODO: additionally
@@ -586,6 +586,129 @@ void ADCS_Get_Estimation_Params(I2C_HandleTypeDef *hi2c) {
 	WRITE_STRUCT_TO_MEMORY(params) // memory module function
 }
 
+void ADCS_Set_ASGP4_Params(I2C_HandleTypeDef *hi2c, double incl_coefficient, double raan_coefficient, double ecc_coefficient, double aop_coefficient, double time_coefficient, double pos_coefficient, double maximum_position_error, ADCS_ASGP4_Filter asgp4_filter, double xp_coefficient, double yp_coefficient, uint8_t gps_roll_over, double position_sd, double velocity_sd, uint8_t min_satellites, double time_gain, double max_lag, uint16_t min_samples) {
+	uint8_t data_send[30] = {}; // from Table 209
+
+	// populate data_send
+	switch_order(data_send, (uint16_t) (incl_coefficient * 1000), 0);
+	switch_order(data_send, (uint16_t) (raan_coefficient * 1000), 2);
+	switch_order(data_send, (uint16_t) (ecc_coefficient * 1000), 4);
+	switch_order(data_send, (uint16_t) (aop_coefficient * 1000), 6);
+	switch_order(data_send, (uint16_t) (time_coefficient * 1000), 8);
+	switch_order(data_send, (uint16_t) (pos_coefficient * 1000), 10);
+	data_send[12] = (uint8_t) (maximum_position_error * 10);
+	data_send[13] = (uint8_t) asgp4_filter;
+	switch_order_32(data_send, (uint32_t) (xp_coefficient * 10000000), 14);
+	switch_order_32(data_send, (uint32_t) (yp_coefficient * 10000000), 18);
+	data_send[22] = gps_roll_over;
+	data_send[23] = (uint8_t) (position_sd * 10);
+	data_send[24] = (uint8_t) (velocity_sd * 100);
+	data_send[25] = min_satellites;
+	data_send[26] = (uint8_t) (time_gain * 100);
+	data_send[27] = (uint8_t) (max_lag * 100);
+	switch_order(data_send, min_samples, 28);
+
+	I2C_telecommand_wrapper(hi2c, TC_CUBEACP_SET_AUGMENTED_SGP4_PARAMETERS, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+}
+
+void ADCS_Get_ASGP4_Params(I2C_HandleTypeDef *hi2c) {
+	ADCS_ASGP4_Params_Struct params;
+	
+	uint8_t data_length = 30;
+	uint8_t data_received[data_length]; // define temp buffer
+
+	I2C_telemetry_wrapper(hi2c, TLF_CUBEACP_GET_AUGMENTED_SGP4_PARAMETERS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+	// map temp buffer to struct
+	params.incl_coefficient = ((double)(data_received[1] << 8 | data_received[0])) * 0.001;
+    params.raan_coefficient = ((double)(data_received[3] << 8 | data_received[2])) * 0.001;
+    params.ecc_coefficient = ((double)(data_received[5] << 8 | data_received[4])) * 0.001;
+    params.aop_coefficient = ((double)(data_received[7] << 8 | data_received[6])) * 0.001;
+    params.time_coefficient = ((double)(data_received[9] << 8 | data_received[8])) * 0.001;
+    params.pos_coefficient = ((double)(data_received[11] << 8 | data_received[10])) * 0.001;
+    params.maximum_position_error = ((double)data_received[12]) * 0.1;
+    params.asgp4_filter = (ADCS_ASGP4_Filter)data_received[13];
+    params.xp_coefficient = ((double)(data_received[17] << 24 | data_received[16] << 16 | data_received[15] << 8 | data_received[14])) * 0.0000001;
+    params.yp_coefficient = ((double)(data_received[21] << 24 | data_received[20] << 16 | data_received[19] << 8 | data_received[18])) * 0.0000001;
+    params.gps_roll_over = data_received[22];
+    params.position_sd = ((double)data_received[23]) * 0.1;
+    params.velocity_sd = ((double)data_received[24]) * 0.01;
+    params.min_satellites = data_received[25];
+    params.time_gain = ((double)data_received[26]) * 0.01;
+    params.max_lag = ((double)data_received[27]) * 0.01;
+    params.min_samples = (data_received[29] << 8 | data_received[28]);
+
+	WRITE_STRUCT_TO_MEMORY(params) // memory module function
+}
+
+void ADCS_Set_Tracking_Controller_Target_Reference(I2C_HandleTypeDef *hi2c, float lon, float lat, float alt) {
+	uint8_t data_send[12];
+
+	// float uses IEEE 754 float32, with all bytes reversed, so eg. 1.1 becomes [0xCD, 0xCC, 0x8C, 0x3F]
+	// the float type should already be reversed, but need to test in implementation
+	// convert floats to reversed arrays of uint8_t
+	memcpy(&data_send[0],  &lon, sizeof(lon));
+	memcpy(&data_send[4],  &lon, sizeof(lat));
+	memcpy(&data_send[8],  &lon, sizeof(alt));
+
+	I2C_telecommand_wrapper(hi2c, TC_CUBEACP_SET_TRACKING_CONTROLLER_TARGET_REFERENCE, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+}
+
+void ADCS_Get_Tracking_Controller_Target_Reference(I2C_HandleTypeDef *hi2c) {
+	ADCS_Tracking_Controller_Target_Struct ref;
+	
+	uint8_t data_length = 12;
+	uint8_t data_received[data_length]; // define temp buffer
+
+	I2C_telemetry_wrapper(hi2c, TLF_CUBEACP_GET_TRACKING_CONTROLLER_TARGET_REFERENCE, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+	// map temp buffer to struct
+	memcpy(&ref.lon, &data_received[0], 4);
+	memcpy(&ref.lat, &data_received[4], 4);
+	memcpy(&ref.alt, &data_received[8], 4);
+
+	WRITE_STRUCT_TO_MEMORY(ref);
+}
+
+void ADCS_Set_Rate_Gyro_Config(I2C_HandleTypeDef *hi2c, ADCS_Axis_Select gyro1, ADCS_Axis_Select gyro2, ADCS_Axis_Select gyro3, double x_rate_offset, double y_rate_offset, double z_rate_offset, uint8_t rate_sensor_mult) {
+	uint8_t data_send[10];
+
+	data_send[0] = (uint8_t) gyro1;
+	data_send[1] = (uint8_t) gyro2;
+	data_send[2] = (uint8_t) gyro3;
+
+	switch_order(data_send, (uint16_t) (x_rate_offset * 1000), 3);
+	switch_order(data_send, (uint16_t) (x_rate_offset * 1000), 5);
+	switch_order(data_send, (uint16_t) (x_rate_offset * 1000), 7);
+
+	data_send[9] = rate_sensor_mult;
+
+	I2C_telecommand_wrapper(hi2c, TC_CUBEACP_SET_RATE_GYRO_CONFIG, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+}
+
+void ADCS_Get_Rate_Gyro_Config(I2C_HandleTypeDef *hi2c) {
+	ADCS_Rate_Gyro_Config_Struct config;
+	
+	uint8_t data_length = 12;
+	uint8_t data_received[data_length]; // define temp buffer
+
+	I2C_telemetry_wrapper(hi2c, TLF_CUBEACP_GET_RATE_GYRO_CONFIG, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+	// map temp buffer to struct
+	
+	config.gyro1 = data_received[0];
+	config.gyro1 = data_received[1];
+	config.gyro1 = data_received[2];
+
+	config.x_rate_offset = ((double)(data_received[4] << 8 | data_received[3])) * 0.001;
+	config.x_rate_offset = ((double)(data_received[6] << 8 | data_received[5])) * 0.001;
+	config.x_rate_offset = ((double)(data_received[8] << 8 | data_received[7])) * 0.001;
+
+	config.rate_sensor_mult = data_received[9];
+
+	WRITE_STRUCT_TO_MEMORY(ref);
+}
+
 
 // TODO: jump here
 
@@ -819,6 +942,14 @@ void COMMS_Crc8Init()
 void switch_order(uint8_t *array, uint16_t value, int index) {
     array[index] = (uint8_t)(value & 0xFF); // Insert the low byte of the value into the array at the specified index
     array[index + 1] = (uint8_t)(value >> 8); // Insert the high byte of the value into the array at the next index
+}
+
+// Swap low and high bytes of uint32 to turn into uint8 and put into specified index of an array
+void switch_order_32(uint8_t *array, uint32_t value, int index) {
+    array[index] = (uint8_t)(value & 0xFF); // Insert the low byte of the value into the array at the specified index
+    array[index + 1] = (uint8_t)((value >> 8) & 0xFF); // Insert the second byte of the value into the array at the next index
+	array[index + 2] = (uint8_t)((value >> 16) & 0xFF); // Insert the third byte of the value into the array at the next next index
+    array[index + 3] = (uint8_t)(value >> 24); // Insert the high byte of the value into the array at the next next next index
 }
 
 /***************************************************************************//**

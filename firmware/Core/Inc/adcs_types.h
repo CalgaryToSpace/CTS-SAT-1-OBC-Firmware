@@ -132,6 +132,21 @@ typedef enum ADCS_Magnetometer_Mode {
 	ADCS_Magnetometer_Mode_None
 } ADCS_Magnetometer_Mode;
 
+typedef enum ADCS_ASGP4_Filter {
+    ADCS_ASGP4_Filter_Lowpass,
+    ADCS_ASGP4_Filter_Average
+} ADCS_ASGP4_Filter;
+
+typedef enum ADCS_Axis_Select {
+    ADCS_Positive_X,    
+    ADCS_Negative_X,    
+    ADCS_Positive_Y,
+    ADCS_Negative_Y,
+    ADCS_Positive_Z,
+    ADCS_Negative_Z,
+    ADCS_Not_Used
+} ADCS_Axis_Select;
+
 // TODO: enums
 
 /* Structs */
@@ -287,6 +302,42 @@ typedef struct ADCS_Estimation_Params_Struct {
     uint8_t cam1_and_cam2_sampling_period;
 } ADCS_Estimation_Params_Struct;
 
+typedef struct ADCS_ASGP4_Params_Struct {
+    double incl_coefficient;
+    double raan_coefficient;
+    double ecc_coefficient;
+    double aop_coefficient;
+    double time_coefficient;
+    double pos_coefficient;
+    double maximum_position_error;
+    ADCS_ASGP4_Filter asgp4_filter;
+    double xp_coefficient;
+    double yp_coefficient;
+    uint8_t gps_roll_over;
+    double position_sd;
+    double velocity_sd;
+    uint8_t min_satellites;
+    double time_gain;
+    double max_lag;
+    uint16_t min_samples;
+} ADCS_ASGP4_Params_Struct;
+
+typedef struct ADCS_Tracking_Controller_Target_Struct {
+    float lon;
+    float lat;
+    float alt;
+} ADCS_Tracking_Controller_Target_Struct;
+
+typedef struct ADCS_Rate_Gyro_Config_Struct {
+    ADCS_Axis_Select gyro1; 
+    ADCS_Axis_Select gyro2; 
+    ADCS_Axis_Select gyro3; 
+    double x_rate_offset; 
+    double y_rate_offset; 
+    double z_rate_offset; 
+    uint8_t rate_sensor_mult;
+} ADCS_Rate_Gyro_Config_Struct;
+
 // TODO: structs
 
 /* Function Definitions */
@@ -296,7 +347,7 @@ typedef struct ADCS_Estimation_Params_Struct {
 #define ADCS_NO_CHECKSUM 0
 #define WRITE_STRUCT_TO_MEMORY(struct_to_write) // memory module function: write struct to memory
 void switch_order(uint8_t *array, uint16_t value, int index);
-void reverse_uint32(uint8_t *array, uint32_t value, int index);
+void switch_order_32(uint8_t *array, uint32_t value, int index);
 
 // TC/TLM functions (basic communication)
 void I2C_telecommand_wrapper(I2C_HandleTypeDef *hi2c, uint8_t id, uint8_t* data, uint32_t data_length, uint8_t include_checksum);
@@ -388,5 +439,29 @@ void ADCS_Set_Estimation_Params(I2C_HandleTypeDef *hi2c,
 								bool wheel_30s_power_up_delay, // present in CubeSupport but not in the manual -- need to test
                                 uint8_t cam1_and_cam2_sampling_period);
 void ADCS_Get_Estimation_Params(I2C_HandleTypeDef *hi2c);
+void ADCS_Set_ASGP4_Params(I2C_HandleTypeDef *hi2c,
+                           double incl_coefficient,
+                           double raan_coefficient,
+                           double ecc_coefficient,
+                           double aop_coefficient,
+                           double time_coefficient,
+                           double pos_coefficient,
+                           double maximum_position_error,
+                           ADCS_ASGP4_Filter asgp4_filter,
+                           double xp_coefficient,
+                           double yp_coefficient,
+                           uint8_t gps_roll_over,
+                           double position_sd,
+                           double velocity_sd,
+                           uint8_t min_satellites,
+                           double time_gain,
+                           double max_lag,
+                           uint16_t min_samples);
+void ADCS_Get_ASGP4_Params(I2C_HandleTypeDef *hi2c);
+void ADCS_Set_Tracking_Controller_Target_Reference(I2C_HandleTypeDef *hi2c, float lon, float lat, float alt);
+void ADCS_Get_Tracking_Controller_Target_Reference(I2C_HandleTypeDef *hi2c);
+void ADCS_Set_Rate_Gyro_Config(I2C_HandleTypeDef *hi2c, ADCS_Axis_Select gyro1, ADCS_Axis_Select gyro2, ADCS_Axis_Select gyro3, double x_rate_offset, double y_rate_offset, double z_rate_offset, uint8_t rate_sensor_mult);
+
 // TODO: prototypes
+
 #endif /* INC_ADCS_TYPES_H_ */
