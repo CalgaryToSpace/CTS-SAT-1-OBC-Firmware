@@ -461,7 +461,7 @@ void ADCS_Get_ASGP4_Params(I2C_HandleTypeDef *hi2c);
 void ADCS_Set_Tracking_Controller_Target_Reference(I2C_HandleTypeDef *hi2c, float lon, float lat, float alt);
 void ADCS_Get_Tracking_Controller_Target_Reference(I2C_HandleTypeDef *hi2c);
 void ADCS_Set_Rate_Gyro_Config(I2C_HandleTypeDef *hi2c, ADCS_Axis_Select gyro1, ADCS_Axis_Select gyro2, ADCS_Axis_Select gyro3, double x_rate_offset, double y_rate_offset, double z_rate_offset, uint8_t rate_sensor_mult);
-
+void ADCS_Get_Rate_Gyro_Config(I2C_HandleTypeDef *hi2c);
 // TODO: prototypes
 
 #endif /* INC_ADCS_TYPES_H_ */
