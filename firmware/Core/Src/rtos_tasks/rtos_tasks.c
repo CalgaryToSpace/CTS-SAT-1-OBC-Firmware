@@ -5,6 +5,7 @@
 #include "telecommands/telecommand_parser.h"
 #include "debug_tools/debug_uart.h"
 #include "uart_handler/uart_handler.h"
+#include "transforms/arrays.h"
 
 #include "cmsis_os.h"
 
@@ -84,36 +85,55 @@ void TASK_handle_uart_telecommands(void *argument) {
 			}
 
 			// execute/queue the command
-			// process the telecommand
+			// process the telecommand name
 			int32_t tcmd_idx = TCMD_parse_telecommand_get_index((char *)latest_tcmd, latest_tcmd_len);
-
-			// get the telecommand definition
-			debug_uart_print_str("======= Telecommand ======\n");
-			if (tcmd_idx >= 0) {
-				debug_uart_print_str("Received telecommand '");
-				debug_uart_print_str(TCMD_telecommand_definitions[tcmd_idx].tcmd_name);
-				debug_uart_print_str("'\n");
-				// TODO: maybe log/print args too
-			} else {
-				debug_uart_print_str("Telecommand not found (code ");
-				debug_uart_print_int32(tcmd_idx);
-				debug_uart_print_str(").\n");
+			if (tcmd_idx < 0) {
+				debug_uart_print_str("Telecommand not found in the list.\n");
 				continue;
 			}
 
-			// TODO: parse out the timestamp and see if it should be run immediately or queued (and add a queue system)
+			// get the telecommand definition
+			TCMD_TelecommandDefinition_t tcmd_def = TCMD_telecommand_definitions[tcmd_idx];
+			debug_uart_print_str("======= Telecommand ======\n");
+			debug_uart_print_str("Received telecommand '");
+			debug_uart_print_str(tcmd_def.tcmd_name);
+			debug_uart_print_str("'\n");
+
+			// validate the args
+			int32_t start_of_args_idx = TCMD_PREFIX_STR_LEN + strlen(tcmd_def.tcmd_name);
+			if (latest_tcmd_len < start_of_args_idx + 1) {
+				debug_uart_print_str("ERROR: You must have parenthesis for the args.\n");
+				continue;
+			}
+			if (latest_tcmd[start_of_args_idx] != '(') {
+				debug_uart_print_str("ERROR: You must have parenthesis for the args. You need an opening paren.\n");
+				continue;
+			}
+			int32_t end_of_args_idx = GEN_get_index_of_substring_in_array((char*)latest_tcmd, latest_tcmd_len, ")");
+			if (end_of_args_idx < 0) {
+				debug_uart_print_str("ERROR: You must have parenthesis for the args. No closing paren found.\n");
+				continue;
+			}
+
+			// TODO: maybe log/print args too
+			
+			uint8_t args_str_no_parens[end_of_args_idx - start_of_args_idx + 2];
+			memcpy(args_str_no_parens, &latest_tcmd[start_of_args_idx+1], end_of_args_idx - start_of_args_idx - 1);
+			args_str_no_parens[end_of_args_idx - 1] = '\0';
+
+			// TODO: parse out the @tssent=xx (timestamp sent) and ensure it's not a duplicate
+			// TODO: parse out the @tsexec=xx (timestamp to execute at) and see if it should be run immediately or queued (and add a queue system)
 			// TODO: add a queue system for telecommands, maybe to flash
-			// TODO: read out the hash and validate it
+			// TODO: read out the @sha256=xx hash and validate it
 
 
 			// Handle the telecommand by calling the appropriate function.
 			// Null-terminate the args string.
 			latest_tcmd[latest_tcmd_len] = '\0';
-			TCMD_TelecommandDefinition_t tcmd_def = TCMD_telecommand_definitions[tcmd_idx];
 			char response_buf[512];
 			memset(response_buf, 0, sizeof(response_buf));
 			tcmd_def.tcmd_func(
-				&latest_tcmd[strlen(tcmd_def.tcmd_name)], // pointer to the first character of the args
+				args_str_no_parens,
 				TCMD_TelecommandChannel_DEBUG_UART,
 				response_buf,
 				sizeof(response_buf));

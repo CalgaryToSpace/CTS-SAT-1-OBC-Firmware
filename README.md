@@ -32,6 +32,8 @@ Firmware for the CTS-SAT-1 ("FrontierSat") mission. Runs on the STM32-based Onbo
 * Connect to the STM32 debug serial port at baud=1152000.
 * Use Breakpoints in VS Code to pause execution and explore the stack. Breakpoint are obeyed when you use the "Debug STM32" button to flash the chip.
 
+The following serial terminal works well for sending commands: https://github.com/wh201906/SerialTest/releases/
+
 ### Python Serial Terminal
 
 ```bash

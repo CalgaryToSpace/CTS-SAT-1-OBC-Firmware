@@ -24,7 +24,7 @@ uint8_t TCMD_is_char_valid_telecommand_name_char(char c) {
 /// @param haystack_arr_len The length of the array to search within.
 /// @param substring The substring to search for. Must be a null-terminated C-string.
 /// @return The index of the start of the first occurrence of the substring in the array, or -1 if not found
-int16_t TCMD_get_index_of_substring_in_array(const char *haystack_arr, int16_t haystack_arr_len, const char *needle_str) {
+int16_t GEN_get_index_of_substring_in_array(const char *haystack_arr, int16_t haystack_arr_len, const char *needle_str) {
     uint32_t needle_str_len = strlen(needle_str);
     
     // Iterate through the haystack array

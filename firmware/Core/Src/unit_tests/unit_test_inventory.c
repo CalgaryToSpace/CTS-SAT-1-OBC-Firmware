@@ -1,6 +1,7 @@
 #include "unit_tests/unit_test_helpers.h"
 #include "unit_tests/unit_test_inventory.h"
 
+#include "unit_tests/test_assorted_prototypes.h"
 #include "unit_tests/test_byte_transforms.h"
 #include "unit_tests/test_telecommand_parser.h"
 #include "unit_tests/test_tests.h"
@@ -26,9 +27,9 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func_name = "TCMD_is_char_alphanumeric"
     },
     {
-        .test_func = TEST_EXEC__TCMD_get_index_of_substring_in_array,
+        .test_func = TEST_EXEC__GEN_get_index_of_substring_in_array,
         .test_file = "telecommands/telecommand_parser",
-        .test_func_name = "TCMD_get_index_of_substring_in_array"
+        .test_func_name = "GEN_get_index_of_substring_in_array"
     },
     {
         .test_func = TEST_EXEC__TCMD_check_starts_with_device_id,
