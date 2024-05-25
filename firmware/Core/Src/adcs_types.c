@@ -8,6 +8,7 @@
 #include "adcs_types.h"
 #include "adcs_ids.h"
 #include <string.h>
+#include <stdio.h>
 
 /*
  * Summary list of required command IDs:
@@ -938,6 +939,7 @@ uint8_t send_UART_telecommand(UART_HandleTypeDef *huart, uint8_t id, uint8_t* da
 }
 
 // Debug function to check I2C connection status
+// TODO: delete this before sending it up in flight
 int I2C_Scan(void)
 { 
 	uint8_t Buffer[25] = {0};
@@ -960,12 +962,13 @@ int I2C_Scan(void)
         }
     	else if(ret == HAL_OK)
     	{
-    		sprintf(Buffer, "0x%X", i);
+    		sprintf(Buffer, "0x%X", i); // TODO: should probably change sprintf to snprintf
     		HAL_UART_Transmit(&hlpuart1, Buffer, sizeof(Buffer), 10000);
     	}
     }
     HAL_UART_Transmit(&hlpuart1, EndMSG, sizeof(EndMSG), 10000);
     /*--[ Scanning Done ]--*/
+	return 0;
 }
 
 
