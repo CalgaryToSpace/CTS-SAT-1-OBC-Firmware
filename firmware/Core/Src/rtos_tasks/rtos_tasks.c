@@ -77,6 +77,12 @@ void TASK_handle_uart_telecommands(void *argument) {
 				continue;
 			}
 
+			// check that the telecommand starts with the correct prefix
+			if (!TCMD_check_starts_with_device_id((char *)latest_tcmd, latest_tcmd_len)) {
+				debug_uart_print_str("Telecommand does not start with the correct prefix.\n");
+				continue;
+			}
+
 			// execute/queue the command
 			// process the telecommand
 			int32_t tcmd_idx = TCMD_parse_telecommand_get_index((char *)latest_tcmd, latest_tcmd_len);
@@ -117,7 +123,8 @@ void TASK_handle_uart_telecommands(void *argument) {
 			debug_uart_print_str(response_buf);
 			debug_uart_print_str("\n==========================\n");
 			
-			// TODO: in the future, if the buffer content was longer than the telecommand, we _could_ shift the remaining bytes to the front of the buffer
+			// TODO: in the future, if the buffer content was longer than the telecommand, we
+			//   _could_ shift the remaining bytes to the front of the buffer
 		}
 		else {
 			debug_uart_print_str("Only partial telecommand received. Buffer length: ");
