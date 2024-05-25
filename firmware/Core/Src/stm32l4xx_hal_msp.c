@@ -20,6 +20,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
@@ -62,7 +63,6 @@
   */
 void HAL_MspInit(void)
 {
-
   /* USER CODE BEGIN MspInit 0 */
 
   /* USER CODE END MspInit 0 */
@@ -104,17 +104,18 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* hi2c)
       Error_Handler();
     }
 
-    __HAL_RCC_GPIOB_CLK_ENABLE();
+    __HAL_RCC_GPIOG_CLK_ENABLE();
+    HAL_PWREx_EnableVddIO2();
     /**I2C1 GPIO Configuration
-    PB8     ------> I2C1_SCL
-    PB9     ------> I2C1_SDA
+    PG13     ------> I2C1_SDA
+    PG14     ------> I2C1_SCL
     */
-    GPIO_InitStruct.Pin = PIN_STACK_I2C1_SCL_Pin|PIN_STACK_I2C1_SDA_Pin;
+    GPIO_InitStruct.Pin = PIN_STACK_I2C1_SDA_Pin|PIN_STACK_I2C1_SCL_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF4_I2C1;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
 
     /* Peripheral clock enable */
     __HAL_RCC_I2C1_CLK_ENABLE();
@@ -241,12 +242,12 @@ void HAL_I2C_MspDeInit(I2C_HandleTypeDef* hi2c)
     __HAL_RCC_I2C1_CLK_DISABLE();
 
     /**I2C1 GPIO Configuration
-    PB8     ------> I2C1_SCL
-    PB9     ------> I2C1_SDA
+    PG13     ------> I2C1_SDA
+    PG14     ------> I2C1_SCL
     */
-    HAL_GPIO_DeInit(PIN_STACK_I2C1_SCL_GPIO_Port, PIN_STACK_I2C1_SCL_Pin);
-
     HAL_GPIO_DeInit(PIN_STACK_I2C1_SDA_GPIO_Port, PIN_STACK_I2C1_SDA_Pin);
+
+    HAL_GPIO_DeInit(PIN_STACK_I2C1_SCL_GPIO_Port, PIN_STACK_I2C1_SCL_Pin);
 
   /* USER CODE BEGIN I2C1_MspDeInit 1 */
 
