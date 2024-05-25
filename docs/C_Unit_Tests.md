@@ -12,18 +12,24 @@ The intentions with these unit tests are:
 3. Provide a way to ensure core functionality continues working in the wake of refactors and
 configuration changes.
 
-## What we're not doing
+## Non-Objectives
 
-* Seeking high coverage of unit tests, or enforcing unit tests where there is minimal gain.
+Companies may care about the following, but we do not:
+
+* Seeking high coverage of unit tests, or enforcing creating unit tests where there is minimal gain.
 * Using mocks to emulate difficult-to-test systems.
     * Instead: write functions in a way that the testable part and the difficult-to-test system
     never appear in the same function. For example, implement reading from UART in a different
     function than the parser.
 
+Unit tests, when used correctly, are extremely powerful, and enable far faster development.
+
 ## How to Write a Test
 
-The following walks you through an example of creating a testable function, and then writing
+The following guide demonstrates an example of creating a testable function, and then writing
 unit tests for that function.
+
+To see the complete diff of implementing this test, look at [commit a1943af](https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/commit/a1943aff0f0741de2d8b6e10b146a1d3c005cdf3).
 
 0. Install the Codeium extension for VS Code, and sign in. This AI code generation tool will help
 generate a lot of the boilerplate code you're about to encounter.

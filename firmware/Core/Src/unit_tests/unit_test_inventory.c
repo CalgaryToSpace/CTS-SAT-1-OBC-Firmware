@@ -26,6 +26,11 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func_name = "TCMD_is_char_alphanumeric"
     },
     {
+        .test_func = TEST_EXEC__TCMD_get_index_of_substring_in_array,
+        .test_file = "telecommands/telecommand_parser",
+        .test_func_name = "TCMD_get_index_of_substring_in_array"
+    },
+    {
         .test_func = TEST_EXEC__TCMD_check_starts_with_device_id,
         .test_file = "telecommands/telecommand_parser",
         .test_func_name = "TCMD_check_starts_with_device_id"
