@@ -71,7 +71,8 @@ uint8_t TCMDEXEC_echo_back_uint32_args(const uint8_t *args_str, TCMD_Telecommand
 
     for (uint8_t arg_num = 0; arg_num < 10; arg_num++) {
         uint64_t arg_uint64;
-        uint8_t parse_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), arg_num, &arg_uint64);
+        uint8_t parse_result = TCMD_extract_uint64_arg(
+            (char*)args_str, strlen((char*)args_str), arg_num, &arg_uint64);
         if (parse_result > 0) {
             // error parsing
             snprintf(
@@ -85,7 +86,7 @@ uint8_t TCMDEXEC_echo_back_uint32_args(const uint8_t *args_str, TCMD_Telecommand
                 &response_output_buf[strlen(response_output_buf)],
                 response_output_buf_len - strlen(response_output_buf) - 1,
                 "Arg%d=%" PRIu32 ", ",
-                arg_num, arg_uint64);
+                arg_num, (uint32_t)arg_uint64);
         }
     }
     return 0;

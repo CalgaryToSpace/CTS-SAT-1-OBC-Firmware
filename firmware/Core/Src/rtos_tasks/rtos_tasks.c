@@ -38,7 +38,7 @@ void TASK_handle_uart_telecommands(void *argument) {
 		// place the main delay at the top to avoid a "continue" statement skipping it
 		osDelay(400);
 
-		debug_uart_print_str("TASK_handle_uart_telecommands -> top of while(1)\n");
+		// debug_uart_print_str("TASK_handle_uart_telecommands -> top of while(1)\n");
 
 		memset(latest_tcmd, 0, UART_telecommand_buffer_len);
 		latest_tcmd_len = 0; // 0 means no telecommand available

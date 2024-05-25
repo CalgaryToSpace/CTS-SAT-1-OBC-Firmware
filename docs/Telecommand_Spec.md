@@ -8,7 +8,7 @@ The same specification is used whether the commands are delivered over UART or R
 
 Every command contains the following subsections, concatenated together with no delimeters:
 
-1. Target Device: `CTS1+` (meaning CTS-SAT-1)
+1. Target Device Prefix: `CTS1+` (meaning CTS-SAT-1)
 2. Command Name: e.g., `hello_world`
 3. Arguments: e.g., `(arg1, arg2, arg3)`
 4. 🚧 Command Metadata 1 - Timestamp Sent: `@tssent=xxx`, where `xxx` is the UInt64 value (milliseconds) in base10 when the command was sent.

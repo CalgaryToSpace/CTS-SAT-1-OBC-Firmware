@@ -46,6 +46,7 @@ generate a lot of the boilerplate code you're about to encounter.
         return (four_byte_array[0] << 24) | (four_byte_array[1] << 16) |
                 (four_byte_array[2] << 8)  | four_byte_array[3];
     }
+    ```
 
 2. Create a new file in `Core/Src/unit_tests` called `test_bytes_transforms.c`. Create the unit test
 function within that file:
