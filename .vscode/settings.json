@@ -1,5 +1,11 @@
 {
     "editor.tabSize": 4,
-    "editor.insertSpaces": false
+    "editor.insertSpaces": true,
+    "editor.rulers": [
+        99
+    ],
+    "files.associations": {
+        "cmsis_os.h": "c"
+    },
 }
 

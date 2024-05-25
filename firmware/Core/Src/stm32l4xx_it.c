@@ -22,6 +22,8 @@
 #include "stm32l4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <string.h>
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -55,6 +57,7 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
+extern UART_HandleTypeDef hlpuart1;
 extern TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN EV */
@@ -90,6 +93,10 @@ void HardFault_Handler(void)
   while (1)
   {
     /* USER CODE BEGIN W1_HardFault_IRQn 0 */
+    char msg[64];
+    snprintf(msg, sizeof(msg), "HardFault_Handler() -> Hard fault\n");
+    HAL_UART_Transmit(&hlpuart1, (uint8_t *)msg, strlen(msg), 1000); // TODO: check flight-readiness
+    
     /* USER CODE END W1_HardFault_IRQn 0 */
   }
 }
@@ -105,6 +112,10 @@ void MemManage_Handler(void)
   while (1)
   {
     /* USER CODE BEGIN W1_MemoryManagement_IRQn 0 */
+    char msg[64];
+    snprintf(msg, sizeof(msg), "MemManage_Handler() -> Memory management fault\n");
+    HAL_UART_Transmit(&hlpuart1, (uint8_t *)msg, strlen(msg), 1000); // TODO: check flight-readiness
+    
     /* USER CODE END W1_MemoryManagement_IRQn 0 */
   }
 }
@@ -120,6 +131,10 @@ void BusFault_Handler(void)
   while (1)
   {
     /* USER CODE BEGIN W1_BusFault_IRQn 0 */
+    char msg[64];
+    snprintf(msg, sizeof(msg), "BusFault_Handler() -> Bus fault\n");
+    HAL_UART_Transmit(&hlpuart1, (uint8_t *)msg, strlen(msg), 1000); // TODO: check flight-readiness
+    
     /* USER CODE END W1_BusFault_IRQn 0 */
   }
 }
@@ -135,6 +150,10 @@ void UsageFault_Handler(void)
   while (1)
   {
     /* USER CODE BEGIN W1_UsageFault_IRQn 0 */
+    char msg[64];
+    snprintf(msg, sizeof(msg), "UsageFault_Handler() -> Usage fault\n");
+    HAL_UART_Transmit(&hlpuart1, (uint8_t *)msg, strlen(msg), 1000); // TODO: check flight-readiness
+    
     /* USER CODE END W1_UsageFault_IRQn 0 */
   }
 }
@@ -171,6 +190,20 @@ void TIM1_UP_TIM16_IRQHandler(void)
   /* USER CODE BEGIN TIM1_UP_TIM16_IRQn 1 */
 
   /* USER CODE END TIM1_UP_TIM16_IRQn 1 */
+}
+
+/**
+  * @brief This function handles LPUART1 global interrupt.
+  */
+void LPUART1_IRQHandler(void)
+{
+  /* USER CODE BEGIN LPUART1_IRQn 0 */
+
+  /* USER CODE END LPUART1_IRQn 0 */
+  HAL_UART_IRQHandler(&hlpuart1);
+  /* USER CODE BEGIN LPUART1_IRQn 1 */
+
+  /* USER CODE END LPUART1_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

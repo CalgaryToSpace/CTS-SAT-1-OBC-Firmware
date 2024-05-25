@@ -32,9 +32,16 @@ Firmware for the CTS-SAT-1 ("FrontierSat") mission. Runs on the STM32-based Onbo
 * Connect to the STM32 debug serial port at baud=1152000.
 * Use Breakpoints in VS Code to pause execution and explore the stack. Breakpoint are obeyed when you use the "Debug STM32" button to flash the chip.
 
+The following serial terminal works well for sending commands: https://github.com/wh201906/SerialTest/releases/
+
 ### Python Serial Terminal
 
 ```bash
 python3 -m pip install pyserial
 python3 -m serial.tools.miniterm - 115200
 ```
+
+## Notes
+* Lower NVIC priority number means higher priority.
+* For UART, FIFO Mode must be enabled.
+* When starting a new FreeRTOS project, you must manually increase the heap size. Hard faults may mean a thread is running out of stack memory.
