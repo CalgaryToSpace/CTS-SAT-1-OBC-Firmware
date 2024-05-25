@@ -24,6 +24,28 @@
 	- within a byte, use the opposite endian-ness (first towards the end, last towards the beginning of the byte)
 	- check INT vs UINT (int is signed, uint is unsigned)!
 	- make sure all input (TC) / output (TLM) values are __actual__ values, NOT raw values!
+	- **functions should return 0 on success, >0 for issues** 
+	- **needs to be added to telecommand parser (telecommand_definitions.c)**
+	- **unit tests:**
+			uint8_t TEST_EXEC__ADCS_function_name() {
+					type input_params = value;
+					TEST_ASSERT_TRUE(ADCS_function_name(params) == expected_return_value);
+			}
+		registered in unit_test_inventory.c
+			{
+				.test_func = TEST_EXEC__ADCS_function_name,
+				.test_file = "file that the function is in",
+				.test_func_name = "ADCS_function_name"
+			},
+	** NEED TO REFACTOR EVERY FUNCTION:**
+		- for unit tests:
+			- telemetry requests: function should call a separate function to 
+			- pack into struct and write struct to memory
+			- telecommand: can't really do that, but should return the ACK error flag
+		- I2C_telemetry should become ADCS_telemetry_receive
+		- I2C_telecommand should become ADCS_command_send
+	** use hi2c3 as an extern insetad of function argument**
+	** I2C_telecommand_wrapper needs a timeout (50ms?) for failing send **
  *  */
 
 ADCS_TC_Ack_Struct ADCS_TC_Ack(I2C_HandleTypeDef *hi2c) {
