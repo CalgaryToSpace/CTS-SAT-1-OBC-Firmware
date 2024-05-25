@@ -19,6 +19,8 @@ region of code it belongs to.
 * `UART_`: related to low-level UART drivers, written by the CTS team
 * `TEST_`: unit testing and integration testing infrastructure
 * `TEST_EXEC_`: unit test and integration test functions
+* `GEN_`: general-purpose functions which don't fit into any other category
+	* For example, byte manipulation functions.
 
 ## Satellite Subsystems
 
