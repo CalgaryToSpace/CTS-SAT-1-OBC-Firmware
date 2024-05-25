@@ -27,6 +27,7 @@
 #include "debug_tools/debug_uart.h"
 #include "rtos_tasks/rtos_tasks.h"
 #include "uart_handler/uart_handler.h"
+#include "adcs_types.h"
 
 /* USER CODE END Includes */
 
@@ -161,6 +162,12 @@ int main(void)
   UART_init_uart_handlers();
 
   /* USER CODE END 2 */
+
+  // TODO: code for testing ADCS goes here
+  //I2C_Scan();
+    //ADCS_Bootloader_Clear_Errors(&hi2c1);
+    ADCS_Set_Wheel_Speed(&hi2c1, 0x0001, 0x0002, 0x0003);
+    ADCS_Deploy_Magnetometer(&hi2c1, 12);
 
   /* Init scheduler */
   osKernelInitialize();

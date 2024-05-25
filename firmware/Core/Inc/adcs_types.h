@@ -360,6 +360,7 @@ void COMMS_Crc8Init();
 uint8_t COMMS_Crc8Checksum(uint8_t* buffer, uint16_t len);
 
 // UART debug functions
+int I2C_Scan(void);
 uint8_t send_UART_telecommand(UART_HandleTypeDef *huart, uint8_t id, uint8_t* data, uint32_t data_length);
 void PRINT_STRING_UART(UART_HandleTypeDef *huart, void *string);
 void PRINT_NEW_LINE(UART_HandleTypeDef *huart);
