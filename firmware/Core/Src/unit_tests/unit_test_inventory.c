@@ -1,6 +1,7 @@
 #include "unit_tests/unit_test_helpers.h"
 #include "unit_tests/unit_test_inventory.h"
 
+#include "unit_tests/test_byte_transforms.h"
 #include "unit_tests/test_telecommand_parser.h"
 #include "unit_tests/test_tests.h"
 
@@ -28,6 +29,11 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func = TEST_EXEC__TCMD_check_starts_with_device_id,
         .test_file = "telecommands/telecommand_parser",
         .test_func_name = "TCMD_check_starts_with_device_id"
+    },
+    {
+        .test_func = TEST_EXEC__GEN_convert_big_endian_four_byte_array_to_uint32,
+        .test_file = "transforms/byte_transforms",
+        .test_func_name = "GEN_convert_big_endian_four_byte_array_to_uint32"
     },
     
 };
