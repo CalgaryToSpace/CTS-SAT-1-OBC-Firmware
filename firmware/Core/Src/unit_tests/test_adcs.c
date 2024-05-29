@@ -1,6 +1,5 @@
 #include "unit_tests/unit_test_helpers.h" // for all unit tests
 #include "unit_tests/test_adcs.h" // for ADCS tests
-#include "adcs_types.h"
 
 /* TODO: ADCS tests
 	uint8_t TEST_EXEC__ADCS_function_name() {
@@ -8,6 +7,8 @@
 		TEST_ASSERT_TRUE(ADCS_function_name(params) == expected_return_value);
 	}
 */
+
+// memcmp(&one, &two, byte_length) gives 0 iff both mems are equal
 
 uint8_t TEST_EXEC__ADCS_Pack_to_Ack() {
     uint8_t input_params[4] = {1, 2, 3, 4};
@@ -17,8 +18,6 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Ack() {
     expected.error_flag = TC_Error_Invalid_Params;
     expected.error_index = 4;
 
-    ADCS_TC_Ack_Struct result = ADCS_Pack_to_Ack(&input_params);
-    
-    TEST_ASSERT_TRUE((result.error_flag == expected.error_flag) && (result.processed == expected.processed) && (result.error_index == expected.error_index) && (result.last_id == expected.last_id));
-
+    ADCS_TC_Ack_Struct result = ADCS_Pack_to_Ack(input_params);
+    TEST_ASSERT_TRUE(memcmp(&result, &expected, 4) == 0);
 }

@@ -26,7 +26,7 @@ typedef struct {
 extern const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[];
 extern const int16_t TCMD_NUM_TELECOMMANDS;
 
-
+// TODO: define telecommands here
 uint8_t TCMDEXEC_hello_world(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len);
 
