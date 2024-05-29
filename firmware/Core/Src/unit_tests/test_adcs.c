@@ -11,7 +11,8 @@
 // memcmp(&one, &two, byte_length) gives 0 iff both mems are equal
 
 uint8_t TEST_EXEC__ADCS_Pack_to_Ack() {
-    uint8_t input_params[4] = {1, 2, 3, 4};
+    uint8_t input_params[4] = {0x11, 0x01, 0x03, 0x04};
+    
     ADCS_TC_Ack_Struct expected;
     expected.last_id = 17;
     expected.processed = true;
