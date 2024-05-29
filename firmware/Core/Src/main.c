@@ -163,10 +163,10 @@ int main(void)
   /* USER CODE END 2 */
 
   // TODO: code for testing ADCS goes here
-  //I2C_Scan();
+    //I2C_Scan();
     //ADCS_Bootloader_Clear_Errors(&hi2c1);
-    ADCS_Set_Wheel_Speed(&hi2c1, 0x0001, 0x0002, 0x0003);
-    ADCS_Deploy_Magnetometer(&hi2c1, 12);
+    //ADCS_Set_Wheel_Speed(&hi2c1, 0x0001, 0x0002, 0x0003);
+    //ADCS_Deploy_Magnetometer(&hi2c1, 12);
 
   /* Init scheduler */
   osKernelInitialize();

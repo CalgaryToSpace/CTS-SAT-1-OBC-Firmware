@@ -42,6 +42,14 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func_name = "GEN_convert_big_endian_four_byte_array_to_uint32"
     },
     
+    /* TODO: ADCS unit tests
+    {
+		.test_func = TEST_EXEC__ADCS_function_name,
+		.test_file = "unit_tests/test_adcs",
+		.test_func_name = "ADCS_function_name"
+	},
+    */
+
 };
 
 // extern
