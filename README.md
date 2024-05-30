@@ -20,28 +20,36 @@ Firmware for the CTS-SAT-1 ("FrontierSat") mission. Runs on the STM32-based Onbo
 
 ### Troubleshooting
 
-1. Disable your antivirus if it starts removing the compiler.
-2. Use the Ctrl+Shift+P command palate to run "STM32: Install all the required build ...".
+1. Check that your MicroUSB cable supports data transfer. Many MicroUSB cables are power-only.
+2. Disable your antivirus if it starts removing the compiler.
+3. Use the Ctrl+Shift+P command palate to run "STM32: Install all the required build ...".
+4. 
 
 ### Updating the IOC File/Regenerating Boilerplate
 
-* The IOC file must be updated using CubeMX instead of STM32CubeIDE now. This is a fair tradeoff, as it allows us to use VS Code.
-* IOC file updates should be very going forward. This repo uses the OBC Rev 1.3 IOC file.
+The IOC file must be updated using CubeMX instead of STM32CubeIDE now. Feel free to test IOC
+file changes, but do not commit IOC file changes nor auto-generated code changes. Instead, once 
+you've found the ideal configuration, request the changes to a Team Lead (who will make the change 
+directly in the `main` branch).
+Then, rebase off of the `main` branch.
 
 ## Debugging Setup
-* Connect to the STM32 debug serial port at baud=1152000.
+* Connect to the STM32 debug serial port at baud=115200.
 * Use Breakpoints in VS Code to pause execution and explore the stack. Breakpoint are obeyed when you use the "Debug STM32" button to flash the chip.
 
-The following serial terminal works well for sending commands: https://github.com/wh201906/SerialTest/releases/
+The "SerialTest" serial terminal works well for sending commands: https://github.com/wh201906/SerialTest/releases/, and is recommended.
 
 ### Python Serial Terminal
+
+The Python serial terminal is useful for receiving only.
 
 ```bash
 python3 -m pip install pyserial
 python3 -m serial.tools.miniterm - 115200
 ```
 
-## Notes
+## Random Notes
 * Lower NVIC priority number means higher priority.
 * For UART, FIFO Mode must be enabled.
-* When starting a new FreeRTOS project, you must manually increase the heap size. Hard faults may mean a thread is running out of stack memory.
+* When starting a new FreeRTOS project, you must manually increase the total heap size. Hard 
+faults may mean a thread is running out of stack memory.
