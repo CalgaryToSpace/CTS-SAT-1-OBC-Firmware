@@ -38,3 +38,10 @@ __pycache__/
 *$py.class
 venv/
 
+# Neovim development
+cmake
+update_cmake_cache.sh 
+CMakeLists.txt 
+GSE/CMakeLists.txt 
+.clangd 
+
