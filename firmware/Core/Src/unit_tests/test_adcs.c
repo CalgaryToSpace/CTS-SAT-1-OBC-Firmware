@@ -1,5 +1,6 @@
 #include "unit_tests/unit_test_helpers.h" // for all unit tests
 #include "unit_tests/test_adcs.h" // for ADCS tests
+#include <string.h>
 
 /* TODO: ADCS tests
 	uint8_t TEST_EXEC__ADCS_function_name() {
@@ -21,4 +22,5 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Ack() {
 
     ADCS_TC_Ack_Struct result = ADCS_Pack_to_Ack(input_params);
     TEST_ASSERT_TRUE(memcmp(&result, &expected, 4) == 0);
+    return 0;
 }

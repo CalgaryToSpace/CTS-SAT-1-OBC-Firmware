@@ -3,6 +3,7 @@
 #include "telecommands/telecommand_args_helpers.h"
 #include "transforms/arrays.h"
 #include "unit_tests/unit_test_executor.h"
+#include "adcs_types.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -99,3 +100,9 @@ uint8_t TCMDEXEC_run_all_unit_tests(const uint8_t *args_str, TCMD_TelecommandCha
     return 0;
 }
 
+uint8_t TCMDEXEC_ADCS_ack(void) {
+    ADCS_TC_Ack();
+    return 0;
+}
+
+// TODO: telecommand definitions
