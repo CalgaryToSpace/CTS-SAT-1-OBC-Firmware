@@ -3,8 +3,8 @@
 #include "main.h"
 
 // UART telecommand buffer
-const uint16_t UART_telecommand_buffer_len = 256; // extern
-volatile uint8_t UART_telecommand_buffer[256]; // extern // TODO: confirm that this volatile means that the contents are volatile but the pointer is not
+const uint16_t UART_telecommand_buffer_len = UART_TELECOMMAND_BUFFER_LEN; // extern
+volatile uint8_t UART_telecommand_buffer[UART_TELECOMMAND_BUFFER_LEN]; // extern // TODO: confirm that this volatile means that the contents are volatile but the pointer is not
 volatile uint16_t UART_telecommand_buffer_write_idx = 0; // extern
 volatile uint32_t UART_telecommand_last_write_time_ms = 0; // extern
 volatile uint8_t UART_telecommand_buffer_last_rx_byte = 0; // extern

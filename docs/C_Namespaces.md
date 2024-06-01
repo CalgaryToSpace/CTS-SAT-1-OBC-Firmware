@@ -37,6 +37,7 @@ region of code it belongs to.
 * `ENVIRO_`: related to monitoring the environment (e.g., the on-OBC temperature sensor)
 * `FLASH_`: drive functions for the SPI flash system, which the `lfs_` implementation can call into
 	* This may be removed.
+* `MPI_`: related to the Mini Plasma Imager experiment
 
 
 ## Libraries, External, etc.

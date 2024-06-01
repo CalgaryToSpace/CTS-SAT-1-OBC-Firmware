@@ -1,0 +1,10 @@
+
+#ifndef __INCLUDE_GUARD__TEST_TELECOMMAND_ARGS_HELPERS_H__
+#define __INCLUDE_GUARD__TEST_TELECOMMAND_ARGS_HELPERS_H__
+
+#include "main.h"
+
+
+uint8_t TEST_EXEC__TCMD_arg_base64_decode();
+
+#endif // __INCLUDE_GUARD__TEST_TELECOMMAND_ARGS_HELPERS_H__

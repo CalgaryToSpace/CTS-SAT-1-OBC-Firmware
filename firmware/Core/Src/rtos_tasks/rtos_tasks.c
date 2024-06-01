@@ -33,7 +33,7 @@ void TASK_handle_uart_telecommands(void *argument) {
 	TASK_HELP_start_of_task();
 
 	// CONFIGURATION PARAMETER
-	uint32_t timeout_duration_ms = 100;
+	uint32_t timeout_duration_ms = 500;
 
 	uint8_t latest_tcmd[UART_telecommand_buffer_len];
 	uint16_t latest_tcmd_len = 0;
@@ -71,11 +71,11 @@ void TASK_handle_uart_telecommands(void *argument) {
 
 			// optionally, echo back the command
 			if (latest_tcmd_len > 0) {
-				DEBUG_uart_print_str("Received telecommand (len=");
-				DEBUG_uart_print_uint32(latest_tcmd_len);
-				DEBUG_uart_print_str("): '");
-				DEBUG_uart_print_str((char *)latest_tcmd);
-				DEBUG_uart_print_str("'\n");
+//				DEBUG_uart_print_str("Received telecommand (len=");
+//				DEBUG_uart_print_uint32(latest_tcmd_len);
+//				DEBUG_uart_print_str("): '");
+//				DEBUG_uart_print_str((char *)latest_tcmd);
+//				DEBUG_uart_print_str("'\n");
 			}
 			else {
 				// DEBUG_uart_print_str("No telecommand received.\n");
@@ -98,10 +98,10 @@ void TASK_handle_uart_telecommands(void *argument) {
 
 			// get the telecommand definition
 			TCMD_TelecommandDefinition_t tcmd_def = TCMD_telecommand_definitions[tcmd_idx];
-			DEBUG_uart_print_str("======= Telecommand ======\n");
-			DEBUG_uart_print_str("Received telecommand '");
-			DEBUG_uart_print_str(tcmd_def.tcmd_name);
-			DEBUG_uart_print_str("'\n");
+//			DEBUG_uart_print_str("======= Telecommand ======\n");
+//			DEBUG_uart_print_str("Received telecommand '");
+//			DEBUG_uart_print_str(tcmd_def.tcmd_name);
+//			DEBUG_uart_print_str("'\n");
 
 			// validate the args
 			int32_t start_of_args_idx = TCMD_PREFIX_STR_LEN + strlen(tcmd_def.tcmd_name);
@@ -143,14 +143,15 @@ void TASK_handle_uart_telecommands(void *argument) {
 				sizeof(response_buf));
 
 			// print back the response
-			DEBUG_uart_print_str("======== Response (err=");
-			DEBUG_uart_print_uint32(tcmd_result);
+//			DEBUG_uart_print_str("======== Response (err=");
+//			DEBUG_uart_print_uint32(tcmd_result);
 			if (tcmd_result != 0) {
 				DEBUG_uart_print_str(" !!!!!! ERROR !!!!!!");
 			}
-			DEBUG_uart_print_str(") ========\n");
+//			DEBUG_uart_print_str(") ========\n");
 			DEBUG_uart_print_str(response_buf);
-			DEBUG_uart_print_str("\n==========================\n");
+			DEBUG_uart_print_str("\n");
+//			DEBUG_uart_print_str("\n==========================\n");
 			
 			// TODO: in the future, if the buffer content was longer than the telecommand, we
 			//   _could_ shift the remaining bytes to the front of the buffer

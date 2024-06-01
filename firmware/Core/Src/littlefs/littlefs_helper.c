@@ -308,3 +308,4 @@ int8_t LFS_read_file(char *file_name, uint8_t *read_buffer, uint32_t read_buffer
 	DEBUG_uart_print_str("Successfully closed the file!\n");
 	return 0;	
 }
+

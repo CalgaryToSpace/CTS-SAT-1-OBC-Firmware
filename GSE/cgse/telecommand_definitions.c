@@ -1,0 +1,1 @@
+../../firmware/Core/Src/telecommands/telecommand_definitions.c
