@@ -26,6 +26,7 @@
 #include "debug_tools/debug_i2c.h"
 #include "debug_tools/debug_uart.h"
 #include "rtos_tasks/rtos_tasks.h"
+#include "stm32l4xx_hal_spi.h"
 #include "uart_handler/uart_handler.h"
 #include "littlefs/flash_driver.h"
 
@@ -762,7 +763,8 @@ static void MX_SPI1_Init(void)
   hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
+  //hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
   hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;

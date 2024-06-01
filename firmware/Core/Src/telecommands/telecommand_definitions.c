@@ -1,9 +1,12 @@
 
 #include "telecommands/telecommand_definitions.h"
+#include "littlefs/lfs.h"
+#include "littlefs/littlefs_helper.h"
 #include "telecommands/telecommand_args_helpers.h"
 #include "transforms/arrays.h"
 #include "unit_tests/unit_test_executor.h"
 #include "timekeeping/timekeeping.h"
+#include "mpi_firmware.h"
 
 // Additional telecommand definitions files:
 #include "telecommands/flash_telecommand_defs.h"
@@ -11,20 +14,25 @@
 #include "telecommands/timekeeping_telecommand_defs.h"
 
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
 #include <inttypes.h>
+#include <stdbool.h>
 
 extern volatile uint8_t TASK_heartbeat_is_on;
+
+extern lfs_t lfs;
+extern uint8_t LFS_is_lfs_mounted;
 
 // extern
 const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "hello_world",
         .tcmd_func = TCMDEXEC_hello_world,
-        .number_of_args = 0,
-    },
+    .number_of_args = 0,
+},
     {
         .tcmd_name = "heartbeat_off",
         .tcmd_func = TCMDEXEC_heartbeat_off,
@@ -70,7 +78,6 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_func = TCMDEXEC_available_telecommands,
         .number_of_args = 0,
     },
-
     // ****************** SECTION: flash_telecommand_defs ******************
     {
         .tcmd_name = "flash_activate_each_cs",
@@ -126,12 +133,26 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 1,
     },
     {
+        .tcmd_name = "fs_delete_file",
+        .tcmd_func = TCMDEXEC_fs_delete_file,
+        .number_of_args = 1,
+    },
+    {
+        .tcmd_name = "fs_ls_dir",
+        .tcmd_func = TCMDEXEC_fs_ls_dir,
+        .number_of_args = 1,
+    },
+    {
         .tcmd_name = "fs_demo_write_then_read",
         .tcmd_func = TCMDEXEC_fs_demo_write_then_read,
         .number_of_args = 0,
     },
     // ****************** END SECTION: lfs_telecommand_defs ******************
-
+    {
+        .tcmd_name = "upload_mpi_firmware_page",
+        .tcmd_func = TCMDEXEC_upload_mpi_firmware_page,
+        .number_of_args = 4,
+    }
 };
 
 // extern
@@ -232,6 +253,117 @@ uint8_t TCMDEXEC_available_telecommands(const char *args_str, TCMD_TelecommandCh
     }
     snprintf(response_output_buf, response_output_buf_len, "%s", response);
 
+    return 0;
+}
+
+uint8_t TCMDEXEC_upload_mpi_firmware_page(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) 
+{
+    response_output_buf[0] = '\0';
+    
+    // Store bytes to the MPI firmware binary file for updating the MPI firmware later
+    
+    uint8_t parse_result = 0;
+    uint32_t file_start_address = 0;
+    uint32_t mpi_firmware_file_size = 0;
+
+    char file_offset_arg[50] = {0};
+    parse_result = TCMD_extract_string_arg((char*)args_str, 0, file_offset_arg, 50);
+    if (parse_result > 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Error: Unable to parse start address.");
+        return 1;
+    }
+    file_start_address = atoi(file_offset_arg);
+
+    uint32_t start_index = 0;
+    uint32_t number_of_bytes_sent = 0;
+    parse_result = TCMD_get_arg_info((char*)args_str, strlen((char*)args_str), 1, &start_index, NULL, &number_of_bytes_sent);
+    if (parse_result > 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Error: Unable to determine index of requested argument");
+        return 1;
+    }
+
+    uint8_t firmware_bytes[MPI_FIRMWARE_FILE_CHUNK_SIZE];
+    uint32_t firmware_bytes_len = MPI_FIRMWARE_FILE_CHUNK_SIZE;
+    parse_result = TCMD_arg_base64_decode((char*)args_str, strlen((char*)args_str), 1, firmware_bytes, &firmware_bytes_len); 
+    if (parse_result > 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Error: Unable to decode argument as base 64.");
+        return 1;
+    }
+
+    char file_size_arg[50] = {0};
+    parse_result = TCMD_extract_string_arg((char*)args_str, 3, file_size_arg, 50);
+    if (parse_result > 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Error: Unable to parse firmware file size.");
+        return 1;
+    }
+    mpi_firmware_file_size = atoi(file_size_arg);
+
+    if (file_start_address >= mpi_firmware_file_size) {
+        snprintf(response_output_buf, response_output_buf_len, "Error: Start address is larger than size of firmware file.");
+        return 1;
+    }
+
+    char firmware_filename[TCMD_MAX_STRING_LEN] = {0};
+    parse_result = TCMD_arg_as_string((char*)args_str, strlen((char*)args_str), 2, firmware_filename);
+    if (parse_result > 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Unable to parse argument as filename");
+    }
+
+
+    lfs_file_t file;
+    int result = 0;
+    bool was_mounted = LFS_is_lfs_mounted;
+    if (!was_mounted)
+    {
+        result = LFS_mount();
+        if (result != 0)
+        {
+            snprintf(response_output_buf, response_output_buf_len, "Unable to mount filesystem");
+            return 1;
+        }
+    }
+    result = lfs_file_open(&lfs, &file, firmware_filename, LFS_O_WRONLY | LFS_O_CREAT); 
+    if (result < 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Unable to open MPI firmware file: %s; response: %d", firmware_filename, result);
+        return 1;
+    }
+
+    if (file_start_address == 0) {
+        result = lfs_file_truncate(&lfs, &file, (lfs_off_t)mpi_firmware_file_size);
+        if (result < 0) {
+            lfs_file_close(&lfs, &file);
+            snprintf(response_output_buf, response_output_buf_len, "Unable to resize MPI firmware file: %s; response: %d", firmware_filename, result);
+            return 1;
+        }
+    }
+
+    result = lfs_file_seek(&lfs, &file, file_start_address, LFS_SEEK_SET);
+    if (result < 0) {
+        lfs_file_close(&lfs, &file);
+        snprintf(response_output_buf, response_output_buf_len, "Unable to seek in MPI firmware file: %s: response: %d", firmware_filename, result);
+        return 1;
+    }
+
+    result = lfs_file_write(&lfs, &file, firmware_bytes, firmware_bytes_len);
+    if (result < 0) {
+        lfs_file_close(&lfs, &file);
+        snprintf(response_output_buf, response_output_buf_len, "Unable to write MPI firmware page to file: %s; response: %d", firmware_filename, result);
+        return 1;
+    }
+
+    result = lfs_file_close(&lfs, &file);
+    if (result < 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Unable to close MPI firmware file: %s; response: %d", firmware_filename, result);
+        return 1;
+    }
+
+//    if (!was_mounted)
+//    {
+//        (void)LFS_unmount();
+//    }
+
+    snprintf(response_output_buf, response_output_buf_len, "Received MPI firmware page. Wrote %lu bytes to \"%s\" at address %lu", firmware_bytes_len, firmware_filename, (uint32_t)file_start_address);
     return 0;
 }
 

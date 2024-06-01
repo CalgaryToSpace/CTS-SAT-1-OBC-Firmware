@@ -35,104 +35,104 @@
 /// @return None - GPIO writes can't fail
 void FLASH_activate_chip_select(uint8_t chip_number)
 {
-    FLASH_deactivate_chip_select();
-    // NOTE: the "reset low" activate action must be AFTER all other pins are "set high"
+FLASH_deactivate_chip_select();
+// NOTE: the "reset low" activate action must be AFTER all other pins are "set high"
 
-    if (chip_number == 0) {
-        HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_0_GPIO_Port, PIN_MEM_NCS_FLASH_0_Pin, GPIO_PIN_RESET);
-    } else if (chip_number == 1) {
-        HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_1_GPIO_Port, PIN_MEM_NCS_FLASH_1_Pin, GPIO_PIN_RESET);
-    } else if (chip_number == 2) {
-        HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_2_GPIO_Port, PIN_MEM_NCS_FLASH_2_Pin, GPIO_PIN_RESET);
-    } else if (chip_number == 3) {
-        HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_3_GPIO_Port, PIN_MEM_NCS_FLASH_3_Pin, GPIO_PIN_RESET);
-    } else if (chip_number == 4) {
-        HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_4_GPIO_Port, PIN_MEM_NCS_FLASH_4_Pin, GPIO_PIN_RESET);
-    } else if (chip_number == 5) {
-        HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_5_GPIO_Port, PIN_MEM_NCS_FLASH_5_Pin, GPIO_PIN_RESET);
-    } else if (chip_number == 6) {
-        HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_6_GPIO_Port, PIN_MEM_NCS_FLASH_6_Pin, GPIO_PIN_RESET);
-    } else if (chip_number == 7) {
-        HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_7_GPIO_Port, PIN_MEM_NCS_FLASH_7_Pin, GPIO_PIN_RESET);
-    }
-    
-    // TODO: check if this is how we want to access the FRAM chips
-    else if (chip_number == 8) {
-        HAL_GPIO_WritePin(PIN_MEM_NCS_FRAM_0_GPIO_Port, PIN_MEM_NCS_FRAM_0_Pin, GPIO_PIN_RESET);
-    } else if (chip_number == 9) {
-        HAL_GPIO_WritePin(PIN_MEM_NCS_FRAM_1_GPIO_Port, PIN_MEM_NCS_FRAM_1_Pin, GPIO_PIN_RESET);
-    }
+if (chip_number == 0) {
+    HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_0_GPIO_Port, PIN_MEM_NCS_FLASH_0_Pin, GPIO_PIN_RESET);
+} else if (chip_number == 1) {
+    HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_1_GPIO_Port, PIN_MEM_NCS_FLASH_1_Pin, GPIO_PIN_RESET);
+} else if (chip_number == 2) {
+    HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_2_GPIO_Port, PIN_MEM_NCS_FLASH_2_Pin, GPIO_PIN_RESET);
+} else if (chip_number == 3) {
+    HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_3_GPIO_Port, PIN_MEM_NCS_FLASH_3_Pin, GPIO_PIN_RESET);
+} else if (chip_number == 4) {
+    HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_4_GPIO_Port, PIN_MEM_NCS_FLASH_4_Pin, GPIO_PIN_RESET);
+} else if (chip_number == 5) {
+    HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_5_GPIO_Port, PIN_MEM_NCS_FLASH_5_Pin, GPIO_PIN_RESET);
+} else if (chip_number == 6) {
+    HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_6_GPIO_Port, PIN_MEM_NCS_FLASH_6_Pin, GPIO_PIN_RESET);
+} else if (chip_number == 7) {
+    HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_7_GPIO_Port, PIN_MEM_NCS_FLASH_7_Pin, GPIO_PIN_RESET);
+}
+
+// TODO: check if this is how we want to access the FRAM chips
+else if (chip_number == 8) {
+    HAL_GPIO_WritePin(PIN_MEM_NCS_FRAM_0_GPIO_Port, PIN_MEM_NCS_FRAM_0_Pin, GPIO_PIN_RESET);
+} else if (chip_number == 9) {
+    HAL_GPIO_WritePin(PIN_MEM_NCS_FRAM_1_GPIO_Port, PIN_MEM_NCS_FRAM_1_Pin, GPIO_PIN_RESET);
+}
 }
 
 /// @brief Deactivates the chip select for all lines.
 /// @return None - GPIO writes can't fail
 void FLASH_deactivate_chip_select()
 {
-    HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_0_GPIO_Port, PIN_MEM_NCS_FLASH_0_Pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_1_GPIO_Port, PIN_MEM_NCS_FLASH_1_Pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_2_GPIO_Port, PIN_MEM_NCS_FLASH_2_Pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_3_GPIO_Port, PIN_MEM_NCS_FLASH_3_Pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_4_GPIO_Port, PIN_MEM_NCS_FLASH_4_Pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_5_GPIO_Port, PIN_MEM_NCS_FLASH_5_Pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_6_GPIO_Port, PIN_MEM_NCS_FLASH_6_Pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_7_GPIO_Port, PIN_MEM_NCS_FLASH_7_Pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(PIN_MEM_NCS_FRAM_0_GPIO_Port, PIN_MEM_NCS_FRAM_0_Pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(PIN_MEM_NCS_FRAM_1_GPIO_Port, PIN_MEM_NCS_FRAM_1_Pin, GPIO_PIN_SET);
+HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_0_GPIO_Port, PIN_MEM_NCS_FLASH_0_Pin, GPIO_PIN_SET);
+HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_1_GPIO_Port, PIN_MEM_NCS_FLASH_1_Pin, GPIO_PIN_SET);
+HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_2_GPIO_Port, PIN_MEM_NCS_FLASH_2_Pin, GPIO_PIN_SET);
+HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_3_GPIO_Port, PIN_MEM_NCS_FLASH_3_Pin, GPIO_PIN_SET);
+HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_4_GPIO_Port, PIN_MEM_NCS_FLASH_4_Pin, GPIO_PIN_SET);
+HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_5_GPIO_Port, PIN_MEM_NCS_FLASH_5_Pin, GPIO_PIN_SET);
+HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_6_GPIO_Port, PIN_MEM_NCS_FLASH_6_Pin, GPIO_PIN_SET);
+HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_7_GPIO_Port, PIN_MEM_NCS_FLASH_7_Pin, GPIO_PIN_SET);
+HAL_GPIO_WritePin(PIN_MEM_NCS_FRAM_0_GPIO_Port, PIN_MEM_NCS_FRAM_0_Pin, GPIO_PIN_SET);
+HAL_GPIO_WritePin(PIN_MEM_NCS_FRAM_1_GPIO_Port, PIN_MEM_NCS_FRAM_1_Pin, GPIO_PIN_SET);
 }
 
 /**
- * @brief Read Status Register and store the values in given buffer
- * @param hspi - Pointer to the SPI HAL handle
- * @param chip_number - the chip select number to activate
- * @param buf - Pointer to a buffer to store SR1 value. Length: 1 byte.
- * @retval 0 on success, >0 on failure
- */
+* @brief Read Status Register and store the values in given buffer
+* @param hspi - Pointer to the SPI HAL handle
+* @param chip_number - the chip select number to activate
+* @param buf - Pointer to a buffer to store SR1 value. Length: 1 byte.
+* @retval 0 on success, >0 on failure
+*/
 uint8_t FLASH_read_status_register(SPI_HandleTypeDef *hspi, uint8_t chip_number, uint8_t *buf)
 {
-    FLASH_activate_chip_select(chip_number);
-    const HAL_StatusTypeDef tx_result = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_CMD_READ_STATUS_REG_1, 1, FLASH_HAL_TIMEOUT_MS);
-    if (tx_result != HAL_OK) {
-        FLASH_deactivate_chip_select();
-        return 1;
-    }
-
-    const HAL_StatusTypeDef rx_result = HAL_SPI_Receive(hspi, (uint8_t *)buf, 1, FLASH_HAL_TIMEOUT_MS);
-    if (rx_result != HAL_OK) {
-        FLASH_deactivate_chip_select();
-        return 2;
-    }
-
+FLASH_activate_chip_select(chip_number);
+const HAL_StatusTypeDef tx_result = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_CMD_READ_STATUS_REG_1, 1, FLASH_HAL_TIMEOUT_MS);
+if (tx_result != HAL_OK) {
     FLASH_deactivate_chip_select();
-    return 0;
+    return 1;
+}
+
+const HAL_StatusTypeDef rx_result = HAL_SPI_Receive(hspi, (uint8_t *)buf, 1, FLASH_HAL_TIMEOUT_MS);
+if (rx_result != HAL_OK) {
+    FLASH_deactivate_chip_select();
+    return 2;
+}
+
+FLASH_deactivate_chip_select();
+return 0;
 }
 
 /**
- * @brief Sends Write Enable Command
- * @param hspi - Pointer to the SPI HAL handle
- * @param chip_number - the chip select number to activate
- * @retval 0 on success, >0 on failure
- */
+* @brief Sends Write Enable Command
+* @param hspi - Pointer to the SPI HAL handle
+* @param chip_number - the chip select number to activate
+* @retval 0 on success, >0 on failure
+*/
 uint8_t FLASH_write_enable(SPI_HandleTypeDef *hspi, uint8_t chip_number)
 {
-    // Buffer to store status register value
-    uint8_t status_reg_buffer[1] = {0};
+// Buffer to store status register value
+uint8_t status_reg_buffer[1] = {0};
 
-    FLASH_activate_chip_select(chip_number);
-    const HAL_StatusTypeDef tx_result_1 = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_CMD_WRITE_ENABLE, 1, FLASH_HAL_TIMEOUT_MS);
-    FLASH_deactivate_chip_select();
-    if (tx_result_1 != HAL_OK) {
-        return 1;
+FLASH_activate_chip_select(chip_number);
+const HAL_StatusTypeDef tx_result_1 = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_CMD_WRITE_ENABLE, 1, FLASH_HAL_TIMEOUT_MS);
+FLASH_deactivate_chip_select();
+if (tx_result_1 != HAL_OK) {
+    return 1;
+}
+
+// Keep looping as long as device is busy (until the Write Enable Latch is active [1])
+const uint32_t start_loop_time_ms = HAL_GetTick();
+while (1)
+{
+    const uint8_t read_status_result = FLASH_read_status_register(hspi, chip_number, status_reg_buffer);
+    if (read_status_result != 0) {
+        FLASH_deactivate_chip_select();
+        return 3;
     }
-
-    // Keep looping as long as device is busy (until the Write Enable Latch is active [1])
-    const uint32_t start_loop_time_ms = HAL_GetTick();
-    while (1)
-    {
-        const uint8_t read_status_result = FLASH_read_status_register(hspi, chip_number, status_reg_buffer);
-        if (read_status_result != 0) {
-            FLASH_deactivate_chip_select();
-            return 3;
-        }
 
         if ((status_reg_buffer[0] & FLASH_SR1_WRITE_ENABLE_LATCH_MASK) > 0) {
             // Success condition: write enabled.
