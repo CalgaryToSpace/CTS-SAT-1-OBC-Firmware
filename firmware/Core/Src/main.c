@@ -27,6 +27,7 @@
 #include "debug_tools/debug_uart.h"
 #include "rtos_tasks/rtos_tasks.h"
 #include "uart_handler/uart_handler.h"
+#include "littlefs/littlefs_helper.h"
 
 /* USER CODE END Includes */
 

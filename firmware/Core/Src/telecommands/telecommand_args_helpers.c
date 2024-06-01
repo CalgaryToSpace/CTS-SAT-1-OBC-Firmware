@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 
 /// @brief Extracts the longest substring of integer characters, starting from the beginning of the
@@ -76,3 +77,54 @@ uint8_t TCMD_extract_uint64_arg(const char *str, uint32_t str_len, uint8_t arg_i
     return 0;
 }
 
+/// @brief Extracts the nth comma-separated argument from the input string, assuming it's a string
+/// @param str Input string
+/// @param str_len Length of the input string
+/// @param arg_index Index of the argument to extract (0-based)
+/// @param result Pointer to the result
+/// @return 0 if successful, 1 if the string is empty, 2 if the string does not contain enough arguments
+///         3 for other error
+uint8_t TCMD_extract_string_arg(const char *str, uint32_t str_len, uint8_t arg_index, char **result) {
+    if (str_len == 0) {
+        return 1;
+    }
+
+    // FIXME: This function needs to be converted to using the stack. The result should be a single pointer.
+
+    char *copy = strdup(str); // Make a copy of the input string
+    if (copy == NULL)
+        return 3;
+
+    char *token = strtok(copy, ",");
+    int current_index = 0;
+    while (token != NULL && current_index < arg_index) {
+        token = strtok(NULL, ",");
+        current_index++;
+    }
+
+    if (token == NULL) {
+        free(copy);
+        return 2;
+    }
+
+    // Trim leading and trailing whitespace from the token
+    while (*token == ' ' || *token == '\t') {
+        token++;
+    }
+    size_t token_len = strlen(token);
+    while (token_len > 0 && (token[token_len - 1] == ' ' || token[token_len - 1] == '\t')) {
+        token_len--;
+    }
+
+    *result = (char *)malloc(token_len + 1);
+    if (*result == NULL) {
+        free(copy);
+        return 3;
+    }
+    
+    strncpy(*result, token, token_len);
+    (*result)[token_len] = '\0';
+
+    free(copy);
+    return 0; // Successful extraction
+}
