@@ -367,6 +367,9 @@ void PRINT_NEW_LINE(UART_HandleTypeDef *huart);
 
 // ADCS packer functions
 ADCS_TC_Ack_Struct ADCS_Pack_to_Ack(uint8_t* data_received);
+ADCS_ID_Struct ADCS_Pack_to_Identification(uint8_t* data_received);
+ADCS_Boot_Running_Status_Struct ADCS_Pack_to_Program_Status(uint8_t* data_received);
+ADCS_Comms_Status_Struct ADCS_Pack_to_Comms_Status(uint8_t *data_received);
 // TODO: packers
 
 // ADCS functions

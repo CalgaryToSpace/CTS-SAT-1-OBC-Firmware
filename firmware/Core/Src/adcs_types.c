@@ -59,7 +59,9 @@ ADCS_TC_Ack_Struct ADCS_TC_Ack() {
 	ADCS_I2C_telemetry_wrapper(TLF_TC_ACK, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
 	// map temp buffer to Ack struct
-	ADCS_TC_Ack_Struct ack = ADCS_Pack_to_Ack(&data_received);
+	ADCS_TC_Ack_Struct ack = ADCS_Pack_to_Ack(&data_received[0]);
+
+	WRITE_STRUCT_TO_MEMORY(ack) // memory module function
 
 	return ack;
 }
@@ -73,7 +75,6 @@ ADCS_TC_Ack_Struct ADCS_Pack_to_Ack(uint8_t* data_received) {
 	ack.error_flag = data_received[2];
 	ack.error_index = data_received[3];
 
-	WRITE_STRUCT_TO_MEMORY(ack) // memory module function
 	return ack;
 }
 
@@ -85,11 +86,19 @@ void ADCS_Reset() {
 
 void ADCS_Identification() {
 	// TODO: Follow this format for all other telemetry requests!
-	ADCS_ID_Struct id;
+	
 	uint8_t data_length = 8;
 	uint8_t data_received[data_length]; // define temp buffer
 
 	ADCS_I2C_telemetry_wrapper(TLF_IDENTIFICATION, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+	ADCS_ID_Struct id = ADCS_Pack_to_Identification(&data_received[0]);
+
+	WRITE_STRUCT_TO_MEMORY(id) // memory module function
+}
+
+ADCS_ID_Struct ADCS_Pack_to_Identification(uint8_t* data_received) {
+	ADCS_ID_Struct id;
 
 	// map temp buffer to Identification struct
 	id.node_type = data_received[0];
@@ -99,35 +108,46 @@ void ADCS_Identification() {
 	id.seconds_since_startup = data_received[5] << 8 | data_received[4]; // uint16_t
 	id.ms_past_second = data_received[7] << 8 | data_received[6]; // uint16_t
 
-	WRITE_STRUCT_TO_MEMORY(id) // memory module function
+	return id;
 }
 
 void ADCS_Program_Status() {
-	ADCS_Boot_Running_Status_Struct status;
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
 
 	ADCS_I2C_telemetry_wrapper(TLF_BOOT_RUNNING_PROGRAM_STATUS, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
+	ADCS_Boot_Running_Status_Struct status = ADCS_Pack_to_Program_Status(&data_received[0]);
+
+	WRITE_STRUCT_TO_MEMORY(status) // memory module function
+}
+
+ADCS_Boot_Running_Status_Struct ADCS_Pack_to_Program_Status(uint8_t* data_received) {
+	ADCS_Boot_Running_Status_Struct status;
 	// map to struct
 	status.reset_cause = data_received[0] & 0xF0; // takes upper four bits of byte 0
 	status.boot_cause = data_received[0] & 0x0F; // take upper four bits of byte 0
 	status.boot_counter = data_received[2] << 8 | data_received[1]; // uint16_t
 	status.boot_program_index = data_received[3];
-	status.major_firmware_version = data_received[2]; // uint8_t
-	status.minor_firmware_version = data_received[3]; // uint8_t
-
-	WRITE_STRUCT_TO_MEMORY(status) // memory module function
+	status.major_firmware_version = data_received[4]; // uint8_t
+	status.minor_firmware_version = data_received[5]; // uint8_t
+	return status;
 }
 
 void ADCS_Communication_Status() {
 	// returns I2C communication status of the ADCS (Table 37)
-	ADCS_Comms_Status_Struct status;
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
 
 	ADCS_I2C_telemetry_wrapper(TLF_SATSTATE_COMM_STATUS, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
+	ADCS_Comms_Status_Struct status = ADCS_Pack_to_Comms_Status(&data_received[0]);
+
+	WRITE_STRUCT_TO_MEMORY(status) // memory module function
+}
+
+ADCS_Comms_Status_Struct ADCS_Pack_to_Comms_Status(uint8_t *data_received) {
+	ADCS_Comms_Status_Struct status; 
 	// map to struct
 	status.tc_counter = data_received[1] << 8 | data_received[0]; // uint16_t
 	status.tlm_counter = data_received[3] << 8 | data_received[2]; // uint16_t
@@ -135,8 +155,7 @@ void ADCS_Communication_Status() {
 	status.i2c_tlm_error = data_received[4] & 0b00010000; // bit 3 is 1 if the number of data clocked out was more than the telemetry package
 	status.i2c_tc_error = data_received[4] & 0b00001000; // bit 4 is 1 if the telecommand sent exceeded the buffer size
 	// other bits are for UART and CAN; ignore them
-
-	WRITE_STRUCT_TO_MEMORY(status) // memory module function
+	return status;
 }
 
 void ADCS_Deploy_Magnetometer(uint8_t deploy_timeout) {

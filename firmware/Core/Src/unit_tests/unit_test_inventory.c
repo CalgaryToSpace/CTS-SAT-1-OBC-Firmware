@@ -5,6 +5,7 @@
 #include "unit_tests/test_byte_transforms.h"
 #include "unit_tests/test_telecommand_parser.h"
 #include "unit_tests/test_tests.h"
+#include "unit_tests/test_adcs.h"
 
 
 // extern
@@ -49,6 +50,31 @@ const TEST_Definition_t TEST_definitions[] = {
 		.test_func_name = "ADCS_function_name"
 	},
     */
+
+    {
+		.test_func = TEST_EXEC__ADCS_Pack_to_Ack,
+		.test_file = "unit_tests/test_adcs",
+		.test_func_name = "ADCS_Pack_to_Ack"
+	},
+
+    {
+		.test_func = TEST_EXEC__ADCS_Pack_to_Identification,
+		.test_file = "unit_tests/test_adcs",
+		.test_func_name = "ADCS_Pack_to_Identification"
+	},
+
+    {
+		.test_func = TEST_EXEC__ADCS_Pack_to_Program_Status,
+		.test_file = "unit_tests/test_adcs",
+		.test_func_name = "ADCS_Pack_to_Program_Status"
+	},
+
+    {
+		.test_func = TEST_EXEC__ADCS_Pack_to_Comms_Status,
+		.test_file = "unit_tests/test_adcs",
+		.test_func_name = "ADCS_Pack_to_Comms_Status"
+	},
+
 
 };
 
