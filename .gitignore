@@ -15,3 +15,10 @@ __pycache__/
 *$py.class
 venv/
 
+######################
+# Neovim             #
+######################
+
+# For the clangd LVM support if developing in neovim 
+firmware/.clangd
+firmware/cmake
