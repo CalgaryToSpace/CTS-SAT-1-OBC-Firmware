@@ -3,6 +3,7 @@
 #include "telecommands/telecommand_args_helpers.h"
 #include "transforms/arrays.h"
 #include "unit_tests/unit_test_executor.h"
+#include "mpi_firmware.h"
 
 // Additional telecommand definitions files:
 #include "telecommands/flash_telecommand_defs.h"
@@ -58,7 +59,6 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_func = TCMDEXEC_available_telecommands,
         .number_of_args = 0,
     },
-
     // ****************** SECTION: flash_telecommand_defs ******************
     {
         .tcmd_name = "flash_activate_each_cs",
@@ -119,7 +119,11 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 0,
     },
     // ****************** END SECTION: lfs_telecommand_defs ******************
-
+    {
+        .tcmd_name = "upload_mpi_firmware_page",
+        .tcmd_func = TCMDEXEC_upload_mpi_firmware_page,
+        .number_of_args = 4,
+    }
 };
 
 // extern
@@ -220,6 +224,66 @@ uint8_t TCMDEXEC_available_telecommands(const uint8_t *args_str, TCMD_Telecomman
     }
     snprintf(response_output_buf, response_output_buf_len, "%s", response);
 
+    return 0;
+}
+
+uint8_t TCMDEXEC_upload_mpi_firmware_page(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    response_output_buf[0] = '\0';
+    
+    // Store bytes to the MPI firmware binary file for updating the MPI firmware later
+    
+    uint8_t parse_result = 0;
+    uint64_t file_start_address = 0;
+    uint64_t mpi_firmware_file_size = 0;
+
+    parse_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 0, &file_start_address);
+    if (parse_result > 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Unable to parse start address.");
+        return 1;
+    }
+
+    parse_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 3, &mpi_firmware_file_size);
+    if (parse_result > 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Unable to parse MPI firmware filesize.");
+        return 1;
+    }
+
+    if (file_start_address >= mpi_firmware_file_size) {
+        snprintf(response_output_buf, response_output_buf_len, "Unable to parse MPI firmware filesize.");
+        return 1;
+    }
+
+    size_t bytes_to_copy = mpi_firmware_file_size - file_start_address;
+    if (bytes_to_copy > MPI_FIRMWARE_FILE_CHUNK_SIZE) {
+        bytes_to_copy = MPI_FIRMWARE_FILE_CHUNK_SIZE;
+    }
+
+    uint8_t firmware_bytes[MPI_FIRMWARE_FILE_CHUNK_SIZE];
+    uint32_t start_index = 0;
+    parse_result = TCMD_get_arg_info((char*)args_str, strlen((char*)args_str), 1, &start_index, NULL, NULL);
+    if (parse_result > 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Unable to determine index of requested argument");
+        return 1;
+    }
+
+    // TODO bug-hunting
+    memcpy(firmware_bytes, args_str + start_index, bytes_to_copy);
+
+    
+    char firmware_filename[TCMD_MAX_STRING_LEN] = {0};
+    parse_result = TCMD_arg_as_string((char*)args_str, strlen((char*)args_str), 2, firmware_filename);
+    if (parse_result > 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Unable to parse argument as filename");
+    }
+
+    // TODO write these bytes into the MPI file
+    // ... 
+    //
+    // load the file bytes and overwrite / extend the array
+
+    
+    snprintf(response_output_buf, response_output_buf_len, "Received MPI firmware page. Wrote %u bytes to %s", bytes_to_copy, firmware_filename);
     return 0;
 }
 

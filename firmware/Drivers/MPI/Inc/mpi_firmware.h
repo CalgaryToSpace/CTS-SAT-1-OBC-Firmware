@@ -1,0 +1,9 @@
+#ifndef __INCLUDE_GUARD__MPI_FIRMWARE_H
+#define __INCLUDE_GUARD__MPI_FIRMWARE_H
+
+#include <stdint.h>
+
+#define MPI_FIRMWARE_FILE_CHUNK_SIZE 256
+
+
+#endif // __INCLUDE_GUARD__MPI_FIRMWARE_H

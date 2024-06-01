@@ -86,6 +86,7 @@ uint8_t TCMD_extract_uint64_arg(const char *str, uint32_t str_len, uint8_t arg_i
 ///         3 for other error
 uint8_t TCMD_extract_string_arg(const char *str, uint8_t arg_index, char *result, uint16_t result_max_len) {
     const uint16_t str_len = strlen(str);
+
     if (str_len == 0) {
         return 1;
     }
@@ -93,12 +94,12 @@ uint8_t TCMD_extract_string_arg(const char *str, uint8_t arg_index, char *result
     uint32_t arg_count = 0;
     uint32_t i = 0;
     uint32_t start_index = 0;
+
     for (; i < str_len; i++) {
         if (str[i] == ',') {
             if (arg_count == arg_index) {
                 break;
             }
-
             arg_count++;
             start_index = i + 1;
         }
@@ -135,3 +136,75 @@ uint8_t TCMD_extract_string_arg(const char *str, uint8_t arg_index, char *result
 
     return 0; // Successful extraction
 }
+
+/// @brief Provides the index into the command string corresponding to the start of the requested argument number
+/// @param str Input string
+/// @param str_len Length of the input string
+/// @param arg_index Index of the argument to extract (0-based)
+/// @param result Pointer to the result
+/// @return 0 if successful, 1 if the string is empty, 2 if the string does not contain enough arguments
+// TODO unit tests for this
+uint8_t TCMD_get_arg_info(const char *str, uint32_t str_len, uint8_t arg_index, uint32_t *first_index, uint32_t *last_index, uint32_t *arg_length) {
+    if (str_len == 0) {
+        return 1;
+    }
+
+    uint32_t arg_count = 0;
+    uint32_t i = 0;
+    uint32_t start_index = 0;
+    uint32_t stop_index = 0;
+    for (; i < str_len; i++) {
+        if (str[i] == ',' || str[i] == ')') {
+            stop_index = i - 1;
+            if (arg_count == arg_index || str[i] == ')') {
+                break;
+            }
+            arg_count++;
+            start_index = i + 1;
+        }
+    }
+
+    if (arg_count < arg_index) {
+        return 2;
+    }
+
+    if (first_index != NULL) {
+        *first_index = start_index;
+    }
+    
+    if (last_index != NULL) {
+        *last_index = stop_index;
+    }
+    
+    if (arg_length != NULL) {
+        *arg_length = stop_index - start_index + 1;
+    }
+
+    return 0;
+}
+
+/// @brief Extract argument as a character string
+/// @param str Input string
+/// @param str_len Length of the input string
+/// @param arg_index Index of the argument to extract (0-based)
+/// @param result Pointer to the result, which must be a pre-allocated array of length TCMD_MAX_STRING_LEN
+/// @return 0 if successful, 1 if the string is empty, 2 if the string does not contain enough arguments
+// TODO unit tests for this
+uint8_t TCMD_arg_as_string(const char *str, uint32_t str_len, uint8_t arg_index, char *result) {
+
+    uint32_t first_index = 0;
+    uint32_t arg_length = 0;
+    uint8_t parse_result = TCMD_get_arg_info(str, str_len, arg_index, &first_index, NULL, &arg_length);
+    if (parse_result > 0) {
+        return parse_result;
+    }
+    if (arg_length >= TCMD_MAX_STRING_LEN) {
+        arg_length = TCMD_MAX_STRING_LEN - 1;
+    }
+
+    memcpy(result, str + first_index, arg_length);
+    result[arg_length] = '\0';
+
+    return 0;
+}
+
