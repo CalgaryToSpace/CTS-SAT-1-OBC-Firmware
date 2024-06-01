@@ -40,6 +40,11 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "available_telecommands",
         .tcmd_func = TCMDEXEC_available_telecommands,
         .number_of_args = 0,
+    },
+    {
+        .tcmd_name = "ebube_command",
+        .tcmd_func = TCMDEXEC_ebube_command,
+        .number_of_args = 0,
     }
 };
 
@@ -130,3 +135,8 @@ uint8_t TCMDEXEC_available_telecommands(const uint8_t *args_str, TCMD_Telecomman
     return 0;
 }
 
+uint8_t TCMDEXEC_ebube_command(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    snprintf(response_output_buf, response_output_buf_len, "Hello, Ebube this is your world!\n");
+    return 0;
+}
