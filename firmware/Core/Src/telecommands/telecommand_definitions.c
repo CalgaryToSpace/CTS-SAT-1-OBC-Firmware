@@ -148,18 +148,27 @@ uint8_t TCMDEXEC_upload_mpi_firmware_page(const uint8_t *args_str, TCMD_Telecomm
 
     parse_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 0, &file_start_address);
     if (parse_result > 0) {
-        snprintf(response_output_buf, response_output_buf_len, "Unable to parse start address.");
+        snprintf(response_output_buf, response_output_buf_len, "Error: Unable to parse start address.");
+        return 1;
+    }
+
+    uint8_t firmware_bytes[MPI_FIRMWARE_FILE_CHUNK_SIZE];
+    uint32_t start_index = 0;
+    uint32_t number_of_bytes_sent = 0;
+    parse_result = TCMD_get_arg_info((char*)args_str, strlen((char*)args_str), 1, &start_index, NULL, &number_of_bytes_sent);
+    if (parse_result > 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Error: Unable to determine index of requested argument");
         return 1;
     }
 
     parse_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 3, &mpi_firmware_file_size);
     if (parse_result > 0) {
-        snprintf(response_output_buf, response_output_buf_len, "Unable to parse MPI firmware filesize.");
+        snprintf(response_output_buf, response_output_buf_len, "Error: Unable to parse MPI firmware filesize.");
         return 1;
     }
 
     if (file_start_address >= mpi_firmware_file_size) {
-        snprintf(response_output_buf, response_output_buf_len, "Unable to parse MPI firmware filesize.");
+        snprintf(response_output_buf, response_output_buf_len, "Error: Start address is larger than size of firmware file.");
         return 1;
     }
 
@@ -167,18 +176,12 @@ uint8_t TCMDEXEC_upload_mpi_firmware_page(const uint8_t *args_str, TCMD_Telecomm
     if (bytes_to_copy > MPI_FIRMWARE_FILE_CHUNK_SIZE) {
         bytes_to_copy = MPI_FIRMWARE_FILE_CHUNK_SIZE;
     }
-
-    uint8_t firmware_bytes[MPI_FIRMWARE_FILE_CHUNK_SIZE];
-    uint32_t start_index = 0;
-    parse_result = TCMD_get_arg_info((char*)args_str, strlen((char*)args_str), 1, &start_index, NULL, NULL);
-    if (parse_result > 0) {
-        snprintf(response_output_buf, response_output_buf_len, "Unable to determine index of requested argument");
-        return 1;
+    if (bytes_to_copy > number_of_bytes_sent) {
+        bytes_to_copy = number_of_bytes_sent;
     }
 
     // TODO bug-hunting
     memcpy(firmware_bytes, args_str + start_index, bytes_to_copy);
-
     
     char firmware_filename[TCMD_MAX_STRING_LEN] = {0};
     parse_result = TCMD_arg_as_string((char*)args_str, strlen((char*)args_str), 2, firmware_filename);
@@ -190,9 +193,8 @@ uint8_t TCMDEXEC_upload_mpi_firmware_page(const uint8_t *args_str, TCMD_Telecomm
     // ... 
     //
     // load the file bytes and overwrite / extend the array
-
     
-    snprintf(response_output_buf, response_output_buf_len, "Received MPI firmware page. Wrote %u bytes to %s", bytes_to_copy, firmware_filename);
+    snprintf(response_output_buf, response_output_buf_len, "Received MPI firmware page. Wrote %u bytes to \"%s\" at address %lu", bytes_to_copy, firmware_filename, (uint32_t)file_start_address);
     return 0;
 }
 
