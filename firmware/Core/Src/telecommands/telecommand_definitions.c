@@ -243,12 +243,20 @@ uint8_t TCMDEXEC_upload_mpi_firmware_page(const uint8_t *args_str, TCMD_Telecomm
         return 1;
     }
 
-    uint8_t firmware_bytes[MPI_FIRMWARE_FILE_CHUNK_SIZE];
     uint32_t start_index = 0;
     uint32_t number_of_bytes_sent = 0;
     parse_result = TCMD_get_arg_info((char*)args_str, strlen((char*)args_str), 1, &start_index, NULL, &number_of_bytes_sent);
     if (parse_result > 0) {
         snprintf(response_output_buf, response_output_buf_len, "Error: Unable to determine index of requested argument");
+        return 1;
+    }
+
+
+    uint8_t firmware_bytes[MPI_FIRMWARE_FILE_CHUNK_SIZE];
+    uint32_t firmware_bytes_len = MPI_FIRMWARE_FILE_CHUNK_SIZE;
+    parse_result = TCMD_arg_base64_decode((char*)args_str, strlen((char*)args_str), 1, firmware_bytes, &firmware_bytes_len); 
+    if (parse_result > 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Error: Unable to decode argument as base 64.");
         return 1;
     }
 
@@ -263,17 +271,6 @@ uint8_t TCMDEXEC_upload_mpi_firmware_page(const uint8_t *args_str, TCMD_Telecomm
         return 1;
     }
 
-    size_t bytes_to_copy = mpi_firmware_file_size - file_start_address;
-    if (bytes_to_copy > MPI_FIRMWARE_FILE_CHUNK_SIZE) {
-        bytes_to_copy = MPI_FIRMWARE_FILE_CHUNK_SIZE;
-    }
-    if (bytes_to_copy > number_of_bytes_sent) {
-        bytes_to_copy = number_of_bytes_sent;
-    }
-
-    // TODO bug-hunting
-    memcpy(firmware_bytes, args_str + start_index, bytes_to_copy);
-    
     char firmware_filename[TCMD_MAX_STRING_LEN] = {0};
     parse_result = TCMD_arg_as_string((char*)args_str, strlen((char*)args_str), 2, firmware_filename);
     if (parse_result > 0) {
@@ -285,7 +282,7 @@ uint8_t TCMDEXEC_upload_mpi_firmware_page(const uint8_t *args_str, TCMD_Telecomm
     //
     // load the file bytes and overwrite / extend the array
     
-    snprintf(response_output_buf, response_output_buf_len, "Received MPI firmware page. Wrote %u bytes to \"%s\" at address %lu", bytes_to_copy, firmware_filename, (uint32_t)file_start_address);
+    snprintf(response_output_buf, response_output_buf_len, "Received MPI firmware page. Wrote %lu bytes to \"%s\" at address %lu", firmware_bytes_len, firmware_filename, (uint32_t)file_start_address);
     return 0;
 }
 
