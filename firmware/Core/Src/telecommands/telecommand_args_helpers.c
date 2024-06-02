@@ -147,3 +147,50 @@ uint8_t TCMD_arg_as_string(const char *str, uint32_t str_len, uint8_t arg_index,
     return 0;
 }
 
+uint8_t TCMD_arg_base64_decode(const char *str, uint32_t str_len, uint8_t arg_index, uint8_t *result, uint32_t *result_len) {
+
+    char base64[TCMD_MAX_STRING_LEN] = {0};
+    uint8_t parse_result = TCMD_arg_as_string(str, str_len, arg_index, base64);
+    if (parse_result > 0) {
+        return parse_result;
+    }
+
+    uint32_t base64_len = strlen(base64);
+    uint32_t byte_counter = 0;
+    char chars[4] = {0};
+
+    for (int i = 0; i < base64_len; i+=4) {
+        for (int j = 0; j < 4; j++) {
+            chars[j] = TCMD_base64_decode_character(base64[i+j]);
+        }
+
+        if (byte_counter + 2 >= *result_len) {
+            // Ran out of array to store bytes in
+            return 1;
+        }
+        result[byte_counter] = (chars[0] << 2) | (chars[1] >> 4);
+        result[byte_counter + 1] = (chars[1] << 4) | (chars[2] >> 2);
+        result[byte_counter + 2] = (chars[2] << 6) | chars[3];
+        byte_counter += 3;
+    }
+
+    *result_len = byte_counter;
+
+    return 0;
+}
+
+uint8_t TCMD_base64_decode_character(char c) {
+    if (c == '/') 
+        return 63;
+    else if (c == '+')
+        return 62;
+    else if (c >= '0' && c <= '9')
+        return c + 4;
+    else if (c >= 'a' && c <= 'z')
+        return c - 71;
+    else if (c >= 'A' && c <= 'Z')
+        return c - 65;
+    else 
+        return 0; // '=' and any erroneous characters are interpreted as padding
+                    
+}

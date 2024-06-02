@@ -9,5 +9,6 @@ uint8_t TEST_EXEC__TCMD_is_char_alphanumeric();
 
 uint8_t TEST_EXEC__TCMD_check_starts_with_device_id();
 
+uint8_t TEST_EXEC__TCMD_arg_base64_decode();
 
 #endif // __INCLUDE_GUARD__TEST_COMMAND_PARSER_H__
