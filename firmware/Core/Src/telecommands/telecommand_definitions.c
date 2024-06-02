@@ -9,7 +9,6 @@
 #include "telecommands/flash_telecommand_defs.h"
 #include "telecommands/lfs_telecommand_defs.h"
 
-
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
@@ -48,6 +47,11 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "echo_back_uint32_args",
         .tcmd_func = TCMDEXEC_echo_back_uint32_args,
         .number_of_args = 10,
+    },
+    {
+        .tcmd_name = "fs_format_storage",
+        .tcmd_func = TCMDEXEC_echo_back_uint32_args,
+        .number_of_args = 0,
     },
     {
         .tcmd_name = "run_all_unit_tests",
@@ -194,6 +198,20 @@ uint8_t TCMDEXEC_echo_back_uint32_args(const uint8_t *args_str, TCMD_Telecommand
     return 0;
 }
 
+uint8_t TCMDEXEC_fs_format_storage(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len){
+    // uint8_t result = LFS_FORMAT();
+    // if (result < 0) {
+    //     // debug_uart_print_str("Formatting Error: ");
+    //     // debug_uart_print_uint32(result);
+    //     // debug_uart_print_str("\n");
+    //     return result;
+    // } else {
+    //     // debug_uart_print_str("Formatting Successfull");
+    //     return result;
+    // }
+    return 0;
+}
 
 uint8_t TCMDEXEC_run_all_unit_tests(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
