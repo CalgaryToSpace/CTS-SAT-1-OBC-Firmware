@@ -1,5 +1,6 @@
 #include "unit_tests/unit_test_executor.h"
 #include "unit_tests/unit_test_inventory.h"
+#include "debug_tools/debug_uart.h"
 
 #include "main.h"
 
@@ -17,18 +18,16 @@ uint8_t TEST_run_all_unit_tests_and_log(char log_buffer[], uint16_t log_buffer_s
         TEST_Function_Ptr test_function = TEST_definitions[test_num].test_func;
         uint8_t result = test_function();
 
-        // TODO: we should probably emit these right to UART, as we'll run out of stack space for all the messages
-
-        uint16_t added_str_len = snprintf(
-            &log_buffer[cur_buf_idx],
-            log_buffer_size - cur_buf_idx,
+        snprintf(
+            log_buffer,
+            log_buffer_size,
             "Test #%03d: %s (%s > %s)\n",
             test_num,
             (result == 0) ? "PASS ✅" : "FAIL ❌",
             TEST_definitions[test_num].test_file,
             TEST_definitions[test_num].test_func_name
         );
-        cur_buf_idx += added_str_len;
+        debug_uart_print_str(log_buffer);
         
         total_exec_count++;
         if (result == 0) {
@@ -37,9 +36,6 @@ uint8_t TEST_run_all_unit_tests_and_log(char log_buffer[], uint16_t log_buffer_s
             total_fail_count++;
         }
 
-        if (cur_buf_idx >= log_buffer_size) {
-            break;
-        }
     }
     uint32_t end_time_ms = HAL_GetTick();
 
