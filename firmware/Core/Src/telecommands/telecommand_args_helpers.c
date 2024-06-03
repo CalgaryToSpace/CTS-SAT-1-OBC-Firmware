@@ -93,9 +93,17 @@ uint8_t TCMD_get_arg_info(const char *str, uint32_t str_len, uint8_t arg_index, 
     uint32_t start_index = 0;
     uint32_t stop_index = 0;
     for (; i < str_len; i++) {
-        if (str[i] == ',' || str[i] == ')') {
+        // Only one ( is allowed per command
+        if (str[i] == '(') {
+            start_index = i + 1;
+        }
+        else if (str[i] == ')') {
             stop_index = i - 1;
-            if (arg_count == arg_index || str[i] == ')') {
+            break;
+        }
+        else if (str[i] == ',' ) {
+            stop_index = i - 1;
+            if (arg_count == arg_index ) {
                 break;
             }
             arg_count++;
