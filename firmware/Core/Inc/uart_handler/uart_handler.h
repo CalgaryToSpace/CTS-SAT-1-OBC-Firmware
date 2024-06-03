@@ -4,6 +4,9 @@
 
 #include "main.h"
 
+
+#define UART_TELECOMMAND_BUFFER_LEN 256
+
 extern const uint16_t UART_telecommand_buffer_len; // Length of the UART telecommand buffer
 extern volatile uint8_t UART_telecommand_buffer[];          // Buffer for UART telecommands
 extern volatile uint16_t UART_telecommand_buffer_write_idx; // Write index for UART telecommand buffer
