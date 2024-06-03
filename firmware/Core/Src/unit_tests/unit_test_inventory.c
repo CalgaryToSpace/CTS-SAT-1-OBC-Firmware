@@ -38,14 +38,14 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func_name = "TCMD_check_starts_with_device_id"
     },
     {
-        .test_func = TEST_EXEC__GEN_convert_big_endian_four_byte_array_to_uint32,
-        .test_file = "transforms/byte_transforms",
-        .test_func_name = "GEN_convert_big_endian_four_byte_array_to_uint32"
-    },
-    {
         .test_func = TEST_EXEC__TCMD_arg_base64_decode,
         .test_file = "telecommands/telecommand_args_helpers",
         .test_func_name = "TCMD_arg_base64_decode"
+    },
+    {
+        .test_func = TEST_EXEC__GEN_convert_big_endian_four_byte_array_to_uint32,
+        .test_file = "transforms/byte_transforms",
+        .test_func_name = "GEN_convert_big_endian_four_byte_array_to_uint32"
     },
     
 };
