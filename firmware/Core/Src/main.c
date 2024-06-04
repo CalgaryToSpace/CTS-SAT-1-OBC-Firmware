@@ -108,6 +108,8 @@ static void MX_USART3_UART_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_I2C3_Init(void);
 void StartDefaultTask(void *argument);
+void LFS_init_filesystem(void);
+
 
 /* USER CODE BEGIN PFP */
 
@@ -164,87 +166,10 @@ int main(void)
   
   FLASH_deactivate_chip_select();
 
-  // /*-------------------------Memory Module Code Testing Begin-------------------------*/
-  // // Turn on LED1 to indicate program starting
-  // HAL_GPIO_WritePin(PIN_LED1_OUT_GPIO_Port, PIN_LED1_OUT_Pin, GPIO_PIN_SET);
-  // debug_uart_print_str("Memory Module Testing Begins\n");
 
-  // char spiRxBuffer[512] = {0};
-  // char spiRxBuffer2[512] = {0};
-  // char spiTxBuffer[512] = {0};
-
-  // strcpy((char *)spiTxBuffer, "Test 1234 String");
-  // FLASH_write(&hspi1, (uint8_t *)spiTxBuffer, 17777215, 16);
-  // FLASH_read(&hspi1, (uint8_t *)spiRxBuffer, 17777215, 16);
-  // FLASH_erase(&hspi1, 17777215);
-  // FLASH_read(&hspi1, (uint8_t *)spiRxBuffer2, 17777215, 16);
-
-  // //LittleFS testing
-  // uint8_t boot_count = 0;
-  // int8_t result;
-  // char result_read;
-
-  // // Initialize LittleFS Values, and pass SPI pointer
-  // LFS_INITIALIZE(&hspi1);
-
-  // result = LFS_FORMAT();
-  // if (result < 0)
-  // {
-  //   debug_uart_print_str("Formatting Error: ");
-  //   debug_uart_print_uint32(result);
-  //   debug_uart_print_str("\n");
-  //   return result;
-  // }
-
-  // for (int i = 0; i < 10; i++)
-  // {
-  //   result = LFS_MOUNT();
-  //   if (result < 0)
-  //   {
-  //     debug_uart_print_str("Mounting Error: ");
-  //     debug_uart_print_uint32(result);
-  //     debug_uart_print_str("\n");
-  //     return result;
-  //   }
-
-  //   result = LFS_READ_FILE("boot_count.txt", &boot_count, sizeof(boot_count));
-  //   if (result < 0)
-  //   {
-  //     debug_uart_print_str("Reading Error: ");
-  //     debug_uart_print_uint32(result);
-  //     debug_uart_print_str("\n");
-  //     return result;
-  //   }
-
-  //   debug_uart_print_str("Read Value: ");
-  //   debug_uart_print_uint32(boot_count);
-  //   debug_uart_print_str("\n");
-
-  //   boot_count += 1;
-
-  //   result = LFS_WRITE_FILE("boot_count.txt", &boot_count, sizeof(boot_count));
-  //   if (result < 0)
-  //   {
-  //     debug_uart_print_str("Writing Error: ");
-  //     debug_uart_print_str(&result_read);
-  //     debug_uart_print_str("\n");
-  //     return result;
-  //   }
-
-  //   result = LFS_UNMOUNT();
-  //   if (result < 0)
-  //   {
-  //     debug_uart_print_str("Unmounting Error: ");
-  //     debug_uart_print_uint32(result);
-  //     debug_uart_print_str("\n");
-  //     return result;
-  //   }
-  // }
-
-  // // Turn off LED1 to indicate Program End
-  // HAL_GPIO_WritePin(PIN_LED1_OUT_GPIO_Port, PIN_LED1_OUT_Pin, GPIO_PIN_RESET);
-  // debug_uart_print_str("Memory Module Testing Ends\n");
-  // /*-------------------------Memory Module Code Testing End-------------------------*/
+  // TODO does the filesystem have to be unmounted sometime?
+  // Where should this go, maybe a separate filesystem TASK?
+  LFS_init_filesystem();
 
   /* USER CODE END 2 */
 
@@ -1044,4 +969,42 @@ void assert_failed(uint8_t *file, uint32_t line)
      ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
 }
+
+
+void LFS_init_filesystem(void) {
+
+  //LittleFS initialization (TODO: use INIT function)
+  int8_t result = 0;
+
+  // Initialize LittleFS Values, and pass SPI pointer
+  LFS_INITIALIZE(&hspi1);
+
+  // Strategy: mount the filesystem.
+  // TODO look into this:
+  // If this fails, try formatting it (but maybe not! Satellite operators
+  // should be the only one to try to format the filesystem? So we do not
+  // lose critical data, just in case the failure to mount was not a chronic
+  // issue, like power interruption, for example?
+  // The assumption is that formatting erases data...
+  result = LFS_MOUNT();
+  if (result < 0) {
+      // For now, just try to format the system
+      result = LFS_FORMAT();
+      if (result < 0) {
+          debug_uart_print_str("Unable to format filesystem: result = ");
+          debug_uart_print_uint32(result);
+      }
+      else {
+          result = LFS_MOUNT();
+      }
+  }
+  if (result < 0) {
+      debug_uart_print_str("Unable to mount filesystem: result = ");
+      debug_uart_print_uint32(result);
+  }
+
+  return;
+
+}
+
 #endif /* USE_FULL_ASSERT */
