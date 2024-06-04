@@ -3,7 +3,8 @@
 
 #include <stdint.h>
 
-#define MPI_FIRMWARE_FILE_CHUNK_SIZE 256
+// 256 BASE64 characters represent 192 bytes
+#define MPI_FIRMWARE_FILE_CHUNK_SIZE 192
 
 
 #endif // __INCLUDE_GUARD__MPI_FIRMWARE_H
