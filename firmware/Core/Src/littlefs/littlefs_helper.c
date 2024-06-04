@@ -278,7 +278,7 @@ int8_t LFS_READ_FILE(char *file_name, void *read_buffer, uint32_t size)
 		debug_uart_print_str("Opened / Created a file named: \n");
 		debug_uart_print_str(file_name);
 
-		// Write defined data to file
+		// Read data from file
 		result = lfs_file_read(&lfs, &file, read_buffer, size);
 		if (result < 0)
 		{
@@ -304,3 +304,4 @@ int8_t LFS_READ_FILE(char *file_name, void *read_buffer, uint32_t size)
 		}
 	}
 }
+
