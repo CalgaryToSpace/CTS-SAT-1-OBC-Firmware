@@ -1,16 +1,27 @@
 
 #include "telecommands/telecommand_definitions.h"
+#include "littlefs/lfs.h"
 #include "telecommands/telecommand_args_helpers.h"
 #include "transforms/arrays.h"
 #include "unit_tests/unit_test_executor.h"
 #include "mpi_firmware.h"
-
-#include "littlefs/littlefs_helper.h"
+#include "littlefs/lfs.h"
 
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
 #include <inttypes.h>
+
+
+extern uint8_t LFS_mounted;
+extern lfs_t lfs;
+
+// Is there a better approach to MPI firmware management?
+// This is temporary storage while MPI firmware pages are being sent to the satellite.
+// Or maybe do an fset on the file descriptor? What if pages arrive out of
+// order?
+// OR: write each page to its own file, like mpi_firmware_page_0001.bin, etc.
+// then writing to the MPI would just load the files in order.
 
 // extern
 const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
@@ -181,7 +192,6 @@ uint8_t TCMDEXEC_upload_mpi_firmware_page(const uint8_t *args_str, TCMD_Telecomm
         return 1;
     }
 
-
     uint8_t firmware_bytes[MPI_FIRMWARE_FILE_CHUNK_SIZE];
     uint32_t firmware_bytes_len = MPI_FIRMWARE_FILE_CHUNK_SIZE;
     parse_result = TCMD_arg_base64_decode((char*)args_str, strlen((char*)args_str), 1, firmware_bytes, &firmware_bytes_len); 
@@ -207,11 +217,40 @@ uint8_t TCMDEXEC_upload_mpi_firmware_page(const uint8_t *args_str, TCMD_Telecomm
         snprintf(response_output_buf, response_output_buf_len, "Unable to parse argument as filename");
     }
 
-    // TODO write these bytes into the MPI file
-    // ... 
-    //
-    // load the file bytes and overwrite / extend the array
-    
+    lfs_file_t file;
+    int result = 0;
+    result = lfs_file_open(&lfs, &file, firmware_filename, LFS_O_APPEND); 
+    if (result < 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Unable to open MPI firmware file: %s; response: %d", firmware_filename, result);
+        return 1;
+    }
+
+    if (file_start_address == 0) {
+        result = lfs_file_truncate(&lfs, &file, mpi_firmware_file_size);
+        if (result < 0) {
+            snprintf(response_output_buf, response_output_buf_len, "Unable to resize MPI firmware file: %s; response: %d", firmware_filename, result);
+            return 1;
+        }
+    }
+
+    result = lfs_file_seek(&lfs, &file, file_start_address, LFS_SEEK_SET);
+    if (result < 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Unable to seek in MPI firmware file: %s: response: %d", firmware_filename, result);
+        return 1;
+    }
+
+    result = lfs_file_write(&lfs, &file, firmware_bytes, firmware_bytes_len);
+    if (result < 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Unable to write MPI firmware page to file: %s; response: %d", firmware_filename, result);
+        return 1;
+    }
+
+    result = lfs_file_close(&lfs, &file);
+    if (result < 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Unable to close MPI firmware file: %s; response: %d", firmware_filename, result);
+        return 1;
+    }
+
     snprintf(response_output_buf, response_output_buf_len, "Received MPI firmware page. Wrote %lu bytes to \"%s\" at address %lu", firmware_bytes_len, firmware_filename, (uint32_t)file_start_address);
     return 0;
 }
