@@ -108,7 +108,6 @@ static void MX_USART3_UART_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_I2C3_Init(void);
 void StartDefaultTask(void *argument);
-void LFS_init_filesystem(void);
 
 
 /* USER CODE BEGIN PFP */
@@ -166,10 +165,8 @@ int main(void)
   
   FLASH_deactivate_chip_select();
 
-
-  // TODO does the filesystem have to be unmounted sometime?
-  // Where should this go, maybe a separate filesystem TASK?
   LFS_init_filesystem();
+
 
   /* USER CODE END 2 */
 
@@ -953,43 +950,6 @@ void Error_Handler(void)
   }
   /* USER CODE END Error_Handler_Debug */
 }
-
-void LFS_init_filesystem(void) {
-
-  //LittleFS initialization (TODO: use INIT function)
-  int8_t result = 0;
-
-  // Initialize LittleFS Values, and pass SPI pointer
-  LFS_INITIALIZE(&hspi1);
-
-  // Strategy: mount the filesystem.
-  // TODO look into this:
-  // If this fails, try formatting it (but maybe not! Satellite operators
-  // should be the only one to try to format the filesystem? So we do not
-  // lose critical data, just in case the failure to mount was not a chronic
-  // issue, like power interruption, for example?
-  // The assumption is that formatting erases data...
-  result = LFS_MOUNT();
-  if (result < 0) {
-      // For now, just try to format the system
-      result = LFS_FORMAT();
-      if (result < 0) {
-          debug_uart_print_str("Unable to format filesystem: result = ");
-          debug_uart_print_uint32(result);
-      }
-      else {
-          result = LFS_MOUNT();
-      }
-  }
-  if (result < 0) {
-      debug_uart_print_str("Unable to mount filesystem: result = ");
-      debug_uart_print_uint32(result);
-  }
-
-  return;
-
-}
-
 
 #ifdef  USE_FULL_ASSERT
 /**
