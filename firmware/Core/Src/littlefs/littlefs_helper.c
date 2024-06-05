@@ -305,3 +305,40 @@ int8_t LFS_READ_FILE(char *file_name, void *read_buffer, uint32_t size)
 	}
 }
 
+void LFS_init_filesystem(void) {
+
+  //LittleFS initialization (TODO: use INIT function)
+  int8_t result = 0;
+
+  // Initialize LittleFS Values, and pass SPI pointer
+  LFS_INITIALIZE(&hspi1);
+
+  // Strategy: mount the filesystem.
+  // TODO look into this:
+  // If this fails, try formatting it (but maybe not! Satellite operators
+  // should be the only one to try to format the filesystem? So we do not
+  // lose critical data, just in case the failure to mount was not a chronic
+  // issue, like power interruption, for example?
+  // The assumption is that formatting erases data...
+  result = LFS_MOUNT();
+  if (result < 0) {
+      // For now, just try to format the system
+      result = LFS_FORMAT();
+      if (result < 0) {
+          debug_uart_print_str("Unable to format filesystem: result = ");
+          debug_uart_print_uint32(result);
+      }
+      else {
+          result = LFS_MOUNT();
+      }
+  }
+  if (result < 0) {
+      debug_uart_print_str("Unable to mount filesystem: result = ");
+      debug_uart_print_uint32(result);
+  }
+
+  return;
+
+}
+
+

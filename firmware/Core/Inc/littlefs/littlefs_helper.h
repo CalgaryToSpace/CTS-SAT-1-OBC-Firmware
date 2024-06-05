@@ -26,4 +26,6 @@ int8_t LFS_UNMOUNT();
 int8_t LFS_WRITE_FILE(char *, void *, uint32_t);
 int8_t LFS_READ_FILE(char *, void *, uint32_t);
 
+void LFS_init_filesystem();
+
 #endif /* INC_LITTELFS_HELPER_H_ */
