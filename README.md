@@ -22,7 +22,7 @@ Firmware for the CTS-SAT-1 ("FrontierSat") mission. Runs on the STM32-based Onbo
 
 1. Check that your MicroUSB cable supports data transfer. Many MicroUSB cables are power-only.
 2. Disable your antivirus if it starts removing the compiler.
-3. Use the Ctrl+Shift+P command palate to run "STM32: Install all the required build ...".
+3. Use the Ctrl+Shift+P command palate to run "STM32: Install all the build tools ...".
 4. 
 
 ### Updating the IOC File/Regenerating Boilerplate
