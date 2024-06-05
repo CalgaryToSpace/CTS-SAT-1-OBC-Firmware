@@ -525,13 +525,13 @@ void ADCS_Get_Raw_Magnetometer_Values() {
 
 	ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_RAW_MAGNETOMETER, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
-	ADCS_Wheel_Speed_Struct mag_vals = ADCS_Pack_to_Raw_Magnetometer_Values(data_received);
+	ADCS_Raw_Mag_TLM_Struct mag_vals = ADCS_Pack_to_Raw_Magnetometer_Values(data_received);
 
 	WRITE_STRUCT_TO_MEMORY(mag_vals) // memory module function
 }
 
-ADCS_Wheel_Speed_Struct ADCS_Pack_to_Raw_Magnetometer_Values(uint8_t* data_received) {
-	ADCS_Wheel_Speed_Struct mag_vals;
+ADCS_Raw_Mag_TLM_Struct ADCS_Pack_to_Raw_Magnetometer_Values(uint8_t* data_received) {
+	ADCS_Raw_Mag_TLM_Struct mag_vals;
 
 	// map temp buffer to struct
 	// all values in rpm

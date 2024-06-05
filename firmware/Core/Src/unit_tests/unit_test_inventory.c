@@ -75,6 +75,101 @@ const TEST_Definition_t TEST_definitions[] = {
 		.test_func_name = "ADCS_Pack_to_Comms_Status"
 	},
 
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_Power_Control,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Power_Control"
+    },
+
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_Angular_Rates,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Angular_Rates"
+    },
+
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_LLH_Position,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_LLH_Position"
+    },
+
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_Unix_Time_Save_Mode,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Unix_Time_Save_Mode"
+    },
+
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_Orbit_Params,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Orbit_Params"
+    },
+
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_Rated_Sensor_Rates,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Rated_Sensor_Rates"
+    },
+
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_Wheel_Speed,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Wheel_Speed"
+    },
+
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_Magnetorquer_Command_Time,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Magnetorquer_Command_Time"
+    },
+
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_Raw_Magnetometer_Values,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Raw_Magnetometer_Values"
+    },
+
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_Fine_Angular_Rates,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Fine_Angular_Rates"
+    },
+
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_Magnetometer_Config,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Magnetometer_Config"
+    },
+
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_Commanded_Attitude_Angles,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Commanded_Attitude_Angles"
+    },
+
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_Estimation_Params,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Estimation_Params"
+    },
+
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_ASGP4_Params,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_ASGP4_Params"
+    },
+
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_Tracking_Controller_Target_Reference,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Tracking_Controller_Target_Reference"
+    },
+
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_Rate_Gyro_Config,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Rate_Gyro_Config"
+    }
 
 };
 

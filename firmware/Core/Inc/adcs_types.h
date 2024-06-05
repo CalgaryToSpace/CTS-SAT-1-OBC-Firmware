@@ -246,9 +246,9 @@ typedef struct ADCS_Magnetorquer_Command_Struct {
 } ADCS_Magnetorquer_Command_Struct;
 
 typedef struct ADCS_Raw_Mag_TLM_Struct {
-	uint8_t x; 
-	uint8_t y;
-	uint8_t z; 
+	int16_t x; 
+	int16_t y;
+	int16_t z; 
 } ADCS_Raw_Mag_TLM_Struct;
 
 typedef struct ADCS_Fine_Angular_Rates_Struct {
@@ -378,7 +378,7 @@ ADCS_Orbit_Params_Struct ADCS_Pack_to_Orbit_Params(uint8_t* data_received);
 ADCS_Rated_Sensor_Rates_Struct ADCS_Pack_to_Rated_Sensor_Rates(uint8_t* data_received);
 ADCS_Wheel_Speed_Struct ADCS_Pack_to_Wheel_Speed(uint8_t* data_received);
 ADCS_Magnetorquer_Command_Struct ADCS_Pack_to_Magnetorquer_Command_Time(uint8_t* data_received);
-ADCS_Wheel_Speed_Struct ADCS_Pack_to_Raw_Magnetometer_Values(uint8_t* data_received);
+ADCS_Raw_Mag_TLM_Struct ADCS_Pack_to_Raw_Magnetometer_Values(uint8_t* data_received);
 ADCS_Fine_Angular_Rates_Struct ADCS_Pack_to_Fine_Angular_Rates(uint8_t* data_received);
 ADCS_Magnetometer_Config_Struct ADCS_Pack_to_Magnetometer_Config(uint8_t* data_received);
 ADCS_Commanded_Angles_Struct ADCS_Pack_to_Commanded_Attitude_Angles(uint8_t* data_received);
