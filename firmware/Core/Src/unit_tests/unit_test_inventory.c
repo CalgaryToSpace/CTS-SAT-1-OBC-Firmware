@@ -5,6 +5,7 @@
 #include "unit_tests/test_byte_transforms.h"
 #include "unit_tests/test_telecommand_parser.h"
 #include "unit_tests/test_tests.h"
+#include "unit_tests/test_helpers.h"
 
 
 // extern
@@ -41,6 +42,11 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_file = "transforms/byte_transforms",
         .test_func_name = "GEN_convert_big_endian_four_byte_array_to_uint32"
     },
+    {
+        .test_func = TEST_HELPER_Split_String_By_Delimiter,
+        .test_file = "helpers/helpers",
+        .test_func_name = "split_string_by_delimiter"
+    }
     
 };
 
