@@ -1,0 +1,147 @@
+"""\
+Generates a list of pins, in a Markdown file, from the IOC file.
+"""
+
+from pathlib import Path
+
+import polars as pl
+import git
+
+
+def get_git_file_modified_info(file_path: Path | str) -> str:
+    """Returns the last modified date of the file, according to Git.
+    
+    Returns a string with the full date and time, and the short commit hash.
+    """
+    
+    file_path = Path(file_path)
+    assert file_path.exists(), f"File does not exist: {file_path}"
+
+    repo = git.Repo(file_path.parent, search_parent_directories=True)
+    commits = list(repo.iter_commits(paths=file_path))
+    
+    if not commits:
+        raise ValueError(f"No commits found for {file_path}")
+    
+    last_commit = commits[0]
+    last_modified_date = last_commit.committed_datetime
+    short_commit_hash = last_commit.hexsha[:7]
+    
+    return f"{last_modified_date} (Commit {short_commit_hash})"
+
+
+
+def read_ioc_file(ioc_file_path: Path | str) -> pl.DataFrame:
+    """Reads the IOC file and returns a DataFrame.
+    Has columns: ["parameter", "value"]
+    """
+
+    df = pl.read_csv(
+        ioc_file_path,
+        separator="=",
+        has_header=False,
+        skip_rows=1,  # skip the comment row at the top
+        new_columns=["parameter", "value"],
+    )
+    return df
+
+
+def make_pin_table(ioc_file_path: Path | str) -> pl.DataFrame:
+    """Generates a table of pins from the IOC file.
+    
+    Each row is a pin (with a Pin ID like 'PA0').
+    Columns are human-readable names (e.g., 'GPIO Pin Label').
+    """
+
+    df = read_ioc_file(ioc_file_path)
+
+    df = df.with_columns(
+        parsed=(
+            pl.col("parameter").str.extract_groups(
+                r"^(?<pin_id>P[A-Z]\d+)\.(?<pin_parameter>.+)"
+            )
+        ),
+    ).unnest("parsed")
+
+    print(df)
+
+    # pivot the table to make one-row-per-pin
+    df = df.filter(
+        pl.col("pin_id").is_not_null() & pl.col("pin_parameter").is_not_null()
+    )
+    df = df.pivot(
+        index="pin_id",
+        columns="pin_parameter",
+        values="value",
+    )
+
+    # reorder and rename the cols
+    df = df.select(
+        pl.col("pin_id").alias("Pin ID"),
+        pl.col("GPIO_Label").alias("GPIO Pin Label"),  # our label for it
+        # pl.col("GPIOParameters").alias("GPIO Parameters"),  # useless, no info in it
+        pl.col("Signal").alias("Signal Type"),
+        pl.col("Locked"),
+        pl.col("Mode"),
+    )
+    print(df)
+
+    df = df.sort(['GPIO Pin Label', 'Pin ID'])
+
+    return df
+
+
+MD_FILE_TEMPLATE = """\
+# Pin List (from IOC file)
+
+This is an auto-generated list of pins from the IOC file.
+
+This is a representation of the IOC file, as of {file_save_id}.
+
+{pin_count} pins are used.
+
+## Table
+
+{pin_table}
+"""
+
+
+def generate_markdown_table_file(ioc_file_path: Path | str, output_path: Path | str):
+    """Writes the pin table as a Markdown file."""
+
+    df = make_pin_table(ioc_file_path)
+
+    with pl.Config(
+        tbl_formatting="ASCII_MARKDOWN",
+        tbl_rows=1000,
+        tbl_hide_dataframe_shape=True,
+        tbl_hide_column_data_types=True,
+    ):
+        tbl_as_markdown = str(df)
+
+    md_content = MD_FILE_TEMPLATE.format(
+        file_save_id=get_git_file_modified_info(ioc_file_path),
+        pin_table=tbl_as_markdown,
+        pin_count=len(df),
+    )
+
+    with open(output_path, "w") as f:
+        f.write(md_content)
+
+
+def main():
+    repo_root_path = Path(
+        git.Repo(".", search_parent_directories=True).working_tree_dir
+    )
+    ioc_file_path_list = list(repo_root_path.rglob("*.ioc"))
+    assert (
+        len(ioc_file_path_list) == 1
+    ), f"Expected 1 IOC file, got {len(ioc_file_path_list)}"
+    ioc_file_path = ioc_file_path_list[0]
+    output_path = repo_root_path / "docs" / "IOC_Pin_List.md"
+
+    generate_markdown_table_file(ioc_file_path, output_path)
+
+
+if __name__ == "__main__":
+    main()
