@@ -190,7 +190,7 @@ int main(void)
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
-//  TASK_debug_print_heartbeat_Handle = osThreadNew(TASK_debug_print_heartbeat, NULL, &TASK_debug_print_heartbeat_Attributes);
+  TASK_debug_print_heartbeat_Handle = osThreadNew(TASK_debug_print_heartbeat, NULL, &TASK_debug_print_heartbeat_Attributes);
 
   TASK_handle_uart_telecommands_Handle = osThreadNew(TASK_handle_uart_telecommands, NULL, &TASK_handle_uart_telecommands_Attributes);
   
