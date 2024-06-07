@@ -9,11 +9,23 @@
 #include <string.h>
 #include <inttypes.h>
 
+extern volatile int TASK_heartbeat_is_enabled;
+
 // extern
 const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "hello_world",
         .tcmd_func = TCMDEXEC_hello_world,
+        .number_of_args = 0,
+    },
+    {
+        .tcmd_name = "disable_heartbeat",
+        .tcmd_func = TCMDEXEC_disable_heartbeat,
+        .number_of_args = 0,
+    },
+    {
+        .tcmd_name = "enable_heartbeat",
+        .tcmd_func = TCMDEXEC_enable_heartbeat,
         .number_of_args = 0,
     },
     {
@@ -53,6 +65,20 @@ const int16_t TCMD_NUM_TELECOMMANDS = sizeof(TCMD_telecommand_definitions) / siz
 uint8_t TCMDEXEC_hello_world(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     snprintf(response_output_buf, response_output_buf_len, "Hello, world!\n");
+    return 0;
+}
+
+uint8_t TCMDEXEC_disable_heartbeat(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    TASK_heartbeat_is_enabled = 0;
+    snprintf(response_output_buf, response_output_buf_len, "Heartbeat disabled");
+    return 0;
+}
+
+uint8_t TCMDEXEC_enable_heartbeat(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    TASK_heartbeat_is_enabled = 1;
+    snprintf(response_output_buf, response_output_buf_len, "Heartbeat enabled");
     return 0;
 }
 
