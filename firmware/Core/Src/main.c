@@ -797,18 +797,18 @@ static void MX_GPIO_Init(void)
   HAL_PWREx_EnableVddIO2();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOE, PIN_LED1_OUT_Pin|PIN_LED2_OUT_Pin|PIN_LED3_OUT_Pin|PIN_SCI_NCS_FLASH_0_Pin
-                          |PIN_SCI_NCS_FRAM_1_Pin|PIN_SCI_NCS_FRAM_0_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOE, PIN_LED1_OUT_Pin|PIN_LED2_OUT_Pin|PIN_LED3_OUT_Pin|PIN_SPI_NCS_FLASH_0_Pin
+                          |PIN_SPI_NCS_FRAM_1_Pin|PIN_SPI_NCS_FRAM_0_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, PIN_CAM_EN_OUT_Pin|PIN_BOOM_DEPLOY_EN_OUT_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOF, PIN_SCI_NCS_FLASH_7_Pin|PIN_SCI_NCS_FLASH_6_Pin|PIN_SCI_NCS_FLASH_5_Pin|PIN_SCI_NCS_FLASH_4_Pin
-                          |PIN_SCI_NCS_FLASH_3_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOF, PIN_SPI_NCS_FLASH_7_Pin|PIN_SPI_NCS_FLASH_6_Pin|PIN_SPI_NCS_FLASH_5_Pin|PIN_SPI_NCS_FLASH_4_Pin
+                          |PIN_SPI_NCS_FLASH_3_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOG, PIN_SCI_NCS_FLASH_2_Pin|PIN_SCI_NCS_FLASH_1_Pin|PIN_MISO_MPI_RX_NEN_OUT_Pin|PIN_MOSI_MPI_TX_EN_OUT_Pin
+  HAL_GPIO_WritePin(GPIOG, PIN_SPI_NCS_FLASH_2_Pin|PIN_SPI_NCS_FLASH_1_Pin|PIN_MISO_MPI_RX_NEN_OUT_Pin|PIN_MOSI_MPI_TX_EN_OUT_Pin
                           |PIN_NRST_LORA_US_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
@@ -817,10 +817,10 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(PIN_NRST_LORA_EU_OUT_GPIO_Port, PIN_NRST_LORA_EU_OUT_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : PIN_LED1_OUT_Pin PIN_LED2_OUT_Pin PIN_LED3_OUT_Pin PIN_SCI_NCS_FLASH_0_Pin
-                           PIN_SCI_NCS_FRAM_1_Pin PIN_SCI_NCS_FRAM_0_Pin */
-  GPIO_InitStruct.Pin = PIN_LED1_OUT_Pin|PIN_LED2_OUT_Pin|PIN_LED3_OUT_Pin|PIN_SCI_NCS_FLASH_0_Pin
-                          |PIN_SCI_NCS_FRAM_1_Pin|PIN_SCI_NCS_FRAM_0_Pin;
+  /*Configure GPIO pins : PIN_LED1_OUT_Pin PIN_LED2_OUT_Pin PIN_LED3_OUT_Pin PIN_SPI_NCS_FLASH_0_Pin
+                           PIN_SPI_NCS_FRAM_1_Pin PIN_SPI_NCS_FRAM_0_Pin */
+  GPIO_InitStruct.Pin = PIN_LED1_OUT_Pin|PIN_LED2_OUT_Pin|PIN_LED3_OUT_Pin|PIN_SPI_NCS_FLASH_0_Pin
+                          |PIN_SPI_NCS_FRAM_1_Pin|PIN_SPI_NCS_FRAM_0_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -839,18 +839,18 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PIN_SCI_NCS_FLASH_7_Pin PIN_SCI_NCS_FLASH_6_Pin PIN_SCI_NCS_FLASH_5_Pin PIN_SCI_NCS_FLASH_4_Pin
-                           PIN_SCI_NCS_FLASH_3_Pin */
-  GPIO_InitStruct.Pin = PIN_SCI_NCS_FLASH_7_Pin|PIN_SCI_NCS_FLASH_6_Pin|PIN_SCI_NCS_FLASH_5_Pin|PIN_SCI_NCS_FLASH_4_Pin
-                          |PIN_SCI_NCS_FLASH_3_Pin;
+  /*Configure GPIO pins : PIN_SPI_NCS_FLASH_7_Pin PIN_SPI_NCS_FLASH_6_Pin PIN_SPI_NCS_FLASH_5_Pin PIN_SPI_NCS_FLASH_4_Pin
+                           PIN_SPI_NCS_FLASH_3_Pin */
+  GPIO_InitStruct.Pin = PIN_SPI_NCS_FLASH_7_Pin|PIN_SPI_NCS_FLASH_6_Pin|PIN_SPI_NCS_FLASH_5_Pin|PIN_SPI_NCS_FLASH_4_Pin
+                          |PIN_SPI_NCS_FLASH_3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PIN_SCI_NCS_FLASH_2_Pin PIN_SCI_NCS_FLASH_1_Pin PIN_MISO_MPI_RX_NEN_OUT_Pin PIN_MOSI_MPI_TX_EN_OUT_Pin
+  /*Configure GPIO pins : PIN_SPI_NCS_FLASH_2_Pin PIN_SPI_NCS_FLASH_1_Pin PIN_MISO_MPI_RX_NEN_OUT_Pin PIN_MOSI_MPI_TX_EN_OUT_Pin
                            PIN_NRST_LORA_US_Pin */
-  GPIO_InitStruct.Pin = PIN_SCI_NCS_FLASH_2_Pin|PIN_SCI_NCS_FLASH_1_Pin|PIN_MISO_MPI_RX_NEN_OUT_Pin|PIN_MOSI_MPI_TX_EN_OUT_Pin
+  GPIO_InitStruct.Pin = PIN_SPI_NCS_FLASH_2_Pin|PIN_SPI_NCS_FLASH_1_Pin|PIN_MISO_MPI_RX_NEN_OUT_Pin|PIN_MOSI_MPI_TX_EN_OUT_Pin
                           |PIN_NRST_LORA_US_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
