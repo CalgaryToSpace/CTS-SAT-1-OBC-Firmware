@@ -8,51 +8,51 @@ This is a representation of the IOC file, as of 2024-06-07 16:44:17-06:00 (Commi
 
 ## Table
 
-| Pin ID | GPIO Pin Label            | Signal Type | Locked | Mode               |
-|--------|---------------------------|-------------|--------|--------------------|
-| PF1    | PIN_ANTENNA_A_I2C2_SCL    | I2C2_SCL    | true   | I2C                |
-| PF0    | PIN_ANTENNA_A_I2C2_SDA    | I2C2_SDA    | true   | I2C                |
-| PC0    | PIN_ANTENNA_B_I2C3_SCL    | I2C3_SCL    | null   | I2C                |
-| PC1    | PIN_ANTENNA_B_I2C3_SDA    | I2C3_SDA    | null   | I2C                |
-| PA3    | PIN_BOOM_DEPLOY_EN_OUT    | GPIO_Output | true   | null               |
-| PA4    | PIN_BOOM_PGOOD_IN_TBC     | GPIO_Input  | true   | null               |
-| PA1    | PIN_CAMERA_MISO_UART4_RX  | UART4_RX    | true   | Asynchronous       |
-| PA0    | PIN_CAMERA_MOSI_UART4_TX  | UART4_TX    | true   | Asynchronous       |
-| PA2    | PIN_CAM_EN_OUT            | GPIO_Output | true   | null               |
-| PG8    | PIN_DEBUG_MISO_LPUART1_RX | LPUART1_RX  | true   | Asynchronous       |
-| PG7    | PIN_DEBUG_MOSI_LPUART1_TX | LPUART1_TX  | true   | Asynchronous       |
-| PB7    | PIN_DEVKIT_LD2            | GPIO_Output | true   | null               |
-| PC5    | PIN_GPS_MISO_USART3_RX    | USART3_RX   | true   | Asynchronous       |
-| PC4    | PIN_GPS_MOSI_USART3_TX    | USART3_TX   | true   | Asynchronous       |
-| PA6    | PIN_GPS_PPS_IN            | GPIO_Input  | true   | null               |
-| PE2    | PIN_LED1_OUT              | GPIO_Output | true   | null               |
-| PE3    | PIN_LED2_OUT              | GPIO_Output | true   | null               |
-| PE4    | PIN_LED3_OUT              | GPIO_Output | true   | null               |
-| PD2    | PIN_LORA_EU_MISO_UART5_RX | UART5_RX    | true   | Asynchronous       |
-| PC12   | PIN_LORA_EU_MOSI_UART5_TX | UART5_TX    | true   | Asynchronous       |
-| PD6    | PIN_LORA_US_MISO_UART2_RX | USART2_RX   | true   | Asynchronous       |
-| PD5    | PIN_LORA_US_MOSI_UART2_TX | USART2_TX   | true   | Asynchronous       |
-| PE14   | PIN_MEMORY_SPI1_MISO      | SPI1_MISO   | true   | Full_Duplex_Master |
-| PE15   | PIN_MEMORY_SPI1_MOSI      | SPI1_MOSI   | null   | Full_Duplex_Master |
-| PE13   | PIN_MEMORY_SPI1_SCLK      | SPI1_SCK    | true   | Full_Duplex_Master |
-| PG4    | PIN_MISO_MPI_RX_NEN_OUT   | GPIO_Output | true   | null               |
-| PG5    | PIN_MOSI_MPI_TX_EN_OUT    | GPIO_Output | true   | null               |
-| PA10   | PIN_MPI_MISO_USART1_RX    | USART1_RX   | true   | Asynchronous       |
-| PA9    | PIN_MPI_MOSI_USART1_TX    | USART1_TX   | true   | Asynchronous       |
-| PC11   | PIN_NRST_LORA_EU_OUT      | GPIO_Output | true   | null               |
-| PG9    | PIN_NRST_LORA_US          | GPIO_Output | true   | null               |
-| PE7    | PIN_SPI_NCS_FLASH_0       | GPIO_Output | true   | null               |
-| PG1    | PIN_SPI_NCS_FLASH_1       | GPIO_Output | true   | null               |
-| PG0    | PIN_SPI_NCS_FLASH_2       | GPIO_Output | true   | null               |
-| PF15   | PIN_SPI_NCS_FLASH_3       | GPIO_Output | true   | null               |
-| PF14   | PIN_SPI_NCS_FLASH_4       | GPIO_Output | true   | null               |
-| PF13   | PIN_SPI_NCS_FLASH_5       | GPIO_Output | true   | null               |
-| PF12   | PIN_SPI_NCS_FLASH_6       | GPIO_Output | true   | null               |
-| PF11   | PIN_SPI_NCS_FLASH_7       | GPIO_Output | true   | null               |
-| PE9    | PIN_SPI_NCS_FRAM_0        | GPIO_Output | true   | null               |
-| PE8    | PIN_SPI_NCS_FRAM_1        | GPIO_Output | true   | null               |
-| PG14   | PIN_STACK_I2C1_SCL        | I2C1_SCL    | true   | I2C                |
-| PG13   | PIN_STACK_I2C1_SDA        | I2C1_SDA    | true   | I2C                |
-| PD12   | PIN_TEMP_SENSOR_I2C4_SCL  | I2C4_SCL    | true   | I2C                |
-| PD13   | PIN_TEMP_SENSOR_I2C4_SDA  | I2C4_SDA    | null   | I2C                |
-| PB12   | PIN_UHF_CTL_OUT           | GPIO_Output | true   | null               |
+| GPIO Pin Label            | Pin ID | Signal Type | Mode               | Locked |
+|---------------------------|--------|-------------|--------------------|--------|
+| PIN_ANTENNA_A_I2C2_SCL    | PF1    | I2C2_SCL    | I2C                | true   |
+| PIN_ANTENNA_A_I2C2_SDA    | PF0    | I2C2_SDA    | I2C                | true   |
+| PIN_ANTENNA_B_I2C3_SCL    | PC0    | I2C3_SCL    | I2C                |        |
+| PIN_ANTENNA_B_I2C3_SDA    | PC1    | I2C3_SDA    | I2C                |        |
+| PIN_BOOM_DEPLOY_EN_OUT    | PA3    | GPIO_Output |                    | true   |
+| PIN_BOOM_PGOOD_IN_TBC     | PA4    | GPIO_Input  |                    | true   |
+| PIN_CAMERA_MISO_UART4_RX  | PA1    | UART4_RX    | Asynchronous       | true   |
+| PIN_CAMERA_MOSI_UART4_TX  | PA0    | UART4_TX    | Asynchronous       | true   |
+| PIN_CAM_EN_OUT            | PA2    | GPIO_Output |                    | true   |
+| PIN_DEBUG_MISO_LPUART1_RX | PG8    | LPUART1_RX  | Asynchronous       | true   |
+| PIN_DEBUG_MOSI_LPUART1_TX | PG7    | LPUART1_TX  | Asynchronous       | true   |
+| PIN_DEVKIT_LD2            | PB7    | GPIO_Output |                    | true   |
+| PIN_GPS_MISO_USART3_RX    | PC5    | USART3_RX   | Asynchronous       | true   |
+| PIN_GPS_MOSI_USART3_TX    | PC4    | USART3_TX   | Asynchronous       | true   |
+| PIN_GPS_PPS_IN            | PA6    | GPIO_Input  |                    | true   |
+| PIN_LED1_OUT              | PE2    | GPIO_Output |                    | true   |
+| PIN_LED2_OUT              | PE3    | GPIO_Output |                    | true   |
+| PIN_LED3_OUT              | PE4    | GPIO_Output |                    | true   |
+| PIN_LORA_EU_MISO_UART5_RX | PD2    | UART5_RX    | Asynchronous       | true   |
+| PIN_LORA_EU_MOSI_UART5_TX | PC12   | UART5_TX    | Asynchronous       | true   |
+| PIN_LORA_US_MISO_UART2_RX | PD6    | USART2_RX   | Asynchronous       | true   |
+| PIN_LORA_US_MOSI_UART2_TX | PD5    | USART2_TX   | Asynchronous       | true   |
+| PIN_MEMORY_SPI1_MISO      | PE14   | SPI1_MISO   | Full_Duplex_Master | true   |
+| PIN_MEMORY_SPI1_MOSI      | PE15   | SPI1_MOSI   | Full_Duplex_Master |        |
+| PIN_MEMORY_SPI1_SCLK      | PE13   | SPI1_SCK    | Full_Duplex_Master | true   |
+| PIN_MISO_MPI_RX_NEN_OUT   | PG4    | GPIO_Output |                    | true   |
+| PIN_MOSI_MPI_TX_EN_OUT    | PG5    | GPIO_Output |                    | true   |
+| PIN_MPI_MISO_USART1_RX    | PA10   | USART1_RX   | Asynchronous       | true   |
+| PIN_MPI_MOSI_USART1_TX    | PA9    | USART1_TX   | Asynchronous       | true   |
+| PIN_NRST_LORA_EU_OUT      | PC11   | GPIO_Output |                    | true   |
+| PIN_NRST_LORA_US          | PG9    | GPIO_Output |                    | true   |
+| PIN_SPI_NCS_FLASH_0       | PE7    | GPIO_Output |                    | true   |
+| PIN_SPI_NCS_FLASH_1       | PG1    | GPIO_Output |                    | true   |
+| PIN_SPI_NCS_FLASH_2       | PG0    | GPIO_Output |                    | true   |
+| PIN_SPI_NCS_FLASH_3       | PF15   | GPIO_Output |                    | true   |
+| PIN_SPI_NCS_FLASH_4       | PF14   | GPIO_Output |                    | true   |
+| PIN_SPI_NCS_FLASH_5       | PF13   | GPIO_Output |                    | true   |
+| PIN_SPI_NCS_FLASH_6       | PF12   | GPIO_Output |                    | true   |
+| PIN_SPI_NCS_FLASH_7       | PF11   | GPIO_Output |                    | true   |
+| PIN_SPI_NCS_FRAM_0        | PE9    | GPIO_Output |                    | true   |
+| PIN_SPI_NCS_FRAM_1        | PE8    | GPIO_Output |                    | true   |
+| PIN_STACK_I2C1_SCL        | PG14   | I2C1_SCL    | I2C                | true   |
+| PIN_STACK_I2C1_SDA        | PG13   | I2C1_SDA    | I2C                | true   |
+| PIN_TEMP_SENSOR_I2C4_SCL  | PD12   | I2C4_SCL    | I2C                | true   |
+| PIN_TEMP_SENSOR_I2C4_SDA  | PD13   | I2C4_SDA    | I2C                |        |
+| PIN_UHF_CTL_OUT           | PB12   | GPIO_Output |                    | true   |

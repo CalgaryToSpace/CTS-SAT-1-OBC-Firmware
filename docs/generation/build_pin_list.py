@@ -77,12 +77,12 @@ def make_pin_table(ioc_file_path: Path | str) -> pl.DataFrame:
 
     # reorder and rename the cols
     df = df.select(
-        pl.col("pin_id").alias("Pin ID"),
         pl.col("GPIO_Label").alias("GPIO Pin Label"),  # our label for it
+        pl.col("pin_id").alias("Pin ID"),
         # pl.col("GPIOParameters").alias("GPIO Parameters"),  # useless, no info in it
         pl.col("Signal").alias("Signal Type"),
-        pl.col("Locked"),
         pl.col("Mode"),
+        pl.col("Locked"),
     )
     print(df)
 
@@ -110,6 +110,7 @@ def generate_markdown_table_file(ioc_file_path: Path | str, output_path: Path | 
     """Writes the pin table as a Markdown file."""
 
     df = make_pin_table(ioc_file_path)
+    df = df.fill_null(pl.lit('')) # fill nulls with placeholder empty string (better for markdown)
 
     with pl.Config(
         tbl_formatting="ASCII_MARKDOWN",
