@@ -101,8 +101,9 @@ uint8_t TCMDEXEC_run_all_unit_tests(const uint8_t *args_str, TCMD_TelecommandCha
 }
 
 uint8_t TCMDEXEC_ADCS_ack(void) {
-    ADCS_TC_Ack();
-    return 0;
+    ADCS_TC_Ack_Struct ack;
+    ADCS_TC_Ack(&ack);
+    return ack.error_flag;
 }
 
 // TODO: telecommand definitions

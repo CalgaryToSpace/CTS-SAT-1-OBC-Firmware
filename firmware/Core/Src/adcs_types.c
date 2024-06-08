@@ -9,6 +9,7 @@
 #include "adcs_ids.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 /*
  * Summary list of required command IDs:
@@ -51,7 +52,7 @@
 
 extern I2C_HandleTypeDef hi2c1; // allows not needing the parameters
 
-ADCS_TC_Ack_Struct ADCS_TC_Ack() {
+uint8_t ADCS_TC_Ack(ADCS_TC_Ack_Struct *ack) {
 	//note return value -- this is a special case of telemetry request for telecommands
 	uint8_t data_received[8]; // define temp buffer
 	uint8_t data_length = 4;
@@ -59,23 +60,23 @@ ADCS_TC_Ack_Struct ADCS_TC_Ack() {
 	ADCS_I2C_telemetry_wrapper(TLF_TC_ACK, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
 	// map temp buffer to Ack struct
-	ADCS_TC_Ack_Struct ack = ADCS_Pack_to_Ack(&data_received[0]);
+	ADCS_Pack_to_Ack(&data_received[0], ack);
 
 	WRITE_STRUCT_TO_MEMORY(ack) // memory module function
 
-	return ack;
+	return 0;
 }
 
-ADCS_TC_Ack_Struct ADCS_Pack_to_Ack(uint8_t* data_received) {
+uint8_t ADCS_Pack_to_Ack(uint8_t* data_received, ADCS_TC_Ack_Struct *result) {
 	ADCS_TC_Ack_Struct ack;
 
 	// map temp buffer to Ack struct
-	ack.last_id = data_received[0];
-	ack.processed = data_received[1];
-	ack.error_flag = data_received[2];
-	ack.error_index = data_received[3];
+	result->last_id = data_received[0];
+	result->processed = data_received[1];
+	result->error_flag = data_received[2];
+	result->error_index = data_received[3];
 
-	return ack;
+	return 0;
 }
 
 void ADCS_Reset() {
@@ -92,23 +93,20 @@ void ADCS_Identification() {
 
 	ADCS_I2C_telemetry_wrapper(TLF_IDENTIFICATION, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
-	ADCS_ID_Struct id = ADCS_Pack_to_Identification(&data_received[0]);
+	ADCS_ID_Struct id; 
+	ADCS_Pack_to_Identification(&data_received[0], &id);
 
 	WRITE_STRUCT_TO_MEMORY(id) // memory module function
 }
 
-ADCS_ID_Struct ADCS_Pack_to_Identification(uint8_t* data_received) {
-	ADCS_ID_Struct id;
-
-	// map temp buffer to Identification struct
-	id.node_type = data_received[0];
-	id.interface_version = data_received[1];
-	id.major_firmware_version = data_received[2];
-	id.minor_firmware_version = data_received[3];
-	id.seconds_since_startup = data_received[5] << 8 | data_received[4]; // uint16_t
-	id.ms_past_second = data_received[7] << 8 | data_received[6]; // uint16_t
-
-	return id;
+uint8_t ADCS_Pack_to_Identification(uint8_t *data_received, ADCS_ID_Struct *result) {
+    result->node_type = data_received[0];
+    result->interface_version = data_received[1];
+    result->major_firmware_version = data_received[2];
+    result->minor_firmware_version = data_received[3];
+    result->seconds_since_startup = data_received[4] | (data_received[5] << 8);
+    result->ms_past_second = data_received[6] | (data_received[7] << 8);
+    return 0;
 }
 
 void ADCS_Program_Status() {
@@ -117,21 +115,22 @@ void ADCS_Program_Status() {
 
 	ADCS_I2C_telemetry_wrapper(TLF_BOOT_RUNNING_PROGRAM_STATUS, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
-	ADCS_Boot_Running_Status_Struct status = ADCS_Pack_to_Program_Status(&data_received[0]);
+	ADCS_Boot_Running_Status_Struct status; 
+	ADCS_Pack_to_Program_Status(&data_received[0], &status);
 
 	WRITE_STRUCT_TO_MEMORY(status) // memory module function
 }
 
-ADCS_Boot_Running_Status_Struct ADCS_Pack_to_Program_Status(uint8_t* data_received) {
-	ADCS_Boot_Running_Status_Struct status;
+uint8_t ADCS_Pack_to_Program_Status(uint8_t* data_received, ADCS_Boot_Running_Status_Struct *result) {
 	// map to struct
-	status.reset_cause = data_received[0] & 0xF0; // takes upper four bits of byte 0
-	status.boot_cause = data_received[0] & 0x0F; // take upper four bits of byte 0
-	status.boot_counter = data_received[2] << 8 | data_received[1]; // uint16_t
-	status.boot_program_index = data_received[3];
-	status.major_firmware_version = data_received[4]; // uint8_t
-	status.minor_firmware_version = data_received[5]; // uint8_t
-	return status;
+	result->reset_cause = (data_received[0] & 0xF0) >> 4; // takes upper four bits of byte 0
+	result->boot_cause = data_received[0] & 0x0F; // take upper four bits of byte 0
+	result->boot_counter = data_received[2] << 8 | data_received[1]; // uint16_t
+	result->boot_program_index = data_received[3];
+	result->major_firmware_version = data_received[4]; // uint8_t
+	result->minor_firmware_version = data_received[5]; // uint8_t
+
+	return 0;
 }
 
 void ADCS_Communication_Status() {
@@ -141,21 +140,19 @@ void ADCS_Communication_Status() {
 
 	ADCS_I2C_telemetry_wrapper(TLF_SATSTATE_COMM_STATUS, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
-	ADCS_Comms_Status_Struct status = ADCS_Pack_to_Comms_Status(&data_received[0]);
+	ADCS_Comms_Status_Struct status;
+	ADCS_Pack_to_Comms_Status(&data_received[0], &status);
 
 	WRITE_STRUCT_TO_MEMORY(status) // memory module function
 }
 
-ADCS_Comms_Status_Struct ADCS_Pack_to_Comms_Status(uint8_t *data_received) {
-	ADCS_Comms_Status_Struct status; 
-	// map to struct
-	status.tc_counter = data_received[1] << 8 | data_received[0]; // uint16_t
-	status.tlm_counter = data_received[3] << 8 | data_received[2]; // uint16_t
-	status.tc_buffer_overrun = data_received[4] & 0b10000000; // bit 0 is 1 if TC buffer was overrun while receiving a telecommand
-	status.i2c_tlm_error = data_received[4] & 0b00010000; // bit 3 is 1 if the number of data clocked out was more than the telemetry package
-	status.i2c_tc_error = data_received[4] & 0b00001000; // bit 4 is 1 if the telecommand sent exceeded the buffer size
-	// other bits are for UART and CAN; ignore them
-	return status;
+uint8_t ADCS_Pack_to_Comms_Status(uint8_t *data_received, ADCS_Comms_Status_Struct *result) {
+    result->tc_counter = data_received[1] << 8 | data_received[0]; // uint16_t
+    result->tlm_counter = data_received[3] << 8 | data_received[2]; // uint16_t
+    result->tc_buffer_overrun = data_received[4] & 0b10000000; // bit 0 is 1 if TC buffer was overrun while receiving a telecommand
+    result->i2c_tlm_error = data_received[4] & 0b00010000; // bit 3 is 1 if the number of data clocked out was more than the telemetry package
+    result->i2c_tc_error = data_received[4] & 0b00001000; // bit 4 is 1 if the telecommand sent exceeded the buffer size
+    return 0;
 }
 
 void ADCS_Deploy_Magnetometer(uint8_t deploy_timeout) {
@@ -245,30 +242,31 @@ void ADCS_Get_Power_Control() {
 
 	ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_GET_ADCS_POWER_CONTROL, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
-	ADCS_Power_Control_Struct power = ADCS_Pack_to_Power_Control(data_received);
+	ADCS_Power_Control_Struct power;
+	ADCS_Pack_to_Power_Control(data_received, &power);
 
 	WRITE_STRUCT_TO_MEMORY(power) // memory module function
 }
 
-ADCS_Power_Control_Struct ADCS_Pack_to_Power_Control(uint8_t* data_received) {
+uint8_t ADCS_Pack_to_Power_Control(uint8_t* data_received, ADCS_Power_Control_Struct* result) {
 	ADCS_Power_Control_Struct power;
 
 	// map to struct; all of these are two-bit enums
 	// within the byte, everything goes in reverse order!!
-	power.cube_control_signal = (data_received[0]) & 0x03;
-	power.cube_control_motor = (data_received[0] >> 2) & 0x03;
-	power.cube_sense1 = (data_received[0] >> 4) & 0x03;
-	power.cube_sense2 = (data_received[0] >> 6) & 0x03;
+	result->cube_control_signal = (data_received[0]) & 0x03;
+	result->cube_control_motor = (data_received[0] >> 2) & 0x03;
+	result->cube_sense1 = (data_received[0] >> 4) & 0x03;
+	result->cube_sense2 = (data_received[0] >> 6) & 0x03;
 
-	power.cube_star_power = (data_received[1]) & 0x03;
-	power.cube_wheel1_power = (data_received[1] >> 2) & 0x03;
-	power.cube_wheel2_power =  (data_received[1] >> 4) & 0x03;
-	power.cube_wheel3_power = (data_received[1] >> 6) & 0x03;
+	result->cube_star_power = (data_received[1]) & 0x03;
+	result->cube_wheel1_power = (data_received[1] >> 2) & 0x03;
+	result->cube_wheel2_power =  (data_received[1] >> 4) & 0x03;
+	result->cube_wheel3_power = (data_received[1] >> 6) & 0x03;
 
-	power.motor_power = (data_received[2]) & 0x03;
-	power.gps_power = (data_received[2] >> 2) & 0x03;
+	result->motor_power = (data_received[2]) & 0x03;
+	result->gps_power = (data_received[2] >> 2) & 0x03;
 
-	return power;
+	return 0;
 }
 
 
@@ -332,20 +330,17 @@ void ADCS_Estimate_Angular_Rates() {
 
 	ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_ESTIMATED_ANGULAR_RATES, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
-	ADCS_Angular_Rates_Struct rates = ADCS_Pack_to_Angular_Rates(data_received);
+	ADCS_Angular_Rates_Struct rates;
+	ADCS_Pack_to_Angular_Rates(data_received, &rates);
 
 	WRITE_STRUCT_TO_MEMORY(rates) // memory module function
 }
 
-ADCS_Angular_Rates_Struct ADCS_Pack_to_Angular_Rates(uint8_t* data_received) {
-	ADCS_Angular_Rates_Struct rates;
-
-	// Formatted value is obtained using the formula: (formatted value) [deg/s] = RAWVAL*0.01
-	rates.x_rate = (double)(data_received[1] << 8 | data_received[0]) * 0.01; 
-	rates.y_rate = (double)(data_received[3] << 8 | data_received[2]) * 0.01; 
-	rates.z_rate = (double)(data_received[5] << 8 | data_received[4]) * 0.01; 
-
-	return rates;
+uint8_t ADCS_Pack_to_Angular_Rates(uint8_t *data_received, ADCS_Angular_Rates_Struct *result) {
+    result->x_rate = ((double) (data_received[1] << 8 | data_received[0])) * 0.01;
+    result->y_rate = ((double) (data_received[3] << 8 | data_received[2])) * 0.01;
+    result->z_rate = ((double) (data_received[5] << 8 | data_received[4])) * 0.01;
+    return 0;
 }
 
 void ADCS_Get_LLH_Position() {
@@ -354,20 +349,17 @@ void ADCS_Get_LLH_Position() {
 
 	ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_SATELLITE_POSITION_LLH, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
-	ADCS_LLH_Position_Struct pos = ADCS_Pack_to_LLH_Position(data_received);
+	ADCS_LLH_Position_Struct pos;
+	ADCS_Pack_to_LLH_Position(data_received, &pos);
 
 	WRITE_STRUCT_TO_MEMORY(pos) // memory module function
 }
 
-ADCS_LLH_Position_Struct ADCS_Pack_to_LLH_Position(uint8_t* data_received) {
-	ADCS_LLH_Position_Struct pos;
-
-	// Formatted value is obtained using the formula: (formatted value) [deg] or [km] = RAWVAL*0.01
-	pos.latitude = (double)(data_received[1] << 8 | data_received[0]) * 0.01; 
-	pos.longitude = (double)(data_received[3] << 8 | data_received[2]) * 0.01; 
-	pos.altitude = (double)(data_received[5] << 8 | data_received[4]) * 0.01; 
-
-	return pos;
+uint8_t ADCS_Pack_to_LLH_Position(uint8_t *data_received, ADCS_LLH_Position_Struct *result) {
+    result->latitude = (double)(data_received[1] << 8 | data_received[0]) * 0.01; 
+    result->longitude = (double)(data_received[3] << 8 | data_received[2]) * 0.01; 
+    result->altitude = (double)(data_received[5] << 8 | data_received[4]) * 0.01; 
+    return 0;
 }
 
 void ADCS_Bootloader_Clear_Errors() {
@@ -386,21 +378,18 @@ void ADCS_Get_Unix_Time_Save_Mode() {
 
 	ADCS_I2C_telemetry_wrapper(TLF_GET_UNIX_TIME_SAVE_TO_FLASH, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
-	ADCS_Set_Unix_Time_Save_Mode_Struct mode = ADCS_Pack_to_Unix_Time_Save_Mode(data_received);
+	ADCS_Set_Unix_Time_Save_Mode_Struct mode; 
+	ADCS_Pack_to_Unix_Time_Save_Mode(data_received, &mode);
 
 	WRITE_STRUCT_TO_MEMORY(mode) // memory module function
 }
 
-ADCS_Set_Unix_Time_Save_Mode_Struct ADCS_Pack_to_Unix_Time_Save_Mode(uint8_t* data_received) {
-	ADCS_Set_Unix_Time_Save_Mode_Struct mode;
-
-	mode.save_now = data_received[0] & 0b00000001;
-	mode.save_on_update = data_received[0] & 0b00000010;
-	mode.save_periodic = data_received[0] & 0b00000100;
-
-	mode.period = data_received[1];
-
-	return mode;
+uint8_t ADCS_Pack_to_Unix_Time_Save_Mode(uint8_t *data_received, ADCS_Set_Unix_Time_Save_Mode_Struct *result) {
+    result->save_now = data_received[0] & 0b00000001;
+    result->save_on_update = data_received[0] & 0b00000010;
+    result->save_periodic = data_received[0] & 0b00000100;
+    result->period = data_received[1];
+    return 0;
 }
 
 void ADCS_Set_SGP4_Orbit_Params(double inclination, double eccentricity, double ascending_node_right_ascension,
@@ -429,25 +418,22 @@ void ADCS_Get_SGP4_Orbit_Params() {
 
 	ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_GET_SGP4_ORBIT_PARAMETERS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
-	ADCS_Orbit_Params_Struct params = ADCS_Pack_to_Orbit_Params(data_received);
+	ADCS_Orbit_Params_Struct params;
+	ADCS_Pack_to_Orbit_Params(data_received, &params);
 
 	WRITE_STRUCT_TO_MEMORY(params) // memory module function
 }
 
-ADCS_Orbit_Params_Struct ADCS_Pack_to_Orbit_Params(uint8_t* data_received) {
-	ADCS_Orbit_Params_Struct params;
-
-	// map temp buffer to orbit params struct
-	memcpy(&params.inclination, &data_received[0], sizeof(double));
-	memcpy(&params.eccentricity, &data_received[8], sizeof(double));
-	memcpy(&params.ascending_node_right_ascension, &data_received[16], sizeof(double));
-	memcpy(&params.perigee_argument, &data_received[24], sizeof(double));
-	memcpy(&params.b_star_drag_term, &data_received[32], sizeof(double));
-	memcpy(&params.mean_motion, &data_received[40], sizeof(double));
-	memcpy(&params.mean_anomaly, &data_received[48], sizeof(double));
-	memcpy(&params.epoch, &data_received[56], sizeof(double));
-
-	return params;
+uint8_t ADCS_Pack_to_Orbit_Params(uint8_t *data_received, ADCS_Orbit_Params_Struct *result) {
+    memcpy(&result->inclination, &data_received[0], sizeof(double));
+    memcpy(&result->eccentricity, &data_received[8], sizeof(double));
+    memcpy(&result->ascending_node_right_ascension, &data_received[16], sizeof(double));
+    memcpy(&result->perigee_argument, &data_received[24], sizeof(double));
+    memcpy(&result->b_star_drag_term, &data_received[32], sizeof(double));
+    memcpy(&result->mean_motion, &data_received[40], sizeof(double));
+    memcpy(&result->mean_anomaly, &data_received[48], sizeof(double));
+    memcpy(&result->epoch, &data_received[56], sizeof(double));
+    return 0;
 }
 
 void ADCS_Rate_Sensor_Rates() {
@@ -456,21 +442,18 @@ void ADCS_Rate_Sensor_Rates() {
 
 	ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_RATE_SENSOR_RATES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
-	ADCS_Rated_Sensor_Rates_Struct rates = ADCS_Pack_to_Rated_Sensor_Rates(data_received);
+	ADCS_Rated_Sensor_Rates_Struct rates;
+	ADCS_Pack_to_Rated_Sensor_Rates(data_received, &rates);
 
 	WRITE_STRUCT_TO_MEMORY(rates) // memory module function
 }
 
-ADCS_Rated_Sensor_Rates_Struct ADCS_Pack_to_Rated_Sensor_Rates(uint8_t* data_received) {
-	ADCS_Rated_Sensor_Rates_Struct rates;
-
-	// map temp buffer to struct
-	// formatted value (deg/s) = raw value * 0.01
-	rates.x = ((double)(data_received[1] << 8 | data_received[0])) * 0.01;
-	rates.y = ((double)(data_received[3] << 8 | data_received[2])) * 0.01; 
-	rates.z = ((double)(data_received[5] << 8 | data_received[4])) * 0.01; 
-
-	return rates;
+uint8_t ADCS_Pack_to_Rated_Sensor_Rates(uint8_t *data_received, ADCS_Rated_Sensor_Rates_Struct *result) {
+    // formatted value (deg/s) = raw value * 0.01
+	result->x = ((double)(data_received[1] << 8 | data_received[0])) * 0.01;
+    result->y = ((double)(data_received[3] << 8 | data_received[2])) * 0.01;
+    result->z = ((double)(data_received[5] << 8 | data_received[4])) * 0.01;
+    return 0;
 }
 
 void ADCS_Get_Wheel_Speed() {
@@ -479,21 +462,18 @@ void ADCS_Get_Wheel_Speed() {
 
 	ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_WHEEL_SPEED, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
-	ADCS_Wheel_Speed_Struct speeds = ADCS_Pack_to_Wheel_Speed(data_received);
+	ADCS_Wheel_Speed_Struct speeds;
+	ADCS_Pack_to_Wheel_Speed(data_received, &speeds);
 
 	WRITE_STRUCT_TO_MEMORY(speeds) // memory module function
 }
 
-ADCS_Wheel_Speed_Struct ADCS_Pack_to_Wheel_Speed(uint8_t* data_received) {
-	ADCS_Wheel_Speed_Struct speeds;
-
-	// map temp buffer to struct
+uint8_t ADCS_Pack_to_Wheel_Speed(uint8_t *data_received, ADCS_Wheel_Speed_Struct *result) {
 	// all values in rpm
-	speeds.x = data_received[1] << 8 | data_received[0];
-	speeds.y = data_received[3] << 8 | data_received[2]; 
-	speeds.z = data_received[5] << 8 | data_received[4]; 
-
-	return speeds;
+    result->x = data_received[1] << 8 | data_received[0];
+    result->y = data_received[3] << 8 | data_received[2];
+    result->z = data_received[5] << 8 | data_received[4];
+    return 0;
 }
 
 void ADCS_Get_Magnetorquer_Command_Time() {
@@ -502,21 +482,18 @@ void ADCS_Get_Magnetorquer_Command_Time() {
 
 	ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_MAGNETORQUER_COMMAND, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
-	ADCS_Magnetorquer_Command_Struct time = ADCS_Pack_to_Magnetorquer_Command_Time(data_received);
+	ADCS_Magnetorquer_Command_Struct time;
+	ADCS_Pack_to_Magnetorquer_Command_Time(data_received, &time);
 
 	WRITE_STRUCT_TO_MEMORY(time) // memory module function
 }
 
-ADCS_Magnetorquer_Command_Struct ADCS_Pack_to_Magnetorquer_Command_Time(uint8_t* data_received) {
-	ADCS_Magnetorquer_Command_Struct time;
-
-	// map temp buffer to struct
-	// formatted value (sec) = raw value * 0.01
-	time.x = ((double)(data_received[1] << 8 | data_received[0])) * 0.01;
-	time.y = ((double)(data_received[3] << 8 | data_received[2])) * 0.01; 
-	time.z = ((double)(data_received[5] << 8 | data_received[4])) * 0.01; 
-
-	return time;
+uint8_t ADCS_Pack_to_Magnetorquer_Command_Time(uint8_t *data_received, ADCS_Magnetorquer_Command_Struct *result) {
+    // formatted value (sec) = raw value * 0.01
+	result->x = ((double)(data_received[1] << 8 | data_received[0])) * 0.01;
+    result->y = ((double)(data_received[3] << 8 | data_received[2])) * 0.01;
+    result->z = ((double)(data_received[5] << 8 | data_received[4])) * 0.01;
+    return 0;
 }
 
 void ADCS_Get_Raw_Magnetometer_Values() {
@@ -525,21 +502,17 @@ void ADCS_Get_Raw_Magnetometer_Values() {
 
 	ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_RAW_MAGNETOMETER, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
-	ADCS_Raw_Mag_TLM_Struct mag_vals = ADCS_Pack_to_Raw_Magnetometer_Values(data_received);
+	ADCS_Raw_Mag_TLM_Struct mag_vals;
+	ADCS_Pack_to_Raw_Magnetometer_Values(data_received, &mag_vals);
 
 	WRITE_STRUCT_TO_MEMORY(mag_vals) // memory module function
 }
 
-ADCS_Raw_Mag_TLM_Struct ADCS_Pack_to_Raw_Magnetometer_Values(uint8_t* data_received) {
-	ADCS_Raw_Mag_TLM_Struct mag_vals;
-
-	// map temp buffer to struct
-	// all values in rpm
-	mag_vals.x = data_received[1] << 8 | data_received[0];
-	mag_vals.y = data_received[3] << 8 | data_received[2]; 
-	mag_vals.z = data_received[5] << 8 | data_received[4]; 
-
-	return mag_vals;
+uint8_t ADCS_Pack_to_Raw_Magnetometer_Values(uint8_t *data_received, ADCS_Raw_Mag_TLM_Struct *result) {
+	result->x = data_received[1] << 8 | data_received[0];
+    result->y = data_received[3] << 8 | data_received[2];
+    result->z = data_received[5] << 8 | data_received[4];
+    return 0;
 }
 
 void ADCS_Estimate_Fine_Angular_Rates() {
@@ -548,21 +521,18 @@ void ADCS_Estimate_Fine_Angular_Rates() {
 
 	ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_FINE_ESTIMATED_ANGULAR_RATES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
-	ADCS_Fine_Angular_Rates_Struct rates = ADCS_Pack_to_Fine_Angular_Rates(data_received);
+	ADCS_Fine_Angular_Rates_Struct rates;
+	ADCS_Pack_to_Fine_Angular_Rates(data_received, &rates);
 
 	WRITE_STRUCT_TO_MEMORY(rates) // memory module function
 }
 
-ADCS_Fine_Angular_Rates_Struct ADCS_Pack_to_Fine_Angular_Rates(uint8_t* data_received) {
-	ADCS_Fine_Angular_Rates_Struct rates;
-
-	// map temp buffer to struct
-	// formatted value (deg/s) = raw value * 0.01
-	rates.x = ((double)(data_received[1] << 8 | data_received[0])) * 0.01;
-	rates.y = ((double)(data_received[3] << 8 | data_received[2])) * 0.01; 
-	rates.z = ((double)(data_received[5] << 8 | data_received[4])) * 0.01; 
-
-	return rates;
+uint8_t ADCS_Pack_to_Fine_Angular_Rates(uint8_t *data_received, ADCS_Fine_Angular_Rates_Struct *result) {
+    // formatted value (deg/s) = raw value * 0.01
+	result->x = ((double)(data_received[1] << 8 | data_received[0])) * 0.01;
+    result->y = ((double)(data_received[3] << 8 | data_received[2])) * 0.01;
+    result->z = ((double)(data_received[5] << 8 | data_received[4])) * 0.01;
+    return 0;
 }
 
 void ADCS_Get_Magnetometer_Config() {
@@ -571,34 +541,31 @@ void ADCS_Get_Magnetometer_Config() {
 
 	ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_GET_MAGNETOMETER_CONFIG, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
-	ADCS_Magnetometer_Config_Struct config = ADCS_Pack_to_Magnetometer_Config(data_received);
+	ADCS_Magnetometer_Config_Struct config;
+	ADCS_Pack_to_Magnetometer_Config(data_received, &config);
 
 	WRITE_STRUCT_TO_MEMORY(config) // memory module function
 }
 
-ADCS_Magnetometer_Config_Struct ADCS_Pack_to_Magnetometer_Config(uint8_t* data_received) {
-	ADCS_Magnetometer_Config_Struct config;
-
-	// map temp buffer to struct
-	// formatted value for mounting transform angles (deg/s) = raw value * 0.01
-	// formatted value (deg/s) = raw value * 0.001
-	config.mounting_transform_alpha_angle = ((double)(data_received[1] << 8 | data_received[0])) * 0.01; 
-	config.mounting_transform_beta_angle = ((double)(data_received[3] << 8 | data_received[2])) * 0.01; 
-	config.mounting_transform_gamma_angle = ((double)(data_received[5] << 8 | data_received[4])) * 0.01; 
-	config.channel_1_offset = ((double)(data_received[7] << 8 | data_received[6])) * 0.001; 
-	config.channel_2_offset = ((double)(data_received[9] << 8 | data_received[8])) * 0.001; 
-	config.channel_3_offset = ((double)(data_received[11] << 8 | data_received[10])) * 0.001; 
-	config.sensitivity_matrix_s11 = ((double)(data_received[13] << 8 | data_received[12])) * 0.001; 
-	config.sensitivity_matrix_s22 = ((double)(data_received[15] << 8 | data_received[14])) * 0.001; 
-	config.sensitivity_matrix_s33 = ((double)(data_received[17] << 8 | data_received[16])) * 0.001; 
-	config.sensitivity_matrix_s12 = ((double)(data_received[19] << 8 | data_received[18])) * 0.001; 
-	config.sensitivity_matrix_s13 = ((double)(data_received[21] << 8 | data_received[20])) * 0.001; 
-	config.sensitivity_matrix_s21 = ((double)(data_received[23] << 8 | data_received[22])) * 0.001; 
-	config.sensitivity_matrix_s23 = ((double)(data_received[25] << 8 | data_received[24])) * 0.001; 
-	config.sensitivity_matrix_s31 = ((double)(data_received[27] << 8 | data_received[26])) * 0.001; 
-	config.sensitivity_matrix_s32 = ((double)(data_received[29] << 8 | data_received[28])) * 0.001; 
-
-	return config;
+uint8_t ADCS_Pack_to_Magnetometer_Config(uint8_t *data_received, ADCS_Magnetometer_Config_Struct *result) {
+    // formatted value for mounting transform angles (deg/s) = raw value * 0.01
+	result->mounting_transform_alpha_angle = ((double)(data_received[1] << 8 | data_received[0])) * 0.01;
+    result->mounting_transform_beta_angle = ((double)(data_received[3] << 8 | data_received[2])) * 0.01;
+    result->mounting_transform_gamma_angle = ((double)(data_received[5] << 8 | data_received[4])) * 0.01;
+    // formatted value (deg/s) = raw value * 0.001
+	result->channel_1_offset = ((double)(data_received[7] << 8 | data_received[6])) * 0.001;
+    result->channel_2_offset = ((double)(data_received[9] << 8 | data_received[8])) * 0.001;
+    result->channel_3_offset = ((double)(data_received[11] << 8 | data_received[10])) * 0.001;
+    result->sensitivity_matrix_s11 = ((double)(data_received[13] << 8 | data_received[12])) * 0.001;
+    result->sensitivity_matrix_s22 = ((double)(data_received[15] << 8 | data_received[14])) * 0.001;
+    result->sensitivity_matrix_s33 = ((double)(data_received[17] << 8 | data_received[16])) * 0.001;
+    result->sensitivity_matrix_s12 = ((double)(data_received[19] << 8 | data_received[18])) * 0.001;
+    result->sensitivity_matrix_s13 = ((double)(data_received[21] << 8 | data_received[20])) * 0.001;
+    result->sensitivity_matrix_s21 = ((double)(data_received[23] << 8 | data_received[22])) * 0.001;
+    result->sensitivity_matrix_s23 = ((double)(data_received[25] << 8 | data_received[24])) * 0.001;
+    result->sensitivity_matrix_s31 = ((double)(data_received[27] << 8 | data_received[26])) * 0.001;
+    result->sensitivity_matrix_s32 = ((double)(data_received[29] << 8 | data_received[28])) * 0.001;
+    return 0;
 }
 
 void ADCS_Get_Commanded_Attitude_Angles() {
@@ -607,23 +574,19 @@ void ADCS_Get_Commanded_Attitude_Angles() {
 
 	ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_GET_COMMANDED_ATTITUDE_ANGLES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
-	ADCS_Commanded_Angles_Struct angles = ADCS_Pack_to_Commanded_Attitude_Angles(data_received);
+	ADCS_Commanded_Angles_Struct angles;
+	ADCS_Pack_to_Commanded_Attitude_Angles(data_received, &angles);
 
 	WRITE_STRUCT_TO_MEMORY(angles) // memory module function
 }
 
-ADCS_Commanded_Angles_Struct ADCS_Pack_to_Commanded_Attitude_Angles(uint8_t* data_received) {
-	ADCS_Commanded_Angles_Struct angles;
-
-	// map temp buffer to struct
-	// Formatted value is obtained using the formula: (formatted value) [deg] = RAWVAL*0.01
-	angles.x = (double)(data_received[1] << 8 | data_received[0]) * 0.01; 
-	angles.y = (double)(data_received[3] << 8 | data_received[2]) * 0.01; 
-	angles.z = (double)(data_received[5] << 8 | data_received[4]) * 0.01; 
-
-	return angles;
+uint8_t ADCS_Pack_to_Commanded_Attitude_Angles(uint8_t *data_received, ADCS_Commanded_Angles_Struct *result) {
+    // Formatted value is obtained using the formula: (formatted value) [deg] = RAWVAL*0.01
+	result->x = (double)(data_received[1] << 8 | data_received[0]) * 0.01;
+    result->y = (double)(data_received[3] << 8 | data_received[2]) * 0.01;
+    result->z = (double)(data_received[5] << 8 | data_received[4]) * 0.01;
+    return 0;
 }
-
 
 void ADCS_Set_Commanded_Attitude_Angles(double x, double y, double z) {
 	// raw parameter value is obtained using the formula: (raw parameter) = (formatted value)*100.0
@@ -683,36 +646,36 @@ void ADCS_Get_Estimation_Params() {
 
 	ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_GET_ESTIMATION_PARAMETERS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
-	ADCS_Estimation_Params_Struct params = ADCS_Pack_to_Estimation_Params(data_received);
+	ADCS_Estimation_Params_Struct params;
+	ADCS_Pack_to_Estimation_Params(data_received, &params);
 
 	WRITE_STRUCT_TO_MEMORY(params) // memory module function
 }
 
-ADCS_Estimation_Params_Struct ADCS_Pack_to_Estimation_Params(uint8_t* data_received) {
-	ADCS_Estimation_Params_Struct params;
+uint8_t ADCS_Pack_to_Estimation_Params(uint8_t* data_received, ADCS_Estimation_Params_Struct* result) {
+    // map temp buffer to struct
+    memcpy(&result->magnetometer_rate_filter_system_noise, &data_received[0], 4);
+    memcpy(&result->ekf_system_noise, &data_received[4], 4);
+    memcpy(&result->css_measurement_noise, &data_received[8], 4);
+    memcpy(&result->sun_sensor_measurement_noise, &data_received[12], 4);
+    memcpy(&result->nadir_sensor_measurement_noise, &data_received[16], 4);
+    memcpy(&result->magnetometer_measurement_noise, &data_received[20], 4);
+    memcpy(&result->star_tracker_measurement_noise, &data_received[24], 4);
+    result->use_sun_sensor = (data_received[28] & 0b00000001);
+    result->use_nadir_sensor = (data_received[28] & 0b00000010) >> 1;
+    result->use_css = (data_received[28] & 0b00000100) >> 2;
+    result->use_star_tracker = (data_received[28] & 0b00001000) >> 3;
+    result->nadir_sensor_terminator_test = (data_received[28] & 0b00010000) >> 4;
+    result->automatic_magnetometer_recovery = (data_received[28] & 0b00100000) >> 5;
+    result->magnetometer_mode = (data_received[28] & 0b11000000) >> 6;
+    result->magnetometer_selection_for_raw_mtm_tlm = (data_received[29] & 0b00000011);
+    result->automatic_estimation_transition_due_to_rate_sensor_errors = (data_received[29] & 0b00000100) >> 2;
+    result->wheel_30s_power_up_delay = (data_received[29] & 0b00001000) >> 3;
+    result->cam1_and_cam2_sampling_period = data_received[30];
 
-	// map temp buffer to struct
-	memcpy(&params.magnetometer_rate_filter_system_noise, &data_received[0], 4);
-	memcpy(&params.ekf_system_noise, &data_received[4], 4);
-	memcpy(&params.css_measurement_noise, &data_received[8], 4);
-	memcpy(&params.sun_sensor_measurement_noise, &data_received[12], 4);
-	memcpy(&params.nadir_sensor_measurement_noise, &data_received[16], 4);
-	memcpy(&params.magnetometer_measurement_noise, &data_received[20], 4);
-	memcpy(&params.star_tracker_measurement_noise, &data_received[24], 4);
-	params.use_sun_sensor = (data_received[28] & 0b00000001);
-	params.use_nadir_sensor = (data_received[28] & 0b00000010) >> 1;
-	params.use_css = (data_received[28] & 0b00000100) >> 2;
-	params.use_star_tracker = (data_received[28] & 0b00001000) >> 3;
-	params.nadir_sensor_terminator_test = (data_received[28] & 0b00010000) >> 4;
-	params.automatic_magnetometer_recovery = (data_received[28] & 0b00100000) >> 5;
-	params.magnetometer_mode = (data_received[28] & 0b11000000) >> 6;
-	params.magnetometer_selection_for_raw_mtm_tlm = (data_received[29] & 0b00000011);
-	params.automatic_estimation_transition_due_to_rate_sensor_errors = (data_received[29] & 0b00000100) >> 2;
-	params.wheel_30s_power_up_delay = (data_received[29] & 0b00001000) >> 3;
-	params.cam1_and_cam2_sampling_period = data_received[30];
-
-	return params;
+    return 0;
 }
+
 
 void ADCS_Set_ASGP4_Params(double incl_coefficient, double raan_coefficient, double ecc_coefficient, double aop_coefficient, double time_coefficient, double pos_coefficient, double maximum_position_error, ADCS_ASGP4_Filter asgp4_filter, double xp_coefficient, double yp_coefficient, uint8_t gps_roll_over, double position_sd, double velocity_sd, uint8_t min_satellites, double time_gain, double max_lag, uint16_t min_samples) {
 	uint8_t data_send[30] = {}; // from Table 209
@@ -745,35 +708,35 @@ void ADCS_Get_ASGP4_Params() {
 
 	ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_GET_AUGMENTED_SGP4_PARAMETERS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
-	ADCS_ASGP4_Params_Struct params = ADCS_Pack_to_ASGP4_Params(data_received);
+	ADCS_ASGP4_Params_Struct params;
+	ADCS_Pack_to_ASGP4_Params(data_received, &params);
 
 	WRITE_STRUCT_TO_MEMORY(params) // memory module function
 }
 
-ADCS_ASGP4_Params_Struct ADCS_Pack_to_ASGP4_Params(uint8_t* data_received) {
-	ADCS_ASGP4_Params_Struct params;
+uint8_t ADCS_Pack_to_ASGP4_Params(uint8_t* data_received, ADCS_ASGP4_Params_Struct* result) {
+    // map temp buffer to struct
+    result->incl_coefficient = ((double)(data_received[1] << 8 | data_received[0])) * 0.001;
+    result->raan_coefficient = ((double)(data_received[3] << 8 | data_received[2])) * 0.001;
+    result->ecc_coefficient = ((double)(data_received[5] << 8 | data_received[4])) * 0.001;
+    result->aop_coefficient = ((double)(data_received[7] << 8 | data_received[6])) * 0.001;
+    result->time_coefficient = ((double)(data_received[9] << 8 | data_received[8])) * 0.001;
+    result->pos_coefficient = ((double)(data_received[11] << 8 | data_received[10])) * 0.001;
+    result->maximum_position_error = ((double)data_received[12]) * 0.1;
+    result->asgp4_filter = (ADCS_ASGP4_Filter)data_received[13];
+    result->xp_coefficient = ((double)(data_received[17] << 24 | data_received[16] << 16 | data_received[15] << 8 | data_received[14])) * 0.0000001;
+    result->yp_coefficient = ((double)(data_received[21] << 24 | data_received[20] << 16 | data_received[19] << 8 | data_received[18])) * 0.0000001;
+    result->gps_roll_over = data_received[22];
+    result->position_sd = ((double)data_received[23]) * 0.1;
+    result->velocity_sd = ((double)data_received[24]) * 0.01;
+    result->min_satellites = data_received[25];
+    result->time_gain = ((double)data_received[26]) * 0.01;
+    result->max_lag = ((double)data_received[27]) * 0.01;
+    result->min_samples = (data_received[29] << 8 | data_received[28]);
 
-	// map temp buffer to struct
-	params.incl_coefficient = ((double)(data_received[1] << 8 | data_received[0])) * 0.001;
-	params.raan_coefficient = ((double)(data_received[3] << 8 | data_received[2])) * 0.001;
-	params.ecc_coefficient = ((double)(data_received[5] << 8 | data_received[4])) * 0.001;
-	params.aop_coefficient = ((double)(data_received[7] << 8 | data_received[6])) * 0.001;
-	params.time_coefficient = ((double)(data_received[9] << 8 | data_received[8])) * 0.001;
-	params.pos_coefficient = ((double)(data_received[11] << 8 | data_received[10])) * 0.001;
-	params.maximum_position_error = ((double)data_received[12]) * 0.1;
-	params.asgp4_filter = (ADCS_ASGP4_Filter)data_received[13];
-	params.xp_coefficient = ((double)(data_received[17] << 24 | data_received[16] << 16 | data_received[15] << 8 | data_received[14])) * 0.0000001;
-	params.yp_coefficient = ((double)(data_received[21] << 24 | data_received[20] << 16 | data_received[19] << 8 | data_received[18])) * 0.0000001;
-	params.gps_roll_over = data_received[22];
-	params.position_sd = ((double)data_received[23]) * 0.1;
-	params.velocity_sd = ((double)data_received[24]) * 0.01;
-	params.min_satellites = data_received[25];
-	params.time_gain = ((double)data_received[26]) * 0.01;
-	params.max_lag = ((double)data_received[27]) * 0.01;
-	params.min_samples = (data_received[29] << 8 | data_received[28]);
-
-	return params;
+    return 0;
 }
+
 
 void ADCS_Set_Tracking_Controller_Target_Reference(float lon, float lat, float alt) {
 	uint8_t data_send[12];
@@ -794,20 +757,19 @@ void ADCS_Get_Tracking_Controller_Target_Reference() {
 
 	ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_GET_TRACKING_CONTROLLER_TARGET_REFERENCE, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
-	ADCS_Tracking_Controller_Target_Struct ref = ADCS_Pack_to_Tracking_Controller_Target_Reference(data_received);
+	ADCS_Tracking_Controller_Target_Struct ref;
+	ADCS_Pack_to_Tracking_Controller_Target_Reference(data_received, &ref);
 
 	WRITE_STRUCT_TO_MEMORY(ref);
 }
 
-ADCS_Tracking_Controller_Target_Struct ADCS_Pack_to_Tracking_Controller_Target_Reference(uint8_t* data_received) {
-	ADCS_Tracking_Controller_Target_Struct ref;
+uint8_t ADCS_Pack_to_Tracking_Controller_Target_Reference(uint8_t* data_received, ADCS_Tracking_Controller_Target_Struct* ref) {
+    // map temp buffer to struct
+    memcpy(&ref->lon, &data_received[0], 4);
+    memcpy(&ref->lat, &data_received[4], 4);
+    memcpy(&ref->alt, &data_received[8], 4);
 
-	// map temp buffer to struct
-	memcpy(&ref.lon, &data_received[0], 4);
-	memcpy(&ref.lat, &data_received[4], 4);
-	memcpy(&ref.alt, &data_received[8], 4);
-
-	return ref;
+    return 0;
 }
 
 void ADCS_Set_Rate_Gyro_Config(ADCS_Axis_Select gyro1, ADCS_Axis_Select gyro2, ADCS_Axis_Select gyro3, double x_rate_offset, double y_rate_offset, double z_rate_offset, uint8_t rate_sensor_mult) {
@@ -832,27 +794,27 @@ void ADCS_Get_Rate_Gyro_Config() {
 
 	ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_GET_RATE_GYRO_CONFIG, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
-	ADCS_Rate_Gyro_Config_Struct config = ADCS_Pack_to_Rate_Gyro_Config(data_received);
+	ADCS_Rate_Gyro_Config_Struct config;
+	ADCS_Pack_to_Rate_Gyro_Config(data_received, &config);
 
 	WRITE_STRUCT_TO_MEMORY(config);
 }
 
-ADCS_Rate_Gyro_Config_Struct ADCS_Pack_to_Rate_Gyro_Config(uint8_t* data_received) {
-	ADCS_Rate_Gyro_Config_Struct config;
+uint8_t ADCS_Pack_to_Rate_Gyro_Config(uint8_t* data_received, ADCS_Rate_Gyro_Config_Struct* result) {
+    result->gyro1 = data_received[0];
+    result->gyro2 = data_received[1];
+    result->gyro3 = data_received[2];
 
-	// map temp buffer to struct
-	config.gyro1 = data_received[0];
-	config.gyro2 = data_received[1];
-	config.gyro3 = data_received[2];
+	// Raw parameter value is obtained using the formula: (formatted value) [deg/s] = RAWVAL*0.001
+    result->x_rate_offset = ((double)(data_received[4] << 8 | data_received[3])) * 0.001;
+    result->y_rate_offset = ((double)(data_received[6] << 8 | data_received[5])) * 0.001;
+    result->z_rate_offset = ((double)(data_received[8] << 8 | data_received[7])) * 0.001;
 
-	config.x_rate_offset = ((double)(data_received[4] << 8 | data_received[3])) * 0.001;
-	config.y_rate_offset = ((double)(data_received[6] << 8 | data_received[5])) * 0.001;
-	config.z_rate_offset = ((double)(data_received[8] << 8 | data_received[7])) * 0.001;
+    result->rate_sensor_mult = data_received[9];
 
-	config.rate_sensor_mult = data_received[9];
-
-	return config;
+    return 0;
 }
+
 
 
 // TODO: jump here
@@ -877,7 +839,7 @@ void ADCS_I2C_telecommand_wrapper(uint8_t id, uint8_t* data, uint32_t data_lengt
 
 		// Poll Acknowledge Telemetry Format until the Processed flag equals 1.
 		while (!ack.processed) {
-			ack = ADCS_TC_Ack();
+			ADCS_TC_Ack(&ack);
 		}
 
 		// Confirm telecommand validity by checking the TC Error flag of the last read TC Acknowledge Telemetry Format.

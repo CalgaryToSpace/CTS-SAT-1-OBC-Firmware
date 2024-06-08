@@ -6,7 +6,6 @@
  */
 
 #include "main.h"
-#include "adcs_ids.h"
 #include <stdbool.h>
 
 #ifndef INC_ADCS_TYPES_H_
@@ -234,9 +233,9 @@ typedef struct ADCS_Rated_Sensor_Rates_Struct {
 } ADCS_Rated_Sensor_Rates_Struct;
 
 typedef struct ADCS_Wheel_Speed_Struct {
-	uint8_t x; 
-	uint8_t y;
-	uint8_t z; 
+	int16_t x; 
+	int16_t y;
+	int16_t z; 
 } ADCS_Wheel_Speed_Struct;
 
 typedef struct ADCS_Magnetorquer_Command_Struct {
@@ -366,26 +365,26 @@ void PRINT_STRING_UART(UART_HandleTypeDef *huart, void *string);
 void PRINT_NEW_LINE(UART_HandleTypeDef *huart);
 
 // ADCS packer functions
-ADCS_TC_Ack_Struct ADCS_Pack_to_Ack(uint8_t* data_received);
-ADCS_ID_Struct ADCS_Pack_to_Identification(uint8_t* data_received);
-ADCS_Boot_Running_Status_Struct ADCS_Pack_to_Program_Status(uint8_t* data_received);
-ADCS_Comms_Status_Struct ADCS_Pack_to_Comms_Status(uint8_t *data_received);
-ADCS_Power_Control_Struct ADCS_Pack_to_Power_Control(uint8_t* data_received);
-ADCS_Angular_Rates_Struct ADCS_Pack_to_Angular_Rates(uint8_t* data_received);
-ADCS_LLH_Position_Struct ADCS_Pack_to_LLH_Position(uint8_t* data_received);
-ADCS_Set_Unix_Time_Save_Mode_Struct ADCS_Pack_to_Unix_Time_Save_Mode(uint8_t* data_received);
-ADCS_Orbit_Params_Struct ADCS_Pack_to_Orbit_Params(uint8_t* data_received);
-ADCS_Rated_Sensor_Rates_Struct ADCS_Pack_to_Rated_Sensor_Rates(uint8_t* data_received);
-ADCS_Wheel_Speed_Struct ADCS_Pack_to_Wheel_Speed(uint8_t* data_received);
-ADCS_Magnetorquer_Command_Struct ADCS_Pack_to_Magnetorquer_Command_Time(uint8_t* data_received);
-ADCS_Raw_Mag_TLM_Struct ADCS_Pack_to_Raw_Magnetometer_Values(uint8_t* data_received);
-ADCS_Fine_Angular_Rates_Struct ADCS_Pack_to_Fine_Angular_Rates(uint8_t* data_received);
-ADCS_Magnetometer_Config_Struct ADCS_Pack_to_Magnetometer_Config(uint8_t* data_received);
-ADCS_Commanded_Angles_Struct ADCS_Pack_to_Commanded_Attitude_Angles(uint8_t* data_received);
-ADCS_Estimation_Params_Struct ADCS_Pack_to_Estimation_Params(uint8_t* data_received);
-ADCS_ASGP4_Params_Struct ADCS_Pack_to_ASGP4_Params(uint8_t* data_received);
-ADCS_Tracking_Controller_Target_Struct ADCS_Pack_to_Tracking_Controller_Target_Reference(uint8_t* data_received);
-ADCS_Rate_Gyro_Config_Struct ADCS_Pack_to_Rate_Gyro_Config(uint8_t* data_received);
+uint8_t ADCS_Pack_to_Ack(uint8_t* data_received, ADCS_TC_Ack_Struct *result);
+uint8_t ADCS_Pack_to_Identification(uint8_t* data_received, ADCS_ID_Struct *result);
+uint8_t ADCS_Pack_to_Program_Status(uint8_t* data_received, ADCS_Boot_Running_Status_Struct *result);
+uint8_t ADCS_Pack_to_Comms_Status(uint8_t* data_received, ADCS_Comms_Status_Struct *result);
+uint8_t ADCS_Pack_to_Power_Control(uint8_t* data_received, ADCS_Power_Control_Struct *result);
+uint8_t ADCS_Pack_to_Angular_Rates(uint8_t* data_received, ADCS_Angular_Rates_Struct *result);
+uint8_t ADCS_Pack_to_LLH_Position(uint8_t* data_received, ADCS_LLH_Position_Struct *result);
+uint8_t ADCS_Pack_to_Unix_Time_Save_Mode(uint8_t* data_received, ADCS_Set_Unix_Time_Save_Mode_Struct *result);
+uint8_t ADCS_Pack_to_Orbit_Params(uint8_t* data_received, ADCS_Orbit_Params_Struct *result);
+uint8_t ADCS_Pack_to_Rated_Sensor_Rates(uint8_t* data_received, ADCS_Rated_Sensor_Rates_Struct *result);
+uint8_t ADCS_Pack_to_Wheel_Speed(uint8_t* data_received, ADCS_Wheel_Speed_Struct *result);
+uint8_t ADCS_Pack_to_Magnetorquer_Command_Time(uint8_t* data_received, ADCS_Magnetorquer_Command_Struct *result);
+uint8_t ADCS_Pack_to_Raw_Magnetometer_Values(uint8_t* data_received, ADCS_Raw_Mag_TLM_Struct *result);
+uint8_t ADCS_Pack_to_Fine_Angular_Rates(uint8_t* data_received, ADCS_Fine_Angular_Rates_Struct *result);
+uint8_t ADCS_Pack_to_Magnetometer_Config(uint8_t* data_received, ADCS_Magnetometer_Config_Struct *result);
+uint8_t ADCS_Pack_to_Commanded_Attitude_Angles(uint8_t* data_received, ADCS_Commanded_Angles_Struct *result);
+uint8_t ADCS_Pack_to_Estimation_Params(uint8_t* data_received, ADCS_Estimation_Params_Struct *result);
+uint8_t ADCS_Pack_to_ASGP4_Params(uint8_t* data_received, ADCS_ASGP4_Params_Struct *result);
+uint8_t ADCS_Pack_to_Tracking_Controller_Target_Reference(uint8_t* data_received, ADCS_Tracking_Controller_Target_Struct *result);
+uint8_t ADCS_Pack_to_Rate_Gyro_Config(uint8_t* data_received, ADCS_Rate_Gyro_Config_Struct *result);
 
 // TODO: packers
 
@@ -400,7 +399,7 @@ void ADCS_Clear_Errors();
 void ADCS_Attitude_Control_Mode(ADCS_Control_Mode mode, uint16_t timeout);
 void ADCS_Stop_Reaction_Wheels();
 void ADCS_Attitude_Estimation_Mode(ADCS_Estimation_Mode mode);
-ADCS_TC_Ack_Struct ADCS_TC_Ack();
+uint8_t ADCS_TC_Ack(ADCS_TC_Ack_Struct *ack);
 void ADCS_Run_Once();
 void ADCS_Set_Magnetometer_Mode(ADCS_Magnetometer_Mode mode);
 void ADCS_Set_Magnetorquer_Output(double x_duty, double y_duty, double z_duty);
