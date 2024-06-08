@@ -2,6 +2,7 @@
 #define __INCLUDE_GUARD__MAIN_H_
 
 #include <termios.h>
+#include <ncurses.h>
 
 #define TCMD_BUFFER_SIZE 256
 #define RECEIVE_BUFFER_SIZE 512
@@ -15,6 +16,15 @@ typedef struct
     char *device_path;
     char *command_prefix;
 
+    WINDOW *main_window;
+    WINDOW *command_window;
+
+    bool satellite_connected;
+    int satellite_link;
+
 } GSE_program_state_t;
+
+int init_terminal_screen(GSE_program_state_t *program_state);
+int connect_to_satellite(GSE_program_state_t *program_state);
 
 #endif // __INCLUDE_GUARD__MAIN_H_

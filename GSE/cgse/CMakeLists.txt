@@ -8,7 +8,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 find_library(CURSES ncursesw HINTS /usr/local/lib)
 include_directories(/usr/local/include)
 
-add_executable(cgse main.c)
+add_executable(cgse main.c command_history.c)
 target_link_libraries(cgse ${CURSES})
 
 # Add more include directories if needed

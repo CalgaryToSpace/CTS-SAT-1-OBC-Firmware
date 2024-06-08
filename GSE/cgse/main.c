@@ -1,5 +1,7 @@
 #include "main.h"
 
+#include "command_history.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -21,8 +23,6 @@
 
 // TODO use curses to get an output window and an input window?
 
-WINDOW *main_window = NULL;
-WINDOW *command_window = NULL;
 
 volatile sig_atomic_t running = 1;
 
@@ -35,51 +35,272 @@ static void interrupthandler(int sig)
 int main(int argc, char **argv)
 {
 
+    int status = 0;
+
     GSE_program_state_t program_state = {0};
     program_state.baud_rate = 115200;
     program_state.command_prefix = "CTS1";
 
-    if (argc != 2)
+    if (argc > 2)
     {
-        fprintf(stderr, "usage: %s <devicepath> \n", argv[0]);
+        fprintf(stderr, "usage: %s [<devicepath>] \n", argv[0]);
         return EXIT_FAILURE;
     }
-
-    program_state.device_path = argv[1];
 
     struct sigaction intact = {0};
     intact.sa_handler = interrupthandler;
     sigaction(SIGINT, &intact, NULL);
 
-    // window setup
+    status = init_terminal_screen(&program_state);
+    if (status != 0)
+    {
+        endwin();
+        fprintf(stderr, "Unable to initialize ncurses screen.\n");
+        return EXIT_FAILURE;
+    }
+    
+    if (argc == 2)
+    {
+        program_state.device_path = argv[1];
+        status = connect_to_satellite(&program_state);
+        if (status != 0)
+        {
+            wprintw(program_state.main_window, "Unable to connct to satellite using \"%s\".\n", program_state.device_path);
+            // Do not quit - can try again later
+        }
+        program_state.satellite_connected = true;
+
+    }
+
+    // Set up a while loop, with a sleep to reduce processor overhead
+    uint8_t receive_buffer[RECEIVE_BUFFER_SIZE] = {0};
+    ssize_t bytes_received = 0;
+    int y = 0;
+    int x = 0;
+    int key = 0;
+    char command_buffer[COMMAND_BUFFER_SIZE] = {0};
+    int command_index = 0;
+    ssize_t bytes_sent = 0;
+
+    char telecommand_buffer[TCMD_BUFFER_SIZE] = {0};
+    mvwprintw(program_state.command_window, 0, 0, "%s> %s", program_state.command_prefix, command_buffer);
+    wrefresh(program_state.command_window);
+    int line = 0;
+    int col = 0;
+    // Current line being edited
+    CGSE_store_command("");
+    size_t command_history_index = 0;
+
+    while(running)
+    {
+        // select() to see if data are ready?
+        memset(receive_buffer, 0, RECEIVE_BUFFER_SIZE);
+        if (program_state.satellite_connected)
+        {
+            bytes_received = read(program_state.satellite_link, receive_buffer, RECEIVE_BUFFER_SIZE);
+        }
+        else 
+        {
+            bytes_received = 0;
+        }
+        if (bytes_received > 0)
+        {
+            wprintw(program_state.main_window, "%s", receive_buffer);
+        }
+        wrefresh(program_state.main_window);
+        wrefresh(program_state.command_window);
+
+        struct timeval tv = {0};
+        gettimeofday(&tv, NULL);
+        double t1 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
+        double t2 = t1;
+
+        getyx(program_state.command_window, line, col);
+
+        while ((key = wgetch(program_state.command_window)) != ERR && (t2 - t1) < 0.5)
+        {
+            if (key == '\b' || key == 127 || key == KEY_BACKSPACE)
+            {
+                if (command_index > 0)
+                {
+                    command_index--;
+                    command_buffer[command_index] = '\0';
+                    command_history_index = CGSE_number_of_stored_commands() - 1;
+                    CGSE_remove_command(command_history_index);
+                    CGSE_store_command(command_buffer);
+                }
+            }
+            else if (key == KEY_UP )
+            {
+                wprintw(program_state.main_window, "checking if there is a command at command_history_current_command_number %ld\n", command_history_index);
+                if (command_history_index > 0)
+                {
+                    char *previous_command = CGSE_recall_command((size_t)command_history_index - 1);
+                    if (previous_command != NULL)
+                    {
+                        snprintf(command_buffer, COMMAND_BUFFER_SIZE, "%s", previous_command);
+                        command_history_index--;
+                        command_index = (int)strlen(previous_command);
+                    }
+                }
+                wprintw(program_state.main_window, "command_history_index %ld\n", command_history_index);
+            }
+            else if (key == KEY_DOWN )
+            {
+                if (command_history_index < CGSE_number_of_stored_commands())
+                {
+                    char *next_command = CGSE_recall_command((size_t)(command_history_index+1));
+                    if (next_command != NULL)
+                    {
+                        snprintf(command_buffer, COMMAND_BUFFER_SIZE, "%s", next_command);
+                        command_history_index++;
+                        command_index = (int)strlen(next_command);
+                    }
+                }
+                wprintw(program_state.main_window, "command_history_index %ld\n", command_history_index);
+            }
+            else if (command_index >= COMMAND_BUFFER_SIZE - 2)
+            {
+                command_index = COMMAND_BUFFER_SIZE - 1;
+                command_buffer[command_index] = '\0';
+            }
+            else if (key != '\n') 
+            {
+                command_buffer[command_index++] = key;
+                command_buffer[command_index] = '\0';
+                CGSE_remove_command(command_history_index);
+                CGSE_store_command(command_buffer);
+            }
+
+            wmove(program_state.command_window, line, 0);
+            wclrtoeol(program_state.command_window);
+            wprintw(program_state.command_window, "%s> %s", program_state.command_prefix, command_buffer);
+
+            if (key == '\n')
+            {
+                wprintw(program_state.command_window, "\n%s> ", program_state.command_prefix);
+                if (strcmp(".exit", command_buffer) == 0 || strcmp(".quit", command_buffer) == 0)
+                {
+                    running = 0;
+                }
+                else if (strcmp("?", command_buffer) == 0 || strcmp(".help", command_buffer) == 0)
+                {
+                    wprintw(program_state.command_window, "Available commands:\n");
+                    wprintw(program_state.command_window, "%30s - %s\n", "? or .help", "show available commands");
+                    wprintw(program_state.command_window, "%30s - %s\n", ".quit or .exit", "quit terminal");
+
+                    wprintw(program_state.command_window, "\n%s> ", program_state.command_prefix);
+                    // Reset command 
+                    command_index = 0;
+                    command_buffer[0] = '\0';
+                }
+                else 
+                {
+                    if (command_index > COMMAND_BUFFER_SIZE - 1)
+                    {
+                        command_index = COMMAND_BUFFER_SIZE - 1;
+                    }
+                    command_buffer[command_index] = '\0';
+                    CGSE_remove_command(CGSE_number_of_stored_commands()-1);
+                    status = CGSE_store_command(command_buffer);
+                    if (status == 0)
+                    {
+                        // This number of stored commands will be at least 1
+                        command_history_index = (ssize_t)CGSE_number_of_stored_commands() - 1;
+                        wprintw(program_state.main_window, "command_history_index %ld\n", command_history_index);
+                    }
+                    else
+                    {
+                        // TODO: print message on a status line that command 
+                        // could not be stored to command history
+                        // Let's not fail here, in case some critical task
+                        // needs to be completed 
+                    }
+                    // write...
+                    snprintf(telecommand_buffer, TCMD_BUFFER_SIZE, "%s+%s", program_state.command_prefix, command_buffer);
+                    if (strlen(command_buffer) > 0 && command_buffer[0] != '.' && program_state.satellite_connected)
+                    {
+                        bytes_sent = write(program_state.satellite_link, telecommand_buffer, strlen(telecommand_buffer));
+                    }
+                    
+                    // Reset command 
+                    command_index = 0;
+                    command_buffer[0] = '\0';
+                    CGSE_store_command(command_buffer);
+                    command_history_index = CGSE_number_of_stored_commands() - 1;
+                }
+            }
+            gettimeofday(&tv, NULL);
+            t2 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
+        }
+
+        wrefresh(program_state.command_window);
+        usleep(IO_WAIT_USEC);
+        
+    }
+
+cleanup:
+    clear();
+    refresh();
+    if (program_state.satellite_connected && program_state.satellite_link > 0)
+    {
+        close(program_state.satellite_link);
+    }
+
+    endwin();
+
+
+    fprintf(stdout, "Byte!\n");
+
+    return EXIT_SUCCESS;
+}
+
+int init_terminal_screen(GSE_program_state_t *program_state)
+{
+    int status = 0;
     setlocale(LC_ALL, "");
     initscr();
-    noecho();
-    raw();
-    intrflush(NULL, false);
+    status |= noecho();
+    status |= raw();
+    status |= intrflush(NULL, false);
 
-    main_window = newwin(15, 0, 0, 0);
-    keypad(main_window, TRUE);
-    nodelay(main_window, TRUE);
-    scrollok(main_window, TRUE);
-    idlok(main_window, TRUE);
+    program_state->main_window = newwin(15, 0, 0, 0);
+    if (program_state->main_window == NULL)
+    {
+        status |= 1;
+    }
+    status |= keypad(program_state->main_window, TRUE);
+    status |= nodelay(program_state->main_window, TRUE);
+    status |= scrollok(program_state->main_window, TRUE);
+    status |= idlok(program_state->main_window, TRUE);
 
-    command_window = newwin(0, 0, 16, 0);
-    keypad(command_window, TRUE);
-    nodelay(command_window, TRUE);
-    scrollok(command_window, TRUE);
-    idlok(command_window, TRUE);
+    program_state->command_window = newwin(0, 0, 16, 0);
+    if (program_state->command_window == NULL)
+    {
+        status |= 1;
+    }
+    status |= keypad(program_state->command_window, TRUE);
+    status |= nodelay(program_state->command_window, TRUE);
+    status |= scrollok(program_state->command_window, TRUE);
+    status |= idlok(program_state->command_window, TRUE);
 
-    wprintw(main_window, "Connecting to \"%s\" @ %lu...", program_state.device_path, program_state.baud_rate);
-    wrefresh(main_window);
+    return status;
+
+}
+
+int connect_to_satellite(GSE_program_state_t *program_state)
+{
+
+    wprintw(program_state->main_window, "Connecting to \"%s\" @ %lu...", program_state->device_path, program_state->baud_rate);
+    wrefresh(program_state->main_window);
 
     // Connect and set link parameters
-    int sat_link = open(program_state.device_path, O_RDWR | O_NONBLOCK | O_NOCTTY);
+    int sat_link = open(program_state->device_path, O_RDWR | O_NONBLOCK | O_NOCTTY);
     if (sat_link == -1)
     {
         endwin();
         fprintf(stderr, "Unable to open satellite link.\n");
-        return EXIT_FAILURE;
+        return -1;
     }
 
     struct termios sat_link_params;
@@ -87,9 +308,9 @@ int main(int argc, char **argv)
     if (result != 0)
     {
         fprintf(stderr, "Unable to get satellite link information.\n");
-        goto cleanup;
+        return -1;
     }
-    cfsetspeed(&sat_link_params, program_state.baud_rate);
+    cfsetspeed(&sat_link_params, program_state->baud_rate);
     sat_link_params.c_cflag &= ~PARENB;
     sat_link_params.c_cflag &= ~CSTOPB;
     sat_link_params.c_cflag &= ~CSIZE;
@@ -104,129 +325,14 @@ int main(int argc, char **argv)
     if (result != 0)
     {
         fprintf(stderr, "Unable to set satellite link baud rate.\n");
-        goto cleanup;
+        return -1;
     }
     tcflush(sat_link, TCIOFLUSH);
     
-    wprintw(main_window, "connected.\n");
-    wrefresh(main_window);
+    wprintw(program_state->main_window, "connected.\n");
+    wrefresh(program_state->main_window);
 
+    program_state->satellite_link = sat_link;
 
-    // Set up a while loop, with a sleep to reduce processor overhead
-    uint8_t receive_buffer[RECEIVE_BUFFER_SIZE] = {0};
-    ssize_t bytes_received = 0;
-    int y = 0;
-    int x = 0;
-    int key = 0;
-    char command_buffer[COMMAND_BUFFER_SIZE] = {0};
-    int command_index = 0;
-    ssize_t bytes_sent = 0;
-
-    char telecommand_buffer[TCMD_BUFFER_SIZE] = {0};
-    mvwprintw(command_window, 0, 0, "%s> %s", program_state.command_prefix, command_buffer);
-    wrefresh(command_window);
-    int line = 0;
-    int col = 0;
-
-    while(running)
-    {
-        // select() to see if data are ready?
-        memset(receive_buffer, 0, RECEIVE_BUFFER_SIZE);
-        bytes_received = read(sat_link, receive_buffer, RECEIVE_BUFFER_SIZE);
-        if (bytes_received > 0)
-        {
-            wprintw(main_window, "%s", receive_buffer);
-            wrefresh(main_window);
-            wrefresh(command_window);
-        }
-
-        struct timeval tv = {0};
-        gettimeofday(&tv, NULL);
-        double t1 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
-        double t2 = t1;
-
-        getyx(command_window, line, col);
-
-        while ((key = wgetch(command_window)) != ERR && (t2 - t1) < 0.5)
-        {
-            if (key == '\b' || key == 127 || key == KEY_BACKSPACE)
-            {
-                if (command_index > 0)
-                {
-                    command_index--;
-                    command_buffer[command_index] = '\0';
-                }
-            }
-            else if (command_index >= COMMAND_BUFFER_SIZE - 2)
-            {
-                command_index = COMMAND_BUFFER_SIZE - 1;
-            }
-            else if (key != '\n') 
-            {
-                command_buffer[command_index++] = key;
-            }
-            command_buffer[command_index] = '\0';
-            wmove(command_window, line, 0);
-            wclrtoeol(command_window);
-            wprintw(command_window, "%s> %s", program_state.command_prefix, command_buffer);
-            if (key == '\n')
-            {
-                wprintw(command_window, "\n%s> ", program_state.command_prefix);
-                if (strcmp(".exit", command_buffer) == 0 || strcmp(".quit", command_buffer) == 0)
-                {
-                    running = 0;
-                }
-                else if (strcmp("?", command_buffer) == 0 || strcmp(".help", command_buffer) == 0)
-                {
-                    wprintw(command_window, "Available commands:\n");
-                    wprintw(command_window, "%30s - %s\n", "? or .help", "show available commands");
-                    wprintw(command_window, "%30s - %s\n", ".quit or .exit", "quit terminal");
-
-                    wprintw(command_window, "\n%s> ", program_state.command_prefix);
-                    // Reset command 
-                    command_index = 0;
-                    command_buffer[0] = '\0';
-                }
-                else 
-                {
-                    if (command_index > COMMAND_BUFFER_SIZE - 1)
-                    {
-                        command_index = COMMAND_BUFFER_SIZE - 1;
-                    }
-                    command_buffer[command_index] = '\0';
-                    // write...
-                    snprintf(telecommand_buffer, TCMD_BUFFER_SIZE, "%s+%s", program_state.command_prefix, command_buffer);
-                    if (strlen(command_buffer) > 0 && command_buffer[0] != '.')
-                    {
-                        bytes_sent = write(sat_link, telecommand_buffer, strlen(telecommand_buffer));
-                    }
-                    
-                    // Reset command 
-                    command_index = 0;
-                    command_buffer[0] = '\0';
-                }
-            }
-            gettimeofday(&tv, NULL);
-            t2 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
-        }
-
-        wrefresh(command_window);
-        usleep(IO_WAIT_USEC);
-        
-    }
-
-cleanup:
-    clear();
-    refresh();
-    if (sat_link > 0)
-    {
-        close(sat_link);
-    }
-
-    endwin();
-
-
-    fprintf(stdout, "Byte!\n");
-
-    return EXIT_SUCCESS;
+    return 0;
 }
