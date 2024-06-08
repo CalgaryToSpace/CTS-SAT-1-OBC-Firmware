@@ -12,7 +12,7 @@
 #include <string.h>
 #include <stdio.h>
 
-volatile int TASK_heartbeat_is_enabled = 1;
+volatile uint8_t TASK_heartbeat_is_on = 1;
 
 void TASK_debug_print_heartbeat(void *argument) {
 	TASK_HELP_start_of_task();
@@ -20,8 +20,7 @@ void TASK_debug_print_heartbeat(void *argument) {
 	debug_uart_print_str("TASK_debug_print_heartbeat() -> started (booted)\n");
 	osDelay(100);
 	while (1) {
-        if (TASK_heartbeat_is_enabled)
-        {
+        if (TASK_heartbeat_is_on) {
             debug_uart_print_str("TASK_debug_print_heartbeat() -> top of while(1)\n");
             HAL_GPIO_TogglePin(PIN_LED_DEVKIT_LD2_GPIO_Port, PIN_LED_DEVKIT_LD2_Pin);
         }
