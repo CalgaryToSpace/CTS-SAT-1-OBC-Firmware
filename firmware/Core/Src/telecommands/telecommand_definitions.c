@@ -66,9 +66,24 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 0,
     },
     {
-        .tcmd_name = "flash_read_as_hex",
-        .tcmd_func = TCMDEXEC_flash_read_as_hex,
+        .tcmd_name = "flash_each_is_reachable",
+        .tcmd_func = TCMDEXEC_flash_each_is_reachable,
+        .number_of_args = 0,
+    },
+    {
+        .tcmd_name = "flash_read_hex",
+        .tcmd_func = TCMDEXEC_flash_read_hex,
         .number_of_args = 3,
+    },
+    {
+        .tcmd_name = "flash_write_hex",
+        .tcmd_func = TCMDEXEC_flash_write_hex,
+        .number_of_args = 3,
+    },
+    {
+        .tcmd_name = "flash_erase",
+        .tcmd_func = TCMDEXEC_flash_erase,
+        .number_of_args = 2,
     },
     // ****************** END SECTION: flash_telecommand_defs ******************
 

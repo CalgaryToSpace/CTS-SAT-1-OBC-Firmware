@@ -78,53 +78,60 @@ uint8_t TCMD_extract_uint64_arg(const char *str, uint32_t str_len, uint8_t arg_i
 }
 
 /// @brief Extracts the nth comma-separated argument from the input string, assuming it's a string
-/// @param str Input string
-/// @param str_len Length of the input string
+/// @param str Input string (null-terminated)
 /// @param arg_index Index of the argument to extract (0-based)
-/// @param result Pointer to the result
+/// @param result Pointer to the result, to be filled with the extracted string (null-terminated)
+/// @param result_max_len Maximum length of the result
 /// @return 0 if successful, 1 if the string is empty, 2 if the string does not contain enough arguments
 ///         3 for other error
-uint8_t TCMD_extract_string_arg(const char *str, uint32_t str_len, uint8_t arg_index, char **result) {
+uint8_t TCMD_extract_string_arg(const char *str, uint8_t arg_index, char *result, uint16_t result_max_len) {
+    const uint16_t str_len = strlen(str);
     if (str_len == 0) {
         return 1;
     }
 
-    // FIXME: This function needs to be converted to using the stack. The result should be a single pointer.
+    uint32_t arg_count = 0;
+    uint32_t i = 0;
+    uint32_t start_index = 0;
+    for (; i < str_len; i++) {
+        if (str[i] == ',') {
+            if (arg_count == arg_index) {
+                break;
+            }
 
-    char *copy = strdup(str); // Make a copy of the input string
-    if (copy == NULL)
-        return 3;
-
-    char *token = strtok(copy, ",");
-    int current_index = 0;
-    while (token != NULL && current_index < arg_index) {
-        token = strtok(NULL, ",");
-        current_index++;
+            arg_count++;
+            start_index = i + 1;
+        }
     }
 
-    if (token == NULL) {
-        free(copy);
+    if (arg_count < arg_index) {
         return 2;
     }
 
-    // Trim leading and trailing whitespace from the token
-    while (*token == ' ' || *token == '\t') {
-        token++;
-    }
-    size_t token_len = strlen(token);
-    while (token_len > 0 && (token[token_len - 1] == ' ' || token[token_len - 1] == '\t')) {
-        token_len--;
-    }
-
-    *result = (char *)malloc(token_len + 1);
-    if (*result == NULL) {
-        free(copy);
+    uint32_t end_index = i;
+    if (end_index - start_index >= result_max_len) {
         return 3;
     }
-    
-    strncpy(*result, token, token_len);
-    (*result)[token_len] = '\0';
 
-    free(copy);
+    // Trim leading whitespace
+    while (start_index < end_index && (str[start_index] == ' ' || str[start_index] == '\t')) {
+        start_index++;
+    }
+
+    // Trim trailing whitespace
+    while (end_index > start_index && (str[end_index - 1] == ' ' || str[end_index - 1] == '\t')) {
+        end_index--;
+    }
+
+    uint32_t token_len = end_index - start_index;
+
+    if (token_len >= result_max_len) {
+        // The argument is too long for the result buffer.
+        return 3;
+    }
+
+    strncpy(result, &str[start_index], token_len);
+    result[token_len] = '\0';
+
     return 0; // Successful extraction
 }

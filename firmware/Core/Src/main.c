@@ -27,7 +27,7 @@
 #include "debug_tools/debug_uart.h"
 #include "rtos_tasks/rtos_tasks.h"
 #include "uart_handler/uart_handler.h"
-#include "littlefs/littlefs_helper.h"
+#include "littlefs/flash_driver.h"
 
 /* USER CODE END Includes */
 
@@ -159,6 +159,8 @@ int main(void)
 
   // start the callback interrupts for the UART channels
   UART_init_uart_handlers();
+  
+  FLASH_deactivate_chip_select();
 
   /* USER CODE END 2 */
 
