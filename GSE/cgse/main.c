@@ -43,7 +43,7 @@ int main(int argc, char **argv)
 
     if (argc > 2)
     {
-        fprintf(stderr, "usage: %s [<devicepath>] \n", argv[0]);
+        fprintf(stderr, "usage: %s [<device-path>] \n", argv[0]);
         return EXIT_FAILURE;
     }
 
@@ -65,10 +65,13 @@ int main(int argc, char **argv)
         status = connect_to_satellite(&program_state);
         if (status != 0)
         {
-            wprintw(program_state.main_window, "Unable to connct to satellite using \"%s\".\n", program_state.device_path);
+            wprintw(program_state.command_window, "\n Unable to connect to satellite using \"%s\"\n", program_state.device_path);
             // Do not quit - can try again later
         }
-        program_state.satellite_connected = true;
+        else
+        {
+            program_state.satellite_connected = true;
+        }
 
     }
 
@@ -83,7 +86,7 @@ int main(int argc, char **argv)
     ssize_t bytes_sent = 0;
 
     char telecommand_buffer[TCMD_BUFFER_SIZE] = {0};
-    mvwprintw(program_state.command_window, 0, 0, "%s> %s", program_state.command_prefix, command_buffer);
+    wprintw(program_state.command_window, "%s> %s", program_state.command_prefix, command_buffer);
     wrefresh(program_state.command_window);
     int line = 0;
     int col = 0;
@@ -132,7 +135,6 @@ int main(int argc, char **argv)
             }
             else if (key == KEY_UP )
             {
-                wprintw(program_state.main_window, "checking if there is a command at command_history_current_command_number %ld\n", command_history_index);
                 if (command_history_index > 0)
                 {
                     char *previous_command = CGSE_recall_command((size_t)command_history_index - 1);
@@ -143,7 +145,6 @@ int main(int argc, char **argv)
                         command_index = (int)strlen(previous_command);
                     }
                 }
-                wprintw(program_state.main_window, "command_history_index %ld\n", command_history_index);
             }
             else if (key == KEY_DOWN )
             {
@@ -157,7 +158,6 @@ int main(int argc, char **argv)
                         command_index = (int)strlen(next_command);
                     }
                 }
-                wprintw(program_state.main_window, "command_history_index %ld\n", command_history_index);
             }
             else if (command_index >= COMMAND_BUFFER_SIZE - 2)
             {
@@ -168,6 +168,7 @@ int main(int argc, char **argv)
             {
                 command_buffer[command_index++] = key;
                 command_buffer[command_index] = '\0';
+                command_history_index = CGSE_number_of_stored_commands() - 1;
                 CGSE_remove_command(command_history_index);
                 CGSE_store_command(command_buffer);
             }
@@ -178,17 +179,71 @@ int main(int argc, char **argv)
 
             if (key == '\n')
             {
-                wprintw(program_state.command_window, "\n%s> ", program_state.command_prefix);
+                CGSE_remove_command(CGSE_number_of_stored_commands()-1);
+                status = CGSE_store_command(command_buffer);
+                command_history_index = (ssize_t)CGSE_number_of_stored_commands() - 1;
                 if (strcmp(".exit", command_buffer) == 0 || strcmp(".quit", command_buffer) == 0)
                 {
                     running = 0;
                 }
                 else if (strcmp("?", command_buffer) == 0 || strcmp(".help", command_buffer) == 0)
                 {
-                    wprintw(program_state.command_window, "Available commands:\n");
+                    wprintw(program_state.command_window, "\n Available commands:\n");
                     wprintw(program_state.command_window, "%30s - %s\n", "? or .help", "show available commands");
                     wprintw(program_state.command_window, "%30s - %s\n", ".quit or .exit", "quit terminal");
+                    wprintw(program_state.command_window, "\n");
+                    wprintw(program_state.command_window, "%30s - %s\n", ".connect <device-path>", "establish as serial link to the satellite <device-path>");
 
+                    wprintw(program_state.command_window, "\n%s> ", program_state.command_prefix);
+                    // Reset command 
+                    command_index = 0;
+                    command_buffer[0] = '\0';
+                }
+                else if (command_buffer[0] == '.')
+                {
+                    // TODO search terminal command list for this command 
+                    char *cmd_to_check = ".connect";
+                    if (strncmp(cmd_to_check, command_buffer, strlen(cmd_to_check)) == 0)
+                    {
+                        // Based on "man strsep" example
+                        char **ap, *arg_vector[3];
+                        char *input_string = command_buffer;
+                        int n_connect_args = 0;
+                        for (ap = arg_vector; (*ap = strsep(&input_string, " ")) != NULL;)
+                        {
+                            if (**ap != '\0')
+                            {
+                                n_connect_args++;
+                                if (++ap >= &arg_vector[3])
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                        if (n_connect_args == 2)
+                        {
+                            program_state.device_path = arg_vector[1];
+                            status = connect_to_satellite(&program_state);
+                            if (status != 0)
+                            {
+                                wprintw(program_state.command_window, "\n Unable to connect to satellite using \"%s\"", program_state.device_path);
+                                // Do not quit - can try again later
+                            }
+                            else 
+                            {
+                                program_state.satellite_connected = true;
+                            }
+                        }
+                        else 
+                        {
+                            wprintw(program_state.command_window, "\n Usage: .connect <device-path>");
+                        }
+                    }
+                    else 
+                    {
+                        wprintw(program_state.command_window, "\n Unrecognized terminal command");
+                        wrefresh(program_state.command_window);
+                    }
                     wprintw(program_state.command_window, "\n%s> ", program_state.command_prefix);
                     // Reset command 
                     command_index = 0;
@@ -201,34 +256,31 @@ int main(int argc, char **argv)
                         command_index = COMMAND_BUFFER_SIZE - 1;
                     }
                     command_buffer[command_index] = '\0';
-                    CGSE_remove_command(CGSE_number_of_stored_commands()-1);
-                    status = CGSE_store_command(command_buffer);
-                    if (status == 0)
-                    {
-                        // This number of stored commands will be at least 1
-                        command_history_index = (ssize_t)CGSE_number_of_stored_commands() - 1;
-                        wprintw(program_state.main_window, "command_history_index %ld\n", command_history_index);
-                    }
-                    else
-                    {
-                        // TODO: print message on a status line that command 
-                        // could not be stored to command history
-                        // Let's not fail here, in case some critical task
-                        // needs to be completed 
-                    }
                     // write...
                     snprintf(telecommand_buffer, TCMD_BUFFER_SIZE, "%s+%s", program_state.command_prefix, command_buffer);
-                    if (strlen(command_buffer) > 0 && command_buffer[0] != '.' && program_state.satellite_connected)
+                    if (program_state.satellite_connected)
                     {
-                        bytes_sent = write(program_state.satellite_link, telecommand_buffer, strlen(telecommand_buffer));
+                        if (strlen(command_buffer) > 0)
+                        {
+                            bytes_sent = write(program_state.satellite_link, telecommand_buffer, strlen(telecommand_buffer));
+                        }
+                        else 
+                        {
+                            wprintw(program_state.command_window, "\n Empty command not sent");
+                        }
+                    }
+                    else 
+                    {
+                        wprintw(program_state.command_window, "\n Not connected to satellite");
                     }
                     
+                    wprintw(program_state.command_window, "\n%s> ", program_state.command_prefix);
                     // Reset command 
                     command_index = 0;
                     command_buffer[0] = '\0';
-                    CGSE_store_command(command_buffer);
-                    command_history_index = CGSE_number_of_stored_commands() - 1;
                 }
+                CGSE_store_command(command_buffer);
+                command_history_index = CGSE_number_of_stored_commands() - 1;
             }
             gettimeofday(&tv, NULL);
             t2 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
@@ -291,8 +343,8 @@ int init_terminal_screen(GSE_program_state_t *program_state)
 int connect_to_satellite(GSE_program_state_t *program_state)
 {
 
-    wprintw(program_state->main_window, "Connecting to \"%s\" @ %lu...", program_state->device_path, program_state->baud_rate);
-    wrefresh(program_state->main_window);
+    wprintw(program_state->command_window, "\n Connecting to \"%s\" @ %lu...", program_state->device_path, program_state->baud_rate);
+    wrefresh(program_state->command_window);
 
     // Connect and set link parameters
     int sat_link = open(program_state->device_path, O_RDWR | O_NONBLOCK | O_NOCTTY);
@@ -307,6 +359,7 @@ int connect_to_satellite(GSE_program_state_t *program_state)
     int result = tcgetattr(sat_link, &sat_link_params);
     if (result != 0)
     {
+        endwin();
         fprintf(stderr, "Unable to get satellite link information.\n");
         return -1;
     }
@@ -324,13 +377,14 @@ int connect_to_satellite(GSE_program_state_t *program_state)
     result = tcsetattr(sat_link, TCSANOW, &sat_link_params);
     if (result != 0)
     {
+        endwin();
         fprintf(stderr, "Unable to set satellite link baud rate.\n");
         return -1;
     }
     tcflush(sat_link, TCIOFLUSH);
     
-    wprintw(program_state->main_window, "connected.\n");
-    wrefresh(program_state->main_window);
+    wprintw(program_state->command_window, "connected.\n");
+    wrefresh(program_state->command_window);
 
     program_state->satellite_link = sat_link;
 
