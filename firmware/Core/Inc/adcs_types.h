@@ -32,6 +32,9 @@
 // CRC defines
 #define CRC_POLY 0x91
 
+// epsilon for comparing doubles
+#define ADCS_TEST_EPSILON 1e-9
+
 /* Enumerated Values */
 
 // Telecommand Error Flags - Section 5.2.2 Figure 6 of Firmware Manual

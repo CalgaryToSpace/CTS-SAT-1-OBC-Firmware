@@ -1,5 +1,6 @@
 #include "unit_tests/unit_test_helpers.h" // for all unit tests
 #include "unit_tests/test_adcs.h"         // for ADCS tests
+#include "transforms/number_comparisons.h" // for comparing doubles
 #include <stdio.h>
 #include <string.h>
 
@@ -89,25 +90,25 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Power_Control() {
 }
 
 uint8_t TEST_EXEC__ADCS_Pack_to_Angular_Rates() {
-    uint8_t input_params[6] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66};
+    uint8_t input_params[6] = {0x11, 0x22, 0x33, 0x44, 0x55, 0xff};
     ADCS_Angular_Rates_Struct result;
     ADCS_Pack_to_Angular_Rates(input_params, &result);
 
-    TEST_ASSERT_TRUE(result.x_rate == 87.21);
-    TEST_ASSERT_TRUE(result.y_rate == 174.59);
-    TEST_ASSERT_TRUE(result.z_rate == 261.97);
+    TEST_ASSERT_TRUE(compare_doubles(result.x_rate, 87.21, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.y_rate, 174.59, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.z_rate, -1.71, ADCS_TEST_EPSILON));
 
     return 0;
 }
 
 uint8_t TEST_EXEC__ADCS_Pack_to_LLH_Position() {
-    uint8_t input_params[6] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66};
+    uint8_t input_params[6] = {0x11, 0x22, 0x33, 0xff, 0x55, 0x66};
     ADCS_LLH_Position_Struct result;
     ADCS_Pack_to_LLH_Position(input_params, &result);
 
-    TEST_ASSERT_TRUE(result.latitude == 87.21);
-    TEST_ASSERT_TRUE(result.longitude == 174.59);
-    TEST_ASSERT_TRUE(result.altitude == 261.97);
+    TEST_ASSERT_TRUE(compare_doubles(result.latitude, 87.21, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.longitude, -2.05, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.altitude, 261.97, ADCS_TEST_EPSILON));
 
     return 0;
 }
@@ -138,25 +139,25 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Orbit_Params() {
     ADCS_Orbit_Params_Struct result;
     ADCS_Pack_to_Orbit_Params(input_params, &result);
 
-    TEST_ASSERT_TRUE(result.inclination == 1.2);
-    TEST_ASSERT_TRUE(result.eccentricity == 0.67);
-    TEST_ASSERT_TRUE(result.ascending_node_right_ascension == 5.6);
-    TEST_ASSERT_TRUE(result.b_star_drag_term == 0.9);
-    TEST_ASSERT_TRUE(result.mean_motion == 10.1);
-    TEST_ASSERT_TRUE(result.mean_anomaly == 11.2);
-    TEST_ASSERT_TRUE(result.epoch == 12.3);
+    TEST_ASSERT_TRUE(compare_doubles(result.inclination, 1.2, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.eccentricity, 0.67, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.ascending_node_right_ascension, 5.6, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.b_star_drag_term, 0.9, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.mean_motion, 10.1, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.mean_anomaly, 11.2, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.epoch, 12.3, ADCS_TEST_EPSILON));
 
     return 0;
 }
 
 uint8_t TEST_EXEC__ADCS_Pack_to_Rated_Sensor_Rates() {
-    uint8_t input_params[6] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66};
+    uint8_t input_params[6] = {0x11, 0x22, 0x33, 0x44, 0x55, 0xff};
     ADCS_Rated_Sensor_Rates_Struct result;
     ADCS_Pack_to_Rated_Sensor_Rates(input_params, &result);
 
-    TEST_ASSERT_TRUE(result.x == 87.21);
-    TEST_ASSERT_TRUE(result.y == 174.59);
-    TEST_ASSERT_TRUE(result.z == 261.97);
+    TEST_ASSERT_TRUE(compare_doubles(result.x, 87.21, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.y, 174.59, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.z, -1.71, ADCS_TEST_EPSILON));
 
     return 0;
 }
@@ -165,7 +166,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Wheel_Speed() {
     uint8_t input_params[6] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66};
     ADCS_Wheel_Speed_Struct result;
     ADCS_Pack_to_Wheel_Speed(input_params, &result);
-
+    // TODO: pick up here with compare_doubles and fixing negatives
     TEST_ASSERT_TRUE(result.x == 8721);
     TEST_ASSERT_TRUE(result.y == 17459);
     TEST_ASSERT_TRUE(result.z == 26197);

@@ -337,9 +337,10 @@ void ADCS_Estimate_Angular_Rates() {
 }
 
 uint8_t ADCS_Pack_to_Angular_Rates(uint8_t *data_received, ADCS_Angular_Rates_Struct *result) {
-    result->x_rate = ((double) (data_received[1] << 8 | data_received[0])) * 0.01;
-    result->y_rate = ((double) (data_received[3] << 8 | data_received[2])) * 0.01;
-    result->z_rate = ((double) (data_received[5] << 8 | data_received[4])) * 0.01;
+	// need to convert to int16 first, then double, to ensure negative numbers are represented correctly
+    result->x_rate = ((double) ((int16_t) (data_received[1] << 8 | data_received[0]))) * 0.01;
+    result->y_rate = ((double) ((int16_t) (data_received[3] << 8 | data_received[2]))) * 0.01;
+    result->z_rate = ((double) ((int16_t) (data_received[5] << 8 | data_received[4]))) * 0.01;
     return 0;
 }
 
@@ -356,9 +357,11 @@ void ADCS_Get_LLH_Position() {
 }
 
 uint8_t ADCS_Pack_to_LLH_Position(uint8_t *data_received, ADCS_LLH_Position_Struct *result) {
-    result->latitude = (double)(data_received[1] << 8 | data_received[0]) * 0.01; 
-    result->longitude = (double)(data_received[3] << 8 | data_received[2]) * 0.01; 
-    result->altitude = (double)(data_received[5] << 8 | data_received[4]) * 0.01; 
+    // formatted value (deg or km) = raw value * 0.01
+	// need to convert to int16 first, then double, to ensure negative numbers are represented correctly
+	result->latitude  = ((double) ((int16_t) (data_received[1] << 8 | data_received[0]))) * 0.01; 
+    result->longitude = ((double) ((int16_t) (data_received[3] << 8 | data_received[2]))) * 0.01; 
+    result->altitude  = ((double) ((int16_t) (data_received[5] << 8 | data_received[4]))) * 0.01; 
     return 0;
 }
 
@@ -450,9 +453,10 @@ void ADCS_Rate_Sensor_Rates() {
 
 uint8_t ADCS_Pack_to_Rated_Sensor_Rates(uint8_t *data_received, ADCS_Rated_Sensor_Rates_Struct *result) {
     // formatted value (deg/s) = raw value * 0.01
-	result->x = ((double)(data_received[1] << 8 | data_received[0])) * 0.01;
-    result->y = ((double)(data_received[3] << 8 | data_received[2])) * 0.01;
-    result->z = ((double)(data_received[5] << 8 | data_received[4])) * 0.01;
+	// need to convert to int16 first, then double, to ensure negative numbers are represented correctly
+	result->x  = ((double) ((int16_t) (data_received[1] << 8 | data_received[0]))) * 0.01; 
+    result->y = ((double) ((int16_t) (data_received[3] << 8 | data_received[2]))) * 0.01; 
+    result->z  = ((double) ((int16_t) (data_received[5] << 8 | data_received[4]))) * 0.01; 
     return 0;
 }
 
