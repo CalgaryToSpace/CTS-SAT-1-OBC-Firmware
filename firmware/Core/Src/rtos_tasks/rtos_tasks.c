@@ -19,7 +19,7 @@ void TASK_debug_print_heartbeat(void *argument) {
 	osDelay(100);
 	while (1) {
 		debug_uart_print_str("TASK_debug_print_heartbeat() -> top of while(1)\n");
-		HAL_GPIO_TogglePin(PIN_DEVKIT_LD2_GPIO_Port, PIN_DEVKIT_LD2_Pin);
+		HAL_GPIO_TogglePin(PIN_LED_DEVKIT_LD2_GPIO_Port, PIN_LED_DEVKIT_LD2_Pin);
 		osDelay(1000);
 	}
 }
