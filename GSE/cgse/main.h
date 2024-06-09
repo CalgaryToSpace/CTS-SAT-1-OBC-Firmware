@@ -13,6 +13,8 @@
 #define IO_WAIT_USEC 50000
 #define COMMAND_BUFFER_SIZE 512
 
+#define CGSE_TIME_STR_MAX_LEN 32
+
 
 typedef struct 
 {
@@ -52,6 +54,8 @@ void CGSE_license(void);
 void CGSE_about(void);
 void CGSE_help(char *name);
 int find_link_path(char *linkpath);
+
+void CGSE_time_string(char *time_str);
 
 
 #endif // __INCLUDE_GUARD__MAIN_H_

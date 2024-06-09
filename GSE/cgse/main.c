@@ -80,6 +80,8 @@ int main(int argc, char **argv)
     // Current line being edited
     CGSE_store_command("");
 
+    char time_buffer[CGSE_TIME_STR_MAX_LEN] = {0};
+
     while(running)
     {
         // select() to see if data are ready?
@@ -87,6 +89,7 @@ int main(int argc, char **argv)
         if (ps.satellite_connected)
         {
             bytes_received = read(ps.satellite_link, receive_buffer, RECEIVE_BUFFER_SIZE);
+            CGSE_time_string(time_buffer);
         }
         else 
         {
@@ -94,7 +97,8 @@ int main(int argc, char **argv)
         }
         if (bytes_received > 0)
         {
-            wprintw(ps.main_window, "%s", receive_buffer);
+
+            wprintw(ps.main_window, "%s: %s", time_buffer, receive_buffer);
         }
         wrefresh(ps.main_window);
         wrefresh(ps.command_window);
@@ -572,5 +576,17 @@ int find_link_path(char *linkpath)
     free(dirpath);
 
     return 0;
+}
+
+/// time_str must be large enough to store 32 chars
+void CGSE_time_string(char *time_str)
+{
+    struct timeval tv = {0};
+    gettimeofday(&tv, NULL);
+    struct tm *t = gmtime(&tv.tv_sec);
+    snprintf(time_str, CGSE_TIME_STR_MAX_LEN, "UTC=%4d-%02d-%02dT%02d:%02d:%02d.%06d", t->tm_year+1900, t->tm_mon+1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec, tv.tv_usec);
+
+    char *result = strdup(time_str);
+    return;
 }
 
