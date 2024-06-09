@@ -3,6 +3,10 @@
 
 #include <termios.h>
 #include <ncurses.h>
+#include <stdio.h>
+
+#define CGSE_DEFAULT_BAUD_RATE 115200
+#define CGSE_DEFAULT_TELECOMMAND_PREFIX "CTS1"
 
 #define TCMD_BUFFER_SIZE 256
 #define RECEIVE_BUFFER_SIZE 512
@@ -12,9 +16,15 @@
 
 typedef struct 
 {
+
+    int nOptions;
+    int argc;
+    char **argv;
+
     speed_t baud_rate;
-    char *device_path;
+    char satellite_link_path[FILENAME_MAX];
     char *command_prefix;
+    bool auto_connect;
 
     WINDOW *main_window;
     WINDOW *command_window;
@@ -22,9 +32,26 @@ typedef struct
     bool satellite_connected;
     int satellite_link;
 
+    char command_buffer[COMMAND_BUFFER_SIZE];
+    size_t command_history_index;
+    int cursor_position;
+    int command_index;
+
+    char telecommand_buffer[TCMD_BUFFER_SIZE];
+
 } GSE_program_state_t;
 
 int init_terminal_screen(GSE_program_state_t *program_state);
 int connect_to_satellite(GSE_program_state_t *program_state);
+
+int parse_input(GSE_program_state_t *program_state, int key);
+
+int parse_args(GSE_program_state_t *ps);
+
+void CGSE_license(void);
+void CGSE_about(void);
+void CGSE_help(char *name);
+int find_link_path(char *linkpath);
+
 
 #endif // __INCLUDE_GUARD__MAIN_H_
