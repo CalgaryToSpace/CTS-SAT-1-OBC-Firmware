@@ -93,6 +93,7 @@ int main(int argc, char **argv)
     // Current line being edited
     CGSE_store_command("");
     size_t command_history_index = 0;
+    int cursor_position = 0;
 
     while(running)
     {
@@ -118,22 +119,28 @@ int main(int argc, char **argv)
         double t1 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
         double t2 = t1;
 
-        getyx(program_state.command_window, line, col);
 
         while ((key = wgetch(program_state.command_window)) != ERR && (t2 - t1) < 0.5)
         {
+            getyx(program_state.command_window, line, col);
             if (key == '\b' || key == 127 || key == KEY_BACKSPACE)
             {
-                if (command_index > 0)
+                if (cursor_position > 0)
                 {
                     command_index--;
+                    cursor_position--;
+                    col--;
+                    for (int c = cursor_position; c < strlen(command_buffer) && c < COMMAND_BUFFER_SIZE - 2; c++)
+                    {
+                        command_buffer[c] = command_buffer[c+1];
+                    }
                     command_buffer[command_index] = '\0';
                     command_history_index = CGSE_number_of_stored_commands() - 1;
                     CGSE_remove_command(command_history_index);
                     CGSE_store_command(command_buffer);
                 }
             }
-            else if (key == KEY_UP )
+            else if (key == KEY_UP)
             {
                 if (command_history_index > 0)
                 {
@@ -141,12 +148,14 @@ int main(int argc, char **argv)
                     if (previous_command != NULL)
                     {
                         snprintf(command_buffer, COMMAND_BUFFER_SIZE, "%s", previous_command);
+                        cursor_position = strlen(command_buffer);
+                        col = strlen(program_state.command_prefix) + 2 + cursor_position;
                         command_history_index--;
-                        command_index = (int)strlen(previous_command);
+                        command_index = cursor_position;
                     }
                 }
             }
-            else if (key == KEY_DOWN )
+            else if (key == KEY_DOWN)
             {
                 if (command_history_index < CGSE_number_of_stored_commands())
                 {
@@ -154,9 +163,27 @@ int main(int argc, char **argv)
                     if (next_command != NULL)
                     {
                         snprintf(command_buffer, COMMAND_BUFFER_SIZE, "%s", next_command);
+                        cursor_position = strlen(command_buffer);
+                        col = strlen(program_state.command_prefix) + 2 + cursor_position;
                         command_history_index++;
-                        command_index = (int)strlen(next_command);
+                        command_index = cursor_position;
                     }
+                }
+            }
+            else if (key == KEY_LEFT)
+            {
+                if (cursor_position > 0)
+                {
+                    cursor_position--;
+                    col--;
+                }
+            }
+            else if (key == KEY_RIGHT)
+            {
+                if (cursor_position < strlen(command_buffer) && cursor_position < COMMAND_BUFFER_SIZE - 1)
+                {
+                    cursor_position++;
+                    col++;
                 }
             }
             else if (command_index >= COMMAND_BUFFER_SIZE - 2)
@@ -171,17 +198,22 @@ int main(int argc, char **argv)
                 command_history_index = CGSE_number_of_stored_commands() - 1;
                 CGSE_remove_command(command_history_index);
                 CGSE_store_command(command_buffer);
+                cursor_position++;
+                col++;
             }
 
             wmove(program_state.command_window, line, 0);
-            wclrtoeol(program_state.command_window);
             wprintw(program_state.command_window, "%s> %s", program_state.command_prefix, command_buffer);
+            wclrtoeol(program_state.command_window);
+            wmove(program_state.command_window, line, col);
 
             if (key == '\n')
             {
-                CGSE_remove_command(CGSE_number_of_stored_commands()-1);
-                status = CGSE_store_command(command_buffer);
-                command_history_index = (ssize_t)CGSE_number_of_stored_commands() - 1;
+                if (strlen(command_buffer) > 0)
+                {
+                    CGSE_store_command("");
+                    command_history_index = CGSE_number_of_stored_commands();
+                }
                 if (strcmp(".exit", command_buffer) == 0 || strcmp(".quit", command_buffer) == 0)
                 {
                     running = 0;
@@ -198,6 +230,9 @@ int main(int argc, char **argv)
                     // Reset command 
                     command_index = 0;
                     command_buffer[0] = '\0';
+
+                    wprintw(program_state.main_window, "Storing \"%s\"\n", command_buffer);
+                    wrefresh(program_state.main_window);
                 }
                 else if (command_buffer[0] == '.')
                 {
@@ -254,32 +289,32 @@ int main(int argc, char **argv)
                     if (command_index > COMMAND_BUFFER_SIZE - 1)
                     {
                         command_index = COMMAND_BUFFER_SIZE - 1;
+                        if (cursor_position > 0)
+                        {
+                            cursor_position = command_index;
+                        }
                     }
                     command_buffer[command_index] = '\0';
+                    col = strlen(program_state.command_prefix) + 2 + strlen(command_buffer);
+                    wmove(program_state.command_window, line, col);
                     // write...
                     snprintf(telecommand_buffer, TCMD_BUFFER_SIZE, "%s+%s", program_state.command_prefix, command_buffer);
-                    if (program_state.satellite_connected)
+                    if (strlen(command_buffer) > 0)
                     {
-                        if (strlen(command_buffer) > 0)
+                        if (program_state.satellite_connected)
                         {
                             bytes_sent = write(program_state.satellite_link, telecommand_buffer, strlen(telecommand_buffer));
                         }
                         else 
                         {
-                            wprintw(program_state.command_window, "\n Empty command not sent");
+                            wprintw(program_state.command_window, "\n Not connected to satellite");
                         }
                     }
-                    else 
-                    {
-                        wprintw(program_state.command_window, "\n Not connected to satellite");
-                    }
-                    
                     wprintw(program_state.command_window, "\n%s> ", program_state.command_prefix);
                     // Reset command 
                     command_index = 0;
                     command_buffer[0] = '\0';
                 }
-                CGSE_store_command(command_buffer);
                 command_history_index = CGSE_number_of_stored_commands() - 1;
             }
             gettimeofday(&tv, NULL);
