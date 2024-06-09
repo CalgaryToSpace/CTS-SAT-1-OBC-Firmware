@@ -25,5 +25,11 @@ firmware/cmake
 GSE/cgse/.clangd
 GSE/cgse/cmake
 GSE/cgse/.cache
+cmake/
+.clangd
 firmware/CMakeLists.txt
 firmware/update_for_lsp.sh
+CMakeLists.txt
+GSE/CMakeLists.txt
+update_cmake_cache.sh
+
