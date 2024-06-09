@@ -120,11 +120,17 @@ int main(int argc, char **argv)
         double t2 = t1;
 
 
+
         while ((key = wgetch(program_state.command_window)) != ERR && (t2 - t1) < 0.5)
         {
             getyx(program_state.command_window, line, col);
             if (key == '\b' || key == 127 || key == KEY_BACKSPACE)
             {
+                if (command_history_index < CGSE_number_of_stored_commands() - 1)
+                {
+                    CGSE_store_command(command_buffer);
+                    command_history_index = CGSE_number_of_stored_commands() - 1;
+                }
                 if (cursor_position > 0)
                 {
                     command_index--;
@@ -151,7 +157,7 @@ int main(int argc, char **argv)
                         cursor_position = strlen(command_buffer);
                         col = strlen(program_state.command_prefix) + 2 + cursor_position;
                         command_history_index--;
-                        command_index = cursor_position;
+                        command_index = strlen(command_buffer);
                     }
                 }
             }
@@ -166,7 +172,7 @@ int main(int argc, char **argv)
                         cursor_position = strlen(command_buffer);
                         col = strlen(program_state.command_prefix) + 2 + cursor_position;
                         command_history_index++;
-                        command_index = cursor_position;
+                        command_index = strlen(command_buffer);
                     }
                 }
             }
@@ -209,10 +215,22 @@ int main(int argc, char **argv)
 
             if (key == '\n')
             {
+                command_index = strlen(command_buffer);
+                cursor_position = command_index;
+                col = strlen(program_state.command_prefix) + 2 + cursor_position;
+                wmove(program_state.command_window, line, col);
                 if (strlen(command_buffer) > 0)
                 {
+                    if (command_history_index < CGSE_number_of_stored_commands() - 1)
+                    {
+                        if (strlen(CGSE_recall_command(CGSE_number_of_stored_commands() - 1)) == 0)
+                        {
+                            CGSE_remove_command(CGSE_number_of_stored_commands() - 1);
+                        }
+                        CGSE_store_command(command_buffer);
+                    }
                     CGSE_store_command("");
-                    command_history_index = CGSE_number_of_stored_commands();
+                    command_history_index = CGSE_number_of_stored_commands() - 1;
                 }
                 if (strcmp(".exit", command_buffer) == 0 || strcmp(".quit", command_buffer) == 0)
                 {
@@ -230,9 +248,6 @@ int main(int argc, char **argv)
                     // Reset command 
                     command_index = 0;
                     command_buffer[0] = '\0';
-
-                    wprintw(program_state.main_window, "Storing \"%s\"\n", command_buffer);
-                    wrefresh(program_state.main_window);
                 }
                 else if (command_buffer[0] == '.')
                 {
@@ -277,9 +292,9 @@ int main(int argc, char **argv)
                     else 
                     {
                         wprintw(program_state.command_window, "\n Unrecognized terminal command");
-                        wrefresh(program_state.command_window);
                     }
                     wprintw(program_state.command_window, "\n%s> ", program_state.command_prefix);
+                    wrefresh(program_state.command_window);
                     // Reset command 
                     command_index = 0;
                     command_buffer[0] = '\0';
