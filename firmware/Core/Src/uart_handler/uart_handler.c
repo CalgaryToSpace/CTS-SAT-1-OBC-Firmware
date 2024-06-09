@@ -15,11 +15,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     // This ISR function gets called every time a byte is received on the UART.
 
     if (huart->Instance == LPUART1) {
-        // debug_uart_print_str("HAL_UART_RxCpltCallback() -> LPUART1\n");
+        // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> LPUART1\n");
         
         // add the byte to the buffer
         if (UART_telecommand_buffer_write_idx >= UART_telecommand_buffer_len) {
-            debug_uart_print_str("HAL_UART_RxCpltCallback() -> UART telecommand buffer is full\n");
+            DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART telecommand buffer is full\n");
             
             // shift all bytes left by 1
             for (uint16_t i = 1; i < UART_telecommand_buffer_len; i++) {
@@ -35,7 +35,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     }
     else {
         // FIXME: add the rest
-        debug_uart_print_str("HAL_UART_RxCpltCallback() -> unknown UART instance\n"); // FIXME: remove
+        DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> unknown UART instance\n"); // FIXME: remove
     }
 }
 
