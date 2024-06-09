@@ -2,6 +2,8 @@
 
 #include "command_history.h"
 
+#include "telecommand_definitions.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -25,6 +27,9 @@
 
 
 volatile sig_atomic_t running = 1;
+volatile uint8_t TASK_heartbeat_is_on = 0;
+extern const int16_t TCMD_NUM_TELECOMMANDS;
+extern const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[];
 
 static void interrupthandler(int sig)
 {
@@ -350,6 +355,7 @@ int parse_input(GSE_program_state_t *ps, int key)
             wprintw(ps->command_window, "%30s - %s\n", ".quit or .exit", "quit terminal");
             wprintw(ps->command_window, "\n");
             wprintw(ps->command_window, "%30s - %s\n", ".connect <device-path>", "establish as serial link to the satellite <device-path>");
+            wprintw(ps->command_window, "%30s - %s\n", ".telecommands", "list telecommands");
 
             wprintw(ps->command_window, "\n%s> ", ps->command_prefix);
             // Reset command 
@@ -359,8 +365,7 @@ int parse_input(GSE_program_state_t *ps, int key)
         else if (ps->command_buffer[0] == '.')
         {
             // TODO search terminal command list for this command 
-            char *cmd_to_check = ".connect";
-            if (strncmp(cmd_to_check, ps->command_buffer, strlen(cmd_to_check)) == 0)
+            if (strncmp(".connect", ps->command_buffer, strlen(".connect")) == 0)
             {
                 // Based on "man strsep" example
                 char **ap, *arg_vector[3];
@@ -395,6 +400,11 @@ int parse_input(GSE_program_state_t *ps, int key)
                 {
                     wprintw(ps->command_window, "\n Usage: .connect <device-path>");
                 }
+            }
+            else if (strncmp(".telecommands", ps->command_buffer, strlen(".telecommands")) == 0)
+            {
+                wprintw(ps->command_window, "\n");
+                CGSE_list_telecommands(ps);
             }
             else 
             {
@@ -590,3 +600,27 @@ void CGSE_time_string(char *time_str)
     return;
 }
 
+
+void CGSE_list_telecommands(GSE_program_state_t *ps)
+{
+
+    const TCMD_TelecommandDefinition_t *cmd = NULL;
+    int nArgs = 0;
+    for (int i = 0; i < TCMD_NUM_TELECOMMANDS; i++)
+    {
+        cmd = &TCMD_telecommand_definitions[i];
+        nArgs = cmd->number_of_args;
+        wprintw(ps->command_window, "%3d) %s(", i+1, cmd->tcmd_name);
+        for (int a = 0; a < nArgs; a++)
+        {
+            wprintw(ps->command_window, "a%03d", a+1);
+            if (a < nArgs - 1)
+            {
+                wprintw(ps->command_window, ",");
+            }
+        }
+        wprintw(ps->command_window, ")\n");
+    }
+
+    return;
+}

@@ -8,9 +8,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 find_library(CURSES ncursesw HINTS /usr/local/lib)
 include_directories(/usr/local/include)
 
-add_executable(cgse main.c command_history.c)
+add_executable(cgse main.c command_history.c telecommand_definitions.c)
 target_link_libraries(cgse ${CURSES})
 
 # Add more include directories if needed
-target_include_directories(cgse PUBLIC "${CMAKE_SOURCE_DIR}")
+target_include_directories(cgse PUBLIC "." "telecommands" "transforms")
 
