@@ -28,6 +28,7 @@ typedef struct
     char *command_prefix;
     bool auto_connect;
 
+    WINDOW *status_window;
     WINDOW *main_window;
     WINDOW *command_window;
 

@@ -102,7 +102,7 @@ int main(int argc, char **argv)
         }
         if (bytes_received > 0)
         {
-
+            wclrtoeol(ps.main_window);
             wprintw(ps.main_window, "%s: %s", time_buffer, receive_buffer);
         }
         wrefresh(ps.main_window);
@@ -152,7 +152,14 @@ int init_terminal_screen(GSE_program_state_t *ps)
     status |= raw();
     status |= intrflush(NULL, false);
 
-    ps->main_window = newwin(15, 0, 0, 0);
+    ps->status_window = newwin(1, 0, 0, 0);
+    if (ps->status_window == NULL)
+    {
+        status |= 1;
+    }
+    status |= wattron(ps->status_window, A_REVERSE);
+
+    ps->main_window = newwin(15, 0, 1, 0);
     if (ps->main_window == NULL)
     {
         status |= 1;
