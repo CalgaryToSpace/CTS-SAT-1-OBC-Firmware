@@ -22,5 +22,8 @@ venv/
 # For the clangd LVM support if developing in neovim 
 firmware/.clangd
 firmware/cmake
+GSE/cgse/.clangd
+GSE/cgse/cmake
+GSE/cgse/.cache
 firmware/CMakeLists.txt
 firmware/update_for_lsp.sh
