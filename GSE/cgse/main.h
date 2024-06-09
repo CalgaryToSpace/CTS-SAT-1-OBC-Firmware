@@ -60,4 +60,6 @@ void CGSE_time_string(char *time_str);
 
 void CGSE_list_telecommands(GSE_program_state_t *ps);
 
+void update_link_status(GSE_program_state_t *ps);
+
 #endif // __INCLUDE_GUARD__MAIN_H_

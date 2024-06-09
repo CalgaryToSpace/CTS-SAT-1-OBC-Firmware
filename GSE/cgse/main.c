@@ -105,6 +105,8 @@ int main(int argc, char **argv)
             wclrtoeol(ps.main_window);
             wprintw(ps.main_window, "%s: %s", time_buffer, receive_buffer);
         }
+        update_link_status(&ps);
+        wrefresh(ps.status_window);
         wrefresh(ps.main_window);
         wrefresh(ps.command_window);
 
@@ -186,15 +188,17 @@ int init_terminal_screen(GSE_program_state_t *ps)
 int connect_to_satellite(GSE_program_state_t *ps)
 {
 
-    wprintw(ps->command_window, "\n Connecting to \"%s\" @ %lu...", ps->satellite_link_path, ps->baud_rate);
-    wrefresh(ps->command_window);
+    mvwprintw(ps->status_window, 0, 0, "Connecting to \"%s\" @ %lu...", ps->satellite_link_path, ps->baud_rate);
+    wclrtoeol(ps->status_window);
+    wrefresh(ps->status_window);
 
     // Connect and set link parameters
     int sat_link = open(ps->satellite_link_path, O_RDWR | O_NONBLOCK | O_NOCTTY);
     if (sat_link == -1)
     {
-        endwin();
-        fprintf(stderr, "Unable to open satellite link.\n");
+        mvwprintw(ps->status_window, 0, 0, "Unable to open satellite link.\n");
+        wclrtoeol(ps->status_window);
+        wrefresh(ps->status_window);
         return -1;
     }
 
@@ -202,8 +206,9 @@ int connect_to_satellite(GSE_program_state_t *ps)
     int result = tcgetattr(sat_link, &sat_link_params);
     if (result != 0)
     {
-        endwin();
-        fprintf(stderr, "Unable to get satellite link information.\n");
+        wprintw(ps->status_window, "Unable to get satellite link information.\n");
+        wclrtoeol(ps->status_window);
+        wrefresh(ps->status_window);
         return -1;
     }
     cfsetspeed(&sat_link_params, ps->baud_rate);
@@ -220,15 +225,14 @@ int connect_to_satellite(GSE_program_state_t *ps)
     result = tcsetattr(sat_link, TCSANOW, &sat_link_params);
     if (result != 0)
     {
-        endwin();
-        fprintf(stderr, "Unable to set satellite link baud rate.\n");
+        wprintw(ps->status_window, "Unable to set satellite link baud rate.\n");
+        wclrtoeol(ps->status_window);
+        wrefresh(ps->status_window);
         return -1;
     }
     tcflush(sat_link, TCIOFLUSH);
     
-    wprintw(ps->command_window, "connected.\n");
-    wrefresh(ps->command_window);
-
+    update_link_status(ps);
     ps->satellite_link = sat_link;
     ps->satellite_connected = true;
 
@@ -630,4 +634,14 @@ void CGSE_list_telecommands(GSE_program_state_t *ps)
     }
 
     return;
+}
+
+void update_link_status(GSE_program_state_t *ps)
+{
+    if (ps->satellite_connected)
+    {
+        mvwprintw(ps->status_window, 0, 0, "Connected on %s @ %lu\n", ps->satellite_link_path, ps->baud_rate);
+        wclrtoeol(ps->status_window);
+        wrefresh(ps->status_window);
+    }
 }
