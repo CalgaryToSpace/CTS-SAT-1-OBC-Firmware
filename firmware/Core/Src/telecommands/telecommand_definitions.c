@@ -112,8 +112,8 @@ uint8_t TCMDEXEC_heartbeat_on(const uint8_t *args_str, TCMD_TelecommandChannel_e
 uint8_t TCMDEXEC_hello_ali(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                            char *response_output_buf, uint16_t response_output_buf_len)
 {
-    debug_uart_print_str((char *)args_str);
-    debug_uart_print_str("\n");
+    DEBUG_uart_print_str((char *)args_str);
+    DEBUG_uart_print_str("\n");
     uint8_t args[2][20];
     const uint8_t args_count = split_string_by_delimiter(args_str, strlen((char *)args_str), ',', args, 2);
     uint8_t args_count_str[5];
@@ -123,7 +123,7 @@ uint8_t TCMDEXEC_hello_ali(const uint8_t *args_str, TCMD_TelecommandChannel_enum
 
     strncat(response_output_buf, "Hello, world From Ali!\n", 24);
 
-    strncat(response_output_buf, "Args count: ", 12);
+    strncat(response_output_buf, "Args count: ", 13);
     strncat(response_output_buf, (char *)args_count_str, 5);
     strcat(response_output_buf, "\n");
 
@@ -132,7 +132,13 @@ uint8_t TCMDEXEC_hello_ali(const uint8_t *args_str, TCMD_TelecommandChannel_enum
 
     strncat(response_output_buf, (char *)args[1], strlen((char *)args[1]) - 1);
     strcat(response_output_buf, "\n\0");
-
+    return 0;
+}
+uint8_t TCMDEXEC_heartbeat_off(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                               char *response_output_buf, uint16_t response_output_buf_len)
+{
+    TASK_heartbeat_is_on = 0;
+    snprintf(response_output_buf, response_output_buf_len, "Heartbeat OFF");
     return 0;
 }
 
