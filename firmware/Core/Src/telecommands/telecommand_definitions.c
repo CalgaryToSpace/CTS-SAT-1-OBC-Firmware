@@ -131,8 +131,12 @@ uint8_t TCMDEXEC_get_configuration_variable(const uint8_t *args_str, TCMD_Teleco
 uint8_t TCMDEXEC_get_all_configuration_variables(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                  char *response_output_buf, uint16_t response_output_buf_len)
 {
-    const char *header = "Available Configuration Variables:\n\n";
-    snprintf(response_output_buf, response_output_buf_len, "%s", header);
+    DEBUG_uart_print_str((char *)args_str);
+    DEBUG_uart_print_str("\n");
+    uint8_t args[2][20];
+    const uint8_t args_count = split_string_by_delimiter(args_str, strlen((char *)args_str), ',', args, 2);
+    uint8_t args_count_str[5];
+    snprintf((char *)args_count_str, 5, "%d", args_count);
 
     strcat(response_output_buf, "Integer Configuration Variables:\n\n");
 
@@ -141,15 +145,14 @@ uint8_t TCMDEXEC_get_all_configuration_variables(const uint8_t *args_str, TCMD_T
     const uint16_t config_integer_table_size = CONFIG_print_integer_table(config_integer_table);
     strncat(response_output_buf, config_integer_table, config_integer_table_size);
 
-    strcat(response_output_buf, "\n\n");
+    strncat(response_output_buf, "Args count: ", 13);
+    strncat(response_output_buf, (char *)args_count_str, 5);
+    strcat(response_output_buf, "\n");
 
     strcat(response_output_buf, "String Configuration Variables:\n\n");
 
-    char config_string_table[100];
-    memset(config_string_table, 0, 100);
-    const uint16_t config_string_table_size = CONFIG_print_string_table(config_string_table);
-    strncat(response_output_buf, config_string_table, config_string_table_size);
-
+    strncat(response_output_buf, (char *)args[1], strlen((char *)args[1]) - 1);
+    strcat(response_output_buf, "\n\0");
     return 0;
 }
 
