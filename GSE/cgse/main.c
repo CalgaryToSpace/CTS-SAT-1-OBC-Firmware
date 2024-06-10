@@ -60,32 +60,19 @@ int main(int argc, char **argv)
     int key = 0;
     while(running)
     {
-        parse_telemetry(&ps);
         update_link_status(&ps);
         wrefresh(ps.status_window);
+
+        parse_telemetry(&ps);
         wrefresh(ps.main_window);
         wrefresh(ps.command_window);
 
-        struct timeval tv = {0};
-        gettimeofday(&tv, NULL);
-        double t1 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
-        double t2 = t1;
-
-
-        
-        while ((key = wgetch(ps.command_window)) != ERR && (t2 - t1) < 0.5)
-        {
-            parse_input(&ps, key);
-            gettimeofday(&tv, NULL);
-            t2 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
-        }
-
+        parse_input(&ps, key);
         wrefresh(ps.command_window);
+
         usleep(IO_WAIT_USEC);
-        
     }
 
-cleanup:
     clear();
     refresh();
     if (ps.satellite_connected && ps.satellite_link > 0)
@@ -188,220 +175,231 @@ int parse_input(GSE_program_state_t *ps, int key)
     int col = 0;
     ssize_t bytes_sent = 0;
 
-    getyx(ps->command_window, line, col);
-    if (key == '\b' || key == 127 || key == KEY_BACKSPACE)
+    struct timeval tv = {0};
+    gettimeofday(&tv, NULL);
+    double t1 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
+    double t2 = t1;
+    while ((key = wgetch(ps->command_window)) != ERR && (t2 - t1) < 0.5)
     {
-        if (ps->command_history_index < CGSE_number_of_stored_commands() - 1)
+
+        getyx(ps->command_window, line, col);
+        if (key == '\b' || key == 127 || key == KEY_BACKSPACE)
         {
-            CGSE_store_command(ps->command_buffer);
-            ps->command_history_index = CGSE_number_of_stored_commands() - 1;
-        }
-        if (ps->cursor_position > 0)
-        {
-            ps->command_index--;
-            ps->cursor_position--;
-            col--;
-            for (int c = ps->cursor_position; c < strlen(ps->command_buffer) && c < COMMAND_BUFFER_SIZE - 2; c++)
+            if (ps->command_history_index < CGSE_number_of_stored_commands() - 1)
             {
-                ps->command_buffer[c] = ps->command_buffer[c+1];
+                CGSE_store_command(ps->command_buffer);
+                ps->command_history_index = CGSE_number_of_stored_commands() - 1;
             }
+            if (ps->cursor_position > 0)
+            {
+                ps->command_index--;
+                ps->cursor_position--;
+                col--;
+                for (int c = ps->cursor_position; c < strlen(ps->command_buffer) && c < COMMAND_BUFFER_SIZE - 2; c++)
+                {
+                    ps->command_buffer[c] = ps->command_buffer[c+1];
+                }
+                ps->command_buffer[ps->command_index] = '\0';
+                ps->command_history_index = CGSE_number_of_stored_commands() - 1;
+                CGSE_remove_command(ps->command_history_index);
+                CGSE_store_command(ps->command_buffer);
+            }
+        }
+        else if (key == KEY_UP)
+        {
+            if (ps->command_history_index > 0)
+            {
+                char *previous_command = CGSE_recall_command((size_t)ps->command_history_index - 1);
+                if (previous_command != NULL)
+                {
+                    snprintf(ps->command_buffer, COMMAND_BUFFER_SIZE, "%s", previous_command);
+                    ps->cursor_position = strlen(ps->command_buffer);
+                    col = strlen(ps->command_prefix) + 2 + ps->cursor_position;
+                    ps->command_history_index--;
+                    ps->command_index = strlen(ps->command_buffer);
+                }
+            }
+        }
+        else if (key == KEY_DOWN)
+        {
+            if (ps->command_history_index < CGSE_number_of_stored_commands())
+            {
+                char *next_command = CGSE_recall_command((size_t)(ps->command_history_index+1));
+                if (next_command != NULL)
+                {
+                    snprintf(ps->command_buffer, COMMAND_BUFFER_SIZE, "%s", next_command);
+                    ps->cursor_position = strlen(ps->command_buffer);
+                    col = strlen(ps->command_prefix) + 2 + ps->cursor_position;
+                    ps->command_history_index++;
+                    ps->command_index = strlen(ps->command_buffer);
+                }
+            }
+        }
+        else if (key == KEY_LEFT)
+        {
+            if (ps->cursor_position > 0)
+            {
+                ps->cursor_position--;
+                col--;
+            }
+        }
+        else if (key == KEY_RIGHT)
+        {
+            if (ps->cursor_position < strlen(ps->command_buffer) && ps->cursor_position < COMMAND_BUFFER_SIZE - 1)
+            {
+                ps->cursor_position++;
+                col++;
+            }
+        }
+        else if (ps->command_index >= COMMAND_BUFFER_SIZE - 2)
+        {
+            ps->command_index = COMMAND_BUFFER_SIZE - 1;
+            ps->command_buffer[ps->command_index] = '\0';
+        }
+        else if (key != '\n') 
+        {
+            ps->command_buffer[ps->command_index++] = key;
             ps->command_buffer[ps->command_index] = '\0';
             ps->command_history_index = CGSE_number_of_stored_commands() - 1;
             CGSE_remove_command(ps->command_history_index);
             CGSE_store_command(ps->command_buffer);
-        }
-    }
-    else if (key == KEY_UP)
-    {
-        if (ps->command_history_index > 0)
-        {
-            char *previous_command = CGSE_recall_command((size_t)ps->command_history_index - 1);
-            if (previous_command != NULL)
-            {
-                snprintf(ps->command_buffer, COMMAND_BUFFER_SIZE, "%s", previous_command);
-                ps->cursor_position = strlen(ps->command_buffer);
-                col = strlen(ps->command_prefix) + 2 + ps->cursor_position;
-                ps->command_history_index--;
-                ps->command_index = strlen(ps->command_buffer);
-            }
-        }
-    }
-    else if (key == KEY_DOWN)
-    {
-        if (ps->command_history_index < CGSE_number_of_stored_commands())
-        {
-            char *next_command = CGSE_recall_command((size_t)(ps->command_history_index+1));
-            if (next_command != NULL)
-            {
-                snprintf(ps->command_buffer, COMMAND_BUFFER_SIZE, "%s", next_command);
-                ps->cursor_position = strlen(ps->command_buffer);
-                col = strlen(ps->command_prefix) + 2 + ps->cursor_position;
-                ps->command_history_index++;
-                ps->command_index = strlen(ps->command_buffer);
-            }
-        }
-    }
-    else if (key == KEY_LEFT)
-    {
-        if (ps->cursor_position > 0)
-        {
-            ps->cursor_position--;
-            col--;
-        }
-    }
-    else if (key == KEY_RIGHT)
-    {
-        if (ps->cursor_position < strlen(ps->command_buffer) && ps->cursor_position < COMMAND_BUFFER_SIZE - 1)
-        {
             ps->cursor_position++;
             col++;
         }
-    }
-    else if (ps->command_index >= COMMAND_BUFFER_SIZE - 2)
-    {
-        ps->command_index = COMMAND_BUFFER_SIZE - 1;
-        ps->command_buffer[ps->command_index] = '\0';
-    }
-    else if (key != '\n') 
-    {
-        ps->command_buffer[ps->command_index++] = key;
-        ps->command_buffer[ps->command_index] = '\0';
-        ps->command_history_index = CGSE_number_of_stored_commands() - 1;
-        CGSE_remove_command(ps->command_history_index);
-        CGSE_store_command(ps->command_buffer);
-        ps->cursor_position++;
-        col++;
-    }
 
-    wmove(ps->command_window, line, 0);
-    wprintw(ps->command_window, "%s> %s", ps->command_prefix, ps->command_buffer);
-    wclrtoeol(ps->command_window);
-    wmove(ps->command_window, line, col);
-
-    if (key == '\n')
-    {
-        ps->command_index = strlen(ps->command_buffer);
-        ps->cursor_position = ps->command_index;
-        col = strlen(ps->command_prefix) + 2 + ps->cursor_position;
+        wmove(ps->command_window, line, 0);
+        wprintw(ps->command_window, "%s> %s", ps->command_prefix, ps->command_buffer);
+        wclrtoeol(ps->command_window);
         wmove(ps->command_window, line, col);
-        if (strlen(ps->command_buffer) > 0)
-        {
-            if (ps->command_history_index < CGSE_number_of_stored_commands() - 1)
-            {
-                if (strlen(CGSE_recall_command(CGSE_number_of_stored_commands() - 1)) == 0)
-                {
-                    CGSE_remove_command(CGSE_number_of_stored_commands() - 1);
-                }
-                CGSE_store_command(ps->command_buffer);
-            }
-            CGSE_store_command("");
-            ps->command_history_index = CGSE_number_of_stored_commands() - 1;
-        }
-        if (strcmp(".exit", ps->command_buffer) == 0 || strcmp(".quit", ps->command_buffer) == 0)
-        {
-            running = 0;
-        }
-        else if (strcmp("?", ps->command_buffer) == 0 || strcmp(".help", ps->command_buffer) == 0)
-        {
-            wprintw(ps->command_window, "\n Available commands:\n");
-            wprintw(ps->command_window, "%30s - %s\n", "? or .help", "show available commands");
-            wprintw(ps->command_window, "%30s - %s\n", ".quit or .exit", "quit terminal");
-            wprintw(ps->command_window, "\n");
-            wprintw(ps->command_window, "%30s - %s\n", ".connect [<device-path>]", "connect to the satellite, optionally using <device-path>");
-            wprintw(ps->command_window, "%30s - %s\n", ".disconnect", "disconnect from the satellite");
-            wprintw(ps->command_window, "%30s - %s\n", ".telecommands", "list telecommands");
 
-            wprintw(ps->command_window, "\n%s> ", ps->command_prefix);
-            // Reset command 
-            ps->command_index = 0;
-            ps->command_buffer[0] = '\0';
-        }
-        else if (ps->command_buffer[0] == '.')
+        if (key == '\n')
         {
-            // TODO search terminal command list for this command 
-            if (strncmp(".connect", ps->command_buffer, strlen(".connect")) == 0)
-            {
-                if (ps->satellite_connected)
-                {
-                    CGSE_disconnect(ps);
-                    
-                }
-                if (strlen(ps->command_buffer) > strlen(".connect"))
-                {
-                    // check additional argument
-                    // Based on "man strsep" example
-                    char **ap, *arg_vector[3];
-                    char *input_string = ps->command_buffer;
-                    int n_connect_args = 0;
-                    for (ap = arg_vector; (*ap = strsep(&input_string, " ")) != NULL;)
-                    {
-                        if (**ap != '\0')
-                        {
-                            n_connect_args++;
-                            if (++ap >= &arg_vector[3])
-                            {
-                                break;
-                            }
-                        }
-                    }
-                    if (n_connect_args == 2)
-                    {
-                        snprintf(ps->satellite_link_path, FILENAME_MAX, "%s", arg_vector[1]);
-                    }
-                }
-                CGSE_connect(ps);
-            }
-            else if (strcmp(".disconnect", ps->command_buffer) == 0)
-            {
-                CGSE_disconnect(ps);
-            }
-            else if (strcmp(".telecommands", ps->command_buffer) == 0)
-            {
-                wprintw(ps->command_window, "\n");
-                CGSE_list_telecommands(ps);
-            }
-            else 
-            {
-                wprintw(ps->command_window, "\n Unrecognized terminal command");
-            }
-            wprintw(ps->command_window, "\n%s> ", ps->command_prefix);
-            wrefresh(ps->command_window);
-            // Reset command 
-            ps->command_index = 0;
-            ps->command_buffer[0] = '\0';
-        }
-        else 
-        {
-            if (ps->command_index > COMMAND_BUFFER_SIZE - 1)
-            {
-                ps->command_index = COMMAND_BUFFER_SIZE - 1;
-                if (ps->cursor_position > 0)
-                {
-                    ps->cursor_position = ps->command_index;
-                }
-            }
-            ps->command_buffer[ps->command_index] = '\0';
-            col = strlen(ps->command_prefix) + 2 + strlen(ps->command_buffer);
+            ps->command_index = strlen(ps->command_buffer);
+            ps->cursor_position = ps->command_index;
+            col = strlen(ps->command_prefix) + 2 + ps->cursor_position;
             wmove(ps->command_window, line, col);
-            // write...
-            snprintf(ps->telecommand_buffer, TCMD_BUFFER_SIZE, "%s+%s", ps->command_prefix, ps->command_buffer);
             if (strlen(ps->command_buffer) > 0)
             {
-                if (ps->satellite_connected)
+                if (ps->command_history_index < CGSE_number_of_stored_commands() - 1)
                 {
-                    bytes_sent = write(ps->satellite_link, ps->telecommand_buffer, strlen(ps->telecommand_buffer));
+                    if (strlen(CGSE_recall_command(CGSE_number_of_stored_commands() - 1)) == 0)
+                    {
+                        CGSE_remove_command(CGSE_number_of_stored_commands() - 1);
+                    }
+                    CGSE_store_command(ps->command_buffer);
+                }
+                CGSE_store_command("");
+                ps->command_history_index = CGSE_number_of_stored_commands() - 1;
+            }
+            if (strcmp(".exit", ps->command_buffer) == 0 || strcmp(".quit", ps->command_buffer) == 0)
+            {
+                running = 0;
+            }
+            else if (strcmp("?", ps->command_buffer) == 0 || strcmp(".help", ps->command_buffer) == 0)
+            {
+                wprintw(ps->command_window, "\n Available commands:\n");
+                wprintw(ps->command_window, "%30s - %s\n", "? or .help", "show available commands");
+                wprintw(ps->command_window, "%30s - %s\n", ".quit or .exit", "quit terminal");
+                wprintw(ps->command_window, "\n");
+                wprintw(ps->command_window, "%30s - %s\n", ".connect [<device-path>]", "connect to the satellite, optionally using <device-path>");
+                wprintw(ps->command_window, "%30s - %s\n", ".disconnect", "disconnect from the satellite");
+                wprintw(ps->command_window, "%30s - %s\n", ".telecommands", "list telecommands");
+
+                wprintw(ps->command_window, "\n%s> ", ps->command_prefix);
+                // Reset command 
+                ps->command_index = 0;
+                ps->command_buffer[0] = '\0';
+            }
+            else if (ps->command_buffer[0] == '.')
+            {
+                // TODO search terminal command list for this command 
+                if (strncmp(".connect", ps->command_buffer, strlen(".connect")) == 0)
+                {
+                    if (ps->satellite_connected)
+                    {
+                        CGSE_disconnect(ps);
+                        
+                    }
+                    if (strlen(ps->command_buffer) > strlen(".connect"))
+                    {
+                        // check additional argument
+                        // Based on "man strsep" example
+                        char **ap, *arg_vector[3];
+                        char *input_string = ps->command_buffer;
+                        int n_connect_args = 0;
+                        for (ap = arg_vector; (*ap = strsep(&input_string, " ")) != NULL;)
+                        {
+                            if (**ap != '\0')
+                            {
+                                n_connect_args++;
+                                if (++ap >= &arg_vector[3])
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                        if (n_connect_args == 2)
+                        {
+                            snprintf(ps->satellite_link_path, FILENAME_MAX, "%s", arg_vector[1]);
+                        }
+                    }
+                    CGSE_connect(ps);
+                }
+                else if (strcmp(".disconnect", ps->command_buffer) == 0)
+                {
+                    CGSE_disconnect(ps);
+                }
+                else if (strcmp(".telecommands", ps->command_buffer) == 0)
+                {
+                    wprintw(ps->command_window, "\n");
+                    CGSE_list_telecommands(ps);
                 }
                 else 
                 {
-                    wprintw(ps->command_window, "\n Not connected to satellite");
+                    wprintw(ps->command_window, "\n Unrecognized terminal command");
                 }
+                wprintw(ps->command_window, "\n%s> ", ps->command_prefix);
+                wrefresh(ps->command_window);
+                // Reset command 
+                ps->command_index = 0;
+                ps->command_buffer[0] = '\0';
             }
-            wprintw(ps->command_window, "\n%s> ", ps->command_prefix);
-            // Reset command 
-            ps->command_index = 0;
-            ps->command_buffer[0] = '\0';
+            else 
+            {
+                if (ps->command_index > COMMAND_BUFFER_SIZE - 1)
+                {
+                    ps->command_index = COMMAND_BUFFER_SIZE - 1;
+                    if (ps->cursor_position > 0)
+                    {
+                        ps->cursor_position = ps->command_index;
+                    }
+                }
+                ps->command_buffer[ps->command_index] = '\0';
+                col = strlen(ps->command_prefix) + 2 + strlen(ps->command_buffer);
+                wmove(ps->command_window, line, col);
+                // write...
+                snprintf(ps->telecommand_buffer, TCMD_BUFFER_SIZE, "%s+%s", ps->command_prefix, ps->command_buffer);
+                if (strlen(ps->command_buffer) > 0)
+                {
+                    if (ps->satellite_connected)
+                    {
+                        bytes_sent = write(ps->satellite_link, ps->telecommand_buffer, strlen(ps->telecommand_buffer));
+                    }
+                    else 
+                    {
+                        wprintw(ps->command_window, "\n Not connected to satellite");
+                    }
+                }
+                wprintw(ps->command_window, "\n%s> ", ps->command_prefix);
+                // Reset command 
+                ps->command_index = 0;
+                ps->command_buffer[0] = '\0';
+            }
+            ps->command_history_index = CGSE_number_of_stored_commands() - 1;
         }
-        ps->command_history_index = CGSE_number_of_stored_commands() - 1;
+
+        gettimeofday(&tv, NULL);
+        t2 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
     }
 
     return 0;
