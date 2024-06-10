@@ -71,9 +71,9 @@ const osThreadAttr_t defaultTask_attributes = {
 
 // For CTS-SAT-1, please create threads here (and not in the IOC file):
 
-osThreadId_t TASK_debug_print_heartbeat_Handle;
-const osThreadAttr_t TASK_debug_print_heartbeat_Attributes = {
-  .name = "TASK_debug_print_heartbeat",
+osThreadId_t TASK_DEBUG_print_heartbeat_Handle;
+const osThreadAttr_t TASK_DEBUG_print_heartbeat_Attributes = {
+  .name = "TASK_DEBUG_print_heartbeat",
   .stack_size = 128,
   .priority = (osPriority_t) osPriorityBelowNormal5,
 };
@@ -185,7 +185,7 @@ int main(void)
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
-  TASK_debug_print_heartbeat_Handle = osThreadNew(TASK_debug_print_heartbeat, NULL, &TASK_debug_print_heartbeat_Attributes);
+  TASK_DEBUG_print_heartbeat_Handle = osThreadNew(TASK_DEBUG_print_heartbeat, NULL, &TASK_DEBUG_print_heartbeat_Attributes);
 
   TASK_handle_uart_telecommands_Handle = osThreadNew(TASK_handle_uart_telecommands, NULL, &TASK_handle_uart_telecommands_Attributes);
   
@@ -203,7 +203,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    debug_uart_print_str("This superloop point should never be reached, because the FreeRTOS Kernel is running...\n");
+    DEBUG_uart_print_str("This superloop point should never be reached, because the FreeRTOS Kernel is running...\n");
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -797,30 +797,30 @@ static void MX_GPIO_Init(void)
   HAL_PWREx_EnableVddIO2();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOE, PIN_LED1_OUT_Pin|PIN_LED2_OUT_Pin|PIN_LED3_OUT_Pin|PIN_SCI_NCS_FLASH_0_Pin
-                          |PIN_SCI_NCS_FRAM_1_Pin|PIN_SCI_NCS_FRAM_0_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOE, PIN_LED_GP1_OUT_Pin|PIN_LED_GP2_OUT_Pin|PIN_LED_GP3_OUT_Pin|PIN_MEM_NCS_FLASH_0_Pin
+                          |PIN_MEM_NCS_FRAM_1_Pin|PIN_MEM_NCS_FRAM_0_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, PIN_CAM_EN_OUT_Pin|PIN_BOOM_DEPLOY_EN_OUT_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOF, PIN_SCI_NCS_FLASH_7_Pin|PIN_SCI_NCS_FLASH_6_Pin|PIN_SCI_NCS_FLASH_5_Pin|PIN_SCI_NCS_FLASH_4_Pin
-                          |PIN_SCI_NCS_FLASH_3_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOF, PIN_MEM_NCS_FLASH_7_Pin|PIN_MEM_NCS_FLASH_6_Pin|PIN_MEM_NCS_FLASH_5_Pin|PIN_MEM_NCS_FLASH_4_Pin
+                          |PIN_MEM_NCS_FLASH_3_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOG, PIN_SCI_NCS_FLASH_2_Pin|PIN_SCI_NCS_FLASH_1_Pin|PIN_MISO_MPI_RX_NEN_OUT_Pin|PIN_MOSI_MPI_TX_EN_OUT_Pin
+  HAL_GPIO_WritePin(GPIOG, PIN_MEM_NCS_FLASH_2_Pin|PIN_MEM_NCS_FLASH_1_Pin|PIN_MPI_NEN_RX_MISO_OUT_Pin|PIN_MPI_EN_TX_MOSI_OUT_Pin
                           |PIN_NRST_LORA_US_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, PIN_UHF_CTL_OUT_Pin|PIN_DEVKIT_LD2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, PIN_UHF_CTRL_OUT_Pin|PIN_LED_DEVKIT_LD2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(PIN_NRST_LORA_EU_OUT_GPIO_Port, PIN_NRST_LORA_EU_OUT_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : PIN_LED1_OUT_Pin PIN_LED2_OUT_Pin PIN_LED3_OUT_Pin PIN_SCI_NCS_FLASH_0_Pin
-                           PIN_SCI_NCS_FRAM_1_Pin PIN_SCI_NCS_FRAM_0_Pin */
-  GPIO_InitStruct.Pin = PIN_LED1_OUT_Pin|PIN_LED2_OUT_Pin|PIN_LED3_OUT_Pin|PIN_SCI_NCS_FLASH_0_Pin
-                          |PIN_SCI_NCS_FRAM_1_Pin|PIN_SCI_NCS_FRAM_0_Pin;
+  /*Configure GPIO pins : PIN_LED_GP1_OUT_Pin PIN_LED_GP2_OUT_Pin PIN_LED_GP3_OUT_Pin PIN_MEM_NCS_FLASH_0_Pin
+                           PIN_MEM_NCS_FRAM_1_Pin PIN_MEM_NCS_FRAM_0_Pin */
+  GPIO_InitStruct.Pin = PIN_LED_GP1_OUT_Pin|PIN_LED_GP2_OUT_Pin|PIN_LED_GP3_OUT_Pin|PIN_MEM_NCS_FLASH_0_Pin
+                          |PIN_MEM_NCS_FRAM_1_Pin|PIN_MEM_NCS_FRAM_0_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -839,26 +839,26 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PIN_SCI_NCS_FLASH_7_Pin PIN_SCI_NCS_FLASH_6_Pin PIN_SCI_NCS_FLASH_5_Pin PIN_SCI_NCS_FLASH_4_Pin
-                           PIN_SCI_NCS_FLASH_3_Pin */
-  GPIO_InitStruct.Pin = PIN_SCI_NCS_FLASH_7_Pin|PIN_SCI_NCS_FLASH_6_Pin|PIN_SCI_NCS_FLASH_5_Pin|PIN_SCI_NCS_FLASH_4_Pin
-                          |PIN_SCI_NCS_FLASH_3_Pin;
+  /*Configure GPIO pins : PIN_MEM_NCS_FLASH_7_Pin PIN_MEM_NCS_FLASH_6_Pin PIN_MEM_NCS_FLASH_5_Pin PIN_MEM_NCS_FLASH_4_Pin
+                           PIN_MEM_NCS_FLASH_3_Pin */
+  GPIO_InitStruct.Pin = PIN_MEM_NCS_FLASH_7_Pin|PIN_MEM_NCS_FLASH_6_Pin|PIN_MEM_NCS_FLASH_5_Pin|PIN_MEM_NCS_FLASH_4_Pin
+                          |PIN_MEM_NCS_FLASH_3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PIN_SCI_NCS_FLASH_2_Pin PIN_SCI_NCS_FLASH_1_Pin PIN_MISO_MPI_RX_NEN_OUT_Pin PIN_MOSI_MPI_TX_EN_OUT_Pin
+  /*Configure GPIO pins : PIN_MEM_NCS_FLASH_2_Pin PIN_MEM_NCS_FLASH_1_Pin PIN_MPI_NEN_RX_MISO_OUT_Pin PIN_MPI_EN_TX_MOSI_OUT_Pin
                            PIN_NRST_LORA_US_Pin */
-  GPIO_InitStruct.Pin = PIN_SCI_NCS_FLASH_2_Pin|PIN_SCI_NCS_FLASH_1_Pin|PIN_MISO_MPI_RX_NEN_OUT_Pin|PIN_MOSI_MPI_TX_EN_OUT_Pin
+  GPIO_InitStruct.Pin = PIN_MEM_NCS_FLASH_2_Pin|PIN_MEM_NCS_FLASH_1_Pin|PIN_MPI_NEN_RX_MISO_OUT_Pin|PIN_MPI_EN_TX_MOSI_OUT_Pin
                           |PIN_NRST_LORA_US_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PIN_UHF_CTL_OUT_Pin PIN_DEVKIT_LD2_Pin */
-  GPIO_InitStruct.Pin = PIN_UHF_CTL_OUT_Pin|PIN_DEVKIT_LD2_Pin;
+  /*Configure GPIO pins : PIN_UHF_CTRL_OUT_Pin PIN_LED_DEVKIT_LD2_Pin */
+  GPIO_InitStruct.Pin = PIN_UHF_CTRL_OUT_Pin|PIN_LED_DEVKIT_LD2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -937,7 +937,7 @@ void Error_Handler(void)
   while (1)
   {
     // TODO: make this flight-ready
-    debug_uart_print_str("Error_Handler() called\n");
+    DEBUG_uart_print_str("Error_Handler() called\n");
   }
   /* USER CODE END Error_Handler_Debug */
 }

@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 
-void debug_i2c_scan(I2C_HandleTypeDef *hi2c);
+void DEBUG_i2c_scan(I2C_HandleTypeDef *hi2c);
 
 
 
