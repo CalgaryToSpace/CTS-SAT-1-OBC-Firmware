@@ -133,8 +133,13 @@ uint8_t TCMDEXEC_get_all_configuration_variables(const uint8_t *args_str, TCMD_T
 {
     DEBUG_uart_print_str((char *)args_str);
     DEBUG_uart_print_str("\n");
-    uint8_t args[2][20];
-    const uint8_t args_count = split_string_by_delimiter(args_str, strlen((char *)args_str), ',', args, 2);
+    uint8_t args[3][20];
+    for (uint8_t i = 0; i < 3; i++)
+    {
+        memset(args[i], 0, 20);
+    }
+    const uint8_t args_len = strlen((char *)args_str);
+    const uint8_t args_count = split_string_by_delimiter(args_str, args_len, ',', args, 3);
     uint8_t args_count_str[5];
     snprintf((char *)args_count_str, 5, "%d", args_count);
 
@@ -149,10 +154,11 @@ uint8_t TCMDEXEC_get_all_configuration_variables(const uint8_t *args_str, TCMD_T
     strncat(response_output_buf, (char *)args_count_str, 5);
     strcat(response_output_buf, "\n");
 
-    strcat(response_output_buf, "String Configuration Variables:\n\n");
-
-    strncat(response_output_buf, (char *)args[1], strlen((char *)args[1]) - 1);
-    strcat(response_output_buf, "\n\0");
+    for (uint8_t i = 0; i < args_count; i++)
+    {
+        strncat(response_output_buf, (char *)args[i], strlen((char *)args[i]));
+        strcat(response_output_buf, "\n");
+    }
     return 0;
 }
 
