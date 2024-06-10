@@ -51,39 +51,13 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    struct sigaction intact = {0};
-    intact.sa_handler = interrupthandler;
-    sigaction(SIGINT, &intact, NULL);
-
-    status = init_terminal_screen(&ps);
+    status = CGSE_init(&ps);
     if (status != 0)
     {
-        endwin();
-        fprintf(stderr, "Unable to initialize ncurses screen.\n");
         return EXIT_FAILURE;
     }
-    
-    if (ps.auto_connect)
-    {
-        status = CGSE_connect(&ps);
-        if (status != 0)
-        {
-            wprintw(ps.command_window, "\n Unable to connect to satellite using \"%s\"\n", ps.satellite_link_path);
-            // Do not quit - can try again later
-        }
-    }
 
-    // Set up a while loop, with a sleep to reduce processor overhead
-    int y = 0;
-    int x = 0;
     int key = 0;
-
-    wprintw(ps.command_window, "%s> %s", ps.command_prefix, ps.command_buffer);
-    wrefresh(ps.command_window);
-    // Current line being edited
-    CGSE_store_command("");
-
-
     while(running)
     {
         parse_telemetry(&ps);
@@ -678,5 +652,40 @@ void CGSE_disconnect(GSE_program_state_t *ps)
     }
 
     return;
+}
+
+int CGSE_init(GSE_program_state_t *ps)
+{
+    int status = 0;
+
+    struct sigaction intact = {0};
+    intact.sa_handler = interrupthandler;
+    sigaction(SIGINT, &intact, NULL);
+
+    status = init_terminal_screen(ps);
+    if (status != 0)
+    {
+        endwin();
+        fprintf(stderr, "Unable to initialize ncurses screen.\n");
+        return EXIT_FAILURE;
+    }
+    
+    if (ps->auto_connect)
+    {
+        status = CGSE_connect(ps);
+        if (status != 0)
+        {
+            wprintw(ps->command_window, "\n Unable to connect to satellite using \"%s\"\n", ps->satellite_link_path);
+            // Do not quit - can try again later
+        }
+    }
+
+
+    wprintw(ps->command_window, "%s> %s", ps->command_prefix, ps->command_buffer);
+    wrefresh(ps->command_window);
+    // Current line being edited
+    CGSE_store_command("");
+
+    return 0;
 }
 

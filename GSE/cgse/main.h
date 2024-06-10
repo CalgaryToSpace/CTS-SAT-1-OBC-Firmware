@@ -64,11 +64,10 @@ int find_link_path(char *linkpath);
 void CGSE_time_string(char *time_str);
 
 void CGSE_list_telecommands(GSE_program_state_t *ps);
-
 void update_link_status(GSE_program_state_t *ps);
-
 void parse_telemetry(GSE_program_state_t *ps);
 
 void CGSE_disconnect(GSE_program_state_t *ps);
+int CGSE_init(GSE_program_state_t *ps);
 
 #endif // __INCLUDE_GUARD__MAIN_H_
