@@ -29,6 +29,11 @@ uint8_t split_string_by_delimiter(const uint8_t *input_str, const uint8_t input_
 
         // copy over word
         const uint8_t word_len = pos_in_str - start_of_word;
+        if (word_len == 0)
+        {
+            start_of_word++;
+            continue;
+        }
         uint8_t copy[word_len + 1]; // account for null terminator
         strncpy((char *)copy, (char *)(input_str + start_of_word), word_len);
         copy[word_len] = '\0';
