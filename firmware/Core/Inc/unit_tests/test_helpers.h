@@ -1,6 +1,6 @@
 #ifndef __INCLUDE_GUARD__TEST__HELPERS__H__
 #define __INCLUDE_GUARD__TEST__HELPERS__H__
-
-void TEST_HELPER_Split_String_By_Delimiter();
+#include <stdint.h>
+uint8_t TEST_EXEC__HELPER_Split_String_By_Delimiter();
 
 #endif

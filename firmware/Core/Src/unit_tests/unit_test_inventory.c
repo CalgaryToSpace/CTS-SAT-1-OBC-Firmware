@@ -10,27 +10,41 @@
 // extern
 const TEST_Definition_t TEST_definitions[] = {
 
-    {.test_func = TEST_EXEC__test_asserts,
+    {
+     .test_func = TEST_EXEC__test_asserts,
      .test_file = "unit_tests/test_tests",
-     .test_func_name = "test_asserts"},
-    {.test_func = TEST_EXEC__this_test_always_fails,
+     .test_func_name = "test_asserts"
+    },
+    {
+     .test_func = TEST_EXEC__this_test_always_fails,
      .test_file = "unit_tests/test_tests",
-     .test_func_name = "this_test_always_fails"},
-    {.test_func = TEST_EXEC__TCMD_is_char_alphanumeric,
+     .test_func_name = "this_test_always_fails"
+    },
+    {
+     .test_func = TEST_EXEC__TCMD_is_char_alphanumeric,
      .test_file = "telecommands/telecommand_parser",
-     .test_func_name = "TCMD_is_char_alphanumeric"},
-    {.test_func = TEST_EXEC__GEN_get_index_of_substring_in_array,
+     .test_func_name = "TCMD_is_char_alphanumeric"
+    },
+    {
+     .test_func = TEST_EXEC__GEN_get_index_of_substring_in_array,
      .test_file = "telecommands/telecommand_parser",
-     .test_func_name = "GEN_get_index_of_substring_in_array"},
-    {.test_func = TEST_EXEC__TCMD_check_starts_with_device_id,
+     .test_func_name = "GEN_get_index_of_substring_in_array"
+    },
+    {
+     .test_func = TEST_EXEC__TCMD_check_starts_with_device_id,
      .test_file = "telecommands/telecommand_parser",
-     .test_func_name = "TCMD_check_starts_with_device_id"},
-    {.test_func = TEST_EXEC__GEN_convert_big_endian_four_byte_array_to_uint32,
+     .test_func_name = "TCMD_check_starts_with_device_id"
+    },
+    {
+     .test_func = TEST_EXEC__GEN_convert_big_endian_four_byte_array_to_uint32,
      .test_file = "transforms/byte_transforms",
-     .test_func_name = "GEN_convert_big_endian_four_byte_array_to_uint32"},
-    {.test_func = TEST_HELPER_Split_String_By_Delimiter,
+     .test_func_name = "GEN_convert_big_endian_four_byte_array_to_uint32"
+    },
+    {
+     .test_func = TEST_EXEC__HELPER_Split_String_By_Delimiter,
      .test_file = "helpers/helpers",
-     .test_func_name = "split_string_by_delimiter"}
+     .test_func_name = "split_string_by_delimiter"
+    }
 
 };
 

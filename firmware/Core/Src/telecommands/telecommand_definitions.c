@@ -4,8 +4,7 @@
 #include "transforms/arrays.h"
 #include "unit_tests/unit_test_executor.h"
 #include "debug_tools/debug_uart.h"
-#include "transforms/string_helpers.h"
-#include "configuration/configuration.h"
+#include "helpers/helpers.h"
 
 #include <stdio.h>
 #include <stdint.h>
