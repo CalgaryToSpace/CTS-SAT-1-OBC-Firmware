@@ -65,7 +65,7 @@ int main(int argc, char **argv)
     
     if (ps.auto_connect)
     {
-        status = connect_to_satellite(&ps);
+        status = CGSE_connect(&ps);
         if (status != 0)
         {
             wprintw(ps.command_window, "\n Unable to connect to satellite using \"%s\"\n", ps.satellite_link_path);
@@ -167,20 +167,12 @@ int init_terminal_screen(GSE_program_state_t *ps)
 
 }
 
-int connect_to_satellite(GSE_program_state_t *ps)
+int CGSE_connect(GSE_program_state_t *ps)
 {
-
-    mvwprintw(ps->status_window, 0, 0, "Connecting to \"%s\" @ %lu...", ps->satellite_link_path, ps->baud_rate);
-    wclrtoeol(ps->status_window);
-    wrefresh(ps->status_window);
-
     // Connect and set link parameters
     int sat_link = open(ps->satellite_link_path, O_RDWR | O_NONBLOCK | O_NOCTTY);
     if (sat_link == -1)
     {
-        mvwprintw(ps->status_window, 0, 0, "Unable to open satellite link.\n");
-        wclrtoeol(ps->status_window);
-        wrefresh(ps->status_window);
         return -1;
     }
 
@@ -188,9 +180,6 @@ int connect_to_satellite(GSE_program_state_t *ps)
     int result = tcgetattr(sat_link, &sat_link_params);
     if (result != 0)
     {
-        wprintw(ps->status_window, "Unable to get satellite link information.\n");
-        wclrtoeol(ps->status_window);
-        wrefresh(ps->status_window);
         return -1;
     }
     cfsetspeed(&sat_link_params, ps->baud_rate);
@@ -207,9 +196,6 @@ int connect_to_satellite(GSE_program_state_t *ps)
     result = tcsetattr(sat_link, TCSANOW, &sat_link_params);
     if (result != 0)
     {
-        wprintw(ps->status_window, "Unable to set satellite link baud rate.\n");
-        wclrtoeol(ps->status_window);
-        wrefresh(ps->status_window);
         return -1;
     }
     tcflush(sat_link, TCIOFLUSH);
@@ -347,7 +333,8 @@ int parse_input(GSE_program_state_t *ps, int key)
             wprintw(ps->command_window, "%30s - %s\n", "? or .help", "show available commands");
             wprintw(ps->command_window, "%30s - %s\n", ".quit or .exit", "quit terminal");
             wprintw(ps->command_window, "\n");
-            wprintw(ps->command_window, "%30s - %s\n", ".connect <device-path>", "establish as serial link to the satellite <device-path>");
+            wprintw(ps->command_window, "%30s - %s\n", ".connect [<device-path>]", "connect to the satellite, optionally using <device-path>");
+            wprintw(ps->command_window, "%30s - %s\n", ".disconnect", "disconnect from the satellite");
             wprintw(ps->command_window, "%30s - %s\n", ".telecommands", "list telecommands");
 
             wprintw(ps->command_window, "\n%s> ", ps->command_prefix);
@@ -360,41 +347,41 @@ int parse_input(GSE_program_state_t *ps, int key)
             // TODO search terminal command list for this command 
             if (strncmp(".connect", ps->command_buffer, strlen(".connect")) == 0)
             {
-                // Based on "man strsep" example
-                char **ap, *arg_vector[3];
-                char *input_string = ps->command_buffer;
-                int n_connect_args = 0;
-                for (ap = arg_vector; (*ap = strsep(&input_string, " ")) != NULL;)
+                if (ps->satellite_connected)
                 {
-                    if (**ap != '\0')
+                    CGSE_disconnect(ps);
+                    
+                }
+                if (strlen(ps->command_buffer) > strlen(".connect"))
+                {
+                    // check additional argument
+                    // Based on "man strsep" example
+                    char **ap, *arg_vector[3];
+                    char *input_string = ps->command_buffer;
+                    int n_connect_args = 0;
+                    for (ap = arg_vector; (*ap = strsep(&input_string, " ")) != NULL;)
                     {
-                        n_connect_args++;
-                        if (++ap >= &arg_vector[3])
+                        if (**ap != '\0')
                         {
-                            break;
+                            n_connect_args++;
+                            if (++ap >= &arg_vector[3])
+                            {
+                                break;
+                            }
                         }
                     }
-                }
-                if (n_connect_args == 2)
-                {
-                    snprintf(ps->satellite_link_path, FILENAME_MAX, "%s", arg_vector[1]);
-                    status = connect_to_satellite(ps);
-                    if (status != 0)
+                    if (n_connect_args == 2)
                     {
-                        wprintw(ps->command_window, "\n Unable to connect to satellite using \"%s\"", ps->satellite_link_path);
-                        // Do not quit - can try again later
-                    }
-                    else 
-                    {
-                        ps->satellite_connected = true;
+                        snprintf(ps->satellite_link_path, FILENAME_MAX, "%s", arg_vector[1]);
                     }
                 }
-                else 
-                {
-                    wprintw(ps->command_window, "\n Usage: .connect <device-path>");
-                }
+                CGSE_connect(ps);
             }
-            else if (strncmp(".telecommands", ps->command_buffer, strlen(".telecommands")) == 0)
+            else if (strcmp(".disconnect", ps->command_buffer) == 0)
+            {
+                CGSE_disconnect(ps);
+            }
+            else if (strcmp(".telecommands", ps->command_buffer) == 0)
             {
                 wprintw(ps->command_window, "\n");
                 CGSE_list_telecommands(ps);
@@ -622,10 +609,17 @@ void update_link_status(GSE_program_state_t *ps)
 {
     if (ps->satellite_connected)
     {
-        mvwprintw(ps->status_window, 0, 0, "Connected on %s @ %lu\n", ps->satellite_link_path, ps->baud_rate);
+        mvwprintw(ps->status_window, 0, 0, "Connected on %s @ %lu", ps->satellite_link_path, ps->baud_rate);
         wclrtoeol(ps->status_window);
         wrefresh(ps->status_window);
     }
+    else
+    {
+        mvwprintw(ps->status_window, 0, 0, "");
+        wclrtoeol(ps->status_window);
+        wrefresh(ps->status_window);
+    }
+
 }
 
 void parse_telemetry(GSE_program_state_t *ps)
@@ -670,5 +664,19 @@ void parse_telemetry(GSE_program_state_t *ps)
         // TODO convert binary to base64 to allow printing to the screen
         wprintw(ps->main_window, "%s: %s", ps->time_buffer, ps->receive_buffer);
     }
+
+    return;
+}
+
+void CGSE_disconnect(GSE_program_state_t *ps)
+{
+    if (ps->satellite_link > 0)
+    {
+        close(ps->satellite_link);
+        ps->satellite_link = 0;
+        ps->satellite_connected = false;
+    }
+
+    return;
 }
 

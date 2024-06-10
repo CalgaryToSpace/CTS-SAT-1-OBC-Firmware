@@ -50,7 +50,7 @@ typedef struct
 } GSE_program_state_t;
 
 int init_terminal_screen(GSE_program_state_t *program_state);
-int connect_to_satellite(GSE_program_state_t *program_state);
+int CGSE_connect(GSE_program_state_t *program_state);
 
 int parse_input(GSE_program_state_t *program_state, int key);
 
@@ -68,5 +68,7 @@ void CGSE_list_telecommands(GSE_program_state_t *ps);
 void update_link_status(GSE_program_state_t *ps);
 
 void parse_telemetry(GSE_program_state_t *ps);
+
+void CGSE_disconnect(GSE_program_state_t *ps);
 
 #endif // __INCLUDE_GUARD__MAIN_H_
