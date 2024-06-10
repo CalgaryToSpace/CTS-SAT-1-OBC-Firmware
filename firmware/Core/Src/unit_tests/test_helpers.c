@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <string.h>
 
+// Function which tests the split_string_by_delimiter function
 uint8_t TEST_EXEC__HELPER_Split_String_By_Delimiter()
 {
     // Test case 1: Normal case

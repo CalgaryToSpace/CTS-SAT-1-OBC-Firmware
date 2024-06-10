@@ -5,6 +5,17 @@
 
 #include "helpers/helpers.h"
 
+/// @brief Populates an array of strings by splitting a string by a delimiter
+/// @param input_str Input String
+/// @param input_str_len length of input string
+/// @param delim any character
+/// @param result 2d array of strings
+/// @param max_segments Max number of strings to be populated
+/// @return Number of strings populated
+/// @note By default, each string inside the result array is 20 characters long
+/// if this is not enough for the string, need to update approach of increase size of array
+// TODO: Update approach of increase size of array
+// TODO: Update input_str_len so that it is not needed
 uint8_t split_string_by_delimiter(const uint8_t *input_str, const uint8_t input_str_len, const uint8_t delim, uint8_t result[][20], const uint8_t max_segments)
 {
     if (input_str == NULL || result == NULL || max_segments == 0 || input_str_len == 0)
