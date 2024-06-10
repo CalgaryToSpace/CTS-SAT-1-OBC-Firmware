@@ -74,91 +74,10 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 0,
     },
     {
-        .tcmd_name = "set_config_var",
-        .tcmd_func = TCMDEXEC_set_configuration_variable,
-        .number_of_args = 2,
-    },
-    {
-        .tcmd_name = "get_int_config_var",
-        .tcmd_func = TCMDEXEC_get_integer_configuration_variable,
-        .number_of_args = 2,
-    },
-    {
-        .tcmd_name = "get_all_config_vars",
-        .tcmd_func = TCMDEXEC_get_all_configuration_variables,
+        .tcmd_name = "alis_hello_world",
+        .tcmd_func = TCMDEXEC_hello_ali,
         .number_of_args = 0,
-    },
-
-    // ****************** SECTION: flash_telecommand_defs ******************
-    {
-        .tcmd_name = "flash_activate_each_cs",
-        .tcmd_func = TCMDEXEC_flash_activate_each_cs,
-        .number_of_args = 0,
-    },
-    {
-        .tcmd_name = "flash_each_is_reachable",
-        .tcmd_func = TCMDEXEC_flash_each_is_reachable,
-        .number_of_args = 0,
-    },
-    {
-        .tcmd_name = "flash_read_hex",
-        .tcmd_func = TCMDEXEC_flash_read_hex,
-        .number_of_args = 3,
-    },
-    {
-        .tcmd_name = "flash_write_hex",
-        .tcmd_func = TCMDEXEC_flash_write_hex,
-        .number_of_args = 3,
-    },
-    {
-        .tcmd_name = "flash_erase",
-        .tcmd_func = TCMDEXEC_flash_erase,
-        .number_of_args = 2,
-    },
-    {
-        .tcmd_name = "flash_benchmark_erase_write_read",
-        .tcmd_func = TCMDEXEC_flash_benchmark_erase_write_read,
-        .number_of_args = 3,
-    },
-    // ****************** END SECTION: flash_telecommand_defs ******************
-
-    // ****************** SECTION: lfs_telecommand_defs ******************
-    {
-        .tcmd_name = "fs_format_storage",
-        .tcmd_func = TCMDEXEC_fs_format_storage,
-        .number_of_args = 0,
-    },
-    {
-        .tcmd_name = "fs_mount",
-        .tcmd_func = TCMDEXEC_fs_mount,
-        .number_of_args = 0,
-    },
-    {
-        .tcmd_name = "fs_unmount",
-        .tcmd_func = TCMDEXEC_fs_unmount,
-        .number_of_args = 0,
-    },
-    {
-        .tcmd_name = "fs_write_file",
-        .tcmd_func = TCMDEXEC_fs_write_file,
-        .number_of_args = 2,
-    },
-    {
-        .tcmd_name = "fs_read_file",
-        .tcmd_func = TCMDEXEC_fs_read_file,
-        .number_of_args = 1,
-    },
-    {
-        .tcmd_name = "fs_demo_write_then_read",
-        .tcmd_func = TCMDEXEC_fs_demo_write_then_read,
-        .number_of_args = 0,
-    },
-    {
-        .tcmd_name = "fs_benchmark_write_read",
-        .tcmd_func = TCMDEXEC_fs_benchmark_write_read,
-        .number_of_args = 2,
-    },
-    // ****************** END SECTION: lfs_telecommand_defs ******************
+    }
 
 };
 
@@ -176,70 +95,11 @@ uint8_t TCMDEXEC_hello_world(const uint8_t *args_str, TCMD_TelecommandChannel_en
     return 0;
 }
 
-uint8_t TCMDEXEC_set_configuration_variable(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                                            char *response_output_buf, uint16_t response_output_buf_len)
+uint8_t TCMDEXEC_heartbeat_off(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                               char *response_output_buf, uint16_t response_output_buf_len)
 {
-    // TODO
-    snprintf(response_output_buf, response_output_buf_len, "TODO\n");
-    return 0;
-}
-
-uint8_t TCMDEXEC_get_integer_configuration_variable(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                                                    char *response_output_buf, uint16_t response_output_buf_len)
-{
-    CONFIG_integer_config_entry_t res;
-    const uint8_t found_int = CONFIG_find_integer_variable_by_name((const char *)args_str, strlen((char *)args_str), &res);
-    if (found_int > 0)
-    {
-        snprintf(response_output_buf, response_output_buf_len, "%s : %s\n", "Could not find", args_str);
-        return 0;
-    }
-
-    size_t num = 0;
-    char num_type_str[10];
-    memset(num_type_str, 0, 10);
-    const uint8_t found_num_type = CONFIG_get_integer_type(res.width_bytes, &num, res.variable_pointer, num_type_str);
-
-    if (found_num_type != 0)
-    {
-        snprintf(response_output_buf, response_output_buf_len, "%s\n", "Could not find type");
-        return 0;
-    }
-
-    snprintf(response_output_buf, response_output_buf_len, "%s | %d | %d\n", res.variable_name, res.width_bytes, num);
-
-    return 0;
-}
-
-uint8_t TCMDEXEC_get_string_configuration_variable(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
-{
-    return 0;
-}
-uint8_t TCMDEXEC_get_all_configuration_variables(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                                                 char *response_output_buf, uint16_t response_output_buf_len)
-{
-    // TODO: Deal with table which is too long, current thread has limited stack size,
-    // may need to increase or find other solution
-
-    const char *header = "Available Configuration Variables:";
-    const char *integer_header = "Integer Configuration Variables:";
-    const char *string_header = "String Configuration Variables:";
-
-    char config_integer_table[100];
-    memset(config_integer_table, 0, 100);
-    const uint16_t config_integer_table_size = CONFIG_print_integer_table(config_integer_table);
-
-    char config_string_table[100];
-    memset(config_string_table, 0, 100);
-    const uint16_t config_string_table_size = CONFIG_print_string_table(config_string_table);
-
-    snprintf(response_output_buf,
-             response_output_buf_len,
-             "%s\n\n%s\n\n%s\n\n%s\n\n%s",
-             header,
-             integer_header, config_integer_table,
-             string_header, config_string_table);
-
+    TASK_heartbeat_is_on = 0;
+    snprintf(response_output_buf, response_output_buf_len, "Heartbeat OFF");
     return 0;
 }
 
@@ -248,6 +108,22 @@ uint8_t TCMDEXEC_heartbeat_on(const uint8_t *args_str, TCMD_TelecommandChannel_e
 {
     TASK_heartbeat_is_on = 1;
     snprintf(response_output_buf, response_output_buf_len, "Heartbeat ON");
+}
+uint8_t TCMDEXEC_hello_ali(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                           char *response_output_buf, uint16_t response_output_buf_len)
+{
+    debug_uart_print_str((char *)args_str);
+    debug_uart_print_str("\n");
+    uint8_t args[2][20];
+    uint8_t args_count = split_string_by_delimiter(args_str, strlen((char *)args_str), ',', args, 1);
+
+    debug_uart_print_str("Args count: ");
+    debug_uart_print_uint32(args_count);
+    debug_uart_print_str("\n");
+    debug_uart_print_str((char *)args[0]);
+    debug_uart_print_str("\n");
+    snprintf(response_output_buf, response_output_buf_len, "Hello, world From Ali!\n");
+
     return 0;
 }
 

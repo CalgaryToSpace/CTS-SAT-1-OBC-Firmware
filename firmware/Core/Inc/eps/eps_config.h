@@ -3,8 +3,10 @@
 
 #include "../configuration/configuration.h"
 
-extern uint8_t test_integer_config_eps = 1;
+extern uint8_t test_config_eps = 1;
 
-extern char *test_string_config_eps = "test\0";
+extern const Configuration_Variable EPS_CONFIG[] = {
+    {.var = &test_config_eps,
+     .subsystem = CTS_Subsystem_EPS}};
 
 #endif
