@@ -35,6 +35,11 @@ typedef struct
     bool satellite_connected;
     int satellite_link;
 
+    char time_buffer[CGSE_TIME_STR_MAX_LEN];
+
+    uint8_t receive_buffer[RECEIVE_BUFFER_SIZE];
+    ssize_t bytes_received;
+
     char command_buffer[COMMAND_BUFFER_SIZE];
     size_t command_history_index;
     int cursor_position;
@@ -61,5 +66,7 @@ void CGSE_time_string(char *time_str);
 void CGSE_list_telecommands(GSE_program_state_t *ps);
 
 void update_link_status(GSE_program_state_t *ps);
+
+void parse_telemetry(GSE_program_state_t *ps);
 
 #endif // __INCLUDE_GUARD__MAIN_H_

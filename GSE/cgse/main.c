@@ -74,8 +74,6 @@ int main(int argc, char **argv)
     }
 
     // Set up a while loop, with a sleep to reduce processor overhead
-    uint8_t receive_buffer[RECEIVE_BUFFER_SIZE] = {0};
-    ssize_t bytes_received = 0;
     int y = 0;
     int x = 0;
     int key = 0;
@@ -85,26 +83,10 @@ int main(int argc, char **argv)
     // Current line being edited
     CGSE_store_command("");
 
-    char time_buffer[CGSE_TIME_STR_MAX_LEN] = {0};
 
     while(running)
     {
-        // select() to see if data are ready?
-        memset(receive_buffer, 0, RECEIVE_BUFFER_SIZE);
-        if (ps.satellite_connected)
-        {
-            bytes_received = read(ps.satellite_link, receive_buffer, RECEIVE_BUFFER_SIZE);
-            CGSE_time_string(time_buffer);
-        }
-        else 
-        {
-            bytes_received = 0;
-        }
-        if (bytes_received > 0)
-        {
-            wclrtoeol(ps.main_window);
-            wprintw(ps.main_window, "%s: %s", time_buffer, receive_buffer);
-        }
+        parse_telemetry(&ps);
         update_link_status(&ps);
         wrefresh(ps.status_window);
         wrefresh(ps.main_window);
@@ -645,3 +627,48 @@ void update_link_status(GSE_program_state_t *ps)
         wrefresh(ps->status_window);
     }
 }
+
+void parse_telemetry(GSE_program_state_t *ps)
+{
+    // select() to see if data are ready?
+    memset(ps->receive_buffer, 0, RECEIVE_BUFFER_SIZE);
+    size_t start = 0;
+    size_t stop = 0;
+
+    ps->bytes_received = 0;
+    if (ps->satellite_connected)
+    {
+        CGSE_time_string(ps->time_buffer);
+        struct timeval tv = {0};
+        gettimeofday(&tv, NULL);
+        double t1 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
+        double t2 = t1;
+        while (ps->bytes_received >= 0 && (t2-t1) < 0.25)
+        {
+            start = stop;
+            ps->bytes_received = read(ps->satellite_link, ps->receive_buffer + start, RECEIVE_BUFFER_SIZE);
+            if (ps->bytes_received > 0)
+            {
+                stop = start + ps->bytes_received;
+            }
+            gettimeofday(&tv, NULL);
+            t2 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
+        }
+    }
+    else 
+    {
+       stop = 0; 
+    }
+    if (stop > 0)
+    {
+        wclrtoeol(ps->main_window);
+        if (stop >= RECEIVE_BUFFER_SIZE)
+        {
+            stop--;
+        }
+        ps->receive_buffer[stop] = '\0';
+        // TODO convert binary to base64 to allow printing to the screen
+        wprintw(ps->main_window, "%s: %s", ps->time_buffer, ps->receive_buffer);
+    }
+}
+
