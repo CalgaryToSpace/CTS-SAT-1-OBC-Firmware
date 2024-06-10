@@ -19,10 +19,10 @@ uint8_t TEST_EXEC__HELPER_Split_String_By_Delimiter()
     const uint8_t *fruits = (uint8_t *)"apple,banana,cherry,date\0";
     const uint8_t num_strings_split = split_string_by_delimiter(fruits, strlen((char *)fruits), ',', fruitOutput, max_string_num);
     TEST_ASSERT_TRUE(num_strings_split == 4);
-    TEST_ASSERT_TRUE(strcmp((char *)fruitOutput[0], "apple") == 0);
-    TEST_ASSERT_TRUE(strcmp((char *)fruitOutput[1], "banana") == 0);
-    TEST_ASSERT_TRUE(strcmp((char *)fruitOutput[2], "cherry") == 0);
-    TEST_ASSERT_TRUE(strcmp((char *)fruitOutput[3], "date") == 0);
+    TEST_ASSERT_TRUE(strncmp((char *)fruitOutput[0], "apple\0", 7) == 0);
+    TEST_ASSERT_TRUE(strncmp((char *)fruitOutput[1], "banana\0", 8) == 0);
+    TEST_ASSERT_TRUE(strncmp((char *)fruitOutput[2], "cherry\0", 8) == 0);
+    TEST_ASSERT_TRUE(strncmp((char *)fruitOutput[3], "date\0", 6) == 0);
 
     // Test case 2: Empty string
     const char empty[] = "";
@@ -52,7 +52,7 @@ uint8_t TEST_EXEC__HELPER_Split_String_By_Delimiter()
     }
     const uint8_t num_strings_split_single = split_string_by_delimiter(single, strlen((char *)single), ',', single_output, 1);
     TEST_ASSERT_TRUE(num_strings_split_single == 1);
-    TEST_ASSERT_TRUE(strcmp((char *)single_output[0], "single") == 0);
+    TEST_ASSERT_TRUE(strncmp((char *)single_output[0], "single\0", 8) == 0);
 
     // Test case 4: Trailing comma
     const uint8_t *trailing = (uint8_t *)"one,two,\0";
@@ -63,8 +63,8 @@ uint8_t TEST_EXEC__HELPER_Split_String_By_Delimiter()
     }
     const uint8_t num_strings_split_trailing = split_string_by_delimiter(trailing, strlen((char *)trailing), ',', trailing_output, 2);
     TEST_ASSERT_TRUE(num_strings_split_trailing == 2);
-    TEST_ASSERT_TRUE(strcmp((char *)trailing_output[0], "one") == 0);
-    TEST_ASSERT_TRUE(strcmp((char *)trailing_output[1], "two") == 0);
+    TEST_ASSERT_TRUE(strncmp((char *)trailing_output[1], "two\0", 5) == 0);
+    TEST_ASSERT_TRUE(strncmp((char *)trailing_output[0], "one\0", 5) == 0);
 
     // Test case 5: Leading comma
     const uint8_t *leading = (uint8_t *)",one,two,three\0";
@@ -76,9 +76,9 @@ uint8_t TEST_EXEC__HELPER_Split_String_By_Delimiter()
     const uint8_t num_strings_split_leading = split_string_by_delimiter(leading, strlen((char *)leading), ',', leading_output, 3);
 
     TEST_ASSERT_TRUE(num_strings_split_leading == 3);
-    TEST_ASSERT_TRUE(strcmp((char *)leading_output[0], "one") == 0);
-    TEST_ASSERT_TRUE(strcmp((char *)leading_output[1], "two") == 0);
-    TEST_ASSERT_TRUE(strcmp((char *)leading_output[2], "three") == 0);
+    TEST_ASSERT_TRUE(strncmp((char *)leading_output[0], "one\0", 5) == 0);
+    TEST_ASSERT_TRUE(strncmp((char *)leading_output[1], "two\0", 5) == 0);
+    TEST_ASSERT_TRUE(strncmp((char *)leading_output[2], "three\0", 7) == 0);
 
     // Test case 6: Multiple consecutive commas
     const uint8_t *consecutive = (uint8_t *)"one,,two\0";
@@ -89,8 +89,8 @@ uint8_t TEST_EXEC__HELPER_Split_String_By_Delimiter()
     }
     const uint8_t num_strings_split_consecutive = split_string_by_delimiter(consecutive, strlen((char *)consecutive), ',', consecutive_output, 2);
     TEST_ASSERT_TRUE(num_strings_split_consecutive == 2);
-    TEST_ASSERT_TRUE(strcmp((char *)consecutive_output[0], "one") == 0);
-    TEST_ASSERT_TRUE(strcmp((char *)consecutive_output[1], "two") == 0);
+    TEST_ASSERT_TRUE(strncmp((char *)consecutive_output[0], "one\0", 5) == 0);
+    TEST_ASSERT_TRUE(strncmp((char *)consecutive_output[1], "two\0", 5) == 0);
 
     return 0;
 }
