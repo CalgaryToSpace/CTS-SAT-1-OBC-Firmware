@@ -9,7 +9,8 @@
 /// @param input_str Input String
 /// @param input_str_len length of input string
 /// @param delim any character
-/// @param result 2d array of strings
+/// @param result 2d array of strings to be populated, enusre that the array is clearerd before passing in,
+/// or undefined behavior may occur
 /// @param max_segments Max number of strings to be populated
 /// @return Number of strings populated
 /// @note By default, each string inside the result array is 20 characters long
