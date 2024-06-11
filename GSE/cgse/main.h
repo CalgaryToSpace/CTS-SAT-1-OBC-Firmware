@@ -47,14 +47,17 @@ typedef struct
 
     char telecommand_buffer[TCMD_BUFFER_SIZE];
 
-} GSE_program_state_t;
+    char *current_directory[FILENAME_MAX];
+    char *file_to_load[FILENAME_MAX];
 
-int init_terminal_screen(GSE_program_state_t *program_state);
-int CGSE_connect(GSE_program_state_t *program_state);
+} CGSE_program_state_t;
 
-int parse_input(GSE_program_state_t *program_state, int key);
+int init_terminal_screen(CGSE_program_state_t *program_state);
+int CGSE_connect(CGSE_program_state_t *program_state);
 
-int parse_args(GSE_program_state_t *ps);
+int parse_input(CGSE_program_state_t *program_state, int key);
+
+int parse_args(CGSE_program_state_t *ps);
 
 void CGSE_license(void);
 void CGSE_about(void);
@@ -63,11 +66,13 @@ int find_link_path(char *linkpath);
 
 void CGSE_time_string(char *time_str);
 
-void CGSE_list_telecommands(GSE_program_state_t *ps);
-void update_link_status(GSE_program_state_t *ps);
-void parse_telemetry(GSE_program_state_t *ps);
+void CGSE_list_telecommands(CGSE_program_state_t *ps);
+void update_link_status(CGSE_program_state_t *ps);
+void parse_telemetry(CGSE_program_state_t *ps);
 
-void CGSE_disconnect(GSE_program_state_t *ps);
-int CGSE_init(GSE_program_state_t *ps);
+void CGSE_disconnect(CGSE_program_state_t *ps);
+int CGSE_init(CGSE_program_state_t *ps);
+
+int CGSE_list_files(CGSE_program_state_t *ps);
 
 #endif // __INCLUDE_GUARD__MAIN_H_

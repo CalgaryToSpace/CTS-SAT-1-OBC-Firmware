@@ -42,7 +42,7 @@ int main(int argc, char **argv)
 
     int status = 0;
 
-    GSE_program_state_t ps = {0};
+    CGSE_program_state_t ps = {0};
     ps.argc = argc;
     ps.argv = argv;
     status = parse_args(&ps);
@@ -88,7 +88,7 @@ int main(int argc, char **argv)
     return EXIT_SUCCESS;
 }
 
-int init_terminal_screen(GSE_program_state_t *ps)
+int init_terminal_screen(CGSE_program_state_t *ps)
 {
     int status = 0;
     setlocale(LC_ALL, "");
@@ -128,7 +128,7 @@ int init_terminal_screen(GSE_program_state_t *ps)
 
 }
 
-int CGSE_connect(GSE_program_state_t *ps)
+int CGSE_connect(CGSE_program_state_t *ps)
 {
     // Connect and set link parameters
     int sat_link = open(ps->satellite_link_path, O_RDWR | O_NONBLOCK | O_NOCTTY);
@@ -168,7 +168,7 @@ int CGSE_connect(GSE_program_state_t *ps)
     return 0;
 }
 
-int parse_input(GSE_program_state_t *ps, int key)
+int parse_input(CGSE_program_state_t *ps, int key)
 {
     int status = 0;
     int line = 0;
@@ -422,7 +422,7 @@ int parse_input(GSE_program_state_t *ps, int key)
     return 0;
 }
 
-int parse_args(GSE_program_state_t *ps)
+int parse_args(CGSE_program_state_t *ps)
 {
     int status = 0;
 
@@ -570,7 +570,7 @@ void CGSE_time_string(char *time_str)
 }
 
 
-void CGSE_list_telecommands(GSE_program_state_t *ps)
+void CGSE_list_telecommands(CGSE_program_state_t *ps)
 {
 
     const TCMD_TelecommandDefinition_t *cmd = NULL;
@@ -594,7 +594,7 @@ void CGSE_list_telecommands(GSE_program_state_t *ps)
     return;
 }
 
-void update_link_status(GSE_program_state_t *ps)
+void update_link_status(CGSE_program_state_t *ps)
 {
     if (ps->satellite_connected)
     {
@@ -611,7 +611,7 @@ void update_link_status(GSE_program_state_t *ps)
 
 }
 
-void parse_telemetry(GSE_program_state_t *ps)
+void parse_telemetry(CGSE_program_state_t *ps)
 {
     // select() to see if data are ready?
     memset(ps->receive_buffer, 0, RECEIVE_BUFFER_SIZE);
@@ -657,7 +657,7 @@ void parse_telemetry(GSE_program_state_t *ps)
     return;
 }
 
-void CGSE_disconnect(GSE_program_state_t *ps)
+void CGSE_disconnect(CGSE_program_state_t *ps)
 {
     if (ps->satellite_link > 0)
     {
@@ -669,7 +669,7 @@ void CGSE_disconnect(GSE_program_state_t *ps)
     return;
 }
 
-int CGSE_init(GSE_program_state_t *ps)
+int CGSE_init(CGSE_program_state_t *ps)
 {
     int status = 0;
 
