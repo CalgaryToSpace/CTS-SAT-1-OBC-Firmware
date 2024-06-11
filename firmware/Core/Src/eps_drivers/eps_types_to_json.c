@@ -24,7 +24,7 @@ typedef struct {
 	int16_t voltage_raw;
 	int16_t current_raw;
 	int16_t power_raw;
-} eps_vpid_raw_t;
+} EPS_vpid_raw_t;
 
 For the long array, use array_name[0], array_name[1], array_name[2], etc. verbosely instead of using iteration.
 
@@ -39,7 +39,7 @@ Note that modification are sometimes required, including:
 
 */
 
-uint8_t eps_vpid_raw_TO_json(const eps_vpid_raw_t *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t EPS_vpid_raw_TO_json(const EPS_vpid_raw_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 10) {
         return 1; // Error: Invalid input
     }
@@ -58,7 +58,7 @@ uint8_t eps_vpid_raw_TO_json(const eps_vpid_raw_t *data, char json_output_str[],
     return 0; // Success
 }
 
-uint8_t eps_vpid_eng_TO_json(const eps_vpid_eng_t *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t EPS_vpid_eng_TO_json(const EPS_vpid_eng_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 10) {
         return 1; // Error: Invalid input
     }
@@ -77,13 +77,13 @@ uint8_t eps_vpid_eng_TO_json(const eps_vpid_eng_t *data, char json_output_str[],
     return 0; // Success
 }
 
-uint8_t eps_battery_pack_datatype_raw_TO_json(const eps_battery_pack_datatype_raw_t *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t EPS_battery_pack_datatype_raw_TO_json(const EPS_battery_pack_datatype_raw_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 10) {
         return 1; // Error: Invalid input
     }
 
     char vip_bp_input_raw_json[100];
-    const uint8_t json_ret_code = eps_vpid_raw_TO_json(&(data->vip_bp_input_raw), vip_bp_input_raw_json, 100);
+    const uint8_t json_ret_code = EPS_vpid_raw_TO_json(&(data->vip_bp_input_raw), vip_bp_input_raw_json, 100);
     if (json_ret_code != 0) {
         return json_ret_code; // Error: subfunction error
     }
@@ -110,13 +110,13 @@ uint8_t eps_battery_pack_datatype_raw_TO_json(const eps_battery_pack_datatype_ra
     return 0; // Success
 }
 
-uint8_t eps_battery_pack_datatype_eng_TO_json(const eps_battery_pack_datatype_eng_t *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t EPS_battery_pack_datatype_eng_TO_json(const EPS_battery_pack_datatype_eng_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 10) {
         return 1; // Error: Invalid input
     }
 
     char vip_bp_input_json[100];
-    const uint8_t json_ret_code = eps_vpid_eng_TO_json(&(data->vip_bp_input), vip_bp_input_json, 100);
+    const uint8_t json_ret_code = EPS_vpid_eng_TO_json(&(data->vip_bp_input), vip_bp_input_json, 100);
     if (json_ret_code != 0) {
         return json_ret_code + 32; // Error: subfunction error
     }
@@ -143,13 +143,13 @@ uint8_t eps_battery_pack_datatype_eng_TO_json(const eps_battery_pack_datatype_en
     return 0; // Success
 }
 
-uint8_t eps_conditioning_channel_datatype_raw_TO_json(const eps_conditioning_channel_datatype_raw_t *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t EPS_conditioning_channel_datatype_raw_TO_json(const EPS_conditioning_channel_datatype_raw_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 10) {
         return 1; // Error: Invalid input
     }
 
     char vip_cc_output_raw_json[100];
-    const uint8_t json_ret_code = eps_vpid_raw_TO_json(&(data->vip_cc_output_raw), vip_cc_output_raw_json, 100);
+    const uint8_t json_ret_code = EPS_vpid_raw_TO_json(&(data->vip_cc_output_raw), vip_cc_output_raw_json, 100);
     if (json_ret_code != 0) {
         return json_ret_code; // Error: subfunction error
     }
@@ -172,13 +172,13 @@ uint8_t eps_conditioning_channel_datatype_raw_TO_json(const eps_conditioning_cha
     return 0; // Success
 }
 
-uint8_t eps_conditioning_channel_datatype_eng_TO_json(const eps_conditioning_channel_datatype_eng_t *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t EPS_conditioning_channel_datatype_eng_TO_json(const EPS_conditioning_channel_datatype_eng_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 10) {
         return 1; // Error: Invalid input
     }
 
     char vip_cc_output_json[100];
-    const uint8_t json_ret_code = eps_vpid_eng_TO_json(&(data->vip_cc_output), vip_cc_output_json, 100);
+    const uint8_t json_ret_code = EPS_vpid_eng_TO_json(&(data->vip_cc_output), vip_cc_output_json, 100);
     if (json_ret_code != 0) {
         return json_ret_code; // Error: subfunction error
     }
@@ -201,7 +201,7 @@ uint8_t eps_conditioning_channel_datatype_eng_TO_json(const eps_conditioning_cha
     return 0; // Success
 }
 
-uint8_t eps_conditioning_channel_short_datatype_raw_TO_json(const eps_conditioning_channel_short_datatype_raw_t *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t EPS_conditioning_channel_short_datatype_raw_TO_json(const EPS_conditioning_channel_short_datatype_raw_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 10) {
         return 1; // Error: Invalid input
     }
@@ -223,7 +223,7 @@ uint8_t eps_conditioning_channel_short_datatype_raw_TO_json(const eps_conditioni
     return 0; // Success
 }
 
-uint8_t eps_conditioning_channel_short_datatype_eng_TO_json(const eps_conditioning_channel_short_datatype_eng_t *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t EPS_conditioning_channel_short_datatype_eng_TO_json(const EPS_conditioning_channel_short_datatype_eng_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 10) {
         return 1; // Error: Invalid input
     }
@@ -246,7 +246,7 @@ uint8_t eps_conditioning_channel_short_datatype_eng_TO_json(const eps_conditioni
 }
 
 
-uint8_t eps_result_system_status_TO_json(const eps_result_system_status_t *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t EPS_result_system_status_TO_json(const EPS_result_system_status_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 10) {
         return 1; // Error: Invalid input
     }
@@ -271,7 +271,7 @@ uint8_t eps_result_system_status_TO_json(const eps_result_system_status_t *data,
 }
 
 
-uint8_t eps_result_pdu_overcurrent_fault_state_TO_json(const eps_result_pdu_overcurrent_fault_state_t *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t EPS_result_pdu_overcurrent_fault_state_TO_json(const EPS_result_pdu_overcurrent_fault_state_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 10) {
         return 1; // Error: Invalid input
     }
@@ -310,7 +310,7 @@ uint8_t eps_result_pdu_overcurrent_fault_state_TO_json(const eps_result_pdu_over
     return 0; // Success
 }
 
-uint8_t eps_result_pbu_abf_placed_state_TO_json(const eps_result_pbu_abf_placed_state_t *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t EPS_result_pbu_abf_placed_state_TO_json(const EPS_result_pbu_abf_placed_state_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 10) {
         return 1; // Error: Invalid input
     }

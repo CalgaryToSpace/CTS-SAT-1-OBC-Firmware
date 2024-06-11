@@ -33,28 +33,10 @@
 
 // #pragma region Function_Prototypes
 
-uint8_t eps_send_cmd_get_response_i2c(const uint8_t cmd_buf[], uint8_t cmd_buf_len,
-        uint8_t rx_buf[], uint16_t rx_buf_len);
-uint8_t eps_send_cmd_get_response_uart(const uint8_t cmd_buf[], uint8_t cmd_buf_len,
-        uint8_t rx_buf[], uint16_t rx_buf_len);
 uint8_t eps_send_cmd_get_response(const uint8_t cmd_buf[], uint8_t cmd_buf_len,
         uint8_t rx_buf[], uint16_t rx_buf_len);
 
-uint8_t eps_run_argumentless_cmd(uint8_t command_code);
-
-
-void pack_eps_result_system_status(const uint8_t rx_buf[], eps_result_system_status_t *result_dest);
-void pack_eps_result_pdu_overcurrent_fault_state(const uint8_t rx_buf[], eps_result_pdu_overcurrent_fault_state_t *result_dest);
-
-void pack_eps_result_pdu_housekeeping_data_raw(const uint8_t rx_buf[], eps_result_pdu_housekeeping_data_raw_t *result_dest);
-void pack_eps_result_pdu_housekeeping_data_eng(const uint8_t rx_buf[], eps_result_pdu_housekeeping_data_eng_t *result_dest);
-void pack_eps_result_pbu_housekeeping_data_raw(const uint8_t rx_buf[], eps_result_pbu_housekeeping_data_raw_t *result_dest);
-void pack_eps_result_pbu_housekeeping_data_eng(const uint8_t rx_buf[], eps_result_pbu_housekeeping_data_eng_t *result_dest);
-void pack_eps_result_pcu_housekeeping_data_raw(const uint8_t rx_buf[], eps_result_pcu_housekeeping_data_raw_t *result_dest);
-void pack_eps_result_pcu_housekeeping_data_eng(const uint8_t rx_buf[], eps_result_pcu_housekeeping_data_eng_t *result_dest);
-void pack_eps_result_piu_housekeeping_data_raw(const uint8_t rx_buf[], eps_result_piu_housekeeping_data_raw_t *result_dest);
-void pack_eps_result_piu_housekeeping_data_eng(const uint8_t rx_buf[], eps_result_piu_housekeeping_data_eng_t *result_dest);
-
+uint8_t EPS_run_argumentless_cmd(uint8_t command_code);
 
 // #pragma endregion Function_Prototypes
 

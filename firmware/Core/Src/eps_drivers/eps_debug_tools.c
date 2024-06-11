@@ -7,7 +7,7 @@
 #include "eps_drivers/eps_commands.h"
 
 
-void eps_debug_uart_print_system_status(eps_result_system_status_t* system_status) {
+void EPS_debug_uart_print_system_status(EPS_result_system_status_t* system_status) {
 	char msg1[365];
 	sprintf(
 	    msg1,
@@ -25,7 +25,7 @@ void eps_debug_uart_print_system_status(eps_result_system_status_t* system_statu
 	DEBUG_uart_print_str(msg1);
 }
 
-void eps_result_pdu_housekeeping_data_eng_to_json(const eps_result_pdu_housekeeping_data_eng_t *data, char json_output_str[]) {
+void EPS_result_pdu_housekeeping_data_eng_to_json(const EPS_result_pdu_housekeeping_data_eng_t *data, char json_output_str[]) {
     // json_output_str must be >= 4096 bytes
 
     sprintf(json_output_str, "{\n");

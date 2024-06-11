@@ -39,14 +39,17 @@ following uppercase identifiers to indicate which subsystem/region of code it be
 * `FLASH_`: driver functions for the SPI flash system, which the `lfs_` implementation can call into
 * `STM32_`: driver functions for features within the STM32, including internal flash, boot metadata, etc.
 
+## Other Categories
+* `TIM_`: related to the timer peripheral, or timing in general
+
+## Libraries, External, etc.
+
+* `HAL_`: STM32 HAL (Hardware Abstraction Layer)
+* `lfs_`: LittleFS library functions
+
 ## Other Conventions
 
 * `_CFG_`: Variables can contain `_CFG_` to indicate that they are configuration variables of 
 another subsystem/namespace. For example, `EPS_CFG_` denotes an EPS subsystem configuration variable.
 * `_CMD_`: Functions can contain `_CMD_` to indicate that they trigger a command to that subsystem.
 For example, `EPS_CMD_` denotes a function which triggers a command to the EPS subsystem (and gets the EPS's response).
-
-## Libraries, External, etc.
-
-* `HAL_`: STM32 HAL (Hardware Abstraction Layer)
-* `lfs_`: LittleFS library functions
