@@ -105,14 +105,15 @@ uint8_t TCMDEXEC_set_configuration_variable(const uint8_t *args_str, TCMD_Teleco
     const uint8_t args_len = strlen((char *)args_str);
     const uint8_t args_count = split_string_by_delimiter((const char *)args_str, args_len, ',', args, 3);
     char args_count_str[5];
-    snprintf((char *)args_count_str, 5, "%d", args_count);
+    snprintf(args_count_str, 5, "%d", args_count);
+    args_count_str[4] = '\0';
 
     memset(response_output_buf, 0, response_output_buf_len);
 
     strncat(response_output_buf, "Hello, world From Ali!\n", 24);
 
     strncat(response_output_buf, "Args count: ", 13);
-    strncat(response_output_buf, (char *)args_count_str, 5);
+    strncat(response_output_buf, args_count_str, 5);
     strcat(response_output_buf, "\n");
 
     for (uint8_t i = 0; i < args_count; i++)
