@@ -11,18 +11,18 @@ uint8_t TEST_EXEC__HELPER_Split_String_By_Delimiter()
     // Test case 1: Normal case
     const uint8_t max_string_num = 4;
     const uint8_t max_string_len = 20;
-    uint8_t fruitOutput[max_string_num][max_string_len];
+    uint8_t fruit_output[max_string_num][max_string_len];
     for (uint8_t i = 0; i < max_string_num; i++)
     {
-        memset(fruitOutput[i], 0, sizeof(fruitOutput[i]));
+        memset(fruit_output[i], 0, sizeof(fruit_output[i]));
     }
     const uint8_t *fruits = (uint8_t *)"apple,banana,cherry,date\0";
-    const uint8_t num_strings_split = split_string_by_delimiter(fruits, strlen((char *)fruits), ',', fruitOutput, max_string_num);
+    const uint8_t num_strings_split = split_string_by_delimiter(fruits, strlen((char *)fruits), ',', fruit_output, max_string_num);
     TEST_ASSERT_TRUE(num_strings_split == 4);
-    TEST_ASSERT_TRUE(strncmp((char *)fruitOutput[0], "apple\0", 7) == 0);
-    TEST_ASSERT_TRUE(strncmp((char *)fruitOutput[1], "banana\0", 8) == 0);
-    TEST_ASSERT_TRUE(strncmp((char *)fruitOutput[2], "cherry\0", 8) == 0);
-    TEST_ASSERT_TRUE(strncmp((char *)fruitOutput[3], "date\0", 6) == 0);
+    TEST_ASSERT_TRUE(strncmp((char *)fruit_output[0], "apple\0", 7) == 0);
+    TEST_ASSERT_TRUE(strncmp((char *)fruit_output[1], "banana\0", 8) == 0);
+    TEST_ASSERT_TRUE(strncmp((char *)fruit_output[2], "cherry\0", 8) == 0);
+    TEST_ASSERT_TRUE(strncmp((char *)fruit_output[3], "date\0", 6) == 0);
 
     // Test case 2: Empty string
     const char empty[] = "";
