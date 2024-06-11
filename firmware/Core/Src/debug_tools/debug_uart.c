@@ -27,7 +27,7 @@ void DEBUG_uart_print_int32(int32_t value) {
 void DEBUG_uart_print_array_hex(const uint8_t* arr, uint16_t len, const char* end_str) {
 	char msg[10];
 	for (uint16_t i = 0; i < len; i++) {
-		sprintf(msg, "0x%02x ", arr[i]);
+		snprintf(msg, sizeof(msg), "0x%02x ", arr[i]);
 		DEBUG_uart_print_str(msg);
 	}
 
