@@ -263,6 +263,7 @@ int parse_input(GSE_program_state_t *ps, int key)
         }
         else if (key != '\n' && ps->command_index < COMMAND_BUFFER_SIZE - 1) 
         {
+            wprintw(ps->main_window, "cursor: %d, buffer_len, %lu\n", ps->cursor_position, buffer_len);
             if (ps->cursor_position < buffer_len)
             {
                 for (int k = buffer_len - 1; k >= ps->cursor_position; k--)
@@ -321,6 +322,7 @@ int parse_input(GSE_program_state_t *ps, int key)
                 wprintw(ps->command_window, "\n%s> ", ps->command_prefix);
                 // Reset command 
                 ps->command_index = 0;
+                ps->cursor_position = 0;
                 ps->command_buffer[0] = '\0';
             }
             else if (ps->command_buffer[0] == '.')
@@ -375,6 +377,7 @@ int parse_input(GSE_program_state_t *ps, int key)
                 wrefresh(ps->command_window);
                 // Reset command 
                 ps->command_index = 0;
+                ps->cursor_position = 0;
                 ps->command_buffer[0] = '\0';
             }
             else 
@@ -406,6 +409,7 @@ int parse_input(GSE_program_state_t *ps, int key)
                 wprintw(ps->command_window, "\n%s> ", ps->command_prefix);
                 // Reset command 
                 ps->command_index = 0;
+                ps->cursor_position = 0;
                 ps->command_buffer[0] = '\0';
             }
             ps->command_history_index = CGSE_number_of_stored_commands() - 1;
