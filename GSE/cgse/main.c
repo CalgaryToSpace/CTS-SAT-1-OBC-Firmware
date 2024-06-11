@@ -336,26 +336,14 @@ int parse_input(CGSE_program_state_t *ps, int key)
                     }
                     if (strlen(ps->command_buffer) > strlen(".connect"))
                     {
-                        // check additional argument
-                        // Based on "man strsep" example
-                        char **ap, *arg_vector[3];
-                        char *input_string = ps->command_buffer;
-                        int n_connect_args = 0;
-                        for (ap = arg_vector; (*ap = strsep(&input_string, " ")) != NULL;)
-                        {
-                            if (**ap != '\0')
-                            {
-                                n_connect_args++;
-                                if (++ap >= &arg_vector[3])
-                                {
-                                    break;
-                                }
-                            }
-                        }
+                        char *arg_vector[2];
+                        int n_connect_args = 2;
+                        char *buf = CGSE_parse_command_args(ps, &n_connect_args, arg_vector);
                         if (n_connect_args == 2)
                         {
                             snprintf(ps->satellite_link_path, FILENAME_MAX, "%s", arg_vector[1]);
                         }
+                        free(buf);
                     }
                     CGSE_connect(ps);
                 }
@@ -367,6 +355,23 @@ int parse_input(CGSE_program_state_t *ps, int key)
                 {
                     wprintw(ps->command_window, "\n");
                     CGSE_list_telecommands(ps);
+                }
+                if (strncmp(".ls", ps->command_buffer, strlen(".ls")) == 0)
+                {
+                    if (strlen(ps->command_buffer) > strlen(".ls"))
+                    {
+                        char *arg_vector[2];
+                        int n_ls_args = 2;
+                        char *buf = CGSE_parse_command_args(ps, &n_ls_args, arg_vector);
+                        if (n_ls_args == 2)
+                        {
+                            snprintf(ps->current_directory, FILENAME_MAX, "%s", arg_vector[1]);
+                        }
+                        free(buf);
+                    }
+                    wclrtoeol(ps->command_window);
+                    wprintw(ps->command_window, "\n");
+                    CGSE_ls_dir(ps);
                 }
                 else 
                 {
@@ -428,6 +433,7 @@ int parse_args(CGSE_program_state_t *ps)
     ps->baud_rate = CGSE_DEFAULT_BAUD_RATE;
     ps->command_prefix = CGSE_DEFAULT_TELECOMMAND_PREFIX;
     ps->auto_connect = true;
+    snprintf(ps->current_directory, FILENAME_MAX, "%s", ".");
 
     char *arg = NULL;
 
@@ -701,5 +707,61 @@ int CGSE_init(CGSE_program_state_t *ps)
     CGSE_store_command("");
 
     return 0;
+}
+
+char * CGSE_parse_command_args(CGSE_program_state_t *ps, int *nargs, char **arg_vector)
+{
+    if (ps == NULL || nargs == NULL || arg_vector == NULL)
+    {
+        return NULL;
+    }
+
+    // Based on "man strsep" example
+    char *input_string_caller_must_free = strdup(ps->command_buffer);
+    if (input_string_caller_must_free == NULL)
+    {
+        return NULL;
+    }
+
+    int max_arg = *nargs;
+    int args_found = 0;
+    for (char **ap = arg_vector; (*ap = strsep(&input_string_caller_must_free, " ")) != NULL;)
+    {
+        if (**ap != '\0')
+        {
+            args_found++;
+            if (++ap >= &arg_vector[max_arg])
+            {
+                break;
+            }
+        }
+    }
+    *nargs = args_found;
+
+    return input_string_caller_must_free;
+}
+
+int CGSE_ls_dir(CGSE_program_state_t *ps)
+{
+    struct dirent *dp = NULL;
+
+    // From man 3 directory example
+    DIR *directory = opendir(ps->current_directory);
+    if (directory == NULL)
+        return -1;
+
+    int n_files = 0;
+    while ((dp = readdir(directory)) != NULL) 
+    {
+        if (strlen(dp->d_name) > 0 && dp->d_name[0] != '.')
+        {
+            n_files++;
+            wprintw(ps->command_window, "%3d) %s\n", n_files, dp->d_name);
+        }
+    }
+    (void)closedir(directory);
+
+    return 0;
+
 }
 

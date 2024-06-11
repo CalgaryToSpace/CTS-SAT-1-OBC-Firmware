@@ -47,8 +47,8 @@ typedef struct
 
     char telecommand_buffer[TCMD_BUFFER_SIZE];
 
-    char *current_directory[FILENAME_MAX];
-    char *file_to_load[FILENAME_MAX];
+    char current_directory[FILENAME_MAX];
+    char file_to_load[FILENAME_MAX];
 
 } CGSE_program_state_t;
 
@@ -73,6 +73,8 @@ void parse_telemetry(CGSE_program_state_t *ps);
 void CGSE_disconnect(CGSE_program_state_t *ps);
 int CGSE_init(CGSE_program_state_t *ps);
 
-int CGSE_list_files(CGSE_program_state_t *ps);
+char * CGSE_parse_command_args(CGSE_program_state_t *ps, int *nargs, char **arg_vector);
+
+int CGSE_ls_dir(CGSE_program_state_t *ps);
 
 #endif // __INCLUDE_GUARD__MAIN_H_
