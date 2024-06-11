@@ -4,7 +4,7 @@
 #include "transforms/arrays.h"
 #include "unit_tests/unit_test_executor.h"
 #include "debug_tools/debug_uart.h"
-#include "helpers/helpers.h"
+#include "transforms/string_helpers.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -56,8 +56,8 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 0,
     },
     {
-        .tcmd_name = "alis_hello_world",
-        .tcmd_func = TCMDEXEC_hello_ali,
+        .tcmd_name = "set_config_var",
+        .tcmd_func = TCMDEXEC_set_configuration_variable,
         .number_of_args = 0,
     }
 
@@ -91,19 +91,20 @@ uint8_t TCMDEXEC_heartbeat_on(const uint8_t *args_str, TCMD_TelecommandChannel_e
     TASK_heartbeat_is_on = 1;
     snprintf(response_output_buf, response_output_buf_len, "Heartbeat ON");
 }
-uint8_t TCMDEXEC_hello_ali(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                           char *response_output_buf, uint16_t response_output_buf_len)
+
+uint8_t TCMDEXEC_set_configuration_variable(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                            char *response_output_buf, uint16_t response_output_buf_len)
 {
     DEBUG_uart_print_str((char *)args_str);
     DEBUG_uart_print_str("\n");
-    uint8_t args[3][20];
+    char args[3][20];
     for (uint8_t i = 0; i < 3; i++)
     {
         memset(args[i], 0, 20);
     }
     const uint8_t args_len = strlen((char *)args_str);
-    const uint8_t args_count = split_string_by_delimiter(args_str, args_len, ',', args, 3);
-    uint8_t args_count_str[5];
+    const uint8_t args_count = split_string_by_delimiter((const char *)args_str, args_len, ',', args, 3);
+    char args_count_str[5];
     snprintf((char *)args_count_str, 5, "%d", args_count);
 
     memset(response_output_buf, 0, response_output_buf_len);
