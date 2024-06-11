@@ -263,7 +263,6 @@ int parse_input(CGSE_program_state_t *ps, int key)
         }
         else if (key != '\n' && ps->command_index < COMMAND_BUFFER_SIZE - 1) 
         {
-            wprintw(ps->main_window, "cursor: %d, buffer_len, %lu\n", ps->cursor_position, buffer_len);
             if (ps->cursor_position < buffer_len)
             {
                 for (int k = buffer_len - 1; k >= ps->cursor_position; k--)
