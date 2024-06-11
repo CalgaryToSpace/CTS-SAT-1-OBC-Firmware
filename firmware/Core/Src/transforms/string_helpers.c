@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "helpers/helpers.h"
+#include "transforms/string_helpers.h"
 
 /// @brief Populates an array of strings by splitting a string by a delimiter
 /// @param input_str Input String
@@ -17,7 +17,7 @@
 /// if this is not enough for the string, need to update approach of increase size of array
 // TODO: Update approach of increase size of array
 // TODO: Update input_str_len so that it is not needed
-uint8_t split_string_by_delimiter(const uint8_t *input_str, const uint8_t input_str_len, const uint8_t delim, uint8_t result[][20], const uint8_t max_segments)
+uint8_t split_string_by_delimiter(const char *input_str, const uint8_t input_str_len, const char delim, char result[][20], const uint8_t max_segments)
 {
     if (input_str == NULL || result == NULL || max_segments == 0 || input_str_len == 0)
     {
