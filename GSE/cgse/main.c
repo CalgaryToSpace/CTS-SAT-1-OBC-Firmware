@@ -174,15 +174,18 @@ int parse_input(GSE_program_state_t *ps, int key)
     int line = 0;
     int col = 0;
     ssize_t bytes_sent = 0;
+    size_t buffer_len = 0;
 
     struct timeval tv = {0};
     gettimeofday(&tv, NULL);
     double t1 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
     double t2 = t1;
+
     while ((key = wgetch(ps->command_window)) != ERR && (t2 - t1) < 0.5)
     {
 
         getyx(ps->command_window, line, col);
+        buffer_len = strlen(ps->command_buffer);
         if (key == '\b' || key == 127 || key == KEY_BACKSPACE)
         {
             if (ps->command_history_index < CGSE_number_of_stored_commands() - 1)
@@ -195,7 +198,7 @@ int parse_input(GSE_program_state_t *ps, int key)
                 ps->command_index--;
                 ps->cursor_position--;
                 col--;
-                for (int c = ps->cursor_position; c < strlen(ps->command_buffer) && c < COMMAND_BUFFER_SIZE - 2; c++)
+                for (int c = ps->cursor_position; c < buffer_len && c < COMMAND_BUFFER_SIZE - 2; c++)
                 {
                     ps->command_buffer[c] = ps->command_buffer[c+1];
                 }
@@ -213,10 +216,11 @@ int parse_input(GSE_program_state_t *ps, int key)
                 if (previous_command != NULL)
                 {
                     snprintf(ps->command_buffer, COMMAND_BUFFER_SIZE, "%s", previous_command);
-                    ps->cursor_position = strlen(ps->command_buffer);
+                    buffer_len = strlen(ps->command_buffer);
+                    ps->cursor_position = buffer_len;
                     col = strlen(ps->command_prefix) + 2 + ps->cursor_position;
                     ps->command_history_index--;
-                    ps->command_index = strlen(ps->command_buffer);
+                    ps->command_index = buffer_len;
                 }
             }
         }
@@ -228,10 +232,11 @@ int parse_input(GSE_program_state_t *ps, int key)
                 if (next_command != NULL)
                 {
                     snprintf(ps->command_buffer, COMMAND_BUFFER_SIZE, "%s", next_command);
-                    ps->cursor_position = strlen(ps->command_buffer);
+                    buffer_len = strlen(ps->command_buffer);
+                    ps->cursor_position = buffer_len;
                     col = strlen(ps->command_prefix) + 2 + ps->cursor_position;
                     ps->command_history_index++;
-                    ps->command_index = strlen(ps->command_buffer);
+                    ps->command_index = buffer_len;
                 }
             }
         }
@@ -245,7 +250,7 @@ int parse_input(GSE_program_state_t *ps, int key)
         }
         else if (key == KEY_RIGHT)
         {
-            if (ps->cursor_position < strlen(ps->command_buffer) && ps->cursor_position < COMMAND_BUFFER_SIZE - 1)
+            if (ps->cursor_position < buffer_len && ps->cursor_position < COMMAND_BUFFER_SIZE - 1)
             {
                 ps->cursor_position++;
                 col++;
@@ -256,14 +261,22 @@ int parse_input(GSE_program_state_t *ps, int key)
             ps->command_index = COMMAND_BUFFER_SIZE - 1;
             ps->command_buffer[ps->command_index] = '\0';
         }
-        else if (key != '\n') 
+        else if (key != '\n' && ps->command_index < COMMAND_BUFFER_SIZE - 1) 
         {
-            ps->command_buffer[ps->command_index++] = key;
+            if (ps->cursor_position < buffer_len)
+            {
+                for (int k = buffer_len - 1; k >= ps->cursor_position; k--)
+                {
+                    ps->command_buffer[k+1] = ps->command_buffer[k];
+                }
+            }
+            ps->command_buffer[ps->cursor_position++] = key;
+            ps->command_index++;
             ps->command_buffer[ps->command_index] = '\0';
+            buffer_len = strlen(ps->command_buffer);
             ps->command_history_index = CGSE_number_of_stored_commands() - 1;
             CGSE_remove_command(ps->command_history_index);
             CGSE_store_command(ps->command_buffer);
-            ps->cursor_position++;
             col++;
         }
 
