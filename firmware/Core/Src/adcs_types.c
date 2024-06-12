@@ -480,23 +480,23 @@ uint8_t ADCS_Pack_to_Wheel_Speed(uint8_t *data_received, ADCS_Wheel_Speed_Struct
     return 0;
 }
 
-void ADCS_Get_Magnetorquer_Command_Time() {
+void ADCS_Get_Magnetorquer_Command() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
 
 	ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_MAGNETORQUER_COMMAND, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
 	ADCS_Magnetorquer_Command_Struct time;
-	ADCS_Pack_to_Magnetorquer_Command_Time(data_received, &time);
+	ADCS_Pack_to_Magnetorquer_Command(data_received, &time);
 
 	WRITE_STRUCT_TO_MEMORY(time) // memory module function
 }
 
-uint8_t ADCS_Pack_to_Magnetorquer_Command_Time(uint8_t *data_received, ADCS_Magnetorquer_Command_Struct *result) {
+uint8_t ADCS_Pack_to_Magnetorquer_Command(uint8_t *data_received, ADCS_Magnetorquer_Command_Struct *result) {
     // formatted value (sec) = raw value * 0.01
-	result->x = ((double)(data_received[1] << 8 | data_received[0])) * 0.01;
-    result->y = ((double)(data_received[3] << 8 | data_received[2])) * 0.01;
-    result->z = ((double)(data_received[5] << 8 | data_received[4])) * 0.01;
+	result->x = ((double)((int16_t)(data_received[1] << 8 | data_received[0]))) * 0.01;
+    result->y = ((double)((int16_t)(data_received[3] << 8 | data_received[2]))) * 0.01;
+    result->z = ((double)((int16_t)(data_received[5] << 8 | data_received[4]))) * 0.01;
     return 0;
 }
 
@@ -533,9 +533,9 @@ void ADCS_Estimate_Fine_Angular_Rates() {
 
 uint8_t ADCS_Pack_to_Fine_Angular_Rates(uint8_t *data_received, ADCS_Fine_Angular_Rates_Struct *result) {
     // formatted value (deg/s) = raw value * 0.01
-	result->x = ((double)(data_received[1] << 8 | data_received[0])) * 0.01;
-    result->y = ((double)(data_received[3] << 8 | data_received[2])) * 0.01;
-    result->z = ((double)(data_received[5] << 8 | data_received[4])) * 0.01;
+	result->x = ((double)((int16_t)(data_received[1] << 8 | data_received[0]))) * 0.01;
+    result->y = ((double)((int16_t)(data_received[3] << 8 | data_received[2]))) * 0.01;
+    result->z = ((double)((int16_t)(data_received[5] << 8 | data_received[4]))) * 0.01;
     return 0;
 }
 
@@ -553,22 +553,22 @@ void ADCS_Get_Magnetometer_Config() {
 
 uint8_t ADCS_Pack_to_Magnetometer_Config(uint8_t *data_received, ADCS_Magnetometer_Config_Struct *result) {
     // formatted value for mounting transform angles (deg/s) = raw value * 0.01
-	result->mounting_transform_alpha_angle = ((double)(data_received[1] << 8 | data_received[0])) * 0.01;
-    result->mounting_transform_beta_angle = ((double)(data_received[3] << 8 | data_received[2])) * 0.01;
-    result->mounting_transform_gamma_angle = ((double)(data_received[5] << 8 | data_received[4])) * 0.01;
+	result->mounting_transform_alpha_angle = ((double)((int16_t)(data_received[1] << 8 | data_received[0]))) * 0.01;
+    result->mounting_transform_beta_angle = ((double)((int16_t)(data_received[3] << 8 | data_received[2]))) * 0.01;
+    result->mounting_transform_gamma_angle = ((double)((int16_t)(data_received[5] << 8 | data_received[4]))) * 0.01;
     // formatted value (deg/s) = raw value * 0.001
-	result->channel_1_offset = ((double)(data_received[7] << 8 | data_received[6])) * 0.001;
-    result->channel_2_offset = ((double)(data_received[9] << 8 | data_received[8])) * 0.001;
-    result->channel_3_offset = ((double)(data_received[11] << 8 | data_received[10])) * 0.001;
-    result->sensitivity_matrix_s11 = ((double)(data_received[13] << 8 | data_received[12])) * 0.001;
-    result->sensitivity_matrix_s22 = ((double)(data_received[15] << 8 | data_received[14])) * 0.001;
-    result->sensitivity_matrix_s33 = ((double)(data_received[17] << 8 | data_received[16])) * 0.001;
-    result->sensitivity_matrix_s12 = ((double)(data_received[19] << 8 | data_received[18])) * 0.001;
-    result->sensitivity_matrix_s13 = ((double)(data_received[21] << 8 | data_received[20])) * 0.001;
-    result->sensitivity_matrix_s21 = ((double)(data_received[23] << 8 | data_received[22])) * 0.001;
-    result->sensitivity_matrix_s23 = ((double)(data_received[25] << 8 | data_received[24])) * 0.001;
-    result->sensitivity_matrix_s31 = ((double)(data_received[27] << 8 | data_received[26])) * 0.001;
-    result->sensitivity_matrix_s32 = ((double)(data_received[29] << 8 | data_received[28])) * 0.001;
+	result->channel_1_offset = ((double)((int16_t)(data_received[7] << 8 | data_received[6]))) * 0.001;
+    result->channel_2_offset = ((double)((int16_t)(data_received[9] << 8 | data_received[8]))) * 0.001;
+    result->channel_3_offset = ((double)((int16_t)(data_received[11] << 8 | data_received[10]))) * 0.001;
+    result->sensitivity_matrix_s11 = ((double)((int16_t)(data_received[13] << 8 | data_received[12]))) * 0.001;
+    result->sensitivity_matrix_s22 = ((double)((int16_t)(data_received[15] << 8 | data_received[14]))) * 0.001;
+    result->sensitivity_matrix_s33 = ((double)((int16_t)(data_received[17] << 8 | data_received[16]))) * 0.001;
+    result->sensitivity_matrix_s12 = ((double)((int16_t)(data_received[19] << 8 | data_received[18]))) * 0.001;
+    result->sensitivity_matrix_s13 = ((double)((int16_t)(data_received[21] << 8 | data_received[20]))) * 0.001;
+    result->sensitivity_matrix_s21 = ((double)((int16_t)(data_received[23] << 8 | data_received[22]))) * 0.001;
+    result->sensitivity_matrix_s23 = ((double)((int16_t)(data_received[25] << 8 | data_received[24]))) * 0.001;
+    result->sensitivity_matrix_s31 = ((double)((int16_t)(data_received[27] << 8 | data_received[26]))) * 0.001;
+    result->sensitivity_matrix_s32 = ((double)((int16_t)(data_received[29] << 8 | data_received[28]))) * 0.001;
     return 0;
 }
 
@@ -586,9 +586,9 @@ void ADCS_Get_Commanded_Attitude_Angles() {
 
 uint8_t ADCS_Pack_to_Commanded_Attitude_Angles(uint8_t *data_received, ADCS_Commanded_Angles_Struct *result) {
     // Formatted value is obtained using the formula: (formatted value) [deg] = RAWVAL*0.01
-	result->x = (double)(data_received[1] << 8 | data_received[0]) * 0.01;
-    result->y = (double)(data_received[3] << 8 | data_received[2]) * 0.01;
-    result->z = (double)(data_received[5] << 8 | data_received[4]) * 0.01;
+	result->x = (double)((int16_t)(data_received[1] << 8 | data_received[0])) * 0.01;
+    result->y = (double)((int16_t)(data_received[3] << 8 | data_received[2])) * 0.01;
+    result->z = (double)((int16_t)(data_received[5] << 8 | data_received[4])) * 0.01;
     return 0;
 }
 
@@ -720,22 +720,22 @@ void ADCS_Get_ASGP4_Params() {
 
 uint8_t ADCS_Pack_to_ASGP4_Params(uint8_t* data_received, ADCS_ASGP4_Params_Struct* result) {
     // map temp buffer to struct
-    result->incl_coefficient = ((double)(data_received[1] << 8 | data_received[0])) * 0.001;
-    result->raan_coefficient = ((double)(data_received[3] << 8 | data_received[2])) * 0.001;
-    result->ecc_coefficient = ((double)(data_received[5] << 8 | data_received[4])) * 0.001;
-    result->aop_coefficient = ((double)(data_received[7] << 8 | data_received[6])) * 0.001;
-    result->time_coefficient = ((double)(data_received[9] << 8 | data_received[8])) * 0.001;
-    result->pos_coefficient = ((double)(data_received[11] << 8 | data_received[10])) * 0.001;
-    result->maximum_position_error = ((double)data_received[12]) * 0.1;
+    result->incl_coefficient = ((double)((int16_t)(data_received[1] << 8 | data_received[0]))) * 0.001;
+    result->raan_coefficient = ((double)((int16_t)(data_received[3] << 8 | data_received[2]))) * 0.001;
+    result->ecc_coefficient = ((double)((int16_t)(data_received[5] << 8 | data_received[4]))) * 0.001;
+    result->aop_coefficient = ((double)((int16_t)(data_received[7] << 8 | data_received[6]))) * 0.001;
+    result->time_coefficient = ((double)((int16_t)(data_received[9] << 8 | data_received[8]))) * 0.001;
+    result->pos_coefficient = ((double)((int16_t)(data_received[11] << 8 | data_received[10]))) * 0.001;
+    result->maximum_position_error = ((double)((int16_t)data_received[12])) * 0.1;
     result->asgp4_filter = (ADCS_ASGP4_Filter)data_received[13];
-    result->xp_coefficient = ((double)(data_received[17] << 24 | data_received[16] << 16 | data_received[15] << 8 | data_received[14])) * 0.0000001;
-    result->yp_coefficient = ((double)(data_received[21] << 24 | data_received[20] << 16 | data_received[19] << 8 | data_received[18])) * 0.0000001;
+    result->xp_coefficient = ((double)((int16_t)(data_received[17] << 24 | data_received[16] << 16 | data_received[15] << 8 | data_received[14]))) * 0.0000001;
+    result->yp_coefficient = ((double)((int16_t)(data_received[21] << 24 | data_received[20] << 16 | data_received[19] << 8 | data_received[18]))) * 0.0000001;
     result->gps_roll_over = data_received[22];
-    result->position_sd = ((double)data_received[23]) * 0.1;
-    result->velocity_sd = ((double)data_received[24]) * 0.01;
+    result->position_sd = ((double)((int16_t)data_received[23])) * 0.1;
+    result->velocity_sd = ((double)((int16_t)data_received[24])) * 0.01;
     result->min_satellites = data_received[25];
-    result->time_gain = ((double)data_received[26]) * 0.01;
-    result->max_lag = ((double)data_received[27]) * 0.01;
+    result->time_gain = ((double)((int16_t)data_received[26])) * 0.01;
+    result->max_lag = ((double)((int16_t)data_received[27])) * 0.01;
     result->min_samples = (data_received[29] << 8 | data_received[28]);
 
     return 0;
@@ -810,9 +810,9 @@ uint8_t ADCS_Pack_to_Rate_Gyro_Config(uint8_t* data_received, ADCS_Rate_Gyro_Con
     result->gyro3 = data_received[2];
 
 	// Raw parameter value is obtained using the formula: (formatted value) [deg/s] = RAWVAL*0.001
-    result->x_rate_offset = ((double)(data_received[4] << 8 | data_received[3])) * 0.001;
-    result->y_rate_offset = ((double)(data_received[6] << 8 | data_received[5])) * 0.001;
-    result->z_rate_offset = ((double)(data_received[8] << 8 | data_received[7])) * 0.001;
+    result->x_rate_offset = ((double)((int16_t)(data_received[4] << 8 | data_received[3]))) * 0.001;
+    result->y_rate_offset = ((double)((int16_t)(data_received[6] << 8 | data_received[5]))) * 0.001;
+    result->z_rate_offset = ((double)((int16_t)(data_received[8] << 8 | data_received[7]))) * 0.001;
 
     result->rate_sensor_mult = data_received[9];
 

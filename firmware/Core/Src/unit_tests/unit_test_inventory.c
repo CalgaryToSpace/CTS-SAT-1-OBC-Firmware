@@ -118,9 +118,9 @@ const TEST_Definition_t TEST_definitions[] = {
     },
 
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Magnetorquer_Command_Time,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Magnetorquer_Command,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Magnetorquer_Command_Time"
+        .test_func_name = "ADCS_Pack_to_Magnetorquer_Command"
     },
 
     {

@@ -379,7 +379,7 @@ uint8_t ADCS_Pack_to_Unix_Time_Save_Mode(uint8_t* data_received, ADCS_Set_Unix_T
 uint8_t ADCS_Pack_to_Orbit_Params(uint8_t* data_received, ADCS_Orbit_Params_Struct *result);
 uint8_t ADCS_Pack_to_Rated_Sensor_Rates(uint8_t* data_received, ADCS_Rated_Sensor_Rates_Struct *result);
 uint8_t ADCS_Pack_to_Wheel_Speed(uint8_t* data_received, ADCS_Wheel_Speed_Struct *result);
-uint8_t ADCS_Pack_to_Magnetorquer_Command_Time(uint8_t* data_received, ADCS_Magnetorquer_Command_Struct *result);
+uint8_t ADCS_Pack_to_Magnetorquer_Command(uint8_t* data_received, ADCS_Magnetorquer_Command_Struct *result);
 uint8_t ADCS_Pack_to_Raw_Magnetometer_Values(uint8_t* data_received, ADCS_Raw_Mag_TLM_Struct *result);
 uint8_t ADCS_Pack_to_Fine_Angular_Rates(uint8_t* data_received, ADCS_Fine_Angular_Rates_Struct *result);
 uint8_t ADCS_Pack_to_Magnetometer_Config(uint8_t* data_received, ADCS_Magnetometer_Config_Struct *result);
@@ -439,7 +439,7 @@ void ADCS_Get_SGP4_Orbit_Params();
 void ADCS_Save_Orbit_Params();
 void ADCS_Rate_Sensor_Rates();
 void ADCS_Get_Wheel_Speed();
-void ADCS_Get_Magnetorquer_Command_Time();
+void ADCS_Get_Magnetorquer_Command();
 void ADCS_Get_Raw_Magnetometer_Values();
 void ADCS_Fine_Angular_Rates();
 void ADCS_Estimate_Fine_Angular_Rates();

@@ -15,7 +15,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Unix_Time_Save_Mode();
 uint8_t TEST_EXEC__ADCS_Pack_to_Orbit_Params();
 uint8_t TEST_EXEC__ADCS_Pack_to_Rated_Sensor_Rates();
 uint8_t TEST_EXEC__ADCS_Pack_to_Wheel_Speed();
-uint8_t TEST_EXEC__ADCS_Pack_to_Magnetorquer_Command_Time();
+uint8_t TEST_EXEC__ADCS_Pack_to_Magnetorquer_Command();
 uint8_t TEST_EXEC__ADCS_Pack_to_Raw_Magnetometer_Values();
 uint8_t TEST_EXEC__ADCS_Pack_to_Fine_Angular_Rates();
 uint8_t TEST_EXEC__ADCS_Pack_to_Magnetometer_Config();
