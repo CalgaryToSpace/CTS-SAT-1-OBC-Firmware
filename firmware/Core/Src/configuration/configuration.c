@@ -1,6 +1,5 @@
 #include "configuration/configuration.h"
-#include "eps_config.h"
-#include "configuration.h"
+#include "eps/eps_config.h"
 
 #include <stdio.h>
 #include <stdint.h>
