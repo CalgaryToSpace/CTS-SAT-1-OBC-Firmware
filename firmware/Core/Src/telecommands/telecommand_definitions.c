@@ -4,6 +4,8 @@
 #include "transforms/arrays.h"
 #include "unit_tests/unit_test_executor.h"
 
+#include "telecommands/eps_telecommands.h"
+
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
@@ -52,7 +54,17 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "available_telecommands",
         .tcmd_func = TCMDEXEC_available_telecommands,
         .number_of_args = 0,
-    }
+    },
+
+    /* ============================ EPS-Related (eps_telecommands.c/h) ================= */
+    {
+        .tcmd_name = "eps_watchdog",
+        .tcmd_func = TCMDEXEC_eps_watchdog,
+        .number_of_args = 0,
+    },
+    /* *************************** END EPS Section ************************************** */
+    
+
 };
 
 // extern
