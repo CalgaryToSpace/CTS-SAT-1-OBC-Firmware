@@ -11,6 +11,8 @@
 #include <stdint.h>
 #include <string.h>
 
+extern UART_HandleTypeDef *UART_eps_port_handle;
+
 const uint16_t EPS_RX_TIMEOUT_MS = 200; // TODO: decrease for flight
 
 /// @brief Sends a command to the EPS, and receives the response.
@@ -51,7 +53,8 @@ uint8_t eps_send_cmd_get_response(
 
 	// TX TO EPS
 	HAL_StatusTypeDef tx_status = HAL_UART_Transmit(
-			&huart4, (uint8_t*) cmd_buf_with_tags, cmd_buf_with_tags_len, 1000); // 1000
+		UART_eps_port_handle,
+		(uint8_t*) cmd_buf_with_tags, cmd_buf_with_tags_len, 1000); // FIXME: update the timeout
 	if (tx_status != HAL_OK) {
 		if (EPS_ENABLE_DEBUG_PRINT) {
 			char msg[200];
@@ -63,7 +66,7 @@ uint8_t eps_send_cmd_get_response(
 
 	// Reset the EPS UART interrupt variables
 	UART_eps_is_expecting_data = 0; // Lock writing to the UART_eps_buffer while we memset it
-	for (uint8_t i = 0; i < UART_eps_buffer_len; i++) {
+	for (uint16_t i = 0; i < UART_eps_buffer_len; i++) {
 		// Clear the buffer
 		// Can't use memset because UART_eps_buffer is volatile
 		UART_eps_buffer[i] = 0;
@@ -81,6 +84,7 @@ uint8_t eps_send_cmd_get_response(
 		}
 
 		// Check if we've timed out
+		// FIXME: timeout needs to be since the start of the write AND this
 		if ((HAL_GetTick() - UART_eps_last_write_time_ms) > EPS_RX_TIMEOUT_MS) {
 			if (EPS_ENABLE_DEBUG_PRINT) {
 				char msg[200];
@@ -89,6 +93,7 @@ uint8_t eps_send_cmd_get_response(
 					"OBC -> EPS TIMEOUT ERROR: HAL_GetTick() - UART_eps_last_write_time_ms > EPS_RX_TIMEOUT_MS\n");
 				DEBUG_uart_print_str(msg);
 			}
+			break;
 		}
 
 		// TODO: also end when we receive the end tag
