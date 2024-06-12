@@ -3,6 +3,8 @@
 
 #include <telecommands/eps_telecommands.h>
 
+#include <stdio.h>
+
 /// @brief Triggers the EPS watchdog. No args.
 /// @return 0 on success, 1 on failure.
 uint8_t TCMDEXEC_eps_watchdog(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
@@ -12,9 +14,11 @@ uint8_t TCMDEXEC_eps_watchdog(const uint8_t *args_str, TCMD_TelecommandChannel_e
 
     if (result == 0) {
         snprintf(response_output_buf, response_output_buf_len, "EPS watchdog triggered successfully.");
+        return 0;
     } else {
         snprintf(
             response_output_buf, response_output_buf_len,
             "EPS watchdog trigger failed (err %d)", result);
+        return 1;
     }
 }
