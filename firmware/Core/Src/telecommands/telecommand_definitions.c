@@ -22,7 +22,7 @@
 #include "timekeeping/timekeeping.h"
 #include "littlefs/littlefs_helper.h"
 #include "stm32/stm32_reboot_reason.h"
-
+#include "telecommands/eps_telecommands.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -329,6 +329,16 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
 
     // ****************** END SECTION: freertos_telecommand_defs ******************
 
+
+    /* ============================ EPS-Related (eps_telecommands.c/h) ================= */
+    {
+        .tcmd_name = "eps_watchdog",
+        .tcmd_func = TCMDEXEC_eps_watchdog,
+        .number_of_args = 0,
+    },
+    /* *************************** END EPS Section ************************************** */
+    
+    
     // ****************** SECTION: agenda_telecommand_defs ******************
 
    {
