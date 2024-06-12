@@ -14,9 +14,8 @@ uint8_t TCMDEXEC_fs_format_storage(const uint8_t *args_str, TCMD_TelecommandChan
         snprintf(response_output_buf, response_output_buf_len, "LittleFS Formatting Error: %d\n", result);
         return 1;
     }
-    else {
-        snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Formatted!\n");
-    }
+    
+    snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Formatted!\n");
     return 0;
 }
 
@@ -27,9 +26,8 @@ uint8_t TCMDEXEC_fs_mount(const uint8_t *args_str, TCMD_TelecommandChannel_enum_
         snprintf(response_output_buf, response_output_buf_len, "LittleFS Mounting Error: %d\n", result);
         return 1;
     }
-    else {
-        snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Mounted!\n");
-    }
+    
+    snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Mounted!\n");
     return 0;
 }
 
@@ -40,9 +38,8 @@ uint8_t TCMDEXEC_fs_unmount(const uint8_t *args_str, TCMD_TelecommandChannel_enu
         snprintf(response_output_buf, response_output_buf_len, "LittleFS Unmounting Error: %d\n", result);
         return 1;
     }
-    else {
-        snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Unounted!\n");
-    }
+    
+    snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Unounted!\n");
     return 0;
 }
 
@@ -78,9 +75,8 @@ uint8_t TCMDEXEC_fs_write_file(const uint8_t *args_str, TCMD_TelecommandChannel_
         snprintf(response_output_buf, response_output_buf_len, "LittleFS Writing Error: %d\n", result);
         return 1;
     }
-    else {
-        snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Wrote Data!");
-    }
+    
+    snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Wrote Data!");
     return 0;
 }
 
@@ -101,11 +97,10 @@ uint8_t TCMDEXEC_fs_read_file(const uint8_t *args_str, TCMD_TelecommandChannel_e
 
     int8_t result = LFS_read_file(arg_file_name, rx_buffer, sizeof(rx_buffer));
     if (result < 0) {
-        snprintf(response_output_buf, response_output_buf_len, "LittleFS Reading Error: %d\n", result);
+        snprintf(response_output_buf, response_output_buf_len, "LittleFS error reading file '%s': %d", arg_file_name, result);
         return 1;
     }
-    else {
-        snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Read Data: %s!", rx_buffer);
-    }
+    
+    snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Read File '%s': '%s'!", arg_file_name, rx_buffer);
     return 0;
 }
