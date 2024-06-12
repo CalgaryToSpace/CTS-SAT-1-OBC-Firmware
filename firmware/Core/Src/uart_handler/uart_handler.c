@@ -59,15 +59,17 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         HAL_UART_Receive_IT(UART_telecommand_port_handle, (uint8_t*) &UART_telecommand_buffer_last_rx_byte, 1);
     }
     else if (huart->Instance == UART_eps_port_handle->Instance) {
-        // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> EPS Data\n");
+        DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> EPS Data\n");
 
         if (! UART_eps_is_expecting_data) {
             // not expecting data, ignore this noise
+            HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t*) &UART_eps_buffer_last_rx_byte, 1);
             return;
         }
 
         if (UART_eps_buffer_write_idx >= UART_eps_buffer_len) {
             DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART EPS buffer is full\n");
+            HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t*) &UART_eps_buffer_last_rx_byte, 1);
             // exit, with everything the way it is (stop appending)
             return;
         }

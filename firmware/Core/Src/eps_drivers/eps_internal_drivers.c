@@ -13,7 +13,7 @@
 
 extern UART_HandleTypeDef *UART_eps_port_handle;
 
-const uint16_t EPS_RX_TIMEOUT_MS = 200; // TODO: decrease for flight
+const uint32_t EPS_RX_TIMEOUT_MS = 200; // TODO: decrease for flight
 
 /// @brief Sends a command to the EPS, and receives the response.
 /// @param cmd_buf Array of bytes to send to the EPS, including the command code, STID, IVID, etc.
@@ -76,6 +76,7 @@ uint8_t eps_send_cmd_get_response(
 
 	// RX FROM EPS, into UART_eps_buffer
 	// End when we timeout, when we receive the expected number of bytes.
+	uint32_t start_rx_time = HAL_GetTick();
 	while (1) {
 		// Check if we've received the expected number of bytes
 		if (UART_eps_buffer_write_idx >= rx_buf_len) {
@@ -84,17 +85,18 @@ uint8_t eps_send_cmd_get_response(
 		}
 
 		// Check if we've timed out
-		// FIXME: timeout needs to be since the start of the write AND this
-		if ((HAL_GetTick() - UART_eps_last_write_time_ms) > EPS_RX_TIMEOUT_MS) {
+		if ((HAL_GetTick() - start_rx_time) > EPS_RX_TIMEOUT_MS) {
 			if (EPS_ENABLE_DEBUG_PRINT) {
 				char msg[200];
 				snprintf(
 					msg, sizeof(msg),
-					"OBC -> EPS TIMEOUT ERROR: HAL_GetTick() - UART_eps_last_write_time_ms > EPS_RX_TIMEOUT_MS\n");
+					"OBC -> EPS TIMEOUT ERROR: HAL_GetTick() - start_rx_time > EPS_RX_TIMEOUT_MS\n");
 				DEBUG_uart_print_str(msg);
 			}
 			break;
 		}
+
+		// TODO: Consider a short timeout after we've received the first byte, but before we've received the last expected byte, between received bytes (not that valuable)
 
 		// TODO: also end when we receive the end tag
 	}
