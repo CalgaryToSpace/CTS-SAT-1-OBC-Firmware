@@ -19,11 +19,16 @@ SPI_HandleTypeDef *hspi_lfs_ptr = &hspi1;
 /**
  * @brief LittleFS read function
  * @param block_num - Block number LittleFS is trying to access
- * @retval returns number from 0 - FLASH_NUMBER_OF_FLASH_DEVICES - 1
+ * @retval returns number from 0 to FLASH_NUMBER_OF_FLASH_DEVICES - 1, < 0 if block_num out of range
  */
 uint8_t LFS_get_chip_number(lfs_block_t block_num)
 {
     uint16_t block_count_per_device = (FLASH_CHIP_SIZE_BYTES / FLASH_CHIP_BLOCK_SIZE_BYTES);
+
+    // If block number is higher than legal range, return -1
+    if (block_num > (block_count_per_device * FLASH_NUMBER_OF_FLASH_DEVICES)) {
+        return -1;
+    }
 
     for (uint8_t i = FLASH_NUMBER_OF_FLASH_DEVICES-1; i > 0; i--)
     {
