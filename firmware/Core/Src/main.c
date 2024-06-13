@@ -82,7 +82,9 @@ const osThreadAttr_t TASK_DEBUG_print_heartbeat_Attributes = {
 osThreadId_t TASK_handle_uart_telecommands_Handle;
 const osThreadAttr_t TASK_handle_uart_telecommands_Attributes = {
   .name = "TASK_handle_uart_telecommands",
-  .stack_size = 2048,
+  // Size 2048 doesn't work with LFS settings, but 8192 does
+  // TODO: confirm stack size
+  .stack_size = 8192,
   .priority = (osPriority_t) osPriorityNormal,
 };
 
