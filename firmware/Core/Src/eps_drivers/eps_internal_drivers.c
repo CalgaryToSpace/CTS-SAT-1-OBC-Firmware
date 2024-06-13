@@ -13,7 +13,8 @@
 
 extern UART_HandleTypeDef *UART_eps_port_handle;
 
-const uint32_t EPS_RX_TIMEOUT_MS = 200; // TODO: decrease for flight
+const uint32_t EPS_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS = 50;
+const uint32_t EPS_RX_TIMEOUT_BETWEEN_BYTES_MS = 25;
 
 /// @brief Sends a command to the EPS, and receives the response.
 /// @param cmd_buf Array of bytes to send to the EPS, including the command code, STID, IVID, etc.
@@ -45,14 +46,14 @@ uint8_t EPS_send_cmd_get_response(
     strcpy((char*)&cmd_buf_with_tags[begin_tag_len+cmd_buf_len], "</cmd>");
 
 	if (EPS_ENABLE_DEBUG_PRINT) {
-		DEBUG_uart_print_str("OBC->EPS (no tags): ");
+		DEBUG_uart_print_str("OBC->EPS DATA (no tags): ");
 		DEBUG_uart_print_array_hex(cmd_buf, cmd_buf_len, "\n");
-		DEBUG_uart_print_str("OBC->EPS (with tags): ");
+		DEBUG_uart_print_str("OBC->EPS DATA (with tags): ");
 		DEBUG_uart_print_array_hex(cmd_buf_with_tags, cmd_buf_with_tags_len, "\n");
 	}
 
 	// TX TO EPS
-	HAL_StatusTypeDef tx_status = HAL_UART_Transmit(
+	const HAL_StatusTypeDef tx_status = HAL_UART_Transmit(
 		UART_eps_port_handle,
 		(uint8_t*) cmd_buf_with_tags, cmd_buf_with_tags_len, 1000); // FIXME: update the timeout
 	if (tx_status != HAL_OK) {
@@ -76,27 +77,34 @@ uint8_t EPS_send_cmd_get_response(
 
 	// RX FROM EPS, into UART_eps_buffer
 	// End when we timeout, when we receive the expected number of bytes.
-	uint32_t start_rx_time = HAL_GetTick();
+	const uint32_t start_rx_time = HAL_GetTick();
 	while (1) {
 		// Check if we've received the expected number of bytes
-		if (UART_eps_buffer_write_idx >= rx_buf_len) {
+		if (UART_eps_buffer_write_idx >= rx_len_with_tags) {
 			// Best-case: we've received the expected number of bytes, and can be done!
 			break;
 		}
 
-		// Check if we've timed out
-		if ((HAL_GetTick() - start_rx_time) > EPS_RX_TIMEOUT_MS) {
-			if (EPS_ENABLE_DEBUG_PRINT) {
-				char msg[200];
-				snprintf(
-					msg, sizeof(msg),
-					"OBC -> EPS TIMEOUT ERROR: HAL_GetTick() - start_rx_time > EPS_RX_TIMEOUT_MS\n");
-				DEBUG_uart_print_str(msg);
+		if ((UART_eps_buffer_write_idx == 0)) {
+			// Check if we've timed out (before the first byte)
+			if ((HAL_GetTick() - start_rx_time) > EPS_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS) {
+				if (EPS_ENABLE_DEBUG_PRINT) {
+					DEBUG_uart_print_str("EPS->OBC ERROR: timeout before first byte received\n");
+				}
+				// fatal error; return
+				return 3;
 			}
-			break;
 		}
-
-		// TODO: Consider a short timeout after we've received the first byte, but before we've received the last expected byte, between received bytes (not that valuable)
+		else { // thus, UART_eps_buffer_write_idx > 0
+			// Check if we've timed out (between bytes)
+			if (HAL_GetTick() - UART_eps_last_write_time_ms > EPS_RX_TIMEOUT_BETWEEN_BYTES_MS) {
+				if (EPS_ENABLE_DEBUG_PRINT) {
+					DEBUG_uart_print_str("EPS->OBC WARNING: timeout between bytes\n");
+				}
+				// non-fatal error; try to parse what we received
+				break;
+			}
+		}
 
 		// TODO: also end when we receive the end tag
 	}
@@ -105,7 +113,7 @@ uint8_t EPS_send_cmd_get_response(
 	UART_eps_is_expecting_data = 0; // We are no longer expecting a response
 
 	// For now, log the received bytes
-	DEBUG_uart_print_str("EPS->OBC (with tags): ");
+	DEBUG_uart_print_str("EPS->OBC DATA (with tags): ");
 	DEBUG_uart_print_array_hex((uint8_t*)UART_eps_buffer, UART_eps_buffer_write_idx, "");
 	DEBUG_uart_print_str("\n");
 
@@ -113,27 +121,43 @@ uint8_t EPS_send_cmd_get_response(
 	// TODO: if the following cases happen ever during testing, consider allowing them and treating them as WARNINGs
 	if (UART_eps_buffer_write_idx == 0) {
 		if (EPS_ENABLE_DEBUG_PRINT) {
-			DEBUG_uart_print_str("OBC -> EPS ERROR: UART_eps_buffer_write_idx == 0\n");
+			DEBUG_uart_print_str("EPS->OBC ERROR: UART_eps_buffer_write_idx == 0\n");
 		}
-		return 3;
+		return 12;
 	}
 	else if (UART_eps_buffer_write_idx < begin_tag_len + EPS_DEFAULT_RX_LEN_MIN + end_tag_len) {
 		if (EPS_ENABLE_DEBUG_PRINT) {
-			DEBUG_uart_print_str("OBC -> EPS ERROR: UART_eps_buffer_write_idx < expected shortest RX\n");
+			char msg[200];
+			snprintf(
+				msg, sizeof(msg),
+				"EPS->OBC ERROR: UART_eps_buffer_write_idx < begin_tag_len + EPS_DEFAULT_RX_LEN_MIN + end_tag_len (%d < %d)\n",
+				UART_eps_buffer_write_idx, begin_tag_len+EPS_DEFAULT_RX_LEN_MIN+end_tag_len);
+			DEBUG_uart_print_str(msg);
 		}
-		return 4;
+		return 13;
 	}
 	else if (UART_eps_buffer_write_idx < rx_len_with_tags) {
 		if (EPS_ENABLE_DEBUG_PRINT) {
-			DEBUG_uart_print_str("OBC -> EPS ERROR: UART_eps_buffer_write_idx < rx_len_with_tags\n");
+			char msg[200];
+			snprintf(
+				msg, sizeof(msg),
+				"EPS->OBC ERROR: UART_eps_buffer_write_idx < rx_len_with_tags (%d < %d)\n",
+				UART_eps_buffer_write_idx, rx_len_with_tags);
+			DEBUG_uart_print_str(msg);
 		}
-		return 5;
+		return 14;
 	}
-	else if (UART_eps_buffer_write_idx > rx_len_with_tags) {
+	else if (UART_eps_buffer_write_idx > (rx_len_with_tags+2)) {
+		// The +2 is for a "\r\n" that might be appended to the end of the response
 		if (EPS_ENABLE_DEBUG_PRINT) {
-			DEBUG_uart_print_str("OBC -> EPS ERROR: UART_eps_buffer_write_idx > rx_len_with_tags\n");
+			char msg[200];
+			snprintf(
+				msg, sizeof(msg),
+				"EPS->OBC WARNING: UART_eps_buffer_write_idx > rx_len_with_tags+2 (%d > %d+2)\n",
+				UART_eps_buffer_write_idx, rx_len_with_tags);
+			DEBUG_uart_print_str(msg);
 		}
-		return 6;
+		return 15;
 	}
 
 	// FIXME: pack the rx_buf less-naively (check/confirm the start tag location)
@@ -145,13 +169,13 @@ uint8_t EPS_send_cmd_get_response(
 	}
 
 	if (EPS_ENABLE_DEBUG_PRINT) {
-		DEBUG_uart_print_str("EPS->OBC (no tags): ");
+		DEBUG_uart_print_str("EPS->OBC DATA (no tags): ");
 		DEBUG_uart_print_array_hex(rx_buf, rx_buf_len, "\n");
 	}
 
 	// Check STAT field (Table 3-11) - 0x00 and 0x80 mean success
 	// TODO: consider doing this check in the next level up
-	int8_t eps_stat_field = rx_buf[4];
+	const uint8_t eps_stat_field = rx_buf[4];
 	if ((eps_stat_field != 0x00) && (eps_stat_field != 0x80)) {
 		if (EPS_ENABLE_DEBUG_PRINT) {
 			char msg[100];
