@@ -336,6 +336,11 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_func = TCMDEXEC_eps_watchdog,
         .number_of_args = 0,
     },
+    {
+        .tcmd_name = "eps_get_system_status_json",
+        .tcmd_func = TCMDEXEC_eps_get_system_status_json,
+        .number_of_args = 0,
+    },
     /* *************************** END EPS Section ************************************** */
     
     
