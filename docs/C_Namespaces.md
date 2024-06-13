@@ -26,6 +26,7 @@ region of code it belongs to.
 
 * `ADCS_`: duh
 * `EPS_`: duh
+* `EPS_CMD_`: actual EPS commands, which are sent to the EPS
 * `GPS_`: duh
 * `COMMS_ANT_`: related to the I2C communications for the deployable communications antenna
 * `AX100_`: related to the AX100 communication module, at a low level
@@ -38,6 +39,8 @@ region of code it belongs to.
 * `FLASH_`: drive functions for the SPI flash system, which the `lfs_` implementation can call into
 	* This may be removed.
 
+## Other Categories
+* `TIM_`: related to the timer peripheral, or timing in general
 
 ## Libraries, External, etc.
 
