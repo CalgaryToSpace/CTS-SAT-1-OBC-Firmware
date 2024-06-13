@@ -39,6 +39,8 @@ Note that modification are sometimes required, including:
 
 */
 
+// TODO: determine how long each of these are, add to docs, add checks to each function at the start
+
 uint8_t EPS_vpid_raw_TO_json(const EPS_vpid_raw_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 10) {
         return 1; // Error: Invalid input
