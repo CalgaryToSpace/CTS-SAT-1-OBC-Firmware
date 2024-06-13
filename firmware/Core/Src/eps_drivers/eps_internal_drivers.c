@@ -21,7 +21,7 @@ const uint32_t EPS_RX_TIMEOUT_MS = 200; // TODO: decrease for flight
 /// @param rx_buf Buffer to store the response. Is filled with the response, without tags.
 /// @param rx_buf_len Length of the response buffer. Must be the command length.
 /// @return 0 on success, >0 if error.
-uint8_t eps_send_cmd_get_response(
+uint8_t EPS_send_cmd_get_response(
 		const uint8_t cmd_buf[], uint8_t cmd_buf_len,
 		uint8_t rx_buf[], uint16_t rx_buf_len
 	) {
@@ -182,6 +182,6 @@ uint8_t EPS_run_argumentless_cmd(uint8_t command_code) {
 	cmd_buf[2] = command_code; // "CC"
 	cmd_buf[3] = EPS_COMMAND_BID;
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	return comms_err;
 }
