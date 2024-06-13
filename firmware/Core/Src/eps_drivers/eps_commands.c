@@ -24,7 +24,7 @@ uint8_t EPS_CMD_system_reset() {
 	cmd_buf[3] = EPS_COMMAND_BID;
 	cmd_buf[4] = arg_reset_key;
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	return comms_err;
 }
 
@@ -61,7 +61,7 @@ uint8_t EPS_CMD_output_bus_group_on(uint16_t CH_BF,  uint16_t CH_EXT_BF) {
 	cmd_buf[6] = CH_EXT_BF & 0x00FF;
 	cmd_buf[7] = CH_EXT_BF >> 8;
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	return comms_err;
 }
 
@@ -82,7 +82,7 @@ uint8_t EPS_CMD_output_bus_group_off(uint16_t CH_BF,  uint16_t CH_EXT_BF) {
 	cmd_buf[6] = CH_EXT_BF & 0x00FF;
 	cmd_buf[7] = CH_EXT_BF >> 8;
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	return comms_err;
 }
 
@@ -103,7 +103,7 @@ uint8_t EPS_CMD_output_bus_group_state(uint16_t CH_BF,  uint16_t CH_EXT_BF) {
 	cmd_buf[6] = CH_EXT_BF & 0x00FF;
 	cmd_buf[7] = CH_EXT_BF >> 8;
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	return comms_err;
 }
 
@@ -121,7 +121,7 @@ uint8_t EPS_CMD_output_bus_channel_on(uint8_t CH_IDX) {
 	cmd_buf[3] = EPS_COMMAND_BID;
 	cmd_buf[4] = CH_IDX;
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	return comms_err;
 }
 
@@ -139,7 +139,7 @@ uint8_t EPS_CMD_output_bus_channel_off(uint8_t CH_IDX) {
 	cmd_buf[3] = EPS_COMMAND_BID;
 	cmd_buf[4] = CH_IDX;
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	return comms_err;
 }
 
@@ -166,7 +166,7 @@ uint8_t EPS_CMD_get_system_status(EPS_result_system_status_t* result_dest) {
 	cmd_buf[2] = CC;
 	cmd_buf[3] = EPS_COMMAND_BID;
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	if (comms_err != 0) {
 		return comms_err;
 	}
@@ -188,7 +188,7 @@ uint8_t EPS_CMD_get_pdu_overcurrent_fault_state(EPS_result_pdu_overcurrent_fault
 	cmd_buf[2] = CC;
 	cmd_buf[3] = EPS_COMMAND_BID;
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	if (comms_err != 0) {
 		return comms_err;
 	}
@@ -210,7 +210,7 @@ uint8_t EPS_CMD_get_pbu_abf_placed_state(EPS_result_pbu_abf_placed_state_t* resu
 	cmd_buf[2] = CC;
 	cmd_buf[3] = EPS_COMMAND_BID;
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	if (comms_err != 0) {
 		return comms_err;
 	}
@@ -241,7 +241,7 @@ uint8_t EPS_CMD_get_pdu_housekeeping_data_raw(EPS_result_pdu_housekeeping_data_r
 	cmd_buf[2] = CC;
 	cmd_buf[3] = EPS_COMMAND_BID;
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	if (comms_err != 0) {
 		return comms_err;
 	}
@@ -263,7 +263,7 @@ uint8_t EPS_CMD_get_pdu_housekeeping_data_eng(EPS_result_pdu_housekeeping_data_e
 	cmd_buf[2] = CC;
 	cmd_buf[3] = EPS_COMMAND_BID;
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	if (comms_err != 0) {
 		return comms_err;
 	}
@@ -285,7 +285,7 @@ uint8_t EPS_CMD_get_pdu_housekeeping_data_running_average(EPS_result_pdu_houseke
 	cmd_buf[2] = CC;
 	cmd_buf[3] = EPS_COMMAND_BID;
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	if (comms_err != 0) {
 		return comms_err;
 	}
@@ -307,7 +307,7 @@ uint8_t EPS_CMD_get_pbu_housekeeping_data_raw(EPS_result_pbu_housekeeping_data_r
 	cmd_buf[2] = CC;
 	cmd_buf[3] = EPS_COMMAND_BID;
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	if (comms_err != 0) {
 		return comms_err;
 	}
@@ -329,7 +329,7 @@ uint8_t EPS_CMD_get_pbu_housekeeping_data_eng(EPS_result_pbu_housekeeping_data_e
 	cmd_buf[2] = CC;
 	cmd_buf[3] = EPS_COMMAND_BID;
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	if (comms_err != 0) {
 		return comms_err;
 	}
@@ -351,7 +351,7 @@ uint8_t EPS_CMD_get_pbu_housekeeping_data_running_average(EPS_result_pbu_houseke
 	cmd_buf[2] = CC;
 	cmd_buf[3] = EPS_COMMAND_BID;
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	if (comms_err != 0) {
 		return comms_err;
 	}
@@ -373,7 +373,7 @@ uint8_t EPS_CMD_get_pcu_housekeeping_data_raw(EPS_result_pcu_housekeeping_data_r
 	cmd_buf[2] = CC;
 	cmd_buf[3] = EPS_COMMAND_BID;
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	if (comms_err != 0) {
 		return comms_err;
 	}
@@ -395,7 +395,7 @@ uint8_t EPS_CMD_get_pcu_housekeeping_data_eng(EPS_result_pcu_housekeeping_data_e
 	cmd_buf[2] = CC;
 	cmd_buf[3] = EPS_COMMAND_BID;
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	if (comms_err != 0) {
 		return comms_err;
 	}
@@ -417,7 +417,7 @@ uint8_t EPS_CMD_get_pcu_housekeeping_data_running_average(EPS_result_pcu_houseke
 	cmd_buf[2] = CC;
 	cmd_buf[3] = EPS_COMMAND_BID;
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	if (comms_err != 0) {
 		return comms_err;
 	}
@@ -446,7 +446,7 @@ uint8_t EPS_CMD_get_configuration_parameter(uint16_t parameter_id, uint8_t param
 
 	// TODO: confirm if infinite reading allowed, or if we need to set rx_len based on the required parameter
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	if (comms_err != 0) {
 		return comms_err;
 	}
@@ -482,7 +482,7 @@ uint8_t EPS_CMD_set_configuration_parameter(uint16_t parameter_id, uint8_t new_p
 	cmd_buf[6] = new_parameter_value; // TODO: fix the width here; big task
 	return 100;
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	if (comms_err != 0) {
 		return comms_err;
 	}
@@ -508,7 +508,7 @@ uint8_t EPS_CMD_reset_configuration_parameter(uint16_t parameter_id) {
 	cmd_buf[4] = parameter_id & 0x00FF;
 	cmd_buf[5] = parameter_id >> 8;
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	if (comms_err != 0) {
 		return comms_err;
 	}
@@ -534,7 +534,7 @@ uint8_t EPS_CMD_reset_configuration() {
 
 	cmd_buf[4] = arg_conf_key;
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	return comms_err;
 }
 
@@ -554,7 +554,7 @@ uint8_t EPS_CMD_load_configuration() {
 
 	cmd_buf[4] = arg_conf_key;
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	return comms_err;
 }
 
@@ -576,7 +576,7 @@ uint8_t EPS_CMD_save_configuration() {
 	cmd_buf[4] = arg_conf_key;
 	cmd_buf[5] = CHECKSUM;
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	return comms_err;
 }
 
@@ -593,7 +593,7 @@ uint8_t EPS_CMD_get_piu_housekeeping_data_raw(EPS_result_piu_housekeeping_data_r
 	cmd_buf[2] = CC;
 	cmd_buf[3] = EPS_COMMAND_BID;
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	if (comms_err != 0) {
 		return comms_err;
 	}
@@ -615,7 +615,7 @@ uint8_t EPS_CMD_get_piu_housekeeping_data_eng(EPS_result_piu_housekeeping_data_e
 	cmd_buf[2] = CC;
 	cmd_buf[3] = EPS_COMMAND_BID;
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	if (comms_err != 0) {
 		return comms_err;
 	}
@@ -637,7 +637,7 @@ uint8_t EPS_CMD_get_piu_housekeeping_data_running_average(EPS_result_piu_houseke
 	cmd_buf[2] = CC;
 	cmd_buf[3] = EPS_COMMAND_BID;
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	if (comms_err != 0) {
 		return comms_err;
 	}
@@ -667,7 +667,7 @@ uint8_t EPS_CMD_correct_time(int32_t time_correction) {
 	cmd_buf[6] = (time_correction >> 16) & 0xFF;
 	cmd_buf[7] = (time_correction >> 24) & 0xFF;
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	return comms_err;
 }
 
@@ -687,6 +687,6 @@ uint8_t EPS_CMD_zero_reset_cause_counters() {
 	
 	cmd_buf[4] = arg_zero_key;
 
-	const uint8_t comms_err = eps_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	return comms_err;
 }
