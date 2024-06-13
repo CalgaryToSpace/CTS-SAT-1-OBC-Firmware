@@ -104,3 +104,42 @@ uint8_t TCMDEXEC_fs_read_file(const uint8_t *args_str, TCMD_TelecommandChannel_e
     snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Read File '%s': '%s'!", arg_file_name, rx_buffer);
     return 0;
 }
+
+
+uint8_t TCMDEXEC_fs_demo_write_then_read(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+
+    char file_name[] = "demo_test.txt";
+
+    char file_content[200];
+    snprintf(file_content, sizeof(file_content), "Hello, World! Write timestamp: %lu", HAL_GetTick());
+
+    const int8_t mount_result = LFS_mount();
+    if (mount_result < 0) {
+        snprintf(response_output_buf, response_output_buf_len, "LittleFS mounting error: %d\n", mount_result);
+        return 1;
+    }
+
+    // TODO: Delete file first, if it exists, otherwise it just overwrites from the start, keeping anything extra longer in the file.
+    const int8_t write_result = LFS_write_file(file_name, (uint8_t*) file_content, strlen(file_content));
+    if (write_result < 0) {
+        snprintf(response_output_buf, response_output_buf_len, "LittleFS writing error: %d\n", write_result);
+        return 2;
+    }
+
+    uint8_t read_buffer[200] = {0};
+    const int8_t read_result = LFS_read_file(file_name, read_buffer, sizeof(read_buffer));
+    if (read_result < 0) {
+        snprintf(response_output_buf, response_output_buf_len, "LittleFS reading error: %d\n", read_result);
+        return 3;
+    }
+
+    // ensure safety for upcoming print
+    read_buffer[sizeof(read_buffer) - 1] = '\0';
+
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "LittleFS Successfully Read File '%s'. System uptime: %lu, File Content: '%s'!",
+        file_name, HAL_GetTick(), (char*)read_buffer);
+    return 0;
+}

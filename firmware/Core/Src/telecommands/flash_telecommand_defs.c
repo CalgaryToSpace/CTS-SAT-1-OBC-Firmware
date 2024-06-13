@@ -171,7 +171,7 @@ uint8_t TCMDEXEC_flash_write_hex(const uint8_t *args_str, TCMD_TelecommandChanne
     uint8_t arg0_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 0, &chip_num);
     uint8_t arg1_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 1, &flash_addr_u64);
     
-    // TODO: string extract the hex
+    // FIXME: actually extract the hex from the string
     // uint8_t arg2_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 2, &num_bytes);
     uint8_t arg2_result = 0; // temporary - fake success
 

@@ -16,6 +16,8 @@ uint8_t LFS_read_buffer[512];
 uint8_t LFS_prog_buffer[512];
 uint8_t LFS_lookahead_buf[16];
 
+// TODO: look into the `LFS_F_INLINE` macro to increase the maximum number of files we can have
+
 // Variables LittleFS uses for various functions
 lfs_t lfs;
 struct lfs_config cfg = {
@@ -27,9 +29,12 @@ struct lfs_config cfg = {
 	// block device configuration
 	.read_size = 512,
 	.prog_size = 512,
-	.block_size = 1024, // TODO: this seems way too large // old: 262144 = 256KiB
-	.block_count = 4096,
-	.block_cycles = 100, // TODO: ASK ABOUT THIS (HOW FREQUENT ARE WE USING THE MODULE,
+	// On the "S25FL512S", the minimum eraseable block size is 256 KiB = 262144 bytes.
+	// The block size is the smallest erasable unit of the flash memory, and is the minimum size
+	// an individual file occupies.
+	.block_size = 262144,
+	.block_count = 256, // 512 Mib / 256 KiB = 256 (i.e., max 256 files)
+	.block_cycles = 100, // TODO: ASK ABOUT THIS (HOW FREQUENT ARE WE USING THE MODULE)
 	.cache_size = 512,
 	.lookahead_size = 16,
 	.compact_thresh = -1, // Defaults to ~88% block_size when zero (lfs.h, line 232)
@@ -63,13 +68,13 @@ int8_t LFS_format()
 /**
  * @brief Mounts LittleFS to the Memory Module
  * @param None
- * @retval Returns negative values if mount failed, else return 0
+ * @retval Returns 0 on success. Negative values if mount failed. 1 if already mounted.
  */
 int8_t LFS_mount()
 {
 	if (LFS_is_lfs_mounted) {
 		debug_uart_print_str("LittleFS already mounted!\n");
-		return -1;
+		return 1;
 	}
 
 	// Variable to store status of LittleFS mounting
