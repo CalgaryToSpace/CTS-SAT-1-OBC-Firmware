@@ -14,3 +14,4 @@ target_link_libraries(cgse ${CURSES})
 # Add more include directories if needed
 target_include_directories(cgse PUBLIC "." "telecommands" "transforms")
 
+install(TARGETS cgse DESTINATION "$ENV{HOME}/bin")
