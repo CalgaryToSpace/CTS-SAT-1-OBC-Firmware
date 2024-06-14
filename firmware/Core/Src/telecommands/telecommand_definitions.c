@@ -343,7 +343,7 @@ uint8_t TCMDEXEC_upload_mpi_firmware_page(const uint8_t *args_str, TCMD_Telecomm
         return 1;
     }
 
-    snprintf(response_output_buf, response_output_buf_len, "Received MPI firmware page. Wrote %lu bytes to \"%s\" at address %lu", firmware_bytes_len, firmware_filename, (uint32_t)file_start_address);
+    snprintf(response_output_buf, response_output_buf_len, "Received MPI firmware page. Wrote %u bytes to \"%s\" at address %u", firmware_bytes_len, firmware_filename, (uint32_t)file_start_address);
     return 0;
 }
 
