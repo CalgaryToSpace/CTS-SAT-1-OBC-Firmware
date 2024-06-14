@@ -2,7 +2,7 @@
 // /*-------------------------Memory Module Code Testing Begin-------------------------*/
 // // Turn on LED1 to indicate program starting
 // HAL_GPIO_WritePin(PIN_LED1_OUT_GPIO_Port, PIN_LED1_OUT_Pin, GPIO_PIN_SET);
-// debug_uart_print_str("Memory Module Testing Begins\n");
+// DEBUG_uart_print_str("Memory Module Testing Begins\n");
 
 // char spiRxBuffer[512] = {0};
 // char spiRxBuffer2[512] = {0};
@@ -25,9 +25,9 @@
 // result = LFS_format();
 // if (result < 0)
 // {
-//   debug_uart_print_str("Formatting Error: ");
-//   debug_uart_print_uint32(result);
-//   debug_uart_print_str("\n");
+//   DEBUG_uart_print_str("Formatting Error: ");
+//   DEBUG_uart_print_uint32(result);
+//   DEBUG_uart_print_str("\n");
 //   return result;
 // }
 
@@ -36,47 +36,47 @@
 //   result = LFS_mount();
 //   if (result < 0)
 //   {
-//     debug_uart_print_str("Mounting Error: ");
-//     debug_uart_print_uint32(result);
-//     debug_uart_print_str("\n");
+//     DEBUG_uart_print_str("Mounting Error: ");
+//     DEBUG_uart_print_uint32(result);
+//     DEBUG_uart_print_str("\n");
 //     return result;
 //   }
 
 //   result = LFS_read_file("boot_count.txt", &boot_count, sizeof(boot_count));
 //   if (result < 0)
 //   {
-//     debug_uart_print_str("Reading Error: ");
-//     debug_uart_print_uint32(result);
-//     debug_uart_print_str("\n");
+//     DEBUG_uart_print_str("Reading Error: ");
+//     DEBUG_uart_print_uint32(result);
+//     DEBUG_uart_print_str("\n");
 //     return result;
 //   }
 
-//   debug_uart_print_str("Read Value: ");
-//   debug_uart_print_uint32(boot_count);
-//   debug_uart_print_str("\n");
+//   DEBUG_uart_print_str("Read Value: ");
+//   DEBUG_uart_print_uint32(boot_count);
+//   DEBUG_uart_print_str("\n");
 
 //   boot_count += 1;
 
 //   result = LFS_write_file("boot_count.txt", &boot_count, sizeof(boot_count));
 //   if (result < 0)
 //   {
-//     debug_uart_print_str("Writing Error: ");
-//     debug_uart_print_str(&result_read);
-//     debug_uart_print_str("\n");
+//     DEBUG_uart_print_str("Writing Error: ");
+//     DEBUG_uart_print_str(&result_read);
+//     DEBUG_uart_print_str("\n");
 //     return result;
 //   }
 
 //   result = LFS_unmount();
 //   if (result < 0)
 //   {
-//     debug_uart_print_str("Unmounting Error: ");
-//     debug_uart_print_uint32(result);
-//     debug_uart_print_str("\n");
+//     DEBUG_uart_print_str("Unmounting Error: ");
+//     DEBUG_uart_print_uint32(result);
+//     DEBUG_uart_print_str("\n");
 //     return result;
 //   }
 // }
 
 // // Turn off LED1 to indicate Program End
 // HAL_GPIO_WritePin(PIN_LED1_OUT_GPIO_Port, PIN_LED1_OUT_Pin, GPIO_PIN_RESET);
-// debug_uart_print_str("Memory Module Testing Ends\n");
+// DEBUG_uart_print_str("Memory Module Testing Ends\n");
 // /*-------------------------Memory Module Code Testing End-------------------------*/

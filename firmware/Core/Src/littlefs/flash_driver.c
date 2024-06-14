@@ -120,9 +120,9 @@ uint8_t FLASH_write_enable(SPI_HandleTypeDef *hspi, uint8_t chip_number)
         }
         wip = status_reg_buffer[0] & 1;
 
-        debug_uart_print_str("DEBUG: status_reg = ");
-        debug_uart_print_array_hex(status_reg_buffer, 1);
-        debug_uart_print_str("\n");
+        DEBUG_uart_print_str("DEBUG: status_reg = ");
+        DEBUG_uart_print_array_hex(status_reg_buffer, 1);
+        DEBUG_uart_print_str("\n");
     }
     return 0;
 }
@@ -365,15 +365,15 @@ uint8_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_number)
     // TODO: maybe check the capacity as well here, esp. in deployment
     uint8_t are_bytes_correct = 0;
     if (rx_buffer[0] == 0x01 && rx_buffer[1] == 0x02) {
-        debug_uart_print_str("SUCCESS: FLASH_is_reachable received IDs: ");
+        DEBUG_uart_print_str("SUCCESS: FLASH_is_reachable received IDs: ");
         are_bytes_correct = 1;
     } else {
-        debug_uart_print_str("ERROR: FLASH_is_reachable received IDs: ");
+        DEBUG_uart_print_str("ERROR: FLASH_is_reachable received IDs: ");
         are_bytes_correct = 0;
     }
 
-    debug_uart_print_array_hex(rx_buffer, 5);
-    debug_uart_print_str("\n");
+    DEBUG_uart_print_array_hex(rx_buffer, 5);
+    DEBUG_uart_print_str("\n");
 
     if (!are_bytes_correct) {
         // error: IDs don't match

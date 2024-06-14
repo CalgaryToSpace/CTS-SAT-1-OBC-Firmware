@@ -19,13 +19,13 @@ uint8_t TCMDEXEC_flash_activate_each_cs(const uint8_t *args_str, TCMD_Telecomman
     HAL_Delay(delay_time_ms);
 
     for (uint8_t chip_number = 0; chip_number < FLASH_NUMBER_OF_FLASH_DEVICES; chip_number++) {
-        debug_uart_print_str("Activating CS: ");
-        debug_uart_print_uint32(chip_number);
-        debug_uart_print_str("...");
+        DEBUG_uart_print_str("Activating CS: ");
+        DEBUG_uart_print_uint32(chip_number);
+        DEBUG_uart_print_str("...");
         FLASH_activate_chip_select(chip_number);
         HAL_Delay(delay_time_ms);
 
-        debug_uart_print_str("Deactivated.\n");
+        DEBUG_uart_print_str("Deactivated.\n");
         FLASH_deactivate_chip_select();
         HAL_Delay(delay_time_ms);
     }

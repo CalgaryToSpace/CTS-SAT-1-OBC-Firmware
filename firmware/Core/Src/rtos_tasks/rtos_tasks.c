@@ -144,11 +144,11 @@ void TASK_handle_uart_telecommands(void *argument) {
 
 			// print back the response
 			DEBUG_uart_print_str("======== Response (err=");
-			debug_uart_print_uint32(tcmd_result);
+			DEBUG_uart_print_uint32(tcmd_result);
 			if (tcmd_result != 0) {
-				debug_uart_print_str(" !!!!!! ERROR !!!!!!");
+				DEBUG_uart_print_str(" !!!!!! ERROR !!!!!!");
 			}
-			debug_uart_print_str(") ========\n");
+			DEBUG_uart_print_str(") ========\n");
 			DEBUG_uart_print_str(response_buf);
 			DEBUG_uart_print_str("\n==========================\n");
 			

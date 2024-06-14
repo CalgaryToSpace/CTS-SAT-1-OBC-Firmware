@@ -4,7 +4,7 @@
 #include "debug_tools/debug_uart.h"
 
 void demo_flash_write() {
-    debug_uart_print_str("Starting demo_flash_write()...\n");
+    DEBUG_uart_print_str("Starting demo_flash_write()...\n");
 
     uint8_t chip_num = 0;
     uint32_t flash_addr = 0;
@@ -15,17 +15,17 @@ void demo_flash_write() {
     for (uint8_t i = 0; i < 2; i++) {
         uint8_t result = FLASH_write(&hspi1, chip_num, flash_addr, bytes_to_write, num_bytes);
         if (result != 0) {
-            debug_uart_print_str("Error in FLASH_write\n");
+            DEBUG_uart_print_str("Error in FLASH_write\n");
             return;
         }
     }
 
-    debug_uart_print_str("Wrote bytes in demo_flash_write(). Done.\n");
+    DEBUG_uart_print_str("Wrote bytes in demo_flash_write(). Done.\n");
 }
 
 
 void demo_flash_read() {
-    debug_uart_print_str("Starting demo_flash_read()...\n");
+    DEBUG_uart_print_str("Starting demo_flash_read()...\n");
 
     uint8_t chip_num = 0;
     uint32_t flash_addr = 0;
@@ -36,14 +36,14 @@ void demo_flash_read() {
     uint8_t result = FLASH_read_data(&hspi1, chip_num, flash_addr, bytes_store, num_bytes);
 
     if (result != 0) {
-        debug_uart_print_str("Error in FLASH_read_data\n");
+        DEBUG_uart_print_str("Error in FLASH_read_data\n");
         return;
     }
 
-    debug_uart_print_str("Read bytes: \n");
-    debug_uart_print_array_hex(bytes_store, num_bytes);
+    DEBUG_uart_print_str("Read bytes: \n");
+    DEBUG_uart_print_array_hex(bytes_store, num_bytes);
 
-    debug_uart_print_str("\nRead bytes in demo_flash_read(). Done.\n");
+    DEBUG_uart_print_str("\nRead bytes in demo_flash_read(). Done.\n");
 }
 
 // void demo_flash_full() {

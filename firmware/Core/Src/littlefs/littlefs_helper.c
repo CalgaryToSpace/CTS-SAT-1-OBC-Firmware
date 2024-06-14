@@ -57,11 +57,11 @@ int8_t LFS_format()
 	int8_t result = lfs_format(&lfs, &cfg);
 	if (result < 0)
 	{
-		debug_uart_print_str("Error formatting!\n");
+		DEBUG_uart_print_str("Error formatting!\n");
 		return result;
 	}
 	
-	debug_uart_print_str("Formatting successful!\n");
+	DEBUG_uart_print_str("Formatting successful!\n");
 	return 0;
 }
 
@@ -73,7 +73,7 @@ int8_t LFS_format()
 int8_t LFS_mount()
 {
 	if (LFS_is_lfs_mounted) {
-		debug_uart_print_str("LittleFS already mounted!\n");
+		DEBUG_uart_print_str("LittleFS already mounted!\n");
 		return 1;
 	}
 
@@ -81,11 +81,11 @@ int8_t LFS_mount()
 	int8_t result = lfs_mount(&lfs, &cfg);
 	if (result < 0)
 	{
-		debug_uart_print_str("Mounting unsuccessful\n");
+		DEBUG_uart_print_str("Mounting unsuccessful\n");
 		return result;
 	}
 	
-	debug_uart_print_str("Mounting successful\n");
+	DEBUG_uart_print_str("Mounting successful\n");
 	LFS_is_lfs_mounted = 1;
 	return 0;
 }
@@ -98,7 +98,7 @@ int8_t LFS_mount()
 int8_t LFS_unmount()
 {
 	if (! LFS_is_lfs_mounted) {
-		debug_uart_print_str("LittleFS not mounted.\n");
+		DEBUG_uart_print_str("LittleFS not mounted.\n");
 		return -1;
 	}
 
@@ -106,11 +106,11 @@ int8_t LFS_unmount()
 	const int8_t unmount_result = lfs_unmount(&lfs);
 	if (unmount_result < 0)
 	{
-		debug_uart_print_str("Error un-mounting.\n");
+		DEBUG_uart_print_str("Error un-mounting.\n");
 		return unmount_result;
 	}
 	
-	debug_uart_print_str("Successfully un-mounted LittleFS.\n");
+	DEBUG_uart_print_str("Successfully un-mounted LittleFS.\n");
 	LFS_is_lfs_mounted = 0;
 	return 0;
 }
@@ -144,33 +144,33 @@ int8_t LFS_write_file(char *file_name, uint8_t *write_buffer, uint32_t write_buf
 
 	if (open_result < 0)
 	{
-		debug_uart_print_str("Error opening/creating file.\n");
+		DEBUG_uart_print_str("Error opening/creating file.\n");
 		return open_result;
 	}
 	
-	debug_uart_print_str("Opened/created a file named: '");
-	debug_uart_print_str(file_name);
-	debug_uart_print_str("'\n");
+	DEBUG_uart_print_str("Opened/created a file named: '");
+	DEBUG_uart_print_str(file_name);
+	DEBUG_uart_print_str("'\n");
 
 	// Write data to file
 	const int8_t write_result = lfs_file_write(&lfs, &file, write_buffer, write_buffer_len);
 	if (write_result < 0)
 	{
-		debug_uart_print_str("Error writing to file!\n");
+		DEBUG_uart_print_str("Error writing to file!\n");
 		return write_result;
 	}
 	
-	debug_uart_print_str("Successfully wrote data to file!\n");
+	DEBUG_uart_print_str("Successfully wrote data to file!\n");
 
 	// Close the File, the storage is not updated until the file is closed successfully
 	const int8_t close_result = lfs_file_close(&lfs, &file);
 	if (close_result < 0)
 	{
-		debug_uart_print_str("Error closing the file!\n");
+		DEBUG_uart_print_str("Error closing the file!\n");
 		return close_result;
 	}
 	
-	debug_uart_print_str("Successfully closed the file!\n");
+	DEBUG_uart_print_str("Successfully closed the file!\n");
 	return 0;
 }
 
@@ -187,31 +187,31 @@ int8_t LFS_read_file(char *file_name, uint8_t *read_buffer, uint32_t read_buffer
 	const int8_t open_result = lfs_file_open(&lfs, &file, file_name, LFS_O_RDONLY);
 	if (open_result < 0)
 	{
-		debug_uart_print_str("Error opening file to read\n");
+		DEBUG_uart_print_str("Error opening file to read\n");
 		return open_result;
 	}
 	
-	debug_uart_print_str("Opened file to read: ");
-	debug_uart_print_str(file_name);
-	debug_uart_print_str("\n");
+	DEBUG_uart_print_str("Opened file to read: ");
+	DEBUG_uart_print_str(file_name);
+	DEBUG_uart_print_str("\n");
 
 	const int8_t read_result = lfs_file_read(&lfs, &file, read_buffer, read_buffer_len);
 	if (read_result < 0)
 	{
-		debug_uart_print_str("Error Reading File!\n");
+		DEBUG_uart_print_str("Error Reading File!\n");
 		return read_result;
 	}
 	
-	debug_uart_print_str("Successfully read file!\n");
+	DEBUG_uart_print_str("Successfully read file!\n");
 
 	// Close the File, the storage is not updated until the file is closed successfully
 	const int8_t close_result = lfs_file_close(&lfs, &file);
 	if (close_result < 0)
 	{
-		debug_uart_print_str("Error closing the file!\n");
+		DEBUG_uart_print_str("Error closing the file!\n");
 		return close_result;
 	}
 	
-	debug_uart_print_str("Successfully closed the file!\n");
+	DEBUG_uart_print_str("Successfully closed the file!\n");
 	return 0;	
 }
