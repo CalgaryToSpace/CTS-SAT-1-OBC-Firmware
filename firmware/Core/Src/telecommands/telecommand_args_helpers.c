@@ -74,6 +74,7 @@ uint8_t TCMD_extract_uint64_arg(const char *str, uint32_t str_len, uint8_t arg_i
         // Other error
         return 4;
     }
+    
     return 0;
 }
 

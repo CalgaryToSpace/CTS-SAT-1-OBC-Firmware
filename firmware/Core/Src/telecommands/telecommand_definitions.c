@@ -290,8 +290,7 @@ uint8_t TCMDEXEC_upload_mpi_firmware_page(const uint8_t *args_str, TCMD_Telecomm
     }
 
     // TODO: remove this: No LFS flash mem attached. Pretend it went well
-
-    snprintf(response_output_buf, response_output_buf_len, "Received MPI memory page");
+    snprintf(response_output_buf, response_output_buf_len, "Received MPI firmware page");
     return 0;
 
     lfs_file_t file;

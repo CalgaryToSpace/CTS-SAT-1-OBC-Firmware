@@ -4,6 +4,7 @@
 
 #include "telecommands/telecommand_definitions.h"
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -394,93 +395,105 @@ int parse_input(CGSE_program_state_t *ps, int key)
                             char *mpi_firmware = CGSE_base64_encode_from_file(ps, mpi_firmware_path, &mpi_firmware_length);
                             if (mpi_firmware == NULL)
                             {
-                                wprintw(ps->command_window, "\nUnable to load firmware bytes as base64 from %s", mpi_firmware_path);
+                                wprintw(ps->command_window, "\nUnable to load firmware from %s", mpi_firmware_path);
                             }
-                            // Send bytes as pages to the satellite
-                            // TODO get number of bytes, not number of base64
-                            // characters
-                            size_t mpi_firmware_size_base64 = strlen(mpi_firmware);
-                            size_t remaining_chars = mpi_firmware_size_base64;
-                            size_t chars_to_send = 0;
-                            size_t chars_sent = 0;
-                            char *p = mpi_firmware;
-                            char telemetry_buffer[COMMAND_BUFFER_SIZE] = {0};
-                            size_t tm_offset = 0;
-                            size_t tm_bytes_sent = 0;
-                            int mpi_firmware_page = 0;
-                            int mpi_firmware_bytes_sent = 0;
-                            while (remaining_chars > 0)
+                            else 
                             {
-                                chars_to_send = FIRMWARE_CHUNK_SIZE;    
-                                if (chars_to_send > remaining_chars)
+                                // Send bytes as pages to the satellite
+                                // TODO get number of bytes, not number of base64
+                                // characters
+                                size_t mpi_firmware_size_base64 = strlen(mpi_firmware);
+                                size_t remaining_chars = mpi_firmware_size_base64;
+                                size_t chars_to_send = 0;
+                                size_t chars_sent = 0;
+                                char *p = mpi_firmware;
+                                char telemetry_buffer[COMMAND_BUFFER_SIZE] = {0};
+                                size_t tm_offset = 0;
+                                size_t tm_bytes_sent = 0;
+                                int mpi_firmware_page = 0;
+                                int mpi_firmware_bytes_sent = 0;
+                                while (remaining_chars > 0)
                                 {
-                                    chars_to_send = remaining_chars;
-                                }
-                                tm_offset = snprintf(telemetry_buffer, COMMAND_BUFFER_SIZE, "%s+upload_mpi_firmware_page(%d,", ps->command_prefix, mpi_firmware_bytes_sent);
-                                memcpy(telemetry_buffer + tm_offset, p, chars_to_send);
-                                tm_offset += chars_to_send;
-                                //tm_offset += snprintf(telemetry_buffer + tm_offset, chars_to_send, "%s", p);
-                                snprintf(telemetry_buffer + tm_offset, COMMAND_BUFFER_SIZE - tm_offset, ",%s,%lu)", arg_vector[1], mpi_firmware_length);
-
-                                tm_bytes_sent = write(ps->satellite_link, telemetry_buffer, strlen(telemetry_buffer));
-                                if (tm_bytes_sent > 0)
-                                {
-                                    chars_sent += chars_to_send;
-                                    mpi_firmware_bytes_sent = (chars_sent * 3) / 4;
-                                    remaining_chars -= chars_to_send;
-                                    p += chars_sent;
-                                    mpi_firmware_page++;
-                                    wprintw(ps->command_window, "\nSent MPI firmware page %d (total %d of %lu bytes)\n", mpi_firmware_page, mpi_firmware_bytes_sent, mpi_firmware_length);
-                                    wprintw(ps->command_window, "Waiting for response...");
-                                    wrefresh(ps->command_window);
-                                    // Return to main while loop, re-entering
-                                    // here?
-                                    int nTries = 0;
-                                    // TODO check CRC from response, etc.
-                                    struct timeval tv = {0};
-                                    gettimeofday(&tv, NULL);
-                                    double t1 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
-                                    double t2 = t1;
-                                    int bytes_received = 0;
-                                    while ((t2-t1) < MPI_FIRMWARE_PAGE_TIMEOUT)
+                                    chars_to_send = FIRMWARE_CHUNK_SIZE;    
+                                    if (chars_to_send > remaining_chars)
                                     {
-                                        usleep(500000);
-                                        int new_bytes = read(ps->satellite_link, ps->receive_buffer, RECEIVE_BUFFER_SIZE);
-                                        bytes_received += new_bytes;
-                                        if (new_bytes > 0)
-                                        {
-                                            wprintw(ps->main_window, "%s\n", ps->receive_buffer);
-                                            wrefresh(ps->main_window); 
-                                        }
-                                        gettimeofday(&tv, NULL);
-                                        t2 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
+                                        chars_to_send = remaining_chars;
                                     }
-                                    if (bytes_received == 0)
+                                    tm_offset = snprintf(telemetry_buffer, COMMAND_BUFFER_SIZE, "%s+upload_mpi_firmware_page(%d,", ps->command_prefix, mpi_firmware_bytes_sent);
+                                    memcpy(telemetry_buffer + tm_offset, p, chars_to_send);
+                                    tm_offset += chars_to_send;
+                                    //tm_offset += snprintf(telemetry_buffer + tm_offset, chars_to_send, "%s", p);
+                                    snprintf(telemetry_buffer + tm_offset, COMMAND_BUFFER_SIZE - tm_offset, ",%s,%lu)", arg_vector[1], mpi_firmware_length);
+
+                                    tm_bytes_sent = write(ps->satellite_link, telemetry_buffer, strlen(telemetry_buffer));
+                                    if (tm_bytes_sent == strlen(telemetry_buffer))
                                     {
-                                        wprintw(ps->command_window, "\nDid not receive reply after. Aborting...");
+                                        chars_sent += chars_to_send;
+                                        mpi_firmware_bytes_sent = (chars_sent * 3) / 4;
+                                        remaining_chars -= chars_to_send;
+                                        p += chars_to_send;
+                                        mpi_firmware_page++;
+                                        wprintw(ps->command_window, "\nSent MPI firmware page %d (total %d of %lu bytes)", mpi_firmware_page, mpi_firmware_bytes_sent, mpi_firmware_length);
+                                        wrefresh(ps->command_window);
+                                        // Return to main while loop, re-entering
+                                        // here?
+                                        // TODO check CRC from response, etc.
+                                        struct timeval tv = {0};
+                                        gettimeofday(&tv, NULL);
+                                        double t1 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
+                                        double t2 = t1;
+                                        int bytes_received = 0;
+                                        bool got_page = false;
+                                        while ((t2-t1) < MPI_FIRMWARE_PAGE_TIMEOUT && !got_page)
+                                        {
+                                            usleep(100000);
+                                            int new_bytes = read(ps->satellite_link, ps->receive_buffer, RECEIVE_BUFFER_SIZE);
+                                            bytes_received += new_bytes;
+                                            if (new_bytes > 0)
+                                            {
+                                                char *expected = "Received MPI firmware page";
+                                                if (strncmp(expected, (char*)ps->receive_buffer, strlen(expected)) == 0)
+                                                {
+                                                    CGSE_time_string(ps->time_buffer);
+                                                    got_page = true;
+                                                }
+                                            }
+                                            if (got_page)
+                                            {
+                                                wprintw(ps->main_window, "%s: %s", ps->time_buffer, ps->receive_buffer);
+                                                wrefresh(ps->main_window); 
+                                                wrefresh(ps->command_window);
+                                            }
+                                            gettimeofday(&tv, NULL);
+                                            t2 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
+                                        }
+                                        if (!got_page)
+                                        {
+                                            wprintw(ps->command_window, "\nDid not receive reply after. Aborting...");
+                                            break;
+                                        }
+                                    }
+                                    else 
+                                    {
+                                        // otherwise abort (or add this page to the
+                                        // failed-list and try those pages later?)
+                                        wprintw(ps->command_window, "\nFailed to send firmware page %d. Aborting...", mpi_firmware_page);
                                         break;
                                     }
+
+
+
+                                    // Check for interrupt...
+                                    int mpi_key = 0;
+                                    mpi_key = wgetch(ps->command_window);
+                                    if (mpi_key == 'q')
+                                    {
+                                        wprintw(ps->command_window, "\nUpload interrupted by user.\n");
+                                        wrefresh(ps->command_window);
+                                        break;
+                                    }
+
                                 }
-                                else 
-                                {
-                                    // otherwise abort (or add this page to the
-                                    // failed-list and try those pages later?)
-                                    wprintw(ps->command_window, "\nFailed to send firmware page %d. Aborting...", mpi_firmware_page);
-                                    break;
-                                }
-
-
-
-                                // Check for interrupt...
-                                int mpi_key = 0;
-                                mpi_key = wgetch(ps->command_window);
-                                if (mpi_key == 'q')
-                                {
-                                    wprintw(ps->command_window, "\nUpload interrupted by user.\n");
-                                    wrefresh(ps->command_window);
-                                    break;
-                                }
-
                             }
 
                             // All done
