@@ -318,7 +318,7 @@ int parse_input(CGSE_program_state_t *ps, int key)
                 wprintw(ps->command_window, "%30s - %s\n", ".connect [<device-path>]", "connect to the satellite, optionally using <device-path>");
                 wprintw(ps->command_window, "%30s - %s\n", ".disconnect", "disconnect from the satellite");
                 wprintw(ps->command_window, "%30s - %s\n", ".telecommands", "list telecommands");
-                wprintw(ps->command_window, "%30s - %s\n", ".load_as_base64 <filename>", "load bytes from <filename> (relative to the current directory) as a base64 string. ");
+                wprintw(ps->command_window, "%30s - %s\n", ".upload_mpi_firwmare <filename>", "upload MPI firmware from <filename> relative to the current directory. ");
 
                 wprintw(ps->command_window, "\n%s> ", ps->command_prefix);
                 // Reset command 
@@ -375,9 +375,13 @@ int parse_input(CGSE_program_state_t *ps, int key)
                     wprintw(ps->command_window, "\n");
                     CGSE_ls_dir(ps);
                 }
-                else if (strncmp(".load_as_base64", ps->command_buffer, strlen(".load_as_base64")) == 0)
+                else if (strncmp(".upload_mpi_firmware", ps->command_buffer, strlen(".upload_mpi_firmware")) == 0)
                 {
-                    if (strlen(ps->command_buffer) > strlen(".l"))
+                    if (!ps->satellite_connected)
+                    {
+                        wprintw(ps->command_window, "\nNot connected to satellite.");
+                    }
+                    else if (strlen(ps->command_buffer) > strlen(".upload_mpi_firmware"))
                     {
                         char *arg_vector[2];
                         int n_args = 2;
@@ -386,25 +390,21 @@ int parse_input(CGSE_program_state_t *ps, int key)
                         {
                             char path[FILENAME_MAX];
                             snprintf(path, FILENAME_MAX, "%s/%s", ps->current_directory, arg_vector[1]);
-                            char *base64 = CGSE_base64_encode_from_file(ps, path);
-                            if (base64 != NULL)
+                            char *CGSE_base64_full = CGSE_base64_encode_from_file(ps, path);
+                            if (CGSE_base64_full == NULL)
                             {
-                                wprintw(ps->command_window, "\nloaded %s as:\n%s\n", path, base64);
-                                free(base64);
+                                wprintw(ps->command_window, "\nUnable to load firmware bytes as base64 from %s", path);
                             }
-                            else
-                            {
-                                wprintw(ps->command_window, "\nUnable to load bytes as base64 from %s\n", path);
-                            }
+                            // Send bytes in groups of 64 to the satellite
+                            free(CGSE_base64_full);
                         }
                         else 
                         {
-                            wprintw(ps->command_window, "\nUnable to parse command.\n");
+                            wprintw(ps->command_window, "\nUnable to parse command.");
                         }
                         free(buf);
                     }
                     wclrtoeol(ps->command_window);
-                    wprintw(ps->command_window, "\n");
                 }
                 else 
                 {
@@ -854,7 +854,6 @@ char * CGSE_base64_encode_bytes(CGSE_program_state_t *ps, uint8_t *byte_array, i
     int offset = 0;
     int bytes_encoded = 0;
     int i = 0;
-    wprintw(ps->command_window, "\n");
     for (; i < base64_size; i++)
     {
         offset = i % 4;
