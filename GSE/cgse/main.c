@@ -408,6 +408,7 @@ int parse_input(CGSE_program_state_t *ps, int key)
                             size_t tm_offset = 0;
                             size_t tm_bytes_sent = 0;
                             int mpi_firmware_page = 0;
+                            int mpi_firmware_bytes_sent = 0;
                             while (remaining_chars > 0)
                             {
                                 chars_to_send = FIRMWARE_CHUNK_SIZE;    
@@ -425,43 +426,38 @@ int parse_input(CGSE_program_state_t *ps, int key)
                                 if (tm_bytes_sent > 0)
                                 {
                                     chars_sent += chars_to_send;
+                                    mpi_firmware_bytes_sent = (chars_sent * 3) / 4;
                                     remaining_chars -= chars_to_send;
                                     p += chars_sent;
                                     mpi_firmware_page++;
-                                    wprintw(ps->command_window, "\nSent MPI firmware page %d (total %lu of %lu base64 characters)\n", mpi_firmware_page, chars_sent, mpi_firmware_size_base64);
+                                    wprintw(ps->command_window, "\nSent MPI firmware page %d (total %d of %lu bytes)\n", mpi_firmware_page, mpi_firmware_bytes_sent, mpi_firmware_length);
                                     wprintw(ps->command_window, "Waiting for response...");
                                     wrefresh(ps->command_window);
                                     // Return to main while loop, re-entering
                                     // here?
                                     int nTries = 0;
-                                    bool got_response = false;
                                     // TODO check CRC from response, etc.
-                                    while (!got_response && nTries < 5)
+                                    struct timeval tv = {0};
+                                    gettimeofday(&tv, NULL);
+                                    double t1 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
+                                    double t2 = t1;
+                                    int bytes_received = 0;
+                                    while ((t2-t1) < 1.0)
                                     {
-                                        struct timeval tv = {0};
-                                        gettimeofday(&tv, NULL);
-                                        double t1 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
-                                        double t2 = t1;
-                                        ps->bytes_received = 0;
-                                        while (ps->bytes_received == 0 && (t2-t1) < 4.0)
+                                        usleep(500000);
+                                        int new_bytes = read(ps->satellite_link, ps->receive_buffer, RECEIVE_BUFFER_SIZE);
+                                        bytes_received += new_bytes;
+                                        if (new_bytes > 0)
                                         {
-                                            usleep(1500000);
-                                            ps->bytes_received = read(ps->satellite_link, ps->receive_buffer, RECEIVE_BUFFER_SIZE);
-                                            if (ps->bytes_received > 0)
-                                            {
-                                                wprintw(ps->main_window, "%s\n", ps->receive_buffer);
-                                                wrefresh(ps->main_window); 
-                                                got_response = true;
-                                            }
-                                            gettimeofday(&tv, NULL);
-                                            t2 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
+                                            wprintw(ps->main_window, "%s\n", ps->receive_buffer);
+                                            wrefresh(ps->main_window); 
                                         }
-//                                        usleep(200000);
-                                        nTries++;
+                                        gettimeofday(&tv, NULL);
+                                        t2 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
                                     }
-                                    if (nTries == 5)
+                                    if (bytes_received == 0)
                                     {
-                                        wprintw(ps->command_window, "\nDid not receive reply after %d tries. Aborting...", nTries);
+                                        wprintw(ps->command_window, "\nDid not receive reply after. Aborting...");
                                         break;
                                     }
                                 }
@@ -476,6 +472,14 @@ int parse_input(CGSE_program_state_t *ps, int key)
 
 
                                 // Check for interrupt...
+                                int mpi_key = 0;
+                                mpi_key = wgetch(ps->command_window);
+                                if (mpi_key == 'q')
+                                {
+                                    wprintw(ps->command_window, "\nUpload interrupted by user.\n");
+                                    wrefresh(ps->command_window);
+                                    break;
+                                }
 
                             }
 
