@@ -884,30 +884,6 @@ char * CGSE_base64_encode_bytes(CGSE_program_state_t *ps, uint8_t *byte_array, i
             }
         }
         base64[i] = CGSE_base64_encode_character(bits);
-        int o = i % 4;
-        if (o == 0 && bytes_encoded < len)
-        {
-            for (int j = 0; j < 3; j++)
-            {
-                for (int b = 0; b < 8; b++)
-                {
-                    wprintw(ps->command_window, "%d", byte_array[bytes_encoded+j] >> (7-b) & 0x01);
-                }
-            }
-            wprintw(ps->command_window, "\n");
-            wprintw(ps->command_window, "^       ^       ^\n");
-        }
-        for (int k = 0; k < o; k++)
-        {
-            wprintw(ps->command_window, "      ");
-        }
-        for (int b = 0; b < 6; b++)
-        {
-            wprintw(ps->command_window, "%d", bits >> (5-b) & 0x01);
-
-        }
-        wprintw(ps->command_window, "\n");
-        wrefresh(ps->command_window);
     }
     base64[i] = '\0';
 
