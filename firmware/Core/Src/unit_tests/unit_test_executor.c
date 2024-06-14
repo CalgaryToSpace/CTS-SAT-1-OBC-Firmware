@@ -27,7 +27,7 @@ uint8_t TEST_run_all_unit_tests_and_log(char log_buffer[], uint16_t log_buffer_s
             TEST_definitions[test_num].test_file,
             TEST_definitions[test_num].test_func_name
         );
-        debug_uart_print_str(log_buffer);
+        DEBUG_uart_print_str(log_buffer);
         
         total_exec_count++;
         if (result == 0) {

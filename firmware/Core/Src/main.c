@@ -165,9 +165,6 @@ int main(void)
   
   FLASH_deactivate_chip_select();
 
-  LFS_init_filesystem();
-
-
   /* USER CODE END 2 */
 
   /* Init scheduler */

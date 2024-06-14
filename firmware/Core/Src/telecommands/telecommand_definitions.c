@@ -208,21 +208,6 @@ uint8_t TCMDEXEC_echo_back_uint32_args(const uint8_t *args_str, TCMD_Telecommand
     return 0;
 }
 
-uint8_t TCMDEXEC_fs_format_storage(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len){
-    // uint8_t result = LFS_FORMAT();
-    // if (result < 0) {
-    //     // debug_uart_print_str("Formatting Error: ");
-    //     // debug_uart_print_uint32(result);
-    //     // debug_uart_print_str("\n");
-    //     return result;
-    // } else {
-    //     // debug_uart_print_str("Formatting Successfull");
-    //     return result;
-    // }
-    return 0;
-}
-
 uint8_t TCMDEXEC_run_all_unit_tests(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     TEST_run_all_unit_tests_and_log(response_output_buf, response_output_buf_len);
@@ -343,7 +328,7 @@ uint8_t TCMDEXEC_upload_mpi_firmware_page(const uint8_t *args_str, TCMD_Telecomm
         return 1;
     }
 
-    snprintf(response_output_buf, response_output_buf_len, "Received MPI firmware page. Wrote %u bytes to \"%s\" at address %u", firmware_bytes_len, firmware_filename, (uint32_t)file_start_address);
+    snprintf(response_output_buf, response_output_buf_len, "Received MPI firmware page. Wrote %lu bytes to \"%s\" at address %lu", firmware_bytes_len, firmware_filename, (uint32_t)file_start_address);
     return 0;
 }
 
