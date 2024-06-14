@@ -8,7 +8,7 @@
 #include <../Inc/mpi/mpiCommandHandling.h>
 #include <../Inc/mpi/DoubleBuffer.h>
 #include "debug_tools/debug_uart.h"
-#include <../Inc/memory_utilities.h>
+// #include <../Inc/memory_utilities.h>
 #include "main.h"
 #include "string.h"
 #include <stdio.h>
@@ -16,6 +16,42 @@
 // Global Variables
 #define BUFFER_SIZE 160		 // Buffer Size set to accommodate length of a Tele-command packet
 DoubleBuffer MPIFrameBuffer; // Double buffer is used to receive incoming MPI Frames for processing
+
+/**
+ * @brief Sends commandcode+params to the MPI
+ * @param command data (command) being sent to the MPI
+ * @returns 0 - failure from MPI, 1- command successfully received by the MPI, 2 - failed UART transmission, 3 - failed UART reception
+ */
+uint8_t sendTelecommandHex(uint8_t *command)
+{
+	size_t commandBufferSize = strlen((const char *)command);
+	const char *TC_hex = "5443"; // Hex representation of 'T' and 'C' (All commands to the MPI must begin with 'TC')
+	strcat((char *)command, TC_hex);
+
+	// Transmit the MPI command
+	HAL_StatusTypeDef transmit_status = HAL_UART_Transmit(&huart1, (uint8_t *)command, commandBufferSize, 100);
+
+	// Check UART transmission
+	if (transmit_status != HAL_OK)
+	{
+		return 3; // Failed UART transmission
+	}
+
+	// Receive MPI response
+	uint8_t *mpiResponseBuffer; // Buffer stores incoming tele-command response from the MPI (command code followed by response code)
+	HAL_StatusTypeDef receive_status = HAL_UART_Receive_DMA(&huart1, mpiResponseBuffer, BUFFER_SIZE);
+
+	// Check UART reception
+	if (receive_status != HAL_OK)
+	{
+		return 4; // Failed UART reception
+	}
+
+	// Send back MPI response code upon a successful transmission
+	size_t responseBufferSize = strlen((const char *)mpiResponseBuffer);
+	uint8_t response_code = mpiResponseBuffer[responseBufferSize - 1] - '0';
+	return response_code; // 1 - Successful command reception by the MPI, 0 - Failure to comprehend command by the MPI
+}
 
 /**
  * Sends a command to the MPI over UART and returns back the MPI response code (success / fail)
