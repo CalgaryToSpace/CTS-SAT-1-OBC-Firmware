@@ -91,35 +91,32 @@ uint8_t TCMDEXEC_hello_world(const uint8_t *args_str, TCMD_TelecommandChannel_en
 uint8_t TCMDEXEC_set_configuration_variable(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len)
 {
-    DEBUG_uart_print_str((char *)args_str);
-    DEBUG_uart_print_str("\n");
-    char args[3][20];
-    for (uint8_t i = 0; i < 3; i++)
-    {
-        memset(args[i], 0, 20);
-    }
-    const uint8_t args_len = strlen((char *)args_str);
-    const uint8_t args_count = split_string_by_delimiter((const char *)args_str, args_len, ',', args, 3);
-    char args_count_str[5];
-    snprintf(args_count_str, 5, "%d", args_count);
-    args_count_str[4] = '\0';
+    // DEBUG_uart_print_str((char *)args_str);
+    // DEBUG_uart_print_str("\n");
+    // char args[3][20];
+    // for (uint8_t i = 0; i < 3; i++)
+    // {
+    //     memset(args[i], 0, 20);
+    // }
+    // const uint8_t args_len = strlen((char *)args_str);
+    // const uint8_t args_count = split_string_by_delimiter((const char *)args_str, args_len, ',', args, 3);
+    // char args_count_str[5];
+    // snprintf(args_count_str, 5, "%d", args_count);
+    // args_count_str[4] = '\0';
 
-    strcat(response_output_buf, "Integer Configuration Variables:\n\n");
+    // memset(response_output_buf, 0, response_output_buf_len);
 
-    char config_integer_table[100];
-    memset(config_integer_table, 0, 100);
-    const uint16_t config_integer_table_size = CONFIG_print_integer_table(config_integer_table);
-    strncat(response_output_buf, config_integer_table, config_integer_table_size);
+    // strncat(response_output_buf, "Hello, world From Ali!\n", 24);
 
-    strncat(response_output_buf, "Args count: ", 13);
-    strncat(response_output_buf, args_count_str, 5);
-    strcat(response_output_buf, "\n");
+    // strncat(response_output_buf, "Args count: ", 13);
+    // strncat(response_output_buf, args_count_str, 5);
+    // strcat(response_output_buf, "\n");
 
-    for (uint8_t i = 0; i < args_count; i++)
-    {
-        strncat(response_output_buf, (char *)args[i], strlen((char *)args[i]));
-        strcat(response_output_buf, "\n");
-    }
+    // for (uint8_t i = 0; i < args_count; i++)
+    // {
+    //     strncat(response_output_buf, (char *)args[i], strlen((char *)args[i]));
+    //     strcat(response_output_buf, "\n");
+    // }
     return 0;
 }
 
