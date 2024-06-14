@@ -182,32 +182,32 @@ uint8_t TCMDEXEC_heartbeat_on(const uint8_t *args_str, TCMD_TelecommandChannel_e
 uint8_t TCMDEXEC_set_configuration_variable(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len)
 {
-    DEBUG_uart_print_str((char *)args_str);
-    DEBUG_uart_print_str("\n");
-    char args[3][20];
-    for (uint8_t i = 0; i < 3; i++)
-    {
-        memset(args[i], 0, 20);
-    }
-    const uint8_t args_len = strlen((char *)args_str);
-    const uint8_t args_count = split_string_by_delimiter((const char *)args_str, args_len, ',', args, 3);
-    char args_count_str[5];
-    snprintf(args_count_str, 5, "%d", args_count);
-    args_count_str[4] = '\0';
+    // DEBUG_uart_print_str((char *)args_str);
+    // DEBUG_uart_print_str("\n");
+    // char args[3][20];
+    // for (uint8_t i = 0; i < 3; i++)
+    // {
+    //     memset(args[i], 0, 20);
+    // }
+    // const uint8_t args_len = strlen((char *)args_str);
+    // const uint8_t args_count = split_string_by_delimiter((const char *)args_str, args_len, ',', args, 3);
+    // char args_count_str[5];
+    // snprintf(args_count_str, 5, "%d", args_count);
+    // args_count_str[4] = '\0';
 
-    memset(response_output_buf, 0, response_output_buf_len);
+    // memset(response_output_buf, 0, response_output_buf_len);
 
-    strncat(response_output_buf, "Hello, world From Ali!\n", 24);
+    // strncat(response_output_buf, "Hello, world From Ali!\n", 24);
 
-    strncat(response_output_buf, "Args count: ", 13);
-    strncat(response_output_buf, args_count_str, 5);
-    strcat(response_output_buf, "\n");
+    // strncat(response_output_buf, "Args count: ", 13);
+    // strncat(response_output_buf, args_count_str, 5);
+    // strcat(response_output_buf, "\n");
 
-    for (uint8_t i = 0; i < args_count; i++)
-    {
-        strncat(response_output_buf, (char *)args[i], strlen((char *)args[i]));
-        strcat(response_output_buf, "\n");
-    }
+    // for (uint8_t i = 0; i < args_count; i++)
+    // {
+    //     strncat(response_output_buf, (char *)args[i], strlen((char *)args[i]));
+    //     strcat(response_output_buf, "\n");
+    // }
     return 0;
 }
 uint8_t TCMDEXEC_heartbeat_off(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
