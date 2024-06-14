@@ -20,24 +20,25 @@
  * which consists of synchronization bytes, frame counter, housekeeping telemetry,
  * image pixel data, and cyclic redundancy check (CRC) bytes.
  */
-typedef struct {
-	uint8_t sync_byte1;							// First synchronization byte
-	uint8_t sync_byte2;							// Second synchronization byte
-	uint8_t sync_byte3;							// Third synchronization byte
-	uint8_t sync_byte4;							// Fourth synchronization byte
-	uint16_t frame_counter;						// Frame counter for the data frame
-	int16_t board_temperature;					// Current board temperature
-	uint8_t firmware_version;					// Firmware version of the MPI unit
-	uint8_t mpi_unit_id;						// ID of the MPI unit
-	uint16_t detector_status;					// Current status of the detector
-	uint16_t inner_dome_voltage_setting;		// Voltage setting for the inner dome
-	uint8_t spib_reserved;						// Reserved field
-	uint8_t inner_dome_scan_index;				// Index for inner dome scanning
-	uint16_t faceplate_voltage_setting;			// Voltage setting for the faceplate
-	uint16_t faceplate_voltage_adc_reading;		// ADC reading for faceplate voltage
-	uint16_t inner_dome_voltage_adc_reading;	// ADC reading for inner dome voltage
-	uint16_t pixels[67];						// Array of 67 image pixels
-	uint16_t cyclic_redundancy_check;			// CRC for data integrity check
+typedef struct
+{
+	uint8_t sync_byte1;						 // First synchronization byte
+	uint8_t sync_byte2;						 // Second synchronization byte
+	uint8_t sync_byte3;						 // Third synchronization byte
+	uint8_t sync_byte4;						 // Fourth synchronization byte
+	uint16_t frame_counter;					 // Frame counter for the data frame
+	int16_t board_temperature;				 // Current board temperature
+	uint8_t firmware_version;				 // Firmware version of the MPI unit
+	uint8_t mpi_unit_id;					 // ID of the MPI unit
+	uint16_t detector_status;				 // Current status of the detector
+	uint16_t inner_dome_voltage_setting;	 // Voltage setting for the inner dome
+	uint8_t spib_reserved;					 // Reserved field
+	uint8_t inner_dome_scan_index;			 // Index for inner dome scanning
+	uint16_t faceplate_voltage_setting;		 // Voltage setting for the faceplate
+	uint16_t faceplate_voltage_adc_reading;	 // ADC reading for faceplate voltage
+	uint16_t inner_dome_voltage_adc_reading; // ADC reading for inner dome voltage
+	uint16_t pixels[67];					 // Array of 67 image pixels
+	uint16_t cyclic_redundancy_check;		 // CRC for data integrity check
 } MpiFrame_t;
 
 /**
@@ -47,7 +48,8 @@ typedef struct {
  * These codes represent different commands that can be sent
  * to control or configure the MPI's functionality.
  */
-typedef enum {
+typedef enum
+{
 	HV_INNER_DOME_SCAN_MODE = 2,
 	HV_SET_FACEPLATE_VOLTAGE = 4,
 	HV_SET_SCAN_MIDPOINT_VOLTAGE = 5,
@@ -87,7 +89,7 @@ uint8_t sendTC_BL_ENTER_BOOTLOADER();
 uint8_t sendTC_BL_EXIT_BOOTLOADER();
 uint8_t sendTC_BL_SET_APPSW_CRC(uint16_t CRC_Value);
 uint8_t sendTC_BL_ERASE_TEMP_APP_MEMORY();
-uint8_t sendTC_BL_STORE_APPSW_CHUNK(uint32_t offset, uint32_t N, uint8_t* memoryValues);
+uint8_t sendTC_BL_STORE_APPSW_CHUNK(uint32_t offset, uint32_t N, uint8_t *memoryValues);
 uint8_t sendTC_BL_UPGRADE_FIRMWARE();
 uint8_t sendTC_AGC_SET_THRESHOLDS(uint32_t threshold);
 uint8_t sendTC_AGC_SET_DISABLED_SHUTTER_DUTY_CYCLE(uint16_t shutterDutyCycle);
@@ -96,6 +98,8 @@ uint8_t sendTC_AGC_SET_NUMBER_OF_MAXIMA_FOR_CONTROL_VALUE(uint8_t n);
 uint8_t sendTC_AGC_SET_NUMBER_OF_PIXELS_FOR_BASELINE_VALUE(uint8_t n);
 uint8_t sendTC_AGC_SET_STEP_FACTOR(uint8_t n);
 uint8_t sendTC_SET_BASELINE_FIRST_PIXEL(uint8_t n);
+
+uint8_t sendTelecommandHex(uint8_t *dataToSend);
 
 /**
  * Sends tele-command to the MPI over UART
@@ -108,13 +112,12 @@ uint8_t sendTC_SET_BASELINE_FIRST_PIXEL(uint8_t n);
  * 		 	 1 for successful transmission & receive by the MPI
  * 		     0 if an error occurs
  */
-uint8_t sendTelecommand(uint8_t commandCode, const uint8_t* params);
-//uint8_t sendTelecommand(uint8_t commandCode, uint8_t parameters);
+uint8_t sendTelecommand(uint8_t commandCode, const uint8_t *params);
+// uint8_t sendTelecommand(uint8_t commandCode, uint8_t parameters);
 
 // Task methods to run receive and parsing concurrently
 void receiveIncomingMPIFramesTask(void *pvParameters);
 void processIncomingMPIFramesTask(void *pvParameters);
 void StartMPIProcessingTasks();
-
 
 #endif /* INC_MPICOMMANDHANDLING_H_ */
