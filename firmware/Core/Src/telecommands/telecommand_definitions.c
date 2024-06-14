@@ -217,6 +217,11 @@ uint8_t TCMDEXEC_upload_mpi_firmware_page(const uint8_t *args_str, TCMD_Telecomm
         snprintf(response_output_buf, response_output_buf_len, "Unable to parse argument as filename");
     }
 
+    // TODO: remove this: No LFS flash mem attached. Pretend it went well
+
+    snprintf(response_output_buf, response_output_buf_len, "Received MPI memory page");
+    return 0;
+
     lfs_file_t file;
     int result = 0;
     result = lfs_file_open(&lfs, &file, firmware_filename, LFS_O_APPEND); 
