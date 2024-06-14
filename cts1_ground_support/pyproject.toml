@@ -7,6 +7,10 @@ name = "cts1_ground_support"
 version = "v0-dev"
 dependencies = [
   "GitPython",
+  "pyserial",
+  "loguru",
+  "dash",
+  "dash-bootstrap-components",
 ]
 requires-python = ">=3.10"
 authors = [
@@ -49,7 +53,7 @@ Repository = "https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware"
 [tool.ruff.lint]
 select = ["ALL"]
 # ignore = ["FIX002"]
-ignore = ["TD002", "TD003", "FIX002"]
+ignore = ["TD002", "TD003", "FIX002", "COM812"]
 
 [tool.ruff]
 line-length = 99
