@@ -408,7 +408,7 @@ int parse_input(CGSE_program_state_t *ps, int key)
                 }
                 else 
                 {
-                    wprintw(ps->command_window, "\n Unrecognized terminal command");
+                    wprintw(ps->command_window, "\nUnrecognized terminal command");
                 }
                 wprintw(ps->command_window, "\n%s> ", ps->command_prefix);
                 wrefresh(ps->command_window);
