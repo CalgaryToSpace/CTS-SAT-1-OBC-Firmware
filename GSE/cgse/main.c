@@ -416,7 +416,7 @@ int parse_input(CGSE_program_state_t *ps, int key)
                                 {
                                     chars_to_send = remaining_chars;
                                 }
-                                tm_offset = snprintf(telemetry_buffer, COMMAND_BUFFER_SIZE, "%s+upload_mpi_firmware_page(%lu,", ps->command_prefix, chars_sent);
+                                tm_offset = snprintf(telemetry_buffer, COMMAND_BUFFER_SIZE, "%s+upload_mpi_firmware_page(%d,", ps->command_prefix, mpi_firmware_bytes_sent);
                                 memcpy(telemetry_buffer + tm_offset, p, chars_to_send);
                                 tm_offset += chars_to_send;
                                 //tm_offset += snprintf(telemetry_buffer + tm_offset, chars_to_send, "%s", p);
@@ -442,7 +442,7 @@ int parse_input(CGSE_program_state_t *ps, int key)
                                     double t1 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
                                     double t2 = t1;
                                     int bytes_received = 0;
-                                    while ((t2-t1) < 2.0)
+                                    while ((t2-t1) < MPI_FIRMWARE_PAGE_TIMEOUT)
                                     {
                                         usleep(500000);
                                         int new_bytes = read(ps->satellite_link, ps->receive_buffer, RECEIVE_BUFFER_SIZE);
