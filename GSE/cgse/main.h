@@ -12,6 +12,7 @@
 #define RECEIVE_BUFFER_SIZE 512
 #define IO_WAIT_USEC 50000
 #define COMMAND_BUFFER_SIZE 512
+#define FIRMWARE_CHUNK_SIZE 192
 
 #define CGSE_TIME_STR_MAX_LEN 32
 
@@ -62,7 +63,7 @@ int parse_args(CGSE_program_state_t *ps);
 void CGSE_license(void);
 void CGSE_about(void);
 void CGSE_help(char *name);
-int find_link_path(char *linkpath);
+int find_link_path(char *link_path);
 
 void CGSE_time_string(char *time_str);
 
@@ -77,8 +78,7 @@ char * CGSE_parse_command_args(CGSE_program_state_t *ps, int *nargs, char **arg_
 
 int CGSE_ls_dir(CGSE_program_state_t *ps);
 
-char * CGSE_base64_encode_from_file(CGSE_program_state_t *ps, char *filename);
-//char * CGSE_base64_encode_bytes(uint8_t *byte_array, int len);
+char * CGSE_base64_encode_from_file(CGSE_program_state_t *ps, char *file_name, size_t *file_size);
 char * CGSE_base64_encode_bytes(CGSE_program_state_t *ps, uint8_t *byte_array, int len);
 char CGSE_base64_encode_character(uint8_t bits);
 

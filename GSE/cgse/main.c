@@ -318,7 +318,7 @@ int parse_input(CGSE_program_state_t *ps, int key)
                 wprintw(ps->command_window, "%30s - %s\n", ".connect [<device-path>]", "connect to the satellite, optionally using <device-path>");
                 wprintw(ps->command_window, "%30s - %s\n", ".disconnect", "disconnect from the satellite");
                 wprintw(ps->command_window, "%30s - %s\n", ".telecommands", "list telecommands");
-                wprintw(ps->command_window, "%30s - %s\n", ".upload_mpi_firwmare <filename>", "upload MPI firmware from <filename> relative to the current directory. ");
+                wprintw(ps->command_window, "%30s - %s\n", ".upload_mpi_firwmare <file_name>", "upload MPI firmware from <file_name> relative to the current directory. ");
 
                 wprintw(ps->command_window, "\n%s> ", ps->command_prefix);
                 // Reset command 
@@ -388,15 +388,99 @@ int parse_input(CGSE_program_state_t *ps, int key)
                         char *buf = CGSE_parse_command_args(ps, &n_args, arg_vector);
                         if (n_args == 2)
                         {
-                            char path[FILENAME_MAX];
-                            snprintf(path, FILENAME_MAX, "%s/%s", ps->current_directory, arg_vector[1]);
-                            char *CGSE_base64_full = CGSE_base64_encode_from_file(ps, path);
-                            if (CGSE_base64_full == NULL)
+                            char mpi_firmware_path[FILENAME_MAX];
+                            snprintf(mpi_firmware_path, FILENAME_MAX, "%s/%s", ps->current_directory, arg_vector[1]);
+                            size_t mpi_firmware_length = 0;
+                            char *mpi_firmware = CGSE_base64_encode_from_file(ps, mpi_firmware_path, &mpi_firmware_length);
+                            if (mpi_firmware == NULL)
                             {
-                                wprintw(ps->command_window, "\nUnable to load firmware bytes as base64 from %s", path);
+                                wprintw(ps->command_window, "\nUnable to load firmware bytes as base64 from %s", mpi_firmware_path);
                             }
-                            // Send bytes in groups of 64 to the satellite
-                            free(CGSE_base64_full);
+                            // Send bytes as pages to the satellite
+                            // TODO get number of bytes, not number of base64
+                            // characters
+                            size_t mpi_firmware_size_base64 = strlen(mpi_firmware);
+                            size_t remaining_chars = mpi_firmware_size_base64;
+                            size_t chars_to_send = 0;
+                            size_t chars_sent = 0;
+                            char *p = mpi_firmware;
+                            char telemetry_buffer[COMMAND_BUFFER_SIZE] = {0};
+                            size_t tm_offset = 0;
+                            size_t tm_bytes_sent = 0;
+                            int mpi_firmware_page = 0;
+                            while (remaining_chars > 0)
+                            {
+                                chars_to_send = FIRMWARE_CHUNK_SIZE;    
+                                if (chars_to_send > remaining_chars)
+                                {
+                                    chars_to_send = remaining_chars;
+                                }
+                                tm_offset = snprintf(telemetry_buffer, COMMAND_BUFFER_SIZE, "%s+upload_mpi_firwmare_page(%lu,", ps->command_prefix, chars_sent);
+                                memcpy(telemetry_buffer + tm_offset, p, chars_to_send);
+                                tm_offset += chars_to_send;
+                                //tm_offset += snprintf(telemetry_buffer + tm_offset, chars_to_send, "%s", p);
+                                snprintf(telemetry_buffer + tm_offset, COMMAND_BUFFER_SIZE - tm_offset, ",%s,%lu)", arg_vector[1], mpi_firmware_length);
+
+                                tm_bytes_sent = write(ps->satellite_link, telemetry_buffer, strlen(telemetry_buffer));
+                                if (tm_bytes_sent > 0)
+                                {
+                                    chars_sent += chars_to_send;
+                                    remaining_chars -= chars_to_send;
+                                    p += chars_sent;
+                                    mpi_firmware_page++;
+                                    wprintw(ps->command_window, "\nSent MPI firmware page %d (total %lu of %lu base64 characters)\n", mpi_firmware_page, chars_sent, mpi_firmware_size_base64);
+                                    wprintw(ps->command_window, "Waiting for response...");
+                                    wrefresh(ps->command_window);
+                                    // Return to main while loop, re-entering
+                                    // here?
+                                    int nTries = 0;
+                                    bool got_response = false;
+                                    // TODO check CRC from response, etc.
+                                    while (!got_response && nTries < 5)
+                                    {
+                                        struct timeval tv = {0};
+                                        gettimeofday(&tv, NULL);
+                                        double t1 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
+                                        double t2 = t1;
+                                        ps->bytes_received = 0;
+                                        while (ps->bytes_received == 0 && (t2-t1) < 4.0)
+                                        {
+                                            usleep(1500000);
+                                            ps->bytes_received = read(ps->satellite_link, ps->receive_buffer, RECEIVE_BUFFER_SIZE);
+                                            if (ps->bytes_received > 0)
+                                            {
+                                                wprintw(ps->main_window, "%s\n", ps->receive_buffer);
+                                                wrefresh(ps->main_window); 
+                                                got_response = true;
+                                            }
+                                            gettimeofday(&tv, NULL);
+                                            t2 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
+                                        }
+//                                        usleep(200000);
+                                        nTries++;
+                                    }
+                                    if (nTries == 5)
+                                    {
+                                        wprintw(ps->command_window, "\nDid not receive reply after %d tries. Aborting...", nTries);
+                                        break;
+                                    }
+                                }
+                                else 
+                                {
+                                    // otherwise abort (or add this page to the
+                                    // failed-list and try those pages later?)
+                                    wprintw(ps->command_window, "\nFailed to send firmware page %d. Aborting...", mpi_firmware_page);
+                                    break;
+                                }
+
+
+
+                                // Check for interrupt...
+
+                            }
+
+                            // All done
+                            free(mpi_firmware);
                         }
                         else 
                         {
@@ -568,11 +652,11 @@ void CGSE_help(char *name)
     return;
 }
 
-/// linkpath must be allocated to FILENAME_MAX and must be initialized with the path of the system device files.
-int find_link_path(char *linkpath)
+/// link_path must be allocated to FILENAME_MAX and must be initialized with the path of the system device files.
+int find_link_path(char *link_path)
 {
     struct dirent *dp = NULL;
-    char *dirpath = strdup(linkpath);             
+    char *dirpath = strdup(link_path);             
 
     // From man 3 directory example
     DIR *directory = opendir(dirpath);
@@ -585,7 +669,7 @@ int find_link_path(char *linkpath)
     {
         if (strncmp(dp->d_name, pattern, len) == 0) 
         {
-            snprintf(linkpath, FILENAME_MAX, "%s/%s", dirpath, dp->d_name);
+            snprintf(link_path, FILENAME_MAX, "%s/%s", dirpath, dp->d_name);
             break;
         }
     }
@@ -798,24 +882,24 @@ int CGSE_ls_dir(CGSE_program_state_t *ps)
 
 }
 
-char * CGSE_base64_encode_from_file(CGSE_program_state_t *ps, char *filename)
+char * CGSE_base64_encode_from_file(CGSE_program_state_t *ps, char *file_name, size_t *file_size)
 {
-    if (filename == NULL || strlen(filename) == 0)
+    if (file_name == NULL || strlen(file_name) == 0 || file_size == NULL)
     {
         return NULL;
     }
 
     char *base64 = NULL;
     
-    FILE *f = fopen(filename, "r");
+    FILE *f = fopen(file_name, "r");
     if (f == NULL)
     {
         return NULL;
     }
 
     fseek(f, 0, SEEK_END);
-    long file_size = ftell(f);
-    uint8_t *buffer = malloc(sizeof *buffer * file_size + 1);
+    *file_size = ftell(f);
+    uint8_t *buffer = malloc(sizeof *buffer * *file_size + 1);
     if (buffer == NULL)
     {
         fclose(f);
@@ -823,8 +907,8 @@ char * CGSE_base64_encode_from_file(CGSE_program_state_t *ps, char *filename)
     }
 
     fseek(f, 0, SEEK_SET);
-    unsigned long bytes_read = fread(buffer, 1, file_size, f);
-    if (bytes_read != file_size)
+    unsigned long bytes_read = fread(buffer, 1, *file_size, f);
+    if (bytes_read != *file_size)
     {
         fclose(f);
         free(buffer);
@@ -833,7 +917,7 @@ char * CGSE_base64_encode_from_file(CGSE_program_state_t *ps, char *filename)
    
     fclose(f);
 
-    char *base64_caller_frees = CGSE_base64_encode_bytes(ps, buffer, file_size);
+    char *base64_caller_frees = CGSE_base64_encode_bytes(ps, buffer, *file_size);
 
     free(buffer);
 
