@@ -42,6 +42,7 @@ Core/Src/freertos.c \
 Core/Src/littlefs/flash_driver.c \
 Core/Src/littlefs/lfs.c \
 Core/Src/littlefs/lfs_util.c \
+Core/Src/littlefs/littlefs_driver.c \
 Core/Src/littlefs/littlefs_helper.c \
 Core/Src/main.c \
 Drivers/MPI/Src/mpi_firmware.c \
@@ -56,6 +57,8 @@ Core/Src/system_stm32l4xx.c \
 Core/Src/telecommands/telecommand_args_helpers.c \
 Core/Src/telecommands/telecommand_definitions.c \
 Core/Src/telecommands/telecommand_parser.c \
+Core/Src/telecommands/flash_telecommand_defs.c \
+Core/Src/telecommands/lfs_telecommand_defs.c \
 Core/Src/transforms/arrays.c \
 Core/Src/transforms/byte_transforms.c \
 Core/Src/uart_handler/uart_handler.c \
