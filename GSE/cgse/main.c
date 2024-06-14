@@ -10,6 +10,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <sys/fcntl.h>
+#include <sys/stat.h>
 #include <sys/termios.h>
 #include <termios.h>
 #include <stdbool.h>
@@ -317,6 +318,7 @@ int parse_input(CGSE_program_state_t *ps, int key)
                 wprintw(ps->command_window, "%30s - %s\n", ".connect [<device-path>]", "connect to the satellite, optionally using <device-path>");
                 wprintw(ps->command_window, "%30s - %s\n", ".disconnect", "disconnect from the satellite");
                 wprintw(ps->command_window, "%30s - %s\n", ".telecommands", "list telecommands");
+                wprintw(ps->command_window, "%30s - %s\n", ".load_as_base64 <filename>", "load bytes from <filename> (relative to the current directory) as a base64 string. ");
 
                 wprintw(ps->command_window, "\n%s> ", ps->command_prefix);
                 // Reset command 
@@ -356,7 +358,7 @@ int parse_input(CGSE_program_state_t *ps, int key)
                     wprintw(ps->command_window, "\n");
                     CGSE_list_telecommands(ps);
                 }
-                if (strncmp(".ls", ps->command_buffer, strlen(".ls")) == 0)
+                else if (strncmp(".ls", ps->command_buffer, strlen(".ls")) == 0)
                 {
                     if (strlen(ps->command_buffer) > strlen(".ls"))
                     {
@@ -372,6 +374,37 @@ int parse_input(CGSE_program_state_t *ps, int key)
                     wclrtoeol(ps->command_window);
                     wprintw(ps->command_window, "\n");
                     CGSE_ls_dir(ps);
+                }
+                else if (strncmp(".load_as_base64", ps->command_buffer, strlen(".load_as_base64")) == 0)
+                {
+                    if (strlen(ps->command_buffer) > strlen(".l"))
+                    {
+                        char *arg_vector[2];
+                        int n_args = 2;
+                        char *buf = CGSE_parse_command_args(ps, &n_args, arg_vector);
+                        if (n_args == 2)
+                        {
+                            char path[FILENAME_MAX];
+                            snprintf(path, FILENAME_MAX, "%s/%s", ps->current_directory, arg_vector[1]);
+                            char *base64 = CGSE_base64_encode_from_file(ps, path);
+                            if (base64 != NULL)
+                            {
+                                wprintw(ps->command_window, "\nloaded %s as:\n%s\n", path, base64);
+                                free(base64);
+                            }
+                            else
+                            {
+                                wprintw(ps->command_window, "\nUnable to load bytes as base64 from %s\n", path);
+                            }
+                        }
+                        else 
+                        {
+                            wprintw(ps->command_window, "\nUnable to parse command.\n");
+                        }
+                        free(buf);
+                    }
+                    wclrtoeol(ps->command_window);
+                    wprintw(ps->command_window, "\n");
                 }
                 else 
                 {
@@ -762,6 +795,129 @@ int CGSE_ls_dir(CGSE_program_state_t *ps)
     (void)closedir(directory);
 
     return 0;
+
+}
+
+char * CGSE_base64_encode_from_file(CGSE_program_state_t *ps, char *filename)
+{
+    if (filename == NULL || strlen(filename) == 0)
+    {
+        return NULL;
+    }
+
+    char *base64 = NULL;
+    
+    FILE *f = fopen(filename, "r");
+    if (f == NULL)
+    {
+        return NULL;
+    }
+
+    fseek(f, 0, SEEK_END);
+    long file_size = ftell(f);
+    uint8_t *buffer = malloc(sizeof *buffer * file_size + 1);
+    if (buffer == NULL)
+    {
+        fclose(f);
+        return NULL;
+    }
+
+    fseek(f, 0, SEEK_SET);
+    unsigned long bytes_read = fread(buffer, 1, file_size, f);
+    if (bytes_read != file_size)
+    {
+        fclose(f);
+        free(buffer);
+        return NULL;
+    }
+   
+    fclose(f);
+
+    char *base64_caller_frees = CGSE_base64_encode_bytes(ps, buffer, file_size);
+
+    free(buffer);
+
+    return base64_caller_frees;
+}
+
+char * CGSE_base64_encode_bytes(CGSE_program_state_t *ps, uint8_t *byte_array, int len)
+{
+    int base64_size = ((len + 2) / 3) * 4;
+
+    char *base64 = malloc(sizeof *base64 * (base64_size + 1));
+    if (base64 == NULL)
+    {
+        return NULL;
+    }
+
+    uint8_t bits = 0;
+    int offset = 0;
+    int bytes_encoded = 0;
+    int i = 0;
+    wprintw(ps->command_window, "\n");
+    for (; i < base64_size; i++)
+    {
+        offset = i % 4;
+        if (bytes_encoded >= len)
+        {
+            bits = 255; // trigger '='
+        }
+        else
+        {
+            switch (offset)
+            {
+                case 0:
+                    bits = byte_array[bytes_encoded] >> 2;
+                    break;
+                case 1:
+                    bits = ((byte_array[bytes_encoded] & 0b11) << 4) | (byte_array[bytes_encoded + 1] >> 4);
+                    bytes_encoded++;
+                    break;
+                case 2:
+                    bits = ((byte_array[bytes_encoded] & 0b1111) << 2) | (byte_array[bytes_encoded + 1] >> 6);
+                    bytes_encoded++;
+                    break;
+                case 3:
+                    bits = byte_array[bytes_encoded] & 0b111111;
+                    bytes_encoded++;
+                    break;
+            }
+        }
+        base64[i] = CGSE_base64_encode_character(bits);
+    }
+    base64[i] = '\0';
+
+    return base64;
+}
+
+char CGSE_base64_encode_character(uint8_t bits) {
+    uint8_t result = 255;
+    if (bits == 63)
+    {
+        result ='/';
+    }
+    else if (bits == 62)
+    {
+        result = '+';
+    }
+    else if (bits > 51 && bits < 62)
+    {
+        result = bits - 4;
+    }
+    else if (bits > 25 && bits < 52)
+    {
+        result = bits + 71;
+    }
+    else if  (bits < 26)
+    {
+        result = bits + 65;
+    }
+    else 
+    {
+        result = (uint8_t)'='; 
+    }
+
+    return (char) result;
 
 }
 

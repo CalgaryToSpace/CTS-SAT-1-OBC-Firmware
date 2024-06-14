@@ -77,4 +77,9 @@ char * CGSE_parse_command_args(CGSE_program_state_t *ps, int *nargs, char **arg_
 
 int CGSE_ls_dir(CGSE_program_state_t *ps);
 
+char * CGSE_base64_encode_from_file(CGSE_program_state_t *ps, char *filename);
+//char * CGSE_base64_encode_bytes(uint8_t *byte_array, int len);
+char * CGSE_base64_encode_bytes(CGSE_program_state_t *ps, uint8_t *byte_array, int len);
+char CGSE_base64_encode_character(uint8_t bits);
+
 #endif // __INCLUDE_GUARD__MAIN_H_
