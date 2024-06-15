@@ -20,6 +20,6 @@ add_executable(cgse main.c command_history.c telecommand_definitions.c)
 target_link_libraries(cgse ${CURSES})
 
 # Add more include directories if needed
-target_include_directories(cgse PUBLIC "." "telecommands" "transforms")
+target_include_directories(cgse PUBLIC "." "include")
 
 install(TARGETS cgse DESTINATION "$ENV{HOME}/bin")

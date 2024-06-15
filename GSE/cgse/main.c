@@ -2,7 +2,7 @@
 
 #include "command_history.h"
 
-#include "telecommand_definitions.h"
+#include "telecommands/telecommand_definitions.h"
 
 #include <math.h>
 #include <stdio.h>
