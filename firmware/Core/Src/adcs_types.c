@@ -888,6 +888,8 @@ void ADCS_send_I2C_telecommand(uint8_t id, uint8_t* data, uint32_t data_length, 
 	// ADCS_ESC_CHARACTER, ADCS_START_MESSAGE [uint8_t TLM/TC ID], ADCS_ESC_CHARACTER, ADCS_END_MESSAGE
 	// The defines in adcs_types.h already include the 7th bit of the ID to distinguish TLM and TC
 
+	uint8_t adcs_tc_status; 
+	
 	//Allocate only required memory
 	uint8_t buf[data_length + include_checksum]; // add additional bit for checksum if needed
 
@@ -900,7 +902,7 @@ void ADCS_send_I2C_telecommand(uint8_t id, uint8_t* data, uint32_t data_length, 
 	if (include_checksum) {buf[data_length] = COMMS_Crc8Checksum(data, data_length);}
 
 	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY) {} // wait until ready
-	HAL_I2C_Mem_Write_IT(&hi2c1, ADCS_I2C_ADDRESS << 1, id, 1, buf, sizeof(buf));
+	adcs_tc_status = HAL_I2C_Mem_Write_IT(&hi2c1, ADCS_I2C_ADDRESS << 1, id, 1, buf, sizeof(buf));
 	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY) {} // wait until finished
 	//HAL_I2C_Master_Transmit(&hi2c1, ADCS_I2C_ADDRESS, buf, sizeof(buf), HAL_MAX_DELAY);
 
@@ -911,6 +913,7 @@ void ADCS_send_I2C_telecommand(uint8_t id, uint8_t* data, uint32_t data_length, 
 	ignored. For I2C communication, the Tc Error Status in the Telecommand Acknowledge telemetry frame
 	(Table 39: Telecommand Acknowledge Telemetry Format) will have a value of 4. */
 
+	return adcs_tc_status;
 }
 
 /**
@@ -933,13 +936,14 @@ uint8_t ADCS_send_I2C_telemetry_request(uint8_t id, uint8_t* data, uint32_t data
 	/* When requesting telemetry through I2C, it is possible to read one extra byte past the allowed
 	length of the telemetry frame. In this case, the extra byte will also be an 8-bit checksum
 	computed by the CubeACP and can be used by the interfacing OBC to validate the message.*/
+	uint8_t adcs_tlm_status;
 
 	//Allocate only required memory
 	uint8_t temp_data[data_length + include_checksum];
 		// temp data used for checksum checking
 
 	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY) {} // wait until ready
-	HAL_I2C_Mem_Read_IT(&hi2c1, ADCS_I2C_ADDRESS << 1, id, 1, temp_data, sizeof(temp_data));
+	adcs_tlm_status = HAL_I2C_Mem_Read_IT(&hi2c1, ADCS_I2C_ADDRESS << 1, id, 1, temp_data, sizeof(temp_data));
 	// read the data using the EEPROM protocol (handled by built-in Mem_Read function)
 		// ADCS_I2C_ADDRESS << 1 = ADCS_I2C_WRITE, and (ADCS_I2C_ADDRESS << 1) | 0x01 = ADCS_I2C_READ
 	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY) {} // wait until finished
@@ -957,7 +961,7 @@ uint8_t ADCS_send_I2C_telemetry_request(uint8_t id, uint8_t* data, uint32_t data
 		}
 	}
 
-	return 0;
+	return adcs_tlm_status;
 
 }
 
