@@ -5,6 +5,7 @@
 #include "unit_tests/unit_test_executor.h"
 #include "debug_tools/debug_uart.h"
 #include "transforms/string_helpers.h"
+#include "configuration/configuration.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -58,6 +59,16 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "set_config_var",
         .tcmd_func = TCMDEXEC_set_configuration_variable,
+        .number_of_args = 2,
+    },
+    {
+        .tcmd_name = "get_config_var",
+        .tcmd_func = TCMDEXEC_get_configuration_variable,
+        .number_of_args = 1,
+    },
+    {
+        .tcmd_name = "get_all_config_vars",
+        .tcmd_func = TCMDEXEC_get_all_configuration_variables,
         .number_of_args = 0,
     }
 
@@ -80,34 +91,43 @@ uint8_t TCMDEXEC_hello_world(const uint8_t *args_str, TCMD_TelecommandChannel_en
 uint8_t TCMDEXEC_set_configuration_variable(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len)
 {
-    // DEBUG_uart_print_str((char *)args_str);
-    // DEBUG_uart_print_str("\n");
-    // char args[3][20];
-    // for (uint8_t i = 0; i < 3; i++)
-    // {
-    //     memset(args[i], 0, 20);
-    // }
-    // const uint8_t args_len = strlen((char *)args_str);
-    // const uint8_t args_count = split_string_by_delimiter((const char *)args_str, args_len, ',', args, 3);
-    // char args_count_str[5];
-    // snprintf(args_count_str, 5, "%d", args_count);
-    // args_count_str[4] = '\0';
-
-    // memset(response_output_buf, 0, response_output_buf_len);
-
-    // strncat(response_output_buf, "Hello, world From Ali!\n", 24);
-
-    // strncat(response_output_buf, "Args count: ", 13);
-    // strncat(response_output_buf, args_count_str, 5);
-    // strcat(response_output_buf, "\n");
-
-    // for (uint8_t i = 0; i < args_count; i++)
-    // {
-    //     strncat(response_output_buf, (char *)args[i], strlen((char *)args[i]));
-    //     strcat(response_output_buf, "\n");
-    // }
+    // TODO
+    snprintf(response_output_buf, response_output_buf_len, "TODO\n");
     return 0;
 }
+
+uint8_t TCMDEXEC_get_configuration_variable(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                            char *response_output_buf, uint16_t response_output_buf_len)
+{
+    snprintf(response_output_buf, response_output_buf_len, "TODO\n");
+    return 0;
+}
+
+uint8_t TCMDEXEC_get_all_configuration_variables(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                                 char *response_output_buf, uint16_t response_output_buf_len)
+{
+    const char *header = "Available Configuration Variables:\n\n";
+    snprintf(response_output_buf, response_output_buf_len, "%s", header);
+
+    strcat(response_output_buf, "Integer Configuration Variables:\n\n");
+
+    char config_integer_table[100];
+    memset(config_integer_table, 0, 100);
+    const uint16_t config_integer_table_size = CONFIG_print_integer_table(config_integer_table);
+    strncat(response_output_buf, config_integer_table, config_integer_table_size);
+
+    strcat(response_output_buf, "\n\n");
+
+    strcat(response_output_buf, "String Configuration Variables:\n\n");
+
+    char config_string_table[100];
+    memset(config_string_table, 0, 100);
+    const uint16_t config_string_table_size = CONFIG_print_string_table(config_string_table);
+    strncat(response_output_buf, config_string_table, config_string_table_size);
+
+    return 0;
+}
+
 uint8_t TCMDEXEC_heartbeat_off(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                char *response_output_buf, uint16_t response_output_buf_len)
 {
