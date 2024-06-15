@@ -68,7 +68,7 @@ uint8_t TEST_EXEC__HELPER_split_string_by_delimiter()
     // Test 3.3, Iteration 2
 
     const uint8_t modified_delimiter_at_the_beginning_res_len = strlen("hello\0");
-    const char modified_delimiter_at_the_beginning_result[20];
+    char modified_delimiter_at_the_beginning_result[20];
     memset(modified_delimiter_at_the_beginning_result, 0, 20);
     const uint8_t modified_delimiter_at_the_beginning_res = split_string_by_delimiter(&delimiter_at_the_beginning, strlen(delimiter_at_the_beginning), ',', modified_delimiter_at_the_beginning_result);
     TEST_ASSERT_TRUE(modified_delimiter_at_the_beginning_res == 0);
