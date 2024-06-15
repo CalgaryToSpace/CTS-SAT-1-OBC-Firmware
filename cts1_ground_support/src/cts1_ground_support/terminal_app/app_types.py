@@ -39,6 +39,9 @@ class RxTxLogEntry:
         """Get the text representation of the log entry."""
         if self.entry_type == "notice":
             return f"==================== {self.raw_bytes.decode()} ===================="
+        # TODO: make these equals-signs a fixed width
+        if self.entry_type == "error":
+            return f"==================== {self.raw_bytes.decode()} ===================="
 
         # TODO: include timestamp as arg
         # TODO: specific linefeed/carriage return symbol

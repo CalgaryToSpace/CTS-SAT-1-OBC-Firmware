@@ -6,7 +6,7 @@ import time
 import serial
 from loguru import logger
 
-from cts1_ground_support.terminal_app.app_config import UART_BAUD_RATE
+from cts1_ground_support.terminal_app.app_config import MAX_RX_TX_LOG_ENTRIES, UART_BAUD_RATE
 from cts1_ground_support.terminal_app.app_store import app_store
 from cts1_ground_support.terminal_app.app_types import UART_PORT_NAME_DISCONNECTED, RxTxLogEntry
 
@@ -28,6 +28,9 @@ def uart_listener() -> None:
                     if port.in_waiting > 0:
                         received_data: bytes = port.readline()
                         app_store.rxtx_log.append(RxTxLogEntry(received_data, "receive"))
+                    elif len(app_store.rxtx_log) > MAX_RX_TX_LOG_ENTRIES:
+                        # Data's not coming in rapid-fire, so take a sec to purge the buffer.
+                        app_store.rxtx_log = app_store.rxtx_log[-MAX_RX_TX_LOG_ENTRIES:]
 
                     # Check for outgoing data
                     if len(app_store.tx_queue) > 0:

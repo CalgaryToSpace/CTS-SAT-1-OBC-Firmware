@@ -24,9 +24,9 @@ from cts1_ground_support.terminal_app.serial_thread import start_uart_listener
 
 UART_PORT_OPTION_LABEL_DISCONNECTED = "⛔ Disconnected ⛔"
 
-# TODO: cap the length of the log
 # TODO: log UART comms to a file
-# TODO: represent newlines with special symbol
+# TODO: add a "Jump to Bottom" button, if scrolled up at all
+# TODO: setup variable polling interval: poll frequently right after sending a command, then slow
 
 
 @functools.lru_cache  # cache forever is fine
@@ -79,6 +79,7 @@ def update_argument_inputs(selected_command_name: str) -> list[html.Div]:
                     id=(this_id := f"arg-input-{arg_num}"),
                     placeholder=f"Argument {arg_num}",
                     disabled=(arg_num >= selected_tcmd.number_of_args),
+                    style={"font-family": "monospace"},
                 ),
                 dbc.Label(f"Argument {arg_num}", html_for=this_id),
             ],
@@ -128,6 +129,12 @@ def send_button_callback(
     """Handle the send button click event by adding the command to the TX queue."""
     logger.info(f"Send button clicked ({n_clicks=})!")
 
+    if selected_command_name is None:
+        msg = "No command selected. Can't send a command!"
+        logger.error(msg)
+        app_store.rxtx_log.append(RxTxLogEntry(msg.encode(), "error"))
+        return
+
     args = [
         every_arg_value[arg_num]
         for arg_num in range(get_telecommand_by_name(selected_command_name).number_of_args)
@@ -157,7 +164,7 @@ def send_button_callback(
 def clear_log_button_callback(n_clicks: int) -> None:
     """Handle the "Clear Log" button click event by resetting the log."""
     logger.info(f"Clear Log button clicked ({n_clicks=})!")
-    app_store.rxtx_log = [].copy()
+    app_store.rxtx_log = [RxTxLogEntry(b"Log Reset", "notice")].copy()
 
 
 @callback(
@@ -249,12 +256,13 @@ def generate_left_pane() -> list:
         ),
         dbc.Row(
             [
-                dbc.Label("Select Telecommand:", html_for="telecommand-dropdown"),
+                dbc.Label("Select a Telecommand:", html_for="telecommand-dropdown"),
                 dcc.Dropdown(
                     id="telecommand-dropdown",
                     options=[{"label": cmd, "value": cmd} for cmd in get_telecommand_name_list()],
                     value=get_telecommand_name_list()[0],
                     className="mb-3",  # Add margin bottom to the dropdown
+                    style={"font-family": "monospace"},
                 ),
             ],
         ),
@@ -269,7 +277,7 @@ def generate_left_pane() -> list:
                     color="danger",
                 ),
                 dbc.Button(
-                    "Send ➡️",
+                    "Send 📡",
                     id="send-button",
                     n_clicks=0,
                     className="m-1 px-5",
