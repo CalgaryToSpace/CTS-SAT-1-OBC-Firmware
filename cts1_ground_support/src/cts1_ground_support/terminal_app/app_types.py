@@ -4,24 +4,30 @@ import time
 from dataclasses import dataclass, field
 from typing import Literal
 
+from cts1_ground_support.bytes import bytes_to_nice_str
+
+UART_PORT_NAME_DISCONNECTED = "disconnected"
+
 
 @dataclass
 class RxTxLogEntry:
     """A class to store an entry in the RX/TX log."""
 
     raw_bytes: bytes
-    entry_type: Literal["send", "receive", "notice"]
+    entry_type: Literal["transmit", "receive", "notice"]
     timestamp_sec: float = field(default_factory=lambda: time.time())
 
     @property
     def style(self: "RxTxLogEntry") -> dict:
         """Get the style for the log entry."""
-        if self.entry_type == "send":
+        if self.entry_type == "transmit":
             return {"color": "cyan"}
-        if self.entry_type == "notice":
-            return {"color": "yellow"}
         if self.entry_type == "receive":
             return {"color": "#AAFFAA"}  # green
+
+        if self.entry_type == "notice":
+            return {"color": "yellow"}
+
         if self.entry_type == "error":
             return {"color": "#FF6666"}
 
@@ -34,5 +40,6 @@ class RxTxLogEntry:
         if self.entry_type == "notice":
             return f"==================== {self.raw_bytes.decode()} ===================="
 
-        # TODO: represent binary/unprintable characters as hex
-        return self.raw_bytes.decode()
+        # TODO: include timestamp as arg
+        # TODO: specific linefeed/carriage return symbol
+        return bytes_to_nice_str(self.raw_bytes)

@@ -10,15 +10,17 @@ The main screen has the following components:
 import dash
 import dash_bootstrap_components as dbc
 from dash import callback, dcc, html
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 from loguru import logger
 
 from cts1_ground_support.serial import list_serial_ports
 from cts1_ground_support.telecommand_array_parser import parse_telecommand_list_from_repo
 from cts1_ground_support.telecommand_types import TelecommandDefinition
 from cts1_ground_support.terminal_app.app_store import app_store
-from cts1_ground_support.terminal_app.app_types import RxTxLogEntry
+from cts1_ground_support.terminal_app.app_types import UART_PORT_NAME_DISCONNECTED, RxTxLogEntry
 from cts1_ground_support.terminal_app.serial_thread import start_uart_listener
+
+UART_PORT_OPTION_LABEL_DISCONNECTED = "⛔ Disconnected ⛔"
 
 
 def get_telecommand_name_list() -> list[str]:
@@ -37,27 +39,42 @@ def get_telecommand_by_name(name: str) -> TelecommandDefinition:
     return telecommand
 
 
-@callback(Output("argument-inputs", "children"), Input("telecommand-dropdown", "value"))
+def get_max_arguments_per_telecommand() -> int:
+    """Get the maximum number of arguments for any telecommand."""
+    telecommands = parse_telecommand_list_from_repo()
+    return max(tcmd.number_of_args for tcmd in telecommands)
+
+
+@callback(
+    Output("argument-inputs", "children"),
+    Input("telecommand-dropdown", "value"),
+)
 def update_argument_inputs(selected_command_name: str) -> list[html.Div]:
     """Generate the argument input fields based on the selected telecommand."""
     selected_tcmd = get_telecommand_by_name(selected_command_name)
 
     if selected_tcmd is None:
+        app_store.selected_command_name = None
         return []
+
+    app_store.selected_command_name = selected_command_name
 
     return [
         dbc.FormFloating(
             [
                 dbc.Input(
                     type="text",
-                    id=(this_id := f"arg-input-{selected_command_name}-{arg_num}"),
+                    id=(this_id := f"arg-input-{arg_num}"),
                     placeholder=f"Argument {arg_num}",
+                    disabled=(arg_num >= selected_tcmd.number_of_args),
                 ),
                 dbc.Label(f"Argument {arg_num}", html_for=this_id),
             ],
             className="mb-3",
+            # Hide the argument input if it is not needed for the selected telecommand.
+            style=({"display": "none"} if arg_num >= selected_tcmd.number_of_args else {}),
         )
-        for arg_num in range(selected_tcmd.number_of_args)
+        for arg_num in range(get_max_arguments_per_telecommand())
     ]
 
 
@@ -66,9 +83,13 @@ def handle_uart_port_change(uart_port_name: str) -> None:
     last_uart_port_name = app_store.uart_port_name
 
     if uart_port_name != last_uart_port_name:
-        if uart_port_name == "disconnected":
+        if uart_port_name == UART_PORT_NAME_DISCONNECTED:
+            logger.debug(
+                f"Disconnect. Last port: {last_uart_port_name}. New port: {uart_port_name}."
+            )
             msg = "Serial port disconnected."
-        elif last_uart_port_name == "disconnected":
+        elif last_uart_port_name == UART_PORT_NAME_DISCONNECTED:
+            logger.debug(f"Connect. Last port: {last_uart_port_name}. New port: {uart_port_name}.")
             msg = f"Serial port connected: {uart_port_name}"
         else:
             msg = f"Serial port changed from {last_uart_port_name} to {uart_port_name}"
@@ -81,33 +102,78 @@ def handle_uart_port_change(uart_port_name: str) -> None:
 
 @callback(
     Input("send-button", "n_clicks"),
-    Input("telecommand-dropdown", "value"),
+    State("telecommand-dropdown", "value"),
+    *[
+        State(f"arg-input-{arg_num}", "value")
+        for arg_num in range(get_max_arguments_per_telecommand())
+    ],
     prevent_initial_call=True,
 )
-def send_button_callback(n_clicks: int, selected_command_name: str) -> None:
+def send_button_callback(
+    n_clicks: int, selected_command_name: str, *every_arg_value: tuple[str]
+) -> None:
     """Handle the send button click event by adding the command to the TX queue."""
-    logger.info(f"Send button clicked {n_clicks=} times!")
-    args = [app_store[dcc.Input(f"arg-input-{selected_command_name}-{arg_num}").value] for arg_num in range(get_telecommand_by_name(selected_command_name).number_of_args)]
-    command = f"{selected_command_name},{','.join(args)}".encode()
-    app_store.tx_queue.append(command)
+    logger.info(f"Send button clicked ({n_clicks=})!")
+
+    args = [
+        every_arg_value[arg_num]
+        for arg_num in range(get_telecommand_by_name(selected_command_name).number_of_args)
+    ]
+    if any(arg is None or arg == "" for arg in args):
+        msg = f"Not all arguments are filled in. Can't run {selected_command_name}{args}!"
+        logger.error(msg)
+        app_store.rxtx_log.append(RxTxLogEntry(msg.encode(), "error"))
+        return
+
+    if app_store.uart_port_name == UART_PORT_NAME_DISCONNECTED:
+        msg = "Can't send command when disconnected."
+        logger.error(msg)
+        app_store.rxtx_log.append(RxTxLogEntry(msg.encode(), "error"))
+        return
+
+    logger.info(f"Adding command to queue: {selected_command_name}{args}")
+
+    command_str = f"CTS1+{selected_command_name}({','.join(args)})!"
+    app_store.tx_queue.append(command_str.encode("ascii"))
 
 
 @callback(
-    Output("rx-tx-log", "children"),
-    Input("uart-port-dropdown", "value"),
-    Input("send-button", "n_clicks"),
-    Input("uart-update-interval-component", "n_intervals"),
+    Input("clear-log-button", "n_clicks"),
+    prevent_initial_call=True,
 )
-def update_uart_log_interval(
-    uart_port_name: str,
-    n_clicks_send: int,
-    update_interval_count: int,
-) -> html.Div:
-    """Update the UART log at the specified interval."""
-    # Checks if the UART port status changed, record it appropriately in the app_store.
+def clear_log_button_callback(n_clicks: int) -> None:
+    """Handle the "Clear Log" button click event by resetting the log."""
+    logger.info(f"Clear Log button clicked ({n_clicks=})!")
+    app_store.rxtx_log = [].copy()
+
+
+@callback(
+    Output("uart-port-dropdown", "options"),
+    Input("uart-port-dropdown", "value"),
+    Input("uart-port-dropdown-interval-component", "n_intervals"),
+)
+def update_uart_port_dropdown_options(uart_port_name: str, _n_intervals: int) -> list[str]:
+    """Update the UART port dropdown with the available serial ports."""
+    if uart_port_name is None:
+        uart_port_name = UART_PORT_NAME_DISCONNECTED
     handle_uart_port_change(uart_port_name)
 
-    return generate_rx_tx_log()
+    # Re-render the dropdown with the updated list of serial ports.
+    port_name_list = list_serial_ports()
+    if app_store.uart_port_name not in ([*port_name_list, UART_PORT_NAME_DISCONNECTED]):
+        msg = f"Serial port is no longer available in list of ports: {app_store.uart_port_name}"
+        logger.warning(msg)
+        app_store.rxtx_log.append(RxTxLogEntry(msg.encode(), "error"))
+        app_store.uart_port_name = UART_PORT_NAME_DISCONNECTED
+
+    if app_store.uart_port_name != uart_port_name:
+        logger.debug("Would try to update the selected UART port value to 'DISCONNECTED'.")
+
+    # NOTE: Don't try to update the dropdown options in the callback, as it will trigger the
+    # callback again and infinitely toggle between connected and disconnected.
+    return [
+        {"label": UART_PORT_OPTION_LABEL_DISCONNECTED, "value": UART_PORT_NAME_DISCONNECTED}
+    ] + [{"label": port, "value": port} for port in port_name_list]
 
 
 def generate_rx_tx_log() -> html.Div:
@@ -124,27 +190,22 @@ def generate_rx_tx_log() -> html.Div:
     )
 
 
+# Should be the last callback in the file, as other callbacks modify the log.
 @callback(
-    Output("uart-port-dropdown", "options"),
-    Output("uart-port-dropdown", "value"),
-    Input("uart-port-dropdown-interval-component", "n_intervals"),
+    Output("rx-tx-log", "children"),
+    Input("uart-port-dropdown", "value"),
+    Input("send-button", "n_clicks"),
+    Input("clear-log-button", "n_clicks"),
+    Input("uart-update-interval-component", "n_intervals"),
 )
-def update_uart_port_dropdown(_n_intervals: int) -> dcc.Dropdown:
-    """Update the UART port dropdown with the available serial ports."""
-    port_name_list = list_serial_ports()
-    if app_store.uart_port_name not in ([*port_name_list, "disconnected"]):
-        logger.warning(
-            f"Force disconnecting from serial port in callback: {app_store.uart_port_name}"
-        )
-        app_store.uart_port_name = "disconnected"
-
-    return (
-        (
-            [{"label": "⛔ Disconnected ⛔", "value": "disconnected"}]
-            + [{"label": port, "value": port} for port in port_name_list]
-        ),
-        app_store.uart_port_name,
-    )
+def update_uart_log_interval(
+    _uart_port_name: str,
+    _n_clicks_send: int,
+    _n_clicks_clear_logs: int,
+    _update_interval_count: int,
+) -> html.Div:
+    """Update the UART log at the specified interval."""
+    return generate_rx_tx_log()
 
 
 def generate_left_pane() -> list:
@@ -156,10 +217,15 @@ def generate_left_pane() -> list:
                 dcc.Dropdown(
                     id="uart-port-dropdown",
                     options=(
-                        [{"label": "⛔ Disconnected ⛔", "value": "disconnected"}]
+                        [
+                            {
+                                "label": UART_PORT_OPTION_LABEL_DISCONNECTED,
+                                "value": UART_PORT_NAME_DISCONNECTED,
+                            }
+                        ]
                         + [{"label": port, "value": port} for port in list_serial_ports()]
                     ),
-                    value="disconnected",
+                    value=UART_PORT_NAME_DISCONNECTED,
                     className="mb-3",  # Add margin bottom to the dropdown
                 ),
                 dcc.Interval(
@@ -183,11 +249,18 @@ def generate_left_pane() -> list:
         html.Div(id="argument-inputs", className="mb-3"),
         dbc.Button("Send", id="send-button", n_clicks=0, className="m-3"),
         dbc.Button(
-            "Clear Arguments",
-            id="clear-arguments-button",
+            "Reset Arguments",
+            id="reset-arguments-button",
             n_clicks=0,
             className="m-3",
         ),
+        dbc.Button(
+            "Clear Log",
+            id="clear-log-button",
+            n_clicks=0,
+            className="m-3",
+        ),
+        # TODO: add a disconnect button to pause
     ]
 
 

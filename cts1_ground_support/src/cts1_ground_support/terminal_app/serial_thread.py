@@ -8,19 +8,22 @@ from loguru import logger
 
 from cts1_ground_support.terminal_app.app_config import UART_BAUD_RATE
 from cts1_ground_support.terminal_app.app_store import app_store
-from cts1_ground_support.terminal_app.app_types import RxTxLogEntry
+from cts1_ground_support.terminal_app.app_types import UART_PORT_NAME_DISCONNECTED, RxTxLogEntry
 
 
 def uart_listener() -> None:
     """Listen for incoming UART data and log it to the app_store."""
     while True:
-        if app_store.uart_port_name == "disconnected":
+        if app_store.uart_port_name == UART_PORT_NAME_DISCONNECTED:
             time.sleep(0.1)
             continue
 
         try:
             with serial.Serial(app_store.uart_port_name, UART_BAUD_RATE, timeout=1) as port:
                 while True:
+                    if app_store.uart_port_name == UART_PORT_NAME_DISCONNECTED:
+                        break
+
                     # Check for incoming data
                     if port.in_waiting > 0:
                         received_data: bytes = port.readline()
@@ -34,11 +37,14 @@ def uart_listener() -> None:
 
                     time.sleep(0.01)
 
-        except serial.SerialException:
-            msg = f"Serial port forcefully disconnected: {app_store.uart_port_name}"
-            app_store.rxtx_log.append(RxTxLogEntry(msg.encode(), "notice"))
-            logger.info(msg)
-            app_store.uart_port_name = "disconnected"  # propagate back to UI
+        except serial.SerialException as e:
+            msg = (
+                f"Serial port forcefully disconnected (SerialException: {e}): "
+                f"{app_store.uart_port_name}"
+            )
+            app_store.rxtx_log.append(RxTxLogEntry(msg.encode(), "error"))
+            logger.warning(msg)
+            app_store.uart_port_name = UART_PORT_NAME_DISCONNECTED  # propagate back to UI
             time.sleep(0.5)
 
 
