@@ -30,6 +30,12 @@ extern const int16_t TCMD_NUM_TELECOMMANDS;
 uint8_t TCMDEXEC_set_configuration_variable(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len);
 
+uint8_t TCMDEXEC_get_configuration_variable(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                            char *response_output_buf, uint16_t response_output_buf_len);
+
+uint8_t TCMDEXEC_get_all_configuration_variables(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                                 char *response_output_buf, uint16_t response_output_buf_len);
+
 uint8_t TCMDEXEC_heartbeat_off(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                char *response_output_buf, uint16_t response_output_buf_len);
 
