@@ -43,11 +43,9 @@ Homepage = "https://calgarytospace.ca/"
 # Documentation = "https://readthedocs.org"
 Repository = "https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware"
 
-# [project.scripts]
-# spam-cli = "spam:main_cli"
-
-# [project.gui-scripts]
-# spam-gui = "spam:main_gui"
+[project.scripts]
+cts1_ground_support = "cts1_ground_support:main"
+cts1_terminal = "cts1_ground_support:main"
 
 
 [tool.ruff.lint]

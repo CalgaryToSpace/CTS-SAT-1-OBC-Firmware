@@ -1,7 +1,7 @@
-# CTS-SAT-1 Ground Support Software (`cts_gsup`)
+# CTS-SAT-1 Ground Support Software (`cts1_ground_support`)
 
 This ground support software is used to test the satellite by sending the satellite telecommands,
-primarily over the debug UART interface.
+primarily over the debug UART interface. It is a command-aware UART terminal.
 
 Over time, the goal is to develop it into the ground station control software.
 
@@ -25,3 +25,5 @@ Over time, the goal is to develop it into the ground station control software.
 4. Run `./venv/Scripts/activate` (on Windows), or `source ./venv/bin/activate` (on real operating systems).
 5. Run `pip install -e cts1_ground_support[dev]` to install this Python Project in your virtual environment.
 6. Run `cts1_ground_support --help` to ensure it worked.
+7. Run `cts1_ground_support` to start the ground support terminal.
+8. Visit [http://127.0.0.1:8050/](http://127.0.0.1:8050/) in a web browser to view the web interface and send commands to your dev kit.

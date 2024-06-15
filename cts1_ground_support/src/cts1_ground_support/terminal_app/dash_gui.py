@@ -7,6 +7,7 @@ The main screen has the following components:
 (occupies the right 70% of the screen).
 """
 
+import argparse
 import functools
 
 import dash
@@ -27,6 +28,7 @@ UART_PORT_OPTION_LABEL_DISCONNECTED = "⛔ Disconnected ⛔"
 # TODO: log UART comms to a file
 # TODO: add a "Jump to Bottom" button, if scrolled up at all
 # TODO: setup variable polling interval: poll frequently right after sending a command, then slow
+# TODO: render the unit test check marks correct (instead of as hex), if we want
 
 
 @functools.lru_cache  # cache forever is fine
@@ -291,7 +293,7 @@ def generate_left_pane() -> list:
     ]
 
 
-def main() -> None:
+def run_dash_app(*, enable_debug: bool = False) -> None:
     """Run the main Dash application."""
     app = dash.Dash(
         "CTS-SAT-1 Ground Support",
@@ -339,8 +341,21 @@ def main() -> None:
 
     start_uart_listener()
 
-    app.run_server(debug=True)
+    app.run_server(debug=enable_debug)
     logger.info("Dash app started and finished.")
+
+
+def main() -> None:
+    """Run the main server, with optional debug mode (via CLI arg)."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-d",
+        "--debug",
+        action="store_true",
+        help="Enable debug mode for the Dash app.",
+    )
+    args = parser.parse_args()
+    run_dash_app(enable_debug=args.debug)
 
 
 if __name__ == "__main__":
