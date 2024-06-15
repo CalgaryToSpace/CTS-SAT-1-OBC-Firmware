@@ -24,10 +24,9 @@ from cts1_ground_support.terminal_app.serial_thread import start_uart_listener
 
 UART_PORT_OPTION_LABEL_DISCONNECTED = "⛔ Disconnected ⛔"
 
-# TODO: pause refreshes if we're scrolled up at all
 # TODO: cap the length of the log
 # TODO: log UART comms to a file
-# TODO: fix the spacing and sizing in the log display
+# TODO: represent newlines with special symbol
 
 
 @functools.lru_cache  # cache forever is fine
@@ -116,6 +115,7 @@ def handle_uart_port_change(uart_port_name: str) -> None:
 @callback(
     Input("send-button", "n_clicks"),
     State("telecommand-dropdown", "value"),
+    # TODO: maybe this could be cleanear with `Input/State("argument-inputs", "children")`, somehow
     *[
         State(f"arg-input-{arg_num}", "value")
         for arg_num in range(get_max_arguments_per_telecommand())
@@ -192,24 +192,18 @@ def update_uart_port_dropdown_options(uart_port_name: str, _n_intervals: int) ->
 def generate_rx_tx_log() -> html.Div:
     """Generate the RX/TX log, which shows the most recent received and transmitted messages."""
     return html.Div(
-        # Do the reverse because of the "flex-direction: column-reverse" style.
-        # The web is wacky.
-        [html.P(entry.text, style=entry.style) for entry in reversed(app_store.rxtx_log)],
-        style={
-            "font-family": "monospace",
-            "background-color": "black",
-            "height": "100%",
-            "overflowY": "auto",
-            "flex-direction": "column-reverse",
-            "display": "flex",
-        },
+        [
+            html.P(entry.text, style=entry.css_style | {"margin": "0", "line-height": "1.1"})
+            for entry in (app_store.rxtx_log)
+        ],
         id="rx-tx-log",
+        className="p-3",
     )
 
 
 # Should be the last callback in the file, as other callbacks modify the log.
 @callback(
-    Output("rx-tx-log", "children"),
+    Output("rx-tx-log-container", "children"),
     Input("uart-port-dropdown", "value"),
     Input("send-button", "n_clicks"),
     Input("clear-log-button", "n_clicks"),
@@ -283,6 +277,7 @@ def generate_left_pane() -> list:
                 ),
             ],
             justify="center",
+            className="mb-3",
         ),
         html.Div(id="argument-inputs", className="mb-3"),
     ]
@@ -307,7 +302,18 @@ def main() -> None:
                     ),
                     dbc.Col(
                         [
-                            generate_rx_tx_log(),
+                            html.Div(
+                                generate_rx_tx_log(),
+                                id="rx-tx-log-container",
+                                style={
+                                    "font-family": "monospace",
+                                    "background-color": "black",
+                                    "height": "100%",
+                                    "overflowY": "auto",
+                                    "flex-direction": "column-reverse",
+                                    "display": "flex",
+                                },
+                            ),
                             dcc.Interval(
                                 id="uart-update-interval-component",
                                 interval=1000,  # in milliseconds

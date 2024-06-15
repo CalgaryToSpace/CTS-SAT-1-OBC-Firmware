@@ -18,8 +18,8 @@ class RxTxLogEntry:
     timestamp_sec: float = field(default_factory=lambda: time.time())
 
     @property
-    def style(self: "RxTxLogEntry") -> dict:
-        """Get the style for the log entry."""
+    def css_style(self: "RxTxLogEntry") -> dict:
+        """Get the CSS style for the log entry (mostly just color currently)."""
         if self.entry_type == "transmit":
             return {"color": "cyan"}
         if self.entry_type == "receive":
