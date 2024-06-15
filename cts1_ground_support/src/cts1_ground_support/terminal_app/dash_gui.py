@@ -7,6 +7,8 @@ The main screen has the following components:
 (occupies the right 70% of the screen).
 """
 
+import functools
+
 import dash
 import dash_bootstrap_components as dbc
 from dash import callback, dcc, html
@@ -22,16 +24,27 @@ from cts1_ground_support.terminal_app.serial_thread import start_uart_listener
 
 UART_PORT_OPTION_LABEL_DISCONNECTED = "⛔ Disconnected ⛔"
 
+# TODO: pause refreshes if we're scrolled up at all
+# TODO: cap the length of the log
+# TODO: log UART comms to a file
+# TODO: fix the spacing and sizing in the log display
+
+
+@functools.lru_cache  # cache forever is fine
+def get_telecommand_list_from_repo_cached() -> list[TelecommandDefinition]:
+    """Get the telecommand list from the repo, and cache the result."""
+    return parse_telecommand_list_from_repo()
+
 
 def get_telecommand_name_list() -> list[str]:
     """Get a list of telecommand names by reading the telecommands from the repo."""
-    telecommands = parse_telecommand_list_from_repo()
+    telecommands = get_telecommand_list_from_repo_cached()
     return [tcmd.name for tcmd in telecommands]
 
 
 def get_telecommand_by_name(name: str) -> TelecommandDefinition:
     """Get a telecommand definition by name."""
-    telecommands = parse_telecommand_list_from_repo()
+    telecommands = get_telecommand_list_from_repo_cached()
     telecommand = next((tcmd for tcmd in telecommands if tcmd.name == name), None)
     if not telecommand:
         msg = f"Telecommand not found: {name}"
@@ -41,7 +54,7 @@ def get_telecommand_by_name(name: str) -> TelecommandDefinition:
 
 def get_max_arguments_per_telecommand() -> int:
     """Get the maximum number of arguments for any telecommand."""
-    telecommands = parse_telecommand_list_from_repo()
+    telecommands = get_telecommand_list_from_repo_cached()
     return max(tcmd.number_of_args for tcmd in telecommands)
 
 
@@ -179,12 +192,16 @@ def update_uart_port_dropdown_options(uart_port_name: str, _n_intervals: int) ->
 def generate_rx_tx_log() -> html.Div:
     """Generate the RX/TX log, which shows the most recent received and transmitted messages."""
     return html.Div(
-        [html.P(entry.text, style=entry.style) for entry in app_store.rxtx_log],
+        # Do the reverse because of the "flex-direction: column-reverse" style.
+        # The web is wacky.
+        [html.P(entry.text, style=entry.style) for entry in reversed(app_store.rxtx_log)],
         style={
             "font-family": "monospace",
             "background-color": "black",
             "height": "100%",
             "overflowY": "auto",
+            "flex-direction": "column-reverse",
+            "display": "flex",
         },
         id="rx-tx-log",
     )
@@ -209,8 +226,9 @@ def update_uart_log_interval(
 
 
 def generate_left_pane() -> list:
-    """Make the left pane of the GUI, to be put inside a col."""
+    """Make the left pane of the GUI, to be put inside a Col."""
     return [
+        html.H1("CTS-SAT-1 Ground Support - Telecommand Terminal", className="text-center"),
         dbc.Row(
             [
                 dbc.Label("Select a Serial Port:", html_for="uart-port-dropdown"),
@@ -246,21 +264,27 @@ def generate_left_pane() -> list:
                 ),
             ],
         ),
+        dbc.Row(
+            [
+                dbc.Button(
+                    "Clear Log 🫗",
+                    id="clear-log-button",
+                    n_clicks=0,
+                    className="m-1 px-3",
+                    style={"width": "auto"},
+                    color="danger",
+                ),
+                dbc.Button(
+                    "Send ➡️",
+                    id="send-button",
+                    n_clicks=0,
+                    className="m-1 px-5",
+                    style={"width": "auto"},
+                ),
+            ],
+            justify="center",
+        ),
         html.Div(id="argument-inputs", className="mb-3"),
-        dbc.Button("Send", id="send-button", n_clicks=0, className="m-3"),
-        dbc.Button(
-            "Reset Arguments",
-            id="reset-arguments-button",
-            n_clicks=0,
-            className="m-3",
-        ),
-        dbc.Button(
-            "Clear Log",
-            id="clear-log-button",
-            n_clicks=0,
-            className="m-3",
-        ),
-        # TODO: add a disconnect button to pause
     ]
 
 
@@ -273,12 +297,13 @@ def main() -> None:
 
     app.layout = dbc.Container(
         [
-            html.H1("CTS-SAT-1 Ground Support - Telecommand Terminal", className="text-center"),
             dbc.Row(
                 [
                     dbc.Col(
                         generate_left_pane(),
                         width=3,
+                        style={"height": "100vh", "overflow-y": "scroll"},
+                        class_name="p-3",
                     ),
                     dbc.Col(
                         [
@@ -290,6 +315,7 @@ def main() -> None:
                             ),
                         ],
                         width=9,
+                        style={"height": "100vh", "overflow-y": "scroll"},
                     ),
                 ],
             ),
