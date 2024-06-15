@@ -7,13 +7,8 @@ The main screen has the following components:
 (occupies the right 70% of the screen).
 """
 
-import time
-from dataclasses import dataclass, field
-from typing import Literal
-
 import dash
 import dash_bootstrap_components as dbc
-import serial
 from dash import callback, dcc, html
 from dash.dependencies import Input, Output
 from loguru import logger
@@ -21,53 +16,9 @@ from loguru import logger
 from cts1_ground_support.serial import list_serial_ports
 from cts1_ground_support.telecommand_array_parser import parse_telecommand_list_from_repo
 from cts1_ground_support.telecommand_types import TelecommandDefinition
-
-# Constants
-UART_BAUD_RATE = 115200
-
-
-@dataclass
-class RxTxLogEntry:
-    """A class to store an entry in the RX/TX log."""
-
-    raw_bytes: bytes
-    entry_type: Literal["send", "receive", "notice"]
-
-    @property
-    def style(self: "RxTxLogEntry") -> dict:
-        """Get the style for the log entry."""
-        if self.entry_type == "send":
-            return {"color": "cyan"}
-        if self.entry_type == "notice":
-            return {"color": "yellow"}
-        if self.entry_type == "receive":
-            return {"color": "#AAFFAA"}  # green
-        if self.entry_type == "error":
-            return {"color": "#FF6666"}
-
-        msg = f"Invalid entry type: {self.entry_type}"
-        raise ValueError(msg)
-
-    @property
-    def text(self: "RxTxLogEntry") -> str:
-        """Get the text representation of the log entry."""
-        if self.entry_type == "notice":
-            return f"==================== {self.raw_bytes.decode()} ===================="
-
-        # TODO: represent binary/unprintable characters as hex
-        return self.raw_bytes.decode()
-
-
-@dataclass
-class AppStore:
-    """A singleton class to store the app's state."""
-
-    uart_port_name: str = "disconnected"
-    rxtx_log: list[RxTxLogEntry] = field(default_factory=list)
-
-
-app_store = AppStore()
-start_time = time.time()
+from cts1_ground_support.terminal_app.app_store import app_store
+from cts1_ground_support.terminal_app.app_types import RxTxLogEntry
+from cts1_ground_support.terminal_app.serial_thread import start_uart_listener
 
 
 def get_telecommand_name_list() -> list[str]:
@@ -129,6 +80,19 @@ def handle_uart_port_change(uart_port_name: str) -> None:
 
 
 @callback(
+    Input("send-button", "n_clicks"),
+    Input("telecommand-dropdown", "value"),
+    prevent_initial_call=True,
+)
+def send_button_callback(n_clicks: int, selected_command_name: str) -> None:
+    """Handle the send button click event by adding the command to the TX queue."""
+    logger.info(f"Send button clicked {n_clicks=} times!")
+    args = [app_store[dcc.Input(f"arg-input-{selected_command_name}-{arg_num}").value] for arg_num in range(get_telecommand_by_name(selected_command_name).number_of_args)]
+    command = f"{selected_command_name},{','.join(args)}".encode()
+    app_store.tx_queue.append(command)
+
+
+@callback(
     Output("rx-tx-log", "children"),
     Input("uart-port-dropdown", "value"),
     Input("send-button", "n_clicks"),
@@ -140,11 +104,8 @@ def update_uart_log_interval(
     update_interval_count: int,
 ) -> html.Div:
     """Update the UART log at the specified interval."""
-    # If the UART port status changed, record it appropriately in the app_store.
+    # Checks if the UART port status changed, record it appropriately in the app_store.
     handle_uart_port_change(uart_port_name)
-
-    if n_clicks_send > 0:
-        logger.info(f"Send button clicked ({n_clicks_send=})")
 
     return generate_rx_tx_log()
 
@@ -163,6 +124,29 @@ def generate_rx_tx_log() -> html.Div:
     )
 
 
+@callback(
+    Output("uart-port-dropdown", "options"),
+    Output("uart-port-dropdown", "value"),
+    Input("uart-port-dropdown-interval-component", "n_intervals"),
+)
+def update_uart_port_dropdown(_n_intervals: int) -> dcc.Dropdown:
+    """Update the UART port dropdown with the available serial ports."""
+    port_name_list = list_serial_ports()
+    if app_store.uart_port_name not in ([*port_name_list, "disconnected"]):
+        logger.warning(
+            f"Force disconnecting from serial port in callback: {app_store.uart_port_name}"
+        )
+        app_store.uart_port_name = "disconnected"
+
+    return (
+        (
+            [{"label": "⛔ Disconnected ⛔", "value": "disconnected"}]
+            + [{"label": port, "value": port} for port in port_name_list]
+        ),
+        app_store.uart_port_name,
+    )
+
+
 def generate_left_pane() -> list:
     """Make the left pane of the GUI, to be put inside a col."""
     return [
@@ -177,6 +161,11 @@ def generate_left_pane() -> list:
                     ),
                     value="disconnected",
                     className="mb-3",  # Add margin bottom to the dropdown
+                ),
+                dcc.Interval(
+                    id="uart-port-dropdown-interval-component",
+                    interval=2500,  # in milliseconds
+                    n_intervals=0,
                 ),
             ],
         ),
@@ -223,7 +212,7 @@ def main() -> None:
                             generate_rx_tx_log(),
                             dcc.Interval(
                                 id="uart-update-interval-component",
-                                interval=250,  # in milliseconds
+                                interval=1000,  # in milliseconds
                                 n_intervals=0,
                             ),
                         ],
@@ -235,7 +224,10 @@ def main() -> None:
         fluid=True,  # Use a fluid container for full width
     )
 
+    start_uart_listener()
+
     app.run_server(debug=True)
+    logger.info("Dash app started and finished.")
 
 
 if __name__ == "__main__":
