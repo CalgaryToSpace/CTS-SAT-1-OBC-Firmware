@@ -124,7 +124,8 @@ uint8_t TCMDEXEC_get_all_configuration_variables(const uint8_t *args_str, TCMD_T
     snprintf(response_output_buf,
              response_output_buf_len,
              "%s\n\n%s\n\n%s\n\n%s\n\n%s",
-             header, integer_header, config_integer_table,
+             header,
+             integer_header, config_integer_table,
              string_header, config_string_table);
 
     return 0;
