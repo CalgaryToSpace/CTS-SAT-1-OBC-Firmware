@@ -175,21 +175,6 @@ uint8_t TCMDEXEC_hello_world(const uint8_t *args_str, TCMD_TelecommandChannel_en
     return 0;
 }
 
-uint8_t TCMDEXEC_heartbeat_off(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                               char *response_output_buf, uint16_t response_output_buf_len)
-{
-    TASK_heartbeat_is_on = 0;
-    snprintf(response_output_buf, response_output_buf_len, "Heartbeat OFF");
-    return 0;
-}
-
-uint8_t TCMDEXEC_heartbeat_on(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                              char *response_output_buf, uint16_t response_output_buf_len)
-{
-    TASK_heartbeat_is_on = 1;
-    snprintf(response_output_buf, response_output_buf_len, "Heartbeat ON");
-}
-
 uint8_t TCMDEXEC_set_configuration_variable(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len)
 {
@@ -208,25 +193,35 @@ uint8_t TCMDEXEC_get_configuration_variable(const uint8_t *args_str, TCMD_Teleco
 uint8_t TCMDEXEC_get_all_configuration_variables(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                  char *response_output_buf, uint16_t response_output_buf_len)
 {
-    const char *header = "Available Configuration Variables:\n\n";
-    snprintf(response_output_buf, response_output_buf_len, "%s", header);
+    // TODO: Deal with table which is too long, current thread has limited stack size,
+    // may need to increase or find other solution
 
-    strcat(response_output_buf, "Integer Configuration Variables:\n\n");
+    const char *header = "Available Configuration Variables:";
+    const char *integer_header = "Integer Configuration Variables:";
+    const char *string_header = "String Configuration Variables:";
 
     char config_integer_table[100];
     memset(config_integer_table, 0, 100);
     const uint16_t config_integer_table_size = CONFIG_print_integer_table(config_integer_table);
-    strncat(response_output_buf, config_integer_table, config_integer_table_size);
-
-    strcat(response_output_buf, "\n\n");
-
-    strcat(response_output_buf, "String Configuration Variables:\n\n");
 
     char config_string_table[100];
     memset(config_string_table, 0, 100);
     const uint16_t config_string_table_size = CONFIG_print_string_table(config_string_table);
-    strncat(response_output_buf, config_string_table, config_string_table_size);
 
+    snprintf(response_output_buf,
+             response_output_buf_len,
+             "%s\n\n%s\n\n%s\n\n%s\n\n%s",
+             header, integer_header, config_integer_table,
+             string_header, config_string_table);
+
+    return 0;
+}
+
+uint8_t TCMDEXEC_heartbeat_on(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                              char *response_output_buf, uint16_t response_output_buf_len)
+{
+    TASK_heartbeat_is_on = 1;
+    snprintf(response_output_buf, response_output_buf_len, "Heartbeat ON");
     return 0;
 }
 
