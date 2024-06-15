@@ -4,6 +4,11 @@
 #include "transforms/arrays.h"
 #include "unit_tests/unit_test_executor.h"
 
+// Additional telecommand definitions files:
+#include "telecommands/flash_telecommand_defs.h"
+#include "telecommands/lfs_telecommand_defs.h"
+
+
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
@@ -52,7 +57,69 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "available_telecommands",
         .tcmd_func = TCMDEXEC_available_telecommands,
         .number_of_args = 0,
-    }
+    },
+
+    // ****************** SECTION: flash_telecommand_defs ******************
+    {
+        .tcmd_name = "flash_activate_each_cs",
+        .tcmd_func = TCMDEXEC_flash_activate_each_cs,
+        .number_of_args = 0,
+    },
+    {
+        .tcmd_name = "flash_each_is_reachable",
+        .tcmd_func = TCMDEXEC_flash_each_is_reachable,
+        .number_of_args = 0,
+    },
+    {
+        .tcmd_name = "flash_read_hex",
+        .tcmd_func = TCMDEXEC_flash_read_hex,
+        .number_of_args = 3,
+    },
+    {
+        .tcmd_name = "flash_write_hex",
+        .tcmd_func = TCMDEXEC_flash_write_hex,
+        .number_of_args = 3,
+    },
+    {
+        .tcmd_name = "flash_erase",
+        .tcmd_func = TCMDEXEC_flash_erase,
+        .number_of_args = 2,
+    },
+    // ****************** END SECTION: flash_telecommand_defs ******************
+
+    // ****************** SECTION: lfs_telecommand_defs ******************
+    {
+        .tcmd_name = "fs_format_storage",
+        .tcmd_func = TCMDEXEC_fs_format_storage,
+        .number_of_args = 0,
+    },
+    {
+        .tcmd_name = "fs_mount",
+        .tcmd_func = TCMDEXEC_fs_mount,
+        .number_of_args = 0,
+    },
+    {
+        .tcmd_name = "fs_unmount",
+        .tcmd_func = TCMDEXEC_fs_unmount,
+        .number_of_args = 0,
+    },
+    {
+        .tcmd_name = "fs_write_file",
+        .tcmd_func = TCMDEXEC_fs_write_file,
+        .number_of_args = 2,
+    },
+    {
+        .tcmd_name = "fs_read_file",
+        .tcmd_func = TCMDEXEC_fs_read_file,
+        .number_of_args = 1,
+    },
+    {
+        .tcmd_name = "fs_demo_write_then_read",
+        .tcmd_func = TCMDEXEC_fs_demo_write_then_read,
+        .number_of_args = 0,
+    },
+    // ****************** END SECTION: lfs_telecommand_defs ******************
+
 };
 
 // extern

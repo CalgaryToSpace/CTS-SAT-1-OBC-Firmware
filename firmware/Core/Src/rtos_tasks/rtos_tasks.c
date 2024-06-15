@@ -136,14 +136,19 @@ void TASK_handle_uart_telecommands(void *argument) {
 			latest_tcmd[latest_tcmd_len] = '\0';
 			char response_buf[512];
 			memset(response_buf, 0, sizeof(response_buf));
-			tcmd_def.tcmd_func(
+			const uint8_t tcmd_result = tcmd_def.tcmd_func(
 				args_str_no_parens,
 				TCMD_TelecommandChannel_DEBUG_UART,
 				response_buf,
 				sizeof(response_buf));
 
 			// print back the response
-			DEBUG_uart_print_str("======== Response ========\n");
+			DEBUG_uart_print_str("======== Response (err=");
+			DEBUG_uart_print_uint32(tcmd_result);
+			if (tcmd_result != 0) {
+				DEBUG_uart_print_str(" !!!!!! ERROR !!!!!!");
+			}
+			DEBUG_uart_print_str(") ========\n");
 			DEBUG_uart_print_str(response_buf);
 			DEBUG_uart_print_str("\n==========================\n");
 			
