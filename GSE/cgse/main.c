@@ -412,6 +412,7 @@ int parse_input(CGSE_program_state_t *ps, int key)
                                 size_t tm_bytes_sent = 0;
                                 int mpi_firmware_page = 0;
                                 int mpi_firmware_bytes_sent = 0;
+                                int mpi_firmware_bytes_offset = 0;
                                 while (remaining_chars > 0)
                                 {
                                     chars_to_send = FIRMWARE_CHUNK_SIZE;    
@@ -419,7 +420,8 @@ int parse_input(CGSE_program_state_t *ps, int key)
                                     {
                                         chars_to_send = remaining_chars;
                                     }
-                                    tm_offset = snprintf(telemetry_buffer, COMMAND_BUFFER_SIZE, "%s+upload_mpi_firmware_page(%d,", ps->command_prefix, mpi_firmware_bytes_sent);
+                                    mpi_firmware_bytes_offset = mpi_firmware_bytes_sent;
+                                    tm_offset = snprintf(telemetry_buffer, COMMAND_BUFFER_SIZE, "%s+upload_mpi_firmware_page(%d,", ps->command_prefix, mpi_firmware_bytes_offset);
                                     memcpy(telemetry_buffer + tm_offset, p, chars_to_send);
                                     tm_offset += chars_to_send;
                                     //tm_offset += snprintf(telemetry_buffer + tm_offset, chars_to_send, "%s", p);
@@ -444,6 +446,7 @@ int parse_input(CGSE_program_state_t *ps, int key)
                                         double t2 = t1;
                                         int bytes_received = 0;
                                         bool got_page = false;
+                                        char expected_response[255] = {0};
                                         while ((t2-t1) < MPI_FIRMWARE_PAGE_TIMEOUT && !got_page)
                                         {
                                             usleep(100000);
@@ -451,8 +454,9 @@ int parse_input(CGSE_program_state_t *ps, int key)
                                             bytes_received += new_bytes;
                                             if (new_bytes > 0)
                                             {
-                                                char *expected = "Received MPI firmware page";
-                                                if (strncmp(expected, (char*)ps->receive_buffer, strlen(expected)) == 0)
+                                                snprintf(expected_response, 255, "Received MPI firmware page. Wrote %d bytes to \"%s\" at address %d", mpi_firmware_bytes_sent, arg_vector[1], mpi_firmware_bytes_offset);
+                                                //if (strncmp(expected_response, (char*)ps->receive_buffer, strlen(expected_response)) == 0)
+                                                if (strncmp(expected_response, (char*)ps->receive_buffer, 12) == 0)
                                                 {
                                                     CGSE_time_string(ps->time_buffer);
                                                     got_page = true;
@@ -469,7 +473,7 @@ int parse_input(CGSE_program_state_t *ps, int key)
                                         }
                                         if (!got_page)
                                         {
-                                            wprintw(ps->command_window, "\nDid not receive reply after. Aborting...");
+                                            wprintw(ps->command_window, "\nDid not receive reply. Aborting firmware upload...");
                                             break;
                                         }
                                     }
