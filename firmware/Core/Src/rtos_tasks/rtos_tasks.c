@@ -12,7 +12,7 @@
 #include <string.h>
 #include <stdio.h>
 
-volatile uint8_t TASK_heartbeat_is_on = 1;
+volatile uint8_t TASK_heartbeat_is_on = 0;
 
 void TASK_DEBUG_print_heartbeat(void *argument) {
 	TASK_HELP_start_of_task();
