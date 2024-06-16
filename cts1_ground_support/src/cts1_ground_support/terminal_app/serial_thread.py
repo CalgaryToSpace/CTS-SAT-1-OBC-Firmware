@@ -37,6 +37,7 @@ def uart_listener() -> None:
                         tx_data = app_store.tx_queue.pop(0)
                         port.write(tx_data)
                         app_store.rxtx_log.append(RxTxLogEntry(tx_data, "transmit"))
+                        app_store.last_tx_timestamp_sec = time.time()
 
                     time.sleep(0.01)
 

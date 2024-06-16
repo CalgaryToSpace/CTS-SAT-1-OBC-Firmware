@@ -15,9 +15,11 @@ class AppStore:
         default_factory=lambda: [RxTxLogEntry(b"Start of Log", "notice")]
     )
     start_timestamp_sec: float = field(default_factory=time.time)
+    last_tx_timestamp_sec: float = 0
     tx_queue: list[bytes] = field(default_factory=list)
 
     selected_command_name: str | None = None
+    uart_log_refresh_rate_ms: int = 500
 
 
 app_store = AppStore()

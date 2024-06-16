@@ -1,14 +1,24 @@
 """Helpers for dealing with raw bytes, displaying them, etc."""
 
 
+def format_byte_as_hex(b: int) -> str:
+    """Format a byte as a 2-character hex string.
+
+    Example: 1 -> "[0x01]"
+    """
+    return f"[0x{hex(b)[2:].upper().zfill(2)}]"
+
+
 def bytes_to_nice_str(byte_obj: bytes) -> str:
-    """Print a byte object as hex or ASCII, whichever is better.
+    """Convert a 'bytes' object to hex and ASCII/UTF-8, whichever is better for each character.
 
     Example print: [0xDA][0xBE]INFO: boot complete[0xDA][0xED]
     """
     out: str = ""
     for b in byte_obj:
         # Check if it's a printable ASCII character.
+        # 'b' is an int.
+
         if b == 0x0A:  # noqa: PLR2004 (magic number 0x0A=newline)
             out += "↴\n"  # ↴ (DOWNWARDS ARROW WITH CORNER LEFTWARDS) - Unicode: U+21B4
         elif b == 0x0D:  # noqa: PLR2004 (magic number 0x0D=carriage return)
@@ -16,8 +26,13 @@ def bytes_to_nice_str(byte_obj: bytes) -> str:
         elif 0x20 <= b <= 0x7E:  # noqa: PLR2004
             out += bytes([b]).decode("ascii")
         else:
-            hex_repr = hex(b)  # like '0XA'
-            hex_repr = hex_repr.upper().replace("0X", "").zfill(2)
-            hex_repr = f"0x{hex_repr}"
-            out += f"[{hex_repr}]"
+            out += format_byte_as_hex(b)
+
+    # Convert some Unicode characters back to unicode (e.g., for unit tests).
+    good_unicode_chars = {"✔️", "✅", "❌"}
+    for char in good_unicode_chars:
+        char_as_bytes = char.encode("utf-8")
+        find_str = "".join(format_byte_as_hex(b) for b in char_as_bytes)
+        out = out.replace(find_str, char)
+
     return out

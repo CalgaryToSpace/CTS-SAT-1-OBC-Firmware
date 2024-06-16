@@ -9,6 +9,7 @@ The main screen has the following components:
 
 import argparse
 import functools
+import time
 
 import dash
 import dash_bootstrap_components as dbc
@@ -25,10 +26,8 @@ from cts1_ground_support.terminal_app.serial_thread import start_uart_listener
 
 UART_PORT_OPTION_LABEL_DISCONNECTED = "⛔ Disconnected ⛔"
 
-# TODO: log UART comms to a file
+# TODO: log the UART comms to a file
 # TODO: add a "Jump to Bottom" button, if scrolled up at all
-# TODO: setup variable polling interval: poll frequently right after sending a command, then slow
-# TODO: render the unit test check marks correct (instead of as hex), if we want
 
 
 @functools.lru_cache  # cache forever is fine
@@ -156,6 +155,7 @@ def send_button_callback(
     logger.info(f"Adding command to queue: {selected_command_name}{args}")
 
     command_str = f"CTS1+{selected_command_name}({','.join(args)})!"
+    app_store.last_tx_timestamp_sec = time.time()
     app_store.tx_queue.append(command_str.encode("ascii"))
 
 
@@ -213,6 +213,7 @@ def generate_rx_tx_log() -> html.Div:
 # Should be the last callback in the file, as other callbacks modify the log.
 @callback(
     Output("rx-tx-log-container", "children"),
+    Output("uart-update-interval-component", "interval"),
     Input("uart-port-dropdown", "value"),
     Input("send-button", "n_clicks"),
     Input("clear-log-button", "n_clicks"),
@@ -224,8 +225,22 @@ def update_uart_log_interval(
     _n_clicks_clear_logs: int,
     _update_interval_count: int,
 ) -> html.Div:
-    """Update the UART log at the specified interval."""
-    return generate_rx_tx_log()
+    """Update the UART log at the specified interval. Also, update the refresh interval."""
+    sec_since_send = time.time() - app_store.last_tx_timestamp_sec
+    if sec_since_send < 10:  # noqa: PLR2004
+        # Rapid refreshed right after sending a command.
+        app_store.uart_log_refresh_rate_ms = 250
+    elif sec_since_send < 60:  # noqa: PLR2004
+        # Chill if it's been a while since the last command.
+        app_store.uart_log_refresh_rate_ms = 800
+    else:
+        # Slow down if it's been a long time since the last command.
+        app_store.uart_log_refresh_rate_ms = 2000
+
+    return (
+        generate_rx_tx_log(),  # new log entries
+        app_store.uart_log_refresh_rate_ms,  # new refresh interval
+    )
 
 
 def generate_left_pane() -> list:
@@ -295,9 +310,16 @@ def generate_left_pane() -> list:
 
 def run_dash_app(*, enable_debug: bool = False) -> None:
     """Run the main Dash application."""
+    app_name = "CTS-SAT-1 Ground Support"
     app = dash.Dash(
-        "CTS-SAT-1 Ground Support",
+        app_name,
         external_stylesheets=[dbc.themes.BOOTSTRAP],
+        title=app_name,
+        update_title=(
+            # Disable the update title, unless we're debugging.
+            # Makes it look cleaner overall.
+            "Updating..." if enable_debug else None
+        ),
     )
 
     app.layout = dbc.Container(
