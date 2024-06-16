@@ -73,7 +73,7 @@ int8_t LFS_format()
 int8_t LFS_mount()
 {
 	if (LFS_is_lfs_mounted) {
-		DEBUG_uart_print_str("LittleFS already mounted!\n");
+//		DEBUG_uart_print_str("LittleFS already mounted!\n");
 		return 1;
 	}
 
@@ -81,11 +81,11 @@ int8_t LFS_mount()
     int8_t mount_result = lfs_mount(&lfs, &cfg);
     if (mount_result < 0)
     {
-        DEBUG_uart_print_str("Mounting unsuccessful\n");
+//        DEBUG_uart_print_str("Mounting unsuccessful\n");
         return mount_result;
     }
 
-    DEBUG_uart_print_str("Mounting successful\n");
+//    DEBUG_uart_print_str("Mounting successful\n");
     LFS_is_lfs_mounted = 1;
     return 0;
 }
@@ -99,7 +99,7 @@ int8_t LFS_unmount()
 {
     if (!LFS_is_lfs_mounted)
     {
-        DEBUG_uart_print_str("LittleFS not mounted.\n");
+//        DEBUG_uart_print_str("LittleFS not mounted.\n");
         return 1;
     }
 
@@ -107,11 +107,11 @@ int8_t LFS_unmount()
     const int8_t unmount_result = lfs_unmount(&lfs);
     if (unmount_result < 0)
     {
-        DEBUG_uart_print_str("Error un-mounting.\n");
+//        DEBUG_uart_print_str("Error un-mounting.\n");
         return unmount_result;
     }
 
-    DEBUG_uart_print_str("Successfully un-mounted LittleFS.\n");
+//    DEBUG_uart_print_str("Successfully un-mounted LittleFS.\n");
     LFS_is_lfs_mounted = 0;
     return 0;
 }
@@ -125,7 +125,7 @@ int8_t LFS_list_directory(char *root_directory)
 {
     if (!LFS_is_lfs_mounted)
     {
-        DEBUG_uart_print_str("LittleFS not mounted.\n");
+//        DEBUG_uart_print_str("LittleFS not mounted.\n");
         return 1;
     }
 
