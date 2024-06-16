@@ -27,7 +27,9 @@ from cts1_ground_support.terminal_app.serial_thread import start_uart_listener
 UART_PORT_OPTION_LABEL_DISCONNECTED = "⛔ Disconnected ⛔"
 
 # TODO: log the UART comms to a file
-# TODO: add a "Jump to Bottom" button, if scrolled up at all
+# TODO: fix the connect/disconnect loop when multiple clients are connected
+#   ^ Ideas: Add an "Apply" button to change the port, or a mechanism where the "default-on-load"
+#            value comes from the app_store's latest connected port (esp on load).
 
 
 @functools.lru_cache  # cache forever is fine
@@ -80,7 +82,7 @@ def update_argument_inputs(selected_command_name: str) -> list[html.Div]:
                     id=(this_id := f"arg-input-{arg_num}"),
                     placeholder=f"Argument {arg_num}",
                     disabled=(arg_num >= selected_tcmd.number_of_args),
-                    style={"font-family": "monospace"},
+                    style={"fontFamily": "monospace"},
                 ),
                 dbc.Label(f"Argument {arg_num}", html_for=this_id),
             ],
@@ -202,7 +204,7 @@ def generate_rx_tx_log() -> html.Div:
     """Generate the RX/TX log, which shows the most recent received and transmitted messages."""
     return html.Div(
         [
-            html.P(entry.text, style=entry.css_style | {"margin": "0", "line-height": "1.1"})
+            html.P(entry.text, style=(entry.css_style | {"margin": "0", "lineHeight": "1.1"}))
             for entry in (app_store.rxtx_log)
         ],
         id="rx-tx-log",
@@ -279,7 +281,7 @@ def generate_left_pane() -> list:
                     options=[{"label": cmd, "value": cmd} for cmd in get_telecommand_name_list()],
                     value=get_telecommand_name_list()[0],
                     className="mb-3",  # Add margin bottom to the dropdown
-                    style={"font-family": "monospace"},
+                    style={"fontFamily": "monospace"},
                 ),
             ],
         ),
@@ -312,7 +314,7 @@ def run_dash_app(*, enable_debug: bool = False) -> None:
     """Run the main Dash application."""
     app_name = "CTS-SAT-1 Ground Support"
     app = dash.Dash(
-        app_name,
+        __name__,  # required to load /assets folder
         external_stylesheets=[dbc.themes.BOOTSTRAP],
         title=app_name,
         update_title=(
@@ -329,7 +331,7 @@ def run_dash_app(*, enable_debug: bool = False) -> None:
                     dbc.Col(
                         generate_left_pane(),
                         width=3,
-                        style={"height": "100vh", "overflow-y": "scroll"},
+                        style={"height": "100vh", "overflowY": "scroll"},
                         class_name="p-3",
                     ),
                     dbc.Col(
@@ -338,11 +340,11 @@ def run_dash_app(*, enable_debug: bool = False) -> None:
                                 generate_rx_tx_log(),
                                 id="rx-tx-log-container",
                                 style={
-                                    "font-family": "monospace",
-                                    "background-color": "black",
+                                    "fontFamily": "monospace",
+                                    "backgroundColor": "black",
                                     "height": "100%",
                                     "overflowY": "auto",
-                                    "flex-direction": "column-reverse",
+                                    "flexDirection": "column-reverse",
                                     "display": "flex",
                                 },
                             ),
@@ -353,9 +355,21 @@ def run_dash_app(*, enable_debug: bool = False) -> None:
                             ),
                         ],
                         width=9,
-                        style={"height": "100vh", "overflow-y": "scroll"},
+                        style={"height": "100vh", "overflowY": "scroll"},
                     ),
                 ],
+            ),
+            dbc.Button(
+                "Jump to Bottom ⬇️",
+                id="scroll-to-bottom-button",
+                style={
+                    "display": "none",
+                    "position": "fixed",
+                    "bottom": "20px",
+                    "right": "60px",
+                    "zIndex": "99",
+                },
+                color="danger",
             ),
         ],
         fluid=True,  # Use a fluid container for full width
