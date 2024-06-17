@@ -6,23 +6,23 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Change path from /src if needed, or add more directories
 file(GLOB_RECURSE sources
-        "${CMAKE_SOURCE_DIR}/Core/*.c"
-        "${CMAKE_SOURCE_DIR}/Drivers/*.c"
-        "${CMAKE_SOURCE_DIR}/Middlewares/*.c"
+        "${CMAKE_SOURCE_DIR}/firmware/Core/*.c"
+        "${CMAKE_SOURCE_DIR}/firmware/Drivers/*.c"
+        "${CMAKE_SOURCE_DIR}/firmware/Middlewares/*.c"
         )
 # Add precompiler definitions like that:
 add_definitions(-DSTM32L4R5xx -DUSE_HAL_DRIVER -DDEBUG=1 -DTARGET=CTS-SAT-1_FW)
 
-add_executable(my_app ${sources})
+add_executable(ctssat1 ${sources})
 
 # Add more include directories if needed
-target_include_directories(my_app PUBLIC "${CMAKE_SOURCE_DIR}/Core/Inc"
-    "${CMAKE_SOURCE_DIR}/Drivers/STM32L4xx_HAL_Driver/Inc"
-    "${CMAKE_SOURCE_DIR}/Drivers/CMSIS/Device/ST/STM32L4xx/Include"
-    "${CMAKE_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2"
-    "${CMAKE_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/include"
-    "${CMAKE_SOURCE_DIR}/Drivers/MPI/Inc"
-    "${CMAKE_SOURCE_DIR}/Drivers/CMSIS/Include"
+target_include_directories(ctssat1 PUBLIC "${CMAKE_SOURCE_DIR}/firmware/Core/Inc"
+    "${CMAKE_SOURCE_DIR}/firmware/Drivers/STM32L4xx_HAL_Driver/Inc"
+    "${CMAKE_SOURCE_DIR}/firmware/Drivers/CMSIS/Device/ST/STM32L4xx/Include"
+    "${CMAKE_SOURCE_DIR}/firmware/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2"
+    "${CMAKE_SOURCE_DIR}/firmware/Middlewares/Third_Party/FreeRTOS/Source/include"
+    "${CMAKE_SOURCE_DIR}/firmware/Drivers/MPI/Inc"
+    "${CMAKE_SOURCE_DIR}/firmware/Drivers/CMSIS/Include"
     )
 
 # If you have precompiled headers you can add them like this
