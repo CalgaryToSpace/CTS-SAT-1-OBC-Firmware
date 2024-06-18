@@ -179,7 +179,7 @@ int8_t LFS_list_directory(char *root_directory)
  * @param file_name Pointer to cstring holding the file name to remove
  * @retval 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
  */
-int8_t LFS_delete_file(char *file_name)
+int8_t LFS_delete_file(const char file_name[])
 {
     if (!LFS_is_lfs_mounted)
     {
@@ -229,7 +229,7 @@ int8_t LFS_make_directory(char *dir_name)
  * @param write_buffer_len - Size of the data to write
  * @retval 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
  */
-int8_t LFS_write_file(char *file_name, uint8_t *write_buffer, uint32_t write_buffer_len)
+int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t write_buffer_len)
 {
     if (!LFS_is_lfs_mounted)
     {
@@ -287,7 +287,7 @@ int8_t LFS_write_file(char *file_name, uint8_t *write_buffer, uint32_t write_buf
  * @param read_buffer_len - Size of the data to read
  * @retval Returns negative values if read or file open failed, else return 0
  */
-int8_t LFS_read_file(char *file_name, uint8_t *read_buffer, uint32_t read_buffer_len)
+int8_t LFS_read_file(const char file_name[], uint8_t *read_buffer, uint32_t read_buffer_len)
 {
 	lfs_file_t file;
 	const int8_t open_result = lfs_file_open(&lfs, &file, file_name, LFS_O_RDONLY);

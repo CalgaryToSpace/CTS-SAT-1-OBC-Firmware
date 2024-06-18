@@ -135,6 +135,11 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_func = TCMDEXEC_fs_demo_write_then_read,
         .number_of_args = 0,
     },
+    {
+        .tcmd_name = "fs_benchmark_write_read",
+        .tcmd_func = TCMDEXEC_fs_benchmark_write_read,
+        .number_of_args = 2,
+    },
     // ****************** END SECTION: lfs_telecommand_defs ******************
 
 };
