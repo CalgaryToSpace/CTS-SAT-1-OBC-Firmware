@@ -121,8 +121,15 @@ void TASK_handle_uart_telecommands(void *argument) {
 
 			// TODO: maybe log/print args too
 			
-			uint8_t args_str_no_parens[end_of_args_idx - start_of_args_idx + 2];
-			memcpy(args_str_no_parens, &latest_tcmd[start_of_args_idx+1], end_of_args_idx - start_of_args_idx - 1);
+            // This is not valid initialization of an array. This would have
+            // to be malloc'd or a max size would be declared
+			//uint8_t args_str_no_parens[end_of_args_idx - start_of_args_idx + 2];
+            uint8_t args_str_no_parens[TASK_MAX_ARG_LIST_SIZE];
+            int32_t command_n_chars = end_of_args_idx - (start_of_args_idx + 1);
+            if (command_n_chars > TASK_MAX_ARG_LIST_SIZE - 1) {
+                command_n_chars = TASK_MAX_ARG_LIST_SIZE - 1;
+            }
+			memcpy(args_str_no_parens, &latest_tcmd[start_of_args_idx+1], command_n_chars);
 			args_str_no_parens[end_of_args_idx - 1] = '\0';
 
 			// TODO: parse out the @tssent=xx (timestamp sent) and ensure it's not a duplicate

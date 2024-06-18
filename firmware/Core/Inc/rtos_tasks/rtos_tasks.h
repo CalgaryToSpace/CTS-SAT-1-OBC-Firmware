@@ -5,6 +5,9 @@
 #include "main.h"
 #include "rtos_tasks/rtos_task_helpers.h"
 
+// TODO: how large should this be?
+#define TASK_MAX_ARG_LIST_SIZE 512
+
 void TASK_DEBUG_print_heartbeat(void *argument);
 
 void TASK_handle_uart_telecommands(void *argument);
