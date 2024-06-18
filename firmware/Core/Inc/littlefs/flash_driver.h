@@ -13,7 +13,7 @@
 #include "littlefs/lfs.h"
 
 
-/*-----------------------------INCLUDES-----------------------------*/
+/*----------------------------- CONFIG VARIABLES ----------------------------- */
 
 // number of CS pins available
 #define FLASH_NUMBER_OF_FLASH_DEVICES 8 // TODO: update to 8, or 10 with FRAM maybe
