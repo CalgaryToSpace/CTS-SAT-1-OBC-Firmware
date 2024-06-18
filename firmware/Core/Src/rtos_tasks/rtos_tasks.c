@@ -130,7 +130,7 @@ void TASK_handle_uart_telecommands(void *argument) {
                 command_n_chars = TASK_MAX_ARG_LIST_SIZE - 1;
             }
 			memcpy(args_str_no_parens, &latest_tcmd[start_of_args_idx+1], command_n_chars);
-			args_str_no_parens[end_of_args_idx - 1] = '\0';
+			args_str_no_parens[command_n_chars] = '\0';
 
 			// TODO: parse out the @tssent=xx (timestamp sent) and ensure it's not a duplicate
 			// TODO: parse out the @tsexec=xx (timestamp to execute at) and see if it should be run immediately or queued (and add a queue system)
