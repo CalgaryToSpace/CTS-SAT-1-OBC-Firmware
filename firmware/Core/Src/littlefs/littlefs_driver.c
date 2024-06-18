@@ -59,11 +59,12 @@ int LFS_block_device_erase(const struct lfs_config *c, lfs_block_t block)
 
 /**
  * @brief LittleFS sync function
- * @param LittleFS Configurations
- * @retval int - 0 since this function isn't used
+ * @param c - LittleFS Configuration
+ * @retval int - 0 since we are not caching reads or writes
  */
 int LFS_block_device_sync(const struct lfs_config *c)
 {
+	// Per the README:
+	// If the write function does not perform caching, and therefore each read or write call hits the memory, the sync function can simply return 0.
 	return 0;
 }
-
