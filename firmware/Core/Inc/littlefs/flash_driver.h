@@ -59,7 +59,7 @@ uint8_t FLASH_read_status_register(SPI_HandleTypeDef *hspi, uint8_t chip_number,
 uint8_t FLASH_write_enable(SPI_HandleTypeDef *hspi, uint8_t chip_number);
 uint8_t FLASH_write_disable(SPI_HandleTypeDef *hspi, uint8_t chip_number);
 uint8_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t addr);
-uint8_t FLASH_write(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t addr, uint8_t *packet_buffer, lfs_size_t size);
+uint8_t FLASH_write(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t addr, uint8_t *packet_buffer, lfs_size_t packet_buffer_len);
 uint8_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t addr, uint8_t *rx_buffer, lfs_size_t rx_buffer_len);
 
 uint8_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_number);
