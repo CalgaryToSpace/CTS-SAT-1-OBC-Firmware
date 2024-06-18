@@ -7,6 +7,12 @@
 #include "littlefs/littlefs_driver.h"
 #include "debug_tools/debug_uart.h"
 
+
+#include "config/static_config.h"
+#ifndef LFS_ENABLE_UART_DEBUG_PRINT
+    #error "LFS_ENABLE_UART_DEBUG_PRINT not defined in static_config.h"
+#endif
+
 /*-----------------------------VARIABLES-----------------------------*/
 // Variables to track LittleFS on Flash Memory Module
 uint8_t LFS_is_lfs_mounted = 0;
@@ -270,7 +276,7 @@ int8_t LFS_write_file(char *file_name, uint8_t *write_buffer, uint32_t write_buf
     #if LFS_ENABLE_UART_DEBUG_PRINT
 	DEBUG_uart_print_str("Successfully closed the file!\n");
     #endif
-    
+
 	return 0;
 }
 
