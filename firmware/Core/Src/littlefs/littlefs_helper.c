@@ -25,6 +25,7 @@ uint8_t LFS_is_lfs_mounted = 0;
 uint8_t LFS_read_buffer[FLASH_CHIP_PAGE_SIZE_BYTES];
 uint8_t LFS_prog_buffer[FLASH_CHIP_PAGE_SIZE_BYTES];
 uint8_t LFS_lookahead_buf[16];
+uint8_t LFS_file_buffer[FLASH_CHIP_PAGE_SIZE_BYTES];
 
 // TODO: look into the `LFS_F_INLINE` macro to increase the maximum number of files we can have
 
@@ -49,6 +50,11 @@ struct lfs_config cfg = {
     .read_buffer = LFS_read_buffer,
     .prog_buffer = LFS_prog_buffer,
     .lookahead_buffer = LFS_lookahead_buf};
+
+struct lfs_file_config file_cfg = {
+    .buffer = LFS_file_buffer,
+    .attr_count = 0,
+    .attrs = NULL};
 
 // -----------------------------LITTLEFS FUNCTIONS-----------------------------
 
@@ -239,7 +245,7 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
 
     // Create or Open a file with Write only flag
     lfs_file_t file;
-    const int8_t open_result = lfs_file_open(&lfs, &file, file_name, LFS_O_WRONLY | LFS_O_CREAT);
+    const int8_t open_result = lfs_file_opencfg(&lfs, &file, file_name, LFS_O_WRONLY | LFS_O_CREAT, &file_cfg);
 
 	if (open_result < 0)
 	{
@@ -290,7 +296,7 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
 int8_t LFS_read_file(const char file_name[], uint8_t *read_buffer, uint32_t read_buffer_len)
 {
 	lfs_file_t file;
-	const int8_t open_result = lfs_file_open(&lfs, &file, file_name, LFS_O_RDONLY);
+	const int8_t open_result = lfs_file_opencfg(&lfs, &file, file_name, LFS_O_RDONLY, &file_cfg);
 	if (open_result < 0)
 	{
 		DEBUG_uart_print_str("Error opening file to read\n");

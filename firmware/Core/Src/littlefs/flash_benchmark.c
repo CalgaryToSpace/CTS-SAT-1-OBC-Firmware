@@ -4,6 +4,7 @@
 #include "littlefs/flash_driver.h"
 
 #include <string.h>
+#include <stdio.h>
 
 SPI_HandleTypeDef *hspi_ptr = &hspi1;
 
