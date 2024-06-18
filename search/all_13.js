@@ -126,5 +126,5 @@ var searchData=
   ['prog_5fbuffer_123',['prog_buffer',['../structlfs__config.html#a8f4cc43d08071d32b52c5106dac3cb56',1,'lfs_config']]],
   ['prog_5fsize_124',['prog_size',['../structlfs__config.html#aae1956189539d586e3dcd68af5460199',1,'lfs_config']]],
   ['ptag_125',['ptag',['../structlfs__dir__traverse.html#a5b5f3a68d6efc4b69f3ea16bb6f46dd9',1,'lfs_dir_traverse::ptag'],['../structlfs__commit.html#a99930b9579a13b93b3165e5ed195c9eb',1,'lfs_commit::ptag']]],
-  ['python_20serial_20terminal_126',['Python Serial Terminal',['../md_README.html#autotoc_md42',1,'']]]
+  ['python_20serial_20terminal_126',['Python Serial Terminal',['../md_README.html#autotoc_md43',1,'']]]
 ];

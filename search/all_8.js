@@ -16,7 +16,7 @@ var searchData=
   ['clock_20source_20msi_13',['System Clock source                    | MSI',['../system__stm32l4xx_8c.html#autotoc_md19',1,'']]],
   ['cmsis_14',['CMSIS',['../group__CMSIS.html',1,'']]],
   ['cmsis_5fdevice_5fheader_15',['CMSIS_device_header',['../FreeRTOSConfig_8h.html#ad6db6908b5ef4d6a4f5423a39f1a4392',1,'FreeRTOSConfig.h']]],
-  ['code_16',['Code',['../md_README.html#autotoc_md38',1,'Developing with VS Code'],['../md_docs_2C__Namespaces.html#autotoc_md6',1,'General Code']]],
+  ['code_16',['Code',['../md_README.html#autotoc_md39',1,'Developing with VS Code'],['../md_docs_2C__Namespaces.html#autotoc_md6',1,'General Code']]],
   ['coding_20practices_17',['Best Coding Practices',['../md_docs_2C__General__Guidelines.html#autotoc_md2',1,'']]],
   ['command_20format_18',['Command Format',['../md_docs_2Telecommand__Spec.html#autotoc_md16',1,'']]],
   ['commit_19',['commit',['../structlfs__dir__commit__commit.html#ad2bb233da97eb1f673658062d910d614',1,'lfs_dir_commit_commit']]],
