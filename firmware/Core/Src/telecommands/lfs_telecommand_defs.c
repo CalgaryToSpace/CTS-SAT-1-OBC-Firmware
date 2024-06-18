@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 #include "littlefs/littlefs_helper.h"
+#include "littlefs/littlefs_benchmark.h"
 #include "telecommands/telecommand_definitions.h"
 #include "telecommands/telecommand_args_helpers.h"
 
@@ -147,5 +148,38 @@ uint8_t TCMDEXEC_fs_demo_write_then_read(const char *args_str, TCMD_TelecommandC
         response_output_buf, response_output_buf_len,
         "LittleFS Successfully Read File '%s'. System uptime: %lu, File Content: '%s'!",
         file_name, HAL_GetTick(), (char*)read_buffer);
+    return 0;
+}
+
+/// @brief Telecommand: Benchmark LittleFS write and read operations
+/// @param args_str Arg 0: Write chunk size, Arg 1: Write chunk count
+/// @return 0 on success, 1 if error parsing args, 2 if benchmark failed
+/// @note The maximum write chunk size is 127 bytes, apparently; need to investigate why so small.
+uint8_t TCMDEXEC_fs_benchmark_write_read(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    uint64_t arg_write_chunk_size, arg_write_chunk_count;
+
+    const uint8_t parse_write_chunk_size_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 0, &arg_write_chunk_size);
+    const uint8_t parse_write_chunk_count_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 1, &arg_write_chunk_count);
+    if (parse_write_chunk_size_result != 0 || parse_write_chunk_count_result != 0) {
+        // error parsing
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing write chunk size arg: Arg 0 Err=%d, Arg 1 Err=%d", parse_write_chunk_size_result, parse_write_chunk_count_result);
+        return 1;
+    }
+
+    const int8_t benchmark_result = LFS_benchmark_write_read(arg_write_chunk_size, arg_write_chunk_count, response_output_buf, response_output_buf_len);
+    response_output_buf[response_output_buf_len - 1] = '\0'; // ensure null-terminated
+
+    if (benchmark_result != 0) {
+        snprintf(
+            &response_output_buf[strlen(response_output_buf)],
+            response_output_buf_len - strlen(response_output_buf) - 1,
+            "Benchmark failed. Error: %d", benchmark_result);
+        return 2;
+    }
     return 0;
 }
