@@ -2,10 +2,13 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#include "debug_tools/debug_uart.h"
+#include "littlefs/lfs.h"
 #include "littlefs/littlefs_helper.h"
 #include "telecommands/telecommand_definitions.h"
 #include "telecommands/telecommand_args_helpers.h"
 
+extern lfs_t lfs;
 
 uint8_t TCMDEXEC_fs_format_storage(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
@@ -102,6 +105,53 @@ uint8_t TCMDEXEC_fs_read_file(const uint8_t *args_str, TCMD_TelecommandChannel_e
     }
     
     snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Read File '%s': '%s'!", arg_file_name, rx_buffer);
+    return 0;
+}
+
+uint8_t TCMDEXEC_fs_ls_dir(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+
+    // args_str points to the first character of the first argument
+
+    char arg_dir_name[64] = {0};
+    const uint8_t parse_dir_name_result = TCMD_extract_string_arg((char*)args_str, 0, arg_dir_name, sizeof(arg_dir_name));
+    if (parse_dir_name_result != 0) {
+        // error parsing
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing dir name arg: Error %d", parse_dir_name_result);
+        return 1;
+    }
+
+    // Based on https://github.com/littlefs-project/littlefs/issues/2
+    lfs_dir_t dir = {0};
+    int8_t result = lfs_dir_open(&lfs, &dir, arg_dir_name);
+    if (result < 0) {
+        snprintf(response_output_buf, response_output_buf_len, "LittleFS error reading dir '%s': %d", arg_dir_name, result);
+        return 1;
+    }
+
+    struct lfs_info info = {0};
+    const char item[512] = {0};
+    while (1) {
+        int read_result = lfs_dir_read(&lfs, &dir, &info);
+        if (read_result < 0) {
+            return 1;
+        }
+        if (read_result == 0) {
+            break;
+        }
+        snprintf((char*)item, 512, "%s%s\n", info.name, info.type == LFS_TYPE_DIR ? "/" : "");
+        DEBUG_uart_print_str(item);
+    }
+    response_output_buf[0] = '\0';
+
+    int close_result = lfs_dir_close(&lfs, &dir);
+    if (close_result) {
+        return 1;
+    }
+
     return 0;
 }
 
