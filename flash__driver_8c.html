@@ -209,6 +209,63 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <p>Activates the chip select for the given chip number by setting the corresponding GPIO pins LOW. Deactivates all other chip selects by setting their corresponding GPIO pins HIGH. </p><dl class="section return"><dt>Returns</dt><dd>None - GPIO writes can't fail </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="flash__driver_8c_aaaeb3d0b88da2a9d8f8e4b25252f34fa_cgraph.png" border="0" usemap="#aflash__driver_8c_aaaeb3d0b88da2a9d8f8e4b25252f34fa_cgraph" alt=""/></div>
+<map name="aflash__driver_8c_aaaeb3d0b88da2a9d8f8e4b25252f34fa_cgraph" id="aflash__driver_8c_aaaeb3d0b88da2a9d8f8e4b25252f34fa_cgraph">
+<area shape="rect" title="Activates the chip select for the given flash module number." alt="" coords="5,5,155,46"/>
+<area shape="rect" href="flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="203,5,366,46"/>
+<area shape="poly" title=" " alt="" coords="155,23,187,23,187,28,155,28"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="flash__driver_8c_aaaeb3d0b88da2a9d8f8e4b25252f34fa_icgraph.png" border="0" usemap="#aflash__driver_8c_aaaeb3d0b88da2a9d8f8e4b25252f34fa_icgraph" alt=""/></div>
+<map name="aflash__driver_8c_aaaeb3d0b88da2a9d8f8e4b25252f34fa_icgraph" id="aflash__driver_8c_aaaeb3d0b88da2a9d8f8e4b25252f34fa_icgraph">
+<area shape="rect" title="Activates the chip select for the given flash module number." alt="" coords="866,226,1015,267"/>
+<area shape="rect" href="flash__driver_8c.html#ac53f82844342cb2cac29aeb17a58ef91" title="Sends Sector Erase Command." alt="" coords="242,31,346,56"/>
+<area shape="poly" title=" " alt="" coords="913,215,871,167,845,143,816,122,760,89,709,65,662,50,617,41,570,37,518,37,394,41,347,43,346,38,394,36,518,32,570,32,617,36,664,45,711,60,762,84,819,117,848,139,874,163,917,211"/>
+<area shape="rect" href="flash__driver_8c.html#a79ed6b376c80e357517301def2d68ae6" title=" " alt="" coords="650,288,795,314"/>
+<area shape="poly" title=" " alt="" coords="852,271,778,290,776,285,850,266"/>
+<area shape="rect" href="flash__driver_8c.html#aff72a1d6168435b6501e86654d360984" title="Sends Page Program Command." alt="" coords="658,348,787,374"/>
+<area shape="poly" title=" " alt="" coords="901,278,862,304,819,329,767,350,765,345,816,324,859,299,898,273"/>
+<area shape="rect" href="flash__driver_8c.html#ae1eebdf2ce8dc00d9d493e081b45090b" title="Read Status Register and store the values in given buffer." alt="" coords="627,132,818,158"/>
+<area shape="poly" title=" " alt="" coords="893,220,817,179,768,161,770,156,819,174,895,215"/>
+<area shape="rect" href="flash__driver_8c.html#acc16450ecc997ae57ca44b584ebd5231" title="Sends Page Program Command." alt="" coords="244,183,344,208"/>
+<area shape="poly" title=" " alt="" coords="851,250,642,246,517,238,394,223,339,212,340,206,394,218,518,233,642,241,851,245"/>
+<area shape="rect" href="flash__driver_8c.html#aa7d103560997c3a7415f78d114575f30" title="Sends Write Enable Command." alt="" coords="414,183,559,208"/>
+<area shape="poly" title=" " alt="" coords="850,235,817,230,559,204,560,199,818,225,851,229"/>
+<area shape="rect" href="flash__telecommand__defs_8c.html#a93619d65d9ee373fda111a30e72473fd" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="633,398,812,439"/>
+<area shape="poly" title=" " alt="" coords="920,281,878,336,850,364,819,388,799,400,796,395,816,384,846,360,874,332,916,278"/>
+<area shape="rect" href="littlefs__driver_8c.html#ac92d3429222f40c34643f2969b93060a" title="LittleFS erase function." alt="" coords="15,55,184,80"/>
+<area shape="poly" title=" " alt="" coords="227,54,185,60,184,54,226,49"/>
+<area shape="rect" href="flash__telecommand__defs_8c.html#a532973c2cd1a7644c775c1356458b9ea" title="Telecommand: Erase a sector of flash memory." alt="" coords="17,5,182,31"/>
+<area shape="poly" title=" " alt="" coords="226,37,182,32,183,26,227,32"/>
+<area shape="rect" href="flash__telecommand__defs_8c.html#aab69fe2ed23354245ce8d3f8b9f40e2b" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="406,283,567,324"/>
+<area shape="poly" title=" " alt="" coords="634,304,568,305,568,300,634,299"/>
+<area shape="rect" href="flash__testing__demos_8c.html#a8b820d5639e3201ec967af242a24a521" title=" " alt="" coords="427,348,546,374"/>
+<area shape="poly" title=" " alt="" coords="642,364,547,364,547,358,642,358"/>
+<area shape="rect" href="littlefs__driver_8c.html#ac0f31450af1dca02021baa7111548662" title="LittleFS read function." alt="" coords="406,397,567,423"/>
+<area shape="poly" title=" " alt="" coords="643,380,552,399,551,394,642,375"/>
+<area shape="rect" href="flash__telecommand__defs_8c.html#a3150e4ea1a576f89d535a1b52d655f4e" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="394,447,579,472"/>
+<area shape="poly" title=" " alt="" coords="644,381,629,388,614,400,606,412,596,425,581,438,557,449,555,444,578,433,592,422,601,409,610,396,626,384,642,376"/>
+<area shape="poly" title=" " alt="" coords="688,126,638,96,579,71,517,57,455,49,347,45,347,39,455,44,518,52,580,66,641,91,691,121"/>
+<area shape="poly" title=" " alt="" coords="612,151,506,159,394,173,341,185,340,179,394,168,506,153,612,146"/>
+<area shape="rect" href="flash__driver_8c.html#ab3067b8d2b8505620ab7a14de794e441" title="Sends Write Disable Command." alt="" coords="413,81,561,107"/>
+<area shape="poly" title=" " alt="" coords="644,131,549,110,550,105,645,126"/>
+<area shape="poly" title=" " alt="" coords="645,164,550,185,549,179,644,159"/>
+<area shape="rect" href="flash__testing__demos_8c.html#a195fe65949096932e071ddb8f4ff0dd6" title=" " alt="" coords="38,133,161,159"/>
+<area shape="poly" title=" " alt="" coords="228,182,152,162,154,157,229,176"/>
+<area shape="rect" href="littlefs__driver_8c.html#a6979423f6b81b4ac02cd878f0a93cc69" title="LittleFS write function." alt="" coords="19,183,180,208"/>
+<area shape="poly" title=" " alt="" coords="228,198,181,198,181,193,228,193"/>
+<area shape="rect" href="flash__telecommand__defs_8c.html#a09655588325624ccb37343c81f21b24c" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="5,232,194,258"/>
+<area shape="poly" title=" " alt="" coords="229,215,154,234,152,229,228,209"/>
+<area shape="poly" title=" " alt="" coords="455,175,310,59,313,55,458,170"/>
+<area shape="poly" title=" " alt="" coords="399,198,344,198,344,193,399,193"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -229,6 +286,66 @@ Functions</h2></td></tr>
 
 <p>Deactivates the chip select for all lines. </p>
 <dl class="section return"><dt>Returns</dt><dd>None - GPIO writes can't fail </dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="flash__driver_8c_acf8b378419ff3241ec1536d900ebcb72_icgraph.png" border="0" usemap="#aflash__driver_8c_acf8b378419ff3241ec1536d900ebcb72_icgraph" alt=""/></div>
+<map name="aflash__driver_8c_acf8b378419ff3241ec1536d900ebcb72_icgraph" id="aflash__driver_8c_acf8b378419ff3241ec1536d900ebcb72_icgraph">
+<area shape="rect" title="Deactivates the chip select for all lines." alt="" coords="1063,421,1226,461"/>
+<area shape="rect" href="flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="866,338,1015,379"/>
+<area shape="poly" title=" " alt="" coords="1077,417,992,382,994,377,1079,412"/>
+<area shape="rect" href="flash__driver_8c.html#ac53f82844342cb2cac29aeb17a58ef91" title="Sends Sector Erase Command." alt="" coords="242,536,346,562"/>
+<area shape="poly" title=" " alt="" coords="1129,476,1110,508,1085,543,1054,577,1016,603,930,645,853,674,781,691,711,697,641,693,566,679,485,657,393,627,366,615,342,598,305,564,309,560,345,594,369,610,395,622,487,652,568,674,641,688,711,692,780,686,851,669,928,640,1014,599,1050,573,1081,540,1106,505,1125,474"/>
+<area shape="rect" href="flash__driver_8c.html#a79ed6b376c80e357517301def2d68ae6" title=" " alt="" coords="650,168,795,194"/>
+<area shape="poly" title=" " alt="" coords="1132,406,1117,361,1093,308,1058,256,1037,234,1014,215,988,201,961,190,904,177,847,173,796,174,796,169,848,167,905,172,963,185,991,196,1016,211,1041,230,1063,253,1097,305,1122,359,1137,405"/>
+<area shape="rect" href="flash__telecommand__defs_8c.html#aab69fe2ed23354245ce8d3f8b9f40e2b" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="406,154,567,195"/>
+<area shape="poly" title=" " alt="" coords="1135,406,1122,353,1099,289,1083,257,1064,227,1041,199,1013,176,958,146,897,128,834,119,770,118,707,123,648,132,551,156,550,151,647,127,706,118,769,112,834,113,898,122,960,141,1017,172,1044,196,1068,224,1088,254,1104,287,1127,351,1140,404"/>
+<area shape="rect" href="flash__driver_8c.html#aff72a1d6168435b6501e86654d360984" title="Sends Page Program Command." alt="" coords="658,67,787,92"/>
+<area shape="poly" title=" " alt="" coords="1138,405,1129,341,1108,260,1092,219,1071,180,1045,144,1013,114,988,97,960,85,901,72,841,68,788,72,787,66,841,63,901,66,962,80,990,93,1017,109,1049,140,1076,177,1097,217,1113,259,1134,340,1144,405"/>
+<area shape="rect" href="flash__driver_8c.html#ae1eebdf2ce8dc00d9d493e081b45090b" title="Read Status Register and store the values in given buffer." alt="" coords="627,536,818,562"/>
+<area shape="poly" title=" " alt="" coords="1105,473,1063,498,1016,519,966,533,915,542,818,551,818,546,914,537,965,528,1014,514,1061,493,1102,468"/>
+<area shape="rect" href="flash__driver_8c.html#acc16450ecc997ae57ca44b584ebd5231" title="Sends Page Program Command." alt="" coords="244,411,344,436"/>
+<area shape="poly" title=" " alt="" coords="1114,411,1070,368,1043,346,1014,329,962,305,919,293,817,281,752,270,695,258,598,237,552,234,504,238,453,252,395,278,376,291,359,306,332,344,313,382,302,411,297,410,308,380,327,341,355,303,373,286,393,273,451,247,504,233,552,228,598,232,697,253,753,265,818,276,920,288,964,300,1016,324,1046,342,1073,364,1118,407"/>
+<area shape="rect" href="flash__driver_8c.html#ab3067b8d2b8505620ab7a14de794e441" title="Sends Write Disable Command." alt="" coords="413,587,561,612"/>
+<area shape="poly" title=" " alt="" coords="1118,475,1074,517,1046,538,1016,554,957,576,896,592,833,603,771,610,656,614,561,610,562,604,656,608,771,604,833,597,895,586,956,571,1014,549,1043,533,1070,513,1115,471"/>
+<area shape="rect" href="flash__driver_8c.html#aa7d103560997c3a7415f78d114575f30" title="Sends Write Enable Command." alt="" coords="414,435,559,460"/>
+<area shape="poly" title=" " alt="" coords="1048,458,959,469,854,477,740,480,627,475,548,464,549,458,628,470,740,475,853,472,958,463,1047,453"/>
+<area shape="rect" href="flash__telecommand__defs_8c.html#a93619d65d9ee373fda111a30e72473fd" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="633,421,812,461"/>
+<area shape="poly" title=" " alt="" coords="1047,444,813,444,813,438,1047,438"/>
+<area shape="rect" href="main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="916,688,965,714"/>
+<area shape="poly" title=" " alt="" coords="1134,477,1117,520,1091,572,1058,624,1017,671,992,687,967,697,965,692,990,682,1013,667,1054,621,1087,569,1112,518,1129,475"/>
+<area shape="poly" title=" " alt="" coords="850,349,750,345,632,351,570,360,509,375,450,396,395,424,364,450,338,481,304,537,299,534,333,478,360,446,393,420,448,391,508,370,569,355,632,345,750,339,850,344"/>
+<area shape="poly" title=" " alt="" coords="901,330,739,196,742,192,904,326"/>
+<area shape="poly" title=" " alt="" coords="921,325,878,245,849,200,816,157,779,122,743,95,746,91,782,118,820,154,853,197,882,242,926,323"/>
+<area shape="poly" title=" " alt="" coords="909,392,819,475,743,538,739,533,816,471,905,388"/>
+<area shape="poly" title=" " alt="" coords="878,334,817,317,697,292,601,276,555,275,507,280,455,293,395,317,364,336,338,362,304,412,300,409,334,359,361,332,393,312,453,288,506,275,555,269,601,271,698,287,818,312,880,329"/>
+<area shape="poly" title=" " alt="" coords="851,373,744,389,628,411,532,437,531,431,627,406,743,384,850,367"/>
+<area shape="poly" title=" " alt="" coords="871,387,779,422,778,417,870,382"/>
+<area shape="rect" href="littlefs__driver_8c.html#ac92d3429222f40c34643f2969b93060a" title="LittleFS erase function." alt="" coords="15,511,184,536"/>
+<area shape="poly" title=" " alt="" coords="226,543,184,537,185,532,227,537"/>
+<area shape="rect" href="flash__telecommand__defs_8c.html#a532973c2cd1a7644c775c1356458b9ea" title="Telecommand: Erase a sector of flash memory." alt="" coords="17,560,182,586"/>
+<area shape="poly" title=" " alt="" coords="227,560,183,565,182,560,226,554"/>
+<area shape="poly" title=" " alt="" coords="634,181,568,179,568,174,635,176"/>
+<area shape="rect" href="flash__testing__demos_8c.html#a8b820d5639e3201ec967af242a24a521" title=" " alt="" coords="427,5,546,31"/>
+<area shape="poly" title=" " alt="" coords="655,65,579,45,539,34,540,29,580,40,656,60"/>
+<area shape="rect" href="littlefs__driver_8c.html#ac0f31450af1dca02021baa7111548662" title="LittleFS read function." alt="" coords="406,55,567,80"/>
+<area shape="poly" title=" " alt="" coords="642,78,568,74,568,69,643,73"/>
+<area shape="rect" href="flash__telecommand__defs_8c.html#a3150e4ea1a576f89d535a1b52d655f4e" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="394,104,579,130"/>
+<area shape="poly" title=" " alt="" coords="643,95,573,106,572,101,642,89"/>
+<area shape="poly" title=" " alt="" coords="612,552,346,552,346,546,612,546"/>
+<area shape="poly" title=" " alt="" coords="624,535,512,511,393,475,352,458,317,439,319,434,354,453,395,470,513,506,625,530"/>
+<area shape="poly" title=" " alt="" coords="645,568,550,589,549,583,644,563"/>
+<area shape="poly" title=" " alt="" coords="656,533,626,519,602,500,578,482,535,463,537,459,581,477,605,496,629,515,658,528"/>
+<area shape="rect" href="flash__testing__demos_8c.html#a195fe65949096932e071ddb8f4ff0dd6" title=" " alt="" coords="38,361,161,387"/>
+<area shape="poly" title=" " alt="" coords="228,410,152,390,154,385,229,404"/>
+<area shape="rect" href="littlefs__driver_8c.html#a6979423f6b81b4ac02cd878f0a93cc69" title="LittleFS write function." alt="" coords="19,411,180,436"/>
+<area shape="poly" title=" " alt="" coords="228,426,181,426,181,421,228,421"/>
+<area shape="rect" href="flash__telecommand__defs_8c.html#a09655588325624ccb37343c81f21b24c" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="5,460,194,486"/>
+<area shape="poly" title=" " alt="" coords="229,443,154,462,152,457,228,437"/>
+<area shape="poly" title=" " alt="" coords="448,471,321,538,319,533,445,466"/>
+<area shape="poly" title=" " alt="" coords="398,439,344,432,344,427,399,434"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -271,6 +388,45 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="flash__driver_8c_ac53f82844342cb2cac29aeb17a58ef91_cgraph.png" border="0" usemap="#aflash__driver_8c_ac53f82844342cb2cac29aeb17a58ef91_cgraph" alt=""/></div>
+<map name="aflash__driver_8c_ac53f82844342cb2cac29aeb17a58ef91_cgraph" id="aflash__driver_8c_ac53f82844342cb2cac29aeb17a58ef91_cgraph">
+<area shape="rect" title="Sends Sector Erase Command." alt="" coords="5,58,110,84"/>
+<area shape="rect" href="flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="590,82,739,123"/>
+<area shape="poly" title=" " alt="" coords="110,71,574,95,574,101,110,76"/>
+<area shape="rect" href="flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="788,54,951,95"/>
+<area shape="poly" title=" " alt="" coords="98,55,157,39,319,11,386,5,448,3,511,6,577,13,740,40,777,48,776,53,739,45,577,19,510,11,448,8,386,10,320,16,158,44,99,60"/>
+<area shape="rect" href="flash__driver_8c.html#ae1eebdf2ce8dc00d9d493e081b45090b" title="Read Status Register and store the values in given buffer." alt="" coords="351,33,541,58"/>
+<area shape="poly" title=" " alt="" coords="110,65,336,50,336,55,110,70"/>
+<area shape="rect" href="flash__driver_8c.html#aa7d103560997c3a7415f78d114575f30" title="Sends Write Enable Command." alt="" coords="158,159,303,185"/>
+<area shape="poly" title=" " alt="" coords="83,82,195,149,193,153,80,86"/>
+<area shape="poly" title=" " alt="" coords="739,90,772,85,773,91,740,95"/>
+<area shape="poly" title=" " alt="" coords="499,56,575,77,574,82,497,61"/>
+<area shape="poly" title=" " alt="" coords="542,49,772,65,772,71,542,55"/>
+<area shape="poly" title=" " alt="" coords="303,158,574,114,575,120,304,163"/>
+<area shape="poly" title=" " alt="" coords="304,173,393,174,502,170,622,157,739,132,780,118,817,100,820,105,782,123,740,137,622,162,503,175,393,179,303,178"/>
+<area shape="poly" title=" " alt="" coords="253,156,408,64,411,69,255,161"/>
+<area shape="rect" href="debug__uart_8c.html#a6899cfc3d3792f1457667bc3ae91160d" title=" " alt="" coords="351,286,541,312"/>
+<area shape="poly" title=" " alt="" coords="247,183,292,223,352,264,382,278,380,283,350,269,289,227,243,187"/>
+<area shape="rect" href="debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="589,261,740,286"/>
+<area shape="poly" title=" " alt="" coords="264,183,352,213,467,240,575,259,574,264,466,245,350,219,263,188"/>
+<area shape="poly" title=" " alt="" coords="541,285,574,281,574,287,542,290"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="flash__driver_8c_ac53f82844342cb2cac29aeb17a58ef91_icgraph.png" border="0" usemap="#aflash__driver_8c_ac53f82844342cb2cac29aeb17a58ef91_icgraph" alt=""/></div>
+<map name="aflash__driver_8c_ac53f82844342cb2cac29aeb17a58ef91_icgraph" id="aflash__driver_8c_ac53f82844342cb2cac29aeb17a58ef91_icgraph">
+<area shape="rect" title="Sends Sector Erase Command." alt="" coords="222,31,326,56"/>
+<area shape="rect" href="littlefs__driver_8c.html#ac92d3429222f40c34643f2969b93060a" title="LittleFS erase function." alt="" coords="5,5,174,31"/>
+<area shape="poly" title=" " alt="" coords="206,37,174,32,175,27,207,32"/>
+<area shape="rect" href="flash__telecommand__defs_8c.html#a532973c2cd1a7644c775c1356458b9ea" title="Telecommand: Erase a sector of flash memory." alt="" coords="7,55,172,80"/>
+<area shape="poly" title=" " alt="" coords="207,55,173,59,172,54,206,50"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -292,6 +448,34 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="flash__driver_8c_a79ed6b376c80e357517301def2d68ae6_cgraph.png" border="0" usemap="#aflash__driver_8c_a79ed6b376c80e357517301def2d68ae6_cgraph" alt=""/></div>
+<map name="aflash__driver_8c_a79ed6b376c80e357517301def2d68ae6_cgraph" id="aflash__driver_8c_a79ed6b376c80e357517301def2d68ae6_cgraph">
+<area shape="rect" title=" " alt="" coords="5,85,151,111"/>
+<area shape="rect" href="debug__uart_8c.html#a6899cfc3d3792f1457667bc3ae91160d" title=" " alt="" coords="199,5,389,31"/>
+<area shape="poly" title=" " alt="" coords="110,82,198,48,236,34,238,39,200,53,112,87"/>
+<area shape="rect" href="debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="444,43,594,68"/>
+<area shape="poly" title=" " alt="" coords="151,89,428,62,428,67,151,94"/>
+<area shape="rect" href="flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="219,106,369,146"/>
+<area shape="poly" title=" " alt="" coords="151,105,204,112,203,117,151,110"/>
+<area shape="rect" href="flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="437,120,600,161"/>
+<area shape="poly" title=" " alt="" coords="100,109,144,135,199,156,256,165,314,167,370,164,422,157,422,163,371,169,314,172,255,170,198,161,142,140,98,114"/>
+<area shape="poly" title=" " alt="" coords="376,29,429,38,428,43,375,34"/>
+<area shape="poly" title=" " alt="" coords="369,128,421,132,421,137,369,134"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="flash__driver_8c_a79ed6b376c80e357517301def2d68ae6_icgraph.png" border="0" usemap="#aflash__driver_8c_a79ed6b376c80e357517301def2d68ae6_icgraph" alt=""/></div>
+<map name="aflash__driver_8c_a79ed6b376c80e357517301def2d68ae6_icgraph" id="aflash__driver_8c_a79ed6b376c80e357517301def2d68ae6_icgraph">
+<area shape="rect" title=" " alt="" coords="215,13,360,39"/>
+<area shape="rect" href="flash__telecommand__defs_8c.html#aab69fe2ed23354245ce8d3f8b9f40e2b" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="5,5,167,46"/>
+<area shape="poly" title=" " alt="" coords="199,28,167,28,167,23,199,23"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -346,6 +530,33 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="flash__driver_8c_aff72a1d6168435b6501e86654d360984_cgraph.png" border="0" usemap="#aflash__driver_8c_aff72a1d6168435b6501e86654d360984_cgraph" alt=""/></div>
+<map name="aflash__driver_8c_aff72a1d6168435b6501e86654d360984_cgraph" id="aflash__driver_8c_aff72a1d6168435b6501e86654d360984_cgraph">
+<area shape="rect" title="Sends Page Program Command." alt="" coords="5,42,135,68"/>
+<area shape="rect" href="flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="183,5,332,46"/>
+<area shape="poly" title=" " alt="" coords="134,42,167,37,168,42,135,48"/>
+<area shape="rect" href="flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="380,35,543,75"/>
+<area shape="poly" title=" " alt="" coords="135,54,183,55,332,55,364,55,364,60,332,60,183,60,135,59"/>
+<area shape="poly" title=" " alt="" coords="333,34,365,38,364,44,332,39"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="flash__driver_8c_aff72a1d6168435b6501e86654d360984_icgraph.png" border="0" usemap="#aflash__driver_8c_aff72a1d6168435b6501e86654d360984_icgraph" alt=""/></div>
+<map name="aflash__driver_8c_aff72a1d6168435b6501e86654d360984_icgraph" id="aflash__driver_8c_aff72a1d6168435b6501e86654d360984_icgraph">
+<area shape="rect" title="Sends Page Program Command." alt="" coords="239,55,368,80"/>
+<area shape="rect" href="flash__testing__demos_8c.html#a8b820d5639e3201ec967af242a24a521" title=" " alt="" coords="38,5,158,31"/>
+<area shape="poly" title=" " alt="" coords="231,53,154,34,155,29,232,48"/>
+<area shape="rect" href="littlefs__driver_8c.html#ac0f31450af1dca02021baa7111548662" title="LittleFS read function." alt="" coords="17,55,179,80"/>
+<area shape="poly" title=" " alt="" coords="224,70,179,70,179,65,224,65"/>
+<area shape="rect" href="flash__telecommand__defs_8c.html#a3150e4ea1a576f89d535a1b52d655f4e" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="5,104,191,130"/>
+<area shape="poly" title=" " alt="" coords="232,87,155,106,154,101,231,82"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -388,6 +599,47 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="flash__driver_8c_ae1eebdf2ce8dc00d9d493e081b45090b_cgraph.png" border="0" usemap="#aflash__driver_8c_ae1eebdf2ce8dc00d9d493e081b45090b_cgraph" alt=""/></div>
+<map name="aflash__driver_8c_ae1eebdf2ce8dc00d9d493e081b45090b_cgraph" id="aflash__driver_8c_ae1eebdf2ce8dc00d9d493e081b45090b_cgraph">
+<area shape="rect" title="Read Status Register and store the values in given buffer." alt="" coords="5,42,196,68"/>
+<area shape="rect" href="flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="244,5,393,46"/>
+<area shape="poly" title=" " alt="" coords="196,39,228,35,229,40,197,45"/>
+<area shape="rect" href="flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="441,35,604,75"/>
+<area shape="poly" title=" " alt="" coords="196,54,244,55,393,55,425,55,425,60,393,60,244,60,196,60"/>
+<area shape="poly" title=" " alt="" coords="394,34,426,38,425,44,393,39"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="flash__driver_8c_ae1eebdf2ce8dc00d9d493e081b45090b_icgraph.png" border="0" usemap="#aflash__driver_8c_ae1eebdf2ce8dc00d9d493e081b45090b_icgraph" alt=""/></div>
+<map name="aflash__driver_8c_ae1eebdf2ce8dc00d9d493e081b45090b_icgraph" id="aflash__driver_8c_ae1eebdf2ce8dc00d9d493e081b45090b_icgraph">
+<area shape="rect" title="Read Status Register and store the values in given buffer." alt="" coords="590,92,781,118"/>
+<area shape="rect" href="flash__driver_8c.html#ac53f82844342cb2cac29aeb17a58ef91" title="Sends Sector Erase Command." alt="" coords="242,41,346,67"/>
+<area shape="poly" title=" " alt="" coords="641,88,594,70,542,57,490,51,438,49,346,52,346,46,438,43,491,45,543,52,595,65,643,83"/>
+<area shape="rect" href="flash__driver_8c.html#acc16450ecc997ae57ca44b584ebd5231" title="Sends Page Program Command." alt="" coords="244,153,344,179"/>
+<area shape="poly" title=" " alt="" coords="641,126,594,143,543,157,490,165,437,169,344,171,344,165,437,164,490,159,542,152,593,138,639,121"/>
+<area shape="rect" href="flash__driver_8c.html#ab3067b8d2b8505620ab7a14de794e441" title="Sends Write Disable Command." alt="" coords="394,116,542,142"/>
+<area shape="poly" title=" " alt="" coords="575,120,543,123,543,118,574,114"/>
+<area shape="rect" href="flash__driver_8c.html#aa7d103560997c3a7415f78d114575f30" title="Sends Write Enable Command." alt="" coords="396,67,541,92"/>
+<area shape="poly" title=" " alt="" coords="575,95,541,91,541,85,575,89"/>
+<area shape="rect" href="littlefs__driver_8c.html#ac92d3429222f40c34643f2969b93060a" title="LittleFS erase function." alt="" coords="15,55,184,80"/>
+<area shape="poly" title=" " alt="" coords="226,61,184,64,184,59,226,56"/>
+<area shape="rect" href="flash__telecommand__defs_8c.html#a532973c2cd1a7644c775c1356458b9ea" title="Telecommand: Erase a sector of flash memory." alt="" coords="17,5,182,31"/>
+<area shape="poly" title=" " alt="" coords="226,44,172,34,173,29,227,39"/>
+<area shape="rect" href="flash__testing__demos_8c.html#a195fe65949096932e071ddb8f4ff0dd6" title=" " alt="" coords="38,203,161,228"/>
+<area shape="poly" title=" " alt="" coords="229,185,154,205,152,199,228,180"/>
+<area shape="rect" href="littlefs__driver_8c.html#a6979423f6b81b4ac02cd878f0a93cc69" title="LittleFS write function." alt="" coords="19,104,180,130"/>
+<area shape="poly" title=" " alt="" coords="228,152,152,133,154,128,229,147"/>
+<area shape="rect" href="flash__telecommand__defs_8c.html#a09655588325624ccb37343c81f21b24c" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="5,153,194,179"/>
+<area shape="poly" title=" " alt="" coords="228,169,194,169,194,164,228,164"/>
+<area shape="poly" title=" " alt="" coords="380,69,346,64,347,59,380,64"/>
+<area shape="poly" title=" " alt="" coords="407,101,395,106,351,130,315,155,312,151,348,126,393,101,405,96"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -442,6 +694,47 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="flash__driver_8c_acc16450ecc997ae57ca44b584ebd5231_cgraph.png" border="0" usemap="#aflash__driver_8c_acc16450ecc997ae57ca44b584ebd5231_cgraph" alt=""/></div>
+<map name="aflash__driver_8c_acc16450ecc997ae57ca44b584ebd5231_cgraph" id="aflash__driver_8c_acc16450ecc997ae57ca44b584ebd5231_cgraph">
+<area shape="rect" title="Sends Page Program Command." alt="" coords="5,58,106,84"/>
+<area shape="rect" href="flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="586,83,735,123"/>
+<area shape="poly" title=" " alt="" coords="106,71,570,96,570,101,106,76"/>
+<area shape="rect" href="flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="784,55,947,95"/>
+<area shape="poly" title=" " alt="" coords="94,55,153,39,315,11,382,4,444,3,507,6,573,13,736,40,773,48,772,53,735,46,573,19,506,11,444,8,382,10,316,16,154,44,96,60"/>
+<area shape="rect" href="flash__driver_8c.html#ae1eebdf2ce8dc00d9d493e081b45090b" title="Read Status Register and store the values in given buffer." alt="" coords="347,33,537,59"/>
+<area shape="poly" title=" " alt="" coords="106,65,331,50,332,56,106,70"/>
+<area shape="rect" href="flash__driver_8c.html#aa7d103560997c3a7415f78d114575f30" title="Sends Write Enable Command." alt="" coords="154,160,299,185"/>
+<area shape="poly" title=" " alt="" coords="81,82,192,149,189,154,78,87"/>
+<area shape="poly" title=" " alt="" coords="735,90,768,86,769,91,736,95"/>
+<area shape="poly" title=" " alt="" coords="495,57,571,77,570,82,493,62"/>
+<area shape="poly" title=" " alt="" coords="538,50,768,66,768,71,538,55"/>
+<area shape="poly" title=" " alt="" coords="299,158,570,115,571,120,300,163"/>
+<area shape="poly" title=" " alt="" coords="300,173,389,174,498,170,618,157,735,132,776,118,813,100,816,105,778,123,736,138,618,162,499,175,389,180,299,179"/>
+<area shape="poly" title=" " alt="" coords="249,157,404,64,407,69,251,161"/>
+<area shape="rect" href="debug__uart_8c.html#a6899cfc3d3792f1457667bc3ae91160d" title=" " alt="" coords="347,286,537,312"/>
+<area shape="poly" title=" " alt="" coords="243,184,288,223,348,265,378,278,376,283,346,269,285,227,239,188"/>
+<area shape="rect" href="debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="585,261,736,287"/>
+<area shape="poly" title=" " alt="" coords="260,183,348,214,463,240,571,259,570,264,462,246,346,219,259,188"/>
+<area shape="poly" title=" " alt="" coords="537,285,570,281,570,287,538,291"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="flash__driver_8c_acc16450ecc997ae57ca44b584ebd5231_icgraph.png" border="0" usemap="#aflash__driver_8c_acc16450ecc997ae57ca44b584ebd5231_icgraph" alt=""/></div>
+<map name="aflash__driver_8c_acc16450ecc997ae57ca44b584ebd5231_icgraph" id="aflash__driver_8c_acc16450ecc997ae57ca44b584ebd5231_icgraph">
+<area shape="rect" title="Sends Page Program Command." alt="" coords="242,55,342,80"/>
+<area shape="rect" href="flash__testing__demos_8c.html#a195fe65949096932e071ddb8f4ff0dd6" title=" " alt="" coords="38,5,161,31"/>
+<area shape="poly" title=" " alt="" coords="226,53,193,45,152,34,154,29,194,40,227,48"/>
+<area shape="rect" href="littlefs__driver_8c.html#a6979423f6b81b4ac02cd878f0a93cc69" title="LittleFS write function." alt="" coords="19,55,180,80"/>
+<area shape="poly" title=" " alt="" coords="226,70,181,70,181,65,226,65"/>
+<area shape="rect" href="flash__telecommand__defs_8c.html#a09655588325624ccb37343c81f21b24c" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="5,104,194,130"/>
+<area shape="poly" title=" " alt="" coords="227,87,194,95,154,106,152,101,193,90,226,82"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -478,6 +771,22 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="flash__driver_8c_ab3067b8d2b8505620ab7a14de794e441_cgraph.png" border="0" usemap="#aflash__driver_8c_ab3067b8d2b8505620ab7a14de794e441_cgraph" alt=""/></div>
+<map name="aflash__driver_8c_ab3067b8d2b8505620ab7a14de794e441_cgraph" id="aflash__driver_8c_ab3067b8d2b8505620ab7a14de794e441_cgraph">
+<area shape="rect" title="Sends Write Disable Command." alt="" coords="5,5,154,31"/>
+<area shape="rect" href="flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="637,23,801,64"/>
+<area shape="poly" title=" " alt="" coords="154,13,351,11,470,15,590,22,622,26,621,31,589,27,470,20,351,17,154,18"/>
+<area shape="rect" href="flash__driver_8c.html#ae1eebdf2ce8dc00d9d493e081b45090b" title="Read Status Register and store the values in given buffer." alt="" coords="202,31,392,56"/>
+<area shape="poly" title=" " alt="" coords="154,24,187,28,186,33,154,29"/>
+<area shape="poly" title=" " alt="" coords="392,41,622,41,622,46,392,46"/>
+<area shape="rect" href="flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="440,81,589,121"/>
+<area shape="poly" title=" " alt="" coords="349,54,426,75,424,80,348,60"/>
+<area shape="poly" title=" " alt="" coords="589,77,629,66,630,71,590,83"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -514,6 +823,50 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="flash__driver_8c_aa7d103560997c3a7415f78d114575f30_cgraph.png" border="0" usemap="#aflash__driver_8c_aa7d103560997c3a7415f78d114575f30_cgraph" alt=""/></div>
+<map name="aflash__driver_8c_aa7d103560997c3a7415f78d114575f30_cgraph" id="aflash__driver_8c_aa7d103560997c3a7415f78d114575f30_cgraph">
+<area shape="rect" title="Sends Write Enable Command." alt="" coords="5,87,151,113"/>
+<area shape="rect" href="debug__uart_8c.html#a6899cfc3d3792f1457667bc3ae91160d" title=" " alt="" coords="199,38,389,64"/>
+<area shape="poly" title=" " alt="" coords="137,84,219,65,220,70,138,89"/>
+<area shape="rect" href="debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="437,7,587,33"/>
+<area shape="poly" title=" " alt="" coords="93,84,138,52,167,35,198,23,255,10,313,5,421,6,421,12,314,10,256,16,199,28,169,40,141,56,96,89"/>
+<area shape="rect" href="flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="438,126,587,167"/>
+<area shape="poly" title=" " alt="" coords="135,111,199,123,315,135,423,141,422,147,315,140,198,128,134,116"/>
+<area shape="rect" href="flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="635,126,799,167"/>
+<area shape="poly" title=" " alt="" coords="108,111,150,129,199,145,306,172,392,185,478,186,587,176,630,168,631,174,588,181,478,192,391,190,305,177,198,151,148,134,106,116"/>
+<area shape="rect" href="flash__driver_8c.html#ae1eebdf2ce8dc00d9d493e081b45090b" title="Read Status Register and store the values in given buffer." alt="" coords="199,87,389,113"/>
+<area shape="poly" title=" " alt="" coords="151,97,183,97,183,103,151,103"/>
+<area shape="poly" title=" " alt="" coords="389,35,421,30,422,35,390,40"/>
+<area shape="poly" title=" " alt="" coords="587,144,620,144,620,149,587,149"/>
+<area shape="poly" title=" " alt="" coords="358,111,423,125,422,130,357,116"/>
+<area shape="poly" title=" " alt="" coords="389,97,485,102,588,112,628,120,627,125,587,117,485,107,389,103"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="flash__driver_8c_aa7d103560997c3a7415f78d114575f30_icgraph.png" border="0" usemap="#aflash__driver_8c_aa7d103560997c3a7415f78d114575f30_icgraph" alt=""/></div>
+<map name="aflash__driver_8c_aa7d103560997c3a7415f78d114575f30_icgraph" id="aflash__driver_8c_aa7d103560997c3a7415f78d114575f30_icgraph">
+<area shape="rect" title="Sends Write Enable Command." alt="" coords="394,104,539,130"/>
+<area shape="rect" href="flash__driver_8c.html#ac53f82844342cb2cac29aeb17a58ef91" title="Sends Sector Erase Command." alt="" coords="242,55,346,80"/>
+<area shape="poly" title=" " alt="" coords="404,102,341,84,342,78,405,97"/>
+<area shape="rect" href="flash__driver_8c.html#acc16450ecc997ae57ca44b584ebd5231" title="Sends Page Program Command." alt="" coords="244,128,344,154"/>
+<area shape="poly" title=" " alt="" coords="379,132,345,137,344,131,378,126"/>
+<area shape="rect" href="littlefs__driver_8c.html#ac92d3429222f40c34643f2969b93060a" title="LittleFS erase function." alt="" coords="15,5,184,31"/>
+<area shape="poly" title=" " alt="" coords="226,53,152,34,154,29,227,48"/>
+<area shape="rect" href="flash__telecommand__defs_8c.html#a532973c2cd1a7644c775c1356458b9ea" title="Telecommand: Erase a sector of flash memory." alt="" coords="17,55,182,80"/>
+<area shape="poly" title=" " alt="" coords="226,70,183,70,183,65,226,65"/>
+<area shape="rect" href="flash__testing__demos_8c.html#a195fe65949096932e071ddb8f4ff0dd6" title=" " alt="" coords="38,104,161,130"/>
+<area shape="poly" title=" " alt="" coords="228,135,161,127,162,122,228,130"/>
+<area shape="rect" href="littlefs__driver_8c.html#a6979423f6b81b4ac02cd878f0a93cc69" title="LittleFS write function." alt="" coords="19,153,180,179"/>
+<area shape="poly" title=" " alt="" coords="229,152,181,158,180,153,228,147"/>
+<area shape="rect" href="flash__telecommand__defs_8c.html#a09655588325624ccb37343c81f21b24c" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="5,203,194,228"/>
+<area shape="poly" title=" " alt="" coords="258,164,195,194,162,205,160,200,193,189,256,159"/>
+</map>
+</div>
 
 </div>
 </div>

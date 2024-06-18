@@ -1,0 +1,28 @@
+<map id="TCMDEXEC_flash_erase" name="TCMDEXEC_flash_erase">
+<area shape="rect" id="Node000001" title="Telecommand: Erase a sector of flash memory." alt="" coords="5,259,171,285"/>
+<area shape="rect" id="Node000002" href="$flash__driver_8c.html#ac53f82844342cb2cac29aeb17a58ef91" title="Sends Sector Erase Command." alt="" coords="252,183,357,209"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="126,256,250,212,252,217,128,261"/>
+<area shape="rect" id="Node000009" href="$telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="219,283,390,309"/>
+<area shape="poly" id="edge15_Node000001_Node000009" title=" " alt="" coords="172,278,203,282,203,287,171,284"/>
+<area shape="rect" id="Node000003" href="$flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="877,233,1027,274"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="358,206,485,233,561,246,639,256,733,260,829,256,862,255,862,260,829,261,733,265,638,261,561,252,484,238,357,211"/>
+<area shape="rect" id="Node000004" href="$flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="1075,150,1238,191"/>
+<area shape="poly" id="edge4_Node000002_Node000004" title=" " alt="" coords="324,180,376,148,452,107,542,67,590,51,638,40,748,17,836,4,879,3,923,9,972,21,1028,41,1061,60,1091,84,1136,136,1132,139,1087,88,1058,64,1026,46,971,26,922,14,879,9,837,9,749,23,639,45,591,57,544,72,454,111,379,152,327,185"/>
+<area shape="rect" id="Node000005" href="$flash__driver_8c.html#ae1eebdf2ce8dc00d9d493e081b45090b" title="Read Status Register and store the values in given buffer." alt="" coords="638,183,829,209"/>
+<area shape="poly" id="edge5_Node000002_Node000005" title=" " alt="" coords="357,193,623,193,623,199,357,199"/>
+<area shape="rect" id="Node000006" href="$flash__driver_8c.html#aa7d103560997c3a7415f78d114575f30" title="Sends Write Enable Command." alt="" coords="442,132,587,158"/>
+<area shape="poly" id="edge8_Node000002_Node000006" title=" " alt="" coords="356,181,442,160,444,165,358,186"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="1003,230,1089,195,1091,200,1005,235"/>
+<area shape="poly" id="edge6_Node000005_Node000003" title=" " alt="" coords="786,207,863,227,861,232,785,212"/>
+<area shape="poly" id="edge7_Node000005_Node000004" title=" " alt="" coords="829,188,1059,174,1059,179,829,193"/>
+<area shape="poly" id="edge12_Node000006_Node000003" title=" " alt="" coords="533,157,579,189,608,206,639,219,695,234,753,244,862,252,861,257,753,249,694,239,637,224,606,210,576,194,530,161"/>
+<area shape="poly" id="edge13_Node000006_Node000004" title=" " alt="" coords="587,145,1027,163,1059,164,1059,169,1027,168,587,151"/>
+<area shape="poly" id="edge14_Node000006_Node000005" title=" " alt="" coords="574,156,661,176,659,182,572,161"/>
+<area shape="rect" id="Node000007" href="$debug__uart_8c.html#a6899cfc3d3792f1457667bc3ae91160d" title=" " alt="" coords="638,82,829,107"/>
+<area shape="poly" id="edge9_Node000006_Node000007" title=" " alt="" coords="572,129,659,109,661,114,574,134"/>
+<area shape="rect" id="Node000008" href="$debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="877,56,1027,82"/>
+<area shape="poly" id="edge11_Node000006_Node000008" title=" " alt="" coords="529,130,575,96,605,79,638,67,695,55,753,50,861,54,861,59,753,55,695,60,639,72,608,84,578,100,532,134"/>
+<area shape="poly" id="edge10_Node000007_Node000008" title=" " alt="" coords="828,81,861,77,862,82,829,86"/>
+<area shape="rect" id="Node000010" href="$telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts the longest substring of integer characters, starting from the beginning of the string,..." alt="" coords="438,335,590,361"/>
+<area shape="poly" id="edge16_Node000009_Node000010" title=" " alt="" coords="360,307,445,328,444,333,358,312"/>
+</map>

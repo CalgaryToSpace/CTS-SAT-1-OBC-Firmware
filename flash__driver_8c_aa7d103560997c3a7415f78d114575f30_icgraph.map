@@ -1,0 +1,17 @@
+<map id="FLASH_write_enable" name="FLASH_write_enable">
+<area shape="rect" id="Node000001" title="Sends Write Enable Command." alt="" coords="394,104,539,130"/>
+<area shape="rect" id="Node000002" href="$flash__driver_8c.html#ac53f82844342cb2cac29aeb17a58ef91" title="Sends Sector Erase Command." alt="" coords="242,55,346,80"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="404,102,341,84,342,78,405,97"/>
+<area shape="rect" id="Node000005" href="$flash__driver_8c.html#acc16450ecc997ae57ca44b584ebd5231" title="Sends Page Program Command." alt="" coords="244,128,344,154"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="379,132,345,137,344,131,378,126"/>
+<area shape="rect" id="Node000003" href="$littlefs__driver_8c.html#ac92d3429222f40c34643f2969b93060a" title="LittleFS erase function." alt="" coords="15,5,184,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="226,53,152,34,154,29,227,48"/>
+<area shape="rect" id="Node000004" href="$flash__telecommand__defs_8c.html#a532973c2cd1a7644c775c1356458b9ea" title="Telecommand: Erase a sector of flash memory." alt="" coords="17,55,182,80"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="226,70,183,70,183,65,226,65"/>
+<area shape="rect" id="Node000006" href="$flash__testing__demos_8c.html#a195fe65949096932e071ddb8f4ff0dd6" title=" " alt="" coords="38,104,161,130"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="228,135,161,127,162,122,228,130"/>
+<area shape="rect" id="Node000007" href="$littlefs__driver_8c.html#a6979423f6b81b4ac02cd878f0a93cc69" title="LittleFS write function." alt="" coords="19,153,180,179"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="229,152,181,158,180,153,228,147"/>
+<area shape="rect" id="Node000008" href="$flash__telecommand__defs_8c.html#a09655588325624ccb37343c81f21b24c" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="5,203,194,228"/>
+<area shape="poly" id="edge7_Node000005_Node000008" title=" " alt="" coords="258,164,195,194,162,205,160,200,193,189,256,159"/>
+</map>
