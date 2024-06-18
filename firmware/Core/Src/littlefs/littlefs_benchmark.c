@@ -4,6 +4,7 @@
 #include "littlefs/littlefs_helper.h"
 
 #include <string.h>
+#include <stdio.h>
 
 uint8_t LFS_benchmark_write_read(uint16_t write_chunk_size, uint16_t write_chunk_count, char* response_str, uint16_t response_str_len) {
     const char file_name[] = "benchmark_test.txt";

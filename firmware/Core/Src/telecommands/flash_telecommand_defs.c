@@ -6,6 +6,7 @@
 #include "littlefs/flash_benchmark.h"
 #include "debug_tools/debug_uart.h"
 
+#include <stdio.h>
 #include <string.h>
 #include <inttypes.h>
 

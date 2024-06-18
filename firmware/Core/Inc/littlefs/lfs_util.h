@@ -8,6 +8,19 @@
 #ifndef LFS_UTIL_H
 #define LFS_UTIL_H
 
+// ================ Configuration =================
+#define LFS_NO_MALLOC 1
+
+// TODO: try setting these macros to write to debug UART or logs, maybe
+#define LFS_NO_DEBUG 1
+#define LFS_NO_WARN 1
+#define LFS_NO_ERROR 1
+#define LFS_NO_ASSERT 1
+// #define LFS_NO_INTRINSICS // Use the default for this.
+
+// ============= END Configuration ================
+
+
 // Users can override lfs_util.h with their own configuration by defining
 // LFS_CONFIG as a header file to include (-DLFS_CONFIG=lfs_config.h).
 //
