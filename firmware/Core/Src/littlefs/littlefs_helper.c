@@ -241,9 +241,11 @@ int8_t LFS_write_file(char *file_name, uint8_t *write_buffer, uint32_t write_buf
 		return open_result;
 	}
 	
+    #if LFS_ENABLE_UART_DEBUG_PRINT
 	DEBUG_uart_print_str("Opened/created a file named: '");
 	DEBUG_uart_print_str(file_name);
 	DEBUG_uart_print_str("'\n");
+    #endif
 
 	// Write data to file
 	const int8_t write_result = lfs_file_write(&lfs, &file, write_buffer, write_buffer_len);
@@ -253,7 +255,9 @@ int8_t LFS_write_file(char *file_name, uint8_t *write_buffer, uint32_t write_buf
 		return write_result;
 	}
 	
+    #if LFS_ENABLE_UART_DEBUG_PRINT
 	DEBUG_uart_print_str("Successfully wrote data to file!\n");
+    #endif
 
 	// Close the File, the storage is not updated until the file is closed successfully
 	const int8_t close_result = lfs_file_close(&lfs, &file);
@@ -263,7 +267,10 @@ int8_t LFS_write_file(char *file_name, uint8_t *write_buffer, uint32_t write_buf
 		return close_result;
 	}
 	
+    #if LFS_ENABLE_UART_DEBUG_PRINT
 	DEBUG_uart_print_str("Successfully closed the file!\n");
+    #endif
+    
 	return 0;
 }
 
@@ -284,9 +291,11 @@ int8_t LFS_read_file(char *file_name, uint8_t *read_buffer, uint32_t read_buffer
 		return open_result;
 	}
 	
+    #if LFS_ENABLE_UART_DEBUG_PRINT
 	DEBUG_uart_print_str("Opened file to read: ");
 	DEBUG_uart_print_str(file_name);
 	DEBUG_uart_print_str("\n");
+    #endif
 
 	const int8_t read_result = lfs_file_read(&lfs, &file, read_buffer, read_buffer_len);
 	if (read_result < 0)
@@ -295,7 +304,9 @@ int8_t LFS_read_file(char *file_name, uint8_t *read_buffer, uint32_t read_buffer
 		return read_result;
 	}
 	
+    #if LFS_ENABLE_UART_DEBUG_PRINT
 	DEBUG_uart_print_str("Successfully read file!\n");
+    #endif
 
 	// Close the File, the storage is not updated until the file is closed successfully
 	const int8_t close_result = lfs_file_close(&lfs, &file);
@@ -305,6 +316,9 @@ int8_t LFS_read_file(char *file_name, uint8_t *read_buffer, uint32_t read_buffer
 		return close_result;
 	}
 	
+    #if LFS_ENABLE_UART_DEBUG_PRINT
 	DEBUG_uart_print_str("Successfully closed the file!\n");
+    #endif
+
 	return 0;	
 }
