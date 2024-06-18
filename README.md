@@ -1,16 +1,17 @@
 # CTS-SAT-1-OBC-Firmware
 Firmware for the CTS-SAT-1 ("FrontierSat") mission. Runs on the STM32-based Onboard Computer.
 
+## Quick Links
+
+* [Doxygen Documentation](https://calgarytospace.github.io/CTS-SAT-1-OBC-Firmware)
+
 ## Developing with VS Code
 
 1. On Windows only, install the [ST-Link Debugging Driver](https://www.st.com/en/development-tools/stsw-link009.html) for compatibility with OpenOCD.
 2. Clone this repo.
 3. Open this repo in File Explorer.
 4. Right click on the `firmware` folder in this repo, and select "Open with VS Code". **Do not open the entire repo with VS Code like you normally would.**
-5. When prompted in the bottom-right corner, select these options:
-
-![VS Code initial opening options](/docs/media/vs-code-startup-instructions.png)
-
+5. When prompted in the bottom-right corner about "A git repository was found in the parent folders...", click "Yes".
 6. Install the recommended VS Code extensions when prompted.
 	* If you're not prompted, use Ctrl+Shift+P to navigate to ">Extensions: Show Recommended Extensions".
 7. Navigate to the "ST" extension in the extension pane. Select the option to install the build toolchain (appears for first use).
