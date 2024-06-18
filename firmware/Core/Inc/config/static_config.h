@@ -11,4 +11,10 @@
 #define LFS_ENABLE_UART_DEBUG_PRINT 1
 
 
+// NOTE: All C files that use config variables from here should include a guard like the following:
+// #ifndef LFS_ENABLE_UART_DEBUG_PRINT
+//     #error "LFS_ENABLE_UART_DEBUG_PRINT not defined"
+// #endif
+
+
 #endif /* __INCLUDE_GUARD__STATIC_CONFIG_H__ */

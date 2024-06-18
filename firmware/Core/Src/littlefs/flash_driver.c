@@ -3,7 +3,11 @@
 
 #include "littlefs/flash_driver.h"
 #include "debug_tools/debug_uart.h"
+
 #include "config/static_config.h"
+#ifndef FLASH_ENABLE_UART_DEBUG_PRINT
+    #error "FLASH_ENABLE_UART_DEBUG_PRINT not defined"
+#endif
 
 /// Timeout duration for HAL_SPI_READ/WRITE operations.
 #define FLASH_HAL_TIMEOUT_MS 10 
