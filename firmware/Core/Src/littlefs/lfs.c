@@ -6,6 +6,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #include "littlefs/lfs.h"
+#include "debug_tools/debug_uart.h"
 #include "littlefs/lfs_util.h"
 
 

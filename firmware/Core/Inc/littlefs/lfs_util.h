@@ -14,6 +14,7 @@
 // If LFS_CONFIG is used, none of the default utils will be emitted and must be
 // provided by the config file. To start, I would suggest copying lfs_util.h
 // and modifying as needed.
+#include "debug_tools/debug_uart.h"
 #ifdef LFS_CONFIG
 #define LFS_STRINGIZE(x) LFS_STRINGIZE2(x)
 #define LFS_STRINGIZE2(x) #x

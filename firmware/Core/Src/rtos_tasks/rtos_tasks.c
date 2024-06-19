@@ -40,7 +40,7 @@ void TASK_handle_uart_telecommands(void *argument) {
 
 	while (1) {
 		// place the main delay at the top to avoid a "continue" statement skipping it
-		osDelay(400);
+		osDelay(TASK_OSDELAY_TICKS);
 
 		// DEBUG_uart_print_str("TASK_handle_uart_telecommands -> top of while(1)\n");
 

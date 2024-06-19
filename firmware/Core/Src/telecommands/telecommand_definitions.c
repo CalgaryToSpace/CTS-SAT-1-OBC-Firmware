@@ -121,6 +121,11 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 1,
     },
     {
+        .tcmd_name = "fs_delete_file",
+        .tcmd_func = TCMDEXEC_fs_delete_file,
+        .number_of_args = 1,
+    },
+    {
         .tcmd_name = "fs_ls_dir",
         .tcmd_func = TCMDEXEC_fs_ls_dir,
         .number_of_args = 1,
