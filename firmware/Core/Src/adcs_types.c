@@ -63,12 +63,15 @@ uint8_t ADCS_TC_Ack(ADCS_TC_Ack_Struct *ack) {
 	ADCS_Pack_to_Ack(&data_received[0], ack);
 
 	WRITE_STRUCT_TO_MEMORY(ack) // memory module function
-	
+
+	if (tlm_status == 0) {
+		return ack->error_flag;
+	}
+
 	return tlm_status;
 }
 
 uint8_t ADCS_Pack_to_Ack(uint8_t* data_received, ADCS_TC_Ack_Struct *result) {
-	ADCS_TC_Ack_Struct ack;
 
 	// map temp buffer to Ack struct
 	result->last_id = data_received[0];
@@ -221,9 +224,9 @@ uint8_t ADCS_Set_Magnetorquer_Output(double x_duty, double y_duty, double z_duty
 	// duty >> 8 gives upper byte, duty & 0x00FF gives lower byte
 	uint8_t data_send[6];
 	// swap low and high bytes and populate data_send
-	switch_order(data_send, ((uint16_t) (x_duty * 1000)), 0);
-	switch_order(data_send, ((uint16_t) (y_duty * 1000)), 2);
-	switch_order(data_send, ((uint16_t) (z_duty * 1000)), 4);
+	ADCS_switch_order(data_send, ((uint16_t) (x_duty * 1000)), 0);
+	ADCS_switch_order(data_send, ((uint16_t) (y_duty * 1000)), 2);
+	ADCS_switch_order(data_send, ((uint16_t) (z_duty * 1000)), 4);
 	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_SET_MAGNETORQUER_OUTPUT, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
@@ -233,9 +236,9 @@ uint8_t ADCS_Set_Wheel_Speed(uint16_t x_speed, uint16_t y_speed, uint16_t z_spee
 	// for the duty equations, raw parameter value is in rpm
 	uint8_t data_send[6]; // 6-byte data to send
 	// swap low and high bytes and populate data_send
-	switch_order(data_send, x_speed, 0);
-	switch_order(data_send, y_speed, 2);
-	switch_order(data_send, z_speed, 4);
+	ADCS_switch_order(data_send, x_speed, 0);
+	ADCS_switch_order(data_send, y_speed, 2);
+	ADCS_switch_order(data_send, z_speed, 4);
 	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_SET_WHEEL_SPEED, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
@@ -268,7 +271,6 @@ uint8_t ADCS_Get_Power_Control() {
 }
 
 uint8_t ADCS_Pack_to_Power_Control(uint8_t* data_received, ADCS_Power_Control_Struct* result) {
-	ADCS_Power_Control_Struct power;
 
 	// map to struct; all of these are two-bit enums
 	// within the byte, everything goes in reverse order!!
@@ -313,21 +315,21 @@ uint8_t ADCS_Set_Magnetometer_Config(I2C_HandleTypeDef *hi2c,
 	// and raw value divided by 1000 for everything else
 	// these are all INT, not UINT! 
 	// TODO: change this after testing
-	switch_order(data_send, ((uint16_t) mounting_transform_alpha_angle * 100), 0);
-	switch_order(data_send, ((uint16_t) mounting_transform_beta_angle * 100), 2);
-	switch_order(data_send, ((uint16_t) mounting_transform_gamma_angle * 100), 4);
-	switch_order(data_send, ((uint16_t) channel_1_offset * 1000), 6);
-	switch_order(data_send, ((uint16_t) channel_2_offset * 1000), 8);
-	switch_order(data_send, ((uint16_t) channel_3_offset * 1000), 10);
-	switch_order(data_send, ((uint16_t) sensitivity_matrix_s11 * 1000), 12);
-	switch_order(data_send, ((uint16_t) sensitivity_matrix_s22 * 1000), 14);
-	switch_order(data_send, ((uint16_t) sensitivity_matrix_s33 * 1000), 16);
-	switch_order(data_send, ((uint16_t) sensitivity_matrix_s12 * 1000), 18);
-	switch_order(data_send, ((uint16_t) sensitivity_matrix_s13 * 1000), 20);
-	switch_order(data_send, ((uint16_t) sensitivity_matrix_s21 * 1000), 22);
-	switch_order(data_send, ((uint16_t) sensitivity_matrix_s23 * 1000), 24);
-	switch_order(data_send, ((uint16_t) sensitivity_matrix_s31 * 1000), 26);
-	switch_order(data_send, ((uint16_t) sensitivity_matrix_s32 * 1000), 28);
+	ADCS_switch_order(data_send, ((uint16_t) mounting_transform_alpha_angle * 100), 0);
+	ADCS_switch_order(data_send, ((uint16_t) mounting_transform_beta_angle * 100), 2);
+	ADCS_switch_order(data_send, ((uint16_t) mounting_transform_gamma_angle * 100), 4);
+	ADCS_switch_order(data_send, ((uint16_t) channel_1_offset * 1000), 6);
+	ADCS_switch_order(data_send, ((uint16_t) channel_2_offset * 1000), 8);
+	ADCS_switch_order(data_send, ((uint16_t) channel_3_offset * 1000), 10);
+	ADCS_switch_order(data_send, ((uint16_t) sensitivity_matrix_s11 * 1000), 12);
+	ADCS_switch_order(data_send, ((uint16_t) sensitivity_matrix_s22 * 1000), 14);
+	ADCS_switch_order(data_send, ((uint16_t) sensitivity_matrix_s33 * 1000), 16);
+	ADCS_switch_order(data_send, ((uint16_t) sensitivity_matrix_s12 * 1000), 18);
+	ADCS_switch_order(data_send, ((uint16_t) sensitivity_matrix_s13 * 1000), 20);
+	ADCS_switch_order(data_send, ((uint16_t) sensitivity_matrix_s21 * 1000), 22);
+	ADCS_switch_order(data_send, ((uint16_t) sensitivity_matrix_s23 * 1000), 24);
+	ADCS_switch_order(data_send, ((uint16_t) sensitivity_matrix_s31 * 1000), 26);
+	ADCS_switch_order(data_send, ((uint16_t) sensitivity_matrix_s32 * 1000), 28);
 
 	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_CUBEACP_SET_MAGNETOMETER_CONFIG, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
@@ -644,9 +646,9 @@ uint8_t ADCS_Set_Commanded_Attitude_Angles(double x, double y, double z) {
 	// angle >> 8 gives upper byte, angle & 0x00FF gives lower byte
 	uint8_t data_send[6];
 	// swap low and high bytes and populate data_send
-	switch_order(data_send, ((uint16_t) (x * 100)), 0);
-	switch_order(data_send, ((uint16_t) (y * 100)), 2);
-	switch_order(data_send, ((uint16_t) (z * 100)), 4);
+	ADCS_switch_order(data_send, ((uint16_t) (x * 100)), 0);
+	ADCS_switch_order(data_send, ((uint16_t) (y * 100)), 2);
+	ADCS_switch_order(data_send, ((uint16_t) (z * 100)), 4);
 	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_CUBEACP_SET_COMMANDED_ATTITUDE_ANGLES, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
@@ -736,23 +738,23 @@ uint8_t ADCS_Set_ASGP4_Params(double incl_coefficient, double raan_coefficient, 
 	uint8_t data_send[30] = {}; // from Table 209
 
 	// populate data_send
-	switch_order(data_send, (uint16_t) (incl_coefficient * 1000), 0);
-	switch_order(data_send, (uint16_t) (raan_coefficient * 1000), 2);
-	switch_order(data_send, (uint16_t) (ecc_coefficient * 1000), 4);
-	switch_order(data_send, (uint16_t) (aop_coefficient * 1000), 6);
-	switch_order(data_send, (uint16_t) (time_coefficient * 1000), 8);
-	switch_order(data_send, (uint16_t) (pos_coefficient * 1000), 10);
+	ADCS_switch_order(data_send, (uint16_t) (incl_coefficient * 1000), 0);
+	ADCS_switch_order(data_send, (uint16_t) (raan_coefficient * 1000), 2);
+	ADCS_switch_order(data_send, (uint16_t) (ecc_coefficient * 1000), 4);
+	ADCS_switch_order(data_send, (uint16_t) (aop_coefficient * 1000), 6);
+	ADCS_switch_order(data_send, (uint16_t) (time_coefficient * 1000), 8);
+	ADCS_switch_order(data_send, (uint16_t) (pos_coefficient * 1000), 10);
 	data_send[12] = (uint8_t) (maximum_position_error * 10);
 	data_send[13] = (uint8_t) asgp4_filter;
-	switch_order_32(data_send, (uint32_t) (xp_coefficient * 10000000), 14);
-	switch_order_32(data_send, (uint32_t) (yp_coefficient * 10000000), 18);
+	ADCS_switch_order_32(data_send, (uint32_t) (xp_coefficient * 10000000), 14);
+	ADCS_switch_order_32(data_send, (uint32_t) (yp_coefficient * 10000000), 18);
 	data_send[22] = gps_roll_over;
 	data_send[23] = (uint8_t) (position_sd * 10);
 	data_send[24] = (uint8_t) (velocity_sd * 100);
 	data_send[25] = min_satellites;
 	data_send[26] = (uint8_t) (time_gain * 100);
 	data_send[27] = (uint8_t) (max_lag * 100);
-	switch_order(data_send, min_samples, 28);
+	ADCS_switch_order(data_send, min_samples, 28);
 
 	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_CUBEACP_SET_AUGMENTED_SGP4_PARAMETERS, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
@@ -840,9 +842,9 @@ uint8_t ADCS_Set_Rate_Gyro_Config(ADCS_Axis_Select gyro1, ADCS_Axis_Select gyro2
 	data_send[1] = (uint8_t) gyro2;
 	data_send[2] = (uint8_t) gyro3;
 
-	switch_order(data_send, (uint16_t) (x_rate_offset * 1000), 3);
-	switch_order(data_send, (uint16_t) (x_rate_offset * 1000), 5);
-	switch_order(data_send, (uint16_t) (x_rate_offset * 1000), 7);
+	ADCS_switch_order(data_send, (uint16_t) (x_rate_offset * 1000), 3);
+	ADCS_switch_order(data_send, (uint16_t) (x_rate_offset * 1000), 5);
+	ADCS_switch_order(data_send, (uint16_t) (x_rate_offset * 1000), 7);
 
 	data_send[9] = rate_sensor_mult;
 
@@ -963,7 +965,7 @@ uint8_t ADCS_send_I2C_telecommand(uint8_t id, uint8_t* data, uint32_t data_lengt
 	}
 
 	// include checksum following data if enabled
-	if (include_checksum) {buf[data_length] = COMMS_Crc8Checksum(data, data_length);}
+	if (include_checksum) {buf[data_length] = ADCS_COMMS_Crc8Checksum(data, data_length);}
 
 	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY) {} // wait until ready
 	adcs_tc_status = HAL_I2C_Mem_Write_IT(&hi2c1, ADCS_I2C_ADDRESS << 1, id, 1, buf, sizeof(buf));
@@ -1019,7 +1021,7 @@ uint8_t ADCS_send_I2C_telemetry_request(uint8_t id, uint8_t* data, uint32_t data
 
 	if (include_checksum) {
 		uint8_t checksum = temp_data[data_length];
-		uint8_t checksum_test = COMMS_Crc8Checksum(data, data_length);
+		uint8_t checksum_test = ADCS_COMMS_Crc8Checksum(data, data_length);
 		if (checksum != checksum_test) {
 			return 0x04;
 		}
@@ -1029,7 +1031,7 @@ uint8_t ADCS_send_I2C_telemetry_request(uint8_t id, uint8_t* data, uint32_t data
 
 }
 
-uint8_t send_UART_telecommand(UART_HandleTypeDef *huart, uint8_t id, uint8_t* data, uint32_t data_length) {
+uint8_t ADCS_send_UART_telecommand(UART_HandleTypeDef *huart, uint8_t id, uint8_t* data, uint32_t data_length) {
 	// WARNING: DEPRECATED FUNCTION
 	// This function is incomplete, and will not be updated.
 	// USE AT YOUR OWN RISK.
@@ -1129,14 +1131,14 @@ uint8_t I2C_Scan(void)
 
 
 // Swap low and high bytes of uint16 to turn into uint8 and put into specified index of an array
-uint8_t switch_order(uint8_t *array, uint16_t value, int index) {
+uint8_t ADCS_switch_order(uint8_t *array, uint16_t value, int index) {
     array[index] = (uint8_t)(value & 0xFF); // Insert the low byte of the value into the array at the specified index
     array[index + 1] = (uint8_t)(value >> 8); // Insert the high byte of the value into the array at the next index
 	return 0;
 }
 
 // Swap low and high bytes of uint32 to turn into uint8 and put into specified index of an array
-uint8_t switch_order_32(uint8_t *array, uint32_t value, int index) {
+uint8_t ADCS_switch_order_32(uint8_t *array, uint32_t value, int index) {
     array[index] = (uint8_t)(value & 0xFF); // Insert the low byte of the value into the array at the specified index
     array[index + 1] = (uint8_t)((value >> 8) & 0xFF); // Insert the second byte of the value into the array at the next index
 	array[index + 2] = (uint8_t)((value >> 16) & 0xFF); // Insert the third byte of the value into the array at the next next index
