@@ -484,7 +484,7 @@ uint8_t EPS_result_pcu_housekeeping_data_raw_TO_json(const EPS_result_pcu_housek
     // Write JSON string to buffer
     int snprintf_ret = snprintf(
         json_output_str, json_output_str_len,
-        "{\"voltage_internal_board_supply_mV\":%u,\"temperature_mcu_cC\":%u,\"vip_total_input\":%s,\"battery_pack_status_bitfield\":%u, \"battery_pack_info_each_pack\":[%s,%s,%s,%s]}",
+        "{\"voltage_internal_board_supply_raw\":%u,\"temperature_mcu_raw\":%u,\"vip_total_input_raw\":%s,\"conditioning_channel_info_each_channel_raw\":[%s,%s,%s,%s], \"battery_pack_info_each_pack\":[%s,%s,%s,%s]}",
         data->voltage_internal_board_supply_raw,
         data->temperature_mcu_raw,
         data->vip_total_input_raw,

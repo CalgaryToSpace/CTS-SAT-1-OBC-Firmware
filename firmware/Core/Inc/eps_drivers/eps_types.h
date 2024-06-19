@@ -195,7 +195,7 @@ typedef struct {
 } EPS_result_pbu_housekeeping_data_eng_t;
 
 // Command Response: 0x70: Get PCU (Conditioning Unit) Housekeeping Data (Raw)
-// TODO: EPS_result_pcu_housekeeping_data_raw_t
+// TODO: EPS_result_pcu_housekeeping_data_raw_t 
 typedef struct {
 	uint16_t voltage_internal_board_supply_raw;
 	uint16_t temperature_mcu_raw;
