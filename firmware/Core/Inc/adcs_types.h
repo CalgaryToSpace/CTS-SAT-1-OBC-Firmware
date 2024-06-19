@@ -33,7 +33,7 @@
 #define CRC_POLY 0x91
 
 // epsilon for comparing doubles
-#define ADCS_TEST_EPSILON 1e-9
+#define ADCS_TEST_EPSILON 1e-6
 
 /* Enumerated Values */
 

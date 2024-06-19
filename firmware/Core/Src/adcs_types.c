@@ -577,10 +577,10 @@ uint8_t ADCS_Estimate_Fine_Angular_Rates() {
 }
 
 uint8_t ADCS_Pack_to_Fine_Angular_Rates(uint8_t *data_received, ADCS_Fine_Angular_Rates_Struct *result) {
-    // formatted value (deg/s) = raw value * 0.01
-	result->x = ((double)((int16_t)(data_received[1] << 8 | data_received[0]))) * 0.01;
-    result->y = ((double)((int16_t)(data_received[3] << 8 | data_received[2]))) * 0.01;
-    result->z = ((double)((int16_t)(data_received[5] << 8 | data_received[4]))) * 0.01;
+    // formatted value (deg/s) = raw value * 0.001
+	result->x = ((double)((int16_t)(data_received[1] << 8 | data_received[0]))) * 0.001;
+    result->y = ((double)((int16_t)(data_received[3] << 8 | data_received[2]))) * 0.001;
+    result->z = ((double)((int16_t)(data_received[5] << 8 | data_received[4]))) * 0.001;
     return 0;
 }
 
@@ -784,8 +784,8 @@ uint8_t ADCS_Pack_to_ASGP4_Params(uint8_t* data_received, ADCS_ASGP4_Params_Stru
     result->pos_coefficient = ((double)((int16_t)(data_received[11] << 8 | data_received[10]))) * 0.001;
     result->maximum_position_error = ((double)((int16_t)data_received[12])) * 0.1;
     result->asgp4_filter = (ADCS_ASGP4_Filter)data_received[13];
-    result->xp_coefficient = ((double)((int16_t)(data_received[17] << 24 | data_received[16] << 16 | data_received[15] << 8 | data_received[14]))) * 0.0000001;
-    result->yp_coefficient = ((double)((int16_t)(data_received[21] << 24 | data_received[20] << 16 | data_received[19] << 8 | data_received[18]))) * 0.0000001;
+    result->xp_coefficient = ((double)((int32_t)(data_received[17] << 24 | data_received[16] << 16 | data_received[15] << 8 | data_received[14]))) * 0.0000001;
+    result->yp_coefficient = ((double)((int32_t)(data_received[21] << 24 | data_received[20] << 16 | data_received[19] << 8 | data_received[18]))) * 0.0000001;
     result->gps_roll_over = data_received[22];
     result->position_sd = ((double)((int16_t)data_received[23])) * 0.1;
     result->velocity_sd = ((double)((int16_t)data_received[24])) * 0.01;
