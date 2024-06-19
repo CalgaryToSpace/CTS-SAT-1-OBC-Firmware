@@ -16,6 +16,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <inttypes.h>
+#include "telecommand_definitions.h"
 
 extern volatile uint8_t TASK_heartbeat_is_on;
 
@@ -67,9 +68,9 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 2,
     },
     {
-        .tcmd_name = "get_config_var",
-        .tcmd_func = TCMDEXEC_get_configuration_variable,
-        .number_of_args = 1,
+        .tcmd_name = "get_int_config_var",
+        .tcmd_func = TCMDEXEC_get_integer_configuration_variable,
+        .number_of_args = 2,
     },
     {
         .tcmd_name = "get_all_config_vars",
@@ -162,13 +163,37 @@ uint8_t TCMDEXEC_set_configuration_variable(const uint8_t *args_str, TCMD_Teleco
     return 0;
 }
 
-uint8_t TCMDEXEC_get_configuration_variable(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                                            char *response_output_buf, uint16_t response_output_buf_len)
+uint8_t TCMDEXEC_get_integer_configuration_variable(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                                    char *response_output_buf, uint16_t response_output_buf_len)
 {
-    snprintf(response_output_buf, response_output_buf_len, "TODO\n");
+    CONFIG_integer_config_entry_t res;
+    const uint8_t found_int = CONFIG_find_integer_variable_by_name((const char *)args_str, strlen((char *)args_str), &res);
+    if (found_int > 0)
+    {
+        snprintf(response_output_buf, response_output_buf_len, "%s : %s\n", "Could not find", args_str);
+        return 0;
+    }
+
+    size_t num = 0;
+    char num_type_str[10];
+    memset(num_type_str, 0, 10);
+    const uint8_t found_num_type = CONFIG_get_integer_type(res.width_bytes, &num, res.variable_pointer, num_type_str);
+
+    if (found_num_type != 0)
+    {
+        snprintf(response_output_buf, response_output_buf_len, "%s\n", "Could not find type");
+        return 0;
+    }
+
+    snprintf(response_output_buf, response_output_buf_len, "%s | %d | %d\n", res.variable_name, res.width_bytes, num);
+
     return 0;
 }
 
+uint8_t TCMDEXEC_get_string_configuration_variable(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
+{
+    return 0;
+}
 uint8_t TCMDEXEC_get_all_configuration_variables(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                  char *response_output_buf, uint16_t response_output_buf_len)
 {

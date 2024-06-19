@@ -35,6 +35,35 @@ CONFIG_string_config_entry_t CTS1_String_Configuration_Variables[] = {
 // extern
 const uint8_t CTS1_String_Configuration_Variables_Count = sizeof(CTS1_String_Configuration_Variables) / sizeof(CONFIG_string_config_entry_t);
 
+uint8_t CONFIG_get_integer_type(size_t width, size_t *value, const void *var_ptr, char *type_as_str)
+{
+    // ssize_t value = -1;
+    switch (width)
+    {
+    case 1:
+        strcat(type_as_str, "uint8_t ");
+        *value = *(uint8_t *)var_ptr;
+        break;
+    case 2:
+        strcat(type_as_str, "uint16_t ");
+        *value = *(uint16_t *)var_ptr;
+        break;
+    case 4:
+        strcat(type_as_str, "uint32_t ");
+        *value = *(uint32_t *)var_ptr;
+        break;
+    case 8:
+        strcat(type_as_str, "uint64_t ");
+        *value = *(uint64_t *)var_ptr;
+        break;
+    default:
+        strcat(type_as_str, "unknown ");
+        return 1;
+        break;
+    }
+    return 0;
+}
+
 /// @brief Populuates result with a table of all integer configuration variables
 /// @param result Buffer to populate
 /// @return Length of the result as uint16
@@ -111,4 +140,40 @@ uint16_t CONFIG_print_string_table(char *result)
 
     strcat(result, "\0");
     return strlen(result);
+}
+
+/// @brief Finds an integer configuration variable by name
+/// @param name Name of the variable
+/// @param result Buffer to populate
+/// @return 0 if found, 1 if not found
+uint8_t CONFIG_find_integer_variable_by_name(const char *name, const uint8_t str_len, CONFIG_integer_config_entry_t *result)
+{
+    for (uint8_t i = 0; i < CTS1_Integer_Configuration_Variables_Count; i++)
+    {
+        const char *current_name = CTS1_Integer_Configuration_Variables[i].variable_name;
+        if (strncmp(name, current_name, str_len) == 0)
+        {
+            result = &CTS1_Integer_Configuration_Variables[i];
+            return 0;
+        }
+    }
+    return 1;
+}
+/// @brief Finds a string configuration variable by name
+/// @param name Name of the variable
+/// @param result Buffer to populate
+/// @return 0 if found, 1 if not found
+uint8_t CONFIG_find_string_variable_by_name(const char *name, CONFIG_string_config_entry_t *result)
+{
+    for (uint8_t i = 0; i < CTS1_String_Configuration_Variables_Count; i++)
+    {
+        const char *current_name = CTS1_String_Configuration_Variables[i].variable_name;
+        if (strcmp(name, current_name) == 0)
+        {
+            result = &CTS1_String_Configuration_Variables[i];
+
+            return 0;
+        }
+    }
+    return 1;
 }
