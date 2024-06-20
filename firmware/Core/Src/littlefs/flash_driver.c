@@ -1,5 +1,5 @@
-
 /*-----------------------------INCLUDES-----------------------------*/
+#include <time.h>
 #include "main.h"
 
 #include "littlefs/flash_driver.h"
@@ -7,6 +7,7 @@
 
 // TODO: check on timeout, maybe decrease a lot
 #define FLASH_TIMEOUT_MS 50
+#define LOOP_TIMEOUT_MS 50
 
 // -----------------------------FLASH DRIVER FUNCTIONS-----------------------------
 
@@ -107,16 +108,21 @@ uint8_t FLASH_write_enable(SPI_HandleTypeDef *hspi, uint8_t chip_number)
         return 1;
     }
 
-    // Keep looping as long as device is busy
-    // FIXME: needs a timeout
+    // Keep Looping until the Write Enable Latch is set
+    uint32_t loop_limit = HAL_GetTick() + LOOP_TIMEOUT_MS;
     uint8_t wip = 1;
     while (wip)
     {
-        // FIXME: this could stall forever
+        uint32_t curren_time = HAL_GetTick();
+        if (curren_time > loop_limit) {
+            DEBUG_uart_print_str("Timeout while setting Write Enable Latch to 1\n");
+            return 2;
+        }
+
         const uint8_t read_status_result = FLASH_read_status_register(hspi, chip_number, status_reg_buffer);
         if (read_status_result != 0) {
             FLASH_deactivate_chip_select();
-            return 1;
+            return 3;
         }
         wip = status_reg_buffer[0] & 1;
 
@@ -150,14 +156,20 @@ uint8_t FLASH_write_disable(SPI_HandleTypeDef *hspi, uint8_t chip_number)
     }
 
     // Keep looping until Write Enable latch isn't 0
-    // FIXME: needs a timeout
+    uint32_t loop_limit = HAL_GetTick() + LOOP_TIMEOUT_MS;
     uint8_t wel = 1;
     while (wel)
     {
+        uint32_t curren_time = HAL_GetTick();
+        if (curren_time > loop_limit) {
+            DEBUG_uart_print_str("Timeout while setting Write Enable Latch to 0\n");
+            return 2;
+        }
+
         const uint8_t read_status_result = FLASH_read_status_register(hspi, chip_number, status_reg_buffer);
         if (read_status_result != 0) {
             FLASH_deactivate_chip_select();
-            return 1;
+            return 3;
         }
         wel = status_reg_buffer[0] & 2;
     }
@@ -201,11 +213,17 @@ uint8_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t ad
     uint8_t status_reg_buffer[1] = {0};
 
     // Keep looping as long as device is busy
-    // FIXME: needs a timeout
+    uint32_t loop_limit = HAL_GetTick() + LOOP_TIMEOUT_MS;
     uint8_t wip = 1;
     uint8_t err = 0;
     while (wip)
     {
+        uint32_t curren_time = HAL_GetTick();
+        if (curren_time > loop_limit) {
+            DEBUG_uart_print_str("Timeout while setting Write Enable Latch to 0\n");
+            return 4;
+        }
+
         const uint8_t status_result = FLASH_read_status_register(hspi, chip_number, status_reg_buffer);
         if (status_result != 0) {
             FLASH_deactivate_chip_select();
@@ -214,14 +232,10 @@ uint8_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t ad
         wip = status_reg_buffer[0] & 1;
         err = status_reg_buffer[0] & 0b01000000;
         if (err == 1) {
-            // FIXME: why don't we return here?
-            break;
+            return 6;
         }
     }
-    if (err) {
-        return 10;
-    }
-    
+
     return 0;
 }
 
@@ -271,11 +285,16 @@ uint8_t FLASH_write(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t ad
     uint8_t status_reg_buffer[1] = {0};
 
     // Keep looping as long as device is busy
-    // FIXME: needs a timeout
+    uint32_t loop_limit = HAL_GetTick() + LOOP_TIMEOUT_MS;
     uint8_t wip = 1;
     uint8_t err = 0;
     while (wip)
     {
+        uint32_t curren_time = HAL_GetTick();
+        if (curren_time > loop_limit) {
+            DEBUG_uart_print_str("Timeout while setting Write Enable Latch to 0\n");
+            return 2;
+        }
         const uint8_t status_result = FLASH_read_status_register(hspi, chip_number, status_reg_buffer);
         if (status_result != 0) {
             FLASH_deactivate_chip_select();
