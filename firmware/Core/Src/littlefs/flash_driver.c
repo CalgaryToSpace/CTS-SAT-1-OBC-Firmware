@@ -141,17 +141,13 @@ uint8_t FLASH_write_enable(SPI_HandleTypeDef *hspi, uint8_t chip_number)
  */
 uint8_t FLASH_write_disable(SPI_HandleTypeDef *hspi, uint8_t chip_number)
 {
-    // FIXME: THIS FUNCTIONS IS NOT USED. It doesn't activate a chip select line even.
-    return 30;
-
     // Buffer to store status register values in
     uint8_t status_reg_buffer[1] = {0};
 
-    FLASH_deactivate_chip_select(); // FIXME: activate?
+    FLASH_activate_chip_select(chip_number);
     const HAL_StatusTypeDef tx_status = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_WRDI, 1, FLASH_TIMEOUT_MS);
-
+    FLASH_deactivate_chip_select();
     if (tx_status != HAL_OK) {
-        FLASH_deactivate_chip_select();
         return 1;
     }
 
@@ -172,6 +168,10 @@ uint8_t FLASH_write_disable(SPI_HandleTypeDef *hspi, uint8_t chip_number)
             return 3;
         }
         wel = status_reg_buffer[0] & 2;
+        
+        DEBUG_uart_print_str("DEBUG: status_reg = ");
+        DEBUG_uart_print_array_hex(status_reg_buffer, 1);
+        DEBUG_uart_print_str("\n");
     }
     return 0;
 }
