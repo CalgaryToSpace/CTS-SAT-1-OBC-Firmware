@@ -1,16 +1,15 @@
 var searchData=
 [
-  ['hal_5fi2c_5fmspdeinit_0',['HAL_I2C_MspDeInit',['../stm32l4xx__hal__msp_8c.html#a2ec8d9b09854c732e2feed549278f048',1,'stm32l4xx_hal_msp.c']]],
-  ['hal_5fi2c_5fmspinit_1',['HAL_I2C_MspInit',['../stm32l4xx__hal__msp_8c.html#abe01a202c27b23fc150aa66af3130073',1,'stm32l4xx_hal_msp.c']]],
-  ['hal_5finittick_2',['HAL_InitTick',['../stm32l4xx__hal__timebase__tim_8c.html#a879cdb21ef051eb81ec51c18147397d5',1,'stm32l4xx_hal_timebase_tim.c']]],
-  ['hal_5fmspinit_3',['HAL_MspInit',['../stm32l4xx__hal__msp_8c.html#ae4fb8e66865c87d0ebab74a726a6891f',1,'stm32l4xx_hal_msp.c']]],
-  ['hal_5fresumetick_4',['HAL_ResumeTick',['../stm32l4xx__hal__timebase__tim_8c.html#a24e0ee9dae1ec0f9d19200f5575ff790',1,'stm32l4xx_hal_timebase_tim.c']]],
-  ['hal_5fspi_5fmspdeinit_5',['HAL_SPI_MspDeInit',['../stm32l4xx__hal__msp_8c.html#abadc4d4974af1afd943e8d13589068e1',1,'stm32l4xx_hal_msp.c']]],
-  ['hal_5fspi_5fmspinit_6',['HAL_SPI_MspInit',['../stm32l4xx__hal__msp_8c.html#a17f583be14b22caffa6c4e56dcd035ef',1,'stm32l4xx_hal_msp.c']]],
-  ['hal_5fsuspendtick_7',['HAL_SuspendTick',['../stm32l4xx__hal__timebase__tim_8c.html#aaf651af2afe688a991c657f64f8fa5f9',1,'stm32l4xx_hal_timebase_tim.c']]],
-  ['hal_5ftim_5fperiodelapsedcallback_8',['HAL_TIM_PeriodElapsedCallback',['../main_8c.html#a8a3b0ad512a6e6c6157440b68d395eac',1,'main.c']]],
-  ['hal_5fuart_5fmspdeinit_9',['HAL_UART_MspDeInit',['../stm32l4xx__hal__msp_8c.html#a718f39804e3b910d738a0e1e46151188',1,'stm32l4xx_hal_msp.c']]],
-  ['hal_5fuart_5fmspinit_10',['HAL_UART_MspInit',['../stm32l4xx__hal__msp_8c.html#a0e553b32211877322f949b14801bbfa7',1,'stm32l4xx_hal_msp.c']]],
-  ['hal_5fuart_5frxcpltcallback_11',['HAL_UART_RxCpltCallback',['../uart__handler_8c.html#ae494a9643f29b87d6d81e5264e60e57b',1,'uart_handler.c']]],
-  ['hardfault_5fhandler_12',['HardFault_Handler',['../stm32l4xx__it_8h.html#a2bffc10d5bd4106753b7c30e86903bea',1,'HardFault_Handler(void):&#160;stm32l4xx_it.c'],['../stm32l4xx__it_8c.html#a2bffc10d5bd4106753b7c30e86903bea',1,'HardFault_Handler(void):&#160;stm32l4xx_it.c']]]
+  ['gen_5fconvert_5fbig_5fendian_5ffour_5fbyte_5farray_5fto_5fuint32_0',['GEN_convert_big_endian_four_byte_array_to_uint32',['../byte__transforms_8h.html#a5bb752d6b5ce545430fb8787beb12066',1,'GEN_convert_big_endian_four_byte_array_to_uint32(uint8_t four_byte_array[]):&#160;byte_transforms.c'],['../byte__transforms_8c.html#a5bb752d6b5ce545430fb8787beb12066',1,'GEN_convert_big_endian_four_byte_array_to_uint32(uint8_t four_byte_array[]):&#160;byte_transforms.c']]],
+  ['gen_5fconvert_5flittle_5fendian_5ffour_5fbyte_5farray_5fto_5fuint32_1',['GEN_convert_little_endian_four_byte_array_to_uint32',['../byte__transforms_8h.html#a4fcaae0b86496ed5ada43043f3d8d7a2',1,'GEN_convert_little_endian_four_byte_array_to_uint32(uint8_t four_byte_array[]):&#160;byte_transforms.c'],['../byte__transforms_8c.html#a4fcaae0b86496ed5ada43043f3d8d7a2',1,'GEN_convert_little_endian_four_byte_array_to_uint32(uint8_t four_byte_array[]):&#160;byte_transforms.c']]],
+  ['gen_5fget_5findex_5fof_5fsubstring_5fin_5farray_2',['GEN_get_index_of_substring_in_array',['../arrays_8h.html#af6f2987b63d15c0cc889ac8c2ea0d072',1,'GEN_get_index_of_substring_in_array(const char *haystack_arr, int16_t haystack_arr_len, const char *needle_str):&#160;telecommand_parser.c'],['../telecommand__parser_8c.html#af6f2987b63d15c0cc889ac8c2ea0d072',1,'GEN_get_index_of_substring_in_array(const char *haystack_arr, int16_t haystack_arr_len, const char *needle_str):&#160;telecommand_parser.c']]],
+  ['generate_5fleft_5fpane_3',['generate_left_pane',['../namespacects1__ground__support_1_1terminal__app_1_1dash__gui.html#a16c42b0efc5896c04fa7b2b04c310667',1,'cts1_ground_support::terminal_app::dash_gui']]],
+  ['generate_5fmarkdown_5ftable_5ffile_4',['generate_markdown_table_file',['../namespacebuild__pin__list.html#af9973210c23517117c5ba0864d40cf73',1,'build_pin_list']]],
+  ['generate_5frx_5ftx_5flog_5',['generate_rx_tx_log',['../namespacects1__ground__support_1_1terminal__app_1_1dash__gui.html#a2d91aa9b3c453bd1aaebf0cf3fa7935e',1,'cts1_ground_support::terminal_app::dash_gui']]],
+  ['get_5fgit_5ffile_5fmodified_5finfo_6',['get_git_file_modified_info',['../namespacebuild__pin__list.html#a637fbfe91f83927b90cb0943325a9feb',1,'build_pin_list']]],
+  ['get_5fmax_5farguments_5fper_5ftelecommand_7',['get_max_arguments_per_telecommand',['../namespacects1__ground__support_1_1terminal__app_1_1dash__gui.html#a4e5345e95e711ed5ceb6a42c4a2181cd',1,'cts1_ground_support::terminal_app::dash_gui']]],
+  ['get_5frepo_5fpath_8',['get_repo_path',['../namespacects1__ground__support_1_1paths.html#a37a1198ca2e2f8d58947b47eff9f25ea',1,'cts1_ground_support::paths']]],
+  ['get_5ftelecommand_5fby_5fname_9',['get_telecommand_by_name',['../namespacects1__ground__support_1_1terminal__app_1_1dash__gui.html#a960947eecbf9a6f33d55204bcf5b71b7',1,'cts1_ground_support::terminal_app::dash_gui']]],
+  ['get_5ftelecommand_5flist_5ffrom_5frepo_5fcached_10',['get_telecommand_list_from_repo_cached',['../namespacects1__ground__support_1_1terminal__app_1_1dash__gui.html#ac5604e68b6d71b702255bc0474c4abbe',1,'cts1_ground_support::terminal_app::dash_gui']]],
+  ['get_5ftelecommand_5fname_5flist_11',['get_telecommand_name_list',['../namespacects1__ground__support_1_1terminal__app_1_1dash__gui.html#aade74349bdf27154c168572a11fc4100',1,'cts1_ground_support::terminal_app::dash_gui']]]
 ];

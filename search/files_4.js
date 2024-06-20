@@ -1,10 +1,8 @@
 var searchData=
 [
-  ['flash_5fdriver_2ec_0',['flash_driver.c',['../flash__driver_8c.html',1,'']]],
-  ['flash_5fdriver_2eh_1',['flash_driver.h',['../flash__driver_8h.html',1,'']]],
-  ['flash_5ftelecommand_5fdefs_2ec_2',['flash_telecommand_defs.c',['../flash__telecommand__defs_8c.html',1,'']]],
-  ['flash_5ftelecommand_5fdefs_2eh_3',['flash_telecommand_defs.h',['../flash__telecommand__defs_8h.html',1,'']]],
-  ['flash_5ftesting_5fdemos_2ec_4',['flash_testing_demos.c',['../flash__testing__demos_8c.html',1,'']]],
-  ['freertos_2ec_5',['freertos.c',['../freertos_8c.html',1,'']]],
-  ['freertosconfig_2eh_6',['FreeRTOSConfig.h',['../FreeRTOSConfig_8h.html',1,'']]]
+  ['dash_5fgui_2epy_0',['dash_gui.py',['../dash__gui_8py.html',1,'']]],
+  ['debug_5fi2c_2ec_1',['debug_i2c.c',['../debug__i2c_8c.html',1,'']]],
+  ['debug_5fi2c_2eh_2',['debug_i2c.h',['../debug__i2c_8h.html',1,'']]],
+  ['debug_5fuart_2ec_3',['debug_uart.c',['../debug__uart_8c.html',1,'']]],
+  ['debug_5fuart_2eh_4',['debug_uart.h',['../debug__uart_8h.html',1,'']]]
 ];

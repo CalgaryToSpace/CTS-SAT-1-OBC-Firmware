@@ -1,4 +1,11 @@
 var searchData=
 [
-  ['error_5fhandler_0',['Error_Handler',['../main_8h.html#a1730ffe1e560465665eb47d9264826f9',1,'Error_Handler(void):&#160;main.c'],['../main_8c.html#a1730ffe1e560465665eb47d9264826f9',1,'Error_Handler(void):&#160;main.c']]]
+  ['debug_5fi2c_5fscan_0',['DEBUG_i2c_scan',['../debug__i2c_8h.html#a2dfefee7ab46c86526796a6bd1bdafd1',1,'DEBUG_i2c_scan(I2C_HandleTypeDef *hi2c):&#160;debug_i2c.c'],['../debug__i2c_8c.html#a2dfefee7ab46c86526796a6bd1bdafd1',1,'DEBUG_i2c_scan(I2C_HandleTypeDef *hi2c):&#160;debug_i2c.c']]],
+  ['debug_5fuart_5fprint_5farray_5fhex_1',['DEBUG_uart_print_array_hex',['../debug__uart_8h.html#a6899cfc3d3792f1457667bc3ae91160d',1,'DEBUG_uart_print_array_hex(uint8_t *array, uint32_t array_len):&#160;debug_uart.c'],['../debug__uart_8c.html#a6899cfc3d3792f1457667bc3ae91160d',1,'DEBUG_uart_print_array_hex(uint8_t *array, uint32_t array_len):&#160;debug_uart.c']]],
+  ['debug_5fuart_5fprint_5fint32_2',['DEBUG_uart_print_int32',['../debug__uart_8h.html#a16220fff29466d9de2dfe06c7512246d',1,'DEBUG_uart_print_int32(int32_t value):&#160;debug_uart.c'],['../debug__uart_8c.html#a16220fff29466d9de2dfe06c7512246d',1,'DEBUG_uart_print_int32(int32_t value):&#160;debug_uart.c']]],
+  ['debug_5fuart_5fprint_5fstr_3',['DEBUG_uart_print_str',['../debug__uart_8h.html#a50bda81315799872455980023a8fbfe8',1,'DEBUG_uart_print_str(const char *str):&#160;debug_uart.c'],['../debug__uart_8c.html#a50bda81315799872455980023a8fbfe8',1,'DEBUG_uart_print_str(const char *str):&#160;debug_uart.c']]],
+  ['debug_5fuart_5fprint_5fuint32_4',['DEBUG_uart_print_uint32',['../debug__uart_8h.html#a6e361e09754cc0dcf4809c053731f12a',1,'DEBUG_uart_print_uint32(uint32_t value):&#160;debug_uart.c'],['../debug__uart_8c.html#a6e361e09754cc0dcf4809c053731f12a',1,'DEBUG_uart_print_uint32(uint32_t value):&#160;debug_uart.c']]],
+  ['debugmon_5fhandler_5',['DebugMon_Handler',['../stm32l4xx__it_8h.html#adbdfb05858cc36fc520974df37ec3cb0',1,'DebugMon_Handler(void):&#160;stm32l4xx_it.c'],['../stm32l4xx__it_8c.html#adbdfb05858cc36fc520974df37ec3cb0',1,'DebugMon_Handler(void):&#160;stm32l4xx_it.c']]],
+  ['demo_5fflash_5fread_6',['demo_flash_read',['../flash__testing__demos_8c.html#a8b820d5639e3201ec967af242a24a521',1,'flash_testing_demos.c']]],
+  ['demo_5fflash_5fwrite_7',['demo_flash_write',['../flash__testing__demos_8c.html#a195fe65949096932e071ddb8f4ff0dd6',1,'flash_testing_demos.c']]]
 ];
