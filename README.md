@@ -1,11 +1,11 @@
 # CTS-SAT-1-OBC-Firmware
-Firmware for the CTS-SAT-1 ("FrontierSat") mission. Runs on the STM32-based Onboard Computer.
+Firmware and ground support software for the CTS-SAT-1 ("FrontierSat") mission. Firmware runs on the STM32-based Onboard Computer.
 
 ## Quick Links
 
 * [Doxygen Documentation](https://calgarytospace.github.io/CTS-SAT-1-OBC-Firmware)
 
-## Developing with VS Code
+## Developing Firmware with VS Code
 
 1. On Windows only, install the [ST-Link Debugging Driver](https://www.st.com/en/development-tools/stsw-link009.html) for compatibility with OpenOCD.
 2. Clone this repo.
@@ -19,12 +19,15 @@ Firmware for the CTS-SAT-1 ("FrontierSat") mission. Runs on the STM32-based Onbo
 9. Plug in an STM32 dev kit, and flash the project using the "Flash STM32" button/command palate option.
 10. Optional: setup the Codeium extension by creating an account. Codeium is a free GitHub Copilot-like extension which can boost productivity when used effectively.
 
+## Developing and Using the Ground Support Software
+
+See the [CTS-SAT-1 Ground Support Software README](/cts1_ground_support/README.md) for more information.
+
 ### Troubleshooting
 
 1. Check that your MicroUSB cable supports data transfer. Many MicroUSB cables are power-only.
 2. Disable your antivirus if it starts removing the compiler.
 3. Use the Ctrl+Shift+P command palate to run "STM32: Install all the build tools ...".
-4. 
 
 ### Updating the IOC File/Regenerating Boilerplate
 
