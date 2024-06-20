@@ -3,6 +3,9 @@
 #include "telecommands/telecommand_args_helpers.h"
 #include "transforms/arrays.h"
 #include "unit_tests/unit_test_executor.h"
+#include "debug_tools/debug_uart.h"
+#include "transforms/string_helpers.h"
+#include "configuration/configuration.h"
 
 // Additional telecommand definitions files:
 #include "telecommands/flash_telecommand_defs.h"
@@ -13,6 +16,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <inttypes.h>
+#include "telecommand_definitions.h"
 
 extern volatile uint8_t TASK_heartbeat_is_on;
 
@@ -56,6 +60,21 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "available_telecommands",
         .tcmd_func = TCMDEXEC_available_telecommands,
+        .number_of_args = 0,
+    },
+    {
+        .tcmd_name = "set_config_var",
+        .tcmd_func = TCMDEXEC_set_configuration_variable,
+        .number_of_args = 2,
+    },
+    {
+        .tcmd_name = "get_int_config_var",
+        .tcmd_func = TCMDEXEC_get_integer_configuration_variable,
+        .number_of_args = 2,
+    },
+    {
+        .tcmd_name = "get_all_config_vars",
+        .tcmd_func = TCMDEXEC_get_all_configuration_variables,
         .number_of_args = 0,
     },
 
@@ -130,33 +149,105 @@ const int16_t TCMD_NUM_TELECOMMANDS = sizeof(TCMD_telecommand_definitions) / siz
 //                          char *response_output_buf, uint16_t response_output_buf_len)
 
 uint8_t TCMDEXEC_hello_world(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
+                             char *response_output_buf, uint16_t response_output_buf_len)
+{
     snprintf(response_output_buf, response_output_buf_len, "Hello, world!\n");
     return 0;
 }
 
-uint8_t TCMDEXEC_heartbeat_off(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
-    TASK_heartbeat_is_on = 0;
-    snprintf(response_output_buf, response_output_buf_len, "Heartbeat OFF");
+uint8_t TCMDEXEC_set_configuration_variable(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                            char *response_output_buf, uint16_t response_output_buf_len)
+{
+    // TODO
+    snprintf(response_output_buf, response_output_buf_len, "TODO\n");
+    return 0;
+}
+
+uint8_t TCMDEXEC_get_integer_configuration_variable(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                                    char *response_output_buf, uint16_t response_output_buf_len)
+{
+    CONFIG_integer_config_entry_t res;
+    const uint8_t found_int = CONFIG_find_integer_variable_by_name((const char *)args_str, strlen((char *)args_str), &res);
+    if (found_int > 0)
+    {
+        snprintf(response_output_buf, response_output_buf_len, "%s : %s\n", "Could not find", args_str);
+        return 0;
+    }
+
+    size_t num = 0;
+    char num_type_str[10];
+    memset(num_type_str, 0, 10);
+    const uint8_t found_num_type = CONFIG_get_integer_type(res.width_bytes, &num, res.variable_pointer, num_type_str);
+
+    if (found_num_type != 0)
+    {
+        snprintf(response_output_buf, response_output_buf_len, "%s\n", "Could not find type");
+        return 0;
+    }
+
+    snprintf(response_output_buf, response_output_buf_len, "%s | %d | %d\n", res.variable_name, res.width_bytes, num);
+
+    return 0;
+}
+
+uint8_t TCMDEXEC_get_string_configuration_variable(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
+{
+    return 0;
+}
+uint8_t TCMDEXEC_get_all_configuration_variables(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                                 char *response_output_buf, uint16_t response_output_buf_len)
+{
+    // TODO: Deal with table which is too long, current thread has limited stack size,
+    // may need to increase or find other solution
+
+    const char *header = "Available Configuration Variables:";
+    const char *integer_header = "Integer Configuration Variables:";
+    const char *string_header = "String Configuration Variables:";
+
+    char config_integer_table[100];
+    memset(config_integer_table, 0, 100);
+    const uint16_t config_integer_table_size = CONFIG_print_integer_table(config_integer_table);
+
+    char config_string_table[100];
+    memset(config_string_table, 0, 100);
+    const uint16_t config_string_table_size = CONFIG_print_string_table(config_string_table);
+
+    snprintf(response_output_buf,
+             response_output_buf_len,
+             "%s\n\n%s\n\n%s\n\n%s\n\n%s",
+             header,
+             integer_header, config_integer_table,
+             string_header, config_string_table);
+
     return 0;
 }
 
 uint8_t TCMDEXEC_heartbeat_on(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
+                              char *response_output_buf, uint16_t response_output_buf_len)
+{
     TASK_heartbeat_is_on = 1;
     snprintf(response_output_buf, response_output_buf_len, "Heartbeat ON");
     return 0;
 }
 
+uint8_t TCMDEXEC_heartbeat_off(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                               char *response_output_buf, uint16_t response_output_buf_len)
+{
+    TASK_heartbeat_is_on = 0;
+    snprintf(response_output_buf, response_output_buf_len, "Heartbeat OFF");
+    return 0;
+}
+
 uint8_t TCMDEXEC_core_system_stats(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
+                                   char *response_output_buf, uint16_t response_output_buf_len)
+{
     snprintf(response_output_buf, response_output_buf_len, "System stats: TODO\n");
     return 0;
 }
 
 uint8_t TCMDEXEC_echo_back_args(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
+                                char *response_output_buf, uint16_t response_output_buf_len)
+{
 
     snprintf(response_output_buf, response_output_buf_len, "SUCCESS: Echo Args: '%s'\n", args_str);
     // TODO: handle args_str being too long
@@ -164,21 +255,25 @@ uint8_t TCMDEXEC_echo_back_args(const uint8_t *args_str, TCMD_TelecommandChannel
 }
 
 uint8_t TCMDEXEC_echo_back_uint32_args(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
+                                       char *response_output_buf, uint16_t response_output_buf_len)
+{
     response_output_buf[0] = '\0'; // clear the response buffer
 
-    for (uint8_t arg_num = 0; arg_num < 10; arg_num++) {
+    for (uint8_t arg_num = 0; arg_num < 10; arg_num++)
+    {
         uint64_t arg_uint64;
         uint8_t parse_result = TCMD_extract_uint64_arg(
-            (char*)args_str, strlen((char*)args_str), arg_num, &arg_uint64);
-        if (parse_result > 0) {
+            (char *)args_str, strlen((char *)args_str), arg_num, &arg_uint64);
+        if (parse_result > 0)
+        {
             // error parsing
             snprintf(
                 &response_output_buf[strlen(response_output_buf)],
                 response_output_buf_len - strlen(response_output_buf) - 1,
                 "Arg%d=error%d, ", arg_num, parse_result);
         }
-        else {
+        else
+        {
             // success parsing
             snprintf(
                 &response_output_buf[strlen(response_output_buf)],
@@ -190,16 +285,17 @@ uint8_t TCMDEXEC_echo_back_uint32_args(const uint8_t *args_str, TCMD_Telecommand
     return 0;
 }
 
-
 uint8_t TCMDEXEC_run_all_unit_tests(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
+                                    char *response_output_buf, uint16_t response_output_buf_len)
+{
     TEST_run_all_unit_tests_and_log(response_output_buf, response_output_buf_len);
     return 0;
 }
 
 uint8_t TCMDEXEC_available_telecommands(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
-    
+                                        char *response_output_buf, uint16_t response_output_buf_len)
+{
+
     char response[512] = {0};
     char *p = response;
     ssize_t left = sizeof(response);
@@ -207,14 +303,17 @@ uint8_t TCMDEXEC_available_telecommands(const uint8_t *args_str, TCMD_Telecomman
     snprintf(p, left, "%s", "Available_telecommands\n");
     p += 23;
     left -= 23;
-    for (uint16_t i = 0; i < TCMD_NUM_TELECOMMANDS; i++) {
+    for (uint16_t i = 0; i < TCMD_NUM_TELECOMMANDS; i++)
+    {
         len = strlen(TCMD_telecommand_definitions[i].tcmd_name) + 6;
         snprintf(p, left, "%3u) %s\n", i + 1, TCMD_telecommand_definitions[i].tcmd_name);
         p += len;
-        if (left > len) {
+        if (left > len)
+        {
             left -= len;
         }
-        else {
+        else
+        {
             break;
         }
     }
@@ -222,4 +321,3 @@ uint8_t TCMDEXEC_available_telecommands(const uint8_t *args_str, TCMD_Telecomman
 
     return 0;
 }
-

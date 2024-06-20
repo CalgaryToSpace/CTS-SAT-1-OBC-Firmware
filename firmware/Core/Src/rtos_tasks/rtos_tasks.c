@@ -104,6 +104,8 @@ void TASK_handle_uart_telecommands(void *argument) {
 			DEBUG_uart_print_str("'\n");
 
 			// validate the args
+
+			// opening parenthesis index
 			int32_t start_of_args_idx = TCMD_PREFIX_STR_LEN + strlen(tcmd_def.tcmd_name);
 			if (latest_tcmd_len < start_of_args_idx + 1) {
 				DEBUG_uart_print_str("ERROR: You must have parenthesis for the args.\n");
@@ -113,6 +115,8 @@ void TASK_handle_uart_telecommands(void *argument) {
 				DEBUG_uart_print_str("ERROR: You must have parenthesis for the args. You need an opening paren.\n");
 				continue;
 			}
+			
+			// closing parenthesis index
 			int32_t end_of_args_idx = GEN_get_index_of_substring_in_array((char*)latest_tcmd, latest_tcmd_len, ")");
 			if (end_of_args_idx < 0) {
 				DEBUG_uart_print_str("ERROR: You must have parenthesis for the args. No closing paren found.\n");
@@ -121,9 +125,10 @@ void TASK_handle_uart_telecommands(void *argument) {
 
 			// TODO: maybe log/print args too
 			
-			uint8_t args_str_no_parens[end_of_args_idx - start_of_args_idx + 2];
-			memcpy(args_str_no_parens, &latest_tcmd[start_of_args_idx+1], end_of_args_idx - start_of_args_idx - 1);
-			args_str_no_parens[end_of_args_idx - 1] = '\0';
+			const uint16_t arg_len = end_of_args_idx - start_of_args_idx - 1;
+			uint8_t args_str_no_parens[arg_len + 1];
+			memcpy(args_str_no_parens, &latest_tcmd[start_of_args_idx + 1], arg_len);
+			args_str_no_parens[arg_len] = '\0';
 
 			// TODO: parse out the @tssent=xx (timestamp sent) and ensure it's not a duplicate
 			// TODO: parse out the @tsexec=xx (timestamp to execute at) and see if it should be run immediately or queued (and add a queue system)
