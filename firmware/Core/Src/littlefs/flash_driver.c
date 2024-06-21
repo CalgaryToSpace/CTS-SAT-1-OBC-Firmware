@@ -6,7 +6,7 @@
 
 // TODO: check on timeout, maybe decrease a lot
 #define FLASH_TIMEOUT_MS 50
-#define FLASH_LOOP_TIMEOUT_MS 50
+#define FLASH_LOOP_TIMEOUT_MS 5000
 
 // -----------------------------FLASH DRIVER FUNCTIONS-----------------------------
 
