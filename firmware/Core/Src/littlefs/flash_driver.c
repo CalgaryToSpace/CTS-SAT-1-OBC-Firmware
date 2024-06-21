@@ -4,9 +4,11 @@
 #include "littlefs/flash_driver.h"
 #include "debug_tools/debug_uart.h"
 
-// TODO: check on timeout, maybe decrease a lot
-#define FLASH_TIMEOUT_MS 50
-#define FLASH_LOOP_TIMEOUT_MS 5000
+/// Timeout duration for HAL_SPI_READ/WRITE operations.
+#define FLASH_HAL_TIMEOUT_MS 5
+
+/// Duration to wait for the status register to update before timing out.
+#define FLASH_LOOP_TIMEOUT_MS 10
 
 // -----------------------------FLASH DRIVER FUNCTIONS-----------------------------
 
@@ -72,13 +74,13 @@ void FLASH_deactivate_chip_select()
 uint8_t FLASH_read_status_register(SPI_HandleTypeDef *hspi, uint8_t chip_number, uint8_t *buf)
 {
     FLASH_activate_chip_select(chip_number);
-    const HAL_StatusTypeDef tx_result = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_RDSR1, 1, FLASH_TIMEOUT_MS);
+    const HAL_StatusTypeDef tx_result = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_RDSR1, 1, FLASH_HAL_TIMEOUT_MS);
     if (tx_result != HAL_OK) {
         FLASH_deactivate_chip_select();
         return 1;
     }
 
-    const HAL_StatusTypeDef rx_result = HAL_SPI_Receive(hspi, (uint8_t *)buf, 1, FLASH_TIMEOUT_MS);
+    const HAL_StatusTypeDef rx_result = HAL_SPI_Receive(hspi, (uint8_t *)buf, 1, FLASH_HAL_TIMEOUT_MS);
     if (rx_result != HAL_OK) {
         FLASH_deactivate_chip_select();
         return 2;
@@ -101,7 +103,7 @@ uint8_t FLASH_write_enable(SPI_HandleTypeDef *hspi, uint8_t chip_number)
     uint8_t status_reg_buffer[1] = {0};
 
     FLASH_activate_chip_select(chip_number);
-    const HAL_StatusTypeDef tx_result_1 = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_WREN, 1, HAL_MAX_DELAY);
+    const HAL_StatusTypeDef tx_result_1 = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_WREN, 1, FLASH_HAL_TIMEOUT_MS);
     FLASH_deactivate_chip_select();
     if (tx_result_1 != HAL_OK) {
         return 1;
@@ -144,7 +146,7 @@ uint8_t FLASH_write_disable(SPI_HandleTypeDef *hspi, uint8_t chip_number)
     uint8_t status_reg_buffer[1] = {0};
 
     FLASH_activate_chip_select(chip_number);
-    const HAL_StatusTypeDef tx_status = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_WRDI, 1, FLASH_TIMEOUT_MS);
+    const HAL_StatusTypeDef tx_status = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_WRDI, 1, FLASH_HAL_TIMEOUT_MS);
     FLASH_deactivate_chip_select();
     if (tx_status != HAL_OK) {
         return 1;
@@ -196,12 +198,12 @@ uint8_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t ad
 
     // Send Sector Erase Command
     FLASH_activate_chip_select(chip_number);
-    const HAL_StatusTypeDef tx_result_1 = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_4SE, 1, FLASH_TIMEOUT_MS);
+    const HAL_StatusTypeDef tx_result_1 = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_4SE, 1, FLASH_HAL_TIMEOUT_MS);
     if (tx_result_1 != HAL_OK) {
         FLASH_deactivate_chip_select();
         return 2;
     }
-    const HAL_StatusTypeDef tx_result_2 = HAL_SPI_Transmit(hspi, (uint8_t *)addr_bytes, 4, FLASH_TIMEOUT_MS);
+    const HAL_StatusTypeDef tx_result_2 = HAL_SPI_Transmit(hspi, (uint8_t *)addr_bytes, 4, FLASH_HAL_TIMEOUT_MS);
     if (tx_result_2 != HAL_OK) {
         FLASH_deactivate_chip_select();
         return 3;
@@ -260,17 +262,17 @@ uint8_t FLASH_write(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t ad
 
     // Send WREN Command and the Data required with the command
     FLASH_activate_chip_select(chip_number);
-    const uint8_t tx_result_1 = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_4WRITE, 1, FLASH_TIMEOUT_MS);
+    const uint8_t tx_result_1 = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_4WRITE, 1, FLASH_HAL_TIMEOUT_MS);
     if (tx_result_1 != HAL_OK) {
         FLASH_deactivate_chip_select();
         return 2;
     }
-    const uint8_t tx_result_2 = HAL_SPI_Transmit(hspi, (uint8_t *)addr_bytes, 4, FLASH_TIMEOUT_MS);
+    const uint8_t tx_result_2 = HAL_SPI_Transmit(hspi, (uint8_t *)addr_bytes, 4, FLASH_HAL_TIMEOUT_MS);
     if (tx_result_2 != HAL_OK) {
         FLASH_deactivate_chip_select();
         return 3;
     }
-    const uint8_t tx_result_3 = HAL_SPI_Transmit(hspi, (uint8_t *)packet_buffer, size, FLASH_TIMEOUT_MS);
+    const uint8_t tx_result_3 = HAL_SPI_Transmit(hspi, (uint8_t *)packet_buffer, size, FLASH_HAL_TIMEOUT_MS);
     if (tx_result_3 != HAL_OK) {
         FLASH_deactivate_chip_select();
         return 4;
@@ -328,17 +330,17 @@ uint8_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_
 
     // Send Read Command and the data required with it
     FLASH_activate_chip_select(chip_number);
-    const HAL_StatusTypeDef tx_result_1 = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_4READ, 1, FLASH_TIMEOUT_MS);
+    const HAL_StatusTypeDef tx_result_1 = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_4READ, 1, FLASH_HAL_TIMEOUT_MS);
     if (tx_result_1 != HAL_OK) {
         FLASH_deactivate_chip_select();
         return 1;
     }
-    const HAL_StatusTypeDef tx_result_2 = HAL_SPI_Transmit(hspi, (uint8_t *)addr_bytes, 4, FLASH_TIMEOUT_MS);
+    const HAL_StatusTypeDef tx_result_2 = HAL_SPI_Transmit(hspi, (uint8_t *)addr_bytes, 4, FLASH_HAL_TIMEOUT_MS);
     if (tx_result_2 != HAL_OK) {
         FLASH_deactivate_chip_select();
         return 2;
     }
-    const HAL_StatusTypeDef rx_result_1 = HAL_SPI_Receive(hspi, (uint8_t *)rx_buffer, rx_buffer_len, FLASH_TIMEOUT_MS);
+    const HAL_StatusTypeDef rx_result_1 = HAL_SPI_Receive(hspi, (uint8_t *)rx_buffer, rx_buffer_len, FLASH_HAL_TIMEOUT_MS);
     if (rx_result_1 != HAL_OK) {
         FLASH_deactivate_chip_select();
         return 3;
@@ -362,13 +364,13 @@ uint8_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_number)
     FLASH_activate_chip_select(chip_number);
 
     // Transmit the READ_ID_CMD
-    if (HAL_SPI_Transmit(&hspi1, tx_buffer, 1, FLASH_TIMEOUT_MS) != HAL_OK) {
+    if (HAL_SPI_Transmit(&hspi1, tx_buffer, 1, FLASH_HAL_TIMEOUT_MS) != HAL_OK) {
         FLASH_deactivate_chip_select();
         return 1;
     }
 
     // Receive the response
-    if (HAL_SPI_Receive(&hspi1, rx_buffer, 5, FLASH_TIMEOUT_MS) != HAL_OK) {
+    if (HAL_SPI_Receive(&hspi1, rx_buffer, 5, FLASH_HAL_TIMEOUT_MS) != HAL_OK) {
         FLASH_deactivate_chip_select();
         return 2;
     }
