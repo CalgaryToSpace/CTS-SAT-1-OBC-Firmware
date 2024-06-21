@@ -1,5 +1,4 @@
 /*-----------------------------INCLUDES-----------------------------*/
-#include <time.h>
 #include "main.h"
 
 #include "littlefs/flash_driver.h"
