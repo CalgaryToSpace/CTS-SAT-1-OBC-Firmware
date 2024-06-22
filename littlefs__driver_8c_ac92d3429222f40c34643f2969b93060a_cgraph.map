@@ -1,26 +1,28 @@
 <map id="LFS_block_device_erase" name="LFS_block_device_erase">
-<area shape="rect" id="Node000001" title="LittleFS erase function." alt="" coords="5,81,174,107"/>
-<area shape="rect" id="Node000002" href="$flash__driver_8c.html#ac53f82844342cb2cac29aeb17a58ef91" title="Sends Sector Erase Command." alt="" coords="246,56,350,82"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="174,81,230,74,230,80,174,87"/>
-<area shape="rect" id="Node000009" href="$littlefs__driver_8c.html#ac54becf2a06dc9a90f281df70e34d857" title=" " alt="" coords="222,105,374,131"/>
-<area shape="poly" id="edge15_Node000001_Node000009" title=" " alt="" coords="174,101,206,105,206,110,174,107"/>
-<area shape="rect" id="Node000003" href="$flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="854,81,1004,121"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="351,69,839,94,839,99,350,74"/>
-<area shape="rect" id="Node000004" href="$flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="1052,53,1215,93"/>
-<area shape="poly" id="edge4_Node000002_Node000004" title=" " alt="" coords="345,53,422,36,584,11,651,5,713,3,775,5,842,12,1004,38,1041,46,1040,51,1004,43,841,17,775,11,713,8,651,10,585,16,422,41,347,58"/>
-<area shape="rect" id="Node000005" href="$flash__driver_8c.html#ae1eebdf2ce8dc00d9d493e081b45090b" title="Read Status Register and store the values in given buffer." alt="" coords="615,31,806,56"/>
-<area shape="poly" id="edge5_Node000002_Node000005" title=" " alt="" coords="350,63,599,48,600,53,350,68"/>
-<area shape="rect" id="Node000006" href="$flash__driver_8c.html#aa7d103560997c3a7415f78d114575f30" title="Sends Write Enable Command." alt="" coords="422,157,567,183"/>
-<area shape="poly" id="edge8_Node000002_Node000006" title=" " alt="" coords="348,80,375,90,424,118,466,146,463,150,421,122,373,95,346,85"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="1003,88,1036,83,1037,89,1004,93"/>
-<area shape="poly" id="edge6_Node000005_Node000003" title=" " alt="" coords="763,54,840,75,838,80,762,60"/>
-<area shape="poly" id="edge7_Node000005_Node000004" title=" " alt="" coords="806,47,1036,63,1036,69,806,53"/>
-<area shape="poly" id="edge12_Node000006_Node000003" title=" " alt="" coords="567,156,838,112,839,118,568,161"/>
-<area shape="poly" id="edge13_Node000006_Node000004" title=" " alt="" coords="568,171,657,172,767,168,886,155,1003,130,1044,116,1082,98,1084,103,1046,121,1005,135,887,160,767,173,657,177,568,177"/>
-<area shape="poly" id="edge14_Node000006_Node000005" title=" " alt="" coords="517,155,673,62,675,67,520,159"/>
-<area shape="rect" id="Node000007" href="$debug__uart_8c.html#a6899cfc3d3792f1457667bc3ae91160d" title=" " alt="" coords="615,284,806,310"/>
-<area shape="poly" id="edge9_Node000006_Node000007" title=" " alt="" coords="511,182,556,221,617,263,646,276,644,281,614,267,553,225,508,186"/>
-<area shape="rect" id="Node000008" href="$debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="854,259,1004,284"/>
-<area shape="poly" id="edge11_Node000006_Node000008" title=" " alt="" coords="529,181,616,212,732,238,839,257,838,262,731,243,615,217,527,186"/>
-<area shape="poly" id="edge10_Node000007_Node000008" title=" " alt="" coords="805,283,838,279,839,285,806,288"/>
+<area shape="rect" id="Node000001" title="LittleFS erase function." alt="" coords="5,150,174,176"/>
+<area shape="rect" id="Node000002" href="$flash__driver_8c.html#ac53f82844342cb2cac29aeb17a58ef91" title="Sends Sector Erase Command." alt="" coords="246,125,350,150"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="174,150,230,143,230,148,174,155"/>
+<area shape="rect" id="Node000009" href="$littlefs__driver_8c.html#ac54becf2a06dc9a90f281df70e34d857" title=" " alt="" coords="222,174,374,200"/>
+<area shape="poly" id="edge17_Node000001_Node000009" title=" " alt="" coords="174,170,206,174,206,179,174,175"/>
+<area shape="rect" id="Node000003" href="$debug__uart_8c.html#a6899cfc3d3792f1457667bc3ae91160d" title=" " alt="" coords="615,35,806,61"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="321,122,366,98,421,78,512,59,600,49,601,55,513,64,423,83,368,103,323,126"/>
+<area shape="rect" id="Node000004" href="$debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="854,35,1004,61"/>
+<area shape="poly" id="edge4_Node000002_Node000004" title=" " alt="" coords="311,122,357,84,388,63,421,47,476,27,524,14,568,6,610,3,697,8,806,20,860,29,859,34,805,25,696,13,610,8,569,11,526,19,478,32,423,52,391,68,360,88,315,126"/>
+<area shape="rect" id="Node000005" href="$flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="854,246,1004,287"/>
+<area shape="poly" id="edge5_Node000002_Node000005" title=" " alt="" coords="351,148,375,159,400,179,423,198,475,221,529,239,585,252,641,262,748,270,839,270,839,276,748,276,640,267,584,258,527,244,473,226,421,202,396,183,373,164,349,153"/>
+<area shape="rect" id="Node000006" href="$flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="1052,218,1215,259"/>
+<area shape="poly" id="edge7_Node000002_Node000006" title=" " alt="" coords="351,135,468,139,631,148,817,167,1005,197,1057,211,1056,216,1003,203,816,172,631,154,468,144,351,141"/>
+<area shape="rect" id="Node000007" href="$flash__driver_8c.html#ae1eebdf2ce8dc00d9d493e081b45090b" title="Read Status Register and store the values in given buffer." alt="" coords="615,339,806,365"/>
+<area shape="poly" id="edge8_Node000002_Node000007" title=" " alt="" coords="352,144,376,159,391,180,398,201,399,243,400,282,408,300,424,318,466,343,513,358,562,364,610,364,610,369,562,369,512,363,463,348,420,322,404,303,395,283,393,243,393,202,386,183,372,163,349,149"/>
+<area shape="rect" id="Node000008" href="$flash__driver_8c.html#aa7d103560997c3a7415f78d114575f30" title="Sends Write Enable Command." alt="" coords="422,162,567,188"/>
+<area shape="poly" id="edge11_Node000002_Node000008" title=" " alt="" coords="351,145,409,156,408,161,350,150"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="806,45,838,45,838,51,806,51"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="1003,254,1036,249,1037,255,1004,259"/>
+<area shape="poly" id="edge9_Node000007_Node000005" title=" " alt="" coords="753,336,805,318,867,291,869,296,807,323,755,341"/>
+<area shape="poly" id="edge10_Node000007_Node000006" title=" " alt="" coords="806,339,902,322,1003,296,1080,264,1082,269,1005,301,903,327,807,344"/>
+<area shape="poly" id="edge12_Node000008_Node000003" title=" " alt="" coords="517,159,673,67,675,71,520,164"/>
+<area shape="poly" id="edge13_Node000008_Node000004" title=" " alt="" coords="541,159,866,63,868,68,543,164"/>
+<area shape="poly" id="edge14_Node000008_Node000005" title=" " alt="" coords="528,186,616,216,732,240,839,255,839,261,731,245,615,221,526,191"/>
+<area shape="poly" id="edge15_Node000008_Node000006" title=" " alt="" coords="568,179,1036,226,1036,232,567,185"/>
+<area shape="poly" id="edge16_Node000008_Node000007" title=" " alt="" coords="514,186,683,327,680,331,510,190"/>
 </map>
