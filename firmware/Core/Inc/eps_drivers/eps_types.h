@@ -195,7 +195,7 @@ typedef struct {
 } EPS_result_pbu_housekeeping_data_eng_t;
 
 // Command Response: 0x70: Get PCU (Conditioning Unit) Housekeeping Data (Raw)
-// TODO: EPS_result_pcu_housekeeping_data_raw_t 
+// TODO: EPS_result_pcu_housekeeping_data_raw_t - DONE
 typedef struct {
 	uint16_t voltage_internal_board_supply_raw;
 	uint16_t temperature_mcu_raw;
@@ -206,6 +206,7 @@ typedef struct {
 
 // Command Response: 0x72: Get PCU (Conditioning Unit) Housekeeping Data (Eng)
 // Command Response: 0x74: Get PCU (Conditioning Unit) Housekeeping Data (Running Average, Eng)
+// TODO: EPS_result_pcu_housekeeping_data_eng_t - DONE
 typedef struct {
     uint16_t voltage_internal_board_supply_mV;
     uint16_t temperature_mcu_cC; // centiCelsius = 1e-2 degrees C
@@ -215,6 +216,7 @@ typedef struct {
 } EPS_result_pcu_housekeeping_data_eng_t;
 
 // Command Response: 0xA0: Get PDU (Distribution Unit) Housekeeping Data (Raw)
+// TODO: EPS_result_pdu_housekeeping_data_raw_t
 typedef struct {
 	uint16_t voltage_internal_board_supply_raw;
 	uint16_t temperature_mcu_raw;

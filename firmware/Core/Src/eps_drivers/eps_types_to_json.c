@@ -484,7 +484,7 @@ uint8_t EPS_result_pcu_housekeeping_data_raw_TO_json(const EPS_result_pcu_housek
     // Write JSON string to buffer
     int snprintf_ret = snprintf(
         json_output_str, json_output_str_len,
-        "{\"voltage_internal_board_supply_raw\":%u,\"temperature_mcu_raw\":%u,\"vip_total_input_raw\":%s,\"conditioning_channel_info_each_channel_raw\":[%s,%s,%s,%s], \"battery_pack_info_each_pack\":[%s,%s,%s,%s]}",
+        "{\"voltage_internal_board_supply_raw\":%u,\"temperature_mcu_raw\":%u,\"vip_total_input_raw\":%s,\"conditioning_channel_info_each_channel_raw\":[%s,%s,%s,%s]}",
         data->voltage_internal_board_supply_raw,
         data->temperature_mcu_raw,
         data->vip_total_input_raw,
@@ -499,6 +499,70 @@ uint8_t EPS_result_pcu_housekeeping_data_raw_TO_json(const EPS_result_pcu_housek
     }
     return 0; // Success
 }
+
+uint8_t EPS_result_pcu_housekeeping_data_eng_TO_json(const EPS_result_pcu_housekeeping_data_eng_t *data, char json_output_str[], uint16_t json_output_str_len) {
+    if (data == NULL || json_output_str == NULL || json_output_str_len < 10) {
+        return 1; // Error: Invalid input
+    }
+
+    // Write JSON string to buffer
+    int snprintf_ret = snprintf(
+        json_output_str, json_output_str_len,
+        "{\"voltage_internal_board_supply_mV\":%u,\"temperature_mcu_cC\":%u,\"vip_total_input\":%s,\"conditioning_channel_info_each_channel\":[%s,%s,%s,%s]}",
+        data->voltage_internal_board_supply_mV,
+        data->temperature_mcu_cC,
+        data->vip_total_input,
+        data->conditioning_channel_info_each_channel[0], data->conditioning_channel_info_each_channel[1],
+        data->conditioning_channel_info_each_channel[2], data->conditioning_channel_info_each_channel[3]);
+
+    if (snprintf_ret < 0) {
+        return 2; // Error: snprintf encoding error
+    }
+    if (snprintf_ret >= json_output_str_len) {
+        return 3; // Error: string buffer too short
+    }
+    return 0; // Success
+}
+
+uint8_t EPS_result_piu_housekeeping_data_raw_TO_json(const EPS_result_piu_housekeeping_data_raw_t *data, char json_output_str[], uint16_t json_output_str_len) {
+    if (data == NULL || json_output_str == NULL || json_output_str_len < 10) {
+        return 1; // Error: Invalid input
+    }
+
+    // Write JSON string to buffer
+    int snprintf_ret = snprintf(
+        json_output_str, json_output_str_len,
+        "{\"voltage_internal_board_supply_mV\":%u,\"temperature_mcu_cC\":%u,\"vip_total_input\":%s,\"conditioning_channel_info_each_channel\":[%s,%s,%s,%s]}",
+        data->voltage_internal_board_supply_raw,
+        data->temperature_mcu_raw,
+        data->vip_dist_input_raw,
+        data->vip_batt_input_raw,
+        data->stat_ch_on_bitfield,
+        data->stat_ch_overcurrent_fault_bitfield,
+        data->battery_status_bitfield,
+        data->battery_temp2_raw,
+        data->battery_temp3_raw,
+
+        data->vd0_voltage_raw,
+        data->vd1_voltage_raw,
+        data->vd2_voltage_raw,
+
+
+        data->vip_each_channel_raw[0], data->vip_each_channel_raw[1], data->vip_each_channel_raw[2], data->vip_each_channel_raw[3],
+        data->vip_each_channel_raw[5], data->vip_each_channel_raw[6], data->vip_each_channel_raw[7]
+
+
+
+    if (snprintf_ret < 0) {
+        return 2; // Error: snprintf encoding error
+    }
+    if (snprintf_ret >= json_output_str_len) {
+        return 3; // Error: string buffer too short
+    }
+    return 0; // Success
+}
+
+
 
 
 
