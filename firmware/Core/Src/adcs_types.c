@@ -19,10 +19,11 @@
 	Telemetry: 146, 151, 153, 154, 158, 159, 163, 161, 162, 166, 167, 168, 169, 172, 176, 177, 178, 179, 180, 191
 
 	Done: (see test logs for more info)
-	Untested: 7, 9, 15, 23, 27, 28, 45, 55, 64, 138, 145, 155, 156, 157, 170, 199, 200, 201, 204, 207, 223, 227
-	Tested: 10, 11, 13, 14, 17, 26, 63, 147, 150, 197, 240
+	Untested: 155, 156, 157, 170, 201, 204, 223
+	Need Work: 15/199, 23/138, 28/227
+	Tested: 7, 9, 10, 11, 13, 14, 17, 26, 27, 45, 55, 63, 64, 133, 145, 147, 150, 197, 200, 207, 240
 
-	TODO: additionally
+	additionally
 	- within a byte, use the opposite endian-ness (first towards the end, last towards the beginning of the byte)
 	- check INT vs UINT (int is signed, uint is unsigned)!
 	- make sure all input (TC) / output (TLM) values are __actual__ values, NOT raw values!
@@ -421,8 +422,8 @@ uint8_t ADCS_Get_Unix_Time_Save_Mode() {
 
 uint8_t ADCS_Pack_to_Unix_Time_Save_Mode(uint8_t *data_received, ADCS_Set_Unix_Time_Save_Mode_Struct *result) {
     result->save_now = data_received[0] & 0b00000001;
-    result->save_on_update = data_received[0] & 0b00000010;
-    result->save_periodic = data_received[0] & 0b00000100;
+    result->save_on_update = (data_received[0] & 0b00000010) >> 1;
+    result->save_periodic = (data_received[0] & 0b00000100) >> 2;
     result->period = data_received[1];
     return 0;
 }
@@ -805,8 +806,8 @@ uint8_t ADCS_Set_Tracking_Controller_Target_Reference(float lon, float lat, floa
 	// the float type should already be reversed, but need to test in implementation
 	// convert floats to reversed arrays of uint8_t
 	memcpy(&data_send[0],  &lon, sizeof(lon));
-	memcpy(&data_send[4],  &lon, sizeof(lat));
-	memcpy(&data_send[8],  &lon, sizeof(alt));
+	memcpy(&data_send[4],  &lat, sizeof(lat));
+	memcpy(&data_send[8],  &alt, sizeof(alt));
 
 	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_CUBEACP_SET_TRACKING_CONTROLLER_TARGET_REFERENCE, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
@@ -967,9 +968,12 @@ uint8_t ADCS_send_I2C_telecommand(uint8_t id, uint8_t* data, uint32_t data_lengt
 	// include checksum following data if enabled
 	if (include_checksum) {buf[data_length] = ADCS_COMMS_Crc8Checksum(data, data_length);}
 
-	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY) {} // wait until ready
-	adcs_tc_status = HAL_I2C_Mem_Write_IT(&hi2c1, ADCS_I2C_ADDRESS << 1, id, 1, buf, sizeof(buf));
-	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY) {} // wait until finished
+	adcs_tc_status = HAL_I2C_Mem_Write(&hi2c1, ADCS_I2C_ADDRESS << 1, id, 1, buf, sizeof(buf), ADCS_HAL_TIMEOUT);
+	//HAL_UART_Transmit(&hlpuart1, test, sizeof(test), 10000);
+
+	//while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY) {} // wait until ready
+	//adcs_tc_status = HAL_I2C_Mem_Write_IT(&hi2c1, ADCS_I2C_ADDRESS << 1, id, 1, buf, sizeof(buf));
+	//while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY) {} // wait until finished
 	//HAL_I2C_Master_Transmit(&hi2c1, ADCS_I2C_ADDRESS, buf, sizeof(buf), HAL_MAX_DELAY);
 
 	/* When sending a command to the CubeACP, it is possible to include an 8-bit CRC checksum.
@@ -1008,11 +1012,12 @@ uint8_t ADCS_send_I2C_telemetry_request(uint8_t id, uint8_t* data, uint32_t data
 	uint8_t temp_data[data_length + include_checksum];
 		// temp data used for checksum checking
 
-	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY) {} // wait until ready
-	adcs_tlm_status = HAL_I2C_Mem_Read_IT(&hi2c1, ADCS_I2C_ADDRESS << 1, id, 1, temp_data, sizeof(temp_data));
+	adcs_tlm_status = HAL_I2C_Mem_Read(&hi2c1, ADCS_I2C_ADDRESS << 1, id, 1, temp_data, sizeof(temp_data), ADCS_HAL_TIMEOUT);
+	// while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY) {} // wait until ready
+	// adcs_tlm_status = HAL_I2C_Mem_Read_IT(&hi2c1, ADCS_I2C_ADDRESS << 1, id, 1, temp_data, sizeof(temp_data));
 	// read the data using the EEPROM protocol (handled by built-in Mem_Read function)
 		// ADCS_I2C_ADDRESS << 1 = ADCS_I2C_WRITE, and (ADCS_I2C_ADDRESS << 1) | 0x01 = ADCS_I2C_READ
-	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY) {} // wait until finished
+	// while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY) {} // wait until finished
 
 	for (int i = 0; i < data_length; i++) {
 			// populate external data, except for checksum byte

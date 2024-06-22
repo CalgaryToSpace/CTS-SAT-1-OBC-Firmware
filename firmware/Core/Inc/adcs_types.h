@@ -32,6 +32,9 @@
 // CRC defines
 #define CRC_POLY 0x91
 
+// define for timeout
+#define ADCS_HAL_TIMEOUT 1000
+
 // epsilon for comparing doubles
 #define ADCS_TEST_EPSILON 1e-6
 

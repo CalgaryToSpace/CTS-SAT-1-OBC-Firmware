@@ -36,6 +36,16 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "run_all_unit_tests",
         .tcmd_func = TCMDEXEC_run_all_unit_tests,
         .number_of_args = 0,
+    },
+    {
+        .tcmd_name = "adcs_ack",
+        .tcmd_func = TCMDEXEC_ADCS_ack,
+        .number_of_args = 0,
+    },
+    {
+        .tcmd_name = "adcs_set_wheel_speed",
+        .tcmd_func = TCMDEXEC_ADCS_set_wheel_speed,
+        .number_of_args = 0,
     }
 };
 
@@ -104,6 +114,13 @@ uint8_t TCMDEXEC_ADCS_ack(void) {
     ADCS_TC_Ack_Struct ack;
     ADCS_TC_Ack(&ack);
     return ack.error_flag;
+}
+
+uint8_t TCMDEXEC_ADCS_set_wheel_speed(void) {
+    ADCS_TC_Ack_Struct ack;
+    ADCS_Set_Wheel_Speed(1, 2, 3);
+    //FIXME: fix me
+    return 0;
 }
 
 // TODO: telecommand definitions
