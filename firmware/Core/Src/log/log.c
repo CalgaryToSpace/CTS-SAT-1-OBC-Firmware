@@ -1,0 +1,337 @@
+#include "log/log.h"
+#include "debug_tools/debug_uart.h"
+#include "littlefs/lfs.h"
+#include "littlefs/littlefs_helper.h"
+#include "timekeeping/timekeeping.h"
+
+#include <complex.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdarg.h>
+#include <stdarg.h>
+
+// Inspired by uLog: https://github.com/rdpoor/ulog
+
+extern UART_HandleTypeDef hlpuart1;
+extern uint8_t LFS_is_lfs_mounted;
+
+// Internal interfaces and variables
+
+#define LOG_TIMESTAMP_MAX_LENGTH 30
+#define LOG_CHANNEL_NAME_MAX_LENGTH 20
+#define LOG_SYSTEM_NAME_MAX_LENGTH 20
+#define LOG_FORMATTED_MESSAGE_MAX_LENGTH 120
+#define LOG_FULL_MESSAGE_MAX_LENGTH 200
+#define LOG_UART_TRANSMIT_TIMEOUT 200
+
+static char LOG_timestamp_string[LOG_TIMESTAMP_MAX_LENGTH] = {0};
+static char LOG_formatted_log_message[LOG_FORMATTED_MESSAGE_MAX_LENGTH] = {0};
+static char LOG_full_log_message[LOG_FULL_MESSAGE_MAX_LENGTH] = {0};
+
+typedef struct {
+    LOG_channel_enum_t channel;
+    const char name[LOG_CHANNEL_NAME_MAX_LENGTH];
+    uint8_t enabled;
+} LOG_channel_t;
+
+typedef struct {
+    LOG_system_enum_t system;
+    char name[LOG_SYSTEM_NAME_MAX_LENGTH];
+    char *log_file_path;
+    uint8_t logging_enabled;
+} LOG_system_t;
+
+void LOG_to_file(const char filename[], const char msg[]);
+void LOG_to_umbilical_uart(const char msg[]);
+void LOG_to_uhf_radio(const char msg[]);
+void LOG_set_channel_state(LOG_channel_enum_t channel, uint8_t state);
+void LOG_set_system_file_logging_state(LOG_system_enum_t systems, uint8_t state);
+
+static LOG_channel_t LOG_channels[] = {
+    {LOG_CHANNEL_FILE, "log files", 0},
+    {LOG_CHANNEL_UHF_RADIO, "UHF radio", 0},
+    {LOG_CHANNEL_UMBILICAL_UART, "umbilical UART", 1},
+};
+static const uint16_t LOG_NUM_CHANNELS = sizeof(LOG_channels) / sizeof(LOG_channel_t);
+
+
+// LOG_SYSTEM_UNKNOWN must be the first entry
+static LOG_system_t LOG_systems[] = {
+    {LOG_SYSTEM_OBC, "OBC", "/logs/obc_system.log", 1},
+    {LOG_SYSTEM_UHF_RADIO, "UHF_RADIO", "/logs/uhf_radio_system.log", 1},
+    {LOG_SYSTEM_UMBILICAL_UART, "UMBILICAL_UART", "/logs/umbilical_uart_system.log", 1},
+    {LOG_SYSTEM_GPS, "GPS", "/logs/gps_system.log", 1},
+    {LOG_SYSTEM_MPI, "MPI", "/logs/mpi_system.log", 1},
+    {LOG_SYSTEM_EPS, "EPS", "/logs/eps_system.log", 1},
+    {LOG_SYSTEM_BOOM, "BOOM", "/logs/boom_system.log", 1},
+    {LOG_SYSTEM_ADCS, "ADCS", "/logs/adcs_system.log", 1},
+    {LOG_SYSTEM_LFS, "LFS", "/logs/lfs_system.log", 1},
+    {LOG_SYSTEM_FLASH, "FLASH", "/logs/flash_system.log", 1},
+    {LOG_SYSTEM_ANTENNA_DEPLOY, "ANTENNA_DEPLOY", "/logs/antenna_deploy_system.log", 1},
+    {LOG_SYSTEM_LOG, "LOG", "/logs/log_system.log", 1},
+    {LOG_SYSTEM_TELECOMMAND, "TELECOMMAND", "/logs/telecommand_system.log", 1},
+    {LOG_SYSTEM_UNIT_TEST, "UNIT_TEST", "/logs/unit_test_system.log", 1},
+    {LOG_SYSTEM_UNKNOWN, "UNKNOWN", "/logs/unknown_system.log", 1},
+};
+static const uint16_t LOG_NUM_SYSTEMS = sizeof(LOG_systems) / sizeof(LOG_system_t);
+
+// External interfaces 
+
+/// @brief Log a message to several communication channels
+/// @param from source of log message (i.e., satellite subsystem)
+/// @param channels bitwise-OR'd destination channels
+/// @param severity message severity
+/// @param msg message text
+/// @return void
+/// @details Normally msg does not end with a newline (\n).
+///     Exclude one or more channel using LOG_channel_exceptions(...).
+void LOG_message(LOG_system_enum_t from, LOG_severity_enum_t severity, LOG_channel_enum_t channels, const char fmt[], ...)
+{
+    // Get the system time
+    TIM_get_timestamp_string(LOG_timestamp_string, LOG_TIMESTAMP_MAX_LENGTH);
+
+    char *severity_text;
+    switch (severity) {
+        case LOG_SEVERITY_NORMAL:
+            severity_text = "NORMAL";
+            break;
+        case LOG_SEVERITY_ERROR:
+            severity_text = "ERROR";
+            break;
+        case LOG_SEVERITY_CRITICAL:
+            severity_text = "CRITICAL";
+            break;
+        default:
+            severity_text = "UNKNOWN SEVERITY";
+            break;
+    }
+
+    // Prepare the message according to the requested format
+    va_list ap;
+    va_start(ap, fmt);
+    vsnprintf(LOG_formatted_log_message, LOG_FORMATTED_MESSAGE_MAX_LENGTH, fmt, ap);
+    va_end(ap);
+
+    // Prepare the full message including time and severity
+    // Defaults to "UNKNOWN"
+    uint16_t system_index = LOG_NUM_SYSTEMS - 1;
+    for (uint16_t i = 0; i < LOG_NUM_SYSTEMS; i++) {
+        if (LOG_systems[i].system == from) {
+            system_index = i;
+            break;
+        }
+    }
+    snprintf(LOG_full_log_message, LOG_FULL_MESSAGE_MAX_LENGTH, 
+            "%s [%s:%s]: %s\n", 
+            LOG_timestamp_string, 
+            LOG_systems[system_index].name, 
+            severity_text, 
+            LOG_formatted_log_message
+    );
+
+    // Send message to enabled channels
+    for (uint16_t i = 0; i < LOG_NUM_CHANNELS; i++) {
+        if (LOG_channels[i].enabled && (LOG_channels[i].channel & channels)) {
+            switch (LOG_channels[i].channel) {
+                case LOG_CHANNEL_FILE:
+                    // Send to log file if subsystem logging is enabled
+                    if (LOG_systems[system_index].logging_enabled) {
+                        LOG_to_file(LOG_systems[system_index].log_file_path, LOG_full_log_message);
+                    }
+                    break;
+                case LOG_CHANNEL_UHF_RADIO:
+                    LOG_to_uhf_radio(LOG_full_log_message);
+                    break;
+                case LOG_CHANNEL_UMBILICAL_UART:
+                    LOG_to_umbilical_uart(LOG_full_log_message);
+                    break;
+                default:
+                    // TODO: Is recursion allowed?
+                    LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_CRITICAL, 
+                            LOG_CHANNEL_ALL, "Error: unknown log channel %s", 
+                            LOG_channels[i].name
+                    );
+                    break;
+            }
+        }
+    }
+    
+    return;
+}
+
+LOG_channel_enum_t LOG_channel_exceptions(LOG_channel_enum_t exceptions)
+{
+    return LOG_CHANNEL_ALL & ~exceptions;
+}
+
+
+/// @brief Enable the specified logging channel
+/// @param channel Bitwise OR'd channels to enable
+/// @return returns 0 on success
+void LOG_enable_channels(LOG_channel_enum_t channels)
+{
+    LOG_set_channel_state(channels, 1);
+    return;
+}
+
+/// @brief Disable the specified logging channel
+/// @param channel Bitwise-OR'd channels to disable
+/// @return returns 0 on success
+void LOG_disable_channels(LOG_channel_enum_t channels)
+{
+    LOG_set_channel_state(channels, 0);
+    return;
+}
+
+/// @brief Enable file logging for the specified systems
+/// @param systems Bitwise OR'd systems to enable
+/// @return returns 0 on success
+void LOG_enable_systems(LOG_system_enum_t systems)
+{
+    LOG_set_system_file_logging_state(systems, 1);
+    return;
+}
+
+/// @brief Disable file logging for the specified systems
+/// @param systems Bitwise OR'd systems to enable
+/// @return returns 0 on success
+void LOG_disable_systems(LOG_system_enum_t systems)
+{
+    LOG_set_system_file_logging_state(systems, 0);
+    return;
+}
+
+
+void LOG_channels_status(LOG_channel_enum_t channels)
+{
+    for (uint16_t i = 0; i < LOG_NUM_CHANNELS; i++) {
+        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_NORMAL, 
+                LOG_CHANNEL_ALL,
+                "%20s: %s",  
+                LOG_channels[i].name,
+                LOG_channels[i].enabled ? "enabled" : "disabled"
+        );
+    }
+}
+
+void LOG_systems_status(LOG_system_enum_t systems)
+{
+    for (uint16_t i = 0; i < LOG_NUM_SYSTEMS; i++) {
+        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_NORMAL, 
+                LOG_CHANNEL_ALL,
+                "%20s: %9s (log file: '%s')",  
+                LOG_systems[i].name,
+                LOG_systems[i].logging_enabled ? "enabled" : "disabled",
+                LOG_systems[i].log_file_path
+        );
+    }
+}
+
+// Internal functions
+
+/// @brief Sends a log message to a log file
+/// @param filename full path of the log file
+/// @param msg The message to be logged
+/// @return void
+void LOG_to_file(const char filename[], const char msg[])
+{
+    if (!LFS_is_lfs_mounted) {
+        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_CRITICAL, LOG_channel_exceptions(LOG_CHANNEL_FILE), 
+                "Error writing to system log file: LFS not mounted.\n");
+        return;
+    }
+
+    // We cannot use LFS_append_file due to recursion of the logging system
+    lfs_file_t file;
+    const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, filename, LFS_O_RDWR | LFS_O_CREAT | LFS_O_APPEND, &LFS_file_cfg);
+	if (open_result < 0)
+	{
+        // This error cannot be logged, except via UART or during an overpass 
+        // of the ground station
+        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_CRITICAL, LOG_channel_exceptions(LOG_CHANNEL_FILE), 
+                "Error opening system log file.\n");
+		return;
+	}
+    const lfs_soff_t offset = lfs_file_seek(&LFS_filesystem, &file, 0, LFS_SEEK_END);
+    if (offset < 0) {
+        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_CRITICAL, LOG_channel_exceptions(LOG_CHANNEL_FILE), 
+                "Error seeking to end of system log file.\n");
+        return;
+    }
+
+	const lfs_ssize_t bytes_written = lfs_file_write(&LFS_filesystem, &file, msg, strlen(msg));
+	if (bytes_written < 0) {
+        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_CRITICAL, LOG_channel_exceptions(LOG_CHANNEL_FILE), 
+                "Error writing to system log file.\n");
+		return;
+	}
+	
+	// Close the File, the storage is not updated until the file is closed successfully
+	const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
+	if (close_result < 0) {
+        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_CRITICAL, LOG_channel_exceptions(LOG_CHANNEL_FILE), 
+                "Error closing system log file.\n");
+		return;
+	}
+	
+	return;
+}
+
+/// @brief Sends a log message to the umbilical UART
+/// @param msg The message to be logged
+/// @return void
+void LOG_to_umbilical_uart(const char msg[]) 
+{
+    HAL_UART_Transmit(&hlpuart1, (uint8_t *)msg, strlen(msg),
+                      LOG_UART_TRANSMIT_TIMEOUT);
+    return;
+}
+
+/// @brief Sends a log message to the UHF radio
+/// @param msg The message to be logged
+/// @return void
+void LOG_to_uhf_radio(const char msg[])
+{
+    LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_CRITICAL, LOG_CHANNEL_UMBILICAL_UART, "TODO: replace this with a UHF RADIO transmission");
+    return;
+}
+
+/// @brief Enable or disable logging channels
+/// @param channels Bitwise OR'd log channels
+/// @state 0: disable  1:  enable
+/// @return 0 on success
+void LOG_set_channel_state(LOG_channel_enum_t channels, uint8_t state)
+{
+    for (uint16_t i = 0; i < LOG_NUM_CHANNELS; i++) {
+        if (LOG_channels[i].channel & channels) {
+            LOG_channels[i].enabled = state;
+            LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, 
+                    "%s logging via %s", 
+                    state == 0 ? "Disabled" : "Enabled", 
+                    LOG_channels[i].name
+            );
+        }
+    }
+    return;
+}
+
+/// @brief Enable or disable logging to file for specified systems
+/// @param systems Bitwise OR'd system to toggle logging for
+/// @state 0: disable  1:  enable
+/// @return 0 on success
+void LOG_set_system_file_logging_state(LOG_system_enum_t systems, uint8_t state)
+{
+    for (uint16_t i = 0; i < LOG_NUM_SYSTEMS; i++) {
+        if (LOG_systems[i].system & systems) {
+            LOG_systems[i].logging_enabled = state;
+            LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, 
+                    "%s file logging for %s", 
+                    state == 0 ? "Disabled" : "Enabled", 
+                    LOG_systems[i].name
+            );
+        }
+    }
+    return;
+}
+

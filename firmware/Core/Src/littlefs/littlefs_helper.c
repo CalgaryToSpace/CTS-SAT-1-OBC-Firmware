@@ -4,9 +4,11 @@
 #include <stdint.h>
 
 #include "littlefs/littlefs_helper.h"
+#include "littlefs/lfs.h"
 #include "littlefs/littlefs_driver.h"
 #include "debug_tools/debug_uart.h"
 #include "config/static_config.h"
+#include "log/log.h"
 
 /*-----------------------------VARIABLES-----------------------------*/
 // Variables to track LittleFS on Flash Memory Module
@@ -128,7 +130,7 @@ int8_t LFS_unmount()
  * @param root_directory Pointer to cstring holding the root directory to open and read 
  * @retval 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
  */
-int8_t LFS_list_directory(char *root_directory)
+int8_t LFS_list_directory(const char root_directory[])
 {
     if (!LFS_is_lfs_mounted)
     {
@@ -204,7 +206,7 @@ int8_t LFS_delete_file(const char file_name[])
  * @param dir_name Pointer to cstring holding the name of the directory
  * @retval 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
  */
-int8_t LFS_make_directory(char *dir_name)
+int8_t LFS_make_directory(const char dir_name[])
 {
     if (!LFS_is_lfs_mounted)
     {
@@ -282,50 +284,130 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
 }
 
 /**
+ * @brief Creates / Opens LittleFS File to append contents
+ * @param file_name - Pointer to cstring holding the file name to create or open
+ * @param write_buffer - Pointer to buffer holding the data to write
+ * @param write_buffer_len - Size of the data to write
+ * @retval 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
+ */
+int8_t LFS_append_file(const char file_name[], uint8_t *write_buffer, uint32_t write_buffer_len)
+{
+    if (!LFS_is_lfs_mounted)
+    {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_channel_exceptions(LOG_CHANNEL_FILE), "LittleFS not mounted");
+        return 1;
+    }
+
+    lfs_file_t file;
+    const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND, &LFS_file_cfg);
+
+	if (open_result < 0)
+	{
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_channel_exceptions(LOG_CHANNEL_FILE), "Error opening file");
+		return open_result;
+	}
+	
+    const int8_t seek_result = lfs_file_seek(&LFS_filesystem, &file, 0, LFS_SEEK_END);
+    if (seek_result < 0) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_channel_exceptions(LOG_CHANNEL_FILE), "Error seeking within file");
+        return seek_result;
+    }
+
+	const int8_t write_result = lfs_file_write(&LFS_filesystem, &file, write_buffer, write_buffer_len);
+	if (write_result < 0)
+	{
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_channel_exceptions(LOG_CHANNEL_FILE), "Error writing to file");
+		return write_result;
+	}
+	
+	// Close the File, the storage is not updated until the file is closed successfully
+	const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
+	if (close_result < 0)
+	{
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_channel_exceptions(LOG_CHANNEL_FILE), "Error closing file");
+		return close_result;
+	}
+	
+	return 0;
+}
+
+/**
  * @brief Opens LittleFS File to read from the Memory Module
  * @param file_name - Pointer to buffer holding the file name to open
+ * @param offset - position within the file to read from
  * @param read_buffer - Pointer to buffer where the read data will be stored
  * @param read_buffer_len - Size of the data to read
- * @retval Returns negative values if read or file open failed, else return 0
+ * @retval Returns negative values if read or file open failed, else the
+ * number of bytes read
  */
-int8_t LFS_read_file(const char file_name[], uint8_t *read_buffer, uint32_t read_buffer_len)
+lfs_ssize_t LFS_read_file(const char file_name[], lfs_soff_t offset, uint8_t *read_buffer, uint32_t read_buffer_len)
 {
 	lfs_file_t file;
 	const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_RDONLY, &LFS_file_cfg);
 	if (open_result < 0)
 	{
-		DEBUG_uart_print_str("Error opening file to read\n");
+        // TODO: confirm behaviour is desired: this assumes filesystem as a
+        // whole as an issue, so does not send log message to file
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_channel_exceptions(LOG_CHANNEL_FILE), "Error opening file to read");
 		return open_result;
 	}
 	
     if (LFS_enable_hot_path_debug_logs) {
-        DEBUG_uart_print_str("Opened file to read: ");
-        DEBUG_uart_print_str(file_name);
-        DEBUG_uart_print_str("\n");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_CHANNEL_ALL, "Opened file to read: %s", file_name);
     }
 
-	const int8_t read_result = lfs_file_read(&LFS_filesystem, &file, read_buffer, read_buffer_len);
+    const lfs_soff_t seek_result = lfs_file_seek(&LFS_filesystem, &file, offset, LFS_SEEK_SET);
+	if (seek_result < 0)
+	{
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_channel_exceptions(LOG_CHANNEL_FILE), "Error seeking within file");
+		return seek_result;
+	}
+
+	const lfs_ssize_t read_result = lfs_file_read(&LFS_filesystem, &file, read_buffer, read_buffer_len);
 	if (read_result < 0)
 	{
-		DEBUG_uart_print_str("Error Reading File!\n");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_channel_exceptions(LOG_CHANNEL_FILE), "Error reading file");
 		return read_result;
 	}
 	
     if (LFS_enable_hot_path_debug_logs) {
-	    DEBUG_uart_print_str("Successfully read file!\n");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_CHANNEL_ALL, "Successfully read file");
     }
 
 	// Close the File, the storage is not updated until the file is closed successfully
 	const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
 	if (close_result < 0)
 	{
-		DEBUG_uart_print_str("Error closing the file!\n");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_channel_exceptions(LOG_CHANNEL_FILE), "Error closing file");
 		return close_result;
 	}
 	
     if (LFS_enable_hot_path_debug_logs) {
-	    DEBUG_uart_print_str("Successfully closed the file!\n");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_channel_exceptions(LOG_CHANNEL_FILE), "Successfully close file");
     }
 
-	return 0;	
+	return read_result;	
+}
+
+/**
+ * @brief Returns the file size
+ * @param file_name - Pointer to buffer holding the file name to open
+ * @retval Returns negative values if read or file open failed, else the
+ * number of bytes in the file
+ */
+lfs_ssize_t LFS_file_size(const char file_name[])
+{
+	lfs_file_t file;
+	const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_RDONLY, &LFS_file_cfg);
+    if (open_result < 0) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_channel_exceptions(LOG_CHANNEL_FILE), "Error opening file");
+        return open_result;
+    }
+    const lfs_ssize_t size = lfs_file_size(&LFS_filesystem, &file);
+    const uint8_t close_result = lfs_file_close(&LFS_filesystem, &file);
+	if (close_result < 0) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_channel_exceptions(LOG_CHANNEL_FILE), "Error closing file");
+		return close_result;
+	}
+    return size;
 }

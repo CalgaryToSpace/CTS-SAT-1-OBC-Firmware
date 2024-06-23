@@ -8,8 +8,8 @@
 // Additional telecommand definitions files:
 #include "telecommands/flash_telecommand_defs.h"
 #include "telecommands/lfs_telecommand_defs.h"
+#include "telecommands/log_telecommand_defs.h"
 #include "telecommands/timekeeping_telecommand_defs.h"
-
 
 #include <stdio.h>
 #include <stdint.h>
@@ -146,10 +146,15 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
-        .tcmd_name = "fs_read_file",
-        .tcmd_func = TCMDEXEC_fs_read_file,
+        .tcmd_name = "fs_read_file_hex",
+        .tcmd_func = TCMDEXEC_fs_read_file_hex,
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "fs_read_text_file",
+        .tcmd_func = TCMDEXEC_fs_read_text_file,
+        .number_of_args = 1,
     },
     {
         .tcmd_name = "fs_demo_write_then_read",
@@ -164,6 +169,45 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     // ****************** END SECTION: lfs_telecommand_defs ******************
+
+    // ****************** SECTION: log_telecommand_defs ******************
+    {
+        .tcmd_name = "log_enable_channels",
+        .tcmd_func = TCMDEXEC_log_enable_channels,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "log_disable_channels",
+        .tcmd_func = TCMDEXEC_log_disable_channels,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "log_enable_systems",
+        .tcmd_func = TCMDEXEC_log_enable_systems,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "log_disable_systems",
+        .tcmd_func = TCMDEXEC_log_disable_systems,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "log_channels_status",
+        .tcmd_func = TCMDEXEC_log_channels_status,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "log_systems_status",
+        .tcmd_func = TCMDEXEC_log_systems_status,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    // ****************** END SECTION: log_telecommand_defs ******************
 
 };
 
