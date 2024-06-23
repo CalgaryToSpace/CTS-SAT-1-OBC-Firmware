@@ -28,6 +28,7 @@
 #include "rtos_tasks/rtos_tasks.h"
 #include "uart_handler/uart_handler.h"
 #include "littlefs/flash_driver.h"
+#include "log/log.h"
 
 /* USER CODE END Includes */
 
@@ -163,6 +164,9 @@ int main(void)
   UART_init_uart_handlers();
   
   FLASH_deactivate_chip_select();
+
+  // Logging system
+  LOG_init();
 
   /* USER CODE END 2 */
 

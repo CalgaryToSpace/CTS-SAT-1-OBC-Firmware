@@ -114,6 +114,11 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 1,
     },
     {
+        .tcmd_name = "fs_read_text_file",
+        .tcmd_func = TCMDEXEC_fs_read_text_file,
+        .number_of_args = 1,
+    },
+    {
         .tcmd_name = "fs_demo_write_then_read",
         .tcmd_func = TCMDEXEC_fs_demo_write_then_read,
         .number_of_args = 0,

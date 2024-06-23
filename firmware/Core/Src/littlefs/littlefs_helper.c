@@ -4,8 +4,11 @@
 #include <stdint.h>
 
 #include "littlefs/littlefs_helper.h"
+#include "littlefs/lfs.h"
 #include "littlefs/littlefs_driver.h"
 #include "debug_tools/debug_uart.h"
+#include "log/log.h"
+#include "log/ulog.h"
 
 /*-----------------------------VARIABLES-----------------------------*/
 // Variables to track LittleFS on Flash Memory Module
@@ -268,13 +271,62 @@ int8_t LFS_write_file(char *file_name, uint8_t *write_buffer, uint32_t write_buf
 }
 
 /**
+ * @brief Creates / Opens LittleFS File to append contents
+ * @param file_name - Pointer to cstring holding the file name to create or open
+ * @param write_buffer - Pointer to buffer holding the data to write
+ * @param write_buffer_len - Size of the data to write
+ * @retval 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
+ */
+int8_t LFS_append_file(char *file_name, uint8_t *write_buffer, uint32_t write_buffer_len)
+{
+    if (!LFS_is_lfs_mounted)
+    {
+		ULOG_ERROR("LittleFS not mounted.\n");
+        return 1;
+    }
+
+    lfs_file_t file;
+    const int8_t open_result = lfs_file_open(&lfs, &file, file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND);
+
+	if (open_result < 0)
+	{
+		ULOG_ERROR("Error opening file\n");
+		return open_result;
+	}
+	
+    const int8_t seek_result = lfs_file_seek(&lfs, &file, 0, LFS_SEEK_END);
+    if (seek_result < 0) {
+        ULOG_ERROR("Seek error\n");
+    }
+
+	const int8_t write_result = lfs_file_write(&lfs, &file, write_buffer, write_buffer_len);
+	if (write_result < 0)
+	{
+		ULOG_ERROR("Error writing to file\n");
+		return write_result;
+	}
+	
+	// Close the File, the storage is not updated until the file is closed successfully
+	const int8_t close_result = lfs_file_close(&lfs, &file);
+	if (close_result < 0)
+	{
+		ULOG_ERROR("Error closing the file\n");
+		return close_result;
+	}
+	
+	return 0;
+}
+
+/**
  * @brief Opens LittleFS File to read from the Memory Module
  * @param file_name - Pointer to buffer holding the file name to open
+ * @param offset - position within the file to read from
  * @param read_buffer - Pointer to buffer where the read data will be stored
  * @param read_buffer_len - Size of the data to read
- * @retval Returns negative values if read or file open failed, else return 0
+ * @retval Returns negative values if read or file open failed, else the
+ * number of bytes read
  */
-int8_t LFS_read_file(char *file_name, uint8_t *read_buffer, uint32_t read_buffer_len)
+lfs_ssize_t LFS_read_file(char *file_name, lfs_soff_t offset, uint8_t *read_buffer, uint32_t read_buffer_len)
 {
 	lfs_file_t file;
 	const int8_t open_result = lfs_file_open(&lfs, &file, file_name, LFS_O_RDONLY);
@@ -284,19 +336,20 @@ int8_t LFS_read_file(char *file_name, uint8_t *read_buffer, uint32_t read_buffer
 		return open_result;
 	}
 	
-	DEBUG_uart_print_str("Opened file to read: ");
-	DEBUG_uart_print_str(file_name);
-	DEBUG_uart_print_str("\n");
+    const lfs_soff_t seek_result = lfs_file_seek(&lfs, &file, offset, LFS_SEEK_SET);
+	if (seek_result < 0)
+	{
+		DEBUG_uart_print_str("File seek error\n");
+		return seek_result;
+	}
 
-	const int8_t read_result = lfs_file_read(&lfs, &file, read_buffer, read_buffer_len);
+	const lfs_ssize_t read_result = lfs_file_read(&lfs, &file, read_buffer, read_buffer_len);
 	if (read_result < 0)
 	{
 		DEBUG_uart_print_str("Error Reading File!\n");
 		return read_result;
 	}
 	
-	DEBUG_uart_print_str("Successfully read file!\n");
-
 	// Close the File, the storage is not updated until the file is closed successfully
 	const int8_t close_result = lfs_file_close(&lfs, &file);
 	if (close_result < 0)
@@ -305,6 +358,27 @@ int8_t LFS_read_file(char *file_name, uint8_t *read_buffer, uint32_t read_buffer
 		return close_result;
 	}
 	
-	DEBUG_uart_print_str("Successfully closed the file!\n");
-	return 0;	
+	return read_result;	
+}
+
+/**
+ * @brief Returns the file size
+ * @param file_name - Pointer to buffer holding the file name to open
+ * @retval Returns negative values if read or file open failed, else the
+ * number of bytes in the file
+ */
+lfs_ssize_t LFS_file_size(char *file_name)
+{
+	lfs_file_t file;
+	const int8_t open_result = lfs_file_open(&lfs, &file, file_name, LFS_O_RDONLY);
+    if (open_result < 0) {
+        DEBUG_uart_print_str("Error opening file\n");
+    }
+    const lfs_ssize_t size = lfs_file_size(&lfs, &file);
+    const uint8_t close_result = lfs_file_close(&lfs, &file);
+	if (close_result < 0) {
+		DEBUG_uart_print_str("Error closing the file!\n");
+		return close_result;
+	}
+    return size;
 }
