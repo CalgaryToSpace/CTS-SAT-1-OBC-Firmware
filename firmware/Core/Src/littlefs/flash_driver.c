@@ -5,7 +5,7 @@
 #include "debug_tools/debug_uart.h"
 
 /// Timeout duration for HAL_SPI_READ/WRITE operations.
-#define FLASH_HAL_TIMEOUT_MS 5
+#define FLASH_HAL_TIMEOUT_MS 10 
 
 // The following timeout values are sourced from Section 11.3.1, Table 56: "CFI system interface string"
 // and are interpreted using: https://www.infineon.com/dgdl/Infineon-AN98488_Quick_Guide_to_Common_Flash_Interface-ApplicationNotes-v05_00-EN.pdf
