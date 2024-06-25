@@ -370,7 +370,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "mpi_send_command",
         .tcmd_func = TCMDEXEC_mpi_send_command_hex,
-        .number_of_args = 2,
+        .number_of_args = 1,
     }
     // ****************** END: MPI_telecommand_definitions ********************
 };
