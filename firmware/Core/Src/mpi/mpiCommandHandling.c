@@ -6,7 +6,7 @@
  */
 
 #include <../Inc/mpi/mpiCommandHandling.h>
-#include <../Inc/mpi/DoubleBuffer.h>
+#include <../Inc/mpi/double_buffer.h>
 #include "debug_tools/debug_uart.h"
 // #include <../Inc/memory_utilities.h>
 #include "main.h"
@@ -20,37 +20,60 @@ DoubleBuffer MPIFrameBuffer; // Double buffer is used to receive incoming MPI Fr
 /**
  * @brief Sends commandcode+params to the MPI
  * @param command data (command) being sent to the MPI
- * @returns 0 - failure from MPI, 1- command successfully received by the MPI, 2 - failed UART transmission, 3 - failed UART reception
+ * @returns 0 - success, 1 - failure from the MPI, 2 - failed UART transmission, 3 - failed UART reception
  */
-uint8_t sendTelecommandHex(uint8_t *command)
+uint8_t sendTelecommandHex(uint8_t *bytes_to_send, size_t bytes_to_send_len, uint8_t *mpi_cmd_response, size_t mpi_cmd_response_len)
 {
-	size_t commandBufferSize = strlen((const char *)command);
-	const char *TC_hex = "5443"; // Hex representation of 'T' and 'C' (All commands to the MPI must begin with 'TC')
-	strcat((char *)command, TC_hex);
+	// Buffers to store outgoing & incoming data from the MPI
+	uint8_t UART1_txBuffer[bytes_to_send_len + 2];	   // +2 accounts for 'TC' command identifier being appended
+	memset(UART1_txBuffer, 0, sizeof(UART1_txBuffer)); // Initialize all elements to 0
+
+	// All commands to the MPI must begin with 'TC'
+	UART1_txBuffer[0] = 0x54; // Hex representation of 'T'
+	UART1_txBuffer[1] = 0x43; // Hex representation of 'C'
+
+	// Add the command bytes / parameters to the buffer
+	if (bytes_to_send_len != 0)
+	{
+		for (size_t i = 0; i < bytes_to_send_len; i++)
+		{
+			UART1_txBuffer[2 + i] = bytes_to_send[i];
+		}
+	}
 
 	// Transmit the MPI command
-	HAL_StatusTypeDef transmit_status = HAL_UART_Transmit(&huart1, (uint8_t *)command, commandBufferSize, 100);
+	HAL_StatusTypeDef transmit_status = HAL_UART_Transmit(&huart1, (uint8_t *)UART1_txBuffer, sizeof(UART1_txBuffer), 100);
 
 	// Check UART transmission
 	if (transmit_status != HAL_OK)
 	{
-		return 3; // Failed UART transmission
+		return 2; // Error code for failed UART transmission
 	}
 
 	// Receive MPI response
-	uint8_t *mpiResponseBuffer; // Buffer stores incoming tele-command response from the MPI (command code followed by response code)
-	HAL_StatusTypeDef receive_status = HAL_UART_Receive_DMA(&huart1, mpiResponseBuffer, BUFFER_SIZE);
+	HAL_StatusTypeDef receive_status = HAL_UART_Receive_DMA(&huart1, (uint8_t *)mpi_cmd_response, mpi_cmd_response_len);
 
 	// Check UART reception
 	if (receive_status != HAL_OK)
 	{
-		return 4; // Failed UART reception
+		return 3; // Error Code for failed UART reception
 	}
 
-	// Send back MPI response code upon a successful transmission
-	size_t responseBufferSize = strlen((const char *)mpiResponseBuffer);
-	uint8_t response_code = mpiResponseBuffer[responseBufferSize - 1] - '0';
-	return response_code; // 1 - Successful command reception by the MPI, 0 - Failure to comprehend command by the MPI
+	// Verify MPI response
+
+	if (memcmp(UART1_txBuffer, mpi_cmd_response, bytes_to_send + 2) != 0)
+	{
+		return 1; // Error code for invalid response from the MPI
+	}
+	// Check if the byte after (cmd echo) is 0x01
+	if (mpi_cmd_response[bytes_to_send_len + 3] == 0x01)
+	{
+		return 0; // Valid response from the MPI
+	}
+	else
+	{
+		return 1; // Error code for invalid response from the MPI
+	}
 }
 
 /**
@@ -248,7 +271,7 @@ uint8_t sendTC_HV_INNER_DOME_SCAN_MODE(uint8_t mode)
 	uint8_t params[] = {mode};
 
 	// Command has been verified and parsed to be sent to the MPI (Returns MPI response)
-	return sendTelecommand(HV_INNER_DOME_SCAN_MODE, params);
+	return sendTelecommand(MPI_CMD_HV_INNER_DOME_SCAN_MODE, params);
 }
 
 // TODO: Confirm for voltage methods whether they are two settings or a range between them
@@ -266,7 +289,7 @@ uint8_t sendTC_HV_SET_FACEPLATE_VOLTAGE(uint16_t voltage)
 	params[1] = (uint8_t)(voltage);		 // LSB of voltage
 
 	// Command has been verified and parsed to be sent to the MPI (Returns MPI response)
-	return sendTelecommand(HV_SET_FACEPLATE_VOLTAGE, params);
+	return sendTelecommand(MPI_CMD_HV_SET_FACEPLATE_VOLTAGE, params);
 }
 
 uint8_t sendTC_HV_SET_SCAN_MIDPOINT_VOLTAGE(uint16_t voltage)
@@ -283,7 +306,7 @@ uint8_t sendTC_HV_SET_SCAN_MIDPOINT_VOLTAGE(uint16_t voltage)
 	params[1] = (uint8_t)(voltage);		 // LSB of voltage
 
 	// Command has been verified and parsed to be sent to the MPI (Returns MPI response)
-	return sendTelecommand(HV_SET_SCAN_MIDPOINT_VOLTAGE, params);
+	return sendTelecommand(MPI_CMD_HV_SET_SCAN_MIDPOINT_VOLTAGE, params);
 }
 
 uint8_t sendTC_HV_SET_SCAN_AMPLITUDE_VOLTAGE(uint16_t voltage)
@@ -300,7 +323,7 @@ uint8_t sendTC_HV_SET_SCAN_AMPLITUDE_VOLTAGE(uint16_t voltage)
 	params[1] = (uint8_t)(voltage);		 // LSB of voltage
 
 	// Command has been verified and parsed to be sent to the MPI (Returns MPI response)
-	return sendTelecommand(HV_SET_SCAN_AMPLITUDE_VOLTAGE, params);
+	return sendTelecommand(MPI_CMD_HV_SET_SCAN_AMPLITUDE_VOLTAGE, params);
 }
 
 uint8_t sendTC_HV_SET_SCAN_NUMBER_OF_STEPS(uint16_t steps)
@@ -313,7 +336,7 @@ uint8_t sendTC_HV_SET_SCAN_NUMBER_OF_STEPS(uint16_t steps)
 	params[1] = (uint8_t)(steps);	   // Byte 0 of steps
 
 	// Command has been verified and parsed to be sent to the MPI (Returns MPI response)
-	return sendTelecommand(HV_SET_SCAN_NUMBER_OF_STEPS, params);
+	return sendTelecommand(MPI_CMD_HV_SET_SCAN_NUMBER_OF_STEPS, params);
 }
 
 uint8_t sendTC_SET_INTEGRATION_PERIOD(uint16_t period)
@@ -329,7 +352,7 @@ uint8_t sendTC_SET_INTEGRATION_PERIOD(uint16_t period)
 	params[1] = (uint8_t)(period);		// LSB of integration period setting
 
 	// Command has been verified and parsed to be sent to the MPI (Returns MPI response)
-	return sendTelecommand(SET_INTEGRATION_PERIOD, params);
+	return sendTelecommand(MPI_CMD_SET_INTEGRATION_PERIOD, params);
 }
 
 uint8_t sendTC_AGC_ENABLE()
@@ -338,7 +361,7 @@ uint8_t sendTC_AGC_ENABLE()
 	uint8_t params[] = {};
 
 	// Command ready to be sent to the MPI
-	return sendTelecommand(AGC_ENABLE, params);
+	return sendTelecommand(MPI_CMD_AGC_ENABLE, params);
 }
 
 uint8_t sendTC_AGC_DISABLE()
@@ -347,7 +370,7 @@ uint8_t sendTC_AGC_DISABLE()
 	uint8_t params[] = {};
 
 	// Command ready to be sent to the MPI
-	return sendTelecommand(AGC_DISABLE, params);
+	return sendTelecommand(MPI_CMD_AGC_DISABLE, params);
 }
 
 uint8_t sendTC_BL_ENTER_BOOTLOADER()
@@ -356,7 +379,7 @@ uint8_t sendTC_BL_ENTER_BOOTLOADER()
 	uint8_t params[] = {};
 
 	// Command ready to be sent to the MPI
-	return sendTelecommand(BL_ENTER_BOOTLOADER, params);
+	return sendTelecommand(MPI_CMD_BL_ENTER_BOOTLOADER, params);
 }
 
 uint8_t sendTC_BL_EXIT_BOOTLOADER()
@@ -365,7 +388,7 @@ uint8_t sendTC_BL_EXIT_BOOTLOADER()
 	uint8_t params[] = {};
 
 	// Command ready to be sent to the MPI
-	return sendTelecommand(BL_EXIT_BOOTLOADER, params);
+	return sendTelecommand(MPI_CMD_BL_EXIT_BOOTLOADER, params);
 }
 
 uint8_t sendTC_BL_SET_APPSW_CRC(uint16_t CRC_Value)
@@ -378,7 +401,7 @@ uint8_t sendTC_BL_SET_APPSW_CRC(uint16_t CRC_Value)
 	params[1] = (uint8_t)(CRC_Value);	   // Byte 0 of CRC_Value
 
 	// Command has been verified and parsed to be sent to the MPI (Returns MPI response)
-	return sendTelecommand(BL_SET_APPSW_CRC, params);
+	return sendTelecommand(MPI_CMD_BL_SET_APPSW_CRC, params);
 }
 
 uint8_t sendTC_BL_ERASE_TEMP_APP_MEMORY()
@@ -387,7 +410,7 @@ uint8_t sendTC_BL_ERASE_TEMP_APP_MEMORY()
 	uint8_t params[] = {};
 
 	// Command ready to be sent to the MPI
-	return sendTelecommand(BL_ERASE_TEMP_APP_MEMORY, params);
+	return sendTelecommand(MPI_CMD_BL_ERASE_TEMP_APP_MEMORY, params);
 }
 
 // @param - uint32_t + variable payload (2-byte memory offset, 2-byte memory words N, 2*N bytes of memory values)
@@ -396,7 +419,7 @@ uint8_t sendTC_BL_STORE_APPSW_CHUNK(uint32_t offset, uint32_t N, uint8_t *memory
 	// TODO: Need more clarity on the data being sent here to parse them into the send method...
 	uint8_t params[] = {};
 	// Error check CRC parameter
-	return sendTelecommand(BL_STORE_APPSW_CHUNK, params);
+	return sendTelecommand(MPI_CMD_BL_STORE_APPSW_CHUNK, params);
 }
 
 uint8_t sendTC_BL_UPGRADE_FIRMWARE()
@@ -405,7 +428,7 @@ uint8_t sendTC_BL_UPGRADE_FIRMWARE()
 	uint8_t params[] = {};
 
 	// Command ready to be sent to the MPI
-	return sendTelecommand(BL_UPGRADE_FIRMWARE, params);
+	return sendTelecommand(MPI_CMD_BL_UPGRADE_FIRMWARE, params);
 }
 
 uint8_t sendTC_AGC_SET_THRESHOLDS(uint32_t threshold)
@@ -428,7 +451,7 @@ uint8_t sendTC_AGC_SET_THRESHOLDS(uint32_t threshold)
 	params[3] = (uint8_t)(upperThreshold >> 8); // MSB of upper threshold
 
 	// Command has been verified and parsed to be sent to the MPI (Returns MPI response)
-	return sendTelecommand(AGC_SET_THRESHOLDS, params);
+	return sendTelecommand(MPI_CMD_AGC_SET_THRESHOLDS, params);
 }
 
 uint8_t sendTC_AGC_SET_DISABLED_SHUTTER_DUTY_CYCLE(uint16_t shutterDutyCycle)
@@ -445,7 +468,7 @@ uint8_t sendTC_AGC_SET_DISABLED_SHUTTER_DUTY_CYCLE(uint16_t shutterDutyCycle)
 	params[1] = (uint8_t)(shutterDutyCycle);	  // Byte 0 of shutterDutyCycle
 
 	// Command has been verified and parsed to be sent to the MPI (Returns MPI response)
-	return sendTelecommand(AGC_SET_DISABLED_SHUTTER_DUTY_CYCLE, params);
+	return sendTelecommand(MPI_CMD_AGC_SET_DISABLED_SHUTTER_DUTY_CYCLE, params);
 }
 
 uint8_t sendTC_AGC_SET_PIXEL_RANGE(uint32_t index)
@@ -464,7 +487,7 @@ uint8_t sendTC_AGC_SET_PIXEL_RANGE(uint32_t index)
 	params[3] = (uint8_t)(upperIndex >> 8); // MSB of upper threshold
 
 	// Command has been verified and parsed to be sent to the MPI (Returns MPI response)
-	return sendTelecommand(AGC_SET_PIXEL_RANGE, params);
+	return sendTelecommand(MPI_CMD_AGC_SET_PIXEL_RANGE, params);
 }
 
 uint8_t sendTC_AGC_SET_NUMBER_OF_MAXIMA_FOR_CONTROL_VALUE(uint8_t n)
@@ -479,7 +502,7 @@ uint8_t sendTC_AGC_SET_NUMBER_OF_MAXIMA_FOR_CONTROL_VALUE(uint8_t n)
 	uint8_t params[] = {n};
 
 	// Command has been verified and parsed to be sent to the MPI (Returns MPI response)
-	return sendTelecommand(AGC_SET_NUMBER_OF_MAXIMA_FOR_CONTROL_VALUE, params);
+	return sendTelecommand(MPI_CMD_AGC_SET_NUMBER_OF_MAXIMA_FOR_CONTROL_VALUE, params);
 }
 
 uint8_t sendTC_AGC_SET_NUMBER_OF_PIXELS_FOR_BASELINE_VALUE(uint8_t n)
@@ -494,7 +517,7 @@ uint8_t sendTC_AGC_SET_NUMBER_OF_PIXELS_FOR_BASELINE_VALUE(uint8_t n)
 	uint8_t params[] = {n};
 
 	// Command has been verified and parsed to be sent to the MPI (Returns MPI response)
-	return sendTelecommand(AGC_SET_NUMBER_OF_PIXELS_FOR_BASELINE_VALUE, params);
+	return sendTelecommand(MPI_CMD_AGC_SET_NUMBER_OF_PIXELS_FOR_BASELINE_VALUE, params);
 }
 
 uint8_t sendTC_AGC_SET_STEP_FACTOR(uint8_t n)
@@ -511,7 +534,7 @@ uint8_t sendTC_AGC_SET_STEP_FACTOR(uint8_t n)
 	uint8_t params[] = {n};
 
 	// Command has been verified and parsed to be sent to the MPI (Returns MPI response)
-	return sendTelecommand(AGC_SET_STEP_FACTOR, params);
+	return sendTelecommand(MPI_CMD_AGC_SET_STEP_FACTOR, params);
 }
 
 uint8_t sendTC_SET_BASELINE_FIRST_PIXEL(uint8_t n)
@@ -526,7 +549,7 @@ uint8_t sendTC_SET_BASELINE_FIRST_PIXEL(uint8_t n)
 	uint8_t params[] = {n};
 
 	// Command has been verified and parsed to be sent to the MPI (Returns MPI response)
-	return sendTelecommand(SET_BASELINE_FIRST_PIXEL, params);
+	return sendTelecommand(MPI_CMD_SET_BASELINE_FIRST_PIXEL, params);
 }
 
 // Validate the MPI frame for correctness
