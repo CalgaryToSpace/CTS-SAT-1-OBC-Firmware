@@ -318,6 +318,8 @@ int parse_input(CGSE_program_state_t *ps, int key)
                 wprintw(ps->command_window, "\n");
                 wprintw(ps->command_window, "%30s - %s\n", ".connect [<device-path>]", "connect to the satellite, optionally using <device-path>");
                 wprintw(ps->command_window, "%30s - %s\n", ".disconnect", "disconnect from the satellite");
+                wprintw(ps->command_window, "%30s - %s\n", ".show_timestamp", "Show GSE computer timestamp on received messages");
+                wprintw(ps->command_window, "%30s - %s\n", ".hide_timestamp", "Hide GSE computer timestamp on received messages");
                 wprintw(ps->command_window, "%30s - %s\n", ".telecommands", "list telecommands");
                 wprintw(ps->command_window, "%30s - %s\n", ".upload_mpi_firmware <file_name>", "upload MPI firmware from <file_name> relative to the current directory. ");
 
@@ -353,6 +355,14 @@ int parse_input(CGSE_program_state_t *ps, int key)
                 else if (strcmp(".disconnect", ps->command_buffer) == 0)
                 {
                     CGSE_disconnect(ps);
+                }
+                else if (strcmp(".show_timestamp", ps->command_buffer) == 0)
+                {
+                    ps->prepend_timestamp = true;
+                }
+                else if (strcmp(".hide_timestamp", ps->command_buffer) == 0)
+                {
+                    ps->prepend_timestamp = false;
                 }
                 else if (strcmp(".telecommands", ps->command_buffer) == 0)
                 {
@@ -571,6 +581,7 @@ int parse_args(CGSE_program_state_t *ps)
     ps->baud_rate = CGSE_DEFAULT_BAUD_RATE;
     ps->command_prefix = CGSE_DEFAULT_TELECOMMAND_PREFIX;
     ps->auto_connect = true;
+    ps->prepend_timestamp = false;
     snprintf(ps->current_directory, FILENAME_MAX, "%s", ".");
 
     char *arg = NULL;
@@ -794,7 +805,13 @@ void parse_telemetry(CGSE_program_state_t *ps)
         }
         ps->receive_buffer[stop] = '\0';
         // TODO convert binary to base64 to allow printing to the screen
-        wprintw(ps->main_window, "%s: %s", ps->time_buffer, ps->receive_buffer);
+        // TODO log received message and timestamp to a file
+        if (ps->prepend_timestamp) {
+            wprintw(ps->main_window, "%s: %s", ps->time_buffer, ps->receive_buffer);
+        }
+        else {
+            wprintw(ps->main_window, "%s", ps->receive_buffer);
+        }
     }
 
     return;

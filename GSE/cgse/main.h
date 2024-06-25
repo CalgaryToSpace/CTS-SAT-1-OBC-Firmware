@@ -56,6 +56,8 @@ typedef struct
     char current_directory[FILENAME_MAX];
     char file_to_load[FILENAME_MAX];
 
+    bool prepend_timestamp;
+
 } CGSE_program_state_t;
 
 int init_terminal_screen(CGSE_program_state_t *program_state);
