@@ -320,9 +320,10 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Tracking_Controller_Target_Reference()
 
     ADCS_Tracking_Controller_Target_Struct result;
     ADCS_Pack_to_Tracking_Controller_Target_Reference(input_params, &result);
-    TEST_ASSERT_TRUE(compare_doubles(result.lon, 110.4, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(compare_doubles(result.lat, -69.6, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.lon, 110.4, 10*ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.lat, -69.6, 10*ADCS_TEST_EPSILON));
     TEST_ASSERT_TRUE(compare_doubles(result.alt, 1.05, ADCS_TEST_EPSILON));
+    // per CubeSupport, latitude and longitude are only accurate to within 1e-5 degrees
 
     return 0;
 }

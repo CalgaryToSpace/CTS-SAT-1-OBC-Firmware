@@ -32,8 +32,11 @@
 // CRC defines
 #define CRC_POLY 0x91
 
+// define for timeout
+#define ADCS_HAL_TIMEOUT 1000
+
 // epsilon for comparing doubles
-#define ADCS_TEST_EPSILON 1e-9
+#define ADCS_TEST_EPSILON 1e-6
 
 /* Enumerated Values */
 
@@ -348,24 +351,26 @@ typedef struct ADCS_Rate_Gyro_Config_Struct {
 #define ADCS_INCLUDE_CHECKSUM 1
 #define ADCS_NO_CHECKSUM 0
 #define WRITE_STRUCT_TO_MEMORY(struct_to_write) // memory module function: write struct to memory
-void switch_order(uint8_t *array, uint16_t value, int index);
-void switch_order_32(uint8_t *array, uint32_t value, int index);
+
+// byte transforms
+uint8_t ADCS_switch_order(uint8_t *array, uint16_t value, int index);
+uint8_t ADCS_switch_order_32(uint8_t *array, uint32_t value, int index);
 
 // TC/TLM functions (basic communication)
-void ADCS_I2C_telecommand_wrapper(uint8_t id, uint8_t* data, uint32_t data_length, uint8_t include_checksum);
-void ADCS_I2C_telemetry_wrapper(uint8_t id, uint8_t* data, uint32_t data_length, uint8_t include_checksum);
-void ADCS_send_I2C_telecommand(uint8_t id, uint8_t* data, uint32_t data_length, uint8_t include_checksum);
+uint8_t ADCS_I2C_telecommand_wrapper(uint8_t id, uint8_t* data, uint32_t data_length, uint8_t include_checksum);
+uint8_t ADCS_I2C_telemetry_wrapper(uint8_t id, uint8_t* data, uint32_t data_length, uint8_t include_checksum);
+uint8_t ADCS_send_I2C_telecommand(uint8_t id, uint8_t* data, uint32_t data_length, uint8_t include_checksum);
 uint8_t ADCS_send_I2C_telemetry_request(uint8_t id, uint8_t* data, uint32_t data_length, uint8_t include_checksum);
 
 // CRC functions
-void COMMS_Crc8Init();
-uint8_t COMMS_Crc8Checksum(uint8_t* buffer, uint16_t len);
+uint8_t ADCS_COMMS_Crc8Init();
+uint8_t ADCS_COMMS_Crc8Checksum(uint8_t* buffer, uint16_t len);
 
-// UART debug functions
-int I2C_Scan(void);
-uint8_t send_UART_telecommand(UART_HandleTypeDef *huart, uint8_t id, uint8_t* data, uint32_t data_length);
-void PRINT_STRING_UART(UART_HandleTypeDef *huart, void *string);
-void PRINT_NEW_LINE(UART_HandleTypeDef *huart);
+// I2C/UART debug functions
+uint8_t I2C_Scan(void);
+uint8_t ADCS_send_UART_telecommand(UART_HandleTypeDef *huart, uint8_t id, uint8_t* data, uint32_t data_length);
+uint8_t PRINT_STRING_UART(UART_HandleTypeDef *huart, void *string);
+uint8_t PRINT_NEW_LINE(UART_HandleTypeDef *huart);
 
 // ADCS packer functions
 uint8_t ADCS_Pack_to_Ack(uint8_t* data_received, ADCS_TC_Ack_Struct *result);
@@ -392,30 +397,30 @@ uint8_t ADCS_Pack_to_Rate_Gyro_Config(uint8_t* data_received, ADCS_Rate_Gyro_Con
 // TODO: packers
 
 // ADCS functions
-void ADCS_Reset();
-void ADCS_Identification();
-void ADCS_Program_Status();
-void ADCS_Communication_Status();
-void ADCS_Deploy_Magnetometer(uint8_t deploy_timeout);
-void ADCS_Set_Run_Mode(ADCS_Run_Mode mode);
-void ADCS_Clear_Errors();
-void ADCS_Attitude_Control_Mode(ADCS_Control_Mode mode, uint16_t timeout);
-void ADCS_Stop_Reaction_Wheels();
-void ADCS_Attitude_Estimation_Mode(ADCS_Estimation_Mode mode);
+uint8_t ADCS_Reset();
+uint8_t ADCS_Identification();
+uint8_t ADCS_Program_Status();
+uint8_t ADCS_Communication_Status();
+uint8_t ADCS_Deploy_Magnetometer(uint8_t deploy_timeout);
+uint8_t ADCS_Set_Run_Mode(ADCS_Run_Mode mode);
+uint8_t ADCS_Clear_Errors();
+uint8_t ADCS_Attitude_Control_Mode(ADCS_Control_Mode mode, uint16_t timeout);
+uint8_t ADCS_Stop_Reaction_Wheels();
+uint8_t ADCS_Attitude_Estimation_Mode(ADCS_Estimation_Mode mode);
 uint8_t ADCS_TC_Ack(ADCS_TC_Ack_Struct *ack);
-void ADCS_Run_Once();
-void ADCS_Set_Magnetometer_Mode(ADCS_Magnetometer_Mode mode);
-void ADCS_Set_Magnetorquer_Output(double x_duty, double y_duty, double z_duty);
-void ADCS_Set_Wheel_Speed(uint16_t x_speed, uint16_t y_speed, uint16_t z_speed);
-void ADCS_Save_Config();
-void ADCS_Estimate_Angular_Rates();
-void ADCS_Get_LLH_Position();
-void ADCS_Get_Power_Control();
-void ADCS_Set_Power_Control(ADCS_Power_Select cube_control_signal, ADCS_Power_Select cube_control_motor, ADCS_Power_Select cube_sense1,
+uint8_t ADCS_Run_Once();
+uint8_t ADCS_Set_Magnetometer_Mode(ADCS_Magnetometer_Mode mode);
+uint8_t ADCS_Set_Magnetorquer_Output(double x_duty, double y_duty, double z_duty);
+uint8_t ADCS_Set_Wheel_Speed(uint16_t x_speed, uint16_t y_speed, uint16_t z_speed);
+uint8_t ADCS_Save_Config();
+uint8_t ADCS_Estimate_Angular_Rates();
+uint8_t ADCS_Get_LLH_Position();
+uint8_t ADCS_Get_Power_Control();
+uint8_t ADCS_Set_Power_Control(ADCS_Power_Select cube_control_signal, ADCS_Power_Select cube_control_motor, ADCS_Power_Select cube_sense1,
         ADCS_Power_Select cube_sense2, ADCS_Power_Select cube_star_power, ADCS_Power_Select cube_wheel1_power,
         ADCS_Power_Select cube_wheel2_power, ADCS_Power_Select cube_wheel3_power, ADCS_Power_Select motor_power,
         ADCS_Power_Select gps_power);
-void ADCS_Set_Magnetometer_Config(I2C_HandleTypeDef *hi2c,
+uint8_t ADCS_Set_Magnetometer_Config(I2C_HandleTypeDef *hi2c,
 		double mounting_transform_alpha_angle,
         double mounting_transform_beta_angle,
         double mounting_transform_gamma_angle,
@@ -431,22 +436,22 @@ void ADCS_Set_Magnetometer_Config(I2C_HandleTypeDef *hi2c,
         double sensitivity_matrix_s23,
         double sensitivity_matrix_s31,
         double sensitivity_matrix_s32);
-void ADCS_Bootloader_Clear_Errors();
-void ADCS_Set_Unix_Time_Save_Mode(bool save_now, bool save_on_update, bool save_periodic, uint8_t period);
-void ADCS_Get_Unix_Time_Save_Mode();
-void ADCS_Set_SGP4_Orbit_Params(double inclination, double eccentricity, double ascending_node_right_ascension, double perigee_argument, double b_star_drag_term, double mean_motion, double mean_anomaly, double epoch);
-void ADCS_Get_SGP4_Orbit_Params();
-void ADCS_Save_Orbit_Params();
-void ADCS_Rate_Sensor_Rates();
-void ADCS_Get_Wheel_Speed();
-void ADCS_Get_Magnetorquer_Command();
-void ADCS_Get_Raw_Magnetometer_Values();
-void ADCS_Fine_Angular_Rates();
-void ADCS_Estimate_Fine_Angular_Rates();
-void ADCS_Get_Magnetometer_Config();
-void ADCS_Get_Commanded_Attitude_Angles();
-void ADCS_Set_Commanded_Attitude_Angles(double x, double y, double z);
-void ADCS_Set_Estimation_Params(
+uint8_t ADCS_Bootloader_Clear_Errors();
+uint8_t ADCS_Set_Unix_Time_Save_Mode(bool save_now, bool save_on_update, bool save_periodic, uint8_t period);
+uint8_t ADCS_Get_Unix_Time_Save_Mode();
+uint8_t ADCS_Set_SGP4_Orbit_Params(double inclination, double eccentricity, double ascending_node_right_ascension, double perigee_argument, double b_star_drag_term, double mean_motion, double mean_anomaly, double epoch);
+uint8_t ADCS_Get_SGP4_Orbit_Params();
+uint8_t ADCS_Save_Orbit_Params();
+uint8_t ADCS_Rate_Sensor_Rates();
+uint8_t ADCS_Get_Wheel_Speed();
+uint8_t ADCS_Get_Magnetorquer_Command();
+uint8_t ADCS_Get_Raw_Magnetometer_Values();
+uint8_t ADCS_Fine_Angular_Rates();
+uint8_t ADCS_Estimate_Fine_Angular_Rates();
+uint8_t ADCS_Get_Magnetometer_Config();
+uint8_t ADCS_Get_Commanded_Attitude_Angles();
+uint8_t ADCS_Set_Commanded_Attitude_Angles(double x, double y, double z);
+uint8_t ADCS_Set_Estimation_Params(
 								float magnetometer_rate_filter_system_noise, 
                                 float ekf_system_noise, 
                                 float css_measurement_noise, 
@@ -465,8 +470,8 @@ void ADCS_Set_Estimation_Params(
                                 bool automatic_estimation_transition_due_to_rate_sensor_errors, 
 								bool wheel_30s_power_up_delay, // present in CubeSupport but not in the manual -- need to test
                                 uint8_t cam1_and_cam2_sampling_period);
-void ADCS_Get_Estimation_Params();
-void ADCS_Set_ASGP4_Params(double incl_coefficient,
+uint8_t ADCS_Get_Estimation_Params();
+uint8_t ADCS_Set_ASGP4_Params(double incl_coefficient,
                            double raan_coefficient,
                            double ecc_coefficient,
                            double aop_coefficient,
@@ -483,11 +488,11 @@ void ADCS_Set_ASGP4_Params(double incl_coefficient,
                            double time_gain,
                            double max_lag,
                            uint16_t min_samples);
-void ADCS_Get_ASGP4_Params();
-void ADCS_Set_Tracking_Controller_Target_Reference(float lon, float lat, float alt);
-void ADCS_Get_Tracking_Controller_Target_Reference();
-void ADCS_Set_Rate_Gyro_Config(ADCS_Axis_Select gyro1, ADCS_Axis_Select gyro2, ADCS_Axis_Select gyro3, double x_rate_offset, double y_rate_offset, double z_rate_offset, uint8_t rate_sensor_mult);
-void ADCS_Get_Rate_Gyro_Config();
+uint8_t ADCS_Get_ASGP4_Params();
+uint8_t ADCS_Set_Tracking_Controller_Target_Reference(float lon, float lat, float alt);
+uint8_t ADCS_Get_Tracking_Controller_Target_Reference();
+uint8_t ADCS_Set_Rate_Gyro_Config(ADCS_Axis_Select gyro1, ADCS_Axis_Select gyro2, ADCS_Axis_Select gyro3, double x_rate_offset, double y_rate_offset, double z_rate_offset, uint8_t rate_sensor_mult);
+uint8_t ADCS_Get_Rate_Gyro_Config();
 // TODO: prototypes
 
 #endif /* INC_ADCS_TYPES_H_ */

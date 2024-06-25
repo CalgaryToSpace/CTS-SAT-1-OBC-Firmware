@@ -123,7 +123,7 @@ void StartDefaultTask(void *argument);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -163,6 +163,7 @@ int main(void)
   /* USER CODE END 2 */
 
   // TODO: code for testing ADCS goes here
+  ADCS_COMMS_Crc8Init();
     //I2C_Scan();
     //ADCS_Bootloader_Clear_Errors(&hi2c1);
     //ADCS_Set_Wheel_Speed(&hi2c1, 0x0001, 0x0002, 0x0003);

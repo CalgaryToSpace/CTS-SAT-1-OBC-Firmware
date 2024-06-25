@@ -44,4 +44,6 @@ uint8_t TCMDEXEC_run_all_unit_tests(const uint8_t *args_str, TCMD_TelecommandCha
 
 uint8_t TCMDEXEC_ADCS_ack(void);
 
+uint8_t TCMDEXEC_ADCS_set_wheel_speed(void);
+
 #endif // __INCLUDE_GUARD__TELECOMMAND_DEFINITIONS_H
