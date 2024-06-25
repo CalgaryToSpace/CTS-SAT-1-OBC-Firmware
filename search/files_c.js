@@ -17,5 +17,9 @@ var searchData=
   ['test_5ftelecommand_5fparser_2ec_14',['test_telecommand_parser.c',['../test__telecommand__parser_8c.html',1,'']]],
   ['test_5ftelecommand_5fparser_2eh_15',['test_telecommand_parser.h',['../test__telecommand__parser_8h.html',1,'']]],
   ['test_5ftests_2ec_16',['test_tests.c',['../test__tests_8c.html',1,'']]],
-  ['test_5ftests_2eh_17',['test_tests.h',['../test__tests_8h.html',1,'']]]
+  ['test_5ftests_2eh_17',['test_tests.h',['../test__tests_8h.html',1,'']]],
+  ['timekeeping_2ec_18',['timekeeping.c',['../timekeeping_8c.html',1,'']]],
+  ['timekeeping_2eh_19',['timekeeping.h',['../timekeeping_8h.html',1,'']]],
+  ['timekeeping_5ftelecommand_5fdefs_2ec_20',['timekeeping_telecommand_defs.c',['../timekeeping__telecommand__defs_8c.html',1,'']]],
+  ['timekeeping_5ftelecommand_5fdefs_2eh_21',['timekeeping_telecommand_defs.h',['../timekeeping__telecommand__defs_8h.html',1,'']]]
 ];
