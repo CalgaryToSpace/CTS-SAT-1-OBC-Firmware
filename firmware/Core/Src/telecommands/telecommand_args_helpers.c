@@ -31,8 +31,10 @@ uint8_t TCMD_ascii_to_uint64(const char *str, uint32_t str_len, uint64_t *result
 
     uint64_t temp_result = 0;
     uint32_t i = 0;
-    for (; i < str_len; i++) {
-        if (str[i] < '0' || str[i] > '9') {
+    for (; i < str_len; i++)
+    {
+        if (str[i] < '0' || str[i] > '9')
+        {
             break;
         }
 
@@ -55,17 +57,22 @@ uint8_t TCMD_ascii_to_uint64(const char *str, uint32_t str_len, uint64_t *result
 /// @param result Pointer to the result
 /// @return 0 if successful, 1 if the string is empty, 2 if the string does not contain enough arguments
 ///        3 if the argument is not an integer, 4 for other error
-uint8_t TCMD_extract_uint64_arg(const char *str, uint32_t str_len, uint8_t arg_index, uint64_t *result) {
-    if (str_len == 0) {
+uint8_t TCMD_extract_uint64_arg(const char *str, uint32_t str_len, uint8_t arg_index, uint64_t *result)
+{
+    if (str_len == 0)
+    {
         return 1;
     }
 
     uint32_t arg_count = 0;
     uint32_t i = 0;
     uint32_t start_index = 0;
-    for (; i < str_len; i++) {
-        if (str[i] == ',') {
-            if (arg_count == arg_index) {
+    for (; i < str_len; i++)
+    {
+        if (str[i] == ',')
+        {
+            if (arg_count == arg_index)
+            {
                 break;
             }
 
@@ -74,7 +81,8 @@ uint8_t TCMD_extract_uint64_arg(const char *str, uint32_t str_len, uint8_t arg_i
         }
     }
 
-    if (arg_count < arg_index) {
+    if (arg_count < arg_index)
+    {
         return 2;
     }
 
@@ -83,7 +91,8 @@ uint8_t TCMD_extract_uint64_arg(const char *str, uint32_t str_len, uint8_t arg_i
         // The argument is not an integer
         return 3;
     }
-    else if (parse_result > 0) {
+    else if (parse_result > 0)
+    {
         // Other error
         return 4;
     }
@@ -175,18 +184,23 @@ uint8_t TCMD_extract_int64_arg(const char *str, uint32_t str_len, uint8_t arg_in
 /// @param result_max_len Maximum length of the result
 /// @return 0 if successful, 1 if the string is empty, 2 if the string does not contain enough arguments
 ///         3 for other error
-uint8_t TCMD_extract_string_arg(const char *str, uint8_t arg_index, char *result, uint16_t result_max_len) {
+uint8_t TCMD_extract_string_arg(const char *str, uint8_t arg_index, char *result, uint16_t result_max_len)
+{
     const uint16_t str_len = strlen(str);
-    if (str_len == 0) {
+    if (str_len == 0)
+    {
         return 1;
     }
 
     uint32_t arg_count = 0;
     uint32_t i = 0;
     uint32_t start_index = 0;
-    for (; i < str_len; i++) {
-        if (str[i] == ',') {
-            if (arg_count == arg_index) {
+    for (; i < str_len; i++)
+    {
+        if (str[i] == ',')
+        {
+            if (arg_count == arg_index)
+            {
                 break;
             }
 
@@ -195,28 +209,33 @@ uint8_t TCMD_extract_string_arg(const char *str, uint8_t arg_index, char *result
         }
     }
 
-    if (arg_count < arg_index) {
+    if (arg_count < arg_index)
+    {
         return 2;
     }
     
     uint32_t end_index = i;
-    if (end_index - start_index >= result_max_len) {
+    if (end_index - start_index >= result_max_len)
+    {
         return 3;
     }
 
     // Trim leading whitespace
-    while (start_index < end_index && (str[start_index] == ' ' || str[start_index] == '\t')) {
+    while (start_index < end_index && (str[start_index] == ' ' || str[start_index] == '\t'))
+    {
         start_index++;
     }
 
     // Trim trailing whitespace
-    while (end_index > start_index && (str[end_index - 1] == ' ' || str[end_index - 1] == '\t')) {
+    while (end_index > start_index && (str[end_index - 1] == ' ' || str[end_index - 1] == '\t'))
+    {
         end_index--;
     }
 
     uint32_t token_len = end_index - start_index;
 
-    if (token_len >= result_max_len) {
+    if (token_len >= result_max_len)
+    {
         // The argument is too long for the result buffer.
         return 3;
     }
