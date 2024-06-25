@@ -139,9 +139,8 @@ uint8_t TCMDEXEC_flash_read_hex(const uint8_t *args_str, TCMD_TelecommandChannel
             response_output_buf_len - strlen(response_output_buf) - 1,
             "%02X ", read_buf[i]);
 
-        // add newline separator every 8 bytes
-        // if (i > 0 && i % 8 == 0) {
-        if (i > 0 && i % 16 == 0) {
+        // add newline separator every 16 bytes
+        if (i > 0 && (i + 1) % 16 == 0) {
             snprintf(
                 &response_output_buf[strlen(response_output_buf)],
                 response_output_buf_len - strlen(response_output_buf) - 1,
