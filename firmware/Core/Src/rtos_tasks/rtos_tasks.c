@@ -4,6 +4,7 @@
 #include "rtos_tasks/rtos_tasks.h"
 #include "telecommands/telecommand_parser.h"
 #include "debug_tools/debug_uart.h"
+#include "timekeeping/timekeeping.h"
 #include "uart_handler/uart_handler.h"
 #include "transforms/arrays.h"
 
@@ -11,20 +12,34 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <time.h>
 
 volatile uint8_t TASK_heartbeat_is_on = 1;
+
+char TASK_heartbeat_timing_str[64] = {0};
 
 void TASK_DEBUG_print_heartbeat(void *argument) {
 	TASK_HELP_start_of_task();
 
 	DEBUG_uart_print_str("TASK_DEBUG_print_heartbeat() -> started (booted)\n");
 	osDelay(100);
+
+    uint64_t unix_time_ms = 0;
+    time_t seconds = 0;
+    uint16_t ms = 0;
+    struct tm *time_info;
+
 	while (1) {
         if (TASK_heartbeat_is_on) {
-            DEBUG_uart_print_str("TASK_DEBUG_print_heartbeat() -> top of while(1)\n");
+            unix_time_ms = TIM_get_current_unix_epoch_time_ms();
+            seconds = (time_t)(unix_time_ms/ 1000U);
+            ms = unix_time_ms - 1000U * seconds;
+            time_info = gmtime(&seconds);
+            snprintf(TASK_heartbeat_timing_str, 64, "FrontierSat time: %d%02d%02dT%02d:%02d:%02d.%03u\n", time_info->tm_year + 1900, time_info->tm_mon + 1, time_info->tm_mday, time_info->tm_hour, time_info->tm_min, time_info->tm_sec, ms);
+            DEBUG_uart_print_str(TASK_heartbeat_timing_str);
 		}
 		HAL_GPIO_TogglePin(PIN_LED_DEVKIT_LD2_GPIO_Port, PIN_LED_DEVKIT_LD2_Pin);
-		osDelay(1000);
+		osDelay(990);
 	}
 }
 
@@ -167,3 +182,4 @@ void TASK_handle_uart_telecommands(void *argument) {
 		}
 	} /* End Task's Main Loop */
 }
+

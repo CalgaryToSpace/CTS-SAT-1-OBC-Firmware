@@ -3,10 +3,12 @@
 #include "telecommands/telecommand_args_helpers.h"
 #include "transforms/arrays.h"
 #include "unit_tests/unit_test_executor.h"
+#include "timekeeping/timekeeping.h"
 
 // Additional telecommand definitions files:
 #include "telecommands/flash_telecommand_defs.h"
 #include "telecommands/lfs_telecommand_defs.h"
+#include "telecommands/timekeeping_telecommand_defs.h"
 
 
 #include <stdio.h>
@@ -51,6 +53,16 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "run_all_unit_tests",
         .tcmd_func = TCMDEXEC_run_all_unit_tests,
+        .number_of_args = 0,
+    },
+    {
+        .tcmd_name = "get_system_time",
+        .tcmd_func = TCMDEXEC_get_system_time,
+        .number_of_args = 0,
+    },
+    {
+        .tcmd_name = "set_system_time",
+        .tcmd_func = TCMDEXEC_set_system_time,
         .number_of_args = 0,
     },
     {
