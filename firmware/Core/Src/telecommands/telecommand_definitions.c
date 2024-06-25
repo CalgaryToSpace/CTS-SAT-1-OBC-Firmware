@@ -3,7 +3,7 @@
 #include "telecommands/telecommand_args_helpers.h"
 #include "transforms/arrays.h"
 #include "unit_tests/unit_test_executor.h"
-#include "mpi_telecommand_definitions.h"
+#include "telecommands/mpi_telecommand_definitions.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -42,7 +42,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "mpi_send_command",
         .tcmd_func = TCMDEXEC_mpi_send_command_hex,
-        .number_of_args = 2,
+        .number_of_args = 1,
     }
     // ****************** END: MPI_telecommand_definitions ********************
 };
