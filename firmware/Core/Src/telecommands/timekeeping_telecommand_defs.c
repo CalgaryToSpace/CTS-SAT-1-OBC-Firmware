@@ -6,13 +6,13 @@
 #include <stdio.h>
 #include <string.h>
 
-uint8_t TCMDEXEC_get_system_time(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_get_system_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     TIM_get_timestamp_string(response_output_buf, response_output_buf_len);
     return 0;
 }
 
-uint8_t TCMDEXEC_set_system_time(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_set_system_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
   
     uint64_t ms = 0;
