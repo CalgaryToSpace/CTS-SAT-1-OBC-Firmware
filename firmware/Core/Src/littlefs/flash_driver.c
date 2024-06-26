@@ -10,6 +10,9 @@
 #endif
 
 /// Timeout duration for HAL_SPI_READ/WRITE operations.
+// Note: FLASH_read_data has sporadic timeouts at 5ms; 10ms is a safe bet.
+// 512 bytes should take 2ms at 2Mbps.
+// TODO: ^ investigate the HAL_SPI_Receive overhead (2ms expected, >5ms observed)
 #define FLASH_HAL_TIMEOUT_MS 10 
 
 // The following timeout values are sourced from Section 11.3.1, Table 56: "CFI system interface string"
