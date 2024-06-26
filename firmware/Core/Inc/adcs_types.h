@@ -152,6 +152,53 @@ typedef enum ADCS_Axis_Select {
     ADCS_Not_Used
 } ADCS_Axis_Select;
 
+typedef enum ADCS_Capture_Result {
+    ADCS_Capture_Result_Startup,
+    ADCS_Capture_Result_Pending,
+    ADCS_Capture_Result_Success,
+    ADCS_Capture_Result_Success_Shift,
+    ADCS_Capture_Result_Timeout,
+    ADCS_Capture_Result_SRAM_Error
+} ADCS_Capture_Result;
+
+typedef enum ADCS_Detect_Result {
+    ADCS_Detect_Result_Startup,
+    ADCS_Detect_Result_No_Detect,
+    ADCS_Detect_Result_Pending,
+    ADCS_Detect_Result_Too_Many_Edges,
+    ADCS_Detect_Result_Too_Few_Edges,
+    ADCS_Detect_Result_Bad_Fit,
+    ADCS_Detect_Result_Sun_Not_Found,
+    ADCS_Detect_Result_Success
+} ADCS_Detect_Result;
+
+typedef enum ADCS_Which_Cam_Sensor {
+    ADCS_Cam_None,
+    ADCS_Cam1_Sensor,
+    ADCS_Cam2_Sensor
+} ADCS_Which_Cam_Sensor;
+
+typedef enum ADCS_GPS_Solution_Status {
+    ADCS_GPS_Solution_Status_Solution_Computed,
+    ADCS_GPS_Solution_Status_Insufficient_Observations,
+    ADCS_GPS_Solution_Status_No_Convergence,
+    ADCS_GPS_Solution_Status_Singularity_At_Parameters_Matrix,
+    ADCS_GPS_Solution_Status_Covariance_Trace_Exceeds_Maximum,
+    ADCS_GPS_Solution_Status_Not_Yet_Converged_From_Cold_Start,
+    ADCS_GPS_Solution_Status_Height_Or_Velocity_Limits_Exceeded,
+    ADCS_GPS_Solution_Status_Variance_Exceeds_Limits,
+    ADCS_GPS_Solution_Status_Large_Residuals,
+    ADCS_GPS_Solution_Status_Calculating_Comparison_To_User_Provided,
+    ADCS_GPS_Solution_Status_Fixed_Position_Invalid, 
+    ADCS_GPS_Solution_Status_Position_Type_Unauthorized 
+} ADCS_GPS_Solution_Status;
+
+typedef enum ADCS_GPS_Axis {
+    ADCS_GPS_X,
+    ADCS_GPS_Y,
+    ADCS_GPS_Z
+} ADCS_GPS_Axis;
+
 // TODO: enums
 
 /* Structs */
@@ -343,6 +390,137 @@ typedef struct ADCS_Rate_Gyro_Config_Struct {
     uint8_t rate_sensor_mult;
 } ADCS_Rate_Gyro_Config_Struct;
 
+typedef struct ADCS_Estimated_Attitude_Angles_Struct {
+    double estimated_roll_angle;
+    double estimated_pitch_angle;
+    double estimated_yaw_angle;
+} ADCS_Estimated_Attitude_Angles_Struct;
+
+typedef struct ADCS_Magnetic_Field_Vector_Struct {
+    double x;
+    double y;
+    double z;
+} ADCS_Magnetic_Field_Vector_Struct;
+
+typedef struct ADCS_Fine_Sun_Vector_Struct {
+    double x;
+    double y;
+    double z;
+} ADCS_Fine_Sun_Vector_Struct;
+
+typedef struct ADCS_Nadir_Vector_Struct {
+    double x;
+    double y;
+    double z;
+} ADCS_Nadir_Vector_Struct;
+
+typedef struct ADCS_Quaternion_Error_Vector_Struct {
+    double quaternion_error_q1;
+    double quaternion_error_q2;
+    double quaternion_error_q3;
+} ADCS_Quaternion_Error_Vector_Struct;
+
+typedef struct ADCS_Estimated_Gyro_Bias_Struct {
+    double estimated_x_gyro_bias;
+    double estimated_y_gyro_bias;
+    double estimated_z_gyro_bias;
+} ADCS_Estimated_Gyro_Bias_Struct;
+
+typedef struct ADCS_Estimation_Innovation_Vector_Struct {
+    double innovation_vector_x;
+    double innovation_vector_y;
+    double innovation_vector_z;
+} ADCS_Estimation_Innovation_Vector_Struct;
+
+typedef struct ADCS_Raw_Cam_Sensor_Struct {
+    ADCS_Which_Cam_Sensor which_sensor;
+    int16_t cam_centroid_x;
+    int16_t cam_centroid_y;
+    ADCS_Capture_Result cam_capture_status;
+    ADCS_Detect_Result cam_detection_result;
+} ADCS_Raw_Cam_Sensor_Struct;
+
+typedef struct ADCS_Raw_CSS_1_to_6_Struct {
+    uint8_t css1;
+    uint8_t css2;
+    uint8_t css3;
+    uint8_t css4;
+    uint8_t css5;
+    uint8_t css6;
+} ADCS_Raw_CSS_1_to_6_Struct;
+
+typedef struct ADCS_Raw_CSS_7_to_10_Struct {
+    uint8_t css7;
+    uint8_t css8;
+    uint8_t css9;
+    uint8_t css10;
+} ADCS_Raw_CSS_7_to_10_Struct;
+
+typedef struct ADCS_CubeControl_Current_Struct {
+    uint16_t cubecontrol_3v3_current;
+    uint16_t cubecontrol_5v_current;
+    uint16_t cubecontrol_vbat_current;
+} ADCS_CubeControl_Current_Struct;
+
+typedef struct ADCS_Raw_GPS_Status_Struct {
+    ADCS_GPS_Solution_Status gps_solution_status;
+    uint8_t num_tracked_satellites;
+    uint8_t num_used_satellites;
+    uint8_t counter_xyz_log;
+    uint8_t counter_range_log;
+    uint8_t response_message_gps_log;
+} ADCS_Raw_GPS_Status_Struct;
+
+typedef struct {
+    uint16_t gps_reference_week;
+    double gps_time; // in seconds
+} ADCS_Raw_GPS_Time_Struct;
+
+typedef struct ADCS_Raw_GPS_Struct {
+    ADCS_GPS_Axis axis;
+    int32_t ecef_position;    
+    int16_t ecef_velocity;   
+} ADCS_Raw_GPS_Struct;
+
+typedef struct ADCS_Measurements_Struct {
+    double magnetic_field_x;
+    double magnetic_field_y;
+    double magnetic_field_z;
+    double coarse_sun_x;
+    double coarse_sun_y;
+    double coarse_sun_z;
+    double sun_x;
+    double sun_y;
+    double sun_z;
+    double nadir_x;
+    double nadir_y;
+    double nadir_z;
+    double x_angular_rate;
+    double y_angular_rate;
+    double z_angular_rate;
+    double x_wheel_speed;
+    double y_wheel_speed;
+    double z_wheel_speed;
+    double star1_body_x;
+    double star1_body_y;
+    double star1_body_z;
+    double star1_orbit_x;
+    double star1_orbit_y;
+    double star1_orbit_z;
+    double star2_body_x;
+    double star2_body_y;
+    double star2_body_z;
+    double star2_orbit_x;
+    double star2_orbit_y;
+    double star2_orbit_z;
+    double star3_body_x;
+    double star3_body_y;
+    double star3_body_z;
+    double star3_orbit_x;
+    double star3_orbit_y;
+    double star3_orbit_z;
+} ADCS_Measurements_Struct;
+
 // TODO: structs
 
 /* Function Definitions */
@@ -393,7 +571,24 @@ uint8_t ADCS_Pack_to_Estimation_Params(uint8_t* data_received, ADCS_Estimation_P
 uint8_t ADCS_Pack_to_ASGP4_Params(uint8_t* data_received, ADCS_ASGP4_Params_Struct *result);
 uint8_t ADCS_Pack_to_Tracking_Controller_Target_Reference(uint8_t* data_received, ADCS_Tracking_Controller_Target_Struct *result);
 uint8_t ADCS_Pack_to_Rate_Gyro_Config(uint8_t* data_received, ADCS_Rate_Gyro_Config_Struct *result);
-
+uint8_t ADCS_Pack_to_Estimated_Attitude_Angles(uint8_t *data_received, ADCS_Estimated_Attitude_Angles_Struct *angles);
+uint8_t ADCS_Pack_to_Magnetic_Field_Vector(uint8_t *data_received, ADCS_Magnetic_Field_Vector_Struct *vector_components);
+uint8_t ADCS_Pack_to_Fine_Sun_Vector(uint8_t *data_received, ADCS_Fine_Sun_Vector_Struct *vector_components);
+uint8_t ADCS_Pack_to_Nadir_Vector(uint8_t *data_received, ADCS_Nadir_Vector_Struct *vector_components);
+uint8_t ADCS_Pack_to_Commanded__Wheel_Speed(uint8_t *data_received, ADCS_Wheel_Speed_Struct *result);
+uint8_t ADCS_Pack_to_IGRF_Magnetic_Field_Vector(uint8_t *data_received, ADCS_Magnetic_Field_Vector_Struct *vector_components);
+uint8_t ADCS_Pack_to_Quaternion_Error_Vector(uint8_t *data_received, ADCS_Quaternion_Error_Vector_Struct *result);
+uint8_t ADCS_Pack_to_Estimated_Gyro_Bias(uint8_t* data_received, ADCS_Estimated_Gyro_Bias_Struct *result);
+uint8_t ADCS_Pack_to_Estimation_Innovation_Vector(uint8_t* data_received, ADCS_Estimation_Innovation_Vector_Struct* result);
+uint8_t ADCS_Pack_to_Raw_Cam1_Sensor(uint8_t* data_received, ADCS_Raw_Cam_Sensor_Struct* result);
+uint8_t ADCS_Pack_to_Raw_Cam2_Sensor(uint8_t* data_received, ADCS_Raw_Cam_Sensor_Struct* result);
+uint8_t ADCS_Pack_to_Raw_CSS_1_to_6(uint8_t* data_received, ADCS_Raw_CSS_1_to_6_Struct* result);
+uint8_t ADCS_Pack_to_Raw_CSS_7_to_10(uint8_t* data_received, ADCS_Raw_CSS_7_to_10_Struct* result);
+uint8_t ADCS_Pack_to_CubeControl_Current(uint8_t* data_received, ADCS_CubeControl_Current_Struct* result);
+uint8_t ADCS_Pack_to_Raw_GPS_Status(uint8_t* data_received, ADCS_Raw_GPS_Status_Struct* result);
+uint8_t ADCS_Pack_to_Raw_GPS_Time(uint8_t* data_received, ADCS_Raw_GPS_Time_Struct* result);
+uint8_t ADCS_Pack_to_Raw_GPS(ADCS_GPS_Axis axis, uint8_t *data_received, ADCS_Raw_GPS_Struct *result);
+uint8_t ADCS_Pack_to_Measurements(uint8_t* telemetry_data, ADCS_Measurements_Struct* measurements);
 // TODO: packers
 
 // ADCS functions
@@ -493,6 +688,31 @@ uint8_t ADCS_Set_Tracking_Controller_Target_Reference(float lon, float lat, floa
 uint8_t ADCS_Get_Tracking_Controller_Target_Reference();
 uint8_t ADCS_Set_Rate_Gyro_Config(ADCS_Axis_Select gyro1, ADCS_Axis_Select gyro2, ADCS_Axis_Select gyro3, double x_rate_offset, double y_rate_offset, double z_rate_offset, uint8_t rate_sensor_mult);
 uint8_t ADCS_Get_Rate_Gyro_Config();
+uint8_t ADCS_Estimated_Attitude_Angles();
+uint8_t ADCS_Magnetic_Field_Vector();
+uint8_t ADCS_Fine_Sun_Vector();
+uint8_t ADCS_Nadir_Vector();
+uint8_t ADCS_Commanded_Wheel_Speed();
+uint8_t ADCS_IGRF_Magnetic_Field_Vector();
+uint8_t ADCS_Quaternion_Error_Vector();
+uint8_t ADCS_Estimated_Gyro_Bias();
+uint8_t ADCS_Estimation_Innovation_Vector();
+uint8_t ADCS_Raw_Cam1_Sensor();
+uint8_t ADCS_Raw_Cam2_Sensor();
+uint8_t ADCS_Raw_CSS_1_to_6();
+uint8_t ADCS_Raw_CSS_7_to_10();
+uint8_t ADCS_CubeControl_Current();
+uint8_t ADCS_Raw_GPS_Status();
+uint8_t ADCS_Raw_GPS_Time();
+uint8_t ADCS_Raw_GPS_X();
+uint8_t ADCS_Raw_GPS_Y();
+uint8_t ADCS_Raw_GPS_Z();
+uint8_t ADCS_Measurements();
 // TODO: prototypes
+
+void ADCS_not_a_real_function(); 
+// this is just here to catch any missing semicolons
+// so I don't have to hunt for them in other files
+// TODO: delete this before merging
 
 #endif /* INC_ADCS_TYPES_H_ */

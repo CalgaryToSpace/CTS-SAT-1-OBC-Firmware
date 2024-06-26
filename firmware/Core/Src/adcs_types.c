@@ -16,12 +16,15 @@
 
 	TODO: (Commands to write)
 	Commands:
-	Telemetry: 146, 151, 153, 154, 158, 159, 163, 161, 162, 166, 167, 168, 169, 172, 176, 177, 178, 179, 180, 191
+	Telemetry: 
 
 	Done: (see test logs for more info)
+	Need Unit Tests: 146, 151, 153, 154, 158, 159, 161, 162, 163, 166, 167, 168, 169, 172, 176, 177, 178, 179, 180, 191
 	Untested: 155, 156, 157, 170, 201, 204, 223
 	Need Work: 15/199, 23/138, 28/227
-	Tested: 7, 9, 10, 11, 13, 14, 17, 26, 27, 45, 55, 63, 64, 133, 145, 147, 150, 197, 200, 207, 240
+	Tested: 7, 9, 10, 11, 13, 14, 17, 26, 27, 45, 55, 63, 64, 133, 145, 147, 150, 197, 200, 207
+	Telecommand Written: 240
+	Telecommand Tested: 
 
 	additionally
 	- within a byte, use the opposite endian-ness (first towards the end, last towards the beginning of the byte)
@@ -878,6 +881,480 @@ uint8_t ADCS_Pack_to_Rate_Gyro_Config(uint8_t* data_received, ADCS_Rate_Gyro_Con
     result->z_rate_offset = ((double)((int16_t)(data_received[8] << 8 | data_received[7]))) * 0.001;
 
     result->rate_sensor_mult = data_received[9];
+
+    return 0;
+}
+
+uint8_t ADCS_Estimated_Attitude_Angles() {
+    uint8_t data_length = 6;
+    uint8_t data_received[data_length]; // define temp buffer
+
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_ESTIMATED_ATTITUDE_ANGLES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+    ADCS_Estimated_Attitude_Angles_Struct angles; 
+    ADCS_Pack_to_Estimated_Attitude_Angles(&data_received[0], &angles);
+
+    WRITE_STRUCT_TO_MEMORY(angles); // memory module function
+
+    return tlm_status;
+}
+
+uint8_t ADCS_Pack_to_Estimated_Attitude_Angles(uint8_t *data_received, ADCS_Estimated_Attitude_Angles_Struct *angles) {
+    angles->estimated_roll_angle = ((double) ((int16_t) (data_received[1] << 8 | data_received[0]))) * 0.01;
+    angles->estimated_pitch_angle = ((double) ((int16_t) (data_received[3] << 8 | data_received[2]))) * 0.01;
+    angles->estimated_yaw_angle = ((double) ((int16_t) (data_received[5] << 8 | data_received[4]))) * 0.01;
+	return 0;
+}
+
+uint8_t ADCS_Magnetic_Field_Vector() {
+    uint8_t data_length = 6;
+    uint8_t data_received[data_length]; // define temp buffer
+
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_MAGNETIC_FIELD_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+    ADCS_Magnetic_Field_Vector_Struct vector_components; 
+    ADCS_Pack_to_Magnetic_Field_Vector(&data_received[0], &vector_components);
+
+    WRITE_STRUCT_TO_MEMORY(vector_components); // memory module function
+
+    return tlm_status;
+}
+
+uint8_t ADCS_Pack_to_Magnetic_Field_Vector(uint8_t *data_received, ADCS_Magnetic_Field_Vector_Struct *vector_components) {
+	// gives vector components in uT (10^-6 Teslas)
+    vector_components->x = ((double) ((int16_t) (data_received[1] << 8 | data_received[0]))) * 0.01;
+    vector_components->y = ((double) ((int16_t) (data_received[3] << 8 | data_received[2]))) * 0.01;
+    vector_components->z = ((double) ((int16_t) (data_received[5] << 8 | data_received[4]))) * 0.01;
+	return 0;
+}
+
+uint8_t ADCS_Fine_Sun_Vector() {
+    uint8_t data_length = 6;
+    uint8_t data_received[data_length]; // define temp buffer
+
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_FINE_SUN_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+    ADCS_Fine_Sun_Vector_Struct vector_components; 
+    ADCS_Pack_to_Fine_Sun_Vector(&data_received[0], &vector_components);
+
+    WRITE_STRUCT_TO_MEMORY(vector_components); // memory module function
+
+    return tlm_status;
+}
+
+uint8_t ADCS_Pack_to_Fine_Sun_Vector(uint8_t *data_received, ADCS_Fine_Sun_Vector_Struct *vector_components) {
+    vector_components->x = ((double) ((int16_t) (data_received[1] << 8 | data_received[0]))) / 10000.0;
+    vector_components->y = ((double) ((int16_t) (data_received[3] << 8 | data_received[2]))) / 10000.0;
+    vector_components->z = ((double) ((int16_t) (data_received[5] << 8 | data_received[4]))) / 10000.0;
+	return 0;
+}
+
+uint8_t ADCS_Nadir_Vector() {
+    uint8_t data_length = 6;
+    uint8_t data_received[data_length]; // define temp buffer
+
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_NADIR_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+    ADCS_Nadir_Vector_Struct vector_components; 
+    ADCS_Pack_to_Nadir_Vector(&data_received[0], &vector_components);
+
+    WRITE_STRUCT_TO_MEMORY(vector_components); // memory module function
+
+    return tlm_status;
+}
+
+uint8_t ADCS_Pack_to_Nadir_Vector(uint8_t *data_received, ADCS_Nadir_Vector_Struct *vector_components) {
+    vector_components->x = ((double) ((int16_t) (data_received[1] << 8 | data_received[0]))) / 10000.0;
+    vector_components->y = ((double) ((int16_t) (data_received[3] << 8 | data_received[2]))) / 10000.0;
+    vector_components->z = ((double) ((int16_t) (data_received[5] << 8 | data_received[4]))) / 10000.0;
+	return 0;
+}
+
+uint8_t ADCS_Commanded_Wheel_Speed() {
+	uint8_t data_length = 6;
+	uint8_t data_received[data_length]; // define temp buffer
+
+	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_WHEEL_SPEED_COMMANDS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+	ADCS_Wheel_Speed_Struct speeds;
+	ADCS_Pack_to_Commanded_Wheel_Speed(data_received, &speeds);
+
+	WRITE_STRUCT_TO_MEMORY(speeds) // memory module function
+
+	return tlm_status;
+}
+
+uint8_t ADCS_Pack_to_Commanded__Wheel_Speed(uint8_t *data_received, ADCS_Wheel_Speed_Struct *result) {
+	// all values in rpm
+    result->x = data_received[1] << 8 | data_received[0];
+    result->y = data_received[3] << 8 | data_received[2];
+    result->z = data_received[5] << 8 | data_received[4];
+    return 0;
+}
+
+uint8_t ADCS_IGRF_Magnetic_Field_Vector() {
+    uint8_t data_length = 6;
+    uint8_t data_received[data_length]; // define temp buffer
+
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_IGRF_MODELLED_MAGNETIC_FIELD_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+    ADCS_Magnetic_Field_Vector_Struct vector_components; 
+    ADCS_Pack_to_IGRF_Magnetic_Field_Vector(&data_received[0], &vector_components);
+
+    WRITE_STRUCT_TO_MEMORY(vector_components); // memory module function
+
+    return tlm_status;
+}
+
+uint8_t ADCS_Pack_to_IGRF_Magnetic_Field_Vector(uint8_t *data_received, ADCS_Magnetic_Field_Vector_Struct *vector_components) {
+	// gives vector components in uT (10^-6 Teslas)
+    vector_components->x = ((double) ((int16_t) (data_received[1] << 8 | data_received[0]))) * 0.01;
+    vector_components->y = ((double) ((int16_t) (data_received[3] << 8 | data_received[2]))) * 0.01;
+    vector_components->z = ((double) ((int16_t) (data_received[5] << 8 | data_received[4]))) * 0.01;
+	return 0;
+}
+
+uint8_t ADCS_Quaternion_Error_Vector() {
+    uint8_t data_length = 6;
+    uint8_t data_received[data_length]; // define temp buffer
+
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_QUATERNION_ERROR_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+    ADCS_Quaternion_Error_Vector_Struct q_error;
+    ADCS_Pack_to_Quaternion_Error_Vector(&data_received[0], &q_error);
+
+    WRITE_STRUCT_TO_MEMORY(q_error) // memory module function
+
+    return tlm_status;
+}
+
+uint8_t ADCS_Pack_to_Quaternion_Error_Vector(uint8_t *data_received, ADCS_Quaternion_Error_Vector_Struct *result) {
+    result->quaternion_error_q1 = ((double) ((int16_t) (data_received[1] << 8 | data_received[0]))) * 0.0001;
+    result->quaternion_error_q2 = ((double) ((int16_t) (data_received[3] << 8 | data_received[2]))) * 0.0001;
+    result->quaternion_error_q3 = ((double) ((int16_t) (data_received[5] << 8 | data_received[4]))) * 0.0001;
+
+    return 0;
+}
+
+uint8_t ADCS_Estimated_Gyro_Bias() {
+    uint8_t data_length = 6;
+    uint8_t data_received[data_length]; // define temp buffer
+
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_ESTIMATED_GYRO_BIAS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+    ADCS_Estimated_Gyro_Bias_Struct gyro_bias;
+    ADCS_Pack_to_Estimated_Gyro_Bias(&data_received[0], &gyro_bias);
+
+    WRITE_STRUCT_TO_MEMORY(gyro_bias) // memory module function
+
+    return tlm_status;
+}
+
+uint8_t ADCS_Pack_to_Estimated_Gyro_Bias(uint8_t* data_received, ADCS_Estimated_Gyro_Bias_Struct *result) {
+    result->estimated_x_gyro_bias = ((double) ((int16_t) (data_received[1] << 8 | data_received[0]))) * 0.001;
+    result->estimated_y_gyro_bias = ((double) ((int16_t) (data_received[3] << 8 | data_received[2]))) * 0.001;
+    result->estimated_z_gyro_bias = ((double) ((int16_t) (data_received[5] << 8 | data_received[4]))) * 0.001;
+
+    return 0;
+}
+
+uint8_t ADCS_Estimation_Innovation_Vector() {
+    uint8_t data_length = 6;
+    uint8_t data_received[data_length]; // define temp buffer
+
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_ESTIMATION_INNOVATION_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+    ADCS_Estimation_Innovation_Vector_Struct innovation_vector;
+    ADCS_Pack_to_Estimation_Innovation_Vector(&data_received[0], &innovation_vector);
+
+    WRITE_STRUCT_TO_MEMORY(innovation_vector) // memory module function
+
+    return tlm_status;
+}
+
+uint8_t ADCS_Pack_to_Estimation_Innovation_Vector(uint8_t* data_received, ADCS_Estimation_Innovation_Vector_Struct* result) {
+    result->innovation_vector_x = ((double) ((int16_t) (data_received[1] << 8 | data_received[0]))) * 0.0001;
+    result->innovation_vector_y = ((double) ((int16_t) (data_received[3] << 8 | data_received[2]))) * 0.0001;
+    result->innovation_vector_z = ((double) ((int16_t) (data_received[5] << 8 | data_received[4]))) * 0.0001;
+
+    return 0;
+}
+
+uint8_t ADCS_Raw_Cam1_Sensor() {
+    uint8_t data_length = 6;
+    uint8_t data_received[data_length]; // define temp buffer
+
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_RAW_CAM1_SENSOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+    ADCS_Raw_Cam_Sensor_Struct raw_cam1_sensor;
+    ADCS_Pack_to_Raw_Cam1_Sensor(&data_received[0], &raw_cam1_sensor);
+
+    WRITE_STRUCT_TO_MEMORY(raw_cam1_sensor) // memory module function
+
+    return tlm_status;
+}
+
+uint8_t ADCS_Pack_to_Raw_Cam1_Sensor(uint8_t* data_received, ADCS_Raw_Cam_Sensor_Struct* result) {
+    result->which_sensor = ADCS_Cam1_Sensor;
+	result->cam_centroid_x = (int16_t) (data_received[1] << 8 | data_received[0]);
+    result->cam_centroid_y = (int16_t) (data_received[3] << 8 | data_received[2]);
+    result->cam_capture_status = data_received[4];
+    result->cam_detection_result = data_received[5];
+
+    return 0;
+}
+
+uint8_t ADCS_Raw_Cam2_Sensor() {
+    uint8_t data_length = 6;
+    uint8_t data_received[data_length]; // define temp buffer
+
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_RAW_CAM2_SENSOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+    ADCS_Raw_Cam_Sensor_Struct raw_cam2_sensor;
+    ADCS_Pack_to_Raw_Cam2_Sensor(&data_received[0], &raw_cam2_sensor);
+
+    WRITE_STRUCT_TO_MEMORY(raw_cam2_sensor) // memory module function
+
+    return tlm_status;
+}
+
+uint8_t ADCS_Pack_to_Raw_Cam2_Sensor(uint8_t* data_received, ADCS_Raw_Cam_Sensor_Struct* result) {
+    result->which_sensor = ADCS_Cam2_Sensor;
+	result->cam_centroid_x = (int16_t) (data_received[1] << 8 | data_received[0]);
+    result->cam_centroid_y = (int16_t) (data_received[3] << 8 | data_received[2]);
+    result->cam_capture_status = data_received[4];
+    result->cam_detection_result = data_received[5];
+
+    return 0;
+}
+
+uint8_t ADCS_Raw_CSS_1_to_6() {
+    uint8_t data_length = 6;
+    uint8_t data_received[data_length]; // define temp buffer
+
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_RAW_CSS_1_TO_6, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+    ADCS_Raw_CSS_1_to_6_Struct raw_css;
+    ADCS_Pack_to_Raw_CSS_1_to_6(&data_received[0], &raw_css);
+
+    WRITE_STRUCT_TO_MEMORY(raw_css) // memory module function
+
+    return tlm_status;
+}
+
+uint8_t ADCS_Pack_to_Raw_CSS_1_to_6(uint8_t* data_received, ADCS_Raw_CSS_1_to_6_Struct* result) {
+    result->css1 = data_received[0];
+    result->css2 = data_received[1];
+    result->css3 = data_received[2];
+    result->css4 = data_received[3];
+    result->css5 = data_received[4];
+    result->css6 = data_received[5];
+
+    return 0;
+}
+
+uint8_t ADCS_Raw_CSS_7_to_10() {
+    uint8_t data_length = 6;
+    uint8_t data_received[data_length]; // define temp buffer
+
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_RAW_CSS_7_TO_10, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+    ADCS_Raw_CSS_7_to_10_Struct raw_css_7_to_10;
+    ADCS_Pack_to_Raw_CSS_7_to_10(&data_received[0], &raw_css_7_to_10);
+
+    WRITE_STRUCT_TO_MEMORY(raw_css_7_to_10) // memory module function
+
+    return tlm_status;
+}
+
+uint8_t ADCS_Pack_to_Raw_CSS_7_to_10(uint8_t* data_received, ADCS_Raw_CSS_7_to_10_Struct* result) {
+    result->css7 = data_received[0];
+    result->css8 = data_received[1];
+    result->css9 = data_received[2];
+    result->css10 = data_received[3];
+
+    return 0;
+}
+
+uint8_t ADCS_CubeControl_Current() {
+    uint8_t data_length = 6;
+    uint8_t data_received[data_length]; // define temp buffer
+
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_CUBECONTROL_CURRENT_MEASUREMENTS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+    ADCS_CubeControl_Current_Struct cubecontrol_current;
+    ADCS_Pack_to_CubeControl_Current(&data_received[0], &cubecontrol_current);
+
+    WRITE_STRUCT_TO_MEMORY(cubecontrol_current) // memory module function
+
+    return tlm_status;
+}
+
+uint8_t ADCS_Pack_to_CubeControl_Current(uint8_t* data_received, ADCS_CubeControl_Current_Struct* result) {
+    // everything in mA
+	result->cubecontrol_3v3_current = (data_received[1] << 8 | data_received[0]);
+    result->cubecontrol_5v_current = (data_received[3] << 8 | data_received[2]);
+    result->cubecontrol_vbat_current = (data_received[5] << 8 | data_received[4]);
+
+    return 0;
+}
+
+uint8_t ADCS_Raw_GPS_Status() {
+    uint8_t data_length = 6;
+    uint8_t data_received[data_length]; // define temp buffer
+
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_RAW_GPS_STATUS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+    ADCS_Raw_GPS_Status_Struct raw_gps_status;
+    ADCS_Pack_to_Raw_GPS_Status(&data_received[0], &raw_gps_status);
+
+    WRITE_STRUCT_TO_MEMORY(raw_gps_status) // memory module function
+
+    return tlm_status;
+}
+
+uint8_t ADCS_Pack_to_Raw_GPS_Status(uint8_t* data_received, ADCS_Raw_GPS_Status_Struct* result) {
+    result->gps_solution_status = (ADCS_GPS_Solution_Status) data_received[0];
+    result->num_tracked_satellites = data_received[1];
+    result->num_used_satellites = data_received[2];
+    result->counter_xyz_log = data_received[3];
+    result->counter_range_log = data_received[4];
+    result->response_message_gps_log = data_received[5];
+
+    return 0;
+}
+
+uint8_t ADCS_Raw_GPS_Time() {
+    uint8_t data_length = 6;
+    uint8_t data_received[data_length]; // define temp buffer
+
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_RAW_GPS_TIME, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+    ADCS_Raw_GPS_Time_Struct raw_gps_time;
+    ADCS_Pack_to_Raw_GPS_Time(data_received, &raw_gps_time);
+
+    WRITE_STRUCT_TO_MEMORY(raw_gps_time); // memory module function
+
+    return tlm_status;
+}
+
+uint8_t ADCS_Pack_to_Raw_GPS_Time(uint8_t* data_received, ADCS_Raw_GPS_Time_Struct* result) {
+    result->gps_reference_week = (uint16_t)(data_received[1] << 8 | data_received[0]);
+    result->gps_time = ((uint32_t)(data_received[5] << 24 | data_received[4] << 16 | data_received[3] << 8 | data_received[2])) / 1000.0; // Convert milliseconds to seconds
+
+    return 0; 
+}
+
+uint8_t ADCS_Raw_GPS_X() {
+    uint8_t data_length = 6;
+    uint8_t data_received[data_length]; // define temp buffer
+
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_RAW_GPS_X, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+    ADCS_Raw_GPS_Struct raw_gps_x;
+    ADCS_Pack_to_Raw_GPS(ADCS_GPS_X, data_received, &raw_gps_x);
+
+    WRITE_STRUCT_TO_MEMORY(raw_gps_x); // memory module function
+
+    return tlm_status;
+}
+
+uint8_t ADCS_Raw_GPS_Y() {
+    uint8_t data_length = 6;
+    uint8_t data_received[data_length]; // define temp buffer
+
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_RAW_GPS_Y, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+    ADCS_Raw_GPS_Struct raw_gps_y;
+    ADCS_Pack_to_Raw_GPS(ADCS_GPS_Y, data_received, &raw_gps_y);
+
+    WRITE_STRUCT_TO_MEMORY(raw_gps_y); // memory module function
+
+    return tlm_status;
+}
+
+uint8_t ADCS_Raw_GPS_Z() {
+    uint8_t data_length = 6;
+    uint8_t data_received[data_length]; // define temp buffer
+
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_RAW_GPS_Z, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+    ADCS_Raw_GPS_Struct raw_gps_z;
+    ADCS_Pack_to_Raw_GPS(ADCS_GPS_Z, data_received, &raw_gps_z);
+
+    WRITE_STRUCT_TO_MEMORY(raw_gps_z); // memory module function
+
+    return tlm_status;
+}
+
+uint8_t ADCS_Pack_to_Raw_GPS(ADCS_GPS_Axis axis, uint8_t *data_received, ADCS_Raw_GPS_Struct *result) {
+    result->axis = axis;
+    result->ecef_position = (int32_t)(data_received[3] << 24 | data_received[2] << 16 | 
+                                               data_received[1] << 8 | data_received[0]); // ECEF Position Z [m]
+	result->ecef_velocity = (int16_t)(data_received[5] << 8 | data_received[4]);  // ECEF Velocity Z [m/s]
+
+    return 0;
+}
+
+uint8_t ADCS_Measurements() {
+    uint8_t data_length = 72;
+    uint8_t data_received[data_length]; // define temp buffer
+
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_ADCS_MEASUREMENTS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+    ADCS_Measurements_Struct measurements;
+    ADCS_Pack_to_Measurements(data_received, &measurements);
+
+    WRITE_STRUCT_TO_MEMORY(measurements); // memory module function
+
+    return tlm_status;
+}
+
+uint8_t ADCS_Pack_to_Measurements(uint8_t* telemetry_data, ADCS_Measurements_Struct* measurements) {
+    // Constants for conversion factors
+    const double MAGNETIC_FIELD_FACTOR = 0.01;
+    const double COARSE_SUN_FACTOR = 1.0 / 10000.0;
+    const double ANGULAR_RATE_FACTOR = 0.01;
+    const double WHEEL_SPEED_FACTOR = 1.0;
+    const double VECTOR_FACTOR = 1.0 / 10000.0;
+
+    // Parse each telemetry entry according to Table 150 in the Firmware Reference Manual
+    measurements->magnetic_field_x = (double)((int16_t)(telemetry_data[1] << 8 | telemetry_data[0])) * MAGNETIC_FIELD_FACTOR;
+    measurements->magnetic_field_y = (double)((int16_t)(telemetry_data[3] << 8 | telemetry_data[2])) * MAGNETIC_FIELD_FACTOR;
+    measurements->magnetic_field_z = (double)((int16_t)(telemetry_data[5] << 8 | telemetry_data[4])) * MAGNETIC_FIELD_FACTOR;
+    measurements->coarse_sun_x = (double)((int16_t)(telemetry_data[7] << 8 | telemetry_data[6])) * COARSE_SUN_FACTOR;
+    measurements->coarse_sun_y = (double)((int16_t)(telemetry_data[9] << 8 | telemetry_data[8])) * COARSE_SUN_FACTOR;
+    measurements->coarse_sun_z = (double)((int16_t)(telemetry_data[11] << 8 | telemetry_data[10])) * COARSE_SUN_FACTOR;
+    measurements->sun_x = (double)((int16_t)(telemetry_data[13] << 8 | telemetry_data[12])) * COARSE_SUN_FACTOR;
+    measurements->sun_y = (double)((int16_t)(telemetry_data[15] << 8 | telemetry_data[14])) * COARSE_SUN_FACTOR;
+    measurements->sun_z = (double)((int16_t)(telemetry_data[17] << 8 | telemetry_data[16])) * COARSE_SUN_FACTOR;
+    measurements->nadir_x = (double)((int16_t)(telemetry_data[19] << 8 | telemetry_data[18])) * COARSE_SUN_FACTOR;
+    measurements->nadir_y = (double)((int16_t)(telemetry_data[21] << 8 | telemetry_data[20])) * COARSE_SUN_FACTOR;
+    measurements->nadir_z = (double)((int16_t)(telemetry_data[23] << 8 | telemetry_data[22])) * COARSE_SUN_FACTOR;
+    measurements->x_angular_rate = (double)((int16_t)(telemetry_data[25] << 8 | telemetry_data[24])) * ANGULAR_RATE_FACTOR;
+    measurements->y_angular_rate = (double)((int16_t)(telemetry_data[27] << 8 | telemetry_data[26])) * ANGULAR_RATE_FACTOR;
+    measurements->z_angular_rate = (double)((int16_t)(telemetry_data[29] << 8 | telemetry_data[28])) * ANGULAR_RATE_FACTOR;
+    measurements->x_wheel_speed = (double)((int16_t)(telemetry_data[31] << 8 | telemetry_data[30])) * WHEEL_SPEED_FACTOR;
+    measurements->y_wheel_speed = (double)((int16_t)(telemetry_data[33] << 8 | telemetry_data[32])) * WHEEL_SPEED_FACTOR;
+    measurements->z_wheel_speed = (double)((int16_t)(telemetry_data[35] << 8 | telemetry_data[34])) * WHEEL_SPEED_FACTOR;
+    measurements->star1_body_x = (double)((int16_t)(telemetry_data[37] << 8 | telemetry_data[36])) * VECTOR_FACTOR;
+    measurements->star1_body_y = (double)((int16_t)(telemetry_data[39] << 8 | telemetry_data[38])) * VECTOR_FACTOR;
+    measurements->star1_body_z = (double)((int16_t)(telemetry_data[41] << 8 | telemetry_data[40])) * VECTOR_FACTOR;
+    measurements->star1_orbit_x = (double)((int16_t)(telemetry_data[43] << 8 | telemetry_data[42])) * VECTOR_FACTOR;
+    measurements->star1_orbit_y = (double)((int16_t)(telemetry_data[45] << 8 | telemetry_data[44])) * VECTOR_FACTOR;
+    measurements->star1_orbit_z = (double)((int16_t)(telemetry_data[47] << 8 | telemetry_data[46])) * VECTOR_FACTOR;
+    measurements->star2_body_x = (double)((int16_t)(telemetry_data[49] << 8 | telemetry_data[48])) * VECTOR_FACTOR;
+    measurements->star2_body_y = (double)((int16_t)(telemetry_data[51] << 8 | telemetry_data[50])) * VECTOR_FACTOR;
+    measurements->star2_body_z = (double)((int16_t)(telemetry_data[53] << 8 | telemetry_data[52])) * VECTOR_FACTOR;
+    measurements->star2_orbit_x = (double)((int16_t)(telemetry_data[55] << 8 | telemetry_data[54])) * VECTOR_FACTOR;
+    measurements->star2_orbit_y = (double)((int16_t)(telemetry_data[57] << 8 | telemetry_data[56])) * VECTOR_FACTOR;
+    measurements->star2_orbit_z = (double)((int16_t)(telemetry_data[59] << 8 | telemetry_data[58])) * VECTOR_FACTOR;
+    measurements->star3_body_x = (double)((int16_t)(telemetry_data[61] << 8 | telemetry_data[60])) * VECTOR_FACTOR;
+    measurements->star3_body_y = (double)((int16_t)(telemetry_data[63] << 8 | telemetry_data[62])) * VECTOR_FACTOR;
+    measurements->star3_body_z = (double)((int16_t)(telemetry_data[65] << 8 | telemetry_data[64])) * VECTOR_FACTOR;
+    measurements->star3_orbit_x = (double)((int16_t)(telemetry_data[67] << 8 | telemetry_data[66])) * VECTOR_FACTOR;
+    measurements->star3_orbit_y = (double)((int16_t)(telemetry_data[69] << 8 | telemetry_data[68])) * VECTOR_FACTOR;
+    measurements->star3_orbit_z = (double)((int16_t)(telemetry_data[71] << 8 | telemetry_data[70])) * VECTOR_FACTOR;
 
     return 0;
 }
