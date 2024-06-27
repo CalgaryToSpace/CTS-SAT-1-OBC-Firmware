@@ -11,7 +11,7 @@
 /// @brief Telecommand: Read bytes as hex from a flash address
 /// @param args_str No args.
 /// @return 0 always
-uint8_t TCMDEXEC_flash_activate_each_cs(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_flash_activate_each_cs(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     const uint16_t delay_time_ms = 500;
 
@@ -37,7 +37,7 @@ uint8_t TCMDEXEC_flash_activate_each_cs(const uint8_t *args_str, TCMD_Telecomman
 /// @brief Telecommand: Read bytes as hex from a flash address
 /// @param args_str No args.
 /// @return 0 always
-uint8_t TCMDEXEC_flash_each_is_reachable(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_flash_each_is_reachable(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t fail_count = 0;
 
@@ -88,14 +88,14 @@ uint8_t TCMDEXEC_flash_each_is_reachable(const uint8_t *args_str, TCMD_Telecomma
 /// @param args_str Arg 0: Chip Number (CS number) as uint, Arg 1: Flash Address as uint,
 ///     Arg 2: Number of bytes to read as uint
 /// @return 0 on success, >0 on error // TODO: explain better
-uint8_t TCMDEXEC_flash_read_hex(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_flash_read_hex(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     const uint16_t max_num_bytes = 256;
     uint64_t chip_num, flash_addr, arg_num_bytes;
 
-    uint8_t arg0_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 0, &chip_num);
-    uint8_t arg1_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 1, &flash_addr);
-    uint8_t arg2_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 2, &arg_num_bytes);
+    uint8_t arg0_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &chip_num);
+    uint8_t arg1_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &flash_addr);
+    uint8_t arg2_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 2, &arg_num_bytes);
     
     if (arg0_result != 0 || arg1_result != 0 || arg2_result != 0) {
         snprintf(
@@ -156,7 +156,7 @@ uint8_t TCMDEXEC_flash_read_hex(const uint8_t *args_str, TCMD_TelecommandChannel
 /// @param args_str Arg 0: Chip Number (CS number) as uint, Arg 1: Flash Address as uint,
 ///     Arg 2: Hex string of bytes to write, with no delimiters, in all lowercase
 /// @return 0 on success, >0 on error // TODO: explain better
-uint8_t TCMDEXEC_flash_write_hex(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_flash_write_hex(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     const uint16_t max_num_bytes = 256;
     uint16_t num_bytes;
@@ -167,11 +167,11 @@ uint8_t TCMDEXEC_flash_write_hex(const uint8_t *args_str, TCMD_TelecommandChanne
 
     uint8_t bytes_to_write[max_num_bytes];
 
-    uint8_t arg0_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 0, &chip_num);
-    uint8_t arg1_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 1, &flash_addr_u64);
+    uint8_t arg0_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &chip_num);
+    uint8_t arg1_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &flash_addr_u64);
     
     // FIXME: actually extract the hex from the string
-    // uint8_t arg2_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 2, &num_bytes);
+    // uint8_t arg2_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 2, &num_bytes);
     uint8_t arg2_result = 0; // temporary - fake success
 
     // FIXME: remove this next temp code, and write a string
@@ -228,12 +228,12 @@ uint8_t TCMDEXEC_flash_write_hex(const uint8_t *args_str, TCMD_TelecommandChanne
 /// @param args_str Arg 0: Chip Number (CS number) as uint, Arg 1: Flash Address as uint,
 ///     Arg 2: Number of bytes to erase as uint
 /// @return 0 on success, >0 on error // TODO: explain better
-uint8_t TCMDEXEC_flash_erase(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_flash_erase(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     uint64_t chip_num, flash_addr;
 
-    uint8_t arg0_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 0, &chip_num);
-    uint8_t arg1_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 1, &flash_addr);
+    uint8_t arg0_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &chip_num);
+    uint8_t arg1_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &flash_addr);
     
     if (arg0_result != 0 || arg1_result != 0) {
         snprintf(

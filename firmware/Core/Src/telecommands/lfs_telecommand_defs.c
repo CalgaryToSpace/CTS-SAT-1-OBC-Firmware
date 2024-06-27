@@ -7,7 +7,7 @@
 #include "telecommands/telecommand_args_helpers.h"
 
 
-uint8_t TCMDEXEC_fs_format_storage(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_fs_format_storage(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     int8_t result = LFS_format();
     if (result < 0) {
@@ -19,7 +19,7 @@ uint8_t TCMDEXEC_fs_format_storage(const uint8_t *args_str, TCMD_TelecommandChan
     return 0;
 }
 
-uint8_t TCMDEXEC_fs_mount(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_fs_mount(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     int8_t result = LFS_mount();
     if (result < 0) {
@@ -31,7 +31,7 @@ uint8_t TCMDEXEC_fs_mount(const uint8_t *args_str, TCMD_TelecommandChannel_enum_
     return 0;
 }
 
-uint8_t TCMDEXEC_fs_unmount(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_fs_unmount(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     int8_t result = LFS_unmount();
     if (result < 0) {
@@ -45,11 +45,11 @@ uint8_t TCMDEXEC_fs_unmount(const uint8_t *args_str, TCMD_TelecommandChannel_enu
 
 /// @brief Telecommand: Write data to a file in LittleFS
 /// @param args_str Arg 0: File name, Arg 1: String to write to file
-uint8_t TCMDEXEC_fs_write_file(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_fs_write_file(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
 
     char arg_file_name[64] = {0};
-    const uint8_t parse_file_name_result = TCMD_extract_string_arg((char*)args_str, 0, arg_file_name, sizeof(arg_file_name));
+    const uint8_t parse_file_name_result = TCMD_extract_string_arg(args_str, 0, arg_file_name, sizeof(arg_file_name));
     if (parse_file_name_result != 0) {
         // error parsing
         snprintf(
@@ -60,7 +60,7 @@ uint8_t TCMDEXEC_fs_write_file(const uint8_t *args_str, TCMD_TelecommandChannel_
     }
 
     char arg_file_content[512] = {0};
-    const uint8_t parse_file_content_result = TCMD_extract_string_arg((char*)args_str, 1, arg_file_content, sizeof(arg_file_content));
+    const uint8_t parse_file_content_result = TCMD_extract_string_arg(args_str, 1, arg_file_content, sizeof(arg_file_content));
     if (parse_file_content_result != 0) {
         // error parsing
         snprintf(
@@ -80,12 +80,12 @@ uint8_t TCMDEXEC_fs_write_file(const uint8_t *args_str, TCMD_TelecommandChannel_
     return 0;
 }
 
-uint8_t TCMDEXEC_fs_read_file(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_fs_read_file(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t rx_buffer[512] = {0};
 
     char arg_file_name[64] = {0};
-    const uint8_t parse_file_name_result = TCMD_extract_string_arg((char*)args_str, 0, arg_file_name, sizeof(arg_file_name));
+    const uint8_t parse_file_name_result = TCMD_extract_string_arg(args_str, 0, arg_file_name, sizeof(arg_file_name));
     if (parse_file_name_result != 0) {
         // error parsing
         snprintf(
@@ -106,7 +106,7 @@ uint8_t TCMDEXEC_fs_read_file(const uint8_t *args_str, TCMD_TelecommandChannel_e
 }
 
 
-uint8_t TCMDEXEC_fs_demo_write_then_read(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_fs_demo_write_then_read(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
 
     char file_name[] = "demo_test.txt";
