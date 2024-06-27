@@ -17,7 +17,7 @@ uint8_t TCMDEXEC_set_system_time(const char *args_str, TCMD_TelecommandChannel_e
   
     uint64_t ms = 0;
 
-    uint8_t result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 0, &ms);
+    uint8_t result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &ms);
     if (result != 0) {
         return 1;
     }

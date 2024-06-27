@@ -49,7 +49,7 @@ uint8_t TCMDEXEC_fs_write_file(const char *args_str, TCMD_TelecommandChannel_enu
                         char *response_output_buf, uint16_t response_output_buf_len) {
 
     char arg_file_name[64] = {0};
-    const uint8_t parse_file_name_result = TCMD_extract_string_arg((char*)args_str, 0, arg_file_name, sizeof(arg_file_name));
+    const uint8_t parse_file_name_result = TCMD_extract_string_arg(args_str, 0, arg_file_name, sizeof(arg_file_name));
     if (parse_file_name_result != 0) {
         // error parsing
         snprintf(
@@ -60,7 +60,7 @@ uint8_t TCMDEXEC_fs_write_file(const char *args_str, TCMD_TelecommandChannel_enu
     }
 
     char arg_file_content[512] = {0};
-    const uint8_t parse_file_content_result = TCMD_extract_string_arg((char*)args_str, 1, arg_file_content, sizeof(arg_file_content));
+    const uint8_t parse_file_content_result = TCMD_extract_string_arg(args_str, 1, arg_file_content, sizeof(arg_file_content));
     if (parse_file_content_result != 0) {
         // error parsing
         snprintf(
@@ -85,7 +85,7 @@ uint8_t TCMDEXEC_fs_read_file(const char *args_str, TCMD_TelecommandChannel_enum
     uint8_t rx_buffer[512] = {0};
 
     char arg_file_name[64] = {0};
-    const uint8_t parse_file_name_result = TCMD_extract_string_arg((char*)args_str, 0, arg_file_name, sizeof(arg_file_name));
+    const uint8_t parse_file_name_result = TCMD_extract_string_arg(args_str, 0, arg_file_name, sizeof(arg_file_name));
     if (parse_file_name_result != 0) {
         // error parsing
         snprintf(

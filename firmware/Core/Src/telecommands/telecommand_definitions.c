@@ -182,7 +182,7 @@ uint8_t TCMDEXEC_echo_back_uint32_args(const char *args_str, TCMD_TelecommandCha
     for (uint8_t arg_num = 0; arg_num < 10; arg_num++) {
         uint64_t arg_uint64;
         uint8_t parse_result = TCMD_extract_uint64_arg(
-            (char*)args_str, strlen((char*)args_str), arg_num, &arg_uint64);
+            args_str, strlen(args_str), arg_num, &arg_uint64);
         if (parse_result > 0) {
             // error parsing
             snprintf(
