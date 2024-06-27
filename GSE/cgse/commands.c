@@ -1,5 +1,6 @@
 #include "commands.h"
 #include "main.h"
+#include "base64.h"
 
 #include "telecommands/telecommand_definitions.h"
 
@@ -213,7 +214,7 @@ int CGSE_upload_mpi_firmware(CGSE_program_state_t *ps, char *cmd_string) {
         char mpi_firmware_path[FILENAME_MAX];
         snprintf(mpi_firmware_path, FILENAME_MAX, "%s/%s", ps->current_directory, arg_vector[1]);
         size_t mpi_firmware_length = 0;
-        char *mpi_firmware = CGSE_base64_encode_from_file(ps, mpi_firmware_path, &mpi_firmware_length);
+        char *mpi_firmware = CGSE_base64_encode_from_file(mpi_firmware_path, &mpi_firmware_length);
         if (mpi_firmware == NULL)
         {
             wprintw(ps->command_window, "\nUnable to load firmware from %s", mpi_firmware_path);

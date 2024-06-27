@@ -16,7 +16,7 @@ endif(CMAKE_BUILD_TYPE STREQUAL Debug)
 find_library(CURSES ncursesw HINTS /usr/local/lib)
 include_directories(/usr/local/include)
 
-add_executable(cgse main.c commands.c command_history.c telecommand_definitions.c)
+add_executable(cgse main.c commands.c command_history.c base64.c telecommand_definitions.c)
 target_link_libraries(cgse ${CURSES})
 
 # Add more include directories if needed

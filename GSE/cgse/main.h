@@ -78,8 +78,4 @@ void parse_telemetry(CGSE_program_state_t *ps);
 int CGSE_init(CGSE_program_state_t *ps);
 
 
-char * CGSE_base64_encode_from_file(CGSE_program_state_t *ps, char *file_name, size_t *file_size);
-char * CGSE_base64_encode_bytes(CGSE_program_state_t *ps, uint8_t *byte_array, int len);
-char CGSE_base64_encode_character(uint8_t bits);
-
 #endif // __INCLUDE_GUARD__MAIN_H_
