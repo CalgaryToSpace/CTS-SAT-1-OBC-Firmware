@@ -271,7 +271,7 @@ uint8_t TCMDEXEC_flash_erase(const char *args_str, TCMD_TelecommandChannel_enum_
 /// @param args_str Arg 0: Chip Number (CS number) as uint, Arg 1: Test Data Address as uint,
 ///     Arg 2: Test Data Length as uint
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_flash_benchmark_erase_write_read(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_flash_benchmark_erase_write_read(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     uint64_t chip_num, test_data_address, test_data_length;
 
