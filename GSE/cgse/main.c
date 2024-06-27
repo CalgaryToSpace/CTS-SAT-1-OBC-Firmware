@@ -320,6 +320,7 @@ int parse_input(CGSE_program_state_t *ps, int key)
                 wprintw(ps->command_window, "%30s - %s\n", ".disconnect", "disconnect from the satellite");
                 wprintw(ps->command_window, "%30s - %s\n", ".show_timestamp", "Show GSE computer timestamp on received messages");
                 wprintw(ps->command_window, "%30s - %s\n", ".hide_timestamp", "Hide GSE computer timestamp on received messages");
+                wprintw(ps->command_window, "%30s - %s\n", ".sync_time", "Synchronize satellite time with whit computer's time");
                 wprintw(ps->command_window, "%30s - %s\n", ".telecommands", "list telecommands");
                 wprintw(ps->command_window, "%30s - %s\n", ".upload_mpi_firmware <file_name>", "upload MPI firmware from <file_name> relative to the current directory. ");
 
@@ -363,6 +364,30 @@ int parse_input(CGSE_program_state_t *ps, int key)
                 else if (strcmp(".hide_timestamp", ps->command_buffer) == 0)
                 {
                     ps->prepend_timestamp = false;
+                }
+                else if (strcmp(".sync_time", ps->command_buffer) == 0)
+                {
+                    char tcmd[256];
+                    struct timeval epoch = {0};
+                    int gtod_result = gettimeofday(&epoch, NULL);
+                    if (gtod_result != 0) 
+                    {
+                        wprintw(ps->command_window, "\n Unable to get the time");
+                    }
+                    else {
+                        uint64_t epoch_ms = (uint64_t)epoch.tv_sec * 1000 + epoch.tv_usec/1000;
+                        // TODO account for a calibrated delay in
+                        // communicating with the satellite
+                        snprintf(tcmd, 256, "%s+set_system_time(%llu)", ps->command_prefix, epoch_ms);
+                        if (ps->satellite_connected) 
+                        {
+                            bytes_sent = write(ps->satellite_link, tcmd, strlen(tcmd));
+                        }
+                        else 
+                        {
+                            wprintw(ps->command_window, "\n Not connected to satellite");
+                        }
+                    }
                 }
                 else if (strcmp(".telecommands", ps->command_buffer) == 0)
                 {
