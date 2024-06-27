@@ -1,10 +1,12 @@
 #include "main.h"
 
 #include "command_history.h"
+#include "commands.h"
 
 #include "telecommands/telecommand_definitions.h"
 
 #include <math.h>
+#include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -22,8 +24,6 @@
 #include <ncurses.h>
 #include <errno.h>
 
-#include <dirent.h>
-
 #include <time.h>
 #include <sys/time.h>
 
@@ -32,6 +32,8 @@ volatile sig_atomic_t running = 1;
 volatile uint8_t TASK_heartbeat_is_on = 0;
 extern const int16_t TCMD_NUM_TELECOMMANDS;
 extern const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[];
+extern const int CGSE_NUM_TERMINAL_COMMANDS; 
+extern const CGSE_command_t CGSE_terminal_commands[];
 
 static void interrupthandler(int sig)
 {
@@ -128,46 +130,6 @@ int init_terminal_screen(CGSE_program_state_t *ps)
 
     return status;
 
-}
-
-int CGSE_connect(CGSE_program_state_t *ps)
-{
-    // Connect and set link parameters
-    int sat_link = open(ps->satellite_link_path, O_RDWR | O_NONBLOCK | O_NOCTTY);
-    if (sat_link == -1)
-    {
-        return -1;
-    }
-
-    struct termios sat_link_params;
-    int result = tcgetattr(sat_link, &sat_link_params);
-    if (result != 0)
-    {
-        return -1;
-    }
-    cfsetspeed(&sat_link_params, ps->baud_rate);
-    sat_link_params.c_cflag &= ~PARENB;
-    sat_link_params.c_cflag &= ~CSTOPB;
-    sat_link_params.c_cflag &= ~CSIZE;
-    sat_link_params.c_cflag &= ~CS8;
-    sat_link_params.c_cflag &= ~CRTSCTS;
-    sat_link_params.c_cc[VMIN] = 1;
-    sat_link_params.c_cc[VTIME] = 1;
-    sat_link_params.c_cflag |= (CREAD | CLOCAL);
-    cfmakeraw(&sat_link_params);
-    
-    result = tcsetattr(sat_link, TCSANOW, &sat_link_params);
-    if (result != 0)
-    {
-        return -1;
-    }
-    tcflush(sat_link, TCIOFLUSH);
-    
-    update_link_status(ps);
-    ps->satellite_link = sat_link;
-    ps->satellite_connected = true;
-
-    return 0;
 }
 
 int parse_input(CGSE_program_state_t *ps, int key)
@@ -306,259 +268,26 @@ int parse_input(CGSE_program_state_t *ps, int key)
                 CGSE_store_command("");
                 ps->command_history_index = CGSE_number_of_stored_commands() - 1;
             }
-            if (strcmp(".exit", ps->command_buffer) == 0 || strcmp(".quit", ps->command_buffer) == 0)
+            if (ps->command_buffer[0] == '.')
             {
-                running = 0;
-            }
-            else if (strcmp("?", ps->command_buffer) == 0 || strcmp(".help", ps->command_buffer) == 0)
-            {
-                wprintw(ps->command_window, "\n Available commands:\n");
-                wprintw(ps->command_window, "%30s - %s\n", "? or .help", "show available commands");
-                wprintw(ps->command_window, "%30s - %s\n", ".quit or .exit", "quit terminal");
-                wprintw(ps->command_window, "\n");
-                wprintw(ps->command_window, "%30s - %s\n", ".connect [<device-path>]", "connect to the satellite, optionally using <device-path>");
-                wprintw(ps->command_window, "%30s - %s\n", ".disconnect", "disconnect from the satellite");
-                wprintw(ps->command_window, "%30s - %s\n", ".show_timestamp", "Show GSE computer timestamp on received messages");
-                wprintw(ps->command_window, "%30s - %s\n", ".hide_timestamp", "Hide GSE computer timestamp on received messages");
-                wprintw(ps->command_window, "%30s - %s\n", ".sync_time", "Synchronize satellite time with whit computer's time");
-                wprintw(ps->command_window, "%30s - %s\n", ".telecommands", "list telecommands");
-                wprintw(ps->command_window, "%30s - %s\n", ".upload_mpi_firmware <file_name>", "upload MPI firmware from <file_name> relative to the current directory. ");
-
-                wprintw(ps->command_window, "\n%s> ", ps->command_prefix);
-                // Reset command 
-                ps->command_index = 0;
-                ps->cursor_position = 0;
-                ps->command_buffer[0] = '\0';
-            }
-            else if (ps->command_buffer[0] == '.')
-            {
-                // TODO search terminal command list for this command 
-                if (strncmp(".connect", ps->command_buffer, strlen(".connect")) == 0)
-                {
-                    if (ps->satellite_connected)
+                bool got_command = false;
+                for (int c = 0; c < CGSE_NUM_TERMINAL_COMMANDS; c++) {
+                    const CGSE_command_t *cmd = &CGSE_terminal_commands[c];
+                    if (strncmp(ps->command_buffer, cmd->name, strlen(cmd->name)) == 0)
                     {
-                        CGSE_disconnect(ps);
-                        
-                    }
-                    if (strlen(ps->command_buffer) > strlen(".connect"))
-                    {
-                        char *arg_vector[2];
-                        int n_connect_args = 2;
-                        char *buf = CGSE_parse_command_args(ps, &n_connect_args, arg_vector);
-                        if (n_connect_args == 2)
-                        {
-                            snprintf(ps->satellite_link_path, FILENAME_MAX, "%s", arg_vector[1]);
-                        }
-                        free(buf);
-                    }
-                    CGSE_connect(ps);
-                }
-                else if (strcmp(".disconnect", ps->command_buffer) == 0)
-                {
-                    CGSE_disconnect(ps);
-                }
-                else if (strcmp(".show_timestamp", ps->command_buffer) == 0)
-                {
-                    ps->prepend_timestamp = true;
-                }
-                else if (strcmp(".hide_timestamp", ps->command_buffer) == 0)
-                {
-                    ps->prepend_timestamp = false;
-                }
-                else if (strcmp(".sync_time", ps->command_buffer) == 0)
-                {
-                    char tcmd[256];
-                    struct timeval epoch = {0};
-                    int gtod_result = gettimeofday(&epoch, NULL);
-                    if (gtod_result != 0) 
-                    {
-                        wprintw(ps->command_window, "\n Unable to get the time");
-                    }
-                    else {
-                        uint64_t epoch_ms = (uint64_t)epoch.tv_sec * 1000 + epoch.tv_usec/1000;
-                        // TODO account for a calibrated delay in
-                        // communicating with the satellite
-                        snprintf(tcmd, 256, "%s+set_system_time(%llu)!", ps->command_prefix, epoch_ms);
-                        if (ps->satellite_connected) 
-                        {
-                            bytes_sent = write(ps->satellite_link, tcmd, strlen(tcmd));
-                        }
-                        else 
-                        {
-                            wprintw(ps->command_window, "\n Not connected to satellite");
-                        }
+                        int cmd_status = cmd->function(ps, ps->command_buffer);
+                        got_command = true;
+                        break;
                     }
                 }
-                else if (strcmp(".telecommands", ps->command_buffer) == 0)
-                {
-                    wprintw(ps->command_window, "\n");
-                    CGSE_list_telecommands(ps);
-                }
-                else if (strncmp(".ls", ps->command_buffer, strlen(".ls")) == 0)
-                {
-                    if (strlen(ps->command_buffer) > strlen(".ls"))
-                    {
-                        char *arg_vector[2];
-                        int n_ls_args = 2;
-                        char *buf = CGSE_parse_command_args(ps, &n_ls_args, arg_vector);
-                        if (n_ls_args == 2)
-                        {
-                            snprintf(ps->current_directory, FILENAME_MAX, "%s", arg_vector[1]);
-                        }
-                        free(buf);
-                    }
-                    wclrtoeol(ps->command_window);
-                    wprintw(ps->command_window, "\n");
-                    CGSE_ls_dir(ps);
-                }
-                else if (strncmp(".upload_mpi_firmware", ps->command_buffer, strlen(".upload_mpi_firmware")) == 0)
-                {
-                    if (!ps->satellite_connected)
-                    {
-                        wprintw(ps->command_window, "\nNot connected to satellite.");
-                    }
-                    else if (strlen(ps->command_buffer) > strlen(".upload_mpi_firmware"))
-                    {
-                        char *arg_vector[2];
-                        int n_args = 2;
-                        char *buf = CGSE_parse_command_args(ps, &n_args, arg_vector);
-                        if (n_args == 2)
-                        {
-                            char mpi_firmware_path[FILENAME_MAX];
-                            snprintf(mpi_firmware_path, FILENAME_MAX, "%s/%s", ps->current_directory, arg_vector[1]);
-                            size_t mpi_firmware_length = 0;
-                            char *mpi_firmware = CGSE_base64_encode_from_file(ps, mpi_firmware_path, &mpi_firmware_length);
-                            if (mpi_firmware == NULL)
-                            {
-                                wprintw(ps->command_window, "\nUnable to load firmware from %s", mpi_firmware_path);
-                            }
-                            else 
-                            {
-                                // Send bytes as pages to the satellite
-                                // TODO get number of bytes, not number of base64
-                                // characters
-                                size_t mpi_firmware_size_base64 = strlen(mpi_firmware);
-                                size_t remaining_chars = mpi_firmware_size_base64;
-                                size_t chars_to_send = 0;
-                                size_t chars_sent = 0;
-                                char *p = mpi_firmware;
-                                char telemetry_buffer[COMMAND_BUFFER_SIZE] = {0};
-                                size_t tm_offset = 0;
-                                size_t tm_bytes_sent = 0;
-                                int mpi_firmware_page = 0;
-                                int mpi_firmware_bytes_sent = 0;
-                                int mpi_firmware_bytes_offset = 0;
-                                while (remaining_chars > 0)
-                                {
-                                    chars_to_send = FIRMWARE_CHUNK_SIZE;    
-                                    if (chars_to_send > remaining_chars)
-                                    {
-                                        chars_to_send = remaining_chars;
-                                    }
-                                    mpi_firmware_bytes_offset = mpi_firmware_bytes_sent;
-                                    tm_offset = snprintf(telemetry_buffer, COMMAND_BUFFER_SIZE, "%s+upload_mpi_firmware_page(%d,", ps->command_prefix, mpi_firmware_bytes_offset);
-                                    memcpy(telemetry_buffer + tm_offset, p, chars_to_send);
-                                    tm_offset += chars_to_send;
-                                    //tm_offset += snprintf(telemetry_buffer + tm_offset, chars_to_send, "%s", p);
-                                    snprintf(telemetry_buffer + tm_offset, COMMAND_BUFFER_SIZE - tm_offset, ",%s,%lu)!", arg_vector[1], mpi_firmware_length);
-
-                                    tm_bytes_sent = write(ps->satellite_link, telemetry_buffer, strlen(telemetry_buffer));
-                                    if (tm_bytes_sent == strlen(telemetry_buffer))
-                                    {
-                                        chars_sent += chars_to_send;
-                                        mpi_firmware_bytes_sent = (chars_sent * 3) / 4;
-                                        remaining_chars -= chars_to_send;
-                                        p += chars_to_send;
-                                        mpi_firmware_page++;
-                                        wprintw(ps->command_window, "\nSent MPI firmware page %d (total %d of %lu bytes)", mpi_firmware_page, mpi_firmware_bytes_sent, mpi_firmware_length);
-                                        wrefresh(ps->command_window);
-                                        // Return to main while loop, re-entering
-                                        // here?
-                                        // TODO check CRC from response, etc.
-                                        struct timeval tv = {0};
-                                        gettimeofday(&tv, NULL);
-                                        double t1 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
-                                        double t2 = t1;
-                                        int bytes_received = 0;
-                                        bool got_page = false;
-                                        char expected_response[255] = {0};
-                                        while ((t2-t1) < MPI_FIRMWARE_PAGE_TIMEOUT && !got_page)
-                                        {
-                                            usleep(100000);
-                                            int new_bytes = read(ps->satellite_link, ps->receive_buffer, RECEIVE_BUFFER_SIZE);
-                                            bytes_received += new_bytes;
-                                            if (new_bytes > 0)
-                                            {
-                                                snprintf(expected_response, 255, "Received MPI firmware page. Wrote %d bytes to \"%s\" at address %d", mpi_firmware_bytes_sent, arg_vector[1], mpi_firmware_bytes_offset);
-                                                //if (strncmp(expected_response, (char*)ps->receive_buffer, strlen(expected_response)) == 0)
-                                                if (strncmp(expected_response, (char*)ps->receive_buffer, 12) == 0)
-                                                {
-                                                    CGSE_time_string(ps->time_buffer);
-                                                    got_page = true;
-                                                }
-                                            }
-                                            if (got_page)
-                                            {
-                                                wprintw(ps->main_window, "%s: %s", ps->time_buffer, ps->receive_buffer);
-                                                wrefresh(ps->main_window); 
-                                                wrefresh(ps->command_window);
-                                            }
-                                            gettimeofday(&tv, NULL);
-                                            t2 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
-                                        }
-                                        if (!got_page)
-                                        {
-                                            wprintw(ps->command_window, "\nDid not receive reply. Aborting firmware upload...");
-                                            break;
-                                        }
-                                    }
-                                    else 
-                                    {
-                                        // otherwise abort (or add this page to the
-                                        // failed-list and try those pages later?)
-                                        wprintw(ps->command_window, "\nFailed to send firmware page %d. Aborting...", mpi_firmware_page);
-                                        break;
-                                    }
-
-
-
-                                    // Check for interrupt...
-                                    int mpi_key = 0;
-                                    mpi_key = wgetch(ps->command_window);
-                                    if (mpi_key == 'q')
-                                    {
-                                        wprintw(ps->command_window, "\nUpload interrupted by user.\n");
-                                        wrefresh(ps->command_window);
-                                        break;
-                                    }
-
-                                }
-                            }
-
-                            // All done
-                            free(mpi_firmware);
-                        }
-                        else 
-                        {
-                            wprintw(ps->command_window, "\nUnable to parse command.");
-                        }
-                        free(buf);
-                    }
-                    wclrtoeol(ps->command_window);
-                }
-                else 
+                if (!got_command)
                 {
                     wprintw(ps->command_window, "\nUnrecognized terminal command");
                 }
-                wprintw(ps->command_window, "\n%s> ", ps->command_prefix);
-                wrefresh(ps->command_window);
-                // Reset command 
-                ps->command_index = 0;
-                ps->cursor_position = 0;
-                ps->command_buffer[0] = '\0';
             }
             else 
             {
+                // A possible telecommand
                 if (ps->command_index > COMMAND_BUFFER_SIZE - 1)
                 {
                     ps->command_index = COMMAND_BUFFER_SIZE - 1;
@@ -583,12 +312,13 @@ int parse_input(CGSE_program_state_t *ps, int key)
                         wprintw(ps->command_window, "\n Not connected to satellite");
                     }
                 }
-                wprintw(ps->command_window, "\n%s> ", ps->command_prefix);
-                // Reset command 
-                ps->command_index = 0;
-                ps->cursor_position = 0;
-                ps->command_buffer[0] = '\0';
             }
+            wprintw(ps->command_window, "\n%s> ", ps->command_prefix);
+            wrefresh(ps->command_window);
+            // Reset command 
+            ps->command_index = 0;
+            ps->cursor_position = 0;
+            ps->command_buffer[0] = '\0';
             ps->command_history_index = CGSE_number_of_stored_commands() - 1;
         }
 
@@ -661,7 +391,7 @@ int parse_args(CGSE_program_state_t *ps)
         }
         else if (strcmp("--help", arg) == 0)
         {
-            CGSE_help(ps->argv[0]);
+            CGSE_commandline_help(ps->argv[0]);
             return 1;
         }
         else 
@@ -675,7 +405,7 @@ int parse_args(CGSE_program_state_t *ps)
     if (strlen(ps->satellite_link_path) == 0)
     {
         snprintf(ps->satellite_link_path, FILENAME_MAX, "/dev");
-        find_link_path(ps->satellite_link_path);
+        CGSE_find_link_path(ps->satellite_link_path);
     }
 
     return 0;
@@ -695,7 +425,7 @@ void CGSE_about(void)
     return;
 }
 
-void CGSE_help(char *name)
+void CGSE_commandline_help(char *name)
 {
     fprintf(stdout, "usage: %s [option] ...\n", name);
 
@@ -709,33 +439,6 @@ void CGSE_help(char *name)
     return;
 }
 
-/// link_path must be allocated to FILENAME_MAX and must be initialized with the path of the system device files.
-int find_link_path(char *link_path)
-{
-    struct dirent *dp = NULL;
-    char *dirpath = strdup(link_path);             
-
-    // From man 3 directory example
-    DIR *directory = opendir(dirpath);
-    if (directory == NULL)
-        return -1;
-
-    char *pattern = "tty.usbmodem";
-    int len = strlen(pattern);
-    while ((dp = readdir(directory)) != NULL) 
-    {
-        if (strncmp(dp->d_name, pattern, len) == 0) 
-        {
-            snprintf(link_path, FILENAME_MAX, "%s/%s", dirpath, dp->d_name);
-            break;
-        }
-    }
-    (void)closedir(directory);
-    free(dirpath);
-
-    return 0;
-}
-
 /// time_str must be large enough to store 32 chars
 void CGSE_time_string(char *time_str)
 {
@@ -745,31 +448,6 @@ void CGSE_time_string(char *time_str)
     snprintf(time_str, CGSE_TIME_STR_MAX_LEN, "UTC=%4d-%02d-%02dT%02d:%02d:%02d.%06d", t->tm_year+1900, t->tm_mon+1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec, tv.tv_usec);
 
     char *result = strdup(time_str);
-    return;
-}
-
-
-void CGSE_list_telecommands(CGSE_program_state_t *ps)
-{
-
-    const TCMD_TelecommandDefinition_t *cmd = NULL;
-    int nArgs = 0;
-    for (int i = 0; i < TCMD_NUM_TELECOMMANDS; i++)
-    {
-        cmd = &TCMD_telecommand_definitions[i];
-        nArgs = cmd->number_of_args;
-        wprintw(ps->command_window, "%3d) %s(", i+1, cmd->tcmd_name);
-        for (int a = 0; a < nArgs; a++)
-        {
-            wprintw(ps->command_window, "a%03d", a+1);
-            if (a < nArgs - 1)
-            {
-                wprintw(ps->command_window, ",");
-            }
-        }
-        wprintw(ps->command_window, ")\n");
-    }
-
     return;
 }
 
@@ -867,18 +545,6 @@ void parse_telemetry(CGSE_program_state_t *ps)
     return;
 }
 
-void CGSE_disconnect(CGSE_program_state_t *ps)
-{
-    if (ps->satellite_link > 0)
-    {
-        close(ps->satellite_link);
-        ps->satellite_link = 0;
-        ps->satellite_connected = false;
-    }
-
-    return;
-}
-
 int CGSE_init(CGSE_program_state_t *ps)
 {
     int status = 0;
@@ -897,7 +563,7 @@ int CGSE_init(CGSE_program_state_t *ps)
     
     if (ps->auto_connect)
     {
-        status = CGSE_connect(ps);
+        status = CGSE_connect(ps, ".connect");
         if (status != 0)
         {
             wprintw(ps->command_window, "\n Unable to connect to satellite using \"%s\"\n", ps->satellite_link_path);
@@ -912,62 +578,6 @@ int CGSE_init(CGSE_program_state_t *ps)
     CGSE_store_command("");
 
     return 0;
-}
-
-char * CGSE_parse_command_args(CGSE_program_state_t *ps, int *nargs, char **arg_vector)
-{
-    if (ps == NULL || nargs == NULL || arg_vector == NULL)
-    {
-        return NULL;
-    }
-
-    // Based on "man strsep" example
-    char *input_string_caller_must_free = strdup(ps->command_buffer);
-    if (input_string_caller_must_free == NULL)
-    {
-        return NULL;
-    }
-
-    int max_arg = *nargs;
-    int args_found = 0;
-    for (char **ap = arg_vector; (*ap = strsep(&input_string_caller_must_free, " ")) != NULL;)
-    {
-        if (**ap != '\0')
-        {
-            args_found++;
-            if (++ap >= &arg_vector[max_arg])
-            {
-                break;
-            }
-        }
-    }
-    *nargs = args_found;
-
-    return input_string_caller_must_free;
-}
-
-int CGSE_ls_dir(CGSE_program_state_t *ps)
-{
-    struct dirent *dp = NULL;
-
-    // From man 3 directory example
-    DIR *directory = opendir(ps->current_directory);
-    if (directory == NULL)
-        return -1;
-
-    int n_files = 0;
-    while ((dp = readdir(directory)) != NULL) 
-    {
-        if (strlen(dp->d_name) > 0 && dp->d_name[0] != '.')
-        {
-            n_files++;
-            wprintw(ps->command_window, "%3d) %s\n", n_files, dp->d_name);
-        }
-    }
-    (void)closedir(directory);
-
-    return 0;
-
 }
 
 char * CGSE_base64_encode_from_file(CGSE_program_state_t *ps, char *file_name, size_t *file_size)
