@@ -378,7 +378,7 @@ int parse_input(CGSE_program_state_t *ps, int key)
                         uint64_t epoch_ms = (uint64_t)epoch.tv_sec * 1000 + epoch.tv_usec/1000;
                         // TODO account for a calibrated delay in
                         // communicating with the satellite
-                        snprintf(tcmd, 256, "%s+set_system_time(%llu)", ps->command_prefix, epoch_ms);
+                        snprintf(tcmd, 256, "%s+set_system_time(%llu)!", ps->command_prefix, epoch_ms);
                         if (ps->satellite_connected) 
                         {
                             bytes_sent = write(ps->satellite_link, tcmd, strlen(tcmd));
@@ -460,7 +460,7 @@ int parse_input(CGSE_program_state_t *ps, int key)
                                     memcpy(telemetry_buffer + tm_offset, p, chars_to_send);
                                     tm_offset += chars_to_send;
                                     //tm_offset += snprintf(telemetry_buffer + tm_offset, chars_to_send, "%s", p);
-                                    snprintf(telemetry_buffer + tm_offset, COMMAND_BUFFER_SIZE - tm_offset, ",%s,%lu)", arg_vector[1], mpi_firmware_length);
+                                    snprintf(telemetry_buffer + tm_offset, COMMAND_BUFFER_SIZE - tm_offset, ",%s,%lu)!", arg_vector[1], mpi_firmware_length);
 
                                     tm_bytes_sent = write(ps->satellite_link, telemetry_buffer, strlen(telemetry_buffer));
                                     if (tm_bytes_sent == strlen(telemetry_buffer))
@@ -571,7 +571,7 @@ int parse_input(CGSE_program_state_t *ps, int key)
                 col = strlen(ps->command_prefix) + 2 + strlen(ps->command_buffer);
                 wmove(ps->command_window, line, col);
                 // write...
-                snprintf(ps->telecommand_buffer, TCMD_BUFFER_SIZE, "%s+%s", ps->command_prefix, ps->command_buffer);
+                snprintf(ps->telecommand_buffer, TCMD_BUFFER_SIZE, "%s+%s!", ps->command_prefix, ps->command_buffer);
                 if (strlen(ps->command_buffer) > 0)
                 {
                     if (ps->satellite_connected)
