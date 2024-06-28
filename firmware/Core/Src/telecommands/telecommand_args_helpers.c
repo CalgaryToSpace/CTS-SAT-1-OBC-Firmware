@@ -135,3 +135,32 @@ uint8_t TCMD_extract_string_arg(const char *str, uint8_t arg_index, char *result
 
     return 0; // Successful extraction
 }
+/// @brief Grabs a hexidecimal string and parses it into a byte array
+/// @param str Input string in hexdecimal format and hex header (null-terminated)
+/// @param str_len The length of the input string
+/// @param result Pointer to the result; a byte array containing the values of the hex string (No header for byte array length)
+/// @return 0 if successful, 1 if the string is empty, 2 if the string is not in hex form
+///         3 for other error
+uint8_t TCMD_hex_string_to_byte_array(const char *str, uint32_t str_len, unsigned char *result){
+    if (str[0]!='0' && str[1]!='x'){ // string does not contain hex header therefore return error
+        return 2;
+    }
+    if (strlen(str)==0){ //string is empty
+        return 3;
+    }
+    uint16_t no_header_hex_len = str_len - 2; //removes header from string length
+    uint16_t byte_array_len;
+
+    if (no_header_hex_len%2 ==1){ 
+        byte_array_len = no_header_hex_len/2 +1; // adds padding if hex string is odd length
+    } 
+    else{
+        byte_array_len = no_header_hex_len/2;
+    }
+
+    unsigned char byte_array[byte_array_len];
+    unsigned char byte;
+    // sprintf(output, "%02X", (unsigned char)*input)
+
+    return 0;
+}
