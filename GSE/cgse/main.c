@@ -86,8 +86,11 @@ int main(int argc, char **argv)
 
     endwin();
 
-
-    fprintf(stdout, "Byte!\n");
+    int write_res = CGSE_write_command_history(&ps);
+    if (write_res != 0) {
+        fprintf(stderr, "Error writing command history.\n");
+    }
+    CGSE_free_command_history();
 
     return EXIT_SUCCESS;
 }
@@ -338,6 +341,9 @@ int parse_args(CGSE_program_state_t *ps)
     ps->auto_connect = true;
     ps->prepend_timestamp = false;
     snprintf(ps->current_directory, FILENAME_MAX, "%s", ".");
+    
+    char *history_path = getenv("HOME");
+    snprintf(ps->command_history_file_path, FILENAME_MAX, "%s/%s", history_path != NULL ? history_path : "", CGSE_COMMAND_HISTORY_FILENAME);
 
     char *arg = NULL;
 
@@ -354,7 +360,7 @@ int parse_args(CGSE_program_state_t *ps)
             snprintf(ps->satellite_link_path, FILENAME_MAX, "%s", arg + 7);
             ps->nOptions++;
         }
-        if (strncmp("--baud-rate=", arg, 12) == 0)
+        else if (strncmp("--baud-rate=", arg, 12) == 0)
         {
             if (strlen(arg) < 13)
             {
@@ -364,7 +370,7 @@ int parse_args(CGSE_program_state_t *ps)
             ps->baud_rate = atoi(arg + 12);
             ps->nOptions++;
         }
-        if (strncmp("--command-prefix=", arg, 17) == 0)
+        else if (strncmp("--command-prefix=", arg, 17) == 0)
         {
             if (strlen(arg) < 18)
             {
@@ -372,6 +378,16 @@ int parse_args(CGSE_program_state_t *ps)
                 return EXIT_FAILURE;
             }
             ps->command_prefix = arg + 17;
+            ps->nOptions++;
+        }
+        else if (strncmp("--command-history-filename=", arg, 27) == 0)
+        {
+            if (strlen(arg) < 28)
+            {
+                fprintf(stderr, "Unable to interpret %s\n", arg);
+                return EXIT_FAILURE;
+            }
+            snprintf(ps->command_history_file_path, FILENAME_MAX, "%s", ps->command_prefix = arg + 27);
             ps->nOptions++;
         }
         else if (strcmp("--no-auto-connect", arg) == 0)
@@ -434,8 +450,8 @@ void CGSE_commandline_help(char *name)
     fprintf(stdout, "%30s -- %s%d.\n", "--baud-rate=<rate>", "Set the satellite link baud rate. Default: ", CGSE_DEFAULT_BAUD_RATE);
     fprintf(stdout, "%30s -- %s\n", "--no-auto-connect", "Start program without connecting to satellite.");
     fprintf(stdout, "%30s -- %s\n", "--command-prefix=<prefix>", "Telecommand prefix. Default: " CGSE_DEFAULT_TELECOMMAND_PREFIX );
+    fprintf(stdout, "%30s -- %s\n", "--command-history-filename=<filename>", "Command history filename. Default: ${HOME}/" CGSE_COMMAND_HISTORY_FILENAME);
 
-    /// more help
     return;
 }
 
@@ -571,11 +587,14 @@ int CGSE_init(CGSE_program_state_t *ps)
         }
     }
 
+    
+    int read_history_res = CGSE_read_command_history(ps);
+    if (read_history_res != 0) {
+        CGSE_store_command("");
+    }
 
     wprintw(ps->command_window, "%s> %s", ps->command_prefix, ps->command_buffer);
     wrefresh(ps->command_window);
-    // Current line being edited
-    CGSE_store_command("");
 
     return 0;
 }

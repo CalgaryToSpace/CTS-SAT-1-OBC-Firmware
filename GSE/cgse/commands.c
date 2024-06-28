@@ -18,8 +18,8 @@
 extern volatile sig_atomic_t running;
 
 const CGSE_command_t CGSE_terminal_commands[] = {
-    {".quit", ".quit or .exit", "quit the terminal", CGSE_quit, false},
-    {".help", ".help or ?", "show available terminal commands", CGSE_help, false},
+    {".quit", ".quit", "quit the terminal", CGSE_quit, false},
+    {".help", ".help", "show available terminal commands", CGSE_help, false},
     {".connect", ".connect [<device-name>]", "connect to the satellite, optionally using <device-path>", CGSE_connect, false},
     {".disconnect", ".disconnect", "disconnect from from satellite", CGSE_disconnect, false},
     {".show_timestamp", ".show_timestamp", "show GSE computer timestamp on received messages", CGSE_show_timestamp, false},
