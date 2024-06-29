@@ -54,19 +54,16 @@ int main(int argc, char **argv)
     ps->argv = argv;
 
     int arg_status = parse_args(ps);
-    if (arg_status != 0)
-    {
+    if (arg_status != 0) {
         return EXIT_FAILURE;
     }
 
     int init_status = CGSE_init(ps);
-    if (init_status != 0)
-    {
+    if (init_status != 0) {
         return EXIT_FAILURE;
     }
 
-    while(running)
-    {
+    while(running) {
         update_link_status(ps);
         parse_telemetry(ps);
         process_command_queue(ps);
@@ -76,8 +73,7 @@ int main(int argc, char **argv)
 
     clear();
     refresh();
-    if (ps->satellite_connected && ps->satellite_link > 0)
-    {
+    if (ps->satellite_connected && ps->satellite_link > 0) {
         close(ps->satellite_link);
     }
 
@@ -106,15 +102,13 @@ int init_terminal_screen(CGSE_program_state_t *ps)
     status |= intrflush(NULL, false);
 
     ps->status_window = newwin(1, 0, 0, 0);
-    if (ps->status_window == NULL)
-    {
+    if (ps->status_window == NULL) {
         status |= 1;
     }
     status |= wattron(ps->status_window, A_REVERSE);
 
     ps->main_window = newwin(CGSE_TM_WINDOW_SIZE, 0, 1, 0);
-    if (ps->main_window == NULL)
-    {
+    if (ps->main_window == NULL) {
         status |= 1;
     }
     status |= keypad(ps->main_window, TRUE);
@@ -123,8 +117,7 @@ int init_terminal_screen(CGSE_program_state_t *ps)
     status |= idlok(ps->main_window, TRUE);
 
     ps->command_window = newwin(0, 0, CGSE_TM_WINDOW_SIZE + 1, 0);
-    if (ps->command_window == NULL)
-    {
+    if (ps->command_window == NULL) {
         status |= 1;
     }
     status |= keypad(ps->command_window, TRUE);
@@ -149,25 +142,21 @@ int parse_input(CGSE_program_state_t *ps)
 
     int key = 0;
 
-    while ((key = wgetch(ps->command_window)) != ERR && (t2 - t1) < 0.5)
-    {
+    while ((key = wgetch(ps->command_window)) != ERR && (t2 - t1) < 0.5) {
 
         getyx(ps->command_window, line, col);
         buffer_len = strlen(ps->command_buffer);
         if (key == '\b' || key == 127 || key == KEY_BACKSPACE)
         {
-            if (ps->command_history_index < CGSE_number_of_stored_commands() - 1)
-            {
+            if (ps->command_history_index < CGSE_number_of_stored_commands() - 1) {
                 CGSE_store_command(ps->command_buffer);
                 ps->command_history_index = CGSE_number_of_stored_commands() - 1;
             }
-            if (ps->cursor_position > 0)
-            {
+            if (ps->cursor_position > 0) {
                 ps->command_index--;
                 ps->cursor_position--;
                 col--;
-                for (int c = ps->cursor_position; c < buffer_len && c < COMMAND_BUFFER_SIZE - 2; c++)
-                {
+                for (int c = ps->cursor_position; c < buffer_len && c < COMMAND_BUFFER_SIZE - 2; c++) {
                     ps->command_buffer[c] = ps->command_buffer[c+1];
                 }
                 ps->command_buffer[ps->command_index] = '\0';
@@ -176,13 +165,10 @@ int parse_input(CGSE_program_state_t *ps)
                 CGSE_store_command(ps->command_buffer);
             }
         }
-        else if (key == KEY_UP)
-        {
-            if (ps->command_history_index > 0)
-            {
+        else if (key == KEY_UP) {
+            if (ps->command_history_index > 0) {
                 char *previous_command = CGSE_recall_command((size_t)ps->command_history_index - 1);
-                if (previous_command != NULL)
-                {
+                if (previous_command != NULL) {
                     snprintf(ps->command_buffer, COMMAND_BUFFER_SIZE, "%s", previous_command);
                     buffer_len = strlen(ps->command_buffer);
                     ps->cursor_position = buffer_len;
@@ -192,13 +178,10 @@ int parse_input(CGSE_program_state_t *ps)
                 }
             }
         }
-        else if (key == KEY_DOWN)
-        {
-            if (ps->command_history_index < CGSE_number_of_stored_commands())
-            {
+        else if (key == KEY_DOWN) {
+            if (ps->command_history_index < CGSE_number_of_stored_commands()) {
                 char *next_command = CGSE_recall_command((size_t)(ps->command_history_index+1));
-                if (next_command != NULL)
-                {
+                if (next_command != NULL) {
                     snprintf(ps->command_buffer, COMMAND_BUFFER_SIZE, "%s", next_command);
                     buffer_len = strlen(ps->command_buffer);
                     ps->cursor_position = buffer_len;
@@ -208,33 +191,25 @@ int parse_input(CGSE_program_state_t *ps)
                 }
             }
         }
-        else if (key == KEY_LEFT)
-        {
-            if (ps->cursor_position > 0)
-            {
+        else if (key == KEY_LEFT) {
+            if (ps->cursor_position > 0) {
                 ps->cursor_position--;
                 col--;
             }
         }
-        else if (key == KEY_RIGHT)
-        {
-            if (ps->cursor_position < buffer_len && ps->cursor_position < COMMAND_BUFFER_SIZE - 1)
-            {
+        else if (key == KEY_RIGHT) {
+            if (ps->cursor_position < buffer_len && ps->cursor_position < COMMAND_BUFFER_SIZE - 1) {
                 ps->cursor_position++;
                 col++;
             }
         }
-        else if (ps->command_index >= COMMAND_BUFFER_SIZE - 2)
-        {
+        else if (ps->command_index >= COMMAND_BUFFER_SIZE - 2) {
             ps->command_index = COMMAND_BUFFER_SIZE - 1;
             ps->command_buffer[ps->command_index] = '\0';
         }
-        else if (key != '\n' && ps->command_index < COMMAND_BUFFER_SIZE - 1) 
-        {
-            if (ps->cursor_position < buffer_len)
-            {
-                for (int k = buffer_len - 1; k >= ps->cursor_position; k--)
-                {
+        else if (key != '\n' && ps->command_index < COMMAND_BUFFER_SIZE - 1) {
+            if (ps->cursor_position < buffer_len) {
+                for (int k = buffer_len - 1; k >= ps->cursor_position; k--) {
                     ps->command_buffer[k+1] = ps->command_buffer[k];
                 }
             }
@@ -253,8 +228,7 @@ int parse_input(CGSE_program_state_t *ps)
         wclrtoeol(ps->command_window);
         wmove(ps->command_window, line, col);
 
-        if (key == '\n')
-        {
+        if (key == '\n') {
             CGSE_execute_command(ps);
         }
 
@@ -285,53 +259,42 @@ int parse_args(CGSE_program_state_t *ps)
 
     char *arg = NULL;
 
-    for (int i = 1; i < ps->argc; i++)
-    {
+    for (int i = 1; i < ps->argc; i++) {
         arg = ps->argv[i];
-        if (strncmp("--link=", arg, 7) == 0)
-        {
-            if (strlen(arg) < 8)
-            {
+        if (strncmp("--link=", arg, 7) == 0) {
+            if (strlen(arg) < 8) {
                 fprintf(stderr, "Unable to interpret %s\n", arg);
                 return EXIT_FAILURE;
             }
             snprintf(ps->satellite_link_path, FILENAME_MAX, "%s", arg + 7);
             ps->nOptions++;
         }
-        else if (strncmp("--baud-rate=", arg, 12) == 0)
-        {
-            if (strlen(arg) < 13)
-            {
+        else if (strncmp("--baud-rate=", arg, 12) == 0) {
+            if (strlen(arg) < 13) {
                 fprintf(stderr, "Unable to interpret %s\n", arg);
                 return EXIT_FAILURE;
             }
             ps->baud_rate = atoi(arg + 12);
             ps->nOptions++;
         }
-        else if (strncmp("--command-prefix=", arg, 17) == 0)
-        {
-            if (strlen(arg) < 18)
-            {
+        else if (strncmp("--command-prefix=", arg, 17) == 0) {
+            if (strlen(arg) < 18) {
                 fprintf(stderr, "Unable to interpret %s\n", arg);
                 return EXIT_FAILURE;
             }
             ps->command_prefix = arg + 17;
             ps->nOptions++;
         }
-        else if (strncmp("--command-history-filename=", arg, 27) == 0)
-        {
-            if (strlen(arg) < 28)
-            {
+        else if (strncmp("--command-history-filename=", arg, 27) == 0) {
+            if (strlen(arg) < 28) {
                 fprintf(stderr, "Unable to interpret %s\n", arg);
                 return EXIT_FAILURE;
             }
             snprintf(ps->command_history_file_path, FILENAME_MAX, "%s", arg + 27);
             ps->nOptions++;
         }
-        else if (strncmp("--commands=", arg, 11) == 0)
-        {
-            if (strlen(arg) < 12)
-            {
+        else if (strncmp("--commands=", arg, 11) == 0) {
+            if (strlen(arg) < 12) {
                 fprintf(stderr, "Unable to interpret %s\n", arg);
                 return EXIT_FAILURE;
             }
@@ -344,28 +307,23 @@ int parse_args(CGSE_program_state_t *ps)
                 return EXIT_FAILURE;
             }
         }
-        else if (strcmp("--no-auto-connect", arg) == 0)
-        {
+        else if (strcmp("--no-auto-connect", arg) == 0) {
             ps->auto_connect = false;
             ps->nOptions++;
         }
-        else if (strcmp("--about", arg) == 0)
-        {
+        else if (strcmp("--about", arg) == 0) {
             CGSE_about();
             return 1;
         }
-        else if (strcmp("--license", arg) == 0)
-        {
+        else if (strcmp("--license", arg) == 0) {
             CGSE_license();
             return 1;
         }
-        else if (strcmp("--help", arg) == 0)
-        {
+        else if (strcmp("--help", arg) == 0) {
             CGSE_commandline_help(ps->argv[0]);
             return 1;
         }
-        else 
-        {
+        else {
             fprintf(stderr, "Unrecognized option %s\n", arg);
             return EXIT_FAILURE;
         }
@@ -377,13 +335,10 @@ int parse_args(CGSE_program_state_t *ps)
         return EXIT_FAILURE;
     }
 
-    if (strlen(ps->satellite_link_path) == 0)
-    {
+    if (strlen(ps->satellite_link_path) == 0) {
         snprintf(ps->satellite_link_path, FILENAME_MAX, "/dev");
         CGSE_find_link_path(ps->satellite_link_path);
     }
-
-
 
     return 0;
 
@@ -459,33 +414,28 @@ void parse_telemetry(CGSE_program_state_t *ps)
     static int8_t prepend_timestamp = -1;
 
     ps->bytes_received = 0;
-    if (ps->satellite_connected)
-    {
+    if (ps->satellite_connected) {
         CGSE_time_string(ps->time_buffer);
         struct timeval tv = {0};
         gettimeofday(&tv, NULL);
         double t1 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
         double t2 = t1;
-        while (ps->bytes_received >= 0 && (t2-t1) < 0.25)
-        {
+
+        while (ps->bytes_received >= 0 && (t2-t1) < 0.25) {
             ps->bytes_received = read(ps->satellite_link, ps->receive_buffer + stop, RECEIVE_BUFFER_SIZE);
-            if (ps->bytes_received > 0)
-            {
+            if (ps->bytes_received > 0) {
                 stop += ps->bytes_received;
             }
             gettimeofday(&tv, NULL);
             t2 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
         }
     }
-    else 
-    {
+    else {
        stop = 0; 
     }
-    if (stop > 0)
-    {
+    if (stop > 0) {
         wclrtoeol(ps->main_window);
-        if (stop >= RECEIVE_BUFFER_SIZE)
-        {
+        if (stop >= RECEIVE_BUFFER_SIZE) {
             stop--;
         }
         ps->receive_buffer[stop] = '\0';
@@ -501,6 +451,7 @@ void parse_telemetry(CGSE_program_state_t *ps)
             }
             char *bufline = NULL;
             uint32_t lines_treated = 0;
+            
             while ((bufline = strsep(&string, "\n")) != NULL) {
                 if (strlen(bufline) > 0) {
                     if (lines_treated == 0 && !last_line_complete) {
@@ -536,14 +487,16 @@ void process_command_queue(CGSE_program_state_t *ps)
     // Queue up that command if it is time...
     // First command is up next 
     // It is removed once sent to the satellite
-    CGSE_command_queue_entry_t *e = NULL;
-    // Run all commands that are due 
-    // TODO maybe with a timeout as a safety...
+
+    // Run all commands that are due, up to a timeout
     struct timeval tv = {0};
     gettimeofday(&tv, NULL);
     double t1 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
     double t2 = t1;
+
     memcpy(ps->editing_buffer, ps->command_buffer, COMMAND_BUFFER_SIZE);
+    CGSE_command_queue_entry_t *e = NULL;
+
     while ((e = CGSE_command_queue_next()) != NULL && t2 - t1 < 0.25) {
         snprintf(ps->command_buffer, COMMAND_BUFFER_SIZE, "%s", e->command_text);
         CGSE_execute_command(ps);
@@ -574,20 +527,16 @@ int CGSE_init(CGSE_program_state_t *ps)
     sigaction(SIGINT, &intact, NULL);
 
     status = init_terminal_screen(ps);
-    if (status != 0)
-    {
+    if (status != 0) {
         endwin();
         fprintf(stderr, "Unable to initialize ncurses screen.\n");
         return EXIT_FAILURE;
     }
     
-    if (ps->auto_connect)
-    {
+    if (ps->auto_connect) {
         status = CGSE_connect(ps, ".connect");
-        if (status != 0)
-        {
+        if (status != 0) {
             wprintw(ps->command_window, "\n Unable to connect to satellite using \"%s\"\n", ps->satellite_link_path);
-            // Do not quit - can try again later
         }
     }
 

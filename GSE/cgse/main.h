@@ -19,14 +19,14 @@
 
 #define FIRMWARE_CHUNK_SIZE 128
 #define MPI_FIRMWARE_PAGE_TIMEOUT 10.0
+#define MPI_FIRMWARE_PAGE_TIMEOUT_STEP_US 100000
 
 #define CGSE_TM_WINDOW_SIZE 23
 
 #define CGSE_TIME_STR_MAX_LEN 32
 
 
-typedef struct 
-{
+typedef struct {
 
     int nOptions;
     int argc;
@@ -86,7 +86,5 @@ void parse_telemetry(CGSE_program_state_t *ps);
 void process_command_queue(CGSE_program_state_t *ps);
 
 int CGSE_init(CGSE_program_state_t *ps);
-
-
 
 #endif // __INCLUDE_GUARD__MAIN_H_

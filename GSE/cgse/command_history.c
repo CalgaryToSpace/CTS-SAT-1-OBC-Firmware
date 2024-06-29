@@ -27,8 +27,7 @@ int CGSE_store_command(char *cmd)
     }
     else {
         CGSE_command_history_t *mem = realloc(CGSE_command_history, sizeof *mem * (CGSE_command_history_length + 1));
-        if (mem == NULL)
-        {
+        if (mem == NULL) {
             return -1;
         }
         CGSE_command_history = mem;
@@ -44,15 +43,12 @@ int CGSE_store_command(char *cmd)
 
 int CGSE_remove_command(size_t index)
 {
-    if (CGSE_command_history_length > 0 && index < CGSE_command_history_length)
-    {
-        if (index < CGSE_command_history_length -1)
-        {
+    if (CGSE_command_history_length > 0 && index < CGSE_command_history_length) {
+        if (index < CGSE_command_history_length -1) {
             memmove(&CGSE_command_history[index], &CGSE_command_history[index + 1], sizeof *CGSE_command_history * (CGSE_command_history_length-(index + 1)));
         }
         CGSE_command_history_t *mem = realloc(CGSE_command_history, sizeof *CGSE_command_history * (CGSE_command_history_length - 1));
-        if (mem == NULL)
-        {
+        if (mem == NULL) {
             return -1;
         }
         CGSE_command_history = mem;
@@ -67,8 +63,7 @@ int CGSE_remove_command(size_t index)
 char * CGSE_recall_command(size_t index)
 {
     char *cmd = NULL;
-    if (index < CGSE_command_history_length)
-    {
+    if (index < CGSE_command_history_length) {
         cmd = CGSE_command_history[index].text;
     }
 
@@ -83,16 +78,17 @@ size_t CGSE_number_of_stored_commands(void)
 int CGSE_read_command_history(CGSE_program_state_t *ps)
 {
     FILE *f = fopen(ps->command_history_file_path, "r");
-    if (f == NULL) {
-        return -1;
+    if (f == NULL) { return -1;
     }
 
     int lines = 0;
     // Cushion for time string at the start of each line
     char line_buf[CGSE_COMMAND_HISTORY_BUFFER_SIZE]; 
+
     while (fgets(line_buf, CGSE_COMMAND_HISTORY_BUFFER_SIZE, f) != NULL) {
         lines++;
     }
+
     int seek_res = fseek(f, 0, SEEK_SET);
     if (seek_res != 0) {
         fclose(f);
@@ -102,8 +98,10 @@ int CGSE_read_command_history(CGSE_program_state_t *ps)
     if (recent_history_start < 0) {
         recent_history_start = 0;
     }
+
     lines = 0;
     int restored_lines = 0;
+
     while (fgets(line_buf, COMMAND_BUFFER_SIZE + 50, f) != NULL) {
         if (lines >= recent_history_start) {
             char *p = line_buf;
@@ -123,6 +121,7 @@ int CGSE_read_command_history(CGSE_program_state_t *ps)
         }
         lines++;
     }
+
     // Set up command line for editing
     CGSE_store_command("");
     ps->command_history_index = CGSE_command_history_length - 1;
@@ -159,3 +158,4 @@ void CGSE_free_command_history(void)
 
     return;
 }
+

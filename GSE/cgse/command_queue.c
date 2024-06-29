@@ -113,6 +113,7 @@ int CGSE_command_queue_read_commands(CGSE_program_state_t *ps)
     }
 
     char line_buffer[COMMAND_BUFFER_SIZE + 100];
+
     while (fgets(line_buffer, COMMAND_BUFFER_SIZE + 100, f) != NULL) {
         CGSE_command_queue_add_command(ps, line_buffer);
     }
