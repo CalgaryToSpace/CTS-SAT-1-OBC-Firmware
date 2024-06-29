@@ -68,15 +68,9 @@ int main(int argc, char **argv)
     while(running)
     {
         update_link_status(ps);
-        wrefresh(ps->status_window);
-
         parse_telemetry(ps);
-
         process_command_queue(ps);
-
-        // Check for user input
         parse_input(ps);
-
         usleep(IO_WAIT_USEC);
     }
 
@@ -451,6 +445,8 @@ void update_link_status(CGSE_program_state_t *ps)
 
     wclrtoeol(ps->status_window);
     wrefresh(ps->status_window);
+
+    return;
 
 }
 
