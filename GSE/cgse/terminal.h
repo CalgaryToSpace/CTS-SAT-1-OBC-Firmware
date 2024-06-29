@@ -3,6 +3,7 @@
 
 #include "main.h"
 
+int init_terminal_screen(CGSE_program_state_t *program_state);
 int parse_input(CGSE_program_state_t *program_state);
 void update_link_status(CGSE_program_state_t *ps);
 void parse_telemetry(CGSE_program_state_t *ps);

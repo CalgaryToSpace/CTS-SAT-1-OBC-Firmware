@@ -3,14 +3,53 @@
 #include "command_history.h"
 #include "command_queue.h"
 
+#include <locale.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <ncurses.h>
 
 int line = 0;
 int col = 0;
+
+int init_terminal_screen(CGSE_program_state_t *ps)
+{
+    int status = 0;
+    setlocale(LC_ALL, "");
+    initscr();
+    status |= noecho();
+    status |= raw();
+    status |= intrflush(NULL, false);
+
+    ps->status_window = newwin(1, 0, 0, 0);
+    if (ps->status_window == NULL) {
+        status |= 1;
+    }
+    status |= wattron(ps->status_window, A_REVERSE);
+
+    ps->main_window = newwin(CGSE_TM_WINDOW_SIZE, 0, 1, 0);
+    if (ps->main_window == NULL) {
+        status |= 1;
+    }
+    status |= keypad(ps->main_window, TRUE);
+    status |= nodelay(ps->main_window, TRUE);
+    status |= scrollok(ps->main_window, TRUE);
+    status |= idlok(ps->main_window, TRUE);
+
+    ps->command_window = newwin(0, 0, CGSE_TM_WINDOW_SIZE + 1, 0);
+    if (ps->command_window == NULL) {
+        status |= 1;
+    }
+    status |= keypad(ps->command_window, TRUE);
+    status |= nodelay(ps->command_window, TRUE);
+    status |= scrollok(ps->command_window, TRUE);
+    status |= idlok(ps->command_window, TRUE);
+
+    return status;
+
+}
 
 int parse_input(CGSE_program_state_t *ps)
 {

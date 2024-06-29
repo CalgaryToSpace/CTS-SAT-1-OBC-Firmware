@@ -20,7 +20,6 @@
 #include <string.h>
 #include <signal.h>
 
-#include <locale.h>
 #include <ncurses.h>
 #include <errno.h>
 
@@ -40,6 +39,8 @@ static void interrupthandler(int sig)
 {
     (void)sig;
     running = 0;
+
+    return;
 }
 
 int main(int argc, char **argv)
@@ -47,9 +48,9 @@ int main(int argc, char **argv)
 
     CGSE_program_state_t program_state = {0};
     CGSE_program_state_t *ps = &program_state;
+
     ps->argc = argc;
     ps->argv = argv;
-
     int arg_status = parse_args(ps);
     if (arg_status != 0) {
         return EXIT_FAILURE;
@@ -68,50 +69,9 @@ int main(int argc, char **argv)
         usleep(IO_WAIT_USEC);
     }
 
-    clear();
-    refresh();
-    endwin();
-
     CGSE_shutdown(ps);
 
     return EXIT_SUCCESS;
-}
-
-int init_terminal_screen(CGSE_program_state_t *ps)
-{
-    int status = 0;
-    setlocale(LC_ALL, "");
-    initscr();
-    status |= noecho();
-    status |= raw();
-    status |= intrflush(NULL, false);
-
-    ps->status_window = newwin(1, 0, 0, 0);
-    if (ps->status_window == NULL) {
-        status |= 1;
-    }
-    status |= wattron(ps->status_window, A_REVERSE);
-
-    ps->main_window = newwin(CGSE_TM_WINDOW_SIZE, 0, 1, 0);
-    if (ps->main_window == NULL) {
-        status |= 1;
-    }
-    status |= keypad(ps->main_window, TRUE);
-    status |= nodelay(ps->main_window, TRUE);
-    status |= scrollok(ps->main_window, TRUE);
-    status |= idlok(ps->main_window, TRUE);
-
-    ps->command_window = newwin(0, 0, CGSE_TM_WINDOW_SIZE + 1, 0);
-    if (ps->command_window == NULL) {
-        status |= 1;
-    }
-    status |= keypad(ps->command_window, TRUE);
-    status |= nodelay(ps->command_window, TRUE);
-    status |= scrollok(ps->command_window, TRUE);
-    status |= idlok(ps->command_window, TRUE);
-
-    return status;
-
 }
 
 int parse_args(CGSE_program_state_t *ps)
@@ -221,6 +181,7 @@ int parse_args(CGSE_program_state_t *ps)
 void CGSE_license(void)
 {
     fprintf(stdout, "MIT License. Etc.\n");
+
     return;
 }
 
@@ -228,6 +189,7 @@ void CGSE_about(void)
 {
     fprintf(stdout, "Lightweight GSE terminal for FrontierSat development.\n");
     fprintf(stdout, "Copyright (C) CalgaryToSpace (2024)\n");
+
     return;
 }
 
@@ -253,8 +215,8 @@ void CGSE_time_string(char *time_str)
     gettimeofday(&tv, NULL);
     struct tm *t = gmtime(&tv.tv_sec);
     snprintf(time_str, CGSE_TIME_STR_MAX_LEN, "UTC=%4d-%02d-%02dT%02d:%02d:%02d.%06d", t->tm_year+1900, t->tm_mon+1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec, tv.tv_usec);
-
     char *result = strdup(time_str);
+
     return;
 }
 
@@ -280,7 +242,6 @@ int CGSE_init(CGSE_program_state_t *ps)
         }
     }
 
-    
     int read_history_res = CGSE_read_command_history(ps);
     if (read_history_res != 0) {
         CGSE_store_command("");
@@ -294,6 +255,10 @@ int CGSE_init(CGSE_program_state_t *ps)
 
 void CGSE_shutdown(CGSE_program_state_t *ps) 
 {
+    clear();
+    refresh();
+    endwin();
+
     if (ps->satellite_connected && ps->satellite_link > 0) {
         close(ps->satellite_link);
     }

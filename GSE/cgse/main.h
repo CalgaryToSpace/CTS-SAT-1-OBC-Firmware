@@ -69,7 +69,6 @@ typedef struct {
 
 } CGSE_program_state_t;
 
-int init_terminal_screen(CGSE_program_state_t *program_state);
 int parse_args(CGSE_program_state_t *ps);
 
 void CGSE_license(void);
