@@ -137,7 +137,7 @@ int parse_args(CGSE_program_state_t *ps)
             // Import commands from file
             int queue_read_res = CGSE_command_queue_read_commands(ps);
             if (queue_read_res != 0) {
-                wprintw(ps->command_window, "\n Error loading commands from %s\n", ps->command_queue_file_path);
+                fprintf(stderr, "Error loading commands from %s\n", ps->command_queue_file_path);
                 return EXIT_FAILURE;
             }
         }
@@ -255,10 +255,6 @@ int CGSE_init(CGSE_program_state_t *ps)
 
 void CGSE_shutdown(CGSE_program_state_t *ps) 
 {
-    clear();
-    refresh();
-    endwin();
-
     if (ps->satellite_connected && ps->satellite_link > 0) {
         close(ps->satellite_link);
     }
@@ -272,6 +268,8 @@ void CGSE_shutdown(CGSE_program_state_t *ps)
     // TODO maybe write out remaining commands in the command queue for later
     // processing?
     CGSE_free_command_queue();
+
+    CGSE_terminal_shutdown();
 
     return;
 

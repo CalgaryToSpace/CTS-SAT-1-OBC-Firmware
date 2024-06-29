@@ -19,8 +19,6 @@
 #include <ncurses.h>
 
 extern volatile sig_atomic_t running;
-extern int line;
-extern int col;
 
 const CGSE_command_t CGSE_terminal_commands[] = {
     {".quit", ".quit", "quit the terminal", CGSE_quit, false},
@@ -393,10 +391,7 @@ int CGSE_find_link_path(char *link_path)
 
 int CGSE_execute_command(CGSE_program_state_t *ps)
 {
-    ps->command_index = strlen(ps->command_buffer);
-    ps->cursor_position = ps->command_index;
-    col = strlen(ps->command_prefix) + 2 + ps->cursor_position;
-    wmove(ps->command_window, line, col);
+    reset_editing_cursor(ps);
     if (strlen(ps->command_buffer) > 0) {
         if (ps->command_history_index < CGSE_number_of_stored_commands() - 1) {
             if (strlen(CGSE_recall_command(CGSE_number_of_stored_commands() - 1)) == 0) {
@@ -430,8 +425,7 @@ int CGSE_execute_command(CGSE_program_state_t *ps)
             }
         }
         ps->command_buffer[ps->command_index] = '\0';
-        col = strlen(ps->command_prefix) + 2 + strlen(ps->command_buffer);
-        wmove(ps->command_window, line, col);
+        update_editing_cursor(ps);
         // write...
         snprintf(ps->telecommand_buffer, TCMD_BUFFER_SIZE, "%s+%s!", ps->command_prefix, ps->command_buffer);
         if (strlen(ps->command_buffer) > 0) {
@@ -446,10 +440,11 @@ int CGSE_execute_command(CGSE_program_state_t *ps)
     wprintw(ps->command_window, "\n%s> ", ps->command_prefix);
     wrefresh(ps->command_window);
     // Reset command 
-    ps->command_index = 0;
-    ps->cursor_position = 0;
     ps->command_buffer[0] = '\0';
+    ps->line++;
+    reset_editing_cursor(ps);
     ps->command_history_index = CGSE_number_of_stored_commands() - 1;
 
     return 0;
 }
+

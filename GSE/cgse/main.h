@@ -66,6 +66,9 @@ typedef struct {
 
     bool prepend_timestamp;
 
+    // Terminal cursor position
+    int line;
+    int col;
 
 } CGSE_program_state_t;
 
