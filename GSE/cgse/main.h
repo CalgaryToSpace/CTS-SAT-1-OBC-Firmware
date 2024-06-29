@@ -32,6 +32,8 @@ typedef struct
     int argc;
     char **argv;
 
+    uint64_t program_start_epoch_ms;
+
     speed_t baud_rate;
     char satellite_link_path[FILENAME_MAX];
     char *command_prefix;
@@ -56,6 +58,7 @@ typedef struct
     char command_history_file_path[FILENAME_MAX];
 
     char telecommand_buffer[TCMD_BUFFER_SIZE];
+    char command_queue_file_path[FILENAME_MAX];
 
     char current_directory[FILENAME_MAX];
     char file_to_load[FILENAME_MAX];
@@ -67,7 +70,7 @@ typedef struct
 
 int init_terminal_screen(CGSE_program_state_t *program_state);
 
-int parse_input(CGSE_program_state_t *program_state, int key);
+int parse_input(CGSE_program_state_t *program_state);
 
 int parse_args(CGSE_program_state_t *ps);
 

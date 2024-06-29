@@ -1,4 +1,6 @@
 #include "commands.h"
+#include "command_history.h"
+#include "command_queue.h"
 #include "main.h"
 #include "base64.h"
 
@@ -16,6 +18,8 @@
 #include <ncurses.h>
 
 extern volatile sig_atomic_t running;
+extern int line;
+extern int col;
 
 const CGSE_command_t CGSE_terminal_commands[] = {
     {".quit", ".quit", "quit the terminal", CGSE_quit, false},
@@ -26,6 +30,7 @@ const CGSE_command_t CGSE_terminal_commands[] = {
     {".hide_timestamp", ".hide_timestamp", "show GSE computer timestamp on received messages", CGSE_hide_timestamp, false},
     {".sync_time", ".sync_time", "synchronize satellite time with whit computer's time", CGSE_sync_timestamp, false},
     {".telecommands", ".telecommands", "list telecommands", CGSE_list_telecommands, false},
+    {".list_queued_commands", ".list_queued_commands", "list queued telecommands and terminal commands", CGSE_list_queued_commands, false},
     {".ls", ".ls", "list current directory", CGSE_list_current_directory, false},
     {".upload_mpi_firmware", ".upload_mpi_firmware <file_name>", "upload MPI firmware from <file_name> relative to the current directory", CGSE_upload_mpi_firmware, false},
 };
@@ -196,6 +201,11 @@ int CGSE_list_current_directory(CGSE_program_state_t *ps, char *cmd_string) {
     wprintw(ps->command_window, "\n");
     CGSE_ls_dir(ps);
 
+    return 0;
+}
+
+int CGSE_list_queued_commands(CGSE_program_state_t *ps, char *cmd_string) {
+    CGSE_command_queue_list_commands(ps);
     return 0;
 }
 
@@ -416,3 +426,77 @@ int CGSE_find_link_path(char *link_path)
     return 0;
 }
 
+int CGSE_execute_command(CGSE_program_state_t *ps)
+{
+    ps->command_index = strlen(ps->command_buffer);
+    ps->cursor_position = ps->command_index;
+    col = strlen(ps->command_prefix) + 2 + ps->cursor_position;
+    wmove(ps->command_window, line, col);
+    if (strlen(ps->command_buffer) > 0)
+    {
+        if (ps->command_history_index < CGSE_number_of_stored_commands() - 1)
+        {
+            if (strlen(CGSE_recall_command(CGSE_number_of_stored_commands() - 1)) == 0)
+            {
+                CGSE_remove_command(CGSE_number_of_stored_commands() - 1);
+            }
+            CGSE_store_command(ps->command_buffer);
+        }
+        CGSE_store_command("");
+        ps->command_history_index = CGSE_number_of_stored_commands() - 1;
+    }
+    if (ps->command_buffer[0] == '.')
+    {
+        bool got_command = false;
+        for (int c = 0; c < CGSE_NUM_TERMINAL_COMMANDS; c++) {
+            const CGSE_command_t *cmd = &CGSE_terminal_commands[c];
+            if (strncmp(ps->command_buffer, cmd->name, strlen(cmd->name)) == 0)
+            {
+                int cmd_status = cmd->function(ps, ps->command_buffer);
+                got_command = true;
+                break;
+            }
+        }
+        if (!got_command)
+        {
+            wprintw(ps->command_window, "\nUnrecognized terminal command");
+        }
+    }
+    else 
+    {
+        // A possible telecommand
+        if (ps->command_index > COMMAND_BUFFER_SIZE - 1)
+        {
+            ps->command_index = COMMAND_BUFFER_SIZE - 1;
+            if (ps->cursor_position > 0)
+            {
+                ps->cursor_position = ps->command_index;
+            }
+        }
+        ps->command_buffer[ps->command_index] = '\0';
+        col = strlen(ps->command_prefix) + 2 + strlen(ps->command_buffer);
+        wmove(ps->command_window, line, col);
+        // write...
+        snprintf(ps->telecommand_buffer, TCMD_BUFFER_SIZE, "%s+%s!", ps->command_prefix, ps->command_buffer);
+        if (strlen(ps->command_buffer) > 0)
+        {
+            if (ps->satellite_connected)
+            {
+                write(ps->satellite_link, ps->telecommand_buffer, strlen(ps->telecommand_buffer));
+            }
+            else 
+            {
+                wprintw(ps->command_window, "\n Not connected to satellite");
+            }
+        }
+    }
+    wprintw(ps->command_window, "\n%s> ", ps->command_prefix);
+    wrefresh(ps->command_window);
+    // Reset command 
+    ps->command_index = 0;
+    ps->cursor_position = 0;
+    ps->command_buffer[0] = '\0';
+    ps->command_history_index = CGSE_number_of_stored_commands() - 1;
+
+    return 0;
+}

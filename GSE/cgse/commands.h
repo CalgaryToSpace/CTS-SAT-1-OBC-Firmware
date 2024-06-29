@@ -23,10 +23,13 @@ int CGSE_hide_timestamp(CGSE_program_state_t *ps, char *cmd_string);
 int CGSE_sync_timestamp(CGSE_program_state_t *ps, char *cmd_string);
 int CGSE_list_telecommands(CGSE_program_state_t *ps, char *cmd_string);
 int CGSE_list_current_directory(CGSE_program_state_t *ps, char *cmd_string);
+int CGSE_list_queued_commands(CGSE_program_state_t *ps, char *cmd_string);
 int CGSE_upload_mpi_firmware(CGSE_program_state_t *ps, char *cmd_string);
 
 char * CGSE_get_args_from_str(char* args, int *nargs, char **arg_vector);
 int CGSE_ls_dir(CGSE_program_state_t *ps);
 int CGSE_find_link_path(char *link_path);
+
+int CGSE_execute_command(CGSE_program_state_t *ps);
 
 #endif // __INCLUDE__GUARD__COMMAND_H_

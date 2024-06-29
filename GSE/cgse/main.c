@@ -1,6 +1,7 @@
 #include "main.h"
 
 #include "command_history.h"
+#include "command_queue.h"
 #include "commands.h"
 
 #include "telecommands/telecommand_definitions.h"
@@ -30,6 +31,9 @@
 
 volatile sig_atomic_t running = 1;
 volatile uint8_t TASK_heartbeat_is_on = 0;
+int line = 0;
+int col = 0;
+
 extern const int16_t TCMD_NUM_TELECOMMANDS;
 extern const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[];
 extern const int CGSE_NUM_TERMINAL_COMMANDS; 
@@ -71,7 +75,25 @@ int main(int argc, char **argv)
         wrefresh(ps.main_window);
         wrefresh(ps.command_window);
 
-        parse_input(&ps, key);
+        // TODO show time until next queued command is run
+        // Queue up that command if it is time...
+        // First command is up next 
+        // It is removed once sent to the satellite
+        CGSE_command_queue_entry_t *e = NULL;
+        // Run all commands that are due 
+        // TODO maybe with a timeout as a safety...
+        while ((e = CGSE_command_queue_next()) != NULL) {
+            snprintf(ps.command_buffer, COMMAND_BUFFER_SIZE, "%s", e->command_text);
+            CGSE_execute_command(&ps);
+            wmove(ps.command_window, line, col);
+            wprintw(ps.command_window, "\nqueue-> %s%s> ", e->command_text, ps.command_prefix);
+            getyx(ps.command_window, line, col);
+            wrefresh(ps.command_window);
+            CGSE_command_queue_remove_next();
+        }
+
+        // Check for user input
+        parse_input(&ps);
         wrefresh(ps.command_window);
 
         usleep(IO_WAIT_USEC);
@@ -91,6 +113,10 @@ int main(int argc, char **argv)
         fprintf(stderr, "Error writing command history.\n");
     }
     CGSE_free_command_history();
+
+    // TODO maybe write out remaining commands in the command queue for later
+    // processing?
+    CGSE_free_command_queue();
 
     return EXIT_SUCCESS;
 }
@@ -135,11 +161,9 @@ int init_terminal_screen(CGSE_program_state_t *ps)
 
 }
 
-int parse_input(CGSE_program_state_t *ps, int key)
+int parse_input(CGSE_program_state_t *ps)
 {
     int status = 0;
-    int line = 0;
-    int col = 0;
     ssize_t bytes_sent = 0;
     size_t buffer_len = 0;
 
@@ -147,6 +171,8 @@ int parse_input(CGSE_program_state_t *ps, int key)
     gettimeofday(&tv, NULL);
     double t1 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
     double t2 = t1;
+
+    int key = 0;
 
     while ((key = wgetch(ps->command_window)) != ERR && (t2 - t1) < 0.5)
     {
@@ -254,75 +280,7 @@ int parse_input(CGSE_program_state_t *ps, int key)
 
         if (key == '\n')
         {
-            ps->command_index = strlen(ps->command_buffer);
-            ps->cursor_position = ps->command_index;
-            col = strlen(ps->command_prefix) + 2 + ps->cursor_position;
-            wmove(ps->command_window, line, col);
-            if (strlen(ps->command_buffer) > 0)
-            {
-                if (ps->command_history_index < CGSE_number_of_stored_commands() - 1)
-                {
-                    if (strlen(CGSE_recall_command(CGSE_number_of_stored_commands() - 1)) == 0)
-                    {
-                        CGSE_remove_command(CGSE_number_of_stored_commands() - 1);
-                    }
-                    CGSE_store_command(ps->command_buffer);
-                }
-                CGSE_store_command("");
-                ps->command_history_index = CGSE_number_of_stored_commands() - 1;
-            }
-            if (ps->command_buffer[0] == '.')
-            {
-                bool got_command = false;
-                for (int c = 0; c < CGSE_NUM_TERMINAL_COMMANDS; c++) {
-                    const CGSE_command_t *cmd = &CGSE_terminal_commands[c];
-                    if (strncmp(ps->command_buffer, cmd->name, strlen(cmd->name)) == 0)
-                    {
-                        int cmd_status = cmd->function(ps, ps->command_buffer);
-                        got_command = true;
-                        break;
-                    }
-                }
-                if (!got_command)
-                {
-                    wprintw(ps->command_window, "\nUnrecognized terminal command");
-                }
-            }
-            else 
-            {
-                // A possible telecommand
-                if (ps->command_index > COMMAND_BUFFER_SIZE - 1)
-                {
-                    ps->command_index = COMMAND_BUFFER_SIZE - 1;
-                    if (ps->cursor_position > 0)
-                    {
-                        ps->cursor_position = ps->command_index;
-                    }
-                }
-                ps->command_buffer[ps->command_index] = '\0';
-                col = strlen(ps->command_prefix) + 2 + strlen(ps->command_buffer);
-                wmove(ps->command_window, line, col);
-                // write...
-                snprintf(ps->telecommand_buffer, TCMD_BUFFER_SIZE, "%s+%s!", ps->command_prefix, ps->command_buffer);
-                if (strlen(ps->command_buffer) > 0)
-                {
-                    if (ps->satellite_connected)
-                    {
-                        bytes_sent = write(ps->satellite_link, ps->telecommand_buffer, strlen(ps->telecommand_buffer));
-                    }
-                    else 
-                    {
-                        wprintw(ps->command_window, "\n Not connected to satellite");
-                    }
-                }
-            }
-            wprintw(ps->command_window, "\n%s> ", ps->command_prefix);
-            wrefresh(ps->command_window);
-            // Reset command 
-            ps->command_index = 0;
-            ps->cursor_position = 0;
-            ps->command_buffer[0] = '\0';
-            ps->command_history_index = CGSE_number_of_stored_commands() - 1;
+            CGSE_execute_command(ps);
         }
 
         gettimeofday(&tv, NULL);
@@ -335,6 +293,10 @@ int parse_input(CGSE_program_state_t *ps, int key)
 int parse_args(CGSE_program_state_t *ps)
 {
     int status = 0;
+
+    struct timeval tv = {0};
+    gettimeofday(&tv, NULL);
+    ps->program_start_epoch_ms = tv.tv_sec * 1000 + tv.tv_usec / 1000;
 
     ps->baud_rate = CGSE_DEFAULT_BAUD_RATE;
     ps->command_prefix = CGSE_DEFAULT_TELECOMMAND_PREFIX;
@@ -387,8 +349,24 @@ int parse_args(CGSE_program_state_t *ps)
                 fprintf(stderr, "Unable to interpret %s\n", arg);
                 return EXIT_FAILURE;
             }
-            snprintf(ps->command_history_file_path, FILENAME_MAX, "%s", ps->command_prefix = arg + 27);
+            snprintf(ps->command_history_file_path, FILENAME_MAX, "%s", arg + 27);
             ps->nOptions++;
+        }
+        else if (strncmp("--commands=", arg, 11) == 0)
+        {
+            if (strlen(arg) < 12)
+            {
+                fprintf(stderr, "Unable to interpret %s\n", arg);
+                return EXIT_FAILURE;
+            }
+            snprintf(ps->command_queue_file_path, FILENAME_MAX, "%s", arg + 11);
+            ps->nOptions++;
+            // Import commands from file
+            int queue_read_res = CGSE_command_queue_read_commands(ps);
+            if (queue_read_res != 0) {
+                wprintw(ps->command_window, "\n Error loading commands from %s\n", ps->command_queue_file_path);
+                return EXIT_FAILURE;
+            }
         }
         else if (strcmp("--no-auto-connect", arg) == 0)
         {
@@ -418,11 +396,18 @@ int parse_args(CGSE_program_state_t *ps)
 
     }
 
+    if (ps->argc - ps->nOptions != 1) {
+        CGSE_commandline_help(ps->argv[0]);
+        return EXIT_FAILURE;
+    }
+
     if (strlen(ps->satellite_link_path) == 0)
     {
         snprintf(ps->satellite_link_path, FILENAME_MAX, "/dev");
         CGSE_find_link_path(ps->satellite_link_path);
     }
+
+
 
     return 0;
 
@@ -451,6 +436,7 @@ void CGSE_commandline_help(char *name)
     fprintf(stdout, "%30s -- %s\n", "--no-auto-connect", "Start program without connecting to satellite.");
     fprintf(stdout, "%30s -- %s\n", "--command-prefix=<prefix>", "Telecommand prefix. Default: " CGSE_DEFAULT_TELECOMMAND_PREFIX );
     fprintf(stdout, "%30s -- %s\n", "--command-history-filename=<filename>", "Command history filename. Default: ${HOME}/" CGSE_COMMAND_HISTORY_FILENAME);
+    fprintf(stdout, "%30s -- %s\n", "--commands=<filename>", "Queue commands from <filename>.");
 
     return;
 }
@@ -469,18 +455,20 @@ void CGSE_time_string(char *time_str)
 
 void update_link_status(CGSE_program_state_t *ps)
 {
-    if (ps->satellite_connected)
-    {
+    if (ps->satellite_connected) {
         mvwprintw(ps->status_window, 0, 0, "Connected on %s @ %lu", ps->satellite_link_path, ps->baud_rate);
-        wclrtoeol(ps->status_window);
-        wrefresh(ps->status_window);
     }
-    else
-    {
-        mvwprintw(ps->status_window, 0, 0, "");
-        wclrtoeol(ps->status_window);
-        wrefresh(ps->status_window);
+    else {
+        mvwprintw(ps->status_window, 0, 0, "NOT connected on %s", ps->satellite_link_path);
     }
+    double time_to_next_command = 0.0;
+    bool command_is_queued = CGSE_command_queue_command_is_queued(&time_to_next_command);
+    if (command_is_queued) {
+        wprintw(ps->status_window, ", sending next command in %.1f s", time_to_next_command);
+    }
+
+    wclrtoeol(ps->status_window);
+    wrefresh(ps->status_window);
 
 }
 
@@ -533,15 +521,15 @@ void parse_telemetry(CGSE_program_state_t *ps)
             if (string == NULL) {
                 return;
             }
-            char *line = NULL;
+            char *bufline = NULL;
             uint32_t lines_treated = 0;
-            while ((line = strsep(&string, "\n")) != NULL) {
-                if (strlen(line) > 0) {
+            while ((bufline = strsep(&string, "\n")) != NULL) {
+                if (strlen(bufline) > 0) {
                     if (lines_treated == 0 && !last_line_complete) {
-                        wprintw(ps->main_window, "%s", line);
+                        wprintw(ps->main_window, "%s", bufline);
                     }
                     else {
-                        wprintw(ps->main_window, "\n%s: %s", ps->time_buffer, line);
+                        wprintw(ps->main_window, "\n%s: %s", ps->time_buffer, bufline);
                     }
                 }
                 lines_treated++;
