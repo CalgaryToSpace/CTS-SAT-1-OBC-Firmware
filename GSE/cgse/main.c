@@ -75,24 +75,7 @@ int main(int argc, char **argv)
         wrefresh(ps.main_window);
         wrefresh(ps.command_window);
 
-        // TODO show time until next queued command is run
-        // Queue up that command if it is time...
-        // First command is up next 
-        // It is removed once sent to the satellite
-        CGSE_command_queue_entry_t *e = NULL;
-        // Run all commands that are due 
-        // TODO maybe with a timeout as a safety...
-        memcpy(ps.editing_buffer, ps.command_buffer, COMMAND_BUFFER_SIZE);
-        while ((e = CGSE_command_queue_next()) != NULL) {
-            snprintf(ps.command_buffer, COMMAND_BUFFER_SIZE, "%s", e->command_text);
-            CGSE_execute_command(&ps);
-            wmove(ps.command_window, line, col);
-            wprintw(ps.command_window, "\nqueue-> %s%s> ", e->command_text, ps.command_prefix);
-            getyx(ps.command_window, line, col);
-            wrefresh(ps.command_window);
-            CGSE_command_queue_remove_next();
-        }
-        memcpy(ps.command_buffer, ps.editing_buffer, COMMAND_BUFFER_SIZE);
+        process_command_queue(&ps);
 
         // Check for user input
         parse_input(&ps);
@@ -550,6 +533,41 @@ void parse_telemetry(CGSE_program_state_t *ps)
 
     return;
 }
+
+void process_command_queue(CGSE_program_state_t *ps)
+{
+    // TODO show time until next queued command is run
+    // Queue up that command if it is time...
+    // First command is up next 
+    // It is removed once sent to the satellite
+    CGSE_command_queue_entry_t *e = NULL;
+    // Run all commands that are due 
+    // TODO maybe with a timeout as a safety...
+    struct timeval tv = {0};
+    gettimeofday(&tv, NULL);
+    double t1 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
+    double t2 = t1;
+    memcpy(ps->editing_buffer, ps->command_buffer, COMMAND_BUFFER_SIZE);
+    while ((e = CGSE_command_queue_next()) != NULL && t2 - t1 < 0.25) {
+        snprintf(ps->command_buffer, COMMAND_BUFFER_SIZE, "%s", e->command_text);
+        CGSE_execute_command(ps);
+        wmove(ps->command_window, line, 0);
+        wprintw(ps->command_window, "queue-> %s", e->command_text);
+        wclrtoeol(ps->command_window);
+        line++;
+        wprintw(ps->command_window, "%s> %s", ps->command_prefix, ps->editing_buffer);
+        wmove(ps->command_window, line, strlen(ps->command_prefix) + 2 + strlen(ps->editing_buffer));
+        wrefresh(ps->command_window);
+        CGSE_command_queue_remove_next();
+
+        gettimeofday(&tv, NULL);
+        t2 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
+    }
+    memcpy(ps->command_buffer, ps->editing_buffer, COMMAND_BUFFER_SIZE);
+
+    return;
+}
+
 
 int CGSE_init(CGSE_program_state_t *ps)
 {

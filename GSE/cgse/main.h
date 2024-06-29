@@ -83,8 +83,10 @@ void CGSE_time_string(char *time_str);
 
 void update_link_status(CGSE_program_state_t *ps);
 void parse_telemetry(CGSE_program_state_t *ps);
+void process_command_queue(CGSE_program_state_t *ps);
 
 int CGSE_init(CGSE_program_state_t *ps);
+
 
 
 #endif // __INCLUDE_GUARD__MAIN_H_
