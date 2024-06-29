@@ -391,7 +391,6 @@ int CGSE_find_link_path(char *link_path)
 
 int CGSE_execute_command(CGSE_program_state_t *ps)
 {
-    reset_editing_cursor(ps);
     if (strlen(ps->command_buffer) > 0) {
         if (ps->command_history_index < CGSE_number_of_stored_commands() - 1) {
             if (strlen(CGSE_recall_command(CGSE_number_of_stored_commands() - 1)) == 0) {
@@ -414,6 +413,7 @@ int CGSE_execute_command(CGSE_program_state_t *ps)
         }
         if (!got_command) {
             wprintw(ps->command_window, "\nUnrecognized terminal command");
+            ps->line++;
         }
     }
     else {
@@ -425,7 +425,6 @@ int CGSE_execute_command(CGSE_program_state_t *ps)
             }
         }
         ps->command_buffer[ps->command_index] = '\0';
-        update_editing_cursor(ps);
         // write...
         snprintf(ps->telecommand_buffer, TCMD_BUFFER_SIZE, "%s+%s!", ps->command_prefix, ps->command_buffer);
         if (strlen(ps->command_buffer) > 0) {
@@ -434,15 +433,12 @@ int CGSE_execute_command(CGSE_program_state_t *ps)
             }
             else {
                 wprintw(ps->command_window, "\n Not connected to satellite");
+                ps->line++;
             }
         }
     }
-    wprintw(ps->command_window, "\n%s> ", ps->command_prefix);
-    wrefresh(ps->command_window);
     // Reset command 
     ps->command_buffer[0] = '\0';
-    ps->line++;
-    reset_editing_cursor(ps);
     ps->command_history_index = CGSE_number_of_stored_commands() - 1;
 
     return 0;

@@ -55,7 +55,9 @@ typedef struct {
     char editing_buffer[COMMAND_BUFFER_SIZE];
     size_t command_history_index;
     int cursor_position;
+    int editing_cursor_position;
     int command_index;
+    int editing_command_index;
     char command_history_file_path[FILENAME_MAX];
 
     char telecommand_buffer[TCMD_BUFFER_SIZE];

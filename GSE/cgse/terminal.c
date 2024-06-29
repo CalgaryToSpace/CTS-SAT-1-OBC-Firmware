@@ -2,6 +2,7 @@
 #include "commands.h"
 #include "command_history.h"
 #include "command_queue.h"
+#include "main.h"
 
 #include <locale.h>
 #include <stdlib.h>
@@ -62,8 +63,6 @@ int parse_input(CGSE_program_state_t *ps)
     int key = 0;
 
     while ((key = wgetch(ps->command_window)) != ERR && (t2 - t1) < 0.5) {
-
-        getyx(ps->command_window, ps->line, ps->col);
         buffer_len = strlen(ps->command_buffer);
         if (key == '\b' || key == 127 || key == KEY_BACKSPACE)
         {
@@ -139,6 +138,8 @@ int parse_input(CGSE_program_state_t *ps)
 
         if (key == '\n') {
             CGSE_execute_command(ps);
+            ps->line++;
+            reset_editing_cursor(ps);
         }
 
         gettimeofday(&tv, NULL);
@@ -262,17 +263,19 @@ void process_command_queue(CGSE_program_state_t *ps)
     CGSE_command_queue_entry_t *e = NULL;
 
     while ((e = CGSE_command_queue_next()) != NULL && t2 - t1 < 0.25) {
-        memcpy(ps->editing_buffer, ps->command_buffer, COMMAND_BUFFER_SIZE);
+        store_editing_cursor(ps);
         snprintf(ps->command_buffer, COMMAND_BUFFER_SIZE, "%s", e->command_text);
+        ps->command_index = strlen(ps->command_buffer);
+        ps->cursor_position = ps->command_index;
         CGSE_execute_command(ps);
         wmove(ps->command_window, ps->line, 0);
         wprintw(ps->command_window, "queue-> %s", e->command_text);
         wclrtoeol(ps->command_window);
-        wprintw(ps->command_window, "%s> %s", ps->command_prefix, ps->editing_buffer);
-        memcpy(ps->command_buffer, ps->editing_buffer, COMMAND_BUFFER_SIZE);
+        CGSE_command_queue_remove_next();
+        restore_editing_cursor(ps);
+        ps->line++;
         update_editing_cursor(ps);
         wrefresh(ps->command_window);
-        CGSE_command_queue_remove_next();
 
         gettimeofday(&tv, NULL);
         t2 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
@@ -291,7 +294,7 @@ void reset_editing_cursor(CGSE_program_state_t *ps)
     if (ps->line > LINES - 1) {
         ps->line = LINES - 1;
     }
-    wmove(ps->command_window, ps->line, ps->col);
+    print_command_line(ps);
 
     return;
 }
@@ -310,6 +313,35 @@ void update_editing_cursor(CGSE_program_state_t *ps)
     else if (ps->col > max_col) {
         ps->col = max_col;
     }
+    print_command_line(ps);
+
+    return;
+}
+
+void store_editing_cursor(CGSE_program_state_t *ps)
+{
+    memcpy(ps->editing_buffer, ps->command_buffer, COMMAND_BUFFER_SIZE);
+    ps->editing_command_index = ps->command_index;
+    ps->editing_cursor_position = ps->cursor_position;
+
+    return;
+}
+
+void restore_editing_cursor(CGSE_program_state_t *ps)
+{
+    memcpy(ps->command_buffer, ps->editing_buffer, COMMAND_BUFFER_SIZE);
+    ps->command_index = ps->editing_command_index;
+    ps->cursor_position = ps->editing_cursor_position;
+
+    return;
+}
+
+void print_command_line(CGSE_program_state_t *ps) 
+{
+    wmove(ps->command_window, ps->line, 0);
+    wprintw(ps->command_window, "%s> %s", ps->command_prefix, ps->command_buffer);
+    wmove(ps->command_window, ps->line, strlen(ps->command_prefix) + 2 + ps->command_index);
+    wclrtoeol(ps->command_window);
     wmove(ps->command_window, ps->line, ps->col);
 
     return;
@@ -323,3 +355,5 @@ void CGSE_terminal_shutdown(void)
 
     return;
 }
+
+

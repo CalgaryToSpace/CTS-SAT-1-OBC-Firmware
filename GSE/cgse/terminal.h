@@ -11,7 +11,10 @@ void process_command_queue(CGSE_program_state_t *ps);
 
 void reset_editing_cursor(CGSE_program_state_t *ps);
 void update_editing_cursor(CGSE_program_state_t *ps);
+void store_editing_cursor(CGSE_program_state_t *ps);
+void restore_editing_cursor(CGSE_program_state_t *ps);
 
 void CGSE_terminal_shutdown(void);
+void print_command_line(CGSE_program_state_t *ps);
 
 #endif // __INCLUDE__GUARD_TERMINAL_H_
