@@ -82,6 +82,7 @@ int main(int argc, char **argv)
         CGSE_command_queue_entry_t *e = NULL;
         // Run all commands that are due 
         // TODO maybe with a timeout as a safety...
+        memcpy(ps.editing_buffer, ps.command_buffer, COMMAND_BUFFER_SIZE);
         while ((e = CGSE_command_queue_next()) != NULL) {
             snprintf(ps.command_buffer, COMMAND_BUFFER_SIZE, "%s", e->command_text);
             CGSE_execute_command(&ps);
@@ -91,6 +92,7 @@ int main(int argc, char **argv)
             wrefresh(ps.command_window);
             CGSE_command_queue_remove_next();
         }
+        memcpy(ps.command_buffer, ps.editing_buffer, COMMAND_BUFFER_SIZE);
 
         // Check for user input
         parse_input(&ps);

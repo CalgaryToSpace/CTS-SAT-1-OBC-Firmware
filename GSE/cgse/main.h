@@ -52,6 +52,7 @@ typedef struct
     ssize_t bytes_received;
 
     char command_buffer[COMMAND_BUFFER_SIZE];
+    char editing_buffer[COMMAND_BUFFER_SIZE];
     size_t command_history_index;
     int cursor_position;
     int command_index;
