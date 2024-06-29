@@ -187,8 +187,8 @@ void CGSE_license(void)
 
 void CGSE_about(void)
 {
-    fprintf(stdout, "Lightweight GSE terminal for FrontierSat development.\n");
-    fprintf(stdout, "Copyright (C) CalgaryToSpace (2024)\n");
+    fprintf(stdout, "Lightweight GSE terminal for FrontierSat communications.\n");
+    fprintf(stdout, "Copyright (C) Johnathan K Burchill (2024)\n");
 
     return;
 }
