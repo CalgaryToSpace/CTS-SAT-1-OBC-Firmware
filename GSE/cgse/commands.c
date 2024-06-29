@@ -3,6 +3,7 @@
 #include "command_queue.h"
 #include "main.h"
 #include "base64.h"
+#include "terminal.h"
 
 #include "telecommands/telecommand_definitions.h"
 

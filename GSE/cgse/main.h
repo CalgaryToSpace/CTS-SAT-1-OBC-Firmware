@@ -70,9 +70,6 @@ typedef struct {
 } CGSE_program_state_t;
 
 int init_terminal_screen(CGSE_program_state_t *program_state);
-
-int parse_input(CGSE_program_state_t *program_state);
-
 int parse_args(CGSE_program_state_t *ps);
 
 void CGSE_license(void);
@@ -81,10 +78,7 @@ void CGSE_commandline_help(char *name);
 
 void CGSE_time_string(char *time_str);
 
-void update_link_status(CGSE_program_state_t *ps);
-void parse_telemetry(CGSE_program_state_t *ps);
-void process_command_queue(CGSE_program_state_t *ps);
-
 int CGSE_init(CGSE_program_state_t *ps);
+void CGSE_shutdown(CGSE_program_state_t *ps);
 
 #endif // __INCLUDE_GUARD__MAIN_H_
