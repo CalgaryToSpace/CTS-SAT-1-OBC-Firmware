@@ -48,53 +48,49 @@ static void interrupthandler(int sig)
 int main(int argc, char **argv)
 {
 
-    int status = 0;
+    CGSE_program_state_t program_state = {0};
+    CGSE_program_state_t *ps = &program_state;
+    ps->argc = argc;
+    ps->argv = argv;
 
-    CGSE_program_state_t ps = {0};
-    ps.argc = argc;
-    ps.argv = argv;
-    status = parse_args(&ps);
-    if (status != 0)
+    int arg_status = parse_args(ps);
+    if (arg_status != 0)
     {
         return EXIT_FAILURE;
     }
 
-    status = CGSE_init(&ps);
-    if (status != 0)
+    int init_status = CGSE_init(ps);
+    if (init_status != 0)
     {
         return EXIT_FAILURE;
     }
 
-    int key = 0;
     while(running)
     {
-        update_link_status(&ps);
-        wrefresh(ps.status_window);
+        update_link_status(ps);
+        wrefresh(ps->status_window);
 
-        parse_telemetry(&ps);
-        wrefresh(ps.main_window);
-        wrefresh(ps.command_window);
+        parse_telemetry(ps);
 
-        process_command_queue(&ps);
+        process_command_queue(ps);
 
         // Check for user input
-        parse_input(&ps);
-        wrefresh(ps.command_window);
+        parse_input(ps);
 
         usleep(IO_WAIT_USEC);
     }
 
     clear();
     refresh();
-    if (ps.satellite_connected && ps.satellite_link > 0)
+    if (ps->satellite_connected && ps->satellite_link > 0)
     {
-        close(ps.satellite_link);
+        close(ps->satellite_link);
     }
 
     endwin();
 
-    int write_res = CGSE_write_command_history(&ps);
-    if (write_res != 0) {
+    int write_status = CGSE_write_command_history(ps);
+    if (write_status != 0) {
         fprintf(stderr, "Error writing command history.\n");
     }
     CGSE_free_command_history();
@@ -272,6 +268,7 @@ int parse_input(CGSE_program_state_t *ps)
         t2 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
     }
 
+    wrefresh(ps->command_window);
     return 0;
 }
 
@@ -504,7 +501,7 @@ void parse_telemetry(CGSE_program_state_t *ps)
             }
             char *string = strdup((char*)ps->receive_buffer);
             if (string == NULL) {
-                return;
+                goto done_parsing_telemetry;
             }
             char *bufline = NULL;
             uint32_t lines_treated = 0;
@@ -531,6 +528,9 @@ void parse_telemetry(CGSE_program_state_t *ps)
         }
     }
 
+done_parsing_telemetry:
+    wrefresh(ps->main_window);
+    wrefresh(ps->command_window);
     return;
 }
 
