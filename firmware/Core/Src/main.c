@@ -26,8 +26,10 @@
 #include "debug_tools/debug_i2c.h"
 #include "debug_tools/debug_uart.h"
 #include "rtos_tasks/rtos_tasks.h"
+#include "stm32l4xx_hal_rcc.h"
 #include "uart_handler/uart_handler.h"
 #include "littlefs/flash_driver.h"
+#include "timekeeping/timekeeping.h"
 
 /* USER CODE END Includes */
 
@@ -164,6 +166,8 @@ int main(void)
   
   FLASH_deactivate_chip_select();
 
+  TIM_Init();
+
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -257,6 +261,16 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+
+  // Initialize the RTC low speed external clock, which can operate during 
+  // a VDD power loss when RTC battery is present
+  RCC_OscInitTypeDef rtc_osc;
+  rtc_osc.OscillatorType = RCC_OSCILLATORTYPE_LSE;
+  rtc_osc.LSEState = RCC_LSE_ON;
+  if (HAL_RCC_OscConfig(&rtc_osc) != HAL_OK) {
+      Error_Handler();
+  }
+
 }
 
 /**

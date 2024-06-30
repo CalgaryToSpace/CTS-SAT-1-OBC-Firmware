@@ -66,6 +66,11 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 0,
     },
     {
+        .tcmd_name = "set_system_time_from_rtc",
+        .tcmd_func = TCMDEXEC_set_system_time_from_rtc,
+        .number_of_args = 0,
+    },
+    {
         .tcmd_name = "available_telecommands",
         .tcmd_func = TCMDEXEC_available_telecommands,
         .number_of_args = 0,

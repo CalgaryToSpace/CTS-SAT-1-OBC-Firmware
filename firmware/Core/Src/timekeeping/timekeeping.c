@@ -1,6 +1,11 @@
 #include "timekeeping/timekeeping.h"
 #include "debug_tools/debug_uart.h"
 #include "stm32l4xx_hal.h"
+#include "stm32l4xx_hal_def.h"
+#include "stm32l4xx_hal_pwr.h"
+#include "stm32l4xx_hal_rcc.h"
+#include "stm32l4xx_hal_rtc.h"
+#include "stm32l4xx_hal_tim.h"
 
 #include <stdio.h>
 #include <inttypes.h>
@@ -11,6 +16,8 @@ uint64_t TIM_unix_epoch_time_at_last_time_resync_ms = 0;
 uint32_t TIM_system_uptime_at_last_time_resync_ms = 0;
 TIM_sync_source_t TIM_last_synchronization_source = TIM_SOURCE_NONE;
 
+RTC_HandleTypeDef TIM_rtc_handle = {0};
+
 uint32_t TIM_get_current_system_uptime_ms(void) {
     return HAL_GetTick();
 }
@@ -20,6 +27,8 @@ void TIM_set_current_unix_epoch_time_ms(uint64_t current_unix_epoch_time_ms, TIM
     TIM_unix_epoch_time_at_last_time_resync_ms = current_unix_epoch_time_ms;
     TIM_system_uptime_at_last_time_resync_ms = HAL_GetTick();
     TIM_last_synchronization_source = source;
+
+    return;
 }
 
 /// @brief Returns the current unix timestamp, in milliseconds
@@ -101,6 +110,9 @@ char TIM_synchronization_source_letter(TIM_sync_source_t source) {
         case TIM_SOURCE_GNSS:
             source_letter = 'G';
             break;
+        case TIM_SOURCE_RTC:
+            source_letter = 'R';
+            break;
         case TIM_SOURCE_TELECOMMAND:
             source_letter = 'T';
             break;
@@ -176,3 +188,107 @@ void TIM_epoch_ms_to_decimal_string(char *str, size_t len) {
     return;
 
 }
+
+void TIM_Init(void)
+{
+    // Initialize the Real-time clock (RTC)
+    // Needed when restoring from battery backup operation, i.e. at power on
+    __HAL_RCC_PWR_CLK_ENABLE();
+    HAL_PWR_EnableBkUpAccess();
+    // Use the clock source LSE which should work when powered down when there 
+    // is an RTC battery
+    __HAL_RCC_RTC_CONFIG(RCC_RTCCLKSOURCE_LSE);
+    __HAL_RCC_RTC_ENABLE();
+    
+    // These values are from:
+    // From https://github.com/STMicroelectronics/STM32CubeL4/blob/master/Projects/NUCLEO-L4R5ZI/Examples/RTC/RTC_TimeStamp/Inc/main.h
+
+    TIM_rtc_handle.Instance = RTC;
+    TIM_rtc_handle.Init.HourFormat = RTC_HOURFORMAT_24;
+    TIM_rtc_handle.Init.OutPut = RTC_OUTPUT_DISABLE;
+    TIM_rtc_handle.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
+    TIM_rtc_handle.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
+    TIM_rtc_handle.Init.AsynchPrediv = 0x7F;
+    TIM_rtc_handle.Init.SynchPrediv = 0x00FF;
+    HAL_StatusTypeDef rtc_init_status = HAL_RTC_Init(&TIM_rtc_handle);
+    if (rtc_init_status != HAL_OK) {
+        return;
+    }
+
+    HAL_Delay(TIM_RTC_STARTUP_DELAY_TICKS);
+
+    // Assume the RTC has the correct time and set the epoch from it
+    TIM_set_current_unix_epoch_time_ms(TIM_get_rtc_unix_epoch_ms(), TIM_SOURCE_RTC);
+
+    // Return a value? Other Init functions do not...
+    return;
+}
+
+uint64_t TIM_get_rtc_unix_epoch_ms(void)
+{
+    RTC_TimeTypeDef rtc_time = {0};
+    HAL_StatusTypeDef time_status = HAL_RTC_GetTime(&TIM_rtc_handle, &rtc_time, RTC_FORMAT_BIN);
+    if (time_status != HAL_OK) {
+        DEBUG_uart_print_str("Error getting RTC time\n");
+        return 0;
+    }
+        
+    RTC_DateTypeDef rtc_date = {0};
+    HAL_StatusTypeDef date_status = HAL_RTC_GetDate(&TIM_rtc_handle, &rtc_date, RTC_FORMAT_BIN);
+    if (date_status != HAL_OK) {
+        DEBUG_uart_print_str("Error getting RTC date\n");
+        return 0;
+    }
+
+    struct tm date = {0};
+    date.tm_year = rtc_date.Year + 100;
+    date.tm_mon = rtc_date.Month - 1;
+    date.tm_mday = rtc_date.Date;
+    date.tm_hour = rtc_time.Hours;
+    date.tm_min = rtc_time.Minutes;
+    date.tm_sec = rtc_time.Seconds;
+    time_t seconds = mktime(&date);
+    // TODO add subsection resolution
+    uint64_t ms = (uint64_t)seconds * 1000;
+
+    return ms;
+}
+
+// TODO track source for RTC setting?
+void TIM_set_rtc_from_unix_epoch_ms(uint64_t ms)
+{
+    time_t seconds = (time_t)(ms / 1000);
+    struct tm *date = gmtime(&seconds);
+
+    RTC_DateTypeDef rtc_date = {0};
+    RTC_TimeTypeDef rtc_time = {0};
+
+    rtc_date.Year = date->tm_year - 100;
+    rtc_date.Month = date->tm_mon + 1;
+    rtc_date.Date = date->tm_mday;
+
+    rtc_time.Hours = date->tm_hour;
+    rtc_time.Minutes = date->tm_min;
+    rtc_time.Seconds = date->tm_sec;
+    // TODO handle the subsecond part
+
+    // TODO flag error information
+    HAL_StatusTypeDef time_status = HAL_RTC_SetTime(&TIM_rtc_handle, &rtc_time, RTC_FORMAT_BIN);
+    if (time_status != HAL_OK) {
+        DEBUG_uart_print_str("Error setting RTC time\n");
+        return;
+    }
+     
+    HAL_StatusTypeDef date_status = HAL_RTC_SetDate(&TIM_rtc_handle, &rtc_date, RTC_FORMAT_BIN);
+    if (date_status != HAL_OK) {
+        DEBUG_uart_print_str("Error setting RTC date\n");
+        return;
+    }
+
+    // TODO: Need to store backup registers?
+    // Only for timers, alarms?
+    HAL_RTCEx_BKUPWrite(&TIM_rtc_handle, RTC_BKP_DR0, 0x32F2);
+
+    return;
+}
+

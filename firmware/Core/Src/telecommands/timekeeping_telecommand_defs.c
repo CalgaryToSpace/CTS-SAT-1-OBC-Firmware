@@ -22,7 +22,18 @@ uint8_t TCMDEXEC_set_system_time(const char *args_str, TCMD_TelecommandChannel_e
         return 1;
     }
     TIM_set_current_unix_epoch_time_ms(ms, TIM_SOURCE_TELECOMMAND);
+
+    // Update the RTC 
+    TIM_set_rtc_from_unix_epoch_ms(ms);
+
     snprintf(response_output_buf, response_output_buf_len, "Updated system time");
+    return 0;
+}
+
+
+uint8_t TCMDEXEC_set_system_time_from_rtc(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    TIM_set_current_unix_epoch_time_ms(TIM_get_rtc_unix_epoch_ms(), TIM_SOURCE_RTC);
     return 0;
 }
 
