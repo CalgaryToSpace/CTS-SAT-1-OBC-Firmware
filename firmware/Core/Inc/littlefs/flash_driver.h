@@ -47,12 +47,12 @@ static const uint8_t FLASH_SR1_ERASE_ERROR_MASK = (1 << 5);
 
 /*-----------------------------FLASH ERROR CODES-----------------------------*/
 enum FLASH_ERRORS {
-    FLASH_ERR_OK                    = 0,
-    FLASH_ERR_SPI_TRANSMIT_FAILED   = -3,
-    FLASH_ERR_SPI_RECEIVE_FAILED    = -4,
-    FLASH_ERR_DEVICE_BUSY_TIMEOUT   = -6,
-    FLASH_ERR_UNKOWN                = -7,
-    FLASH_ERR_STATUS_REG_ERROR      = -8
+    FLASH_ERR_OK                    = 0,    // No error occurred
+    FLASH_ERR_SPI_TRANSMIT_FAILED   = -3,   // Error occurred while transmitting SPI signal
+    FLASH_ERR_SPI_RECEIVE_FAILED    = -4,   // Error occurred while receiving SPI signal
+    FLASH_ERR_DEVICE_BUSY_TIMEOUT   = -6,   // Took too long for the device to be in standby
+    FLASH_ERR_UNKNOWN                = -7,   // Unknown error occurred (code reached where it shouldn't have been possible)
+    FLASH_ERR_STATUS_REG_ERROR      = -8    // Error occurred which was indicated by one of the Status Register Bits.
 };
 
 /*-----------------------------DRIVER FUNCTIONS-----------------------------*/

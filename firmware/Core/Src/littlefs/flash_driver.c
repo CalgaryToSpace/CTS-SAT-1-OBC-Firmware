@@ -129,7 +129,7 @@ uint8_t FLASH_write_enable(SPI_HandleTypeDef *hspi, uint8_t chip_number)
     while (1)
     {
         const uint8_t read_status_result = FLASH_read_status_register(hspi, chip_number, status_reg_buffer);
-        if (read_status_result != 0) {
+        if (read_status_result != FLASH_ERR_OK) {
             FLASH_deactivate_chip_select();
             return read_status_result;
         }
@@ -151,7 +151,7 @@ uint8_t FLASH_write_enable(SPI_HandleTypeDef *hspi, uint8_t chip_number)
     }
 
     // Should never be reached:
-    return FLASH_ERR_UNKOWN;
+    return FLASH_ERR_UNKNOWN;
 }
 
 /**
@@ -177,7 +177,7 @@ uint8_t FLASH_write_disable(SPI_HandleTypeDef *hspi, uint8_t chip_number)
     while (1)
     {
         const uint8_t read_status_result = FLASH_read_status_register(hspi, chip_number, status_reg_buffer);
-        if (read_status_result != 0) {
+        if (read_status_result != FLASH_ERR_OK) {
             FLASH_deactivate_chip_select();
             return read_status_result;
         }
@@ -199,7 +199,7 @@ uint8_t FLASH_write_disable(SPI_HandleTypeDef *hspi, uint8_t chip_number)
     }
 
     // Should never be reached:
-    return FLASH_ERR_UNKOWN;
+    return FLASH_ERR_UNKNOWN;
 }
 
 /**
@@ -216,7 +216,7 @@ uint8_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t ad
 
     // Send Write Enable Command
     const uint8_t wren_result = FLASH_write_enable(hspi, chip_number);
-    if (wren_result != 0) {
+    if (wren_result != FLASH_ERR_OK) {
         FLASH_deactivate_chip_select();
         return wren_result;
     }
@@ -243,7 +243,7 @@ uint8_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t ad
     while (1)
     {
         const uint8_t read_status_result = FLASH_read_status_register(hspi, chip_number, status_reg_buffer);
-        if (read_status_result != 0) {
+        if (read_status_result != FLASH_ERR_OK) {
             FLASH_deactivate_chip_select();
             return read_status_result;
         }
@@ -271,7 +271,7 @@ uint8_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t ad
     }
 
     // Should never be reached:
-    return FLASH_ERR_UNKOWN;
+    return FLASH_ERR_UNKNOWN;
 }
 
 /**
@@ -290,7 +290,7 @@ uint8_t FLASH_write(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t ad
 
     // Enable WREN Command, so that we can write to the memory module
     const uint8_t wren_result = FLASH_write_enable(hspi, chip_number);
-    if (wren_result != 0) {
+    if (wren_result != FLASH_ERR_OK) {
         FLASH_deactivate_chip_select();
         return wren_result;
     }
@@ -321,7 +321,7 @@ uint8_t FLASH_write(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t ad
     while (1)
     {
         const uint8_t read_status_result = FLASH_read_status_register(hspi, chip_number, status_reg_buffer);
-        if (read_status_result != 0) {
+        if (read_status_result != FLASH_ERR_OK) {
             FLASH_deactivate_chip_select();
             return read_status_result;
         }
@@ -349,7 +349,7 @@ uint8_t FLASH_write(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t ad
     }
 
     // Should never be reached:
-    return FLASH_ERR_UNKOWN;
+    return FLASH_ERR_UNKNOWN;
 }
 
 /**
