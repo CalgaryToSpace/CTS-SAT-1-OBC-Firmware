@@ -4,6 +4,7 @@
 #include "rtos_tasks/rtos_tasks.h"
 #include "telecommands/telecommand_parser.h"
 #include "debug_tools/debug_uart.h"
+#include "timekeeping/timekeeping.h"
 #include "uart_handler/uart_handler.h"
 #include "transforms/arrays.h"
 
@@ -11,16 +12,34 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <time.h>
 
-void TASK_debug_print_heartbeat(void *argument) {
+volatile uint8_t TASK_heartbeat_is_on = 1;
+
+char TASK_heartbeat_timing_str[64] = {0};
+
+void TASK_DEBUG_print_heartbeat(void *argument) {
 	TASK_HELP_start_of_task();
 
-	debug_uart_print_str("TASK_debug_print_heartbeat() -> started (booted)\n");
+	DEBUG_uart_print_str("TASK_DEBUG_print_heartbeat() -> started (booted)\n");
 	osDelay(100);
+
+    uint64_t unix_time_ms = 0;
+    time_t seconds = 0;
+    uint16_t ms = 0;
+    struct tm *time_info;
+
 	while (1) {
-		debug_uart_print_str("TASK_debug_print_heartbeat() -> top of while(1)\n");
-		HAL_GPIO_TogglePin(PIN_DEVKIT_LD2_GPIO_Port, PIN_DEVKIT_LD2_Pin);
-		osDelay(1000);
+        if (TASK_heartbeat_is_on) {
+            unix_time_ms = TIM_get_current_unix_epoch_time_ms();
+            seconds = (time_t)(unix_time_ms/ 1000U);
+            ms = unix_time_ms - 1000U * seconds;
+            time_info = gmtime(&seconds);
+            snprintf(TASK_heartbeat_timing_str, 64, "FrontierSat time: %d%02d%02dT%02d:%02d:%02d.%03u\n", time_info->tm_year + 1900, time_info->tm_mon + 1, time_info->tm_mday, time_info->tm_hour, time_info->tm_min, time_info->tm_sec, ms);
+            DEBUG_uart_print_str(TASK_heartbeat_timing_str);
+		}
+		HAL_GPIO_TogglePin(PIN_LED_DEVKIT_LD2_GPIO_Port, PIN_LED_DEVKIT_LD2_Pin);
+		osDelay(990);
 	}
 }
 
@@ -38,7 +57,7 @@ void TASK_handle_uart_telecommands(void *argument) {
 		// place the main delay at the top to avoid a "continue" statement skipping it
 		osDelay(400);
 
-		// debug_uart_print_str("TASK_handle_uart_telecommands -> top of while(1)\n");
+		// DEBUG_uart_print_str("TASK_handle_uart_telecommands -> top of while(1)\n");
 
 		memset(latest_tcmd, 0, UART_telecommand_buffer_len);
 		latest_tcmd_len = 0; // 0 means no telecommand available
@@ -46,13 +65,14 @@ void TASK_handle_uart_telecommands(void *argument) {
 		// log the status
 		// char msg[256];
 		// snprintf(msg, sizeof(msg), "UART telecommand buffer: write_index=%d, last_time=%lums\n", UART_telecommand_buffer_write_idx, UART_telecommand_last_write_time_ms);
-		// debug_uart_print_str(msg);
+		// DEBUG_uart_print_str(msg);
 
 		if ((HAL_GetTick() - UART_telecommand_last_write_time_ms > timeout_duration_ms) && (UART_telecommand_buffer_write_idx > 0)) {
-			// debug_uart_print_str("UART telecommand received (timeout occurred, buffer has data)\n");
+			// DEBUG_uart_print_str("UART telecommand received (timeout occurred, buffer has data)\n");
 			
 			// copy the buffer to the latest_tcmd buffer
 			latest_tcmd_len = UART_telecommand_buffer_write_idx;
+			// FIXME: rewrite the following memcpy/memset without the casts (which disregards the volatile qualifier)
 			memcpy(latest_tcmd, (uint8_t*) UART_telecommand_buffer, UART_telecommand_buffer_len); // copy the whole buffer to ensure nulls get copied too
 
 			// clear the buffer and reset the write pointer
@@ -67,20 +87,20 @@ void TASK_handle_uart_telecommands(void *argument) {
 
 			// optionally, echo back the command
 			if (latest_tcmd_len > 0) {
-				debug_uart_print_str("Received telecommand (len=");
-				debug_uart_print_uint32(latest_tcmd_len);
-				debug_uart_print_str("): '");
-				debug_uart_print_str((char *)latest_tcmd);
-				debug_uart_print_str("'\n");
+				DEBUG_uart_print_str("Received telecommand (len=");
+				DEBUG_uart_print_uint32(latest_tcmd_len);
+				DEBUG_uart_print_str("): '");
+				DEBUG_uart_print_str((char *)latest_tcmd);
+				DEBUG_uart_print_str("'\n");
 			}
 			else {
-				// debug_uart_print_str("No telecommand received.\n");
+				// DEBUG_uart_print_str("No telecommand received.\n");
 				continue;
 			}
 
 			// check that the telecommand starts with the correct prefix
 			if (!TCMD_check_starts_with_device_id((char *)latest_tcmd, latest_tcmd_len)) {
-				debug_uart_print_str("Telecommand does not start with the correct prefix.\n");
+				DEBUG_uart_print_str("Telecommand does not start with the correct prefix.\n");
 				continue;
 			}
 
@@ -88,38 +108,43 @@ void TASK_handle_uart_telecommands(void *argument) {
 			// process the telecommand name
 			int32_t tcmd_idx = TCMD_parse_telecommand_get_index((char *)latest_tcmd, latest_tcmd_len);
 			if (tcmd_idx < 0) {
-				debug_uart_print_str("Telecommand not found in the list.\n");
+				DEBUG_uart_print_str("Telecommand not found in the list.\n");
 				continue;
 			}
 
 			// get the telecommand definition
 			TCMD_TelecommandDefinition_t tcmd_def = TCMD_telecommand_definitions[tcmd_idx];
-			debug_uart_print_str("======= Telecommand ======\n");
-			debug_uart_print_str("Received telecommand '");
-			debug_uart_print_str(tcmd_def.tcmd_name);
-			debug_uart_print_str("'\n");
+			DEBUG_uart_print_str("======= Telecommand ======\n");
+			DEBUG_uart_print_str("Received telecommand '");
+			DEBUG_uart_print_str(tcmd_def.tcmd_name);
+			DEBUG_uart_print_str("'\n");
 
 			// validate the args
+
+			// opening parenthesis index
 			int32_t start_of_args_idx = TCMD_PREFIX_STR_LEN + strlen(tcmd_def.tcmd_name);
 			if (latest_tcmd_len < start_of_args_idx + 1) {
-				debug_uart_print_str("ERROR: You must have parenthesis for the args.\n");
+				DEBUG_uart_print_str("ERROR: You must have parenthesis for the args.\n");
 				continue;
 			}
 			if (latest_tcmd[start_of_args_idx] != '(') {
-				debug_uart_print_str("ERROR: You must have parenthesis for the args. You need an opening paren.\n");
+				DEBUG_uart_print_str("ERROR: You must have parenthesis for the args. You need an opening paren.\n");
 				continue;
 			}
+			
+			// closing parenthesis index
 			int32_t end_of_args_idx = GEN_get_index_of_substring_in_array((char*)latest_tcmd, latest_tcmd_len, ")");
 			if (end_of_args_idx < 0) {
-				debug_uart_print_str("ERROR: You must have parenthesis for the args. No closing paren found.\n");
+				DEBUG_uart_print_str("ERROR: You must have parenthesis for the args. No closing paren found.\n");
 				continue;
 			}
 
 			// TODO: maybe log/print args too
 			
-			uint8_t args_str_no_parens[end_of_args_idx - start_of_args_idx + 2];
-			memcpy(args_str_no_parens, &latest_tcmd[start_of_args_idx+1], end_of_args_idx - start_of_args_idx - 1);
-			args_str_no_parens[end_of_args_idx - 1] = '\0';
+			const uint16_t arg_len = end_of_args_idx - start_of_args_idx - 1;
+			char args_str_no_parens[arg_len + 1];
+			memcpy(args_str_no_parens, &latest_tcmd[start_of_args_idx + 1], arg_len);
+			args_str_no_parens[arg_len] = '\0';
 
 			// TODO: parse out the @tssent=xx (timestamp sent) and ensure it's not a duplicate
 			// TODO: parse out the @tsexec=xx (timestamp to execute at) and see if it should be run immediately or queued (and add a queue system)
@@ -132,24 +157,30 @@ void TASK_handle_uart_telecommands(void *argument) {
 			latest_tcmd[latest_tcmd_len] = '\0';
 			char response_buf[512];
 			memset(response_buf, 0, sizeof(response_buf));
-			tcmd_def.tcmd_func(
+			const uint8_t tcmd_result = tcmd_def.tcmd_func(
 				args_str_no_parens,
 				TCMD_TelecommandChannel_DEBUG_UART,
 				response_buf,
 				sizeof(response_buf));
 
 			// print back the response
-			debug_uart_print_str("======== Response ========\n");
-			debug_uart_print_str(response_buf);
-			debug_uart_print_str("\n==========================\n");
+			DEBUG_uart_print_str("======== Response (err=");
+			DEBUG_uart_print_uint32(tcmd_result);
+			if (tcmd_result != 0) {
+				DEBUG_uart_print_str(" !!!!!! ERROR !!!!!!");
+			}
+			DEBUG_uart_print_str(") ========\n");
+			DEBUG_uart_print_str(response_buf);
+			DEBUG_uart_print_str("\n==========================\n");
 			
 			// TODO: in the future, if the buffer content was longer than the telecommand, we
 			//   _could_ shift the remaining bytes to the front of the buffer
 		}
 		else {
-			debug_uart_print_str("Only partial telecommand received. Buffer length: ");
-			debug_uart_print_uint32(latest_tcmd_len);
-			debug_uart_print_str(" bytes filled.\n");
+			DEBUG_uart_print_str("Only partial telecommand received. Buffer length: ");
+			DEBUG_uart_print_uint32(latest_tcmd_len);
+			DEBUG_uart_print_str(" bytes filled.\n");
 		}
 	} /* End Task's Main Loop */
 }
+

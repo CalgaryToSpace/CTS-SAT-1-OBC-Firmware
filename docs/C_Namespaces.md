@@ -1,7 +1,7 @@
 # C Namespaces
 
-Every non-local C function, enum, typedef, etc. in this codebase shall be prefixed with one of the following uppercase identifiers to indicate which subsystem/
-region of code it belongs to.
+Every non-local C function, enum, typedef, etc. in this codebase shall be prefixed with one of the
+following uppercase identifiers to indicate which subsystem/region of code it belongs to.
 
 ## General Code
 

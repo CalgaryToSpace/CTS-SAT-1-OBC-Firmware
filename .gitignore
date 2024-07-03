@@ -1,5 +1,5 @@
 ######################
-# Eclipse/CubeIDE    #
+### Eclipse/CubeIDE ##
 ######################
 **/.metadata/
 **/.settings/
@@ -13,7 +13,7 @@
 # They are very important for CubeIDE to work properly.
 
 ######################
-# STM32 for VSCode   #
+## STM32 for VSCode ##
 ######################
 **/build/
 **/STM32Make.make
@@ -32,9 +32,24 @@
 ehthumbs.db
 Thumbs.db
 
-# Python
+
+######################
+###### Python ########
+######################
 __pycache__/
 *.py[cod]
 *$py.class
 venv/
+.pytest_cache/
 
+
+######################
+#### Doxygen Docs ####
+######################
+html/
+latex/
+
+######################
+#### Other Tools #####
+######################
+.aider*
