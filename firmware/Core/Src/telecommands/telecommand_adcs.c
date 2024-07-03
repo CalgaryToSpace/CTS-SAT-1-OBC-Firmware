@@ -116,33 +116,44 @@ uint8_t TCMDEXEC_ADCS_set_magnetometer_mode(const uint8_t *args_str, TCMD_Teleco
 
 uint8_t TCMDEXEC_ADCS_set_magnetorquer_output(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Set_Magnetorquer_Output();
+     // parse arguments: first into uint64_t, then convert to correct form for input
+    uint8_t num_args = 3;
+    uint64_t arguments[num_args]; 
+    uint16_t args_16[num_args];
+    for (uint8_t i = 0; i < num_args; i++) {
+        TCMD_extract_double_arg(args_str, strlen((char*)args_str), i, &arguments[i]);
+        args_16[i] = (uint16_t) arguments[i];
+    }
+    
+    uint8_t status = ADCS_Set_Magnetorquer_Output(args_16[0], args_16[1], args_16[2]);
     return status;
 }                                    
 
 uint8_t TCMDEXEC_ADCS_save_config(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                   char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Save_Config();
     return status;
 }                        
 
 uint8_t TCMDEXEC_ADCS_estimate_angular_rates(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                              char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Estimate_Angular_Rates();
     return status;
 }                                    
 
 uint8_t TCMDEXEC_ADCS_get_llh_position(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                        char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Get_LLH_Position();
     return status;
 }                            
 
 uint8_t TCMDEXEC_ADCS_get_power_control(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                         char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Get_Power_Control();
     return status;
-}                            
+}   
+
+// TODO: 9 telecommands remaining!
 
 uint8_t TCMDEXEC_ADCS_set_power_control(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                         char *response_output_buf, uint16_t response_output_buf_len) {
@@ -158,7 +169,7 @@ uint8_t TCMDEXEC_ADCS_set_magnetometer_config(const uint8_t *args_str, TCMD_Tele
 
 uint8_t TCMDEXEC_ADCS_bootloader_clear_errors(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Bootloader_Clear_Errors(); 
     return status;
 }                                    
 
@@ -170,7 +181,7 @@ uint8_t TCMDEXEC_ADCS_set_unix_time_save_mode(const uint8_t *args_str, TCMD_Tele
 
 uint8_t TCMDEXEC_ADCS_get_unix_time_save_mode(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Get_Unix_Time_Save_Mode();
     return status;
 }                                    
 
@@ -182,61 +193,61 @@ uint8_t TCMDEXEC_ADCS_set_sgp4_orbit_params(const uint8_t *args_str, TCMD_Teleco
 
 uint8_t TCMDEXEC_ADCS_get_sgp4_orbit_params(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Get_SGP4_Orbit_Params();
     return status;
 }                                
 
 uint8_t TCMDEXEC_ADCS_save_orbit_params(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                         char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Save_Orbit_Params();
     return status;
 }                            
 
 uint8_t TCMDEXEC_ADCS_rate_sensor_rates(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                         char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Rate_Sensor_Rates();
     return status;
 }                            
 
 uint8_t TCMDEXEC_ADCS_get_wheel_speed(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                       char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Get_Wheel_Speed();
     return status;
 }                            
 
 uint8_t TCMDEXEC_ADCS_get_magnetorquer_command(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Get_Magnetorquer_Command();
     return status;
 }                                    
 
 uint8_t TCMDEXEC_ADCS_get_raw_magnetometer_values(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                   char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Get_Raw_Magnetometer_Values();
     return status;
 }                                        
 
 uint8_t TCMDEXEC_ADCS_fine_angular_rates(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                          char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Fine_Angular_Rates();
     return status;
 }                                
 
 uint8_t TCMDEXEC_ADCS_estimate_fine_angular_rates(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                   char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Estimate_Fine_Angular_Rates(); 
     return status;
 }                                        
 
 uint8_t TCMDEXEC_ADCS_get_magnetometer_config(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Get_Magnetometer_Config();
     return status;
 }                                    
 
 uint8_t TCMDEXEC_ADCS_get_commanded_attitude_angles(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                     char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Get_Commanded_Attitude_Angles();
     return status;
 }                                        
 
@@ -254,7 +265,7 @@ uint8_t TCMDEXEC_ADCS_set_estimation_params(const uint8_t *args_str, TCMD_Teleco
 
 uint8_t TCMDEXEC_ADCS_get_estimation_params(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Get_Estimation_Params();
     return status;
 }                                
 
@@ -266,7 +277,7 @@ uint8_t TCMDEXEC_ADCS_set_asgp4_params(const uint8_t *args_str, TCMD_Telecommand
 
 uint8_t TCMDEXEC_ADCS_get_asgp4_params(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                        char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Get_ASGP4_Params();
     return status;
 }                            
 
@@ -278,7 +289,7 @@ uint8_t TCMDEXEC_ADCS_set_tracking_controller_target_reference(const uint8_t *ar
 
 uint8_t TCMDEXEC_ADCS_get_tracking_controller_target_reference(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                                 char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Get_Tracking_Controller_Target_Reference();
     return status;
 }                                                    
 
@@ -290,127 +301,127 @@ uint8_t TCMDEXEC_ADCS_set_rate_gyro_config(const uint8_t *args_str, TCMD_Telecom
 
 uint8_t TCMDEXEC_ADCS_get_rate_gyro_config(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                            char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Get_Rate_Gyro_Config();
     return status;
 }                                
 
 uint8_t TCMDEXEC_ADCS_estimated_attitude_angles(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                 char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Estimated_Attitude_Angles();
     return status;
 }                                    
 
 uint8_t TCMDEXEC_ADCS_magnetic_field_vector(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Magnetic_Field_Vector();
     return status;
 }                                
 
 uint8_t TCMDEXEC_ADCS_fine_sun_vector(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                       char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Fine_Sun_Vector();
     return status;
 }                            
 
 uint8_t TCMDEXEC_ADCS_nadir_vector(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                    char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Nadir_Vector();
     return status;
 }                        
 
 uint8_t TCMDEXEC_ADCS_commanded_wheel_speed(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Commanded_Wheel_Speed();
     return status;
 }                                
 
 uint8_t TCMDEXEC_ADCS_igrf_magnetic_field_vector(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                  char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_IGRF_Magnetic_Field_Vector();
     return status;
 }                                        
 
 uint8_t TCMDEXEC_ADCS_quaternion_error_vector(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Quaternion_Error_Vector();
     return status;
 }                                    
 
 uint8_t TCMDEXEC_ADCS_estimated_gyro_bias(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                           char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Estimated_Gyro_Bias();
     return status;
 }                                
 
 uint8_t TCMDEXEC_ADCS_estimation_innovation_vector(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                    char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Estimation_Innovation_Vector();
     return status;
 }                                        
 
 uint8_t TCMDEXEC_ADCS_raw_cam1_sensor(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                       char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Raw_Cam1_Sensor();
     return status;
 }                            
 
 uint8_t TCMDEXEC_ADCS_raw_cam2_sensor(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                       char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Raw_Cam2_Sensor;
     return status;
 }                            
 
 uint8_t TCMDEXEC_ADCS_raw_css_1_to_6(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                      char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Raw_CSS_1_to_6();
     return status;
 }                            
 
 uint8_t TCMDEXEC_ADCS_raw_css_7_to_10(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                       char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Raw_CSS_7_to_10();
     return status;
 }                            
 
 uint8_t TCMDEXEC_ADCS_cubecontrol_current(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                           char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_CubeControl_Current();
     return status;
 }                                
 
 uint8_t TCMDEXEC_ADCS_raw_gps_status(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                      char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Raw_GPS_Status();
     return status;
 }                            
 
 uint8_t TCMDEXEC_ADCS_raw_gps_time(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                    char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Raw_GPS_Time();
     return status;
 }                        
 
 uint8_t TCMDEXEC_ADCS_raw_gps_x(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                 char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Raw_GPS_X();
     return status;
 }                    
 
 uint8_t TCMDEXEC_ADCS_raw_gps_y(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                 char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Raw_GPS_Y();
     return status;
 }                    
 
 uint8_t TCMDEXEC_ADCS_raw_gps_z(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                 char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Raw_GPS_Z();
     return status;
 }                    
 
 uint8_t TCMDEXEC_ADCS_measurements(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                    char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint8_t status = ADCS_Measurements(); 
     return status;
 }                        
 
