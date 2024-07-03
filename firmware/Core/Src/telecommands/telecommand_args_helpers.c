@@ -113,7 +113,7 @@ uint8_t TCMD_extract_string_arg(const char *str, uint8_t arg_index, char *result
     if (arg_count < arg_index) {
         return 2;
     }
-
+    
     uint32_t end_index = i;
     if (end_index - start_index >= result_max_len) {
         return 3;
@@ -238,5 +238,64 @@ uint8_t TCMD_extract_hex_array_arg(const char *args_str, uint8_t arg_index, uint
     }
 
     *result_length = byte_index;
+    return 0;
+}
+/// @brief Extracts the longest substring of double characters, starting from the beginning of the
+///     string, to a maximum length or until the first non-double character is found.
+/// @param str Input string, starting with a double
+/// @param str_len Max length of the input string
+/// @param result Pointer to the result
+/// @return 0 if successful, 1 if the string is empty, 2 if the string does not start with a double
+uint8_t TCMD_ascii_to_double(const char *str, uint32_t str_len, double *result) {
+    if (str_len == 0) {
+        return 1;
+    }
+
+    double temp_result = atof(str);
+
+    *result = temp_result;
+    return 0;
+}
+
+/// @brief Extracts the nth comma-separated argument from the input string, assuming it's a double
+/// @param str Input string
+/// @param str_len Length of the input string
+/// @param arg_index Index of the argument to extract (0-based)
+/// @param result Pointer to the result
+/// @return 0 if successful, 1 if the string is empty, 2 if the string does not contain enough arguments
+///        3 if the argument is not a double, 4 for other error
+uint8_t TCMD_extract_double_arg(const char *str, uint32_t str_len, uint8_t arg_index, double *result) {
+    if (str_len == 0) {
+        return 1;
+    }
+
+    uint32_t arg_count = 0;
+    uint32_t i = 0;
+    uint32_t start_index = 0;
+    for (; i < str_len; i++) {
+        if (str[i] == ',') {
+            if (arg_count == arg_index) {
+                break;
+            }
+
+            arg_count++;
+            start_index = i + 1;
+        }
+    }
+
+
+    if (arg_count < arg_index) {
+        return 2;
+    }
+
+    uint8_t parse_result = TCMD_ascii_to_double(&str[start_index], i - start_index, result);
+    if (parse_result == 2) {
+        // The argument is not a double
+        return 3;
+    }
+    else if (parse_result > 0) {
+        // Other error
+        return 4;
+    }
     return 0;
 }
