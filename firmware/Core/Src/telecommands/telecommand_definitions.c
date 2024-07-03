@@ -1,9 +1,9 @@
 
 #include "telecommands/telecommand_definitions.h"
+#include "telecommands/telecommand_adcs.h"
 #include "telecommands/telecommand_args_helpers.h"
 #include "transforms/arrays.h"
 #include "unit_tests/unit_test_executor.h"
-#include "adcs_types.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -109,18 +109,3 @@ uint8_t TCMDEXEC_run_all_unit_tests(const uint8_t *args_str, TCMD_TelecommandCha
     TEST_run_all_unit_tests_and_log(response_output_buf, response_output_buf_len);
     return 0;
 }
-
-uint8_t TCMDEXEC_ADCS_ack(void) {
-    ADCS_TC_Ack_Struct ack;
-    ADCS_TC_Ack(&ack);
-    return ack.error_flag;
-}
-
-uint8_t TCMDEXEC_ADCS_set_wheel_speed(void) {
-    ADCS_TC_Ack_Struct ack;
-    ADCS_Set_Wheel_Speed(1, 2, 3);
-    //FIXME: fix me
-    return 0;
-}
-
-// TODO: telecommand definitions

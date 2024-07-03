@@ -575,7 +575,7 @@ uint8_t ADCS_Pack_to_Estimated_Attitude_Angles(uint8_t *data_received, ADCS_Esti
 uint8_t ADCS_Pack_to_Magnetic_Field_Vector(uint8_t *data_received, ADCS_Magnetic_Field_Vector_Struct *vector_components);
 uint8_t ADCS_Pack_to_Fine_Sun_Vector(uint8_t *data_received, ADCS_Fine_Sun_Vector_Struct *vector_components);
 uint8_t ADCS_Pack_to_Nadir_Vector(uint8_t *data_received, ADCS_Nadir_Vector_Struct *vector_components);
-uint8_t ADCS_Pack_to_Commanded__Wheel_Speed(uint8_t *data_received, ADCS_Wheel_Speed_Struct *result);
+uint8_t ADCS_Pack_to_Commanded_Wheel_Speed(uint8_t *data_received, ADCS_Wheel_Speed_Struct *result);
 uint8_t ADCS_Pack_to_IGRF_Magnetic_Field_Vector(uint8_t *data_received, ADCS_Magnetic_Field_Vector_Struct *vector_components);
 uint8_t ADCS_Pack_to_Quaternion_Error_Vector(uint8_t *data_received, ADCS_Quaternion_Error_Vector_Struct *result);
 uint8_t ADCS_Pack_to_Estimated_Gyro_Bias(uint8_t* data_received, ADCS_Estimated_Gyro_Bias_Struct *result);
@@ -600,7 +600,6 @@ uint8_t ADCS_Deploy_Magnetometer(uint8_t deploy_timeout);
 uint8_t ADCS_Set_Run_Mode(ADCS_Run_Mode mode);
 uint8_t ADCS_Clear_Errors();
 uint8_t ADCS_Attitude_Control_Mode(ADCS_Control_Mode mode, uint16_t timeout);
-uint8_t ADCS_Stop_Reaction_Wheels();
 uint8_t ADCS_Attitude_Estimation_Mode(ADCS_Estimation_Mode mode);
 uint8_t ADCS_TC_Ack(ADCS_TC_Ack_Struct *ack);
 uint8_t ADCS_Run_Once();

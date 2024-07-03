@@ -984,7 +984,7 @@ uint8_t ADCS_Commanded_Wheel_Speed() {
 	return tlm_status;
 }
 
-uint8_t ADCS_Pack_to_Commanded__Wheel_Speed(uint8_t *data_received, ADCS_Wheel_Speed_Struct *result) {
+uint8_t ADCS_Pack_to_Commanded_Wheel_Speed(uint8_t *data_received, ADCS_Wheel_Speed_Struct *result) {
 	// all values in rpm
     result->x = data_received[1] << 8 | data_received[0];
     result->y = data_received[3] << 8 | data_received[2];
