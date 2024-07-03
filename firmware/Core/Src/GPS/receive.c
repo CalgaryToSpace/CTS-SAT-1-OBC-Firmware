@@ -29,24 +29,61 @@ void receive_log(int wait)
 	// SEE TABLE !): Binary Message Response structure (these are the sync bits)
 	// extra note, how I understand it is that if the header size (including sync bits isnt 28 the gps has been
 	// reconficured
-
-	if (rec[0] == 0xAA && rec[1] == 0x44 && rec[2] == 0x12)
+	uint8_t *start = rec[0];
+	while (start < sizeof(rec) / sizeof(rec[0]) && start == "\0")
 	{
-		HAL_UART_Transmit(&hlpuart1, &headerintro, strlen((char *)headerintro), HAL_MAX_DELAY);
-		//		if(rec[3] == 28 && strlen(rec) > 28){
-		header_status *header_ptr;
-		gps_bestxyz_status *log_ptr;
-		//		//SEE table 10 rec[3] is the header length
-		//		uint8_t header[rec[3]] = rec;
-		//		for(int i = 0; i < rec[3]; i++){
-		//			header[i] = rec[i];
-		//		}
-		pack_header(rec, &header_ptr);
-		pack_gps_bestxyz(rec, &log_ptr, header_ptr->header_length);
-		char sync_1_str[4];							  // Buffer to hold the string representation of sync_1
-		sprintf(sync_1_str, "%d", log_ptr->vel_type); // Convert sync_1 to hexadecimal string
-		HAL_UART_Transmit(&hlpuart1, (uint8_t *)sync_1_str, strlen(sync_1_str), HAL_MAX_DELAY);
-		//		}
+		if (*start == 0xAA && *(start + 1) == 0x44 && *(start + 2) == 0x12)
+		{
+			// HAL_UART_Transmit(&hlpuart1, &headerintro, strlen((char *)headerintro), HAL_MAX_DELAY);
+			//		if(rec[3] == 28 && strlen(rec) > 28){
+			header_status *header_ptr;
+			pack_header(start, &header_ptr);
+
+			// move to start of
+			start += header_ptr->header_length;
+			void *test_ptr;
+
+			switch (header_ptr->msg_id)
+			{
+			case 241:
+
+				gps_bestxyz_status *log_bestxyz_ptr;
+				//		//SEE table 10 rec[3] is the header length
+				//		uint8_t header[rec[3]] = rec;
+				//		for(int i = 0; i < rec[3]; i++){
+				//			header[i] = rec[i];
+				//		}
+				pack_gps_bestxyz(start, &log_bestxyz_ptr);
+				// char sync_1_str[4];							  // Buffer to hold the string representation of sync_1
+				// sprintf(sync_1_str, "%d", log_ptr->vel_type); // Convert sync_1 to hexadecimal string
+				// HAL_UART_Transmit(&hlpuart1, (uint8_t *)sync_1_str, strlen(sync_1_str), HAL_MAX_DELAY);
+				//		}
+				test_ptr = log_bestxyz_ptr;
+
+			case 101:
+				gps_time_status *log_time_ptr;
+				pack_gps_time(start, &log_time_ptr);
+				test_ptr = log_bestxyz_ptr;
+			case 2065:
+				gps_itdetectstatus_entry_count *log_itcount_ptr;
+				pack_gps_itdetectstatus(start, &log_itcount_ptr);
+				test_ptr = log_bestxyz_ptr;
+			case 93:
+				gps_rxstatus *log_rxstat_ptr;
+				pack_gps_rxstatus(start, &log_rxstat_ptr);
+				test_ptr = log_rxstat_ptr;
+			// dont know yet what I will be doing for this
+			case 128:
+				continue;
+			}
+			start += header_ptr->msg_length;
+		}
+		else
+		{
+			// need to somehow show that the logs are not being received properly
+			break;
+		}
+		// CALL API AND STORE FROM REC[0] to Start in the api, get rid of rec after
 	}
 
 	return (void *)0;
@@ -55,76 +92,66 @@ void receive_log(int wait)
 void pack_header(const uint8_t rx_buff[], header_status **result_dest)
 {
 	//	memcpy(result_dest, rx_buff, sizeof(header_status));
-	*result_dest = (header_status *)rx_buff;
+	*result_dest = (header_status *)&rx_buff;
+}
+void print_header(const header_status **header)
+{
+	(*header)->msg_id;
 }
 // need to add check for if header is less than 25 cause then theres an error
 // use the message id or type to determine which pack to call
-void pack_gps_bestxyz(const uint8_t rx_buff[], gps_bestxyz_status **result_dest, uint8_t H)
+
+/// NOT SURE WHAT I AM SUPPOSED TO BE DOING WITH THIS INFORMATION
+void pack_gps_bestxyz(const uint8_t rx_buff[], gps_bestxyz_status **result_dest)
 {
-	*result_dest = (header_status *)&rx_buff[H];
-	//	result_dest->sync_1 = rx_buff[0];  // Sync_1: 8-bit value at offset 0
-	//	result_dest->sync_2 = rx_buff[1];  // Sync_2: 8-bit value at offset 1
-	//	result_dest->sync_3 = rx_buff[2];  // Sync_3: 8-bit value at offset 2
-	//	result_dest->header_length = rx_buff[3];  // Header length: 8-bit value at offset 3
-	//	result_dest->msg_id = (rx_buff[5] << 8) | rx_buff[4];  // Message ID: 16-bit value at offset 4
-	//	result_dest->msg_type = rx_buff[6];  // Message type: 8-bit value at offset 6
-	//	result_dest->prt_addr = rx_buff[7];  // Port address: 8-bit value at offset 7
-	//	result_dest->msg_length = (rx_buff[9] << 8) | rx_buff[8];  // Message length: 16-bit value at offset 8
-	//	result_dest->sequence = (rx_buff[11] << 8) | rx_buff[10];  // Sequence: 16-bit value at offset 10
-	//	result_dest->idle_time = rx_buff[12];  // Idle time: 8-bit value at offset 12
-	//	result_dest->time_status = (GPS_TIME_STATUS_enum_t)rx_buff[12];  // Time status: Enum value at offset 12
-	//	result_dest->week = (rx_buff[14] << 8) | rx_buff[13];  // GPS reference week number: 16-bit value at offset 14
-	//	result_dest->ms = (rx_buff[18] << 24) | (rx_buff[17] << 16) | (rx_buff[16] << 8) | rx_buff[15];  // ms GPSEC: 32-bit value at offset 16
-	//	result_dest->rcvr_status = (rx_buff[22] << 24) | (rx_buff[21] << 16) | (rx_buff[20] << 8) | rx_buff[19];  // Receiver status: 32-bit value at offset 20
-	//	result_dest->reserved = (rx_buff[24] << 8) | rx_buff[23];  // Reserved: 16-bit value at offset 24
-	//	result_dest->rcvr_version = (rx_buff[26] << 8) | rx_buff[25];  // Receiver version: 16-bit value at offset 26
-	//	result_dest->psol_status = (rx_buff[H + 8] << 24) | (rx_buff[H + 7] << 16) | (rx_buff[H + 6] << 8) | rx_buff[H + 5];  // P-sol status: 32-bit value at offset H
-	//	result_dest->pos_type = (rx_buff[H + 12] << 24) | (rx_buff[H + 11] << 16) | (rx_buff[H + 10] << 8) | rx_buff[H + 9];  // Position type: 32-bit value at offset H+4
-	//	result_dest->p_x = ((int64_t)rx_buff[H + 16] << 56) | ((int64_t)rx_buff[H + 15] << 48) | ((int64_t)rx_buff[H + 14] << 40) | ((int64_t)rx_buff[H + 13] << 32) |
-	//	                    ((int64_t)rx_buff[H + 12] << 24) | ((int64_t)rx_buff[H + 11] << 16) | ((int64_t)rx_buff[H + 10] << 8) | rx_buff[H + 9];  // Position coord X: 64-bit value at offset H+8
-	//	result_dest->p_y = ((int64_t)rx_buff[H + 24] << 56) | ((int64_t)rx_buff[H + 23] << 48) | ((int64_t)rx_buff[H + 22] << 40) | ((int64_t)rx_buff[H + 21] << 32) |
-	//	                    ((int64_t)rx_buff[H + 20] << 24) | ((int64_t)rx_buff[H + 19] << 16) | ((int64_t)rx_buff[H + 18] << 8) | rx_buff[H + 17];  // Position coord Y: 64-bit value at offset H+16
-	//	result_dest->p_z = ((int64_t)rx_buff[H + 32] << 56) | ((int64_t)rx_buff[H + 31] << 48) | ((int64_t)rx_buff[H + 30] << 40) | ((int64_t)rx_buff[H + 29] << 32) |
-	//	                    ((int64_t)rx_buff[H + 28] << 24) | ((int64_t)rx_buff[H + 27] << 16) | ((int64_t)rx_buff[H + 26] << 8) | rx_buff[H + 25];  // Position coord Z: 64-bit value at offset H+24
-	//	result_dest->p_x_omega = (rx_buff[H + 40] << 24) | (rx_buff[H + 39] << 16) | (rx_buff[H + 38] << 8) | rx_buff[H + 37];  // Std dev P-X: 32-bit value at offset H+32
-	//	result_dest->p_y_omega = (rx_buff[H + 44] << 24) | (rx_buff[H + 43] << 16) | (rx_buff[H + 42] << 8) | rx_buff[H + 41];  // Std dev P-Y: 32-bit value at offset H+36
-	//	result_dest->p_z_omega = (rx_buff[H + 48] << 24) | (rx_buff[H + 47] << 16) | (rx_buff[H + 46] << 8) | rx_buff[H + 45];  // Std dev P-Z: 32-bit value at offset H+40
-	//	result_dest->vsol_status = (rx_buff[H + 52] << 24) | (rx_buff[H + 51] << 16) | (rx_buff[H + 50] << 8) | rx_buff[H + 49];  // V-sol status: 32-bit value at offset H+44
-	//	result_dest->vel_type = (rx_buff[H + 58] << 8) | rx_buff[H + 57];  // Velocity type: 16-bit value at offset H+48
-	//	result_dest->v_x = ((int64_t)rx_buff[H + 64] << 56) | ((int64_t)rx_buff[H + 63] << 48) | ((int64_t)rx_buff[H + 62] << 40) | ((int64_t)rx_buff[H + 61] << 32) |
-	//	                   ((int64_t)rx_buff[H + 60] << 24) | ((int64_t)rx_buff[H + 59] << 16) | ((int64_t)rx_buff[H + 58] << 8) | rx_buff[H + 57];  // Velocity coord X: 64-bit value at offset H+52
-	//	result_dest->v_y = ((int64_t)rx_buff[H + 72] << 56) | ((int64_t)rx_buff[H + 71] << 48) | ((int64_t)rx_buff[H + 70] << 40) | ((int64_t)rx_buff[H + 69] << 32) |
-	//	                   ((int64_t)rx_buff[H + 68] << 24) | ((int64_t)rx_buff[H + 67] << 16) | ((int64_t)rx_buff[H + 66] << 8) | rx_buff[H + 65];  // Velocity coord Y: 64-bit value at offset H+60
-	//	result_dest->v_z = ((int64_t)rx_buff[H + 80] << 56) | ((int64_t)rx_buff[H + 79] << 48) | ((int64_t)rx_buff[H + 78] << 40) | ((int64_t)rx_buff[H + 77] << 32) |
-	//	                   ((int64_t)rx_buff[H + 76] << 24) | ((int64_t)rx_buff[H + 75] << 16) | ((int64_t)rx_buff[H + 74] << 8) | rx_buff[H + 73];  // Velocity coord Z: 64-bit value at offset H+68
-	//	result_dest->v_x_omega = (rx_buff[H + 84] << 24) | (rx_buff[H + 83] << 16) | (rx_buff[H + 82] << 8) | rx_buff[H + 81];  // Std dev V-X: 32-bit value at offset H+76
-	//	result_dest->v_y_omega = (rx_buff[H + 88] << 24) | (rx_buff[H + 87] << 16) | (rx_buff[H + 86] << 8) | rx_buff[H + 85];  // Std dev V-Y: 32-bit value at offset H+80
-	//	result_dest->v_z_omega = (rx_buff[H + 92] << 24) | (rx_buff[H + 91] << 16) | (rx_buff[H + 90] << 8) | rx_buff[H + 89];  // Std dev V-Z: 32-bit value at offset H+84
-	//	result_dest->stn_id[0] = rx_buff[H + 96];  // Base station identification: Character 1 at offset H+88
-	//	result_dest->stn_id[1] = rx_buff[H + 97];  // Base station identification: Character 2 at offset H+89
-	//	result_dest->stn_id[2] = rx_buff[H + 98];  // Base station identification: Character 3 at offset H+90
-	//	result_dest->stn_id[3] = rx_buff[H + 99];  // Base station identification: Character 4 at offset H+91
-	//	result_dest->v_latency = (rx_buff[H + 100] << 24) | (rx_buff[H + 101] << 16) | (rx_buff[H + 102] << 8) | rx_buff[H + 103];  // Velocity time tag: 32-bit value at offset H+92
-	//	result_dest->diff_age = (rx_buff[H + 104] << 24) | (rx_buff[H + 105] << 16) | (rx_buff[H + 106] << 8) | rx_buff[H + 107];  // Differential age: 32-bit value at offset H+96
-	//	result_dest->sol_age = (rx_buff[H + 108] << 24) | (rx_buff[H + 109] << 16) | (rx_buff[H + 110] << 8) | rx_buff[H + 111];  // Solution age: 32-bit value at offset H+100
-	//	result_dest->num_svs = rx_buff[H + 112];  // Number of satellites tracked: 8-bit value at offset H+104
-	//	result_dest->num_soln_svs = rx_buff[H + 113];  // Number of satellites used in solution: 8-bit value at offset H+105
-	//	result_dest->num_ggL1 = rx_buff[H + 114];  // Number of satellites with L1/E1/B1 signals used in solution: 8-bit value at offset H+106
-	//	result_dest->solnMultiSVs = rx_buff[H + 115];  // Number of satellites with multi-frequency signals used in solution: 8-bit value at offset H+107
-	//	result_dest->reserved2 = rx_buff[H + 116];  // Reserved: 8-bit value at offset H+108
-	//	result_dest->ext_sol_stat = rx_buff[H + 117];  // Extended solution status: 8-bit value at offset H+109
-	//	result_dest->gal_beidou_mask = rx_buff[H + 118];  // Galileo and BeiDou signals used mask: 8-bit value at offset H+110
-	//	result_dest->gps_glonass_mask = rx_buff[H + 119];  // GPS and GLONASS signals used mask: 8-bit value at offset H+111
-	//	result_dest->crc[0] = rx_buff[H + 120];  // 32-bit CRC (byte 0): 8-bit value at offset H+112
-	//	result_dest->crc[1] = rx_buff[H + 121];  // 32-bit CRC (byte 1): 8-bit value at offset H+113
-	//	result_dest->crc[2] = rx_buff[H + 122];  // 32-bit CRC (byte 2): 8-bit value at offset H+114
-	//	result_dest->crc[3] = rx_buff[H + 123];  // 32-bit CRC (byte 3): 8-bit value at offset H+115
-	//
-	//
-	//
-	//
+	*result_dest = (gps_bestxyz_status *)&rx_buff;
 }
 
+void print_bestxyz(const gps_bestxyz_status **log)
+{
+	(*log)->sol_age;
+}
+
+void pack_gps_time(const uint8_t rx_buff[], gps_time_status **result_dest)
+{
+	*result_dest = (gps_time_status *)&rx_buff;
+}
+
+void print_time(const gps_time_status **log)
+{
+	(*log)->utc_day;
+}
+
+void pack_gps_itdetectstatus(const uint8_t rx_buff[], gps_itdetectstatus_entry_count **result_dest)
+{
+	*result_dest = (gps_itdetectstatus_entry_count *)&rx_buff;
+	itdetectstatus_entry *it_entries[(*result_dest)->num_entries];
+	for (int i = 0; i < (*result_dest)->num_entries; i++)
+	{
+		// 40 is the total offset of itdetectstatus-entry see gps_types.h
+		it_entries[i] = (itdetectstatus_entry *)&rx_buff[i * 40 + 1];
+		print_it_etry(it_entries[i]);
+	}
+}
+void print_itdetect(const gps_itdetectstatus_entry_count **log)
+{
+	(*log)->num_entries;
+}
+
+void print_itdetect_entry(const itdetectstatus_entry **log)
+{
+	(*log)->rf_path;
+}
+
+void pack_gps_rxstatus(const uint8_t rx_buff[], gps_rxstatus **result_dest)
+{
+	*result_dest = (gps_rxstatus *)&rx_buff;
+}
+void print_rxstat(const gps_rxstatus **log)
+{
+	(*log)->error;
+}
+// THIS IS OLD DONE BY OTHER MATT BEFORE DECIDED TO DO BINARY
 char **gpsParseReceive(char *received)
 {
 	if (received[0] != '#')

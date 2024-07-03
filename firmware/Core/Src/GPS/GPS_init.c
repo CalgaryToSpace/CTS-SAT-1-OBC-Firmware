@@ -1,11 +1,11 @@
 /*
  * GPS_init.c
  *
- *  Created on: June 27, 2023
+ *  Created on: June 27, 2024
  *  Author: Matjaz Cigler
  */
 
-#include "../../Inc/GPS/send.h"
+#include "../../Inc/GPS/GPS_init.h"
 // #include "../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h"
 // #include "stm32l4xx_hal_def.h"
 
