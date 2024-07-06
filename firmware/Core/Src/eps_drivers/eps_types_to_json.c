@@ -635,7 +635,6 @@ uint8_t EPS_result_piu_housekeeping_data_eng_TO_json(const EPS_result_piu_housek
         data->stat_ch_ext_overcurrent_fault_bitfield
         );
 
-
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error
     }
