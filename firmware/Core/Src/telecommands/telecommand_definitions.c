@@ -211,27 +211,31 @@ uint8_t TCMDEXEC_run_all_unit_tests(const char *args_str, TCMD_TelecommandChanne
 
 uint8_t TCMDEXEC_available_telecommands(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-    
-    char response[512] = {0};
-    char *p = response;
-    ssize_t left = sizeof(response);
-    size_t len = 0;
-    snprintf(p, left, "%s", "Available_telecommands\n");
-    p += 23;
-    left -= 23;
-    for (uint16_t i = 0; i < TCMD_NUM_TELECOMMANDS; i++) {
-        len = strlen(TCMD_telecommand_definitions[i].tcmd_name) + 6;
-        snprintf(p, left, "%3u) %s\n", i + 1, TCMD_telecommand_definitions[i].tcmd_name);
-        p += len;
-        if (left > len) {
-            left -= len;
-        }
-        else {
+    char *p = response_output_buf;
+    uint16_t remaining_space = response_output_buf_len;
+
+    // Start response with header
+    snprintf(p, remaining_space, "Available_telecommands\n");
+    const uint16_t header_length = strlen(p);
+    p += header_length;
+    remaining_space -= header_length;
+
+    // Append each telecommand name to the response
+    for (uint16_t tcmd_idx = 0; tcmd_idx < TCMD_NUM_TELECOMMANDS; tcmd_idx++) {
+        const uint16_t line_length = snprintf(
+            p,
+            remaining_space,
+            "%3u) %s\n",
+            tcmd_idx + 1,
+            TCMD_telecommand_definitions[tcmd_idx].tcmd_name
+        );
+        if (line_length >= remaining_space) {
+            // Not enough space left to append more telecommands
             break;
         }
+        p += line_length;
+        remaining_space -= line_length;
     }
-    snprintf(response_output_buf, response_output_buf_len, "%s", response);
 
     return 0;
 }
-
