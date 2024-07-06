@@ -53,7 +53,7 @@ uint8_t TCMDEXEC_mpi_send_command_hex(const uint8_t *args_str, TCMD_TelecommandC
     memset(mpi_cmd_response, 0, sizeof(mpi_cmd_response)); // Initialize all elements to 0
 
     // Send command to MPI
-    uint8_t cmd_response = sendTelecommandHex(args_str, arg_str_len, mpi_cmd_response, mpi_cmd_response_len);
+    uint8_t cmd_response = sendTelecommandHex((const char *)args_str, arg_str_len, mpi_cmd_response, mpi_cmd_response_len);
 
     // Verify successful echo response from the mpi
     if (cmd_response != 0)
