@@ -532,7 +532,8 @@ uint8_t EPS_result_piu_housekeeping_data_raw_TO_json(const EPS_result_piu_housek
     // Write JSON string to buffer
     int snprintf_ret = snprintf(
         json_output_str, json_output_str_len,
-        "{\"voltage_internal_board_supply_mV\":%u,\"temperature_mcu_cC\":%u,\"vip_total_input\":%s,\"conditioning_channel_info_each_channel\":[%s,%s,%s,%s]}",
+        // TODO: Fix the text on this!!!!!!
+        "{\"voltage_internal_board_supply_raw\":%u,\"temperature_mcu_raw\":%u,\"vip_dist_input_raw\":%s,\"vip_batt_input_raw\":%s, \"stat_ch_on_bitfield\":%u, \"stat_ch_overcurrent_fault_bitfield\":%u,\"battery_status_bitfield\":%u,\"battery_temp2_raw\":%u, \"battery_temp3_raw\":%u, \"vd0_voltage_raw\":%u, \"vd1_voltage_raw\":%u, \"vd2_voltage_raw\":%u, \"vip_each_channel_raw\":[%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s], \"conditioning_channel_info_each_channel_raw\":[%s,%s,%s,%s,%s], \"stat_ch_ext_on_bitfield\":%u, \"stat_ch_ext_overcurrent_fault_bitfield\":%u}",
         data->voltage_internal_board_supply_raw,
         data->temperature_mcu_raw,
         data->vip_dist_input_raw,
@@ -548,9 +549,91 @@ uint8_t EPS_result_piu_housekeeping_data_raw_TO_json(const EPS_result_piu_housek
         data->vd2_voltage_raw,
 
 
-        data->vip_each_channel_raw[0], data->vip_each_channel_raw[1], data->vip_each_channel_raw[2], data->vip_each_channel_raw[3],
-        data->vip_each_channel_raw[5], data->vip_each_channel_raw[6], data->vip_each_channel_raw[7]
+        data->vip_each_channel_raw[0], data->vip_each_channel_raw[1], 
+        data->vip_each_channel_raw[2], data->vip_each_channel_raw[3],
+        data->vip_each_channel_raw[4], data->vip_each_channel_raw[5], 
+        data->vip_each_channel_raw[6], data->vip_each_channel_raw[7],
+        data->vip_each_channel_raw[8], data->vip_each_channel_raw[9], 
+        data->vip_each_channel_raw[10], data->vip_each_channel_raw[11],
+        data->vip_each_channel_raw[12], data->vip_each_channel_raw[13], 
+        data->vip_each_channel_raw[14], data->vip_each_channel_raw[15],
+        data->vip_each_channel_raw[15], data->vip_each_channel_raw[16], 
+        data->vip_each_channel_raw[17], data->vip_each_channel_raw[18],
+        data->vip_each_channel_raw[19], data->vip_each_channel_raw[20], 
+        data->vip_each_channel_raw[21], data->vip_each_channel_raw[22],
+        data->vip_each_channel_raw[23], data->vip_each_channel_raw[24], 
+        data->vip_each_channel_raw[25], data->vip_each_channel_raw[26],
+        data->vip_each_channel_raw[27], data->vip_each_channel_raw[28],
+         data->vip_each_channel_raw[29], data->vip_each_channel_raw[30],
+        data->vip_each_channel_raw[31],
 
+        data->conditioning_channel_info_each_channel_raw[0], data->conditioning_channel_info_each_channel_raw[1],
+        data->conditioning_channel_info_each_channel_raw[2], data->conditioning_channel_info_each_channel_raw[3],
+        data->conditioning_channel_info_each_channel_raw[4],
+
+        data->stat_ch_ext_on_bitfield,
+        data->stat_ch_ext_overcurrent_fault_bitfield
+        );
+
+
+    if (snprintf_ret < 0) {
+        return 2; // Error: snprintf encoding error
+    }
+    if (snprintf_ret >= json_output_str_len) {
+        return 3; // Error: string buffer too short
+    }
+    return 0; // Success
+}
+
+uint8_t EPS_result_piu_housekeeping_data_eng_TO_json(const EPS_result_piu_housekeeping_data_eng_t *data, char json_output_str[], uint16_t json_output_str_len) {
+    if (data == NULL || json_output_str == NULL || json_output_str_len < 10) {
+        return 1; // Error: Invalid input
+    }
+
+    // Write JSON string to buffer
+    int snprintf_ret = snprintf(
+        json_output_str, json_output_str_len,
+        "{\"voltage_internal_board_supply_mV\":%u,\"temperature_mcu_cC\":%u,\"vip_dist_input\":%s,\"vip_batt_input\":%s, \"stat_ch_on_bitfield\":%u, \"stat_ch_overcurrent_fault_bitfield\":%u,\"battery_status_bitfield\":%u,\"battery_temp2_cC\":%u, \"battery_temp3_cC\":%u, \"vd0_voltage_mV\":%u, \"vd1_voltage_mV\":%u, \"vd2_voltage_mV\":%u, \"vip_each_channel\":[%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s], \"conditioning_channel_info_each_channel\":[%s,%s,%s,%s,%s], \"stat_ch_ext_on_bitfield\":%u, \"stat_ch_ext_overcurrent_fault_bitfield\":%u}",
+        data->voltage_internal_board_supply_mV,
+        data->temperature_mcu_cC,
+        data->vip_dist_input,
+        data->vip_batt_input,
+        data->stat_ch_on_bitfield,
+        data->stat_ch_overcurrent_fault_bitfield,
+        data->battery_status_bitfield,
+        data->battery_temp2_cC,
+        data->battery_temp3_cC,
+
+        data->vd0_voltage_mV,
+        data->vd1_voltage_mV,
+        data->vd2_voltage_mV,
+
+
+        data->vip_each_channel[0], data->vip_each_channel[1], 
+        data->vip_each_channel[2], data->vip_each_channel[3],
+        data->vip_each_channel[4], data->vip_each_channel[5], 
+        data->vip_each_channel[6], data->vip_each_channel[7],
+        data->vip_each_channel[8], data->vip_each_channel[9], 
+        data->vip_each_channel[10], data->vip_each_channel[11],
+        data->vip_each_channel[12], data->vip_each_channel[13], 
+        data->vip_each_channel[14], data->vip_each_channel[15],
+        data->vip_each_channel[15], data->vip_each_channel[16], 
+        data->vip_each_channel[17], data->vip_each_channel[18],
+        data->vip_each_channel[19], data->vip_each_channel[20], 
+        data->vip_each_channel[21], data->vip_each_channel[22],
+        data->vip_each_channel[23], data->vip_each_channel[24], 
+        data->vip_each_channel[25], data->vip_each_channel[26],
+        data->vip_each_channel[27], data->vip_each_channel[28],
+        data->vip_each_channel[29], data->vip_each_channel[30],
+        data->vip_each_channel[31],
+
+        data->conditioning_channel_info_each_channel[0], data->conditioning_channel_info_each_channel[1],
+        data->conditioning_channel_info_each_channel[2], data->conditioning_channel_info_each_channel[3],
+        data->conditioning_channel_info_each_channel[4],
+
+        data->stat_ch_ext_on_bitfield,
+        data->stat_ch_ext_overcurrent_fault_bitfield
+        );
 
 
     if (snprintf_ret < 0) {
