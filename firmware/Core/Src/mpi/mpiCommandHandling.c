@@ -60,8 +60,7 @@ uint8_t sendTelecommandHex(uint8_t *bytes_to_send, size_t bytes_to_send_len, uin
 	}
 
 	// Verify MPI response
-
-	if (memcmp(UART1_txBuffer, mpi_cmd_response, bytes_to_send + 2) != 0)
+	if (memcmp(UART1_txBuffer, mpi_cmd_response, *bytes_to_send + 2) != 0)
 	{
 		return 1; // Error code for invalid response from the MPI
 	}
@@ -229,25 +228,26 @@ void processFrameData(MpiFrame_t frame)
 
 	// Send formatted data over HLPUART for verification
 	// HAL_UART_Transmit(&hlpuart1, (uint8_t*)variable_buffer, strlen(variable_buffer), HAL_MAX_DELAY);
-	PRINT_STRING_UART(variable_buffer);
+	debug_uart_print_str(variable_buffer);
 
 	// TODO: For testing write parsed and raw data to files to verify and update test plans
 	writeFrameToMemory(frame);
 }
 
 // This function deals with writing data packets to memory using MEMORY UTILITIES
+// TODO: Rewrite this method once the littlefs module is merged in
 void writeFrameToMemory(MpiFrame_t frame)
 {
 
 	// Calling the WRITE function and making sure it's successful
-	if (WRITE_FILE(&hspi1, (uint8_t *)&frame, sizeof(frame)))
-	{
-		PRINT_STRING_UART("MPIFrame Written successfully");
-	}
-	else
-	{
-		PRINT_STRING_UART("Error Occurred while writing MPIFrame");
-	}
+	// if (WRITE_FILE(&hspi1, (uint8_t *)&frame, sizeof(frame)))
+	// {
+	// 	PRINT_STRING_UART("MPIFrame Written successfully");
+	// }
+	// else
+	// {
+	// 	PRINT_STRING_UART("Error Occurred while writing MPIFrame");
+	// }
 }
 
 // Tele-Command specific functions
