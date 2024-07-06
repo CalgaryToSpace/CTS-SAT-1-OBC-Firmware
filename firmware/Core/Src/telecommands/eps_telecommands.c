@@ -49,3 +49,12 @@ uint8_t TCMDEXEC_eps_get_system_status_json(const uint8_t *args_str,
     }
     return 0;
 }
+
+// Ebube's Addition: --------------------------------------------------------------------------------
+uint8_t TCMDEXEC_eps_vpid_raw_json(const uint8_t *args_str,
+                        TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+
+
+
+}
