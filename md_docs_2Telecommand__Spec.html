@@ -88,14 +88,19 @@ $(function(){ initResizable(false); });
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p><a class="anchor" id="autotoc_md20"></a> The following specification defines how telecommands are constructed to control the satellite.</p>
-<p>The same specification is used whether the commands are delivered over UART or Radio.</p>
+<p>The same specification is used whether the commands are delivered over Debug UART or Radio.</p>
 <h1><a class="anchor" id="autotoc_md21"></a>
 Command Format</h1>
 <p>Every command contains the following subsections, concatenated together with no delimeters:</p>
 <ol type="1">
 <li>Target Device Prefix: <code>CTS1+</code> (meaning CTS-SAT-1)</li>
 <li>Command Name: e.g., <code>hello_world</code></li>
-<li>Arguments: e.g., <code>(arg1, arg2, arg3)</code></li>
+<li>Arguments: e.g., <code>(arg1,arg2,arg3)</code> (no spaces between arguments allowed).<ul>
+<li>For no arguments, send <code>()</code>.</li>
+<li>All arguments are positional (order matters).</li>
+<li>All arguments are required (no optional arguments).</li>
+</ul>
+</li>
 <li>🚧 Command Metadata 1 - Timestamp Sent: <code>@tssent=xxx</code>, where <code>xxx</code> is the UInt64 value (milliseconds) in base10 when the command was sent.</li>
 <li>🚧 Command Metadata 2 - Delayed Execution Timestamp: <code>@tsexec=xxx</code>, where <code>xxx</code> is the UInt64 value (milliseconds) in base10 when the command should be executed, or 0 to execute immediately.</li>
 </ol>
