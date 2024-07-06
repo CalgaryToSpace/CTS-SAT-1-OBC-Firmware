@@ -25,7 +25,7 @@ uint8_t TCMD_is_char_valid_telecommand_name_char(char c) {
 /// @param substring The substring to search for. Must be a null-terminated C-string.
 /// @return The index of the start of the first occurrence of the substring in the array, or -1 if not found
 int16_t GEN_get_index_of_substring_in_array(const char *haystack_arr, int16_t haystack_arr_len, const char *needle_str) {
-    uint32_t needle_str_len = strlen(needle_str);
+    uint16_t needle_str_len = strlen(needle_str);
     
     // Iterate through the haystack array
     for (int16_t i = 0; i <= haystack_arr_len - needle_str_len; i++) {
@@ -82,8 +82,8 @@ int32_t TCMD_parse_telecommand_get_index(const char *tcmd_str, uint32_t tcmd_str
     // Find the length of the telecommand name part of the "tcmd_str"
     // tcmd_name_len is the length of the telecommand name part of the "tcmd_str"
     //   and its default value is the remainder of the string after the prefix
-    int32_t tcmd_name_len = tcmd_str_len - TCMD_PREFIX_STR_LEN;
-    for (int32_t i = TCMD_PREFIX_STR_LEN; i < tcmd_str_len; i++) {
+    uint16_t tcmd_name_len = tcmd_str_len - TCMD_PREFIX_STR_LEN;
+    for (uint16_t i = TCMD_PREFIX_STR_LEN; i < tcmd_str_len; i++) {
         if (!TCMD_is_char_valid_telecommand_name_char(tcmd_str[i])) {
             tcmd_name_len = i - TCMD_PREFIX_STR_LEN;
             break;
@@ -91,12 +91,12 @@ int32_t TCMD_parse_telecommand_get_index(const char *tcmd_str, uint32_t tcmd_str
     }
 
     // Iterate through the table of telecommands, and see if any match the given telecommand string
-    for (int32_t check_cmd_idx = 0; check_cmd_idx < TCMD_NUM_TELECOMMANDS; check_cmd_idx++) {
+    for (uint16_t check_cmd_idx = 0; check_cmd_idx < TCMD_NUM_TELECOMMANDS; check_cmd_idx++) {
         if (tcmd_name_len != strlen(TCMD_telecommand_definitions[check_cmd_idx].tcmd_name)) {
             continue;
         }
 
-        for (int32_t str_idx = 0; str_idx < tcmd_name_len; str_idx++) {
+        for (uint16_t str_idx = 0; str_idx < tcmd_name_len; str_idx++) {
             char rxd_char = tcmd_str[str_idx + TCMD_PREFIX_STR_LEN];
             char real_tcmd_name_char = TCMD_telecommand_definitions[check_cmd_idx].tcmd_name[str_idx];
             if (rxd_char != real_tcmd_name_char) {
