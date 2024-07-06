@@ -14,6 +14,10 @@
 
 #include "littlefs/flash_driver.h"
 
+extern lfs_t lfs;
+extern struct lfs_config cfg;
+extern struct lfs_file_config file_cfg;
+
 /*---------------------------FUNCTIONS---------------------------*/
 int8_t LFS_format();
 int8_t LFS_mount();

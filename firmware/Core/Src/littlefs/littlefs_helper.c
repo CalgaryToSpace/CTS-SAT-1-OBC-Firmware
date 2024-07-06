@@ -29,7 +29,7 @@ uint8_t LFS_file_buffer[FLASH_CHIP_PAGE_SIZE_BYTES];
 
 // TODO: look into the `LFS_F_INLINE` macro to increase the maximum number of files we can have
 
-// Variables LittleFS uses for various functions
+// Variables LittleFS uses for various functions (all externed in littlefs_helper.h)
 lfs_t lfs;
 struct lfs_config cfg = {
     .read = LFS_block_device_read,
