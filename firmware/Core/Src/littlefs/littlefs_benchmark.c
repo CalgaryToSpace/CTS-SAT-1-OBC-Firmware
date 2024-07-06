@@ -29,7 +29,7 @@ uint8_t LFS_benchmark_write_read(uint16_t write_chunk_size, uint16_t write_chunk
     // Open file for writing
     const uint32_t write_open_start_time = HAL_GetTick();
     lfs_file_t file;
-    const int8_t open_result = lfs_file_opencfg(&lfs, &file, file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC, &file_cfg);
+    const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC, &LFS_file_cfg);
 	if (open_result != 0)
 	{
 		snprintf(
@@ -47,7 +47,7 @@ uint8_t LFS_benchmark_write_read(uint16_t write_chunk_size, uint16_t write_chunk
     // Write
     const uint32_t write_send_start_time = HAL_GetTick();
     for (uint32_t chunk_num = 0; chunk_num < write_chunk_count; chunk_num++) {
-        const int8_t write_result = lfs_file_write(&lfs, &file, write_buffer, write_chunk_size);
+        const int8_t write_result = lfs_file_write(&LFS_filesystem, &file, write_buffer, write_chunk_size);
         for (uint32_t i = 0; i < write_chunk_size; i++) {
             // Weak checksum, but good enough
             expected_checksum ^= write_buffer[i];
@@ -69,7 +69,7 @@ uint8_t LFS_benchmark_write_read(uint16_t write_chunk_size, uint16_t write_chunk
 
     // Close the file
     const uint32_t close_start_time = HAL_GetTick();
-    const int8_t close_result = lfs_file_close(&lfs, &file);
+    const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
     if (close_result < 0) {
         snprintf(
             &response_str[strlen(response_str)],
@@ -85,7 +85,7 @@ uint8_t LFS_benchmark_write_read(uint16_t write_chunk_size, uint16_t write_chunk
 
     // Re-open the file for reading
     const uint32_t read_open_start_time = HAL_GetTick();
-    const int8_t read_open_result = lfs_file_opencfg(&lfs, &file, file_name, LFS_O_RDONLY, &file_cfg);
+    const int8_t read_open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_RDONLY, &LFS_file_cfg);
     if (read_open_result < 0) {
         snprintf(
             &response_str[strlen(response_str)],
@@ -104,7 +104,7 @@ uint8_t LFS_benchmark_write_read(uint16_t write_chunk_size, uint16_t write_chunk
     uint8_t read_buffer[write_chunk_size];
     uint8_t read_checksum = 0;
     for (uint32_t chunk_num = 0; chunk_num < write_chunk_count; chunk_num++) {
-        const int8_t read_result = lfs_file_read(&lfs, &file, read_buffer, write_chunk_size);
+        const int8_t read_result = lfs_file_read(&LFS_filesystem, &file, read_buffer, write_chunk_size);
         if (read_result < 0) {
             snprintf(
                 &response_str[strlen(response_str)],
@@ -125,7 +125,7 @@ uint8_t LFS_benchmark_write_read(uint16_t write_chunk_size, uint16_t write_chunk
 
     // Close the file
     const uint32_t read_close_start_time = HAL_GetTick();
-    const int8_t read_close_result = lfs_file_close(&lfs, &file);
+    const int8_t read_close_result = lfs_file_close(&LFS_filesystem, &file);
     if (read_close_result < 0) {
         snprintf(
             &response_str[strlen(response_str)],

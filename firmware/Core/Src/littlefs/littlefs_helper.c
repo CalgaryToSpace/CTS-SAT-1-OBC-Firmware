@@ -30,8 +30,8 @@ uint8_t LFS_file_buffer[FLASH_CHIP_PAGE_SIZE_BYTES];
 // TODO: look into the `LFS_F_INLINE` macro to increase the maximum number of files we can have
 
 // Variables LittleFS uses for various functions (all externed in littlefs_helper.h)
-lfs_t lfs;
-struct lfs_config cfg = {
+lfs_t LFS_filesystem;
+struct lfs_config LFS_cfg = {
     .read = LFS_block_device_read,
     .prog = LFS_block_device_prog,
     .erase = LFS_block_device_erase,
@@ -51,7 +51,7 @@ struct lfs_config cfg = {
     .prog_buffer = LFS_prog_buffer,
     .lookahead_buffer = LFS_lookahead_buf};
 
-struct lfs_file_config file_cfg = {
+struct lfs_file_config LFS_file_cfg = {
     .buffer = LFS_file_buffer,
     .attr_count = 0,
     .attrs = NULL};
@@ -66,7 +66,7 @@ struct lfs_file_config file_cfg = {
  */
 int8_t LFS_format()
 {
-	int8_t result = lfs_format(&lfs, &cfg);
+	int8_t result = lfs_format(&LFS_filesystem, &LFS_cfg);
 	if (result < 0)
 	{
 		DEBUG_uart_print_str("Error formatting!\n");
@@ -90,7 +90,7 @@ int8_t LFS_mount()
 	}
 
     // Variable to store status of LittleFS mounting
-    int8_t mount_result = lfs_mount(&lfs, &cfg);
+    int8_t mount_result = lfs_mount(&LFS_filesystem, &LFS_cfg);
     if (mount_result < 0)
     {
         DEBUG_uart_print_str("Mounting unsuccessful\n");
@@ -116,7 +116,7 @@ int8_t LFS_unmount()
     }
 
     // Unmount LittleFS to release any resources used by LittleFS
-    const int8_t unmount_result = lfs_unmount(&lfs);
+    const int8_t unmount_result = lfs_unmount(&LFS_filesystem);
     if (unmount_result < 0)
     {
         DEBUG_uart_print_str("Error un-mounting.\n");
@@ -142,7 +142,7 @@ int8_t LFS_list_directory(char *root_directory)
     }
 
     lfs_dir_t dir;
-    int8_t open_dir_result = lfs_dir_open(&lfs, &dir, root_directory);
+    int8_t open_dir_result = lfs_dir_open(&LFS_filesystem, &dir, root_directory);
     if (open_dir_result < 0)
     {
         DEBUG_uart_print_str("Error opening a directory.\n");
@@ -154,7 +154,7 @@ int8_t LFS_list_directory(char *root_directory)
     while (read_dir_result >= 0)
     {
         struct lfs_info info;
-        read_dir_result = lfs_dir_read(&lfs, &dir, &info);
+        read_dir_result = lfs_dir_read(&LFS_filesystem, &dir, &info);
 
         DEBUG_uart_print_str(info.name);
         DEBUG_uart_print_str(", ");
@@ -170,7 +170,7 @@ int8_t LFS_list_directory(char *root_directory)
 
     DEBUG_uart_print_str("Successfully Listed Directory Contents.\n");
 
-    int8_t close_dir_result = lfs_dir_close(&lfs, &dir);
+    int8_t close_dir_result = lfs_dir_close(&LFS_filesystem, &dir);
     if (close_dir_result < 0)
     {
         DEBUG_uart_print_str("Error closing directory.\n");
@@ -193,7 +193,7 @@ int8_t LFS_delete_file(const char file_name[])
         return 1;
     }
 
-    int8_t remove_result = lfs_remove(&lfs, file_name);
+    int8_t remove_result = lfs_remove(&LFS_filesystem, file_name);
     if (remove_result < 0)
     {
         DEBUG_uart_print_str("Error removing file/directory.\n");
@@ -217,7 +217,7 @@ int8_t LFS_make_directory(char *dir_name)
         return 1;
     }
 
-    int8_t make_dir_result = lfs_mkdir(&lfs, dir_name);
+    int8_t make_dir_result = lfs_mkdir(&LFS_filesystem, dir_name);
     if (make_dir_result < 0)
     {
         DEBUG_uart_print_str("Error creating directory.\n");
@@ -245,7 +245,7 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
 
     // Create or Open a file with Write only flag
     lfs_file_t file;
-    const int8_t open_result = lfs_file_opencfg(&lfs, &file, file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC, &file_cfg);
+    const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC, &LFS_file_cfg);
 
 	if (open_result < 0)
 	{
@@ -260,7 +260,7 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
     #endif
 
 	// Write data to file
-	const int8_t write_result = lfs_file_write(&lfs, &file, write_buffer, write_buffer_len);
+	const int8_t write_result = lfs_file_write(&LFS_filesystem, &file, write_buffer, write_buffer_len);
 	if (write_result < 0)
 	{
 		DEBUG_uart_print_str("Error writing to file!\n");
@@ -272,7 +272,7 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
     #endif
 
 	// Close the File, the storage is not updated until the file is closed successfully
-	const int8_t close_result = lfs_file_close(&lfs, &file);
+	const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
 	if (close_result < 0)
 	{
 		DEBUG_uart_print_str("Error closing the file!\n");
@@ -296,7 +296,7 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
 int8_t LFS_read_file(const char file_name[], uint8_t *read_buffer, uint32_t read_buffer_len)
 {
 	lfs_file_t file;
-	const int8_t open_result = lfs_file_opencfg(&lfs, &file, file_name, LFS_O_RDONLY, &file_cfg);
+	const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_RDONLY, &LFS_file_cfg);
 	if (open_result < 0)
 	{
 		DEBUG_uart_print_str("Error opening file to read\n");
@@ -309,7 +309,7 @@ int8_t LFS_read_file(const char file_name[], uint8_t *read_buffer, uint32_t read
 	DEBUG_uart_print_str("\n");
     #endif
 
-	const int8_t read_result = lfs_file_read(&lfs, &file, read_buffer, read_buffer_len);
+	const int8_t read_result = lfs_file_read(&LFS_filesystem, &file, read_buffer, read_buffer_len);
 	if (read_result < 0)
 	{
 		DEBUG_uart_print_str("Error Reading File!\n");
@@ -321,7 +321,7 @@ int8_t LFS_read_file(const char file_name[], uint8_t *read_buffer, uint32_t read
     #endif
 
 	// Close the File, the storage is not updated until the file is closed successfully
-	const int8_t close_result = lfs_file_close(&lfs, &file);
+	const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
 	if (close_result < 0)
 	{
 		DEBUG_uart_print_str("Error closing the file!\n");
