@@ -245,7 +245,7 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
 
     // Create or Open a file with Write only flag
     lfs_file_t file;
-    const int8_t open_result = lfs_file_opencfg(&lfs, &file, file_name, LFS_O_WRONLY | LFS_O_CREAT, &file_cfg);
+    const int8_t open_result = lfs_file_opencfg(&lfs, &file, file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC, &file_cfg);
 
 	if (open_result < 0)
 	{
