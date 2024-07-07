@@ -127,7 +127,6 @@ uint8_t TCMDEXEC_fs_demo_write_then_read(const char *args_str, TCMD_TelecommandC
         return 1;
     }
 
-    // TODO: Delete file first, if it exists, otherwise it just overwrites from the start, keeping anything extra longer in the file.
     const int8_t write_result = LFS_write_file(file_name, (uint8_t*) file_content, strlen(file_content));
     if (write_result < 0) {
         snprintf(response_output_buf, response_output_buf_len, "LittleFS writing error: %d\n", write_result);
@@ -141,7 +140,7 @@ uint8_t TCMDEXEC_fs_demo_write_then_read(const char *args_str, TCMD_TelecommandC
         return 3;
     }
 
-    // ensure safety for upcoming print
+    // Rnsure safety for upcoming print.
     read_buffer[sizeof(read_buffer) - 1] = '\0';
 
     snprintf(
