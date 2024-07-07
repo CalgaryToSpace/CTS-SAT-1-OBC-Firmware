@@ -5,9 +5,6 @@
 #include "debug_tools/debug_uart.h"
 
 #include "config/static_config.h"
-#ifndef FLASH_ENABLE_UART_DEBUG_PRINT
-    #error "FLASH_ENABLE_UART_DEBUG_PRINT not defined"
-#endif
 
 /// Timeout duration for HAL_SPI_READ/WRITE operations.
 // Note: FLASH_read_data has sporadic timeouts at 5ms; 10ms is a safe bet.
@@ -153,11 +150,11 @@ uint8_t FLASH_write_enable(SPI_HandleTypeDef *hspi, uint8_t chip_number)
             return 2;
         }
 
-        #if FLASH_ENABLE_UART_DEBUG_PRINT
-        DEBUG_uart_print_str("DEBUG: status_reg = 0x");
-        DEBUG_uart_print_array_hex(status_reg_buffer, 1);
-        DEBUG_uart_print_str("\n");
-        #endif
+        if (FLASH_enable_hot_path_debug_logs) {
+            DEBUG_uart_print_str("DEBUG: status_reg = 0x");
+            DEBUG_uart_print_array_hex(status_reg_buffer, 1);
+            DEBUG_uart_print_str("\n");
+        }
     }
 
     // Should never be reached:

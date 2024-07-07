@@ -6,12 +6,7 @@
 #include "littlefs/littlefs_helper.h"
 #include "littlefs/littlefs_driver.h"
 #include "debug_tools/debug_uart.h"
-
-
 #include "config/static_config.h"
-#ifndef LFS_ENABLE_UART_DEBUG_PRINT
-    #error "LFS_ENABLE_UART_DEBUG_PRINT not defined in static_config.h"
-#endif
 
 /*-----------------------------VARIABLES-----------------------------*/
 // Variables to track LittleFS on Flash Memory Module
@@ -19,12 +14,12 @@ uint8_t LFS_is_lfs_mounted = 0;
 
 #define FLASH_CHIP_PAGE_SIZE_BYTES 512
 #define FLASH_CHIP_BLOCK_SIZE_BYTES 262144
-
+#define FLASH_LOOKAHEAD_SIZE 16
 
 // LittleFS Buffers for reading and writing
 uint8_t LFS_read_buffer[FLASH_CHIP_PAGE_SIZE_BYTES];
 uint8_t LFS_prog_buffer[FLASH_CHIP_PAGE_SIZE_BYTES];
-uint8_t LFS_lookahead_buf[16];
+uint8_t LFS_lookahead_buf[FLASH_LOOKAHEAD_SIZE];
 uint8_t LFS_file_buffer[FLASH_CHIP_PAGE_SIZE_BYTES];
 
 // TODO: look into the `LFS_F_INLINE` macro to increase the maximum number of files we can have
@@ -43,8 +38,8 @@ struct lfs_config LFS_cfg = {
     .block_size = FLASH_CHIP_BLOCK_SIZE_BYTES, // FIXME: Clarify block Size 256KiB or 1KiB
     .block_count = (FLASH_CHIP_SIZE_BYTES / FLASH_CHIP_BLOCK_SIZE_BYTES),
     .block_cycles = 100, // TODO: ASK ABOUT THIS (HOW FREQUENT ARE WE USING THE MODULE),
-    .cache_size = 512,
-    .lookahead_size = 16,
+    .cache_size = FLASH_CHIP_PAGE_SIZE_BYTES,
+    .lookahead_size = FLASH_LOOKAHEAD_SIZE,
     .compact_thresh = -1, // Defaults to ~88% block_size when zero (lfs.h, line 232)
 
     .read_buffer = LFS_read_buffer,
@@ -253,11 +248,11 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
 		return open_result;
 	}
 	
-    #if LFS_ENABLE_UART_DEBUG_PRINT
-	DEBUG_uart_print_str("Opened/created a file named: '");
-	DEBUG_uart_print_str(file_name);
-	DEBUG_uart_print_str("'\n");
-    #endif
+    if (LFS_enable_hot_path_debug_logs) {
+        DEBUG_uart_print_str("Opened/created a file named: '");
+        DEBUG_uart_print_str(file_name);
+        DEBUG_uart_print_str("'\n");
+    }
 
 	// Write data to file
 	const int8_t write_result = lfs_file_write(&LFS_filesystem, &file, write_buffer, write_buffer_len);
@@ -267,9 +262,9 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
 		return write_result;
 	}
 	
-    #if LFS_ENABLE_UART_DEBUG_PRINT
-	DEBUG_uart_print_str("Successfully wrote data to file!\n");
-    #endif
+    if (LFS_enable_hot_path_debug_logs) {
+	    DEBUG_uart_print_str("Successfully wrote data to file!\n");
+    }
 
 	// Close the File, the storage is not updated until the file is closed successfully
 	const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
@@ -279,9 +274,9 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
 		return close_result;
 	}
 	
-    #if LFS_ENABLE_UART_DEBUG_PRINT
-	DEBUG_uart_print_str("Successfully closed the file!\n");
-    #endif
+    if (LFS_enable_hot_path_debug_logs) {
+	    DEBUG_uart_print_str("Successfully closed the file!\n");
+    }
 
 	return 0;
 }
@@ -303,11 +298,11 @@ int8_t LFS_read_file(const char file_name[], uint8_t *read_buffer, uint32_t read
 		return open_result;
 	}
 	
-    #if LFS_ENABLE_UART_DEBUG_PRINT
-	DEBUG_uart_print_str("Opened file to read: ");
-	DEBUG_uart_print_str(file_name);
-	DEBUG_uart_print_str("\n");
-    #endif
+    if (LFS_enable_hot_path_debug_logs) {
+        DEBUG_uart_print_str("Opened file to read: ");
+        DEBUG_uart_print_str(file_name);
+        DEBUG_uart_print_str("\n");
+    }
 
 	const int8_t read_result = lfs_file_read(&LFS_filesystem, &file, read_buffer, read_buffer_len);
 	if (read_result < 0)
@@ -316,9 +311,9 @@ int8_t LFS_read_file(const char file_name[], uint8_t *read_buffer, uint32_t read
 		return read_result;
 	}
 	
-    #if LFS_ENABLE_UART_DEBUG_PRINT
-	DEBUG_uart_print_str("Successfully read file!\n");
-    #endif
+    if (LFS_enable_hot_path_debug_logs) {
+	    DEBUG_uart_print_str("Successfully read file!\n");
+    }
 
 	// Close the File, the storage is not updated until the file is closed successfully
 	const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
@@ -328,9 +323,9 @@ int8_t LFS_read_file(const char file_name[], uint8_t *read_buffer, uint32_t read
 		return close_result;
 	}
 	
-    #if LFS_ENABLE_UART_DEBUG_PRINT
-	DEBUG_uart_print_str("Successfully closed the file!\n");
-    #endif
+    if (LFS_enable_hot_path_debug_logs) {
+	    DEBUG_uart_print_str("Successfully closed the file!\n");
+    }
 
 	return 0;	
 }

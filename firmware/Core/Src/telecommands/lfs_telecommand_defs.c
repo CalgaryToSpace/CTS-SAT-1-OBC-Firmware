@@ -140,7 +140,7 @@ uint8_t TCMDEXEC_fs_demo_write_then_read(const char *args_str, TCMD_TelecommandC
         return 3;
     }
 
-    // Rnsure safety for upcoming print.
+    // Ensure safety for upcoming print.
     read_buffer[sizeof(read_buffer) - 1] = '\0';
 
     snprintf(
