@@ -22,7 +22,7 @@ DoubleBuffer MPIFrameBuffer; // Double buffer is used to receive incoming MPI Fr
  * @param command data (command) being sent to the MPI
  * @returns 0 - success, 1 - failure from the MPI, 2 - failed UART transmission, 3 - failed UART reception
  */
-uint8_t sendTelecommandHex(uint8_t *bytes_to_send, size_t bytes_to_send_len, uint8_t *mpi_cmd_response, size_t mpi_cmd_response_len)
+uint8_t sendTelecommandHex(const char *bytes_to_send, size_t bytes_to_send_len, uint8_t *mpi_cmd_response, size_t mpi_cmd_response_len)
 {
 	// Buffers to store outgoing & incoming data from the MPI
 	uint8_t UART1_txBuffer[bytes_to_send_len + 2];	   // +2 accounts for 'TC' command identifier being appended
@@ -228,7 +228,7 @@ void processFrameData(MpiFrame_t frame)
 
 	// Send formatted data over HLPUART for verification
 	// HAL_UART_Transmit(&hlpuart1, (uint8_t*)variable_buffer, strlen(variable_buffer), HAL_MAX_DELAY);
-	debug_uart_print_str(variable_buffer);
+	DEBUG_uart_print_str(variable_buffer);
 
 	// TODO: For testing write parsed and raw data to files to verify and update test plans
 	writeFrameToMemory(frame);
@@ -437,12 +437,6 @@ uint8_t sendTC_AGC_SET_THRESHOLDS(uint32_t threshold)
 	uint16_t lowerThreshold = (uint16_t)(threshold);
 	uint16_t upperThreshold = (uint16_t)(threshold >> 16);
 
-	// Check if thresholds are within valid range (0 to 65535)
-	if (lowerThreshold < 0 || lowerThreshold > 65535 || upperThreshold < 0 || upperThreshold > 65535)
-	{
-		return 3; // Invalid voltage parameter (custom code to distinguish from MPI response codes)
-	}
-
 	// Prepare parameters for the command
 	uint8_t params[4];							// 2 bytes for lower threshold + 2 bytes for upper threshold
 	params[0] = (uint8_t)(lowerThreshold);		// LSB of lower threshold
@@ -457,7 +451,7 @@ uint8_t sendTC_AGC_SET_THRESHOLDS(uint32_t threshold)
 uint8_t sendTC_AGC_SET_DISABLED_SHUTTER_DUTY_CYCLE(uint16_t shutterDutyCycle)
 {
 	// Check if shutterDutyCycle is within valid range (0 to 50000)
-	if (shutterDutyCycle < 0 || shutterDutyCycle > 50000)
+	if (shutterDutyCycle > 50000)
 	{
 		return 3; // Invalid voltage parameter (custom code to distinguish from MPI response codes)
 	}
@@ -522,9 +516,10 @@ uint8_t sendTC_AGC_SET_NUMBER_OF_PIXELS_FOR_BASELINE_VALUE(uint8_t n)
 
 uint8_t sendTC_AGC_SET_STEP_FACTOR(uint8_t n)
 {
-	// Check if N is within valid range (1 to 10)
-	if (n < 1 || n > 255)
+	// Check if n is within the range 1 to 255 (Note: Since 255 is the max range of uint8_t it is not checked here)
+	if (n < 1)
 	{
+
 		return 3; // Invalid voltage parameter (custom code to distinguish from MPI response codes)
 	}
 
@@ -539,8 +534,8 @@ uint8_t sendTC_AGC_SET_STEP_FACTOR(uint8_t n)
 
 uint8_t sendTC_SET_BASELINE_FIRST_PIXEL(uint8_t n)
 {
-	// Check if N is within valid range (1 to 10)
-	if (n < 0 || n > 50)
+	// Check if N is within valid range 0 to 50 (Note: Since uint8_t cannot be negative it is not checked here)
+	if (n > 50)
 	{
 		return 3; // Invalid voltage parameter (custom code to distinguish from MPI response codes)
 	}
