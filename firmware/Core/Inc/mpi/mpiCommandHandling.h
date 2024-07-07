@@ -80,7 +80,7 @@ uint8_t SEND_MPI_TC_SET_BASELINE_FIRST_PIXEL(uint8_t n);
  * @param mpi_command_response
  * @return 0 - Success, 1 - MPI side failure, 2 - Transmit Error, 3 - Receive Error
  */
-uint8_t sendTelecommandHex(uint8_t *bytes_to_send, size_t bytes_to_send_len, uint8_t *mpi_cmd_response, size_t mpi_cmd_response_len);
+uint8_t sendTelecommandHex(const char *bytes_to_send, size_t bytes_to_send_len, uint8_t *mpi_cmd_response, size_t mpi_cmd_response_len);
 
 /**
  * Sends tele-command to the MPI over UART
