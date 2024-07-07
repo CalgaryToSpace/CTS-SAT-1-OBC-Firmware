@@ -182,7 +182,7 @@ def extract_telecommand_arg_list(docstring: str) -> list[str]:
 
     """
     arg_pattern = re.compile(
-        r"@param args_str.*\n(?P<args>([\s/]*- Arg (?P<arg_num>\d+): (?P<arg_description>.+)\n)*)"
+        r"@param args_str.*\n(?P<args>([\s/]*- Arg (?P<arg_num>\d+): (?P<arg_description>.+)\s*)*)"
     )
 
     matches = []
@@ -191,7 +191,7 @@ def extract_telecommand_arg_list(docstring: str) -> list[str]:
         return None
 
     args_text = match.group("args")
-    arg_desc_pattern = re.compile(r"- Arg (?P<arg_num>\d+): (?P<arg_description>.+)\n")
+    arg_desc_pattern = re.compile(r"- Arg (?P<arg_num>\d+): (?P<arg_description>.+)\s*")
 
     matches.extend(
         [arg_match.group("arg_description") for arg_match in arg_desc_pattern.finditer(args_text)]

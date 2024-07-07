@@ -140,7 +140,7 @@ def test_extract_telecommand_arg_list() -> None:
     - Arg 1: Flash Address as uint
     - Arg 2: Number of bytes to erase as uint
     @return 0 on success, >0 on error
-    """
+    """.strip()
     exp_output1 = [
         "Chip Number (CS number) as uint",
         "Flash Address as uint",
@@ -165,6 +165,22 @@ def test_extract_telecommand_arg_list() -> None:
     """
     assert extract_telecommand_arg_list(input3) is None
 
+    # Similar case to 1, but without anything after the last argument description.
+    input4 = """
+    @brief Telecommand: Erase a sector of flash memory.
+    @param args_str
+    - Arg 0: Chip Number (CS number) as uint
+    - Arg 1: Flash Address as uint
+    - Arg 2: Number of bytes to erase as uint
+    """.strip()
+    exp_output4 = [
+        "Chip Number (CS number) as uint",
+        "Flash Address as uint",
+        "Number of bytes to erase as uint",
+    ]
+    result4 = extract_telecommand_arg_list(input4)
+    assert result4 == exp_output4
+
 
 def test_parse_telecommand_list_from_repo() -> None:
     """Test the `parse_telecommand_list_from_repo` function with the real file in this repo."""
@@ -185,7 +201,7 @@ def test_parse_telecommand_list_from_repo() -> None:
     assert hello_world_telecommand.full_docstring.startswith("@brief ")
     assert hello_world_telecommand.argument_descriptions == []
 
-    # Check a telecommand with arguments.
+    # Check a telecommand with 1 argument.
     found_read_file_tcmds = [tcmd for tcmd in telecommands if tcmd.name == "fs_read_file"]
     assert (
         len(found_read_file_tcmds) == 1
@@ -197,4 +213,19 @@ def test_parse_telecommand_list_from_repo() -> None:
     assert read_file_telecommand.full_docstring.startswith("@brief ")
     assert read_file_telecommand.argument_descriptions == [
         "File path as string",
+    ]
+
+    # Check a telecommand with 2 arguments.
+    found_read_file_tcmds = [tcmd for tcmd in telecommands if tcmd.name == "fs_write_file"]
+    assert (
+        len(found_read_file_tcmds) == 1
+    ), f"Expected to find 1 fs_read_file telecommand, but found {len(found_read_file_tcmds)}"
+    read_file_telecommand = found_read_file_tcmds[0]
+    assert read_file_telecommand.name == "fs_write_file"
+    assert read_file_telecommand.tcmd_func == "TCMDEXEC_fs_write_file"
+    assert read_file_telecommand.number_of_args == 2
+    assert read_file_telecommand.full_docstring.startswith("@brief ")
+    assert read_file_telecommand.argument_descriptions == [
+        "File path as string",
+        "String to write to file",
     ]
