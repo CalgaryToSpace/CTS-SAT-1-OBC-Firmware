@@ -20,6 +20,7 @@ class AppStore:
 
     selected_command_name: str | None = None
     uart_log_refresh_rate_ms: int = 500
+    command_preview: str = ""
 
 
 app_store = AppStore()
