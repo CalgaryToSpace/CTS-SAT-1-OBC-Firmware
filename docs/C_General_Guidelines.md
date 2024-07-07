@@ -36,3 +36,20 @@ uint8_t function_name(int input1, int input2, int *output_arr, int output_arr_le
     // Function body here.
 }
 ```
+
+For telecommands executors (`TCMDEXEC_` functions), the docstring should be formatted to describle each argument, in this exact format. For example:
+```c
+
+/// @brief Telecommand: Write data to a file in LittleFS
+/// @param args_str
+/// - Arg 0: File name
+/// - Arg 1: String to write to file
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_fs_write_file(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                               char *response_output_buf, uint16_t response_output_buf_len) {
+    char arg_file_name[64] = {0};
+    char arg_file_content[100] = {0};
+    const uint8_t parse_file_name_result = TCMD_extract_string_arg(args_str, 0, arg_file_name, sizeof(arg_file_name));
+    const uint8_t parse_file_content_result = TCMD_extract_string_arg(args_str, 1, arg_file_content, sizeof(arg_file_content));
+}
+```

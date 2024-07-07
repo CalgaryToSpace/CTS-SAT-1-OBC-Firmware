@@ -44,7 +44,9 @@ uint8_t TCMDEXEC_fs_unmount(const char *args_str, TCMD_TelecommandChannel_enum_t
 }
 
 /// @brief Telecommand: Write data to a file in LittleFS
-/// @param args_str Arg 0: File name, Arg 1: String to write to file
+/// @param args_str
+/// - Arg 0: File path as string
+/// - Arg 1: String to write to file
 uint8_t TCMDEXEC_fs_write_file(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
 
@@ -80,6 +82,10 @@ uint8_t TCMDEXEC_fs_write_file(const char *args_str, TCMD_TelecommandChannel_enu
     return 0;
 }
 
+/// @brief Reads a file from LittleFS, and responds with its contents in raw form (including non-printable and null bytes).
+/// @param args_str
+/// - Arg 0: File path as string
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_fs_read_file(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t rx_buffer[512] = {0};

@@ -61,37 +61,46 @@ def get_max_arguments_per_telecommand() -> int:
 
 
 @callback(
-    Output("argument-inputs", "children"),
+    Output("argument-inputs-container", "children"),
     Input("telecommand-dropdown", "value"),
 )
 def update_argument_inputs(selected_command_name: str) -> list[html.Div]:
     """Generate the argument input fields based on the selected telecommand."""
     selected_tcmd = get_telecommand_by_name(selected_command_name)
 
-    if selected_tcmd is None:
-        app_store.selected_command_name = None
-        return []
-
     app_store.selected_command_name = selected_command_name
 
-    return [
-        dbc.FormFloating(
-            [
-                dbc.Input(
-                    type="text",
-                    id=(this_id := f"arg-input-{arg_num}"),
-                    placeholder=f"Argument {arg_num}",
-                    disabled=(arg_num >= selected_tcmd.number_of_args),
-                    style={"fontFamily": "monospace"},
-                ),
-                dbc.Label(f"Argument {arg_num}", html_for=this_id),
-            ],
-            className="mb-3",
-            # Hide the argument input if it is not needed for the selected telecommand.
-            style=({"display": "none"} if arg_num >= selected_tcmd.number_of_args else {}),
+    arg_inputs = []
+    for arg_num in range(get_max_arguments_per_telecommand()):
+        if (selected_tcmd.argument_descriptions is not None) and (
+            arg_num < len(selected_tcmd.argument_descriptions)
+        ):
+            arg_description = selected_tcmd.argument_descriptions[arg_num]
+            label = f"Arg {arg_num}: {arg_description}"
+        else:
+            label = f"Arg {arg_num}"
+
+        this_id = f"arg-input-{arg_num}"
+
+        arg_inputs.append(
+            dbc.FormFloating(
+                [
+                    dbc.Input(
+                        type="text",
+                        id=this_id,
+                        placeholder=label,
+                        disabled=(arg_num >= selected_tcmd.number_of_args),
+                        style={"fontFamily": "monospace"},
+                    ),
+                    dbc.Label(label, html_for=this_id),
+                ],
+                className="mb-3",
+                # Hide the argument input if it is not needed for the selected telecommand.
+                style=({"display": "none"} if arg_num >= selected_tcmd.number_of_args else {}),
+            )
         )
-        for arg_num in range(get_max_arguments_per_telecommand())
-    ]
+
+    return arg_inputs
 
 
 def handle_uart_port_change(uart_port_name: str) -> None:
@@ -117,9 +126,34 @@ def handle_uart_port_change(uart_port_name: str) -> None:
 
 
 @callback(
+    Output("command-preview-container", "children"),
+    Input("telecommand-dropdown", "value"),
+    # TODO: maybe this could be cleaner with `Input/State("argument-inputs-container", "children")`
+    *[
+        Input(f"arg-input-{arg_num}", "value")
+        for arg_num in range(get_max_arguments_per_telecommand())
+    ],
+    prevent_initial_call=True,  # Objects aren't created yet, so errors are thrown.
+)
+def update_command_preview(selected_command_name: str, *every_arg_value: tuple[str]) -> list:
+    """Make an area with the command preview for the selected telecommand."""
+    selected_command = get_telecommand_by_name(selected_command_name)
+    arg_vals = [every_arg_value[arg_num] for arg_num in range(selected_command.number_of_args)]
+
+    # Replace None with empty string, to avoid "None" in the preview.
+    arg_vals = [arg if arg is not None else "" for arg in arg_vals]
+
+    app_store.command_preview = f"CTS1+{selected_command_name}({','.join(arg_vals)})!"
+    return [
+        html.H4(["Preview"], className="text-center"),
+        html.Pre(app_store.command_preview, id="command-preview", className="mb-3"),
+    ]
+
+
+@callback(
     Input("send-button", "n_clicks"),
     State("telecommand-dropdown", "value"),
-    # TODO: maybe this could be cleanear with `Input/State("argument-inputs", "children")`, somehow
+    # TODO: maybe this could be cleaner with `Input/State("argument-inputs-container", "children")`
     *[
         State(f"arg-input-{arg_num}", "value")
         for arg_num in range(get_max_arguments_per_telecommand())
@@ -154,11 +188,10 @@ def send_button_callback(
         app_store.rxtx_log.append(RxTxLogEntry(msg.encode(), "error"))
         return
 
-    logger.info(f"Adding command to queue: {selected_command_name}{args}")
+    logger.info(f"Adding command to queue: {app_store.command_preview}")
 
-    command_str = f"CTS1+{selected_command_name}({','.join(args)})!"
     app_store.last_tx_timestamp_sec = time.time()
-    app_store.tx_queue.append(command_str.encode("ascii"))
+    app_store.tx_queue.append(app_store.command_preview.encode("ascii"))
 
 
 @callback(
@@ -198,6 +231,29 @@ def update_uart_port_dropdown_options(uart_port_name: str, _n_intervals: int) ->
     return [
         {"label": UART_PORT_OPTION_LABEL_DISCONNECTED, "value": UART_PORT_NAME_DISCONNECTED}
     ] + [{"label": port, "value": port} for port in port_name_list]
+
+
+@callback(
+    Output("selected-tcmd-info-container", "children"),
+    Input("telecommand-dropdown", "value"),
+)
+def update_selected_tcmd_info(selected_command_name: str) -> list:
+    """Make an area with the docstring for the selected telecommand."""
+    selected_command = get_telecommand_by_name(selected_command_name)
+
+    if selected_command.full_docstring is None:
+        docstring = f"No docstring found for {selected_command.tcmd_func}"
+    else:
+        docstring = selected_command.full_docstring
+
+    return [
+        html.H4(
+            ["Docs: ", html.Span(selected_command_name, style={"fontFamily": "monospace"})],
+            className="text-center",
+        ),
+        # TODO: add the "brief" docstring here, and then hide the rest in a "Click to expand"
+        html.Pre(docstring, id="selected-tcmd-info", className="mb-3"),
+    ]
 
 
 def generate_rx_tx_log() -> html.Div:
@@ -273,18 +329,26 @@ def generate_left_pane() -> list:
                 ),
             ],
         ),
+        html.Hr(),
         dbc.Row(
             [
                 dbc.Label("Select a Telecommand:", html_for="telecommand-dropdown"),
                 dcc.Dropdown(
                     id="telecommand-dropdown",
                     options=[{"label": cmd, "value": cmd} for cmd in get_telecommand_name_list()],
-                    value=get_telecommand_name_list()[0],
+                    value=app_store.selected_command_name,
                     className="mb-3",  # Add margin bottom to the dropdown
                     style={"fontFamily": "monospace"},
                 ),
             ],
         ),
+        html.Div(
+            update_argument_inputs(app_store.selected_command_name),
+            id="argument-inputs-container",
+            className="mb-3",
+        ),
+        html.Hr(),
+        html.Div(id="command-preview-container", className="mb-3"),
         dbc.Row(
             [
                 dbc.Button(
@@ -306,12 +370,16 @@ def generate_left_pane() -> list:
             justify="center",
             className="mb-3",
         ),
-        html.Div(id="argument-inputs", className="mb-3"),
+        html.Hr(),
+        html.Div(id="selected-tcmd-info-container", className="mb-3"),
     ]
 
 
 def run_dash_app(*, enable_debug: bool = False) -> None:
     """Run the main Dash application."""
+    # Set the inital state of the app store.
+    app_store.selected_command_name = get_telecommand_name_list()[0]
+
     app_name = "CTS-SAT-1 Ground Support"
     app = dash.Dash(
         __name__,  # required to load /assets folder
