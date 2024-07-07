@@ -74,24 +74,37 @@ def update_argument_inputs(selected_command_name: str) -> list[html.Div]:
 
     app_store.selected_command_name = selected_command_name
 
-    return [
-        dbc.FormFloating(
-            [
-                dbc.Input(
-                    type="text",
-                    id=(this_id := f"arg-input-{arg_num}"),
-                    placeholder=f"Argument {arg_num}",
-                    disabled=(arg_num >= selected_tcmd.number_of_args),
-                    style={"fontFamily": "monospace"},
-                ),
-                dbc.Label(f"Argument {arg_num}", html_for=this_id),
-            ],
-            className="mb-3",
-            # Hide the argument input if it is not needed for the selected telecommand.
-            style=({"display": "none"} if arg_num >= selected_tcmd.number_of_args else {}),
+    arg_inputs = []
+    for arg_num in range(get_max_arguments_per_telecommand()):
+        if (selected_tcmd.argument_descriptions is not None) and (
+            arg_num < len(selected_tcmd.argument_descriptions)
+        ):
+            arg_description = selected_tcmd.argument_descriptions[arg_num]
+            label = f"Arg {arg_num}: {arg_description}"
+        else:
+            label = f"Arg {arg_num}"
+
+        this_id = f"arg-input-{arg_num}"
+
+        arg_inputs.append(
+            dbc.FormFloating(
+                [
+                    dbc.Input(
+                        type="text",
+                        id=this_id,
+                        placeholder=label,
+                        disabled=(arg_num >= selected_tcmd.number_of_args),
+                        style={"fontFamily": "monospace"},
+                    ),
+                    dbc.Label(label, html_for=this_id),
+                ],
+                className="mb-3",
+                # Hide the argument input if it is not needed for the selected telecommand.
+                style=({"display": "none"} if arg_num >= selected_tcmd.number_of_args else {}),
+            )
         )
-        for arg_num in range(get_max_arguments_per_telecommand())
-    ]
+
+    return arg_inputs
 
 
 def handle_uart_port_change(uart_port_name: str) -> None:
