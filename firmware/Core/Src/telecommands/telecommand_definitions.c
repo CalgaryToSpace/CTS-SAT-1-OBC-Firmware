@@ -141,6 +141,12 @@ const int16_t TCMD_NUM_TELECOMMANDS = sizeof(TCMD_telecommand_definitions) / siz
 // uint8_t <function_name>(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
 //                          char *response_output_buf, uint16_t response_output_buf_len)
 
+/// @brief A simple telecommand that responds with "Hello, world!"
+/// @param args_str No arguments expected
+/// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
+/// @param response_output_buf The buffer to write the response to
+/// @param response_output_buf_len The maximum length of the response_output_buf (its size)
+/// @return 0 if successful, >0 if an error occurred (but hello_world can't return an error)
 uint8_t TCMDEXEC_hello_world(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     snprintf(response_output_buf, response_output_buf_len, "Hello, world!\n");
