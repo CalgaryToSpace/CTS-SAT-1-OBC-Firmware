@@ -99,8 +99,8 @@ $(function(){ initResizable(false); });
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ad6d5f74ff34e35e930c8f9f9bf88cb11" id="r_ad6d5f74ff34e35e930c8f9f9bf88cb11"><td class="memItemLeft" align="right" valign="top">dict[str, str|int]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad6d5f74ff34e35e930c8f9f9bf88cb11">to_dict</a> (&quot;TelecommandDefinition&quot; self)</td></tr>
-<tr class="separator:ad6d5f74ff34e35e930c8f9f9bf88cb11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2641fea114d94d586a9496730d89cac7" id="r_a2641fea114d94d586a9496730d89cac7"><td class="memItemLeft" align="right" valign="top">dict[str, str|int|list[str]|None]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2641fea114d94d586a9496730d89cac7">to_dict</a> (&quot;TelecommandDefinition&quot; self)</td></tr>
+<tr class="separator:a2641fea114d94d586a9496730d89cac7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -112,22 +112,30 @@ Public Attributes</h2></td></tr>
 <tr class="separator:ae19f06bf29f9e8bd865c4802afa4badc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac8e278ea73b4b52bd1b7cb41364080a5" id="r_ac8e278ea73b4b52bd1b7cb41364080a5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac8e278ea73b4b52bd1b7cb41364080a5">number_of_args</a></td></tr>
 <tr class="separator:ac8e278ea73b4b52bd1b7cb41364080a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d13b8a3785dbea89be55e349152a5fd" id="r_a7d13b8a3785dbea89be55e349152a5fd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7d13b8a3785dbea89be55e349152a5fd">full_docstring</a></td></tr>
+<tr class="separator:a7d13b8a3785dbea89be55e349152a5fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a145b439c80185b85e262c415d9da7e66" id="r_a145b439c80185b85e262c415d9da7e66"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a145b439c80185b85e262c415d9da7e66">argument_descriptions</a></td></tr>
+<tr class="separator:a145b439c80185b85e262c415d9da7e66"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
 <tr class="memitem:adc403ea57b686dd213001759f0619653" id="r_adc403ea57b686dd213001759f0619653"><td class="memItemLeft" align="right" valign="top">str&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adc403ea57b686dd213001759f0619653">description</a> = None</td></tr>
 <tr class="separator:adc403ea57b686dd213001759f0619653"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7a3488ac2561bf9d780dba84abbf9f9" id="r_ab7a3488ac2561bf9d780dba84abbf9f9"><td class="memItemLeft" align="right" valign="top">str&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab7a3488ac2561bf9d780dba84abbf9f9">full_docstring</a> = None</td></tr>
+<tr class="separator:ab7a3488ac2561bf9d780dba84abbf9f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e702ad6ea26e7ca60889f2f17bfd306" id="r_a9e702ad6ea26e7ca60889f2f17bfd306"><td class="memItemLeft" align="right" valign="top">list&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9e702ad6ea26e7ca60889f2f17bfd306">argument_descriptions</a> = None</td></tr>
+<tr class="separator:a9e702ad6ea26e7ca60889f2f17bfd306"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><pre class="fragment">Stores a telecommand definition. from the `telecommand_definitions.c` file.</pre> </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="ad6d5f74ff34e35e930c8f9f9bf88cb11" name="ad6d5f74ff34e35e930c8f9f9bf88cb11"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad6d5f74ff34e35e930c8f9f9bf88cb11">&#9670;&#160;</a></span>to_dict()</h2>
+<a id="a2641fea114d94d586a9496730d89cac7" name="a2641fea114d94d586a9496730d89cac7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2641fea114d94d586a9496730d89cac7">&#9670;&#160;</a></span>to_dict()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"> dict[str, str | int] cts1_ground_support.telecommand_types.TelecommandDefinition.to_dict </td>
+          <td class="memname"> dict[str, str | int | list[str] | None] cts1_ground_support.telecommand_types.TelecommandDefinition.to_dict </td>
           <td>(</td>
           <td class="paramtype">&quot;TelecommandDefinition&quot;</td>          <td class="paramname"><span class="paramname"><em>self</em></span></td><td>)</td>
           <td></td>
@@ -138,6 +146,42 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a id="a9e702ad6ea26e7ca60889f2f17bfd306" name="a9e702ad6ea26e7ca60889f2f17bfd306"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e702ad6ea26e7ca60889f2f17bfd306">&#9670;&#160;</a></span>argument_descriptions <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">list cts1_ground_support.telecommand_types.TelecommandDefinition.argument_descriptions = None</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a145b439c80185b85e262c415d9da7e66" name="a145b439c80185b85e262c415d9da7e66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a145b439c80185b85e262c415d9da7e66">&#9670;&#160;</a></span>argument_descriptions <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">cts1_ground_support.telecommand_types.TelecommandDefinition.argument_descriptions</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="adc403ea57b686dd213001759f0619653" name="adc403ea57b686dd213001759f0619653"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#adc403ea57b686dd213001759f0619653">&#9670;&#160;</a></span>description <span class="overload">[1/2]</span></h2>
 
@@ -168,6 +212,42 @@ Static Public Attributes</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">cts1_ground_support.telecommand_types.TelecommandDefinition.description</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab7a3488ac2561bf9d780dba84abbf9f9" name="ab7a3488ac2561bf9d780dba84abbf9f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7a3488ac2561bf9d780dba84abbf9f9">&#9670;&#160;</a></span>full_docstring <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">str cts1_ground_support.telecommand_types.TelecommandDefinition.full_docstring = None</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7d13b8a3785dbea89be55e349152a5fd" name="a7d13b8a3785dbea89be55e349152a5fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d13b8a3785dbea89be55e349152a5fd">&#9670;&#160;</a></span>full_docstring <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">cts1_ground_support.telecommand_types.TelecommandDefinition.full_docstring</td>
         </tr>
       </table>
 </div><div class="memdoc">

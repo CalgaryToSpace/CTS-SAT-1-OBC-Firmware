@@ -131,6 +131,7 @@ Functions</h2></td></tr>
 <tr class="memitem:a3c61964d3a1d316ef87dd76b1704b3b0" id="r_a3c61964d3a1d316ef87dd76b1704b3b0"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3c61964d3a1d316ef87dd76b1704b3b0">TCMDEXEC_get_system_time</a> (const char *args_str, <a class="el" href="telecommand__definitions_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
 <tr class="separator:a3c61964d3a1d316ef87dd76b1704b3b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2f0faa6c92a8852e4ece806dbb525e58" id="r_a2f0faa6c92a8852e4ece806dbb525e58"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2f0faa6c92a8852e4ece806dbb525e58">TCMDEXEC_set_system_time</a> (const char *args_str, <a class="el" href="telecommand__definitions_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
+<tr class="memdesc:a2f0faa6c92a8852e4ece806dbb525e58"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the system time to the provided Unix epoch time in milliseconds.  <br /></td></tr>
 <tr class="separator:a2f0faa6c92a8852e4ece806dbb525e58"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
@@ -211,12 +212,24 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Set the system time to the provided Unix epoch time in milliseconds. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args_str</td><td><ul>
+<li>Arg 0: Unix epoch time in milliseconds (uint64_t) </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 if successful, 1 if error </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="timekeeping__telecommand__defs_8c_a2f0faa6c92a8852e4ece806dbb525e58_cgraph.png" border="0" usemap="#atimekeeping__telecommand__defs_8c_a2f0faa6c92a8852e4ece806dbb525e58_cgraph" alt=""/></div>
 <map name="atimekeeping__telecommand__defs_8c_a2f0faa6c92a8852e4ece806dbb525e58_cgraph" id="atimekeeping__telecommand__defs_8c_a2f0faa6c92a8852e4ece806dbb525e58_cgraph">
-<area shape="rect" title=" " alt="" coords="5,35,204,60"/>
+<area shape="rect" title="Set the system time to the provided Unix epoch time in milliseconds." alt="" coords="5,35,204,60"/>
 <area shape="rect" href="telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="252,5,423,31"/>
 <area shape="poly" title=" " alt="" coords="204,32,236,28,237,34,204,38"/>
 <area shape="rect" href="timekeeping_8c.html#a05cd293bfd9a609af88ff87898a0fcbc" title="Use this function in a telecommand, or upon receiving a time update from the GPS." alt="" coords="264,55,411,96"/>

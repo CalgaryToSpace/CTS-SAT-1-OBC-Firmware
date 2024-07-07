@@ -165,6 +165,7 @@ Enumerations</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ad6b8ddd16605326b8170d20f462dc78c" id="r_ad6b8ddd16605326b8170d20f462dc78c"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad6b8ddd16605326b8170d20f462dc78c">TCMDEXEC_hello_world</a> (const char *args_str, <a class="el" href="#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
+<tr class="memdesc:ad6b8ddd16605326b8170d20f462dc78c"><td class="mdescLeft">&#160;</td><td class="mdescRight">A simple telecommand that responds with "Hello, world!".  <br /></td></tr>
 <tr class="separator:ad6b8ddd16605326b8170d20f462dc78c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77d132e06e51e0fd1652dc90ff551e04" id="r_a77d132e06e51e0fd1652dc90ff551e04"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a77d132e06e51e0fd1652dc90ff551e04">TCMDEXEC_heartbeat_off</a> (const char *args_str, <a class="el" href="#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
 <tr class="separator:a77d132e06e51e0fd1652dc90ff551e04"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -449,6 +450,18 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>A simple telecommand that responds with "Hello, world!". </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args_str</td><td>No arguments expected </td></tr>
+    <tr><td class="paramname">tcmd_channel</td><td>The channel on which the telecommand was received, and on which the response should be sent </td></tr>
+    <tr><td class="paramname">response_output_buf</td><td>The buffer to write the response to </td></tr>
+    <tr><td class="paramname">response_output_buf_len</td><td>The maximum length of the response_output_buf (its size) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 if successful, &gt;0 if an error occurred (but hello_world can't return an error) </dd></dl>
 
 </div>
 </div>

@@ -155,6 +155,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:a4659cdcf78b593dfe35fcda78686f83d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Telecommand: Write data to a file in LittleFS.  <br /></td></tr>
 <tr class="separator:a4659cdcf78b593dfe35fcda78686f83d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7c0b1a4e9d0f7f5d92a6a96b5b1bc40d" id="r_a7c0b1a4e9d0f7f5d92a6a96b5b1bc40d"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7c0b1a4e9d0f7f5d92a6a96b5b1bc40d">TCMDEXEC_fs_read_file</a> (const char *args_str, <a class="el" href="telecommand__definitions_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
+<tr class="memdesc:a7c0b1a4e9d0f7f5d92a6a96b5b1bc40d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads a file from LittleFS, and responds with its contents in raw form (including non-printable and null bytes).  <br /></td></tr>
 <tr class="separator:a7c0b1a4e9d0f7f5d92a6a96b5b1bc40d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad8f1ceca7e7eeee5b869ec251392b12d" id="r_ad8f1ceca7e7eeee5b869ec251392b12d"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad8f1ceca7e7eeee5b869ec251392b12d">TCMDEXEC_fs_demo_write_then_read</a> (const char *args_str, <a class="el" href="telecommand__definitions_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
 <tr class="separator:ad8f1ceca7e7eeee5b869ec251392b12d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -711,12 +712,24 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Reads a file from LittleFS, and responds with its contents in raw form (including non-printable and null bytes). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args_str</td><td><ul>
+<li>Arg 0: File path as string </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, &gt;0 on error </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="lfs__telecommand__defs_8c_a7c0b1a4e9d0f7f5d92a6a96b5b1bc40d_cgraph.png" border="0" usemap="#alfs__telecommand__defs_8c_a7c0b1a4e9d0f7f5d92a6a96b5b1bc40d_cgraph" alt=""/></div>
 <map name="alfs__telecommand__defs_8c_a7c0b1a4e9d0f7f5d92a6a96b5b1bc40d_cgraph" id="alfs__telecommand__defs_8c_a7c0b1a4e9d0f7f5d92a6a96b5b1bc40d_cgraph">
-<area shape="rect" title=" " alt="" coords="5,474,171,500"/>
+<area shape="rect" title="Reads a file from LittleFS, and responds with its contents in raw form (including non&#45;printable and n..." alt="" coords="5,474,171,500"/>
 <area shape="rect" href="littlefs__helper_8c.html#ab7f6661d3f75ddc064920fda1fa92858" title="Opens LittleFS File to read from the Memory Module." alt="" coords="252,449,354,474"/>
 <area shape="poly" title=" " alt="" coords="170,474,237,466,238,472,171,480"/>
 <area shape="rect" href="telecommand__args__helpers_8c.html#a0fa1c206f35d62f732c8ca95067fb36c" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a string." alt="" coords="219,498,387,524"/>
@@ -958,7 +971,11 @@ Here is the call graph for this function:</div>
 <p>Telecommand: Write data to a file in LittleFS. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">args_str</td><td>Arg 0: File name, Arg 1: String to write to file </td></tr>
+    <tr><td class="paramname">args_str</td><td><ul>
+<li>Arg 0: File path as string</li>
+<li>Arg 1: String to write to file </li>
+</ul>
+</td></tr>
   </table>
   </dd>
 </dl>
