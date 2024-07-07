@@ -200,6 +200,28 @@ def update_uart_port_dropdown_options(uart_port_name: str, _n_intervals: int) ->
     ] + [{"label": port, "value": port} for port in port_name_list]
 
 
+@callback(
+    Output("selected-tcmd-info-container", "children"),
+    Input("telecommand-dropdown", "value"),
+)
+def update_selected_tcmd_info(selected_command_name: str) -> list:
+    """Make an area with the docstring for the selected telecommand."""
+    selected_command = get_telecommand_by_name(selected_command_name)
+
+    if selected_command.full_docstring is None:
+        docstring = f"No docstring found for {selected_command.tcmd_func}"
+    else:
+        docstring = selected_command.full_docstring
+
+    return [
+        html.H4(
+            ["Docs: ", html.Span(selected_command_name, style={"fontFamily": "monospace"})],
+        ),
+        # TODO: add the "brief" docstring here, and then hide the rest in a "Click to expand"
+        html.Pre(docstring, id="selected-tcmd-info", className="mb-3"),
+    ]
+
+
 def generate_rx_tx_log() -> html.Div:
     """Generate the RX/TX log, which shows the most recent received and transmitted messages."""
     return html.Div(
@@ -285,6 +307,7 @@ def generate_left_pane() -> list:
                 ),
             ],
         ),
+        html.Div(id="argument-inputs", className="mb-3"),
         dbc.Row(
             [
                 dbc.Button(
@@ -306,7 +329,7 @@ def generate_left_pane() -> list:
             justify="center",
             className="mb-3",
         ),
-        html.Div(id="argument-inputs", className="mb-3"),
+        html.Div(id="selected-tcmd-info-container", className="mb-3"),
     ]
 
 
