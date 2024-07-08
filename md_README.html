@@ -129,13 +129,19 @@ Debugging Setup</h1>
 <li>Connect to the STM32 debug serial port at baud=115200.</li>
 <li>Use Breakpoints in VS Code to pause execution and explore the stack. Breakpoint are obeyed when you use the "Debug STM32" button to flash the chip.</li>
 </ul>
-<p>The "SerialTest" serial terminal works well for sending commands: <a href="https://github.com/wh201906/SerialTest/releases/">https://github.com/wh201906/SerialTest/releases/</a>, and is recommended.</p>
+<p>The "SerialTest" serial terminal works well for sending commands: <a href="https://github.com/wh201906/SerialTest/releases/">https://github.com/wh201906/SerialTest/releases/</a>, and is recommended. The ground support software (see above) is also solid.</p>
 <h2><a class="anchor" id="autotoc_md49"></a>
 Python Serial Terminal</h2>
 <p>The Python serial terminal is useful for receiving only.</p>
 <div class="fragment"><div class="line">python3 -m pip install pyserial</div>
 <div class="line">python3 -m serial.tools.miniterm - 115200</div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md50"></a>
+Contributors</h1>
+<p>Please add your name to the list below in your first Pull Request!</p>
+<ul>
+<li>Parker L.</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md51"></a>
 Random Notes</h1>
 <ul>
 <li>Lower NVIC priority number means higher priority.</li>

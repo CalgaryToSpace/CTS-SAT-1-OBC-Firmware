@@ -1,9 +1,13 @@
 <map id="lfs_file_read" name="lfs_file_read">
-<area shape="rect" id="Node000001" title=" " alt="" coords="387,42,477,68"/>
-<area shape="rect" id="Node000002" href="$littlefs__helper_8c.html#ab7f6661d3f75ddc064920fda1fa92858" title="Opens LittleFS File to read from the Memory Module." alt="" coords="238,42,339,68"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="371,58,339,58,339,52,371,52"/>
-<area shape="rect" id="Node000003" href="$lfs__telecommand__defs_8c.html#ad8f1ceca7e7eeee5b869ec251392b12d" title=" " alt="" coords="5,5,190,46"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="222,47,190,43,191,37,222,42"/>
-<area shape="rect" id="Node000004" href="$lfs__telecommand__defs_8c.html#a7c0b1a4e9d0f7f5d92a6a96b5b1bc40d" title="Reads a file from LittleFS, and responds with its contents in raw form (including non&#45;printable and n..." alt="" coords="15,70,180,96"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="222,67,181,73,180,68,222,62"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="470,54,560,80"/>
+<area shape="rect" id="Node000002" href="$littlefs__benchmark_8c.html#a685a1db445cf40a9ebd1e9dd6ecfb251" title="Benchmarks the write/read operations on the LittleFS file system." alt="" coords="238,21,422,47"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="454,59,404,50,405,44,455,54"/>
+<area shape="rect" id="Node000004" href="$littlefs__helper_8c.html#a557196d1f527da24b2b4dad0680cb87c" title="Opens LittleFS File to read from the Memory Module." alt="" coords="279,78,381,104"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="455,77,381,87,380,82,454,72"/>
+<area shape="rect" id="Node000003" href="$lfs__telecommand__defs_8c.html#a265fb9e9f253a1a4858e81f6ff6949c8" title="Telecommand: Benchmark LittleFS write and read operations." alt="" coords="7,5,188,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="222,33,189,31,189,26,222,27"/>
+<area shape="rect" id="Node000005" href="$lfs__telecommand__defs_8c.html#ad8f1ceca7e7eeee5b869ec251392b12d" title=" " alt="" coords="5,71,190,111"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="263,94,190,94,190,88,263,88"/>
+<area shape="rect" id="Node000006" href="$lfs__telecommand__defs_8c.html#a7c0b1a4e9d0f7f5d92a6a96b5b1bc40d" title="Reads a file from LittleFS, and responds with its contents in raw form (including non&#45;printable and n..." alt="" coords="15,136,180,161"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="265,110,153,138,152,132,263,104"/>
 </map>

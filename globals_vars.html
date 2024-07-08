@@ -97,11 +97,6 @@ $(function(){ initResizable(false); });
 </ul>
 
 
-<h3><a id="index_c" name="index_c"></a>- c -</h3><ul>
-<li>cfg&#160;:&#160;<a class="el" href="littlefs__helper_8c.html#a5858bea21771d8bb389604d10e4fcc0f">littlefs_helper.c</a></li>
-</ul>
-
-
 <h3><a id="index_d" name="index_d"></a>- d -</h3><ul>
 <li>defaultTask_attributes&#160;:&#160;<a class="el" href="main_8c.html#a25fbb54afdba71c24ba51ed50166ac8d">main.c</a></li>
 <li>defaultTaskHandle&#160;:&#160;<a class="el" href="main_8c.html#a6a263905468b0c37de4ee5e50ede4e74">main.c</a></li>
@@ -128,6 +123,7 @@ $(function(){ initResizable(false); });
 <li>FLASH_CMD_WRITE_4_BYTE_ADDR&#160;:&#160;<a class="el" href="flash__driver_8h.html#af070c59907e9cf4c349a4ed48331cb23">flash_driver.h</a></li>
 <li>FLASH_CMD_WRITE_DISABLE&#160;:&#160;<a class="el" href="flash__driver_8h.html#afcece134fd86202d87f5abb82550dbe1">flash_driver.h</a></li>
 <li>FLASH_CMD_WRITE_ENABLE&#160;:&#160;<a class="el" href="flash__driver_8h.html#a512ef14a335f3cfee103131d653979a0">flash_driver.h</a></li>
+<li>FLASH_enable_hot_path_debug_logs&#160;:&#160;<a class="el" href="static__config_8h.html#af9fc6d3885be80e075d091fd1d7d65bf">static_config.h</a></li>
 <li>FLASH_SR1_ERASE_ERROR_MASK&#160;:&#160;<a class="el" href="flash__driver_8h.html#adfeff399f75a154e1655e63730de49a9">flash_driver.h</a></li>
 <li>FLASH_SR1_PROGRAMMING_ERROR_MASK&#160;:&#160;<a class="el" href="flash__driver_8h.html#adb4ce6ff87992b7b394798d0e4eec64b">flash_driver.h</a></li>
 <li>FLASH_SR1_WRITE_ENABLE_LATCH_MASK&#160;:&#160;<a class="el" href="flash__driver_8h.html#a348bbede557c3db424f7ccb724d879be">flash_driver.h</a></li>
@@ -143,6 +139,7 @@ $(function(){ initResizable(false); });
 <li>hlpuart1&#160;:&#160;<a class="el" href="main_8h.html#a5c3f9dccaa7cebcc70e1657af9e5e5dc">main.h</a>, <a class="el" href="main_8c.html#a5c3f9dccaa7cebcc70e1657af9e5e5dc">main.c</a>, <a class="el" href="stm32l4xx__it_8c.html#a5c3f9dccaa7cebcc70e1657af9e5e5dc">stm32l4xx_it.c</a></li>
 <li>hspi1&#160;:&#160;<a class="el" href="main_8h.html#a9c6222bae4d0328dd843ae099623b40b">main.h</a>, <a class="el" href="main_8c.html#a9c6222bae4d0328dd843ae099623b40b">main.c</a></li>
 <li>hspi_lfs_ptr&#160;:&#160;<a class="el" href="littlefs__driver_8c.html#a398153cbdf14ce0a0018b4aa3797386d">littlefs_driver.c</a></li>
+<li>hspi_ptr&#160;:&#160;<a class="el" href="flash__benchmark_8c.html#ada509e6c08af88aa3dddd7e097efe09f">flash_benchmark.c</a></li>
 <li>htim1&#160;:&#160;<a class="el" href="stm32l4xx__hal__timebase__tim_8c.html#a25fc663547539bc49fecc0011bd76ab5">stm32l4xx_hal_timebase_tim.c</a>, <a class="el" href="stm32l4xx__it_8c.html#a25fc663547539bc49fecc0011bd76ab5">stm32l4xx_it.c</a></li>
 <li>huart1&#160;:&#160;<a class="el" href="main_8h.html#a2cf715bef37f7e8ef385a30974a5f0d5">main.h</a>, <a class="el" href="main_8c.html#a2cf715bef37f7e8ef385a30974a5f0d5">main.c</a></li>
 <li>huart2&#160;:&#160;<a class="el" href="main_8h.html#aa9479c261d65eecedd3d9582f7f0f89c">main.h</a>, <a class="el" href="main_8c.html#aa9479c261d65eecedd3d9582f7f0f89c">main.c</a></li>
@@ -153,9 +150,13 @@ $(function(){ initResizable(false); });
 
 
 <h3><a id="index_l" name="index_l"></a>- l -</h3><ul>
-<li>lfs&#160;:&#160;<a class="el" href="littlefs__helper_8c.html#a11e58d59232e490f0bb0781c309abdb2">littlefs_helper.c</a></li>
+<li>LFS_cfg&#160;:&#160;<a class="el" href="littlefs__helper_8h.html#ae308f3499cb89a7b576817c4c036c1f6">littlefs_helper.h</a>, <a class="el" href="littlefs__helper_8c.html#ae308f3499cb89a7b576817c4c036c1f6">littlefs_helper.c</a></li>
+<li>LFS_enable_hot_path_debug_logs&#160;:&#160;<a class="el" href="static__config_8h.html#ada4ae7080e8ffe4bdf42ec0c634667c7">static_config.h</a></li>
+<li>LFS_file_buffer&#160;:&#160;<a class="el" href="littlefs__helper_8c.html#ace2c39f31d90f6d8595f0ee59792f02f">littlefs_helper.c</a></li>
+<li>LFS_file_cfg&#160;:&#160;<a class="el" href="littlefs__helper_8h.html#a53ab5b4b7a73a0b81ad2760c7437dbdb">littlefs_helper.h</a>, <a class="el" href="littlefs__helper_8c.html#a53ab5b4b7a73a0b81ad2760c7437dbdb">littlefs_helper.c</a></li>
+<li>LFS_filesystem&#160;:&#160;<a class="el" href="littlefs__helper_8h.html#a8c1bcaa9226d39b07834de8fb7e9c367">littlefs_helper.h</a>, <a class="el" href="littlefs__helper_8c.html#a8c1bcaa9226d39b07834de8fb7e9c367">littlefs_helper.c</a></li>
 <li>LFS_is_lfs_mounted&#160;:&#160;<a class="el" href="littlefs__helper_8c.html#aa7eeeb2151fb12e7a8e09d77d78da07e">littlefs_helper.c</a></li>
-<li>LFS_lookahead_buf&#160;:&#160;<a class="el" href="littlefs__helper_8c.html#adcb986e6bc4a72af945118dfdb99e92c">littlefs_helper.c</a></li>
+<li>LFS_lookahead_buf&#160;:&#160;<a class="el" href="littlefs__helper_8c.html#ade793a0788144172e10415cbf3eed6e5">littlefs_helper.c</a></li>
 <li>LFS_prog_buffer&#160;:&#160;<a class="el" href="littlefs__helper_8c.html#aa48944bae8cb8f039cdf7183e79703c6">littlefs_helper.c</a></li>
 <li>LFS_read_buffer&#160;:&#160;<a class="el" href="littlefs__helper_8c.html#a451f5febfc3d85b81bfe4f58cc352eba">littlefs_helper.c</a></li>
 </ul>

@@ -1,15 +1,19 @@
 <map id="TCMD_ascii_to_uint64" name="TCMD_ascii_to_uint64">
-<area shape="rect" id="Node000001" title="Extracts the longest substring of integer characters, starting from the beginning of the string,..." alt="" coords="471,120,623,145"/>
-<area shape="rect" id="Node000002" href="$telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="252,120,423,145"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="455,135,423,135,423,130,455,130"/>
+<area shape="rect" id="Node000001" title="Extracts the longest substring of integer characters, starting from the beginning of the string,..." alt="" coords="471,185,623,211"/>
+<area shape="rect" id="Node000002" href="$telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="252,185,423,211"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="455,200,423,200,423,195,455,195"/>
 <area shape="rect" id="Node000003" href="$telecommand__definitions_8c.html#a5ae77884461dfbf9b764fbdad99ed497" title=" " alt="" coords="23,5,186,46"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="301,113,255,86,203,60,174,49,176,44,205,55,257,82,304,108"/>
-<area shape="rect" id="Node000004" href="$flash__telecommand__defs_8c.html#abf1a62ec4474e4584deb50c95c7800c4" title="Telecommand: Erase a sector of flash memory." alt="" coords="22,70,187,96"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="258,118,168,99,169,94,259,113"/>
-<area shape="rect" id="Node000005" href="$flash__telecommand__defs_8c.html#aaad387e58757cce93fe46c8eb25cc822" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="12,120,197,145"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="237,135,198,135,198,130,237,130"/>
-<area shape="rect" id="Node000006" href="$flash__telecommand__defs_8c.html#ad09f175c2e7126e812bfaeebcd17c172" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="10,169,199,195"/>
-<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="259,152,169,171,168,166,258,146"/>
-<area shape="rect" id="Node000007" href="$timekeeping__telecommand__defs_8c.html#a2f0faa6c92a8852e4ece806dbb525e58" title="Set the system time to the provided Unix epoch time in milliseconds." alt="" coords="5,218,204,244"/>
-<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="305,156,258,184,205,209,172,220,171,215,203,205,256,179,302,152"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="316,174,268,117,237,87,202,61,179,49,181,44,205,57,240,83,272,114,320,170"/>
+<area shape="rect" id="Node000004" href="$flash__telecommand__defs_8c.html#aeb4bfdf0b416966258a378a382f529ce" title="Telecommand: Benchmarks the erase/write/read operations on the flash memory module." alt="" coords="6,71,203,111"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="301,178,255,152,203,125,174,114,176,109,205,121,257,147,304,174"/>
+<area shape="rect" id="Node000005" href="$flash__telecommand__defs_8c.html#abf1a62ec4474e4584deb50c95c7800c4" title="Telecommand: Erase a sector of flash memory." alt="" coords="22,136,187,161"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="258,184,168,164,169,159,259,178"/>
+<area shape="rect" id="Node000006" href="$flash__telecommand__defs_8c.html#aaad387e58757cce93fe46c8eb25cc822" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="12,185,197,211"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="237,200,198,200,198,195,237,195"/>
+<area shape="rect" id="Node000007" href="$flash__telecommand__defs_8c.html#ad09f175c2e7126e812bfaeebcd17c172" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="10,234,199,260"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="259,217,169,236,168,231,258,212"/>
+<area shape="rect" id="Node000008" href="$lfs__telecommand__defs_8c.html#a265fb9e9f253a1a4858e81f6ff6949c8" title="Telecommand: Benchmark LittleFS write and read operations." alt="" coords="14,284,195,325"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="304,222,257,248,205,275,176,286,174,281,203,270,255,244,301,217"/>
+<area shape="rect" id="Node000009" href="$timekeeping__telecommand__defs_8c.html#a2f0faa6c92a8852e4ece806dbb525e58" title="Set the system time to the provided Unix epoch time in milliseconds." alt="" coords="5,349,204,375"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="320,225,273,283,241,313,205,339,178,351,176,346,202,334,237,309,269,279,316,222"/>
 </map>
