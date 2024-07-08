@@ -97,6 +97,11 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_func = TCMDEXEC_flash_erase,
         .number_of_args = 2,
     },
+    {
+        .tcmd_name = "flash_benchmark_erase_write_read",
+        .tcmd_func = TCMDEXEC_flash_benchmark_erase_write_read,
+        .number_of_args = 3,
+    },
     // ****************** END SECTION: flash_telecommand_defs ******************
 
     // ****************** SECTION: lfs_telecommand_defs ******************
@@ -129,6 +134,11 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "fs_demo_write_then_read",
         .tcmd_func = TCMDEXEC_fs_demo_write_then_read,
         .number_of_args = 0,
+    },
+    {
+        .tcmd_name = "fs_benchmark_write_read",
+        .tcmd_func = TCMDEXEC_fs_benchmark_write_read,
+        .number_of_args = 2,
     },
     // ****************** END SECTION: lfs_telecommand_defs ******************
 

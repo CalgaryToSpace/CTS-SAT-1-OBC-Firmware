@@ -4,7 +4,12 @@
 #include "littlefs/flash_driver.h"
 #include "debug_tools/debug_uart.h"
 
+#include "config/static_config.h"
+
 /// Timeout duration for HAL_SPI_READ/WRITE operations.
+// Note: FLASH_read_data has sporadic timeouts at 5ms; 10ms is a safe bet.
+// 512 bytes should take 2ms at 2Mbps.
+// TODO: ^ investigate the HAL_SPI_Receive overhead (2ms expected, >5ms observed)
 #define FLASH_HAL_TIMEOUT_MS 10 
 
 // The following timeout values are sourced from Section 11.3.1, Table 56: "CFI system interface string"
@@ -145,9 +150,11 @@ uint8_t FLASH_write_enable(SPI_HandleTypeDef *hspi, uint8_t chip_number)
             return 2;
         }
 
-        DEBUG_uart_print_str("DEBUG: status_reg = 0x");
-        DEBUG_uart_print_array_hex(status_reg_buffer, 1);
-        DEBUG_uart_print_str("\n");
+        if (FLASH_enable_hot_path_debug_logs) {
+            DEBUG_uart_print_str("DEBUG: status_reg = 0x");
+            DEBUG_uart_print_array_hex(status_reg_buffer, 1);
+            DEBUG_uart_print_str("\n");
+        }
     }
 
     // Should never be reached:
@@ -280,10 +287,10 @@ uint8_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t ad
  * @param chip_number - the chip select number to activate
  * @param addr - block number that is to be written
  * @param packet_buffer - Pointer to buffer containing data to write
- * @param size - integer that idicates the size of the data
+ * @param packet_buffer_len - integer that indicates the size of the data to write
  * @retval Returns 0 on success, >0 on failure
  */
-uint8_t FLASH_write(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t addr, uint8_t *packet_buffer, lfs_size_t size)
+uint8_t FLASH_write(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t addr, uint8_t *packet_buffer, lfs_size_t packet_buffer_len)
 {
     // Split address into its 4 bytes
     uint8_t addr_bytes[4] = {(addr >> 24) & 0xFF, (addr >> 16) & 0xFF, (addr >> 8) & 0xFF, addr & 0xFF};
@@ -307,7 +314,7 @@ uint8_t FLASH_write(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t ad
         FLASH_deactivate_chip_select();
         return 3;
     }
-    const uint8_t tx_result_3 = HAL_SPI_Transmit(hspi, (uint8_t *)packet_buffer, size, FLASH_HAL_TIMEOUT_MS);
+    const uint8_t tx_result_3 = HAL_SPI_Transmit(hspi, (uint8_t *)packet_buffer, packet_buffer_len, FLASH_HAL_TIMEOUT_MS);
     if (tx_result_3 != HAL_OK) {
         FLASH_deactivate_chip_select();
         return 4;
@@ -358,7 +365,7 @@ uint8_t FLASH_write(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t ad
  * @param chip_number - the chip select number to activate
  * @param addr - block number that is to be read
  * @param rx_buffer - a to buffer where the read data will be stored
- * @param rx_buffer_len - integer that idicates the size of the data
+ * @param rx_buffer_len - integer that indicates the capacity of `rx_buffer`
  * @retval Returns 0 on success, >0 on failure
  */
 uint8_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t addr, uint8_t *rx_buffer, lfs_size_t rx_buffer_len)
