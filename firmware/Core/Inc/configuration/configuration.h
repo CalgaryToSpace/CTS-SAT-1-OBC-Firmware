@@ -8,7 +8,7 @@ typedef struct
 {
     const char *variable_name;
     const void *variable_pointer; // pointer to a uint8_t, uint16_t, etc.
-    const uint8_t width_bytes;    // width of the config variable (e.g., 1 for uint8_t, 2 for uint16_t, etc.)
+    uint8_t width_bytes;          // width of the config variable (e.g., 1 for uint8_t, 2 for uint16_t, etc.)
 } CONFIG_integer_config_entry_t;
 
 typedef struct
@@ -26,7 +26,7 @@ extern CONFIG_string_config_entry_t CTS1_String_Configuration_Variables[];
 
 extern const uint8_t CTS1_String_Configuration_Variables_Count;
 
-uint8_t CONFIG_get_integer_type(size_t width, size_t *value, const void *var_ptr, char *type_as_str);
+uint8_t CONFIG_get_config_integer_value(uint8_t width, uint64_t *value, const void *var_ptr);
 
 uint16_t CONFIG_print_integer_table(char *result);
 

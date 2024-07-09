@@ -7,6 +7,10 @@
 #include "transforms/string_helpers.h"
 #include "configuration/configuration.h"
 
+// Additional telecommand definitions files:
+#include "telecommands/flash_telecommand_defs.h"
+#include "telecommands/lfs_telecommand_defs.h"
+
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
@@ -118,10 +122,9 @@ uint8_t TCMDEXEC_get_integer_configuration_variable(const uint8_t *args_str, TCM
         return 0;
     }
 
-    size_t num = 0;
-    char num_type_str[10];
-    memset(num_type_str, 0, 10);
-    const uint8_t found_num_type = CONFIG_get_integer_type(res.width_bytes, &num, res.variable_pointer, num_type_str);
+    uint64_t num = 0;
+
+    const uint8_t found_num_type = CONFIG_get_config_integer_value(res.width_bytes, &num, res.variable_pointer);
 
     if (found_num_type != 0)
     {
@@ -129,7 +132,7 @@ uint8_t TCMDEXEC_get_integer_configuration_variable(const uint8_t *args_str, TCM
         return 0;
     }
 
-    snprintf(response_output_buf, response_output_buf_len, "%s | %d | %d\n", res.variable_name, res.width_bytes, num);
+    snprintf(response_output_buf, response_output_buf_len, "%s \nwidth: %d\nvalue: %lu\n", res.variable_name, res.width_bytes, num);
 
     return 0;
 }
