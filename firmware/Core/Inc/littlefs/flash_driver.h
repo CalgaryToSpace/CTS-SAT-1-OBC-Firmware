@@ -48,25 +48,25 @@ static const uint8_t FLASH_SR1_PROGRAMMING_ERROR_MASK = (1 << 6);
 static const uint8_t FLASH_SR1_ERASE_ERROR_MASK = (1 << 5);
 
 /*-----------------------------FLASH ERROR CODES-----------------------------*/
-enum FLASH_ERRORS {
+typedef enum {
     FLASH_ERR_OK                    = 0,    // No error occurred
     FLASH_ERR_SPI_TRANSMIT_FAILED   = -3,   // Error occurred while transmitting SPI signal
     FLASH_ERR_SPI_RECEIVE_FAILED    = -4,   // Error occurred while receiving SPI signal
     FLASH_ERR_DEVICE_BUSY_TIMEOUT   = -6,   // Took too long for the device to be in standby
-    FLASH_ERR_UNKNOWN                = -7,   // Unknown error occurred (code reached where it shouldn't have been possible)
+    FLASH_ERR_UNKNOWN               = -7,   // Unknown error occurred (code reached where it shouldn't have been possible)
     FLASH_ERR_STATUS_REG_ERROR      = -8    // Error occurred which was indicated by one of the Status Register Bits.
-};
+} FLASH_error_enum_t;
 
 /*-----------------------------DRIVER FUNCTIONS-----------------------------*/
 void FLASH_activate_chip_select(uint8_t chip_number);
 void FLASH_deactivate_chip_select();
-uint8_t FLASH_read_status_register(SPI_HandleTypeDef *hspi, uint8_t chip_number, uint8_t *buf);
-uint8_t FLASH_write_enable(SPI_HandleTypeDef *hspi, uint8_t chip_number);
-uint8_t FLASH_write_disable(SPI_HandleTypeDef *hspi, uint8_t chip_number);
-uint8_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t addr);
-uint8_t FLASH_write(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t addr, uint8_t *packet_buffer, lfs_size_t packet_buffer_len);
-uint8_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t addr, uint8_t *rx_buffer, lfs_size_t rx_buffer_len);
+FLASH_error_enum_t FLASH_read_status_register(SPI_HandleTypeDef *hspi, uint8_t chip_number, uint8_t *buf);
+FLASH_error_enum_t FLASH_write_enable(SPI_HandleTypeDef *hspi, uint8_t chip_number);
+FLASH_error_enum_t FLASH_write_disable(SPI_HandleTypeDef *hspi, uint8_t chip_number);
+FLASH_error_enum_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t addr);
+FLASH_error_enum_t FLASH_write(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t addr, uint8_t *packet_buffer, lfs_size_t packet_buffer_len);
+FLASH_error_enum_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t addr, uint8_t *rx_buffer, lfs_size_t rx_buffer_len);
 
-uint8_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_number);
+FLASH_error_enum_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_number);
 
 #endif /* __INCLUDE_GUARD__FLASH_DRIVER_H__ */
