@@ -5,8 +5,8 @@
  * Author: Vaibhav Kapoor
  */
 
-#ifndef INC_MPICOMMANDHANDLING_H_
-#define INC_MPICOMMANDHANDLING_H_
+#ifndef INC_MPI_COMMAND_HANDLING_H_
+#define INC_MPI_COMMAND_HANDLING_H_
 #include "main.h"
 #include "mpi/double_buffer.h"
 #include "mpi/mpi_types.h"
@@ -50,27 +50,27 @@ void processFrameData(MpiFrame_t frame);
 void writeFrameToMemory(MpiFrame_t frame);
 
 // Individual MPI Command functions
-uint8_t SEND_MPI_TC_HV_INNER_DOME_SCAN_MODE(uint8_t mode);
-uint8_t SEND_MPI_TC_HV_SET_FACEPLATE_VOLTAGE(uint16_t voltage);
-uint8_t SEND_MPI_TC_HV_SET_SCAN_MIDPOINT_VOLTAGE(uint16_t voltage);
-uint8_t SEND_MPI_TC_HV_SET_SCAN_AMPLITUDE_VOLTAGE(uint16_t voltage);
-uint8_t SEND_MPI_TC_HV_SET_SCAN_NUMBER_OF_STEPS(uint16_t steps);
-uint8_t SEND_MPI_TC_SET_INTEGRATION_PERIOD(uint16_t period);
-uint8_t SEND_MPI_TC_AGC_ENABLE();
-uint8_t SEND_MPI_TC_AGC_DISABLE();
-uint8_t SEND_MPI_TC_BL_ENTER_BOOTLOADER();
-uint8_t SEND_MPI_TC_BL_EXIT_BOOTLOADER();
-uint8_t SEND_MPI_TC_BL_SET_APPSW_CRC(uint16_t CRC_Value);
-uint8_t SEND_MPI_TC_BL_ERASE_TEMP_APP_MEMORY();
-uint8_t SEND_MPI_TC_BL_STORE_APPSW_CHUNK(uint32_t offset, uint32_t N, uint8_t *memoryValues);
-uint8_t SEND_MPI_TC_BL_UPGRADE_FIRMWARE();
-uint8_t SEND_MPI_TC_AGC_SET_THRESHOLDS(uint32_t threshold);
-uint8_t SEND_MPI_TC_AGC_SET_DISABLED_SHUTTER_DUTY_CYCLE(uint16_t shutterDutyCycle);
-uint8_t SEND_MPI_TC_AGC_SET_PIXEL_RANGE(uint32_t index);
-uint8_t SEND_MPI_TC_AGC_SET_NUMBER_OF_MAXIMA_FOR_CONTROL_VALUE(uint8_t n);
-uint8_t SEND_MPI_TC_AGC_SET_NUMBER_OF_PIXELS_FOR_BASELINE_VALUE(uint8_t n);
-uint8_t SEND_MPI_TC_AGC_SET_STEP_FACTOR(uint8_t n);
-uint8_t SEND_MPI_TC_SET_BASELINE_FIRST_PIXEL(uint8_t n);
+uint8_t MPI_send_tc_HV_INNER_DOME_SCAN_MODE(uint8_t mode);
+uint8_t MPI_send_tc_HV_SET_FACEPLATE_VOLTAGE(uint16_t voltage);
+uint8_t MPI_send_tc_HV_SET_SCAN_MIDPOINT_VOLTAGE(uint16_t voltage);
+uint8_t MPI_send_tc_HV_SET_SCAN_AMPLITUDE_VOLTAGE(uint16_t voltage);
+uint8_t MPI_send_tc_HV_SET_SCAN_NUMBER_OF_STEPS(uint16_t steps);
+uint8_t MPI_send_tc_SET_INTEGRATION_PERIOD(uint16_t period);
+uint8_t MPI_send_tc_AGC_ENABLE();
+uint8_t MPI_send_tc_AGC_DISABLE();
+uint8_t MPI_send_tc_BL_ENTER_BOOTLOADER();
+uint8_t MPI_send_tc_BL_EXIT_BOOTLOADER();
+uint8_t MPI_send_tc_BL_SET_APPSW_CRC(uint16_t CRC_Value);
+uint8_t MPI_send_tc_BL_ERASE_TEMP_APP_MEMORY();
+uint8_t MPI_send_tc_BL_STORE_APPSW_CHUNK(uint32_t offset, uint32_t N, uint8_t *memoryValues);
+uint8_t MPI_send_tc_BL_UPGRADE_FIRMWARE();
+uint8_t MPI_send_tc_AGC_SET_THRESHOLDS(uint32_t threshold);
+uint8_t MPI_send_tc_AGC_SET_DISABLED_SHUTTER_DUTY_CYCLE(uint16_t shutterDutyCycle);
+uint8_t MPI_send_tc_AGC_SET_PIXEL_RANGE(uint32_t index);
+uint8_t MPI_send_tc_AGC_SET_NUMBER_OF_MAXIMA_FOR_CONTROL_VALUE(uint8_t n);
+uint8_t MPI_send_tc_AGC_SET_NUMBER_OF_PIXELS_FOR_BASELINE_VALUE(uint8_t n);
+uint8_t MPI_send_tc_AGC_SET_STEP_FACTOR(uint8_t n);
+uint8_t MPI_send_tc_SET_BASELINE_FIRST_PIXEL(uint8_t n);
 
 /**
  * @brief
@@ -80,7 +80,7 @@ uint8_t SEND_MPI_TC_SET_BASELINE_FIRST_PIXEL(uint8_t n);
  * @param mpi_command_response
  * @return 0 - Success, 1 - MPI side failure, 2 - Transmit Error, 3 - Receive Error
  */
-uint8_t sendTelecommandHex(const char *bytes_to_send, size_t bytes_to_send_len, uint8_t *mpi_cmd_response, size_t mpi_cmd_response_len);
+uint8_t MPI_send_telecommand_hex(const char *bytes_to_send, size_t bytes_to_send_len, uint8_t *mpi_cmd_response, size_t mpi_cmd_response_len);
 
 /**
  * Sends tele-command to the MPI over UART
@@ -93,7 +93,7 @@ uint8_t sendTelecommandHex(const char *bytes_to_send, size_t bytes_to_send_len, 
  * 		 	 1 for successful transmission & receive by the MPI
  * 		     0 if an error occurs
  */
-uint8_t sendTelecommand(uint8_t commandCode, const uint8_t *params);
+uint8_t MPI_send_telecommand(uint8_t commandCode, const uint8_t *params);
 // uint8_t sendTelecommand(uint8_t commandCode, uint8_t parameters);
 
 // Task methods to run receive and parsing concurrently
