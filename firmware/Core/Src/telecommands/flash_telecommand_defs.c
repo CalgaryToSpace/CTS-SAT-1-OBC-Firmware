@@ -3,8 +3,10 @@
 
 #include "telecommands/flash_telecommand_defs.h"
 #include "littlefs/flash_driver.h"
+#include "littlefs/flash_benchmark.h"
 #include "debug_tools/debug_uart.h"
 
+#include <stdio.h>
 #include <string.h>
 #include <inttypes.h>
 
@@ -225,8 +227,10 @@ uint8_t TCMDEXEC_flash_write_hex(const char *args_str, TCMD_TelecommandChannel_e
 
 
 /// @brief Telecommand: Erase a sector of flash memory.
-/// @param args_str Arg 0: Chip Number (CS number) as uint, Arg 1: Flash Address as uint,
-///     Arg 2: Number of bytes to erase as uint
+/// @param args_str
+/// - Arg 0: Chip Number (CS number) as uint
+/// - Arg 1: Flash Address as uint
+/// - Arg 2: Number of bytes to erase as uint
 /// @return 0 on success, >0 on error // TODO: explain better
 uint8_t TCMDEXEC_flash_erase(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
@@ -261,4 +265,39 @@ uint8_t TCMDEXEC_flash_erase(const char *args_str, TCMD_TelecommandChannel_enum_
     }
     
     return 0;
+}
+
+/// @brief Telecommand: Benchmarks the erase/write/read operations on the flash memory module.
+/// @param args_str
+/// - Arg 0: Chip Number (CS number) as uint
+/// - Arg 1: Test Data Address as uint
+/// - Arg 2: Test Data Length as uint
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_flash_benchmark_erase_write_read(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    uint64_t chip_num, test_data_address, test_data_length;
+
+    uint8_t arg0_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 0, &chip_num);
+    uint8_t arg1_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 1, &test_data_address);
+    uint8_t arg2_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 2, &test_data_length);
+    
+    if (arg0_result != 0 || arg1_result != 0 || arg2_result != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error parsing arguments. Return codes: arg0=%d, arg1=%d, arg2=%d",
+            arg0_result, arg1_result, arg2_result);
+        return 1;
+    }
+
+    uint8_t result = FLASH_benchmark_erase_write_read((uint8_t)chip_num, (uint32_t)test_data_address, (uint32_t)test_data_length, response_output_buf, response_output_buf_len);
+    response_output_buf[response_output_buf_len - 1] = '\0'; // ensure null-terminated
+    if (result != 0) {
+        snprintf(
+            &response_output_buf[strlen(response_output_buf)],
+            response_output_buf_len - strlen(response_output_buf) - 1,
+            "Error benchmarking flash: Returned %d", result);
+        return 2;
+    }
+    
+    return result;
 }

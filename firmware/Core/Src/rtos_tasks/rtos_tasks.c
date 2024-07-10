@@ -104,7 +104,6 @@ void TASK_handle_uart_telecommands(void *argument) {
 				continue;
 			}
 
-			// execute/queue the command
 			// process the telecommand name
 			int32_t tcmd_idx = TCMD_parse_telecommand_get_index((char *)latest_tcmd, latest_tcmd_len);
 			if (tcmd_idx < 0) {
@@ -157,14 +156,19 @@ void TASK_handle_uart_telecommands(void *argument) {
 			latest_tcmd[latest_tcmd_len] = '\0';
 			char response_buf[512];
 			memset(response_buf, 0, sizeof(response_buf));
+			const uint32_t uptime_before_tcmd_exec_ms = HAL_GetTick();
 			const uint8_t tcmd_result = tcmd_def.tcmd_func(
 				args_str_no_parens,
 				TCMD_TelecommandChannel_DEBUG_UART,
 				response_buf,
 				sizeof(response_buf));
+			const uint32_t uptime_after_tcmd_exec_ms = HAL_GetTick();
+			const uint32_t tcmd_exec_duration_ms = uptime_after_tcmd_exec_ms - uptime_before_tcmd_exec_ms;
 
 			// print back the response
-			DEBUG_uart_print_str("======== Response (err=");
+			DEBUG_uart_print_str("======== Response (duration=");
+			DEBUG_uart_print_int32(tcmd_exec_duration_ms);
+			DEBUG_uart_print_str("ms, err=");
 			DEBUG_uart_print_uint32(tcmd_result);
 			if (tcmd_result != 0) {
 				DEBUG_uart_print_str(" !!!!!! ERROR !!!!!!");

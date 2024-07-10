@@ -63,7 +63,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "set_system_time",
         .tcmd_func = TCMDEXEC_set_system_time,
-        .number_of_args = 0,
+        .number_of_args = 1,
     },
     {
         .tcmd_name = "available_telecommands",
@@ -96,6 +96,11 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "flash_erase",
         .tcmd_func = TCMDEXEC_flash_erase,
         .number_of_args = 2,
+    },
+    {
+        .tcmd_name = "flash_benchmark_erase_write_read",
+        .tcmd_func = TCMDEXEC_flash_benchmark_erase_write_read,
+        .number_of_args = 3,
     },
     // ****************** END SECTION: flash_telecommand_defs ******************
 
@@ -130,6 +135,11 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_func = TCMDEXEC_fs_demo_write_then_read,
         .number_of_args = 0,
     },
+    {
+        .tcmd_name = "fs_benchmark_write_read",
+        .tcmd_func = TCMDEXEC_fs_benchmark_write_read,
+        .number_of_args = 2,
+    },
     // ****************** END SECTION: lfs_telecommand_defs ******************
 
 };
@@ -141,6 +151,12 @@ const int16_t TCMD_NUM_TELECOMMANDS = sizeof(TCMD_telecommand_definitions) / siz
 // uint8_t <function_name>(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
 //                          char *response_output_buf, uint16_t response_output_buf_len)
 
+/// @brief A simple telecommand that responds with "Hello, world!"
+/// @param args_str No arguments expected
+/// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
+/// @param response_output_buf The buffer to write the response to
+/// @param response_output_buf_len The maximum length of the response_output_buf (its size)
+/// @return 0 if successful, >0 if an error occurred (but hello_world can't return an error)
 uint8_t TCMDEXEC_hello_world(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     snprintf(response_output_buf, response_output_buf_len, "Hello, world!\n");
@@ -211,27 +227,31 @@ uint8_t TCMDEXEC_run_all_unit_tests(const char *args_str, TCMD_TelecommandChanne
 
 uint8_t TCMDEXEC_available_telecommands(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-    
-    char response[512] = {0};
-    char *p = response;
-    ssize_t left = sizeof(response);
-    size_t len = 0;
-    snprintf(p, left, "%s", "Available_telecommands\n");
-    p += 23;
-    left -= 23;
-    for (uint16_t i = 0; i < TCMD_NUM_TELECOMMANDS; i++) {
-        len = strlen(TCMD_telecommand_definitions[i].tcmd_name) + 6;
-        snprintf(p, left, "%3u) %s\n", i + 1, TCMD_telecommand_definitions[i].tcmd_name);
-        p += len;
-        if (left > len) {
-            left -= len;
-        }
-        else {
+    char *p = response_output_buf;
+    uint16_t remaining_space = response_output_buf_len;
+
+    // Start response with header
+    snprintf(p, remaining_space, "Available_telecommands\n");
+    const uint16_t header_length = strlen(p);
+    p += header_length;
+    remaining_space -= header_length;
+
+    // Append each telecommand name to the response
+    for (uint16_t tcmd_idx = 0; tcmd_idx < TCMD_NUM_TELECOMMANDS; tcmd_idx++) {
+        const uint16_t line_length = snprintf(
+            p,
+            remaining_space,
+            "%3u) %s\n",
+            tcmd_idx + 1,
+            TCMD_telecommand_definitions[tcmd_idx].tcmd_name
+        );
+        if (line_length >= remaining_space) {
+            // Not enough space left to append more telecommands
             break;
         }
+        p += line_length;
+        remaining_space -= line_length;
     }
-    snprintf(response_output_buf, response_output_buf_len, "%s", response);
 
     return 0;
 }
-

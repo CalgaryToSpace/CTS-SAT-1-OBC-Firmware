@@ -14,14 +14,18 @@
 
 #include "littlefs/flash_driver.h"
 
+extern lfs_t LFS_filesystem; // LittleFS filesystem object; traditionally called `lfs`
+extern struct lfs_config LFS_cfg;
+extern struct lfs_file_config LFS_file_cfg;
+
 /*---------------------------FUNCTIONS---------------------------*/
 int8_t LFS_format();
 int8_t LFS_mount();
 int8_t LFS_unmount();
 int8_t LFS_list_directory(char *root_directory);
-int8_t LFS_delete_file(char *file_name);
+int8_t LFS_delete_file(const char file_name[]);
 int8_t LFS_make_directory(char *dir_name);
-int8_t LFS_write_file(char *file_name, uint8_t *write_buffer, uint32_t write_buffer_len);
-int8_t LFS_read_file(char *file_name, uint8_t *read_buffer, uint32_t read_buffer_len);
+int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t write_buffer_len);
+int8_t LFS_read_file(const char file_name[], uint8_t *read_buffer, uint32_t read_buffer_len);
 
 #endif /* __INCLUDE_GUARD__LITTLEFS_HELPER_H__ */
