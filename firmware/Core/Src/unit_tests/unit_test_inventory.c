@@ -45,7 +45,11 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func = TEST_EXEC__TCMD_get_suffix_tag_uint64,
         .test_file = "telecommands/telecommand_parser",
         .test_func_name = "TCMD_get_suffix_tag_uint64"
-    }
+    },
+        .test_func = TEST_EXEC__TCMD_hex_string_to_byte_array,
+        .test_file = "telecommands/telecommand_args_helpers",
+        .test_func_name = "TCMD_hex_string_to_byte_array"
+    },
     
 };
 
