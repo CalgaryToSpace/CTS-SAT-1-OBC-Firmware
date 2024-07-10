@@ -28,16 +28,16 @@ uint8_t TEST_EXEC__TCMD_hex_string_to_byte_array(){
 
     TEST_ASSERT(TCMD_extract_hex_array_arg(normal_delim,0,result,sizeof(result))==0); // tests if function has no error
 
-    if (result[0]!=255){val==1;}
-    if (result[1]!=255){val==1;}
-    if (result[2]!=170){val==1;}
-    if (result[3]!=1){val==1;}
+    if (result[0]!=255){val=1;} 
+    if (result[1]!=255){val=1;} 
+    if (result[2]!=170){val=1;} 
+    if (result[3]!=1){val=1;} 
 
     TEST_ASSERT(TCMD_extract_hex_array_arg(normal_args_and_uneven,1,result,sizeof(result))==0);
-    if (result[0]!=1){val==1;}
-    if (result[1]!=22){val==1;}
-    if (result[2]!=0){val==1;}
-    if (result[3]!=255){val==1;}
+    if (result[0]!=1){val=1;}
+    if (result[1]!=34){val=1;}
+    if (result[2]!=0){val=1;}
+    if (result[3]!=255){val=1;}
 
     TEST_ASSERT(TCMD_extract_hex_array_arg(not_even,0,result,sizeof(result))==1); // testing uneven
     uint8_t result_odd[3];
