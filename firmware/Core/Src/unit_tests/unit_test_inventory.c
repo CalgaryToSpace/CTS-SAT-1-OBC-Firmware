@@ -41,6 +41,11 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_file = "transforms/byte_transforms",
         .test_func_name = "GEN_convert_big_endian_four_byte_array_to_uint32"
     },
+    {
+        .test_func = TEST_EXEC__TCMD_hex_string_to_byte_array,
+        .test_file = "telecommands/telecommand_args_helpers",
+        .test_func_name = "TCMD_hex_string_to_byte_array"
+    },
     
 };
 
