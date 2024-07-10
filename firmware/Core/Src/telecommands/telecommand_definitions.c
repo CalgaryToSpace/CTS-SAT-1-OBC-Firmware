@@ -122,9 +122,10 @@ uint8_t TCMDEXEC_get_integer_configuration_variable(const uint8_t *args_str, TCM
         return 0;
     }
 
-    uint64_t num = 0;
-
-    const uint8_t found_num_type = CONFIG_get_config_integer_value(res.width_bytes, &num, res.variable_pointer);
+    size_t num = 0;
+    char num_type_str[10];
+    memset(num_type_str, 0, 10);
+    const uint8_t found_num_type = CONFIG_get_integer_type(res.width_bytes, &num, res.variable_pointer, num_type_str);
 
     if (found_num_type != 0)
     {
@@ -132,7 +133,7 @@ uint8_t TCMDEXEC_get_integer_configuration_variable(const uint8_t *args_str, TCM
         return 0;
     }
 
-    snprintf(response_output_buf, response_output_buf_len, "%s \nwidth: %d\nvalue: %lu\n", res.variable_name, res.width_bytes, num);
+    snprintf(response_output_buf, response_output_buf_len, "%s | %d | %d\n", res.variable_name, res.width_bytes, num);
 
     return 0;
 }

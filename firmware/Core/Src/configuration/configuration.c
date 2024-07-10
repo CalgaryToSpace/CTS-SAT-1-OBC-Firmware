@@ -1,5 +1,5 @@
 #include "configuration/configuration.h"
-#include "eps_config.h"
+#include "eps/eps_config.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -41,19 +41,25 @@ uint8_t CONFIG_get_config_integer_value(uint8_t width, uint64_t *value, const vo
     switch (width)
     {
     case 1:
+        strcat(type_as_str, "uint8_t ");
         *value = *(uint8_t *)var_ptr;
         break;
     case 2:
+        strcat(type_as_str, "uint16_t ");
         *value = *(uint16_t *)var_ptr;
         break;
     case 4:
+        strcat(type_as_str, "uint32_t ");
         *value = *(uint32_t *)var_ptr;
         break;
     case 8:
+        strcat(type_as_str, "uint64_t ");
         *value = *(uint64_t *)var_ptr;
         break;
     default:
+        strcat(type_as_str, "unknown ");
         return 1;
+        break;
     }
     return 0;
 }
@@ -144,12 +150,10 @@ uint8_t CONFIG_find_integer_variable_by_name(const char *name, const uint8_t str
 {
     for (uint8_t i = 0; i < CTS1_Integer_Configuration_Variables_Count; i++)
     {
-        const CONFIG_integer_config_entry_t current_var = CTS1_Integer_Configuration_Variables[i];
-        if (strncmp(name, current_var.variable_name, str_len) == 0)
+        const char *current_name = CTS1_Integer_Configuration_Variables[i].variable_name;
+        if (strncmp(name, current_name, str_len) == 0)
         {
-            result->variable_name = current_var.variable_name;
-            result->variable_pointer = current_var.variable_pointer;
-            result->width_bytes = current_var.width_bytes;
+            result = &CTS1_Integer_Configuration_Variables[i];
             return 0;
         }
     }

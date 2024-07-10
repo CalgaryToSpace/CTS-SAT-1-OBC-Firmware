@@ -142,17 +142,16 @@ void TASK_handle_uart_telecommands(void *argument)
 				DEBUG_uart_print_str("ERROR: You must have parenthesis for the args. You need an opening paren.\n");
 				continue;
 			}
-
+			
 			// closing parenthesis index
-			int32_t end_of_args_idx = GEN_get_index_of_substring_in_array((char *)latest_tcmd, latest_tcmd_len, ")");
-			if (end_of_args_idx < 0)
-			{
+			int32_t end_of_args_idx = GEN_get_index_of_substring_in_array((char*)latest_tcmd, latest_tcmd_len, ")");
+			if (end_of_args_idx < 0) {
 				DEBUG_uart_print_str("ERROR: You must have parenthesis for the args. No closing paren found.\n");
 				continue;
 			}
 
 			// TODO: maybe log/print args too
-
+			
 			const uint16_t arg_len = end_of_args_idx - start_of_args_idx - 1;
 			uint8_t args_str_no_parens[arg_len + 1];
 			memcpy(args_str_no_parens, &latest_tcmd[start_of_args_idx + 1], arg_len);
