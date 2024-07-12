@@ -8,6 +8,7 @@
 #include "unit_tests/test_tests.h"
 #include "unit_tests/test_telecommand_arg_helpers.h"
 #include "unit_tests/unit_test_helpers.h"
+#include "unit_tests/test_configuration_variables.h"
 
 
 // extern
@@ -84,6 +85,36 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_file = "log/log",
         .test_func_name = "TEST_EXEC__LOG_all_sinks_except"
     },
+    {
+        .test_func = TEST_EXEC__setup_configuration_variables,
+        .test_file = "configuration/configuration_variables",
+        .test_func_name = "TEST_EXEC__setup_configuration_variables"
+    },
+    {
+        .test_func = TEST_EXEC__compare_search_config_names,
+        .test_file = "configuration/configuration_variables",
+        .test_func_name = "TEST_EXEC__compare_search_config_names"
+    },
+    {
+        .test_func = TEST_EXEC__get_int_var_index,
+        .test_file = "configuration/configuration_variables",
+        .test_func_name = "TEST_EXEC__get_int_var_index"
+    },
+    {
+        .test_func = TEST_EXEC__get_str_var_index,
+        .test_file = "configuration/configuration_variables",
+        .test_func_name = "TEST_EXEC__get_str_var_index"
+    },
+    {
+        .test_func = TEST_EXEC__set_int_variable,
+        .test_file = "configuration/configuration_variables",
+        .test_func_name = "TEST_EXEC__set_int_variable"
+    },
+    {
+        .test_func = TEST_EXEC__set_str_variable,
+        .test_file = "configuration/configuration_variables",
+        .test_func_name = "TEST_EXEC__set_str_variable"
+    }
 };
 
 // extern
