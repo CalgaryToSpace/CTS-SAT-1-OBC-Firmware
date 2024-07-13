@@ -3,6 +3,6 @@
 
 #include <stdint.h>
 
-uint8_t ANT_CMD_system_reset();
+uint8_t ANT_CMD_measure_temp();
 
 #endif /* __INCLUDE_GUARD_ANT_COMMANDS_H__ */

@@ -22,6 +22,9 @@ uint8_t ANT_send_cmd_get_response(
     const uint8_t cmd_buf[], uint8_t cmd_len,
     uint8_t rx_buf[], uint16_t rx_len
     ) {
-        // ASSERT: 
+        // ASSERT: rx_buf_len must be >= 5 for all commands. Raise error if not.
+        if(rx_len < ANT_DEFAULT_RX_LEN_MIN) return 1;
+
+        
 
 }
