@@ -24,51 +24,61 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "hello_world",
         .tcmd_func = TCMDEXEC_hello_world,
         .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
         .tcmd_name = "heartbeat_off",
         .tcmd_func = TCMDEXEC_heartbeat_off,
         .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
         .tcmd_name = "heartbeat_on",
         .tcmd_func = TCMDEXEC_heartbeat_on,
         .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
         .tcmd_name = "core_system_stats",
         .tcmd_func = TCMDEXEC_core_system_stats,
         .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
         .tcmd_name = "echo_back_args",
         .tcmd_func = TCMDEXEC_echo_back_args,
         .number_of_args = 1, // TODO: support more than 1 arg
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
         .tcmd_name = "echo_back_uint32_args",
         .tcmd_func = TCMDEXEC_echo_back_uint32_args,
         .number_of_args = 10,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
         .tcmd_name = "run_all_unit_tests",
         .tcmd_func = TCMDEXEC_run_all_unit_tests,
         .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
         .tcmd_name = "get_system_time",
         .tcmd_func = TCMDEXEC_get_system_time,
         .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
         .tcmd_name = "set_system_time",
         .tcmd_func = TCMDEXEC_set_system_time,
         .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
         .tcmd_name = "available_telecommands",
         .tcmd_func = TCMDEXEC_available_telecommands,
         .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
 
     // ****************** SECTION: flash_telecommand_defs ******************
@@ -76,31 +86,37 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "flash_activate_each_cs",
         .tcmd_func = TCMDEXEC_flash_activate_each_cs,
         .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
         .tcmd_name = "flash_each_is_reachable",
         .tcmd_func = TCMDEXEC_flash_each_is_reachable,
         .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
         .tcmd_name = "flash_read_hex",
         .tcmd_func = TCMDEXEC_flash_read_hex,
         .number_of_args = 3,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
         .tcmd_name = "flash_write_hex",
         .tcmd_func = TCMDEXEC_flash_write_hex,
         .number_of_args = 3,
+        .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
     },
     {
         .tcmd_name = "flash_erase",
         .tcmd_func = TCMDEXEC_flash_erase,
         .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
     },
     {
         .tcmd_name = "flash_benchmark_erase_write_read",
         .tcmd_func = TCMDEXEC_flash_benchmark_erase_write_read,
         .number_of_args = 3,
+        .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
     },
     // ****************** END SECTION: flash_telecommand_defs ******************
 
@@ -109,36 +125,43 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "fs_format_storage",
         .tcmd_func = TCMDEXEC_fs_format_storage,
         .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
         .tcmd_name = "fs_mount",
         .tcmd_func = TCMDEXEC_fs_mount,
         .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
         .tcmd_name = "fs_unmount",
         .tcmd_func = TCMDEXEC_fs_unmount,
         .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
         .tcmd_name = "fs_write_file",
         .tcmd_func = TCMDEXEC_fs_write_file,
         .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
         .tcmd_name = "fs_read_file",
         .tcmd_func = TCMDEXEC_fs_read_file,
         .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
         .tcmd_name = "fs_demo_write_then_read",
         .tcmd_func = TCMDEXEC_fs_demo_write_then_read,
         .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
         .tcmd_name = "fs_benchmark_write_read",
         .tcmd_func = TCMDEXEC_fs_benchmark_write_read,
         .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     // ****************** END SECTION: lfs_telecommand_defs ******************
 
