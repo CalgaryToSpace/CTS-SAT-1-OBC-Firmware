@@ -12,7 +12,7 @@
 /// @param str_len Max length of the input string
 /// @param result Pointer to the result
 /// @return 0 if successful, 1 if the string is empty, 2 if the string does not start with an integer
-uint8_t TCMD_ascii_to_uint64(const uint8_t *str, uint32_t str_len, uint64_t *result) {
+uint8_t TCMD_ascii_to_uint64(const char *str, uint32_t str_len, uint64_t *result) {
     if (str_len == 0) {
         return 1;
     }
@@ -42,7 +42,7 @@ uint8_t TCMD_ascii_to_uint64(const uint8_t *str, uint32_t str_len, uint64_t *res
 /// @param result Pointer to the result
 /// @return 0 if successful, 1 if the string is empty, 2 if the string does not contain enough arguments
 ///        3 if the argument is not an integer, 4 for other error
-uint8_t TCMD_extract_uint64_arg(const uint8_t *str, uint32_t str_len, uint8_t arg_index, uint64_t *result) {
+uint8_t TCMD_extract_uint64_arg(const char *str, uint32_t str_len, uint8_t arg_index, uint64_t *result) {
     if (str_len == 0) {
         return 1;
     }
