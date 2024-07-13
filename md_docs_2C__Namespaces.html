@@ -104,7 +104,7 @@ General Code</h1>
 <li><code>DEBUG_UART_</code>: related to debugging via UART, and debugging UART communications</li>
 <li><code>DEBUG_I2C_</code>: related to I2C</li>
 <li><code>LFS_</code>: related to LittleFS, the satellite's filesystem<ul>
-<li>Note that functions implemented in the LittleFS library will be prefixed with <code>lfs_</code> (lowercase).</li>
+<li>Note that functions implemented in the LittleFS library are prefixed with <code>lfs_</code> (lowercase).</li>
 <li>The uppercase <code>LFS_</code> prefix indicates that the function is implemented by the CTS team.</li>
 </ul>
 </li>
@@ -120,7 +120,8 @@ General Code</h1>
 Satellite Subsystems</h1>
 <ul>
 <li><code>ADCS_</code>: duh</li>
-<li><code>EPS_</code>: duh</li>
+<li><code>EPS_</code>: related to the Electrical Power System</li>
+<li><code>EPS_CMD_</code>: functions which trigger a command to the EPS subsystem</li>
 <li><code>GPS_</code>: duh</li>
 <li><code>COMMS_ANT_</code>: related to the I2C communications for the deployable communications antenna</li>
 <li><code>AX100_</code>: related to the AX100 communication module, at a low level</li>
@@ -128,7 +129,7 @@ Satellite Subsystems</h1>
 <li>Note: we may want to discard either <code>COMMS_</code> or <code>AX100_</code> as we begin implementation</li>
 </ul>
 </li>
-<li><code>BOOM_</code>: related to the burn wire driver for the boom subsystem</li>
+<li><code>BOOM_</code>: related to the burn wire driver for the deployable composite latice boom (DCLB) subsystem</li>
 <li><code>CAM_</code>: related to the UART camera</li>
 <li><code>LORA_</code>: related to the UART LoRaWAN communications systems, if integrated</li>
 <li><code>ENVIRO_</code>: related to monitoring the environment (e.g., the on-OBC temperature sensor)</li>
@@ -138,6 +139,12 @@ Satellite Subsystems</h1>
 </li>
 </ul>
 <h1><a class="anchor" id="autotoc_md13"></a>
+Other Conventions</h1>
+<ul>
+<li><code>_CFG_</code>: Variables can contain <code>_CFG_</code> to indicate that they are configuration variables of another subsystem/namespace. For example, <code>EPS_CFG_</code> denotes an EPS subsystem configuration variable.</li>
+<li><code>_CMD_</code>: Functions can contain <code>_CMD_</code> to indicate that they trigger a command to that subsystem. For example, <code>EPS_CMD_</code> denotes a function which triggers a command to the EPS subsystem (and gets the EPS's response).</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md14"></a>
 Libraries, External, etc.</h1>
 <ul>
 <li><code>HAL_</code>: STM32 HAL (Hardware Abstraction Layer)</li>

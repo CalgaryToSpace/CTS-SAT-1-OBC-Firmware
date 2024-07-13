@@ -87,13 +87,13 @@ $(function(){ initResizable(false); });
   <div class="headertitle"><div class="title">CTS-SAT-1-OBC-Firmware</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md42"></a>Firmware and ground support software for the CTS-SAT-1 ("FrontierSat") mission. Firmware runs on the STM32-based Onboard Computer.</p>
-<h1><a class="anchor" id="autotoc_md43"></a>
+<div class="textblock"><p><a class="anchor" id="autotoc_md43"></a>Firmware and ground support software for the CTS-SAT-1 ("FrontierSat") mission. Firmware runs on the STM32-based Onboard Computer.</p>
+<h1><a class="anchor" id="autotoc_md44"></a>
 Quick Links</h1>
 <ul>
 <li><a href="https://calgarytospace.github.io/CTS-SAT-1-OBC-Firmware">Doxygen Documentation</a></li>
 </ul>
-<h1><a class="anchor" id="autotoc_md44"></a>
+<h1><a class="anchor" id="autotoc_md45"></a>
 Developing Firmware with VS Code</h1>
 <ol type="1">
 <li>On Windows only, install the <a href="https://www.st.com/en/development-tools/stsw-link009.html">ST-Link Debugging Driver</a> for compatibility with OpenOCD.</li>
@@ -110,38 +110,38 @@ Developing Firmware with VS Code</h1>
 <li>Plug in an STM32 dev kit, and flash the project using the "Flash STM32" button/command palate option.</li>
 <li>Optional: setup the Codeium extension by creating an account. Codeium is a free GitHub Copilot-like extension which can boost productivity when used effectively.</li>
 </ol>
-<h1><a class="anchor" id="autotoc_md45"></a>
+<h1><a class="anchor" id="autotoc_md46"></a>
 Developing and Using the Ground Support Software</h1>
 <p>See the <a class="el" href="cts1__ground__support_2README_8md.html">CTS-SAT-1 Ground Support Software README</a> for more information.</p>
-<h2><a class="anchor" id="autotoc_md46"></a>
+<h2><a class="anchor" id="autotoc_md47"></a>
 Troubleshooting</h2>
 <ol type="1">
 <li>Check that your MicroUSB cable supports data transfer. Many MicroUSB cables are power-only.</li>
 <li>Disable your antivirus if it starts removing the compiler.</li>
 <li>Use the Ctrl+Shift+P command palate to run "STM32: Install all the build tools ...".</li>
 </ol>
-<h2><a class="anchor" id="autotoc_md47"></a>
+<h2><a class="anchor" id="autotoc_md48"></a>
 Updating the IOC File/Regenerating Boilerplate</h2>
 <p>The IOC file must be updated using CubeMX instead of STM32CubeIDE now. Feel free to test IOC file changes, but do not commit IOC file changes nor auto-generated code changes. Instead, once you've found the ideal configuration, request the changes to a Team Lead (who will make the change directly in the <code>main</code> branch). Then, rebase off of the <code>main</code> branch.</p>
-<h1><a class="anchor" id="autotoc_md48"></a>
+<h1><a class="anchor" id="autotoc_md49"></a>
 Debugging Setup</h1>
 <ul>
 <li>Connect to the STM32 debug serial port at baud=115200.</li>
 <li>Use Breakpoints in VS Code to pause execution and explore the stack. Breakpoint are obeyed when you use the "Debug STM32" button to flash the chip.</li>
 </ul>
 <p>The "SerialTest" serial terminal works well for sending commands: <a href="https://github.com/wh201906/SerialTest/releases/">https://github.com/wh201906/SerialTest/releases/</a>, and is recommended. The ground support software (see above) is also solid.</p>
-<h2><a class="anchor" id="autotoc_md49"></a>
+<h2><a class="anchor" id="autotoc_md50"></a>
 Python Serial Terminal</h2>
 <p>The Python serial terminal is useful for receiving only.</p>
 <div class="fragment"><div class="line">python3 -m pip install pyserial</div>
 <div class="line">python3 -m serial.tools.miniterm - 115200</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md50"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md51"></a>
 Contributors</h1>
 <p>Please add your name to the list below in your first Pull Request!</p>
 <ul>
 <li>Parker L.</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md51"></a>
+<h1><a class="anchor" id="autotoc_md52"></a>
 Random Notes</h1>
 <ul>
 <li>Lower NVIC priority number means higher priority.</li>

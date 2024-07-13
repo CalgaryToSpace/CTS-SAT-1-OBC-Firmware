@@ -27,14 +27,14 @@ var searchData=
   ['handle_5fuart_5fport_5fchange_24',['handle_uart_port_change',['../namespacects1__ground__support_1_1terminal__app_1_1dash__gui.html#a248ef2a1e01206097e4378065b427855',1,'cts1_ground_support::terminal_app::dash_gui']]],
   ['handling_25',['Error Handling',['../md_docs_2C__General__Guidelines.html#autotoc_md8',1,'']]],
   ['hardfault_5fhandler_26',['HardFault_Handler',['../stm32l4xx__it_8h.html#a2bffc10d5bd4106753b7c30e86903bea',1,'HardFault_Handler(void):&#160;stm32l4xx_it.c'],['../stm32l4xx__it_8c.html#a2bffc10d5bd4106753b7c30e86903bea',1,'HardFault_Handler(void):&#160;stm32l4xx_it.c']]],
-  ['hclk_20hz_204000000_27',['HCLK(Hz)                               | 4000000',['../system__stm32l4xx_8c.html#autotoc_md26',1,'']]],
+  ['hclk_20hz_204000000_27',['HCLK(Hz)                               | 4000000',['../system__stm32l4xx_8c.html#autotoc_md27',1,'']]],
   ['head_28',['head',['../structlfs__dir.html#a086e8d93663f5528fcc7c2ff7802883d',1,'lfs_dir::head'],['../structlfs__file_1_1lfs__ctz.html#aff9613735c2288e388bf3000a66f4720',1,'lfs_file::lfs_ctz::head']]],
   ['hi2c1_29',['hi2c1',['../main_8h.html#af7b2c26e44dadaaa798a5c3d82914ba7',1,'hi2c1:&#160;main.c'],['../main_8c.html#af7b2c26e44dadaaa798a5c3d82914ba7',1,'hi2c1:&#160;main.c']]],
   ['hi2c2_30',['hi2c2',['../main_8h.html#ac379bcc152d860f08b1279fd3e232295',1,'hi2c2:&#160;main.c'],['../main_8c.html#ac379bcc152d860f08b1279fd3e232295',1,'hi2c2:&#160;main.c']]],
   ['hi2c3_31',['hi2c3',['../main_8h.html#a5ccf4a01a8d7f08d3190181f843f7515',1,'hi2c3:&#160;main.c'],['../main_8c.html#a5ccf4a01a8d7f08d3190181f843f7515',1,'hi2c3:&#160;main.c']]],
   ['hi2c4_32',['hi2c4',['../main_8h.html#a818789480a74b70bbcaf6d73e8e763ed',1,'hi2c4:&#160;main.c'],['../main_8c.html#a818789480a74b70bbcaf6d73e8e763ed',1,'hi2c4:&#160;main.c']]],
   ['hlpuart1_33',['hlpuart1',['../main_8h.html#a5c3f9dccaa7cebcc70e1657af9e5e5dc',1,'hlpuart1:&#160;main.c'],['../main_8c.html#a5c3f9dccaa7cebcc70e1657af9e5e5dc',1,'hlpuart1:&#160;main.c'],['../stm32l4xx__it_8c.html#a5c3f9dccaa7cebcc70e1657af9e5e5dc',1,'hlpuart1:&#160;main.c']]],
-  ['how_20to_20write_20a_20test_34',['How to Write a Test',['../md_docs_2C__Unit__Tests.html#autotoc_md17',1,'']]],
+  ['how_20to_20write_20a_20test_34',['How to Write a Test',['../md_docs_2C__Unit__Tests.html#autotoc_md18',1,'']]],
   ['hse_5fstartup_5ftimeout_35',['HSE_STARTUP_TIMEOUT',['../stm32l4xx__hal__conf_8h.html#a68ecbc9b0a1a40a1ec9d18d5e9747c4f',1,'stm32l4xx_hal_conf.h']]],
   ['hse_5fvalue_36',['HSE_VALUE',['../stm32l4xx__hal__conf_8h.html#aeafcff4f57440c60e64812dddd13e7cb',1,'HSE_VALUE:&#160;stm32l4xx_hal_conf.h'],['../group__STM32L4xx__System__Private__Defines.html#gaeafcff4f57440c60e64812dddd13e7cb',1,'HSE_VALUE:&#160;system_stm32l4xx.c']]],
   ['hsi48_5fvalue_37',['HSI48_VALUE',['../stm32l4xx__hal__conf_8h.html#a47f01e5e3f2edfa94bf74c08835f3875',1,'stm32l4xx_hal_conf.h']]],
@@ -48,5 +48,5 @@ var searchData=
   ['huart3_45',['huart3',['../main_8h.html#ab7c63c1b0f65db92b6a4ea19edf957e1',1,'huart3:&#160;main.c'],['../main_8c.html#ab7c63c1b0f65db92b6a4ea19edf957e1',1,'huart3:&#160;main.c']]],
   ['huart4_46',['huart4',['../main_8h.html#ae273feb3e0dc44e38892650faa58fced',1,'huart4:&#160;main.c'],['../main_8c.html#ae273feb3e0dc44e38892650faa58fced',1,'huart4:&#160;main.c']]],
   ['huart5_47',['huart5',['../main_8h.html#a25a82fcf0cd24eb6d39977cb5864cec8',1,'huart5:&#160;main.c'],['../main_8c.html#a25a82fcf0cd24eb6d39977cb5864cec8',1,'huart5:&#160;main.c'],['../stm32l4xx__it_8c.html#a25a82fcf0cd24eb6d39977cb5864cec8',1,'huart5:&#160;main.c']]],
-  ['hz_204000000_48',['Hz 4000000',['../system__stm32l4xx_8c.html#autotoc_md26',1,'HCLK(Hz)                               | 4000000'],['../system__stm32l4xx_8c.html#autotoc_md25',1,'SYSCLK(Hz)                             | 4000000']]]
+  ['hz_204000000_48',['Hz 4000000',['../system__stm32l4xx_8c.html#autotoc_md27',1,'HCLK(Hz)                               | 4000000'],['../system__stm32l4xx_8c.html#autotoc_md26',1,'SYSCLK(Hz)                             | 4000000']]]
 ];
