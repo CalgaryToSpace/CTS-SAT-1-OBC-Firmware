@@ -54,7 +54,9 @@ typedef enum {
     FLASH_ERR_SPI_RECEIVE_FAILED    = -4,   // Error occurred while receiving SPI signal
     FLASH_ERR_DEVICE_BUSY_TIMEOUT   = -6,   // Took too long for the device to be in standby
     FLASH_ERR_UNKNOWN               = -7,   // Unknown error occurred (code reached where it shouldn't have been possible)
-    FLASH_ERR_STATUS_REG_ERROR      = -8    // Error occurred which was indicated by one of the Status Register Bits.
+    FLASH_ERR_STATUS_REG_ERROR      = -8,   // Error occurred which was indicated by one of the Status Register Bits.
+    FLASH_ERR_SPI_TRANSMIT_TIMEOUT  = -10,  // Timeout when transmitting SPI signal
+    FLASH_ERR_SPI_RECEIVE_TIMEOUT   = -11   // Timeout when receiving SPI signal
 } FLASH_error_enum_t;
 
 /*-----------------------------DRIVER FUNCTIONS-----------------------------*/

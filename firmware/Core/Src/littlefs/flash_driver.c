@@ -98,12 +98,22 @@ FLASH_error_enum_t FLASH_read_status_register(SPI_HandleTypeDef *hspi, uint8_t c
     const HAL_StatusTypeDef tx_result = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_CMD_READ_STATUS_REG_1, 1, FLASH_HAL_TIMEOUT_MS);
     if (tx_result != HAL_OK) {
         FLASH_deactivate_chip_select();
+
+        if (tx_result == HAL_TIMEOUT) {
+            return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
+        }
+        
         return FLASH_ERR_SPI_TRANSMIT_FAILED;
     }
 
     const HAL_StatusTypeDef rx_result = HAL_SPI_Receive(hspi, (uint8_t *)buf, 1, FLASH_HAL_TIMEOUT_MS);
     if (rx_result != HAL_OK) {
         FLASH_deactivate_chip_select();
+
+        if (rx_result == HAL_TIMEOUT) {
+            return FLASH_ERR_SPI_RECEIVE_TIMEOUT;
+        }
+
         return FLASH_ERR_SPI_RECEIVE_FAILED;
     }
 
@@ -126,6 +136,11 @@ FLASH_error_enum_t FLASH_write_enable(SPI_HandleTypeDef *hspi, uint8_t chip_numb
     const HAL_StatusTypeDef tx_result_1 = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_CMD_WRITE_ENABLE, 1, FLASH_HAL_TIMEOUT_MS);
     FLASH_deactivate_chip_select();
     if (tx_result_1 != HAL_OK) {
+
+        if (tx_result_1 == HAL_TIMEOUT) {
+            return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
+        }
+
         return FLASH_ERR_SPI_TRANSMIT_FAILED;
     }
 
@@ -176,6 +191,11 @@ FLASH_error_enum_t FLASH_write_disable(SPI_HandleTypeDef *hspi, uint8_t chip_num
     const HAL_StatusTypeDef tx_status = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_CMD_WRITE_DISABLE, 1, FLASH_HAL_TIMEOUT_MS);
     FLASH_deactivate_chip_select();
     if (tx_status != HAL_OK) {
+
+        if (tx_status == HAL_TIMEOUT) {
+            return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
+        }
+        
         return FLASH_ERR_SPI_TRANSMIT_FAILED;
     }
 
@@ -233,11 +253,21 @@ FLASH_error_enum_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs
     const HAL_StatusTypeDef tx_result_1 = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_CMD_SECTOR_ERASE_4_BYTE_ADDR, 1, FLASH_HAL_TIMEOUT_MS);
     if (tx_result_1 != HAL_OK) {
         FLASH_deactivate_chip_select();
+
+        if (tx_result_1 == HAL_TIMEOUT) {
+            return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
+        }
+        
         return FLASH_ERR_SPI_TRANSMIT_FAILED;
     }
     const HAL_StatusTypeDef tx_result_2 = HAL_SPI_Transmit(hspi, (uint8_t *)addr_bytes, 4, FLASH_HAL_TIMEOUT_MS);
     if (tx_result_2 != HAL_OK) {
         FLASH_deactivate_chip_select();
+
+        if (tx_result_2 == HAL_TIMEOUT) {
+            return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
+        }
+
         return FLASH_ERR_SPI_TRANSMIT_FAILED;
     }
     FLASH_deactivate_chip_select();
@@ -307,16 +337,31 @@ FLASH_error_enum_t FLASH_write(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs
     const uint8_t tx_result_1 = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_CMD_WRITE_4_BYTE_ADDR, 1, FLASH_HAL_TIMEOUT_MS);
     if (tx_result_1 != HAL_OK) {
         FLASH_deactivate_chip_select();
+
+        if (tx_result_1 == HAL_TIMEOUT) {
+            return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
+        }
+
         return FLASH_ERR_SPI_TRANSMIT_FAILED;
     }
     const uint8_t tx_result_2 = HAL_SPI_Transmit(hspi, (uint8_t *)addr_bytes, 4, FLASH_HAL_TIMEOUT_MS);
     if (tx_result_2 != HAL_OK) {
         FLASH_deactivate_chip_select();
+
+        if (tx_result_2 == HAL_TIMEOUT) {
+            return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
+        }
+
         return FLASH_ERR_SPI_TRANSMIT_FAILED;
     }
     const uint8_t tx_result_3 = HAL_SPI_Transmit(hspi, (uint8_t *)packet_buffer, packet_buffer_len, FLASH_HAL_TIMEOUT_MS);
     if (tx_result_3 != HAL_OK) {
         FLASH_deactivate_chip_select();
+
+        if (tx_result_3 == HAL_TIMEOUT) {
+            return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
+        }
+
         return FLASH_ERR_SPI_TRANSMIT_FAILED;
     }
 
@@ -378,16 +423,31 @@ FLASH_error_enum_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number,
     const HAL_StatusTypeDef tx_result_1 = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_CMD_READ_4_BYTE_ADDR, 1, FLASH_HAL_TIMEOUT_MS);
     if (tx_result_1 != HAL_OK) {
         FLASH_deactivate_chip_select();
+
+        if (tx_result_1 == HAL_TIMEOUT) {
+            return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
+        }
+
         return FLASH_ERR_SPI_TRANSMIT_FAILED;
     }
     const HAL_StatusTypeDef tx_result_2 = HAL_SPI_Transmit(hspi, (uint8_t *)addr_bytes, 4, FLASH_HAL_TIMEOUT_MS);
     if (tx_result_2 != HAL_OK) {
         FLASH_deactivate_chip_select();
+
+        if (tx_result_2 == HAL_TIMEOUT) {
+            return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
+        }
+
         return FLASH_ERR_SPI_TRANSMIT_FAILED;
     }
     const HAL_StatusTypeDef rx_result_1 = HAL_SPI_Receive(hspi, (uint8_t *)rx_buffer, rx_buffer_len, FLASH_HAL_TIMEOUT_MS);
     if (rx_result_1 != HAL_OK) {
         FLASH_deactivate_chip_select();
+
+        if (rx_result_1 == HAL_TIMEOUT) {
+            return FLASH_ERR_SPI_RECEIVE_TIMEOUT;
+        }
+
         return FLASH_ERR_SPI_RECEIVE_FAILED;
     }
     FLASH_deactivate_chip_select();
@@ -405,17 +465,28 @@ FLASH_error_enum_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_numb
     uint8_t rx_buffer[5];
     memset(rx_buffer, 0, 5);
 
-    FLASH_activate_chip_select(chip_number);
-
     // Transmit the READ_ID_CMD
-    if (HAL_SPI_Transmit(hspi, tx_buffer, 1, FLASH_HAL_TIMEOUT_MS) != HAL_OK) {
+    FLASH_activate_chip_select(chip_number);
+    const HAL_StatusTypeDef tx_result_1 = HAL_SPI_Transmit(hspi, tx_buffer, 1, FLASH_HAL_TIMEOUT_MS);
+    if (tx_result_1 != HAL_OK) {
         FLASH_deactivate_chip_select();
+
+        if (tx_result_1 == HAL_TIMEOUT) {
+            return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
+        }
+
         return FLASH_ERR_SPI_TRANSMIT_FAILED;
     }
 
     // Receive the response
-    if (HAL_SPI_Receive(hspi, rx_buffer, 5, FLASH_HAL_TIMEOUT_MS) != HAL_OK) {
+    const HAL_StatusTypeDef rx_result = HAL_SPI_Receive(hspi, rx_buffer, 5, FLASH_HAL_TIMEOUT_MS);
+    if (rx_result != HAL_OK) {
         FLASH_deactivate_chip_select();
+
+        if (rx_result == HAL_TIMEOUT) {
+            return FLASH_ERR_SPI_RECEIVE_TIMEOUT;
+        }
+
         return FLASH_ERR_SPI_RECEIVE_FAILED;
     }
 
