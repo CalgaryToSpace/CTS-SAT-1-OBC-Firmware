@@ -1,6 +1,6 @@
 <map id="LFS_block_device_prog" name="LFS_block_device_prog">
 <area shape="rect" id="Node000001" title="LittleFS write function." alt="" coords="5,150,167,176"/>
-<area shape="rect" id="Node000002" href="$flash__driver_8c.html#adc1ecbe9fc5a396862ac16217da2d651" title="Sends Page Program Command." alt="" coords="241,125,341,150"/>
+<area shape="rect" id="Node000002" href="$flash__driver_8c.html#a60239a397fffe5773a2777533bfcbca2" title="Sends Page Program Command." alt="" coords="241,125,341,150"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="167,150,225,143,226,148,168,155"/>
 <area shape="rect" id="Node000009" href="$littlefs__driver_8c.html#ac54becf2a06dc9a90f281df70e34d857" title=" " alt="" coords="215,174,367,200"/>
 <area shape="poly" id="edge17_Node000001_Node000009" title=" " alt="" coords="168,170,200,173,199,179,167,175"/>
@@ -12,9 +12,9 @@
 <area shape="poly" id="edge5_Node000002_Node000005" title=" " alt="" coords="343,148,368,159,393,179,416,198,468,221,522,239,578,252,634,262,741,270,832,270,832,276,741,276,633,267,577,258,520,244,466,226,414,202,389,183,366,164,340,153"/>
 <area shape="rect" id="Node000006" href="$flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="1045,218,1208,259"/>
 <area shape="poly" id="edge7_Node000002_Node000006" title=" " alt="" coords="342,135,459,139,622,148,809,167,998,197,1050,211,1049,216,996,203,808,172,621,154,458,144,341,141"/>
-<area shape="rect" id="Node000007" href="$flash__driver_8c.html#ae1eebdf2ce8dc00d9d493e081b45090b" title="Read Status Register and store the values in given buffer." alt="" coords="608,339,799,365"/>
+<area shape="rect" id="Node000007" href="$flash__driver_8c.html#ad86ddde592dfea7dd3c6129ca311923a" title="Read Status Register and store the values in given buffer." alt="" coords="608,339,799,365"/>
 <area shape="poly" id="edge8_Node000002_Node000007" title=" " alt="" coords="343,144,369,159,384,180,391,201,392,243,393,282,401,300,417,318,459,343,506,358,555,364,603,364,603,369,555,369,505,363,456,348,413,322,397,303,388,283,386,243,386,202,379,183,365,163,340,148"/>
-<area shape="rect" id="Node000008" href="$flash__driver_8c.html#aa7d103560997c3a7415f78d114575f30" title="Sends Write Enable Command." alt="" coords="415,162,560,188"/>
+<area shape="rect" id="Node000008" href="$flash__driver_8c.html#aedefd1fa550b34fc7c57465aa5c5874b" title="Sends Write Enable Command." alt="" coords="415,162,560,188"/>
 <area shape="poly" id="edge11_Node000002_Node000008" title=" " alt="" coords="342,144,402,156,401,161,341,150"/>
 <area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="799,45,831,45,831,51,799,51"/>
 <area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="996,254,1029,249,1030,255,997,259"/>

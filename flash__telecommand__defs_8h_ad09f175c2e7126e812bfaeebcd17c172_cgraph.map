@@ -1,6 +1,6 @@
 <map id="TCMDEXEC_flash_write_hex" name="TCMDEXEC_flash_write_hex">
 <area shape="rect" id="Node000001" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="5,255,194,281"/>
-<area shape="rect" id="Node000002" href="$flash__driver_8c.html#adc1ecbe9fc5a396862ac16217da2d651" title="Sends Page Program Command." alt="" coords="277,154,378,179"/>
+<area shape="rect" id="Node000002" href="$flash__driver_8c.html#a60239a397fffe5773a2777533bfcbca2" title="Sends Page Program Command." alt="" coords="277,154,378,179"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="130,252,282,184,284,189,132,257"/>
 <area shape="rect" id="Node000009" href="$telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="242,279,413,305"/>
 <area shape="poly" id="edge17_Node000001_Node000009" title=" " alt="" coords="194,275,226,279,226,284,193,281"/>
@@ -12,9 +12,9 @@
 <area shape="poly" id="edge5_Node000002_Node000005" title=" " alt="" coords="378,174,461,189,561,206,662,217,778,225,885,229,884,234,778,231,661,223,560,211,461,195,377,179"/>
 <area shape="rect" id="Node000006" href="$flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="1098,185,1261,226"/>
 <area shape="poly" id="edge7_Node000002_Node000006" title=" " alt="" coords="338,151,388,103,422,76,460,54,515,30,563,15,608,6,650,3,739,7,852,16,909,15,955,12,999,16,1024,24,1051,38,1089,66,1121,100,1146,137,1165,170,1160,172,1142,140,1117,104,1085,70,1049,42,1022,29,998,22,955,18,909,21,852,21,739,13,650,9,608,12,565,20,517,35,462,58,425,80,391,107,342,155"/>
-<area shape="rect" id="Node000007" href="$flash__driver_8c.html#ae1eebdf2ce8dc00d9d493e081b45090b" title="Read Status Register and store the values in given buffer." alt="" coords="661,306,852,331"/>
+<area shape="rect" id="Node000007" href="$flash__driver_8c.html#ad86ddde592dfea7dd3c6129ca311923a" title="Read Status Register and store the values in given buffer." alt="" coords="661,306,852,331"/>
 <area shape="poly" id="edge8_Node000002_Node000007" title=" " alt="" coords="341,178,389,232,423,261,462,284,507,300,554,311,646,320,646,325,553,316,505,306,460,289,420,265,385,236,337,182"/>
-<area shape="rect" id="Node000008" href="$flash__driver_8c.html#aa7d103560997c3a7415f78d114575f30" title="Sends Write Enable Command." alt="" coords="465,154,610,179"/>
+<area shape="rect" id="Node000008" href="$flash__driver_8c.html#aedefd1fa550b34fc7c57465aa5c5874b" title="Sends Write Enable Command." alt="" coords="465,154,610,179"/>
 <area shape="poly" id="edge11_Node000002_Node000008" title=" " alt="" coords="378,164,449,164,449,169,378,169"/>
 <area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="852,63,884,63,884,68,852,68"/>
 <area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="1049,220,1082,216,1083,221,1050,226"/>

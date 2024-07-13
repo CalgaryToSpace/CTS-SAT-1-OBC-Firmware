@@ -1,10 +1,10 @@
 <map id="FLASH_benchmark_erase_write_read" name="FLASH_benchmark_erase_write_read">
 <area shape="rect" id="Node000001" title="Benchmarks the erase/read/write operations on the flash memory module." alt="" coords="5,251,181,292"/>
-<area shape="rect" id="Node000002" href="$flash__driver_8c.html#ac53f82844342cb2cac29aeb17a58ef91" title="Sends Sector Erase Command." alt="" coords="229,360,333,386"/>
+<area shape="rect" id="Node000002" href="$flash__driver_8c.html#ae9ff2d16b7ab58000a6720b637366839" title="Sends Sector Erase Command." alt="" coords="229,360,333,386"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="134,290,243,350,241,355,131,295"/>
-<area shape="rect" id="Node000009" href="$flash__driver_8c.html#aff72a1d6168435b6501e86654d360984" title="Sends Page Program Command." alt="" coords="605,5,734,31"/>
+<area shape="rect" id="Node000009" href="$flash__driver_8c.html#aad6973bad0210b2dbe8d76adc6619757" title="Sends Page Program Command." alt="" coords="605,5,734,31"/>
 <area shape="poly" id="edge17_Node000001_Node000009" title=" " alt="" coords="111,249,155,205,218,149,295,93,337,68,380,48,433,31,488,20,589,13,590,18,488,26,434,36,382,53,339,73,298,97,221,153,158,209,115,253"/>
-<area shape="rect" id="Node000010" href="$flash__driver_8c.html#adc1ecbe9fc5a396862ac16217da2d651" title="Sends Page Program Command." alt="" coords="231,259,331,284"/>
+<area shape="rect" id="Node000010" href="$flash__driver_8c.html#a60239a397fffe5773a2777533bfcbca2" title="Sends Page Program Command." alt="" coords="231,259,331,284"/>
 <area shape="poly" id="edge20_Node000001_Node000010" title=" " alt="" coords="181,269,215,269,215,274,181,274"/>
 <area shape="rect" id="Node000003" href="$debug__uart_8c.html#a6899cfc3d3792f1457667bc3ae91160d" title=" " alt="" coords="574,461,765,487"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="298,384,334,413,382,440,426,453,471,463,559,472,559,477,470,468,424,458,380,445,331,418,295,388"/>
@@ -14,9 +14,9 @@
 <area shape="poly" id="edge5_Node000002_Node000005" title=" " alt="" coords="292,358,329,320,379,280,430,248,472,226,516,209,574,193,631,181,690,172,797,165,798,170,690,178,632,186,575,198,518,214,474,231,433,252,383,284,333,324,296,362"/>
 <area shape="rect" id="Node000006" href="$flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="1011,177,1174,217"/>
 <area shape="poly" id="edge7_Node000002_Node000006" title=" " alt="" coords="288,385,299,417,317,458,345,499,362,516,382,531,434,556,480,570,523,575,565,573,654,555,764,533,871,520,914,505,961,472,987,446,1009,416,1044,350,1068,285,1082,232,1087,233,1073,287,1049,352,1014,419,991,449,965,476,917,510,873,525,765,538,655,560,566,578,523,580,479,575,432,561,380,535,359,520,341,502,313,460,294,419,283,387"/>
-<area shape="rect" id="Node000007" href="$flash__driver_8c.html#ae1eebdf2ce8dc00d9d493e081b45090b" title="Read Status Register and store the values in given buffer." alt="" coords="574,208,765,234"/>
+<area shape="rect" id="Node000007" href="$flash__driver_8c.html#ad86ddde592dfea7dd3c6129ca311923a" title="Read Status Register and store the values in given buffer." alt="" coords="574,208,765,234"/>
 <area shape="poly" id="edge8_Node000002_Node000007" title=" " alt="" coords="312,357,426,309,573,250,612,237,613,242,575,255,428,314,314,362"/>
-<area shape="rect" id="Node000008" href="$flash__driver_8c.html#aa7d103560997c3a7415f78d114575f30" title="Sends Write Enable Command." alt="" coords="381,360,526,386"/>
+<area shape="rect" id="Node000008" href="$flash__driver_8c.html#aedefd1fa550b34fc7c57465aa5c5874b" title="Sends Write Enable Command." alt="" coords="381,360,526,386"/>
 <area shape="poly" id="edge11_Node000002_Node000008" title=" " alt="" coords="333,370,366,370,366,376,333,376"/>
 <area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="764,460,797,457,798,462,765,466"/>
 <area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="963,176,996,180,995,186,962,181"/>

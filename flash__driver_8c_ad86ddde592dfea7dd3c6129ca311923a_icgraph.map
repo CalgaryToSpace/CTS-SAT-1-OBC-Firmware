@@ -1,12 +1,12 @@
 <map id="FLASH_read_status_register" name="FLASH_read_status_register">
 <area shape="rect" id="Node000001" title="Read Status Register and store the values in given buffer." alt="" coords="836,121,1026,147"/>
-<area shape="rect" id="Node000002" href="$flash__driver_8c.html#ac53f82844342cb2cac29aeb17a58ef91" title="Sends Sector Erase Command." alt="" coords="487,55,591,80"/>
+<area shape="rect" id="Node000002" href="$flash__driver_8c.html#ae9ff2d16b7ab58000a6720b637366839" title="Sends Sector Erase Command." alt="" coords="487,55,591,80"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="885,117,838,100,787,86,683,73,592,69,592,64,684,67,788,81,840,95,887,112"/>
-<area shape="rect" id="Node000007" href="$flash__driver_8c.html#adc1ecbe9fc5a396862ac16217da2d651" title="Sends Page Program Command." alt="" coords="489,179,589,204"/>
+<area shape="rect" id="Node000007" href="$flash__driver_8c.html#a60239a397fffe5773a2777533bfcbca2" title="Sends Page Program Command." alt="" coords="489,179,589,204"/>
 <area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="887,156,840,173,788,186,735,193,682,197,590,197,590,192,682,192,735,188,787,181,838,168,885,151"/>
-<area shape="rect" id="Node000011" href="$flash__driver_8c.html#ab3067b8d2b8505620ab7a14de794e441" title="Sends Write Disable Command." alt="" coords="639,145,788,171"/>
+<area shape="rect" id="Node000011" href="$flash__driver_8c.html#a40465bf4bb4cdce119638ad6f36158b9" title="Sends Write Disable Command." alt="" coords="639,145,788,171"/>
 <area shape="poly" id="edge11_Node000001_Node000011" title=" " alt="" coords="820,149,789,153,788,147,820,144"/>
-<area shape="rect" id="Node000012" href="$flash__driver_8c.html#aa7d103560997c3a7415f78d114575f30" title="Sends Write Enable Command." alt="" coords="641,96,786,122"/>
+<area shape="rect" id="Node000012" href="$flash__driver_8c.html#aedefd1fa550b34fc7c57465aa5c5874b" title="Sends Write Enable Command." alt="" coords="641,96,786,122"/>
 <area shape="poly" id="edge12_Node000001_Node000012" title=" " alt="" coords="820,124,786,120,787,115,821,119"/>
 <area shape="rect" id="Node000003" href="$flash__benchmark_8c.html#a9485023a9a54cf461dba878ce4d013fb" title="Benchmarks the erase/read/write operations on the flash memory module." alt="" coords="257,105,433,145"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="479,88,417,106,416,101,478,83"/>

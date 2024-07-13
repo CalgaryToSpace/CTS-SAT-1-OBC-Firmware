@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['tcmd_5freadiness_5flevel_5fenum_5ft_0',['TCMD_readiness_level_enum_t',['../telecommand__definitions_8h.html#a9fd68e85101924b8acff534610df0189',1,'telecommand_definitions.h']]],
-  ['tcmd_5ftelecommandchannel_5fenum_5ft_1',['TCMD_TelecommandChannel_enum_t',['../telecommand__definitions_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c',1,'telecommand_definitions.h']]],
-  ['tim_5fsync_5fsource_2',['TIM_SYNC_SOURCE',['../timekeeping_8h.html#a13ac9e80d89db8b1563cb7e942698c4c',1,'timekeeping.h']]]
+  ['lfs_5ferror_0',['lfs_error',['../lfs_8h.html#a2013246b2ea0e24c90af69690b59a79d',1,'lfs.h']]],
+  ['lfs_5fopen_5fflags_1',['lfs_open_flags',['../lfs_8h.html#a19d926da72bba28ac92d8c69df0a21ec',1,'lfs.h']]],
+  ['lfs_5ftype_2',['lfs_type',['../lfs_8h.html#a7c78ea6e6b81c1b9b8b897573ab64c3a',1,'lfs.h']]],
+  ['lfs_5fwhence_5fflags_3',['lfs_whence_flags',['../lfs_8h.html#ad303aaea301ebbb0db272615f2b2a9d0',1,'lfs.h']]]
 ];
