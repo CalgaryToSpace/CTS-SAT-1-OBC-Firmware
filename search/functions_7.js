@@ -1,17 +1,19 @@
 var searchData=
 [
-  ['hal_5fi2c_5fmspdeinit_0',['HAL_I2C_MspDeInit',['../stm32l4xx__hal__msp_8c.html#a2ec8d9b09854c732e2feed549278f048',1,'stm32l4xx_hal_msp.c']]],
-  ['hal_5fi2c_5fmspinit_1',['HAL_I2C_MspInit',['../stm32l4xx__hal__msp_8c.html#abe01a202c27b23fc150aa66af3130073',1,'stm32l4xx_hal_msp.c']]],
-  ['hal_5finittick_2',['HAL_InitTick',['../stm32l4xx__hal__timebase__tim_8c.html#a879cdb21ef051eb81ec51c18147397d5',1,'stm32l4xx_hal_timebase_tim.c']]],
-  ['hal_5fmspinit_3',['HAL_MspInit',['../stm32l4xx__hal__msp_8c.html#ae4fb8e66865c87d0ebab74a726a6891f',1,'stm32l4xx_hal_msp.c']]],
-  ['hal_5fresumetick_4',['HAL_ResumeTick',['../stm32l4xx__hal__timebase__tim_8c.html#a24e0ee9dae1ec0f9d19200f5575ff790',1,'stm32l4xx_hal_timebase_tim.c']]],
-  ['hal_5fspi_5fmspdeinit_5',['HAL_SPI_MspDeInit',['../stm32l4xx__hal__msp_8c.html#abadc4d4974af1afd943e8d13589068e1',1,'stm32l4xx_hal_msp.c']]],
-  ['hal_5fspi_5fmspinit_6',['HAL_SPI_MspInit',['../stm32l4xx__hal__msp_8c.html#a17f583be14b22caffa6c4e56dcd035ef',1,'stm32l4xx_hal_msp.c']]],
-  ['hal_5fsuspendtick_7',['HAL_SuspendTick',['../stm32l4xx__hal__timebase__tim_8c.html#aaf651af2afe688a991c657f64f8fa5f9',1,'stm32l4xx_hal_timebase_tim.c']]],
-  ['hal_5ftim_5fperiodelapsedcallback_8',['HAL_TIM_PeriodElapsedCallback',['../main_8c.html#a8a3b0ad512a6e6c6157440b68d395eac',1,'main.c']]],
-  ['hal_5fuart_5fmspdeinit_9',['HAL_UART_MspDeInit',['../stm32l4xx__hal__msp_8c.html#a718f39804e3b910d738a0e1e46151188',1,'stm32l4xx_hal_msp.c']]],
-  ['hal_5fuart_5fmspinit_10',['HAL_UART_MspInit',['../stm32l4xx__hal__msp_8c.html#a0e553b32211877322f949b14801bbfa7',1,'stm32l4xx_hal_msp.c']]],
-  ['hal_5fuart_5frxcpltcallback_11',['HAL_UART_RxCpltCallback',['../uart__handler_8c.html#ae494a9643f29b87d6d81e5264e60e57b',1,'uart_handler.c']]],
-  ['handle_5fuart_5fport_5fchange_12',['handle_uart_port_change',['../namespacects1__ground__support_1_1terminal__app_1_1dash__gui.html#a248ef2a1e01206097e4378065b427855',1,'cts1_ground_support::terminal_app::dash_gui']]],
-  ['hardfault_5fhandler_13',['HardFault_Handler',['../stm32l4xx__it_8h.html#a2bffc10d5bd4106753b7c30e86903bea',1,'HardFault_Handler(void):&#160;stm32l4xx_it.c'],['../stm32l4xx__it_8c.html#a2bffc10d5bd4106753b7c30e86903bea',1,'HardFault_Handler(void):&#160;stm32l4xx_it.c']]]
+  ['hal_5fcrc_5fmspdeinit_0',['HAL_CRC_MspDeInit',['../stm32l4xx__hal__msp_8c.html#ac19b8df939b3490e690bdf1e1e04ead3',1,'stm32l4xx_hal_msp.c']]],
+  ['hal_5fcrc_5fmspinit_1',['HAL_CRC_MspInit',['../stm32l4xx__hal__msp_8c.html#a5167ffd293de5d86f5873910416b36d0',1,'stm32l4xx_hal_msp.c']]],
+  ['hal_5fi2c_5fmspdeinit_2',['HAL_I2C_MspDeInit',['../stm32l4xx__hal__msp_8c.html#a2ec8d9b09854c732e2feed549278f048',1,'stm32l4xx_hal_msp.c']]],
+  ['hal_5fi2c_5fmspinit_3',['HAL_I2C_MspInit',['../stm32l4xx__hal__msp_8c.html#abe01a202c27b23fc150aa66af3130073',1,'stm32l4xx_hal_msp.c']]],
+  ['hal_5finittick_4',['HAL_InitTick',['../stm32l4xx__hal__timebase__tim_8c.html#a879cdb21ef051eb81ec51c18147397d5',1,'stm32l4xx_hal_timebase_tim.c']]],
+  ['hal_5fmspinit_5',['HAL_MspInit',['../stm32l4xx__hal__msp_8c.html#ae4fb8e66865c87d0ebab74a726a6891f',1,'stm32l4xx_hal_msp.c']]],
+  ['hal_5fresumetick_6',['HAL_ResumeTick',['../stm32l4xx__hal__timebase__tim_8c.html#a24e0ee9dae1ec0f9d19200f5575ff790',1,'stm32l4xx_hal_timebase_tim.c']]],
+  ['hal_5fspi_5fmspdeinit_7',['HAL_SPI_MspDeInit',['../stm32l4xx__hal__msp_8c.html#abadc4d4974af1afd943e8d13589068e1',1,'stm32l4xx_hal_msp.c']]],
+  ['hal_5fspi_5fmspinit_8',['HAL_SPI_MspInit',['../stm32l4xx__hal__msp_8c.html#a17f583be14b22caffa6c4e56dcd035ef',1,'stm32l4xx_hal_msp.c']]],
+  ['hal_5fsuspendtick_9',['HAL_SuspendTick',['../stm32l4xx__hal__timebase__tim_8c.html#aaf651af2afe688a991c657f64f8fa5f9',1,'stm32l4xx_hal_timebase_tim.c']]],
+  ['hal_5ftim_5fperiodelapsedcallback_10',['HAL_TIM_PeriodElapsedCallback',['../main_8c.html#a8a3b0ad512a6e6c6157440b68d395eac',1,'main.c']]],
+  ['hal_5fuart_5fmspdeinit_11',['HAL_UART_MspDeInit',['../stm32l4xx__hal__msp_8c.html#a718f39804e3b910d738a0e1e46151188',1,'stm32l4xx_hal_msp.c']]],
+  ['hal_5fuart_5fmspinit_12',['HAL_UART_MspInit',['../stm32l4xx__hal__msp_8c.html#a0e553b32211877322f949b14801bbfa7',1,'stm32l4xx_hal_msp.c']]],
+  ['hal_5fuart_5frxcpltcallback_13',['HAL_UART_RxCpltCallback',['../uart__handler_8c.html#ae494a9643f29b87d6d81e5264e60e57b',1,'uart_handler.c']]],
+  ['handle_5fuart_5fport_5fchange_14',['handle_uart_port_change',['../namespacects1__ground__support_1_1terminal__app_1_1dash__gui.html#a248ef2a1e01206097e4378065b427855',1,'cts1_ground_support::terminal_app::dash_gui']]],
+  ['hardfault_5fhandler_15',['HardFault_Handler',['../stm32l4xx__it_8h.html#a2bffc10d5bd4106753b7c30e86903bea',1,'HardFault_Handler(void):&#160;stm32l4xx_it.c'],['../stm32l4xx__it_8c.html#a2bffc10d5bd4106753b7c30e86903bea',1,'HardFault_Handler(void):&#160;stm32l4xx_it.c']]]
 ];
