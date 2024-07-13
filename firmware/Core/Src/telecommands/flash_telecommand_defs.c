@@ -46,7 +46,7 @@ uint8_t TCMDEXEC_flash_each_is_reachable(const char *args_str, TCMD_TelecommandC
     FLASH_deactivate_chip_select();
 
     for (uint8_t chip_number = 0; chip_number < FLASH_NUMBER_OF_FLASH_DEVICES; chip_number++) {
-        const uint8_t result = FLASH_is_reachable(&hspi1, chip_number);
+        const FLASH_error_enum_t result = FLASH_is_reachable(&hspi1, chip_number);
         if (result != 0) {
             fail_count++;
 
@@ -125,7 +125,7 @@ uint8_t TCMDEXEC_flash_read_hex(const char *args_str, TCMD_TelecommandChannel_en
 
     uint8_t read_buf[max_num_bytes];
     uint32_t num_bytes = (uint32_t)arg_num_bytes;
-    uint8_t result = FLASH_read_data(&hspi1, chip_num, flash_addr, read_buf, num_bytes);
+    FLASH_error_enum_t result = FLASH_read_data(&hspi1, chip_num, flash_addr, read_buf, num_bytes);
 
     if (result != 0) {
         snprintf(
@@ -208,7 +208,7 @@ uint8_t TCMDEXEC_flash_write_hex(const char *args_str, TCMD_TelecommandChannel_e
     uint32_t flash_addr = (uint32_t)flash_addr_u64;
 
 
-    uint8_t result = FLASH_write(&hspi1, chip_num, flash_addr, bytes_to_write, num_bytes);
+    FLASH_error_enum_t result = FLASH_write(&hspi1, chip_num, flash_addr, bytes_to_write, num_bytes);
 
     if (result != 0) {
         snprintf(
@@ -255,7 +255,7 @@ uint8_t TCMDEXEC_flash_erase(const char *args_str, TCMD_TelecommandChannel_enum_
         return 2;
     }
 
-    uint8_t result = FLASH_erase(&hspi1, chip_num, flash_addr);
+    FLASH_error_enum_t result = FLASH_erase(&hspi1, chip_num, flash_addr);
 
     if (result != 0) {
         snprintf(
