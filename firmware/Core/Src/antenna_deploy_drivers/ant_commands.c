@@ -8,5 +8,12 @@
 uint8_t ANT_CMD_measure_temp() {
     const uint8_t CC = 0xC0;
 
-    
+    const uint8_t cmd_buf[] = {CC};
+    const uint8_t cmd_len = sizeof(cmd_buf);
+
+    const uint8_t rx_len = ANT_DEFAULT_RX_LEN_MIN;
+    const rx_buf[rx_len];
+
+    const uint8_t comms_err = ANT_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+    return comms_err;
 }

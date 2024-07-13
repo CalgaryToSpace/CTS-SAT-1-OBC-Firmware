@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 
+// Pragma region constants
+
+#define ANT_DEFAULT_RX_LEN_MIN 5 // for commands with no response params, 5 bytes are returned
 
 uint8_t ANT_send_cmd_get_response(
     const uint8_t cmd_buf[], uint8_t cmd_len,
