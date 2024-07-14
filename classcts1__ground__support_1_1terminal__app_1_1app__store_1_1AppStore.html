@@ -101,43 +101,17 @@ Static Public Attributes</h2></td></tr>
 <tr class="separator:afe7070bb0a57be6a4e6c7134ef91ebd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a134de1ae6bee5f11054ae681139d9a91" id="r_a134de1ae6bee5f11054ae681139d9a91"><td class="memItemLeft" align="right" valign="top">list&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a134de1ae6bee5f11054ae681139d9a91">rxtx_log</a></td></tr>
 <tr class="separator:a134de1ae6bee5f11054ae681139d9a91"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a855ad2e0d71bc85140477a05b132d995" id="r_a855ad2e0d71bc85140477a05b132d995"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a855ad2e0d71bc85140477a05b132d995">start_timestamp_sec</a> = field(default_factory=time.time)</td></tr>
-<tr class="separator:a855ad2e0d71bc85140477a05b132d995"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc7f3728b824e20bcbab6a194ddf091d" id="r_adc7f3728b824e20bcbab6a194ddf091d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adc7f3728b824e20bcbab6a194ddf091d">server_start_timestamp_sec</a> = field(default_factory=time.time)</td></tr>
+<tr class="separator:adc7f3728b824e20bcbab6a194ddf091d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c3d1db5ea15794034ce3023c971fd1c" id="r_a4c3d1db5ea15794034ce3023c971fd1c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4c3d1db5ea15794034ce3023c971fd1c">last_tx_timestamp_sec</a> = 0</td></tr>
 <tr class="separator:a4c3d1db5ea15794034ce3023c971fd1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ef09d3a5fce355a3be188f662198253" id="r_a1ef09d3a5fce355a3be188f662198253"><td class="memItemLeft" align="right" valign="top">list&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1ef09d3a5fce355a3be188f662198253">tx_queue</a> = field(default_factory=list)</td></tr>
 <tr class="separator:a1ef09d3a5fce355a3be188f662198253"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a953046017bc19d6946024d9ad01fad99" id="r_a953046017bc19d6946024d9ad01fad99"><td class="memItemLeft" align="right" valign="top">str&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a953046017bc19d6946024d9ad01fad99">selected_command_name</a> = None</td></tr>
-<tr class="separator:a953046017bc19d6946024d9ad01fad99"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a439e2c0758ee1dc1238b610acc37e51a" id="r_a439e2c0758ee1dc1238b610acc37e51a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a439e2c0758ee1dc1238b610acc37e51a">uart_log_refresh_rate_ms</a> = 500</td></tr>
 <tr class="separator:a439e2c0758ee1dc1238b610acc37e51a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3f29e7d77da259a5c0477bb0d88165c8" id="r_a3f29e7d77da259a5c0477bb0d88165c8"><td class="memItemLeft" align="right" valign="top">str&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3f29e7d77da259a5c0477bb0d88165c8">command_preview</a> = &quot;&quot;</td></tr>
-<tr class="separator:a3f29e7d77da259a5c0477bb0d88165c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><pre class="fragment">A singleton class to store the app's state.</pre> </div><h2 class="groupheader">Member Data Documentation</h2>
-<a id="a3f29e7d77da259a5c0477bb0d88165c8" name="a3f29e7d77da259a5c0477bb0d88165c8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3f29e7d77da259a5c0477bb0d88165c8">&#9670;&#160;</a></span>command_preview</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">str cts1_ground_support.terminal_app.app_store.AppStore.command_preview = &quot;&quot;</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
+<div class="textblock"><pre class="fragment">A singleton class to store the app's state (across all clients).</pre> </div><h2 class="groupheader">Member Data Documentation</h2>
 <a id="a4c3d1db5ea15794034ce3023c971fd1c" name="a4c3d1db5ea15794034ce3023c971fd1c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4c3d1db5ea15794034ce3023c971fd1c">&#9670;&#160;</a></span>last_tx_timestamp_sec</h2>
 
@@ -185,8 +159,8 @@ Static Public Attributes</h2></td></tr>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="a953046017bc19d6946024d9ad01fad99" name="a953046017bc19d6946024d9ad01fad99"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a953046017bc19d6946024d9ad01fad99">&#9670;&#160;</a></span>selected_command_name</h2>
+<a id="adc7f3728b824e20bcbab6a194ddf091d" name="adc7f3728b824e20bcbab6a194ddf091d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc7f3728b824e20bcbab6a194ddf091d">&#9670;&#160;</a></span>server_start_timestamp_sec</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -195,29 +169,7 @@ Static Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">str cts1_ground_support.terminal_app.app_store.AppStore.selected_command_name = None</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a855ad2e0d71bc85140477a05b132d995" name="a855ad2e0d71bc85140477a05b132d995"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a855ad2e0d71bc85140477a05b132d995">&#9670;&#160;</a></span>start_timestamp_sec</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">float cts1_ground_support.terminal_app.app_store.AppStore.start_timestamp_sec = field(default_factory=time.time)</td>
+          <td class="memname">float cts1_ground_support.terminal_app.app_store.AppStore.server_start_timestamp_sec = field(default_factory=time.time)</td>
         </tr>
       </table>
   </td>

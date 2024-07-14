@@ -242,11 +242,13 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions [ ] = {
     .tcmd_name = "hello_world",
     .tcmd_func = TCMDEXEC_hello_world,
     .number_of_args = 0,
+    .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
 },
 {
     .tcmd_name = "heartbeat_off",
     .tcmd_func = TCMDEXEC_heartbeat_off,
     .number_of_args = 0,
+    .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
 } } ;
 ```</pre> 
 </div>

@@ -111,8 +111,8 @@ Collaboration diagram for cts1_ground_support.terminal_app.app_types.RxTxLogEntr
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a1eb97c311da1c91931750183bee7cf9f" id="r_a1eb97c311da1c91931750183bee7cf9f"><td class="memItemLeft" align="right" valign="top">dict&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1eb97c311da1c91931750183bee7cf9f">css_style</a> (&quot;RxTxLogEntry&quot; self)</td></tr>
 <tr class="separator:a1eb97c311da1c91931750183bee7cf9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adbe7c4fdaad42a657f7c2154b4b761f8" id="r_adbe7c4fdaad42a657f7c2154b4b761f8"><td class="memItemLeft" align="right" valign="top">str&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adbe7c4fdaad42a657f7c2154b4b761f8">text</a> (&quot;RxTxLogEntry&quot; self)</td></tr>
-<tr class="separator:adbe7c4fdaad42a657f7c2154b4b761f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcebd1c24ffc368c6d315b852441dcd2" id="r_afcebd1c24ffc368c6d315b852441dcd2"><td class="memItemLeft" align="right" valign="top">str&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afcebd1c24ffc368c6d315b852441dcd2">to_string</a> (&quot;RxTxLogEntry&quot; self, *, bool show_end_of_line_chars, bool show_timestamp)</td></tr>
+<tr class="separator:afcebd1c24ffc368c6d315b852441dcd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -121,7 +121,7 @@ Public Attributes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:aa02f0700eb18f2633212907c8fdddff1" id="r_aa02f0700eb18f2633212907c8fdddff1"><td class="memItemLeft" align="right" valign="top">Literal&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa02f0700eb18f2633212907c8fdddff1">entry_type</a> [&quot;transmit&quot;, &quot;receive&quot;, &quot;notice&quot;]</td></tr>
+<tr class="memitem:aa02f0700eb18f2633212907c8fdddff1" id="r_aa02f0700eb18f2633212907c8fdddff1"><td class="memItemLeft" align="right" valign="top">Literal&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa02f0700eb18f2633212907c8fdddff1">entry_type</a> [&quot;transmit&quot;, &quot;receive&quot;, &quot;notice&quot;, &quot;error&quot;]</td></tr>
 <tr class="separator:aa02f0700eb18f2633212907c8fdddff1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a68012c415c4a76b6c6bd6cb2e62d184e" id="r_a68012c415c4a76b6c6bd6cb2e62d184e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a68012c415c4a76b6c6bd6cb2e62d184e">timestamp_sec</a> = field(default_factory=lambda: time.time())</td></tr>
 <tr class="separator:a68012c415c4a76b6c6bd6cb2e62d184e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -145,17 +145,32 @@ Static Public Attributes</h2></td></tr>
 <pre class="fragment">Get the CSS style for the log entry (mostly just color currently).</pre> 
 </div>
 </div>
-<a id="adbe7c4fdaad42a657f7c2154b4b761f8" name="adbe7c4fdaad42a657f7c2154b4b761f8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adbe7c4fdaad42a657f7c2154b4b761f8">&#9670;&#160;</a></span>text()</h2>
+<a id="afcebd1c24ffc368c6d315b852441dcd2" name="afcebd1c24ffc368c6d315b852441dcd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcebd1c24ffc368c6d315b852441dcd2">&#9670;&#160;</a></span>to_string()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"> str cts1_ground_support.terminal_app.app_types.RxTxLogEntry.text </td>
+          <td class="memname"> str cts1_ground_support.terminal_app.app_types.RxTxLogEntry.to_string </td>
           <td>(</td>
-          <td class="paramtype">&quot;RxTxLogEntry&quot;</td>          <td class="paramname"><span class="paramname"><em>self</em></span></td><td>)</td>
+          <td class="paramtype">&quot;RxTxLogEntry&quot;</td>          <td class="paramname"><span class="paramname"><em>self</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">*</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>show_end_of_line_chars</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool
+    </td>          <td class="paramname"><span class="paramname"><em>show_timestamp</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -173,7 +188,7 @@ Static Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">Literal cts1_ground_support.terminal_app.app_types.RxTxLogEntry.entry_type [&quot;transmit&quot;, &quot;receive&quot;, &quot;notice&quot;]</td>
+          <td class="memname">Literal cts1_ground_support.terminal_app.app_types.RxTxLogEntry.entry_type [&quot;transmit&quot;, &quot;receive&quot;, &quot;notice&quot;, &quot;error&quot;]</td>
         </tr>
       </table>
   </td>
