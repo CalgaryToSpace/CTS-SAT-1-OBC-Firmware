@@ -270,6 +270,8 @@ uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChann
         }
     }
 
+    // TODO: read out the @sha256=xx hash and validate it here.
+
     // Check that the args_str_no_parens is not too long.
     // Note: `arg_len` does not include the null terminator, but `TCMD_ARGS_STR_NO_PARENS_SIZE` does.
     if (arg_len + 1 > TCMD_ARGS_STR_NO_PARENS_SIZE) {
@@ -285,9 +287,4 @@ uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChann
     parsed_tcmd_output->timestamp_to_execute = timestamp_to_execute;
     parsed_tcmd_output->tcmd_channel = tcmd_channel;
     return 0;
-
-    // TODO: in caller, ensure `timestamp_sent` is not a duplicate
-    // TODO: in called, read `timestamp_to_execute` to decide to run immediately or to schedule
-    // TODO: read out the @sha256=xx hash and validate it
-
 }

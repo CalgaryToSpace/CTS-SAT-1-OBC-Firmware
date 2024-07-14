@@ -22,6 +22,9 @@ uint8_t TCMD_agenda_is_valid[TCMD_AGENDA_SIZE] = {0};
 /// @return 0 on success, 1 if the agenda is full.
 /// @note Performs a deep copy of the `parsed_tcmd` arg into the agenda.
 uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd) {
+    // FIXME: Issue #53 - Check `parsed_tcmd.timestamp_sent` against the yet-to-be-created `TCMD_timestamp_sent_record[]`, and skip this command if it is (to prevent replays).
+    // ^ Use a config variable to override this check, if desired.
+
     // Find the first empty slot in the agenda.
     for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
         // Skip filled slots.

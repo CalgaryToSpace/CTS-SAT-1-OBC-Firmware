@@ -116,8 +116,6 @@ void TASK_handle_uart_telecommands(void *argument) {
 			continue;
 		}
 
-		// FIXME: check if the telecommand is in the 'tssent' table, and skip it if it is (to prevent replays).
-
 		// Add the telecommand to the agenda (regardless of whether it's in the future).
 		TCMD_add_tcmd_to_agenda(&parsed_tcmd);
 	
