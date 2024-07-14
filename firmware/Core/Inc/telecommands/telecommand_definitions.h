@@ -4,6 +4,9 @@
 
 #include <stdint.h>
 
+// Max len of `args_str_no_parens` in `TCMD_parsed_tcmd_to_execute_t`, including null terminator.
+#define TCMD_ARGS_STR_NO_PARENS_SIZE 255
+
 typedef enum {
     TCMD_TelecommandChannel_DEBUG_UART,
     TCMD_TelecommandChannel_RADIO1
@@ -35,6 +38,15 @@ typedef struct {
     // TODO: maybe add other fields, including priority, expected execution duration, "config vs. action", etc.
 
 } TCMD_TelecommandDefinition_t;
+
+
+typedef struct {
+    uint8_t tcmd_idx;
+    char args_str_no_parens[255]; // TODO: consider changing this to a pointer, and storing the args somewhere else to save memory
+    uint64_t timestamp_sent;
+    uint64_t timestamp_to_execute;
+    TCMD_TelecommandChannel_enum_t tcmd_channel;
+} TCMD_parsed_tcmd_to_execute_t;
 
 
 extern const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[];
