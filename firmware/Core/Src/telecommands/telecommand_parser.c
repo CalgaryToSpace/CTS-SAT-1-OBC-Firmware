@@ -158,7 +158,7 @@ uint8_t TCMD_get_suffix_tag_uint64(const char *str, const char *tag_name, uint64
     // Copy the value into a buffer
     char value_str[32]; // uint64 needs 20 chars max
     memset(value_str, 0, sizeof(value_str));
-    if (value_end_index - value_start_index >= sizeof(value_str) - 1) {
+    if ((uint32_t)(value_end_index - value_start_index) >= sizeof(value_str) - 1) {
         // Failure: digit string too long
         return 5;
     }
@@ -166,7 +166,7 @@ uint8_t TCMD_get_suffix_tag_uint64(const char *str, const char *tag_name, uint64
 
     // Convert the value to a uint64_t
     uint64_t value;
-    if (TCMD_ascii_to_uint64(value_str, strlen(value_str), &value) > 0) {
+    if (TCMD_ascii_to_uint64(value_str, strlen(value_str), &value) != 0) {
         return 6;
     }
 
