@@ -2,7 +2,10 @@
 
 import time
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import Literal
+
+import pytz
 
 from cts1_ground_support.bytes import bytes_to_nice_str
 
@@ -14,7 +17,7 @@ class RxTxLogEntry:
     """A class to store an entry in the RX/TX log."""
 
     raw_bytes: bytes
-    entry_type: Literal["transmit", "receive", "notice"]
+    entry_type: Literal["transmit", "receive", "notice", "error"]
     timestamp_sec: float = field(default_factory=lambda: time.time())
 
     @property
@@ -34,15 +37,22 @@ class RxTxLogEntry:
         msg = f"Invalid entry type: {self.entry_type}"
         raise ValueError(msg)
 
-    @property
-    def text(self: "RxTxLogEntry") -> str:
+    def to_string(
+        self: "RxTxLogEntry", *, show_end_of_line_chars: bool, show_timestamp: bool
+    ) -> str:
         """Get the text representation of the log entry."""
+        prefix = ""
+        if show_timestamp:
+            dt = datetime.fromtimestamp(self.timestamp_sec, tz=pytz.timezone("America/Edmonton"))
+            # Format the datetime object to include milliseconds
+            prefix = dt.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3] + ": "
+
         if self.entry_type == "notice":
-            return f"==================== {self.raw_bytes.decode()} ===================="
+            return f"{prefix}==================== {self.raw_bytes.decode()} ===================="
         # TODO: make these equals-signs a fixed width
         if self.entry_type == "error":
-            return f"==================== {self.raw_bytes.decode()} ===================="
+            return f"{prefix}==================== {self.raw_bytes.decode()} ===================="
 
-        # TODO: include timestamp as arg
-        # TODO: specific linefeed/carriage return symbol
-        return bytes_to_nice_str(self.raw_bytes)
+        return f"{prefix}" + bytes_to_nice_str(
+            self.raw_bytes, show_end_of_line_chars=show_end_of_line_chars
+        )

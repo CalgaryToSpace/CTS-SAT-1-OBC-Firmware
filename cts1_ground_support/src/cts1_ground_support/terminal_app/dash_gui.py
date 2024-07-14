@@ -326,11 +326,18 @@ def update_selected_tcmd_info(selected_command_name: str) -> list:
     ]
 
 
-def generate_rx_tx_log() -> html.Div:
+def generate_rx_tx_log(
+    *, show_end_of_line_chars: bool = False, show_timestamp: bool = False
+) -> html.Div:
     """Generate the RX/TX log, which shows the most recent received and transmitted messages."""
     return html.Div(
         [
-            html.P(entry.text, style=(entry.css_style | {"margin": "0", "lineHeight": "1.1"}))
+            html.P(
+                entry.to_string(
+                    show_end_of_line_chars=show_end_of_line_chars, show_timestamp=show_timestamp
+                ),
+                style=(entry.css_style | {"margin": "0", "lineHeight": "1.1"}),
+            )
             for entry in (app_store.rxtx_log)
         ],
         id="rx-tx-log",
@@ -346,12 +353,14 @@ def generate_rx_tx_log() -> html.Div:
     Input("send-button", "n_clicks"),
     Input("clear-log-button", "n_clicks"),
     Input("uart-update-interval-component", "n_intervals"),
+    Input("display-options-checklist", "value"),
 )
 def update_uart_log_interval(
     _uart_port_name: str,
     _n_clicks_send: int,
     _n_clicks_clear_logs: int,
     _update_interval_count: int,
+    display_options_checklist: list[str] | None,
 ) -> html.Div:
     """Update the UART log at the specified interval. Also, update the refresh interval."""
     sec_since_send = time.time() - app_store.last_tx_timestamp_sec
@@ -365,8 +374,18 @@ def update_uart_log_interval(
         # Slow down if it's been a long time since the last command.
         app_store.uart_log_refresh_rate_ms = 2000
 
+    if display_options_checklist:
+        show_end_of_line_chars = "show_end_of_line_chars" in display_options_checklist
+        show_timestamp = "show_timestamp" in display_options_checklist
+    else:
+        show_end_of_line_chars = False
+        show_timestamp = False
+
     return (
-        generate_rx_tx_log(),  # new log entries
+        # new log entries
+        generate_rx_tx_log(
+            show_end_of_line_chars=show_end_of_line_chars, show_timestamp=show_timestamp
+        ),
         app_store.uart_log_refresh_rate_ms,  # new refresh interval
     )
 
@@ -465,6 +484,7 @@ def generate_left_pane(*, selected_command_name: str, enable_advanced: bool) -> 
                 style=({} if enable_advanced else {"display": "none"}),
             ),
         ),
+        html.Hr(),
         html.Div(id="command-preview-container", className="mb-3"),
         dbc.Row(
             [
@@ -489,6 +509,19 @@ def generate_left_pane(*, selected_command_name: str, enable_advanced: bool) -> 
         ),
         html.Hr(),
         html.Div(id="selected-tcmd-info-container", className="mb-3"),
+        html.Hr(),
+        html.H4("Display Options", className="text-center"),
+        html.Div(
+            [
+                dbc.Checklist(
+                    options={
+                        "show_end_of_line_chars": "Show End-of-Line Characters?",
+                        "show_timestamp": "Show Timestamps?",
+                    },
+                    id="display-options-checklist",
+                ),
+            ]
+        ),
     ]
 
 
