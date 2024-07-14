@@ -11,6 +11,8 @@ dependencies = [
   "loguru",
   "dash",
   "dash-bootstrap-components",
+  "dash-split-pane~=1.0.0",
+  "pytz",
 ]
 requires-python = ">=3.10"
 authors = [

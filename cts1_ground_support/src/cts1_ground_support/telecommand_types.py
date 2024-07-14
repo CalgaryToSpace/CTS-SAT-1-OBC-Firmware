@@ -11,6 +11,7 @@ class TelecommandDefinition:
     tcmd_func: str
     description: str | None = None
     number_of_args: int
+    readiness_level: str
     full_docstring: str | None = None
     argument_descriptions: list[str] | None = None
 
@@ -21,6 +22,22 @@ class TelecommandDefinition:
             "tcmd_func": self.tcmd_func,
             "description": self.description,
             "number_of_args": self.number_of_args,
+            "readiness_level": self.readiness_level,
             "full_docstring": self.full_docstring,
             "argument_descriptions": self.argument_descriptions,
+        }
+
+    def to_dict_table_fields(self: "TelecommandDefinition") -> dict[str, str | int]:
+        """Convert the telecommand definition to a dictionary, with only the fields from the array.
+
+        Returns
+        -------
+            dict[str, str | int]: A dict of the fields in the telecommand registration array.
+
+        """
+        return {
+            "Command": self.name,
+            "Function Name": self.tcmd_func,
+            "Number of Args": self.number_of_args,
+            "Readiness Level": self.readiness_level,
         }

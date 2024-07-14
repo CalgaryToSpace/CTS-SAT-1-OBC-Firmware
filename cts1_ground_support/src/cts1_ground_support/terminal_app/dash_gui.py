@@ -9,16 +9,19 @@ The main screen has the following components:
 
 import argparse
 import functools
+import json
 import time
 
 import dash
 import dash_bootstrap_components as dbc
+import dash_split_pane
 from dash import callback, dcc, html
 from dash.dependencies import Input, Output, State
 from loguru import logger
 
 from cts1_ground_support.serial import list_serial_ports
 from cts1_ground_support.telecommand_array_parser import parse_telecommand_list_from_repo
+from cts1_ground_support.telecommand_preview import generate_telecommand_preview
 from cts1_ground_support.telecommand_types import TelecommandDefinition
 from cts1_ground_support.terminal_app.app_store import app_store
 from cts1_ground_support.terminal_app.app_types import UART_PORT_NAME_DISCONNECTED, RxTxLogEntry
@@ -67,8 +70,6 @@ def get_max_arguments_per_telecommand() -> int:
 def update_argument_inputs(selected_command_name: str) -> list[html.Div]:
     """Generate the argument input fields based on the selected telecommand."""
     selected_tcmd = get_telecommand_by_name(selected_command_name)
-
-    app_store.selected_command_name = selected_command_name
 
     arg_inputs = []
     for arg_num in range(get_max_arguments_per_telecommand()):
@@ -126,8 +127,12 @@ def handle_uart_port_change(uart_port_name: str) -> None:
 
 
 @callback(
-    Output("command-preview-container", "children"),
+    Output("stored-command-preview", "data"),
     Input("telecommand-dropdown", "value"),
+    Input("suffix-tags-checklist", "value"),
+    Input("input-tsexec-suffix-tag", "value"),
+    Input("extra-suffix-tags-input", "value"),  # Advanced feature for debugging
+    Input("uart-update-interval-component", "n_intervals"),
     # TODO: maybe this could be cleaner with `Input/State("argument-inputs-container", "children")`
     *[
         Input(f"arg-input-{arg_num}", "value")
@@ -135,24 +140,70 @@ def handle_uart_port_change(uart_port_name: str) -> None:
     ],
     prevent_initial_call=True,  # Objects aren't created yet, so errors are thrown.
 )
-def update_command_preview(selected_command_name: str, *every_arg_value: tuple[str]) -> list:
-    """Make an area with the command preview for the selected telecommand."""
+def update_stored_command_preview(
+    selected_command_name: str,
+    suffix_tags_checklist: list[str] | None,
+    tsexec_suffix_tag: str | None,
+    extra_suffix_tags_input: str,
+    _n_intervals: int,
+    *every_arg_value: tuple[str],
+) -> list:
+    """When any input to the command preview changes, regenerate the command preview.
+
+    Stores the command preview so that it's accessible from any function which wants it.
+    """
+    # Prep incoming args.
+    if suffix_tags_checklist is None:
+        suffix_tags_checklist = []
+
+    if tsexec_suffix_tag == "":
+        tsexec_suffix_tag = None
+
+    # Get the selected command and its arguments.
     selected_command = get_telecommand_by_name(selected_command_name)
     arg_vals = [every_arg_value[arg_num] for arg_num in range(selected_command.number_of_args)]
 
     # Replace None with empty string, to avoid "None" in the preview.
-    arg_vals = [arg if arg is not None else "" for arg in arg_vals]
+    arg_vals: list[str] = [str(arg) if arg is not None else "" for arg in arg_vals]
 
-    app_store.command_preview = f"CTS1+{selected_command_name}({','.join(arg_vals)})!"
+    enable_tssent_suffix = "enable_tssent_tag" in suffix_tags_checklist
+
+    extra_suffix_tags = {}
+    if extra_suffix_tags_input:
+        try:
+            extra_suffix_tags = json.loads(extra_suffix_tags_input)
+        except json.JSONDecodeError as e:
+            logger.error(f"Error decoding JSON in extra-suffix-tags-input field: {e}")
+
+        if not isinstance(extra_suffix_tags, dict):
+            logger.error(f"Extra suffix tags input is not a dictionary: {extra_suffix_tags}")
+            extra_suffix_tags = {}
+
+    return generate_telecommand_preview(
+        tcmd_name=selected_command_name,
+        arg_list=arg_vals,
+        enable_tssent_suffix=enable_tssent_suffix,
+        tsexec_suffix_value=tsexec_suffix_tag,
+        extra_suffix_tags=extra_suffix_tags.copy(),
+    )
+
+
+@callback(
+    Output("command-preview-container", "children"),
+    Input("stored-command-preview", "data"),
+)
+def update_command_preview_render(command_preview: str) -> list:
+    """Make an area with the command preview for the selected telecommand."""
     return [
-        html.H4(["Preview"], className="text-center"),
-        html.Pre(app_store.command_preview, id="command-preview", className="mb-3"),
+        html.H4(["Command Preview"], className="text-center"),
+        html.Pre(command_preview, id="command-preview", className="mb-3"),
     ]
 
 
 @callback(
     Input("send-button", "n_clicks"),
     State("telecommand-dropdown", "value"),
+    State("stored-command-preview", "data"),
     # TODO: maybe this could be cleaner with `Input/State("argument-inputs-container", "children")`
     *[
         State(f"arg-input-{arg_num}", "value")
@@ -161,7 +212,7 @@ def update_command_preview(selected_command_name: str, *every_arg_value: tuple[s
     prevent_initial_call=True,
 )
 def send_button_callback(
-    n_clicks: int, selected_command_name: str, *every_arg_value: tuple[str]
+    n_clicks: int, selected_command_name: str, command_preview: str, *every_arg_value: tuple[str]
 ) -> None:
     """Handle the send button click event by adding the command to the TX queue."""
     logger.info(f"Send button clicked ({n_clicks=})!")
@@ -188,10 +239,10 @@ def send_button_callback(
         app_store.rxtx_log.append(RxTxLogEntry(msg.encode(), "error"))
         return
 
-    logger.info(f"Adding command to queue: {app_store.command_preview}")
+    logger.info(f"Adding command to queue: {command_preview}")
 
     app_store.last_tx_timestamp_sec = time.time()
-    app_store.tx_queue.append(app_store.command_preview.encode("ascii"))
+    app_store.tx_queue.append(command_preview.encode("ascii"))
 
 
 @callback(
@@ -209,7 +260,7 @@ def clear_log_button_callback(n_clicks: int) -> None:
     Input("uart-port-dropdown", "value"),
     Input("uart-port-dropdown-interval-component", "n_intervals"),
 )
-def update_uart_port_dropdown_options(uart_port_name: str, _n_intervals: int) -> list[str]:
+def update_uart_port_dropdown_options(uart_port_name: str | None, _n_intervals: int) -> list[str]:
     """Update the UART port dropdown with the available serial ports."""
     if uart_port_name is None:
         uart_port_name = UART_PORT_NAME_DISCONNECTED
@@ -246,21 +297,47 @@ def update_selected_tcmd_info(selected_command_name: str) -> list:
     else:
         docstring = selected_command.full_docstring
 
+    table_fields = selected_command.to_dict_table_fields()
+
+    table_header = html.Thead(html.Tr([html.Th("Field"), html.Th("Value")]))
+    table_body = html.Tbody(
+        [
+            html.Tr(
+                [
+                    html.Td(key),
+                    html.Td(value, style={"fontFamily": "monospace"}),
+                ]
+            )
+            for key, value in table_fields.items()
+        ]
+    )
+
+    table = dbc.Table(
+        [table_header, table_body], bordered=True, striped=True, hover=True, responsive=True
+    )
+
     return [
-        html.H4(
-            ["Docs: ", html.Span(selected_command_name, style={"fontFamily": "monospace"})],
-            className="text-center",
-        ),
+        html.H4(["Command Info"], className="text-center"),
+        table,
+        html.Hr(),
+        html.H4(["Command Docstring"], className="text-center"),
         # TODO: add the "brief" docstring here, and then hide the rest in a "Click to expand"
         html.Pre(docstring, id="selected-tcmd-info", className="mb-3"),
     ]
 
 
-def generate_rx_tx_log() -> html.Div:
+def generate_rx_tx_log(
+    *, show_end_of_line_chars: bool = False, show_timestamp: bool = False
+) -> html.Div:
     """Generate the RX/TX log, which shows the most recent received and transmitted messages."""
     return html.Div(
         [
-            html.P(entry.text, style=(entry.css_style | {"margin": "0", "lineHeight": "1.1"}))
+            html.P(
+                entry.to_string(
+                    show_end_of_line_chars=show_end_of_line_chars, show_timestamp=show_timestamp
+                ),
+                style=(entry.css_style | {"margin": "0", "lineHeight": "1.1"}),
+            )
             for entry in (app_store.rxtx_log)
         ],
         id="rx-tx-log",
@@ -276,12 +353,14 @@ def generate_rx_tx_log() -> html.Div:
     Input("send-button", "n_clicks"),
     Input("clear-log-button", "n_clicks"),
     Input("uart-update-interval-component", "n_intervals"),
+    Input("display-options-checklist", "value"),
 )
 def update_uart_log_interval(
     _uart_port_name: str,
     _n_clicks_send: int,
     _n_clicks_clear_logs: int,
     _update_interval_count: int,
+    display_options_checklist: list[str] | None,
 ) -> html.Div:
     """Update the UART log at the specified interval. Also, update the refresh interval."""
     sec_since_send = time.time() - app_store.last_tx_timestamp_sec
@@ -295,13 +374,23 @@ def update_uart_log_interval(
         # Slow down if it's been a long time since the last command.
         app_store.uart_log_refresh_rate_ms = 2000
 
+    if display_options_checklist:
+        show_end_of_line_chars = "show_end_of_line_chars" in display_options_checklist
+        show_timestamp = "show_timestamp" in display_options_checklist
+    else:
+        show_end_of_line_chars = False
+        show_timestamp = False
+
     return (
-        generate_rx_tx_log(),  # new log entries
+        # new log entries
+        generate_rx_tx_log(
+            show_end_of_line_chars=show_end_of_line_chars, show_timestamp=show_timestamp
+        ),
         app_store.uart_log_refresh_rate_ms,  # new refresh interval
     )
 
 
-def generate_left_pane() -> list:
+def generate_left_pane(*, selected_command_name: str, enable_advanced: bool) -> list:
     """Make the left pane of the GUI, to be put inside a Col."""
     return [
         html.H1("CTS-SAT-1 Ground Support - Telecommand Terminal", className="text-center"),
@@ -336,16 +425,64 @@ def generate_left_pane() -> list:
                 dcc.Dropdown(
                     id="telecommand-dropdown",
                     options=[{"label": cmd, "value": cmd} for cmd in get_telecommand_name_list()],
-                    value=app_store.selected_command_name,
+                    value=selected_command_name,
                     className="mb-3",  # Add margin bottom to the dropdown
                     style={"fontFamily": "monospace"},
                 ),
             ],
         ),
         html.Div(
-            update_argument_inputs(app_store.selected_command_name),
+            update_argument_inputs(selected_command_name),
             id="argument-inputs-container",
             className="mb-3",
+        ),
+        html.Hr(),
+        html.Div(
+            [
+                dbc.Label("Suffix Tag Options:", html_for="suffix-tags-checklist"),
+                dbc.Checklist(
+                    options={
+                        "enable_tssent_tag": "Send '@tssent=current_timestamp' Tag?",
+                        # TODO: add more here, like the "Send 'sha256' Tag"
+                    },
+                    id="suffix-tags-checklist",
+                ),
+            ]
+        ),
+        html.Div(
+            dbc.FormFloating(
+                [
+                    dbc.Input(
+                        type="text",
+                        id="input-tsexec-suffix-tag",
+                        placeholder="Timestamp to Execute Command (@tsexec=xxx)",
+                        style={"fontFamily": "monospace"},
+                    ),
+                    dbc.Label(
+                        "Timestamp to Execute Command (@tsexec=xxx)",
+                        html_for="input-tsexec-suffix-tag",
+                    ),
+                ],
+                className="mb-3",
+            ),
+        ),
+        html.Div(
+            dbc.FormFloating(
+                [
+                    dbc.Input(
+                        type="text",
+                        id="extra-suffix-tags-input",
+                        placeholder="Extra Suffix Tags Input (JSON)",
+                        style={"fontFamily": "monospace"},
+                    ),
+                    dbc.Label(
+                        "Extra Suffix Tags Input (JSON)", html_for="extra-suffix-tags-input"
+                    ),
+                ],
+                className="mb-3",
+                # Hide this field by default, and only show if the CLI arg "--advanced" is passed.
+                style=({} if enable_advanced else {"display": "none"}),
+            ),
         ),
         html.Hr(),
         html.Div(id="command-preview-container", className="mb-3"),
@@ -372,14 +509,24 @@ def generate_left_pane() -> list:
         ),
         html.Hr(),
         html.Div(id="selected-tcmd-info-container", className="mb-3"),
+        html.Hr(),
+        html.H4("Display Options", className="text-center"),
+        html.Div(
+            [
+                dbc.Checklist(
+                    options={
+                        "show_end_of_line_chars": "Show End-of-Line Characters?",
+                        "show_timestamp": "Show Timestamps?",
+                    },
+                    id="display-options-checklist",
+                ),
+            ]
+        ),
     ]
 
 
-def run_dash_app(*, enable_debug: bool = False) -> None:
+def run_dash_app(*, enable_debug: bool = False, enable_advanced: bool = False) -> None:
     """Run the main Dash application."""
-    # Set the inital state of the app store.
-    app_store.selected_command_name = get_telecommand_name_list()[0]
-
     app_name = "CTS-SAT-1 Ground Support"
     app = dash.Dash(
         __name__,  # required to load /assets folder
@@ -394,38 +541,36 @@ def run_dash_app(*, enable_debug: bool = False) -> None:
 
     app.layout = dbc.Container(
         [
-            dbc.Row(
+            dash_split_pane.DashSplitPane(
                 [
-                    dbc.Col(
-                        generate_left_pane(),
-                        width=3,
-                        style={"height": "100vh", "overflowY": "scroll"},
-                        class_name="p-3",
+                    html.Div(
+                        generate_left_pane(
+                            selected_command_name=get_telecommand_name_list()[0],  # default
+                            enable_advanced=enable_advanced,
+                        ),
+                        className="p-3",
+                        style={
+                            "height": "100%",
+                            "overflowY": "auto",  # Enable vertical scroll.
+                        },
                     ),
-                    dbc.Col(
-                        [
-                            html.Div(
-                                generate_rx_tx_log(),
-                                id="rx-tx-log-container",
-                                style={
-                                    "fontFamily": "monospace",
-                                    "backgroundColor": "black",
-                                    "height": "100%",
-                                    "overflowY": "auto",
-                                    "flexDirection": "column-reverse",
-                                    "display": "flex",
-                                },
-                            ),
-                            dcc.Interval(
-                                id="uart-update-interval-component",
-                                interval=1000,  # in milliseconds
-                                n_intervals=0,
-                            ),
-                        ],
-                        width=9,
-                        style={"height": "100vh", "overflowY": "scroll"},
+                    html.Div(
+                        generate_rx_tx_log(),
+                        id="rx-tx-log-container",
+                        style={
+                            "fontFamily": "monospace",
+                            "backgroundColor": "black",
+                            "height": "100%",
+                            "overflowY": "auto",
+                            "flexDirection": "column-reverse",
+                            "display": "flex",
+                        },
                     ),
                 ],
+                id="vertical-split-pane-1",
+                split="vertical",
+                size=500,  # Default starting size.
+                minSize=300,
             ),
             dbc.Button(
                 "Jump to Bottom ⬇️",
@@ -439,6 +584,12 @@ def run_dash_app(*, enable_debug: bool = False) -> None:
                 },
                 color="danger",
             ),
+            dcc.Interval(
+                id="uart-update-interval-component",
+                interval=1000,  # in milliseconds
+                n_intervals=0,
+            ),
+            dcc.Store(id="stored-command-preview", data=""),
         ],
         fluid=True,  # Use a fluid container for full width
     )
@@ -458,8 +609,14 @@ def main() -> None:
         action="store_true",
         help="Enable debug mode for the Dash app.",
     )
+    parser.add_argument(
+        "-a",
+        "--advanced",
+        action="store_true",
+        help="Enable advanced features for ground debugging, like the extra suffix tags input.",
+    )
     args = parser.parse_args()
-    run_dash_app(enable_debug=args.debug)
+    run_dash_app(enable_debug=args.debug, enable_advanced=args.advanced)
 
 
 if __name__ == "__main__":

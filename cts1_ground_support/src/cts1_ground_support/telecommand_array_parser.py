@@ -34,11 +34,13 @@ def parse_telecommand_array_table(c_code: str | Path) -> list[TelecommandDefinit
         .tcmd_name = "hello_world",
         .tcmd_func = TCMDEXEC_hello_world,
         .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
         .tcmd_name = "heartbeat_off",
         .tcmd_func = TCMDEXEC_heartbeat_off,
         .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     } } ;
     ```
 
@@ -93,6 +95,7 @@ def parse_telecommand_array_table(c_code: str | Path) -> list[TelecommandDefinit
                 name=fields["tcmd_name"],
                 tcmd_func=fields["tcmd_func"],
                 number_of_args=fields["number_of_args"],
+                readiness_level=fields["readiness_level"],
             ),
         )
 
