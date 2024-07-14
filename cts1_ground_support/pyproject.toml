@@ -6,11 +6,11 @@ build-backend = "hatchling.build"
 name = "cts1_ground_support"
 version = "v0-dev"
 dependencies = [
-  "GitPython",
-  "pyserial",
-  "loguru",
-  "dash",
-  "dash-bootstrap-components",
+  "GitPython~=3.1.43",
+  "pyserial~=3.5",
+  "loguru~=0.7.2",
+  "dash~=2.17.1",
+  "dash-bootstrap-components~=1.6.0",
 ]
 requires-python = ">=3.10"
 authors = [
