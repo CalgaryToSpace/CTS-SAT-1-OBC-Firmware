@@ -18,9 +18,7 @@ class AppStore:
     last_tx_timestamp_sec: float = 0
     tx_queue: list[bytes] = field(default_factory=list)
 
-    selected_command_name: str | None = None  # TODO: remove from here
     uart_log_refresh_rate_ms: int = 500
-    command_preview: str = ""  # TODO: remove from here
 
 
 app_store = AppStore()

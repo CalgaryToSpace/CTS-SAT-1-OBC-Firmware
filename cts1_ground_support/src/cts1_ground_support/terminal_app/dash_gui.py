@@ -71,8 +71,6 @@ def update_argument_inputs(selected_command_name: str) -> list[html.Div]:
     """Generate the argument input fields based on the selected telecommand."""
     selected_tcmd = get_telecommand_by_name(selected_command_name)
 
-    app_store.selected_command_name = selected_command_name
-
     arg_inputs = []
     for arg_num in range(get_max_arguments_per_telecommand()):
         if (selected_tcmd.argument_descriptions is not None) and (
@@ -129,7 +127,7 @@ def handle_uart_port_change(uart_port_name: str) -> None:
 
 
 @callback(
-    Output("command-preview-container", "children"),
+    Output("stored-command-preview", "data"),
     Input("telecommand-dropdown", "value"),
     Input("suffix-tags-checklist", "value"),
     Input("input-tsexec-suffix-tag", "value"),
@@ -142,7 +140,7 @@ def handle_uart_port_change(uart_port_name: str) -> None:
     ],
     prevent_initial_call=True,  # Objects aren't created yet, so errors are thrown.
 )
-def update_command_preview(
+def update_stored_command_preview(
     selected_command_name: str,
     suffix_tags_checklist: list[str] | None,
     tsexec_suffix_tag: str | None,
@@ -150,7 +148,10 @@ def update_command_preview(
     _n_intervals: int,
     *every_arg_value: tuple[str],
 ) -> list:
-    """Make an area with the command preview for the selected telecommand."""
+    """When any input to the command preview changes, regenerate the command preview.
+
+    Stores the command preview so that it's accessible from any function which wants it.
+    """
     # Prep incoming args.
     if suffix_tags_checklist is None:
         suffix_tags_checklist = []
@@ -178,22 +179,31 @@ def update_command_preview(
             logger.error(f"Extra suffix tags input is not a dictionary: {extra_suffix_tags}")
             extra_suffix_tags = {}
 
-    app_store.command_preview = generate_telecommand_preview(
+    return generate_telecommand_preview(
         tcmd_name=selected_command_name,
         arg_list=arg_vals,
         enable_tssent_suffix=enable_tssent_suffix,
         tsexec_suffix_value=tsexec_suffix_tag,
         extra_suffix_tags=extra_suffix_tags.copy(),
     )
+
+
+@callback(
+    Output("command-preview-container", "children"),
+    Input("stored-command-preview", "data"),
+)
+def update_command_preview_render(command_preview: str) -> list:
+    """Make an area with the command preview for the selected telecommand."""
     return [
-        html.H4(["Preview"], className="text-center"),
-        html.Pre(app_store.command_preview, id="command-preview", className="mb-3"),
+        html.H4(["Command Preview"], className="text-center"),
+        html.Pre(command_preview, id="command-preview", className="mb-3"),
     ]
 
 
 @callback(
     Input("send-button", "n_clicks"),
     State("telecommand-dropdown", "value"),
+    State("stored-command-preview", "data"),
     # TODO: maybe this could be cleaner with `Input/State("argument-inputs-container", "children")`
     *[
         State(f"arg-input-{arg_num}", "value")
@@ -202,7 +212,7 @@ def update_command_preview(
     prevent_initial_call=True,
 )
 def send_button_callback(
-    n_clicks: int, selected_command_name: str, *every_arg_value: tuple[str]
+    n_clicks: int, selected_command_name: str, command_preview: str, *every_arg_value: tuple[str]
 ) -> None:
     """Handle the send button click event by adding the command to the TX queue."""
     logger.info(f"Send button clicked ({n_clicks=})!")
@@ -229,10 +239,10 @@ def send_button_callback(
         app_store.rxtx_log.append(RxTxLogEntry(msg.encode(), "error"))
         return
 
-    logger.info(f"Adding command to queue: {app_store.command_preview}")
+    logger.info(f"Adding command to queue: {command_preview}")
 
     app_store.last_tx_timestamp_sec = time.time()
-    app_store.tx_queue.append(app_store.command_preview.encode("ascii"))
+    app_store.tx_queue.append(command_preview.encode("ascii"))
 
 
 @callback(
@@ -250,7 +260,7 @@ def clear_log_button_callback(n_clicks: int) -> None:
     Input("uart-port-dropdown", "value"),
     Input("uart-port-dropdown-interval-component", "n_intervals"),
 )
-def update_uart_port_dropdown_options(uart_port_name: str, _n_intervals: int) -> list[str]:
+def update_uart_port_dropdown_options(uart_port_name: str | None, _n_intervals: int) -> list[str]:
     """Update the UART port dropdown with the available serial ports."""
     if uart_port_name is None:
         uart_port_name = UART_PORT_NAME_DISCONNECTED
@@ -361,7 +371,7 @@ def update_uart_log_interval(
     )
 
 
-def generate_left_pane(*, enable_advanced: bool) -> list:
+def generate_left_pane(*, selected_command_name: str, enable_advanced: bool) -> list:
     """Make the left pane of the GUI, to be put inside a Col."""
     return [
         html.H1("CTS-SAT-1 Ground Support - Telecommand Terminal", className="text-center"),
@@ -396,26 +406,29 @@ def generate_left_pane(*, enable_advanced: bool) -> list:
                 dcc.Dropdown(
                     id="telecommand-dropdown",
                     options=[{"label": cmd, "value": cmd} for cmd in get_telecommand_name_list()],
-                    value=app_store.selected_command_name,
+                    value=selected_command_name,
                     className="mb-3",  # Add margin bottom to the dropdown
                     style={"fontFamily": "monospace"},
                 ),
             ],
         ),
         html.Div(
-            update_argument_inputs(app_store.selected_command_name),
+            update_argument_inputs(selected_command_name),
             id="argument-inputs-container",
             className="mb-3",
         ),
         html.Hr(),
         html.Div(
-            dbc.Checklist(
-                options={
-                    "enable_tssent_tag": "Send '@tssent=current_timestamp' Tag?",
-                    # TODO: add more here, like the "Send 'sha256' Tag"
-                },
-                id="suffix-tags-checklist",
-            ),
+            [
+                dbc.Label("Suffix Tag Options:", html_for="suffix-tags-checklist"),
+                dbc.Checklist(
+                    options={
+                        "enable_tssent_tag": "Send '@tssent=current_timestamp' Tag?",
+                        # TODO: add more here, like the "Send 'sha256' Tag"
+                    },
+                    id="suffix-tags-checklist",
+                ),
+            ]
         ),
         html.Div(
             dbc.FormFloating(
@@ -481,9 +494,6 @@ def generate_left_pane(*, enable_advanced: bool) -> list:
 
 def run_dash_app(*, enable_debug: bool = False, enable_advanced: bool = False) -> None:
     """Run the main Dash application."""
-    # Set the inital state of the app store.
-    app_store.selected_command_name = get_telecommand_name_list()[0]
-
     app_name = "CTS-SAT-1 Ground Support"
     app = dash.Dash(
         __name__,  # required to load /assets folder
@@ -501,7 +511,10 @@ def run_dash_app(*, enable_debug: bool = False, enable_advanced: bool = False) -
             dash_split_pane.DashSplitPane(
                 [
                     html.Div(
-                        generate_left_pane(enable_advanced=enable_advanced),
+                        generate_left_pane(
+                            selected_command_name=get_telecommand_name_list()[0],  # default
+                            enable_advanced=enable_advanced,
+                        ),
                         className="p-3",
                         style={
                             "height": "100%",
@@ -543,6 +556,7 @@ def run_dash_app(*, enable_debug: bool = False, enable_advanced: bool = False) -
                 interval=1000,  # in milliseconds
                 n_intervals=0,
             ),
+            dcc.Store(id="stored-command-preview", data=""),
         ],
         fluid=True,  # Use a fluid container for full width
     )
