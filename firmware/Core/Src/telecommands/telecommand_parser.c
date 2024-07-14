@@ -1,5 +1,6 @@
 #include "telecommands/telecommand_definitions.h"
 #include "telecommands/telecommand_parser.h"
+#include "telecommands/telecommand_args_helpers.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -10,6 +11,13 @@
 /// @return 1 if the character is alphanumeric, 0 otherwise.
 uint8_t TCMD_is_char_alphanumeric(char c) {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
+}
+
+/// @brief Returns whether a character is numeric (0-9).
+/// @param c The character to check.
+/// @return 1 if the character is a numerical digit (0-9), 0 otherwise.
+uint8_t TCMD_is_char_numeric(char c) {
+    return (c >= '0' && c <= '9');
 }
 
 /// @brief Returns whether a character is a valid character in a telecommand name.
@@ -110,4 +118,61 @@ int32_t TCMD_parse_telecommand_get_index(const char *tcmd_str, uint32_t tcmd_str
         }
     }
     return (-1);
+}
+
+/// @brief Searches for a `str` like `\@tag_name=xxxx`, and sets `uint64_t xxxx` into `out_value`.
+/// @param str The string (haystack) to search with for the tag.
+/// @param tag_name The tag to search for, including the '@' and '='.
+/// @param value_dest The destination for the value. `*value_dest` will be set.
+/// @return 0 if the tag was found successfully. >0 if the tag was not found, or there was an error.
+/// @note This function will return an error if the character after the number is not in: `#\@\0`
+uint8_t TCMD_get_suffix_tag_uint64(const char *str, const char *tag_name, uint64_t *value_dest) {
+    // Find the tag in the string
+    int16_t tag_index = GEN_get_index_of_substring_in_array(str, strlen(str), tag_name);
+    if (tag_index < 0) {
+        return 1;
+    }
+
+    // Find the start of the value, then do safety check.
+    uint16_t value_start_index = tag_index + strlen(tag_name);
+    if (value_start_index >= strlen(str)) {
+        return 2;
+    }
+
+    // Find the end of the value
+    uint16_t value_end_index = value_start_index;
+    while (TCMD_is_char_numeric(str[value_end_index])) {
+        value_end_index++;
+    }
+
+    // Check that there was at least one digit
+    if (value_end_index <= value_start_index) {
+        return 3;
+    }
+
+    // Check that the character after the number is any of '#', '@', or '\0'
+    if (str[value_end_index] != '#' && str[value_end_index] != '@' && str[value_end_index] != '\0') {
+        return 4;
+    }
+
+    // Copy the value into a buffer
+    char value_str[32]; // uint64 needs 20 chars max
+    memset(value_str, 0, sizeof(value_str));
+    if (value_end_index - value_start_index >= sizeof(value_str) - 1) {
+        // Failure: digit string too long
+        return 5;
+    }
+    strncpy(value_str, str + value_start_index, value_end_index - value_start_index);
+
+    // Convert the value to a uint64_t
+    uint64_t value;
+    if (TCMD_ascii_to_uint64(value_str, strlen(value_str), &value) > 0) {
+        return 6;
+    }
+
+    // Set the value
+    *value_dest = value;
+    
+    // Success
+    return 0;
 }

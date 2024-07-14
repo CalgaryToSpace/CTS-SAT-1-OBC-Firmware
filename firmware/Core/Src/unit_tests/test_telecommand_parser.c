@@ -41,3 +41,40 @@ uint8_t TEST_EXEC__TCMD_check_starts_with_device_id() {
 
     return 0;
 }
+
+uint8_t TEST_EXEC__TCMD_get_suffix_tag_uint64() {
+    uint8_t result_err = 0;
+    uint64_t result_val = 0;
+    result_err = TCMD_get_suffix_tag_uint64("@tsexec=1234", "@tsexec=", &result_val);
+    TEST_ASSERT(result_err == 0);
+    TEST_ASSERT(result_val == 1234);
+
+    result_err = TCMD_get_suffix_tag_uint64("@tsexec=1234", "@tssent=", &result_val);
+    TEST_ASSERT(result_err > 0);
+
+    result_err = TCMD_get_suffix_tag_uint64("@tsexec=1720939654482", "@tsexec=", &result_val);
+    TEST_ASSERT(result_err == 0);
+    TEST_ASSERT(result_val == 1720939654482);
+
+    result_err = TCMD_get_suffix_tag_uint64("@tsexec=1720939654482@tssent=3441879389695", "@tssent=", &result_val);
+    TEST_ASSERT(result_err == 0);
+    TEST_ASSERT(result_val == 3441879389695);
+
+    result_err = TCMD_get_suffix_tag_uint64("@tsexec=1720939654482@tssent=3441879389695", "@tsexec=", &result_val);
+    TEST_ASSERT(result_err == 0);
+    TEST_ASSERT(result_val == 1720939654482);
+
+    result_err = TCMD_get_suffix_tag_uint64("@tsexec=1720939654482A@tssent=3441879389695", "@tsexec=", &result_val);
+    TEST_ASSERT(result_err > 0); // should fail because of the A
+
+    // Case: minimum length
+    result_err = TCMD_get_suffix_tag_uint64("@tsexec=0@tssent=3441879389695", "@tsexec=", &result_val);
+    TEST_ASSERT(result_err == 0);
+    TEST_ASSERT(result_val == 0);
+
+    // Fail case: 0-length value
+    result_err = TCMD_get_suffix_tag_uint64("@tsexec=@tssent=3441879389695", "@tsexec=", &result_val);
+    TEST_ASSERT(result_err > 0);
+
+    return 0;
+}
