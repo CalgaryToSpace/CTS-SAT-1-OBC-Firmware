@@ -246,11 +246,30 @@ def update_selected_tcmd_info(selected_command_name: str) -> list:
     else:
         docstring = selected_command.full_docstring
 
+    table_fields = selected_command.to_dict_table_fields()
+
+    table_header = html.Thead(html.Tr([html.Th("Field"), html.Th("Value")]))
+    table_body = html.Tbody(
+        [
+            html.Tr(
+                [
+                    html.Td(key),
+                    html.Td(value, style={"fontFamily": "monospace"}),
+                ]
+            )
+            for key, value in table_fields.items()
+        ]
+    )
+
+    table = dbc.Table(
+        [table_header, table_body], bordered=True, striped=True, hover=True, responsive=True
+    )
+
     return [
-        html.H4(
-            ["Docs: ", html.Span(selected_command_name, style={"fontFamily": "monospace"})],
-            className="text-center",
-        ),
+        html.H4(["Command Info"], className="text-center"),
+        table,
+        html.Hr(),
+        html.H4(["Command Docstring"], className="text-center"),
         # TODO: add the "brief" docstring here, and then hide the rest in a "Click to expand"
         html.Pre(docstring, id="selected-tcmd-info", className="mb-3"),
     ]
