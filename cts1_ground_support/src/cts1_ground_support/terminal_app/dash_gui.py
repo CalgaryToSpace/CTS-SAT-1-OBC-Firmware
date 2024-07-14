@@ -13,6 +13,7 @@ import time
 
 import dash
 import dash_bootstrap_components as dbc
+import dash_extensions as de
 from dash import callback, dcc, html
 from dash.dependencies import Input, Output, State
 from loguru import logger
@@ -85,12 +86,16 @@ def update_argument_inputs(selected_command_name: str) -> list[html.Div]:
         arg_inputs.append(
             dbc.FormFloating(
                 [
-                    dbc.Input(
-                        type="text",
-                        id=this_id,
-                        placeholder=label,
-                        disabled=(arg_num >= selected_tcmd.number_of_args),
-                        style={"fontFamily": "monospace"},
+                    de.Keyboard(
+                        dbc.Input(
+                            type="text",
+                            id=this_id,
+                            placeholder=label,
+                            disabled=(arg_num >= selected_tcmd.number_of_args),
+                            style={"fontFamily": "monospace"},
+                        ),
+                        captureKeys=["Enter"],
+                        id="enter-key-listener",
                     ),
                     dbc.Label(label, html_for=this_id),
                 ],
@@ -152,6 +157,7 @@ def update_command_preview(selected_command_name: str, *every_arg_value: tuple[s
 
 @callback(
     Input("send-button", "n_clicks"),
+    Input("enter-key-listener", "n_keydowns"),
     State("telecommand-dropdown", "value"),
     # TODO: maybe this could be cleaner with `Input/State("argument-inputs-container", "children")`
     *[
@@ -161,10 +167,10 @@ def update_command_preview(selected_command_name: str, *every_arg_value: tuple[s
     prevent_initial_call=True,
 )
 def send_button_callback(
-    n_clicks: int, selected_command_name: str, *every_arg_value: tuple[str]
+    n_clicks: int, n_enter_keydowns: int, selected_command_name: str, *every_arg_value: tuple[str]
 ) -> None:
     """Handle the send button click event by adding the command to the TX queue."""
-    logger.info(f"Send button clicked ({n_clicks=})!")
+    logger.info(f"Send button clicked ({n_clicks=}, {n_enter_keydowns=})!")
 
     if selected_command_name is None:
         msg = "No command selected. Can't send a command!"
