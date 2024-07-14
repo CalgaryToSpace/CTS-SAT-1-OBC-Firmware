@@ -332,13 +332,16 @@ def generate_rx_tx_log(
     """Generate the RX/TX log, which shows the most recent received and transmitted messages."""
     return html.Div(
         [
-            html.P(
+            html.Pre(
                 entry.to_string(
                     show_end_of_line_chars=show_end_of_line_chars, show_timestamp=show_timestamp
                 ),
-                style=(entry.css_style | {"margin": "0", "lineHeight": "1.1"}),
+                style=(
+                    entry.css_style
+                    | {"margin": "0", "lineHeight": "1.1", "whiteSpace": "pre-wrap"}
+                ),
             )
-            for entry in (app_store.rxtx_log)
+            for entry in app_store.rxtx_log
         ],
         id="rx-tx-log",
         className="p-3",
@@ -586,7 +589,7 @@ def run_dash_app(*, enable_debug: bool = False, enable_advanced: bool = False) -
             ),
             dcc.Interval(
                 id="uart-update-interval-component",
-                interval=1000,  # in milliseconds
+                interval=800,  # in milliseconds
                 n_intervals=0,
             ),
             dcc.Store(id="stored-command-preview", data=""),
