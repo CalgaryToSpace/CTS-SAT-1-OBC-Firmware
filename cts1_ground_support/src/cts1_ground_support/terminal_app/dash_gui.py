@@ -9,6 +9,7 @@ The main screen has the following components:
 
 import argparse
 import functools
+import json
 import time
 
 import dash
@@ -20,6 +21,7 @@ from loguru import logger
 
 from cts1_ground_support.serial import list_serial_ports
 from cts1_ground_support.telecommand_array_parser import parse_telecommand_list_from_repo
+from cts1_ground_support.telecommand_preview import generate_telecommand_preview
 from cts1_ground_support.telecommand_types import TelecommandDefinition
 from cts1_ground_support.terminal_app.app_store import app_store
 from cts1_ground_support.terminal_app.app_types import UART_PORT_NAME_DISCONNECTED, RxTxLogEntry
@@ -129,6 +131,10 @@ def handle_uart_port_change(uart_port_name: str) -> None:
 @callback(
     Output("command-preview-container", "children"),
     Input("telecommand-dropdown", "value"),
+    Input("suffix-tags-checklist", "value"),
+    Input("input-tsexec-suffix-tag", "value"),
+    Input("extra-suffix-tags-input", "value"),  # Advanced feature for debugging
+    Input("uart-update-interval-component", "n_intervals"),
     # TODO: maybe this could be cleaner with `Input/State("argument-inputs-container", "children")`
     *[
         Input(f"arg-input-{arg_num}", "value")
@@ -136,15 +142,49 @@ def handle_uart_port_change(uart_port_name: str) -> None:
     ],
     prevent_initial_call=True,  # Objects aren't created yet, so errors are thrown.
 )
-def update_command_preview(selected_command_name: str, *every_arg_value: tuple[str]) -> list:
+def update_command_preview(
+    selected_command_name: str,
+    suffix_tags_checklist: list[str] | None,
+    tsexec_suffix_tag: str | None,
+    extra_suffix_tags_input: str,
+    _n_intervals: int,
+    *every_arg_value: tuple[str],
+) -> list:
     """Make an area with the command preview for the selected telecommand."""
+    # Prep incoming args.
+    if suffix_tags_checklist is None:
+        suffix_tags_checklist = []
+
+    if tsexec_suffix_tag == "":
+        tsexec_suffix_tag = None
+
+    # Get the selected command and its arguments.
     selected_command = get_telecommand_by_name(selected_command_name)
     arg_vals = [every_arg_value[arg_num] for arg_num in range(selected_command.number_of_args)]
 
     # Replace None with empty string, to avoid "None" in the preview.
-    arg_vals = [arg if arg is not None else "" for arg in arg_vals]
+    arg_vals: list[str] = [str(arg) if arg is not None else "" for arg in arg_vals]
 
-    app_store.command_preview = f"CTS1+{selected_command_name}({','.join(arg_vals)})!"
+    enable_tssent_suffix = "enable_tssent_tag" in suffix_tags_checklist
+
+    extra_suffix_tags = {}
+    if extra_suffix_tags_input:
+        try:
+            extra_suffix_tags = json.loads(extra_suffix_tags_input)
+        except json.JSONDecodeError as e:
+            logger.error(f"Error decoding JSON in extra-suffix-tags-input field: {e}")
+
+        if not isinstance(extra_suffix_tags, dict):
+            logger.error(f"Extra suffix tags input is not a dictionary: {extra_suffix_tags}")
+            extra_suffix_tags = {}
+
+    app_store.command_preview = generate_telecommand_preview(
+        tcmd_name=selected_command_name,
+        arg_list=arg_vals,
+        enable_tssent_suffix=enable_tssent_suffix,
+        tsexec_suffix_value=tsexec_suffix_tag,
+        extra_suffix_tags=extra_suffix_tags.copy(),
+    )
     return [
         html.H4(["Preview"], className="text-center"),
         html.Pre(app_store.command_preview, id="command-preview", className="mb-3"),
@@ -321,7 +361,7 @@ def update_uart_log_interval(
     )
 
 
-def generate_left_pane() -> list:
+def generate_left_pane(*, enable_advanced: bool) -> list:
     """Make the left pane of the GUI, to be put inside a Col."""
     return [
         html.H1("CTS-SAT-1 Ground Support - Telecommand Terminal", className="text-center"),
@@ -368,6 +408,50 @@ def generate_left_pane() -> list:
             className="mb-3",
         ),
         html.Hr(),
+        html.Div(
+            dbc.Checklist(
+                options={
+                    "enable_tssent_tag": "Send '@tssent=current_timestamp' Tag?",
+                    # TODO: add more here, like the "Send 'sha256' Tag"
+                },
+                id="suffix-tags-checklist",
+            ),
+        ),
+        html.Div(
+            dbc.FormFloating(
+                [
+                    dbc.Input(
+                        type="text",
+                        id="input-tsexec-suffix-tag",
+                        placeholder="Timestamp to Execute Command (@tsexec=xxx)",
+                        style={"fontFamily": "monospace"},
+                    ),
+                    dbc.Label(
+                        "Timestamp to Execute Command (@tsexec=xxx)",
+                        html_for="input-tsexec-suffix-tag",
+                    ),
+                ],
+                className="mb-3",
+            ),
+        ),
+        html.Div(
+            dbc.FormFloating(
+                [
+                    dbc.Input(
+                        type="text",
+                        id="extra-suffix-tags-input",
+                        placeholder="Extra Suffix Tags Input (JSON)",
+                        style={"fontFamily": "monospace"},
+                    ),
+                    dbc.Label(
+                        "Extra Suffix Tags Input (JSON)", html_for="extra-suffix-tags-input"
+                    ),
+                ],
+                className="mb-3",
+                # Hide this field by default, and only show if the CLI arg "--advanced" is passed.
+                style=({} if enable_advanced else {"display": "none"}),
+            ),
+        ),
         html.Div(id="command-preview-container", className="mb-3"),
         dbc.Row(
             [
@@ -395,7 +479,7 @@ def generate_left_pane() -> list:
     ]
 
 
-def run_dash_app(*, enable_debug: bool = False) -> None:
+def run_dash_app(*, enable_debug: bool = False, enable_advanced: bool = False) -> None:
     """Run the main Dash application."""
     # Set the inital state of the app store.
     app_store.selected_command_name = get_telecommand_name_list()[0]
@@ -417,7 +501,7 @@ def run_dash_app(*, enable_debug: bool = False) -> None:
             dash_split_pane.DashSplitPane(
                 [
                     html.Div(
-                        generate_left_pane(),
+                        generate_left_pane(enable_advanced=enable_advanced),
                         className="p-3",
                         style={
                             "height": "100%",
@@ -478,8 +562,14 @@ def main() -> None:
         action="store_true",
         help="Enable debug mode for the Dash app.",
     )
+    parser.add_argument(
+        "-a",
+        "--advanced",
+        action="store_true",
+        help="Enable advanced features for ground debugging, like the extra suffix tags input.",
+    )
     args = parser.parse_args()
-    run_dash_app(enable_debug=args.debug)
+    run_dash_app(enable_debug=args.debug, enable_advanced=args.advanced)
 
 
 if __name__ == "__main__":
