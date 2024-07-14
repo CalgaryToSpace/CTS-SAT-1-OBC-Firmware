@@ -17,7 +17,7 @@
 
 volatile uint8_t TASK_heartbeat_is_on = 1;
 
-char TASK_heartbeat_timing_str[64] = {0};
+char TASK_heartbeat_timing_str[128] = {0};
 
 void TASK_DEBUG_print_heartbeat(void *argument) {
 	TASK_HELP_start_of_task();
@@ -36,7 +36,14 @@ void TASK_DEBUG_print_heartbeat(void *argument) {
             seconds = (time_t)(unix_time_ms/ 1000U);
             ms = unix_time_ms - 1000U * seconds;
             time_info = gmtime(&seconds);
-            snprintf(TASK_heartbeat_timing_str, 64, "FrontierSat time: %d%02d%02dT%02d:%02d:%02d.%03u\n", time_info->tm_year + 1900, time_info->tm_mon + 1, time_info->tm_mday, time_info->tm_hour, time_info->tm_min, time_info->tm_sec, ms);
+            snprintf(
+				TASK_heartbeat_timing_str,
+				sizeof(TASK_heartbeat_timing_str),
+				"FrontierSat time: %d%02d%02dT%02d:%02d:%02d.%03u, Uptime: %lu ms\n",
+				time_info->tm_year + 1900, time_info->tm_mon + 1, time_info->tm_mday,
+				time_info->tm_hour, time_info->tm_min, time_info->tm_sec, ms,
+				HAL_GetTick()
+			);
             DEBUG_uart_print_str(TASK_heartbeat_timing_str);
 		}
 		HAL_GPIO_TogglePin(PIN_LED_DEVKIT_LD2_GPIO_Port, PIN_LED_DEVKIT_LD2_Pin);
@@ -97,9 +104,6 @@ void TASK_handle_uart_telecommands(void *argument) {
 		DEBUG_uart_print_str(latest_tcmd);
 		DEBUG_uart_print_str("\n=====================================================\n");
 
-		// TODO: move all the following code into a `TCMD_parse_schedule_execute_telecommand` function
-		// TODO: consider moving the "execute now" logic to a separate task, and still queue the telecommands for immediate execution
-
 		// Parse the telecommand
 		TCMD_parsed_tcmd_to_execute_t parsed_tcmd;
 		uint8_t parse_result = TCMD_parse_full_telecommand(
@@ -114,25 +118,37 @@ void TASK_handle_uart_telecommands(void *argument) {
 
 		// FIXME: check if the telecommand is in the 'tssent' table, and skip it if it is (to prevent replays).
 
-		// If applicable, schedule the telecommand for later execution.
-		if (parsed_tcmd.timestamp_to_execute > TIM_get_current_unix_epoch_time_ms()) {
-			// TODO: schedule
-			DEBUG_uart_print_str("Telecommand is scheduled for later execution (at: ");
-			DEBUG_uart_print_uint64(parsed_tcmd.timestamp_to_execute);
-			DEBUG_uart_print_str(" ms)\n");
-			continue;
-		}
-
-		// Execute the telecommand
-		char response_output_buf[512] = {0};
-		TCMD_execute_parsed_telecommand_now(
-			parsed_tcmd.tcmd_idx,
-			parsed_tcmd.args_str_no_parens,
-			parsed_tcmd.tcmd_channel,
-			response_output_buf,
-			sizeof(response_output_buf)
-		);
+		// Add the telecommand to the agenda (regardless of whether it's in the future).
+		TCMD_add_tcmd_to_agenda(&parsed_tcmd);
 	
 	} /* End Task's Main Loop */
 }
 
+void TASK_execute_telecommands(void *argument) {
+	TASK_HELP_start_of_task();
+
+	while (1) {
+		// DEBUG_uart_print_str("TASK_execute_telecommands -> top of while(1)\n");
+
+		// Get the next telecommand to execute.
+		int16_t next_tcmd_slot = TCMD_get_next_tcmd_agenda_slot_to_execute();
+		if (next_tcmd_slot == -1) {
+			// No telecommands to execute.
+			// DEBUG_uart_print_str("No telecommands to execute.\n");
+			osDelay(50); // TODO: benchmark the TCMD_get_next_tcmd_agenda_slot_to_execute function and adjust this delay.
+			continue;
+		}
+
+		// Execute the telecommand.
+		char response_output_buf[512] = {0};
+		TCMD_execute_telecommand_in_agenda(
+			next_tcmd_slot,
+			response_output_buf,
+			sizeof(response_output_buf)
+		);
+
+		// Note: No yield here; execute all pending telecommands back-to-back.
+		// TODO: should probably consider a yield here.
+
+	} /* End Task's Main Loop */
+}
