@@ -13,6 +13,7 @@ import time
 
 import dash
 import dash_bootstrap_components as dbc
+import dash_split_pane
 from dash import callback, dcc, html
 from dash.dependencies import Input, Output, State
 from loguru import logger
@@ -413,38 +414,33 @@ def run_dash_app(*, enable_debug: bool = False) -> None:
 
     app.layout = dbc.Container(
         [
-            dbc.Row(
+            dash_split_pane.DashSplitPane(
                 [
-                    dbc.Col(
+                    html.Div(
                         generate_left_pane(),
-                        width=3,
-                        style={"height": "100vh", "overflowY": "scroll"},
-                        class_name="p-3",
+                        className="p-3",
+                        style={
+                            "height": "100%",
+                            "overflowY": "auto",  # Enable vertical scroll.
+                        },
                     ),
-                    dbc.Col(
-                        [
-                            html.Div(
-                                generate_rx_tx_log(),
-                                id="rx-tx-log-container",
-                                style={
-                                    "fontFamily": "monospace",
-                                    "backgroundColor": "black",
-                                    "height": "100%",
-                                    "overflowY": "auto",
-                                    "flexDirection": "column-reverse",
-                                    "display": "flex",
-                                },
-                            ),
-                            dcc.Interval(
-                                id="uart-update-interval-component",
-                                interval=1000,  # in milliseconds
-                                n_intervals=0,
-                            ),
-                        ],
-                        width=9,
-                        style={"height": "100vh", "overflowY": "scroll"},
+                    html.Div(
+                        generate_rx_tx_log(),
+                        id="rx-tx-log-container",
+                        style={
+                            "fontFamily": "monospace",
+                            "backgroundColor": "black",
+                            "height": "100%",
+                            "overflowY": "auto",
+                            "flexDirection": "column-reverse",
+                            "display": "flex",
+                        },
                     ),
                 ],
+                id="vertical-split-pane-1",
+                split="vertical",
+                size=500,  # Default starting size.
+                minSize=300,
             ),
             dbc.Button(
                 "Jump to Bottom ⬇️",
@@ -457,6 +453,11 @@ def run_dash_app(*, enable_debug: bool = False) -> None:
                     "zIndex": "99",
                 },
                 color="danger",
+            ),
+            dcc.Interval(
+                id="uart-update-interval-component",
+                interval=1000,  # in milliseconds
+                n_intervals=0,
             ),
         ],
         fluid=True,  # Use a fluid container for full width
