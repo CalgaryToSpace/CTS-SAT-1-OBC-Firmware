@@ -25,9 +25,9 @@ Every command contains the following subsections, concatenated together with no 
     * For no arguments, send `()`.
     * All arguments are positional (order matters).
     * All arguments are required (no optional arguments).
-4. Command Suffix Tag 1 - Timestamp Sent: `@tssent=xxx`, where `xxx` is the UInt64 value (milliseconds) in base10 when the command was sent.
+4. Command Suffix Tag 1 - Timestamp Sent: `@tssent=xxx`, where `xxx` is the UInt64 unix timestamp (milliseconds) in base10 when the command was sent.
     * Why? Each command must be sent at a unique timestamp. On the satellite, we avoid double-executing a command that is sent twice by tracking the distinct list of `tssent` values received.
-5. Command Suffix Tag 2 - Delayed Execution Timestamp: `@tsexec=xxx`, where `xxx` is the UInt64 value (milliseconds) in base10 when the command should be executed, or 0 to execute immediately.
+5. Command Suffix Tag 2 - Delayed Execution Timestamp: `@tsexec=xxx`, where `xxx` is the UInt64 unix timestamp (milliseconds) in base10 when the command should be executed, or 0 to execute immediately.
     * Why? This allows for scheduling commands in the future.
 5. 🚧 Command Suffix Tag 3 - Authenticated SHA256 Hash: `#sha256=xxx`, where `xxx` is the 32-byte base64 representation of the sha256 hash of all characters preceding, concatenated with the secure key used to authenticate communications with the satellite.
     * Why? This ensures that the command was not malformed in transit, and is a way of validating that the command was sent by the CTS team and not a malicious actor.
@@ -37,3 +37,11 @@ Every command contains the following subsections, concatenated together with no 
     * Why? Serial terminals often add extra characters.
 
 Note: The 🚧 emoji indicates that the command part is planned, but is not yet implemented.
+
+## Notes
+
+The following characters have special meanings, and cannot be used in any variable parts of the command:
+
+```
++ ! @ # ( ) , = :
+```
