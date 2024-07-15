@@ -100,7 +100,7 @@ int16_t TCMD_get_next_tcmd_agenda_slot_to_execute() {
 }
 
 
-/// @brief Executes a telecommand immediately.
+/// @brief Executes a telecommand immediately, based on the minimum info required to execute a telecommand.
 /// @param tcmd_idx The index into `TCMD_telecommand_definitions` for the telecommand to execute.
 /// @param args_str_no_parens A cstring containing the arguments for the telecommand. Null-terminated.
 /// @param response_output_buf A buffer to store the response from the telecommand.
@@ -147,7 +147,7 @@ uint8_t TCMD_execute_parsed_telecommand_now(const uint16_t tcmd_idx, const char 
     return tcmd_result;
 }
 
-/// @brief Executes a telecommand immediately.
+/// @brief Executes a telecommand from the agenda immediately.
 /// @param tcmd_agenda_slot_num The index into `TCMD_agenda` for the telecommand to execute.
 /// @param response_output_buf A buffer to store the response from the telecommand.
 /// @param response_output_buf_size The size of the `response_output_buf`.
