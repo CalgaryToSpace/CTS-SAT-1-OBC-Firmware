@@ -30,7 +30,7 @@ var searchData=
   ['handle_5fuart_5fport_5fchange_27',['handle_uart_port_change',['../namespacects1__ground__support_1_1terminal__app_1_1dash__gui.html#a248ef2a1e01206097e4378065b427855',1,'cts1_ground_support::terminal_app::dash_gui']]],
   ['handling_28',['Error Handling',['../md_docs_2C__General__Guidelines.html#autotoc_md8',1,'']]],
   ['hardfault_5fhandler_29',['HardFault_Handler',['../stm32l4xx__it_8h.html#a2bffc10d5bd4106753b7c30e86903bea',1,'HardFault_Handler(void):&#160;stm32l4xx_it.c'],['../stm32l4xx__it_8c.html#a2bffc10d5bd4106753b7c30e86903bea',1,'HardFault_Handler(void):&#160;stm32l4xx_it.c']]],
-  ['hclk_20hz_204000000_30',['HCLK(Hz)                               | 4000000',['../system__stm32l4xx_8c.html#autotoc_md27',1,'']]],
+  ['hclk_20hz_204000000_30',['HCLK(Hz)                               | 4000000',['../system__stm32l4xx_8c.html#autotoc_md28',1,'']]],
   ['hcrc_31',['hcrc',['../main_8c.html#ae3358c54a01c6487322df1275618d6b1',1,'main.c']]],
   ['head_32',['head',['../structlfs__dir.html#a086e8d93663f5528fcc7c2ff7802883d',1,'lfs_dir::head'],['../structlfs__file_1_1lfs__ctz.html#aff9613735c2288e388bf3000a66f4720',1,'lfs_file::lfs_ctz::head']]],
   ['hi2c1_33',['hi2c1',['../main_8h.html#af7b2c26e44dadaaa798a5c3d82914ba7',1,'hi2c1:&#160;main.c'],['../main_8c.html#af7b2c26e44dadaaa798a5c3d82914ba7',1,'hi2c1:&#160;main.c']]],
@@ -52,5 +52,5 @@ var searchData=
   ['huart3_49',['huart3',['../main_8h.html#ab7c63c1b0f65db92b6a4ea19edf957e1',1,'huart3:&#160;main.c'],['../main_8c.html#ab7c63c1b0f65db92b6a4ea19edf957e1',1,'huart3:&#160;main.c']]],
   ['huart4_50',['huart4',['../main_8h.html#ae273feb3e0dc44e38892650faa58fced',1,'huart4:&#160;main.c'],['../main_8c.html#ae273feb3e0dc44e38892650faa58fced',1,'huart4:&#160;main.c']]],
   ['huart5_51',['huart5',['../main_8h.html#a25a82fcf0cd24eb6d39977cb5864cec8',1,'huart5:&#160;main.c'],['../main_8c.html#a25a82fcf0cd24eb6d39977cb5864cec8',1,'huart5:&#160;main.c'],['../stm32l4xx__it_8c.html#a25a82fcf0cd24eb6d39977cb5864cec8',1,'huart5:&#160;main.c']]],
-  ['hz_204000000_52',['Hz 4000000',['../system__stm32l4xx_8c.html#autotoc_md27',1,'HCLK(Hz)                               | 4000000'],['../system__stm32l4xx_8c.html#autotoc_md26',1,'SYSCLK(Hz)                             | 4000000']]]
+  ['hz_204000000_52',['Hz 4000000',['../system__stm32l4xx_8c.html#autotoc_md28',1,'HCLK(Hz)                               | 4000000'],['../system__stm32l4xx_8c.html#autotoc_md27',1,'SYSCLK(Hz)                             | 4000000']]]
 ];

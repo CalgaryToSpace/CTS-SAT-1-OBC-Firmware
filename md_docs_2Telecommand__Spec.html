@@ -95,6 +95,7 @@ Examples</h1>
 <div class="line">CTS1+run_all_unit_tests()!</div>
 <div class="line">CTS1+echo_back_args(arg1,arg2,arg3)!</div>
 <div class="line">CTS1+echo_back_uint32_args(1234,invalid_arg,32,68,42,65989985)!</div>
+<div class="line">CTS1+echo_back_args(arg1,arg2,arg3)@tssent=1716611908453@tsexec=1716611999999!</div>
 <div class="line">CTS1+echo_back_args(arg1,arg2,arg3)@tssent=1716611908453@tsexec=1716611999999#sha256=XXxxxXXXxx+xx/xx===!</div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md23"></a>
 Command Format</h1>
@@ -108,11 +109,11 @@ Command Format</h1>
 <li>All arguments are required (no optional arguments).</li>
 </ul>
 </li>
-<li>🚧 Command Suffix Tag 1 - Timestamp Sent: <code>@tssent=xxx</code>, where <code>xxx</code> is the UInt64 value (milliseconds) in base10 when the command was sent.<ul>
+<li>Command Suffix Tag 1 - Timestamp Sent: <code>@tssent=xxx</code>, where <code>xxx</code> is the UInt64 unix timestamp (milliseconds) in base10 when the command was sent.<ul>
 <li>Why? Each command must be sent at a unique timestamp. On the satellite, we avoid double-executing a command that is sent twice by tracking the distinct list of <code>tssent</code> values received.</li>
 </ul>
 </li>
-<li>🚧 Command Suffix Tag 2 - Delayed Execution Timestamp: <code>@tsexec=xxx</code>, where <code>xxx</code> is the UInt64 value (milliseconds) in base10 when the command should be executed, or 0 to execute immediately.<ul>
+<li>Command Suffix Tag 2 - Delayed Execution Timestamp: <code>@tsexec=xxx</code>, where <code>xxx</code> is the UInt64 unix timestamp (milliseconds) in base10 when the command should be executed, or 0 to execute immediately.<ul>
 <li>Why? This allows for scheduling commands in the future.</li>
 </ul>
 </li>
@@ -122,8 +123,8 @@ Command Format</h1>
 <li>Why? This ensures that the command was not malformed in transit, and is a way of validating that the command was sent by the CTS team and not a malicious actor.</li>
 </ul>
 </li>
-<li>🚧 End-of-Command Marker: <code>!</code><ul>
-<li>Why? To ensure that the command is complete and not truncated.</li>
+<li>End-of-Command Marker: <code>!</code><ul>
+<li>Why? To ensure that the command is complete and not truncated. Also, to ensure that the string-being-parsed does not have multiple commands concatenated together.</li>
 </ul>
 </li>
 <li>Extra trailing characters/whitespaces are not required, but are permitted.<ul>
@@ -131,8 +132,11 @@ Command Format</h1>
 </ul>
 </li>
 </ol>
-<p>NOTE: the 🚧 emoji indicates that the command part is not yet implemented</p>
-<div class="fragment"><div class="line"># TODO: Update this spec as integration continues. This spec isn&#39;t fully implemented yet, and is subject to change.</div>
+<p>Note: The 🚧 emoji indicates that the command part is planned, but is not yet implemented.</p>
+<h1><a class="anchor" id="autotoc_md24"></a>
+Notes</h1>
+<p>The following characters have special meanings, and cannot be used in any variable parts of the command:</p>
+<div class="fragment"><div class="line">+ ! @ # ( ) , = :</div>
 </div><!-- fragment --> </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

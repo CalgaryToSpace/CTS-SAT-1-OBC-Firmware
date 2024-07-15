@@ -1,12 +1,14 @@
 <map id="TCMD_check_starts_with_device_id" name="TCMD_check_starts_with_device_id">
-<area shape="rect" id="Node000001" title="Returns whether tcmd_str starts with CTS1+ (TCMD_PREFIX_STR)." alt="" coords="609,26,781,67"/>
-<area shape="rect" id="Node000002" href="$rtos__tasks_8c.html#a8dcebcb92690e2abce2b7ecb96e411c4" title=" " alt="" coords="103,5,325,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="605,24,561,17,439,10,326,12,325,7,440,4,562,12,606,19"/>
-<area shape="rect" id="Node000004" href="$telecommand__parser_8c.html#adc031daef8bd51a82f869a4797c2683e" title="Finds an index into TCMD_telecommand_definitions for the given telecommand string." alt="" coords="376,26,558,67"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="594,49,559,49,559,44,594,44"/>
-<area shape="rect" id="Node000005" href="$test__telecommand__parser_8c.html#afff2bf9bf80ce758c39636cc04e2b52c" title=" " alt="" coords="373,91,561,132"/>
-<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="608,74,542,93,540,88,607,69"/>
-<area shape="rect" id="Node000003" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,5,55,31"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="87,21,55,21,55,16,87,16"/>
-<area shape="poly" id="edge4_Node000004_Node000002" title=" " alt="" coords="360,37,325,33,326,28,361,32"/>
+<area shape="rect" id="Node000001" title="Returns whether tcmd_str starts with CTS1+ (TCMD_PREFIX_STR)." alt="" coords="864,26,1035,67"/>
+<area shape="rect" id="Node000002" href="$telecommand__parser_8c.html#a479be5d2e5ee3cd0fe5312818aa8742e" title="Parses a telecommand into everything needed to execute it." alt="" coords="373,5,579,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="860,24,815,17,693,10,580,13,580,7,694,5,816,12,861,19"/>
+<area shape="rect" id="Node000005" href="$telecommand__parser_8c.html#adc031daef8bd51a82f869a4797c2683e" title="Finds an index into TCMD_telecommand_definitions for the given telecommand string." alt="" coords="630,26,813,67"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="848,49,813,49,813,44,848,44"/>
+<area shape="rect" id="Node000006" href="$test__telecommand__parser_8c.html#afff2bf9bf80ce758c39636cc04e2b52c" title=" " alt="" coords="627,91,816,132"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="863,74,796,93,794,88,861,69"/>
+<area shape="rect" id="Node000003" href="$rtos__tasks_8c.html#a8dcebcb92690e2abce2b7ecb96e411c4" title=" " alt="" coords="103,5,325,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="358,21,325,21,325,16,358,16"/>
+<area shape="rect" id="Node000004" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,5,55,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="87,21,55,21,55,16,87,16"/>
+<area shape="poly" id="edge5_Node000005_Node000002" title=" " alt="" coords="614,37,579,33,580,27,615,31"/>
 </map>

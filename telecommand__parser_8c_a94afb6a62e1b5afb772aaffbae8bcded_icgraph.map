@@ -1,9 +1,11 @@
 <map id="TCMD_is_char_valid_telecommand_name_char" name="TCMD_is_char_valid_telecommand_name_char">
-<area shape="rect" id="Node000001" title="Returns whether a character is a valid character in a telecommand name." alt="" coords="603,5,781,46"/>
-<area shape="rect" id="Node000002" href="$telecommand__parser_8c.html#adc031daef8bd51a82f869a4797c2683e" title="Finds an index into TCMD_telecommand_definitions for the given telecommand string." alt="" coords="373,5,555,46"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="588,28,556,28,556,23,588,23"/>
-<area shape="rect" id="Node000003" href="$rtos__tasks_8c.html#a8dcebcb92690e2abce2b7ecb96e411c4" title=" " alt="" coords="103,13,325,39"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="357,28,326,28,326,23,357,23"/>
-<area shape="rect" id="Node000004" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,13,55,39"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="87,28,55,28,55,23,87,23"/>
+<area shape="rect" id="Node000001" title="Returns whether a character is a valid character in a telecommand name." alt="" coords="858,5,1035,46"/>
+<area shape="rect" id="Node000002" href="$telecommand__parser_8c.html#adc031daef8bd51a82f869a4797c2683e" title="Finds an index into TCMD_telecommand_definitions for the given telecommand string." alt="" coords="627,5,810,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="842,28,810,28,810,23,842,23"/>
+<area shape="rect" id="Node000003" href="$telecommand__parser_8c.html#a479be5d2e5ee3cd0fe5312818aa8742e" title="Parses a telecommand into everything needed to execute it." alt="" coords="373,13,579,39"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="612,28,580,28,580,23,612,23"/>
+<area shape="rect" id="Node000004" href="$rtos__tasks_8c.html#a8dcebcb92690e2abce2b7ecb96e411c4" title=" " alt="" coords="103,13,325,39"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="358,28,325,28,325,23,358,23"/>
+<area shape="rect" id="Node000005" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,13,55,39"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="87,28,55,28,55,23,87,23"/>
 </map>

@@ -1,0 +1,9 @@
+<map id="TIM_set_current_unix_epoch_time_ms" name="TIM_set_current_unix_epoch_time_ms">
+<area shape="rect" id="Node000001" title="Use this function in a telecommand, or upon receiving a time update from the GPS." alt="" coords="5,27,152,68"/>
+<area shape="rect" id="Node000002" href="$debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="215,5,366,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="151,35,199,28,200,33,152,40"/>
+<area shape="rect" id="Node000003" href="$timekeeping_8c.html#ab4b35505d2b1362ca6d14b12608fbd36" title="Efficient conversion of the synchronized epoch in ms to a decimal string." alt="" coords="200,55,381,96"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="152,54,185,59,184,64,151,60"/>
+<area shape="rect" id="Node000004" href="$timekeeping_8c.html#ab806b8884c269c16f3bc4b766d1fc943" title="Returns the current unix timestamp, in milliseconds." alt="" coords="429,55,575,96"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="382,73,413,73,413,78,382,78"/>
+</map>
