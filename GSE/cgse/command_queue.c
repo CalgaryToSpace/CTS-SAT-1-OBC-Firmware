@@ -69,6 +69,7 @@ int CGSE_command_queue_add_command(CGSE_program_state_t *ps, char *cmd_text) {
     // nnnnnnnn is the time value in ms
     // <command-text> is either a telecommand or a "."-leading terminal
     // command
+    // Do not add trailing \n
     char *p = cmd_text;
     switch(*p) {
         // Absolute time since midnight on 1 Jan 1970 in ms
@@ -88,7 +89,12 @@ int CGSE_command_queue_add_command(CGSE_program_state_t *ps, char *cmd_text) {
     if (*p == ' ' && strlen(p) > 1) {
         char *cmd = p+1;
         // This memory is freed later
-        e.command_text = strdup(cmd);
+        // remove trailing \n 
+        // last command in command file must have a \n 
+        if (strlen(cmd) > 0) {
+            cmd[strlen(cmd)-1] = '\0';
+            e.command_text = strdup(cmd);
+        }
     }
     else {
         return -1;
