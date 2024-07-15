@@ -202,6 +202,8 @@ uint8_t TCMDEXEC_heartbeat_on(const char *args_str, TCMD_TelecommandChannel_enum
 
 uint8_t TCMDEXEC_core_system_stats(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
+    // TODO: implement this (Issue #103)
+    // Use `TCMD_get_agenda_used_slots_count`
     snprintf(response_output_buf, response_output_buf_len, "System stats: TODO\n");
     return 0;
 }

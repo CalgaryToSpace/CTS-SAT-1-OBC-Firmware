@@ -13,6 +13,10 @@
 /// @param result Pointer to the result
 /// @return 0 if successful, 1 if the string is empty, 2 if the string does not start with an integer
 uint8_t TCMD_ascii_to_uint64(const char *str, uint32_t str_len, uint64_t *result) {
+    // FIXME: return error if the string is too long/number is too large
+    // FIXME: return error if the number doesn't occupy the whole string (e.g., "123abc" with str_len=6 should error)
+    // TODO: write unit tests for this function
+    // TODO: consider removing the str_len parameter and using strlen(str) instead (requires refactor in caller)
     if (str_len == 0) {
         return 1;
     }

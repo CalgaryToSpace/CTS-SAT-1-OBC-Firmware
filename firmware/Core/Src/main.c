@@ -73,12 +73,13 @@ const osThreadAttr_t defaultTask_attributes = {
 /* USER CODE BEGIN PV */
 
 // The STM32 has 640 KB of RAM.
-// For CTS-SAT-1, please create threads here (and not in the IOC file):
+// For CTS-SAT-1, please create threads here (and not in the IOC file).
+// Don't forget to add the thread much farther down, also.
 
 osThreadId_t TASK_DEBUG_print_heartbeat_Handle;
 const osThreadAttr_t TASK_DEBUG_print_heartbeat_Attributes = {
   .name = "TASK_DEBUG_print_heartbeat",
-  .stack_size = 128,
+  .stack_size = 256,
   .priority = (osPriority_t) osPriorityBelowNormal5,
 };
 
@@ -91,6 +92,12 @@ const osThreadAttr_t TASK_handle_uart_telecommands_Attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 
+osThreadId_t TASK_execute_telecommands_Handle;
+const osThreadAttr_t TASK_execute_telecommands_Attributes = {
+  .name = "TASK_execute_telecommands",
+  .stack_size = 8192,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 
 
 
@@ -198,6 +205,8 @@ int main(void)
   TASK_DEBUG_print_heartbeat_Handle = osThreadNew(TASK_DEBUG_print_heartbeat, NULL, &TASK_DEBUG_print_heartbeat_Attributes);
 
   TASK_handle_uart_telecommands_Handle = osThreadNew(TASK_handle_uart_telecommands, NULL, &TASK_handle_uart_telecommands_Attributes);
+
+  TASK_execute_telecommands_Handle = osThreadNew(TASK_execute_telecommands, NULL, &TASK_execute_telecommands_Attributes);
   
   /* USER CODE END RTOS_THREADS */
 

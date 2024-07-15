@@ -17,9 +17,23 @@ uint32_t TIM_get_current_system_uptime_ms(void) {
 
 /// @brief Use this function in a telecommand, or upon receiving a time update from the GPS. 
 void TIM_set_current_unix_epoch_time_ms(uint64_t current_unix_epoch_time_ms, TIM_sync_source_t source) {
+    // Determine whether the current sync time is before the last sync time.
+    // It would be a warning scenario which makes logs difficult to decipher.
+    // Don't log it right away; update the time info, then log after.
+    const uint8_t is_this_sync_before_the_last_sync = current_unix_epoch_time_ms < TIM_unix_epoch_time_at_last_time_resync_ms;
+
+    // Update the time.
     TIM_unix_epoch_time_at_last_time_resync_ms = current_unix_epoch_time_ms;
     TIM_system_uptime_at_last_time_resync_ms = HAL_GetTick();
     TIM_last_synchronization_source = source;
+
+    // Log a warning if the current sync time is before the last sync time.
+    if (is_this_sync_before_the_last_sync) {
+        char log_str[TIM_EPOCH_DECIMAL_STRING_LEN];
+        TIM_epoch_ms_to_decimal_string(log_str, TIM_EPOCH_DECIMAL_STRING_LEN);
+        DEBUG_uart_print_str("WARNING: setting current time to before the last sync.");
+        // TODO: use the logger warning function, and add other data with a format string here.
+    }
 }
 
 /// @brief Returns the current unix timestamp, in milliseconds

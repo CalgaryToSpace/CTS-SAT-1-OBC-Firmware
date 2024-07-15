@@ -1,5 +1,8 @@
 #include "telecommands/telecommand_definitions.h"
 #include "telecommands/telecommand_parser.h"
+#include "telecommands/telecommand_args_helpers.h"
+#include "debug_tools/debug_uart.h"
+#include "transforms/arrays.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -12,6 +15,13 @@ uint8_t TCMD_is_char_alphanumeric(char c) {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
 }
 
+/// @brief Returns whether a character is numeric (0-9).
+/// @param c The character to check.
+/// @return 1 if the character is a numerical digit (0-9), 0 otherwise.
+uint8_t TCMD_is_char_numeric(char c) {
+    return (c >= '0' && c <= '9');
+}
+
 /// @brief Returns whether a character is a valid character in a telecommand name.
 /// @param c The character to check.
 /// @return 1 if the character is valid, 0 otherwise.
@@ -19,32 +29,6 @@ uint8_t TCMD_is_char_valid_telecommand_name_char(char c) {
     return TCMD_is_char_alphanumeric(c) || c == '_';
 }
 
-/// @brief Returns the index of the first occurrence of a substring in an array.
-/// @param haystack_arr The array to search within.
-/// @param haystack_arr_len The length of the array to search within.
-/// @param substring The substring to search for. Must be a null-terminated C-string.
-/// @return The index of the start of the first occurrence of the substring in the array, or -1 if not found
-int16_t GEN_get_index_of_substring_in_array(const char *haystack_arr, int16_t haystack_arr_len, const char *needle_str) {
-    uint16_t needle_str_len = strlen(needle_str);
-    
-    // Iterate through the haystack array
-    for (int16_t i = 0; i <= haystack_arr_len - needle_str_len; i++) {
-        // Check if the substring matches at position i
-        int16_t j;
-        for (j = 0; j < needle_str_len; j++) {
-            if (haystack_arr[i + j] != needle_str[j]) {
-                break;
-            }
-        }
-        // If we completed the inner loop, we found the substring
-        if (j == needle_str_len) {
-            return i;
-        }
-    }
-
-    // If the substring was not found, return -1
-    return -1;
-}
 
 /// @brief Returns whether tcmd_str starts with `CTS1+` (TCMD_PREFIX_STR).
 /// @param tcmd_str The telecommand string to check.
@@ -110,4 +94,197 @@ int32_t TCMD_parse_telecommand_get_index(const char *tcmd_str, uint32_t tcmd_str
         }
     }
     return (-1);
+}
+
+/// @brief Searches for a `str` like `\@tag_name=xxxx`, and sets `uint64_t xxxx` into `out_value`.
+/// @param str The string (haystack) to search with for the tag.
+/// @param tag_name The tag to search for, including the '@' and '='.
+/// @param value_dest The destination for the value. `*value_dest` will be set.
+/// @return 0 if the tag was found successfully. >0 if the tag was not found, or there was an error.
+/// @note This function will return an error if the character after the number is not in: `#\@\0!`
+uint8_t TCMD_get_suffix_tag_uint64(const char *str, const char *tag_name, uint64_t *value_dest) {
+    // Find the tag in the string
+    int16_t tag_index = GEN_get_index_of_substring_in_array(str, strlen(str), tag_name);
+    if (tag_index < 0) {
+        return 1;
+    }
+
+    // Find the start of the value, then do safety check.
+    uint16_t value_start_index = tag_index + strlen(tag_name);
+    if (value_start_index >= strlen(str)) {
+        return 2;
+    }
+
+    // Find the end of the value
+    uint16_t value_end_index = value_start_index;
+    while (TCMD_is_char_numeric(str[value_end_index])) {
+        value_end_index++;
+    }
+
+    // Check that there was at least one digit
+    if (value_end_index <= value_start_index) {
+        return 3;
+    }
+
+    // Check that the character after the number is any of '#', '@', '!', or '\0'
+    if (str[value_end_index] != '#' && str[value_end_index] != '@' && str[value_end_index] != '\0' && str[value_end_index] != '!') {
+        return 4;
+    }
+
+    // Copy the value into a buffer
+    char value_str[32]; // uint64 needs 20 chars max
+    memset(value_str, 0, sizeof(value_str));
+    if ((uint32_t)(value_end_index - value_start_index) >= sizeof(value_str) - 1) {
+        // Failure: digit string too long
+        return 5;
+    }
+    strncpy(value_str, str + value_start_index, value_end_index - value_start_index);
+
+    // Convert the value to a uint64_t
+    uint64_t value;
+    if (TCMD_ascii_to_uint64(value_str, strlen(value_str), &value) != 0) {
+        return 6;
+    }
+
+    // Set the value
+    *value_dest = value;
+    
+    // Success
+    return 0;
+}
+
+
+/// @brief Parses a telecommand into everything needed to execute it.
+/// @param tcmd_str The telecommand string to parse. Must be null-terminated.
+/// @param parsed_tcmd_output Pointer to the output struct, which is modified by this function.
+///     Not modified if an error occurs.
+/// @return 0 on success, >0 on error.
+uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChannel_enum_t tcmd_channel,
+        TCMD_parsed_tcmd_to_execute_t *parsed_tcmd_output) {
+    size_t tcmd_str_len = strlen(tcmd_str);
+
+    if (parsed_tcmd_output == NULL) {
+        DEBUG_uart_print_str("Error: TCMD_parse_full_telecommand: parsed_tcmd_output is NULL.\n");
+        return 1;
+    }
+
+    if (tcmd_str_len == 0) {
+        DEBUG_uart_print_str("Error: TCMD_parse_full_telecommand: called with empty string.\n");
+        return 10;
+    }
+
+    // Optionally, echo back the command.
+    DEBUG_uart_print_str("Parsed telecommand (len=");
+    DEBUG_uart_print_uint32(tcmd_str_len);
+    DEBUG_uart_print_str("): '");
+    DEBUG_uart_print_str(tcmd_str);
+    DEBUG_uart_print_str("'\n");
+
+    // Check that the telecommand starts with the correct prefix.
+    if (!TCMD_check_starts_with_device_id(tcmd_str, tcmd_str_len)) {
+        DEBUG_uart_print_str("Error: TCMD_parse_full_telecommand: str does not start with the correct prefix.\n");
+        return 20;
+    }
+
+    // Check that the telecommand ends with "!" (but can have whitespaces between '!' and the end of the string).
+    // Also, check that the _only_ '!' is at the end of the string.
+    // Important to ensure we're not accidentally parsing 2 telecommands in the same string.
+    uint16_t end_of_tcmd_char_str_count = 0;
+    for (int32_t i = tcmd_str_len - 1; i >= TCMD_PREFIX_STR_LEN; i--) {
+        if (tcmd_str[i] == ' ' || tcmd_str[i] == '\r' || tcmd_str[i] == '\n') {
+            // Skip whitespace.
+            continue;
+        }
+        else if (tcmd_str[i] == '!') {
+            if (end_of_tcmd_char_str_count == 0) {
+                end_of_tcmd_char_str_count++;
+            }
+            else {
+                // Found a second '!', which is not allowed.
+                DEBUG_uart_print_str("Error: TCMD_parse_full_telecommand: found >1 '!' in the string.\n");
+                return 25;
+            }
+        }
+    }
+    if (end_of_tcmd_char_str_count == 0) {
+        DEBUG_uart_print_str("Error: TCMD_parse_full_telecommand: no '!' found at the end of the string.\n");
+        return 26;
+    }
+
+    // Process the telecommand name.
+    int32_t tcmd_idx = TCMD_parse_telecommand_get_index(tcmd_str, tcmd_str_len);
+    if (tcmd_idx < 0) {
+        DEBUG_uart_print_str("Error: TCMD_parse_full_telecommand: telecommand not found in the list.\n");
+        return 30;
+    }
+
+    // Get the telecommand definition.
+    TCMD_TelecommandDefinition_t tcmd_def = TCMD_telecommand_definitions[tcmd_idx];
+
+    // Args: Check opening parenthesis index.
+    uint32_t start_of_args_idx = TCMD_PREFIX_STR_LEN + strlen(tcmd_def.tcmd_name);
+    if (tcmd_str_len < start_of_args_idx + 1) {
+        DEBUG_uart_print_str("ERROR: TCMD_parse_full_telecommand: You must have parenthesis for the args.\n");
+        return 40;
+    }
+    if (tcmd_str[start_of_args_idx] != '(') {
+        DEBUG_uart_print_str("ERROR: TCMD_parse_full_telecommand: You must have parenthesis for the args. You need an opening paren.\n");
+        return 50;
+    }
+    
+    // Args: Check closing parenthesis index.
+    int32_t end_of_args_idx = GEN_get_index_of_substring_in_array(tcmd_str, tcmd_str_len, ")");
+    if (end_of_args_idx < 0) {
+        DEBUG_uart_print_str("ERROR: TCMD_parse_full_telecommand: You must have parenthesis for the args. No closing paren found.\n");
+        return 60;
+    }
+
+    // Extract the args string.
+    // arg_len is the number of characters (excluding null terminator) in `args_str_no_parens`
+    const uint16_t arg_len = end_of_args_idx - start_of_args_idx - 1;
+    char args_str_no_parens[arg_len + 1];
+    memcpy(args_str_no_parens, &tcmd_str[start_of_args_idx + 1], arg_len);
+    args_str_no_parens[arg_len] = '\0';
+
+    // Extract suffix tags.
+    const char *tcmd_suffix_tag_str = &tcmd_str[end_of_args_idx];
+    const uint16_t tcmd_suffix_tag_str_len = strlen(tcmd_suffix_tag_str);
+
+    // Extract @tssent=xxxx from the telecommand string, starting at &tcmd_str[end_of_args_idx]
+    uint64_t timestamp_sent = 0; // default value
+    if (GEN_get_index_of_substring_in_array(tcmd_suffix_tag_str, tcmd_suffix_tag_str_len, "@tssent=") >= 0) {
+        // The "@tssent=" tag was found, so parse it.
+        if (TCMD_get_suffix_tag_uint64(tcmd_suffix_tag_str, "@tssent=", &timestamp_sent) != 0) {
+            DEBUG_uart_print_str("Error: TCMD_parse_full_telecommand: failed to parse present @tssent=xxxx.\n");
+            return 70;
+        }
+    }
+
+    // Extract @tsexec=xxxx from the telecommand string, starting at &tcmd_str[end_of_args_idx]
+    uint64_t timestamp_to_execute = 0; // default value: execute immediately
+    if (GEN_get_index_of_substring_in_array(tcmd_suffix_tag_str, tcmd_suffix_tag_str_len, "@tsexec=") >= 0) {
+        // The "@tsexec=" tag was found, so parse it.
+        if (TCMD_get_suffix_tag_uint64(tcmd_suffix_tag_str, "@tsexec=", &timestamp_to_execute) != 0) {
+            DEBUG_uart_print_str("Error: TCMD_parse_full_telecommand: failed to parse present @tsexec=xxxx.\n");
+            return 80;
+        }
+    }
+
+    // TODO: read out the @sha256=xx hash and validate it here.
+
+    // Check that the args_str_no_parens is not too long.
+    // Note: `arg_len` does not include the null terminator, but `TCMD_ARGS_STR_NO_PARENS_SIZE` does.
+    if (arg_len + 1 > TCMD_ARGS_STR_NO_PARENS_SIZE) {
+        DEBUG_uart_print_str("Error: TCMD_parse_full_telecommand: args_str_no_parens is too long.\n");
+        return 90;
+    }
+
+    // Reached the end of the telecommand parsing. Thus, success. Fill the output struct.
+    parsed_tcmd_output->tcmd_idx = tcmd_idx;
+    memset(parsed_tcmd_output->args_str_no_parens, 0, TCMD_ARGS_STR_NO_PARENS_SIZE); // Safety.
+    memcpy(parsed_tcmd_output->args_str_no_parens, args_str_no_parens, arg_len + 1);
+    parsed_tcmd_output->timestamp_sent = timestamp_sent;
+    parsed_tcmd_output->timestamp_to_execute = timestamp_to_execute;
+    parsed_tcmd_output->tcmd_channel = tcmd_channel;
+    return 0;
 }

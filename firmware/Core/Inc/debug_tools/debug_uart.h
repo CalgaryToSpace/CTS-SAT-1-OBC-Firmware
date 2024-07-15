@@ -10,6 +10,7 @@
 void DEBUG_uart_print_str(const char *str);
 void DEBUG_uart_print_uint32(uint32_t value);
 void DEBUG_uart_print_int32(int32_t value);
+void DEBUG_uart_print_uint64(uint64_t value);
 void DEBUG_uart_print_array_hex(uint8_t *array, uint32_t array_len);
 
 
