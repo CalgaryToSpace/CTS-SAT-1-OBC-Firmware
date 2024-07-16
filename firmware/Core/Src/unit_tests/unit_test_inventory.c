@@ -5,6 +5,7 @@
 #include "unit_tests/test_byte_transforms.h"
 #include "unit_tests/test_telecommand_parser.h"
 #include "unit_tests/test_tests.h"
+#include "unit_tests/test_telecommand_arg_helpers.h"
 
 
 // extern
