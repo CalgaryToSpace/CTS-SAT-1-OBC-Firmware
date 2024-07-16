@@ -245,16 +245,30 @@ uint8_t TCMD_extract_hex_array_arg(const char *args_str, uint8_t arg_index, uint
 /// @param str Input string, starting with a double
 /// @param str_len Max length of the input string
 /// @param result Pointer to the result
-/// @return 0 if successful, 1 if the string is empty, 2 if the string does not start with a double
+/// @return 0 if successful, 1 if the string is empty, 2 if the string does not start with a double, 3 for other issues
 uint8_t TCMD_ascii_to_double(const char *str, uint32_t str_len, double *result) {
     if (str_len == 0) {
         return 1;
     }
 
-    double temp_result = atof(str);
+    for (uint32_t i = 0; i < str_len; i++) {
+        // iterate through the string to find the first non-whitespace character
+        if (isdigit(str[i])) {
+            // so long as the first character is a digit, atof can handle it
+            double temp_result = atof(str);
+            *result = temp_result;
+            return 0;
+        }
+        else if (!isdigit(str[i]) && !isspace(str[i])) {
+            // atof removes whitespace, so we only need to check for other characters
+            // atof also ignores all subsequent non-double characters following the double
+            return 2;
+        }
+    }
 
-    *result = temp_result;
-    return 0;
+    // if this return is reached, there has been another issue in the input
+    return 3;
+
 }
 
 /// @brief Extracts the nth comma-separated argument from the input string, assuming it's a double
