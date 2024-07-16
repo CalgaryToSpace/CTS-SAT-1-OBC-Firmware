@@ -141,7 +141,7 @@ uint8_t TCMD_extract_string_arg(const char *str, uint8_t arg_index, char *result
 }
 /// @brief Grabs a hexidecimal string or multiple  hex strings with an arg index and outputs a byte array of the specified hex string (must be null-terminated)
 /// @param args_str Input string in hexdecimal format with no hex header (null-termianted)
-/// @param str_len The length of the input string
+/// @param arg_index Index of the argument to extract (0-based)
 /// @param result Pointer to the result; a byte array containing the values of the hex string 
 /// @param result_array_size Size of the result array
 /// @return 0 if successful, 1 if the string contains an uneven byte, 2 if the string contains hex header
