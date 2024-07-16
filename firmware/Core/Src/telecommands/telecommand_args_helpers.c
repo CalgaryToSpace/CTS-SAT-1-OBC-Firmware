@@ -144,9 +144,10 @@ uint8_t TCMD_extract_string_arg(const char *str, uint8_t arg_index, char *result
 /// @param arg_index Index of the argument to extract (0-based)
 /// @param result Pointer to the result; a byte array containing the values of the hex string 
 /// @param result_array_size Size of the result array
-/// @return 0 if successful, 1 if the string contains an uneven byte, 2 if the string contains hex header
+/// @param result_length Pointer to variable that will contain the length of the result after converting
+/// @return 0 if successful, 1 if the string contains an uneven byte, 2 if the string contains hex header,
 ///         3 for other error, return 4 for seg fault on result array
-uint8_t TCMD_extract_hex_array_arg(const char *args_str, uint8_t arg_index, uint8_t result_array[], uint16_t result_array_size){
+uint8_t TCMD_extract_hex_array_arg(const char *args_str, uint8_t arg_index, uint8_t result_array[], uint16_t result_array_size, uint16_t *result_length ){
 
     if (strlen(args_str) == 0){ //string is empty
         return 3;
@@ -224,6 +225,7 @@ uint8_t TCMD_extract_hex_array_arg(const char *args_str, uint8_t arg_index, uint
         return 1;
     }
 
+    *result_length = result_index;
 
     return 0;
 }
