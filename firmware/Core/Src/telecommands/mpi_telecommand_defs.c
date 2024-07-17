@@ -1,7 +1,7 @@
 #include "telecommands/telecommand_args_helpers.h"
-#include "telecommands/mpi_telecommand_definitions.h"
+#include "telecommands/mpi_telecommand_defs.h"
+#include "mpi/mpi_command_handling.h"
 #include "transforms/arrays.h"
-#include "mpi_command_handling.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -9,10 +9,15 @@
 #include <string.h>
 #include <inttypes.h>
 
-/// @brief Send a command to the MPI
-/// @param commandCode CommandCode to identify command being sent to the MPI
-/// @param commandParam Parameter part of the command being sent to the MPI
-/// @return 0 if successful, 1 if NULL input, 2 if invalid hex input, 3 error from MPI
+/**
+ * @brief Send a configuration command & params (IF ANY) to the MPI encoded in hex
+ *
+ * @param args_str Hex-encoded string representing the configuration command + params (IF ANY) being sent to the MPI
+ * @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
+ * @param response_output_buf The buffer to write the response to
+ * @param response_output_buf_len The maximum length of the response_output_buf (its size)
+ * @return 0: if successful, 1: if invalid input, 2: error transmitting, 3: MPI responded with an error
+ */
 uint8_t TCMDEXEC_mpi_send_command_hex(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                       char *response_output_buf, uint16_t response_output_buf_len)
 {
@@ -48,7 +53,7 @@ uint8_t TCMDEXEC_mpi_send_command_hex(const char *args_str, TCMD_TelecommandChan
     }
 
     // Allocate space to receive incoming MPI response
-    size_t mpi_cmd_response_len = 50;
+    const size_t mpi_cmd_response_len = 50;
     uint8_t mpi_cmd_response[mpi_cmd_response_len];        // Max possible size for an MPI command+parameters can be 7 bytes + 2^N bytes of variable payload. To account for a buffer zone, 50 bytes will be allocated
     memset(mpi_cmd_response, 0, sizeof(mpi_cmd_response)); // Initialize all elements to 0
 
@@ -58,21 +63,19 @@ uint8_t TCMDEXEC_mpi_send_command_hex(const char *args_str, TCMD_TelecommandChan
     // Verify successful echo response from the mpi
     if (cmd_response != 0)
     {
-        snprintf(response_output_buf, response_output_buf_len, "MPI failed to execute command. MPI echoed response code: %u\n", cmd_response);
+        snprintf(&response_output_buf[strlen(response_output_buf)], response_output_buf_len - strlen(response_output_buf) - 1, "MPI failed to execute command. MPI echoed response code: %u\n", cmd_response);
 
-        // Print MPI response buffer as HEX
-        snprintf(response_output_buf, response_output_buf_len, "MPI response buffer: ");
+        // Send back complete response from the MPI
+        snprintf(&response_output_buf[strlen(response_output_buf)], response_output_buf_len - strlen(response_output_buf) - 1, "MPI response buffer: ");
         for (size_t i = 0; i < mpi_cmd_response_len; i++)
         {
-            snprintf(response_output_buf, response_output_buf_len, "%02X", mpi_cmd_response[i]);
+            snprintf(&response_output_buf[strlen(response_output_buf)], response_output_buf_len - strlen(response_output_buf) - 1, "%02X", mpi_cmd_response[i]);
         }
 
-        return 3; // Error code for mpi side error
+        return 3; // Error code: MPI responded with an error
     }
+
     // Successful MPI response
-    else
-    {
-        snprintf(response_output_buf, response_output_buf_len, "MPI successfully executed the command. MPI echoed response code: %u\n", cmd_response);
-        return 0;
-    }
+    snprintf(response_output_buf, response_output_buf_len, "MPI successfully executed the command. MPI echoed response code: %u\n", cmd_response);
+    return 0;
 }
