@@ -1,6 +1,5 @@
 #ifndef INC_MPI_COMMAND_HANDLING_H_
 #define INC_MPI_COMMAND_HANDLING_H_
-
 #include <stdint.h>
 #include <stddef.h>
 #include "mpi/mpi_types.h"
