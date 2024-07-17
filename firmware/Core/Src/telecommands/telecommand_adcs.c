@@ -10,6 +10,10 @@
 
 #include "adcs_types.h"
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_ack(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_TC_Ack_Struct ack;
@@ -17,6 +21,12 @@ uint8_t TCMDEXEC_ADCS_ack(const uint8_t *args_str, TCMD_TelecommandChannel_enum_
     return ack.error_flag;
 }
 
+/// @brief Telecommand: Set the wheel speed of the ADCS
+/// @param args_str 
+///     - Arg 0: Wheel speed X value
+///     - Arg 1: Wheel speed Y value
+///     - Arg 2: Wheel speed Z value
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_wheel_speed(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     
@@ -33,30 +43,50 @@ uint8_t TCMDEXEC_ADCS_set_wheel_speed(const uint8_t *args_str, TCMD_TelecommandC
     return status;
 }
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_reset(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                             char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Reset(); 
     return status;
 }                
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_identification(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                      char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Identification(); 
     return status;
 }                            
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_program_status(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                      char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Program_Status(); 
     return status;
 }                            
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_communication_status(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                            char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Communication_Status(); 
     return status;
 }                                
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_deploy_magnetometer(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                           char *response_output_buf, uint16_t response_output_buf_len) {
     uint64_t timeout;
@@ -65,6 +95,10 @@ uint8_t TCMDEXEC_ADCS_deploy_magnetometer(const uint8_t *args_str, TCMD_Telecomm
     return status;
 }                                
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_run_mode(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                    char *response_output_buf, uint16_t response_output_buf_len) {
     uint64_t run_mode;
@@ -73,12 +107,21 @@ uint8_t TCMDEXEC_ADCS_set_run_mode(const uint8_t *args_str, TCMD_TelecommandChan
     return status;
 }                        
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_clear_errors(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                    char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Clear_Errors();
     return status;
 }                        
 
+/// @brief Telecommand: Set the attitude control mode of the ADCS
+/// @param args_str 
+///     - Arg 0: Control mode to set (Table 77 in Firmware Manual)
+///     - Arg 1: Timeout to set control mode
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_attitude_control_mode(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
     // parse arguments into uint64_t
@@ -92,6 +135,10 @@ uint8_t TCMDEXEC_ADCS_attitude_control_mode(const uint8_t *args_str, TCMD_Teleco
     return status;
 }                                                         
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_attitude_estimation_mode(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                char *response_output_buf, uint16_t response_output_buf_len) {
     uint64_t estimation_mode;
@@ -100,12 +147,20 @@ uint8_t TCMDEXEC_ADCS_attitude_estimation_mode(const uint8_t *args_str, TCMD_Tel
     return status;
 }                                    
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_run_once(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Run_Once();
     return status;
 }                    
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_magnetometer_mode(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
     uint64_t mode;
@@ -114,6 +169,12 @@ uint8_t TCMDEXEC_ADCS_set_magnetometer_mode(const uint8_t *args_str, TCMD_Teleco
     return status;
 }                                
 
+/// @brief Telecommand: Set the magnetorquer output values
+/// @param args_str 
+///     - Arg 0: Magnetorquer X duty cycle
+///     - Arg 1: Magnetorquer Y duty cycle
+///     - Arg 2: Magnetorquer Z duty cycle
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_magnetorquer_output(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
      // parse arguments: first into uint64_t, then convert to correct form for input
@@ -129,24 +190,40 @@ uint8_t TCMDEXEC_ADCS_set_magnetorquer_output(const uint8_t *args_str, TCMD_Tele
     return status;
 }                                    
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_save_config(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                   char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Save_Config();
     return status;
 }                        
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_estimate_angular_rates(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                              char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Estimate_Angular_Rates();
     return status;
 }                                    
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_get_llh_position(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                        char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Get_LLH_Position();
     return status;
 }                            
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_get_power_control(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                         char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Get_Power_Control();
@@ -155,270 +232,450 @@ uint8_t TCMDEXEC_ADCS_get_power_control(const uint8_t *args_str, TCMD_Telecomman
 
 // TODO: 9 telecommands remaining!
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_power_control(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                         char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = 255; // this is a placeholder for now;
     return status;
 }                            
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_magnetometer_config(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = 255; // this is a placeholder for now;
     return status;
 }                                    
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_bootloader_clear_errors(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Bootloader_Clear_Errors(); 
     return status;
 }                                    
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_unix_time_save_mode(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = 255; // this is a placeholder for now;
     return status;
 }                                    
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_get_unix_time_save_mode(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Get_Unix_Time_Save_Mode();
     return status;
 }                                    
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_sgp4_orbit_params(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = 255; // this is a placeholder for now;
     return status;
 }                                
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_get_sgp4_orbit_params(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Get_SGP4_Orbit_Params();
     return status;
 }                                
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_save_orbit_params(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                         char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Save_Orbit_Params();
     return status;
 }                            
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_rate_sensor_rates(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                         char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Rate_Sensor_Rates();
     return status;
 }                            
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_get_wheel_speed(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                       char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Get_Wheel_Speed();
     return status;
 }                            
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_get_magnetorquer_command(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Get_Magnetorquer_Command();
     return status;
 }                                    
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_get_raw_magnetometer_values(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                   char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Get_Raw_Magnetometer_Values();
     return status;
 }                                        
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_fine_angular_rates(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                          char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Fine_Angular_Rates();
     return status;
 }                                
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_estimate_fine_angular_rates(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                   char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Estimate_Fine_Angular_Rates(); 
     return status;
 }                                        
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_get_magnetometer_config(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Get_Magnetometer_Config();
     return status;
 }                                    
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_get_commanded_attitude_angles(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                     char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Get_Commanded_Attitude_Angles();
     return status;
 }                                        
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_commanded_attitude_angles(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                     char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = 255; // this is a placeholder for now;
     return status;
 }                                        
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_estimation_params(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = 255; // this is a placeholder for now;
     return status;
 }                                
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_get_estimation_params(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Get_Estimation_Params();
     return status;
 }                                
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_asgp4_params(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                        char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = 255; // this is a placeholder for now;
     return status;
 }                            
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_get_asgp4_params(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                        char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Get_ASGP4_Params();
     return status;
 }                            
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_tracking_controller_target_reference(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                                 char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = 255; // this is a placeholder for now;
     return status;
 }                                                    
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_get_tracking_controller_target_reference(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                                 char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Get_Tracking_Controller_Target_Reference();
     return status;
 }                                                    
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_rate_gyro_config(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                            char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = 255; // this is a placeholder for now;
     return status;
 }                                
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_get_rate_gyro_config(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                            char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Get_Rate_Gyro_Config();
     return status;
 }                                
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_estimated_attitude_angles(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                 char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Estimated_Attitude_Angles();
     return status;
 }                                    
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_magnetic_field_vector(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Magnetic_Field_Vector();
     return status;
 }                                
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_fine_sun_vector(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                       char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Fine_Sun_Vector();
     return status;
 }                            
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_nadir_vector(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                    char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Nadir_Vector();
     return status;
 }                        
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_commanded_wheel_speed(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Commanded_Wheel_Speed();
     return status;
 }                                
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_igrf_magnetic_field_vector(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                  char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_IGRF_Magnetic_Field_Vector();
     return status;
 }                                        
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_quaternion_error_vector(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Quaternion_Error_Vector();
     return status;
 }                                    
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_estimated_gyro_bias(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                           char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Estimated_Gyro_Bias();
     return status;
 }                                
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_estimation_innovation_vector(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                    char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Estimation_Innovation_Vector();
     return status;
 }                                        
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_raw_cam1_sensor(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                       char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Raw_Cam1_Sensor();
     return status;
 }                            
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_raw_cam2_sensor(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                       char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Raw_Cam2_Sensor;
     return status;
 }                            
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_raw_css_1_to_6(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                      char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Raw_CSS_1_to_6();
     return status;
 }                            
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_raw_css_7_to_10(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                       char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Raw_CSS_7_to_10();
     return status;
 }                            
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_cubecontrol_current(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                           char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_CubeControl_Current();
     return status;
 }                                
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_raw_gps_status(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                      char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Raw_GPS_Status();
     return status;
 }                            
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_raw_gps_time(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                    char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Raw_GPS_Time();
     return status;
 }                        
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_raw_gps_x(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                 char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Raw_GPS_X();
     return status;
 }                    
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_raw_gps_y(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                 char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Raw_GPS_Y();
     return status;
 }                    
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_raw_gps_z(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                 char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Raw_GPS_Z();
     return status;
 }                    
 
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_measurements(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                    char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Measurements(); 
