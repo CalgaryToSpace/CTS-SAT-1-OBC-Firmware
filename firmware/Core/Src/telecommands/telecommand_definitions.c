@@ -376,13 +376,6 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     }
     // ****************** END: MPI_telecommand_definitions ********************
 
-    // ****************** START: MPI_telecommand_definitions ******************
-    {
-        .tcmd_name = "mpi_send_command",
-        .tcmd_func = TCMDEXEC_mpi_send_command_hex,
-        .number_of_args = 1,
-    }
-    // ****************** END: MPI_telecommand_definitions ********************
 };
 
 // extern
@@ -408,16 +401,14 @@ uint8_t TCMDEXEC_hello_world(const char *args_str, TCMD_TelecommandChannel_enum_
 }
 
 uint8_t TCMDEXEC_heartbeat_off(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                               char *response_output_buf, uint16_t response_output_buf_len)
-{
+                        char *response_output_buf, uint16_t response_output_buf_len) {
     TASK_heartbeat_is_on = 0;
     snprintf(response_output_buf, response_output_buf_len, "Heartbeat OFF");
     return 0;
 }
 
 uint8_t TCMDEXEC_heartbeat_on(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                              char *response_output_buf, uint16_t response_output_buf_len)
-{
+                        char *response_output_buf, uint16_t response_output_buf_len) {
     TASK_heartbeat_is_on = 1;
     snprintf(response_output_buf, response_output_buf_len, "Heartbeat ON");
     return 0;
@@ -432,8 +423,7 @@ uint8_t TCMDEXEC_core_system_stats(const char *args_str, TCMD_TelecommandChannel
 }
 
 uint8_t TCMDEXEC_available_telecommands(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                                        char *response_output_buf, uint16_t response_output_buf_len)
-{
+                        char *response_output_buf, uint16_t response_output_buf_len) {
     char *p = response_output_buf;
     uint16_t remaining_space = response_output_buf_len;
 
@@ -444,16 +434,15 @@ uint8_t TCMDEXEC_available_telecommands(const char *args_str, TCMD_TelecommandCh
     remaining_space -= header_length;
 
     // Append each telecommand name to the response
-    for (uint16_t tcmd_idx = 0; tcmd_idx < TCMD_NUM_TELECOMMANDS; tcmd_idx++)
-    {
+    for (uint16_t tcmd_idx = 0; tcmd_idx < TCMD_NUM_TELECOMMANDS; tcmd_idx++) {
         const uint16_t line_length = snprintf(
             p,
             remaining_space,
             "%3u) %s\n",
             tcmd_idx + 1,
-            TCMD_telecommand_definitions[tcmd_idx].tcmd_name);
-        if (line_length >= remaining_space)
-        {
+            TCMD_telecommand_definitions[tcmd_idx].tcmd_name
+        );
+        if (line_length >= remaining_space) {
             // Not enough space left to append more telecommands
             break;
         }
