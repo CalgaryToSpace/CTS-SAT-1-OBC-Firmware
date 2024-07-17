@@ -7,7 +7,12 @@
 #include <stdint.h>
 #include <string.h>
 
-extern I2C_HandleTypeDef *I2C_ant_port_handle;
+static const uint8_t ANT_ADDR = 0x31 << 1;
+
+extern I2C_HandleTypeDef hi2c2;
+
+// Might not need to include cmd buf array and length depending on the parameters of the command
+// If no parameters, you should only need to send the command byte (8 bits)
 
 /**
  * @brief Sends a command to the antenna controller and waits for a response.
@@ -22,9 +27,20 @@ uint8_t ANT_send_cmd_get_response(
     const uint8_t cmd_buf[], uint8_t cmd_len,
     uint8_t rx_buf[], uint16_t rx_len
     ) {
-        // ASSERT: rx_buf_len must be >= 5 for all commands. Raise error if not.
-        if(rx_len < ANT_DEFAULT_RX_LEN_MIN) return 1;
+    const HAL_StatusTypeDef tx_status = HAL_I2C_Master_Transmit(&hi2c2, ANT_ADDR, cmd_buf, cmd_len, 1000);
+    if (tx_status != HAL_OK) {
+        // TODO: Add print statement for debugging
+        return 1;
+    }
 
-        
+    if (rx_len != 0) {
+        const HAL_StatusTypeDef rx_status = HAL_I2C_Master_Receive(&hi2c2, ANT_ADDR, rx_buf, rx_len, 1000);
+        if(rx_status != HAL_OK) {
+            // TODO: Add print statement for debugging
+            return 2;
+        }
 
+
+    }
+    return 0;
 }
