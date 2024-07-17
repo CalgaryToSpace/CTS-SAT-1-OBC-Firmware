@@ -1,5 +1,6 @@
 #include "transforms/arrays.h"
 
+#include <ctype.h>
 #include <string.h>
 
 
@@ -60,4 +61,69 @@ void GEN_uint64_to_str(uint64_t value, char *buffer) {
         buffer[i] = temp[index - i - 1];
     }
     buffer[index] = '\0';
+}
+
+/// @brief Converts a hex string to a byte array
+/// @param hex_str  The input hex string. Can be upper or lower case. Can contain spaces and underscores between bytes.
+/// @param output_byte_array Pointer to the output destination byte array.
+/// @param output_byte_array_size Maximum size of the output byte array.
+/// @param output_byte_array_len Pointer to the output variable that will be set to the length of the output byte array.
+/// @return 0 if successful, >0 for error
+/// @note Delimiters between bytes are ignored, but delimiters within a byte are not allowed.
+uint8_t GEN_hex_str_to_byte_array(const char *hex_str, uint8_t output_byte_array[],
+    uint16_t output_byte_array_size, uint16_t *output_byte_array_len)
+{
+    const size_t hex_str_len = strlen(hex_str);
+    if (hex_str_len == 0) {
+        // String is empty
+        return 1;
+    }
+
+    uint16_t byte_index = 0;
+    uint8_t current_byte = 0;
+    uint8_t nibble_count = 0;
+
+    for (size_t i = 0; i < hex_str_len; i++) {
+        char current_char = hex_str[i];
+
+        if (current_char == ' ' || current_char == '_') {
+            if (nibble_count % 2 != 0) {
+                // Separator found in the middle of a byte.
+                return 4;
+            }
+            // Skip spaces and underscores
+            continue;
+        }
+
+        if (!isxdigit(current_char)) {
+            // Invalid character found
+            return 2;
+        }
+
+        current_char = tolower(current_char);
+
+        // Incantation to convert a hex character to a nibble.
+        uint8_t nibble = (uint8_t)((current_char >= '0' && current_char <= '9') ? (current_char - '0') : (current_char - 'a' + 10));
+
+        current_byte = (current_byte << 4) | nibble;
+        nibble_count++;
+
+        if (nibble_count == 2) {
+            if (byte_index >= output_byte_array_size) {
+                // Output array size exceeded
+                return 3;
+            }
+            output_byte_array[byte_index++] = current_byte;
+            current_byte = 0;
+            nibble_count = 0;
+        }
+    }
+
+    if (nibble_count != 0) {
+        // Odd number of nibbles (half a byte)
+        return 4;
+    }
+
+    *output_byte_array_len = byte_index;
+    return 0;
 }
