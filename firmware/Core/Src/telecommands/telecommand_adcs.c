@@ -159,7 +159,7 @@ uint8_t TCMDEXEC_ADCS_run_once(const uint8_t *args_str, TCMD_TelecommandChannel_
 
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 
-///     - No arguments for this command
+///     - Arg 0: magnetometer mode to set
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_magnetometer_mode(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
@@ -177,16 +177,14 @@ uint8_t TCMDEXEC_ADCS_set_magnetometer_mode(const uint8_t *args_str, TCMD_Teleco
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_magnetorquer_output(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
-     // parse arguments: first into uint64_t, then convert to correct form for input
+     // parse arguments into doubles
     uint8_t num_args = 3;
-    uint64_t arguments[num_args]; 
-    uint16_t args_16[num_args];
+    double arguments[num_args]; 
     for (uint8_t i = 0; i < num_args; i++) {
         TCMD_extract_double_arg(args_str, strlen((char*)args_str), i, &arguments[i]);
-        args_16[i] = (uint16_t) arguments[i];
     }
     
-    uint8_t status = ADCS_Set_Magnetorquer_Output(args_16[0], args_16[1], args_16[2]);
+    uint8_t status = ADCS_Set_Magnetorquer_Output(arguments[0], arguments[1], arguments[2]);
     return status;
 }                                    
 
@@ -230,25 +228,66 @@ uint8_t TCMDEXEC_ADCS_get_power_control(const uint8_t *args_str, TCMD_Telecomman
     return status;
 }   
 
-// TODO: 9 telecommands remaining!
-
-/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @brief Telecommand: Request the given telemetry data from the ADCS (power off mode = 0, power on mode = 1, power same mode = 2)
 /// @param args_str 
-///     - No arguments for this command
+///     - Arg 0: Power control mode for cube control signal
+///     - Arg 1: Power control mode for cube control motor
+///     - Arg 2: Power control mode for cube sense 1
+///     - Arg 3: Power control mode for cube sense 2
+///     - Arg 4: Power control mode for cube star
+///     - Arg 5: Power control mode for cube wheel 1
+///     - Arg 6: Power control mode for cube wheel 2
+///     - Arg 7: Power control mode for cube wheel 3
+///     - Arg 8: Power control mode for motor
+///     - Arg 9: Power control mode for gps
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_power_control(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                         char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+
+    // parse arguments: first into uint64_t, then convert to correct form for input
+    uint8_t num_args = 10;
+    uint64_t arguments[num_args]; 
+    uint8_t args_8[num_args];
+    for (uint8_t i = 0; i < num_args; i++) {
+        TCMD_extract_uint64_arg(args_str, strlen((char*)args_str), i, &arguments[i]);
+        args_8[i] = (uint8_t) arguments[i];
+    }
+    
+    uint8_t status = ADCS_Set_Power_Control((ADCS_Power_Select) args_8[0], (ADCS_Power_Select) args_8[1], (ADCS_Power_Select) args_8[2], (ADCS_Power_Select) args_8[3], (ADCS_Power_Select) args_8[4], (ADCS_Power_Select) args_8[5], (ADCS_Power_Select) args_8[6], (ADCS_Power_Select) args_8[7], (ADCS_Power_Select) args_8[8], (ADCS_Power_Select) args_8[9]);
     return status;
 }                            
 
+// TODO: 8 telecommands remaining! (Find the placeholder 255 values and deal with them)
+
 /// @brief Telecommand: Request the given telemetry data from the ADCS
-/// @param args_str 
-///     - No arguments for this command
+/// @param args_str // TODO: fix this first
+///     - Arg 0:
+///     - Arg 0:
+///     - Arg 0:
+///     - Arg 0:
+///     - Arg 0:
+///     - Arg 0:
+///     - Arg 0:
+///     - Arg 0:
+///     - Arg 0:
+///     - Arg 0:
+///     - Arg 0:
+///     - Arg 0:
+///     - Arg 0:
+///     - Arg 0:
+///     - Arg 0:
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_magnetometer_config(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+
+    // parse arguments into doubles
+    uint8_t num_args = 15;
+    double arguments[num_args]; 
+    for (uint8_t i = 0; i < num_args; i++) {
+        TCMD_extract_double_arg(args_str, strlen((char*)args_str), i, &arguments[i]);
+    }
+    
+    uint8_t status = ADCS_Set_Magnetometer_Config(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], arguments[6], arguments[7], arguments[8], arguments[9], arguments[10], arguments[11], arguments[12], arguments[13], arguments[14], arguments[15]);
     return status;
 }                                    
 
@@ -588,7 +627,7 @@ uint8_t TCMDEXEC_ADCS_raw_cam1_sensor(const uint8_t *args_str, TCMD_TelecommandC
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_raw_cam2_sensor(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                       char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Raw_Cam2_Sensor;
+    uint8_t status = ADCS_Raw_Cam2_Sensor();
     return status;
 }                            
 
@@ -683,3 +722,4 @@ uint8_t TCMDEXEC_ADCS_measurements(const uint8_t *args_str, TCMD_TelecommandChan
 }                        
 
 // TODO: telecommand definitions
+// TODO also: all the docstrings from telecommands with more than 1 arg should be ported to adcs_types.c

@@ -125,9 +125,9 @@ typedef enum ADCS_Estimation_Mode {
 } ADCS_Estimation_Mode;
 
 typedef enum ADCS_Power_Select {
-	ADCS_Power_Select_Off,
-	ADCS_Power_Select_On,
-	ADCS_Power_Select_Same
+	ADCS_Power_Select_Off = 0,
+	ADCS_Power_Select_On = 1,
+	ADCS_Power_Select_Same = 2
 } ADCS_Power_Select;
 
 typedef enum ADCS_Magnetometer_Mode {

@@ -349,7 +349,7 @@ uint8_t ADCS_Pack_to_Power_Control(uint8_t* data_received, ADCS_Power_Control_St
 
 /// @brief Instruct the ADCS to execute the titular command.
 /// @return 0 if successful, non-zero if an error occurred in transmission.
-uint8_t ADCS_Set_Magnetometer_Config(I2C_HandleTypeDef *hi2c,
+uint8_t ADCS_Set_Magnetometer_Config(
 		double mounting_transform_alpha_angle,
         double mounting_transform_beta_angle,
         double mounting_transform_gamma_angle,
