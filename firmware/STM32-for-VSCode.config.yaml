@@ -38,7 +38,9 @@ cFlags:
   - -fdata-sections
   - -ffunction-sections
   - -Wextra # CTS: Enable extra warnings for safety
-  - -Wno-unused-parameter # CTS: Ignore (allow) unused parameters
+  - -Wpedantic # CTS: Enable pedantic warnings for even more safety
+  - -Wmissing-field-initializers # CTS: Warn if a struct is not fully initialized [broken?]
+  - -Wno-unused-parameter # CTS: Ignore (allow) unused parametersa
   # - -Werror # CTS: Optional: Treat warnings as errors
 
 cxxFlags: []
