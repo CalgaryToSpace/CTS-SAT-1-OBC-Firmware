@@ -56,8 +56,10 @@
 
 extern I2C_HandleTypeDef hi2c1; // allows not needing the parameters
 
+/// @brief Instructs the ADCS to determine whether the last command succeeded. (Doesn't work for telemetry requests, by design.)
+/// @param[out] ack Structure containing the formatted information about the last command sent.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_TC_Ack(ADCS_TC_Ack_Struct *ack) {
-	//note return value -- this is a special case of telemetry request for telecommands
 	uint8_t data_received[8]; // define temp buffer
 	uint8_t data_length = 4;
 
@@ -75,6 +77,10 @@ uint8_t ADCS_TC_Ack(ADCS_TC_Ack_Struct *ack) {
 	return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Ack(uint8_t* data_received, ADCS_TC_Ack_Struct *result) {
 
 	// map temp buffer to Ack struct
@@ -86,6 +92,8 @@ uint8_t ADCS_Pack_to_Ack(uint8_t* data_received, ADCS_TC_Ack_Struct *result) {
 	return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Reset() {
 	// returns telecommand error flag
 	uint8_t data_send[1] = {ADCS_MAGIC_NUMBER};
@@ -93,6 +101,8 @@ uint8_t ADCS_Reset() {
 	return tc_status;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Identification() {
 	// TODO: Follow this format for all other telemetry requests!
 	
@@ -109,6 +119,10 @@ uint8_t ADCS_Identification() {
 	return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Identification(uint8_t *data_received, ADCS_ID_Struct *result) {
     result->node_type = data_received[0];
     result->interface_version = data_received[1];
@@ -119,6 +133,8 @@ uint8_t ADCS_Pack_to_Identification(uint8_t *data_received, ADCS_ID_Struct *resu
     return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Program_Status() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -133,6 +149,10 @@ uint8_t ADCS_Program_Status() {
 	return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Program_Status(uint8_t* data_received, ADCS_Boot_Running_Status_Struct *result) {
 	// map to struct
 	result->reset_cause = (data_received[0] & 0xF0) >> 4; // takes upper four bits of byte 0
@@ -145,6 +165,8 @@ uint8_t ADCS_Pack_to_Program_Status(uint8_t* data_received, ADCS_Boot_Running_St
 	return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Communication_Status() {
 	// returns I2C communication status of the ADCS (Table 37)
 	uint8_t data_length = 6;
@@ -160,6 +182,10 @@ uint8_t ADCS_Communication_Status() {
 	return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Comms_Status(uint8_t *data_received, ADCS_Comms_Status_Struct *result) {
     result->tc_counter = data_received[1] << 8 | data_received[0]; // uint16_t
     result->tlm_counter = data_received[3] << 8 | data_received[2]; // uint16_t
@@ -169,6 +195,8 @@ uint8_t ADCS_Pack_to_Comms_Status(uint8_t *data_received, ADCS_Comms_Status_Stru
     return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Deploy_Magnetometer(uint8_t deploy_timeout) {
 	// Deploys the magnetometer boom, timeout in seconds
 	uint8_t data_send[1] = {deploy_timeout};
@@ -176,6 +204,8 @@ uint8_t ADCS_Deploy_Magnetometer(uint8_t deploy_timeout) {
 	return tc_status;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Set_Run_Mode(ADCS_Run_Mode mode) {
 	// Disables the ADCS
 	uint8_t data_send[1] = {mode};
@@ -183,6 +213,8 @@ uint8_t ADCS_Set_Run_Mode(ADCS_Run_Mode mode) {
 	return tc_status;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Clear_Errors() {
 	// Clears error flags
 	// NOTE: THERE IS ANOTHER, SEPARATE CLEAR ERROR FLAG TC FOR THE BOOTLODER (TC_BL_CLEAR_ERRORS)
@@ -191,6 +223,8 @@ uint8_t ADCS_Clear_Errors() {
 	return tc_status;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Attitude_Control_Mode(ADCS_Control_Mode mode, uint16_t timeout) {
 	// Sets the ADCS attitude control mode
 	// See User Manual, Section 4.4.3 Table 3 for requirements to switch control mode
@@ -199,6 +233,8 @@ uint8_t ADCS_Attitude_Control_Mode(ADCS_Control_Mode mode, uint16_t timeout) {
 	return tc_status;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Attitude_Estimation_Mode(ADCS_Estimation_Mode mode) {
 	// Sets the ADCS attitude estimation mode
 	// Possible values for mode given in Section 6.3 Table 80 of Firmware Reference Manual (ranges from 0 to 7)
@@ -208,6 +244,8 @@ uint8_t ADCS_Attitude_Estimation_Mode(ADCS_Estimation_Mode mode) {
 	return tc_status;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Run_Once() {
 	// requires ADCS_Enable_Triggered to have run first
 	// (if ADCS_Enable_On has run instead, then this is unnecessary)
@@ -216,12 +254,16 @@ uint8_t ADCS_Run_Once() {
 	return tc_status;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Set_Magnetometer_Mode(ADCS_Magnetometer_Mode mode) {
 	uint8_t data_send[1] = {mode};
 	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_SET_MODE_OF_MAGNETOMETER_OPERATION, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Set_Magnetorquer_Output(double x_duty, double y_duty, double z_duty) {
 	// only valid after ADCS_Enable_Manual_Control is run
 	// for the duty equations, raw parameter value is obtained using the formula: (raw parameter) = (formatted value)*1000.0
@@ -235,6 +277,8 @@ uint8_t ADCS_Set_Magnetorquer_Output(double x_duty, double y_duty, double z_duty
 	return tc_status;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Set_Wheel_Speed(uint16_t x_speed, uint16_t y_speed, uint16_t z_speed) {
 	// only valid after ADCS_Enable_Manual_Control is run
 	// for the duty equations, raw parameter value is in rpm
@@ -247,6 +291,8 @@ uint8_t ADCS_Set_Wheel_Speed(uint16_t x_speed, uint16_t y_speed, uint16_t z_spee
 	return tc_status;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Set_Power_Control(ADCS_Power_Select cube_control_signal, ADCS_Power_Select cube_control_motor, ADCS_Power_Select cube_sense1,
         ADCS_Power_Select cube_sense2, ADCS_Power_Select cube_star_power, ADCS_Power_Select cube_wheel1_power,
         ADCS_Power_Select cube_wheel2_power, ADCS_Power_Select cube_wheel3_power, ADCS_Power_Select motor_power,
@@ -260,6 +306,8 @@ uint8_t ADCS_Set_Power_Control(ADCS_Power_Select cube_control_signal, ADCS_Power
 	return tc_status;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Get_Power_Control() {
 	uint8_t data_length = 3;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -274,6 +322,10 @@ uint8_t ADCS_Get_Power_Control() {
 	return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Power_Control(uint8_t* data_received, ADCS_Power_Control_Struct* result) {
 
 	// map to struct; all of these are two-bit enums
@@ -295,6 +347,8 @@ uint8_t ADCS_Pack_to_Power_Control(uint8_t* data_received, ADCS_Power_Control_St
 }
 
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Set_Magnetometer_Config(I2C_HandleTypeDef *hi2c,
 		double mounting_transform_alpha_angle,
         double mounting_transform_beta_angle,
@@ -340,18 +394,24 @@ uint8_t ADCS_Set_Magnetometer_Config(I2C_HandleTypeDef *hi2c,
 
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Save_Config() {
 	uint8_t data_send[0]; // 0-byte data (from manual)
 	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_SAVE_CONFIG, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Save_Orbit_Params() {
 	uint8_t data_send[0]; // 0-byte data (from manual)
 	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_SAVE_ORBIT_PARAMS, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Estimate_Angular_Rates() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -366,6 +426,10 @@ uint8_t ADCS_Estimate_Angular_Rates() {
 	return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Angular_Rates(uint8_t *data_received, ADCS_Angular_Rates_Struct *result) {
 	// need to convert to int16 first, then double, to ensure negative numbers are represented correctly
     result->x_rate = ((double) ((int16_t) (data_received[1] << 8 | data_received[0]))) * 0.01;
@@ -374,6 +438,8 @@ uint8_t ADCS_Pack_to_Angular_Rates(uint8_t *data_received, ADCS_Angular_Rates_St
     return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Get_LLH_Position() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -388,6 +454,10 @@ uint8_t ADCS_Get_LLH_Position() {
 	return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_LLH_Position(uint8_t *data_received, ADCS_LLH_Position_Struct *result) {
     // formatted value (deg or km) = raw value * 0.01
 	// need to convert to int16 first, then double, to ensure negative numbers are represented correctly
@@ -397,18 +467,24 @@ uint8_t ADCS_Pack_to_LLH_Position(uint8_t *data_received, ADCS_LLH_Position_Stru
     return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Bootloader_Clear_Errors() {
 	uint8_t data_send[0]; // 0-byte data (from manual)
 	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_BL_CLEAR_ERRORS, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Set_Unix_Time_Save_Mode(bool save_now, bool save_on_update, bool save_periodic, uint8_t period) {
 	uint8_t data_send[2] = { (save_now | (save_on_update << 1) | (save_periodic << 2) ) , period}; // 2-byte data (from manual)
 	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_SET_UNIX_TIME_SAVE_TO_FLASH, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Get_Unix_Time_Save_Mode() {
 	uint8_t data_length = 2;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -423,6 +499,10 @@ uint8_t ADCS_Get_Unix_Time_Save_Mode() {
 	return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Unix_Time_Save_Mode(uint8_t *data_received, ADCS_Set_Unix_Time_Save_Mode_Struct *result) {
     result->save_now = data_received[0] & 0b00000001;
     result->save_on_update = (data_received[0] & 0b00000010) >> 1;
@@ -431,6 +511,8 @@ uint8_t ADCS_Pack_to_Unix_Time_Save_Mode(uint8_t *data_received, ADCS_Set_Unix_T
     return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Set_SGP4_Orbit_Params(double inclination, double eccentricity, double ascending_node_right_ascension,
 														//  degrees,					dimensionless, 		degrees
 		double perigee_argument, double b_star_drag_term, double mean_motion, double mean_anomaly, double epoch) {
@@ -452,6 +534,8 @@ uint8_t ADCS_Set_SGP4_Orbit_Params(double inclination, double eccentricity, doub
 	return tc_status;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Get_SGP4_Orbit_Params() {
 	uint8_t data_length = 64;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -466,6 +550,10 @@ uint8_t ADCS_Get_SGP4_Orbit_Params() {
 	return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Orbit_Params(uint8_t *data_received, ADCS_Orbit_Params_Struct *result) {
     memcpy(&result->inclination, &data_received[0], sizeof(double));
     memcpy(&result->eccentricity, &data_received[8], sizeof(double));
@@ -478,6 +566,8 @@ uint8_t ADCS_Pack_to_Orbit_Params(uint8_t *data_received, ADCS_Orbit_Params_Stru
     return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Rate_Sensor_Rates() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -492,6 +582,10 @@ uint8_t ADCS_Rate_Sensor_Rates() {
 	return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Rated_Sensor_Rates(uint8_t *data_received, ADCS_Rated_Sensor_Rates_Struct *result) {
     // formatted value (deg/s) = raw value * 0.01
 	// need to convert to int16 first, then double, to ensure negative numbers are represented correctly
@@ -501,6 +595,8 @@ uint8_t ADCS_Pack_to_Rated_Sensor_Rates(uint8_t *data_received, ADCS_Rated_Senso
     return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Get_Wheel_Speed() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -515,6 +611,10 @@ uint8_t ADCS_Get_Wheel_Speed() {
 	return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Wheel_Speed(uint8_t *data_received, ADCS_Wheel_Speed_Struct *result) {
 	// all values in rpm
     result->x = data_received[1] << 8 | data_received[0];
@@ -523,6 +623,8 @@ uint8_t ADCS_Pack_to_Wheel_Speed(uint8_t *data_received, ADCS_Wheel_Speed_Struct
     return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Get_Magnetorquer_Command() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -537,6 +639,10 @@ uint8_t ADCS_Get_Magnetorquer_Command() {
 	return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Magnetorquer_Command(uint8_t *data_received, ADCS_Magnetorquer_Command_Struct *result) {
     // formatted value (sec) = raw value * 0.01
 	result->x = ((double)((int16_t)(data_received[1] << 8 | data_received[0]))) * 0.01;
@@ -545,6 +651,8 @@ uint8_t ADCS_Pack_to_Magnetorquer_Command(uint8_t *data_received, ADCS_Magnetorq
     return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Get_Raw_Magnetometer_Values() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -559,6 +667,10 @@ uint8_t ADCS_Get_Raw_Magnetometer_Values() {
 	return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Raw_Magnetometer_Values(uint8_t *data_received, ADCS_Raw_Mag_TLM_Struct *result) {
 	result->x = data_received[1] << 8 | data_received[0];
     result->y = data_received[3] << 8 | data_received[2];
@@ -566,6 +678,8 @@ uint8_t ADCS_Pack_to_Raw_Magnetometer_Values(uint8_t *data_received, ADCS_Raw_Ma
     return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Estimate_Fine_Angular_Rates() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -580,6 +694,10 @@ uint8_t ADCS_Estimate_Fine_Angular_Rates() {
 	return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Fine_Angular_Rates(uint8_t *data_received, ADCS_Fine_Angular_Rates_Struct *result) {
     // formatted value (deg/s) = raw value * 0.001
 	result->x = ((double)((int16_t)(data_received[1] << 8 | data_received[0]))) * 0.001;
@@ -588,6 +706,8 @@ uint8_t ADCS_Pack_to_Fine_Angular_Rates(uint8_t *data_received, ADCS_Fine_Angula
     return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Get_Magnetometer_Config() {
 	uint8_t data_length = 30;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -602,6 +722,10 @@ uint8_t ADCS_Get_Magnetometer_Config() {
 	return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Magnetometer_Config(uint8_t *data_received, ADCS_Magnetometer_Config_Struct *result) {
     // formatted value for mounting transform angles (deg/s) = raw value * 0.01
 	result->mounting_transform_alpha_angle = ((double)((int16_t)(data_received[1] << 8 | data_received[0]))) * 0.01;
@@ -623,6 +747,8 @@ uint8_t ADCS_Pack_to_Magnetometer_Config(uint8_t *data_received, ADCS_Magnetomet
     return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Get_Commanded_Attitude_Angles() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -637,6 +763,10 @@ uint8_t ADCS_Get_Commanded_Attitude_Angles() {
 	return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Commanded_Attitude_Angles(uint8_t *data_received, ADCS_Commanded_Angles_Struct *result) {
     // Formatted value is obtained using the formula: (formatted value) [deg] = RAWVAL*0.01
 	result->x = (double)((int16_t)(data_received[1] << 8 | data_received[0])) * 0.01;
@@ -645,6 +775,8 @@ uint8_t ADCS_Pack_to_Commanded_Attitude_Angles(uint8_t *data_received, ADCS_Comm
     return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Set_Commanded_Attitude_Angles(double x, double y, double z) {
 	// raw parameter value is obtained using the formula: (raw parameter) = (formatted value)*100.0
 	// angle >> 8 gives upper byte, angle & 0x00FF gives lower byte
@@ -657,6 +789,8 @@ uint8_t ADCS_Set_Commanded_Attitude_Angles(double x, double y, double z) {
 	return tc_status;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Set_Estimation_Params(
 								float magnetometer_rate_filter_system_noise, 
                                 float ekf_system_noise, 
@@ -699,6 +833,8 @@ uint8_t ADCS_Set_Estimation_Params(
 	return tc_status;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Get_Estimation_Params() {
 	uint8_t data_length = 31;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -713,6 +849,10 @@ uint8_t ADCS_Get_Estimation_Params() {
 	return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Estimation_Params(uint8_t* data_received, ADCS_Estimation_Params_Struct* result) {
     // map temp buffer to struct
     memcpy(&result->magnetometer_rate_filter_system_noise, &data_received[0], 4);
@@ -738,6 +878,8 @@ uint8_t ADCS_Pack_to_Estimation_Params(uint8_t* data_received, ADCS_Estimation_P
 }
 
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Set_ASGP4_Params(double incl_coefficient, double raan_coefficient, double ecc_coefficient, double aop_coefficient, double time_coefficient, double pos_coefficient, double maximum_position_error, ADCS_ASGP4_Filter asgp4_filter, double xp_coefficient, double yp_coefficient, uint8_t gps_roll_over, double position_sd, double velocity_sd, uint8_t min_satellites, double time_gain, double max_lag, uint16_t min_samples) {
 	uint8_t data_send[30] = {}; // from Table 209
 
@@ -764,6 +906,8 @@ uint8_t ADCS_Set_ASGP4_Params(double incl_coefficient, double raan_coefficient, 
 	return tc_status;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Get_ASGP4_Params() {
 	uint8_t data_length = 30;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -778,6 +922,10 @@ uint8_t ADCS_Get_ASGP4_Params() {
 	return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_ASGP4_Params(uint8_t* data_received, ADCS_ASGP4_Params_Struct* result) {
     // map temp buffer to struct
     result->incl_coefficient = ((double)((int16_t)(data_received[1] << 8 | data_received[0]))) * 0.001;
@@ -802,6 +950,8 @@ uint8_t ADCS_Pack_to_ASGP4_Params(uint8_t* data_received, ADCS_ASGP4_Params_Stru
 }
 
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Set_Tracking_Controller_Target_Reference(float lon, float lat, float alt) {
 	uint8_t data_send[12];
 
@@ -816,6 +966,8 @@ uint8_t ADCS_Set_Tracking_Controller_Target_Reference(float lon, float lat, floa
 	return tc_status;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Get_Tracking_Controller_Target_Reference() {
 	uint8_t data_length = 12;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -830,6 +982,10 @@ uint8_t ADCS_Get_Tracking_Controller_Target_Reference() {
 	return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Tracking_Controller_Target_Reference(uint8_t* data_received, ADCS_Tracking_Controller_Target_Struct* ref) {
     // map temp buffer to struct
     memcpy(&ref->lon, &data_received[0], 4);
@@ -839,6 +995,8 @@ uint8_t ADCS_Pack_to_Tracking_Controller_Target_Reference(uint8_t* data_received
     return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Set_Rate_Gyro_Config(ADCS_Axis_Select gyro1, ADCS_Axis_Select gyro2, ADCS_Axis_Select gyro3, double x_rate_offset, double y_rate_offset, double z_rate_offset, uint8_t rate_sensor_mult) {
 	uint8_t data_send[10];
 
@@ -856,6 +1014,8 @@ uint8_t ADCS_Set_Rate_Gyro_Config(ADCS_Axis_Select gyro1, ADCS_Axis_Select gyro2
 	return tc_status;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Get_Rate_Gyro_Config() {
 	uint8_t data_length = 12;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -870,6 +1030,10 @@ uint8_t ADCS_Get_Rate_Gyro_Config() {
 	return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Rate_Gyro_Config(uint8_t* data_received, ADCS_Rate_Gyro_Config_Struct* result) {
     result->gyro1 = data_received[0];
     result->gyro2 = data_received[1];
@@ -885,6 +1049,8 @@ uint8_t ADCS_Pack_to_Rate_Gyro_Config(uint8_t* data_received, ADCS_Rate_Gyro_Con
     return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Estimated_Attitude_Angles() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -899,6 +1065,10 @@ uint8_t ADCS_Estimated_Attitude_Angles() {
     return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Estimated_Attitude_Angles(uint8_t *data_received, ADCS_Estimated_Attitude_Angles_Struct *angles) {
     angles->estimated_roll_angle = ((double) ((int16_t) (data_received[1] << 8 | data_received[0]))) * 0.01;
     angles->estimated_pitch_angle = ((double) ((int16_t) (data_received[3] << 8 | data_received[2]))) * 0.01;
@@ -906,6 +1076,8 @@ uint8_t ADCS_Pack_to_Estimated_Attitude_Angles(uint8_t *data_received, ADCS_Esti
 	return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Magnetic_Field_Vector() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -920,6 +1092,10 @@ uint8_t ADCS_Magnetic_Field_Vector() {
     return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Magnetic_Field_Vector(uint8_t *data_received, ADCS_Magnetic_Field_Vector_Struct *vector_components) {
 	// gives vector components in uT (10^-6 Teslas)
     vector_components->x = ((double) ((int16_t) (data_received[1] << 8 | data_received[0]))) * 0.01;
@@ -928,6 +1104,8 @@ uint8_t ADCS_Pack_to_Magnetic_Field_Vector(uint8_t *data_received, ADCS_Magnetic
 	return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Fine_Sun_Vector() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -942,6 +1120,10 @@ uint8_t ADCS_Fine_Sun_Vector() {
     return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Fine_Sun_Vector(uint8_t *data_received, ADCS_Fine_Sun_Vector_Struct *vector_components) {
     vector_components->x = ((double) ((int16_t) (data_received[1] << 8 | data_received[0]))) / 10000.0;
     vector_components->y = ((double) ((int16_t) (data_received[3] << 8 | data_received[2]))) / 10000.0;
@@ -949,6 +1131,8 @@ uint8_t ADCS_Pack_to_Fine_Sun_Vector(uint8_t *data_received, ADCS_Fine_Sun_Vecto
 	return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Nadir_Vector() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -963,6 +1147,10 @@ uint8_t ADCS_Nadir_Vector() {
     return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Nadir_Vector(uint8_t *data_received, ADCS_Nadir_Vector_Struct *vector_components) {
     vector_components->x = ((double) ((int16_t) (data_received[1] << 8 | data_received[0]))) / 10000.0;
     vector_components->y = ((double) ((int16_t) (data_received[3] << 8 | data_received[2]))) / 10000.0;
@@ -970,6 +1158,8 @@ uint8_t ADCS_Pack_to_Nadir_Vector(uint8_t *data_received, ADCS_Nadir_Vector_Stru
 	return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Commanded_Wheel_Speed() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -984,6 +1174,10 @@ uint8_t ADCS_Commanded_Wheel_Speed() {
 	return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Commanded_Wheel_Speed(uint8_t *data_received, ADCS_Wheel_Speed_Struct *result) {
 	// all values in rpm
     result->x = data_received[1] << 8 | data_received[0];
@@ -992,6 +1186,8 @@ uint8_t ADCS_Pack_to_Commanded_Wheel_Speed(uint8_t *data_received, ADCS_Wheel_Sp
     return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_IGRF_Magnetic_Field_Vector() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1006,6 +1202,10 @@ uint8_t ADCS_IGRF_Magnetic_Field_Vector() {
     return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_IGRF_Magnetic_Field_Vector(uint8_t *data_received, ADCS_Magnetic_Field_Vector_Struct *vector_components) {
 	// gives vector components in uT (10^-6 Teslas)
     vector_components->x = ((double) ((int16_t) (data_received[1] << 8 | data_received[0]))) * 0.01;
@@ -1014,6 +1214,8 @@ uint8_t ADCS_Pack_to_IGRF_Magnetic_Field_Vector(uint8_t *data_received, ADCS_Mag
 	return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Quaternion_Error_Vector() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1028,6 +1230,10 @@ uint8_t ADCS_Quaternion_Error_Vector() {
     return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Quaternion_Error_Vector(uint8_t *data_received, ADCS_Quaternion_Error_Vector_Struct *result) {
     result->quaternion_error_q1 = ((double) ((int16_t) (data_received[1] << 8 | data_received[0]))) * 0.0001;
     result->quaternion_error_q2 = ((double) ((int16_t) (data_received[3] << 8 | data_received[2]))) * 0.0001;
@@ -1036,6 +1242,8 @@ uint8_t ADCS_Pack_to_Quaternion_Error_Vector(uint8_t *data_received, ADCS_Quater
     return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Estimated_Gyro_Bias() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1050,6 +1258,10 @@ uint8_t ADCS_Estimated_Gyro_Bias() {
     return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Estimated_Gyro_Bias(uint8_t* data_received, ADCS_Estimated_Gyro_Bias_Struct *result) {
     result->estimated_x_gyro_bias = ((double) ((int16_t) (data_received[1] << 8 | data_received[0]))) * 0.001;
     result->estimated_y_gyro_bias = ((double) ((int16_t) (data_received[3] << 8 | data_received[2]))) * 0.001;
@@ -1058,6 +1270,8 @@ uint8_t ADCS_Pack_to_Estimated_Gyro_Bias(uint8_t* data_received, ADCS_Estimated_
     return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Estimation_Innovation_Vector() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1072,6 +1286,10 @@ uint8_t ADCS_Estimation_Innovation_Vector() {
     return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Estimation_Innovation_Vector(uint8_t* data_received, ADCS_Estimation_Innovation_Vector_Struct* result) {
     result->innovation_vector_x = ((double) ((int16_t) (data_received[1] << 8 | data_received[0]))) * 0.0001;
     result->innovation_vector_y = ((double) ((int16_t) (data_received[3] << 8 | data_received[2]))) * 0.0001;
@@ -1080,6 +1298,8 @@ uint8_t ADCS_Pack_to_Estimation_Innovation_Vector(uint8_t* data_received, ADCS_E
     return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Raw_Cam1_Sensor() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1094,6 +1314,10 @@ uint8_t ADCS_Raw_Cam1_Sensor() {
     return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Raw_Cam1_Sensor(uint8_t* data_received, ADCS_Raw_Cam_Sensor_Struct* result) {
     result->which_sensor = ADCS_Cam1_Sensor;
 	result->cam_centroid_x = (int16_t) (data_received[1] << 8 | data_received[0]);
@@ -1104,6 +1328,8 @@ uint8_t ADCS_Pack_to_Raw_Cam1_Sensor(uint8_t* data_received, ADCS_Raw_Cam_Sensor
     return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Raw_Cam2_Sensor() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1118,6 +1344,10 @@ uint8_t ADCS_Raw_Cam2_Sensor() {
     return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Raw_Cam2_Sensor(uint8_t* data_received, ADCS_Raw_Cam_Sensor_Struct* result) {
     result->which_sensor = ADCS_Cam2_Sensor;
 	result->cam_centroid_x = (int16_t) (data_received[1] << 8 | data_received[0]);
@@ -1128,6 +1358,8 @@ uint8_t ADCS_Pack_to_Raw_Cam2_Sensor(uint8_t* data_received, ADCS_Raw_Cam_Sensor
     return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Raw_CSS_1_to_6() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1142,6 +1374,10 @@ uint8_t ADCS_Raw_CSS_1_to_6() {
     return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Raw_CSS_1_to_6(uint8_t* data_received, ADCS_Raw_CSS_1_to_6_Struct* result) {
     result->css1 = data_received[0];
     result->css2 = data_received[1];
@@ -1153,6 +1389,8 @@ uint8_t ADCS_Pack_to_Raw_CSS_1_to_6(uint8_t* data_received, ADCS_Raw_CSS_1_to_6_
     return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Raw_CSS_7_to_10() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1167,6 +1405,10 @@ uint8_t ADCS_Raw_CSS_7_to_10() {
     return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Raw_CSS_7_to_10(uint8_t* data_received, ADCS_Raw_CSS_7_to_10_Struct* result) {
     result->css7 = data_received[0];
     result->css8 = data_received[1];
@@ -1176,6 +1418,8 @@ uint8_t ADCS_Pack_to_Raw_CSS_7_to_10(uint8_t* data_received, ADCS_Raw_CSS_7_to_1
     return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_CubeControl_Current() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1190,6 +1434,10 @@ uint8_t ADCS_CubeControl_Current() {
     return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_CubeControl_Current(uint8_t* data_received, ADCS_CubeControl_Current_Struct* result) {
     // everything in mA
 	result->cubecontrol_3v3_current = (data_received[1] << 8 | data_received[0]);
@@ -1199,6 +1447,8 @@ uint8_t ADCS_Pack_to_CubeControl_Current(uint8_t* data_received, ADCS_CubeContro
     return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Raw_GPS_Status() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1213,6 +1463,10 @@ uint8_t ADCS_Raw_GPS_Status() {
     return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Raw_GPS_Status(uint8_t* data_received, ADCS_Raw_GPS_Status_Struct* result) {
     result->gps_solution_status = (ADCS_GPS_Solution_Status) data_received[0];
     result->num_tracked_satellites = data_received[1];
@@ -1224,6 +1478,8 @@ uint8_t ADCS_Pack_to_Raw_GPS_Status(uint8_t* data_received, ADCS_Raw_GPS_Status_
     return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Raw_GPS_Time() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1238,6 +1494,10 @@ uint8_t ADCS_Raw_GPS_Time() {
     return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Raw_GPS_Time(uint8_t* data_received, ADCS_Raw_GPS_Time_Struct* result) {
     result->gps_reference_week = (uint16_t)(data_received[1] << 8 | data_received[0]);
     result->gps_time = ((uint32_t)(data_received[5] << 24 | data_received[4] << 16 | data_received[3] << 8 | data_received[2])) / 1000.0; // Convert milliseconds to seconds
@@ -1245,6 +1505,8 @@ uint8_t ADCS_Pack_to_Raw_GPS_Time(uint8_t* data_received, ADCS_Raw_GPS_Time_Stru
     return 0; 
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Raw_GPS_X() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1259,6 +1521,8 @@ uint8_t ADCS_Raw_GPS_X() {
     return tlm_status;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Raw_GPS_Y() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1273,6 +1537,8 @@ uint8_t ADCS_Raw_GPS_Y() {
     return tlm_status;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Raw_GPS_Z() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1287,6 +1553,10 @@ uint8_t ADCS_Raw_GPS_Z() {
     return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Raw_GPS(ADCS_GPS_Axis axis, uint8_t *data_received, ADCS_Raw_GPS_Struct *result) {
     result->axis = axis;
     result->ecef_position = (int32_t)(data_received[3] << 24 | data_received[2] << 16 | 
@@ -1296,6 +1566,8 @@ uint8_t ADCS_Pack_to_Raw_GPS(ADCS_GPS_Axis axis, uint8_t *data_received, ADCS_Ra
     return 0;
 }
 
+/// @brief Instruct the ADCS to execute the titular command.
+/// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Measurements() {
     uint8_t data_length = 72;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1310,6 +1582,10 @@ uint8_t ADCS_Measurements() {
     return tlm_status;
 }
 
+/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
+/// @param[out] result Structure containing the formated data for this command.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Measurements(uint8_t* telemetry_data, ADCS_Measurements_Struct* measurements) {
     // Constants for conversion factors
     const double MAGNETIC_FIELD_FACTOR = 0.01;
@@ -1359,21 +1635,16 @@ uint8_t ADCS_Pack_to_Measurements(uint8_t* telemetry_data, ADCS_Measurements_Str
     return 0;
 }
 
-
-
 // TODO: jump here
 
-/**
- * ADCS_I2C_telecommand_wrapper
- * REQUIRES:
- *  - hi2c points to valid I2C handle (ex. &hi2c1)
- *  - id is a valid telecommand ID (see Firmware Reference Manual)
- *  - data points to array of uint8_t with length at least data_length (should contain the correct number of bytes for the given telecommand ID)
- *  - include_checksum is either ADCS_INCLUDE_CHECKSUM or ADCS_NO_CHECKSUM
- * PROMISES:
- * 	- sends telecommand to ADCS and checks that it has been acknowledged
- * 	- returns the error flag from the result of the transmission
- */
+
+
+/// @brief Sends a telecommand over I2C to the ADCS, checks that it's been acknowledged, and returns the ACK error flag.
+/// @param[in] id Valid ADCS telecommand ID (see Firmware Reference Manual)
+/// @param[in] data Data array to send the raw data bytes; length must be at least data_length (should contain the correct number of bytes for the given telecommand ID)
+/// @param[in] data_length Length of the data array.
+/// @param[in] include_checksum Tells the ADCS whether to use a CRC8 checksum; should be either ADCS_INCLUDE_CHECKSUM or ADCS_NO_CHECKSUM 
+/// @return 0 if successful, 1 if invalid ID, 2 if incorrect parameter length, 3 if incorrect parameter value, and 4 if failed CRC
 uint8_t ADCS_I2C_telecommand_wrapper(uint8_t id, uint8_t* data, uint32_t data_length, uint8_t include_checksum) {
 	ADCS_TC_Ack_Struct ack;
 	uint8_t tc_status;
@@ -1393,17 +1664,12 @@ uint8_t ADCS_I2C_telecommand_wrapper(uint8_t id, uint8_t* data, uint32_t data_le
 	return tc_status;
 }
 
-/**
- * ADCS_I2C_telemetry_wrapper
- * REQUIRES:
- *  - hi2c points to valid I2C handle (ex. &hi2c1)
- *  - id is a valid telemetry request ID (see Firmware Reference Manual)
- *  - data points to array of uint8_t with length at least data_length (should contain the correct number of bytes for the given telemetry request ID)
- *  - include_checksum is either ADCS_INCLUDE_CHECKSUM or ADCS_NO_CHECKSUM
- * PROMISES:
- * 	- Return value is 4 if checksum value doesn't match, 0 for any other successful transmission (including with no checksum)
- * 	- data array filled with result of transmission
- */
+/// @brief Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don't match.
+/// @param[in] id Valid ADCS telemetry request ID (see Firmware Reference Manual)
+/// @param[in] include_checksum Tells the ADCS whether to use a CRC8 checksum; should be either ADCS_INCLUDE_CHECKSUM or ADCS_NO_CHECKSUM 
+/// @param[in] data_length Length of the data array.
+/// @param[out] data Data array to write the raw telemetry bytes to; length must be at least data_length (should contain the correct number of bytes for the given telemetry request ID)
+/// @return 0 if successful, other numbers if the HAL failed to transmit or receive data. 
 uint8_t ADCS_I2C_telemetry_wrapper(uint8_t id, uint8_t* data, uint32_t data_length, uint8_t include_checksum) {
     // Send telemetry request (data gets stored to input data array)
 	uint8_t checksum_check = ADCS_send_I2C_telemetry_request(id, data, data_length, include_checksum);
@@ -1417,16 +1683,12 @@ uint8_t ADCS_I2C_telemetry_wrapper(uint8_t id, uint8_t* data, uint32_t data_leng
 }
 
 
-/**
- * send_I2C_telecommand
- * REQUIRES:
- *  - hi2c points to valid I2C handle (ex. &hi2c1)
- *  - id is a valid telecommand ID (see Firmware Reference Manual)
- *  - data points to array of uint8_t with length at least data_length (should contain the correct number of bytes for the given telecommand ID)
- *  - include_checksum is either ADCS_INCLUDE_CHECKSUM or ADCS_NO_CHECKSUM
- * PROMISES:
- * 	- Transmits data to the ADCS over I2C
- */
+/// @brief Sends a telecommand over I2C to the ADCS.
+/// @param[in] id Valid ADCS telecommand ID (see Firmware Reference Manual)
+/// @param[in] data Data array to send the raw data bytes; length must be at least data_length (should contain the correct number of bytes for the given telecommand ID)
+/// @param[in] data_length Length of the data array.
+/// @param[in] include_checksum Tells the ADCS whether to use a CRC8 checksum; should be either ADCS_INCLUDE_CHECKSUM or ADCS_NO_CHECKSUM 
+/// @return 0 if successful, 4 if the checksums don't match, other numbers if the HAL failed to transmit or receive data.
 uint8_t ADCS_send_I2C_telecommand(uint8_t id, uint8_t* data, uint32_t data_length, uint8_t include_checksum) {
 	// Telecommand Format:
 	// ADCS_ESC_CHARACTER, ADCS_START_MESSAGE [uint8_t TLM/TC ID], ADCS_ESC_CHARACTER, ADCS_END_MESSAGE
@@ -1463,17 +1725,12 @@ uint8_t ADCS_send_I2C_telecommand(uint8_t id, uint8_t* data, uint32_t data_lengt
 	return adcs_tc_status;
 }
 
-/**
- * send_I2C_telemetry_request
- * REQUIRES:
- *  - hi2c points to valid I2C handle (ex. &hi2c1)
- *  - id is a valid telemetry request ID (see Firmware Reference Manual)
- *  - data points to array of uint8_t with length at least data_length (should contain the correct number of bytes for the given telemetry request ID)
- *  - include_checksum is either ADCS_INCLUDE_CHECKSUM or ADCS_NO_CHECKSUM
- * PROMISES:
- * 	- Return value is 4 if checksum value doesn't match, 0 for any other successful transmission (including with no checksum)
- * 	- data array filled with result of transmission
- */
+/// @brief Sends a telemetry request over I2C to the ADCS.
+/// @param[in] id Valid ADCS telemetry request ID (see Firmware Reference Manual)
+/// @param[in] include_checksum Tells the ADCS whether to use a CRC8 checksum; should be either ADCS_INCLUDE_CHECKSUM or ADCS_NO_CHECKSUM 
+/// @param[in] data_length Length of the data array.
+/// @param[out] data Data array to write the raw telemetry bytes to; length must be at least data_length (should contain the correct number of bytes for the given telemetry request ID)
+/// @return 0 if successful, 4 if the checksums don't match, other numbers if the HAL failed to transmit or receive data. 
 uint8_t ADCS_send_I2C_telemetry_request(uint8_t id, uint8_t* data, uint32_t data_length, uint8_t include_checksum) {
 	// Telemetry Request Format:
 	// Note: requires a repeated start condition; data_length is number of bits to read.
@@ -1612,7 +1869,11 @@ uint8_t I2C_Scan(void)
 }
 
 
-// Swap low and high bytes of uint16 to turn into uint8 and put into specified index of an array
+/// @brief Swap low and high bytes of uint16 to turn into uint8 and put into specified index of an array
+/// @param[in] value Value to split and swap the order of.
+/// @param[in] index Index in array to write the result. (Array must contain at least two bytes, with index pointing to the first)
+/// @param[out] array Data array to write the two bytes to at the specified index and index + 1.
+/// @return 0 once complete.
 uint8_t ADCS_switch_order(uint8_t *array, uint16_t value, int index) {
     array[index] = (uint8_t)(value & 0xFF); // Insert the low byte of the value into the array at the specified index
     array[index + 1] = (uint8_t)(value >> 8); // Insert the high byte of the value into the array at the next index
@@ -1620,6 +1881,11 @@ uint8_t ADCS_switch_order(uint8_t *array, uint16_t value, int index) {
 }
 
 // Swap low and high bytes of uint32 to turn into uint8 and put into specified index of an array
+/// @brief Swap low and high bytes of uint32 to turn into uint8 and put into specified index of an array
+/// @param[in] value Value to split and swap the order of.
+/// @param[in] index Index in array to write the result. (Array must contain at least four bytes, with index pointing to the first)
+/// @param[out] array Data array to write the four bytes to at the specified index and the three subsequent indices.
+/// @return 0 once complete.
 uint8_t ADCS_switch_order_32(uint8_t *array, uint32_t value, int index) {
     array[index] = (uint8_t)(value & 0xFF); // Insert the low byte of the value into the array at the specified index
     array[index + 1] = (uint8_t)((value >> 8) & 0xFF); // Insert the second byte of the value into the array at the next index
@@ -1628,11 +1894,9 @@ uint8_t ADCS_switch_order_32(uint8_t *array, uint32_t value, int index) {
 	return 0;
 }
 
-// CRC initialisation
-// init lookup table for 8-bit crc calculation
-
+/// @brief Initialise the lookup table for 8-bit CRC calculation.
+/// @return 0 once successful.
 uint8_t CRC8Table[256];
-
 uint8_t ADCS_COMMS_Crc8Init()
 	{
 	int val;
@@ -1650,14 +1914,10 @@ uint8_t ADCS_COMMS_Crc8Init()
 	return 0;
 }
 
-/***************************************************************************//**
-* Calculates an 8-bit CRC value
-*
-* @param[in] buffer
-* the buffer containing data for which to calculate the crc value
-* @param[in] len
-* the number of bytes of valid data in the buffer
-******************************************************************************/
+/// @brief Calculates an 8-bit CRC value
+/// @param[in] buffer the buffer containing data for which to calculate the crc value
+/// @param[in] len the number of bytes of valid data in the buffer
+/// @return the CRC value calculated (which is 0xFF for an empty buffer)
 uint8_t ADCS_COMMS_Crc8Checksum(uint8_t* buffer, uint16_t len)
 {
 	if (len == 0) return 0xff;
@@ -1671,7 +1931,7 @@ uint8_t ADCS_COMMS_Crc8Checksum(uint8_t* buffer, uint16_t len)
 	return crc;
 }
 
-
+// TODO: delete these two UART debug functions before flight
 //Debug function to print a new line (\n) in UART
 uint8_t PRINT_NEW_LINE(UART_HandleTypeDef *huart) {
     char buf[] = "\r\n";
