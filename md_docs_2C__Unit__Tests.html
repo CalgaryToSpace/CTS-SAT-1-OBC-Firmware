@@ -140,7 +140,7 @@ How to Write a Test</h1>
 <div class="line">}</div>
 <div class="ttc" id="atest__byte__transforms_8h_html_ab71300f8334c35bfe98a29cadafe2064"><div class="ttname"><a href="test__byte__transforms_8h.html#ab71300f8334c35bfe98a29cadafe2064">TEST_EXEC__GEN_convert_big_endian_four_byte_array_to_uint32</a></div><div class="ttdeci">uint8_t TEST_EXEC__GEN_convert_big_endian_four_byte_array_to_uint32()</div><div class="ttdef"><b>Definition</b> test_byte_transforms.c:6</div></div>
 <div class="ttc" id="aunit__test__helpers_8h_html"><div class="ttname"><a href="unit__test__helpers_8h.html">unit_test_helpers.h</a></div></div>
-<div class="ttc" id="aunit__test__helpers_8h_html_a487ecc4a41de84b85995b70faa0b1970"><div class="ttname"><a href="unit__test__helpers_8h.html#a487ecc4a41de84b85995b70faa0b1970">TEST_ASSERT_TRUE</a></div><div class="ttdeci">#define TEST_ASSERT_TRUE(x)</div><div class="ttdef"><b>Definition</b> unit_test_helpers.h:8</div></div>
+<div class="ttc" id="aunit__test__helpers_8h_html_a487ecc4a41de84b85995b70faa0b1970"><div class="ttname"><a href="unit__test__helpers_8h.html#a487ecc4a41de84b85995b70faa0b1970">TEST_ASSERT_TRUE</a></div><div class="ttdeci">#define TEST_ASSERT_TRUE(x)</div><div class="ttdef"><b>Definition</b> unit_test_helpers.h:6</div></div>
 </div><!-- fragment --></li>
 <li><p class="startli">Add the function prototype to the header file <code>Core/Inc/unit_tests/test_bytes_transforms.h</code>:</p>
 <div class="fragment"><div class="line"><span class="comment">// File: unit_tests/test_bytes_transforms.h</span></div>
@@ -167,7 +167,7 @@ How to Write a Test</h1>
 <div class="ttc" id="astructTEST__Definition__t_html"><div class="ttname"><a href="structTEST__Definition__t.html">TEST_Definition_t</a></div><div class="ttdef"><b>Definition</b> unit_test_inventory.h:10</div></div>
 <div class="ttc" id="astructTEST__Definition__t_html_a815ba215b00ebdcd667d4056568cbc47"><div class="ttname"><a href="structTEST__Definition__t.html#a815ba215b00ebdcd667d4056568cbc47">TEST_Definition_t::test_func</a></div><div class="ttdeci">TEST_Function_Ptr test_func</div><div class="ttdef"><b>Definition</b> unit_test_inventory.h:11</div></div>
 <div class="ttc" id="atest__byte__transforms_8h_html"><div class="ttname"><a href="test__byte__transforms_8h.html">test_byte_transforms.h</a></div></div>
-<div class="ttc" id="aunit__test__inventory_8h_html_a4106e4c44dd0242087ba46545175fedb"><div class="ttname"><a href="unit__test__inventory_8h.html#a4106e4c44dd0242087ba46545175fedb">TEST_definitions</a></div><div class="ttdeci">const TEST_Definition_t TEST_definitions[]</div><div class="ttdef"><b>Definition</b> unit_test_inventory.c:11</div></div>
+<div class="ttc" id="aunit__test__inventory_8h_html_a4106e4c44dd0242087ba46545175fedb"><div class="ttname"><a href="unit__test__inventory_8h.html#a4106e4c44dd0242087ba46545175fedb">TEST_definitions</a></div><div class="ttdeci">const TEST_Definition_t TEST_definitions[]</div><div class="ttdef"><b>Definition</b> unit_test_inventory.c:12</div></div>
 </div><!-- fragment --></li>
 <li>Flash the STM32, and run the <code>CTS1+run_all_unit_tests</code> command via the Debug UART line. See that the test passes.</li>
 <li><p class="startli">Go back to the <code>TEST_EXEC__GEN_convert_big_endian_four_byte_array_to_uint32</code> function, and implement the test:</p>

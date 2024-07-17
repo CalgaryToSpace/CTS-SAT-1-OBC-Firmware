@@ -93,28 +93,35 @@ $(function(){ initResizable(false); });
   <div class="headertitle"><div class="title">telecommand_args_helpers.c File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="telecommand__args__helpers_8h_source.html">telecommands/telecommand_args_helpers.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="arrays_8h_source.html">transforms/arrays.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="telecommand__args__helpers_8h_source.html">telecommands/telecommand_args_helpers.h</a>&quot;</code><br />
 <code>#include &lt;string.h&gt;</code><br />
 <code>#include &lt;stdint.h&gt;</code><br />
 <code>#include &lt;stdio.h&gt;</code><br />
 <code>#include &lt;stdlib.h&gt;</code><br />
+<code>#include &lt;ctype.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for telecommand_args_helpers.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="telecommand__args__helpers_8c__incl.png" border="0" usemap="#afirmware_2Core_2Src_2telecommands_2telecommand__args__helpers_8c" alt=""/></div>
 <map name="afirmware_2Core_2Src_2telecommands_2telecommand__args__helpers_8c" id="afirmware_2Core_2Src_2telecommands_2telecommand__args__helpers_8c">
-<area shape="rect" title=" " alt="" coords="194,5,408,46"/>
-<area shape="rect" href="telecommand__args__helpers_8h.html" title=" " alt="" coords="5,94,194,135"/>
-<area shape="poly" title=" " alt="" coords="256,49,160,90,158,85,254,44"/>
-<area shape="rect" title=" " alt="" coords="133,183,197,208"/>
-<area shape="poly" title=" " alt="" coords="287,48,186,172,182,169,283,44"/>
-<area shape="rect" title=" " alt="" coords="269,102,333,127"/>
-<area shape="poly" title=" " alt="" coords="304,47,304,86,298,86,298,47"/>
-<area shape="rect" title=" " alt="" coords="357,102,416,127"/>
-<area shape="poly" title=" " alt="" coords="322,45,366,88,362,92,318,48"/>
-<area shape="rect" title=" " alt="" coords="440,102,503,127"/>
-<area shape="poly" title=" " alt="" coords="341,44,435,92,433,97,338,49"/>
-<area shape="poly" title=" " alt="" coords="118,133,147,169,143,172,114,137"/>
+<area shape="rect" title=" " alt="" coords="350,5,564,46"/>
+<area shape="rect" href="arrays_8h.html" title=" " alt="" coords="5,102,138,127"/>
+<area shape="poly" title=" " alt="" coords="369,49,141,100,140,95,368,44"/>
+<area shape="rect" title=" " alt="" coords="144,183,207,208"/>
+<area shape="poly" title=" " alt="" coords="350,33,310,41,271,53,235,71,203,96,191,112,184,130,178,168,173,167,179,129,187,109,199,92,232,66,269,48,309,35,349,28"/>
+<area shape="rect" href="telecommand__args__helpers_8h.html" title=" " alt="" coords="213,94,402,135"/>
+<area shape="poly" title=" " alt="" coords="424,49,356,88,353,84,422,44"/>
+<area shape="rect" title=" " alt="" coords="425,102,489,127"/>
+<area shape="poly" title=" " alt="" coords="460,47,460,86,454,86,454,47"/>
+<area shape="rect" title=" " alt="" coords="513,102,572,127"/>
+<area shape="poly" title=" " alt="" coords="478,45,522,88,518,92,474,48"/>
+<area shape="rect" title=" " alt="" coords="596,102,659,127"/>
+<area shape="poly" title=" " alt="" coords="497,44,591,92,589,97,494,49"/>
+<area shape="rect" title=" " alt="" coords="683,102,745,127"/>
+<area shape="poly" title=" " alt="" coords="526,44,671,91,674,93,672,98,669,97,525,49"/>
+<area shape="poly" title=" " alt="" coords="89,125,149,171,146,175,86,130"/>
+<area shape="poly" title=" " alt="" coords="276,138,210,177,207,172,273,133"/>
 </map>
 </div>
 </div><table class="memberdecls">
@@ -129,6 +136,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a0fa1c206f35d62f732c8ca95067fb36c" id="r_a0fa1c206f35d62f732c8ca95067fb36c"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0fa1c206f35d62f732c8ca95067fb36c">TCMD_extract_string_arg</a> (const char *str, uint8_t arg_index, char *result, uint16_t result_max_len)</td></tr>
 <tr class="memdesc:a0fa1c206f35d62f732c8ca95067fb36c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts the nth comma-separated argument from the input string, assuming it's a string.  <br /></td></tr>
 <tr class="separator:a0fa1c206f35d62f732c8ca95067fb36c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f4c71ad48b16b79e4bb91ffb13111d7" id="r_a3f4c71ad48b16b79e4bb91ffb13111d7"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3f4c71ad48b16b79e4bb91ffb13111d7">TCMD_extract_hex_array_arg</a> (const char *args_str, uint8_t arg_index, uint8_t result_array[], uint16_t result_array_size, uint16_t *result_length)</td></tr>
+<tr class="memdesc:a3f4c71ad48b16b79e4bb91ffb13111d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts the nth comma-separated argument from the input string, assuming it's a hex string.  <br /></td></tr>
+<tr class="separator:a3f4c71ad48b16b79e4bb91ffb13111d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="aeeb7af1211280043fdbd8392dbd3c283" name="aeeb7af1211280043fdbd8392dbd3c283"></a>
@@ -197,6 +207,66 @@ Here is the caller graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="358,414,325,414,325,408,358,408"/>
 <area shape="rect" href="main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,398,55,424"/>
 <area shape="poly" title=" " alt="" coords="87,414,55,414,55,408,87,408"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a3f4c71ad48b16b79e4bb91ffb13111d7" name="a3f4c71ad48b16b79e4bb91ffb13111d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f4c71ad48b16b79e4bb91ffb13111d7">&#9670;&#160;</a></span>TCMD_extract_hex_array_arg()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t TCMD_extract_hex_array_arg </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>args_str</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>arg_index</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>result_array</em></span>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>result_array_size</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t *</td>          <td class="paramname"><span class="paramname"><em>result_length</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Extracts the nth comma-separated argument from the input string, assuming it's a hex string. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args_str</td><td>Input string containing comma-separated arguments (null-terminated) </td></tr>
+    <tr><td class="paramname">arg_index</td><td>Index of the argument to extract (0-based) </td></tr>
+    <tr><td class="paramname">result</td><td>Pointer to the result; a byte array containing the values of the hex string </td></tr>
+    <tr><td class="paramname">result_array_size</td><td>Size of the result array </td></tr>
+    <tr><td class="paramname">result_length</td><td>Pointer to variable that will contain the length of the result after converting </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 if successful, &gt;0 for error </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Delimiters between bytes are ignored, but delimiters within a byte are not allowed. </dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="telecommand__args__helpers_8c_a3f4c71ad48b16b79e4bb91ffb13111d7_icgraph.png" border="0" usemap="#atelecommand__args__helpers_8c_a3f4c71ad48b16b79e4bb91ffb13111d7_icgraph" alt=""/></div>
+<map name="atelecommand__args__helpers_8c_a3f4c71ad48b16b79e4bb91ffb13111d7_icgraph" id="atelecommand__args__helpers_8c_a3f4c71ad48b16b79e4bb91ffb13111d7_icgraph">
+<area shape="rect" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a hex string." alt="" coords="246,13,437,39"/>
+<area shape="rect" href="test__telecommand__arg__helpers_8c.html#a53ee6bd966b62fa17929ba99f948ed42" title=" " alt="" coords="5,5,198,46"/>
+<area shape="poly" title=" " alt="" coords="230,28,198,28,198,23,230,23"/>
 </map>
 </div>
 

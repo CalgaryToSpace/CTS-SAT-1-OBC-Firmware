@@ -94,17 +94,20 @@ $(function(){ initResizable(false); });
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="arrays_8h_source.html">transforms/arrays.h</a>&quot;</code><br />
+<code>#include &lt;ctype.h&gt;</code><br />
 <code>#include &lt;string.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for arrays.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="arrays_8c__incl.png" border="0" usemap="#afirmware_2Core_2Src_2transforms_2arrays_8c" alt=""/></div>
 <map name="afirmware_2Core_2Src_2transforms_2arrays_8c" id="afirmware_2Core_2Src_2transforms_2arrays_8c">
-<area shape="rect" title=" " alt="" coords="36,5,227,46"/>
+<area shape="rect" title=" " alt="" coords="97,5,289,46"/>
 <area shape="rect" href="arrays_8h.html" title=" " alt="" coords="5,94,138,120"/>
-<area shape="poly" title=" " alt="" coords="119,48,92,83,88,80,115,45"/>
-<area shape="rect" title=" " alt="" coords="161,94,225,120"/>
-<area shape="poly" title=" " alt="" coords="149,45,176,80,172,83,145,48"/>
+<area shape="poly" title=" " alt="" coords="164,49,104,88,101,83,161,44"/>
+<area shape="rect" title=" " alt="" coords="162,94,224,120"/>
+<area shape="poly" title=" " alt="" coords="196,46,196,78,190,78,190,46"/>
+<area shape="rect" title=" " alt="" coords="248,94,311,120"/>
+<area shape="poly" title=" " alt="" coords="216,44,257,81,253,85,212,48"/>
 <area shape="rect" title=" " alt="" coords="40,168,103,193"/>
 <area shape="poly" title=" " alt="" coords="74,120,74,152,69,152,69,120"/>
 </map>
@@ -118,6 +121,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a4d9146ce5234948adb9b3845f4e91b53" id="r_a4d9146ce5234948adb9b3845f4e91b53"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4d9146ce5234948adb9b3845f4e91b53">GEN_uint64_to_str</a> (uint64_t value, char *buffer)</td></tr>
 <tr class="memdesc:a4d9146ce5234948adb9b3845f4e91b53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a uint64_t to a string.  <br /></td></tr>
 <tr class="separator:a4d9146ce5234948adb9b3845f4e91b53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56374402f5b6de9b5a1a6e5a4aa02446" id="r_a56374402f5b6de9b5a1a6e5a4aa02446"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a56374402f5b6de9b5a1a6e5a4aa02446">GEN_hex_str_to_byte_array</a> (const char *hex_str, uint8_t output_byte_array[], uint16_t output_byte_array_size, uint16_t *output_byte_array_len)</td></tr>
+<tr class="memdesc:a56374402f5b6de9b5a1a6e5a4aa02446"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a hex string to a byte array.  <br /></td></tr>
+<tr class="separator:a56374402f5b6de9b5a1a6e5a4aa02446"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="af6f2987b63d15c0cc889ac8c2ea0d072" name="af6f2987b63d15c0cc889ac8c2ea0d072"></a>
@@ -175,6 +181,50 @@ Here is the caller graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="87,21,55,21,55,16,87,16"/>
 </map>
 </div>
+
+</div>
+</div>
+<a id="a56374402f5b6de9b5a1a6e5a4aa02446" name="a56374402f5b6de9b5a1a6e5a4aa02446"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56374402f5b6de9b5a1a6e5a4aa02446">&#9670;&#160;</a></span>GEN_hex_str_to_byte_array()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t GEN_hex_str_to_byte_array </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>hex_str</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>output_byte_array</em></span>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>output_byte_array_size</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t *</td>          <td class="paramname"><span class="paramname"><em>output_byte_array_len</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Converts a hex string to a byte array. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">hex_str</td><td>The input hex string. Can be upper or lower case. Can contain spaces and underscores between bytes. </td></tr>
+    <tr><td class="paramname">output_byte_array</td><td>Pointer to the output destination byte array. </td></tr>
+    <tr><td class="paramname">output_byte_array_size</td><td>Maximum size of the output byte array. </td></tr>
+    <tr><td class="paramname">output_byte_array_len</td><td>Pointer to the output variable that will be set to the length of the output byte array. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 if successful, &gt;0 for error </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Delimiters between bytes are ignored, but delimiters within a byte are not allowed. </dd></dl>
 
 </div>
 </div>
