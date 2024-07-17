@@ -1,5 +1,5 @@
-#ifndef __INCLUDE_GUARD__MPI_TELECOMMAND_DEFINITIONS_H__
-#define __INCLUDE_GUARD__MPI_TELECOMMAND_DEFINITIONS_H__
+#ifndef __INCLUDE_GUARD__MPI_TELECOMMAND_DEFS_H__
+#define __INCLUDE_GUARD__MPI_TELECOMMAND_DEFS_H__
 
 #include <stdint.h>
 #include "telecommands/telecommand_definitions.h"
