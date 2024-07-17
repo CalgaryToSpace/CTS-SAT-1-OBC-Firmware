@@ -1,9 +1,11 @@
+#include "transforms/arrays.h"
 #include "telecommands/telecommand_args_helpers.h"
 
 #include <string.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 
 /// @brief Extracts the longest substring of integer characters, starting from the beginning of the
@@ -139,23 +141,30 @@ uint8_t TCMD_extract_string_arg(const char *str, uint8_t arg_index, char *result
 
     return 0; // Successful extraction
 }
-/// @brief Grabs a hexidecimal string or multiple  hex strings with an arg index and outputs a byte array of the specified hex string (must be null-terminated)
-/// @param args_str Input string in hexdecimal format with no hex header (null-termianted)
+
+
+
+/// @brief Extracts the nth comma-separated argument from the input string, assuming it's a hex string.
+/// @param args_str Input string containing comma-separated arguments (null-terminated)
 /// @param arg_index Index of the argument to extract (0-based)
 /// @param result Pointer to the result; a byte array containing the values of the hex string 
 /// @param result_array_size Size of the result array
 /// @param result_length Pointer to variable that will contain the length of the result after converting
-/// @return 0 if successful, 1 if the string contains an uneven byte, 2 if the string contains hex header,
-///         3 for other error, return 4 for seg fault on result array
-uint8_t TCMD_extract_hex_array_arg(const char *args_str, uint8_t arg_index, uint8_t result_array[], uint16_t result_array_size, uint16_t *result_length ){
-
-    if (strlen(args_str) == 0){ //string is empty
-        return 3;
+/// @return 0 if successful, >0 for error
+/// @note Delimiters between bytes are ignored, but delimiters within a byte are not allowed.
+uint8_t TCMD_extract_hex_array_arg(const char *args_str, uint8_t arg_index, uint8_t result_array[],
+    uint16_t result_array_size, uint16_t *result_length )
+{
+    const size_t args_str_len = strlen(args_str);
+    if (args_str_len == 0) {
+        // String is empty
+        return 10;
     }
 
+    // Find the start index of the argument.
     uint32_t arg_count = 0;
     uint32_t start_index = 0;
-    for (uint32_t i =0; i < strlen(args_str); i++) {
+    for (uint32_t i = 0; i < args_str_len; i++) {
         if (args_str[i] == ',') {
             if (arg_count == arg_index) {
                 break;
@@ -164,68 +173,70 @@ uint8_t TCMD_extract_hex_array_arg(const char *args_str, uint8_t arg_index, uint
             start_index = i + 1;
         }
     }
-    //
-    if (args_str[start_index]=='\0' || args_str[start_index]==',') { //checks if string arg is empty or not
-        return 3;
+    
+    if (arg_count < arg_index) {
+        // Not enough arguments
+        return 11;
     }
 
-    if (args_str[start_index+1]=='\0') { // since start index is not null terminated check if the next index is a value (to prevent seg fault) 
-        return 1; // byte is uneven if there is no char after start index
+    if (strlen(&args_str[start_index]) < 2) {
+        // Empty argument, or not enough characters to form a byte
+        return 12; 
     }
 
-    //since start_index and start_index+1 are not null check for header
-    if (args_str[start_index]=='0' && args_str[start_index+1]=='x'){ // string contain hex header therefore return error
-        return 2;
+    // Find the end index of the argument.
+    // `end_index` will point to the character after the last character of the argument.
+    uint32_t end_index = start_index;
+    while (args_str[end_index] != ',' && args_str[end_index] != '\0') {
+        end_index++;
     }
     
-    char byte_string[3];
-    byte_string[2]='\0';
-    uint16_t result_index = 0; // index for the result array incremented based off of delimiter or after a byte
-    char *endptr;
-    uint32_t char_count = 0; //checks for uneven without delimiter
+    // Parse the hex string into a byte array.
+    uint16_t byte_index = 0;
+    uint8_t current_byte = 0;
+    uint8_t nibble_count = 0;
 
-    for (uint32_t i = start_index; i<strlen(args_str); i++){
-        if (args_str[i]==',' || args_str[i]=='\0' ){
-            break;
-        }
+    for (size_t i = start_index; i < end_index; i++) {
+        char current_char = args_str[i];
 
-        if (args_str[i]==' ' || args_str[i]=='_'){
-            if (char_count==1){ //check if previous byte was uneven
-                return 1;
-            }
-            char_count=0; //reset char count to begin counting again
-            continue;
-        } 
-        else
-        {
-            char_count++; 
-        }
-
-        uint32_t byte_index=(char_count-1)%2;
-        byte_string[byte_index]=args_str[i];
-        
-        if (char_count%2==0) // char count == 2 therefore a byte can be successfully converted and put into result_array
-        {
-            char_count = 0; //reset counting the characters
-            uint8_t byte= strtol(byte_string,&endptr,16); //
-            if (*endptr != '\0') { // checking if converted properly
-                return 3;
-            } 
-            if (result_index<result_array_size){ // seg fault check
-                result_array[result_index] = (uint8_t)byte;
-            } else{
+        if (current_char == ' ' || current_char == '_') {
+            if (nibble_count % 2 != 0) {
+                // Separator found in the middle of a byte.
                 return 4;
             }
-            
-            result_index++;
-        }    
+            // Skip spaces and underscores
+            continue;
+        }
+
+        if (!isxdigit(current_char)) {
+            // Invalid character found
+            return 2;
+        }
+
+        current_char = tolower(current_char);
+
+        // Incantation to convert a hex character to a nibble.
+        uint8_t nibble = (uint8_t)((current_char >= '0' && current_char <= '9') ? (current_char - '0') : (current_char - 'a' + 10));
+
+        current_byte = (current_byte << 4) | nibble;
+        nibble_count++;
+
+        if (nibble_count == 2) {
+            if (byte_index >= result_array_size) {
+                // Output array size exceeded
+                return 3;
+            }
+            result_array[byte_index++] = current_byte;
+            current_byte = 0;
+            nibble_count = 0;
+        }
     }
 
-    if (char_count == 1){ // final check if any byte is uneven
-        return 1;
+    if (nibble_count != 0) {
+        // Odd number of nibbles (half a byte)
+        return 4;
     }
 
-    *result_length = result_index;
-
+    *result_length = byte_index;
     return 0;
 }

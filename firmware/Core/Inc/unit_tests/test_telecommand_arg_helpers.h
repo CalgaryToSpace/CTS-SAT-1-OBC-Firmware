@@ -3,6 +3,6 @@
 
 #include "main.h"
 
-uint8_t TEST_EXEC__TCMD_hex_string_to_byte_array();
+uint8_t TEST_EXEC__TCMD_extract_hex_array_arg();
 
 #endif // __INCLUDE_GUARD__TEST_BYTE_TRANSFORMS_H__
