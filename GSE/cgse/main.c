@@ -240,13 +240,6 @@ int CGSE_init(CGSE_program_state_t *ps)
         if (status != 0) {
             wprintw(ps->command_window, "\n Unable to connect to satellite using \"%s\"\n", ps->satellite_link_path);
         }
-        // TODO:
-        // Check response from get_system_time() for type == 'N' or 'E'
-        // and sync time with GSE computer if needed
-        // or if time passed since sync is too large.
-        // Do not automatically sync based on time being out of date, since it
-        // could be the GSE computer's clock that is wrong.
-        // Maybe ask user if computer clock is correct.
 
     }
 
