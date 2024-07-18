@@ -167,7 +167,7 @@ LOG_channel_enum_t LOG_channel_exceptions(LOG_channel_enum_t exceptions)
 
 
 /// @brief Enable the specified logging channel
-/// @param channel Bitwise OR'd channels to enable
+/// @param channels Bitwise OR'd channels to enable
 /// @return returns 0 on success
 void LOG_enable_channels(LOG_channel_enum_t channels)
 {
@@ -176,12 +176,27 @@ void LOG_enable_channels(LOG_channel_enum_t channels)
 }
 
 /// @brief Disable the specified logging channel
-/// @param channel Bitwise-OR'd channels to disable
+/// @param channels Bitwise OR'd channels to disable 
 /// @return returns 0 on success
 void LOG_disable_channels(LOG_channel_enum_t channels)
 {
     LOG_set_channel_state(channels, 0);
     return;
+}
+
+/// @brief Check logging channel status
+/// @param channel the channel to check
+/// @return returns 0 on success
+uint8_t LOG_channel_is_enabled(LOG_channel_enum_t channel)
+{
+    for (uint16_t i = 0; i < LOG_NUM_CHANNELS; i++) {
+        if (LOG_channels[i].channel == channel) {
+            return LOG_channels[i].enabled;
+        }
+    }
+    
+    // System not found? Return false
+    return 0;
 }
 
 /// @brief Enable file logging for the specified systems
@@ -202,6 +217,20 @@ void LOG_disable_systems(LOG_system_enum_t systems)
     return;
 }
 
+/// @brief Check whether logging to file is enabled for a subsystem
+/// @param system
+/// @return returns 1 if logging to file is enabled, 0 otherwise.
+uint8_t LOG_system_logging_is_enabled(LOG_system_enum_t system)
+{
+    for (uint16_t i = 0; i < LOG_NUM_SYSTEMS; i++) {
+        if (LOG_systems[i].system == system) {
+            return 1;
+        }
+    }
+    
+    // System not found? Return false
+    return 0;
+}
 
 void LOG_channels_status(LOG_channel_enum_t channels)
 {

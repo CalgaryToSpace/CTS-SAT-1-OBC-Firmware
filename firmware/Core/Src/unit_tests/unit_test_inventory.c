@@ -3,6 +3,7 @@
 
 #include "unit_tests/test_assorted_prototypes.h"
 #include "unit_tests/test_byte_transforms.h"
+#include "unit_tests/test_logging.h"
 #include "unit_tests/test_telecommand_parser.h"
 #include "unit_tests/test_tests.h"
 #include "unit_tests/test_telecommand_arg_helpers.h"
@@ -52,7 +53,26 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_file = "telecommands/telecommand_args_helpers",
         .test_func_name = "TCMD_extract_hex_array_arg"
     },
-    
+    {
+        .test_func = TEST_EXEC__LOG_toggle_channels,
+        .test_file = "log/log",
+        .test_func_name = "TEST_EXEC__LOG_toggle_channels"
+    },
+    {
+        .test_func = TEST_EXEC__LOG_toggle_systems,
+        .test_file = "log/log",
+        .test_func_name = "TEST_EXEC__LOG_toggle_systems"
+    },
+    {
+        .test_func = TEST_EXEC__LOG_channel_exceptions,
+        .test_file = "log/log",
+        .test_func_name = "TEST_EXEC__LOG_channel_exceptions"
+    },
+    {
+        .test_func = TEST_EXEC__LOG_message,
+        .test_file = "log/log",
+        .test_func_name = "TEST_EXEC__LOG_message"
+    },
 };
 
 // extern
