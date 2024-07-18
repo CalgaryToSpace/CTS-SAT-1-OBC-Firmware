@@ -22,7 +22,7 @@ uint8_t TCMDEXEC_mpi_send_command_hex(const char *args_str, TCMD_TelecommandChan
                                       char *response_output_buf, uint16_t response_output_buf_len)
 {
     // Get the length of the input string
-    size_t arg_str_len = strlen((const char *)args_str);
+    size_t args_str_len = strlen((const char *)args_str);
 
     // Invalid argument: NULL
     if (args_str == NULL)
@@ -32,7 +32,7 @@ uint8_t TCMDEXEC_mpi_send_command_hex(const char *args_str, TCMD_TelecommandChan
     }
 
     // Invalid argument: Invalid hex length
-    if (arg_str_len % 2 != 0)
+    if (args_str_len % 2 != 0)
     {
         snprintf(response_output_buf, response_output_buf_len, "Invalid hex string length. Must be even.\n");
         return 2; // Error code for invalid hex input
@@ -40,7 +40,7 @@ uint8_t TCMDEXEC_mpi_send_command_hex(const char *args_str, TCMD_TelecommandChan
 
     // Invalid argument: Invalid hex character
     char *endptr;
-    for (size_t i = 0; i < arg_str_len; i += 2)
+    for (size_t i = 0; i < args_str_len; i += 2)
     {
         // Convert two characters at a time to ensure they form a valid hex byte
         char hex_byte[3] = {args_str[i], args_str[i + 1], '\0'};
@@ -52,13 +52,21 @@ uint8_t TCMDEXEC_mpi_send_command_hex(const char *args_str, TCMD_TelecommandChan
         }
     }
 
+    // Parse command from string to hex
+    const size_t args_str_hex_size = 50;    //TODO: Find right max size / expected size
+    uint8_t args_str_hex[args_str_hex_size];
+    size_t args_str_hex_len = 0;  
+    uint8_t parse_args_str_result = TCMD_hex_string_to_bytes(args_str, 0, args_str_hex, args_str_hex_size, &args_str_hex_len);
+
+    // TODO: Add error checking for parse result
+
     // Allocate space to receive incoming MPI response
     const size_t mpi_cmd_response_len = 50;
     uint8_t mpi_cmd_response[mpi_cmd_response_len];        // Max possible size for an MPI command+parameters can be 7 bytes + 2^N bytes of variable payload. To account for a buffer zone, 50 bytes will be allocated
     memset(mpi_cmd_response, 0, sizeof(mpi_cmd_response)); // Initialize all elements to 0
 
     // Send command to MPI
-    uint8_t cmd_response = MPI_send_telecommand_hex(args_str, arg_str_len, mpi_cmd_response, mpi_cmd_response_len);
+    uint8_t cmd_response = MPI_send_telecommand_hex(args_str_hex, args_str_hex_len, mpi_cmd_response, mpi_cmd_response_len);
 
     // Verify successful echo response from the mpi
     if (cmd_response != 0)
