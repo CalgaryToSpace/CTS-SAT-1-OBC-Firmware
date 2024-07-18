@@ -66,11 +66,11 @@ int8_t LFS_format()
 	int8_t result = lfs_format(&LFS_filesystem, &LFS_cfg);
 	if (result < 0)
 	{
-		DEBUG_uart_print_str("Error formatting!\n");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Error formatting!");
 		return result;
 	}
 	
-	DEBUG_uart_print_str("Formatting successful!\n");
+	LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_DEBUG, LOG_CHANNEL_ALL, "Formatting successful!");
 	return 0;
 }
 
@@ -82,7 +82,7 @@ int8_t LFS_format()
 int8_t LFS_mount()
 {
 	if (LFS_is_lfs_mounted) {
-		DEBUG_uart_print_str("LittleFS already mounted!\n");
+		LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "LittleFS already mounted!");
 		return 1;
 	}
 
@@ -90,11 +90,11 @@ int8_t LFS_mount()
     int8_t mount_result = lfs_mount(&LFS_filesystem, &LFS_cfg);
     if (mount_result < 0)
     {
-        DEBUG_uart_print_str("Mounting unsuccessful\n");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Mounting unsuccessful");
         return mount_result;
     }
 
-    DEBUG_uart_print_str("Mounting successful\n");
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "Mounting successful");
     LFS_is_lfs_mounted = 1;
     return 0;
 }
@@ -108,7 +108,7 @@ int8_t LFS_unmount()
 {
     if (!LFS_is_lfs_mounted)
     {
-        DEBUG_uart_print_str("LittleFS not mounted.\n");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "LittleFS not mounted.");
         return 1;
     }
 
@@ -116,11 +116,11 @@ int8_t LFS_unmount()
     const int8_t unmount_result = lfs_unmount(&LFS_filesystem);
     if (unmount_result < 0)
     {
-        DEBUG_uart_print_str("Error un-mounting.\n");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Error un-mounting.");
         return unmount_result;
     }
 
-    DEBUG_uart_print_str("Successfully un-mounted LittleFS.\n");
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "Successfully un-mounted LittleFS.");
     LFS_is_lfs_mounted = 0;
     return 0;
 }
@@ -134,7 +134,7 @@ int8_t LFS_list_directory(const char root_directory[])
 {
     if (!LFS_is_lfs_mounted)
     {
-        DEBUG_uart_print_str("LittleFS not mounted.\n");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "LittleFS not mounted.");
         return 1;
     }
 
@@ -142,7 +142,7 @@ int8_t LFS_list_directory(const char root_directory[])
     int8_t open_dir_result = lfs_dir_open(&LFS_filesystem, &dir, root_directory);
     if (open_dir_result < 0)
     {
-        DEBUG_uart_print_str("Error opening a directory.\n");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Error opening a directory.");
         return open_dir_result;
     }
 
@@ -153,24 +153,24 @@ int8_t LFS_list_directory(const char root_directory[])
         struct lfs_info info;
         read_dir_result = lfs_dir_read(&LFS_filesystem, &dir, &info);
 
+        // Do not log the output
         DEBUG_uart_print_str(info.name);
-        DEBUG_uart_print_str(", ");
+        DEBUG_uart_print_str("\n");
         // TODO: The info struct contains information about directory contents
     }
-    DEBUG_uart_print_str("\n");
 
     if (read_dir_result < 0)
     {
-        DEBUG_uart_print_str("Error reading directory contents.\n");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Error reading directory contents.");
         return read_dir_result;
     }
 
-    DEBUG_uart_print_str("Successfully Listed Directory Contents.\n");
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "Successfully Listed Directory Contents.");
 
     int8_t close_dir_result = lfs_dir_close(&LFS_filesystem, &dir);
     if (close_dir_result < 0)
     {
-        DEBUG_uart_print_str("Error closing directory.\n");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Error closing directory.");
         return close_dir_result;
     }
 
@@ -186,18 +186,18 @@ int8_t LFS_delete_file(const char file_name[])
 {
     if (!LFS_is_lfs_mounted)
     {
-        DEBUG_uart_print_str("LittleFS not mounted.\n");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "LittleFS not mounted.");
         return 1;
     }
 
     int8_t remove_result = lfs_remove(&LFS_filesystem, file_name);
     if (remove_result < 0)
     {
-        DEBUG_uart_print_str("Error removing file/directory.\n");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Error removing file/directory.");
         return remove_result;
     }
 
-    DEBUG_uart_print_str("Successfully removed file/directory.\n");
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "Successfully removed file/directory.");
     return 0;
 }
 
@@ -210,18 +210,18 @@ int8_t LFS_make_directory(const char dir_name[])
 {
     if (!LFS_is_lfs_mounted)
     {
-        DEBUG_uart_print_str("LittleFS not mounted.\n");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "LittleFS not mounted.");
         return 1;
     }
 
     int8_t make_dir_result = lfs_mkdir(&LFS_filesystem, dir_name);
     if (make_dir_result < 0)
     {
-        DEBUG_uart_print_str("Error creating directory.\n");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Error creating directory.");
         return make_dir_result;
     }
 
-    DEBUG_uart_print_str("Successfully created directory.\n");
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "Successfully created directory.");
     return 0;
 }
 
@@ -236,7 +236,7 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
 {
     if (!LFS_is_lfs_mounted)
     {
-        DEBUG_uart_print_str("LittleFS not mounted.\n");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "LittleFS not mounted.");
         return 1;
     }
 
@@ -246,39 +246,31 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
 
 	if (open_result < 0)
 	{
-		DEBUG_uart_print_str("Error opening/creating file.\n");
+		LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Error opening/creating file.");
 		return open_result;
 	}
 	
-    if (LFS_enable_hot_path_debug_logs) {
-        DEBUG_uart_print_str("Opened/created a file named: '");
-        DEBUG_uart_print_str(file_name);
-        DEBUG_uart_print_str("'\n");
-    }
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_DEBUG, LOG_CHANNEL_ALL, "Opened/created '%s'", file_name);
 
 	// Write data to file
 	const int8_t write_result = lfs_file_write(&LFS_filesystem, &file, write_buffer, write_buffer_len);
 	if (write_result < 0)
 	{
-		DEBUG_uart_print_str("Error writing to file!\n");
+		LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Error writing to file!");
 		return write_result;
 	}
 	
-    if (LFS_enable_hot_path_debug_logs) {
-	    DEBUG_uart_print_str("Successfully wrote data to file!\n");
-    }
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_DEBUG, LOG_CHANNEL_ALL, "Successfully wrote data to file!");
 
 	// Close the File, the storage is not updated until the file is closed successfully
 	const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
 	if (close_result < 0)
 	{
-		DEBUG_uart_print_str("Error closing the file!\n");
+		LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Error closing the file!");
 		return close_result;
 	}
 	
-    if (LFS_enable_hot_path_debug_logs) {
-	    DEBUG_uart_print_str("Successfully closed the file!\n");
-    }
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_DEBUG, LOG_CHANNEL_ALL, "Successfully closed the file!");
 
 	return 0;
 }

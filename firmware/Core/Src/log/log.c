@@ -21,8 +21,10 @@ extern uint8_t LFS_is_lfs_mounted;
 #define LOG_TIMESTAMP_MAX_LENGTH 30
 #define LOG_CHANNEL_NAME_MAX_LENGTH 20
 #define LOG_SYSTEM_NAME_MAX_LENGTH 20
-#define LOG_FORMATTED_MESSAGE_MAX_LENGTH 120
-#define LOG_FULL_MESSAGE_MAX_LENGTH 200
+// Messages up to 256 characters
+#define LOG_FORMATTED_MESSAGE_MAX_LENGTH 256
+// Includes prefix, with cushion for delimiters and newline
+#define LOG_FULL_MESSAGE_MAX_LENGTH ( LOG_FORMATTED_MESSAGE_MAX_LENGTH + LOG_TIMESTAMP_MAX_LENGTH + LOG_CHANNEL_NAME_MAX_LENGTH + LOG_SYSTEM_NAME_MAX_LENGTH + 1 )
 #define LOG_UART_TRANSMIT_TIMEOUT 200
 
 static char LOG_timestamp_string[LOG_TIMESTAMP_MAX_LENGTH] = {0};
@@ -41,6 +43,7 @@ typedef struct {
     char name[LOG_SYSTEM_NAME_MAX_LENGTH];
     char *log_file_path;
     uint8_t logging_enabled;
+    uint8_t severity_mask;
 } LOG_system_t;
 
 void LOG_to_file(const char filename[], const char msg[]);
@@ -49,31 +52,34 @@ void LOG_to_uhf_radio(const char msg[]);
 void LOG_set_channel_state(LOG_channel_enum_t channel, uint8_t state);
 void LOG_set_system_file_logging_state(LOG_system_enum_t systems, uint8_t state);
 
+static const uint8_t LOG_SEVERITY_MASK_ALL = 0xFF;
+// No debugging messages by default
+static const uint8_t LOG_SEVERITY_MASK_DEFAULT = LOG_SEVERITY_MASK_ALL & ~(uint8_t)LOG_SEVERITY_DEBUG;
+
 static LOG_channel_t LOG_channels[] = {
-    {LOG_CHANNEL_FILE, "log files", 0, LOG_SEVERITY_NORMAL | LOG_SEVERITY_ERROR | LOG_SEVERITY_CRITICAL},
-    {LOG_CHANNEL_UHF_RADIO, "UHF radio", 0, LOG_SEVERITY_NORMAL | LOG_SEVERITY_ERROR | LOG_SEVERITY_CRITICAL},
-    {LOG_CHANNEL_UMBILICAL_UART, "umbilical UART", 1, LOG_SEVERITY_NORMAL | LOG_SEVERITY_ERROR | LOG_SEVERITY_CRITICAL},
+    {LOG_CHANNEL_FILE, "log files", LOG_CHANNEL_OFF, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_CHANNEL_UHF_RADIO, "UHF radio", LOG_CHANNEL_OFF, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_CHANNEL_UMBILICAL_UART, "umbilical UART", LOG_CHANNEL_ON, LOG_SEVERITY_MASK_DEFAULT},
 };
 static const uint16_t LOG_NUM_CHANNELS = sizeof(LOG_channels) / sizeof(LOG_channel_t);
 
-
 // LOG_SYSTEM_UNKNOWN must be the first entry
 static LOG_system_t LOG_systems[] = {
-    {LOG_SYSTEM_OBC, "OBC", "/logs/obc_system.log", 1},
-    {LOG_SYSTEM_UHF_RADIO, "UHF_RADIO", "/logs/uhf_radio_system.log", 1},
-    {LOG_SYSTEM_UMBILICAL_UART, "UMBILICAL_UART", "/logs/umbilical_uart_system.log", 1},
-    {LOG_SYSTEM_GPS, "GPS", "/logs/gps_system.log", 1},
-    {LOG_SYSTEM_MPI, "MPI", "/logs/mpi_system.log", 1},
-    {LOG_SYSTEM_EPS, "EPS", "/logs/eps_system.log", 1},
-    {LOG_SYSTEM_BOOM, "BOOM", "/logs/boom_system.log", 1},
-    {LOG_SYSTEM_ADCS, "ADCS", "/logs/adcs_system.log", 1},
-    {LOG_SYSTEM_LFS, "LFS", "/logs/lfs_system.log", 1},
-    {LOG_SYSTEM_FLASH, "FLASH", "/logs/flash_system.log", 1},
-    {LOG_SYSTEM_ANTENNA_DEPLOY, "ANTENNA_DEPLOY", "/logs/antenna_deploy_system.log", 1},
-    {LOG_SYSTEM_LOG, "LOG", "/logs/log_system.log", 1},
-    {LOG_SYSTEM_TELECOMMAND, "TELECOMMAND", "/logs/telecommand_system.log", 1},
-    {LOG_SYSTEM_UNIT_TEST, "UNIT_TEST", "/logs/unit_test_system.log", 1},
-    {LOG_SYSTEM_UNKNOWN, "UNKNOWN", "/logs/unknown_system.log", 1},
+    {LOG_SYSTEM_OBC, "OBC", "/logs/obc_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SYSTEM_UHF_RADIO, "UHF_RADIO", "/logs/uhf_radio_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SYSTEM_UMBILICAL_UART, "UMBILICAL_UART", "/logs/umbilical_uart_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SYSTEM_GPS, "GPS", "/logs/gps_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SYSTEM_MPI, "MPI", "/logs/mpi_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SYSTEM_EPS, "EPS", "/logs/eps_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SYSTEM_BOOM, "BOOM", "/logs/boom_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SYSTEM_ADCS, "ADCS", "/logs/adcs_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SYSTEM_LFS, "LFS", "/logs/lfs_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SYSTEM_FLASH, "FLASH", "/logs/flash_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SYSTEM_ANTENNA_DEPLOY, "ANTENNA_DEPLOY", "/logs/antenna_deploy_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SYSTEM_LOG, "LOG", "/logs/log_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SYSTEM_TELECOMMAND, "TELECOMMAND", "/logs/telecommand_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SYSTEM_UNIT_TEST, "UNIT_TEST", "/logs/unit_test_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SYSTEM_UNKNOWN, "UNKNOWN", "/logs/unknown_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
 };
 static const uint16_t LOG_NUM_SYSTEMS = sizeof(LOG_systems) / sizeof(LOG_system_t);
 
@@ -86,7 +92,7 @@ static const uint16_t LOG_NUM_SYSTEMS = sizeof(LOG_systems) / sizeof(LOG_system_
 /// @param msg message text
 /// @return void
 /// @details Normally msg does not end with a newline (\n).
-///     Exclude one or more channel using LOG_channel_exceptions(...).
+///     Exclude one or more channels using LOG_channel_exceptions(...).
 void LOG_message(LOG_system_enum_t from, LOG_severity_enum_t severity, LOG_channel_enum_t channels, const char fmt[], ...)
 {
     // Get the system time
@@ -99,6 +105,9 @@ void LOG_message(LOG_system_enum_t from, LOG_severity_enum_t severity, LOG_chann
             break;
         case LOG_SEVERITY_NORMAL:
             severity_text = "NORMAL";
+            break;
+        case LOG_SEVERITY_WARNING:
+            severity_text = "WARNING";
             break;
         case LOG_SEVERITY_ERROR:
             severity_text = "ERROR";
@@ -138,7 +147,7 @@ void LOG_message(LOG_system_enum_t from, LOG_severity_enum_t severity, LOG_chann
     LOG_channel_t *c;
     for (uint16_t i = 0; i < LOG_NUM_CHANNELS; i++) {
         c = &LOG_channels[i];
-        if (c->enabled && (c->channel & channels) && (c->severity_mask & severity)) {
+        if (c->enabled && (c->channel & channels) && (c->severity_mask & severity) && (system->severity_mask & severity)) {
             switch (c->channel) {
                 case LOG_CHANNEL_FILE:
                     // Send to log file if subsystem logging is enabled
@@ -166,15 +175,16 @@ void LOG_message(LOG_system_enum_t from, LOG_severity_enum_t severity, LOG_chann
     return;
 }
 
+/// @brief All channels except the specified exceptions
+/// @param exceptions Bitwise OR'd channel exceptions
+/// @return Bitwise OR'd value of all other channels
 LOG_channel_enum_t LOG_channel_exceptions(LOG_channel_enum_t exceptions)
 {
     return LOG_CHANNEL_ALL & ~exceptions;
 }
 
-
 /// @brief Enable the specified logging channel
 /// @param channels Bitwise OR'd channels to enable
-/// @return returns 0 on success
 void LOG_enable_channels(LOG_channel_enum_t channels)
 {
     LOG_set_channel_state(channels, 1);
@@ -183,7 +193,6 @@ void LOG_enable_channels(LOG_channel_enum_t channels)
 
 /// @brief Disable the specified logging channel
 /// @param channels Bitwise OR'd channels to disable 
-/// @return returns 0 on success
 void LOG_disable_channels(LOG_channel_enum_t channels)
 {
     LOG_set_channel_state(channels, 0);
@@ -192,7 +201,7 @@ void LOG_disable_channels(LOG_channel_enum_t channels)
 
 /// @brief Check logging channel status
 /// @param channel the channel to check
-/// @return returns 0 on success
+/// @return 0: disabled (or invalid channel); 1: enabled
 uint8_t LOG_channel_is_enabled(LOG_channel_enum_t channel)
 {
     for (uint16_t i = 0; i < LOG_NUM_CHANNELS; i++) {
@@ -201,22 +210,16 @@ uint8_t LOG_channel_is_enabled(LOG_channel_enum_t channel)
         }
     }
     
-    // System not found? Return false
+    // System not found
     return 0;
 }
 
-void LOG_set_severity_mask(LOG_channel_enum_t channels, LOG_severity_enum_t severity_mask)
-{
-    for (uint16_t i = 0; i < LOG_NUM_CHANNELS; i++) {
-        if (LOG_channels[i].channel & channels) {
-            LOG_channels[i].severity_mask = severity_mask;
-        }
-    }
-
-    return;
-}
-
-void LOG_set_debugging_messages_state(LOG_channel_enum_t channels, uint8_t state)
+/// @brief Turn debugging messages on or off for the specified channels
+/// @param channels bitwise-OR'd channels to adjust
+/// @param state 0: debugging messages off; 1: debugging messages on
+/// @details Turning off a channel's debugging messages overrides a system's
+///     debugging messages state
+void LOG_set_channel_debugging_messages_state(LOG_channel_enum_t channels, uint8_t state)
 {
     uint8_t mask = LOG_SEVERITY_DEBUG;
     for (uint16_t i = 0; i < LOG_NUM_CHANNELS; i++) {
@@ -228,6 +231,30 @@ void LOG_set_debugging_messages_state(LOG_channel_enum_t channels, uint8_t state
             else {
                 LOG_channels[i].severity_mask &= ~mask;
                 LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "Disabled debugging on the %s channel", LOG_channels[i].name);
+            }
+        }
+    }
+
+    return;
+}
+
+/// @brief Turn debugging messages on or off for the specified systems
+/// @param systems bitwise-OR'd systems to adjust
+/// @param state 0: debugging messages off; 1: debugging messages on
+/// @details Debugging messages will be disabled if turned off for a given
+///     channel
+void LOG_set_system_debugging_messages_state(LOG_system_enum_t systems, uint8_t state)
+{
+    uint8_t mask = LOG_SEVERITY_DEBUG;
+    for (uint16_t i = 0; i < LOG_NUM_SYSTEMS; i++) {
+        if (LOG_systems[i].system & systems) {
+            if (state) {
+                LOG_systems[i].severity_mask |= mask;
+                LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "Enabled debugging for the %s system", LOG_systems[i].name);
+            }
+            else {
+                LOG_systems[i].severity_mask &= ~mask;
+                LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "Disabled debugging for the %s system", LOG_systems[i].name);
             }
         }
     }
@@ -266,6 +293,17 @@ uint8_t LOG_system_logging_is_enabled(LOG_system_enum_t system)
     
     // System not found? Return false
     return 0;
+}
+
+void LOG_set_severity_mask(LOG_system_enum_t systems, LOG_severity_enum_t severity_mask)
+{
+    for (uint16_t i = 0; i < LOG_NUM_SYSTEMS; i++) {
+        if (LOG_systems[i].system & systems) {
+            LOG_systems[i].severity_mask = severity_mask;
+        }
+    }
+
+    return;
 }
 
 void LOG_channels_status(LOG_channel_enum_t channels)

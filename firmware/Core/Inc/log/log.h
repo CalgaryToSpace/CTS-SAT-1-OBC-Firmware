@@ -6,9 +6,24 @@
 typedef enum {
     LOG_SEVERITY_DEBUG = 1 << 0,
     LOG_SEVERITY_NORMAL = 1 << 1,
-    LOG_SEVERITY_ERROR = 1 << 2,
-    LOG_SEVERITY_CRITICAL = 1 << 3,
+    LOG_SEVERITY_WARNING = 1 << 2,
+    LOG_SEVERITY_ERROR = 1 << 3,
+    LOG_SEVERITY_CRITICAL = 1 << 4,
 } LOG_severity_enum_t;
+
+typedef enum {
+    LOG_CHANNEL_NONE = 0,
+    LOG_CHANNEL_UHF_RADIO = 1 << 0,
+    LOG_CHANNEL_FILE = 1 << 1,
+    LOG_CHANNEL_UMBILICAL_UART = 1 << 2,
+    LOG_CHANNEL_UNKNOWN = 1 << 3,
+    LOG_CHANNEL_ALL = (1 << 4) - 1,
+} LOG_channel_enum_t;
+
+enum {
+    LOG_CHANNEL_OFF = 0,
+    LOG_CHANNEL_ON = 1,
+};
 
 typedef enum {
     LOG_SYSTEM_OBC = 1 << 0,
@@ -29,14 +44,10 @@ typedef enum {
     LOG_SYSTEM_ALL = (1 << 15) - 1,
 } LOG_system_enum_t;
 
-typedef enum {
-    LOG_CHANNEL_NONE = 0,
-    LOG_CHANNEL_UHF_RADIO = 1 << 0,
-    LOG_CHANNEL_FILE = 1 << 1,
-    LOG_CHANNEL_UMBILICAL_UART = 1 << 2,
-    LOG_CHANNEL_UNKNOWN = 1 << 3,
-    LOG_CHANNEL_ALL = (1 << 4) - 1,
-} LOG_channel_enum_t;
+enum {
+    LOG_SYSTEM_OFF = 0,
+    LOG_SYSTEM_ON = 1,
+};
 
 void LOG_message(LOG_system_enum_t from, LOG_severity_enum_t severity, LOG_channel_enum_t channels, const char fmt[], ...);
 LOG_channel_enum_t LOG_channel_exceptions(LOG_channel_enum_t exceptions);
@@ -44,15 +55,16 @@ LOG_channel_enum_t LOG_channel_exceptions(LOG_channel_enum_t exceptions);
 void LOG_enable_channels(LOG_channel_enum_t channels);
 void LOG_disable_channels(LOG_channel_enum_t channels);
 uint8_t LOG_channel_is_enabled(LOG_channel_enum_t channel);
-void LOG_set_severity_mask(LOG_channel_enum_t channels, LOG_severity_enum_t severity_mask);
-void LOG_set_debugging_messages_state(LOG_channel_enum_t channels, uint8_t state);
 
 void LOG_enable_systems(LOG_system_enum_t systems);
 void LOG_disable_systems(LOG_system_enum_t systems);
 uint8_t LOG_system_logging_is_enabled(LOG_system_enum_t system);
+void LOG_set_severity_mask(LOG_system_enum_t systems, LOG_severity_enum_t severity_mask);
+
+void LOG_set_channel_debugging_messages_state(LOG_channel_enum_t channels, uint8_t state);
+void LOG_set_system_debugging_messages_state(LOG_system_enum_t systems, uint8_t state);
 
 void LOG_channels_status(LOG_channel_enum_t channels);
 void LOG_systems_status(LOG_system_enum_t systems);
 
 #endif // __INCLUDE__GUARD__LOG_H_
-

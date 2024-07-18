@@ -15,16 +15,21 @@
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
+#include <inttypes.h>
 
 volatile uint8_t TASK_heartbeat_is_on = 1;
 
 char TASK_heartbeat_timing_str[128] = {0};
 
+
+// TODO replace with a radio beacon
 void TASK_DEBUG_print_heartbeat(void *argument) {
 	TASK_HELP_start_of_task();
+    // LOG_message crashes the STM32 when getting the system time if called here. Why?
+    // Use DEBUG_uart for now
+    DEBUG_uart_print_str("TASK_DEBUG_print_heartbeat() -> started (booted)");
 
-	DEBUG_uart_print_str("TASK_DEBUG_print_heartbeat() -> started (booted)\n");
-	osDelay(100);
+	osDelay(500);
 
     uint64_t unix_time_ms = 0;
     time_t seconds = 0;
@@ -40,7 +45,7 @@ void TASK_DEBUG_print_heartbeat(void *argument) {
             snprintf(
 				TASK_heartbeat_timing_str,
 				sizeof(TASK_heartbeat_timing_str),
-				"FrontierSat time: %d%02d%02dT%02d:%02d:%02d.%03u, Uptime: %lu ms\n",
+				"FrontierSat time: %d%02d%02dT%02d:%02d:%02d.%03u, Uptime: %" PRIu32 " ms\n",
 				time_info->tm_year + 1900, time_info->tm_mon + 1, time_info->tm_mday,
 				time_info->tm_hour, time_info->tm_min, time_info->tm_sec, ms,
 				HAL_GetTick()
@@ -66,15 +71,13 @@ void TASK_handle_uart_telecommands(void *argument) {
 		// place the main delay at the top to avoid a "continue" statement skipping it
 		osDelay(400);
 
-		// DEBUG_uart_print_str("TASK_handle_uart_telecommands -> top of while(1)\n");
+		//LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_DEBUG, LOG_CHANNEL_ALL, "TASK_handle_uart_telecommands -> top of while(1)");
 
 		memset(latest_tcmd, 0, UART_telecommand_buffer_len);
 		latest_tcmd_len = 0; // 0 means no telecommand available
 
 		// log the status
-		// char msg[256];
-		// snprintf(msg, sizeof(msg), "UART telecommand buffer: write_index=%d, last_time=%lums\n", UART_telecommand_buffer_write_idx, UART_telecommand_last_write_time_ms);
-		// DEBUG_uart_print_str(msg);
+        //LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_DEBUG, LOG_CHANNEL_ALL, "UART telecommand buffer: write_index=%d, last_time=%lums", UART_telecommand_buffer_write_idx, UART_telecommand_last_write_time_ms);
 
 		if ((HAL_GetTick() - UART_telecommand_last_write_time_ms > timeout_duration_ms) && (UART_telecommand_buffer_write_idx > 0)) {
 			// Copy the buffer to the latest_tcmd buffer.
@@ -125,13 +128,13 @@ void TASK_execute_telecommands(void *argument) {
 	TASK_HELP_start_of_task();
 
 	while (1) {
-		// DEBUG_uart_print_str("TASK_execute_telecommands -> top of while(1)\n");
+		//LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_DEBUG, LOG_CHANNEL_ALL, "TASK_execute_telecommands -> top of while(1)");
 
 		// Get the next telecommand to execute.
 		int16_t next_tcmd_slot = TCMD_get_next_tcmd_agenda_slot_to_execute();
 		if (next_tcmd_slot == -1) {
 			// No telecommands to execute.
-			// DEBUG_uart_print_str("No telecommands to execute.\n");
+			//LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_DEBUG, LOG_CHANNEL_ALL, "No telecommands to execute.");
 			osDelay(50); // TODO: benchmark the TCMD_get_next_tcmd_agenda_slot_to_execute function and adjust this delay.
 			continue;
 		}
