@@ -4,6 +4,7 @@
 #include "telecommands/flash_telecommand_defs.h"
 #include "littlefs/flash_driver.h"
 #include "littlefs/flash_benchmark.h"
+#include "log/log.h"
 #include "debug_tools/debug_uart.h"
 
 #include <stdio.h>
@@ -21,17 +22,16 @@ uint8_t TCMDEXEC_flash_activate_each_cs(const char *args_str, TCMD_TelecommandCh
     HAL_Delay(delay_time_ms);
 
     for (uint8_t chip_number = 0; chip_number < FLASH_NUMBER_OF_FLASH_DEVICES; chip_number++) {
-        DEBUG_uart_print_str("Activating CS: ");
-        DEBUG_uart_print_uint32(chip_number);
-        DEBUG_uart_print_str("...\n");
+        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "Activating CS: %" PRIu32 "...", chip_number);
         FLASH_activate_chip_select(chip_number);
         HAL_Delay(delay_time_ms);
 
-        DEBUG_uart_print_str("Deactivated.\n");
         FLASH_deactivate_chip_select();
         HAL_Delay(delay_time_ms);
+        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "Deactivated.");
     }
-    strcpy(response_output_buf, "All CS activated and deactivated.\n");
+    LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "All CS activated and deactivated");
+
     return 0;
 }
 
@@ -50,37 +50,20 @@ uint8_t TCMDEXEC_flash_each_is_reachable(const char *args_str, TCMD_TelecommandC
         if (result != 0) {
             fail_count++;
 
-            // append to response buffer
-            snprintf(
-                &response_output_buf[strlen(response_output_buf)],
-                response_output_buf_len - strlen(response_output_buf) - 1,
-                "Chip %d is not reachable. Error code: %d\n",
-                chip_number, result);
+            LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Chip %d is not reachable. Error code %d", chip_number, result);
         }
         else {
-            // append to response buffer
-            snprintf(
-                &response_output_buf[strlen(response_output_buf)],
-                response_output_buf_len - strlen(response_output_buf) - 1,
-                "Chip %d is reachable.\n",
-                chip_number);
+            LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "Chip %d is reachable.", chip_number);
         }
     }
 
-    // append overall status
+    // Overall status
     if (fail_count == 0) {
-        snprintf(
-            &response_output_buf[strlen(response_output_buf)],
-            response_output_buf_len - strlen(response_output_buf) - 1,
-            "All chips are reachable.");
+        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "All chips are reachable.");
         return 0;
     }
     else {
-        snprintf(
-            &response_output_buf[strlen(response_output_buf)],
-            response_output_buf_len - strlen(response_output_buf) - 1,
-            "%d/%d chips are not reachable.",
-            fail_count, FLASH_NUMBER_OF_FLASH_DEVICES);
+        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "%d/%d chips not reachable.", fail_count, FLASH_NUMBER_OF_FLASH_DEVICES);
         return 1;
     }
 }

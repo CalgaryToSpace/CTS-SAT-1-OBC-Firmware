@@ -15,7 +15,7 @@ uint8_t TCMDEXEC_log_enable_channels(const char *args_str, TCMD_TelecommandChann
     uint64_t channels;
     uint8_t result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &channels);
     if (result) {
-        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Unable to parse channels from telecommand argument");
+        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Unable to parse channels from telecommand argument");
         return 1;
     }
     // Response is provided by logging system
@@ -45,7 +45,7 @@ uint8_t TCMDEXEC_log_enable_systems(const char *args_str, TCMD_TelecommandChanne
     uint64_t systems;
     uint8_t result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &systems);
     if (result) {
-        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Unable to parse systems from telecommand argument");
+        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Unable to parse systems from telecommand argument");
         return 1;
     }
     // Response is provided by logging system
@@ -60,7 +60,7 @@ uint8_t TCMDEXEC_log_disable_systems(const char *args_str, TCMD_TelecommandChann
     uint64_t systems;
     uint8_t result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &systems);
     if (result) {
-        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Unable to parse systems from telecommand argument");
+        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Unable to parse systems from telecommand argument");
         return 1;
     }
     // Response is provided by logging system
@@ -75,7 +75,7 @@ uint8_t TCMDEXEC_log_channels_status(const char *args_str, TCMD_TelecommandChann
     uint64_t channels;
     uint8_t result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &channels);
     if (result) {
-        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Unable to parse channels from telecommand argument");
+        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Unable to parse channels from telecommand argument");
         return 1;
     }
     // Response is provided by logging system
@@ -90,7 +90,7 @@ uint8_t TCMDEXEC_log_systems_status(const char *args_str, TCMD_TelecommandChanne
     uint64_t systems;
     uint8_t result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &systems);
     if (result) {
-        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Unable to parse systems from telecommand argument");
+        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Unable to parse systems from telecommand argument");
         return 1;
     }
     // Response is provided by logging system
@@ -99,3 +99,24 @@ uint8_t TCMDEXEC_log_systems_status(const char *args_str, TCMD_TelecommandChanne
     return 0;
 }
 
+uint8_t TCMDEXEC_log_debugging_messages(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    uint64_t channels = 0;
+    uint8_t channels_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &channels);
+    if (channels_result) {
+        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Unable to parse state from first telecommand argument");
+        return 1;
+    }
+    
+    uint64_t state = 0;
+    uint8_t state_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &state);
+    if (state_result) {
+        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Unable to parse state from 2nd telecommand argument");
+        return 1;
+    }
+    // Response is provided by logging system
+
+    LOG_set_debugging_messages_state(channels, state);
+
+    return 0;
+}

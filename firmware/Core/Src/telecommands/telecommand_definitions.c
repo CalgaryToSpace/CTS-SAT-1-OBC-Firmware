@@ -1,6 +1,8 @@
 
 #include "telecommands/telecommand_definitions.h"
+#include "log/log.h"
 #include "telecommands/telecommand_args_helpers.h"
+#include "telecommands/telecommand_types.h"
 #include "transforms/arrays.h"
 #include "unit_tests/unit_test_executor.h"
 #include "timekeeping/timekeeping.h"
@@ -207,6 +209,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
+    {
+        .tcmd_name = "log_debugging_messages",
+        .tcmd_func = TCMDEXEC_log_debugging_messages,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
+    },
     // ****************** END SECTION: log_telecommand_defs ******************
 
 };
@@ -226,21 +234,21 @@ const int16_t TCMD_NUM_TELECOMMANDS = sizeof(TCMD_telecommand_definitions) / siz
 /// @return 0 if successful, >0 if an error occurred (but hello_world can't return an error)
 uint8_t TCMDEXEC_hello_world(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-    snprintf(response_output_buf, response_output_buf_len, "Hello, world!\n");
+    LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "Hello, world!");
     return 0;
 }
 
 uint8_t TCMDEXEC_heartbeat_off(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     TASK_heartbeat_is_on = 0;
-    snprintf(response_output_buf, response_output_buf_len, "Heartbeat OFF");
+    LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "Heartbeat message OFF");
     return 0;
 }
 
 uint8_t TCMDEXEC_heartbeat_on(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     TASK_heartbeat_is_on = 1;
-    snprintf(response_output_buf, response_output_buf_len, "Heartbeat ON");
+    LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "Heartbeat message ON");
     return 0;
 }
 
@@ -248,14 +256,14 @@ uint8_t TCMDEXEC_core_system_stats(const char *args_str, TCMD_TelecommandChannel
                         char *response_output_buf, uint16_t response_output_buf_len) {
     // TODO: implement this (Issue #103)
     // Use `TCMD_get_agenda_used_slots_count`
-    snprintf(response_output_buf, response_output_buf_len, "System stats: TODO\n");
+    LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_CRITICAL, LOG_CHANNEL_ALL, "TODO: Core System Stats");
     return 0;
 }
 
 uint8_t TCMDEXEC_echo_back_args(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
 
-    snprintf(response_output_buf, response_output_buf_len, "SUCCESS: Echo Args: '%s'\n", args_str);
+    LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, " Echo args: '%s'", args_str);
     // TODO: handle args_str being too long
     return 0;
 }
@@ -264,24 +272,20 @@ uint8_t TCMDEXEC_echo_back_uint32_args(const char *args_str, TCMD_TelecommandCha
                         char *response_output_buf, uint16_t response_output_buf_len) {
     response_output_buf[0] = '\0'; // clear the response buffer
 
-    for (uint8_t arg_num = 0; arg_num < 10; arg_num++) {
+    uint8_t max_args = 10;
+    for (uint8_t arg_num = 0; arg_num < max_args; arg_num++) {
         uint64_t arg_uint64;
         uint8_t parse_result = TCMD_extract_uint64_arg(
             args_str, strlen(args_str), arg_num, &arg_uint64);
         if (parse_result > 0) {
             // error parsing
-            snprintf(
-                &response_output_buf[strlen(response_output_buf)],
-                response_output_buf_len - strlen(response_output_buf) - 1,
-                "Arg%d=error%d, ", arg_num, parse_result);
+            LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Unable to parse Arg%d. Parse result: %d", arg_num, parse_result
+            );
         }
         else {
             // success parsing
-            snprintf(
-                &response_output_buf[strlen(response_output_buf)],
-                response_output_buf_len - strlen(response_output_buf) - 1,
-                "Arg%d=%" PRIu32 ", ",
-                arg_num, (uint32_t)arg_uint64);
+            LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "Arg%d=%" PRIu32 "%s", arg_num, parse_result, arg_num < max_args - 1 ? ", ": ""
+            );
         }
     }
     return 0;
@@ -296,31 +300,13 @@ uint8_t TCMDEXEC_run_all_unit_tests(const char *args_str, TCMD_TelecommandChanne
 
 uint8_t TCMDEXEC_available_telecommands(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-    char *p = response_output_buf;
-    uint16_t remaining_space = response_output_buf_len;
-
     // Start response with header
-    snprintf(p, remaining_space, "Available_telecommands\n");
-    const uint16_t header_length = strlen(p);
-    p += header_length;
-    remaining_space -= header_length;
+    LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "Available telecommands:");
 
-    // Append each telecommand name to the response
+    uint16_t n_commands = 0;
     for (uint16_t tcmd_idx = 0; tcmd_idx < TCMD_NUM_TELECOMMANDS; tcmd_idx++) {
-        const uint16_t line_length = snprintf(
-            p,
-            remaining_space,
-            "%3u) %s\n",
-            tcmd_idx + 1,
-            TCMD_telecommand_definitions[tcmd_idx].tcmd_name
-        );
-        if (line_length >= remaining_space) {
-            // Not enough space left to append more telecommands
-            break;
-        }
-        p += line_length;
-        remaining_space -= line_length;
+        n_commands++;
+        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "%3u) %s", n_commands, TCMD_telecommand_definitions[tcmd_idx].tcmd_name);
     }
-
     return 0;
 }

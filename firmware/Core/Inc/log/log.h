@@ -4,9 +4,10 @@
 #include <stdint.h>
 
 typedef enum {
-    LOG_SEVERITY_NORMAL,
-    LOG_SEVERITY_ERROR,
-    LOG_SEVERITY_CRITICAL,
+    LOG_SEVERITY_DEBUG = 1 << 0,
+    LOG_SEVERITY_NORMAL = 1 << 1,
+    LOG_SEVERITY_ERROR = 1 << 2,
+    LOG_SEVERITY_CRITICAL = 1 << 3,
 } LOG_severity_enum_t;
 
 typedef enum {
@@ -43,6 +44,8 @@ LOG_channel_enum_t LOG_channel_exceptions(LOG_channel_enum_t exceptions);
 void LOG_enable_channels(LOG_channel_enum_t channels);
 void LOG_disable_channels(LOG_channel_enum_t channels);
 uint8_t LOG_channel_is_enabled(LOG_channel_enum_t channel);
+void LOG_set_severity_mask(LOG_channel_enum_t channels, LOG_severity_enum_t severity_mask);
+void LOG_set_debugging_messages_state(LOG_channel_enum_t channels, uint8_t state);
 
 void LOG_enable_systems(LOG_system_enum_t systems);
 void LOG_disable_systems(LOG_system_enum_t systems);
