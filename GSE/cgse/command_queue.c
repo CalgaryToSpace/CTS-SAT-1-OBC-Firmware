@@ -1,5 +1,6 @@
 #include "command_queue.h"
 #include "main.h"
+#include "terminal.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -111,22 +112,22 @@ int CGSE_command_queue_add_command(CGSE_program_state_t *ps, char *cmd_text) {
     return 0;
 }
 
-int CGSE_command_queue_read_commands(CGSE_program_state_t *ps)
+int CGSE_command_queue_read_commands(CGSE_program_state_t *ps, const char *path)
 {
-    FILE *f = fopen(ps->command_queue_file_path, "r");
+    FILE *f = fopen(path, "r");
     if (f == NULL) {
         return -1;
     }
 
     char line_buffer[COMMAND_BUFFER_SIZE + 100];
-
+    int status = 0;
     while (fgets(line_buffer, COMMAND_BUFFER_SIZE + 100, f) != NULL) {
-        CGSE_command_queue_add_command(ps, line_buffer);
+        status |= CGSE_command_queue_add_command(ps, line_buffer);
     }
 
     fclose(f);
 
-    return 0;
+    return status;
 }
 
 void CGSE_free_command_queue(void)
@@ -160,11 +161,16 @@ void CGSE_command_queue_list_commands(CGSE_program_state_t *ps)
         return;
     }
     CGSE_command_queue_entry_t *e = NULL;
-    wprintw(ps->command_window, "\nQueued commands:\n");
+    command_window_print(ps, "Queued commands:");
     for (int i = 0; i < CGSE_command_queue_length; i++) {
         e = &CGSE_command_queue[i];
-        wprintw(ps->command_window, "%03d) @%llu: %s", i+1, e->execution_time, e->command_text);
+        command_window_print(ps, "%03d) @%llu: %s", i+1, e->execution_time, e->command_text);
     }
 
     return;
+}
+
+int CGSE_command_queue_number_of_commands(CGSE_program_state_t *ps)
+{
+    return CGSE_command_queue_length;
 }

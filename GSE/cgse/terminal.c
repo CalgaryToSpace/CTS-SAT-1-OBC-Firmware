@@ -143,17 +143,15 @@ void parse_telemetry(CGSE_program_state_t *ps)
         double t1 = current_time();
         double t2 = t1;
 
-        while (ps->bytes_received >= 0 && (t2-t1) < 0.25) {
-            ps->bytes_received = read(ps->satellite_link, ps->receive_buffer + stop, RECEIVE_BUFFER_SIZE);
+        while (ps->bytes_received >= 0 && ps->bytes_received < RECEIVE_BUFFER_SIZE - 1 && (t2-t1) < 0.25) {
+            ps->bytes_received = read(ps->satellite_link, ps->receive_buffer + stop, RECEIVE_BUFFER_SIZE - stop);
             if (ps->bytes_received > 0) {
                 stop += ps->bytes_received;
             }
             t2 = current_time();
         }
     }
-    else {
-       stop = 0; 
-    }
+
     if (stop > 0) {
         wclrtoeol(ps->main_window);
         if (stop >= RECEIVE_BUFFER_SIZE) {

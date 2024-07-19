@@ -13,6 +13,8 @@
 #define IO_WAIT_USEC 50000
 #define COMMAND_BUFFER_SIZE 512
 
+#define CGSE_COMMAND_STARTUP_QUEUE_FILENAME ".cgse_startup_commands"
+
 #define CGSE_COMMAND_HISTORY_FILENAME ".cgse_command_history"
 #define CGSE_COMMAND_HISTORY_BUFFER_SIZE COMMAND_BUFFER_SIZE + 100
 #define CGSE_COMMAND_HISTORY_MAX_LENGTH 1000
@@ -60,7 +62,8 @@ typedef struct {
     char command_history_file_path[FILENAME_MAX];
 
     char telecommand_buffer[TCMD_BUFFER_SIZE];
-    char command_queue_file_path[FILENAME_MAX];
+    char command_startup_queue_file_path[FILENAME_MAX];
+    char command_optional_queue_file_path[FILENAME_MAX];
 
     char current_directory[FILENAME_MAX];
     char file_to_load[FILENAME_MAX];

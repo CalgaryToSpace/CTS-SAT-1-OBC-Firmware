@@ -80,18 +80,17 @@ int parse_args(CGSE_program_state_t *ps)
 {
     int status = 0;
 
-    struct timeval tv = {0};
-    gettimeofday(&tv, NULL);
-    ps->program_start_epoch_ms = tv.tv_sec * 1000 + tv.tv_usec / 1000;
+    ps->program_start_epoch_ms = current_time() * 1000;
 
     ps->baud_rate = CGSE_DEFAULT_BAUD_RATE;
     ps->command_prefix = CGSE_DEFAULT_TELECOMMAND_PREFIX;
     ps->auto_connect = true;
     ps->prepend_timestamp = false;
     snprintf(ps->current_directory, FILENAME_MAX, "%s", ".");
-    
+
     char *history_path = getenv("HOME");
     snprintf(ps->command_history_file_path, FILENAME_MAX, "%s/%s", history_path != NULL ? history_path : "", CGSE_COMMAND_HISTORY_FILENAME);
+    snprintf(ps->command_startup_queue_file_path, FILENAME_MAX, "%s/%s", history_path != NULL ? history_path : "", CGSE_COMMAND_STARTUP_QUEUE_FILENAME);
 
     char *arg = NULL;
 
@@ -134,14 +133,8 @@ int parse_args(CGSE_program_state_t *ps)
                 fprintf(stderr, "Unable to interpret %s\n", arg);
                 return EXIT_FAILURE;
             }
-            snprintf(ps->command_queue_file_path, FILENAME_MAX, "%s", arg + 11);
+            snprintf(ps->command_optional_queue_file_path, FILENAME_MAX, "%s", arg + 11);
             ps->nOptions++;
-            // Import commands from file
-            int queue_read_res = CGSE_command_queue_read_commands(ps);
-            if (queue_read_res != 0) {
-                fprintf(stderr, "Error loading commands from %s\n", ps->command_queue_file_path);
-                return EXIT_FAILURE;
-            }
         }
         else if (strcmp("--no-auto-connect", arg) == 0) {
             ps->auto_connect = false;
@@ -177,7 +170,6 @@ int parse_args(CGSE_program_state_t *ps)
     }
 
     return 0;
-
 }
 
 void CGSE_license(void)
@@ -246,6 +238,21 @@ int CGSE_init(CGSE_program_state_t *ps)
         CGSE_store_command("");
     }
 
+    // Import command queue from startup file, warn if there was a problem
+    int startup_queue_read_res = CGSE_command_queue_read_commands(ps, ps->command_startup_queue_file_path);
+    if (startup_queue_read_res != 0) {
+        command_window_print(ps, "No startup command-queue commands were loaded from %s", ps->command_startup_queue_file_path);
+    }
+
+    // Import optional command queue from file specified by command-line option
+    if (strlen(ps->command_optional_queue_file_path) > 0) { 
+        int optional_queue_read_res = CGSE_command_queue_read_commands(ps, ps->command_optional_queue_file_path);
+        if (optional_queue_read_res != 0) {
+            command_window_print(ps, "No optional command-queue commands were loaded from %s", ps->command_optional_queue_file_path);
+        }
+    }
+
+    // Draw the command line
     wmove(ps->command_window, ps->line, 0);
     wprintw(ps->command_window, "%s> %s", ps->command_prefix, ps->command_buffer);
     wrefresh(ps->command_window);
