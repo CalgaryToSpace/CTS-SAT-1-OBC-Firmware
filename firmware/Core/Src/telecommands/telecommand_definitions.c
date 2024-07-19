@@ -4,6 +4,7 @@
 #include "transforms/arrays.h"
 #include "unit_tests/unit_test_executor.h"
 #include "timekeeping/timekeeping.h"
+#include "debug_tools/debug_uart.h"
 
 // Additional telecommand definitions files:
 #include "telecommands/flash_telecommand_defs.h"
@@ -296,8 +297,11 @@ uint8_t TCMDEXEC_available_telecommands(const char *args_str, TCMD_TelecommandCh
 
 uint8_t TCMDEXEC_reboot(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-    DEBUG_uart_print_str("Rebooting by telecommand request \n\r"); 
-    HAL_Delay(1000);
+    DEBUG_uart_print_str("Rebooting by telecommand request...\n"); 
+    
+    // Delay to flush UART buffer
+    HAL_Delay(100);
+
     NVIC_SystemReset();
     return 0;
 }
