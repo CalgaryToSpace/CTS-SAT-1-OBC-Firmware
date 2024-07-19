@@ -22,7 +22,7 @@ uint8_t TCMDEXEC_mpi_send_command_hex(const char *args_str, TCMD_TelecommandChan
                                       char *response_output_buf, uint16_t response_output_buf_len)
 {
     // Get the length of the input string
-    size_t args_str_len = strlen((const char *)args_str);
+    size_t args_str_len = strlen(args_str);
 
     // Validate command argument
     if (args_str == NULL)
