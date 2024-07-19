@@ -33,14 +33,6 @@ uint8_t TCMDEXEC_mpi_send_command_hex(const char *args_str, TCMD_TelecommandChan
         return 1; // Error code: Invalid input
     }
 
-    // Parse command from string to hex
-    const size_t args_str_hex_size = 50;    //TODO: Find right max size / expected size
-    uint8_t args_str_hex[args_str_hex_size];
-    size_t args_str_hex_len = 0;  
-    uint8_t parse_args_str_result = TCMD_hex_string_to_bytes(args_str, 0, args_str_hex, args_str_hex_size, &args_str_hex_len);
-
-    // TODO: Add error checking for parse result
-
     // Allocate space to receive incoming MPI response
     const size_t MPI_rx_buffer_max_size = 50;
     uint16_t MPI_rx_buffer_len;

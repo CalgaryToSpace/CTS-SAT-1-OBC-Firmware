@@ -81,6 +81,8 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
 		}
 		// TODO: write_idx >= sizeof(rx_buffer) HANDLE OVERFLOW
 	}
+	
+	return 0; // Valid response from the MPI
 }
 
 /// @brief The MPI responds to each telecommand with a response code consisting of an echo of the telecommand and a success byte (either 1 for success or 0 for fail).
