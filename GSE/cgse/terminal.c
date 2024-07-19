@@ -140,9 +140,7 @@ void parse_telemetry(CGSE_program_state_t *ps)
     ps->bytes_received = 0;
     if (ps->satellite_connected) {
         CGSE_time_string(ps->time_buffer);
-        struct timeval tv = {0};
-        gettimeofday(&tv, NULL);
-        double t1 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
+        double t1 = current_time();
         double t2 = t1;
 
         while (ps->bytes_received >= 0 && (t2-t1) < 0.25) {
@@ -150,8 +148,7 @@ void parse_telemetry(CGSE_program_state_t *ps)
             if (ps->bytes_received > 0) {
                 stop += ps->bytes_received;
             }
-            gettimeofday(&tv, NULL);
-            t2 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
+            t2 = current_time();
         }
     }
     else {
