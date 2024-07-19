@@ -2,8 +2,6 @@
 #define __CRC_H
 
 #include <stdint.h>
-// #include "stm32l4xx.h"
-// #include "stm32l4xx_hal_crc.h"
 #include "stm32l4xx_hal.h"
 
 // Function prototypes
