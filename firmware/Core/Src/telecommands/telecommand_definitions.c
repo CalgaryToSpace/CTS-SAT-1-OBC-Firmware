@@ -296,6 +296,8 @@ uint8_t TCMDEXEC_available_telecommands(const char *args_str, TCMD_TelecommandCh
 
 uint8_t TCMDEXEC_reboot(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
+    DEBUG_uart_print_str("Rebooting by telecommand request \n\r"); 
+    HAL_Delay(1000);
     NVIC_SystemReset();
     return 0;
 }
