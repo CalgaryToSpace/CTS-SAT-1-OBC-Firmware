@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <sys/time.h>
+#include <stdarg.h>
 
 #include <ncurses.h>
 
@@ -35,26 +36,26 @@ const CGSE_command_t CGSE_terminal_commands[] = {
 };
 const int CGSE_NUM_TERMINAL_COMMANDS = sizeof(CGSE_terminal_commands) / sizeof(CGSE_command_t);
 
-int CGSE_quit(CGSE_program_state_t *ps, char *cmd_string) 
+int CGSE_quit(CGSE_program_state_t *ps, const char *cmd_string) 
 {
     running = 0;
 
     return 0;
 };
 
-int CGSE_help(CGSE_program_state_t *ps, char *cmd_string) 
+int CGSE_help(CGSE_program_state_t *ps, const char *cmd_string) 
 {
-    wprintw(ps->command_window, "\n Available commands:\n");
+    command_window_print(ps, "Available commands:");
     for (int c = 0; c < CGSE_NUM_TERMINAL_COMMANDS; c++) {
         const CGSE_command_t *cmd = &CGSE_terminal_commands[c];
-        wprintw(ps->command_window, "%30s - %s\n", cmd->help_template, cmd->description);
+        command_window_print(ps, "%35s - %s", cmd->help_template, cmd->description);
     }
     // TODO show help for telecommands
 
     return 0;
 }
 
-int CGSE_connect(CGSE_program_state_t *ps, char *cmd_string)
+int CGSE_connect(CGSE_program_state_t *ps, const char *cmd_string)
 {
     if (ps->satellite_connected) {
         CGSE_disconnect(ps, cmd_string);
@@ -74,15 +75,15 @@ int CGSE_connect(CGSE_program_state_t *ps, char *cmd_string)
     // Connect and set link parameters
     int sat_link = open(ps->satellite_link_path, O_RDWR | O_NONBLOCK | O_NOCTTY);
     if (sat_link == -1) {
-        wprintw(ps->command_window, "\n Error opening satellite link");
+        command_window_print(ps, "Error opening satellite link. Check umbilical or radio is plugged into the ground station computer");
         return -1;
     }
 
     struct termios sat_link_params;
     int result = tcgetattr(sat_link, &sat_link_params);
     if (result != 0) {
-        wprintw(ps->command_window, "\n Error setting satellite link parameters");
-        return -1;
+        command_window_print(ps, "Error setting satellite link parameters");
+        return -2;
     }
     cfsetspeed(&sat_link_params, ps->baud_rate);
     sat_link_params.c_cflag &= ~PARENB;
@@ -97,8 +98,9 @@ int CGSE_connect(CGSE_program_state_t *ps, char *cmd_string)
     
     result = tcsetattr(sat_link, TCSANOW, &sat_link_params);
     if (result != 0) {
-        wprintw(ps->command_window, "\n Error setting satellite link parameters");
-        return -1;
+        command_window_print(ps, "Error setting satellite link parameters");
+        ps->line += 1;
+        return -3;
     }
     tcflush(sat_link, TCIOFLUSH);
     
@@ -109,7 +111,8 @@ int CGSE_connect(CGSE_program_state_t *ps, char *cmd_string)
     return 0;
 }
 
-int CGSE_disconnect(CGSE_program_state_t *ps, char *cmd_string) {
+int CGSE_disconnect(CGSE_program_state_t *ps, const char *cmd_string) 
+{
     if (ps->satellite_link > 0) {
         close(ps->satellite_link);
         ps->satellite_link = 0;
@@ -119,22 +122,25 @@ int CGSE_disconnect(CGSE_program_state_t *ps, char *cmd_string) {
     return 0;
 }
 
-int CGSE_show_timestamp(CGSE_program_state_t *ps, char *cmd_string) {
+int CGSE_show_timestamp(CGSE_program_state_t *ps, const char *cmd_string) 
+{
     ps->prepend_timestamp = true;
     return 0;
 }
 
-int CGSE_hide_timestamp(CGSE_program_state_t *ps, char *cmd_string) {
+int CGSE_hide_timestamp(CGSE_program_state_t *ps, const char *cmd_string) 
+{
     ps->prepend_timestamp = false;
     return 0;
 }
 
-int CGSE_sync_timestamp(CGSE_program_state_t *ps, char *cmd_string) {
+int CGSE_sync_timestamp(CGSE_program_state_t *ps, const char *cmd_string) 
+{
     char tcmd[256];
     struct timeval epoch = {0};
     int gtod_result = gettimeofday(&epoch, NULL);
     if (gtod_result != 0) {
-        wprintw(ps->command_window, "\n Unable to get the time");
+        command_window_print(ps, "Unable to get the time");
         return -1;
     }
     uint64_t epoch_ms = (uint64_t)epoch.tv_sec * 1000 + epoch.tv_usec/1000;
@@ -144,18 +150,18 @@ int CGSE_sync_timestamp(CGSE_program_state_t *ps, char *cmd_string) {
     if (ps->satellite_connected) {
         int bytes_sent = write(ps->satellite_link, tcmd, strlen(tcmd));
         if (bytes_sent <= 0) {
-            wprintw(ps->command_window, "\n Error sending telecommand");
+            command_window_print(ps, "Error sending telecommand");
         }
     }
     else {
-        wprintw(ps->command_window, "\n Not connected to satellite");
+        command_window_print(ps, "Not connected to satellite");
     }
 
     return 0;
 }
 
-int CGSE_list_telecommands(CGSE_program_state_t *ps, char *cmd_string) {
-    wprintw(ps->command_window, "\n");
+int CGSE_list_telecommands(CGSE_program_state_t *ps, const char *cmd_string) 
+{
     const TCMD_TelecommandDefinition_t *cmd = NULL;
     int nArgs = 0;
     for (int i = 0; i < TCMD_NUM_TELECOMMANDS; i++) {
@@ -168,13 +174,16 @@ int CGSE_list_telecommands(CGSE_program_state_t *ps, char *cmd_string) {
                 wprintw(ps->command_window, ",");
             }
         }
-        wprintw(ps->command_window, ")\n");
+        wprintw(ps->command_window, ")");
+        // Trigger newline and scroll
+        command_window_print(ps, "\n"); 
     }
 
     return 0;
 }
 
-int CGSE_list_current_directory(CGSE_program_state_t *ps, char *cmd_string) {
+int CGSE_list_current_directory(CGSE_program_state_t *ps, const char *cmd_string) 
+{
     char *arg_vector[2];
     int n_ls_args = 2;
     char *buf = CGSE_get_args_from_str(cmd_string, &n_ls_args, arg_vector);
@@ -189,14 +198,16 @@ int CGSE_list_current_directory(CGSE_program_state_t *ps, char *cmd_string) {
     return 0;
 }
 
-int CGSE_list_queued_commands(CGSE_program_state_t *ps, char *cmd_string) {
+int CGSE_list_queued_commands(CGSE_program_state_t *ps, const char *cmd_string) 
+{
     CGSE_command_queue_list_commands(ps);
     return 0;
 }
 
-int CGSE_upload_mpi_firmware(CGSE_program_state_t *ps, char *cmd_string) {
+int CGSE_upload_mpi_firmware(CGSE_program_state_t *ps, const char *cmd_string) 
+{
     if (!ps->satellite_connected) {
-        wprintw(ps->command_window, "\nNot connected to satellite.");
+        command_window_print(ps, "Not connected to satellite");
         return -1;
     }
 
@@ -209,7 +220,7 @@ int CGSE_upload_mpi_firmware(CGSE_program_state_t *ps, char *cmd_string) {
         size_t mpi_firmware_length = 0;
         char *mpi_firmware = CGSE_base64_encode_from_file(mpi_firmware_path, &mpi_firmware_length);
         if (mpi_firmware == NULL) {
-            wprintw(ps->command_window, "\nUnable to load firmware from %s", mpi_firmware_path);
+            command_window_print(ps, "Unable to load firmware from %s", mpi_firmware_path);
         }
         else {
             // Send bytes as pages to the satellite
@@ -245,7 +256,7 @@ int CGSE_upload_mpi_firmware(CGSE_program_state_t *ps, char *cmd_string) {
                     remaining_chars -= chars_to_send;
                     p += chars_to_send;
                     mpi_firmware_page++;
-                    wprintw(ps->command_window, "\nSent MPI firmware page %d (total %d of %lu bytes)", mpi_firmware_page, mpi_firmware_bytes_sent, mpi_firmware_length);
+                    command_window_print(ps, "Sent MPI firmware page %d (total %d of %lu bytes)", mpi_firmware_page, mpi_firmware_bytes_sent, mpi_firmware_length);
                     wrefresh(ps->command_window);
                     // Return to main while loop, re-entering
                     // here?
@@ -278,14 +289,14 @@ int CGSE_upload_mpi_firmware(CGSE_program_state_t *ps, char *cmd_string) {
                         t2 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
                     }
                     if (!got_page) {
-                        wprintw(ps->command_window, "\nDid not receive reply. Aborting firmware upload...");
+                        command_window_print(ps, "Did not receive reply. Aborting firmware upload...");
                         break;
                     }
                 }
                 else {
                     // otherwise abort (or add this page to the
                     // failed-list and try those pages later?)
-                    wprintw(ps->command_window, "\nFailed to send firmware page %d. Aborting...", mpi_firmware_page);
+                    command_window_print(ps, "Failed to send firmware page %d. Aborting...", mpi_firmware_page);
                     break;
                 }
 
@@ -293,7 +304,7 @@ int CGSE_upload_mpi_firmware(CGSE_program_state_t *ps, char *cmd_string) {
                 int mpi_key = 0;
                 mpi_key = wgetch(ps->command_window);
                 if (mpi_key == 'q') {
-                    wprintw(ps->command_window, "\nUpload interrupted by user.\n");
+                    command_window_print(ps, "Upload interrupted by user.");
                     wrefresh(ps->command_window);
                     break;
                 }
@@ -304,7 +315,7 @@ int CGSE_upload_mpi_firmware(CGSE_program_state_t *ps, char *cmd_string) {
         free(mpi_firmware);
     }
     else {
-        wprintw(ps->command_window, "\nUnable to parse command.");
+        command_window_print(ps, "Unable to parse command.");
     }
     free(buf);
 
@@ -312,7 +323,7 @@ int CGSE_upload_mpi_firmware(CGSE_program_state_t *ps, char *cmd_string) {
     return 0;
 }
 
-char * CGSE_get_args_from_str(char* args, int *nargs, char **arg_vector)
+char * CGSE_get_args_from_str(const char* args, int *nargs, char **arg_vector)
 {
     if (args == NULL || nargs == NULL || arg_vector == NULL) {
         return NULL;
@@ -389,58 +400,88 @@ int CGSE_find_link_path(char *link_path)
     return 0;
 }
 
-int CGSE_execute_command(CGSE_program_state_t *ps)
+int CGSE_execute_command(CGSE_program_state_t *ps, const char *command)
 {
-    if (strlen(ps->command_buffer) > 0) {
-        if (ps->command_history_index < CGSE_number_of_stored_commands() - 1) {
-            if (strlen(CGSE_recall_command(CGSE_number_of_stored_commands() - 1)) == 0) {
-                CGSE_remove_command(CGSE_number_of_stored_commands() - 1);
-            }
-            CGSE_store_command(ps->command_buffer);
-        }
-        CGSE_store_command("");
-        ps->command_history_index = CGSE_number_of_stored_commands() - 1;
+
+    size_t buffer_len = strlen(command);
+    if (buffer_len == 0) {
+        return 0;
     }
-    if (ps->command_buffer[0] == '.') {
-        bool got_command = false;
+
+    // Store the command 
+    CGSE_store_command(command);
+    ps->command_history_index = CGSE_number_of_stored_commands() - 1;
+
+    // check for known terminal command
+    if (command[0] == '.') {
+        bool known_terminal_command = false;
         for (int c = 0; c < CGSE_NUM_TERMINAL_COMMANDS; c++) {
             const CGSE_command_t *cmd = &CGSE_terminal_commands[c];
-            if (strncmp(ps->command_buffer, cmd->name, strlen(cmd->name)) == 0) {
-                int cmd_status = cmd->function(ps, ps->command_buffer);
-                got_command = true;
+            if (strncmp(command, cmd->name, strlen(cmd->name)) == 0) {
+                // Execute the terminal command
+                int cmd_status = cmd->function(ps, command);
+                known_terminal_command = true;
                 break;
             }
         }
-        if (!got_command) {
-            wprintw(ps->command_window, "\nUnrecognized terminal command");
-            ps->line++;
+        if (!known_terminal_command) {
+            command_window_print(ps, "Unrecognized terminal command");
         }
     }
-    else {
-        // A possible telecommand
-        if (ps->command_index > COMMAND_BUFFER_SIZE - 1) {
-            ps->command_index = COMMAND_BUFFER_SIZE - 1;
-            if (ps->cursor_position > 0) {
-                ps->cursor_position = ps->command_index;
-            }
-        }
-        ps->command_buffer[ps->command_index] = '\0';
-        // write...
-        snprintf(ps->telecommand_buffer, TCMD_BUFFER_SIZE, "%s+%s!", ps->command_prefix, ps->command_buffer);
-        if (strlen(ps->command_buffer) > 0) {
+    else if (CGSE_is_valid_telecommand(command)) {
+        snprintf(ps->telecommand_buffer, TCMD_BUFFER_SIZE, "%s+%s!", ps->command_prefix, command);
+        if (buffer_len > 0) {
             if (ps->satellite_connected) {
                 write(ps->satellite_link, ps->telecommand_buffer, strlen(ps->telecommand_buffer));
             }
             else {
-                wprintw(ps->command_window, "\n Not connected to satellite");
-                ps->line++;
+                command_window_print(ps, "Not connected to satellite");
             }
         }
     }
-    // Reset command 
-    ps->command_buffer[0] = '\0';
-    ps->command_history_index = CGSE_number_of_stored_commands() - 1;
+    else {
+        command_window_print(ps, "Unrecognized telecommand");
+    }
 
     return 0;
+}
+
+void process_command_queue(CGSE_program_state_t *ps)
+{
+    // TODO show time until next queued command is run
+    // Queue up that command if it is time...
+    // First command is up next 
+    // It is removed once sent to the satellite
+
+    // Run all commands that are due, up to a timeout
+    struct timeval tv = {0};
+    gettimeofday(&tv, NULL);
+    double t1 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
+    double t2 = t1;
+
+    CGSE_command_queue_entry_t *e = NULL;
+
+    while ((e = CGSE_command_queue_next()) != NULL && t2 - t1 < 0.25) {
+        command_window_print(ps, "queue-> %s", e->command_text);
+        CGSE_execute_command(ps, e->command_text);
+        commandline_redraw(ps);
+        CGSE_command_queue_remove_next();
+
+        gettimeofday(&tv, NULL);
+        t2 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
+    }
+
+    return;
+}
+
+bool CGSE_is_valid_telecommand(const char *command)
+{
+    if (strlen(command) == 0) {
+        return false;
+    }
+
+    // TODO other checks for telecommand validity
+
+    return true;
 }
 

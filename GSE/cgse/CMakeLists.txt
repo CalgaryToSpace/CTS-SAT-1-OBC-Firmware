@@ -6,7 +6,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if(CMAKE_BUILD_TYPE STREQUAL Debug)
     message( "-- Debugging enabled")
-    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pg -std=gnu99 ")
+    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 -std=gnu99 ")
 else (CMAKE_BUILD_TYPE STREQUAL Debug)
     message( "-- Optimization enabled")
     SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -std=gnu99 ")

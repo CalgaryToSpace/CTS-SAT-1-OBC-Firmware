@@ -11,6 +11,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <ncurses.h>
+#include <stdarg.h>
 
 int init_terminal_screen(CGSE_program_state_t *ps)
 {
@@ -21,13 +22,18 @@ int init_terminal_screen(CGSE_program_state_t *ps)
     status |= raw();
     status |= intrflush(NULL, false);
 
-    ps->status_window = newwin(1, 0, 0, 0);
+    ps->status_window_height = 1;
+    ps->main_window_height = CGSE_TM_WINDOW_DEFAULT_SIZE;
+    ps->command_window_height = LINES - ps->status_window_height - ps->main_window_height;
+    // TODO check for 0 or negative heights
+
+    ps->status_window = newwin(ps->status_window_height, 0, 0, 0);
     if (ps->status_window == NULL) {
         status |= 1;
     }
     status |= wattron(ps->status_window, A_REVERSE);
 
-    ps->main_window = newwin(CGSE_TM_WINDOW_SIZE, 0, 1, 0);
+    ps->main_window = newwin(ps->main_window_height, 0, 1, 0);
     if (ps->main_window == NULL) {
         status |= 1;
     }
@@ -36,7 +42,7 @@ int init_terminal_screen(CGSE_program_state_t *ps)
     status |= scrollok(ps->main_window, TRUE);
     status |= idlok(ps->main_window, TRUE);
 
-    ps->command_window = newwin(0, 0, CGSE_TM_WINDOW_SIZE + 1, 0);
+    ps->command_window = newwin(ps->command_window_height, 0, ps->status_window_height + ps->main_window_height, 0);
     if (ps->command_window == NULL) {
         status |= 1;
     }
@@ -55,95 +61,48 @@ int parse_input(CGSE_program_state_t *ps)
     ssize_t bytes_sent = 0;
     size_t buffer_len = 0;
 
-    struct timeval tv = {0};
-    gettimeofday(&tv, NULL);
-    double t1 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
+    double t1 = current_time();
     double t2 = t1;
 
     int key = 0;
 
     while ((key = wgetch(ps->command_window)) != ERR && (t2 - t1) < 0.5) {
         buffer_len = strlen(ps->command_buffer);
+        // Erase character to the left
         if (key == '\b' || key == 127 || key == KEY_BACKSPACE)
         {
-            if (ps->command_history_index < CGSE_number_of_stored_commands() - 1) {
-                CGSE_store_command(ps->command_buffer);
-                ps->command_history_index = CGSE_number_of_stored_commands() - 1;
-            }
-            if (ps->cursor_position > 0) {
-                ps->cursor_position--;
-                ps->command_index--;
-                for (int c = ps->cursor_position; c < buffer_len && c < COMMAND_BUFFER_SIZE - 2; c++) {
-                    ps->command_buffer[c] = ps->command_buffer[c+1];
-                }
-                ps->command_buffer[ps->command_index] = '\0';
-                ps->command_history_index = CGSE_number_of_stored_commands() - 1;
-                CGSE_remove_command(ps->command_history_index);
-                CGSE_store_command(ps->command_buffer);
-            }
+            commandline_action(ps, CGSE_CMD_ACTION_BACKSPACE, key);
         }
         else if (key == KEY_UP) {
-            if (ps->command_history_index > 0) {
-                char *previous_command = CGSE_recall_command((size_t)ps->command_history_index - 1);
-                if (previous_command != NULL) {
-                    snprintf(ps->command_buffer, COMMAND_BUFFER_SIZE, "%s", previous_command);
-                    reset_editing_cursor(ps);
-                    ps->command_history_index--;
-                }
-            }
+            commandline_action(ps, CGSE_CMD_ACTION_CURSOR_UP, key);
         }
         else if (key == KEY_DOWN) {
-            if (ps->command_history_index < CGSE_number_of_stored_commands()) {
-                char *next_command = CGSE_recall_command((size_t)(ps->command_history_index+1));
-                if (next_command != NULL) {
-                    snprintf(ps->command_buffer, COMMAND_BUFFER_SIZE, "%s", next_command);
-                    reset_editing_cursor(ps);
-                    ps->command_history_index++;
-                }
-            }
+            commandline_action(ps, CGSE_CMD_ACTION_CURSOR_DOWN, key);
         }
         else if (key == KEY_LEFT) {
-            if (ps->cursor_position > 0) {
-                ps->cursor_position--;
-            }
+            commandline_action(ps, CGSE_CMD_ACTION_CURSOR_LEFT, key);
         }
         else if (key == KEY_RIGHT) {
-            if (ps->cursor_position < buffer_len && ps->cursor_position < COMMAND_BUFFER_SIZE - 1) {
-                ps->cursor_position++;
-            }
+            commandline_action(ps, CGSE_CMD_ACTION_CURSOR_RIGHT, key);
         }
-        else if (ps->command_index >= COMMAND_BUFFER_SIZE - 2) {
-            ps->command_index = COMMAND_BUFFER_SIZE - 1;
-            ps->command_buffer[ps->command_index] = '\0';
+        else if (key != '\n' && ps->cursor_position < COMMAND_BUFFER_SIZE - 1) {
+            commandline_action(ps, CGSE_CMD_ACTION_INSERT, key);
         }
-        else if (key != '\n' && ps->command_index < COMMAND_BUFFER_SIZE - 1) {
-            if (ps->cursor_position < buffer_len) {
-                for (int k = buffer_len - 1; k >= ps->cursor_position; k--) {
-                    ps->command_buffer[k+1] = ps->command_buffer[k];
-                }
-            }
-            ps->command_buffer[ps->cursor_position++] = key;
-            ps->command_index++;
-            ps->command_buffer[ps->command_index] = '\0';
-            buffer_len = strlen(ps->command_buffer);
-            ps->command_history_index = CGSE_number_of_stored_commands() - 1;
-            CGSE_remove_command(ps->command_history_index);
-            CGSE_store_command(ps->command_buffer);
+        else if (key == '\n') {
+            // Print the command to the command window
+            command_window_print(ps, "%s> %s", ps->command_prefix, ps->command_buffer);
+            CGSE_execute_command(ps, ps->command_buffer);
+            // Reset the editing buffer
+            ps->cursor_position = 0;
+            ps->command_buffer[0] = '\0';
         }
 
-        wmove(ps->command_window, ps->line, 0);
-        wprintw(ps->command_window, "%s> %s", ps->command_prefix, ps->command_buffer);
-        wclrtoeol(ps->command_window);
-        update_editing_cursor(ps);
+        // Update command window text and cursor position
+        commandline_redraw(ps);
 
-        if (key == '\n') {
-            CGSE_execute_command(ps);
-            ps->line++;
-            reset_editing_cursor(ps);
-        }
 
-        gettimeofday(&tv, NULL);
-        t2 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
+        // Update timer
+        t2 = current_time();
     }
 
     wrefresh(ps->command_window);
@@ -168,7 +127,6 @@ void update_link_status(CGSE_program_state_t *ps)
     wrefresh(ps->status_window);
 
     return;
-
 }
 
 void parse_telemetry(CGSE_program_state_t *ps)
@@ -247,73 +205,23 @@ done_parsing_telemetry:
     return;
 }
 
-void process_command_queue(CGSE_program_state_t *ps)
-{
-    // TODO show time until next queued command is run
-    // Queue up that command if it is time...
-    // First command is up next 
-    // It is removed once sent to the satellite
-
-    // Run all commands that are due, up to a timeout
-    struct timeval tv = {0};
-    gettimeofday(&tv, NULL);
-    double t1 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
-    double t2 = t1;
-
-    CGSE_command_queue_entry_t *e = NULL;
-
-    while ((e = CGSE_command_queue_next()) != NULL && t2 - t1 < 0.25) {
-        store_editing_cursor(ps);
-        snprintf(ps->command_buffer, COMMAND_BUFFER_SIZE, "%s", e->command_text);
-        ps->command_index = strlen(ps->command_buffer);
-        ps->cursor_position = ps->command_index;
-        CGSE_execute_command(ps);
-        wmove(ps->command_window, ps->line, 0);
-        wprintw(ps->command_window, "queue-> %s", e->command_text);
-        wclrtoeol(ps->command_window);
-        CGSE_command_queue_remove_next();
-        restore_editing_cursor(ps);
-        ps->line++;
-        update_editing_cursor(ps);
-        wrefresh(ps->command_window);
-
-        gettimeofday(&tv, NULL);
-        t2 = (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
-    }
-
-    return;
-}
-
 // Moves cursor to end of editing line
-void reset_editing_cursor(CGSE_program_state_t *ps)
+void move_cursor(CGSE_program_state_t *ps, CGSE_cursor_edit_position_enum_t position)
 {
     size_t buffer_len = strlen(ps->command_buffer);
-    ps->cursor_position = buffer_len;
-    ps->command_index = buffer_len;
-    ps->col = strlen(ps->command_prefix) + 2 + buffer_len;
-    if (ps->line > LINES - 1) {
-        ps->line = LINES - 1;
+
+    switch (position) {
+        case CGSE_CURSOR_START_OF_LINE:
+            ps->cursor_position = 0;
+            break;
+        case CGSE_CURSOR_END_OF_LINE:
+            ps->cursor_position = buffer_len;
+            break;
+        default:
+            break;
     }
-    print_command_line(ps);
 
-    return;
-}
-
-
-// Moves cursor to new column of editing line
-void update_editing_cursor(CGSE_program_state_t *ps)
-{
-    size_t buffer_len = strlen(ps->command_buffer);
-    ps->command_index = buffer_len;
     ps->col = strlen(ps->command_prefix) + 2 + ps->cursor_position;
-    size_t max_col = strlen(ps->command_prefix) + 2 + buffer_len; 
-    if (ps->col < 0) {
-        ps->col = 0;
-    }
-    else if (ps->col > max_col) {
-        ps->col = max_col;
-    }
-    print_command_line(ps);
 
     return;
 }
@@ -321,7 +229,6 @@ void update_editing_cursor(CGSE_program_state_t *ps)
 void store_editing_cursor(CGSE_program_state_t *ps)
 {
     memcpy(ps->editing_buffer, ps->command_buffer, COMMAND_BUFFER_SIZE);
-    ps->editing_command_index = ps->command_index;
     ps->editing_cursor_position = ps->cursor_position;
 
     return;
@@ -330,7 +237,6 @@ void store_editing_cursor(CGSE_program_state_t *ps)
 void restore_editing_cursor(CGSE_program_state_t *ps)
 {
     memcpy(ps->command_buffer, ps->editing_buffer, COMMAND_BUFFER_SIZE);
-    ps->command_index = ps->editing_command_index;
     ps->cursor_position = ps->editing_cursor_position;
 
     return;
@@ -340,7 +246,7 @@ void print_command_line(CGSE_program_state_t *ps)
 {
     wmove(ps->command_window, ps->line, 0);
     wprintw(ps->command_window, "%s> %s", ps->command_prefix, ps->command_buffer);
-    wmove(ps->command_window, ps->line, strlen(ps->command_prefix) + 2 + ps->command_index);
+    wmove(ps->command_window, ps->line, strlen(ps->command_prefix) + 2 + ps->cursor_position);
     wclrtoeol(ps->command_window);
     wmove(ps->command_window, ps->line, ps->col);
 
@@ -356,4 +262,131 @@ void CGSE_terminal_shutdown(void)
     return;
 }
 
+void commandline_action(CGSE_program_state_t *ps, CGSE_commandline_action_enum_t action, int key)
+{
+    if (ps == NULL) {
+        return;
+    }
+
+    size_t buffer_len = strlen(ps->command_buffer);
+    switch (action) {
+        case CGSE_CMD_ACTION_CURSOR_UP:
+            if (ps->command_history_index > 0) {
+                char *previous_command = CGSE_recall_command((size_t)ps->command_history_index - 1);
+                if (previous_command != NULL) {
+                    snprintf(ps->command_buffer, COMMAND_BUFFER_SIZE, "%s", previous_command);
+                    ps->command_history_index--;
+                    move_cursor(ps, CGSE_CURSOR_END_OF_LINE);
+                }
+            }
+            break;
+
+        case CGSE_CMD_ACTION_CURSOR_DOWN:
+            if (ps->command_history_index < CGSE_number_of_stored_commands()) {
+                char *next_command = CGSE_recall_command((size_t)(ps->command_history_index+1));
+                if (next_command != NULL) {
+                    snprintf(ps->command_buffer, COMMAND_BUFFER_SIZE, "%s", next_command);
+                    ps->command_history_index++;
+                    move_cursor(ps, CGSE_CURSOR_END_OF_LINE);
+                }
+            }
+            break;
+        
+        case CGSE_CMD_ACTION_CURSOR_LEFT:
+            if (ps->cursor_position > 0) {
+                ps->cursor_position--;
+            }
+            break;
+
+        case CGSE_CMD_ACTION_CURSOR_RIGHT:
+            if (ps->cursor_position < buffer_len && ps->cursor_position < COMMAND_BUFFER_SIZE - 1) {
+                ps->cursor_position++;
+            }
+            break;
+
+        case CGSE_CMD_ACTION_INSERT:
+            if (ps->cursor_position < COMMAND_BUFFER_SIZE - 1) {
+                // Move characters to the right 
+                if (ps->cursor_position < buffer_len && buffer_len < COMMAND_BUFFER_SIZE - 1) {
+                    for (int k = buffer_len - 1; k >= ps->cursor_position; k--) {
+                        ps->command_buffer[k+1] = ps->command_buffer[k];
+                    }
+                }
+                ps->command_buffer[ps->cursor_position] = key;
+                ps->cursor_position++;
+                ps->col++;
+                buffer_len++;
+                ps->command_buffer[buffer_len] = '\0';
+                ps->command_history_index = CGSE_number_of_stored_commands() - 1;
+                CGSE_remove_command(ps->command_history_index);
+                CGSE_store_command(ps->command_buffer);
+            }
+            break;
+
+        case CGSE_CMD_ACTION_BACKSPACE:
+            if (ps->cursor_position > 0) {
+                ps->cursor_position--;
+                ps->col--;
+                for (int c = ps->cursor_position; c < buffer_len && c < COMMAND_BUFFER_SIZE - 2; c++) {
+                    ps->command_buffer[c] = ps->command_buffer[c+1];
+                }
+                buffer_len--;
+                ps->command_buffer[buffer_len] = '\0';
+                ps->command_history_index = CGSE_number_of_stored_commands() - 1;
+                CGSE_remove_command(ps->command_history_index);
+                CGSE_store_command(ps->command_buffer);
+            }
+            break;
+
+        default:
+            break;
+    }
+
+    return;
+}
+
+void commandline_redraw(CGSE_program_state_t *ps)
+{
+    if (ps == NULL) {
+        return;
+    }
+
+    // Scroll window up?
+    if (ps->line > ps->command_window_height - 1) {
+        wscrl(ps->command_window, 1);
+        ps->line = ps->command_window_height - 1;
+    }
+
+    size_t buffer_len = strlen(ps->command_buffer);
+    ps->col = ps->cursor_position + strlen(ps->command_prefix) + 2;
+
+    // Redraw the command line
+    wmove(ps->command_window, ps->line, 0);
+    wprintw(ps->command_window, "%s> %s", ps->command_prefix, ps->command_buffer);
+    wclrtoeol(ps->command_window);
+    wmove(ps->command_window, ps->line, ps->col);
+
+    return;
+}
+
+
+void command_window_print(CGSE_program_state_t *ps, const char *fmt, ...)
+{
+    wmove(ps->command_window, ps->line, 0);
+    va_list ap;
+    va_start(ap, fmt);
+    vw_printw(ps->command_window, fmt, ap);
+    va_end(ap);
+    wclrtoeol(ps->command_window);
+    ps->line++;
+
+    return;
+}
+
+double current_time(void) 
+{
+    struct timeval tv = {0};
+    gettimeofday(&tv, NULL);
+    return (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
+}
 

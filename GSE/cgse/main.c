@@ -29,6 +29,8 @@
 
 volatile sig_atomic_t running = 1;
 volatile uint8_t TASK_heartbeat_is_on = 0;
+int lfs = 0;
+uint8_t LFS_is_lfs_mounted = 0;
 
 extern const int16_t TCMD_NUM_TELECOMMANDS;
 extern const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[];
@@ -236,11 +238,7 @@ int CGSE_init(CGSE_program_state_t *ps)
     }
     
     if (ps->auto_connect) {
-        status = CGSE_connect(ps, ".connect");
-        if (status != 0) {
-            wprintw(ps->command_window, "\n Unable to connect to satellite using \"%s\"\n", ps->satellite_link_path);
-        }
-
+        CGSE_connect(ps, ".connect");
     }
 
     int read_history_res = CGSE_read_command_history(ps);
@@ -248,6 +246,7 @@ int CGSE_init(CGSE_program_state_t *ps)
         CGSE_store_command("");
     }
 
+    wmove(ps->command_window, ps->line, 0);
     wprintw(ps->command_window, "%s> %s", ps->command_prefix, ps->command_buffer);
     wrefresh(ps->command_window);
 

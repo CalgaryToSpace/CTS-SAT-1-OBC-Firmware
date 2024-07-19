@@ -16,7 +16,7 @@ size_t CGSE_command_history_length = 0;
 /// ... 
 /// Return values: 
 ///   -1 memory issue
-int CGSE_store_command(char *cmd) 
+int CGSE_store_command(const char *cmd) 
 {
     // history buffer in CGSE_COMMAND_HISTORY_MAX_LENGTH plus 1 to account for
     // the command line storage
