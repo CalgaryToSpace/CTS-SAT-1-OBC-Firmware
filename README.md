@@ -58,6 +58,7 @@ Please add your name to the list below in your first Pull Request!
 
 * Parker L.
 * Nadeem M.
+* Chris K.
 
 
 ## Random Notes
