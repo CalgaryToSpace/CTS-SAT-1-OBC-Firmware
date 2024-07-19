@@ -82,6 +82,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
+        .tcmd_name = "reboot",
+        .tcmd_func = TCMDEXEC_reboot,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
         .tcmd_name = "scan_i2c_bus",
         .tcmd_func = TCMDEXEC_scan_i2c_bus,
         .number_of_args = 1,
@@ -285,5 +291,11 @@ uint8_t TCMDEXEC_available_telecommands(const char *args_str, TCMD_TelecommandCh
         remaining_space -= line_length;
     }
 
+    return 0;
+}
+
+uint8_t TCMDEXEC_reboot(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    NVIC_SystemReset();
     return 0;
 }
