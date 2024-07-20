@@ -28,7 +28,7 @@ uint8_t TCMDEXEC_ant_deploy_antenna1(const char *args_str, TCMD_TelecommandChann
                         char *response_output_buf, uint16_t response_output_buf_len) {
 
     uint64_t arg_activation_time;
-    const uint8_t parse_activation_time_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 0, &arg_activation_time);
+    const uint8_t parse_activation_time_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str),  0, &arg_activation_time);
     if (parse_activation_time_result != 0) {
         // error parsing
         snprintf(
