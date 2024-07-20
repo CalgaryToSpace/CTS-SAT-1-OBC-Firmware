@@ -63,7 +63,6 @@ static LOG_channel_t LOG_channels[] = {
 };
 static const uint16_t LOG_NUM_CHANNELS = sizeof(LOG_channels) / sizeof(LOG_channel_t);
 
-// LOG_SYSTEM_UNKNOWN must be the first entry
 static LOG_system_t LOG_systems[] = {
     {LOG_SYSTEM_OBC, "OBC", "/logs/obc_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_UHF_RADIO, "UHF_RADIO", "/logs/uhf_radio_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
@@ -79,6 +78,7 @@ static LOG_system_t LOG_systems[] = {
     {LOG_SYSTEM_LOG, "LOG", "/logs/log_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_TELECOMMAND, "TELECOMMAND", "/logs/telecommand_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_UNIT_TEST, "UNIT_TEST", "/logs/unit_test_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
+// LOG_SYSTEM_UNKNOWN must be the LAST entry so it is easy to find below
     {LOG_SYSTEM_UNKNOWN, "UNKNOWN", "/logs/unknown_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
 };
 static const uint16_t LOG_NUM_SYSTEMS = sizeof(LOG_systems) / sizeof(LOG_system_t);
