@@ -605,7 +605,7 @@ uint8_t ADCS_TC_Ack(ADCS_TC_Ack_Struct *ack);
 uint8_t ADCS_Run_Once();
 uint8_t ADCS_Set_Magnetometer_Mode(ADCS_Magnetometer_Mode mode);
 uint8_t ADCS_Set_Magnetorquer_Output(double x_duty, double y_duty, double z_duty);
-uint8_t ADCS_Set_Wheel_Speed(uint16_t x_speed, uint16_t y_speed, uint16_t z_speed);
+uint8_t ADCS_Set_Wheel_Speed(int16_t x_speed, int16_t y_speed, int16_t z_speed);
 uint8_t ADCS_Save_Config();
 uint8_t ADCS_Estimate_Angular_Rates();
 uint8_t ADCS_Get_LLH_Position();

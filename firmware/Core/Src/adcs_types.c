@@ -19,8 +19,8 @@
 	Telemetry: 
 
 	Done: (see test logs for more info)
-	Need Unit Tests: 146, 151, 153, 154, 158, 159, 161, 162, 163, 166, 167, 168, 169, 172, 176, 177, 178, 179, 180, 191
-	Untested: 155, 156, 157, 170, 201, 204, 223
+	Need Unit Tests: 146, 151, 153, 154, 158, 159, 161, 162, 163, 166, 167, 168, 169, 172, 176, 177, 178, 179, 180, 191, 155, 156, 157, 204, 223, 170, 201
+	Untested:  
 	Need Work: 15/199, 23/138, 28/227
 	Tested: 7, 9, 10, 11, 13, 14, 17, 26, 27, 45, 55, 63, 64, 133, 145, 147, 150, 197, 200, 207
 	Telecommand Written: 240
@@ -104,8 +104,7 @@ uint8_t ADCS_Reset() {
 /// @brief Instruct the ADCS to execute the titular command.
 /// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Identification() {
-	// TODO: Follow this format for all other telemetry requests!
-	
+
 	uint8_t data_length = 8;
 	uint8_t data_received[data_length]; // define temp buffer
 
@@ -279,7 +278,7 @@ uint8_t ADCS_Set_Magnetorquer_Output(double x_duty, double y_duty, double z_duty
 
 /// @brief Instruct the ADCS to execute the titular command.
 /// @return 0 if successful, non-zero if an error occurred in transmission.
-uint8_t ADCS_Set_Wheel_Speed(uint16_t x_speed, uint16_t y_speed, uint16_t z_speed) {
+uint8_t ADCS_Set_Wheel_Speed(int16_t x_speed, int16_t y_speed, int16_t z_speed) {
 	// only valid after ADCS_Enable_Manual_Control is run
 	// for the duty equations, raw parameter value is in rpm
 	uint8_t data_send[6]; // 6-byte data to send
@@ -347,7 +346,22 @@ uint8_t ADCS_Pack_to_Power_Control(uint8_t* data_received, ADCS_Power_Control_St
 }
 
 
-/// @brief Instruct the ADCS to execute the titular command.
+/// @brief Instruct the ADCS to set the magnetometer configuration.
+/// @param mounting_transform_alpha_angle Mounting transform alpha angle [deg] 
+/// @param mounting_transform_beta_angle Mounting transform beta angle [deg]
+/// @param mounting_transform_gamma_angle Mounting transform gamma angle [deg]
+/// @param channel_1_offset Channel 1 offset value
+/// @param channel_2_offset Channel 2 offset value
+/// @param channel_3_offset Channel 3 offset value
+/// @param sensitivity_matrix_s11 Value (1, 1) of the magnetometer sensitivity matrix
+/// @param sensitivity_matrix_s22 Value (2, 2) of the magnetometer sensitivity matrix
+/// @param sensitivity_matrix_s33 Value (3, 3) of the magnetometer sensitivity matrix
+/// @param sensitivity_matrix_s12 Value (1, 2) of the magnetometer sensitivity matrix
+/// @param sensitivity_matrix_s13 Value (1, 3) of the magnetometer sensitivity matrix
+/// @param sensitivity_matrix_s21 Value (2, 1) of the magnetometer sensitivity matrix
+/// @param sensitivity_matrix_s23 Value (2, 3) of the magnetometer sensitivity matrix
+/// @param sensitivity_matrix_s31 Value (3, 1) of the magnetometer sensitivity matrix
+/// @param sensitivity_matrix_s32 Value (3, 2) of the magnetometer sensitivity matrix
 /// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Set_Magnetometer_Config(
 		double mounting_transform_alpha_angle,
@@ -371,23 +385,21 @@ uint8_t ADCS_Set_Magnetometer_Config(
 	// reorder uint8_t bytes to be low-byte then high-byte
 	// actual config is raw value divided by 100 for mounting transform angles
 	// and raw value divided by 1000 for everything else
-	// these are all INT, not UINT! 
-	// TODO: change this after testing
-	ADCS_switch_order(data_send, ((uint16_t) mounting_transform_alpha_angle * 100), 0);
-	ADCS_switch_order(data_send, ((uint16_t) mounting_transform_beta_angle * 100), 2);
-	ADCS_switch_order(data_send, ((uint16_t) mounting_transform_gamma_angle * 100), 4);
-	ADCS_switch_order(data_send, ((uint16_t) channel_1_offset * 1000), 6);
-	ADCS_switch_order(data_send, ((uint16_t) channel_2_offset * 1000), 8);
-	ADCS_switch_order(data_send, ((uint16_t) channel_3_offset * 1000), 10);
-	ADCS_switch_order(data_send, ((uint16_t) sensitivity_matrix_s11 * 1000), 12);
-	ADCS_switch_order(data_send, ((uint16_t) sensitivity_matrix_s22 * 1000), 14);
-	ADCS_switch_order(data_send, ((uint16_t) sensitivity_matrix_s33 * 1000), 16);
-	ADCS_switch_order(data_send, ((uint16_t) sensitivity_matrix_s12 * 1000), 18);
-	ADCS_switch_order(data_send, ((uint16_t) sensitivity_matrix_s13 * 1000), 20);
-	ADCS_switch_order(data_send, ((uint16_t) sensitivity_matrix_s21 * 1000), 22);
-	ADCS_switch_order(data_send, ((uint16_t) sensitivity_matrix_s23 * 1000), 24);
-	ADCS_switch_order(data_send, ((uint16_t) sensitivity_matrix_s31 * 1000), 26);
-	ADCS_switch_order(data_send, ((uint16_t) sensitivity_matrix_s32 * 1000), 28);
+	ADCS_switch_order(data_send, ((int16_t) (mounting_transform_alpha_angle * 100)), 0);
+	ADCS_switch_order(data_send, ((int16_t) (mounting_transform_beta_angle * 100)), 2);
+	ADCS_switch_order(data_send, ((int16_t) (mounting_transform_gamma_angle * 100)), 4);
+	ADCS_switch_order(data_send, ((int16_t) (channel_1_offset * 1000)), 6);
+	ADCS_switch_order(data_send, ((int16_t) (channel_2_offset * 1000)), 8);
+	ADCS_switch_order(data_send, ((int16_t) (channel_3_offset * 1000)), 10);
+	ADCS_switch_order(data_send, ((int16_t) (sensitivity_matrix_s11 * 1000)), 12);
+	ADCS_switch_order(data_send, ((int16_t) (sensitivity_matrix_s22 * 1000)), 14);
+	ADCS_switch_order(data_send, ((int16_t) (sensitivity_matrix_s33 * 1000)), 16);
+	ADCS_switch_order(data_send, ((int16_t) (sensitivity_matrix_s12 * 1000)), 18);
+	ADCS_switch_order(data_send, ((int16_t) (sensitivity_matrix_s13 * 1000)), 20);
+	ADCS_switch_order(data_send, ((int16_t) (sensitivity_matrix_s21 * 1000)), 22);
+	ADCS_switch_order(data_send, ((int16_t) (sensitivity_matrix_s23 * 1000)), 24);
+	ADCS_switch_order(data_send, ((int16_t) (sensitivity_matrix_s31 * 1000)), 26);
+	ADCS_switch_order(data_send, ((int16_t) (sensitivity_matrix_s32 * 1000)), 28);
 
 	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_CUBEACP_SET_MAGNETOMETER_CONFIG, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
@@ -782,9 +794,9 @@ uint8_t ADCS_Set_Commanded_Attitude_Angles(double x, double y, double z) {
 	// angle >> 8 gives upper byte, angle & 0x00FF gives lower byte
 	uint8_t data_send[6];
 	// swap low and high bytes and populate data_send
-	ADCS_switch_order(data_send, ((uint16_t) (x * 100)), 0);
-	ADCS_switch_order(data_send, ((uint16_t) (y * 100)), 2);
-	ADCS_switch_order(data_send, ((uint16_t) (z * 100)), 4);
+	ADCS_switch_order(data_send, ((int16_t) (x * 100)), 0);
+	ADCS_switch_order(data_send, ((int16_t) (y * 100)), 2);
+	ADCS_switch_order(data_send, ((int16_t) (z * 100)), 4);
 	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_CUBEACP_SET_COMMANDED_ATTITUDE_ANGLES, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
@@ -892,8 +904,8 @@ uint8_t ADCS_Set_ASGP4_Params(double incl_coefficient, double raan_coefficient, 
 	ADCS_switch_order(data_send, (uint16_t) (pos_coefficient * 1000), 10);
 	data_send[12] = (uint8_t) (maximum_position_error * 10);
 	data_send[13] = (uint8_t) asgp4_filter;
-	ADCS_switch_order_32(data_send, (uint32_t) (xp_coefficient * 10000000), 14);
-	ADCS_switch_order_32(data_send, (uint32_t) (yp_coefficient * 10000000), 18);
+	ADCS_switch_order_32(data_send, (int32_t) (xp_coefficient * 10000000), 14);
+	ADCS_switch_order_32(data_send, (int32_t) (yp_coefficient * 10000000), 18);
 	data_send[22] = gps_roll_over;
 	data_send[23] = (uint8_t) (position_sd * 10);
 	data_send[24] = (uint8_t) (velocity_sd * 100);
@@ -1004,9 +1016,9 @@ uint8_t ADCS_Set_Rate_Gyro_Config(ADCS_Axis_Select gyro1, ADCS_Axis_Select gyro2
 	data_send[1] = (uint8_t) gyro2;
 	data_send[2] = (uint8_t) gyro3;
 
-	ADCS_switch_order(data_send, (uint16_t) (x_rate_offset * 1000), 3);
-	ADCS_switch_order(data_send, (uint16_t) (x_rate_offset * 1000), 5);
-	ADCS_switch_order(data_send, (uint16_t) (x_rate_offset * 1000), 7);
+	ADCS_switch_order(data_send, (int16_t) (x_rate_offset * 1000), 3);
+	ADCS_switch_order(data_send, (int16_t) (y_rate_offset * 1000), 5);
+	ADCS_switch_order(data_send, (int16_t) (z_rate_offset * 1000), 7);
 
 	data_send[9] = rate_sensor_mult;
 

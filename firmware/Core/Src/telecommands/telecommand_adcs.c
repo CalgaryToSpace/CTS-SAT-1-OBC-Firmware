@@ -33,10 +33,10 @@ uint8_t TCMDEXEC_ADCS_set_wheel_speed(const uint8_t *args_str, TCMD_TelecommandC
     // parse arguments: first into uint64_t, then convert to correct form for input
     uint8_t num_args = 3;
     uint64_t arguments[num_args]; 
-    uint16_t args_16[num_args];
+    int16_t args_16[num_args];
     for (uint8_t i = 0; i < num_args; i++) {
         TCMD_extract_uint64_arg(args_str, strlen((char*)args_str), i, &arguments[i]);
-        args_16[i] = (uint16_t) arguments[i];
+        args_16[i] = (int16_t) arguments[i];
     }
     
     uint8_t status = ADCS_Set_Wheel_Speed(args_16[0], args_16[1], args_16[2]); 
@@ -265,15 +265,15 @@ uint8_t TCMDEXEC_ADCS_set_power_control(const uint8_t *args_str, TCMD_Telecomman
 ///     - Arg 3: Channel 1 offset value
 ///     - Arg 4: Channel 2 offset value
 ///     - Arg 5: Channel 3 offset value
-///     - Arg 0: Value (1, 1) of the magnetometer sensitivity matrix
-///     - Arg 0: Value (2, 2) of the magnetometer sensitivity matrix
-///     - Arg 0: Value (3, 3) of the magnetometer sensitivity matrix
-///     - Arg 0: Value (1, 2) of the magnetometer sensitivity matrix
-///     - Arg 0: Value (1, 3) of the magnetometer sensitivity matrix
-///     - Arg 0: Value (2, 1) of the magnetometer sensitivity matrix
-///     - Arg 0: Value (2, 3) of the magnetometer sensitivity matrix
-///     - Arg 0: Value (3, 1) of the magnetometer sensitivity matrix
-///     - Arg 0: Value (3, 2) of the magnetometer sensitivity matrix
+///     - Arg 6: Value (1, 1) of the magnetometer sensitivity matrix
+///     - Arg 7: Value (2, 2) of the magnetometer sensitivity matrix
+///     - Arg 8: Value (3, 3) of the magnetometer sensitivity matrix
+///     - Arg 9: Value (1, 2) of the magnetometer sensitivity matrix
+///     - Arg 10: Value (1, 3) of the magnetometer sensitivity matrix
+///     - Arg 11: Value (2, 1) of the magnetometer sensitivity matrix
+///     - Arg 12: Value (2, 3) of the magnetometer sensitivity matrix
+///     - Arg 13: Value (3, 1) of the magnetometer sensitivity matrix
+///     - Arg 14: Value (3, 2) of the magnetometer sensitivity matrix
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_magnetometer_config(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
