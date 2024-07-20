@@ -138,7 +138,7 @@ void TASK_execute_telecommands(void *argument) {
 		}
 
 		// Execute the telecommand.
-		char response_output_buf[512] = {0};
+		char response_output_buf[TCMD_MAX_RESPONSE_BUFFER_LENGTH] = {0};
 		TCMD_execute_telecommand_in_agenda(
 			next_tcmd_slot,
 			response_output_buf,
