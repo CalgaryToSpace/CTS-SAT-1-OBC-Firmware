@@ -177,7 +177,7 @@ uint8_t LOG_is_channel_enabled(LOG_channel_enum_t channel)
 ///     debugging messages state
 void LOG_set_channel_debugging_messages_state(LOG_channel_enum_t channel, uint8_t state)
 {
-    uint32_t mask = LOG_SEVERITY_DEBUG;
+    const uint32_t mask = LOG_SEVERITY_DEBUG;
     for (uint16_t i = 0; i < LOG_NUMBER_OF_CHANNELS; i++) {
         if (LOG_channels[i].channel == channel) {
             if (state) {
@@ -205,7 +205,7 @@ void LOG_set_channel_debugging_messages_state(LOG_channel_enum_t channel, uint8_
 ///     channel
 void LOG_set_system_debugging_messages_state(LOG_system_enum_t system, uint8_t state)
 {
-    uint32_t mask = LOG_SEVERITY_DEBUG;
+    const uint32_t mask = LOG_SEVERITY_DEBUG;
     for (uint16_t i = 0; i < LOG_NUMBER_OF_SYSTEMS; i++) {
         if (LOG_systems[i].system == system) {
             if (state) {
