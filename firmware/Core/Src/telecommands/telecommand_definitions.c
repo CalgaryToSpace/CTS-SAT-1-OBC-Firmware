@@ -15,6 +15,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <inttypes.h>
+#include <task.h>
 
 extern volatile uint8_t TASK_heartbeat_is_on;
 
@@ -77,6 +78,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "available_telecommands",
         .tcmd_func = TCMDEXEC_available_telecommands,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "retrieve_freertos_metadata",
+        .tcmd_func = TCMDEXEC_retrieve_freertos_metadata,
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
@@ -277,6 +284,13 @@ uint8_t TCMDEXEC_available_telecommands(const char *args_str, TCMD_TelecommandCh
         p += line_length;
         remaining_space -= line_length;
     }
+
+    return 0;
+}
+
+uint8_t TCMDEXEC_retreive_freertos_metadata(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    
 
     return 0;
 }
