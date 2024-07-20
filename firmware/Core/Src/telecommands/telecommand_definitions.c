@@ -173,42 +173,42 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
 
     // ****************** SECTION: log_telecommand_defs ******************
     {
-        .tcmd_name = "log_enable_channels",
-        .tcmd_func = TCMDEXEC_log_enable_channels,
+        .tcmd_name = "log_set_channel_state",
+        .tcmd_func = TCMDEXEC_log_set_channel_state,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "log_set_file_logging_state_for_system",
+        .tcmd_func = TCMDEXEC_log_set_file_logging_state_for_system,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "log_report_channel_logging_state",
+        .tcmd_func = TCMDEXEC_log_report_channel_logging_state,
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
-        .tcmd_name = "log_disable_channels",
-        .tcmd_func = TCMDEXEC_log_disable_channels,
+        .tcmd_name = "log_report_file_logging_state_for_system",
+        .tcmd_func = TCMDEXEC_log_report_system_file_logging_state,
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
-        .tcmd_name = "log_enable_systems",
-        .tcmd_func = TCMDEXEC_log_enable_systems,
-        .number_of_args = 1,
+        .tcmd_name = "log_set_channel_debugging_messages_state",
+        .tcmd_func = TCMDEXEC_log_set_channel_debugging_messages_state,
+        .number_of_args = 2,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
-        .tcmd_name = "log_disable_systems",
-        .tcmd_func = TCMDEXEC_log_disable_systems,
-        .number_of_args = 1,
+        .tcmd_name = "log_set_system_debugging_messages_state",
+        .tcmd_func = TCMDEXEC_log_set_system_debugging_messages_state,
+        .number_of_args = 2,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
-    {
-        .tcmd_name = "log_channels_status",
-        .tcmd_func = TCMDEXEC_log_channels_status,
-        .number_of_args = 1,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },
-    {
-        .tcmd_name = "log_systems_status",
-        .tcmd_func = TCMDEXEC_log_systems_status,
-        .number_of_args = 1,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },
-    // ****************** END SECTION: log_telecommand_defs ******************
+   // ****************** END SECTION: log_telecommand_defs ******************
 
 };
 

@@ -49,23 +49,17 @@ enum {
     LOG_SYSTEM_ON = 1,
 };
 
-void LOG_message(LOG_system_enum_t from, LOG_severity_enum_t severity, LOG_channel_enum_t channels, const char fmt[], ...);
-LOG_channel_enum_t LOG_all_channels_except(LOG_channel_enum_t exceptions);
-
-void LOG_enable_channels(LOG_channel_enum_t channels);
-void LOG_disable_channels(LOG_channel_enum_t channels);
-uint8_t LOG_channel_is_enabled(LOG_channel_enum_t channel);
-
-void LOG_enable_systems(LOG_system_enum_t systems);
-void LOG_disable_systems(LOG_system_enum_t systems);
-uint8_t LOG_system_logging_is_enabled(LOG_system_enum_t system);
-void LOG_set_severity_mask(LOG_system_enum_t systems, LOG_severity_enum_t severity_mask);
-const char* LOG_severity_enum_t_to_str(LOG_severity_enum_t severity);
-
-void LOG_set_channel_debugging_messages_state(LOG_channel_enum_t channels, uint8_t state);
-void LOG_set_system_debugging_messages_state(LOG_system_enum_t systems, uint8_t state);
-
-void LOG_channels_status(LOG_channel_enum_t channels);
-void LOG_systems_status(LOG_system_enum_t systems);
+void LOG_message(LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_t channel_mask, const char fmt[], ...);
+uint32_t LOG_all_channels_except(uint32_t exceptions);
+uint8_t LOG_is_channel_enabled(LOG_channel_enum_t channel);
+void LOG_set_channel_debugging_messages_state(LOG_channel_enum_t channel, uint8_t state);
+void LOG_set_system_debugging_messages_state(LOG_system_enum_t system, uint8_t state);
+uint8_t LOG_is_file_logging_enabled_for_system(LOG_system_enum_t system);
+void LOG_set_severity_mask_for_system(LOG_system_enum_t system, uint32_t severity_mask);
+void LOG_set_file_logging_state_for_system(LOG_system_enum_t system, uint8_t state);
+void LOG_set_channel_state(LOG_channel_enum_t channel, uint8_t state);
+void LOG_report_channel_logging_state(LOG_channel_enum_t channels);
+void LOG_report_system_file_logging_state(LOG_system_enum_t systems);
+const char* LOG_get_severity_name(LOG_severity_enum_t severity);
 
 #endif // __INCLUDE__GUARD__LOG_H_

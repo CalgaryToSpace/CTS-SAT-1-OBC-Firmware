@@ -54,14 +54,24 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func_name = "TCMD_extract_hex_array_arg"
     },
     {
-        .test_func = TEST_EXEC__LOG_toggle_channels,
+        .test_func = TEST_EXEC__LOG_enable_disable_LOG_CHANNEL_FILE,
         .test_file = "log/log",
-        .test_func_name = "TEST_EXEC__LOG_toggle_channels"
+        .test_func_name = "TEST_EXEC__LOG_enable_disable_LOG_CHANNEL_FILE"
     },
     {
-        .test_func = TEST_EXEC__LOG_toggle_systems,
+        .test_func = TEST_EXEC__LOG_enable_disable_LOG_CHANNEL_UHF_RADIO,
         .test_file = "log/log",
-        .test_func_name = "TEST_EXEC__LOG_toggle_systems"
+        .test_func_name = "TEST_EXEC__LOG_enable_disable_LOG_CHANNEL_UHF_RADIO"
+    },
+    {
+        .test_func = TEST_EXEC__LOG_enable_disable_LOG_CHANNEL_UMBILICAL_UART,
+        .test_file = "log/log",
+        .test_func_name = "TEST_EXEC__LOG_enable_disable_LOG_CHANNEL_UMBILICAL_UART"
+    },
+    {
+        .test_func = TEST_EXEC__LOG_enable_disable_LOG_FILE_LOGGING_FOR_SYSTEM_MPI,
+        .test_file = "log/log",
+        .test_func_name = "TEST_EXEC__LOG_enable_disable_LOG_FILE_LOGGING_FOR_SYSTEM_MPI"
     },
     {
         .test_func = TEST_EXEC__LOG_all_channels_except,
