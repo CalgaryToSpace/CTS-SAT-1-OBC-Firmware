@@ -16,6 +16,7 @@
 #include <string.h>
 #include <inttypes.h>
 #include <task.h>
+#include <portmacro.h>
 
 extern volatile uint8_t TASK_heartbeat_is_on;
 
@@ -288,9 +289,47 @@ uint8_t TCMDEXEC_available_telecommands(const char *args_str, TCMD_TelecommandCh
     return 0;
 }
 
-uint8_t TCMDEXEC_retreive_freertos_metadata(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_retrieve_freertos_metadata(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-    
+    TaskStatus_t *pxTaskStatusArray;
+    UBaseType_t uxArraySize, x;
+    unsigned long ulTotalRunTime;
+
+    // Get the number of tasks
+    uxArraySize = uxTaskGetNumberOfTasks();
+
+    // Allocate memory for the task status array
+    pxTaskStatusArray = pvPortMalloc(uxArraySize * sizeof(TaskStatus_t));
+
+    if (pxTaskStatusArray != NULL) {
+        // Generate raw status information about each task
+        uxArraySize = uxTaskGetSystemState(pxTaskStatusArray, uxArraySize, &ulTotalRunTime);
+
+        // Initialize the response buffer
+        snprintf(response_output_buf, response_output_buf_len, "Task Name\t\tState\tPriority\tStack\tTask Number\n");
+        snprintf(response_output_buf + strlen(response_output_buf), response_output_buf_len - strlen(response_output_buf),
+                 "--------------------------------------------------------\n");
+
+        // Append task information to the response buffer
+        for (x = 0; x < uxArraySize; x++) {
+            snprintf(response_output_buf + strlen(response_output_buf), response_output_buf_len - strlen(response_output_buf),
+                     "%-16s\t%-4s\t%-8u\t%-5u\t%-10u\n",
+                     pxTaskStatusArray[x].pcTaskName,
+                     pxTaskStatusArray[x].eCurrentState == eRunning ? "RUN" :
+                     pxTaskStatusArray[x].eCurrentState == eReady ? "RDY" :
+                     pxTaskStatusArray[x].eCurrentState == eBlocked ? "BLK" :
+                     pxTaskStatusArray[x].eCurrentState == eSuspended ? "SUSP" :
+                     pxTaskStatusArray[x].eCurrentState == eDeleted ? "DEL" : "UNKN",
+                     pxTaskStatusArray[x].uxCurrentPriority,
+                     pxTaskStatusArray[x].usStackHighWaterMark,
+                     pxTaskStatusArray[x].xTaskNumber);
+        }
+
+        // The array is no longer needed, free the memory it consumes. 
+        vPortFree(pxTaskStatusArray);
+    } else {
+        snprintf(response_output_buf, response_output_buf_len, "Failed to allocate memory for task status array.\n");
+    }
 
     return 0;
 }
