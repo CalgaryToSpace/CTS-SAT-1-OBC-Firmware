@@ -57,18 +57,18 @@ uint8_t TEST_EXEC__LOG_enable_disable_LOG_CHANNEL_UMBILICAL_UART(void)
 
 uint8_t TEST_EXEC__LOG_enable_disable_LOG_FILE_LOGGING_FOR_SYSTEM_MPI(void)
 {
-    uint8_t initial_is_file_logging_enabled = LOG_is_file_logging_enabled_for_system(LOG_SYSTEM_MPI);
+    uint8_t initial_is_file_logging_enabled = LOG_is_system_file_logging_enabled(LOG_SYSTEM_MPI);
 
     // Test case 1: enable and disable logging to LOG_SYSTEM_MPI
     // Enable
-    LOG_set_file_logging_state_for_system(LOG_SYSTEM_MPI, LOG_SYSTEM_ON);
-    TEST_ASSERT(LOG_is_file_logging_enabled_for_system(LOG_SYSTEM_MPI) == 1);
+    LOG_set_system_file_logging_state(LOG_SYSTEM_MPI, LOG_SYSTEM_ON);
+    TEST_ASSERT(LOG_is_system_file_logging_enabled(LOG_SYSTEM_MPI) == 1);
     // Disable
-    LOG_set_file_logging_state_for_system(LOG_SYSTEM_MPI, LOG_SYSTEM_OFF);
-    TEST_ASSERT(LOG_is_file_logging_enabled_for_system(LOG_SYSTEM_MPI) == 0);
+    LOG_set_system_file_logging_state(LOG_SYSTEM_MPI, LOG_SYSTEM_OFF);
+    TEST_ASSERT(LOG_is_system_file_logging_enabled(LOG_SYSTEM_MPI) == 0);
     // Restore initial state
-    LOG_set_file_logging_state_for_system(LOG_SYSTEM_MPI, initial_is_file_logging_enabled);
-    TEST_ASSERT(LOG_is_file_logging_enabled_for_system(LOG_SYSTEM_MPI) == initial_is_file_logging_enabled);
+    LOG_set_system_file_logging_state(LOG_SYSTEM_MPI, initial_is_file_logging_enabled);
+    TEST_ASSERT(LOG_is_system_file_logging_enabled(LOG_SYSTEM_MPI) == initial_is_file_logging_enabled);
 
     return 0;
 }

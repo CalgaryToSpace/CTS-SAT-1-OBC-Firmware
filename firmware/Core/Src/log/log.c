@@ -67,7 +67,7 @@ static LOG_system_t LOG_systems[] = {
     {LOG_SYSTEM_LOG, "LOG", "/logs/log_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_TELECOMMAND, "TELECOMMAND", "/logs/telecommand_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_UNIT_TEST, "UNIT_TEST", "/logs/unit_test_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
-// LOG_SYSTEM_UNKNOWN must be the LAST entry so it is easy to find below
+// LOG_SYSTEM_UNKNOWN must be the LAST entry to make it easy to find below
     {LOG_SYSTEM_UNKNOWN, "UNKNOWN", "/logs/unknown_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
 };
 static const uint16_t LOG_NUMBER_OF_SYSTEMS = sizeof(LOG_systems) / sizeof(LOG_system_t);
@@ -229,7 +229,7 @@ void LOG_set_system_debugging_messages_state(LOG_system_enum_t system, uint8_t s
 /// @brief Check whether file logging is enabled for a subsystem
 /// @param system
 /// @return returns 1 if logging to file is enabled, 0 otherwise.
-uint8_t LOG_is_file_logging_enabled_for_system(LOG_system_enum_t system)
+uint8_t LOG_is_system_file_logging_enabled(LOG_system_enum_t system)
 {
     for (uint16_t i = 0; i < LOG_NUMBER_OF_SYSTEMS; i++) {
         if (LOG_systems[i].system == system) {
@@ -238,14 +238,14 @@ uint8_t LOG_is_file_logging_enabled_for_system(LOG_system_enum_t system)
     }
     
     // System not found? Return false
-    LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "LOG_is_file_logging_enabled_for_system(): unknown system: %d", system);
+    LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "LOG_is_system_file_logging_enabled(): unknown system: %d", system);
     return 0;
 }
 
 /// @brief Set the logging severity bitfield mask for a subsystem
 /// @param system specified system
 /// @param severity_mask bitfield representing the severities to be logged
-void LOG_set_severity_mask_for_system(LOG_system_enum_t system, uint32_t severity_mask)
+void LOG_set_system_severity_mask(LOG_system_enum_t system, uint32_t severity_mask)
 {
     for (uint16_t i = 0; i < LOG_NUMBER_OF_SYSTEMS; i++) {
         if (LOG_systems[i].system == system) {
@@ -255,14 +255,14 @@ void LOG_set_severity_mask_for_system(LOG_system_enum_t system, uint32_t severit
     }
 
     // System not found
-    LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "LOG_set_severity_mask_for_system(): unknown system: %d", system);
+    LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "LOG_set_system_severity_mask(): unknown system: %d", system);
     return;
 }
 
 /// @brief Enable or disable logging to file for a subsystem
 /// @param system specified subsystem
 /// @state 0: disable  1:  enable
-void LOG_set_file_logging_state_for_system(LOG_system_enum_t system, uint8_t state)
+void LOG_set_system_file_logging_state(LOG_system_enum_t system, uint8_t state)
 {
     for (uint16_t i = 0; i < LOG_NUMBER_OF_SYSTEMS; i++) {
         if (LOG_systems[i].system == system) {
@@ -277,7 +277,7 @@ void LOG_set_file_logging_state_for_system(LOG_system_enum_t system, uint8_t sta
     }
 
     // System not found
-    LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "LOG_set_file_logging_state_for_system(): unknown system: %d", system);
+    LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "LOG_set_system_file_logging_state(): unknown system: %d", system);
     return;
 }
 

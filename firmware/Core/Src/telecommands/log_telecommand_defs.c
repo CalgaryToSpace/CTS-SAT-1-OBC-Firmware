@@ -19,7 +19,7 @@ uint8_t TCMDEXEC_log_set_channel_state(const char *args_str, TCMD_TelecommandCha
     }
 
     uint64_t state;
-    uint8_t state_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &state);
+    uint8_t state_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &state);
     if (state_result) {
         LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Unable to parse state from second telecommand argument");
         return 1;
@@ -31,7 +31,7 @@ uint8_t TCMDEXEC_log_set_channel_state(const char *args_str, TCMD_TelecommandCha
     return 0;
 }
 
-uint8_t TCMDEXEC_log_set_file_logging_state_for_system(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_log_set_system_file_logging_state(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     
     uint64_t system;
@@ -42,14 +42,14 @@ uint8_t TCMDEXEC_log_set_file_logging_state_for_system(const char *args_str, TCM
     }
 
     uint64_t state;
-    uint8_t state_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &state);
+    uint8_t state_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &state);
     if (state_result) {
         LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Unable to parse state from second telecommand argument");
         return 1;
     }
 
     // Response is logged by log system
-    LOG_set_file_logging_state_for_system(system, state);
+    LOG_set_system_file_logging_state(system, state);
 
     return 0;
 }
@@ -70,6 +70,17 @@ uint8_t TCMDEXEC_log_report_channel_logging_state(const char *args_str, TCMD_Tel
     return 0;
 }
 
+uint8_t TCMDEXEC_log_report_all_channel_logging_states(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    // Response is logged by log system
+    for (uint16_t i = 0; i < LOG_number_of_logging_channels(); i++) {
+        LOG_report_channel_logging_state(1 << i);
+    }
+
+    return 0;
+}
+
 uint8_t TCMDEXEC_log_report_system_file_logging_state(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     
@@ -82,6 +93,18 @@ uint8_t TCMDEXEC_log_report_system_file_logging_state(const char *args_str, TCMD
 
     // Response is logged by log system
     LOG_report_system_file_logging_state(system);
+
+    return 0;
+}
+
+uint8_t TCMDEXEC_log_report_all_system_file_logging_states(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    // Response is logged by log system
+    // Do not include the "unknown", which is the last entry
+    for (uint16_t i = 0; i < LOG_number_of_logging_systems() - 1; i++) {
+        LOG_report_system_file_logging_state(1 << i);
+    }
 
     return 0;
 }
