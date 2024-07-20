@@ -29,7 +29,7 @@ uint8_t TCMDEXEC_ADCS_ack(const uint8_t *args_str, TCMD_TelecommandChannel_enum_
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_wheel_speed(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-    
+    // TODO: Need to use int64 extraction to make this work properly!!!
     // parse arguments: first into uint64_t, then convert to correct form for input
     uint8_t num_args = 3;
     uint64_t arguments[num_args]; 

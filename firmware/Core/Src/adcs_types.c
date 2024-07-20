@@ -14,17 +14,11 @@
 /*
  * Summary list of required command IDs:
 
-	TODO: (Commands to write)
-	Commands:
-	Telemetry: 
-
-	Done: (see test logs for more info)
-	Need Unit Tests: 146, 151, 153, 154, 158, 159, 161, 162, 163, 166, 167, 168, 169, 172, 176, 177, 178, 179, 180, 191, 155, 156, 157, 204, 223, 170, 201
-	Untested:  
-	Need Work: 15/199, 23/138, 28/227
+	TODO: 
+	Tested and Need Unit Tests: 146, 151, 153, 154, 158, 159, 161, 162, 163, 166, 167, 168, 169, 172, 176, 177, 178, 179, 180, 191, 155, 156, 157, 204, 223, 170, 201, 15/199, 23/138, 28/227
 	Tested: 7, 9, 10, 11, 13, 14, 17, 26, 27, 45, 55, 63, 64, 133, 145, 147, 150, 197, 200, 207
-	Telecommand Written: 240
-	Telecommand Tested: 
+	Telecommand Written: 240 and a bunch more
+	Telecommand Tested: N/A, all have failed so far
 
 	additionally
 	- within a byte, use the opposite endian-ness (first towards the end, last towards the beginning of the byte)
@@ -223,6 +217,8 @@ uint8_t ADCS_Clear_Errors() {
 }
 
 /// @brief Instruct the ADCS to execute the titular command.
+/// @param mode Control mode to set (Table 77 in Firmware Manual)
+/// @param timeout Timeout to set control mode
 /// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Attitude_Control_Mode(ADCS_Control_Mode mode, uint16_t timeout) {
 	// Sets the ADCS attitude control mode
@@ -254,6 +250,7 @@ uint8_t ADCS_Run_Once() {
 }
 
 /// @brief Instruct the ADCS to execute the titular command.
+/// @param mode Mode to set (Table 89 in Firmware Manual)
 /// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Set_Magnetometer_Mode(ADCS_Magnetometer_Mode mode) {
 	uint8_t data_send[1] = {mode};
@@ -277,6 +274,9 @@ uint8_t ADCS_Set_Magnetorquer_Output(double x_duty, double y_duty, double z_duty
 }
 
 /// @brief Instruct the ADCS to execute the titular command.
+/// @param x_speed Wheel speed X value
+/// @param y_speed Wheel speed Y value
+/// @param z_speed Wheel speed Z value
 /// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Set_Wheel_Speed(int16_t x_speed, int16_t y_speed, int16_t z_speed) {
 	// only valid after ADCS_Enable_Manual_Control is run
@@ -291,6 +291,16 @@ uint8_t ADCS_Set_Wheel_Speed(int16_t x_speed, int16_t y_speed, int16_t z_speed) 
 }
 
 /// @brief Instruct the ADCS to execute the titular command.
+/// @param ht Power control mode for cube control signal
+/// @param ht Power control mode for cube control motor
+/// @param ht Power control mode for cube sense 1
+/// @param ht Power control mode for cube sense 2
+/// @param ht Power control mode for cube star
+/// @param ht Power control mode for cube wheel 1
+/// @param ht Power control mode for cube wheel 2
+/// @param ht Power control mode for cube wheel 3
+/// @param ht Power control mode for motor
+/// @param ht Power control mode for gps
 /// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Set_Power_Control(ADCS_Power_Select cube_control_signal, ADCS_Power_Select cube_control_motor, ADCS_Power_Select cube_sense1,
         ADCS_Power_Select cube_sense2, ADCS_Power_Select cube_star_power, ADCS_Power_Select cube_wheel1_power,
