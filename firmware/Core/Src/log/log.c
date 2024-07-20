@@ -61,7 +61,7 @@ static LOG_channel_t LOG_channels[] = {
     {LOG_CHANNEL_UHF_RADIO, "UHF radio", LOG_CHANNEL_OFF, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_CHANNEL_UMBILICAL_UART, "umbilical UART", LOG_CHANNEL_ON, LOG_SEVERITY_MASK_DEFAULT},
 };
-static const uint16_t LOG_NUM_CHANNELS = sizeof(LOG_channels) / sizeof(LOG_channel_t);
+static const uint16_t LOG_NUMBER_OF_CHANNELS = sizeof(LOG_channels) / sizeof(LOG_channel_t);
 
 static LOG_system_t LOG_systems[] = {
     {LOG_SYSTEM_OBC, "OBC", "/logs/obc_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
@@ -81,7 +81,7 @@ static LOG_system_t LOG_systems[] = {
 // LOG_SYSTEM_UNKNOWN must be the LAST entry so it is easy to find below
     {LOG_SYSTEM_UNKNOWN, "UNKNOWN", "/logs/unknown_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
 };
-static const uint16_t LOG_NUM_SYSTEMS = sizeof(LOG_systems) / sizeof(LOG_system_t);
+static const uint16_t LOG_NUMBER_OF_SYSTEMS = sizeof(LOG_systems) / sizeof(LOG_system_t);
 
 // External interfaces 
 
@@ -128,8 +128,8 @@ void LOG_message(LOG_system_enum_t from, LOG_severity_enum_t severity, LOG_chann
 
     // Prepare the full message including time and severity
     // Defaults to "UNKNOWN"
-    LOG_system_t *system = &LOG_systems[LOG_NUM_SYSTEMS - 1];
-    for (uint16_t i = 0; i < LOG_NUM_SYSTEMS; i++) {
+    LOG_system_t *system = &LOG_systems[LOG_NUMBER_OF_SYSTEMS - 1];
+    for (uint16_t i = 0; i < LOG_NUMBER_OF_SYSTEMS; i++) {
         if (LOG_systems[i].system == from) {
             system = &LOG_systems[i];
             break;
@@ -145,7 +145,7 @@ void LOG_message(LOG_system_enum_t from, LOG_severity_enum_t severity, LOG_chann
 
     // Send message to enabled channels
     LOG_channel_t *c;
-    for (uint16_t i = 0; i < LOG_NUM_CHANNELS; i++) {
+    for (uint16_t i = 0; i < LOG_NUMBER_OF_CHANNELS; i++) {
         c = &LOG_channels[i];
         if (c->enabled && (c->channel & channels) && (c->severity_mask & severity) && (system->severity_mask & severity)) {
             switch (c->channel) {
@@ -204,7 +204,7 @@ void LOG_disable_channels(LOG_channel_enum_t channels)
 /// @return 0: disabled (or invalid channel); 1: enabled
 uint8_t LOG_channel_is_enabled(LOG_channel_enum_t channel)
 {
-    for (uint16_t i = 0; i < LOG_NUM_CHANNELS; i++) {
+    for (uint16_t i = 0; i < LOG_NUMBER_OF_CHANNELS; i++) {
         if (LOG_channels[i].channel == channel) {
             return LOG_channels[i].enabled;
         }
@@ -222,7 +222,7 @@ uint8_t LOG_channel_is_enabled(LOG_channel_enum_t channel)
 void LOG_set_channel_debugging_messages_state(LOG_channel_enum_t channels, uint8_t state)
 {
     uint8_t mask = LOG_SEVERITY_DEBUG;
-    for (uint16_t i = 0; i < LOG_NUM_CHANNELS; i++) {
+    for (uint16_t i = 0; i < LOG_NUMBER_OF_CHANNELS; i++) {
         if (LOG_channels[i].channel & channels) {
             if (state) {
                 LOG_channels[i].severity_mask |= mask;
@@ -246,7 +246,7 @@ void LOG_set_channel_debugging_messages_state(LOG_channel_enum_t channels, uint8
 void LOG_set_system_debugging_messages_state(LOG_system_enum_t systems, uint8_t state)
 {
     uint8_t mask = LOG_SEVERITY_DEBUG;
-    for (uint16_t i = 0; i < LOG_NUM_SYSTEMS; i++) {
+    for (uint16_t i = 0; i < LOG_NUMBER_OF_SYSTEMS; i++) {
         if (LOG_systems[i].system & systems) {
             if (state) {
                 LOG_systems[i].severity_mask |= mask;
@@ -285,7 +285,7 @@ void LOG_disable_systems(LOG_system_enum_t systems)
 /// @return returns 1 if logging to file is enabled, 0 otherwise.
 uint8_t LOG_system_logging_is_enabled(LOG_system_enum_t system)
 {
-    for (uint16_t i = 0; i < LOG_NUM_SYSTEMS; i++) {
+    for (uint16_t i = 0; i < LOG_NUMBER_OF_SYSTEMS; i++) {
         if (LOG_systems[i].system == system) {
             return 1;
         }
@@ -297,7 +297,7 @@ uint8_t LOG_system_logging_is_enabled(LOG_system_enum_t system)
 
 void LOG_set_severity_mask(LOG_system_enum_t systems, LOG_severity_enum_t severity_mask)
 {
-    for (uint16_t i = 0; i < LOG_NUM_SYSTEMS; i++) {
+    for (uint16_t i = 0; i < LOG_NUMBER_OF_SYSTEMS; i++) {
         if (LOG_systems[i].system & systems) {
             LOG_systems[i].severity_mask = severity_mask;
         }
@@ -308,7 +308,7 @@ void LOG_set_severity_mask(LOG_system_enum_t systems, LOG_severity_enum_t severi
 
 void LOG_channels_status(LOG_channel_enum_t channels)
 {
-    for (uint16_t i = 0; i < LOG_NUM_CHANNELS; i++) {
+    for (uint16_t i = 0; i < LOG_NUMBER_OF_CHANNELS; i++) {
         LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_NORMAL, 
                 LOG_CHANNEL_ALL,
                 "%20s: %s",  
@@ -320,7 +320,7 @@ void LOG_channels_status(LOG_channel_enum_t channels)
 
 void LOG_systems_status(LOG_system_enum_t systems)
 {
-    for (uint16_t i = 0; i < LOG_NUM_SYSTEMS; i++) {
+    for (uint16_t i = 0; i < LOG_NUMBER_OF_SYSTEMS; i++) {
         LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_NORMAL, 
                 LOG_CHANNEL_ALL,
                 "%20s: %9s (log file: '%s')",  
@@ -407,7 +407,7 @@ void LOG_to_uhf_radio(const char msg[])
 /// @return 0 on success
 void LOG_set_channel_state(LOG_channel_enum_t channels, uint8_t state)
 {
-    for (uint16_t i = 0; i < LOG_NUM_CHANNELS; i++) {
+    for (uint16_t i = 0; i < LOG_NUMBER_OF_CHANNELS; i++) {
         if (LOG_channels[i].channel & channels) {
             LOG_channels[i].enabled = state;
             LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, 
@@ -426,7 +426,7 @@ void LOG_set_channel_state(LOG_channel_enum_t channels, uint8_t state)
 /// @return 0 on success
 void LOG_set_system_file_logging_state(LOG_system_enum_t systems, uint8_t state)
 {
-    for (uint16_t i = 0; i < LOG_NUM_SYSTEMS; i++) {
+    for (uint16_t i = 0; i < LOG_NUMBER_OF_SYSTEMS; i++) {
         if (LOG_systems[i].system & systems) {
             LOG_systems[i].logging_enabled = state;
             LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, 
