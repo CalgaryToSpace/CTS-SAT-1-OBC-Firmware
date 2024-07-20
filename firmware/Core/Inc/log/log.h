@@ -60,6 +60,7 @@ void LOG_enable_systems(LOG_system_enum_t systems);
 void LOG_disable_systems(LOG_system_enum_t systems);
 uint8_t LOG_system_logging_is_enabled(LOG_system_enum_t system);
 void LOG_set_severity_mask(LOG_system_enum_t systems, LOG_severity_enum_t severity_mask);
+const char* LOG_severity_enum_t_to_str(LOG_severity_enum_t severity);
 
 void LOG_set_channel_debugging_messages_state(LOG_channel_enum_t channels, uint8_t state);
 void LOG_set_system_debugging_messages_state(LOG_system_enum_t systems, uint8_t state);

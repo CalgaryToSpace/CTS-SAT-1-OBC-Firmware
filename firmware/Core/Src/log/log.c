@@ -98,27 +98,7 @@ void LOG_message(LOG_system_enum_t from, LOG_severity_enum_t severity, LOG_chann
     // Get the system time
     TIM_get_timestamp_string(LOG_timestamp_string, LOG_TIMESTAMP_MAX_LENGTH);
 
-    char *severity_text;
-    switch (severity) {
-        case LOG_SEVERITY_DEBUG:
-            severity_text = "DEBUG";
-            break;
-        case LOG_SEVERITY_NORMAL:
-            severity_text = "NORMAL";
-            break;
-        case LOG_SEVERITY_WARNING:
-            severity_text = "WARNING";
-            break;
-        case LOG_SEVERITY_ERROR:
-            severity_text = "ERROR";
-            break;
-        case LOG_SEVERITY_CRITICAL:
-            severity_text = "CRITICAL";
-            break;
-        default:
-            severity_text = "UNKNOWN SEVERITY";
-            break;
-    }
+    const char *severity_text = LOG_severity_enum_t_to_str(severity);
 
     // Prepare the message according to the requested format
     va_list ap;
@@ -304,6 +284,24 @@ void LOG_set_severity_mask(LOG_system_enum_t systems, LOG_severity_enum_t severi
     }
 
     return;
+}
+
+const char* LOG_severity_enum_t_to_str(LOG_severity_enum_t severity) 
+{
+    switch (severity) {
+        case LOG_SEVERITY_DEBUG:
+            return "DEBUG";
+        case LOG_SEVERITY_NORMAL:
+            return "NORMAL";
+        case LOG_SEVERITY_WARNING:
+            return "WARNING";
+        case LOG_SEVERITY_ERROR:
+            return "ERROR";
+        case LOG_SEVERITY_CRITICAL:
+            return "CRITICAL";
+        default:
+            return "UNKNOWN SEVERITY";
+    }
 }
 
 void LOG_channels_status(LOG_channel_enum_t channels)
