@@ -4,6 +4,9 @@
 #include <string.h>
 #include "main.h"
 
+const uint32_t I2C_scan_number_of_trials = 3;
+const uint32_t I2C_scan_timeout_ms = 5;
+
 /// @brief Scans the I2C bus for devices. Prints out the addresses of devices found.
 /// @param args_str
 /// - Arg 0: I2C bus to scan (1-4)
@@ -43,7 +46,7 @@ uint8_t TCMDEXEC_scan_i2c_bus(const char *args_str, TCMD_TelecommandChannel_enum
 
     // Go through all possible i2c addresses
     for (uint16_t i = 0; i < 128; i++) {
-        const HAL_StatusTypeDef i2c_device_status = HAL_I2C_IsDeviceReady(hi2c, (i<<1), 3, 5);
+        const HAL_StatusTypeDef i2c_device_status = HAL_I2C_IsDeviceReady(hi2c, (i<<1), I2C_scan_number_of_trials, I2C_scan_timeout_ms);
 
         // Calculate remaining space in buffer. -1 for null terminator
         const size_t remaining_space = response_output_buf_len - strlen(response_output_buf) - 1;
