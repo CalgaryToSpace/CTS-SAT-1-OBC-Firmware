@@ -13,7 +13,7 @@ void demo_flash_write() {
     uint32_t num_bytes = strlen((char*)bytes_to_write);
 
     for (uint8_t i = 0; i < 2; i++) {
-        uint8_t result = FLASH_write(&hspi1, chip_num, flash_addr, bytes_to_write, num_bytes);
+        FLASH_error_enum_t result = FLASH_write(&hspi1, chip_num, flash_addr, bytes_to_write, num_bytes);
         if (result != 0) {
             DEBUG_uart_print_str("Error in FLASH_write\n");
             return;
@@ -33,7 +33,7 @@ void demo_flash_read() {
 
     uint8_t bytes_store[100];
 
-    uint8_t result = FLASH_read_data(&hspi1, chip_num, flash_addr, bytes_store, num_bytes);
+    FLASH_error_enum_t result = FLASH_read_data(&hspi1, chip_num, flash_addr, bytes_store, num_bytes);
 
     if (result != 0) {
         DEBUG_uart_print_str("Error in FLASH_read_data\n");

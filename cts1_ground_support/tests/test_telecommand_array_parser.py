@@ -28,11 +28,13 @@ def test_parse_telecommand_list() -> None:
         .tcmd_name = "hello_world",
         .tcmd_func = TCMDEXEC_hello_world,
         .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
         .tcmd_name = "heartbeat_off",
         .tcmd_func = TCMDEXEC_heartbeat_off,
         .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     }};
     """
 
@@ -41,11 +43,13 @@ def test_parse_telecommand_list() -> None:
             name="hello_world",
             tcmd_func="TCMDEXEC_hello_world",
             number_of_args=0,
+            readiness_level="TCMD_READINESS_LEVEL_FOR_OPERATION",
         ),
         TelecommandDefinition(
             name="heartbeat_off",
             tcmd_func="TCMDEXEC_heartbeat_off",
             number_of_args=1,
+            readiness_level="TCMD_READINESS_LEVEL_FOR_OPERATION",
         ),
     ]
     parsed1 = parse_telecommand_array_table(in1)
@@ -66,6 +70,7 @@ def test_parse_telecommand_list() -> None:
             .tcmd_name = "hello_world",
             .tcmd_func = TCMDEXEC_hello_world,
             .number_of_args = 0,
+            .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
         },
         """)
 
