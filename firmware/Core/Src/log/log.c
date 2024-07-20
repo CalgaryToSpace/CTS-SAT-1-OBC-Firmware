@@ -41,10 +41,6 @@ typedef struct {
     uint32_t severity_mask;
 } LOG_system_t;
 
-void LOG_to_file(const char filename[], const char msg[]);
-void LOG_to_umbilical_uart(const char msg[]);
-void LOG_to_uhf_radio(const char msg[]);
-
 static const uint8_t LOG_SEVERITY_MASK_ALL = 0xFF;
 // No debugging messages by default
 static const uint8_t LOG_SEVERITY_MASK_DEFAULT = LOG_SEVERITY_MASK_ALL & ~(uint8_t)LOG_SEVERITY_DEBUG;
@@ -237,7 +233,7 @@ uint8_t LOG_is_file_logging_enabled_for_system(LOG_system_enum_t system)
 {
     for (uint16_t i = 0; i < LOG_NUMBER_OF_SYSTEMS; i++) {
         if (LOG_systems[i].system == system) {
-            return 1;
+            return LOG_systems[i].logging_enabled;
         }
     }
     
@@ -330,11 +326,25 @@ void LOG_report_channel_logging_state(LOG_channel_enum_t channel)
 void LOG_report_system_file_logging_state(LOG_system_enum_t system)
 {
     for (uint16_t i = 0; i < LOG_NUMBER_OF_SYSTEMS; i++) {
-        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "%20s: %9s (log file: '%s')",  LOG_systems[i].name, LOG_systems[i].logging_enabled ? "enabled" : "disabled", LOG_systems[i].log_file_path);
+        if (LOG_systems[i].system == system) {
+            LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "%20s: %9s (log file: '%s')",  LOG_systems[i].name, LOG_systems[i].logging_enabled ? "enabled" : "disabled", LOG_systems[i].log_file_path);
+            return;
+        }
     }
 
     // System not found
     LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "LOG_report_channel_status(): unknown system: %d", system);
+    return;
+}
+
+uint16_t LOG_number_of_logging_channels(void)
+{
+    return LOG_NUMBER_OF_CHANNELS;
+}
+
+uint16_t LOG_number_of_logging_systems(void)
+{
+    return LOG_NUMBER_OF_SYSTEMS;
 }
 
 /// @brief Get the name of a severity enum

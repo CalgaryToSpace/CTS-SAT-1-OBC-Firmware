@@ -60,6 +60,8 @@ void LOG_set_file_logging_state_for_system(LOG_system_enum_t system, uint8_t sta
 void LOG_set_channel_state(LOG_channel_enum_t channel, uint8_t state);
 void LOG_report_channel_logging_state(LOG_channel_enum_t channels);
 void LOG_report_system_file_logging_state(LOG_system_enum_t systems);
+uint16_t LOG_number_of_logging_channels(void);
+uint16_t LOG_number_of_logging_systems(void);
 const char* LOG_get_severity_name(LOG_severity_enum_t severity);
 
 #endif // __INCLUDE__GUARD__LOG_H_
