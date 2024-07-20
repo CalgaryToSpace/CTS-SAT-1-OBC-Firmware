@@ -428,7 +428,7 @@ Here is the call graph for this function:</div>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>0 on success, &gt;0 on error // TODO: explain better </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, &gt;0 on error </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -499,11 +499,16 @@ Here is the call graph for this function:</div>
 <p>Telecommand: Read bytes as hex from a flash address. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">args_str</td><td>Arg 0: Chip Number (CS number) as uint, Arg 1: Flash Address as uint, Arg 2: Number of bytes to read as uint </td></tr>
+    <tr><td class="paramname">args_str</td><td><ul>
+<li>Arg 0: Chip Number (CS number) as uint</li>
+<li>Arg 1: Flash Address as uint</li>
+<li>Arg 2: Number of bytes to read as uint </li>
+</ul>
+</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>0 on success, &gt;0 on error // TODO: explain better </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, &gt;0 on error </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -558,44 +563,51 @@ Here is the call graph for this function:</div>
 <p>Telecommand: Read bytes as hex from a flash address. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">args_str</td><td>Arg 0: Chip Number (CS number) as uint, Arg 1: Flash Address as uint, Arg 2: Hex string of bytes to write, with no delimiters, in all lowercase </td></tr>
+    <tr><td class="paramname">args_str</td><td><ul>
+<li>Arg 0: Chip Number (CS number) as uint</li>
+<li>Arg 1: Flash Address as uint</li>
+<li>Arg 2: Hex string of bytes to write (any case, allows space/underscore separators) </li>
+</ul>
+</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>0 on success, &gt;0 on error // TODO: explain better </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, &gt;0 on error </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="flash__telecommand__defs_8c_ad09f175c2e7126e812bfaeebcd17c172_cgraph.png" border="0" usemap="#aflash__telecommand__defs_8c_ad09f175c2e7126e812bfaeebcd17c172_cgraph" alt=""/></div>
 <map name="aflash__telecommand__defs_8c_ad09f175c2e7126e812bfaeebcd17c172_cgraph" id="aflash__telecommand__defs_8c_ad09f175c2e7126e812bfaeebcd17c172_cgraph">
-<area shape="rect" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="5,255,194,281"/>
-<area shape="rect" href="flash__driver_8c.html#a60239a397fffe5773a2777533bfcbca2" title="Sends Page Program Command." alt="" coords="277,154,378,179"/>
-<area shape="poly" title=" " alt="" coords="130,252,282,184,284,189,132,257"/>
-<area shape="rect" href="telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="242,279,413,305"/>
-<area shape="poly" title=" " alt="" coords="194,275,226,279,226,284,193,281"/>
-<area shape="rect" href="debug__uart_8c.html#a6899cfc3d3792f1457667bc3ae91160d" title=" " alt="" coords="661,52,852,78"/>
-<area shape="poly" title=" " alt="" coords="377,152,683,80,685,85,379,158"/>
-<area shape="rect" href="debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="900,52,1050,78"/>
-<area shape="poly" title=" " alt="" coords="351,151,400,125,460,98,566,58,652,36,740,30,852,37,906,46,905,51,851,43,740,35,652,42,567,63,462,102,403,130,353,156"/>
-<area shape="rect" href="flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="900,213,1050,254"/>
-<area shape="poly" title=" " alt="" coords="378,174,461,189,561,206,662,217,778,225,885,229,884,234,778,231,661,223,560,211,461,195,377,179"/>
-<area shape="rect" href="flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="1098,185,1261,226"/>
-<area shape="poly" title=" " alt="" coords="338,151,388,103,422,76,460,54,515,30,563,15,608,6,650,3,739,7,852,16,909,15,955,12,999,16,1024,24,1051,38,1089,66,1121,100,1146,137,1165,170,1160,172,1142,140,1117,104,1085,70,1049,42,1022,29,998,22,955,18,909,21,852,21,739,13,650,9,608,12,565,20,517,35,462,58,425,80,391,107,342,155"/>
-<area shape="rect" href="flash__driver_8c.html#ad86ddde592dfea7dd3c6129ca311923a" title="Read Status Register and store the values in given buffer." alt="" coords="661,306,852,331"/>
-<area shape="poly" title=" " alt="" coords="341,178,389,232,423,261,462,284,507,300,554,311,646,320,646,325,553,316,505,306,460,289,420,265,385,236,337,182"/>
-<area shape="rect" href="flash__driver_8c.html#aedefd1fa550b34fc7c57465aa5c5874b" title="Sends Write Enable Command." alt="" coords="465,154,610,179"/>
-<area shape="poly" title=" " alt="" coords="378,164,449,164,449,169,378,169"/>
-<area shape="poly" title=" " alt="" coords="852,63,884,63,884,68,852,68"/>
-<area shape="poly" title=" " alt="" coords="1049,220,1082,216,1083,221,1050,226"/>
-<area shape="poly" title=" " alt="" coords="799,303,851,284,913,258,915,263,853,289,801,308"/>
-<area shape="poly" title=" " alt="" coords="852,305,948,289,1049,263,1126,231,1128,235,1051,268,949,294,853,310"/>
-<area shape="poly" title=" " alt="" coords="558,151,604,124,660,95,695,81,697,86,662,100,607,128,561,156"/>
-<area shape="poly" title=" " alt="" coords="596,151,900,80,902,85,597,156"/>
-<area shape="poly" title=" " alt="" coords="611,175,885,217,885,222,610,180"/>
-<area shape="poly" title=" " alt="" coords="610,168,852,183,1082,197,1082,202,852,188,610,174"/>
-<area shape="poly" title=" " alt="" coords="559,178,726,295,722,299,556,182"/>
-<area shape="rect" href="telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts the longest substring of integer characters, starting from the beginning of the string,..." alt="" coords="461,356,613,382"/>
-<area shape="poly" title=" " alt="" coords="366,303,487,348,485,353,364,308"/>
+<area shape="rect" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="5,228,194,254"/>
+<area shape="rect" href="flash__driver_8c.html#a60239a397fffe5773a2777533bfcbca2" title="Sends Page Program Command." alt="" coords="287,153,388,179"/>
+<area shape="poly" title=" " alt="" coords="142,225,279,182,280,187,144,230"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#a3f4c71ad48b16b79e4bb91ffb13111d7" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a hex string." alt="" coords="242,228,433,254"/>
+<area shape="poly" title=" " alt="" coords="194,238,226,238,226,244,194,244"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="252,329,423,355"/>
+<area shape="poly" title=" " alt="" coords="133,252,292,321,290,325,131,257"/>
+<area shape="rect" href="debug__uart_8c.html#a6899cfc3d3792f1457667bc3ae91160d" title=" " alt="" coords="681,52,872,78"/>
+<area shape="poly" title=" " alt="" coords="387,152,702,79,703,84,388,157"/>
+<area shape="rect" href="debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="920,52,1070,78"/>
+<area shape="poly" title=" " alt="" coords="362,151,415,123,480,94,586,56,672,35,760,29,872,37,926,46,925,51,871,42,760,35,673,41,587,61,482,99,417,128,364,155"/>
+<area shape="rect" href="flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="920,213,1070,253"/>
+<area shape="poly" title=" " alt="" coords="388,173,481,189,581,205,682,217,798,225,905,229,904,234,798,230,681,222,581,210,481,194,388,178"/>
+<area shape="rect" href="flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="1118,185,1281,225"/>
+<area shape="poly" title=" " alt="" coords="349,151,402,102,439,74,480,52,535,29,584,15,628,6,671,3,760,7,872,16,929,15,975,12,1019,16,1044,24,1071,37,1109,65,1141,100,1166,136,1185,169,1180,172,1162,139,1137,103,1105,69,1069,42,1042,29,1018,21,975,17,929,20,872,21,759,13,671,9,629,12,585,20,537,34,482,57,442,79,406,106,353,155"/>
+<area shape="rect" href="flash__driver_8c.html#ad86ddde592dfea7dd3c6129ca311923a" title="Read Status Register and store the values in given buffer." alt="" coords="681,305,872,331"/>
+<area shape="poly" title=" " alt="" coords="375,177,405,193,435,214,450,233,458,252,466,269,482,284,526,304,573,317,620,323,666,325,666,330,620,329,572,322,524,309,480,288,462,272,453,254,446,236,431,218,403,197,373,182"/>
+<area shape="rect" href="flash__driver_8c.html#aedefd1fa550b34fc7c57465aa5c5874b" title="Sends Write Enable Command." alt="" coords="485,153,630,179"/>
+<area shape="poly" title=" " alt="" coords="388,164,469,164,469,169,388,169"/>
+<area shape="poly" title=" " alt="" coords="872,62,904,62,904,68,872,68"/>
+<area shape="poly" title=" " alt="" coords="1069,220,1102,216,1103,221,1070,225"/>
+<area shape="poly" title=" " alt="" coords="819,302,871,284,933,258,935,262,873,289,821,307"/>
+<area shape="poly" title=" " alt="" coords="872,305,968,288,1069,262,1146,230,1148,235,1071,267,969,293,873,310"/>
+<area shape="poly" title=" " alt="" coords="578,151,624,123,680,94,715,81,717,86,682,99,627,128,581,155"/>
+<area shape="poly" title=" " alt="" coords="616,150,920,79,922,84,617,155"/>
+<area shape="poly" title=" " alt="" coords="631,175,905,217,905,222,630,180"/>
+<area shape="poly" title=" " alt="" coords="630,168,872,182,1102,196,1102,202,872,188,630,173"/>
+<area shape="poly" title=" " alt="" coords="579,178,746,294,742,299,576,182"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts the longest substring of integer characters, starting from the beginning of the string,..." alt="" coords="481,356,633,382"/>
+<area shape="poly" title=" " alt="" coords="424,350,466,355,465,360,423,355"/>
 </map>
 </div>
 
