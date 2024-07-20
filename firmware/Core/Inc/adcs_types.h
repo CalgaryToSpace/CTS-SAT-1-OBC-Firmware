@@ -614,7 +614,7 @@ uint8_t ADCS_Set_Power_Control(ADCS_Power_Select cube_control_signal, ADCS_Power
         ADCS_Power_Select cube_sense2, ADCS_Power_Select cube_star_power, ADCS_Power_Select cube_wheel1_power,
         ADCS_Power_Select cube_wheel2_power, ADCS_Power_Select cube_wheel3_power, ADCS_Power_Select motor_power,
         ADCS_Power_Select gps_power);
-uint8_t ADCS_Set_Magnetometer_Config(I2C_HandleTypeDef *hi2c,
+uint8_t ADCS_Set_Magnetometer_Config(
 		double mounting_transform_alpha_angle,
         double mounting_transform_beta_angle,
         double mounting_transform_gamma_angle,

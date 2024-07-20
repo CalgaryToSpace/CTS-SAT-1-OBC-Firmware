@@ -257,25 +257,23 @@ uint8_t TCMDEXEC_ADCS_set_power_control(const uint8_t *args_str, TCMD_Telecomman
     return status;
 }                            
 
-// TODO: 8 telecommands remaining! (Find the placeholder 255 values and deal with them)
-
 /// @brief Telecommand: Request the given telemetry data from the ADCS
-/// @param args_str // TODO: fix this first
-///     - Arg 0:
-///     - Arg 0:
-///     - Arg 0:
-///     - Arg 0:
-///     - Arg 0:
-///     - Arg 0:
-///     - Arg 0:
-///     - Arg 0:
-///     - Arg 0:
-///     - Arg 0:
-///     - Arg 0:
-///     - Arg 0:
-///     - Arg 0:
-///     - Arg 0:
-///     - Arg 0:
+/// @param args_str 
+///     - Arg 0: Mounting transform alpha angle [deg] 
+///     - Arg 1: Mounting transform beta angle [deg]
+///     - Arg 2: Mounting transform gamma angle [deg]
+///     - Arg 3: Channel 1 offset value
+///     - Arg 4: Channel 2 offset value
+///     - Arg 5: Channel 3 offset value
+///     - Arg 0: Value (1, 1) of the magnetometer sensitivity matrix
+///     - Arg 0: Value (2, 2) of the magnetometer sensitivity matrix
+///     - Arg 0: Value (3, 3) of the magnetometer sensitivity matrix
+///     - Arg 0: Value (1, 2) of the magnetometer sensitivity matrix
+///     - Arg 0: Value (1, 3) of the magnetometer sensitivity matrix
+///     - Arg 0: Value (2, 1) of the magnetometer sensitivity matrix
+///     - Arg 0: Value (2, 3) of the magnetometer sensitivity matrix
+///     - Arg 0: Value (3, 1) of the magnetometer sensitivity matrix
+///     - Arg 0: Value (3, 2) of the magnetometer sensitivity matrix
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_magnetometer_config(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
@@ -287,9 +285,11 @@ uint8_t TCMDEXEC_ADCS_set_magnetometer_config(const uint8_t *args_str, TCMD_Tele
         TCMD_extract_double_arg(args_str, strlen((char*)args_str), i, &arguments[i]);
     }
     
-    uint8_t status = ADCS_Set_Magnetometer_Config(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], arguments[6], arguments[7], arguments[8], arguments[9], arguments[10], arguments[11], arguments[12], arguments[13], arguments[14], arguments[15]);
+    uint8_t status = ADCS_Set_Magnetometer_Config(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], arguments[6], arguments[7], arguments[8], arguments[9], arguments[10], arguments[11], arguments[12], arguments[13], arguments[14]);
     return status;
-}                                    
+}     
+
+// TODO: 7 telecommands remaining! (Find the placeholder 255 values and deal with them)
 
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 
