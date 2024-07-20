@@ -107,5 +107,18 @@ uint8_t TEST_EXEC__TCMD_ascii_to_double() {
     // Error: numbers in the middle
     TEST_ASSERT_TRUE(TCMD_ascii_to_double("123a123", 7, &output_val));
 
+    // More assorted tests
+    TEST_ASSERT_TRUE(TCMD_ascii_to_double("a23.7a", 6, &output_val) != 0);
+    TEST_ASSERT_TRUE(TCMD_ascii_to_double("23a7", 4, &output_val) != 0);
+    TEST_ASSERT_TRUE(TCMD_ascii_to_double("23ar.7", 6, &output_val) != 0);
+    TEST_ASSERT_TRUE(TCMD_ascii_to_double(" 23.7", 5, &output_val) != 0); // has a space
+    TEST_ASSERT_TRUE(TCMD_ascii_to_double("23.7 ", 5, &output_val) != 0); // has a space
+    TEST_ASSERT_TRUE(TCMD_ascii_to_double("2 3.7", 5, &output_val) != 0); // has a space
+    TEST_ASSERT_TRUE(TCMD_ascii_to_double("23.7.1", 6, &output_val) != 0); // two decimal points
+    TEST_ASSERT_TRUE(TCMD_ascii_to_double(".7", 2, &output_val) != 0); // can't have decimal point at start
+    TEST_ASSERT_TRUE(TCMD_ascii_to_double("7.", 2, &output_val) != 0); // can't have decimal point at end
+    TEST_ASSERT_TRUE(TCMD_ascii_to_double("7-7", 2, &output_val) != 0); // can't have minus sign in the middle
+    TEST_ASSERT_TRUE(TCMD_ascii_to_double("1.5-", 2, &output_val) != 0); // can't have minus sign at the end
+
     return 0;
 }

@@ -245,76 +245,40 @@ uint8_t TCMD_extract_hex_array_arg(const char *args_str, uint8_t arg_index, uint
 /// @param str Input string, starting with a double
 /// @param str_len Max length of the input string
 /// @param result Pointer to the result
-/// @return 0 if successful, 1 if the string is empty, 2 if the string does not start with a double, 3 for other issues
+/// @return 0 if successful, 1 if the string is empty, 2 if the string does not start with a double
 uint8_t TCMD_ascii_to_double(const char *str, uint32_t str_len, double *result) {
+    
     if (str_len == 0) {
+        // check for an empty string
         return 1;
     }
 
-    for (uint32_t i = 0; i < str_len; i++) {
+    uint8_t number_of_decimal_points_found = 0;
+    for (uint8_t i = 0; i < str_len; i++) { // main loop
         const char iter_char = str[i];
-        // iterate through the string to find the first non-whitespace character
-        if (isdigit(iter_char)) {
-            // so long as the first character is a digit, atof can handle it
-            const double temp_result = atof(str);
-            *result = temp_result;
-            break;
+        // negative sign at start is allowed
+        if (i==0 && iter_char == '-') { 
+            continue; 
         }
-        else if (!isdigit(iter_char) && !isspace(iter_char) && (iter_char != '-')) {
-            // atof removes whitespace, so we only need to check for other characters
-            // atof also ignores all subsequent non-double characters following the double
-            return 2;
+
+        // decimal sign is allowed once, but not at the start/end
+        if ( (iter_char == '.') && (number_of_decimal_points_found == 0) && (i != 0 && i != str_len-1) ) {
+            number_of_decimal_points_found += 1;
+            continue;
         }
+
+        // if it's a number, continue
+        if (isdigit(iter_char)) { continue; }
+
+        // if we've reached the end of the valid conditions for this char, it's invalid
+        return 2; // invalid char
     }
 
-    // check the middle for non-acceptable characters (ex. 123a123)
-    uint8_t num_negative_signs = 0; // should be <= 1
-    uint8_t num_decimals = 0; // should be <= 1
-    for (uint32_t i = 0; i < str_len; i++) {
-        const char iter_char = str[i];
-        // iterate through the string to find any non-whitespace characters
-        if (isdigit(iter_char)) {
-        }
-        else if (iter_char == '-') {
-            num_negative_signs++;
-            if (num_negative_signs > 1) {
-                return 2;
-            }
-        }
-        else if (iter_char == '.') {
-            num_decimals++;
-            if (num_decimals > 1) {
-                return 2;
-            }
-        }
-        else if (!isspace(iter_char)) {
-            // atof removes whitespace, so we only need to check for other characters
-            // atof also ignores all subsequent non-double characters following the double
-            return 2;
-        }
-    }
+    // now that we know they're valid chars, use atof
+    const double temp_result = atof(str);
+    *result = temp_result;
 
-
-    for (int32_t i = str_len - 1; i >= 0; i--) {
-        const char iter_char = str[i];
-        // iterate through the string backwards to find the last non-whitespace character
-        if (isdigit(iter_char)) {
-            // so long as there are no random characters afterwards, we're fine
-            return 0;
-        }
-        else if (!isdigit(iter_char) && !isspace(iter_char)) {
-            // atof removes whitespace, so we only need to check for other characters
-            // atof also ignores all subsequent non-double characters following the double
-            return 2;
-        }
-        else if (isspace(iter_char) && i == (int32_t) str_len - 1) {
-            // input is entirely whitespace
-            return 1;
-        }
-    }
-
-    // if this return is reached, there has been another issue in the input
-    return 3;
+    return 0;
 
 }
 
