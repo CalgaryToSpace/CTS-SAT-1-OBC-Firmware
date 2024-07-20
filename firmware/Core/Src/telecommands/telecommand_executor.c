@@ -1,5 +1,4 @@
 
-#include "log/log.h"
 #include "telecommands/telecommand_parser.h"
 #include "telecommands/telecommand_definitions.h"
 #include "telecommands/telecommand_executor.h"
@@ -8,7 +7,6 @@
 #include "timekeeping/timekeeping.h"
 
 #include <stdint.h>
-#include <inttypes.h>
 
 /// @brief  The agenda (schedule queue) of telecommands to execute.
 TCMD_parsed_tcmd_to_execute_t TCMD_agenda[TCMD_AGENDA_SIZE];
@@ -47,8 +45,9 @@ uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd
         // Mark the slot as valid.
         TCMD_agenda_is_valid[slot_num] = 1;
 
-        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_DEBUG, LOG_CHANNEL_ALL, "Telecommand added to agenda at slot %" PRIu16, slot_num);
-
+        // DEBUG_uart_print_str("Telecommand added to agenda at slot ");
+        // DEBUG_uart_print_uint32(slot_num);
+        // DEBUG_uart_print_str("\n");
         return 0;
     }
     return 1;
@@ -113,11 +112,14 @@ uint8_t TCMD_execute_parsed_telecommand_now(const uint16_t tcmd_idx, const char 
 ) {
     // Get the telecommand definition.
     if (tcmd_idx >= TCMD_NUM_TELECOMMANDS) {
-        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "TCMD_execute_parsed_telecommand: tcmd_idx out of bounds");
+        DEBUG_uart_print_str("Error: TCMD_execute_parsed_telecommand: tcmd_idx out of bounds.\n");
         return 254;
     }
     TCMD_TelecommandDefinition_t tcmd_def = TCMD_telecommand_definitions[tcmd_idx];
-    LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "==== Executing telecommand '%s' ====", tcmd_def.tcmd_name);
+
+    DEBUG_uart_print_str("======== Executing telecommand '");
+    DEBUG_uart_print_str(tcmd_def.tcmd_name);
+    DEBUG_uart_print_str("' ========\n");
 
     // Handle the telecommand by calling the appropriate function.
     // Null-terminate the args string.
@@ -131,11 +133,16 @@ uint8_t TCMD_execute_parsed_telecommand_now(const uint16_t tcmd_idx, const char 
     const uint32_t tcmd_exec_duration_ms = uptime_after_tcmd_exec_ms - uptime_before_tcmd_exec_ms;
 
     // Print back the response.
-    LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "==== Response (duration=%ld ms, err=%lu %s) ====", tcmd_exec_duration_ms, tcmd_result, tcmd_result != 0 ? " !! ERROR !!" : ""
-    );
-    // TODO do we need to log the response output?
-    LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "%s", response_output_buf);
-    LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "===================================");
+    DEBUG_uart_print_str("======== Response (duration=");
+    DEBUG_uart_print_int32(tcmd_exec_duration_ms);
+    DEBUG_uart_print_str("ms, err=");
+    DEBUG_uart_print_uint32(tcmd_result);
+    if (tcmd_result != 0) {
+        DEBUG_uart_print_str(" !!!!!! ERROR !!!!!!");
+    }
+    DEBUG_uart_print_str(") ========\n");
+    DEBUG_uart_print_str(response_output_buf);
+    DEBUG_uart_print_str("\n==========================\n");
 
     return tcmd_result;
 }
@@ -149,7 +156,7 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
     char *response_output_buf, uint16_t response_output_buf_size
 ) {
     if (! TCMD_agenda_is_valid[tcmd_agenda_slot_num]) {
-        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "TCMD_execute_telecommand_in_agenda: invalid slot");
+        DEBUG_uart_print_str("Error: TCMD_execute_telecommand_in_agenda: slot is invalid.\n");
         return 253;
     }
 

@@ -16,11 +16,11 @@ uint8_t TCMDEXEC_fs_format_storage(const char *args_str, TCMD_TelecommandChannel
                         char *response_output_buf, uint16_t response_output_buf_len) {
     int8_t result = LFS_format();
     if (result < 0) {
-        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "LittleFS Formatting Error: %d", result);
+        snprintf(response_output_buf, response_output_buf_len, "LittleFS Formatting Error: %d\n", result);
         return 1;
     }
     
-    LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "LittleFS Successfully Formatted!");
+    snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Formatted!\n");
     return 0;
 }
 
@@ -28,11 +28,11 @@ uint8_t TCMDEXEC_fs_mount(const char *args_str, TCMD_TelecommandChannel_enum_t t
                         char *response_output_buf, uint16_t response_output_buf_len) {
     int8_t result = LFS_mount();
     if (result < 0) {
-        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "LittleFS Mounting Error: %d", result);
+        snprintf(response_output_buf, response_output_buf_len, "LittleFS Mounting Error: %d\n", result);
         return 1;
     }
     
-    LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "LittleFS Successfully Mounted!");
+    snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Mounted!\n");
     return 0;
 }
 
@@ -40,11 +40,11 @@ uint8_t TCMDEXEC_fs_unmount(const char *args_str, TCMD_TelecommandChannel_enum_t
                         char *response_output_buf, uint16_t response_output_buf_len) {
     int8_t result = LFS_unmount();
     if (result < 0) {
-        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "LittleFS Unmounting Error: %d", result);
+        snprintf(response_output_buf, response_output_buf_len, "LittleFS Unmounting Error: %d\n", result);
         return 1;
     }
     
-    LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "LittleFS Successfully Unounted!");
+    snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Unounted!\n");
     return 0;
 }
 
@@ -59,7 +59,10 @@ uint8_t TCMDEXEC_fs_write_file(const char *args_str, TCMD_TelecommandChannel_enu
     const uint8_t parse_file_name_result = TCMD_extract_string_arg(args_str, 0, arg_file_name, sizeof(arg_file_name));
     if (parse_file_name_result != 0) {
         // error parsing
-        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Error parsing file name arg: Error %d", parse_file_name_result);
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing file name arg: Error %d", parse_file_name_result);
         return 1;
     }
 
@@ -67,17 +70,20 @@ uint8_t TCMDEXEC_fs_write_file(const char *args_str, TCMD_TelecommandChannel_enu
     const uint8_t parse_file_content_result = TCMD_extract_string_arg(args_str, 1, arg_file_content, sizeof(arg_file_content));
     if (parse_file_content_result != 0) {
         // error parsing
-        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Error parsing file content arg: Error %d", parse_file_content_result);
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing file content arg: Error %d", parse_file_content_result);
         return 2;
     }
 
     int8_t result = LFS_write_file(arg_file_name, (uint8_t*) arg_file_content, strlen(arg_file_content));
     if (result < 0) {
-        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "LittleFS Writing Error: %d", result);
+        snprintf(response_output_buf, response_output_buf_len, "LittleFS Writing Error: %d\n", result);
         return 1;
     }
     
-    LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "LittleFS Successfully Wrote Data!");
+    snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Wrote Data!");
     return 0;
 }
 
@@ -93,13 +99,16 @@ uint8_t TCMDEXEC_fs_read_file_hex(const char *args_str, TCMD_TelecommandChannel_
     const uint8_t parse_file_name_result = TCMD_extract_string_arg(args_str, 0, arg_file_name, sizeof(arg_file_name));
     if (parse_file_name_result != 0) {
         // error parsing
-        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Unable to parse file name arg: Error code %d", parse_file_name_result);
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing file name arg: Error %d", parse_file_name_result);
         return 1;
     }
 
     lfs_ssize_t file_size = LFS_file_size(arg_file_name);
     if (file_size <0) {
-        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "LittleFS error getting file size '%s': %ld", arg_file_name, file_size);
+        snprintf(response_output_buf, response_output_buf_len, "LittleFS error getting file size '%s': %ld", arg_file_name, file_size);
         return 1;
     }
     lfs_ssize_t bytes_read = 1;
@@ -107,19 +116,18 @@ uint8_t TCMDEXEC_fs_read_file_hex(const char *args_str, TCMD_TelecommandChannel_
     while (total_bytes_read < file_size && bytes_read > 0) {
         bytes_read = LFS_read_file(arg_file_name, total_bytes_read, rx_buffer, sizeof(rx_buffer));
         if (bytes_read < 0) {
-            LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "LittleFS error reading file '%s': %ld", arg_file_name, bytes_read);
+            snprintf(response_output_buf, response_output_buf_len, "LittleFS error reading file '%s': %ld", arg_file_name, bytes_read);
             return 1;
         }
         total_bytes_read += bytes_read;
         // print to uart and radio
-        // No need to log the output
         DEBUG_uart_print_array_hex(rx_buffer, bytes_read);
         // TODO send to radio
-        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_CRITICAL, LOG_CHANNEL_ALL, "TODO: send data to radio from TCMD_fs_read_file_hex()");
+        DEBUG_uart_print_str("TODO: send data to radio from TCMD_fs_read_file_hex()\n");
+
     }
     
-    LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "LittleFS Successfully Read File '%s': '%s'!", arg_file_name, rx_buffer);
-
+    snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Read File '%s': '%s'!", arg_file_name, rx_buffer);
     return 0;
 }
 
@@ -135,13 +143,16 @@ uint8_t TCMDEXEC_fs_read_text_file(const char *args_str, TCMD_TelecommandChannel
     const uint8_t parse_file_name_result = TCMD_extract_string_arg((char*)args_str, 0, arg_file_name, sizeof(arg_file_name));
     if (parse_file_name_result != 0) {
         // error parsing
-        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Unable to parse file name arg: Error code %d", parse_file_name_result);
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing file name arg: Error %d", parse_file_name_result);
         return 1;
     }
 
     lfs_ssize_t file_size = LFS_file_size(arg_file_name);
     if (file_size <0) {
-        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "LittleFS error getting file size '%s': %ld", arg_file_name, file_size);
+        snprintf(response_output_buf, response_output_buf_len, "LittleFS error getting file size '%s': %ld", arg_file_name, file_size);
         return 1;
     }
     lfs_ssize_t bytes_read = 1;
@@ -149,7 +160,7 @@ uint8_t TCMDEXEC_fs_read_text_file(const char *args_str, TCMD_TelecommandChannel
     while (total_bytes_read < file_size && bytes_read > 0) {
         bytes_read = LFS_read_file(arg_file_name, total_bytes_read, rx_buffer, sizeof(rx_buffer) - 1);
         if (bytes_read < 0) {
-            LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "LittleFS error reading file '%s': %ld", arg_file_name, bytes_read);
+            snprintf(response_output_buf, response_output_buf_len, "LittleFS error reading file '%s': %ld", arg_file_name, bytes_read);
             return 1;
         }
         total_bytes_read += bytes_read;
@@ -157,11 +168,11 @@ uint8_t TCMDEXEC_fs_read_text_file(const char *args_str, TCMD_TelecommandChannel
         // print to uart and radio
         DEBUG_uart_print_str((char*)rx_buffer);
         // TODO send to radio
-        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_CRITICAL, LOG_CHANNEL_ALL, "TODO: send data to radio from TCMD_fs_read_text_file()");
+        DEBUG_uart_print_str("TODO: send data to radio from TCMD_fs_read_text_file()\n");
 
     }
     
-    LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "LittleFS Successfully Read File '%s': '%s'!", arg_file_name, rx_buffer);
+    snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Read File '%s': '%s'!", arg_file_name, rx_buffer);
     return 0;
 }
 
@@ -176,27 +187,30 @@ uint8_t TCMDEXEC_fs_demo_write_then_read(const char *args_str, TCMD_TelecommandC
 
     const int8_t mount_result = LFS_mount();
     if (mount_result < 0) {
-        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "LittleFS mounting error: %d", mount_result);
+        snprintf(response_output_buf, response_output_buf_len, "LittleFS mounting error: %d\n", mount_result);
         return 1;
     }
 
     const int8_t write_result = LFS_write_file(file_name, (uint8_t*) file_content, strlen(file_content));
     if (write_result < 0) {
-        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "LittleFS writing error: %d", write_result);
+        snprintf(response_output_buf, response_output_buf_len, "LittleFS writing error: %d\n", write_result);
         return 2;
     }
 
     uint8_t read_buffer[200] = {0};
     const int8_t read_result = LFS_read_file(file_name, 0, read_buffer, sizeof(read_buffer));
     if (read_result < 0) {
-        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "LittleFS reading error: %d", read_result);
+        snprintf(response_output_buf, response_output_buf_len, "LittleFS reading error: %d\n", read_result);
         return 3;
     }
 
     // Ensure safety for upcoming print.
     read_buffer[sizeof(read_buffer) - 1] = '\0';
 
-    LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "LittleFS Successfully Read File '%s'. System uptime: %lu, File Content: '%s'!", file_name, HAL_GetTick(), (char*)read_buffer);
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "LittleFS Successfully Read File '%s'. System uptime: %lu, File Content: '%s'!",
+        file_name, HAL_GetTick(), (char*)read_buffer);
     return 0;
 }
 
@@ -215,7 +229,10 @@ uint8_t TCMDEXEC_fs_benchmark_write_read(const char *args_str, TCMD_TelecommandC
     const uint8_t parse_write_chunk_count_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 1, &arg_write_chunk_count);
     if (parse_write_chunk_size_result != 0 || parse_write_chunk_count_result != 0) {
         // error parsing
-        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "Error parsing write chunk size arg: Arg 0 Err=%d, Arg 1 Err=%d", parse_write_chunk_size_result, parse_write_chunk_count_result);
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing write chunk size arg: Arg 0 Err=%d, Arg 1 Err=%d", parse_write_chunk_size_result, parse_write_chunk_count_result);
         return 1;
     }
 
@@ -223,7 +240,10 @@ uint8_t TCMDEXEC_fs_benchmark_write_read(const char *args_str, TCMD_TelecommandC
     response_output_buf[response_output_buf_len - 1] = '\0'; // ensure null-terminated
 
     if (benchmark_result != 0) {
-        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Benchmark failed. Error: %d", benchmark_result);
+        snprintf(
+            &response_output_buf[strlen(response_output_buf)],
+            response_output_buf_len - strlen(response_output_buf) - 1,
+            "Benchmark failed. Error: %d", benchmark_result);
         return 2;
     }
     return 0;

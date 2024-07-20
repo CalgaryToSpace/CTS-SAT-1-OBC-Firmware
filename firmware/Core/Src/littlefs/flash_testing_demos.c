@@ -2,10 +2,9 @@
 
 #include "littlefs/flash_driver.h"
 #include "debug_tools/debug_uart.h"
-#include "log/log.h"
 
 void demo_flash_write() {
-    LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_DEBUG, LOG_CHANNEL_ALL, "Starting demo_flash_write()...");
+    DEBUG_uart_print_str("Starting demo_flash_write()...\n");
 
     uint8_t chip_num = 0;
     uint32_t flash_addr = 0;
@@ -16,17 +15,17 @@ void demo_flash_write() {
     for (uint8_t i = 0; i < 2; i++) {
         FLASH_error_enum_t result = FLASH_write(&hspi1, chip_num, flash_addr, bytes_to_write, num_bytes);
         if (result != 0) {
-            LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Error in FLASH_write");
+            DEBUG_uart_print_str("Error in FLASH_write\n");
             return;
         }
     }
-    LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_DEBUG, LOG_CHANNEL_ALL, "Wrote bytes in demo_flash_write()");
 
-    return;
+    DEBUG_uart_print_str("Wrote bytes in demo_flash_write(). Done.\n");
 }
 
+
 void demo_flash_read() {
-    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_DEBUG, LOG_CHANNEL_ALL, "Starting demo_flash_read()...");
+    DEBUG_uart_print_str("Starting demo_flash_read()...\n");
 
     uint8_t chip_num = 0;
     uint32_t flash_addr = 0;
@@ -37,15 +36,14 @@ void demo_flash_read() {
     FLASH_error_enum_t result = FLASH_read_data(&hspi1, chip_num, flash_addr, bytes_store, num_bytes);
 
     if (result != 0) {
-        LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Error in FLASH_read_data()");
+        DEBUG_uart_print_str("Error in FLASH_read_data\n");
         return;
     }
-    LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_DEBUG, LOG_CHANNEL_ALL, "Read bytes: ");
+
+    DEBUG_uart_print_str("Read bytes: \n");
     DEBUG_uart_print_array_hex(bytes_store, num_bytes);
 
-    LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_DEBUG, LOG_CHANNEL_ALL, "Read bytes in demo_flash_read()");
-
-    return;
+    DEBUG_uart_print_str("\nRead bytes in demo_flash_read(). Done.\n");
 }
 
 // void demo_flash_full() {

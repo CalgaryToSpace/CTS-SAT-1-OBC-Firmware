@@ -2,11 +2,9 @@
 #include "main.h"
 
 #include "littlefs/flash_driver.h"
-#include "log/log.h"
+#include "debug_tools/debug_uart.h"
 
 #include "config/static_config.h"
-#include <stdio.h>
-#include <stdint.h>
 
 /// Timeout duration for HAL_SPI_READ/WRITE operations.
 // Note: FLASH_read_data has sporadic timeouts at 5ms; 10ms is a safe bet.
@@ -163,11 +161,15 @@ FLASH_error_enum_t FLASH_write_enable(SPI_HandleTypeDef *hspi, uint8_t chip_numb
 
         // Do this comparison AFTER checking the success condition (for speed, and to avoid timing out on a success).
         if (HAL_GetTick() - start_loop_time_ms > FLASH_LOOP_REGISTER_CHANGE_TIMEOUT_MS) {
-            LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Flash write enable timeout");
+            DEBUG_uart_print_str("Flash write enable timeout\n");
             return FLASH_ERR_DEVICE_BUSY_TIMEOUT;
         }
 
-        LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_DEBUG, LOG_CHANNEL_ALL, "status_reg = 0x", status_reg_buffer);
+        if (FLASH_enable_hot_path_debug_logs) {
+            DEBUG_uart_print_str("DEBUG: status_reg = 0x");
+            DEBUG_uart_print_array_hex(status_reg_buffer, 1);
+            DEBUG_uart_print_str("\n");
+        }
     }
 
     // Should never be reached:
@@ -214,11 +216,13 @@ FLASH_error_enum_t FLASH_write_disable(SPI_HandleTypeDef *hspi, uint8_t chip_num
 
         // Do this comparison AFTER checking the success condition (for speed, and to avoid timing out on a success).
         if (HAL_GetTick() - start_loop_time_ms > FLASH_LOOP_REGISTER_CHANGE_TIMEOUT_MS) {
-            LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Flash write disable timeout");
+            DEBUG_uart_print_str("Flash write disable timeout\n");
             return FLASH_ERR_DEVICE_BUSY_TIMEOUT;
         }
 
-        LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_DEBUG, LOG_CHANNEL_ALL, "DEBUG: status_reg = %#x", status_reg_buffer);
+        DEBUG_uart_print_str("DEBUG: status_reg = 0x");
+        DEBUG_uart_print_array_hex(status_reg_buffer, 1);
+        DEBUG_uart_print_str("\n");
     }
 
     // Should never be reached:
@@ -283,7 +287,7 @@ FLASH_error_enum_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs
 
         if ((status_reg_buffer[0] & FLASH_SR1_ERASE_ERROR_MASK) > 0) {
             // Flash module returned "erase error" via the status register.
-            LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Flash erase error");
+            DEBUG_uart_print_str("Flash erase error\n");
             return FLASH_ERR_STATUS_REG_ERROR;
         }
 
@@ -294,11 +298,13 @@ FLASH_error_enum_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs
 
         // Do this comparison AFTER checking the success condition (for speed, and to avoid timing out on a success).
         if (HAL_GetTick() - start_loop_time_ms > FLASH_LOOP_SECTOR_ERASE_TIMEOUT_MS) {
-            LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Flash erase timeout");
+            DEBUG_uart_print_str("Flash erase timeout\n");
             return FLASH_ERR_DEVICE_BUSY_TIMEOUT;
         }
 
-        LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_DEBUG, LOG_CHANNEL_ALL, "DEBUG: status_reg = %#x", status_reg_buffer);
+        DEBUG_uart_print_str("DEBUG: status_reg = 0x");
+        DEBUG_uart_print_array_hex(status_reg_buffer, 1);
+        DEBUG_uart_print_str("\n");
     }
 
     // Should never be reached:
@@ -374,7 +380,7 @@ FLASH_error_enum_t FLASH_write(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs
 
         if ((status_reg_buffer[0] & FLASH_SR1_PROGRAMMING_ERROR_MASK) > 0) {
             // Flash module returned "programming error" via the status register.
-            LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Flash programming error");
+            DEBUG_uart_print_str("Flash programming error\n");
             return FLASH_ERR_STATUS_REG_ERROR;
         }
 
@@ -385,11 +391,13 @@ FLASH_error_enum_t FLASH_write(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs
 
         // Do this comparison AFTER checking the success condition (for speed, and to avoid timing out on a success).
         if (HAL_GetTick() - start_loop_time_ms > FLASH_LOOP_WRITE_TIMEOUT_MS) {
-            LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "Flash write timeout");
+            DEBUG_uart_print_str("Flash write timeout\n");
             return FLASH_ERR_DEVICE_BUSY_TIMEOUT;
         }
 
-        LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_DEBUG, LOG_CHANNEL_ALL, "DEBUG: status_reg = %#x", status_reg_buffer);
+        DEBUG_uart_print_str("DEBUG: status_reg = 0x");
+        DEBUG_uart_print_array_hex(status_reg_buffer, 1);
+        DEBUG_uart_print_str("\n");
     }
 
     // Should never be reached:
@@ -489,16 +497,17 @@ FLASH_error_enum_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_numb
     // and rx_buffer[2] is the memory capacity (not checked, as we have a few different capacities).
     // rx_buffer[2] is 0x20=512 for 512 Mib (mebibits)
     // TODO: maybe check the capacity as well here, esp. in deployment
-    char ids_text[15];
-    snprintf(ids_text, 15, "%02X %02X %02X %02X %02X", rx_buffer[0], rx_buffer[1], rx_buffer[2], rx_buffer[3], rx_buffer[4]);
     uint8_t are_bytes_correct = 0;
     if (rx_buffer[0] == 0x01 && rx_buffer[1] == 0x02) {
-        LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "FLASH_is_reachable received IDs: %s", ids_text);
+        DEBUG_uart_print_str("SUCCESS: FLASH_is_reachable received IDs: ");
         are_bytes_correct = 1;
     } else {
-        LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "FLASH_is_reachable received IDs: %s", ids_text);
+        DEBUG_uart_print_str("ERROR: FLASH_is_reachable received IDs: ");
         are_bytes_correct = 0;
     }
+
+    DEBUG_uart_print_array_hex(rx_buffer, 5);
+    DEBUG_uart_print_str("\n");
 
     if (!are_bytes_correct) {
         // error: IDs don't match

@@ -28,7 +28,6 @@
 #include "rtos_tasks/rtos_tasks.h"
 #include "uart_handler/uart_handler.h"
 #include "littlefs/flash_driver.h"
-#include "log/log.h"
 
 /* USER CODE END Includes */
 

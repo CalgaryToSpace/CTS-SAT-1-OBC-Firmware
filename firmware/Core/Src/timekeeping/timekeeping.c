@@ -1,9 +1,10 @@
 #include "timekeeping/timekeeping.h"
-#include "log/log.h"
+#include "debug_tools/debug_uart.h"
 #include "stm32l4xx_hal.h"
 
 #include <stdio.h>
 #include <inttypes.h>
+#include <string.h>
 #include <time.h>
 
 uint64_t TIM_unix_epoch_time_at_last_time_resync_ms = 0;
@@ -16,23 +17,26 @@ uint32_t TIM_get_current_system_uptime_ms(void) {
 
 /// @brief Use this function in a telecommand, or upon receiving a time update from the GPS. 
 void TIM_set_current_unix_epoch_time_ms(uint64_t current_unix_epoch_time_ms, TIM_sync_source_t source) {
-    // The new time might be less than the current time, for example when the
-    // system clock runs fast and we get an update from the GPS or the ground
-    // station. Log a warning after updating the time.
-    const uint8_t time_set_back = current_unix_epoch_time_ms < TIM_get_current_unix_epoch_time_ms();
+    // Determine whether the current sync time is before the last sync time.
+    // It would be a warning scenario which makes logs difficult to decipher.
+    // Don't log it right away; update the time info, then log after.
+    const uint8_t is_this_sync_before_the_last_sync = current_unix_epoch_time_ms < TIM_unix_epoch_time_at_last_time_resync_ms;
 
     // Update the time.
     TIM_unix_epoch_time_at_last_time_resync_ms = current_unix_epoch_time_ms;
     TIM_system_uptime_at_last_time_resync_ms = HAL_GetTick();
     TIM_last_synchronization_source = source;
 
-    if (time_set_back) {
-        LOG_message(LOG_SYSTEM_OBC, LOG_SEVERITY_WARNING, LOG_CHANNEL_ALL, "synced to an earlier time");
+    // Log a warning if the current sync time is before the last sync time.
+    if (is_this_sync_before_the_last_sync) {
+        char log_str[TIM_EPOCH_DECIMAL_STRING_LEN];
+        TIM_epoch_ms_to_decimal_string(log_str, TIM_EPOCH_DECIMAL_STRING_LEN);
+        DEBUG_uart_print_str("WARNING: setting current time to before the last sync.");
+        // TODO: use the logger warning function, and add other data with a format string here.
     }
 }
 
 /// @brief Returns the current unix timestamp, in milliseconds
-/// @return milliseconds since midnight on 1 Jan 1970
 uint64_t TIM_get_current_unix_epoch_time_ms() {
     return (HAL_GetTick() - TIM_system_uptime_at_last_time_resync_ms) + TIM_unix_epoch_time_at_last_time_resync_ms;
 }
@@ -52,13 +56,13 @@ void TIM_get_timestamp_string(char *log_str, size_t max_len) {
     char source = TIM_synchronization_source_letter(TIM_last_synchronization_source);
     uint32_t delta_uptime = TIM_get_current_system_uptime_ms() - TIM_system_uptime_at_last_time_resync_ms;
     TIM_epoch_ms_to_decimal_string(log_str, max_len);
-    snprintf(log_str + TIM_EPOCH_DECIMAL_STRING_LEN - 1, max_len - TIM_EPOCH_DECIMAL_STRING_LEN, "_%c_%010" PRIu32, source, delta_uptime); 
+    snprintf(log_str + TIM_EPOCH_DECIMAL_STRING_LEN - 1, max_len - TIM_EPOCH_DECIMAL_STRING_LEN, "_%c_%010lu", source, delta_uptime); 
 
     return;
 }
 
 
-/// @brief Returns a calendar-friendly timestamp string 
+/// @brief Returns a human-friendly timestamp string 
 /// @param log_str - Pointer to buffer that stores the log string 
 /// @param max_len - Maximum length of log_str buffer
 /// @detail The string identifies the current Unix time, and number of 
@@ -89,7 +93,7 @@ void TIM_get_timestamp_string_datetime(char *log_str, size_t max_len) {
     snprintf(
         log_str, 
         max_len, 
-        "%d%02d%02dT%02d%02d%02d.%03u_%c_%" PRIu32, 
+        "%d%02d%02dT%02d%02d%02d.%03u_%c_%lu", 
         time_info->tm_year + 1900, 
         time_info->tm_mon + 1, 
         time_info->tm_mday, 
@@ -163,7 +167,7 @@ void TIM_epoch_ms_to_decimal_string(char *str, size_t len) {
     uint32_t ms_small_part = ms % 1000000000;
 
     // On every call to this function, update the right-most 9 digits
-    snprintf(ms_digits + 4, 10, "%09lu" PRIu32, ms_small_part);
+    snprintf(ms_digits + 4, 10, "%09lu", ms_small_part);
 
     // Return if there is nothing else to do
     uint64_t ms_large_part = ms / 1000000000;
