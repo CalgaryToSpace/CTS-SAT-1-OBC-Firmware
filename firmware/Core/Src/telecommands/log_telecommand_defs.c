@@ -8,7 +8,7 @@
 #include "telecommands/telecommand_args_helpers.h"
 
 
-uint8_t TCMDEXEC_log_set_channel_state(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_log_set_channel_enabled_state(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     
     uint64_t channel;
@@ -26,7 +26,7 @@ uint8_t TCMDEXEC_log_set_channel_state(const char *args_str, TCMD_TelecommandCha
     }
 
     // Response is logged by log system
-    LOG_set_channel_state(channel, state);
+    LOG_set_channel_enabled_state(channel, state);
 
     return 0;
 }
@@ -54,7 +54,7 @@ uint8_t TCMDEXEC_log_set_system_file_logging_state(const char *args_str, TCMD_Te
     return 0;
 }
 
-uint8_t TCMDEXEC_log_report_channel_logging_state(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_log_report_channel_enabled_state(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     
     uint64_t channel;
@@ -65,17 +65,17 @@ uint8_t TCMDEXEC_log_report_channel_logging_state(const char *args_str, TCMD_Tel
     }
 
     // Response is logged by log system
-    LOG_report_channel_logging_state(channel);
+    LOG_report_channel_enabled_state(channel);
 
     return 0;
 }
 
-uint8_t TCMDEXEC_log_report_all_channel_logging_states(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_log_report_all_channel_enabled_states(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     
     // Response is logged by log system
     for (uint16_t i = 0; i < LOG_number_of_logging_channels(); i++) {
-        LOG_report_channel_logging_state(1 << i);
+        LOG_report_channel_enabled_state(1 << i);
     }
 
     return 0;

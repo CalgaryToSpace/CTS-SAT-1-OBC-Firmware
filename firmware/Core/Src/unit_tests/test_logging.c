@@ -7,13 +7,13 @@ uint8_t TEST_EXEC__LOG_enable_disable_LOG_CHANNEL_FILE(void)
 
     // Test case 1: enable and disable logging to LOG_CHANNEL_FILE 
     // Enable
-    LOG_set_channel_state(LOG_CHANNEL_FILE, LOG_CHANNEL_ON);
+    LOG_set_channel_enabled_state(LOG_CHANNEL_FILE, LOG_CHANNEL_ON);
     TEST_ASSERT(LOG_is_channel_enabled(LOG_CHANNEL_FILE) == 1);
     // Disable
-    LOG_set_channel_state(LOG_CHANNEL_FILE, LOG_CHANNEL_OFF);
+    LOG_set_channel_enabled_state(LOG_CHANNEL_FILE, LOG_CHANNEL_OFF);
     TEST_ASSERT(LOG_is_channel_enabled(LOG_CHANNEL_FILE) == 0);
     // Restore initial state
-    LOG_set_channel_state(LOG_CHANNEL_FILE, initial_is_channel_enabled);
+    LOG_set_channel_enabled_state(LOG_CHANNEL_FILE, initial_is_channel_enabled);
     TEST_ASSERT(LOG_is_channel_enabled(LOG_CHANNEL_FILE) == initial_is_channel_enabled);
 
     return 0;
@@ -25,13 +25,13 @@ uint8_t TEST_EXEC__LOG_enable_disable_LOG_CHANNEL_UHF_RADIO(void)
 
     // Test case 1: enable and disable logging to LOG_CHANNEL_UHF_RADIO
     // Enable
-    LOG_set_channel_state(LOG_CHANNEL_UHF_RADIO, LOG_CHANNEL_ON);
+    LOG_set_channel_enabled_state(LOG_CHANNEL_UHF_RADIO, LOG_CHANNEL_ON);
     TEST_ASSERT(LOG_is_channel_enabled(LOG_CHANNEL_UHF_RADIO) == 1);
     // Disable
-    LOG_set_channel_state(LOG_CHANNEL_UHF_RADIO, LOG_CHANNEL_OFF);
+    LOG_set_channel_enabled_state(LOG_CHANNEL_UHF_RADIO, LOG_CHANNEL_OFF);
     TEST_ASSERT(LOG_is_channel_enabled(LOG_CHANNEL_UHF_RADIO) == 0);
     // Restore initial state
-    LOG_set_channel_state(LOG_CHANNEL_UHF_RADIO, initial_is_channel_enabled);
+    LOG_set_channel_enabled_state(LOG_CHANNEL_UHF_RADIO, initial_is_channel_enabled);
     TEST_ASSERT(LOG_is_channel_enabled(LOG_CHANNEL_UHF_RADIO) == initial_is_channel_enabled);
 
     return 0;
@@ -43,13 +43,13 @@ uint8_t TEST_EXEC__LOG_enable_disable_LOG_CHANNEL_UMBILICAL_UART(void)
 
     // Test case 1: enable and disable logging to LOG_CHANNEL_UMBILICAL_UART
     // Enable
-    LOG_set_channel_state(LOG_CHANNEL_UMBILICAL_UART, LOG_CHANNEL_ON);
+    LOG_set_channel_enabled_state(LOG_CHANNEL_UMBILICAL_UART, LOG_CHANNEL_ON);
     TEST_ASSERT(LOG_is_channel_enabled(LOG_CHANNEL_UMBILICAL_UART) == 1);
     // Disable
-    LOG_set_channel_state(LOG_CHANNEL_UMBILICAL_UART, LOG_CHANNEL_OFF);
+    LOG_set_channel_enabled_state(LOG_CHANNEL_UMBILICAL_UART, LOG_CHANNEL_OFF);
     TEST_ASSERT(LOG_is_channel_enabled(LOG_CHANNEL_UMBILICAL_UART) == 0);
     // Restore initial state
-    LOG_set_channel_state(LOG_CHANNEL_UMBILICAL_UART, initial_is_channel_enabled);
+    LOG_set_channel_enabled_state(LOG_CHANNEL_UMBILICAL_UART, initial_is_channel_enabled);
     TEST_ASSERT(LOG_is_channel_enabled(LOG_CHANNEL_UMBILICAL_UART) == initial_is_channel_enabled);
 
     return 0;

@@ -259,6 +259,28 @@ void LOG_set_system_severity_mask(LOG_system_enum_t system, uint32_t severity_ma
     return;
 }
 
+/// @brief Enable or disable logging to a channel
+/// @param channel specified channel
+/// @state 0: disable  1:  enable
+void LOG_set_channel_enabled_state(LOG_channel_enum_t channel, uint8_t state)
+{
+    for (uint16_t i = 0; i < LOG_NUMBER_OF_CHANNELS; i++) {
+        if (LOG_channels[i].channel == channel) {
+            LOG_channels[i].enabled = state;
+            LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, 
+                    "%s logging to %s", 
+                    state == 0 ? "Disabled" : "Enabled", 
+                    LOG_channels[i].name
+            );
+            return;
+        }
+    }
+
+    // Channel not found
+    LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "LOG_set_channel_state(): unknown system: %d", system);
+    return;
+}
+
 /// @brief Enable or disable logging to file for a subsystem
 /// @param system specified subsystem
 /// @state 0: disable  1:  enable
@@ -281,31 +303,9 @@ void LOG_set_system_file_logging_state(LOG_system_enum_t system, uint8_t state)
     return;
 }
 
-/// @brief Enable or disable logging to a channel
+/// @brief Report a channel's enabled state
 /// @param channel specified channel
-/// @state 0: disable  1:  enable
-void LOG_set_channel_state(LOG_channel_enum_t channel, uint8_t state)
-{
-    for (uint16_t i = 0; i < LOG_NUMBER_OF_CHANNELS; i++) {
-        if (LOG_channels[i].channel == channel) {
-            LOG_channels[i].enabled = state;
-            LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, 
-                    "%s logging to %s", 
-                    state == 0 ? "Disabled" : "Enabled", 
-                    LOG_channels[i].name
-            );
-            return;
-        }
-    }
-
-    // Channel not found
-    LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_CHANNEL_ALL, "LOG_set_channel_state(): unknown system: %d", system);
-    return;
-}
-
-/// @brief Report a channel's logging state
-/// @param channel specified channel
-void LOG_report_channel_logging_state(LOG_channel_enum_t channel)
+void LOG_report_channel_enabled_state(LOG_channel_enum_t channel)
 {
     for (uint16_t i = 0; i < LOG_NUMBER_OF_CHANNELS; i++) {
         if (LOG_channels[i].channel == channel) {

@@ -56,9 +56,9 @@ void LOG_set_channel_debugging_messages_state(LOG_channel_enum_t channel, uint8_
 void LOG_set_system_debugging_messages_state(LOG_system_enum_t system, uint8_t state);
 uint8_t LOG_is_system_file_logging_enabled(LOG_system_enum_t system);
 void LOG_set_system_severity_mask(LOG_system_enum_t system, uint32_t severity_mask);
+void LOG_set_channel_enabled_state(LOG_channel_enum_t channel, uint8_t state);
 void LOG_set_system_file_logging_state(LOG_system_enum_t system, uint8_t state);
-void LOG_set_channel_state(LOG_channel_enum_t channel, uint8_t state);
-void LOG_report_channel_logging_state(LOG_channel_enum_t channels);
+void LOG_report_channel_enabled_state(LOG_channel_enum_t channels);
 void LOG_report_system_file_logging_state(LOG_system_enum_t systems);
 uint16_t LOG_number_of_logging_channels(void);
 uint16_t LOG_number_of_logging_systems(void);
