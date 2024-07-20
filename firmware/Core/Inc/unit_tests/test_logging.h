@@ -5,7 +5,7 @@
 
 uint8_t TEST_EXEC__LOG_toggle_channels(void);
 uint8_t TEST_EXEC__LOG_toggle_systems(void);
-uint8_t TEST_EXEC__LOG_channel_exceptions(void);
+uint8_t TEST_EXEC__LOG_all_channels_except(void);
 uint8_t TEST_EXEC__LOG_message(void);
 
 #endif // __INCLUDE_GUARD__TEST_LOGGING_H__

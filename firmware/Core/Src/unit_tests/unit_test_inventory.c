@@ -64,9 +64,9 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func_name = "TEST_EXEC__LOG_toggle_systems"
     },
     {
-        .test_func = TEST_EXEC__LOG_channel_exceptions,
+        .test_func = TEST_EXEC__LOG_all_channels_except,
         .test_file = "log/log",
-        .test_func_name = "TEST_EXEC__LOG_channel_exceptions"
+        .test_func_name = "TEST_EXEC__LOG_all_channels_except"
     },
     {
         .test_func = TEST_EXEC__LOG_message,

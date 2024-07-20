@@ -92,7 +92,7 @@ static const uint16_t LOG_NUMBER_OF_SYSTEMS = sizeof(LOG_systems) / sizeof(LOG_s
 /// @param msg message text
 /// @return void
 /// @details Normally msg does not end with a newline (\n).
-///     Exclude one or more channels using LOG_channel_exceptions(...).
+///     Exclude one or more channels using LOG_all_channels_except(...)
 void LOG_message(LOG_system_enum_t from, LOG_severity_enum_t severity, LOG_channel_enum_t channels, const char fmt[], ...)
 {
     // Get the system time
@@ -155,10 +155,11 @@ void LOG_message(LOG_system_enum_t from, LOG_severity_enum_t severity, LOG_chann
     return;
 }
 
-/// @brief All channels except the specified exceptions
-/// @param exceptions Bitwise OR'd channel exceptions
-/// @return Bitwise OR'd value of all other channels
-LOG_channel_enum_t LOG_channel_exceptions(LOG_channel_enum_t exceptions)
+/// @brief Returns all channels, except the specified exceptions
+/// @param exceptions Bitfield represent log channels to exclude
+/// @return Bitfield representing all log channels, except those passed as an arg
+/// @note Especially useful in calls to `LOG_message()`, to report a failure of a specific logging sink.
+LOG_channel_enum_t LOG_all_channels_except(LOG_channel_enum_t exceptions)
 {
     return LOG_CHANNEL_ALL & ~exceptions;
 }
@@ -339,7 +340,7 @@ void LOG_systems_status(LOG_system_enum_t systems)
 void LOG_to_file(const char filename[], const char msg[])
 {
     if (!LFS_is_lfs_mounted) {
-        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_CRITICAL, LOG_channel_exceptions(LOG_CHANNEL_FILE), 
+        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_CRITICAL, LOG_all_channels_except(LOG_CHANNEL_FILE), 
                 "Error writing to system log file: LFS not mounted.\n");
         return;
     }
@@ -351,20 +352,20 @@ void LOG_to_file(const char filename[], const char msg[])
 	{
         // This error cannot be logged, except via UART or during an overpass 
         // of the ground station
-        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_CRITICAL, LOG_channel_exceptions(LOG_CHANNEL_FILE), 
+        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_CRITICAL, LOG_all_channels_except(LOG_CHANNEL_FILE), 
                 "Error opening system log file.\n");
 		return;
 	}
     const lfs_soff_t offset = lfs_file_seek(&LFS_filesystem, &file, 0, LFS_SEEK_END);
     if (offset < 0) {
-        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_CRITICAL, LOG_channel_exceptions(LOG_CHANNEL_FILE), 
+        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_CRITICAL, LOG_all_channels_except(LOG_CHANNEL_FILE), 
                 "Error seeking to end of system log file.\n");
         return;
     }
 
 	const lfs_ssize_t bytes_written = lfs_file_write(&LFS_filesystem, &file, msg, strlen(msg));
 	if (bytes_written < 0) {
-        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_CRITICAL, LOG_channel_exceptions(LOG_CHANNEL_FILE), 
+        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_CRITICAL, LOG_all_channels_except(LOG_CHANNEL_FILE), 
                 "Error writing to system log file.\n");
 		return;
 	}
@@ -372,7 +373,7 @@ void LOG_to_file(const char filename[], const char msg[])
 	// Close the File, the storage is not updated until the file is closed successfully
 	const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
 	if (close_result < 0) {
-        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_CRITICAL, LOG_channel_exceptions(LOG_CHANNEL_FILE), 
+        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_CRITICAL, LOG_all_channels_except(LOG_CHANNEL_FILE), 
                 "Error closing system log file.\n");
 		return;
 	}

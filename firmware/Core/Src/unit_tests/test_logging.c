@@ -84,17 +84,17 @@ uint8_t TEST_EXEC__LOG_toggle_systems(void)
     return 0;
 }
 
-uint8_t TEST_EXEC__LOG_channel_exceptions(void)
+uint8_t TEST_EXEC__LOG_all_channels_except(void)
 {
     return 0;
     // Test case 1: all channels except the UHF radio
-    TEST_ASSERT(LOG_channel_exceptions(LOG_CHANNEL_UHF_RADIO) == (LOG_CHANNEL_ALL & ~LOG_CHANNEL_UHF_RADIO));
+    TEST_ASSERT(LOG_all_channels_except(LOG_CHANNEL_UHF_RADIO) == (LOG_CHANNEL_ALL & ~LOG_CHANNEL_UHF_RADIO));
     // Test case 2: all channels except the umbilical UART
-    TEST_ASSERT(LOG_channel_exceptions(LOG_CHANNEL_UMBILICAL_UART) == (LOG_CHANNEL_ALL & ~LOG_CHANNEL_UMBILICAL_UART));
+    TEST_ASSERT(LOG_all_channels_except(LOG_CHANNEL_UMBILICAL_UART) == (LOG_CHANNEL_ALL & ~LOG_CHANNEL_UMBILICAL_UART));
     // Test case 3: all channels except the filesystem
-    TEST_ASSERT(LOG_channel_exceptions(LOG_CHANNEL_FILE) == (LOG_CHANNEL_ALL & ~LOG_CHANNEL_FILE));
+    TEST_ASSERT(LOG_all_channels_except(LOG_CHANNEL_FILE) == (LOG_CHANNEL_ALL & ~LOG_CHANNEL_FILE));
     // Test case 4: no channels
-    TEST_ASSERT(LOG_channel_exceptions(LOG_CHANNEL_ALL) == LOG_CHANNEL_NONE);
+    TEST_ASSERT(LOG_all_channels_except(LOG_CHANNEL_ALL) == LOG_CHANNEL_NONE);
 
     return 0;
 }

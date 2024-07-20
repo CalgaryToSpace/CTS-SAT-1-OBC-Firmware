@@ -50,7 +50,7 @@ enum {
 };
 
 void LOG_message(LOG_system_enum_t from, LOG_severity_enum_t severity, LOG_channel_enum_t channels, const char fmt[], ...);
-LOG_channel_enum_t LOG_channel_exceptions(LOG_channel_enum_t exceptions);
+LOG_channel_enum_t LOG_all_channels_except(LOG_channel_enum_t exceptions);
 
 void LOG_enable_channels(LOG_channel_enum_t channels);
 void LOG_disable_channels(LOG_channel_enum_t channels);
