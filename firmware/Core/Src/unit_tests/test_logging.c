@@ -81,7 +81,9 @@ uint8_t TEST_EXEC__LOG_all_channels_except(void)
     TEST_ASSERT(LOG_all_channels_except(LOG_CHANNEL_UMBILICAL_UART) == (LOG_CHANNEL_ALL & ~LOG_CHANNEL_UMBILICAL_UART));
     // Test case 3: all channels except the filesystem
     TEST_ASSERT(LOG_all_channels_except(LOG_CHANNEL_FILE) == (LOG_CHANNEL_ALL & ~LOG_CHANNEL_FILE));
-    // Test case 4: no channels
+    // Test case 4: all channels except the filesystem and umbilical UART
+    TEST_ASSERT(LOG_all_channels_except(LOG_CHANNEL_FILE | LOG_CHANNEL_UMBILICAL_UART) == (LOG_CHANNEL_ALL & ~(LOG_CHANNEL_FILE | LOG_CHANNEL_UMBILICAL_UART)));
+    // Test case 5: no channels
     TEST_ASSERT(LOG_all_channels_except(LOG_CHANNEL_ALL) == LOG_CHANNEL_NONE);
 
     return 0;
