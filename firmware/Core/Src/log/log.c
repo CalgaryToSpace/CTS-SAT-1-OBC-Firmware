@@ -309,7 +309,7 @@ void LOG_report_channel_logging_state(LOG_channel_enum_t channel)
 {
     for (uint16_t i = 0; i < LOG_NUMBER_OF_CHANNELS; i++) {
         if (LOG_channels[i].channel == channel) {
-            LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "%20s: %s",  LOG_channels[i].name, LOG_channels[i].enabled ? "enabled" : "disabled");
+            LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "%20s: %s",  LOG_channels[i].name, LOG_channels[i].enabled ? "enabled" : "DISABLED");
             return;
         }
     }
@@ -327,7 +327,7 @@ void LOG_report_system_file_logging_state(LOG_system_enum_t system)
 {
     for (uint16_t i = 0; i < LOG_NUMBER_OF_SYSTEMS; i++) {
         if (LOG_systems[i].system == system) {
-            LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "%20s: %9s (log file: '%s')",  LOG_systems[i].name, LOG_systems[i].logging_enabled ? "enabled" : "disabled", LOG_systems[i].log_file_path);
+            LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_NORMAL, LOG_CHANNEL_ALL, "%20s: %9s (log file: '%s')",  LOG_systems[i].name, LOG_systems[i].logging_enabled ? "enabled" : "DISABLED", LOG_systems[i].log_file_path);
             return;
         }
     }
