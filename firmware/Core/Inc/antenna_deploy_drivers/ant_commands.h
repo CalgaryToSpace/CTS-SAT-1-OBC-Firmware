@@ -5,7 +5,7 @@
 
 uint8_t ANT_CMD_arm_antenna_system();
 
-uint8_t ANT_CMD_deploy_antenna1();
+uint8_t ANT_CMD_deploy_antenna1(uint8_t ativation_time_seconds);
 
 uint8_t ANT_CMD_measure_temp();
 

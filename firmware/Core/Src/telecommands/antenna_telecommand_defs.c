@@ -3,6 +3,7 @@
 #include "telecommands/antenna_telecommand_defs.h"
 #include "antenna_deploy_drivers/ant_commands.h"
 #include "antenna_deploy_drivers/ant_internal_drivers.h"
+#include "telecommands/telecommand_args_helpers.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -26,20 +27,25 @@ uint8_t TCMDEXEC_ant_arm_antenna_system(const char *args_str, TCMD_TelecommandCh
 uint8_t TCMDEXEC_ant_deploy_antenna1(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
 
-    uint64_t arg_write_chunk_size, arg_write_chunk_count;
-
-    const uint8_t parse_write_chunk_size_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 0, &arg_write_chunk_size);
-    const uint8_t parse_write_chunk_count_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 1, &arg_write_chunk_count);
-    if (parse_write_chunk_size_result != 0 || parse_write_chunk_count_result != 0) {
+    uint64_t arg_activation_time;
+    const uint8_t parse_activation_time_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 0, &arg_activation_time);
+    if (parse_activation_time_result != 0) {
         // error parsing
         snprintf(
             response_output_buf,
             response_output_buf_len,
-            "Error parsing write chunk size arg: Arg 0 Err=%d, Arg 1 Err=%d", parse_write_chunk_size_result, parse_write_chunk_count_result);
-        return 1;
+            "Error parsing activation time arg: %d", parse_activation_time_result);
+        return 3;
+    }
+    if(arg_activation_time > 255) {
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error: Activation time must be less than 255");
+        return 4;
     }
 
-    const uint8_t comms_err = ANT_CMD_deploy_antenna1(arg_write_chunk_size, arg_write_chunk_count);
+    const uint8_t comms_err = ANT_CMD_deploy_antenna1((uint8_t)arg_activation_time);
     if (comms_err != 0) {
         snprintf(response_output_buf, response_output_buf_len, "Error: %d", comms_err);
     } else {
