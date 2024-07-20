@@ -404,7 +404,7 @@ lfs_ssize_t LFS_file_size(const char file_name[])
         return open_result;
     }
     const lfs_ssize_t size = lfs_file_size(&LFS_filesystem, &file);
-    const uint8_t close_result = lfs_file_close(&LFS_filesystem, &file);
+    const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
 	if (close_result < 0) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_channels_except(LOG_CHANNEL_FILE), "Error closing file");
 		return close_result;
