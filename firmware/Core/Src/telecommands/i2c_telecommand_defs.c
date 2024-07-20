@@ -34,25 +34,25 @@ uint8_t TCMDEXEC_scan_i2c_bus(const char *args_str, TCMD_TelecommandChannel_enum
             return 1;
     }
 
-	char msg[16];
+    char msg[16];
     uint8_t count_success = 0;
     uint8_t count_error = 0;
     uint8_t count_timeout = 0;
     uint8_t count_busy = 0;
     uint8_t count_misc = 0;
 
-	// Go through all possible i2c addresses
-	for (uint16_t i = 0; i < 128; i++) {
+    // Go through all possible i2c addresses
+    for (uint16_t i = 0; i < 128; i++) {
         const HAL_StatusTypeDef i2c_device_status = HAL_I2C_IsDeviceReady(hi2c, (i<<1), 3, 5);
 
         // Calculate remaining space in buffer. -1 for null terminator
         const size_t remaining_space = response_output_buf_len - strlen(response_output_buf) - 1;
 
-		if (i2c_device_status == HAL_OK) {
-			// O for OK
+        if (i2c_device_status == HAL_OK) {
+            // O for OK
             snprintf(msg, sizeof(msg), " 0x%02x ", i);
             count_success++;
-		} 
+        } 
         else if (i2c_device_status == HAL_ERROR) {
             // E for Error
             snprintf(msg, sizeof(msg), "  _E_ ");
@@ -62,12 +62,12 @@ uint8_t TCMDEXEC_scan_i2c_bus(const char *args_str, TCMD_TelecommandChannel_enum
             // T for timeout
             snprintf(msg, sizeof(msg), "  _T_ ");
             count_timeout++;
-		}
+        }
         else if (i2c_device_status == HAL_BUSY) {
             // B for busy
             snprintf(msg, sizeof(msg), "  _B_ ");
             count_busy++;
-		}
+        }
         else {
             // M for Misc. error
             snprintf(msg, sizeof(msg), "  _M_ ");
@@ -79,7 +79,7 @@ uint8_t TCMDEXEC_scan_i2c_bus(const char *args_str, TCMD_TelecommandChannel_enum
             snprintf(&msg[strlen(msg)], sizeof(msg) - strlen(msg), "\n");
         }
         strncat(response_output_buf, msg, remaining_space);
-	}
+    }
 
     // Add counts to the end of the response.
     snprintf(
