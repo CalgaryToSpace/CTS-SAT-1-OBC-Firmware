@@ -257,12 +257,29 @@ uint8_t TCMD_ascii_to_double(const char *str, uint32_t str_len, double *result) 
             // so long as the first character is a digit, atof can handle it
             double temp_result = atof(str);
             *result = temp_result;
+            break;
+        }
+        else if (!isdigit(str[i]) && !isspace(str[i]) && !(str[i]) == '-') {
+            // atof removes whitespace, so we only need to check for other characters
+            // atof also ignores all subsequent non-double characters following the double
+            return 2;
+        }
+    }
+
+    for (uint32_t i = str_len - 1; i >= 0; i--) {
+        // iterate through the string backwards to find the first non-whitespace character
+        if (isdigit(str[i])) {
+            // so long as there are no random charachers afterwards, we're fine
             return 0;
         }
         else if (!isdigit(str[i]) && !isspace(str[i])) {
             // atof removes whitespace, so we only need to check for other characters
             // atof also ignores all subsequent non-double characters following the double
             return 2;
+        }
+        else if (isspace(str[i]) && i == str_len - 1) {
+            // input is entirely whitespace
+            return 1;
         }
     }
 

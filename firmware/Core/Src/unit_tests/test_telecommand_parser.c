@@ -1,5 +1,9 @@
 #include "unit_tests/unit_test_helpers.h"
 #include "telecommands/telecommand_parser.h"
+#include "telecommands/telecommand_args_helpers.h"
+#include "transforms/number_comparisons.h"
+
+#define HELPERS_TEST_EPSILON 1e-6
 
 uint8_t TEST_EXEC__TCMD_is_char_alphanumeric() {
     TEST_ASSERT(TCMD_is_char_alphanumeric('a') == 1);
@@ -18,9 +22,6 @@ uint8_t TEST_EXEC__TCMD_is_char_alphanumeric() {
     TEST_ASSERT(TCMD_is_char_alphanumeric('(') == 0); // important, on right side of command name
     return 0;
 }
-
-
-
 
 uint8_t TEST_EXEC__TCMD_check_starts_with_device_id() {
     uint8_t result = 0;
@@ -75,6 +76,33 @@ uint8_t TEST_EXEC__TCMD_get_suffix_tag_uint64() {
     // Fail case: 0-length value
     result_err = TCMD_get_suffix_tag_uint64("@tsexec=@tssent=3441879389695", "@tsexec=", &result_val);
     TEST_ASSERT(result_err > 0);
+
+    return 0;
+}
+uint8_t TEST_EXEC__TCMD_ascii_to_double() {
+    double output_val;
+
+    // Nominal test.
+    TEST_ASSERT_FALSE(TCMD_ascii_to_double("6.7", 3, &output_val));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(output_val, 6.7, HELPERS_TEST_EPSILON) == 1);
+    // assert: output_val approx equals 6.7
+
+    // Nominal test (negative).
+    TEST_ASSERT_FALSE(TCMD_ascii_to_double("-23.9", 5, &output_val));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(output_val, -23.9, HELPERS_TEST_EPSILON) == 1);
+    // assert: output_val approx equals -23.9
+
+    // Error: empty string
+    TEST_ASSERT_TRUE(TCMD_ascii_to_double("", 0, &output_val));
+
+    // Error: just a space
+    TEST_ASSERT_TRUE(TCMD_ascii_to_double(" ", 1, &output_val));
+
+    // Error: letters
+    TEST_ASSERT_TRUE(TCMD_ascii_to_double("abc", 3, &output_val));
+
+    // Error: trailing letters
+    TEST_ASSERT_TRUE(TCMD_ascii_to_double("23.7a", 5, &output_val));
 
     return 0;
 }

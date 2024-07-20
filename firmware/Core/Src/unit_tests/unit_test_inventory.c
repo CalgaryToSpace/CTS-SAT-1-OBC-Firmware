@@ -6,6 +6,7 @@
 #include "unit_tests/test_telecommand_parser.h"
 #include "unit_tests/test_tests.h"
 #include "unit_tests/test_telecommand_arg_helpers.h"
+#include "unit_tests/unit_test_helpers.h"
 
 
 // extern
@@ -51,6 +52,11 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func = TEST_EXEC__TCMD_extract_hex_array_arg,
         .test_file = "telecommands/telecommand_args_helpers",
         .test_func_name = "TCMD_extract_hex_array_arg"
+    },
+    {
+        .test_func = TEST_EXEC__TCMD_ascii_to_double,
+        .test_file = "telecommands/telecommand_args_helpers",
+        .test_func_name = "TCMD_ascii_to_double"
     },
     
 };
