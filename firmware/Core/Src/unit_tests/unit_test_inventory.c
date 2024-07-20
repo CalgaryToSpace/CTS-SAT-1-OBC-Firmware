@@ -78,11 +78,6 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_file = "log/log",
         .test_func_name = "TEST_EXEC__LOG_all_channels_except"
     },
-    {
-        .test_func = TEST_EXEC__LOG_message,
-        .test_file = "log/log",
-        .test_func_name = "TEST_EXEC__LOG_message"
-    },
 };
 
 // extern

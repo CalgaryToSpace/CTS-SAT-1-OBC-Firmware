@@ -87,15 +87,3 @@ uint8_t TEST_EXEC__LOG_all_channels_except(void)
     return 0;
 }
 
-uint8_t TEST_EXEC__LOG_message(void)
-{
-    // Test case 1: Display a log message on the umbilical channel: requires interactive assessment! 
-    LOG_message(LOG_SYSTEM_UNIT_TEST, 
-            LOG_SEVERITY_NORMAL, 
-            LOG_CHANNEL_UMBILICAL_UART, 
-            "DO NOT IGNORE: This message should start with a timestamp \
-followed by [UNIT_TEST:NORMAL]: DO NOT...");
-
-    return 0;
-}
-
