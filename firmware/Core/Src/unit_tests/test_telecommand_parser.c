@@ -104,5 +104,8 @@ uint8_t TEST_EXEC__TCMD_ascii_to_double() {
     // Error: trailing letters
     TEST_ASSERT_TRUE(TCMD_ascii_to_double("23.7a", 5, &output_val));
 
+    // Error: numbers in the middle
+    TEST_ASSERT_TRUE(TCMD_ascii_to_double("123a123", 7, &output_val));
+
     return 0;
 }

@@ -252,32 +252,62 @@ uint8_t TCMD_ascii_to_double(const char *str, uint32_t str_len, double *result) 
     }
 
     for (uint32_t i = 0; i < str_len; i++) {
+        const char iter_char = str[i];
         // iterate through the string to find the first non-whitespace character
-        if (isdigit(str[i])) {
+        if (isdigit(iter_char)) {
             // so long as the first character is a digit, atof can handle it
-            double temp_result = atof(str);
+            const double temp_result = atof(str);
             *result = temp_result;
             break;
         }
-        else if (!isdigit(str[i]) && !isspace(str[i]) && !(str[i]) == '-') {
+        else if (!isdigit(iter_char) && !isspace(iter_char) && (iter_char != '-')) {
             // atof removes whitespace, so we only need to check for other characters
             // atof also ignores all subsequent non-double characters following the double
             return 2;
         }
     }
 
-    for (uint32_t i = str_len - 1; i >= 0; i--) {
-        // iterate through the string backwards to find the first non-whitespace character
-        if (isdigit(str[i])) {
-            // so long as there are no random charachers afterwards, we're fine
-            return 0;
+    // check the middle for non-acceptable characters (ex. 123a123)
+    uint8_t num_negative_signs = 0; // should be <= 1
+    uint8_t num_decimals = 0; // should be <= 1
+    for (uint32_t i = 0; i < str_len; i++) {
+        const char iter_char = str[i];
+        // iterate through the string to find any non-whitespace characters
+        if (isdigit(iter_char)) {
         }
-        else if (!isdigit(str[i]) && !isspace(str[i])) {
+        else if (iter_char == '-') {
+            num_negative_signs++;
+            if (num_negative_signs > 1) {
+                return 2;
+            }
+        }
+        else if (iter_char == '.') {
+            num_decimals++;
+            if (num_decimals > 1) {
+                return 2;
+            }
+        }
+        else if (!isspace(iter_char)) {
             // atof removes whitespace, so we only need to check for other characters
             // atof also ignores all subsequent non-double characters following the double
             return 2;
         }
-        else if (isspace(str[i]) && i == str_len - 1) {
+    }
+
+
+    for (int32_t i = str_len - 1; i >= 0; i--) {
+        const char iter_char = str[i];
+        // iterate through the string backwards to find the last non-whitespace character
+        if (isdigit(iter_char)) {
+            // so long as there are no random characters afterwards, we're fine
+            return 0;
+        }
+        else if (!isdigit(iter_char) && !isspace(iter_char)) {
+            // atof removes whitespace, so we only need to check for other characters
+            // atof also ignores all subsequent non-double characters following the double
+            return 2;
+        }
+        else if (isspace(iter_char) && i == (int32_t) str_len - 1) {
             // input is entirely whitespace
             return 1;
         }
