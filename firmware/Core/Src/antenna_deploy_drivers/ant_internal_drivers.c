@@ -24,26 +24,26 @@ extern I2C_HandleTypeDef hi2c2;
  * @retval 0 upon success, 1 if there was an error transmitting the command, 2 if there was an error receiving the response
  */
 uint8_t ANT_send_cmd_get_response(
-    const uint8_t cmd_buf[], uint8_t cmd_len,
+    uint8_t cmd_buf[], uint8_t cmd_len,
     uint8_t rx_buf[], uint16_t rx_len
     ) {
-    const HAL_StatusTypeDef tx_status = HAL_I2C_Master_Transmit(&hi2c2, ANT_ADDR, &cmd_buf, cmd_len, 1000);
+    const HAL_StatusTypeDef tx_status = HAL_I2C_Master_Transmit(&hi2c2, ANT_ADDR, cmd_buf, cmd_len, 1000);
     if (tx_status != HAL_OK) {
         // TODO: Add print statement for debugging
         return 1;
     }
 
-    // check for timeout error (tx_status == HAL_TIMEOUT)
-    if(tx_status == HAL_TIMEOUT) {
-        return 3;
-    }
-
     if (rx_len != 0) {
-        const HAL_StatusTypeDef rx_status = HAL_I2C_Master_Receive(&hi2c2, ANT_ADDR, &rx_buf, rx_len, 1000);
+        const HAL_StatusTypeDef rx_status = HAL_I2C_Master_Receive(&hi2c2, ANT_ADDR, rx_buf, rx_len, 1000);
         if(rx_status != HAL_OK) {
             // TODO: Add print statement for debugging
             return 2;
         }
+    }
+
+    // check for timeout error (tx_status == HAL_TIMEOUT)
+    if(tx_status == HAL_TIMEOUT) {
+        return 3;
     }
 
     return 0;
