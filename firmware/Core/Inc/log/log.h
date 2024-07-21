@@ -12,17 +12,17 @@ typedef enum {
 } LOG_severity_enum_t;
 
 typedef enum {
-    LOG_CHANNEL_NONE = 0,
-    LOG_CHANNEL_UHF_RADIO = 1 << 0,
-    LOG_CHANNEL_FILE = 1 << 1,
-    LOG_CHANNEL_UMBILICAL_UART = 1 << 2,
-    LOG_CHANNEL_UNKNOWN = 1 << 3,
-    LOG_CHANNEL_ALL = (1 << 4) - 1,
-} LOG_channel_enum_t;
+    LOG_SINK_NONE = 0,
+    LOG_SINK_UHF_RADIO = 1 << 0,
+    LOG_SINK_FILE = 1 << 1,
+    LOG_SINK_UMBILICAL_UART = 1 << 2,
+    LOG_SINK_UNKNOWN = 1 << 3,
+    LOG_SINK_ALL = (1 << 4) - 1,
+} LOG_sink_enum_t;
 
 enum {
-    LOG_CHANNEL_OFF = 0,
-    LOG_CHANNEL_ON = 1,
+    LOG_SINK_OFF = 0,
+    LOG_SINK_ON = 1,
 };
 
 typedef enum {
@@ -49,18 +49,18 @@ enum {
     LOG_SYSTEM_ON = 1,
 };
 
-void LOG_message(LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_t channel_mask, const char fmt[], ...);
-uint32_t LOG_all_channels_except(uint32_t exceptions);
-uint8_t LOG_is_channel_enabled(LOG_channel_enum_t channel);
-void LOG_set_channel_debugging_messages_state(LOG_channel_enum_t channel, uint8_t state);
-void LOG_set_system_debugging_messages_state(LOG_system_enum_t system, uint8_t state);
+void LOG_message(LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_t sink_mask, const char fmt[], ...);
+uint32_t LOG_all_sinks_except(uint32_t exceptions);
+uint8_t LOG_is_sink_enabled(LOG_sink_enum_t sink);
+void LOG_set_sink_debugging_messages_enabled_state(LOG_sink_enum_t sink, uint8_t state);
+void LOG_set_system_debugging_messages_enabled_state(LOG_system_enum_t system, uint8_t state);
 uint8_t LOG_is_system_file_logging_enabled(LOG_system_enum_t system);
 void LOG_set_system_severity_mask(LOG_system_enum_t system, uint32_t severity_mask);
-void LOG_set_channel_enabled_state(LOG_channel_enum_t channel, uint8_t state);
-void LOG_set_system_file_logging_state(LOG_system_enum_t system, uint8_t state);
-void LOG_report_channel_enabled_state(LOG_channel_enum_t channels);
+void LOG_set_sink_enabled_state(LOG_sink_enum_t sink, uint8_t state);
+void LOG_set_system_file_logging_enabled_state(LOG_system_enum_t system, uint8_t state);
+void LOG_report_sink_enabled_state(LOG_sink_enum_t sinks);
 void LOG_report_system_file_logging_state(LOG_system_enum_t systems);
-uint16_t LOG_number_of_logging_channels(void);
+uint16_t LOG_number_of_logging_sinks(void);
 uint16_t LOG_number_of_logging_systems(void);
 const char* LOG_get_severity_name(LOG_severity_enum_t severity);
 

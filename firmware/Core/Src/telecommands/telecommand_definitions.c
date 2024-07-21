@@ -173,26 +173,26 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
 
     // ****************** SECTION: log_telecommand_defs ******************
     {
-        .tcmd_name = "log_set_channel_state",
-        .tcmd_func = TCMDEXEC_log_set_channel_enabled_state,
+        .tcmd_name = "log_set_sink_enabled_state",
+        .tcmd_func = TCMDEXEC_log_set_sink_enabled_state,
         .number_of_args = 2,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
-        .tcmd_name = "log_set_system_file_logging_state",
-        .tcmd_func = TCMDEXEC_log_set_system_file_logging_state,
+        .tcmd_name = "log_set_system_file_logging_enabled_state",
+        .tcmd_func = TCMDEXEC_log_set_system_file_logging_enabled_state,
         .number_of_args = 2,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
-        .tcmd_name = "log_report_channel_enabled_state",
-        .tcmd_func = TCMDEXEC_log_report_channel_enabled_state,
+        .tcmd_name = "log_report_sink_enabled_state",
+        .tcmd_func = TCMDEXEC_log_report_sink_enabled_state,
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
-        .tcmd_name = "log_report_all_channel_enabled_states",
-        .tcmd_func = TCMDEXEC_log_report_all_channel_enabled_states,
+        .tcmd_name = "log_report_all_sink_enabled_states",
+        .tcmd_func = TCMDEXEC_log_report_all_sink_enabled_states,
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
@@ -209,8 +209,8 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
-        .tcmd_name = "log_set_channel_debugging_messages_state",
-        .tcmd_func = TCMDEXEC_log_set_channel_debugging_messages_state,
+        .tcmd_name = "log_set_sink_debugging_messages_state",
+        .tcmd_func = TCMDEXEC_log_set_sink_debugging_messages_state,
         .number_of_args = 2,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },

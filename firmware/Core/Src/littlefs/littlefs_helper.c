@@ -294,7 +294,7 @@ int8_t LFS_append_file(const char file_name[], uint8_t *write_buffer, uint32_t w
 {
     if (!LFS_is_lfs_mounted)
     {
-        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_channels_except(LOG_CHANNEL_FILE), "LittleFS not mounted");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "LittleFS not mounted");
         return 1;
     }
 
@@ -303,20 +303,20 @@ int8_t LFS_append_file(const char file_name[], uint8_t *write_buffer, uint32_t w
 
 	if (open_result < 0)
 	{
-        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_channels_except(LOG_CHANNEL_FILE), "Error opening file");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening file");
 		return open_result;
 	}
 	
     const int8_t seek_result = lfs_file_seek(&LFS_filesystem, &file, 0, LFS_SEEK_END);
     if (seek_result < 0) {
-        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_channels_except(LOG_CHANNEL_FILE), "Error seeking within file");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error seeking within file");
         return seek_result;
     }
 
 	const int8_t write_result = lfs_file_write(&LFS_filesystem, &file, write_buffer, write_buffer_len);
 	if (write_result < 0)
 	{
-        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_channels_except(LOG_CHANNEL_FILE), "Error writing to file");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error writing to file");
 		return write_result;
 	}
 	
@@ -324,7 +324,7 @@ int8_t LFS_append_file(const char file_name[], uint8_t *write_buffer, uint32_t w
 	const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
 	if (close_result < 0)
 	{
-        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_channels_except(LOG_CHANNEL_FILE), "Error closing file");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing file");
 		return close_result;
 	}
 	
@@ -348,42 +348,42 @@ lfs_ssize_t LFS_read_file(const char file_name[], lfs_soff_t offset, uint8_t *re
 	{
         // TODO: confirm behaviour is desired: this assumes filesystem as a
         // whole as an issue, so does not send log message to file
-        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_channels_except(LOG_CHANNEL_FILE), "Error opening file to read");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening file to read");
 		return open_result;
 	}
 	
     if (LFS_enable_hot_path_debug_logs) {
-        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_CHANNEL_ALL, "Opened file to read: %s", file_name);
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_SINK_ALL, "Opened file to read: %s", file_name);
     }
 
     const lfs_soff_t seek_result = lfs_file_seek(&LFS_filesystem, &file, offset, LFS_SEEK_SET);
 	if (seek_result < 0)
 	{
-        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_channels_except(LOG_CHANNEL_FILE), "Error seeking within file");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error seeking within file");
 		return seek_result;
 	}
 
 	const lfs_ssize_t read_result = lfs_file_read(&LFS_filesystem, &file, read_buffer, read_buffer_len);
 	if (read_result < 0)
 	{
-        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_channels_except(LOG_CHANNEL_FILE), "Error reading file");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error reading file");
 		return read_result;
 	}
 	
     if (LFS_enable_hot_path_debug_logs) {
-        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_CHANNEL_ALL, "Successfully read file");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_SINK_ALL, "Successfully read file");
     }
 
 	// Close the File, the storage is not updated until the file is closed successfully
 	const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
 	if (close_result < 0)
 	{
-        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_channels_except(LOG_CHANNEL_FILE), "Error closing file");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing file");
 		return close_result;
 	}
 	
     if (LFS_enable_hot_path_debug_logs) {
-        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_channels_except(LOG_CHANNEL_FILE), "Successfully close file");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully close file");
     }
 
 	return read_result;	
@@ -400,13 +400,13 @@ lfs_ssize_t LFS_file_size(const char file_name[])
 	lfs_file_t file;
 	const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_RDONLY, &LFS_file_cfg);
     if (open_result < 0) {
-        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_channels_except(LOG_CHANNEL_FILE), "Error opening file");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening file");
         return open_result;
     }
     const lfs_ssize_t size = lfs_file_size(&LFS_filesystem, &file);
     const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
 	if (close_result < 0) {
-        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_channels_except(LOG_CHANNEL_FILE), "Error closing file");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing file");
 		return close_result;
 	}
     return size;
