@@ -112,9 +112,9 @@ Include dependency graph for telecommand_args_helpers.c:</div>
 <area shape="poly" title=" " alt="" coords="350,33,310,41,271,53,235,71,203,96,191,112,184,130,178,168,173,167,179,129,187,109,199,92,232,66,269,48,309,35,349,28"/>
 <area shape="rect" href="telecommand__args__helpers_8h.html" title=" " alt="" coords="213,94,402,135"/>
 <area shape="poly" title=" " alt="" coords="424,49,356,88,353,84,422,44"/>
-<area shape="rect" title=" " alt="" coords="425,102,489,127"/>
+<area shape="rect" title=" " alt="" coords="425,102,488,127"/>
 <area shape="poly" title=" " alt="" coords="460,47,460,86,454,86,454,47"/>
-<area shape="rect" title=" " alt="" coords="513,102,572,127"/>
+<area shape="rect" title=" " alt="" coords="512,102,572,127"/>
 <area shape="poly" title=" " alt="" coords="478,45,522,88,518,92,474,48"/>
 <area shape="rect" title=" " alt="" coords="596,102,659,127"/>
 <area shape="poly" title=" " alt="" coords="497,44,591,92,589,97,494,49"/>
@@ -139,8 +139,63 @@ Functions</h2></td></tr>
 <tr class="memitem:a3f4c71ad48b16b79e4bb91ffb13111d7" id="r_a3f4c71ad48b16b79e4bb91ffb13111d7"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3f4c71ad48b16b79e4bb91ffb13111d7">TCMD_extract_hex_array_arg</a> (const char *args_str, uint8_t arg_index, uint8_t result_array[], uint16_t result_array_size, uint16_t *result_length)</td></tr>
 <tr class="memdesc:a3f4c71ad48b16b79e4bb91ffb13111d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts the nth comma-separated argument from the input string, assuming it's a hex string.  <br /></td></tr>
 <tr class="separator:a3f4c71ad48b16b79e4bb91ffb13111d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1e0196b1d139dd1b8b8c3fcdd5e1033" id="r_ae1e0196b1d139dd1b8b8c3fcdd5e1033"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae1e0196b1d139dd1b8b8c3fcdd5e1033">TCMD_ascii_to_double</a> (const char *str, uint32_t str_len, double *result)</td></tr>
+<tr class="memdesc:ae1e0196b1d139dd1b8b8c3fcdd5e1033"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts the longest substring of double characters, starting from the beginning of the string, to a maximum length or until the first non-double character is found.  <br /></td></tr>
+<tr class="separator:ae1e0196b1d139dd1b8b8c3fcdd5e1033"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3515b358e82f707e916c0ec45c38acc3" id="r_a3515b358e82f707e916c0ec45c38acc3"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3515b358e82f707e916c0ec45c38acc3">TCMD_extract_double_arg</a> (const char *str, uint32_t str_len, uint8_t arg_index, double *result)</td></tr>
+<tr class="memdesc:a3515b358e82f707e916c0ec45c38acc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts the nth comma-separated argument from the input string, assuming it's a double.  <br /></td></tr>
+<tr class="separator:a3515b358e82f707e916c0ec45c38acc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="ae1e0196b1d139dd1b8b8c3fcdd5e1033" name="ae1e0196b1d139dd1b8b8c3fcdd5e1033"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1e0196b1d139dd1b8b8c3fcdd5e1033">&#9670;&#160;</a></span>TCMD_ascii_to_double()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t TCMD_ascii_to_double </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>str</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t</td>          <td class="paramname"><span class="paramname"><em>str_len</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>result</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Extracts the longest substring of double characters, starting from the beginning of the string, to a maximum length or until the first non-double character is found. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">str</td><td>Input string, starting with a double </td></tr>
+    <tr><td class="paramname">str_len</td><td>Max length of the input string </td></tr>
+    <tr><td class="paramname">result</td><td>Pointer to the result </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 if successful, 1 if the string is empty, 2 if the string does not start with a double </dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="telecommand__args__helpers_8c_ae1e0196b1d139dd1b8b8c3fcdd5e1033_icgraph.png" border="0" usemap="#atelecommand__args__helpers_8c_ae1e0196b1d139dd1b8b8c3fcdd5e1033_icgraph" alt=""/></div>
+<map name="atelecommand__args__helpers_8c_ae1e0196b1d139dd1b8b8c3fcdd5e1033_icgraph" id="atelecommand__args__helpers_8c_ae1e0196b1d139dd1b8b8c3fcdd5e1033_icgraph">
+<area shape="rect" title="Extracts the longest substring of double characters, starting from the beginning of the string,..." alt="" coords="234,35,389,60"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#a3515b358e82f707e916c0ec45c38acc3" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a double." alt="" coords="8,5,183,31"/>
+<area shape="poly" title=" " alt="" coords="218,37,183,33,183,27,218,32"/>
+<area shape="rect" href="test__telecommand__parser_8c.html#a3168a7eba8ce6dfbc21d848ecc8f1e3b" title=" " alt="" coords="5,55,186,96"/>
+<area shape="poly" title=" " alt="" coords="218,62,186,66,186,61,218,57"/>
+</map>
+</div>
+
+</div>
+</div>
 <a id="aeeb7af1211280043fdbd8392dbd3c283" name="aeeb7af1211280043fdbd8392dbd3c283"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aeeb7af1211280043fdbd8392dbd3c283">&#9670;&#160;</a></span>TCMD_ascii_to_uint64()</h2>
 
@@ -180,7 +235,7 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="telecommand__args__helpers_8c_aeeb7af1211280043fdbd8392dbd3c283_icgraph.png" border="0" usemap="#atelecommand__args__helpers_8c_aeeb7af1211280043fdbd8392dbd3c283_icgraph" alt=""/></div>
 <map name="atelecommand__args__helpers_8c_aeeb7af1211280043fdbd8392dbd3c283_icgraph" id="atelecommand__args__helpers_8c_aeeb7af1211280043fdbd8392dbd3c283_icgraph">
-<area shape="rect" title="Extracts the longest substring of integer characters, starting from the beginning of the string,..." alt="" coords="847,317,999,343"/>
+<area shape="rect" title="Extracts the longest substring of integer characters, starting from the beginning of the string,..." alt="" coords="847,317,999,342"/>
 <area shape="rect" href="telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="627,210,799,236"/>
 <area shape="poly" title=" " alt="" coords="881,312,739,239,742,234,884,307"/>
 <area shape="rect" href="telecommand__parser_8c.html#a9ea4d9d994573e6ede05facd0bad0ee3" title="Searches for a str like \@tag_name=xxxx, and sets uint64_t xxxx into out_value." alt="" coords="641,391,785,431"/>
@@ -191,22 +246,75 @@ Here is the caller graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="685,202,637,163,578,125,553,114,555,110,581,121,640,159,688,198"/>
 <area shape="rect" href="flash__telecommand__defs_8c.html#abf1a62ec4474e4584deb50c95c7800c4" title="Telecommand: Erase a sector of flash memory." alt="" coords="394,136,559,161"/>
 <area shape="poly" title=" " alt="" coords="666,206,579,175,540,164,541,159,580,170,667,201"/>
-<area shape="rect" href="flash__telecommand__defs_8c.html#aaad387e58757cce93fe46c8eb25cc822" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="384,185,569,211"/>
+<area shape="rect" href="flash__telecommand__defs_8c.html#aaad387e58757cce93fe46c8eb25cc822" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="384,185,569,210"/>
 <area shape="poly" title=" " alt="" coords="612,215,569,210,570,205,612,210"/>
 <area shape="rect" href="flash__telecommand__defs_8c.html#ad09f175c2e7126e812bfaeebcd17c172" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="382,234,570,260"/>
 <area shape="poly" title=" " alt="" coords="612,236,571,240,570,235,612,231"/>
 <area shape="rect" href="lfs__telecommand__defs_8c.html#a265fb9e9f253a1a4858e81f6ff6949c8" title="Telecommand: Benchmark LittleFS write and read operations." alt="" coords="386,284,567,325"/>
 <area shape="poly" title=" " alt="" coords="664,244,580,275,546,286,545,281,578,270,662,239"/>
-<area shape="rect" href="timekeeping__telecommand__defs_8c.html#a2f0faa6c92a8852e4ece806dbb525e58" title="Set the system time to the provided Unix epoch time in milliseconds." alt="" coords="377,349,575,375"/>
+<area shape="rect" href="timekeeping__telecommand__defs_8c.html#a2f0faa6c92a8852e4ece806dbb525e58" title="Set the system time to the provided Unix epoch time in milliseconds." alt="" coords="377,349,575,374"/>
 <area shape="poly" title=" " alt="" coords="692,250,644,295,613,319,581,339,551,351,549,346,578,334,610,314,640,291,688,246"/>
 <area shape="rect" href="telecommand__parser_8c.html#a479be5d2e5ee3cd0fe5312818aa8742e" title="Parses a telecommand into everything needed to execute it." alt="" coords="373,398,579,424"/>
 <area shape="poly" title=" " alt="" coords="626,414,580,414,580,408,626,408"/>
-<area shape="rect" href="test__telecommand__parser_8c.html#abcf71bfef1438541e4d004c7db36496c" title=" " alt="" coords="391,448,562,489"/>
+<area shape="rect" href="test__telecommand__parser_8c.html#abcf71bfef1438541e4d004c7db36496c" title=" " alt="" coords="390,448,562,489"/>
 <area shape="poly" title=" " alt="" coords="627,435,563,450,562,445,625,429"/>
 <area shape="rect" href="rtos__tasks_8c.html#a8dcebcb92690e2abce2b7ecb96e411c4" title=" " alt="" coords="103,398,325,424"/>
 <area shape="poly" title=" " alt="" coords="358,414,325,414,325,408,358,408"/>
 <area shape="rect" href="main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,398,55,424"/>
 <area shape="poly" title=" " alt="" coords="87,414,55,414,55,408,87,408"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a3515b358e82f707e916c0ec45c38acc3" name="a3515b358e82f707e916c0ec45c38acc3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3515b358e82f707e916c0ec45c38acc3">&#9670;&#160;</a></span>TCMD_extract_double_arg()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t TCMD_extract_double_arg </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>str</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t</td>          <td class="paramname"><span class="paramname"><em>str_len</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>arg_index</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>result</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Extracts the nth comma-separated argument from the input string, assuming it's a double. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">str</td><td>Input string </td></tr>
+    <tr><td class="paramname">str_len</td><td>Length of the input string </td></tr>
+    <tr><td class="paramname">arg_index</td><td>Index of the argument to extract (0-based) </td></tr>
+    <tr><td class="paramname">result</td><td>Pointer to the result </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 if successful, 1 if the string is empty, 2 if the string does not contain enough arguments 3 if the argument is not a double, 4 for other error </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="telecommand__args__helpers_8c_a3515b358e82f707e916c0ec45c38acc3_cgraph.png" border="0" usemap="#atelecommand__args__helpers_8c_a3515b358e82f707e916c0ec45c38acc3_cgraph" alt=""/></div>
+<map name="atelecommand__args__helpers_8c_a3515b358e82f707e916c0ec45c38acc3_cgraph" id="atelecommand__args__helpers_8c_a3515b358e82f707e916c0ec45c38acc3_cgraph">
+<area shape="rect" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a double." alt="" coords="5,5,180,31"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#ae1e0196b1d139dd1b8b8c3fcdd5e1033" title="Extracts the longest substring of double characters, starting from the beginning of the string,..." alt="" coords="228,5,383,31"/>
+<area shape="poly" title=" " alt="" coords="180,16,212,16,212,21,180,21"/>
 </map>
 </div>
 
@@ -384,20 +492,20 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="telecommand__args__helpers_8c_aa11f06d167f7dbbd4360df4d179d0791_icgraph.png" border="0" usemap="#atelecommand__args__helpers_8c_aa11f06d167f7dbbd4360df4d179d0791_icgraph" alt=""/></div>
 <map name="atelecommand__args__helpers_8c_aa11f06d167f7dbbd4360df4d179d0791_icgraph" id="atelecommand__args__helpers_8c_aa11f06d167f7dbbd4360df4d179d0791_icgraph">
-<area shape="rect" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="252,185,423,211"/>
+<area shape="rect" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="252,185,423,210"/>
 <area shape="rect" href="telecommand__definitions_8c.html#a5ae77884461dfbf9b764fbdad99ed497" title=" " alt="" coords="23,5,186,46"/>
 <area shape="poly" title=" " alt="" coords="316,174,268,117,237,87,202,61,179,49,181,44,205,57,240,83,272,114,320,170"/>
 <area shape="rect" href="flash__telecommand__defs_8c.html#aeb4bfdf0b416966258a378a382f529ce" title="Telecommand: Benchmarks the erase/write/read operations on the flash memory module." alt="" coords="6,71,203,111"/>
 <area shape="poly" title=" " alt="" coords="301,178,255,152,203,125,174,114,176,109,205,121,257,147,304,174"/>
 <area shape="rect" href="flash__telecommand__defs_8c.html#abf1a62ec4474e4584deb50c95c7800c4" title="Telecommand: Erase a sector of flash memory." alt="" coords="22,136,187,161"/>
 <area shape="poly" title=" " alt="" coords="258,184,168,164,169,159,259,178"/>
-<area shape="rect" href="flash__telecommand__defs_8c.html#aaad387e58757cce93fe46c8eb25cc822" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="12,185,197,211"/>
+<area shape="rect" href="flash__telecommand__defs_8c.html#aaad387e58757cce93fe46c8eb25cc822" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="12,185,197,210"/>
 <area shape="poly" title=" " alt="" coords="237,200,198,200,198,195,237,195"/>
 <area shape="rect" href="flash__telecommand__defs_8c.html#ad09f175c2e7126e812bfaeebcd17c172" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="10,234,199,260"/>
 <area shape="poly" title=" " alt="" coords="259,217,169,236,168,231,258,212"/>
 <area shape="rect" href="lfs__telecommand__defs_8c.html#a265fb9e9f253a1a4858e81f6ff6949c8" title="Telecommand: Benchmark LittleFS write and read operations." alt="" coords="14,284,195,325"/>
 <area shape="poly" title=" " alt="" coords="304,222,257,248,205,275,176,286,174,281,203,270,255,244,301,217"/>
-<area shape="rect" href="timekeeping__telecommand__defs_8c.html#a2f0faa6c92a8852e4ece806dbb525e58" title="Set the system time to the provided Unix epoch time in milliseconds." alt="" coords="5,349,204,375"/>
+<area shape="rect" href="timekeeping__telecommand__defs_8c.html#a2f0faa6c92a8852e4ece806dbb525e58" title="Set the system time to the provided Unix epoch time in milliseconds." alt="" coords="5,349,204,374"/>
 <area shape="poly" title=" " alt="" coords="320,225,273,283,241,313,205,339,178,351,176,346,202,334,237,309,269,279,316,222"/>
 </map>
 </div>

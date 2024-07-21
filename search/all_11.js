@@ -9,5 +9,7 @@ var searchData=
   ['nmi_5fhandler_6',['NMI_Handler',['../stm32l4xx__it_8h.html#a6ad7a5e3ee69cb6db6a6b9111ba898bc',1,'NMI_Handler(void):&#160;stm32l4xx_it.c'],['../stm32l4xx__it_8c.html#a6ad7a5e3ee69cb6db6a6b9111ba898bc',1,'NMI_Handler(void):&#160;stm32l4xx_it.c']]],
   ['non_20objectives_7',['Non-Objectives',['../md_docs_2C__Unit__Tests.html#autotoc_md17',1,'']]],
   ['notes_8',['Notes',['../md_docs_2Telecommand__Spec.html#autotoc_md24',1,'Notes'],['../md_README.html#autotoc_md53',1,'Random Notes']]],
-  ['number_5fof_5fargs_9',['number_of_args',['../classcts1__ground__support_1_1telecommand__types_1_1TelecommandDefinition.html#ac8e278ea73b4b52bd1b7cb41364080a5',1,'cts1_ground_support.telecommand_types.TelecommandDefinition.number_of_args'],['../structTCMD__TelecommandDefinition__t.html#a6844d5f4ad29cae4e009a7a34c1d81fb',1,'TCMD_TelecommandDefinition_t::number_of_args']]]
+  ['number_5fcomparisons_2ec_9',['number_comparisons.c',['../number__comparisons_8c.html',1,'']]],
+  ['number_5fcomparisons_2eh_10',['number_comparisons.h',['../number__comparisons_8h.html',1,'']]],
+  ['number_5fof_5fargs_11',['number_of_args',['../classcts1__ground__support_1_1telecommand__types_1_1TelecommandDefinition.html#ac8e278ea73b4b52bd1b7cb41364080a5',1,'cts1_ground_support.telecommand_types.TelecommandDefinition.number_of_args'],['../structTCMD__TelecommandDefinition__t.html#a6844d5f4ad29cae4e009a7a34c1d81fb',1,'TCMD_TelecommandDefinition_t::number_of_args']]]
 ];

@@ -1,12 +1,12 @@
 <map id="TIM_get_current_unix_epoch_time_ms" name="TIM_get_current_unix_epoch_time_ms">
-<area shape="rect" id="Node000001" title="Returns the current unix timestamp, in milliseconds." alt="" coords="731,86,878,127"/>
+<area shape="rect" id="Node000001" title="Returns the current unix timestamp, in milliseconds." alt="" coords="731,86,878,126"/>
 <area shape="rect" id="Node000002" href="$rtos__tasks_8c.html#a7cf23bbdce878a0b7c41607751423179" title=" " alt="" coords="252,5,454,31"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="760,80,723,59,683,43,625,30,565,22,454,17,455,11,566,17,626,25,684,38,725,55,762,75"/>
-<area shape="rect" id="Node000004" href="$telecommand__executor_8c.html#a6f29fb3908f76a7b826dfa263b1b38f0" title="Finds the index into TCMD_agenda (slot_num) of the next telecommand to execute." alt="" coords="509,53,677,93"/>
+<area shape="rect" id="Node000004" href="$telecommand__executor_8c.html#a6f29fb3908f76a7b826dfa263b1b38f0" title="Finds the index into TCMD_agenda (slot_num) of the next telecommand to execute." alt="" coords="508,52,677,93"/>
 <area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="716,95,677,89,678,83,717,90"/>
-<area shape="rect" id="Node000006" href="$timekeeping_8c.html#ab4b35505d2b1362ca6d14b12608fbd36" title="Efficient conversion of the synchronized epoch in ms to a decimal string." alt="" coords="502,118,683,159"/>
+<area shape="rect" id="Node000006" href="$timekeeping_8c.html#ab4b35505d2b1362ca6d14b12608fbd36" title="Efficient conversion of the synchronized epoch in ms to a decimal string." alt="" coords="502,118,683,158"/>
 <area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="717,122,684,127,683,122,716,117"/>
-<area shape="rect" id="Node000011" href="$timekeeping_8c.html#abba2d2af7908d3fe4cbc1c0ea04a3b60" title="Returns a human&#45;friendly timestamp string." alt="" coords="505,183,681,224"/>
+<area shape="rect" id="Node000011" href="$timekeeping_8c.html#abba2d2af7908d3fe4cbc1c0ea04a3b60" title="Returns a human&#45;friendly timestamp string." alt="" coords="504,183,681,224"/>
 <area shape="poly" id="edge11_Node000001_Node000011" title=" " alt="" coords="755,137,684,173,655,185,653,180,682,168,753,132"/>
 <area shape="rect" id="Node000003" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="80,32,129,58"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="237,33,130,45,129,40,236,28"/>
