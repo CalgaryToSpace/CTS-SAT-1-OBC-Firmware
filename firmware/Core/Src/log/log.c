@@ -84,6 +84,26 @@ static const uint16_t LOG_NUMBER_OF_SYSTEMS = sizeof(LOG_systems) / sizeof(LOG_s
 ///     Exclude one or more channels using LOG_all_channels_except(...)
 void LOG_message(LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_t channel_mask, const char fmt[], ...)
 {
+    // Ensure quick return if debugging is disabled
+    // Needed to maintain good hot-path performance
+    if (severity == LOG_SEVERITY_DEBUG) {
+        // Return early if debugging is not enabled for this system
+        if (!(severity & LOG_systems[1 << source].severity_mask)) {
+            return;
+        }
+        // Return early if debugging is not enabled for ALL of the requested channels
+        uint8_t debugging_enabled_for_at_least_one_channel = 0;
+        for (uint16_t i = 0; i < LOG_NUMBER_OF_CHANNELS; i++) {
+            if (LOG_channels[i].enabled) {
+                debugging_enabled_for_at_least_one_channel = 1;
+                break;
+            }
+        }
+        if (!debugging_enabled_for_at_least_one_channel) {
+            return; 
+        }
+    }
+
     // Get the system time
     TIM_get_timestamp_string(LOG_timestamp_string, LOG_TIMESTAMP_MAX_LENGTH);
 
