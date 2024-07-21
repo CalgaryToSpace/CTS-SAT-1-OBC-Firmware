@@ -8,7 +8,7 @@
 
 /// @brief Triggers the EPS watchdog. No args.
 /// @return 0 on success, 1 on failure.
-uint8_t TCMDEXEC_eps_watchdog(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_eps_watchdog(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     
     const uint8_t result = EPS_CMD_watchdog();
@@ -26,7 +26,7 @@ uint8_t TCMDEXEC_eps_watchdog(const uint8_t *args_str, TCMD_TelecommandChannel_e
 
 /// @brief Gets the EPS system status, and returns it as a JSON string.
 /// @return 0 on success, >0 on failure.
-uint8_t TCMDEXEC_eps_get_system_status_json(const uint8_t *args_str,
+uint8_t TCMDEXEC_eps_get_system_status_json(const char *args_str,
                         TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     

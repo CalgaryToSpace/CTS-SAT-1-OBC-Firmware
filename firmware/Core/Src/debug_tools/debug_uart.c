@@ -32,7 +32,7 @@ void DEBUG_uart_print_uint64(uint64_t value) {
     DEBUG_uart_print_str(buffer);
 }
 
-void DEBUG_uart_print_array_hex(uint8_t *array, uint32_t array_len) {
+void DEBUG_uart_print_array_hex(const uint8_t *array, uint32_t array_len) {
     for (uint32_t i = 0; i < array_len; i++) {
         char buffer[4];
         snprintf(buffer, 4, "%02X ", array[i]);
