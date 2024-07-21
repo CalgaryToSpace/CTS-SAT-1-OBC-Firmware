@@ -47,9 +47,10 @@ uint8_t EPS_send_cmd_get_response(
 
 	if (EPS_ENABLE_DEBUG_PRINT) {
 		DEBUG_uart_print_str("OBC->EPS DATA (no tags): ");
-		DEBUG_uart_print_array_hex(cmd_buf, cmd_buf_len, "\n");
-		DEBUG_uart_print_str("OBC->EPS DATA (with tags): ");
-		DEBUG_uart_print_array_hex(cmd_buf_with_tags, cmd_buf_with_tags_len, "\n");
+		DEBUG_uart_print_array_hex(cmd_buf, cmd_buf_len);
+		DEBUG_uart_print_str("\nOBC->EPS DATA (with tags): ");
+		DEBUG_uart_print_array_hex(cmd_buf_with_tags, cmd_buf_with_tags_len);
+		DEBUG_uart_print_str("\n");
 	}
 
 	// TX TO EPS
@@ -114,7 +115,7 @@ uint8_t EPS_send_cmd_get_response(
 
 	// For now, log the received bytes
 	DEBUG_uart_print_str("EPS->OBC DATA (with tags): ");
-	DEBUG_uart_print_array_hex((uint8_t*)UART_eps_buffer, UART_eps_buffer_write_idx, "");
+	DEBUG_uart_print_array_hex((uint8_t*)UART_eps_buffer, UART_eps_buffer_write_idx);
 	DEBUG_uart_print_str("\n");
 
 	// Check that we've received what we're expecting
@@ -170,7 +171,8 @@ uint8_t EPS_send_cmd_get_response(
 
 	if (EPS_ENABLE_DEBUG_PRINT) {
 		DEBUG_uart_print_str("EPS->OBC DATA (no tags): ");
-		DEBUG_uart_print_array_hex(rx_buf, rx_buf_len, "\n");
+		DEBUG_uart_print_array_hex(rx_buf, rx_buf_len);
+		DEBUG_uart_print_str("\n");
 	}
 
 	// Check STAT field (Table 3-11) - 0x00 and 0x80 mean success
