@@ -22,10 +22,6 @@
 // Includes prefix, with cushion for delimiters and newline
 #define LOG_FULL_MESSAGE_MAX_LENGTH ( LOG_FORMATTED_MESSAGE_MAX_LENGTH + LOG_TIMESTAMP_MAX_LENGTH + LOG_SINK_NAME_MAX_LENGTH + LOG_SYSTEM_NAME_MAX_LENGTH + 1 )
 
-static char LOG_timestamp_string[LOG_TIMESTAMP_MAX_LENGTH] = {0};
-static char LOG_formatted_log_message[LOG_FORMATTED_MESSAGE_MAX_LENGTH] = {0};
-static char LOG_full_log_message[LOG_FULL_MESSAGE_MAX_LENGTH] = {0};
-
 typedef struct {
     LOG_sink_enum_t sink;
     const char name[LOG_SINK_NAME_MAX_LENGTH];
@@ -41,12 +37,37 @@ typedef struct {
     uint32_t severity_mask;
 } LOG_system_t;
 
+typedef struct {
+    LOG_system_enum_t source;
+    LOG_severity_enum_t severity;
+    uint32_t sink_mask;
+    char full_message[LOG_FULL_MESSAGE_MAX_LENGTH];
+} LOG_memory_entry_t;
+
+
+// Allocate memory buffers
+static char LOG_timestamp_string[LOG_TIMESTAMP_MAX_LENGTH] = {0};
+static char LOG_formatted_log_message[LOG_FORMATTED_MESSAGE_MAX_LENGTH] = {0};
+
+// Memory sink is a circular buffer up to 256 entries
+// Used for log backup in case of filesystem failure, and as independent
+// buffer storage for preparing log messages, in case of recursive calls to
+// LOG_message
+#define LOG_MEMORY_NUMBER_OF_ENTRIES 128
+static LOG_memory_entry_t LOG_memory_table[LOG_MEMORY_NUMBER_OF_ENTRIES] = {0};
+// Start at last position in table, as first call to LOG_message will roll this to 0
+static uint8_t LOG_memory_index_of_current_log_entry = LOG_MEMORY_NUMBER_OF_ENTRIES - 1;
+
+// severity masking
 static const uint8_t LOG_SEVERITY_MASK_ALL = 0xFF;
 // No debugging messages by default
 static const uint8_t LOG_SEVERITY_MASK_DEFAULT = LOG_SEVERITY_MASK_ALL & ~(uint8_t)LOG_SEVERITY_DEBUG;
 
-// Note: LOG_sinks entries must have same order as LOG_sink_enum_t
-// entries.
+// Note: LOG_sinks entries must have same order as LOG_sink_enum_t entries.
+// The in-memory log table is a combination of working memory for constructing
+// log messages and a backup of the most recent log messages logged to at
+// least one channel. It cannot be turned off. It is not included in the
+// array of sinks.
 static LOG_sink_t LOG_sinks[] = {
     {LOG_SINK_UHF_RADIO, "UHF radio", LOG_SINK_OFF, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SINK_FILE, "log files", LOG_SINK_OFF, LOG_SEVERITY_MASK_DEFAULT},
@@ -112,7 +133,15 @@ void LOG_message(LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_
     // Get the system time
     TIM_get_timestamp_string(LOG_timestamp_string, LOG_TIMESTAMP_MAX_LENGTH);
 
-    const char *severity_text = LOG_get_severity_name(severity);
+    // Get pointer to next storage slot in circular memory table
+    LOG_memory_index_of_current_log_entry++;
+    if (LOG_memory_index_of_current_log_entry > LOG_MEMORY_NUMBER_OF_ENTRIES - 1) {
+        LOG_memory_index_of_current_log_entry = 0;
+    }
+    LOG_memory_entry_t *current_log_entry = &LOG_memory_table[LOG_memory_index_of_current_log_entry];
+    current_log_entry->source = source;
+    current_log_entry->severity = severity;
+    current_log_entry->sink_mask = sink_mask;
 
     // Prepare the message according to the requested format
     va_list ap;
@@ -122,6 +151,7 @@ void LOG_message(LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_
 
     // Prepare the full message including time and severity
     // Defaults to "UNKNOWN" system
+    const char *severity_text = LOG_get_severity_name(severity);
     LOG_system_t *system = &LOG_systems[LOG_NUMBER_OF_SYSTEMS - 1];
     for (uint16_t i = 0; i < LOG_NUMBER_OF_SYSTEMS; i++) {
         if (LOG_systems[i].system == source) {
@@ -129,7 +159,7 @@ void LOG_message(LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_
             break;
         }
     }
-    snprintf(LOG_full_log_message, LOG_FULL_MESSAGE_MAX_LENGTH, 
+    snprintf(current_log_entry->full_message, LOG_FULL_MESSAGE_MAX_LENGTH, 
             "%s [%s:%s]: %s\n", 
             LOG_timestamp_string, 
             system->name, 
@@ -146,19 +176,19 @@ void LOG_message(LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_
                 case LOG_SINK_FILE:
                     // Send to log file if subsystem logging is enabled
                     if (system->file_logging_enabled) {
-                        LOG_to_file(system->log_file_path, LOG_full_log_message);
+                        LOG_to_file(system->log_file_path, current_log_entry->full_message);
                     }
                     break;
                 case LOG_SINK_UHF_RADIO:
-                    LOG_to_uhf_radio(LOG_full_log_message);
+                    LOG_to_uhf_radio(current_log_entry->full_message);
                     break;
                 case LOG_SINK_UMBILICAL_UART:
-                    LOG_to_umbilical_uart(LOG_full_log_message);
+                    LOG_to_umbilical_uart(current_log_entry->full_message);
                     break;
-                // FIXME: handle case LOG_SINK_MEMORY
+                case LOG_SINK_NONE:
+                case LOG_SINK_UNKNOWN:
                 default:
-                    // Recursion not allowed; use direct calls
-                    // Should not reach this anyway
+                    // Should not reach this except by memory corruption 
                     LOG_to_umbilical_uart("Error: unkown log sink\n");
                     break;
             }
@@ -390,5 +420,36 @@ const char* LOG_get_severity_name(LOG_severity_enum_t severity)
         default:
             return "UNKNOWN SEVERITY";
     }
+}
+
+/// @brief Get the size in entries of the in-memory log table
+/// @return size of the in-memory log table
+uint8_t LOG_memory_table_max_entries(void)
+{
+    return LOG_MEMORY_NUMBER_OF_ENTRIES;
+}
+
+/// @brief Get the index of the most recent in-memory log message
+/// @return index of the most recent log message
+uint8_t LOG_get_memory_table_index_of_most_recent_log_entry(void)
+{
+    return LOG_memory_index_of_current_log_entry;
+}
+
+/// @brief Get a pointer to the full text of the in-memory log message at the
+/// specified index
+/// @param index requested in-memory log message
+/// @return pointer to the full text of the log message
+const char *LOG_get_memory_table_full_message_at_index(uint8_t index)
+{
+    return LOG_memory_table[index].full_message;
+}
+
+/// @brief Get the most recent log message text 
+/// @return pointer to the full text of the most recent lost message
+/// (statically allocated)
+const char *LOG_get_most_recent_log_message_text(void)
+{
+    return LOG_memory_table[LOG_memory_index_of_current_log_entry].full_message;
 }
 
