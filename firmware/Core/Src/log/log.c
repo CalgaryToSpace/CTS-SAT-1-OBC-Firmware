@@ -196,7 +196,7 @@ uint8_t LOG_is_sink_enabled(LOG_sink_enum_t sink)
 /// @param state 0: debugging messages off; 1: debugging messages on
 /// @details Turning off a sink's debugging messages overrides a system's
 ///     debugging messages state
-void LOG_set_sink_debugging_messages_state(LOG_sink_enum_t sink, uint8_t state)
+void LOG_set_sink_debugging_messages_enabled_state(LOG_sink_enum_t sink, uint8_t state)
 {
     const uint32_t mask = LOG_SEVERITY_DEBUG;
     for (uint16_t i = 0; i < LOG_NUMBER_OF_SINKS; i++) {
@@ -214,7 +214,7 @@ void LOG_set_sink_debugging_messages_state(LOG_sink_enum_t sink, uint8_t state)
     }
 
     // Sink not found
-    LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_SINK_ALL, "LOG_set_sink_debugging_messages_state(): unknown sink: %d", sink);
+    LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_SINK_ALL, "LOG_set_sink_debugging_messages_enabled_state(): unknown sink: %d", sink);
 
     return;
 }
@@ -224,7 +224,7 @@ void LOG_set_sink_debugging_messages_state(LOG_sink_enum_t sink, uint8_t state)
 /// @param state 0: debugging messages off; 1: debugging messages on
 /// @details Debugging messages will be disabled if turned off for a given
 ///     sink
-void LOG_set_system_debugging_messages_state(LOG_system_enum_t system, uint8_t state)
+void LOG_set_system_debugging_messages_enabled_state(LOG_system_enum_t system, uint8_t state)
 {
     const uint32_t mask = LOG_SEVERITY_DEBUG;
     for (uint16_t i = 0; i < LOG_NUMBER_OF_SYSTEMS; i++) {
@@ -242,7 +242,7 @@ void LOG_set_system_debugging_messages_state(LOG_system_enum_t system, uint8_t s
     }
 
     // System not found
-    LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_SINK_ALL, "LOG_set_system_debugging_messages_state(): unknown system: %d", system);
+    LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_SINK_ALL, "LOG_set_system_debugging_messages_enabled_state(): unknown system: %d", system);
 
     return;
 }
