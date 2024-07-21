@@ -37,7 +37,7 @@ typedef struct {
     LOG_system_enum_t system;
     char name[LOG_SYSTEM_NAME_MAX_LENGTH];
     char *log_file_path;
-    uint8_t logging_enabled;
+    uint8_t file_logging_enabled;
     uint32_t severity_mask;
 } LOG_system_t;
 
@@ -45,13 +45,17 @@ static const uint8_t LOG_SEVERITY_MASK_ALL = 0xFF;
 // No debugging messages by default
 static const uint8_t LOG_SEVERITY_MASK_DEFAULT = LOG_SEVERITY_MASK_ALL & ~(uint8_t)LOG_SEVERITY_DEBUG;
 
+// Note: LOG_sinks entries must have same order as LOG_sink_enum_t
+// entries.
 static LOG_sink_t LOG_sinks[] = {
-    {LOG_SINK_FILE, "log files", LOG_SINK_OFF, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SINK_UHF_RADIO, "UHF radio", LOG_SINK_OFF, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SINK_FILE, "log files", LOG_SINK_OFF, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SINK_UMBILICAL_UART, "umbilical UART", LOG_SINK_ON, LOG_SEVERITY_MASK_DEFAULT},
 };
 static const uint16_t LOG_NUMBER_OF_SINKS = sizeof(LOG_sinks) / sizeof(LOG_sink_t);
 
+// Note: LOG_systems entries must have same order as LOG_system_enum_t
+// entries.
 static LOG_system_t LOG_systems[] = {
     {LOG_SYSTEM_OBC, "OBC", "/logs/obc_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_UHF_RADIO, "UHF_RADIO", "/logs/uhf_radio_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
@@ -117,7 +121,7 @@ void LOG_message(LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_
     va_end(ap);
 
     // Prepare the full message including time and severity
-    // Defaults to "UNKNOWN"
+    // Defaults to "UNKNOWN" system
     LOG_system_t *system = &LOG_systems[LOG_NUMBER_OF_SYSTEMS - 1];
     for (uint16_t i = 0; i < LOG_NUMBER_OF_SYSTEMS; i++) {
         if (LOG_systems[i].system == source) {
@@ -141,7 +145,7 @@ void LOG_message(LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_
             switch (c->sink) {
                 case LOG_SINK_FILE:
                     // Send to log file if subsystem logging is enabled
-                    if (system->logging_enabled) {
+                    if (system->file_logging_enabled) {
                         LOG_to_file(system->log_file_path, LOG_full_log_message);
                     }
                     break;
@@ -151,12 +155,11 @@ void LOG_message(LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_
                 case LOG_SINK_UMBILICAL_UART:
                     LOG_to_umbilical_uart(LOG_full_log_message);
                     break;
+                // FIXME: handle case LOG_SINK_MEMORY
                 default:
-                    // TODO: Is recursion allowed?
-                    LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_CRITICAL, 
-                            LOG_SINK_ALL, "Error: unknown log sink %s", 
-                            c->name
-                    );
+                    // Recursion not allowed; use direct calls
+                    // Should not reach this anyway
+                    LOG_to_umbilical_uart("Error: unkown log sink\n");
                     break;
             }
         }
@@ -254,7 +257,7 @@ uint8_t LOG_is_system_file_logging_enabled(LOG_system_enum_t system)
 {
     for (uint16_t i = 0; i < LOG_NUMBER_OF_SYSTEMS; i++) {
         if (LOG_systems[i].system == system) {
-            return LOG_systems[i].logging_enabled;
+            return LOG_systems[i].file_logging_enabled;
         }
     }
     
@@ -309,7 +312,7 @@ void LOG_set_system_file_logging_enabled_state(LOG_system_enum_t system, uint8_t
 {
     for (uint16_t i = 0; i < LOG_NUMBER_OF_SYSTEMS; i++) {
         if (LOG_systems[i].system == system) {
-            LOG_systems[i].logging_enabled = state;
+            LOG_systems[i].file_logging_enabled = state;
             LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, 
                     "%s file logging for %s", 
                     state == 0 ? "Disabled" : "Enabled", 
@@ -348,7 +351,7 @@ void LOG_report_system_file_logging_state(LOG_system_enum_t system)
 {
     for (uint16_t i = 0; i < LOG_NUMBER_OF_SYSTEMS; i++) {
         if (LOG_systems[i].system == system) {
-            LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, "%20s: %9s (log file: '%s')",  LOG_systems[i].name, LOG_systems[i].logging_enabled ? "enabled" : "DISABLED", LOG_systems[i].log_file_path);
+            LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, "%20s: %9s (log file: '%s')",  LOG_systems[i].name, LOG_systems[i].file_logging_enabled ? "enabled" : "DISABLED", LOG_systems[i].log_file_path);
             return;
         }
     }
