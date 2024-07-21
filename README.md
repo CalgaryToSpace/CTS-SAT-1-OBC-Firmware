@@ -57,6 +57,7 @@ python3 -m serial.tools.miniterm - 115200
 Please add your name to the list below in your first Pull Request!
 
 * Parker L.
+* Nadeem M.
 
 
 ## Random Notes
