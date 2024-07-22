@@ -28,22 +28,21 @@ uint8_t ANT_send_cmd_get_response(
     uint8_t rx_buf[], uint16_t rx_len
     ) {
     const HAL_StatusTypeDef tx_status = HAL_I2C_Master_Transmit(&hi2c2, ANT_ADDR, cmd_buf, cmd_len, 1000);
-    if (tx_status != HAL_OK) {
+    if (tx_status == HAL_ERROR) {
         // TODO: Add print statement for debugging
         return 1;
+    } else if(tx_status == HAL_BUSY) {
+        return 2;
+    } else if(tx_status == HAL_TIMEOUT) {
+        return 3;
     }
 
     if (rx_len != 0) {
         const HAL_StatusTypeDef rx_status = HAL_I2C_Master_Receive(&hi2c2, ANT_ADDR, rx_buf, rx_len, 1000);
         if(rx_status != HAL_OK) {
             // TODO: Add print statement for debugging
-            return 2;
+            return 4;
         }
-    }
-
-    // check for timeout error (tx_status == HAL_TIMEOUT)
-    if(tx_status == HAL_TIMEOUT) {
-        return 3;
     }
 
     return 0;
