@@ -14,8 +14,8 @@
 // Variables to track LittleFS on Flash Memory Module
 uint8_t LFS_is_lfs_mounted = 0;
 
-#define FLASH_CHIP_PAGE_SIZE_BYTES 512
-#define FLASH_CHIP_BLOCK_SIZE_BYTES 262144
+#define FLASH_CHIP_PAGE_SIZE_BYTES 2176
+#define FLASH_CHIP_BLOCK_SIZE_BYTES 139264
 #define FLASH_LOOKAHEAD_SIZE 16
 
 // LittleFS Buffers for reading and writing
