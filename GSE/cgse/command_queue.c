@@ -81,19 +81,24 @@ int CGSE_command_queue_add_command(CGSE_program_state_t *ps, char *cmd_text) {
         case 'r':
             e.execution_time = ps->program_start_epoch_ms + atoll(p+1);
             break;
+        case '#':
+            // Ignore comments
+            return 0;
+            break;
         default:
             return -1;
+            break;
     }
     while (*p != '\0' && *p != ' ') {
         p++;
     }
     if (*p == ' ' && strlen(p) > 1) {
         char *cmd = p+1;
-        // This memory is freed later
         // remove trailing \n 
         // last command in command file must have a \n 
         if (strlen(cmd) > 0) {
             cmd[strlen(cmd)-1] = '\0';
+            // This memory is freed later
             e.command_text = strdup(cmd);
         }
     }
@@ -174,3 +179,23 @@ int CGSE_command_queue_number_of_commands(CGSE_program_state_t *ps)
 {
     return CGSE_command_queue_length;
 }
+
+void CGSE_load_command_queue(CGSE_program_state_t *ps)
+{
+    // Import command queue from startup file, warn if there was a problem
+    int startup_queue_read_res = CGSE_command_queue_read_commands(ps, ps->command_startup_queue_file_path);
+    if (startup_queue_read_res != 0) {
+        command_window_print(ps, "No startup command-queue commands were loaded from %s", ps->command_startup_queue_file_path);
+    }
+
+    // Import optional command queue from file specified by command-line option
+    if (strlen(ps->command_optional_queue_file_path) > 0) { 
+        int optional_queue_read_res = CGSE_command_queue_read_commands(ps, ps->command_optional_queue_file_path);
+        if (optional_queue_read_res != 0) {
+            command_window_print(ps, "No optional command-queue commands were loaded from %s", ps->command_optional_queue_file_path);
+        }
+    }
+
+    return;
+}
+

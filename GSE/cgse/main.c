@@ -230,7 +230,7 @@ int CGSE_init(CGSE_program_state_t *ps)
     }
     
     if (ps->auto_connect) {
-        CGSE_connect(ps, ".connect");
+        CGSE_terminal_connect(ps, ".connect");
     }
 
     int read_history_res = CGSE_read_command_history(ps);
@@ -238,19 +238,7 @@ int CGSE_init(CGSE_program_state_t *ps)
         CGSE_store_command("");
     }
 
-    // Import command queue from startup file, warn if there was a problem
-    int startup_queue_read_res = CGSE_command_queue_read_commands(ps, ps->command_startup_queue_file_path);
-    if (startup_queue_read_res != 0) {
-        command_window_print(ps, "No startup command-queue commands were loaded from %s", ps->command_startup_queue_file_path);
-    }
-
-    // Import optional command queue from file specified by command-line option
-    if (strlen(ps->command_optional_queue_file_path) > 0) { 
-        int optional_queue_read_res = CGSE_command_queue_read_commands(ps, ps->command_optional_queue_file_path);
-        if (optional_queue_read_res != 0) {
-            command_window_print(ps, "No optional command-queue commands were loaded from %s", ps->command_optional_queue_file_path);
-        }
-    }
+    CGSE_load_command_queue(ps);
 
     // Draw the command line
     wmove(ps->command_window, ps->line, 0);

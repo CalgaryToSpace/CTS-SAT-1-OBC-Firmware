@@ -15,17 +15,18 @@ typedef struct {
 } CGSE_command_t;
 
 // Terminal commands
-int CGSE_quit(CGSE_program_state_t *ps, const char *cmd_string);
-int CGSE_help(CGSE_program_state_t *ps, const char *cmd_string);
-int CGSE_connect(CGSE_program_state_t *ps, const char *cmd_string);
-int CGSE_disconnect(CGSE_program_state_t *ps, const char *cmd_string);
-int CGSE_show_timestamp(CGSE_program_state_t *ps, const char *cmd_string);
-int CGSE_hide_timestamp(CGSE_program_state_t *ps, const char *cmd_string);
-int CGSE_sync_timestamp(CGSE_program_state_t *ps, const char *cmd_string);
-int CGSE_list_telecommands(CGSE_program_state_t *ps, const char *cmd_string);
-int CGSE_list_current_directory(CGSE_program_state_t *ps, const char *cmd_string);
-int CGSE_list_queued_commands(CGSE_program_state_t *ps, const char *cmd_string);
-int CGSE_upload_mpi_firmware(CGSE_program_state_t *ps, const char *cmd_string);
+int CGSE_terminal_quit(CGSE_program_state_t *ps, const char *cmd_string);
+int CGSE_terminal_help(CGSE_program_state_t *ps, const char *cmd_string);
+int CGSE_terminal_connect(CGSE_program_state_t *ps, const char *cmd_string);
+int CGSE_terminal_disconnect(CGSE_program_state_t *ps, const char *cmd_string);
+int CGSE_terminal_show_timestamp(CGSE_program_state_t *ps, const char *cmd_string);
+int CGSE_terminal_hide_timestamp(CGSE_program_state_t *ps, const char *cmd_string);
+int CGSE_terminal_sync_timestamp(CGSE_program_state_t *ps, const char *cmd_string);
+int CGSE_terminal_list_telecommands(CGSE_program_state_t *ps, const char *cmd_string);
+int CGSE_terminal_list_current_directory(CGSE_program_state_t *ps, const char *cmd_string);
+int CGSE_terminal_list_queued_commands(CGSE_program_state_t *ps, const char *cmd_string);
+int CGSE_terminal_reload_command_queue(CGSE_program_state_t *ps, const char *cmd_string);
+int CGSE_terminal_upload_mpi_firmware(CGSE_program_state_t *ps, const char *cmd_string);
 
 
 char * CGSE_get_args_from_str(const char* args, int *nargs, char **arg_vector);

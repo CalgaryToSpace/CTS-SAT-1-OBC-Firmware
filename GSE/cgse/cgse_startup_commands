@@ -1,2 +1,10 @@
+# overview of queued messages
 r0 .list_queued_commands
-r5000 .sync_time
+# Sync dev kit time to GSE computer time
+r1000 .sync_time
+# Disable the heartbeat messages
+r3000 heartbeat_off()
+# Enable in-flight debugging via umbilical
+r4000 log_set_channel_debugging_messages_state(4,1)
+# Enable debugging for all subsystems
+r5000 log_set_system_debugging_messages_state(256,1)

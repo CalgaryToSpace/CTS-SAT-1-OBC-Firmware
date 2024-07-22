@@ -24,5 +24,6 @@ void CGSE_free_command_queue(void);
 bool CGSE_command_queue_command_is_queued(double *seconds_until_execution);
 void CGSE_command_queue_list_commands(CGSE_program_state_t *ps);
 int CGSE_command_queue_number_of_commands(CGSE_program_state_t *ps);
+void CGSE_load_command_queue(CGSE_program_state_t *ps);
 
 #endif // __INCLUDE__GUARD__COMMAND_QUEUE_H_

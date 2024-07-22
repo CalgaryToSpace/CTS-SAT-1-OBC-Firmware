@@ -22,28 +22,29 @@
 extern volatile sig_atomic_t running;
 
 const CGSE_command_t CGSE_terminal_commands[] = {
-    {".quit", ".quit", "quit the terminal", CGSE_quit, false},
-    {".help", ".help", "show available terminal commands", CGSE_help, false},
-    {".connect", ".connect [<device-name>]", "connect to the satellite, optionally using <device-path>", CGSE_connect, false},
-    {".disconnect", ".disconnect", "disconnect from from satellite", CGSE_disconnect, false},
-    {".show_timestamp", ".show_timestamp", "show GSE computer timestamp on received messages", CGSE_show_timestamp, false},
-    {".hide_timestamp", ".hide_timestamp", "show GSE computer timestamp on received messages", CGSE_hide_timestamp, false},
-    {".sync_time", ".sync_time", "synchronize satellite time with whit computer's time", CGSE_sync_timestamp, false},
-    {".telecommands", ".telecommands", "list telecommands", CGSE_list_telecommands, false},
-    {".list_queued_commands", ".list_queued_commands", "list queued telecommands and terminal commands", CGSE_list_queued_commands, false},
-    {".ls", ".ls", "list current directory", CGSE_list_current_directory, false},
-    {".upload_mpi_firmware", ".upload_mpi_firmware <file_name>", "upload MPI firmware from <file_name> relative to the current directory", CGSE_upload_mpi_firmware, false},
+    {".quit", ".quit", "quit the terminal", CGSE_terminal_quit, false},
+    {".help", ".help", "show available terminal commands", CGSE_terminal_help, false},
+    {".connect", ".connect [<device-name>]", "connect to the satellite, optionally using <device-path>", CGSE_terminal_connect, false},
+    {".disconnect", ".disconnect", "disconnect from from satellite", CGSE_terminal_disconnect, false},
+    {".show_timestamp", ".show_timestamp", "show GSE computer timestamp on received messages", CGSE_terminal_show_timestamp, false},
+    {".hide_timestamp", ".hide_timestamp", "show GSE computer timestamp on received messages", CGSE_terminal_hide_timestamp, false},
+    {".sync_time", ".sync_time", "synchronize satellite time with whit computer's time", CGSE_terminal_sync_timestamp, false},
+    {".telecommands", ".telecommands", "list telecommands", CGSE_terminal_list_telecommands, false},
+    {".list_queued_commands", ".list_queued_commands", "list queued telecommands and terminal commands", CGSE_terminal_list_queued_commands, false},
+    {".reload_command_queue", ".reload_command_queue", "reload command queue from default and optional files", CGSE_terminal_reload_command_queue, false},
+    {".ls", ".ls", "list current directory", CGSE_terminal_list_current_directory, false},
+    {".upload_mpi_firmware", ".upload_mpi_firmware <file_name>", "upload MPI firmware from <file_name> relative to the current directory", CGSE_terminal_upload_mpi_firmware, false},
 };
 const int CGSE_NUM_TERMINAL_COMMANDS = sizeof(CGSE_terminal_commands) / sizeof(CGSE_command_t);
 
-int CGSE_quit(CGSE_program_state_t *ps, const char *cmd_string) 
+int CGSE_terminal_quit(CGSE_program_state_t *ps, const char *cmd_string) 
 {
     running = 0;
 
     return 0;
 };
 
-int CGSE_help(CGSE_program_state_t *ps, const char *cmd_string) 
+int CGSE_terminal_help(CGSE_program_state_t *ps, const char *cmd_string) 
 {
     command_window_print(ps, "Available commands:");
     for (int c = 0; c < CGSE_NUM_TERMINAL_COMMANDS; c++) {
@@ -55,10 +56,10 @@ int CGSE_help(CGSE_program_state_t *ps, const char *cmd_string)
     return 0;
 }
 
-int CGSE_connect(CGSE_program_state_t *ps, const char *cmd_string)
+int CGSE_terminal_connect(CGSE_program_state_t *ps, const char *cmd_string)
 {
     if (ps->satellite_connected) {
-        CGSE_disconnect(ps, cmd_string);
+        CGSE_terminal_disconnect(ps, cmd_string);
     }
 
     char *arg_vector[2];
@@ -111,7 +112,7 @@ int CGSE_connect(CGSE_program_state_t *ps, const char *cmd_string)
     return 0;
 }
 
-int CGSE_disconnect(CGSE_program_state_t *ps, const char *cmd_string) 
+int CGSE_terminal_disconnect(CGSE_program_state_t *ps, const char *cmd_string) 
 {
     if (ps->satellite_link > 0) {
         close(ps->satellite_link);
@@ -122,19 +123,19 @@ int CGSE_disconnect(CGSE_program_state_t *ps, const char *cmd_string)
     return 0;
 }
 
-int CGSE_show_timestamp(CGSE_program_state_t *ps, const char *cmd_string) 
+int CGSE_terminal_show_timestamp(CGSE_program_state_t *ps, const char *cmd_string) 
 {
     ps->prepend_timestamp = true;
     return 0;
 }
 
-int CGSE_hide_timestamp(CGSE_program_state_t *ps, const char *cmd_string) 
+int CGSE_terminal_hide_timestamp(CGSE_program_state_t *ps, const char *cmd_string) 
 {
     ps->prepend_timestamp = false;
     return 0;
 }
 
-int CGSE_sync_timestamp(CGSE_program_state_t *ps, const char *cmd_string) 
+int CGSE_terminal_sync_timestamp(CGSE_program_state_t *ps, const char *cmd_string) 
 {
     char tcmd[256];
     struct timeval epoch = {0};
@@ -160,7 +161,7 @@ int CGSE_sync_timestamp(CGSE_program_state_t *ps, const char *cmd_string)
     return 0;
 }
 
-int CGSE_list_telecommands(CGSE_program_state_t *ps, const char *cmd_string) 
+int CGSE_terminal_list_telecommands(CGSE_program_state_t *ps, const char *cmd_string) 
 {
     const TCMD_TelecommandDefinition_t *cmd = NULL;
     int nArgs = 0;
@@ -182,7 +183,7 @@ int CGSE_list_telecommands(CGSE_program_state_t *ps, const char *cmd_string)
     return 0;
 }
 
-int CGSE_list_current_directory(CGSE_program_state_t *ps, const char *cmd_string) 
+int CGSE_terminal_list_current_directory(CGSE_program_state_t *ps, const char *cmd_string) 
 {
     char *arg_vector[2];
     int n_ls_args = 2;
@@ -198,13 +199,19 @@ int CGSE_list_current_directory(CGSE_program_state_t *ps, const char *cmd_string
     return 0;
 }
 
-int CGSE_list_queued_commands(CGSE_program_state_t *ps, const char *cmd_string) 
+int CGSE_terminal_list_queued_commands(CGSE_program_state_t *ps, const char *cmd_string) 
 {
     CGSE_command_queue_list_commands(ps);
     return 0;
 }
 
-int CGSE_upload_mpi_firmware(CGSE_program_state_t *ps, const char *cmd_string) 
+int CGSE_terminal_reload_command_queue(CGSE_program_state_t *ps, const char *cmd_string) 
+{
+    CGSE_load_command_queue(ps);
+    return 0;
+}
+
+int CGSE_terminal_upload_mpi_firmware(CGSE_program_state_t *ps, const char *cmd_string) 
 {
     if (!ps->satellite_connected) {
         command_window_print(ps, "Not connected to satellite");
