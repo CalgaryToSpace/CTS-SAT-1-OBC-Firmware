@@ -13,8 +13,8 @@
 /// @param str Input string, starting with an integer
 /// @param str_len Max length of the input string
 /// @param result Pointer to the result
-/// @return 0 if successful, 1 if the string is empty, 2 if the string does not start with an integer,
-///         3 if the size of result doesn't match str_len, 4 for if the string is too long
+/// @return 0 if successful, 1 if the string is empty, 2 if the input string doesn't match str_len, 3 for if the string is too long,
+///         4 if the string does not start with an integer, 5 if the size of result doesn't match str_len
 uint8_t TCMD_ascii_to_uint64(const char *str, uint32_t str_len, uint64_t *result) {
     // FIXME: return error if the string is too long/number is too large
     // FIXME: return error if the number doesn't occupy the whole string (e.g., "123abc" with str_len=6 should error)
@@ -25,10 +25,16 @@ uint8_t TCMD_ascii_to_uint64(const char *str, uint32_t str_len, uint64_t *result
         return 1;
     }
 
+    // Return error if the input string doesn't match size of str_len
+    if(strlen(str) != str_len) {
+        *result = 0;
+        return 2;
+    }
+
     // Return error if size of integer is larger than the total length of the result variable (20 for uint64_t)
     if (str_len > 20) {
         *result = 0;
-        return 4;
+        return 3;
     }
 
     uint64_t temp_result = 0;
@@ -41,13 +47,16 @@ uint8_t TCMD_ascii_to_uint64(const char *str, uint32_t str_len, uint64_t *result
         temp_result = temp_result * 10 + (str[i] - '0');
     }
 
+    // Error: the string does not start with an integer
     if (i == 0) {
-        // Error if the string does not start with an integer
         *result = 0;
-        return 2;
-    } else if ( i != str_len) {
-        // Error if result length deosn't match str_len
-        return 3;
+        return 4;
+    } 
+    
+    // Error: result length deosn't match str_len
+    if (i != str_len) {
+        *result = 0;
+        return 5;
     }
 
     *result = temp_result;
