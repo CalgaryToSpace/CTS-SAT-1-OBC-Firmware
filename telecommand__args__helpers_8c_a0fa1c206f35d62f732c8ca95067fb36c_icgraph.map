@@ -1,7 +1,9 @@
 <map id="TCMD_extract_string_arg" name="TCMD_extract_string_arg">
-<area shape="rect" id="Node000001" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a string." alt="" coords="222,31,390,56"/>
-<area shape="rect" id="Node000002" href="$lfs__telecommand__defs_8c.html#a7c0b1a4e9d0f7f5d92a6a96b5b1bc40d" title="Reads a file from LittleFS, and responds with its contents in raw form (including non&#45;printable and n..." alt="" coords="7,5,172,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="206,34,172,31,173,25,206,29"/>
-<area shape="rect" id="Node000003" href="$lfs__telecommand__defs_8c.html#a4659cdcf78b593dfe35fcda78686f83d" title="Telecommand: Write data to a file in LittleFS." alt="" coords="5,55,174,80"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="207,57,174,61,174,55,206,52"/>
+<area shape="rect" id="Node000001" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a string." alt="" coords="247,55,415,80"/>
+<area shape="rect" id="Node000002" href="$lfs__telecommand__defs_8c.html#adcd5c5bb896cd90680be830952d3ae65" title="Reads a file from LittleFS, and responds with its contents as 2&#45;digit hex bytes." alt="" coords="6,5,198,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="253,53,164,34,166,29,254,48"/>
+<area shape="rect" id="Node000003" href="$lfs__telecommand__defs_8c.html#a3987d15fbe2d9a0e39633747d99aebe1" title="Reads a file from LittleFS, and responds with its contents as 2&#45;digit hex bytes." alt="" coords="5,55,199,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="232,70,199,70,199,65,232,65"/>
+<area shape="rect" id="Node000004" href="$lfs__telecommand__defs_8c.html#a4659cdcf78b593dfe35fcda78686f83d" title="Telecommand: Write data to a file in LittleFS." alt="" coords="18,104,186,130"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="254,87,166,106,164,101,253,82"/>
 </map>

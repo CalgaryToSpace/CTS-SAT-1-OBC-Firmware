@@ -1,23 +1,24 @@
 <map id="firmware/Core/Inc/littlefs/littlefs_helper.h" name="firmware/Core/Inc/littlefs/littlefs_helper.h">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,168,46"/>
-<area shape="rect" id="Node000002" title=" " alt="" coords="54,315,117,341"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="81,47,68,94,64,151,67,208,81,300,76,301,61,209,58,151,63,94,76,46"/>
-<area shape="rect" id="Node000003" href="$flash__driver_8h.html" title=" " alt="" coords="77,94,213,120"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="103,45,129,80,125,83,99,48"/>
-<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="143,121,126,168,93,300,88,299,121,167,138,119"/>
-<area shape="rect" id="Node000004" href="$main_8h.html" title=": Header for main.c file. This file contains the common defines of the application." alt="" coords="136,168,195,193"/>
-<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="151,119,160,152,155,153,146,121"/>
-<area shape="rect" id="Node000006" href="$lfs_8h.html" title=" " alt="" coords="236,168,321,193"/>
-<area shape="poly" id="edge6_Node000003_Node000006" title=" " alt="" coords="169,118,244,158,241,162,167,123"/>
-<area shape="rect" id="Node000005" title=" " alt="" coords="123,241,236,267"/>
-<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="170,193,177,225,172,226,165,194"/>
-<area shape="rect" id="Node000007" href="$lfs__util_8h.html" title=" " alt="" coords="261,241,330,267"/>
-<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="284,193,292,226,287,227,279,194"/>
-<area shape="poly" id="edge8_Node000007_Node000002" title=" " alt="" coords="261,270,132,313,131,308,260,265"/>
-<area shape="rect" id="Node000008" title=" " alt="" coords="167,315,240,341"/>
-<area shape="poly" id="edge9_Node000007_Node000008" title=" " alt="" coords="282,270,233,308,229,303,279,265"/>
-<area shape="rect" id="Node000009" title=" " alt="" coords="264,315,328,341"/>
-<area shape="poly" id="edge10_Node000007_Node000009" title=" " alt="" coords="298,267,298,299,293,299,293,267"/>
-<area shape="rect" id="Node000010" title=" " alt="" coords="351,315,427,341"/>
-<area shape="poly" id="edge11_Node000007_Node000010" title=" " alt="" coords="313,265,363,303,360,308,310,270"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="30,5,193,46"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,315,69,341"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="78,48,53,69,34,95,24,121,19,149,17,206,23,258,32,299,26,300,17,259,11,206,13,148,19,120,29,93,49,65,75,44"/>
+<area shape="rect" id="Node000003" href="$flash__driver_8h.html" title=" " alt="" coords="44,94,180,120"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="114,46,114,78,109,78,109,46"/>
+<area shape="rect" id="Node000006" href="$lfs_8h.html" title=" " alt="" coords="175,168,259,193"/>
+<area shape="poly" id="edge12_Node000001_Node000006" title=" " alt="" coords="145,44,171,66,194,93,208,122,216,152,211,153,203,124,189,95,167,69,141,49"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="105,121,78,169,56,239,44,300,38,299,51,238,73,167,101,119"/>
+<area shape="rect" id="Node000004" href="$main_8h.html" title=": Header for main.c file. This file contains the common defines of the application." alt="" coords="87,168,147,193"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="115,120,118,152,112,152,110,120"/>
+<area shape="poly" id="edge6_Node000003_Node000006" title=" " alt="" coords="131,118,188,156,185,161,128,122"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="75,241,188,267"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="122,193,129,225,123,226,117,194"/>
+<area shape="rect" id="Node000007" href="$lfs__util_8h.html" title=" " alt="" coords="213,241,282,267"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="225,193,239,226,234,228,220,195"/>
+<area shape="poly" id="edge8_Node000007_Node000002" title=" " alt="" coords="213,270,84,313,82,308,212,265"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="119,315,192,341"/>
+<area shape="poly" id="edge9_Node000007_Node000008" title=" " alt="" coords="234,270,185,308,181,303,230,265"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="216,315,279,341"/>
+<area shape="poly" id="edge10_Node000007_Node000009" title=" " alt="" coords="250,267,250,299,245,299,245,267"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="303,315,379,341"/>
+<area shape="poly" id="edge11_Node000007_Node000010" title=" " alt="" coords="265,265,315,303,312,308,262,270"/>
 </map>

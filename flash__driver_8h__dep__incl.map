@@ -1,23 +1,25 @@
 <map id="firmware/Core/Inc/littlefs/flash_driver.h" name="firmware/Core/Inc/littlefs/flash_driver.h">
-<area shape="rect" id="Node000001" title=" " alt="" coords="758,5,921,46"/>
-<area shape="rect" id="Node000002" href="$littlefs__helper_8h.html" title=" " alt="" coords="194,94,357,135"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="744,42,569,65,369,97,357,99,356,94,368,91,568,60,743,36"/>
-<area shape="rect" id="Node000006" href="$flash__benchmark_8c.html" title=" " alt="" coords="381,94,546,135"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="744,52,547,97,546,91,743,46"/>
-<area shape="rect" id="Node000007" href="$flash__driver_8c.html" title=" " alt="" coords="569,94,734,135"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="784,55,695,96,693,91,782,50"/>
-<area shape="rect" id="Node000008" href="$flash__testing__demos_8c.html" title=" " alt="" coords="757,94,922,135"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="842,62,842,94,837,94,837,62"/>
-<area shape="rect" id="Node000009" href="$littlefs__driver_8c.html" title=" " alt="" coords="945,94,1110,135"/>
-<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="897,50,986,91,984,96,895,55"/>
-<area shape="rect" id="Node000010" href="$main_8c.html" title=": Main program body" alt="" coords="1133,102,1300,127"/>
-<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="936,46,1164,98,1163,103,935,51"/>
-<area shape="rect" id="Node000011" href="$flash__telecommand__defs_8c.html" title=" " alt="" coords="1324,94,1539,135"/>
-<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="936,38,1313,91,1325,93,1324,98,1312,97,936,43"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="848,5,1010,46"/>
+<area shape="rect" id="Node000002" href="$littlefs__helper_8h.html" title=" " alt="" coords="284,94,446,135"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="833,42,658,65,459,97,447,99,446,94,458,91,658,60,832,36"/>
+<area shape="rect" id="Node000007" href="$flash__benchmark_8c.html" title=" " alt="" coords="471,94,635,135"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="833,52,636,97,635,91,832,46"/>
+<area shape="rect" id="Node000008" href="$flash__driver_8c.html" title=" " alt="" coords="659,94,823,135"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="873,55,784,96,782,91,871,50"/>
+<area shape="rect" id="Node000009" href="$flash__testing__demos_8c.html" title=" " alt="" coords="847,94,1011,135"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="932,62,932,94,926,94,926,62"/>
+<area shape="rect" id="Node000010" href="$littlefs__driver_8c.html" title=" " alt="" coords="1035,94,1199,135"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="987,50,1075,91,1073,96,984,55"/>
+<area shape="rect" id="Node000011" href="$main_8c.html" title=": Main program body" alt="" coords="1222,102,1390,127"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="1025,46,1253,98,1252,103,1024,51"/>
+<area shape="rect" id="Node000012" href="$flash__telecommand__defs_8c.html" title=" " alt="" coords="1414,94,1628,135"/>
+<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="1026,38,1403,91,1414,93,1413,98,1402,97,1025,43"/>
 <area shape="rect" id="Node000003" href="$littlefs__benchmark_8c.html" title=" " alt="" coords="5,183,170,223"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="220,144,131,185,129,180,218,139"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="288,142,151,185,150,180,287,137"/>
 <area shape="rect" id="Node000004" href="$littlefs__helper_8c.html" title=" " alt="" coords="193,183,358,223"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="278,150,278,182,273,182,273,150"/>
-<area shape="rect" id="Node000005" href="$lfs__telecommand__defs_8c.html" title=" " alt="" coords="382,183,596,223"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="339,138,441,180,439,185,337,143"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="335,148,298,184,294,180,332,144"/>
+<area shape="rect" id="Node000005" href="$log__sinks_8c.html" title=" " alt="" coords="382,183,529,223"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="398,143,437,180,433,184,394,147"/>
+<area shape="rect" id="Node000006" href="$lfs__telecommand__defs_8c.html" title=" " alt="" coords="552,183,767,223"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="447,137,593,180,592,185,446,142"/>
 </map>

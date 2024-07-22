@@ -11,5 +11,11 @@ var searchData=
   ['littlefs_5fdriver_2ec_8',['littlefs_driver.c',['../littlefs__driver_8c.html',1,'']]],
   ['littlefs_5fdriver_2eh_9',['littlefs_driver.h',['../littlefs__driver_8h.html',1,'']]],
   ['littlefs_5fhelper_2ec_10',['littlefs_helper.c',['../littlefs__helper_8c.html',1,'']]],
-  ['littlefs_5fhelper_2eh_11',['littlefs_helper.h',['../littlefs__helper_8h.html',1,'']]]
+  ['littlefs_5fhelper_2eh_11',['littlefs_helper.h',['../littlefs__helper_8h.html',1,'']]],
+  ['log_2ec_12',['log.c',['../log_8c.html',1,'']]],
+  ['log_2eh_13',['log.h',['../log_8h.html',1,'']]],
+  ['log_5fsinks_2ec_14',['log_sinks.c',['../log__sinks_8c.html',1,'']]],
+  ['log_5fsinks_2eh_15',['log_sinks.h',['../log__sinks_8h.html',1,'']]],
+  ['log_5ftelecommand_5fdefs_2ec_16',['log_telecommand_defs.c',['../log__telecommand__defs_8c.html',1,'']]],
+  ['log_5ftelecommand_5fdefs_2eh_17',['log_telecommand_defs.h',['../log__telecommand__defs_8h.html',1,'']]]
 ];

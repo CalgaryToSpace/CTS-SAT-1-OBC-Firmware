@@ -38,7 +38,7 @@ var searchData=
   ['hi2c2_35',['hi2c2',['../main_8h.html#ac379bcc152d860f08b1279fd3e232295',1,'hi2c2:&#160;main.c'],['../main_8c.html#ac379bcc152d860f08b1279fd3e232295',1,'hi2c2:&#160;main.c']]],
   ['hi2c3_36',['hi2c3',['../main_8h.html#a5ccf4a01a8d7f08d3190181f843f7515',1,'hi2c3:&#160;main.c'],['../main_8c.html#a5ccf4a01a8d7f08d3190181f843f7515',1,'hi2c3:&#160;main.c']]],
   ['hi2c4_37',['hi2c4',['../main_8h.html#a818789480a74b70bbcaf6d73e8e763ed',1,'hi2c4:&#160;main.c'],['../main_8c.html#a818789480a74b70bbcaf6d73e8e763ed',1,'hi2c4:&#160;main.c']]],
-  ['hlpuart1_38',['hlpuart1',['../main_8h.html#a5c3f9dccaa7cebcc70e1657af9e5e5dc',1,'hlpuart1:&#160;main.c'],['../main_8c.html#a5c3f9dccaa7cebcc70e1657af9e5e5dc',1,'hlpuart1:&#160;main.c'],['../stm32l4xx__it_8c.html#a5c3f9dccaa7cebcc70e1657af9e5e5dc',1,'hlpuart1:&#160;main.c']]],
+  ['hlpuart1_38',['hlpuart1',['../main_8h.html#a5c3f9dccaa7cebcc70e1657af9e5e5dc',1,'hlpuart1:&#160;main.c'],['../log__sinks_8c.html#a5c3f9dccaa7cebcc70e1657af9e5e5dc',1,'hlpuart1:&#160;main.c'],['../main_8c.html#a5c3f9dccaa7cebcc70e1657af9e5e5dc',1,'hlpuart1:&#160;main.c'],['../stm32l4xx__it_8c.html#a5c3f9dccaa7cebcc70e1657af9e5e5dc',1,'hlpuart1:&#160;main.c']]],
   ['how_20to_20write_20a_20test_39',['How to Write a Test',['../md_docs_2C__Unit__Tests.html#autotoc_md18',1,'']]],
   ['hse_5fstartup_5ftimeout_40',['HSE_STARTUP_TIMEOUT',['../stm32l4xx__hal__conf_8h.html#a68ecbc9b0a1a40a1ec9d18d5e9747c4f',1,'stm32l4xx_hal_conf.h']]],
   ['hse_5fvalue_41',['HSE_VALUE',['../stm32l4xx__hal__conf_8h.html#aeafcff4f57440c60e64812dddd13e7cb',1,'HSE_VALUE:&#160;stm32l4xx_hal_conf.h'],['../group__STM32L4xx__System__Private__Defines.html#gaeafcff4f57440c60e64812dddd13e7cb',1,'HSE_VALUE:&#160;system_stm32l4xx.c']]],
