@@ -3,6 +3,7 @@
 
 #include "unit_tests/test_assorted_prototypes.h"
 #include "unit_tests/test_byte_transforms.h"
+#include "unit_tests/test_logging.h"
 #include "unit_tests/test_telecommand_parser.h"
 #include "unit_tests/test_tests.h"
 #include "unit_tests/test_telecommand_arg_helpers.h"
@@ -58,7 +59,31 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_file = "telecommands/telecommand_args_helpers",
         .test_func_name = "TCMD_ascii_to_double"
     },
-    
+    {
+        .test_func = TEST_EXEC__LOG_enable_disable_LOG_SINK_FILE,
+        .test_file = "log/log",
+        .test_func_name = "TEST_EXEC__LOG_enable_disable_LOG_SINK_FILE"
+    },
+    {
+        .test_func = TEST_EXEC__LOG_enable_disable_LOG_SINK_UHF_RADIO,
+        .test_file = "log/log",
+        .test_func_name = "TEST_EXEC__LOG_enable_disable_LOG_SINK_UHF_RADIO"
+    },
+    {
+        .test_func = TEST_EXEC__LOG_enable_disable_LOG_SINK_UMBILICAL_UART,
+        .test_file = "log/log",
+        .test_func_name = "TEST_EXEC__LOG_enable_disable_LOG_SINK_UMBILICAL_UART"
+    },
+    {
+        .test_func = TEST_EXEC__LOG_enable_disable_LOG_FILE_LOGGING_FOR_SYSTEM_MPI,
+        .test_file = "log/log",
+        .test_func_name = "TEST_EXEC__LOG_enable_disable_LOG_FILE_LOGGING_FOR_SYSTEM_MPI"
+    },
+    {
+        .test_func = TEST_EXEC__LOG_all_sinks_except,
+        .test_file = "log/log",
+        .test_func_name = "TEST_EXEC__LOG_all_sinks_except"
+    },
 };
 
 // extern
