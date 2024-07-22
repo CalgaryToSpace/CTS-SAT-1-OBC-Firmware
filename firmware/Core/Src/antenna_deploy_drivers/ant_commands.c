@@ -26,7 +26,7 @@ uint8_t ANT_CMD_arm_antenna_system() {
 
 uint8_t ANT_CMD_deploy_antenna1(uint8_t activation_time_seconds) {
     uint8_t CC = 0xA1;
-    uint8_t CC_param;
+    uint8_t CC_param = activation_time_seconds;
 
     uint8_t cmd_len = 2;
     uint8_t cmd_buf[cmd_len];
