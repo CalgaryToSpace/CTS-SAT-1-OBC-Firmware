@@ -1,6 +1,31 @@
 #include "telecommands/telecommand_args_helpers.h"
 #include "unit_tests/unit_test_helpers.h"
 
+uint8_t TEST_EXEC__TCMD_ascii_to_uint64() {
+    uint64_t result;
+
+    // Success: Nominal test
+    TEST_ASSERT(TCMD_ascii_to_uint64("123", 3, &result) == 0);
+    TEST_ASSERT(result == 123);
+/*
+    // Error: Empty string
+    TEST_ASSERT(TCMD_ascii_to_uint64("", 0, result) == 1);
+    TEST_ASSERT(result == 0);
+
+    // Error: String doesn't start with an integer
+    TEST_ASSERT(TCMD_ascii_to_uint64("abc123", 6, result) == 2)
+    TEST_ASSERT(result == 0);
+
+    // Error: Result length doesn't match str_len
+    TEST_ASSERT(TCMD_ascii_to_uint64("123abc", 6, result) == 3);
+    TEST_ASSERT(result == 123);
+
+    // Error: String is too long
+    TEST_ASSERT(TCMD_ascii_to_uint64("123456789123456789123", 21, result) == 4)
+    TEST_ASSERT(result == 0);
+*/
+    return 0;
+}
 
 uint8_t TEST_EXEC__TCMD_extract_hex_array_arg() {
     uint8_t result[4];
