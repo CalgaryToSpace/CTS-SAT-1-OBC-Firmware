@@ -9,6 +9,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+/// @brief  Arm the antenna deploy system
+/// @return 0 if successful, >0 if error occurred
 uint8_t ANT_CMD_arm_antenna_system() {
     uint8_t CC = 0xAD;
 
@@ -24,6 +26,9 @@ uint8_t ANT_CMD_arm_antenna_system() {
     return comms_err;
 }
 
+/// @brief Deploys antenna 1
+/// @param activation_time_seconds Activation time in seconds
+/// @return 0 if successful, >0 if error occurred
 uint8_t ANT_CMD_deploy_antenna1(uint8_t activation_time_seconds) {
     uint8_t CC = 0xA1;
     uint8_t CC_param = activation_time_seconds;
@@ -41,6 +46,8 @@ uint8_t ANT_CMD_deploy_antenna1(uint8_t activation_time_seconds) {
     return comms_err;
 }
 
+/// @brief Measure the temperature of the antenna controller system
+/// @return 0 if successful, >0 if error occurred
 uint8_t ANT_CMD_measure_temp() {
     uint8_t CC = 0xC0;
 
