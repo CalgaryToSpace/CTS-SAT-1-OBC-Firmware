@@ -16,23 +16,22 @@
 /// @return 0 if successful, 1 if the string is empty, 2 if the input string doesn't match str_len, 3 for if the string is too long,
 ///         4 if the string does not start with an integer, 5 if the size of result doesn't match str_len
 uint8_t TCMD_ascii_to_uint64(const char *str, uint32_t str_len, uint64_t *result) {
-    // FIXME: return error if the string is too long/number is too large
-    // FIXME: return error if the number doesn't occupy the whole string (e.g., "123abc" with str_len=6 should error)
-    // TODO: write unit tests for this function
     // TODO: consider removing the str_len parameter and using strlen(str) instead (requires refactor in caller)
-    if (str_len == 0) {
+
+    // Error: the input string is empty
+    if (str_len == 0 || strlen(str) == 0) {
         *result = 0;
         return 1;
     }
 
-    // Return error if the input string doesn't match size of str_len
+    // Error: the input string doesn't match size of str_len
     if(strlen(str) != str_len) {
         *result = 0;
         return 2;
     }
 
-    // Return error if size of integer is larger than the total length of the result variable (20 for uint64_t)
-    if (str_len > 20) {
+    // Error: size of string is larger than the total length of the result variable (20 for uint64_t)
+    if (strlen(str) > 20 || str_len > 20) {
         *result = 0;
         return 3;
     }
@@ -94,7 +93,7 @@ uint8_t TCMD_extract_uint64_arg(const char *str, uint32_t str_len, uint8_t arg_i
     }
 
     uint8_t parse_result = TCMD_ascii_to_uint64(&str[start_index], i - start_index, result);
-    if (parse_result == 2) {
+    if (parse_result == 4) {
         // The argument is not an integer
         return 3;
     }
