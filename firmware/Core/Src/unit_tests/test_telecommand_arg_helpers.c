@@ -74,3 +74,48 @@ uint8_t TEST_EXEC__TCMD_extract_hex_array_arg() {
 
     return 0;
 }
+
+uint8_t TEST_EXEC__TCMD_ascii_to_int64() {
+    int64_t output_val;
+
+    // Nominal test.
+    TEST_ASSERT_FALSE(TCMD_ascii_to_int64("6", 3, &output_val));
+    TEST_ASSERT_TRUE(output_val == 6);
+    // assert: output_val approx equals 6
+
+    // Nominal test (negative).
+    TEST_ASSERT_FALSE(TCMD_ascii_to_int64("-23", 5, &output_val));
+    TEST_ASSERT_TRUE(output_val == -23);
+    // assert: output_val approx equals -23
+
+    // Error: empty string
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64("", 0, &output_val));
+
+    // Error: just a space
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64(" ", 1, &output_val));
+
+    // Error: letters
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64("abc", 3, &output_val));
+
+    // Error: trailing letters
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64("23.7a", 5, &output_val));
+
+    // Error: numbers in the middle
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64("123a123", 7, &output_val));
+
+    // More assorted tests
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64("a23.7a", 6, &output_val) != 0);
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64("1.2", 3, &output_val) != 0);
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64("23a7", 4, &output_val) != 0);
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64("23ar.7", 6, &output_val) != 0);
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64(" 23.7", 5, &output_val) != 0); // has a space
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64("23.7 ", 5, &output_val) != 0); // has a space
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64("2 3.7", 5, &output_val) != 0); // has a space
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64("23.7.1", 6, &output_val) != 0); // two decimal points
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64(".7", 2, &output_val) != 0); // can't have decimal point 
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64("7.", 2, &output_val) != 0); // can't have decimal point
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64("7-7", 2, &output_val) != 0); // can't have minus sign in the middle
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64("1.5-", 2, &output_val) != 0); // can't have minus sign at the end
+
+    return 0;
+}

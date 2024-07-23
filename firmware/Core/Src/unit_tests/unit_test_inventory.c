@@ -109,7 +109,12 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func = TEST_EXEC__set_str_variable,
         .test_file = "configuration/configuration_variables",
         .test_func_name = "TEST_EXEC__set_str_variable"
-    }
+    },
+    {
+        .test_func = TEST_EXEC__TCMD_ascii_to_int64,
+        .test_file = "telecommands/telecommand_args_helpers",
+        .test_func_name = "TCMD_ascii_to_int64"
+    },
 };
 
 // extern
