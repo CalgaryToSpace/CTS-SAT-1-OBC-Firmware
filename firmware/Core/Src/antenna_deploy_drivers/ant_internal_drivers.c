@@ -21,7 +21,7 @@ extern I2C_HandleTypeDef hi2c2;
  * @param cmd_len Length of the command buffer
  * @param rx_buf Array to store the response from the antenna controller
  * @param rx_len Length of the response buffer
- * @retval 0 upon success, 1 if there was an error transmitting the command, 2 if there was an error receiving the response
+ * @retval 0 upon success, 1 if tx_status received HAL_ERROR, 2 if tx_status received HAL_BUSY, 3 if tx_status received HAL_TIMEOUT, 4 if rx_status received HAL_ERROR
  */
 uint8_t ANT_send_cmd_get_response(
     uint8_t cmd_buf[], uint8_t cmd_len,
