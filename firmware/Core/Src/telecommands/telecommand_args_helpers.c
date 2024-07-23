@@ -88,7 +88,7 @@ uint8_t TCMD_extract_uint64_arg(const char *str, uint32_t str_len, uint8_t arg_i
 /// @param str Input string, starting with an integer
 /// @param str_len Max length of the input string
 /// @param result Pointer to the result
-/// @return 0 if successful, 1 if the string is empty, 2 if the string does not start with an integer
+/// @return 0 if successful, 1 if the string is empty, 2 if the string does not entirely encapsulate an integer
 uint8_t TCMD_ascii_to_int64(const uint8_t *str, uint32_t str_len, int64_t *result) {
     if (str_len == 0) {
         return 1;
@@ -110,6 +110,10 @@ uint8_t TCMD_ascii_to_int64(const uint8_t *str, uint32_t str_len, int64_t *resul
     }
 
     if (i == 0) {
+        return 2;
+    }
+    else if ((str[i] < '0' || str[i] > '9') && str[i] != '\0') {
+        // check to make sure the string doesn't end with garbage characters
         return 2;
     }
 
