@@ -12,7 +12,7 @@
 
 /// @brief Telecommand: Arm the antenna deploy system
 /// @param args_str no args
-/// @retval 0 if successful, >0 if error occurred
+/// @return 0 if successful, >0 if error occurred
 uint8_t TCMDEXEC_ant_arm_antenna_system(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     const uint8_t comms_err = ANT_CMD_arm_antenna_system();
@@ -24,6 +24,9 @@ uint8_t TCMDEXEC_ant_arm_antenna_system(const char *args_str, TCMD_TelecommandCh
     return 0;
 }
 
+/// @brief  Telecommand: Deploy antenna 1
+/// @param args_str activation time in seconds
+/// @return 0 if successful, >0 if error occurred, other if other error has occurred
 uint8_t TCMDEXEC_ant_deploy_antenna1(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
 
@@ -54,6 +57,9 @@ uint8_t TCMDEXEC_ant_deploy_antenna1(const char *args_str, TCMD_TelecommandChann
     return 0;
 }
 
+/// @brief Telecommand: Measure the temperature of the antenna controller
+/// @param args_str no args
+/// @return Returns the current temperature reading if successful, >0 if error occurred
 uint8_t TCMDEXEC_ant_measure_temp(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     const uint8_t comms_err = ANT_CMD_measure_temp();
