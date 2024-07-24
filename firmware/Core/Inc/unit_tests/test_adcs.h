@@ -24,6 +24,17 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Estimation_Params();
 uint8_t TEST_EXEC__ADCS_Pack_to_ASGP4_Params();
 uint8_t TEST_EXEC__ADCS_Pack_to_Tracking_Controller_Target_Reference();
 uint8_t TEST_EXEC__ADCS_Pack_to_Rate_Gyro_Config();
+uint8_t TEST_EXEC__ADCS_Pack_to_Estimated_Attitude_Angles();
+uint8_t TEST_EXEC__ADCS_Pack_to_Magnetic_Field_Vector();
+uint8_t TEST_EXEC__ADCS_Pack_to_Fine_Sun_Vector();
+uint8_t TEST_EXEC__ADCS_Pack_to_Nadir_Vector();
+uint8_t TEST_EXEC__ADCS_Pack_to_Commanded_Wheel_Speed();
+uint8_t TEST_EXEC__ADCS_Pack_to_IGRF_Magnetic_Field_Vector();
+uint8_t TEST_EXEC__ADCS_Pack_to_Quaternion_Error_Vector();
+uint8_t TEST_EXEC__ADCS_Pack_to_Estimated_Gyro_Bias();
+uint8_t TEST_EXEC__ADCS_Pack_to_Estimation_Innovation_Vector();
+uint8_t TEST_EXEC__ADCS_Pack_to_Raw_Cam1_Sensor();
+uint8_t TEST_EXEC__ADCS_Pack_to_Raw_Cam2_Sensor();
 
 #endif // __INCLUDE_GUARD__ADCS_TEST_PROTOTYPES_H__
 

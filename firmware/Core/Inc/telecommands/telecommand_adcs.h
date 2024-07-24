@@ -5,6 +5,9 @@
 #include <stdint.h>
 #include "telecommands/telecommand_definitions.h"
 
+// if we fail to properly extract a value, we should return the reason for that failure
+#define ABORT_TC_FOR_FAILED_EXTRACT(x) uint8_t result = x; if (!(result)) { return result; }
+
 // TODO: define telecommands here
 
 uint8_t TCMDEXEC_ADCS_reset(const uint8_t *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,

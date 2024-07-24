@@ -344,3 +344,149 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Rate_Gyro_Config()
 
     return 0;
 }
+
+uint8_t TEST_EXEC__ADCS_Pack_to_Estimated_Attitude_Angles()
+{
+    uint8_t input_params[6] = {0x10, 0x27, 0x34, 0xff, 0x56, 0x78}; // Example data
+
+    ADCS_Estimated_Attitude_Angles_Struct result;
+    ADCS_Pack_to_Estimated_Attitude_Angles(input_params, &result);
+
+    TEST_ASSERT_TRUE(compare_doubles(result.estimated_roll_angle, 100, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.estimated_pitch_angle, -2.04, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.estimated_yaw_angle, 308.06, ADCS_TEST_EPSILON));
+
+    return 0;
+}
+
+uint8_t TEST_EXEC__ADCS_Pack_to_Magnetic_Field_Vector()
+{
+    uint8_t input_params[6] = {0x10, 0x27, 0x34, 0xff, 0x56, 0x78}; // Example data
+
+    ADCS_Magnetic_Field_Vector_Struct result;
+    ADCS_Pack_to_Magnetic_Field_Vector(input_params, &result);
+
+    TEST_ASSERT_TRUE(compare_doubles(result.x, 100, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.y, -2.04, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.z, 308.06, ADCS_TEST_EPSILON));
+
+    return 0;
+}
+
+uint8_t TEST_EXEC__ADCS_Pack_to_Nadir_Vector()
+{
+    uint8_t input_params[6] = {0x01, 0x10, 0xf1, 0x11, 0xF0, 0xF1}; // Example data
+
+    ADCS_Nadir_Vector_Struct result;
+    ADCS_Pack_to_Nadir_Vector(input_params, &result);
+
+    TEST_ASSERT_TRUE(compare_doubles(result.x, 0.4097, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.y, 0.4593, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.z, -0.36, ADCS_TEST_EPSILON));
+
+    return 0;
+}
+
+uint8_t TEST_EXEC__ADCS_Pack_to_Commanded_Wheel_Speed()
+{
+    uint8_t input_params[6] = {0x01, 0x02, 0x03, 0x04, 0x05, 0xd6}; // Example data
+
+    ADCS_Wheel_Speed_Struct result;
+    ADCS_Pack_to_Commanded_Wheel_Speed(input_params, &result);
+
+    TEST_ASSERT_TRUE(result.x == 513);
+    TEST_ASSERT_TRUE(result.y == 1027);
+    TEST_ASSERT_TRUE(result.z == -10747);
+
+    return 0;
+}
+// FIXME: Below is the generated
+uint8_t TEST_EXEC__ADCS_Pack_to_IGRF_Magnetic_Field_Vector()
+{
+    uint8_t input_params[6] = {0x09, 0x08, 0x07, 0x06, 0x05, 0x04}; // Example data
+
+    ADCS_Magnetic_Field_Vector_Struct result;
+    ADCS_Pack_to_IGRF_Magnetic_Field_Vector(input_params, &result);
+
+    TEST_ASSERT_TRUE(compare_doubles(result.x, 20.88, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.y, 15.56, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.z, 10.05, ADCS_TEST_EPSILON));
+
+    return 0;
+}
+
+uint8_t TEST_EXEC__ADCS_Pack_to_Quaternion_Error_Vector()
+{
+    uint8_t input_params[6] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06}; // Example data
+
+    ADCS_Quaternion_Error_Vector_Struct result;
+    ADCS_Pack_to_Quaternion_Error_Vector(input_params, &result);
+
+    TEST_ASSERT_TRUE(compare_doubles(result.quaternion_error_q1, 0.1312, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.quaternion_error_q2, 0.2587, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.quaternion_error_q3, 0.3876, ADCS_TEST_EPSILON));
+
+    return 0;
+}
+
+uint8_t TEST_EXEC__ADCS_Pack_to_Estimated_Gyro_Bias()
+{
+    uint8_t input_params[6] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06}; // Example data
+
+    ADCS_Estimated_Gyro_Bias_Struct result;
+    ADCS_Pack_to_Estimated_Gyro_Bias(input_params, &result);
+
+    TEST_ASSERT_TRUE(compare_doubles(result.estimated_x_gyro_bias, 2.001, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.estimated_y_gyro_bias, 4.003, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.estimated_z_gyro_bias, 6.005, ADCS_TEST_EPSILON));
+
+    return 0;
+}
+
+uint8_t TEST_EXEC__ADCS_Pack_to_Estimation_Innovation_Vector()
+{
+    uint8_t input_params[6] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06}; // Example data
+
+    ADCS_Estimation_Innovation_Vector_Struct result;
+    ADCS_Pack_to_Estimation_Innovation_Vector(input_params, &result);
+
+    TEST_ASSERT_TRUE(compare_doubles(result.innovation_vector_x, 0.2042, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.innovation_vector_y, 0.2063, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.innovation_vector_z, 0.3084, ADCS_TEST_EPSILON));
+
+    return 0;
+}
+
+uint8_t TEST_EXEC__ADCS_Pack_to_Raw_Cam1_Sensor()
+{
+    uint8_t input_params[6] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06}; // Example data
+
+    ADCS_Raw_Cam_Sensor_Struct result;
+    ADCS_Pack_to_Raw_Cam1_Sensor(input_params, &result);
+
+    TEST_ASSERT_TRUE(result.which_sensor == ADCS_Cam1_Sensor);
+    TEST_ASSERT_TRUE(result.cam_centroid_x == 0x0201);
+    TEST_ASSERT_TRUE(result.cam_centroid_y == 0x0403);
+    TEST_ASSERT_TRUE(result.cam_capture_status == 0x05);
+    TEST_ASSERT_TRUE(result.cam_detection_result == 0x06);
+
+    return 0;
+}
+
+uint8_t TEST_EXEC__ADCS_Pack_to_Raw_Cam2_Sensor()
+{
+    uint8_t input_params[6] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06}; // Example data
+
+    ADCS_Raw_Cam_Sensor_Struct result;
+    ADCS_Pack_to_Raw_Cam2_Sensor(input_params, &result);
+
+    TEST_ASSERT_TRUE(result.which_sensor == ADCS_Cam2_Sensor);
+    TEST_ASSERT_TRUE(result.cam_centroid_x == 0x0201);
+    TEST_ASSERT_TRUE(result.cam_centroid_y == 0x0403);
+    TEST_ASSERT_TRUE(result.cam_capture_status == 0x05);
+    TEST_ASSERT_TRUE(result.cam_detection_result == 0x06);
+
+    return 0;
+}
+
+uint8_t TEST_EXEC__ADCS_Pack_to_Fine_Sun_Vector() {return 3535;}

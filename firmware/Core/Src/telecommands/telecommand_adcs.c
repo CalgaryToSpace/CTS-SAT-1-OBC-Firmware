@@ -35,7 +35,7 @@ uint8_t TCMDEXEC_ADCS_set_wheel_speed(const uint8_t *args_str, TCMD_TelecommandC
     uint64_t arguments[num_args]; 
     int16_t args_16[num_args];
     for (uint8_t i = 0; i < num_args; i++) {
-        TCMD_extract_uint64_arg(args_str, strlen((char*)args_str), i, &arguments[i]);
+        TCMD_extract_int64_arg(args_str, strlen((char*)args_str), i, &arguments[i]);
         args_16[i] = (int16_t) arguments[i];
     }
     

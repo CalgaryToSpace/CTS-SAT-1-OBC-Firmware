@@ -16,6 +16,7 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_file = "unit_tests/test_tests",
         .test_func_name = "test_asserts"
     },
+    
     {
         .test_func = TEST_EXEC__this_test_always_fails,
         .test_file = "unit_tests/test_tests",
@@ -27,16 +28,19 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_file = "telecommands/telecommand_parser",
         .test_func_name = "TCMD_is_char_alphanumeric"
     },
+    
     {
         .test_func = TEST_EXEC__GEN_get_index_of_substring_in_array,
         .test_file = "telecommands/telecommand_parser",
         .test_func_name = "GEN_get_index_of_substring_in_array"
     },
+    
     {
         .test_func = TEST_EXEC__TCMD_check_starts_with_device_id,
         .test_file = "telecommands/telecommand_parser",
         .test_func_name = "TCMD_check_starts_with_device_id"
     },
+    
     {
         .test_func = TEST_EXEC__GEN_convert_big_endian_four_byte_array_to_uint32,
         .test_file = "transforms/byte_transforms",
@@ -169,7 +173,74 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func = TEST_EXEC__ADCS_Pack_to_Rate_Gyro_Config,
         .test_file = "unit_tests/test_adcs",
         .test_func_name = "ADCS_Pack_to_Rate_Gyro_Config"
+    },
+
+    {
+    .test_func = TEST_EXEC__ADCS_Pack_to_Estimated_Attitude_Angles,
+    .test_file = "unit_tests/test_adcs",
+    .test_func_name = "ADCS_Pack_to_Estimated_Attitude_Angles"
+    },
+    
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_Magnetic_Field_Vector,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Magnetic_Field_Vector"
+    },
+    
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_Fine_Sun_Vector,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Fine_Sun_Vector"
+    },
+    
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_Nadir_Vector,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Nadir_Vector"
+    },
+    
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_Commanded_Wheel_Speed,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Commanded_Wheel_Speed"
+    },
+    
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_IGRF_Magnetic_Field_Vector,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_IGRF_Magnetic_Field_Vector"
+    },
+    
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_Quaternion_Error_Vector,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Quaternion_Error_Vector"
+    },
+    
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_Estimated_Gyro_Bias,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Estimated_Gyro_Bias"
+    },
+    
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_Estimation_Innovation_Vector,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Estimation_Innovation_Vector"
+    },
+    
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_Raw_Cam1_Sensor,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Raw_Cam1_Sensor"
+    },
+    
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_Raw_Cam2_Sensor,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Raw_Cam2_Sensor"
     }
+
 
 };
 
