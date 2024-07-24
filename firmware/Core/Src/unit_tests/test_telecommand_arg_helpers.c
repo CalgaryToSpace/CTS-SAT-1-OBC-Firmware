@@ -25,7 +25,7 @@ uint8_t TEST_EXEC__TCMD_ascii_to_uint64() {
     TEST_ASSERT(result == 0);
 
     // Error: Result length doesn't match str_len
-    TEST_ASSERT(TCMD_ascii_to_uint64("123abc", 6, &result) == 5);
+    TEST_ASSERT(TCMD_ascii_to_uint64("123abc", 6, &result) == 4);
     TEST_ASSERT(result == 0);
 
     return 0;

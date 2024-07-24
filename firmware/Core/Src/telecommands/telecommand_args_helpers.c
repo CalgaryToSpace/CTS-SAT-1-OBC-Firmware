@@ -14,7 +14,7 @@
 /// @param str_len Max length of the input string
 /// @param result Pointer to the result
 /// @return 0 if successful, 1 if the string is empty, 2 if the input string doesn't match str_len, 3 for if the string is too long,
-///         4 if the string does not start with an integer, 5 if the size of result doesn't match str_len
+///         4 if the result size doesn't match str_len (includes non-integer characters)
 uint8_t TCMD_ascii_to_uint64(const char *str, uint32_t str_len, uint64_t *result) {
     // TODO: consider removing the str_len parameter and using strlen(str) instead (requires refactor in caller)
 
@@ -46,16 +46,10 @@ uint8_t TCMD_ascii_to_uint64(const char *str, uint32_t str_len, uint64_t *result
         temp_result = temp_result * 10 + (str[i] - '0');
     }
 
-    // Error: the string does not start with an integer
-    if (i == 0) {
+    // Error: the result size doesn't match str_len (input includes non-integers)
+    if (i == 0 || i != str_len) {
         *result = 0;
         return 4;
-    } 
-    
-    // Error: result length deosn't match str_len
-    if (i != str_len) {
-        *result = 0;
-        return 5;
     }
 
     *result = temp_result;
