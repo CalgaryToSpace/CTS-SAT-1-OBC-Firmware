@@ -15,7 +15,8 @@
 #include <stdint.h>
 #include <string.h>
 #include <inttypes.h>
-#include <task.h>
+#include "FreeRTOS.h"
+#include "task.h"
 #include <portmacro.h>
 
 extern volatile uint8_t TASK_heartbeat_is_on;
