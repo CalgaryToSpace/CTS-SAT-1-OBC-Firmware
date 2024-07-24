@@ -19,7 +19,7 @@
 #define LOG_SYSTEM_NAME_MAX_LENGTH 20
 // Messages up to 256 characters
 #define LOG_FORMATTED_MESSAGE_MAX_LENGTH 256
-// Includes prefix, with cushion for delimiters and newline
+// Includes prefix, with cushion for delimiters, newline, and null terminator
 #define LOG_FULL_MESSAGE_MAX_LENGTH ( LOG_FORMATTED_MESSAGE_MAX_LENGTH + LOG_TIMESTAMP_MAX_LENGTH + LOG_SINK_NAME_MAX_LENGTH + LOG_SYSTEM_NAME_MAX_LENGTH + 1 )
 
 typedef struct {
@@ -189,7 +189,7 @@ void LOG_message(LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_
                 case LOG_SINK_UNKNOWN:
                 default:
                     // Should not reach this except by memory corruption 
-                    LOG_to_umbilical_uart("Error: unkown log sink\n");
+                    LOG_to_umbilical_uart("Error: unknown log sink\n");
                     break;
             }
         }
@@ -446,7 +446,7 @@ const char *LOG_get_memory_table_full_message_at_index(uint8_t index)
 }
 
 /// @brief Get the most recent log message text 
-/// @return pointer to the full text of the most recent lost message
+/// @return pointer to the full text of the most recent message
 /// (statically allocated)
 const char *LOG_get_most_recent_log_message_text(void)
 {
