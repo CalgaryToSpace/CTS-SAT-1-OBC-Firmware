@@ -246,14 +246,13 @@ uint8_t TCMDEXEC_log_report_n_latest_messages_from_memory(const char *args_str, 
     if (start_index < 0) {
         start_index += max_entries;
     }
-    uint8_t index = (uint8_t)start_index;
     void (*transmit_function)(const char *);
     switch (tcmd_channel) {
         case TCMD_TelecommandChannel_DEBUG_UART:
             transmit_function = LOG_to_umbilical_uart;
             break;
         case TCMD_TelecommandChannel_RADIO1:
-            transmit_function = LOG_to_umbilical_uart;
+            transmit_function = LOG_to_uhf_radio;
             break;
         default:
             // Channel is unknown, log error to the filesystem and return
@@ -263,13 +262,10 @@ uint8_t TCMDEXEC_log_report_n_latest_messages_from_memory(const char *args_str, 
     }
 
     // Report the messages
-    for (uint8_t i = 0; i < requested_number_of_entries; i++) {
-        if (index > max_entries - 1) {
-            index = 0;
-        }
-        const char *log_text = LOG_get_memory_table_full_message_at_index(index);
+    for (uint8_t response_number = 0; response_number < requested_number_of_entries; response_number++) {
+        const uint16_t log_index = (start_index + response_number) % max_entries;
+        const char *log_text = LOG_get_memory_table_full_message_at_index(log_index);
         transmit_function(log_text);
-        index++;
     }
     
     return 0;
