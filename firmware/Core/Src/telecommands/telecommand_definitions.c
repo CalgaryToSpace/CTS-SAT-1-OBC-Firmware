@@ -292,6 +292,7 @@ uint8_t TCMDEXEC_available_telecommands(const char *args_str, TCMD_TelecommandCh
 
 uint8_t TCMDEXEC_retrieve_freertos_metadata(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
+                            
     TaskStatus_t *pxTaskStatusArray;
     UBaseType_t uxArraySize, x;
     unsigned long ulTotalRunTime;
@@ -300,26 +301,53 @@ uint8_t TCMDEXEC_retrieve_freertos_metadata(const char *args_str, TCMD_Telecomma
     pxTaskStatusArray = pvPortMalloc(uxArraySize * sizeof(TaskStatus_t));
 
     if (pxTaskStatusArray != NULL) {
-        // Generate raw status information about each task
-        uxArraySize = uxTaskGetSystemState(pxTaskStatusArray, uxArraySize, &ulTotalRunTime);
 
-        // Initialize the response buffer
-        snprintf(response_output_buf + strlen(response_output_buf), response_output_buf_len- strlen(response_output_buf), "Task Name\t\tState\tPriority\tStack\n");
-        snprintf(response_output_buf + strlen(response_output_buf), response_output_buf_len - strlen(response_output_buf),
-                 "------------------------------------------------------------------\n");
+        uxArraySize = uxTaskGetSystemState(pxTaskStatusArray, uxArraySize, &ulTotalRunTime);
+        int n = snprintf(response_output_buf, response_output_buf_len, "[\n");
 
         for (x = 0; x < uxArraySize; x++) {
-            snprintf(response_output_buf + strlen(response_output_buf), response_output_buf_len - strlen(response_output_buf),
-                     "%-18s\t %-12s %-10lu %-10u\n",
-                     pxTaskStatusArray[x].pcTaskName,
-                     pxTaskStatusArray[x].eCurrentState == eRunning ? "RUN" :
-                     pxTaskStatusArray[x].eCurrentState == eReady ? "RDY" :
-                     pxTaskStatusArray[x].eCurrentState == eBlocked ? "BLK" :
-                     pxTaskStatusArray[x].eCurrentState == eSuspended ? "SUSP" :
-                     pxTaskStatusArray[x].eCurrentState == eDeleted ? "DEL" : "UNKN",
-                     pxTaskStatusArray[x].uxCurrentPriority,
-                     pxTaskStatusArray[x].usStackHighWaterMark);
+
+        int needed = snprintf(NULL, 0, "  {\n"
+                                        "    \"TaskName\": \"%s\",\n"
+                                        "    \"State\": \"%s\",\n"
+                                        "    \"Priority\": %lu,\n"
+                                        "    \"Stack\": %u\n"
+                                        "  }%s\n",
+                                        pxTaskStatusArray[x].pcTaskName,
+                                        pxTaskStatusArray[x].eCurrentState == eRunning ? "RUN" :
+                                        pxTaskStatusArray[x].eCurrentState == eReady ? "RDY" :
+                                        pxTaskStatusArray[x].eCurrentState == eBlocked ? "BLK" :
+                                        pxTaskStatusArray[x].eCurrentState == eSuspended ? "SUSP" :
+                                        pxTaskStatusArray[x].eCurrentState == eDeleted ? "DEL" : "UNKN",
+                                        pxTaskStatusArray[x].uxCurrentPriority,
+                                        pxTaskStatusArray[x].usStackHighWaterMark,
+                                        x < uxArraySize - 1 ? "," : "");
+
+        if (n + needed < response_output_buf_len) {
+            n += snprintf(response_output_buf + n, response_output_buf_len - n, "  {\n"
+                                                                                    "    \"TaskName\": \"%s\",\n"
+                                                                                    "    \"State\": \"%s\",\n"
+                                                                                    "    \"Priority\": %lu,\n"
+                                                                                    "    \"Stack\": %u\n"
+                                                                                    "  }%s\n",
+                                                                                    pxTaskStatusArray[x].pcTaskName,
+                                                                                    pxTaskStatusArray[x].eCurrentState == eRunning ? "RUN" :
+                                                                                    pxTaskStatusArray[x].eCurrentState == eReady ? "RDY" :
+                                                                                    pxTaskStatusArray[x].eCurrentState == eBlocked ? "BLK" :
+                                                                                    pxTaskStatusArray[x].eCurrentState == eSuspended ? "SUSP" :
+                                                                                    pxTaskStatusArray[x].eCurrentState == eDeleted ? "DEL" : "UNKN",
+                                                                                    pxTaskStatusArray[x].uxCurrentPriority,
+                                                                                    pxTaskStatusArray[x].usStackHighWaterMark,
+                                                                                    x < uxArraySize - 1 ? "," : "");
+        } else {
+            // Not enough space in buffer, handle error or break
+            snprintf(response_output_buf + n, response_output_buf_len - n, "]\n");
+            vPortFree(pxTaskStatusArray);
+            return 1;
         }
+    }
+   
+        snprintf(response_output_buf + n, response_output_buf_len - n, "]\n");
         vPortFree(pxTaskStatusArray);
     } else {
         snprintf(response_output_buf, response_output_buf_len, "Failed to allocate memory for task status array.\n");
