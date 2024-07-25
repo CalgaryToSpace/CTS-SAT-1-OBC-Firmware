@@ -15,8 +15,8 @@
 #include <stdint.h>
 #include <string.h>
 #include <inttypes.h>
-#include "FreeRTOS.h"
-#include "task.h"
+#include <FreeRTOS.h>
+#include <task.h>
 #include <portmacro.h>
 
 extern volatile uint8_t TASK_heartbeat_is_on;
@@ -296,10 +296,7 @@ uint8_t TCMDEXEC_retrieve_freertos_metadata(const char *args_str, TCMD_Telecomma
     UBaseType_t uxArraySize, x;
     unsigned long ulTotalRunTime;
 
-    // Get the number of tasks
     uxArraySize = uxTaskGetNumberOfTasks();
-
-    // Allocate memory for the task status array
     pxTaskStatusArray = pvPortMalloc(uxArraySize * sizeof(TaskStatus_t));
 
     if (pxTaskStatusArray != NULL) {
@@ -307,14 +304,13 @@ uint8_t TCMDEXEC_retrieve_freertos_metadata(const char *args_str, TCMD_Telecomma
         uxArraySize = uxTaskGetSystemState(pxTaskStatusArray, uxArraySize, &ulTotalRunTime);
 
         // Initialize the response buffer
-        snprintf(response_output_buf, response_output_buf_len, "Task Name\t\tState\tPriority\tStack\tTask Number\n");
+        snprintf(response_output_buf + strlen(response_output_buf), response_output_buf_len- strlen(response_output_buf), "Task Name\t\tState\tPriority\tStack\n");
         snprintf(response_output_buf + strlen(response_output_buf), response_output_buf_len - strlen(response_output_buf),
-                 "--------------------------------------------------------\n");
+                 "------------------------------------------------------------------\n");
 
-        // Append task information to the response buffer
         for (x = 0; x < uxArraySize; x++) {
             snprintf(response_output_buf + strlen(response_output_buf), response_output_buf_len - strlen(response_output_buf),
-                     "%-16s\t%-4s\t%-8u\t%-5u\t%-10u\n",
+                     "%-18s\t %-12s %-10lu %-10u\n",
                      pxTaskStatusArray[x].pcTaskName,
                      pxTaskStatusArray[x].eCurrentState == eRunning ? "RUN" :
                      pxTaskStatusArray[x].eCurrentState == eReady ? "RDY" :
@@ -322,14 +318,12 @@ uint8_t TCMDEXEC_retrieve_freertos_metadata(const char *args_str, TCMD_Telecomma
                      pxTaskStatusArray[x].eCurrentState == eSuspended ? "SUSP" :
                      pxTaskStatusArray[x].eCurrentState == eDeleted ? "DEL" : "UNKN",
                      pxTaskStatusArray[x].uxCurrentPriority,
-                     pxTaskStatusArray[x].usStackHighWaterMark,
-                     pxTaskStatusArray[x].xTaskNumber);
+                     pxTaskStatusArray[x].usStackHighWaterMark);
         }
-
-        // The array is no longer needed, free the memory it consumes. 
         vPortFree(pxTaskStatusArray);
     } else {
         snprintf(response_output_buf, response_output_buf_len, "Failed to allocate memory for task status array.\n");
+        return 1;
     }
 
     return 0;
