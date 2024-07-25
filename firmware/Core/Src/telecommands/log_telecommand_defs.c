@@ -242,10 +242,12 @@ uint8_t TCMDEXEC_log_report_n_latest_messages_from_memory(const char *args_str, 
 
     // Report the entries in the log table, which is a circular buffer
     uint8_t current_index = LOG_get_memory_table_index_of_most_recent_log_entry();
-    int16_t start_index = ((int16_t)current_index + 1 - (int16_t)requested_number_of_entries); 
-    if (start_index < 0) {
-        start_index += max_entries;
+    int16_t signed_start_index = ((int16_t)current_index + 1 - (int16_t)requested_number_of_entries); 
+    if (signed_start_index < 0) {
+        signed_start_index += max_entries;
     }
+    uint16_t start_index = (uint16_t)signed_start_index;
+
     void (*transmit_function)(const char *);
     switch (tcmd_channel) {
         case TCMD_TelecommandChannel_DEBUG_UART:
@@ -262,7 +264,7 @@ uint8_t TCMDEXEC_log_report_n_latest_messages_from_memory(const char *args_str, 
     }
 
     // Report the messages
-    for (uint8_t response_number = 0; response_number < requested_number_of_entries; response_number++) {
+    for (uint16_t response_number = 0; response_number < requested_number_of_entries; response_number++) {
         const uint16_t log_index = (start_index + response_number) % max_entries;
         const char *log_text = LOG_get_memory_table_full_message_at_index(log_index);
         transmit_function(log_text);
