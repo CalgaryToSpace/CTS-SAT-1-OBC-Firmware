@@ -5,8 +5,6 @@
 
 uint8_t TEST_EXEC__setup_configuration_variables();
 
-uint8_t TEST_EXEC__compare_search_config_names();
-
 uint8_t TEST_EXEC__get_int_var_index();
 
 uint8_t TEST_EXEC__get_str_var_index();

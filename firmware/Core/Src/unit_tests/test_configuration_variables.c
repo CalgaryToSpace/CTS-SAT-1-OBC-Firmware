@@ -3,9 +3,14 @@
 #include "configuration.h"
 
 #include <string.h>
+
+
 uint8_t TEST_EXEC__setup_configuration_variables()
 {
+    // NOTE: This isn't a stable unit test, but rather a check of the current configuration variables.
+    
     // Test that all int variables are <= UINT32_MAX
+    // Pretty sure this test is impossible to fail, as the size is literally uint32_t.
     for (uint16_t i = 0; i < CONFIG_int_config_variables_count; i++)
     {
         const CONFIG_integer_config_entry_t current_var = CONFIG_int_config_variables[i];
@@ -13,7 +18,8 @@ uint8_t TEST_EXEC__setup_configuration_variables()
     }
 
     // Test that all string variables length <= max length
-    // and <= CONFIG_MAX_VARIABLE_NAME_LENGTH
+    // and <= CONFIG_MAX_VARIABLE_NAME_LENGTH.
+    // Again, pretty sure this test is impossible to fail.
     for (uint16_t i = 0; i < CONFIG_str_config_variables_count; i++)
     {
         const CONFIG_string_config_entry_t current_var = CONFIG_str_config_variables[i];
@@ -25,48 +31,26 @@ uint8_t TEST_EXEC__setup_configuration_variables()
     return 0;
 }
 
-uint8_t TEST_EXEC__compare_search_config_names()
-{
-    // Test 1: names are exactly equal
-    const char *search_name_1 = "test_name";
-    const char *config_var_name_1 = "test_name";
-    TEST_ASSERT(CONFIG_comapre_search_config_names(search_name_1, 10, config_var_name_1, 10) == 0);
-
-    // Test 2: names are not equal
-    const char *search_name_2 = "some_var";
-    const char *config_var_name_2 = "test_name_2";
-    TEST_ASSERT(CONFIG_comapre_search_config_names(search_name_2, 10, config_var_name_2, 12) == 1);
-
-    // Test 3: search name is a substring of config name
-    // should return 1
-    const char *search_name_3 = "test_name";
-    const char *config_var_name_3 = "test_name_3";
-    TEST_ASSERT(CONFIG_comapre_search_config_names(search_name_3, 10, config_var_name_3, 12) == 1);
-    return 0;
-}
-
 uint8_t TEST_EXEC__get_int_var_index()
 {
-    // Test 1.1: find variable which does not exist
-    // should return -1
-    TEST_ASSERT(CONFIG_get_int_var_index("yo dog, this shouldn't exist", 29) == -1);
+    // Test 1.1 (Failure): Find variable which does not exist.
+    TEST_ASSERT(CONFIG_get_int_var_index("yo dog, this shouldn't exist") == -1);
 
-    // Test 1.2: find variable which does exist
+    // Test 1.2 (Success): find variable which does exist.
     const CONFIG_integer_config_entry_t first_var = CONFIG_int_config_variables[0];
-    TEST_ASSERT(CONFIG_get_int_var_index(first_var.variable_name, strlen(first_var.variable_name)) == 0);
+    TEST_ASSERT(CONFIG_get_int_var_index(first_var.variable_name) == 0);
 
     return 0;
 }
 
 uint8_t TEST_EXEC__get_str_var_index()
 {
-    // Test 1.1: find variable which does not exist
-    // should return -1
-    TEST_ASSERT(CONFIG_get_str_var_index("yo dog, this shouldn't exist", 29) == -1);
+    // Test 1.1 (Failure): find variable which does not exist.
+    TEST_ASSERT(CONFIG_get_str_var_index("yo dog, this doesn't exist") == -1);
 
-    // Test 1.2: find variable which does exist
+    // Test 1.2 (Success): find variable which does exist.
     const CONFIG_string_config_entry_t first_var = CONFIG_str_config_variables[0];
-    TEST_ASSERT(CONFIG_get_str_var_index(first_var.variable_name, strlen(first_var.variable_name)) == 0);
+    TEST_ASSERT(CONFIG_get_str_var_index(first_var.variable_name) == 0);
 
     return 0;
 }
@@ -77,7 +61,7 @@ uint8_t TEST_EXEC__set_int_variable()
     // Test 1.1: set variable which does not exist
     // should return 2
     const uint32_t initial_val = *first_var.num_config_var;
-    TEST_ASSERT(CONFIG_set_int_variable("yo dog, this shouldn't exist", 789) == 2);
+    TEST_ASSERT(CONFIG_set_int_variable("yo dog, this doesn't exist", 789) == 2);
     TEST_ASSERT(*first_var.num_config_var == initial_val);
 
     // Test 1.2: set variable which does exist
@@ -104,24 +88,19 @@ uint8_t TEST_EXEC__set_str_variable()
     strncpy(inital_val, first_var.variable_pointer, first_var.max_length);
     inital_val[first_var.max_length - 1] = '\0';
 
-    // Test 1.1: set variable which does not exist
-    // should return 2
+    // Test 1.1 (Failure): Set variable which does not exist.
     TEST_ASSERT(CONFIG_set_str_variable("yo dog, this shouldn't exist", "hello") == 1);
     TEST_ASSERT(strcmp(inital_val, first_var.variable_pointer) == 0);
 
-    // Test 1.2: set variable which does exist
-    // but length of new value is out of range
-    // shsould return 2
+    // Test 1.2 (Failure): Set variable which does exist but length of new value is out of range.
     const uint32_t double_len = strlen(first_var.variable_name) * 2;
     char new_val_too_big[double_len + 1];
     memset(new_val_too_big, 's', double_len);
     new_val_too_big[double_len] = '\0';
-
     TEST_ASSERT(CONFIG_set_str_variable(first_var.variable_name, new_val_too_big) == 2);
     TEST_ASSERT(strcmp(inital_val, first_var.variable_pointer) == 0);
 
-    // Test 1.3: set variable which does exist
-    // should return 0
+    // Test 1.3 (Success): Set variable which does exist.
     char new_val[first_var.max_length - 1];
     memset(new_val, 'a', first_var.max_length - 2);
     new_val[first_var.max_length - 1] = '\0';
