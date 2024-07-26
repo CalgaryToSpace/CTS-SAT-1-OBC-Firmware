@@ -30,11 +30,12 @@ var searchData=
   ['lfs_5fwarn_27',['LFS_WARN',['../lfs__util_8h.html#ad4cbf00d1a7933828678148432525f1e',1,'lfs_util.h']]],
   ['log_5fformatted_5fmessage_5fmax_5flength_28',['LOG_FORMATTED_MESSAGE_MAX_LENGTH',['../log_8c.html#a68cddde36b124d15327d45f7d2892a6a',1,'log.c']]],
   ['log_5ffull_5fmessage_5fmax_5flength_29',['LOG_FULL_MESSAGE_MAX_LENGTH',['../log_8c.html#a8c584bed7eb804d4a469d9f38b338fbd',1,'log.c']]],
-  ['log_5fsink_5fname_5fmax_5flength_30',['LOG_SINK_NAME_MAX_LENGTH',['../log_8c.html#a7cb868b15459b676dab5e02481154b89',1,'log.c']]],
-  ['log_5fsystem_5fname_5fmax_5flength_31',['LOG_SYSTEM_NAME_MAX_LENGTH',['../log_8c.html#ae6917d43c0991b55bea0b7ef25a236bc',1,'log.c']]],
-  ['log_5ftimestamp_5fmax_5flength_32',['LOG_TIMESTAMP_MAX_LENGTH',['../log_8c.html#a69acfa42e136da1445ddece44d8de150',1,'log.c']]],
-  ['log_5fuart_5ftransmit_5ftimeout_33',['LOG_UART_TRANSMIT_TIMEOUT',['../log__sinks_8h.html#a67ae267ce75e2b794e8f58299a7008c3',1,'log_sinks.h']]],
-  ['lse_5fstartup_5ftimeout_34',['LSE_STARTUP_TIMEOUT',['../stm32l4xx__hal__conf_8h.html#a85e6fc812dc26f7161a04be2568a5462',1,'stm32l4xx_hal_conf.h']]],
-  ['lse_5fvalue_35',['LSE_VALUE',['../stm32l4xx__hal__conf_8h.html#a7bbb9d19e5189a6ccd0fb6fa6177d20d',1,'stm32l4xx_hal_conf.h']]],
-  ['lsi_5fvalue_36',['LSI_VALUE',['../stm32l4xx__hal__conf_8h.html#a4872023e65449c0506aac3ea6bec99e9',1,'stm32l4xx_hal_conf.h']]]
+  ['log_5fmemory_5fnumber_5fof_5fentries_30',['LOG_MEMORY_NUMBER_OF_ENTRIES',['../log_8c.html#a8a61811827a541287cc00a065a2395e5',1,'log.c']]],
+  ['log_5fsink_5fname_5fmax_5flength_31',['LOG_SINK_NAME_MAX_LENGTH',['../log_8c.html#a7cb868b15459b676dab5e02481154b89',1,'log.c']]],
+  ['log_5fsystem_5fname_5fmax_5flength_32',['LOG_SYSTEM_NAME_MAX_LENGTH',['../log_8c.html#ae6917d43c0991b55bea0b7ef25a236bc',1,'log.c']]],
+  ['log_5ftimestamp_5fmax_5flength_33',['LOG_TIMESTAMP_MAX_LENGTH',['../log_8c.html#a69acfa42e136da1445ddece44d8de150',1,'log.c']]],
+  ['log_5fuart_5ftransmit_5ftimeout_34',['LOG_UART_TRANSMIT_TIMEOUT',['../log__sinks_8h.html#a67ae267ce75e2b794e8f58299a7008c3',1,'log_sinks.h']]],
+  ['lse_5fstartup_5ftimeout_35',['LSE_STARTUP_TIMEOUT',['../stm32l4xx__hal__conf_8h.html#a85e6fc812dc26f7161a04be2568a5462',1,'stm32l4xx_hal_conf.h']]],
+  ['lse_5fvalue_36',['LSE_VALUE',['../stm32l4xx__hal__conf_8h.html#a7bbb9d19e5189a6ccd0fb6fa6177d20d',1,'stm32l4xx_hal_conf.h']]],
+  ['lsi_5fvalue_37',['LSI_VALUE',['../stm32l4xx__hal__conf_8h.html#a4872023e65449c0506aac3ea6bec99e9',1,'stm32l4xx_hal_conf.h']]]
 ];

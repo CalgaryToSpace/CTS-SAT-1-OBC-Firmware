@@ -23,6 +23,7 @@ var searchData=
   ['lfs_5fmdir_20',['lfs_mdir',['../structlfs__mdir.html',1,'']]],
   ['lfs_5fmlist_21',['lfs_mlist',['../structlfs_1_1lfs__mlist.html',1,'lfs']]],
   ['lfs_5fsuperblock_22',['lfs_superblock',['../structlfs__superblock.html',1,'']]],
-  ['log_5fsink_5ft_23',['LOG_sink_t',['../structLOG__sink__t.html',1,'']]],
-  ['log_5fsystem_5ft_24',['LOG_system_t',['../structLOG__system__t.html',1,'']]]
+  ['log_5fmemory_5fentry_5ft_23',['LOG_memory_entry_t',['../structLOG__memory__entry__t.html',1,'']]],
+  ['log_5fsink_5ft_24',['LOG_sink_t',['../structLOG__sink__t.html',1,'']]],
+  ['log_5fsystem_5ft_25',['LOG_system_t',['../structLOG__system__t.html',1,'']]]
 ];
