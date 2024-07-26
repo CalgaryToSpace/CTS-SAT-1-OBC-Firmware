@@ -105,18 +105,17 @@ uint8_t CONFIG_set_str_variable(const char *var_name, const char *new_value)
     const int16_t index = CONFIG_get_str_var_index(var_name);
     if (index < 0)
     {
+        // Variable not found.
         return 1;
     }
     CONFIG_string_config_entry_t config_var = CONFIG_str_config_variables[index];
 
-    const size_t len = strlen(new_value);
-
-    if ((uint8_t)len > config_var.max_length - 1)
+    if (strlen(new_value) >= config_var.max_length)
     {
+        // New value is too long.
         return 2;
     }
-    strncpy(config_var.variable_pointer, new_value, len);
-    config_var.variable_pointer[len] = '\0';
+    strcpy(config_var.variable_pointer, new_value);
 
     return 0;
 }
