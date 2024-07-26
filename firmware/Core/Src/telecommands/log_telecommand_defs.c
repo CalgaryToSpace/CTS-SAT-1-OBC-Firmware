@@ -4,8 +4,10 @@
 #include <stdint.h>
 
 #include "log/log.h"
+#include "log/log_sinks.h"
 #include "telecommands/log_telecommand_defs.h"
 #include "telecommands/telecommand_args_helpers.h"
+#include "telecommands/telecommand_types.h"
 
 
 /// @brief Telecommand: Set a LOG sink's enabled state
@@ -195,3 +197,78 @@ uint8_t TCMDEXEC_log_set_system_debugging_messages_state(const char *args_str, T
     return 0;
 }
 
+/// @brief Telecommand: Report the latest log message to the incoming
+/// telecommand channel
+uint8_t TCMDEXEC_log_report_latest_message_from_memory(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    // This does not get logged. Send result directly back on telecommand
+    // channel the request arrived on
+    const char *log_text = LOG_get_most_recent_log_message_text();
+    switch (tcmd_channel) {
+        case TCMD_TelecommandChannel_DEBUG_UART:
+            LOG_to_umbilical_uart(log_text);
+            break;
+        case TCMD_TelecommandChannel_RADIO1:
+            LOG_to_uhf_radio(log_text);
+            break;
+        default:
+            // Channel is unknown, log just to the filesystem
+            LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_FILE, "TCMDEXEC_log_report_latest_message(): Unknown telecommand channel");
+            break;
+    }
+
+    return 0;
+}
+
+/// @brief Telecommand: Report the N latest log messages to the incoming
+/// telecommand channel
+/// @param args_str
+/// - Arg 0: Number of latest log messages to report
+uint8_t TCMDEXEC_log_report_n_latest_messages_from_memory(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    // This does not get logged. Send result directly back on telecommand
+    // channel the request arrived on
+    uint64_t requested_number_of_entries = 0;
+    uint8_t result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &requested_number_of_entries);
+    if (result) {
+        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL, "TCMDEXEC_log_report_n_latest_messages(): Unable to parse number of entries from first telecommand argument");
+        return 1;
+    }
+    const uint8_t max_entries = LOG_memory_table_max_entries();
+    if (requested_number_of_entries > max_entries) {
+        LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL, "TCMDEXEC_log_report_n_latest_messages(): Requested number of log messages must be at most %d", max_entries);
+        return 1;
+    }
+
+    // Report the entries in the log table, which is a circular buffer
+    uint8_t current_index = LOG_get_memory_table_index_of_most_recent_log_entry();
+    int16_t signed_start_index = ((int16_t)current_index + 1 - (int16_t)requested_number_of_entries); 
+    if (signed_start_index < 0) {
+        signed_start_index += max_entries;
+    }
+    uint16_t start_index = (uint16_t)signed_start_index;
+
+    void (*transmit_function)(const char *);
+    switch (tcmd_channel) {
+        case TCMD_TelecommandChannel_DEBUG_UART:
+            transmit_function = LOG_to_umbilical_uart;
+            break;
+        case TCMD_TelecommandChannel_RADIO1:
+            transmit_function = LOG_to_uhf_radio;
+            break;
+        default:
+            // Channel is unknown, log error to the filesystem and return
+            LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_FILE, "TCMDEXEC_log_report_latest_message(): Unknown telecommand channel");
+            return 1;
+            break;
+    }
+
+    // Report the messages
+    for (uint16_t response_number = 0; response_number < requested_number_of_entries; response_number++) {
+        const uint16_t log_index = (start_index + response_number) % max_entries;
+        const char *log_text = LOG_get_memory_table_full_message_at_index(log_index);
+        transmit_function(log_text);
+    }
+    
+    return 0;
+}
