@@ -12,6 +12,7 @@
 #include "telecommands/log_telecommand_defs.h"
 #include "telecommands/timekeeping_telecommand_defs.h"
 #include "telecommands/i2c_telecommand_defs.h"
+#include "telecommands/config_telecommand_defs.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -94,6 +95,39 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
+
+    // ****************** SECTION: config_telecommand_defs ******************
+    {
+        .tcmd_name = "config_set_int_var",
+        .tcmd_func = TCMDEXEC_config_set_int_var,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "config_set_str_var",
+        .tcmd_func = TCMDEXEC_config_set_str_var,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "config_get_int_var_json",
+        .tcmd_func = TCMDEXEC_config_get_int_var_json,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "config_get_str_var_json",
+        .tcmd_func = TCMDEXEC_config_get_str_var_json,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "config_get_all_vars_jsonl",
+        .tcmd_func = TCMDEXEC_config_get_all_vars_jsonl,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    // ****************** END SECTION: config_telecommand_defs ******************
 
     // ****************** SECTION: flash_telecommand_defs ******************
     {
