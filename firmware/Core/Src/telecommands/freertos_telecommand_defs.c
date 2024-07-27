@@ -24,47 +24,51 @@
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0 if successful, >0 if an error occurred (but hello_world can't return an error)
+const char* freertos_current_state_enum_to_str(eTaskState state) {
+    switch (state) {
+        case eRunning:    return "RUN";
+        case eReady:      return "RDY";
+        case eBlocked:    return "BLK";
+        case eSuspended:  return "SUSP";
+        case eDeleted:    return "DEL";
+        default:          return "UNKN";
+    }
+}
 
-uint8_t TCMDEXEC_retrieve_freertos_metadata(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_freertos_get_metadata(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
                             
-    TaskStatus_t *pxTaskStatusArray;
-    UBaseType_t uxArraySize, x;
-    unsigned long ulTotalRunTime;
+    TaskStatus_t *px_task_status_array;
+    UBaseType_t ux_array_size, x;
+    unsigned long ul_total_run_time;
 
-    uxArraySize = uxTaskGetNumberOfTasks();
-    pxTaskStatusArray = pvPortMalloc(uxArraySize * sizeof(TaskStatus_t));
+    ux_array_size = uxTaskGetNumberOfTasks();
+    px_task_status_array = pvPortMalloc(ux_array_size * sizeof(TaskStatus_t));
 
-    if (pxTaskStatusArray != NULL) {
+    if (px_task_status_array == NULL) {
+        DEBUG_uart_print_str("Failed to allocate memory for task status array.");
+        return 1;
+    }
 
-        uxArraySize = uxTaskGetSystemState(pxTaskStatusArray, uxArraySize, &ulTotalRunTime);
-        DEBUG_uart_print_str("[");
+    ux_array_size = uxTaskGetSystemState(px_task_status_array, ux_array_size, &ul_total_run_time);
+    DEBUG_uart_print_str("[");
 
-        for (x = 0; x < uxArraySize; x++) {
-            char message_buffer[256];
-            int len = snprintf(message_buffer, sizeof(message_buffer),
-                               "{\"TaskName\":\"%s\",\"State\":\"%s\",\"Priority\":%lu,\"Stack\":%u}%s",
-                               pxTaskStatusArray[x].pcTaskName,
-                               pxTaskStatusArray[x].eCurrentState == eRunning ? "RUN" :
-                               pxTaskStatusArray[x].eCurrentState == eReady ? "RDY" :
-                               pxTaskStatusArray[x].eCurrentState == eBlocked ? "BLK" :
-                               pxTaskStatusArray[x].eCurrentState == eSuspended ? "SUSP" :
-                               pxTaskStatusArray[x].eCurrentState == eDeleted ? "DEL" : "UNKN",
-                               pxTaskStatusArray[x].uxCurrentPriority,
-                               pxTaskStatusArray[x].usStackHighWaterMark,
-                               x < uxArraySize - 1 ? "," : "");
-            if (len > 0) {
-                DEBUG_uart_print_str(message_buffer);
-            }
+    for (x = 0; x < ux_array_size; x++) {
+        char message_buffer[256];
+        int len = snprintf(message_buffer, sizeof(message_buffer),
+                            "{\"TaskName\":\"%s\",\"State\":\"%s\",\"Priority\":%lu,\"Stack\":%u}%s",
+                            px_task_status_array[x].pcTaskName,
+                            freertos_current_state_enum_to_str(px_task_status_array[x].eCurrentState),
+                            px_task_status_array[x].uxCurrentPriority,
+                            px_task_status_array[x].usStackHighWaterMark,
+                            x < ux_array_size - 1 ? "," : "");
+        if (len > 0) {
+            DEBUG_uart_print_str(message_buffer);
         }
+    }
 
-        DEBUG_uart_print_str("]");
-        vPortFree(pxTaskStatusArray);
-        
-        } else {
-            DEBUG_uart_print_str("Failed to allocate memory for task status array.");
-            return 1;
-            }
-
+    DEBUG_uart_print_str("]");
+    vPortFree(px_task_status_array);
+    
     return 0;
 }

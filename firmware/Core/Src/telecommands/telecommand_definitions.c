@@ -253,8 +253,8 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
    // ****************** SECTION: freertos_telecommand_defs ******************
 
    {
-        .tcmd_name = "retrieve_freertos_metadata",
-        .tcmd_func = TCMDEXEC_retrieve_freertos_metadata,
+        .tcmd_name = "freertos_get_metadata",
+        .tcmd_func = TCMDEXEC_freertos_get_metadata,
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
