@@ -1,0 +1,13 @@
+<map id="TCMDEXEC_config_get_all_vars_jsonl" name="TCMDEXEC_config_get_all_vars_jsonl">
+<area shape="rect" id="Node000001" title="Get all configuration variables, as JSON. One variable per line." alt="" coords="5,67,164,107"/>
+<area shape="rect" id="Node000002" href="$configuration_8c.html#a15953fad2e540ddff7d798aa4778e49b" title="Converts an integer configuration variable to a JSON string." alt="" coords="212,17,380,42"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="161,64,230,45,232,50,162,69"/>
+<area shape="rect" id="Node000004" href="$configuration_8c.html#aab6d5d356fa5371e86ed499eb0fb1224" title="Converts a string configuration variable to a JSON string." alt="" coords="212,74,380,100"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="164,84,196,84,196,90,164,90"/>
+<area shape="rect" id="Node000006" href="$debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="221,124,371,149"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="165,103,224,117,222,122,164,108"/>
+<area shape="rect" id="Node000003" href="$configuration_8c.html#a4eda81199e5bb807b7aa1dbb8ace221d" title="Finds an int config variable in CONFIG_int_config_variables and returns its index." alt="" coords="428,5,572,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="380,25,413,25,413,30,380,31"/>
+<area shape="rect" id="Node000005" href="$configuration_8c.html#ac1cca0fbec71b1fd7954874daa0be8d8" title="Finds a string config variable in CONFIG_str_config_variables and returns its index." alt="" coords="428,71,572,111"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="380,86,412,87,412,92,380,91"/>
+</map>
