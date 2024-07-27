@@ -2,7 +2,6 @@
 #define __INCLUDE_GUARD__CONFIGURATION_H
 
 #include <stdint.h>
-#include <stdlib.h>
 
 typedef struct
 {

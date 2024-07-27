@@ -143,7 +143,7 @@ uint16_t CONFIG_int_var_to_json(const char *var_name, char *json_str, const uint
 /// @param var_name Name of the variable
 /// @param json_str Buffer to write the JSON string to
 /// @param json_str_max_len Max length of the buffer
-/// @return Length of the JSON string
+/// @return If successful, Length of the JSON string (>1), otherwise 1
 /// @note The JSON string is in the format: {"name":"var_name","value":"value"}\n
 uint16_t CONFIG_str_var_to_json(const char *var_name, char *json_str, const uint16_t json_str_max_len)
 {

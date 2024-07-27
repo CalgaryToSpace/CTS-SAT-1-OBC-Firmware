@@ -94,7 +94,7 @@ uint8_t TCMDEXEC_config_get_int_var_json(const char *args_str, TCMD_TelecommandC
                                                     char *response_output_buf, uint16_t response_output_buf_len)
 {
     const uint16_t res = CONFIG_int_var_to_json(args_str, response_output_buf, response_output_buf_len);
-    if (res != 0)
+    if (res == 1)
     {
         snprintf(response_output_buf, response_output_buf_len, "Could not find variable '%s'", args_str);
         return 1;
@@ -111,7 +111,7 @@ uint8_t TCMDEXEC_config_get_str_var_json(const char *args_str, TCMD_TelecommandC
 {
 
     const uint16_t res = CONFIG_str_var_to_json(args_str, response_output_buf, response_output_buf_len);
-    if (res != 0)
+    if (res == 1)
     {
         snprintf(response_output_buf, response_output_buf_len, "Could not find variable '%s'", args_str);
         return 1;
