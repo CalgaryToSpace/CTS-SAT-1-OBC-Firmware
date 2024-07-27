@@ -83,8 +83,8 @@ uint8_t TCMD_extract_uint64_arg(const char *str, uint32_t str_len, uint8_t arg_i
     return 0;
 }
 
-/// @brief Extracts the longest substring of integer characters, starting from the beginning of the
-///     string, to a maximum length or until the first non-integer character is found.
+/// @brief Extracts a substring of integer characters, starting from the beginning of the
+///     string, to a maximum length or until a comma or end-of-string is found.
 /// @param str Input string, starting with an integer
 /// @param str_len Max length of the input string
 /// @param result Pointer to the result
@@ -93,7 +93,7 @@ uint8_t TCMD_ascii_to_int64(const char *str, uint32_t str_len, int64_t *result) 
     if (str_len == 0) {
         return 1;
     }
-    uint64_t temp_result = 0;
+    int64_t temp_result = 0;
     uint32_t i = 0;
     for (; i < str_len; i++) {
         if (str[i] == '-' && i == 0) {
@@ -112,7 +112,7 @@ uint8_t TCMD_ascii_to_int64(const char *str, uint32_t str_len, int64_t *result) 
     if (i == 0) {
         return 2;
     }
-    else if ((str[i] < '0' || str[i] > '9') && str[i] != '\0') {
+    else if ((str[i] < '0' || str[i] > '9') && str[i] != '\0' && str[i] != ',') {
         // check to make sure the string doesn't end with garbage characters
         return 2;
     }

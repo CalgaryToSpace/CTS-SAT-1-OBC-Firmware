@@ -119,3 +119,37 @@ uint8_t TEST_EXEC__TCMD_ascii_to_int64() {
 
     return 0;
 }
+
+uint8_t TEST_EXEC__TCMD_extract_int64_arg() {
+    int64_t output_val;
+
+    // Nominal test
+    TEST_ASSERT_FALSE(TCMD_extract_int64_arg("2,-4,245", 8, 0, &output_val));
+    TEST_ASSERT_TRUE(output_val == 2);
+    TEST_ASSERT_FALSE(TCMD_extract_int64_arg("2,-4,245", 8, 1, &output_val));
+    TEST_ASSERT_TRUE(output_val == -4);
+    TEST_ASSERT_FALSE(TCMD_extract_int64_arg("2,-4,245", 8, 2, &output_val));
+    TEST_ASSERT_TRUE(output_val == 245);
+
+    // Non-int characters
+    TEST_ASSERT_FALSE(TCMD_extract_int64_arg("2,-4,24a5", 9, 0, &output_val));
+    TEST_ASSERT_TRUE(output_val == 2);
+    TEST_ASSERT_FALSE(TCMD_extract_int64_arg("2,-4,24a5", 9, 1, &output_val));
+    TEST_ASSERT_TRUE(output_val == -4);
+    TEST_ASSERT_TRUE(TCMD_extract_int64_arg("2,-4,24a5", 9, 2, &output_val)); // should error here
+
+    // More errors
+    TEST_ASSERT_TRUE(TCMD_extract_int64_arg("2,-4,24.5", 9, 2, &output_val));
+    TEST_ASSERT_TRUE(TCMD_extract_int64_arg("2,-4,--245", 9, 2, &output_val));
+    TEST_ASSERT_TRUE(TCMD_extract_int64_arg("2,-4,24/5", 9, 2, &output_val));
+    TEST_ASSERT_TRUE(TCMD_extract_int64_arg("2,-4a,245", 9, 1, &output_val));
+
+    // Wrong length
+    TEST_ASSERT_TRUE(TCMD_extract_int64_arg("2,-4,245", 4, 2, &output_val));
+
+    // Whitespace
+    TEST_ASSERT_TRUE(TCMD_extract_int64_arg(" , , ", 5, 2, &output_val));
+    TEST_ASSERT_TRUE(TCMD_extract_int64_arg("", 0, 0, &output_val));
+
+    return 0;
+}

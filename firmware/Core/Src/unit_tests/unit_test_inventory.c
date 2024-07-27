@@ -115,6 +115,11 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_file = "telecommands/telecommand_args_helpers",
         .test_func_name = "TCMD_ascii_to_int64"
     },
+    {
+        .test_func = TEST_EXEC__TCMD_extract_int64_arg,
+        .test_file = "telecommands/telecommand_args_helpers",
+        .test_func_name = "TCMD_extract_int64_arg"
+    },
 };
 
 // extern
