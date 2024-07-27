@@ -99,8 +99,13 @@ uint8_t TCMD_ascii_to_int64(const char *str, uint32_t str_len, int64_t *result) 
         if (str[i] == '-' && i == 0) {
             continue;
         }
-        else if (str[i] < '0' || str[i] > '9') {
+        else if ((str[i] == '\0' || str[i] == ',')) {
+            // move to finishing the computation
             break;
+        }
+        else if (str[i] < '0' || str[i] > '9') {
+            // check to make sure the string doesn't contain garbage characters
+            return 2;
         }
         temp_result = temp_result * 10 + (str[i] - '0');
     }
@@ -110,10 +115,6 @@ uint8_t TCMD_ascii_to_int64(const char *str, uint32_t str_len, int64_t *result) 
     }
 
     if (i == 0) {
-        return 2;
-    }
-    else if ((str[i] < '0' || str[i] > '9') && str[i] != '\0' && str[i] != ',') {
-        // check to make sure the string doesn't end with garbage characters
         return 2;
     }
 

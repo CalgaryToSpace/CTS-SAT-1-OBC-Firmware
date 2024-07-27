@@ -131,6 +131,9 @@ uint8_t TEST_EXEC__TCMD_extract_int64_arg() {
     TEST_ASSERT_FALSE(TCMD_extract_int64_arg("2,-4,245", 8, 2, &output_val));
     TEST_ASSERT_TRUE(output_val == 245);
 
+    // Go past the end
+    TEST_ASSERT_TRUE(TCMD_extract_int64_arg("2,-4,245", 8, 3, &output_val));
+
     // Non-int characters
     TEST_ASSERT_FALSE(TCMD_extract_int64_arg("2,-4,24a5", 9, 0, &output_val));
     TEST_ASSERT_TRUE(output_val == 2);
