@@ -176,9 +176,9 @@ const TEST_Definition_t TEST_definitions[] = {
     },
 
     {
-    .test_func = TEST_EXEC__ADCS_Pack_to_Estimated_Attitude_Angles,
-    .test_file = "unit_tests/test_adcs",
-    .test_func_name = "ADCS_Pack_to_Estimated_Attitude_Angles"
+        .test_func = TEST_EXEC__ADCS_Pack_to_Estimated_Attitude_Angles,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Estimated_Attitude_Angles"
     },
     
     {
@@ -239,8 +239,49 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func = TEST_EXEC__ADCS_Pack_to_Raw_Cam2_Sensor,
         .test_file = "unit_tests/test_adcs",
         .test_func_name = "ADCS_Pack_to_Raw_Cam2_Sensor"
-    }
+    },
 
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_Raw_CSS_1_to_6,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Raw_CSS_1_to_6"
+    },
+
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_Raw_CSS_7_to_10,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Raw_CSS_7_to_10"
+    },
+
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_CubeControl_Current,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_CubeControl_Current"
+    },
+
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_Raw_GPS_Status,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Raw_GPS_Status"
+    },
+
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_Raw_GPS_Time,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Raw_GPS_Time"
+    },
+
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_Raw_GPS,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Raw_GPS"
+    },
+
+    {
+        .test_func = TEST_EXEC__ADCS_Pack_to_Measurements,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_Pack_to_Measurements"
+    },
 
 };
 

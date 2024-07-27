@@ -35,6 +35,13 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Estimated_Gyro_Bias();
 uint8_t TEST_EXEC__ADCS_Pack_to_Estimation_Innovation_Vector();
 uint8_t TEST_EXEC__ADCS_Pack_to_Raw_Cam1_Sensor();
 uint8_t TEST_EXEC__ADCS_Pack_to_Raw_Cam2_Sensor();
+uint8_t TEST_EXEC__ADCS_Pack_to_Raw_CSS_1_to_6();
+uint8_t TEST_EXEC__ADCS_Pack_to_Raw_CSS_7_to_10();
+uint8_t TEST_EXEC__ADCS_Pack_to_CubeControl_Current();
+uint8_t TEST_EXEC__ADCS_Pack_to_Raw_GPS_Status();
+uint8_t TEST_EXEC__ADCS_Pack_to_Raw_GPS_Time();
+uint8_t TEST_EXEC__ADCS_Pack_to_Raw_GPS();
+uint8_t TEST_EXEC__ADCS_Pack_to_Measurements();
 
 #endif // __INCLUDE_GUARD__ADCS_TEST_PROTOTYPES_H__
 
