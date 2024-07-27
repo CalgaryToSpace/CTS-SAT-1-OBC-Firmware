@@ -1461,10 +1461,10 @@ uint8_t ADCS_CubeControl_Current() {
 /// @param[out] result Structure containing the formated data for this command.
 /// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_CubeControl_Current(uint8_t* data_received, ADCS_CubeControl_Current_Struct* result) {
-    // everything in mA
-	result->cubecontrol_3v3_current = (data_received[1] << 8 | data_received[0]);
-    result->cubecontrol_5v_current = (data_received[3] << 8 | data_received[2]);
-    result->cubecontrol_vbat_current = (data_received[5] << 8 | data_received[4]);
+    // everything in mA after multiplying RAWVAL*0.48828125 (aka dividing by 2.048 exactly)
+	result->cubecontrol_3v3_current = ((double) ((uint16_t) (data_received[1] << 8 | data_received[0]))) / 2.048;
+    result->cubecontrol_5v_current = ((double) ((uint16_t) (data_received[3] << 8 | data_received[2]))) / 2.048;
+    result->cubecontrol_vbat_current = ((double) ((uint16_t) (data_received[5] << 8 | data_received[4]))) / 2.048;
 
     return 0;
 }

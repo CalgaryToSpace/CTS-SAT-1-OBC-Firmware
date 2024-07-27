@@ -457,9 +457,9 @@ typedef struct ADCS_Raw_CSS_7_to_10_Struct {
 } ADCS_Raw_CSS_7_to_10_Struct;
 
 typedef struct ADCS_CubeControl_Current_Struct {
-    uint16_t cubecontrol_3v3_current;
-    uint16_t cubecontrol_5v_current;
-    uint16_t cubecontrol_vbat_current;
+    double cubecontrol_3v3_current;
+    double cubecontrol_5v_current;
+    double cubecontrol_vbat_current;
 } ADCS_CubeControl_Current_Struct;
 
 typedef struct ADCS_Raw_GPS_Status_Struct {

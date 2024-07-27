@@ -528,13 +528,14 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Raw_CSS_7_to_10() {
 
 uint8_t TEST_EXEC__ADCS_Pack_to_CubeControl_Current() {
     // FIXME: this test fails. Find out why
-    // it's probably an integer thing when it should be a double
     uint8_t input_params[6] = {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc};
+
     ADCS_CubeControl_Current_Struct result;
     ADCS_Pack_to_CubeControl_Current(input_params, &result);
+
     TEST_ASSERT_TRUE(compare_doubles(result.cubecontrol_3v3_current, 6508.7890625, ADCS_TEST_EPSILON / 100.0));
     TEST_ASSERT_TRUE(compare_doubles(result.cubecontrol_5v_current, 15041.9921875, ADCS_TEST_EPSILON / 100.0));
-    TEST_ASSERT_TRUE(compare_doubles(result.cubecontrol_vbat_current, -23575.1953125, ADCS_TEST_EPSILON / 100.0));
+    TEST_ASSERT_TRUE(compare_doubles(result.cubecontrol_vbat_current, 23575.1953125, ADCS_TEST_EPSILON / 100.0));
     return 0;
 }
 
@@ -578,10 +579,56 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Raw_GPS() {
 }
 
 uint8_t TEST_EXEC__ADCS_Pack_to_Measurements() {
-    return 245;
-    uint8_t input_params[6] = {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc};
+    
+    uint8_t input_params[72] = {0xd2, 0x1c, 0xa3, 0xc5, 0x3e, 0x93, 0x49, 0xf8, 
+                                0x65, 0xef, 0x1f, 0xd3, 0xd1, 0xdb, 0xce, 0x16, 
+                                0x27, 0xc5, 0xb1, 0xe5, 0xd3, 0x19, 0x70, 0xd9, 
+                                0x87, 0x6f, 0xa1, 0x09, 0xf0, 0xb7, 0x99, 0xcc, 
+                                0xb9, 0x5f, 0x6b, 0xe1, 0xd3, 0x05, 0xc9, 0x19, 
+                                0x9c, 0xd7, 0x02, 0x2a, 0x54, 0xc2, 0x4f, 0xca, 
+                                0x7d, 0xa2, 0x0d, 0x03, 0x48, 0x98, 0xe6, 0xb7, 
+                                0xac, 0x8d, 0x3d, 0x63, 0x0b, 0x2c, 0x84, 0x7f, 
+                                0x32, 0x15, 0x47, 0x9e, 0x3c, 0x4a, 0xd3, 0x1c};
+    
     ADCS_Measurements_Struct result;
     ADCS_Pack_to_Measurements(input_params, &result);
-    // TODO: One left!
+
+    TEST_ASSERT_TRUE(compare_doubles(result.magnetic_field_x, 73.78, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.magnetic_field_y, -149.41, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.magnetic_field_z, -278.42, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.coarse_sun_x, -0.1975, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.coarse_sun_y, -0.4251, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.coarse_sun_z, -1.1489, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.sun_x, -0.9263, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.sun_y, 0.5838, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.sun_z, -1.5065, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.nadir_x, -0.6735, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.nadir_y, 0.6611, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.nadir_z, -0.9872, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.x_angular_rate, 285.51, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.y_angular_rate, 24.65, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.z_angular_rate, -184.48, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.x_wheel_speed, -13159, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.y_wheel_speed, 24505, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.z_wheel_speed, -7829, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.star1_body_x, 0.1491, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.star1_body_y, 0.6601, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.star1_body_z, -1.034, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.star1_orbit_x, 1.0754, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.star1_orbit_y, -1.5788, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.star1_orbit_z, -1.3745, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.star2_body_x, -2.3939, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.star2_body_y, 0.0781, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.star2_body_z, -2.6552, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.star2_orbit_x, -1.8458, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.star2_orbit_y, -2.9268, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.star2_orbit_z, 2.5405, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.star3_body_x, 1.1275, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.star3_body_y, 3.2644, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.star3_body_z, 0.5426, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.star3_orbit_x, -2.5017, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.star3_orbit_y, 1.9004, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(compare_doubles(result.star3_orbit_z, 0.7379, ADCS_TEST_EPSILON));
+
     return 0;
 }
