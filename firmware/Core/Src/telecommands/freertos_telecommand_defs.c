@@ -39,7 +39,7 @@ uint8_t TCMDEXEC_freertos_get_metadata(const char *args_str, TCMD_TelecommandCha
                         char *response_output_buf, uint16_t response_output_buf_len) {
                             
     TaskStatus_t *px_task_status_array;
-    UBaseType_t ux_array_size, x;
+    UBaseType_t ux_array_size;
     unsigned long ul_total_run_time;
 
     ux_array_size = uxTaskGetNumberOfTasks();
@@ -53,10 +53,10 @@ uint8_t TCMDEXEC_freertos_get_metadata(const char *args_str, TCMD_TelecommandCha
     ux_array_size = uxTaskGetSystemState(px_task_status_array, ux_array_size, &ul_total_run_time);
     DEBUG_uart_print_str("[");
 
-    for (x = 0; x < ux_array_size; x++) {
+    for (UBaseType_t x = 0; x < ux_array_size; x++) {
         char message_buffer[256];
         int len = snprintf(message_buffer, sizeof(message_buffer),
-                            "{\"TaskName\":\"%s\",\"State\":\"%s\",\"Priority\":%lu,\"Stack\":%u}%s",
+                            "{\"task_name\":\"%s\",\"state\":\"%s\",\"priority\":%lu,\"stack\":%u}%s",
                             px_task_status_array[x].pcTaskName,
                             freertos_current_state_enum_to_str(px_task_status_array[x].eCurrentState),
                             px_task_status_array[x].uxCurrentPriority,
