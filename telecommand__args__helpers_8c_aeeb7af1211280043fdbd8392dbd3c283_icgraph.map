@@ -1,5 +1,5 @@
 <map id="TCMD_ascii_to_uint64" name="TCMD_ascii_to_uint64">
-<area shape="rect" id="Node000001" title="Extracts the longest substring of integer characters, starting from the beginning of the string,..." alt="" coords="847,718,999,744"/>
+<area shape="rect" id="Node000001" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="847,718,999,744"/>
 <area shape="rect" id="Node000002" href="$telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="627,465,799,490"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="899,708,723,492,727,489,904,705"/>
 <area shape="rect" id="Node000018" href="$telecommand__parser_8c.html#a9ea4d9d994573e6ede05facd0bad0ee3" title="Searches for a str like \@tag_name=xxxx, and sets uint64_t xxxx into out_value." alt="" coords="641,927,785,967"/>

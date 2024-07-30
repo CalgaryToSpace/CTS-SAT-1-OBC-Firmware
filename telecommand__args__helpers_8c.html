@@ -128,11 +128,17 @@ Include dependency graph for telecommand_args_helpers.c:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:aeeb7af1211280043fdbd8392dbd3c283" id="r_aeeb7af1211280043fdbd8392dbd3c283"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeeb7af1211280043fdbd8392dbd3c283">TCMD_ascii_to_uint64</a> (const char *str, uint32_t str_len, uint64_t *result)</td></tr>
-<tr class="memdesc:aeeb7af1211280043fdbd8392dbd3c283"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts the longest substring of integer characters, starting from the beginning of the string, to a maximum length or until the first non-integer character is found.  <br /></td></tr>
+<tr class="memdesc:aeeb7af1211280043fdbd8392dbd3c283"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts a uint64, starting from the beginning of <code>str</code>, to a maximum length of <code>str_len</code>.  <br /></td></tr>
 <tr class="separator:aeeb7af1211280043fdbd8392dbd3c283"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa11f06d167f7dbbd4360df4d179d0791" id="r_aa11f06d167f7dbbd4360df4d179d0791"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa11f06d167f7dbbd4360df4d179d0791">TCMD_extract_uint64_arg</a> (const char *str, uint32_t str_len, uint8_t arg_index, uint64_t *result)</td></tr>
 <tr class="memdesc:aa11f06d167f7dbbd4360df4d179d0791"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts the nth comma-separated argument from the input string, assuming it's a uint64.  <br /></td></tr>
 <tr class="separator:aa11f06d167f7dbbd4360df4d179d0791"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04f6462dfde5f2da552384fd1f80eded" id="r_a04f6462dfde5f2da552384fd1f80eded"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a04f6462dfde5f2da552384fd1f80eded">TCMD_ascii_to_int64</a> (const char *str, uint32_t str_len, int64_t *result)</td></tr>
+<tr class="memdesc:a04f6462dfde5f2da552384fd1f80eded"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts an int64, starting from the beginning of <code>str</code>, to a maximum length of <code>str_len</code>.  <br /></td></tr>
+<tr class="separator:a04f6462dfde5f2da552384fd1f80eded"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a346c46ceb946b28be37b1739855bd4d6" id="r_a346c46ceb946b28be37b1739855bd4d6"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a346c46ceb946b28be37b1739855bd4d6">TCMD_extract_int64_arg</a> (const char *str, uint32_t str_len, uint8_t arg_index, int64_t *result)</td></tr>
+<tr class="memdesc:a346c46ceb946b28be37b1739855bd4d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts the nth comma-separated argument from the input string, assuming it's an int64.  <br /></td></tr>
+<tr class="separator:a346c46ceb946b28be37b1739855bd4d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0fa1c206f35d62f732c8ca95067fb36c" id="r_a0fa1c206f35d62f732c8ca95067fb36c"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0fa1c206f35d62f732c8ca95067fb36c">TCMD_extract_string_arg</a> (const char *str, uint8_t arg_index, char *result, uint16_t result_max_len)</td></tr>
 <tr class="memdesc:a0fa1c206f35d62f732c8ca95067fb36c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts the nth comma-separated argument from the input string, assuming it's a string.  <br /></td></tr>
 <tr class="separator:a0fa1c206f35d62f732c8ca95067fb36c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -196,6 +202,57 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
+<a id="a04f6462dfde5f2da552384fd1f80eded" name="a04f6462dfde5f2da552384fd1f80eded"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04f6462dfde5f2da552384fd1f80eded">&#9670;&#160;</a></span>TCMD_ascii_to_int64()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t TCMD_ascii_to_int64 </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>str</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t</td>          <td class="paramname"><span class="paramname"><em>str_len</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t *</td>          <td class="paramname"><span class="paramname"><em>result</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Extracts an int64, starting from the beginning of <code>str</code>, to a maximum length of <code>str_len</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">str</td><td>Input string, starting with an integer or negative sign. </td></tr>
+    <tr><td class="paramname">str_len</td><td>Length of the input string. The first <code>str_len</code> characters are considered. </td></tr>
+    <tr><td class="paramname">result</td><td>Pointer to the result </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 if successful, 1 if the string is empty, 2 if the string does not entirely encapsulate an integer </dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="telecommand__args__helpers_8c_a04f6462dfde5f2da552384fd1f80eded_icgraph.png" border="0" usemap="#atelecommand__args__helpers_8c_a04f6462dfde5f2da552384fd1f80eded_icgraph" alt=""/></div>
+<map name="atelecommand__args__helpers_8c_a04f6462dfde5f2da552384fd1f80eded_icgraph" id="atelecommand__args__helpers_8c_a04f6462dfde5f2da552384fd1f80eded_icgraph">
+<area shape="rect" title="Extracts an int64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="474,42,619,68"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#a346c46ceb946b28be37b1739855bd4d6" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s an int64." alt="" coords="254,13,418,38"/>
+<area shape="poly" title=" " alt="" coords="458,45,418,40,419,34,459,40"/>
+<area shape="rect" href="test__telecommand__arg__helpers_8c.html#acdd1532577f846dbaa45bfbc955e8996" title=" " alt="" coords="246,63,426,103"/>
+<area shape="poly" title=" " alt="" coords="459,69,427,74,426,68,458,64"/>
+<area shape="rect" href="test__telecommand__arg__helpers_8c.html#aaf7e716978e5ce3608a4cce774d135c0" title=" " alt="" coords="5,5,198,46"/>
+<area shape="poly" title=" " alt="" coords="238,28,198,28,198,23,238,23"/>
+</map>
+</div>
+
+</div>
+</div>
 <a id="aeeb7af1211280043fdbd8392dbd3c283" name="aeeb7af1211280043fdbd8392dbd3c283"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aeeb7af1211280043fdbd8392dbd3c283">&#9670;&#160;</a></span>TCMD_ascii_to_uint64()</h2>
 
@@ -220,11 +277,11 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Extracts the longest substring of integer characters, starting from the beginning of the string, to a maximum length or until the first non-integer character is found. </p>
+<p>Extracts a uint64, starting from the beginning of <code>str</code>, to a maximum length of <code>str_len</code>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">str</td><td>Input string, starting with an integer </td></tr>
-    <tr><td class="paramname">str_len</td><td>Max length of the input string </td></tr>
+    <tr><td class="paramname">str_len</td><td>Length of the input string. The first <code>str_len</code> characters are considered. </td></tr>
     <tr><td class="paramname">result</td><td>Pointer to the result </td></tr>
   </table>
   </dd>
@@ -235,7 +292,7 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="telecommand__args__helpers_8c_aeeb7af1211280043fdbd8392dbd3c283_icgraph.png" border="0" usemap="#atelecommand__args__helpers_8c_aeeb7af1211280043fdbd8392dbd3c283_icgraph" alt=""/></div>
 <map name="atelecommand__args__helpers_8c_aeeb7af1211280043fdbd8392dbd3c283_icgraph" id="atelecommand__args__helpers_8c_aeeb7af1211280043fdbd8392dbd3c283_icgraph">
-<area shape="rect" title="Extracts the longest substring of integer characters, starting from the beginning of the string,..." alt="" coords="847,718,999,744"/>
+<area shape="rect" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="847,718,999,744"/>
 <area shape="rect" href="telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="627,465,799,490"/>
 <area shape="poly" title=" " alt="" coords="899,708,723,492,727,489,904,705"/>
 <area shape="rect" href="telecommand__parser_8c.html#a9ea4d9d994573e6ede05facd0bad0ee3" title="Searches for a str like \@tag_name=xxxx, and sets uint64_t xxxx into out_value." alt="" coords="641,927,785,967"/>
@@ -398,6 +455,69 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
+<a id="a346c46ceb946b28be37b1739855bd4d6" name="a346c46ceb946b28be37b1739855bd4d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a346c46ceb946b28be37b1739855bd4d6">&#9670;&#160;</a></span>TCMD_extract_int64_arg()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t TCMD_extract_int64_arg </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>str</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t</td>          <td class="paramname"><span class="paramname"><em>str_len</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>arg_index</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t *</td>          <td class="paramname"><span class="paramname"><em>result</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Extracts the nth comma-separated argument from the input string, assuming it's an int64. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">str</td><td>Input string </td></tr>
+    <tr><td class="paramname">str_len</td><td>Length of the input string </td></tr>
+    <tr><td class="paramname">arg_index</td><td>Index of the argument to extract (0-based) </td></tr>
+    <tr><td class="paramname">result</td><td>Pointer to the result </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 if successful, 1 if the string is empty, 2 if the string does not contain enough arguments 3 if the argument is not an integer, 4 for other error </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="telecommand__args__helpers_8c_a346c46ceb946b28be37b1739855bd4d6_cgraph.png" border="0" usemap="#atelecommand__args__helpers_8c_a346c46ceb946b28be37b1739855bd4d6_cgraph" alt=""/></div>
+<map name="atelecommand__args__helpers_8c_a346c46ceb946b28be37b1739855bd4d6_cgraph" id="atelecommand__args__helpers_8c_a346c46ceb946b28be37b1739855bd4d6_cgraph">
+<area shape="rect" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s an int64." alt="" coords="5,5,170,31"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#a04f6462dfde5f2da552384fd1f80eded" title="Extracts an int64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="218,5,363,31"/>
+<area shape="poly" title=" " alt="" coords="170,16,202,16,202,21,170,21"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="telecommand__args__helpers_8c_a346c46ceb946b28be37b1739855bd4d6_icgraph.png" border="0" usemap="#atelecommand__args__helpers_8c_a346c46ceb946b28be37b1739855bd4d6_icgraph" alt=""/></div>
+<map name="atelecommand__args__helpers_8c_a346c46ceb946b28be37b1739855bd4d6_icgraph" id="atelecommand__args__helpers_8c_a346c46ceb946b28be37b1739855bd4d6_icgraph">
+<area shape="rect" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s an int64." alt="" coords="246,13,410,38"/>
+<area shape="rect" href="test__telecommand__arg__helpers_8c.html#aaf7e716978e5ce3608a4cce774d135c0" title=" " alt="" coords="5,5,198,46"/>
+<area shape="poly" title=" " alt="" coords="230,28,198,28,198,23,230,23"/>
+</map>
+</div>
+
+</div>
+</div>
 <a id="a0fa1c206f35d62f732c8ca95067fb36c" name="a0fa1c206f35d62f732c8ca95067fb36c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0fa1c206f35d62f732c8ca95067fb36c">&#9670;&#160;</a></span>TCMD_extract_string_arg()</h2>
 
@@ -505,7 +625,7 @@ Here is the call graph for this function:</div>
 <div class="center"><img src="telecommand__args__helpers_8c_aa11f06d167f7dbbd4360df4d179d0791_cgraph.png" border="0" usemap="#atelecommand__args__helpers_8c_aa11f06d167f7dbbd4360df4d179d0791_cgraph" alt=""/></div>
 <map name="atelecommand__args__helpers_8c_aa11f06d167f7dbbd4360df4d179d0791_cgraph" id="atelecommand__args__helpers_8c_aa11f06d167f7dbbd4360df4d179d0791_cgraph">
 <area shape="rect" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="5,5,177,31"/>
-<area shape="rect" href="telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts the longest substring of integer characters, starting from the beginning of the string,..." alt="" coords="225,5,377,31"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="225,5,377,31"/>
 <area shape="poly" title=" " alt="" coords="177,16,209,16,209,21,177,21"/>
 </map>
 </div>
