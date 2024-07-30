@@ -7,6 +7,7 @@
 #include "debug_tools/debug_uart.h"
 
 // Additional telecommand definitions files:
+#include "telecommands/freertos_telecommand_defs.h"
 #include "telecommands/flash_telecommand_defs.h"
 #include "telecommands/lfs_telecommand_defs.h"
 #include "telecommands/log_telecommand_defs.h"
@@ -282,6 +283,17 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     },
 
    // ****************** END SECTION: log_telecommand_defs ******************
+
+   // ****************** SECTION: freertos_telecommand_defs ******************
+
+   {
+        .tcmd_name = "freetos_list_tasks_jsonl",
+        .tcmd_func = TCMDEXEC_freetos_list_tasks_jsonl,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+
+    // ****************** END SECTION: freertos_telecommand_defs ******************
 
 };
 
