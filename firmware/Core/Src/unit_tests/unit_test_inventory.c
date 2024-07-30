@@ -3,9 +3,13 @@
 
 #include "unit_tests/test_assorted_prototypes.h"
 #include "unit_tests/test_byte_transforms.h"
+#include "unit_tests/test_logging.h"
 #include "unit_tests/test_telecommand_parser.h"
 #include "unit_tests/test_tests.h"
 #include "unit_tests/test_adcs.h"
+#include "unit_tests/test_telecommand_arg_helpers.h"
+#include "unit_tests/unit_test_helpers.h"
+#include "unit_tests/test_configuration_variables.h"
 
 
 // extern
@@ -283,6 +287,81 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func_name = "ADCS_Pack_to_Measurements"
     },
 
+    {
+        .test_func = TEST_EXEC__TCMD_get_suffix_tag_uint64,
+        .test_file = "telecommands/telecommand_parser",
+        .test_func_name = "TCMD_get_suffix_tag_uint64"
+    },
+    {
+        .test_func = TEST_EXEC__TCMD_extract_hex_array_arg,
+        .test_file = "telecommands/telecommand_args_helpers",
+        .test_func_name = "TCMD_extract_hex_array_arg"
+    },
+    {
+        .test_func = TEST_EXEC__TCMD_ascii_to_double,
+        .test_file = "telecommands/telecommand_args_helpers",
+        .test_func_name = "TCMD_ascii_to_double"
+    },
+    {
+        .test_func = TEST_EXEC__LOG_enable_disable_LOG_SINK_FILE,
+        .test_file = "log/log",
+        .test_func_name = "TEST_EXEC__LOG_enable_disable_LOG_SINK_FILE"
+    },
+    {
+        .test_func = TEST_EXEC__LOG_enable_disable_LOG_SINK_UHF_RADIO,
+        .test_file = "log/log",
+        .test_func_name = "TEST_EXEC__LOG_enable_disable_LOG_SINK_UHF_RADIO"
+    },
+    {
+        .test_func = TEST_EXEC__LOG_enable_disable_LOG_SINK_UMBILICAL_UART,
+        .test_file = "log/log",
+        .test_func_name = "TEST_EXEC__LOG_enable_disable_LOG_SINK_UMBILICAL_UART"
+    },
+    {
+        .test_func = TEST_EXEC__LOG_enable_disable_LOG_FILE_LOGGING_FOR_SYSTEM_MPI,
+        .test_file = "log/log",
+        .test_func_name = "TEST_EXEC__LOG_enable_disable_LOG_FILE_LOGGING_FOR_SYSTEM_MPI"
+    },
+    {
+        .test_func = TEST_EXEC__LOG_all_sinks_except,
+        .test_file = "log/log",
+        .test_func_name = "TEST_EXEC__LOG_all_sinks_except"
+    },
+    {
+        .test_func = TEST_EXEC__setup_configuration_variables,
+        .test_file = "configuration/configuration_variables",
+        .test_func_name = "TEST_EXEC__setup_configuration_variables"
+    },
+    {
+        .test_func = TEST_EXEC__get_int_var_index,
+        .test_file = "configuration/configuration_variables",
+        .test_func_name = "TEST_EXEC__get_int_var_index"
+    },
+    {
+        .test_func = TEST_EXEC__get_str_var_index,
+        .test_file = "configuration/configuration_variables",
+        .test_func_name = "TEST_EXEC__get_str_var_index"
+    },
+    {
+        .test_func = TEST_EXEC__set_int_variable,
+        .test_file = "configuration/configuration_variables",
+        .test_func_name = "TEST_EXEC__set_int_variable"
+    },
+    {
+        .test_func = TEST_EXEC__set_str_variable,
+        .test_file = "configuration/configuration_variables",
+        .test_func_name = "TEST_EXEC__set_str_variable"
+    },
+    {
+        .test_func = TEST_EXEC__TCMD_ascii_to_int64,
+        .test_file = "telecommands/telecommand_args_helpers",
+        .test_func_name = "TCMD_ascii_to_int64"
+    },
+    {
+        .test_func = TEST_EXEC__TCMD_extract_int64_arg,
+        .test_file = "telecommands/telecommand_args_helpers",
+        .test_func_name = "TCMD_extract_int64_arg"
+    },
 };
 
 // extern

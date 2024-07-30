@@ -14,7 +14,7 @@ following uppercase identifiers to indicate which subsystem/region of code it be
 * `DEBUG_UART_`: related to debugging via UART, and debugging UART communications
 * `DEBUG_I2C_`: related to I2C
 * `LFS_`: related to LittleFS, the satellite's filesystem
-	* Note that functions implemented in the LittleFS library will be prefixed with `lfs_` (lowercase).
+	* Note that functions implemented in the LittleFS library are prefixed with `lfs_` (lowercase).
 	* The uppercase `LFS_` prefix indicates that the function is implemented by the CTS team.
 * `UART_`: related to low-level UART drivers, written by the CTS team
 * `TEST_`: unit testing and integration testing infrastructure
@@ -25,19 +25,26 @@ following uppercase identifiers to indicate which subsystem/region of code it be
 ## Satellite Subsystems
 
 * `ADCS_`: duh
-* `EPS_`: duh
+* `EPS_`: related to the Electrical Power System
+* `EPS_CMD_`: functions which trigger a command to the EPS subsystem
 * `GPS_`: duh
 * `COMMS_ANT_`: related to the I2C communications for the deployable communications antenna
 * `AX100_`: related to the AX100 communication module, at a low level
 * `COMMS_`: related to higher-level functions for command and data handling, which calls into the `AX100_` prefix
 	* Note: we may want to discard either `COMMS_` or `AX100_` as we begin implementation
-* `BOOM_`: related to the burn wire driver for the boom subsystem
+* `BOOM_`: related to the burn wire driver for the deployable composite latice boom (DCLB) subsystem
 * `CAM_`: related to the UART camera
 * `LORA_`: related to the UART LoRaWAN communications systems, if integrated
 * `ENVIRO_`: related to monitoring the environment (e.g., the on-OBC temperature sensor)
 * `FLASH_`: drive functions for the SPI flash system, which the `lfs_` implementation can call into
 	* This may be removed.
 
+## Other Conventions
+
+* `_CFG_`: Variables can contain `_CFG_` to indicate that they are configuration variables of 
+another subsystem/namespace. For example, `EPS_CFG_` denotes an EPS subsystem configuration variable.
+* `_CMD_`: Functions can contain `_CMD_` to indicate that they trigger a command to that subsystem.
+For example, `EPS_CMD_` denotes a function which triggers a command to the EPS subsystem (and gets the EPS's response).
 
 ## Libraries, External, etc.
 

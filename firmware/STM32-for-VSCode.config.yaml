@@ -37,12 +37,18 @@ cFlags:
   - -Wall
   - -fdata-sections
   - -ffunction-sections
+  - -Wextra # CTS: Enable extra warnings for safety
+  - -Wpedantic # CTS: Enable pedantic warnings for even more safety
+  - -Wmissing-field-initializers # CTS: Warn if a struct is not fully initialized [broken?]
+  - -Wno-unused-parameter # CTS: Ignore (allow) unused parametersa
+  # - -Werror # CTS: Optional: Treat warnings as errors
 
 cxxFlags: []
 assemblyFlags: 
   - -Wall
   - -fdata-sections
   - -ffunction-sections
+  - -Wextra # CTS: Enable extra warnings for safety
 
 linkerFlags: 
   - -Wl,--print-memory-usage
@@ -106,4 +112,3 @@ customMakefileRules:
 makeFlags:
 # - -O  # use this option when the output of make is mixed up only works for make version 4.0 and upwards
 # - --silent # use this option to silence the output of the build
-    

@@ -12,6 +12,10 @@ uint8_t TCMDEXEC_get_system_time(const char *args_str, TCMD_TelecommandChannel_e
     return 0;
 }
 
+/// @brief Set the system time to the provided Unix epoch time in milliseconds
+/// @param args_str
+/// - Arg 0: Unix epoch time in milliseconds (uint64_t)
+/// @return 0 if successful, 1 if error
 uint8_t TCMDEXEC_set_system_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
   

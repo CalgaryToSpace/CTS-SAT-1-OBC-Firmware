@@ -9,7 +9,7 @@ def format_byte_as_hex(b: int) -> str:
     return f"[0x{hex(b)[2:].upper().zfill(2)}]"
 
 
-def bytes_to_nice_str(byte_obj: bytes) -> str:
+def bytes_to_nice_str(byte_obj: bytes, *, show_end_of_line_chars: bool) -> str:
     """Convert a 'bytes' object to hex and ASCII/UTF-8, whichever is better for each character.
 
     Example print: [0xDA][0xBE]INFO: boot complete[0xDA][0xED]
@@ -20,9 +20,12 @@ def bytes_to_nice_str(byte_obj: bytes) -> str:
         # 'b' is an int.
 
         if b == 0x0A:  # noqa: PLR2004 (magic number 0x0A=newline)
-            out += "↴\n"  # ↴ (DOWNWARDS ARROW WITH CORNER LEFTWARDS) - Unicode: U+21B4
+            if show_end_of_line_chars:
+                out += "↴"  # ↴ (DOWNWARDS ARROW WITH CORNER LEFTWARDS) - Unicode: U+21B4
+            out += "\n"
         elif b == 0x0D:  # noqa: PLR2004 (magic number 0x0D=carriage return)
-            out += "↵"  # ↵ (DOWNWARDS ARROW WITH CORNER LEFTWARDS) - Unicode: U+21B5
+            if show_end_of_line_chars:
+                out += "↵"  # ↵ (DOWNWARDS ARROW WITH CORNER LEFTWARDS) - Unicode: U+21B5
         elif 0x20 <= b <= 0x7E:  # noqa: PLR2004
             out += bytes([b]).decode("ascii")
         else:
