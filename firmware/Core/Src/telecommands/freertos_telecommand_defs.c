@@ -17,6 +17,21 @@
 #include <task.h>
 #include <portmacro.h>
 
+/// @brief Converts a FreeRTOS TaskState enum to a string representation.
+/// @param state Input TaskState enum
+/// @return A pointer to a C-string representing the input TaskState enum (statically-allocated).
+const char* freertos_eTaskState_to_str(eTaskState state) {
+    switch (state) {
+        case eRunning:    return "eRunning";
+        case eReady:      return "eReady";
+        case eBlocked:    return "eBlocked";
+        case eSuspended:  return "eSuspended";
+        case eDeleted:    return "eDeleted";
+        case eInvalid:    return "eInvalid";
+        default:          return "Other";
+    }
+}
+
 
 /// @brief Telecommand that return metadata regarding Tasks from FreeRTOS
 /// @param args_str No arguments expected
@@ -24,51 +39,38 @@
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0 if successful, >0 if an error occurred (but hello_world can't return an error)
-const char* freertos_current_state_enum_to_str(eTaskState state) {
-    switch (state) {
-        case eRunning:    return "RUN";
-        case eReady:      return "RDY";
-        case eBlocked:    return "BLK";
-        case eSuspended:  return "SUSP";
-        case eDeleted:    return "DEL";
-        default:          return "UNKN";
-    }
-}
-
-uint8_t TCMDEXEC_freertos_get_metadata(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_freetos_list_tasks_jsonl(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-                            
-    TaskStatus_t *px_task_status_array;
-    UBaseType_t ux_array_size;
-    unsigned long ul_total_run_time;
+    const UBaseType_t number_of_tasks = uxTaskGetNumberOfTasks();
+    uint32_t total_run_time;
+    TaskStatus_t task_statuses[number_of_tasks];
 
-    ux_array_size = uxTaskGetNumberOfTasks();
-    px_task_status_array = pvPortMalloc(ux_array_size * sizeof(TaskStatus_t));
-
-    if (px_task_status_array == NULL) {
-        DEBUG_uart_print_str("Failed to allocate memory for task status array.");
+    if (uxTaskGetSystemState(task_statuses, number_of_tasks, &total_run_time) == 0) {
+        DEBUG_uart_print_str("Error: TCMDEXEC_freetos_list_tasks_jsonl: uxTaskGetSystemState failed.\n");
         return 1;
     }
 
-    ux_array_size = uxTaskGetSystemState(px_task_status_array, ux_array_size, &ul_total_run_time);
-    DEBUG_uart_print_str("[");
-
-    for (UBaseType_t x = 0; x < ux_array_size; x++) {
+    for (UBaseType_t x = 0; x < number_of_tasks; x++) {
+        // Get the task state for the x-th task
         char message_buffer[256];
-        int len = snprintf(message_buffer, sizeof(message_buffer),
-                            "{\"task_name\":\"%s\",\"state\":\"%s\",\"priority\":%lu,\"stack\":%u}%s",
-                            px_task_status_array[x].pcTaskName,
-                            freertos_current_state_enum_to_str(px_task_status_array[x].eCurrentState),
-                            px_task_status_array[x].uxCurrentPriority,
-                            px_task_status_array[x].usStackHighWaterMark,
-                            x < ux_array_size - 1 ? "," : "");
-        if (len > 0) {
-            DEBUG_uart_print_str(message_buffer);
-        }
+        snprintf(
+            message_buffer, sizeof(message_buffer),
+            "{\"task_name\":\"%s\",\"state\":\"%s\",\"priority\":%lu,\"stack_min_remaining_bytes\":%u,\"runtime\":%lu}\n",
+            task_statuses[x].pcTaskName,
+            freertos_eTaskState_to_str(task_statuses[x].eCurrentState),
+            task_statuses[x].uxCurrentPriority,
+            // `usStackHighWaterMark`: The minimum amount of stack space that has remained for the task since the task was created.
+            // The closer this value is to zero the closer the task has come to overflowing its stack.
+            task_statuses[x].usStackHighWaterMark,
+            task_statuses[x].ulRunTimeCounter
+        );
+          
+        DEBUG_uart_print_str(message_buffer);
     }
 
-    DEBUG_uart_print_str("]");
-    vPortFree(px_task_status_array);
-    
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "{\"number_of_tasks\":%lu,\"total_run_time\":%lu}", number_of_tasks, total_run_time
+    );
     return 0;
 }
