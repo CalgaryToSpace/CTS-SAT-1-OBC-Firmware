@@ -74,3 +74,87 @@ uint8_t TEST_EXEC__TCMD_extract_hex_array_arg() {
 
     return 0;
 }
+
+uint8_t TEST_EXEC__TCMD_ascii_to_int64() {
+    int64_t output_val;
+
+    // Nominal test.
+    TEST_ASSERT(TCMD_ascii_to_int64("6", 1, &output_val) == 0);
+    TEST_ASSERT_TRUE(output_val == 6);
+
+    // Nominal test (negative).
+    TEST_ASSERT(TCMD_ascii_to_int64("-23", 3, &output_val) == 0);
+    TEST_ASSERT_TRUE(output_val == -23);
+    // assert: output_val approx equals -23
+
+    // Error: str_len is given as longer than the string, and thus the first 3 chars contain non-int characters.
+    TEST_ASSERT(TCMD_ascii_to_int64("6", 3, &output_val) != 0);
+
+    // Error: empty string
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64("", 0, &output_val));
+
+    // Error: just a space
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64(" ", 1, &output_val));
+
+    // Error: letters
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64("abc", 3, &output_val));
+
+    // Error: trailing letters
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64("23.7a", 5, &output_val));
+
+    // Error: numbers in the middle
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64("123a123", 7, &output_val));
+
+    // More assorted error tests.
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64("a23.7a", 6, &output_val) != 0);
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64("1.2", 3, &output_val) != 0);
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64("23a7", 4, &output_val) != 0);
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64("23ar.7", 6, &output_val) != 0);
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64(" 23.7", 5, &output_val) != 0); // has a space
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64("23.7 ", 5, &output_val) != 0); // has a space
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64("2 3.7", 5, &output_val) != 0); // has a space
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64("23.7.1", 6, &output_val) != 0); // two decimal points
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64(".7", 2, &output_val) != 0); // can't have decimal point 
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64("7.", 2, &output_val) != 0); // can't have decimal point
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64("7-7", 3, &output_val) != 0); // can't have minus sign in the middle
+    TEST_ASSERT_TRUE(TCMD_ascii_to_int64("1.5-", 3, &output_val) != 0); // can't have minus sign at the end
+
+    return 0;
+}
+
+uint8_t TEST_EXEC__TCMD_extract_int64_arg() {
+    int64_t output_val;
+
+    // Nominal test
+    TEST_ASSERT_FALSE(TCMD_extract_int64_arg("2,-4,245", 8, 0, &output_val));
+    TEST_ASSERT_TRUE(output_val == 2);
+    TEST_ASSERT_FALSE(TCMD_extract_int64_arg("2,-4,245", 8, 1, &output_val));
+    TEST_ASSERT_TRUE(output_val == -4);
+    TEST_ASSERT_FALSE(TCMD_extract_int64_arg("2,-4,245", 8, 2, &output_val));
+    TEST_ASSERT_TRUE(output_val == 245);
+
+    // Go past the end
+    TEST_ASSERT_TRUE(TCMD_extract_int64_arg("2,-4,245", 8, 3, &output_val));
+
+    // Non-int characters
+    TEST_ASSERT_FALSE(TCMD_extract_int64_arg("2,-4,24a5", 9, 0, &output_val));
+    TEST_ASSERT_TRUE(output_val == 2);
+    TEST_ASSERT_FALSE(TCMD_extract_int64_arg("2,-4,24a5", 9, 1, &output_val));
+    TEST_ASSERT_TRUE(output_val == -4);
+    TEST_ASSERT_TRUE(TCMD_extract_int64_arg("2,-4,24a5", 9, 2, &output_val)); // should error here
+
+    // More errors
+    TEST_ASSERT_TRUE(TCMD_extract_int64_arg("2,-4,24.5", 9, 2, &output_val));
+    TEST_ASSERT_TRUE(TCMD_extract_int64_arg("2,-4,--245", 9, 2, &output_val));
+    TEST_ASSERT_TRUE(TCMD_extract_int64_arg("2,-4,24/5", 9, 2, &output_val));
+    TEST_ASSERT_TRUE(TCMD_extract_int64_arg("2,-4a,245", 9, 1, &output_val));
+
+    // Wrong length
+    TEST_ASSERT_TRUE(TCMD_extract_int64_arg("2,-4,245", 4, 2, &output_val));
+
+    // Whitespace
+    TEST_ASSERT_TRUE(TCMD_extract_int64_arg(" , , ", 5, 2, &output_val));
+    TEST_ASSERT_TRUE(TCMD_extract_int64_arg("", 0, 0, &output_val));
+
+    return 0;
+}

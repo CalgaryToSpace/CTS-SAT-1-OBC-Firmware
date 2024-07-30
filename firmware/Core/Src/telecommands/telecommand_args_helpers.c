@@ -8,10 +8,9 @@
 #include <ctype.h>
 
 
-/// @brief Extracts the longest substring of integer characters, starting from the beginning of the
-///     string, to a maximum length or until the first non-integer character is found.
+/// @brief Extracts a uint64, starting from the beginning of `str`, to a maximum length of `str_len`.
 /// @param str Input string, starting with an integer
-/// @param str_len Max length of the input string
+/// @param str_len Length of the input string. The first `str_len` characters are considered.
 /// @param result Pointer to the result
 /// @return 0 if successful, 1 if the string is empty, 2 if the string does not start with an integer
 uint8_t TCMD_ascii_to_uint64(const char *str, uint32_t str_len, uint64_t *result) {
@@ -72,6 +71,84 @@ uint8_t TCMD_extract_uint64_arg(const char *str, uint32_t str_len, uint8_t arg_i
     }
 
     uint8_t parse_result = TCMD_ascii_to_uint64(&str[start_index], i - start_index, result);
+    if (parse_result == 2) {
+        // The argument is not an integer
+        return 3;
+    }
+    else if (parse_result > 0) {
+        // Other error
+        return 4;
+    }
+    return 0;
+}
+
+/// @brief Extracts an int64, starting from the beginning of `str`, to a maximum length of `str_len`.
+/// @param str Input string, starting with an integer or negative sign.
+/// @param str_len Length of the input string. The first `str_len` characters are considered.
+/// @param result Pointer to the result
+/// @return 0 if successful, 1 if the string is empty, 2 if the string does not entirely encapsulate an integer
+uint8_t TCMD_ascii_to_int64(const char *str, uint32_t str_len, int64_t *result) {
+    // FIXME: return error if the string is too long/number is too large
+    if (str_len == 0) {
+        return 1;
+    }
+    
+    int64_t temp_result = 0;
+    uint32_t i = 0;
+    for (; i < str_len; i++) {
+        if (str[i] == '-' && i == 0) {
+            continue;
+        }
+        else if (str[i] < '0' || str[i] > '9') {
+            // Error: String contains non-numeric characters.
+            return 2;
+        }
+        temp_result = temp_result * 10 + (str[i] - '0');
+    }
+
+    if (str[0] == '-') {
+        temp_result *= -1;
+    }
+
+    if (i == 0) {
+        return 2;
+    }
+
+    *result = temp_result;
+    return 0;
+}
+
+/// @brief Extracts the nth comma-separated argument from the input string, assuming it's an int64
+/// @param str Input string
+/// @param str_len Length of the input string
+/// @param arg_index Index of the argument to extract (0-based)
+/// @param result Pointer to the result
+/// @return 0 if successful, 1 if the string is empty, 2 if the string does not contain enough arguments
+///        3 if the argument is not an integer, 4 for other error
+uint8_t TCMD_extract_int64_arg(const char *str, uint32_t str_len, uint8_t arg_index, int64_t *result) {
+    if (str_len == 0) {
+        return 1;
+    }
+
+    uint32_t arg_count = 0;
+    uint32_t i = 0;
+    uint32_t start_index = 0;
+    for (; i < str_len; i++) {
+        if (str[i] == ',') {
+            if (arg_count == arg_index) {
+                break;
+            }
+
+            arg_count++;
+            start_index = i + 1;
+        }
+    }
+
+    if (arg_count < arg_index) {
+        return 2;
+    }
+
+    uint8_t parse_result = TCMD_ascii_to_int64(&str[start_index], i - start_index, result);
     if (parse_result == 2) {
         // The argument is not an integer
         return 3;
