@@ -8,10 +8,9 @@
 #include <ctype.h>
 
 
-/// @brief Extracts the longest substring of integer characters, starting from the beginning of the
-///     string, to a maximum length or until the first non-integer character is found.
+/// @brief Extracts a uint64, starting from the beginning of `str`, to a maximum length of `str_len`.
 /// @param str Input string, starting with an integer
-/// @param str_len Max length of the input string
+/// @param str_len Length of the input string. The first `str_len` characters are considered.
 /// @param result Pointer to the result
 /// @return 0 if successful, 1 if the string is empty, 2 if the string does not start with an integer
 uint8_t TCMD_ascii_to_uint64(const char *str, uint32_t str_len, uint64_t *result) {
@@ -83,28 +82,25 @@ uint8_t TCMD_extract_uint64_arg(const char *str, uint32_t str_len, uint8_t arg_i
     return 0;
 }
 
-/// @brief Extracts a substring of integer characters, starting from the beginning of the
-///     string, to a maximum length or until a comma or end-of-string is found.
-/// @param str Input string, starting with an integer
-/// @param str_len Max length of the input string
+/// @brief Extracts an int64, starting from the beginning of `str`, to a maximum length of `str_len`.
+/// @param str Input string, starting with an integer or negative sign.
+/// @param str_len Length of the input string. The first `str_len` characters are considered.
 /// @param result Pointer to the result
 /// @return 0 if successful, 1 if the string is empty, 2 if the string does not entirely encapsulate an integer
 uint8_t TCMD_ascii_to_int64(const char *str, uint32_t str_len, int64_t *result) {
+    // FIXME: return error if the string is too long/number is too large
     if (str_len == 0) {
         return 1;
     }
+    
     int64_t temp_result = 0;
     uint32_t i = 0;
     for (; i < str_len; i++) {
         if (str[i] == '-' && i == 0) {
             continue;
         }
-        else if ((str[i] == '\0' || str[i] == ',')) {
-            // move to finishing the computation
-            break;
-        }
         else if (str[i] < '0' || str[i] > '9') {
-            // check to make sure the string doesn't contain garbage characters
+            // Error: String contains non-numeric characters.
             return 2;
         }
         temp_result = temp_result * 10 + (str[i] - '0');
