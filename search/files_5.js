@@ -8,5 +8,7 @@ var searchData=
   ['flash_5ftelecommand_5fdefs_2eh_5',['flash_telecommand_defs.h',['../flash__telecommand__defs_8h.html',1,'']]],
   ['flash_5ftesting_5fdemos_2ec_6',['flash_testing_demos.c',['../flash__testing__demos_8c.html',1,'']]],
   ['freertos_2ec_7',['freertos.c',['../freertos_8c.html',1,'']]],
-  ['freertosconfig_2eh_8',['FreeRTOSConfig.h',['../FreeRTOSConfig_8h.html',1,'']]]
+  ['freertos_5ftelecommand_5fdefs_2ec_8',['freertos_telecommand_defs.c',['../freertos__telecommand__defs_8c.html',1,'']]],
+  ['freertos_5ftelecommand_5fdefs_2eh_9',['freertos_telecommand_defs.h',['../freertos__telecommand__defs_8h.html',1,'']]],
+  ['freertosconfig_2eh_10',['FreeRTOSConfig.h',['../FreeRTOSConfig_8h.html',1,'']]]
 ];
