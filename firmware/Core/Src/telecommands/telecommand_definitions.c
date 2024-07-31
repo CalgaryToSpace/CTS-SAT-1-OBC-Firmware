@@ -3,7 +3,6 @@
 #include "telecommands/telecommand_adcs.h"
 #include "telecommands/telecommand_args_helpers.h"
 #include "transforms/arrays.h"
-#include "unit_tests/unit_test_executor.h"
 #include "timekeeping/timekeeping.h"
 #include "debug_tools/debug_uart.h"
 
@@ -15,6 +14,7 @@
 #include "telecommands/timekeeping_telecommand_defs.h"
 #include "telecommands/i2c_telecommand_defs.h"
 #include "telecommands/config_telecommand_defs.h"
+#include "telecommands/testing_telecommand_defs.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -50,24 +50,6 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
-        .tcmd_name = "echo_back_args",
-        .tcmd_func = TCMDEXEC_echo_back_args,
-        .number_of_args = 1, // TODO: support more than 1 arg
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },
-    {
-        .tcmd_name = "echo_back_uint32_args",
-        .tcmd_func = TCMDEXEC_echo_back_uint32_args,
-        .number_of_args = 10,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },
-    {
-        .tcmd_name = "run_all_unit_tests",
-        .tcmd_func = TCMDEXEC_run_all_unit_tests,
-        .number_of_args = 0,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },
-    {
         .tcmd_name = "get_system_time",
         .tcmd_func = TCMDEXEC_get_system_time,
         .number_of_args = 0,
@@ -97,6 +79,35 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
+
+    // ****************** SECTION: testing_telecommand_defs ******************
+
+    {
+        .tcmd_name = "echo_back_args",
+        .tcmd_func = TCMDEXEC_echo_back_args,
+        .number_of_args = 1, // TODO: support more than 1 arg
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "echo_back_uint32_args",
+        .tcmd_func = TCMDEXEC_echo_back_uint32_args,
+        .number_of_args = 3,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "run_all_unit_tests",
+        .tcmd_func = TCMDEXEC_run_all_unit_tests,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "demo_blocking_delay",
+        .tcmd_func = TCMDEXEC_demo_blocking_delay,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING, // Can cause crash via Watchdog reset.
+    },
+
+    // ****************** END SECTION: testing_telecommand_defs ******************
 
     // ****************** SECTION: config_telecommand_defs ******************
     {
@@ -307,6 +318,13 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
 
+    {
+        .tcmd_name = "freertos_demo_stack_usage",
+        .tcmd_func = TCMDEXEC_freertos_demo_stack_usage,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING, // Can cause crash via stack overflow.
+    },
+
     // ****************** END SECTION: freertos_telecommand_defs ******************
 
 };
@@ -349,48 +367,6 @@ uint8_t TCMDEXEC_core_system_stats(const char *args_str, TCMD_TelecommandChannel
     // TODO: implement this (Issue #103)
     // Use `TCMD_get_agenda_used_slots_count`
     snprintf(response_output_buf, response_output_buf_len, "System stats: TODO\n");
-    return 0;
-}
-
-uint8_t TCMDEXEC_echo_back_args(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
-
-    snprintf(response_output_buf, response_output_buf_len, "SUCCESS: Echo Args: '%s'\n", args_str);
-    // TODO: handle args_str being too long
-    return 0;
-}
-
-uint8_t TCMDEXEC_echo_back_uint32_args(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
-    response_output_buf[0] = '\0'; // clear the response buffer
-
-    for (uint8_t arg_num = 0; arg_num < 10; arg_num++) {
-        uint64_t arg_uint64;
-        uint8_t parse_result = TCMD_extract_uint64_arg(
-            args_str, strlen(args_str), arg_num, &arg_uint64);
-        if (parse_result > 0) {
-            // error parsing
-            snprintf(
-                &response_output_buf[strlen(response_output_buf)],
-                response_output_buf_len - strlen(response_output_buf) - 1,
-                "Arg%d=error%d, ", arg_num, parse_result);
-        }
-        else {
-            // success parsing
-            snprintf(
-                &response_output_buf[strlen(response_output_buf)],
-                response_output_buf_len - strlen(response_output_buf) - 1,
-                "Arg%d=%" PRIu32 ", ",
-                arg_num, (uint32_t)arg_uint64);
-        }
-    }
-    return 0;
-}
-
-
-uint8_t TCMDEXEC_run_all_unit_tests(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
-    TEST_run_all_unit_tests_and_log(response_output_buf, response_output_buf_len);
     return 0;
 }
 

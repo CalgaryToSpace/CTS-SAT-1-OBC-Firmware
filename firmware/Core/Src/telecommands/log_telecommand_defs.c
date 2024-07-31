@@ -13,6 +13,7 @@
 /// @brief Telecommand: Set a LOG sink's enabled state
 /// @param args_str
 /// - Arg 0: Sink enum value
+/// - Arg 1: Enabled? 0: disable sink, 1: enable sink
 /// @details FrontierSat LOG sinks
 ///    LOG_SINK_UHF_RADIO = 1
 ///    LOG_SINK_FILE = 2 
@@ -43,6 +44,7 @@ uint8_t TCMDEXEC_log_set_sink_enabled_state(const char *args_str, TCMD_Telecomma
 /// @brief Telecommand: Set a LOG subsystem's file logging enabled state
 /// @param args_str
 /// - Arg 0: Subsystem enum value
+/// - Arg 1: Enabled? 0: disable file logging, 1: enable file logging
 /// @details FrontierSat LOG sinks
 ///    LOG_SYSTEM_OBC = 1
 ///    LOG_SYSTEM_UHF_RADIO = 2

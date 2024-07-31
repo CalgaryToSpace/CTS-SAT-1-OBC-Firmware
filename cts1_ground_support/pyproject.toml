@@ -38,6 +38,7 @@ dev = [
   "setuptools",
   "hatchling",
   "ruff",
+  "coverage", # For CI.
 ]
 
 [project.urls]

@@ -41,3 +41,14 @@ class TelecommandDefinition:
             "Number of Args": self.number_of_args,
             "Readiness Level": self.readiness_level,
         }
+
+    def has_required_fields(self: "TelecommandDefinition") -> bool:
+        """Check if the telecommand definition has all the required fields."""
+        return all(
+            [
+                self.name is not None,
+                self.tcmd_func is not None,
+                self.number_of_args is not None,
+                self.readiness_level is not None,
+            ]
+        )
