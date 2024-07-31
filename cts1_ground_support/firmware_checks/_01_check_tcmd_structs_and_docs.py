@@ -17,7 +17,7 @@ def check_tcmd_struct_fields() -> None:
             success = False
 
     if success:
-        logger.success("All telecommand structs have the required fields.")
+        logger.success(f"All {len(tcmd_list):,} telecommand structs have the required fields.")
     else:
         msg = "One or more telecommand structs are missing required fields."
         raise ValueError(msg)
@@ -49,7 +49,7 @@ def check_tcmd_arg_lists() -> None:
             success = False
 
     if success:
-        logger.success("All telecommands have appropriate argument docstrings!")
+        logger.success(f"All {len(tcmd_list)} telecommands have appropriate argument docstrings!")
     else:
         logger.error(
             "Please look at the `docs/C_General_Guidelines.md` file to see the docstring "
