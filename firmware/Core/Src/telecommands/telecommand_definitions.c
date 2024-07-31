@@ -103,7 +103,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "demo_blocking_delay",
         .tcmd_func = TCMDEXEC_demo_blocking_delay,
         .number_of_args = 1,
-        .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
+        .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING, // Can cause crash via Watchdog reset.
     },
 
     // ****************** END SECTION: testing_telecommand_defs ******************
@@ -302,6 +302,13 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_func = TCMDEXEC_freetos_list_tasks_jsonl,
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+
+    {
+        .tcmd_name = "freertos_demo_stack_usage",
+        .tcmd_func = TCMDEXEC_freertos_demo_stack_usage,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING, // Can cause crash via stack overflow.
     },
 
     // ****************** END SECTION: freertos_telecommand_defs ******************
