@@ -16,5 +16,6 @@ var searchData=
   ['get_5frepo_5fpath_13',['get_repo_path',['../namespacects1__ground__support_1_1paths.html#a37a1198ca2e2f8d58947b47eff9f25ea',1,'cts1_ground_support::paths']]],
   ['get_5ftelecommand_5fby_5fname_14',['get_telecommand_by_name',['../namespacects1__ground__support_1_1terminal__app_1_1dash__gui.html#a960947eecbf9a6f33d55204bcf5b71b7',1,'cts1_ground_support::terminal_app::dash_gui']]],
   ['get_5ftelecommand_5flist_5ffrom_5frepo_5fcached_15',['get_telecommand_list_from_repo_cached',['../namespacects1__ground__support_1_1terminal__app_1_1dash__gui.html#ac5604e68b6d71b702255bc0474c4abbe',1,'cts1_ground_support::terminal_app::dash_gui']]],
-  ['get_5ftelecommand_5fname_5flist_16',['get_telecommand_name_list',['../namespacects1__ground__support_1_1terminal__app_1_1dash__gui.html#aade74349bdf27154c168572a11fc4100',1,'cts1_ground_support::terminal_app::dash_gui']]]
+  ['get_5ftelecommand_5fname_5flist_16',['get_telecommand_name_list',['../namespacects1__ground__support_1_1terminal__app_1_1dash__gui.html#aade74349bdf27154c168572a11fc4100',1,'cts1_ground_support::terminal_app::dash_gui']]],
+  ['getruntimecountervalue_17',['getRunTimeCounterValue',['../freertos_8c.html#a757086670335adcf3c5cbf96e3a8aab0',1,'freertos.c']]]
 ];

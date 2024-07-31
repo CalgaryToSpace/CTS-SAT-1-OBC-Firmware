@@ -124,8 +124,10 @@ Macros</h2></td></tr>
 <tr class="separator:a6c534a6cf8a00528fe0be42083484f9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9f213227674effff0122a75d94d87938" id="r_a9f213227674effff0122a75d94d87938"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9f213227674effff0122a75d94d87938">configTOTAL_HEAP_SIZE</a>&#160;&#160;&#160;((size_t)32768)</td></tr>
 <tr class="separator:a9f213227674effff0122a75d94d87938"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac388dc4041aab6997348828eb27fc1a8" id="r_ac388dc4041aab6997348828eb27fc1a8"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac388dc4041aab6997348828eb27fc1a8">configMAX_TASK_NAME_LEN</a>&#160;&#160;&#160;( 16 )</td></tr>
+<tr class="memitem:ac388dc4041aab6997348828eb27fc1a8" id="r_ac388dc4041aab6997348828eb27fc1a8"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac388dc4041aab6997348828eb27fc1a8">configMAX_TASK_NAME_LEN</a>&#160;&#160;&#160;( 64 )</td></tr>
 <tr class="separator:ac388dc4041aab6997348828eb27fc1a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8081822f3ebc7c917b63bd7bdd7bc58" id="r_ad8081822f3ebc7c917b63bd7bdd7bc58"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad8081822f3ebc7c917b63bd7bdd7bc58">configGENERATE_RUN_TIME_STATS</a>&#160;&#160;&#160;1</td></tr>
+<tr class="separator:ad8081822f3ebc7c917b63bd7bdd7bc58"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a27f5ee137dc9f125681a31f0b0a4b3be" id="r_a27f5ee137dc9f125681a31f0b0a4b3be"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a27f5ee137dc9f125681a31f0b0a4b3be">configUSE_TRACE_FACILITY</a>&#160;&#160;&#160;1</td></tr>
 <tr class="separator:a27f5ee137dc9f125681a31f0b0a4b3be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac311ed9b9e5ae4d2d9648b33a24acce" id="r_aac311ed9b9e5ae4d2d9648b33a24acce"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aac311ed9b9e5ae4d2d9648b33a24acce">configUSE_16_BIT_TICKS</a>&#160;&#160;&#160;0</td></tr>
@@ -214,6 +216,10 @@ Macros</h2></td></tr>
 <tr class="separator:a6f30022da7d797dd31f1b8a11cae9a35"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb38886ec26ede3e81782a04a1735259" id="r_acb38886ec26ede3e81782a04a1735259"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acb38886ec26ede3e81782a04a1735259">USE_CUSTOM_SYSTICK_HANDLER_IMPLEMENTATION</a>&#160;&#160;&#160;0</td></tr>
 <tr class="separator:acb38886ec26ede3e81782a04a1735259"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e99068394cbdc26c95f54a9f0358dff" id="r_a7e99068394cbdc26c95f54a9f0358dff"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7e99068394cbdc26c95f54a9f0358dff">portCONFIGURE_TIMER_FOR_RUN_TIME_STATS</a>&#160;&#160;&#160;<a class="el" href="freertos_8c.html#abf04c5aa1ed33066be12ca0b602dbb6a">configureTimerForRunTimeStats</a></td></tr>
+<tr class="separator:a7e99068394cbdc26c95f54a9f0358dff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90729682adf0ea5697f75b84e8101d83" id="r_a90729682adf0ea5697f75b84e8101d83"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a90729682adf0ea5697f75b84e8101d83">portGET_RUN_TIME_COUNTER_VALUE</a>&#160;&#160;&#160;<a class="el" href="freertos_8c.html#a757086670335adcf3c5cbf96e3a8aab0">getRunTimeCounterValue</a></td></tr>
+<tr class="separator:a90729682adf0ea5697f75b84e8101d83"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="ad6db6908b5ef4d6a4f5423a39f1a4392" name="ad6db6908b5ef4d6a4f5423a39f1a4392"></a>
@@ -283,6 +289,20 @@ Macros</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">#define configENABLE_MPU&#160;&#160;&#160;0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad8081822f3ebc7c917b63bd7bdd7bc58" name="ad8081822f3ebc7c917b63bd7bdd7bc58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8081822f3ebc7c917b63bd7bdd7bc58">&#9670;&#160;</a></span>configGENERATE_RUN_TIME_STATS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define configGENERATE_RUN_TIME_STATS&#160;&#160;&#160;1</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -380,7 +400,7 @@ Macros</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define configMAX_TASK_NAME_LEN&#160;&#160;&#160;( 16 )</td>
+          <td class="memname">#define configMAX_TASK_NAME_LEN&#160;&#160;&#160;( 64 )</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -969,6 +989,34 @@ Macros</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">#define INCLUDE_xTimerPendFunctionCall&#160;&#160;&#160;1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7e99068394cbdc26c95f54a9f0358dff" name="a7e99068394cbdc26c95f54a9f0358dff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e99068394cbdc26c95f54a9f0358dff">&#9670;&#160;</a></span>portCONFIGURE_TIMER_FOR_RUN_TIME_STATS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS&#160;&#160;&#160;<a class="el" href="freertos_8c.html#abf04c5aa1ed33066be12ca0b602dbb6a">configureTimerForRunTimeStats</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a90729682adf0ea5697f75b84e8101d83" name="a90729682adf0ea5697f75b84e8101d83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90729682adf0ea5697f75b84e8101d83">&#9670;&#160;</a></span>portGET_RUN_TIME_COUNTER_VALUE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define portGET_RUN_TIME_COUNTER_VALUE&#160;&#160;&#160;<a class="el" href="freertos_8c.html#a757086670335adcf3c5cbf96e3a8aab0">getRunTimeCounterValue</a></td>
         </tr>
       </table>
 </div><div class="memdoc">

@@ -104,5 +104,7 @@ var searchData=
   ['pin_5ftemp_5fsensor_5fi2c4_5fsda_5fpin_101',['PIN_TEMP_SENSOR_I2C4_SDA_Pin',['../main_8h.html#a62033c45fc1a9f15da95b3daabbd416c',1,'main.h']]],
   ['pin_5fuhf_5fctrl_5fout_5fgpio_5fport_102',['PIN_UHF_CTRL_OUT_GPIO_Port',['../main_8h.html#a13ed0bd11c835b54b03b2047e051acc4',1,'main.h']]],
   ['pin_5fuhf_5fctrl_5fout_5fpin_103',['PIN_UHF_CTRL_OUT_Pin',['../main_8h.html#a106809586bbfab6dc93d4929c72eaf69',1,'main.h']]],
-  ['prefetch_5fenable_104',['PREFETCH_ENABLE',['../stm32l4xx__hal__conf_8h.html#a13fc0d5e7bb925385c0cc0772ba6a391',1,'stm32l4xx_hal_conf.h']]]
+  ['portconfigure_5ftimer_5ffor_5frun_5ftime_5fstats_104',['portCONFIGURE_TIMER_FOR_RUN_TIME_STATS',['../FreeRTOSConfig_8h.html#a7e99068394cbdc26c95f54a9f0358dff',1,'FreeRTOSConfig.h']]],
+  ['portget_5frun_5ftime_5fcounter_5fvalue_105',['portGET_RUN_TIME_COUNTER_VALUE',['../FreeRTOSConfig_8h.html#a90729682adf0ea5697f75b84e8101d83',1,'FreeRTOSConfig.h']]],
+  ['prefetch_5fenable_106',['PREFETCH_ENABLE',['../stm32l4xx__hal__conf_8h.html#a13fc0d5e7bb925385c0cc0772ba6a391',1,'stm32l4xx_hal_conf.h']]]
 ];

@@ -11,9 +11,10 @@ var searchData=
   ['mx_5fi2c4_5finit_8',['MX_I2C4_Init',['../main_8c.html#af4e34667b0cb79444cb7933306644053',1,'main.c']]],
   ['mx_5flpuart1_5fuart_5finit_9',['MX_LPUART1_UART_Init',['../main_8c.html#a21ad298121ac0d079b93bf2c49d0fa92',1,'main.c']]],
   ['mx_5fspi1_5finit_10',['MX_SPI1_Init',['../main_8c.html#a28dbf2494083ac5f39daa87bf09e4eb3',1,'main.c']]],
-  ['mx_5fuart4_5finit_11',['MX_UART4_Init',['../main_8c.html#ada2fde91c9d08b4055b4d171690255d0',1,'main.c']]],
-  ['mx_5fuart5_5finit_12',['MX_UART5_Init',['../main_8c.html#a18142fc3a1bfec6edaf6cf0af5549764',1,'main.c']]],
-  ['mx_5fusart1_5fuart_5finit_13',['MX_USART1_UART_Init',['../main_8c.html#a62f4b77e20bccafe98a183771749c20c',1,'main.c']]],
-  ['mx_5fusart2_5fuart_5finit_14',['MX_USART2_UART_Init',['../main_8c.html#a6db1014d713f6f5c0f52a13299ee0733',1,'main.c']]],
-  ['mx_5fusart3_5fuart_5finit_15',['MX_USART3_UART_Init',['../main_8c.html#a1c98cc38e233c6b46ca2bf9598a5fce8',1,'main.c']]]
+  ['mx_5ftim16_5finit_11',['MX_TIM16_Init',['../main_8c.html#a4e631056d61a1546185e9bf5a2edd463',1,'main.c']]],
+  ['mx_5fuart4_5finit_12',['MX_UART4_Init',['../main_8c.html#ada2fde91c9d08b4055b4d171690255d0',1,'main.c']]],
+  ['mx_5fuart5_5finit_13',['MX_UART5_Init',['../main_8c.html#a18142fc3a1bfec6edaf6cf0af5549764',1,'main.c']]],
+  ['mx_5fusart1_5fuart_5finit_14',['MX_USART1_UART_Init',['../main_8c.html#a62f4b77e20bccafe98a183771749c20c',1,'main.c']]],
+  ['mx_5fusart2_5fuart_5finit_15',['MX_USART2_UART_Init',['../main_8c.html#a6db1014d713f6f5c0f52a13299ee0733',1,'main.c']]],
+  ['mx_5fusart3_5fuart_5finit_16',['MX_USART3_UART_Init',['../main_8c.html#a1c98cc38e233c6b46ca2bf9598a5fce8',1,'main.c']]]
 ];

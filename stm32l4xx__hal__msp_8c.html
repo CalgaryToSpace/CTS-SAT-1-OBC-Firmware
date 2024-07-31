@@ -138,6 +138,12 @@ Functions</h2></td></tr>
 <tr class="memitem:abadc4d4974af1afd943e8d13589068e1" id="r_abadc4d4974af1afd943e8d13589068e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abadc4d4974af1afd943e8d13589068e1">HAL_SPI_MspDeInit</a> (SPI_HandleTypeDef *hspi)</td></tr>
 <tr class="memdesc:abadc4d4974af1afd943e8d13589068e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">SPI MSP De-Initialization This function freeze the hardware resources used in this example.  <br /></td></tr>
 <tr class="separator:abadc4d4974af1afd943e8d13589068e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb25ade2f7e3f7aae167bd52270c2b86" id="r_abb25ade2f7e3f7aae167bd52270c2b86"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abb25ade2f7e3f7aae167bd52270c2b86">HAL_TIM_Base_MspInit</a> (TIM_HandleTypeDef *htim_base)</td></tr>
+<tr class="memdesc:abb25ade2f7e3f7aae167bd52270c2b86"><td class="mdescLeft">&#160;</td><td class="mdescRight">TIM_Base MSP Initialization This function configures the hardware resources used in this example.  <br /></td></tr>
+<tr class="separator:abb25ade2f7e3f7aae167bd52270c2b86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a555b8a2d3c7a07341f8cb1255318fa2b" id="r_a555b8a2d3c7a07341f8cb1255318fa2b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a555b8a2d3c7a07341f8cb1255318fa2b">HAL_TIM_Base_MspDeInit</a> (TIM_HandleTypeDef *htim_base)</td></tr>
+<tr class="memdesc:a555b8a2d3c7a07341f8cb1255318fa2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">TIM_Base MSP De-Initialization This function freeze the hardware resources used in this example.  <br /></td></tr>
+<tr class="separator:a555b8a2d3c7a07341f8cb1255318fa2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This file provides code for the MSP Initialization and de-Initialization codes. </p>
@@ -372,6 +378,68 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 <p>SPI1 GPIO Configuration PE13 ------&gt; SPI1_SCK PE14 ------&gt; SPI1_MISO PE15 ------&gt; SPI1_MOSI</p>
+
+</div>
+</div>
+<a id="a555b8a2d3c7a07341f8cb1255318fa2b" name="a555b8a2d3c7a07341f8cb1255318fa2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a555b8a2d3c7a07341f8cb1255318fa2b">&#9670;&#160;</a></span>HAL_TIM_Base_MspDeInit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void HAL_TIM_Base_MspDeInit </td>
+          <td>(</td>
+          <td class="paramtype">TIM_HandleTypeDef *</td>          <td class="paramname"><span class="paramname"><em>htim_base</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>TIM_Base MSP De-Initialization This function freeze the hardware resources used in this example. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">htim_base</td><td>TIM_Base handle pointer </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">None</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="abb25ade2f7e3f7aae167bd52270c2b86" name="abb25ade2f7e3f7aae167bd52270c2b86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb25ade2f7e3f7aae167bd52270c2b86">&#9670;&#160;</a></span>HAL_TIM_Base_MspInit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void HAL_TIM_Base_MspInit </td>
+          <td>(</td>
+          <td class="paramtype">TIM_HandleTypeDef *</td>          <td class="paramname"><span class="paramname"><em>htim_base</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>TIM_Base MSP Initialization This function configures the hardware resources used in this example. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">htim_base</td><td>TIM_Base handle pointer </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">None</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
