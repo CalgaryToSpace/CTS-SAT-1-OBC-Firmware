@@ -53,12 +53,14 @@
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+volatile unsigned long ulHighFrequencyTimerTicks = 0;
 
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
 extern UART_HandleTypeDef hlpuart1;
 extern UART_HandleTypeDef huart5;
+extern TIM_HandleTypeDef htim16;
 extern TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN EV */
@@ -188,7 +190,9 @@ void TIM1_UP_TIM16_IRQHandler(void)
 
   /* USER CODE END TIM1_UP_TIM16_IRQn 0 */
   HAL_TIM_IRQHandler(&htim1);
+  HAL_TIM_IRQHandler(&htim16);
   /* USER CODE BEGIN TIM1_UP_TIM16_IRQn 1 */
+  ulHighFrequencyTimerTicks++;
 
   /* USER CODE END TIM1_UP_TIM16_IRQn 1 */
 }
