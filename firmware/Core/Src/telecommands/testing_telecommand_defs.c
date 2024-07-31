@@ -12,7 +12,9 @@
 #include <string.h>
 
 
-
+/// @brief A demo telecommand that echoes back the argument it received.
+/// @param args_str
+/// - Arg 0: The string to echo back.
 uint8_t TCMDEXEC_echo_back_args(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
 
@@ -21,11 +23,17 @@ uint8_t TCMDEXEC_echo_back_args(const char *args_str, TCMD_TelecommandChannel_en
     return 0;
 }
 
+/// @brief A demo telecommand that echoes back each integer argument it received.
+/// @param args_str 3 integer arguments to echo back.
+/// - Arg 0: The first integer to echo back.
+/// - Arg 1: The second integer to echo back.
+/// - Arg 2: The third integer to echo back.
+/// @return 0 if all ints are parsed successfully, otherwise the error code of the first failed parse.
 uint8_t TCMDEXEC_echo_back_uint32_args(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     response_output_buf[0] = '\0'; // clear the response buffer
 
-    for (uint8_t arg_num = 0; arg_num < 10; arg_num++) {
+    for (uint8_t arg_num = 0; arg_num < 3; arg_num++) {
         uint64_t arg_uint64;
         uint8_t parse_result = TCMD_extract_uint64_arg(
             args_str, strlen(args_str), arg_num, &arg_uint64);
