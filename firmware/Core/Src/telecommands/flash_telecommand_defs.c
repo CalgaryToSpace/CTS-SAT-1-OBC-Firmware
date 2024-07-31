@@ -224,7 +224,6 @@ uint8_t TCMDEXEC_flash_write_hex(const char *args_str, TCMD_TelecommandChannel_e
 /// @param args_str
 /// - Arg 0: Chip Number (CS number) as uint
 /// - Arg 1: Flash Address as uint
-/// - Arg 2: Number of bytes to erase as uint
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_flash_erase(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {

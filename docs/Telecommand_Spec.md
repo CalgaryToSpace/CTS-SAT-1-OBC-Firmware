@@ -10,7 +10,7 @@ The same specification is used whether the commands are delivered over Debug UAR
 CTS1+hello_world()!
 CTS1+run_all_unit_tests()!
 CTS1+echo_back_args(arg1,arg2,arg3)!
-CTS1+echo_back_uint32_args(1234,invalid_arg,32,68,42,65989985)!
+CTS1+echo_back_uint32_args(1234,invalid_arg,32)!
 CTS1+echo_back_args(arg1,arg2,arg3)@tssent=1716611908453@tsexec=1716611999999!
 CTS1+echo_back_args(arg1,arg2,arg3)@tssent=1716611908453@tsexec=1716611999999#sha256=XXxxxXXXxx+xx/xx===!
 ```

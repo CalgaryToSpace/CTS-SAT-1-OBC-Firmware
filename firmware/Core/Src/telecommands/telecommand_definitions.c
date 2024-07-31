@@ -90,7 +90,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "echo_back_uint32_args",
         .tcmd_func = TCMDEXEC_echo_back_uint32_args,
-        .number_of_args = 10,
+        .number_of_args = 3,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
