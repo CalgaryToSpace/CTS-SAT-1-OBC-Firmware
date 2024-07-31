@@ -52,6 +52,8 @@ extern UART_HandleTypeDef huart3;
 
 extern SPI_HandleTypeDef hspi1;
 
+extern TIM_HandleTypeDef htim16;
+
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
