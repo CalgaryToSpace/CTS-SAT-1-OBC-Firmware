@@ -640,7 +640,6 @@ uint8_t ADCS_Rate_Sensor_Rates();
 uint8_t ADCS_Get_Wheel_Speed();
 uint8_t ADCS_Get_Magnetorquer_Command();
 uint8_t ADCS_Get_Raw_Magnetometer_Values();
-uint8_t ADCS_Fine_Angular_Rates();
 uint8_t ADCS_Estimate_Fine_Angular_Rates();
 uint8_t ADCS_Get_Magnetometer_Config();
 uint8_t ADCS_Get_Commanded_Attitude_Angles();

@@ -29,8 +29,7 @@ uint8_t TCMDEXEC_ADCS_ack(const char *args_str, TCMD_TelecommandChannel_enum_t t
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_wheel_speed(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-    // TODO: Need to use int64 extraction to make this work properly!!!
-    // parse arguments: first into uint64_t, then convert to correct form for input
+    // parse arguments: first into int64_t, then convert to correct form for input
     uint8_t num_args = 3;
     uint64_t arguments[num_args]; 
     int16_t args_16[num_args];
@@ -389,17 +388,7 @@ uint8_t TCMDEXEC_ADCS_get_raw_magnetometer_values(const char *args_str, TCMD_Tel
                                                   char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status = ADCS_Get_Raw_Magnetometer_Values();
     return status;
-}                                        
-
-/// @brief Telecommand: Request the given telemetry data from the ADCS
-/// @param args_str 
-///     - No arguments for this command
-/// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_ADCS_fine_angular_rates(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                                         char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Fine_Angular_Rates();
-    return status;
-}                                
+}                                                                 
 
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 
