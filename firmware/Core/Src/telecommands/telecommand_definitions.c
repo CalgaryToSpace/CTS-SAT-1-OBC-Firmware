@@ -242,7 +242,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "adcs_set_wheel_speed",
         .tcmd_func = TCMDEXEC_ADCS_set_wheel_speed,
-        .number_of_args = 0,
+        .number_of_args = 3,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     // ****************** END SECTION: adcs_telecommands ******************
