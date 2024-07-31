@@ -7,7 +7,13 @@ Firmware and ground support software for the CTS-SAT-1 ("FrontierSat") mission. 
 
 ## Developing Firmware with VS Code
 
-1. On Windows only, install the [ST-Link Debugging Driver](https://www.st.com/en/development-tools/stsw-link009.html) for compatibility with OpenOCD.
+1. On sub-par operating systems:
+	* **Windows only:** Install the [ST-Link Debugging Driver](https://www.st.com/en/development-tools/stsw-link009.html) for compatibility with OpenOCD.
+	* **Mac only:** Upgrade make from version 3 to version 4:
+		1. Install Homebrew: https://brew.sh
+		2. Run `brew install make --with-default-names` in Terminal.
+		3. Run `make --version` to confirm that you have version 4.
+		4. Maybe more steps from: https://stackoverflow.com/questions/43175529/updating-make-version-on-mac
 2. Clone this repo.
 3. Open this repo in File Explorer.
 4. Right click on the `firmware` folder in this repo, and select "Open with VS Code". **Do not open the entire repo with VS Code like you normally would.**
