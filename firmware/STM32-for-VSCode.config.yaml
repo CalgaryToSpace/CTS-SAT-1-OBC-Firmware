@@ -33,25 +33,29 @@ cxxDefinitionsFile:
 asDefinitionsFile:
 
 # Compiler flags
-cFlags: 
+cFlags:
   - -Wall
   - -fdata-sections
   - -ffunction-sections
   - -Wextra # CTS: Enable extra warnings for safety
   - -Wpedantic # CTS: Enable pedantic warnings for even more safety
   - -Wmissing-field-initializers # CTS: Warn if a struct is not fully initialized [broken?]
-  - -Wno-unused-parameter # CTS: Ignore (allow) unused parametersa
+  - -Wno-unused-parameter # CTS: Ignore (allow) unused parameters
   # - -Werror # CTS: Optional: Treat warnings as errors
+  - -fdiagnostics-color=always # CTS: Attempt to force colorized output, esp. when running with --output-sync
+
 
 cxxFlags: []
-assemblyFlags: 
+assemblyFlags:
   - -Wall
   - -fdata-sections
   - -ffunction-sections
   - -Wextra # CTS: Enable extra warnings for safety
+  - -fdiagnostics-color=always # CTS: Attempt to force colorized output, esp. when running with --output-sync
 
-linkerFlags: 
+linkerFlags:
   - -Wl,--print-memory-usage
+  - -fdiagnostics-color=always # CTS: Attempt to force colorized output, esp. when running with --output-sync
 
 
 # libraries to be included. The -l prefix to the library will be automatically added.
@@ -112,3 +116,4 @@ customMakefileRules:
 makeFlags:
 # - -O  # use this option when the output of make is mixed up only works for make version 4.0 and upwards
 # - --silent # use this option to silence the output of the build
+  - --output-sync=target # CTS: Fix issue with error messages being garbled (esp. on Windows).
