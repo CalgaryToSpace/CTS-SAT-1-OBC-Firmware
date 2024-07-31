@@ -126,8 +126,10 @@ This graph shows which files directly or indirectly include this file:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ac66230589ec5088ca11fb1b49386618a" id="r_ac66230589ec5088ca11fb1b49386618a"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac66230589ec5088ca11fb1b49386618a">TCMDEXEC_echo_back_args</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
+<tr class="memdesc:ac66230589ec5088ca11fb1b49386618a"><td class="mdescLeft">&#160;</td><td class="mdescRight">A demo telecommand that echoes back the argument it received.  <br /></td></tr>
 <tr class="separator:ac66230589ec5088ca11fb1b49386618a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ae77884461dfbf9b764fbdad99ed497" id="r_a5ae77884461dfbf9b764fbdad99ed497"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5ae77884461dfbf9b764fbdad99ed497">TCMDEXEC_echo_back_uint32_args</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
+<tr class="memdesc:a5ae77884461dfbf9b764fbdad99ed497"><td class="mdescLeft">&#160;</td><td class="mdescRight">A demo telecommand that echoes back each integer argument it received.  <br /></td></tr>
 <tr class="separator:a5ae77884461dfbf9b764fbdad99ed497"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a47c61131da7cd8beb840d6bd6e86b7fa" id="r_a47c61131da7cd8beb840d6bd6e86b7fa"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a47c61131da7cd8beb840d6bd6e86b7fa">TCMDEXEC_run_all_unit_tests</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
 <tr class="separator:a47c61131da7cd8beb840d6bd6e86b7fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -220,6 +222,17 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
+<p>A demo telecommand that echoes back the argument it received. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args_str</td><td><ul>
+<li>Arg 0: The string to echo back. </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="a5ae77884461dfbf9b764fbdad99ed497" name="a5ae77884461dfbf9b764fbdad99ed497"></a>
@@ -250,12 +263,26 @@ Here is the call graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>A demo telecommand that echoes back each integer argument it received. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args_str</td><td>3 integer arguments to echo back.<ul>
+<li>Arg 0: The first integer to echo back.</li>
+<li>Arg 1: The second integer to echo back.</li>
+<li>Arg 2: The third integer to echo back. </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 if all ints are parsed successfully, otherwise the error code of the first failed parse. </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="testing__telecommand__defs_8h_a5ae77884461dfbf9b764fbdad99ed497_cgraph.png" border="0" usemap="#atesting__telecommand__defs_8h_a5ae77884461dfbf9b764fbdad99ed497_cgraph" alt=""/></div>
 <map name="atesting__telecommand__defs_8h_a5ae77884461dfbf9b764fbdad99ed497_cgraph" id="atesting__telecommand__defs_8h_a5ae77884461dfbf9b764fbdad99ed497_cgraph">
-<area shape="rect" title=" " alt="" coords="5,5,168,46"/>
+<area shape="rect" title="A demo telecommand that echoes back each integer argument it received." alt="" coords="5,5,168,46"/>
 <area shape="rect" href="telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="216,13,387,38"/>
 <area shape="poly" title=" " alt="" coords="168,23,200,23,200,28,168,28"/>
 <area shape="rect" href="telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="435,13,587,38"/>
