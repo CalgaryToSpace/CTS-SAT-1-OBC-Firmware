@@ -75,6 +75,7 @@ const osThreadAttr_t defaultTask_attributes = {
 // The STM32 has 640 KB of RAM.
 // For CTS-SAT-1, please create threads here (and not in the IOC file).
 // Don't forget to add the thread much farther down, also.
+// Per the IOC file, the "TOTAL_HEAP_SIZE" (where task stacks are allocated) is 32,768 bytes of RAM.
 
 osThreadId_t TASK_DEBUG_print_heartbeat_Handle;
 const osThreadAttr_t TASK_DEBUG_print_heartbeat_Attributes = {
