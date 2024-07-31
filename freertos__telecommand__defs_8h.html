@@ -93,15 +93,19 @@ $(function(){ initResizable(false); });
   <div class="headertitle"><div class="title">freertos_telecommand_defs.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="telecommand__types_8h_source.html">telecommands/telecommand_types.h</a>&quot;</code><br />
+<code>#include &lt;stdint.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for freertos_telecommand_defs.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="freertos__telecommand__defs_8h__incl.png" border="0" usemap="#afirmware_2Core_2Inc_2telecommands_2freertos__telecommand__defs_8h" alt=""/></div>
 <map name="afirmware_2Core_2Inc_2telecommands_2freertos__telecommand__defs_8h" id="afirmware_2Core_2Inc_2telecommands_2freertos__telecommand__defs_8h">
-<area shape="rect" title=" " alt="" coords="5,5,218,46"/>
-<area shape="rect" title=" " alt="" coords="80,94,143,120"/>
-<area shape="poly" title=" " alt="" coords="114,46,114,78,109,78,109,46"/>
+<area shape="rect" title=" " alt="" coords="59,5,271,46"/>
+<area shape="rect" href="telecommand__types_8h.html" title=" " alt="" coords="5,94,194,135"/>
+<area shape="poly" title=" " alt="" coords="152,48,126,83,121,80,148,45"/>
+<area shape="rect" title=" " alt="" coords="133,183,196,208"/>
+<area shape="poly" title=" " alt="" coords="183,45,197,67,209,93,213,114,209,135,200,155,188,172,184,169,195,152,204,134,207,114,204,95,193,69,178,48"/>
+<area shape="poly" title=" " alt="" coords="118,133,147,169,143,172,114,137"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -124,8 +128,68 @@ Functions</h2></td></tr>
 <tr class="memitem:affe196d014edd887070db68b5e50dcda" id="r_affe196d014edd887070db68b5e50dcda"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#affe196d014edd887070db68b5e50dcda">TCMDEXEC_freetos_list_tasks_jsonl</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
 <tr class="memdesc:affe196d014edd887070db68b5e50dcda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Telecommand that return metadata regarding Tasks from FreeRTOS.  <br /></td></tr>
 <tr class="separator:affe196d014edd887070db68b5e50dcda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b904b2dbd48309aca904123e16216c8" id="r_a1b904b2dbd48309aca904123e16216c8"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1b904b2dbd48309aca904123e16216c8">TCMDEXEC_freertos_demo_stack_usage</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
+<tr class="memdesc:a1b904b2dbd48309aca904123e16216c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Demo using stack memory by allocating a Variable-Length Array (VLA) on the stack.  <br /></td></tr>
+<tr class="separator:a1b904b2dbd48309aca904123e16216c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="a1b904b2dbd48309aca904123e16216c8" name="a1b904b2dbd48309aca904123e16216c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b904b2dbd48309aca904123e16216c8">&#9670;&#160;</a></span>TCMDEXEC_freertos_demo_stack_usage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t TCMDEXEC_freertos_demo_stack_usage </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>args_str</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a></td>          <td class="paramname"><span class="paramname"><em>tcmd_channel</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>response_output_buf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>response_output_buf_len</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Demo using stack memory by allocating a Variable-Length Array (VLA) on the stack. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args_str</td><td><ul>
+<li>Arg 0: num_bytes (uint64_t) - The number of elements to allocate in the VLA. &lt;=1_000_000. </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, &gt;0 on error </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="freertos__telecommand__defs_8h_a1b904b2dbd48309aca904123e16216c8_cgraph.png" border="0" usemap="#afreertos__telecommand__defs_8h_a1b904b2dbd48309aca904123e16216c8_cgraph" alt=""/></div>
+<map name="afreertos__telecommand__defs_8h_a1b904b2dbd48309aca904123e16216c8_cgraph" id="afreertos__telecommand__defs_8h_a1b904b2dbd48309aca904123e16216c8_cgraph">
+<area shape="rect" title="Demo using stack memory by allocating a Variable&#45;Length Array (VLA) on the stack." alt="" coords="5,27,188,68"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="236,5,407,31"/>
+<area shape="poly" title=" " alt="" coords="188,33,220,29,221,34,189,38"/>
+<area shape="rect" href="timekeeping_8c.html#a94e564d601196fe7f3e2bc83050deb12" title=" " alt="" coords="239,55,404,96"/>
+<area shape="poly" title=" " alt="" coords="189,56,224,61,223,66,188,62"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="455,5,607,31"/>
+<area shape="poly" title=" " alt="" coords="408,16,439,16,439,21,408,21"/>
+</map>
+</div>
+
+</div>
+</div>
 <a id="affe196d014edd887070db68b5e50dcda" name="affe196d014edd887070db68b5e50dcda"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#affe196d014edd887070db68b5e50dcda">&#9670;&#160;</a></span>TCMDEXEC_freetos_list_tasks_jsonl()</h2>
 
