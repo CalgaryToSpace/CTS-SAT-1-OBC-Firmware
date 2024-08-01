@@ -34,7 +34,7 @@ uint8_t TCMDEXEC_ADCS_set_wheel_speed(const char *args_str, TCMD_TelecommandChan
     uint64_t arguments[num_args]; 
     int16_t args_16[num_args];
     for (uint8_t i = 0; i < num_args; i++) {
-        TCMD_extract_int64_arg(args_str, strlen((char*)args_str), i, &arguments[i]);
+        TCMD_extract_int64_arg(args_str, strlen(args_str), i, &arguments[i]);
         args_16[i] = (int16_t) arguments[i];
     }
     
@@ -89,7 +89,7 @@ uint8_t TCMDEXEC_ADCS_communication_status(const char *args_str, TCMD_Telecomman
 uint8_t TCMDEXEC_ADCS_deploy_magnetometer(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                           char *response_output_buf, uint16_t response_output_buf_len) {
     uint64_t timeout;
-    TCMD_extract_uint64_arg(args_str, strlen((char*)args_str), 0, &timeout);
+    TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &timeout);
     uint8_t status = ADCS_Deploy_Magnetometer((uint8_t) timeout);
     return status;
 }                                
@@ -101,7 +101,7 @@ uint8_t TCMDEXEC_ADCS_deploy_magnetometer(const char *args_str, TCMD_Telecommand
 uint8_t TCMDEXEC_ADCS_set_run_mode(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                    char *response_output_buf, uint16_t response_output_buf_len) {
     uint64_t run_mode;
-    TCMD_extract_uint64_arg(args_str, strlen((char*)args_str), 0, &run_mode);
+    TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &run_mode);
     uint8_t status = ADCS_Set_Run_Mode((ADCS_Run_Mode) run_mode); 
     return status;
 }                        
@@ -127,7 +127,7 @@ uint8_t TCMDEXEC_ADCS_attitude_control_mode(const char *args_str, TCMD_Telecomma
     uint8_t num_args = 2;
     uint64_t arguments[num_args]; 
     for (uint8_t i = 0; i < num_args; i++) {
-        TCMD_extract_uint64_arg(args_str, strlen((char*)args_str), i, &arguments[i]);
+        TCMD_extract_uint64_arg(args_str, strlen(args_str), i, &arguments[i]);
     }
     // then convert to correct form for input
     uint8_t status = ADCS_Attitude_Control_Mode((ADCS_Control_Mode) arguments[0], (uint16_t) arguments[1]);
@@ -141,7 +141,7 @@ uint8_t TCMDEXEC_ADCS_attitude_control_mode(const char *args_str, TCMD_Telecomma
 uint8_t TCMDEXEC_ADCS_attitude_estimation_mode(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                char *response_output_buf, uint16_t response_output_buf_len) {
     uint64_t estimation_mode;
-    TCMD_extract_uint64_arg(args_str, strlen((char*)args_str), 0, &estimation_mode);
+    TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &estimation_mode);
     uint8_t status = ADCS_Attitude_Estimation_Mode((ADCS_Estimation_Mode) estimation_mode); 
     return status;
 }                                    
@@ -163,7 +163,7 @@ uint8_t TCMDEXEC_ADCS_run_once(const char *args_str, TCMD_TelecommandChannel_enu
 uint8_t TCMDEXEC_ADCS_set_magnetometer_mode(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
     uint64_t mode;
-    TCMD_extract_uint64_arg(args_str, strlen((char*)args_str), 0, &mode);
+    TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &mode);
     uint8_t status = ADCS_Set_Magnetometer_Mode((ADCS_Magnetometer_Mode) mode);
     return status;
 }                                
@@ -180,7 +180,7 @@ uint8_t TCMDEXEC_ADCS_set_magnetorquer_output(const char *args_str, TCMD_Telecom
     uint8_t num_args = 3;
     double arguments[num_args]; 
     for (uint8_t i = 0; i < num_args; i++) {
-        TCMD_extract_double_arg(args_str, strlen((char*)args_str), i, &arguments[i]);
+        TCMD_extract_double_arg(args_str, strlen(args_str), i, &arguments[i]);
     }
     
     uint8_t status = ADCS_Set_Magnetorquer_Output(arguments[0], arguments[1], arguments[2]);
@@ -248,7 +248,7 @@ uint8_t TCMDEXEC_ADCS_set_power_control(const char *args_str, TCMD_TelecommandCh
     uint64_t arguments[num_args]; 
     uint8_t args_8[num_args];
     for (uint8_t i = 0; i < num_args; i++) {
-        TCMD_extract_uint64_arg(args_str, strlen((char*)args_str), i, &arguments[i]);
+        TCMD_extract_uint64_arg(args_str, strlen(args_str), i, &arguments[i]);
         args_8[i] = (uint8_t) arguments[i];
     }
     
@@ -281,14 +281,12 @@ uint8_t TCMDEXEC_ADCS_set_magnetometer_config(const char *args_str, TCMD_Telecom
     uint8_t num_args = 15;
     double arguments[num_args]; 
     for (uint8_t i = 0; i < num_args; i++) {
-        TCMD_extract_double_arg(args_str, strlen((char*)args_str), i, &arguments[i]);
+        TCMD_extract_double_arg(args_str, strlen(args_str), i, &arguments[i]);
     }
     
     uint8_t status = ADCS_Set_Magnetometer_Config(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], arguments[6], arguments[7], arguments[8], arguments[9], arguments[10], arguments[11], arguments[12], arguments[13], arguments[14]);
     return status;
 }     
-
-// TODO: 7 telecommands remaining! (Find the placeholder 255 values and deal with them)
 
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 
@@ -302,11 +300,22 @@ uint8_t TCMDEXEC_ADCS_bootloader_clear_errors(const char *args_str, TCMD_Telecom
 
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 
-///     - No arguments for this command
+///     - Arg 0: whether to save the current Unix time immediately
+///     - Arg 1: whether to save the current Unix time whenever a command is used to update it
+///     - Arg 2: whether to save the current Unix time periodically
+///     - Arg 3: the period of saving the current Unix time
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_unix_time_save_mode(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    uint64_t bools[3];
+    uint64_t uint_arg;
+    for (uint8_t i = 0; i < 3; i++) {
+        TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &bools);
+    }
+    
+    TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &uint_arg);
+
+    uint8_t status = ADCS_Set_Unix_Time_Save_Mode(bools[0], bools[1], bools[2], (uint8_t) uint_arg);
     return status;
 }                                    
 
@@ -319,6 +328,8 @@ uint8_t TCMDEXEC_ADCS_get_unix_time_save_mode(const char *args_str, TCMD_Telecom
     uint8_t status = ADCS_Get_Unix_Time_Save_Mode();
     return status;
 }                                    
+
+// TODO: 6 telecommands remaining! (Find the placeholder 255 values and deal with them)
 
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 

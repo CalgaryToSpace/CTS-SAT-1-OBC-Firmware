@@ -498,6 +498,10 @@ uint8_t ADCS_Bootloader_Clear_Errors() {
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Set_Unix_Time_Save_Mode command.
+/// @param[in] save_now whether to save the current Unix time immediately
+/// @param[in] save_on_update whether to save the current Unix time whenever a command is used to update it
+/// @param[in] save_periodic whether to save the current Unix time periodically
+/// @param[in] period the period of saving the current Unix time
 /// @return 0 if successful, non-zero if a HAL error occurred in transmission.
 uint8_t ADCS_Set_Unix_Time_Save_Mode(bool save_now, bool save_on_update, bool save_periodic, uint8_t period) {
 	uint8_t data_send[2] = { (save_now | (save_on_update << 1) | (save_periodic << 2) ) , period}; // 2-byte data (from manual)
