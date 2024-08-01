@@ -279,7 +279,38 @@ uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChann
         return 90;
     }
 
-    // Reached the end of the telecommand parsing. Thus, success. Fill the output struct.
+    // ensure the corrent number of args are provided
+    int32_t num_args_expected = TCMD_telecommand_definitions[tcmd_idx].number_of_args;
+
+    char error_message[80];
+    snprintf(error_message, 80, "Error: TCMD_parse_full_telecommand: this telecommand acepts %d arguments.\n", num_args_expected);
+    if ( num_args_expected == 0 && arg_len > 0) {
+        DEBUG_uart_print_str(error_message);
+        return 100;
+    }
+    if ( num_args_expected > 0 && arg_len == 0) {
+        DEBUG_uart_print_str(error_message);
+        return 100;
+    }
+
+    char remaining_args_to_parse[arg_len + 1];
+    memcpy(remaining_args_to_parse, &args_str_no_parens, arg_len +1);
+
+    for (int32_t i = 0; i < num_args_expected - 1; i++) {
+        int32_t comma_idx = GEN_get_index_of_substring_in_array(remaining_args_to_parse, arg_len + 1 , ",");
+        if (comma_idx == -1) {
+            DEBUG_uart_print_str(error_message);
+            return 100;
+        }    
+        remaining_args_to_parse[comma_idx] = '_';
+    }
+    // check if more than the expected arguments were provided
+    int32_t comma_idx = GEN_get_index_of_substring_in_array(remaining_args_to_parse, arg_len + 1 , ",");
+    if (comma_idx != -1) {
+        DEBUG_uart_print_str(error_message);
+        return 100;
+    }
+// Reached the end of the telecommand parsing. Thus, success. Fill the output struct.
     parsed_tcmd_output->tcmd_idx = tcmd_idx;
     memset(parsed_tcmd_output->args_str_no_parens, 0, TCMD_ARGS_STR_NO_PARENS_SIZE); // Safety.
     memcpy(parsed_tcmd_output->args_str_no_parens, args_str_no_parens, arg_len + 1);

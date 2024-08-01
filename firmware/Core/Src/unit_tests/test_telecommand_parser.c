@@ -122,3 +122,16 @@ uint8_t TEST_EXEC__TCMD_ascii_to_double() {
 
     return 0;
 }
+
+uint8_t TEST_EXEC_TCMD_TCMD_parse_full_telecommand() {
+    TCMD_parsed_tcmd_to_execute_t parsed_tcmd;
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+hello_world()!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 0);
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+hello_world(a)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) != 0);
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+hello_world(a,1)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) != 0);
+
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+set_system_time(10)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 0);
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+set_system_time()!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) != 0);
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+set_system_time(10,1)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) != 0);
+    
+    return 0;
+}
