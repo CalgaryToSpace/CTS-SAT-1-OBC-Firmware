@@ -538,17 +538,25 @@ uint8_t ADCS_Pack_to_Unix_Time_Save_Mode(uint8_t *data_received, ADCS_Set_Unix_T
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Set_SGP4_Orbit_Params command.
+/// @param[in] inclination inclination (degrees)
+/// @param[in] eccentricity eccentricity (dimensionless)
+/// @param[in] ascending_node_right_ascension right ascension of the ascending node (degrees)
+/// @param[in] perigee_argument argument of perigee (degrees)
+/// @param[in] b_star_drag_term b-star drag term (dimensionless)
+/// @param[in] mean_motion mean motion (orbits per day)
+/// @param[in] mean_anomaly mean anomaly (degrees)
+/// @param[in] epoch epoch (double; integer component is year, decimal component is day)
 /// @return 0 if successful, non-zero if a HAL error occurred in transmission.
 uint8_t ADCS_Set_SGP4_Orbit_Params(double inclination, double eccentricity, double ascending_node_right_ascension,
-														//  degrees,					dimensionless, 		degrees
+								//         degrees,			   dimensionless, 		    degrees
 		double perigee_argument, double b_star_drag_term, double mean_motion, double mean_anomaly, double epoch) {
 		// degrees,					dimensionless,			orbits/day,			degrees,			years.days
 
-	uint8_t data_send[64] = {};
+	uint8_t data_send[64];
 
 	// convert doubles to arrays of uint8_t
-	memcpy(&data_send[0], &inclination, sizeof(inclination));
-	memcpy(&data_send[8], &eccentricity, sizeof(eccentricity));
+	memcpy(&data_send[0],  &inclination, sizeof(inclination));
+	memcpy(&data_send[8],  &eccentricity, sizeof(eccentricity));
 	memcpy(&data_send[16], &ascending_node_right_ascension, sizeof(ascending_node_right_ascension));
 	memcpy(&data_send[24], &perigee_argument, sizeof(perigee_argument));
 	memcpy(&data_send[32], &b_star_drag_term, sizeof(b_star_drag_term));
@@ -802,6 +810,9 @@ uint8_t ADCS_Pack_to_Commanded_Attitude_Angles(uint8_t *data_received, ADCS_Comm
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Set_Commanded_Attitude_Angles command.
+/// @param[in] x x attitude angle
+/// @param[in] y y attitude angle
+/// @param[in] z z attitude angle
 /// @return 0 if successful, non-zero if a HAL error occurred in transmission.
 uint8_t ADCS_Set_Commanded_Attitude_Angles(double x, double y, double z) {
 	// raw parameter value is obtained using the formula: (raw parameter) = (formatted value)*100.0
@@ -907,7 +918,7 @@ uint8_t ADCS_Pack_to_Estimation_Params(uint8_t* data_received, ADCS_Estimation_P
 /// @brief Instruct the ADCS to execute the ADCS_Set_ASGP4_Params command.
 /// @return 0 if successful, non-zero if a HAL error occurred in transmission.
 uint8_t ADCS_Set_ASGP4_Params(double incl_coefficient, double raan_coefficient, double ecc_coefficient, double aop_coefficient, double time_coefficient, double pos_coefficient, double maximum_position_error, ADCS_ASGP4_Filter asgp4_filter, double xp_coefficient, double yp_coefficient, uint8_t gps_roll_over, double position_sd, double velocity_sd, uint8_t min_satellites, double time_gain, double max_lag, uint16_t min_samples) {
-	uint8_t data_send[30] = {}; // from Table 209
+	uint8_t data_send[30]; // from Table 209
 
 	// populate data_send
 	ADCS_switch_order(data_send, (uint16_t) (incl_coefficient * 1000), 0);
@@ -977,6 +988,9 @@ uint8_t ADCS_Pack_to_ASGP4_Params(uint8_t* data_received, ADCS_ASGP4_Params_Stru
 
 
 /// @brief Instruct the ADCS to execute the ADCS_Set_Tracking_Controller_Target_Reference command.
+/// @param[in] lon longitude
+/// @param[in] lat latitude
+/// @param[in] alt altitude
 /// @return 0 if successful, non-zero if a HAL error occurred in transmission.
 uint8_t ADCS_Set_Tracking_Controller_Target_Reference(float lon, float lat, float alt) {
 	uint8_t data_send[12];

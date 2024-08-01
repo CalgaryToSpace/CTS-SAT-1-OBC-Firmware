@@ -23,9 +23,9 @@ uint8_t TCMDEXEC_ADCS_ack(const char *args_str, TCMD_TelecommandChannel_enum_t t
 
 /// @brief Telecommand: Set the wheel speed of the ADCS
 /// @param args_str 
-///     - Arg 0: Wheel speed X value
-///     - Arg 1: Wheel speed Y value
-///     - Arg 2: Wheel speed Z value
+///     - Arg 0: wheel speed x value
+///     - Arg 1: wheel speed y value
+///     - Arg 2: wheel speed z value
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_wheel_speed(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
@@ -170,9 +170,9 @@ uint8_t TCMDEXEC_ADCS_set_magnetometer_mode(const char *args_str, TCMD_Telecomma
 
 /// @brief Telecommand: Set the magnetorquer output values
 /// @param args_str 
-///     - Arg 0: Magnetorquer X duty cycle
-///     - Arg 1: Magnetorquer Y duty cycle
-///     - Arg 2: Magnetorquer Z duty cycle
+///     - Arg 0: magnetorquer x duty cycle
+///     - Arg 1: magnetorquer y duty cycle
+///     - Arg 2: magnetorquer z duty cycle
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_magnetorquer_output(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
@@ -329,15 +329,27 @@ uint8_t TCMDEXEC_ADCS_get_unix_time_save_mode(const char *args_str, TCMD_Telecom
     return status;
 }                                    
 
-// TODO: 6 telecommands remaining! (Find the placeholder 255 values and deal with them)
-
-/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @brief Telecommand: Set the ADCS Simplified General Perturbations (SGP4) orbit parameters
 /// @param args_str 
-///     - No arguments for this command
+///     - Arg 0: inclination (degrees)
+///     - Arg 1: eccentricity (dimensionless)
+///     - Arg 2: right ascension of the ascending node (degrees)
+///     - Arg 3: argument of perigee (degrees)
+///     - Arg 4: b-star drag term (dimensionless)
+///     - Arg 5: mean motion (orbits per day)
+///     - Arg 6: mean anomaly (degrees)
+///     - Arg 7: epoch (double; integer component is year, decimal component is day)
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_sgp4_orbit_params(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    // parse arguments into doubles
+    uint8_t num_args = 8;
+    double arguments[num_args]; 
+    for (uint8_t i = 0; i < num_args; i++) {
+        TCMD_extract_double_arg(args_str, strlen(args_str), i, &arguments[i]);
+    }                                            
+
+    uint8_t status = ADCS_Set_SGP4_Orbit_Params(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], arguments[6], arguments[7]);
     return status;
 }                                
 
@@ -433,13 +445,24 @@ uint8_t TCMDEXEC_ADCS_get_commanded_attitude_angles(const char *args_str, TCMD_T
 
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 
-///     - No arguments for this command
+///     - Arg 0: x attitude angle
+///     - Arg 1: y attitude angle
+///     - Arg 2: z attitude angle
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_commanded_attitude_angles(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                     char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    // parse arguments into doubles
+    uint8_t num_args = 3;
+    double arguments[num_args]; 
+    for (uint8_t i = 0; i < num_args; i++) {
+        TCMD_extract_double_arg(args_str, strlen(args_str), i, &arguments[i]);
+    }
+
+    uint8_t status = ADCS_Set_Commanded_Attitude_Angles(arguments[0], arguments[1], arguments[2]); 
     return status;
-}                                        
+}          
+
+// TODO: 3 telecommands remaining! (Find the placeholder 255 values and deal with them)
 
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 
@@ -481,13 +504,23 @@ uint8_t TCMDEXEC_ADCS_get_asgp4_params(const char *args_str, TCMD_TelecommandCha
     return status;
 }                            
 
-/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @brief Telecommand: Set the ADCS tracking controller target reference (location on Earth to point towards)
 /// @param args_str 
-///     - No arguments for this command
+///     - Arg 0: longitude
+///     - Arg 1: latitude
+///     - Arg 2: altitude
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_tracking_controller_target_reference(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                                 char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    // parse arguments into doubles
+    uint8_t num_args = 3;
+    double arguments[num_args]; 
+    for (uint8_t i = 0; i < num_args; i++) {
+        TCMD_extract_double_arg(args_str, strlen(args_str), i, &arguments[i]);
+    }
+
+    uint8_t status = ADCS_Set_Tracking_Controller_Target_Reference((float) arguments[0], (float) arguments[1], (float) arguments[2]); 
+    
     return status;
 }                                                    
 

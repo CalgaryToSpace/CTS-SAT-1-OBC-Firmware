@@ -374,7 +374,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "adcs_set_sgp4_orbit_params",
         .tcmd_func = TCMDEXEC_ADCS_set_sgp4_orbit_params,
-        .number_of_args = 0,
+        .number_of_args = 8,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
@@ -434,7 +434,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "adcs_set_commanded_attitude_angles",
         .tcmd_func = TCMDEXEC_ADCS_set_commanded_attitude_angles,
-        .number_of_args = 0,
+        .number_of_args = 3,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
@@ -464,7 +464,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "adcs_set_tracking_controller_target_reference",
         .tcmd_func = TCMDEXEC_ADCS_set_tracking_controller_target_reference,
-        .number_of_args = 0,
+        .number_of_args = 3,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
