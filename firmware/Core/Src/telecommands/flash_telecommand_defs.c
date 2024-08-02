@@ -202,7 +202,7 @@ uint8_t TCMDEXEC_flash_write_hex(const char *args_str, TCMD_TelecommandChannel_e
     uint32_t flash_addr = (uint32_t)flash_addr_u64;
 
 
-    FLASH_error_enum_t result = FLASH_write(&hspi1, chip_num, flash_addr, bytes_to_write, num_bytes);
+    FLASH_error_enum_t result = FLASH_write_data(&hspi1, chip_num, flash_addr, bytes_to_write, num_bytes);
 
     if (result != 0) {
         snprintf(
