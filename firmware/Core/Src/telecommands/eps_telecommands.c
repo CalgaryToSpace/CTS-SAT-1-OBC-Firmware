@@ -51,10 +51,41 @@ uint8_t TCMDEXEC_eps_get_system_status_json(const uint8_t *args_str,
 }
 
 // Ebube's Addition: --------------------------------------------------------------------------------
-uint8_t TCMDEXEC_eps_vpid_raw_json(const uint8_t *args_str,
+/// @brief Gets the voltage, power and current data, and returns it as a JSON string
+/// @return 0 on success, >0 on failure 
+// NOTE: There is no command for this in the "eps_commands"
+// uint8_t TCMDEXEC_eps_vpid_raw_json(const uint8_t *args_str,
+//                         TCMD_TelecommandChannel_enum_t tcmd_channel,
+//                         char *response_output_buf, uint16_t response_output_buf_len) {
+//         if(result_json != )
+// }
+
+/// @brief Triggered if there is an overcurrent detected (sharp spike in current)
+/// @return 0 if there is no overcurrent detected, >0 is overcurrent is detected
+// NOTE - please double check this!
+uint8_t TCMDEXEC_eps_get_pdu_overcurrent_fault_state_json(const uint8_t *args_str,
                         TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    EPS_result_pdu_overcurrent_fault_state_t status;
+    const uint8_t result = EPS_CMD_get_pdu_overcurrent_fault_state(&status);
 
+    if (result != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS get system status failed (err %d)", result);
+        return 1;
+    }
 
+    const uint8_t result_json = EPS_result_system_status_TO_json(
+        &status, response_output_buf, response_output_buf_len);
 
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS get system status JSON failed (err %d)", result_json);
+        return 2;
+    }
+    return 0;
 }
+
+// Info is sent if there is overcurrent detected (see page 50 in Software ICD)
+// EPS_CMD_get_pdu_overcurrent_fault_state
