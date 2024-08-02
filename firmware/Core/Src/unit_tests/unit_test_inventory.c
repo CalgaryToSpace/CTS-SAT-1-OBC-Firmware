@@ -61,7 +61,7 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func_name = "TCMD_ascii_to_double"
     },
     {
-        .test_func = TEST_EXEC_TCMD_TCMD_parse_full_telecommand,
+        .test_func = TEST_EXEC_TCMD_parse_full_telecommand,
         .test_file = "telecommands/telecommand_parser",
         .test_func_name = "TCMD_parse_full_telecommand"
     },

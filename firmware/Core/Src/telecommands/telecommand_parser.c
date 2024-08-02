@@ -220,7 +220,7 @@ uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChann
 
     // Get the telecommand definition.
     TCMD_TelecommandDefinition_t tcmd_def = TCMD_telecommand_definitions[tcmd_idx];
-
+    
     // Args: Check opening parenthesis index.
     uint32_t start_of_args_idx = TCMD_PREFIX_STR_LEN + strlen(tcmd_def.tcmd_name);
     if (tcmd_str_len < start_of_args_idx + 1) {
@@ -281,32 +281,25 @@ uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChann
 
     // ensure the corrent number of args are provided
     int32_t num_args_expected = TCMD_telecommand_definitions[tcmd_idx].number_of_args;
+    char* tcmd_name = TCMD_telecommand_definitions[tcmd_idx].tcmd_name;
 
-    char error_message[80];
-    snprintf(error_message, 80, "Error: TCMD_parse_full_telecommand: this telecommand acepts %d arguments.\n", num_args_expected);
-    if ( num_args_expected == 0 && arg_len > 0) {
-        DEBUG_uart_print_str(error_message);
-        return 100;
-    }
-    if ( num_args_expected > 0 && arg_len == 0) {
-        DEBUG_uart_print_str(error_message);
-        return 100;
-    }
-
-    char remaining_args_to_parse[arg_len + 1];
-    memcpy(remaining_args_to_parse, &args_str_no_parens, arg_len +1);
-
-    for (int32_t i = 0; i < num_args_expected - 1; i++) {
-        int32_t comma_idx = GEN_get_index_of_substring_in_array(remaining_args_to_parse, arg_len + 1 , ",");
-        if (comma_idx == -1) {
-            DEBUG_uart_print_str(error_message);
-            return 100;
+    char error_message[130];
+    snprintf(error_message, sizeof(error_message), "Error: TCMD_parse_full_telecommand: %s() accepts %d argument(s).\n", tcmd_name, num_args_expected);
+    // if ( num_args_expected == 0 && arg_len > 0) {
+    //     DEBUG_uart_print_str(error_message);
+    //     return 100;
+    // }
+    int32_t num_commas = 0;
+    for (int32_t i = 0; i < arg_len + 1; i++) {
+        if (args_str_no_parens[i] == ',') {
+            num_commas++;
         }    
-        remaining_args_to_parse[comma_idx] = '_';
     }
-    // check if more than the expected arguments were provided
-    int32_t comma_idx = GEN_get_index_of_substring_in_array(remaining_args_to_parse, arg_len + 1 , ",");
-    if (comma_idx != -1) {
+    int32_t takes_no_arguments_and_none_provided = num_args_expected == 0 && arg_len == 0;
+    int32_t takes_one_argument_and_one_provided = num_args_expected == 1 && arg_len != 0 && num_commas == 0;
+    int32_t has_correct_number_of_commas = num_commas == num_args_expected - 1 && num_args_expected > 1;
+    int32_t correct_number_of_args_provided = takes_no_arguments_and_none_provided || takes_one_argument_and_one_provided || has_correct_number_of_commas;
+    if (!correct_number_of_args_provided) {
         DEBUG_uart_print_str(error_message);
         return 100;
     }
