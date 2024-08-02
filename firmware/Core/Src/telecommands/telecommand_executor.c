@@ -120,7 +120,9 @@ uint8_t TCMD_execute_parsed_telecommand_now(const uint16_t tcmd_idx, const char 
     DEBUG_uart_print_str("=========================");
     DEBUG_uart_print_str(" Executing telecommand '");
     DEBUG_uart_print_str(tcmd_def.tcmd_name);
-    DEBUG_uart_print_str("=========================\n");
+    DEBUG_uart_print_str("'=========================\n");
+    
+    
 
     // Handle the telecommand by calling the appropriate function.
     // Null-terminate the args string.
