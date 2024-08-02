@@ -106,12 +106,21 @@ Features</h1>
 <h1><a class="anchor" id="autotoc_md3"></a>
 Getting Started</h1>
 <ol type="1">
-<li>Install Python 3.11 from the Microsoft Store.</li>
+<li>On sub-par operating systems:<ul>
+<li><b>On Windows:</b> Install Linux. Or, if you're stubborn, do this:<ol type="a">
+<li>Install "Python 3.12" from the Microsoft Store.</li>
+<li>Install "Windows Terminal" from the Microsoft Store.</li>
+<li>Open a Powershell Terminal as Administrator, and run: <code>Set-ExecutionPolicy Unrestricted</code></li>
+<li>Close the Powershell Terminal (opened as Administrator).</li>
+</ol>
+</li>
+</ul>
+</li>
 <li>Clone this repo, and open a terminal in this repo's root.</li>
-<li>Run <code>python3.11 -m venv venv/</code> to create a Python virtual environment named <code>venv/</code> in the current directory.</li>
+<li>Run <code>python3 -m venv venv/</code> to create a Python virtual environment named <code>venv/</code> in the current directory.</li>
 <li>Run <code>./venv/Scripts/activate</code> (on Windows), or <code>source ./venv/bin/activate</code> (on real operating systems).</li>
-<li>Run <code>pip install -e <a class="el" href="namespacects1__ground__support.html">cts1_ground_support</a></code> to install this Python Project in your virtual environment.</li>
-<li>Run <code><a class="el" href="namespacects1__ground__support.html">cts1_ground_support</a> --help</code> to ensure it worked.</li>
+<li>Run <code>pip install -e <a class="el" href="namespacects1__ground__support.html">cts1_ground_support</a>[dev]</code> to install this Python Project in your virtual environment.</li>
+<li>Run <code><a class="el" href="namespacects1__ground__support.html">cts1_ground_support</a> --help</code> to ensure it installed.</li>
 <li>Run <code><a class="el" href="namespacects1__ground__support.html">cts1_ground_support</a></code> to start the ground support terminal.</li>
 <li>Visit <a href="http://127.0.0.1:8050/">http://127.0.0.1:8050/</a> in a web browser to view the web interface and send commands to your dev kit.</li>
 </ol>
@@ -122,7 +131,7 @@ Development</h1>
 <li>Run <code>pip install -e <a class="el" href="namespacects1__ground__support.html">cts1_ground_support</a>[dev]</code> to install the development dependencies.</li>
 <li>Run <code><a class="el" href="namespacects1__ground__support.html">cts1_ground_support</a> --debug</code> to start the ground support terminal in debug mode.</li>
 </ol>
-<p>The gound support terminal will automatically reload when you make changes to the code. It is written using the Dash framework in Python, which is well-documented via Google searches. </p>
+<p>The ground support terminal will automatically reload when you make changes to the code. It is written using the Dash framework in Python, which is well-documented via Google searches. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->
