@@ -117,9 +117,10 @@ uint8_t TCMD_execute_parsed_telecommand_now(const uint16_t tcmd_idx, const char 
     }
     TCMD_TelecommandDefinition_t tcmd_def = TCMD_telecommand_definitions[tcmd_idx];
 
-    DEBUG_uart_print_str("======== Executing telecommand '");
+    DEBUG_uart_print_str("=========================");
+    DEBUG_uart_print_str(" Executing telecommand '");
     DEBUG_uart_print_str(tcmd_def.tcmd_name);
-    DEBUG_uart_print_str("' ========\n");
+    DEBUG_uart_print_str("=========================\n");
 
     // Handle the telecommand by calling the appropriate function.
     // Null-terminate the args string.
@@ -133,16 +134,17 @@ uint8_t TCMD_execute_parsed_telecommand_now(const uint16_t tcmd_idx, const char 
     const uint32_t tcmd_exec_duration_ms = uptime_after_tcmd_exec_ms - uptime_before_tcmd_exec_ms;
 
     // Print back the response.
-    DEBUG_uart_print_str("======== Response (duration=");
+    DEBUG_uart_print_str("=========================");
+    DEBUG_uart_print_str(" Response (duration=");
     DEBUG_uart_print_int32(tcmd_exec_duration_ms);
     DEBUG_uart_print_str("ms, err=");
     DEBUG_uart_print_uint32(tcmd_result);
     if (tcmd_result != 0) {
         DEBUG_uart_print_str(" !!!!!! ERROR !!!!!!");
     }
-    DEBUG_uart_print_str(") ========\n");
+    DEBUG_uart_print_str(") =========================\n");
     DEBUG_uart_print_str(response_output_buf);
-    DEBUG_uart_print_str("\n==========================\n");
+    DEBUG_uart_print_str("\n=========================\n");
 
     return tcmd_result;
 }
