@@ -87,8 +87,8 @@ $(function(){ initResizable(false); });
   <div class="headertitle"><div class="title">C Namespaces</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md10"></a> Every non-local C function, enum, typedef, etc. in this codebase shall be prefixed with one of the following uppercase identifiers to indicate which subsystem/region of code it belongs to.</p>
-<h1><a class="anchor" id="autotoc_md11"></a>
+<div class="textblock"><p><a class="anchor" id="autotoc_md22"></a> Every non-local C function, enum, typedef, etc. in this codebase shall be prefixed with one of the following uppercase identifiers to indicate which subsystem/region of code it belongs to.</p>
+<h1><a class="anchor" id="autotoc_md23"></a>
 General Code</h1>
 <ul>
 <li><code>TCMD_</code>: related to the telecommand parsing system</li>
@@ -116,7 +116,7 @@ General Code</h1>
 </ul>
 </li>
 </ul>
-<h1><a class="anchor" id="autotoc_md12"></a>
+<h1><a class="anchor" id="autotoc_md24"></a>
 Satellite Subsystems</h1>
 <ul>
 <li><code>ADCS_</code>: duh</li>
@@ -138,13 +138,13 @@ Satellite Subsystems</h1>
 </ul>
 </li>
 </ul>
-<h1><a class="anchor" id="autotoc_md13"></a>
+<h1><a class="anchor" id="autotoc_md25"></a>
 Other Conventions</h1>
 <ul>
 <li><code>_CFG_</code>: Variables can contain <code>_CFG_</code> to indicate that they are configuration variables of another subsystem/namespace. For example, <code>EPS_CFG_</code> denotes an EPS subsystem configuration variable.</li>
 <li><code>_CMD_</code>: Functions can contain <code>_CMD_</code> to indicate that they trigger a command to that subsystem. For example, <code>EPS_CMD_</code> denotes a function which triggers a command to the EPS subsystem (and gets the EPS's response).</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md14"></a>
+<h1><a class="anchor" id="autotoc_md26"></a>
 Libraries, External, etc.</h1>
 <ul>
 <li><code>HAL_</code>: STM32 HAL (Hardware Abstraction Layer)</li>

@@ -1,4 +1,10 @@
 var searchData=
 [
-  ['xportpendsvhandler_0',['xPortPendSVHandler',['../FreeRTOSConfig_8h.html#a6f30022da7d797dd31f1b8a11cae9a35',1,'FreeRTOSConfig.h']]]
+  ['variable_5fname_0',['variable_name',['../structCONFIG__integer__config__entry__t.html#a59720ad8835b796dec4cc5a88c6fb38e',1,'CONFIG_integer_config_entry_t::variable_name'],['../structCONFIG__string__config__entry__t.html#a98f862068fe5e95a3d54d04219f87a10',1,'CONFIG_string_config_entry_t::variable_name']]],
+  ['variable_5fpointer_1',['variable_pointer',['../structCONFIG__string__config__entry__t.html#aafefc806e9538e16be0d53c50d5275a3',1,'CONFIG_string_config_entry_t']]],
+  ['vdd_5fvalue_2',['VDD_VALUE',['../stm32l4xx__hal__conf_8h.html#aae550dad9f96d52cfce5e539adadbbb4',1,'stm32l4xx_hal_conf.h']]],
+  ['version_3',['version',['../structlfs__superblock.html#a06e9dc926560cd09cf3d6648a7554443',1,'lfs_superblock']]],
+  ['vportsvchandler_4',['vPortSVCHandler',['../FreeRTOSConfig_8h.html#ad43047b3ea0a146673e30637488bf754',1,'FreeRTOSConfig.h']]],
+  ['vs_20code_5',['Tips for Navigating in VS Code',['../md_docs_230__Repo__Organization.html#autotoc_md16',1,'']]],
+  ['vs_20code_20setup_20procedure_6',['VS Code Setup Procedure',['../md_docs_200__Getting__Started.html#autotoc_md6',1,'']]]
 ];

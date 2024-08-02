@@ -1,26 +1,4 @@
 var searchData=
 [
-  ['a_20test_0',['How to Write a Test',['../md_docs_2C__Unit__Tests.html#autotoc_md18',1,'']]],
-  ['ahb_20prescaler_201_1',['AHB Prescaler                          | 1',['../system__stm32l4xx_8c.html#autotoc_md29',1,'']]],
-  ['ahbpresctable_2',['AHBPrescTable',['../group__STM32L4xx__System__Private__Variables.html#ga6e1d9cd666f0eacbfde31e9932a93466',1,'system_stm32l4xx.c']]],
-  ['and_20rng_20clock_3',['SDIO and RNG clock                     |',['../system__stm32l4xx_8c.html#autotoc_md43',1,'']]],
-  ['and_20using_20the_20ground_20support_20software_4',['Developing and Using the Ground Support Software',['../md_README.html#autotoc_md47',1,'']]],
-  ['apb1_20prescaler_201_5',['APB1 Prescaler                         | 1',['../system__stm32l4xx_8c.html#autotoc_md30',1,'']]],
-  ['apb2_20prescaler_201_6',['APB2 Prescaler                         | 1',['../system__stm32l4xx_8c.html#autotoc_md31',1,'']]],
-  ['apbpresctable_7',['APBPrescTable',['../group__STM32L4xx__System__Private__Variables.html#ga5b4f8b768465842cf854a8f993b375e9',1,'system_stm32l4xx.c']]],
-  ['app_5fconfig_2epy_8',['app_config.py',['../app__config_8py.html',1,'']]],
-  ['app_5fstore_9',['app_store',['../namespacects1__ground__support_1_1terminal__app_1_1app__store.html#ad168e4eeb8c2214c9d15624ebcdd54bb',1,'cts1_ground_support::terminal_app::app_store']]],
-  ['app_5fstore_2epy_10',['app_store.py',['../app__store_8py.html',1,'']]],
-  ['app_5ftypes_2epy_11',['app_types.py',['../app__types_8py.html',1,'']]],
-  ['appstore_12',['AppStore',['../classcts1__ground__support_1_1terminal__app_1_1app__store_1_1AppStore.html',1,'cts1_ground_support::terminal_app::app_store']]],
-  ['args_5fstr_5fno_5fparens_13',['args_str_no_parens',['../structTCMD__parsed__tcmd__to__execute__t.html#a6e2685dc71e0fa5bcbc1c89be53b6f66',1,'TCMD_parsed_tcmd_to_execute_t']]],
-  ['argument_5fdescriptions_14',['argument_descriptions',['../classcts1__ground__support_1_1telecommand__types_1_1TelecommandDefinition.html#a9e702ad6ea26e7ca60889f2f17bfd306',1,'cts1_ground_support.telecommand_types.TelecommandDefinition.argument_descriptions'],['../classcts1__ground__support_1_1telecommand__types_1_1TelecommandDefinition.html#a145b439c80185b85e262c415d9da7e66',1,'cts1_ground_support.telecommand_types.TelecommandDefinition.argument_descriptions']]],
-  ['arrays_2ec_15',['arrays.c',['../arrays_8c.html',1,'']]],
-  ['arrays_2eh_16',['arrays.h',['../arrays_8h.html',1,'']]],
-  ['as_20follows_3a_17',['This file configures the system clock as follows:',['../system__stm32l4xx_8c.html#autotoc_md25',1,'']]],
-  ['assert_5fparam_18',['assert_param',['../stm32l4xx__hal__conf_8h.html#a631dea7b230e600555f979c62af1de21',1,'stm32l4xx_hal_conf.h']]],
-  ['attr_5fcount_19',['attr_count',['../structlfs__file__config.html#ab95351369bbecf9e30fca9f950681cdf',1,'lfs_file_config']]],
-  ['attr_5fmax_20',['attr_max',['../structlfs__config.html#a7066a4cd3c8fc8fad07a0fdadfe8754d',1,'lfs_config::attr_max'],['../structlfs__fsinfo.html#a15603fc061f646ef7fed72733c982937',1,'lfs_fsinfo::attr_max'],['../structlfs__superblock.html#a0e83ec964dc7e0ab1c0957606283279f',1,'lfs_superblock::attr_max'],['../structlfs.html#ae3c264e2e3536a98fb24890d5f4921f3',1,'lfs::attr_max']]],
-  ['attrcount_21',['attrcount',['../structlfs__dir__traverse.html#a1862563ef7c174523d65e4bc5bd73680',1,'lfs_dir_traverse']]],
-  ['attrs_22',['attrs',['../structlfs__file__config.html#a52f2507239750225b63df0fc421d8418',1,'lfs_file_config::attrs'],['../structlfs__dir__traverse.html#aa4ee6208dce18724a5578db643d966b4',1,'lfs_dir_traverse::attrs']]]
+  ['8_0',['PLL_N                                  | 8',['../system__stm32l4xx_8c.html#autotoc_md49',1,'']]]
 ];
