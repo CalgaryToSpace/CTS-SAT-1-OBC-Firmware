@@ -827,6 +827,24 @@ uint8_t ADCS_Set_Commanded_Attitude_Angles(double x, double y, double z) {
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Set_Estimation_Params command.
+/// @param[in] magnetometer_rate_filter_system_noise Magnetometer rate filter system noise parameter
+/// @param[in] ekf_system_noise EKS system noise parameter
+/// @param[in] css_measurement_noise CSS measurement noise parameter
+/// @param[in] sun_sensor_measurement_noise sun sensor measurement noise parameter
+/// @param[in] nadir_sensor_measurement_noise nadir sensor measurement noise parameter
+/// @param[in] magnetometer_measurement_noise magnetometer measurement noise parameter
+/// @param[in] star_tracker_measurement_noise star tracker measurement noise parameter
+/// @param[in] use_sun_sensor whether or not to use the sun sensor measurement in EKF
+/// @param[in] use_nadir_sensor whether or not to use the nadir sensor measurement in EKF
+/// @param[in] use_css whether or not to use the CSS measurement in EKF
+/// @param[in] use_star_tracker whether or not to use the star tracker measurement in EKF
+/// @param[in] nadir_sensor_terminator_test select to ignore nadir sensor measurements when terminator is in FOV
+/// @param[in] automatic_magnetometer_recovery select whether automatic switch to redundant magnetometer should occur in case of failure
+/// @param[in] magnetometer_mode select magnetometer mode for estimation and control
+/// @param[in] magnetometer_selection_for_raw_mtm_tlm select magnetometer mode for the second raw telemetry frame
+/// @param[in] automatic_estimation_transition_due_to_rate_sensor_errors enable/disable automatic transition from MEMS rate estimation mode to RKF in case of rate sensor error
+/// @param[in] wheel_30s_power_up_delay present in CubeSupport but not in the manual -- need to test
+/// @param[in] cam1_and_cam2_sampling_period the manual calls it this, but CubeSupport calls it "error counter reset period" -- need to test
 /// @return 0 if successful, non-zero if a HAL error occurred in transmission.
 uint8_t ADCS_Set_Estimation_Params(
 								float magnetometer_rate_filter_system_noise, 

@@ -462,15 +462,68 @@ uint8_t TCMDEXEC_ADCS_set_commanded_attitude_angles(const char *args_str, TCMD_T
     return status;
 }          
 
-// TODO: 3 telecommands remaining! (Find the placeholder 255 values and deal with them)
-
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 
-///     - No arguments for this command
+///     - Arg 0: magnetometer_rate_filter_system_noise (Magnetometer rate filter system noise parameter)
+///     - Arg 1: ekf_system_noise (EKS system noise parameter)
+///     - Arg 2: css_measurement_noise (CSS measurement noise parameter)
+///     - Arg 3: sun_sensor_measurement_noise (sun sensor measurement noise parameter)
+///     - Arg 4: nadir_sensor_measurement_noise (nadir sensor measurement noise parameter)
+///     - Arg 5: magnetometer_measurement_noise (magnetometer measurement noise parameter)
+///     - Arg 6: star_tracker_measurement_noise (star tracker measurement noise parameter)
+///     - Arg 7: use_sun_sensor (whether or not to use the sun sensor measurement in EKF)
+///     - Arg 8: use_nadir_sensor (whether or not to use the nadir sensor measurement in EKF)
+///     - Arg 9: use_css (whether or not to use the CSS measurement in EKF)
+///     - Arg 10: use_star_tracker (whether or not to use the star tracker measurement in EKF)
+///     - Arg 11: nadir_sensor_terminator_test (select to ignore nadir sensor measurements when terminator is in FOV)
+///     - Arg 12: automatic_magnetometer_recovery (select whether automatic switch to redundant magnetometer should occur in case of failure)
+///     - Arg 13: magnetometer_mode (select magnetometer mode for estimation and control)
+///     - Arg 14: magnetometer_selection_for_raw_mtm_tlm (select magnetometer mode for the second raw telemetry frame)
+///     - Arg 15: automatic_estimation_transition_due_to_rate_sensor_errors (enable/disable automatic transition from MEMS rate estimation mode to RKF in case of rate sensor error)
+///     - Arg 16: wheel_30s_power_up_delay (present in CubeSupport but not in the manual -- need to test)
+///     - Arg 17: cam1_and_cam2_sampling_period (the manual calls it this, but CubeSupport calls it "error counter reset period" -- need to test)
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_estimation_params(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    // the first seven are floats (0-6)
+
+    // the next six are bools (0-5)
+    // after that there are two enums (6-7)
+    // and then two more bools (8-9)
+    // followed by a uint8 (10)
+
+    // in other words, seven double-types followed by eleven uint64-types
+    
+    uint8_t num_args = 7;
+    double double_type_arguments[num_args]; 
+    float float_args[num_args];
+    for (uint8_t i = 0; i < num_args; i++) {
+        TCMD_extract_double_arg(args_str, strlen(args_str), i, &double_type_arguments[i]);
+        float_args[i] = double_type_arguments[i];
+    }
+
+    uint8_t new_num_args = 11;
+    uint64_t uint_type_arguments[new_num_args]; 
+    bool bool_args[8];
+    ADCS_Magnetometer_Mode enum_args[2];
+    uint8_t uint8_arg;
+
+    for (uint8_t i = 0; i < new_num_args; i++) {
+        TCMD_extract_uint64_arg(args_str, strlen(args_str), i + 7, &uint_type_arguments[i]);
+        if (i < 6 || i == 8 || i == 9) {
+            bool_args[i] == (bool) uint_type_arguments[i];
+        }
+    }
+    enum_args[0] = (ADCS_Magnetometer_Mode) uint_type_arguments[6];
+    enum_args[1] = (ADCS_Magnetometer_Mode) uint_type_arguments[7];
+    uint8_arg = (uint8_t) uint_type_arguments[10];
+    
+    uint8_t status = ADCS_Set_Estimation_Params(float_args[0], float_args[1], float_args[2], float_args[3], float_args[4], float_args[5], float_args[6],
+                                                bool_args[0], bool_args[1], bool_args[2], bool_args[3], bool_args[4], bool_args[5], 
+                                                enum_args[0], enum_args[1],
+                                                bool_args[6], bool_args[7], 
+                                                uint8_arg); 
+    
     return status;
 }                                
 
@@ -483,6 +536,8 @@ uint8_t TCMDEXEC_ADCS_get_estimation_params(const char *args_str, TCMD_Telecomma
     uint8_t status = ADCS_Get_Estimation_Params();
     return status;
 }                                
+
+// TODO: 2 telecommands remaining! (Find the placeholder 255 values and deal with them)
 
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 
