@@ -537,15 +537,63 @@ uint8_t TCMDEXEC_ADCS_get_estimation_params(const char *args_str, TCMD_Telecomma
     return status;
 }                                
 
-// TODO: 2 telecommands remaining! (Find the placeholder 255 values and deal with them)
-
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 
-///     - No arguments for this command
+///     - Arg 0: incl_coefficient (Set inclination filter coefficient)
+///     - Arg 1: raan_coefficient (Set RAAN filter coefficient)
+///     - Arg 2: ecc_coefficient (Set eccentricity filter coefficient)
+///     - Arg 3: aop_coefficient (Set argument of perigee filter coefficient)
+///     - Arg 4: time_coefficient (Set time filter coefficient)
+///     - Arg 5: pos_coefficient (Set position filter coefficient)
+///     - Arg 6: maximum_position_error (Maximum position error for ASGP4 to continue working)
+///     - Arg 7: asgp4_filter (The type of filter being used (enum))
+///     - Arg 8: xp_coefficient (Polar coefficient xp)
+///     - Arg 9: yp_coefficient (Polar coefficient yp)
+///     - Arg 10: gps_roll_over (GPS roll over number)
+///     - Arg 11: position_sd (Maximum position standard deviation for ASGP4 to continue working)
+///     - Arg 12: velocity_sd (Maximum velocity standard deviation for ASGP4 to continue working)
+///     - Arg 13: min_satellites (Minimum satellites required for ASGP4 to continue working)
+///     - Arg 14: time_gain (Time offset compensation gain)
+///     - Arg 15: max_lag (Maximum lagged timestamp measurements to incorporate)
+///     - Arg 16: min_samples (Minimum samples to use to get ASGP4)
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_asgp4_params(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                        char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    // seven doubles, then enum, then two doubles, uint8, two doubles, uint8, two doubles, uint16
+    //  0-6             7           8-9             10      11-12       13      14-15       16
+    uint8_t total_doubles = 14;
+    uint8_t total_uints = 4;
+    
+    double doubles_params[total_doubles];
+    uint64_t uint_params[total_uints]; // includes enum
+
+    uint8_t num_args = 17;
+
+    uint8_t double_counter = 0;
+    uint8_t uint_counter = 0;
+
+    for (uint8_t i = 0; i < num_args; i++) {
+        if (i < 7 || (i == 8 || i == 9) || (i == 11 || i == 12) || (i == 14 || i == 15)) {
+            TCMD_extract_double_arg(args_str, strlen(args_str), i, &doubles_params[double_counter]);
+            double_counter++;
+        }
+        else if (i == 7 || i == 10 || i == 13 || i == 16) {
+            TCMD_extract_uint64_arg(args_str, strlen(args_str), i, &uint_params[uint_counter]);
+            uint_counter++;
+        }
+        else {
+            return 5; // this return should never be reached, but it is here for debugging
+        }
+    }
+
+    uint8_t status = ADCS_Set_ASGP4_Params(doubles_params[0], doubles_params[1], doubles_params[2], doubles_params[3], doubles_params[4], doubles_params[5], doubles_params[6],
+                                        (ADCS_ASGP4_Filter) uint_params[0],
+                                        doubles_params[7], doubles_params[8],
+                                        (uint8_t) uint_params[1],
+                                        doubles_params[9], doubles_params[10],
+                                        (uint8_t) uint_params[2],
+                                        doubles_params[11], doubles_params[12],
+                                        (uint16_t) uint_params[3]); 
     return status;
 }                            
 
@@ -588,6 +636,8 @@ uint8_t TCMDEXEC_ADCS_get_tracking_controller_target_reference(const char *args_
     uint8_t status = ADCS_Get_Tracking_Controller_Target_Reference();
     return status;
 }                                                    
+
+// TODO: 1 telecommand remaining! (Find the placeholder 255 value and deal with it)
 
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 

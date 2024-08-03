@@ -933,7 +933,24 @@ uint8_t ADCS_Pack_to_Estimation_Params(uint8_t* data_received, ADCS_Estimation_P
 }
 
 
-/// @brief Instruct the ADCS to execute the ADCS_Set_ASGP4_Params command.
+/// @brief Set the Augmented SGP4 Parameters of the ADCS.
+/// @param[in] incl_coefficient Set inclination filter coefficient
+/// @param[in] raan_coefficient Set RAAN filter coefficient 
+/// @param[in] ecc_coefficient Set eccentricity filter coefficient
+/// @param[in] aop_coefficient Set argument of perigee filter coefficient
+/// @param[in] time_coefficient Set time filter coefficient
+/// @param[in] pos_coefficient Set position filter coefficient
+/// @param[in] maximum_position_error Maximum position error for ASGP4 to continue working
+/// @param[in] asgp4_filter The type of filter being used (enum)
+/// @param[in] xp_coefficient Polar coefficient xp  
+/// @param[in] yp_coefficient Polar coefficient yp 
+/// @param[in] gps_roll_over GPS roll over number
+/// @param[in] position_sd Maximum position standard deviation for ASGP4 to continue working
+/// @param[in] velocity_sd Maximum velocity standard deviation for ASGP4 to continue working
+/// @param[in] min_satellites Minimum satellites required for ASGP4 to continue working
+/// @param[in] time_gain Time offset compensation gain
+/// @param[in] max_lag Maximum lagged timestamp measurements to incorporate
+/// @param[in] min_samples Minimum samples to use to get ASGP4
 /// @return 0 if successful, non-zero if a HAL error occurred in transmission.
 uint8_t ADCS_Set_ASGP4_Params(double incl_coefficient, double raan_coefficient, double ecc_coefficient, double aop_coefficient, double time_coefficient, double pos_coefficient, double maximum_position_error, ADCS_ASGP4_Filter asgp4_filter, double xp_coefficient, double yp_coefficient, uint8_t gps_roll_over, double position_sd, double velocity_sd, uint8_t min_satellites, double time_gain, double max_lag, uint16_t min_samples) {
 	uint8_t data_send[30]; // from Table 209
