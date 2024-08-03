@@ -31,7 +31,7 @@ uint8_t TCMDEXEC_ADCS_set_wheel_speed(const char *args_str, TCMD_TelecommandChan
                         char *response_output_buf, uint16_t response_output_buf_len) {
     // parse arguments: first into int64_t, then convert to correct form for input
     uint8_t num_args = 3;
-    uint64_t arguments[num_args]; 
+    int64_t arguments[num_args]; 
     int16_t args_16[num_args];
     for (uint8_t i = 0; i < num_args; i++) {
         TCMD_extract_int64_arg(args_str, strlen(args_str), i, &arguments[i]);
@@ -511,7 +511,7 @@ uint8_t TCMDEXEC_ADCS_set_estimation_params(const char *args_str, TCMD_Telecomma
     for (uint8_t i = 0; i < new_num_args; i++) {
         TCMD_extract_uint64_arg(args_str, strlen(args_str), i + 7, &uint_type_arguments[i]);
         if (i < 6 || i == 8 || i == 9) {
-            bool_args[i] == (bool) uint_type_arguments[i];
+            bool_args[i] = (bool) uint_type_arguments[i];
         }
     }
     enum_args[0] = (ADCS_Magnetometer_Mode) uint_type_arguments[6];

@@ -182,9 +182,9 @@ uint8_t ADCS_Communication_Status() {
 uint8_t ADCS_Pack_to_Comms_Status(uint8_t *data_received, ADCS_Comms_Status_Struct *result) {
     result->tc_counter = data_received[1] << 8 | data_received[0]; // uint16_t
     result->tlm_counter = data_received[3] << 8 | data_received[2]; // uint16_t
-    result->tc_buffer_overrun = data_received[4] & 0b10000000; // bit 0 is 1 if TC buffer was overrun while receiving a telecommand
-    result->i2c_tlm_error = data_received[4] & 0b00010000; // bit 3 is 1 if the number of data clocked out was more than the telemetry package
-    result->i2c_tc_error = data_received[4] & 0b00001000; // bit 4 is 1 if the telecommand sent exceeded the buffer size
+    result->tc_buffer_overrun = data_received[4] & 128; // bit 0 is 1 if TC buffer was overrun while receiving a telecommand
+    result->i2c_tlm_error = data_received[4] & 16; // bit 3 is 1 if the number of data clocked out was more than the telemetry package
+    result->i2c_tc_error = data_received[4] & 8; // bit 4 is 1 if the telecommand sent exceeded the buffer size
     return 0;
 }
 
@@ -211,7 +211,7 @@ uint8_t ADCS_Set_Run_Mode(ADCS_Run_Mode mode) {
 uint8_t ADCS_Clear_Errors() {
 	// Clears error flags
 	// NOTE: THERE IS ANOTHER, SEPARATE CLEAR ERROR FLAG TC FOR THE BOOTLODER (TC_BL_CLEAR_ERRORS)
-	uint8_t data_send[1] = {0b11000000};
+	uint8_t data_send[1] = {192}; //0b11000000
 	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_CLEAR_ERRORS, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
@@ -530,9 +530,9 @@ uint8_t ADCS_Get_Unix_Time_Save_Mode() {
 /// @param[out] result Structure containing the formated data for this command.
 /// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Unix_Time_Save_Mode(uint8_t *data_received, ADCS_Set_Unix_Time_Save_Mode_Struct *result) {
-    result->save_now = data_received[0] & 0b00000001;
-    result->save_on_update = (data_received[0] & 0b00000010) >> 1;
-    result->save_periodic = (data_received[0] & 0b00000100) >> 2;
+    result->save_now = data_received[0] & 1; // 0b00000001
+    result->save_on_update = (data_received[0] & 2) >> 1; // 0b00000010
+    result->save_periodic = (data_received[0] & 4) >> 2; // 0b00000100
     result->period = data_received[1];
     return 0;
 }
@@ -867,7 +867,7 @@ uint8_t ADCS_Set_Estimation_Params(
                                 uint8_t cam1_and_cam2_sampling_period) { // the manual calls it this, but CubeSupport calls it "error counter reset period" -- need to test
 	// float uses IEEE 754 float32, with all bytes reversed, so eg. 1.1 becomes [0xCD, 0xCC, 0x8C, 0x3F]
 	// the float type should already be reversed, but need to test in implementation
-	uint8_t data_send[31] = {};
+	uint8_t data_send[31];
 
 	// convert floats to reversed arrays of uint8_t
 	memcpy(&data_send[0],  &magnetometer_rate_filter_system_noise, sizeof(magnetometer_rate_filter_system_noise));
@@ -917,16 +917,16 @@ uint8_t ADCS_Pack_to_Estimation_Params(uint8_t* data_received, ADCS_Estimation_P
     memcpy(&result->nadir_sensor_measurement_noise, &data_received[16], 4);
     memcpy(&result->magnetometer_measurement_noise, &data_received[20], 4);
     memcpy(&result->star_tracker_measurement_noise, &data_received[24], 4);
-    result->use_sun_sensor = (data_received[28] & 0b00000001);
-    result->use_nadir_sensor = (data_received[28] & 0b00000010) >> 1;
-    result->use_css = (data_received[28] & 0b00000100) >> 2;
-    result->use_star_tracker = (data_received[28] & 0b00001000) >> 3;
-    result->nadir_sensor_terminator_test = (data_received[28] & 0b00010000) >> 4;
-    result->automatic_magnetometer_recovery = (data_received[28] & 0b00100000) >> 5;
-    result->magnetometer_mode = (data_received[28] & 0b11000000) >> 6;
-    result->magnetometer_selection_for_raw_mtm_tlm = (data_received[29] & 0b00000011);
-    result->automatic_estimation_transition_due_to_rate_sensor_errors = (data_received[29] & 0b00000100) >> 2;
-    result->wheel_30s_power_up_delay = (data_received[29] & 0b00001000) >> 3;
+    result->use_sun_sensor = (data_received[28] & 1); // 0b00000001 
+    result->use_nadir_sensor = (data_received[28] & 2) >> 1; // 0b00000010
+    result->use_css = (data_received[28] & 4) >> 2; // 0b00000100
+    result->use_star_tracker = (data_received[28] & 8) >> 3; // 0b00001000
+    result->nadir_sensor_terminator_test = (data_received[28] & 16) >> 4; // 0b00010000
+    result->automatic_magnetometer_recovery = (data_received[28] & 32) >> 5; // 0b00100000
+    result->magnetometer_mode = (data_received[28] & 192) >> 6; // 0b11000000
+    result->magnetometer_selection_for_raw_mtm_tlm = (data_received[29] & 3); // 0b00000011
+    result->automatic_estimation_transition_due_to_rate_sensor_errors = (data_received[29] & 4) >> 2; // 0b00000100
+    result->wheel_30s_power_up_delay = (data_received[29] & 8) >> 3; // 0b00001000
     result->cam1_and_cam2_sampling_period = data_received[30];
 
     return 0;
@@ -1839,7 +1839,7 @@ uint8_t ADCS_send_UART_telecommand(UART_HandleTypeDef *huart, uint8_t id, uint8_
 	// data bytes can be up to a maximum of 8 bytes; data_length ranges from 0 to 8
 
 	//Check id to identify if it's Telecommand or Telemetry Request
-	uint8_t telemetry_request = id & 0b10000000; // 1 = TLM, 0 = TC
+	uint8_t telemetry_request = id & 128; // 1 = TLM, 0 = TC
 
 	//Allocate only required memory by checking first bit of ID
 	uint8_t buf[5 + (!telemetry_request)*data_length];
