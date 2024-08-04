@@ -476,7 +476,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "adcs_set_rate_gyro_config",
         .tcmd_func = TCMDEXEC_ADCS_set_rate_gyro_config,
-        .number_of_args = 0,
+        .number_of_args = 7,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {

@@ -1071,6 +1071,13 @@ uint8_t ADCS_Pack_to_Tracking_Controller_Target_Reference(uint8_t* data_received
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Set_Rate_Gyro_Config command.
+/// @param[in] gyro1 Axis for Gyro #1 (options are pos/neg x, pos/neg y, pos/neg z)
+/// @param[in] gyro2 Axis for Gyro #2 (options are pos/neg x, pos/neg y, pos/neg z)
+/// @param[in] gyro3 Axis for Gyro #3 (options are pos/neg x, pos/neg y, pos/neg z)
+/// @param[in] x_rate_offset x-rate sensor offset
+/// @param[in] y_rate_offset y-rate sensor offset
+/// @param[in] z_rate_offset z-rate sensor offset
+/// @param[in] rate_sensor_mult multiplier of rate sensor measurement
 /// @return 0 if successful, non-zero if a HAL error occurred in transmission.
 uint8_t ADCS_Set_Rate_Gyro_Config(ADCS_Axis_Select gyro1, ADCS_Axis_Select gyro2, ADCS_Axis_Select gyro3, double x_rate_offset, double y_rate_offset, double z_rate_offset, uint8_t rate_sensor_mult) {
 	uint8_t data_send[10];

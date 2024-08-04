@@ -310,12 +310,12 @@ uint8_t TCMDEXEC_ADCS_set_unix_time_save_mode(const char *args_str, TCMD_Telecom
     uint64_t bools[3];
     uint64_t uint_arg;
     for (uint8_t i = 0; i < 3; i++) {
-        TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &bools);
+        TCMD_extract_uint64_arg(args_str, strlen(args_str), i, &bools[i]);
     }
     
-    TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &uint_arg);
+    TCMD_extract_uint64_arg(args_str, strlen(args_str), 3, &uint_arg);
 
-    uint8_t status = ADCS_Set_Unix_Time_Save_Mode(bools[0], bools[1], bools[2], (uint8_t) uint_arg);
+    uint8_t status = ADCS_Set_Unix_Time_Save_Mode((bool) bools[0], (bool) bools[1], (bool) bools[2], (uint8_t) uint_arg);
     return status;
 }                                    
 
@@ -641,11 +641,35 @@ uint8_t TCMDEXEC_ADCS_get_tracking_controller_target_reference(const char *args_
 
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 
-///     - No arguments for this command
+///     - Arg 0: gyro1 (Axis for Gyro #1; enum, options are pos/neg x, pos/neg y, pos/neg z)
+///     - Arg 1: gyro2 (Axis for Gyro #2; enum, options are pos/neg x, pos/neg y, pos/neg z)
+///     - Arg 2: gyro3 (Axis for Gyro #3; enum, options are pos/neg x, pos/neg y, pos/neg z)
+///     - Arg 3: x_rate_offset (x-rate sensor offset)
+///     - Arg 4: y_rate_offset (y-rate sensor offset)
+///     - Arg 5: z_rate_offset (z-rate sensor offset)
+///     - Arg 6: rate_sensor_mult (multiplier of rate sensor measurement)
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_set_rate_gyro_config(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                            char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = 255; // this is a placeholder for now;
+    
+    // parse axis select arguments into uint64s
+    uint8_t num_axis_args = 3;
+    uint64_t axis_arguments[num_axis_args]; 
+    for (uint8_t i = 0; i < num_axis_args; i++) {
+        TCMD_extract_uint64_arg(args_str, strlen(args_str), i, &axis_arguments[i]);
+    }
+
+    // parse axis select arguments into doubles
+    uint8_t num_offset_args = 3;
+    double offset_arguments[num_offset_args]; 
+    for (uint8_t i = 0; i < num_offset_args; i++) {
+        TCMD_extract_double_arg(args_str, strlen(args_str), i + 3, &offset_arguments[i]);
+    }
+
+    uint64_t rate_sensor_mult;
+    TCMD_extract_uint64_arg(args_str, strlen(args_str), 6, &rate_sensor_mult);
+    
+    uint8_t status = ADCS_Set_Rate_Gyro_Config((ADCS_Axis_Select) axis_arguments[0], (ADCS_Axis_Select) axis_arguments[1], (ADCS_Axis_Select) axis_arguments[2],  offset_arguments[0], offset_arguments[1], offset_arguments[2], (uint8_t) rate_sensor_mult); 
     return status;
 }                                
 
