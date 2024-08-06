@@ -11,43 +11,6 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-/*
- * Summary list of required command IDs:
-
-	TODO: 
-	Tested and Need Unit Tests: 146, 151, 153, 154, 158, 159, 161, 162, 163, 166, 167, 168, 169, 172, 176, 177, 178, 179, 180, 191, 155, 156, 157, 204, 223, 170, 201, 15/199, 23/138, 28/227
-	Tested: 7, 9, 10, 11, 13, 14, 17, 26, 27, 45, 55, 63, 64, 133, 145, 147, 150, 197, 200, 207
-	Telecommand Written: 240 and a bunch more
-	Telecommand Tested: N/A, all have failed so far
-
-	additionally
-	- within a byte, use the opposite endian-ness (first towards the end, last towards the beginning of the byte)
-	- check INT vs UINT (int is signed, uint is unsigned)!
-	- make sure all input (TC) / output (TLM) values are __actual__ values, NOT raw values!
-	- **functions should return 0 on success, >0 for issues** 
-	- **needs to be added to telecommand parser (telecommand_definitions.c)**
-	- **unit tests:**
-			uint8_t TEST_EXEC__ADCS_function_name() {
-					type input_params = value;
-					TEST_ASSERT_TRUE(ADCS_function_name(params) == expected_return_value);
-			}
-		registered in unit_test_inventory.c
-			{
-				.test_func = TEST_EXEC__ADCS_function_name,
-				.test_file = "file that the function is in",
-				.test_func_name = "ADCS_function_name"
-			},
-	** NEED TO REFACTOR EVERY FUNCTION:**
-		- for unit tests:
-			- telemetry requests: function should call a separate function to 
-			- pack into struct and write struct to memory
-			- telecommand: can't really do that, but should return the ACK error flag
-		- I2C_telemetry should become ADCS_telemetry_receive
-		- I2C_telecommand should become ADCS_command_send
-	** use hi2c3 as an extern insetad of function argument**
-	** ADCS_I2C_telecommand_wrapper needs a timeout (50ms?) for failing send **
- *  */
-
 extern I2C_HandleTypeDef hi2c1; // allows not needing the parameters
 
 /// @brief Instructs the ADCS to determine whether the last command succeeded. (Doesn't work for telemetry requests, by design.)
@@ -244,8 +207,8 @@ uint8_t ADCS_Attitude_Estimation_Mode(ADCS_Estimation_Mode mode) {
 uint8_t ADCS_Run_Once() {
 	// requires ADCS_Enable_Triggered to have run first
 	// (if ADCS_Enable_On has run instead, then this is unnecessary)
-	uint8_t data_send[0];
-	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_TRIGGER_ADCS_LOOP, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+	uint8_t data_send[1]; // 0-byte data (from manual) input into wrapper, but one-byte here to avoid warnings
+	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_TRIGGER_ADCS_LOOP, data_send, 0, ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
@@ -419,16 +382,16 @@ uint8_t ADCS_Set_Magnetometer_Config(
 /// @brief Instruct the ADCS to execute the ADCS_Save_Config command.
 /// @return 0 if successful, non-zero if a HAL error occurred in transmission.
 uint8_t ADCS_Save_Config() {
-	uint8_t data_send[0]; // 0-byte data (from manual)
-	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_SAVE_CONFIG, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+	uint8_t data_send[1]; // 0-byte data (from manual) input into wrapper, but one-byte here to avoid warnings
+	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_SAVE_CONFIG, data_send, 0, ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Save_Orbit_Params command.
 /// @return 0 if successful, non-zero if a HAL error occurred in transmission.
 uint8_t ADCS_Save_Orbit_Params() {
-	uint8_t data_send[0]; // 0-byte data (from manual)
-	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_SAVE_ORBIT_PARAMS, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+	uint8_t data_send[1]; // 0-byte data (from manual) input into wrapper, but one-byte here to avoid warnings
+	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_SAVE_ORBIT_PARAMS, data_send, 0, ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
@@ -492,8 +455,8 @@ uint8_t ADCS_Pack_to_LLH_Position(uint8_t *data_received, ADCS_LLH_Position_Stru
 /// @brief Instruct the ADCS to execute the ADCS_Bootloader_Clear_Errors command.
 /// @return 0 if successful, non-zero if a HAL error occurred in transmission.
 uint8_t ADCS_Bootloader_Clear_Errors() {
-	uint8_t data_send[0]; // 0-byte data (from manual)
-	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_BL_CLEAR_ERRORS, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+	uint8_t data_send[1]; // 0-byte data (from manual) input into wrapper, but one-byte here to avoid warnings
+	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_BL_CLEAR_ERRORS, data_send, 0, ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
@@ -1717,9 +1680,8 @@ uint8_t ADCS_Pack_to_Measurements(uint8_t* telemetry_data, ADCS_Measurements_Str
     return 0;
 }
 
-// TODO: jump here
 
-
+/* Basic Telecommand Functions */
 
 /// @brief Sends a telecommand over I2C to the ADCS, checks that it's been acknowledged, and returns the ACK error flag.
 /// @param[in] id Valid ADCS telecommand ID (see Firmware Reference Manual)
@@ -1778,11 +1740,11 @@ uint8_t ADCS_send_I2C_telecommand(uint8_t id, uint8_t* data, uint32_t data_lengt
 
 	uint8_t adcs_tc_status; 
 	
-	//Allocate only required memory
+	// allocate only required memory
 	uint8_t buf[data_length + include_checksum]; // add additional bit for checksum if needed
 
-	// Fill buffer with Data if transmitting a Telecommand
-	for (int i = 0; i < data_length; i++) {
+	// fill buffer with data 
+	for (uint8_t i = 0; i < data_length; i++) {
 		buf[i] = data[i];
 	}
 
@@ -1790,12 +1752,6 @@ uint8_t ADCS_send_I2C_telecommand(uint8_t id, uint8_t* data, uint32_t data_lengt
 	if (include_checksum) {buf[data_length] = ADCS_COMMS_Crc8Checksum(data, data_length);}
 
 	adcs_tc_status = HAL_I2C_Mem_Write(&hi2c1, ADCS_I2C_ADDRESS << 1, id, 1, buf, sizeof(buf), ADCS_HAL_TIMEOUT);
-	//HAL_UART_Transmit(&hlpuart1, test, sizeof(test), 10000);
-
-	//while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY) {} // wait until ready
-	//adcs_tc_status = HAL_I2C_Mem_Write_IT(&hi2c1, ADCS_I2C_ADDRESS << 1, id, 1, buf, sizeof(buf));
-	//while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY) {} // wait until finished
-	//HAL_I2C_Master_Transmit(&hi2c1, ADCS_I2C_ADDRESS, buf, sizeof(buf), HAL_MAX_DELAY);
 
 	/* When sending a command to the CubeACP, it is possible to include an 8-bit CRC checksum.
 	For instance, when sending a command that has a length of 8 bytes, it is possible to include a
@@ -1829,13 +1785,8 @@ uint8_t ADCS_send_I2C_telemetry_request(uint8_t id, uint8_t* data, uint32_t data
 		// temp data used for checksum checking
 
 	adcs_tlm_status = HAL_I2C_Mem_Read(&hi2c1, ADCS_I2C_ADDRESS << 1, id, 1, temp_data, sizeof(temp_data), ADCS_HAL_TIMEOUT);
-	// while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY) {} // wait until ready
-	// adcs_tlm_status = HAL_I2C_Mem_Read_IT(&hi2c1, ADCS_I2C_ADDRESS << 1, id, 1, temp_data, sizeof(temp_data));
-	// read the data using the EEPROM protocol (handled by built-in Mem_Read function)
-		// ADCS_I2C_ADDRESS << 1 = ADCS_I2C_WRITE, and (ADCS_I2C_ADDRESS << 1) | 0x01 = ADCS_I2C_READ
-	// while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY) {} // wait until finished
 
-	for (int i = 0; i < data_length; i++) {
+	for (uint8_t i = 0; i < data_length; i++) {
 			// populate external data, except for checksum byte
 			data[i] = temp_data[i];
 	}
@@ -1880,7 +1831,7 @@ uint8_t ADCS_send_UART_telecommand(UART_HandleTypeDef *huart, uint8_t id, uint8_
 		buf[4] = ADCS_END_MESSAGE;
 	} else {
 		//Fill buffer with Data if transmitting a Telecommand
-		for (int i = 0; i < data_length; i++) {
+		for (uint8_t i = 0; i < data_length; i++) {
 			buf[i + 3] = data[i];
 		}
 		//Fill buffer with ESC and EOM
@@ -1902,7 +1853,7 @@ uint8_t ADCS_send_UART_telecommand(UART_HandleTypeDef *huart, uint8_t id, uint8_
 
 	if (telemetry_request) {
 		//Ignoring ESC, EOM, SOM and storing the rest of the values in data
-		for (int i = 3; i < sizeof(buf_rec)-2; i++) {
+		for (uint8_t i = 3; i < sizeof(buf_rec)-2; i++) {
 			// put the data into the data array excluding TC ID or TLM ID
 			data[i-3] = buf_rec[i];
 		}
@@ -1916,7 +1867,7 @@ uint8_t ADCS_send_UART_telecommand(UART_HandleTypeDef *huart, uint8_t id, uint8_
   // The receipt of the acknowledge will indicate that another telecommand may be sent.
   // Sending another telecommand before the acknowledge will corrupt the telecommand buffer.
 }
-
+/*
 // Debug function to check I2C connection status
 // TODO: delete this before sending it up in flight
 uint8_t I2C_Scan(void)
@@ -1930,13 +1881,13 @@ uint8_t I2C_Scan(void)
 
     HAL_Delay(1000);
 
-    /*-[ I2C Bus Scanning ]-*/
+    // [ I2C Bus Scanning ]
     HAL_UART_Transmit(&hlpuart1, StartMSG, sizeof(StartMSG), 10000);
     for(i=1; i<128; i++)
     {
     	ret = HAL_I2C_IsDeviceReady(&hi2c1, (uint16_t)(i<<1), 3, 5);
     	if (ret != HAL_OK) 
-    	{ /* No ACK Received At That Address */
+    	{ // No ACK Received At That Address 
     		HAL_UART_Transmit(&hlpuart1, Space, sizeof(Space), 10000);
         }
     	else if(ret == HAL_OK)
@@ -1946,10 +1897,10 @@ uint8_t I2C_Scan(void)
     	}
     }
     HAL_UART_Transmit(&hlpuart1, EndMSG, sizeof(EndMSG), 10000);
-    /*--[ Scanning Done ]--*/
+    // --[ Scanning Done ]-- 
 	return 0;
 }
-
+*/
 
 /// @brief Swap low and high bytes of uint16 to turn into uint8 and put into specified index of an array
 /// @param[in] value Value to split and swap the order of.
@@ -2012,22 +1963,3 @@ uint8_t ADCS_COMMS_Crc8Checksum(uint8_t* buffer, uint16_t len)
 
 	return crc;
 }
-
-// TODO: delete these two UART debug functions before flight
-//Debug function to print a new line (\n) in UART
-uint8_t PRINT_NEW_LINE(UART_HandleTypeDef *huart) {
-    char buf[] = "\r\n";
-    HAL_UART_Transmit(huart, (uint8_t*) buf, strlen(buf), 100);
-	return 0;
-}
-
-//Debug function to print a given string to UART
-uint8_t PRINT_STRING_UART(UART_HandleTypeDef *huart, void *string) {
-
-//    char *buff = (char*) string;
-    HAL_UART_Transmit(huart, (uint8_t*) string, strlen((char*) string), 100);
-    PRINT_NEW_LINE(huart);
-//    memset(string, 0, strlen((char*) string));
-return 0;
-}
-

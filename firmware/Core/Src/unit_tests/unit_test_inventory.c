@@ -51,14 +51,8 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func_name = "GEN_convert_big_endian_four_byte_array_to_uint32"
     },
     
-    /* TODO: ADCS unit tests
-    {
-		.test_func = TEST_EXEC__ADCS_function_name,
-		.test_file = "unit_tests/test_adcs",
-		.test_func_name = "ADCS_function_name"
-	},
-    */
-
+    // ****************** SECTION: test_adcs ******************
+    
     {
 		.test_func = TEST_EXEC__ADCS_Pack_to_Ack,
 		.test_file = "unit_tests/test_adcs",
@@ -286,6 +280,8 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_file = "unit_tests/test_adcs",
         .test_func_name = "ADCS_Pack_to_Measurements"
     },
+
+    // ****************** END SECTION: test_adcs ******************
 
     {
         .test_func = TEST_EXEC__TCMD_get_suffix_tag_uint64,

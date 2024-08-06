@@ -637,8 +637,6 @@ uint8_t TCMDEXEC_ADCS_get_tracking_controller_target_reference(const char *args_
     return status;
 }                                                    
 
-// TODO: 1 telecommand remaining! (Find the placeholder 255 value and deal with it)
-
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 
 ///     - Arg 0: gyro1 (Axis for Gyro #1; enum, options are pos/neg x, pos/neg y, pos/neg z)
@@ -882,6 +880,3 @@ uint8_t TCMDEXEC_ADCS_measurements(const char *args_str, TCMD_TelecommandChannel
     uint8_t status = ADCS_Measurements(); 
     return status;
 }                        
-
-// TODO: telecommand definitions
-// TODO also: all the docstrings from telecommands with more than 1 arg should be ported to adcs_types.c

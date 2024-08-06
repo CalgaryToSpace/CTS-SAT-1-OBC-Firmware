@@ -3,7 +3,7 @@
 
 #include "adcs_types.h"
 
-// TODO: ADCS test header
+// ADCS test definitions
 uint8_t TEST_EXEC__ADCS_Pack_to_Ack();
 uint8_t TEST_EXEC__ADCS_Pack_to_Identification();
 uint8_t TEST_EXEC__ADCS_Pack_to_Program_Status();

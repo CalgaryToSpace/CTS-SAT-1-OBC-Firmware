@@ -199,8 +199,6 @@ typedef enum ADCS_GPS_Axis {
     ADCS_GPS_Z
 } ADCS_GPS_Axis;
 
-// TODO: enums
-
 /* Structs */
 
 typedef struct ADCS_TC_Ack_Struct {
@@ -521,8 +519,6 @@ typedef struct ADCS_Measurements_Struct {
     double star3_orbit_z;
 } ADCS_Measurements_Struct;
 
-// TODO: structs
-
 /* Function Definitions */
 
 #define ADCS_I2C_HANDLE &hi2c1
@@ -547,8 +543,6 @@ uint8_t ADCS_COMMS_Crc8Checksum(uint8_t* buffer, uint16_t len);
 // I2C/UART debug functions
 uint8_t I2C_Scan(void);
 uint8_t ADCS_send_UART_telecommand(UART_HandleTypeDef *huart, uint8_t id, uint8_t* data, uint32_t data_length);
-uint8_t PRINT_STRING_UART(UART_HandleTypeDef *huart, void *string);
-uint8_t PRINT_NEW_LINE(UART_HandleTypeDef *huart);
 
 // ADCS packer functions
 uint8_t ADCS_Pack_to_Ack(uint8_t* data_received, ADCS_TC_Ack_Struct *result);
@@ -589,7 +583,6 @@ uint8_t ADCS_Pack_to_Raw_GPS_Status(uint8_t* data_received, ADCS_Raw_GPS_Status_
 uint8_t ADCS_Pack_to_Raw_GPS_Time(uint8_t* data_received, ADCS_Raw_GPS_Time_Struct* result);
 uint8_t ADCS_Pack_to_Raw_GPS(ADCS_GPS_Axis axis, uint8_t *data_received, ADCS_Raw_GPS_Struct *result);
 uint8_t ADCS_Pack_to_Measurements(uint8_t* telemetry_data, ADCS_Measurements_Struct* measurements);
-// TODO: packers
 
 // ADCS functions
 uint8_t ADCS_Reset();
@@ -706,11 +699,5 @@ uint8_t ADCS_Raw_GPS_X();
 uint8_t ADCS_Raw_GPS_Y();
 uint8_t ADCS_Raw_GPS_Z();
 uint8_t ADCS_Measurements();
-// TODO: prototypes
-
-void ADCS_not_a_real_function(); 
-// this is just here to catch any missing semicolons
-// so I don't have to hunt for them in other files
-// TODO: delete this before merging
 
 #endif /* INC_ADCS_TYPES_H_ */

@@ -4,14 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 
-/* TODO: ADCS tests
-    uint8_t TEST_EXEC__ADCS_function_name() {
-        type input_params = value;
-        TEST_ASSERT_TRUE(ADCS_function_name(params) == expected_return_value);
-    }
-*/
-
-// to run all unit tests: CTS1+run_all_unit_tests()!
+// Reminder: to run all unit tests, CTS1+run_all_unit_tests()!
 
 uint8_t TEST_EXEC__ADCS_Pack_to_Ack() {
     uint8_t input_params[4] = {0x11, 0x01, 0x03, 0x04};
@@ -253,7 +246,6 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Commanded_Attitude_Angles()
     return 0;
 }
 
-// TODO: pick up here with GEN_compare_doubles and testing negatives, then create return values
 uint8_t TEST_EXEC__ADCS_Pack_to_Estimation_Params()
 {
     uint8_t input_params[31] = {0xCD, 0xCC, 0x8C, 0x3F, 0xCD, 0xCC, 0x0C, 0x40, 0x33, 0x33, 0x53,
@@ -527,7 +519,6 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Raw_CSS_7_to_10() {
 }
 
 uint8_t TEST_EXEC__ADCS_Pack_to_CubeControl_Current() {
-    // FIXME: this test fails. Find out why
     uint8_t input_params[6] = {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc};
 
     ADCS_CubeControl_Current_Struct result;
