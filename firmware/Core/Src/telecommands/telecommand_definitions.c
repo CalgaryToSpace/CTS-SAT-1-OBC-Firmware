@@ -15,6 +15,8 @@
 #include "telecommands/config_telecommand_defs.h"
 #include "telecommands/testing_telecommand_defs.h"
 
+#include "telecommands/eps_telecommands.h"
+
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
@@ -313,6 +315,23 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
 
     // ****************** END SECTION: freertos_telecommand_defs ******************
 
+
+    /* ============================ EPS-Related (eps_telecommands.c/h) ================= */
+    {
+        .tcmd_name = "eps_watchdog",
+        .tcmd_func = TCMDEXEC_eps_watchdog,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_get_system_status_json",
+        .tcmd_func = TCMDEXEC_eps_get_system_status_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    /* *************************** END EPS Section ************************************** */
+    
+    
 };
 
 // extern
