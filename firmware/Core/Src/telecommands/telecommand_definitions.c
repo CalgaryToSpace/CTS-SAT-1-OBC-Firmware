@@ -14,6 +14,7 @@
 #include "telecommands/i2c_telecommand_defs.h"
 #include "telecommands/config_telecommand_defs.h"
 #include "telecommands/testing_telecommand_defs.h"
+#include "telecommands/telecommand_executor.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -312,6 +313,15 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     },
 
     // ****************** END SECTION: freertos_telecommand_defs ******************
+
+    // ****************** SECTION: telecommand_executor ******************
+
+   {
+        .tcmd_name = "agenda_delete_all",
+        .tcmd_func = TCMDEXEC_agenda_delete_all,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
 
 };
 
