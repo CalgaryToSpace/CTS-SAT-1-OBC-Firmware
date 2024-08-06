@@ -100,9 +100,9 @@ void TASK_handle_uart_telecommands(void *argument) {
 			continue;
 		}
 
-		DEBUG_uart_print_str("============= UART Telecommand Received =============\n");
+		DEBUG_uart_print_str("========================= UART Telecommand Received =========================\n");
 		DEBUG_uart_print_str(latest_tcmd);
-		DEBUG_uart_print_str("\n=====================================================\n");
+		DEBUG_uart_print_str("\n=========================\n");
 
 		// Parse the telecommand
 		TCMD_parsed_tcmd_to_execute_t parsed_tcmd;
