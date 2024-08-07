@@ -224,36 +224,9 @@ void TASK_service_eps_watchdog(void *argument) {
 void TASK_receive_gps_info(void *argument) {
 	TASK_HELP_start_of_task();
 
-	char latest_gps_response[UART_gps_buffer_len];
-	uint16_t latest_gps_response_len = 0;
-
 	while (1) {
 
 		osDelay(200);
-
-		// Checking if there is data in the GPS buffer
-		if(UART_gps_buffer_write_idx > 0) {
-
-			// Copy data from the UART buffer to a separate buffer
-			for (uint16_t i = 0; i < UART_gps_buffer_len; i++) {
-				latest_gps_response[i] = (char) UART_gps_buffer[i];
-			}
-
-			// Set the null terminator at the end of the `latest_gps_response` str.
-			latest_gps_response[latest_gps_response_len] = '\0';
-
-			// Clear the buffer (memset to 0, but volatile-compatible) and reset the write pointer.
-			for (uint16_t i = 0; i < UART_gps_buffer_len; i++) {
-				UART_gps_buffer[i] = 0;
-			}
-			UART_gps_buffer_write_idx = 0;
-
-		}
-
-		// Parsing the gps data
-		gps_response_header gps_header;
-		const u_int8_t gps_header_result = parse_gps_header(latest_gps_response,&gps_header);
-
 
 	} /* End Task's Main Loop */
 }
