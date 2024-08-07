@@ -2,7 +2,7 @@
 #include "telecommands/telecommand_parser.h"
 #include "telecommands/telecommand_args_helpers.h"
 #include "transforms/number_comparisons.h"
-
+#include "string.h"
 #define HELPERS_TEST_EPSILON 1e-6
 
 uint8_t TEST_EXEC__TCMD_is_char_alphanumeric() {
@@ -119,6 +119,43 @@ uint8_t TEST_EXEC__TCMD_ascii_to_double() {
     TEST_ASSERT_TRUE(TCMD_ascii_to_double("7.", 2, &output_val) != 0); // can't have decimal point at end
     TEST_ASSERT_TRUE(TCMD_ascii_to_double("7-7", 2, &output_val) != 0); // can't have minus sign in the middle
     TEST_ASSERT_TRUE(TCMD_ascii_to_double("1.5-", 2, &output_val) != 0); // can't have minus sign at the end
+
+    return 0;
+}
+
+uint8_t TEST_EXEC_TCMD_parse_full_telecommand() {
+    TCMD_parsed_tcmd_to_execute_t parsed_tcmd;
+    // Testing correct usage of 0 argument telecommand 
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+hello_world()!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 0);
+    TEST_ASSERT_TRUE(strcmp(parsed_tcmd.args_str_no_parens, "") == 0);
+    TEST_ASSERT_TRUE(parsed_tcmd.tcmd_channel == TCMD_TelecommandChannel_DEBUG_UART);
+    TEST_ASSERT_TRUE(strcmp(TCMD_telecommand_definitions[parsed_tcmd.tcmd_idx].tcmd_name, "hello_world") == 0);
+
+    // Tesing incorrect usage of 0 argument telecommand
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+hello_world(a)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 100);
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+hello_world(a,1)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 100);
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+hello_world(,)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 100);
+
+    // Testing correct usage of 1 argument telecommand 
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+set_system_time(10)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 0); 
+    TEST_ASSERT_TRUE(strcmp(parsed_tcmd.args_str_no_parens, "10") == 0);
+    TEST_ASSERT_TRUE(parsed_tcmd.tcmd_channel == TCMD_TelecommandChannel_DEBUG_UART);
+    TEST_ASSERT_TRUE(strcmp(TCMD_telecommand_definitions[parsed_tcmd.tcmd_idx].tcmd_name, "set_system_time") == 0);
+
+
+    // Tesing incorrect usage of 1 argument telecommand
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+set_system_time()!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 100);
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+set_system_time(10,1)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 100);
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+set_system_time(10,)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 100);
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+set_system_time(,10)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 100);
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+set_system_time(,)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 100);
+
+    // Testing correct usage of 3 3 argument telecommand
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+flash_read_hex(0,0,0)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 0);
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+flash_read_hex(0,0,0,)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 100);
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+flash_read_hex(,0,0,0)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 100);
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+flash_read_hex(,0,0,0)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 100);
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+flash_read_hex(0,0)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 100);
 
     return 0;
 }
