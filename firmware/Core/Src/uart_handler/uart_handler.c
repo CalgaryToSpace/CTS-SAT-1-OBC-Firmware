@@ -24,18 +24,13 @@ volatile uint32_t UART_eps_last_write_time_ms = 0; // extern
 volatile uint8_t UART_eps_is_expecting_data = 0; // extern; set to 1 when a command is sent, and we're awaiting a response
 volatile uint8_t UART_eps_buffer_last_rx_byte = 0; // not an extern
 
-// UART MPI cmd response buffer
-const uint16_t UART_mpi_rx_buffer_len = 50; // extern
-volatile uint8_t UART_mpi_rx_buffer[50]; // extern
-volatile uint8_t UART_mpi_rx_last_byte = 0; // extern
-volatile uint32_t UART_mpi_rx_last_byte_write_time_ms = 0; // extern
-volatile uint16_t UART_mpi_rx_buffer_write_idx = 0; // extern
 // UART GPS buffer
-const uint16_t UART_gps_buffer_len = 512; // extern
-volatile uint8_t UART_gps_buffer[512]; // extern // TODO: confirm that this volatile means that the contents are volatile but the pointer is not
+const uint16_t UART_gps_buffer_len = 256; // extern
+volatile uint8_t UART_gps_buffer[256]; // extern // TODO: confirm that this volatile means that the contents are volatile but the pointer is not
 volatile uint16_t UART_gps_buffer_write_idx = 0; // extern
 volatile uint32_t UART_gps_last_write_time_ms = 0; // extern
 volatile uint8_t UART_gps_buffer_last_rx_byte = 0; // extern
+
 
 
 // UART MPI science data buffer (WILL NEED IN THE FUTURE)
@@ -112,7 +107,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
             DEBUG_uart_print_str("Unhandled MPI Mode\n"); //TODO: HANDLE other MPI MODES
         }
     }
-    else if (huart->Instance == UART_gps_port_handle->Instance) {
+    else if (huart->Instance == UART_gps_port_handle) {
         // add the byte to the buffer
         if (UART_gps_buffer_write_idx >= UART_gps_buffer_len) {
             DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART gps buffer is full\n");
