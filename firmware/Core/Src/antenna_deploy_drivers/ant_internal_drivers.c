@@ -7,27 +7,20 @@
 #include <stdint.h>
 #include <string.h>
 
-uint16_t ANT_ADDR = 0x31 << 1;
+const uint16_t ANT_ADDR = 0x31 << 1;
+const uint8_t timeout = 50;
 
 extern I2C_HandleTypeDef hi2c2;
 
-// Might not need to include cmd buf array and length depending on the parameters of the command
-// If no parameters, you should only need to send the command byte (8 bits)
-
 /**
- * @brief Sends a command to the antenna controller and waits for a response.
+ * @brief Sends a command to the antenna controller.
  * 
  * @param cmd_buf Array of bytes to send to the antenna controller
  * @param cmd_len Length of the command buffer
- * @param rx_buf Array to store the response from the antenna controller
- * @param rx_len Length of the response buffer
- * @return 0 upon success, 1 if tx_status received HAL_ERROR, 2 if tx_status received HAL_BUSY, 3 if tx_status received HAL_TIMEOUT, 4 if rx_status received HAL_ERROR
+ * @return 0 upon success, 1 if tx_status received HAL_ERROR, 2 if tx_status received HAL_BUSY, 3 if tx_status received HAL_TIMEOUT
  */
-uint8_t ANT_send_cmd_get_response(
-    uint8_t cmd_buf[], uint8_t cmd_len,
-    uint8_t rx_buf[], uint16_t rx_len
-    ) {
-    const HAL_StatusTypeDef tx_status = HAL_I2C_Master_Transmit(&hi2c2, ANT_ADDR, cmd_buf, cmd_len, 1000);
+uint8_t ANT_send_cmd(uint8_t cmd_buf[], uint8_t cmd_len) {
+    const HAL_StatusTypeDef tx_status = HAL_I2C_Master_Transmit(&hi2c2, ANT_ADDR, cmd_buf, cmd_len, timeout);
     if (tx_status == HAL_ERROR) {
         // TODO: Add print statement for debugging
         return 1;
@@ -37,13 +30,22 @@ uint8_t ANT_send_cmd_get_response(
         return 3;
     }
 
-    if (rx_len != 0) {
-        const HAL_StatusTypeDef rx_status = HAL_I2C_Master_Receive(&hi2c2, ANT_ADDR, rx_buf, rx_len, 1000);
+    return 0;
+}
+
+/**
+ * @brief Receives a response from the antenna controller.
+ * 
+ * @param rx_buf Array to store the response from the antenna controller
+ * @param rx_len Length of the response buffer
+ * @return 0 upon success, 4 if rx_status received HAL_ERROR
+ */
+uint8_t ANT_get_response(uint8_t rx_buf[], uint16_t rx_len) {
+    const HAL_StatusTypeDef rx_status = HAL_I2C_Master_Receive(&hi2c2, ANT_ADDR, rx_buf, rx_len, timeout);
         if(rx_status != HAL_OK) {
             // TODO: Add print statement for debugging
             return 4;
         }
-    }
-
+    
     return 0;
 }
