@@ -2,12 +2,19 @@
 
 * The code should be audited for the following aspects, as a final check before the final flash.
 
-## Automated Check Ideas
+## Automated Check Ideas (GitHub Actions)
 
 1. Telecommand Execution (`TCMDEXEC_`) function names match their registrations in the table.
 2. No malloc usage.
 3. Are all `TEST_EXEC_` functions registered in the test table?
 4. Are all `TCMDEXEC_` functions registered in the telecommand table?
+
+## Manual Execution Checks
+
+The following checks involve executing code and/or telecommands.
+
+* Units tests pass.
+* Python-based system tests/checks pass.
 
 
 ## Logging Checks
