@@ -226,6 +226,13 @@ void TASK_receive_gps_info(void *argument) {
 
 	while (1) {
 
+		// Checking if there is data in the GPS buffer
+		if(UART_gps_buffer_write_idx > 0) {
+
+			// Parse the data
+
+		}
+
 		osDelay(200);
 
 	} /* End Task's Main Loop */
