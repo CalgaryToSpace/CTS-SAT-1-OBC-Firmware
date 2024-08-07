@@ -163,3 +163,13 @@ void TASK_execute_telecommands(void *argument) {
 
 	} /* End Task's Main Loop */
 }
+
+void TASK_receive_gps_info(void *argument) {
+	TASK_HELP_start_of_task();
+
+	while (1) {
+
+		osDelay(200);
+
+	} /* End Task's Main Loop */
+}
