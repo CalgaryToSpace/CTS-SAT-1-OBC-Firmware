@@ -426,12 +426,10 @@ uint8_t TCMDEXEC_agenda_delete_all(const char *args_str, TCMD_TelecommandChannel
 uint8_t TCMDEXEC_agenda_delete_by_tssent(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     
-    uint64_t tssent;
+    uint64_t tssent = 0;
 
     // Parse the arg string passed into a uint64_t for the timestamp sent
-    uint8_t parse_result = TCMD_extract_uint64_arg(
-        args_str, strlen(args_str), 0, &tssent
-    );
+    uint8_t parse_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &tssent);
 
     //Checking if the parsing was right
     if (parse_result > 0) {
