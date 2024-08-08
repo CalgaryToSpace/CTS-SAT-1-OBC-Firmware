@@ -423,6 +423,10 @@ uint8_t TCMDEXEC_agenda_delete_all(const char *args_str, TCMD_TelecommandChannel
     return 0;
 }
 
+/// @brief Deleting the agenda by the sent timestamp of the telecommand
+/// @param args_str
+/// - Arg 0: timestamp sent of the telecommand in milliseconds (uint64_t)
+/// @return 0 if successful, 1 if error
 uint8_t TCMDEXEC_agenda_delete_by_tssent(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     
