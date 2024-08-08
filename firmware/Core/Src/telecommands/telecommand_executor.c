@@ -146,7 +146,7 @@ uint8_t TCMD_execute_parsed_telecommand_now(const uint16_t tcmd_idx, const char 
     }
     DEBUG_uart_print_str(") =========================\n");
     DEBUG_uart_print_str(response_output_buf);
-    DEBUG_uart_print_str("\n=========================\n");
+    DEBUG_uart_print_str("\n===========================================================================\n");
 
     return tcmd_result;
 }
