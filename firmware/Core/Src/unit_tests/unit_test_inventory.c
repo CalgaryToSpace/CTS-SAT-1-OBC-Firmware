@@ -55,6 +55,11 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func_name = "TCMD_extract_hex_array_arg"
     },
     {
+        .test_func = TEST_EXEC__TCMD_extract_uint64_arg,
+        .test_file = "telecommands/telecommand_args_helpers",
+        .test_func_name = "TCMD_extract_uint64_arg"
+    },
+    {
         .test_func = TEST_EXEC__TCMD_ascii_to_uint64,
         .test_file = "telecommands/telecommand_args_helpers",
         .test_func_name = "TCMD_ascii_to_uint64"

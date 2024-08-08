@@ -13,27 +13,24 @@
 /// @param str Input string, starting with an integer
 /// @param str_len Max length of the input string
 /// @param result Pointer to the result
-/// @return 0 if successful, 1 if the string is empty, 2 if the input string doesn't match str_len, 3 for if the string is too long,
-///         4 if the result size doesn't match str_len (includes non-integer characters)
+/// @return 0 if successful, 1 if the string is empty, 2 if the string size is longer than 19 characters,
+///         3 if the string contains non-integer characters.
+/// @note Result is not written to if an error occurs. The max digit length that can be store in the result
+/// is 19. If the input string is longer than 19 characters, an error will be returned.
 uint8_t TCMD_ascii_to_uint64(const char *str, uint32_t str_len, uint64_t *result) {
+    // FIXME: return error if the string is too long/number is too large
+    // FIXME: return error if the number doesn't occupy the whole string (e.g., "123abc" with str_len=6 should error)
+    // TODO: write unit tests for this function
     // TODO: consider removing the str_len parameter and using strlen(str) instead (requires refactor in caller)
 
     // Error: the input string is empty
-    if (str_len == 0 || strlen(str) == 0) {
-        *result = 0;
+    if (str_len == 0) {
         return 1;
     }
 
-    // Error: the input string doesn't match size of str_len
-    if(strlen(str) != str_len) {
-        *result = 0;
-        return 2;
-    }
-
     // Error: size of string is larger than the total length of the result variable (20 for uint64_t)
-    if (strlen(str) > 20 || str_len > 20) {
-        *result = 0;
-        return 3;
+    if (str_len > 19) {
+        return 2;
     }
 
     uint64_t temp_result = 0;
@@ -48,8 +45,7 @@ uint8_t TCMD_ascii_to_uint64(const char *str, uint32_t str_len, uint64_t *result
 
     // Error: the result size doesn't match str_len (input includes non-integers)
     if (i == 0 || i != str_len) {
-        *result = 0;
-        return 4;
+        return 3;
     }
 
     *result = temp_result;
@@ -87,7 +83,7 @@ uint8_t TCMD_extract_uint64_arg(const char *str, uint32_t str_len, uint8_t arg_i
     }
 
     uint8_t parse_result = TCMD_ascii_to_uint64(&str[start_index], i - start_index, result);
-    if (parse_result == 4) {
+    if (parse_result == 3) {
         // The argument is not an integer
         return 3;
     }
