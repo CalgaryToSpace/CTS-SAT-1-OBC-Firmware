@@ -323,6 +323,13 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
 
+    {
+        .tcmd_name = "agenda_delete_by_tssent",
+        .tcmd_func = TCMDEXEC_agenda_delete_by_tssent,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+
 };
 
 // extern
@@ -406,4 +413,49 @@ uint8_t TCMDEXEC_reboot(const char *args_str, TCMD_TelecommandChannel_enum_t tcm
 
     NVIC_SystemReset();
     return 0;
+}
+
+uint8_t TCMDEXEC_agenda_delete_all(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    DEBUG_uart_print_str("Deleting all entires from the Agenda...\n"); 
+    TCMD_agenda_delete_all();
+
+    return 0;
+}
+
+uint8_t TCMDEXEC_agenda_delete_by_tssent(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    uint64_t tssent;
+
+    // Parse the arg string passed into a uint64_t for the timestamp sent
+    uint8_t parse_result = TCMD_extract_uint64_arg(
+        args_str, strlen(args_str), 0, &tssent
+    );
+
+    //Checking if the parsing was right
+    if (parse_result > 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Error parsing timestamp sent: Err=%d", parse_result);
+        return 1;
+    }
+
+    // Pass the tssent into the function that handles the delete from the stack
+    uint8_t result = TCMD_agenda_delete_by_tssent(&tssent);
+
+    if (result == 1)
+    {
+        DEBUG_uart_print_str("Telecommand with tssent: ");
+        DEBUG_uart_print_uint64(tssent);
+        DEBUG_uart_print_str(" not found in agenda.\n");
+    }
+
+    if (result == 0)
+    {
+        DEBUG_uart_print_str("Telecommand with tssent: ");
+        DEBUG_uart_print_uint64(tssent);
+        DEBUG_uart_print_str(" deleted from agenda");
+        DEBUG_uart_print_str("\n");
+    }
+    
+    return result;
 }

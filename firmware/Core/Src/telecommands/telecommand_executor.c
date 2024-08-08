@@ -174,10 +174,9 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
     );
 }
 
-
 /// @brief Deletes all entries from the agenda.
 /// @return 0 on completion.
-uint16_t TCMD_agenda_delete_all() {
+uint8_t TCMD_agenda_delete_all() {
     for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
         if (TCMD_agenda_is_valid[slot_num]) {
             TCMD_agenda_is_valid[slot_num] = 0;
@@ -189,39 +188,18 @@ uint16_t TCMD_agenda_delete_all() {
 /// @brief Deletes a telecommand from the agenda by its `timestamp_sent` field.
 /// @param tssent The `timestamp_sent` value of the telecommand to delete.
 /// @return 0 on success, 1 if the telecommand was not found.
-uint8_t TCMD_agenda_delete_by_tssent(uint64_t tssent) {
+uint8_t TCMD_agenda_delete_by_tssent(uint64_t *tssent) {
+
+    // Looping through the agenda and checking for valid agendas and if the timestamp matches
     for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
-        if (TCMD_agenda_is_valid[slot_num] && TCMD_agenda[slot_num].timestamp_sent == tssent) {
+        if (TCMD_agenda_is_valid[slot_num] && TCMD_agenda[slot_num].timestamp_sent == *tssent) {
+
+            // Setting agenda as invalid
             TCMD_agenda_is_valid[slot_num] = 0; 
-            DEBUG_uart_print_str("Telecommand with tssent: ");
-            DEBUG_uart_print_uint64(tssent);
-            DEBUG_uart_print_str(" deleted from agenda at slot ");
-            DEBUG_uart_print_uint32(slot_num);
-            DEBUG_uart_print_str("\n");
             return 0;
         }
     }
-    DEBUG_uart_print_str("Telecommand with tssent: ");
-    DEBUG_uart_print_uint64(tssent);
-    DEBUG_uart_print_str(" not found in agenda.\n");
+    
+    // If agenda is not found with timestamp return 1
     return 1;
 }
-
-uint8_t TCMDEXEC_agenda_delete_by_tssent(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
-    
-    uint64_t tssent = 0;
-    uint8_t result = TCMD_agenda_delete_by_tssent(&tssent);
-    
-    return 0;
-}
-
-uint8_t TCMDEXEC_agenda_delete_all(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
-    DEBUG_uart_print_str("Deleting all entires from the Agenda...\n"); 
-    TCMD_agenda_delete_all();
-
-    return 0;
-}
-
-
