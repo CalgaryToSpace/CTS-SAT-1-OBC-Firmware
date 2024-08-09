@@ -21,7 +21,7 @@ uint8_t TEST_EXEC__TCMD_ascii_to_uint64() {
     // Error: String doesn't start with an integer
     TEST_ASSERT(TCMD_ascii_to_uint64("abc123", 6, &result) == 3);
 
-    // Error: Result length doesn't match str_len
+    // Error: Result digit length doesn't match str_len
     TEST_ASSERT(TCMD_ascii_to_uint64("123abc", 6, &result) == 3);
 
     return 0;
