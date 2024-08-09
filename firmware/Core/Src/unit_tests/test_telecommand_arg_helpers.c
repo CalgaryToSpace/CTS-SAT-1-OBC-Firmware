@@ -11,26 +11,42 @@ uint8_t TEST_EXEC__TCMD_ascii_to_uint64() {
     // Error: Empty string
     TEST_ASSERT(TCMD_ascii_to_uint64("", 0, &result) == 1);
 
-    // Error: String size doesn't match str_len
-    TEST_ASSERT(TCMD_ascii_to_uint64("123456", 10, &result) == 2);
-
     // Error: String is too long
-    TEST_ASSERT(TCMD_ascii_to_uint64("123456789123456789123", 21, &result) == 3)
+    TEST_ASSERT(TCMD_ascii_to_uint64("12345678912345678912", 20, &result) == 2);
+
+    // Success: String has a digit length of 19
+    TEST_ASSERT(TCMD_ascii_to_uint64("1234567891234567891", 19, &result) == 0);
+    TEST_ASSERT(result == 1234567891234567891);
 
     // Error: String doesn't start with an integer
-    TEST_ASSERT(TCMD_ascii_to_uint64("abc123", 6, &result) == 4)
+    TEST_ASSERT(TCMD_ascii_to_uint64("abc123", 6, &result) == 3);
 
     // Error: Result length doesn't match str_len
-    TEST_ASSERT(TCMD_ascii_to_uint64("123abc", 6, &result) == 4);
+    TEST_ASSERT(TCMD_ascii_to_uint64("123abc", 6, &result) == 3);
 
     return 0;
 }
 
 uint8_t TEST_EXEC__TCMD_extract_uint64_arg() {
     uint64_t result;
-    char str[] = "1,2,3,4,5,6,7,8,9";
+    char str[] = "1,2,3,4,a,6,7,8,9";
     // Success: Nominal Test
-    TEST_ASSERT(TCMD_extract_uint64_arg(str, sizeof(str), 0, &result) == 0)
+    TEST_ASSERT(TCMD_extract_uint64_arg(str, sizeof(str), 0, &result) == 0);
+    TEST_ASSERT(result == 1);
+
+    char str2[0];
+    // Error: Empty string
+    TEST_ASSERT(TCMD_extract_uint64_arg(str2, sizeof(str2), 0, &result) == 1);
+
+    // Error: Not enough arguments
+    TEST_ASSERT(TCMD_extract_uint64_arg(str, sizeof(str), 10, &result) == 2);
+
+    // Error: Argument is not an integer
+    TEST_ASSERT(TCMD_extract_uint64_arg(str, sizeof(str), 4, &result) == 3);
+
+    char str3[] = "1,2,3,4,12345678912345678912";
+    // Error: Argument is longer than can be taken by TCMD_ascii_to_uint64()
+    TEST_ASSERT(TCMD_extract_uint64_arg(str3, sizeof(str3), 4, &result) == 4);
 
     return 0;
 }
