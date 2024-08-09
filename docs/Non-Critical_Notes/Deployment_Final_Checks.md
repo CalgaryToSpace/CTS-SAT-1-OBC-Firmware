@@ -36,3 +36,4 @@ The following checks involve executing code and/or telecommands.
 2. Are all GitHub Issues implemented and/or closed as not implemented.
 3. Are all PRs merged?
 4. Are all branches merged?
+5. Ctrl+Shift+F for `TODO` and `FIXME` in the codebase.
