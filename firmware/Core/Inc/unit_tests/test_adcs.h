@@ -1,0 +1,48 @@
+#ifndef __INCLUDE_GUARD__ADCS_TEST_PROTOTYPES_H__
+#define __INCLUDE_GUARD__ADCS_TEST_PROTOTYPES_H__
+
+#include "adcs_types.h"
+
+// ADCS test definitions
+uint8_t TEST_EXEC__ADCS_Pack_to_Ack();
+uint8_t TEST_EXEC__ADCS_Pack_to_Identification();
+uint8_t TEST_EXEC__ADCS_Pack_to_Program_Status();
+uint8_t TEST_EXEC__ADCS_Pack_to_Comms_Status();
+uint8_t TEST_EXEC__ADCS_Pack_to_Power_Control();
+uint8_t TEST_EXEC__ADCS_Pack_to_Angular_Rates();
+uint8_t TEST_EXEC__ADCS_Pack_to_LLH_Position();
+uint8_t TEST_EXEC__ADCS_Pack_to_Unix_Time_Save_Mode();
+uint8_t TEST_EXEC__ADCS_Pack_to_Orbit_Params();
+uint8_t TEST_EXEC__ADCS_Pack_to_Rated_Sensor_Rates();
+uint8_t TEST_EXEC__ADCS_Pack_to_Wheel_Speed();
+uint8_t TEST_EXEC__ADCS_Pack_to_Magnetorquer_Command();
+uint8_t TEST_EXEC__ADCS_Pack_to_Raw_Magnetometer_Values();
+uint8_t TEST_EXEC__ADCS_Pack_to_Fine_Angular_Rates();
+uint8_t TEST_EXEC__ADCS_Pack_to_Magnetometer_Config();
+uint8_t TEST_EXEC__ADCS_Pack_to_Commanded_Attitude_Angles();
+uint8_t TEST_EXEC__ADCS_Pack_to_Estimation_Params();
+uint8_t TEST_EXEC__ADCS_Pack_to_ASGP4_Params();
+uint8_t TEST_EXEC__ADCS_Pack_to_Tracking_Controller_Target_Reference();
+uint8_t TEST_EXEC__ADCS_Pack_to_Rate_Gyro_Config();
+uint8_t TEST_EXEC__ADCS_Pack_to_Estimated_Attitude_Angles();
+uint8_t TEST_EXEC__ADCS_Pack_to_Magnetic_Field_Vector();
+uint8_t TEST_EXEC__ADCS_Pack_to_Fine_Sun_Vector();
+uint8_t TEST_EXEC__ADCS_Pack_to_Nadir_Vector();
+uint8_t TEST_EXEC__ADCS_Pack_to_Commanded_Wheel_Speed();
+uint8_t TEST_EXEC__ADCS_Pack_to_IGRF_Magnetic_Field_Vector();
+uint8_t TEST_EXEC__ADCS_Pack_to_Quaternion_Error_Vector();
+uint8_t TEST_EXEC__ADCS_Pack_to_Estimated_Gyro_Bias();
+uint8_t TEST_EXEC__ADCS_Pack_to_Estimation_Innovation_Vector();
+uint8_t TEST_EXEC__ADCS_Pack_to_Raw_Cam1_Sensor();
+uint8_t TEST_EXEC__ADCS_Pack_to_Raw_Cam2_Sensor();
+uint8_t TEST_EXEC__ADCS_Pack_to_Raw_CSS_1_to_6();
+uint8_t TEST_EXEC__ADCS_Pack_to_Raw_CSS_7_to_10();
+uint8_t TEST_EXEC__ADCS_Pack_to_CubeControl_Current();
+uint8_t TEST_EXEC__ADCS_Pack_to_Raw_GPS_Status();
+uint8_t TEST_EXEC__ADCS_Pack_to_Raw_GPS_Time();
+uint8_t TEST_EXEC__ADCS_Pack_to_Raw_GPS();
+uint8_t TEST_EXEC__ADCS_Pack_to_Measurements();
+
+#endif // __INCLUDE_GUARD__ADCS_TEST_PROTOTYPES_H__
+
+
