@@ -109,6 +109,9 @@ ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffuncti
 
 CFLAGS += $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
 
+# CTS: Enable extra warnings for safety
+CFLAGS += -Wextra -Wpedantic -Wmissing-field-initializers -Wno-unused-parameter -Werror
+
 ifeq ($(DEBUG), 1)
 CFLAGS += -g -gdwarf-2
 endif
