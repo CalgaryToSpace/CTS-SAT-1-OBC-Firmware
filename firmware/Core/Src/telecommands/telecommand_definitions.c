@@ -14,9 +14,6 @@
 #include "telecommands/i2c_telecommand_defs.h"
 #include "telecommands/config_telecommand_defs.h"
 #include "telecommands/testing_telecommand_defs.h"
-
-#include "mpi_telecommand_definitions.h"
-#include "telecommands/mpi_telecommand_definitions.h"
 #include "telecommands/mpi_telecommand_defs.h"
 
 #include <stdio.h>
