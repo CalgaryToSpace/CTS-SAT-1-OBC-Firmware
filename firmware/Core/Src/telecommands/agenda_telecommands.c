@@ -34,7 +34,7 @@ uint8_t TCMDEXEC_agenda_delete_by_tssent(const char *args_str, TCMD_TelecommandC
     uint64_t tssent = 0;
 
     // Parse the arg string passed into a uint64_t for the timestamp sent
-    uint8_t parse_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &tssent);
+    const uint8_t parse_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &tssent);
 
     //Checking if the parsing was right
     if (parse_result > 0) {
@@ -43,22 +43,21 @@ uint8_t TCMDEXEC_agenda_delete_by_tssent(const char *args_str, TCMD_TelecommandC
     }
 
     // Pass the tssent into the function that handles the delete from the stack
-    uint8_t result = TCMD_agenda_delete_by_tssent(&tssent);
+    const uint8_t result = TCMD_agenda_delete_by_tssent(tssent);
 
     if (result == 1)
     {
         DEBUG_uart_print_str("Telecommand with tssent: ");
         DEBUG_uart_print_uint64(tssent);
         DEBUG_uart_print_str(" not found in agenda.\n");
+
+        return result;
     }
 
-    if (result == 0)
-    {
-        DEBUG_uart_print_str("Telecommand with tssent: ");
-        DEBUG_uart_print_uint64(tssent);
-        DEBUG_uart_print_str(" deleted from agenda");
-        DEBUG_uart_print_str("\n");
-    }
+    DEBUG_uart_print_str("Telecommand with tssent: ");
+    DEBUG_uart_print_uint64(tssent);
+    DEBUG_uart_print_str(" deleted from agenda");
+    DEBUG_uart_print_str("\n");
     
     return result;
 }
