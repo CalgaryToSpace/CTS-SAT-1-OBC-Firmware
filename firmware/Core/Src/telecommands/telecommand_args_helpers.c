@@ -12,14 +12,21 @@
 /// @param str Input string, starting with an integer
 /// @param str_len Length of the input string. The first `str_len` characters are considered.
 /// @param result Pointer to the result
-/// @return 0 if successful, 1 if the string is empty, 2 if the string does not start with an integer
+/// @return 0 if successful, 1 if the string is empty, 2 if the string size is longer than 19 characters,
+///         3 if the string contains non-integer characters.
+/// @note Result is not written to if an error occurs. The max digit length that can be store in the result
+/// is 19. If the input string is longer than 19 characters, an error will be returned.
 uint8_t TCMD_ascii_to_uint64(const char *str, uint32_t str_len, uint64_t *result) {
-    // FIXME: return error if the string is too long/number is too large
-    // FIXME: return error if the number doesn't occupy the whole string (e.g., "123abc" with str_len=6 should error)
-    // TODO: write unit tests for this function
     // TODO: consider removing the str_len parameter and using strlen(str) instead (requires refactor in caller)
+
+    // Error: the input string is empty
     if (str_len == 0) {
         return 1;
+    }
+
+    // Error: size of string is larger than the max allowed length of the result variable
+    if (str_len > 19) {
+        return 2;
     }
 
     uint64_t temp_result = 0;
@@ -32,8 +39,9 @@ uint8_t TCMD_ascii_to_uint64(const char *str, uint32_t str_len, uint64_t *result
         temp_result = temp_result * 10 + (str[i] - '0');
     }
 
-    if (i == 0) {
-        return 2;
+    // Error: the result size doesn't match str_len (input includes non-integers)
+    if (i == 0 || i != str_len) {
+        return 3;
     }
 
     *result = temp_result;
@@ -71,7 +79,7 @@ uint8_t TCMD_extract_uint64_arg(const char *str, uint32_t str_len, uint8_t arg_i
     }
 
     uint8_t parse_result = TCMD_ascii_to_uint64(&str[start_index], i - start_index, result);
-    if (parse_result == 2) {
+    if (parse_result == 3) {
         // The argument is not an integer
         return 3;
     }
