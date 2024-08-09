@@ -8,5 +8,6 @@ var searchData=
   ['debug_5fuart_5fprint_5fuint64_5',['DEBUG_uart_print_uint64',['../debug__uart_8h.html#a22493cadb29d076ea9413c69392799b7',1,'DEBUG_uart_print_uint64(uint64_t value):&#160;debug_uart.c'],['../debug__uart_8c.html#a22493cadb29d076ea9413c69392799b7',1,'DEBUG_uart_print_uint64(uint64_t value):&#160;debug_uart.c']]],
   ['debugmon_5fhandler_6',['DebugMon_Handler',['../stm32l4xx__it_8h.html#adbdfb05858cc36fc520974df37ec3cb0',1,'DebugMon_Handler(void):&#160;stm32l4xx_it.c'],['../stm32l4xx__it_8c.html#adbdfb05858cc36fc520974df37ec3cb0',1,'DebugMon_Handler(void):&#160;stm32l4xx_it.c']]],
   ['demo_5fflash_5fread_7',['demo_flash_read',['../flash__testing__demos_8c.html#a8b820d5639e3201ec967af242a24a521',1,'flash_testing_demos.c']]],
-  ['demo_5fflash_5fwrite_8',['demo_flash_write',['../flash__testing__demos_8c.html#a195fe65949096932e071ddb8f4ff0dd6',1,'flash_testing_demos.c']]]
+  ['demo_5fflash_5fwrite_8',['demo_flash_write',['../flash__testing__demos_8c.html#a195fe65949096932e071ddb8f4ff0dd6',1,'flash_testing_demos.c']]],
+  ['dma1_5fchannel2_5firqhandler_9',['DMA1_Channel2_IRQHandler',['../stm32l4xx__it_8h.html#a0c3390d4dc5cfceccbeda71aa672d99d',1,'DMA1_Channel2_IRQHandler(void):&#160;stm32l4xx_it.c'],['../stm32l4xx__it_8c.html#a0c3390d4dc5cfceccbeda71aa672d99d',1,'DMA1_Channel2_IRQHandler(void):&#160;stm32l4xx_it.c']]]
 ];
