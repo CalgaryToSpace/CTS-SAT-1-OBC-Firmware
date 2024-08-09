@@ -65,13 +65,13 @@ uint8_t TCMDEXEC_mpi_send_command_hex(const char *args_str, TCMD_TelecommandChan
         snprintf(&response_output_buf[strlen(response_output_buf)], response_output_buf_len - strlen(response_output_buf) - 1, "MPI response buffer: ");
         for (size_t i = 0; i < mpi_response_size; i++)
         {
-            snprintf(&response_output_buf[strlen(response_output_buf)], response_output_buf_len - strlen(response_output_buf) - 1, "%02X", mpi_response[i]);
+            snprintf(&response_output_buf[strlen(response_output_buf)], response_output_buf_len - strlen(response_output_buf) - 1, "%02X ", mpi_response[i]);
         }
 
         return 3; // Error code: MPI failed to execute cmd
     }
 
     // Successful MPI response
-    snprintf(response_output_buf, response_output_buf_len, "MPI successfully executed the command. MPI echoed response code: %u\n", cmd_response);
+    snprintf(response_output_buf, response_output_buf_len, "MPI successfully executed the command. MPI echoed response code: %u\n", mpi_response[args_bytes_len+2]);
     return 0;
 }
