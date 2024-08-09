@@ -9,15 +9,14 @@
 #include <string.h>
 #include <inttypes.h>
 
-/**
- * @brief Send a configuration command & params (IF ANY) to the MPI encoded in hex
- *
- * @param args_str Hex-encoded string representing the configuration command + params (IF ANY) being sent to the MPI
- * @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
- * @param response_output_buf The buffer to write the response to
- * @param response_output_buf_len The maximum length of the response_output_buf (its size)
- * @return 0: if successful, 1: if invalid input, 2: error transmitting, 3: MPI failed to execute cmd
- */
+
+///@brief Send a configuration command & params (IF ANY) to the MPI encoded in hex
+/// @param args_str 
+/// - Arg 0: Hex-encoded string representing the configuration command + params (IF ANY) being sent to the MPI
+/// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
+/// @param response_output_buf The buffer to write the response to
+/// @param response_output_buf_len The maximum length of the response_output_buf (its size)
+/// @return 0: if successful, 1: if invalid input, 2: error transmitting, 3: MPI failed to execute cmd
 uint8_t TCMDEXEC_mpi_send_command_hex(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                       char *response_output_buf, uint16_t response_output_buf_len)
 {
