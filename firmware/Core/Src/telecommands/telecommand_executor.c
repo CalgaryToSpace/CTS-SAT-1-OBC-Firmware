@@ -177,3 +177,33 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
         response_output_buf_size
     );
 }
+
+/// @brief Deletes all entries from the agenda.
+/// @return 0 on completion.
+uint8_t TCMD_agenda_delete_all() {
+    for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
+        if (TCMD_agenda_is_valid[slot_num]) {
+            TCMD_agenda_is_valid[slot_num] = 0;
+        }
+    }
+    return 0;
+}
+
+/// @brief Deletes a telecommand from the agenda by its `timestamp_sent` field.
+/// @param tssent The `timestamp_sent` value of the telecommand to delete.
+/// @return 0 on success, 1 if the telecommand was not found.
+uint8_t TCMD_agenda_delete_by_tssent(uint64_t tssent) {
+
+    // Looping through the agenda and checking for valid agendas and if the timestamp matches
+    for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
+        if (TCMD_agenda_is_valid[slot_num] && TCMD_agenda[slot_num].timestamp_sent == tssent) {
+
+            // Setting agenda as invalid
+            TCMD_agenda_is_valid[slot_num] = 0; 
+            return 0;
+        }
+    }
+    
+    // If agenda is not found with timestamp return 1
+    return 1;
+}
