@@ -10,6 +10,19 @@
 #include <stdint.h>
 
 /**
+ * @enum Mpi_Mode
+ * @brief Enumerates the different modes under which the satellite can operate the MPI
+ * 
+ */
+enum Mpi_Mode {
+    COMMAND_MODE,                           // MPI is in command mode
+    SCIENCE_DATA_MODE,                      // MPI is science data is being collected mode
+    NOT_LISTENING_TO_MPI_MODE               // MPI is recording science data but it is not being collected mode
+};
+
+extern enum Mpi_Mode current_mpi_mode;      // Current mode under which the MPI is being operated
+
+/**
  * @brief Represents an data frame received from the MPI
  *
  * This struct lays out the structure of an MPI data frame,
