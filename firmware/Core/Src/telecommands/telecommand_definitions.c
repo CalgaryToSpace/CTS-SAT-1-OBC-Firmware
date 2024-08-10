@@ -4,6 +4,7 @@
 #include "transforms/arrays.h"
 #include "timekeeping/timekeeping.h"
 #include "debug_tools/debug_uart.h"
+#include "log/log.h"
 
 // Additional telecommand definitions files:
 #include "telecommands/freertos_telecommand_defs.h"
@@ -330,7 +331,10 @@ const int16_t TCMD_NUM_TELECOMMANDS = sizeof(TCMD_telecommand_definitions) / siz
 /// @return 0 if successful, >0 if an error occurred (but hello_world can't return an error)
 uint8_t TCMDEXEC_hello_world(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-    snprintf(response_output_buf, response_output_buf_len, "Hello, world!\n");
+    LOG_message(
+        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "Hello, world!"
+    );
     return 0;
 }
 

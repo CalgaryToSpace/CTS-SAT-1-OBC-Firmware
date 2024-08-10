@@ -49,3 +49,26 @@ There are several sinks. Generally, all log messages should go to all sinks (`LO
 Sometimes, however, there may be a time where you want to exclude a specific sink. For example, if you are logging a message saying "using the filesystem failed", you probably don't want to log that message to the failing filesystem. In such a case, use `LOG_all_sinks_except(LOG_SINK_FILE)`.
 
 Several sinks can chained together with the bitwise OR operator (`|`). For example, to log to the UART and the radio, use `LOG_SINK_UART | LOG_SINK_RADIO`. To log to everything except the filesystem and radio, use `LOG_all_sinks_except(LOG_SINK_FILE | LOG_SINK_RADIO)`.
+
+## Timestamp Format
+
+The timekeeping clock on satellites drifts due to temperature variations, inaccuracies in the crystal oscillator, etc; it is re-synced with the GPS and/or ground station every so often.
+
+The system time is stored in "unix timestamp format" (seconds since 1970-01-01). This is a very well-known date/time representation.
+
+In the log printouts, each log is shown in the format of the following example:
+```
+1723331067154_T_0000018056 [TELECOMMAND:NORMAL]: Hello, world!
+```
+
+The timestamp on logs is stored in "sync time + source + offset" format. In the example above, the fields are:
+* **Sync Time**: 1723331067154, meaning 1723331067.154 seconds since midnight, 1970-01-01.
+* **Source**: `T`, meaning the time was last synced via the `set_system_time()` telecommand.
+    * Specifically, the time was synced like `CTS1+set_system_time(1723331067154)!`.
+* **Offset**: 0000018056, meaning the time was last synced 18.056 seconds before that hello world message was logged.
+
+By adding together the sync time and the offset, the absolute order of the log message can be determined by sorting the logs lexicographically (i.e., first by the sync time value, then by the offset value).
+
+The timestamp for each log message could be stored as just a single number of ms since 1970-01-01, but the "sync time + source + offset" format is used to allow absolute chronological sorting of the logs, even if the satellite's time moves "backwards" during a time sync.
+
+For more information about the timestamp format, see the [Timestamp Format Rationale docs](/docs/Non-Critical_Notes/Timestamp_Format_Rationale.md).
