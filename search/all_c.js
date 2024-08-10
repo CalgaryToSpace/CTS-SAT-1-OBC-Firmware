@@ -13,10 +13,11 @@ var searchData=
   ['error_5fhandler_10',['Error_Handler',['../main_8h.html#a1730ffe1e560465665eb47d9264826f9',1,'Error_Handler(void):&#160;main.c'],['../main_8c.html#a1730ffe1e560465665eb47d9264826f9',1,'Error_Handler(void):&#160;main.c']]],
   ['etag_11',['etag',['../structlfs__mdir.html#a1169f749e9b0ad1c18ff8045a3a6770f',1,'lfs_mdir']]],
   ['etc_12',['Libraries, External, etc.',['../md_docs_2C__Namespaces.html#autotoc_md26',1,'']]],
-  ['examples_13',['Examples',['../md_docs_2Telecommand__Spec.html#autotoc_md38',1,'']]],
-  ['external_20etc_14',['Libraries, External, etc.',['../md_docs_2C__Namespaces.html#autotoc_md26',1,'']]],
-  ['external_5fsai1_5fclock_5fvalue_15',['EXTERNAL_SAI1_CLOCK_VALUE',['../stm32l4xx__hal__conf_8h.html#a3e840e13854bdb68608b69a2ecf996ab',1,'stm32l4xx_hal_conf.h']]],
-  ['external_5fsai2_5fclock_5fvalue_16',['EXTERNAL_SAI2_CLOCK_VALUE',['../stm32l4xx__hal__conf_8h.html#a8f8fce2496d8c61b71331907e08c24c7',1,'stm32l4xx_hal_conf.h']]],
-  ['extract_5fc_5ffunction_5fdocstring_17',['extract_c_function_docstring',['../namespacects1__ground__support_1_1telecommand__array__parser.html#a8b7b7a6be6b2ee9650528ca3c6716c59',1,'cts1_ground_support::telecommand_array_parser']]],
-  ['extract_5ftelecommand_5farg_5flist_18',['extract_telecommand_arg_list',['../namespacects1__ground__support_1_1telecommand__array__parser.html#a17a7c4b57a1e81c9bd02673d00aa5afe',1,'cts1_ground_support::telecommand_array_parser']]]
+  ['examples_13',['Examples',['../md_docs_2Telecommand__Spec.html#autotoc_md44',1,'']]],
+  ['execution_20checks_14',['Manual Execution Checks',['../md_docs_2Non-Critical__Notes_2Deployment__Final__Checks.html#autotoc_md38',1,'']]],
+  ['external_20etc_15',['Libraries, External, etc.',['../md_docs_2C__Namespaces.html#autotoc_md26',1,'']]],
+  ['external_5fsai1_5fclock_5fvalue_16',['EXTERNAL_SAI1_CLOCK_VALUE',['../stm32l4xx__hal__conf_8h.html#a3e840e13854bdb68608b69a2ecf996ab',1,'stm32l4xx_hal_conf.h']]],
+  ['external_5fsai2_5fclock_5fvalue_17',['EXTERNAL_SAI2_CLOCK_VALUE',['../stm32l4xx__hal__conf_8h.html#a8f8fce2496d8c61b71331907e08c24c7',1,'stm32l4xx_hal_conf.h']]],
+  ['extract_5fc_5ffunction_5fdocstring_18',['extract_c_function_docstring',['../namespacects1__ground__support_1_1telecommand__array__parser.html#a8b7b7a6be6b2ee9650528ca3c6716c59',1,'cts1_ground_support::telecommand_array_parser']]],
+  ['extract_5ftelecommand_5farg_5flist_19',['extract_telecommand_arg_list',['../namespacects1__ground__support_1_1telecommand__array__parser.html#a17a7c4b57a1e81c9bd02673d00aa5afe',1,'cts1_ground_support::telecommand_array_parser']]]
 ];

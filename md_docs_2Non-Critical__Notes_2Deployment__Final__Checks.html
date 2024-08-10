@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.12.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>CTS-SAT-1-OBC-Firmware: CTS-SAT-1-OBC-Firmware</title>
+<title>CTS-SAT-1-OBC-Firmware: Deployment Final Checks</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -84,39 +84,52 @@ $(function(){ initResizable(false); });
 </div><!-- top -->
 <div id="doc-content">
 <div><div class="header">
-  <div class="headertitle"><div class="title">CTS-SAT-1-OBC-Firmware</div></div>
+  <div class="headertitle"><div class="title">Deployment Final Checks</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md66"></a></p>
-<p>Firmware and ground support software for the CTS-SAT-1 ("FrontierSat") mission. Firmware runs on the STM32-based Onboard Computer.</p>
-<h1><a class="anchor" id="autotoc_md67"></a>
-Quick Links - Getting Started</h1>
+<div class="textblock"><p><a class="anchor" id="autotoc_md36"></a></p>
 <ul>
-<li><a class="el" href="00__Getting__Started_8md.html">Getting Started Guide</a></li>
-<li><a href="/docs/">Firmware Documentation File List</a> (start with <code><a class="el" href="00__Getting__Started_8md.html">00_Getting_Started.md</a></code>)</li>
-<li>Developing and using the CTS-SAT-1 Ground Support Software: <a class="el" href="cts1__ground__support_2README_8md.html">Ground Support README</a></li>
-<li><a href="https://calgarytospace.github.io/CTS-SAT-1-OBC-Firmware">Doxygen Documentation</a></li>
+<li>The code should be audited for the following aspects, as a final check before the final flash.</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md68"></a>
-Contributors</h1>
-<p>Please add your name to the list below in your first Pull Request!</p>
-<ul>
-<li>Parker L.</li>
-<li>Nadeem M.</li>
-<li>Chris K.</li>
-</ul>
-<h1><a class="anchor" id="autotoc_md69"></a>
-License and Libraries</h1>
-<p>This bulk of this project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.</p>
-<p>This project includes the following libraries, each with their own licenses:</p>
+<h1><a class="anchor" id="autotoc_md37"></a>
+Automated Check Ideas (GitHub Actions)</h1>
 <ol type="1">
-<li><b>STM32CubeIDE HAL library</b>, which is licensed under a variety of licenses. See applicable licenses in applicable sub-folders.<ul>
-<li>The gist is that the usage is very permissive, as long as you buy real STM32 chips.</li>
+<li>Telecommand Execution (<code>TCMDEXEC_</code>) function names match their registrations in the table.</li>
+<li>No malloc usage.</li>
+<li>Are all <code>TEST_EXEC_</code> functions registered in the test table?</li>
+<li>Are all <code>TCMDEXEC_</code> functions registered in the telecommand table?</li>
+</ol>
+<h1><a class="anchor" id="autotoc_md38"></a>
+Manual Execution Checks</h1>
+<p>The following checks involve executing code and/or telecommands.</p>
+<ul>
+<li>Units tests pass.</li>
+<li>Python-based system tests/checks pass.</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md39"></a>
+Logging Checks</h1>
+<ol type="1">
+<li>Are all logs to <code><a class="el" href="log_8h.html#a9620661557eea5fdaf535b894ae58c84" title="Log a message to several destinations (sinks)">LOG_message()</a></code>? Limited use of UART logging.</li>
+<li>Are <code><a class="el" href="log_8h.html#a9620661557eea5fdaf535b894ae58c84" title="Log a message to several destinations (sinks)">LOG_message()</a></code> calls using the correct exclusions and levels?</li>
+</ol>
+<h1><a class="anchor" id="autotoc_md40"></a>
+Other Checks</h1>
+<ol type="1">
+<li>Check the changelog of libraries (LittleFS, CSP maybe) for bug fixes.</li>
+<li>Are there any large VLA allocations? Can/should any be replaced with static allocations?<ul>
+<li>Maybe enable <code>-Wvla</code> or <code>-Wstack-usage</code>? Not sure what they are yet.</li>
 </ul>
 </li>
-<li><b>FreeRTOS</b></li>
-<li><b>CMSIS</b></li>
-<li><b>LittleFS:</b> Licensed under the BSD-3-Clause license. </li>
+<li>Maybe enable compiler optimizations?</li>
+</ol>
+<h1><a class="anchor" id="autotoc_md41"></a>
+Management Checks</h1>
+<ol type="1">
+<li>Are all the requirements met?</li>
+<li>Are all GitHub Issues implemented and/or closed as not implemented.</li>
+<li>Are all PRs merged?</li>
+<li>Are all branches merged?</li>
+<li>Ctrl+Shift+F for <code>TODO</code> and <code>FIXME</code> in the codebase. </li>
 </ol>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->

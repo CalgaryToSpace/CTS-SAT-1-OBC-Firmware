@@ -22,9 +22,10 @@ var searchData=
   ['get_5ftelecommand_5flist_5ffrom_5frepo_5fcached_19',['get_telecommand_list_from_repo_cached',['../namespacects1__ground__support_1_1terminal__app_1_1dash__gui.html#ac5604e68b6d71b702255bc0474c4abbe',1,'cts1_ground_support::terminal_app::dash_gui']]],
   ['get_5ftelecommand_5fname_5flist_20',['get_telecommand_name_list',['../namespacects1__ground__support_1_1terminal__app_1_1dash__gui.html#aade74349bdf27154c168572a11fc4100',1,'cts1_ground_support::terminal_app::dash_gui']]],
   ['getruntimecountervalue_21',['getRunTimeCounterValue',['../freertos_8c.html#a757086670335adcf3c5cbf96e3a8aab0',1,'freertos.c']]],
-  ['getting_20started_22',['Getting Started',['../md_cts1__ground__support_2README.html#autotoc_md3',1,'Getting Started'],['../md_docs_200__Getting__Started.html',1,'Getting Started!'],['../md_README.html#autotoc_md61',1,'Quick Links - Getting Started']]],
-  ['goals_23',['Goals',['../md_cts1__ground__support_2README.html#autotoc_md1',1,'']]],
-  ['ground_20support_20software_20tt_20cts1_5fground_5fsupport_20tt_24',['CTS-SAT-1 Ground Support Software (&lt;tt&gt;cts1_ground_support&lt;/tt&gt;)',['../md_cts1__ground__support_2README.html',1,'']]],
-  ['gstate_25',['gstate',['../structlfs.html#ab4c94fb3aff01d5d1ae031b13245729d',1,'lfs']]],
-  ['guidelines_26',['C General Guidelines',['../md_docs_2C__General__Guidelines.html',1,'']]]
+  ['getting_20started_22',['Getting Started',['../md_cts1__ground__support_2README.html#autotoc_md3',1,'Getting Started'],['../md_docs_200__Getting__Started.html',1,'Getting Started!'],['../md_README.html#autotoc_md67',1,'Quick Links - Getting Started']]],
+  ['github_20actions_23',['Automated Check Ideas (GitHub Actions)',['../md_docs_2Non-Critical__Notes_2Deployment__Final__Checks.html#autotoc_md37',1,'']]],
+  ['goals_24',['Goals',['../md_cts1__ground__support_2README.html#autotoc_md1',1,'']]],
+  ['ground_20support_20software_20tt_20cts1_5fground_5fsupport_20tt_25',['CTS-SAT-1 Ground Support Software (&lt;tt&gt;cts1_ground_support&lt;/tt&gt;)',['../md_cts1__ground__support_2README.html',1,'']]],
+  ['gstate_26',['gstate',['../structlfs.html#ab4c94fb3aff01d5d1ae031b13245729d',1,'lfs']]],
+  ['guidelines_27',['C General Guidelines',['../md_docs_2C__General__Guidelines.html',1,'']]]
 ];

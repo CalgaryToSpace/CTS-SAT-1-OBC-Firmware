@@ -87,11 +87,12 @@ $(function(){ initResizable(false); });
   <div class="headertitle"><div class="title">Non-Critical STM32 Notes</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md36"></a></p>
+<div class="textblock"><p><a class="anchor" id="autotoc_md42"></a></p>
 <ul>
 <li>Lower NVIC priority number means higher priority.</li>
 <li>For UART, FIFO Mode must be enabled.</li>
-<li>When starting a new FreeRTOS project, you must manually increase the total heap size. Hard faults may mean a thread is running out of stack memory. </li>
+<li>When starting a new FreeRTOS project, you must manually increase the total heap size. Hard faults may mean a thread is running out of stack memory.</li>
+<li>With UART DMA, calling <code>HAL_UART_Receive_DMA()</code> takes a long time (maybe, 1ms). Do not call it inside an Interrupt Service Routine (ISR). Call it only once to start the DMA receive. </li>
 </ul>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->

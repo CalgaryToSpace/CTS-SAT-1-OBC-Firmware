@@ -33,7 +33,7 @@ var searchData=
   ['handling_30',['Error Handling',['../md_docs_2C__General__Guidelines.html#autotoc_md20',1,'']]],
   ['hardfault_5fhandler_31',['HardFault_Handler',['../stm32l4xx__it_8h.html#a2bffc10d5bd4106753b7c30e86903bea',1,'HardFault_Handler(void):&#160;stm32l4xx_it.c'],['../stm32l4xx__it_8c.html#a2bffc10d5bd4106753b7c30e86903bea',1,'HardFault_Handler(void):&#160;stm32l4xx_it.c']]],
   ['has_5frequired_5ffields_32',['has_required_fields',['../classcts1__ground__support_1_1telecommand__types_1_1TelecommandDefinition.html#a36e5379ca10ca6168e8b4ff113603b3e',1,'cts1_ground_support::telecommand_types::TelecommandDefinition']]],
-  ['hclk_20hz_204000000_33',['HCLK(Hz)                               | 4000000',['../system__stm32l4xx_8c.html#autotoc_md44',1,'']]],
+  ['hclk_20hz_204000000_33',['HCLK(Hz)                               | 4000000',['../system__stm32l4xx_8c.html#autotoc_md50',1,'']]],
   ['hcrc_34',['hcrc',['../main_8c.html#ae3358c54a01c6487322df1275618d6b1',1,'main.c']]],
   ['hdma_5fusart1_5frx_35',['hdma_usart1_rx',['../main_8c.html#a34251392f0d5e2461e3aef615918c235',1,'hdma_usart1_rx:&#160;main.c'],['../stm32l4xx__hal__msp_8c.html#a34251392f0d5e2461e3aef615918c235',1,'hdma_usart1_rx:&#160;main.c'],['../stm32l4xx__it_8c.html#a34251392f0d5e2461e3aef615918c235',1,'hdma_usart1_rx:&#160;main.c']]],
   ['head_36',['head',['../structlfs__dir.html#a086e8d93663f5528fcc7c2ff7802883d',1,'lfs_dir::head'],['../structlfs__file_1_1lfs__ctz.html#aff9613735c2288e388bf3000a66f4720',1,'lfs_file::lfs_ctz::head']]],
@@ -59,5 +59,5 @@ var searchData=
   ['huart4_56',['huart4',['../main_8h.html#ae273feb3e0dc44e38892650faa58fced',1,'huart4:&#160;main.c'],['../main_8c.html#ae273feb3e0dc44e38892650faa58fced',1,'huart4:&#160;main.c']]],
   ['huart5_57',['huart5',['../main_8h.html#a25a82fcf0cd24eb6d39977cb5864cec8',1,'huart5:&#160;main.c'],['../main_8c.html#a25a82fcf0cd24eb6d39977cb5864cec8',1,'huart5:&#160;main.c'],['../stm32l4xx__it_8c.html#a25a82fcf0cd24eb6d39977cb5864cec8',1,'huart5:&#160;main.c']]],
   ['hunt_20activity_58',['Treasure Hunt Activity',['../md_docs_230__Repo__Organization.html#autotoc_md15',1,'']]],
-  ['hz_204000000_59',['Hz 4000000',['../system__stm32l4xx_8c.html#autotoc_md44',1,'HCLK(Hz)                               | 4000000'],['../system__stm32l4xx_8c.html#autotoc_md43',1,'SYSCLK(Hz)                             | 4000000']]]
+  ['hz_204000000_59',['Hz 4000000',['../system__stm32l4xx_8c.html#autotoc_md50',1,'HCLK(Hz)                               | 4000000'],['../system__stm32l4xx_8c.html#autotoc_md49',1,'SYSCLK(Hz)                             | 4000000']]]
 ];
