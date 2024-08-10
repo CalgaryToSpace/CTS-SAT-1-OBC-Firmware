@@ -177,3 +177,26 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
         response_output_buf_size
     );
 }
+
+/// @brief Fetches all active entries from the agenda and prints them out.
+/// @return 0 on completion.
+uint8_t TCMD_agenda_fetch(){
+
+    //Get the number of active agendas
+    const uint8_t count = TCMD_get_agenda_used_slots_count();
+
+    if (count == 0){
+        DEBUG_uart_print_str("No active/valid agendas available");
+    }
+
+    char message_buffer[256];
+
+    for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
+        if (TCMD_agenda_is_valid[slot_num]) {
+            TCMD_agenda_is_valid[slot_num];
+        }
+    }
+
+
+    return 0;
+}

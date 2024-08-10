@@ -14,6 +14,7 @@
 #include "telecommands/i2c_telecommand_defs.h"
 #include "telecommands/config_telecommand_defs.h"
 #include "telecommands/testing_telecommand_defs.h"
+#include "telecommands/agenda_telecommands_def.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -312,6 +313,17 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     },
 
     // ****************** END SECTION: freertos_telecommand_defs ******************
+
+    // ****************** SECTION: agenda_telecommand_defs ******************
+
+   {
+        .tcmd_name = "agenda_fetch",
+        .tcmd_func = TCMDEXEC_agenda_fetch,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+
+    // ****************** END SECTION: agenda_telecommand_defs ******************
 
 };
 

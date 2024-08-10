@@ -22,4 +22,6 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
     char *response_output_buf, uint16_t response_output_buf_size
 );
 
+uint8_t TCMD_agenda_fetch();
+
 #endif // INCLUDE_GUARD__TELECOMMAND_EXECUTOR_H
