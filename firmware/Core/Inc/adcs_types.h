@@ -11,32 +11,32 @@
 #ifndef INC_ADCS_TYPES_H_
 #define INC_ADCS_TYPES_H_
 
-//Bit 7 of Telecommand and Telemetry Request - Section 4.1 of Firmware Manual
-#define ADCS_TELECOMMAND 0
-#define ADCS_TELEMETRY_REQUEST 1
+// Bit 7 of Telecommand and Telemetry Request - Section 4.1 of Firmware Manual
+static const uint8_t ADCS_TELECOMMAND = 0;
+static const uint8_t ADCS_TELEMETRY_REQUEST = 1;
 
-//ADCS Magic Number defined in Section 5.1 Table 10 of Firmware Manual
-#define ADCS_MAGIC_NUMBER 0x5A // Used to make sure that the reset command is valid
+// ADCS Magic Number defined in Section 5.1 Table 10 of Firmware Manual
+static const uint8_t ADCS_MAGIC_NUMBER = 0x5A; // Used to make sure that the reset command is valid
 
-//I2C Write and Read Addresses - Section 5.3 Table 5 of Firmware Manual
-#define ADCS_I2C_WRITE 0xAE
-#define ADCS_I2C_READ 0xAF
-#define ADCS_I2C_ADDRESS 0x57
+// I2C Write and Read Addresses - Section 5.3 Table 5 of Firmware Manual
+static const uint8_t ADCS_I2C_WRITE = 0xAE;
+static const uint8_t ADCS_I2C_READ = 0xAF;
+static const uint8_t ADCS_I2C_ADDRESS = 0x57;
 
-//Identifiers of UART Start of Message and End of Message - Section 4.2 of Firmware Manual
+// Identifiers of UART Start of Message and End of Message - Section 4.2 of Firmware Manual
 // 0x1F | 0x7F ....... | 0x1F 0xFF
-#define ADCS_ESC_CHARACTER 0x1F
-#define ADCS_START_MESSAGE 0x7F
-#define ADCS_END_MESSAGE 0xFF
+static const uint8_t ADCS_ESC_CHARACTER = 0x1F;
+static const uint8_t ADCS_START_MESSAGE = 0x7F;
+static const uint8_t ADCS_END_MESSAGE = 0xFF;
 
 // CRC defines
-#define CRC_POLY 0x91
+static const uint8_t ADCS_CRC_POLY = 0x91;
 
 // define for timeout
-#define ADCS_HAL_TIMEOUT 1000
+static const uint16_t ADCS_HAL_TIMEOUT = 1000;
 
 // epsilon for comparing doubles
-#define ADCS_TEST_EPSILON 1e-6
+static const uint8_t ADCS_TEST_EPSILON = 1e-6;
 
 /* Enumerated Values */
 
@@ -49,7 +49,7 @@ typedef enum TC_Error_Flag {
 	TC_Error_CRC
 } TC_Error_Flag;
 
- // ADCS Run Modes - Section 5.3.1 Table 75 of Firmware Manual
+// ADCS Run Modes - Section 5.3.1 Table 75 of Firmware Manual
 typedef enum ADCS_Run_Mode {
 	ADCS_Run_Mode_Off,
 	ADCS_Run_Mode_Enabled,
@@ -77,7 +77,7 @@ typedef enum ADCS_Reset_Cause {
     ADCS_Unknown_Reset_Cause
 } ADCS_Reset_Cause;
 
-//ADCS Boot Causes - Section 6.1.2 Table 29 of Firmware Manual
+// ADCS Boot Causes - Section 6.1.2 Table 29 of Firmware Manual
 typedef enum ADCS_Boot_Cause {
     ADCS_Boot_Cause_Unexpected,
     ADCS_Boot_Cause_Not_Used_1,
@@ -87,13 +87,13 @@ typedef enum ADCS_Boot_Cause {
     ADCS_Boot_Cause_SRAM_Latchup
 } ADCS_Boot_Cause;
 
-//ADCS Running Programs - Section 6.1.2 Table 30 of Firmware Manual
+// ADCS Running Programs - Section 6.1.2 Table 30 of Firmware Manual
 typedef enum ADCS_Running_Program {
     ADCS_Running_ADCS = 1,
     ADCS_Running_Bootloader = 2
 } ADCS_Running_Program;
 
-//ADCS Control Modes - Section 6.3.1 Table 77 of Firmware Manual
+// ADCS Control Modes - Section 6.3.1 Table 77 of Firmware Manual
 typedef enum ADCS_Control_Mode {
     ADCS_Control_Mode_None,
     ADCS_Control_Mode_Detumbling,
@@ -522,8 +522,8 @@ typedef struct ADCS_Measurements_Struct {
 /* Function Definitions */
 
 #define ADCS_I2C_HANDLE &hi2c1
-#define ADCS_INCLUDE_CHECKSUM 1
-#define ADCS_NO_CHECKSUM 0
+static const uint8_t ADCS_INCLUDE_CHECKSUM = 1;
+static const uint8_t ADCS_NO_CHECKSUM = 0;
 #define WRITE_STRUCT_TO_MEMORY(struct_to_write) // memory module function: write struct to memory
 
 // byte transforms

@@ -1912,7 +1912,7 @@ uint8_t ADCS_COMMS_Crc8Init()
 		for (int j = 0; j < 8; j++)
 		{
 			if (val & 1)
-			val ^= CRC_POLY;
+			val ^= ADCS_CRC_POLY;
 			val >>= 1;
 		}
 		CRC8Table[i] = val;
