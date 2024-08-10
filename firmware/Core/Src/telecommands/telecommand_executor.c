@@ -6,7 +6,9 @@
 #include "debug_tools/debug_uart.h"
 #include "timekeeping/timekeeping.h"
 
+#include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 
 /// @brief  The agenda (schedule queue) of telecommands to execute.
 TCMD_parsed_tcmd_to_execute_t TCMD_agenda[TCMD_AGENDA_SIZE];
@@ -187,16 +189,27 @@ uint8_t TCMD_agenda_fetch(){
 
     if (count == 0){
         DEBUG_uart_print_str("No active/valid agendas available");
+        return 1;
     }
 
-    char message_buffer[256];
+    DEBUG_uart_print_str("Number of active agendas is: ");
+    DEBUG_uart_print_str(count);
+    DEBUG_uart_print_str("\n");
 
     for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
+        char message_buffer[256];
         if (TCMD_agenda_is_valid[slot_num]) {
-            TCMD_agenda_is_valid[slot_num];
-        }
+            snprintf(
+                message_buffer, sizeof(message_buffer),
+                "{\"agenda_index\":\"%u\",\"telecommand_channel\":\"%d\",\"timestamp_sent\":%lu,\"timestamp_to_execute\":%lu}\n",
+                TCMD_agenda[slot_num].tcmd_idx,
+                TCMD_agenda[slot_num].tcmd_channel,
+                TCMD_agenda[slot_num].timestamp_sent,
+                TCMD_agenda[slot_num].timestamp_to_execute
+            );
     }
-
+    DEBUG_uart_print_str(message_buffer);
+}
 
     return 0;
 }
