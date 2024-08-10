@@ -34,9 +34,9 @@ uint8_t TEST_EXEC__TCMD_extract_uint64_arg() {
     TEST_ASSERT(TCMD_extract_uint64_arg(str, sizeof(str), 0, &result) == 0);
     TEST_ASSERT(result == 1);
 
-    char str2[0];
+    char str2[] = "0";
     // Error: Empty string
-    TEST_ASSERT(TCMD_extract_uint64_arg(str2, sizeof(str2), 0, &result) == 1);
+    TEST_ASSERT(TCMD_extract_uint64_arg(str2, 0, 0, &result) == 1);
 
     // Error: Not enough arguments
     TEST_ASSERT(TCMD_extract_uint64_arg(str, sizeof(str), 10, &result) == 2);
