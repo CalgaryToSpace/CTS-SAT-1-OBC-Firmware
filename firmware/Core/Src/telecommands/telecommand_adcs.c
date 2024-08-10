@@ -30,7 +30,7 @@ uint8_t TCMDEXEC_ADCS_ack(const char *args_str, TCMD_TelecommandChannel_enum_t t
 uint8_t TCMDEXEC_ADCS_set_wheel_speed(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     // parse arguments: first into int64_t, then convert to correct form for input
-    uint8_t num_args = 3;
+    const uint8_t num_args = 3;
     int64_t arguments[num_args]; 
     int16_t args_16[num_args];
     for (uint8_t i = 0; i < num_args; i++) {
@@ -116,7 +116,7 @@ uint8_t TCMDEXEC_ADCS_clear_errors(const char *args_str, TCMD_TelecommandChannel
     return status;
 }                        
 
-/// @brief Telecommand: Set the attitude control mode of the ADCS
+/// @brief Telecommand: Set the attitude control mode of the ADCS; needs Power Control to be set before working
 /// @param args_str 
 ///     - Arg 0: Control mode to set (Table 77 in Firmware Manual)
 ///     - Arg 1: Timeout to set control mode
@@ -124,7 +124,7 @@ uint8_t TCMDEXEC_ADCS_clear_errors(const char *args_str, TCMD_TelecommandChannel
 uint8_t TCMDEXEC_ADCS_attitude_control_mode(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
     // parse arguments into uint64_t
-    uint8_t num_args = 2;
+    const uint8_t num_args = 2;
     uint64_t arguments[num_args]; 
     for (uint8_t i = 0; i < num_args; i++) {
         TCMD_extract_uint64_arg(args_str, strlen(args_str), i, &arguments[i]);
@@ -177,7 +177,7 @@ uint8_t TCMDEXEC_ADCS_set_magnetometer_mode(const char *args_str, TCMD_Telecomma
 uint8_t TCMDEXEC_ADCS_set_magnetorquer_output(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
      // parse arguments into doubles
-    uint8_t num_args = 3;
+    const uint8_t num_args = 3;
     double arguments[num_args]; 
     for (uint8_t i = 0; i < num_args; i++) {
         TCMD_extract_double_arg(args_str, strlen(args_str), i, &arguments[i]);
@@ -244,7 +244,7 @@ uint8_t TCMDEXEC_ADCS_set_power_control(const char *args_str, TCMD_TelecommandCh
                                         char *response_output_buf, uint16_t response_output_buf_len) {
 
     // parse arguments: first into uint64_t, then convert to correct form for input
-    uint8_t num_args = 10;
+    const uint8_t num_args = 10;
     uint64_t arguments[num_args]; 
     uint8_t args_8[num_args];
     for (uint8_t i = 0; i < num_args; i++) {
@@ -278,7 +278,7 @@ uint8_t TCMDEXEC_ADCS_set_magnetometer_config(const char *args_str, TCMD_Telecom
                                               char *response_output_buf, uint16_t response_output_buf_len) {
 
     // parse arguments into doubles
-    uint8_t num_args = 15;
+    const uint8_t num_args = 15;
     double arguments[num_args]; 
     for (uint8_t i = 0; i < num_args; i++) {
         TCMD_extract_double_arg(args_str, strlen(args_str), i, &arguments[i]);
@@ -343,11 +343,11 @@ uint8_t TCMDEXEC_ADCS_get_unix_time_save_mode(const char *args_str, TCMD_Telecom
 uint8_t TCMDEXEC_ADCS_set_sgp4_orbit_params(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
     // parse arguments into doubles
-    uint8_t num_args = 8;
+    const uint8_t num_args = 8;
     double arguments[num_args]; 
     for (uint8_t i = 0; i < num_args; i++) {
         TCMD_extract_double_arg(args_str, strlen(args_str), i, &arguments[i]);
-    }                                            
+    }
 
     uint8_t status = ADCS_Set_SGP4_Orbit_Params(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], arguments[6], arguments[7]);
     return status;
@@ -452,7 +452,7 @@ uint8_t TCMDEXEC_ADCS_get_commanded_attitude_angles(const char *args_str, TCMD_T
 uint8_t TCMDEXEC_ADCS_set_commanded_attitude_angles(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                     char *response_output_buf, uint16_t response_output_buf_len) {
     // parse arguments into doubles
-    uint8_t num_args = 3;
+    const uint8_t num_args = 3;
     double arguments[num_args]; 
     for (uint8_t i = 0; i < num_args; i++) {
         TCMD_extract_double_arg(args_str, strlen(args_str), i, &arguments[i]);
@@ -494,7 +494,7 @@ uint8_t TCMDEXEC_ADCS_set_estimation_params(const char *args_str, TCMD_Telecomma
 
     // in other words, seven double-types followed by eleven uint64-types
     
-    uint8_t num_args = 7;
+    const uint8_t num_args = 7;
     double double_type_arguments[num_args]; 
     float float_args[num_args];
     for (uint8_t i = 0; i < num_args; i++) {
@@ -567,7 +567,7 @@ uint8_t TCMDEXEC_ADCS_set_asgp4_params(const char *args_str, TCMD_TelecommandCha
     double doubles_params[total_doubles];
     uint64_t uint_params[total_uints]; // includes enum
 
-    uint8_t num_args = 17;
+    const uint8_t num_args = 17;
 
     uint8_t double_counter = 0;
     uint8_t uint_counter = 0;
@@ -616,7 +616,7 @@ uint8_t TCMDEXEC_ADCS_get_asgp4_params(const char *args_str, TCMD_TelecommandCha
 uint8_t TCMDEXEC_ADCS_set_tracking_controller_target_reference(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                                 char *response_output_buf, uint16_t response_output_buf_len) {
     // parse arguments into doubles
-    uint8_t num_args = 3;
+    const uint8_t num_args = 3;
     double arguments[num_args]; 
     for (uint8_t i = 0; i < num_args; i++) {
         TCMD_extract_double_arg(args_str, strlen(args_str), i, &arguments[i]);

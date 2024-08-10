@@ -50,7 +50,7 @@ uint8_t ADCS_Pack_to_Ack(uint8_t* data_received, ADCS_TC_Ack_Struct *result) {
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Reset command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Reset() {
 	// returns telecommand error flag
 	uint8_t data_send[1] = {ADCS_MAGIC_NUMBER};
@@ -59,7 +59,7 @@ uint8_t ADCS_Reset() {
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Identification command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Identification() {
 
 	uint8_t data_length = 8;
@@ -90,7 +90,7 @@ uint8_t ADCS_Pack_to_Identification(uint8_t *data_received, ADCS_ID_Struct *resu
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Program_Status command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Program_Status() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -122,7 +122,7 @@ uint8_t ADCS_Pack_to_Program_Status(uint8_t* data_received, ADCS_Boot_Running_St
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Communication_Status command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Communication_Status() {
 	// returns I2C communication status of the ADCS (Table 37)
 	uint8_t data_length = 6;
@@ -152,7 +152,7 @@ uint8_t ADCS_Pack_to_Comms_Status(uint8_t *data_received, ADCS_Comms_Status_Stru
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Deploy_Magnetometer command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Deploy_Magnetometer(uint8_t deploy_timeout) {
 	// Deploys the magnetometer boom, timeout in seconds
 	uint8_t data_send[1] = {deploy_timeout};
@@ -161,7 +161,7 @@ uint8_t ADCS_Deploy_Magnetometer(uint8_t deploy_timeout) {
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Set_Run_Mode command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Set_Run_Mode(ADCS_Run_Mode mode) {
 	// Disables the ADCS
 	uint8_t data_send[1] = {mode};
@@ -170,7 +170,7 @@ uint8_t ADCS_Set_Run_Mode(ADCS_Run_Mode mode) {
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Clear_Errors command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Clear_Errors() {
 	// Clears error flags
 	// NOTE: THERE IS ANOTHER, SEPARATE CLEAR ERROR FLAG TC FOR THE BOOTLODER (TC_BL_CLEAR_ERRORS)
@@ -192,7 +192,7 @@ uint8_t ADCS_Attitude_Control_Mode(ADCS_Control_Mode mode, uint16_t timeout) {
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Attitude_Estimation_Mode command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Attitude_Estimation_Mode(ADCS_Estimation_Mode mode) {
 	// Sets the ADCS attitude estimation mode
 	// Possible values for mode given in Section 6.3 Table 80 of Firmware Reference Manual (ranges from 0 to 7)
@@ -203,7 +203,7 @@ uint8_t ADCS_Attitude_Estimation_Mode(ADCS_Estimation_Mode mode) {
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Run_Once command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Run_Once() {
 	// requires ADCS_Enable_Triggered to have run first
 	// (if ADCS_Enable_On has run instead, then this is unnecessary)
@@ -222,7 +222,7 @@ uint8_t ADCS_Set_Magnetometer_Mode(ADCS_Magnetometer_Mode mode) {
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Set_Magnetorquer_Output command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Set_Magnetorquer_Output(double x_duty, double y_duty, double z_duty) {
 	// only valid after ADCS_Enable_Manual_Control is run
 	// for the duty equations, raw parameter value is obtained using the formula: (raw parameter) = (formatted value)*1000.0
@@ -254,16 +254,16 @@ uint8_t ADCS_Set_Wheel_Speed(int16_t x_speed, int16_t y_speed, int16_t z_speed) 
 }
 
 /// @brief Instruct the ADCS to execute the titular command.
-/// @param ht Power control mode for cube control signal
-/// @param ht Power control mode for cube control motor
-/// @param ht Power control mode for cube sense 1
-/// @param ht Power control mode for cube sense 2
-/// @param ht Power control mode for cube star
-/// @param ht Power control mode for cube wheel 1
-/// @param ht Power control mode for cube wheel 2
-/// @param ht Power control mode for cube wheel 3
-/// @param ht Power control mode for motor
-/// @param ht Power control mode for gps
+/// @param cube_control_signal Power control mode for cube control signal
+/// @param cube_control_motor Power control mode for cube control motor
+/// @param cube_sense1 Power control mode for cube sense 1
+/// @param cube_sense2 Power control mode for cube sense 2
+/// @param cube_star_power Power control mode for cube star
+/// @param cube_wheel1_power Power control mode for cube wheel 1
+/// @param cube_wheel2_power Power control mode for cube wheel 2
+/// @param cube_wheel3_power Power control mode for cube wheel 3
+/// @param motor_power Power control mode for motor
+/// @param gps_power Power control mode for gps
 /// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Set_Power_Control(ADCS_Power_Select cube_control_signal, ADCS_Power_Select cube_control_motor, ADCS_Power_Select cube_sense1,
         ADCS_Power_Select cube_sense2, ADCS_Power_Select cube_star_power, ADCS_Power_Select cube_wheel1_power,
@@ -279,7 +279,7 @@ uint8_t ADCS_Set_Power_Control(ADCS_Power_Select cube_control_signal, ADCS_Power
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Get_Power_Control command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Get_Power_Control() {
 	uint8_t data_length = 3;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -380,7 +380,7 @@ uint8_t ADCS_Set_Magnetometer_Config(
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Save_Config command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Save_Config() {
 	uint8_t data_send[1]; // 0-byte data (from manual) input into wrapper, but one-byte here to avoid warnings
 	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_SAVE_CONFIG, data_send, 0, ADCS_INCLUDE_CHECKSUM);
@@ -388,7 +388,7 @@ uint8_t ADCS_Save_Config() {
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Save_Orbit_Params command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Save_Orbit_Params() {
 	uint8_t data_send[1]; // 0-byte data (from manual) input into wrapper, but one-byte here to avoid warnings
 	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_SAVE_ORBIT_PARAMS, data_send, 0, ADCS_INCLUDE_CHECKSUM);
@@ -396,7 +396,7 @@ uint8_t ADCS_Save_Orbit_Params() {
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Estimate_Angular_Rates command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Estimate_Angular_Rates() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -424,7 +424,7 @@ uint8_t ADCS_Pack_to_Angular_Rates(uint8_t *data_received, ADCS_Angular_Rates_St
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Get_LLH_Position command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Get_LLH_Position() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -453,7 +453,7 @@ uint8_t ADCS_Pack_to_LLH_Position(uint8_t *data_received, ADCS_LLH_Position_Stru
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Bootloader_Clear_Errors command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Bootloader_Clear_Errors() {
 	uint8_t data_send[1]; // 0-byte data (from manual) input into wrapper, but one-byte here to avoid warnings
 	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_BL_CLEAR_ERRORS, data_send, 0, ADCS_INCLUDE_CHECKSUM);
@@ -465,7 +465,7 @@ uint8_t ADCS_Bootloader_Clear_Errors() {
 /// @param[in] save_on_update whether to save the current Unix time whenever a command is used to update it
 /// @param[in] save_periodic whether to save the current Unix time periodically
 /// @param[in] period the period of saving the current Unix time
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Set_Unix_Time_Save_Mode(bool save_now, bool save_on_update, bool save_periodic, uint8_t period) {
 	uint8_t data_send[2] = { (save_now | (save_on_update << 1) | (save_periodic << 2) ) , period}; // 2-byte data (from manual)
 	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_SET_UNIX_TIME_SAVE_TO_FLASH, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
@@ -473,7 +473,7 @@ uint8_t ADCS_Set_Unix_Time_Save_Mode(bool save_now, bool save_on_update, bool sa
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Get_Unix_Time_Save_Mode command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Get_Unix_Time_Save_Mode() {
 	uint8_t data_length = 2;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -500,6 +500,9 @@ uint8_t ADCS_Pack_to_Unix_Time_Save_Mode(uint8_t *data_received, ADCS_Set_Unix_T
     return 0;
 }
 
+// TODO: Figure out why the SGP4 get/set functions aren't working (all zeroes).
+// I bet it's to do with memcpy and double types.
+
 /// @brief Instruct the ADCS to execute the ADCS_Set_SGP4_Orbit_Params command.
 /// @param[in] inclination inclination (degrees)
 /// @param[in] eccentricity eccentricity (dimensionless)
@@ -509,7 +512,7 @@ uint8_t ADCS_Pack_to_Unix_Time_Save_Mode(uint8_t *data_received, ADCS_Set_Unix_T
 /// @param[in] mean_motion mean motion (orbits per day)
 /// @param[in] mean_anomaly mean anomaly (degrees)
 /// @param[in] epoch epoch (double; integer component is year, decimal component is day)
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Set_SGP4_Orbit_Params(double inclination, double eccentricity, double ascending_node_right_ascension,
 								//         degrees,			   dimensionless, 		    degrees
 		double perigee_argument, double b_star_drag_term, double mean_motion, double mean_anomaly, double epoch) {
@@ -532,7 +535,7 @@ uint8_t ADCS_Set_SGP4_Orbit_Params(double inclination, double eccentricity, doub
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Get_SGP4_Orbit_Params command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Get_SGP4_Orbit_Params() {
 	uint8_t data_length = 64;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -564,7 +567,7 @@ uint8_t ADCS_Pack_to_Orbit_Params(uint8_t *data_received, ADCS_Orbit_Params_Stru
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Rate_Sensor_Rates command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Rate_Sensor_Rates() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -593,7 +596,7 @@ uint8_t ADCS_Pack_to_Rated_Sensor_Rates(uint8_t *data_received, ADCS_Rated_Senso
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Get_Wheel_Speed command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Get_Wheel_Speed() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -621,7 +624,7 @@ uint8_t ADCS_Pack_to_Wheel_Speed(uint8_t *data_received, ADCS_Wheel_Speed_Struct
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Get_Magnetorquer_Command command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Get_Magnetorquer_Command() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -649,7 +652,7 @@ uint8_t ADCS_Pack_to_Magnetorquer_Command(uint8_t *data_received, ADCS_Magnetorq
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Get_Raw_Magnetometer_Values command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Get_Raw_Magnetometer_Values() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -676,7 +679,7 @@ uint8_t ADCS_Pack_to_Raw_Magnetometer_Values(uint8_t *data_received, ADCS_Raw_Ma
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Estimate_Fine_Angular_Rates command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Estimate_Fine_Angular_Rates() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -704,7 +707,7 @@ uint8_t ADCS_Pack_to_Fine_Angular_Rates(uint8_t *data_received, ADCS_Fine_Angula
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Get_Magnetometer_Config command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Get_Magnetometer_Config() {
 	uint8_t data_length = 30;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -745,7 +748,7 @@ uint8_t ADCS_Pack_to_Magnetometer_Config(uint8_t *data_received, ADCS_Magnetomet
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Get_Commanded_Attitude_Angles command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Get_Commanded_Attitude_Angles() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -776,7 +779,7 @@ uint8_t ADCS_Pack_to_Commanded_Attitude_Angles(uint8_t *data_received, ADCS_Comm
 /// @param[in] x x attitude angle
 /// @param[in] y y attitude angle
 /// @param[in] z z attitude angle
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Set_Commanded_Attitude_Angles(double x, double y, double z) {
 	// raw parameter value is obtained using the formula: (raw parameter) = (formatted value)*100.0
 	// angle >> 8 gives upper byte, angle & 0x00FF gives lower byte
@@ -808,7 +811,7 @@ uint8_t ADCS_Set_Commanded_Attitude_Angles(double x, double y, double z) {
 /// @param[in] automatic_estimation_transition_due_to_rate_sensor_errors enable/disable automatic transition from MEMS rate estimation mode to RKF in case of rate sensor error
 /// @param[in] wheel_30s_power_up_delay present in CubeSupport but not in the manual -- need to test
 /// @param[in] cam1_and_cam2_sampling_period the manual calls it this, but CubeSupport calls it "error counter reset period" -- need to test
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Set_Estimation_Params(
 								float magnetometer_rate_filter_system_noise, 
                                 float ekf_system_noise, 
@@ -852,7 +855,7 @@ uint8_t ADCS_Set_Estimation_Params(
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Get_Estimation_Params command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Get_Estimation_Params() {
 	uint8_t data_length = 31;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -914,7 +917,7 @@ uint8_t ADCS_Pack_to_Estimation_Params(uint8_t* data_received, ADCS_Estimation_P
 /// @param[in] time_gain Time offset compensation gain
 /// @param[in] max_lag Maximum lagged timestamp measurements to incorporate
 /// @param[in] min_samples Minimum samples to use to get ASGP4
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Set_ASGP4_Params(double incl_coefficient, double raan_coefficient, double ecc_coefficient, double aop_coefficient, double time_coefficient, double pos_coefficient, double maximum_position_error, ADCS_ASGP4_Filter asgp4_filter, double xp_coefficient, double yp_coefficient, uint8_t gps_roll_over, double position_sd, double velocity_sd, uint8_t min_satellites, double time_gain, double max_lag, uint16_t min_samples) {
 	uint8_t data_send[30]; // from Table 209
 
@@ -942,7 +945,7 @@ uint8_t ADCS_Set_ASGP4_Params(double incl_coefficient, double raan_coefficient, 
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Get_ASGP4_Params command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Get_ASGP4_Params() {
 	uint8_t data_length = 30;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -989,7 +992,7 @@ uint8_t ADCS_Pack_to_ASGP4_Params(uint8_t* data_received, ADCS_ASGP4_Params_Stru
 /// @param[in] lon longitude
 /// @param[in] lat latitude
 /// @param[in] alt altitude
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Set_Tracking_Controller_Target_Reference(float lon, float lat, float alt) {
 	uint8_t data_send[12];
 
@@ -1005,7 +1008,7 @@ uint8_t ADCS_Set_Tracking_Controller_Target_Reference(float lon, float lat, floa
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Get_Tracking_Controller_Target_Reference command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Get_Tracking_Controller_Target_Reference() {
 	uint8_t data_length = 12;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -1041,7 +1044,7 @@ uint8_t ADCS_Pack_to_Tracking_Controller_Target_Reference(uint8_t* data_received
 /// @param[in] y_rate_offset y-rate sensor offset
 /// @param[in] z_rate_offset z-rate sensor offset
 /// @param[in] rate_sensor_mult multiplier of rate sensor measurement
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Set_Rate_Gyro_Config(ADCS_Axis_Select gyro1, ADCS_Axis_Select gyro2, ADCS_Axis_Select gyro3, double x_rate_offset, double y_rate_offset, double z_rate_offset, uint8_t rate_sensor_mult) {
 	uint8_t data_send[10];
 
@@ -1060,7 +1063,7 @@ uint8_t ADCS_Set_Rate_Gyro_Config(ADCS_Axis_Select gyro1, ADCS_Axis_Select gyro2
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Get_Rate_Gyro_Config command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Get_Rate_Gyro_Config() {
 	uint8_t data_length = 12;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -1095,7 +1098,7 @@ uint8_t ADCS_Pack_to_Rate_Gyro_Config(uint8_t* data_received, ADCS_Rate_Gyro_Con
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Estimated_Attitude_Angles command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Estimated_Attitude_Angles() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1122,7 +1125,7 @@ uint8_t ADCS_Pack_to_Estimated_Attitude_Angles(uint8_t *data_received, ADCS_Esti
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Magnetic_Field_Vector command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Magnetic_Field_Vector() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1150,7 +1153,7 @@ uint8_t ADCS_Pack_to_Magnetic_Field_Vector(uint8_t *data_received, ADCS_Magnetic
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Fine_Sun_Vector command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Fine_Sun_Vector() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1177,7 +1180,7 @@ uint8_t ADCS_Pack_to_Fine_Sun_Vector(uint8_t *data_received, ADCS_Fine_Sun_Vecto
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Nadir_Vector command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Nadir_Vector() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1204,7 +1207,7 @@ uint8_t ADCS_Pack_to_Nadir_Vector(uint8_t *data_received, ADCS_Nadir_Vector_Stru
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Commanded_Wheel_Speed command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Commanded_Wheel_Speed() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
@@ -1232,7 +1235,7 @@ uint8_t ADCS_Pack_to_Commanded_Wheel_Speed(uint8_t *data_received, ADCS_Wheel_Sp
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_IGRF_Magnetic_Field_Vector command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_IGRF_Magnetic_Field_Vector() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1260,7 +1263,7 @@ uint8_t ADCS_Pack_to_IGRF_Magnetic_Field_Vector(uint8_t *data_received, ADCS_Mag
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Quaternion_Error_Vector command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Quaternion_Error_Vector() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1288,7 +1291,7 @@ uint8_t ADCS_Pack_to_Quaternion_Error_Vector(uint8_t *data_received, ADCS_Quater
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Estimated_Gyro_Bias command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Estimated_Gyro_Bias() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1316,7 +1319,7 @@ uint8_t ADCS_Pack_to_Estimated_Gyro_Bias(uint8_t* data_received, ADCS_Estimated_
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Estimation_Innovation_Vector command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Estimation_Innovation_Vector() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1344,7 +1347,7 @@ uint8_t ADCS_Pack_to_Estimation_Innovation_Vector(uint8_t* data_received, ADCS_E
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Raw_Cam1_Sensor command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Raw_Cam1_Sensor() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1374,7 +1377,7 @@ uint8_t ADCS_Pack_to_Raw_Cam1_Sensor(uint8_t* data_received, ADCS_Raw_Cam_Sensor
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Raw_Cam2_Sensor command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Raw_Cam2_Sensor() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1404,7 +1407,7 @@ uint8_t ADCS_Pack_to_Raw_Cam2_Sensor(uint8_t* data_received, ADCS_Raw_Cam_Sensor
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Raw_CSS_1_to_6 command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Raw_CSS_1_to_6() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1435,7 +1438,7 @@ uint8_t ADCS_Pack_to_Raw_CSS_1_to_6(uint8_t* data_received, ADCS_Raw_CSS_1_to_6_
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Raw_CSS_7_to_10 command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Raw_CSS_7_to_10() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1464,7 +1467,7 @@ uint8_t ADCS_Pack_to_Raw_CSS_7_to_10(uint8_t* data_received, ADCS_Raw_CSS_7_to_1
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_CubeControl_Current command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_CubeControl_Current() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1493,7 +1496,7 @@ uint8_t ADCS_Pack_to_CubeControl_Current(uint8_t* data_received, ADCS_CubeContro
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Raw_GPS_Status command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Raw_GPS_Status() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1524,7 +1527,7 @@ uint8_t ADCS_Pack_to_Raw_GPS_Status(uint8_t* data_received, ADCS_Raw_GPS_Status_
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Raw_GPS_Time command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Raw_GPS_Time() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1551,7 +1554,7 @@ uint8_t ADCS_Pack_to_Raw_GPS_Time(uint8_t* data_received, ADCS_Raw_GPS_Time_Stru
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Raw_GPS_X command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Raw_GPS_X() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1567,7 +1570,7 @@ uint8_t ADCS_Raw_GPS_X() {
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Raw_GPS_Y command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Raw_GPS_Y() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1583,7 +1586,7 @@ uint8_t ADCS_Raw_GPS_Y() {
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Raw_GPS_Z command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Raw_GPS_Z() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1612,7 +1615,7 @@ uint8_t ADCS_Pack_to_Raw_GPS(ADCS_GPS_Axis axis, uint8_t *data_received, ADCS_Ra
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Measurements command.
-/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Measurements() {
     uint8_t data_length = 72;
     uint8_t data_received[data_length]; // define temp buffer
@@ -1700,12 +1703,16 @@ uint8_t ADCS_I2C_telecommand_wrapper(uint8_t id, uint8_t* data, uint32_t data_le
 		// Poll Acknowledge Telemetry Format until the Processed flag equals 1.
 		while (!ack.processed) {
 			ADCS_TC_Ack(&ack);
-		}
+		} // TODO: this needs a timeout
 
 		// Confirm telecommand validity by checking the TC Error flag of the last read TC Acknowledge Telemetry Format.
     } while (ack.error_flag == TC_Error_CRC);  // if the checksum doesn't check out, keep resending the request
 
-	return tc_status;
+	if (tc_status == 0) {
+		return ack.error_flag; // if the HAL was successful and the ADCS had an error, tell us what it is
+	} 
+
+	return tc_status; // otherwise, if the HAL had an error, tell us what that is instead
 }
 
 /// @brief Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don't match.
@@ -1867,40 +1874,6 @@ uint8_t ADCS_send_UART_telecommand(UART_HandleTypeDef *huart, uint8_t id, uint8_
   // The receipt of the acknowledge will indicate that another telecommand may be sent.
   // Sending another telecommand before the acknowledge will corrupt the telecommand buffer.
 }
-/*
-// Debug function to check I2C connection status
-// TODO: delete this before sending it up in flight
-uint8_t I2C_Scan(void)
-{ 
-	uint8_t Buffer[25] = {0};
-	uint8_t Space[] = " - ";
-	uint8_t StartMSG[] = "Starting I2C Scanning: \r\n";
-	uint8_t EndMSG[] = "Done! \r\n\r\n";
-
-	uint8_t i = 0, ret;
-
-    HAL_Delay(1000);
-
-    // [ I2C Bus Scanning ]
-    HAL_UART_Transmit(&hlpuart1, StartMSG, sizeof(StartMSG), 10000);
-    for(i=1; i<128; i++)
-    {
-    	ret = HAL_I2C_IsDeviceReady(&hi2c1, (uint16_t)(i<<1), 3, 5);
-    	if (ret != HAL_OK) 
-    	{ // No ACK Received At That Address 
-    		HAL_UART_Transmit(&hlpuart1, Space, sizeof(Space), 10000);
-        }
-    	else if(ret == HAL_OK)
-    	{
-    		sprintf(Buffer, "0x%X", i); // TODO: should probably change sprintf to snprintf
-    		HAL_UART_Transmit(&hlpuart1, Buffer, sizeof(Buffer), 10000);
-    	}
-    }
-    HAL_UART_Transmit(&hlpuart1, EndMSG, sizeof(EndMSG), 10000);
-    // --[ Scanning Done ]-- 
-	return 0;
-}
-*/
 
 /// @brief Swap low and high bytes of uint16 to turn into uint8 and put into specified index of an array
 /// @param[in] value Value to split and swap the order of.
