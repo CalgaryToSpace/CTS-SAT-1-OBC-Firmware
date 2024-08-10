@@ -3,6 +3,8 @@
 #include "telecommands/telecommand_executor.h"
 #include "debug_tools/debug_uart.h"
 #include "telecommands/agenda_telecommands_defs.h"
+#include "log/log.h"
+#include "transforms/arrays.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -15,7 +17,7 @@
 /// @return 0 on success
 uint8_t TCMDEXEC_agenda_delete_all(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-    DEBUG_uart_print_str("Deleting all entires from the Agenda...\n"); 
+    DEBUG_uart_print_str("Deleting all entries from the agenda\n"); 
     TCMD_agenda_delete_all();
 
     return 0;
@@ -36,28 +38,31 @@ uint8_t TCMDEXEC_agenda_delete_by_tssent(const char *args_str, TCMD_TelecommandC
     // Parse the arg string passed into a uint64_t for the timestamp sent
     const uint8_t parse_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &tssent);
 
-    //Checking if the parsing was right
+    // Checking if the argument was valid.
     if (parse_result > 0) {
         snprintf(response_output_buf, response_output_buf_len, "Error parsing timestamp sent: Err=%d", parse_result);
         return 1;
     }
+    char tssent_str[32];
+    GEN_uint64_to_str(tssent, tssent_str);
 
     // Pass the tssent into the function that handles the delete from the stack
     const uint8_t result = TCMD_agenda_delete_by_tssent(tssent);
 
-    if (result == 1)
+    if (result != 0)
     {
-        DEBUG_uart_print_str("Telecommand with tssent: ");
-        DEBUG_uart_print_uint64(tssent);
-        DEBUG_uart_print_str(" not found in agenda.\n");
-
-        return result;
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Telecommand with tssent=%s not found in agenda.",
+            tssent_str
+        );
+        return 1;
     }
 
-    DEBUG_uart_print_str("Telecommand with tssent: ");
-    DEBUG_uart_print_uint64(tssent);
-    DEBUG_uart_print_str(" deleted from agenda");
-    DEBUG_uart_print_str("\n");
-    
-    return result;
+    LOG_message(
+        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "Telecommand with tssent=%s deleted from agenda.",
+        tssent_str
+    );
+    return 0;
 }

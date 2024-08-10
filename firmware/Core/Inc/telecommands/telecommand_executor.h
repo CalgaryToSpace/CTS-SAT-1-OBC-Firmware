@@ -22,8 +22,8 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
     char *response_output_buf, uint16_t response_output_buf_size
 );
 
-uint8_t TCMD_agenda_delete_all();
 
+void TCMD_agenda_delete_all();
 uint8_t TCMD_agenda_delete_by_tssent(uint64_t tssent);
 
 #endif // INCLUDE_GUARD__TELECOMMAND_EXECUTOR_H
