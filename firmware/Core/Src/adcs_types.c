@@ -20,7 +20,7 @@ uint8_t ADCS_TC_Ack(ADCS_TC_Ack_Struct *ack) {
 	uint8_t data_received[8]; // define temp buffer
 	uint8_t data_length = 4;
 
-	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_TC_ACK, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
+	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_COMMAND_ACK, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
 	// map temp buffer to Ack struct
 	ADCS_Pack_to_Ack(&data_received[0], ack);
@@ -54,7 +54,7 @@ uint8_t ADCS_Pack_to_Ack(uint8_t* data_received, ADCS_TC_Ack_Struct *result) {
 uint8_t ADCS_Reset() {
 	// returns telecommand error flag
 	uint8_t data_send[1] = {ADCS_MAGIC_NUMBER};
-	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_RESET, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(ADCS_COMMAND_RESET, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
@@ -65,7 +65,7 @@ uint8_t ADCS_Identification() {
 	uint8_t data_length = 8;
 	uint8_t data_received[data_length]; // define temp buffer
 
-	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_IDENTIFICATION, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_IDENTIFICATION, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
 	ADCS_ID_Struct id; 
 	ADCS_Pack_to_Identification(&data_received[0], &id);
@@ -95,7 +95,7 @@ uint8_t ADCS_Program_Status() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
 
-	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_BOOT_RUNNING_PROGRAM_STATUS, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
+	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_BOOT_RUNNING_PROGRAM_STATUS, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
 	ADCS_Boot_Running_Status_Struct status; 
 	ADCS_Pack_to_Program_Status(&data_received[0], &status);
@@ -128,7 +128,7 @@ uint8_t ADCS_Communication_Status() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
 
-	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_SATSTATE_COMM_STATUS, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
+	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_SATSTATE_COMM_STATUS, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
 	ADCS_Comms_Status_Struct status;
 	ADCS_Pack_to_Comms_Status(&data_received[0], &status);
@@ -156,7 +156,7 @@ uint8_t ADCS_Pack_to_Comms_Status(uint8_t *data_received, ADCS_Comms_Status_Stru
 uint8_t ADCS_Deploy_Magnetometer(uint8_t deploy_timeout) {
 	// Deploys the magnetometer boom, timeout in seconds
 	uint8_t data_send[1] = {deploy_timeout};
-	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_DEPLOY_MAGNETOMETER_BOOM, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(ADCS_COMMAND_DEPLOY_MAGNETOMETER_BOOM, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
@@ -165,7 +165,7 @@ uint8_t ADCS_Deploy_Magnetometer(uint8_t deploy_timeout) {
 uint8_t ADCS_Set_Run_Mode(ADCS_Run_Mode mode) {
 	// Disables the ADCS
 	uint8_t data_send[1] = {mode};
-	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_ADCS_RUN_MODE, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(ADCS_COMMAND_ADCS_RUN_MODE, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
@@ -173,9 +173,9 @@ uint8_t ADCS_Set_Run_Mode(ADCS_Run_Mode mode) {
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Clear_Errors() {
 	// Clears error flags
-	// NOTE: THERE IS ANOTHER, SEPARATE CLEAR ERROR FLAG TC FOR THE BOOTLODER (TC_BL_CLEAR_ERRORS)
+	// NOTE: THERE IS ANOTHER, SEPARATE CLEAR ERROR FLAG TC FOR THE BOOTLODER (ADCS_COMMAND_BL_CLEAR_ERRORS)
 	uint8_t data_send[1] = {192}; //0b11000000
-	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_CLEAR_ERRORS, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(ADCS_COMMAND_CLEAR_ERRORS, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
@@ -187,7 +187,7 @@ uint8_t ADCS_Attitude_Control_Mode(ADCS_Control_Mode mode, uint16_t timeout) {
 	// Sets the ADCS attitude control mode
 	// See User Manual, Section 4.4.3 Table 3 for requirements to switch control mode
 	uint8_t data_send[3] = {mode, timeout & 0x00FF, timeout >> 8};
-	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_SET_ATTITUDE_CONTROL_MODE, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(ADCS_COMMAND_SET_ATTITUDE_CONTROL_MODE, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
@@ -198,7 +198,7 @@ uint8_t ADCS_Attitude_Estimation_Mode(ADCS_Estimation_Mode mode) {
 	// Possible values for mode given in Section 6.3 Table 80 of Firmware Reference Manual (ranges from 0 to 7)
 	// needs power control to be on
 	uint8_t data_send[1] = {mode};
-	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_SET_ATTITUDE_ESTIMATION_MODE, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(ADCS_COMMAND_SET_ATTITUDE_ESTIMATION_MODE, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
@@ -208,7 +208,7 @@ uint8_t ADCS_Run_Once() {
 	// requires ADCS_Enable_Triggered to have run first
 	// (if ADCS_Enable_On has run instead, then this is unnecessary)
 	uint8_t data_send[1]; // 0-byte data (from manual) input into wrapper, but one-byte here to avoid warnings
-	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_TRIGGER_ADCS_LOOP, data_send, 0, ADCS_INCLUDE_CHECKSUM);
+	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(ADCS_COMMAND_TRIGGER_ADCS_LOOP, data_send, 0, ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
@@ -217,7 +217,7 @@ uint8_t ADCS_Run_Once() {
 /// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_Set_Magnetometer_Mode(ADCS_Magnetometer_Mode mode) {
 	uint8_t data_send[1] = {mode};
-	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_SET_MODE_OF_MAGNETOMETER_OPERATION, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(ADCS_COMMAND_SET_MODE_OF_MAGNETOMETER_OPERATION, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
@@ -232,7 +232,7 @@ uint8_t ADCS_Set_Magnetorquer_Output(double x_duty, double y_duty, double z_duty
 	ADCS_switch_order(data_send, ((uint16_t) (x_duty * 1000)), 0);
 	ADCS_switch_order(data_send, ((uint16_t) (y_duty * 1000)), 2);
 	ADCS_switch_order(data_send, ((uint16_t) (z_duty * 1000)), 4);
-	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_SET_MAGNETORQUER_OUTPUT, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(ADCS_COMMAND_SET_MAGNETORQUER_OUTPUT, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
@@ -249,7 +249,7 @@ uint8_t ADCS_Set_Wheel_Speed(int16_t x_speed, int16_t y_speed, int16_t z_speed) 
 	ADCS_switch_order(data_send, x_speed, 0);
 	ADCS_switch_order(data_send, y_speed, 2);
 	ADCS_switch_order(data_send, z_speed, 4);
-	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_SET_WHEEL_SPEED, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(ADCS_COMMAND_SET_WHEEL_SPEED, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
@@ -274,7 +274,7 @@ uint8_t ADCS_Set_Power_Control(ADCS_Power_Select cube_control_signal, ADCS_Power
 	data_send[0] = (cube_control_signal) | (cube_control_motor << 2) | (cube_sense1 << 4) | (cube_sense2 << 6);
 	data_send[1] = (cube_star_power) | (cube_wheel1_power << 2) | (cube_wheel2_power << 4) | (cube_wheel3_power << 6);
 	data_send[2] = (motor_power) | (gps_power << 2);
-	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_CUBEACP_SET_ADCS_POWER_CONTROL, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(ADCS_COMMAND_CUBEACP_SET_ADCS_POWER_CONTROL, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
@@ -284,7 +284,7 @@ uint8_t ADCS_Get_Power_Control() {
 	uint8_t data_length = 3;
 	uint8_t data_received[data_length]; // define temp buffer
 
-	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_GET_ADCS_POWER_CONTROL, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
+	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_GET_ADCS_POWER_CONTROL, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
 	ADCS_Power_Control_Struct power;
 	ADCS_Pack_to_Power_Control(data_received, &power);
@@ -374,7 +374,7 @@ uint8_t ADCS_Set_Magnetometer_Config(
 	ADCS_switch_order(data_send, ((int16_t) (sensitivity_matrix_s31 * 1000)), 26);
 	ADCS_switch_order(data_send, ((int16_t) (sensitivity_matrix_s32 * 1000)), 28);
 
-	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_CUBEACP_SET_MAGNETOMETER_CONFIG, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(ADCS_COMMAND_CUBEACP_SET_MAGNETOMETER_CONFIG, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 
 }
@@ -383,7 +383,7 @@ uint8_t ADCS_Set_Magnetometer_Config(
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Save_Config() {
 	uint8_t data_send[1]; // 0-byte data (from manual) input into wrapper, but one-byte here to avoid warnings
-	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_SAVE_CONFIG, data_send, 0, ADCS_INCLUDE_CHECKSUM);
+	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(ADCS_COMMAND_SAVE_CONFIG, data_send, 0, ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
@@ -391,7 +391,7 @@ uint8_t ADCS_Save_Config() {
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Save_Orbit_Params() {
 	uint8_t data_send[1]; // 0-byte data (from manual) input into wrapper, but one-byte here to avoid warnings
-	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_SAVE_ORBIT_PARAMS, data_send, 0, ADCS_INCLUDE_CHECKSUM);
+	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(ADCS_COMMAND_SAVE_ORBIT_PARAMS, data_send, 0, ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
@@ -401,7 +401,7 @@ uint8_t ADCS_Estimate_Angular_Rates() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
 
-	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_ESTIMATED_ANGULAR_RATES, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
+	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_ESTIMATED_ANGULAR_RATES, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
 	ADCS_Angular_Rates_Struct rates;
 	ADCS_Pack_to_Angular_Rates(data_received, &rates);
@@ -429,7 +429,7 @@ uint8_t ADCS_Get_LLH_Position() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
 
-	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_SATELLITE_POSITION_LLH, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
+	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_SATELLITE_POSITION_LLH, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
 	ADCS_LLH_Position_Struct pos;
 	ADCS_Pack_to_LLH_Position(data_received, &pos);
@@ -456,7 +456,7 @@ uint8_t ADCS_Pack_to_LLH_Position(uint8_t *data_received, ADCS_LLH_Position_Stru
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Bootloader_Clear_Errors() {
 	uint8_t data_send[1]; // 0-byte data (from manual) input into wrapper, but one-byte here to avoid warnings
-	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_BL_CLEAR_ERRORS, data_send, 0, ADCS_INCLUDE_CHECKSUM);
+	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(ADCS_COMMAND_BOOTLOADER_CLEAR_ERRORS, data_send, 0, ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
@@ -468,7 +468,7 @@ uint8_t ADCS_Bootloader_Clear_Errors() {
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Set_Unix_Time_Save_Mode(bool save_now, bool save_on_update, bool save_periodic, uint8_t period) {
 	uint8_t data_send[2] = { (save_now | (save_on_update << 1) | (save_periodic << 2) ) , period}; // 2-byte data (from manual)
-	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_SET_UNIX_TIME_SAVE_TO_FLASH, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(ADCS_COMMAND_SET_UNIX_TIME_SAVE_TO_FLASH, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
@@ -478,7 +478,7 @@ uint8_t ADCS_Get_Unix_Time_Save_Mode() {
 	uint8_t data_length = 2;
 	uint8_t data_received[data_length]; // define temp buffer
 
-	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_GET_UNIX_TIME_SAVE_TO_FLASH, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
+	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_GET_UNIX_TIME_SAVE_TO_FLASH, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
 	ADCS_Set_Unix_Time_Save_Mode_Struct mode; 
 	ADCS_Pack_to_Unix_Time_Save_Mode(data_received, &mode);
@@ -530,7 +530,7 @@ uint8_t ADCS_Set_SGP4_Orbit_Params(double inclination, double eccentricity, doub
 	memcpy(&data_send[48], &mean_anomaly, sizeof(mean_anomaly));
 	memcpy(&data_send[56], &epoch, sizeof(epoch));
 
-	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_CUBEACP_SET_SGP4_ORBIT_PARAMETERS, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(ADCS_COMMAND_CUBEACP_SET_SGP4_ORBIT_PARAMETERS, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
@@ -540,7 +540,7 @@ uint8_t ADCS_Get_SGP4_Orbit_Params() {
 	uint8_t data_length = 64;
 	uint8_t data_received[data_length]; // define temp buffer
 
-	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_GET_SGP4_ORBIT_PARAMETERS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_GET_SGP4_ORBIT_PARAMETERS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
 	ADCS_Orbit_Params_Struct params;
 	ADCS_Pack_to_Orbit_Params(data_received, &params);
@@ -572,7 +572,7 @@ uint8_t ADCS_Rate_Sensor_Rates() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
 
-	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_RATE_SENSOR_RATES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_RATE_SENSOR_RATES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
 	ADCS_Rated_Sensor_Rates_Struct rates;
 	ADCS_Pack_to_Rated_Sensor_Rates(data_received, &rates);
@@ -601,7 +601,7 @@ uint8_t ADCS_Get_Wheel_Speed() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
 
-	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_WHEEL_SPEED, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_WHEEL_SPEED, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
 	ADCS_Wheel_Speed_Struct speeds;
 	ADCS_Pack_to_Wheel_Speed(data_received, &speeds);
@@ -629,7 +629,7 @@ uint8_t ADCS_Get_Magnetorquer_Command() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
 
-	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_MAGNETORQUER_COMMAND, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_MAGNETORQUER_COMMAND, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
 	ADCS_Magnetorquer_Command_Struct time;
 	ADCS_Pack_to_Magnetorquer_Command(data_received, &time);
@@ -657,7 +657,7 @@ uint8_t ADCS_Get_Raw_Magnetometer_Values() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
 
-	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_RAW_MAGNETOMETER, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_RAW_MAGNETOMETER, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
 	ADCS_Raw_Mag_TLM_Struct mag_vals;
 	ADCS_Pack_to_Raw_Magnetometer_Values(data_received, &mag_vals);
@@ -684,7 +684,7 @@ uint8_t ADCS_Estimate_Fine_Angular_Rates() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
 
-	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_FINE_ESTIMATED_ANGULAR_RATES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_FINE_ESTIMATED_ANGULAR_RATES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
 	ADCS_Fine_Angular_Rates_Struct rates;
 	ADCS_Pack_to_Fine_Angular_Rates(data_received, &rates);
@@ -712,7 +712,7 @@ uint8_t ADCS_Get_Magnetometer_Config() {
 	uint8_t data_length = 30;
 	uint8_t data_received[data_length]; // define temp buffer
 
-	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_GET_MAGNETOMETER_CONFIG, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_GET_MAGNETOMETER_CONFIG, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
 	ADCS_Magnetometer_Config_Struct config;
 	ADCS_Pack_to_Magnetometer_Config(data_received, &config);
@@ -753,7 +753,7 @@ uint8_t ADCS_Get_Commanded_Attitude_Angles() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
 
-	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_GET_COMMANDED_ATTITUDE_ANGLES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_GET_COMMANDED_ATTITUDE_ANGLES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
 	ADCS_Commanded_Angles_Struct angles;
 	ADCS_Pack_to_Commanded_Attitude_Angles(data_received, &angles);
@@ -788,7 +788,7 @@ uint8_t ADCS_Set_Commanded_Attitude_Angles(double x, double y, double z) {
 	ADCS_switch_order(data_send, ((int16_t) (x * 100)), 0);
 	ADCS_switch_order(data_send, ((int16_t) (y * 100)), 2);
 	ADCS_switch_order(data_send, ((int16_t) (z * 100)), 4);
-	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_CUBEACP_SET_COMMANDED_ATTITUDE_ANGLES, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(ADCS_COMMAND_CUBEACP_SET_COMMANDED_ATTITUDE_ANGLES, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
@@ -850,7 +850,7 @@ uint8_t ADCS_Set_Estimation_Params(
 
 	data_send[30] = cam1_and_cam2_sampling_period; // lower four bits are for cam1 and upper four are for cam2 if the manual is correct, not CubeSupport
 
-	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_CUBEACP_SET_ESTIMATION_PARAMETERS, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(ADCS_COMMAND_CUBEACP_SET_ESTIMATION_PARAMETERS, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
@@ -860,7 +860,7 @@ uint8_t ADCS_Get_Estimation_Params() {
 	uint8_t data_length = 31;
 	uint8_t data_received[data_length]; // define temp buffer
 
-	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_GET_ESTIMATION_PARAMETERS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_GET_ESTIMATION_PARAMETERS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
 	ADCS_Estimation_Params_Struct params;
 	ADCS_Pack_to_Estimation_Params(data_received, &params);
@@ -940,7 +940,7 @@ uint8_t ADCS_Set_ASGP4_Params(double incl_coefficient, double raan_coefficient, 
 	data_send[27] = (uint8_t) (max_lag * 100);
 	ADCS_switch_order(data_send, min_samples, 28);
 
-	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_CUBEACP_SET_AUGMENTED_SGP4_PARAMETERS, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(ADCS_COMMAND_CUBEACP_SET_AUGMENTED_SGP4_PARAMETERS, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
@@ -950,7 +950,7 @@ uint8_t ADCS_Get_ASGP4_Params() {
 	uint8_t data_length = 30;
 	uint8_t data_received[data_length]; // define temp buffer
 
-	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_GET_AUGMENTED_SGP4_PARAMETERS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_GET_AUGMENTED_SGP4_PARAMETERS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
 	ADCS_ASGP4_Params_Struct params;
 	ADCS_Pack_to_ASGP4_Params(data_received, &params);
@@ -1003,7 +1003,7 @@ uint8_t ADCS_Set_Tracking_Controller_Target_Reference(float lon, float lat, floa
 	memcpy(&data_send[4],  &lat, sizeof(lat));
 	memcpy(&data_send[8],  &alt, sizeof(alt));
 
-	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_CUBEACP_SET_TRACKING_CONTROLLER_TARGET_REFERENCE, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(ADCS_COMMAND_CUBEACP_SET_TRACKING_CONTROLLER_TARGET_REFERENCE, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
@@ -1013,7 +1013,7 @@ uint8_t ADCS_Get_Tracking_Controller_Target_Reference() {
 	uint8_t data_length = 12;
 	uint8_t data_received[data_length]; // define temp buffer
 
-	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_GET_TRACKING_CONTROLLER_TARGET_REFERENCE, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_GET_TRACKING_CONTROLLER_TARGET_REFERENCE, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
 	ADCS_Tracking_Controller_Target_Struct ref;
 	ADCS_Pack_to_Tracking_Controller_Target_Reference(data_received, &ref);
@@ -1058,7 +1058,7 @@ uint8_t ADCS_Set_Rate_Gyro_Config(ADCS_Axis_Select gyro1, ADCS_Axis_Select gyro2
 
 	data_send[9] = rate_sensor_mult;
 
-	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(TC_CUBEACP_SET_RATE_GYRO_CONFIG, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+	uint8_t tc_status = ADCS_I2C_telecommand_wrapper(ADCS_COMMAND_CUBEACP_SET_RATE_GYRO_CONFIG, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return tc_status;
 }
 
@@ -1068,7 +1068,7 @@ uint8_t ADCS_Get_Rate_Gyro_Config() {
 	uint8_t data_length = 12;
 	uint8_t data_received[data_length]; // define temp buffer
 
-	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_GET_RATE_GYRO_CONFIG, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_GET_RATE_GYRO_CONFIG, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
 	ADCS_Rate_Gyro_Config_Struct config;
 	ADCS_Pack_to_Rate_Gyro_Config(data_received, &config);
@@ -1103,7 +1103,7 @@ uint8_t ADCS_Estimated_Attitude_Angles() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
-    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_ESTIMATED_ATTITUDE_ANGLES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_ESTIMATED_ATTITUDE_ANGLES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
     ADCS_Estimated_Attitude_Angles_Struct angles; 
     ADCS_Pack_to_Estimated_Attitude_Angles(&data_received[0], &angles);
@@ -1130,7 +1130,7 @@ uint8_t ADCS_Magnetic_Field_Vector() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
-    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_MAGNETIC_FIELD_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_MAGNETIC_FIELD_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
     ADCS_Magnetic_Field_Vector_Struct vector_components; 
     ADCS_Pack_to_Magnetic_Field_Vector(&data_received[0], &vector_components);
@@ -1158,7 +1158,7 @@ uint8_t ADCS_Fine_Sun_Vector() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
-    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_FINE_SUN_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_FINE_SUN_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
     ADCS_Fine_Sun_Vector_Struct vector_components; 
     ADCS_Pack_to_Fine_Sun_Vector(&data_received[0], &vector_components);
@@ -1185,7 +1185,7 @@ uint8_t ADCS_Nadir_Vector() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
-    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_NADIR_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_NADIR_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
     ADCS_Nadir_Vector_Struct vector_components; 
     ADCS_Pack_to_Nadir_Vector(&data_received[0], &vector_components);
@@ -1212,7 +1212,7 @@ uint8_t ADCS_Commanded_Wheel_Speed() {
 	uint8_t data_length = 6;
 	uint8_t data_received[data_length]; // define temp buffer
 
-	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_WHEEL_SPEED_COMMANDS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+	uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_WHEEL_SPEED_COMMANDS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
 	ADCS_Wheel_Speed_Struct speeds;
 	ADCS_Pack_to_Commanded_Wheel_Speed(data_received, &speeds);
@@ -1240,7 +1240,7 @@ uint8_t ADCS_IGRF_Magnetic_Field_Vector() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
-    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_IGRF_MODELLED_MAGNETIC_FIELD_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_IGRF_MODELLED_MAGNETIC_FIELD_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
     ADCS_Magnetic_Field_Vector_Struct vector_components; 
     ADCS_Pack_to_IGRF_Magnetic_Field_Vector(&data_received[0], &vector_components);
@@ -1268,7 +1268,7 @@ uint8_t ADCS_Quaternion_Error_Vector() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
-    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_QUATERNION_ERROR_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_QUATERNION_ERROR_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
     ADCS_Quaternion_Error_Vector_Struct q_error;
     ADCS_Pack_to_Quaternion_Error_Vector(&data_received[0], &q_error);
@@ -1296,7 +1296,7 @@ uint8_t ADCS_Estimated_Gyro_Bias() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
-    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_ESTIMATED_GYRO_BIAS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_ESTIMATED_GYRO_BIAS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
     ADCS_Estimated_Gyro_Bias_Struct gyro_bias;
     ADCS_Pack_to_Estimated_Gyro_Bias(&data_received[0], &gyro_bias);
@@ -1324,7 +1324,7 @@ uint8_t ADCS_Estimation_Innovation_Vector() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
-    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_ESTIMATION_INNOVATION_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_ESTIMATION_INNOVATION_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
     ADCS_Estimation_Innovation_Vector_Struct innovation_vector;
     ADCS_Pack_to_Estimation_Innovation_Vector(&data_received[0], &innovation_vector);
@@ -1352,7 +1352,7 @@ uint8_t ADCS_Raw_Cam1_Sensor() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
-    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_RAW_CAM1_SENSOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_RAW_CAM1_SENSOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
     ADCS_Raw_Cam_Sensor_Struct raw_cam1_sensor;
     ADCS_Pack_to_Raw_Cam1_Sensor(&data_received[0], &raw_cam1_sensor);
@@ -1382,7 +1382,7 @@ uint8_t ADCS_Raw_Cam2_Sensor() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
-    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_RAW_CAM2_SENSOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_RAW_CAM2_SENSOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
     ADCS_Raw_Cam_Sensor_Struct raw_cam2_sensor;
     ADCS_Pack_to_Raw_Cam2_Sensor(&data_received[0], &raw_cam2_sensor);
@@ -1412,7 +1412,7 @@ uint8_t ADCS_Raw_CSS_1_to_6() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
-    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_RAW_CSS_1_TO_6, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_RAW_CSS_1_TO_6, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
     ADCS_Raw_CSS_1_to_6_Struct raw_css;
     ADCS_Pack_to_Raw_CSS_1_to_6(&data_received[0], &raw_css);
@@ -1443,7 +1443,7 @@ uint8_t ADCS_Raw_CSS_7_to_10() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
-    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_RAW_CSS_7_TO_10, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_RAW_CSS_7_TO_10, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
     ADCS_Raw_CSS_7_to_10_Struct raw_css_7_to_10;
     ADCS_Pack_to_Raw_CSS_7_to_10(&data_received[0], &raw_css_7_to_10);
@@ -1472,7 +1472,7 @@ uint8_t ADCS_CubeControl_Current() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
-    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_CUBECONTROL_CURRENT_MEASUREMENTS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_CUBECONTROL_CURRENT_MEASUREMENTS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
     ADCS_CubeControl_Current_Struct cubecontrol_current;
     ADCS_Pack_to_CubeControl_Current(&data_received[0], &cubecontrol_current);
@@ -1501,7 +1501,7 @@ uint8_t ADCS_Raw_GPS_Status() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
-    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_RAW_GPS_STATUS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_RAW_GPS_STATUS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
     ADCS_Raw_GPS_Status_Struct raw_gps_status;
     ADCS_Pack_to_Raw_GPS_Status(&data_received[0], &raw_gps_status);
@@ -1532,7 +1532,7 @@ uint8_t ADCS_Raw_GPS_Time() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
-    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_RAW_GPS_TIME, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_RAW_GPS_TIME, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
     ADCS_Raw_GPS_Time_Struct raw_gps_time;
     ADCS_Pack_to_Raw_GPS_Time(data_received, &raw_gps_time);
@@ -1559,7 +1559,7 @@ uint8_t ADCS_Raw_GPS_X() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
-    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_RAW_GPS_X, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_RAW_GPS_X, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
     ADCS_Raw_GPS_Struct raw_gps_x;
     ADCS_Pack_to_Raw_GPS(ADCS_GPS_X, data_received, &raw_gps_x);
@@ -1575,7 +1575,7 @@ uint8_t ADCS_Raw_GPS_Y() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
-    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_RAW_GPS_Y, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_RAW_GPS_Y, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
     ADCS_Raw_GPS_Struct raw_gps_y;
     ADCS_Pack_to_Raw_GPS(ADCS_GPS_Y, data_received, &raw_gps_y);
@@ -1591,7 +1591,7 @@ uint8_t ADCS_Raw_GPS_Z() {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
-    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_RAW_GPS_Z, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_RAW_GPS_Z, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
     ADCS_Raw_GPS_Struct raw_gps_z;
     ADCS_Pack_to_Raw_GPS(ADCS_GPS_Z, data_received, &raw_gps_z);
@@ -1620,7 +1620,7 @@ uint8_t ADCS_Measurements() {
     uint8_t data_length = 72;
     uint8_t data_received[data_length]; // define temp buffer
 
-    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(TLF_CUBEACP_ADCS_MEASUREMENTS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_I2C_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_ADCS_MEASUREMENTS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
     ADCS_Measurements_Struct measurements;
     ADCS_Pack_to_Measurements(data_received, &measurements);
