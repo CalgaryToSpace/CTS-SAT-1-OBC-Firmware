@@ -1,6 +1,6 @@
 # Logging
 
-Satellites do things both as a result of us earthlings sending telecommands, as a result of scheduled telecommands, and as a result of other autonomous actions (e.g., automatically turning of subsystems when the power gets low).
+Satellites do things both as a result of us earthlings sending telecommands, as a result of scheduled telecommands, and as a result of other autonomous actions (e.g., automatically turning off subsystems when the power gets low).
 
 Nearly everything the satellite does must be logged so that it can be audited in the case of problems.
 
@@ -12,7 +12,7 @@ This is a simple and effective way to debug code, but it is not a good way to lo
 
 ## Logging in Space
 
-The logging system on this satellite is rather simple: call the `LOG_message(...)` function with the message you want, and it will be logged to a file, over the radio, to a file, to memory, and to the UART debug console (if connected on earth).
+The logging system on this satellite is rather simple: call the `LOG_message(...)` function with the message you want, and it will be logged to a file, sent over the radio, stored in memory, and passed through the umbilical UART debug console (if connected on earth).
 
 ## How to use `LOG_message(...)`
 
@@ -34,17 +34,63 @@ The following are very small and specific details about the arguments to `LOG_me
 
 ### Subsystems
 
-There are several subsystems, defined in an enum. Use the right one.
+There are several subsystems, defined in an enum in `log/log.h`. Use the right one.
+```c
+typedef enum {
+    LOG_SYSTEM_OBC = 1 << 0,
+    LOG_SYSTEM_UHF_RADIO = 1 << 1,
+    LOG_SYSTEM_UMBILICAL_UART = 1 << 2,
+    LOG_SYSTEM_GPS = 1 << 3,
+    LOG_SYSTEM_MPI = 1 << 4,
+    LOG_SYSTEM_EPS = 1 << 5,
+    LOG_SYSTEM_BOOM = 1 << 6,
+    LOG_SYSTEM_ADCS = 1 << 7,
+    LOG_SYSTEM_LFS = 1 << 8,
+    LOG_SYSTEM_FLASH = 1 << 9,
+    LOG_SYSTEM_ANTENNA_DEPLOY = 1 << 10,
+    LOG_SYSTEM_LOG = 1 << 11,
+    LOG_SYSTEM_TELECOMMAND = 1 << 12,
+    LOG_SYSTEM_UNIT_TEST = 1 << 13,
+    LOG_SYSTEM_UNKNOWN = 1 << 14,
+    LOG_SYSTEM_ALL = (1 << 15) - 1,
+} LOG_system_enum_t;
+```
 
 ### Log Levels
 
 There are several log levels, defined in an enum.
 
+```c
+typedef enum {
+    LOG_SEVERITY_DEBUG = 1 << 0,
+    LOG_SEVERITY_NORMAL = 1 << 1,
+    LOG_SEVERITY_WARNING = 1 << 2,
+    LOG_SEVERITY_ERROR = 1 << 3,
+    LOG_SEVERITY_CRITICAL = 1 << 4,
+} LOG_severity_enum_t;
+```
+
 Sometimes, stuff works (use `LOG_SEVERITY_NORMAL`). Sometimes it doesn't (use `LOG_SEVERITY_WARNING` or `LOG_SEVERITY_ERROR`). Sometimes, the thing not working can cause other things to not work (use `LOG_SEVERITY_CRITICAL`).
+
+Extra debugging information can be logged using `LOG_SEVERITY_DEBUG`. Such
+`LOG_message(...)` statements must be removed from the final version of the
+firmware.
 
 ### Sinks
 
-There are several sinks. Generally, all log messages should go to all sinks (`LOG_SINK_ALL`).
+There are several sinks (i.e., log message destinations):
+```c
+typedef enum {
+    LOG_SINK_NONE = 0,
+    LOG_SINK_UHF_RADIO = 1 << 0,
+    LOG_SINK_FILE = 1 << 1,
+    LOG_SINK_UMBILICAL_UART = 1 << 2,
+    LOG_SINK_UNKNOWN = 1 << 3,
+    LOG_SINK_ALL = (1 << 4) - 1,
+} LOG_sink_enum_t;
+```
+
+Generally, all log messages should go to all sinks (`LOG_SINK_ALL`).
 
 Sometimes, however, there may be a time where you want to exclude a specific sink. For example, if you are logging a message saying "using the filesystem failed", you probably don't want to log that message to the failing filesystem. In such a case, use `LOG_all_sinks_except(LOG_SINK_FILE)`.
 
