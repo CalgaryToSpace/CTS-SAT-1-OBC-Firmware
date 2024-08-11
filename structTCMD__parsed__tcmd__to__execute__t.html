@@ -96,14 +96,18 @@ $(function(){ initResizable(false); });
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:af1d8f4058a1b757f6ca97cadcbecdf44" id="r_af1d8f4058a1b757f6ca97cadcbecdf44"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af1d8f4058a1b757f6ca97cadcbecdf44">tcmd_idx</a></td></tr>
+<tr class="memdesc:af1d8f4058a1b757f6ca97cadcbecdf44"><td class="mdescLeft">&#160;</td><td class="mdescRight">The index of the telecommand in the <code>TCMD_telecommand_definitions</code> array.  <br /></td></tr>
 <tr class="separator:af1d8f4058a1b757f6ca97cadcbecdf44"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e2685dc71e0fa5bcbc1c89be53b6f66" id="r_a6e2685dc71e0fa5bcbc1c89be53b6f66"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6e2685dc71e0fa5bcbc1c89be53b6f66">args_str_no_parens</a> [255]</td></tr>
 <tr class="separator:a6e2685dc71e0fa5bcbc1c89be53b6f66"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9d9fb7bd782e4543ffd9566bc1c4335" id="r_af9d9fb7bd782e4543ffd9566bc1c4335"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af9d9fb7bd782e4543ffd9566bc1c4335">timestamp_sent</a></td></tr>
+<tr class="memdesc:af9d9fb7bd782e4543ffd9566bc1c4335"><td class="mdescLeft">&#160;</td><td class="mdescRight">The value of the <code>@tssent</code> field when the telecommand was received.  <br /></td></tr>
 <tr class="separator:af9d9fb7bd782e4543ffd9566bc1c4335"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d9de34b2c656d3d78566aadf965ad2c" id="r_a8d9de34b2c656d3d78566aadf965ad2c"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8d9de34b2c656d3d78566aadf965ad2c">timestamp_to_execute</a></td></tr>
+<tr class="memdesc:a8d9de34b2c656d3d78566aadf965ad2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">The value of the <code>@tsexec</code> field when the telecommand was received.  <br /></td></tr>
 <tr class="separator:a8d9de34b2c656d3d78566aadf965ad2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9c39bd1a34a29e9ad43a4fc8efe94d11" id="r_a9c39bd1a34a29e9ad43a4fc8efe94d11"><td class="memItemLeft" align="right" valign="top"><a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9c39bd1a34a29e9ad43a4fc8efe94d11">tcmd_channel</a></td></tr>
+<tr class="memdesc:a9c39bd1a34a29e9ad43a4fc8efe94d11"><td class="mdescLeft">&#160;</td><td class="mdescRight">The channel on which the telecommand was received, and on which the response should be sent.  <br /></td></tr>
 <tr class="separator:a9c39bd1a34a29e9ad43a4fc8efe94d11"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Data Documentation</h2>
@@ -133,6 +137,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>The channel on which the telecommand was received, and on which the response should be sent. </p>
+
 </div>
 </div>
 <a id="af1d8f4058a1b757f6ca97cadcbecdf44" name="af1d8f4058a1b757f6ca97cadcbecdf44"></a>
@@ -146,6 +152,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>The index of the telecommand in the <code>TCMD_telecommand_definitions</code> array. </p>
 
 </div>
 </div>
@@ -161,6 +169,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>The value of the <code>@tssent</code> field when the telecommand was received. </p>
+
 </div>
 </div>
 <a id="a8d9de34b2c656d3d78566aadf965ad2c" name="a8d9de34b2c656d3d78566aadf965ad2c"></a>
@@ -174,6 +184,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>The value of the <code>@tsexec</code> field when the telecommand was received. </p>
 
 </div>
 </div>

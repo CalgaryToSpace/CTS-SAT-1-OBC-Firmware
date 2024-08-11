@@ -1,5 +1,16 @@
 <map id="GEN_uint64_to_str" name="GEN_uint64_to_str">
-<area shape="rect" id="Node000001" title="Converts a uint64_t to a string." alt="" coords="224,5,355,31"/>
-<area shape="rect" id="Node000002" href="$debug__uart_8c.html#a22493cadb29d076ea9413c69392799b7" title=" " alt="" coords="5,5,176,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="208,21,176,21,176,16,208,16"/>
+<area shape="rect" id="Node000001" title="Converts a uint64_t to a string." alt="" coords="594,92,726,118"/>
+<area shape="rect" id="Node000002" href="$debug__uart_8c.html#a22493cadb29d076ea9413c69392799b7" title=" " alt="" coords="364,5,534,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="624,86,587,65,545,46,510,34,511,29,547,41,589,61,627,82"/>
+<area shape="rect" id="Node000003" href="$telecommand__executor_8c.html#afa8bba8de3269bd6abc37f9a6642fdde" title="Deletes a telecommand from the agenda by its tssent (timestamp sent) field." alt="" coords="374,55,523,96"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="579,96,524,89,524,83,579,91"/>
+<area shape="rect" id="Node000004" href="$agenda__telecommand__defs_8c.html#a5864bb52f6db2633d0780b9f28c46d5b" title="Telecommand: Delete agenda entry by timestamp." alt="" coords="111,84,294,125"/>
+<area shape="poly" id="edge7_Node000001_Node000004" title=" " alt="" coords="579,110,546,110,351,110,295,109,295,104,351,105,546,105,579,104"/>
+<area shape="rect" id="Node000005" href="$telecommand__executor_8c.html#aa779e85b5e4980298a22fe51742fc752" title="Executes a telecommand from the agenda immediately." alt="" coords="351,170,546,210"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="614,127,547,154,504,172,502,167,545,149,612,122"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="359,89,295,97,295,91,359,84"/>
+<area shape="rect" id="Node000006" href="$rtos__tasks_8c.html#a04172000ecfd61309b0b9a892c0839ea" title=" " alt="" coords="103,177,303,203"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="336,193,303,193,303,188,336,188"/>
+<area shape="rect" id="Node000007" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,177,55,203"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="87,193,55,193,55,188,87,188"/>
 </map>
