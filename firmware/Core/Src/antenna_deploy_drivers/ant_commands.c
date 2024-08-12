@@ -11,12 +11,10 @@
 /// @brief  Arm the antenna deploy system
 /// @return 0 if successful, >0 if error occurred
 uint8_t ANT_CMD_arm_antenna_system() {
-    uint8_t CC = 0xAD;
-
     uint8_t cmd_len = 1;
     uint8_t cmd_buf[cmd_len];
 
-    cmd_buf[0] = CC;
+    cmd_buf[0] = ANT_CMD_ARM_ANTENNA_SYSTEM;
 
     const uint8_t comms_err = ANT_send_cmd(cmd_buf, cmd_len);
     return comms_err;
@@ -26,14 +24,11 @@ uint8_t ANT_CMD_arm_antenna_system() {
 /// @param[in] activation_time_seconds Activation time in seconds
 /// @return 0 if successful, >0 if error occurred
 uint8_t ANT_CMD_deploy_antenna1(uint8_t activation_time_seconds) {
-    uint8_t CC = 0xA1;
-    uint8_t CC_param = activation_time_seconds;
-
     uint8_t cmd_len = 2;
     uint8_t cmd_buf[cmd_len];
 
-    cmd_buf[0] = CC;
-    cmd_buf[1] = CC_param;
+    cmd_buf[0] = ANT_CMD_DEPLOY_ANTENNA1;
+    cmd_buf[1] = activation_time_seconds;
 
     const uint8_t comms_err = ANT_send_cmd(cmd_buf, cmd_len);
     return comms_err;
@@ -43,12 +38,10 @@ uint8_t ANT_CMD_deploy_antenna1(uint8_t activation_time_seconds) {
 /// @return 0 if successful, >0 if error occurred
 /// @note Upon success, the temperature is printed to the debug UART
 uint8_t ANT_CMD_measure_temp() {
-    uint8_t CC = 0xC0;
-
     uint8_t cmd_len = 1;
     uint8_t cmd_buf[cmd_len];
 
-    cmd_buf[0] = CC;
+    cmd_buf[0] = ANT_CMD_MEASURE_TEMP;
 
     uint8_t rx_len = 2;
     uint8_t rx_buf[rx_len];
