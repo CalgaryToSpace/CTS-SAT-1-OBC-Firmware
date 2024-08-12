@@ -87,11 +87,11 @@ $(function(){ initResizable(false); });
   <div class="headertitle"><div class="title">Deployment Final Checks</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md36"></a></p>
+<div class="textblock"><p><a class="anchor" id="autotoc_md45"></a></p>
 <ul>
 <li>The code should be audited for the following aspects, as a final check before the final flash.</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md37"></a>
+<h1><a class="anchor" id="autotoc_md46"></a>
 Automated Check Ideas (GitHub Actions)</h1>
 <ol type="1">
 <li>Telecommand Execution (<code>TCMDEXEC_</code>) function names match their registrations in the table.</li>
@@ -99,20 +99,22 @@ Automated Check Ideas (GitHub Actions)</h1>
 <li>Are all <code>TEST_EXEC_</code> functions registered in the test table?</li>
 <li>Are all <code>TCMDEXEC_</code> functions registered in the telecommand table?</li>
 </ol>
-<h1><a class="anchor" id="autotoc_md38"></a>
+<h1><a class="anchor" id="autotoc_md47"></a>
 Manual Execution Checks</h1>
 <p>The following checks involve executing code and/or telecommands.</p>
 <ul>
 <li>Units tests pass.</li>
 <li>Python-based system tests/checks pass.</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md39"></a>
+<h1><a class="anchor" id="autotoc_md48"></a>
 Logging Checks</h1>
 <ol type="1">
 <li>Are all logs to <code><a class="el" href="log_8h.html#a9620661557eea5fdaf535b894ae58c84" title="Log a message to several destinations (sinks)">LOG_message()</a></code>? Limited use of UART logging.</li>
 <li>Are <code><a class="el" href="log_8h.html#a9620661557eea5fdaf535b894ae58c84" title="Log a message to several destinations (sinks)">LOG_message()</a></code> calls using the correct exclusions and levels?</li>
+<li>Are the log levels appropriate? Logs right before non-zero returns should generally be a warning/error level.</li>
+<li>Are the log format strings consistent with the actual arguments? TODO: Find a build option to enable this.</li>
 </ol>
-<h1><a class="anchor" id="autotoc_md40"></a>
+<h1><a class="anchor" id="autotoc_md49"></a>
 Other Checks</h1>
 <ol type="1">
 <li>Check the changelog of libraries (LittleFS, CSP maybe) for bug fixes.</li>
@@ -122,7 +124,7 @@ Other Checks</h1>
 </li>
 <li>Maybe enable compiler optimizations?</li>
 </ol>
-<h1><a class="anchor" id="autotoc_md41"></a>
+<h1><a class="anchor" id="autotoc_md50"></a>
 Management Checks</h1>
 <ol type="1">
 <li>Are all the requirements met?</li>

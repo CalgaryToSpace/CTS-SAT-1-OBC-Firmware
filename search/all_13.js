@@ -1,18 +1,19 @@
 var searchData=
 [
-  ['na_0',['NA',['../system__stm32l4xx_8c.html#autotoc_md59',1,'PLLSAI1_P                              | NA'],['../system__stm32l4xx_8c.html#autotoc_md60',1,'PLLSAI1_Q                              | NA'],['../system__stm32l4xx_8c.html#autotoc_md61',1,'PLLSAI1_R                              | NA'],['../system__stm32l4xx_8c.html#autotoc_md62',1,'PLLSAI2_P                              | NA'],['../system__stm32l4xx_8c.html#autotoc_md63',1,'PLLSAI2_Q                              | NA'],['../system__stm32l4xx_8c.html#autotoc_md64',1,'PLLSAI2_R                              | NA']]],
+  ['na_0',['NA',['../system__stm32l4xx_8c.html#autotoc_md72',1,'PLLSAI1_P                              | NA'],['../system__stm32l4xx_8c.html#autotoc_md73',1,'PLLSAI1_Q                              | NA'],['../system__stm32l4xx_8c.html#autotoc_md74',1,'PLLSAI1_R                              | NA'],['../system__stm32l4xx_8c.html#autotoc_md75',1,'PLLSAI2_P                              | NA'],['../system__stm32l4xx_8c.html#autotoc_md76',1,'PLLSAI2_Q                              | NA'],['../system__stm32l4xx_8c.html#autotoc_md77',1,'PLLSAI2_R                              | NA']]],
   ['name_1',['name',['../classcts1__ground__support_1_1telecommand__types_1_1TelecommandDefinition.html#a69a604dd55539e12d1ee66c54e329d40',1,'cts1_ground_support.telecommand_types.TelecommandDefinition.name'],['../structlfs__info.html#ac7f654d53d14194e3780e448a512ae3d',1,'lfs_info::name'],['../structlfs__dir__find__match.html#a9aaa964d20803e44a37e42e610350e5d',1,'lfs_dir_find_match::name'],['../structLOG__sink__t.html#a176c9b14ddd28cc8e18438ebff719bf3',1,'LOG_sink_t::name'],['../structLOG__system__t.html#a5bb24ed838833d772f260dd7ff14e42f',1,'LOG_system_t::name']]],
   ['name_5fmax_2',['name_max',['../structlfs__config.html#af1030de545060dc685806d88dff2aedc',1,'lfs_config::name_max'],['../structlfs__fsinfo.html#aa6d3b904a8bc1e3cbc8f7ee5e2f287f5',1,'lfs_fsinfo::name_max'],['../structlfs__superblock.html#a99877d0a0e4469854716a2cc2c94da17',1,'lfs_superblock::name_max'],['../structlfs.html#a5775d6e3afc99403c0f2723583fd7db1',1,'lfs::name_max']]],
   ['namespaces_3',['C Namespaces',['../md_docs_2C__Namespaces.html',1,'']]],
-  ['naming_20convention_4',['Naming Convention',['../md_docs_2C__General__Guidelines.html#autotoc_md18',1,'']]],
+  ['naming_20convention_4',['Naming Convention',['../md_docs_2C__General__Guidelines.html#autotoc_md27',1,'']]],
   ['navigating_20in_20vs_20code_5',['Tips for Navigating in VS Code',['../md_docs_230__Repo__Organization.html#autotoc_md16',1,'']]],
   ['next_6',['next',['../structlfs__dir.html#a0211996db0b03972f0377d9a7fb07712',1,'lfs_dir::next'],['../structlfs__file.html#a07c2bf982b39801e4789af9df0518a35',1,'lfs_file::next'],['../structlfs_1_1lfs__mlist.html#a2a9a3c14b0be7204a88698189bb8829e',1,'lfs::lfs_mlist::next'],['../structlfs_1_1lfs__lookahead.html#ad189233452079b0a169dc295d5ae0c28',1,'lfs::lfs_lookahead::next']]],
   ['nmi_5fhandler_7',['NMI_Handler',['../stm32l4xx__it_8h.html#a6ad7a5e3ee69cb6db6a6b9111ba898bc',1,'NMI_Handler(void):&#160;stm32l4xx_it.c'],['../stm32l4xx__it_8c.html#a6ad7a5e3ee69cb6db6a6b9111ba898bc',1,'NMI_Handler(void):&#160;stm32l4xx_it.c']]],
   ['non_20critical_20stm32_20notes_8',['Non-Critical STM32 Notes',['../md_docs_2Non-Critical__Notes_2STM32__Notes.html',1,'']]],
-  ['non_20objectives_9',['Non-Objectives',['../md_docs_2C__Unit__Tests.html#autotoc_md29',1,'']]],
-  ['notes_10',['Notes',['../md_docs_2Non-Critical__Notes_2STM32__Notes.html',1,'Non-Critical STM32 Notes'],['../md_docs_2Telecommand__Spec.html#autotoc_md46',1,'Notes']]],
-  ['num_5fconfig_5fvar_11',['num_config_var',['../structCONFIG__integer__config__entry__t.html#a9f73a273e6ce4de91671725cee550fb7',1,'CONFIG_integer_config_entry_t']]],
-  ['number_5fcomparisons_2ec_12',['number_comparisons.c',['../number__comparisons_8c.html',1,'']]],
-  ['number_5fcomparisons_2eh_13',['number_comparisons.h',['../number__comparisons_8h.html',1,'']]],
-  ['number_5fof_5fargs_14',['number_of_args',['../classcts1__ground__support_1_1telecommand__types_1_1TelecommandDefinition.html#ac8e278ea73b4b52bd1b7cb41364080a5',1,'cts1_ground_support.telecommand_types.TelecommandDefinition.number_of_args'],['../structTCMD__TelecommandDefinition__t.html#a6844d5f4ad29cae4e009a7a34c1d81fb',1,'TCMD_TelecommandDefinition_t::number_of_args']]]
+  ['non_20objectives_9',['Non-Objectives',['../md_docs_2C__Unit__Tests.html#autotoc_md38',1,'']]],
+  ['notation_10',['Notation',['../md_docs_2Non-Critical__Notes_2Timestamp__Format__Rationale.html#autotoc_md54',1,'']]],
+  ['notes_11',['Notes',['../md_docs_2Non-Critical__Notes_2STM32__Notes.html',1,'Non-Critical STM32 Notes'],['../md_docs_2Telecommand__Spec.html#autotoc_md59',1,'Notes']]],
+  ['num_5fconfig_5fvar_12',['num_config_var',['../structCONFIG__integer__config__entry__t.html#a9f73a273e6ce4de91671725cee550fb7',1,'CONFIG_integer_config_entry_t']]],
+  ['number_5fcomparisons_2ec_13',['number_comparisons.c',['../number__comparisons_8c.html',1,'']]],
+  ['number_5fcomparisons_2eh_14',['number_comparisons.h',['../number__comparisons_8h.html',1,'']]],
+  ['number_5fof_5fargs_15',['number_of_args',['../classcts1__ground__support_1_1telecommand__types_1_1TelecommandDefinition.html#ac8e278ea73b4b52bd1b7cb41364080a5',1,'cts1_ground_support.telecommand_types.TelecommandDefinition.number_of_args'],['../structTCMD__TelecommandDefinition__t.html#a6844d5f4ad29cae4e009a7a34c1d81fb',1,'TCMD_TelecommandDefinition_t::number_of_args']]]
 ];

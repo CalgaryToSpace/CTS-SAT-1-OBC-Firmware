@@ -1,7 +1,7 @@
 var searchData=
 [
   ['begin_0',['begin',['../structlfs__dir__traverse.html#a07798a0ee23e576070aa72241c04e081',1,'lfs_dir_traverse::begin'],['../structlfs__commit.html#a19f7062a2210efa0b1a08b0b2e40946a',1,'lfs_commit::begin']]],
-  ['best_20coding_20practices_1',['Best Coding Practices',['../md_docs_2C__General__Guidelines.html#autotoc_md19',1,'']]],
+  ['best_20coding_20practices_1',['Best Coding Practices',['../md_docs_2C__General__Guidelines.html#autotoc_md28',1,'']]],
   ['block_2',['block',['../structlfs__cache.html#afa697dc693f3eaa7e4cc517b0f23f655',1,'lfs_cache::block'],['../structlfs__file.html#aa88ec6249b329c4d5815532f1860033f',1,'lfs_file::block'],['../structlfs__diskoff.html#ac228afed215617b061e4a9821983ac8a',1,'lfs_diskoff::block'],['../structlfs__commit.html#af33dd37f1861fad3a2d2b475b71c346c',1,'lfs_commit::block']]],
   ['block_5fcount_3',['block_count',['../structlfs__config.html#a71fab1bab430e963b9cc202485cfe236',1,'lfs_config::block_count'],['../structlfs__fsinfo.html#a38d98540ca357d1446fcfe6be85b71f2',1,'lfs_fsinfo::block_count'],['../structlfs__superblock.html#a31415fe70c0ae6bf65982555023c5599',1,'lfs_superblock::block_count'],['../structlfs.html#a702b5966b8324895b3e4c8ce97afd14d',1,'lfs::block_count']]],
   ['block_5fcycles_4',['block_cycles',['../structlfs__config.html#afe0aed6a5c8f2353c5ab6b45bc4b28c6',1,'lfs_config']]],

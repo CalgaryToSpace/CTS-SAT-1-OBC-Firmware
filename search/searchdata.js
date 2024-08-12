@@ -3,7 +3,7 @@ var indexSectionsWithContent =
   0: "0123478_abcdefghilmnopqrstuvwx",
   1: "aclrt",
   2: "bcft",
-  3: "03_abcdefilmnprstu",
+  3: "034_abcdefilmnprstu",
   4: "_bcdefghilmnprstu",
   5: "_abcdefghilmnoprstuv",
   6: "lt",
