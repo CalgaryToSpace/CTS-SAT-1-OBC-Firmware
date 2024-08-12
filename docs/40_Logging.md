@@ -10,7 +10,7 @@ In general embedded systems development, you commonly print data to a UART termi
 
 This is a simple and effective way to debug code, but it is not a good way to log data in a satellite. We can't plug a UART cable into a satellite flying through space at 8 km/s.
 
-## Logging in Space
+## Logging in Space (Orbit)
 
 The logging system on this satellite is rather simple: call the `LOG_message(...)` function with the message you want, and it will be logged to a file, sent over the radio, stored in memory, and passed through the umbilical UART debug console (if connected on earth).
 
@@ -71,10 +71,6 @@ typedef enum {
 ```
 
 Sometimes, stuff works (use `LOG_SEVERITY_NORMAL`). Sometimes it doesn't (use `LOG_SEVERITY_WARNING` or `LOG_SEVERITY_ERROR`). Sometimes, the thing not working can cause other things to not work (use `LOG_SEVERITY_CRITICAL`).
-
-Extra debugging information can be logged using `LOG_SEVERITY_DEBUG`. Such
-`LOG_message(...)` statements must be removed from the final version of the
-firmware.
 
 ### Sinks
 
