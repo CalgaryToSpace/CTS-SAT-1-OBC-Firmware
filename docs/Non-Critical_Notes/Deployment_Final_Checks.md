@@ -21,6 +21,8 @@ The following checks involve executing code and/or telecommands.
 
 1. Are all logs to `LOG_message()`? Limited use of UART logging.
 2. Are `LOG_message()` calls using the correct exclusions and levels?
+3. Are the log levels appropriate? Logs right before non-zero returns should generally be a warning/error level.
+4. Are the log format strings consistent with the actual arguments? TODO: Find a build option to enable this.
 
 ## Other Checks
 
