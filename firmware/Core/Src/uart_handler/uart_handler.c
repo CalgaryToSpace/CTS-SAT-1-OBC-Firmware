@@ -107,7 +107,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
             DEBUG_uart_print_str("Unhandled MPI Mode\n"); // TODO: HANDLE other MPI MODES
         }
     }
-    else if (huart->Instance == UART_gps_port_handle) {
+    else if (huart->Instance == UART_gps_port_handle->Instance) {
         // add the byte to the buffer
         if (UART_gps_buffer_write_idx >= UART_gps_buffer_len) {
             DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART gps buffer is full\n");
