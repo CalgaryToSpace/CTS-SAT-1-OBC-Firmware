@@ -15,8 +15,8 @@ Please add your name to the list below in your first Pull Request!
 * Parker L.
 * Nadeem M.
 * Chris K.
+* Kale F.
 * Marko V.
-
 
 ## License and Libraries
 
