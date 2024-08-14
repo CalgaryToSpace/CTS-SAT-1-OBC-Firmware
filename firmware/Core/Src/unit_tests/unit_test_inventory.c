@@ -9,6 +9,7 @@
 #include "unit_tests/test_telecommand_arg_helpers.h"
 #include "unit_tests/unit_test_helpers.h"
 #include "unit_tests/test_configuration_variables.h"
+#include "unit_tests/test_flash_driver.h"
 
 
 // extern
@@ -130,6 +131,13 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_file = "telecommands/telecommand_args_helpers",
         .test_func_name = "TCMD_extract_int64_arg"
     },
+
+    // {
+    //     .test_func = TEST_EXEC__FLASH_read,
+    //     .test_file = "telecommands/telecommand_args_helpers",
+    //     .test_func_name = "TCMD_extract_int64_arg"
+    // },
+    
 };
 
 // extern

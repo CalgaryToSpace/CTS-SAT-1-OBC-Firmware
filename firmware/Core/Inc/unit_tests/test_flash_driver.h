@@ -3,5 +3,6 @@
 
 #include <stdint.h>
 
+uint8_t TEST_EXEC__FLASH_read();
 
 #endif // __INCLUDE_GUARD__TTEST_FLASH_DRIVER__
