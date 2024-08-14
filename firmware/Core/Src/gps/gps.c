@@ -1,3 +1,5 @@
+#include "log/log.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
@@ -6,9 +8,11 @@
 
 #define CRC32_POLYNOMIAL 0xEDB88320L
 
-/* --------------------------------------------------------------------------
-Calculate a CRC value to be used by CRC calculation functions.
--------------------------------------------------------------------------- */
+/// @brief Calculate a CRC value to be used by CRC calculation functions.
+/// @param i
+/// - Arg 0: variable name
+/// - Arg 1: new value
+/// @return 0 if successful, >0 if an error occurred
 uint32_t CRC32Value(uint8_t i) {
     int j;
     uint32_t ulCRC;
@@ -22,11 +26,11 @@ uint32_t CRC32Value(uint8_t i) {
         }
     return ulCRC;
 }
-/* --------------------------------------------------------------------------
-Calculates the CRC-32 of a block of data all at once
-ulCount - Number of bytes in the data block
-ucBuffer - Data block
--------------------------------------------------------------------------- */
+
+/// @brief Calculates the CRC-32 of a block of data all at once
+/// @param ulCount - Number of bytes in the data block
+/// @param ucBuffer - Data block
+/// @return 0 if successful, >0 if an error occurred
 uint32_t CalculateBlockCRC32( uint32_t ulCount, uint8_t *ucBuffer ) {
     uint32_t ulTemp1;
     uint32_t ulTemp2;
@@ -42,6 +46,9 @@ uint32_t CalculateBlockCRC32( uint32_t ulCount, uint8_t *ucBuffer ) {
 
 
 
+/// @brief Parse Received Data
+/// @param buffer - Number of bytes in the data block
+/// @return 0 if successful, >0 if an error occurred
 void ParseGpsData(const char* buffer) {
     if (buffer[0] != '#') {
         // Not a valid GPS message
