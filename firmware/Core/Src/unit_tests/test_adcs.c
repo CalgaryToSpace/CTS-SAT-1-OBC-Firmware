@@ -1,4 +1,4 @@
-#include "adcs_drivers/adcs_types.h"
+#include "adcs_drivers/adcs_struct_packers.h"
 #include "unit_tests/unit_test_helpers.h"  // for all unit tests
 #include "unit_tests/test_adcs.h"          // for ADCS tests
 #include "transforms/number_comparisons.h" // for comparing doubles

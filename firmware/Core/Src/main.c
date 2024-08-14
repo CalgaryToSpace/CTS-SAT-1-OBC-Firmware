@@ -28,6 +28,7 @@
 #include "rtos_tasks/rtos_tasks.h"
 #include "uart_handler/uart_handler.h"
 #include "adcs_drivers/adcs_types.h"
+#include "adcs_drivers/adcs_internal_drivers.h"
 #include "littlefs/flash_driver.h"
 
 /* USER CODE END Includes */
