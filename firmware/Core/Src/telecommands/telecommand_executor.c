@@ -11,7 +11,6 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <inttypes.h>
 
 
 /// @brief  The agenda (schedule queue) of telecommands to execute.
@@ -185,7 +184,7 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
     TCMD_agenda_is_valid[tcmd_agenda_slot_num] = 0;
 
     char tssent_str[32];
-    GEN_uint64_to_str(TCMD_agenda[tcmd_agenda_slot_num].timestamp_to_execute, tssent_str);
+    GEN_uint64_to_str(TCMD_agenda[tcmd_agenda_slot_num].timestamp_sent, tssent_str);
     char tsexec_str[32];
     GEN_uint64_to_str(TCMD_agenda[tcmd_agenda_slot_num].timestamp_to_execute, tsexec_str);
     LOG_message(
