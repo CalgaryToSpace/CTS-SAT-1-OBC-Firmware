@@ -79,3 +79,18 @@ uint8_t TCMDEXEC_agenda_fetch_jsonl(const char *args_str, TCMD_TelecommandChanne
     const uint8_t result = TCMD_agenda_fetch();
     return result;
 }
+
+
+/// @brief Telecommand: Delete agenda entry by function name
+/// @param args_str
+/// - Arg 0: function name (string) - The name of the telecommand function in the agenda to delete.
+/// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
+/// @param response_output_buf The buffer to write the response to
+/// @param response_output_buf_len The maximum length of the response_output_buf (its size)
+/// @return 0 on success, > 0 on error
+uint8_t TCMDEXEC_agenda_delete_by_function_name(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    const uint8_t result = TCMD_agenda_delete_by_function_name(args_str);
+    return result;
+}

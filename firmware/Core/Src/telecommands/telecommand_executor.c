@@ -10,7 +10,8 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
 
 
 /// @brief  The agenda (schedule queue) of telecommands to execute.
@@ -309,6 +310,67 @@ uint8_t TCMD_agenda_fetch(){
         // Early-exit optimization: Break the loop once all active agendas have been logged
         if (logged_agendas >= active_agendas) {
             break;
+        }
+    }
+
+    return 0;
+}
+
+
+/// @brief Deletes a telecommand from the agenda by the telecommand function name.
+/// @param function_name The `timestamp_sent` value of the telecommand to delete.
+/// @return 0 on success, > 0 if the telecommand was not found.
+/// @note Calls `LOG_message()` to log the deletion before all returns.
+uint8_t TCMD_agenda_delete_by_function_name(const char *function_name) {
+    bool is_valid_function_name_count = false;
+
+    // Get count of active agendas
+    const uint8_t active_agendas = TCMD_get_agenda_used_slots_count();
+
+    if(active_agendas == 0){
+        LOG_message(
+        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "TCMD_agenda_delete_by_function_name: No active telecommands in the agenda."
+        );
+    return 1;
+    }
+
+    // Loop through the telecommand definitions and check if the passed function name is valid
+    for (uint16_t idx = 0; idx < TCMD_NUM_TELECOMMANDS; idx++) {
+        if (strcmp(TCMD_telecommand_definitions[idx].tcmd_name,function_name) == 0) {
+            is_valid_function_name_count = true;
+            break;
+        }
+    }
+
+    if(!is_valid_function_name_count){
+        LOG_message(
+        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "TCMD_agenda_delete_by_function_name: Invalid telecommand name passed in the function."
+        );
+        return 2;
+    }
+
+    // Loop through the agenda and check for valid agendas
+    for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
+        if (TCMD_agenda_is_valid[slot_num] ) {
+
+            // Grab the index of the telecommand in the `TCMD_telecommand_definitions` array
+            uint8_t telecommand_index = TCMD_agenda[slot_num].tcmd_idx;
+
+            // Perform a string comparision
+            if(strcmp(TCMD_telecommand_definitions[telecommand_index].tcmd_name,function_name) == 0){
+                
+                // Set agenda as invalid
+                TCMD_agenda_is_valid[slot_num] = 0;
+                
+                LOG_message(
+                LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                "TCMD_agenda_delete_by_function_name: Telecommand with function name= %s (%s) deleted from agenda.",
+                function_name,
+                TCMD_telecommand_definitions[TCMD_agenda[slot_num].tcmd_idx].tcmd_name
+                );
+            }
         }
     }
 

@@ -28,4 +28,6 @@ uint8_t TCMD_agenda_delete_by_tssent(uint64_t tssent);
 
 uint8_t TCMD_agenda_fetch();
 
+uint8_t TCMD_agenda_delete_by_function_name(const char *function_name);
+
 #endif // INCLUDE_GUARD__TELECOMMAND_EXECUTOR_H
