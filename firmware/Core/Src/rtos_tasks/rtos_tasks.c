@@ -227,7 +227,10 @@ void TASK_receive_gps_info(void *argument) {
 		// Checking if there is data in the GPS buffer
 		if(UART_gps_buffer_write_idx > 0) {
 
-			// Parse the data
+			// Parse the data: Pseudo Code
+
+    		//Read data from uart interrupt, copy the data into a seprate buffer. Ending delimiter astericks.
+    		// Call ParseGpsData into this ie us
 
 		}
 
