@@ -8,7 +8,9 @@
 #include <string.h>
 #include <inttypes.h>
 
-#include "adcs_types.h"
+#include "adcs_drivers/adcs_types.h"
+#include "adcs_drivers/adcs_commands.h"
+#include "adcs_drivers/adcs_struct_packers.h"
 
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 

@@ -5,8 +5,11 @@
  *      Author: Nadeem Moosa, Saksham Puri, Zachary Uy
  */
 
-#ifndef INC_ADCS_IDS_H_
-#define INC_ADCS_IDS_H_
+#ifndef INC_ADCS_COMMAND_IDS_H_
+#define INC_ADCS_COMMAND_IDS_H_
+
+#include "adcs_types.h"
+#include <stdint.h>
 
 /* Command IDs */
 
@@ -223,4 +226,4 @@ static const uint8_t ADCS_COMMAND_BOOTLOADER_RUN_PROGRAM = 101;
 static const uint8_t ADCS_COMMAND_BOOTLOADER_READ_INFO = 102;
 static const uint8_t ADCS_COMMAND_BOOTLOADER_COPY_TO_FLASH = 103;
 
-#endif /* INC_ADCS_IDS_H_ */
+#endif /* INC_ADCS_COMMAND_IDS_H_ */
