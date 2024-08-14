@@ -71,6 +71,11 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func_name = "TCMD_ascii_to_double"
     },
     {
+        .test_func = TEST_EXEC_TCMD_parse_full_telecommand,
+        .test_file = "telecommands/telecommand_parser",
+        .test_func_name = "TCMD_parse_full_telecommand"
+    },
+    {
         .test_func = TEST_EXEC__LOG_enable_disable_LOG_SINK_FILE,
         .test_file = "log/log",
         .test_func_name = "TEST_EXEC__LOG_enable_disable_LOG_SINK_FILE"
