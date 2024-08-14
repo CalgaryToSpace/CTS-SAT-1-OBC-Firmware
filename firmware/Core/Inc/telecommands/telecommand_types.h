@@ -39,10 +39,14 @@ typedef struct {
 
 
 typedef struct {
+    /// @brief The index of the telecommand in the `TCMD_telecommand_definitions` array.
     uint8_t tcmd_idx;
     char args_str_no_parens[255]; // TODO: consider changing this to a pointer, and storing the args somewhere else to save memory
+    /// @brief The value of the `@tssent` field when the telecommand was received.
     uint64_t timestamp_sent;
+    /// @brief The value of the `@tsexec` field when the telecommand was received.
     uint64_t timestamp_to_execute;
+    /// @brief The channel on which the telecommand was received, and on which the response should be sent.
     TCMD_TelecommandChannel_enum_t tcmd_channel;
 } TCMD_parsed_tcmd_to_execute_t;
 
