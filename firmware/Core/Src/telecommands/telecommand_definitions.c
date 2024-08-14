@@ -316,7 +316,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
 
     // ****************** END SECTION: freertos_telecommand_defs ******************
 
-    // ****************** SECTION: telecommand_executor ******************
+    // ****************** SECTION: agenda_telecommand_defs ******************
 
    {
         .tcmd_name = "agenda_delete_all",
@@ -331,6 +331,15 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
+
+   {
+        .tcmd_name = "agenda_fetch",
+        .tcmd_func = TCMDEXEC_agenda_fetch_jsonl,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+
+    // ****************** END SECTION: agenda_telecommand_defs ******************
 
 };
 

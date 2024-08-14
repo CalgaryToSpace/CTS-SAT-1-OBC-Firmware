@@ -8,7 +8,10 @@
 #include "log/log.h"
 #include "transforms/arrays.h"
 
+#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
+
 
 /// @brief  The agenda (schedule queue) of telecommands to execute.
 TCMD_parsed_tcmd_to_execute_t TCMD_agenda[TCMD_AGENDA_SIZE];
@@ -17,6 +20,18 @@ TCMD_parsed_tcmd_to_execute_t TCMD_agenda[TCMD_AGENDA_SIZE];
 /// @brief  A flag indicating whether a given index in `TCMD_agenda` is valid
 ///         (i.e., filled with a not-yet-executed command).
 uint8_t TCMD_agenda_is_valid[TCMD_AGENDA_SIZE] = {0};
+
+/// @brief Converts a TCMD_TelecommandChannel_enum_t to a string representation.
+/// @param channel Input TCMD_TelecommandChannel_enum_t
+/// @return A pointer to a C-string representing the TCMD_TelecommandChannel_enum_t.
+const char* telecommand_channel_enum_to_str(TCMD_TelecommandChannel_enum_t channel) {
+    switch (channel) {
+        case TCMD_TelecommandChannel_DEBUG_UART     :return "DEBUG_UART";
+        case TCMD_TelecommandChannel_RADIO1         :return "RADIO1";
+        default                                     :return "UNKNOWN_CHANNEL";
+    }
+}
+
 
 
 /// @brief Adds a telecommand to the agenda (schedule/queue) of telecommands to execute.
@@ -123,8 +138,6 @@ uint8_t TCMD_execute_parsed_telecommand_now(const uint16_t tcmd_idx, const char 
     DEBUG_uart_print_str(" Executing telecommand '");
     DEBUG_uart_print_str(tcmd_def.tcmd_name);
     DEBUG_uart_print_str("'=========================\n");
-    
-    
 
     // Handle the telecommand by calling the appropriate function.
     // Null-terminate the args string.
@@ -171,7 +184,7 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
     TCMD_agenda_is_valid[tcmd_agenda_slot_num] = 0;
 
     char tssent_str[32];
-    GEN_uint64_to_str(TCMD_agenda[tcmd_agenda_slot_num].timestamp_to_execute, tssent_str);
+    GEN_uint64_to_str(TCMD_agenda[tcmd_agenda_slot_num].timestamp_sent, tssent_str);
     char tsexec_str[32];
     GEN_uint64_to_str(TCMD_agenda[tcmd_agenda_slot_num].timestamp_to_execute, tsexec_str);
     LOG_message(
@@ -240,4 +253,64 @@ uint8_t TCMD_agenda_delete_by_tssent(uint64_t tssent) {
         tssent_str
     );
     return 1;
+}
+
+/// @brief Fetches the active agendas.
+/// @return 0 on success, 1 if there are no active agendas.
+uint8_t TCMD_agenda_fetch(){
+    uint16_t active_agendas = 0;
+    uint16_t logged_agendas = 0;
+    
+    // Count the number of active agendas
+    for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
+        if (TCMD_agenda_is_valid[slot_num]) {
+            active_agendas++;
+            }
+    }
+
+    // if no active agendas, return 1
+    if(active_agendas == 0){
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "TCMD_agenda_fetch: No entries in the agenda."
+        );
+        return 1;
+    }
+
+    // Output the number of active agendas
+    LOG_message(
+        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "TCMD_agenda_fetch: Active agendas: %u",
+        active_agendas
+    );
+
+    // List all active agendas in JSONL format
+    for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
+        if (TCMD_agenda_is_valid[slot_num]) {
+
+            // Convert uint64_t to a string
+            char tssent_str[32];
+            GEN_uint64_to_str(TCMD_agenda[slot_num].timestamp_sent, tssent_str);
+            char tsexec_str[32];
+            GEN_uint64_to_str(TCMD_agenda[slot_num].timestamp_to_execute, tsexec_str);
+
+            LOG_message(
+                LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, 
+                "{\"slot_num\":\"%u\",\"telecommand_channel\":\"%s\",\"timestamp_sent\":%s,\"timestamp_to_execute\":%s}\n",
+                slot_num,
+                telecommand_channel_enum_to_str(TCMD_agenda[slot_num].tcmd_channel),
+                tssent_str,
+                tsexec_str
+            );
+        }
+
+        logged_agendas++;
+
+        // Early-exit optimization: Break the loop once all active agendas have been logged
+        if (logged_agendas >= active_agendas) {
+            break;
+        }
+    }
+
+    return 0;
 }
