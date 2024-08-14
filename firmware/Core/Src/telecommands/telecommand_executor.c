@@ -260,7 +260,6 @@ uint8_t TCMD_agenda_delete_by_tssent(uint64_t tssent) {
 uint8_t TCMD_agenda_fetch(){
     uint16_t active_agendas = 0;
     uint16_t logged_agendas = 0;
-    char message_buffer[512];
     
     // Count the number of active agendas
     for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
@@ -271,8 +270,10 @@ uint8_t TCMD_agenda_fetch(){
 
     // if no active agendas, return 1
     if(active_agendas == 0){
-        LOG_message( LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "TCMD_agenda_fetch: No entries in the agenda.");
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "TCMD_agenda_fetch: No entries in the agenda."
+        );
         return 1;
     }
 
@@ -293,26 +294,23 @@ uint8_t TCMD_agenda_fetch(){
             char tsexec_str[32];
             GEN_uint64_to_str(TCMD_agenda[slot_num].timestamp_to_execute, tsexec_str);
 
-            snprintf(
-                message_buffer, sizeof(message_buffer),
+            LOG_message(
+                LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, 
                 "{\"slot_num\":\"%u\",\"telecommand_channel\":\"%s\",\"timestamp_sent\":%s,\"timestamp_to_execute\":%s}\n",
                 slot_num,
                 telecommand_channel_enum_to_str(TCMD_agenda[slot_num].tcmd_channel),
                 tssent_str,
                 tsexec_str
             );
-
-            LOG_message( LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, message_buffer);
         }
 
-            logged_agendas++;
+        logged_agendas++;
 
-            // Early-exit optimization: Break the loop once all active agendas have been logged
-            if (logged_agendas >= active_agendas) {
-                break;
-            }
+        // Early-exit optimization: Break the loop once all active agendas have been logged
+        if (logged_agendas >= active_agendas) {
+            break;
+        }
     }
 
     return 0;
-
 }
