@@ -17,6 +17,9 @@
 #include "telecommands/testing_telecommand_defs.h"
 #include "telecommands/telecommand_executor.h"
 #include "telecommands/agenda_telecommands_defs.h"
+#include "timekeeping/timekeeping.h"
+#include "littlefs/littlefs_helper.h"
+
 
 #include <stdio.h>
 #include <stdint.h>
@@ -372,9 +375,30 @@ uint8_t TCMDEXEC_heartbeat_on(const char *args_str, TCMD_TelecommandChannel_enum
 
 uint8_t TCMDEXEC_core_system_stats(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-    // TODO: implement this (Issue #103)
-    // Use `TCMD_get_agenda_used_slots_count`
-    snprintf(response_output_buf, response_output_buf_len, "System stats: TODO\n");
+
+    uint64_t timestamp = TIM_get_current_unix_epoch_time_ms();
+
+    uint32_t uptime = TIM_get_current_system_uptime_ms();
+
+    uint32_t last_resync_ms = TIM_get_system_uptime_at_last_time_resync_ms(); // timestamp at sync
+
+    uint32_t delta_uptime = TIM_get_current_system_uptime_ms() - last_resync_ms; // time between last time sync 
+
+    int16_t latest_tcmd_sent = TCMD_get_most_recent_tcmd_timestamp_sent();
+
+    uint32_t cmd_count = TCMD_get_tcmd_count();
+
+    uint8_t mount_status = LFS_get_mount_status();
+
+    uint32_t beacon_count;
+    uint32_t temperature;
+    
+    //TODO: 
+    //  logging information for beacon count and temperature still required 
+
+    //  \n{\n\t\"timestamp\": \"%lld\",\n\t  \"uptime\": \"%ld\", \n\t \"fs_mount\": \"%d\",\n\t, \n\t\"timestamp_of_last_sync\": \"%lld\", \n\t\"delta_uptime\": \"%lld\", \n\t\"cmd_count\": \"%lld\", \n\t\"timestamp_last_tcmd_sent\": \"%lld\"
+
+    snprintf(response_output_buf, response_output_buf_len, "{\"timestamp\":\"%lld\",\"uptime\":\"%ld\",\"last_resync_ms\":\"%ld\",\"delta_uptime\":\"%ld\",\"time_of_last_tcmd_sent\":\"%d\",\"total_tcmd_count\":\"%lld\",\"mount_status\":\"%d\"}\n" ,timestamp,uptime,last_resync_ms,delta_uptime,latest_tcmd_sent,cmd_count,mount_status);
     return 0;
 }
 
