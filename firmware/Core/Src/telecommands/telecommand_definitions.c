@@ -331,11 +331,18 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
-
-   {
+    
+    {
         .tcmd_name = "agenda_fetch",
         .tcmd_func = TCMDEXEC_agenda_fetch_jsonl,
         .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+
+    {
+        .tcmd_name = "agenda_delete_by_name",
+        .tcmd_func = TCMDEXEC_agenda_delete_by_name,
+        .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
 

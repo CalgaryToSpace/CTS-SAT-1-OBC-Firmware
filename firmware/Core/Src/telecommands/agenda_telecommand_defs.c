@@ -23,9 +23,9 @@ uint8_t TCMDEXEC_agenda_delete_all(const char *args_str, TCMD_TelecommandChannel
     return 0;
 }
 
-/// @brief Telecommand: Delete agenda entry by timestamp
+/// @brief Telecommand: Delete agenda entry by tssent timestamp
 /// @param args_str
-/// - Arg 0: Timestamp sent (uint64_t) - The timestamp of the agenda entry to delete.
+/// - Arg 0: Timestamp sent (uint64_t) - The tssent timestamp of the agenda entry to delete.
 /// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
@@ -77,5 +77,20 @@ uint8_t TCMDEXEC_agenda_fetch_jsonl(const char *args_str, TCMD_TelecommandChanne
                         char *response_output_buf, uint16_t response_output_buf_len) {
      
     const uint8_t result = TCMD_agenda_fetch();
+    return result;
+}
+
+
+/// @brief Telecommand: Delete all agenda entries with a telecommand name
+/// @param args_str
+/// - Arg 0: telecommand name (string) - The name of the telecommand function in the agenda to delete. (e.g, hello_world)
+/// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
+/// @param response_output_buf The buffer to write the response to
+/// @param response_output_buf_len The maximum length of the response_output_buf (its size)
+/// @return 0 on success, > 0 on error
+uint8_t TCMDEXEC_agenda_delete_by_name(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    const uint8_t result = TCMD_agenda_delete_by_name(args_str);
     return result;
 }
