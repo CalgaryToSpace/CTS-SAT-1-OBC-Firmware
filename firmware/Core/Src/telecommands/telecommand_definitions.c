@@ -340,8 +340,8 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     },
 
     {
-        .tcmd_name = "agenda_delete_by_function_name",
-        .tcmd_func = TCMDEXEC_agenda_delete_by_function_name,
+        .tcmd_name = "agenda_delete_by_name",
+        .tcmd_func = TCMDEXEC_agenda_delete_by_name,
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
