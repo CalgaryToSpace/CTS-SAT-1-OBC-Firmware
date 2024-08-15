@@ -317,9 +317,10 @@ uint8_t TCMD_agenda_fetch(){
 }
 
 
-/// @brief Deletes telecommands from the agenda by the telecommand name.
+/// @brief Deletes all agenda entries with a telecommand name.
 /// @param telecommand_name The name of the telecommand in the agenda to delete. (e.g, hello_world)
 /// @return 0 on success, > 0 on error.
+/// @note Calls `LOG_message()` before all returns.
 uint8_t TCMD_agenda_delete_by_name(const char *telecommand_name) {
 
     // Get count of active agendas
