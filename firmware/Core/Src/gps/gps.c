@@ -5,43 +5,41 @@
 #include <stdint.h>
 
 #define BUFFER_SIZE 256
-
 #define CRC32_POLYNOMIAL 0xEDB88320L
 
 /// @brief Calculate a CRC value to be used by CRC calculation functions.
 /// @param i
 /// - Arg 0: variable name
-/// - Arg 1: new value
 /// @return 0 if successful, >0 if an error occurred
-uint32_t CRC32Value(uint8_t i) {
+uint32_t crc32_value(uint8_t i) {
     int j;
-    uint32_t ulCRC;
-    ulCRC = i;
+    uint32_t crc;
+    crc = i;
     
     for ( j = 8 ; j > 0; j-- ) {
-        if ( ulCRC & 1 )
-        ulCRC = ( ulCRC >> 1 ) ^ CRC32_POLYNOMIAL;
+        if ( crc & 1 )
+        crc = ( crc >> 1 ) ^ CRC32_POLYNOMIAL;
         else
-        ulCRC >>= 1;
+        crc >>= 1;
         }
-    return ulCRC;
+    return crc;
 }
 
 /// @brief Calculates the CRC-32 of a block of data all at once
 /// @param ulCount - Number of bytes in the data block
 /// @param ucBuffer - Data block
 /// @return 0 if successful, >0 if an error occurred
-uint32_t CalculateBlockCRC32( uint32_t ulCount, uint8_t *ucBuffer ) {
-    uint32_t ulTemp1;
-    uint32_t ulTemp2;
-    uint32_t ulCRC = 0;
+uint32_t calculate_block_crc32( uint32_t ulCount, uint8_t *ucBuffer ) {
+    uint32_t temp1;
+    uint32_t temp2;
+    uint32_t crc = 0;
     while ( ulCount-- != 0 ) {
-        ulTemp1 = ( ulCRC >> 8 ) & 0x00FFFFFFL;
-        ulTemp2 = CRC32Value( ((int) ulCRC ^ *ucBuffer++ ) & 0xFF );
-        ulCRC = ulTemp1 ^ ulTemp2;
+        temp1 = ( crc >> 8 ) & 0x00FFFFFFL;
+        temp2 = crc32_value( ((int) crc ^ *ucBuffer++ ) & 0xFF );
+        crc = temp1 ^ temp2;
         }
 
-    return( ulCRC );
+    return( crc );
 }
 
 
