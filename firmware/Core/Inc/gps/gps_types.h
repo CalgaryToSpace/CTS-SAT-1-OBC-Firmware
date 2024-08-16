@@ -3,20 +3,24 @@
 
 #include <stdint.h>
 
+// TODO: Confirm for the structs if the status_code is needed i.e. is it the binary version of the response 
+
+// ****************** SECTION: gps_header_structs ******************
+
 /// @brief  This refers to the status that indicates how well a time is known
 /// All reported receiver times are subject to a qualifying time status
-///Refer to page 51-53 of the OEM7 Commands and Logs Reference Manual
+/// Refer to page 51-53 of the OEM7 Commands and Logs Reference Manual
 typedef struct {
-    int decimal;
-    const char *ascii;
-    const char *description;
+    int gps_reference_time_status_code;
+    const char *gps_reference_time_status_ascii;
 } gps_reference_time_status;
+
 
 /// @brief This is the first part of the response that every command response from the GNSS receiver has.
 /// Refer to page 34-35 of the OEM7 Commands and Logs Reference Manual
 typedef struct {
     /// @brief The ASCII name of the log or command e.g., "BESTXYZA" or "TIMEA"
-    char log_name[255];
+    char log_name[128];
 
     /// @brief The name of the port from which the log was generated e.g., "COM1".
     char port[10];
@@ -40,42 +44,53 @@ typedef struct {
     /// various hardware and software components of the receiver
     int32_t rx_status;
 
-    /// @brief Reserved for internal use
+    /// @brief Reserved for GPS internal use
     uint32_t reserved;
 
     /// @brief representing the receiver software build number
     uint32_t rx_sw_version;
 } gps_response_header;
 
+// ****************** END SECTION: gps_header_structs ******************
 
-/// @brief This is the first part of the response that every command response from the GNSS receiver has.
+
+// ****************** SECTION: gps_data_structs ******************
+
+/// @brief  This refers to the solution status
+/// Refer to table 90 page 500-501 of the OEM7 Commands and Logs Reference Manual
+typedef struct {
+    int binary;
+    const char *gps_solution_status_ascii;
+} gps_solution_status;
+
+/// @brief This is the struct for the BESTXYZA Command response.
 typedef struct {
     /// @brief The ASCII name of the log or command e.g., "BESTXYZA" or "TIMEA"
-    char p_sol_status;
+    char p_sol_status [100];
 
     /// @brief The name of the port from which the log was generated e.g., "COM1".
-    char pos_type;
+    char pos_type [100];
 
     /// @brief Documentation says the point coordinates come as a double. 
     /// We store as an int32 because the eatrths radius(6.10^6 m) fits within an int32.
-    int32_t p_x_m;
-    int32_t p_y_m;
-    int32_t p_z_m;
+    int32_t position_x_m;
+    int32_t position_y_m;
+    int32_t position_z_m;
 
-    uint32_t p_x_std;
-    uint32_t p_y_std;
-    uint32_t p_z_std;
+    uint32_t position_x_std;
+    uint32_t position_y_std;
+    uint32_t position_z_std;
 
-    uint32_t v_sol_status;
-    char vel_type;
+    uint32_t velocity_sol_status;
+    char velocity_type;
 
-    uint32_t v_x;
-    uint32_t v_y;
-    uint32_t v_z;
+    uint32_t velocity_x;
+    uint32_t velocity_y;
+    uint32_t velocity_z;
 
-    uint32_t v_x_std;
-    uint32_t v_y_std;
-    uint32_t v_z_std;
+    uint32_t velocity_x_std;
+    uint32_t velocity_y_std;
+    uint32_t velocity_z_std;
 
     uint32_t stn_id;
 
