@@ -69,6 +69,11 @@ void ParseGpsData(const char* buffer) {
     char* token = strtok(header, ",");
     while (token != NULL) {
         // Process each field
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Header Field: %s",
+            token
+        );
         printf("Header Field: %s\n", token);
         token = strtok(NULL, ",");
     }
@@ -90,7 +95,11 @@ void ParseGpsData(const char* buffer) {
     token = strtok(data, ",");
     while (token != NULL) {
         // Process each data field
-        printf("Data Field: %s\n", token);
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Data Field: %s",
+            token
+        );
         token = strtok(NULL, ",");
     }
 
@@ -99,7 +108,11 @@ void ParseGpsData(const char* buffer) {
     strncpy(crc, crc_start + 1, 8); // CRC is 8 characters long
     crc[8] = '\0';
 
-    printf("CRC: %s\n", crc);
+    LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "CRC: %s.",
+            crc
+        );
 
     // Validate the CRC (implementation of the CRC function needed)
     // if (!validate_crc(data_start, crc)) {
@@ -107,13 +120,9 @@ void ParseGpsData(const char* buffer) {
     //     return;
     // }
 
-    printf("Message Parsed Successfully\n");
+    LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Message Parsed Successfully."
+        );
 }
 
-int main() {
-    const char* gps_message = "#GPGGA,COM1,0,55.5,SATTIME,2072,133140.000,02000000,58ba,15761;32,2072,136800,8b00602b57a606100004389101eefa4e0eeed24e012f216600007608cd27*1234ABCD";
-
-    ParseGpsData(gps_message);
-
-    return 0;
-}
