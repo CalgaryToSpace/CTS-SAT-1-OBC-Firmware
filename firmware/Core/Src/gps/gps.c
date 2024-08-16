@@ -45,16 +45,20 @@ uint32_t calculate_block_crc32( uint32_t ulCount, uint8_t *ucBuffer ) {
 
 
 /// @brief Parse Received Data
-/// @param buffer - Number of bytes in the data block
+/// @param gps_buffer - Number of bytes in the data block
 /// @return 0 if successful, >0 if an error occurred
-void ParseGpsData(const char* buffer) {
-    if (buffer[0] != '#') {
+void parse_gps_data(const char* gps_buffer) {
+    
+    //Check if it starts with #, if not return error
+    if (gps_buffer[0] != '#') {
         // Not a valid GPS message
         return;
     }
 
-    // Find the semicolon that marks the end of the header
-    char* header_end = strchr(buffer, ';');
+    // Find the next comma to denote the end of the function name. 
+    // Probably loop through the implemented functions names to see if its valid.
+    // Otherwise return an error.
+    char* header_end = strchr(gps_buffer, ';');
     if (!header_end) {
         // No header found
         return;
@@ -62,8 +66,8 @@ void ParseGpsData(const char* buffer) {
 
     // Parse the header
     char header[BUFFER_SIZE];
-    strncpy(header, buffer + 1, header_end - buffer - 1); // Skip the '#'
-    header[header_end - buffer - 1] = '\0';
+    strncpy(header, gps_buffer + 1, header_end - gps_buffer - 1); // Skip the '#'
+    header[header_end - gps_buffer - 1] = '\0';
 
     // Tokenize the header to extract fields
     char* token = strtok(header, ",");
