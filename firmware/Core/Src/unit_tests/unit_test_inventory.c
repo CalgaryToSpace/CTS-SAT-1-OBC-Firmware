@@ -54,231 +54,231 @@ const TEST_Definition_t TEST_definitions[] = {
     // ****************** SECTION: test_adcs ******************
     
     {
-		.test_func = TEST_EXEC__ADCS_Pack_to_Ack,
+		.test_func = TEST_EXEC__ADCS_Pack_to_Ack_Struct,
 		.test_file = "unit_tests/test_adcs",
-		.test_func_name = "ADCS_Pack_to_Ack"
+		.test_func_name = "ADCS_Pack_to_Ack_Struct"
 	},
 
     {
-		.test_func = TEST_EXEC__ADCS_Pack_to_Identification,
+		.test_func = TEST_EXEC__ADCS_Pack_to_Identification_Struct,
 		.test_file = "unit_tests/test_adcs",
-		.test_func_name = "ADCS_Pack_to_Identification"
+		.test_func_name = "ADCS_Pack_to_Identification_Struct"
 	},
 
     {
-		.test_func = TEST_EXEC__ADCS_Pack_to_Program_Status,
+		.test_func = TEST_EXEC__ADCS_Pack_to_Program_Status_Struct,
 		.test_file = "unit_tests/test_adcs",
-		.test_func_name = "ADCS_Pack_to_Program_Status"
+		.test_func_name = "ADCS_Pack_to_Program_Status_Struct"
 	},
 
     {
-		.test_func = TEST_EXEC__ADCS_Pack_to_Comms_Status,
+		.test_func = TEST_EXEC__ADCS_Pack_to_Comms_Status_Struct,
 		.test_file = "unit_tests/test_adcs",
-		.test_func_name = "ADCS_Pack_to_Comms_Status"
+		.test_func_name = "ADCS_Pack_to_Comms_Status_Struct"
 	},
 
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Power_Control,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Power_Control_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Power_Control"
+        .test_func_name = "ADCS_Pack_to_Power_Control_Struct"
     },
 
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Angular_Rates,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Angular_Rates_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Angular_Rates"
+        .test_func_name = "ADCS_Pack_to_Angular_Rates_Struct"
     },
 
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_LLH_Position,
+        .test_func = TEST_EXEC__ADCS_Pack_to_LLH_Position_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_LLH_Position"
+        .test_func_name = "ADCS_Pack_to_LLH_Position_Struct"
     },
 
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Unix_Time_Save_Mode,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Unix_Time_Save_Mode_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Unix_Time_Save_Mode"
+        .test_func_name = "ADCS_Pack_to_Unix_Time_Save_Mode_Struct"
     },
 
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Orbit_Params,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Orbit_Params_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Orbit_Params"
+        .test_func_name = "ADCS_Pack_to_Orbit_Params_Struct"
     },
 
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Rated_Sensor_Rates,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Rated_Sensor_Rates_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Rated_Sensor_Rates"
+        .test_func_name = "ADCS_Pack_to_Rated_Sensor_Rates_Struct"
     },
 
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Wheel_Speed,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Wheel_Speed_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Wheel_Speed"
+        .test_func_name = "ADCS_Pack_to_Wheel_Speed_Struct"
     },
 
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Magnetorquer_Command,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Magnetorquer_Command_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Magnetorquer_Command"
+        .test_func_name = "ADCS_Pack_to_Magnetorquer_Command_Struct"
     },
 
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Raw_Magnetometer_Values,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Raw_Magnetometer_Values_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Raw_Magnetometer_Values"
+        .test_func_name = "ADCS_Pack_to_Raw_Magnetometer_Values_Struct"
     },
 
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Fine_Angular_Rates,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Fine_Angular_Rates_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Fine_Angular_Rates"
+        .test_func_name = "ADCS_Pack_to_Fine_Angular_Rates_Struct"
     },
 
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Magnetometer_Config,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Magnetometer_Config_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Magnetometer_Config"
+        .test_func_name = "ADCS_Pack_to_Magnetometer_Config_Struct"
     },
 
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Commanded_Attitude_Angles,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Commanded_Attitude_Angles_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Commanded_Attitude_Angles"
+        .test_func_name = "ADCS_Pack_to_Commanded_Attitude_Angles_Struct"
     },
 
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Estimation_Params,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Estimation_Params_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Estimation_Params"
+        .test_func_name = "ADCS_Pack_to_Estimation_Params_Struct"
     },
 
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_ASGP4_Params,
+        .test_func = TEST_EXEC__ADCS_Pack_to_ASGP4_Params_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_ASGP4_Params"
+        .test_func_name = "ADCS_Pack_to_ASGP4_Params_Struct"
     },
 
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Tracking_Controller_Target_Reference,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Tracking_Controller_Target_Reference_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Tracking_Controller_Target_Reference"
+        .test_func_name = "ADCS_Pack_to_Tracking_Controller_Target_Reference_Struct"
     },
 
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Rate_Gyro_Config,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Rate_Gyro_Config_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Rate_Gyro_Config"
+        .test_func_name = "ADCS_Pack_to_Rate_Gyro_Config_Struct"
     },
 
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Estimated_Attitude_Angles,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Estimated_Attitude_Angles_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Estimated_Attitude_Angles"
+        .test_func_name = "ADCS_Pack_to_Estimated_Attitude_Angles_Struct"
     },
     
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Magnetic_Field_Vector,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Magnetic_Field_Vector_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Magnetic_Field_Vector"
+        .test_func_name = "ADCS_Pack_to_Magnetic_Field_Vector_Struct"
     },
     
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Fine_Sun_Vector,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Fine_Sun_Vector_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Fine_Sun_Vector"
+        .test_func_name = "ADCS_Pack_to_Fine_Sun_Vector_Struct"
     },
     
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Nadir_Vector,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Nadir_Vector_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Nadir_Vector"
+        .test_func_name = "ADCS_Pack_to_Nadir_Vector_Struct"
     },
     
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Commanded_Wheel_Speed,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Commanded_Wheel_Speed_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Commanded_Wheel_Speed"
+        .test_func_name = "ADCS_Pack_to_Commanded_Wheel_Speed_Struct"
     },
     
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_IGRF_Magnetic_Field_Vector,
+        .test_func = TEST_EXEC__ADCS_Pack_to_IGRF_Magnetic_Field_Vector_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_IGRF_Magnetic_Field_Vector"
+        .test_func_name = "ADCS_Pack_to_IGRF_Magnetic_Field_Vector_Struct"
     },
     
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Quaternion_Error_Vector,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Quaternion_Error_Vector_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Quaternion_Error_Vector"
+        .test_func_name = "ADCS_Pack_to_Quaternion_Error_Vector_Struct"
     },
     
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Estimated_Gyro_Bias,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Estimated_Gyro_Bias_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Estimated_Gyro_Bias"
+        .test_func_name = "ADCS_Pack_to_Estimated_Gyro_Bias_Struct"
     },
     
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Estimation_Innovation_Vector,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Estimation_Innovation_Vector_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Estimation_Innovation_Vector"
+        .test_func_name = "ADCS_Pack_to_Estimation_Innovation_Vector_Struct"
     },
     
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Raw_Cam1_Sensor,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Raw_Cam1_Sensor_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Raw_Cam1_Sensor"
+        .test_func_name = "ADCS_Pack_to_Raw_Cam1_Sensor_Struct"
     },
     
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Raw_Cam2_Sensor,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Raw_Cam2_Sensor_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Raw_Cam2_Sensor"
+        .test_func_name = "ADCS_Pack_to_Raw_Cam2_Sensor_Struct"
     },
 
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Raw_CSS_1_to_6,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Raw_CSS_1_to_6_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Raw_CSS_1_to_6"
+        .test_func_name = "ADCS_Pack_to_Raw_CSS_1_to_6_Struct"
     },
 
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Raw_CSS_7_to_10,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Raw_CSS_7_to_10_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Raw_CSS_7_to_10"
+        .test_func_name = "ADCS_Pack_to_Raw_CSS_7_to_10_Struct"
     },
 
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_CubeControl_Current,
+        .test_func = TEST_EXEC__ADCS_Pack_to_CubeControl_Current_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_CubeControl_Current"
+        .test_func_name = "ADCS_Pack_to_CubeControl_Current_Struct"
     },
 
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Raw_GPS_Status,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Raw_GPS_Status_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Raw_GPS_Status"
+        .test_func_name = "ADCS_Pack_to_Raw_GPS_Status_Struct"
     },
 
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Raw_GPS_Time,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Raw_GPS_Time_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Raw_GPS_Time"
+        .test_func_name = "ADCS_Pack_to_Raw_GPS_Time_Struct"
     },
 
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Raw_GPS,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Raw_GPS_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Raw_GPS"
+        .test_func_name = "ADCS_Pack_to_Raw_GPS_Struct"
     },
 
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Measurements,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Measurements_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Measurements"
+        .test_func_name = "ADCS_Pack_to_Measurements_Struct"
     },
 
     // ****************** END SECTION: test_adcs ******************

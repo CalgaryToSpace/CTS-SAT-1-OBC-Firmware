@@ -119,7 +119,7 @@ uint8_t ADCS_send_I2C_telemetry_request(uint8_t id, uint8_t* data, uint32_t data
 	computed by the CubeACP and can be used by the interfacing OBC to validate the message.*/
 	uint8_t adcs_tlm_status;
 
-	//Allocate only required memory
+	// Allocate only required memory
 	uint8_t temp_data[data_length + include_checksum];
 		// temp data used for checksum checking
 
@@ -152,46 +152,46 @@ uint8_t ADCS_send_UART_telecommand(UART_HandleTypeDef *huart, uint8_t id, uint8_
 	// The defines in adcs_types.h already include the 7th bit of the ID to distinguish TLM and TC
 	// data bytes can be up to a maximum of 8 bytes; data_length ranges from 0 to 8
 
-	//Check id to identify if it's Telecommand or Telemetry Request
+	// Check id to identify if it's Telecommand or Telemetry Request
 	uint8_t telemetry_request = id & 128; // 1 = TLM, 0 = TC
 
-	//Allocate only required memory by checking first bit of ID
+	// Allocate only required memory by checking first bit of ID
 	uint8_t buf[5 + (!telemetry_request)*data_length];
 
-	//Fill buffer with ESC, SOM and ID
+	// Fill buffer with ESC, SOM and ID
 	buf[0] = ADCS_UART_ESCAPE_BYTE;
 	buf[1] = ADCS_UART_START_MESSAGE;
 	buf[2] = id;
 
 	if (telemetry_request) {
-		//If transmitting Telemetry Request
-		//Fill buffer with ESC and EOM without data_length
+		// If transmitting Telemetry Request
+		// Fill buffer with ESC and EOM without data_length
 		buf[3] = ADCS_UART_ESCAPE_BYTE;
 		buf[4] = ADCS_UART_END_MESSAGE;
 	} else {
-		//Fill buffer with Data if transmitting a Telecommand
+		// Fill buffer with Data if transmitting a Telecommand
 		for (uint8_t i = 0; i < data_length; i++) {
 			buf[i + 3] = data[i];
 		}
-		//Fill buffer with ESC and EOM
+		// Fill buffer with ESC and EOM
 		buf[3 + data_length] = ADCS_UART_ESCAPE_BYTE;
 		buf[4 + data_length] = ADCS_UART_END_MESSAGE;
 	}
 
-	//Transmit the TLM or TC via UART
+	// Transmit the TLM or TC via UART
 	HAL_UART_Transmit(huart, buf, strlen((char*)buf), HAL_MAX_DELAY);
 
-	//receiving from telecommand: data is one byte exactly
-	//receiving from telemetry request: data is up to 8 bytes
+	// receiving from telecommand: data is one byte exactly
+	// receiving from telemetry request: data is up to 8 bytes
 
-	//Allocate only required memory
+	// Allocate only required memory
 	uint8_t buf_rec[6 + (telemetry_request)*(data_length-1)];
 
-	//Start receiving acknowledgment or reply from the CubeComputer
+	// Start receiving acknowledgment or reply from the CubeComputer
 	HAL_UART_Receive(huart, buf_rec, strlen((char*)buf_rec), HAL_MAX_DELAY);
 
 	if (telemetry_request) {
-		//Ignoring ESC, EOM, SOM and storing the rest of the values in data
+		// Ignoring ESC, EOM, SOM and storing the rest of the values in data
 		for (uint8_t i = 3; i < sizeof(buf_rec)-2; i++) {
 			// put the data into the data array excluding TC ID or TLM ID
 			data[i-3] = buf_rec[i];
