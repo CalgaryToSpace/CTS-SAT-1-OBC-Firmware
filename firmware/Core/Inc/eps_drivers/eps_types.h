@@ -1,6 +1,6 @@
 
-#ifndef __INCLUDE_GUARD__EPS_TYPES_H__
-#define __INCLUDE_GUARD__EPS_TYPES_H__
+#ifndef INCLUDE_GUARD__EPS_TYPES_H__
+#define INCLUDE_GUARD__EPS_TYPES_H__
 
 #include <stdint.h>
 
@@ -171,4 +171,4 @@ typedef struct {
     uint16_t stat_ch_ext_overcurrent_fault_bitfield;
 } EPS_result_piu_housekeeping_data_eng_t;
 
-#endif /* __INCLUDE_GUARD__EPS_TYPES_H__ */
+#endif /* INCLUDE_GUARD__EPS_TYPES_H__ */

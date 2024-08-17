@@ -1,6 +1,6 @@
 
-#ifndef __INCLUDE_GUARD__EPS_STRUCT_PACKERS_H__
-#define __INCLUDE_GUARD__EPS_STRUCT_PACKERS_H__
+#ifndef INCLUDE_GUARD__EPS_STRUCT_PACKERS_H__
+#define INCLUDE_GUARD__EPS_STRUCT_PACKERS_H__
 
 #include <stdint.h>
 
@@ -15,4 +15,4 @@ void EPS_pack_eps_result_pbu_housekeeping_data_eng(const uint8_t rx_buf[], EPS_r
 void EPS_pack_eps_result_pcu_housekeeping_data_eng(const uint8_t rx_buf[], EPS_result_pcu_housekeeping_data_eng_t *result_dest);
 void EPS_pack_eps_result_piu_housekeeping_data_eng(const uint8_t rx_buf[], EPS_result_piu_housekeeping_data_eng_t *result_dest);
 
-#endif /* __INCLUDE_GUARD__EPS_STRUCT_PACKERS_H__ */
+#endif /* INCLUDE_GUARD__EPS_STRUCT_PACKERS_H__ */

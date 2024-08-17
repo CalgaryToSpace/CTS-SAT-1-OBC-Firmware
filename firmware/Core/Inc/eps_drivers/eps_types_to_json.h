@@ -1,6 +1,6 @@
 
-#ifndef __INCLUDE_GUARD__EPS_TYPES_TO_JSON_H__
-#define __INCLUDE_GUARD__EPS_TYPES_TO_JSON_H__
+#ifndef INCLUDE_GUARD__EPS_TYPES_TO_JSON_H__
+#define INCLUDE_GUARD__EPS_TYPES_TO_JSON_H__
 
 #include "eps_types.h"
 
@@ -24,4 +24,4 @@ uint8_t EPS_result_system_status_TO_json(
 );
 
 
-#endif // __INCLUDE_GUARD__EPS_TYPES_TO_JSON_H__
+#endif // INCLUDE_GUARD__EPS_TYPES_TO_JSON_H__

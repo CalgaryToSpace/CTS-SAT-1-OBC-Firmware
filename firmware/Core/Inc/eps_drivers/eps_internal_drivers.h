@@ -1,6 +1,6 @@
 
-#ifndef __INCLUDE_GUARD__EPS_INTERNAL_DRIVERS_H__
-#define __INCLUDE_GUARD__EPS_INTERNAL_DRIVERS_H__
+#ifndef INCLUDE_GUARD__EPS_INTERNAL_DRIVERS_H__
+#define INCLUDE_GUARD__EPS_INTERNAL_DRIVERS_H__
 
 #include <stdint.h>
 
@@ -40,4 +40,4 @@ uint8_t EPS_run_argumentless_cmd(uint8_t command_code);
 
 // #pragma endregion Function_Prototypes
 
-#endif /* __INCLUDE_GUARD__EPS_INTERNAL_DRIVERS_H__ */
+#endif /* INCLUDE_GUARD__EPS_INTERNAL_DRIVERS_H__ */

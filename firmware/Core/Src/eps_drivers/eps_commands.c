@@ -34,7 +34,7 @@ uint8_t EPS_CMD_no_operation() {
 	return EPS_run_argumentless_cmd(CC);
 }
 
-uint8_t EPS_CMD_cancel_oper() {
+uint8_t EPS_CMD_cancel_operation() {
 	const uint8_t CC = 0x04;
 	return EPS_run_argumentless_cmd(CC);
 }

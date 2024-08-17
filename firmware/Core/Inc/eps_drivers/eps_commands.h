@@ -1,6 +1,6 @@
 
-#ifndef __INCLUDE_GUARD__EPS_COMMANDS_H__
-#define __INCLUDE_GUARD__EPS_COMMANDS_H__
+#ifndef INCLUDE_GUARD__EPS_COMMANDS_H__
+#define INCLUDE_GUARD__EPS_COMMANDS_H__
 
 #include "eps_drivers/eps_types.h"
 
@@ -8,7 +8,7 @@
 
 uint8_t EPS_CMD_system_reset();
 uint8_t EPS_CMD_no_operation();
-uint8_t EPS_CMD_cancel_oper();
+uint8_t EPS_CMD_cancel_operation();
 uint8_t EPS_CMD_watchdog();
 uint8_t EPS_CMD_output_bus_group_on(uint16_t CH_BF, uint16_t CH_EXT_BF);
 uint8_t EPS_CMD_output_bus_group_off(uint16_t CH_BF, uint16_t CH_EXT_BF);
@@ -37,4 +37,4 @@ uint8_t EPS_CMD_get_piu_housekeeping_data_run_avg(EPS_result_piu_housekeeping_da
 uint8_t EPS_CMD_correct_time(int32_t time_correction);
 uint8_t EPS_CMD_zero_reset_cause_counters();
 
-#endif /* __INCLUDE_GUARD__EPS_COMMANDS_H__ */
+#endif /* INCLUDE_GUARD__EPS_COMMANDS_H__ */
