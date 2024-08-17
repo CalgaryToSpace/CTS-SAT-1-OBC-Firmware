@@ -12,8 +12,8 @@
 #define CSP_DEBUG_TIMESTAMP 0
 #define CSP_USE_RDP 0
 #define CSP_USE_RDP_FAST_CLOSE 0
-#define CSP_USE_CRC32 0
-#define CSP_USE_HMAC 0
+#define CSP_USE_CRC32 1
+#define CSP_USE_HMAC 1
 #define CSP_USE_XTEA 0
 #define CSP_USE_PROMISC 0
 #define CSP_USE_QOS 0
