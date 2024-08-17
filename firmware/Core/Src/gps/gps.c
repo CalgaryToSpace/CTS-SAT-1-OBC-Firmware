@@ -1,3 +1,7 @@
+#include "gps/gps.h"
+#include "gps/gps_types.h"
+#include "log/log.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
@@ -40,16 +44,37 @@ uint32_t CalculateBlockCRC32( uint32_t ulCount, uint8_t *ucBuffer ) {
     return( ulCRC );
 }
 
+/// @brief Parse the received GPS header into a struct
+/// @param data_received - The string obtained from the buffer that is to be parsed into the gps_response_header struct
+/// @param result - gps_response_header struct that is returned
+/// @return 0 if successful, >0 if an error occurred
+uint8_t parse_gps_header(const char* data_received, gps_response_header *result){
+
+    // Check if the first character is a #
+    if( data_received[0] != "#"){
+
+        // Invalid response starting string found
+        return 1;
+    }
+
+}
 
 
-void ParseGpsData(const char* buffer) {
-    if (buffer[0] != '#') {
+/// @brief Parse Received Data
+/// @param data_received - Number of bytes in the data block
+/// @return 0 if successful, >0 if an error occurred
+uint8_t parse_bestxyza_data(const char* data_received, gps_response_header *result) {
+    
+    //Check if it starts with #, if not return error
+    if (data_received[0] != '#') {
         // Not a valid GPS message
         return;
     }
 
-    // Find the semicolon that marks the end of the header
-    char* header_end = strchr(buffer, ';');
+    // Find the next comma to denote the end of the function name. 
+    // Probably loop through the implemented functions names to see if its valid.
+    // Otherwise return an error.
+    char* header_end = strchr(data_received, ';');
     if (!header_end) {
         // No header found
         return;
@@ -57,8 +82,8 @@ void ParseGpsData(const char* buffer) {
 
     // Parse the header
     char header[BUFFER_SIZE];
-    strncpy(header, buffer + 1, header_end - buffer - 1); // Skip the '#'
-    header[header_end - buffer - 1] = '\0';
+    strncpy(header, data_received + 1, header_end - data_received - 1); // Skip the '#'
+    header[header_end - data_received - 1] = '\0';
 
     // Tokenize the header to extract fields
     char* token = strtok(header, ",");
