@@ -4,6 +4,7 @@ import tempfile
 from pathlib import Path
 
 import pytest
+
 from cts1_ground_support.paths import get_repo_path, read_text_file
 
 
