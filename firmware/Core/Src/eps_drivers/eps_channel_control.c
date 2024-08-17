@@ -1,5 +1,6 @@
 #include "eps_drivers/eps_types.h"
 #include "eps_drivers/eps_channel_control.h"
+#include "eps_drivers/eps_commands.h"
 
 #include <string.h>
 
@@ -40,4 +41,23 @@ EPS_CHANNEL_enum_t EPS_channel_from_str(const char channel_name[]) {
     if (strcmp(channel_name, "boom") == 0) return EPS_CHANNEL_12V_BOOM;
     
     return EPS_CHANNEL_UNKNOWN;
+}
+
+/// @brief Sets the enabled state of an EPS channel (on or off).
+/// @param channel The channel to enable or disable.
+/// @param enabled 0 to disable, >0 to enable.
+/// @return 0 on success, >0 on failure. Returns 99 if channel is unknown. Propogates the
+///     return value from EPS_CMD_output_bus_channel_on/off().
+uint8_t EPS_set_channel_enabled(EPS_CHANNEL_enum_t channel, uint8_t enabled) {
+    if (channel == EPS_CHANNEL_UNKNOWN) {
+        return 99;
+    }
+    
+    if (enabled) {
+        return EPS_CMD_output_bus_channel_on(channel);
+    }
+    else {
+        return EPS_CMD_output_bus_channel_off(channel);
+    }
+    return 100; // Unreachable
 }

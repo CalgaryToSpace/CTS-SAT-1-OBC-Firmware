@@ -1,8 +1,10 @@
-#include <eps_drivers/eps_commands.h>
-#include <eps_drivers/eps_types.h>
-#include <eps_drivers/eps_types_to_json.h>
+#include "eps_drivers/eps_commands.h"
+#include "eps_drivers/eps_types.h"
+#include "eps_drivers/eps_types_to_json.h"
+#include "eps_drivers/eps_channel_control.h"
 
-#include <telecommands/eps_telecommands.h>
+#include "telecommands/eps_telecommands.h"
+#include "telecommands/telecommand_args_helpers.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -124,6 +126,65 @@ uint8_t TCMDEXEC_eps_switch_to_mode(
         "EPS_CMD_switch_to_%s_mode() successful.",
         args_str
     );
+    return 0;
+}
+
+/// @brief Sets the EPS channel to be enabled (on) or disabled (off).
+/// @param args_str 
+/// - Arg 0: The channel name or number (string)
+/// - Arg 1: 1 to enable (power on), 0 to disable (power off)
+/// @return 0 on success, >0 on failure
+uint8_t TCMDEXEC_eps_set_channel_enabled(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    // Extract Arg 0: The channel name/number.
+    char channel_str[30];
+    const uint8_t arg_0_result = TCMD_extract_string_arg(args_str, 0, channel_str, sizeof(channel_str));
+    if (arg_0_result != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error parsing channel arg: Error %d", arg_0_result);
+        return 1;
+    }
+
+    // Extract Arg 1: 1 to enable (power on), 0 to disable (power off)
+    uint64_t enabled_val_u64 = 42;
+    const uint8_t arg_1_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &enabled_val_u64);
+    if (arg_1_result != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error parsing enabled arg: Error %d", arg_1_result);
+        return 2;
+    }
+    if (enabled_val_u64 != 0 && enabled_val_u64 != 1) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error parsing enabled arg: Must be 0 or 1");
+        return 3;
+    }
+    
+    // Convert the channel string to an enum value.
+    const EPS_CHANNEL_enum_t eps_channel = EPS_channel_from_str(channel_str);
+    if (eps_channel == EPS_CHANNEL_UNKNOWN) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Unknown channel: %s", channel_str);
+        return 4;
+    }
+
+
+    const uint8_t eps_result = EPS_set_channel_enabled(eps_channel, (uint8_t)enabled_val_u64);
+
+    if (eps_result != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "EPS set channel enabled failed (err %d)", eps_result);
+        return 5;
+    }
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "EPS set channel enabled successful.");
     return 0;
 }
 
