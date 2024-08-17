@@ -229,12 +229,16 @@ typedef struct {
            csp_buffer_init(), and can later be accessed by csp_buffer_data_size()
         */
 	union {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+
 		/** Access data as uint8_t. */
 		uint8_t data[0];
 		/** Access data as uint16_t */
 		uint16_t data16[0];
 		/** Access data as uint32_t */
 		uint32_t data32[0];
+#pragma GCC diagnostic pop
 	};
 } csp_packet_t;
 //doc-end:csp_packet_t
