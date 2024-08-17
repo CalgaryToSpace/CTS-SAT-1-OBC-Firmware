@@ -45,7 +45,7 @@ rm -rf $DEST_GIT_REPO_ROOT/firmware/Core/Src/csp
 # First, store the current working directory so we can `cd` back after running waf.
 pushd $SRC_LIBCSP_CLONE_PATH
 git fetch -a
-git checkout v1.6 # We are using the v1.6 tag of libcsp.
+git checkout libcsp-cts-sat-1 # We are using the `libcsp-cts-sat-1` branch of https://github.com/CalgaryToSpace/libcsp repo.
 echo "============= Running waf configure in $SRC_LIBCSP_CLONE_PATH ============="
 $SRC_LIBCSP_CLONE_PATH/waf configure --with-os=freertos --disable-stlib --with-rtable=static
 echo "============= Finished running waf configure ============="
