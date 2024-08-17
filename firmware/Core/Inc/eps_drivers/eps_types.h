@@ -25,12 +25,6 @@ typedef enum {
 	EPS_CHANNEL_28V6_CH16_UNUSED        = 16, // CH16
 } EPS_CHANNEL_enum_t;
 
-// "Complex Datatype: VIPD" (raw)
-typedef struct {
-	int16_t voltage_raw;
-	int16_t current_raw;
-	int16_t power_raw;
-} EPS_vpid_raw_t;
 
 // "Complex Datatype: VIPD" (eng)
 typedef struct {
@@ -38,14 +32,6 @@ typedef struct {
 	int16_t current_mA;
 	int16_t power_cW; // centiWatts (x 10^-2 watts)
 } EPS_vpid_eng_t;
-
-// "Complex Datatype: BPD" (raw)
-typedef struct {
-	EPS_vpid_raw_t vip_bp_input_raw;
-	uint16_t bp_status_bitfield; // See Table 3-18 for bitfield definitions
-	uint16_t cell_voltage_each_cell_raw[4];
-    uint16_t battery_temperature_each_sensor_raw[3];
-} EPS_battery_pack_datatype_raw_t;
 
 // "Complex Datatype: BPD (Battery Pack Datatype)" (eng)
 typedef struct {
@@ -55,15 +41,6 @@ typedef struct {
     int16_t battery_temperature_each_sensor_cC[3]; // centiCelsius = 1e-2 degrees C
 } EPS_battery_pack_datatype_eng_t;
 
-// "Complex Datatype: CCD (Conditioning Channel Datatype)" (raw)
-// The conditioning channel refers to the MPPT system.
-typedef struct {
-	EPS_vpid_raw_t vip_cc_output_raw;
-    uint16_t volt_in_mppt_raw;
-    uint16_t curr_in_mppt_raw;
-    uint16_t volt_ou_mppt_raw;
-    uint16_t curr_ou_mppt_raw;
-} EPS_conditioning_channel_datatype_raw_t;
 
 // "Complex Datatype: CCD (Conditioning Channel Datatype)" (eng)
 // The conditioning channel refers to the MPPT system.
@@ -74,15 +51,6 @@ typedef struct {
     int16_t volt_ou_mppt_mV;
     int16_t curr_ou_mppt_mA;
 } EPS_conditioning_channel_datatype_eng_t;
-
-// "Complex Datatype: CCSD (Conditioning Channel Short Datatype)" (raw)
-// The conditioning channel refers to the MPPT system.
-typedef struct {
-    uint16_t volt_in_mppt_raw;
-    uint16_t curr_in_mppt_raw;
-    uint16_t volt_ou_mppt_raw;
-    uint16_t curr_ou_mppt_raw;
-} EPS_conditioning_channel_short_datatype_raw_t;
 
 // "Complex Datatype: CCSD (Conditioning Channel Short Datatype)" (eng)
 // The conditioning channel refers to the MPPT system.
@@ -135,23 +103,6 @@ typedef struct {
 	EPS_ABF_PIN_PLACED_enum_t abf_placed_1;
 }  EPS_result_pbu_abf_placed_state_t;
 
-
-// Command Response: 0x50: Get PDU (Distribution Unit) Housekeeping Data (Raw)
-typedef struct {
-	uint16_t voltage_internal_board_supply_raw;
-	uint16_t temperature_mcu_raw;
-
-	EPS_vpid_raw_t vip_total_input_raw;
-    
-    uint16_t stat_ch_on_bitfield;
-	uint16_t stat_ch_ext_on_bitfield; // channels not present on our model
-	uint16_t stat_ch_overcurrent_fault_bitfield;
-	uint16_t stat_ch_ext_overcurrent_fault_bitfield; // channels not present on our model
-
-    EPS_vpid_raw_t vip_each_voltage_domain_raw[7];
-    EPS_vpid_raw_t vip_each_channel_raw[32];
-} EPS_result_pdu_housekeeping_data_raw_t;
-
 // Command Response: 0x52: Get PDU (Distribution Unit) Housekeeping Data (Eng)
 // Command Response: 0x54: Get PDU (Distribution Unit) Housekeeping Data (Running Average, Eng)
 typedef struct {
@@ -169,16 +120,6 @@ typedef struct {
     EPS_vpid_eng_t vip_each_channel[32];
 } EPS_result_pdu_housekeeping_data_eng_t;
 
-// Command Response: 0x60: Get PBU (Battery Unit) Housekeeping Data (Raw)
-typedef struct {
-	uint16_t voltage_internal_board_supply_raw;
-	uint16_t temperature_mcu_raw;
-	EPS_vpid_raw_t vip_total_input_raw;
-    uint16_t battery_pack_status_bitfield; // Table 3-18: Battery Pack Status
-
-    EPS_battery_pack_datatype_raw_t battery_pack_info_each_pack_raw[3];
-} EPS_result_pbu_housekeeping_data_raw_t;
-
 // Command Response: 0x62: Get PBU (Battery Unit) Housekeeping Data (Eng)
 // Command Response: 0x64: Get PBU (Battery Unit) Housekeeping Data (Running Average, Eng)
 typedef struct {
@@ -190,14 +131,6 @@ typedef struct {
     EPS_battery_pack_datatype_eng_t battery_pack_info_each_pack[3];
 } EPS_result_pbu_housekeeping_data_eng_t;
 
-// Command Response: 0x70: Get PCU (Conditioning Unit) Housekeeping Data (Raw)
-typedef struct {
-	uint16_t voltage_internal_board_supply_raw;
-	uint16_t temperature_mcu_raw;
-	EPS_vpid_raw_t vip_total_input_raw;
-
-    EPS_conditioning_channel_datatype_raw_t conditioning_channel_info_each_channel_raw[4];
-} EPS_result_pcu_housekeeping_data_raw_t;
 
 // Command Response: 0x72: Get PCU (Conditioning Unit) Housekeeping Data (Eng)
 // Command Response: 0x74: Get PCU (Conditioning Unit) Housekeeping Data (Running Average, Eng)
@@ -209,31 +142,6 @@ typedef struct {
     EPS_conditioning_channel_datatype_eng_t conditioning_channel_info_each_channel[4];
 } EPS_result_pcu_housekeeping_data_eng_t;
 
-// Command Response: 0xA0: Get PDU (Distribution Unit) Housekeeping Data (Raw)
-typedef struct {
-	uint16_t voltage_internal_board_supply_raw;
-	uint16_t temperature_mcu_raw;
-
-    EPS_vpid_raw_t vip_dist_input_raw;
-    EPS_vpid_raw_t vip_batt_input_raw;
-    uint16_t stat_ch_on_bitfield;
-    uint16_t stat_ch_overcurrent_fault_bitfield;
-    uint16_t battery_status_bitfield; // Table 3-18: Battery Pack Status
-    uint16_t battery_temp2_raw;
-    uint16_t battery_temp3_raw;
-
-    uint16_t vd0_voltage_raw;
-    uint16_t vd1_voltage_raw;
-    uint16_t vd2_voltage_raw;
-
-    // Note: elements below this line are not in byte order they are received in
-
-    EPS_vpid_raw_t vip_each_channel_raw[32];
-    EPS_conditioning_channel_short_datatype_raw_t conditioning_channel_info_each_channel_raw[5];
-
-    uint16_t stat_ch_ext_on_bitfield;
-    uint16_t stat_ch_ext_overcurrent_fault_bitfield;
-} EPS_result_piu_housekeeping_data_raw_t;
 
 
 // Command Response: 0xA2: Get PDU (Distribution Unit) Housekeeping Data (Eng)

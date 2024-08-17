@@ -41,24 +41,6 @@ Note that modification are sometimes required, including:
 
 // TODO: determine how long each of these are, add to docs, add checks to each function at the start
 
-uint8_t EPS_vpid_raw_TO_json(const EPS_vpid_raw_t *data, char json_output_str[], uint16_t json_output_str_len) {
-    if (data == NULL || json_output_str == NULL || json_output_str_len < 10) {
-        return 1; // Error: Invalid input
-    }
-
-    int snprintf_ret = snprintf(
-        json_output_str, json_output_str_len,
-        "{\"voltage_raw\":%d,\"current_raw\":%d,\"power_raw\":%d}",
-        data->voltage_raw, data->current_raw, data->power_raw);
-
-    if (snprintf_ret < 0) {
-        return 2; // Error: snprintf encoding error
-    }
-    if (snprintf_ret >= json_output_str_len) {
-        return 3; // Error: string buffer too short
-    }
-    return 0; // Success
-}
 
 uint8_t EPS_vpid_eng_TO_json(const EPS_vpid_eng_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 10) {
@@ -79,38 +61,6 @@ uint8_t EPS_vpid_eng_TO_json(const EPS_vpid_eng_t *data, char json_output_str[],
     return 0; // Success
 }
 
-uint8_t EPS_battery_pack_datatype_raw_TO_json(const EPS_battery_pack_datatype_raw_t *data, char json_output_str[], uint16_t json_output_str_len) {
-    if (data == NULL || json_output_str == NULL || json_output_str_len < 10) {
-        return 1; // Error: Invalid input
-    }
-
-    char vip_bp_input_raw_json[100];
-    const uint8_t json_ret_code = EPS_vpid_raw_TO_json(&(data->vip_bp_input_raw), vip_bp_input_raw_json, 100);
-    if (json_ret_code != 0) {
-        return json_ret_code; // Error: subfunction error
-    }
-
-    int snprintf_ret = snprintf(
-        json_output_str, json_output_str_len,
-        "{\"vip_bp_input_raw\":%s,\"bp_status_bitfield\":%d,\"cell_voltage_each_cell_raw\":[%d,%d,%d,%d],\"battery_temperature_each_sensor_raw\":[%d,%d,%d]}",
-        vip_bp_input_raw_json,
-        data->bp_status_bitfield,
-        data->cell_voltage_each_cell_raw[0],
-        data->cell_voltage_each_cell_raw[1],
-        data->cell_voltage_each_cell_raw[2],
-        data->cell_voltage_each_cell_raw[3],
-        data->battery_temperature_each_sensor_raw[0],
-        data->battery_temperature_each_sensor_raw[1],
-        data->battery_temperature_each_sensor_raw[2]);
-
-    if (snprintf_ret < 0) {
-        return 2; // Error: snprintf encoding error
-    }
-    if (snprintf_ret >= json_output_str_len) {
-        return 3; // Error: string buffer too short
-    }
-    return 0; // Success
-}
 
 uint8_t EPS_battery_pack_datatype_eng_TO_json(const EPS_battery_pack_datatype_eng_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 10) {
@@ -145,34 +95,6 @@ uint8_t EPS_battery_pack_datatype_eng_TO_json(const EPS_battery_pack_datatype_en
     return 0; // Success
 }
 
-uint8_t EPS_conditioning_channel_datatype_raw_TO_json(const EPS_conditioning_channel_datatype_raw_t *data, char json_output_str[], uint16_t json_output_str_len) {
-    if (data == NULL || json_output_str == NULL || json_output_str_len < 10) {
-        return 1; // Error: Invalid input
-    }
-
-    char vip_cc_output_raw_json[100];
-    const uint8_t json_ret_code = EPS_vpid_raw_TO_json(&(data->vip_cc_output_raw), vip_cc_output_raw_json, 100);
-    if (json_ret_code != 0) {
-        return json_ret_code; // Error: subfunction error
-    }
-
-    int snprintf_ret = snprintf(
-        json_output_str, json_output_str_len,
-        "{\"vip_cc_output_raw\":%s,\"volt_in_mppt_raw\":%d,\"curr_in_mppt_raw\":%d,\"volt_ou_mppt_raw\":%d,\"curr_ou_mppt_raw\":%d}",
-        vip_cc_output_raw_json,
-        data->volt_in_mppt_raw,
-        data->curr_in_mppt_raw,
-        data->volt_ou_mppt_raw,
-        data->curr_ou_mppt_raw);
-
-    if (snprintf_ret < 0) {
-        return 2; // Error: snprintf encoding error
-    }
-    if (snprintf_ret >= json_output_str_len) {
-        return 3; // Error: string buffer too short
-    }
-    return 0; // Success
-}
 
 uint8_t EPS_conditioning_channel_datatype_eng_TO_json(const EPS_conditioning_channel_datatype_eng_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 10) {
@@ -193,28 +115,6 @@ uint8_t EPS_conditioning_channel_datatype_eng_TO_json(const EPS_conditioning_cha
         data->curr_in_mppt_mA,
         data->volt_ou_mppt_mV,
         data->curr_ou_mppt_mA);
-
-    if (snprintf_ret < 0) {
-        return 2; // Error: snprintf encoding error
-    }
-    if (snprintf_ret >= json_output_str_len) {
-        return 3; // Error: string buffer too short
-    }
-    return 0; // Success
-}
-
-uint8_t EPS_conditioning_channel_short_datatype_raw_TO_json(const EPS_conditioning_channel_short_datatype_raw_t *data, char json_output_str[], uint16_t json_output_str_len) {
-    if (data == NULL || json_output_str == NULL || json_output_str_len < 10) {
-        return 1; // Error: Invalid input
-    }
-
-    int snprintf_ret = snprintf(
-        json_output_str, json_output_str_len,
-        "{\"volt_in_mppt_raw\":%d,\"curr_in_mppt_raw\":%d,\"volt_ou_mppt_raw\":%d,\"curr_ou_mppt_raw\":%d}",
-        data->volt_in_mppt_raw,
-        data->curr_in_mppt_raw,
-        data->volt_ou_mppt_raw,
-        data->curr_ou_mppt_raw);
 
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error

@@ -228,28 +228,6 @@ uint8_t EPS_CMD_get_pbu_abf_placed_state(EPS_result_pbu_abf_placed_state_t* resu
 	return 0;
 }
 
-uint8_t EPS_CMD_get_pdu_housekeeping_data_raw(EPS_result_pdu_housekeeping_data_raw_t* result_dest) {
-	const uint8_t CC = 0x50;
-	const uint8_t cmd_len = 4;
-	const uint16_t rx_len = 258;
-
-	uint8_t cmd_buf[cmd_len];
-	uint8_t rx_buf[rx_len];
-
-	cmd_buf[0] = EPS_COMMAND_STID;
-	cmd_buf[1] = EPS_COMMAND_IVID;
-	cmd_buf[2] = CC;
-	cmd_buf[3] = EPS_COMMAND_BID;
-
-	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
-	if (comms_err != 0) {
-		return comms_err;
-	}
-
-	EPS_pack_eps_result_pdu_housekeeping_data_raw(rx_buf, result_dest);
-	return 0;
-}
-
 uint8_t EPS_CMD_get_pdu_housekeeping_data_eng(EPS_result_pdu_housekeeping_data_eng_t* result_dest) {
 	const uint8_t CC = 0x52;
 	const uint8_t cmd_len = 4;
@@ -294,28 +272,6 @@ uint8_t EPS_CMD_get_pdu_housekeeping_data_run_avg(EPS_result_pdu_housekeeping_da
 	return 0;
 }
 
-uint8_t EPS_CMD_get_pbu_housekeeping_data_raw(EPS_result_pbu_housekeeping_data_raw_t* result_dest) {
-	const uint8_t CC = 0x60;
-	const uint8_t cmd_len = 4;
-	const uint8_t rx_len = 84;
-
-	uint8_t cmd_buf[cmd_len];
-	uint8_t rx_buf[rx_len];
-
-	cmd_buf[0] = EPS_COMMAND_STID;
-	cmd_buf[1] = EPS_COMMAND_IVID;
-	cmd_buf[2] = CC;
-	cmd_buf[3] = EPS_COMMAND_BID;
-
-	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
-	if (comms_err != 0) {
-		return comms_err;
-	}
-
-	EPS_pack_eps_result_pbu_housekeeping_data_raw(rx_buf, result_dest);
-	return 0;
-}
-
 uint8_t EPS_CMD_get_pbu_housekeeping_data_eng(EPS_result_pbu_housekeeping_data_eng_t* result_dest) {
 	const uint8_t CC = 0x62;
 	const uint8_t cmd_len = 4;
@@ -357,28 +313,6 @@ uint8_t EPS_CMD_get_pbu_housekeeping_data_run_avg(EPS_result_pbu_housekeeping_da
 	}
 	
 	EPS_pack_eps_result_pbu_housekeeping_data_eng(rx_buf, result_dest);
-	return 0;
-}
-
-uint8_t EPS_CMD_get_pcu_housekeeping_data_raw(EPS_result_pcu_housekeeping_data_raw_t* result_dest) {
-	const uint8_t CC = 0x70;
-	const uint8_t cmd_len = 4;
-	const uint8_t rx_len = 72;
-
-	uint8_t cmd_buf[cmd_len];
-	uint8_t rx_buf[rx_len];
-
-	cmd_buf[0] = EPS_COMMAND_STID;
-	cmd_buf[1] = EPS_COMMAND_IVID;
-	cmd_buf[2] = CC;
-	cmd_buf[3] = EPS_COMMAND_BID;
-
-	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
-	if (comms_err != 0) {
-		return comms_err;
-	}
-
-	EPS_pack_eps_result_pcu_housekeeping_data_raw(rx_buf, result_dest);
 	return 0;
 }
 
@@ -578,28 +512,6 @@ uint8_t EPS_CMD_save_configuration() {
 
 	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	return comms_err;
-}
-
-uint8_t EPS_CMD_get_piu_housekeeping_data_raw(EPS_result_piu_housekeeping_data_raw_t* result_dest) {
-	const uint8_t CC = 0xA0;
-	const uint8_t cmd_len = 4;
-	const uint16_t rx_len = 274;
-
-	uint8_t cmd_buf[cmd_len];
-	uint8_t rx_buf[rx_len];
-
-	cmd_buf[0] = EPS_COMMAND_STID;
-	cmd_buf[1] = EPS_COMMAND_IVID;
-	cmd_buf[2] = CC;
-	cmd_buf[3] = EPS_COMMAND_BID;
-
-	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
-	if (comms_err != 0) {
-		return comms_err;
-	}
-
-	EPS_pack_eps_result_piu_housekeeping_data_raw(rx_buf, result_dest);
-	return 0;
 }
 
 uint8_t EPS_CMD_get_piu_housekeeping_data_eng(EPS_result_piu_housekeeping_data_eng_t* result_dest) {
