@@ -1,8 +1,11 @@
 #include "unit_tests/unit_test_gps.h"
+#include "gps/gps.h"
 #include "gps/gps_types.h"
 
-uint8_t TEST_EXEC__GPS_Pack_to_header(){
-    char gps_data[] = "#BESTXYZA,COM1,0,55.0,FINESTEERING,1419,340033.000,02000040,d821,2724;"
+#include <string.h>
+
+uint8_t TEST_EXEC__GPS_Parse_header(){
+    char gps_data[280] = "#BESTXYZA,COM1,0,55.0,FINESTEERING,1419,340033.000,02000040,d821,2724;"
                   "SOL_COMPUTED,NARROW_INT,-1634531.5683,-3664618.0326,4942496.3270,0.0099,"
                   "0.0219,0.0115,SOL_COMPUTED,NARROW_INT,0.0011,-0.0049,-0.0001,0.0199,0.0439,"
                   "0.0230,\"AAAA\",0.250,1.000,0.000,12,11,11,11,0,01,0,33*e9eafeca";
@@ -10,24 +13,25 @@ uint8_t TEST_EXEC__GPS_Pack_to_header(){
     gps_response_header result;
 
     // Call header parser function
+    uint8_t parse_status = parse_gps_header(gps_data, &result);
 
-    TEST_ASSERT_TRUE(result.log_name == "BESTXYZA");
-    TEST_ASSERT_TRUE(result.port == "COM1");
+    TEST_ASSERT_TRUE(parse_status == 0);
+    TEST_ASSERT_TRUE(strcmp(result.log_name, "BESTXYZA") == 0);
+    TEST_ASSERT_TRUE(strcmp(result.port, "COM1") == 0);
     TEST_ASSERT_TRUE(result.sequence_no == 0);
     TEST_ASSERT_TRUE(result.idle_time == 55.0);
-    // TEST_ASSERT_TRUE(result.time_status == "FINESTEERING");
+    TEST_ASSERT_TRUE(strcmp(result.time_status.gps_reference_time_status_ascii, "FINESTEERING") == 0);
     TEST_ASSERT_TRUE(result.week == 1419);
     TEST_ASSERT_TRUE(result.seconds == 340033.000);
-    TEST_ASSERT_TRUE(result.rx_status == 02000040);
+    TEST_ASSERT_TRUE(result.rx_status == 0x02000040);
     TEST_ASSERT_TRUE(result.reserved == 0xd821);
     TEST_ASSERT_TRUE(result.rx_sw_version == 2724);
-
     return 0;
 };
 
 
-uint8_t TEST_EXEC__GPS_Pack_to_bestxyza(){
-    char gps_data[] = "#BESTXYZA,COM1,0,55.0,FINESTEERING,1419,340033.000,02000040,d821,2724;"
+uint8_t TEST_EXEC__GPS_Parse_bestxyza(){
+    char gps_data[280] = "#BESTXYZA,COM1,0,55.0,FINESTEERING,1419,340033.000,02000040,d821,2724;"
                   "SOL_COMPUTED,NARROW_INT,-1634531.5683,-3664618.0326,-3664618.0326,0.0099,"
                   "0.0219,0.0115,SOL_COMPUTED,NARROW_INT,0.0011,-0.0049,-0.0001,0.0199,0.0439,"
                   "0.0230,\"AAAA\",0.250,1.000,0.000,12,11,11,11,0,01,0,33*e9eafeca";
@@ -36,8 +40,8 @@ uint8_t TEST_EXEC__GPS_Pack_to_bestxyza(){
 
     // Call bestxyza parser
 
-    TEST_ASSERT_TRUE(result.position_solution_status == "SOL_COMPUTED");
-    TEST_ASSERT_TRUE(result.position_type == "NARROW_INT");
+    TEST_ASSERT_TRUE(result.position_solution_status.gps_solution_status_ascii == "SOL_COMPUTED");
+    TEST_ASSERT_TRUE(result.position_type.gps_type_ascii == "NARROW_INT");
 
     TEST_ASSERT_TRUE(result.position_x_m == -1634531.5683);
     TEST_ASSERT_TRUE(result.position_y_m == -3664618.0326);
@@ -47,8 +51,8 @@ uint8_t TEST_EXEC__GPS_Pack_to_bestxyza(){
     TEST_ASSERT_TRUE(result.position_y_std_m == 0.0219);
     TEST_ASSERT_TRUE(result.position_z_std_m == 0.0115);
 
-    TEST_ASSERT_TRUE(result.velocity_solution_status == "SOL_COMPUTED");
-    TEST_ASSERT_TRUE(result.velocity_type == "NARROW_INT");
+    TEST_ASSERT_TRUE(result.velocity_solution_status.gps_solution_status_ascii == "SOL_COMPUTED");
+    TEST_ASSERT_TRUE(result.velocity_type.gps_type_ascii == "NARROW_INT");
 
     TEST_ASSERT_TRUE(result.velocity_x_m_per_s == 0.0011);
     TEST_ASSERT_TRUE(result.velocity_y_m_per_s == -0.0049);
