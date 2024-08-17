@@ -1,7 +1,8 @@
 """Check that the telecommand definitions are good."""
 
-from cts1_ground_support.telecommand_array_parser import parse_telecommand_list_from_repo
 from loguru import logger
+
+from cts1_ground_support.telecommand_array_parser import parse_telecommand_list_from_repo
 
 
 def check_tcmd_struct_fields() -> None:

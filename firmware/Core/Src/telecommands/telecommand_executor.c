@@ -5,8 +5,14 @@
 #include "telecommands/telecommand_types.h"
 #include "debug_tools/debug_uart.h"
 #include "timekeeping/timekeeping.h"
+#include "log/log.h"
+#include "transforms/arrays.h"
 
+#include <stdio.h>
 #include <stdint.h>
+#include <string.h>
+#include <stdbool.h>
+
 
 /// @brief  The agenda (schedule queue) of telecommands to execute.
 TCMD_parsed_tcmd_to_execute_t TCMD_agenda[TCMD_AGENDA_SIZE];
@@ -15,6 +21,18 @@ TCMD_parsed_tcmd_to_execute_t TCMD_agenda[TCMD_AGENDA_SIZE];
 /// @brief  A flag indicating whether a given index in `TCMD_agenda` is valid
 ///         (i.e., filled with a not-yet-executed command).
 uint8_t TCMD_agenda_is_valid[TCMD_AGENDA_SIZE] = {0};
+
+/// @brief Converts a TCMD_TelecommandChannel_enum_t to a string representation.
+/// @param channel Input TCMD_TelecommandChannel_enum_t
+/// @return A pointer to a C-string representing the TCMD_TelecommandChannel_enum_t.
+const char* telecommand_channel_enum_to_str(TCMD_TelecommandChannel_enum_t channel) {
+    switch (channel) {
+        case TCMD_TelecommandChannel_DEBUG_UART     :return "DEBUG_UART";
+        case TCMD_TelecommandChannel_RADIO1         :return "RADIO1";
+        default                                     :return "UNKNOWN_CHANNEL";
+    }
+}
+
 
 
 /// @brief Adds a telecommand to the agenda (schedule/queue) of telecommands to execute.
@@ -117,9 +135,10 @@ uint8_t TCMD_execute_parsed_telecommand_now(const uint16_t tcmd_idx, const char 
     }
     TCMD_TelecommandDefinition_t tcmd_def = TCMD_telecommand_definitions[tcmd_idx];
 
-    DEBUG_uart_print_str("======== Executing telecommand '");
+    DEBUG_uart_print_str("=========================");
+    DEBUG_uart_print_str(" Executing telecommand '");
     DEBUG_uart_print_str(tcmd_def.tcmd_name);
-    DEBUG_uart_print_str("' ========\n");
+    DEBUG_uart_print_str("'=========================\n");
 
     // Handle the telecommand by calling the appropriate function.
     // Null-terminate the args string.
@@ -133,16 +152,17 @@ uint8_t TCMD_execute_parsed_telecommand_now(const uint16_t tcmd_idx, const char 
     const uint32_t tcmd_exec_duration_ms = uptime_after_tcmd_exec_ms - uptime_before_tcmd_exec_ms;
 
     // Print back the response.
-    DEBUG_uart_print_str("======== Response (duration=");
+    DEBUG_uart_print_str("=========================");
+    DEBUG_uart_print_str(" Response (duration=");
     DEBUG_uart_print_int32(tcmd_exec_duration_ms);
     DEBUG_uart_print_str("ms, err=");
     DEBUG_uart_print_uint32(tcmd_result);
     if (tcmd_result != 0) {
         DEBUG_uart_print_str(" !!!!!! ERROR !!!!!!");
     }
-    DEBUG_uart_print_str(") ========\n");
+    DEBUG_uart_print_str(") =========================\n");
     DEBUG_uart_print_str(response_output_buf);
-    DEBUG_uart_print_str("\n==========================\n");
+    DEBUG_uart_print_str("\n===========================================================================\n");
 
     return tcmd_result;
 }
@@ -164,6 +184,18 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
     // Do it now, in case the execution does Undefined Behaviour (but could also do it after the call just fine).
     TCMD_agenda_is_valid[tcmd_agenda_slot_num] = 0;
 
+    char tssent_str[32];
+    GEN_uint64_to_str(TCMD_agenda[tcmd_agenda_slot_num].timestamp_sent, tssent_str);
+    char tsexec_str[32];
+    GEN_uint64_to_str(TCMD_agenda[tcmd_agenda_slot_num].timestamp_to_execute, tsexec_str);
+    LOG_message(
+        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "Executing telecommand from agenda slot %d, sent at tssent=%s, scheduled for tsexec=%s.",
+        tcmd_agenda_slot_num,
+        tsexec_str,
+        tssent_str
+    );
+
     // Execute the telecommand.
     return TCMD_execute_parsed_telecommand_now(
         TCMD_agenda[tcmd_agenda_slot_num].tcmd_idx,
@@ -172,4 +204,175 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
         response_output_buf,
         response_output_buf_size
     );
+}
+
+/// @brief Deletes all entries from the agenda.
+/// @return Cannot fail, so no return value.
+void TCMD_agenda_delete_all() {
+    uint16_t num_deleted = 0;
+    for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
+        if (TCMD_agenda_is_valid[slot_num]) {
+            TCMD_agenda_is_valid[slot_num] = 0;
+            num_deleted++;
+        }
+    }
+    LOG_message(
+        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "TCMD_agenda_delete_all: Deleted all %d entries from the agenda.",
+        num_deleted
+    );
+}
+
+/// @brief Deletes a telecommand from the agenda by its `tssent` (timestamp sent) field.
+/// @param tssent The `timestamp_sent` value of the telecommand to delete.
+/// @return 0 on success, 1 if the telecommand was not found.
+/// @note Calls `LOG_message()` to log the deletion before all returns.
+uint8_t TCMD_agenda_delete_by_tssent(uint64_t tssent) {
+    char tssent_str[32];
+    GEN_uint64_to_str(tssent, tssent_str);
+
+    // Loop through the agenda and check for valid agendas and if the timestamp matches
+    for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
+        if (TCMD_agenda_is_valid[slot_num] && TCMD_agenda[slot_num].timestamp_sent == tssent) {
+
+            // Set agenda as invalid
+            TCMD_agenda_is_valid[slot_num] = 0;
+            LOG_message(
+                LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                "TCMD_agenda_delete_by_tssent: Telecommand with tssent=%s (%s) deleted from agenda.",
+                tssent_str,
+                TCMD_telecommand_definitions[TCMD_agenda[slot_num].tcmd_idx].tcmd_name
+            );
+            return 0;
+        }
+    }
+    
+    // If agenda is not found with timestamp return 1
+    LOG_message(
+        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "TCMD_agenda_delete_by_tssent: Telecommand with tssent=%s not found in agenda.",
+        tssent_str
+    );
+    return 1;
+}
+
+/// @brief Fetches the active agendas.
+/// @return 0 on success, 1 if there are no active agendas.
+uint8_t TCMD_agenda_fetch(){
+    uint16_t active_agendas = 0;
+    uint16_t logged_agendas = 0;
+    
+    // Count the number of active agendas
+    for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
+        if (TCMD_agenda_is_valid[slot_num]) {
+            active_agendas++;
+            }
+    }
+
+    // if no active agendas, return 1
+    if(active_agendas == 0){
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "TCMD_agenda_fetch: No entries in the agenda."
+        );
+        return 1;
+    }
+
+    // Output the number of active agendas
+    LOG_message(
+        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "TCMD_agenda_fetch: Active agendas: %u",
+        active_agendas
+    );
+
+    // List all active agendas in JSONL format
+    for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
+        if (TCMD_agenda_is_valid[slot_num]) {
+
+            // Convert uint64_t to a string
+            char tssent_str[32];
+            GEN_uint64_to_str(TCMD_agenda[slot_num].timestamp_sent, tssent_str);
+            char tsexec_str[32];
+            GEN_uint64_to_str(TCMD_agenda[slot_num].timestamp_to_execute, tsexec_str);
+
+            LOG_message(
+                LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, 
+                "{\"slot_num\":\"%u\",\"telecommand_channel\":\"%s\",\"timestamp_sent\":%s,\"timestamp_to_execute\":%s}\n",
+                slot_num,
+                telecommand_channel_enum_to_str(TCMD_agenda[slot_num].tcmd_channel),
+                tssent_str,
+                tsexec_str
+            );
+        }
+
+        logged_agendas++;
+
+        // Early-exit optimization: Break the loop once all active agendas have been logged
+        if (logged_agendas >= active_agendas) {
+            break;
+        }
+    }
+
+    return 0;
+}
+
+
+/// @brief Deletes all agenda entries with a telecommand name.
+/// @param telecommand_name The name of the telecommand in the agenda to delete. (e.g, hello_world)
+/// @return 0 on success, > 0 on error.
+/// @note Calls `LOG_message()` before all returns.
+uint8_t TCMD_agenda_delete_by_name(const char *telecommand_name) {
+
+    // Get count of active agendas
+    const uint8_t active_agendas = TCMD_get_agenda_used_slots_count();
+
+    if(active_agendas == 0){
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "TCMD_agenda_delete_by_telecommand_name: No active telecommands in the agenda."
+        );
+        return 1;
+    }
+
+    // Loop through the telecommand definitions and check if the passed function name is valid
+    bool is_valid_telecommand_name = false;
+    for (uint16_t idx = 0; idx < TCMD_NUM_TELECOMMANDS; idx++) {
+        if (strcmp(TCMD_telecommand_definitions[idx].tcmd_name,telecommand_name) == 0) {
+            is_valid_telecommand_name = true;
+            break;
+        }
+    }
+
+    if(!is_valid_telecommand_name){
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "TCMD_agenda_delete_by_telecommand_name: Invalid telecommand name passed in the function."
+        );
+        return 2;
+    }
+
+    // Loop through the agenda and check for valid agendas
+    for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
+        if (TCMD_agenda_is_valid[slot_num] ) {
+
+            // Grab the index of the telecommand in the `TCMD_telecommand_definitions` array
+            const uint8_t telecommand_index = TCMD_agenda[slot_num].tcmd_idx;
+
+            // Perform a string comparision
+            if(strcmp(TCMD_telecommand_definitions[telecommand_index].tcmd_name,telecommand_name) == 0){
+                
+                // Set agenda as invalid
+                TCMD_agenda_is_valid[slot_num] = 0;
+            }
+        }
+    }
+    
+    LOG_message(
+        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "TCMD_agenda_delete_by_telecommand_name: Removed %d telecommands with the name = (%s) from agenda.",
+        active_agendas,
+        telecommand_name
+    );
+
+    return 0;
 }

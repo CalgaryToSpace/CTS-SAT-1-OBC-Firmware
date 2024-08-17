@@ -12,4 +12,6 @@ uint8_t TEST_EXEC__TCMD_get_suffix_tag_uint64();
 
 uint8_t TEST_EXEC__TCMD_ascii_to_double();
 
+uint8_t TEST_EXEC_TCMD_parse_full_telecommand();
+
 #endif // __INCLUDE_GUARD__TEST_COMMAND_PARSER_H__

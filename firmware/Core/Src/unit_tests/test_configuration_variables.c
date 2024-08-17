@@ -1,6 +1,6 @@
-#include "test_configuration_variables.h"
+#include "unit_tests/test_configuration_variables.h"
 #include "unit_tests/unit_test_helpers.h"
-#include "configuration.h"
+#include "config/configuration.h"
 
 #include <string.h>
 

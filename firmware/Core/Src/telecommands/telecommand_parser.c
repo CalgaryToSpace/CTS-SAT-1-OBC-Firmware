@@ -220,7 +220,7 @@ uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChann
 
     // Get the telecommand definition.
     TCMD_TelecommandDefinition_t tcmd_def = TCMD_telecommand_definitions[tcmd_idx];
-
+    
     // Args: Check opening parenthesis index.
     uint32_t start_of_args_idx = TCMD_PREFIX_STR_LEN + strlen(tcmd_def.tcmd_name);
     if (tcmd_str_len < start_of_args_idx + 1) {
@@ -279,7 +279,26 @@ uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChann
         return 90;
     }
 
-    // Reached the end of the telecommand parsing. Thus, success. Fill the output struct.
+    // ensure the corrent number of args are provided
+    const int8_t num_args_expected = TCMD_telecommand_definitions[tcmd_idx].number_of_args;
+    const char* tcmd_name = TCMD_telecommand_definitions[tcmd_idx].tcmd_name;
+
+    char error_message[130];
+    snprintf(error_message, sizeof(error_message), "Error: TCMD_parse_full_telecommand: %s() accepts %d argument(s).\n", tcmd_name, num_args_expected);
+
+    int16_t num_commas = 0;
+    for (int32_t i = 0; i <= arg_len; i++) {
+        if (args_str_no_parens[i] == ',') {
+            num_commas++;
+        }    
+    }
+    
+    const int8_t correct_number_of_args_provided = (num_args_expected == 0 && arg_len == 0) || (num_commas == (num_args_expected-1) && arg_len != 0);
+    if (!correct_number_of_args_provided) {
+        DEBUG_uart_print_str(error_message);
+        return 100;
+    }
+// Reached the end of the telecommand parsing. Thus, success. Fill the output struct.
     parsed_tcmd_output->tcmd_idx = tcmd_idx;
     memset(parsed_tcmd_output->args_str_no_parens, 0, TCMD_ARGS_STR_NO_PARENS_SIZE); // Safety.
     memcpy(parsed_tcmd_output->args_str_no_parens, args_str_no_parens, arg_len + 1);

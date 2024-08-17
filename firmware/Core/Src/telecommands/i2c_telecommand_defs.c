@@ -1,4 +1,4 @@
-#include "i2c_telecommand_defs.h"
+#include "telecommands/i2c_telecommand_defs.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

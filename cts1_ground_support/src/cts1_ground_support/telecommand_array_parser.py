@@ -4,7 +4,7 @@ import json
 import re
 from pathlib import Path
 
-from cts1_ground_support.paths import get_repo_path
+from cts1_ground_support.paths import get_repo_path, read_text_file
 from cts1_ground_support.telecommand_types import TelecommandDefinition
 
 
@@ -46,7 +46,7 @@ def parse_telecommand_array_table(c_code: str | Path) -> list[TelecommandDefinit
 
     """
     if isinstance(c_code, Path):
-        c_code = c_code.read_text()
+        c_code = read_text_file(c_code)
 
     c_code = remove_c_comments(c_code)
 
@@ -234,7 +234,7 @@ def parse_telecommand_list_from_repo(repo_path: Path | None = None) -> list[Tele
 
     # Read the files which may contain the TCMDEXEC functions.
     c_files_concat: str = "\n".join(
-        f.read_text() for f in repo_path.glob("firmware/Core/Src/**/*.c")
+        read_text_file(f) for f in repo_path.glob("firmware/Core/Src/**/*.c")
     )
 
     # Extract the docstrings for each telecommand.
