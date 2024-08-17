@@ -68,7 +68,7 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_response_header *resu
     //Check if it starts with #, if not return error
     if (data_received[0] != '#') {
         // Not a valid GPS message
-        return;
+        return 1;
     }
 
     // Find the next comma to denote the end of the function name. 
@@ -77,7 +77,7 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_response_header *resu
     char* header_end = strchr(data_received, ';');
     if (!header_end) {
         // No header found
-        return;
+        return 2;
     }
 
     // Parse the header
@@ -103,7 +103,7 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_response_header *resu
     char* crc_start = strchr(data_start, '*');
     if (!crc_start) {
         // No CRC found
-        return;
+        return 3;
     }
 
     // Extract data fields
