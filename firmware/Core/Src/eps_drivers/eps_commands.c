@@ -272,7 +272,7 @@ uint8_t EPS_CMD_get_pdu_housekeeping_data_eng(EPS_result_pdu_housekeeping_data_e
 	return 0;
 }
 
-uint8_t EPS_CMD_get_pdu_housekeeping_data_running_average(EPS_result_pdu_housekeeping_data_eng_t* result_dest) {
+uint8_t EPS_CMD_get_pdu_housekeeping_data_run_avg(EPS_result_pdu_housekeeping_data_eng_t* result_dest) {
 	const uint8_t CC = 0x54;
 	const uint8_t cmd_len = 4;
 	const uint16_t rx_len = 258;
@@ -338,7 +338,7 @@ uint8_t EPS_CMD_get_pbu_housekeeping_data_eng(EPS_result_pbu_housekeeping_data_e
 	return 0;
 }
 
-uint8_t EPS_CMD_get_pbu_housekeeping_data_running_average(EPS_result_pbu_housekeeping_data_eng_t* result_dest) {
+uint8_t EPS_CMD_get_pbu_housekeeping_data_run_avg(EPS_result_pbu_housekeeping_data_eng_t* result_dest) {
 	const uint8_t CC = 0x64;
 	const uint8_t cmd_len = 4;
 	const uint8_t rx_len = 84;
@@ -404,7 +404,7 @@ uint8_t EPS_CMD_get_pcu_housekeeping_data_eng(EPS_result_pcu_housekeeping_data_e
 	return 0;
 }
 
-uint8_t EPS_CMD_get_pcu_housekeeping_data_running_average(EPS_result_pcu_housekeeping_data_eng_t* result_dest) {
+uint8_t EPS_CMD_get_pcu_housekeeping_data_run_avg(EPS_result_pcu_housekeeping_data_eng_t* result_dest) {
 	const uint8_t CC = 0x74;
 	const uint8_t cmd_len = 4;
 	const uint8_t rx_len = 72;
@@ -624,7 +624,7 @@ uint8_t EPS_CMD_get_piu_housekeeping_data_eng(EPS_result_piu_housekeeping_data_e
 	return 0;
 }
 
-uint8_t EPS_CMD_get_piu_housekeeping_data_running_average(EPS_result_piu_housekeeping_data_eng_t* result_dest) {
+uint8_t EPS_CMD_get_piu_housekeeping_data_run_avg(EPS_result_piu_housekeeping_data_eng_t* result_dest) {
 	const uint8_t CC = 0xA4;
 	const uint8_t cmd_len = 4;
 	const uint16_t rx_len = 274;
