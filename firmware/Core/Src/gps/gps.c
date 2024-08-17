@@ -48,22 +48,25 @@ uint32_t CalculateBlockCRC32( uint32_t ulCount, uint8_t *ucBuffer ) {
 /// @param data_received - The string obtained from the buffer that is to be parsed into the gps_response_header struct
 /// @param result - gps_response_header struct that is returned
 /// @return 0 if successful, >0 if an error occurred
-uint8_t parse_gps_header(const char* data_received, gps_response_header *result){
+uint8_t parse_gps_header(const char *data_received, gps_response_header *result){
+
+    // TODO: What if the start of the string is not #?
 
     // Check if the first character is a #
-    if( data_received[0] != "#"){
+    if( data_received[0] != '#'){
 
         // Invalid response starting string found
         return 1;
     }
 
+    return 0;
 }
 
 
 /// @brief Parse Received Data
 /// @param data_received - Number of bytes in the data block
 /// @return 0 if successful, >0 if an error occurred
-uint8_t parse_bestxyza_data(const char* data_received, gps_response_header *result) {
+uint8_t parse_bestxyza_data(const char* data_received, bestxyza_response *result) {
     
     //Check if it starts with #, if not return error
     if (data_received[0] != '#') {
@@ -127,7 +130,12 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_response_header *resu
     //     return;
     // }
 
-    printf("Message Parsed Successfully\n");
+    LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Message Parsed Successfully."
+        );
+
+    return 0;
 }
 
 int main() {
