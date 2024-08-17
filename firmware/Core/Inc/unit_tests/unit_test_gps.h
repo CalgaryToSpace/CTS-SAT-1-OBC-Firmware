@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
-uint8_t TEST_EXEC__GPS_Pack_to_header();
+uint8_t TEST_EXEC__GPS_Parse_header();
+
+uint8_t TEST_EXEC__GPS_Parse_bestxyza();
 
 #endif // __INCLUDE_GUARD__UNIT_TEST_GPS_H__
