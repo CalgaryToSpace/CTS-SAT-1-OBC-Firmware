@@ -30,5 +30,6 @@
         "**/__pycache__": true,
         "**/.pytest_cache": true,
         "**/*.aider*": true,
+        ".ruff_cache": true,
     },
 }

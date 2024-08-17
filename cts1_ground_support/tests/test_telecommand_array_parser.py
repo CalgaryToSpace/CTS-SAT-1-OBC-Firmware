@@ -1,6 +1,7 @@
 """Unit tests for the `telecommand_array_parser.py` module."""
 
 import pytest
+
 from cts1_ground_support.telecommand_array_parser import (
     extract_c_function_docstring,
     extract_telecommand_arg_list,
