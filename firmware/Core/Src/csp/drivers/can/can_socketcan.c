@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <csp/drivers/can_socketcan.h>
 
+#if (CSP_MACOSX || CSP_POSIX)
+
 #include <pthread.h>
 #include <stdlib.h>
 #include <sys/socket.h>
@@ -235,3 +237,5 @@ int csp_can_socketcan_stop(csp_iface_t *iface)
         socketcan_free(ctx);
 	return CSP_ERR_NONE;
 }
+
+#endif // (CSP_MACOSX || CSP_POSIX)

@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <csp/drivers/usart.h>
 
+#if (CSP_WINDOWS)
+
 #include <stdio.h>
 #include <Windows.h>
 #include <process.h>
@@ -171,3 +173,5 @@ int csp_usart_open(const csp_usart_conf_t *conf, csp_usart_callback_t rx_callbac
 
     return CSP_ERR_NONE;
 }
+
+#endif // CSP_WINDOWS

@@ -18,6 +18,8 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+#if 0
+
 #include "csp_rtable_internal.h"
 
 #include <csp/csp_debug.h>
@@ -145,3 +147,5 @@ void csp_rtable_iterate(csp_rtable_iterator_t iter, void * ctx)
          route && iter(ctx, route->address, route->netmask, &route->route);
          route = route->next);
 }
+
+#endif

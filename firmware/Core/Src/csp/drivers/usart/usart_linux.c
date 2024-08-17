@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <csp/drivers/usart.h>
 
+#if (CSP_POSIX || CSP_MACOSX)
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -269,3 +271,5 @@ int csp_usart_open(const csp_usart_conf_t *conf, csp_usart_callback_t rx_callbac
 
 	return CSP_ERR_NONE;
 }
+
+#endif // CSP_POSIX || CSP_MACOSX
