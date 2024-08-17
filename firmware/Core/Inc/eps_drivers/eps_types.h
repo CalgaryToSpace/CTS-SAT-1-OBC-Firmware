@@ -14,7 +14,7 @@ typedef enum {
 	EPS_CHANNEL_3V3_STACK               = 5, // CH5
 	EPS_CHANNEL_3V3_CAMERA              = 6, // CH6
 	EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY  = 7, // CH7
-	EPS_CHANNEL_3V3_LORA_MODULES        = 8, // CH8
+	EPS_CHANNEL_3V3_LORA_MODULE        = 8, // CH8
 	EPS_CHANNEL_VBATT_CH9_UNUSED        = 9, // CH9
 	EPS_CHANNEL_VBATT_CH10_UNUSED       = 10, // CH10
 	EPS_CHANNEL_VBATT_CH11_UNUSED       = 11, // CH11
@@ -23,6 +23,7 @@ typedef enum {
 	EPS_CHANNEL_3V3_CH14_UNUSED         = 14, // CH14
 	EPS_CHANNEL_3V3_CH15_UNUSED         = 15, // CH15
 	EPS_CHANNEL_28V6_CH16_UNUSED        = 16, // CH16
+	EPS_CHANNEL_UNKNOWN                 = 255, // Unknown Channel, parsing failed, etc.
 } EPS_CHANNEL_enum_t;
 
 
