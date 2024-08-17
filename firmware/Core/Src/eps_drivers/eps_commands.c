@@ -44,7 +44,7 @@ uint8_t EPS_CMD_watchdog() {
 	return EPS_run_argumentless_cmd(CC);
 }
 
-uint8_t EPS_CMD_output_bus_group_on(uint16_t CH_BF,  uint16_t CH_EXT_BF) {
+uint8_t EPS_CMD_output_bus_group_on(uint16_t ch_bitfield,  uint16_t ch_extended_bitfield) {
 	const uint8_t CC = 0x10;
 	const uint8_t cmd_len = 8;
 	const uint8_t rx_len = EPS_DEFAULT_RX_LEN_MIN;
@@ -56,16 +56,16 @@ uint8_t EPS_CMD_output_bus_group_on(uint16_t CH_BF,  uint16_t CH_EXT_BF) {
 	cmd_buf[1] = EPS_COMMAND_IVID;
 	cmd_buf[2] = CC;
 	cmd_buf[3] = EPS_COMMAND_BID;
-	cmd_buf[4] = CH_BF & 0x00FF;
-	cmd_buf[5] = CH_BF >> 8;
-	cmd_buf[6] = CH_EXT_BF & 0x00FF;
-	cmd_buf[7] = CH_EXT_BF >> 8;
+	cmd_buf[4] = ch_bitfield & 0x00FF;
+	cmd_buf[5] = ch_bitfield >> 8;
+	cmd_buf[6] = ch_extended_bitfield & 0x00FF;
+	cmd_buf[7] = ch_extended_bitfield >> 8;
 
 	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	return comms_err;
 }
 
-uint8_t EPS_CMD_output_bus_group_off(uint16_t CH_BF,  uint16_t CH_EXT_BF) {
+uint8_t EPS_CMD_output_bus_group_off(uint16_t ch_bitfield,  uint16_t ch_extended_bitfield) {
 	const uint8_t CC = 0x12;
 	const uint8_t cmd_len = 8;
 	const uint8_t rx_len = EPS_DEFAULT_RX_LEN_MIN;
@@ -77,16 +77,16 @@ uint8_t EPS_CMD_output_bus_group_off(uint16_t CH_BF,  uint16_t CH_EXT_BF) {
 	cmd_buf[1] = EPS_COMMAND_IVID;
 	cmd_buf[2] = CC;
 	cmd_buf[3] = EPS_COMMAND_BID;
-	cmd_buf[4] = CH_BF & 0x00FF;
-	cmd_buf[5] = CH_BF >> 8;
-	cmd_buf[6] = CH_EXT_BF & 0x00FF;
-	cmd_buf[7] = CH_EXT_BF >> 8;
+	cmd_buf[4] = ch_bitfield & 0x00FF;
+	cmd_buf[5] = ch_bitfield >> 8;
+	cmd_buf[6] = ch_extended_bitfield & 0x00FF;
+	cmd_buf[7] = ch_extended_bitfield >> 8;
 
 	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	return comms_err;
 }
 
-uint8_t EPS_CMD_output_bus_group_state(uint16_t CH_BF,  uint16_t CH_EXT_BF) {
+uint8_t EPS_CMD_output_bus_group_state(uint16_t ch_bitfield,  uint16_t ch_extended_bitfield) {
 	const uint8_t CC = 0x14;
 	const uint8_t cmd_len = 8;
 	const uint8_t rx_len = EPS_DEFAULT_RX_LEN_MIN;
@@ -98,16 +98,16 @@ uint8_t EPS_CMD_output_bus_group_state(uint16_t CH_BF,  uint16_t CH_EXT_BF) {
 	cmd_buf[1] = EPS_COMMAND_IVID;
 	cmd_buf[2] = CC;
 	cmd_buf[3] = EPS_COMMAND_BID;
-	cmd_buf[4] = CH_BF & 0x00FF;
-	cmd_buf[5] = CH_BF >> 8;
-	cmd_buf[6] = CH_EXT_BF & 0x00FF;
-	cmd_buf[7] = CH_EXT_BF >> 8;
+	cmd_buf[4] = ch_bitfield & 0x00FF;
+	cmd_buf[5] = ch_bitfield >> 8;
+	cmd_buf[6] = ch_extended_bitfield & 0x00FF;
+	cmd_buf[7] = ch_extended_bitfield >> 8;
 
 	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	return comms_err;
 }
 
-uint8_t EPS_CMD_output_bus_channel_on(uint8_t CH_IDX) {
+uint8_t EPS_CMD_output_bus_channel_on(uint8_t ch_idx) {
 	const uint8_t CC = 0x16;
 	const uint8_t cmd_len = 5;
 	const uint8_t rx_len = EPS_DEFAULT_RX_LEN_MIN;
@@ -119,13 +119,13 @@ uint8_t EPS_CMD_output_bus_channel_on(uint8_t CH_IDX) {
 	cmd_buf[1] = EPS_COMMAND_IVID;
 	cmd_buf[2] = CC;
 	cmd_buf[3] = EPS_COMMAND_BID;
-	cmd_buf[4] = CH_IDX;
+	cmd_buf[4] = ch_idx;
 
 	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	return comms_err;
 }
 
-uint8_t EPS_CMD_output_bus_channel_off(uint8_t CH_IDX) {
+uint8_t EPS_CMD_output_bus_channel_off(uint8_t ch_idx) {
 	const uint8_t CC = 0x18;
 	const uint8_t cmd_len = 5;
 	const uint8_t rx_len = EPS_DEFAULT_RX_LEN_MIN;
@@ -137,7 +137,7 @@ uint8_t EPS_CMD_output_bus_channel_off(uint8_t CH_IDX) {
 	cmd_buf[1] = EPS_COMMAND_IVID;
 	cmd_buf[2] = CC;
 	cmd_buf[3] = EPS_COMMAND_BID;
-	cmd_buf[4] = CH_IDX;
+	cmd_buf[4] = ch_idx;
 
 	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	return comms_err;
@@ -215,7 +215,7 @@ uint8_t EPS_CMD_get_pbu_abf_placed_state(EPS_result_pbu_abf_placed_state_t* resu
 		return comms_err;
 	}
 
-	// check that the response bytes are valid
+	// Check that the response bytes are valid
 	if (rx_buf[6] != EPS_ABF_PIN_APPLIED && rx_buf[6] != EPS_ABF_PIN_NOT_APPLIED) {
 		return 20;
 	}
@@ -389,7 +389,7 @@ uint8_t EPS_CMD_get_configuration_parameter(uint16_t parameter_id, uint8_t param
 
 	// const uint32_t parameter_value = rx_buf[5] | (rx_buf[6] << 8) | (rx_buf[7] << 16) | (rx_buf[8] << 24);
 	
-	// copy it to the result
+	// Copy it to the result
 	for (uint8_t idx = 0; idx < 8; idx++) {
 		parameter_value_dest[idx] = rx_buf[idx];
 	}
