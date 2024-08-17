@@ -25,16 +25,10 @@ uint8_t TCMDEXEC_eps_cancel_operation(
     char *response_output_buf, uint16_t response_output_buf_len
 );
 
-uint8_t TCMDEXEC_eps_switch_to_nominal_mode(
+uint8_t TCMDEXEC_eps_switch_to_mode(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
 );
-
-uint8_t TCMDEXEC_eps_switch_to_safety_mode(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-    char *response_output_buf, uint16_t response_output_buf_len
-);
-
 
 uint8_t TCMDEXEC_eps_get_system_status_json(
     const char *args_str,

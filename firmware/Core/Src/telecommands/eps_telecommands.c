@@ -5,6 +5,7 @@
 #include <telecommands/eps_telecommands.h>
 
 #include <stdio.h>
+#include <string.h>
 
 /// @brief Triggers/services the EPS watchdog. No args.
 /// @param args_str No arguments.
@@ -88,45 +89,44 @@ uint8_t TCMDEXEC_eps_cancel_operation(
     return 0;
 }
 
-/// @brief Switches the EPS to nominal mode.
-/// @param args_str No arguments.
+/// @brief Switches the EPS to "nominal" or "safety" mode.
+/// @param args_str
+/// - Arg 0: New mode to switch to. Either "nominal" or "safety".
 /// @return 0 on success, 1 on failure.
-uint8_t TCMDEXEC_eps_switch_to_nominal_mode(
+uint8_t TCMDEXEC_eps_switch_to_mode(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
-) { 
-    const uint8_t result = EPS_CMD_switch_to_nominal_mode();
+) {
+    uint8_t result = 42;
+
+    if (strcmp(args_str, "nominal") == 0) {
+        result = EPS_CMD_switch_to_nominal_mode();
+    }
+    else if (strcmp(args_str, "safety") == 0) {
+        result = EPS_CMD_switch_to_safety_mode();
+    }
+    else {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Invalid mode: %s", args_str);
+        return 1;
+    }
 
     if (result != 0) {
         snprintf(
             response_output_buf, response_output_buf_len,
-            "EPS_CMD_switch_to_nominal_mode() failed (err %d)", result);
+            "EPS_CMD_switch_to_%s_mode() failed (err %d)", args_str, result);
         return 1;
     }
 
-    snprintf(response_output_buf, response_output_buf_len, "EPS_CMD_switch_to_nominal_mode() successful.");
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "EPS_CMD_switch_to_%s_mode() successful.",
+        args_str
+    );
     return 0;
 }
 
-/// @brief Switches the EPS to safety mode.
-/// @param args_str No arguments.
-/// @return 0 on success, 1 on failure.
-uint8_t TCMDEXEC_eps_switch_to_safety_mode(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-    char *response_output_buf, uint16_t response_output_buf_len
-) { 
-    const uint8_t result = EPS_CMD_switch_to_safety_mode();
-
-    if (result != 0) {
-        snprintf(
-            response_output_buf, response_output_buf_len,
-            "EPS_CMD_switch_to_safety_mode() failed (err %d)", result);
-        return 1;
-    }
-
-    snprintf(response_output_buf, response_output_buf_len, "EPS_CMD_switch_to_safety_mode() successful.");
-    return 0;
-}
 
 /// @brief Gets the EPS system status, and returns it as a JSON string.
 /// @return 0 on success, >0 on failure.
