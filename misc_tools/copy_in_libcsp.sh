@@ -47,7 +47,7 @@ pushd $SRC_LIBCSP_CLONE_PATH
 git fetch -a
 git checkout libcsp-cts-sat-1 # We are using the `libcsp-cts-sat-1` branch of https://github.com/CalgaryToSpace/libcsp repo.
 echo "============= Running waf configure in $SRC_LIBCSP_CLONE_PATH ============="
-$SRC_LIBCSP_CLONE_PATH/waf configure --with-os=freertos --disable-stlib --with-rtable=static
+$SRC_LIBCSP_CLONE_PATH/waf configure --with-os=freertos --with-loglevel=debug --enable-crc32 --enable-hmac --with-rtable=static
 echo "============= Finished running waf configure ============="
 # Return to the original working directory.
 popd
