@@ -1,5 +1,4 @@
 #include "gps/gps.h"
-
 #include <stdint.h>
 
 #define BUFFER_SIZE 256
