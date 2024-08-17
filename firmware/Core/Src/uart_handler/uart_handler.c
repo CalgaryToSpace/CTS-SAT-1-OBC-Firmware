@@ -25,8 +25,8 @@ volatile uint8_t UART_eps_is_expecting_data = 0; // extern; set to 1 when a comm
 volatile uint8_t UART_eps_buffer_last_rx_byte = 0; // not an extern
 
 // UART GPS buffer
-const uint16_t UART_gps_buffer_len = 256; // extern
-volatile uint8_t UART_gps_buffer[256]; // extern // TODO: confirm that this volatile means that the contents are volatile but the pointer is not
+const uint16_t UART_gps_buffer_len = 512; // extern
+volatile uint8_t UART_gps_buffer[512]; // extern // TODO: confirm that this volatile means that the contents are volatile but the pointer is not
 volatile uint16_t UART_gps_buffer_write_idx = 0; // extern
 volatile uint32_t UART_gps_last_write_time_ms = 0; // extern
 volatile uint8_t UART_gps_buffer_last_rx_byte = 0; // extern
