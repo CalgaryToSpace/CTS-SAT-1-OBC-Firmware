@@ -56,8 +56,12 @@ typedef struct i2c_frame_s {
     uint8_t len_rx;
     //! Length of \a data part  (-> csp_packet_t.length)
     uint16_t len;
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
     //! CSP id + data  (-> csp_packet_t.id)
     uint8_t data[0];
+#pragma GCC diagnostic pop
 } csp_i2c_frame_t;
 //doc-end:csp_i2c_frame_t
 

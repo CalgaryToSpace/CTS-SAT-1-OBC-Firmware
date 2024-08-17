@@ -3,7 +3,7 @@
 #ifndef W_INCLUDE_CSP_CSP_AUTOCONFIG_H_WAF
 #define W_INCLUDE_CSP_CSP_AUTOCONFIG_H_WAF
 
-#define GIT_REV "v1.6-14-ge34118d"
+#define GIT_REV "v1.6-15-g33c1f4a"
 #define CSP_FREERTOS 1
 /* #undef CSP_POSIX */
 /* #undef CSP_WINDOWS */
