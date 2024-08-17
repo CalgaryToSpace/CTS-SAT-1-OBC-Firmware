@@ -10,7 +10,7 @@
 
 #include "stm32l4xx_hal.h"
 
-/* Basic Telecommand Functions */
+/* Basic Telecommand Functions */ 
 
 /// @brief Sends a telecommand over I2C to the ADCS, checks that it's been acknowledged, and returns the ACK error flag.
 /// @param[in] id Valid ADCS telecommand ID (see Firmware Reference Manual)
@@ -19,26 +19,37 @@
 /// @param[in] include_checksum Tells the ADCS whether to use a CRC8 checksum; should be either ADCS_INCLUDE_CHECKSUM or ADCS_NO_CHECKSUM 
 /// @return 0 if successful, 1 if invalid ID, 2 if incorrect parameter length, 3 if incorrect parameter value, and 4 if failed CRC
 uint8_t ADCS_I2C_telecommand_wrapper(uint8_t id, uint8_t* data, uint32_t data_length, uint8_t include_checksum) {
-	ADCS_TC_Ack_Struct ack;
-	uint8_t tc_status;
-
+	ADCS_CMD_Ack_Struct ack;
+	uint8_t cmd_status;
+	uint8_t num_checksum_tries = 0; // number of tries to resend command if checksum fails
     do {
 		// Send telecommand
-		tc_status = ADCS_send_I2C_telecommand(id, data, data_length, include_checksum);
+		cmd_status = ADCS_send_I2C_telecommand(id, data, data_length, include_checksum);
 
-		// Poll Acknowledge Telemetry Format until the Processed flag equals 1.
-		while (!ack.processed) {
-			ADCS_TC_Ack(&ack);
-		} // TODO: this needs a timeout
+		// poll Acknowledge Telemetry Format until the Processed flag equals 1
+		if (cmd_status == 0) {
+			uint8_t ack_status;
+			uint8_t num_ack_tries = 0;
+			while (!ack.processed) {
+				ack_status = ADCS_CMD_Ack(&ack); // confirm telecommand validity by checking the TC Error flag of the last read TC Acknowledge Telemetry Format.
+				if (ack_status != 0 && ack_status != 4) {
+					return ack_status; // there was an error in the command not related to checksum
+				}
+				num_ack_tries++;
+				if (num_ack_tries > ADCS_PROCESSED_TIMEOUT) {
+					return 5; // command failed to process in time
+					// note: sending another telecommand when the first has not been processed
+					// will result in an error in the next telecommand sent
+					// as the ADCS telecommand buffer has been overrun/corrupted
+				}
+			}
+		} else {
+			return cmd_status; // if the HAL had an error, tell us what that is
+		}
+		num_checksum_tries++;
+    } while (ack.error_flag == ADCS_ERROR_FLAG_CRC && num_checksum_tries < ADCS_CHECKSUM_TIMEOUT);  // if the checksum doesn't check out, keep resending the request
 
-		// Confirm telecommand validity by checking the TC Error flag of the last read TC Acknowledge Telemetry Format.
-    } while (ack.error_flag == TC_Error_CRC);  // if the checksum doesn't check out, keep resending the request
-
-	if (tc_status == 0) {
-		return ack.error_flag; // if the HAL was successful and the ADCS had an error, tell us what it is
-	} 
-
-	return tc_status; // otherwise, if the HAL had an error, tell us what that is instead
+	return ack.error_flag; // if the HAL was successful and the ADCS command had an error, tell us what it is
 }
 
 /// @brief Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don't match.
@@ -48,14 +59,13 @@ uint8_t ADCS_I2C_telecommand_wrapper(uint8_t id, uint8_t* data, uint32_t data_le
 /// @param[out] data Data array to write the raw telemetry bytes to; length must be at least data_length (should contain the correct number of bytes for the given telemetry request ID)
 /// @return 0 if successful, other numbers if the HAL failed to transmit or receive data. 
 uint8_t ADCS_I2C_telemetry_wrapper(uint8_t id, uint8_t* data, uint32_t data_length, uint8_t include_checksum) {
-    // Send telemetry request (data gets stored to input data array)
 	uint8_t checksum_check = ADCS_send_I2C_telemetry_request(id, data, data_length, include_checksum);
-
-	while (checksum_check == 4) {
-		// if the checksum doesn't check out, keep resending the request
+	uint8_t num_checksum_tries = 0;
+	while (checksum_check == 4 && num_checksum_tries < ADCS_CHECKSUM_TIMEOUT) {
+		// if the checksum doesn't check out, keep resending the request up to timeout
 		checksum_check = ADCS_send_I2C_telemetry_request(id, data, data_length, include_checksum);
+		num_checksum_tries++;
 	}
-
 	return checksum_check;
 }
 
@@ -67,11 +77,7 @@ uint8_t ADCS_I2C_telemetry_wrapper(uint8_t id, uint8_t* data, uint32_t data_leng
 /// @param[in] include_checksum Tells the ADCS whether to use a CRC8 checksum; should be either ADCS_INCLUDE_CHECKSUM or ADCS_NO_CHECKSUM 
 /// @return 0 if successful, 4 if the checksums don't match, other numbers if the HAL failed to transmit or receive data.
 uint8_t ADCS_send_I2C_telecommand(uint8_t id, uint8_t* data, uint32_t data_length, uint8_t include_checksum) {
-	// Telecommand Format:
-	// ADCS_ESC_CHARACTER, ADCS_START_MESSAGE [uint8_t TLM/TC ID], ADCS_ESC_CHARACTER, ADCS_END_MESSAGE
-	// The defines in adcs_types.h already include the 7th bit of the ID to distinguish TLM and TC
-
-	uint8_t adcs_tc_status; 
+	uint8_t ADCS_CMD_status; 
 	
 	// allocate only required memory
 	uint8_t buf[data_length + include_checksum]; // add additional bit for checksum if needed
@@ -84,7 +90,7 @@ uint8_t ADCS_send_I2C_telecommand(uint8_t id, uint8_t* data, uint32_t data_lengt
 	// include checksum following data if enabled
 	if (include_checksum) {buf[data_length] = ADCS_COMMS_Crc8Checksum(data, data_length);}
 
-	adcs_tc_status = HAL_I2C_Mem_Write(&hi2c1, ADCS_I2C_ADDRESS << 1, id, 1, buf, sizeof(buf), ADCS_HAL_TIMEOUT);
+	ADCS_CMD_status = HAL_I2C_Mem_Write(ADCS_I2C_HANDLE, ADCS_I2C_ADDRESS << 1, id, 1, buf, sizeof(buf), ADCS_HAL_TIMEOUT);
 
 	/* When sending a command to the CubeACP, it is possible to include an 8-bit CRC checksum.
 	For instance, when sending a command that has a length of 8 bytes, it is possible to include a
@@ -93,7 +99,7 @@ uint8_t ADCS_send_I2C_telecommand(uint8_t id, uint8_t* data, uint32_t data_lengt
 	ignored. For I2C communication, the Tc Error Status in the Telecommand Acknowledge telemetry frame
 	(Table 39: Telecommand Acknowledge Telemetry Format) will have a value of 4. */
 
-	return adcs_tc_status;
+	return ADCS_CMD_status;
 }
 
 /// @brief Sends a telemetry request over I2C to the ADCS.
@@ -105,7 +111,7 @@ uint8_t ADCS_send_I2C_telecommand(uint8_t id, uint8_t* data, uint32_t data_lengt
 uint8_t ADCS_send_I2C_telemetry_request(uint8_t id, uint8_t* data, uint32_t data_length, uint8_t include_checksum) {
 	// Telemetry Request Format:
 	// Note: requires a repeated start condition; data_length is number of bits to read.
-	// [start], ADCS_I2C_WRITE, id, [start] ADCS_I2C_READ, [read all the data], [stop]
+	// [start], ADCS_I2C_WRITE_ADDRESS, id, [start] ADCS_I2C_READ_ADDRESS, [read all the data], [stop]
 	// The defines in adcs_types.h already include the 7th bit of the ID to distinguish TLM and TC
 
 	/* When requesting telemetry through I2C, it is possible to read one extra byte past the allowed
@@ -117,7 +123,7 @@ uint8_t ADCS_send_I2C_telemetry_request(uint8_t id, uint8_t* data, uint32_t data
 	uint8_t temp_data[data_length + include_checksum];
 		// temp data used for checksum checking
 
-	adcs_tlm_status = HAL_I2C_Mem_Read(&hi2c1, ADCS_I2C_ADDRESS << 1, id, 1, temp_data, sizeof(temp_data), ADCS_HAL_TIMEOUT);
+	adcs_tlm_status = HAL_I2C_Mem_Read(ADCS_I2C_HANDLE, ADCS_I2C_ADDRESS << 1, id, 1, temp_data, sizeof(temp_data), ADCS_HAL_TIMEOUT);
 
 	for (uint8_t i = 0; i < data_length; i++) {
 			// populate external data, except for checksum byte
@@ -142,7 +148,7 @@ uint8_t ADCS_send_UART_telecommand(UART_HandleTypeDef *huart, uint8_t id, uint8_
 	// USE AT YOUR OWN RISK.
 
 	// Telemetry Request or Telecommand Format:
-	// ADCS_ESC_CHARACTER, ADCS_START_MESSAGE [uint8_t TLM/TC ID], ADCS_ESC_CHARACTER, ADCS_END_MESSAGE
+	// ADCS_UART_ESCAPE_BYTE, ADCS_UART_START_MESSAGE [uint8_t TLM/TC ID], ADCS_UART_ESCAPE_BYTE, ADCS_UART_END_MESSAGE
 	// The defines in adcs_types.h already include the 7th bit of the ID to distinguish TLM and TC
 	// data bytes can be up to a maximum of 8 bytes; data_length ranges from 0 to 8
 
@@ -153,23 +159,23 @@ uint8_t ADCS_send_UART_telecommand(UART_HandleTypeDef *huart, uint8_t id, uint8_
 	uint8_t buf[5 + (!telemetry_request)*data_length];
 
 	//Fill buffer with ESC, SOM and ID
-	buf[0] = ADCS_ESC_CHARACTER;
-	buf[1] = ADCS_START_MESSAGE;
+	buf[0] = ADCS_UART_ESCAPE_BYTE;
+	buf[1] = ADCS_UART_START_MESSAGE;
 	buf[2] = id;
 
 	if (telemetry_request) {
 		//If transmitting Telemetry Request
 		//Fill buffer with ESC and EOM without data_length
-		buf[3] = ADCS_ESC_CHARACTER;
-		buf[4] = ADCS_END_MESSAGE;
+		buf[3] = ADCS_UART_ESCAPE_BYTE;
+		buf[4] = ADCS_UART_END_MESSAGE;
 	} else {
 		//Fill buffer with Data if transmitting a Telecommand
 		for (uint8_t i = 0; i < data_length; i++) {
 			buf[i + 3] = data[i];
 		}
 		//Fill buffer with ESC and EOM
-		buf[3 + data_length] = ADCS_ESC_CHARACTER;
-		buf[4 + data_length] = ADCS_END_MESSAGE;
+		buf[3 + data_length] = ADCS_UART_ESCAPE_BYTE;
+		buf[4 + data_length] = ADCS_UART_END_MESSAGE;
 	}
 
 	//Transmit the TLM or TC via UART
