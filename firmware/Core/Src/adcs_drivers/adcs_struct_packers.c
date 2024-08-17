@@ -8,11 +8,11 @@
 #include <stdbool.h>
 
 
-/// @brief Packs the ADCS received raw data into the appropriate structure for the ADCS_TC_Ack command.
+/// @brief Packs the ADCS received raw data into the appropriate structure for the ADCS_CMD_Ack command.
 /// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
 /// @param[out] result Structure containing the formated data for this command.
 /// @return 0 once the function is finished running.
-uint8_t ADCS_Pack_to_Ack(uint8_t* data_received, ADCS_TC_Ack_Struct *result) {
+uint8_t ADCS_Pack_to_Ack(uint8_t* data_received, ADCS_CMD_Ack_Struct *result) {
 
 	// map temp buffer to Ack struct
 	result->last_id = data_received[0];
@@ -58,11 +58,11 @@ uint8_t ADCS_Pack_to_Program_Status(uint8_t* data_received, ADCS_Boot_Running_St
 /// @param[out] result Structure containing the formated data for this command.
 /// @return 0 once the function is finished running.}
 uint8_t ADCS_Pack_to_Comms_Status(uint8_t *data_received, ADCS_Comms_Status_Struct *result) {
-    result->tc_counter = data_received[1] << 8 | data_received[0]; // uint16_t
+    result->cmd_counter = data_received[1] << 8 | data_received[0]; // uint16_t
     result->tlm_counter = data_received[3] << 8 | data_received[2]; // uint16_t
-    result->tc_buffer_overrun = data_received[4] & 128; // bit 0 is 1 if TC buffer was overrun while receiving a telecommand
+    result->cmd_buffer_overrun = data_received[4] & 128; // bit 0 is 1 if TC buffer was overrun while receiving a telecommand
     result->i2c_tlm_error = data_received[4] & 16; // bit 3 is 1 if the number of data clocked out was more than the telemetry package
-    result->i2c_tc_error = data_received[4] & 8; // bit 4 is 1 if the telecommand sent exceeded the buffer size
+    result->i2c_cmd_error = data_received[4] & 8; // bit 4 is 1 if the telecommand sent exceeded the buffer size
     return 0;
 }
 
@@ -437,7 +437,7 @@ uint8_t ADCS_Pack_to_Estimation_Innovation_Vector(uint8_t* data_received, ADCS_E
 /// @param[out] result Structure containing the formated data for this command.
 /// @return 0 once the function is finished running.}
 uint8_t ADCS_Pack_to_Raw_Cam1_Sensor(uint8_t* data_received, ADCS_Raw_Cam_Sensor_Struct* result) {
-    result->which_sensor = ADCS_Cam1_Sensor;
+    result->which_sensor = ADCS_CAM1_SENSOR;
 	result->cam_centroid_x = (int16_t) (data_received[1] << 8 | data_received[0]);
     result->cam_centroid_y = (int16_t) (data_received[3] << 8 | data_received[2]);
     result->cam_capture_status = data_received[4];
@@ -451,7 +451,7 @@ uint8_t ADCS_Pack_to_Raw_Cam1_Sensor(uint8_t* data_received, ADCS_Raw_Cam_Sensor
 /// @param[out] result Structure containing the formated data for this command.
 /// @return 0 once the function is finished running.}
 uint8_t ADCS_Pack_to_Raw_Cam2_Sensor(uint8_t* data_received, ADCS_Raw_Cam_Sensor_Struct* result) {
-    result->which_sensor = ADCS_Cam2_Sensor;
+    result->which_sensor = ADCS_CAM2_SENSOR;
 	result->cam_centroid_x = (int16_t) (data_received[1] << 8 | data_received[0]);
     result->cam_centroid_y = (int16_t) (data_received[3] << 8 | data_received[2]);
     result->cam_capture_status = data_received[4];

@@ -4,7 +4,7 @@
 #include "adcs_types.h"
 
 // ADCS packer functions
-uint8_t ADCS_Pack_to_Ack(uint8_t* data_received, ADCS_TC_Ack_Struct *result);
+uint8_t ADCS_Pack_to_Ack(uint8_t* data_received, ADCS_CMD_Ack_Struct *result);
 uint8_t ADCS_Pack_to_Identification(uint8_t* data_received, ADCS_ID_Struct *result);
 uint8_t ADCS_Pack_to_Program_Status(uint8_t* data_received, ADCS_Boot_Running_Status_Struct *result);
 uint8_t ADCS_Pack_to_Comms_Status(uint8_t* data_received, ADCS_Comms_Status_Struct *result);

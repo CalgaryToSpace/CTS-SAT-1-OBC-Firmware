@@ -9,12 +9,12 @@
 
 uint8_t TEST_EXEC__ADCS_Pack_to_Ack() {
     uint8_t input_params[4] = {0x11, 0x01, 0x03, 0x04};
-    ADCS_TC_Ack_Struct result;
+    ADCS_CMD_Ack_Struct result;
     ADCS_Pack_to_Ack(input_params, &result);
 
     TEST_ASSERT_TRUE(result.last_id == 17);
     TEST_ASSERT_TRUE(result.processed == true);
-    TEST_ASSERT_TRUE(result.error_flag == TC_Error_Invalid_Params);
+    TEST_ASSERT_TRUE(result.error_flag == ADCS_ERROR_FLAG_INVALID_PARAMS);
     TEST_ASSERT_TRUE(result.error_index == 4);
 
     return 0;
@@ -40,10 +40,10 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Program_Status() {
     ADCS_Boot_Running_Status_Struct result;
     ADCS_Pack_to_Program_Status(input_params, &result);
 
-    TEST_ASSERT_TRUE(result.reset_cause == ADCS_Unknown_Reset_Cause);
-    TEST_ASSERT_TRUE(result.boot_cause == ADCS_Boot_Cause_Communications_Timeout);
+    TEST_ASSERT_TRUE(result.reset_cause == ADCS_UNKNOWN_RESET_CAUSE);
+    TEST_ASSERT_TRUE(result.boot_cause == ADCS_BOOT_CAUSE_COMMUNICATIONS_TIMEOUT);
     TEST_ASSERT_TRUE(result.boot_counter == 13090);
-    TEST_ASSERT_TRUE(result.boot_program_index == ADCS_Running_Bootloader);
+    TEST_ASSERT_TRUE(result.boot_program_index == ADCS_RUNNING_BOOTLOADER);
     TEST_ASSERT_TRUE(result.major_firmware_version == 85);
     TEST_ASSERT_TRUE(result.minor_firmware_version == 102);
 
@@ -55,11 +55,11 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Comms_Status() {
     ADCS_Comms_Status_Struct result;
     ADCS_Pack_to_Comms_Status(input_params, &result);
 
-    TEST_ASSERT_TRUE(result.tc_counter == 0x2211);
+    TEST_ASSERT_TRUE(result.cmd_counter == 0x2211);
     TEST_ASSERT_TRUE(result.tlm_counter == 0x4433);
-    TEST_ASSERT_TRUE(result.tc_buffer_overrun == false);
+    TEST_ASSERT_TRUE(result.cmd_buffer_overrun == false);
     TEST_ASSERT_TRUE(result.i2c_tlm_error == true);
-    TEST_ASSERT_TRUE(result.i2c_tc_error == false);
+    TEST_ASSERT_TRUE(result.i2c_cmd_error == false);
 
     return 0;
 }
@@ -69,16 +69,16 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Power_Control() {
     ADCS_Power_Control_Struct result;
     ADCS_Pack_to_Power_Control(input_params, &result);
 
-    TEST_ASSERT_TRUE(result.cube_control_motor == ADCS_Power_Select_Off);
-    TEST_ASSERT_TRUE(result.cube_control_signal == ADCS_Power_Select_On);
-    TEST_ASSERT_TRUE(result.cube_sense1 == ADCS_Power_Select_On);
-    TEST_ASSERT_TRUE(result.cube_sense2 == ADCS_Power_Select_Off);
-    TEST_ASSERT_TRUE(result.cube_star_power == ADCS_Power_Select_Same);
-    TEST_ASSERT_TRUE(result.cube_wheel1_power == ADCS_Power_Select_Off);
-    TEST_ASSERT_TRUE(result.cube_wheel2_power == ADCS_Power_Select_Same);
-    TEST_ASSERT_TRUE(result.cube_wheel3_power == ADCS_Power_Select_Off);
-    TEST_ASSERT_TRUE(result.gps_power == ADCS_Power_Select_Off);
-    TEST_ASSERT_TRUE(result.motor_power == ADCS_Power_Select_On);
+    TEST_ASSERT_TRUE(result.cube_control_motor == ADCS_POWER_SELECT_OFF);
+    TEST_ASSERT_TRUE(result.cube_control_signal == ADCS_POWER_SELECT_ON);
+    TEST_ASSERT_TRUE(result.cube_sense1 == ADCS_POWER_SELECT_ON);
+    TEST_ASSERT_TRUE(result.cube_sense2 == ADCS_POWER_SELECT_OFF);
+    TEST_ASSERT_TRUE(result.cube_star_power == ADCS_POWER_SELECT_SAME);
+    TEST_ASSERT_TRUE(result.cube_wheel1_power == ADCS_POWER_SELECT_OFF);
+    TEST_ASSERT_TRUE(result.cube_wheel2_power == ADCS_POWER_SELECT_SAME);
+    TEST_ASSERT_TRUE(result.cube_wheel3_power == ADCS_POWER_SELECT_OFF);
+    TEST_ASSERT_TRUE(result.gps_power == ADCS_POWER_SELECT_OFF);
+    TEST_ASSERT_TRUE(result.motor_power == ADCS_POWER_SELECT_ON);
 
     return 0;
 }
@@ -268,8 +268,8 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Estimation_Params()
     TEST_ASSERT_TRUE(result.use_star_tracker == true);
     TEST_ASSERT_TRUE(result.nadir_sensor_terminator_test == false);
     TEST_ASSERT_TRUE(result.automatic_magnetometer_recovery == true);
-    TEST_ASSERT_TRUE(result.magnetometer_mode == ADCS_Magnetometer_Mode_Main_Motor);
-    TEST_ASSERT_TRUE(result.magnetometer_selection_for_raw_mtm_tlm == ADCS_Magnetometer_Mode_Redundant_Signal);
+    TEST_ASSERT_TRUE(result.magnetometer_mode == ADCS_MAGNETOMETER_MODE_MAIN_MOTOR);
+    TEST_ASSERT_TRUE(result.magnetometer_selection_for_raw_mtm_tlm == ADCS_MAGNETOMETER_MODE_REDUNDANT_SIGNAL);
     TEST_ASSERT_TRUE(result.automatic_estimation_transition_due_to_rate_sensor_errors == true);
     TEST_ASSERT_TRUE(result.wheel_30s_power_up_delay == true);
     TEST_ASSERT_TRUE(result.cam1_and_cam2_sampling_period == 44); // error counter reset period?
@@ -293,7 +293,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_ASGP4_Params()
     TEST_ASSERT_TRUE(GEN_compare_doubles(result.time_coefficient, 5.5, ADCS_TEST_EPSILON));
     TEST_ASSERT_TRUE(GEN_compare_doubles(result.pos_coefficient, 6.6, ADCS_TEST_EPSILON));
     TEST_ASSERT_TRUE(GEN_compare_doubles(result.maximum_position_error, 7.7, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(result.asgp4_filter == ADCS_ASGP4_Filter_Average);
+    TEST_ASSERT_TRUE(result.asgp4_filter == ADCS_ASGP4_FILTER_AVERAGE);
     TEST_ASSERT_TRUE(GEN_compare_doubles(result.xp_coefficient, -8.8, ADCS_TEST_EPSILON));
     TEST_ASSERT_TRUE(GEN_compare_doubles(result.yp_coefficient, -9.9, ADCS_TEST_EPSILON));
     TEST_ASSERT_TRUE(result.gps_roll_over == 10);
@@ -457,11 +457,11 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Raw_Cam1_Sensor()
     ADCS_Raw_Cam_Sensor_Struct result;
     ADCS_Pack_to_Raw_Cam1_Sensor(input_params, &result);
 
-    TEST_ASSERT_TRUE(result.which_sensor == ADCS_Cam1_Sensor);
+    TEST_ASSERT_TRUE(result.which_sensor == ADCS_CAM1_SENSOR);
     TEST_ASSERT_TRUE(result.cam_centroid_x == 513);
     TEST_ASSERT_TRUE(result.cam_centroid_y == -11261);
-    TEST_ASSERT_TRUE(result.cam_capture_status == ADCS_Capture_Result_SRAM_Error);
-    TEST_ASSERT_TRUE(result.cam_detection_result == ADCS_Detect_Result_Sun_Not_Found);
+    TEST_ASSERT_TRUE(result.cam_capture_status == ADCS_CAPTURE_RESULT_SRAM_ERROR);
+    TEST_ASSERT_TRUE(result.cam_detection_result == ADCS_DETECT_RESULT_SUN_NOT_FOUND);
 
     return 0;
 }
@@ -473,11 +473,11 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Raw_Cam2_Sensor()
     ADCS_Raw_Cam_Sensor_Struct result;
     ADCS_Pack_to_Raw_Cam1_Sensor(input_params, &result);
 
-    TEST_ASSERT_TRUE(result.which_sensor == ADCS_Cam1_Sensor);
+    TEST_ASSERT_TRUE(result.which_sensor == ADCS_CAM1_SENSOR);
     TEST_ASSERT_TRUE(result.cam_centroid_x == 513);
     TEST_ASSERT_TRUE(result.cam_centroid_y == -11261);
-    TEST_ASSERT_TRUE(result.cam_capture_status == ADCS_Capture_Result_SRAM_Error);
-    TEST_ASSERT_TRUE(result.cam_detection_result == ADCS_Detect_Result_Sun_Not_Found);
+    TEST_ASSERT_TRUE(result.cam_capture_status == ADCS_CAPTURE_RESULT_SRAM_ERROR);
+    TEST_ASSERT_TRUE(result.cam_detection_result == ADCS_DETECT_RESULT_SUN_NOT_FOUND);
 
     return 0;
 }
@@ -535,7 +535,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Raw_GPS_Status() {
     uint8_t input_params[6] = {0x08, 0x34, 0x56, 0x78, 0x9a, 0xbc};
     ADCS_Raw_GPS_Status_Struct result;
     ADCS_Pack_to_Raw_GPS_Status(input_params, &result);
-    TEST_ASSERT_TRUE(result.gps_solution_status == ADCS_GPS_Solution_Status_Large_Residuals);
+    TEST_ASSERT_TRUE(result.gps_solution_status == ADCS_GPS_SOLUTION_STATUS_LARGE_RESIDUALS);
     TEST_ASSERT_TRUE(result.num_tracked_satellites == 52);
     TEST_ASSERT_TRUE(result.num_used_satellites == 86);
     TEST_ASSERT_TRUE(result.counter_xyz_log == 120);

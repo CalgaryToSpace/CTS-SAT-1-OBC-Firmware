@@ -2,10 +2,13 @@
 #define INC_ADCS_INTERNAL_DRIVERS_H_
 
 #include "adcs_types.h"
+#include "main.h" // this is necessary because &hi2c1 is defined in that file
 
 #define ADCS_I2C_HANDLE &hi2c1
 static const uint8_t ADCS_INCLUDE_CHECKSUM = 1;
 static const uint8_t ADCS_NO_CHECKSUM = 0;
+static const uint8_t ADCS_CHECKSUM_TIMEOUT = 100;
+static const uint16_t ADCS_PROCESSED_TIMEOUT = 1000;
 #define WRITE_STRUCT_TO_MEMORY(struct_to_write) // memory module function: write struct to memory
 
 /* Function Definitions */
@@ -26,6 +29,5 @@ uint8_t ADCS_COMMS_Crc8Checksum(uint8_t* buffer, uint16_t len);
 
 // I2C/UART debug functions
 uint8_t ADCS_send_UART_telecommand(UART_HandleTypeDef *huart, uint8_t id, uint8_t* data, uint32_t data_length);
-
 
 #endif /* INC_ADCS_INTERNAL_DRIVERS_H_ */

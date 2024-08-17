@@ -8,10 +8,9 @@
 #ifndef INC_ADCS_TYPES_H_
 #define INC_ADCS_TYPES_H_
 
-#include "main.h"
-
 #include <stdint.h>
 #include <stdbool.h>
+#include "stm32l4xx_hal.h"
 
 // Bit 7 of Telecommand and Telemetry Request - Section 4.1 of Firmware Manual
 static const uint8_t ADCS_TELECOMMAND = 0;
@@ -21,15 +20,15 @@ static const uint8_t ADCS_TELEMETRY_REQUEST = 1;
 static const uint8_t ADCS_MAGIC_NUMBER = 0x5A; // Used to make sure that the reset command is valid
 
 // I2C Write and Read Addresses - Section 5.3 Table 5 of Firmware Manual
-static const uint8_t ADCS_I2C_WRITE = 0xAE;
-static const uint8_t ADCS_I2C_READ = 0xAF;
+static const uint8_t ADCS_I2C_WRITE_ADDRESS = 0xAE;
+static const uint8_t ADCS_I2C_READ_ADDRESS = 0xAF;
 static const uint8_t ADCS_I2C_ADDRESS = 0x57;
 
 // Identifiers of UART Start of Message and End of Message - Section 4.2 of Firmware Manual
 // 0x1F | 0x7F ....... | 0x1F 0xFF
-static const uint8_t ADCS_ESC_CHARACTER = 0x1F;
-static const uint8_t ADCS_START_MESSAGE = 0x7F;
-static const uint8_t ADCS_END_MESSAGE = 0xFF;
+static const uint8_t ADCS_UART_ESCAPE_BYTE = 0x1F;
+static const uint8_t ADCS_UART_START_MESSAGE = 0x7F;
+static const uint8_t ADCS_UART_END_MESSAGE = 0xFF;
 
 // CRC defines
 static const uint8_t ADCS_CRC_POLY = 0x91;
@@ -43,156 +42,156 @@ static const uint8_t ADCS_TEST_EPSILON = 1e-6;
 /* Enumerated Values */
 
 // Telecommand Error Flags - Section 5.2.2 Figure 6 of Firmware Manual
-typedef enum TC_Error_Flag {
-	TC_Error_None,
-	TC_Error_Invalid_ID,
-	TC_Error_Wrong_Length,
-	TC_Error_Invalid_Params,
-	TC_Error_CRC
-} TC_Error_Flag;
+typedef enum ADCS_Error_Flag {
+	ADCS_ERROR_FLAG_NONE,
+	ADCS_ERROR_FLAG_INVALID_ID,
+	ADCS_ERROR_FLAG_WRONG_LENGTH,
+	ADCS_ERROR_FLAG_INVALID_PARAMS,
+	ADCS_ERROR_FLAG_CRC
+} ADCS_Error_Flag;
 
 // ADCS Run Modes - Section 5.3.1 Table 75 of Firmware Manual
 typedef enum ADCS_Run_Mode {
-	ADCS_Run_Mode_Off,
-	ADCS_Run_Mode_Enabled,
-	ADCS_Run_Mode_Triggered,
-	ADCS_Run_Mode_Simulation
+	ADCS_RUN_MODE_OFF,
+	ADCS_RUN_MODE_ENABLED,
+	ADCS_RUN_MODE_TRIGGERED,
+	ADCS_RUN_MODE_SIMULATION
 } ADCS_Run_Mode;
 
 // ADCS Reset Causes - Section 6.1.2 Table 28 of Firmware Manual
 typedef enum ADCS_Reset_Cause {
-    ADCS_Power_On_Reset,
-    ADCS_Brown_Out_Detected_On_Regulated_Power,
-    ADCS_Brown_Out_Detected_On_Unregulated_Power,
-    ADCS_External_Watchdog_Reset,
-    ADCS_External_Reset,
-    ADCS_Watchdog_Reset,
-    ADCS_Lockup_System_Reset,
-    ADCS_Lockup_Reset,
-    ADCS_System_Request_Reset,
-    ADCS_Backup_Brown_Out,
-    ADCS_Backup_Mode_Reset,
-    ADCS_Backup_Mode_Reset_And_Backup_Brown_Out_Vdd_Regulated,
-    ADCS_Backup_Mode_Reset_And_Backup_Brown_Out_Vdd_Regulated_And_Brown_Out_Regulated,
-    ADCS_Backup_Mode_Reset_And_Watchdog_Reset,
-    ADCS_Backup_Brown_Out_Buvin_And_System_Request_Reset,
-    ADCS_Unknown_Reset_Cause
+    ADCS_POWER_ON_RESET,
+    ADCS_BROWN_OUT_DETECTED_ON_REGULATED_POWER,
+    ADCS_BROWN_OUT_DETECTED_ON_UNREGULATED_POWER,
+    ADCS_EXTERNAL_WATCHDOG_RESET,
+    ADCS_EXTERNAL_RESET,
+    ADCS_WATCHDOG_RESET,
+    ADCS_LOCKUP_SYSTEM_RESET,
+    ADCS_LOCKUP_RESET,
+    ADCS_SYSTEM_REQUEST_RESET,
+    ADCS_BACKUP_BROWN_OUT,
+    ADCS_BACKUP_MODE_RESET,
+    ADCS_BACKUP_MODE_RESET_AND_BACKUP_BROWN_OUT_VDD_REGULATED,
+    ADCS_BACKUP_MODE_RESET_AND_BACKUP_BROWN_OUT_VDD_REGULATED_AND_BROWN_OUT_REGULATED,
+    ADCS_BACKUP_MODE_RESET_AND_WATCHDOG_RESET,
+    ADCS_BACKUP_BROWN_OUT_BUVIN_AND_SYSTEM_REQUEST_RESET,
+    ADCS_UNKNOWN_RESET_CAUSE
 } ADCS_Reset_Cause;
 
 // ADCS Boot Causes - Section 6.1.2 Table 29 of Firmware Manual
 typedef enum ADCS_Boot_Cause {
-    ADCS_Boot_Cause_Unexpected,
-    ADCS_Boot_Cause_Not_Used_1,
-    ADCS_Boot_Cause_Communications_Timeout,
-    ADCS_Boot_Cause_Commanded,
-    ADCS_Boot_Cause_Not_Used_2,
-    ADCS_Boot_Cause_SRAM_Latchup
+    ADCS_BOOT_CAUSE_UNEXPECTED,
+    ADCS_BOOT_CAUSE_NOT_USED_1,
+    ADCS_BOOT_CAUSE_COMMUNICATIONS_TIMEOUT,
+    ADCS_BOOT_CAUSE_COMMANDED,
+    ADCS_BOOT_CAUSE_NOT_USED_2,
+    ADCS_BOOT_CAUSE_SRAM_LATCHUP
 } ADCS_Boot_Cause;
 
 // ADCS Running Programs - Section 6.1.2 Table 30 of Firmware Manual
 typedef enum ADCS_Running_Program {
-    ADCS_Running_ADCS = 1,
-    ADCS_Running_Bootloader = 2
+    ADCS_RUNNING_ADCS = 1,
+    ADCS_RUNNING_BOOTLOADER = 2
 } ADCS_Running_Program;
 
 // ADCS Control Modes - Section 6.3.1 Table 77 of Firmware Manual
 typedef enum ADCS_Control_Mode {
-    ADCS_Control_Mode_None,
-    ADCS_Control_Mode_Detumbling,
-    ADCS_Control_Mode_Y_Thomson_Spin,
-    ADCS_Control_Mode_Y_Wheel_Momentum_Stabilized_Initial_Pitch_Acquisition,
-    ADCS_Control_Mode_Y_Wheel_Momentum_Stabilized_Steady_State,
-    ADCS_Control_Mode_XYZ_Wheel,
-    ADCS_Control_Mode_Rwheel_Sun_Tracking,
-    ADCS_Control_Mode_Rwheel_Target_Tracking,
-    ADCS_Control_Mode_Very_Fast_Spin_Detumbling,
-    ADCS_Control_Mode_Fast_Spin_Detumbling,
-    ADCS_Control_Mode_User_Specific_1,
-    ADCS_Control_Mode_User_Specific_2,
-    ADCS_Control_Mode_Stop_R_Wheels,
-    ADCS_Control_Mode_User_Coded,
-    ADCS_Control_Mode_Sun_Tracking_Yaw_Or_Roll_Only_Wheel,
-    ADCS_Control_Mode_Target_Tracking_Yaw_Only_Wheel
+    ADCS_CONTROL_MODE_NONE,
+    ADCS_CONTROL_MODE_DETUMBLING,
+    ADCS_CONTROL_MODE_Y_THOMSON_SPIN,
+    ADCS_CONTROL_MODE_Y_WHEEL_MOMENTUM_STABILIZED_INITIAL_PITCH_ACQUISITION,
+    ADCS_CONTROL_MODE_Y_WHEEL_MOMENTUM_STABILIZED_STEADY_STATE,
+    ADCS_CONTROL_MODE_XYZ_WHEEL,
+    ADCS_CONTROL_MODE_RWHEEL_SUN_TRACKING,
+    ADCS_CONTROL_MODE_RWHEEL_TARGET_TRACKING,
+    ADCS_CONTROL_MODE_VERY_FAST_SPIN_DETUMBLING,
+    ADCS_CONTROL_MODE_FAST_SPIN_DETUMBLING,
+    ADCS_CONTROL_MODE_USER_SPECIFIC_1,
+    ADCS_CONTROL_MODE_USER_SPECIFIC_2,
+    ADCS_CONTROL_MODE_STOP_R_WHEELS,
+    ADCS_CONTROL_MODE_USER_CODED,
+    ADCS_CONTROL_MODE_SUN_TRACKING_YAW_OR_ROLL_ONLY_WHEEL,
+    ADCS_CONTROL_MODE_TARGET_TRACKING_YAW_ONLY_WHEEL
 } ADCS_Control_Mode;
 
 typedef enum ADCS_Estimation_Mode {
-    ADCS_Estimation_Mode_None,
-    ADCS_Estimation_Mode_MEMS_Rate_Sensing,
-    ADCS_Estimation_Mode_Magnetometer_Rate_Filter,
-    ADCS_Estimation_Mode_Magnetometer_Rate_Filter_With_Pitch_Estimation,
-    ADCS_Estimation_Mode_Magnetometer_And_Fine_Sun_TRIAD_Algorithm,
-    ADCS_Estimation_Mode_Full_State_EKF,
-    ADCS_Estimation_Mode_MEMS_Gyro_EKF,
-    ADCS_Estimation_Mode_User_Coded_Estimation_Mode
+    ADCS_ESTIMATION_MODE_NONE,
+    ADCS_ESTIMATION_MODE_MEMS_RATE_SENSING,
+    ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER,
+    ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER_WITH_PITCH_ESTIMATION,
+    ADCS_ESTIMATION_MODE_MAGNETOMETER_AND_FINE_SUN_TRIAD_ALGORITHM,
+    ADCS_ESTIMATION_MODE_FULL_STATE_EKF,
+    ADCS_ESTIMATION_MODE_MEMS_GYRO_EKF,
+    ADCS_ESTIMATION_MODE_USER_CODED_ESTIMATION_MODE
 } ADCS_Estimation_Mode;
 
 typedef enum ADCS_Power_Select {
-	ADCS_Power_Select_Off = 0,
-	ADCS_Power_Select_On = 1,
-	ADCS_Power_Select_Same = 2
+	ADCS_POWER_SELECT_OFF = 0,
+	ADCS_POWER_SELECT_ON = 1,
+	ADCS_POWER_SELECT_SAME = 2
 } ADCS_Power_Select;
 
 typedef enum ADCS_Magnetometer_Mode {
-	ADCS_Magnetometer_Mode_Main_Signal,
-	ADCS_Magnetometer_Mode_Redundant_Signal,
-	ADCS_Magnetometer_Mode_Main_Motor,
-	ADCS_Magnetometer_Mode_None
+	ADCS_MAGNETOMETER_MODE_MAIN_SIGNAL,
+	ADCS_MAGNETOMETER_MODE_REDUNDANT_SIGNAL,
+	ADCS_MAGNETOMETER_MODE_MAIN_MOTOR,
+	ADCS_MAGNETOMETER_MODE_NONE
 } ADCS_Magnetometer_Mode;
 
 typedef enum ADCS_ASGP4_Filter {
-    ADCS_ASGP4_Filter_Lowpass,
-    ADCS_ASGP4_Filter_Average
+    ADCS_ASGP4_FILTER_LOWPASS,
+    ADCS_ASGP4_FILTER_AVERAGE
 } ADCS_ASGP4_Filter;
 
 typedef enum ADCS_Axis_Select {
-    ADCS_Positive_X,    
-    ADCS_Negative_X,    
-    ADCS_Positive_Y,
-    ADCS_Negative_Y,
-    ADCS_Positive_Z,
-    ADCS_Negative_Z,
-    ADCS_Not_Used
+    ADCS_POSITIVE_X,    
+    ADCS_NEGATIVE_X,    
+    ADCS_POSITIVE_Y,
+    ADCS_NEGATIVE_Y,
+    ADCS_POSITIVE_Z,
+    ADCS_NEGATIVE_Z,
+    ADCS_NOT_USED
 } ADCS_Axis_Select;
 
 typedef enum ADCS_Capture_Result {
-    ADCS_Capture_Result_Startup,
-    ADCS_Capture_Result_Pending,
-    ADCS_Capture_Result_Success,
-    ADCS_Capture_Result_Success_Shift,
-    ADCS_Capture_Result_Timeout,
-    ADCS_Capture_Result_SRAM_Error
+    ADCS_CAPTURE_RESULT_STARTUP,
+    ADCS_CAPTURE_RESULT_PENDING,
+    ADCS_CAPTURE_RESULT_SUCCESS,
+    ADCS_CAPTURE_RESULT_SUCCESS_SHIFT,
+    ADCS_CAPTURE_RESULT_TIMEOUT,
+    ADCS_CAPTURE_RESULT_SRAM_ERROR
 } ADCS_Capture_Result;
 
 typedef enum ADCS_Detect_Result {
-    ADCS_Detect_Result_Startup,
-    ADCS_Detect_Result_No_Detect,
-    ADCS_Detect_Result_Pending,
-    ADCS_Detect_Result_Too_Many_Edges,
-    ADCS_Detect_Result_Too_Few_Edges,
-    ADCS_Detect_Result_Bad_Fit,
-    ADCS_Detect_Result_Sun_Not_Found,
-    ADCS_Detect_Result_Success
+    ADCS_DETECT_RESULT_STARTUP,
+    ADCS_DETECT_RESULT_NO_DETECT,
+    ADCS_DETECT_RESULT_PENDING,
+    ADCS_DETECT_RESULT_TOO_MANY_EDGES,
+    ADCS_DETECT_RESULT_TOO_FEW_EDGES,
+    ADCS_DETECT_RESULT_BAD_FIT,
+    ADCS_DETECT_RESULT_SUN_NOT_FOUND,
+    ADCS_DETECT_RESULT_SUCCESS
 } ADCS_Detect_Result;
 
 typedef enum ADCS_Which_Cam_Sensor {
-    ADCS_Cam_None,
-    ADCS_Cam1_Sensor,
-    ADCS_Cam2_Sensor
+    ADCS_CAM_NONE,
+    ADCS_CAM1_SENSOR,
+    ADCS_CAM2_SENSOR
 } ADCS_Which_Cam_Sensor;
 
 typedef enum ADCS_GPS_Solution_Status {
-    ADCS_GPS_Solution_Status_Solution_Computed,
-    ADCS_GPS_Solution_Status_Insufficient_Observations,
-    ADCS_GPS_Solution_Status_No_Convergence,
-    ADCS_GPS_Solution_Status_Singularity_At_Parameters_Matrix,
-    ADCS_GPS_Solution_Status_Covariance_Trace_Exceeds_Maximum,
-    ADCS_GPS_Solution_Status_Not_Yet_Converged_From_Cold_Start,
-    ADCS_GPS_Solution_Status_Height_Or_Velocity_Limits_Exceeded,
-    ADCS_GPS_Solution_Status_Variance_Exceeds_Limits,
-    ADCS_GPS_Solution_Status_Large_Residuals,
-    ADCS_GPS_Solution_Status_Calculating_Comparison_To_User_Provided,
-    ADCS_GPS_Solution_Status_Fixed_Position_Invalid, 
-    ADCS_GPS_Solution_Status_Position_Type_Unauthorized 
+    ADCS_GPS_SOLUTION_STATUS_SOLUTION_COMPUTED,
+    ADCS_GPS_SOLUTION_STATUS_INSUFFICIENT_OBSERVATIONS,
+    ADCS_GPS_SOLUTION_STATUS_NO_CONVERGENCE,
+    ADCS_GPS_SOLUTION_STATUS_SINGULARITY_AT_PARAMETERS_MATRIX,
+    ADCS_GPS_SOLUTION_STATUS_COVARIANCE_TRACE_EXCEEDS_MAXIMUM,
+    ADCS_GPS_SOLUTION_STATUS_NOT_YET_CONVERGED_FROM_COLD_START,
+    ADCS_GPS_SOLUTION_STATUS_HEIGHT_OR_VELOCITY_LIMITS_EXCEEDED,
+    ADCS_GPS_SOLUTION_STATUS_VARIANCE_EXCEEDS_LIMITS,
+    ADCS_GPS_SOLUTION_STATUS_LARGE_RESIDUALS,
+    ADCS_GPS_SOLUTION_STATUS_CALCULATING_COMPARISON_TO_USER_PROVIDED,
+    ADCS_GPS_SOLUTION_STATUS_FIXED_POSITION_INVALID, 
+    ADCS_GPS_SOLUTION_STATUS_POSITION_TYPE_UNAUTHORIZED 
 } ADCS_GPS_Solution_Status;
 
 typedef enum ADCS_GPS_Axis {
@@ -203,12 +202,12 @@ typedef enum ADCS_GPS_Axis {
 
 /* Structs */
 
-typedef struct ADCS_TC_Ack_Struct {
+typedef struct ADCS_CMD_Ack_Struct {
 	uint8_t last_id;
 	bool processed;
-	enum TC_Error_Flag error_flag;
+	enum ADCS_Error_Flag error_flag;
 	uint8_t error_index;
-} ADCS_TC_Ack_Struct;
+} ADCS_CMD_Ack_Struct;
 
 typedef struct ADCS_ID_Struct {
 	uint8_t node_type;
@@ -229,11 +228,11 @@ typedef struct ADCS_Boot_Running_Status_Struct {
 } ADCS_Boot_Running_Status_Struct;
 
 typedef struct ADCS_Comms_Status_Struct {
-    uint16_t tc_counter;
+    uint16_t cmd_counter;
     uint16_t tlm_counter;
-    bool tc_buffer_overrun;
+    bool cmd_buffer_overrun;
     bool i2c_tlm_error;
-    bool i2c_tc_error;
+    bool i2c_cmd_error;
 } ADCS_Comms_Status_Struct;
 
 typedef struct ADCS_Angular_Rates_Struct {

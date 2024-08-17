@@ -3,27 +3,26 @@
 
 #include "adcs_types.h"
 #include "adcs_internal_drivers.h"
-#include "main.h"
 
 /* Function Definitions */
 
 // ADCS functions
 uint8_t ADCS_Reset();
-uint8_t ADCS_Identification();
-uint8_t ADCS_Program_Status();
-uint8_t ADCS_Communication_Status();
+uint8_t ADCS_Get_Identification();
+uint8_t ADCS_Get_Program_Status();
+uint8_t ADCS_Get_Communication_Status();
 uint8_t ADCS_Deploy_Magnetometer(uint8_t deploy_timeout);
 uint8_t ADCS_Set_Run_Mode(ADCS_Run_Mode mode);
 uint8_t ADCS_Clear_Errors();
 uint8_t ADCS_Attitude_Control_Mode(ADCS_Control_Mode mode, uint16_t timeout);
 uint8_t ADCS_Attitude_Estimation_Mode(ADCS_Estimation_Mode mode);
-uint8_t ADCS_TC_Ack(ADCS_TC_Ack_Struct *ack);
+uint8_t ADCS_CMD_Ack(ADCS_CMD_Ack_Struct *ack);
 uint8_t ADCS_Run_Once();
 uint8_t ADCS_Set_Magnetometer_Mode(ADCS_Magnetometer_Mode mode);
 uint8_t ADCS_Set_Magnetorquer_Output(double x_duty, double y_duty, double z_duty);
 uint8_t ADCS_Set_Wheel_Speed(int16_t x_speed, int16_t y_speed, int16_t z_speed);
 uint8_t ADCS_Save_Config();
-uint8_t ADCS_Estimate_Angular_Rates();
+uint8_t ADCS_Get_Estimate_Angular_Rates();
 uint8_t ADCS_Get_LLH_Position();
 uint8_t ADCS_Get_Power_Control();
 uint8_t ADCS_Set_Power_Control(ADCS_Power_Select cube_control_signal, ADCS_Power_Select cube_control_motor, ADCS_Power_Select cube_sense1,
@@ -46,17 +45,17 @@ uint8_t ADCS_Set_Magnetometer_Config(
         double sensitivity_matrix_s23,
         double sensitivity_matrix_s31,
         double sensitivity_matrix_s32);
-uint8_t ADCS_Bootloader_Clear_Errors();
+uint8_t ADCS_Get_Bootloader_Clear_Errors();
 uint8_t ADCS_Set_Unix_Time_Save_Mode(bool save_now, bool save_on_update, bool save_periodic, uint8_t period);
 uint8_t ADCS_Get_Unix_Time_Save_Mode();
 uint8_t ADCS_Set_SGP4_Orbit_Params(double inclination, double eccentricity, double ascending_node_right_ascension, double perigee_argument, double b_star_drag_term, double mean_motion, double mean_anomaly, double epoch);
 uint8_t ADCS_Get_SGP4_Orbit_Params();
 uint8_t ADCS_Save_Orbit_Params();
-uint8_t ADCS_Rate_Sensor_Rates();
+uint8_t ADCS_Get_Rate_Sensor_Rates();
 uint8_t ADCS_Get_Wheel_Speed();
 uint8_t ADCS_Get_Magnetorquer_Command();
 uint8_t ADCS_Get_Raw_Magnetometer_Values();
-uint8_t ADCS_Estimate_Fine_Angular_Rates();
+uint8_t ADCS_Get_Estimate_Fine_Angular_Rates();
 uint8_t ADCS_Get_Magnetometer_Config();
 uint8_t ADCS_Get_Commanded_Attitude_Angles();
 uint8_t ADCS_Set_Commanded_Attitude_Angles(double x, double y, double z);
@@ -102,25 +101,25 @@ uint8_t ADCS_Set_Tracking_Controller_Target_Reference(float lon, float lat, floa
 uint8_t ADCS_Get_Tracking_Controller_Target_Reference();
 uint8_t ADCS_Set_Rate_Gyro_Config(ADCS_Axis_Select gyro1, ADCS_Axis_Select gyro2, ADCS_Axis_Select gyro3, double x_rate_offset, double y_rate_offset, double z_rate_offset, uint8_t rate_sensor_mult);
 uint8_t ADCS_Get_Rate_Gyro_Config();
-uint8_t ADCS_Estimated_Attitude_Angles();
-uint8_t ADCS_Magnetic_Field_Vector();
-uint8_t ADCS_Fine_Sun_Vector();
-uint8_t ADCS_Nadir_Vector();
-uint8_t ADCS_Commanded_Wheel_Speed();
-uint8_t ADCS_IGRF_Magnetic_Field_Vector();
-uint8_t ADCS_Quaternion_Error_Vector();
-uint8_t ADCS_Estimated_Gyro_Bias();
-uint8_t ADCS_Estimation_Innovation_Vector();
-uint8_t ADCS_Raw_Cam1_Sensor();
-uint8_t ADCS_Raw_Cam2_Sensor();
-uint8_t ADCS_Raw_CSS_1_to_6();
-uint8_t ADCS_Raw_CSS_7_to_10();
-uint8_t ADCS_CubeControl_Current();
-uint8_t ADCS_Raw_GPS_Status();
-uint8_t ADCS_Raw_GPS_Time();
-uint8_t ADCS_Raw_GPS_X();
-uint8_t ADCS_Raw_GPS_Y();
-uint8_t ADCS_Raw_GPS_Z();
-uint8_t ADCS_Measurements();
+uint8_t ADCS_Get_Estimated_Attitude_Angles();
+uint8_t ADCS_Get_Magnetic_Field_Vector();
+uint8_t ADCS_Get_Fine_Sun_Vector();
+uint8_t ADCS_Get_Nadir_Vector();
+uint8_t ADCS_Get_Commanded_Wheel_Speed();
+uint8_t ADCS_Get_IGRF_Magnetic_Field_Vector();
+uint8_t ADCS_Get_Quaternion_Error_Vector();
+uint8_t ADCS_Get_Estimated_Gyro_Bias();
+uint8_t ADCS_Get_Estimation_Innovation_Vector();
+uint8_t ADCS_Get_Raw_Cam1_Sensor();
+uint8_t ADCS_Get_Raw_Cam2_Sensor();
+uint8_t ADCS_Get_Raw_CSS_1_to_6();
+uint8_t ADCS_Get_Raw_CSS_7_to_10();
+uint8_t ADCS_Get_CubeControl_Current();
+uint8_t ADCS_Get_Raw_GPS_Status();
+uint8_t ADCS_Get_Raw_GPS_Time();
+uint8_t ADCS_Get_Raw_GPS_X();
+uint8_t ADCS_Get_Raw_GPS_Y();
+uint8_t ADCS_Get_Raw_GPS_Z();
+uint8_t ADCS_Get_Measurements();
 
 #endif /* INC_ADCS_COMMANDS_H_ */

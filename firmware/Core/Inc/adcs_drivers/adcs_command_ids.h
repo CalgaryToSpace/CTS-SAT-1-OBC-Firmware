@@ -9,7 +9,6 @@
 #define INC_ADCS_COMMAND_IDS_H_
 
 #include "adcs_types.h"
-#include <stdint.h>
 
 /* Command IDs */
 
