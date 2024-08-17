@@ -50,14 +50,40 @@ uint32_t CalculateBlockCRC32( uint32_t ulCount, uint8_t *ucBuffer ) {
 /// @return 0 if successful, >0 if an error occurred
 uint8_t parse_gps_header(const char *data_received, gps_response_header *result){
 
-    // TODO: What if the start of the string is not #?
+    // TODO: What if there are multiple responses in the string?
 
-    // Check if the first character is a #
-    if( data_received[0] != '#'){
+    // Find the start and end of the header, which is # and ; resepectively
+    const char *sync_char = strchr(data_received,'#');
+    const char *delimiter_char = strchr(data_received,';');
 
-        // Invalid response starting string found
-        return 1;
+    if (!sync_char || !delimiter_char) {
+        // Invalid data: No header in gps response
+        return 1; 
     }
+
+    // Calculate the length of the header string
+    const int header_length = delimiter_char - sync_char + 1;
+    if (header_length < 0) {
+        //Sync character occurs after delimiter character
+        return 2;
+    }
+
+    char header_buffer[256];
+    if ((size_t)header_length >= sizeof(header_buffer)) {
+        //Header is too large for the buffer
+        return 3;  
+    }
+
+    // Copy header string into a buffer
+    strncpy(header_buffer, sync_char, header_length);
+    header_buffer[header_length] = '\0';  // Null-terminate the substring
+
+    // Parse the data in the header buffer
+
+
+
+
+
 
     return 0;
 }
