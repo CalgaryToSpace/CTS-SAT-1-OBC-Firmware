@@ -1,4 +1,5 @@
 #include "unit_tests/unit_test_gps.h"
+#include "unit_tests/unit_test_helpers.h"
 #include "gps/gps.h"
 #include "gps/gps_types.h"
 
@@ -13,9 +14,9 @@ uint8_t TEST_EXEC__GPS_Parse_header(){
     gps_response_header result;
 
     // Call header parser function
-    uint8_t parse_status = parse_gps_header(gps_data, &result);
+    uint8_t result = parse_gps_header(gps_data, &result);
 
-    TEST_ASSERT_TRUE(parse_status == 0);
+    // TEST_ASSERT_TRUE(result == 0);
     TEST_ASSERT_TRUE(strcmp(result.log_name, "BESTXYZA") == 0);
     TEST_ASSERT_TRUE(strcmp(result.port, "COM1") == 0);
     TEST_ASSERT_TRUE(result.sequence_no == 0);
@@ -39,9 +40,11 @@ uint8_t TEST_EXEC__GPS_Parse_bestxyza(){
     bestxyza_response result;
 
     // Call bestxyza parser
+    uint8_t result = parse_gps_header(gps_data, &result);
+    
 
-    TEST_ASSERT_TRUE(result.position_solution_status.gps_solution_status_ascii == "SOL_COMPUTED");
-    TEST_ASSERT_TRUE(result.position_type.gps_type_ascii == "NARROW_INT");
+    TEST_ASSERT_TRUE(strcmp(result.position_solution_status.gps_solution_status_ascii,"SOL_COMPUTED" )== 0);
+    TEST_ASSERT_TRUE(strcmp(result.position_type.gps_type_ascii ,"NARROW_INT") == 0);
 
     TEST_ASSERT_TRUE(result.position_x_m == -1634531.5683);
     TEST_ASSERT_TRUE(result.position_y_m == -3664618.0326);
@@ -51,8 +54,8 @@ uint8_t TEST_EXEC__GPS_Parse_bestxyza(){
     TEST_ASSERT_TRUE(result.position_y_std_m == 0.0219);
     TEST_ASSERT_TRUE(result.position_z_std_m == 0.0115);
 
-    TEST_ASSERT_TRUE(result.velocity_solution_status.gps_solution_status_ascii == "SOL_COMPUTED");
-    TEST_ASSERT_TRUE(result.velocity_type.gps_type_ascii == "NARROW_INT");
+    TEST_ASSERT_TRUE(strcmp(result.velocity_solution_status.gps_solution_status_ascii, "SOL_COMPUTED")== 0);
+    TEST_ASSERT_TRUE(strcmp(result.velocity_type.gps_type_ascii,"NARROW_INT") ==0);
 
     TEST_ASSERT_TRUE(result.velocity_x_m_per_s == 0.0011);
     TEST_ASSERT_TRUE(result.velocity_y_m_per_s == -0.0049);
@@ -62,7 +65,7 @@ uint8_t TEST_EXEC__GPS_Parse_bestxyza(){
     TEST_ASSERT_TRUE(result.velocity_y_std_m_per_s == 0.0439);
     TEST_ASSERT_TRUE(result.velocity_z_std_m_per_s == 0.0230);
 
-    TEST_ASSERT_TRUE(result.stn_id == '"AAAA"');
+    TEST_ASSERT_TRUE(strcmp(result.stn_id, '"AAAA"') == 0);
     TEST_ASSERT_TRUE(result.velocity_latency == 0.250);
     TEST_ASSERT_TRUE(result.differential_age_sec == 1.000);
     TEST_ASSERT_TRUE(result.solution_age_sec == 0.000);
