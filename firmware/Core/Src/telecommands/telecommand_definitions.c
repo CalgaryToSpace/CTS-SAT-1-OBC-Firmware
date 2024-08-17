@@ -338,6 +338,36 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
+        .tcmd_name = "eps_system_reset",
+        .tcmd_func = TCMDEXEC_eps_system_reset,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_no_operation",
+        .tcmd_func = TCMDEXEC_eps_no_operation,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_cancel_operation",
+        .tcmd_func = TCMDEXEC_eps_cancel_operation,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_switch_to_mode",
+        .tcmd_func = TCMDEXEC_eps_switch_to_mode,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_set_channel_enabled",
+        .tcmd_func = TCMDEXEC_eps_set_channel_enabled,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
         .tcmd_name = "eps_get_system_status_json",
         .tcmd_func = TCMDEXEC_eps_get_system_status_json,
         .number_of_args = 0,
