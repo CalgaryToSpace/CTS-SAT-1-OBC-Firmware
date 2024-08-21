@@ -528,15 +528,15 @@ uint8_t ADCS_Pack_to_Raw_GPS_Time_Struct(uint8_t* data_received, ADCS_Raw_GPS_Ti
     return 0; 
 }
 
-/// @brief Packs the ADCS received raw data into the appropriate structure for this command.
+/// @brief Packs the ADCS received raw data into the appropriate structure for any of the three Raw_GPS commands (X, Y, Z).
 /// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
 /// @param[out] result Structure containing the formated data for this command.
 /// @return 0 once the function is finished running.}
 uint8_t ADCS_Pack_to_Raw_GPS_Struct(ADCS_GPS_Axis axis, uint8_t *data_received, ADCS_Raw_GPS_Struct *result) {
-    result->axis = axis;
-    result->ecef_position = (int32_t) ((int16_t)(data_received[3] << 24 | data_received[2]) << 16 | 
+    result->axis = axis; // this function works for three commands, so we need to keep this information
+    result->ecef_position_meters = (int32_t) (data_received[3] << 24 | data_received[2] << 16 | 
                                                data_received[1] << 8 | data_received[0]); // ECEF Position Z [m]
-	result->ecef_velocity = (int16_t)(data_received[5] << 8 | data_received[4]);  // ECEF Velocity Z [m/s]
+	result->ecef_velocity_meters_per_sec = (int16_t)(data_received[5] << 8 | data_received[4]);  // ECEF Velocity Z [m/s]
 
     return 0;
 }

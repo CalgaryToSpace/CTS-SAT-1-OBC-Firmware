@@ -1,6 +1,9 @@
 #ifndef __INCLUDE_GUARD__ADCS_TEST_PROTOTYPES_H__
 #define __INCLUDE_GUARD__ADCS_TEST_PROTOTYPES_H__
 
+// epsilon for comparing doubles
+static const float ADCS_TEST_EPSILON = 1e-6;
+
 // ADCS test definitions
 uint8_t TEST_EXEC__ADCS_Pack_to_Ack_Struct();
 uint8_t TEST_EXEC__ADCS_Pack_to_Identification_Struct();

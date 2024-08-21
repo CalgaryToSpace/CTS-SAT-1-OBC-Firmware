@@ -6,7 +6,6 @@
 #include <string.h>
 
 // Reminder: to run all unit tests, CTS1+run_all_unit_tests()!
-// TODO: FIVE UNIT TESTS STILL FAIL
 
 uint8_t TEST_EXEC__ADCS_Pack_to_Ack_Struct() {
     uint8_t input_params[4] = {0x11, 0x01, 0x03, 0x04};
@@ -134,13 +133,13 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Orbit_Params_Struct() {
     ADCS_Orbit_Params_Struct result;
     ADCS_Pack_to_Orbit_Params_Struct(input_params, &result);
 
-    TEST_ASSERT_FALSE(GEN_compare_doubles(result.inclination, 1.2, ADCS_TEST_EPSILON));
-    TEST_ASSERT_FALSE(GEN_compare_doubles(result.eccentricity, 0.67, ADCS_TEST_EPSILON));
-    TEST_ASSERT_FALSE(GEN_compare_doubles(result.ascending_node_right_ascension, 5.6, ADCS_TEST_EPSILON));
-    TEST_ASSERT_FALSE(GEN_compare_doubles(result.b_star_drag_term, 0.9, ADCS_TEST_EPSILON));
-    TEST_ASSERT_FALSE(GEN_compare_doubles(result.mean_motion, 10.1, ADCS_TEST_EPSILON));
-    TEST_ASSERT_FALSE(GEN_compare_doubles(result.mean_anomaly, 11.2, ADCS_TEST_EPSILON));
-    TEST_ASSERT_FALSE(GEN_compare_doubles(result.epoch, 12.3, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.inclination, 1.2, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.eccentricity, 0.67, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.ascending_node_right_ascension, 5.6, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.b_star_drag_term, 0.9, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.mean_motion, 10.1, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.mean_anomaly, 11.2, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.epoch, 12.3, ADCS_TEST_EPSILON));
 
     return 0;
 }
@@ -256,13 +255,13 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Estimation_Params_Struct()
 
     ADCS_Estimation_Params_Struct result;
     ADCS_Pack_to_Estimation_Params_Struct(input_params, &result);
-    TEST_ASSERT_FALSE(GEN_compare_doubles(result.magnetometer_rate_filter_system_noise, 1.1, ADCS_TEST_EPSILON));
-    TEST_ASSERT_FALSE(GEN_compare_doubles(result.ekf_system_noise, 2.2, ADCS_TEST_EPSILON));
-    TEST_ASSERT_FALSE(GEN_compare_doubles(result.css_measurement_noise, 3.3, ADCS_TEST_EPSILON));
-    TEST_ASSERT_FALSE(GEN_compare_doubles(result.sun_sensor_measurement_noise, 4.4, ADCS_TEST_EPSILON));
-    TEST_ASSERT_FALSE(GEN_compare_doubles(result.nadir_sensor_measurement_noise, 5.5, ADCS_TEST_EPSILON));
-    TEST_ASSERT_FALSE(GEN_compare_doubles(result.magnetometer_measurement_noise, 6.6, ADCS_TEST_EPSILON));
-    TEST_ASSERT_FALSE(GEN_compare_doubles(result.star_tracker_measurement_noise, 7.7, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.magnetometer_rate_filter_system_noise, 1.1, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.ekf_system_noise, 2.2, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.css_measurement_noise, 3.3, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.sun_sensor_measurement_noise, 4.4, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.nadir_sensor_measurement_noise, 5.5, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.magnetometer_measurement_noise, 6.6, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.star_tracker_measurement_noise, 7.7, ADCS_TEST_EPSILON));
     TEST_ASSERT_TRUE(result.use_sun_sensor == false);
     TEST_ASSERT_TRUE(result.use_nadir_sensor == true);
     TEST_ASSERT_TRUE(result.use_css == false);
@@ -314,9 +313,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Tracking_Controller_Target_Reference_Struct()
 
     ADCS_Tracking_Controller_Target_Struct result;
     ADCS_Pack_to_Tracking_Controller_Target_Reference_Struct(input_params, &result);
-    TEST_ASSERT_FALSE(GEN_compare_doubles(result.lon, 110.4, 10*ADCS_TEST_EPSILON));
-    TEST_ASSERT_FALSE(GEN_compare_doubles(result.lat, -69.6, 10*ADCS_TEST_EPSILON));
-    TEST_ASSERT_FALSE(GEN_compare_doubles(result.alt, 1.05, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.lon, 110.4, 10*ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.lat, -69.6, 10*ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.alt, 1.05, ADCS_TEST_EPSILON));
     // per CubeSupport, latitude and longitude are only accurate to within 1e-5 degrees
 
     return 0;
@@ -526,9 +525,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_CubeControl_Current_Struct() {
     ADCS_CubeControl_Current_Struct result;
     ADCS_Pack_to_CubeControl_Current_Struct(input_params, &result);
 
-    TEST_ASSERT_FALSE(GEN_compare_doubles(result.cubecontrol_3v3_current_mA, 6508.7890625, ADCS_TEST_EPSILON / 100.0));
-    TEST_ASSERT_FALSE(GEN_compare_doubles(result.cubecontrol_5v_current_mA, 15041.9921875, ADCS_TEST_EPSILON / 100.0));
-    TEST_ASSERT_FALSE(GEN_compare_doubles(result.cubecontrol_vbat_current_mA, 23575.1953125, ADCS_TEST_EPSILON / 100.0));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.cubecontrol_3v3_current_mA, 6508.7890625, ADCS_TEST_EPSILON / 100.0));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.cubecontrol_5v_current_mA, 15041.9921875, ADCS_TEST_EPSILON / 100.0));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.cubecontrol_vbat_current_mA, 23575.1953125, ADCS_TEST_EPSILON / 100.0));
     return 0;
 }
 
@@ -550,7 +549,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Raw_GPS_Time_Struct() {
     ADCS_Raw_GPS_Time_Struct result;
     ADCS_Pack_to_Raw_GPS_Time_Struct(input_params, &result);
     TEST_ASSERT_TRUE(result.gps_reference_week == 13330);
-    TEST_ASSERT_FALSE(GEN_compare_doubles(result.gps_time, 3164239.958, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.gps_time, 3164239.958, ADCS_TEST_EPSILON));
     return 0;
 }
 
@@ -559,14 +558,14 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Raw_GPS_Struct() {
     ADCS_Raw_GPS_Struct result;
     ADCS_Pack_to_Raw_GPS_Struct(ADCS_GPS_AXIS_Y, input_params, &result);
     TEST_ASSERT_TRUE(result.axis == ADCS_GPS_AXIS_Y);
-    TEST_ASSERT_FALSE(GEN_compare_doubles(result.ecef_position, 2018915346, ADCS_TEST_EPSILON));
-    TEST_ASSERT_FALSE(GEN_compare_doubles(result.ecef_velocity, -17254, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(result.ecef_position_meters == 2018915346);
+    TEST_ASSERT_TRUE(result.ecef_velocity_meters_per_sec == -17254);
 
     uint8_t input_params_two[6] = {0x12, 0x34, 0xee, 0xff, 0x9a, 0x0c};
     ADCS_Pack_to_Raw_GPS_Struct(ADCS_GPS_AXIS_X, input_params_two, &result);
     TEST_ASSERT_TRUE(result.axis == ADCS_GPS_AXIS_X);
-    TEST_ASSERT_FALSE(GEN_compare_doubles(result.ecef_position, -1166318, ADCS_TEST_EPSILON));
-    TEST_ASSERT_FALSE(GEN_compare_doubles(result.ecef_velocity, 3226, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(result.ecef_position_meters == -1166318);
+    TEST_ASSERT_TRUE(result.ecef_velocity_meters_per_sec == 3226);
 
     return 0;
 }
