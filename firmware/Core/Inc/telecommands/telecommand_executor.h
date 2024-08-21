@@ -27,11 +27,12 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
 void TCMD_agenda_delete_all();
 
 uint8_t TCMD_agenda_delete_by_tssent(uint64_t tssent);
-uint32_t TCMD_get_tcmd_count();
-uint64_t TCMD_get_most_recent_tcmd_timestamp_sent();
 
 uint8_t TCMD_agenda_fetch();
 
 uint8_t TCMD_agenda_delete_by_name(const char *telecommand_name);
+
+extern uint32_t TCMD_total_tcmd_queued_count;
+extern uint64_t TCMD_latest_received_tcmd_timestamp_sent;
 
 #endif // INCLUDE_GUARD__TELECOMMAND_EXECUTOR_H

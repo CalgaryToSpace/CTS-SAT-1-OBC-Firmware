@@ -190,10 +190,3 @@ void TIM_epoch_ms_to_decimal_string(char *str, size_t len) {
     return;
 
 }
-
-/// @brief  Getter function for the variable 'TIM_system_uptime_at_last_time_resync_ms'
-/// @return Returns the variable 'TIM_system_uptime_at_last_time_resync_ms' for other file use.
-/// @note This function is mostly intended for "system stats" telecommands and logging.
-uint32_t TIM_get_system_uptime_at_last_time_resync_ms() {
-    return TIM_system_uptime_at_last_time_resync_ms;
-}

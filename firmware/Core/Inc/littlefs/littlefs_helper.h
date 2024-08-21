@@ -18,6 +18,7 @@
 extern lfs_t LFS_filesystem; // LittleFS filesystem object; traditionally called `lfs`
 extern struct lfs_config LFS_cfg;
 extern struct lfs_file_config LFS_file_cfg;
+extern uint8_t LFS_is_lfs_mounted;
 
 /*---------------------------FUNCTIONS---------------------------*/
 int8_t LFS_format();
@@ -30,6 +31,5 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
 int8_t LFS_append_file(const char file_name[], uint8_t *write_buffer, uint32_t write_buffer_len);
 lfs_ssize_t LFS_read_file(const char file_name[], lfs_soff_t offset, uint8_t *read_buffer, uint32_t read_buffer_len);
 lfs_ssize_t LFS_file_size(const char file_name[]);
-int8_t LFS_get_mount_status();
 
 #endif /* __INCLUDE_GUARD__LITTLEFS_HELPER_H__ */

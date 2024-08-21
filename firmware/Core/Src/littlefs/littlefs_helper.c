@@ -412,9 +412,3 @@ lfs_ssize_t LFS_file_size(const char file_name[])
     return size;
 }
 
-/// @brief  Getter function for the variable 'LFS_is_lfs_mounted'
-/// @return Returns the variable 'LFS_is_lfs_mounted' for other file use.
-/// @note This function is mostly intended for "system stats" telecommands and logging.
-int8_t LFS_get_mount_status() { 
-    return LFS_is_lfs_mounted;
-}

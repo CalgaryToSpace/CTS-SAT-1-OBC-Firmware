@@ -21,6 +21,7 @@
 #include "telecommands/mpi_telecommand_defs.h"
 #include "timekeeping/timekeeping.h"
 #include "littlefs/littlefs_helper.h"
+#include "sys_reboot_reason.h"
 
 
 #include <stdio.h>
@@ -430,36 +431,26 @@ uint8_t TCMDEXEC_heartbeat_on(const char *args_str, TCMD_TelecommandChannel_enum
 
 uint8_t TCMDEXEC_core_system_stats(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
+
+    // TODO: Add temperatures (EPS, OBC, antenna, etc.)
+    // TODO: Add beacon sent count
+
+    char timestamp_string[20];
+    GEN_uint64_to_str(TIM_get_current_unix_epoch_time_ms(),timestamp_string);
+
+    char time_of_last_tcmd_sent_string[20];
+    GEN_uint64_to_str(TCMD_latest_received_tcmd_timestamp_sent, time_of_last_tcmd_sent_string);
     
-    uint32_t epoch = TIM_get_current_system_uptime_ms(); 
-
-    uint32_t last_resync_ms = TIM_get_system_uptime_at_last_time_resync_ms(); // timestamp at sync
-
-    uint32_t uptime = TIM_get_current_system_uptime_ms(); //current system uptime   
-
-    uint32_t delta_uptime = uptime - last_resync_ms; // time between last time sync 
-
-    int16_t latest_tcmd_sent = TCMD_get_most_recent_tcmd_timestamp_sent();
-
-    uint32_t cmd_count = TCMD_get_tcmd_count();
-
-    uint8_t mount_status = LFS_get_mount_status();
-
-    //TODO: 
-    //  logging information for beacon count and temperature still required 
-
-    //  Getting information to convert epoch into a readable timestamp
-    time_t seconds = (time_t)(epoch/ 1000U);
-    uint16_t ms = epoch - 1000U * seconds;
-    struct tm *time_info = gmtime(&seconds);
-    
-    snprintf(response_output_buf, response_output_buf_len, "{\"timestamp\":\"%d%02d%02dT%02d:%02d:%02d.%03u\",\"uptime\":\"%ld\",\"last_resync_ms\":\"%ld\",\"delta_uptime\":\"%ld\",\"time_of_last_tcmd_sent\":\"%d\",\"total_tcmd_count\":\"%lu\",\"mount_status\":\"%u\"}\n" ,
-    time_info->tm_year + 1900, 
-    time_info->tm_mon + 1, 
-    time_info->tm_mday, 
-    time_info->tm_hour, 
-    time_info->tm_min, 
-    time_info->tm_sec, ms, uptime,last_resync_ms,delta_uptime,latest_tcmd_sent,cmd_count,mount_status);
+    snprintf(response_output_buf, response_output_buf_len, "{\"timestamp\":\"%s\",\"uptime\":\"%lu\",\"last_resync_ms\":\"%lu\",\"delta_uptime\":\"%lu\",\"time_of_last_tcmd_sent\":\"%s\",\"total_tcmd_count\":\"%lu\",\"fs_mount_status\":\"%u\",\"last_time_sync_source\":\"%c\",\"reboot_reason\":\"%s\"}\n" ,
+    timestamp_string, // timestamp
+    TIM_get_current_system_uptime_ms(), // uptime
+    TIM_system_uptime_at_last_time_resync_ms, // last_resync_ms
+    TIM_get_current_system_uptime_ms() - TIM_system_uptime_at_last_time_resync_ms, // delta_uptime
+    time_of_last_tcmd_sent_string, // time_of_last_tcmd_sent
+    TCMD_total_tcmd_queued_count, // total_tcmd_count
+    LFS_is_lfs_mounted, // fs_mount_status
+    TIM_synchronization_source_letter(TIM_last_synchronization_source), // last_time_sync_source
+    reset_cause_get_name(reset_cause_get())); // reboot_reason
 
     return 0;
 }
