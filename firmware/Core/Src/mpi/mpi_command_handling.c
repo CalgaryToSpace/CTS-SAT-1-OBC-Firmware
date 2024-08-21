@@ -1,14 +1,13 @@
 #include "mpi/mpi_command_handling.h"
 #include "mpi/mpi_types.h"
-#include "debug_tools/debug_uart.h"
 #include "uart_handler/uart_handler.h"
 #include "main.h"
 #include "stm32l4xx_hal.h"
 #include "string.h"
 #include <stdio.h>
 
-#define TX_TIMEOUT_DURATION_MS 100	// Timeout duration for transmit in milliseconds
-#define RX_TIMEOUT_DURATION_MS 100	// Timeout duration for receive in milliseconds
+#define MPI_TX_TIMEOUT_DURATION_MS 100	// Timeout duration for transmit in milliseconds
+#define MPI_RX_TIMEOUT_DURATION_MS 100	// Timeout duration for receive in milliseconds
 
 MPI_rx_mode_t current_mpi_mode = NOT_LISTENING_TO_MPI_MODE;
 
@@ -18,14 +17,14 @@ MPI_rx_mode_t current_mpi_mode = NOT_LISTENING_TO_MPI_MODE;
 /// @param MPI_rx_buffer Buffer to store incoming response from the MPI
 /// @param MPI_rx_buffer_max_size The maximum size of the MPI response buffer
 /// @param MPI_rx_buffer_len Pointer to variable that will contain the length of the populated MPI response buffer 
-/// @return 0: Success, 1: No bytes to send, 2: Failed UART transmission, 3: Failed UART reception, 4: MPI unresponsive, 5: MPI failed to execute CMD
+/// @return 0: Success, 1: No bytes to send, 2: Failed UART transmission, 3: Failed UART reception, 4: Timeout waiting for 1st byte from MPI, 5: MPI failed to execute CMD
 uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const size_t bytes_to_send_len, uint8_t *MPI_rx_buffer, size_t MPI_rx_buffer_max_size, uint16_t *MPI_rx_buffer_len)
 {
 	// Set MPI to command mode
 	current_mpi_mode = COMMAND_MODE;
 
 	// Transmit the MPI command
-	HAL_StatusTypeDef transmit_status = HAL_UART_Transmit(&huart1, bytes_to_send, bytes_to_send_len, TX_TIMEOUT_DURATION_MS);
+	HAL_StatusTypeDef transmit_status = HAL_UART_Transmit(&huart1, bytes_to_send, bytes_to_send_len, MPI_TX_TIMEOUT_DURATION_MS);
 
 	// Check UART transmission
 	if (transmit_status != HAL_OK)
@@ -43,16 +42,16 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
     }
 
 	// Record start time for mpi response reception
-	uint32_t UART_mpi_rx_start_time_ms = HAL_GetTick();
+	const uint32_t UART_mpi_rx_start_time_ms = HAL_GetTick();
 
 	while(1){
 		// MPI hasn't sent any data and has timed out
-		if(((HAL_GetTick() - UART_mpi_rx_start_time_ms) > RX_TIMEOUT_DURATION_MS) && (UART_mpi_rx_buffer_write_idx == 0)){
-			return 4; // Error code: MPI unresponsive
+		if(((HAL_GetTick() - UART_mpi_rx_start_time_ms) > MPI_RX_TIMEOUT_DURATION_MS) && (UART_mpi_rx_buffer_write_idx == 0)){
+			return 4; // Error code: Timeout waiting for 1st byte
 		}
 
 		// MPI has sent some data and has timed out
-		if (((HAL_GetTick() - UART_mpi_rx_last_byte_write_time_ms) > RX_TIMEOUT_DURATION_MS) && (UART_mpi_rx_buffer_write_idx > 0)) {
+		if (((HAL_GetTick() - UART_mpi_rx_last_byte_write_time_ms) > MPI_RX_TIMEOUT_DURATION_MS) && (UART_mpi_rx_buffer_write_idx > 0)) {
 			// Copy the buffer to the last received byte index
 			for (uint16_t i = 0; i < UART_mpi_rx_buffer_write_idx; i++) {
 				MPI_rx_buffer[i] = UART_mpi_rx_buffer[i];
@@ -69,7 +68,7 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
 			HAL_UART_DMAStop(&huart1);
 
 			// Validate MPI response
-			uint8_t MPI_response_result = MPI_validate_telecommand_response(bytes_to_send, MPI_rx_buffer, bytes_to_send_len);
+			const uint8_t MPI_response_result = MPI_validate_telecommand_response(bytes_to_send, MPI_rx_buffer, bytes_to_send_len);
 
 			// Error found during validation
 			if(MPI_response_result > 0){
@@ -77,9 +76,7 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
 			}
 
 			return 0; // MPI successfully executed the telecommand
-			// break;
 		}
-		// TODO: write_idx >= sizeof(rx_buffer) HANDLE OVERFLOW
 	}
 	
 	return 0; // Valid response from the MPI

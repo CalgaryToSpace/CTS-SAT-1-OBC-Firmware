@@ -12,11 +12,11 @@
 
 ///@brief Send a configuration command & params (IF ANY) to the MPI encoded in hex
 /// @param args_str 
-/// - Arg 0: Hex-encoded string representing the configuration command + params (IF ANY) being sent to the MPI INCLUDING 'TC' (0x54 0x43)
+/// - Arg 0: Hex-encoded string representing the configuration command + expected data (IF ANY) being sent to the MPI INCLUDING 'TC' (0x54 0x43)
 /// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
-/// @return 0: Success, 1: Invalid Input, 2: Failed UART transmission, 3: Failed UART reception, 4: MPI unresponsive, 5: MPI failed to execute CMD
+/// @return 0: Success, 1: Invalid Input, 2: Failed UART transmission, 3: Failed UART reception, 4: MPI timeout before sending 1 byte, 5: MPI failed to execute CMD
 uint8_t TCMDEXEC_mpi_send_command_hex(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                       char *response_output_buf, uint16_t response_output_buf_len)
 {
@@ -40,7 +40,7 @@ uint8_t TCMDEXEC_mpi_send_command_hex(const char *args_str, TCMD_TelecommandChan
     memset(MPI_rx_buffer, 0, MPI_rx_buffer_max_size);  // Initialize all elements to 0
 
     // Send command to MPI and receive back the response
-    uint8_t cmd_response = MPI_send_telecommand_get_response(args_bytes, args_bytes_len, MPI_rx_buffer, MPI_rx_buffer_max_size, &MPI_rx_buffer_len);
+    const uint8_t cmd_response = MPI_send_telecommand_get_response(args_bytes, args_bytes_len, MPI_rx_buffer, MPI_rx_buffer_max_size, &MPI_rx_buffer_len);
 
     // Verify successful echo response from the mpi
     if (cmd_response == 0){
