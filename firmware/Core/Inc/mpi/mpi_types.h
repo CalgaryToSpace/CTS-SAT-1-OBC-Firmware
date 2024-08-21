@@ -10,17 +10,15 @@
 #include <stdint.h>
 
 /**
- * @enum Mpi_Mode
+ * @enum MPI_rx_mode_t
  * @brief Enumerates the different modes under which the satellite can operate the MPI
  * 
  */
-enum Mpi_Mode {
+typedef enum {
     COMMAND_MODE,                           // MPI is in command mode
     SCIENCE_DATA_MODE,                      // MPI is science data is being collected mode
     NOT_LISTENING_TO_MPI_MODE               // MPI is recording science data but it is not being collected mode
-};
-
-extern enum Mpi_Mode current_mpi_mode;      // Current mode under which the MPI is being operated
+}MPI_rx_mode_t;
 
 /**
  * @brief Represents an data frame received from the MPI
@@ -48,6 +46,6 @@ typedef struct
     uint16_t inner_dome_voltage_adc_reading; // ADC reading for inner dome voltage
     uint16_t pixels[67];                     // Array of 67 image pixels    (Not a typo: It is actually 67!)
     uint16_t cyclic_redundancy_check;        // CRC for data integrity check
-} MpiFrame_t;
+} MPI_dataframe_t;
 
 #endif // __INCLUDE_GUARD__MPI_TYPES_H

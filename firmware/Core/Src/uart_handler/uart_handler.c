@@ -1,6 +1,7 @@
 #include "uart_handler/uart_handler.h"
 #include "debug_tools/debug_uart.h"
-#include "mpi/mpi_types.h"
+//#include "mpi/mpi_types.h"
+#include "mpi/mpi_command_handling.h"
 #include <stdio.h> // remove after testing (temp)
 #include "main.h"
 
