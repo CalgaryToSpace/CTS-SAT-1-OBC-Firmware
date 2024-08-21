@@ -360,9 +360,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Magnetic_Field_Vector_Struct()
     ADCS_Magnetic_Field_Vector_Struct result;
     ADCS_Pack_to_Magnetic_Field_Vector_Struct(input_params, &result);
 
-    TEST_ASSERT_TRUE(result.x_nT == 100000000000);
-    TEST_ASSERT_TRUE(result.y_nT == -2040000000);
-    TEST_ASSERT_TRUE(result.z_nT == 308060000000);
+    TEST_ASSERT_TRUE(result.x_nT == 100000);
+    TEST_ASSERT_TRUE(result.y_nT == -2040);
+    TEST_ASSERT_TRUE(result.z_nT == 308060);
 
     return 0;
 }
@@ -376,7 +376,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Nadir_Vector_Struct()
 
     TEST_ASSERT_TRUE(result.x_micro == 409700);
     TEST_ASSERT_TRUE(result.y_micro == 459300);
-    TEST_ASSERT_TRUE(result.z_micro == -0360000);
+    TEST_ASSERT_TRUE(result.z_micro == -360000);
 
     return 0;
 }
@@ -402,9 +402,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_IGRF_Magnetic_Field_Vector_Struct()
     ADCS_Magnetic_Field_Vector_Struct result;
     ADCS_Pack_to_IGRF_Magnetic_Field_Vector_Struct(input_params, &result);
 
-    TEST_ASSERT_TRUE(result.x_nT == -20390000000);
-    TEST_ASSERT_TRUE(result.y_nT == 15430000000);
-    TEST_ASSERT_TRUE(result.z_nT == -112590000000);
+    TEST_ASSERT_TRUE(result.x_nT == -20390);
+    TEST_ASSERT_TRUE(result.y_nT == 15430);
+    TEST_ASSERT_TRUE(result.z_nT == -112590);
 
     return 0;
 }
@@ -586,9 +586,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Measurements_Struct() {
     ADCS_Measurements_Struct result;
     ADCS_Pack_to_Measurements_Struct(input_params, &result);
 
-    TEST_ASSERT_TRUE(result.magnetic_field_x_nT == 73780000000);
-    TEST_ASSERT_TRUE(result.magnetic_field_y_nT == -149410000000);
-    TEST_ASSERT_TRUE(result.magnetic_field_z_nT == -278420000000);
+    TEST_ASSERT_TRUE(result.magnetic_field_x_nT == 73780);
+    TEST_ASSERT_TRUE(result.magnetic_field_y_nT == -149410);
+    TEST_ASSERT_TRUE(result.magnetic_field_z_nT == -278420);
     TEST_ASSERT_TRUE(result.coarse_sun_x_micro == -197500);
     TEST_ASSERT_TRUE(result.coarse_sun_y_micro == -425100);
     TEST_ASSERT_TRUE(result.coarse_sun_z_micro == -1148900);
@@ -598,22 +598,22 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Measurements_Struct() {
     TEST_ASSERT_TRUE(result.nadir_x_micro == -673500);
     TEST_ASSERT_TRUE(result.nadir_y_micro == 661100);
     TEST_ASSERT_TRUE(result.nadir_z_micro == -987200);
-    TEST_ASSERT_TRUE(result.x_angular_rate_milli_deg_per_sec == 285.510000);
-    TEST_ASSERT_TRUE(result.y_angular_rate_milli_deg_per_sec == 24.650000);
-    TEST_ASSERT_TRUE(result.z_angular_rate_milli_deg_per_sec == -184.480000);
+    TEST_ASSERT_TRUE(result.x_angular_rate_milli_deg_per_sec == 285510);
+    TEST_ASSERT_TRUE(result.y_angular_rate_milli_deg_per_sec == 24650);
+    TEST_ASSERT_TRUE(result.z_angular_rate_milli_deg_per_sec == -184480);
     TEST_ASSERT_TRUE(result.x_wheel_speed_rpm == -13159);
     TEST_ASSERT_TRUE(result.y_wheel_speed_rpm == 24505);
     TEST_ASSERT_TRUE(result.z_wheel_speed_rpm == -7829);
     TEST_ASSERT_TRUE(result.star1_body_x_micro == 149100);
     TEST_ASSERT_TRUE(result.star1_body_y_micro == 660100);
-    TEST_ASSERT_TRUE(result.star1_body_z_micro == 103400);
+    TEST_ASSERT_TRUE(result.star1_body_z_micro == -1034000);
     TEST_ASSERT_TRUE(result.star1_orbit_x_micro == 1075400);
-    TEST_ASSERT_TRUE(result.star1_orbit_y_micro == 1578800);
-    TEST_ASSERT_TRUE(result.star1_orbit_z_micro == 1374500);
+    TEST_ASSERT_TRUE(result.star1_orbit_y_micro == -1578800);
+    TEST_ASSERT_TRUE(result.star1_orbit_z_micro == -1374500);
     TEST_ASSERT_TRUE(result.star2_body_x_micro == -2393900);
     TEST_ASSERT_TRUE(result.star2_body_y_micro == 78100);
     TEST_ASSERT_TRUE(result.star2_body_z_micro == -2655200);
-    TEST_ASSERT_TRUE(result.star2_orbit_x_micro == 1845800);
+    TEST_ASSERT_TRUE(result.star2_orbit_x_micro == -1845800);
     TEST_ASSERT_TRUE(result.star2_orbit_y_micro == -2926800);
     TEST_ASSERT_TRUE(result.star2_orbit_z_micro == 2540500);
     TEST_ASSERT_TRUE(result.star3_body_x_micro == 1127500);
