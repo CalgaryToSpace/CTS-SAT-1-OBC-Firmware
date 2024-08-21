@@ -19,10 +19,6 @@
 #include "telecommands/agenda_telecommands_defs.h"
 #include "telecommands/mpi_telecommand_defs.h"
 
-#include "mpi_telecommand_definitions.h"
-#include "telecommands/mpi_telecommand_definitions.h"
-#include "telecommands/mpi_telecommand_defs.h"
-
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
@@ -358,15 +354,6 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     },
 
     // ****************** END SECTION: agenda_telecommand_defs ******************
-
-    // ****************** START: MPI_telecommand_definitions ******************
-    {
-        .tcmd_name = "mpi_send_command_hex",
-        .tcmd_func = TCMDEXEC_mpi_send_command_hex,
-        .number_of_args = 1,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION
-    },
-    // ****************** END: MPI_telecommand_definitions ********************
 
     // ****************** START: MPI_telecommand_definitions ******************
     {
