@@ -9,7 +9,7 @@
 #define INC_ADCS_TYPES_H_
 
 #include <stdint.h>
-#include <stdbool.h>
+#include <stdbool.h> 
 #include "stm32l4xx_hal.h"
 
 // Bit 7 of Telecommand and Telemetry Request - Section 4.1 of Firmware Manual
@@ -204,7 +204,7 @@ typedef enum ADCS_GPS_Axis {
 
 typedef struct ADCS_CMD_Ack_Struct {
 	uint8_t last_id;
-	bool processed;
+	bool processed:1; // 1-bit bool
 	enum ADCS_Error_Flag error_flag;
 	uint8_t error_index;
 } ADCS_CMD_Ack_Struct;
@@ -230,21 +230,21 @@ typedef struct ADCS_Boot_Running_Status_Struct {
 typedef struct ADCS_Comms_Status_Struct {
     uint16_t cmd_counter;
     uint16_t tlm_counter;
-    bool cmd_buffer_overrun;
-    bool i2c_tlm_error;
-    bool i2c_cmd_error;
+    bool cmd_buffer_overrun:1; // 1-bit bool
+    bool i2c_tlm_error:1; // 1-bit bool
+    bool i2c_cmd_error:1; // 1-bit bool
 } ADCS_Comms_Status_Struct;
 
 typedef struct ADCS_Angular_Rates_Struct {
-    double x_rate;
-    double y_rate;
-    double z_rate;
+    int32_t x_rate_milli_deg_per_sec;
+    int32_t y_rate_milli_deg_per_sec;
+    int32_t z_rate_milli_deg_per_sec;
 } ADCS_Angular_Rates_Struct;
 
 typedef struct ADCS_LLH_Position_Struct {
-    double latitude;
-    double longitude;
-    double altitude;
+    int32_t latitude_milli_deg;
+    int32_t longitude_milli_deg;
+    int32_t altitude_meters;
 } ADCS_LLH_Position_Struct;
 
 typedef struct ADCS_Power_Control_Struct{
@@ -261,9 +261,9 @@ typedef struct ADCS_Power_Control_Struct{
 } ADCS_Power_Control_Struct;
 
 typedef struct ADCS_Set_Unix_Time_Save_Mode_Struct{
-	bool save_now;
-	bool save_on_update;
-	bool save_periodic;
+	bool save_now:1; // 1-bit bool
+	bool save_on_update:1; // 1-bit bool
+	bool save_periodic:1; // 1-bit bool
 	uint8_t period;
 } ADCS_Set_Unix_Time_Save_Mode_Struct;
 
@@ -279,9 +279,9 @@ typedef struct ADCS_Orbit_Params_Struct {
 } ADCS_Orbit_Params_Struct;
 
 typedef struct ADCS_Rated_Sensor_Rates_Struct {
-	double x; 
-	double y;
-	double z; 
+	int32_t x_milli_deg_per_sec; 
+	int32_t y_milli_deg_per_sec;
+	int32_t z_milli_deg_per_sec; 
 } ADCS_Rated_Sensor_Rates_Struct;
 
 typedef struct ADCS_Wheel_Speed_Struct {
@@ -291,9 +291,9 @@ typedef struct ADCS_Wheel_Speed_Struct {
 } ADCS_Wheel_Speed_Struct;
 
 typedef struct ADCS_Magnetorquer_Command_Struct {
-	double x; 
-	double y;
-	double z; 
+	int32_t x_ms; 
+	int32_t y_ms;
+	int32_t z_ms; 
 } ADCS_Magnetorquer_Command_Struct;
 
 typedef struct ADCS_Raw_Mag_TLM_Struct {
@@ -303,33 +303,33 @@ typedef struct ADCS_Raw_Mag_TLM_Struct {
 } ADCS_Raw_Mag_TLM_Struct;
 
 typedef struct ADCS_Fine_Angular_Rates_Struct {
-	double x; 
-	double y;
-	double z; 
+	int16_t x_milli_deg_per_sec; 
+	int16_t y_milli_deg_per_sec;
+	int16_t z_milli_deg_per_sec; 
 } ADCS_Fine_Angular_Rates_Struct;
 
 typedef struct ADCS_Magnetometer_Config_Struct {
-    double mounting_transform_alpha_angle;
-    double mounting_transform_beta_angle;
-    double mounting_transform_gamma_angle;
-    double channel_1_offset;
-    double channel_2_offset;
-    double channel_3_offset;
-    double sensitivity_matrix_s11;
-    double sensitivity_matrix_s22;
-    double sensitivity_matrix_s33;
-    double sensitivity_matrix_s12;
-    double sensitivity_matrix_s13;
-    double sensitivity_matrix_s21;
-    double sensitivity_matrix_s23;
-    double sensitivity_matrix_s31;
-    double sensitivity_matrix_s32;
+    int32_t mounting_transform_alpha_angle_milli_deg_per_sec;
+    int32_t mounting_transform_beta_angle_milli_deg_per_sec;
+    int32_t mounting_transform_gamma_angle_milli_deg_per_sec;
+    int16_t channel_1_offset_milli_deg_per_sec;
+    int16_t channel_2_offset_milli_deg_per_sec;
+    int16_t channel_3_offset_milli_deg_per_sec;
+    int16_t sensitivity_matrix_s11_milli_deg_per_sec;
+    int16_t sensitivity_matrix_s22_milli_deg_per_sec;
+    int16_t sensitivity_matrix_s33_milli_deg_per_sec;
+    int16_t sensitivity_matrix_s12_milli_deg_per_sec;
+    int16_t sensitivity_matrix_s13_milli_deg_per_sec;
+    int16_t sensitivity_matrix_s21_milli_deg_per_sec;
+    int16_t sensitivity_matrix_s23_milli_deg_per_sec;
+    int16_t sensitivity_matrix_s31_milli_deg_per_sec;
+    int16_t sensitivity_matrix_s32_milli_deg_per_sec;
 } ADCS_Magnetometer_Config_Struct;
 
 typedef struct ADCS_Commanded_Angles_Struct {
-	double x; 
-	double y;
-	double z; 
+	int32_t x_milli_deg; 
+	int32_t y_milli_deg;
+	int32_t z_milli_deg; 
 } ADCS_Commanded_Angles_Struct;
 
 typedef struct ADCS_Estimation_Params_Struct {
@@ -340,36 +340,36 @@ typedef struct ADCS_Estimation_Params_Struct {
     float nadir_sensor_measurement_noise;
     float magnetometer_measurement_noise;
     float star_tracker_measurement_noise;
-    bool use_sun_sensor;
-    bool use_nadir_sensor;
-    bool use_css;
-    bool use_star_tracker;
-    bool nadir_sensor_terminator_test;
-    bool automatic_magnetometer_recovery;
+    bool use_sun_sensor:1; // 1-bit bool
+    bool use_nadir_sensor:1; // 1-bit bool
+    bool use_css:1; // 1-bit bool
+    bool use_star_tracker:1; // 1-bit bool
+    bool nadir_sensor_terminator_test:1; // 1-bit bool
+    bool automatic_magnetometer_recovery:1; // 1-bit bool
     ADCS_Magnetometer_Mode magnetometer_mode;
     ADCS_Magnetometer_Mode magnetometer_selection_for_raw_mtm_tlm;
-    bool automatic_estimation_transition_due_to_rate_sensor_errors;
-    bool wheel_30s_power_up_delay;
+    bool automatic_estimation_transition_due_to_rate_sensor_errors:1; // 1-bit bool
+    bool wheel_30s_power_up_delay:1; // 1-bit bool
     uint8_t cam1_and_cam2_sampling_period;
 } ADCS_Estimation_Params_Struct;
 
 typedef struct ADCS_ASGP4_Params_Struct {
-    double incl_coefficient;
-    double raan_coefficient;
-    double ecc_coefficient;
-    double aop_coefficient;
-    double time_coefficient;
-    double pos_coefficient;
-    double maximum_position_error;
+    int16_t incl_coefficient_milli;
+    int16_t raan_coefficient_milli;
+    int16_t ecc_coefficient_milli;
+    int16_t aop_coefficient_milli;
+    int16_t time_coefficient_milli;
+    int16_t pos_coefficient_milli;
+    int32_t maximum_position_error_milli;
     ADCS_ASGP4_Filter asgp4_filter;
-    double xp_coefficient;
-    double yp_coefficient;
+    int64_t xp_coefficient_nano;
+    int64_t yp_coefficient_nano;
     uint8_t gps_roll_over;
-    double position_sd;
-    double velocity_sd;
+    int32_t position_sd_milli;
+    int16_t velocity_sd_milli;
     uint8_t min_satellites;
-    double time_gain;
-    double max_lag;
+    int16_t time_gain_milli;
+    int16_t max_lag_milli;
     uint16_t min_samples;
 } ADCS_ASGP4_Params_Struct;
 
@@ -383,52 +383,52 @@ typedef struct ADCS_Rate_Gyro_Config_Struct {
     ADCS_Axis_Select gyro1; 
     ADCS_Axis_Select gyro2; 
     ADCS_Axis_Select gyro3; 
-    double x_rate_offset; 
-    double y_rate_offset; 
-    double z_rate_offset; 
+    int16_t x_rate_offset_milli_deg_per_sec; 
+    int16_t y_rate_offset_milli_deg_per_sec; 
+    int16_t z_rate_offset_milli_deg_per_sec; 
     uint8_t rate_sensor_mult;
 } ADCS_Rate_Gyro_Config_Struct;
 
 typedef struct ADCS_Estimated_Attitude_Angles_Struct {
-    double estimated_roll_angle;
-    double estimated_pitch_angle;
-    double estimated_yaw_angle;
+    int32_t estimated_roll_angle_milli_deg;
+    int32_t estimated_pitch_angle_milli_deg;
+    int32_t estimated_yaw_angle_milli_deg;
 } ADCS_Estimated_Attitude_Angles_Struct;
 
 typedef struct ADCS_Magnetic_Field_Vector_Struct {
-    double x;
-    double y;
-    double z;
+    int32_t x_nT;
+    int32_t y_nT;
+    int32_t z_nT;
 } ADCS_Magnetic_Field_Vector_Struct;
 
 typedef struct ADCS_Fine_Sun_Vector_Struct {
-    double x;
-    double y;
-    double z;
+    int32_t x_micro;
+    int32_t y_micro;
+    int32_t z_micro;
 } ADCS_Fine_Sun_Vector_Struct;
 
 typedef struct ADCS_Nadir_Vector_Struct {
-    double x;
-    double y;
-    double z;
+    int32_t x_micro;
+    int32_t y_micro;
+    int32_t z_micro;
 } ADCS_Nadir_Vector_Struct;
 
 typedef struct ADCS_Quaternion_Error_Vector_Struct {
-    double quaternion_error_q1;
-    double quaternion_error_q2;
-    double quaternion_error_q3;
+    int32_t quaternion_error_q1_micro;
+    int32_t quaternion_error_q2_micro;
+    int32_t quaternion_error_q3_micro;
 } ADCS_Quaternion_Error_Vector_Struct;
 
 typedef struct ADCS_Estimated_Gyro_Bias_Struct {
-    double estimated_x_gyro_bias;
-    double estimated_y_gyro_bias;
-    double estimated_z_gyro_bias;
+    int32_t estimated_x_gyro_bias_milli_deg_per_sec;
+    int32_t estimated_y_gyro_bias_milli_deg_per_sec;
+    int32_t estimated_z_gyro_bias_milli_deg_per_sec;
 } ADCS_Estimated_Gyro_Bias_Struct;
 
 typedef struct ADCS_Estimation_Innovation_Vector_Struct {
-    double innovation_vector_x;
-    double innovation_vector_y;
-    double innovation_vector_z;
+    int32_t innovation_vector_x_micro;
+    int32_t innovation_vector_y_micro;
+    int32_t innovation_vector_z_micro;
 } ADCS_Estimation_Innovation_Vector_Struct;
 
 typedef struct ADCS_Raw_Cam_Sensor_Struct {
@@ -456,9 +456,9 @@ typedef struct ADCS_Raw_CSS_7_to_10_Struct {
 } ADCS_Raw_CSS_7_to_10_Struct;
 
 typedef struct ADCS_CubeControl_Current_Struct {
-    double cubecontrol_3v3_current;
-    double cubecontrol_5v_current;
-    double cubecontrol_vbat_current;
+    double cubecontrol_3v3_current_mA;
+    double cubecontrol_5v_current_mA;
+    double cubecontrol_vbat_current_mA;
 } ADCS_CubeControl_Current_Struct;
 
 typedef struct ADCS_Raw_GPS_Status_Struct {
@@ -482,42 +482,42 @@ typedef struct ADCS_Raw_GPS_Struct {
 } ADCS_Raw_GPS_Struct;
 
 typedef struct ADCS_Measurements_Struct {
-    double magnetic_field_x;
-    double magnetic_field_y;
-    double magnetic_field_z;
-    double coarse_sun_x;
-    double coarse_sun_y;
-    double coarse_sun_z;
-    double sun_x;
-    double sun_y;
-    double sun_z;
-    double nadir_x;
-    double nadir_y;
-    double nadir_z;
-    double x_angular_rate;
-    double y_angular_rate;
-    double z_angular_rate;
-    double x_wheel_speed;
-    double y_wheel_speed;
-    double z_wheel_speed;
-    double star1_body_x;
-    double star1_body_y;
-    double star1_body_z;
-    double star1_orbit_x;
-    double star1_orbit_y;
-    double star1_orbit_z;
-    double star2_body_x;
-    double star2_body_y;
-    double star2_body_z;
-    double star2_orbit_x;
-    double star2_orbit_y;
-    double star2_orbit_z;
-    double star3_body_x;
-    double star3_body_y;
-    double star3_body_z;
-    double star3_orbit_x;
-    double star3_orbit_y;
-    double star3_orbit_z;
+    int32_t magnetic_field_x_nT;
+    int32_t magnetic_field_y_nT;
+    int32_t magnetic_field_z_nT;
+    int32_t coarse_sun_x_micro;
+    int32_t coarse_sun_y_micro;
+    int32_t coarse_sun_z_micro;
+    int32_t sun_x_micro;
+    int32_t sun_y_micro;
+    int32_t sun_z_micro;
+    int32_t nadir_x_micro;
+    int32_t nadir_y_micro;
+    int32_t nadir_z_micro;
+    int32_t x_angular_rate_milli_deg_per_sec;
+    int32_t y_angular_rate_milli_deg_per_sec;
+    int32_t z_angular_rate_milli_deg_per_sec;
+    int16_t x_wheel_speed_rpm;
+    int16_t y_wheel_speed_rpm;
+    int16_t z_wheel_speed_rpm;
+    int32_t star1_body_x_micro;
+    int32_t star1_body_y_micro;
+    int32_t star1_body_z_micro;
+    int32_t star1_orbit_x_micro;
+    int32_t star1_orbit_y_micro;
+    int32_t star1_orbit_z_micro;
+    int32_t star2_body_x_micro;
+    int32_t star2_body_y_micro;
+    int32_t star2_body_z_micro;
+    int32_t star2_orbit_x_micro;
+    int32_t star2_orbit_y_micro;
+    int32_t star2_orbit_z_micro;
+    int32_t star3_body_x_micro;
+    int32_t star3_body_y_micro;
+    int32_t star3_body_z_micro;
+    int32_t star3_orbit_x_micro;
+    int32_t star3_orbit_y_micro;
+    int32_t star3_orbit_z_micro;
 } ADCS_Measurements_Struct;
 
 #endif /* INC_ADCS_TYPES_H_ */

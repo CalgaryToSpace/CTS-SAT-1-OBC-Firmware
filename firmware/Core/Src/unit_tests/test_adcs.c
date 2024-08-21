@@ -6,6 +6,7 @@
 #include <string.h>
 
 // Reminder: to run all unit tests, CTS1+run_all_unit_tests()!
+// TODO: FIVE UNIT TESTS STILL FAIL
 
 uint8_t TEST_EXEC__ADCS_Pack_to_Ack_Struct() {
     uint8_t input_params[4] = {0x11, 0x01, 0x03, 0x04};
@@ -55,8 +56,8 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Comms_Status_Struct() {
     ADCS_Comms_Status_Struct result;
     ADCS_Pack_to_Comms_Status_Struct(input_params, &result);
 
-    TEST_ASSERT_TRUE(result.cmd_counter == 0x2211);
-    TEST_ASSERT_TRUE(result.tlm_counter == 0x4433);
+    TEST_ASSERT_TRUE(result.cmd_counter == 8721);
+    TEST_ASSERT_TRUE(result.tlm_counter == 17459);
     TEST_ASSERT_TRUE(result.cmd_buffer_overrun == false);
     TEST_ASSERT_TRUE(result.i2c_tlm_error == true);
     TEST_ASSERT_TRUE(result.i2c_cmd_error == false);
@@ -88,9 +89,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Angular_Rates_Struct() {
     ADCS_Angular_Rates_Struct result;
     ADCS_Pack_to_Angular_Rates_Struct(input_params, &result);
 
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.x_rate, 87.21, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.y_rate, 174.59, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.z_rate, -1.71, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(result.x_rate_milli_deg_per_sec == 87210);
+    TEST_ASSERT_TRUE(result.y_rate_milli_deg_per_sec == 174590);
+    TEST_ASSERT_TRUE(result.z_rate_milli_deg_per_sec == -1710);
 
     return 0;
 }
@@ -100,9 +101,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_LLH_Position_Struct() {
     ADCS_LLH_Position_Struct result;
     ADCS_Pack_to_LLH_Position_Struct(input_params, &result);
 
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.latitude, 87.21, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.longitude, -2.05, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.altitude, 261.97, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(result.latitude_milli_deg ==  87210);
+    TEST_ASSERT_TRUE(result.longitude_milli_deg == -2050);
+    TEST_ASSERT_TRUE(result.altitude_meters == 261970);
 
     return 0;
 }
@@ -133,13 +134,13 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Orbit_Params_Struct() {
     ADCS_Orbit_Params_Struct result;
     ADCS_Pack_to_Orbit_Params_Struct(input_params, &result);
 
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.inclination, 1.2, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.eccentricity, 0.67, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.ascending_node_right_ascension, 5.6, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.b_star_drag_term, 0.9, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.mean_motion, 10.1, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.mean_anomaly, 11.2, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.epoch, 12.3, ADCS_TEST_EPSILON));
+    TEST_ASSERT_FALSE(GEN_compare_doubles(result.inclination, 1.2, ADCS_TEST_EPSILON));
+    TEST_ASSERT_FALSE(GEN_compare_doubles(result.eccentricity, 0.67, ADCS_TEST_EPSILON));
+    TEST_ASSERT_FALSE(GEN_compare_doubles(result.ascending_node_right_ascension, 5.6, ADCS_TEST_EPSILON));
+    TEST_ASSERT_FALSE(GEN_compare_doubles(result.b_star_drag_term, 0.9, ADCS_TEST_EPSILON));
+    TEST_ASSERT_FALSE(GEN_compare_doubles(result.mean_motion, 10.1, ADCS_TEST_EPSILON));
+    TEST_ASSERT_FALSE(GEN_compare_doubles(result.mean_anomaly, 11.2, ADCS_TEST_EPSILON));
+    TEST_ASSERT_FALSE(GEN_compare_doubles(result.epoch, 12.3, ADCS_TEST_EPSILON));
 
     return 0;
 }
@@ -149,9 +150,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Rated_Sensor_Rates_Struct() {
     ADCS_Rated_Sensor_Rates_Struct result;
     ADCS_Pack_to_Rated_Sensor_Rates_Struct(input_params, &result);
 
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.x, 87.21, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.y, 174.59, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.z, -1.71, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(result.x_milli_deg_per_sec == 87210);
+    TEST_ASSERT_TRUE(result.y_milli_deg_per_sec == 174590);
+    TEST_ASSERT_TRUE(result.z_milli_deg_per_sec == -1710);
 
     return 0;
 }
@@ -173,9 +174,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Magnetorquer_Command_Struct()
 
     ADCS_Magnetorquer_Command_Struct result;
     ADCS_Pack_to_Magnetorquer_Command_Struct(input_params, &result);
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.x, 87.21, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.y, -2.05, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.z, 261.97, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(result.x_ms == 87210);
+    TEST_ASSERT_TRUE(result.y_ms == -2050);
+    TEST_ASSERT_TRUE(result.z_ms == 261970);
 
     return 0;
 }
@@ -198,9 +199,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Fine_Angular_Rates_Struct()
 
     ADCS_Fine_Angular_Rates_Struct result;
     ADCS_Pack_to_Fine_Angular_Rates_Struct(input_params, &result);
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.x, 8.721, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.y, 17.459, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.z, -0.171, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(result.x_milli_deg_per_sec == 8721);
+    TEST_ASSERT_TRUE(result.y_milli_deg_per_sec == 17459);
+    TEST_ASSERT_TRUE(result.z_milli_deg_per_sec == -171);
 
     return 0;
 }
@@ -215,21 +216,21 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Magnetometer_Config_Struct()
 
     ADCS_Magnetometer_Config_Struct result;
     ADCS_Pack_to_Magnetometer_Config_Struct(input_params, &result);
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.mounting_transform_alpha_angle, 87.38, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.mounting_transform_beta_angle, -87.38, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.mounting_transform_gamma_angle, 87.38, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.channel_1_offset, -8.738, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.channel_2_offset, 8.738, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.channel_3_offset, -8.738, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.sensitivity_matrix_s11, 8.738, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.sensitivity_matrix_s22, -8.738, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.sensitivity_matrix_s33, 8.738, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.sensitivity_matrix_s12, -8.738, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.sensitivity_matrix_s13, 8.738, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.sensitivity_matrix_s21, -8.738, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.sensitivity_matrix_s23, 8.738, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.sensitivity_matrix_s31, -8.738, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.sensitivity_matrix_s32, 8.738, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(result.mounting_transform_alpha_angle_milli_deg_per_sec == 87380);
+    TEST_ASSERT_TRUE(result.mounting_transform_beta_angle_milli_deg_per_sec == -87380);
+    TEST_ASSERT_TRUE(result.mounting_transform_gamma_angle_milli_deg_per_sec == 87380);
+    TEST_ASSERT_TRUE(result.channel_1_offset_milli_deg_per_sec == -8738);
+    TEST_ASSERT_TRUE(result.channel_2_offset_milli_deg_per_sec == 8738);
+    TEST_ASSERT_TRUE(result.channel_3_offset_milli_deg_per_sec == -8738);
+    TEST_ASSERT_TRUE(result.sensitivity_matrix_s11_milli_deg_per_sec == 8738);
+    TEST_ASSERT_TRUE(result.sensitivity_matrix_s22_milli_deg_per_sec == -8738);
+    TEST_ASSERT_TRUE(result.sensitivity_matrix_s33_milli_deg_per_sec == 8738);
+    TEST_ASSERT_TRUE(result.sensitivity_matrix_s12_milli_deg_per_sec == -8738);
+    TEST_ASSERT_TRUE(result.sensitivity_matrix_s13_milli_deg_per_sec == 8738);
+    TEST_ASSERT_TRUE(result.sensitivity_matrix_s21_milli_deg_per_sec == -8738);
+    TEST_ASSERT_TRUE(result.sensitivity_matrix_s23_milli_deg_per_sec == 8738);
+    TEST_ASSERT_TRUE(result.sensitivity_matrix_s31_milli_deg_per_sec == -8738);
+    TEST_ASSERT_TRUE(result.sensitivity_matrix_s32_milli_deg_per_sec == 8738);
 
     return 0;
 }
@@ -240,9 +241,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Commanded_Attitude_Angles_Struct()
 
     ADCS_Commanded_Angles_Struct result;
     ADCS_Pack_to_Commanded_Attitude_Angles_Struct(input_params, &result);
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.x, -219.99, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.y, -176.3, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.z, -132.61, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(result.x_milli_deg == -219990);
+    TEST_ASSERT_TRUE(result.y_milli_deg == -176300);
+    TEST_ASSERT_TRUE(result.z_milli_deg == -132610);
 
     return 0;
 }
@@ -255,13 +256,13 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Estimation_Params_Struct()
 
     ADCS_Estimation_Params_Struct result;
     ADCS_Pack_to_Estimation_Params_Struct(input_params, &result);
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.magnetometer_rate_filter_system_noise, 1.1, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.ekf_system_noise, 2.2, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.css_measurement_noise, 3.3, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.sun_sensor_measurement_noise, 4.4, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.nadir_sensor_measurement_noise, 5.5, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.magnetometer_measurement_noise, 6.6, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.star_tracker_measurement_noise, 7.7, ADCS_TEST_EPSILON));
+    TEST_ASSERT_FALSE(GEN_compare_doubles(result.magnetometer_rate_filter_system_noise, 1.1, ADCS_TEST_EPSILON));
+    TEST_ASSERT_FALSE(GEN_compare_doubles(result.ekf_system_noise, 2.2, ADCS_TEST_EPSILON));
+    TEST_ASSERT_FALSE(GEN_compare_doubles(result.css_measurement_noise, 3.3, ADCS_TEST_EPSILON));
+    TEST_ASSERT_FALSE(GEN_compare_doubles(result.sun_sensor_measurement_noise, 4.4, ADCS_TEST_EPSILON));
+    TEST_ASSERT_FALSE(GEN_compare_doubles(result.nadir_sensor_measurement_noise, 5.5, ADCS_TEST_EPSILON));
+    TEST_ASSERT_FALSE(GEN_compare_doubles(result.magnetometer_measurement_noise, 6.6, ADCS_TEST_EPSILON));
+    TEST_ASSERT_FALSE(GEN_compare_doubles(result.star_tracker_measurement_noise, 7.7, ADCS_TEST_EPSILON));
     TEST_ASSERT_TRUE(result.use_sun_sensor == false);
     TEST_ASSERT_TRUE(result.use_nadir_sensor == true);
     TEST_ASSERT_TRUE(result.use_css == false);
@@ -286,22 +287,22 @@ uint8_t TEST_EXEC__ADCS_Pack_to_ASGP4_Params_Struct()
 
     ADCS_ASGP4_Params_Struct result;
     ADCS_Pack_to_ASGP4_Params_Struct(input_params, &result);
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.incl_coefficient, 1.1, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.raan_coefficient, 2.2, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.ecc_coefficient, 3.3, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.aop_coefficient, 4.4, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.time_coefficient, 5.5, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.pos_coefficient, 6.6, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.maximum_position_error, 7.7, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(result.incl_coefficient_milli == 1100);
+    TEST_ASSERT_TRUE(result.raan_coefficient_milli == 2200);
+    TEST_ASSERT_TRUE(result.ecc_coefficient_milli == 3300);
+    TEST_ASSERT_TRUE(result.aop_coefficient_milli == 4400);
+    TEST_ASSERT_TRUE(result.time_coefficient_milli == 5500);
+    TEST_ASSERT_TRUE(result.pos_coefficient_milli == 6600);
+    TEST_ASSERT_TRUE(result.maximum_position_error_milli == 7700);
     TEST_ASSERT_TRUE(result.asgp4_filter == ADCS_ASGP4_FILTER_AVERAGE);
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.xp_coefficient, -8.8, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.yp_coefficient, -9.9, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(result.xp_coefficient_nano == -8800000000);
+    TEST_ASSERT_TRUE(result.yp_coefficient_nano == -9900000000);
     TEST_ASSERT_TRUE(result.gps_roll_over == 10);
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.position_sd, 11.1, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.velocity_sd, 2.12, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(result.position_sd_milli == 11100);
+    TEST_ASSERT_TRUE(result.velocity_sd_milli == 2120);
     TEST_ASSERT_TRUE(result.min_satellites == 13);
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.time_gain, 2.14, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.max_lag, 2.15, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(result.time_gain_milli == 2140);
+    TEST_ASSERT_TRUE(result.max_lag_milli == 2150);
     TEST_ASSERT_TRUE(result.min_samples == 16);
 
     return 0;
@@ -313,9 +314,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Tracking_Controller_Target_Reference_Struct()
 
     ADCS_Tracking_Controller_Target_Struct result;
     ADCS_Pack_to_Tracking_Controller_Target_Reference_Struct(input_params, &result);
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.lon, 110.4, 10*ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.lat, -69.6, 10*ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.alt, 1.05, ADCS_TEST_EPSILON));
+    TEST_ASSERT_FALSE(GEN_compare_doubles(result.lon, 110.4, 10*ADCS_TEST_EPSILON));
+    TEST_ASSERT_FALSE(GEN_compare_doubles(result.lat, -69.6, 10*ADCS_TEST_EPSILON));
+    TEST_ASSERT_FALSE(GEN_compare_doubles(result.alt, 1.05, ADCS_TEST_EPSILON));
     // per CubeSupport, latitude and longitude are only accurate to within 1e-5 degrees
 
     return 0;
@@ -330,9 +331,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Rate_Gyro_Config_Struct()
     TEST_ASSERT_TRUE(result.gyro1 == 205);
     TEST_ASSERT_TRUE(result.gyro2 == 204);
     TEST_ASSERT_TRUE(result.gyro3 == 220);
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.x_rate_offset, 13.122, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.y_rate_offset, -29.901, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.z_rate_offset, 26.306, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(result.x_rate_offset_milli_deg_per_sec == 13122);
+    TEST_ASSERT_TRUE(result.y_rate_offset_milli_deg_per_sec == -29901);
+    TEST_ASSERT_TRUE(result.z_rate_offset_milli_deg_per_sec == 26306);
     TEST_ASSERT_TRUE(result.rate_sensor_mult == 102);
 
     return 0;
@@ -345,9 +346,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Estimated_Attitude_Angles_Struct()
     ADCS_Estimated_Attitude_Angles_Struct result;
     ADCS_Pack_to_Estimated_Attitude_Angles_Struct(input_params, &result);
 
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.estimated_roll_angle, 100, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.estimated_pitch_angle, -2.04, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.estimated_yaw_angle, 308.06, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(result.estimated_roll_angle_milli_deg == 100000);
+    TEST_ASSERT_TRUE(result.estimated_pitch_angle_milli_deg == -2040);
+    TEST_ASSERT_TRUE(result.estimated_yaw_angle_milli_deg == 308060);
 
     return 0;
 }
@@ -359,9 +360,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Magnetic_Field_Vector_Struct()
     ADCS_Magnetic_Field_Vector_Struct result;
     ADCS_Pack_to_Magnetic_Field_Vector_Struct(input_params, &result);
 
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.x, 100, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.y, -2.04, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.z, 308.06, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(result.x_nT == 100000000000);
+    TEST_ASSERT_TRUE(result.y_nT == -2040000000);
+    TEST_ASSERT_TRUE(result.z_nT == 308060000000);
 
     return 0;
 }
@@ -373,9 +374,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Nadir_Vector_Struct()
     ADCS_Nadir_Vector_Struct result;
     ADCS_Pack_to_Nadir_Vector_Struct(input_params, &result);
 
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.x, 0.4097, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.y, 0.4593, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.z, -0.36, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(result.x_micro == 409700);
+    TEST_ASSERT_TRUE(result.y_micro == 459300);
+    TEST_ASSERT_TRUE(result.z_micro == -0360000);
 
     return 0;
 }
@@ -401,9 +402,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_IGRF_Magnetic_Field_Vector_Struct()
     ADCS_Magnetic_Field_Vector_Struct result;
     ADCS_Pack_to_IGRF_Magnetic_Field_Vector_Struct(input_params, &result);
 
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.x, -20.39, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.y, 15.43, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.z, -112.59, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(result.x_nT == -20390000000);
+    TEST_ASSERT_TRUE(result.y_nT == 15430000000);
+    TEST_ASSERT_TRUE(result.z_nT == -112590000000);
 
     return 0;
 }
@@ -415,9 +416,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Quaternion_Error_Vector_Struct()
     ADCS_Quaternion_Error_Vector_Struct result;
     ADCS_Pack_to_Quaternion_Error_Vector_Struct(input_params, &result);
 
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.quaternion_error_q1, 0.0513, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.quaternion_error_q2, -0.7165, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.quaternion_error_q3, 0.1541, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(result.quaternion_error_q1_micro == 51300);
+    TEST_ASSERT_TRUE(result.quaternion_error_q2_micro == -716500);
+    TEST_ASSERT_TRUE(result.quaternion_error_q3_micro == 154100);
 
     return 0;
 }
@@ -429,9 +430,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Estimated_Gyro_Bias_Struct()
     ADCS_Estimated_Gyro_Bias_Struct result;
     ADCS_Pack_to_Estimated_Gyro_Bias_Struct(input_params, &result);
 
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.estimated_x_gyro_bias, 0.513, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.estimated_y_gyro_bias, -7.165, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.estimated_z_gyro_bias, 1.541, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(result.estimated_x_gyro_bias_milli_deg_per_sec == 513);
+    TEST_ASSERT_TRUE(result.estimated_y_gyro_bias_milli_deg_per_sec == -7165);
+    TEST_ASSERT_TRUE(result.estimated_z_gyro_bias_milli_deg_per_sec == 1541);
 
     return 0;
 }
@@ -443,9 +444,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Estimation_Innovation_Vector_Struct()
     ADCS_Estimation_Innovation_Vector_Struct result;
     ADCS_Pack_to_Estimation_Innovation_Vector_Struct(input_params, &result);
 
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.innovation_vector_x, 0.0513, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.innovation_vector_y, -0.7165, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.innovation_vector_z, 0.1541, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(result.innovation_vector_x_micro ==  51300);
+    TEST_ASSERT_TRUE(result.innovation_vector_y_micro == -716500);
+    TEST_ASSERT_TRUE(result.innovation_vector_z_micro ==  154100);
 
     return 0;
 }
@@ -489,9 +490,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Fine_Sun_Vector_Struct() {
     ADCS_Fine_Sun_Vector_Struct result;
     ADCS_Pack_to_Fine_Sun_Vector_Struct(input_params, &result);
 
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.x, 1.333, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.y, 3.0806, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.z, -1.7254, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(result.x_micro == 1333000);
+    TEST_ASSERT_TRUE(result.y_micro == 3080600);
+    TEST_ASSERT_TRUE(result.z_micro == -1725400);
 
     return 0;
 }
@@ -525,9 +526,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_CubeControl_Current_Struct() {
     ADCS_CubeControl_Current_Struct result;
     ADCS_Pack_to_CubeControl_Current_Struct(input_params, &result);
 
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.cubecontrol_3v3_current, 6508.7890625, ADCS_TEST_EPSILON / 100.0));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.cubecontrol_5v_current, 15041.9921875, ADCS_TEST_EPSILON / 100.0));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.cubecontrol_vbat_current, 23575.1953125, ADCS_TEST_EPSILON / 100.0));
+    TEST_ASSERT_FALSE(GEN_compare_doubles(result.cubecontrol_3v3_current_mA, 6508.7890625, ADCS_TEST_EPSILON / 100.0));
+    TEST_ASSERT_FALSE(GEN_compare_doubles(result.cubecontrol_5v_current_mA, 15041.9921875, ADCS_TEST_EPSILON / 100.0));
+    TEST_ASSERT_FALSE(GEN_compare_doubles(result.cubecontrol_vbat_current_mA, 23575.1953125, ADCS_TEST_EPSILON / 100.0));
     return 0;
 }
 
@@ -549,7 +550,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Raw_GPS_Time_Struct() {
     ADCS_Raw_GPS_Time_Struct result;
     ADCS_Pack_to_Raw_GPS_Time_Struct(input_params, &result);
     TEST_ASSERT_TRUE(result.gps_reference_week == 13330);
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.gps_time, 3164239.958, ADCS_TEST_EPSILON));
+    TEST_ASSERT_FALSE(GEN_compare_doubles(result.gps_time, 3164239.958, ADCS_TEST_EPSILON));
     return 0;
 }
 
@@ -558,14 +559,14 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Raw_GPS_Struct() {
     ADCS_Raw_GPS_Struct result;
     ADCS_Pack_to_Raw_GPS_Struct(ADCS_GPS_AXIS_Y, input_params, &result);
     TEST_ASSERT_TRUE(result.axis == ADCS_GPS_AXIS_Y);
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.ecef_position, 2018915346, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.ecef_velocity, -17254, ADCS_TEST_EPSILON));
+    TEST_ASSERT_FALSE(GEN_compare_doubles(result.ecef_position, 2018915346, ADCS_TEST_EPSILON));
+    TEST_ASSERT_FALSE(GEN_compare_doubles(result.ecef_velocity, -17254, ADCS_TEST_EPSILON));
 
     uint8_t input_params_two[6] = {0x12, 0x34, 0xee, 0xff, 0x9a, 0x0c};
     ADCS_Pack_to_Raw_GPS_Struct(ADCS_GPS_AXIS_X, input_params_two, &result);
     TEST_ASSERT_TRUE(result.axis == ADCS_GPS_AXIS_X);
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.ecef_position, -1166318, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.ecef_velocity, 3226, ADCS_TEST_EPSILON));
+    TEST_ASSERT_FALSE(GEN_compare_doubles(result.ecef_position, -1166318, ADCS_TEST_EPSILON));
+    TEST_ASSERT_FALSE(GEN_compare_doubles(result.ecef_velocity, 3226, ADCS_TEST_EPSILON));
 
     return 0;
 }
@@ -585,42 +586,42 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Measurements_Struct() {
     ADCS_Measurements_Struct result;
     ADCS_Pack_to_Measurements_Struct(input_params, &result);
 
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.magnetic_field_x, 73.78, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.magnetic_field_y, -149.41, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.magnetic_field_z, -278.42, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.coarse_sun_x, -0.1975, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.coarse_sun_y, -0.4251, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.coarse_sun_z, -1.1489, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.sun_x, -0.9263, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.sun_y, 0.5838, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.sun_z, -1.5065, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.nadir_x, -0.6735, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.nadir_y, 0.6611, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.nadir_z, -0.9872, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.x_angular_rate, 285.51, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.y_angular_rate, 24.65, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.z_angular_rate, -184.48, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.x_wheel_speed, -13159, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.y_wheel_speed, 24505, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.z_wheel_speed, -7829, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.star1_body_x, 0.1491, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.star1_body_y, 0.6601, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.star1_body_z, -1.034, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.star1_orbit_x, 1.0754, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.star1_orbit_y, -1.5788, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.star1_orbit_z, -1.3745, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.star2_body_x, -2.3939, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.star2_body_y, 0.0781, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.star2_body_z, -2.6552, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.star2_orbit_x, -1.8458, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.star2_orbit_y, -2.9268, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.star2_orbit_z, 2.5405, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.star3_body_x, 1.1275, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.star3_body_y, 3.2644, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.star3_body_z, 0.5426, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.star3_orbit_x, -2.5017, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.star3_orbit_y, 1.9004, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.star3_orbit_z, 0.7379, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(result.magnetic_field_x_nT == 73780000000);
+    TEST_ASSERT_TRUE(result.magnetic_field_y_nT == -149410000000);
+    TEST_ASSERT_TRUE(result.magnetic_field_z_nT == -278420000000);
+    TEST_ASSERT_TRUE(result.coarse_sun_x_micro == -197500);
+    TEST_ASSERT_TRUE(result.coarse_sun_y_micro == -425100);
+    TEST_ASSERT_TRUE(result.coarse_sun_z_micro == -1148900);
+    TEST_ASSERT_TRUE(result.sun_x_micro == -926300);
+    TEST_ASSERT_TRUE(result.sun_y_micro == 583800);
+    TEST_ASSERT_TRUE(result.sun_z_micro == -1506500);
+    TEST_ASSERT_TRUE(result.nadir_x_micro == -673500);
+    TEST_ASSERT_TRUE(result.nadir_y_micro == 661100);
+    TEST_ASSERT_TRUE(result.nadir_z_micro == -987200);
+    TEST_ASSERT_TRUE(result.x_angular_rate_milli_deg_per_sec == 285.510000);
+    TEST_ASSERT_TRUE(result.y_angular_rate_milli_deg_per_sec == 24.650000);
+    TEST_ASSERT_TRUE(result.z_angular_rate_milli_deg_per_sec == -184.480000);
+    TEST_ASSERT_TRUE(result.x_wheel_speed_rpm == -13159);
+    TEST_ASSERT_TRUE(result.y_wheel_speed_rpm == 24505);
+    TEST_ASSERT_TRUE(result.z_wheel_speed_rpm == -7829);
+    TEST_ASSERT_TRUE(result.star1_body_x_micro == 149100);
+    TEST_ASSERT_TRUE(result.star1_body_y_micro == 660100);
+    TEST_ASSERT_TRUE(result.star1_body_z_micro == 103400);
+    TEST_ASSERT_TRUE(result.star1_orbit_x_micro == 1075400);
+    TEST_ASSERT_TRUE(result.star1_orbit_y_micro == 1578800);
+    TEST_ASSERT_TRUE(result.star1_orbit_z_micro == 1374500);
+    TEST_ASSERT_TRUE(result.star2_body_x_micro == -2393900);
+    TEST_ASSERT_TRUE(result.star2_body_y_micro == 78100);
+    TEST_ASSERT_TRUE(result.star2_body_z_micro == -2655200);
+    TEST_ASSERT_TRUE(result.star2_orbit_x_micro == 1845800);
+    TEST_ASSERT_TRUE(result.star2_orbit_y_micro == -2926800);
+    TEST_ASSERT_TRUE(result.star2_orbit_z_micro == 2540500);
+    TEST_ASSERT_TRUE(result.star3_body_x_micro == 1127500);
+    TEST_ASSERT_TRUE(result.star3_body_y_micro == 3264400);
+    TEST_ASSERT_TRUE(result.star3_body_z_micro == 542600);
+    TEST_ASSERT_TRUE(result.star3_orbit_x_micro == -2501700);
+    TEST_ASSERT_TRUE(result.star3_orbit_y_micro == 1900400);
+    TEST_ASSERT_TRUE(result.star3_orbit_z_micro == 737900);
 
     return 0;
 }
