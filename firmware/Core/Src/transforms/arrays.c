@@ -2,7 +2,7 @@
 
 #include <ctype.h>
 #include <string.h>
-
+#include <stdio.h>
 
 /// @brief Returns the index of the first character of the first occurrence of a substring in an array.
 /// @param haystack_arr The array to search within.
@@ -163,4 +163,24 @@ uint8_t GEN_hex_str_to_byte_array(const char *hex_str, uint8_t output_byte_array
 
     *output_byte_array_len = byte_index;
     return 0;
+}
+
+/// @brief Writes a byte array to a hex string
+/// @param byte_array Input byte array.
+/// @param byte_array_len Length of input `byte_array`.
+/// @param dest_str The destination to write a C-string to.
+/// @param dest_str_size The size of the `dest_str` array, allocated before calling. Must be at least
+///     `byte_array_len * 3 + 1` to fit the entire string.
+void GEN_byte_array_to_hex_str(
+    const uint8_t *byte_array, uint32_t byte_array_len, char *dest_str, uint32_t dest_str_size
+) {
+    dest_str[0] = '\0';
+    uint32_t remaining_size = dest_str_size;
+    for (uint32_t i = 0; i < byte_array_len; i++) {
+        remaining_size -= snprintf(
+            dest_str + strlen(dest_str), remaining_size,
+            "%02X ",
+            byte_array[i]
+        );
+    }
 }
