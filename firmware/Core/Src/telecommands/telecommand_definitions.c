@@ -17,6 +17,7 @@
 #include "telecommands/testing_telecommand_defs.h"
 #include "telecommands/telecommand_executor.h"
 #include "telecommands/agenda_telecommands_defs.h"
+#include "telecommands/csp_telecommand_defs.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -353,6 +354,14 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     },
 
     // ****************** END SECTION: agenda_telecommand_defs ******************
+
+
+    {
+        .tcmd_name = "csp_demo_1",
+        .tcmd_func = TCMDEXEC_csp_demo_1,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
+    },
 
 };
 
