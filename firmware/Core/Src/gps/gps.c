@@ -80,10 +80,61 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
 
     // Parse the data in the header buffer
 
+    //Extracting the log_name
+    char *token;
+    char *end_ptr;
 
+    //TCMD_extract_string_arg TODO:Read and apply
+    //Skip the reserved bytes etc
+    token = strtok(header_buffer, ",");
+    if (token && token[0] == '#') {  
+        strcpy(result->log_name, token + 1);  
+    }
 
+    if (!(token = strtok(NULL, ","))){
+        return 1;
+    }
+    strncpy(result->port, token, sizeof(result->port) - 1);
+    result->port[sizeof(result->port) - 1] = '\0';
 
+    if (!(token = strtok(NULL, ","))){
+        return 1;
+    }
+    result->sequence_no = strtoul(token, &end_ptr, 10);
+    if (*end_ptr != '\0') return 1;  // Error in conversion
 
+    if (!(token = strtok(NULL, ","))){
+        return 1;
+    }
+    result->idle_time = strtoul(token, &end_ptr, 10);
+
+    if (!(token = strtok(NULL, ","))){
+        return 1;
+    }
+    result->time_status.gps_reference_time_status_ascii = strdup(token);
+
+    if (!(token = strtok(NULL, ","))){
+        return 1;
+    }
+    result->week = strtoul(token, &end_ptr, 10);
+
+    if (!(token = strtok(NULL, ","))){
+        return 1;
+    }
+    result->seconds = strtoul(token, &end_ptr, 10);
+
+    if (!(token = strtok(NULL, ","))){
+        return 1;
+    }
+    result->rx_status = strtoul(token, &end_ptr, 16);  // hexadecimal
+
+    if (!(token = strtok(NULL, ","))){
+        return 1;
+    }
+    result->reserved = strtoul(token, &end_ptr, 16);  // hexadecimal
+
+    if (!(token = strtok(NULL, ","))) return 1;
+    result->rx_sw_version = strtoul(token, &end_ptr, 10);
 
     return 0;
 }
