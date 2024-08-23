@@ -50,10 +50,6 @@ reset_cause_t reset_cause_get(void)
 		reset_cause = RESET_CAUSE_UNKNOWN;
 	}
 
-	// Clear all the reset flags or else they will remain set during future
-	// resets until system power is fully removed.
-	__HAL_RCC_CLEAR_RESET_FLAGS();
-
 	return reset_cause; 
 }
 
