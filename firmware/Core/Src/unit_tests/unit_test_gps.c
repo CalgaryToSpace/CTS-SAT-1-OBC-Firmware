@@ -36,7 +36,7 @@ uint8_t TEST_EXEC__GPS_Parse_bestxyza(){
                   "0.0219,0.0115,SOL_COMPUTED,NARROW_INT,0.0011,-0.0049,-0.0001,0.0199,0.0439,"
                   "0.0230,\"AAAA\",0.250,1.000,0.000,12,11,11,11,0,01,0,33*e9eafeca";
 
-    bestxyza_response result;
+    gps_bestxyza_response result;
 
     // Call bestxyza parser
     uint8_t parse_result = parse_bestxyza_data(gps_data, &result);

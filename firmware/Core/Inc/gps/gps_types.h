@@ -205,6 +205,6 @@ typedef struct {
     /// @brief 32 bit CRC (ASCII and Binary only). 
     uint32_t crc;
     
-} bestxyza_response;
+} gps_bestxyza_response;
 
 #endif // INCLUDE_GUARD__GPS_TYPES_H

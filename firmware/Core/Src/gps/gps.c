@@ -4,6 +4,7 @@
 #include "telecommands/telecommand_args_helpers.h"
 
 #include <stdio.h>
+#include <stdlib.h> 
 #include <string.h>
 #include <stdint.h>
 
@@ -196,7 +197,7 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
 /// @brief Parse Received Data
 /// @param data_received - Number of bytes in the data block
 /// @return 0 if successful, >0 if an error occurred
-uint8_t parse_bestxyza_data(const char* data_received, bestxyza_response *result) {
+uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *result) {
     
     //Check if it starts with #, if not return error
     if (data_received[0] != '#') {
