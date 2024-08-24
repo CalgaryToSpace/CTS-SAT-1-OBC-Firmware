@@ -3,8 +3,6 @@
 
 #include <stdint.h>
 
-// TODO: Confirm for the structs if the status_code is needed i.e. is it the binary version of the response 
-
 // ****************** SECTION: gps_header_structs ******************
 
 /// @brief  This refers to the status that indicates how well a time is known
@@ -35,6 +33,7 @@ typedef struct {
     char port[10];
 
     /// @brief Used for multiple related logs, e.g., 0.
+    /// TODO: Potentially try use a fixed point number to get decimal points
     uint32_t sequence_no;
 
     /// @brief The minimum percentage of time the processor is idle.
@@ -47,14 +46,12 @@ typedef struct {
     uint32_t week;
 
     /// @brief Seconds from the beginning of the GPS reference week
+    /// TODO: Potentially try use a fixed point number to get decimal points
     uint32_t seconds;
 
     /// @brief An eight digit hexadecimal number representing the status of
     /// various hardware and software components of the receiver
     int32_t rx_status;
-
-    /// @brief Reserved for GPS internal use
-    uint32_t reserved;
 
     /// @brief representing the receiver software build number
     uint32_t rx_sw_version;
