@@ -467,7 +467,7 @@ typedef struct ADCS_Raw_GPS_Status_Struct {
     uint8_t response_message_gps_log;
 } ADCS_Raw_GPS_Status_Struct;
 
-typedef struct {
+typedef struct ADCS_Raw_GPS_Time_Struct {
     uint16_t gps_reference_week;
     double gps_time; // in seconds
 } ADCS_Raw_GPS_Time_Struct;
