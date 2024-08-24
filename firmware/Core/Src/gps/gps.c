@@ -119,8 +119,6 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
     char token_buffer[256];
     char *end_ptr;
 
-    //TCMD_extract_string_arg TODO:Read and apply
-
     // Log Name
     parse_result = TCMD_extract_string_arg(header_buffer, 0, token_buffer, sizeof(token_buffer));
     if (parse_result != 0) {  
@@ -156,7 +154,7 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
     if (parse_result != 0) {  
         return parse_result;  
     }
-    uint8_t status_result = assign_gps_time_status(token_buffer, &result->time_status);
+    const uint8_t status_result = assign_gps_time_status(token_buffer, &result->time_status);
     if (status_result != 0) {
         // Time Status not recognized
         return 1;
@@ -194,85 +192,206 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
 }
 
 
+/// @brief Assigns a GPS solution status based on the provided string.
+/// @param status_str The status string to parse.
+/// @param status Pointer to GPS_solution_status_enum_t where the status will be stored.
+/// @return Returns 0 on success, 1 if the status string is unrecognized.
+uint8_t assign_gps_solution_status(const char *status_str, GPS_solution_status_enum_t *status) {
+    if (strcmp(status_str, "SOL_COMPUTED") == 0) {
+        *status = GPS_SOL_COMPUTED;
+    } else if (strcmp(status_str, "INSUFFICIENT_OBS") == 0) {
+        *status = GPS_INSUFFICIENT_OBS;
+    } else if (strcmp(status_str, "NO_CONVERGENCE") == 0) {
+        *status = GPS_NO_CONVERGENCE;
+    } else if (strcmp(status_str, "SINGULARITY") == 0) {
+        *status = GPS_SINGULARITY;
+    } else if (strcmp(status_str, "COV_TRACE") == 0) {
+        *status = GPS_COV_TRACE;
+    } else if (strcmp(status_str, "TEST_DIST") == 0) {
+        *status = GPS_TEST_DIST;
+    } else if (strcmp(status_str, "COLD_START") == 0) {
+        *status = GPS_COLD_START;
+    } else if (strcmp(status_str, "V_H_LIMIT") == 0) {
+        *status = GPS_V_H_LIMIT;
+    } else if (strcmp(status_str, "VARIANCE") == 0) {
+        *status = GPS_VARIANCE;
+    } else if (strcmp(status_str, "RESIDUALS") == 0) {
+        *status = GPS_RESIDUALS;
+    } else if (strcmp(status_str, "INTEGRITY_WARNING") == 0) {
+        *status = GPS_INTEGRITY_WARNING;
+    } else {
+        return 1;  // Unrecognized status string
+    }
+    return 0;  // Success
+}
+
+
+/// @brief Assigns a GPS position or velocity type based on the provided string.
+/// @param type_str The type string to parse.
+/// @param type Pointer to GPS_position_velocity_type_enum_t where the type will be stored.
+/// @return Returns 0 on success, 1 if the type string is unrecognized.
+uint8_t assign_gps_position_velocity_type(const char *type_str, GPS_position_velocity_type_enum_t *type) {
+    if (strcmp(type_str, "NONE") == 0) {
+        *type = GPS_TYPE_NONE;
+    } else if (strcmp(type_str, "FIXEDPOS") == 0) {
+        *type = GPS_TYPE_FIXEDPOS;
+    } else if (strcmp(type_str, "FIXEDHEIGHT") == 0) {
+        *type = GPS_TYPE_FIXEDHEIGHT;
+    } else if (strcmp(type_str, "DOPPLER_VELOCITY") == 0) {
+        *type = GPS_TYPE_DOPPLER_VELOCITY;
+    } else if (strcmp(type_str, "SINGLE") == 0) {
+        *type = GPS_TYPE_SINGLE;
+    } else if (strcmp(type_str, "PSDIFF") == 0) {
+        *type = GPS_TYPE_PSDIFF;
+    } else if (strcmp(type_str, "WAAS") == 0) {
+        *type = GPS_TYPE_WAAS;
+    } else if (strcmp(type_str, "PROPAGATED") == 0) {
+        *type = GPS_TYPE_PROPAGATED;
+    } else if (strcmp(type_str, "L1_FLOAT") == 0) {
+        *type = GPS_TYPE_L1_FLOAT;
+    } else if (strcmp(type_str, "NARROW_FLOAT") == 0) {
+        *type = GPS_TYPE_NARROW_FLOAT;
+    } else if (strcmp(type_str, "L1_INT") == 0) {
+        *type = GPS_TYPE_L1_INT;
+    } else if (strcmp(type_str, "WIDE_INT") == 0) {
+        *type = GPS_TYPE_WIDE_INT;
+    } else if (strcmp(type_str, "NARROW_INT") == 0) {
+        *type = GPS_TYPE_NARROW_INT;
+    } else if (strcmp(type_str, "RTK_DIRECT_INS") == 0) {
+        *type = GPS_TYPE_RTK_DIRECT_INS;
+    } else if (strcmp(type_str, "INS_SBAS") == 0) {
+        *type = GPS_TYPE_INS_SBAS;
+    } else if (strcmp(type_str, "INS_PSRSP") == 0) {
+        *type = GPS_TYPE_INS_PSRSP;
+    } else if (strcmp(type_str, "INS_PSRDIFF") == 0) {
+        *type = GPS_TYPE_INS_PSRDIFF;
+    } else if (strcmp(type_str, "INS_RTKFLOAT") == 0) {
+        *type = GPS_TYPE_INS_RTKFLOAT;
+    } else if (strcmp(type_str, "INS_RTKFIXED") == 0) {
+        *type = GPS_TYPE_INS_RTKFIXED;
+    } else if (strcmp(type_str, "PPP_CONVERGING") == 0) {
+        *type = GPS_TYPE_PPP_CONVERGING;
+    } else if (strcmp(type_str, "PPP") == 0) {
+        *type = GPS_TYPE_PPP;
+    } else if (strcmp(type_str, "OPERATIONAL") == 0) {
+        *type = GPS_TYPE_OPERATIONAL;
+    } else if (strcmp(type_str, "WARNING") == 0) {
+        *type = GPS_TYPE_WARNING;
+    } else if (strcmp(type_str, "OUT_OF_BOUNDS") == 0) {
+        *type = GPS_TYPE_OUT_OF_BOUNDS;
+    } else if (strcmp(type_str, "INS_PPP_CONVERGING") == 0) {
+        *type = GPS_TYPE_INS_PPP_CONVERGING;
+    } else if (strcmp(type_str, "INS_PPP") == 0) {
+        *type = GPS_TYPE_INS_PPP;
+    } else if (strcmp(type_str, "PPP_BASIC_CONVERGING") == 0) {
+        *type = GPS_TYPE_PPP_BASIC_CONVERGING;
+    } else if (strcmp(type_str, "PPP_BASIC") == 0) {
+        *type = GPS_TYPE_PPP_BASIC;
+    } else if (strcmp(type_str, "INS_PPP_BASIC_CONVERGING") == 0) {
+        *type = GPS_TYPE_INS_PPP_BASIC_CONVERGING;
+    } else if (strcmp(type_str, "INS_PPP_BASIC") == 0) {
+        *type = GPS_TYPE_INS_PPP_BASIC;
+    } else {
+        return 1;  // Unrecognized type string
+    }
+    return 0;  // Success
+}
+
 /// @brief Parse Received Data
 /// @param data_received - Number of bytes in the data block
 /// @return 0 if successful, >0 if an error occurred
 uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *result) {
-    
-    //Check if it starts with #, if not return error
-    if (data_received[0] != '#') {
-        // Not a valid GPS message
+
+    gps_response_header bestxyza_header;
+    const uint8_t header_parse_result = parse_gps_header(data_received,&bestxyza_header);
+
+    if(header_parse_result != 0){
+        // Error in parsing header section
         return 1;
     }
 
-    // Find the next comma to denote the end of the function name. 
-    // Probably loop through the implemented functions names to see if its valid.
-    // Otherwise return an error.
-    char* header_end = strchr(data_received, ';');
-    if (!header_end) {
-        // No header found
+    if(strcmp(bestxyza_header.log_name, "BESTXYZA") != 0){
+        // Incorrect log function
         return 2;
     }
 
-    // Parse the header
-    char header[BUFFER_SIZE];
-    strncpy(header, data_received + 1, header_end - data_received - 1); // Skip the '#'
-    header[header_end - data_received - 1] = '\0';
+    // TODO: What if there is multiple commands in the string?
+    const char *header_delimiter_char = strchr(data_received,';');
+    const char* bestxyza_data_start = header_delimiter_char + 1;
+    const char* asterisk = strchr(bestxyza_data_start, '*');
 
-    // Tokenize the header to extract fields
-    char* token = strtok(header, ",");
-    while (token != NULL) {
-        // Process each field
-        LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Header Field: %s",
-            token
-        );
-        printf("Header Field: %s\n", token);
-        token = strtok(NULL, ",");
-    }
-
-    // Now handle the data portion after the header
-    char* data_start = header_end + 1;
-    char* crc_start = strchr(data_start, '*');
-    if (!crc_start) {
-        // No CRC found
+    if(!asterisk){
+        // Not terminator to the end of the bestxyza data, ie no CRC present
         return 3;
     }
 
-    // Extract data fields
-    char data[BUFFER_SIZE];
-    strncpy(data, data_start, crc_start - data_start);
-    data[crc_start - data_start] = '\0';
+    const int bestxyza_data_length = bestxyza_data_start - asterisk + 1;
 
-    // Tokenize the data to extract fields
-    token = strtok(data, ",");
-    while (token != NULL) {
-        // Process each data field
-        LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Data Field: %s",
-            token
-        );
-        token = strtok(NULL, ",");
+    if (bestxyza_data_length < 0) {
+        //CRC asterick comes before the start of the data: Incomplete bestxyza data
+        return 4;
     }
 
-    // Extract and check the CRC (you will need a CRC function to validate this)
-    char crc[9];
-    strncpy(crc, crc_start + 1, 8); // CRC is 8 characters long
-    crc[8] = '\0';
+    char bestxyza_data_buffer[1024];
+    if ((size_t)bestxyza_data_length >= sizeof(bestxyza_data_buffer)) {
+        //Header is too large for the buffer
+        return 5;  
+    }
 
-    LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "CRC: %s.",
-            crc
-        );
+    strncpy(bestxyza_data_buffer, bestxyza_data_start, bestxyza_data_length);
+    bestxyza_data_buffer[bestxyza_data_length] = '\0';
 
-    // Validate the CRC (implementation of the CRC function needed)
-    // if (!validate_crc(data_start, crc)) {
-    //     printf("CRC Validation Failed\n");
-    //     return;
-    // }
+    // Parse the data in the bestxyza data buffer
+    uint8_t parse_result;
+    char token_buffer[256];
+    
+    // Position Solution Status
+    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 0, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    uint8_t status_result = assign_gps_solution_status(token_buffer, &result->position_solution_status);
+    if(status_result != 0){
+        // Invalid string passed
+        return status_result;
+    }
+
+    // Position Type
+    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 1, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    uint8_t status_result = assign_gps_position_velocity_type(token_buffer, &result->position_type);
+    if(status_result != 0){
+        // Invalid string passed
+        return status_result;
+    }
+
+
+    // Velocity Solution Status
+    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 8, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    status_result = assign_gps_solution_status(token_buffer, &result->velocity_solution_status);
+    if(status_result != 0){
+        // Invalid string passed
+        return status_result;
+    }
+
+    // Velocity Type
+    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 9, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    uint8_t status_result = assign_gps_position_velocity_type(token_buffer, &result->velocity_type);
+    if(status_result != 0){
+        // Invalid string passed
+        return status_result;
+    }
+
+
+
 
     LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
