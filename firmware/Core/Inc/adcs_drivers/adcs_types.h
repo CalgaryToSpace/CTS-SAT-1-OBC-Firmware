@@ -282,6 +282,7 @@ typedef struct ADCS_Rated_Sensor_Rates_Struct {
 } ADCS_Rated_Sensor_Rates_Struct;
 
 typedef struct ADCS_Wheel_Speed_Struct {
+    // TODO: Add bool for whether it's commanded or actual wheel speed
 	int16_t x; 
 	int16_t y;
 	int16_t z; 
@@ -293,11 +294,11 @@ typedef struct ADCS_Magnetorquer_Command_Struct {
 	int32_t z_ms; 
 } ADCS_Magnetorquer_Command_Struct;
 
-typedef struct ADCS_Raw_Mag_TLM_Struct {
+typedef struct ADCS_Raw_Magnetometer_Values_Struct {
 	int16_t x; 
 	int16_t y;
 	int16_t z; 
-} ADCS_Raw_Mag_TLM_Struct;
+} ADCS_Raw_Magnetometer_Values_Struct;
 
 typedef struct ADCS_Fine_Angular_Rates_Struct {
 	int16_t x_milli_deg_per_sec; 

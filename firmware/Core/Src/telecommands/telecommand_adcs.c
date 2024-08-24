@@ -11,8 +11,9 @@
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_commands.h"
 #include "adcs_drivers/adcs_struct_packers.h"
+#include "adcs_drivers/adcs_types_to_json.h"
 
-/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @bpacked_structelecommand: Request the given telemetry data from the ADCS
 /// @param args_str 
 ///     - No arguments for this command
 /// @return 0 on success, >0 on error
@@ -60,7 +61,24 @@ uint8_t TCMDEXEC_ADCS_reset(const char *args_str, TCMD_TelecommandChannel_enum_t
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_identification(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                      char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Identification(); 
+    ADCS_ID_Struct packed_struct;
+    uint8_t status = ADCS_Get_Identification(&packed_struct); 
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_ID_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                            
 
@@ -70,7 +88,24 @@ uint8_t TCMDEXEC_ADCS_identification(const char *args_str, TCMD_TelecommandChann
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_program_status(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                      char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Program_Status(); 
+    ADCS_Boot_Running_Status_Struct packed_struct;
+    uint8_t status = ADCS_Get_Program_Status(&packed_struct); 
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Boot_Running_Status_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                            
 
@@ -80,7 +115,24 @@ uint8_t TCMDEXEC_ADCS_program_status(const char *args_str, TCMD_TelecommandChann
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_communication_status(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                            char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Communication_Status(); 
+    ADCS_Comms_Status_Struct packed_struct;
+    uint8_t status = ADCS_Get_Communication_Status(&packed_struct); 
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Comms_Status_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                                
 
@@ -205,7 +257,24 @@ uint8_t TCMDEXEC_ADCS_save_config(const char *args_str, TCMD_TelecommandChannel_
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_estimate_angular_rates(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                              char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Estimate_Angular_Rates();
+    ADCS_Angular_Rates_Struct packed_struct;
+    uint8_t status = ADCS_Get_Estimate_Angular_Rates(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Angular_Rates_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                                    
 
@@ -215,7 +284,24 @@ uint8_t TCMDEXEC_ADCS_estimate_angular_rates(const char *args_str, TCMD_Telecomm
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_get_llh_position(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                        char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_LLH_Position();
+    ADCS_LLH_Position_Struct packed_struct;
+    uint8_t status = ADCS_Get_LLH_Position(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_LLH_Position_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                            
 
@@ -225,7 +311,24 @@ uint8_t TCMDEXEC_ADCS_get_llh_position(const char *args_str, TCMD_TelecommandCha
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_get_power_control(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                         char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Power_Control();
+    ADCS_Power_Control_Struct packed_struct;
+    uint8_t status = ADCS_Get_Power_Control(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Power_Control_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }   
 
@@ -296,7 +399,7 @@ uint8_t TCMDEXEC_ADCS_set_magnetometer_config(const char *args_str, TCMD_Telecom
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_bootloader_clear_errors(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Bootloader_Clear_Errors(); 
+    uint8_t status = ADCS_Bootloader_Clear_Errors(); 
     return status;
 }                                    
 
@@ -327,7 +430,24 @@ uint8_t TCMDEXEC_ADCS_set_unix_time_save_mode(const char *args_str, TCMD_Telecom
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_get_unix_time_save_mode(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Unix_Time_Save_Mode();
+    ADCS_Set_Unix_Time_Save_Mode_Struct packed_struct;
+    uint8_t status = ADCS_Get_Unix_Time_Save_Mode(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Set_Unix_Time_Save_Mode_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                                    
 
@@ -361,7 +481,24 @@ uint8_t TCMDEXEC_ADCS_set_sgp4_orbit_params(const char *args_str, TCMD_Telecomma
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_get_sgp4_orbit_params(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_SGP4_Orbit_Params();
+    ADCS_Orbit_Params_Struct packed_struct;
+    uint8_t status = ADCS_Get_SGP4_Orbit_Params(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Orbit_Params_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                                
 
@@ -381,7 +518,24 @@ uint8_t TCMDEXEC_ADCS_save_orbit_params(const char *args_str, TCMD_TelecommandCh
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_rate_sensor_rates(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                         char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Rate_Sensor_Rates();
+    ADCS_Rated_Sensor_Rates_Struct packed_struct;
+    uint8_t status = ADCS_Get_Rate_Sensor_Rates(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Rated_Sensor_Rates_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                            
 
@@ -391,7 +545,24 @@ uint8_t TCMDEXEC_ADCS_rate_sensor_rates(const char *args_str, TCMD_TelecommandCh
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_get_wheel_speed(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                       char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Wheel_Speed();
+    ADCS_Wheel_Speed_Struct packed_struct;
+    uint8_t status = ADCS_Get_Wheel_Speed(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Wheel_Speed_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                            
 
@@ -401,7 +572,24 @@ uint8_t TCMDEXEC_ADCS_get_wheel_speed(const char *args_str, TCMD_TelecommandChan
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_get_magnetorquer_command(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Magnetorquer_Command();
+    ADCS_Magnetorquer_Command_Struct packed_struct;
+    uint8_t status = ADCS_Get_Magnetorquer_Command(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Magnetorquer_Command_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                                    
 
@@ -411,7 +599,24 @@ uint8_t TCMDEXEC_ADCS_get_magnetorquer_command(const char *args_str, TCMD_Teleco
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_get_raw_magnetometer_values(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                   char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Raw_Magnetometer_Values();
+    ADCS_Raw_Magnetometer_Values_Struct packed_struct;
+    uint8_t status = ADCS_Get_Raw_Magnetometer_Values(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Raw_Magnetometer_Values_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                                                                 
 
@@ -421,7 +626,24 @@ uint8_t TCMDEXEC_ADCS_get_raw_magnetometer_values(const char *args_str, TCMD_Tel
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_estimate_fine_angular_rates(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                   char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Estimate_Fine_Angular_Rates(); 
+    ADCS_Fine_Angular_Rates_Struct packed_struct;
+    uint8_t status = ADCS_Get_Estimate_Fine_Angular_Rates(&packed_struct); 
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Fine_Angular_Rates_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                                        
 
@@ -431,7 +653,24 @@ uint8_t TCMDEXEC_ADCS_estimate_fine_angular_rates(const char *args_str, TCMD_Tel
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_get_magnetometer_config(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Magnetometer_Config();
+    ADCS_Magnetometer_Config_Struct packed_struct;
+    uint8_t status = ADCS_Get_Magnetometer_Config(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Magnetometer_Config_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                                    
 
@@ -441,7 +680,24 @@ uint8_t TCMDEXEC_ADCS_get_magnetometer_config(const char *args_str, TCMD_Telecom
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_get_commanded_attitude_angles(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                     char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Commanded_Attitude_Angles();
+    ADCS_Commanded_Angles_Struct packed_struct;
+    uint8_t status = ADCS_Get_Commanded_Attitude_Angles(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Commanded_Angles_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                                        
 
@@ -535,7 +791,24 @@ uint8_t TCMDEXEC_ADCS_set_estimation_params(const char *args_str, TCMD_Telecomma
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_get_estimation_params(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Estimation_Params();
+    ADCS_Estimation_Params_Struct packed_struct;
+    uint8_t status = ADCS_Get_Estimation_Params(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Estimation_Params_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                                
 
@@ -605,7 +878,24 @@ uint8_t TCMDEXEC_ADCS_set_asgp4_params(const char *args_str, TCMD_TelecommandCha
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_get_asgp4_params(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                        char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_ASGP4_Params();
+    ADCS_ASGP4_Params_Struct packed_struct;
+    uint8_t status = ADCS_Get_ASGP4_Params(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_ASGP4_Params_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                            
 
@@ -635,7 +925,24 @@ uint8_t TCMDEXEC_ADCS_set_tracking_controller_target_reference(const char *args_
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_get_tracking_controller_target_reference(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                                 char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Tracking_Controller_Target_Reference();
+    ADCS_Tracking_Controller_Target_Struct packed_struct;
+    uint8_t status = ADCS_Get_Tracking_Controller_Target_Reference(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Tracking_Controller_Target_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                                                    
 
@@ -679,7 +986,24 @@ uint8_t TCMDEXEC_ADCS_set_rate_gyro_config(const char *args_str, TCMD_Telecomman
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_get_rate_gyro_config(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                            char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Rate_Gyro_Config();
+    ADCS_Rate_Gyro_Config_Struct packed_struct;
+    uint8_t status = ADCS_Get_Rate_Gyro_Config(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Rate_Gyro_Config_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                                
 
@@ -689,7 +1013,24 @@ uint8_t TCMDEXEC_ADCS_get_rate_gyro_config(const char *args_str, TCMD_Telecomman
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_estimated_attitude_angles(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                 char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Estimated_Attitude_Angles();
+    ADCS_Estimated_Attitude_Angles_Struct packed_struct;
+    uint8_t status = ADCS_Get_Estimated_Attitude_Angles(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Estimated_Attitude_Angles_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                                    
 
@@ -699,7 +1040,24 @@ uint8_t TCMDEXEC_ADCS_estimated_attitude_angles(const char *args_str, TCMD_Telec
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_magnetic_field_vector(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Magnetic_Field_Vector();
+    ADCS_Magnetic_Field_Vector_Struct packed_struct;
+    uint8_t status = ADCS_Get_Magnetic_Field_Vector(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Magnetic_Field_Vector_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                                
 
@@ -709,7 +1067,24 @@ uint8_t TCMDEXEC_ADCS_magnetic_field_vector(const char *args_str, TCMD_Telecomma
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_fine_sun_vector(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                       char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Fine_Sun_Vector();
+    ADCS_Fine_Sun_Vector_Struct packed_struct;
+    uint8_t status = ADCS_Get_Fine_Sun_Vector(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Fine_Sun_Vector_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                            
 
@@ -719,7 +1094,24 @@ uint8_t TCMDEXEC_ADCS_fine_sun_vector(const char *args_str, TCMD_TelecommandChan
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_nadir_vector(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                    char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Nadir_Vector();
+    ADCS_Nadir_Vector_Struct packed_struct;
+    uint8_t status = ADCS_Get_Nadir_Vector(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Nadir_Vector_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                        
 
@@ -729,7 +1121,24 @@ uint8_t TCMDEXEC_ADCS_nadir_vector(const char *args_str, TCMD_TelecommandChannel
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_commanded_wheel_speed(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Commanded_Wheel_Speed();
+    ADCS_Wheel_Speed_Struct packed_struct;
+    uint8_t status = ADCS_Get_Commanded_Wheel_Speed(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Wheel_Speed_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                                
 
@@ -739,7 +1148,24 @@ uint8_t TCMDEXEC_ADCS_commanded_wheel_speed(const char *args_str, TCMD_Telecomma
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_igrf_magnetic_field_vector(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                  char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_IGRF_Magnetic_Field_Vector();
+    ADCS_Magnetic_Field_Vector_Struct packed_struct;
+    uint8_t status = ADCS_Get_IGRF_Magnetic_Field_Vector(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Magnetic_Field_Vector_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                                        
 
@@ -749,7 +1175,24 @@ uint8_t TCMDEXEC_ADCS_igrf_magnetic_field_vector(const char *args_str, TCMD_Tele
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_quaternion_error_vector(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Quaternion_Error_Vector();
+    ADCS_Quaternion_Error_Vector_Struct packed_struct;
+    uint8_t status = ADCS_Get_Quaternion_Error_Vector(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Quaternion_Error_Vector_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                                    
 
@@ -759,7 +1202,24 @@ uint8_t TCMDEXEC_ADCS_quaternion_error_vector(const char *args_str, TCMD_Telecom
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_estimated_gyro_bias(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                           char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Estimated_Gyro_Bias();
+    ADCS_Estimated_Gyro_Bias_Struct packed_struct;
+    uint8_t status = ADCS_Get_Estimated_Gyro_Bias(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Estimated_Gyro_Bias_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                                
 
@@ -769,7 +1229,24 @@ uint8_t TCMDEXEC_ADCS_estimated_gyro_bias(const char *args_str, TCMD_Telecommand
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_estimation_innovation_vector(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                    char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Estimation_Innovation_Vector();
+    ADCS_Estimation_Innovation_Vector_Struct packed_struct;
+    uint8_t status = ADCS_Get_Estimation_Innovation_Vector(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Estimation_Innovation_Vector_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                                        
 
@@ -779,7 +1256,24 @@ uint8_t TCMDEXEC_ADCS_estimation_innovation_vector(const char *args_str, TCMD_Te
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_raw_cam1_sensor(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                       char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Raw_Cam1_Sensor();
+    ADCS_Raw_Cam_Sensor_Struct packed_struct;
+    uint8_t status = ADCS_Get_Raw_Cam1_Sensor(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Raw_Cam_Sensor_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                            
 
@@ -789,7 +1283,24 @@ uint8_t TCMDEXEC_ADCS_raw_cam1_sensor(const char *args_str, TCMD_TelecommandChan
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_raw_cam2_sensor(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                       char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Raw_Cam2_Sensor();
+    ADCS_Raw_Cam_Sensor_Struct packed_struct;
+    uint8_t status = ADCS_Get_Raw_Cam2_Sensor(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Raw_Cam_Sensor_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                            
 
@@ -799,7 +1310,24 @@ uint8_t TCMDEXEC_ADCS_raw_cam2_sensor(const char *args_str, TCMD_TelecommandChan
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_raw_css_1_to_6(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                      char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Raw_CSS_1_to_6();
+    ADCS_Raw_CSS_1_to_6_Struct packed_struct;
+    uint8_t status = ADCS_Get_Raw_CSS_1_to_6(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Raw_CSS_1_to_6_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                            
 
@@ -809,7 +1337,24 @@ uint8_t TCMDEXEC_ADCS_raw_css_1_to_6(const char *args_str, TCMD_TelecommandChann
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_raw_css_7_to_10(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                       char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Raw_CSS_7_to_10();
+    ADCS_Raw_CSS_7_to_10_Struct packed_struct;
+    uint8_t status = ADCS_Get_Raw_CSS_7_to_10(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Raw_CSS_7_to_10_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                            
 
@@ -819,7 +1364,24 @@ uint8_t TCMDEXEC_ADCS_raw_css_7_to_10(const char *args_str, TCMD_TelecommandChan
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_cubecontrol_current(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                           char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_CubeControl_Current();
+    ADCS_CubeControl_Current_Struct packed_struct;
+    uint8_t status = ADCS_Get_CubeControl_Current(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_CubeControl_Current_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                                
 
@@ -829,7 +1391,24 @@ uint8_t TCMDEXEC_ADCS_cubecontrol_current(const char *args_str, TCMD_Telecommand
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_raw_gps_status(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                      char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Raw_GPS_Status();
+    ADCS_Raw_GPS_Status_Struct packed_struct;
+    uint8_t status = ADCS_Get_Raw_GPS_Status(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Raw_GPS_Status_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                            
 
@@ -839,7 +1418,24 @@ uint8_t TCMDEXEC_ADCS_raw_gps_status(const char *args_str, TCMD_TelecommandChann
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_raw_gps_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                    char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Raw_GPS_Time();
+    ADCS_Raw_GPS_Time_Struct packed_struct;
+    uint8_t status = ADCS_Get_Raw_GPS_Time(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Raw_GPS_Time_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                        
 
@@ -849,7 +1445,24 @@ uint8_t TCMDEXEC_ADCS_raw_gps_time(const char *args_str, TCMD_TelecommandChannel
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_raw_gps_x(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                 char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Raw_GPS_X();
+    ADCS_Raw_GPS_Struct packed_struct;
+    uint8_t status = ADCS_Get_Raw_GPS_X(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Raw_GPS_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                    
 
@@ -859,7 +1472,24 @@ uint8_t TCMDEXEC_ADCS_raw_gps_x(const char *args_str, TCMD_TelecommandChannel_en
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_raw_gps_y(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                 char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Raw_GPS_Y();
+    ADCS_Raw_GPS_Struct packed_struct;
+    uint8_t status = ADCS_Get_Raw_GPS_Y(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Raw_GPS_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                    
 
@@ -869,7 +1499,24 @@ uint8_t TCMDEXEC_ADCS_raw_gps_y(const char *args_str, TCMD_TelecommandChannel_en
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_raw_gps_z(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                 char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Raw_GPS_Z();
+    ADCS_Raw_GPS_Struct packed_struct;
+    uint8_t status = ADCS_Get_Raw_GPS_Z(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Raw_GPS_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                    
 
@@ -879,6 +1526,25 @@ uint8_t TCMDEXEC_ADCS_raw_gps_z(const char *args_str, TCMD_TelecommandChannel_en
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ADCS_measurements(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                    char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Get_Measurements(); 
+    ADCS_Measurements_Struct packed_struct;
+    uint8_t status = ADCS_Get_Measurements(&packed_struct); 
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_Measurements_Struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
     return status;
 }                        
+
+// TODO: potentially create TCMEXEC_ADCS_generic_command and TCMEXEC ADCS_generic_telemetry_request functions (?)

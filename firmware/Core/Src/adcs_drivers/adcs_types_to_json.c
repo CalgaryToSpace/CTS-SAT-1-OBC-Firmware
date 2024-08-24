@@ -277,12 +277,12 @@ uint8_t ADCS_Magnetorquer_Command_Struct_TO_json(const ADCS_Magnetorquer_Command
     return 0;
 }
 
-/// @brief Converts ADCS_Raw_Mag_TLM_Struct to a JSON string.
-/// @param[in] data Pointer to the ADCS_Raw_Mag_TLM_Struct.
+/// @brief Converts ADCS_Raw_Magnetometer_Values_Struct to a JSON string.
+/// @param[in] data Pointer to the ADCS_Raw_Magnetometer_Values_Struct.
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Raw_Mag_TLM_Struct_TO_json(const ADCS_Raw_Mag_TLM_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_Raw_Magnetometer_Values_Struct_TO_json(const ADCS_Raw_Magnetometer_Values_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 100) {
         return 1; // Error: invalid input
     }

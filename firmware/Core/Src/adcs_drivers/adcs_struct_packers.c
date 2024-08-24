@@ -185,7 +185,7 @@ uint8_t ADCS_Pack_to_Magnetorquer_Command_Struct(uint8_t *data_received, ADCS_Ma
 /// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
 /// @param[out] result Structure containing the formated data for this command.
 /// @return 0 once the function is finished running.}
-uint8_t ADCS_Pack_to_Raw_Magnetometer_Values_Struct(uint8_t *data_received, ADCS_Raw_Mag_TLM_Struct *result) {
+uint8_t ADCS_Pack_to_Raw_Magnetometer_Values_Struct(uint8_t *data_received, ADCS_Raw_Magnetometer_Values_Struct *result) {
 	result->x = data_received[1] << 8 | data_received[0];
     result->y = data_received[3] << 8 | data_received[2];
     result->z = data_received[5] << 8 | data_received[4];

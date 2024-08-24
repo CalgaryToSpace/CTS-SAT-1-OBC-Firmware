@@ -16,7 +16,7 @@ uint8_t ADCS_Pack_to_Orbit_Params_Struct(uint8_t* data_received, ADCS_Orbit_Para
 uint8_t ADCS_Pack_to_Rated_Sensor_Rates_Struct(uint8_t* data_received, ADCS_Rated_Sensor_Rates_Struct *result);
 uint8_t ADCS_Pack_to_Wheel_Speed_Struct(uint8_t* data_received, ADCS_Wheel_Speed_Struct *result);
 uint8_t ADCS_Pack_to_Magnetorquer_Command_Struct(uint8_t* data_received, ADCS_Magnetorquer_Command_Struct *result);
-uint8_t ADCS_Pack_to_Raw_Magnetometer_Values_Struct(uint8_t* data_received, ADCS_Raw_Mag_TLM_Struct *result);
+uint8_t ADCS_Pack_to_Raw_Magnetometer_Values_Struct(uint8_t* data_received, ADCS_Raw_Magnetometer_Values_Struct *result);
 uint8_t ADCS_Pack_to_Fine_Angular_Rates_Struct(uint8_t* data_received, ADCS_Fine_Angular_Rates_Struct *result);
 uint8_t ADCS_Pack_to_Magnetometer_Config_Struct(uint8_t* data_received, ADCS_Magnetometer_Config_Struct *result);
 uint8_t ADCS_Pack_to_Commanded_Attitude_Angles_Struct(uint8_t* data_received, ADCS_Commanded_Angles_Struct *result);

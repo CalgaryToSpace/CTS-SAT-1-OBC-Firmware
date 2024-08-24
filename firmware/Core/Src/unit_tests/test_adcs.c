@@ -183,7 +183,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Magnetorquer_Command_Struct()
 uint8_t TEST_EXEC__ADCS_Pack_to_Raw_Magnetometer_Values_Struct()
 {
     uint8_t input_params[6] = {0x11, 0x22, 0x33, 0x44, 0x55, 0xff};
-    ADCS_Raw_Mag_TLM_Struct result;
+    ADCS_Raw_Magnetometer_Values_Struct result;
     ADCS_Pack_to_Raw_Magnetometer_Values_Struct(input_params, &result);
     TEST_ASSERT_TRUE(result.x == 8721);
     TEST_ASSERT_TRUE(result.y == 17459);

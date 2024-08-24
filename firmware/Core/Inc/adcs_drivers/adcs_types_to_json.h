@@ -23,7 +23,7 @@ uint8_t ADCS_Orbit_Params_Struct_TO_json(const ADCS_Orbit_Params_Struct *data, c
 uint8_t ADCS_Rated_Sensor_Rates_Struct_TO_json(const ADCS_Rated_Sensor_Rates_Struct *data, char json_output_str[], uint16_t json_output_str_len);
 uint8_t ADCS_Wheel_Speed_Struct_TO_json(const ADCS_Wheel_Speed_Struct *data, char json_output_str[], uint16_t json_output_str_len);
 uint8_t ADCS_Magnetorquer_Command_Struct_TO_json(const ADCS_Magnetorquer_Command_Struct *data, char json_output_str[], uint16_t json_output_str_len);
-uint8_t ADCS_Raw_Mag_TLM_Struct_TO_json(const ADCS_Raw_Mag_TLM_Struct *data, char json_output_str[], uint16_t json_output_str_len);
+uint8_t ADCS_Raw_Magnetometer_Values_Struct_TO_json(const ADCS_Raw_Magnetometer_Values_Struct *data, char json_output_str[], uint16_t json_output_str_len);
 uint8_t ADCS_Fine_Angular_Rates_Struct_TO_json(const ADCS_Fine_Angular_Rates_Struct *data, char json_output_str[], uint16_t json_output_str_len);
 uint8_t ADCS_Magnetometer_Config_Struct_TO_json(const ADCS_Magnetometer_Config_Struct *data, char json_output_str[], uint16_t json_output_str_len);
 uint8_t ADCS_Commanded_Angles_Struct_TO_json(const ADCS_Commanded_Angles_Struct *data, char json_output_str[], uint16_t json_output_str_len);
