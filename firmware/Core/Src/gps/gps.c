@@ -1,6 +1,7 @@
 #include "gps/gps.h"
 #include "gps/gps_types.h"
 #include "log/log.h"
+#include "telecommands/telecommand_args_helpers.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -44,6 +45,40 @@ uint32_t calculate_block_crc32( uint32_t ulCount, uint8_t *ucBuffer ) {
     return( crc );
 }
 
+
+/// @brief Assigns a GPS time status based on the provided string.
+/// @param status_str The status string to parse.
+/// @param status Pointer to GPS_reference_time_status_t where the status will be stored.
+/// @return Returns 0 on success, 1 if the status string is unrecognized.
+uint8_t assign_gps_time_status(const char *status_str, GPS_reference_time_status_t *status) {
+    if (strcmp(status_str, "UNKNOWN") == 0) {
+        *status = GPS_UNKNOWN;
+    } else if (strcmp(status_str, "APPROXIMATE") == 0) {
+        *status = GPS_APPROXIMATE;
+    } else if (strcmp(status_str, "COARSEADJUSTING") == 0) {
+        *status = GPS_COARSEADJUSTING;
+    } else if (strcmp(status_str, "COARSE") == 0) {
+        *status = GPS_COARSE;
+    } else if (strcmp(status_str, "COARSESTEERING") == 0) {
+        *status = GPS_COARSESTEERING;
+    } else if (strcmp(status_str, "FREEWHEELING") == 0) {
+        *status = GPS_FREEWHEELING;
+    } else if (strcmp(status_str, "FINEADJUSTING") == 0) {
+        *status = GPS_FINEADJUSTING;
+    } else if (strcmp(status_str, "FINE") == 0) {
+        *status = GPS_FINE;
+    } else if (strcmp(status_str, "FINEBACKUPSTEERING") == 0) {
+        *status = GPS_FINEBACKUPSTEERING;
+    } else if (strcmp(status_str, "FINESTEERING") == 0) {
+        *status = GPS_FINESTEERING;
+    } else if (strcmp(status_str, "SATTIME") == 0) {
+        *status = GPS_SATTIME;
+    } else {
+        return 1;  // Unrecognized status string
+    }
+    return 0;  // Success
+}
+
 /// @brief Parse the received GPS header into a struct
 /// @param data_received - The string obtained from the buffer that is to be parsed into the gps_response_header struct
 /// @param result - gps_response_header struct that is returned
@@ -79,62 +114,80 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
     header_buffer[header_length] = '\0';  // Null-terminate the substring
 
     // Parse the data in the header buffer
-
-    //Extracting the log_name
-    char *token;
+    uint8_t parse_result;
+    char token_buffer[256];
     char *end_ptr;
 
     //TCMD_extract_string_arg TODO:Read and apply
-    //Skip the reserved bytes etc
-    token = strtok(header_buffer, ",");
-    if (token && token[0] == '#') {  
-        strcpy(result->log_name, token + 1);  
-    }
 
-    if (!(token = strtok(NULL, ","))){
-        return 1;
+    // Log Name
+    parse_result = TCMD_extract_string_arg(header_buffer, 0, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
     }
-    strncpy(result->port, token, sizeof(result->port) - 1);
+    strcpy(result->log_name, token_buffer + 1);
+
+    // Port
+    parse_result = TCMD_extract_string_arg(header_buffer, 1, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    strncpy(result->port, token_buffer, sizeof(result->port) - 1);
     result->port[sizeof(result->port) - 1] = '\0';
 
-    if (!(token = strtok(NULL, ","))){
-        return 1;
+    // Sequence Number
+    parse_result = TCMD_extract_string_arg(header_buffer, 2, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
     }
-    result->sequence_no = strtoul(token, &end_ptr, 10);
+    result->sequence_no = strtoul(token_buffer, &end_ptr, 10);
     if (*end_ptr != '\0') return 1;  // Error in conversion
 
-    if (!(token = strtok(NULL, ","))){
+    // Idle Time
+    parse_result = TCMD_extract_string_arg(header_buffer, 3, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    result->idle_time = strtoul(token_buffer, &end_ptr, 10);
+
+    // Time Status
+    parse_result = TCMD_extract_string_arg(header_buffer, 4, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    uint8_t status_result = assign_gps_time_status(token_buffer, &result->time_status);
+    if (status_result != 0) {
+        // Time Status not recognized
         return 1;
     }
-    result->idle_time = strtoul(token, &end_ptr, 10);
-
-    if (!(token = strtok(NULL, ","))){
-        return 1;
+    
+    // Week
+    parse_result = TCMD_extract_string_arg(header_buffer, 5, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
     }
-    result->time_status.gps_reference_time_status_ascii = strdup(token);
+    result->week = strtoul(token_buffer, &end_ptr, 10);
 
-    if (!(token = strtok(NULL, ","))){
-        return 1;
+    // seconds
+    parse_result = TCMD_extract_string_arg(header_buffer, 6, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
     }
-    result->week = strtoul(token, &end_ptr, 10);
+    result->seconds = strtoul(token_buffer, &end_ptr, 10);
 
-    if (!(token = strtok(NULL, ","))){
-        return 1;
+    // Rx Status
+    parse_result = TCMD_extract_string_arg(header_buffer, 7, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
     }
-    result->seconds = strtoul(token, &end_ptr, 10);
+    result->rx_status = strtoul(token_buffer, &end_ptr, 16);  // hexadecimal
 
-    if (!(token = strtok(NULL, ","))){
-        return 1;
+    // Rx Sw Version
+    parse_result = TCMD_extract_string_arg(header_buffer, 8, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
     }
-    result->rx_status = strtoul(token, &end_ptr, 16);  // hexadecimal
-
-    if (!(token = strtok(NULL, ","))){
-        return 1;
-    }
-    result->reserved = strtoul(token, &end_ptr, 16);  // hexadecimal
-
-    if (!(token = strtok(NULL, ","))) return 1;
-    result->rx_sw_version = strtoul(token, &end_ptr, 10);
+    result->rx_sw_version = strtoul(token_buffer, &end_ptr, 10);
 
     return 0;
 }

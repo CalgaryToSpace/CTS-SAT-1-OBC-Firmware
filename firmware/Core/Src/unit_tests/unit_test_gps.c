@@ -21,11 +21,10 @@ uint8_t TEST_EXEC__GPS_Parse_header(){
     TEST_ASSERT_TRUE(strcmp(gps_header_result.port, "COM1") == 0);
     TEST_ASSERT_TRUE(gps_header_result.sequence_no == 0);
     TEST_ASSERT_TRUE(gps_header_result.idle_time == 55.0);
-    TEST_ASSERT_TRUE(strcmp(gps_header_result.time_status.gps_reference_time_status_ascii, "FINESTEERING") == 0);
+    TEST_ASSERT_TRUE(gps_header_result.time_status == GPS_FINESTEERING);
     TEST_ASSERT_TRUE(gps_header_result.week == 1419);
     TEST_ASSERT_TRUE(gps_header_result.seconds == 340033.000);
     TEST_ASSERT_TRUE(gps_header_result.rx_status == 0x02000040);
-    TEST_ASSERT_TRUE(gps_header_result.reserved == 0xd821);
     TEST_ASSERT_TRUE(gps_header_result.rx_sw_version == 2724);
     return 0;
 }
@@ -43,8 +42,8 @@ uint8_t TEST_EXEC__GPS_Parse_bestxyza(){
     uint8_t parse_result = parse_bestxyza_data(gps_data, &result);
     
     TEST_ASSERT_TRUE(parse_result == 0);
-    TEST_ASSERT_TRUE(strcmp(result.position_solution_status.gps_solution_status_ascii,"SOL_COMPUTED" )== 0);
-    TEST_ASSERT_TRUE(strcmp(result.position_type.gps_type_ascii ,"NARROW_INT") == 0);
+    TEST_ASSERT_TRUE(result.position_solution_status == GPS_SOL_COMPUTED);
+    TEST_ASSERT_TRUE(result.position_type == GPS_TYPE_NARROW_INT);
 
     TEST_ASSERT_TRUE(result.position_x_m == -1634531.5683);
     TEST_ASSERT_TRUE(result.position_y_m == -3664618.0326);
@@ -54,8 +53,8 @@ uint8_t TEST_EXEC__GPS_Parse_bestxyza(){
     TEST_ASSERT_TRUE(result.position_y_std_m == 0.0219);
     TEST_ASSERT_TRUE(result.position_z_std_m == 0.0115);
 
-    TEST_ASSERT_TRUE(strcmp(result.velocity_solution_status.gps_solution_status_ascii, "SOL_COMPUTED")== 0);
-    TEST_ASSERT_TRUE(strcmp(result.velocity_type.gps_type_ascii,"NARROW_INT") ==0);
+    TEST_ASSERT_TRUE(result.velocity_solution_status == GPS_SOL_COMPUTED);
+    TEST_ASSERT_TRUE(result.velocity_type == GPS_TYPE_NARROW_INT);
 
     TEST_ASSERT_TRUE(result.velocity_x_m_per_s == 0.0011);
     TEST_ASSERT_TRUE(result.velocity_y_m_per_s == -0.0049);
