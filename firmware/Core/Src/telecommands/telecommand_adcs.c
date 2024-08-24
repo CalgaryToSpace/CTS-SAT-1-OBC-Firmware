@@ -722,13 +722,13 @@ uint8_t TCMDEXEC_ADCS_set_commanded_attitude_angles(const char *args_str, TCMD_T
 
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 
-///     - Arg 0: magnetometer_rate_filter_system_noise (Magnetometer rate filter system noise parameter)
-///     - Arg 1: ekf_system_noise (EKS system noise parameter)
-///     - Arg 2: css_measurement_noise (CSS measurement noise parameter)
-///     - Arg 3: sun_sensor_measurement_noise (sun sensor measurement noise parameter)
-///     - Arg 4: nadir_sensor_measurement_noise (nadir sensor measurement noise parameter)
-///     - Arg 5: magnetometer_measurement_noise (magnetometer measurement noise parameter)
-///     - Arg 6: star_tracker_measurement_noise (star tracker measurement noise parameter)
+///     - Arg 0: magnetometer_rate_filter_system_noise (Magnetometer rate filter system noise covariance parameter)
+///     - Arg 1: ekf_system_noise (EKS system noise covariance parameter)
+///     - Arg 2: css_measurement_noise (CSS measurement noise covariance parameter)
+///     - Arg 3: sun_sensor_measurement_noise (sun sensor measurement noise covariance parameter)
+///     - Arg 4: nadir_sensor_measurement_noise (nadir sensor measurement noise covariance parameter)
+///     - Arg 5: magnetometer_measurement_noise (magnetometer measurement noise covariance parameter)
+///     - Arg 6: star_tracker_measurement_noise (star tracker measurement noise covariance parameter)
 ///     - Arg 7: use_sun_sensor (whether or not to use the sun sensor measurement in EKF)
 ///     - Arg 8: use_nadir_sensor (whether or not to use the nadir sensor measurement in EKF)
 ///     - Arg 9: use_css (whether or not to use the CSS measurement in EKF)
@@ -744,7 +744,6 @@ uint8_t TCMDEXEC_ADCS_set_commanded_attitude_angles(const char *args_str, TCMD_T
 uint8_t TCMDEXEC_ADCS_set_estimation_params(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
     // the first seven are floats (0-6)
-
     // the next six are bools (0-5)
     // after that there are two enums (6-7)
     // and then two more bools (8-9)

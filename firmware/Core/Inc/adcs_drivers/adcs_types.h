@@ -372,9 +372,9 @@ typedef struct ADCS_ASGP4_Params_Struct {
 } ADCS_ASGP4_Params_Struct;
 
 typedef struct ADCS_Tracking_Controller_Target_Struct {
-    float lon;
-    float lat;
-    float alt;
+    float longitude_degrees;
+    float latitude_degrees;
+    float altitude_meters;
 } ADCS_Tracking_Controller_Target_Struct;
 
 typedef struct ADCS_Rate_Gyro_Config_Struct {
@@ -470,7 +470,7 @@ typedef struct ADCS_Raw_GPS_Status_Struct {
 
 typedef struct ADCS_Raw_GPS_Time_Struct {
     uint16_t gps_reference_week;
-    double gps_time; // in seconds
+    uint32_t gps_time_ms; // in seconds
 } ADCS_Raw_GPS_Time_Struct;
 
 typedef struct ADCS_Raw_GPS_Struct {

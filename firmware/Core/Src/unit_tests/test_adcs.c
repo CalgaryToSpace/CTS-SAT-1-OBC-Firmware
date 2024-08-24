@@ -313,9 +313,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Tracking_Controller_Target_Reference_Struct()
 
     ADCS_Tracking_Controller_Target_Struct result;
     ADCS_Pack_to_Tracking_Controller_Target_Reference_Struct(input_params, &result);
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.lon, 110.4, 10*ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.lat, -69.6, 10*ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.alt, 1.05, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.longitude_degrees, 110.4, 10*ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.latitude_degrees, -69.6, 10*ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.altitude_meters, 1.05, ADCS_TEST_EPSILON));
     // per CubeSupport, latitude and longitude are only accurate to within 1e-5 degrees
 
     return 0;
@@ -549,7 +549,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Raw_GPS_Time_Struct() {
     ADCS_Raw_GPS_Time_Struct result;
     ADCS_Pack_to_Raw_GPS_Time_Struct(input_params, &result);
     TEST_ASSERT_TRUE(result.gps_reference_week == 13330);
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.gps_time, 3164239.958, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.gps_time_ms, 3164239958, ADCS_TEST_EPSILON));
     return 0;
 }
 

@@ -302,9 +302,9 @@ uint8_t ADCS_Pack_to_ASGP4_Params_Struct(uint8_t* data_received, ADCS_ASGP4_Para
 /// @return 0 once the function is finished running.}
 uint8_t ADCS_Pack_to_Tracking_Controller_Target_Reference_Struct(uint8_t* data_received, ADCS_Tracking_Controller_Target_Struct* ref) {
     // map temp buffer to struct
-    memcpy(&ref->lon, &data_received[0], 4);
-    memcpy(&ref->lat, &data_received[4], 4);
-    memcpy(&ref->alt, &data_received[8], 4);
+    memcpy(&ref->longitude_degrees, &data_received[0], 4);
+    memcpy(&ref->latitude_degrees, &data_received[4], 4);
+    memcpy(&ref->altitude_meters, &data_received[8], 4);
 
     return 0;
 }
@@ -523,7 +523,7 @@ uint8_t ADCS_Pack_to_Raw_GPS_Status_Struct(uint8_t* data_received, ADCS_Raw_GPS_
 /// @return 0 once the function is finished running.}
 uint8_t ADCS_Pack_to_Raw_GPS_Time_Struct(uint8_t* data_received, ADCS_Raw_GPS_Time_Struct* result) {
     result->gps_reference_week = (uint16_t)(data_received[1] << 8 | data_received[0]);
-    result->gps_time = ((uint32_t)(data_received[5] << 24 | data_received[4] << 16 | data_received[3] << 8 | data_received[2])) / 1000.0; // Convert milliseconds to seconds
+    result->gps_time_ms = (uint32_t) (data_received[5] << 24 | data_received[4] << 16 | data_received[3] << 8 | data_received[2]);
 
     return 0; 
 }
