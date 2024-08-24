@@ -11,15 +11,13 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-// TODO: determine how long each of these are and fix the json_output_str_len < ##NUMBER##
-
 /// @brief Converts ADCS_CMD_Ack_Struct to a JSON string.
 /// @param[in] data Pointer to the ADCS_CMD_Ack_Struct.
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
 uint8_t ADCS_CMD_Ack_Struct_TO_json(const ADCS_CMD_Ack_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
-    if (data == NULL || json_output_str == NULL || json_output_str_len < 100) {
+    if (data == NULL || json_output_str == NULL || json_output_str_len < 63) {
         return 1; // Error: invalid input
     }
     int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, "{\"last_id\":%u,\"processed\":%u,\"error_flag\":%u,\"error_index\":%u}", 
@@ -41,7 +39,7 @@ uint8_t ADCS_CMD_Ack_Struct_TO_json(const ADCS_CMD_Ack_Struct *data, char json_o
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
 uint8_t ADCS_ID_Struct_TO_json(const ADCS_ID_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
-    if (data == NULL || json_output_str == NULL || json_output_str_len < 200) {
+    if (data == NULL || json_output_str == NULL || json_output_str_len < 153) {
         return 1; // Error: invalid input
     }
     int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, "{\"node_type\":%u,\"interface_version\":%u,\"major_firmware_version\":%u,\"minor_firmware_version\":%u,\"seconds_since_startup\":%u,\"ms_past_second\":%u}",
@@ -63,7 +61,7 @@ uint8_t ADCS_ID_Struct_TO_json(const ADCS_ID_Struct *data, char json_output_str[
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
 uint8_t ADCS_Boot_Running_Status_Struct_TO_json(const ADCS_Boot_Running_Status_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
-    if (data == NULL || json_output_str == NULL || json_output_str_len < 250) {
+    if (data == NULL || json_output_str == NULL || json_output_str_len < 136) {
         return 1; // Error: invalid input
     }
     int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, "{\"reset_cause\":%u,\"boot_cause\":%u,\"boot_counter\":%u,\"boot_program_index\":%u,\"major_firmware_version\":%u,\"minor_firmware_version\":%u}",
@@ -85,7 +83,7 @@ uint8_t ADCS_Boot_Running_Status_Struct_TO_json(const ADCS_Boot_Running_Status_S
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
 uint8_t ADCS_Comms_Status_Struct_TO_json(const ADCS_Comms_Status_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
-    if (data == NULL || json_output_str == NULL || json_output_str_len < 150) {
+    if (data == NULL || json_output_str == NULL || json_output_str_len < 101) {
         return 1; // Error: invalid input
     }
     int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, "{\"cmd_counter\":%u,\"tlm_counter\":%u,\"cmd_buffer_overrun\":%u,\"i2c_tlm_error\":%u,\"i2c_cmd_error\":%u}",
@@ -107,7 +105,7 @@ uint8_t ADCS_Comms_Status_Struct_TO_json(const ADCS_Comms_Status_Struct *data, c
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
 uint8_t ADCS_Angular_Rates_Struct_TO_json(const ADCS_Angular_Rates_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
-    if (data == NULL || json_output_str == NULL || json_output_str_len < 200) {
+    if (data == NULL || json_output_str == NULL || json_output_str_len < 119) {
         return 1; // Error: invalid input
     }
     int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, "{\"x_rate_milli_deg_per_sec\":%ld,\"y_rate_milli_deg_per_sec\":%ld,\"z_rate_milli_deg_per_sec\":%ld}", 
@@ -122,6 +120,8 @@ uint8_t ADCS_Angular_Rates_Struct_TO_json(const ADCS_Angular_Rates_Struct *data,
     
     return 0;
 }
+
+// TODO: determine how long each of the function strings below this TODO are and fix the json_output_str_len < ##NUMBER##
 
 /// @brief Converts ADCS_LLH_Position_Struct to a JSON string.
 /// @param[in] data Pointer to the ADCS_LLH_Position_Struct.
