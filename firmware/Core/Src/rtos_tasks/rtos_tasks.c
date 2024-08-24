@@ -254,6 +254,12 @@ void TASK_receive_gps_info(void *argument) {
 		gps_response_header gps_header;
 		const u_int8_t gps_header_result = parse_gps_header(latest_gps_response,&gps_header);
 
+		// TODO: Figure out what to do after this
+		if(gps_header_result != 0){
+			// Failed to parse
+			break;
+		}
+
 
 	} /* End Task's Main Loop */
 }
