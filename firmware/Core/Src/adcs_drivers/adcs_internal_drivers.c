@@ -142,24 +142,23 @@ uint8_t ADCS_send_I2C_telemetry_request(uint8_t id, uint8_t* data, uint32_t data
 
 }
 
-/// @brief Swap low and high bytes of uint16 to turn into uint8 and put into specified index of an array
+/// @brief Swap low and high bytes of a uint16 to turn into uint8 and put into specified index of an array
 /// @param[in] value Value to split and swap the order of.
 /// @param[in] index Index in array to write the result. (Array must contain at least two bytes, with index pointing to the first)
 /// @param[out] array Data array to write the two bytes to at the specified index and index + 1.
 /// @return 0 once complete.
-uint8_t ADCS_switch_order(uint8_t *array, uint16_t value, int index) {
+uint8_t ADCS_convert_uint16_to_reversed_uint8_array_members(uint8_t *array, uint16_t value, int index) {
     array[index] = (uint8_t)(value & 0xFF); // Insert the low byte of the value into the array at the specified index
     array[index + 1] = (uint8_t)(value >> 8); // Insert the high byte of the value into the array at the next index
 	return 0;
 }
 
-// Swap low and high bytes of uint32 to turn into uint8 and put into specified index of an array
-/// @brief Swap low and high bytes of uint32 to turn into uint8 and put into specified index of an array
+/// @brief Reverse the order of the four bytes of a uint32 to turn into uint8 and put into specified index of an array
 /// @param[in] value Value to split and swap the order of.
 /// @param[in] index Index in array to write the result. (Array must contain at least four bytes, with index pointing to the first)
 /// @param[out] array Data array to write the four bytes to at the specified index and the three subsequent indices.
 /// @return 0 once complete.
-uint8_t ADCS_switch_order_32(uint8_t *array, uint32_t value, int index) {
+uint8_t ADCS_convert_uint32_to_reversed_uint8_array_members(uint8_t *array, uint32_t value, int index) {
     array[index] = (uint8_t)(value & 0xFF); // Insert the low byte of the value into the array at the specified index
     array[index + 1] = (uint8_t)((value >> 8) & 0xFF); // Insert the second byte of the value into the array at the next index
 	array[index + 2] = (uint8_t)((value >> 16) & 0xFF); // Insert the third byte of the value into the array at the next next index

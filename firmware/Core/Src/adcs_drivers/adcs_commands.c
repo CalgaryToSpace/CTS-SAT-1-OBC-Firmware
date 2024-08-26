@@ -169,9 +169,9 @@ uint8_t ADCS_Set_Magnetorquer_Output(double x_duty, double y_duty, double z_duty
 	// duty >> 8 gives upper byte, duty & 0x00FF gives lower byte
 	uint8_t data_send[6];
 	// swap low and high bytes and populate data_send
-	ADCS_switch_order(data_send, ((uint16_t) (x_duty * 1000)), 0);
-	ADCS_switch_order(data_send, ((uint16_t) (y_duty * 1000)), 2);
-	ADCS_switch_order(data_send, ((uint16_t) (z_duty * 1000)), 4);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ((uint16_t) (x_duty * 1000)), 0);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ((uint16_t) (y_duty * 1000)), 2);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ((uint16_t) (z_duty * 1000)), 4);
 	uint8_t cmd_status = ADCS_I2C_telecommand_wrapper(ADCS_COMMAND_SET_MAGNETORQUER_OUTPUT, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return cmd_status;
 }
@@ -186,9 +186,9 @@ uint8_t ADCS_Set_Wheel_Speed(int16_t x_speed, int16_t y_speed, int16_t z_speed) 
 	// for the duty equations, raw parameter value is in rpm
 	uint8_t data_send[6]; // 6-byte data to send
 	// swap low and high bytes and populate data_send
-	ADCS_switch_order(data_send, x_speed, 0);
-	ADCS_switch_order(data_send, y_speed, 2);
-	ADCS_switch_order(data_send, z_speed, 4);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, x_speed, 0);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, y_speed, 2);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, z_speed, 4);
 	uint8_t cmd_status = ADCS_I2C_telecommand_wrapper(ADCS_COMMAND_SET_WHEEL_SPEED, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return cmd_status;
 }
@@ -270,21 +270,21 @@ uint8_t ADCS_Set_Magnetometer_Config(
 	// reorder uint8_t bytes to be low-byte then high-byte
 	// actual config is raw value divided by 100 for mounting transform angles
 	// and raw value divided by 1000 for everything else
-	ADCS_switch_order(data_send, ((int16_t) (mounting_transform_alpha_angle * 100)), 0);
-	ADCS_switch_order(data_send, ((int16_t) (mounting_transform_beta_angle * 100)), 2);
-	ADCS_switch_order(data_send, ((int16_t) (mounting_transform_gamma_angle * 100)), 4);
-	ADCS_switch_order(data_send, ((int16_t) (channel_1_offset * 1000)), 6);
-	ADCS_switch_order(data_send, ((int16_t) (channel_2_offset * 1000)), 8);
-	ADCS_switch_order(data_send, ((int16_t) (channel_3_offset * 1000)), 10);
-	ADCS_switch_order(data_send, ((int16_t) (sensitivity_matrix_s11 * 1000)), 12);
-	ADCS_switch_order(data_send, ((int16_t) (sensitivity_matrix_s22 * 1000)), 14);
-	ADCS_switch_order(data_send, ((int16_t) (sensitivity_matrix_s33 * 1000)), 16);
-	ADCS_switch_order(data_send, ((int16_t) (sensitivity_matrix_s12 * 1000)), 18);
-	ADCS_switch_order(data_send, ((int16_t) (sensitivity_matrix_s13 * 1000)), 20);
-	ADCS_switch_order(data_send, ((int16_t) (sensitivity_matrix_s21 * 1000)), 22);
-	ADCS_switch_order(data_send, ((int16_t) (sensitivity_matrix_s23 * 1000)), 24);
-	ADCS_switch_order(data_send, ((int16_t) (sensitivity_matrix_s31 * 1000)), 26);
-	ADCS_switch_order(data_send, ((int16_t) (sensitivity_matrix_s32 * 1000)), 28);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ((int16_t) (mounting_transform_alpha_angle * 100)), 0);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ((int16_t) (mounting_transform_beta_angle * 100)), 2);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ((int16_t) (mounting_transform_gamma_angle * 100)), 4);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ((int16_t) (channel_1_offset * 1000)), 6);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ((int16_t) (channel_2_offset * 1000)), 8);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ((int16_t) (channel_3_offset * 1000)), 10);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ((int16_t) (sensitivity_matrix_s11 * 1000)), 12);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ((int16_t) (sensitivity_matrix_s22 * 1000)), 14);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ((int16_t) (sensitivity_matrix_s33 * 1000)), 16);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ((int16_t) (sensitivity_matrix_s12 * 1000)), 18);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ((int16_t) (sensitivity_matrix_s13 * 1000)), 20);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ((int16_t) (sensitivity_matrix_s21 * 1000)), 22);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ((int16_t) (sensitivity_matrix_s23 * 1000)), 24);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ((int16_t) (sensitivity_matrix_s31 * 1000)), 26);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ((int16_t) (sensitivity_matrix_s32 * 1000)), 28);
 
 	uint8_t cmd_status = ADCS_I2C_telecommand_wrapper(ADCS_COMMAND_CUBEACP_SET_MAGNETOMETER_CONFIG, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return cmd_status;
@@ -533,9 +533,9 @@ uint8_t ADCS_Set_Commanded_Attitude_Angles(double x, double y, double z) {
 	// angle >> 8 gives upper byte, angle & 0x00FF gives lower byte
 	uint8_t data_send[6];
 	// swap low and high bytes and populate data_send
-	ADCS_switch_order(data_send, ((int16_t) (x * 100)), 0);
-	ADCS_switch_order(data_send, ((int16_t) (y * 100)), 2);
-	ADCS_switch_order(data_send, ((int16_t) (z * 100)), 4);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ((int16_t) (x * 100)), 0);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ((int16_t) (y * 100)), 2);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ((int16_t) (z * 100)), 4);
 	uint8_t cmd_status = ADCS_I2C_telecommand_wrapper(ADCS_COMMAND_CUBEACP_SET_COMMANDED_ATTITUDE_ANGLES, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return cmd_status;
 }
@@ -638,23 +638,23 @@ uint8_t ADCS_Set_ASGP4_Params(double incl_coefficient, double raan_coefficient, 
 	uint8_t data_send[30]; // from Table 209
 
 	// populate data_send
-	ADCS_switch_order(data_send, (uint16_t) (incl_coefficient * 1000), 0);
-	ADCS_switch_order(data_send, (uint16_t) (raan_coefficient * 1000), 2);
-	ADCS_switch_order(data_send, (uint16_t) (ecc_coefficient * 1000), 4);
-	ADCS_switch_order(data_send, (uint16_t) (aop_coefficient * 1000), 6);
-	ADCS_switch_order(data_send, (uint16_t) (time_coefficient * 1000), 8);
-	ADCS_switch_order(data_send, (uint16_t) (pos_coefficient * 1000), 10);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, (uint16_t) (incl_coefficient * 1000), 0);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, (uint16_t) (raan_coefficient * 1000), 2);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, (uint16_t) (ecc_coefficient * 1000), 4);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, (uint16_t) (aop_coefficient * 1000), 6);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, (uint16_t) (time_coefficient * 1000), 8);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, (uint16_t) (pos_coefficient * 1000), 10);
 	data_send[12] = (uint8_t) (maximum_position_error * 10);
 	data_send[13] = (uint8_t) asgp4_filter;
-	ADCS_switch_order_32(data_send, (int32_t) (xp_coefficient * 10000000), 14);
-	ADCS_switch_order_32(data_send, (int32_t) (yp_coefficient * 10000000), 18);
+	ADCS_convert_uint32_to_reversed_uint8_array_members(data_send, (int32_t) (xp_coefficient * 10000000), 14);
+	ADCS_convert_uint32_to_reversed_uint8_array_members(data_send, (int32_t) (yp_coefficient * 10000000), 18);
 	data_send[22] = gps_roll_over;
 	data_send[23] = (uint8_t) (position_sd * 10);
 	data_send[24] = (uint8_t) (velocity_sd * 100);
 	data_send[25] = min_satellites;
 	data_send[26] = (uint8_t) (time_gain * 100);
 	data_send[27] = (uint8_t) (max_lag * 100);
-	ADCS_switch_order(data_send, min_samples, 28);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, min_samples, 28);
 
 	uint8_t cmd_status = ADCS_I2C_telecommand_wrapper(ADCS_COMMAND_CUBEACP_SET_AUGMENTED_SGP4_PARAMETERS, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
 	return cmd_status;
@@ -723,9 +723,9 @@ uint8_t ADCS_Set_Rate_Gyro_Config(ADCS_Axis_Select gyro1, ADCS_Axis_Select gyro2
 	data_send[1] = (uint8_t) gyro2;
 	data_send[2] = (uint8_t) gyro3;
 
-	ADCS_switch_order(data_send, (int16_t) (x_rate_offset * 1000), 3);
-	ADCS_switch_order(data_send, (int16_t) (y_rate_offset * 1000), 5);
-	ADCS_switch_order(data_send, (int16_t) (z_rate_offset * 1000), 7);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, (int16_t) (x_rate_offset * 1000), 3);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, (int16_t) (y_rate_offset * 1000), 5);
+	ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, (int16_t) (z_rate_offset * 1000), 7);
 
 	data_send[9] = rate_sensor_mult;
 
