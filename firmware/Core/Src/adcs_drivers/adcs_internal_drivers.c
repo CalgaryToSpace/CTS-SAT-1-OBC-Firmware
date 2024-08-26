@@ -147,7 +147,7 @@ uint8_t ADCS_send_I2C_telemetry_request(uint8_t id, uint8_t* data, uint32_t data
 /// @param[in] index Index in array to write the result. (Array must contain at least two bytes, with index pointing to the first)
 /// @param[out] array Data array to write the two bytes to at the specified index and index + 1.
 /// @return 0 once complete.
-uint8_t ADCS_convert_uint16_to_reversed_uint8_array_members(uint8_t *array, uint16_t value, int index) {
+uint8_t ADCS_convert_uint16_to_reversed_uint8_array_members(uint8_t *array, uint16_t value, uint16_t index) {
     array[index] = (uint8_t)(value & 0xFF); // Insert the low byte of the value into the array at the specified index
     array[index + 1] = (uint8_t)(value >> 8); // Insert the high byte of the value into the array at the next index
 	return 0;
@@ -158,7 +158,7 @@ uint8_t ADCS_convert_uint16_to_reversed_uint8_array_members(uint8_t *array, uint
 /// @param[in] index Index in array to write the result. (Array must contain at least four bytes, with index pointing to the first)
 /// @param[out] array Data array to write the four bytes to at the specified index and the three subsequent indices.
 /// @return 0 once complete.
-uint8_t ADCS_convert_uint32_to_reversed_uint8_array_members(uint8_t *array, uint32_t value, int index) {
+uint8_t ADCS_convert_uint32_to_reversed_uint8_array_members(uint8_t *array, uint32_t value, uint16_t index) {
     array[index] = (uint8_t)(value & 0xFF); // Insert the low byte of the value into the array at the specified index
     array[index + 1] = (uint8_t)((value >> 8) & 0xFF); // Insert the second byte of the value into the array at the next index
 	array[index + 2] = (uint8_t)((value >> 16) & 0xFF); // Insert the third byte of the value into the array at the next next index
@@ -169,13 +169,12 @@ uint8_t ADCS_convert_uint32_to_reversed_uint8_array_members(uint8_t *array, uint
 /// @brief Initialise the lookup table for 8-bit CRC calculation.
 /// @return 0 once successful.
 uint8_t CRC8Table[256];
-uint8_t ADCS_COMMS_Crc8Init()
-	{
+uint8_t ADCS_COMMS_Crc8Init() {
 	int val;
-	for (int i = 0; i < 256; i++)
+	for (uint16_t i = 0; i < 256; i++)
 	{
 		val = i;
-		for (int j = 0; j < 8; j++)
+		for (uint8_t j = 0; j < 8; j++)
 		{
 			if (val & 1)
 			val ^= ADCS_CRC_POLY;
