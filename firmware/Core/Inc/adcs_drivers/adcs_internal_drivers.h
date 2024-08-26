@@ -27,7 +27,4 @@ uint8_t ADCS_send_I2C_telemetry_request(uint8_t id, uint8_t* data, uint32_t data
 uint8_t ADCS_COMMS_Crc8Init();
 uint8_t ADCS_COMMS_Crc8Checksum(uint8_t* buffer, uint16_t len);
 
-// I2C/UART debug functions
-uint8_t ADCS_send_UART_telecommand(UART_HandleTypeDef *huart, uint8_t id, uint8_t* data, uint32_t data_length);
-
 #endif /* INC_ADCS_INTERNAL_DRIVERS_H_ */
