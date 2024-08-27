@@ -6,6 +6,9 @@
 #include <string.h>
 
 uint8_t TEST_EXEC__GPS_Parse_header(){
+
+    // TODO: Try testing with another header string
+    
     char gps_data[280] = "#BESTXYZA,COM1,0,55.0,FINESTEERING,1419,340033.000,02000040,d821,2724;"
                   "SOL_COMPUTED,NARROW_INT,-1634531.5683,-3664618.0326,4942496.3270,0.0099,"
                   "0.0219,0.0115,SOL_COMPUTED,NARROW_INT,0.0011,-0.0049,-0.0001,0.0199,0.0439,"

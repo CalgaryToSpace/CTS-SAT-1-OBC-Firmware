@@ -80,6 +80,24 @@ uint8_t assign_gps_time_status(const char *status_str, GPS_reference_time_status
     return 0;  // Success
 }
 
+
+const char* get_gps_time_status_description(GPS_reference_time_status_t status) {
+    switch (status) {
+        case GPS_UNKNOWN: return "Unknown";
+        case GPS_APPROXIMATE: return "Approximate";
+        case GPS_COARSEADJUSTING: return "Coarse Adjusting";
+        case GPS_COARSE: return "Coarse";
+        case GPS_COARSESTEERING: return "Coarse Steering";
+        case GPS_FREEWHEELING: return "Freewheeling";
+        case GPS_FINEADJUSTING: return "Fine Adjusting";
+        case GPS_FINE: return "Fine";
+        case GPS_FINEBACKUPSTEERING: return "Fine Backup Steering";
+        case GPS_FINESTEERING: return "Fine Steering";
+        case GPS_SATTIME: return "Satellite Time";
+        default: return "Invalid Status";
+    }
+}
+
 /// @brief Parse the received GPS header into a struct
 /// @param data_received - The string obtained from the buffer that is to be parsed into the gps_response_header struct
 /// @param result - gps_response_header struct that is returned
@@ -126,13 +144,26 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
     }
     strcpy(result->log_name, token_buffer + 1);
 
+    LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Log Name = %s.",
+            result->log_name
+        );
+
     // Port
     parse_result = TCMD_extract_string_arg(header_buffer, 1, token_buffer, sizeof(token_buffer));
-    if (parse_result != 0) {  
+    if (parse_result != 0) { 
         return parse_result;  
     }
+
     strncpy(result->port, token_buffer, sizeof(result->port) - 1);
     result->port[sizeof(result->port) - 1] = '\0';
+
+    LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Port = %s.",
+            result->port
+        );
 
     // Sequence Number
     parse_result = TCMD_extract_string_arg(header_buffer, 2, token_buffer, sizeof(token_buffer));
@@ -140,7 +171,15 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
         return parse_result;  
     }
     result->sequence_no = strtoul(token_buffer, &end_ptr, 10);
-    if (*end_ptr != '\0') return 1;  // Error in conversion
+    if (*end_ptr != '\0'){
+        return 1;  // Error in conversion
+    }
+
+    LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Seq No = %lu.",
+            result->sequence_no
+        );
 
     // Idle Time
     parse_result = TCMD_extract_string_arg(header_buffer, 3, token_buffer, sizeof(token_buffer));
@@ -148,6 +187,12 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
         return parse_result;  
     }
     result->idle_time = strtoul(token_buffer, &end_ptr, 10);
+
+    LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Idle Time = %lu.",
+            result->idle_time
+        );
 
     // Time Status
     parse_result = TCMD_extract_string_arg(header_buffer, 4, token_buffer, sizeof(token_buffer));
@@ -159,6 +204,12 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
         // Time Status not recognized
         return 1;
     }
+
+    LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Time status = %s.",
+            get_gps_time_status_description(result->time_status)
+        );
     
     // Week
     parse_result = TCMD_extract_string_arg(header_buffer, 5, token_buffer, sizeof(token_buffer));
@@ -167,12 +218,24 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
     }
     result->week = strtoul(token_buffer, &end_ptr, 10);
 
+    LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Week = %lu.",
+            result->week
+        );
+
     // seconds
     parse_result = TCMD_extract_string_arg(header_buffer, 6, token_buffer, sizeof(token_buffer));
     if (parse_result != 0) {  
         return parse_result;  
     }
     result->seconds = strtoul(token_buffer, &end_ptr, 10);
+
+    LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "seconds = %lu.",
+            result->seconds
+        );
 
     // Rx Status
     parse_result = TCMD_extract_string_arg(header_buffer, 7, token_buffer, sizeof(token_buffer));
@@ -181,12 +244,24 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
     }
     result->rx_status = strtoul(token_buffer, &end_ptr, 16);  // hexadecimal
 
+    LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Rx Status = %x.",
+            result->rx_status
+        );
+
     // Rx Sw Version
-    parse_result = TCMD_extract_string_arg(header_buffer, 8, token_buffer, sizeof(token_buffer));
+    parse_result = TCMD_extract_string_arg(header_buffer, 9, token_buffer, sizeof(token_buffer));
     if (parse_result != 0) {  
         return parse_result;  
     }
     result->rx_sw_version = strtoul(token_buffer, &end_ptr, 10);
+
+    LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Rx sw Version = %lu.",
+            result->rx_sw_version
+        );
 
     return 0;
 }
@@ -361,7 +436,7 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
     if (parse_result != 0) {  
         return parse_result;  
     }
-    uint8_t status_result = assign_gps_position_velocity_type(token_buffer, &result->position_type);
+    status_result = assign_gps_position_velocity_type(token_buffer, &result->position_type);
     if(status_result != 0){
         // Invalid string passed
         return status_result;
@@ -384,7 +459,7 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
     if (parse_result != 0) {  
         return parse_result;  
     }
-    uint8_t status_result = assign_gps_position_velocity_type(token_buffer, &result->velocity_type);
+    status_result = assign_gps_position_velocity_type(token_buffer, &result->velocity_type);
     if(status_result != 0){
         // Invalid string passed
         return status_result;
