@@ -396,6 +396,11 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_file = "gps/gps",
         .test_func_name = "parse_gps_header"
     },
+    {
+        .test_func = TEST_EXEC__GPS_Parse_bestxyza,
+        .test_file = "gps/gps",
+        .test_func_name = "parse_bestxyza_data"
+    },
 };
 
 // extern
