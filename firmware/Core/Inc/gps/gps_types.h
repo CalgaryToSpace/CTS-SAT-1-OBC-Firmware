@@ -187,8 +187,6 @@ typedef struct {
 
     /// @brief Number of satellites with multi-frequency signals used in solution 
     uint8_t satellite_no_sol_multifreq;
- 
-    char reserved;
 
     /// @brief Extended solution status. 
     /// Refer to table 94 on page 504 of the OEM& Commands and Logs Reference Manual

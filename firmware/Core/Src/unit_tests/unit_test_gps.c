@@ -76,7 +76,6 @@ uint8_t TEST_EXEC__GPS_Parse_bestxyza(){
     TEST_ASSERT_TRUE(result.satellite_no_used_in_solution == 11);
     TEST_ASSERT_TRUE(result.satellite_no_l1_e1_b1 == 11);
     TEST_ASSERT_TRUE(result.satellite_no_sol_multifreq == 11);
-    TEST_ASSERT_TRUE(result.reserved == 0);
 
     // Need to confirm the representation of these values
     TEST_ASSERT_TRUE(result.extended_solution_status == 01);
