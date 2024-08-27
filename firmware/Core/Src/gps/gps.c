@@ -400,7 +400,7 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
         return 3;
     }
 
-    const int bestxyza_data_length = bestxyza_data_start - asterisk + 1;
+    const int bestxyza_data_length = asterisk - bestxyza_data_start + 1;
 
     if (bestxyza_data_length < 0) {
         //CRC asterick comes before the start of the data: Incomplete bestxyza data
@@ -416,9 +416,16 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
     strncpy(bestxyza_data_buffer, bestxyza_data_start, bestxyza_data_length);
     bestxyza_data_buffer[bestxyza_data_length] = '\0';
 
+    LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Extracted Data = %s.",
+            bestxyza_data_buffer
+        );
+
     // Parse the data in the bestxyza data buffer
     uint8_t parse_result;
     char token_buffer[256];
+    char *end_ptr;
     
     // Position Solution Status
     parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 0, token_buffer, sizeof(token_buffer));
@@ -441,6 +448,44 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
         // Invalid string passed
         return status_result;
     }
+
+    // Position Coordinates 
+    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 2, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    result->position_x_m = (int32_t)strtod(token_buffer, &end_ptr);
+
+    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 3, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    result->position_y_m = (int32_t)strtod(token_buffer, &end_ptr);
+
+    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 4, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    result->position_z_m = (int32_t)strtod(token_buffer, &end_ptr);
+
+    // Position Coordinates Standard Deviation
+    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 5, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    result->position_x_std_m = strtoul(token_buffer, &end_ptr, 10);
+
+    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 6, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    result->position_y_std_m = strtoul(token_buffer, &end_ptr, 10);
+
+    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 7, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    result->position_z_std_m = strtoul(token_buffer, &end_ptr, 10);
 
 
     // Velocity Solution Status
@@ -465,13 +510,122 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
         return status_result;
     }
 
+    // Velocity Coordinates
+    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 10, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    result->velocity_x_m_per_s = (int64_t)strtod(token_buffer, &end_ptr);
 
+    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 11, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    result->velocity_y_m_per_s = (int64_t)strtod(token_buffer, &end_ptr);
 
+    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 12, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    result->velocity_z_m_per_s = (int64_t)strtod(token_buffer, &end_ptr);
 
-    LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Message Parsed Successfully."
-        );
+    // Velocity Coordinates Standard Deviation
+    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 13, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    result->velocity_x_std_m_per_s = strtoul(token_buffer, &end_ptr, 10);
+
+    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 14, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    result->velocity_y_std_m_per_s = strtoul(token_buffer, &end_ptr, 10);
+
+    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 15, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    result->velocity_z_std_m_per_s = strtoul(token_buffer, &end_ptr, 10);
+
+    // Base Station Standard Deviation
+    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 16, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) { 
+        return parse_result;  
+    }
+
+    strncpy(result->stn_id, token_buffer, sizeof(result->stn_id) - 1);
+    result->stn_id[sizeof(result->stn_id) - 1] = '\0';
+
+    // Velocity Latency
+    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 17, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    result->velocity_latency = strtoul(token_buffer, &end_ptr, 10);
+
+    // Differential Age
+    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 18, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    result->differential_age_sec = strtoul(token_buffer, &end_ptr, 10);
+
+    // Solution Age
+    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 19, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    result->solution_age_sec = strtoul(token_buffer, &end_ptr, 10);
+
+    // No of Satellites tracked
+    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 20, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    result->satellite_no_tracked = strtoul(token_buffer, &end_ptr, 10);
+
+    // Number of satellites used in solution
+    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 21, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    result->satellite_no_used_in_solution = strtoul(token_buffer, &end_ptr, 10);
+
+    // Number of satellites with L1/E1/B1 signals used in solution
+    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 22, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    result->satellite_no_l1_e1_b1 = strtoul(token_buffer, &end_ptr, 10);
+
+    // Number of satellites with multi-frequency signals used in solution
+    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 23, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    result->satellite_no_sol_multifreq = strtoul(token_buffer, &end_ptr, 10);
+
+    // Extended solution status
+    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 25, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    result->extended_solution_status = strtoul(token_buffer, &end_ptr, 16);
+
+    // Galileo and BeiDou signals used mask
+    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 26, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    result->galileo_beiDou_sig_mask = strtoul(token_buffer, &end_ptr, 16);
+
+    // GPS and GLONASS signals used mask
+    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 27, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    result->gps_glonass_sig_mask = strtoul(token_buffer, &end_ptr, 16);
 
     return 0;
 }
