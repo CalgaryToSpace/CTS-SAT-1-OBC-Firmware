@@ -8,7 +8,7 @@
 
 #define MPI_TX_TIMEOUT_DURATION_MS 100	// Timeout duration for transmit in milliseconds
 #define MPI_RX_TIMEOUT_DURATION_MS 200	// Timeout duration for receive in milliseconds
-uint16_t copy_index;
+
 MPI_rx_mode_t current_mpi_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
 
 /// @brief Sends commandcode+params to the MPI as bytes
@@ -38,12 +38,13 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
         return 3; // Error code: Failed UART reception
     }
 
-	// Record start time for mpi response reception
+	// Record start time for mpi response reception & reset UART buffer write index
 	UART_mpi_rx_buffer_write_idx = 0;
 	const uint32_t UART_mpi_rx_start_time_ms = HAL_GetTick();
 
 	// Receive until MPI response timesout and verify it
 	while (1) {
+		// Check for MPI response atleast until a timout event
 		if ((HAL_GetTick() - UART_mpi_rx_start_time_ms) < MPI_RX_TIMEOUT_DURATION_MS) {
 			continue;
 		}
@@ -77,7 +78,7 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
 			// Validate MPI response
 			const uint8_t MPI_response_result = MPI_validate_telecommand_response(bytes_to_send, MPI_rx_buffer, bytes_to_send_len);
 
-			// Error found during validation
+			// Check for validation errors & report corresponding error code
 			if (MPI_response_result > 0) {
 				return MPI_response_result;
 			}

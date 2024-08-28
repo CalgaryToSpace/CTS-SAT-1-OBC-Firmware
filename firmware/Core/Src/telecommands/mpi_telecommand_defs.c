@@ -27,22 +27,22 @@ uint8_t TCMDEXEC_mpi_send_command_hex(const char *args_str, TCMD_TelecommandChan
     uint8_t args_bytes[args_bytes_size];                // Byte array to store the values of converted hex string
     const uint8_t bytes_parse_result = TCMD_extract_hex_array_arg(args_str, 0, args_bytes, args_bytes_size, &args_bytes_len);
 
-    // Check invalid arguments
+    // Check for invalid arguments
     if(bytes_parse_result != 0){
         snprintf(response_output_buf, response_output_buf_len, "Invalid hex argument received");
         return 1; // Error code: Invalid input
     }
 
     // Allocate space to receive incoming MPI response
-    const size_t MPI_rx_buffer_max_size = 50;
-    uint16_t MPI_rx_buffer_len = 0;
-    uint8_t MPI_rx_buffer[MPI_rx_buffer_max_size];     // Max possible size for an MPI command+parameters can be 7 bytes + 2^N bytes of variable payload. To account for a buffer zone, 50 bytes will be allocated
-    memset(MPI_rx_buffer, 0, MPI_rx_buffer_max_size);  // Initialize all elements to 0
+    const size_t MPI_rx_buffer_max_size = 50;           // Max possible MPI response buffer size allocated to 50 bytes (Considering for the telecommand echo response, NOT science data. MPI command + parameters can be 7 bytes + 2^N bytes of variable payload)
+    uint16_t MPI_rx_buffer_len = 0;                     // Length of MPI response buffer
+    uint8_t MPI_rx_buffer[MPI_rx_buffer_max_size];      // Buffer to store incoming response from the MPI
+    memset(MPI_rx_buffer, 0, MPI_rx_buffer_max_size);   // Initialize all elements to 0
 
     // Send command to MPI and receive back the response
     const uint8_t cmd_response = MPI_send_telecommand_get_response(args_bytes, args_bytes_len, MPI_rx_buffer, MPI_rx_buffer_max_size, &MPI_rx_buffer_len);
 
-    //Send back MPI response log
+    //Send back MPI response log detail
     switch(cmd_response) {
         case 0: 
             snprintf(response_output_buf, response_output_buf_len, "MPI successfully executed the command. MPI echoed response code: %u\n", MPI_rx_buffer[args_bytes_len]);
