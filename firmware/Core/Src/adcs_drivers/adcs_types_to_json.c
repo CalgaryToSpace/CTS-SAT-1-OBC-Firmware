@@ -917,3 +917,32 @@ uint8_t ADCS_Measurements_Struct_TO_json(const ADCS_Measurements_Struct *data, c
     
     return 0;
 }
+
+/// @brief Converts a generic array of ADCS telemetry to a JSON string.
+/// @param[in] data Pointer to the array.
+/// @param[in] data_length Length of the array.
+/// @param[out] json_output_str Buffer to hold the JSON string.
+/// @param[in] json_output_str_len Length of the JSON output buffer.
+/// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
+uint8_t ADCS_generic_telemetry_uint8_array_TO_json(const uint8_t *data, const uint16_t data_length, char json_output_str[], uint16_t json_output_str_len) {
+    if (data == NULL || json_output_str == NULL || json_output_str_len < 1512) { // 1512 = 504 (longest data_length) * 3 characters per byte
+        return 1; // Error: invalid input
+    }
+    int16_t snprintf_ret; 
+    int16_t total_written = 0;
+    for (uint16_t i = 0; i < data_length; i++) {
+        // write each data byte in hex, separated by spaces (for easy translation into CubeSupport)
+        snprintf_ret = snprintf(json_output_str, json_output_str_len, "%x ", data[i]);
+        
+        if (snprintf_ret < 0) {
+            return 2; // Error: snprintf encoding error
+        } else {
+            total_written += snprintf_ret;
+        }
+
+        if (total_written >= json_output_str_len) {
+            return 3; // Error: string buffer too short
+        }
+    }
+    return 0;
+}
