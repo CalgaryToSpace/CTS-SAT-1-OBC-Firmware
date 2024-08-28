@@ -1569,12 +1569,12 @@ uint8_t TCMDEXEC_adcs_generic_command(const char *args_str, TCMD_TelecommandChan
 
     if (command_id > 255) {
         snprintf(response_output_buf, response_output_buf_len,
-            "Invalid ADCS command or telemetry request ID (err 4)");
-        return 4; // invalid ID
+            "Invalid ADCS command or telemetry request ID (err 6)");
+        return 6; // invalid ID
     } else if (command_id > 127) {
         snprintf(response_output_buf, response_output_buf_len,
-            "ADCS telemetry request ID received, not command ID (err 3)");
-        return 3; // command_id is a telemetry request, not a command
+            "ADCS telemetry request ID received, not command ID (err 5)");
+        return 5; // command_id is a telemetry request, not a command
     }
     
     // parse hex array arguments
@@ -1603,12 +1603,12 @@ uint8_t TCMDEXEC_adcs_generic_telemetry_request(const char *args_str, TCMD_Telec
 
     if (telemetry_request_id < 128) {
         snprintf(response_output_buf, response_output_buf_len,
-            "ADCS command ID received, not telemetry request ID (err 3)");
-        return 3;
+            "ADCS command ID received, not telemetry request ID (err 5)");
+        return 5;
     } else if (telemetry_request_id > 255) {
         snprintf(response_output_buf, response_output_buf_len,
-            "Invalid ADCS command or telemetry request ID (err 4)");
-        return 4; // invalid ID
+            "Invalid ADCS command or telemetry request ID (err 6)");
+        return 6; // invalid ID
     }
 
     // parse data length argument: first into uint64_t
