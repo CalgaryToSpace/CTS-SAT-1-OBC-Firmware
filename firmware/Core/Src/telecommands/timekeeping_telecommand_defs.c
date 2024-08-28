@@ -32,14 +32,15 @@ uint8_t TCMDEXEC_set_system_time(const char *args_str, TCMD_TelecommandChannel_e
 
 /// @brief Adjust the system time with a signed int
 /// @param args_str
-/// - Arg 0: Correction time in milliseconds (int64_t)
+/// - Arg 0: Correction time in milliseconds (int64_t). Positive = forward in time, negative = backward in time.
 /// @return 0 if successful, 1 if error
 uint8_t TCMDEXEC_correct_system_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len){
 
-    int64_t correction_time_ms=0;
+    int64_t correction_time_ms = 0;
 
-    if(TCMD_ascii_to_int64(args_str, strlen(args_str), &correction_time_ms)!=0){ // Converting args_str to signed int and checks if arguement is correct
+    // Convert args_str to signed int and checks if arguement is correct
+    if (TCMD_ascii_to_int64(args_str, strlen(args_str), &correction_time_ms) != 0) {
         snprintf(response_output_buf, response_output_buf_len, "Incorrect argument entered. Please enter a signed integer number of milliseconds");
         return 1;
     }
