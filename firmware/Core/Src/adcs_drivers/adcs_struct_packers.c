@@ -60,9 +60,10 @@ uint8_t ADCS_Pack_to_Program_Status_Struct(uint8_t* data_received, ADCS_Boot_Run
 uint8_t ADCS_Pack_to_Comms_Status_Struct(uint8_t *data_received, ADCS_Comms_Status_Struct *result) {
     result->cmd_counter = data_received[1] << 8 | data_received[0]; // uint16_t
     result->tlm_counter = data_received[3] << 8 | data_received[2]; // uint16_t
-    result->cmd_buffer_overrun = data_received[4] & 128; // bit 0 is 1 if TC buffer was overrun while receiving a telecommand
-    result->i2c_tlm_error = data_received[4] & 16; // bit 3 is 1 if the number of data clocked out was more than the telemetry package
-    result->i2c_cmd_error = data_received[4] & 8; // bit 4 is 1 if the telecommand sent exceeded the buffer size
+    // bits we care about: 0b10011000 (the others are for UART and CAN, which we are not using)
+    result->cmd_buffer_overrun = (data_received[4] & 0x80) >> 7; // first bit is 1 if TC buffer was overrun while receiving a telecommand
+    result->i2c_tlm_error = (data_received[4] & 0x10) >> 4; // fourth bit is 1 if the number of data clocked out was more than the telemetry package
+    result->i2c_cmd_error = (data_received[4] & 0x8) >> 3; // fifth bit is 1 if the telecommand sent exceeded the buffer size
     return 0;
 }
 
@@ -121,9 +122,9 @@ uint8_t ADCS_Pack_to_LLH_Position_Struct(uint8_t *data_received, ADCS_LLH_Positi
 /// @param[out] result Structure containing the formated data for this command.
 /// @return 0 once the function is finished running.}
 uint8_t ADCS_Pack_to_Unix_Time_Save_Mode_Struct(uint8_t *data_received, ADCS_Set_Unix_Time_Save_Mode_Struct *result) {
-    result->save_now = data_received[0] & 1; // 0b00000001
-    result->save_on_update = (data_received[0] & 2) >> 1; // 0b00000010
-    result->save_periodic = (data_received[0] & 4) >> 2; // 0b00000100
+    result->save_now = data_received[0] & 0x1; // 0b00000001
+    result->save_on_update = (data_received[0] & 0x2) >> 1; // 0b00000010
+    result->save_periodic = (data_received[0] & 0x4) >> 2; // 0b00000100
     result->period = data_received[1];
     return 0;
 }
@@ -254,16 +255,16 @@ uint8_t ADCS_Pack_to_Estimation_Params_Struct(uint8_t* data_received, ADCS_Estim
     memcpy(&result->nadir_sensor_measurement_noise, &data_received[16], 4);
     memcpy(&result->magnetometer_measurement_noise, &data_received[20], 4);
     memcpy(&result->star_tracker_measurement_noise, &data_received[24], 4);
-    result->use_sun_sensor = (data_received[28] & 1); // 0b00000001 
-    result->use_nadir_sensor = (data_received[28] & 2) >> 1; // 0b00000010
-    result->use_css = (data_received[28] & 4) >> 2; // 0b00000100
-    result->use_star_tracker = (data_received[28] & 8) >> 3; // 0b00001000
-    result->nadir_sensor_terminator_test = (data_received[28] & 16) >> 4; // 0b00010000
-    result->automatic_magnetometer_recovery = (data_received[28] & 32) >> 5; // 0b00100000
-    result->magnetometer_mode = (data_received[28] & 192) >> 6; // 0b11000000
-    result->magnetometer_selection_for_raw_mtm_tlm = (data_received[29] & 3); // 0b00000011
+    result->use_sun_sensor = (data_received[28] & 0x1); // 0b00000001 
+    result->use_nadir_sensor = (data_received[28] & 0x2) >> 1; // 0b00000010
+    result->use_css = (data_received[28] & 0x4) >> 2; // 0b00000100
+    result->use_star_tracker = (data_received[28] & 0x8) >> 3; // 0b00001000
+    result->nadir_sensor_terminator_test = (data_received[28] & 0x10) >> 4; // 0b00010000
+    result->automatic_magnetometer_recovery = (data_received[28] & 0x20) >> 5; // 0b00100000
+    result->magnetometer_mode = (data_received[28] & 0xc0) >> 6; // 0b11000000
+    result->magnetometer_selection_for_raw_mtm_tlm = (data_received[29] & 0x3); // 0b00000011
     result->automatic_estimation_transition_due_to_rate_sensor_errors = (data_received[29] & 4) >> 2; // 0b00000100
-    result->wheel_30s_power_up_delay = (data_received[29] & 8) >> 3; // 0b00001000
+    result->wheel_30s_power_up_delay = (data_received[29] & 0x8) >> 3; // 0b00001000
     result->cam1_and_cam2_sampling_period = data_received[30];
 
     return 0;
