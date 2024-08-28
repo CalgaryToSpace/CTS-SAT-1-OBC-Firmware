@@ -1,6 +1,16 @@
 {
     "configurations": [
         {
+            "cwd": "${workspaceFolder}",
+            "executable": "./build/CTS-SAT-1_FW.elf",
+            "name": "Debug with ST-Link",
+            "request": "launch",
+            "type": "cortex-debug",
+            "runToEntryPoint": "main",
+            "showDevDebugOutput": "none",
+            "servertype": "stlink"
+        },
+        {
             "showDevDebugOutput": "parsed",
             "cwd": "${workspaceRoot}",
             "executable": "./build/CTS-SAT-1_FW.elf",

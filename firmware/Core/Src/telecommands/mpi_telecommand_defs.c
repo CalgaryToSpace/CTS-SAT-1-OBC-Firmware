@@ -35,19 +35,33 @@ uint8_t TCMDEXEC_mpi_send_command_hex(const char *args_str, TCMD_TelecommandChan
 
     // Allocate space to receive incoming MPI response
     const size_t MPI_rx_buffer_max_size = 50;
-    uint16_t MPI_rx_buffer_len;
+    uint16_t MPI_rx_buffer_len = 0;
     uint8_t MPI_rx_buffer[MPI_rx_buffer_max_size];     // Max possible size for an MPI command+parameters can be 7 bytes + 2^N bytes of variable payload. To account for a buffer zone, 50 bytes will be allocated
     memset(MPI_rx_buffer, 0, MPI_rx_buffer_max_size);  // Initialize all elements to 0
 
     // Send command to MPI and receive back the response
     const uint8_t cmd_response = MPI_send_telecommand_get_response(args_bytes, args_bytes_len, MPI_rx_buffer, MPI_rx_buffer_max_size, &MPI_rx_buffer_len);
 
-    // Verify successful echo response from the mpi
-    if (cmd_response == 0){
-        snprintf(response_output_buf, response_output_buf_len, "MPI successfully executed the command. MPI echoed response code: %u\n", MPI_rx_buffer[args_bytes_len]);
-    }
-    else{
-        snprintf(response_output_buf, response_output_buf_len, "MPI failed to execute command. MPI echoed response code: %u\n", cmd_response);
+    //Send back MPI response log
+    switch(cmd_response) {
+        case 0: 
+            snprintf(response_output_buf, response_output_buf_len, "MPI successfully executed the command. MPI echoed response code: %u\n", MPI_rx_buffer[args_bytes_len]);
+            break;
+        case 2: 
+            snprintf(response_output_buf, response_output_buf_len, "Failed UART transmission.\n");
+            break;
+        case 3: 
+            snprintf(response_output_buf, response_output_buf_len, "Failed UART reception.\n");
+            break;
+        case 4: 
+            snprintf(response_output_buf, response_output_buf_len, "Timeout waiting for 1st byte from MPI.\n");
+            break;
+        case 5: 
+            snprintf(response_output_buf, response_output_buf_len, "MPI failed to execute telecommand.  MPI echoed response code: %u\n", cmd_response);
+            break;
+        case 6:
+            snprintf(response_output_buf, response_output_buf_len, "Invalid response from the MPI.  MPI echoed response code: %u\n", cmd_response);
+            break;
     }
 
     // Send back complete response from the MPI               
