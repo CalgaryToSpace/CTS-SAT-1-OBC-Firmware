@@ -46,7 +46,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         HAL_UART_Receive_IT(&hlpuart1, (uint8_t*) &UART_telecommand_buffer_last_rx_byte, 1);
     }
     else if (huart->Instance == USART1) {
-        if(current_mpi_mode == COMMAND_MODE) {
+        if(current_mpi_mode == MPI_RX_MODE_COMMAND_MODE) {
             // Check if buffer is full
             if(UART_mpi_rx_buffer_write_idx >= UART_mpi_rx_buffer_len) {
                 DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART mpi response buffer is full\n");

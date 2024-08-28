@@ -9,7 +9,7 @@
 #define MPI_TX_TIMEOUT_DURATION_MS 100	// Timeout duration for transmit in milliseconds
 #define MPI_RX_TIMEOUT_DURATION_MS 200	// Timeout duration for receive in milliseconds
 uint16_t copy_index;
-MPI_rx_mode_t current_mpi_mode = NOT_LISTENING_TO_MPI_MODE;
+MPI_rx_mode_t current_mpi_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
 
 /// @brief Sends commandcode+params to the MPI as bytes
 /// @param bytes_to_send Buffer containing the telecommand + params (IF ANY) as hex bytes
@@ -20,7 +20,7 @@ MPI_rx_mode_t current_mpi_mode = NOT_LISTENING_TO_MPI_MODE;
 /// @return 0: Success, 1: No bytes to send, 2: Failed UART transmission, 3: Failed UART reception, 4: Timeout waiting for 1st byte from MPI, 5: MPI failed to execute CMD, 6: Invalid response from the MPI
 uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const size_t bytes_to_send_len, uint8_t *MPI_rx_buffer, const size_t MPI_rx_buffer_max_size, uint16_t *MPI_rx_buffer_len) {
 	// Set MPI to command mode
-	current_mpi_mode = COMMAND_MODE;
+	current_mpi_mode = MPI_RX_MODE_COMMAND_MODE;
 
 	// Transmit the MPI command
 	HAL_StatusTypeDef transmit_status = HAL_UART_Transmit(&huart1, bytes_to_send, bytes_to_send_len, MPI_TX_TIMEOUT_DURATION_MS);

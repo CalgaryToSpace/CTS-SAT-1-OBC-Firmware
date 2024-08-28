@@ -15,9 +15,9 @@
  * 
  */
 typedef enum {
-    COMMAND_MODE,                           // MPI is in command mode
-    SCIENCE_DATA_MODE,                      // MPI is science data is being collected mode
-    NOT_LISTENING_TO_MPI_MODE               // MPI is recording science data but it is not being collected mode
+    MPI_RX_MODE_COMMAND_MODE,               // MPI is in command mode
+    MPI_RX_MODE_SCIENCE_DATA,               // MPI is science data is being collected mode
+    MPI_RX_MODE_NOT_LISTENING_TO_MPI        // MPI is recording science data but it is not being collected mode
 }MPI_rx_mode_t;
 
 /**
