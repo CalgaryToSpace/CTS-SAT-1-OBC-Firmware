@@ -29,32 +29,9 @@ typedef struct {
     /// @brief The ASCII name of the log or command e.g., "BESTXYZA" or "TIMEA"
     char log_name[128];
 
-    /// @brief The name of the port from which the log was generated e.g., "COM1".
-    char port[10];
-
-    /// @brief Used for multiple related logs, e.g., 0.
-    /// TODO: Potentially try use a fixed point number to get decimal points
-    uint32_t sequence_no;
-
-    /// @brief The minimum percentage of time the processor is idle.
-    uint32_t idle_time;
-
     /// @brief Indicates the quality of the GPS reference time
     GPS_reference_time_status_t time_status;
 
-    /// @brief GPS reference week number
-    uint32_t week;
-
-    /// @brief Seconds from the beginning of the GPS reference week
-    /// TODO: Potentially try use a fixed point number to get decimal points
-    uint32_t seconds;
-
-    /// @brief An eight digit hexadecimal number representing the status of
-    /// various hardware and software components of the receiver
-    int32_t rx_status;
-
-    /// @brief representing the receiver software build number
-    uint32_t rx_sw_version;
 } gps_response_header;
 
 // ****************** END SECTION: gps_header_structs ******************
@@ -120,7 +97,7 @@ typedef enum {
     GPS_TYPE_PPP_BASIC = 78,
     GPS_TYPE_INS_PPP_BASIC_CONVERGING = 79,
     GPS_TYPE_INS_PPP_BASIC = 80
-} GPS_position_velocity_type_enum_t;
+} GPS_position_type_enum_t;
 
 
 /// @brief This is the struct for the BESTXYZA Command response.
@@ -130,14 +107,14 @@ typedef struct {
     GPS_solution_status_enum_t position_solution_status;
 
     /// @brief Position type.
-    GPS_position_velocity_type_enum_t position_type;
+    GPS_position_type_enum_t position_type;
 
     /// @brief Documentation says the point coordinates come as a double. 
-    /// We store as an int32 because the eatrths radius(6.10^6 m) fits within an int32.
+    /// We store as an int64 because the eatths radius(6.10^6 m) and we are storing the values as millimeters which fits within an int64.
     /// Position coordinates
-    int32_t position_x_m;
-    int32_t position_y_m;
-    int32_t position_z_m;
+    int64_t position_x_mm;
+    int64_t position_y_mm;
+    int64_t position_z_mm;
 
     /// @brief Documentation says the standard deviation of the position coordinates come as a float. 
     /// The standard deviation of the position coordinates
@@ -145,60 +122,11 @@ typedef struct {
     uint32_t position_y_std_m;
     uint32_t position_z_std_m;
 
-    /// @brief Velocity Solution status.
-    GPS_solution_status_enum_t velocity_solution_status;
-
-    /// @brief Velocity type. 
-    GPS_position_velocity_type_enum_t velocity_type;
-
-    /// @brief Documentation says the velocity vector come as a double. 
-    /// The Velocity Vectors along the axes
-    int64_t velocity_x_m_per_s;
-    int64_t velocity_y_m_per_s;
-    int64_t velocity_z_m_per_s;
-
-    /// @brief Documentation says the standard deviation of the velocity vector come as a float. 
-    /// The standard deviation of the velocity vector
-    uint32_t velocity_x_std_m_per_s;
-    uint32_t velocity_y_std_m_per_s;
-    uint32_t velocity_z_std_m_per_s;
-
-    /// @brief Base station identification. 
-    char stn_id [4];
-
-    /// @brief A measure of the latency in the velocity time tag in seconds. 
-    /// It should be subtracted from the time to give improved results. 
-    uint32_t velocity_latency;
-
     /// @brief Differential age in seconds. 
     uint32_t differential_age_sec;
 
     /// @brief Solution age in seconds. 
     uint32_t solution_age_sec;
-
-    /// @brief Number of satellites tracked.
-    uint8_t satellite_no_tracked;
-
-    /// @brief Number of satellites used in solution.
-    uint8_t satellite_no_used_in_solution;
-
-    /// @brief Number of satellites with L1/E1/B1 signals used in solution. 
-    uint8_t satellite_no_l1_e1_b1;
-
-    /// @brief Number of satellites with multi-frequency signals used in solution 
-    uint8_t satellite_no_sol_multifreq;
-
-    /// @brief Extended solution status. 
-    /// Refer to table 94 on page 504 of the OEM& Commands and Logs Reference Manual
-    uint8_t extended_solution_status;
-
-    /// @brief Galileo and BeiDou signals used mask
-    /// Refer to table 93 on page 503 of the OEM& Commands and Logs Reference Manual
-    uint8_t galileo_beiDou_sig_mask;
-
-    /// @brief GPS and GLONASS signals used mask.
-    /// Refer to table 92 on page 503 of the OEM& Commands and Logs Reference Manual
-    uint8_t gps_glonass_sig_mask;
 
     /// @brief 32 bit CRC (ASCII and Binary only). 
     uint32_t crc;
