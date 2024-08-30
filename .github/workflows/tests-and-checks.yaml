@@ -50,6 +50,7 @@ jobs:
           python -m pip install -e cts1_ground_support[dev]
       - name: Lint with Ruff
         run: |
+          ruff version
           ruff check cts1_ground_support/
         # continue-on-error: true
       - name: Test with pytest
