@@ -2,6 +2,7 @@
 #include "gps/gps_types.h"
 #include "log/log.h"
 #include "telecommands/telecommand_args_helpers.h"
+#include "transforms/arrays.h"
 
 #include <stdio.h>
 #include <stdlib.h> 
@@ -11,10 +12,13 @@
 #define BUFFER_SIZE 256
 #define CRC32_POLYNOMIAL 0xEDB88320L
 
+// TODO: Utilize the CRC functions below from the documentation to perform error checking on GPS response
+// Refer to Page 56 of the OEM7 Commands and Logs Reference Manual
+
 /// @brief Calculate a CRC value to be used by CRC calculation functions.
 /// @param i
 /// - Arg 0: variable name
-/// @return 0 if successful, >0 if an error occurred
+/// @return 32 bit CRC Value
 uint32_t crc32_value(uint8_t i) {
     int j;
     uint32_t crc;
@@ -32,7 +36,7 @@ uint32_t crc32_value(uint8_t i) {
 /// @brief Calculates the CRC-32 of a block of data all at once
 /// @param ulCount - Number of bytes in the data block
 /// @param ucBuffer - Data block
-/// @return 0 if successful, >0 if an error occurred
+/// @return 32 bit CRC Value
 uint32_t calculate_block_crc32( uint32_t ulCount, uint8_t *ucBuffer ) {
     uint32_t temp1;
     uint32_t temp2;
@@ -81,27 +85,10 @@ uint8_t assign_gps_time_status(const char *status_str, GPS_reference_time_status
 }
 
 
-const char* get_gps_time_status_description(GPS_reference_time_status_t status) {
-    switch (status) {
-        case GPS_UNKNOWN: return "Unknown";
-        case GPS_APPROXIMATE: return "Approximate";
-        case GPS_COARSEADJUSTING: return "Coarse Adjusting";
-        case GPS_COARSE: return "Coarse";
-        case GPS_COARSESTEERING: return "Coarse Steering";
-        case GPS_FREEWHEELING: return "Freewheeling";
-        case GPS_FINEADJUSTING: return "Fine Adjusting";
-        case GPS_FINE: return "Fine";
-        case GPS_FINEBACKUPSTEERING: return "Fine Backup Steering";
-        case GPS_FINESTEERING: return "Fine Steering";
-        case GPS_SATTIME: return "Satellite Time";
-        default: return "Invalid Status";
-    }
-}
-
 /// @brief Parse the received GPS header into a struct
 /// @param data_received - The string obtained from the buffer that is to be parsed into the gps_response_header struct
 /// @param result - gps_response_header struct that is returned
-/// @return 0 if successful, >0 if an error occurred
+/// @return 0 if successful, > 0 if an error occurred
 uint8_t parse_gps_header(const char *data_received, gps_response_header *result){
 
     // TODO: What if there are multiple responses in the string?
@@ -135,7 +122,6 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
     // Parse the data in the header buffer
     uint8_t parse_result;
     char token_buffer[256];
-    char *end_ptr;
 
     // Log Name
     parse_result = TCMD_extract_string_arg(header_buffer, 0, token_buffer, sizeof(token_buffer));
@@ -143,56 +129,6 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
         return parse_result;  
     }
     strcpy(result->log_name, token_buffer + 1);
-
-    LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Log Name = %s",
-            result->log_name
-        );
-
-    // Port
-    parse_result = TCMD_extract_string_arg(header_buffer, 1, token_buffer, sizeof(token_buffer));
-    if (parse_result != 0) { 
-        return parse_result;  
-    }
-
-    strncpy(result->port, token_buffer, sizeof(result->port) - 1);
-    result->port[sizeof(result->port) - 1] = '\0';
-
-    LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Port = %s",
-            result->port
-        );
-
-    // Sequence Number
-    parse_result = TCMD_extract_string_arg(header_buffer, 2, token_buffer, sizeof(token_buffer));
-    if (parse_result != 0) {  
-        return parse_result;  
-    }
-    result->sequence_no = strtoul(token_buffer, &end_ptr, 10);
-    if (*end_ptr != '\0'){
-        return 1;  // Error in conversion
-    }
-
-    LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Seq No = %lu",
-            result->sequence_no
-        );
-
-    // Idle Time
-    parse_result = TCMD_extract_string_arg(header_buffer, 3, token_buffer, sizeof(token_buffer));
-    if (parse_result != 0) {  
-        return parse_result;  
-    }
-    result->idle_time = strtoul(token_buffer, &end_ptr, 10);
-
-    LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Idle Time = %lu",
-            result->idle_time
-        );
 
     // Time Status
     parse_result = TCMD_extract_string_arg(header_buffer, 4, token_buffer, sizeof(token_buffer));
@@ -202,68 +138,11 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
     const uint8_t status_result = assign_gps_time_status(token_buffer, &result->time_status);
     if (status_result != 0) {
         // Time Status not recognized
-        return 1;
+        return status_result;
     }
-
-    LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Time status = %s",
-            get_gps_time_status_description(result->time_status)
-        );
-    
-    // Week
-    parse_result = TCMD_extract_string_arg(header_buffer, 5, token_buffer, sizeof(token_buffer));
-    if (parse_result != 0) {  
-        return parse_result;  
-    }
-    result->week = strtoul(token_buffer, &end_ptr, 10);
-
-    LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Week = %lu",
-            result->week
-        );
-
-    // seconds
-    parse_result = TCMD_extract_string_arg(header_buffer, 6, token_buffer, sizeof(token_buffer));
-    if (parse_result != 0) {  
-        return parse_result;  
-    }
-    result->seconds = strtoul(token_buffer, &end_ptr, 10);
-
-    LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "seconds = %lu",
-            result->seconds
-        );
-
-    // Rx Status
-    parse_result = TCMD_extract_string_arg(header_buffer, 7, token_buffer, sizeof(token_buffer));
-    if (parse_result != 0) {  
-        return parse_result;  
-    }
-    result->rx_status = strtoul(token_buffer, &end_ptr, 16);  // hexadecimal
-
-    LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Rx Status = %x",
-            result->rx_status
-        );
-
-    // Rx Sw Version
-    parse_result = TCMD_extract_string_arg(header_buffer, 9, token_buffer, sizeof(token_buffer));
-    if (parse_result != 0) {  
-        return parse_result;  
-    }
-    result->rx_sw_version = strtoul(token_buffer, &end_ptr, 10);
-
-    LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Rx sw Version = %lu",
-            result->rx_sw_version
-        );
 
     return 0;
+
 }
 
 
@@ -305,7 +184,7 @@ uint8_t assign_gps_solution_status(const char *status_str, GPS_solution_status_e
 /// @param type_str The type string to parse.
 /// @param type Pointer to GPS_position_velocity_type_enum_t where the type will be stored.
 /// @return Returns 0 on success, 1 if the type string is unrecognized.
-uint8_t assign_gps_position_velocity_type(const char *type_str, GPS_position_velocity_type_enum_t *type) {
+uint8_t assign_gps_position_velocity_type(const char *type_str, GPS_position_type_enum_t *type) {
     if (strcmp(type_str, "NONE") == 0) {
         *type = GPS_TYPE_NONE;
     } else if (strcmp(type_str, "FIXEDPOS") == 0) {
@@ -460,64 +339,58 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
             "Extracted Position X Coordinate = %s",
             token_buffer
         );
-    // result->position_x_m = (int32_t)strtod(token_buffer, &end_ptr);
-    double p_result;
-    const char *p_str = "-1634531.5683";
-    const double expected_result = -1634531.5683;
-    // const int double_convert_result = TCMD_ascii_to_double(token_buffer,strlen(token_buffer),&p_result);
 
-    const int double_convert_result = TCMD_ascii_to_double(p_str,strlen(p_str),&p_result);
+    double value = strtod(token_buffer, &end_ptr);
+    double conv_result = value * 1000;
+    result->position_x_mm = (int64_t) conv_result;
 
-    if(double_convert_result != 0){
-        LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "Error converting ASCII to double."
-        );
-    return 1;
-    }
+    char print_value[32];
+    GEN_uint64_to_str(result->position_x_mm, print_value);
 
     LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Position x expected result = %lf",
-            expected_result
-        );
-
-    char conversion_to_string[50];
-    sprintf(conversion_to_string, "%f", p_result);
-
-    LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Position x in string after conversion = %s",
-            conversion_to_string
-        );
-
-
-
-    LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Position x = %f",
-            p_result
-        );
-
-    result->position_x_m = p_result;
-
-    LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Position x = %f",
-            result->position_x_m
+            // "Position x = %ld",
+            "Position x = %s",
+            // result->position_x_mm
+            print_value
         );
 
     parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 3, token_buffer, sizeof(token_buffer));
     if (parse_result != 0) {  
         return parse_result;  
     }
-    result->position_y_m = (int32_t)strtod(token_buffer, &end_ptr);
+
+    value = strtod(token_buffer, &end_ptr);
+    conv_result = value * 1000;
+    result->position_y_mm = (int64_t) conv_result;
+
+    GEN_uint64_to_str(result->position_y_mm, print_value);
+
+    LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            // "Position y = %ld",
+            "Position y = %s",
+            // result->position_y_mm
+            print_value
+        );
 
     parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 4, token_buffer, sizeof(token_buffer));
     if (parse_result != 0) {  
         return parse_result;  
     }
-    result->position_z_m = (int32_t)strtod(token_buffer, &end_ptr);
+
+    value = strtod(token_buffer, &end_ptr);
+    conv_result = value * 1000;
+    result->position_z_mm = (int64_t) conv_result;
+
+    GEN_uint64_to_str(result->position_z_mm, print_value);
+
+    LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            // "Position z = %ld",
+            "Position z = %s",
+            print_value
+        );
 
     // Position Coordinates Standard Deviation
     parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 5, token_buffer, sizeof(token_buffer));
@@ -538,89 +411,6 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
     }
     result->position_z_std_m = strtoul(token_buffer, &end_ptr, 10);
 
-
-    // Velocity Solution Status
-    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 8, token_buffer, sizeof(token_buffer));
-    if (parse_result != 0) {  
-        return parse_result;  
-    }
-    status_result = assign_gps_solution_status(token_buffer, &result->velocity_solution_status);
-    if(status_result != 0){
-        // Invalid string passed
-        return status_result;
-    }
-
-    // Velocity Type
-    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 9, token_buffer, sizeof(token_buffer));
-    if (parse_result != 0) {  
-        return parse_result;  
-    }
-    status_result = assign_gps_position_velocity_type(token_buffer, &result->velocity_type);
-    if(status_result != 0){
-        // Invalid string passed
-        return status_result;
-    }
-
-    // Velocity Coordinates
-    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 10, token_buffer, sizeof(token_buffer));
-    if (parse_result != 0) {  
-        return parse_result;  
-    }
-    result->velocity_x_m_per_s = (int64_t)strtod(token_buffer, &end_ptr);
-
-    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 11, token_buffer, sizeof(token_buffer));
-    if (parse_result != 0) {  
-        return parse_result;  
-    }
-    result->velocity_y_m_per_s = (int64_t)strtod(token_buffer, &end_ptr);
-
-    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 12, token_buffer, sizeof(token_buffer));
-    if (parse_result != 0) {  
-        return parse_result;  
-    }
-    result->velocity_z_m_per_s = (int64_t)strtod(token_buffer, &end_ptr);
-
-    // Velocity Coordinates Standard Deviation
-    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 13, token_buffer, sizeof(token_buffer));
-    if (parse_result != 0) {  
-        return parse_result;  
-    }
-    result->velocity_x_std_m_per_s = strtoul(token_buffer, &end_ptr, 10);
-
-    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 14, token_buffer, sizeof(token_buffer));
-    if (parse_result != 0) {  
-        return parse_result;  
-    }
-    result->velocity_y_std_m_per_s = strtoul(token_buffer, &end_ptr, 10);
-
-    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 15, token_buffer, sizeof(token_buffer));
-    if (parse_result != 0) {  
-        return parse_result;  
-    }
-    result->velocity_z_std_m_per_s = strtoul(token_buffer, &end_ptr, 10);
-
-    // Base Station Standard Deviation
-    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 16, token_buffer, sizeof(token_buffer));
-    if (parse_result != 0) { 
-        return parse_result;  
-    }
-
-    strncpy(result->stn_id, token_buffer, sizeof(result->stn_id) - 1);
-    result->stn_id[sizeof(result->stn_id) - 1] = '\0';
-
-    LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "stn_id = %s.",
-            result->stn_id
-        );
-
-    // Velocity Latency
-    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 17, token_buffer, sizeof(token_buffer));
-    if (parse_result != 0) {  
-        return parse_result;  
-    }
-    result->velocity_latency = strtoul(token_buffer, &end_ptr, 10);
-
     // Differential Age
     parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 18, token_buffer, sizeof(token_buffer));
     if (parse_result != 0) {  
@@ -634,55 +424,6 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
         return parse_result;  
     }
     result->solution_age_sec = strtoul(token_buffer, &end_ptr, 10);
-
-    // No of Satellites tracked
-    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 20, token_buffer, sizeof(token_buffer));
-    if (parse_result != 0) {  
-        return parse_result;  
-    }
-    result->satellite_no_tracked = strtoul(token_buffer, &end_ptr, 10);
-
-    // Number of satellites used in solution
-    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 21, token_buffer, sizeof(token_buffer));
-    if (parse_result != 0) {  
-        return parse_result;  
-    }
-    result->satellite_no_used_in_solution = strtoul(token_buffer, &end_ptr, 10);
-
-    // Number of satellites with L1/E1/B1 signals used in solution
-    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 22, token_buffer, sizeof(token_buffer));
-    if (parse_result != 0) {  
-        return parse_result;  
-    }
-    result->satellite_no_l1_e1_b1 = strtoul(token_buffer, &end_ptr, 10);
-
-    // Number of satellites with multi-frequency signals used in solution
-    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 23, token_buffer, sizeof(token_buffer));
-    if (parse_result != 0) {  
-        return parse_result;  
-    }
-    result->satellite_no_sol_multifreq = strtoul(token_buffer, &end_ptr, 10);
-
-    // Extended solution status
-    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 25, token_buffer, sizeof(token_buffer));
-    if (parse_result != 0) {  
-        return parse_result;  
-    }
-    result->extended_solution_status = strtoul(token_buffer, &end_ptr, 16);
-
-    // Galileo and BeiDou signals used mask
-    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 26, token_buffer, sizeof(token_buffer));
-    if (parse_result != 0) {  
-        return parse_result;  
-    }
-    result->galileo_beiDou_sig_mask = strtoul(token_buffer, &end_ptr, 16);
-
-    // GPS and GLONASS signals used mask
-    parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 27, token_buffer, sizeof(token_buffer));
-    if (parse_result != 0) {  
-        return parse_result;  
-    }
-    result->gps_glonass_sig_mask = strtoul(token_buffer, &end_ptr, 16);
 
     char crc[9];
     strncpy(crc, asterisk + 1, 8);
