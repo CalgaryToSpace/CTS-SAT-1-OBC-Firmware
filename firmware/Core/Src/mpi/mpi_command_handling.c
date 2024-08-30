@@ -17,8 +17,11 @@ MPI_rx_mode_t current_mpi_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
 /// @param MPI_rx_buffer Buffer to store incoming response from the MPI
 /// @param MPI_rx_buffer_max_size The maximum size of the MPI response buffer
 /// @param MPI_rx_buffer_len Pointer to variable that will contain the length of the populated MPI response buffer 
-/// @return 0: Success, 1: No bytes to send, 2: Failed UART transmission, 3: Failed UART reception, 4: Timeout waiting for 1st byte from MPI, 5: MPI failed to execute CMD, 6: Invalid response from the MPI
-uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const size_t bytes_to_send_len, uint8_t *MPI_rx_buffer, const size_t MPI_rx_buffer_max_size, uint16_t *MPI_rx_buffer_len) {
+/// @return 0: Success, 1: No bytes to send, 2: Failed UART transmission, 3: Failed UART reception, 
+///			4: Timeout waiting for 1st byte from MPI, 5: MPI failed to execute CMD, 6: Invalid response from the MPI
+uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const size_t bytes_to_send_len, uint8_t *MPI_rx_buffer, 
+										  const size_t MPI_rx_buffer_max_size, uint16_t *MPI_rx_buffer_len) {
+	
 	// Set MPI to command mode
 	current_mpi_mode = MPI_RX_MODE_COMMAND_MODE;
 

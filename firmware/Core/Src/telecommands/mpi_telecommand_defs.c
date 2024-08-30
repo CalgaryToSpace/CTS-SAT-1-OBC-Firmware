@@ -18,8 +18,8 @@
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0: Success, 1: Invalid Input, 2: Failed UART transmission, 3: Failed UART reception, 4: MPI timeout before sending 1 byte, 5: MPI failed to execute CMD
 uint8_t TCMDEXEC_mpi_send_command_hex(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                                      char *response_output_buf, uint16_t response_output_buf_len)
-{
+                                      char *response_output_buf, uint16_t response_output_buf_len) {
+    
     // Parse hex-encoded string to bytes
     const size_t args_str_len = strlen(args_str);       // Length of input string
     const uint16_t args_bytes_size = args_str_len/2;    // Expected size of input byte array
