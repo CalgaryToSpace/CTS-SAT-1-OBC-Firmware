@@ -112,6 +112,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
+    {
+        .tcmd_name = "send_cmd_to_peripheral",
+        .tcmd_func = TCMDEXEC_send_cmd_to_peripheral,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
 
     // ****************** SECTION: testing_telecommand_defs ******************
 
@@ -1124,6 +1130,84 @@ uint8_t TCMDEXEC_reboot(const char *args_str, TCMD_TelecommandChannel_enum_t tcm
     HAL_Delay(100);
 
     NVIC_SystemReset();
+    return 0;
+}
+
+/// @brief Send artibrary configuration commands to a peripheral (MPI, GPS, CAMERA)
+/// @param args_str 
+/// - Arg 0: UART port to send data to
+/// - Arg 1: Data to be sent (bytes specified in base64)
+/// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
+/// @param response_output_buf The buffer to write the response to
+/// @param response_output_buf_len The maximum length of the response_output_buf (its size)
+/// @return 0: Success, 1: Error parsing args, 2: Invalid uart port requested, 3: Error transmitting data, 4: Error receiving data
+uint8_t TCMDEXEC_send_cmd_to_peripheral(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len){
+
+    // Parse UART port argument
+    char *arg_uart_port_name = "\0";
+    UART_HandleTypeDef *UART_peripheral_port;
+    const uint8_t uart_port_name_parse_result = TCMD_extract_string_arg(args_str, 0, arg_uart_port_name, 20);
+
+    // Parse hex-encoded config command (string to bytes)
+    const uint16_t args_bytes_to_send_size = (strlen(args_str) - strlen(arg_uart_port_name))/2;             // Expected size of config command byte array
+    uint16_t arg_bytes_to_send_len;                                                                         // Variable to store the length of the converted byte array
+    uint8_t arg_bytes_to_send[args_bytes_to_send_size];                                                     // Byte array to store the values of converted hex string
+    const uint8_t bytes_to_send_parse_result = TCMD_extract_hex_array_arg(args_str, 1, arg_bytes_to_send, args_bytes_to_send_size, &arg_bytes_to_send_len);
+
+    if(uart_port_name_parse_result != 0 || bytes_to_send_parse_result !=0){
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing uart port/data to send arg: Arg 0 Err=%d, Arg 1 Err=%d", uart_port_name_parse_result, bytes_to_send_parse_result);
+        return 1;    // Error code: Error parsing args
+    }
+
+    // Set peripheral UART port to requested
+    if(strcmp(arg_uart_port_name, "huart1") == 0){
+        UART_peripheral_port = &huart1;
+    }
+    else if(strcmp(arg_uart_port_name, "huart2") == 0){
+        UART_peripheral_port = &huart2;
+    }
+    else if(strcmp(arg_uart_port_name, "huart3") == 0){
+        UART_peripheral_port = &huart3;
+    }
+    else if(strcmp(arg_uart_port_name, "huart4") == 0){
+        UART_peripheral_port = &huart4;
+    }
+    else if(strcmp(arg_uart_port_name, "huart5") == 0){
+        UART_peripheral_port = &huart5;
+    }
+    else{
+        snprintf(response_output_buf, response_output_buf_len, "Invalid UART port requested!");
+        return 2;   // Error code: Invalid UART port requested
+    }
+
+    // Transmit config command to requested peripheral
+	HAL_StatusTypeDef transmit_status = HAL_UART_Transmit(UART_peripheral_port, arg_bytes_to_send, arg_bytes_to_send_len, 200);
+
+    // Check UART transmission
+	if (transmit_status != HAL_OK) {
+		return 3; // Error code: Failed UART transmission
+	}
+
+    // Receive response from peripheral
+	//HAL_StatusTypeDef receive_status;
+
+    // Handle reception from the MPI
+    // if(UART_peripheral_port == &huart1){
+    //     receive_status = HAL_UART_Receive(UART_peripheral_port, (uint8_t*) &UART_mpi_rx_last_byte, 1);
+    // }
+    
+	
+	// Check for UART reception errors
+    // if (receive_status != HAL_OK) {
+    //     return 4; // Error code: Failed UART reception
+    // }
+
+    // TODO: Parse response and validate
+
     return 0;
 }
 
