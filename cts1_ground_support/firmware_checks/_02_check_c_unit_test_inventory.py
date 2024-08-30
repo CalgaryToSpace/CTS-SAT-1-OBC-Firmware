@@ -87,6 +87,8 @@ def validate_test_exec_registration() -> None:
 
     if issue_count:
         sys.exit(issue_count)
+    else:
+        logger.success("All `TEST_EXEC_` functions are registered properly.")
 
 
 if __name__ == "__main__":

@@ -339,7 +339,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     },
     
     {
-        .tcmd_name = "agenda_fetch",
+        .tcmd_name = "agenda_fetch_jsonl",
         .tcmd_func = TCMDEXEC_agenda_fetch_jsonl,
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,

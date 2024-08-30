@@ -64,6 +64,33 @@ def check_tcmd_arg_lists() -> None:
         sys.exit(1)
 
 
+def check_tcmd_function_names_match_registration_names() -> None:
+    """Check that the telecommand function names match the registration names."""
+    error_count = 0
+    tcmd_list = parse_telecommand_list_from_repo()
+
+    for tcmd in tcmd_list:
+        if tcmd.tcmd_func != f"TCMDEXEC_{tcmd.name}":
+            logger.warning(
+                f"The '{tcmd.name}' telecommand has a function name that does not match its "
+                f"registration name. The function name is `{tcmd.tcmd_func}`, but the "
+                f"registration name is `{tcmd.name}`."
+            )
+            error_count += 1
+
+    if error_count == 0:
+        logger.success(
+            f"All {len(tcmd_list)} telecommand function names match their registration names."
+        )
+    else:
+        logger.error(
+            "Please ensure that the telecommand function name names match the name registered "
+            "in the `telecommand_definitions.c` table."
+        )
+        sys.exit(1)
+
+
 if __name__ == "__main__":
     check_tcmd_struct_fields()
     check_tcmd_arg_lists()
+    check_tcmd_function_names_match_registration_names()
