@@ -12,11 +12,12 @@
 
 ///@brief Send a configuration command & params (IF ANY) to the MPI encoded in hex
 /// @param args_str 
-/// - Arg 0: Hex-encoded string representing the configuration command + expected data (IF ANY) being sent to the MPI INCLUDING 'TC' (0x54 0x43)
+/// - Arg 0: Hex-encoded string representing the configuration command + arguments (IF ANY) to send to the MPI, INCLUDING 'TC' (0x54 0x43)
 /// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
-/// @return 0: Success, 1: Invalid Input, 2: Failed UART transmission, 3: Failed UART reception, 4: MPI timeout before sending 1 byte, 5: MPI failed to execute CMD
+/// @return 0: Success, 1: Invalid Input, 2: Failed UART transmission, 3: Failed UART reception,
+///     4: MPI timeout before sending 1 byte, 5: MPI failed to execute CMD
 uint8_t TCMDEXEC_mpi_send_command_hex(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                       char *response_output_buf, uint16_t response_output_buf_len) {
     
@@ -33,8 +34,10 @@ uint8_t TCMDEXEC_mpi_send_command_hex(const char *args_str, TCMD_TelecommandChan
         return 1; // Error code: Invalid input
     }
 
-    // Allocate space to receive incoming MPI response
-    const size_t MPI_rx_buffer_max_size = 50;           // Max possible MPI response buffer size allocated to 50 bytes (Considering for the telecommand echo response, NOT science data. MPI command + parameters can be 7 bytes + 2^N bytes of variable payload)
+    // Allocate space to receive incoming MPI response.
+    // Max possible MPI response buffer size allocated to 50 bytes (Considering for the telecommand echo response,
+    // NOT science data. MPI command + arguments can be 7 bytes + 2^N bytes of variable payload).
+    const size_t MPI_rx_buffer_max_size = 50;          
     uint16_t MPI_rx_buffer_len = 0;                     // Length of MPI response buffer
     uint8_t MPI_rx_buffer[MPI_rx_buffer_max_size];      // Buffer to store incoming response from the MPI
     memset(MPI_rx_buffer, 0, MPI_rx_buffer_max_size);   // Initialize all elements to 0
@@ -42,7 +45,7 @@ uint8_t TCMDEXEC_mpi_send_command_hex(const char *args_str, TCMD_TelecommandChan
     // Send command to MPI and receive back the response
     const uint8_t cmd_response = MPI_send_telecommand_get_response(args_bytes, args_bytes_len, MPI_rx_buffer, MPI_rx_buffer_max_size, &MPI_rx_buffer_len);
 
-    //Send back MPI response log detail
+    // Send back MPI response log detail
     switch(cmd_response) {
         case 0: 
             snprintf(response_output_buf, response_output_buf_len, "MPI successfully executed the command. MPI echoed response code: %u\n", MPI_rx_buffer[args_bytes_len]);
@@ -62,13 +65,24 @@ uint8_t TCMDEXEC_mpi_send_command_hex(const char *args_str, TCMD_TelecommandChan
         case 6:
             snprintf(response_output_buf, response_output_buf_len, "Invalid response from the MPI.  MPI echoed response code: %u\n", cmd_response);
             break;
+        default:
+            snprintf(response_output_buf, response_output_buf_len, "Unknown MPI_send_telecommand_get_response() return: %u\n", cmd_response);
+            break;
     }
 
     // Send back complete response from the MPI               
-    snprintf(&response_output_buf[strlen(response_output_buf)], response_output_buf_len - strlen(response_output_buf) - 1, "MPI telecommand response: ");
+    snprintf(
+        &response_output_buf[strlen(response_output_buf)],
+        response_output_buf_len - strlen(response_output_buf) - 1,
+        "MPI telecommand response: "
+    );
     for (size_t i = 0; i < MPI_rx_buffer_len; i++)
     {
-        snprintf(&response_output_buf[strlen(response_output_buf)], response_output_buf_len - strlen(response_output_buf) - 1, "%02X ", MPI_rx_buffer[i]);
+        snprintf(
+            &response_output_buf[strlen(response_output_buf)],
+            response_output_buf_len - strlen(response_output_buf) - 1,
+            "%02X ", MPI_rx_buffer[i]
+        );
     }
 
     return cmd_response;
