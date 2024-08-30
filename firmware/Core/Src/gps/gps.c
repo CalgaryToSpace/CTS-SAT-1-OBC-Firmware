@@ -146,7 +146,7 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
 
     LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Log Name = %s.",
+            "Log Name = %s",
             result->log_name
         );
 
@@ -161,7 +161,7 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
 
     LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Port = %s.",
+            "Port = %s",
             result->port
         );
 
@@ -177,7 +177,7 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
 
     LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Seq No = %lu.",
+            "Seq No = %lu",
             result->sequence_no
         );
 
@@ -190,7 +190,7 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
 
     LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Idle Time = %lu.",
+            "Idle Time = %lu",
             result->idle_time
         );
 
@@ -207,7 +207,7 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
 
     LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Time status = %s.",
+            "Time status = %s",
             get_gps_time_status_description(result->time_status)
         );
     
@@ -220,7 +220,7 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
 
     LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Week = %lu.",
+            "Week = %lu",
             result->week
         );
 
@@ -233,7 +233,7 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
 
     LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "seconds = %lu.",
+            "seconds = %lu",
             result->seconds
         );
 
@@ -246,7 +246,7 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
 
     LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Rx Status = %x.",
+            "Rx Status = %x",
             result->rx_status
         );
 
@@ -259,7 +259,7 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
 
     LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Rx sw Version = %lu.",
+            "Rx sw Version = %lu",
             result->rx_sw_version
         );
 
@@ -418,7 +418,7 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
 
     LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Extracted Data = %s.",
+            "Extracted Data = %s",
             bestxyza_data_buffer
         );
 
@@ -454,7 +454,58 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
     if (parse_result != 0) {  
         return parse_result;  
     }
-    result->position_x_m = (int32_t)strtod(token_buffer, &end_ptr);
+
+    LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Extracted Position X Coordinate = %s",
+            token_buffer
+        );
+    // result->position_x_m = (int32_t)strtod(token_buffer, &end_ptr);
+    double p_result;
+    const char *p_str = "-1634531.5683";
+    const double expected_result = -1634531.5683;
+    // const int double_convert_result = TCMD_ascii_to_double(token_buffer,strlen(token_buffer),&p_result);
+
+    const int double_convert_result = TCMD_ascii_to_double(p_str,strlen(p_str),&p_result);
+
+    if(double_convert_result != 0){
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error converting ASCII to double."
+        );
+    return 1;
+    }
+
+    LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Position x expected result = %lf",
+            expected_result
+        );
+
+    char conversion_to_string[50];
+    sprintf(conversion_to_string, "%f", p_result);
+
+    LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Position x in string after conversion = %s",
+            conversion_to_string
+        );
+
+
+
+    LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Position x = %f",
+            p_result
+        );
+
+    result->position_x_m = p_result;
+
+    LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Position x = %f",
+            result->position_x_m
+        );
 
     parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 3, token_buffer, sizeof(token_buffer));
     if (parse_result != 0) {  
@@ -557,6 +608,12 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
     strncpy(result->stn_id, token_buffer, sizeof(result->stn_id) - 1);
     result->stn_id[sizeof(result->stn_id) - 1] = '\0';
 
+    LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "stn_id = %s.",
+            result->stn_id
+        );
+
     // Velocity Latency
     parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 17, token_buffer, sizeof(token_buffer));
     if (parse_result != 0) {  
@@ -626,6 +683,18 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
         return parse_result;  
     }
     result->gps_glonass_sig_mask = strtoul(token_buffer, &end_ptr, 16);
+
+    char crc[9];
+    strncpy(crc, asterisk + 1, 8);
+    crc[sizeof(crc)-1] = '\0';
+
+    LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "CRC = %s.",
+            crc
+        );
+
+    result->crc = strtoul(crc,&end_ptr, 16);
 
     return 0;
 }
