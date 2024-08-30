@@ -24,7 +24,6 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
                                           const size_t MPI_rx_buffer_max_size, uint16_t *MPI_rx_buffer_len) {
     
     
-    
     // Store the original MPI mode, then set MPI to command mode.
     MPI_current_uart_rx_mode = MPI_RX_MODE_COMMAND_MODE;
 
@@ -63,6 +62,8 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
 
         // MPI hasn't sent any data and has timed out
         if ((*MPI_rx_buffer_len == 0)) {
+
+            // Stop reception from the MPI & Reset mpi UART mode state
             HAL_UART_DMAStop(&huart1);
             MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
             return 4; // Error code: Timeout waiting for 1st byte
@@ -70,7 +71,10 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
 
         // MPI has sent some data and has timed out
         else if ((*MPI_rx_buffer_len > 0) && ((HAL_GetTick() - UART_mpi_rx_last_byte_write_time_ms) > MPI_RX_TIMEOUT_DURATION_MS)) {
+
+            // Stop reception from the MPI & Reset mpi UART mode state
             HAL_UART_DMAStop(&huart1);
+            MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
 
             // Copy the buffer to the last received byte index & clear the UART buffer
             for (uint16_t i = 0; i < *MPI_rx_buffer_len; i++) {
@@ -90,8 +94,7 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
 
             // Check for validation errors & report corresponding error code
             if (MPI_response_result > 0) {
-                HAL_UART_DMAStop(&huart1);
-                MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
+                // DMA is already stopped at the top of this if block & MPI UART mode has also been reset already
                 return MPI_response_result;
             }
 
@@ -106,6 +109,7 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
 /// @param MPI_tx_buffer_size Size of the MPI response buffer
 /// @return 0: MPI successfully executed telecommand, 5: MPI failed to execute telecommand, 6: Invalid response from the MPI
 uint8_t MPI_validate_telecommand_response(const uint8_t *MPI_tx_buffer, uint8_t *MPI_rx_buffer, const uint16_t MPI_tx_buffer_size) {
+    
     // Verify if the MPI response echos the cmd sent
     if (memcmp(MPI_tx_buffer, MPI_rx_buffer, MPI_tx_buffer_size) != 0) {
         return 6; // Error code: Invalid response from the MPI
