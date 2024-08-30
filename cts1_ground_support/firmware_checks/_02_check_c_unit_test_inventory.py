@@ -13,7 +13,7 @@ TEST_TABLE_FILE_PATH = "firmware/Core/Src/unit_tests/unit_test_inventory.c"
 
 def get_test_exec_function_name_definition_list() -> list[str]:
     """Get the list of all `TEST_EXEC_` function names in the repository."""
-    pattern = re.compile(r"int.{0,30}(?P<name>TEST_EXEC_\w+)", flags=re.DOTALL)
+    pattern = re.compile(r"int.{0,10}(?P<name>TEST_EXEC_\w+)", flags=re.DOTALL)
 
     function_name_list: list[str] = []
 
@@ -56,7 +56,9 @@ def validate_test_exec_registration() -> None:
     logger.info(f"Found {len(test_exec_function_name_list)} `TEST_EXEC_` function definitions.")
 
     test_exec_registered_function_name_list = get_test_exec_registered_function_name_list()
-    logger.info(f"Found {len(test_exec_registered_function_name_list)} `TEST_EXEC_` functions.")
+    logger.info(
+        f"Found {len(test_exec_registered_function_name_list)} `TEST_EXEC_` functions registered."
+    )
 
     unregistered_functions = set(test_exec_function_name_list) - set(
         test_exec_registered_function_name_list

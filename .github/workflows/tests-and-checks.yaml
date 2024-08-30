@@ -79,4 +79,7 @@ jobs:
       - name: Check C Unit Test Inventory
         run: |
           python ./cts1_ground_support/firmware_checks/_02_check_c_unit_test_inventory.py
+      - name: Check for Missing Telecommand Registrations
+        run: |
+          python ./cts1_ground_support/firmware_checks/_03_check_missing_tcmd_registrations.py
           

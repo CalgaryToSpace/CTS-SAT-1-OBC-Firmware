@@ -5,9 +5,12 @@
 ## Automated Check Ideas (GitHub Actions)
 
 1. ✅ Telecommand Execution (`TCMDEXEC_`) function names match their registrations in the table.
+    * Implemented in `check_tcmd_function_names_match_registration_names()`.
 2. No malloc usage.
 3. ✅ Are all `TEST_EXEC_` functions registered in the test table?
-4. Are all `TCMDEXEC_` functions registered in the telecommand table?
+    * Implemented in `validate_test_exec_registration()`.
+4. ✅ Are all `TCMDEXEC_` functions registered in the telecommand table?
+    * Implemented in `validate_tcmdexec_registration()`.
 
 ✅ = Automated test now exists.
 
