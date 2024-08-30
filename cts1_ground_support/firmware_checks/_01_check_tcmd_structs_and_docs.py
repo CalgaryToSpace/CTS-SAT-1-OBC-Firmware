@@ -1,5 +1,7 @@
 """Check that the telecommand definitions are good."""
 
+import sys
+
 from loguru import logger
 
 from cts1_ground_support.telecommand_array_parser import parse_telecommand_list_from_repo
@@ -21,7 +23,8 @@ def check_tcmd_struct_fields() -> None:
         logger.success(f"All {len(tcmd_list):,} telecommand structs have the required fields.")
     else:
         msg = "One or more telecommand structs are missing required fields."
-        raise ValueError(msg)
+        logger.error(msg)
+        sys.exit(1)
 
 
 def check_tcmd_arg_lists() -> None:
@@ -57,7 +60,8 @@ def check_tcmd_arg_lists() -> None:
             "specification for telecommands."
         )
         msg = "One or more telecommand structs are missing required fields."
-        raise ValueError(msg)
+        logger.error(msg)
+        sys.exit(1)
 
 
 if __name__ == "__main__":

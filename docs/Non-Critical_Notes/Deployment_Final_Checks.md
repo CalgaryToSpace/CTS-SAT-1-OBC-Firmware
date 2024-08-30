@@ -6,8 +6,10 @@
 
 1. Telecommand Execution (`TCMDEXEC_`) function names match their registrations in the table.
 2. No malloc usage.
-3. Are all `TEST_EXEC_` functions registered in the test table?
+3. ✅ Are all `TEST_EXEC_` functions registered in the test table?
 4. Are all `TCMDEXEC_` functions registered in the telecommand table?
+
+✅ = Automated test now exists.
 
 ## Manual Execution Checks
 

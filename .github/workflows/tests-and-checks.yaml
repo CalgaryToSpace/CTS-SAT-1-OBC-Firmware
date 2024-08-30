@@ -76,3 +76,7 @@ jobs:
       - name: Check Telecommand Structs and Docs
         run: |
           python ./cts1_ground_support/firmware_checks/_01_check_tcmd_structs_and_docs.py
+      - name: Check C Unit Test Inventory
+        run: |
+          python ./cts1_ground_support/firmware_checks/_02_check_c_unit_test_inventory.py
+          
