@@ -142,7 +142,6 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
     }
 
     return 0;
-
 }
 
 
@@ -295,12 +294,6 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
     strncpy(bestxyza_data_buffer, bestxyza_data_start, bestxyza_data_length);
     bestxyza_data_buffer[bestxyza_data_length] = '\0';
 
-    LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Extracted Data = %s",
-            bestxyza_data_buffer
-        );
-
     // Parse the data in the bestxyza data buffer
     uint8_t parse_result;
     char token_buffer[256];
@@ -334,96 +327,211 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
         return parse_result;  
     }
 
-    LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Extracted Position X Coordinate = %s",
-            token_buffer
-        );
-
     double value = strtod(token_buffer, &end_ptr);
     double conv_result = value * 1000;
     result->position_x_mm = (int64_t) conv_result;
-
-    char print_value[32];
-    GEN_uint64_to_str(result->position_x_mm, print_value);
-
-    LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            // "Position x = %ld",
-            "Position x = %s",
-            // result->position_x_mm
-            print_value
-        );
 
     parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 3, token_buffer, sizeof(token_buffer));
     if (parse_result != 0) {  
         return parse_result;  
     }
-
     value = strtod(token_buffer, &end_ptr);
     conv_result = value * 1000;
     result->position_y_mm = (int64_t) conv_result;
-
-    GEN_uint64_to_str(result->position_y_mm, print_value);
-
-    LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            // "Position y = %ld",
-            "Position y = %s",
-            // result->position_y_mm
-            print_value
-        );
 
     parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 4, token_buffer, sizeof(token_buffer));
     if (parse_result != 0) {  
         return parse_result;  
     }
-
     value = strtod(token_buffer, &end_ptr);
     conv_result = value * 1000;
     result->position_z_mm = (int64_t) conv_result;
-
-    GEN_uint64_to_str(result->position_z_mm, print_value);
-
-    LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            // "Position z = %ld",
-            "Position z = %s",
-            print_value
-        );
 
     // Position Coordinates Standard Deviation
     parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 5, token_buffer, sizeof(token_buffer));
     if (parse_result != 0) {  
         return parse_result;  
     }
-    result->position_x_std_m = strtoul(token_buffer, &end_ptr, 10);
+    value = strtod(token_buffer, &end_ptr);
+    conv_result = value * 1000;
+    result->position_x_std_mm = (int32_t) conv_result;
 
     parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 6, token_buffer, sizeof(token_buffer));
     if (parse_result != 0) {  
         return parse_result;  
     }
-    result->position_y_std_m = strtoul(token_buffer, &end_ptr, 10);
+    value = strtod(token_buffer, &end_ptr);
+    conv_result = value * 1000;
+    result->position_y_std_mm = (int32_t) conv_result;
 
     parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 7, token_buffer, sizeof(token_buffer));
     if (parse_result != 0) {  
         return parse_result;  
     }
-    result->position_z_std_m = strtoul(token_buffer, &end_ptr, 10);
+    value = strtod(token_buffer, &end_ptr);
+    conv_result = value * 1000;
+    result->position_z_std_mm = (int32_t) conv_result;
 
     // Differential Age
     parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 18, token_buffer, sizeof(token_buffer));
     if (parse_result != 0) {  
         return parse_result;  
     }
-    result->differential_age_sec = strtoul(token_buffer, &end_ptr, 10);
+    value = strtod(token_buffer, &end_ptr);
+    conv_result = value * 1000;
+    result->differential_age_ms = (int64_t) conv_result;
 
     // Solution Age
     parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 19, token_buffer, sizeof(token_buffer));
     if (parse_result != 0) {  
         return parse_result;  
     }
-    result->solution_age_sec = strtoul(token_buffer, &end_ptr, 10);
+    value = strtod(token_buffer, &end_ptr);
+    conv_result = value * 1000;
+    result->solution_age_ms = (int64_t) conv_result;
+
+    char crc[9];
+    strncpy(crc, asterisk + 1, 8);
+    crc[sizeof(crc)-1] = '\0';
+
+    LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "CRC = %s.",
+            crc
+        );
+
+    result->crc = strtoul(crc,&end_ptr, 16);
+
+    return 0;
+}
+
+/// @brief Assigns a GPS Clock Model status based on the provided string.
+/// @param status_str The status string to parse.
+/// @param status Pointer to GPS_clock_model_status_enum_t where the status will be stored.
+/// @return Returns 0 on success, 1 if the status string is unrecognized.
+uint8_t assign_gps_clock_model_status(const char *status_str, GPS_clock_model_status_enum_t *status) {
+    if (strcmp(status_str, "VALID") == 0) {
+        *status = GPS_CLOCK_VALID;
+    } else if (strcmp(status_str, "CONVERGING") == 0) {
+        *status = GPS_CLOCK_CONVERGING;
+    } else if (strcmp(status_str, "ITERATING") == 0) {
+        *status = GPS_CLOCK_ITERATING;
+    } else if (strcmp(status_str, "INVALID") == 0) {
+        *status = GPS_CLOCK_INVALID;
+    } else {
+        return 1;  // Unrecognized status string
+    }
+    return 0;  // Success
+}
+
+/// @brief Assigns a GPS UTC status based on the provided string.
+/// @param status_str The status string to parse.
+/// @param status Pointer to GPS_utc_status_enum_t where the status will be stored.
+/// @return Returns 0 on success, 1 if the status string is unrecognized.
+uint8_t assign_gps_utc_status(const char *status_str, GPS_utc_status_enum_t *status) {
+    if (strcmp(status_str, "INVALID") == 0) {
+        *status = GPS_UTC_INVALID;
+    } else if (strcmp(status_str, "VALID") == 0) {
+        *status = GPS_UTC_VALID;
+    } else if (strcmp(status_str, "WARNING") == 0) {
+        *status = GPS_UTC_WARNING;
+    } else {
+        return 1;  // Unrecognized status string
+    }
+    return 0;  // Success
+}
+
+/// @brief Parse Received Data
+/// @param data_received - Number of bytes in the data block
+/// @return 0 if successful, >0 if an error occurred
+uint8_t parse_timea_data(const char* data_received, gps_timea_response *result) {
+
+    gps_response_header timea_header;
+    const uint8_t header_parse_result = parse_gps_header(data_received,&timea_header);
+
+    if(header_parse_result != 0){
+        // Error in parsing header section
+        return 1;
+    }
+
+    if(strcmp(timea_header.log_name, "TIMEA") != 0){
+        // Incorrect log function
+        return 2;
+    }
+
+    // TODO: What if there is multiple commands in the string?
+    const char *header_delimiter_char = strchr(data_received,';');
+    const char* timea_data_start = header_delimiter_char + 1;
+    const char* asterisk = strchr(timea_data_start, '*');
+
+    if(!asterisk){
+        // Not terminator to the end of the bestxyza data, ie no CRC present
+        return 3;
+    }
+
+    const int timea_data_length = asterisk - timea_data_start + 1;
+
+    if (timea_data_length < 0) {
+        //CRC asterick comes before the start of the data: Incomplete bestxyza data
+        return 4;
+    }
+
+    char timea_data_buffer[1024];
+    if ((size_t)timea_data_length >= sizeof(timea_data_buffer)) {
+        //Header is too large for the buffer
+        return 5;  
+    }
+
+    strncpy(timea_data_buffer, timea_data_start, timea_data_length);
+    timea_data_buffer[timea_data_length] = '\0';
+
+    // Parse the data in the bestxyza data buffer
+    uint8_t parse_result;
+    char token_buffer[256];
+    char *end_ptr;
+    
+    // Clock Model Status
+    parse_result = TCMD_extract_string_arg(timea_data_buffer, 0, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    uint8_t status_result = assign_gps_clock_model_status(token_buffer, &result->clock_status);
+    if(status_result != 0){
+        // Invalid string passed
+        return status_result;
+    }
+
+    // UTC Offset
+    parse_result = TCMD_extract_string_arg(timea_data_buffer, 3, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+    result->utc_offset = (int64_t) strtod(token_buffer, &end_ptr);
+
+
+    // UTC Status
+    parse_result = TCMD_extract_string_arg(timea_data_buffer, 10, token_buffer, sizeof(token_buffer));
+    if (parse_result != 0) {  
+        return parse_result;  
+    }
+
+    // Remove '*' if it's included in the UTC status
+    char *asterisk_pos = strchr(token_buffer, '*');
+    if (asterisk_pos) {
+        *asterisk_pos = '\0';  // Terminate the string before the '*'
+    }
+
+    LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "UTC Status = %s.",
+            token_buffer
+        );
+    
+    status_result = assign_gps_utc_status(token_buffer, &result->utc_status);
+    if(status_result != 0){
+        // Invalid string passed
+        return status_result;
+    }
 
     char crc[9];
     strncpy(crc, asterisk + 1, 8);
