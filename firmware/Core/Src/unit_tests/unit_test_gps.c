@@ -5,7 +5,6 @@
 #include "gps/gps_types.h"
 
 #include <string.h>
-#define HELPERS_TEST_EPSILON 1e-6
 
 uint8_t TEST_EXEC__GPS_Parse_header(){
 
@@ -20,14 +19,12 @@ uint8_t TEST_EXEC__GPS_Parse_header(){
 
     // Call header parser function
     uint8_t result = parse_gps_header(gps_data, &gps_header_result);
-
     TEST_ASSERT_TRUE(result == 0);
     TEST_ASSERT_TRUE(strcmp(gps_header_result.log_name, "BESTXYZA") == 0);
     TEST_ASSERT_TRUE(gps_header_result.time_status == GPS_FINESTEERING);
 
     return 0;
 }
-
 
 uint8_t TEST_EXEC__GPS_Parse_bestxyza(){
     char gps_data[280] = "#BESTXYZA,COM1,0,55.0,FINESTEERING,1419,340033.000,02000040,d821,2724;"
@@ -39,23 +36,36 @@ uint8_t TEST_EXEC__GPS_Parse_bestxyza(){
 
     // Call bestxyza parser
     uint8_t parse_result = parse_bestxyza_data(gps_data, &result);
-    // TEST_ASSERT_TRUE(parse_result == 0);
+    TEST_ASSERT_TRUE(parse_result == 0);
     TEST_ASSERT_TRUE(result.position_solution_status == GPS_SOL_COMPUTED);
     TEST_ASSERT_TRUE(result.position_type == GPS_TYPE_NARROW_INT);
-
     TEST_ASSERT_TRUE(result.position_x_mm == -1634531568);
     TEST_ASSERT_TRUE(result.position_y_mm == -3664618032);
     TEST_ASSERT_TRUE(result.position_z_mm == -3664618032);
-
-    // TEST_ASSERT_TRUE(result.position_x_std_m == 0.0099);
-    // TEST_ASSERT_TRUE(result.position_y_std_m == 0.0219);
-    // TEST_ASSERT_TRUE(result.position_z_std_m == 0.0115);
-    
-    // TEST_ASSERT_TRUE(result.differential_age_sec == 1.000);
-    // TEST_ASSERT_TRUE(result.solution_age_sec == 0.000);
-
+    TEST_ASSERT_TRUE(result.position_x_std_mm == 9);
+    TEST_ASSERT_TRUE(result.position_y_std_mm == 21);
+    TEST_ASSERT_TRUE(result.position_z_std_mm == 11);
+    TEST_ASSERT_TRUE(result.differential_age_ms == 1000);
+    TEST_ASSERT_TRUE(result.solution_age_ms == 0000);
     TEST_ASSERT_TRUE(result.crc == 0xe9eafeca);
 
     return 0;
-    
+}
+
+
+uint8_t TEST_EXEC__GPS_Parse_timea(){
+    char gps_data[280] = "#TIMEA,COM1,0,86.5,FINESTEERING,1930,428348.000,02000020,9924,32768;VALID,1.667187222e-10,9.641617960e-10,-18.00000000000,2017,1,5,22,58,50000,VALID*2a066e78";
+
+    gps_timea_response result;
+
+    // Call timea parser
+    uint8_t parse_result = parse_timea_data(gps_data, &result);
+    // TEST_ASSERT_TRUE(parse_result == 0);
+    TEST_ASSERT_TRUE(result.clock_status == GPS_CLOCK_VALID);
+
+    TEST_ASSERT_TRUE(result.utc_offset == -18.00000000000);
+    TEST_ASSERT_TRUE(result.utc_status == GPS_UTC_VALID);
+    // TEST_ASSERT_TRUE(result.crc == 0x2a066e78);
+
+    return 0;
 }

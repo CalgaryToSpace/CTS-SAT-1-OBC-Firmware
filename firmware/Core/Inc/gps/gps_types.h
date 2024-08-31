@@ -110,27 +110,64 @@ typedef struct {
     GPS_position_type_enum_t position_type;
 
     /// @brief Documentation says the point coordinates come as a double. 
-    /// We store as an int64 because the eatths radius(6.10^6 m) and we are storing the values as millimeters which fits within an int64.
-    /// Position coordinates
+    /// We store as an int64 because the earth's radius(6.10^6 m) and we are storing the values as millimeters which fits within an int64.
+    /// Position coordinates in millimeters
     int64_t position_x_mm;
     int64_t position_y_mm;
     int64_t position_z_mm;
 
     /// @brief Documentation says the standard deviation of the position coordinates come as a float. 
-    /// The standard deviation of the position coordinates
-    uint32_t position_x_std_m;
-    uint32_t position_y_std_m;
-    uint32_t position_z_std_m;
+    /// The standard deviation of the position coordinates in millimeters
+    uint32_t position_x_std_mm;
+    uint32_t position_y_std_mm;
+    uint32_t position_z_std_mm;
 
-    /// @brief Differential age in seconds. 
-    uint32_t differential_age_sec;
+    /// @brief Differential age in seconds. Storing as a uint64 so as to capture the millisecond accuracy
+    uint64_t differential_age_ms;
 
-    /// @brief Solution age in seconds. 
-    uint32_t solution_age_sec;
+    /// @brief Solution age in seconds. Storing as a uint64 so as to capture the millisecond accuracy 
+    uint64_t solution_age_ms;
 
     /// @brief 32 bit CRC (ASCII and Binary only). 
     uint32_t crc;
     
 } gps_bestxyza_response;
+
+
+/// @brief  This refers to the Clock Model Status
+/// Refer to table 105 page 526 of the OEM7 Commands and Logs Reference Manual
+typedef enum {
+    GPS_CLOCK_VALID = 0,
+    GPS_CLOCK_CONVERGING = 1,
+    GPS_CLOCK_ITERATING = 2,
+    GPS_CLOCK_INVALID = 3,
+} GPS_clock_model_status_enum_t;
+
+typedef enum {
+    GPS_UTC_INVALID = 0,
+    GPS_UTC_VALID = 1,
+    GPS_UTC_WARNING = 2
+} GPS_utc_status_enum_t;
+
+/// @brief This is the struct for the TIMEA Command response.
+/// Refer to page 941-943 of the OEM7 Commands and Logs Reference Manual
+typedef struct {
+    /// @brief Clock model status
+    GPS_clock_model_status_enum_t clock_status;
+
+    /// @brief /// The offset of GPS system time from UTC time
+    /// Documentation says the utc offset comes as a double. 
+    int64_t utc_offset;
+
+    /// @brief UTC status 
+    /// Refer to page 943 of the OEM7 Commands and Logs Reference Manual
+    GPS_utc_status_enum_t utc_status;
+
+    /// @brief 32 bit CRC (ASCII and Binary only). 
+    uint32_t crc;
+    
+} gps_timea_response;
+
+// ****************** END SECTION: gps_data_structs ******************
 
 #endif // INCLUDE_GUARD__GPS_TYPES_H

@@ -152,6 +152,11 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_file = "gps/gps",
         .test_func_name = "parse_bestxyza_data"
     },
+    {
+        .test_func = TEST_EXEC__GPS_Parse_timea,
+        .test_file = "gps/gps",
+        .test_func_name = "parse_timea_data"
+    },
 };
 
 // extern
