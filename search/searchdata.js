@@ -1,14 +1,14 @@
 var indexSectionsWithContent =
 {
   0: "0123478_abcdefghilmnopqrstuvwx",
-  1: "aclrt",
-  2: "bcft",
+  1: "aclmrt",
+  2: "bcfmt",
   3: "034_abcdefilmnprstu",
   4: "_bcdefghilmnprstuv",
   5: "_abcdefghilmnoprstuv",
   6: "lt",
-  7: "flt",
-  8: "flt",
+  7: "flmt",
+  8: "flmt",
   9: "acdefhilmptuvx",
   10: "cs",
   11: "1cdefgilnoprstu"

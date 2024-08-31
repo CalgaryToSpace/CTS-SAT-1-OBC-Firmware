@@ -23,11 +23,12 @@ var searchData=
   ['deployment_20final_20checks_20',['Deployment Final Checks',['../md_docs_2Non-Critical__Notes_2Deployment__Final__Checks.html',1,'']]],
   ['deployment_5ffinal_5fchecks_2emd_21',['Deployment_Final_Checks.md',['../Deployment__Final__Checks_8md.html',1,'']]],
   ['description_22',['description',['../classcts1__ground__support_1_1telecommand__types_1_1TelecommandDefinition.html#ae19f06bf29f9e8bd865c4802afa4badc',1,'cts1_ground_support::telecommand_types::TelecommandDefinition']]],
-  ['development_23',['Development',['../md_cts1__ground__support_2README.html#autotoc_md4',1,'']]],
-  ['diff_24',['diff',['../structlfs__dir__traverse.html#ac9e5f6c88484603ea9a4b4a520c94b9d',1,'lfs_dir_traverse']]],
-  ['dir_25',['dir',['../structlfs__dir__traverse.html#a5ce237ce00481f751b5246c653749182',1,'lfs_dir_traverse']]],
-  ['disk_26',['disk',['../structlfs__dir__traverse.html#a8a1dcab0f825e921ca1309b8b4ac10ae',1,'lfs_dir_traverse']]],
-  ['disk_5fversion_27',['disk_version',['../structlfs__fsinfo.html#ab694efe887dc4db897369ee44031107a',1,'lfs_fsinfo']]],
-  ['dma1_5fchannel2_5firqhandler_28',['DMA1_Channel2_IRQHandler',['../stm32l4xx__it_8h.html#a0c3390d4dc5cfceccbeda71aa672d99d',1,'DMA1_Channel2_IRQHandler(void):&#160;stm32l4xx_it.c'],['../stm32l4xx__it_8c.html#a0c3390d4dc5cfceccbeda71aa672d99d',1,'DMA1_Channel2_IRQHandler(void):&#160;stm32l4xx_it.c']]],
-  ['documentation_29',['Documentation',['../md_docs_2C__General__Guidelines.html#autotoc_md30',1,'']]]
+  ['detector_5fstatus_23',['detector_status',['../structMPI__dataframe__t.html#a394eaffd404eae51888b6b5e52879edc',1,'MPI_dataframe_t']]],
+  ['development_24',['Development',['../md_cts1__ground__support_2README.html#autotoc_md4',1,'']]],
+  ['diff_25',['diff',['../structlfs__dir__traverse.html#ac9e5f6c88484603ea9a4b4a520c94b9d',1,'lfs_dir_traverse']]],
+  ['dir_26',['dir',['../structlfs__dir__traverse.html#a5ce237ce00481f751b5246c653749182',1,'lfs_dir_traverse']]],
+  ['disk_27',['disk',['../structlfs__dir__traverse.html#a8a1dcab0f825e921ca1309b8b4ac10ae',1,'lfs_dir_traverse']]],
+  ['disk_5fversion_28',['disk_version',['../structlfs__fsinfo.html#ab694efe887dc4db897369ee44031107a',1,'lfs_fsinfo']]],
+  ['dma1_5fchannel2_5firqhandler_29',['DMA1_Channel2_IRQHandler',['../stm32l4xx__it_8h.html#a0c3390d4dc5cfceccbeda71aa672d99d',1,'DMA1_Channel2_IRQHandler(void):&#160;stm32l4xx_it.c'],['../stm32l4xx__it_8c.html#a0c3390d4dc5cfceccbeda71aa672d99d',1,'DMA1_Channel2_IRQHandler(void):&#160;stm32l4xx_it.c']]],
+  ['documentation_30',['Documentation',['../md_docs_2C__General__Guidelines.html#autotoc_md30',1,'']]]
 ];

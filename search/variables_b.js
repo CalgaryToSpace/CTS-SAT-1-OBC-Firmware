@@ -6,5 +6,7 @@ var searchData=
   ['md_5ffile_5ftemplate_3',['MD_FILE_TEMPLATE',['../namespacebuild__pin__list.html#ad8feb9bdfe996117f16283596227cadd',1,'build_pin_list']]],
   ['metadata_5fmax_4',['metadata_max',['../structlfs__config.html#acee64f494548f3e836328c49fc3dad76',1,'lfs_config']]],
   ['mlist_5',['mlist',['../structlfs.html#ad21bfdb4ce25c3ffbe6989d1278d6f63',1,'lfs']]],
-  ['msirangetable_6',['MSIRangeTable',['../group__STM32L4xx__System__Private__Variables.html#ga4d9e663c3c5bd4ca3361bf97d48158bf',1,'system_stm32l4xx.c']]]
+  ['mpi_5fcurrent_5fuart_5frx_5fmode_6',['MPI_current_uart_rx_mode',['../mpi__command__handling_8h.html#ae701c14e4b8c897648edf2d4ea61dc3e',1,'MPI_current_uart_rx_mode:&#160;mpi_command_handling.c'],['../mpi__command__handling_8c.html#ae701c14e4b8c897648edf2d4ea61dc3e',1,'MPI_current_uart_rx_mode:&#160;mpi_command_handling.c']]],
+  ['mpi_5funit_5fid_7',['mpi_unit_id',['../structMPI__dataframe__t.html#ac157e72ec8fbb64883b5b625b448db25',1,'MPI_dataframe_t']]],
+  ['msirangetable_8',['MSIRangeTable',['../group__STM32L4xx__System__Private__Variables.html#ga4d9e663c3c5bd4ca3361bf97d48158bf',1,'system_stm32l4xx.c']]]
 ];

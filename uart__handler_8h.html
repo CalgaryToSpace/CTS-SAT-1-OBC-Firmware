@@ -94,17 +94,15 @@ $(function(){ initResizable(false); });
   <div class="headertitle"><div class="title">uart_handler.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="main_8h_source.html">main.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for uart_handler.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="uart__handler_8h__incl.png" border="0" usemap="#afirmware_2Core_2Inc_2uart__handler_2uart__handler_8h" alt=""/></div>
 <map name="afirmware_2Core_2Inc_2uart__handler_2uart__handler_8h" id="afirmware_2Core_2Inc_2uart__handler_2uart__handler_8h">
 <area shape="rect" title=" " alt="" coords="5,5,161,46"/>
-<area shape="rect" href="main_8h.html" title=": Header for main.c file. This file contains the common defines of the application." alt="" coords="53,94,113,120"/>
+<area shape="rect" title=" " alt="" coords="51,94,115,120"/>
 <area shape="poly" title=" " alt="" coords="86,46,86,78,80,78,80,46"/>
-<area shape="rect" title=" " alt="" coords="26,168,140,193"/>
-<area shape="poly" title=" " alt="" coords="86,120,86,152,80,152,80,120"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -112,13 +110,15 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="uart__handler_8h__dep__incl.png" border="0" usemap="#afirmware_2Core_2Inc_2uart__handler_2uart__handler_8hdep" alt=""/></div>
 <map name="afirmware_2Core_2Inc_2uart__handler_2uart__handler_8hdep" id="afirmware_2Core_2Inc_2uart__handler_2uart__handler_8hdep">
-<area shape="rect" title=" " alt="" coords="195,5,351,46"/>
+<area shape="rect" title=" " alt="" coords="301,5,456,46"/>
 <area shape="rect" href="main_8c.html" title=": Main program body" alt="" coords="5,102,173,127"/>
-<area shape="poly" title=" " alt="" coords="219,55,116,103,114,99,217,50"/>
-<area shape="rect" href="rtos__tasks_8c.html" title=" " alt="" coords="197,94,349,135"/>
-<area shape="poly" title=" " alt="" coords="276,62,276,94,270,94,270,62"/>
-<area shape="rect" href="uart__handler_8c.html" title=" " alt="" coords="373,94,528,135"/>
-<area shape="poly" title=" " alt="" coords="328,51,411,91,409,96,326,55"/>
+<area shape="poly" title=" " alt="" coords="298,54,130,103,129,98,297,48"/>
+<area shape="rect" href="mpi__command__handling_8c.html" title=" " alt="" coords="197,94,373,135"/>
+<area shape="poly" title=" " alt="" coords="348,59,308,96,304,92,344,55"/>
+<area shape="rect" href="rtos__tasks_8c.html" title=" " alt="" coords="397,94,549,135"/>
+<area shape="poly" title=" " alt="" coords="413,55,453,92,450,96,409,59"/>
+<area shape="rect" href="uart__handler_8c.html" title=" " alt="" coords="573,94,728,135"/>
+<area shape="poly" title=" " alt="" coords="456,49,589,91,588,96,454,54"/>
 </map>
 </div>
 </div>
@@ -141,6 +141,16 @@ Variables</h2></td></tr>
 <tr class="separator:a5fc035655fe624cd899b134f514f9ced"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af362401833143981fe53788bfcf4f041" id="r_af362401833143981fe53788bfcf4f041"><td class="memItemLeft" align="right" valign="top">volatile uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af362401833143981fe53788bfcf4f041">UART_telecommand_buffer_last_rx_byte</a></td></tr>
 <tr class="separator:af362401833143981fe53788bfcf4f041"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c557847de5b32882050b12d563ddf85" id="r_a5c557847de5b32882050b12d563ddf85"><td class="memItemLeft" align="right" valign="top">const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5c557847de5b32882050b12d563ddf85">UART_mpi_rx_buffer_len</a></td></tr>
+<tr class="separator:a5c557847de5b32882050b12d563ddf85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa248bde0395e54d0076ae339ca1c9dd8" id="r_aa248bde0395e54d0076ae339ca1c9dd8"><td class="memItemLeft" align="right" valign="top">volatile uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa248bde0395e54d0076ae339ca1c9dd8">UART_mpi_rx_buffer</a> []</td></tr>
+<tr class="separator:aa248bde0395e54d0076ae339ca1c9dd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49d64495aeecec6853de5b1804c6553f" id="r_a49d64495aeecec6853de5b1804c6553f"><td class="memItemLeft" align="right" valign="top">volatile uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a49d64495aeecec6853de5b1804c6553f">UART_mpi_rx_last_byte</a></td></tr>
+<tr class="separator:a49d64495aeecec6853de5b1804c6553f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ea1847a81be6f38c10903bac3c4b60a" id="r_a5ea1847a81be6f38c10903bac3c4b60a"><td class="memItemLeft" align="right" valign="top">volatile uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5ea1847a81be6f38c10903bac3c4b60a">UART_mpi_rx_last_byte_write_time_ms</a></td></tr>
+<tr class="separator:a5ea1847a81be6f38c10903bac3c4b60a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd8bb0d45cc89f04c66533a32760b004" id="r_afd8bb0d45cc89f04c66533a32760b004"><td class="memItemLeft" align="right" valign="top">volatile uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afd8bb0d45cc89f04c66533a32760b004">UART_mpi_rx_buffer_write_idx</a></td></tr>
+<tr class="separator:afd8bb0d45cc89f04c66533a32760b004"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a59db2ba73b7115a05fe34c3d05e712c3" name="a59db2ba73b7115a05fe34c3d05e712c3"></a>
@@ -171,6 +181,116 @@ Here is the caller graph for this function:</div>
 </div>
 </div>
 <h2 class="groupheader">Variable Documentation</h2>
+<a id="aa248bde0395e54d0076ae339ca1c9dd8" name="aa248bde0395e54d0076ae339ca1c9dd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa248bde0395e54d0076ae339ca1c9dd8">&#9670;&#160;</a></span>UART_mpi_rx_buffer</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">volatile uint8_t UART_mpi_rx_buffer[]</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5c557847de5b32882050b12d563ddf85" name="a5c557847de5b32882050b12d563ddf85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c557847de5b32882050b12d563ddf85">&#9670;&#160;</a></span>UART_mpi_rx_buffer_len</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint16_t UART_mpi_rx_buffer_len</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afd8bb0d45cc89f04c66533a32760b004" name="afd8bb0d45cc89f04c66533a32760b004"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd8bb0d45cc89f04c66533a32760b004">&#9670;&#160;</a></span>UART_mpi_rx_buffer_write_idx</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">volatile uint16_t UART_mpi_rx_buffer_write_idx</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a49d64495aeecec6853de5b1804c6553f" name="a49d64495aeecec6853de5b1804c6553f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49d64495aeecec6853de5b1804c6553f">&#9670;&#160;</a></span>UART_mpi_rx_last_byte</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">volatile uint8_t UART_mpi_rx_last_byte</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5ea1847a81be6f38c10903bac3c4b60a" name="a5ea1847a81be6f38c10903bac3c4b60a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ea1847a81be6f38c10903bac3c4b60a">&#9670;&#160;</a></span>UART_mpi_rx_last_byte_write_time_ms</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">volatile uint32_t UART_mpi_rx_last_byte_write_time_ms</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a939f2917cfd0f516e8ded513354afcb1" name="a939f2917cfd0f516e8ded513354afcb1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a939f2917cfd0f516e8ded513354afcb1">&#9670;&#160;</a></span>UART_telecommand_buffer</h2>
 

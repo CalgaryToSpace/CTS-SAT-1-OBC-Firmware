@@ -1,0 +1,9 @@
+<map id="TCMDEXEC_mpi_send_command_hex" name="TCMDEXEC_mpi_send_command_hex">
+<area shape="rect" id="Node000001" title="Send a configuration command &amp; params (IF ANY) to the MPI encoded in hex." alt="" coords="5,42,252,68"/>
+<area shape="rect" id="Node000002" href="$mpi__command__handling_8c.html#acb800cd1da2ae33e76bb5d7746bbafb5" title="Sends commandcode+params to the MPI as bytes." alt="" coords="313,5,478,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="251,39,297,34,298,39,251,44"/>
+<area shape="rect" id="Node000004" href="$telecommand__args__helpers_8c.html#a3f4c71ad48b16b79e4bb91ffb13111d7" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a hex string." alt="" coords="300,70,491,96"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="253,65,284,69,284,74,252,71"/>
+<area shape="rect" id="Node000003" href="$mpi__command__handling_8c.html#ac4ddc1be72f41eb71f22491e91150a6c" title="The MPI responds to each telecommand with a response code consisting of an echo of the telecommand an..." alt="" coords="539,5,721,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="479,23,524,23,524,28,479,28"/>
+</map>
