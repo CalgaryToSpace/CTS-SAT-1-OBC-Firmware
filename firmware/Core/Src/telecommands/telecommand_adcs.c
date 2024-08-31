@@ -13,6 +13,105 @@
 #include "adcs_drivers/adcs_struct_packers.h"
 #include "adcs_drivers/adcs_types_to_json.h"
 
+/// @brief Telecommand: execute a generic command on the ADCS
+/// @param args_str 
+///     - Arg 0: ID of the telecommand to send (see Firmware Reference Manual)
+///     - Arg 1: hex array of data bytes of length up to 504 (longest command is almost ADCS Configuration (ID 26/204) at 504 bytes)
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_generic_command(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    // parse command ID argument: first into uint64_t, then convert to correct form for input
+    uint64_t command_id;
+    TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &command_id);
+
+    if (command_id > 255) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "Invalid ADCS command or telemetry request ID (err 6)");
+        return 6; // invalid ID
+    } else if (command_id > 127) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request ID received, not command ID (err 5)");
+        return 5; // command_id is a telemetry request, not a command
+    }
+    
+    // parse hex array arguments
+    uint8_t hex_data_array[504]; 
+    uint16_t data_length;
+    TCMD_extract_hex_array_arg(args_str, 1, &hex_data_array[0], data_length, &data_length);
+    
+    uint8_t status = ADCS_I2C_telecommand_wrapper((uint8_t) command_id, &hex_data_array[0], (uint32_t) data_length, ADCS_INCLUDE_CHECKSUM);
+    return status;
+}
+
+/// @brief Telecommand: obtain generic telemetry from the ADCS
+/// @param args_str 
+///     - Arg 0: ID of the telemetry request to send (see Firmware Reference Manual)
+///     - Arg 1: number of data bytes expected to receive from the ADCS (also see Firmware Reference Manual, up to 504)
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_generic_telemetry_request(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+
+    // parse telemetry request ID argument: first into uint64_t
+    uint64_t telemetry_request_id;
+    TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &telemetry_request_id);
+
+    if (telemetry_request_id < 128) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS command ID received, not telemetry request ID (err 5)");
+        return 5;
+    } else if (telemetry_request_id > 255) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "Invalid ADCS command or telemetry request ID (err 6)");
+        return 6; // invalid ID
+    }
+
+    // parse data length argument: first into uint64_t
+    uint64_t data_length;
+    TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &data_length);
+
+    uint8_t data_received[data_length];
+    
+    uint8_t status = ADCS_I2C_telemetry_wrapper((uint8_t) telemetry_request_id, &data_received[0], (uint8_t) data_length, ADCS_INCLUDE_CHECKSUM); 
+
+    // there's no built in method to get an error for this, so check communications status for telemetry error bit
+    ADCS_Comms_Status_Struct comms_status;
+    uint8_t comms_status_status = ADCS_Get_Communication_Status(&comms_status);
+
+    if (comms_status_status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS failed to check communications status telemetry (err %d)", comms_status_status);
+        return 1;
+    } else if (comms_status.i2c_tlm_error) {
+        // if number of data clocked out by ADCS was more than telemetry package, we need to reset the error flags then return an error
+        uint8_t clear_error_status = ADCS_Clear_Errors();
+        snprintf(response_output_buf, response_output_buf_len,
+            "Insufficient number of bits receieved for generic ADCS telemetry request (err %d)", comms_status.i2c_tlm_error);
+        if (clear_error_status != 0) {
+                snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS failed to send ADCS_Clear_Status command (err %d)", clear_error_status);
+            }
+        return 3;
+    }
+
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_generic_telemetry_uint8_array_TO_json(
+        &data_received[0], data_length, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2; 
+    }
+
+    return status; 
+}
+
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 
 ///     - No arguments for this command
@@ -1536,97 +1635,6 @@ uint8_t TCMDEXEC_adcs_measurements(const char *args_str, TCMD_TelecommandChannel
 
     const uint8_t result_json = ADCS_Measurements_Struct_TO_json(
         &packed_struct, response_output_buf, response_output_buf_len);
-
-    if (result_json != 0) {
-        snprintf(response_output_buf, response_output_buf_len,
-            "ADCS telemetry request JSON failed (err %d)", result_json);
-        return 2;
-    }
-
-    return status;
-}                        
-
-// TODO: create TCMEXEC_adcs_generic_command and TCMEXEC_adcs_generic_telemetry functions in order to execute unlisted commands from firmware manual
-    // adcs_generic_command: parameters are command ID, number of data bytes to send, then the bytes themselves
-        // this is easy! Just call telecommand_wrapper() with the inputs (which should already be extracted to uint8s as hex array)!
-        // confirm ID is a command, then TCMD_extract_hex_array_arg, then telecommand_wrapper()
-    // adcs_generic_telemetry: parameter is command ID, receive number of data bytes equal to the largest telemetry request
-        // longest telemetry request is almost certainly Get ADCS Configuration (ID 204) at 504 bytes
-        // which means we need a TO_json function for this one
-
-/// @brief Telecommand: execute a generic command on the ADCS
-/// @param args_str 
-///     - Arg 0: ID of the telecommand to send (see Firmware Reference Manual)
-///     - Arg 1: number of data bytes to send to the ADCS (up to 504)
-///     - Arg 2: hex array of data bytes of length given in Arg 1
-/// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_adcs_generic_command(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
-    
-    // parse command ID argument: first into uint64_t, then convert to correct form for input
-    uint64_t command_id;
-    TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &command_id);
-
-    if (command_id > 255) {
-        snprintf(response_output_buf, response_output_buf_len,
-            "Invalid ADCS command or telemetry request ID (err 6)");
-        return 6; // invalid ID
-    } else if (command_id > 127) {
-        snprintf(response_output_buf, response_output_buf_len,
-            "ADCS telemetry request ID received, not command ID (err 5)");
-        return 5; // command_id is a telemetry request, not a command
-    }
-    
-    // parse hex array arguments
-    uint8_t hex_data_array[504]; 
-    uint16_t data_length;
-    TCMD_extract_hex_array_arg(args_str, 2, &hex_data_array[0], data_length, &data_length);
-        // TODO: check whether this actually works this way
-    
-    uint8_t status = ADCS_I2C_telecommand_wrapper((uint8_t) command_id, &hex_data_array[0], (uint32_t) data_length, ADCS_INCLUDE_CHECKSUM);
-    return status;
-}
-
-/// @brief Telecommand: obtain generic telemetry from the ADCS
-/// @param args_str 
-///     - Arg 0: ID of the telemetry request to send (see Firmware Reference Manual)
-///     - Arg 1: number of data bytes expected to receive from the ADCS (also see Firmware Reference Manual)
-/// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_adcs_generic_telemetry_request(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
-
-    // TODO: check what the ADCS does if data_length is incorrect
-    
-    // parse telemetry request ID argument: first into uint64_t
-    uint64_t telemetry_request_id;
-    TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &telemetry_request_id);
-
-    if (telemetry_request_id < 128) {
-        snprintf(response_output_buf, response_output_buf_len,
-            "ADCS command ID received, not telemetry request ID (err 5)");
-        return 5;
-    } else if (telemetry_request_id > 255) {
-        snprintf(response_output_buf, response_output_buf_len,
-            "Invalid ADCS command or telemetry request ID (err 6)");
-        return 6; // invalid ID
-    }
-
-    // parse data length argument: first into uint64_t
-    uint64_t data_length;
-    TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &data_length);
-
-    uint8_t data_received[data_length];
-    
-    uint8_t status = ADCS_I2C_telemetry_wrapper((uint8_t) telemetry_request_id, &data_received[0], (uint8_t) data_length, ADCS_INCLUDE_CHECKSUM); 
-    
-    if (status != 0) {
-        snprintf(response_output_buf, response_output_buf_len,
-            "ADCS telemetry request failed (err %d)", status);
-        return 1;
-    }
-
-    const uint8_t result_json = ADCS_generic_telemetry_uint8_array_TO_json(
-        &data_received[0], data_length, response_output_buf, response_output_buf_len);
 
     if (result_json != 0) {
         snprintf(response_output_buf, response_output_buf_len,
