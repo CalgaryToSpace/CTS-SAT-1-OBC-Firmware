@@ -94,11 +94,21 @@ $(function(){ initResizable(false); });
 <h1><a class="anchor" id="autotoc_md46"></a>
 Automated Check Ideas (GitHub Actions)</h1>
 <ol type="1">
-<li>Telecommand Execution (<code>TCMDEXEC_</code>) function names match their registrations in the table.</li>
+<li>✅ Telecommand Execution (<code>TCMDEXEC_</code>) function names match their registrations in the table.<ul>
+<li>Implemented in <code>check_tcmd_function_names_match_registration_names()</code>.</li>
+</ul>
+</li>
 <li>No malloc usage.</li>
-<li>Are all <code>TEST_EXEC_</code> functions registered in the test table?</li>
-<li>Are all <code>TCMDEXEC_</code> functions registered in the telecommand table?</li>
+<li>✅ Are all <code>TEST_EXEC_</code> functions registered in the test table?<ul>
+<li>Implemented in <code>validate_test_exec_registration()</code>.</li>
+</ul>
+</li>
+<li>✅ Are all <code>TCMDEXEC_</code> functions registered in the telecommand table?<ul>
+<li>Implemented in <code>validate_tcmdexec_registration()</code>.</li>
+</ul>
+</li>
 </ol>
+<p>✅ = Automated test now exists.</p>
 <h1><a class="anchor" id="autotoc_md47"></a>
 Manual Execution Checks</h1>
 <p>The following checks involve executing code and/or telecommands.</p>
