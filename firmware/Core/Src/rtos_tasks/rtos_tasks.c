@@ -235,6 +235,7 @@ void TASK_receive_gps_info(void *argument) {
 		if(UART_gps_buffer_write_idx > 0) {
 
 			// Copy data from the UART buffer to a separate buffer
+			latest_gps_response_len = UART_gps_buffer_write_idx;
 			for (uint16_t i = 0; i < UART_gps_buffer_len; i++) {
 				latest_gps_response[i] = (char) UART_gps_buffer[i];
 			}
@@ -255,6 +256,8 @@ void TASK_receive_gps_info(void *argument) {
 		const u_int8_t gps_header_result = parse_gps_header(latest_gps_response,&gps_header);
 
 		// TODO: Figure out what to do after this
+		// Parse may have failed due to incomplete data
+		// How do I handle the incomplete data? Could drop the data
 		if(gps_header_result != 0){
 			// Failed to parse
 			break;
