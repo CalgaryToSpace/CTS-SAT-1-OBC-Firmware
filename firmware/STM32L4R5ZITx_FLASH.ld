@@ -64,7 +64,14 @@ MEMORY
 RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 640K
 RAM2 (xrw)      : ORIGIN = 0x10000000, LENGTH = 64K
 RAM3 (xrw)      : ORIGIN = 0x20040000, LENGTH = 384K
-FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 2048K
+/* FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 2048K */
+
+/* STM32L4_L4+ Low Level and HAL Drivers Documentation, page 54 */
+/* FLASH Bank 2 is mapped at 0x08000000, FLASH Bank 1 is mapped at: 0x08100000 */
+
+FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 1024K
+GOLDEN_COPY (xrw) : ORIGIN = 0x8100000, LENGTH = 1024K /* Starts from FLASH origin + Flash length */ 
+
 }
 
 /* Define output sections */

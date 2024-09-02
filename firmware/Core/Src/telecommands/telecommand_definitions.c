@@ -18,6 +18,7 @@
 #include "telecommands/telecommand_executor.h"
 #include "telecommands/agenda_telecommands_defs.h"
 #include "telecommands/mpi_telecommand_defs.h"
+#include "telecommands/flash_bank_telecommands_defs.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -363,6 +364,30 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION
     },
     // ****************** END: MPI_telecommand_definitions ********************
+    // ****************** START SECTION: flash_bank_telecommand_defs ******************
+
+    {
+        .tcmd_name = "flash_bank_read",
+        .tcmd_func = TCMDEXEC_Flash_Bank_Read,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
+    }, 
+
+    {
+        .tcmd_name = "flash_bank_write",
+        .tcmd_func = TCMDEXEC_Flash_Bank_Write,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
+    },
+
+    {
+        .tcmd_name = "flash_bank_erase",
+        .tcmd_func = TCMDEXEC_Flash_Bank_Erase,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
+    }
+
+    // ****************** END SECTION: flash_bank_telecommand_defs ******************
 
 };
 

@@ -1,9 +1,10 @@
 #include "flash_bank/flash_bank.h"
+
 #include "stm32l4r5xx.h"
 #include "stm32l4xx_hal.h" // must include this before stm32l4xx_hal_flash.h
 #include "stm32l4xx_hal_flash.h"
 #include "stm32l4xx_hal_flash_ex.h"
-
+#include <string.h>
 /**
  * Writes data to the flash memory.
  *
@@ -37,8 +38,10 @@ uint32_t Flash_Bank_Write(uint32_t address, uint8_t *data, uint32_t length)
     for (uint32_t currentAddress = address; currentAddress < endAddress; currentAddress += 8)
     {
         // currentAddress - address is the number of bytes already written
-        const uint64_t double_word = *(uint64_t *)(data + (currentAddress - address));
-
+        // const uint64_t double_word = *(uint64_t *)(data + (currentAddress - address));
+        uint8_t data_to_write[8] = {0};
+        memcpy(data_to_write, data + (currentAddress - address), 8);
+        const uint64_t double_word = *(uint64_t *)(data_to_write);
         // Write the word to flash
         status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, currentAddress, double_word);
         if (status != HAL_OK)
@@ -70,15 +73,16 @@ uint32_t Flash_Bank_Write(uint32_t address, uint8_t *data, uint32_t length)
 uint8_t Flash_Bank_Read(uint32_t address, uint8_t *buffer, uint32_t length)
 {
     // Check if the address is within the valid range of the flash memory
-    if (address < FLASH_BASE || (address + length) > (FLASH_BANK1_END))
+    if (address < Flash_Partitions_FLASH_BANK2 || (address + length) > (FLASH_BANK2_END))
     {
         return 1; // Return error if address is out of range
     }
 
-    for (uint32_t i = 0; i < length; i++)
+    for (uint32_t i = 0; i < length - 1; i++)
     {
-        buffer[i] = *(volatile uint8_t *)(address + i);
+        buffer[i] = *(uint8_t *)(address + i);
     }
+    buffer[length] = '\0';
 
     return 0; // Return success
 }
@@ -92,17 +96,18 @@ uint8_t Flash_Bank_Read(uint32_t address, uint8_t *buffer, uint32_t length)
  */
 uint32_t Flash_Bank_Erase()
 {
+    __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
+
     HAL_FLASH_Unlock();
 
     FLASH_EraseInitTypeDef EraseInitStruct = {
-        .TypeErase = FLASH_TYPEERASE_MASSERASE,
-        .Banks = FLASH_BANK_1,
+        .TypeErase = FLASH_TYPEERASE_PAGES,
+        .Banks = FLASH_BANK_2,
         .Page = 0,
         .NbPages = 1};
     uint32_t PageError = 0;
     const HAL_StatusTypeDef erase_status = HAL_FLASHEx_Erase(&EraseInitStruct, &PageError);
     HAL_FLASH_Lock();
-
     if (erase_status == HAL_OK)
     {
         return 0;
