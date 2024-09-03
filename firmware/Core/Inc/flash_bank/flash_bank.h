@@ -1,6 +1,10 @@
 #ifndef __INCLUDE_GUARD__FLASH_BANK_H__
 #define __INCLUDE_GUARD__FLASH_BANK_H__
 #include <stdint.h>
+
+/// @brief  Flash Partitions
+/// @note look in the STM32L4R5ZITx_FLASH.ld file
+/// to see the address of each partition, update this as needed
 typedef enum
 {
     Flash_Partitions_RAM = 0x20000000,
