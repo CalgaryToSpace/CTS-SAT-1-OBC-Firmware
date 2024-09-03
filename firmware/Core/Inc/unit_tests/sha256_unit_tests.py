@@ -7,19 +7,19 @@ randomStrings = []
 
 #generate random strings for testing
 for i in range(NUM_TESTS):
-    randomStrings.append( ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(random.randint(10, 20))))
+    randomStrings.append( ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(random.randint(10000, 10000))))
 
 lines = []
 for i in range(NUM_TESTS):
     #create c-style arrays
     lines.append("uint8_t random_message_" + str(i) +"[] = \"" + randomStrings[i] + "\";\n")
     lines.append("uint32_t random_message_" + str(i) + "_size = " + str(len(randomStrings[i])) +";\n")
-
     
-    expected = "uint8_t random_expected_" + str(i) +"[] = {"
     #hash random string
     hash = hashlib.sha256(bytes(randomStrings[i], 'utf8')).hexdigest()
+
     #create a c-style array using hash
+    expected = "uint8_t random_expected_" + str(i) +"[] = {"
     for i in range(32):
         expected += "0x" + hash[2*i: 2*i + 2] + ", "
     expected = expected[:-2] + "};\n\n"
