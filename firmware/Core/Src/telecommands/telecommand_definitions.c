@@ -873,21 +873,21 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "flash_bank_read",
         .tcmd_func = TCMDEXEC_Flash_Bank_Read,
         .number_of_args = 1,
-        .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
+        .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
     }, 
 
     {
         .tcmd_name = "flash_bank_write",
         .tcmd_func = TCMDEXEC_Flash_Bank_Write,
         .number_of_args = 1,
-        .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
+        .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
     },
 
     {
         .tcmd_name = "flash_bank_erase",
         .tcmd_func = TCMDEXEC_Flash_Bank_Erase,
         .number_of_args = 0,
-        .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
+        .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
     },
 
     // ****************** END SECTION: flash_bank_telecommand_defs ******************
