@@ -1,0 +1,14 @@
+<map id="TCMDEXEC_ant_measure_temp" name="TCMDEXEC_ant_measure_temp">
+<area shape="rect" id="Node000001" title="Telecommand: Measure the temperature of the antenna controller." alt="" coords="5,80,216,106"/>
+<area shape="rect" id="Node000002" href="$ant__commands_8c.html#a0a49814cb0f44d24c42491f4b66a6e9f" title="Measure the temperature of the antenna controller system." alt="" coords="264,80,441,106"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="216,90,248,90,248,96,216,96"/>
+<area shape="rect" id="Node000003" href="$ant__internal__drivers_8c.html#ae6614f02f049f30d0bcaa68666730b36" title="Receives a response from the antenna controller." alt="" coords="518,5,651,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="385,77,488,40,511,33,512,38,490,45,387,82"/>
+<area shape="rect" id="Node000004" href="$ant__internal__drivers_8c.html#a6c5b7499f9ef79f0a4d84f2057a99e06" title="Sends a command to the antenna controller." alt="" coords="526,55,642,80"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="441,80,511,73,511,78,442,86"/>
+<area shape="rect" id="Node000005" href="$debug__uart_8c.html#a6899cfc3d3792f1457667bc3ae91160d" title=" " alt="" coords="489,104,679,130"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="442,99,474,103,473,108,441,105"/>
+<area shape="rect" id="Node000006" href="$debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="727,129,878,155"/>
+<area shape="poly" id="edge6_Node000002_Node000006" title=" " alt="" coords="382,104,432,124,490,140,547,147,605,150,712,148,712,153,605,155,546,152,488,145,430,129,380,109"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="680,125,712,129,712,134,679,131"/>
+</map>

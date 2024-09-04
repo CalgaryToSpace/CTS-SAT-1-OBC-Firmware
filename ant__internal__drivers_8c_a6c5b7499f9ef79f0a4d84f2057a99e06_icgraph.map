@@ -1,0 +1,15 @@
+<map id="ANT_send_cmd" name="ANT_send_cmd">
+<area shape="rect" id="Node000001" title="Sends a command to the antenna controller." alt="" coords="500,78,615,104"/>
+<area shape="rect" id="Node000002" href="$ant__commands_8c.html#a6e890b516f69a193dad06ca06965e8da" title="Arm the antenna deploy system." alt="" coords="275,9,441,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="498,76,426,53,427,48,500,71"/>
+<area shape="rect" id="Node000004" href="$ant__commands_8c.html#a78ccb85628987c5faee6df9ea5787350" title="Deploys antenna 1." alt="" coords="264,78,452,104"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="485,94,453,94,453,88,485,88"/>
+<area shape="rect" id="Node000006" href="$ant__commands_8c.html#a0a49814cb0f44d24c42491f4b66a6e9f" title="Measure the temperature of the antenna controller system." alt="" coords="269,132,446,157"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="493,111,410,133,408,128,491,106"/>
+<area shape="rect" id="Node000003" href="$antenna__telecommand__defs_8c.html#a80fd2c43515bf450f5bc03b915e6feab" title="Telecommand: Arm the antenna deploy system." alt="" coords="11,5,210,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="259,31,210,30,211,25,259,25"/>
+<area shape="rect" id="Node000005" href="$antenna__telecommand__defs_8c.html#aa5fd88e7af05f3d4dd6e03e077bc6bce" title="Telecommand: Deploy antenna 1." alt="" coords="30,71,191,111"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="248,94,192,94,192,88,248,88"/>
+<area shape="rect" id="Node000007" href="$antenna__telecommand__defs_8c.html#a316cf470a39e910ad64f65afa587c1b4" title="Telecommand: Measure the temperature of the antenna controller." alt="" coords="5,136,216,161"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="253,149,216,149,216,144,253,143"/>
+</map>

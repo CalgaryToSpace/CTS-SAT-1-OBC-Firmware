@@ -1,0 +1,11 @@
+<map id="TCMDEXEC_ant_deploy_antenna1" name="TCMDEXEC_ant_deploy_antenna1">
+<area shape="rect" id="Node000001" title="Telecommand: Deploy antenna 1." alt="" coords="5,23,167,64"/>
+<area shape="rect" id="Node000002" href="$ant__commands_8c.html#a78ccb85628987c5faee6df9ea5787350" title="Deploys antenna 1." alt="" coords="215,5,403,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="167,32,199,28,200,33,167,37"/>
+<area shape="rect" id="Node000004" href="$telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="223,55,394,80"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="167,50,208,54,207,59,167,55"/>
+<area shape="rect" id="Node000003" href="$ant__internal__drivers_8c.html#a6c5b7499f9ef79f0a4d84f2057a99e06" title="Sends a command to the antenna controller." alt="" coords="470,5,585,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="404,16,454,16,454,21,404,21"/>
+<area shape="rect" id="Node000005" href="$telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="451,55,603,80"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="395,65,436,65,436,70,395,70"/>
+</map>

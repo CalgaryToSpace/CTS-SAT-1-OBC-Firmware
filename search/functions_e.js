@@ -1,9 +1,7 @@
 var searchData=
 [
-  ['send_5fbutton_5fcallback_0',['send_button_callback',['../namespacects1__ground__support_1_1terminal__app_1_1dash__gui.html#a585727a086bff6ef63bc6757b822c6fc',1,'cts1_ground_support::terminal_app::dash_gui']]],
-  ['start_5fuart_5flistener_1',['start_uart_listener',['../namespacects1__ground__support_1_1terminal__app_1_1serial__thread.html#a2aecd96ef3a025582a82410e556d0f9d',1,'cts1_ground_support::terminal_app::serial_thread']]],
-  ['startdefaulttask_2',['StartDefaultTask',['../main_8c.html#a99d0fdb0434092bcb24d9c9af917e4e9',1,'main.c']]],
-  ['systemclock_5fconfig_3',['SystemClock_Config',['../main_8c.html#a70af21c671abfcc773614a9a4f63d920',1,'main.c']]],
-  ['systemcoreclockupdate_4',['SystemCoreClockUpdate',['../group__STM32L4xx__System__Private__Functions.html#gae0c36a9591fe6e9c45ecb21a794f0f0f',1,'system_stm32l4xx.c']]],
-  ['systeminit_5',['SystemInit',['../group__STM32L4xx__System__Private__Functions.html#ga93f514700ccf00d08dbdcff7f1224eb2',1,'system_stm32l4xx.c']]]
+  ['read_5fioc_5ffile_0',['read_ioc_file',['../namespacebuild__pin__list.html#ab6dbda60450b3f2d42f040ac167ff47b',1,'build_pin_list']]],
+  ['read_5ftext_5ffile_1',['read_text_file',['../namespacects1__ground__support_1_1paths.html#a9fd28627ef3767c437084e3e73ce34b9',1,'cts1_ground_support::paths']]],
+  ['remove_5fc_5fcomments_2',['remove_c_comments',['../namespacects1__ground__support_1_1telecommand__array__parser.html#acd0224c9e13126b0bf33fc1cd349eca3',1,'cts1_ground_support::telecommand_array_parser']]],
+  ['run_5fdash_5fapp_3',['run_dash_app',['../namespacects1__ground__support_1_1terminal__app_1_1dash__gui.html#aa42023d23e07176af0530b0c4253bba5',1,'cts1_ground_support::terminal_app::dash_gui']]]
 ];

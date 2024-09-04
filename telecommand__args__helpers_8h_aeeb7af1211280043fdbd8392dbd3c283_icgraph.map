@@ -1,57 +1,59 @@
 <map id="TCMD_ascii_to_uint64" name="TCMD_ascii_to_uint64">
-<area shape="rect" id="Node000001" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="856,1196,1008,1221"/>
-<area shape="rect" id="Node000002" href="$telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="632,589,803,614"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="918,1182,721,616,726,614,923,1180"/>
-<area shape="rect" id="Node000022" href="$telecommand__parser_8c.html#a9ea4d9d994573e6ede05facd0bad0ee3" title="Searches for a str like \@tag_name=xxxx, and sets uint64_t xxxx into out_value." alt="" coords="645,1188,790,1229"/>
-<area shape="poly" id="edge21_Node000001_Node000022" title=" " alt="" coords="840,1211,790,1211,790,1206,840,1206"/>
-<area shape="rect" id="Node000028" href="$test__telecommand__arg__helpers_8c.html#affb4dc595677607bee2b6e68f13fc730" title=" " alt="" coords="627,1253,808,1294"/>
-<area shape="poly" id="edge27_Node000001_Node000028" title=" " alt="" coords="873,1229,787,1255,786,1250,872,1224"/>
+<area shape="rect" id="Node000001" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="856,1261,1008,1286"/>
+<area shape="rect" id="Node000002" href="$telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="632,618,803,644"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="919,1247,721,645,726,644,924,1245"/>
+<area shape="rect" id="Node000023" href="$telecommand__parser_8c.html#a9ea4d9d994573e6ede05facd0bad0ee3" title="Searches for a str like \@tag_name=xxxx, and sets uint64_t xxxx into out_value." alt="" coords="645,1253,790,1294"/>
+<area shape="poly" id="edge22_Node000001_Node000023" title=" " alt="" coords="840,1276,790,1276,790,1271,840,1271"/>
+<area shape="rect" id="Node000029" href="$test__telecommand__arg__helpers_8c.html#affb4dc595677607bee2b6e68f13fc730" title=" " alt="" coords="627,1319,808,1359"/>
+<area shape="poly" id="edge28_Node000001_Node000029" title=" " alt="" coords="873,1294,787,1321,786,1316,872,1289"/>
 <area shape="rect" id="Node000003" href="$agenda__telecommand__defs_8c.html#a5864bb52f6db2633d0780b9f28c46d5b" title="Telecommand: Delete agenda entry by tssent timestamp." alt="" coords="384,5,568,46"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="710,574,694,462,666,308,647,230,626,159,603,100,577,61,563,49,566,45,581,57,608,98,631,157,652,229,671,307,699,462,715,573"/>
-<area shape="rect" id="Node000004" href="$config__telecommand__defs_8c.html#a58c8ec3ca273195ca4b82516cb471ea9" title="Set an integer configuration variable." alt="" coords="397,71,555,111"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="714,574,710,488,704,431,692,368,675,303,651,239,619,179,577,126,554,110,557,105,581,122,624,176,656,237,681,302,698,367,709,430,715,487,719,574"/>
-<area shape="rect" id="Node000005" href="$testing__telecommand__defs_8c.html#ad784e4bdbd73e3ff9aa7cae49b28915c" title="Delay for a specified number of milliseconds, for testing purposes." alt="" coords="383,136,569,177"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="712,573,705,498,684,395,667,341,644,287,614,236,577,192,561,179,564,175,581,188,619,233,649,284,672,339,689,394,710,497,718,573"/>
-<area shape="rect" id="Node000006" href="$testing__telecommand__defs_8c.html#a5ae77884461dfbf9b764fbdad99ed497" title="A demo telecommand that echoes back each integer argument it received." alt="" coords="395,201,557,242"/>
-<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="710,574,699,509,676,424,659,379,637,335,610,293,578,257,556,242,559,238,581,253,614,290,641,332,664,377,681,422,705,508,716,573"/>
-<area shape="rect" id="Node000007" href="$flash__telecommand__defs_8c.html#aeb4bfdf0b416966258a378a382f529ce" title="Telecommand: Benchmarks the erase/write/read operations on the flash memory module." alt="" coords="378,267,575,307"/>
-<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="708,575,693,521,668,453,630,382,606,349,578,321,562,310,565,306,581,317,610,346,634,379,673,450,698,519,713,573"/>
-<area shape="rect" id="Node000008" href="$flash__telecommand__defs_8c.html#abf1a62ec4474e4584deb50c95c7800c4" title="Telecommand: Erase a sector of flash memory." alt="" coords="394,332,559,357"/>
-<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="706,575,689,530,662,474,625,418,603,392,578,371,558,359,560,355,581,366,607,389,630,414,667,471,694,528,711,573"/>
-<area shape="rect" id="Node000009" href="$flash__telecommand__defs_8c.html#aaad387e58757cce93fe46c8eb25cc822" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="384,381,569,406"/>
-<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="702,576,682,540,655,498,620,455,578,420,557,410,560,405,581,415,624,451,659,494,687,537,706,574"/>
-<area shape="rect" id="Node000010" href="$flash__telecommand__defs_8c.html#ad09f175c2e7126e812bfaeebcd17c172" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="382,430,570,456"/>
-<area shape="poly" id="edge9_Node000002_Node000010" title=" " alt="" coords="695,578,646,523,614,495,578,471,551,459,553,454,581,466,617,490,650,519,699,575"/>
-<area shape="rect" id="Node000011" href="$freertos__telecommand__defs_8c.html#a1b904b2dbd48309aca904123e16216c8" title="Demo using stack memory by allocating a Variable&#45;Length Array (VLA) on the stack." alt="" coords="385,480,567,521"/>
-<area shape="poly" id="edge10_Node000002_Node000011" title=" " alt="" coords="677,583,578,536,545,524,547,519,580,531,680,579"/>
-<area shape="rect" id="Node000012" href="$lfs__telecommand__defs_8c.html#a265fb9e9f253a1a4858e81f6ff6949c8" title="Telecommand: Benchmark LittleFS write and read operations." alt="" coords="386,545,567,586"/>
-<area shape="poly" id="edge11_Node000002_Node000012" title=" " alt="" coords="616,589,567,582,568,577,617,584"/>
-<area shape="rect" id="Node000013" href="$log__telecommand__defs_8c.html#a2634be22206b47e64fb2a9876b409193" title="Telecommand: Report the N latest log messages to the incoming telecommand channel." alt="" coords="389,610,563,666"/>
-<area shape="poly" id="edge12_Node000002_Node000013" title=" " alt="" coords="617,619,564,627,563,622,616,614"/>
-<area shape="rect" id="Node000014" href="$log__telecommand__defs_8c.html#abce1ef40ce5022310917da89e7034e69" title="Telecommand: Report a LOG sink&#39;s enabled state." alt="" coords="398,689,554,730"/>
-<area shape="poly" id="edge13_Node000002_Node000014" title=" " alt="" coords="684,625,636,653,580,680,551,691,550,686,578,675,633,648,681,621"/>
-<area shape="rect" id="Node000015" href="$log__telecommand__defs_8c.html#ac8292cd62adf45074109795f0e5997d9" title="Telecommand: Report LOG subsystem&#39;s file logging state (and show logging filename)" alt="" coords="388,755,565,795"/>
-<area shape="poly" id="edge14_Node000002_Node000015" title=" " alt="" coords="700,629,650,686,617,717,581,744,556,756,554,752,578,739,614,713,646,682,696,625"/>
-<area shape="rect" id="Node000016" href="$log__telecommand__defs_8c.html#ac71ba585bc4d897b74eb66122680f0f2" title="Telecommand: Enable or disable debugging messages for LOG sink." alt="" coords="381,820,571,861"/>
-<area shape="poly" id="edge15_Node000002_Node000016" title=" " alt="" coords="707,630,689,670,661,718,625,767,581,809,560,822,557,817,578,805,621,763,656,715,684,667,703,628"/>
-<area shape="rect" id="Node000017" href="$log__telecommand__defs_8c.html#a9b90bca8c2c25117fbac4ce58e086b3f" title="Telecommand: Set a LOG sink&#39;s enabled state." alt="" coords="390,885,562,926"/>
-<area shape="poly" id="edge16_Node000002_Node000017" title=" " alt="" coords="712,630,697,682,671,747,633,815,609,847,581,874,562,887,559,883,578,870,605,843,628,812,666,745,692,680,707,628"/>
-<area shape="rect" id="Node000018" href="$log__telecommand__defs_8c.html#a8f5e5b89e565f4dc22294ef0d97d9688" title="Telecommand: Enable or disable debugging messages for LOG subsystem." alt="" coords="381,951,571,991"/>
-<area shape="poly" id="edge17_Node000002_Node000018" title=" " alt="" coords="715,630,704,694,680,776,662,820,640,864,613,904,581,940,564,952,560,948,578,936,609,901,636,861,657,818,675,775,698,692,710,629"/>
-<area shape="rect" id="Node000019" href="$log__telecommand__defs_8c.html#ace51251ba4b51567dc5cd698fff92866" title="Telecommand: Set a LOG subsystem&#39;s file logging enabled state." alt="" coords="381,1016,571,1057"/>
-<area shape="poly" id="edge18_Node000002_Node000019" title=" " alt="" coords="718,630,709,704,688,804,671,858,648,911,618,961,581,1005,564,1018,561,1013,577,1001,614,958,643,909,666,856,683,803,704,703,712,630"/>
-<area shape="rect" id="Node000020" href="$timekeeping__telecommand__defs_8c.html#a2f0faa6c92a8852e4ece806dbb525e58" title="Set the system time to the provided Unix epoch time in milliseconds." alt="" coords="377,1081,575,1106"/>
-<area shape="poly" id="edge19_Node000002_Node000020" title=" " alt="" coords="720,630,716,716,710,772,699,834,682,898,657,961,624,1019,581,1070,564,1082,561,1078,578,1066,620,1016,652,958,677,896,694,833,705,772,711,715,714,630"/>
-<area shape="rect" id="Node000021" href="$test__telecommand__arg__helpers_8c.html#a37dda3fce12be2de56f63b0cc4e77801" title=" " alt="" coords="380,1131,572,1171"/>
-<area shape="poly" id="edge20_Node000002_Node000021" title=" " alt="" coords="715,631,698,738,669,885,651,959,630,1027,607,1082,581,1121,567,1132,564,1128,577,1117,602,1080,625,1025,646,958,664,883,693,737,710,630"/>
-<area shape="rect" id="Node000023" href="$telecommand__parser_8c.html#a479be5d2e5ee3cd0fe5312818aa8742e" title="Parses a telecommand into everything needed to execute it." alt="" coords="373,1196,579,1221"/>
-<area shape="poly" id="edge22_Node000022_Node000023" title=" " alt="" coords="630,1211,580,1211,580,1206,630,1206"/>
-<area shape="rect" id="Node000027" href="$test__telecommand__parser_8c.html#abcf71bfef1438541e4d004c7db36496c" title=" " alt="" coords="390,1245,562,1286"/>
-<area shape="poly" id="edge26_Node000022_Node000027" title=" " alt="" coords="631,1231,563,1248,561,1243,630,1226"/>
-<area shape="rect" id="Node000024" href="$rtos__tasks_8c.html#a8dcebcb92690e2abce2b7ecb96e411c4" title=" " alt="" coords="103,1168,325,1193"/>
-<area shape="poly" id="edge23_Node000023_Node000024" title=" " alt="" coords="357,1198,325,1195,326,1190,358,1193"/>
-<area shape="rect" id="Node000026" href="$test__telecommand__parser_8c.html#aacc0add1cb7e7fbb2e1a8ec2567b201a" title=" " alt="" coords="125,1217,303,1258"/>
-<area shape="poly" id="edge25_Node000023_Node000026" title=" " alt="" coords="358,1224,304,1230,303,1225,357,1219"/>
-<area shape="rect" id="Node000025" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,1168,55,1193"/>
-<area shape="poly" id="edge24_Node000024_Node000025" title=" " alt="" coords="87,1183,55,1183,55,1178,87,1178"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="710,603,695,486,667,323,649,240,628,165,604,103,577,61,563,49,566,45,581,57,609,100,633,163,654,239,673,322,700,485,716,602"/>
+<area shape="rect" id="Node000004" href="$antenna__telecommand__defs_8c.html#aa5fd88e7af05f3d4dd6e03e077bc6bce" title="Telecommand: Deploy antenna 1." alt="" coords="396,71,557,111"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="715,603,712,512,707,452,696,385,679,316,655,247,621,183,577,126,556,110,559,106,581,122,626,180,659,245,684,314,701,384,712,451,718,512,720,603"/>
+<area shape="rect" id="Node000005" href="$config__telecommand__defs_8c.html#a58c8ec3ca273195ca4b82516cb471ea9" title="Set an integer configuration variable." alt="" coords="397,136,555,177"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="713,603,707,522,688,412,671,353,647,295,616,240,578,192,554,175,557,171,581,188,621,237,652,292,676,351,693,411,713,522,719,602"/>
+<area shape="rect" id="Node000006" href="$testing__telecommand__defs_8c.html#ad784e4bdbd73e3ff9aa7cae49b28915c" title="Delay for a specified number of milliseconds, for testing purposes." alt="" coords="383,201,569,242"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="711,603,702,533,680,440,662,391,640,342,612,297,578,257,561,245,564,240,581,253,616,294,645,340,667,389,685,439,707,532,717,602"/>
+<area shape="rect" id="Node000007" href="$testing__telecommand__defs_8c.html#a5ae77884461dfbf9b764fbdad99ed497" title="A demo telecommand that echoes back each integer argument it received." alt="" coords="395,267,557,307"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="709,603,696,545,671,469,654,429,633,390,607,354,578,322,556,308,559,304,581,318,612,351,637,388,659,427,676,467,701,543,714,602"/>
+<area shape="rect" id="Node000008" href="$flash__telecommand__defs_8c.html#aeb4bfdf0b416966258a378a382f529ce" title="Telecommand: Benchmarks the erase/write/read operations on the flash memory module." alt="" coords="378,332,575,373"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="706,605,689,557,663,499,626,438,603,411,578,386,561,376,564,371,581,382,607,407,630,435,668,496,694,555,711,603"/>
+<area shape="rect" id="Node000009" href="$flash__telecommand__defs_8c.html#abf1a62ec4474e4584deb50c95c7800c4" title="Telecommand: Erase a sector of flash memory." alt="" coords="394,397,559,422"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="703,605,684,567,657,521,621,474,578,436,558,426,561,421,581,431,625,471,661,518,689,564,708,603"/>
+<area shape="rect" id="Node000010" href="$flash__telecommand__defs_8c.html#aaad387e58757cce93fe46c8eb25cc822" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="384,446,569,472"/>
+<area shape="poly" id="edge9_Node000002_Node000010" title=" " alt="" coords="698,607,649,545,616,512,578,485,555,475,557,470,581,481,619,508,653,541,702,604"/>
+<area shape="rect" id="Node000011" href="$flash__telecommand__defs_8c.html#ad09f175c2e7126e812bfaeebcd17c172" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="382,496,570,521"/>
+<area shape="poly" id="edge10_Node000002_Node000011" title=" " alt="" coords="688,610,639,572,578,536,546,524,548,519,580,531,642,567,691,606"/>
+<area shape="rect" id="Node000012" href="$freertos__telecommand__defs_8c.html#a1b904b2dbd48309aca904123e16216c8" title="Demo using stack memory by allocating a Variable&#45;Length Array (VLA) on the stack." alt="" coords="385,545,567,586"/>
+<area shape="poly" id="edge11_Node000002_Node000012" title=" " alt="" coords="652,616,553,589,555,584,653,611"/>
+<area shape="rect" id="Node000013" href="$lfs__telecommand__defs_8c.html#a265fb9e9f253a1a4858e81f6ff6949c8" title="Telecommand: Benchmark LittleFS write and read operations." alt="" coords="386,611,567,651"/>
+<area shape="poly" id="edge12_Node000002_Node000013" title=" " alt="" coords="616,634,567,634,567,628,616,628"/>
+<area shape="rect" id="Node000014" href="$log__telecommand__defs_8c.html#a2634be22206b47e64fb2a9876b409193" title="Telecommand: Report the N latest log messages to the incoming telecommand channel." alt="" coords="389,675,563,731"/>
+<area shape="poly" id="edge13_Node000002_Node000014" title=" " alt="" coords="658,651,564,680,563,674,656,646"/>
+<area shape="rect" id="Node000015" href="$log__telecommand__defs_8c.html#abce1ef40ce5022310917da89e7034e69" title="Telecommand: Report a LOG sink&#39;s enabled state." alt="" coords="398,755,554,795"/>
+<area shape="poly" id="edge14_Node000002_Node000015" title=" " alt="" coords="694,657,644,702,581,745,556,757,554,752,578,741,641,697,691,653"/>
+<area shape="rect" id="Node000016" href="$log__telecommand__defs_8c.html#ac8292cd62adf45074109795f0e5997d9" title="Telecommand: Report LOG subsystem&#39;s file logging state (and show logging filename)" alt="" coords="388,820,565,861"/>
+<area shape="poly" id="edge15_Node000002_Node000016" title=" " alt="" coords="704,659,656,733,621,774,581,809,558,822,556,817,578,805,618,770,652,730,700,656"/>
+<area shape="rect" id="Node000017" href="$log__telecommand__defs_8c.html#ac71ba585bc4d897b74eb66122680f0f2" title="Telecommand: Enable or disable debugging messages for LOG sink." alt="" coords="381,885,571,926"/>
+<area shape="poly" id="edge16_Node000002_Node000017" title=" " alt="" coords="711,659,694,706,667,763,629,823,607,850,581,874,561,887,558,883,578,870,603,847,625,820,662,761,689,704,706,657"/>
+<area shape="rect" id="Node000018" href="$log__telecommand__defs_8c.html#a9b90bca8c2c25117fbac4ce58e086b3f" title="Telecommand: Set a LOG sink&#39;s enabled state." alt="" coords="390,951,562,991"/>
+<area shape="poly" id="edge17_Node000002_Node000018" title=" " alt="" coords="714,660,701,718,676,793,658,833,637,871,611,908,581,940,563,952,560,948,578,936,607,904,632,869,653,830,671,791,695,716,709,659"/>
+<area shape="rect" id="Node000019" href="$log__telecommand__defs_8c.html#a8f5e5b89e565f4dc22294ef0d97d9688" title="Telecommand: Enable or disable debugging messages for LOG subsystem." alt="" coords="381,1016,571,1057"/>
+<area shape="poly" id="edge18_Node000002_Node000019" title=" " alt="" coords="717,660,707,729,684,821,667,871,644,919,616,965,581,1005,564,1018,561,1013,578,1001,612,962,640,917,662,869,679,820,702,728,711,659"/>
+<area shape="rect" id="Node000020" href="$log__telecommand__defs_8c.html#ace51251ba4b51567dc5cd698fff92866" title="Telecommand: Set a LOG subsystem&#39;s file logging enabled state." alt="" coords="381,1081,571,1122"/>
+<area shape="poly" id="edge19_Node000002_Node000020" title=" " alt="" coords="718,659,712,739,693,849,675,908,652,967,621,1022,581,1070,565,1083,562,1079,577,1066,616,1019,647,964,670,907,688,848,707,739,713,659"/>
+<area shape="rect" id="Node000021" href="$timekeeping__telecommand__defs_8c.html#a2f0faa6c92a8852e4ece806dbb525e58" title="Set the system time to the provided Unix epoch time in milliseconds." alt="" coords="377,1146,575,1172"/>
+<area shape="poly" id="edge20_Node000002_Node000021" title=" " alt="" coords="715,659,698,764,669,907,651,979,630,1045,607,1099,581,1136,564,1148,561,1144,577,1132,602,1096,625,1043,646,978,664,906,693,763,710,659"/>
+<area shape="rect" id="Node000022" href="$test__telecommand__arg__helpers_8c.html#a37dda3fce12be2de56f63b0cc4e77801" title=" " alt="" coords="380,1196,572,1237"/>
+<area shape="poly" id="edge21_Node000002_Node000022" title=" " alt="" coords="715,660,700,774,672,931,653,1011,632,1084,608,1145,581,1186,567,1198,564,1194,577,1183,603,1142,627,1083,648,1010,666,930,694,773,710,659"/>
+<area shape="rect" id="Node000024" href="$telecommand__parser_8c.html#a479be5d2e5ee3cd0fe5312818aa8742e" title="Parses a telecommand into everything needed to execute it." alt="" coords="373,1261,579,1286"/>
+<area shape="poly" id="edge23_Node000023_Node000024" title=" " alt="" coords="630,1276,580,1276,580,1271,630,1271"/>
+<area shape="rect" id="Node000028" href="$test__telecommand__parser_8c.html#abcf71bfef1438541e4d004c7db36496c" title=" " alt="" coords="390,1311,562,1351"/>
+<area shape="poly" id="edge27_Node000023_Node000028" title=" " alt="" coords="631,1297,563,1313,561,1308,630,1292"/>
+<area shape="rect" id="Node000025" href="$rtos__tasks_8c.html#a8dcebcb92690e2abce2b7ecb96e411c4" title=" " alt="" coords="103,1233,325,1258"/>
+<area shape="poly" id="edge24_Node000024_Node000025" title=" " alt="" coords="357,1264,325,1260,326,1255,358,1258"/>
+<area shape="rect" id="Node000027" href="$test__telecommand__parser_8c.html#aacc0add1cb7e7fbb2e1a8ec2567b201a" title=" " alt="" coords="125,1283,303,1323"/>
+<area shape="poly" id="edge26_Node000024_Node000027" title=" " alt="" coords="358,1290,304,1296,303,1290,357,1284"/>
+<area shape="rect" id="Node000026" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,1233,55,1258"/>
+<area shape="poly" id="edge25_Node000025_Node000026" title=" " alt="" coords="87,1248,55,1248,55,1243,87,1243"/>
 </map>
