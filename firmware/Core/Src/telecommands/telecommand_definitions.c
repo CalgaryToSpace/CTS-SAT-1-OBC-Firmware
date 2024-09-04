@@ -373,6 +373,68 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
+    {
+        .tcmd_name = "eps_get_pdu_overcurrent_fault_state_json",
+        .tcmd_func = TCMDEXEC_eps_get_pdu_overcurrent_fault_state_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_get_pbu_abf_placed_state_json",
+        .tcmd_func = TCMDEXEC_eps_get_pbu_abf_placed_state_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+
+    {
+        .tcmd_name = "eps_get_pdu_housekeeping_data_eng_json",
+        .tcmd_func = TCMDEXEC_eps_get_pdu_housekeeping_data_eng_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_get_pdu_housekeeping_data_run_avg_json",
+        .tcmd_func = TCMDEXEC_eps_get_pdu_housekeeping_data_run_avg_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_get_pbu_housekeeping_data_eng_json",
+        .tcmd_func = TCMDEXEC_eps_get_pbu_housekeeping_data_eng_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_get_pbu_housekeeping_data_run_avg_json",
+        .tcmd_func = TCMDEXEC_eps_get_pbu_housekeeping_data_run_avg_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_get_pcu_housekeeping_data_eng_json",
+        .tcmd_func = TCMDEXEC_eps_get_pcu_housekeeping_data_eng_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_get_pcu_housekeeping_data_run_avg_json",
+        .tcmd_func = TCMDEXEC_eps_get_pcu_housekeeping_data_run_avg_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_get_piu_housekeeping_data_eng_json",
+        .tcmd_func = TCMDEXEC_eps_get_piu_housekeeping_data_eng_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_get_piu_housekeeping_data_run_avg_json",
+        .tcmd_func = TCMDEXEC_eps_get_piu_housekeeping_data_run_avg_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+
     /* *************************** END EPS Section ************************************** */
     
     

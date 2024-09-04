@@ -16,8 +16,8 @@ volatile uint32_t UART_telecommand_last_write_time_ms = 0; // extern
 volatile uint8_t UART_telecommand_buffer_last_rx_byte = 0; // not an extern
 
 // UART EPS buffer
-const uint16_t UART_eps_buffer_len = 300; // extern // 286 bytes max response, plus a bit for safety and tags
-volatile uint8_t UART_eps_buffer[300]; // extern
+const uint16_t UART_eps_buffer_len = 310; // extern // 286 bytes max response, plus a bit for safety and tags
+volatile uint8_t UART_eps_buffer[310]; // extern
 volatile uint16_t UART_eps_buffer_write_idx = 0; // extern
 volatile uint32_t UART_eps_last_write_time_ms = 0; // extern
 volatile uint8_t UART_eps_is_expecting_data = 0; // extern; set to 1 when a command is sent, and we're awaiting a response
@@ -104,7 +104,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
             DEBUG_uart_print_str("Unhandled MPI Mode\n"); //TODO: HANDLE other MPI MODES
         }
     }
-    
+
     else {
         // FIXME: add the rest (camera, MPI, maybe others)
         DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> unknown UART instance\n"); // FIXME: remove

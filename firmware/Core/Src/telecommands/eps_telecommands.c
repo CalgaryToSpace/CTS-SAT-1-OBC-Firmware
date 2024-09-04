@@ -191,7 +191,7 @@ uint8_t TCMDEXEC_eps_set_channel_enabled(
 }
 
 
-/// @brief Gets the EPS system status, and returns it as a JSON string.
+/// @brief Get the EPS system status, and display it as a JSON string.
 /// @return 0 on success, >0 on failure.
 uint8_t TCMDEXEC_eps_get_system_status_json(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
@@ -213,6 +213,295 @@ uint8_t TCMDEXEC_eps_get_system_status_json(
     if (result_json != 0) {
         snprintf(response_output_buf, response_output_buf_len,
             "EPS_struct_system_status_TO_json failed (err %d)", result_json);
+        return 2;
+    }
+    return 0;
+}
+
+
+
+/// @brief Get the EPS PDU (Power Distribution Unit) overcurrent fault status, and display it as a JSON string.
+/// @return 0 on success, >0 on failure.
+uint8_t TCMDEXEC_eps_get_pdu_overcurrent_fault_state_json(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    
+    EPS_struct_pdu_overcurrent_fault_state_t status;
+    const uint8_t result = EPS_CMD_get_pdu_overcurrent_fault_state(&status);
+
+    if (result != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS_CMD_get_pdu_overcurrent_fault_state (err %d)", result);
+        return 1;
+    }
+
+    const uint8_t result_json = EPS_struct_pdu_overcurrent_fault_state_TO_json(
+        &status, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS_struct_pdu_overcurrent_fault_state_TO_json failed (err %d)", result_json);
+        return 2;
+    }
+    return 0;
+}
+
+
+/// @brief Get the EPS PBU (Power Battery Unit) ABF placed status, and display it as a JSON string.
+/// @return 0 on success, >0 on failure.
+uint8_t TCMDEXEC_eps_get_pbu_abf_placed_state_json(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    
+    EPS_struct_pbu_abf_placed_state_t status;
+    const uint8_t result = EPS_CMD_get_pbu_abf_placed_state(&status);
+
+    if (result != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS_CMD_get_pbu_abf_placed_state (err %d)", result);
+        return 1;
+    }
+
+    const uint8_t result_json = EPS_struct_pbu_abf_placed_state_TO_json(
+        &status, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS_struct_pbu_abf_placed_state_TO_json failed (err %d)", result_json);
+        return 2;
+    }
+    return 0;
+}
+
+
+
+
+/// @brief Get the EPS PDU (Power Distribution Unit) housekeeping data, and display it as a JSON string.
+/// @return 0 on success, >0 on failure.
+uint8_t TCMDEXEC_eps_get_pdu_housekeeping_data_eng_json(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    
+    EPS_struct_pdu_housekeeping_data_eng_t status;
+    const uint8_t result = EPS_CMD_get_pdu_housekeeping_data_eng(&status);
+
+    if (result != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS_CMD_get_pdu_housekeeping_data_eng (err %d)", result);
+        return 1;
+    }
+
+    const uint8_t result_json = EPS_struct_pdu_housekeeping_data_eng_TO_json(
+        &status, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS_struct_pdu_housekeeping_data_eng_TO_json failed (err %d)", result_json);
+        return 2;
+    }
+    return 0;
+}
+
+
+
+/// @brief Get the EPS PDU (Power Distribution Unit) housekeeping data (running average), and display it as a JSON string.
+/// @return 0 on success, >0 on failure.
+uint8_t TCMDEXEC_eps_get_pdu_housekeeping_data_run_avg_json(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    
+    EPS_struct_pdu_housekeeping_data_eng_t status;
+    const uint8_t result = EPS_CMD_get_pdu_housekeeping_data_run_avg(&status);
+
+    if (result != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS_CMD_get_pdu_housekeeping_data_run_avg (err %d)", result);
+        return 1;
+    }
+
+    const uint8_t result_json = EPS_struct_pdu_housekeeping_data_eng_TO_json(
+        &status, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS_struct_pdu_housekeeping_data_eng_TO_json failed (err %d)", result_json);
+        return 2;
+    }
+    return 0;
+}
+
+
+
+/// @brief Get the EPS PBU (Power Battery Unit) housekeeping data, and display it as a JSON string.
+/// @return 0 on success, >0 on failure.
+uint8_t TCMDEXEC_eps_get_pbu_housekeeping_data_eng_json(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    
+    EPS_struct_pbu_housekeeping_data_eng_t status;
+    const uint8_t result = EPS_CMD_get_pbu_housekeeping_data_eng(&status);
+
+    if (result != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS_CMD_get_pbu_housekeeping_data_eng (err %d)", result);
+        return 1;
+    }
+
+    const uint8_t result_json = EPS_struct_pbu_housekeeping_data_eng_TO_json(
+        &status, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS_struct_pbu_housekeeping_data_eng_TO_json failed (err %d)", result_json);
+        return 2;
+    }
+    return 0;
+}
+
+
+
+/// @brief Get the EPS PBU (Power Battery Unit) housekeeping data (running average), and display it as a JSON string.
+/// @return 0 on success, >0 on failure.
+uint8_t TCMDEXEC_eps_get_pbu_housekeeping_data_run_avg_json(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    
+    EPS_struct_pbu_housekeeping_data_eng_t status;
+    const uint8_t result = EPS_CMD_get_pbu_housekeeping_data_run_avg(&status);
+
+    if (result != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS_CMD_get_pbu_housekeeping_data_run_avg (err %d)", result);
+        return 1;
+    }
+
+    const uint8_t result_json = EPS_struct_pbu_housekeeping_data_eng_TO_json(
+        &status, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS_struct_pbu_housekeeping_data_eng_TO_json failed (err %d)", result_json);
+        return 2;
+    }
+    return 0;
+}
+
+
+
+/// @brief Get the EPS PCU (Power Conditioning Unit, solar panel MPPT) housekeeping data, and display it as a JSON string.
+/// @return 0 on success, >0 on failure.
+uint8_t TCMDEXEC_eps_get_pcu_housekeeping_data_eng_json(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    
+    EPS_struct_pcu_housekeeping_data_eng_t status;
+    const uint8_t result = EPS_CMD_get_pcu_housekeeping_data_eng(&status);
+
+    if (result != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS_CMD_get_pcu_housekeeping_data_eng (err %d)", result);
+        return 1;
+    }
+
+    const uint8_t result_json = EPS_struct_pcu_housekeeping_data_eng_TO_json(
+        &status, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS_struct_pcu_housekeeping_data_eng_TO_json failed (err %d)", result_json);
+        return 2;
+    }
+    return 0;
+}
+
+
+
+/// @brief Get the EPS PCU (Power Conditioning Unit, solar panel MPPT) housekeeping data (running average), and display it as a JSON string.
+/// @return 0 on success, >0 on failure.
+uint8_t TCMDEXEC_eps_get_pcu_housekeeping_data_run_avg_json(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    
+    EPS_struct_pcu_housekeeping_data_eng_t status;
+    const uint8_t result = EPS_CMD_get_pcu_housekeeping_data_run_avg(&status);
+
+    if (result != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS_CMD_get_pcu_housekeeping_data_run_avg (err %d)", result);
+        return 1;
+    }
+
+    const uint8_t result_json = EPS_struct_pcu_housekeeping_data_eng_TO_json(
+        &status, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS_struct_pcu_housekeeping_data_eng_TO_json failed (err %d)", result_json);
+        return 2;
+    }
+    return 0;
+}
+
+
+/// @brief Gets the EPS PIU (Power Integrated Unit, info about all systems) housekeeping data, and returns it as a JSON string.
+/// @return 0 on success, >0 on failure.
+uint8_t TCMDEXEC_eps_get_piu_housekeeping_data_eng_json(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    
+    EPS_struct_piu_housekeeping_data_eng_t status;
+    const uint8_t result = EPS_CMD_get_piu_housekeeping_data_eng(&status);
+
+    if (result != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS_CMD_get_piu_housekeeping_data_eng (err %d)", result);
+        return 1;
+    }
+
+    const uint8_t result_json = EPS_struct_piu_housekeeping_data_eng_TO_json(
+        &status, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS_struct_piu_housekeeping_data_eng_TO_json failed (err %d)", result_json);
+        return 2;
+    }
+    return 0;
+}
+
+
+
+/// @brief Get the EPS PIU (Power Integrated Unit, info about all systems) housekeeping data (running average), and display it as a JSON string.
+/// @return 0 on success, >0 on failure.
+uint8_t TCMDEXEC_eps_get_piu_housekeeping_data_run_avg_json(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    
+    EPS_struct_piu_housekeeping_data_eng_t status;
+    const uint8_t result = EPS_CMD_get_piu_housekeeping_data_run_avg(&status);
+
+    if (result != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS_CMD_get_piu_housekeeping_data_run_avg (err %d)", result);
+        return 1;
+    }
+
+    const uint8_t result_json = EPS_struct_piu_housekeeping_data_eng_TO_json(
+        &status, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS_struct_piu_housekeeping_data_eng_TO_json failed (err %d)", result_json);
         return 2;
     }
     return 0;
