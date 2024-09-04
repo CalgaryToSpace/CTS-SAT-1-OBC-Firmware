@@ -37,6 +37,7 @@
 #include <time.h>
 
 extern volatile uint8_t TASK_heartbeat_is_on;
+#define TX_TIMEOUT_DURATION_MS 100	// Timeout duration for transmit in milliseconds
 
 // extern
 const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
@@ -113,8 +114,8 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
-        .tcmd_name = "send_cmd_to_peripheral",
-        .tcmd_func = TCMDEXEC_send_cmd_to_peripheral,
+        .tcmd_name = "peripheral_send_receive_data",
+        .tcmd_func = TCMDEXEC_peripheral_send_receive_data,
         .number_of_args = 2,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
@@ -1141,13 +1142,12 @@ uint8_t TCMDEXEC_reboot(const char *args_str, TCMD_TelecommandChannel_enum_t tcm
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0: Success, 1: Error parsing args, 2: Invalid uart port requested, 3: Error transmitting data, 4: Error receiving data
-uint8_t TCMDEXEC_send_cmd_to_peripheral(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len){
+uint8_t TCMDEXEC_peripheral_send_receive_data(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
 
     // Parse UART port argument
-    char *arg_uart_port_name = "\0";
-    UART_HandleTypeDef *UART_peripheral_port;
-    const uint8_t uart_port_name_parse_result = TCMD_extract_string_arg(args_str, 0, arg_uart_port_name, 20);
+    char arg_uart_port_name[10] = "";
+    const uint8_t uart_port_name_parse_result = TCMD_extract_string_arg(args_str, 0, arg_uart_port_name, 10);
 
     // Parse hex-encoded config command (string to bytes)
     const uint16_t args_bytes_to_send_size = (strlen(args_str) - strlen(arg_uart_port_name))/2;             // Expected size of config command byte array
@@ -1155,7 +1155,7 @@ uint8_t TCMDEXEC_send_cmd_to_peripheral(const char *args_str, TCMD_TelecommandCh
     uint8_t arg_bytes_to_send[args_bytes_to_send_size];                                                     // Byte array to store the values of converted hex string
     const uint8_t bytes_to_send_parse_result = TCMD_extract_hex_array_arg(args_str, 1, arg_bytes_to_send, args_bytes_to_send_size, &arg_bytes_to_send_len);
 
-    if(uart_port_name_parse_result != 0 || bytes_to_send_parse_result !=0){
+    if(uart_port_name_parse_result != 0 || bytes_to_send_parse_result !=0) {
         snprintf(
             response_output_buf,
             response_output_buf_len,
@@ -1164,36 +1164,49 @@ uint8_t TCMDEXEC_send_cmd_to_peripheral(const char *args_str, TCMD_TelecommandCh
     }
 
     // Set peripheral UART port to requested
-    if(strcmp(arg_uart_port_name, "huart1") == 0){
+    UART_HandleTypeDef *UART_peripheral_port;
+    if(strcmp(arg_uart_port_name, "UART1") == 0) {
         UART_peripheral_port = &huart1;
     }
-    else if(strcmp(arg_uart_port_name, "huart2") == 0){
+    else if(strcmp(arg_uart_port_name, "UART2") == 0) {
         UART_peripheral_port = &huart2;
     }
-    else if(strcmp(arg_uart_port_name, "huart3") == 0){
+    else if(strcmp(arg_uart_port_name, "UART3") == 0) {
         UART_peripheral_port = &huart3;
     }
-    else if(strcmp(arg_uart_port_name, "huart4") == 0){
+    else if(strcmp(arg_uart_port_name, "UART4") == 0) {
         UART_peripheral_port = &huart4;
     }
-    else if(strcmp(arg_uart_port_name, "huart5") == 0){
+    else if(strcmp(arg_uart_port_name, "UART5") == 0) {
         UART_peripheral_port = &huart5;
     }
-    else{
-        snprintf(response_output_buf, response_output_buf_len, "Invalid UART port requested!");
+    else {
+        snprintf(response_output_buf, response_output_buf_len, "Invalid UART port requested: %s",arg_uart_port_name);
         return 2;   // Error code: Invalid UART port requested
     }
 
     // Transmit config command to requested peripheral
-	HAL_StatusTypeDef transmit_status = HAL_UART_Transmit(UART_peripheral_port, arg_bytes_to_send, arg_bytes_to_send_len, 200);
+	HAL_StatusTypeDef transmit_status = HAL_UART_Transmit(UART_peripheral_port, arg_bytes_to_send, arg_bytes_to_send_len, TX_TIMEOUT_DURATION_MS);
 
     // Check UART transmission
 	if (transmit_status != HAL_OK) {
 		return 3; // Error code: Failed UART transmission
 	}
 
-    // Receive response from peripheral
-	//HAL_StatusTypeDef receive_status;
+    // Receive response from peripheral based on configured mode
+    if (UART_peripheral_port->hdmarx != NULL && UART_peripheral_port->hdmarx->Instance != NULL) {
+        // DMA is enabled for reception
+        snprintf(response_output_buf, response_output_buf_len, "Function identified selected port as dma enabled receive");
+
+    }
+    else {
+        // Interrupt is enabled for reception
+        snprintf(response_output_buf, response_output_buf_len, "Function identified selected port as Interupt enabled receive");
+    }
+
+    // 5kb data size to receive
+
+	// HAL_StatusTypeDef receive_status;
 
     // Handle reception from the MPI
     // if(UART_peripheral_port == &huart1){
