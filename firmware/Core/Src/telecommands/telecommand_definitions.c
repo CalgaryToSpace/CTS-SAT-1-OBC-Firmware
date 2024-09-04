@@ -12,6 +12,7 @@
 #include "telecommands/lfs_telecommand_defs.h"
 #include "telecommands/log_telecommand_defs.h"
 #include "telecommands/timekeeping_telecommand_defs.h"
+#include "telecommands/antenna_telecommand_defs.h"
 #include "telecommands/i2c_telecommand_defs.h"
 #include "telecommands/config_telecommand_defs.h"
 #include "telecommands/testing_telecommand_defs.h"
@@ -364,6 +365,27 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     },
     // ****************** END: MPI_telecommand_definitions ********************
 
+    // ****************** SECTION: antenna_telecommand_defs ******************
+    {
+        .tcmd_name = "ant_arm_antenna_system",
+        .tcmd_func = TCMDEXEC_ant_arm_antenna_system,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "ant_deploy_antenna1",
+        .tcmd_func = TCMDEXEC_ant_deploy_antenna1,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "ant_measure_temp",
+        .tcmd_func = TCMDEXEC_ant_measure_temp,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    
+    },
+    // ****************** END SECTION: antenna_telecommand_defs ******************
 };
 
 // extern
