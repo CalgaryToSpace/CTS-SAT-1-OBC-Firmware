@@ -31,6 +31,7 @@
 #include "timekeeping/timekeeping.h"
 #include "littlefs/littlefs_helper.h"
 #include "stm32/stm32_reboot_reason.h"
+#include "telecommands/camera_telecommand_def.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -987,6 +988,17 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY, // Not useful in space.
     },
     // ****************** END: MPI_telecommand_definitions ********************
+
+
+    // ****************** START: CAMERA_telecommand_definitions ******************
+    {
+        .tcmd_name = "camera_capture_image",
+        .tcmd_func = TCMDEXEC_camera_capture,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION
+    },
+    // ****************** END: CAMERA_telecommand_definitions ********************
+    
     // ****************** START SECTION: stm32_internal_flash_telecommand_defs ******************
 
     {
