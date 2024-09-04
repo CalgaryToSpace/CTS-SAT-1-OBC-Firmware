@@ -18,6 +18,7 @@
 #include "telecommands/testing_telecommand_defs.h"
 #include "telecommands/telecommand_executor.h"
 #include "telecommands/agenda_telecommands_defs.h"
+#include "telecommands/mpi_telecommand_defs.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -61,6 +62,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "set_system_time",
         .tcmd_func = TCMDEXEC_set_system_time,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "correct_system_time",
+        .tcmd_func = TCMDEXEC_correct_system_time,
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
@@ -721,7 +728,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     },
     
     {
-        .tcmd_name = "agenda_fetch",
+        .tcmd_name = "agenda_fetch_jsonl",
         .tcmd_func = TCMDEXEC_agenda_fetch_jsonl,
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
@@ -735,6 +742,15 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     },
 
     // ****************** END SECTION: agenda_telecommand_defs ******************
+
+    // ****************** START: MPI_telecommand_definitions ******************
+    {
+        .tcmd_name = "mpi_send_command_hex",
+        .tcmd_func = TCMDEXEC_mpi_send_command_hex,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION
+    },
+    // ****************** END: MPI_telecommand_definitions ********************
 
 };
 

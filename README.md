@@ -17,6 +17,7 @@ Please add your name to the list below in your first Pull Request!
 * Chris K.
 * Kale F.
 * Marko V.
+* Vaibhav K.
 
 ## License and Libraries
 
