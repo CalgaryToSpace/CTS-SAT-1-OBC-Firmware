@@ -31,7 +31,7 @@ uint8_t TEST_EXEC__compute_sha256_hash() {
     compute_sha256_hash(symbol_message, 13, digest);
     TEST_ASSERT_TRUE(memcmp(digest, symbol_expected, 32) == 0);
 
-    float start_time = (float) clock() ;
+    int32_t start_time = (int32_t) HAL_GetTick() ;
     //random tests 
     compute_sha256_hash(random_message_0, random_message_0_size, digest);    
     TEST_ASSERT_TRUE(memcmp(digest, random_expected_0, CMOX_SHA256_SIZE) == 0);
@@ -75,10 +75,10 @@ uint8_t TEST_EXEC__compute_sha256_hash() {
     TEST_ASSERT_TRUE(memcmp(digest, random_expected_19, CMOX_SHA256_SIZE) == 0);
 
 
-    float end_time = (float) clock();
-    double time_elapsed = (end_time - start_time) / 4000;
+    int32_t end_time = (int32_t) HAL_GetTick();
+    int32_t time_elapsed = (end_time - start_time);
     DEBUG_uart_print_str("time elapsed ~~~~~~~~ \n ");
-    DEBUG_uart_print_int32((int32_t)time_elapsed);
+    DEBUG_uart_print_int32(time_elapsed);
     DEBUG_uart_print_str("\n time elapsed ~~~~~~~~ \n ");
 
 
