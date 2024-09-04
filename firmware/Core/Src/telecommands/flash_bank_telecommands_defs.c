@@ -19,7 +19,7 @@ uint8_t TCMDEXEC_Flash_Bank_Write(const char *args_str, TCMD_TelecommandChannel_
 
 uint8_t TCMDEXEC_Flash_Bank_Read(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
 {
-    uint64_t number_of_bytes_to_read;
+    uint64_t number_of_bytes_to_read = 0;
     const uint8_t parse_res = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &number_of_bytes_to_read);
     if (parse_res != 0)
     {
@@ -34,7 +34,11 @@ uint8_t TCMDEXEC_Flash_Bank_Read(const char *args_str, TCMD_TelecommandChannel_e
         snprintf(response_output_buf, response_output_buf_len, "Error: %u", res);
         return 1;
     }
-    snprintf(response_output_buf, response_output_buf_len, "%s", read_buffer);
+    for (uint64_t i = 0; i < number_of_bytes_to_read; i++)
+    {
+        snprintf(response_output_buf + (i * 2), response_output_buf_len - (i * 2), "%02X", read_buffer[i]);
+    }
+
     return 0;
 }
 
