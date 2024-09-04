@@ -143,6 +143,21 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func_name = "TEST_EXEC__EPS_channel_from_str",
     },
     {
+        .test_func = TEST_EXEC__GPS_assign_gps_time_status,
+        .test_file = "gps/gps",
+        .test_func_name = "assign_gps_time_status"
+    },
+    {
+        .test_func = TEST_EXEC__GPS_assign_gps_solution_status,
+        .test_file = "gps/gps",
+        .test_func_name = "assign_gps_solution_status"
+    },
+    {
+        .test_func = TEST_EXEC__GPS_position_velocity_type,
+        .test_file = "gps/gps",
+        .test_func_name = "assign_gps_position_velocity_type"
+    },
+    {
         .test_func = TEST_EXEC__GPS_Parse_header,
         .test_file = "gps/gps",
         .test_func_name = "parse_gps_header"

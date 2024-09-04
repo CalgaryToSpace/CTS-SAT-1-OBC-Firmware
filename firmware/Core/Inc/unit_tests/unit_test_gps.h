@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
+uint8_t TEST_EXEC__GPS_assign_gps_time_status();
+uint8_t TEST_EXEC__GPS_assign_gps_solution_status();
+uint8_t TEST_EXEC__GPS_position_velocity_type();
+
 uint8_t TEST_EXEC__GPS_Parse_header();
 uint8_t TEST_EXEC__GPS_Parse_bestxyza();
 uint8_t TEST_EXEC__GPS_Parse_timea();
