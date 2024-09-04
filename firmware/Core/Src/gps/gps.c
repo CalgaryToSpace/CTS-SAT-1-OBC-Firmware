@@ -84,39 +84,6 @@ uint8_t assign_gps_time_status(const char *status_str, GPS_reference_time_status
     return 0;  // Success
 }
 
-uint8_t count_of_responses(const char *data_received, uint8_t *iteration_count){
-    uint8_t hash_count = 0;
-    uint8_t astericks_count = 0;
-
-    while(*data_received){
-        if(*data_received == "#"){
-            hash_count++;
-        }
-        if(*data_received == "*"){
-            astericks_count++;
-        }
-        data_received++;
-    }
-
-    // Counting to ensure the responses are complete
-    const int8_t diff = hash_count - astericks_count;
-
-    if(diff > 0){
-        // Incomplete response, ending section missing
-        // Need to drop the lower half after finding the last extra #
-        *iteration_count = astericks_count;
-        return 1;
-    } else if(diff < 0){
-        // Incomplete response, ending section missing
-        // Need to drop the lower half after finding the last extra #
-        *iteration_count = hash_count;
-        return 2;
-    }
-    
-    *iteration_count = hash_count;
-    return 0;
-}
-
 
 /// @brief Parse the received GPS header into a struct
 /// @param data_received - The string obtained from the buffer that is to be parsed into the gps_response_header struct
@@ -126,26 +93,32 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
 
     // TODO: What if there are multiple responses in the string?
 
+    // Check if the buffer is empty
+    if (data_received == NULL || data_received[0] == '\0') {
+        // Empty or NULL string, return an error
+        return 1;
+    }
+
     // Find the start and end of the header, which is # and ; resepectively
     const char *sync_char = strchr(data_received,'#');
     const char *delimiter_char = strchr(data_received,';');
 
     if (!sync_char || !delimiter_char) {
         // Invalid data: No header in gps response
-        return 1; 
+        return 2; 
     }
 
     // Calculate the length of the header string
     const int header_length = delimiter_char - sync_char + 1;
     if (header_length < 0) {
         //Sync character occurs after delimiter character
-        return 2;
+        return 3;
     }
 
     char header_buffer[256];
     if ((size_t)header_length >= sizeof(header_buffer)) {
         //Header is too large for the buffer
-        return 3;  
+        return 4;  
     }
 
     // Copy header string into a buffer
@@ -154,7 +127,7 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
 
     // Parse the data in the header buffer
     uint8_t parse_result;
-    char token_buffer[256];
+    char token_buffer[128];
 
     // Log Name
     parse_result = TCMD_extract_string_arg(header_buffer, 0, token_buffer, sizeof(token_buffer));
@@ -426,13 +399,6 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
     char crc[9];
     strncpy(crc, asterisk + 1, 8);
     crc[sizeof(crc)-1] = '\0';
-
-    LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "CRC = %s.",
-            crc
-        );
-
     result->crc = strtoul(crc,&end_ptr, 16);
 
     return 0;
@@ -561,13 +527,6 @@ uint8_t parse_timea_data(const char* data_received, gps_timea_response *result) 
     char crc[9];
     strncpy(crc, asterisk + 1, 8);
     crc[sizeof(crc)-1] = '\0';
-
-    LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "CRC = %s.",
-            crc
-        );
-
     result->crc = strtoul(crc,&end_ptr, 16);
 
     return 0;
