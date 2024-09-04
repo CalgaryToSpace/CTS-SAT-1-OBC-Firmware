@@ -6,6 +6,7 @@
 // Name the UART interfaces
 UART_HandleTypeDef *UART_telecommand_port_handle = &hlpuart1;
 UART_HandleTypeDef *UART_eps_port_handle = &huart5; // TODO: update this
+UART_HandleTypeDef *UART_mpi_port_handle = &huart1;
 
 // UART telecommand buffer
 const uint16_t UART_telecommand_buffer_len = 256; // extern
@@ -58,6 +59,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         UART_telecommand_last_write_time_ms = HAL_GetTick();
         HAL_UART_Receive_IT(UART_telecommand_port_handle, (uint8_t*) &UART_telecommand_buffer_last_rx_byte, 1);
     }
+
     else if (huart->Instance == UART_eps_port_handle->Instance) {
         // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> EPS Data\n");
 
@@ -78,7 +80,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         UART_eps_last_write_time_ms = HAL_GetTick();
         HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t*) &UART_eps_buffer_last_rx_byte, 1);
     }
-    else if (huart->Instance == USART1) {
+
+    else if (huart->Instance == UART_mpi_port_handle->Instance) {
         if (MPI_current_uart_rx_mode == MPI_RX_MODE_COMMAND_MODE) {
             // Check if buffer is full
             if (UART_mpi_rx_buffer_write_idx >= UART_mpi_rx_buffer_len) {
@@ -101,6 +104,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
             DEBUG_uart_print_str("Unhandled MPI Mode\n"); //TODO: HANDLE other MPI MODES
         }
     }
+    
     else {
         // FIXME: add the rest (camera, MPI, maybe others)
         DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> unknown UART instance\n"); // FIXME: remove
