@@ -86,25 +86,32 @@ uint8_t Flash_Bank_Read(uint32_t address, uint8_t *buffer, uint32_t length)
 
     return 0; // Return success
 }
+
 /**
- * Erases the flash bank.
+ * Erases a specified number of pages from the flash bank.
  *
- * This function unlocks the flash memory, initializes the erase structure, and performs a mass erase operation on the specified bank.
- * It then locks the flash memory and returns the status of the erase operation.
+ * This function takes in the starting page to erase and the number of pages to erase.
+ * It clears any existing flash errors, unlocks the flash, and then erases the specified pages.
+ * If the erase operation is successful, it returns 0. Otherwise, it returns the page error.
  *
- * @return 0 if the erase operation is successful, the page error code otherwise.
+ * @param start_page_erase The starting page to erase.
+ * @param number_of_pages_to_erase The number of pages to erase.
+ *
+ * @return 0 if the erase operation is successful, page error otherwise.
  */
-uint32_t Flash_Bank_Erase()
+uint32_t Flash_Bank_Erase(uint16_t start_page_erase, uint16_t number_of_pages_to_erase)
 {
     __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
 
     HAL_FLASH_Unlock();
 
-    FLASH_EraseInitTypeDef EraseInitStruct = {
-        .TypeErase = FLASH_TYPEERASE_PAGES,
-        .Banks = FLASH_BANK_2,
-        .Page = 0,
-        .NbPages = 1};
+    FLASH_EraseInitTypeDef EraseInitStruct =
+        {
+            .TypeErase = FLASH_TYPEERASE_PAGES,
+            .Banks = FLASH_BANK_2,
+            .Page = start_page_erase,
+            .NbPages = number_of_pages_to_erase};
+
     uint32_t PageError = 0;
     const HAL_StatusTypeDef erase_status = HAL_FLASHEx_Erase(&EraseInitStruct, &PageError);
     HAL_FLASH_Lock();

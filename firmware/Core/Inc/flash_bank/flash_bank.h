@@ -18,6 +18,6 @@ uint32_t Flash_Bank_Write(uint32_t address, uint8_t *data, uint32_t length);
 
 uint8_t Flash_Bank_Read(uint32_t address, uint8_t *buffer, uint32_t length);
 
-uint32_t Flash_Bank_Erase();
+uint32_t Flash_Bank_Erase(uint16_t start_page_erase, uint16_t number_of_pages_to_erase);
 
 #endif // __INCLUDE_GUARD__FLASH_BANK_H__
