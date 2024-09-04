@@ -17,8 +17,8 @@ uint8_t EPS_battery_pack_datatype_eng_TO_json(
     uint16_t json_output_str_len
 );
 
-uint8_t EPS_result_system_status_TO_json(
-    const EPS_result_system_status_t *data,
+uint8_t EPS_struct_system_status_TO_json(
+    const EPS_struct_system_status_t *data,
     char json_output_str[],
     uint16_t json_output_str_len
 );

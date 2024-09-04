@@ -7,7 +7,7 @@
 #include "eps_drivers/eps_commands.h"
 
 
-void EPS_debug_uart_print_system_status(EPS_result_system_status_t* system_status) {
+void EPS_debug_uart_print_system_status(EPS_struct_system_status_t* system_status) {
 	char msg1[365];
 	sprintf(
 	    msg1,

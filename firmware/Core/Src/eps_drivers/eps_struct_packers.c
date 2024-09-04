@@ -14,7 +14,7 @@ Here is an example: result_dest->var_example_uint16 = (rx_buf[8]) | (rx_buf[9]<<
 
 Assume that the first element of the struct is at rx_buf[5].
 
-typedef struct { ... } EPS_result_system_status_t;
+typedef struct { ... } EPS_struct_system_status_t;
 =================================================================================================
 
 Note that modification are sometimes required, including:
@@ -26,7 +26,7 @@ Note that modification are sometimes required, including:
 
 */
 
-void EPS_pack_eps_result_system_status(const uint8_t rx_buf[], EPS_result_system_status_t *result_dest) {
+void EPS_pack_eps_result_system_status(const uint8_t rx_buf[], EPS_struct_system_status_t *result_dest) {
     result_dest->mode = rx_buf[5];
     result_dest->config_changed_since_boot = rx_buf[6];
     result_dest->reset_cause = rx_buf[7];
@@ -47,7 +47,7 @@ void EPS_pack_eps_result_system_status(const uint8_t rx_buf[], EPS_result_system
     result_dest->calendar_second = rx_buf[35];
 }
 
-void EPS_pack_eps_result_pdu_overcurrent_fault_state(const uint8_t rx_buf[], EPS_result_pdu_overcurrent_fault_state_t *result_dest) {
+void EPS_pack_eps_result_pdu_overcurrent_fault_state(const uint8_t rx_buf[], EPS_struct_pdu_overcurrent_fault_state_t *result_dest) {
     // Note: rx_buf[5] is a reserved/ignored value
 	// const uint8_t rx_len = 78;
 
@@ -64,7 +64,7 @@ void EPS_pack_eps_result_pdu_overcurrent_fault_state(const uint8_t rx_buf[], EPS
 
 
 
-void EPS_pack_eps_result_pdu_housekeeping_data_eng(const uint8_t rx_buf[], EPS_result_pdu_housekeeping_data_eng_t *result_dest) {
+void EPS_pack_eps_result_pdu_housekeeping_data_eng(const uint8_t rx_buf[], EPS_struct_pdu_housekeeping_data_eng_t *result_dest) {
     result_dest->voltage_internal_board_supply_mV = (rx_buf[6] | (rx_buf[7] << 8));
     result_dest->temperature_mcu_cC = (rx_buf[8] | (rx_buf[9] << 8));
 
@@ -95,7 +95,7 @@ void EPS_pack_eps_result_pdu_housekeeping_data_eng(const uint8_t rx_buf[], EPS_r
 
 
 
-void EPS_pack_eps_result_pbu_housekeeping_data_eng(const uint8_t rx_buf[], EPS_result_pbu_housekeeping_data_eng_t *result_dest) {
+void EPS_pack_eps_result_pbu_housekeeping_data_eng(const uint8_t rx_buf[], EPS_struct_pbu_housekeeping_data_eng_t *result_dest) {
 	// rx_buf_len = 84
     result_dest->vip_total_input.voltage_mV = (rx_buf[6]) | (rx_buf[7] << 8);
     result_dest->vip_total_input.current_mA = (rx_buf[8]) | (rx_buf[9] << 8);
@@ -129,7 +129,7 @@ void EPS_pack_eps_result_pbu_housekeeping_data_eng(const uint8_t rx_buf[], EPS_r
 }
 
 
-void EPS_pack_eps_result_pcu_housekeeping_data_eng(const uint8_t rx_buf[], EPS_result_pcu_housekeeping_data_eng_t *result_dest) {
+void EPS_pack_eps_result_pcu_housekeeping_data_eng(const uint8_t rx_buf[], EPS_struct_pcu_housekeeping_data_eng_t *result_dest) {
 	// rx_buf_len = 72
 	result_dest->voltage_internal_board_supply_mV = (rx_buf[6]) | (rx_buf[7] << 8);
     result_dest->temperature_mcu_cC = (rx_buf[8]) | (rx_buf[9] << 8);
@@ -153,7 +153,7 @@ void EPS_pack_eps_result_pcu_housekeeping_data_eng(const uint8_t rx_buf[], EPS_r
 }
 
 
-void EPS_pack_eps_result_piu_housekeeping_data_eng(const uint8_t rx_buf[], EPS_result_piu_housekeeping_data_eng_t *result_dest) {
+void EPS_pack_eps_result_piu_housekeeping_data_eng(const uint8_t rx_buf[], EPS_struct_piu_housekeeping_data_eng_t *result_dest) {
 	// rx_len = 274
     result_dest->voltage_internal_board_supply_mV = rx_buf[6] | (rx_buf[7] << 8);
     result_dest->temperature_mcu_cC = rx_buf[8] | (rx_buf[9] << 8);

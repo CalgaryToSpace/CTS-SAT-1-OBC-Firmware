@@ -82,7 +82,7 @@ typedef struct {
 	uint8_t calendar_hour;
 	uint8_t calendar_minute;
 	uint8_t calendar_second;
-} EPS_result_system_status_t;
+} EPS_struct_system_status_t;
 
 // Command Response: 0x42: Get Overcurrent Fault State
 typedef struct {
@@ -92,7 +92,7 @@ typedef struct {
 	uint16_t stat_ch_overcurrent_fault_bitfield;
 	uint16_t stat_ch_ext_overcurrent_fault_bitfield; // channels not present on our model
     uint16_t overcurrent_fault_count_each_channel[32]; // only channels 0-15 are present on our model
-} EPS_result_pdu_overcurrent_fault_state_t;
+} EPS_struct_pdu_overcurrent_fault_state_t;
 
 // Command Response: 0x44: Get PBU ABF Placed State
 typedef enum {
@@ -102,7 +102,7 @@ typedef enum {
 typedef struct {
 	EPS_ABF_PIN_PLACED_enum_t abf_placed_0;
 	EPS_ABF_PIN_PLACED_enum_t abf_placed_1;
-}  EPS_result_pbu_abf_placed_state_t;
+}  EPS_struct_pbu_abf_placed_state_t;
 
 // Command Response: 0x52: Get PDU (Distribution Unit) Housekeeping Data (Eng)
 // Command Response: 0x54: Get PDU (Distribution Unit) Housekeeping Data (Running Average, Eng)
@@ -119,7 +119,7 @@ typedef struct {
 
     EPS_vpid_eng_t vip_each_voltage_domain[7];
     EPS_vpid_eng_t vip_each_channel[32];
-} EPS_result_pdu_housekeeping_data_eng_t;
+} EPS_struct_pdu_housekeeping_data_eng_t;
 
 // Command Response: 0x62: Get PBU (Battery Unit) Housekeeping Data (Eng)
 // Command Response: 0x64: Get PBU (Battery Unit) Housekeeping Data (Running Average, Eng)
@@ -130,7 +130,7 @@ typedef struct {
     uint16_t battery_pack_status_bitfield; // Table 3-18: Battery Pack Status
 
     EPS_battery_pack_datatype_eng_t battery_pack_info_each_pack[3];
-} EPS_result_pbu_housekeeping_data_eng_t;
+} EPS_struct_pbu_housekeeping_data_eng_t;
 
 
 // Command Response: 0x72: Get PCU (Conditioning Unit) Housekeeping Data (Eng)
@@ -141,7 +141,7 @@ typedef struct {
     EPS_vpid_eng_t vip_total_input;
 
     EPS_conditioning_channel_datatype_eng_t conditioning_channel_info_each_channel[4];
-} EPS_result_pcu_housekeeping_data_eng_t;
+} EPS_struct_pcu_housekeeping_data_eng_t;
 
 
 
@@ -170,6 +170,6 @@ typedef struct {
 
     uint16_t stat_ch_ext_on_bitfield;
     uint16_t stat_ch_ext_overcurrent_fault_bitfield;
-} EPS_result_piu_housekeeping_data_eng_t;
+} EPS_struct_piu_housekeeping_data_eng_t;
 
 #endif /* INCLUDE_GUARD__EPS_TYPES_H__ */

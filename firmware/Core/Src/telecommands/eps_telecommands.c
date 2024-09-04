@@ -198,22 +198,23 @@ uint8_t TCMDEXEC_eps_get_system_status_json(
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     
-    EPS_result_system_status_t status;
+    EPS_struct_system_status_t status;
     const uint8_t result = EPS_CMD_get_system_status(&status);
 
     if (result != 0) {
         snprintf(response_output_buf, response_output_buf_len,
-            "EPS get system status failed (err %d)", result);
+            "EPS_CMD_get_system_status (err %d)", result);
         return 1;
     }
 
-    const uint8_t result_json = EPS_result_system_status_TO_json(
+    const uint8_t result_json = EPS_struct_system_status_TO_json(
         &status, response_output_buf, response_output_buf_len);
 
     if (result_json != 0) {
         snprintf(response_output_buf, response_output_buf_len,
-            "EPS get system status JSON failed (err %d)", result_json);
+            "EPS_struct_system_status_TO_json failed (err %d)", result_json);
         return 2;
     }
     return 0;
 }
+

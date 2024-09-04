@@ -148,7 +148,7 @@ uint8_t EPS_conditioning_channel_short_datatype_eng_TO_json(const EPS_conditioni
 }
 
 
-uint8_t EPS_result_system_status_TO_json(const EPS_result_system_status_t *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t EPS_struct_system_status_TO_json(const EPS_struct_system_status_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 10) {
         return 1; // Error: Invalid input
     }
@@ -173,7 +173,7 @@ uint8_t EPS_result_system_status_TO_json(const EPS_result_system_status_t *data,
 }
 
 
-uint8_t EPS_result_pdu_overcurrent_fault_state_TO_json(const EPS_result_pdu_overcurrent_fault_state_t *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t EPS_struct_pdu_overcurrent_fault_state_TO_json(const EPS_struct_pdu_overcurrent_fault_state_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 10) {
         return 1; // Error: Invalid input
     }
@@ -212,7 +212,7 @@ uint8_t EPS_result_pdu_overcurrent_fault_state_TO_json(const EPS_result_pdu_over
     return 0; // Success
 }
 
-uint8_t EPS_result_pbu_abf_placed_state_TO_json(const EPS_result_pbu_abf_placed_state_t *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t EPS_struct_pbu_abf_placed_state_TO_json(const EPS_struct_pbu_abf_placed_state_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 10) {
         return 1; // Error: Invalid input
     }
