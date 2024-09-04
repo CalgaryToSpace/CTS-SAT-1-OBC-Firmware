@@ -127,4 +127,9 @@ void capture_Image(){
 			LFS_write_file(f_n, sen2, strlen(sen2));
 			return 0;
 		}
+		////// TESTING ONLY ///////
+		uint8_t readtest[67*600] = {'\0'};
+		LFS_read_file(f_n, readtest, 67*600);
+		LFS_unmount();
+		DEBUG_uart_print_str(readtest);
   }
