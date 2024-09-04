@@ -69,17 +69,62 @@ enum Capture_Status{Transmit_Success, Wrong_input};
     }
 
 // needs to be updated with littleFS
+/**
+ * @brief creates temporary buffers and receives image data from camera module
+ * 
+ */
 void capture_Image(){
-	  uint8_t sen[67*300]  = {'\0'};
-	  uint8_t sen1[67*300] = {'\0'};
-	  uint8_t sen2[67*300] = {'\0'};
-	  uint8_t sen3[67*300] = {'\0'};
-		  HAL_UART_Receive(&huart4, sen, 67*300, 10000);
-		  HAL_UART_Receive(&huart4, sen1, 67*300, 10000);
-		  HAL_UART_Receive(&huart4, sen2, 67*300, 10000);
-		  HAL_UART_Receive(&huart4, sen3, 67*300, 10000);
-		//   HAL_UART_Transmit(&hlpuart1, (uint8_t*)sen, 67*300, 10000);
-		//   HAL_UART_Transmit(&hlpuart1, (uint8_t*)sen1, 67*300, 10000);
-		//   HAL_UART_Transmit(&hlpuart1, (uint8_t*)sen2, 67*300, 10000);
-		//   HAL_UART_Transmit(&hlpuart1, (uint8_t*)sen3, 67*300, 10000);
+		uint8_t sen[67*300] = {'\0'};
+		uint8_t sen1[67*300] = {'\0'};
+		uint8_t sen2[67*300] = {'\0'};
+		uint8_t sen3[67*300] = {'\0'};
+		HAL_UART_Receive(&huart4, sen, 67*300, 10000);
+		HAL_UART_Receive(&huart4, sen1, 67*300, 10000);
+		HAL_UART_Receive(&huart4, sen2, 67*300, 10000);
+		HAL_UART_Receive(&huart4, sen3, 67*300, 10000);
+
+		//parsing && littleFS
+		LFS_mount();
+		// filename
+		char f_n[] = "image";
+
+		if(strlen(sen) != 0){
+			//nothing
+		} else{
+			return 0;
+		}
+
+		if(strlen(sen1) != 0){
+			// HAL_UART_Transmit(&hlpuart1, (uint8_t*)sen, 67*300, 10000);
+			LFS_write_file(f_n, sen, 67*300);
+		} else{
+			//trim and transmit 0
+			// HAL_UART_Transmit(&hlpuart1, (uint8_t*)sen, strlen(sen), 10000);
+			LFS_write_file(f_n, sen, strlen(sen));
+			return 0;
+		}
+
+		if(strlen(sen2) != 0){
+			// HAL_UART_Transmit(&hlpuart1, (uint8_t*)sen1, 67*300, 10000);
+			LFS_write_file(f_n, sen1, 67*300);
+		} else{
+			//trim and send 1
+			// HAL_UART_Transmit(&hlpuart1, (uint8_t*)sen1, strlen(sen1), 10000);
+			LFS_write_file(f_n, sen1, strlen(sen1));
+			return 0;
+		}
+
+		if(strlen(sen3) != 0){
+			// HAL_UART_Transmit(&hlpuart1, (uint8_t*)sen2, 67*300, 10000);
+			LFS_write_file(f_n, sen2, 67*300);
+			// trim and send 3
+			// HAL_UART_Transmit(&hlpuart1, (uint8_t*)sen3, strlen(sen3), 10000);
+			LFS_write_file(f_n, sen3, strlen(sen3));
+			return 0;
+		} else{
+			//trim and send 2
+			// HAL_UART_Transmit(&hlpuart1, (uint8_t*)sen2, strlen(sen2), 10000);
+			LFS_write_file(f_n, sen2, strlen(sen2));
+			return 0;
+		}
   }
