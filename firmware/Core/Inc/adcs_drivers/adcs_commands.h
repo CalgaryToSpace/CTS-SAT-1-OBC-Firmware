@@ -30,7 +30,7 @@ uint8_t ADCS_Set_Power_Control(ADCS_Power_Select cube_control_signal, ADCS_Power
         ADCS_Power_Select cube_wheel2_power, ADCS_Power_Select cube_wheel3_power, ADCS_Power_Select motor_power,
         ADCS_Power_Select gps_power);
 uint8_t ADCS_Set_Magnetometer_Config(
-		double mounting_transform_alpha_angle,
+        double mounting_transform_alpha_angle,
         double mounting_transform_beta_angle,
         double mounting_transform_gamma_angle,
         double channel_1_offset,
@@ -60,7 +60,7 @@ uint8_t ADCS_Get_Magnetometer_Config(ADCS_Magnetometer_Config_Struct *output_str
 uint8_t ADCS_Get_Commanded_Attitude_Angles(ADCS_Commanded_Angles_Struct *output_struct);
 uint8_t ADCS_Set_Commanded_Attitude_Angles(double x, double y, double z);
 uint8_t ADCS_Set_Estimation_Params(
-								float magnetometer_rate_filter_system_noise, 
+                                float magnetometer_rate_filter_system_noise, 
                                 float ekf_system_noise, 
                                 float css_measurement_noise, 
                                 float sun_sensor_measurement_noise, 
@@ -76,7 +76,7 @@ uint8_t ADCS_Set_Estimation_Params(
                                 ADCS_Magnetometer_Mode magnetometer_mode, // this is actually the same one as for ID 56!
                                 ADCS_Magnetometer_Mode magnetometer_selection_for_raw_mtm_tlm, // and so is this, actually!
                                 bool automatic_estimation_transition_due_to_rate_sensor_errors, 
-								bool wheel_30s_power_up_delay, // present in CubeSupport but not in the manual -- need to test
+                                bool wheel_30s_power_up_delay, // present in CubeSupport but not in the manual -- need to test
                                 uint8_t cam1_and_cam2_sampling_period);
 uint8_t ADCS_Get_Estimation_Params(ADCS_Estimation_Params_Struct *output_struct);
 uint8_t ADCS_Set_ASGP4_Params(double incl_coefficient,

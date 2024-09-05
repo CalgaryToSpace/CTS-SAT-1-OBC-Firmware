@@ -40,7 +40,7 @@ uint8_t TCMDEXEC_adcs_generic_command(const char *args_str, TCMD_TelecommandChan
     uint16_t data_length;
     TCMD_extract_hex_array_arg(args_str, 1, &hex_data_array[0], data_length, &data_length);
     
-    uint8_t status = ADCS_I2C_telecommand_wrapper((uint8_t) command_id, &hex_data_array[0], (uint32_t) data_length, ADCS_INCLUDE_CHECKSUM);
+    uint8_t status = ADCS_i2c_telecommand_wrapper((uint8_t) command_id, &hex_data_array[0], (uint32_t) data_length, ADCS_INCLUDE_CHECKSUM);
     return status;
 }
 
@@ -72,7 +72,7 @@ uint8_t TCMDEXEC_adcs_generic_telemetry_request(const char *args_str, TCMD_Telec
 
     uint8_t data_received[data_length];
     
-    uint8_t status = ADCS_I2C_telemetry_wrapper((uint8_t) telemetry_request_id, &data_received[0], (uint8_t) data_length, ADCS_INCLUDE_CHECKSUM); 
+    uint8_t status = ADCS_i2c_telemetry_wrapper((uint8_t) telemetry_request_id, &data_received[0], (uint8_t) data_length, ADCS_INCLUDE_CHECKSUM); 
 
     // there's no built in method to get an error for this, so check communications status for telemetry error bit
     ADCS_Comms_Status_Struct comms_status;

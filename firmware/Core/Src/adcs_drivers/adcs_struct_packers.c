@@ -14,13 +14,13 @@
 /// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Ack_Struct(uint8_t* data_received, ADCS_CMD_Ack_Struct *result) {
 
-	// map temp buffer to Ack struct
-	result->last_id = data_received[0];
-	result->processed = data_received[1];
-	result->error_flag = data_received[2];
-	result->error_index = data_received[3];
+    // map temp buffer to Ack struct
+    result->last_id = data_received[0];
+    result->processed = data_received[1];
+    result->error_flag = data_received[2];
+    result->error_index = data_received[3];
 
-	return 0;
+    return 0;
 }
 
 /// @brief Packs the ADCS received raw data into the appropriate structure for this command.
@@ -42,15 +42,15 @@ uint8_t ADCS_Pack_to_Identification_Struct(uint8_t *data_received, ADCS_ID_Struc
 /// @param[out] result Structure containing the formated data for this command.
 /// @return 0 once the function is finished running.
 uint8_t ADCS_Pack_to_Program_Status_Struct(uint8_t* data_received, ADCS_Boot_Running_Status_Struct *result) {
-	// map to struct
-	result->reset_cause = (data_received[0] & 0xF0) >> 4; // takes upper four bits of byte 0
-	result->boot_cause = data_received[0] & 0x0F; // take upper four bits of byte 0
-	result->boot_counter = data_received[2] << 8 | data_received[1]; // uint16_t
-	result->boot_program_index = data_received[3];
-	result->major_firmware_version = data_received[4]; // uint8_t
-	result->minor_firmware_version = data_received[5]; // uint8_t
+    // map to struct
+    result->reset_cause = (data_received[0] & 0xF0) >> 4; // takes upper four bits of byte 0
+    result->boot_cause = data_received[0] & 0x0F; // take upper four bits of byte 0
+    result->boot_counter = data_received[2] << 8 | data_received[1]; // uint16_t
+    result->boot_program_index = data_received[3];
+    result->major_firmware_version = data_received[4]; // uint8_t
+    result->minor_firmware_version = data_received[5]; // uint8_t
 
-	return 0;
+    return 0;
 }
 
 /// @brief Packs the ADCS received raw data into the appropriate structure for this command.
@@ -73,22 +73,22 @@ uint8_t ADCS_Pack_to_Comms_Status_Struct(uint8_t *data_received, ADCS_Comms_Stat
 /// @return 0 once the function is finished running.}
 uint8_t ADCS_Pack_to_Power_Control_Struct(uint8_t* data_received, ADCS_Power_Control_Struct* result) {
 
-	// map to struct; all of these are two-bit enums
-	// within the byte, everything goes in reverse order!!
-	result->cube_control_signal = (data_received[0]) & 0x03;
-	result->cube_control_motor = (data_received[0] >> 2) & 0x03;
-	result->cube_sense1 = (data_received[0] >> 4) & 0x03;
-	result->cube_sense2 = (data_received[0] >> 6) & 0x03;
+    // map to struct; all of these are two-bit enums
+    // within the byte, everything goes in reverse order!!
+    result->cube_control_signal = (data_received[0]) & 0x03;
+    result->cube_control_motor = (data_received[0] >> 2) & 0x03;
+    result->cube_sense1 = (data_received[0] >> 4) & 0x03;
+    result->cube_sense2 = (data_received[0] >> 6) & 0x03;
 
-	result->cube_star_power = (data_received[1]) & 0x03;
-	result->cube_wheel1_power = (data_received[1] >> 2) & 0x03;
-	result->cube_wheel2_power =  (data_received[1] >> 4) & 0x03;
-	result->cube_wheel3_power = (data_received[1] >> 6) & 0x03;
+    result->cube_star_power = (data_received[1]) & 0x03;
+    result->cube_wheel1_power = (data_received[1] >> 2) & 0x03;
+    result->cube_wheel2_power =  (data_received[1] >> 4) & 0x03;
+    result->cube_wheel3_power = (data_received[1] >> 6) & 0x03;
 
-	result->motor_power = (data_received[2]) & 0x03;
-	result->gps_power = (data_received[2] >> 2) & 0x03;
+    result->motor_power = (data_received[2]) & 0x03;
+    result->gps_power = (data_received[2] >> 2) & 0x03;
 
-	return 0;
+    return 0;
 }
 
 /// @brief Packs the ADCS received raw data into the appropriate structure for this command.
@@ -97,10 +97,10 @@ uint8_t ADCS_Pack_to_Power_Control_Struct(uint8_t* data_received, ADCS_Power_Con
 /// @return 0 once the function is finished running.}
 uint8_t ADCS_Pack_to_Angular_Rates_Struct(uint8_t *data_received, ADCS_Angular_Rates_Struct *result) {
     // values given as int16, deg/s value is raw value * 0.01, give integer as m_deg/s
-	// need to convert to int16 first, then double, to ensure negative numbers are represented correctly
-    result->x_rate_milli_deg_per_sec = (int32_t) ((int16_t) (data_received[1] << 8 | data_received[0])) * 10;
-    result->y_rate_milli_deg_per_sec = (int32_t) ((int16_t) (data_received[3] << 8 | data_received[2])) * 10;
-    result->z_rate_milli_deg_per_sec = (int32_t) ((int16_t) (data_received[5] << 8 | data_received[4])) * 10;
+    // need to convert to int16 first, then double, to ensure negative numbers are represented correctly
+    result->x_rate_mdeg_per_sec = (int32_t) ((int16_t) (data_received[1] << 8 | data_received[0])) * 10;
+    result->y_rate_mdeg_per_sec = (int32_t) ((int16_t) (data_received[3] << 8 | data_received[2])) * 10;
+    result->z_rate_mdeg_per_sec = (int32_t) ((int16_t) (data_received[5] << 8 | data_received[4])) * 10;
     return 0;
 }
 
@@ -110,9 +110,9 @@ uint8_t ADCS_Pack_to_Angular_Rates_Struct(uint8_t *data_received, ADCS_Angular_R
 /// @return 0 once the function is finished running.}
 uint8_t ADCS_Pack_to_LLH_Position_Struct(uint8_t *data_received, ADCS_LLH_Position_Struct *result) {
     // formatted value (deg or km) = raw value * 0.01
-	// need to convert to int16 first, then double, to ensure negative numbers are represented correctly
-	result->latitude_milli_deg = (int32_t) ((int16_t) (data_received[1] << 8 | data_received[0])) * 10; 
-    result->longitude_milli_deg = (int32_t) ((int16_t) (data_received[3] << 8 | data_received[2])) * 10; 
+    // need to convert to int16 first, then double, to ensure negative numbers are represented correctly
+    result->latitude_mdeg = (int32_t) ((int16_t) (data_received[1] << 8 | data_received[0])) * 10; 
+    result->longitude_mdeg = (int32_t) ((int16_t) (data_received[3] << 8 | data_received[2])) * 10; 
     result->altitude_meters  = (int32_t) ((int16_t) (data_received[5] << 8 | data_received[4])) * 10; 
     return 0;
 }
@@ -151,10 +151,10 @@ uint8_t ADCS_Pack_to_Orbit_Params_Struct(uint8_t *data_received, ADCS_Orbit_Para
 /// @return 0 once the function is finished running.}
 uint8_t ADCS_Pack_to_Rated_Sensor_Rates_Struct(uint8_t *data_received, ADCS_Rated_Sensor_Rates_Struct *result) {
     // formatted value (deg/s) = raw value * 0.01
-	// need to convert to int16 first, then double, to ensure negative numbers are represented correctly
-	result->x_milli_deg_per_sec = (int32_t) ((int16_t) (data_received[1] << 8 | data_received[0])) * 10; 
-    result->y_milli_deg_per_sec = (int32_t) ((int16_t) (data_received[3] << 8 | data_received[2])) * 10; 
-    result->z_milli_deg_per_sec = (int32_t) ((int16_t) (data_received[5] << 8 | data_received[4])) * 10; 
+    // need to convert to int16 first, then double, to ensure negative numbers are represented correctly
+    result->x_mdeg_per_sec = (int32_t) ((int16_t) (data_received[1] << 8 | data_received[0])) * 10; 
+    result->y_mdeg_per_sec = (int32_t) ((int16_t) (data_received[3] << 8 | data_received[2])) * 10; 
+    result->z_mdeg_per_sec = (int32_t) ((int16_t) (data_received[5] << 8 | data_received[4])) * 10; 
     return 0;
 }
 
@@ -163,7 +163,7 @@ uint8_t ADCS_Pack_to_Rated_Sensor_Rates_Struct(uint8_t *data_received, ADCS_Rate
 /// @param[out] result Structure containing the formated data for this command.
 /// @return 0 once the function is finished running.}
 uint8_t ADCS_Pack_to_Wheel_Speed_Struct(uint8_t *data_received, ADCS_Wheel_Speed_Struct *result) {
-	// all values in rpm
+    // all values in rpm
     result->x = data_received[1] << 8 | data_received[0];
     result->y = data_received[3] << 8 | data_received[2];
     result->z = data_received[5] << 8 | data_received[4];
@@ -176,7 +176,7 @@ uint8_t ADCS_Pack_to_Wheel_Speed_Struct(uint8_t *data_received, ADCS_Wheel_Speed
 /// @return 0 once the function is finished running.}
 uint8_t ADCS_Pack_to_Magnetorquer_Command_Struct(uint8_t *data_received, ADCS_Magnetorquer_Command_Struct *result) {
     // formatted value (sec) = raw value * 0.01
-	result->x_ms = (int32_t) ((int16_t) (data_received[1] << 8 | data_received[0])) * 10;
+    result->x_ms = (int32_t) ((int16_t) (data_received[1] << 8 | data_received[0])) * 10;
     result->y_ms = (int32_t) ((int16_t) (data_received[3] << 8 | data_received[2])) * 10;
     result->z_ms = (int32_t) ((int16_t) (data_received[5] << 8 | data_received[4])) * 10;
     return 0;
@@ -187,7 +187,7 @@ uint8_t ADCS_Pack_to_Magnetorquer_Command_Struct(uint8_t *data_received, ADCS_Ma
 /// @param[out] result Structure containing the formated data for this command.
 /// @return 0 once the function is finished running.}
 uint8_t ADCS_Pack_to_Raw_Magnetometer_Values_Struct(uint8_t *data_received, ADCS_Raw_Magnetometer_Values_Struct *result) {
-	result->x = data_received[1] << 8 | data_received[0];
+    result->x = data_received[1] << 8 | data_received[0];
     result->y = data_received[3] << 8 | data_received[2];
     result->z = data_received[5] << 8 | data_received[4];
     return 0;
@@ -199,9 +199,9 @@ uint8_t ADCS_Pack_to_Raw_Magnetometer_Values_Struct(uint8_t *data_received, ADCS
 /// @return 0 once the function is finished running.}
 uint8_t ADCS_Pack_to_Fine_Angular_Rates_Struct(uint8_t *data_received, ADCS_Fine_Angular_Rates_Struct *result) {
     // formatted value (deg/s) = raw value * 0.001
-	result->x_milli_deg_per_sec = (int16_t) (data_received[1] << 8 | data_received[0]);
-    result->y_milli_deg_per_sec = (int16_t) (data_received[3] << 8 | data_received[2]);
-    result->z_milli_deg_per_sec = (int16_t) (data_received[5] << 8 | data_received[4]);
+    result->x_mdeg_per_sec = (int16_t) (data_received[1] << 8 | data_received[0]);
+    result->y_mdeg_per_sec = (int16_t) (data_received[3] << 8 | data_received[2]);
+    result->z_mdeg_per_sec = (int16_t) (data_received[5] << 8 | data_received[4]);
     return 0;
 }
 
@@ -211,22 +211,22 @@ uint8_t ADCS_Pack_to_Fine_Angular_Rates_Struct(uint8_t *data_received, ADCS_Fine
 /// @return 0 once the function is finished running.}
 uint8_t ADCS_Pack_to_Magnetometer_Config_Struct(uint8_t *data_received, ADCS_Magnetometer_Config_Struct *result) {
     // formatted value for mounting transform angles (deg/s) = raw value * 0.01
-	result->mounting_transform_alpha_angle_milli_deg_per_sec = (int32_t) ((int16_t) (data_received[1] << 8 | data_received[0])) * 10;
-    result->mounting_transform_beta_angle_milli_deg_per_sec =  (int32_t) ((int16_t) (data_received[3] << 8 | data_received[2])) * 10;
-    result->mounting_transform_gamma_angle_milli_deg_per_sec = (int32_t) ((int16_t) (data_received[5] << 8 | data_received[4])) * 10;
+    result->mounting_transform_alpha_angle_mdeg_per_sec = (int32_t) ((int16_t) (data_received[1] << 8 | data_received[0])) * 10;
+    result->mounting_transform_beta_angle_mdeg_per_sec =  (int32_t) ((int16_t) (data_received[3] << 8 | data_received[2])) * 10;
+    result->mounting_transform_gamma_angle_mdeg_per_sec = (int32_t) ((int16_t) (data_received[5] << 8 | data_received[4])) * 10;
     // formatted value (deg/s) = raw value * 0.001
-	result->channel_1_offset_milli_deg_per_sec = (int16_t) (data_received[7] << 8 | data_received[6]);
-    result->channel_2_offset_milli_deg_per_sec = (int16_t) (data_received[9] << 8 | data_received[8]);
-    result->channel_3_offset_milli_deg_per_sec = (int16_t) (data_received[11] << 8 | data_received[10]);
-    result->sensitivity_matrix_s11_milli_deg_per_sec = (int16_t) (data_received[13] << 8 | data_received[12]);
-    result->sensitivity_matrix_s22_milli_deg_per_sec = (int16_t) (data_received[15] << 8 | data_received[14]);
-    result->sensitivity_matrix_s33_milli_deg_per_sec = (int16_t) (data_received[17] << 8 | data_received[16]);
-    result->sensitivity_matrix_s12_milli_deg_per_sec = (int16_t) (data_received[19] << 8 | data_received[18]);
-    result->sensitivity_matrix_s13_milli_deg_per_sec = (int16_t) (data_received[21] << 8 | data_received[20]);
-    result->sensitivity_matrix_s21_milli_deg_per_sec = (int16_t) (data_received[23] << 8 | data_received[22]);
-    result->sensitivity_matrix_s23_milli_deg_per_sec = (int16_t) (data_received[25] << 8 | data_received[24]);
-    result->sensitivity_matrix_s31_milli_deg_per_sec = (int16_t) (data_received[27] << 8 | data_received[26]);
-    result->sensitivity_matrix_s32_milli_deg_per_sec = (int16_t) (data_received[29] << 8 | data_received[28]);
+    result->channel_1_offset_mdeg_per_sec = (int16_t) (data_received[7] << 8 | data_received[6]);
+    result->channel_2_offset_mdeg_per_sec = (int16_t) (data_received[9] << 8 | data_received[8]);
+    result->channel_3_offset_mdeg_per_sec = (int16_t) (data_received[11] << 8 | data_received[10]);
+    result->sensitivity_matrix_s11_mdeg_per_sec = (int16_t) (data_received[13] << 8 | data_received[12]);
+    result->sensitivity_matrix_s22_mdeg_per_sec = (int16_t) (data_received[15] << 8 | data_received[14]);
+    result->sensitivity_matrix_s33_mdeg_per_sec = (int16_t) (data_received[17] << 8 | data_received[16]);
+    result->sensitivity_matrix_s12_mdeg_per_sec = (int16_t) (data_received[19] << 8 | data_received[18]);
+    result->sensitivity_matrix_s13_mdeg_per_sec = (int16_t) (data_received[21] << 8 | data_received[20]);
+    result->sensitivity_matrix_s21_mdeg_per_sec = (int16_t) (data_received[23] << 8 | data_received[22]);
+    result->sensitivity_matrix_s23_mdeg_per_sec = (int16_t) (data_received[25] << 8 | data_received[24]);
+    result->sensitivity_matrix_s31_mdeg_per_sec = (int16_t) (data_received[27] << 8 | data_received[26]);
+    result->sensitivity_matrix_s32_mdeg_per_sec = (int16_t) (data_received[29] << 8 | data_received[28]);
     return 0;
 }
 
@@ -236,9 +236,9 @@ uint8_t ADCS_Pack_to_Magnetometer_Config_Struct(uint8_t *data_received, ADCS_Mag
 /// @return 0 once the function is finished running.}
 uint8_t ADCS_Pack_to_Commanded_Attitude_Angles_Struct(uint8_t *data_received, ADCS_Commanded_Angles_Struct *result) {
     // Formatted value is obtained using the formula: (formatted value) [deg] = RAWVAL*0.01
-	result->x_milli_deg = ((int16_t)(data_received[1] << 8 | data_received[0])) * 10;
-    result->y_milli_deg = ((int16_t)(data_received[3] << 8 | data_received[2])) * 10;
-    result->z_milli_deg = ((int16_t)(data_received[5] << 8 | data_received[4])) * 10;
+    result->x_mdeg = ((int16_t)(data_received[1] << 8 | data_received[0])) * 10;
+    result->y_mdeg = ((int16_t)(data_received[3] << 8 | data_received[2])) * 10;
+    result->z_mdeg = ((int16_t)(data_received[5] << 8 | data_received[4])) * 10;
     return 0;
 }
 
@@ -319,10 +319,10 @@ uint8_t ADCS_Pack_to_Rate_Gyro_Config_Struct(uint8_t* data_received, ADCS_Rate_G
     result->gyro2 = data_received[1];
     result->gyro3 = data_received[2];
 
-	// Raw parameter value is obtained using the formula: (formatted value) [deg/s] = RAWVAL*0.001
-    result->x_rate_offset_milli_deg_per_sec = (int16_t) (data_received[4] << 8 | data_received[3]);
-    result->y_rate_offset_milli_deg_per_sec = (int16_t) (data_received[6] << 8 | data_received[5]);
-    result->z_rate_offset_milli_deg_per_sec = (int16_t) (data_received[8] << 8 | data_received[7]);
+    // Raw parameter value is obtained using the formula: (formatted value) [deg/s] = RAWVAL*0.001
+    result->x_rate_offset_mdeg_per_sec = (int16_t) (data_received[4] << 8 | data_received[3]);
+    result->y_rate_offset_mdeg_per_sec = (int16_t) (data_received[6] << 8 | data_received[5]);
+    result->z_rate_offset_mdeg_per_sec = (int16_t) (data_received[8] << 8 | data_received[7]);
 
     result->rate_sensor_mult = data_received[9];
 
@@ -334,10 +334,10 @@ uint8_t ADCS_Pack_to_Rate_Gyro_Config_Struct(uint8_t* data_received, ADCS_Rate_G
 /// @param[out] result Structure containing the formated data for this command.
 /// @return 0 once the function is finished running.}
 uint8_t ADCS_Pack_to_Estimated_Attitude_Angles_Struct(uint8_t *data_received, ADCS_Estimated_Attitude_Angles_Struct *angles) {
-    angles->estimated_roll_angle_milli_deg = (int32_t) ((int16_t) (data_received[1] << 8 | data_received[0])) * 10;
-    angles->estimated_pitch_angle_milli_deg = (int32_t) ((int16_t) (data_received[3] << 8 | data_received[2])) * 10;
-    angles->estimated_yaw_angle_milli_deg = (int32_t) ((int16_t) (data_received[5] << 8 | data_received[4])) * 10;
-	return 0;
+    angles->estimated_roll_angle_mdeg = (int32_t) ((int16_t) (data_received[1] << 8 | data_received[0])) * 10;
+    angles->estimated_pitch_angle_mdeg = (int32_t) ((int16_t) (data_received[3] << 8 | data_received[2])) * 10;
+    angles->estimated_yaw_angle_mdeg = (int32_t) ((int16_t) (data_received[5] << 8 | data_received[4])) * 10;
+    return 0;
 }
 
 /// @brief Packs the ADCS received raw data into the appropriate structure for this command.
@@ -345,11 +345,11 @@ uint8_t ADCS_Pack_to_Estimated_Attitude_Angles_Struct(uint8_t *data_received, AD
 /// @param[out] result Structure containing the formated data for this command.
 /// @return 0 once the function is finished running.}
 uint8_t ADCS_Pack_to_Magnetic_Field_Vector_Struct(uint8_t *data_received, ADCS_Magnetic_Field_Vector_Struct *vector_components) {
-	// gives vector components in nT (10^-9 Teslas)
+    // gives vector components in nT (10^-9 Teslas)
     vector_components->x_nT = (int32_t) ((int16_t) (data_received[1] << 8 | data_received[0])) * 10;
     vector_components->y_nT = (int32_t) ((int16_t) (data_received[3] << 8 | data_received[2])) * 10;
     vector_components->z_nT = (int32_t) ((int16_t) (data_received[5] << 8 | data_received[4])) * 10;
-	return 0;
+    return 0;
 }
 
 /// @brief Packs the ADCS received raw data into the appropriate structure for this command.
@@ -360,7 +360,7 @@ uint8_t ADCS_Pack_to_Fine_Sun_Vector_Struct(uint8_t *data_received, ADCS_Fine_Su
     vector_components->x_micro = ((int32_t) ((int16_t) (data_received[1] << 8 | data_received[0]))) * 100;
     vector_components->y_micro = ((int32_t) ((int16_t) (data_received[3] << 8 | data_received[2]))) * 100;
     vector_components->z_micro = ((int32_t) ((int16_t) (data_received[5] << 8 | data_received[4]))) * 100;
-	return 0;
+    return 0;
 }
 
 /// @brief Packs the ADCS received raw data into the appropriate structure for this command.
@@ -371,7 +371,7 @@ uint8_t ADCS_Pack_to_Nadir_Vector_Struct(uint8_t *data_received, ADCS_Nadir_Vect
     vector_components->x_micro = ((int32_t) ((int16_t) (data_received[1] << 8 | data_received[0]))) * 100;
     vector_components->y_micro = ((int32_t) ((int16_t) (data_received[3] << 8 | data_received[2]))) * 100;
     vector_components->z_micro = ((int32_t) ((int16_t) (data_received[5] << 8 | data_received[4]))) * 100;
-	return 0;
+    return 0;
 }
 
 /// @brief Packs the ADCS received raw data into the appropriate structure for this command.
@@ -379,7 +379,7 @@ uint8_t ADCS_Pack_to_Nadir_Vector_Struct(uint8_t *data_received, ADCS_Nadir_Vect
 /// @param[out] result Structure containing the formated data for this command.
 /// @return 0 once the function is finished running.}
 uint8_t ADCS_Pack_to_Commanded_Wheel_Speed_Struct(uint8_t *data_received, ADCS_Wheel_Speed_Struct *result) {
-	// all values in rpm
+    // all values in rpm
     result->x = data_received[1] << 8 | data_received[0];
     result->y = data_received[3] << 8 | data_received[2];
     result->z = data_received[5] << 8 | data_received[4];
@@ -391,11 +391,11 @@ uint8_t ADCS_Pack_to_Commanded_Wheel_Speed_Struct(uint8_t *data_received, ADCS_W
 /// @param[out] result Structure containing the formated data for this command.
 /// @return 0 once the function is finished running.}
 uint8_t ADCS_Pack_to_IGRF_Magnetic_Field_Vector_Struct(uint8_t *data_received, ADCS_Magnetic_Field_Vector_Struct *vector_components) {
-	// gives vector components in nT (10^-9 Teslas)
+    // gives vector components in nT (10^-9 Teslas)
     vector_components->x_nT = (int32_t) ((int16_t) (data_received[1] << 8 | data_received[0])) * 10;
     vector_components->y_nT = (int32_t) ((int16_t) (data_received[3] << 8 | data_received[2])) * 10;
     vector_components->z_nT = (int32_t) ((int16_t) (data_received[5] << 8 | data_received[4])) * 10;
-	return 0;
+    return 0;
 }
 
 /// @brief Packs the ADCS received raw data into the appropriate structure for this command.
@@ -415,9 +415,9 @@ uint8_t ADCS_Pack_to_Quaternion_Error_Vector_Struct(uint8_t *data_received, ADCS
 /// @param[out] result Structure containing the formated data for this command.
 /// @return 0 once the function is finished running.}
 uint8_t ADCS_Pack_to_Estimated_Gyro_Bias_Struct(uint8_t* data_received, ADCS_Estimated_Gyro_Bias_Struct *result) {
-    result->estimated_x_gyro_bias_milli_deg_per_sec = (int32_t) ((int16_t) (data_received[1] << 8 | data_received[0]));
-    result->estimated_y_gyro_bias_milli_deg_per_sec = (int32_t) ((int16_t) (data_received[3] << 8 | data_received[2]));
-    result->estimated_z_gyro_bias_milli_deg_per_sec = (int32_t) ((int16_t) (data_received[5] << 8 | data_received[4]));
+    result->estimated_x_gyro_bias_mdeg_per_sec = (int32_t) ((int16_t) (data_received[1] << 8 | data_received[0]));
+    result->estimated_y_gyro_bias_mdeg_per_sec = (int32_t) ((int16_t) (data_received[3] << 8 | data_received[2]));
+    result->estimated_z_gyro_bias_mdeg_per_sec = (int32_t) ((int16_t) (data_received[5] << 8 | data_received[4]));
 
     return 0;
 }
@@ -440,7 +440,7 @@ uint8_t ADCS_Pack_to_Estimation_Innovation_Vector_Struct(uint8_t* data_received,
 /// @return 0 once the function is finished running.}
 uint8_t ADCS_Pack_to_Raw_Cam1_Sensor_Struct(uint8_t* data_received, ADCS_Raw_Cam_Sensor_Struct* result) {
     result->which_sensor = ADCS_WHICH_CAM_SENSOR_CAM1;
-	result->cam_centroid_x = (int16_t) (data_received[1] << 8 | data_received[0]);
+    result->cam_centroid_x = (int16_t) (data_received[1] << 8 | data_received[0]);
     result->cam_centroid_y = (int16_t) (data_received[3] << 8 | data_received[2]);
     result->cam_capture_status = data_received[4];
     result->cam_detection_result = data_received[5];
@@ -454,7 +454,7 @@ uint8_t ADCS_Pack_to_Raw_Cam1_Sensor_Struct(uint8_t* data_received, ADCS_Raw_Cam
 /// @return 0 once the function is finished running.}
 uint8_t ADCS_Pack_to_Raw_Cam2_Sensor_Struct(uint8_t* data_received, ADCS_Raw_Cam_Sensor_Struct* result) {
     result->which_sensor = ADCS_WHICH_CAM_SENSOR_CAM2;
-	result->cam_centroid_x = (int16_t) (data_received[1] << 8 | data_received[0]);
+    result->cam_centroid_x = (int16_t) (data_received[1] << 8 | data_received[0]);
     result->cam_centroid_y = (int16_t) (data_received[3] << 8 | data_received[2]);
     result->cam_capture_status = data_received[4];
     result->cam_detection_result = data_received[5];
@@ -496,7 +496,7 @@ uint8_t ADCS_Pack_to_Raw_CSS_7_to_10_Struct(uint8_t* data_received, ADCS_Raw_CSS
 /// @return 0 once the function is finished running.}
 uint8_t ADCS_Pack_to_CubeControl_Current_Struct(uint8_t* data_received, ADCS_CubeControl_Current_Struct* result) {
     // everything in mA after multiplying RAWVAL*0.48828125 (aka dividing by 2.048 exactly)
-	result->cubecontrol_3v3_current_mA = (( double ) ((uint16_t) (data_received[1] << 8 | data_received[0]))) / 2.048;
+    result->cubecontrol_3v3_current_mA = (( double ) ((uint16_t) (data_received[1] << 8 | data_received[0]))) / 2.048;
     result->cubecontrol_5v_current_mA = (( double ) ((uint16_t) (data_received[3] << 8 | data_received[2]))) / 2.048;
     result->cubecontrol_vbat_current_mA = (( double ) ((uint16_t) (data_received[5] << 8 | data_received[4]))) / 2.048;
 
@@ -537,7 +537,7 @@ uint8_t ADCS_Pack_to_Raw_GPS_Struct(ADCS_GPS_Axis axis, uint8_t *data_received, 
     result->axis = axis; // this function works for three commands, so we need to keep this information
     result->ecef_position_meters = (int32_t) (data_received[3] << 24 | data_received[2] << 16 | 
                                                data_received[1] << 8 | data_received[0]); // ECEF Position Z [m]
-	result->ecef_velocity_meters_per_sec = (int16_t)(data_received[5] << 8 | data_received[4]);  // ECEF Velocity Z [m/s]
+    result->ecef_velocity_meters_per_sec = (int16_t)(data_received[5] << 8 | data_received[4]);  // ECEF Velocity Z [m/s]
 
     return 0;
 }
@@ -561,9 +561,9 @@ uint8_t ADCS_Pack_to_Measurements_Struct(uint8_t* telemetry_data, ADCS_Measureme
     measurements->nadir_x_micro = (int32_t)((int16_t)(telemetry_data[19] << 8 | telemetry_data[18])) * 100;
     measurements->nadir_y_micro = (int32_t)((int16_t)(telemetry_data[21] << 8 | telemetry_data[20])) * 100;
     measurements->nadir_z_micro = (int32_t)((int16_t)(telemetry_data[23] << 8 | telemetry_data[22])) * 100;
-    measurements->x_angular_rate_milli_deg_per_sec = (int32_t)((int16_t)(telemetry_data[25] << 8 | telemetry_data[24])) * 10;
-    measurements->y_angular_rate_milli_deg_per_sec = (int32_t)((int16_t)(telemetry_data[27] << 8 | telemetry_data[26])) * 10;
-    measurements->z_angular_rate_milli_deg_per_sec = (int32_t)((int16_t)(telemetry_data[29] << 8 | telemetry_data[28])) * 10;
+    measurements->x_angular_rate_mdeg_per_sec = (int32_t)((int16_t)(telemetry_data[25] << 8 | telemetry_data[24])) * 10;
+    measurements->y_angular_rate_mdeg_per_sec = (int32_t)((int16_t)(telemetry_data[27] << 8 | telemetry_data[26])) * 10;
+    measurements->z_angular_rate_mdeg_per_sec = (int32_t)((int16_t)(telemetry_data[29] << 8 | telemetry_data[28])) * 10;
     measurements->x_wheel_speed_rpm = ((int16_t)(telemetry_data[31] << 8 | telemetry_data[30]));
     measurements->y_wheel_speed_rpm = ((int16_t)(telemetry_data[33] << 8 | telemetry_data[32]));
     measurements->z_wheel_speed_rpm = ((int16_t)(telemetry_data[35] << 8 | telemetry_data[34]));

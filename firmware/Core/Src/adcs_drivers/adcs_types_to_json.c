@@ -108,8 +108,8 @@ uint8_t ADCS_Angular_Rates_Struct_TO_json(const ADCS_Angular_Rates_Struct *data,
     if (data == NULL || json_output_str == NULL || json_output_str_len < 119) {
         return 1; // Error: invalid input
     }
-    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, "{\"x_rate_milli_deg_per_sec\":%ld,\"y_rate_milli_deg_per_sec\":%ld,\"z_rate_milli_deg_per_sec\":%ld}", 
-            data->x_rate_milli_deg_per_sec, data->y_rate_milli_deg_per_sec, data->z_rate_milli_deg_per_sec);
+    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, "{\"x_rate_mdeg_per_sec\":%ld,\"y_rate_mdeg_per_sec\":%ld,\"z_rate_mdeg_per_sec\":%ld}", 
+            data->x_rate_mdeg_per_sec, data->y_rate_mdeg_per_sec, data->z_rate_mdeg_per_sec);
     
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error
@@ -130,8 +130,8 @@ uint8_t ADCS_LLH_Position_Struct_TO_json(const ADCS_LLH_Position_Struct *data, c
     if (data == NULL || json_output_str == NULL || json_output_str_len < 98) {
         return 1; // Error: invalid input
     }
-    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, "{\"latitude_milli_deg\":%ld,\"longitude_milli_deg\":%ld,\"altitude_meters\":%ld}", 
-            data->latitude_milli_deg, data->longitude_milli_deg, data->altitude_meters);
+    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, "{\"latitude_mdeg\":%ld,\"longitude_mdeg\":%ld,\"altitude_meters\":%ld}", 
+            data->latitude_mdeg, data->longitude_mdeg, data->altitude_meters);
     
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error
@@ -220,8 +220,8 @@ uint8_t ADCS_Rated_Sensor_Rates_Struct_TO_json(const ADCS_Rated_Sensor_Rates_Str
     if (data == NULL || json_output_str == NULL || json_output_str_len < 136) {
         return 1; // Error: invalid input
     }
-    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, "{\"x_milli_deg_per_sec\":%ld,\"y_milli_deg_per_sec\":%ld,\"z_milli_deg_per_sec\":%ld}", 
-            data->x_milli_deg_per_sec, data->y_milli_deg_per_sec, data->z_milli_deg_per_sec);
+    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, "{\"x_mdeg_per_sec\":%ld,\"y_mdeg_per_sec\":%ld,\"z_mdeg_per_sec\":%ld}", 
+            data->x_mdeg_per_sec, data->y_mdeg_per_sec, data->z_mdeg_per_sec);
     
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error
@@ -308,8 +308,8 @@ uint8_t ADCS_Fine_Angular_Rates_Struct_TO_json(const ADCS_Fine_Angular_Rates_Str
     if (data == NULL || json_output_str == NULL || json_output_str_len < 88) {
         return 1; // Error: invalid input
     }
-    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, "{\"x_milli_deg_per_sec\":%d,\"y_milli_deg_per_sec\":%d,\"z_milli_deg_per_sec\":%d}", 
-            data->x_milli_deg_per_sec, data->y_milli_deg_per_sec, data->z_milli_deg_per_sec);
+    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, "{\"x_mdeg_per_sec\":%d,\"y_mdeg_per_sec\":%d,\"z_mdeg_per_sec\":%d}", 
+            data->x_mdeg_per_sec, data->y_mdeg_per_sec, data->z_mdeg_per_sec);
 
     
     if (snprintf_ret < 0) {
@@ -331,16 +331,16 @@ uint8_t ADCS_Magnetometer_Config_Struct_TO_json(const ADCS_Magnetometer_Config_S
     if (data == NULL || json_output_str == NULL || json_output_str_len < 806) {
         return 1; // Error: invalid input
     }
-    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, "{\"mounting_transform_alpha_angle_milli_deg_per_sec\":%ld,\"mounting_transform_beta_angle_milli_deg_per_sec\":%ld,\"mounting_transform_gamma_angle_milli_deg_per_sec\":%ld,"
-            "\"channel_1_offset_milli_deg_per_sec\":%d,\"channel_2_offset_milli_deg_per_sec\":%d,\"channel_3_offset_milli_deg_per_sec\":%d,"
-            "\"sensitivity_matrix_s11_milli_deg_per_sec\":%d,\"sensitivity_matrix_s22_milli_deg_per_sec\":%d,\"sensitivity_matrix_s33_milli_deg_per_sec\":%d,"
-            "\"sensitivity_matrix_s12_milli_deg_per_sec\":%d,\"sensitivity_matrix_s13_milli_deg_per_sec\":%d,\"sensitivity_matrix_s21_milli_deg_per_sec\":%d,"
-            "\"sensitivity_matrix_s23_milli_deg_per_sec\":%d,\"sensitivity_matrix_s31_milli_deg_per_sec\":%d,\"sensitivity_matrix_s32_milli_deg_per_sec\":%d}",
-            data->mounting_transform_alpha_angle_milli_deg_per_sec, data->mounting_transform_beta_angle_milli_deg_per_sec, data->mounting_transform_gamma_angle_milli_deg_per_sec,
-            data->channel_1_offset_milli_deg_per_sec, data->channel_2_offset_milli_deg_per_sec, data->channel_3_offset_milli_deg_per_sec,
-            data->sensitivity_matrix_s11_milli_deg_per_sec, data->sensitivity_matrix_s22_milli_deg_per_sec, data->sensitivity_matrix_s33_milli_deg_per_sec,
-            data->sensitivity_matrix_s12_milli_deg_per_sec, data->sensitivity_matrix_s13_milli_deg_per_sec, data->sensitivity_matrix_s21_milli_deg_per_sec,
-            data->sensitivity_matrix_s23_milli_deg_per_sec, data->sensitivity_matrix_s31_milli_deg_per_sec, data->sensitivity_matrix_s32_milli_deg_per_sec);
+    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, "{\"mounting_transform_alpha_angle_mdeg_per_sec\":%ld,\"mounting_transform_beta_angle_mdeg_per_sec\":%ld,\"mounting_transform_gamma_angle_mdeg_per_sec\":%ld,"
+            "\"channel_1_offset_mdeg_per_sec\":%d,\"channel_2_offset_mdeg_per_sec\":%d,\"channel_3_offset_mdeg_per_sec\":%d,"
+            "\"sensitivity_matrix_s11_mdeg_per_sec\":%d,\"sensitivity_matrix_s22_mdeg_per_sec\":%d,\"sensitivity_matrix_s33_mdeg_per_sec\":%d,"
+            "\"sensitivity_matrix_s12_mdeg_per_sec\":%d,\"sensitivity_matrix_s13_mdeg_per_sec\":%d,\"sensitivity_matrix_s21_mdeg_per_sec\":%d,"
+            "\"sensitivity_matrix_s23_mdeg_per_sec\":%d,\"sensitivity_matrix_s31_mdeg_per_sec\":%d,\"sensitivity_matrix_s32_mdeg_per_sec\":%d}",
+            data->mounting_transform_alpha_angle_mdeg_per_sec, data->mounting_transform_beta_angle_mdeg_per_sec, data->mounting_transform_gamma_angle_mdeg_per_sec,
+            data->channel_1_offset_mdeg_per_sec, data->channel_2_offset_mdeg_per_sec, data->channel_3_offset_mdeg_per_sec,
+            data->sensitivity_matrix_s11_mdeg_per_sec, data->sensitivity_matrix_s22_mdeg_per_sec, data->sensitivity_matrix_s33_mdeg_per_sec,
+            data->sensitivity_matrix_s12_mdeg_per_sec, data->sensitivity_matrix_s13_mdeg_per_sec, data->sensitivity_matrix_s21_mdeg_per_sec,
+            data->sensitivity_matrix_s23_mdeg_per_sec, data->sensitivity_matrix_s31_mdeg_per_sec, data->sensitivity_matrix_s32_mdeg_per_sec);
     
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error
@@ -362,8 +362,8 @@ uint8_t ADCS_Commanded_Angles_Struct_TO_json(const ADCS_Commanded_Angles_Struct 
         return 1; // Error: invalid input
     }
     
-    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, "{\"x_milli_deg\":%ld,\"y_milli_deg\":%ld,\"z_milli_deg\":%ld}", 
-            data->x_milli_deg, data->y_milli_deg, data->z_milli_deg);
+    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, "{\"x_mdeg\":%ld,\"y_mdeg\":%ld,\"z_mdeg\":%ld}", 
+            data->x_mdeg, data->y_mdeg, data->z_mdeg);
 
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error
@@ -508,11 +508,11 @@ uint8_t ADCS_Rate_Gyro_Config_Struct_TO_json(const ADCS_Rate_Gyro_Config_Struct 
     }
     int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, 
                                 "{\"gyro1\":%d,\"gyro2\":%d,\"gyro3\":%d,"
-                                "\"x_rate_offset_milli_deg_per_sec\":%d,\"y_rate_offset_milli_deg_per_sec\":%d,"
-                                "\"z_rate_offset_milli_deg_per_sec\":%d,\"rate_sensor_mult\":%d}", 
+                                "\"x_rate_offset_mdeg_per_sec\":%d,\"y_rate_offset_mdeg_per_sec\":%d,"
+                                "\"z_rate_offset_mdeg_per_sec\":%d,\"rate_sensor_mult\":%d}", 
                                 data->gyro1, data->gyro2, data->gyro3, 
-                                data->x_rate_offset_milli_deg_per_sec, data->y_rate_offset_milli_deg_per_sec, 
-                                data->z_rate_offset_milli_deg_per_sec, data->rate_sensor_mult);
+                                data->x_rate_offset_mdeg_per_sec, data->y_rate_offset_mdeg_per_sec, 
+                                data->z_rate_offset_mdeg_per_sec, data->rate_sensor_mult);
 
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error
@@ -534,10 +534,10 @@ uint8_t ADCS_Estimated_Attitude_Angles_Struct_TO_json(const ADCS_Estimated_Attit
         return 1; // Error: invalid input
     }
     int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, 
-                                "{\"estimated_roll_angle_milli_deg\":%ld,\"estimated_pitch_angle_milli_deg\":%ld,"
-                                "\"estimated_yaw_angle_milli_deg\":%ld}", 
-                                data->estimated_roll_angle_milli_deg, data->estimated_pitch_angle_milli_deg, 
-                                data->estimated_yaw_angle_milli_deg);
+                                "{\"estimated_roll_angle_mdeg\":%ld,\"estimated_pitch_angle_mdeg\":%ld,"
+                                "\"estimated_yaw_angle_mdeg\":%ld}", 
+                                data->estimated_roll_angle_mdeg, data->estimated_pitch_angle_mdeg, 
+                                data->estimated_yaw_angle_mdeg);
 
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error
@@ -653,12 +653,12 @@ uint8_t ADCS_Estimated_Gyro_Bias_Struct_TO_json(const ADCS_Estimated_Gyro_Bias_S
         return 1; // Error: invalid input
     }
     int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, 
-                                "{\"estimated_x_gyro_bias_milli_deg_per_sec\":%ld,"
-                                "\"estimated_y_gyro_bias_milli_deg_per_sec\":%ld,"
-                                "\"estimated_z_gyro_bias_milli_deg_per_sec\":%ld}", 
-                                data->estimated_x_gyro_bias_milli_deg_per_sec, 
-                                data->estimated_y_gyro_bias_milli_deg_per_sec, 
-                                data->estimated_z_gyro_bias_milli_deg_per_sec);
+                                "{\"estimated_x_gyro_bias_mdeg_per_sec\":%ld,"
+                                "\"estimated_y_gyro_bias_mdeg_per_sec\":%ld,"
+                                "\"estimated_z_gyro_bias_mdeg_per_sec\":%ld}", 
+                                data->estimated_x_gyro_bias_mdeg_per_sec, 
+                                data->estimated_y_gyro_bias_mdeg_per_sec, 
+                                data->estimated_z_gyro_bias_mdeg_per_sec);
 
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error
@@ -882,8 +882,8 @@ uint8_t ADCS_Measurements_Struct_TO_json(const ADCS_Measurements_Struct *data, c
                                 "\"coarse_sun_y_micro\":%ld,\"coarse_sun_z_micro\":%ld,"
                                 "\"sun_x_micro\":%ld,\"sun_y_micro\":%ld,\"sun_z_micro\":%ld,"
                                 "\"nadir_x_micro\":%ld,\"nadir_y_micro\":%ld,\"nadir_z_micro\":%ld,"
-                                "\"x_angular_rate_milli_deg_per_sec\":%ld,\"y_angular_rate_milli_deg_per_sec\":%ld,"
-                                "\"z_angular_rate_milli_deg_per_sec\":%ld,\"x_wheel_speed_rpm\":%d,"
+                                "\"x_angular_rate_mdeg_per_sec\":%ld,\"y_angular_rate_mdeg_per_sec\":%ld,"
+                                "\"z_angular_rate_mdeg_per_sec\":%ld,\"x_wheel_speed_rpm\":%d,"
                                 "\"y_wheel_speed_rpm\":%d,\"z_wheel_speed_rpm\":%d,"
                                 "\"star1_body_x_micro\":%ld,\"star1_body_y_micro\":%ld,"
                                 "\"star1_body_z_micro\":%ld,\"star1_orbit_x_micro\":%ld,"
@@ -898,8 +898,8 @@ uint8_t ADCS_Measurements_Struct_TO_json(const ADCS_Measurements_Struct *data, c
                                 data->coarse_sun_x_micro, data->coarse_sun_y_micro, data->coarse_sun_z_micro,
                                 data->sun_x_micro, data->sun_y_micro, data->sun_z_micro,
                                 data->nadir_x_micro, data->nadir_y_micro, data->nadir_z_micro,
-                                data->x_angular_rate_milli_deg_per_sec, data->y_angular_rate_milli_deg_per_sec, 
-                                data->z_angular_rate_milli_deg_per_sec, data->x_wheel_speed_rpm, 
+                                data->x_angular_rate_mdeg_per_sec, data->y_angular_rate_mdeg_per_sec, 
+                                data->z_angular_rate_mdeg_per_sec, data->x_wheel_speed_rpm, 
                                 data->y_wheel_speed_rpm, data->z_wheel_speed_rpm,
                                 data->star1_body_x_micro, data->star1_body_y_micro, data->star1_body_z_micro,
                                 data->star1_orbit_x_micro, data->star1_orbit_y_micro, data->star1_orbit_z_micro,

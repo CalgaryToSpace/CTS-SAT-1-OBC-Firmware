@@ -20,9 +20,9 @@ static const uint8_t ADCS_TELEMETRY_REQUEST = 1;
 static const uint8_t ADCS_MAGIC_NUMBER = 0x5A; // Used to make sure that the reset command is valid
 
 // I2C Write and Read Addresses - Section 5.3 Table 5 of Firmware Manual
-static const uint8_t ADCS_I2C_WRITE_ADDRESS = 0xAE;
-static const uint8_t ADCS_I2C_READ_ADDRESS = 0xAF;
-static const uint8_t ADCS_I2C_ADDRESS = 0x57;
+static const uint8_t ADCS_i2c_WRITE_ADDRESS = 0xAE;
+static const uint8_t ADCS_i2c_READ_ADDRESS = 0xAF;
+static const uint8_t ADCS_i2c_ADDRESS = 0x57;
 
 // Identifiers of UART Start of Message and End of Message - Section 4.2 of Firmware Manual
 // 0x1F | 0x7F ....... | 0x1F 0xFF
@@ -40,19 +40,19 @@ static const uint16_t ADCS_HAL_TIMEOUT = 1000;
 
 // Telecommand Error Flags - Section 5.2.2 Figure 6 of Firmware Manual
 typedef enum ADCS_Error_Flag {
-	ADCS_ERROR_FLAG_NONE = 0,
-	ADCS_ERROR_FLAG_INVALID_ID = 1,
-	ADCS_ERROR_FLAG_WRONG_LENGTH = 2,
-	ADCS_ERROR_FLAG_INVALID_PARAMS = 3,
-	ADCS_ERROR_FLAG_CRC = 4
+    ADCS_ERROR_FLAG_NONE = 0,
+    ADCS_ERROR_FLAG_INVALID_ID = 1,
+    ADCS_ERROR_FLAG_WRONG_LENGTH = 2,
+    ADCS_ERROR_FLAG_INVALID_PARAMS = 3,
+    ADCS_ERROR_FLAG_CRC = 4
 } ADCS_Error_Flag;
 
 // ADCS Run Modes - Section 5.3.1 Table 75 of Firmware Manual
 typedef enum ADCS_Run_Mode {
-	ADCS_RUN_MODE_OFF = 0,
-	ADCS_RUN_MODE_ENABLED = 1,
-	ADCS_RUN_MODE_TRIGGERED = 2,
-	ADCS_RUN_MODE_SIMULATION = 3
+    ADCS_RUN_MODE_OFF = 0,
+    ADCS_RUN_MODE_ENABLED = 1,
+    ADCS_RUN_MODE_TRIGGERED = 2,
+    ADCS_RUN_MODE_SIMULATION = 3
 } ADCS_Run_Mode;
 
 // ADCS Reset Causes - Section 6.1.2 Table 28 of Firmware Manual
@@ -123,16 +123,16 @@ typedef enum ADCS_Estimation_Mode {
 } ADCS_Estimation_Mode;
 
 typedef enum ADCS_Power_Select {
-	ADCS_POWER_SELECT_OFF = 0,
-	ADCS_POWER_SELECT_ON = 1,
-	ADCS_POWER_SELECT_SAME = 2
+    ADCS_POWER_SELECT_OFF = 0,
+    ADCS_POWER_SELECT_ON = 1,
+    ADCS_POWER_SELECT_SAME = 2
 } ADCS_Power_Select;
 
 typedef enum ADCS_Magnetometer_Mode {
-	ADCS_MAGNETOMETER_MODE_MAIN_SIGNAL = 0,
-	ADCS_MAGNETOMETER_MODE_REDUNDANT_SIGNAL = 1,
-	ADCS_MAGNETOMETER_MODE_MAIN_MOTOR = 2,
-	ADCS_MAGNETOMETER_MODE_NONE = 3
+    ADCS_MAGNETOMETER_MODE_MAIN_SIGNAL = 0,
+    ADCS_MAGNETOMETER_MODE_REDUNDANT_SIGNAL = 1,
+    ADCS_MAGNETOMETER_MODE_MAIN_MOTOR = 2,
+    ADCS_MAGNETOMETER_MODE_NONE = 3
 } ADCS_Magnetometer_Mode;
 
 typedef enum ADCS_ASGP4_Filter {
@@ -200,19 +200,19 @@ typedef enum ADCS_GPS_Axis {
 /* Structs */
 
 typedef struct ADCS_CMD_Ack_Struct {
-	uint8_t last_id;
-	bool processed:1; // 1-bit bool
-	enum ADCS_Error_Flag error_flag;
-	uint8_t error_index;
+    uint8_t last_id;
+    bool processed:1; // 1-bit bool
+    enum ADCS_Error_Flag error_flag;
+    uint8_t error_index;
 } ADCS_CMD_Ack_Struct;
 
 typedef struct ADCS_ID_Struct {
-	uint8_t node_type;
-	uint8_t interface_version;
-	uint8_t major_firmware_version;
-	uint8_t minor_firmware_version;
-	uint16_t seconds_since_startup;
-	uint16_t ms_past_second;
+    uint8_t node_type;
+    uint8_t interface_version;
+    uint8_t major_firmware_version;
+    uint8_t minor_firmware_version;
+    uint16_t seconds_since_startup;
+    uint16_t ms_past_second;
 } ADCS_ID_Struct;
 
 typedef struct ADCS_Boot_Running_Status_Struct {
@@ -233,35 +233,35 @@ typedef struct ADCS_Comms_Status_Struct {
 } ADCS_Comms_Status_Struct;
 
 typedef struct ADCS_Angular_Rates_Struct {
-    int32_t x_rate_milli_deg_per_sec;
-    int32_t y_rate_milli_deg_per_sec;
-    int32_t z_rate_milli_deg_per_sec;
+    int32_t x_rate_mdeg_per_sec;
+    int32_t y_rate_mdeg_per_sec;
+    int32_t z_rate_mdeg_per_sec;
 } ADCS_Angular_Rates_Struct;
 
 typedef struct ADCS_LLH_Position_Struct {
-    int32_t latitude_milli_deg;
-    int32_t longitude_milli_deg;
+    int32_t latitude_mdeg;
+    int32_t longitude_mdeg;
     int32_t altitude_meters;
 } ADCS_LLH_Position_Struct;
 
 typedef struct ADCS_Power_Control_Struct{
-	ADCS_Power_Select cube_control_signal;
-	ADCS_Power_Select cube_control_motor;
-	ADCS_Power_Select cube_sense1;
-	ADCS_Power_Select cube_sense2;
-	ADCS_Power_Select cube_star_power;
-	ADCS_Power_Select cube_wheel1_power;
-	ADCS_Power_Select cube_wheel2_power;
-	ADCS_Power_Select cube_wheel3_power;
-	ADCS_Power_Select motor_power;
-	ADCS_Power_Select gps_power;
+    ADCS_Power_Select cube_control_signal;
+    ADCS_Power_Select cube_control_motor;
+    ADCS_Power_Select cube_sense1;
+    ADCS_Power_Select cube_sense2;
+    ADCS_Power_Select cube_star_power;
+    ADCS_Power_Select cube_wheel1_power;
+    ADCS_Power_Select cube_wheel2_power;
+    ADCS_Power_Select cube_wheel3_power;
+    ADCS_Power_Select motor_power;
+    ADCS_Power_Select gps_power;
 } ADCS_Power_Control_Struct;
 
 typedef struct ADCS_Set_Unix_Time_Save_Mode_Struct{
-	bool save_now:1; // 1-bit bool
-	bool save_on_update:1; // 1-bit bool
-	bool save_periodic:1; // 1-bit bool
-	uint8_t period;
+    bool save_now:1; // 1-bit bool
+    bool save_on_update:1; // 1-bit bool
+    bool save_periodic:1; // 1-bit bool
+    uint8_t period;
 } ADCS_Set_Unix_Time_Save_Mode_Struct;
 
 typedef struct ADCS_Orbit_Params_Struct {
@@ -276,58 +276,58 @@ typedef struct ADCS_Orbit_Params_Struct {
 } ADCS_Orbit_Params_Struct;
 
 typedef struct ADCS_Rated_Sensor_Rates_Struct {
-	int32_t x_milli_deg_per_sec; 
-	int32_t y_milli_deg_per_sec;
-	int32_t z_milli_deg_per_sec; 
+    int32_t x_mdeg_per_sec; 
+    int32_t y_mdeg_per_sec;
+    int32_t z_mdeg_per_sec; 
 } ADCS_Rated_Sensor_Rates_Struct;
 
 typedef struct ADCS_Wheel_Speed_Struct {
     // TODO: Add bool for whether it's commanded or actual wheel speed
-	int16_t x; 
-	int16_t y;
-	int16_t z; 
+    int16_t x; 
+    int16_t y;
+    int16_t z; 
 } ADCS_Wheel_Speed_Struct;
 
 typedef struct ADCS_Magnetorquer_Command_Struct {
-	int32_t x_ms; 
-	int32_t y_ms;
-	int32_t z_ms; 
+    int32_t x_ms; 
+    int32_t y_ms;
+    int32_t z_ms; 
 } ADCS_Magnetorquer_Command_Struct;
 
 typedef struct ADCS_Raw_Magnetometer_Values_Struct {
-	int16_t x; 
-	int16_t y;
-	int16_t z; 
+    int16_t x; 
+    int16_t y;
+    int16_t z; 
 } ADCS_Raw_Magnetometer_Values_Struct;
 
 typedef struct ADCS_Fine_Angular_Rates_Struct {
-	int16_t x_milli_deg_per_sec; 
-	int16_t y_milli_deg_per_sec;
-	int16_t z_milli_deg_per_sec; 
+    int16_t x_mdeg_per_sec; 
+    int16_t y_mdeg_per_sec;
+    int16_t z_mdeg_per_sec; 
 } ADCS_Fine_Angular_Rates_Struct;
 
 typedef struct ADCS_Magnetometer_Config_Struct {
-    int32_t mounting_transform_alpha_angle_milli_deg_per_sec;
-    int32_t mounting_transform_beta_angle_milli_deg_per_sec;
-    int32_t mounting_transform_gamma_angle_milli_deg_per_sec;
-    int16_t channel_1_offset_milli_deg_per_sec;
-    int16_t channel_2_offset_milli_deg_per_sec;
-    int16_t channel_3_offset_milli_deg_per_sec;
-    int16_t sensitivity_matrix_s11_milli_deg_per_sec;
-    int16_t sensitivity_matrix_s22_milli_deg_per_sec;
-    int16_t sensitivity_matrix_s33_milli_deg_per_sec;
-    int16_t sensitivity_matrix_s12_milli_deg_per_sec;
-    int16_t sensitivity_matrix_s13_milli_deg_per_sec;
-    int16_t sensitivity_matrix_s21_milli_deg_per_sec;
-    int16_t sensitivity_matrix_s23_milli_deg_per_sec;
-    int16_t sensitivity_matrix_s31_milli_deg_per_sec;
-    int16_t sensitivity_matrix_s32_milli_deg_per_sec;
+    int32_t mounting_transform_alpha_angle_mdeg_per_sec;
+    int32_t mounting_transform_beta_angle_mdeg_per_sec;
+    int32_t mounting_transform_gamma_angle_mdeg_per_sec;
+    int16_t channel_1_offset_mdeg_per_sec;
+    int16_t channel_2_offset_mdeg_per_sec;
+    int16_t channel_3_offset_mdeg_per_sec;
+    int16_t sensitivity_matrix_s11_mdeg_per_sec;
+    int16_t sensitivity_matrix_s22_mdeg_per_sec;
+    int16_t sensitivity_matrix_s33_mdeg_per_sec;
+    int16_t sensitivity_matrix_s12_mdeg_per_sec;
+    int16_t sensitivity_matrix_s13_mdeg_per_sec;
+    int16_t sensitivity_matrix_s21_mdeg_per_sec;
+    int16_t sensitivity_matrix_s23_mdeg_per_sec;
+    int16_t sensitivity_matrix_s31_mdeg_per_sec;
+    int16_t sensitivity_matrix_s32_mdeg_per_sec;
 } ADCS_Magnetometer_Config_Struct;
 
 typedef struct ADCS_Commanded_Angles_Struct {
-	int32_t x_milli_deg; 
-	int32_t y_milli_deg;
-	int32_t z_milli_deg; 
+    int32_t x_mdeg; 
+    int32_t y_mdeg;
+    int32_t z_mdeg; 
 } ADCS_Commanded_Angles_Struct;
 
 typedef struct ADCS_Estimation_Params_Struct {
@@ -381,16 +381,16 @@ typedef struct ADCS_Rate_Gyro_Config_Struct {
     ADCS_Axis_Select gyro1; 
     ADCS_Axis_Select gyro2; 
     ADCS_Axis_Select gyro3; 
-    int16_t x_rate_offset_milli_deg_per_sec; 
-    int16_t y_rate_offset_milli_deg_per_sec; 
-    int16_t z_rate_offset_milli_deg_per_sec; 
+    int16_t x_rate_offset_mdeg_per_sec; 
+    int16_t y_rate_offset_mdeg_per_sec; 
+    int16_t z_rate_offset_mdeg_per_sec; 
     uint8_t rate_sensor_mult;
 } ADCS_Rate_Gyro_Config_Struct;
 
 typedef struct ADCS_Estimated_Attitude_Angles_Struct {
-    int32_t estimated_roll_angle_milli_deg;
-    int32_t estimated_pitch_angle_milli_deg;
-    int32_t estimated_yaw_angle_milli_deg;
+    int32_t estimated_roll_angle_mdeg;
+    int32_t estimated_pitch_angle_mdeg;
+    int32_t estimated_yaw_angle_mdeg;
 } ADCS_Estimated_Attitude_Angles_Struct;
 
 typedef struct ADCS_Magnetic_Field_Vector_Struct {
@@ -418,9 +418,9 @@ typedef struct ADCS_Quaternion_Error_Vector_Struct {
 } ADCS_Quaternion_Error_Vector_Struct;
 
 typedef struct ADCS_Estimated_Gyro_Bias_Struct {
-    int32_t estimated_x_gyro_bias_milli_deg_per_sec;
-    int32_t estimated_y_gyro_bias_milli_deg_per_sec;
-    int32_t estimated_z_gyro_bias_milli_deg_per_sec;
+    int32_t estimated_x_gyro_bias_mdeg_per_sec;
+    int32_t estimated_y_gyro_bias_mdeg_per_sec;
+    int32_t estimated_z_gyro_bias_mdeg_per_sec;
 } ADCS_Estimated_Gyro_Bias_Struct;
 
 typedef struct ADCS_Estimation_Innovation_Vector_Struct {
@@ -492,9 +492,9 @@ typedef struct ADCS_Measurements_Struct {
     int32_t nadir_x_micro;
     int32_t nadir_y_micro;
     int32_t nadir_z_micro;
-    int32_t x_angular_rate_milli_deg_per_sec;
-    int32_t y_angular_rate_milli_deg_per_sec;
-    int32_t z_angular_rate_milli_deg_per_sec;
+    int32_t x_angular_rate_mdeg_per_sec;
+    int32_t y_angular_rate_mdeg_per_sec;
+    int32_t z_angular_rate_mdeg_per_sec;
     int16_t x_wheel_speed_rpm;
     int16_t y_wheel_speed_rpm;
     int16_t z_wheel_speed_rpm;

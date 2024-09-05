@@ -88,9 +88,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Angular_Rates_Struct() {
     ADCS_Angular_Rates_Struct result;
     ADCS_Pack_to_Angular_Rates_Struct(input_params, &result);
 
-    TEST_ASSERT_TRUE(result.x_rate_milli_deg_per_sec == 87210);
-    TEST_ASSERT_TRUE(result.y_rate_milli_deg_per_sec == 174590);
-    TEST_ASSERT_TRUE(result.z_rate_milli_deg_per_sec == -1710);
+    TEST_ASSERT_TRUE(result.x_rate_mdeg_per_sec == 87210);
+    TEST_ASSERT_TRUE(result.y_rate_mdeg_per_sec == 174590);
+    TEST_ASSERT_TRUE(result.z_rate_mdeg_per_sec == -1710);
 
     return 0;
 }
@@ -100,8 +100,8 @@ uint8_t TEST_EXEC__ADCS_Pack_to_LLH_Position_Struct() {
     ADCS_LLH_Position_Struct result;
     ADCS_Pack_to_LLH_Position_Struct(input_params, &result);
 
-    TEST_ASSERT_TRUE(result.latitude_milli_deg ==  87210);
-    TEST_ASSERT_TRUE(result.longitude_milli_deg == -2050);
+    TEST_ASSERT_TRUE(result.latitude_mdeg ==  87210);
+    TEST_ASSERT_TRUE(result.longitude_mdeg == -2050);
     TEST_ASSERT_TRUE(result.altitude_meters == 261970);
 
     return 0;
@@ -149,9 +149,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Rated_Sensor_Rates_Struct() {
     ADCS_Rated_Sensor_Rates_Struct result;
     ADCS_Pack_to_Rated_Sensor_Rates_Struct(input_params, &result);
 
-    TEST_ASSERT_TRUE(result.x_milli_deg_per_sec == 87210);
-    TEST_ASSERT_TRUE(result.y_milli_deg_per_sec == 174590);
-    TEST_ASSERT_TRUE(result.z_milli_deg_per_sec == -1710);
+    TEST_ASSERT_TRUE(result.x_mdeg_per_sec == 87210);
+    TEST_ASSERT_TRUE(result.y_mdeg_per_sec == 174590);
+    TEST_ASSERT_TRUE(result.z_mdeg_per_sec == -1710);
 
     return 0;
 }
@@ -198,9 +198,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Fine_Angular_Rates_Struct()
 
     ADCS_Fine_Angular_Rates_Struct result;
     ADCS_Pack_to_Fine_Angular_Rates_Struct(input_params, &result);
-    TEST_ASSERT_TRUE(result.x_milli_deg_per_sec == 8721);
-    TEST_ASSERT_TRUE(result.y_milli_deg_per_sec == 17459);
-    TEST_ASSERT_TRUE(result.z_milli_deg_per_sec == -171);
+    TEST_ASSERT_TRUE(result.x_mdeg_per_sec == 8721);
+    TEST_ASSERT_TRUE(result.y_mdeg_per_sec == 17459);
+    TEST_ASSERT_TRUE(result.z_mdeg_per_sec == -171);
 
     return 0;
 }
@@ -215,21 +215,21 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Magnetometer_Config_Struct()
 
     ADCS_Magnetometer_Config_Struct result;
     ADCS_Pack_to_Magnetometer_Config_Struct(input_params, &result);
-    TEST_ASSERT_TRUE(result.mounting_transform_alpha_angle_milli_deg_per_sec == 87380);
-    TEST_ASSERT_TRUE(result.mounting_transform_beta_angle_milli_deg_per_sec == -87380);
-    TEST_ASSERT_TRUE(result.mounting_transform_gamma_angle_milli_deg_per_sec == 87380);
-    TEST_ASSERT_TRUE(result.channel_1_offset_milli_deg_per_sec == -8738);
-    TEST_ASSERT_TRUE(result.channel_2_offset_milli_deg_per_sec == 8738);
-    TEST_ASSERT_TRUE(result.channel_3_offset_milli_deg_per_sec == -8738);
-    TEST_ASSERT_TRUE(result.sensitivity_matrix_s11_milli_deg_per_sec == 8738);
-    TEST_ASSERT_TRUE(result.sensitivity_matrix_s22_milli_deg_per_sec == -8738);
-    TEST_ASSERT_TRUE(result.sensitivity_matrix_s33_milli_deg_per_sec == 8738);
-    TEST_ASSERT_TRUE(result.sensitivity_matrix_s12_milli_deg_per_sec == -8738);
-    TEST_ASSERT_TRUE(result.sensitivity_matrix_s13_milli_deg_per_sec == 8738);
-    TEST_ASSERT_TRUE(result.sensitivity_matrix_s21_milli_deg_per_sec == -8738);
-    TEST_ASSERT_TRUE(result.sensitivity_matrix_s23_milli_deg_per_sec == 8738);
-    TEST_ASSERT_TRUE(result.sensitivity_matrix_s31_milli_deg_per_sec == -8738);
-    TEST_ASSERT_TRUE(result.sensitivity_matrix_s32_milli_deg_per_sec == 8738);
+    TEST_ASSERT_TRUE(result.mounting_transform_alpha_angle_mdeg_per_sec == 87380);
+    TEST_ASSERT_TRUE(result.mounting_transform_beta_angle_mdeg_per_sec == -87380);
+    TEST_ASSERT_TRUE(result.mounting_transform_gamma_angle_mdeg_per_sec == 87380);
+    TEST_ASSERT_TRUE(result.channel_1_offset_mdeg_per_sec == -8738);
+    TEST_ASSERT_TRUE(result.channel_2_offset_mdeg_per_sec == 8738);
+    TEST_ASSERT_TRUE(result.channel_3_offset_mdeg_per_sec == -8738);
+    TEST_ASSERT_TRUE(result.sensitivity_matrix_s11_mdeg_per_sec == 8738);
+    TEST_ASSERT_TRUE(result.sensitivity_matrix_s22_mdeg_per_sec == -8738);
+    TEST_ASSERT_TRUE(result.sensitivity_matrix_s33_mdeg_per_sec == 8738);
+    TEST_ASSERT_TRUE(result.sensitivity_matrix_s12_mdeg_per_sec == -8738);
+    TEST_ASSERT_TRUE(result.sensitivity_matrix_s13_mdeg_per_sec == 8738);
+    TEST_ASSERT_TRUE(result.sensitivity_matrix_s21_mdeg_per_sec == -8738);
+    TEST_ASSERT_TRUE(result.sensitivity_matrix_s23_mdeg_per_sec == 8738);
+    TEST_ASSERT_TRUE(result.sensitivity_matrix_s31_mdeg_per_sec == -8738);
+    TEST_ASSERT_TRUE(result.sensitivity_matrix_s32_mdeg_per_sec == 8738);
 
     return 0;
 }
@@ -240,9 +240,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Commanded_Attitude_Angles_Struct()
 
     ADCS_Commanded_Angles_Struct result;
     ADCS_Pack_to_Commanded_Attitude_Angles_Struct(input_params, &result);
-    TEST_ASSERT_TRUE(result.x_milli_deg == -219990);
-    TEST_ASSERT_TRUE(result.y_milli_deg == -176300);
-    TEST_ASSERT_TRUE(result.z_milli_deg == -132610);
+    TEST_ASSERT_TRUE(result.x_mdeg == -219990);
+    TEST_ASSERT_TRUE(result.y_mdeg == -176300);
+    TEST_ASSERT_TRUE(result.z_mdeg == -132610);
 
     return 0;
 }
@@ -330,9 +330,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Rate_Gyro_Config_Struct()
     TEST_ASSERT_TRUE(result.gyro1 == 205);
     TEST_ASSERT_TRUE(result.gyro2 == 204);
     TEST_ASSERT_TRUE(result.gyro3 == 220);
-    TEST_ASSERT_TRUE(result.x_rate_offset_milli_deg_per_sec == 13122);
-    TEST_ASSERT_TRUE(result.y_rate_offset_milli_deg_per_sec == -29901);
-    TEST_ASSERT_TRUE(result.z_rate_offset_milli_deg_per_sec == 26306);
+    TEST_ASSERT_TRUE(result.x_rate_offset_mdeg_per_sec == 13122);
+    TEST_ASSERT_TRUE(result.y_rate_offset_mdeg_per_sec == -29901);
+    TEST_ASSERT_TRUE(result.z_rate_offset_mdeg_per_sec == 26306);
     TEST_ASSERT_TRUE(result.rate_sensor_mult == 102);
 
     return 0;
@@ -345,9 +345,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Estimated_Attitude_Angles_Struct()
     ADCS_Estimated_Attitude_Angles_Struct result;
     ADCS_Pack_to_Estimated_Attitude_Angles_Struct(input_params, &result);
 
-    TEST_ASSERT_TRUE(result.estimated_roll_angle_milli_deg == 100000);
-    TEST_ASSERT_TRUE(result.estimated_pitch_angle_milli_deg == -2040);
-    TEST_ASSERT_TRUE(result.estimated_yaw_angle_milli_deg == 308060);
+    TEST_ASSERT_TRUE(result.estimated_roll_angle_mdeg == 100000);
+    TEST_ASSERT_TRUE(result.estimated_pitch_angle_mdeg == -2040);
+    TEST_ASSERT_TRUE(result.estimated_yaw_angle_mdeg == 308060);
 
     return 0;
 }
@@ -429,9 +429,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Estimated_Gyro_Bias_Struct()
     ADCS_Estimated_Gyro_Bias_Struct result;
     ADCS_Pack_to_Estimated_Gyro_Bias_Struct(input_params, &result);
 
-    TEST_ASSERT_TRUE(result.estimated_x_gyro_bias_milli_deg_per_sec == 513);
-    TEST_ASSERT_TRUE(result.estimated_y_gyro_bias_milli_deg_per_sec == -7165);
-    TEST_ASSERT_TRUE(result.estimated_z_gyro_bias_milli_deg_per_sec == 1541);
+    TEST_ASSERT_TRUE(result.estimated_x_gyro_bias_mdeg_per_sec == 513);
+    TEST_ASSERT_TRUE(result.estimated_y_gyro_bias_mdeg_per_sec == -7165);
+    TEST_ASSERT_TRUE(result.estimated_z_gyro_bias_mdeg_per_sec == 1541);
 
     return 0;
 }
@@ -597,9 +597,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Measurements_Struct() {
     TEST_ASSERT_TRUE(result.nadir_x_micro == -673500);
     TEST_ASSERT_TRUE(result.nadir_y_micro == 661100);
     TEST_ASSERT_TRUE(result.nadir_z_micro == -987200);
-    TEST_ASSERT_TRUE(result.x_angular_rate_milli_deg_per_sec == 285510);
-    TEST_ASSERT_TRUE(result.y_angular_rate_milli_deg_per_sec == 24650);
-    TEST_ASSERT_TRUE(result.z_angular_rate_milli_deg_per_sec == -184480);
+    TEST_ASSERT_TRUE(result.x_angular_rate_mdeg_per_sec == 285510);
+    TEST_ASSERT_TRUE(result.y_angular_rate_mdeg_per_sec == 24650);
+    TEST_ASSERT_TRUE(result.z_angular_rate_mdeg_per_sec == -184480);
     TEST_ASSERT_TRUE(result.x_wheel_speed_rpm == -13159);
     TEST_ASSERT_TRUE(result.y_wheel_speed_rpm == 24505);
     TEST_ASSERT_TRUE(result.z_wheel_speed_rpm == -7829);
