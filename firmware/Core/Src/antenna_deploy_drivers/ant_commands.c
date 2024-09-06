@@ -132,9 +132,96 @@ uint8_t ANT_CMD_measure_temp() {
         comms_err = ANT_get_response(rx_buf, rx_len);
     }
 
-
     DEBUG_uart_print_str("Received raw bytes: ");
     DEBUG_uart_print_array_hex(rx_buf, rx_len);
     DEBUG_uart_print_str("\n");
     return comms_err;
+}
+/// @brief writes 2 bytes of information representing the deployment status of the antennas to the passed buffer,
+///         information on interpereting the response may be found in the ISIS Antenna System user manual. Doc ID: ISIS.ANTS.UM.001 pg. 42
+/// @param response a two byte buffer where the status information is written to.
+/// @return 0 on success, > 0 on failure.
+uint8_t ANT_CMD_report_deployment_status(uint16_t *response) {
+    const uint8_t CMD_LEN  = 1;
+    uint8_t cmd_buf[CMD_LEN];
+
+    cmd_buf[0] = ANT_CMD_REPORT_DEPLOYMENT_STATUS;
+
+    uint8_t status = ant_send_cmd(cmd_buf, CMD_LEN); 
+    
+    if (status == 0) {
+        const uint8_t response_size = 2;
+        // TODO: careful about enidianness!!!
+        status = ANT_get_response(response, response_size);
+    }
+    return status;
+}
+/// @brief writes the number of times deployment has been attempted (for a specified antenna) in a response buffer.
+/// @param antenna the antenna to check
+/// @param response a 1 byte buffer where the count of attempted deployments will be writen
+/// @return 0 on success, > 0 on failure
+uint8_t report_antenna_deployment_activation_count(uint8_t antenna, uint8_t *response) {
+    const uint8_t CMD_BUFF_SIZE = 1;
+    uint8_t cmd_buf[CMD_BUFF_SIZE];
+
+    switch (antenna) {
+        case 1:
+            cmd_buf[0] = ANT_CMD_REPORT_ANT1_DEPLOYMENT_COUNT;
+            break;
+        case 2:
+            cmd_buf[0] = ANT_CMD_REPORT_ANT2_DEPLOYMENT_COUNT;
+            break;
+        case 3:
+            cmd_buf[0] = ANT_CMD_REPORT_ANT3_DEPLOYMENT_COUNT;
+            break;
+        case 4:
+            cmd_buf[0] = ANT_CMD_REPORT_ANT4_DEPLOYMENT_COUNT;
+            break;
+        default:
+            DEBUG_uart_print_str("Invalid choice for antenna: antenna must be between 1-4 inclusive.");
+            return 1;
+    }
+
+    uint8_t status = ant_send_cmd(cmd_buf, CMD_BUFF_SIZE); 
+    if(status == 0) {
+        const uint8_t response_len = 1;
+        // TODO: careful about enidianness!!!
+        status = ANT_get_response(response, response_len);
+    }
+    return status;
+}
+
+/// @brief writes the cumulative time (in 50ms incements) that the deployment system has been active (for a specified antenna) in a response buffer.
+/// @param antenna the antenna to check. A number between 1-4
+/// @param response a 2 byte buffer where the cumulative deployment time (in 50ms increments) will be writen
+/// @return 0 on success, > 0 on failure
+uint8_t report_antenna_deployment_activation_time(uint8_t antenna, uint16_t *response) {
+    const uint8_t CMD_BUFF_SIZE = 1;
+    uint8_t cmd_buf[CMD_BUFF_SIZE];
+
+    switch (antenna) {
+        case 1:
+            cmd_buf[0] = ANT_CMD_REPORT_ANT1_DEPLOYMENT_SYS_ACTIVATION_TIME;
+            break;
+        case 2:
+            cmd_buf[0] = ANT_CMD_REPORT_ANT2_DEPLOYMENT_SYS_ACTIVATION_TIME;
+            break;
+        case 3:
+            cmd_buf[0] = ANT_CMD_REPORT_ANT3_DEPLOYMENT_SYS_ACTIVATION_TIME;
+            break;
+        case 4:
+            cmd_buf[0] = ANT_CMD_REPORT_ANT4_DEPLOYMENT_SYS_ACTIVATION_TIME;
+            break;
+        default:
+            DEBUG_uart_print_str("Invalid choice for antenna: antenna must be between 1-4 inclusive.");
+            return 1;
+    }
+
+    uint8_t status = ant_send_cmd(cmd_buf, CMD_BUFF_SIZE); 
+    if(status == 0) {
+        const uint8_t response_len = 2; 
+        // TODO: careful about enidianness!!!
+        status = ANT_get_response(response, response_len);
+    }
+    return status;
 }
