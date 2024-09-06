@@ -182,7 +182,9 @@ uint8_t TEST_EXEC__GPS_Parse_header(){
 
     // Testing with a different Valid GPS Header
     strcpy(gps_data,
-    "#TIMEA,COM1,0,86.5,FINESTEERING,1930,428348.000,02000020,9924,32768;VALID,1.667187222e-10,9.641617960e-10,-18.00000000000,2017,1,5,22,58,50000,VALID*2a066e78")
+    "#TIMEA,COM1,0,86.5,FINESTEERING,1930,428348.000,02000020,"
+    "9924,32768;VALID,1.667187222e-10,9.641617960e-10,-18.00000000000,"
+    "2017,1,5,22,58,50000,VALID*2a066e78")
     ;
     result = parse_gps_header(gps_data, &gps_header_result);
     TEST_ASSERT_TRUE(result == 0);
@@ -254,6 +256,40 @@ uint8_t TEST_EXEC__GPS_Parse_bestxyza(){
     TEST_ASSERT_TRUE(result.differential_age_ms == 1000);
     TEST_ASSERT_TRUE(result.solution_age_ms == 0000);
     TEST_ASSERT_TRUE(result.crc == 0xe9eafeca);
+
+    // Testing with an empty string
+    strcpy(gps_data, "");
+    parse_result = parse_bestxyza_data(gps_data, &result);
+    TEST_ASSERT_TRUE(parse_result == 1);
+
+    // Introducing an error within the header of the GPS response: Missing delimiting character
+    strcpy(gps_data, "#BESTXYZA,COM1,0,55.0,FINESTEERING,1419,340033.000,02000040,d821,2724"
+                  "SOL_COMPUTED,NARROW_INT,-1634531.5683,-3664618.0326,-3664618.0326,0.0099,"
+                  "0.0219,0.0115,SOL_COMPUTED,NARROW_INT,0.0011,-0.0049,-0.0001,0.0199,0.0439,"
+                  "0.0230,\"AAAA\",0.250,1.000,0.000,12,11,11,11,0,01,0,33*e9eafeca");
+    parse_result = parse_bestxyza_data(gps_data, &result);
+    TEST_ASSERT_TRUE(parse_result == 2);
+
+    // Testing with a different GPS Header
+    strcpy(gps_data,
+    "#TIMEA,COM1,0,86.5,FINESTEERING,1930,428348.000,02000020,9924,32768;"
+    "VALID,1.667187222e-10,9.641617960e-10,-18.00000000000,2017,1,5,22,58,50000,VALID*2a066e78"
+    );
+    parse_result = parse_bestxyza_data(gps_data, &result);
+    TEST_ASSERT_TRUE(parse_result == 3);
+
+    // Missing delimiting character * which denotes the end of the data response
+    strcpy(gps_data, "#BESTXYZA,COM1,0,55.0,FINESTEERING,1419,340033.000,02000040,d821,2724;"
+                  "SOL_COMPUTED,NARROW_INT,-1634531.5683,-3664618.0326,-3664618.0326,0.0099,"
+                  "0.0219,0.0115,SOL_COMPUTED,NARROW_INT,0.0011,-0.0049,-0.0001,0.0199,0.0439,"
+                  "0.0230,\"AAAA\",0.250,1.000,0.000,12,11,11,11,0,01,0,33");
+    parse_result = parse_bestxyza_data(gps_data, &result);
+    TEST_ASSERT_TRUE(parse_result == 4);
+
+    // Missing bestxyza data response
+    strcpy(gps_data, "#BESTXYZA,COM1,0,55.0,FINESTEERING,1419,340033.000,02000040,d821,2724;");
+    parse_result = parse_bestxyza_data(gps_data, &result);
+    TEST_ASSERT_TRUE(parse_result == 5);
 
     return 0;
 }
