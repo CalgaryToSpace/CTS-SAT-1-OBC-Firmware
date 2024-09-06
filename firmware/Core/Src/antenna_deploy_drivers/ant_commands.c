@@ -8,6 +8,18 @@
 #include <stdint.h>
 #include <stdio.h>
 
+/// @brief Performs a reset of the antenna deployment systems microcontroller 
+/// @return 0 if successful, > 0 if error occurred
+uint8_t ANT_CMD_reset() {
+    #define CMD_BUF_LEN 1
+    uint8_t cmd_buf[CMD_BUF_LEN];
+
+    cmd_buf[0] = ANT_CMD_RESET;
+
+    const uint8_t send_status = ant_send_cmd(cmd_buf, CMD_BUF_LEN); 
+    return send_status;
+}
+
 /// @brief  Arm the antenna deploy system
 /// @return 0 if successful, >0 if error occurred
 uint8_t ANT_CMD_arm_antenna_system() {
@@ -19,20 +31,89 @@ uint8_t ANT_CMD_arm_antenna_system() {
     const uint8_t comms_err = ANT_send_cmd(cmd_buf, cmd_len);
     return comms_err;
 }
+/// @brief Disarms the antenna deploy system
+/// @return 0 if successful, > 0 if error occurred
+uint8_t ANT_CMD_disarm() {
+    #define CMD_BUF_LEN 1
+    uint8_t cmd_buf[CMD_BUF_LEN];
 
-/// @brief Deploys antenna 1
+    cmd_buf[0] = ANT_CMD_DISARM_ANTENNA_SYSTEM;
+
+    const uint8_t send_status = ant_send_cmd(cmd_buf, CMD_BUF_LEN); 
+    return send_status;
+}
+
+/// @brief Deploys antenna 
+/// @param antenna The antenna number of the antenna to deploy, this is a number between 1-4.
 /// @param[in] activation_time_seconds Activation time in seconds
 /// @return 0 if successful, >0 if error occurred
-uint8_t ANT_CMD_deploy_antenna1(uint8_t activation_time_seconds) {
-    uint8_t cmd_len = 2;
+uint8_t ANT_CMD_deploy_antenna(uint8_t antenna, uint8_t activation_time_seconds) {
+    const uint8_t cmd_len = 2;
     uint8_t cmd_buf[cmd_len];
 
-    cmd_buf[0] = ANT_CMD_DEPLOY_ANTENNA1;
+    switch (antenna) {
+        case 1:
+            cmd_buf[0] = ANT_CMD_DEPLOY_ANTENNA1;
+            break;
+        case 2:
+            cmd_buf[0] = ANT_CMD_DEPLOY_ANTENNA2;
+            break;
+        case 3:
+            cmd_buf[0] = ANT_CMD_DEPLOY_ANTENNA3;
+            break;
+        case 4:
+            cmd_buf[0] = ANT_CMD_DEPLOY_ANTENNA4;
+            break;
+        default:
+            DEBUG_uart_print_str("Invalid choice for antenna: antenna must be between 1-4 inclusive.");
+            return 1;
+    }
     cmd_buf[1] = activation_time_seconds;
 
     const uint8_t comms_err = ANT_send_cmd(cmd_buf, cmd_len);
     return comms_err;
 }
+/// @brief deploys all antennas one by one automatically
+/// @param activation_time_seconds the maximum activation time for each deployment system in seconds.  
+/// @return 0 if successful, > 0 otherwise. 
+uint8_t ANT_CMD_start_automated_sequential_deployment(uint8_t activation_time_seconds) {
+    #define CMD_BUF_LEN 2
+    uint8_t cmd_buf[CMD_BUF_LEN];
+
+    cmd_buf[0] = ANT_CMD_DISARM_ANTENNA_SYSTEM;
+    cmd_buf[1] = activation_time_seconds;
+
+    const uint8_t send_status = ant_send_cmd(cmd_buf, CMD_BUF_LEN); 
+    return send_status;
+}
+
+uint8_t ANT_CMD_deploy_antenna_with_override(uint8_t antenna, uint8_t activation_time_seconds) {
+    #define CMD_BUF_LEN 2
+    uint8_t cmd_buf[CMD_BUF_LEN];
+
+    switch (antenna) {
+        case 1:
+            cmd_buf[0] = ANT_CMD_DEPLOY_ANTENNA1_OVERRIDE;
+            break;
+        case 2:
+            cmd_buf[0] = ANT_CMD_DEPLOY_ANTENNA2_OVERRIDE;
+            break;
+        case 3:
+            cmd_buf[0] = ANT_CMD_DEPLOY_ANTENNA3_OVERRIDE;
+            break;
+        case 4:
+            cmd_buf[0] = ANT_CMD_DEPLOY_ANTENNA4_OVERRIDE;
+            break;
+        default:
+            DEBUG_uart_print_str("Invalid choice for antenna: antenna must be between 1-4 inclusive.");
+            return 1;
+    }
+    cmd_buf[1] = activation_time_seconds;
+
+    const uint8_t send_status = ant_send_cmd(cmd_buf, CMD_BUF_LEN); 
+    return send_status;
+}
+
 
 /// @brief Measure the temperature of the antenna controller system
 /// @return 0 if successful, >0 if error occurred
