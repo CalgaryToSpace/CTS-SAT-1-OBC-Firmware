@@ -37,5 +37,8 @@ uint8_t ANT_CMD_start_automated_sequential_deployment(uint8_t activation_time_se
 uint8_t ANT_CMD_deploy_antenna_with_override(uint8_t antenna, uint8_t activation_time_seconds);
 uint8_t ANT_CMD_cancel_deployment_system_activation();
 uint8_t ANT_CMD_measure_temp();
+uint8_t ANT_CMD_report_deployment_status(uint16_t *response);
+uint8_t report_antenna_deployment_activation_count(uint8_t antenna, uint8_t *response);
+uint8_t report_antenna_deployment_activation_time(uint8_t antenna, uint16_t *response);
 
 #endif /* __INCLUDE_GUARD_ANT_COMMANDS_H__ */
