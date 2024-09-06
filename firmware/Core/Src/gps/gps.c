@@ -261,30 +261,42 @@ uint8_t assign_gps_position_velocity_type(const char *type_str, GPS_position_typ
 /// @return 0 if successful, >0 if an error occurred
 uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *result) {
 
+    // Check if the buffer is empty
+    if ( data_received[0] == '\0') {
+        // Empty or NULL string, return an error
+        return 1;
+    }
+
     gps_response_header bestxyza_header;
     const uint8_t header_parse_result = parse_gps_header(data_received,&bestxyza_header);
 
     if(header_parse_result != 0){
         // Error in parsing header section
-        return 1;
+        return 2;
     }
 
     if(strcmp(bestxyza_header.log_name, "BESTXYZA") != 0){
         // Incorrect log function
-        return 2;
+        return 3;
     }
 
     // TODO: What if there is multiple commands in the string?
     const char *header_delimiter_char = strchr(data_received,';');
     const char* bestxyza_data_start = header_delimiter_char + 1;
-    const char* asterisk = strchr(bestxyza_data_start, '*');
+    const char* asterisk = strchr(bestxyza_data_start, '*');    
 
     if(!asterisk){
-        // Not terminator to the end of the bestxyza data, ie no CRC present
-        return 3;
+        // No terminator at the end of the bestxyza data, ie no CRC present
+        return 4;
+    }
+
+    if(strcmp(bestxyza_data_start, "\0") == 0){
+        // No data after the gps header within the response
+        return 5;
     }
 
     const int bestxyza_data_length = asterisk - bestxyza_data_start + 1;
+
 
     if (bestxyza_data_length < 0) {
         //CRC asterick comes before the start of the data: Incomplete bestxyza data
