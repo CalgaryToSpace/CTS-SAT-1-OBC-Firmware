@@ -164,9 +164,9 @@ uint8_t ADCS_Pack_to_Rated_Sensor_Rates_Struct(uint8_t *data_received, ADCS_Rate
 /// @return 0 once the function is finished running.}
 uint8_t ADCS_Pack_to_Wheel_Speed_Struct(uint8_t *data_received, ADCS_Wheel_Speed_Struct *result) {
     // all values in rpm
-    result->x = data_received[1] << 8 | data_received[0];
-    result->y = data_received[3] << 8 | data_received[2];
-    result->z = data_received[5] << 8 | data_received[4];
+    result->x_rpm = data_received[1] << 8 | data_received[0];
+    result->y_rpm = data_received[3] << 8 | data_received[2];
+    result->z_rpm = data_received[5] << 8 | data_received[4];
     return 0;
 }
 
@@ -380,9 +380,9 @@ uint8_t ADCS_Pack_to_Nadir_Vector_Struct(uint8_t *data_received, ADCS_Nadir_Vect
 /// @return 0 once the function is finished running.}
 uint8_t ADCS_Pack_to_Commanded_Wheel_Speed_Struct(uint8_t *data_received, ADCS_Wheel_Speed_Struct *result) {
     // all values in rpm
-    result->x = data_received[1] << 8 | data_received[0];
-    result->y = data_received[3] << 8 | data_received[2];
-    result->z = data_received[5] << 8 | data_received[4];
+    result->x_rpm = data_received[1] << 8 | data_received[0];
+    result->y_rpm = data_received[3] << 8 | data_received[2];
+    result->z_rpm = data_received[5] << 8 | data_received[4];
     return 0;
 }
 

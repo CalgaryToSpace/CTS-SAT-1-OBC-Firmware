@@ -283,9 +283,9 @@ typedef struct ADCS_Rated_Sensor_Rates_Struct {
 
 typedef struct ADCS_Wheel_Speed_Struct {
     // TODO: Add bool for whether it's commanded or actual wheel speed
-    int16_t x; 
-    int16_t y;
-    int16_t z; 
+    int16_t x_rpm; 
+    int16_t y_rpm;
+    int16_t z_rpm; 
 } ADCS_Wheel_Speed_Struct;
 
 typedef struct ADCS_Magnetorquer_Command_Struct {

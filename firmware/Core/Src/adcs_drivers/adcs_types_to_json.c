@@ -242,8 +242,8 @@ uint8_t ADCS_Wheel_Speed_Struct_TO_json(const ADCS_Wheel_Speed_Struct *data, cha
     if (data == NULL || json_output_str == NULL || json_output_str_len < 37) {
         return 1; // Error: invalid input
     }
-    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, "{\"x\":%d,\"y\":%d,\"z\":%d}", 
-            data->x, data->y, data->z);
+    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, "{\"x_rpm\":%d,\"y_rpm\":%d,\"z_rpm\":%d}", 
+            data->x_rpm, data->y_rpm, data->z_rpm);
     
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error

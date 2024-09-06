@@ -323,9 +323,9 @@ uint8_t TCMDEXEC_adcs_set_magnetometer_mode(const char *args_str, TCMD_Telecomma
 
 /// @brief Telecommand: Set the magnetorquer output values
 /// @param args_str 
-///     - Arg 0: magnetorquer x duty cycle
-///     - Arg 1: magnetorquer y duty cycle
-///     - Arg 2: magnetorquer z duty cycle
+///     - Arg 0: magnetorquer x duty cycle (double)
+///     - Arg 1: magnetorquer y duty cycle (double)
+///     - Arg 2: magnetorquer z duty cycle (double)
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_set_magnetorquer_output(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
@@ -462,21 +462,21 @@ uint8_t TCMDEXEC_adcs_set_power_control(const char *args_str, TCMD_TelecommandCh
 
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 
-///     - Arg 0: Mounting transform alpha angle [deg] 
-///     - Arg 1: Mounting transform beta angle [deg]
-///     - Arg 2: Mounting transform gamma angle [deg]
-///     - Arg 3: Channel 1 offset value
-///     - Arg 4: Channel 2 offset value
-///     - Arg 5: Channel 3 offset value
-///     - Arg 6: Value (1, 1) of the magnetometer sensitivity matrix
-///     - Arg 7: Value (2, 2) of the magnetometer sensitivity matrix
-///     - Arg 8: Value (3, 3) of the magnetometer sensitivity matrix
-///     - Arg 9: Value (1, 2) of the magnetometer sensitivity matrix
-///     - Arg 10: Value (1, 3) of the magnetometer sensitivity matrix
-///     - Arg 11: Value (2, 1) of the magnetometer sensitivity matrix
-///     - Arg 12: Value (2, 3) of the magnetometer sensitivity matrix
-///     - Arg 13: Value (3, 1) of the magnetometer sensitivity matrix
-///     - Arg 14: Value (3, 2) of the magnetometer sensitivity matrix
+///     - Arg 0: Mounting transform alpha angle [deg] (double) 
+///     - Arg 1: Mounting transform beta angle [deg] (double)
+///     - Arg 2: Mounting transform gamma angle [deg] (double)
+///     - Arg 3: Channel 1 offset value (double)
+///     - Arg 4: Channel 2 offset value (double)
+///     - Arg 5: Channel 3 offset value (double)
+///     - Arg 6: Value (1, 1) of the magnetometer sensitivity matrix (double)
+///     - Arg 7: Value (2, 2) of the magnetometer sensitivity matrix (double)
+///     - Arg 8: Value (3, 3) of the magnetometer sensitivity matrix (double)
+///     - Arg 9: Value (1, 2) of the magnetometer sensitivity matrix (double)
+///     - Arg 10: Value (1, 3) of the magnetometer sensitivity matrix (double)
+///     - Arg 11: Value (2, 1) of the magnetometer sensitivity matrix (double)
+///     - Arg 12: Value (2, 3) of the magnetometer sensitivity matrix (double)
+///     - Arg 13: Value (3, 1) of the magnetometer sensitivity matrix (double)
+///     - Arg 14: Value (3, 2) of the magnetometer sensitivity matrix (double)
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_set_magnetometer_config(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
@@ -552,14 +552,14 @@ uint8_t TCMDEXEC_adcs_get_unix_time_save_mode(const char *args_str, TCMD_Telecom
 
 /// @brief Telecommand: Set the ADCS Simplified General Perturbations (SGP4) orbit parameters
 /// @param args_str 
-///     - Arg 0: inclination (degrees)
-///     - Arg 1: eccentricity (dimensionless)
-///     - Arg 2: right ascension of the ascending node (degrees)
-///     - Arg 3: argument of perigee (degrees)
-///     - Arg 4: b-star drag term (dimensionless)
-///     - Arg 5: mean motion (orbits per day)
-///     - Arg 6: mean anomaly (degrees)
-///     - Arg 7: epoch (double; integer component is year, decimal component is day)
+///     - Arg 0: inclination (degrees) (double)
+///     - Arg 1: eccentricity (dimensionless) (double)
+///     - Arg 2: right ascension of the ascending node (degrees) (double)
+///     - Arg 3: argument of perigee (degrees) (double)
+///     - Arg 4: b-star drag term (dimensionless) (double)
+///     - Arg 5: mean motion (orbits per day) (double)
+///     - Arg 6: mean anomaly (degrees) (double)
+///     - Arg 7: epoch (integer component is year, decimal component is day) (double)
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_set_sgp4_orbit_params(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
@@ -802,9 +802,9 @@ uint8_t TCMDEXEC_adcs_get_commanded_attitude_angles(const char *args_str, TCMD_T
 
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 
-///     - Arg 0: x attitude angle
-///     - Arg 1: y attitude angle
-///     - Arg 2: z attitude angle
+///     - Arg 0: x attitude angle (double)
+///     - Arg 1: y attitude angle (double)
+///     - Arg 2: z attitude angle (double)
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_set_commanded_attitude_angles(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                     char *response_output_buf, uint16_t response_output_buf_len) {
@@ -821,24 +821,24 @@ uint8_t TCMDEXEC_adcs_set_commanded_attitude_angles(const char *args_str, TCMD_T
 
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 
-///     - Arg 0: magnetometer_rate_filter_system_noise (Magnetometer rate filter system noise covariance parameter)
-///     - Arg 1: ekf_system_noise (EKS system noise covariance parameter)
-///     - Arg 2: css_measurement_noise (CSS measurement noise covariance parameter)
-///     - Arg 3: sun_sensor_measurement_noise (sun sensor measurement noise covariance parameter)
-///     - Arg 4: nadir_sensor_measurement_noise (nadir sensor measurement noise covariance parameter)
-///     - Arg 5: magnetometer_measurement_noise (magnetometer measurement noise covariance parameter)
-///     - Arg 6: star_tracker_measurement_noise (star tracker measurement noise covariance parameter)
-///     - Arg 7: use_sun_sensor (whether or not to use the sun sensor measurement in EKF)
-///     - Arg 8: use_nadir_sensor (whether or not to use the nadir sensor measurement in EKF)
-///     - Arg 9: use_css (whether or not to use the CSS measurement in EKF)
-///     - Arg 10: use_star_tracker (whether or not to use the star tracker measurement in EKF)
-///     - Arg 11: nadir_sensor_terminator_test (select to ignore nadir sensor measurements when terminator is in FOV)
-///     - Arg 12: automatic_magnetometer_recovery (select whether automatic switch to redundant magnetometer should occur in case of failure)
-///     - Arg 13: magnetometer_mode (select magnetometer mode for estimation and control)
-///     - Arg 14: magnetometer_selection_for_raw_mtm_tlm (select magnetometer mode for the second raw telemetry frame)
-///     - Arg 15: automatic_estimation_transition_due_to_rate_sensor_errors (enable/disable automatic transition from MEMS rate estimation mode to RKF in case of rate sensor error)
-///     - Arg 16: wheel_30s_power_up_delay (present in CubeSupport but not in the manual -- need to test)
-///     - Arg 17: cam1_and_cam2_sampling_period (the manual calls it this, but CubeSupport calls it "error counter reset period" -- need to test)
+///     - Arg 0: magnetometer_rate_filter_system_noise (float; magnetometer rate filter system noise covariance parameter)
+///     - Arg 1: ekf_system_noise (float; EKF system noise covariance parameter)
+///     - Arg 2: css_measurement_noise (float; CSS measurement noise covariance parameter)
+///     - Arg 3: sun_sensor_measurement_noise (float; sun sensor measurement noise covariance parameter)
+///     - Arg 4: nadir_sensor_measurement_noise (float; nadir sensor measurement noise covariance parameter)
+///     - Arg 5: magnetometer_measurement_noise (float; magnetometer measurement noise covariance parameter)
+///     - Arg 6: star_tracker_measurement_noise (float; star tracker measurement noise covariance parameter)
+///     - Arg 7: use_sun_sensor (bool; whether or not to use the sun sensor measurement in EKF)
+///     - Arg 8: use_nadir_sensor (bool; whether or not to use the nadir sensor measurement in EKF)
+///     - Arg 9: use_css (bool; whether or not to use the CSS measurement in EKF)
+///     - Arg 10: use_star_tracker (bool; whether or not to use the star tracker measurement in EKF)
+///     - Arg 11: nadir_sensor_terminator_test (bool; select to ignore nadir sensor measurements when terminator is in FOV)
+///     - Arg 12: automatic_magnetometer_recovery (bool; select whether automatic switch to redundant magnetometer should occur in case of failure)
+///     - Arg 13: magnetometer_mode (enum; select magnetometer mode for estimation and control)
+///     - Arg 14: magnetometer_selection_for_raw_mtm_tlm (enum; select magnetometer mode for the second raw telemetry frame)
+///     - Arg 15: automatic_estimation_transition_due_to_rate_sensor_errors (bool; enable/disable automatic transition from MEMS rate estimation mode to RKF in case of rate sensor error)
+///     - Arg 16: wheel_30s_power_up_delay (bool; present in CubeSupport but not in the manual -- need to test)
+///     - Arg 17: cam1_and_cam2_sampling_period (uint8; the manual calls it this, but CubeSupport calls it "error counter reset period" -- need to test)
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_set_estimation_params(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
@@ -912,22 +912,22 @@ uint8_t TCMDEXEC_adcs_get_estimation_params(const char *args_str, TCMD_Telecomma
 
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 
-///     - Arg 0: incl_coefficient (Set inclination filter coefficient)
-///     - Arg 1: raan_coefficient (Set RAAN filter coefficient)
-///     - Arg 2: ecc_coefficient (Set eccentricity filter coefficient)
-///     - Arg 3: aop_coefficient (Set argument of perigee filter coefficient)
-///     - Arg 4: time_coefficient (Set time filter coefficient)
-///     - Arg 5: pos_coefficient (Set position filter coefficient)
-///     - Arg 6: maximum_position_error (Maximum position error for ASGP4 to continue working)
+///     - Arg 0: incl_coefficient (set inclination filter coefficient) (double)
+///     - Arg 1: raan_coefficient (set RAAN filter coefficient) (double)
+///     - Arg 2: ecc_coefficient (set eccentricity filter coefficient) (double)
+///     - Arg 3: aop_coefficient (set argument of perigee filter coefficient) (double)
+///     - Arg 4: time_coefficient (set time filter coefficient) (double)
+///     - Arg 5: pos_coefficient (set position filter coefficient) (double)
+///     - Arg 6: maximum_position_error (maximum position error for ASGP4 to continue working) (double)
 ///     - Arg 7: asgp4_filter (The type of filter being used (enum))
-///     - Arg 8: xp_coefficient (Polar coefficient xp)
-///     - Arg 9: yp_coefficient (Polar coefficient yp)
+///     - Arg 8: xp_coefficient (polar coefficient xdouble; p) (double)
+///     - Arg 9: yp_coefficient (polar coefficient ydouble; p) (double)
 ///     - Arg 10: gps_roll_over (GPS roll over number)
-///     - Arg 11: position_sd (Maximum position standard deviation for ASGP4 to continue working)
-///     - Arg 12: velocity_sd (Maximum velocity standard deviation for ASGP4 to continue working)
+///     - Arg 11: position_sd (maximum position standard deviation for ASGP4 to continue working) (double)
+///     - Arg 12: velocity_sd (maximum velocity standard deviation for ASGP4 to continue working) (double)
 ///     - Arg 13: min_satellites (Minimum satellites required for ASGP4 to continue working)
-///     - Arg 14: time_gain (Time offset compensation gain)
-///     - Arg 15: max_lag (Maximum lagged timestamp measurements to incorporate)
+///     - Arg 14: time_gain (time offset compensation gain) (double)
+///     - Arg 15: max_lag (maximum lagged timestamp measurements to incorporate) (double)
 ///     - Arg 16: min_samples (Minimum samples to use to get ASGP4)
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_set_asgp4_params(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
@@ -999,9 +999,9 @@ uint8_t TCMDEXEC_adcs_get_asgp4_params(const char *args_str, TCMD_TelecommandCha
 
 /// @brief Telecommand: Set the ADCS tracking controller target reference (location on Earth to point towards)
 /// @param args_str 
-///     - Arg 0: longitude
-///     - Arg 1: latitude
-///     - Arg 2: altitude
+///     - Arg 0: longitude (double)
+///     - Arg 1: latitude (double)
+///     - Arg 2: altitude (double)
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_set_tracking_controller_target_reference(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                                 char *response_output_buf, uint16_t response_output_buf_len) {
@@ -1049,9 +1049,9 @@ uint8_t TCMDEXEC_adcs_get_tracking_controller_target_reference(const char *args_
 ///     - Arg 0: gyro1 (Axis for Gyro #1; enum, options are pos/neg x, pos/neg y, pos/neg z)
 ///     - Arg 1: gyro2 (Axis for Gyro #2; enum, options are pos/neg x, pos/neg y, pos/neg z)
 ///     - Arg 2: gyro3 (Axis for Gyro #3; enum, options are pos/neg x, pos/neg y, pos/neg z)
-///     - Arg 3: x_rate_offset (x-rate sensor offset)
-///     - Arg 4: y_rate_offset (y-rate sensor offset)
-///     - Arg 5: z_rate_offset (z-rate sensor offset)
+///     - Arg 3: x_rate_offset (x-rate sensor offset) (double)
+///     - Arg 4: y_rate_offset (y-rate sensor offset) (double)
+///     - Arg 5: z_rate_offset (z-rate sensor offset) (double)
 ///     - Arg 6: rate_sensor_mult (multiplier of rate sensor measurement)
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_set_rate_gyro_config(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
