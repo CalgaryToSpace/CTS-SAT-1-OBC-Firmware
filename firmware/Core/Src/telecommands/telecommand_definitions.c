@@ -438,7 +438,7 @@ uint8_t TCMDEXEC_core_system_stats(const char *args_str, TCMD_TelecommandChannel
     char timestamp_string_ms[20];
     GEN_uint64_to_str(TIM_get_current_unix_epoch_time_ms(),timestamp_string_ms);
 
-    STM_reset_cause_name = STM_reset_cause_enum_to_str(STM_get_reset_cause(), STM_reset_cause_name);
+    STM32_reset_cause_name = STM32_reset_cause_enum_to_str(STM32_get_reset_cause(), STM32_reset_cause_name);
 
     char time_of_last_tcmd_sent_ms_string[20];
     GEN_uint64_to_str(TCMD_latest_received_tcmd_timestamp_sent, time_of_last_tcmd_sent_ms_string);
@@ -453,7 +453,7 @@ uint8_t TCMDEXEC_core_system_stats(const char *args_str, TCMD_TelecommandChannel
     TCMD_total_tcmd_queued_count, // total_tcmd_count
     LFS_is_lfs_mounted, // is_lfs_mounted
     TIM_synchronization_source_letter(TIM_last_synchronization_source), // last_time_sync_source
-    STM_reset_cause_name); // reboot_reason
+    STM32_reset_cause_name); // reboot_reason
 
     return 0;
 }
