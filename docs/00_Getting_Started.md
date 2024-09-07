@@ -7,6 +7,9 @@ Follow through this guide, and follow through the rest of the numbered guides in
 ## VS Code Setup Procedure
 
 1. On Windows only, install the [ST-Link Debugging Driver](https://www.st.com/en/development-tools/stsw-link009.html) for compatibility with OpenOCD.
+    1. Download the file.
+    2. Unzip the entire zip file.
+    3. Run the `dpinst_amd64.exe` installer.
 2. Clone this repo.
 3. Open this repo in File Explorer.
 4. Right click on the `firmware` folder in this repo, and select "Open with VS Code". **Do not open the entire repo with VS Code like you normally would.**
