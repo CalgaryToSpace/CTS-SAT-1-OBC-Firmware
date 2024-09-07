@@ -8,7 +8,7 @@
 
 uint8_t TCMDEXEC_Flash_Bank_Write(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
 {
-    const uint32_t res = Flash_Bank_Write(Flash_Partitions_FLASH_BANK2, (uint8_t *)args_str, 10);
+    const uint32_t res = Flash_Bank_Write(Flash_Partitions_FLASH_BANK2, (uint8_t *)args_str, strlen(args_str));
     if (res != 0)
     {
         snprintf(response_output_buf, response_output_buf_len, "Error: %lu", res);
