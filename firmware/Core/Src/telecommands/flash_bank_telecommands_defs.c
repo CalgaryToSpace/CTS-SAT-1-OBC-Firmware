@@ -1,7 +1,7 @@
 #include "telecommands/flash_bank_telecommands_defs.h"
-#include "flash_bank.h"
+#include "flash_bank/flash_bank.h"
 #include "stm32l4xx_hal.h"
-#include "telecommand_args_helpers.h"
+#include "telecommands/telecommand_args_helpers.h"
 
 #include <stdio.h>
 #include <string.h>
