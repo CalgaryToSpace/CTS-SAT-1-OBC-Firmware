@@ -73,7 +73,7 @@ uint32_t Internal_Flash_Bank_Write(uint32_t address, uint8_t *data, uint32_t len
 uint8_t Internal_Flash_Bank_Read(uint32_t address, uint8_t *buffer, uint32_t length)
 {
     // Check if the address is within the valid range of the flash memory
-    if (address < INTERNAL_FLASH_PARTITION_FLASH_BANK2 || (address + length) > (FLASH_BANK2_END))
+    if (address < INTERNAL_FLASH_MEMORY_REGION_GOLDEN_COPY_ADDRESS || (address + length) > (FLASH_BANK2_END))
     {
         return 1; // Return error if address is out of range
     }
