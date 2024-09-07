@@ -1,5 +1,5 @@
-#include "telecommands/flash_bank_telecommands_defs.h"
-#include "flash_bank/flash_bank.h"
+#include "telecommands/stm32_internal_flash_telecommand_defs.h"
+#include "stm32_internal_flash/stm32_internal_flash.h"
 #include "stm32l4xx_hal.h"
 #include "telecommands/telecommand_args_helpers.h"
 
@@ -15,7 +15,7 @@
 /// Thus, it is difficult to write integers directly
 uint8_t TCMDEXEC_flash_bank_write(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
 {
-    const uint32_t res = Flash_Bank_Write(Flash_Partitions_FLASH_BANK2, (uint8_t *)args_str, strlen(args_str));
+    const uint32_t res = Internal_Flash_Bank_Write(INTERNAL_FLASH_PARTITION_FLASH_BANK2, (uint8_t *)args_str, strlen(args_str));
     if (res != 0)
     {
         snprintf(response_output_buf, response_output_buf_len, "Error: %lu", res);
@@ -38,7 +38,7 @@ uint8_t TCMDEXEC_flash_bank_read(const char *args_str, TCMD_TelecommandChannel_e
     }
 
     uint8_t read_buffer[number_of_bytes_to_read + 1]; // + 1 for null-terminator
-    const uint8_t res = Flash_Bank_Read(Flash_Partitions_FLASH_BANK2, read_buffer, sizeof(read_buffer));
+    const uint8_t res = Internal_Flash_Bank_Read(INTERNAL_FLASH_PARTITION_FLASH_BANK2, read_buffer, sizeof(read_buffer));
     if (res != 0)
     {
         snprintf(response_output_buf, response_output_buf_len, "Error: %u", res);
@@ -75,7 +75,7 @@ uint8_t TCMDEXEC_flash_bank_erase(const char *args_str, TCMD_TelecommandChannel_
         return 1;
     }
 
-    const uint32_t res = Flash_Bank_Erase((uint16_t)start_page_erase, (uint16_t)number_of_pages_to_erase);
+    const uint32_t res = Internal_Flash_Bank_Erase((uint16_t)start_page_erase, (uint16_t)number_of_pages_to_erase);
     if (res != 0)
     {
         snprintf(response_output_buf, response_output_buf_len, "Error: %lu", res);

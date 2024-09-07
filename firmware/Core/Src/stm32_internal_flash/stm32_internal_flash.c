@@ -1,4 +1,4 @@
-#include "flash_bank/flash_bank.h"
+#include "stm32_internal_flash/stm32_internal_flash.h"
 
 #include "stm32l4r5xx.h"
 #include "stm32l4xx_hal.h" // must include this before stm32l4xx_hal_flash.h
@@ -19,7 +19,7 @@
  *
  * @return The status of the write operation. A value > 0 indicates an error, while a value of 0 indicates success.
  */
-uint32_t Flash_Bank_Write(uint32_t address, uint8_t *data, uint32_t length)
+uint32_t Internal_Flash_Bank_Write(uint32_t address, uint8_t *data, uint32_t length)
 {
     HAL_StatusTypeDef status;
     uint32_t endAddress = address + length;
@@ -70,10 +70,10 @@ uint32_t Flash_Bank_Write(uint32_t address, uint8_t *data, uint32_t length)
  *
  * @return 0 if the read operation is successful, 1 if the address is out of range.
  */
-uint8_t Flash_Bank_Read(uint32_t address, uint8_t *buffer, uint32_t length)
+uint8_t Internal_Flash_Bank_Read(uint32_t address, uint8_t *buffer, uint32_t length)
 {
     // Check if the address is within the valid range of the flash memory
-    if (address < Flash_Partitions_FLASH_BANK2 || (address + length) > (FLASH_BANK2_END))
+    if (address < INTERNAL_FLASH_PARTITION_FLASH_BANK2 || (address + length) > (FLASH_BANK2_END))
     {
         return 1; // Return error if address is out of range
     }
@@ -99,7 +99,7 @@ uint8_t Flash_Bank_Read(uint32_t address, uint8_t *buffer, uint32_t length)
  *
  * @return 0 if the erase operation is successful, page error otherwise.
  */
-uint32_t Flash_Bank_Erase(uint16_t start_page_erase, uint16_t number_of_pages_to_erase)
+uint32_t Internal_Flash_Bank_Erase(uint16_t start_page_erase, uint16_t number_of_pages_to_erase)
 {
     __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
 
