@@ -876,6 +876,7 @@ uint8_t ADCS_Measurements_Struct_TO_json(const ADCS_Measurements_Struct *data, c
     if (data == NULL || json_output_str == NULL || json_output_str_len < 1557) {
         return 1; // Error: invalid input
     }
+    // TODO: this fails because json_output_str_len is far too short (1024) for this command
     int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, 
                                 "{\"magnetic_field_x_nT\":%ld,\"magnetic_field_y_nT\":%ld,"
                                 "\"magnetic_field_z_nT\":%ld,\"coarse_sun_x_micro\":%ld,"
@@ -925,15 +926,28 @@ uint8_t ADCS_Measurements_Struct_TO_json(const ADCS_Measurements_Struct *data, c
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
 uint8_t ADCS_generic_telemetry_uint8_array_TO_json(const uint8_t *data, const uint16_t data_length, char json_output_str[], uint16_t json_output_str_len) {
-    if (data == NULL || json_output_str == NULL || json_output_str_len < 1512) { // 1512 = 504 (longest data_length) * 3 characters per byte
+    bool remove_spaces = false;
+
+    if (data == NULL || json_output_str == NULL) { 
         return 1; // Error: invalid input
+    } else if (json_output_str_len < (data_length * 3)) { // 3 characters per hex byte
+        // longest data length is 504, but it looks like json_output_str_len is 1024, so the 504-byte command won't work here.
+        remove_spaces = true;
+        if (json_output_str_len < (data_length * 2)) {
+            return 1; // invalid input again
+        }
     }
+
     int16_t snprintf_ret; 
     int16_t total_written = 0;
     for (uint16_t i = 0; i < data_length; i++) {
-        // write each data byte in hex, separated by spaces (for easy translation into CubeSupport)
-        snprintf_ret = snprintf(json_output_str, json_output_str_len, "%x ", data[i]);
-        
+        // TODO: find out if there's a better way to get around the 1024-byte limit
+        if (!remove_spaces) { // write each data byte in hex, separated by spaces (for easy translation into CubeSupport)
+            snprintf_ret = snprintf(&json_output_str[total_written], json_output_str_len, "%x ", data[i]);
+        } else { // if the command size is too long, remove the spaces and try again
+            snprintf_ret = snprintf(&json_output_str[total_written], json_output_str_len, "%x", data[i]);
+        }
+
         if (snprintf_ret < 0) {
             return 2; // Error: snprintf encoding error
         } else {

@@ -71,10 +71,15 @@ uint8_t TCMDEXEC_adcs_generic_telemetry_request(const char *args_str, TCMD_Telec
     TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &data_length);
 
     uint8_t data_received[data_length];
+    // if data_length is longer then it should be for a given command, 
+    // then the byte after the command bytes end is the checksum byte
+    // and the rest should be all zeroes.
     
-    uint8_t status = ADCS_i2c_telemetry_wrapper((uint8_t) telemetry_request_id, &data_received[0], (uint8_t) data_length, ADCS_INCLUDE_CHECKSUM); 
+    uint8_t status = ADCS_i2c_telemetry_wrapper((uint8_t) telemetry_request_id, &data_received[0], (uint32_t) data_length, ADCS_INCLUDE_CHECKSUM); 
 
     // there's no built in method to get an error for this, so check communications status for telemetry error bit
+    // if data_length is too short, the checksum will in almost all cases fail before this point is reached
+    // but if it by chance succeeds, this will catch the error
     ADCS_Comms_Status_Struct comms_status;
     uint8_t comms_status_status = ADCS_Get_Communication_Status(&comms_status);
 
@@ -100,7 +105,7 @@ uint8_t TCMDEXEC_adcs_generic_telemetry_request(const char *args_str, TCMD_Telec
         return 1;
     }
 
-    const uint8_t result_json = ADCS_generic_telemetry_uint8_array_TO_json(
+    uint8_t result_json = ADCS_generic_telemetry_uint8_array_TO_json(
         &data_received[0], data_length, response_output_buf, response_output_buf_len);
 
     if (result_json != 0) {
@@ -119,8 +124,25 @@ uint8_t TCMDEXEC_adcs_generic_telemetry_request(const char *args_str, TCMD_Telec
 uint8_t TCMDEXEC_adcs_ack(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_CMD_Ack_Struct ack;
-    ADCS_CMD_Ack(&ack);
-    return ack.error_flag;
+    uint8_t status = ADCS_CMD_Ack(&ack);
+
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_CMD_Ack_Struct_TO_json(
+        &ack, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
+    return status;
+
 }
 
 /// @brief Telecommand: Set the wheel speed of the ADCS
@@ -249,7 +271,7 @@ uint8_t TCMDEXEC_adcs_deploy_magnetometer(const char *args_str, TCMD_Telecommand
 
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 
-///     - No arguments for this command
+///     - Arg 0: run mode to set; can be can be off (0), enabled (1), triggered (2), or simulation (3)
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_set_run_mode(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                    char *response_output_buf, uint16_t response_output_buf_len) {
@@ -299,7 +321,7 @@ uint8_t TCMDEXEC_adcs_attitude_estimation_mode(const char *args_str, TCMD_Teleco
     return status;
 }                                    
 
-/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @brief Telecommand: If ADCS run mode is Triggered, run the ADCS sensor loop
 /// @param args_str 
 ///     - No arguments for this command
 /// @return 0 on success, >0 on error
@@ -309,7 +331,7 @@ uint8_t TCMDEXEC_adcs_run_once(const char *args_str, TCMD_TelecommandChannel_enu
     return status;
 }                    
 
-/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @brief Telecommand: Set the magnetometer mode of the ADCS
 /// @param args_str 
 ///     - Arg 0: magnetometer mode to set
 /// @return 0 on success, >0 on error

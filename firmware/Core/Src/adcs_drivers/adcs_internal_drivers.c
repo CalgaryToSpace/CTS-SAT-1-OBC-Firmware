@@ -83,7 +83,7 @@ uint8_t ADCS_send_i2c_telecommand(uint8_t id, uint8_t* data, uint32_t data_lengt
     uint8_t buf[data_length + include_checksum]; // add additional bit for checksum if needed
 
     // fill buffer with data 
-    for (uint8_t i = 0; i < data_length; i++) {
+    for (uint32_t i = 0; i < data_length; i++) {
         buf[i] = data[i];
     }
 
@@ -125,7 +125,7 @@ uint8_t ADCS_send_i2c_telemetry_request(uint8_t id, uint8_t* data, uint32_t data
 
     adcs_tlm_status = HAL_I2C_Mem_Read(ADCS_i2c_HANDLE, ADCS_i2c_ADDRESS << 1, id, 1, temp_data, sizeof(temp_data), ADCS_HAL_TIMEOUT);
 
-    for (uint8_t i = 0; i < data_length; i++) {
+    for (uint32_t i = 0; i < data_length; i++) {
             // populate external data, except for checksum byte
             data[i] = temp_data[i];
     }
