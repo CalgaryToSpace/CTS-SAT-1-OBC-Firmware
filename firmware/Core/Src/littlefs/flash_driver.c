@@ -86,6 +86,79 @@ void FLASH_deactivate_chip_select()
 }
 
 /**
+ * @brief Unblocks all blocked blocks of memory on the NAND flash memory module
+ * 
+ * @param hspi - Pointer to the SPI HAL handle
+ * @param chip_number - the chip select number to activate
+ * @param buf - Pointer to a buffer to store the new Block Lock Register value. Length: 1 byte.
+ * @return FLASH_ERR_OK on success, < 0 on failure
+ * 
+ * @note unblocking blocks of memory is necessary to write to memory
+ */
+FLASH_error_enum_t FLASH_unblock_block_lock(SPI_HandleTypeDef *hspi, uint8_t chip_number, uint8_t *buf) {
+
+    static const uint8_t data_bytes = (1 << 1);
+
+    // Send SET FEATURES command
+    FLASH_activate_chip_select(chip_number);
+    const HAL_StatusTypeDef tx_result_1 = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_CMD_SET_FEATURES, 1, FLASH_HAL_TIMEOUT_MS);
+
+    // If couldn't send the command, check why
+    if (tx_result_1 != HAL_OK) {
+        FLASH_deactivate_chip_select();
+
+        if (tx_result_1 == HAL_TIMEOUT) {
+            return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
+        }
+        
+        return FLASH_ERR_SPI_TRANSMIT_FAILED;
+    }
+
+    // Send the byte address of block lock register
+    const HAL_StatusTypeDef tx_result_2 = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_FEAT_BLOCK_LOCK, 1, FLASH_HAL_TIMEOUT_MS);
+
+    // If couldn't send the byte, check why
+    if (tx_result_2 != HAL_OK) {
+        FLASH_deactivate_chip_select();
+
+        if (tx_result_2 == HAL_TIMEOUT) {
+            return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
+        }
+        
+        return FLASH_ERR_SPI_TRANSMIT_FAILED;
+    }
+
+    // Send the data bytes of what we want the Block Lock register to be
+    const HAL_StatusTypeDef tx_result_3 = HAL_SPI_Transmit(hspi, (uint8_t *)&data_bytes, 1, FLASH_HAL_TIMEOUT_MS);
+
+    // If couldn't send the byte, check why
+    if (tx_result_3 != HAL_OK) {
+        FLASH_deactivate_chip_select();
+
+        if (tx_result_3 == HAL_TIMEOUT) {
+            return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
+        }
+        
+        return FLASH_ERR_SPI_TRANSMIT_FAILED;
+    }
+
+    // Call a function that reads the block lock register here to check if it changed anything
+    const FLASH_error_enum_t block_lock_result_2 = FLASH_read_block_lock_register(hspi, chip_number, buf);
+        if (block_lock_result_2 != FLASH_ERR_OK) {
+        FLASH_deactivate_chip_select();
+        
+        if (block_lock_result_2 == FLASH_ERR_SPI_TRANSMIT_TIMEOUT) {
+            return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
+        }
+
+        return FLASH_ERR_SPI_TRANSMIT_FAILED;
+    }
+
+    FLASH_deactivate_chip_select();
+    return FLASH_ERR_OK;
+}
+
+/**
  * @brief Read Status Register and store the values in given buffer
  * @param hspi - Pointer to the SPI HAL handle
  * @param chip_number - the chip select number to activate
@@ -124,6 +197,62 @@ FLASH_error_enum_t FLASH_read_status_register(SPI_HandleTypeDef *hspi, uint8_t c
     }
 
     // Receive the Status Register bits
+    const HAL_StatusTypeDef rx_result = HAL_SPI_Receive(hspi, (uint8_t *)buf, 1, FLASH_HAL_TIMEOUT_MS);
+
+    // If couldn't receive the byte, check why
+    if (rx_result != HAL_OK) {
+        FLASH_deactivate_chip_select();
+
+        if (rx_result == HAL_TIMEOUT) {
+            return FLASH_ERR_SPI_RECEIVE_TIMEOUT;
+        }
+
+        return FLASH_ERR_SPI_RECEIVE_FAILED;
+    }
+
+    FLASH_deactivate_chip_select();
+    return FLASH_ERR_OK;
+}
+
+/**
+ * @brief Read Block Lock Register and store the values in given buffer
+ * @param hspi - Pointer to the SPI HAL handle
+ * @param chip_number - the chip select number to activate
+ * @param buf - Pointer to a buffer to store Block Lock Register value. Length: 1 byte.
+ * @retval FLASH_ERR_OK on success, < 0 on failure
+ */
+FLASH_error_enum_t FLASH_read_block_lock_register(SPI_HandleTypeDef *hspi, uint8_t chip_number, uint8_t *buf)
+{
+    // Send GET FEATURES command
+    FLASH_activate_chip_select(chip_number);
+    const HAL_StatusTypeDef tx_result_1 = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_CMD_GET_FEATURES, 1, FLASH_HAL_TIMEOUT_MS);
+
+    // If couldn't send the command, check why
+    if (tx_result_1 != HAL_OK) {
+        FLASH_deactivate_chip_select();
+
+        if (tx_result_1 == HAL_TIMEOUT) {
+            return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
+        }
+        
+        return FLASH_ERR_SPI_TRANSMIT_FAILED;
+    }
+
+    // Send the byte address of block lock register
+    const HAL_StatusTypeDef tx_result_2 = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_FEAT_BLOCK_LOCK, 1, FLASH_HAL_TIMEOUT_MS);
+
+    // If couldn't send the byte, check why
+    if (tx_result_2 != HAL_OK) {
+        FLASH_deactivate_chip_select();
+
+        if (tx_result_2 == HAL_TIMEOUT) {
+            return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
+        }
+        
+        return FLASH_ERR_SPI_TRANSMIT_FAILED;
+    }
+
+    // Receive the Block Lock Register bits
     const HAL_StatusTypeDef rx_result = HAL_SPI_Receive(hspi, (uint8_t *)buf, 1, FLASH_HAL_TIMEOUT_MS);
 
     // If couldn't receive the byte, check why
@@ -269,7 +398,8 @@ FLASH_error_enum_t FLASH_write_disable(SPI_HandleTypeDef *hspi, uint8_t chip_num
 FLASH_error_enum_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t addr)
 {
     // Split address into its 4 bytes
-    uint8_t addr_bytes[4] = {(addr >> 24) & 0xFF, (addr >> 16) & 0xFF, (addr >> 8) & 0xFF, addr & 0xFF};
+    // uint8_t addr_bytes[4] = {(addr >> 24) & 0xFF, (addr >> 16) & 0xFF, (addr >> 8) & 0xFF, addr & 0xFF};
+    uint8_t addr_bytes[3] = {(addr >> 16) & 0xFF, (addr >> 8) & 0xFF, addr & 0xFF};
 
     // Send WRITE ENABLE Command
     const FLASH_error_enum_t wren_result = FLASH_write_enable(hspi, chip_number);
@@ -294,7 +424,7 @@ FLASH_error_enum_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs
     }
 
     // Send the address bytes
-    const HAL_StatusTypeDef tx_result_2 = HAL_SPI_Transmit(hspi, (uint8_t *)addr_bytes, 4, FLASH_HAL_TIMEOUT_MS);
+    const HAL_StatusTypeDef tx_result_2 = HAL_SPI_Transmit(hspi, (uint8_t *)addr_bytes, 3, FLASH_HAL_TIMEOUT_MS);
 
     // If couldn't send the bytes, check why
     if (tx_result_2 != HAL_OK) {
@@ -361,13 +491,32 @@ FLASH_error_enum_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs
  */
 FLASH_error_enum_t FLASH_write_data(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t addr, uint8_t *packet_buffer, lfs_size_t packet_buffer_len)
 {
-    // Split main address into its 4 bytes
-    uint8_t addr_bytes[4] = {(addr >> 24) & 0xFF, (addr >> 16) & 0xFF, (addr >> 8) & 0xFF, addr & 0xFF};
+    uint8_t temp_buf[1] = {0};
+    const FLASH_error_enum_t temp = FLASH_read_block_lock_register(hspi, chip_number, temp_buf);
+    if (temp != FLASH_ERR_OK) {
+        FLASH_deactivate_chip_select();
+        return temp;
+    }
+/*
+    DEBUG_uart_print_array_hex(packet_buffer, packet_buffer_len);
+    DEBUG_uart_print_str("\n");
+    DEBUG_uart_print_uint32((uint32_t)packet_buffer_len);
+    DEBUG_uart_print_str("\n");
+*/
+    // DEBUG_uart_print_array_hex(packet_buffer, packet_buffer_len);
+
+    // Split main address into its 3 bytes
+    uint8_t addr_bytes[3] = {(addr >> 16) & 0xFF, (addr >> 8) & 0xFF, addr & 0xFF};
     
     // Define the address where data will be stored in cache register (First 4 bits are dummy bits)
     // TODO: Is it fine to always have this at 0?
     uint16_t cache_addr = 0x0000;
-    uint8_t cache_addr_bytes[2] = {(cache_addr >> 8) & 0xFF, cache_addr & 0xFF};
+    uint8_t cache_addr_bytes[2] = {(cache_addr >> 8) & 0xFF, cache_addr & 0xFF}; // modify
+    // check for packet buffer length > 2176 (pg.29 of datasheet, program load)
+    // 1st byte: op code
+    // 2nd bye: 1st four bits dummy bytes, 2nd four bits column address
+    // 3rd byte: rest of column address
+    //4th - forward: data bits
 
     // Send WRITE ENABLE Command
     const FLASH_error_enum_t wren_result = FLASH_write_enable(hspi, chip_number);
@@ -406,7 +555,8 @@ FLASH_error_enum_t FLASH_write_data(SPI_HandleTypeDef *hspi, uint8_t chip_number
     }
 
     // Send the data bytes
-    const uint8_t tx_result_3 = HAL_SPI_Transmit(hspi, (uint8_t *)packet_buffer, packet_buffer_len, FLASH_HAL_TIMEOUT_MS);
+    // const uint8_t tx_result_3 = HAL_SPI_Transmit(hspi, packet_buffer, packet_buffer_len, FLASH_HAL_TIMEOUT_MS);
+    const uint8_t tx_result_3 = HAL_SPI_Transmit(hspi, packet_buffer, packet_buffer_len, 50);
 
     // If couldn't send the bytes, check why
     if (tx_result_3 != HAL_OK) {
@@ -439,7 +589,7 @@ FLASH_error_enum_t FLASH_write_data(SPI_HandleTypeDef *hspi, uint8_t chip_number
     }
 
     // Send address bytes
-    const uint8_t tx_result_5 = HAL_SPI_Transmit(hspi, (uint8_t *)addr_bytes, 4, FLASH_HAL_TIMEOUT_MS);
+    const uint8_t tx_result_5 = HAL_SPI_Transmit(hspi, (uint8_t *)addr_bytes, 3, FLASH_HAL_TIMEOUT_MS);
 
     // If couldn't send the bytes, check why
     if (tx_result_5 != HAL_OK) {
@@ -505,16 +655,23 @@ FLASH_error_enum_t FLASH_write_data(SPI_HandleTypeDef *hspi, uint8_t chip_number
  */
 FLASH_error_enum_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t addr, uint8_t *rx_buffer, lfs_size_t rx_buffer_len)
 {
-    uint8_t read_addr_bytes[4] = {(addr >> 24) & 0xFF, (addr >> 16) & 0xFF, (addr >> 8) & 0xFF, addr & 0xFF};
-
+    // uint8_t read_addr_bytes[4] = {(addr >> 24) & 0xFF, (addr >> 16) & 0xFF, (addr >> 8) & 0xFF, addr & 0xFF};
+    uint8_t read_addr_bytes[3] = {0, (addr >> 8) & 0xFF, addr & 0xFF};
+/*
+    DEBUG_uart_print_str("Read address bytes: ");
+    for(int i=0; i<3; i++) {
+        DEBUG_uart_print_array_hex(&read_addr_bytes[i], 1);
+    }
+    DEBUG_uart_print_str("\n\n");
+*/
     // Define the address where data will be read from in cache register (First 4 bits are dummy bits)
     // TODO: Is it fine to always have this at 0?
     uint16_t cache_addr = 0x0000;
-    uint8_t cache_addr_bytes[2] = {(cache_addr >> 8) & 0xFF, cache_addr & 0xFF};
+    uint8_t cache_addr_bytes[2] = {(cache_addr >> 8) & 0xFF,cache_addr & 0xFF};
 
     // Send PAGE READ command
     FLASH_activate_chip_select(chip_number);
-    const HAL_StatusTypeDef tx_result_1 = HAL_SPI_Transmit(hspi, (uint8_t *) &FLASH_CMD_PAGE_READ, 1, FLASH_HAL_TIMEOUT_MS);
+    const HAL_StatusTypeDef tx_result_1 = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_CMD_PAGE_READ, 1, FLASH_HAL_TIMEOUT_MS);
 
     // If couldn't send the command, check why
     if (tx_result_1 != HAL_OK) {
@@ -529,7 +686,7 @@ FLASH_error_enum_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number,
 
     // FIXME: Datasheet Page 16 talks about only giving 8-bit dummy values and 16-bit address, not sure how that works
     // Send Address bytes 
-    const HAL_StatusTypeDef tx_result_2 = HAL_SPI_Transmit(hspi, (uint8_t *) read_addr_bytes, 4, FLASH_HAL_TIMEOUT_MS);
+    const HAL_StatusTypeDef tx_result_2 = HAL_SPI_Transmit(hspi, (uint8_t *)read_addr_bytes, 3, FLASH_HAL_TIMEOUT_MS);
 
     // If couldn't send the bytes, check why
     if (tx_result_2 != HAL_OK) {
@@ -560,7 +717,8 @@ FLASH_error_enum_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number,
 
         if ((status_reg_buffer[0] & FLASH_SR1_WRITE_IN_PROGRESS_MASK) == 0) {
             // Success condition: write in progress has completed.
-            return FLASH_ERR_OK;
+            // return FLASH_ERR_OK;
+            break;
         }
 
         // Do this comparison AFTER checking the success condition (for speed, and to avoid timing out on a success).
@@ -579,7 +737,7 @@ FLASH_error_enum_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number,
 
     // Send READ FROM CACHE command
     FLASH_activate_chip_select(chip_number);
-    const HAL_StatusTypeDef tx_result_3 = HAL_SPI_Transmit(hspi, (uint8_t *) &FLASH_CMD_READ_FROM_CACHE, 1, FLASH_HAL_TIMEOUT_MS);
+    const HAL_StatusTypeDef tx_result_3 = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_CMD_READ_FROM_CACHE, 1, FLASH_HAL_TIMEOUT_MS);
 
     // If couldn't send the command, check why
     if (tx_result_3 != HAL_OK) {
@@ -593,7 +751,7 @@ FLASH_error_enum_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number,
     }
 
     // Send cache address bytes 
-    const HAL_StatusTypeDef tx_result_4 = HAL_SPI_Transmit(hspi, (uint8_t *) cache_addr_bytes, 2, FLASH_HAL_TIMEOUT_MS);
+    const HAL_StatusTypeDef tx_result_4 = HAL_SPI_Transmit(hspi, (uint8_t *)cache_addr_bytes, 2, FLASH_HAL_TIMEOUT_MS);
 
     // If couldn't send the bytes, check why
     if (tx_result_4 != HAL_OK) {
@@ -607,7 +765,7 @@ FLASH_error_enum_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number,
     }
 
     // Send cache address bytes again just as 2 dummy bytes to use 2 8-bit clock cycles
-    const HAL_StatusTypeDef tx_result_5 = HAL_SPI_Transmit(hspi, (uint8_t *) cache_addr_bytes, 2, FLASH_HAL_TIMEOUT_MS);
+    const HAL_StatusTypeDef tx_result_5 = HAL_SPI_Transmit(hspi, (uint8_t *) cache_addr_bytes, 1, FLASH_HAL_TIMEOUT_MS);
 
     // If couldn't send the bytes, check why
     if (tx_result_5 != HAL_OK) {
@@ -621,7 +779,8 @@ FLASH_error_enum_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number,
     }
 
     // Receive the data into the buffer
-    const HAL_StatusTypeDef rx_result_1 = HAL_SPI_Receive(hspi, (uint8_t *)rx_buffer, rx_buffer_len, FLASH_HAL_TIMEOUT_MS);
+    //const HAL_StatusTypeDef rx_result_1 = HAL_SPI_Receive(hspi, (uint8_t *)rx_buffer, rx_buffer_len, FLASH_HAL_TIMEOUT_MS);
+    const HAL_StatusTypeDef rx_result_1 = HAL_SPI_Receive(hspi, (uint8_t *)rx_buffer, rx_buffer_len, 50);
 
     // If couldn't receive data, check why
     if (rx_result_1 != HAL_OK) {
@@ -636,6 +795,13 @@ FLASH_error_enum_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number,
 
     // Set Chip Select HIGH
     FLASH_deactivate_chip_select();
+
+    DEBUG_uart_print_str("Read data: \n");
+    DEBUG_uart_print_array_hex(rx_buffer, rx_buffer_len);
+    DEBUG_uart_print_str("\n");
+    DEBUG_uart_print_str("Length of data read: ");
+    DEBUG_uart_print_uint32((uint32_t)rx_buffer_len);
+    DEBUG_uart_print_str("\n");
 
     // TODO: Are there any other errors that can occur while reading?
     return FLASH_ERR_OK;
@@ -747,4 +913,25 @@ FLASH_error_enum_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_numb
         return FLASH_ERR_UNKNOWN;
     }
     return FLASH_ERR_OK; // success
+}
+
+FLASH_error_enum_t FLASH_reset(SPI_HandleTypeDef *hspi, uint8_t chip_number)
+{
+    FLASH_activate_chip_select(chip_number);
+
+    uint8_t tx_buffer[1] = {FLASH_CMD_RESET};
+    HAL_StatusTypeDef tx_result = HAL_SPI_Transmit(hspi, tx_buffer, 1, FLASH_HAL_TIMEOUT_MS);
+
+    // If couldn't send the command, check why
+    if (tx_result != HAL_OK) {
+        FLASH_deactivate_chip_select();
+
+        if (tx_result == HAL_TIMEOUT) {
+            return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
+        }
+
+        return FLASH_ERR_SPI_TRANSMIT_FAILED;
+    }
+
+    return FLASH_ERR_OK;
 }

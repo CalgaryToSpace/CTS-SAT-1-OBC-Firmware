@@ -41,10 +41,11 @@ static const uint8_t FLASH_CMD_WRITE_ENABLE = 0x06;  // Write Enable
 static const uint8_t FLASH_CMD_WRITE_DISABLE = 0x04; // Write Disable
 
 static const uint8_t FLASH_CMD_GET_FEATURES = 0x0F; // Get Features
+static const uint8_t FLASH_CMD_SET_FEATURES = 0x1F; // Set Features
 
 static const uint8_t FLASH_CMD_READ_ID = 0x9F; // Read ID (0x2C 0x14)
 
-static const uint8_t FLASH_CMD_RESET = 0xFF;
+static const uint8_t FLASH_CMD_RESET = 0xFF; // Reset operation
 
 // ------------------- Status Register 1 - Byte Masks -------------------
 // Source: Table 5
@@ -68,7 +69,9 @@ typedef enum {
 /*-----------------------------DRIVER FUNCTIONS-----------------------------*/
 void FLASH_activate_chip_select(uint8_t chip_number);
 void FLASH_deactivate_chip_select();
+FLASH_error_enum_t FLASH_unblock_block_lock(SPI_HandleTypeDef *hspi, uint8_t chip_number, uint8_t *buf);
 FLASH_error_enum_t FLASH_read_status_register(SPI_HandleTypeDef *hspi, uint8_t chip_number, uint8_t *buf);
+FLASH_error_enum_t FLASH_read_block_lock_register(SPI_HandleTypeDef *hspi, uint8_t chip_number, uint8_t *buf);
 FLASH_error_enum_t FLASH_write_enable(SPI_HandleTypeDef *hspi, uint8_t chip_number);
 FLASH_error_enum_t FLASH_write_disable(SPI_HandleTypeDef *hspi, uint8_t chip_number);
 FLASH_error_enum_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t addr);
@@ -76,5 +79,6 @@ FLASH_error_enum_t FLASH_write_data(SPI_HandleTypeDef *hspi, uint8_t chip_number
 FLASH_error_enum_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t addr, uint8_t *rx_buffer, lfs_size_t rx_buffer_len);
 
 FLASH_error_enum_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_number);
+FLASH_error_enum_t FLASH_reset(SPI_HandleTypeDef *hspi, uint8_t chip_number);
 
 #endif /* __INCLUDE_GUARD__FLASH_DRIVER_H__ */
