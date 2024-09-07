@@ -21,7 +21,7 @@
 #include "telecommands/mpi_telecommand_defs.h"
 #include "timekeeping/timekeeping.h"
 #include "littlefs/littlefs_helper.h"
-#include "sys_reboot_reason.h"
+#include "stm32/stm32_reboot_reason.h"
 
 
 #include <stdio.h>

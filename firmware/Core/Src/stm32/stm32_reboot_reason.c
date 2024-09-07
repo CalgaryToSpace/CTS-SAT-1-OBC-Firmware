@@ -1,6 +1,6 @@
 // Source: https://stackoverflow.com/questions/34196663/
 
-#include "sys_reboot_reason.h"
+#include "stm32/stm32_reboot_reason.h"
 
 #include "main.h"
 #include <stdio.h>

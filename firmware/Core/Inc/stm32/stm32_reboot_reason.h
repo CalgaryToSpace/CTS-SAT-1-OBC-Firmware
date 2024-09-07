@@ -1,6 +1,6 @@
 
-#ifndef __INCLUDE_GUARD__SYS_REBBOT_REASHON_H__
-#define __INCLUDE_GUARD__SYS_REBBOT_REASHON_H__
+#ifndef INCLUDE_GUARD__STM32_REBOOT_REASON_H
+#define INCLUDE_GUARD__STM32_REBOOT_REASON_H
 
 /// @brief  Possible STM32 system reset causes
 typedef enum STM_reset_cause_e
@@ -21,4 +21,4 @@ extern char * STM_reset_cause_name;
 STM_reset_cause_t STM_get_reset_cause(void);
 char * STM_reset_cause_enum_to_str(STM_reset_cause_t reset_cause, char * previous_case);
 
-#endif // __INCLUDE_GUARD__SYS_REBBOT_REASHON_H__
+#endif // INCLUDE_GUARD__STM32_REBOOT_REASON_H
