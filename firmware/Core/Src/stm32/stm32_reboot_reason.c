@@ -6,14 +6,21 @@
 #include <stdio.h>
 #include <string.h>
 
-char * STM32_reset_cause_name = "UNKNOWN";
-
-/// @brief      Obtain the STM32 system reset cause
+/// @brief      Obtain the STM32 system reset cause.
 /// @param      None
-/// @return     The system reset cause
+/// @return     The system reset cause, as an enum
 STM32_reset_cause_t STM32_get_reset_cause(void)
 {
-    STM32_reset_cause_t reset_cause;
+    // Note: static variables persist across calls to this function.
+    static STM32_reset_cause_t reset_cause = STM32_RESET_CAUSE_UNKNOWN;
+    static uint8_t STM32_has_reset_cause_been_obtained = 0;
+
+    // Fetching the reset cause using the HAL Flag if-statements is only accurate once, so if it's
+    // already loaded, then we just return the value from the first time this function was called.
+    if (STM32_has_reset_cause_been_obtained)
+    {
+        return reset_cause;
+    }
 
     if (__HAL_RCC_GET_FLAG(RCC_FLAG_LPWRRST))
     {
@@ -29,9 +36,9 @@ STM32_reset_cause_t STM32_get_reset_cause(void)
     }
     else if (__HAL_RCC_GET_FLAG(RCC_FLAG_SFTRST))
     {
-        // This reset is induced by calling the ARM CMSIS 
+        // This reset is induced by calling the ARM CMSIS
         // `NVIC_SystemReset()` function!
-        reset_cause = STM32_RESET_CAUSE_SOFTWARE_RESET; 
+        reset_cause = STM32_RESET_CAUSE_SOFTWARE_RESET;
     }
     else if (__HAL_RCC_GET_FLAG(RCC_FLAG_BORRST))
     {
@@ -54,61 +61,45 @@ STM32_reset_cause_t STM32_get_reset_cause(void)
         reset_cause = STM32_RESET_CAUSE_UNKNOWN;
     }
 
-	// NOTE: If the STM resets, the flags that were turned on from the previous reset do not automatically clear themselves.
+    // NOTE: If the STM resets, the flags that were turned on from the previous reset do not automatically clear themselves.
     // The only time that a STM will clear it's own reset flags is when the system is physically powered on and off.
     // Therefore there is a need to call __HAL_RCC_CLEAR_RESET_FLAGS(); to clear the flag after gathering the information.
-	__HAL_RCC_CLEAR_RESET_FLAGS();
+    __HAL_RCC_CLEAR_RESET_FLAGS();
 
-    return reset_cause; 
+    // Set the flag that indicates that the reset cause has been obtained for future calls to this function.
+    STM32_has_reset_cause_been_obtained = 1;
+
+    return reset_cause;
 }
 
-/// @brief      Obtain the system reset cause as an ASCII-printable name string 
-///             from a reset cause type
-/// @param      reset_cause     The previously-obtained system reset cause flag
-/// @param      previous_cause  The reset flag from calling the function TCMDEXEC_core_system_stats
-/// @return     A null-terminated ASCII name string describing the system 
+/// @brief      Convert a reset cause enum to a ASCII-printable name string.
+/// @param      reset_cause A reset cause enum.
+/// @return     A pointer to a statically-allocated null-terminated ASCII name string describing the system
 ///             reset cause
-char * STM32_reset_cause_enum_to_str(STM32_reset_cause_t reset_cause, char * previous_cause)
+char *STM32_reset_cause_enum_to_str(STM32_reset_cause_t reset_cause)
 {
-	char * reset_cause_name = "TBD";
-
-	// previous_cause is utilized to keep track of the reset flag so that you can clear the flags and the information will remain for system core stats
-	// if statement checks if core system stats is being called again and returns the previous case since the reset flags have already been reset
-    if (strcmp(previous_cause,"UNKOWN") == 0 || reset_cause!=STM32_RESET_CAUSE_UNKNOWN){
-        switch (reset_cause)
-    	{
-            case STM32_RESET_CAUSE_UNKNOWN:
-                reset_cause_name = "UNKNOWN";
-                break;
-            case STM32_RESET_CAUSE_LOW_POWER_RESET:
-                reset_cause_name = "LOW_POWER_RESET";
-                break;
-            case STM32_RESET_CAUSE_WINDOW_WATCHDOG_RESET:
-                reset_cause_name = "WINDOW_WATCHDOG_RESET";
-                break;
-            case STM32_RESET_CAUSE_INDEPENDENT_WATCHDOG_RESET:
-                reset_cause_name = "INDEPENDENT_WATCHDOG";
-                break;
-            case STM32_RESET_CAUSE_SOFTWARE_RESET:
-                reset_cause_name = "SOFTWARE_RESET";
-                break;
-            case STM32_RESET_CAUSE_EXTERNAL_RESET_PIN_RESET:
-                reset_cause_name = "EXTERNAL_RESET_PIN";
-                break;
-            case STM32_RESET_CAUSE_BROWNOUT_RESET:
-                reset_cause_name = "POWER_CYCLE_OR_BROWNOUT_RESET";
-                break;
-            case STM32_RESET_CAUSE_OPTION_BYTE_LOADER_RESET:
-                reset_cause_name = "OPTION_BYTE_LOADER_RESET";
-                break;
-            case STM32_RESET_CAUSE_FIREWALL_RESET:
-                reset_cause_name = "FIREWALL_RESET";
-                break;
-        }
-    }
-    else 
+    switch (reset_cause)
     {
-        return previous_cause;
+    case STM32_RESET_CAUSE_UNKNOWN:
+        return "UNKNOWN";
+    case STM32_RESET_CAUSE_LOW_POWER_RESET:
+        return "LOW_POWER_RESET";
+    case STM32_RESET_CAUSE_WINDOW_WATCHDOG_RESET:
+        return "WINDOW_WATCHDOG_RESET";
+    case STM32_RESET_CAUSE_INDEPENDENT_WATCHDOG_RESET:
+        return "INDEPENDENT_WATCHDOG";
+    case STM32_RESET_CAUSE_SOFTWARE_RESET:
+        return "SOFTWARE_RESET";
+    case STM32_RESET_CAUSE_EXTERNAL_RESET_PIN_RESET:
+        return "EXTERNAL_RESET_PIN";
+    case STM32_RESET_CAUSE_BROWNOUT_RESET:
+        return "BROWNOUT_RESET";
+    case STM32_RESET_CAUSE_OPTION_BYTE_LOADER_RESET:
+        return "OPTION_BYTE_LOADER_RESET";
+    case STM32_RESET_CAUSE_FIREWALL_RESET:
+        return "FIREWALL_RESET";
     }
-	return reset_cause_name;
+
+    // Default case.
+    return "INVALID";
 }

@@ -16,9 +16,7 @@ typedef enum STM32_reset_cause_e
     STM32_RESET_CAUSE_FIREWALL_RESET,
 } STM32_reset_cause_t;
 
-extern char * STM32_reset_cause_name;
-
 STM32_reset_cause_t STM32_get_reset_cause(void);
-char * STM32_reset_cause_enum_to_str(STM32_reset_cause_t reset_cause, char * previous_case);
+char * STM32_reset_cause_enum_to_str(STM32_reset_cause_t reset_cause);
 
 #endif // INCLUDE_GUARD__STM32_REBOOT_REASON_H
