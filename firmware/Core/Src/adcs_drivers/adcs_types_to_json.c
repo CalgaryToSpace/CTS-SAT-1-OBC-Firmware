@@ -941,7 +941,6 @@ uint8_t ADCS_generic_telemetry_uint8_array_TO_json(const uint8_t *data, const ui
     int16_t snprintf_ret; 
     int16_t total_written = 0;
     for (uint16_t i = 0; i < data_length; i++) {
-        // TODO: find out if there's a better way to get around the 1024-byte limit
         if (!remove_spaces) { // write each data byte in hex, separated by spaces (for easy translation into CubeSupport)
             snprintf_ret = snprintf(&json_output_str[total_written], json_output_str_len, "%x ", data[i]);
         } else { // if the command size is too long, remove the spaces and try again
