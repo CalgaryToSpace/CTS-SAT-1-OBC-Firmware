@@ -6,9 +6,13 @@
 #include <stdio.h>
 #include <string.h>
 
-/**
- * Writes data to the internal flash bank.
- */
+/// @brief Write data to the internal flash bank starting from address 0x08000000
+/// @param args_str
+/// - Arg 0: The data to write as a string
+/// @note This telecommand is only for testing purposes, it is purposfully not fully fleshed out
+/// as there is no intention on using this. Update as needed
+/// @note Currently, this is only writes all data given as a string.
+/// Thus, it is difficult to write integers directly
 uint8_t TCMDEXEC_Flash_Bank_Write(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
 {
     const uint32_t res = Flash_Bank_Write(Flash_Partitions_FLASH_BANK2, (uint8_t *)args_str, strlen(args_str));
@@ -20,14 +24,9 @@ uint8_t TCMDEXEC_Flash_Bank_Write(const char *args_str, TCMD_TelecommandChannel_
     return 0;
 }
 
-/**
- * Reads data from the internal flash bank. Prints the read data in hex format.
- * Args:
- *   uint64_t: The number of bytes to read.
- *
- * Returns:
- *   uint8_t: 0 on success, 1 on failure.
- */
+/// @brief Read data from the internal flash bank starting from address 0x08000000
+/// @param args_str
+/// - Arg 0: The number of bytes to read as a uint64_t
 uint8_t TCMDEXEC_Flash_Bank_Read(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
 {
     uint64_t number_of_bytes_to_read = 0;
@@ -53,15 +52,10 @@ uint8_t TCMDEXEC_Flash_Bank_Read(const char *args_str, TCMD_TelecommandChannel_e
     return 0;
 }
 
-/**
- * Erases a specified number of pages from the internal flash bank.
- *
- * Args:
- *   uint64_t: The starting page to erase.
- *   uint64_t: The number of pages to erase.
- * Returns:
- *   uint8_t: 0 on success, 1 on failure.
- */
+/// @brief Erase a range of pages in the internal flash bank
+/// @param args_str
+/// - Arg 0: The starting page to erase as a uint64_t
+/// - Arg 1: The number of pages to erase as a uint64_t
 uint8_t TCMDEXEC_Flash_Bank_Erase(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
 {
     uint64_t start_page_erase = 0;
