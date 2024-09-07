@@ -795,14 +795,14 @@ FLASH_error_enum_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number,
 
     // Set Chip Select HIGH
     FLASH_deactivate_chip_select();
-
+/*
     DEBUG_uart_print_str("Read data: \n");
     DEBUG_uart_print_array_hex(rx_buffer, rx_buffer_len);
     DEBUG_uart_print_str("\n");
     DEBUG_uart_print_str("Length of data read: ");
     DEBUG_uart_print_uint32((uint32_t)rx_buffer_len);
     DEBUG_uart_print_str("\n");
-
+*/
     // TODO: Are there any other errors that can occur while reading?
     return FLASH_ERR_OK;
 }
@@ -915,6 +915,12 @@ FLASH_error_enum_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_numb
     return FLASH_ERR_OK; // success
 }
 
+/**
+ * @brief Resets the NAND flash memory module
+ * @param hspi - Pointer to the SPI HAL handle
+ * @param chip_number - The chip select number to activate
+ * @retval FLASH_ERR_OK on success, <0 on failure
+ */
 FLASH_error_enum_t FLASH_reset(SPI_HandleTypeDef *hspi, uint8_t chip_number)
 {
     FLASH_activate_chip_select(chip_number);

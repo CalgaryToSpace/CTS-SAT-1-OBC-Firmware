@@ -156,15 +156,15 @@ uint8_t TCMDEXEC_flash_read_hex(const char *args_str, TCMD_TelecommandChannel_en
             FLASH_NUMBER_OF_FLASH_DEVICES - 1);
         return 2;
     }
-/*
-    if (arg_num_bytes > max_num_bytes || arg_num_bytes == 0) {
+
+    if (arg_num_bytes > MAX_NUM_BYTES_TO_READ || arg_num_bytes == 0) {
         snprintf(
             response_output_buf, response_output_buf_len,
             "Invalid number of bytes to read: %lu. Must be 1 to %d.",
-            (uint32_t)arg_num_bytes, max_num_bytes); // TODO: fix this cast
+            (uint32_t)arg_num_bytes, MAX_NUM_BYTES_TO_READ); // TODO: fix this cast
         return 3;
     }
-*/
+
     //uint8_t read_buf[max_num_bytes];
     uint32_t num_bytes = (uint32_t)arg_num_bytes;
     FLASH_error_enum_t result = FLASH_read_data(&hspi1, chip_num, flash_addr, read_buf, num_bytes);
@@ -175,8 +175,9 @@ uint8_t TCMDEXEC_flash_read_hex(const char *args_str, TCMD_TelecommandChannel_en
             "Error reading flash: %d", result);
         return 4;
     }
-/*
+
     // Convert read data to hex
+    // FIXME: This can't print whole page of data (2048 bytes)
     for (uint16_t i = 0; i < num_bytes; i++) {
         snprintf(
             &response_output_buf[strlen(response_output_buf)],
@@ -191,7 +192,7 @@ uint8_t TCMDEXEC_flash_read_hex(const char *args_str, TCMD_TelecommandChannel_en
                 "\n");
         }
     }
-    */
+
     return 0;
 }
 
@@ -335,6 +336,10 @@ uint8_t TCMDEXEC_flash_benchmark_erase_write_read(const char *args_str, TCMD_Tel
     return result;
 }
 
+/// @brief Telecommand: Reset the flash memory module.
+/// @param args_str 
+/// - Arg 0: Chip Number (CS number) as uint
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_flash_reset(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     uint64_t chip_num;

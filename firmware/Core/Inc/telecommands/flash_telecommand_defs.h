@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include "telecommands/telecommand_definitions.h"
 
+/*----------------------------- CONFIG VARIABLES ----------------------------- */
+// Maximum number of bytes to read from the flash
 #define MAX_NUM_BYTES_TO_READ 2048
 
 uint8_t TCMDEXEC_flash_activate_each_cs(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
