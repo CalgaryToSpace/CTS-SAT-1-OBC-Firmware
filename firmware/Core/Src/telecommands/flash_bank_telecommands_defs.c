@@ -6,6 +6,9 @@
 #include <stdio.h>
 #include <string.h>
 
+/**
+ * Writes data to the internal flash bank.
+ */
 uint8_t TCMDEXEC_Flash_Bank_Write(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
 {
     const uint32_t res = Flash_Bank_Write(Flash_Partitions_FLASH_BANK2, (uint8_t *)args_str, strlen(args_str));
@@ -17,6 +20,14 @@ uint8_t TCMDEXEC_Flash_Bank_Write(const char *args_str, TCMD_TelecommandChannel_
     return 0;
 }
 
+/**
+ * Reads data from the internal flash bank. Prints the read data in hex format.
+ * Args:
+ *   uint64_t: The number of bytes to read.
+ *
+ * Returns:
+ *   uint8_t: 0 on success, 1 on failure.
+ */
 uint8_t TCMDEXEC_Flash_Bank_Read(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
 {
     uint64_t number_of_bytes_to_read = 0;
@@ -27,7 +38,7 @@ uint8_t TCMDEXEC_Flash_Bank_Read(const char *args_str, TCMD_TelecommandChannel_e
         return 1;
     }
 
-    uint8_t read_buffer[number_of_bytes_to_read + 1];
+    uint8_t read_buffer[number_of_bytes_to_read + 1]; // + 1 for null-terminator
     const uint8_t res = Flash_Bank_Read(Flash_Partitions_FLASH_BANK2, read_buffer, sizeof(read_buffer));
     if (res != 0)
     {
@@ -42,6 +53,15 @@ uint8_t TCMDEXEC_Flash_Bank_Read(const char *args_str, TCMD_TelecommandChannel_e
     return 0;
 }
 
+/**
+ * Erases a specified number of pages from the internal flash bank.
+ *
+ * Args:
+ *   uint64_t: The starting page to erase.
+ *   uint64_t: The number of pages to erase.
+ * Returns:
+ *   uint8_t: 0 on success, 1 on failure.
+ */
 uint8_t TCMDEXEC_Flash_Bank_Erase(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
 {
     uint64_t start_page_erase = 0;
