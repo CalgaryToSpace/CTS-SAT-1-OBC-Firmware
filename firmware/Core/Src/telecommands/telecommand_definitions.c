@@ -698,11 +698,11 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
 
-   // ****************** END SECTION: log_telecommand_defs ******************
+    // ****************** END SECTION: log_telecommand_defs ******************
 
-   // ****************** SECTION: freertos_telecommand_defs ******************
+    // ****************** SECTION: freertos_telecommand_defs ******************
 
-   {
+    {
         .tcmd_name = "freetos_list_tasks_jsonl",
         .tcmd_func = TCMDEXEC_freetos_list_tasks_jsonl,
         .number_of_args = 0,
@@ -829,7 +829,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     
     // ****************** SECTION: agenda_telecommand_defs ******************
 
-   {
+    {
         .tcmd_name = "agenda_delete_all",
         .tcmd_func = TCMDEXEC_agenda_delete_all,
         .number_of_args = 0,
@@ -842,7 +842,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
-    
+
     {
         .tcmd_name = "agenda_fetch_jsonl",
         .tcmd_func = TCMDEXEC_agenda_fetch_jsonl,
@@ -871,21 +871,21 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
 
     {
         .tcmd_name = "flash_bank_read",
-        .tcmd_func = TCMDEXEC_Flash_Bank_Read,
+        .tcmd_func = TCMDEXEC_flash_bank_read,
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
-    }, 
+    },
 
     {
         .tcmd_name = "flash_bank_write",
-        .tcmd_func = TCMDEXEC_Flash_Bank_Write,
+        .tcmd_func = TCMDEXEC_flash_bank_write,
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
     },
 
     {
         .tcmd_name = "flash_bank_erase",
-        .tcmd_func = TCMDEXEC_Flash_Bank_Erase,
+        .tcmd_func = TCMDEXEC_flash_bank_erase,
         .number_of_args = 2,
         .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
     },
@@ -1062,8 +1062,8 @@ uint8_t TCMDEXEC_available_telecommands(const char *args_str, TCMD_TelecommandCh
 
 uint8_t TCMDEXEC_reboot(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-    DEBUG_uart_print_str("Rebooting by telecommand request...\n"); 
-    
+    DEBUG_uart_print_str("Rebooting by telecommand request...\n");
+
     // Delay to flush UART buffer
     HAL_Delay(100);
 

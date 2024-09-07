@@ -13,7 +13,7 @@
 /// as there is no intention on using this. Update as needed
 /// @note Currently, this is only writes all data given as a string.
 /// Thus, it is difficult to write integers directly
-uint8_t TCMDEXEC_Flash_Bank_Write(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
+uint8_t TCMDEXEC_flash_bank_write(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
 {
     const uint32_t res = Flash_Bank_Write(Flash_Partitions_FLASH_BANK2, (uint8_t *)args_str, strlen(args_str));
     if (res != 0)
@@ -27,7 +27,7 @@ uint8_t TCMDEXEC_Flash_Bank_Write(const char *args_str, TCMD_TelecommandChannel_
 /// @brief Read data from the internal flash bank starting from address 0x08000000
 /// @param args_str
 /// - Arg 0: The number of bytes to read as a uint64_t
-uint8_t TCMDEXEC_Flash_Bank_Read(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
+uint8_t TCMDEXEC_flash_bank_read(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
 {
     uint64_t number_of_bytes_to_read = 0;
     const uint8_t parse_res = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &number_of_bytes_to_read);
@@ -56,7 +56,7 @@ uint8_t TCMDEXEC_Flash_Bank_Read(const char *args_str, TCMD_TelecommandChannel_e
 /// @param args_str
 /// - Arg 0: The starting page to erase as a uint64_t
 /// - Arg 1: The number of pages to erase as a uint64_t
-uint8_t TCMDEXEC_Flash_Bank_Erase(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
+uint8_t TCMDEXEC_flash_bank_erase(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
 {
     uint64_t start_page_erase = 0;
 
