@@ -14,7 +14,7 @@ typedef enum
     INTERNAL_FLASH_MEMORY_REGION_GOLDEN_COPY_ADDRESS = 0x8100000
 } INTERNAL_FLASH_memory_region_addresses_t;
 
-uint32_t Internal_Flash_Bank_Write(uint32_t address, uint8_t *data, uint32_t length);
+uint8_t Internal_Flash_Bank_Write(uint32_t address, uint8_t *data, uint32_t length);
 
 uint8_t Internal_Flash_Bank_Read(uint32_t address, uint8_t *buffer, uint32_t length);
 

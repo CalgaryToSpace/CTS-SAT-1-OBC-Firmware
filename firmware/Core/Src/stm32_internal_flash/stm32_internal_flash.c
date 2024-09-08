@@ -11,7 +11,7 @@
 /// @param data uint8_t buffer containing the data to be written.
 /// @param length Length of the data to be written.
 /// @return 0 on success, > 0 on error, 10 if HAL_FLASH_Unlock() failed, 11 if HAL_FLASH_Lock() failed
-uint32_t Internal_Flash_Bank_Write(uint32_t address, uint8_t *data, uint32_t length)
+uint8_t Internal_Flash_Bank_Write(uint32_t address, uint8_t *data, uint32_t length)
 {
     const uint32_t end_address = address + length;
 
@@ -42,7 +42,6 @@ uint32_t Internal_Flash_Bank_Write(uint32_t address, uint8_t *data, uint32_t len
         }
     }
 
-    // Lock the Flash to disable the flash control register access
     if (HAL_FLASH_Lock() != HAL_OK)
     {
         return 11;
@@ -51,9 +50,9 @@ uint32_t Internal_Flash_Bank_Write(uint32_t address, uint8_t *data, uint32_t len
     return status;
 }
 
-/// @brief Reads data from the flash memory. By default, set to read from bank 2
+/// @brief Reads data from the flash memory
 /// @param address address to start reading from
-/// @param buffer buffer to store the read data
+/// @param buffer buffer to store the read data, must be length long
 /// @param length number of bytes to read
 /// @return 0 on success, > 0 on error
 uint8_t Internal_Flash_Bank_Read(uint32_t address, uint8_t *buffer, uint32_t length)
