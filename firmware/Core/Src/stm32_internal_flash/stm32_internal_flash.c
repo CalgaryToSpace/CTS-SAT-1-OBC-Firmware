@@ -72,23 +72,18 @@ uint8_t Internal_Flash_Bank_Read(uint32_t address, uint8_t *buffer, uint32_t len
     return 0; // Return success
 }
 
-/**
- * Erases a specified number of pages from the flash bank.
- *
- * This function takes in the starting page to erase and the number of pages to erase.
- * It clears any existing flash errors, unlocks the flash, and then erases the specified pages.
- * If the erase operation is successful, it returns 0. Otherwise, it returns the page error.
- *
- * @param start_page_erase The starting page to erase.
- * @param number_of_pages_to_erase The number of pages to erase.
- *
- * @return 0 if the erase operation is successful, page error otherwise.
- */
+/// @brief Erase pages from bank 2 of flash memory which is located at 0x08100000
+/// @param start_page_erase what page to start erasing from
+/// @param number_of_pages_to_erase how many pages to erase
+/// @return 0 on success, 1 if HAL_FLASH_Unlock() failed, 2 if HAL_FLASH_Lock() failed, address of page which failed on error
 uint32_t Internal_Flash_Bank_Erase(uint16_t start_page_erase, uint16_t number_of_pages_to_erase)
 {
     __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
 
-    HAL_FLASH_Unlock();
+    if (HAL_FLASH_Unlock() != HAL_OK)
+    {
+        return 1;
+    }
 
     FLASH_EraseInitTypeDef EraseInitStruct =
         {
@@ -99,8 +94,13 @@ uint32_t Internal_Flash_Bank_Erase(uint16_t start_page_erase, uint16_t number_of
 
     uint32_t PageError = 0;
     const HAL_StatusTypeDef erase_status = HAL_FLASHEx_Erase(&EraseInitStruct, &PageError);
-    HAL_FLASH_Lock();
-    if (erase_status == HAL_OK)
+    if (HAL_FLASH_Lock() != HAL_OK)
+    {
+        return 2;
+    }
+    // page error is uint32_t max on success, contains address of page which failed on error, check
+    // stm32l4xx_hal_flash_ex.h for more information or the docs for HAL_FLASHEx_Erase
+    if (erase_status == HAL_OK && PageError == UINT32_MAX)
     {
         return 0;
     }
