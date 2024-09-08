@@ -5,54 +5,48 @@
 #include "stm32l4xx_hal_flash.h"
 #include "stm32l4xx_hal_flash_ex.h"
 #include <string.h>
-/**
- * Writes data to the flash memory.
- *
- * This function takes in an address, a pointer to the data to be written, and the length of the data.
- * It unlocks the flash memory, clears all flash flags, and then writes the data to the flash memory in 8-byte chunks.
- * If any part of the write operation fails, it breaks out of the loop and returns the error status.
- * Finally, it locks the flash memory to disable the flash control register access.
- *
- * @param address The starting address in the flash memory where the data will be written.
- * @param data A pointer to the data to be written to the flash memory.
- * @param length The length of the data to be written.
- *
- * @return The status of the write operation. A value > 0 indicates an error, while a value of 0 indicates success.
- */
+
+/// @brief Writes data to the flash memory.
+/// @param address Address in the flash memory where the data will be written.
+/// @param data uint8_t buffer containing the data to be written.
+/// @param length Length of the data to be written.
+/// @return 0 on success, > 0 on error, 10 if HAL_FLASH_Unlock() failed, 11 if HAL_FLASH_Lock() failed
 uint32_t Internal_Flash_Bank_Write(uint32_t address, uint8_t *data, uint32_t length)
 {
-    HAL_StatusTypeDef status;
-    uint32_t endAddress = address + length;
+    const uint32_t end_address = address + length;
 
-    status = HAL_FLASH_Unlock();
-
-    if (status != HAL_OK)
+    if (HAL_FLASH_Unlock() != HAL_OK)
     {
-        return 1;
+        return 10;
     }
 
     // Clear all FLASH flags before starting the operation
     __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
 
-    // Write data to flash
-    for (uint32_t currentAddress = address; currentAddress < endAddress; currentAddress += 8)
+    HAL_StatusTypeDef status;
+
+    for (uint32_t currentAddress = address; currentAddress < end_address; currentAddress += 8)
     {
-        // currentAddress - address is the number of bytes already written
-        // const uint64_t double_word = *(uint64_t *)(data + (currentAddress - address));
         uint8_t data_to_write[8] = {0};
+
+        // currentAddress - address is the number of bytes we have written
+        // since the beginning of the function
         memcpy(data_to_write, data + (currentAddress - address), 8);
+
         const uint64_t double_word = *(uint64_t *)(data_to_write);
-        // Write the word to flash
+
         status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, currentAddress, double_word);
         if (status != HAL_OK)
         {
-            // If the program operation fails, break the loop
             break;
         }
     }
 
     // Lock the Flash to disable the flash control register access
-    HAL_FLASH_Lock();
+    if (HAL_FLASH_Lock() != HAL_OK)
+    {
+        return 11;
+    }
 
     return status;
 }
