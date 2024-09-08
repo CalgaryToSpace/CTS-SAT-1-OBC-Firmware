@@ -51,23 +51,14 @@ uint32_t Internal_Flash_Bank_Write(uint32_t address, uint8_t *data, uint32_t len
     return status;
 }
 
-/**
- * Reads data from the flash memory.
- *
- * This function takes in an address, a pointer to a buffer to store the read data, and the length of the data to be read.
- * It checks if the address is within the valid range of the flash memory and returns an error if it's not.
- * If the address is valid, it reads the data from the flash memory and stores it in the provided buffer.
- *
- * @param address The starting address in the flash memory where the data will be read from.
- * @param buffer A pointer to the buffer where the read data will be stored.
- * @param length The length of the data to be read.
- *
- * @return 0 if the read operation is successful, 1 if the address is out of range.
- */
+/// @brief Reads data from the flash memory. By default, set to read from bank 2
+/// @param address address to start reading from
+/// @param buffer buffer to store the read data
+/// @param length number of bytes to read
+/// @return 0 on success, > 0 on error
 uint8_t Internal_Flash_Bank_Read(uint32_t address, uint8_t *buffer, uint32_t length)
 {
-    // Check if the address is within the valid range of the flash memory
-    if (address < INTERNAL_FLASH_MEMORY_REGION_GOLDEN_COPY_ADDRESS || (address + length) > (FLASH_BANK2_END))
+    if (address + length > FLASH_BANK2_END)
     {
         return 1; // Return error if address is out of range
     }
