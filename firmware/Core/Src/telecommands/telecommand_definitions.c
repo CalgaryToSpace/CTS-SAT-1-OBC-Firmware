@@ -867,7 +867,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION
     },
     // ****************** END: MPI_telecommand_definitions ********************
-    // ****************** START SECTION: flash_bank_telecommand_defs ******************
+    // ****************** START SECTION: stm32_internal_flash_telecommand_defs ******************
 
     {
         .tcmd_name = "flash_bank_read",
@@ -890,7 +890,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
     },
 
-    // ****************** END SECTION: flash_bank_telecommand_defs ******************
+    // ****************** END SECTION: stm32_internal_flash_telecommand_defs ******************
 
     // ****************** SECTION: antenna_telecommand_defs ******************
     {
