@@ -75,7 +75,7 @@ uint8_t Internal_Flash_Bank_Read(uint32_t address, uint8_t *buffer, uint32_t len
 /// @brief Erase pages from bank 2 of flash memory which is located at 0x08100000
 /// @param start_page_erase what page to start erasing from
 /// @param number_of_pages_to_erase how many pages to erase
-/// @return 0 on success, 1 if HAL_FLASH_Unlock() failed, 2 if HAL_FLASH_Lock() failed, address of page which failed on error
+/// @return 0 on success, 1 if HAL_FLASH_Unlock() failed, 2 if HAL_FLASH_Lock() failed, otherwise, the address of page which failed on error
 uint32_t Internal_Flash_Bank_Erase(uint16_t start_page_erase, uint16_t number_of_pages_to_erase)
 {
     __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
