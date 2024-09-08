@@ -67,7 +67,6 @@ uint8_t Internal_Flash_Bank_Read(uint32_t address, uint8_t *buffer, uint32_t len
     {
         buffer[i] = *(uint8_t *)(address + i);
     }
-    buffer[length] = '\0';
 
     return 0; // Return success
 }

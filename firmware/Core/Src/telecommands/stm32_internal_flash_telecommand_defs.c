@@ -37,7 +37,7 @@ uint8_t TCMDEXEC_flash_bank_read(const char *args_str, TCMD_TelecommandChannel_e
         return 1;
     }
 
-    uint8_t read_buffer[number_of_bytes_to_read + 1]; // + 1 for null-terminator
+    uint8_t read_buffer[number_of_bytes_to_read];
     const uint8_t res = Internal_Flash_Bank_Read(INTERNAL_FLASH_MEMORY_REGION_GOLDEN_COPY_ADDRESS, read_buffer, sizeof(read_buffer));
     if (res != 0)
     {
