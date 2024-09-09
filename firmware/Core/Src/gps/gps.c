@@ -262,8 +262,12 @@ uint8_t assign_gps_position_velocity_type(const char *type_str, GPS_position_typ
 uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *result) {
 
     // Check if the buffer is empty
-    if ( data_received[0] == '\0') {
+    if (data_received[0] == '\0') {
         // Empty or NULL string, return an error
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Error 1: Empty buffer"
+        );
         return 1;
     }
 
@@ -272,41 +276,54 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
 
     if(header_parse_result != 0){
         // Error in parsing header section
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Error 2: Error parising the gps header"
+        );
         return 2;
     }
 
     if(strcmp(bestxyza_header.log_name, "BESTXYZA") != 0){
         // Incorrect log function
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Error 3: Incorrect log function ie not BESTXYZA"
+        );
         return 3;
     }
 
     // TODO: What if there is multiple commands in the string?
     const char *header_delimiter_char = strchr(data_received,';');
     const char* bestxyza_data_start = header_delimiter_char + 1;
-    const char* asterisk = strchr(bestxyza_data_start, '*');    
-
-    if(!asterisk){
-        // No terminator at the end of the bestxyza data, ie no CRC present
-        return 4;
-    }
+    const char* asterisk = strchr(bestxyza_data_start, '*');  
 
     if(strcmp(bestxyza_data_start, "\0") == 0){
         // No data after the gps header within the response
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Error 4: Missing Data after the header"
+        );
+        return 4;
+    }  
+
+    if(!asterisk){
+        // No terminator at the end of the bestxyza data, ie no CRC present
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Error 5: Missing Astericks in response"
+        );
         return 5;
     }
 
     const int bestxyza_data_length = asterisk - bestxyza_data_start + 1;
-
-
-    if (bestxyza_data_length < 0) {
-        //CRC asterick comes before the start of the data: Incomplete bestxyza data
-        return 4;
-    }
-
-    char bestxyza_data_buffer[1024];
+    char bestxyza_data_buffer[512];
     if ((size_t)bestxyza_data_length >= sizeof(bestxyza_data_buffer)) {
-        //Header is too large for the buffer
-        return 5;  
+        //Buffer Overflow Error
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Error 6: Buffer overflow"
+        );
+        return 6;  
     }
 
     strncpy(bestxyza_data_buffer, bestxyza_data_start, bestxyza_data_length);
@@ -314,7 +331,7 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
 
     // Parse the data in the bestxyza data buffer
     uint8_t parse_result;
-    char token_buffer[256];
+    char token_buffer[128];
     char *end_ptr;
     
     // Position Solution Status
@@ -487,7 +504,7 @@ uint8_t parse_timea_data(const char* data_received, gps_timea_response *result) 
         return 4;
     }
 
-    char timea_data_buffer[1024];
+    char timea_data_buffer[512];
     if ((size_t)timea_data_length >= sizeof(timea_data_buffer)) {
         //Header is too large for the buffer
         return 5;  
@@ -498,7 +515,7 @@ uint8_t parse_timea_data(const char* data_received, gps_timea_response *result) 
 
     // Parse the data in the bestxyza data buffer
     uint8_t parse_result;
-    char token_buffer[256];
+    char token_buffer[128];
     char *end_ptr;
     
     // Clock Model Status
