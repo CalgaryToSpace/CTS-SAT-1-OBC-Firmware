@@ -119,7 +119,7 @@ uint8_t ANT_CMD_deploy_antenna_with_override(uint8_t antenna, uint8_t activation
 /// @return 0 if successful, >0 if error occurred
 /// @note Upon success, the temperature is printed to the debug UART
 uint8_t ANT_CMD_measure_temp() {
-    uint8_t cmd_len = 1;
+    const uint8_t cmd_len = 1;
     uint8_t cmd_buf[cmd_len];
 
     cmd_buf[0] = ANT_CMD_MEASURE_TEMP;
@@ -138,10 +138,10 @@ uint8_t ANT_CMD_measure_temp() {
     return comms_err;
 }
 /// @brief writes 2 bytes of information representing the deployment status of the antennas to the passed buffer,
-///         information on interpereting the response may be found in the ISIS Antenna System user manual. Doc ID: ISIS.ANTS.UM.001 pg. 42
+///         information on interpreting the response may be found in the ISIS Antenna System user manual. Doc ID: ISIS.ANTS.UM.001 pg. 42
 /// @param response a two byte buffer where the status information is written to.
 /// @return 0 on success, > 0 on failure.
-uint8_t ANT_CMD_report_deployment_status(uint16_t *response) {
+uint8_t ANT_CMD_report_deployment_status(uint8_t response[2]) {
     const uint8_t CMD_LEN  = 1;
     uint8_t cmd_buf[CMD_LEN];
 
@@ -151,14 +151,13 @@ uint8_t ANT_CMD_report_deployment_status(uint16_t *response) {
     
     if (status == 0) {
         const uint8_t response_size = 2;
-        // TODO: careful about enidianness!!!
-        status = ANT_get_response((uint8_t *)response, response_size);
+        status = ANT_get_response(response, response_size);
     }
     return status;
 }
 /// @brief writes the number of times deployment has been attempted (for a specified antenna) in a response buffer.
 /// @param antenna the antenna to check
-/// @param response a 1 byte buffer where the count of attempted deployments will be writen
+/// @param response a 1 byte buffer where the count of attempted deployments will be written
 /// @return 0 on success, > 0 on failure
 uint8_t report_antenna_deployment_activation_count(uint8_t antenna, uint8_t *response) {
     const uint8_t CMD_BUFF_SIZE = 1;
@@ -185,17 +184,16 @@ uint8_t report_antenna_deployment_activation_count(uint8_t antenna, uint8_t *res
     uint8_t status = ANT_send_cmd(cmd_buf, CMD_BUFF_SIZE); 
     if(status == 0) {
         const uint8_t response_len = 1;
-        // TODO: careful about enidianness!!!
         status = ANT_get_response(response, response_len);
     }
     return status;
 }
 
-/// @brief writes the cumulative time (in 50ms incements) that the deployment system has been active (for a specified antenna) in a response buffer.
+/// @brief writes the cumulative time (in 50ms increments) that the deployment system has been active (for a specified antenna) in a response buffer.
 /// @param antenna the antenna to check. A number between 1-4
-/// @param response a 2 byte buffer where the cumulative deployment time (in 50ms increments) will be writen
+/// @param response a 2 byte buffer where the cumulative deployment time (in 50ms increments) will be written
 /// @return 0 on success, > 0 on failure
-uint8_t report_antenna_deployment_activation_time(uint8_t antenna, uint16_t *response) {
+uint8_t report_antenna_deployment_activation_time(uint8_t antenna, uint8_t response[2]) {
     const uint8_t CMD_BUFF_SIZE = 1;
     uint8_t cmd_buf[CMD_BUFF_SIZE];
 
@@ -220,8 +218,7 @@ uint8_t report_antenna_deployment_activation_time(uint8_t antenna, uint16_t *res
     uint8_t status = ANT_send_cmd(cmd_buf, CMD_BUFF_SIZE); 
     if(status == 0) {
         const uint8_t response_len = 2; 
-        // TODO: careful about enidianness!!!
-        status = ANT_get_response((uint8_t *)response, response_len);
+        status = ANT_get_response(response, response_len);
     }
     return status;
 }
