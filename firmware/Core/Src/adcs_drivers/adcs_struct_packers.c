@@ -134,14 +134,14 @@ uint8_t ADCS_Pack_to_Unix_Time_Save_Mode_Struct(uint8_t *data_received, ADCS_Set
 /// @param[out] result Structure containing the formated data for this command.
 /// @return 0 once the function is finished running.}
 uint8_t ADCS_Pack_to_Orbit_Params_Struct(uint8_t *data_received, ADCS_Orbit_Params_Struct *result) {
-    memcpy(&result->inclination, &data_received[0], sizeof(double));
+    memcpy(&result->inclination_deg, &data_received[0], sizeof(double));
     memcpy(&result->eccentricity, &data_received[8], sizeof(double));
-    memcpy(&result->ascending_node_right_ascension, &data_received[16], sizeof(double));
-    memcpy(&result->perigee_argument, &data_received[24], sizeof(double));
+    memcpy(&result->ascending_node_right_ascension_deg, &data_received[16], sizeof(double));
+    memcpy(&result->perigee_argument_deg, &data_received[24], sizeof(double));
     memcpy(&result->b_star_drag_term, &data_received[32], sizeof(double));
-    memcpy(&result->mean_motion, &data_received[40], sizeof(double));
-    memcpy(&result->mean_anomaly, &data_received[48], sizeof(double));
-    memcpy(&result->epoch, &data_received[56], sizeof(double));
+    memcpy(&result->mean_motion_orbits_per_day, &data_received[40], sizeof(double));
+    memcpy(&result->mean_anomaly_deg, &data_received[48], sizeof(double));
+    memcpy(&result->epoch_year_point_day, &data_received[56], sizeof(double));
     return 0;
 }
 
@@ -187,9 +187,9 @@ uint8_t ADCS_Pack_to_Magnetorquer_Command_Struct(uint8_t *data_received, ADCS_Ma
 /// @param[out] result Structure containing the formated data for this command.
 /// @return 0 once the function is finished running.}
 uint8_t ADCS_Pack_to_Raw_Magnetometer_Values_Struct(uint8_t *data_received, ADCS_Raw_Magnetometer_Values_Struct *result) {
-    result->x = data_received[1] << 8 | data_received[0];
-    result->y = data_received[3] << 8 | data_received[2];
-    result->z = data_received[5] << 8 | data_received[4];
+    result->x_sampled = data_received[1] << 8 | data_received[0];
+    result->y_sampled = data_received[3] << 8 | data_received[2];
+    result->z_sampled = data_received[5] << 8 | data_received[4];
     return 0;
 }
 
@@ -249,8 +249,8 @@ uint8_t ADCS_Pack_to_Commanded_Attitude_Angles_Struct(uint8_t *data_received, AD
 uint8_t ADCS_Pack_to_Estimation_Params_Struct(uint8_t* data_received, ADCS_Estimation_Params_Struct* result) {
     // map temp buffer to struct
     memcpy(&result->magnetometer_rate_filter_system_noise, &data_received[0], 4);
-    memcpy(&result->ekf_system_noise, &data_received[4], 4);
-    memcpy(&result->css_measurement_noise, &data_received[8], 4);
+    memcpy(&result->extended_kalman_filter_system_noise, &data_received[4], 4);
+    memcpy(&result->coarse_sun_sensor_measurement_noise, &data_received[8], 4);
     memcpy(&result->sun_sensor_measurement_noise, &data_received[12], 4);
     memcpy(&result->nadir_sensor_measurement_noise, &data_received[16], 4);
     memcpy(&result->magnetometer_measurement_noise, &data_received[20], 4);
@@ -274,7 +274,7 @@ uint8_t ADCS_Pack_to_Estimation_Params_Struct(uint8_t* data_received, ADCS_Estim
 /// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
 /// @param[out] result Structure containing the formated data for this command.
 /// @return 0 once the function is finished running.}
-uint8_t ADCS_Pack_to_ASGP4_Params_Struct(uint8_t* data_received, ADCS_ASGP4_Params_Struct* result) {
+uint8_t ADCS_Pack_to_Augmented_SGP4_Params_Struct(uint8_t* data_received, ADCS_Augmented_SGP4_Params_Struct* result) {
     // map temp buffer to struct
     result->incl_coefficient_milli = (int16_t) (data_received[1] << 8 | data_received[0]);
     result->raan_coefficient_milli = (int16_t) (data_received[3] << 8 | data_received[2]);
@@ -283,7 +283,7 @@ uint8_t ADCS_Pack_to_ASGP4_Params_Struct(uint8_t* data_received, ADCS_ASGP4_Para
     result->time_coefficient_milli = (int16_t) (data_received[9] << 8 | data_received[8]);
     result->pos_coefficient_milli = (int16_t) (data_received[11] << 8 | data_received[10]);
     result->maximum_position_error_milli = ((int32_t)((int16_t)data_received[12])) * 100;
-    result->asgp4_filter = (ADCS_ASGP4_Filter)data_received[13];
+    result->augmented_sgp4_filter = (ADCS_Augmented_SGP4_Filter)data_received[13];
     result->xp_coefficient_nano = ((int64_t)((int32_t)(data_received[17] << 24 | data_received[16] << 16 | data_received[15] << 8 | data_received[14]))) * 100;
     result->yp_coefficient_nano = ((int64_t)((int32_t)(data_received[21] << 24 | data_received[20] << 16 | data_received[19] << 8 | data_received[18]))) * 100;
     result->gps_roll_over = data_received[22];
@@ -466,13 +466,13 @@ uint8_t ADCS_Pack_to_Raw_Cam2_Sensor_Struct(uint8_t* data_received, ADCS_Raw_Cam
 /// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
 /// @param[out] result Structure containing the formated data for this command.
 /// @return 0 once the function is finished running.}
-uint8_t ADCS_Pack_to_Raw_CSS_1_to_6_Struct(uint8_t* data_received, ADCS_Raw_CSS_1_to_6_Struct* result) {
-    result->css1 = data_received[0];
-    result->css2 = data_received[1];
-    result->css3 = data_received[2];
-    result->css4 = data_received[3];
-    result->css5 = data_received[4];
-    result->css6 = data_received[5];
+uint8_t ADCS_Pack_to_Raw_Coarse_Sun_Sensor_1_to_6_Struct(uint8_t* data_received, ADCS_Raw_Coarse_Sun_Sensor_1_to_6_Struct* result) {
+    result->coarse_sun_sensor_1 = data_received[0];
+    result->coarse_sun_sensor_2 = data_received[1];
+    result->coarse_sun_sensor_3 = data_received[2];
+    result->coarse_sun_sensor_4 = data_received[3];
+    result->coarse_sun_sensor_5 = data_received[4];
+    result->coarse_sun_sensor_6 = data_received[5];
 
     return 0;
 }
@@ -481,11 +481,11 @@ uint8_t ADCS_Pack_to_Raw_CSS_1_to_6_Struct(uint8_t* data_received, ADCS_Raw_CSS_
 /// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
 /// @param[out] result Structure containing the formated data for this command.
 /// @return 0 once the function is finished running.}
-uint8_t ADCS_Pack_to_Raw_CSS_7_to_10_Struct(uint8_t* data_received, ADCS_Raw_CSS_7_to_10_Struct* result) {
-    result->css7 = data_received[0];
-    result->css8 = data_received[1];
-    result->css9 = data_received[2];
-    result->css10 = data_received[3];
+uint8_t ADCS_Pack_to_Raw_Coarse_Sun_Sensor_7_to_10_Struct(uint8_t* data_received, ADCS_Raw_Coarse_Sun_Sensor_7_to_10_Struct* result) {
+    result->coarse_sun_sensor_7 = data_received[0];
+    result->coarse_sun_sensor_8 = data_received[1];
+    result->coarse_sun_sensor_9 = data_received[2];
+    result->coarse_sun_sensor_10 = data_received[3];
 
     return 0;
 }

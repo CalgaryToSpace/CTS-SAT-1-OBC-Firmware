@@ -88,7 +88,7 @@ uint8_t ADCS_send_i2c_telecommand(uint8_t id, uint8_t* data, uint32_t data_lengt
     }
 
     // include checksum following data if enabled
-    if (include_checksum) {buf[data_length] = ADCS_COMMS_Crc8Checksum(data, data_length);}
+    if (include_checksum) {buf[data_length] = ADCS_calculate_crc8_checksum(data, data_length);}
 
     ADCS_CMD_status = HAL_I2C_Mem_Write(ADCS_i2c_HANDLE, ADCS_i2c_ADDRESS << 1, id, 1, buf, sizeof(buf), ADCS_HAL_TIMEOUT);
 
@@ -132,7 +132,7 @@ uint8_t ADCS_send_i2c_telemetry_request(uint8_t id, uint8_t* data, uint32_t data
 
     if (include_checksum) {
         uint8_t checksum = temp_data[data_length];
-        uint8_t checksum_test = ADCS_COMMS_Crc8Checksum(data, data_length);
+        uint8_t checksum_test = ADCS_calculate_crc8_checksum(data, data_length);
         if (checksum != checksum_test) {
             return 0x04;
         }
@@ -169,7 +169,7 @@ uint8_t ADCS_convert_uint32_to_reversed_uint8_array_members(uint8_t *array, uint
 /// @brief Initialise the lookup table for 8-bit CRC calculation.
 /// @return 0 once successful.
 uint8_t CRC8Table[256];
-uint8_t ADCS_COMMS_Crc8Init() {
+uint8_t ADCS_initialise_crc8_checksum() {
     int val;
     for (uint16_t i = 0; i < 256; i++)
     {
@@ -189,7 +189,7 @@ uint8_t ADCS_COMMS_Crc8Init() {
 /// @param[in] buffer the buffer containing data for which to calculate the crc value
 /// @param[in] len the number of bytes of valid data in the buffer
 /// @return the CRC value calculated (which is 0xFF for an empty buffer)
-uint8_t ADCS_COMMS_Crc8Checksum(uint8_t* buffer, uint16_t len)
+uint8_t ADCS_calculate_crc8_checksum(uint8_t* buffer, uint16_t len)
 {
     if (len == 0) return 0xff;
 

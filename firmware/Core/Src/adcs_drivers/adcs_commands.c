@@ -530,16 +530,16 @@ uint8_t ADCS_Set_Commanded_Attitude_Angles(double x, double y, double z) {
 
 /// @brief Instruct the ADCS to execute the ADCS_Set_Estimation_Params command.
 /// @param[in] magnetometer_rate_filter_system_noise Magnetometer rate filter system noise parameter
-/// @param[in] ekf_system_noise EKS system noise parameter
-/// @param[in] css_measurement_noise CSS measurement noise parameter
+/// @param[in] extended_kalman_filter_system_noise EKS system noise parameter
+/// @param[in] coarse_sun_sensor_measurement_noise CSS measurement noise parameter
 /// @param[in] sun_sensor_measurement_noise sun sensor measurement noise parameter
 /// @param[in] nadir_sensor_measurement_noise nadir sensor measurement noise parameter
 /// @param[in] magnetometer_measurement_noise magnetometer measurement noise parameter
 /// @param[in] star_tracker_measurement_noise star tracker measurement noise parameter
-/// @param[in] use_sun_sensor whether or not to use the sun sensor measurement in EKF
-/// @param[in] use_nadir_sensor whether or not to use the nadir sensor measurement in EKF
-/// @param[in] use_css whether or not to use the CSS measurement in EKF
-/// @param[in] use_star_tracker whether or not to use the star tracker measurement in EKF
+/// @param[in] use_sun_sensor whether or not to use the sun sensor measurement in extended kalman filter
+/// @param[in] use_nadir_sensor whether or not to use the nadir sensor measurement in extended kalman filter
+/// @param[in] use_css whether or not to use the CSS measurement in extended kalman filter
+/// @param[in] use_star_tracker whether or not to use the star tracker measurement in extended kalman filter
 /// @param[in] nadir_sensor_terminator_test select to ignore nadir sensor measurements when terminator is in FOV
 /// @param[in] automatic_magnetometer_recovery select whether automatic switch to redundant magnetometer should occur in case of failure
 /// @param[in] magnetometer_mode select magnetometer mode for estimation and control
@@ -550,8 +550,8 @@ uint8_t ADCS_Set_Commanded_Attitude_Angles(double x, double y, double z) {
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_Set_Estimation_Params(
                                 float magnetometer_rate_filter_system_noise, 
-                                float ekf_system_noise, 
-                                float css_measurement_noise, 
+                                float extended_kalman_filter_system_noise, 
+                                float coarse_sun_sensor_measurement_noise, 
                                 float sun_sensor_measurement_noise, 
                                 float nadir_sensor_measurement_noise, 
                                 float magnetometer_measurement_noise, 
@@ -573,8 +573,8 @@ uint8_t ADCS_Set_Estimation_Params(
 
     // convert floats to reversed arrays of uint8_t
     memcpy(&data_send[0],  &magnetometer_rate_filter_system_noise, sizeof(magnetometer_rate_filter_system_noise));
-    memcpy(&data_send[4],  &ekf_system_noise, sizeof(ekf_system_noise));
-    memcpy(&data_send[8],  &css_measurement_noise, sizeof(css_measurement_noise));
+    memcpy(&data_send[4],  &extended_kalman_filter_system_noise, sizeof(extended_kalman_filter_system_noise));
+    memcpy(&data_send[8],  &coarse_sun_sensor_measurement_noise, sizeof(coarse_sun_sensor_measurement_noise));
     memcpy(&data_send[12], &sun_sensor_measurement_noise, sizeof(sun_sensor_measurement_noise));
     memcpy(&data_send[16], &nadir_sensor_measurement_noise, sizeof(nadir_sensor_measurement_noise));
     memcpy(&data_send[20], &magnetometer_measurement_noise, sizeof(magnetometer_measurement_noise));
@@ -609,19 +609,19 @@ uint8_t ADCS_Get_Estimation_Params(ADCS_Estimation_Params_Struct *output_struct)
 /// @param[in] aop_coefficient Set argument of perigee filter coefficient
 /// @param[in] time_coefficient Set time filter coefficient
 /// @param[in] pos_coefficient Set position filter coefficient
-/// @param[in] maximum_position_error Maximum position error for ASGP4 to continue working
-/// @param[in] asgp4_filter The type of filter being used (enum)
+/// @param[in] maximum_position_error Maximum position error for Augmented_SGP4 to continue working
+/// @param[in] augmented_sgp4_filter The type of filter being used (enum)
 /// @param[in] xp_coefficient Polar coefficient xp  
 /// @param[in] yp_coefficient Polar coefficient yp 
 /// @param[in] gps_roll_over GPS roll over number
-/// @param[in] position_sd Maximum position standard deviation for ASGP4 to continue working
-/// @param[in] velocity_sd Maximum velocity standard deviation for ASGP4 to continue working
-/// @param[in] min_satellites Minimum satellites required for ASGP4 to continue working
+/// @param[in] position_sd Maximum position standard deviation for Augmented_SGP4 to continue working
+/// @param[in] velocity_sd Maximum velocity standard deviation for Augmented_SGP4 to continue working
+/// @param[in] min_satellites Minimum satellites required for Augmented_SGP4 to continue working
 /// @param[in] time_gain Time offset compensation gain
 /// @param[in] max_lag Maximum lagged timestamp measurements to incorporate
-/// @param[in] min_samples Minimum samples to use to get ASGP4
+/// @param[in] min_samples Minimum samples to use to get Augmented_SGP4
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Set_ASGP4_Params(double incl_coefficient, double raan_coefficient, double ecc_coefficient, double aop_coefficient, double time_coefficient, double pos_coefficient, double maximum_position_error, ADCS_ASGP4_Filter asgp4_filter, double xp_coefficient, double yp_coefficient, uint8_t gps_roll_over, double position_sd, double velocity_sd, uint8_t min_satellites, double time_gain, double max_lag, uint16_t min_samples) {
+uint8_t ADCS_Set_Augmented_SGP4_Params(double incl_coefficient, double raan_coefficient, double ecc_coefficient, double aop_coefficient, double time_coefficient, double pos_coefficient, double maximum_position_error, ADCS_Augmented_SGP4_Filter augmented_sgp4_filter, double xp_coefficient, double yp_coefficient, uint8_t gps_roll_over, double position_sd, double velocity_sd, uint8_t min_satellites, double time_gain, double max_lag, uint16_t min_samples) {
     uint8_t data_send[30]; // from Table 209
 
     // populate data_send
@@ -632,7 +632,7 @@ uint8_t ADCS_Set_ASGP4_Params(double incl_coefficient, double raan_coefficient, 
     ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, (uint16_t) (time_coefficient * 1000), 8);
     ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, (uint16_t) (pos_coefficient * 1000), 10);
     data_send[12] = (uint8_t) (maximum_position_error * 10);
-    data_send[13] = (uint8_t) asgp4_filter;
+    data_send[13] = (uint8_t) augmented_sgp4_filter;
     ADCS_convert_uint32_to_reversed_uint8_array_members(data_send, (int32_t) (xp_coefficient * 10000000), 14);
     ADCS_convert_uint32_to_reversed_uint8_array_members(data_send, (int32_t) (yp_coefficient * 10000000), 18);
     data_send[22] = gps_roll_over;
@@ -647,16 +647,16 @@ uint8_t ADCS_Set_ASGP4_Params(double incl_coefficient, double raan_coefficient, 
     return cmd_status;
 }
 
-/// @brief Instruct the ADCS to execute the ADCS_Get_ASGP4_Params command.
+/// @brief Instruct the ADCS to execute the ADCS_Get_Augmented_SGP4_Params command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_ASGP4_Params(ADCS_ASGP4_Params_Struct *output_struct) {
+uint8_t ADCS_Get_Augmented_SGP4_Params(ADCS_Augmented_SGP4_Params_Struct *output_struct) {
     uint8_t data_length = 30;
     uint8_t data_received[data_length]; // define temp buffer
 
     uint8_t tlm_status = ADCS_i2c_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_GET_AUGMENTED_SGP4_PARAMETERS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
-    ADCS_Pack_to_ASGP4_Params_Struct(data_received, output_struct);
+    ADCS_Pack_to_Augmented_SGP4_Params_Struct(data_received, output_struct);
 
     return tlm_status;
 }/// @brief Instruct the ADCS to execute the ADCS_Set_Tracking_Controller_Target_Reference command.
@@ -886,30 +886,30 @@ uint8_t ADCS_Get_Raw_Cam2_Sensor(ADCS_Raw_Cam_Sensor_Struct *output_struct) {
     return tlm_status;
 }
 
-/// @brief Instruct the ADCS to execute the ADCS_Raw_CSS_1_to_6 command.
+/// @brief Instruct the ADCS to execute the ADCS_Raw_Coarse_Sun_Sensor_1_to_6 command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Raw_CSS_1_to_6(ADCS_Raw_CSS_1_to_6_Struct *output_struct) {
+uint8_t ADCS_Get_Raw_Coarse_Sun_Sensor_1_to_6(ADCS_Raw_Coarse_Sun_Sensor_1_to_6_Struct *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
-    uint8_t tlm_status = ADCS_i2c_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_RAW_CSS_1_TO_6, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_RAW_COARSE_SUN_SENSOR_1_TO_6, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
-    ADCS_Pack_to_Raw_CSS_1_to_6_Struct(&data_received[0], output_struct);
+    ADCS_Pack_to_Raw_Coarse_Sun_Sensor_1_to_6_Struct(&data_received[0], output_struct);
 
     return tlm_status;
 }
 
-/// @brief Instruct the ADCS to execute the ADCS_Raw_CSS_7_to_10 command.
+/// @brief Instruct the ADCS to execute the ADCS_Raw_Coarse_Sun_Sensor_7_to_10 command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Raw_CSS_7_to_10(ADCS_Raw_CSS_7_to_10_Struct *output_struct) {
+uint8_t ADCS_Get_Raw_Coarse_Sun_Sensor_7_to_10(ADCS_Raw_Coarse_Sun_Sensor_7_to_10_Struct *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
-    uint8_t tlm_status = ADCS_i2c_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_RAW_CSS_7_TO_10, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_telemetry_wrapper(ADCS_TELEMETRY_CUBEACP_RAW_COARSE_SUN_SENSOR_7_TO_10, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
-    ADCS_Pack_to_Raw_CSS_7_to_10_Struct(&data_received[0], output_struct);
+    ADCS_Pack_to_Raw_Coarse_Sun_Sensor_7_to_10_Struct(&data_received[0], output_struct);
 
     return tlm_status;
 }

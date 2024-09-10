@@ -195,11 +195,11 @@ uint8_t ADCS_Set_Unix_Time_Save_Mode_Struct_TO_json(const ADCS_Set_Unix_Time_Sav
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
 uint8_t ADCS_Orbit_Params_Struct_TO_json(const ADCS_Orbit_Params_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
-    if (data == NULL || json_output_str == NULL || json_output_str_len < 218) {
+    if (data == NULL || json_output_str == NULL || json_output_str_len < 256) {
         return 1; // Error: invalid input
     }
-    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, "{\"inclination\":%.6f,\"eccentricity\":%.6f,\"ascending_node_right_ascension\":%.6f,\"perigee_argument\":%.6f,\"b_star_drag_term\":%.6f,\"mean_motion\":%.6f,\"mean_anomaly\":%.6f,\"epoch\":%.6f}",
-            data->inclination, data->eccentricity, data->ascending_node_right_ascension, data->perigee_argument, data->b_star_drag_term, data->mean_motion, data->mean_anomaly, data->epoch); 
+    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, "{\"inclination_deg\":%.6f,\"eccentricity\":%.6f,\"ascending_node_right_ascension_deg\":%.6f,\"perigee_argument_deg\":%.6f,\"b_star_drag_term\":%.6f,\"mean_motion_orbits_per_day\":%.6f,\"mean_anomaly_deg\":%.6f,\"epoch_year_point_day\":%.6f}",
+            data->inclination_deg, data->eccentricity, data->ascending_node_right_ascension_deg, data->perigee_argument_deg, data->b_star_drag_term, data->mean_motion_orbits_per_day, data->mean_anomaly_deg, data->epoch_year_point_day); 
     
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error
@@ -287,7 +287,7 @@ uint8_t ADCS_Raw_Magnetometer_Values_Struct_TO_json(const ADCS_Raw_Magnetometer_
         return 1; // Error: invalid input
     }
     int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, "{\"x\":%d,\"y\":%d,\"z\":%d}", 
-            data->x, data->y, data->z);
+            data->x_sampled, data->y_sampled, data->z_sampled);
     
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error
@@ -383,14 +383,14 @@ uint8_t ADCS_Commanded_Angles_Struct_TO_json(const ADCS_Commanded_Angles_Struct 
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
 uint8_t ADCS_Estimation_Params_Struct_TO_json(const ADCS_Estimation_Params_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
-    if (data == NULL || json_output_str == NULL || json_output_str_len < 740) {
+    if (data == NULL || json_output_str == NULL || json_output_str_len < 774) {
         return 1; // Error: invalid input
     }
    // using 7 decimal places for noise covariances, which is the same as on CubeSupport
     int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, 
         "{\"magnetometer_rate_filter_system_noise\":%.7f,"
-        "\"ekf_system_noise\":%.7f,"
-        "\"css_measurement_noise\":%.7f,"
+        "\"extended_kalman_filter_system_noise\":%.7f,"
+        "\"coarse_sun_sensor_measurement_noise\":%.7f,"
         "\"sun_sensor_measurement_noise\":%.7f,"
         "\"nadir_sensor_measurement_noise\":%.7f,"
         "\"magnetometer_measurement_noise\":%.7f,"
@@ -407,8 +407,8 @@ uint8_t ADCS_Estimation_Params_Struct_TO_json(const ADCS_Estimation_Params_Struc
         "\"wheel_30s_power_up_delay\":%d,"
         "\"cam1_and_cam2_sampling_period\":%d}", 
         data->magnetometer_rate_filter_system_noise,
-        data->ekf_system_noise,
-        data->css_measurement_noise,
+        data->extended_kalman_filter_system_noise,
+        data->coarse_sun_sensor_measurement_noise,
         data->sun_sensor_measurement_noise,
         data->nadir_sensor_measurement_noise,
         data->magnetometer_measurement_noise,
@@ -436,12 +436,12 @@ uint8_t ADCS_Estimation_Params_Struct_TO_json(const ADCS_Estimation_Params_Struc
 }
 
 
-/// @brief Converts ADCS_ASGP4_Params_Struct to a JSON string.
-/// @param[in] data Pointer to the ADCS_ASGP4_Params_Struct.
+/// @brief Converts ADCS_Augmented_SGP4_Params_Struct to a JSON string.
+/// @param[in] data Pointer to the ADCS_Augmented_SGP4_Params_Struct.
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_ASGP4_Params_Struct_TO_json(const ADCS_ASGP4_Params_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_Augmented_SGP4_Params_Struct_TO_json(const ADCS_Augmented_SGP4_Params_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 537) {
         return 1; // Error: invalid input
     }
@@ -449,7 +449,7 @@ uint8_t ADCS_ASGP4_Params_Struct_TO_json(const ADCS_ASGP4_Params_Struct *data, c
                                 "{\"incl_coefficient_milli\":%d,\"raan_coefficient_milli\":%d,"
                                 "\"ecc_coefficient_milli\":%d,\"aop_coefficient_milli\":%d,"
                                 "\"time_coefficient_milli\":%d,\"pos_coefficient_milli\":%d,"
-                                "\"maximum_position_error_milli\":%ld,\"asgp4_filter\":%d,"
+                                "\"maximum_position_error_milli\":%ld,\"augmented_sgp4_filter\":%d,"
                                 "\"xp_coefficient_nano\":%lld,\"yp_coefficient_nano\":%lld,"
                                 "\"gps_roll_over\":%d,\"position_sd_milli\":%ld,"
                                 "\"velocity_sd_milli\":%d,\"min_satellites\":%d,"
@@ -457,7 +457,7 @@ uint8_t ADCS_ASGP4_Params_Struct_TO_json(const ADCS_ASGP4_Params_Struct *data, c
                                 data->incl_coefficient_milli, data->raan_coefficient_milli, 
                                 data->ecc_coefficient_milli, data->aop_coefficient_milli, 
                                 data->time_coefficient_milli, data->pos_coefficient_milli, 
-                                data->maximum_position_error_milli, data->asgp4_filter, 
+                                data->maximum_position_error_milli, data->augmented_sgp4_filter, 
                                 data->xp_coefficient_nano, data->yp_coefficient_nano, 
                                 data->gps_roll_over, data->position_sd_milli, 
                                 data->velocity_sd_milli, data->min_satellites, 
@@ -720,20 +720,20 @@ uint8_t ADCS_Raw_Cam_Sensor_Struct_TO_json(const ADCS_Raw_Cam_Sensor_Struct *dat
     return 0;
 }
 
-/// @brief Converts ADCS_Raw_CSS_1_to_6_Struct to a JSON string.
-/// @param[in] data Pointer to the ADCS_Raw_CSS_1_to_6_Struct.
+/// @brief Converts ADCS_Raw_Coarse_Sun_Sensor_1_to_6_Struct to a JSON string.
+/// @param[in] data Pointer to the ADCS_Raw_Coarse_Sun_Sensor_1_to_6_Struct.
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Raw_CSS_1_to_6_Struct_TO_json(const ADCS_Raw_CSS_1_to_6_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
-    if (data == NULL || json_output_str == NULL || json_output_str_len < 80) {
+uint8_t ADCS_Raw_Coarse_Sun_Sensor_1_to_6_Struct_TO_json(const ADCS_Raw_Coarse_Sun_Sensor_1_to_6_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+    if (data == NULL || json_output_str == NULL || json_output_str_len < 454) {
         return 1; // Error: invalid input
     }
     int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, 
-                                "{\"css1\":%d,\"css2\":%d,\"css3\":%d,\"css4\":%d,"
-                                "\"css5\":%d,\"css6\":%d}", 
-                                data->css1, data->css2, data->css3, data->css4, 
-                                data->css5, data->css6);
+                                "{\"coarse_sun_sensor_1\":%d,\"coarse_sun_sensor_2\":%d,\"coarse_sun_sensor_3\":%d,\"coarse_sun_sensor_4\":%d,"
+                                "\"coarse_sun_sensor_5\":%d,\"coarse_sun_sensor_6\":%d}", 
+                                data->coarse_sun_sensor_1, data->coarse_sun_sensor_2, data->coarse_sun_sensor_3, data->coarse_sun_sensor_4, 
+                                data->coarse_sun_sensor_5, data->coarse_sun_sensor_6);
 
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error
@@ -745,18 +745,18 @@ uint8_t ADCS_Raw_CSS_1_to_6_Struct_TO_json(const ADCS_Raw_CSS_1_to_6_Struct *dat
     return 0;
 }
 
-/// @brief Converts ADCS_Raw_CSS_7_to_10_Struct to a JSON string.
-/// @param[in] data Pointer to the ADCS_Raw_CSS_7_to_10_Struct.
+/// @brief Converts ADCS_Raw_Coarse_Sun_Sensor_7_to_10_Struct to a JSON string.
+/// @param[in] data Pointer to the ADCS_Raw_Coarse_Sun_Sensor_7_to_10_Struct.
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Raw_CSS_7_to_10_Struct_TO_json(const ADCS_Raw_CSS_7_to_10_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
-    if (data == NULL || json_output_str == NULL || json_output_str_len < 54) {
+uint8_t ADCS_Raw_Coarse_Sun_Sensor_7_to_10_Struct_TO_json(const ADCS_Raw_Coarse_Sun_Sensor_7_to_10_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+    if (data == NULL || json_output_str == NULL || json_output_str_len < 306) {
         return 1; // Error: invalid input
     }
     int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, 
-                                "{\"css7\":%d,\"css8\":%d,\"css9\":%d,\"css10\":%d}", 
-                                data->css7, data->css8, data->css9, data->css10);
+                                "{\"coarse_sun_sensor_7\":%d,\"coarse_sun_sensor_8\":%d,\"coarse_sun_sensor_9\":%d,\"coarse_sun_sensor_10\":%d}", 
+                                data->coarse_sun_sensor_7, data->coarse_sun_sensor_8, data->coarse_sun_sensor_9, data->coarse_sun_sensor_10);
 
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error

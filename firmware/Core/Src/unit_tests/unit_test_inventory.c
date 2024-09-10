@@ -156,9 +156,9 @@ const TEST_Definition_t TEST_definitions[] = {
     },
 
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_ASGP4_Params_Struct,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Augmented_SGP4_Params_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_ASGP4_Params_Struct"
+        .test_func_name = "ADCS_Pack_to_Augmented_SGP4_Params_Struct"
     },
 
     {
@@ -240,15 +240,15 @@ const TEST_Definition_t TEST_definitions[] = {
     },
 
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Raw_CSS_1_to_6_Struct,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Raw_Coarse_Sun_Sensor_1_to_6_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Raw_CSS_1_to_6_Struct"
+        .test_func_name = "ADCS_Pack_to_Raw_Coarse_Sun_Sensor_1_to_6_Struct"
     },
 
     {
-        .test_func = TEST_EXEC__ADCS_Pack_to_Raw_CSS_7_to_10_Struct,
+        .test_func = TEST_EXEC__ADCS_Pack_to_Raw_Coarse_Sun_Sensor_7_to_10_Struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Raw_CSS_7_to_10_Struct"
+        .test_func_name = "ADCS_Pack_to_Raw_Coarse_Sun_Sensor_7_to_10_Struct"
     },
 
     {

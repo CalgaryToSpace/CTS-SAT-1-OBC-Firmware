@@ -133,13 +133,13 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Orbit_Params_Struct() {
     ADCS_Orbit_Params_Struct result;
     ADCS_Pack_to_Orbit_Params_Struct(input_params, &result);
 
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.inclination, 1.2, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.inclination_deg, 1.2, ADCS_TEST_EPSILON));
     TEST_ASSERT_TRUE(GEN_compare_doubles(result.eccentricity, 0.67, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.ascending_node_right_ascension, 5.6, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.ascending_node_right_ascension_deg, 5.6, ADCS_TEST_EPSILON));
     TEST_ASSERT_TRUE(GEN_compare_doubles(result.b_star_drag_term, 0.9, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.mean_motion, 10.1, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.mean_anomaly, 11.2, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.epoch, 12.3, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.mean_motion_orbits_per_day, 10.1, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.mean_anomaly_deg, 11.2, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.epoch_year_point_day, 12.3, ADCS_TEST_EPSILON));
 
     return 0;
 }
@@ -185,9 +185,9 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Raw_Magnetometer_Values_Struct()
     uint8_t input_params[6] = {0x11, 0x22, 0x33, 0x44, 0x55, 0xff};
     ADCS_Raw_Magnetometer_Values_Struct result;
     ADCS_Pack_to_Raw_Magnetometer_Values_Struct(input_params, &result);
-    TEST_ASSERT_TRUE(result.x == 8721);
-    TEST_ASSERT_TRUE(result.y == 17459);
-    TEST_ASSERT_TRUE(result.z == -171);
+    TEST_ASSERT_TRUE(result.x_sampled == 8721);
+    TEST_ASSERT_TRUE(result.y_sampled == 17459);
+    TEST_ASSERT_TRUE(result.z_sampled == -171);
 
     return 0;
 }
@@ -256,8 +256,8 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Estimation_Params_Struct()
     ADCS_Estimation_Params_Struct result;
     ADCS_Pack_to_Estimation_Params_Struct(input_params, &result);
     TEST_ASSERT_TRUE(GEN_compare_doubles(result.magnetometer_rate_filter_system_noise, 1.1, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.ekf_system_noise, 2.2, ADCS_TEST_EPSILON));
-    TEST_ASSERT_TRUE(GEN_compare_doubles(result.css_measurement_noise, 3.3, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.extended_kalman_filter_system_noise, 2.2, ADCS_TEST_EPSILON));
+    TEST_ASSERT_TRUE(GEN_compare_doubles(result.coarse_sun_sensor_measurement_noise, 3.3, ADCS_TEST_EPSILON));
     TEST_ASSERT_TRUE(GEN_compare_doubles(result.sun_sensor_measurement_noise, 4.4, ADCS_TEST_EPSILON));
     TEST_ASSERT_TRUE(GEN_compare_doubles(result.nadir_sensor_measurement_noise, 5.5, ADCS_TEST_EPSILON));
     TEST_ASSERT_TRUE(GEN_compare_doubles(result.magnetometer_measurement_noise, 6.6, ADCS_TEST_EPSILON));
@@ -277,15 +277,15 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Estimation_Params_Struct()
     return 0;
 }
 
-uint8_t TEST_EXEC__ADCS_Pack_to_ASGP4_Params_Struct()
+uint8_t TEST_EXEC__ADCS_Pack_to_Augmented_SGP4_Params_Struct()
 {
     uint8_t input_params[30] = {0x4C, 0x04, 0x98, 0x08, 0xE4, 0x0C, 0x30, 0x11,
                                 0x7C, 0x15, 0xC8, 0x19, 0x4D, 0x01, 0x00, 0x3A,
                                 0xC1, 0xFA, 0x40, 0x61, 0x19, 0xFA, 0x0A, 0x6F,
                                 0xD4, 0x0D, 0xD6, 0xD7, 0x10, 0x00};
 
-    ADCS_ASGP4_Params_Struct result;
-    ADCS_Pack_to_ASGP4_Params_Struct(input_params, &result);
+    ADCS_Augmented_SGP4_Params_Struct result;
+    ADCS_Pack_to_Augmented_SGP4_Params_Struct(input_params, &result);
     TEST_ASSERT_TRUE(result.incl_coefficient_milli == 1100);
     TEST_ASSERT_TRUE(result.raan_coefficient_milli == 2200);
     TEST_ASSERT_TRUE(result.ecc_coefficient_milli == 3300);
@@ -293,7 +293,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_ASGP4_Params_Struct()
     TEST_ASSERT_TRUE(result.time_coefficient_milli == 5500);
     TEST_ASSERT_TRUE(result.pos_coefficient_milli == 6600);
     TEST_ASSERT_TRUE(result.maximum_position_error_milli == 7700);
-    TEST_ASSERT_TRUE(result.asgp4_filter == ADCS_ASGP4_FILTER_AVERAGE);
+    TEST_ASSERT_TRUE(result.augmented_sgp4_filter == ADCS_Augmented_SGP4_FILTER_AVERAGE);
     TEST_ASSERT_TRUE(result.xp_coefficient_nano == -8800000000);
     TEST_ASSERT_TRUE(result.yp_coefficient_nano == -9900000000);
     TEST_ASSERT_TRUE(result.gps_roll_over == 10);
@@ -496,26 +496,26 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Fine_Sun_Vector_Struct() {
     return 0;
 }
 
-uint8_t TEST_EXEC__ADCS_Pack_to_Raw_CSS_1_to_6_Struct() {
+uint8_t TEST_EXEC__ADCS_Pack_to_Raw_Coarse_Sun_Sensor_1_to_6_Struct() {
     uint8_t input_params[6] = {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc};
-    ADCS_Raw_CSS_1_to_6_Struct result;
-    ADCS_Pack_to_Raw_CSS_1_to_6_Struct(input_params, &result);
-    TEST_ASSERT_TRUE(result.css1 == 18);
-    TEST_ASSERT_TRUE(result.css2 == 52);
-    TEST_ASSERT_TRUE(result.css3 == 86);
-    TEST_ASSERT_TRUE(result.css4 == 120);
-    TEST_ASSERT_TRUE(result.css5 == 154);
-    TEST_ASSERT_TRUE(result.css6 == 188);
+    ADCS_Raw_Coarse_Sun_Sensor_1_to_6_Struct result;
+    ADCS_Pack_to_Raw_Coarse_Sun_Sensor_1_to_6_Struct(input_params, &result);
+    TEST_ASSERT_TRUE(result.coarse_sun_sensor_1 == 18);
+    TEST_ASSERT_TRUE(result.coarse_sun_sensor_2 == 52);
+    TEST_ASSERT_TRUE(result.coarse_sun_sensor_3 == 86);
+    TEST_ASSERT_TRUE(result.coarse_sun_sensor_4 == 120);
+    TEST_ASSERT_TRUE(result.coarse_sun_sensor_5 == 154);
+    TEST_ASSERT_TRUE(result.coarse_sun_sensor_6 == 188);
     return 0;
 }
-uint8_t TEST_EXEC__ADCS_Pack_to_Raw_CSS_7_to_10_Struct() {
+uint8_t TEST_EXEC__ADCS_Pack_to_Raw_Coarse_Sun_Sensor_7_to_10_Struct() {
     uint8_t input_params[4] = {0x12, 0x34, 0x56, 0x78};
-    ADCS_Raw_CSS_7_to_10_Struct result;
-    ADCS_Pack_to_Raw_CSS_7_to_10_Struct(input_params, &result);
-    TEST_ASSERT_TRUE(result.css7 == 18);
-    TEST_ASSERT_TRUE(result.css8 == 52);
-    TEST_ASSERT_TRUE(result.css9 == 86);
-    TEST_ASSERT_TRUE(result.css10 == 120);
+    ADCS_Raw_Coarse_Sun_Sensor_7_to_10_Struct result;
+    ADCS_Pack_to_Raw_Coarse_Sun_Sensor_7_to_10_Struct(input_params, &result);
+    TEST_ASSERT_TRUE(result.coarse_sun_sensor_7 == 18);
+    TEST_ASSERT_TRUE(result.coarse_sun_sensor_8 == 52);
+    TEST_ASSERT_TRUE(result.coarse_sun_sensor_9 == 86);
+    TEST_ASSERT_TRUE(result.coarse_sun_sensor_10 == 120);
     return 0;
 }
 

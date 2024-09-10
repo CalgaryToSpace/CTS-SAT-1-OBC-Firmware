@@ -117,8 +117,8 @@ typedef enum ADCS_Estimation_Mode {
     ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER = 2,
     ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER_WITH_PITCH_ESTIMATION = 3,
     ADCS_ESTIMATION_MODE_MAGNETOMETER_AND_FINE_SUN_TRIAD_ALGORITHM = 4,
-    ADCS_ESTIMATION_MODE_FULL_STATE_EKF = 5,
-    ADCS_ESTIMATION_MODE_MEMS_GYRO_EKF = 6,
+    ADCS_ESTIMATION_MODE_FULL_STATE_extended_kalman_filter = 5,
+    ADCS_ESTIMATION_MODE_MEMS_GYRO_extended_kalman_filter = 6,
     ADCS_ESTIMATION_MODE_USER_CODED_ESTIMATION_MODE = 7
 } ADCS_Estimation_Mode;
 
@@ -135,10 +135,10 @@ typedef enum ADCS_Magnetometer_Mode {
     ADCS_MAGNETOMETER_MODE_NONE = 3
 } ADCS_Magnetometer_Mode;
 
-typedef enum ADCS_ASGP4_Filter {
-    ADCS_ASGP4_FILTER_LOWPASS = 0,
-    ADCS_ASGP4_FILTER_AVERAGE = 1
-} ADCS_ASGP4_Filter;
+typedef enum ADCS_Augmented_SGP4_Filter {
+    ADCS_Augmented_SGP4_FILTER_LOWPASS = 0,
+    ADCS_Augmented_SGP4_FILTER_AVERAGE = 1
+} ADCS_Augmented_SGP4_Filter;
 
 typedef enum ADCS_Axis_Select {
     ADCS_AXIS_SELECT_POSITIVE_X = 0,
@@ -265,14 +265,14 @@ typedef struct ADCS_Set_Unix_Time_Save_Mode_Struct{
 } ADCS_Set_Unix_Time_Save_Mode_Struct;
 
 typedef struct ADCS_Orbit_Params_Struct {
-    double inclination;
+    double inclination_deg;
     double eccentricity;
-    double ascending_node_right_ascension;
-    double perigee_argument;
+    double ascending_node_right_ascension_deg;
+    double perigee_argument_deg;
     double b_star_drag_term;
-    double mean_motion;
-    double mean_anomaly;
-    double epoch;
+    double mean_motion_orbits_per_day;
+    double mean_anomaly_deg;
+    double epoch_year_point_day;
 } ADCS_Orbit_Params_Struct;
 
 typedef struct ADCS_Rated_Sensor_Rates_Struct {
@@ -295,9 +295,9 @@ typedef struct ADCS_Magnetorquer_Command_Struct {
 } ADCS_Magnetorquer_Command_Struct;
 
 typedef struct ADCS_Raw_Magnetometer_Values_Struct {
-    int16_t x; 
-    int16_t y;
-    int16_t z; 
+    int16_t x_sampled; 
+    int16_t y_sampled;
+    int16_t z_sampled; 
 } ADCS_Raw_Magnetometer_Values_Struct;
 
 typedef struct ADCS_Fine_Angular_Rates_Struct {
@@ -332,8 +332,8 @@ typedef struct ADCS_Commanded_Angles_Struct {
 
 typedef struct ADCS_Estimation_Params_Struct {
     float magnetometer_rate_filter_system_noise;
-    float ekf_system_noise;
-    float css_measurement_noise;
+    float extended_kalman_filter_system_noise;
+    float coarse_sun_sensor_measurement_noise;
     float sun_sensor_measurement_noise;
     float nadir_sensor_measurement_noise;
     float magnetometer_measurement_noise;
@@ -351,7 +351,7 @@ typedef struct ADCS_Estimation_Params_Struct {
     uint8_t cam1_and_cam2_sampling_period;
 } ADCS_Estimation_Params_Struct;
 
-typedef struct ADCS_ASGP4_Params_Struct {
+typedef struct ADCS_Augmented_SGP4_Params_Struct {
     int16_t incl_coefficient_milli;
     int16_t raan_coefficient_milli;
     int16_t ecc_coefficient_milli;
@@ -359,7 +359,7 @@ typedef struct ADCS_ASGP4_Params_Struct {
     int16_t time_coefficient_milli;
     int16_t pos_coefficient_milli;
     int32_t maximum_position_error_milli;
-    ADCS_ASGP4_Filter asgp4_filter;
+    ADCS_Augmented_SGP4_Filter augmented_sgp4_filter;
     int64_t xp_coefficient_nano;
     int64_t yp_coefficient_nano;
     uint8_t gps_roll_over;
@@ -369,7 +369,7 @@ typedef struct ADCS_ASGP4_Params_Struct {
     int16_t time_gain_milli;
     int16_t max_lag_milli;
     uint16_t min_samples;
-} ADCS_ASGP4_Params_Struct;
+} ADCS_Augmented_SGP4_Params_Struct;
 
 typedef struct ADCS_Tracking_Controller_Target_Struct {
     float longitude_degrees;
@@ -437,21 +437,21 @@ typedef struct ADCS_Raw_Cam_Sensor_Struct {
     ADCS_Detect_Result cam_detection_result;
 } ADCS_Raw_Cam_Sensor_Struct;
 
-typedef struct ADCS_Raw_CSS_1_to_6_Struct {
-    uint8_t css1;
-    uint8_t css2;
-    uint8_t css3;
-    uint8_t css4;
-    uint8_t css5;
-    uint8_t css6;
-} ADCS_Raw_CSS_1_to_6_Struct;
+typedef struct ADCS_Raw_Coarse_Sun_Sensor_1_to_6_Struct {
+    uint8_t coarse_sun_sensor_1;
+    uint8_t coarse_sun_sensor_2;
+    uint8_t coarse_sun_sensor_3;
+    uint8_t coarse_sun_sensor_4;
+    uint8_t coarse_sun_sensor_5;
+    uint8_t coarse_sun_sensor_6;
+} ADCS_Raw_Coarse_Sun_Sensor_1_to_6_Struct;
 
-typedef struct ADCS_Raw_CSS_7_to_10_Struct {
-    uint8_t css7;
-    uint8_t css8;
-    uint8_t css9;
-    uint8_t css10;
-} ADCS_Raw_CSS_7_to_10_Struct;
+typedef struct ADCS_Raw_Coarse_Sun_Sensor_7_to_10_Struct {
+    uint8_t coarse_sun_sensor_7;
+    uint8_t coarse_sun_sensor_8;
+    uint8_t coarse_sun_sensor_9;
+    uint8_t coarse_sun_sensor_10;
+} ADCS_Raw_Coarse_Sun_Sensor_7_to_10_Struct;
 
 typedef struct ADCS_CubeControl_Current_Struct {
     double cubecontrol_3v3_current_mA;

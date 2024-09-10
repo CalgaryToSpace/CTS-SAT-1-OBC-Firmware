@@ -61,8 +61,8 @@ uint8_t ADCS_Get_Commanded_Attitude_Angles(ADCS_Commanded_Angles_Struct *output_
 uint8_t ADCS_Set_Commanded_Attitude_Angles(double x, double y, double z);
 uint8_t ADCS_Set_Estimation_Params(
                                 float magnetometer_rate_filter_system_noise, 
-                                float ekf_system_noise, 
-                                float css_measurement_noise, 
+                                float extended_kalman_filter_system_noise, 
+                                float coarse_sun_sensor_measurement_noise, 
                                 float sun_sensor_measurement_noise, 
                                 float nadir_sensor_measurement_noise, 
                                 float magnetometer_measurement_noise, 
@@ -79,14 +79,14 @@ uint8_t ADCS_Set_Estimation_Params(
                                 bool wheel_30s_power_up_delay, // present in CubeSupport but not in the manual -- need to test
                                 uint8_t cam1_and_cam2_sampling_period);
 uint8_t ADCS_Get_Estimation_Params(ADCS_Estimation_Params_Struct *output_struct);
-uint8_t ADCS_Set_ASGP4_Params(double incl_coefficient,
+uint8_t ADCS_Set_Augmented_SGP4_Params(double incl_coefficient,
                            double raan_coefficient,
                            double ecc_coefficient,
                            double aop_coefficient,
                            double time_coefficient,
                            double pos_coefficient,
                            double maximum_position_error,
-                           ADCS_ASGP4_Filter asgp4_filter,
+                           ADCS_Augmented_SGP4_Filter augmented_sgp4_filter,
                            double xp_coefficient,
                            double yp_coefficient,
                            uint8_t gps_roll_over,
@@ -96,7 +96,7 @@ uint8_t ADCS_Set_ASGP4_Params(double incl_coefficient,
                            double time_gain,
                            double max_lag,
                            uint16_t min_samples);
-uint8_t ADCS_Get_ASGP4_Params(ADCS_ASGP4_Params_Struct *output_struct);
+uint8_t ADCS_Get_Augmented_SGP4_Params(ADCS_Augmented_SGP4_Params_Struct *output_struct);
 uint8_t ADCS_Set_Tracking_Controller_Target_Reference(float lon, float lat, float alt);
 uint8_t ADCS_Get_Tracking_Controller_Target_Reference(ADCS_Tracking_Controller_Target_Struct *output_struct);
 uint8_t ADCS_Set_Rate_Gyro_Config(ADCS_Axis_Select gyro1, ADCS_Axis_Select gyro2, ADCS_Axis_Select gyro3, double x_rate_offset, double y_rate_offset, double z_rate_offset, uint8_t rate_sensor_mult);
@@ -112,8 +112,8 @@ uint8_t ADCS_Get_Estimated_Gyro_Bias(ADCS_Estimated_Gyro_Bias_Struct *output_str
 uint8_t ADCS_Get_Estimation_Innovation_Vector(ADCS_Estimation_Innovation_Vector_Struct *output_struct);
 uint8_t ADCS_Get_Raw_Cam1_Sensor(ADCS_Raw_Cam_Sensor_Struct *output_struct);
 uint8_t ADCS_Get_Raw_Cam2_Sensor(ADCS_Raw_Cam_Sensor_Struct *output_struct);
-uint8_t ADCS_Get_Raw_CSS_1_to_6(ADCS_Raw_CSS_1_to_6_Struct *output_struct);
-uint8_t ADCS_Get_Raw_CSS_7_to_10(ADCS_Raw_CSS_7_to_10_Struct *output_struct);
+uint8_t ADCS_Get_Raw_Coarse_Sun_Sensor_1_to_6(ADCS_Raw_Coarse_Sun_Sensor_1_to_6_Struct *output_struct);
+uint8_t ADCS_Get_Raw_Coarse_Sun_Sensor_7_to_10(ADCS_Raw_Coarse_Sun_Sensor_7_to_10_Struct *output_struct);
 uint8_t ADCS_Get_CubeControl_Current(ADCS_CubeControl_Current_Struct *output_struct);
 uint8_t ADCS_Get_Raw_GPS_Status(ADCS_Raw_GPS_Status_Struct *output_struct);
 uint8_t ADCS_Get_Raw_GPS_Time(ADCS_Raw_GPS_Time_Struct *output_struct);

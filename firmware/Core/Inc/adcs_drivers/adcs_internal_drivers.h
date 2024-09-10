@@ -24,7 +24,7 @@ uint8_t ADCS_send_i2c_telecommand(uint8_t id, uint8_t* data, uint32_t data_lengt
 uint8_t ADCS_send_i2c_telemetry_request(uint8_t id, uint8_t* data, uint32_t data_length, uint8_t include_checksum);
 
 // CRC functions
-uint8_t ADCS_COMMS_Crc8Init();
-uint8_t ADCS_COMMS_Crc8Checksum(uint8_t* buffer, uint16_t len);
+uint8_t ADCS_initialise_crc8_checksum();
+uint8_t ADCS_calculate_crc8_checksum(uint8_t* buffer, uint16_t len);
 
 #endif /* INC_ADCS_INTERNAL_DRIVERS_H_ */

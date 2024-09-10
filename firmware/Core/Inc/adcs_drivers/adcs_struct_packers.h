@@ -21,7 +21,7 @@ uint8_t ADCS_Pack_to_Fine_Angular_Rates_Struct(uint8_t* data_received, ADCS_Fine
 uint8_t ADCS_Pack_to_Magnetometer_Config_Struct(uint8_t* data_received, ADCS_Magnetometer_Config_Struct *result);
 uint8_t ADCS_Pack_to_Commanded_Attitude_Angles_Struct(uint8_t* data_received, ADCS_Commanded_Angles_Struct *result);
 uint8_t ADCS_Pack_to_Estimation_Params_Struct(uint8_t* data_received, ADCS_Estimation_Params_Struct *result);
-uint8_t ADCS_Pack_to_ASGP4_Params_Struct(uint8_t* data_received, ADCS_ASGP4_Params_Struct *result);
+uint8_t ADCS_Pack_to_Augmented_SGP4_Params_Struct(uint8_t* data_received, ADCS_Augmented_SGP4_Params_Struct *result);
 uint8_t ADCS_Pack_to_Tracking_Controller_Target_Reference_Struct(uint8_t* data_received, ADCS_Tracking_Controller_Target_Struct *result);
 uint8_t ADCS_Pack_to_Rate_Gyro_Config_Struct(uint8_t* data_received, ADCS_Rate_Gyro_Config_Struct *result);
 uint8_t ADCS_Pack_to_Estimated_Attitude_Angles_Struct(uint8_t *data_received, ADCS_Estimated_Attitude_Angles_Struct *angles);
@@ -35,8 +35,8 @@ uint8_t ADCS_Pack_to_Estimated_Gyro_Bias_Struct(uint8_t* data_received, ADCS_Est
 uint8_t ADCS_Pack_to_Estimation_Innovation_Vector_Struct(uint8_t* data_received, ADCS_Estimation_Innovation_Vector_Struct* result);
 uint8_t ADCS_Pack_to_Raw_Cam1_Sensor_Struct(uint8_t* data_received, ADCS_Raw_Cam_Sensor_Struct* result);
 uint8_t ADCS_Pack_to_Raw_Cam2_Sensor_Struct(uint8_t* data_received, ADCS_Raw_Cam_Sensor_Struct* result);
-uint8_t ADCS_Pack_to_Raw_CSS_1_to_6_Struct(uint8_t* data_received, ADCS_Raw_CSS_1_to_6_Struct* result);
-uint8_t ADCS_Pack_to_Raw_CSS_7_to_10_Struct(uint8_t* data_received, ADCS_Raw_CSS_7_to_10_Struct* result);
+uint8_t ADCS_Pack_to_Raw_Coarse_Sun_Sensor_1_to_6_Struct(uint8_t* data_received, ADCS_Raw_Coarse_Sun_Sensor_1_to_6_Struct* result);
+uint8_t ADCS_Pack_to_Raw_Coarse_Sun_Sensor_7_to_10_Struct(uint8_t* data_received, ADCS_Raw_Coarse_Sun_Sensor_7_to_10_Struct* result);
 uint8_t ADCS_Pack_to_CubeControl_Current_Struct(uint8_t* data_received, ADCS_CubeControl_Current_Struct* result);
 uint8_t ADCS_Pack_to_Raw_GPS_Status_Struct(uint8_t* data_received, ADCS_Raw_GPS_Status_Struct* result);
 uint8_t ADCS_Pack_to_Raw_GPS_Time_Struct(uint8_t* data_received, ADCS_Raw_GPS_Time_Struct* result);

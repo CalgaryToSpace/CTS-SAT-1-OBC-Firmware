@@ -190,7 +190,7 @@ int main(void)
   /* USER CODE END 2 */
 
   // TODO: code for testing ADCS goes here
-  ADCS_COMMS_Crc8Init(); // TODO: ADCS_Init()
+  ADCS_initialise_crc8_checksum(); // TODO: ADCS_Init()
 
   /* Init scheduler */
   osKernelInitialize();

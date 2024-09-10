@@ -28,7 +28,7 @@ uint8_t ADCS_Fine_Angular_Rates_Struct_TO_json(const ADCS_Fine_Angular_Rates_Str
 uint8_t ADCS_Magnetometer_Config_Struct_TO_json(const ADCS_Magnetometer_Config_Struct *data, char json_output_str[], uint16_t json_output_str_len);
 uint8_t ADCS_Commanded_Angles_Struct_TO_json(const ADCS_Commanded_Angles_Struct *data, char json_output_str[], uint16_t json_output_str_len);
 uint8_t ADCS_Estimation_Params_Struct_TO_json(const ADCS_Estimation_Params_Struct *data, char json_output_str[], uint16_t json_output_str_len);
-uint8_t ADCS_ASGP4_Params_Struct_TO_json(const ADCS_ASGP4_Params_Struct *data, char json_output_str[], uint16_t json_output_str_len);
+uint8_t ADCS_Augmented_SGP4_Params_Struct_TO_json(const ADCS_Augmented_SGP4_Params_Struct *data, char json_output_str[], uint16_t json_output_str_len);
 uint8_t ADCS_Tracking_Controller_Target_Struct_TO_json(const ADCS_Tracking_Controller_Target_Struct *data, char json_output_str[], uint16_t json_output_str_len);
 uint8_t ADCS_Rate_Gyro_Config_Struct_TO_json(const ADCS_Rate_Gyro_Config_Struct *data, char json_output_str[], uint16_t json_output_str_len);
 uint8_t ADCS_Estimated_Attitude_Angles_Struct_TO_json(const ADCS_Estimated_Attitude_Angles_Struct *data, char json_output_str[], uint16_t json_output_str_len);
@@ -39,8 +39,8 @@ uint8_t ADCS_Quaternion_Error_Vector_Struct_TO_json(const ADCS_Quaternion_Error_
 uint8_t ADCS_Estimated_Gyro_Bias_Struct_TO_json(const ADCS_Estimated_Gyro_Bias_Struct *data, char json_output_str[], uint16_t json_output_str_len);
 uint8_t ADCS_Estimation_Innovation_Vector_Struct_TO_json(const ADCS_Estimation_Innovation_Vector_Struct *data, char json_output_str[], uint16_t json_output_str_len);
 uint8_t ADCS_Raw_Cam_Sensor_Struct_TO_json(const ADCS_Raw_Cam_Sensor_Struct *data, char json_output_str[], uint16_t json_output_str_len);
-uint8_t ADCS_Raw_CSS_1_to_6_Struct_TO_json(const ADCS_Raw_CSS_1_to_6_Struct *data, char json_output_str[], uint16_t json_output_str_len);
-uint8_t ADCS_Raw_CSS_7_to_10_Struct_TO_json(const ADCS_Raw_CSS_7_to_10_Struct *data, char json_output_str[], uint16_t json_output_str_len);
+uint8_t ADCS_Raw_Coarse_Sun_Sensor_1_to_6_Struct_TO_json(const ADCS_Raw_Coarse_Sun_Sensor_1_to_6_Struct *data, char json_output_str[], uint16_t json_output_str_len);
+uint8_t ADCS_Raw_Coarse_Sun_Sensor_7_to_10_Struct_TO_json(const ADCS_Raw_Coarse_Sun_Sensor_7_to_10_Struct *data, char json_output_str[], uint16_t json_output_str_len);
 uint8_t ADCS_CubeControl_Current_Struct_TO_json(const ADCS_CubeControl_Current_Struct *data, char json_output_str[], uint16_t json_output_str_len);
 uint8_t ADCS_Raw_GPS_Status_Struct_TO_json(const ADCS_Raw_GPS_Status_Struct *data, char json_output_str[], uint16_t json_output_str_len);
 uint8_t ADCS_Raw_GPS_Time_Struct_TO_json(const ADCS_Raw_GPS_Time_Struct *data, char json_output_str[], uint16_t json_output_str_len);

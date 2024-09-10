@@ -844,16 +844,16 @@ uint8_t TCMDEXEC_adcs_set_commanded_attitude_angles(const char *args_str, TCMD_T
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 
 ///     - Arg 0: magnetometer_rate_filter_system_noise (float; magnetometer rate filter system noise covariance parameter)
-///     - Arg 1: ekf_system_noise (float; EKF system noise covariance parameter)
-///     - Arg 2: css_measurement_noise (float; CSS measurement noise covariance parameter)
+///     - Arg 1: extended_kalman_filter_system_noise (float; extended kalman filter system noise covariance parameter)
+///     - Arg 2: coarse_sun_sensor_measurement_noise (float; CSS measurement noise covariance parameter)
 ///     - Arg 3: sun_sensor_measurement_noise (float; sun sensor measurement noise covariance parameter)
 ///     - Arg 4: nadir_sensor_measurement_noise (float; nadir sensor measurement noise covariance parameter)
 ///     - Arg 5: magnetometer_measurement_noise (float; magnetometer measurement noise covariance parameter)
 ///     - Arg 6: star_tracker_measurement_noise (float; star tracker measurement noise covariance parameter)
-///     - Arg 7: use_sun_sensor (bool; whether or not to use the sun sensor measurement in EKF)
-///     - Arg 8: use_nadir_sensor (bool; whether or not to use the nadir sensor measurement in EKF)
-///     - Arg 9: use_css (bool; whether or not to use the CSS measurement in EKF)
-///     - Arg 10: use_star_tracker (bool; whether or not to use the star tracker measurement in EKF)
+///     - Arg 7: use_sun_sensor (bool; whether or not to use the sun sensor measurement in extended_kalman_filter)
+///     - Arg 8: use_nadir_sensor (bool; whether or not to use the nadir sensor measurement in extended_kalman_filter)
+///     - Arg 9: use_css (bool; whether or not to use the CSS measurement in extended_kalman_filter)
+///     - Arg 10: use_star_tracker (bool; whether or not to use the star tracker measurement in extended_kalman_filter)
 ///     - Arg 11: nadir_sensor_terminator_test (bool; select to ignore nadir sensor measurements when terminator is in FOV)
 ///     - Arg 12: automatic_magnetometer_recovery (bool; select whether automatic switch to redundant magnetometer should occur in case of failure)
 ///     - Arg 13: magnetometer_mode (enum; select magnetometer mode for estimation and control)
@@ -940,19 +940,19 @@ uint8_t TCMDEXEC_adcs_get_estimation_params(const char *args_str, TCMD_Telecomma
 ///     - Arg 3: aop_coefficient (set argument of perigee filter coefficient) (double)
 ///     - Arg 4: time_coefficient (set time filter coefficient) (double)
 ///     - Arg 5: pos_coefficient (set position filter coefficient) (double)
-///     - Arg 6: maximum_position_error (maximum position error for ASGP4 to continue working) (double)
-///     - Arg 7: asgp4_filter (The type of filter being used (enum))
+///     - Arg 6: maximum_position_error (maximum position error for Augmented_SGP4 to continue working) (double)
+///     - Arg 7: augmented_sgp4_filter (The type of filter being used (enum))
 ///     - Arg 8: xp_coefficient (polar coefficient xdouble; p) (double)
 ///     - Arg 9: yp_coefficient (polar coefficient ydouble; p) (double)
 ///     - Arg 10: gps_roll_over (GPS roll over number)
-///     - Arg 11: position_sd (maximum position standard deviation for ASGP4 to continue working) (double)
-///     - Arg 12: velocity_sd (maximum velocity standard deviation for ASGP4 to continue working) (double)
-///     - Arg 13: min_satellites (Minimum satellites required for ASGP4 to continue working)
+///     - Arg 11: position_sd (maximum position standard deviation for Augmented_SGP4 to continue working) (double)
+///     - Arg 12: velocity_sd (maximum velocity standard deviation for Augmented_SGP4 to continue working) (double)
+///     - Arg 13: min_satellites (Minimum satellites required for Augmented_SGP4 to continue working)
 ///     - Arg 14: time_gain (time offset compensation gain) (double)
 ///     - Arg 15: max_lag (maximum lagged timestamp measurements to incorporate) (double)
-///     - Arg 16: min_samples (Minimum samples to use to get ASGP4)
+///     - Arg 16: min_samples (Minimum samples to use to get Augmented_SGP4)
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_adcs_set_asgp4_params(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_adcs_set_augmented_sgp4_params(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                        char *response_output_buf, uint16_t response_output_buf_len) {
     // seven doubles, then enum, then two doubles, uint8, two doubles, uint8, two doubles, uint16
     //  0-6             7           8-9             10      11-12       13      14-15       16
@@ -981,8 +981,8 @@ uint8_t TCMDEXEC_adcs_set_asgp4_params(const char *args_str, TCMD_TelecommandCha
         }
     }
 
-    uint8_t status = ADCS_Set_ASGP4_Params(doubles_params[0], doubles_params[1], doubles_params[2], doubles_params[3], doubles_params[4], doubles_params[5], doubles_params[6],
-                                        (ADCS_ASGP4_Filter) uint_params[0],
+    uint8_t status = ADCS_Set_Augmented_SGP4_Params(doubles_params[0], doubles_params[1], doubles_params[2], doubles_params[3], doubles_params[4], doubles_params[5], doubles_params[6],
+                                        (ADCS_Augmented_SGP4_Filter) uint_params[0],
                                         doubles_params[7], doubles_params[8],
                                         (uint8_t) uint_params[1],
                                         doubles_params[9], doubles_params[10],
@@ -996,10 +996,10 @@ uint8_t TCMDEXEC_adcs_set_asgp4_params(const char *args_str, TCMD_TelecommandCha
 /// @param args_str 
 ///     - No arguments for this command
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_adcs_get_asgp4_params(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_adcs_get_augmented_sgp4_params(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                        char *response_output_buf, uint16_t response_output_buf_len) {
-    ADCS_ASGP4_Params_Struct packed_struct;
-    uint8_t status = ADCS_Get_ASGP4_Params(&packed_struct);
+    ADCS_Augmented_SGP4_Params_Struct packed_struct;
+    uint8_t status = ADCS_Get_Augmented_SGP4_Params(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -1007,7 +1007,7 @@ uint8_t TCMDEXEC_adcs_get_asgp4_params(const char *args_str, TCMD_TelecommandCha
         return 1;
     }
 
-    const uint8_t result_json = ADCS_ASGP4_Params_Struct_TO_json(
+    const uint8_t result_json = ADCS_Augmented_SGP4_Params_Struct_TO_json(
         &packed_struct, response_output_buf, response_output_buf_len);
 
     if (result_json != 0) {
@@ -1428,10 +1428,10 @@ uint8_t TCMDEXEC_adcs_raw_cam2_sensor(const char *args_str, TCMD_TelecommandChan
 /// @param args_str 
 ///     - No arguments for this command
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_adcs_raw_css_1_to_6(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_adcs_raw_coarse_sun_sensor_1_to_6(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                      char *response_output_buf, uint16_t response_output_buf_len) {
-    ADCS_Raw_CSS_1_to_6_Struct packed_struct;
-    uint8_t status = ADCS_Get_Raw_CSS_1_to_6(&packed_struct);
+    ADCS_Raw_Coarse_Sun_Sensor_1_to_6_Struct packed_struct;
+    uint8_t status = ADCS_Get_Raw_Coarse_Sun_Sensor_1_to_6(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -1439,7 +1439,7 @@ uint8_t TCMDEXEC_adcs_raw_css_1_to_6(const char *args_str, TCMD_TelecommandChann
         return 1;
     }
 
-    const uint8_t result_json = ADCS_Raw_CSS_1_to_6_Struct_TO_json(
+    const uint8_t result_json = ADCS_Raw_Coarse_Sun_Sensor_1_to_6_Struct_TO_json(
         &packed_struct, response_output_buf, response_output_buf_len);
 
     if (result_json != 0) {
@@ -1455,10 +1455,10 @@ uint8_t TCMDEXEC_adcs_raw_css_1_to_6(const char *args_str, TCMD_TelecommandChann
 /// @param args_str 
 ///     - No arguments for this command
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_adcs_raw_css_7_to_10(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_adcs_raw_coarse_sun_sensor_7_to_10(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                       char *response_output_buf, uint16_t response_output_buf_len) {
-    ADCS_Raw_CSS_7_to_10_Struct packed_struct;
-    uint8_t status = ADCS_Get_Raw_CSS_7_to_10(&packed_struct);
+    ADCS_Raw_Coarse_Sun_Sensor_7_to_10_Struct packed_struct;
+    uint8_t status = ADCS_Get_Raw_Coarse_Sun_Sensor_7_to_10(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -1466,7 +1466,7 @@ uint8_t TCMDEXEC_adcs_raw_css_7_to_10(const char *args_str, TCMD_TelecommandChan
         return 1;
     }
 
-    const uint8_t result_json = ADCS_Raw_CSS_7_to_10_Struct_TO_json(
+    const uint8_t result_json = ADCS_Raw_Coarse_Sun_Sensor_7_to_10_Struct_TO_json(
         &packed_struct, response_output_buf, response_output_buf_len);
 
     if (result_json != 0) {
