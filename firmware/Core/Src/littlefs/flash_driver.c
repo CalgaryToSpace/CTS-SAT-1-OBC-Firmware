@@ -11,6 +11,8 @@
 // 512 bytes should take 2ms at 2Mbps.
 // TODO: ^ investigate the HAL_SPI_Receive overhead (2ms expected, >5ms observed)
 #define FLASH_HAL_TIMEOUT_MS 10 
+// FIXME: For sending or receiving 2176 bytes, the timeout should be >10ms. Created temporary fix for now.
+#define FLASH_HAL_MAX_BYTE_TIMEOUT_MS 50
 
 // The following timeout values are sourced from Section 11.3.1, Table 56: "CFI system interface string"
 // and are interpreted using: https://www.infineon.com/dgdl/Infineon-AN98488_Quick_Guide_to_Common_Flash_Interface-ApplicationNotes-v05_00-EN.pdf
@@ -497,13 +499,6 @@ FLASH_error_enum_t FLASH_write_data(SPI_HandleTypeDef *hspi, uint8_t chip_number
         FLASH_deactivate_chip_select();
         return temp;
     }
-/*
-    DEBUG_uart_print_array_hex(packet_buffer, packet_buffer_len);
-    DEBUG_uart_print_str("\n");
-    DEBUG_uart_print_uint32((uint32_t)packet_buffer_len);
-    DEBUG_uart_print_str("\n");
-*/
-    // DEBUG_uart_print_array_hex(packet_buffer, packet_buffer_len);
 
     // Split main address into its 3 bytes
     uint8_t addr_bytes[3] = {(addr >> 16) & 0xFF, (addr >> 8) & 0xFF, addr & 0xFF};
@@ -513,10 +508,6 @@ FLASH_error_enum_t FLASH_write_data(SPI_HandleTypeDef *hspi, uint8_t chip_number
     uint16_t cache_addr = 0x0000;
     uint8_t cache_addr_bytes[2] = {(cache_addr >> 8) & 0xFF, cache_addr & 0xFF}; // modify
     // check for packet buffer length > 2176 (pg.29 of datasheet, program load)
-    // 1st byte: op code
-    // 2nd bye: 1st four bits dummy bytes, 2nd four bits column address
-    // 3rd byte: rest of column address
-    //4th - forward: data bits
 
     // Send WRITE ENABLE Command
     const FLASH_error_enum_t wren_result = FLASH_write_enable(hspi, chip_number);
@@ -555,8 +546,7 @@ FLASH_error_enum_t FLASH_write_data(SPI_HandleTypeDef *hspi, uint8_t chip_number
     }
 
     // Send the data bytes
-    // const uint8_t tx_result_3 = HAL_SPI_Transmit(hspi, packet_buffer, packet_buffer_len, FLASH_HAL_TIMEOUT_MS);
-    const uint8_t tx_result_3 = HAL_SPI_Transmit(hspi, packet_buffer, packet_buffer_len, 50);
+    const uint8_t tx_result_3 = HAL_SPI_Transmit(hspi, packet_buffer, packet_buffer_len, FLASH_HAL_MAX_BYTE_TIMEOUT_MS);
 
     // If couldn't send the bytes, check why
     if (tx_result_3 != HAL_OK) {
@@ -655,15 +645,8 @@ FLASH_error_enum_t FLASH_write_data(SPI_HandleTypeDef *hspi, uint8_t chip_number
  */
 FLASH_error_enum_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t addr, uint8_t *rx_buffer, lfs_size_t rx_buffer_len)
 {
-    // uint8_t read_addr_bytes[4] = {(addr >> 24) & 0xFF, (addr >> 16) & 0xFF, (addr >> 8) & 0xFF, addr & 0xFF};
     uint8_t read_addr_bytes[3] = {0, (addr >> 8) & 0xFF, addr & 0xFF};
-/*
-    DEBUG_uart_print_str("Read address bytes: ");
-    for(int i=0; i<3; i++) {
-        DEBUG_uart_print_array_hex(&read_addr_bytes[i], 1);
-    }
-    DEBUG_uart_print_str("\n\n");
-*/
+
     // Define the address where data will be read from in cache register (First 4 bits are dummy bits)
     // TODO: Is it fine to always have this at 0?
     uint16_t cache_addr = 0x0000;
@@ -684,7 +667,6 @@ FLASH_error_enum_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number,
         return FLASH_ERR_SPI_TRANSMIT_FAILED;
     }
 
-    // FIXME: Datasheet Page 16 talks about only giving 8-bit dummy values and 16-bit address, not sure how that works
     // Send Address bytes 
     const HAL_StatusTypeDef tx_result_2 = HAL_SPI_Transmit(hspi, (uint8_t *)read_addr_bytes, 3, FLASH_HAL_TIMEOUT_MS);
 
@@ -717,7 +699,6 @@ FLASH_error_enum_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number,
 
         if ((status_reg_buffer[0] & FLASH_SR1_WRITE_IN_PROGRESS_MASK) == 0) {
             // Success condition: write in progress has completed.
-            // return FLASH_ERR_OK;
             break;
         }
 
@@ -779,8 +760,7 @@ FLASH_error_enum_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number,
     }
 
     // Receive the data into the buffer
-    //const HAL_StatusTypeDef rx_result_1 = HAL_SPI_Receive(hspi, (uint8_t *)rx_buffer, rx_buffer_len, FLASH_HAL_TIMEOUT_MS);
-    const HAL_StatusTypeDef rx_result_1 = HAL_SPI_Receive(hspi, (uint8_t *)rx_buffer, rx_buffer_len, 50);
+    const HAL_StatusTypeDef rx_result_1 = HAL_SPI_Receive(hspi, (uint8_t *)rx_buffer, rx_buffer_len, FLASH_HAL_MAX_BYTE_TIMEOUT_MS);
 
     // If couldn't receive data, check why
     if (rx_result_1 != HAL_OK) {
@@ -795,41 +775,37 @@ FLASH_error_enum_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number,
 
     // Set Chip Select HIGH
     FLASH_deactivate_chip_select();
-/*
-    DEBUG_uart_print_str("Read data: \n");
-    DEBUG_uart_print_array_hex(rx_buffer, rx_buffer_len);
-    DEBUG_uart_print_str("\n");
-    DEBUG_uart_print_str("Length of data read: ");
-    DEBUG_uart_print_uint32((uint32_t)rx_buffer_len);
-    DEBUG_uart_print_str("\n");
-*/
+
     // TODO: Are there any other errors that can occur while reading?
     return FLASH_ERR_OK;
 }
 
+/**
+ * @brief Resets the NAND flash memory module
+ * @param hspi - Pointer to the SPI HAL handle
+ * @param chip_number - The chip select number to activate
+ * @retval FLASH_ERR_OK on success, <0 on failure
+ */
+FLASH_error_enum_t FLASH_reset(SPI_HandleTypeDef *hspi, uint8_t chip_number)
+{
+    FLASH_activate_chip_select(chip_number);
 
+    uint8_t tx_buffer[1] = {FLASH_CMD_RESET};
+    HAL_StatusTypeDef tx_result = HAL_SPI_Transmit(hspi, tx_buffer, 1, FLASH_HAL_TIMEOUT_MS);
 
+    // If couldn't send the command, check why
+    if (tx_result != HAL_OK) {
+        FLASH_deactivate_chip_select();
 
+        if (tx_result == HAL_TIMEOUT) {
+            return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
+        }
 
+        return FLASH_ERR_SPI_TRANSMIT_FAILED;
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    return FLASH_ERR_OK;
+}
 
 /**
  * @brief Checks if the FLASH chip is reachable by checking it's ID
@@ -913,31 +889,4 @@ FLASH_error_enum_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_numb
         return FLASH_ERR_UNKNOWN;
     }
     return FLASH_ERR_OK; // success
-}
-
-/**
- * @brief Resets the NAND flash memory module
- * @param hspi - Pointer to the SPI HAL handle
- * @param chip_number - The chip select number to activate
- * @retval FLASH_ERR_OK on success, <0 on failure
- */
-FLASH_error_enum_t FLASH_reset(SPI_HandleTypeDef *hspi, uint8_t chip_number)
-{
-    FLASH_activate_chip_select(chip_number);
-
-    uint8_t tx_buffer[1] = {FLASH_CMD_RESET};
-    HAL_StatusTypeDef tx_result = HAL_SPI_Transmit(hspi, tx_buffer, 1, FLASH_HAL_TIMEOUT_MS);
-
-    // If couldn't send the command, check why
-    if (tx_result != HAL_OK) {
-        FLASH_deactivate_chip_select();
-
-        if (tx_result == HAL_TIMEOUT) {
-            return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
-        }
-
-        return FLASH_ERR_SPI_TRANSMIT_FAILED;
-    }
-
-    return FLASH_ERR_OK;
 }

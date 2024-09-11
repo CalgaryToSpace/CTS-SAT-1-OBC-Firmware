@@ -165,7 +165,6 @@ uint8_t TCMDEXEC_flash_read_hex(const char *args_str, TCMD_TelecommandChannel_en
         return 3;
     }
 
-    //uint8_t read_buf[max_num_bytes];
     uint32_t num_bytes = (uint32_t)arg_num_bytes;
     FLASH_error_enum_t result = FLASH_read_data(&hspi1, chip_num, flash_addr, read_buf, num_bytes);
 
@@ -177,7 +176,7 @@ uint8_t TCMDEXEC_flash_read_hex(const char *args_str, TCMD_TelecommandChannel_en
     }
 
     // Convert read data to hex
-    // FIXME: This can't print whole page of data (2048 bytes)
+    // FIXME: This can't print whole page of data (2048 bytes). Fix so that it can.
     for (uint16_t i = 0; i < num_bytes; i++) {
         snprintf(
             &response_output_buf[strlen(response_output_buf)],
