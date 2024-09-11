@@ -60,8 +60,11 @@ uint8_t TCMDEXEC_eps_get_system_status_json(const uint8_t *args_str,
 //         if(result_json != )
 // }
 
+
+
+
 /// @brief Triggered if there is an overcurrent detected (sharp spike in current)
-/// @return 0 if there is no overcurrent detected, >0 is overcurrent is detected
+/// @return 0 if there is no overcurrent detected, >0 overcurrent is detected
 // NOTE - please double check this!
 uint8_t TCMDEXEC_eps_get_pdu_overcurrent_fault_state_json(const uint8_t *args_str,
                         TCMD_TelecommandChannel_enum_t tcmd_channel,
@@ -72,16 +75,16 @@ uint8_t TCMDEXEC_eps_get_pdu_overcurrent_fault_state_json(const uint8_t *args_st
 
     if (result != 0) {
         snprintf(response_output_buf, response_output_buf_len,
-            "EPS get system status failed (err %d)", result);
+            "EPS get pdu overcurrent fault state failed (err %d)", result);
         return 1;
     }
 
-    const uint8_t result_json = EPS_result_system_status_TO_json(
+    const uint8_t result_json = EPS_result_pdu_overcurrent_fault_state_TO_json(
         &status, response_output_buf, response_output_buf_len);
 
     if (result_json != 0) {
         snprintf(response_output_buf, response_output_buf_len,
-            "EPS get system status JSON failed (err %d)", result_json);
+            "EPS get pdu overcurrent fault state JSON failed (err %d)", result_json);
         return 2;
     }
     return 0;

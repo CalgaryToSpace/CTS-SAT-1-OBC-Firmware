@@ -62,11 +62,20 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_func = TCMDEXEC_eps_watchdog,
         .number_of_args = 0,
     },
+    
     {
         .tcmd_name = "eps_get_system_status_json",
         .tcmd_func = TCMDEXEC_eps_get_system_status_json,
         .number_of_args = 0,
     },
+
+    {
+        .tcmd_name = "eps_get_pdu_overcurrent_fault_state_json",
+        .tcmd_func = TCMDEXEC_eps_get_pdu_overcurrent_fault_state_json,
+        .number_of_args = 0,
+
+    }
+
     /* *************************** END EPS Section ************************************** */
     
 
@@ -134,7 +143,7 @@ uint8_t TCMDEXEC_echo_back_uint32_args(const uint8_t *args_str, TCMD_Telecommand
                 &response_output_buf[strlen(response_output_buf)],
                 response_output_buf_len - strlen(response_output_buf) - 1,
                 "Arg%d=%" PRIu32 ", ",
-                arg_num, (uint32_t)arg_uint64);
+                arg_num, (uint32_t)(arg_uint64);
         }
     }
     return 0;
@@ -172,4 +181,7 @@ uint8_t TCMDEXEC_available_telecommands(const uint8_t *args_str, TCMD_Telecomman
 
     return 0;
 }
+
+///////////////////////////////////// EPS to JSON Conversions //////////////////////////////////
+uint8_t TCMDEXEC_eps_get_pdu_overcurrent_fault_state_json()
 
