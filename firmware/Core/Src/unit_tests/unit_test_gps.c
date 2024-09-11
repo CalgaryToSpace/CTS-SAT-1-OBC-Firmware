@@ -330,18 +330,6 @@ uint8_t TEST_EXEC__GPS_Parse_timea(){
     TEST_ASSERT_TRUE(result.utc_status == GPS_UTC_VALID);
     TEST_ASSERT_TRUE(result.crc == 0x2a066e78);
 
-    // char message_buffer[256];
-    //     snprintf(
-    //         message_buffer, sizeof(message_buffer),
-    //         "{\"Clock Status\":\"%s\",\"UTC Offset\":\"%s\",\"UTC Status\":%lu,\"CRC\":%u}\n",
-    //         result.clock_status,
-    //         result.utc_offset,
-    //         result.utc_status,
-    //         result.crc
-    //     );
-          
-    //     DEBUG_uart_print_str(message_buffer);
-
     // Testing with an empty string
     strcpy(gps_data, "");
     parse_result = parse_timea_data(gps_data, &result);

@@ -671,6 +671,23 @@ uint8_t parse_timea_data(const char* data_received, gps_timea_response *result) 
         return 7;
     }
 
+    // // Testing with TCMD_ascii_to_int64 function
+    // int64_t test_result;
+    // parse_result = TCMD_ascii_to_int64(token_buffer,sizeof(token_buffer),&test_result);
+    // if(parse_result!= 0){
+    //     // Couldnt convert to a valid int64 value
+    //     return 9;
+    // }
+
+    // if(test_result > INT64_MAX){
+    //     test_result = INT64_MAX;
+    // } else if (test_result < INT64_MIN){
+    //     test_result = INT64_MIN;
+    // }
+
+    // result->utc_offset = test_result;
+
+    
     // TODO: Determine what to do when we exceed data limit ie fall out of bounds of valid int64_t values
     // May not be necessary as max amount of seconds in a year is 3.154e+7 which is way smaller than the max value of int64
     if(value > INT64_MAX){
