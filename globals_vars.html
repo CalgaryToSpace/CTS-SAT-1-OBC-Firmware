@@ -182,7 +182,7 @@ $(function(){ initResizable(false); });
 <li>LFS_file_buffer&#160;:&#160;<a class="el" href="littlefs__helper_8c.html#ace2c39f31d90f6d8595f0ee59792f02f">littlefs_helper.c</a></li>
 <li>LFS_file_cfg&#160;:&#160;<a class="el" href="littlefs__helper_8h.html#a53ab5b4b7a73a0b81ad2760c7437dbdb">littlefs_helper.h</a>, <a class="el" href="littlefs__helper_8c.html#a53ab5b4b7a73a0b81ad2760c7437dbdb">littlefs_helper.c</a></li>
 <li>LFS_filesystem&#160;:&#160;<a class="el" href="littlefs__helper_8h.html#a8c1bcaa9226d39b07834de8fb7e9c367">littlefs_helper.h</a>, <a class="el" href="littlefs__helper_8c.html#a8c1bcaa9226d39b07834de8fb7e9c367">littlefs_helper.c</a></li>
-<li>LFS_is_lfs_mounted&#160;:&#160;<a class="el" href="littlefs__helper_8c.html#aa7eeeb2151fb12e7a8e09d77d78da07e">littlefs_helper.c</a>, <a class="el" href="log__sinks_8c.html#aa7eeeb2151fb12e7a8e09d77d78da07e">log_sinks.c</a></li>
+<li>LFS_is_lfs_mounted&#160;:&#160;<a class="el" href="littlefs__helper_8h.html#aa7eeeb2151fb12e7a8e09d77d78da07e">littlefs_helper.h</a>, <a class="el" href="littlefs__helper_8c.html#aa7eeeb2151fb12e7a8e09d77d78da07e">littlefs_helper.c</a>, <a class="el" href="log__sinks_8c.html#aa7eeeb2151fb12e7a8e09d77d78da07e">log_sinks.c</a></li>
 <li>LFS_lookahead_buf&#160;:&#160;<a class="el" href="littlefs__helper_8c.html#ade793a0788144172e10415cbf3eed6e5">littlefs_helper.c</a></li>
 <li>LFS_prog_buffer&#160;:&#160;<a class="el" href="littlefs__helper_8c.html#aa48944bae8cb8f039cdf7183e79703c6">littlefs_helper.c</a></li>
 <li>LFS_read_buffer&#160;:&#160;<a class="el" href="littlefs__helper_8c.html#a451f5febfc3d85b81bfe4f58cc352eba">littlefs_helper.c</a></li>
@@ -221,13 +221,15 @@ $(function(){ initResizable(false); });
 <li>TASK_heartbeat_timing_str&#160;:&#160;<a class="el" href="rtos__tasks_8c.html#a8cb0fd058d3b96a10da43e222f7a738f">rtos_tasks.c</a></li>
 <li>TCMD_agenda&#160;:&#160;<a class="el" href="telecommand__executor_8c.html#a88f6cfa3dce5a9add06bb8593a1e5162">telecommand_executor.c</a></li>
 <li>TCMD_agenda_is_valid&#160;:&#160;<a class="el" href="telecommand__executor_8c.html#a1d93d3183332d662e791e6e0e44e7f4a">telecommand_executor.c</a></li>
+<li>TCMD_latest_received_tcmd_timestamp_sent&#160;:&#160;<a class="el" href="telecommand__executor_8h.html#ac65134c4b8f8a9e3bc760fa4b04793da">telecommand_executor.h</a>, <a class="el" href="telecommand__executor_8c.html#ac65134c4b8f8a9e3bc760fa4b04793da">telecommand_executor.c</a></li>
 <li>TCMD_NUM_TELECOMMANDS&#160;:&#160;<a class="el" href="telecommand__definitions_8h.html#a29297159252e5773ef7c4d44c777233b">telecommand_definitions.h</a>, <a class="el" href="telecommand__definitions_8c.html#a29297159252e5773ef7c4d44c777233b">telecommand_definitions.c</a></li>
 <li>TCMD_telecommand_definitions&#160;:&#160;<a class="el" href="telecommand__definitions_8h.html#a148aad99e5610251cb56edb83b95e225">telecommand_definitions.h</a>, <a class="el" href="telecommand__definitions_8c.html#a148aad99e5610251cb56edb83b95e225">telecommand_definitions.c</a></li>
+<li>TCMD_total_tcmd_queued_count&#160;:&#160;<a class="el" href="telecommand__executor_8h.html#ae45aff8b05a8398882c7e07d58b0ea61">telecommand_executor.h</a>, <a class="el" href="telecommand__executor_8c.html#ae45aff8b05a8398882c7e07d58b0ea61">telecommand_executor.c</a></li>
 <li>TEST_definitions&#160;:&#160;<a class="el" href="unit__test__inventory_8h.html#a4106e4c44dd0242087ba46545175fedb">unit_test_inventory.h</a>, <a class="el" href="unit__test__inventory_8c.html#a4106e4c44dd0242087ba46545175fedb">unit_test_inventory.c</a></li>
 <li>TEST_definitions_count&#160;:&#160;<a class="el" href="unit__test__inventory_8h.html#a3a1560ee9809e09c7e8091e330064597">unit_test_inventory.h</a>, <a class="el" href="unit__test__inventory_8c.html#a3a1560ee9809e09c7e8091e330064597">unit_test_inventory.c</a></li>
-<li>TIM_last_synchronization_source&#160;:&#160;<a class="el" href="timekeeping_8c.html#a0243fc184f4f6750c54788e6ec279045">timekeeping.c</a></li>
-<li>TIM_system_uptime_at_last_time_resync_ms&#160;:&#160;<a class="el" href="timekeeping_8c.html#ab981cbf9225d4f992b0276a7b3c210a4">timekeeping.c</a></li>
-<li>TIM_unix_epoch_time_at_last_time_resync_ms&#160;:&#160;<a class="el" href="timekeeping_8c.html#a62a0a178c8d91d9bdfd6c495dc2b2cc1">timekeeping.c</a></li>
+<li>TIM_last_synchronization_source&#160;:&#160;<a class="el" href="timekeeping_8h.html#a0243fc184f4f6750c54788e6ec279045">timekeeping.h</a>, <a class="el" href="timekeeping_8c.html#a0243fc184f4f6750c54788e6ec279045">timekeeping.c</a></li>
+<li>TIM_system_uptime_at_last_time_resync_ms&#160;:&#160;<a class="el" href="timekeeping_8h.html#ab981cbf9225d4f992b0276a7b3c210a4">timekeeping.h</a>, <a class="el" href="timekeeping_8c.html#ab981cbf9225d4f992b0276a7b3c210a4">timekeeping.c</a></li>
+<li>TIM_unix_epoch_time_at_last_time_resync_ms&#160;:&#160;<a class="el" href="timekeeping_8h.html#a62a0a178c8d91d9bdfd6c495dc2b2cc1">timekeeping.h</a>, <a class="el" href="timekeeping_8c.html#a62a0a178c8d91d9bdfd6c495dc2b2cc1">timekeeping.c</a></li>
 <li>timeout&#160;:&#160;<a class="el" href="ant__internal__drivers_8c.html#a91f6071000e844b920d249f74d6fbf42">ant_internal_drivers.c</a></li>
 </ul>
 

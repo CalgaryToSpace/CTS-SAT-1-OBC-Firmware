@@ -166,6 +166,7 @@ var menudata={children:[
 {text:"f",url:"globals_eval.html#index_f"},
 {text:"l",url:"globals_eval.html#index_l"},
 {text:"m",url:"globals_eval.html#index_m"},
+{text:"s",url:"globals_eval.html#index_s"},
 {text:"t",url:"globals_eval.html#index_t"}]},
 {text:"Macros",url:"globals_defs.html",children:[
 {text:"a",url:"globals_defs.html#index_a"},

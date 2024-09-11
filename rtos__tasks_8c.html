@@ -103,6 +103,8 @@ $(function(){ initResizable(false); });
 <code>#include &quot;<a class="el" href="timekeeping_8h_source.html">timekeeping/timekeeping.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="uart__handler_8h_source.html">uart_handler/uart_handler.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="arrays_8h_source.html">transforms/arrays.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="stm32__reboot__reason_8h_source.html">stm32/stm32_reboot_reason.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="log_8h_source.html">log/log.h</a>&quot;</code><br />
 <code>#include &quot;cmsis_os.h&quot;</code><br />
 <code>#include &lt;string.h&gt;</code><br />
 <code>#include &lt;stdio.h&gt;</code><br />
@@ -112,54 +114,59 @@ Include dependency graph for rtos_tasks.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="rtos__tasks_8c__incl.png" border="0" usemap="#afirmware_2Core_2Src_2rtos__tasks_2rtos__tasks_8c" alt=""/></div>
 <map name="afirmware_2Core_2Src_2rtos__tasks_2rtos__tasks_8c" id="afirmware_2Core_2Src_2rtos__tasks_2rtos__tasks_8c">
-<area shape="rect" title=" " alt="" coords="746,5,898,46"/>
-<area shape="rect" href="main_8h.html" title=": Header for main.c file. This file contains the common defines of the application." alt="" coords="32,190,92,216"/>
-<area shape="poly" title=" " alt="" coords="746,32,575,38,369,50,186,69,123,82,89,96,76,113,68,133,63,175,58,174,63,132,71,110,86,92,122,77,186,64,368,45,575,33,746,26"/>
-<area shape="rect" href="rtos__task__helpers_8h.html" title=" " alt="" coords="116,183,256,223"/>
-<area shape="poly" title=" " alt="" coords="746,35,516,57,402,75,356,85,322,96,224,175,220,171,319,92,355,80,401,69,516,52,746,30"/>
-<area shape="rect" href="rtos__tasks_8h.html" title=" " alt="" coords="99,102,257,127"/>
-<area shape="poly" title=" " alt="" coords="746,37,534,61,276,97,252,101,251,96,275,91,533,56,745,32"/>
-<area shape="rect" href="telecommand__parser_8h.html" title=" " alt="" coords="525,94,714,135"/>
-<area shape="poly" title=" " alt="" coords="777,49,680,90,678,85,775,44"/>
-<area shape="rect" href="telecommand__executor_8h.html" title=" " alt="" coords="596,183,784,223"/>
-<area shape="poly" title=" " alt="" coords="809,48,716,172,712,168,805,45"/>
-<area shape="rect" href="debug__uart_8h.html" title=" " alt="" coords="332,102,501,127"/>
-<area shape="poly" title=" " alt="" coords="746,46,489,100,488,95,745,41"/>
-<area shape="rect" href="timekeeping_8h.html" title=" " alt="" coords="860,102,1035,127"/>
-<area shape="poly" title=" " alt="" coords="852,44,919,90,916,95,849,49"/>
-<area shape="rect" href="uart__handler_8h.html" title=" " alt="" coords="724,279,901,304"/>
-<area shape="poly" title=" " alt="" coords="824,46,816,264,811,263,819,46"/>
-<area shape="rect" href="arrays_8h.html" title=" " alt="" coords="993,279,1126,304"/>
-<area shape="poly" title=" " alt="" coords="898,26,938,32,979,44,1018,64,1049,92,1062,113,1071,135,1078,182,1075,227,1069,264,1064,263,1070,227,1072,182,1065,136,1057,115,1045,96,1015,68,977,49,937,37,898,31"/>
-<area shape="rect" title=" " alt="" coords="1110,102,1198,127"/>
-<area shape="poly" title=" " alt="" coords="899,42,1092,91,1101,94,1100,99,1091,97,898,47"/>
-<area shape="rect" title=" " alt="" coords="1222,102,1286,127"/>
-<area shape="poly" title=" " alt="" coords="899,32,1045,53,1128,70,1211,91,1216,93,1214,98,1209,97,1127,75,1044,59,898,37"/>
-<area shape="rect" title=" " alt="" coords="1310,102,1369,127"/>
-<area shape="poly" title=" " alt="" coords="898,28,982,35,1083,47,1191,65,1299,91,1303,93,1301,98,1297,97,1190,71,1082,52,981,40,898,34"/>
-<area shape="rect" title=" " alt="" coords="1392,102,1449,127"/>
-<area shape="poly" title=" " alt="" coords="898,26,996,31,1118,42,1250,61,1381,91,1385,93,1384,98,1380,97,1249,66,1117,47,996,36,898,31"/>
-<area shape="rect" title=" " alt="" coords="5,279,119,304"/>
-<area shape="poly" title=" " alt="" coords="65,216,65,263,59,263,59,216"/>
-<area shape="poly" title=" " alt="" coords="163,130,92,183,89,178,160,125"/>
-<area shape="poly" title=" " alt="" coords="182,127,185,167,180,168,176,128"/>
-<area shape="rect" href="telecommand__types_8h.html" title=" " alt="" coords="460,271,648,312"/>
-<area shape="poly" title=" " alt="" coords="610,136,586,184,564,257,559,255,581,182,605,134"/>
-<area shape="rect" href="telecommand__definitions_8h.html" title=" " alt="" coords="332,183,520,223"/>
-<area shape="poly" title=" " alt="" coords="577,138,485,178,483,173,574,133"/>
-<area shape="rect" title=" " alt="" coords="654,360,718,386"/>
-<area shape="poly" title=" " alt="" coords="588,310,654,349,651,354,586,315"/>
-<area shape="poly" title=" " alt="" coords="457,222,514,260,511,265,454,226"/>
-<area shape="poly" title=" " alt="" coords="427,224,429,268,436,290,449,310,481,328,530,343,639,363,638,368,529,349,478,333,445,314,432,293,424,268,421,224"/>
-<area shape="poly" title=" " alt="" coords="661,226,599,265,596,261,658,222"/>
-<area shape="poly" title=" " alt="" coords="692,224,689,345,684,345,687,223"/>
-<area shape="poly" title=" " alt="" coords="337,130,226,152,104,185,101,186,99,181,103,180,225,147,336,125"/>
-<area shape="poly" title=" " alt="" coords="387,130,351,151,334,166,322,184,316,203,322,222,347,262,382,294,423,319,468,338,515,351,561,360,639,368,639,373,560,366,514,357,467,343,421,324,379,298,343,266,317,224,311,203,317,181,330,163,347,147,384,125"/>
-<area shape="poly" title=" " alt="" coords="952,127,955,163,954,213,943,266,932,292,916,314,885,333,837,348,733,368,732,363,836,343,883,328,912,310,927,289,938,265,949,212,950,163,947,128"/>
-<area shape="rect" title=" " alt="" coords="974,190,1036,216"/>
-<area shape="poly" title=" " alt="" coords="958,126,991,176,986,179,953,129"/>
-<area shape="poly" title=" " alt="" coords="795,307,720,354,717,349,792,303"/>
-<area shape="poly" title=" " alt="" coords="1002,308,734,364,732,359,1001,302"/>
+<area shape="rect" title=" " alt="" coords="906,5,1058,46"/>
+<area shape="rect" href="main_8h.html" title=": Header for main.c file. This file contains the common defines of the application." alt="" coords="115,190,174,216"/>
+<area shape="poly" title=" " alt="" coords="906,29,748,32,553,41,457,50,368,61,294,77,239,96,214,113,193,134,161,178,156,175,189,131,211,109,237,92,292,72,367,56,456,44,553,36,748,27,906,24"/>
+<area shape="rect" href="rtos__task__helpers_8h.html" title=" " alt="" coords="198,183,339,223"/>
+<area shape="poly" title=" " alt="" coords="906,29,817,32,708,42,592,63,534,78,479,96,462,105,450,115,421,137,334,179,332,174,418,132,446,111,459,101,477,92,533,73,591,57,708,37,816,27,906,23"/>
+<area shape="rect" href="rtos__tasks_8h.html" title=" " alt="" coords="250,102,407,127"/>
+<area shape="poly" title=" " alt="" coords="906,37,693,61,432,97,406,101,405,96,431,91,692,56,906,32"/>
+<area shape="rect" href="telecommand__parser_8h.html" title=" " alt="" coords="490,94,679,135"/>
+<area shape="poly" title=" " alt="" coords="906,46,691,93,690,88,905,41"/>
+<area shape="rect" href="telecommand__executor_8h.html" title=" " alt="" coords="762,183,951,223"/>
+<area shape="poly" title=" " alt="" coords="970,48,882,172,877,168,966,45"/>
+<area shape="rect" href="debug__uart_8h.html" title=" " alt="" coords="5,102,175,127"/>
+<area shape="poly" title=" " alt="" coords="906,34,595,55,395,73,194,97,166,101,165,96,194,91,395,68,594,50,905,28"/>
+<area shape="rect" href="timekeeping_8h.html" title=" " alt="" coords="702,102,878,127"/>
+<area shape="poly" title=" " alt="" coords="940,49,831,97,829,92,937,44"/>
+<area shape="rect" href="uart__handler_8h.html" title=" " alt="" coords="772,279,949,304"/>
+<area shape="poly" title=" " alt="" coords="988,46,992,82,992,128,985,178,966,225,939,254,908,274,905,270,936,250,961,222,979,176,987,128,986,82,983,47"/>
+<area shape="rect" href="arrays_8h.html" title=" " alt="" coords="973,279,1106,304"/>
+<area shape="poly" title=" " alt="" coords="990,46,1003,93,1037,263,1032,264,998,95,985,47"/>
+<area shape="rect" href="stm32__reboot__reason_8h.html" title=" " alt="" coords="1070,94,1211,135"/>
+<area shape="poly" title=" " alt="" coords="1019,44,1093,84,1090,89,1017,49"/>
+<area shape="rect" href="log_8h.html" title=" " alt="" coords="1173,279,1242,304"/>
+<area shape="poly" title=" " alt="" coords="1059,35,1157,58,1199,73,1225,92,1237,113,1244,136,1245,183,1235,229,1222,266,1217,264,1230,227,1239,183,1239,137,1232,115,1221,96,1197,78,1156,63,1057,41"/>
+<area shape="rect" title=" " alt="" coords="1286,102,1374,127"/>
+<area shape="poly" title=" " alt="" coords="1059,41,1268,91,1277,94,1276,99,1267,97,1057,46"/>
+<area shape="rect" title=" " alt="" coords="1398,102,1462,127"/>
+<area shape="poly" title=" " alt="" coords="1058,31,1211,52,1300,69,1387,91,1392,93,1390,98,1385,97,1299,75,1211,58,1058,37"/>
+<area shape="rect" title=" " alt="" coords="1486,102,1545,127"/>
+<area shape="poly" title=" " alt="" coords="1058,28,1144,34,1249,46,1363,65,1475,91,1479,93,1477,98,1473,97,1362,70,1249,51,1144,40,1058,33"/>
+<area shape="rect" title=" " alt="" coords="1568,102,1625,127"/>
+<area shape="poly" title=" " alt="" coords="1058,25,1159,30,1284,41,1422,60,1557,91,1561,93,1560,98,1556,97,1421,66,1284,46,1158,35,1058,31"/>
+<area shape="rect" title=" " alt="" coords="116,279,229,304"/>
+<area shape="poly" title=" " alt="" coords="151,215,167,263,162,265,146,217"/>
+<area shape="poly" title=" " alt="" coords="304,130,185,186,183,181,302,125"/>
+<area shape="poly" title=" " alt="" coords="323,129,293,172,288,169,318,126"/>
+<area shape="rect" href="telecommand__types_8h.html" title=" " alt="" coords="457,271,646,312"/>
+<area shape="poly" title=" " alt="" coords="584,136,560,257,555,256,578,135"/>
+<area shape="rect" href="telecommand__definitions_8h.html" title=" " alt="" coords="362,183,551,223"/>
+<area shape="poly" title=" " alt="" coords="557,137,500,176,497,172,554,133"/>
+<area shape="rect" title=" " alt="" coords="677,360,740,386"/>
+<area shape="poly" title=" " alt="" coords="592,310,672,350,670,355,589,315"/>
+<area shape="poly" title=" " alt="" coords="480,222,521,259,517,263,476,226"/>
+<area shape="poly" title=" " alt="" coords="449,225,442,245,437,268,438,290,447,310,460,321,481,331,538,347,603,358,662,365,661,370,602,364,537,353,479,336,457,326,443,314,433,292,432,267,437,243,444,223"/>
+<area shape="poly" title=" " alt="" coords="788,227,636,269,634,264,786,221"/>
+<area shape="poly" title=" " alt="" coords="822,226,791,247,763,273,737,310,720,347,715,345,733,308,759,270,788,243,819,222"/>
+<area shape="poly" title=" " alt="" coords="100,126,131,176,127,178,95,129"/>
+<area shape="poly" title=" " alt="" coords="89,128,80,164,75,213,76,240,81,265,90,289,105,310,134,323,188,335,346,352,522,362,661,368,661,373,522,368,346,357,187,340,132,328,102,314,86,292,76,267,71,240,70,213,75,163,84,127"/>
+<area shape="poly" title=" " alt="" coords="744,130,701,151,682,165,667,184,658,204,655,225,660,270,676,312,694,346,690,348,671,314,655,271,650,225,653,203,662,181,678,162,698,146,742,125"/>
+<area shape="rect" title=" " alt="" coords="676,190,738,216"/>
+<area shape="poly" title=" " alt="" coords="780,129,731,181,727,177,777,126"/>
+<area shape="poly" title=" " alt="" coords="839,307,747,355,744,350,836,303"/>
+<area shape="poly" title=" " alt="" coords="991,308,963,315,756,363,755,358,961,309,990,303"/>
+<area shape="poly" title=" " alt="" coords="1173,304,1118,315,917,347,756,368,755,363,916,341,1118,309,1172,298"/>
 </map>
 </div>
 </div><table class="memberdecls">
@@ -199,13 +206,129 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="rtos__tasks_8c_a7cf23bbdce878a0b7c41607751423179_cgraph.png" border="0" usemap="#artos__tasks_8c_a7cf23bbdce878a0b7c41607751423179_cgraph" alt=""/></div>
 <map name="artos__tasks_8c_a7cf23bbdce878a0b7c41607751423179_cgraph" id="artos__tasks_8c_a7cf23bbdce878a0b7c41607751423179_cgraph">
-<area shape="rect" title=" " alt="" coords="5,55,208,80"/>
-<area shape="rect" href="debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="271,5,422,31"/>
-<area shape="poly" title=" " alt="" coords="172,51,265,32,266,37,173,57"/>
-<area shape="rect" href="rtos__task__helpers_8c.html#a8e6805715f064b84a74583df06db6058" title=" " alt="" coords="256,55,437,80"/>
-<area shape="poly" title=" " alt="" coords="208,65,240,65,240,70,208,70"/>
-<area shape="rect" href="timekeeping_8c.html#ab806b8884c269c16f3bc4b766d1fc943" title="Returns the current unix timestamp, in milliseconds." alt="" coords="273,104,420,145"/>
-<area shape="poly" title=" " alt="" coords="164,78,259,101,257,106,163,84"/>
+<area shape="rect" title=" " alt="" coords="5,577,208,602"/>
+<area shape="rect" href="debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="271,451,422,477"/>
+<area shape="poly" title=" " alt="" coords="122,574,178,531,215,507,255,486,269,480,271,485,257,491,218,511,181,536,125,579"/>
+<area shape="rect" href="log_8c.html#a9620661557eea5fdaf535b894ae58c84" title="Log a message to several destinations (sinks)" alt="" coords="292,501,401,526"/>
+<area shape="poly" title=" " alt="" coords="149,574,288,529,290,534,151,579"/>
+<area shape="rect" href="timekeeping_8c.html#ab806b8884c269c16f3bc4b766d1fc943" title="Returns the current unix timestamp, in milliseconds." alt="" coords="939,311,1085,351"/>
+<area shape="poly" title=" " alt="" coords="208,587,391,584,604,576,790,561,854,550,889,537,905,520,914,503,918,466,919,425,924,404,937,381,958,359,962,363,941,384,929,406,924,426,923,466,919,505,910,523,892,541,855,555,790,567,605,582,391,589,208,592"/>
+<area shape="rect" href="stm32__reboot__reason_8c.html#aac62414297dbd9480448c266541a0ace" title="Obtain the STM32 system reset cause." alt="" coords="263,602,430,628"/>
+<area shape="poly" title=" " alt="" coords="208,598,248,602,247,607,208,603"/>
+<area shape="rect" href="stm32__reboot__reason_8c.html#a8caa6b410830d7592b7f1dd4c1a359b6" title="Convert a reset cause enum to a ASCII&#45;printable name string." alt="" coords="256,652,436,693"/>
+<area shape="poly" title=" " alt="" coords="147,601,272,644,270,649,146,606"/>
+<area shape="rect" href="rtos__task__helpers_8c.html#a8e6805715f064b84a74583df06db6058" title=" " alt="" coords="256,717,437,742"/>
+<area shape="poly" title=" " alt="" coords="123,601,179,650,216,678,257,702,272,709,270,714,254,707,213,682,175,654,119,605"/>
+<area shape="rect" href="log_8c.html#a186ca6df91a1dacb78dbf0b0385747c5" title="Get the name of a severity enum." alt="" coords="490,501,656,526"/>
+<area shape="poly" title=" " alt="" coords="401,511,475,511,475,516,401,516"/>
+<area shape="rect" href="log__sinks_8c.html#ad2518000eb3f3d175e8a4939ee3530af" title="Sends a log message to a log file." alt="" coords="528,651,618,677"/>
+<area shape="poly" title=" " alt="" coords="369,525,541,640,538,645,366,529"/>
+<area shape="rect" href="log__sinks_8c.html#af6b617d68df1389f44e9beb22ffa6d10" title="Sends a log message to the UHF radio." alt="" coords="736,799,864,825"/>
+<area shape="poly" title=" " alt="" coords="370,525,404,552,439,588,455,616,462,641,469,664,487,688,541,729,602,760,665,782,722,797,721,802,663,787,600,765,538,733,483,691,464,666,456,642,450,618,435,591,401,556,366,529"/>
+<area shape="rect" href="log__sinks_8c.html#a3f618faf2b066b771b2cb567c66154b6" title="Sends a log message to the umbilical UART." alt="" coords="723,501,877,526"/>
+<area shape="poly" title=" " alt="" coords="401,499,485,486,573,480,662,486,724,495,723,500,661,491,573,486,485,491,402,504"/>
+<area shape="rect" href="timekeeping_8c.html#a5bfe7cf59c2f5dca9b5f4213f6ea16e7" title="Returns a computer&#45;friendly timestamp string." alt="" coords="485,389,661,414"/>
+<area shape="poly" title=" " alt="" coords="400,501,436,487,450,477,460,466,483,442,524,419,527,424,487,446,464,470,454,481,438,492,402,506"/>
+<area shape="rect" href="lfs_8c.html#aa7eb46b610f8507869aa62759cfd224e" title=" " alt="" coords="752,651,848,677"/>
+<area shape="poly" title=" " alt="" coords="619,662,737,662,737,667,619,667"/>
+<area shape="rect" href="lfs_8c.html#a27b9877d2df6b72e9ac883a408d0d34c" title="File operations ///." alt="" coords="744,602,856,628"/>
+<area shape="poly" title=" " alt="" coords="618,652,728,628,729,633,619,657"/>
+<area shape="rect" href="lfs_8c.html#ad6f28a6af39c34f251a7c8db1bcc9506" title=" " alt="" coords="753,750,847,776"/>
+<area shape="poly" title=" " alt="" coords="596,675,647,706,710,736,739,746,737,751,708,741,644,710,593,680"/>
+<area shape="rect" href="lfs_8c.html#a2769dda334cd0ac276a4a929eadb930d" title=" " alt="" coords="753,701,847,726"/>
+<area shape="poly" title=" " alt="" coords="619,671,739,698,737,703,618,677"/>
+<area shape="poly" title=" " alt="" coords="591,675,711,786,723,792,721,797,708,790,587,679"/>
+<area shape="poly" title=" " alt="" coords="593,649,765,533,768,537,596,653"/>
+<area shape="rect" href="lfs_8c.html#a6913260217358cf9c612d2547f6f0bbe" title=" " alt="" coords="1141,597,1244,622"/>
+<area shape="poly" title=" " alt="" coords="848,655,1125,616,1126,621,849,660"/>
+<area shape="rect" href="lfs_8c.html#abb00542d235be9617c878d46b6b00bb0" title=" " alt="" coords="954,697,1070,722"/>
+<area shape="poly" title=" " alt="" coords="849,672,939,691,938,697,848,677"/>
+<area shape="rect" href="lfs_8c.html#a0f7d91af547222f857c7c7e0b4952836" title=" " alt="" coords="1330,547,1429,573"/>
+<area shape="poly" title=" " alt="" coords="1244,593,1314,575,1315,580,1245,599"/>
+<area shape="rect" href="lfs__util_8h.html#a9faff801530cd687a960a08af1acaaf1" title=" " alt="" coords="1347,597,1412,622"/>
+<area shape="poly" title=" " alt="" coords="1245,607,1332,607,1332,612,1245,612"/>
+<area shape="rect" href="lfs_8c.html#a730bc133994af125df2ef317c03499ea" title=" " alt="" coords="1319,646,1440,672"/>
+<area shape="poly" title=" " alt="" coords="1245,620,1314,639,1313,644,1244,626"/>
+<area shape="rect" href="lfs_8c.html#ae9d4b3e343006f3df668e4c40da0afda" title=" " alt="" coords="1515,649,1605,674"/>
+<area shape="poly" title=" " alt="" coords="1431,568,1460,582,1476,595,1485,609,1494,622,1508,635,1513,639,1510,643,1505,640,1490,625,1481,612,1472,599,1457,586,1428,573"/>
+<area shape="rect" href="lfs__util_8h.html#a6aca234f5581c98fc423e4184532185e" title=" " alt="" coords="1530,550,1590,576"/>
+<area shape="poly" title=" " alt="" coords="1429,558,1515,560,1515,565,1429,564"/>
+<area shape="rect" href="lfs_8c.html#a1938027f324f4a58980b0163cbcf8367" title=" " alt="" coords="1509,599,1610,625"/>
+<area shape="poly" title=" " alt="" coords="1427,571,1499,592,1498,597,1426,576"/>
+<area shape="rect" href="lfs_8c.html#af78645d9b58b26761464ef2e892516b0" title="Internal operations predeclared here ///." alt="" coords="1507,398,1613,424"/>
+<area shape="poly" title=" " alt="" coords="1391,545,1440,497,1505,441,1520,430,1523,434,1508,445,1443,501,1395,549"/>
+<area shape="rect" href="lfs_8c.html#ac43db7a505f104fbcdb589de700715bc" title=" " alt="" coords="2033,649,2125,674"/>
+<area shape="poly" title=" " alt="" coords="1429,546,1515,534,1564,532,1613,535,1731,556,1847,584,2027,641,2026,646,1845,590,1730,561,1613,540,1564,537,1515,539,1430,552"/>
+<area shape="rect" href="lfs_8c.html#a4eb3c4034fadfa6e58510d40f3af3565" title=" " alt="" coords="1853,449,1954,474"/>
+<area shape="poly" title=" " alt="" coords="1398,545,1446,516,1506,491,1595,471,1685,461,1768,456,1838,456,1838,462,1769,462,1685,466,1595,477,1507,496,1448,521,1401,549"/>
+<area shape="rect" href="lfs_8c.html#a64eaa825b262bc79780df365771461cd" title=" " alt="" coords="1822,398,1985,424"/>
+<area shape="poly" title=" " alt="" coords="1613,408,1807,408,1807,414,1613,414"/>
+<area shape="rect" href="lfs_8c.html#abcc4b5d45aafcd5b5e6dd00dc87f8f5b" title=" " alt="" coords="1661,347,1774,373"/>
+<area shape="poly" title=" " alt="" coords="1602,395,1660,376,1662,381,1603,400"/>
+<area shape="poly" title=" " alt="" coords="1968,422,1986,434,2007,457,2024,482,2051,536,2067,590,2076,633,2071,634,2062,591,2046,538,2020,484,2003,460,1983,438,1965,427"/>
+<area shape="rect" href="lfs_8c.html#a74ea955f04467b3fb6877f7797ff5290" title=" " alt="" coords="2173,674,2307,700"/>
+<area shape="poly" title=" " alt="" coords="2126,666,2158,671,2157,677,2125,671"/>
+<area shape="rect" href="lfs_8c.html#a7abfecb79aea2e5abee149d3093e8755" title=" " alt="" coords="2355,711,2464,737"/>
+<area shape="poly" title=" " alt="" coords="2302,698,2341,706,2339,712,2301,703"/>
+<area shape="rect" href="lfs__util_8h.html#aa6d372bce9fdc63166afaab1bad985c2" title=" " alt="" coords="2378,246,2441,272"/>
+<area shape="poly" title=" " alt="" coords="2244,673,2395,285,2400,287,2249,675"/>
+<area shape="poly" title=" " alt="" coords="1768,371,1840,391,1839,396,1767,376"/>
+<area shape="rect" href="lfs_8c.html#a87c48ccdc3781694d58b956062690f45" title=" " alt="" coords="1863,119,1944,145"/>
+<area shape="poly" title=" " alt="" coords="1728,345,1880,155,1884,159,1732,349"/>
+<area shape="poly" title=" " alt="" coords="1735,371,1774,402,1824,434,1840,441,1838,446,1821,439,1771,407,1732,375"/>
+<area shape="rect" href="lfs_8c.html#aed935b683183b73f6ca1ba7b0ffd0f67" title=" " alt="" coords="2034,81,2124,106"/>
+<area shape="poly" title=" " alt="" coords="1944,121,2018,104,2019,109,1945,126"/>
+<area shape="poly" title=" " alt="" coords="857,625,892,636,939,660,980,685,977,690,936,665,890,641,855,630"/>
+<area shape="rect" href="lfs_8c.html#af427c4edfdfd5f3f957708079189ddea" title="Top level file operations ///." alt="" coords="953,395,1071,421"/>
+<area shape="poly" title=" " alt="" coords="854,599,889,581,925,547,955,507,996,434,1001,437,959,510,929,550,892,585,857,604"/>
+<area shape="poly" title=" " alt="" coords="1021,420,1062,496,1095,541,1135,582,1141,587,1138,591,1131,586,1091,545,1058,498,1017,423"/>
+<area shape="poly" title=" " alt="" coords="1072,415,1149,425,1245,434,1352,437,1458,431,1494,425,1495,430,1459,436,1352,442,1245,439,1148,430,1071,420"/>
+<area shape="poly" title=" " alt="" coords="1019,420,1031,462,1054,519,1088,580,1110,608,1135,633,1189,674,1237,705,1284,728,1330,743,1378,753,1430,758,1559,760,2080,760,2149,758,2219,751,2340,734,2341,740,2220,757,2150,763,2080,766,1558,766,1430,763,1377,758,1328,749,1282,733,1235,710,1185,679,1131,637,1106,612,1083,583,1049,521,1026,463,1014,422"/>
+<area shape="poly" title=" " alt="" coords="1045,392,1066,379,1083,361,1101,325,1108,290,1107,256,1102,223,1098,190,1099,157,1108,123,1131,88,1158,59,1185,37,1212,22,1240,12,1302,4,1378,3,2080,3,2135,10,2186,30,2234,58,2277,93,2315,131,2348,168,2394,231,2390,234,2344,172,2311,134,2274,97,2231,63,2184,34,2134,15,2080,8,1378,8,1302,9,1241,17,1214,27,1188,42,1162,63,1135,91,1113,125,1104,158,1103,190,1107,223,1112,256,1113,290,1106,326,1087,364,1069,383,1048,397"/>
+<area shape="poly" title=" " alt="" coords="1043,393,1064,379,1083,361,1095,341,1101,323,1105,286,1109,249,1117,230,1131,210,1187,157,1213,138,1240,124,1269,114,1301,108,1378,104,1561,104,1717,111,1847,123,1847,128,1717,116,1561,110,1378,110,1301,114,1270,120,1242,129,1216,143,1190,161,1135,214,1121,233,1114,251,1110,287,1107,324,1100,344,1087,365,1067,383,1045,397"/>
+<area shape="poly" title=" " alt="" coords="1044,392,1065,379,1083,361,1098,333,1105,306,1103,254,1102,228,1104,202,1113,175,1131,148,1159,118,1186,96,1212,79,1240,67,1301,56,1378,54,1719,54,1801,56,1882,63,2019,81,2018,86,1882,68,1800,62,1719,59,1378,59,1302,61,1241,72,1215,84,1189,100,1163,122,1135,151,1117,178,1109,203,1107,228,1109,254,1110,307,1103,335,1087,364,1069,383,1047,397"/>
+<area shape="rect" href="lfs_8c.html#a4b050bae630f5ffc9452b41c16ec1a2c" title=" " alt="" coords="1321,346,1438,372"/>
+<area shape="poly" title=" " alt="" coords="1071,396,1133,387,1306,365,1306,370,1133,392,1072,401"/>
+<area shape="rect" href="lfs_8c.html#a3ae08e7148c43b3861f5dfac6bf7966d" title=" " alt="" coords="1151,270,1234,296"/>
+<area shape="poly" title=" " alt="" coords="1034,393,1083,361,1161,304,1164,308,1087,365,1037,397"/>
+<area shape="rect" href="lfs_8c.html#a4a32a05356587f37e44f0a73431c8fef" title=" " alt="" coords="1511,195,1609,221"/>
+<area shape="poly" title=" " alt="" coords="1041,393,1063,379,1083,361,1099,334,1104,307,1111,281,1119,268,1131,255,1174,229,1220,209,1269,196,1319,189,1415,187,1495,194,1495,199,1415,192,1320,194,1271,202,1222,214,1176,233,1135,260,1123,271,1116,283,1109,308,1104,335,1087,365,1066,383,1044,397"/>
+<area shape="rect" href="lfs_8c.html#a651bb8d9b7afba50f815c3a7a43abc6c" title=" " alt="" coords="1300,395,1459,421"/>
+<area shape="poly" title=" " alt="" coords="1071,406,1284,406,1284,411,1071,411"/>
+<area shape="rect" href="lfs__util_8h.html#aa30d06c37906ba1f9fe84730c7326de5" title=" " alt="" coords="1152,497,1233,522"/>
+<area shape="poly" title=" " alt="" coords="1037,419,1134,475,1155,487,1153,492,1132,480,1035,424"/>
+<area shape="rect" href="lfs_8c.html#ae594dee3729cd3ecb88e5ad60d1e21bd" title=" " alt="" coords="1133,546,1252,572"/>
+<area shape="poly" title=" " alt="" coords="1025,420,1069,473,1100,505,1135,533,1141,537,1138,541,1131,537,1096,509,1065,477,1021,423"/>
+<area shape="rect" href="lfs__util_8h.html#ac41c19e11c05ec073d0c42f248bb74c3" title=" " alt="" coords="1514,297,1606,322"/>
+<area shape="poly" title=" " alt="" coords="1429,343,1498,324,1499,329,1430,348"/>
+<area shape="poly" title=" " alt="" coords="1214,267,1253,245,1299,224,1374,200,1451,181,1605,153,1743,138,1847,131,1847,137,1744,143,1606,159,1453,186,1376,206,1301,229,1255,250,1216,272"/>
+<area shape="rect" href="lfs_8c.html#ac4b5300e44b2ff4b4fa85bd4ce8a3e44" title=" " alt="" coords="1315,297,1444,322"/>
+<area shape="poly" title=" " alt="" coords="1235,286,1301,296,1300,301,1234,291"/>
+<area shape="poly" title=" " alt="" coords="1234,272,1495,218,1496,224,1235,277"/>
+<area shape="poly" title=" " alt="" coords="1435,293,1563,269,1639,260,1716,256,2080,256,2362,256,2362,262,2080,262,1716,262,1640,265,1564,275,1436,299"/>
+<area shape="poly" title=" " alt="" coords="1444,307,1499,307,1499,312,1444,312"/>
+<area shape="poly" title=" " alt="" coords="1418,294,1457,275,1481,257,1505,238,1521,228,1524,232,1508,242,1485,262,1460,280,1421,298"/>
+<area shape="poly" title=" " alt="" coords="1451,392,1506,383,1645,365,1646,370,1507,388,1452,397"/>
+<area shape="poly" title=" " alt="" coords="847,749,943,724,944,729,848,754"/>
+<area shape="rect" href="lfs_8c.html#a82eccb8ccb85d49165b04885f01c8799" title=" " alt="" coords="962,851,1062,877"/>
+<area shape="poly" title=" " alt="" coords="848,768,892,785,907,796,917,807,926,818,940,830,962,842,959,847,937,834,923,822,913,811,904,800,889,789,846,773"/>
+<area shape="poly" title=" " alt="" coords="1062,849,1380,772,1598,725,1822,684,1925,671,2017,663,2017,668,1925,676,1823,690,1599,730,1381,777,1063,854"/>
+<area shape="rect" href="lfs_8c.html#a441bab3184229d1d74c81bbd4fcb7b29" title="File index list operations ///." alt="" coords="1144,851,1241,877"/>
+<area shape="poly" title=" " alt="" coords="1062,862,1129,862,1129,867,1062,867"/>
+<area shape="rect" href="lfs_8c.html#aff7596f0f9588e7958555ac5a53abd8b" title=" " alt="" coords="1145,901,1240,926"/>
+<area shape="poly" title=" " alt="" coords="1063,875,1131,894,1130,899,1061,880"/>
+<area shape="poly" title=" " alt="" coords="847,710,939,708,939,714,847,715"/>
+<area shape="rect" href="lfs_8c.html#a41d53212e4b29a3f22c93f27153c4030" title=" " alt="" coords="1853,699,1954,725"/>
+<area shape="poly" title=" " alt="" coords="848,723,1192,811,1561,811,1604,809,1647,802,1730,781,1804,755,1861,730,1863,735,1806,760,1731,787,1648,808,1604,814,1561,816,1191,816,846,728"/>
+<area shape="poly" title=" " alt="" coords="1950,696,2017,677,2018,682,1951,701"/>
+<area shape="poly" title=" " alt="" coords="1954,706,2157,690,2158,696,1954,711"/>
+<area shape="rect" href="timekeeping_8c.html#ab4b35505d2b1362ca6d14b12608fbd36" title="Efficient conversion of the synchronized epoch in ms to a decimal string." alt="" coords="709,305,891,346"/>
+<area shape="poly" title=" " alt="" coords="613,386,722,349,724,354,615,391"/>
+<area shape="rect" href="timekeeping_8c.html#a94e564d601196fe7f3e2bc83050deb12" title=" " alt="" coords="717,436,883,477"/>
+<area shape="poly" title=" " alt="" coords="630,412,703,430,701,435,629,418"/>
+<area shape="rect" href="timekeeping_8c.html#aeade976633de1132f209ccaff49ecde0" title=" " alt="" coords="730,371,870,411"/>
+<area shape="poly" title=" " alt="" coords="662,395,714,392,715,398,662,400"/>
+<area shape="poly" title=" " alt="" coords="891,325,923,326,923,331,891,331"/>
 </map>
 </div>
 <div class="dynheader">

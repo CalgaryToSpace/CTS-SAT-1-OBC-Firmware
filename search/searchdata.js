@@ -6,9 +6,9 @@ var indexSectionsWithContent =
   3: "034_abcdefilmnprstu",
   4: "_abcdefghilmnprstuv",
   5: "_abcdefghilmnoprstuv",
-  6: "lt",
-  7: "flmt",
-  8: "flmt",
+  6: "lst",
+  7: "flmst",
+  8: "flmst",
   9: "acdefhilmptuvx",
   10: "cs",
   11: "1cdefgilnoprstu"

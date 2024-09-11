@@ -210,7 +210,7 @@ var searchData=
   ['lfs_5fgstate_5fxor_207',['lfs_gstate_xor',['../lfs_8c.html#a59f650262d5ddc8cb43fc38425eec905',1,'lfs.c']]],
   ['lfs_5finfo_208',['lfs_info',['../structlfs__info.html',1,'']]],
   ['lfs_5finit_209',['lfs_init',['../lfs_8c.html#a4219b606a1b9cb27f194bea14383be0f',1,'lfs.c']]],
-  ['lfs_5fis_5flfs_5fmounted_210',['LFS_is_lfs_mounted',['../littlefs__helper_8c.html#aa7eeeb2151fb12e7a8e09d77d78da07e',1,'LFS_is_lfs_mounted:&#160;littlefs_helper.c'],['../log__sinks_8c.html#aa7eeeb2151fb12e7a8e09d77d78da07e',1,'LFS_is_lfs_mounted:&#160;littlefs_helper.c']]],
+  ['lfs_5fis_5flfs_5fmounted_210',['LFS_is_lfs_mounted',['../littlefs__helper_8h.html#aa7eeeb2151fb12e7a8e09d77d78da07e',1,'LFS_is_lfs_mounted:&#160;littlefs_helper.c'],['../littlefs__helper_8c.html#aa7eeeb2151fb12e7a8e09d77d78da07e',1,'LFS_is_lfs_mounted:&#160;littlefs_helper.c'],['../log__sinks_8c.html#aa7eeeb2151fb12e7a8e09d77d78da07e',1,'LFS_is_lfs_mounted:&#160;littlefs_helper.c']]],
   ['lfs_5flist_5fdirectory_211',['LFS_list_directory',['../littlefs__helper_8h.html#a04d84e6cdd4788ce711e132eec1471f5',1,'LFS_list_directory(const char root_directory[]):&#160;littlefs_helper.c'],['../littlefs__helper_8c.html#a04d84e6cdd4788ce711e132eec1471f5',1,'LFS_list_directory(const char root_directory[]):&#160;littlefs_helper.c']]],
   ['lfs_5flock_212',['LFS_LOCK',['../lfs_8c.html#a6d743a3a56cdc11137b3250dceb967de',1,'lfs.c']]],
   ['lfs_5flookahead_213',['lfs_lookahead',['../structlfs_1_1lfs__lookahead.html',1,'lfs']]],

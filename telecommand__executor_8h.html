@@ -90,7 +90,8 @@ $(function(){ initResizable(false); });
 <div class="header">
   <div class="summary">
 <a href="#define-members">Macros</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">telecommand_executor.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -141,6 +142,8 @@ Functions</h2></td></tr>
 <tr class="memitem:a2d0b4fd68ee69489078e857d965ba136" id="r_a2d0b4fd68ee69489078e857d965ba136"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2d0b4fd68ee69489078e857d965ba136">TCMD_get_agenda_used_slots_count</a> ()</td></tr>
 <tr class="memdesc:a2d0b4fd68ee69489078e857d965ba136"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of used slots in the agenda.  <br /></td></tr>
 <tr class="separator:a2d0b4fd68ee69489078e857d965ba136"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39ee68a4ba5271eaa21abe3e950b5f30" id="r_a39ee68a4ba5271eaa21abe3e950b5f30"><td class="memItemLeft" align="right" valign="top">int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a39ee68a4ba5271eaa21abe3e950b5f30">TCMD_get_last_tcmd_agenda_slot_sent</a> ()</td></tr>
+<tr class="separator:a39ee68a4ba5271eaa21abe3e950b5f30"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f29fb3908f76a7b826dfa263b1b38f0" id="r_a6f29fb3908f76a7b826dfa263b1b38f0"><td class="memItemLeft" align="right" valign="top">int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6f29fb3908f76a7b826dfa263b1b38f0">TCMD_get_next_tcmd_agenda_slot_to_execute</a> ()</td></tr>
 <tr class="memdesc:a6f29fb3908f76a7b826dfa263b1b38f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds the index into <code>TCMD_agenda</code> (<code>slot_num</code>) of the next telecommand to execute.  <br /></td></tr>
 <tr class="separator:a6f29fb3908f76a7b826dfa263b1b38f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -159,6 +162,13 @@ Functions</h2></td></tr>
 <tr class="memitem:a623bdd5a8ab70e2ecfab1f8b17479e62" id="r_a623bdd5a8ab70e2ecfab1f8b17479e62"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a623bdd5a8ab70e2ecfab1f8b17479e62">TCMD_agenda_delete_by_name</a> (const char *telecommand_name)</td></tr>
 <tr class="memdesc:a623bdd5a8ab70e2ecfab1f8b17479e62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes all agenda entries with a telecommand name.  <br /></td></tr>
 <tr class="separator:a623bdd5a8ab70e2ecfab1f8b17479e62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:ae45aff8b05a8398882c7e07d58b0ea61" id="r_ae45aff8b05a8398882c7e07d58b0ea61"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae45aff8b05a8398882c7e07d58b0ea61">TCMD_total_tcmd_queued_count</a></td></tr>
+<tr class="separator:ae45aff8b05a8398882c7e07d58b0ea61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac65134c4b8f8a9e3bc760fa4b04793da" id="r_ac65134c4b8f8a9e3bc760fa4b04793da"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac65134c4b8f8a9e3bc760fa4b04793da">TCMD_latest_received_tcmd_timestamp_sent</a></td></tr>
+<tr class="separator:ac65134c4b8f8a9e3bc760fa4b04793da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="a198a41ec340ae5f0bce5fa5cb48418b1" name="a198a41ec340ae5f0bce5fa5cb48418b1"></a>
@@ -1116,6 +1126,23 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
+<a id="a39ee68a4ba5271eaa21abe3e950b5f30" name="a39ee68a4ba5271eaa21abe3e950b5f30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39ee68a4ba5271eaa21abe3e950b5f30">&#9670;&#160;</a></span>TCMD_get_last_tcmd_agenda_slot_sent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int16_t TCMD_get_last_tcmd_agenda_slot_sent </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a6f29fb3908f76a7b826dfa263b1b38f0" name="a6f29fb3908f76a7b826dfa263b1b38f0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6f29fb3908f76a7b826dfa263b1b38f0">&#9670;&#160;</a></span>TCMD_get_next_tcmd_agenda_slot_to_execute()</h2>
 
@@ -1156,6 +1183,51 @@ Here is the caller graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="87,28,55,28,55,23,87,23"/>
 </map>
 </div>
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="ac65134c4b8f8a9e3bc760fa4b04793da" name="ac65134c4b8f8a9e3bc760fa4b04793da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac65134c4b8f8a9e3bc760fa4b04793da">&#9670;&#160;</a></span>TCMD_latest_received_tcmd_timestamp_sent</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t TCMD_latest_received_tcmd_timestamp_sent</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae45aff8b05a8398882c7e07d58b0ea61" name="ae45aff8b05a8398882c7e07d58b0ea61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae45aff8b05a8398882c7e07d58b0ea61">&#9670;&#160;</a></span>TCMD_total_tcmd_queued_count</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t TCMD_total_tcmd_queued_count</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>

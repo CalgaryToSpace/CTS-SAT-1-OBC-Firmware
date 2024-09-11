@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['tcmd_5freadiness_5flevel_5fenum_5ft_0',['TCMD_readiness_level_enum_t',['../telecommand__types_8h.html#a9fd68e85101924b8acff534610df0189',1,'telecommand_types.h']]],
-  ['tcmd_5ftelecommandchannel_5fenum_5ft_1',['TCMD_TelecommandChannel_enum_t',['../telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c',1,'telecommand_types.h']]],
-  ['tim_5fsync_5fsource_2',['TIM_SYNC_SOURCE',['../timekeeping_8h.html#a13ac9e80d89db8b1563cb7e942698c4c',1,'timekeeping.h']]]
+  ['stm32_5freset_5fcause_5fe_0',['STM32_reset_cause_e',['../stm32__reboot__reason_8h.html#ad146346bd9524709462049a55b1036ec',1,'stm32_reboot_reason.h']]]
 ];
