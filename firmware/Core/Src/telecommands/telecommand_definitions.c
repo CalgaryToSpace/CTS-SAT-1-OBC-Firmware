@@ -367,15 +367,45 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
 
     // ****************** SECTION: antenna_telecommand_defs ******************
     {
+        .tcmd_name = "ant_reset",
+        .tcmd_func = TCMDEXEC_ant_reset,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
         .tcmd_name = "ant_arm_antenna_system",
         .tcmd_func = TCMDEXEC_ant_arm_antenna_system,
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
-        .tcmd_name = "ant_deploy_antenna1",
-        .tcmd_func = TCMDEXEC_ant_deploy_antenna1,
+        .tcmd_name = "ant_disarm_antenna_system",
+        .tcmd_func = TCMDEXEC_ant_disarm_antenna_system,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "ant_deploy_antenna",
+        .tcmd_func = TCMDEXEC_ant_deploy_antenna,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "ant_start_automated_antenna_deployment",
+        .tcmd_func = TCMDEXEC_ant_start_automated_antenna_deployment,
         .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "ant_deploy_antenna_with_override",
+        .tcmd_func = TCMDEXEC_ant_deploy_antenna_with_override,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "ant_cancel_deployment_system_activation",
+        .tcmd_func = TCMDEXEC_ant_cancel_deployment_system_activation,
+        .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
@@ -383,7 +413,24 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_func = TCMDEXEC_ant_measure_temp,
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    
+    },
+    {
+        .tcmd_name = "ant_report_deployment_status",
+        .tcmd_func = TCMDEXEC_ant_report_deployment_status,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "ant_report_antenna_deployment_activation_count",
+        .tcmd_func = TCMDEXEC_ant_report_antenna_deployment_activation_count,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "ant_report_antenna_deployment_activation_time",
+        .tcmd_func = TCMDEXEC_ant_report_antenna_deployment_activation_time,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     // ****************** END SECTION: antenna_telecommand_defs ******************
 };

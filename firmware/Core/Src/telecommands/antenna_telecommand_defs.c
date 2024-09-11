@@ -13,11 +13,13 @@
 uint8_t TCMDEXEC_ant_reset(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) 
 {
-    const status = ANT_CMD_reset();
+    const int status = ANT_CMD_reset();
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len, "Error: %d", status);
         return status;
     }
+    snprintf(response_output_buf, response_output_buf_len, "Success reseting antenna deployment system");
+    return 0;
 }
 
 /// @brief Telecommand: Arm the antenna deploy system
@@ -99,7 +101,7 @@ uint8_t TCMDEXEC_ant_deploy_antenna(const char *args_str, TCMD_TelecommandChanne
         return comms_err;
     }
     
-    snprintf(response_output_buf, response_output_buf_len, "Success: antenna %d deployment in progress.", antenna);
+    snprintf(response_output_buf, response_output_buf_len, "Success: antenna %d deployment in progress.",(uint8_t) antenna);
     return 0;
 }
 
@@ -126,6 +128,159 @@ uint8_t TCMDEXEC_ant_start_automated_antenna_deployment(const char *args_str, TC
     return 0;
 }
 
+uint8_t TCMDEXEC_ant_deploy_antenna_with_override(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+
+    uint64_t antenna;
+    const uint8_t parse_antenna_result = TCMD_extract_uint64_arg(args_str, strlen(args_str),  0, &antenna);
+    if (parse_antenna_result != 0) {
+        // error parsing
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing antenna arg: %d", parse_antenna_result);
+        return 3;
+    }
+    if (antenna < 1 || antenna > 4) {
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error: Antenna number provided is not between 1-4 inclusive."
+        );
+        return 4;
+    }
+
+    uint64_t arg_activation_time;
+    const uint8_t parse_activation_time_result = TCMD_extract_uint64_arg(args_str, strlen(args_str),  1, &arg_activation_time);
+    if (parse_activation_time_result != 0) {
+        // error parsing
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing activation time arg: %d", parse_activation_time_result);
+        return 3;
+    }
+    if(arg_activation_time > 255) {
+        // error: number is too large
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error: Activation time must be less than 255");
+        return 4;
+    }
+
+    const uint8_t comms_err = ANT_CMD_deploy_antenna_with_override((uint8_t)antenna, (uint8_t)arg_activation_time);
+    if (comms_err != 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Error: %d", comms_err);
+        return comms_err;
+    }
+    
+    snprintf(response_output_buf, response_output_buf_len, "Success: antenna %d deployment in progress.",(uint8_t)antenna);
+    return 0;
+}
+
+uint8_t TCMDEXEC_ant_cancel_deployment_system_activation(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    const uint8_t comms_err = ANT_CMD_cancel_deployment_system_activation();
+    if (comms_err != 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Error: failed to cancel deployment");
+        return comms_err;
+    }
+
+    snprintf(response_output_buf, response_output_buf_len, "Success: antenna deployment canceled.");
+    return 0;
+}
+
+
+uint8_t TCMDEXEC_ant_report_deployment_status(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    uint8_t response[2];
+    const uint8_t comms_err = ANT_CMD_report_deployment_status(response);
+    if (comms_err != 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Error: failed to report status.");
+        return comms_err;
+    }
+
+    snprintf(response_output_buf, response_output_buf_len, "Success, deployment status: %x %x", response[0], response[1]);
+    return 0;
+}
+
+uint8_t TCMDEXEC_ant_report_antenna_deployment_activation_count(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    uint64_t antenna;
+    const uint8_t parse_antenna_result = TCMD_extract_uint64_arg(args_str, strlen(args_str),  0, &antenna);
+    if (parse_antenna_result != 0) {
+        // error parsing
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing antenna arg: %d", parse_antenna_result);
+        return 3;
+    }
+    if (antenna < 1 || antenna > 4) {
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error: Antenna number provided is not between 1-4 inclusive."
+        );
+        return 4;
+    }
+
+    uint8_t response[1];
+    const uint8_t comms_status = ANT_CMD_report_antenna_deployment_activation_count((uint8_t)antenna, response);
+    if (comms_status != 0) {
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error reporting antenna deployment count: %d", comms_status);
+        return comms_status;
+    }
+
+    snprintf(
+        response_output_buf,
+        response_output_buf_len,
+        "Success, antenna %u deployment count: %u", (uint8_t)antenna, response[0]);
+    return 0;
+}
+
+uint8_t TCMDEXEC_ant_report_antenna_deployment_activation_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    uint64_t antenna;
+    const uint8_t parse_antenna_result = TCMD_extract_uint64_arg(args_str, strlen(args_str),  0, &antenna);
+    if (parse_antenna_result != 0) {
+        // error parsing
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing antenna arg: %d", parse_antenna_result);
+        return 3;
+    }
+    if (antenna < 1 || antenna > 4) {
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error: Antenna number provided is not between 1-4 inclusive."
+        );
+        return 4;
+    }
+
+    uint16_t response;
+    const uint8_t comms_status = ANT_CMD_report_antenna_deployment_activation_time((uint8_t)antenna, &response);
+    if (comms_status != 0) {
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error reporting antenna deployment time: %d", comms_status);
+        return comms_status;
+    }
+    snprintf(
+        response_output_buf,
+        response_output_buf_len,
+        "Success, antenna %u deployment time: %d", (uint8_t)antenna, response);
+    return 0;
+}
 
 /// @brief Telecommand: Measure the temperature of the antenna controller
 /// @param args_str No args

@@ -20,6 +20,7 @@ uint8_t ANT_CMD_reset() {
     return send_status;
 }
 
+//TODO: Some state should be kept when the antenna is armed so that deploy antenna fails when disarmed 
 /// @brief  Arm the antenna deploy system
 /// @return 0 if successful, >0 if error occurred
 uint8_t ANT_CMD_arm_antenna_system() {
@@ -33,7 +34,7 @@ uint8_t ANT_CMD_arm_antenna_system() {
 }
 /// @brief Disarms the antenna deploy system
 /// @return 0 if successful, > 0 if error occurred
-uint8_t ANT_CMD_disarm() {
+uint8_t ANT_CMD_disarm_antenna_system() {
     const uint8_t CMD_BUF_LEN = 1;
     uint8_t cmd_buf[CMD_BUF_LEN];
 
@@ -77,7 +78,7 @@ uint8_t ANT_CMD_deploy_antenna(uint8_t antenna, uint8_t activation_time_seconds)
 /// @param activation_time_seconds the maximum activation time for each deployment system in seconds.  
 /// @return 0 if successful, > 0 otherwise. 
 uint8_t ANT_CMD_start_automated_sequential_deployment(uint8_t activation_time_seconds) {
-    const uint8_t CMD_BUF_LEN = 1;
+    const uint8_t CMD_BUF_LEN = 2;
     uint8_t cmd_buf[CMD_BUF_LEN];
 
     cmd_buf[0] = ANT_CMD_DISARM_ANTENNA_SYSTEM;
@@ -88,7 +89,7 @@ uint8_t ANT_CMD_start_automated_sequential_deployment(uint8_t activation_time_se
 }
 
 uint8_t ANT_CMD_deploy_antenna_with_override(uint8_t antenna, uint8_t activation_time_seconds) {
-    const uint8_t CMD_BUF_LEN = 1;
+    const uint8_t CMD_BUF_LEN = 2;
     uint8_t cmd_buf[CMD_BUF_LEN];
 
     switch (antenna) {
@@ -114,6 +115,16 @@ uint8_t ANT_CMD_deploy_antenna_with_override(uint8_t antenna, uint8_t activation
     return send_status;
 }
 
+uint8_t ANT_CMD_cancel_deployment_system_activation() {
+    const uint8_t CMD_BUF_LEN = 1;
+    uint8_t cmd_buf[CMD_BUF_LEN];
+
+    cmd_buf[0] = ANT_CMD_CANCEL_DEPLOYMENT;
+    
+
+    const uint8_t send_status = ANT_send_cmd(cmd_buf, CMD_BUF_LEN); 
+    return send_status;
+}
 
 /// @brief Measure the temperature of the antenna controller system
 /// @return 0 if successful, >0 if error occurred
@@ -159,7 +170,7 @@ uint8_t ANT_CMD_report_deployment_status(uint8_t response[2]) {
 /// @param antenna the antenna to check
 /// @param response a 1 byte buffer where the count of attempted deployments will be written
 /// @return 0 on success, > 0 on failure
-uint8_t report_antenna_deployment_activation_count(uint8_t antenna, uint8_t *response) {
+uint8_t ANT_CMD_report_antenna_deployment_activation_count(uint8_t antenna, uint8_t *response) {
     const uint8_t CMD_BUFF_SIZE = 1;
     uint8_t cmd_buf[CMD_BUFF_SIZE];
 
@@ -193,7 +204,7 @@ uint8_t report_antenna_deployment_activation_count(uint8_t antenna, uint8_t *res
 /// @param antenna the antenna to check. A number between 1-4
 /// @param response a 2 byte buffer where the cumulative deployment time (in 50ms increments) will be written
 /// @return 0 on success, > 0 on failure
-uint8_t report_antenna_deployment_activation_time(uint8_t antenna, uint8_t response[2]) {
+uint8_t ANT_CMD_report_antenna_deployment_activation_time(uint8_t antenna, uint16_t *result) {
     const uint8_t CMD_BUFF_SIZE = 1;
     uint8_t cmd_buf[CMD_BUFF_SIZE];
 
@@ -218,7 +229,12 @@ uint8_t report_antenna_deployment_activation_time(uint8_t antenna, uint8_t respo
     uint8_t status = ANT_send_cmd(cmd_buf, CMD_BUFF_SIZE); 
     if(status == 0) {
         const uint8_t response_len = 2; 
+        uint8_t response[2];
         status = ANT_get_response(response, response_len);
+
+        *result = response[0] + (response[1] << 8);
+        // time is reported in increments of 50ms, divide by 20 to get seconds
+        *result = *result / 20;
     }
     return status;
 }
