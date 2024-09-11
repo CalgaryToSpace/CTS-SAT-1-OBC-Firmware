@@ -12,7 +12,7 @@
 /// - Arg 1: The offset to start writing from
 /// @note This telecommand is only for testing purposes, it is purposfully not fully fleshed out
 /// as there is no intention on using this. Update as needed
-uint8_t TCMDEXEC_flash_bank_write(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
+uint8_t TCMDEXEC_internal_flash_write(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
 {
     uint8_t write_hex_buffer[PAGESIZE] = {0};
     uint16_t write_hex_buffer_len = 0;
@@ -44,7 +44,7 @@ uint8_t TCMDEXEC_flash_bank_write(const char *args_str, TCMD_TelecommandChannel_
 /// - Arg 0: The address to start reading from
 /// - Arg 1: The number of bytes to read as a uint64_t
 
-uint8_t TCMDEXEC_flash_bank_read(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
+uint8_t TCMDEXEC_internal_flash_read(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
 {
 
     uint64_t address = 0;
@@ -82,7 +82,7 @@ uint8_t TCMDEXEC_flash_bank_read(const char *args_str, TCMD_TelecommandChannel_e
 /// @param args_str
 /// - Arg 0: The starting page to erase as a uint64_t
 /// - Arg 1: The number of pages to erase as a uint64_t
-uint8_t TCMDEXEC_flash_bank_erase(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
+uint8_t TCMDEXEC_internal_flash_erase(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
 {
     uint64_t start_page_erase = 0;
 

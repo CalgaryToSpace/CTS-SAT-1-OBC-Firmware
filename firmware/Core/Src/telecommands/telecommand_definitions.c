@@ -871,21 +871,21 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
 
     {
         .tcmd_name = "internal_flash_read",
-        .tcmd_func = TCMDEXEC_flash_bank_read,
+        .tcmd_func = TCMDEXEC_internal_flash_read,
         .number_of_args = 2,
         .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
     },
 
     {
         .tcmd_name = "internal_flash_write",
-        .tcmd_func = TCMDEXEC_flash_bank_write,
+        .tcmd_func = TCMDEXEC_internal_flash_write,
         .number_of_args = 2,
         .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
     },
 
     {
         .tcmd_name = "internal_flash_erase",
-        .tcmd_func = TCMDEXEC_flash_bank_erase,
+        .tcmd_func = TCMDEXEC_internal_flash_erase,
         .number_of_args = 2,
         .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
     },
