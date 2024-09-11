@@ -36,8 +36,8 @@ following uppercase identifiers to indicate which subsystem/region of code it be
 * `CAM_`: related to the UART camera
 * `LORA_`: related to the UART LoRaWAN communications systems, if integrated
 * `ENVIRO_`: related to monitoring the environment (e.g., the on-OBC temperature sensor)
-* `FLASH_`: drive functions for the SPI flash system, which the `lfs_` implementation can call into
-	* This may be removed.
+* `FLASH_`: driver functions for the SPI flash system, which the `lfs_` implementation can call into
+* `STM32_`: driver functions for features within the STM32, including internal flash, boot metadata, etc.
 
 ## Other Conventions
 
