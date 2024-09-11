@@ -304,12 +304,21 @@ uint8_t TEST_EXEC__GPS_Parse_bestxyza(){
     parse_result = parse_bestxyza_data(gps_data, &result);
     TEST_ASSERT_TRUE(parse_result == 6);
 
+    // Error within the integer section of the string ie postion_x_mm has an invalid number
+    strcpy(gps_data, "#BESTXYZA,COM1,0,55.0,FINESTEERING,1419,340033.000,02000040,d821,2724;"
+                    "SOL_COMPUTED,NARROW_INT,abcd123.456,-3664618.0326,-3664618.0326,0.0099,"
+                    "0.0219,0.0115,SOL_COMPUTED,NARROW_INT,0.0011,-0.0049,-0.0001,0.0199,0.0439,"
+                    "0.0230,\"AAAA\",0.250,1.000,0.000,12,11,11,11,0,01,0,33*2a066e78");
+    parse_result = parse_bestxyza_data(gps_data, &result);
+    TEST_ASSERT_TRUE(parse_result == 7);
+
     return 0;
 }
 
 
 uint8_t TEST_EXEC__GPS_Parse_timea(){
-    char gps_data[600] = "#TIMEA,COM1,0,86.5,FINESTEERING,1930,428348.000,02000020,9924,32768;VALID,1.667187222e-10,9.641617960e-10,-18.00000000000,2017,1,5,22,58,50000,VALID*2a066e78";
+    char gps_data[600] = "#TIMEA,COM1,0,86.5,FINESTEERING,1930,428348.000,02000020,9924,32768;VALID,"
+                        "1.667187222e-10,9.641617960e-10,-18.00000000000,2017,1,5,22,58,50000,VALID*2a066e78";
 
     gps_timea_response result;
 
@@ -317,10 +326,72 @@ uint8_t TEST_EXEC__GPS_Parse_timea(){
     uint8_t parse_result = parse_timea_data(gps_data, &result);
     TEST_ASSERT_TRUE(parse_result == 0);
     TEST_ASSERT_TRUE(result.clock_status == GPS_CLOCK_VALID);
-
     TEST_ASSERT_TRUE(result.utc_offset == -18.00000000000);
     TEST_ASSERT_TRUE(result.utc_status == GPS_UTC_VALID);
     TEST_ASSERT_TRUE(result.crc == 0x2a066e78);
+
+    // char message_buffer[256];
+    //     snprintf(
+    //         message_buffer, sizeof(message_buffer),
+    //         "{\"Clock Status\":\"%s\",\"UTC Offset\":\"%s\",\"UTC Status\":%lu,\"CRC\":%u}\n",
+    //         result.clock_status,
+    //         result.utc_offset,
+    //         result.utc_status,
+    //         result.crc
+    //     );
+          
+    //     DEBUG_uart_print_str(message_buffer);
+
+    // Testing with an empty string
+    strcpy(gps_data, "");
+    parse_result = parse_timea_data(gps_data, &result);
+    TEST_ASSERT_TRUE(parse_result == 1);
+
+    // Introducing an error within the header of the GPS response: Missing delimiting character
+    strcpy(gps_data, "#TIMEA,COM1,0,86.5,FINESTEERING,1930,428348.000,02000020,9924,32768,VALID,"
+                    "1.667187222e-10,9.641617960e-10,-18.00000000000,2017,1,5,22,58,50000,VALID*2a066e78");
+    parse_result = parse_timea_data(gps_data, &result);
+    TEST_ASSERT_TRUE(parse_result == 2);
+
+    // Testing with a different GPS Header
+    strcpy(gps_data,
+    "#RAWEPHEMA,COM1,0,55.5,SATTIME,2072,133140.000,02000000,58ba,15761;32,2072,"
+    "136800,8b00602b57a606100004389101eefa4e0eeed24e012f216600007608cd27,"
+    "8b00602b58282f02373454d33b986d01bd01a76ba710a2a10d008e21667f,"
+    "8b00602b58ae003384abe701001226ff6c6c1c9999f3c99fffa77c2f05c8*d3806ea3"
+    );
+    parse_result = parse_timea_data(gps_data, &result);
+    TEST_ASSERT_TRUE(parse_result == 3);
+
+    // Missing timea data response after the header
+    strcpy(gps_data, "#TIMEA,COM1,0,86.5,FINESTEERING,1930,428348.000,02000020,9924,32768;");
+    parse_result = parse_timea_data(gps_data, &result);
+    TEST_ASSERT_TRUE(parse_result == 4);
+
+    // Missing delimiting character * ie no CRC
+    strcpy(gps_data, "#TIMEA,COM1,0,86.5,FINESTEERING,1930,428348.000,02000020,9924,32768;VALID,"
+                    "1.667187222e-10,9.641617960e-10,-18.00000000000,2017,1,5,22,58,50000,VALID");
+    parse_result = parse_timea_data(gps_data, &result);
+    TEST_ASSERT_TRUE(parse_result == 5);
+
+    // Data Response Exceeding Buffer Size
+    strcpy(gps_data, "#TIMEA,COM1,0,86.5,FINESTEERING,1930,428348.000,02000020,9924,32768;VALID,"
+                        "1.667187222e-10,9.641617960e-10,-18.00000000000,2017,1,5,22,58,50000,VALID,"
+                        "1.667187222e-10,9.641617960e-10,-18.00000000000,2017,1,5,22,58,50000,VALID,"
+                        "1.667187222e-10,9.641617960e-10,-18.00000000000,2017,1,5,22,58,50000,VALID,"
+                        "1.667187222e-10,9.641617960e-10,-18.00000000000,2017,1,5,22,58,50000,VALID,"
+                        "1.667187222e-10,9.641617960e-10,-18.00000000000,2017,1,5,22,58,50000,VALID,"
+                        "1.667187222e-10,9.641617960e-10,-18.00000000000,2017,1,5,22,58,"
+                        "1.667187222e-10,9.641617960e-10,-18.00000000000,2017,1,5,22,58,50000,VALID*d3806ea3");
+    parse_result = parse_timea_data(gps_data, &result);
+    TEST_ASSERT_TRUE(parse_result == 6);
+
+    // Error within the integer section of the string ie utc_offset has an invalid number
+    strcpy(gps_data, "#TIMEA,COM1,0,86.5,FINESTEERING,1930,428348.000,02000020,9924,32768;VALID,"
+                    "1.667187222e-10,9.641617960e-10,usdhnd18.00000000000,2017,1,5,22,58,50000,VALID*2a066e78");
+    parse_result = parse_timea_data(gps_data, &result);
+    TEST_ASSERT_TRUE(parse_result == 7);
+    
 
     return 0;
 }
