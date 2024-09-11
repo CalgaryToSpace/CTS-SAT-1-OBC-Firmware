@@ -356,6 +356,8 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
         return status_result;
     }
 
+    const int64_t max_positive_int64_value = 9223372036854775807;
+    const int64_t min_negative_int64_value = -9223372036854775807;
     // Position Coordinates 
     parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 2, token_buffer, sizeof(token_buffer));
     if (parse_result != 0) {  
@@ -363,7 +365,19 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
     }
 
     double value = strtod(token_buffer, &end_ptr);
+    if(strcmp(end_ptr, token_buffer) == 0){
+        // Improper string to double conversion
+        return 7;
+    }
     double conv_result = value * 1000;
+
+    //TODO: Determine what to do when we exceed data type value
+    if(conv_result > max_positive_int64_value){
+        conv_result = max_positive_int64_value;
+    }
+    else if(conv_result < min_negative_int64_value){
+        conv_result = min_negative_int64_value;
+    }
     result->position_x_mm = (int64_t) conv_result;
 
     parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 3, token_buffer, sizeof(token_buffer));
@@ -371,7 +385,19 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
         return parse_result;  
     }
     value = strtod(token_buffer, &end_ptr);
+    if(strcmp(end_ptr, token_buffer) == 0){
+        // Improper string to double conversion
+        return 7;
+    }
     conv_result = value * 1000;
+
+    //TODO: Determine what to do when we exceed data type value
+    if(conv_result > max_positive_int64_value){
+        conv_result = max_positive_int64_value;
+    }
+    else if(conv_result < min_negative_int64_value){
+        conv_result = min_negative_int64_value;
+    }
     result->position_y_mm = (int64_t) conv_result;
 
     parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 4, token_buffer, sizeof(token_buffer));
@@ -379,16 +405,42 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
         return parse_result;  
     }
     value = strtod(token_buffer, &end_ptr);
+    if(strcmp(end_ptr, token_buffer) == 0){
+        // Improper string to double conversion
+        return 7;
+    }
     conv_result = value * 1000;
+
+    //TODO: Determine what to do when we exceed data type value
+    if(conv_result > max_positive_int64_value){
+        conv_result = max_positive_int64_value;
+    }
+    else if(conv_result < min_negative_int64_value){
+        conv_result = min_negative_int64_value;
+    }
     result->position_z_mm = (int64_t) conv_result;
 
+    const int32_t max_positive_int32_value = 2147483647;
+    const int32_t min_negative_int32_value = -2147483647;
     // Position Coordinates Standard Deviation
     parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 5, token_buffer, sizeof(token_buffer));
     if (parse_result != 0) {  
         return parse_result;  
     }
     value = strtod(token_buffer, &end_ptr);
+    if(strcmp(end_ptr, token_buffer) == 0){
+        // Improper string to double conversion
+        return 7;
+    }
     conv_result = value * 1000;
+
+    //TODO: Determine what to do when we exceed data type value
+    if(conv_result > max_positive_int32_value){
+        conv_result = max_positive_int32_value;
+    }
+    else if(conv_result < min_negative_int32_value){
+        conv_result = min_negative_int32_value;
+    }
     result->position_x_std_mm = (int32_t) conv_result;
 
     parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 6, token_buffer, sizeof(token_buffer));
@@ -396,7 +448,19 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
         return parse_result;  
     }
     value = strtod(token_buffer, &end_ptr);
+    if(strcmp(end_ptr, token_buffer) == 0){
+        // Improper string to double conversion
+        return 7;
+    }
     conv_result = value * 1000;
+
+    //TODO: Determine what to do when we exceed data type value
+    if(conv_result > max_positive_int32_value){
+        conv_result = max_positive_int32_value;
+    }
+    else if(conv_result < min_negative_int32_value){
+        conv_result = min_negative_int32_value;
+    }
     result->position_y_std_mm = (int32_t) conv_result;
 
     parse_result = TCMD_extract_string_arg(bestxyza_data_buffer, 7, token_buffer, sizeof(token_buffer));
@@ -404,7 +468,19 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
         return parse_result;  
     }
     value = strtod(token_buffer, &end_ptr);
+    if(strcmp(end_ptr, token_buffer) == 0){
+        // Improper string to double conversion
+        return 7;
+    }
     conv_result = value * 1000;
+
+    //TODO: Determine what to do when we exceed data type value
+    if(conv_result > max_positive_int32_value){
+        conv_result = max_positive_int32_value;
+    }
+    else if(conv_result < min_negative_int32_value){
+        conv_result = min_negative_int32_value;
+    }
     result->position_z_std_mm = (int32_t) conv_result;
 
     // Differential Age
@@ -413,7 +489,19 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
         return parse_result;  
     }
     value = strtod(token_buffer, &end_ptr);
+    if(strcmp(end_ptr, token_buffer) == 0){
+        // Improper string to double conversion
+        return 7;
+    }
     conv_result = value * 1000;
+
+    //TODO: Determine what to do when we exceed data type value
+    if(conv_result > max_positive_int64_value){
+        conv_result = max_positive_int64_value;
+    }
+    else if(conv_result < min_negative_int64_value){
+        conv_result = min_negative_int64_value;
+    }
     result->differential_age_ms = (int64_t) conv_result;
 
     // Solution Age
@@ -422,13 +510,27 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
         return parse_result;  
     }
     value = strtod(token_buffer, &end_ptr);
+    if(strcmp(end_ptr, token_buffer) == 0){
+        // Improper string to double conversion
+        return 7;
+    }
     conv_result = value * 1000;
+
+    //TODO: Determine what to do when we exceed data type value
+    if(conv_result > max_positive_int64_value){
+        conv_result = max_positive_int64_value;
+    }
+    else if(conv_result < min_negative_int64_value){
+        conv_result = min_negative_int64_value;
+    }
     result->solution_age_ms = (int64_t) conv_result;
 
     char crc[9];
     strncpy(crc, asterisk + 1, 8);
     crc[sizeof(crc)-1] = '\0';
     result->crc = strtoul(crc,&end_ptr, 16);
+
+    // TODO: Add a check for the CRC
 
     return 0;
 }
@@ -474,17 +576,35 @@ uint8_t assign_gps_utc_status(const char *status_str, GPS_utc_status_enum_t *sta
 /// @return 0 if successful, >0 if an error occurred
 uint8_t parse_timea_data(const char* data_received, gps_timea_response *result) {
 
+    // Check if the buffer is empty
+    if (data_received[0] == '\0') {
+        // Empty or NULL string, return an error
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Error 1: Empty buffer"
+        );
+        return 1;
+    }
+
     gps_response_header timea_header;
     const uint8_t header_parse_result = parse_gps_header(data_received,&timea_header);
 
     if(header_parse_result != 0){
         // Error in parsing header section
-        return 1;
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Error 2: Header Parsing Error"
+        );
+        return 2;
     }
 
     if(strcmp(timea_header.log_name, "TIMEA") != 0){
         // Incorrect log function
-        return 2;
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Error 3: Invalid log function ie not TIMEA"
+        );
+        return 3;
     }
 
     // TODO: What if there is multiple commands in the string?
@@ -492,22 +612,35 @@ uint8_t parse_timea_data(const char* data_received, gps_timea_response *result) 
     const char* timea_data_start = header_delimiter_char + 1;
     const char* asterisk = strchr(timea_data_start, '*');
 
-    if(!asterisk){
-        // Not terminator to the end of the bestxyza data, ie no CRC present
-        return 3;
-    }
-
     const int timea_data_length = asterisk - timea_data_start + 1;
 
-    if (timea_data_length < 0) {
-        //CRC asterick comes before the start of the data: Incomplete bestxyza data
+    if(strcmp(timea_data_start, "\0") == 0){
+        // No data after the gps header within the response
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Error 4: Missing Data after the header"
+        );
         return 4;
     }
 
+    if(!asterisk){
+        // No terminator at the end of the bestxyza data, ie no CRC present
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Error 5: Missing Astericks in response"
+        );
+        return 5;
+    }
+
+    // TODO: Change this to be more conservative of storage space
     char timea_data_buffer[512];
     if ((size_t)timea_data_length >= sizeof(timea_data_buffer)) {
         //Header is too large for the buffer
-        return 5;  
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Error 6: Buffer Oveflow"
+        );
+        return 6;  
     }
 
     strncpy(timea_data_buffer, timea_data_start, timea_data_length);
@@ -534,7 +667,28 @@ uint8_t parse_timea_data(const char* data_received, gps_timea_response *result) 
     if (parse_result != 0) {  
         return parse_result;  
     }
-    result->utc_offset = (int64_t) strtod(token_buffer, &end_ptr);
+
+    // TODO: Update code to use predefined enums for max values
+    const int64_t max_positive_int64_value = INT64_MAX;
+    const int64_t min_negative_int64_value = -9223372036854775807;
+
+    // TODO: Use TCMD_ascii_to_int64 function instead
+    double value = strtod(token_buffer, &end_ptr);
+
+    if(strcmp(end_ptr,token_buffer)==0){
+        return 7;
+    }
+
+    // TODO: Determine what to do when we exceed data limit ie fall out of bounds of valid int64_t values
+// May not be necessary as max amount of seconds in a year is 3.154e+7 which is way smaller than the max value of int64
+    if(value > max_positive_int64_value){
+        value = max_positive_int64_value;
+    } else if (value < min_negative_int64_value){
+        value = min_negative_int64_value;
+    }
+
+
+    result->utc_offset = (int64_t) value;
 
 
     // UTC Status
@@ -553,10 +707,15 @@ uint8_t parse_timea_data(const char* data_received, gps_timea_response *result) 
         return status_result;
     }
 
+    // TODO: Look into using TCMD_extract_hex_array
     char crc[9];
     strncpy(crc, asterisk + 1, 8);
     crc[sizeof(crc)-1] = '\0';
     result->crc = strtoul(crc,&end_ptr, 16);
+
+    // TODO: Add a check for the CRC
+
+    
 
     return 0;
 }
