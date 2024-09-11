@@ -8,17 +8,32 @@
 
 /// @brief Write data to the internal flash bank starting from address 0x08000000
 /// @param args_str
-/// - Arg 0: The data to write as a string
+/// - Arg 0: The data in hex format to write
+/// - Arg 1: The offset to start writing from
 /// @note This telecommand is only for testing purposes, it is purposfully not fully fleshed out
 /// as there is no intention on using this. Update as needed
-/// @note Currently, this is only writes all data given as a string.
-/// Thus, it is difficult to write integers directly
 uint8_t TCMDEXEC_flash_bank_write(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
 {
-    const uint32_t res = Internal_Flash_Bank_Write(INTERNAL_FLASH_MEMORY_REGION_GOLDEN_COPY_ADDRESS, (uint8_t *)args_str, strlen(args_str));
-    if (res != 0)
+    uint8_t write_hex_buffer[PAGESIZE] = {0};
+    uint16_t write_hex_buffer_len = 0;
+    const uint8_t parse_hex_buffer_res = TCMD_extract_hex_array_arg(args_str, 0, write_hex_buffer, sizeof(write_hex_buffer), &write_hex_buffer_len);
+    if (parse_hex_buffer_res != 0)
     {
-        snprintf(response_output_buf, response_output_buf_len, "Error: %lu", res);
+        snprintf(response_output_buf, response_output_buf_len, "Error Parsing Arg 0: %u", parse_hex_buffer_res);
+        return 1;
+    }
+
+    uint64_t offset = 0;
+    const uint8_t parse_offset_res = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &offset);
+    if (parse_offset_res != 0)
+    {
+        snprintf(response_output_buf, response_output_buf_len, "Error Parsing Arg 1: %u", parse_offset_res);
+        return 1;
+    }
+    const uint8_t write_res = Internal_Flash_Bank_Write(INTERNAL_FLASH_MEMORY_REGION_GOLDEN_COPY_ADDRESS + offset, write_hex_buffer, write_hex_buffer_len);
+    if (write_res != 0)
+    {
+        snprintf(response_output_buf, response_output_buf_len, "Error writing to flash: %u", write_res);
         return 1;
     }
     return 0;
@@ -26,19 +41,30 @@ uint8_t TCMDEXEC_flash_bank_write(const char *args_str, TCMD_TelecommandChannel_
 
 /// @brief Read data from the internal flash bank starting from address 0x08000000
 /// @param args_str
-/// - Arg 0: The number of bytes to read as a uint64_t
+/// - Arg 0: The address to start reading from
+/// - Arg 1: The number of bytes to read as a uint64_t
+
 uint8_t TCMDEXEC_flash_bank_read(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
 {
+
+    uint64_t address = 0;
+    const uint8_t parse_address_res = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &address);
+    if (parse_address_res != 0)
+    {
+        snprintf(response_output_buf, response_output_buf_len, "Error Parsing Arg 0: %u", parse_address_res);
+        return 1;
+    }
+
     uint64_t number_of_bytes_to_read = 0;
-    const uint8_t parse_res = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &number_of_bytes_to_read);
+    const uint8_t parse_res = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &number_of_bytes_to_read);
     if (parse_res != 0)
     {
-        snprintf(response_output_buf, response_output_buf_len, "Error Parsing: %u", parse_res);
+        snprintf(response_output_buf, response_output_buf_len, "Error Parsing Arg 1: %u", parse_res);
         return 1;
     }
 
     uint8_t read_buffer[number_of_bytes_to_read];
-    const uint8_t res = Internal_Flash_Bank_Read(INTERNAL_FLASH_MEMORY_REGION_GOLDEN_COPY_ADDRESS, read_buffer, sizeof(read_buffer));
+    const uint8_t res = Internal_Flash_Bank_Read(address, read_buffer, sizeof(read_buffer));
     if (res != 0)
     {
         snprintf(response_output_buf, response_output_buf_len, "Error: %u", res);

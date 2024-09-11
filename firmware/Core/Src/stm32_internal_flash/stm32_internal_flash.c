@@ -11,9 +11,20 @@
 /// @param data uint8_t buffer containing the data to be written.
 /// @param length Length of the data to be written.
 /// @return 0 on success, > 0 on error, 10 if HAL_FLASH_Unlock() failed, 11 if HAL_FLASH_Lock() failed
+/// @note Currently, only allowed to write to golden copy region
 uint8_t Internal_Flash_Bank_Write(uint32_t address, uint8_t *data, uint32_t length)
 {
+    if (address < INTERNAL_FLASH_MEMORY_REGION_GOLDEN_COPY_ADDRESS)
+    {
+        return 1;
+    }
+
     const uint32_t end_address = address + length;
+
+    if (end_address > FLASH_BANK2_END)
+    {
+        return 2;
+    }
 
     if (HAL_FLASH_Unlock() != HAL_OK)
     {
