@@ -10,7 +10,6 @@
 
 #include <stdint.h>
 #include <stdbool.h> 
-#include "stm32l4xx_hal.h"
 
 // Bit 7 of Telecommand and Telemetry Request - Section 4.1 of Firmware Manual
 static const uint8_t ADCS_TELECOMMAND = 0;
@@ -39,24 +38,24 @@ static const uint16_t ADCS_HAL_TIMEOUT = 1000;
 /* Enumerated Values */
 
 // Telecommand Error Flags - Section 5.2.2 Figure 6 of Firmware Manual
-typedef enum ADCS_Error_Flag {
+typedef enum ADCS_error_flag_enum_t {
     ADCS_ERROR_FLAG_NONE = 0,
     ADCS_ERROR_FLAG_INVALID_ID = 1,
     ADCS_ERROR_FLAG_WRONG_LENGTH = 2,
     ADCS_ERROR_FLAG_INVALID_PARAMS = 3,
     ADCS_ERROR_FLAG_CRC = 4
-} ADCS_Error_Flag;
+} ADCS_error_flag_enum_t;
 
 // ADCS Run Modes - Section 5.3.1 Table 75 of Firmware Manual
-typedef enum ADCS_Run_Mode {
+typedef enum ADCS_run_mode_enum_t {
     ADCS_RUN_MODE_OFF = 0,
     ADCS_RUN_MODE_ENABLED = 1,
     ADCS_RUN_MODE_TRIGGERED = 2,
     ADCS_RUN_MODE_SIMULATION = 3
-} ADCS_Run_Mode;
+} ADCS_run_mode_enum_t;
 
 // ADCS Reset Causes - Section 6.1.2 Table 28 of Firmware Manual
-typedef enum ADCS_Reset_Cause {
+typedef enum ADCS_reset_cause_enum_t {
     ADCS_RESET_CAUSE_POWER_ON = 0,
     ADCS_RESET_CAUSE_BROWN_OUT_DETECTED_ON_REGULATED_POWER = 1,
     ADCS_RESET_CAUSE_BROWN_OUT_DETECTED_ON_UNREGULATED_POWER = 2,
@@ -73,26 +72,26 @@ typedef enum ADCS_Reset_Cause {
     ADCS_RESET_CAUSE_BACKUP_MODE_AND_WATCHDOG = 13,
     ADCS_RESET_CAUSE_BACKUP_BROWN_OUT_BUVIN_AND_SYSTEM_REQUEST = 14,
     ADCS_RESET_CAUSE_UNKNOWN = 15
-} ADCS_Reset_Cause;
+} ADCS_reset_cause_enum_t;
 
 // ADCS Boot Causes - Section 6.1.2 Table 29 of Firmware Manual
-typedef enum ADCS_Boot_Cause {
+typedef enum ADCS_boot_cause_enum_t {
     ADCS_BOOT_CAUSE_UNEXPECTED = 0,
     ADCS_BOOT_CAUSE_NOT_USED_1 = 1,
     ADCS_BOOT_CAUSE_COMMUNICATIONS_TIMEOUT = 2,
     ADCS_BOOT_CAUSE_COMMANDED = 3,
     ADCS_BOOT_CAUSE_NOT_USED_2 = 4,
     ADCS_BOOT_CAUSE_SRAM_LATCHUP = 5
-} ADCS_Boot_Cause;
+} ADCS_boot_cause_enum_t;
 
 // ADCS Running Programs - Section 6.1.2 Table 30 of Firmware Manual
-typedef enum ADCS_Running_Program {
+typedef enum ADCS_running_program_enum_t {
     ADCS_RUNNING_PROGRAM_ADCS = 1,
     ADCS_RUNNING_PROGRAM_BOOTLOADER = 2
-} ADCS_Running_Program;
+} ADCS_running_program_enum_t;
 
 // ADCS Control Modes - Section 6.3.1 Table 77 of Firmware Manual
-typedef enum ADCS_Control_Mode {
+typedef enum ADCS_control_mode_enum_t {
     ADCS_CONTROL_MODE_NONE = 0,
     ADCS_CONTROL_MODE_DETUMBLING = 1,
     ADCS_CONTROL_MODE_Y_THOMSON_SPIN = 2,
@@ -109,9 +108,9 @@ typedef enum ADCS_Control_Mode {
     ADCS_CONTROL_MODE_USER_CODED = 13,
     ADCS_CONTROL_MODE_SUN_TRACKING_YAW_OR_ROLL_ONLY_WHEEL = 14,
     ADCS_CONTROL_MODE_TARGET_TRACKING_YAW_ONLY_WHEEL = 15
-} ADCS_Control_Mode;
+} ADCS_control_mode_enum_t;
 
-typedef enum ADCS_Estimation_Mode {
+typedef enum ADCS_estimation_mode_enum_t {
     ADCS_ESTIMATION_MODE_NONE = 0,
     ADCS_ESTIMATION_MODE_MEMS_RATE_SENSING = 1,
     ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER = 2,
@@ -120,27 +119,27 @@ typedef enum ADCS_Estimation_Mode {
     ADCS_ESTIMATION_MODE_FULL_STATE_extended_kalman_filter = 5,
     ADCS_ESTIMATION_MODE_MEMS_GYRO_extended_kalman_filter = 6,
     ADCS_ESTIMATION_MODE_USER_CODED_ESTIMATION_MODE = 7
-} ADCS_Estimation_Mode;
+} ADCS_estimation_mode_enum_t;
 
-typedef enum ADCS_Power_Select {
+typedef enum ADCS_power_select_enum_t {
     ADCS_POWER_SELECT_OFF = 0,
     ADCS_POWER_SELECT_ON = 1,
     ADCS_POWER_SELECT_SAME = 2
-} ADCS_Power_Select;
+} ADCS_power_select_enum_t;
 
-typedef enum ADCS_Magnetometer_Mode {
+typedef enum ADCS_magnetometer_mode_enum_t {
     ADCS_MAGNETOMETER_MODE_MAIN_SIGNAL = 0,
     ADCS_MAGNETOMETER_MODE_REDUNDANT_SIGNAL = 1,
     ADCS_MAGNETOMETER_MODE_MAIN_MOTOR = 2,
     ADCS_MAGNETOMETER_MODE_NONE = 3
-} ADCS_Magnetometer_Mode;
+} ADCS_magnetometer_mode_enum_t;
 
-typedef enum ADCS_Augmented_SGP4_Filter {
+typedef enum ADCS_augmented_sgp4_filter_enum_t {
     ADCS_Augmented_SGP4_FILTER_LOWPASS = 0,
     ADCS_Augmented_SGP4_FILTER_AVERAGE = 1
-} ADCS_Augmented_SGP4_Filter;
+} ADCS_augmented_sgp4_filter_enum_t;
 
-typedef enum ADCS_Axis_Select {
+typedef enum ADCS_axis_select_enum_t {
     ADCS_AXIS_SELECT_POSITIVE_X = 0,
     ADCS_AXIS_SELECT_NEGATIVE_X = 1,
     ADCS_AXIS_SELECT_POSITIVE_Y = 2,
@@ -148,18 +147,18 @@ typedef enum ADCS_Axis_Select {
     ADCS_AXIS_SELECT_POSITIVE_Z = 4,
     ADCS_AXIS_SELECT_NEGATIVE_Z = 5,
     ADCS_AXIS_SELECT_NOT_USED = 6
-} ADCS_Axis_Select;
+} ADCS_axis_select_enum_t;
 
-typedef enum ADCS_Capture_Result {
+typedef enum ADCS_capture_result_enum_t {
     ADCS_CAPTURE_RESULT_STARTUP = 0,
     ADCS_CAPTURE_RESULT_PENDING = 1,
     ADCS_CAPTURE_RESULT_SUCCESS = 2,
     ADCS_CAPTURE_RESULT_SUCCESS_SHIFT = 3,
     ADCS_CAPTURE_RESULT_TIMEOUT = 4,
     ADCS_CAPTURE_RESULT_SRAM_ERROR = 5
-} ADCS_Capture_Result;
+} ADCS_capture_result_enum_t;
 
-typedef enum ADCS_Detect_Result {
+typedef enum ADCS_detect_result_enum_t {
     ADCS_DETECT_RESULT_STARTUP = 0,
     ADCS_DETECT_RESULT_NO_DETECT = 1,
     ADCS_DETECT_RESULT_PENDING = 2,
@@ -168,15 +167,15 @@ typedef enum ADCS_Detect_Result {
     ADCS_DETECT_RESULT_BAD_FIT = 5,
     ADCS_DETECT_RESULT_SUN_NOT_FOUND = 6,
     ADCS_DETECT_RESULT_SUCCESS = 7
-} ADCS_Detect_Result;
+} ADCS_detect_result_enum_t;
 
-typedef enum ADCS_Which_Cam_Sensor {
+typedef enum ADCS_which_cam_sensor_enum_t {
     ADCS_WHICH_CAM_SENSOR_NONE = 0,
     ADCS_WHICH_CAM_SENSOR_CAM1 = 1,
     ADCS_WHICH_CAM_SENSOR_CAM2 = 2
-} ADCS_Which_Cam_Sensor;
+} ADCS_which_cam_sensor_enum_t;
 
-typedef enum ADCS_GPS_Solution_Status {
+typedef enum ADCS_gps_solution_status_enum_t {
     ADCS_GPS_SOLUTION_STATUS_SOLUTION_COMPUTED = 0,
     ADCS_GPS_SOLUTION_STATUS_INSUFFICIENT_OBSERVATIONS = 1,
     ADCS_GPS_SOLUTION_STATUS_NO_CONVERGENCE = 2,
@@ -189,82 +188,82 @@ typedef enum ADCS_GPS_Solution_Status {
     ADCS_GPS_SOLUTION_STATUS_CALCULATING_COMPARISON_TO_USER_PROVIDED = 9,
     ADCS_GPS_SOLUTION_STATUS_FIXED_POSITION_INVALID = 10,
     ADCS_GPS_SOLUTION_STATUS_POSITION_TYPE_UNAUTHORIZED = 11 
-} ADCS_GPS_Solution_Status;
+} ADCS_gps_solution_status_enum_t;
 
-typedef enum ADCS_GPS_Axis {
+typedef enum ADCS_gps_axis_enum_t {
     ADCS_GPS_AXIS_X = 0,
     ADCS_GPS_AXIS_Y = 1,
     ADCS_GPS_AXIS_Z = 2
-} ADCS_GPS_Axis;
+} ADCS_gps_axis_enum_t;
 
 /* Structs */
 
-typedef struct ADCS_CMD_Ack_Struct {
+typedef struct ADCS_cmd_ack_struct_t {
     uint8_t last_id;
     bool processed:1; // 1-bit bool
-    enum ADCS_Error_Flag error_flag;
+    ADCS_error_flag_enum_t error_flag;
     uint8_t error_index;
-} ADCS_CMD_Ack_Struct;
+} ADCS_cmd_ack_struct_t;
 
-typedef struct ADCS_ID_Struct {
+typedef struct ADCS_id_struct_t {
     uint8_t node_type;
     uint8_t interface_version;
     uint8_t major_firmware_version;
     uint8_t minor_firmware_version;
     uint16_t seconds_since_startup;
     uint16_t ms_past_second;
-} ADCS_ID_Struct;
+} ADCS_id_struct_t;
 
-typedef struct ADCS_Boot_Running_Status_Struct {
-    ADCS_Reset_Cause reset_cause;
-    ADCS_Boot_Cause boot_cause;
+typedef struct ADCS_boot_running_status_struct_t {
+    ADCS_reset_cause_enum_t reset_cause;
+    ADCS_boot_cause_enum_t boot_cause;
     uint16_t boot_counter;
-    ADCS_Running_Program boot_program_index;
+    ADCS_running_program_enum_t boot_program_index;
     uint8_t major_firmware_version;
     uint8_t minor_firmware_version;
-} ADCS_Boot_Running_Status_Struct;
+} ADCS_boot_running_status_struct_t;
 
-typedef struct ADCS_Comms_Status_Struct {
+typedef struct ADCS_comms_status_struct_t {
     uint16_t cmd_counter;
     uint16_t tlm_counter;
     bool cmd_buffer_overrun:1; // 1-bit bool
     bool i2c_tlm_error:1; // 1-bit bool
     bool i2c_cmd_error:1; // 1-bit bool
-} ADCS_Comms_Status_Struct;
+} ADCS_comms_status_struct_t;
 
-typedef struct ADCS_Angular_Rates_Struct {
+typedef struct ADCS_angular_rates_struct_t {
     int32_t x_rate_mdeg_per_sec;
     int32_t y_rate_mdeg_per_sec;
     int32_t z_rate_mdeg_per_sec;
-} ADCS_Angular_Rates_Struct;
+} ADCS_angular_rates_struct_t;
 
-typedef struct ADCS_LLH_Position_Struct {
+typedef struct ADCS_llh_position_struct_t {
     int32_t latitude_mdeg;
     int32_t longitude_mdeg;
     int32_t altitude_meters;
-} ADCS_LLH_Position_Struct;
+} ADCS_llh_position_struct_t;
 
-typedef struct ADCS_Power_Control_Struct{
-    ADCS_Power_Select cube_control_signal;
-    ADCS_Power_Select cube_control_motor;
-    ADCS_Power_Select cube_sense1;
-    ADCS_Power_Select cube_sense2;
-    ADCS_Power_Select cube_star_power;
-    ADCS_Power_Select cube_wheel1_power;
-    ADCS_Power_Select cube_wheel2_power;
-    ADCS_Power_Select cube_wheel3_power;
-    ADCS_Power_Select motor_power;
-    ADCS_Power_Select gps_power;
-} ADCS_Power_Control_Struct;
+typedef struct ADCS_Power_Control_struct_t{
+    ADCS_power_select_enum_t cube_control_signal;
+    ADCS_power_select_enum_t cube_control_motor;
+    ADCS_power_select_enum_t cube_sense1;
+    ADCS_power_select_enum_t cube_sense2;
+    ADCS_power_select_enum_t cube_star_power;
+    ADCS_power_select_enum_t cube_wheel1_power;
+    ADCS_power_select_enum_t cube_wheel2_power;
+    ADCS_power_select_enum_t cube_wheel3_power;
+    ADCS_power_select_enum_t motor_power;
+    ADCS_power_select_enum_t gps_power;
+} ADCS_power_control_struct_t;
 
-typedef struct ADCS_Set_Unix_Time_Save_Mode_Struct{
+typedef struct ADCS_Set_Unix_Time_Save_Mode_struct_t{
     bool save_now:1; // 1-bit bool
     bool save_on_update:1; // 1-bit bool
     bool save_periodic:1; // 1-bit bool
     uint8_t period;
-} ADCS_Set_Unix_Time_Save_Mode_Struct;
+} ADCS_set_unix_time_save_mode_struct_t;
 
-typedef struct ADCS_Orbit_Params_Struct {
+typedef struct ADCS_orbit_params_struct_t {
     double inclination_deg;
     double eccentricity;
     double ascending_node_right_ascension_deg;
@@ -273,40 +272,40 @@ typedef struct ADCS_Orbit_Params_Struct {
     double mean_motion_orbits_per_day;
     double mean_anomaly_deg;
     double epoch_year_point_day;
-} ADCS_Orbit_Params_Struct;
+} ADCS_orbit_params_struct_t;
 
-typedef struct ADCS_Rated_Sensor_Rates_Struct {
+typedef struct ADCS_rated_sensor_rates_struct_t {
     int32_t x_mdeg_per_sec; 
     int32_t y_mdeg_per_sec;
     int32_t z_mdeg_per_sec; 
-} ADCS_Rated_Sensor_Rates_Struct;
+} ADCS_rated_sensor_rates_struct_t;
 
-typedef struct ADCS_Wheel_Speed_Struct {
+typedef struct ADCS_wheel_speed_struct_t {
     // TODO: Add bool for whether it's commanded or actual wheel speed
     int16_t x_rpm; 
     int16_t y_rpm;
     int16_t z_rpm; 
-} ADCS_Wheel_Speed_Struct;
+} ADCS_wheel_speed_struct_t;
 
-typedef struct ADCS_Magnetorquer_Command_Struct {
+typedef struct ADCS_magnetorquer_command_struct_t {
     int32_t x_ms; 
     int32_t y_ms;
     int32_t z_ms; 
-} ADCS_Magnetorquer_Command_Struct;
+} ADCS_magnetorquer_command_struct_t;
 
-typedef struct ADCS_Raw_Magnetometer_Values_Struct {
-    int16_t x_sampled; 
-    int16_t y_sampled;
-    int16_t z_sampled; 
-} ADCS_Raw_Magnetometer_Values_Struct;
+typedef struct ADCS_raw_magnetometer_values_struct_t {
+    int16_t x_raw; 
+    int16_t y_raw;
+    int16_t z_raw; 
+} ADCS_raw_magnetometer_values_struct_t;
 
-typedef struct ADCS_Fine_Angular_Rates_Struct {
+typedef struct ADCS_fine_angular_rates_struct_t {
     int16_t x_mdeg_per_sec; 
     int16_t y_mdeg_per_sec;
     int16_t z_mdeg_per_sec; 
-} ADCS_Fine_Angular_Rates_Struct;
+} ADCS_fine_angular_rates_struct_t;
 
-typedef struct ADCS_Magnetometer_Config_Struct {
+typedef struct ADCS_magnetometer_config_struct_t {
     int32_t mounting_transform_alpha_angle_mdeg_per_sec;
     int32_t mounting_transform_beta_angle_mdeg_per_sec;
     int32_t mounting_transform_gamma_angle_mdeg_per_sec;
@@ -322,15 +321,15 @@ typedef struct ADCS_Magnetometer_Config_Struct {
     int16_t sensitivity_matrix_s23_mdeg_per_sec;
     int16_t sensitivity_matrix_s31_mdeg_per_sec;
     int16_t sensitivity_matrix_s32_mdeg_per_sec;
-} ADCS_Magnetometer_Config_Struct;
+} ADCS_magnetometer_config_struct_t;
 
-typedef struct ADCS_Commanded_Angles_Struct {
+typedef struct ADCS_commanded_angles_struct_t {
     int32_t x_mdeg; 
     int32_t y_mdeg;
     int32_t z_mdeg; 
-} ADCS_Commanded_Angles_Struct;
+} ADCS_commanded_angles_struct_t;
 
-typedef struct ADCS_Estimation_Params_Struct {
+typedef struct ADCS_estimation_params_struct_t {
     float magnetometer_rate_filter_system_noise;
     float extended_kalman_filter_system_noise;
     float coarse_sun_sensor_measurement_noise;
@@ -344,14 +343,14 @@ typedef struct ADCS_Estimation_Params_Struct {
     bool use_star_tracker:1; // 1-bit bool
     bool nadir_sensor_terminator_test:1; // 1-bit bool
     bool automatic_magnetometer_recovery:1; // 1-bit bool
-    ADCS_Magnetometer_Mode magnetometer_mode;
-    ADCS_Magnetometer_Mode magnetometer_selection_for_raw_mtm_tlm;
+    ADCS_magnetometer_mode_enum_t magnetometer_mode;
+    ADCS_magnetometer_mode_enum_t magnetometer_selection_for_raw_magnetometer_telemetry;
     bool automatic_estimation_transition_due_to_rate_sensor_errors:1; // 1-bit bool
     bool wheel_30s_power_up_delay:1; // 1-bit bool
     uint8_t cam1_and_cam2_sampling_period;
-} ADCS_Estimation_Params_Struct;
+} ADCS_estimation_params_struct_t;
 
-typedef struct ADCS_Augmented_SGP4_Params_Struct {
+typedef struct ADCS_augmented_sgp4_params_struct_t {
     int16_t incl_coefficient_milli;
     int16_t raan_coefficient_milli;
     int16_t ecc_coefficient_milli;
@@ -359,7 +358,7 @@ typedef struct ADCS_Augmented_SGP4_Params_Struct {
     int16_t time_coefficient_milli;
     int16_t pos_coefficient_milli;
     int32_t maximum_position_error_milli;
-    ADCS_Augmented_SGP4_Filter augmented_sgp4_filter;
+    ADCS_augmented_sgp4_filter_enum_t augmented_sgp4_filter;
     int64_t xp_coefficient_nano;
     int64_t yp_coefficient_nano;
     uint8_t gps_roll_over;
@@ -369,117 +368,117 @@ typedef struct ADCS_Augmented_SGP4_Params_Struct {
     int16_t time_gain_milli;
     int16_t max_lag_milli;
     uint16_t min_samples;
-} ADCS_Augmented_SGP4_Params_Struct;
+} ADCS_augmented_sgp4_params_struct_t;
 
-typedef struct ADCS_Tracking_Controller_Target_Struct {
+typedef struct ADCS_tracking_controller_target_struct_t {
     float longitude_degrees;
     float latitude_degrees;
     float altitude_meters;
-} ADCS_Tracking_Controller_Target_Struct;
+} ADCS_tracking_controller_target_struct_t;
 
-typedef struct ADCS_Rate_Gyro_Config_Struct {
-    ADCS_Axis_Select gyro1; 
-    ADCS_Axis_Select gyro2; 
-    ADCS_Axis_Select gyro3; 
+typedef struct ADCS_rate_gyro_config_struct_t {
+    ADCS_axis_select_enum_t gyro1; 
+    ADCS_axis_select_enum_t gyro2; 
+    ADCS_axis_select_enum_t gyro3; 
     int16_t x_rate_offset_mdeg_per_sec; 
     int16_t y_rate_offset_mdeg_per_sec; 
     int16_t z_rate_offset_mdeg_per_sec; 
     uint8_t rate_sensor_mult;
-} ADCS_Rate_Gyro_Config_Struct;
+} ADCS_rate_gyro_config_struct_t;
 
-typedef struct ADCS_Estimated_Attitude_Angles_Struct {
+typedef struct ADCS_estimated_attitude_angles_struct_t {
     int32_t estimated_roll_angle_mdeg;
     int32_t estimated_pitch_angle_mdeg;
     int32_t estimated_yaw_angle_mdeg;
-} ADCS_Estimated_Attitude_Angles_Struct;
+} ADCS_estimated_attitude_angles_struct_t;
 
-typedef struct ADCS_Magnetic_Field_Vector_Struct {
+typedef struct ADCS_magnetic_field_vector_struct_t {
     int32_t x_nT;
     int32_t y_nT;
     int32_t z_nT;
-} ADCS_Magnetic_Field_Vector_Struct;
+} ADCS_magnetic_field_vector_struct_t;
 
-typedef struct ADCS_Fine_Sun_Vector_Struct {
+typedef struct ADCS_fine_sun_vector_struct_t {
     int32_t x_micro;
     int32_t y_micro;
     int32_t z_micro;
-} ADCS_Fine_Sun_Vector_Struct;
+} ADCS_fine_sun_vector_struct_t;
 
-typedef struct ADCS_Nadir_Vector_Struct {
+typedef struct ADCS_nadir_vector_struct_t {
     int32_t x_micro;
     int32_t y_micro;
     int32_t z_micro;
-} ADCS_Nadir_Vector_Struct;
+} ADCS_nadir_vector_struct_t;
 
-typedef struct ADCS_Quaternion_Error_Vector_Struct {
+typedef struct ADCS_quaternion_error_vector_struct_t {
     int32_t quaternion_error_q1_micro;
     int32_t quaternion_error_q2_micro;
     int32_t quaternion_error_q3_micro;
-} ADCS_Quaternion_Error_Vector_Struct;
+} ADCS_quaternion_error_vector_struct_t;
 
-typedef struct ADCS_Estimated_Gyro_Bias_Struct {
+typedef struct ADCS_estimated_gyro_bias_struct_t {
     int32_t estimated_x_gyro_bias_mdeg_per_sec;
     int32_t estimated_y_gyro_bias_mdeg_per_sec;
     int32_t estimated_z_gyro_bias_mdeg_per_sec;
-} ADCS_Estimated_Gyro_Bias_Struct;
+} ADCS_estimated_gyro_bias_struct_t;
 
-typedef struct ADCS_Estimation_Innovation_Vector_Struct {
+typedef struct ADCS_estimation_innovation_vector_struct_t {
     int32_t innovation_vector_x_micro;
     int32_t innovation_vector_y_micro;
     int32_t innovation_vector_z_micro;
-} ADCS_Estimation_Innovation_Vector_Struct;
+} ADCS_estimation_innovation_vector_struct_t;
 
-typedef struct ADCS_Raw_Cam_Sensor_Struct {
-    ADCS_Which_Cam_Sensor which_sensor;
+typedef struct ADCS_raw_cam_sensor_struct_t {
+    ADCS_which_cam_sensor_enum_t which_sensor;
     int16_t cam_centroid_x;
     int16_t cam_centroid_y;
-    ADCS_Capture_Result cam_capture_status;
-    ADCS_Detect_Result cam_detection_result;
-} ADCS_Raw_Cam_Sensor_Struct;
+    ADCS_capture_result_enum_t cam_capture_status;
+    ADCS_detect_result_enum_t cam_detection_result;
+} ADCS_raw_cam_sensor_struct_t;
 
-typedef struct ADCS_Raw_Coarse_Sun_Sensor_1_to_6_Struct {
+typedef struct ADCS_raw_coarse_sun_sensor_1_to_6_struct_t {
     uint8_t coarse_sun_sensor_1;
     uint8_t coarse_sun_sensor_2;
     uint8_t coarse_sun_sensor_3;
     uint8_t coarse_sun_sensor_4;
     uint8_t coarse_sun_sensor_5;
     uint8_t coarse_sun_sensor_6;
-} ADCS_Raw_Coarse_Sun_Sensor_1_to_6_Struct;
+} ADCS_raw_coarse_sun_sensor_1_to_6_struct_t;
 
-typedef struct ADCS_Raw_Coarse_Sun_Sensor_7_to_10_Struct {
+typedef struct ADCS_raw_coarse_sun_sensor_7_to_10_struct_t {
     uint8_t coarse_sun_sensor_7;
     uint8_t coarse_sun_sensor_8;
     uint8_t coarse_sun_sensor_9;
     uint8_t coarse_sun_sensor_10;
-} ADCS_Raw_Coarse_Sun_Sensor_7_to_10_Struct;
+} ADCS_raw_coarse_sun_sensor_7_to_10_struct_t;
 
-typedef struct ADCS_CubeControl_Current_Struct {
+typedef struct ADCS_cubecontrol_current_struct_t {
     double cubecontrol_3v3_current_mA;
     double cubecontrol_5v_current_mA;
     double cubecontrol_vbat_current_mA;
-} ADCS_CubeControl_Current_Struct;
+} ADCS_cubecontrol_current_struct_t;
 
-typedef struct ADCS_Raw_GPS_Status_Struct {
-    ADCS_GPS_Solution_Status gps_solution_status;
+typedef struct ADCS_raw_gps_status_struct_t {
+    ADCS_gps_solution_status_enum_t gps_solution_status;
     uint8_t num_tracked_satellites;
     uint8_t num_used_satellites;
     uint8_t counter_xyz_log;
     uint8_t counter_range_log;
     uint8_t response_message_gps_log;
-} ADCS_Raw_GPS_Status_Struct;
+} ADCS_raw_gps_status_struct_t;
 
-typedef struct ADCS_Raw_GPS_Time_Struct {
+typedef struct ADCS_raw_gps_time_struct_t {
     uint16_t gps_reference_week;
     uint32_t gps_time_ms; // in seconds
-} ADCS_Raw_GPS_Time_Struct;
+} ADCS_raw_gps_time_struct_t;
 
-typedef struct ADCS_Raw_GPS_Struct {
-    ADCS_GPS_Axis axis;
+typedef struct ADCS_raw_gps_struct_t {
+    ADCS_gps_axis_enum_t axis;
     int32_t ecef_position_meters;    
     int16_t ecef_velocity_meters_per_sec;   
-} ADCS_Raw_GPS_Struct;
+} ADCS_raw_gps_struct_t;
 
-typedef struct ADCS_Measurements_Struct {
+typedef struct ADCS_measurements_struct_t {
     int32_t magnetic_field_x_nT;
     int32_t magnetic_field_y_nT;
     int32_t magnetic_field_z_nT;
@@ -516,6 +515,6 @@ typedef struct ADCS_Measurements_Struct {
     int32_t star3_orbit_x_micro;
     int32_t star3_orbit_y_micro;
     int32_t star3_orbit_z_micro;
-} ADCS_Measurements_Struct;
+} ADCS_measurements_struct_t;
 
 #endif /* INC_ADCS_TYPES_H_ */

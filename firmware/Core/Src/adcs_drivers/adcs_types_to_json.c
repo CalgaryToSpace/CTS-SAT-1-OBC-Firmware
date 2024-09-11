@@ -16,7 +16,7 @@
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_CMD_Ack_Struct_TO_json(const ADCS_CMD_Ack_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_cmd_ack_struct_TO_json(const ADCS_cmd_ack_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 63) {
         return 1; // Error: invalid input
     }
@@ -38,7 +38,7 @@ uint8_t ADCS_CMD_Ack_Struct_TO_json(const ADCS_CMD_Ack_Struct *data, char json_o
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_ID_Struct_TO_json(const ADCS_ID_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_id_struct_TO_json(const ADCS_id_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 153) {
         return 1; // Error: invalid input
     }
@@ -60,7 +60,7 @@ uint8_t ADCS_ID_Struct_TO_json(const ADCS_ID_Struct *data, char json_output_str[
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Boot_Running_Status_Struct_TO_json(const ADCS_Boot_Running_Status_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_boot_running_status_struct_TO_json(const ADCS_boot_running_status_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 136) {
         return 1; // Error: invalid input
     }
@@ -82,7 +82,7 @@ uint8_t ADCS_Boot_Running_Status_Struct_TO_json(const ADCS_Boot_Running_Status_S
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Comms_Status_Struct_TO_json(const ADCS_Comms_Status_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_comms_status_struct_TO_json(const ADCS_comms_status_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 101) {
         return 1; // Error: invalid input
     }
@@ -104,7 +104,7 @@ uint8_t ADCS_Comms_Status_Struct_TO_json(const ADCS_Comms_Status_Struct *data, c
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Angular_Rates_Struct_TO_json(const ADCS_Angular_Rates_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_angular_rates_struct_TO_json(const ADCS_angular_rates_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 119) {
         return 1; // Error: invalid input
     }
@@ -126,7 +126,7 @@ uint8_t ADCS_Angular_Rates_Struct_TO_json(const ADCS_Angular_Rates_Struct *data,
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_LLH_Position_Struct_TO_json(const ADCS_LLH_Position_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_llh_position_struct_TO_json(const ADCS_llh_position_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 98) {
         return 1; // Error: invalid input
     }
@@ -150,7 +150,7 @@ uint8_t ADCS_LLH_Position_Struct_TO_json(const ADCS_LLH_Position_Struct *data, c
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Power_Control_Struct_TO_json(const ADCS_Power_Control_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_power_control_struct_TO_json(const ADCS_power_control_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 246) {
         return 1; // Error: invalid input
     }
@@ -172,7 +172,7 @@ uint8_t ADCS_Power_Control_Struct_TO_json(const ADCS_Power_Control_Struct *data,
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Set_Unix_Time_Save_Mode_Struct_TO_json(const ADCS_Set_Unix_Time_Save_Mode_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_set_unix_time_save_mode_struct_TO_json(const ADCS_set_unix_time_save_mode_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 82) {
         return 1; // Error: invalid input
     }
@@ -194,7 +194,7 @@ uint8_t ADCS_Set_Unix_Time_Save_Mode_Struct_TO_json(const ADCS_Set_Unix_Time_Sav
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Orbit_Params_Struct_TO_json(const ADCS_Orbit_Params_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_orbit_params_struct_TO_json(const ADCS_orbit_params_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 256) {
         return 1; // Error: invalid input
     }
@@ -216,7 +216,7 @@ uint8_t ADCS_Orbit_Params_Struct_TO_json(const ADCS_Orbit_Params_Struct *data, c
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Rated_Sensor_Rates_Struct_TO_json(const ADCS_Rated_Sensor_Rates_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_rated_sensor_rates_struct_TO_json(const ADCS_rated_sensor_rates_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 136) {
         return 1; // Error: invalid input
     }
@@ -238,7 +238,7 @@ uint8_t ADCS_Rated_Sensor_Rates_Struct_TO_json(const ADCS_Rated_Sensor_Rates_Str
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Wheel_Speed_Struct_TO_json(const ADCS_Wheel_Speed_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_wheel_speed_struct_TO_json(const ADCS_wheel_speed_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 37) {
         return 1; // Error: invalid input
     }
@@ -260,7 +260,7 @@ uint8_t ADCS_Wheel_Speed_Struct_TO_json(const ADCS_Wheel_Speed_Struct *data, cha
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Magnetorquer_Command_Struct_TO_json(const ADCS_Magnetorquer_Command_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_magnetorquer_command_struct_TO_json(const ADCS_magnetorquer_command_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 91) {
         return 1; // Error: invalid input
     }
@@ -282,12 +282,12 @@ uint8_t ADCS_Magnetorquer_Command_Struct_TO_json(const ADCS_Magnetorquer_Command
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Raw_Magnetometer_Values_Struct_TO_json(const ADCS_Raw_Magnetometer_Values_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_raw_magnetometer_values_struct_TO_json(const ADCS_raw_magnetometer_values_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 37) {
         return 1; // Error: invalid input
     }
     int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, "{\"x\":%d,\"y\":%d,\"z\":%d}", 
-            data->x_sampled, data->y_sampled, data->z_sampled);
+            data->x_raw, data->y_raw, data->z_raw);
     
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error
@@ -304,7 +304,7 @@ uint8_t ADCS_Raw_Magnetometer_Values_Struct_TO_json(const ADCS_Raw_Magnetometer_
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Fine_Angular_Rates_Struct_TO_json(const ADCS_Fine_Angular_Rates_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_fine_angular_rates_struct_TO_json(const ADCS_fine_angular_rates_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 88) {
         return 1; // Error: invalid input
     }
@@ -327,7 +327,7 @@ uint8_t ADCS_Fine_Angular_Rates_Struct_TO_json(const ADCS_Fine_Angular_Rates_Str
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Magnetometer_Config_Struct_TO_json(const ADCS_Magnetometer_Config_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_magnetometer_config_struct_TO_json(const ADCS_magnetometer_config_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 806) {
         return 1; // Error: invalid input
     }
@@ -357,7 +357,7 @@ uint8_t ADCS_Magnetometer_Config_Struct_TO_json(const ADCS_Magnetometer_Config_S
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Commanded_Angles_Struct_TO_json(const ADCS_Commanded_Angles_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_commanded_angles_struct_TO_json(const ADCS_commanded_angles_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 106) {
         return 1; // Error: invalid input
     }
@@ -382,7 +382,7 @@ uint8_t ADCS_Commanded_Angles_Struct_TO_json(const ADCS_Commanded_Angles_Struct 
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Estimation_Params_Struct_TO_json(const ADCS_Estimation_Params_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_estimation_params_struct_TO_json(const ADCS_estimation_params_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 774) {
         return 1; // Error: invalid input
     }
@@ -402,7 +402,7 @@ uint8_t ADCS_Estimation_Params_Struct_TO_json(const ADCS_Estimation_Params_Struc
         "\"nadir_sensor_terminator_test\":%d,"
         "\"automatic_magnetometer_recovery\":%d,"
         "\"magnetometer_mode\":%d,"
-        "\"magnetometer_selection_for_raw_mtm_tlm\":%d,"
+        "\"magnetometer_selection_for_raw_magnetometer_telemetry\":%d,"
         "\"automatic_estimation_transition_due_to_rate_sensor_errors\":%d,"
         "\"wheel_30s_power_up_delay\":%d,"
         "\"cam1_and_cam2_sampling_period\":%d}", 
@@ -420,7 +420,7 @@ uint8_t ADCS_Estimation_Params_Struct_TO_json(const ADCS_Estimation_Params_Struc
         data->nadir_sensor_terminator_test,
         data->automatic_magnetometer_recovery,
         data->magnetometer_mode,
-        data->magnetometer_selection_for_raw_mtm_tlm,
+        data->magnetometer_selection_for_raw_magnetometer_telemetry,
         data->automatic_estimation_transition_due_to_rate_sensor_errors,
         data->wheel_30s_power_up_delay,
         data->cam1_and_cam2_sampling_period);
@@ -441,7 +441,7 @@ uint8_t ADCS_Estimation_Params_Struct_TO_json(const ADCS_Estimation_Params_Struc
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Augmented_SGP4_Params_Struct_TO_json(const ADCS_Augmented_SGP4_Params_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_augmented_sgp4_params_struct_TO_json(const ADCS_augmented_sgp4_params_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 537) {
         return 1; // Error: invalid input
     }
@@ -478,7 +478,7 @@ uint8_t ADCS_Augmented_SGP4_Params_Struct_TO_json(const ADCS_Augmented_SGP4_Para
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Tracking_Controller_Target_Struct_TO_json(const ADCS_Tracking_Controller_Target_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_tracking_controller_target_struct_TO_json(const ADCS_tracking_controller_target_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 40) {
         return 1; // Error: invalid input
     }
@@ -502,7 +502,7 @@ uint8_t ADCS_Tracking_Controller_Target_Struct_TO_json(const ADCS_Tracking_Contr
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Rate_Gyro_Config_Struct_TO_json(const ADCS_Rate_Gyro_Config_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_rate_gyro_config_struct_TO_json(const ADCS_rate_gyro_config_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 201) {
         return 1; // Error: invalid input
     }
@@ -529,7 +529,7 @@ uint8_t ADCS_Rate_Gyro_Config_Struct_TO_json(const ADCS_Rate_Gyro_Config_Struct 
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Estimated_Attitude_Angles_Struct_TO_json(const ADCS_Estimated_Attitude_Angles_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_estimated_attitude_angles_struct_TO_json(const ADCS_estimated_attitude_angles_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 165) {
         return 1; // Error: invalid input
     }
@@ -554,7 +554,7 @@ uint8_t ADCS_Estimated_Attitude_Angles_Struct_TO_json(const ADCS_Estimated_Attit
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Magnetic_Field_Vector_Struct_TO_json(const ADCS_Magnetic_Field_Vector_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_magnetic_field_vector_struct_TO_json(const ADCS_magnetic_field_vector_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 85) {
         return 1; // Error: invalid input
     }
@@ -577,7 +577,7 @@ uint8_t ADCS_Magnetic_Field_Vector_Struct_TO_json(const ADCS_Magnetic_Field_Vect
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Fine_Sun_Vector_Struct_TO_json(const ADCS_Fine_Sun_Vector_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_fine_sun_vector_struct_TO_json(const ADCS_fine_sun_vector_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 94) {
         return 1; // Error: invalid input
     }
@@ -600,7 +600,7 @@ uint8_t ADCS_Fine_Sun_Vector_Struct_TO_json(const ADCS_Fine_Sun_Vector_Struct *d
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Nadir_Vector_Struct_TO_json(const ADCS_Nadir_Vector_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_nadir_vector_struct_TO_json(const ADCS_nadir_vector_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 94) {
         return 1; // Error: invalid input
     }
@@ -623,7 +623,7 @@ uint8_t ADCS_Nadir_Vector_Struct_TO_json(const ADCS_Nadir_Vector_Struct *data, c
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Quaternion_Error_Vector_Struct_TO_json(const ADCS_Quaternion_Error_Vector_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_quaternion_error_vector_struct_TO_json(const ADCS_quaternion_error_vector_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 150) {
         return 1; // Error: invalid input
     }
@@ -648,7 +648,7 @@ uint8_t ADCS_Quaternion_Error_Vector_Struct_TO_json(const ADCS_Quaternion_Error_
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Estimated_Gyro_Bias_Struct_TO_json(const ADCS_Estimated_Gyro_Bias_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_estimated_gyro_bias_struct_TO_json(const ADCS_estimated_gyro_bias_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 194) {
         return 1; // Error: invalid input
     }
@@ -675,7 +675,7 @@ uint8_t ADCS_Estimated_Gyro_Bias_Struct_TO_json(const ADCS_Estimated_Gyro_Bias_S
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Estimation_Innovation_Vector_Struct_TO_json(const ADCS_Estimation_Innovation_Vector_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_estimation_innovation_vector_struct_TO_json(const ADCS_estimation_innovation_vector_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 150) {
         return 1; // Error: invalid input
     }
@@ -700,7 +700,7 @@ uint8_t ADCS_Estimation_Innovation_Vector_Struct_TO_json(const ADCS_Estimation_I
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Raw_Cam_Sensor_Struct_TO_json(const ADCS_Raw_Cam_Sensor_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_raw_cam_sensor_struct_TO_json(const ADCS_raw_cam_sensor_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 131) {
         return 1; // Error: invalid input
     }
@@ -725,7 +725,7 @@ uint8_t ADCS_Raw_Cam_Sensor_Struct_TO_json(const ADCS_Raw_Cam_Sensor_Struct *dat
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Raw_Coarse_Sun_Sensor_1_to_6_Struct_TO_json(const ADCS_Raw_Coarse_Sun_Sensor_1_to_6_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_raw_coarse_sun_sensor_1_to_6_struct_TO_json(const ADCS_raw_coarse_sun_sensor_1_to_6_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 454) {
         return 1; // Error: invalid input
     }
@@ -750,7 +750,7 @@ uint8_t ADCS_Raw_Coarse_Sun_Sensor_1_to_6_Struct_TO_json(const ADCS_Raw_Coarse_S
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Raw_Coarse_Sun_Sensor_7_to_10_Struct_TO_json(const ADCS_Raw_Coarse_Sun_Sensor_7_to_10_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_raw_coarse_sun_sensor_7_to_10_struct_TO_json(const ADCS_raw_coarse_sun_sensor_7_to_10_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 306) {
         return 1; // Error: invalid input
     }
@@ -773,7 +773,7 @@ uint8_t ADCS_Raw_Coarse_Sun_Sensor_7_to_10_Struct_TO_json(const ADCS_Raw_Coarse_
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_CubeControl_Current_Struct_TO_json(const ADCS_CubeControl_Current_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_cubecontrol_current_struct_TO_json(const ADCS_cubecontrol_current_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 117) {
         return 1; // Error: invalid input
     }
@@ -799,7 +799,7 @@ uint8_t ADCS_CubeControl_Current_Struct_TO_json(const ADCS_CubeControl_Current_S
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Raw_GPS_Status_Struct_TO_json(const ADCS_Raw_GPS_Status_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_raw_gps_status_struct_TO_json(const ADCS_raw_gps_status_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 181) {
         return 1; // Error: invalid input
     }
@@ -826,7 +826,7 @@ uint8_t ADCS_Raw_GPS_Status_Struct_TO_json(const ADCS_Raw_GPS_Status_Struct *dat
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Raw_GPS_Time_Struct_TO_json(const ADCS_Raw_GPS_Time_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_raw_gps_time_struct_TO_json(const ADCS_raw_gps_time_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 60) {
         return 1; // Error: invalid input
     }
@@ -849,7 +849,7 @@ uint8_t ADCS_Raw_GPS_Time_Struct_TO_json(const ADCS_Raw_GPS_Time_Struct *data, c
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Raw_GPS_Struct_TO_json(const ADCS_Raw_GPS_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_raw_gps_struct_TO_json(const ADCS_raw_gps_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 92) {
         return 1; // Error: invalid input
     }
@@ -872,7 +872,7 @@ uint8_t ADCS_Raw_GPS_Struct_TO_json(const ADCS_Raw_GPS_Struct *data, char json_o
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_Measurements_Struct_TO_json(const ADCS_Measurements_Struct *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_measurements_struct_TO_json(const ADCS_measurements_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 1557) {
         return 1; // Error: invalid input
     }

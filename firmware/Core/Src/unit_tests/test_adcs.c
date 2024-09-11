@@ -9,7 +9,7 @@
 
 uint8_t TEST_EXEC__ADCS_Pack_to_Ack_Struct() {
     uint8_t input_params[4] = {0x11, 0x01, 0x03, 0x04};
-    ADCS_CMD_Ack_Struct result;
+    ADCS_cmd_ack_struct_t result;
     ADCS_Pack_to_Ack_Struct(input_params, &result);
 
     TEST_ASSERT_TRUE(result.last_id == 17);
@@ -22,7 +22,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Ack_Struct() {
 
 uint8_t TEST_EXEC__ADCS_Pack_to_Identification_Struct() {
     uint8_t input_params[8] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88};
-    ADCS_ID_Struct result;
+    ADCS_id_struct_t result;
     ADCS_Pack_to_Identification_Struct(input_params, &result);
 
     TEST_ASSERT_TRUE(result.node_type == 17);
@@ -37,7 +37,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Identification_Struct() {
 
 uint8_t TEST_EXEC__ADCS_Pack_to_Program_Status_Struct() {
     uint8_t input_params[6] = {0xF2, 0x22, 0x33, 0x02, 0x55, 0x66};
-    ADCS_Boot_Running_Status_Struct result;
+    ADCS_boot_running_status_struct_t result;
     ADCS_Pack_to_Program_Status_Struct(input_params, &result);
 
     TEST_ASSERT_TRUE(result.reset_cause == ADCS_RESET_CAUSE_UNKNOWN);
@@ -52,7 +52,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Program_Status_Struct() {
 
 uint8_t TEST_EXEC__ADCS_Pack_to_Comms_Status_Struct() {
     uint8_t input_params[5] = {0x11, 0x22, 0x33, 0x44, 0x55};
-    ADCS_Comms_Status_Struct result;
+    ADCS_comms_status_struct_t result;
     ADCS_Pack_to_Comms_Status_Struct(input_params, &result);
 
     TEST_ASSERT_TRUE(result.cmd_counter == 8721);
@@ -66,7 +66,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Comms_Status_Struct() {
 
 uint8_t TEST_EXEC__ADCS_Pack_to_Power_Control_Struct() {
     uint8_t input_params[3] = {0x11, 0x22, 0x31};
-    ADCS_Power_Control_Struct result;
+    ADCS_power_control_struct_t result;
     ADCS_Pack_to_Power_Control_Struct(input_params, &result);
 
     TEST_ASSERT_TRUE(result.cube_control_motor == ADCS_POWER_SELECT_OFF);
@@ -85,7 +85,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Power_Control_Struct() {
 
 uint8_t TEST_EXEC__ADCS_Pack_to_Angular_Rates_Struct() {
     uint8_t input_params[6] = {0x11, 0x22, 0x33, 0x44, 0x55, 0xff};
-    ADCS_Angular_Rates_Struct result;
+    ADCS_angular_rates_struct_t result;
     ADCS_Pack_to_Angular_Rates_Struct(input_params, &result);
 
     TEST_ASSERT_TRUE(result.x_rate_mdeg_per_sec == 87210);
@@ -97,7 +97,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Angular_Rates_Struct() {
 
 uint8_t TEST_EXEC__ADCS_Pack_to_LLH_Position_Struct() {
     uint8_t input_params[6] = {0x11, 0x22, 0x33, 0xff, 0x55, 0x66};
-    ADCS_LLH_Position_Struct result;
+    ADCS_llh_position_struct_t result;
     ADCS_Pack_to_LLH_Position_Struct(input_params, &result);
 
     TEST_ASSERT_TRUE(result.latitude_mdeg ==  87210);
@@ -109,7 +109,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_LLH_Position_Struct() {
 
 uint8_t TEST_EXEC__ADCS_Pack_to_Unix_Time_Save_Mode_Struct() {
     uint8_t input_params[2] = {0x11, 0x22};
-    ADCS_Set_Unix_Time_Save_Mode_Struct result;
+    ADCS_set_unix_time_save_mode_struct_t result;
     ADCS_Pack_to_Unix_Time_Save_Mode_Struct(input_params, &result);
 
     TEST_ASSERT_TRUE(result.save_now == true);
@@ -130,7 +130,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Orbit_Params_Struct() {
         0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x24, 0x40,
         0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x26, 0x40,
         0x9A, 0x99, 0x99, 0x99, 0x99, 0x99, 0x28, 0x40};
-    ADCS_Orbit_Params_Struct result;
+    ADCS_orbit_params_struct_t result;
     ADCS_Pack_to_Orbit_Params_Struct(input_params, &result);
 
     TEST_ASSERT_TRUE(GEN_compare_doubles(result.inclination_deg, 1.2, ADCS_TEST_EPSILON));
@@ -146,7 +146,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Orbit_Params_Struct() {
 
 uint8_t TEST_EXEC__ADCS_Pack_to_Rated_Sensor_Rates_Struct() {
     uint8_t input_params[6] = {0x11, 0x22, 0x33, 0x44, 0x55, 0xff};
-    ADCS_Rated_Sensor_Rates_Struct result;
+    ADCS_rated_sensor_rates_struct_t result;
     ADCS_Pack_to_Rated_Sensor_Rates_Struct(input_params, &result);
 
     TEST_ASSERT_TRUE(result.x_mdeg_per_sec == 87210);
@@ -158,7 +158,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Rated_Sensor_Rates_Struct() {
 
 uint8_t TEST_EXEC__ADCS_Pack_to_Wheel_Speed_Struct() {
     uint8_t input_params[6] = {0x11, 0x22, 0x33, 0xff, 0x55, 0x66};
-    ADCS_Wheel_Speed_Struct result;
+    ADCS_wheel_speed_struct_t result;
     ADCS_Pack_to_Wheel_Speed_Struct(input_params, &result);
     TEST_ASSERT_TRUE(result.x_rpm == 8721);
     TEST_ASSERT_TRUE(result.y_rpm == -205);
@@ -171,7 +171,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Magnetorquer_Command_Struct()
 {
     uint8_t input_params[6] = {0x11, 0x22, 0x33, 0xff, 0x55, 0x66};
 
-    ADCS_Magnetorquer_Command_Struct result;
+    ADCS_magnetorquer_command_struct_t result;
     ADCS_Pack_to_Magnetorquer_Command_Struct(input_params, &result);
     TEST_ASSERT_TRUE(result.x_ms == 87210);
     TEST_ASSERT_TRUE(result.y_ms == -2050);
@@ -183,11 +183,11 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Magnetorquer_Command_Struct()
 uint8_t TEST_EXEC__ADCS_Pack_to_Raw_Magnetometer_Values_Struct()
 {
     uint8_t input_params[6] = {0x11, 0x22, 0x33, 0x44, 0x55, 0xff};
-    ADCS_Raw_Magnetometer_Values_Struct result;
+    ADCS_raw_magnetometer_values_struct_t result;
     ADCS_Pack_to_Raw_Magnetometer_Values_Struct(input_params, &result);
-    TEST_ASSERT_TRUE(result.x_sampled == 8721);
-    TEST_ASSERT_TRUE(result.y_sampled == 17459);
-    TEST_ASSERT_TRUE(result.z_sampled == -171);
+    TEST_ASSERT_TRUE(result.x_raw == 8721);
+    TEST_ASSERT_TRUE(result.y_raw == 17459);
+    TEST_ASSERT_TRUE(result.z_raw == -171);
 
     return 0;
 }
@@ -196,7 +196,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Fine_Angular_Rates_Struct()
 {
     uint8_t input_params[6] = {0x11, 0x22, 0x33, 0x44, 0x55, 0xff};
 
-    ADCS_Fine_Angular_Rates_Struct result;
+    ADCS_fine_angular_rates_struct_t result;
     ADCS_Pack_to_Fine_Angular_Rates_Struct(input_params, &result);
     TEST_ASSERT_TRUE(result.x_mdeg_per_sec == 8721);
     TEST_ASSERT_TRUE(result.y_mdeg_per_sec == 17459);
@@ -213,7 +213,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Magnetometer_Config_Struct()
         0x22, 0x22, 0xDE, 0xDD, 0x22, 0x22, 0xDE, 0xDD,
         0x22, 0x22, 0xDE, 0xDD, 0x22, 0x22};
 
-    ADCS_Magnetometer_Config_Struct result;
+    ADCS_magnetometer_config_struct_t result;
     ADCS_Pack_to_Magnetometer_Config_Struct(input_params, &result);
     TEST_ASSERT_TRUE(result.mounting_transform_alpha_angle_mdeg_per_sec == 87380);
     TEST_ASSERT_TRUE(result.mounting_transform_beta_angle_mdeg_per_sec == -87380);
@@ -238,7 +238,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Commanded_Attitude_Angles_Struct()
 {
     uint8_t input_params[6] = {0x11, 0xaa, 0x22, 0xbb, 0x33, 0xcc};
 
-    ADCS_Commanded_Angles_Struct result;
+    ADCS_commanded_angles_struct_t result;
     ADCS_Pack_to_Commanded_Attitude_Angles_Struct(input_params, &result);
     TEST_ASSERT_TRUE(result.x_mdeg == -219990);
     TEST_ASSERT_TRUE(result.y_mdeg == -176300);
@@ -253,7 +253,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Estimation_Params_Struct()
                                 0x40, 0xCD, 0xCC, 0x8C, 0x40, 0x00, 0x00, 0xB0, 0x40, 0x33, 0x33,
                                 0xD3, 0x40, 0x66, 0x66, 0xF6, 0x40, 0xAA, 0x0D, 0x2C};
 
-    ADCS_Estimation_Params_Struct result;
+    ADCS_estimation_params_struct_t result;
     ADCS_Pack_to_Estimation_Params_Struct(input_params, &result);
     TEST_ASSERT_TRUE(GEN_compare_doubles(result.magnetometer_rate_filter_system_noise, 1.1, ADCS_TEST_EPSILON));
     TEST_ASSERT_TRUE(GEN_compare_doubles(result.extended_kalman_filter_system_noise, 2.2, ADCS_TEST_EPSILON));
@@ -269,7 +269,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Estimation_Params_Struct()
     TEST_ASSERT_TRUE(result.nadir_sensor_terminator_test == false);
     TEST_ASSERT_TRUE(result.automatic_magnetometer_recovery == true);
     TEST_ASSERT_TRUE(result.magnetometer_mode == ADCS_MAGNETOMETER_MODE_MAIN_MOTOR);
-    TEST_ASSERT_TRUE(result.magnetometer_selection_for_raw_mtm_tlm == ADCS_MAGNETOMETER_MODE_REDUNDANT_SIGNAL);
+    TEST_ASSERT_TRUE(result.magnetometer_selection_for_raw_magnetometer_telemetry == ADCS_MAGNETOMETER_MODE_REDUNDANT_SIGNAL);
     TEST_ASSERT_TRUE(result.automatic_estimation_transition_due_to_rate_sensor_errors == true);
     TEST_ASSERT_TRUE(result.wheel_30s_power_up_delay == true);
     TEST_ASSERT_TRUE(result.cam1_and_cam2_sampling_period == 44); // error counter reset period?
@@ -284,7 +284,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Augmented_SGP4_Params_Struct()
                                 0xC1, 0xFA, 0x40, 0x61, 0x19, 0xFA, 0x0A, 0x6F,
                                 0xD4, 0x0D, 0xD6, 0xD7, 0x10, 0x00};
 
-    ADCS_Augmented_SGP4_Params_Struct result;
+    ADCS_augmented_sgp4_params_struct_t result;
     ADCS_Pack_to_Augmented_SGP4_Params_Struct(input_params, &result);
     TEST_ASSERT_TRUE(result.incl_coefficient_milli == 1100);
     TEST_ASSERT_TRUE(result.raan_coefficient_milli == 2200);
@@ -311,7 +311,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Tracking_Controller_Target_Reference_Struct()
 {
     uint8_t input_params[12] = {0xCD, 0xCC, 0xDC, 0x42, 0x33, 0x33, 0x8B, 0xC2, 0x66, 0x66, 0x86, 0x3F};
 
-    ADCS_Tracking_Controller_Target_Struct result;
+    ADCS_tracking_controller_target_struct_t result;
     ADCS_Pack_to_Tracking_Controller_Target_Reference_Struct(input_params, &result);
     TEST_ASSERT_TRUE(GEN_compare_doubles(result.longitude_degrees, 110.4, 10*ADCS_TEST_EPSILON));
     TEST_ASSERT_TRUE(GEN_compare_doubles(result.latitude_degrees, -69.6, 10*ADCS_TEST_EPSILON));
@@ -325,7 +325,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Rate_Gyro_Config_Struct()
 {
     uint8_t input_params[10] = {0xCD, 0xCC, 0xDC, 0x42, 0x33, 0x33, 0x8B, 0xC2, 0x66, 0x66};
 
-    ADCS_Rate_Gyro_Config_Struct result;
+    ADCS_rate_gyro_config_struct_t result;
     ADCS_Pack_to_Rate_Gyro_Config_Struct(input_params, &result);
     TEST_ASSERT_TRUE(result.gyro1 == 205);
     TEST_ASSERT_TRUE(result.gyro2 == 204);
@@ -342,7 +342,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Estimated_Attitude_Angles_Struct()
 {
     uint8_t input_params[6] = {0x10, 0x27, 0x34, 0xff, 0x56, 0x78}; 
 
-    ADCS_Estimated_Attitude_Angles_Struct result;
+    ADCS_estimated_attitude_angles_struct_t result;
     ADCS_Pack_to_Estimated_Attitude_Angles_Struct(input_params, &result);
 
     TEST_ASSERT_TRUE(result.estimated_roll_angle_mdeg == 100000);
@@ -356,7 +356,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Magnetic_Field_Vector_Struct()
 {
     uint8_t input_params[6] = {0x10, 0x27, 0x34, 0xff, 0x56, 0x78}; 
 
-    ADCS_Magnetic_Field_Vector_Struct result;
+    ADCS_magnetic_field_vector_struct_t result;
     ADCS_Pack_to_Magnetic_Field_Vector_Struct(input_params, &result);
 
     TEST_ASSERT_TRUE(result.x_nT == 100000);
@@ -370,7 +370,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Nadir_Vector_Struct()
 {
     uint8_t input_params[6] = {0x01, 0x10, 0xf1, 0x11, 0xF0, 0xF1}; 
 
-    ADCS_Nadir_Vector_Struct result;
+    ADCS_nadir_vector_struct_t result;
     ADCS_Pack_to_Nadir_Vector_Struct(input_params, &result);
 
     TEST_ASSERT_TRUE(result.x_micro == 409700);
@@ -384,7 +384,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Commanded_Wheel_Speed_Struct()
 {
     uint8_t input_params[6] = {0x01, 0x02, 0x03, 0x04, 0x05, 0xd6}; 
 
-    ADCS_Wheel_Speed_Struct result;
+    ADCS_wheel_speed_struct_t result;
     ADCS_Pack_to_Commanded_Wheel_Speed_Struct(input_params, &result);
 
     TEST_ASSERT_TRUE(result.x_rpm == 513);
@@ -398,7 +398,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_IGRF_Magnetic_Field_Vector_Struct()
 {
     uint8_t input_params[6] = {0x09, 0xf8, 0x07, 0x06, 0x05, 0xd4}; 
 
-    ADCS_Magnetic_Field_Vector_Struct result;
+    ADCS_magnetic_field_vector_struct_t result;
     ADCS_Pack_to_IGRF_Magnetic_Field_Vector_Struct(input_params, &result);
 
     TEST_ASSERT_TRUE(result.x_nT == -20390);
@@ -412,7 +412,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Quaternion_Error_Vector_Struct()
 {
     uint8_t input_params[6] = {0x01, 0x02, 0x03, 0xe4, 0x05, 0x06}; 
 
-    ADCS_Quaternion_Error_Vector_Struct result;
+    ADCS_quaternion_error_vector_struct_t result;
     ADCS_Pack_to_Quaternion_Error_Vector_Struct(input_params, &result);
 
     TEST_ASSERT_TRUE(result.quaternion_error_q1_micro == 51300);
@@ -426,7 +426,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Estimated_Gyro_Bias_Struct()
 {
     uint8_t input_params[6] = {0x01, 0x02, 0x03, 0xe4, 0x05, 0x06}; 
 
-    ADCS_Estimated_Gyro_Bias_Struct result;
+    ADCS_estimated_gyro_bias_struct_t result;
     ADCS_Pack_to_Estimated_Gyro_Bias_Struct(input_params, &result);
 
     TEST_ASSERT_TRUE(result.estimated_x_gyro_bias_mdeg_per_sec == 513);
@@ -440,7 +440,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Estimation_Innovation_Vector_Struct()
 {
     uint8_t input_params[6] = {0x01, 0x02, 0x03, 0xe4, 0x05, 0x06}; 
 
-    ADCS_Estimation_Innovation_Vector_Struct result;
+    ADCS_estimation_innovation_vector_struct_t result;
     ADCS_Pack_to_Estimation_Innovation_Vector_Struct(input_params, &result);
 
     TEST_ASSERT_TRUE(result.innovation_vector_x_micro ==  51300);
@@ -454,7 +454,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Raw_Cam1_Sensor_Struct()
 {
     uint8_t input_params[6] = {0x01, 0x02, 0x03, 0xd4, 0x05, 0x06}; 
 
-    ADCS_Raw_Cam_Sensor_Struct result;
+    ADCS_raw_cam_sensor_struct_t result;
     ADCS_Pack_to_Raw_Cam1_Sensor_Struct(input_params, &result);
 
     TEST_ASSERT_TRUE(result.which_sensor == ADCS_WHICH_CAM_SENSOR_CAM1);
@@ -470,7 +470,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Raw_Cam2_Sensor_Struct()
 {
     uint8_t input_params[6] = {0x01, 0x02, 0x03, 0xd4, 0x05, 0x06}; 
 
-    ADCS_Raw_Cam_Sensor_Struct result;
+    ADCS_raw_cam_sensor_struct_t result;
     ADCS_Pack_to_Raw_Cam1_Sensor_Struct(input_params, &result);
 
     TEST_ASSERT_TRUE(result.which_sensor == ADCS_WHICH_CAM_SENSOR_CAM1);
@@ -486,7 +486,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Fine_Sun_Vector_Struct() {
     
     uint8_t input_params[6] = {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc}; 
 
-    ADCS_Fine_Sun_Vector_Struct result;
+    ADCS_fine_sun_vector_struct_t result;
     ADCS_Pack_to_Fine_Sun_Vector_Struct(input_params, &result);
 
     TEST_ASSERT_TRUE(result.x_micro == 1333000);
@@ -498,7 +498,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Fine_Sun_Vector_Struct() {
 
 uint8_t TEST_EXEC__ADCS_Pack_to_Raw_Coarse_Sun_Sensor_1_to_6_Struct() {
     uint8_t input_params[6] = {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc};
-    ADCS_Raw_Coarse_Sun_Sensor_1_to_6_Struct result;
+    ADCS_raw_coarse_sun_sensor_1_to_6_struct_t result;
     ADCS_Pack_to_Raw_Coarse_Sun_Sensor_1_to_6_Struct(input_params, &result);
     TEST_ASSERT_TRUE(result.coarse_sun_sensor_1 == 18);
     TEST_ASSERT_TRUE(result.coarse_sun_sensor_2 == 52);
@@ -510,7 +510,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Raw_Coarse_Sun_Sensor_1_to_6_Struct() {
 }
 uint8_t TEST_EXEC__ADCS_Pack_to_Raw_Coarse_Sun_Sensor_7_to_10_Struct() {
     uint8_t input_params[4] = {0x12, 0x34, 0x56, 0x78};
-    ADCS_Raw_Coarse_Sun_Sensor_7_to_10_Struct result;
+    ADCS_raw_coarse_sun_sensor_7_to_10_struct_t result;
     ADCS_Pack_to_Raw_Coarse_Sun_Sensor_7_to_10_Struct(input_params, &result);
     TEST_ASSERT_TRUE(result.coarse_sun_sensor_7 == 18);
     TEST_ASSERT_TRUE(result.coarse_sun_sensor_8 == 52);
@@ -522,7 +522,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Raw_Coarse_Sun_Sensor_7_to_10_Struct() {
 uint8_t TEST_EXEC__ADCS_Pack_to_CubeControl_Current_Struct() {
     uint8_t input_params[6] = {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc};
 
-    ADCS_CubeControl_Current_Struct result;
+    ADCS_cubecontrol_current_struct_t result;
     ADCS_Pack_to_CubeControl_Current_Struct(input_params, &result);
 
     TEST_ASSERT_TRUE(GEN_compare_doubles(result.cubecontrol_3v3_current_mA, 6508.7890625, ADCS_TEST_EPSILON / 100.0));
@@ -533,7 +533,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_CubeControl_Current_Struct() {
 
 uint8_t TEST_EXEC__ADCS_Pack_to_Raw_GPS_Status_Struct() {
     uint8_t input_params[6] = {0x08, 0x34, 0x56, 0x78, 0x9a, 0xbc};
-    ADCS_Raw_GPS_Status_Struct result;
+    ADCS_raw_gps_status_struct_t result;
     ADCS_Pack_to_Raw_GPS_Status_Struct(input_params, &result);
     TEST_ASSERT_TRUE(result.gps_solution_status == ADCS_GPS_SOLUTION_STATUS_LARGE_RESIDUALS);
     TEST_ASSERT_TRUE(result.num_tracked_satellites == 52);
@@ -546,7 +546,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Raw_GPS_Status_Struct() {
 
 uint8_t TEST_EXEC__ADCS_Pack_to_Raw_GPS_Time_Struct() {
     uint8_t input_params[6] = {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc};
-    ADCS_Raw_GPS_Time_Struct result;
+    ADCS_raw_gps_time_struct_t result;
     ADCS_Pack_to_Raw_GPS_Time_Struct(input_params, &result);
     TEST_ASSERT_TRUE(result.gps_reference_week == 13330);
     TEST_ASSERT_TRUE(GEN_compare_doubles(result.gps_time_ms, 3164239958, ADCS_TEST_EPSILON));
@@ -555,7 +555,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Raw_GPS_Time_Struct() {
 
 uint8_t TEST_EXEC__ADCS_Pack_to_Raw_GPS_Struct() {
     uint8_t input_params[6] = {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc};
-    ADCS_Raw_GPS_Struct result;
+    ADCS_raw_gps_struct_t result;
     ADCS_Pack_to_Raw_GPS_Struct(ADCS_GPS_AXIS_Y, input_params, &result);
     TEST_ASSERT_TRUE(result.axis == ADCS_GPS_AXIS_Y);
     TEST_ASSERT_TRUE(result.ecef_position_meters == 2018915346);
@@ -582,7 +582,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Measurements_Struct() {
                                 0xac, 0x8d, 0x3d, 0x63, 0x0b, 0x2c, 0x84, 0x7f, 
                                 0x32, 0x15, 0x47, 0x9e, 0x3c, 0x4a, 0xd3, 0x1c};
     
-    ADCS_Measurements_Struct result;
+    ADCS_measurements_struct_t result;
     ADCS_Pack_to_Measurements_Struct(input_params, &result);
 
     TEST_ASSERT_TRUE(result.magnetic_field_x_nT == 73780);

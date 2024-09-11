@@ -18,8 +18,8 @@
 /// @param[in] data_length Length of the data array.
 /// @param[in] include_checksum Tells the ADCS whether to use a CRC8 checksum; should be either ADCS_INCLUDE_CHECKSUM or ADCS_NO_CHECKSUM 
 /// @return 0 if successful, 1 if invalid ID, 2 if incorrect parameter length, 3 if incorrect parameter value, and 4 if failed CRC
-uint8_t ADCS_i2c_telecommand_wrapper(uint8_t id, uint8_t* data, uint32_t data_length, uint8_t include_checksum) {
-    ADCS_CMD_Ack_Struct ack;
+uint8_t ADCS_i2c_send_command_and_check(uint8_t id, uint8_t* data, uint32_t data_length, uint8_t include_checksum) {
+    ADCS_cmd_ack_struct_t ack;
     uint8_t cmd_status;
     uint8_t num_checksum_tries = 0; // number of tries to resend command if checksum fails
     do {
@@ -58,7 +58,7 @@ uint8_t ADCS_i2c_telecommand_wrapper(uint8_t id, uint8_t* data, uint32_t data_le
 /// @param[in] data_length Length of the data array.
 /// @param[out] data Data array to write the raw telemetry bytes to; length must be at least data_length (should contain the correct number of bytes for the given telemetry request ID)
 /// @return 0 if successful, other numbers if the HAL failed to transmit or receive data. 
-uint8_t ADCS_i2c_telemetry_wrapper(uint8_t id, uint8_t* data, uint32_t data_length, uint8_t include_checksum) {
+uint8_t ADCS_i2c_request_telemetry_and_check(uint8_t id, uint8_t* data, uint32_t data_length, uint8_t include_checksum) {
     uint8_t checksum_check = ADCS_send_i2c_telemetry_request(id, data, data_length, include_checksum);
     uint8_t num_checksum_tries = 0;
     while (checksum_check == 4 && num_checksum_tries < ADCS_CHECKSUM_TIMEOUT) {
@@ -166,9 +166,10 @@ uint8_t ADCS_convert_uint32_to_reversed_uint8_array_members(uint8_t *array, uint
     return 0;
 }
 
+static uint8_t CRC8Table[256];
+
 /// @brief Initialise the lookup table for 8-bit CRC calculation.
 /// @return 0 once successful.
-uint8_t CRC8Table[256];
 uint8_t ADCS_initialise_crc8_checksum() {
     int val;
     for (uint16_t i = 0; i < 256; i++)
