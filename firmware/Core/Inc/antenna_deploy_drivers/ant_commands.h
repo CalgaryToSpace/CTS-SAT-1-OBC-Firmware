@@ -41,4 +41,11 @@ uint8_t ANT_CMD_report_deployment_status(uint8_t response[2]);
 uint8_t ANT_CMD_report_antenna_deployment_activation_count(uint8_t antenna, uint8_t *response);
 uint8_t ANT_CMD_report_antenna_deployment_activation_time(uint8_t antenna, uint16_t *result);
 
+
+struct Antenna_deployment_status {
+    int is_antenna_1_deployed;
+    int is_antenna_2_deployed;
+    int is_antenna_3_deployed;
+    int is_antenna_4_deployed;
+};
 #endif /* __INCLUDE_GUARD_ANT_COMMANDS_H__ */
