@@ -10,6 +10,9 @@
 #include <string.h>
 #include "inttypes.h"
 
+/// @brief Resets the antenna deployment system's microcontroller
+/// @param args_str no arguments
+/// @return 0 on success, > 0 otherwise
 uint8_t TCMDEXEC_ant_reset(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) 
 {
@@ -37,6 +40,9 @@ uint8_t TCMDEXEC_ant_arm_antenna_system(const char *args_str, TCMD_TelecommandCh
     return 0;
 }
 
+/// @brief Disarms the antenna system
+/// @param args_str No arguments
+/// @return 0 on success, 0 > otherwise
 uint8_t TCMDEXEC_ant_disarm_antenna_system(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     const uint8_t status = ANT_CMD_disarm_antenna_system();
@@ -49,7 +55,7 @@ uint8_t TCMDEXEC_ant_disarm_antenna_system(const char *args_str, TCMD_Telecomman
     return 0;
 }
 
-/// @brief  Telecommand: Deploy antenna 
+/// @brief  Telecommand: Initiates deployment of the selected antenna
 /// @param args_str 
 /// - Arg 0: antenna number. between 1-4
 /// - Arg 1: Activation time in seconds
@@ -105,6 +111,10 @@ uint8_t TCMDEXEC_ant_deploy_antenna(const char *args_str, TCMD_TelecommandChanne
     return 0;
 }
 
+/// @brief begins deployment of all antennas, one by one.
+/// @param args_str 
+/// Arg 0: Activation time in seconds
+/// @return returns 0 on success, > 0 otherwise
 uint8_t TCMDEXEC_ant_start_automated_antenna_deployment(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) 
 {
@@ -128,6 +138,11 @@ uint8_t TCMDEXEC_ant_start_automated_antenna_deployment(const char *args_str, TC
     return 0;
 }
 
+/// @brief  Telecommand: Initiates deployment of the selected antenna, ignoring whether the antennas current status is deployed. 
+/// @param args_str 
+/// - Arg 0: antenna number. between 1-4
+/// - Arg 1: Activation time in seconds
+/// @return 0 on successful communication, >0 on communications error 
 uint8_t TCMDEXEC_ant_deploy_antenna_with_override(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
 
@@ -179,6 +194,9 @@ uint8_t TCMDEXEC_ant_deploy_antenna_with_override(const char *args_str, TCMD_Tel
     return 0;
 }
 
+/// @brief Cancels any active attempts to deploy an antenna
+/// @param args_str No arguments 
+/// @return 0 on successful communication, > 0 on communications error
 uint8_t TCMDEXEC_ant_cancel_deployment_system_activation(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     
@@ -193,6 +211,9 @@ uint8_t TCMDEXEC_ant_cancel_deployment_system_activation(const char *args_str, T
 }
 
 
+/// @brief Prints the deployment status of all antennas
+/// @param args_str No arguments 
+/// @return 0 on successful communication, > 0 on communications error
 uint8_t TCMDEXEC_ant_report_deployment_status(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     
@@ -207,6 +228,10 @@ uint8_t TCMDEXEC_ant_report_deployment_status(const char *args_str, TCMD_Telecom
     return 0;
 }
 
+/// @brief Prints the number of times deployment was attempted on the selected antenna
+/// @param args_str 
+/// Arg 0: the antenna to check, between 1-4 
+/// @return 0 on successful communication, > 0 on communications error
 uint8_t TCMDEXEC_ant_report_antenna_deployment_activation_count(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     uint64_t antenna;
@@ -245,6 +270,10 @@ uint8_t TCMDEXEC_ant_report_antenna_deployment_activation_count(const char *args
     return 0;
 }
 
+/// @brief Prints amount of time the deployment system has been active for for the selected antenna
+/// @param args_str 
+/// Arg 0: the antenna to check, between 1-4 
+/// @return 0 on successful communication, > 0 on communications error
 uint8_t TCMDEXEC_ant_report_antenna_deployment_activation_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     uint64_t antenna;
