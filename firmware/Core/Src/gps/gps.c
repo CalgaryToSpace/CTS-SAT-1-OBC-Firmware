@@ -84,36 +84,6 @@ uint8_t assign_gps_time_status(const char *status_str, GPS_reference_time_status
     return 0;  // Success
 }
 
-/// @brief Assigns a string value based on GPS time status provided.
-const char* get_gps_time_status_string(GPS_reference_time_status_t *status) {
-    switch (*status) {
-        case GPS_UNKNOWN:
-            return "UNKNOWN";
-        case GPS_APPROXIMATE:
-            return "APPROXIMATE";
-        case GPS_COARSEADJUSTING:
-            return "COARSEADJUSTING";
-        case GPS_COARSE:
-            return "COARSE";
-        case GPS_COARSESTEERING:
-            return "COARSESTEERING";
-        case GPS_FREEWHEELING:
-            return "FREEWHEELING";
-        case GPS_FINEADJUSTING:
-            return "FINEADJUSTING";
-        case GPS_FINE:
-            return "FINE";
-        case GPS_FINEBACKUPSTEERING:
-            return "FINEBACKUPSTEERING";
-        case GPS_FINESTEERING:
-            return "FINESTEERING";
-        case GPS_SATTIME:
-            return "SATTIME";
-        default:
-            return "UNKNOWN STATUS";  // If status is unrecognized
-    }
-}
-
 
 /// @brief Parse the received GPS header into a struct
 /// @param data_received - The string obtained from the buffer that is to be parsed into the gps_response_header struct
@@ -176,20 +146,6 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
         // Time Status not recognized
         return status_result;
     }
-
-    char message_buffer[256];
-        snprintf(
-            message_buffer, sizeof(message_buffer),
-            "{\"Log Name\":\"%s\",\"Time Status\":\"%s\",\"UTC Status\":%lu,\"CRC\":%s}\n",
-            result->log_name,
-            get_gps_time_status_string(result->time_status)
-        );
-
-        LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Header Response: %s",
-            message_buffer
-        );
 
     return 0;
 }
@@ -766,23 +722,17 @@ uint8_t parse_timea_data(const char* data_received, gps_timea_response *result) 
 
     // TODO: Add a check for the CRC
 
-        char message_buffer[256];
-        snprintf(
-            message_buffer, sizeof(message_buffer),
-            "{\"Clock Status\":\"%s\",\"UTC Offset\":\"%s\",\"UTC Status\":%lu,\"CRC\":%s}\n",
-            result->clock_status,
-            result->utc_offset,
-            result->utc_status,
-            result->crc
-        );
-
-        LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Timea Response: %s",
-            message_buffer
-        );
+        // char message_buffer[256];
+    //     snprintf(
+    //         message_buffer, sizeof(message_buffer),
+    //         "{\"Clock Status\":\"%s\",\"UTC Offset\":\"%s\",\"UTC Status\":%lu,\"CRC\":%u}\n",
+    //         result.clock_status,
+    //         result.utc_offset,
+    //         result.utc_status,
+    //         result.crc
+    //     );
           
-        // DEBUG_uart_print_str(message_buffer);
+    //     DEBUG_uart_print_str(message_buffer);
 
     return 0;
 }
