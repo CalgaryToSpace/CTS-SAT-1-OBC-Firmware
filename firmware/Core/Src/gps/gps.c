@@ -3,6 +3,7 @@
 #include "log/log.h"
 #include "telecommands/telecommand_args_helpers.h"
 #include "transforms/arrays.h"
+#include "debug_tools/debug_uart.h"
 
 #include <stdio.h>
 #include <stdlib.h> 
@@ -887,12 +888,12 @@ uint8_t parse_timea_data(const char* data_received, gps_timea_response *result) 
     }
     
     // TODO: Determine what to do when we exceed data limit ie fall out of bounds of valid int32_t values
-    if(value > INT32_MAX){
-        value = INT32_MAX;
-    } else if (value < INT32_MIN){
-        value = INT32_MIN;
+    if(value > INT64_MAX){
+        value = INT64_MAX;
+    } else if (value < INT64_MIN){
+        value = INT64_MIN;
     }
-    result->utc_offset = (int32_t) value;
+    result->utc_offset = (int64_t) value;
 
 
     // UTC Status
@@ -928,6 +929,8 @@ uint8_t parse_timea_data(const char* data_received, gps_timea_response *result) 
         gps_utc_status_to_string(result->utc_status),
         result->crc
     );
+
+    // DEBUG_uart_print_int32(result->utc_offset);
 
     // \"UTC Offset\":\"%lld\",
     

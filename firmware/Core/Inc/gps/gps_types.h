@@ -157,7 +157,7 @@ typedef struct {
 
     /// @brief /// The offset of GPS system time from UTC time
     /// Documentation says the utc offset comes as a double. 
-    int32_t utc_offset;
+    int64_t utc_offset;
 
     /// @brief UTC status 
     /// Refer to page 943 of the OEM7 Commands and Logs Reference Manual
