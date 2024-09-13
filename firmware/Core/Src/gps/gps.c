@@ -84,6 +84,38 @@ uint8_t assign_gps_time_status(const char *status_str, GPS_reference_time_status
     return 0;  // Success
 }
 
+/// @brief Assigns a string value based on the provided GPS time status.
+/// @param status GPS_reference_time_status_t value.
+/// @return Returns the assigned string value for the GPS time status.
+const char* get_gps_time_status_string(GPS_reference_time_status_t status) {
+    switch (status) {
+        case GPS_UNKNOWN:
+            return "UNKNOWN";
+        case GPS_APPROXIMATE:
+            return "APPROXIMATE";
+        case GPS_COARSEADJUSTING:
+            return "COARSEADJUSTING";
+        case GPS_COARSE:
+            return "COARSE";
+        case GPS_COARSESTEERING:
+            return "COARSESTEERING";
+        case GPS_FREEWHEELING:
+            return "FREEWHEELING";
+        case GPS_FINEADJUSTING:
+            return "FINEADJUSTING";
+        case GPS_FINE:
+            return "FINE";
+        case GPS_FINEBACKUPSTEERING:
+            return "FINEBACKUPSTEERING";
+        case GPS_FINESTEERING:
+            return "FINESTEERING";
+        case GPS_SATTIME:
+            return "SATTIME";
+        default:
+            return "UNKNOWN STATUS";  // If status is unrecognized
+    }
+}
+
 
 /// @brief Parse the received GPS header into a struct
 /// @param data_received - The string obtained from the buffer that is to be parsed into the gps_response_header struct
@@ -147,6 +179,20 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
         return status_result;
     }
 
+    char message_buffer[256];
+    snprintf(
+        message_buffer, sizeof(message_buffer),
+        "{\"Log Name\":\"%s\",\"Time Status\":\"%s\"}\n",
+        result->log_name,
+        get_gps_time_status_string(result->time_status)
+    );
+    
+    LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Header Response: %s",
+            message_buffer
+        );
+        
     return 0;
 }
 
@@ -255,6 +301,109 @@ uint8_t assign_gps_position_velocity_type(const char *type_str, GPS_position_typ
     }
     return 0;  // Success
 }
+
+/// @brief Assigns a string value based on the provided GPS solution status.
+/// @param status GPS_solution_status_enum_t value.
+/// @return Returns the assigned string value for the GPS_solution_status_enum_t.
+const char* gps_solution_status_to_string(GPS_solution_status_enum_t status) {
+    switch (status) {
+        case GPS_SOL_COMPUTED:
+            return "SOL_COMPUTED";
+        case GPS_INSUFFICIENT_OBS:
+            return "INSUFFICIENT_OBS";
+        case GPS_NO_CONVERGENCE:
+            return "NO_CONVERGENCE";
+        case GPS_SINGULARITY:
+            return "SINGULARITY";
+        case GPS_COV_TRACE:
+            return "COV_TRACE";
+        case GPS_TEST_DIST:
+            return "TEST_DIST";
+        case GPS_COLD_START:
+            return "COLD_START";
+        case GPS_V_H_LIMIT:
+            return "V_H_LIMIT";
+        case GPS_VARIANCE:
+            return "VARIANCE";
+        case GPS_RESIDUALS:
+            return "RESIDUALS";
+        case GPS_INTEGRITY_WARNING:
+            return "INTEGRITY_WARNING";
+        default:
+            return "UNKNOWN STATUS";  // For unrecognized enum values
+    }
+}
+
+/// @brief Assigns a string value based on the provided GPS position type.
+/// @param type GPS_position_type_enum_t value.
+/// @return Returns the assigned string value for the GPS_position_type_enum_t.
+const char* gps_position_velocity_type_to_string(GPS_position_type_enum_t type) {
+    switch (type) {
+        case GPS_TYPE_NONE:
+            return "NONE";
+        case GPS_TYPE_FIXEDPOS:
+            return "FIXEDPOS";
+        case GPS_TYPE_FIXEDHEIGHT:
+            return "FIXEDHEIGHT";
+        case GPS_TYPE_DOPPLER_VELOCITY:
+            return "DOPPLER_VELOCITY";
+        case GPS_TYPE_SINGLE:
+            return "SINGLE";
+        case GPS_TYPE_PSDIFF:
+            return "PSDIFF";
+        case GPS_TYPE_WAAS:
+            return "WAAS";
+        case GPS_TYPE_PROPAGATED:
+            return "PROPAGATED";
+        case GPS_TYPE_L1_FLOAT:
+            return "L1_FLOAT";
+        case GPS_TYPE_NARROW_FLOAT:
+            return "NARROW_FLOAT";
+        case GPS_TYPE_L1_INT:
+            return "L1_INT";
+        case GPS_TYPE_WIDE_INT:
+            return "WIDE_INT";
+        case GPS_TYPE_NARROW_INT:
+            return "NARROW_INT";
+        case GPS_TYPE_RTK_DIRECT_INS:
+            return "RTK_DIRECT_INS";
+        case GPS_TYPE_INS_SBAS:
+            return "INS_SBAS";
+        case GPS_TYPE_INS_PSRSP:
+            return "INS_PSRSP";
+        case GPS_TYPE_INS_PSRDIFF:
+            return "INS_PSRDIFF";
+        case GPS_TYPE_INS_RTKFLOAT:
+            return "INS_RTKFLOAT";
+        case GPS_TYPE_INS_RTKFIXED:
+            return "INS_RTKFIXED";
+        case GPS_TYPE_PPP_CONVERGING:
+            return "PPP_CONVERGING";
+        case GPS_TYPE_PPP:
+            return "PPP";
+        case GPS_TYPE_OPERATIONAL:
+            return "OPERATIONAL";
+        case GPS_TYPE_WARNING:
+            return "WARNING";
+        case GPS_TYPE_OUT_OF_BOUNDS:
+            return "OUT_OF_BOUNDS";
+        case GPS_TYPE_INS_PPP_CONVERGING:
+            return "INS_PPP_CONVERGING";
+        case GPS_TYPE_INS_PPP:
+            return "INS_PPP";
+        case GPS_TYPE_PPP_BASIC_CONVERGING:
+            return "PPP_BASIC_CONVERGING";
+        case GPS_TYPE_PPP_BASIC:
+            return "PPP_BASIC";
+        case GPS_TYPE_INS_PPP_BASIC_CONVERGING:
+            return "INS_PPP_BASIC_CONVERGING";
+        case GPS_TYPE_INS_PPP_BASIC:
+            return "INS_PPP_BASIC";
+        default:
+            return "UNKNOWN TYPE";  // If type is unrecognized
+    }
+}
+
 
 /// @brief Parse Received Data
 /// @param data_received - Number of bytes in the data block
@@ -528,6 +677,37 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
 
     // TODO: Add a check for the CRC
 
+
+    char sol_age[32];
+    GEN_uint64_to_str(result->solution_age_ms, sol_age);
+    char diff_age[32];
+    GEN_uint64_to_str(result->differential_age_ms, diff_age);
+
+    // char message_buffer[512];
+    // snprintf(
+    //     message_buffer, sizeof(message_buffer),
+    //     "{\"Position Solution Status\":\"%s\",\"Position Type\":\"%s\",\"Position x in mm\":\"%lld\",\"Position y in mm\":\"%lld\","
+    //     "\"Position z in mm\":\"%lld\",\"Position x std in mm\":\"%lu\",\"Position y std in mm\":\"%lu\",\"Position z std in mm\":\"%lu\","
+    //     "\"Solution Age in ms\":\"%s\",\"Differential age in ms\":\"%s\",\"CRC\":\"%ld\"}\n",
+    //     gps_solution_status_to_string(result->position_solution_status),
+    //     gps_position_velocity_type_to_string(result->position_type),
+    //     result->position_x_mm,
+    //     result->position_y_mm,
+    //     result->position_z_mm,
+    //     result->position_x_std_mm,
+    //     result->position_y_std_mm,
+    //     result->position_z_std_mm,
+    //     sol_age,
+    //     diff_age,
+    //     result->crc
+    // );
+    
+    // LOG_message(
+    //         LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+    //         "Bestxyza Response: %s",
+    //         message_buffer
+    //     );
+
     return 0;
 }
 
@@ -566,6 +746,41 @@ uint8_t assign_gps_utc_status(const char *status_str, GPS_utc_status_enum_t *sta
     }
     return 0;  // Success
 }
+
+/// @brief Assigns a string value based on the provided GPS clock model status.
+/// @param status GPS_clock_model_status_enum_t value.
+/// @return Returns the assigned string value for the GPS_clock_model_status_enum_t.
+const char* gps_clock_model_status_to_string(GPS_clock_model_status_enum_t status) {
+    switch (status) {
+        case GPS_CLOCK_VALID:
+            return "VALID";
+        case GPS_CLOCK_CONVERGING:
+            return "CONVERGING";
+        case GPS_CLOCK_ITERATING:
+            return "ITERATING";
+        case GPS_CLOCK_INVALID:
+            return "INVALID";
+        default:
+            return "UNKNOWN STATUS";  // For unrecognized enum values
+    }
+}
+
+/// @brief Assigns a string value based on the provided GPS UTC status.
+/// @param status GPS_utc_status_enum_t value.
+/// @return Returns the assigned string value for the GPS_utc_status_enum_t.
+const char* gps_utc_status_to_string(GPS_utc_status_enum_t status) {
+    switch (status) {
+        case GPS_UTC_INVALID:
+            return "INVALID";
+        case GPS_UTC_VALID:
+            return "VALID";
+        case GPS_UTC_WARNING:
+            return "WARNING";
+        default:
+            return "UNKNOWN STATUS";  // For unrecognized enum values
+    }
+}
+
 
 /// @brief Parse Received Data
 /// @param data_received - Number of bytes in the data block
@@ -670,32 +885,14 @@ uint8_t parse_timea_data(const char* data_received, gps_timea_response *result) 
     if(strcmp(end_ptr,token_buffer)==0){
         return 7;
     }
-
-    // // Testing with TCMD_ascii_to_int64 function
-    // int64_t test_result;
-    // parse_result = TCMD_ascii_to_int64(token_buffer,sizeof(token_buffer),&test_result);
-    // if(parse_result!= 0){
-    //     // Couldnt convert to a valid int64 value
-    //     return 9;
-    // }
-
-    // if(test_result > INT64_MAX){
-    //     test_result = INT64_MAX;
-    // } else if (test_result < INT64_MIN){
-    //     test_result = INT64_MIN;
-    // }
-
-    // result->utc_offset = test_result;
-
     
-    // TODO: Determine what to do when we exceed data limit ie fall out of bounds of valid int64_t values
-    // May not be necessary as max amount of seconds in a year is 3.154e+7 which is way smaller than the max value of int64
-    if(value > INT64_MAX){
-        value = INT64_MAX;
-    } else if (value < INT64_MIN){
-        value = INT64_MIN;
+    // TODO: Determine what to do when we exceed data limit ie fall out of bounds of valid int32_t values
+    if(value > INT32_MAX){
+        value = INT32_MAX;
+    } else if (value < INT32_MIN){
+        value = INT32_MIN;
     }
-    result->utc_offset = (int64_t) value;
+    result->utc_offset = (int32_t) value;
 
 
     // UTC Status
@@ -722,18 +919,26 @@ uint8_t parse_timea_data(const char* data_received, gps_timea_response *result) 
 
     // TODO: Add a check for the CRC
 
-        // char message_buffer[256];
-    //     snprintf(
-    //         message_buffer, sizeof(message_buffer),
-    //         "{\"Clock Status\":\"%s\",\"UTC Offset\":\"%s\",\"UTC Status\":%lu,\"CRC\":%u}\n",
-    //         result.clock_status,
-    //         result.utc_offset,
-    //         result.utc_status,
-    //         result.crc
-    //     );
-          
-    //     DEBUG_uart_print_str(message_buffer);
+    char message_buffer[1024];
+    snprintf(
+        message_buffer, sizeof(message_buffer),
+        "{\"Clock Status\":\"%s\",\"UTC Status\":%s,\"CRC\":%lx}\n",
+        gps_clock_model_status_to_string(result->clock_status),
+        // result->utc_offset,
+        gps_utc_status_to_string(result->utc_status),
+        result->crc
+    );
+
+    // \"UTC Offset\":\"%lld\",
+    
+    LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Timea Response: %s",
+            message_buffer
+        );
 
     return 0;
 }
+
+// TCMD_ascii_to_int64
 
