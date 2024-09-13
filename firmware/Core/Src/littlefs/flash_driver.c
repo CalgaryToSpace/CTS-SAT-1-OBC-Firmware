@@ -99,7 +99,7 @@ void FLASH_deactivate_chip_select()
  */
 FLASH_error_enum_t FLASH_unblock_block_lock(SPI_HandleTypeDef *hspi, uint8_t chip_number, uint8_t *buf) {
 
-    static const uint8_t data_bytes = (1 << 1);
+    static const uint8_t data_bytes = 0x00;
 
     // Send SET FEATURES command
     FLASH_activate_chip_select(chip_number);
@@ -399,9 +399,16 @@ FLASH_error_enum_t FLASH_write_disable(SPI_HandleTypeDef *hspi, uint8_t chip_num
  */
 FLASH_error_enum_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t addr)
 {
-    // Split address into its 4 bytes
-    // uint8_t addr_bytes[4] = {(addr >> 24) & 0xFF, (addr >> 16) & 0xFF, (addr >> 8) & 0xFF, addr & 0xFF};
+    // Split address into its 3 bytes
     uint8_t addr_bytes[3] = {(addr >> 16) & 0xFF, (addr >> 8) & 0xFF, addr & 0xFF};
+
+    // Set Block Lock Register to 0x00
+    uint8_t block_lock_reg_buffer[1] = {0};
+    const FLASH_error_enum_t block_lock_result = FLASH_unblock_block_lock(hspi, chip_number, block_lock_reg_buffer);
+    if (block_lock_result != FLASH_ERR_OK) {
+        FLASH_deactivate_chip_select();
+        return block_lock_result;
+    }
 
     // Send WRITE ENABLE Command
     const FLASH_error_enum_t wren_result = FLASH_write_enable(hspi, chip_number);
@@ -493,13 +500,6 @@ FLASH_error_enum_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs
  */
 FLASH_error_enum_t FLASH_write_data(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t addr, uint8_t *packet_buffer, lfs_size_t packet_buffer_len)
 {
-    uint8_t temp_buf[1] = {0};
-    const FLASH_error_enum_t temp = FLASH_read_block_lock_register(hspi, chip_number, temp_buf);
-    if (temp != FLASH_ERR_OK) {
-        FLASH_deactivate_chip_select();
-        return temp;
-    }
-
     // Split main address into its 3 bytes
     uint8_t addr_bytes[3] = {(addr >> 16) & 0xFF, (addr >> 8) & 0xFF, addr & 0xFF};
     
@@ -508,6 +508,14 @@ FLASH_error_enum_t FLASH_write_data(SPI_HandleTypeDef *hspi, uint8_t chip_number
     uint16_t cache_addr = 0x0000;
     uint8_t cache_addr_bytes[2] = {(cache_addr >> 8) & 0xFF, cache_addr & 0xFF}; // modify
     // check for packet buffer length > 2176 (pg.29 of datasheet, program load)
+
+    // Set Block Lock Register to 0x00
+    uint8_t block_lock_reg_buffer[1] = {0};
+    const FLASH_error_enum_t block_lock_result = FLASH_unblock_block_lock(hspi, chip_number, block_lock_reg_buffer);
+    if (block_lock_result != FLASH_ERR_OK) {
+        FLASH_deactivate_chip_select();
+        return block_lock_result;
+    }
 
     // Send WRITE ENABLE Command
     const FLASH_error_enum_t wren_result = FLASH_write_enable(hspi, chip_number);

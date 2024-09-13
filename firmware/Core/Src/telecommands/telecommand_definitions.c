@@ -202,12 +202,6 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_IN_PROGRESS,
     },
-    {
-        .tcmd_name = "flash_unblock_block_locks",
-        .tcmd_func = TCMDEXEC_flash_unblock_block_locks,
-        .number_of_args = 1,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },
     // ****************** END SECTION: flash_telecommand_defs ******************
 
     // ****************** SECTION: lfs_telecommand_defs ******************
