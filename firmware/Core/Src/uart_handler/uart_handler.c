@@ -24,6 +24,13 @@ volatile uint32_t UART_eps_last_write_time_ms = 0; // extern
 volatile uint8_t UART_eps_is_expecting_data = 0; // extern; set to 1 when a command is sent, and we're awaiting a response
 volatile uint8_t UART_eps_buffer_last_rx_byte = 0; // not an extern
 
+// UART MPI cmd response buffer
+const uint16_t UART_mpi_rx_buffer_len = 50; // extern
+volatile uint8_t UART_mpi_rx_buffer[50]; // extern
+volatile uint8_t UART_mpi_rx_last_byte = 0; // extern
+volatile uint32_t UART_mpi_rx_last_byte_write_time_ms = 0; // extern
+volatile uint16_t UART_mpi_rx_buffer_write_idx = 0; // extern
+
 // UART GPS buffer
 const uint16_t UART_gps_buffer_len = 512; // extern
 volatile uint8_t UART_gps_buffer[512]; // extern // TODO: confirm that this volatile means that the contents are volatile but the pointer is not
@@ -105,6 +112,29 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         }
         else {
             DEBUG_uart_print_str("Unhandled MPI Mode\n"); // TODO: HANDLE other MPI MODES
+        }
+    }
+    else if (huart->Instance == USART1) {
+        if (MPI_current_uart_rx_mode == MPI_RX_MODE_COMMAND_MODE) {
+            // Check if buffer is full
+            if (UART_mpi_rx_buffer_write_idx >= UART_mpi_rx_buffer_len) {
+                // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART mpi response buffer is full\n");
+
+                // Shift all bytes left by 1
+                for(uint16_t i = 1; i < UART_mpi_rx_buffer_len; i++) {
+                    UART_mpi_rx_buffer[i - 1] = UART_mpi_rx_buffer[i];
+                }
+
+                // Reset to a valid index
+                UART_mpi_rx_buffer_write_idx = UART_mpi_rx_buffer_len - 1;
+            }
+
+            // Add a byte to the buffer
+            UART_mpi_rx_buffer[UART_mpi_rx_buffer_write_idx++] = UART_mpi_rx_last_byte;
+            UART_mpi_rx_last_byte_write_time_ms = HAL_GetTick();
+        }
+        else {
+            DEBUG_uart_print_str("Unhandled MPI Mode\n"); //TODO: HANDLE other MPI MODES
         }
     }
     else if (huart->Instance == UART_gps_port_handle->Instance) {
