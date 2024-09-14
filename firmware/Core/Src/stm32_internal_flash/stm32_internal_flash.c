@@ -58,7 +58,19 @@ uint8_t Internal_Flash_Bank_Write(uint32_t address, uint8_t *data, uint32_t leng
         return 11;
     }
 
-    return status;
+    switch (status)
+    {
+    case HAL_OK:
+        return 0;
+    case HAL_ERROR:
+        return 4;
+    case HAL_BUSY:
+        return 5;
+    case HAL_TIMEOUT:
+        return 6;
+    default:
+        return 0;
+    }
 }
 
 /// @brief Reads data from the flash memory
