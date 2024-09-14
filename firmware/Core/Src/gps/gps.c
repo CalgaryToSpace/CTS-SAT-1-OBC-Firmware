@@ -683,31 +683,36 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
     GEN_uint64_to_str(result->solution_age_ms, sol_age);
     char diff_age[32];
     GEN_uint64_to_str(result->differential_age_ms, diff_age);
+    char pos_x[32];
+    GEN_int64_to_str(result->position_x_mm,pos_x);
+    char pos_y[32];
+    GEN_int64_to_str(result->position_y_mm,pos_y);
+    char pos_z[32];
+    GEN_int64_to_str(result->position_z_mm,pos_z);
 
-    // char message_buffer[512];
-    // snprintf(
-    //     message_buffer, sizeof(message_buffer),
-    //     "{\"Position Solution Status\":\"%s\",\"Position Type\":\"%s\",\"Position x in mm\":\"%lld\",\"Position y in mm\":\"%lld\","
-    //     "\"Position z in mm\":\"%lld\",\"Position x std in mm\":\"%lu\",\"Position y std in mm\":\"%lu\",\"Position z std in mm\":\"%lu\","
-    //     "\"Solution Age in ms\":\"%s\",\"Differential age in ms\":\"%s\",\"CRC\":\"%ld\"}\n",
-    //     gps_solution_status_to_string(result->position_solution_status),
-    //     gps_position_velocity_type_to_string(result->position_type),
-    //     result->position_x_mm,
-    //     result->position_y_mm,
-    //     result->position_z_mm,
-    //     result->position_x_std_mm,
-    //     result->position_y_std_mm,
-    //     result->position_z_std_mm,
-    //     sol_age,
-    //     diff_age,
-    //     result->crc
-    // );
-    
-    // LOG_message(
-    //         LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-    //         "Bestxyza Response: %s",
-    //         message_buffer
-    //     );
+    char message_buffer[2048];
+    snprintf(
+        message_buffer, sizeof(message_buffer),
+        "{\"Position Solution Status\":\"%s\",\"Position Type\":\"%s\",\"Position x in mm\":\"%s\",\"Position y in mm\":\"%s\",\"Position z in mm\":\"%s\","
+        "\"Position x std in mm\":\"%lu\",\"Position y std in mm\":\"%lu\",\"Position z std in mm\":\"%lu\",\"Solution Age in ms\":\"%s\",\"Differential age in ms\":\"%s\",\"CRC\":\"%ld\"}\n",
+        gps_solution_status_to_string(result->position_solution_status),
+        gps_position_velocity_type_to_string(result->position_type),
+        pos_x,
+        pos_y,
+        pos_z,
+        result->position_x_std_mm,
+        result->position_y_std_mm,
+        result->position_z_std_mm,
+        sol_age,
+        diff_age,
+        result->crc
+    );
+
+    LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Bestxyza Response: %s",
+            message_buffer
+        );
 
     return 0;
 }
@@ -880,14 +885,13 @@ uint8_t parse_timea_data(const char* data_received, gps_timea_response *result) 
         return parse_result;  
     }
 
-    // TODO: Use TCMD_ascii_to_int64 function instead
     double value = strtod(token_buffer, &end_ptr);
-
     if(strcmp(end_ptr,token_buffer)==0){
         return 7;
     }
     
-    // TODO: Determine what to do when we exceed data limit ie fall out of bounds of valid int32_t values
+    // TODO: Determine what to do when we exceed data limit ie fall out of bounds of valid int64_t values
+    // May have to change to int32_t for optimization.
     if(value > INT64_MAX){
         value = INT64_MAX;
     } else if (value < INT64_MIN){
@@ -913,26 +917,23 @@ uint8_t parse_timea_data(const char* data_received, gps_timea_response *result) 
     }
 
     // TODO: Look into using TCMD_extract_hex_array
+    // TODO: Add a check for the CRC
     char crc[9];
     strncpy(crc, asterisk + 1, 8);
     crc[sizeof(crc)-1] = '\0';
     result->crc = strtoul(crc,&end_ptr, 16);
 
-    // TODO: Add a check for the CRC
-
+    char utc_offset[32];
+    GEN_int64_to_str(result->utc_offset,utc_offset);
     char message_buffer[1024];
     snprintf(
         message_buffer, sizeof(message_buffer),
-        "{\"Clock Status\":\"%s\",\"UTC Status\":%s,\"CRC\":%lx}\n",
+        "{\"Clock Status\":\"%s\",\"UTC Status\":%s,\"UTC Offset\":\"%s\",\"CRC\":%lx}\n",
         gps_clock_model_status_to_string(result->clock_status),
-        // result->utc_offset,
+        utc_offset,
         gps_utc_status_to_string(result->utc_status),
         result->crc
     );
-
-    // DEBUG_uart_print_int32(result->utc_offset);
-
-    // \"UTC Offset\":\"%lld\",
     
     LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
@@ -942,6 +943,3 @@ uint8_t parse_timea_data(const char* data_received, gps_timea_response *result) 
 
     return 0;
 }
-
-// TCMD_ascii_to_int64
-
