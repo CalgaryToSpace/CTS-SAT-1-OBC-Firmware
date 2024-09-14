@@ -160,6 +160,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Wheel_Speed_Struct() {
     uint8_t input_params[6] = {0x11, 0x22, 0x33, 0xff, 0x55, 0x66};
     ADCS_wheel_speed_struct_t result;
     ADCS_Pack_to_Wheel_Speed_Struct(input_params, &result);
+    TEST_ASSERT_TRUE(result.actual_wheel_speed == true);
     TEST_ASSERT_TRUE(result.x_rpm == 8721);
     TEST_ASSERT_TRUE(result.y_rpm == -205);
     TEST_ASSERT_TRUE(result.z_rpm == 26197);
@@ -386,7 +387,7 @@ uint8_t TEST_EXEC__ADCS_Pack_to_Commanded_Wheel_Speed_Struct()
 
     ADCS_wheel_speed_struct_t result;
     ADCS_Pack_to_Commanded_Wheel_Speed_Struct(input_params, &result);
-
+    TEST_ASSERT_TRUE(result.actual_wheel_speed == false);
     TEST_ASSERT_TRUE(result.x_rpm == 513);
     TEST_ASSERT_TRUE(result.y_rpm == 1027);
     TEST_ASSERT_TRUE(result.z_rpm == -10747);

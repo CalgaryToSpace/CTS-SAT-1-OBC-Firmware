@@ -242,8 +242,8 @@ uint8_t ADCS_wheel_speed_struct_TO_json(const ADCS_wheel_speed_struct_t *data, c
     if (data == NULL || json_output_str == NULL || json_output_str_len < 37) {
         return 1; // Error: invalid input
     }
-    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, "{\"x_rpm\":%d,\"y_rpm\":%d,\"z_rpm\":%d}", 
-            data->x_rpm, data->y_rpm, data->z_rpm);
+    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, "{\"actual(1)_or_commanded(0)\":%d,\"x_rpm\":%d,\"y_rpm\":%d,\"z_rpm\":%d}", 
+            data->actual_wheel_speed, data->x_rpm, data->y_rpm, data->z_rpm);
     
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error
@@ -876,7 +876,7 @@ uint8_t ADCS_measurements_struct_TO_json(const ADCS_measurements_struct_t *data,
     if (data == NULL || json_output_str == NULL || json_output_str_len < 1557) {
         return 1; // Error: invalid input
     }
-    // TODO: this fails because json_output_str_len is far too short (1024) for this command
+
     int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, 
                                 "{\"magnetic_field_x_nT\":%ld,\"magnetic_field_y_nT\":%ld,"
                                 "\"magnetic_field_z_nT\":%ld,\"coarse_sun_x_micro\":%ld,"

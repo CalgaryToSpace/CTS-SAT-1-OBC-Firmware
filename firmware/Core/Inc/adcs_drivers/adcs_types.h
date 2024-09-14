@@ -281,7 +281,7 @@ typedef struct ADCS_rated_sensor_rates_struct_t {
 } ADCS_rated_sensor_rates_struct_t;
 
 typedef struct ADCS_wheel_speed_struct_t {
-    // TODO: Add bool for whether it's commanded or actual wheel speed
+    bool actual_wheel_speed:1; // 1-bit bool
     int16_t x_rpm; 
     int16_t y_rpm;
     int16_t z_rpm; 
