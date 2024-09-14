@@ -8,6 +8,8 @@
 #include "timekeeping/timekeeping.h"
 #include "uart_handler/uart_handler.h"
 #include "transforms/arrays.h"
+#include "stm32/stm32_reboot_reason.h"
+#include "log/log.h"
 #include "gps/gps_types.h"
 #include "gps/gps.h"
 
