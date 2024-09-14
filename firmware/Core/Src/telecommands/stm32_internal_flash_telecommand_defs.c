@@ -1,8 +1,8 @@
 #include "telecommands/stm32_internal_flash_telecommand_defs.h"
-#include "stm32_internal_flash/stm32_internal_flash.h"
-#include "stm32l4xx_hal.h"
 #include "telecommands/telecommand_args_helpers.h"
+#include "stm32_internal_flash/stm32_internal_flash.h"
 
+#include "stm32l4xx_hal.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -78,7 +78,8 @@ uint8_t TCMDEXEC_internal_flash_read(const char *args_str, TCMD_TelecommandChann
     return 0;
 }
 
-/// @brief Erase a range of pages in the internal flash bank
+/// @brief Erase a range of pages in the internal flash bank.
+/// Only Erases for Flash Bank 2.
 /// @param args_str
 /// - Arg 0: The starting page to erase as a uint64_t
 /// - Arg 1: The number of pages to erase as a uint64_t

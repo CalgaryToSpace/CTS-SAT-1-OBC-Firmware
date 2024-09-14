@@ -6,12 +6,14 @@
 #include "stm32l4xx_hal_flash_ex.h"
 #include <string.h>
 
-/// @brief Writes data to the flash memory.
+/// @brief Writes data to the flash memory in chunks of 8 bytes.
 /// @param address Address in the flash memory where the data will be written.
 /// @param data uint8_t buffer containing the data to be written.
 /// @param length Length of the data to be written.
 /// @return 0 on success, > 0 on error, 10 if HAL_FLASH_Unlock() failed, 11 if HAL_FLASH_Lock() failed
 /// @note Currently, only allowed to write to golden copy region
+/// @note if data is not 8 bytes long, it will write the data given, and clear the rest of the data
+/// Ex: write: 0x01020304, will write 0x0102030400000000, clearing the 8 bytes infront
 uint8_t Internal_Flash_Bank_Write(uint32_t address, uint8_t *data, uint32_t length)
 {
     if (address < INTERNAL_FLASH_MEMORY_REGION_GOLDEN_COPY_ADDRESS)
@@ -39,6 +41,9 @@ uint8_t Internal_Flash_Bank_Write(uint32_t address, uint8_t *data, uint32_t leng
     for (uint32_t currentAddress = address; currentAddress < end_address; currentAddress += 8)
     {
         uint8_t data_to_write[8] = {0};
+
+        // TODO: what to do if data is not 8 bytes long
+        // Currently, it will set the rest of the values to 0
 
         // currentAddress - address is the number of bytes we have written
         // since the beginning of the function
@@ -85,7 +90,7 @@ uint8_t Internal_Flash_Bank_Read(uint32_t address, uint8_t *buffer, uint32_t len
         return 1; // Return error if address is out of range
     }
 
-    for (uint32_t i = 0; i < length - 1; i++)
+    for (uint32_t i = 0; i < length; i++)
     {
         buffer[i] = *(uint8_t *)(address + i);
     }
