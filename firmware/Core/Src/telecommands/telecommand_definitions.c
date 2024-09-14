@@ -20,11 +20,16 @@
 #include "telecommands/telecommand_executor.h"
 #include "telecommands/agenda_telecommands_defs.h"
 #include "telecommands/mpi_telecommand_defs.h"
+#include "timekeeping/timekeeping.h"
+#include "littlefs/littlefs_helper.h"
+#include "stm32/stm32_reboot_reason.h"
+
 
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
 #include <inttypes.h>
+#include <time.h>
 
 extern volatile uint8_t TASK_heartbeat_is_on;
 
@@ -814,9 +819,32 @@ uint8_t TCMDEXEC_heartbeat_on(const char *args_str, TCMD_TelecommandChannel_enum
 
 uint8_t TCMDEXEC_core_system_stats(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-    // TODO: implement this (Issue #103)
-    // Use `TCMD_get_agenda_used_slots_count`
-    snprintf(response_output_buf, response_output_buf_len, "System stats: TODO\n");
+
+    // TODO: Add temperatures (EPS, OBC, antenna, etc.)
+    // TODO: Add beacon sent count
+
+    char timestamp_string_ms[20];
+    GEN_uint64_to_str(TIM_get_current_unix_epoch_time_ms(), timestamp_string_ms);
+
+    const char* STM32_reset_cause_name = STM32_reset_cause_enum_to_str(STM32_get_reset_cause());
+
+    char time_of_last_tcmd_sent_ms_string[20];
+    GEN_uint64_to_str(TCMD_latest_received_tcmd_timestamp_sent, time_of_last_tcmd_sent_ms_string);
+    
+    snprintf(
+        response_output_buf, response_output_buf_len, 
+        "{\"timestamp_ms\":\"%s\",\"uptime_ms\":\"%lu\",\"last_resync_ms\":\"%lu\",\"time_synced_ms_ago\":\"%lu\",\"time_of_last_tcmd_sent_ms\":\"%s\",\"total_tcmd_count\":\"%lu\",\"is_lfs_mounted\":\"%u\",\"last_time_sync_source\":\"%c\",\"reboot_reason\":\"%s\"}\n" ,
+        timestamp_string_ms, // timestamp_ms
+        TIM_get_current_system_uptime_ms(), // uptime_ms
+        TIM_system_uptime_at_last_time_resync_ms, // last_resync_ms
+        TIM_get_current_system_uptime_ms() - TIM_system_uptime_at_last_time_resync_ms, // time_synced_ms_ago
+        time_of_last_tcmd_sent_ms_string, // time_of_last_tcmd_sent_ms
+        TCMD_total_tcmd_queued_count, // total_tcmd_count
+        LFS_is_lfs_mounted, // is_lfs_mounted
+        TIM_synchronization_source_letter(TIM_last_synchronization_source), // last_time_sync_source
+        STM32_reset_cause_name // reboot_reason
+    ); 
+
     return 0;
 }
 

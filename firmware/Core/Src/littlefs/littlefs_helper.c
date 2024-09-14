@@ -411,3 +411,4 @@ lfs_ssize_t LFS_file_size(const char file_name[])
 	}
     return size;
 }
+

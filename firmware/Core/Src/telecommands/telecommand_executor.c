@@ -14,6 +14,9 @@
 #include <stdbool.h>
 
 
+uint32_t TCMD_total_tcmd_queued_count = 0;
+uint64_t TCMD_latest_received_tcmd_timestamp_sent = 0;
+
 /// @brief  The agenda (schedule queue) of telecommands to execute.
 TCMD_parsed_tcmd_to_execute_t TCMD_agenda[TCMD_AGENDA_SIZE];
 // TODO: consider an optimization to store the args_str_no_parens in a separate buffer, to save a ton of memory.
@@ -62,6 +65,10 @@ uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd
 
         // Mark the slot as valid.
         TCMD_agenda_is_valid[slot_num] = 1;
+
+        // Incrementing counters used for stats 
+        TCMD_total_tcmd_queued_count++; 
+        TCMD_latest_received_tcmd_timestamp_sent = parsed_tcmd->timestamp_sent;
 
         // DEBUG_uart_print_str("Telecommand added to agenda at slot ");
         // DEBUG_uart_print_uint32(slot_num);
@@ -116,7 +123,6 @@ int16_t TCMD_get_next_tcmd_agenda_slot_to_execute() {
 
     return earliest_slot_num;
 }
-
 
 /// @brief Executes a telecommand immediately, based on the minimum info required to execute a telecommand.
 /// @param tcmd_idx The index into `TCMD_telecommand_definitions` for the telecommand to execute.
@@ -375,4 +381,6 @@ uint8_t TCMD_agenda_delete_by_name(const char *telecommand_name) {
     );
 
     return 0;
+
 }
+ 

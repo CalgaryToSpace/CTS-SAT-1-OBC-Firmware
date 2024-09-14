@@ -8,6 +8,8 @@
 #include "timekeeping/timekeeping.h"
 #include "uart_handler/uart_handler.h"
 #include "transforms/arrays.h"
+#include "stm32/stm32_reboot_reason.h"
+#include "log/log.h"
 
 #include "cmsis_os.h"
 
@@ -22,7 +24,18 @@ char TASK_heartbeat_timing_str[128] = {0};
 void TASK_DEBUG_print_heartbeat(void *argument) {
 	TASK_HELP_start_of_task();
 
-	DEBUG_uart_print_str("TASK_DEBUG_print_heartbeat() -> started (booted)\n");
+	LOG_message(
+		LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+		"TASK_DEBUG_print_heartbeat() -> started (booted)."
+	);
+
+	// Fetch the reset cause right upon boot so that it is logged for each boot immediately.
+	const char* STM32_reset_cause_name = STM32_reset_cause_enum_to_str(STM32_get_reset_cause());
+	LOG_message(
+		LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+		"Reset reason: %s.", STM32_reset_cause_name
+	);
+
 	osDelay(100);
 
     uint64_t unix_time_ms = 0;
