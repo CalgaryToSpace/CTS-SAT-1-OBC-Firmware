@@ -9,6 +9,7 @@
 #include "unit_tests/test_telecommand_arg_helpers.h"
 #include "unit_tests/unit_test_helpers.h"
 #include "unit_tests/test_configuration_variables.h"
+#include "unit_tests/test_temperature_sensor.h"
 
 
 // extern
@@ -135,6 +136,11 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_file = "telecommands/telecommand_args_helpers",
         .test_func_name = "TCMD_extract_int64_arg"
     },
+    {
+        .test_func = TEST_EXEC__TEMP_calculate_decimal_portion,
+        .test_file = "temperature_sensor/temperature_sensor_driver",
+        .test_func_name = "TEST_EXEC__TEMP_calculate_decimal_portion"
+    }
 };
 
 // extern
