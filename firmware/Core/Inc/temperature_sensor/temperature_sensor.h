@@ -9,12 +9,10 @@ typedef enum
     TWO_BIT_PRECISION,
     THREE_BIT_PRECISION,
     FOUR_BIT_PRECISION,
-} DataPrecision;
+} Temperature_Sensor_Data_Precision_t;
 
-int read_temperature(float *result);
+uint8_t read_temperature(float *result);
 
-float calculate_decimal_portion(uint8_t bits, DataPrecision precision);
-
-float calculate_integer_portion(uint8_t bits);
+float calculate_decimal_portion(uint8_t bits, Temperature_Sensor_Data_Precision_t precision);
 
 #endif
