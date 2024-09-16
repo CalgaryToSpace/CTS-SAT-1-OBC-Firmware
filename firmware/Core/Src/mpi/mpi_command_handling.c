@@ -22,7 +22,7 @@ MPI_rx_mode_t MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
 /// @param MPI_rx_buffer_max_size The maximum size of the MPI response buffer
 /// @param MPI_rx_buffer_len Pointer to variable that will contain the length of the populated MPI response buffer 
 /// @return 0: Success, 1: No bytes to send, 2: Failed UART transmission, 3: Failed UART reception, 
-///			4: Timeout waiting for 1st byte from MPI, 5: MPI failed to execute CMD, 6: Invalid response from the MPI
+///			4: Timeout waiting for 1st byte from MPI
 /// @note If the MPI is in "science data" mode, it will be disabled after the command is executed.
 uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const size_t bytes_to_send_len, uint8_t *MPI_rx_buffer, 
                                           const size_t MPI_rx_buffer_max_size, uint16_t *MPI_rx_buffer_len) {
@@ -55,7 +55,7 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
         return 3; // Error code: Failed UART reception
     }
 
-    // Record start time for mpi response reception & reset UART buffer write index
+    // Reset UART buffer write index & record start time for mpi response reception
     UART_mpi_rx_buffer_write_idx = 0;
     const uint32_t UART_mpi_rx_start_time_ms = HAL_GetTick();
 
@@ -101,15 +101,14 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
             // Reset UART buffer write index
             UART_mpi_rx_buffer_write_idx = 0;
 
-            // Validate MPI response
-            const uint8_t MPI_response_result = MPI_validate_telecommand_response(bytes_to_send, MPI_rx_buffer, bytes_to_send_len);
+            // // Validate MPI response
+            // const uint8_t MPI_response_result = MPI_validate_telecommand_response(bytes_to_send, MPI_rx_buffer, bytes_to_send_len);
 
-            // Check for validation errors & report corresponding error code
-            if (MPI_response_result > 0) {
-                // DMA is already stopped at the top of this if block & MPI UART mode has also
-                // been reset already.
-                return MPI_response_result;
-            }
+            // // Check for validation errors & report corresponding error code
+            // if (MPI_response_result > 0) {
+            //     // DMA is already stopped at the top of this if block & MPI UART mode has also been reset already
+            //     return MPI_response_result;
+            // }
 
             return 0; // MPI successfully executed the telecommand
         }

@@ -23,18 +23,27 @@ volatile uint32_t UART_eps_last_write_time_ms = 0; // extern
 volatile uint8_t UART_eps_is_expecting_data = 0; // extern; set to 1 when a command is sent, and we're awaiting a response
 volatile uint8_t UART_eps_buffer_last_rx_byte = 0; // not an extern
 
-// UART MPI cmd response buffer
+// UART MPI cmd response buffer (USART1)
 const uint16_t UART_mpi_rx_buffer_len = 50; // extern
 volatile uint8_t UART_mpi_rx_buffer[50]; // extern
 volatile uint8_t UART_mpi_rx_last_byte = 0; // extern
 volatile uint32_t UART_mpi_rx_last_byte_write_time_ms = 0; // extern
 volatile uint16_t UART_mpi_rx_buffer_write_idx = 0; // extern
+// UART 1 is connected as: 
 
 // UART MPI science data buffer (WILL NEED IN THE FUTURE)
 // const uint16_t UART_mpi_data_rx_buffer_len = 8192; // extern 
 // volatile uint8_t UART_mpi_data_rx_buffer[8192]; // extern
 // const uint16_t UART_mpi_data_buffer_len = 80000; // extern
 // volatile uint8_t UART_mpi_data_buffer[80000]; // extern
+
+// UART2 response buffer
+// TODO: Configure with peripheral required specifications
+const uint16_t UART2_rx_buffer_len = 5120; // extern
+volatile uint8_t UART2_rx_buffer[5120]; // extern // TODO: confirm that this volatile means that the contents are volatile but the pointer is not
+volatile uint16_t UART2_rx_buffer_write_idx = 0; // extern
+volatile uint32_t UART2_rx_last_write_time_ms = 0; // extern
+volatile uint8_t UART2_rx_buffer_last_rx_byte = 0; // extern
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     // This ISR function gets called every time a byte is received on the UART.
@@ -105,6 +114,24 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         }
     }
 
+    // TODO: Verify implementation with peripheral connected. Currently configured to follow interrupt based receive
+    else if(huart->Instance == USART2){
+        // Add the byte to the buffer
+        if (UART2_rx_buffer_write_idx >= UART2_rx_buffer_len) {
+            // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART telecommand buffer is full\n");
+            
+            // Shift all bytes left by 1
+            for (uint16_t i = 1; i < UART2_rx_buffer_len; i++) {
+                UART2_rx_buffer[i - 1] = UART2_rx_buffer[i];
+            }
+
+            // Reset to a valid index
+            UART2_rx_buffer_write_idx = UART2_rx_buffer_len - 1;
+        }
+        UART2_rx_buffer[UART2_rx_buffer_write_idx++] = UART2_rx_buffer_last_rx_byte;
+        UART2_rx_last_write_time_ms = HAL_GetTick();
+        HAL_UART_Receive_IT(&huart2, (uint8_t*) &UART2_rx_buffer_last_rx_byte, 1);
+    }
     else {
         // FIXME: add the rest (camera, MPI, maybe others)
         DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> unknown UART instance\n"); // FIXME: remove
