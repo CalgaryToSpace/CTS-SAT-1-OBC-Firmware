@@ -21,6 +21,14 @@ extern volatile uint8_t UART_mpi_rx_last_byte; // Last received byte from the MP
 extern volatile uint32_t UART_mpi_rx_last_byte_write_time_ms; // Last write time in milliseconds for MPI response
 extern volatile uint16_t UART_mpi_rx_buffer_write_idx; // Write index for MPI response buffer
 
+// UART2 response buffer
+// TODO: Configure with peripheral required specifications
+extern const uint16_t UART2_rx_buffer_len;
+extern volatile uint8_t UART2_rx_buffer[];
+extern volatile uint16_t UART2_rx_buffer_write_idx;
+extern volatile uint32_t UART2_rx_last_write_time_ms;
+extern volatile uint8_t UART2_rx_buffer_last_rx_byte;
+
 void UART_init_uart_handlers(void);
 
 
