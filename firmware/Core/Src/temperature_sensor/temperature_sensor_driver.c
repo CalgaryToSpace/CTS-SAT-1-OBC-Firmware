@@ -7,7 +7,7 @@
 const uint16_t TEMP_SENSOR_device_addr =  0x91;
 const uint16_t TEMP_SENSOR_temp_register_addr  = 0x00;
 const uint16_t TEMP_SENSOR_config_register_addr = 0x01;
-const Temperature_Sensor_Data_Precision_t TEMP_SENSOR_data_precision = ONE_BIT_PRECISION;
+const Temperature_Sensor_Data_Precision_t TEMP_SENSOR_data_precision = TEMP_SENSOR_ONE_BIT_PRECISION;
 
 
 /// @brief Reads the temperature from the STDS75DS2F and stores it in the provided variable pointer result. 
@@ -62,26 +62,26 @@ float calculate_decimal_portion(uint8_t bits, Temperature_Sensor_Data_Precision_
 
     switch (TEMP_SENSOR_data_precision)
     {
-        case ONE_BIT_PRECISION: 
-            masked_bits = bits & 0x80;
+        case TEMP_SENSOR_ONE_BIT_PRECISION: 
+            masked_bits = bits & 0x80; // 0b100000000
             masked_bits = masked_bits >> 7;
             decimal = (float)masked_bits / 2;
             break;
 
-        case TWO_BIT_PRECISION:
-            masked_bits = bits & 0xC0;
+        case TEMP_SENSOR_TWO_BIT_PRECISION:
+            masked_bits = bits & 0xC0; // 0b11000000
             masked_bits = masked_bits >> 6;
             decimal = (float)masked_bits / 4;
             break;
         
-        case THREE_BIT_PRECISION:
-            masked_bits = bits & 0xE0;
+        case TEMP_SENSOR_THREE_BIT_PRECISION:
+            masked_bits = bits & 0xE0; // 0b11100000
             masked_bits = masked_bits >> 5;
             decimal = (float)masked_bits / 8;
             break;
 
-        case FOUR_BIT_PRECISION:
-            masked_bits = bits & 0xF0;
+        case TEMP_SENSOR_FOUR_BIT_PRECISION:
+            masked_bits = bits & 0xF0; // 0b11110000
             masked_bits = masked_bits >> 4;
             decimal = (float)masked_bits /  16;
             break;

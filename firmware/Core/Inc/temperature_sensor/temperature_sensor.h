@@ -5,10 +5,10 @@
 
 typedef enum  
 {
-    ONE_BIT_PRECISION = 0,
-    TWO_BIT_PRECISION,
-    THREE_BIT_PRECISION,
-    FOUR_BIT_PRECISION,
+    TEMP_SENSOR_ONE_BIT_PRECISION = 0,
+    TEMP_SENSOR_TWO_BIT_PRECISION,
+    TEMP_SENSOR_THREE_BIT_PRECISION,
+    TEMP_SENSOR_FOUR_BIT_PRECISION,
 } Temperature_Sensor_Data_Precision_t;
 
 uint8_t read_temperature(float *result);
