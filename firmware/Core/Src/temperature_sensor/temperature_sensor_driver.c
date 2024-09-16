@@ -2,7 +2,7 @@
 #include "stdio.h"
 #include <stdint.h>
 
-#include "temperature_sensor.h"
+#include "temperature_sensor/temperature_sensor.h"
 
 const uint16_t TEMP_SENSOR_device_addr =  0x91;
 const uint16_t TEMP_SENSOR_temp_register_addr  = 0x00;
