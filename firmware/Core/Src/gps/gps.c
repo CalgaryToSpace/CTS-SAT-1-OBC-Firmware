@@ -56,7 +56,7 @@ uint32_t calculate_block_crc32( uint32_t ulCount, uint8_t *ucBuffer ) {
 /// @param status_str The status string to parse.
 /// @param status Pointer to GPS_reference_time_status_t where the status will be stored.
 /// @return Returns 0 on success, 1 if the status string is unrecognized.
-uint8_t assign_gps_time_status(const char *status_str, GPS_reference_time_status_t *status) {
+uint8_t GPS_reference_time_status_str_to_enum(const char *status_str, GPS_reference_time_status_t *status) {
     if (strcmp(status_str, "UNKNOWN") == 0) {
         *status = GPS_UNKNOWN;
     } else if (strcmp(status_str, "APPROXIMATE") == 0) {
@@ -174,7 +174,7 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
     if (parse_result != 0) {  
         return parse_result;  
     }
-    const uint8_t status_result = assign_gps_time_status(token_buffer, &result->time_status);
+    const uint8_t status_result = GPS_reference_time_status_str_to_enum(token_buffer, &result->time_status);
     if (status_result != 0) {
         // Time Status not recognized
         return status_result;
