@@ -214,10 +214,14 @@ int8_t LFS_make_directory(const char dir_name[])
         return 1;
     }
 
-    int8_t make_dir_result = lfs_mkdir(&LFS_filesystem, dir_name);
+    const int8_t make_dir_result = lfs_mkdir(&LFS_filesystem, dir_name);
     if (make_dir_result < 0)
     {
-        DEBUG_uart_print_str("Error creating directory.\n");
+        LOG_message(
+            LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "Error %d creating directory.",
+            make_dir_result
+        );
         return make_dir_result;
     }
 

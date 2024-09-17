@@ -14,7 +14,18 @@
 /// @param response_str_len 
 /// @return 0 on success. >0 if there was an error.
 uint8_t LFS_benchmark_write_read(uint16_t write_chunk_size, uint16_t write_chunk_count, char* response_str, uint16_t response_str_len) {
-    const char file_name[] = "benchmark_test.txt";
+    const char dir_name[] = "benchmark_write_read";
+    // TODO: check if dir exists first; currently it gives a warning
+    LFS_make_directory(dir_name);
+    
+    char file_name[100];
+    snprintf(
+        file_name,
+        sizeof(file_name),
+        "%s/benchmark_test_%lu.txt",
+        dir_name,
+        HAL_GetTick()
+    );
     response_str[0] = '\0';
 
     uint8_t expected_checksum = 0;
