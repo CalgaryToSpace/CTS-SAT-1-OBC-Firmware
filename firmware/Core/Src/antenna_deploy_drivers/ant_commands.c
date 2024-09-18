@@ -155,11 +155,15 @@ uint8_t ANT_CMD_measure_temp() {
     DEBUG_uart_print_str("\n");
     return comms_err;
 }
+
+
+static uint8_t extract_bit(uint8_t byte, uint8_t position) {return byte >> position & 1u;}
+
 /// @brief writes 2 bytes of information representing the deployment status of the antennas to the passed buffer,
 ///         information on interpreting the response may be found in the ISIS Antenna System user manual. Doc ID: ISIS.ANTS.UM.001 pg. 42
 /// @param response a two byte buffer where the status information is written to.
 /// @return 0 when the antenna deployment system has received the command, >0 otherwise
-uint8_t ANT_CMD_report_deployment_status(uint8_t response[2]) {
+uint8_t ANT_CMD_report_deployment_status(struct Antenna_deployment_status *response) {
     const uint8_t CMD_LEN  = 1;
     uint8_t cmd_buf[CMD_LEN];
 
@@ -169,7 +173,28 @@ uint8_t ANT_CMD_report_deployment_status(uint8_t response[2]) {
     
     if (status == 0) {
         const uint8_t response_size = 2;
-        status = ANT_get_response(response, response_size);
+        uint8_t raw_bytes[response_size];
+        status = ANT_get_response(raw_bytes, response_size);
+
+        response->antenna_1_deployed= !extract_bit(raw_bytes[1], 7);       
+        response->antenna_1_deployment_time_limit_reached= extract_bit(raw_bytes[1], 6);       
+        response->antenna_1_deployment_system_active= extract_bit(raw_bytes[1], 5);       
+
+        response->antenna_2_deployed= !extract_bit(raw_bytes[1], 3);       
+        response->antenna_2_deployment_time_limit_reached= extract_bit(raw_bytes[1], 2);       
+        response->antenna_2_deployment_system_active= extract_bit(raw_bytes[1], 1);
+
+        response->antenna_3_deployed= !extract_bit(raw_bytes[0], 7);       
+        response->antenna_3_deployment_time_limit_reached= extract_bit(raw_bytes[0], 6);       
+        response->antenna_3_deployment_system_active= extract_bit(raw_bytes[0], 5);       
+
+        response->antenna_4_deployed= !extract_bit(raw_bytes[0], 3);       
+        response->antenna_4_deployment_time_limit_reached= extract_bit(raw_bytes[0], 2);       
+        response->antenna_4_deployment_system_active= extract_bit(raw_bytes[0], 1);
+
+        response->ignoring_deployment_switches = extract_bit(raw_bytes[1], 0);
+        response->independent_burn = extract_bit(raw_bytes[0], 4);
+        response->antenna_system_armed = extract_bit(raw_bytes[0], 0);
     }
     return status;
 }
@@ -245,3 +270,4 @@ uint8_t ANT_CMD_report_antenna_deployment_activation_time(uint8_t antenna, uint1
     }
     return status;
 }
+

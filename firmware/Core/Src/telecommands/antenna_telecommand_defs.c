@@ -217,14 +217,57 @@ uint8_t TCMDEXEC_ant_cancel_deployment_system_activation(const char *args_str, T
 uint8_t TCMDEXEC_ant_report_deployment_status(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     
-    uint8_t response[2];
-    const uint8_t comms_err = ANT_CMD_report_deployment_status(response);
+    struct Antenna_deployment_status response;
+    const uint8_t comms_err = ANT_CMD_report_deployment_status(&response);
     if (comms_err != 0) {
         snprintf(response_output_buf, response_output_buf_len, "Error: failed to report status.");
         return comms_err;
     }
 
-    snprintf(response_output_buf, response_output_buf_len, "Success, deployment status: %x %x", response[0], response[1]);
+    snprintf(
+        response_output_buf, 
+        response_output_buf_len, 
+        "Success, deployment status ----- \n Antenna 1: %u \n Antenna 2: %u \n Antenna 3: %u \n Antenna 4: %u \n",
+         response.antenna_1_deployed,
+         response.antenna_2_deployed,
+         response.antenna_3_deployed,
+         response.antenna_4_deployed
+        );
+        //remove the newline characters at the end of the strings to get a proper JSON string
+    snprintf(response_output_buf, response_output_buf_len,
+        "{"
+        "\"antenna_1_deployed\": %d,"   "\n"
+        "\"antenna_1_deployment_time_limit_reached\": %d," "\n"
+        "\"antenna_1_deployment_system_active\": %d," "\n"
+        "\"antenna_2_deployed\": %d," "\n"
+        "\"antenna_2_deployment_time_limit_reached\": %d," "\n"
+        "\"antenna_2_deployment_system_active\": %d," "\n"
+        "\"antenna_3_deployed\": %d," "\n"
+        "\"antenna_3_deployment_time_limit_reached\": %d," "\n"
+        "\"antenna_3_deployment_system_active\": %d," "\n"
+        "\"antenna_4_deployed\": %d," "\n"
+        "\"antenna_4_deployment_time_limit_reached\": %d," "\n"
+        "\"antenna_4_deployment_system_active\": %d," "\n"
+        "\"independent_burn\": %d," "\n"
+        "\"ignoring_deployment_switches\": %d," "\n"
+        "\"antenna_system_armed\": %d" "\n"
+        "}",
+        response.antenna_1_deployed,
+        response.antenna_1_deployment_time_limit_reached,
+        response.antenna_1_deployment_system_active,
+        response.antenna_2_deployed,
+        response.antenna_2_deployment_time_limit_reached,
+        response.antenna_2_deployment_system_active,
+        response.antenna_3_deployed,
+        response.antenna_3_deployment_time_limit_reached,
+        response.antenna_3_deployment_system_active,
+        response.antenna_4_deployed,
+        response.antenna_4_deployment_time_limit_reached,
+        response.antenna_4_deployment_system_active,
+        response.independent_burn,
+        response.ignoring_deployment_switches,
+        response.antenna_system_armed
+    );
     return 0;
 }
 
