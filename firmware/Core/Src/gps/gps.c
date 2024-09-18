@@ -20,7 +20,7 @@
 /// @param i
 /// - Arg 0: variable name
 /// @return 32 bit CRC Value
-uint32_t crc32_value(uint8_t i) {
+uint32_t GPS_crc32_value(uint8_t i) {
     int j;
     uint32_t crc;
     crc = i;

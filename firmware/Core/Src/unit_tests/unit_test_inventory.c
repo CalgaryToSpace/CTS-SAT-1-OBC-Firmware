@@ -392,9 +392,9 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func_name = "ANT_convert_raw_temp_to_cCelsius"
     },
     {
-        .test_func = TEST_EXEC__GPS_assign_gps_time_status,
+        .test_func = TEST_EXEC__GPS_reference_time_status_str_to_enum,
         .test_file = "gps/gps",
-        .test_func_name = "assign_gps_time_status"
+        .test_func_name = "GPS_reference_time_status_str_to_enum"
     },
     {
         .test_func = TEST_EXEC__GPS_assign_gps_solution_status,
