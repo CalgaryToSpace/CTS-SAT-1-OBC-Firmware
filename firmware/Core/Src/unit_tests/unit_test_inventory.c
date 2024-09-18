@@ -148,29 +148,29 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func_name = "GPS_reference_time_status_str_to_enum"
     },
     {
-        .test_func = TEST_EXEC__GPS_assign_gps_solution_status,
+        .test_func = TEST_EXEC__GPS_solution_status_str_to_enum,
         .test_file = "gps/gps",
-        .test_func_name = "assign_gps_solution_status"
+        .test_func_name = "GPS_solution_status_str_to_enum"
     },
     {
-        .test_func = TEST_EXEC__GPS_position_velocity_type,
+        .test_func = TEST_EXEC__GPS_position_type_str_to_enum,
         .test_file = "gps/gps",
-        .test_func_name = "assign_gps_position_velocity_type"
+        .test_func_name = "GPS_position_type_str_to_enum"
     },
     {
-        .test_func = TEST_EXEC__GPS_Parse_header,
+        .test_func = TEST_EXEC__GPS_header_response_parser,
         .test_file = "gps/gps",
-        .test_func_name = "parse_gps_header"
+        .test_func_name = "GPS_header_response_parser"
     },
     {
-        .test_func = TEST_EXEC__GPS_Parse_bestxyza,
+        .test_func = TEST_EXEC__GPS_bestxyza_data_parser,
         .test_file = "gps/gps",
-        .test_func_name = "parse_bestxyza_data"
+        .test_func_name = "GPS_bestxyza_data_parser"
     },
     {
-        .test_func = TEST_EXEC__GPS_Parse_timea,
+        .test_func = TEST_EXEC__GPS_timea_data_parser,
         .test_file = "gps/gps",
-        .test_func_name = "parse_timea_data"
+        .test_func_name = "GPS_timea_data_parser"
     },
 };
 

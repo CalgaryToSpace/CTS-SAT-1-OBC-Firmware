@@ -4,11 +4,11 @@
 #include <stdint.h>
 
 uint8_t TEST_EXEC__GPS_reference_time_status_str_to_enum();
-uint8_t TEST_EXEC__GPS_assign_gps_solution_status();
-uint8_t TEST_EXEC__GPS_position_velocity_type();
+uint8_t TEST_EXEC__GPS_solution_status_str_to_enum();
+uint8_t TEST_EXEC__GPS_position_type_str_to_enum();
 
-uint8_t TEST_EXEC__GPS_Parse_header();
-uint8_t TEST_EXEC__GPS_Parse_bestxyza();
-uint8_t TEST_EXEC__GPS_Parse_timea();
+uint8_t TEST_EXEC__GPS_header_response_parser();
+uint8_t TEST_EXEC__GPS_bestxyza_data_parser();
+uint8_t TEST_EXEC__GPS_timea_data_parser();
 
 #endif // __INCLUDE_GUARD__UNIT_TEST_GPS_H__

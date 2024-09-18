@@ -47,124 +47,124 @@ uint8_t TEST_EXEC__GPS_reference_time_status_str_to_enum() {
 
 }
 
-uint8_t TEST_EXEC__GPS_assign_gps_solution_status() {
+uint8_t TEST_EXEC__GPS_solution_status_str_to_enum() {
     GPS_solution_status_enum_t status;
 
     // Test with recognized status strings
-    TEST_ASSERT_TRUE(assign_gps_solution_status("SOL_COMPUTED", &status) == 0);
+    TEST_ASSERT_TRUE(GPS_solution_status_str_to_enum("SOL_COMPUTED", &status) == 0);
     TEST_ASSERT_TRUE(status == GPS_SOL_COMPUTED);
-    TEST_ASSERT_TRUE(assign_gps_solution_status("INSUFFICIENT_OBS", &status) == 0);
+    TEST_ASSERT_TRUE(GPS_solution_status_str_to_enum("INSUFFICIENT_OBS", &status) == 0);
     TEST_ASSERT_TRUE(status == GPS_INSUFFICIENT_OBS);
-    TEST_ASSERT_TRUE(assign_gps_solution_status("NO_CONVERGENCE", &status) == 0);
+    TEST_ASSERT_TRUE(GPS_solution_status_str_to_enum("NO_CONVERGENCE", &status) == 0);
     TEST_ASSERT_TRUE(status == GPS_NO_CONVERGENCE);
-    TEST_ASSERT_TRUE(assign_gps_solution_status("SINGULARITY", &status) == 0);
+    TEST_ASSERT_TRUE(GPS_solution_status_str_to_enum("SINGULARITY", &status) == 0);
     TEST_ASSERT_TRUE(status == GPS_SINGULARITY);
-    TEST_ASSERT_TRUE(assign_gps_solution_status("COV_TRACE", &status) == 0);
+    TEST_ASSERT_TRUE(GPS_solution_status_str_to_enum("COV_TRACE", &status) == 0);
     TEST_ASSERT_TRUE(status == GPS_COV_TRACE);
-    TEST_ASSERT_TRUE(assign_gps_solution_status("TEST_DIST", &status) == 0);
+    TEST_ASSERT_TRUE(GPS_solution_status_str_to_enum("TEST_DIST", &status) == 0);
     TEST_ASSERT_TRUE(status == GPS_TEST_DIST);
-    TEST_ASSERT_TRUE(assign_gps_solution_status("COLD_START", &status) == 0);
+    TEST_ASSERT_TRUE(GPS_solution_status_str_to_enum("COLD_START", &status) == 0);
     TEST_ASSERT_TRUE(status == GPS_COLD_START);
-    TEST_ASSERT_TRUE(assign_gps_solution_status("V_H_LIMIT", &status) == 0);
+    TEST_ASSERT_TRUE(GPS_solution_status_str_to_enum("V_H_LIMIT", &status) == 0);
     TEST_ASSERT_TRUE(status == GPS_V_H_LIMIT);
-    TEST_ASSERT_TRUE(assign_gps_solution_status("VARIANCE", &status) == 0);
+    TEST_ASSERT_TRUE(GPS_solution_status_str_to_enum("VARIANCE", &status) == 0);
     TEST_ASSERT_TRUE(status == GPS_VARIANCE);
-    TEST_ASSERT_TRUE(assign_gps_solution_status("RESIDUALS", &status) == 0);
+    TEST_ASSERT_TRUE(GPS_solution_status_str_to_enum("RESIDUALS", &status) == 0);
     TEST_ASSERT_TRUE(status == GPS_RESIDUALS);
-    TEST_ASSERT_TRUE(assign_gps_solution_status("INTEGRITY_WARNING", &status) == 0);
+    TEST_ASSERT_TRUE(GPS_solution_status_str_to_enum("INTEGRITY_WARNING", &status) == 0);
     TEST_ASSERT_TRUE(status == GPS_INTEGRITY_WARNING);
 
     // Test with an unrecognized status string
-    TEST_ASSERT_TRUE(assign_gps_solution_status("UNKNOWN_STATUS", &status) == 1);
+    TEST_ASSERT_TRUE(GPS_solution_status_str_to_enum("UNKNOWN_STATUS", &status) == 1);
 
     // Test with an empty string
-    TEST_ASSERT_TRUE(assign_gps_solution_status("", &status) == 1);
+    TEST_ASSERT_TRUE(GPS_solution_status_str_to_enum("", &status) == 1);
 
     // Test with a NULL string
-    TEST_ASSERT_TRUE(assign_gps_solution_status(NULL, &status) == 1);
+    TEST_ASSERT_TRUE(GPS_solution_status_str_to_enum(NULL, &status) == 1);
 
     return 0;
 }
 
 
-uint8_t TEST_EXEC__GPS_position_velocity_type() {
+uint8_t TEST_EXEC__GPS_position_type_str_to_enum() {
     GPS_position_type_enum_t type;
 
     // Test with recognized type strings
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("NONE", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("NONE", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_NONE);
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("FIXEDPOS", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("FIXEDPOS", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_FIXEDPOS);
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("FIXEDHEIGHT", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("FIXEDHEIGHT", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_FIXEDHEIGHT);
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("DOPPLER_VELOCITY", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("DOPPLER_VELOCITY", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_DOPPLER_VELOCITY);
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("SINGLE", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("SINGLE", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_SINGLE);
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("PSDIFF", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("PSDIFF", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_PSDIFF);
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("WAAS", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("WAAS", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_WAAS);
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("PROPAGATED", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("PROPAGATED", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_PROPAGATED);
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("L1_FLOAT", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("L1_FLOAT", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_L1_FLOAT);
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("NARROW_FLOAT", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("NARROW_FLOAT", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_NARROW_FLOAT);
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("L1_INT", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("L1_INT", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_L1_INT);
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("WIDE_INT", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("WIDE_INT", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_WIDE_INT);
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("NARROW_INT", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("NARROW_INT", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_NARROW_INT);
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("RTK_DIRECT_INS", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("RTK_DIRECT_INS", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_RTK_DIRECT_INS);
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("INS_SBAS", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("INS_SBAS", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_INS_SBAS);
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("INS_PSRSP", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("INS_PSRSP", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_INS_PSRSP);
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("INS_PSRDIFF", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("INS_PSRDIFF", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_INS_PSRDIFF);
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("INS_RTKFLOAT", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("INS_RTKFLOAT", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_INS_RTKFLOAT);
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("INS_RTKFIXED", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("INS_RTKFIXED", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_INS_RTKFIXED);
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("PPP_CONVERGING", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("PPP_CONVERGING", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_PPP_CONVERGING);
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("PPP", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("PPP", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_PPP);
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("OPERATIONAL", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("OPERATIONAL", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_OPERATIONAL);
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("WARNING", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("WARNING", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_WARNING);
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("OUT_OF_BOUNDS", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("OUT_OF_BOUNDS", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_OUT_OF_BOUNDS);
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("INS_PPP_CONVERGING", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("INS_PPP_CONVERGING", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_INS_PPP_CONVERGING);
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("INS_PPP", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("INS_PPP", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_INS_PPP);
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("PPP_BASIC_CONVERGING", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("PPP_BASIC_CONVERGING", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_PPP_BASIC_CONVERGING);
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("PPP_BASIC", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("PPP_BASIC", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_PPP_BASIC);
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("INS_PPP_BASIC_CONVERGING", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("INS_PPP_BASIC_CONVERGING", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_INS_PPP_BASIC_CONVERGING);
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("INS_PPP_BASIC", &type) == 0);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("INS_PPP_BASIC", &type) == 0);
     TEST_ASSERT_TRUE(type == GPS_TYPE_INS_PPP_BASIC);
 
     // Test with an unrecognized type string
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("INVALID_TYPE", &type) == 1);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("INVALID_TYPE", &type) == 1);
 
     // Test with an empty string
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type("", &type) == 1);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum("", &type) == 1);
 
     // Test with a NULL string
-    TEST_ASSERT_TRUE(assign_gps_position_velocity_type(NULL, &type) == 1);
+    TEST_ASSERT_TRUE(GPS_position_type_str_to_enum(NULL, &type) == 1);
 
     return 0;
 }
 
-uint8_t TEST_EXEC__GPS_Parse_header(){
+uint8_t TEST_EXEC__GPS_header_response_parser(){
     // TODO: Try testing with another header string
     
     // Testing with a Valid GPS Header
@@ -175,7 +175,7 @@ uint8_t TEST_EXEC__GPS_Parse_header(){
 
     gps_response_header gps_header_result;
 
-    uint8_t result = parse_gps_header(gps_data, &gps_header_result);
+    uint8_t result = GPS_header_response_parser(gps_data, &gps_header_result);
     TEST_ASSERT_TRUE(result == 0);
     TEST_ASSERT_TRUE(strcmp(gps_header_result.log_name, "BESTXYZA") == 0);
     TEST_ASSERT_TRUE(gps_header_result.time_status == GPS_REF_TIME_FINESTEERING);
@@ -186,32 +186,32 @@ uint8_t TEST_EXEC__GPS_Parse_header(){
     "9924,32768;VALID,1.667187222e-10,9.641617960e-10,-18.00000000000,"
     "2017,1,5,22,58,50000,VALID*2a066e78")
     ;
-    result = parse_gps_header(gps_data, &gps_header_result);
+    result = GPS_header_response_parser(gps_data, &gps_header_result);
     TEST_ASSERT_TRUE(result == 0);
 
     // Testing an empty string
     strcpy(gps_data,"");
-    result = parse_gps_header(gps_data, &gps_header_result);
+    result = GPS_header_response_parser(gps_data, &gps_header_result);
     TEST_ASSERT_TRUE(result == 1);
 
     // Testing Missing Sync Character
     strcpy(gps_data,"BESTXYZA,COM1,0,55.0,FINESTEERING,1419,340033.000,02000040,d821,2724;");
-    result = parse_gps_header(gps_data, &gps_header_result);
+    result = GPS_header_response_parser(gps_data, &gps_header_result);
     TEST_ASSERT_TRUE(result == 2);
 
     // Testing missing Terminating character
     strcpy(gps_data,"#BESTXYZA,COM1,0,55.0,FINESTEERING,1419,340033.000,02000040,d821,2724");
-    result = parse_gps_header(gps_data, &gps_header_result);
+    result = GPS_header_response_parser(gps_data, &gps_header_result);
     TEST_ASSERT_TRUE(result == 2);
 
     // Testing missing both Sync and Terminating Character
     strcpy(gps_data,"BESTXYZA,COM1,0,55.0,FINESTEERING,1419,340033.000,02000040,d821,2724");
-    result = parse_gps_header(gps_data, &gps_header_result);
+    result = GPS_header_response_parser(gps_data, &gps_header_result);
     TEST_ASSERT_TRUE(result == 2);
 
     // Testing missing both Sync and Terminating Character
     strcpy(gps_data,"BESTXYZA,COM1,0,55.0,FINESTEERING,1419,340033.000,02000040,d821,2724");
-    result = parse_gps_header(gps_data, &gps_header_result);
+    result = GPS_header_response_parser(gps_data, &gps_header_result);
     TEST_ASSERT_TRUE(result == 2);
 
     // Testing when the ; charcacter comes before the # character
@@ -220,7 +220,7 @@ uint8_t TEST_EXEC__GPS_Parse_header(){
                   "0.0099,0.0219,0.0115,SOL_COMPUTED,NARROW_INT,0.0011,-0.0049,-0.0001,0.0199,0.0439,"
                   "0.0230,\"AAAA\",0.250,1.000,0.000,12,11,11,11,0,01,0,33*e9eafeca"
                   "#BESTXYZA,COM1,0,55.0,FINESTEERING,1419,340033.000,02000040,d821,2724;" );
-    result = parse_gps_header(gps_data, &gps_header_result);
+    result = GPS_header_response_parser(gps_data, &gps_header_result);
     TEST_ASSERT_TRUE(result == 3);
 
     // Testing when the header buffer is exceeded
@@ -228,13 +228,13 @@ uint8_t TEST_EXEC__GPS_Parse_header(){
                     "BESTXYZA,COM1,0,55.0,FINESTEERING,1419,340033.000,02000040,d821,2724"
                     "BESTXYZA,COM1,0,55.0,FINESTEERING,1419,340033.000,02000040,d821,2724"
                     "BESTXYZA,COM1,0,55.0,FINESTEERING,1419,340033.000,02000040,d821,2724;");
-    result = parse_gps_header(gps_data, &gps_header_result);
+    result = GPS_header_response_parser(gps_data, &gps_header_result);
     TEST_ASSERT_TRUE(result == 4);
 
     return 0;
 }
 
-uint8_t TEST_EXEC__GPS_Parse_bestxyza(){
+uint8_t TEST_EXEC__GPS_bestxyza_data_parser(){
     char gps_data[600] = "#BESTXYZA,COM1,0,55.0,FINESTEERING,1419,340033.000,02000040,d821,2724;"
                   "SOL_COMPUTED,NARROW_INT,-1634531.5683,-3664618.0326,-3664618.0326,0.0099,"
                   "0.0219,0.0115,SOL_COMPUTED,NARROW_INT,0.0011,-0.0049,-0.0001,0.0199,0.0439,"
@@ -243,7 +243,7 @@ uint8_t TEST_EXEC__GPS_Parse_bestxyza(){
     gps_bestxyza_response result;
 
     // Call bestxyza parser
-    uint8_t parse_result = parse_bestxyza_data(gps_data, &result);
+    uint8_t parse_result = GPS_bestxyza_data_parser(gps_data, &result);
     TEST_ASSERT_TRUE(parse_result == 0);
     TEST_ASSERT_TRUE(result.position_solution_status == GPS_SOL_COMPUTED);
     TEST_ASSERT_TRUE(result.position_type == GPS_TYPE_NARROW_INT);
@@ -259,7 +259,7 @@ uint8_t TEST_EXEC__GPS_Parse_bestxyza(){
 
     // Testing with an empty string
     strcpy(gps_data, "");
-    parse_result = parse_bestxyza_data(gps_data, &result);
+    parse_result = GPS_bestxyza_data_parser(gps_data, &result);
     TEST_ASSERT_TRUE(parse_result == 1);
 
     // Introducing an error within the header of the GPS response: Missing delimiting character
@@ -267,7 +267,7 @@ uint8_t TEST_EXEC__GPS_Parse_bestxyza(){
                   "SOL_COMPUTED,NARROW_INT,-1634531.5683,-3664618.0326,-3664618.0326,0.0099,"
                   "0.0219,0.0115,SOL_COMPUTED,NARROW_INT,0.0011,-0.0049,-0.0001,0.0199,0.0439,"
                   "0.0230,\"AAAA\",0.250,1.000,0.000,12,11,11,11,0,01,0,33*e9eafeca");
-    parse_result = parse_bestxyza_data(gps_data, &result);
+    parse_result = GPS_bestxyza_data_parser(gps_data, &result);
     TEST_ASSERT_TRUE(parse_result == 2);
 
     // Testing with a different GPS Header
@@ -275,12 +275,12 @@ uint8_t TEST_EXEC__GPS_Parse_bestxyza(){
     "#TIMEA,COM1,0,86.5,FINESTEERING,1930,428348.000,02000020,9924,32768;"
     "VALID,1.667187222e-10,9.641617960e-10,-18.00000000000,2017,1,5,22,58,50000,VALID*2a066e78"
     );
-    parse_result = parse_bestxyza_data(gps_data, &result);
+    parse_result = GPS_bestxyza_data_parser(gps_data, &result);
     TEST_ASSERT_TRUE(parse_result == 3);
 
     // Missing bestxyza data response
     strcpy(gps_data,"#BESTXYZA,COM1,0,55.0,FINESTEERING,1419,340033.000,02000040,d821,2724;");
-    parse_result = parse_bestxyza_data(gps_data, &result);
+    parse_result = GPS_bestxyza_data_parser(gps_data, &result);
     TEST_ASSERT_TRUE(parse_result == 4);
 
     // Missing delimiting character * which denotes the end of the data response
@@ -288,7 +288,7 @@ uint8_t TEST_EXEC__GPS_Parse_bestxyza(){
                     "SOL_COMPUTED,NARROW_INT,-1634531.5683,-3664618.0326,-3664618.0326,0.0099,"
                     "0.0219,0.0115,SOL_COMPUTED,NARROW_INT,0.0011,-0.0049,-0.0001,0.0199,0.0439,"
                     "0.0230,\"AAAA\",0.250,1.000,0.000,12,11,11,11,0,01,0,33");
-    parse_result = parse_bestxyza_data(gps_data, &result);
+    parse_result = GPS_bestxyza_data_parser(gps_data, &result);
     TEST_ASSERT_TRUE(parse_result == 5);
 
     // Data Response is larger than the buffer
@@ -301,7 +301,7 @@ uint8_t TEST_EXEC__GPS_Parse_bestxyza(){
                     "0.0219,0.0115,SOL_COMPUTED,NARROW_INT,0.0011,-0.0049,-0.0001,0.0199,0.0439,"
                     "0.0219,0.0115,0.11,"
                     "0.0230,\"AAAA\",0.250,1.000,0.000,12,11,11,11,0,01,0,33*2a066e78");
-    parse_result = parse_bestxyza_data(gps_data, &result);
+    parse_result = GPS_bestxyza_data_parser(gps_data, &result);
     TEST_ASSERT_TRUE(parse_result == 6);
 
     // Error within the integer section of the string ie postion_x_mm has an invalid number
@@ -309,21 +309,21 @@ uint8_t TEST_EXEC__GPS_Parse_bestxyza(){
                     "SOL_COMPUTED,NARROW_INT,abcd123.456,-3664618.0326,-3664618.0326,0.0099,"
                     "0.0219,0.0115,SOL_COMPUTED,NARROW_INT,0.0011,-0.0049,-0.0001,0.0199,0.0439,"
                     "0.0230,\"AAAA\",0.250,1.000,0.000,12,11,11,11,0,01,0,33*2a066e78");
-    parse_result = parse_bestxyza_data(gps_data, &result);
+    parse_result = GPS_bestxyza_data_parser(gps_data, &result);
     TEST_ASSERT_TRUE(parse_result == 7);
 
     return 0;
 }
 
 
-uint8_t TEST_EXEC__GPS_Parse_timea(){
+uint8_t TEST_EXEC__GPS_timea_data_parser(){
     char gps_data[600] = "#TIMEA,COM1,0,86.5,FINESTEERING,1930,428348.000,02000020,9924,32768;VALID,"
                         "1.667187222e-10,9.641617960e-10,-18.00000000000,2017,1,5,22,58,50000,VALID*2a066e78";
 
     gps_timea_response result;
 
     // Call timea parser
-    uint8_t parse_result = parse_timea_data(gps_data, &result);
+    uint8_t parse_result = GPS_timea_data_parser(gps_data, &result);
     TEST_ASSERT_TRUE(parse_result == 0);
     TEST_ASSERT_TRUE(result.clock_status == GPS_CLOCK_VALID);
     TEST_ASSERT_TRUE(result.utc_offset == -18.00000000000);
@@ -332,13 +332,13 @@ uint8_t TEST_EXEC__GPS_Parse_timea(){
 
     // Testing with an empty string
     strcpy(gps_data, "");
-    parse_result = parse_timea_data(gps_data, &result);
+    parse_result = GPS_timea_data_parser(gps_data, &result);
     TEST_ASSERT_TRUE(parse_result == 1);
 
     // Introducing an error within the header of the GPS response: Missing delimiting character
     strcpy(gps_data, "#TIMEA,COM1,0,86.5,FINESTEERING,1930,428348.000,02000020,9924,32768,VALID,"
                     "1.667187222e-10,9.641617960e-10,-18.00000000000,2017,1,5,22,58,50000,VALID*2a066e78");
-    parse_result = parse_timea_data(gps_data, &result);
+    parse_result = GPS_timea_data_parser(gps_data, &result);
     TEST_ASSERT_TRUE(parse_result == 2);
 
     // Testing with a different GPS Header
@@ -348,18 +348,18 @@ uint8_t TEST_EXEC__GPS_Parse_timea(){
     "8b00602b58282f02373454d33b986d01bd01a76ba710a2a10d008e21667f,"
     "8b00602b58ae003384abe701001226ff6c6c1c9999f3c99fffa77c2f05c8*d3806ea3"
     );
-    parse_result = parse_timea_data(gps_data, &result);
+    parse_result = GPS_timea_data_parser(gps_data, &result);
     TEST_ASSERT_TRUE(parse_result == 3);
 
     // Missing timea data response after the header
     strcpy(gps_data, "#TIMEA,COM1,0,86.5,FINESTEERING,1930,428348.000,02000020,9924,32768;");
-    parse_result = parse_timea_data(gps_data, &result);
+    parse_result = GPS_timea_data_parser(gps_data, &result);
     TEST_ASSERT_TRUE(parse_result == 4);
 
     // Missing delimiting character * ie no CRC
     strcpy(gps_data, "#TIMEA,COM1,0,86.5,FINESTEERING,1930,428348.000,02000020,9924,32768;VALID,"
                     "1.667187222e-10,9.641617960e-10,-18.00000000000,2017,1,5,22,58,50000,VALID");
-    parse_result = parse_timea_data(gps_data, &result);
+    parse_result = GPS_timea_data_parser(gps_data, &result);
     TEST_ASSERT_TRUE(parse_result == 5);
 
     // Data Response Exceeding Buffer Size
@@ -371,13 +371,13 @@ uint8_t TEST_EXEC__GPS_Parse_timea(){
                         "1.667187222e-10,9.641617960e-10,-18.00000000000,2017,1,5,22,58,50000,VALID,"
                         "1.667187222e-10,9.641617960e-10,-18.00000000000,2017,1,5,22,58,"
                         "1.667187222e-10,9.641617960e-10,-18.00000000000,2017,1,5,22,58,50000,VALID*d3806ea3");
-    parse_result = parse_timea_data(gps_data, &result);
+    parse_result = GPS_timea_data_parser(gps_data, &result);
     TEST_ASSERT_TRUE(parse_result == 6);
 
     // Error within the integer section of the string ie utc_offset has an invalid number
     strcpy(gps_data, "#TIMEA,COM1,0,86.5,FINESTEERING,1930,428348.000,02000020,9924,32768;VALID,"
                     "1.667187222e-10,9.641617960e-10,usdhnd18.00000000000,2017,1,5,22,58,50000,VALID*2a066e78");
-    parse_result = parse_timea_data(gps_data, &result);
+    parse_result = GPS_timea_data_parser(gps_data, &result);
     TEST_ASSERT_TRUE(parse_result == 7);
     
 
