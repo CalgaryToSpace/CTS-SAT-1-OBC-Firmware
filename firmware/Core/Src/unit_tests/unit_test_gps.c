@@ -2,6 +2,7 @@
 #include "unit_tests/unit_test_helpers.h"
 #include "transforms/number_comparisons.h"
 #include "gps/gps.h"
+#include "gps/gps_ascii_parsers.h"
 #include "gps/gps_types.h"
 
 #include <string.h>
@@ -52,27 +53,27 @@ uint8_t TEST_EXEC__GPS_solution_status_str_to_enum() {
 
     // Test with recognized status strings
     TEST_ASSERT_TRUE(GPS_solution_status_str_to_enum("SOL_COMPUTED", &status) == 0);
-    TEST_ASSERT_TRUE(status == GPS_SOL_COMPUTED);
+    TEST_ASSERT_TRUE(status == GPS_SOL_STATUS_SOL_COMPUTED);
     TEST_ASSERT_TRUE(GPS_solution_status_str_to_enum("INSUFFICIENT_OBS", &status) == 0);
-    TEST_ASSERT_TRUE(status == GPS_INSUFFICIENT_OBS);
+    TEST_ASSERT_TRUE(status == GPS_SOL_STATUS_INSUFFICIENT_OBS);
     TEST_ASSERT_TRUE(GPS_solution_status_str_to_enum("NO_CONVERGENCE", &status) == 0);
-    TEST_ASSERT_TRUE(status == GPS_NO_CONVERGENCE);
+    TEST_ASSERT_TRUE(status == GPS_SOL_STATUS_NO_CONVERGENCE);
     TEST_ASSERT_TRUE(GPS_solution_status_str_to_enum("SINGULARITY", &status) == 0);
-    TEST_ASSERT_TRUE(status == GPS_SINGULARITY);
+    TEST_ASSERT_TRUE(status == GPS_SOL_STATUS_SINGULARITY);
     TEST_ASSERT_TRUE(GPS_solution_status_str_to_enum("COV_TRACE", &status) == 0);
-    TEST_ASSERT_TRUE(status == GPS_COV_TRACE);
+    TEST_ASSERT_TRUE(status == GPS_SOL_STATUS_COV_TRACE);
     TEST_ASSERT_TRUE(GPS_solution_status_str_to_enum("TEST_DIST", &status) == 0);
-    TEST_ASSERT_TRUE(status == GPS_TEST_DIST);
+    TEST_ASSERT_TRUE(status == GPS_SOL_STATUS_TEST_DIST);
     TEST_ASSERT_TRUE(GPS_solution_status_str_to_enum("COLD_START", &status) == 0);
-    TEST_ASSERT_TRUE(status == GPS_COLD_START);
+    TEST_ASSERT_TRUE(status == GPS_SOL_STATUS_COLD_START);
     TEST_ASSERT_TRUE(GPS_solution_status_str_to_enum("V_H_LIMIT", &status) == 0);
-    TEST_ASSERT_TRUE(status == GPS_V_H_LIMIT);
+    TEST_ASSERT_TRUE(status == GPS_SOL_STATUS_V_H_LIMIT);
     TEST_ASSERT_TRUE(GPS_solution_status_str_to_enum("VARIANCE", &status) == 0);
-    TEST_ASSERT_TRUE(status == GPS_VARIANCE);
+    TEST_ASSERT_TRUE(status == GPS_SOL_STATUS_VARIANCE);
     TEST_ASSERT_TRUE(GPS_solution_status_str_to_enum("RESIDUALS", &status) == 0);
-    TEST_ASSERT_TRUE(status == GPS_RESIDUALS);
+    TEST_ASSERT_TRUE(status == GPS_SOL_STATUS_RESIDUALS);
     TEST_ASSERT_TRUE(GPS_solution_status_str_to_enum("INTEGRITY_WARNING", &status) == 0);
-    TEST_ASSERT_TRUE(status == GPS_INTEGRITY_WARNING);
+    TEST_ASSERT_TRUE(status == GPS_SOL_STATUS_INTEGRITY_WARNING);
 
     // Test with an unrecognized status string
     TEST_ASSERT_TRUE(GPS_solution_status_str_to_enum("UNKNOWN_STATUS", &status) == 1);
@@ -245,7 +246,7 @@ uint8_t TEST_EXEC__GPS_bestxyza_data_parser(){
     // Call bestxyza parser
     uint8_t parse_result = GPS_bestxyza_data_parser(gps_data, &result);
     TEST_ASSERT_TRUE(parse_result == 0);
-    TEST_ASSERT_TRUE(result.position_solution_status == GPS_SOL_COMPUTED);
+    TEST_ASSERT_TRUE(result.position_solution_status == GPS_SOL_STATUS_SOL_COMPUTED);
     TEST_ASSERT_TRUE(result.position_type == GPS_TYPE_NARROW_INT);
     TEST_ASSERT_TRUE(result.position_x_mm == -1634531568);
     TEST_ASSERT_TRUE(result.position_y_mm == -3664618032);
