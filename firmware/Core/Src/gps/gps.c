@@ -119,10 +119,10 @@ const char* GPS_reference_time_status_enum_to_str(GPS_reference_time_status_t st
 
 
 /// @brief Parse the received GPS header into a struct
-/// @param data_received - The string obtained from the buffer that is to be parsed into the gps_response_header struct
-/// @param result - gps_response_header struct that is returned
+/// @param data_received - The string obtained from the buffer that is to be parsed into the GPS_header_response_t struct
+/// @param result - GPS_header_response_t struct that is returned
 /// @return 0 if successful, > 0 if an error occurred
-uint8_t GPS_header_response_parser(const char *data_received, gps_response_header *result){
+uint8_t GPS_header_response_parser(const char *data_received, GPS_header_response_t *result){
 
     // TODO: What if there are multiple responses in the string?
 
@@ -183,7 +183,7 @@ uint8_t GPS_header_response_parser(const char *data_received, gps_response_heade
     char message_buffer[256];
     snprintf(
         message_buffer, sizeof(message_buffer),
-        "{\"Log Name\":\"%s\",\"Time Status\":\"%s\"}\n",
+        "{\"log_name\":\"%s\",\"time_status\":\"%s\"}\n",
         result->log_name,
         GPS_reference_time_status_enum_to_str(result->time_status)
     );
@@ -409,7 +409,7 @@ const char* GPS_position_type_enum_to_string(GPS_position_type_enum_t type) {
 /// @brief Parse Received Data
 /// @param data_received - Number of bytes in the data block
 /// @return 0 if successful, >0 if an error occurred
-uint8_t GPS_bestxyza_data_parser(const char* data_received, gps_bestxyza_response *result) {
+uint8_t GPS_bestxyza_data_parser(const char* data_received, GPS_bestxyza_response_t *result) {
 
     // Check if the buffer is empty
     if (data_received[0] == '\0') {
@@ -421,7 +421,7 @@ uint8_t GPS_bestxyza_data_parser(const char* data_received, gps_bestxyza_respons
         return 1;
     }
 
-    gps_response_header bestxyza_header;
+    GPS_header_response_t bestxyza_header;
     const uint8_t header_parse_result = GPS_header_response_parser(data_received,&bestxyza_header);
 
     if(header_parse_result != 0){
@@ -791,7 +791,7 @@ const char* GPS_utc_status_enum_to_string(GPS_utc_status_enum_t status) {
 /// @brief Parse Received Data
 /// @param data_received - Number of bytes in the data block
 /// @return 0 if successful, >0 if an error occurred
-uint8_t GPS_timea_data_parser(const char* data_received, gps_timea_response *result) {
+uint8_t GPS_timea_data_parser(const char* data_received, GPS_timea_response_t *result) {
 
     // Check if the buffer is empty
     if (data_received[0] == '\0') {
@@ -803,7 +803,7 @@ uint8_t GPS_timea_data_parser(const char* data_received, gps_timea_response *res
         return 1;
     }
 
-    gps_response_header timea_header;
+    GPS_header_response_t timea_header;
     const uint8_t header_parse_result = GPS_header_response_parser(data_received,&timea_header);
 
     if(header_parse_result != 0){

@@ -252,7 +252,7 @@ void TASK_receive_gps_info(void *argument) {
 		}
 
 		// Parsing the gps data
-		gps_response_header gps_header;
+		GPS_header_response_t gps_header;
 		const u_int8_t gps_header_result = GPS_header_response_parser(latest_gps_response,&gps_header);
 
 		// TODO: Figure out what to do after this
