@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-uint8_t TEST_EXEC__GPS_assign_gps_time_status();
+uint8_t TEST_EXEC__GPS_reference_time_status_str_to_enum();
 uint8_t TEST_EXEC__GPS_assign_gps_solution_status();
 uint8_t TEST_EXEC__GPS_position_velocity_type();
 

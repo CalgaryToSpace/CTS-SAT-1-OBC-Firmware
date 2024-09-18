@@ -7,41 +7,41 @@
 #include <string.h>
 
 
-uint8_t TEST_EXEC__GPS_assign_gps_time_status() {
+uint8_t TEST_EXEC__GPS_reference_time_status_str_to_enum() {
     GPS_reference_time_status_t status;
 
     // Test with recognized status strings
-    TEST_ASSERT_TRUE(assign_gps_time_status("UNKNOWN", &status) == 0);
+    TEST_ASSERT_TRUE(GPS_reference_time_status_str_to_enum("UNKNOWN", &status) == 0);
     TEST_ASSERT_TRUE(status == GPS_UNKNOWN);
-    TEST_ASSERT_TRUE(assign_gps_time_status("APPROXIMATE", &status) == 0);
+    TEST_ASSERT_TRUE(GPS_reference_time_status_str_to_enum("APPROXIMATE", &status) == 0);
     TEST_ASSERT_TRUE(status == GPS_APPROXIMATE);
-    TEST_ASSERT_TRUE(assign_gps_time_status("COARSEADJUSTING", &status) == 0);
+    TEST_ASSERT_TRUE(GPS_reference_time_status_str_to_enum("COARSEADJUSTING", &status) == 0);
     TEST_ASSERT_TRUE(status == GPS_COARSEADJUSTING);
-    TEST_ASSERT_TRUE(assign_gps_time_status("COARSE", &status) == 0);
+    TEST_ASSERT_TRUE(GPS_reference_time_status_str_to_enum("COARSE", &status) == 0);
     TEST_ASSERT_TRUE(status == GPS_COARSE);
-    TEST_ASSERT_TRUE(assign_gps_time_status("COARSESTEERING", &status) == 0);
+    TEST_ASSERT_TRUE(GPS_reference_time_status_str_to_enum("COARSESTEERING", &status) == 0);
     TEST_ASSERT_TRUE(status == GPS_COARSESTEERING);
-    TEST_ASSERT_TRUE(assign_gps_time_status("FREEWHEELING", &status) == 0);
+    TEST_ASSERT_TRUE(GPS_reference_time_status_str_to_enum("FREEWHEELING", &status) == 0);
     TEST_ASSERT_TRUE(status == GPS_FREEWHEELING);
-    TEST_ASSERT_TRUE(assign_gps_time_status("FINEADJUSTING", &status) == 0);
+    TEST_ASSERT_TRUE(GPS_reference_time_status_str_to_enum("FINEADJUSTING", &status) == 0);
     TEST_ASSERT_TRUE(status == GPS_FINEADJUSTING);
-    TEST_ASSERT_TRUE(assign_gps_time_status("FINE", &status) == 0);
+    TEST_ASSERT_TRUE(GPS_reference_time_status_str_to_enum("FINE", &status) == 0);
     TEST_ASSERT_TRUE(status == GPS_FINE);
-    TEST_ASSERT_TRUE(assign_gps_time_status("FINEBACKUPSTEERING", &status) == 0);
+    TEST_ASSERT_TRUE(GPS_reference_time_status_str_to_enum("FINEBACKUPSTEERING", &status) == 0);
     TEST_ASSERT_TRUE(status == GPS_FINEBACKUPSTEERING);
-    TEST_ASSERT_TRUE(assign_gps_time_status("FINESTEERING", &status) == 0);
+    TEST_ASSERT_TRUE(GPS_reference_time_status_str_to_enum("FINESTEERING", &status) == 0);
     TEST_ASSERT_TRUE(status == GPS_FINESTEERING);
-    TEST_ASSERT_TRUE(assign_gps_time_status("SATTIME", &status) == 0);
+    TEST_ASSERT_TRUE(GPS_reference_time_status_str_to_enum("SATTIME", &status) == 0);
     TEST_ASSERT_TRUE(status == GPS_SATTIME);
 
     // Test with an unrecognized status string
-    TEST_ASSERT_TRUE(assign_gps_time_status("INVALID_STATUS", &status) == 1);
+    TEST_ASSERT_TRUE(GPS_reference_time_status_str_to_enum("INVALID_STATUS", &status) == 1);
 
     // Test with an empty string
-    TEST_ASSERT_TRUE(assign_gps_time_status("", &status) == 1);
+    TEST_ASSERT_TRUE(GPS_reference_time_status_str_to_enum("", &status) == 1);
 
     // Test with a NULL string
-    TEST_ASSERT_TRUE(assign_gps_time_status(NULL, &status) == 1);
+    TEST_ASSERT_TRUE(GPS_reference_time_status_str_to_enum(NULL, &status) == 1);
 
     return 0;
 
