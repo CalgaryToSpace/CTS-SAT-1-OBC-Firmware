@@ -1,16 +1,20 @@
 """Check that the telecommand definitions are good."""
 
+import git
 import sys
+from pathlib import Path
 
 from loguru import logger
 
 from cts1_ground_support.telecommand_array_parser import parse_telecommand_list_from_repo
 
+GIT_REPO_ROOT_PATH = Path(git.Repo(__file__, search_parent_directories=True).working_tree_dir)
+
 
 def check_tcmd_struct_fields() -> None:
     """Check that the telecommand struct fields are all present."""
     success = True
-    tcmd_list = parse_telecommand_list_from_repo()
+    tcmd_list = parse_telecommand_list_from_repo(GIT_REPO_ROOT_PATH)
 
     for tcmd in tcmd_list:
         if not tcmd.has_required_fields():
@@ -30,7 +34,7 @@ def check_tcmd_struct_fields() -> None:
 def check_tcmd_arg_lists() -> None:
     """Check that the telecommand docstrings have the correct number of arguments."""
     success = True
-    tcmd_list = parse_telecommand_list_from_repo()
+    tcmd_list = parse_telecommand_list_from_repo(GIT_REPO_ROOT_PATH)
 
     for tcmd in tcmd_list:
         if tcmd.argument_descriptions is None:
@@ -67,7 +71,7 @@ def check_tcmd_arg_lists() -> None:
 def check_tcmd_function_names_match_registration_names() -> None:
     """Check that the telecommand function names match the registration names."""
     error_count = 0
-    tcmd_list = parse_telecommand_list_from_repo()
+    tcmd_list = parse_telecommand_list_from_repo(GIT_REPO_ROOT_PATH)
 
     for tcmd in tcmd_list:
         if tcmd.tcmd_func != f"TCMDEXEC_{tcmd.name}":
