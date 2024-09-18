@@ -44,7 +44,7 @@ uint32_t calculate_block_crc32( uint32_t ulCount, uint8_t *ucBuffer ) {
     uint32_t crc = 0;
     while ( ulCount-- != 0 ) {
         temp1 = ( crc >> 8 ) & 0x00FFFFFFL;
-        temp2 = crc32_value( ((int) crc ^ *ucBuffer++ ) & 0xFF );
+        temp2 = GPS_crc32_value( ((int) crc ^ *ucBuffer++ ) & 0xFF );
         crc = temp1 ^ temp2;
         }
 
