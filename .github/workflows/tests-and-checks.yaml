@@ -28,7 +28,7 @@ jobs:
           du -sh *
         # TODO: add line count stats in here for fun
 
-      - name: Ensure build was successful (artifact exists)
+      - name: Ensure build was successful (check ELF artifact exists)
         run: |
           ls -l ./firmware/build/CTS-SAT-1_FW.elf
   
@@ -44,7 +44,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e pip install 'pip install git+https://github.com/CalgaryToSpace/CTS-SAT-1-Ground-Support.git#subdirectory=cts1_ground_support'
+          python -m pip install git+https://github.com/CalgaryToSpace/CTS-SAT-1-Ground-Support.git
       - name: Check Telecommand Structs and Docs
         run: |
           python ./firmware_checks/_01_check_tcmd_structs_and_docs.py
