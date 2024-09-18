@@ -38,7 +38,7 @@ uint32_t GPS_crc32_value(uint8_t i) {
 /// @param ulCount - Number of bytes in the data block
 /// @param ucBuffer - Data block
 /// @return 32 bit CRC Value
-uint32_t calculate_block_crc32( uint32_t ulCount, uint8_t *ucBuffer ) {
+uint32_t GPS_calculate_block_crc32( uint32_t ulCount, uint8_t *ucBuffer ) {
     uint32_t temp1;
     uint32_t temp2;
     uint32_t crc = 0;
