@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-// ****************** SECTION: gps_header_structs ******************
+// ****************** SECTION: GPS_header_structs ******************
 
 /// @brief  This refers to the status that indicates how well a time is known
 /// All reported receiver times are subject to a qualifying time status
@@ -32,12 +32,12 @@ typedef struct {
     /// @brief Indicates the quality of the GPS reference time
     GPS_reference_time_status_t time_status;
 
-} gps_response_header;
+} GPS_header_response_t;
 
-// ****************** END SECTION: gps_header_structs ******************
+// ****************** END SECTION: GPS_header_structs ******************
 
 
-// ****************** SECTION: gps_data_structs ******************
+// ****************** SECTION: GPS_data_structs ******************
 
 /// @brief  This refers to the solution status
 /// Refer to table 90 page 500-501 of the OEM7 Commands and Logs Reference Manual
@@ -131,7 +131,7 @@ typedef struct {
     /// @brief 32 bit CRC (ASCII and Binary only). 
     uint32_t crc;
     
-} gps_bestxyza_response;
+} GPS_bestxyza_response_t;
 
 
 /// @brief  This refers to the Clock Model Status
@@ -166,8 +166,12 @@ typedef struct {
     /// @brief 32 bit CRC (ASCII and Binary only). 
     uint32_t crc;
     
-} gps_timea_response;
+} GPS_timea_response_t;
 
-// ****************** END SECTION: gps_data_structs ******************
+// ****************** END SECTION: GPS_data_structs ******************
+
+// ****************** SECTION: GPS helper functions ******************
+
+// ****************** END SECTION: GPS_header_structs ******************
 
 #endif // INCLUDE_GUARD__GPS_TYPES_H

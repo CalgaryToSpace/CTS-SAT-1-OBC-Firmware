@@ -173,7 +173,7 @@ uint8_t TEST_EXEC__GPS_header_response_parser(){
                   "0.0219,0.0115,SOL_COMPUTED,NARROW_INT,0.0011,-0.0049,-0.0001,0.0199,0.0439,"
                   "0.0230,\"AAAA\",0.250,1.000,0.000,12,11,11,11,0,01,0,33*e9eafeca";
 
-    gps_response_header gps_header_result;
+    GPS_header_response_t gps_header_result;
 
     uint8_t result = GPS_header_response_parser(gps_data, &gps_header_result);
     TEST_ASSERT_TRUE(result == 0);
@@ -240,7 +240,7 @@ uint8_t TEST_EXEC__GPS_bestxyza_data_parser(){
                   "0.0219,0.0115,SOL_COMPUTED,NARROW_INT,0.0011,-0.0049,-0.0001,0.0199,0.0439,"
                   "0.0230,\"AAAA\",0.250,1.000,0.000,12,11,11,11,0,01,0,33*e9eafeca";
 
-    gps_bestxyza_response result;
+    GPS_bestxyza_response_t result;
 
     // Call bestxyza parser
     uint8_t parse_result = GPS_bestxyza_data_parser(gps_data, &result);
@@ -256,6 +256,8 @@ uint8_t TEST_EXEC__GPS_bestxyza_data_parser(){
     TEST_ASSERT_TRUE(result.differential_age_ms == 1000);
     TEST_ASSERT_TRUE(result.solution_age_ms == 0000);
     TEST_ASSERT_TRUE(result.crc == 0xe9eafeca);
+
+    
 
     // Testing with an empty string
     strcpy(gps_data, "");
@@ -320,7 +322,7 @@ uint8_t TEST_EXEC__GPS_timea_data_parser(){
     char gps_data[600] = "#TIMEA,COM1,0,86.5,FINESTEERING,1930,428348.000,02000020,9924,32768;VALID,"
                         "1.667187222e-10,9.641617960e-10,-18.00000000000,2017,1,5,22,58,50000,VALID*2a066e78";
 
-    gps_timea_response result;
+    GPS_timea_response_t result;
 
     // Call timea parser
     uint8_t parse_result = GPS_timea_data_parser(gps_data, &result);
