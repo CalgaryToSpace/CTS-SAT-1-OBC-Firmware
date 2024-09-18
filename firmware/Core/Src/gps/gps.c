@@ -58,27 +58,27 @@ uint32_t GPS_calculate_block_crc32( uint32_t ulCount, uint8_t *ucBuffer ) {
 /// @return Returns 0 on success, 1 if the status string is unrecognized.
 uint8_t GPS_reference_time_status_str_to_enum(const char *status_str, GPS_reference_time_status_t *status) {
     if (strcmp(status_str, "UNKNOWN") == 0) {
-        *status = GPS_UNKNOWN;
+        *status = GPS_REF_TIME_UNKNOWN;
     } else if (strcmp(status_str, "APPROXIMATE") == 0) {
-        *status = GPS_APPROXIMATE;
+        *status = GPS_REF_TIME_APPROXIMATE;
     } else if (strcmp(status_str, "COARSEADJUSTING") == 0) {
-        *status = GPS_COARSEADJUSTING;
+        *status = GPS_REF_TIME_COARSEADJUSTING;
     } else if (strcmp(status_str, "COARSE") == 0) {
-        *status = GPS_COARSE;
+        *status = GPS_REF_TIME_COARSE;
     } else if (strcmp(status_str, "COARSESTEERING") == 0) {
-        *status = GPS_COARSESTEERING;
+        *status = GPS_REF_TIME_COARSESTEERING;
     } else if (strcmp(status_str, "FREEWHEELING") == 0) {
-        *status = GPS_FREEWHEELING;
+        *status = GPS_REF_TIME_FREEWHEELING;
     } else if (strcmp(status_str, "FINEADJUSTING") == 0) {
-        *status = GPS_FINEADJUSTING;
+        *status = GPS_REF_TIME_FINEADJUSTING;
     } else if (strcmp(status_str, "FINE") == 0) {
-        *status = GPS_FINE;
+        *status = GPS_REF_TIME_FINE;
     } else if (strcmp(status_str, "FINEBACKUPSTEERING") == 0) {
-        *status = GPS_FINEBACKUPSTEERING;
+        *status = GPS_REF_TIME_FINEBACKUPSTEERING;
     } else if (strcmp(status_str, "FINESTEERING") == 0) {
-        *status = GPS_FINESTEERING;
+        *status = GPS_REF_TIME_FINESTEERING;
     } else if (strcmp(status_str, "SATTIME") == 0) {
-        *status = GPS_SATTIME;
+        *status = GPS_REF_TIME_SATTIME;
     } else {
         return 1;  // Unrecognized status string
     }
@@ -90,27 +90,27 @@ uint8_t GPS_reference_time_status_str_to_enum(const char *status_str, GPS_refere
 /// @return Returns the assigned string value for the GPS time status.
 const char* get_gps_time_status_string(GPS_reference_time_status_t status) {
     switch (status) {
-        case GPS_UNKNOWN:
+        case GPS_REF_TIME_UNKNOWN:
             return "UNKNOWN";
-        case GPS_APPROXIMATE:
+        case GPS_REF_TIME_APPROXIMATE:
             return "APPROXIMATE";
-        case GPS_COARSEADJUSTING:
+        case GPS_REF_TIME_COARSEADJUSTING:
             return "COARSEADJUSTING";
-        case GPS_COARSE:
+        case GPS_REF_TIME_COARSE:
             return "COARSE";
-        case GPS_COARSESTEERING:
+        case GPS_REF_TIME_COARSESTEERING:
             return "COARSESTEERING";
-        case GPS_FREEWHEELING:
+        case GPS_REF_TIME_FREEWHEELING:
             return "FREEWHEELING";
-        case GPS_FINEADJUSTING:
+        case GPS_REF_TIME_FINEADJUSTING:
             return "FINEADJUSTING";
-        case GPS_FINE:
+        case GPS_REF_TIME_FINE:
             return "FINE";
-        case GPS_FINEBACKUPSTEERING:
+        case GPS_REF_TIME_FINEBACKUPSTEERING:
             return "FINEBACKUPSTEERING";
-        case GPS_FINESTEERING:
+        case GPS_REF_TIME_FINESTEERING:
             return "FINESTEERING";
-        case GPS_SATTIME:
+        case GPS_REF_TIME_SATTIME:
             return "SATTIME";
         default:
             return "UNKNOWN STATUS";  // If status is unrecognized
