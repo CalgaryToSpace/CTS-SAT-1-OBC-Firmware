@@ -88,7 +88,7 @@ uint8_t GPS_reference_time_status_str_to_enum(const char *status_str, GPS_refere
 /// @brief Assigns a string value based on the provided GPS time status.
 /// @param status GPS_reference_time_status_t value.
 /// @return Returns the assigned string value for the GPS time status.
-const char* get_gps_time_status_string(GPS_reference_time_status_t status) {
+const char* GPS_reference_time_status_enum_to_str(GPS_reference_time_status_t status) {
     switch (status) {
         case GPS_REF_TIME_UNKNOWN:
             return "UNKNOWN";
@@ -122,7 +122,7 @@ const char* get_gps_time_status_string(GPS_reference_time_status_t status) {
 /// @param data_received - The string obtained from the buffer that is to be parsed into the gps_response_header struct
 /// @param result - gps_response_header struct that is returned
 /// @return 0 if successful, > 0 if an error occurred
-uint8_t parse_gps_header(const char *data_received, gps_response_header *result){
+uint8_t GPS_header_response_parser(const char *data_received, gps_response_header *result){
 
     // TODO: What if there are multiple responses in the string?
 
@@ -185,7 +185,7 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
         message_buffer, sizeof(message_buffer),
         "{\"Log Name\":\"%s\",\"Time Status\":\"%s\"}\n",
         result->log_name,
-        get_gps_time_status_string(result->time_status)
+        GPS_reference_time_status_enum_to_str(result->time_status)
     );
     
     LOG_message(
@@ -202,7 +202,7 @@ uint8_t parse_gps_header(const char *data_received, gps_response_header *result)
 /// @param status_str The status string to parse.
 /// @param status Pointer to GPS_solution_status_enum_t where the status will be stored.
 /// @return Returns 0 on success, 1 if the status string is unrecognized.
-uint8_t assign_gps_solution_status(const char *status_str, GPS_solution_status_enum_t *status) {
+uint8_t GPS_solution_status_str_to_enum(const char *status_str, GPS_solution_status_enum_t *status) {
     if (strcmp(status_str, "SOL_COMPUTED") == 0) {
         *status = GPS_SOL_COMPUTED;
     } else if (strcmp(status_str, "INSUFFICIENT_OBS") == 0) {
@@ -236,7 +236,7 @@ uint8_t assign_gps_solution_status(const char *status_str, GPS_solution_status_e
 /// @param type_str The type string to parse.
 /// @param type Pointer to GPS_position_velocity_type_enum_t where the type will be stored.
 /// @return Returns 0 on success, 1 if the type string is unrecognized.
-uint8_t assign_gps_position_velocity_type(const char *type_str, GPS_position_type_enum_t *type) {
+uint8_t GPS_position_type_str_to_enum(const char *type_str, GPS_position_type_enum_t *type) {
     if (strcmp(type_str, "NONE") == 0) {
         *type = GPS_TYPE_NONE;
     } else if (strcmp(type_str, "FIXEDPOS") == 0) {
@@ -306,7 +306,7 @@ uint8_t assign_gps_position_velocity_type(const char *type_str, GPS_position_typ
 /// @brief Assigns a string value based on the provided GPS solution status.
 /// @param status GPS_solution_status_enum_t value.
 /// @return Returns the assigned string value for the GPS_solution_status_enum_t.
-const char* gps_solution_status_to_string(GPS_solution_status_enum_t status) {
+const char* GPS_position_type_enum_to_str(GPS_solution_status_enum_t status) {
     switch (status) {
         case GPS_SOL_COMPUTED:
             return "SOL_COMPUTED";
@@ -338,7 +338,7 @@ const char* gps_solution_status_to_string(GPS_solution_status_enum_t status) {
 /// @brief Assigns a string value based on the provided GPS position type.
 /// @param type GPS_position_type_enum_t value.
 /// @return Returns the assigned string value for the GPS_position_type_enum_t.
-const char* gps_position_velocity_type_to_string(GPS_position_type_enum_t type) {
+const char* GPS_position_type_enum_to_string(GPS_position_type_enum_t type) {
     switch (type) {
         case GPS_TYPE_NONE:
             return "NONE";
@@ -409,7 +409,7 @@ const char* gps_position_velocity_type_to_string(GPS_position_type_enum_t type) 
 /// @brief Parse Received Data
 /// @param data_received - Number of bytes in the data block
 /// @return 0 if successful, >0 if an error occurred
-uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *result) {
+uint8_t GPS_bestxyza_data_parser(const char* data_received, gps_bestxyza_response *result) {
 
     // Check if the buffer is empty
     if (data_received[0] == '\0') {
@@ -422,7 +422,7 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
     }
 
     gps_response_header bestxyza_header;
-    const uint8_t header_parse_result = parse_gps_header(data_received,&bestxyza_header);
+    const uint8_t header_parse_result = GPS_header_response_parser(data_received,&bestxyza_header);
 
     if(header_parse_result != 0){
         // Error in parsing header section
@@ -489,7 +489,7 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
     if (parse_result != 0) {  
         return parse_result;  
     }
-    uint8_t status_result = assign_gps_solution_status(token_buffer, &result->position_solution_status);
+    uint8_t status_result = GPS_solution_status_str_to_enum(token_buffer, &result->position_solution_status);
     if(status_result != 0){
         // Invalid string passed
         return status_result;
@@ -500,7 +500,7 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
     if (parse_result != 0) {  
         return parse_result;  
     }
-    status_result = assign_gps_position_velocity_type(token_buffer, &result->position_type);
+    status_result = GPS_position_type_str_to_enum(token_buffer, &result->position_type);
     if(status_result != 0){
         // Invalid string passed
         return status_result;
@@ -695,8 +695,8 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
         message_buffer, sizeof(message_buffer),
         "{\"Position Solution Status\":\"%s\",\"Position Type\":\"%s\",\"Position x in mm\":\"%s\",\"Position y in mm\":\"%s\",\"Position z in mm\":\"%s\","
         "\"Position x std in mm\":\"%lu\",\"Position y std in mm\":\"%lu\",\"Position z std in mm\":\"%lu\",\"Solution Age in ms\":\"%s\",\"Differential age in ms\":\"%s\",\"CRC\":\"%ld\"}\n",
-        gps_solution_status_to_string(result->position_solution_status),
-        gps_position_velocity_type_to_string(result->position_type),
+        GPS_position_type_enum_to_str(result->position_solution_status),
+        GPS_position_type_enum_to_string(result->position_type),
         pos_x,
         pos_y,
         pos_z,
@@ -721,7 +721,7 @@ uint8_t parse_bestxyza_data(const char* data_received, gps_bestxyza_response *re
 /// @param status_str The status string to parse.
 /// @param status Pointer to GPS_clock_model_status_enum_t where the status will be stored.
 /// @return Returns 0 on success, 1 if the status string is unrecognized.
-uint8_t assign_gps_clock_model_status(const char *status_str, GPS_clock_model_status_enum_t *status) {
+uint8_t GPS_clock_model_status_str_to_enum(const char *status_str, GPS_clock_model_status_enum_t *status) {
     if (strcmp(status_str, "VALID") == 0) {
         *status = GPS_CLOCK_VALID;
     } else if (strcmp(status_str, "CONVERGING") == 0) {
@@ -740,7 +740,7 @@ uint8_t assign_gps_clock_model_status(const char *status_str, GPS_clock_model_st
 /// @param status_str The status string to parse.
 /// @param status Pointer to GPS_utc_status_enum_t where the status will be stored.
 /// @return Returns 0 on success, 1 if the status string is unrecognized.
-uint8_t assign_gps_utc_status(const char *status_str, GPS_utc_status_enum_t *status) {
+uint8_t GPS_utc_status_str_to_enum(const char *status_str, GPS_utc_status_enum_t *status) {
     if (strcmp(status_str, "INVALID") == 0) {
         *status = GPS_UTC_INVALID;
     } else if (strcmp(status_str, "VALID") == 0) {
@@ -756,7 +756,7 @@ uint8_t assign_gps_utc_status(const char *status_str, GPS_utc_status_enum_t *sta
 /// @brief Assigns a string value based on the provided GPS clock model status.
 /// @param status GPS_clock_model_status_enum_t value.
 /// @return Returns the assigned string value for the GPS_clock_model_status_enum_t.
-const char* gps_clock_model_status_to_string(GPS_clock_model_status_enum_t status) {
+const char* GPS_clock_model_status_enum_to_string(GPS_clock_model_status_enum_t status) {
     switch (status) {
         case GPS_CLOCK_VALID:
             return "VALID";
@@ -774,7 +774,7 @@ const char* gps_clock_model_status_to_string(GPS_clock_model_status_enum_t statu
 /// @brief Assigns a string value based on the provided GPS UTC status.
 /// @param status GPS_utc_status_enum_t value.
 /// @return Returns the assigned string value for the GPS_utc_status_enum_t.
-const char* gps_utc_status_to_string(GPS_utc_status_enum_t status) {
+const char* GPS_utc_status_enum_to_string(GPS_utc_status_enum_t status) {
     switch (status) {
         case GPS_UTC_INVALID:
             return "INVALID";
@@ -791,7 +791,7 @@ const char* gps_utc_status_to_string(GPS_utc_status_enum_t status) {
 /// @brief Parse Received Data
 /// @param data_received - Number of bytes in the data block
 /// @return 0 if successful, >0 if an error occurred
-uint8_t parse_timea_data(const char* data_received, gps_timea_response *result) {
+uint8_t GPS_timea_data_parser(const char* data_received, gps_timea_response *result) {
 
     // Check if the buffer is empty
     if (data_received[0] == '\0') {
@@ -804,7 +804,7 @@ uint8_t parse_timea_data(const char* data_received, gps_timea_response *result) 
     }
 
     gps_response_header timea_header;
-    const uint8_t header_parse_result = parse_gps_header(data_received,&timea_header);
+    const uint8_t header_parse_result = GPS_header_response_parser(data_received,&timea_header);
 
     if(header_parse_result != 0){
         // Error in parsing header section
@@ -873,7 +873,7 @@ uint8_t parse_timea_data(const char* data_received, gps_timea_response *result) 
     if (parse_result != 0) {  
         return parse_result;  
     }
-    uint8_t status_result = assign_gps_clock_model_status(token_buffer, &result->clock_status);
+    uint8_t status_result = GPS_clock_model_status_str_to_enum(token_buffer, &result->clock_status);
     if(status_result != 0){
         // Invalid string passed
         return status_result;
@@ -910,7 +910,7 @@ uint8_t parse_timea_data(const char* data_received, gps_timea_response *result) 
     if (asterisk_pos) {
         *asterisk_pos = '\0';  
     }
-    status_result = assign_gps_utc_status(token_buffer, &result->utc_status);
+    status_result = GPS_utc_status_str_to_enum(token_buffer, &result->utc_status);
     if(status_result != 0){
         // Invalid string passed
         return status_result;
@@ -929,9 +929,9 @@ uint8_t parse_timea_data(const char* data_received, gps_timea_response *result) 
     snprintf(
         message_buffer, sizeof(message_buffer),
         "{\"Clock Status\":\"%s\",\"UTC Status\":%s,\"UTC Offset\":\"%s\",\"CRC\":%lx}\n",
-        gps_clock_model_status_to_string(result->clock_status),
+        GPS_clock_model_status_enum_to_string(result->clock_status),
         utc_offset,
-        gps_utc_status_to_string(result->utc_status),
+        GPS_utc_status_enum_to_string(result->utc_status),
         result->crc
     );
     
