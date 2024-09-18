@@ -42,18 +42,18 @@ typedef struct {
 /// @brief  This refers to the solution status
 /// Refer to table 90 page 500-501 of the OEM7 Commands and Logs Reference Manual
 typedef enum {
-    GPS_SOL_COMPUTED = 0,
-    GPS_INSUFFICIENT_OBS = 1,
-    GPS_NO_CONVERGENCE = 2,
-    GPS_SINGULARITY = 3,
-    GPS_COV_TRACE = 4,
-    GPS_TEST_DIST = 5,
-    GPS_COLD_START = 6,
-    GPS_V_H_LIMIT = 7,
-    GPS_VARIANCE = 8,
-    GPS_RESIDUALS = 9,
-    GPS_RESERVED_10_12 = 10,  // Since 10-12 are reserved
-    GPS_INTEGRITY_WARNING = 13
+    GPS_SOL_STATUS_SOL_COMPUTED = 0,
+    GPS_SOL_STATUS_INSUFFICIENT_OBS = 1,
+    GPS_SOL_STATUS_NO_CONVERGENCE = 2,
+    GPS_SOL_STATUS_SINGULARITY = 3,
+    GPS_SOL_STATUS_COV_TRACE = 4,
+    GPS_SOL_STATUS_TEST_DIST = 5,
+    GPS_SOL_STATUS_COLD_START = 6,
+    GPS_SOL_STATUS_V_H_LIMIT = 7,
+    GPS_SOL_STATUS_VARIANCE = 8,
+    GPS_SOL_STATUS_RESIDUALS = 9,
+    GPS_SOL_STATUS_RESERVED_10_12 = 10,  // Since 10-12 are reserved
+    GPS_SOL_STATUS_INTEGRITY_WARNING = 13
     // 14-17 are reserved
 } GPS_solution_status_enum_t;
 
@@ -171,6 +171,17 @@ typedef struct {
 // ****************** END SECTION: GPS_data_structs ******************
 
 // ****************** SECTION: GPS helper functions ******************
+
+uint8_t GPS_reference_time_status_str_to_enum(const char *status_str, GPS_reference_time_status_t *status);
+const char* GPS_reference_time_status_enum_to_str(GPS_reference_time_status_t status);
+uint8_t GPS_solution_status_str_to_enum(const char *status_str, GPS_solution_status_enum_t *status);
+uint8_t GPS_position_type_str_to_enum(const char *type_str, GPS_position_type_enum_t *type);
+const char* GPS_position_type_enum_to_str(GPS_solution_status_enum_t status);
+const char* GPS_position_type_enum_to_string(GPS_position_type_enum_t type);
+uint8_t GPS_clock_model_status_str_to_enum(const char *status_str, GPS_clock_model_status_enum_t *status);
+uint8_t GPS_utc_status_str_to_enum(const char *status_str, GPS_utc_status_enum_t *status);
+const char* GPS_clock_model_status_enum_to_string(GPS_clock_model_status_enum_t status);
+const char* GPS_utc_status_enum_to_string(GPS_utc_status_enum_t status);
 
 // ****************** END SECTION: GPS_header_structs ******************
 

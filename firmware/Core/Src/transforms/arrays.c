@@ -72,9 +72,9 @@ void GEN_int64_to_str(int64_t value, char *buffer) {
         return;
     }
 
-    char temp[32];  // Temporary array to hold digits
+    char temp[32];  
     int index = 0;
-    int is_negative = 0;  // Flag to track if the number is negative
+    const uint8_t is_negative = (value < 0);  // Flag to track if the number is negative
 
     // Handle the case where the value is 0
     if (value == 0) {
@@ -85,7 +85,6 @@ void GEN_int64_to_str(int64_t value, char *buffer) {
 
     // Check if the number is negative
     if (value < 0) {
-        is_negative = 1;
         value = -value;  // Convert the number to positive for processing
     }
 
