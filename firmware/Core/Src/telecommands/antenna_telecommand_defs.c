@@ -113,7 +113,7 @@ uint8_t TCMDEXEC_ant_deploy_antenna(const char *args_str, TCMD_TelecommandChanne
 
 /// @brief begins deployment of all antennas, one by one.
 /// @param args_str 
-/// Arg 0: Activation time in seconds
+/// - Arg 0: Activation time in seconds
 /// @return returns 0 on success, > 0 otherwise
 uint8_t TCMDEXEC_ant_start_automated_antenna_deployment(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) 
@@ -273,7 +273,7 @@ uint8_t TCMDEXEC_ant_report_deployment_status(const char *args_str, TCMD_Telecom
 
 /// @brief Prints the number of times deployment was attempted on the selected antenna
 /// @param args_str 
-/// Arg 0: the antenna to check, between 1-4 
+/// - Arg 0: the antenna to check, between 1-4 
 /// @return 0 on successful communication, > 0 on communications error
 uint8_t TCMDEXEC_ant_report_antenna_deployment_activation_count(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
@@ -315,7 +315,7 @@ uint8_t TCMDEXEC_ant_report_antenna_deployment_activation_count(const char *args
 
 /// @brief Prints amount of time the deployment system has been active for for the selected antenna
 /// @param args_str 
-/// Arg 0: the antenna to check, between 1-4 
+/// - Arg 0: the antenna to check, between 1-4 
 /// @return 0 on successful communication, > 0 on communications error
 uint8_t TCMDEXEC_ant_report_antenna_deployment_activation_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
@@ -359,11 +359,13 @@ uint8_t TCMDEXEC_ant_report_antenna_deployment_activation_time(const char *args_
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ant_measure_temp(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-    const uint8_t comms_err = ANT_CMD_measure_temp();
+    uint16_t result;
+    const uint8_t comms_err = ANT_CMD_measure_temp(&result);
     if (comms_err != 0) {
         snprintf(response_output_buf, response_output_buf_len, "Error: %d", comms_err);
         return comms_err;
     }
 
+    snprintf(response_output_buf, response_output_buf_len, "Success, Temp measurement: %u", result);
     return 0;
 }
