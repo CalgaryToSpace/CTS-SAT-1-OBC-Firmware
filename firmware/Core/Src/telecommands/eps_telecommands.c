@@ -135,7 +135,7 @@ uint8_t TCMDEXEC_eps_switch_to_mode(
 /// - Arg 0: The channel name or number (string).
 /// - Arg 1: 1 to enable (power on), 0 to disable (power off)
 /// @return 0 on success, >0 on failure
-/// @note Valid string values for Arg 0: "vbatt_stack", "5v_stack", "3v3_stack", "camera",
+/// @note Valid string values for Arg 0: "vbatt_stack", "stack_5v", "stack_3v3", "camera",
 ///     "uhf_antenna_deploy", "lora_module", "mpi", "boom".
 uint8_t TCMDEXEC_eps_set_channel_enabled(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
@@ -160,7 +160,14 @@ uint8_t TCMDEXEC_eps_set_channel_enabled(
             "Error parsing enabled arg: Error %d", arg_1_result);
         return 2;
     }
-    if (enabled_val_u64 != 0 && enabled_val_u64 != 1) {
+    char enabled_str[20] = "?";
+    if (enabled_val_u64 == 0) {
+        strcpy(enabled_str, "disabled");
+    }
+    else if (enabled_val_u64 == 1) {
+        strcpy(enabled_str, "enabled");
+    }
+    else {
         snprintf(
             response_output_buf, response_output_buf_len,
             "Error parsing enabled arg: Must be 0 or 1");
@@ -182,12 +189,17 @@ uint8_t TCMDEXEC_eps_set_channel_enabled(
     if (eps_result != 0) {
         snprintf(
             response_output_buf, response_output_buf_len,
-            "EPS set channel enabled failed (err %d)", eps_result);
+            "EPS set channel %s failed (err %d)",
+            enabled_str,
+            eps_result
+        );
         return 5;
     }
     snprintf(
         response_output_buf, response_output_buf_len,
-        "EPS set channel enabled successful.");
+        "EPS set channel %s successful.",
+        enabled_str
+    );
     return 0;
 }
 

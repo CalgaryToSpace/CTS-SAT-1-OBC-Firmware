@@ -7,8 +7,8 @@
 /// @brief Converts an EPS channel name to a channel enum.
 /// @param channel_name A lowercase c-string of the channel name (e.g., "mpi"), or a number
 /// representing the channel number (e.g., "1" or "16").
-/// Valid string values: "vbatt_stack", "5v_stack", "3v3_stack", "camera", "uhf_antenna_deploy",
-/// "lora_module", "mpi", "boom".
+/// Valid string values: "vbatt_stack", "stack_5v", "stack_3v3", "camera", "uhf_antenna_deploy",
+/// "lora_module", "mpi_5v", "mpi_12v", "boom".
 /// @return The corresponding enum value. Returns EPS_CHANNEL_UNKNOWN if no match is found.
 EPS_CHANNEL_enum_t EPS_channel_from_str(const char channel_name[]) {
     // Parse Numbers.
@@ -16,7 +16,7 @@ EPS_CHANNEL_enum_t EPS_channel_from_str(const char channel_name[]) {
     if (strcmp(channel_name, "1") == 0) return EPS_CHANNEL_5V_STACK;
     if (strcmp(channel_name, "2") == 0) return EPS_CHANNEL_5V_CH2_UNUSED;
     if (strcmp(channel_name, "3") == 0) return EPS_CHANNEL_5V_CH3_UNUSED;
-    if (strcmp(channel_name, "4") == 0) return EPS_CHANNEL_5V_CH4_UNUSED;
+    if (strcmp(channel_name, "4") == 0) return EPS_CHANNEL_5V_MPI;
     if (strcmp(channel_name, "5") == 0) return EPS_CHANNEL_3V3_STACK;
     if (strcmp(channel_name, "6") == 0) return EPS_CHANNEL_3V3_CAMERA;
     if (strcmp(channel_name, "7") == 0) return EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY;
@@ -32,12 +32,13 @@ EPS_CHANNEL_enum_t EPS_channel_from_str(const char channel_name[]) {
     
     // Parse Strings.
     if (strcmp(channel_name, "vbatt_stack") == 0) return EPS_CHANNEL_VBATT_STACK;
-    if (strcmp(channel_name, "5v_stack") == 0) return EPS_CHANNEL_5V_STACK;
-    if (strcmp(channel_name, "3v3_stack") == 0) return EPS_CHANNEL_3V3_STACK;
+    if (strcmp(channel_name, "stack_5v") == 0) return EPS_CHANNEL_5V_STACK;
+    if (strcmp(channel_name, "stack_3v3") == 0) return EPS_CHANNEL_3V3_STACK;
     if (strcmp(channel_name, "camera") == 0) return EPS_CHANNEL_3V3_CAMERA;
     if (strcmp(channel_name, "uhf_antenna_deploy") == 0) return EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY;
     if (strcmp(channel_name, "lora_module") == 0) return EPS_CHANNEL_3V3_LORA_MODULE;
-    if (strcmp(channel_name, "mpi") == 0) return EPS_CHANNEL_12V_MPI;
+    if (strcmp(channel_name, "mpi_5v") == 0) return EPS_CHANNEL_5V_MPI;
+    if (strcmp(channel_name, "mpi_12v") == 0) return EPS_CHANNEL_12V_MPI;
     if (strcmp(channel_name, "boom") == 0) return EPS_CHANNEL_12V_BOOM;
     
     return EPS_CHANNEL_UNKNOWN;

@@ -10,7 +10,7 @@ typedef enum {
     EPS_CHANNEL_5V_STACK                = 1, // CH1
     EPS_CHANNEL_5V_CH2_UNUSED           = 2, // CH2
     EPS_CHANNEL_5V_CH3_UNUSED           = 3, // CH3
-    EPS_CHANNEL_5V_CH4_UNUSED           = 4, // CH4
+    EPS_CHANNEL_5V_MPI                  = 4, // CH4
     EPS_CHANNEL_3V3_STACK               = 5, // CH5
     EPS_CHANNEL_3V3_CAMERA              = 6, // CH6
     EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY  = 7, // CH7
