@@ -246,9 +246,11 @@ uint8_t EPS_struct_pdu_housekeeping_data_eng_TO_json(const EPS_struct_pdu_housek
     offset = snprintf(json_output_str, json_output_str_len, "{");
 
     // Add voltage_internal_board_supply_mV and temperature_mcu_cC
-    ret = snprintf(json_output_str + offset, json_output_str_len - offset,
-                   "\"voltage_internal_board_supply_mV\":%" PRIu16 ",\"temperature_mcu_cC\":%" PRId16 ",",
-                   data->voltage_internal_board_supply_mV, data->temperature_mcu_cC);
+    ret = snprintf(
+        json_output_str + offset, json_output_str_len - offset,
+        "\"voltage_internal_board_supply_mV\":%" PRIu16 ",\"temperature_mcu_cC\":%" PRId16 ",",
+        data->voltage_internal_board_supply_mV, data->temperature_mcu_cC
+    );
     if (ret < 0 || ret >= (json_output_str_len - offset)) return 3;
     offset += ret;
 
@@ -262,11 +264,13 @@ uint8_t EPS_struct_pdu_housekeeping_data_eng_TO_json(const EPS_struct_pdu_housek
     offset += ret;
 
     // Add the bitfields
-    ret = snprintf(json_output_str + offset, json_output_str_len - offset,
-                   "\"stat_ch_on_bitfield\":%u,\"stat_ch_ext_on_bitfield\":%u,"
-                   "\"stat_ch_overcurrent_fault_bitfield\":%u,\"stat_ch_ext_overcurrent_fault_bitfield\":%u,",
-                   data->stat_ch_on_bitfield, data->stat_ch_ext_on_bitfield,
-                   data->stat_ch_overcurrent_fault_bitfield, data->stat_ch_ext_overcurrent_fault_bitfield);
+    ret = snprintf(
+        json_output_str + offset, json_output_str_len - offset,
+        "\"stat_ch_on_bitfield\":%u,\"stat_ch_ext_on_bitfield\":%u,"
+        "\"stat_ch_overcurrent_fault_bitfield\":%u,\"stat_ch_ext_overcurrent_fault_bitfield\":%u,",
+        data->stat_ch_on_bitfield, data->stat_ch_ext_on_bitfield,
+        data->stat_ch_overcurrent_fault_bitfield, data->stat_ch_ext_overcurrent_fault_bitfield
+    );
     if (ret < 0 || ret >= (json_output_str_len - offset)) return 3;
     offset += ret;
 
@@ -278,7 +282,7 @@ uint8_t EPS_struct_pdu_housekeeping_data_eng_TO_json(const EPS_struct_pdu_housek
     for (int i = 0; i < 7; ++i) {
         char vip_domain_json[128];
         ret = EPS_vpid_eng_TO_json(&data->vip_each_voltage_domain[i], vip_domain_json, sizeof(vip_domain_json));
-        if (ret != 0) return ret;
+        if (ret != 0) return 4;
 
         ret = snprintf(json_output_str + offset, json_output_str_len - offset, "%s%s", vip_domain_json, (i < 6) ? "," : "");
         if (ret < 0 || ret >= (json_output_str_len - offset)) return 3;
@@ -296,7 +300,7 @@ uint8_t EPS_struct_pdu_housekeeping_data_eng_TO_json(const EPS_struct_pdu_housek
     for (int i = 0; i < 32; ++i) {
         char vip_channel_json[128];
         ret = EPS_vpid_eng_TO_json(&data->vip_each_channel[i], vip_channel_json, sizeof(vip_channel_json));
-        if (ret != 0) return ret;
+        if (ret != 0) return 5;
 
         ret = snprintf(json_output_str + offset, json_output_str_len - offset, "%s%s", vip_channel_json, (i < 31) ? "," : "");
         if (ret < 0 || ret >= (json_output_str_len - offset)) return 3;
@@ -430,7 +434,11 @@ uint8_t EPS_struct_pcu_housekeeping_data_eng_TO_json(const EPS_struct_pcu_housek
 
 
 
-uint8_t EPS_struct_piu_housekeeping_data_eng_TO_json(const EPS_struct_piu_housekeeping_data_eng_t *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t EPS_struct_piu_housekeeping_data_eng_TO_json(
+    const EPS_struct_piu_housekeeping_data_eng_t *data,
+    char json_output_str[],
+    uint16_t json_output_str_len
+) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 10) {
         return 1; // Error: Invalid input
     }
@@ -438,8 +446,8 @@ uint8_t EPS_struct_piu_housekeeping_data_eng_TO_json(const EPS_struct_piu_housek
     // Buffers for individual components (e.g., vip_dist_input and vip_batt_input)
     char vip_dist_input_json[128];
     char vip_batt_input_json[128];
-    char vip_each_channel_json[128 * 32];
-    char conditioning_channel_info_json[128 * 5];
+    char vip_each_channel_json[128 * 16]; // Note: Could do all 32 channels, but only using 16 channels on CTS-SAT-1.
+    char conditioning_channel_info_json[256 * 5];
     
     // Convert vip_dist_input and vip_batt_input
     if (EPS_vpid_eng_TO_json(&data->vip_dist_input, vip_dist_input_json, sizeof(vip_dist_input_json)) != 0) {
@@ -452,13 +460,13 @@ uint8_t EPS_struct_piu_housekeeping_data_eng_TO_json(const EPS_struct_piu_housek
     // Convert vip_each_channel array
     vip_each_channel_json[0] = '\0'; // Initialize the JSON array string
     strcat(vip_each_channel_json, "[");
-    for (int i = 0; i < 32; i++) {
+    for (int i = 0; i < 16; i++) {
         char vip_channel_json[128];
         if (EPS_vpid_eng_TO_json(&data->vip_each_channel[i], vip_channel_json, sizeof(vip_channel_json)) != 0) {
             return 4; // Error converting vip_each_channel[i]
         }
         strcat(vip_each_channel_json, vip_channel_json);
-        if (i < 31) {
+        if (i < (16 - 1)) {
             strcat(vip_each_channel_json, ",");
         }
     }
@@ -468,7 +476,7 @@ uint8_t EPS_struct_piu_housekeeping_data_eng_TO_json(const EPS_struct_piu_housek
     conditioning_channel_info_json[0] = '\0'; // Initialize the JSON array string
     strcat(conditioning_channel_info_json, "[");
     for (int i = 0; i < 5; i++) {
-        char conditioning_channel_json[128];
+        char conditioning_channel_json[256];
         if (EPS_conditioning_channel_short_datatype_eng_TO_json(&data->conditioning_channel_info_each_channel[i], conditioning_channel_json, sizeof(conditioning_channel_json)) != 0) {
             return 5; // Error converting conditioning_channel_info_each_channel[i]
         }
@@ -480,7 +488,7 @@ uint8_t EPS_struct_piu_housekeeping_data_eng_TO_json(const EPS_struct_piu_housek
     strcat(conditioning_channel_info_json, "]");
 
     // Format the entire JSON output
-    int snprintf_ret = snprintf(
+    const int snprintf_ret = snprintf(
         json_output_str, json_output_str_len,
         "{"
         "\"voltage_internal_board_supply_mV\":%d,"
@@ -493,8 +501,8 @@ uint8_t EPS_struct_piu_housekeeping_data_eng_TO_json(const EPS_struct_piu_housek
         "\"battery_temp2_cC\":%d,"
         "\"battery_temp3_cC\":%d,"
         "\"vd012_voltage_mV\":[%d,%d,%d],"
-        "\"vip_each_channel\":%s,"
-        "\"conditioning_channel_info_each_channel\":%s,"
+        "\"vip_each_channel\":%s," // List-of-Dicts.
+        "\"conditioning_channel_info_each_channel\":%s," // List-of-Dicts.
         "\"stat_ch_ext_on_bitfield\":%d,"
         "\"stat_ch_ext_overcurrent_fault_bitfield\":%d"
         "}",
