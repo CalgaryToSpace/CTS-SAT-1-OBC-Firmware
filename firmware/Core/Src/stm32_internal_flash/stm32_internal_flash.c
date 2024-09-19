@@ -14,9 +14,9 @@
 /// @note Currently, only allowed to write to golden copy region
 /// @note if data is not 8 bytes long, it will write the data given, and clear the rest of the data
 /// Ex: write: 0x01020304, will write 0x0102030400000000, clearing the 8 bytes infront
-uint8_t Internal_Flash_Bank_Write(uint32_t address, uint8_t *data, uint32_t length)
+uint8_t STM32_Internal_Flash_Bank_Write(uint32_t address, uint8_t *data, uint32_t length)
 {
-    if (address < INTERNAL_FLASH_MEMORY_REGION_GOLDEN_COPY_ADDRESS)
+    if (address < STM32_INTERNAL_FLASH_MEMORY_REGION_GOLDEN_COPY_ADDRESS)
     {
         return 1;
     }
@@ -83,7 +83,7 @@ uint8_t Internal_Flash_Bank_Write(uint32_t address, uint8_t *data, uint32_t leng
 /// @param buffer buffer to store the read data, must be length long
 /// @param length number of bytes to read
 /// @return 0 on success, > 0 on error
-uint8_t Internal_Flash_Bank_Read(uint32_t address, uint8_t *buffer, uint32_t length)
+uint8_t STM32_Internal_Flash_Bank_Read(uint32_t address, uint8_t *buffer, uint32_t length)
 {
     if (address + length > FLASH_BANK2_END)
     {
@@ -103,7 +103,7 @@ uint8_t Internal_Flash_Bank_Read(uint32_t address, uint8_t *buffer, uint32_t len
 /// @param number_of_pages_to_erase how many pages to erase
 /// @param page_error address of page which failed on error, defaults to UINT32_MAX on success
 /// @return 0 on success, 1 if HAL_FLASH_Unlock() failed, 2 if HAL_FLASH_Lock() failed
-uint8_t Internal_Flash_Bank_Erase(uint16_t start_page_erase, uint16_t number_of_pages_to_erase, uint32_t *page_error)
+uint8_t STM32_Internal_Flash_Bank_Erase(uint16_t start_page_erase, uint16_t number_of_pages_to_erase, uint32_t *page_error)
 {
     __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
 
