@@ -1,6 +1,6 @@
 #include "telecommands/stm32_internal_flash_telecommand_defs.h"
 #include "telecommands/telecommand_args_helpers.h"
-#include "stm32_internal_flash/stm32_internal_flash.h"
+#include "stm32_internal_flash_drivers/stm32_internal_flash_drivers.h"
 
 #include "stm32l4xx_hal.h"
 #include <stdio.h>

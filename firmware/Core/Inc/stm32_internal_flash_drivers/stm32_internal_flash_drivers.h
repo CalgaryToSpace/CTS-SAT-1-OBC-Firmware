@@ -1,5 +1,5 @@
-#ifndef __INCLUDE_GUARD__STM32_INTERNAL_FLASH_H__
-#define __INCLUDE_GUARD__STM32_INTERNAL_FLASH_H__
+#ifndef __INCLUDE_GUARD__STM32_INTERNAL_FLASH_DRIVERS_H__
+#define __INCLUDE_GUARD__STM32_INTERNAL_FLASH_DRIVERS_H__
 #include <stdint.h>
 
 /// @brief  Flash Partitions
@@ -20,4 +20,4 @@ uint8_t STM32_Internal_Flash_Bank_Read(uint32_t address, uint8_t *buffer, uint32
 
 uint8_t STM32_Internal_Flash_Bank_Erase(uint16_t start_page_erase, uint16_t number_of_pages_to_erase, uint32_t *page_error);
 
-#endif // __INCLUDE_GUARD__STM32_INTERNAL_FLASH_H__
+#endif // __INCLUDE_GUARD__STM32_INTERNAL_FLASH_DRIVERS_H__
