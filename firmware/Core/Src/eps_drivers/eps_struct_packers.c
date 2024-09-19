@@ -219,6 +219,7 @@ void EPS_pack_eps_result_piu_housekeeping_data_eng(const uint8_t rx_buf[], EPS_s
     result_dest->stat_ch_overcurrent_fault_bitfield = rx_buf[176] | (rx_buf[177] << 8);
 	
 	// VIP_CH[16] to VIP_CH[31]
+    // FIXME: Disable this block probably.
 	for (uint8_t ch_num = 16; ch_num <= 31; ch_num++) {
 		const uint8_t loop_num = ch_num - 16;
 		result_dest->vip_each_channel[ch_num].voltage_mV = (rx_buf[178 + loop_num*6]) | (rx_buf[179 + loop_num*6] << 8);

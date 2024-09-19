@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
-
+#include <inttypes.h>
 
 /*
  ***** To create these eps_<type>_TO_json(...) functions, the following ChatGPT prompt was used: ***** 
@@ -247,7 +247,7 @@ uint8_t EPS_struct_pdu_housekeeping_data_eng_TO_json(const EPS_struct_pdu_housek
 
     // Add voltage_internal_board_supply_mV and temperature_mcu_cC
     ret = snprintf(json_output_str + offset, json_output_str_len - offset,
-                   "\"voltage_internal_board_supply_mV\":%u,\"temperature_mcu_cC\":%u,",
+                   "\"voltage_internal_board_supply_mV\":%" PRIu16 ",\"temperature_mcu_cC\":%" PRId16 ",",
                    data->voltage_internal_board_supply_mV, data->temperature_mcu_cC);
     if (ret < 0 || ret >= (json_output_str_len - offset)) return 3;
     offset += ret;
@@ -352,7 +352,7 @@ uint8_t EPS_struct_pbu_housekeeping_data_eng_TO_json(const EPS_struct_pbu_housek
     int snprintf_ret = snprintf(
         json_output_str, json_output_str_len,
         "{\"voltage_internal_board_supply_mV\":%d,"
-        "\"temperature_mcu_cC\":%d,"
+        "\"temperature_mcu_cC\":%" PRId16 ","
         "\"vip_total_input\":%s,"
         "\"battery_pack_status_bitfield\":%d,"
         "\"battery_pack_info_each_pack\":[%s,%s,%s]}",
@@ -406,7 +406,7 @@ uint8_t EPS_struct_pcu_housekeeping_data_eng_TO_json(const EPS_struct_pcu_housek
         json_output_str, json_output_str_len,
         "{"
         "\"voltage_internal_board_supply_mV\":%d,"
-        "\"temperature_mcu_cC\":%d,"
+        "\"temperature_mcu_cC\":%" PRId16 ","
         "\"vip_total_input\":%s,"
         "\"conditioning_channel_info_each_channel\":[%s,%s,%s,%s]"
         "}",
@@ -484,7 +484,7 @@ uint8_t EPS_struct_piu_housekeeping_data_eng_TO_json(const EPS_struct_piu_housek
         json_output_str, json_output_str_len,
         "{"
         "\"voltage_internal_board_supply_mV\":%d,"
-        "\"temperature_mcu_cC\":%d,"
+        "\"temperature_mcu_cC\":%" PRId16 ","
         "\"vip_dist_input\":%s,"
         "\"vip_batt_input\":%s,"
         "\"stat_ch_on_bitfield\":%d,"

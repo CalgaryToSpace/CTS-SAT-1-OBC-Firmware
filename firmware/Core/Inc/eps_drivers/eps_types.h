@@ -14,7 +14,7 @@ typedef enum {
     EPS_CHANNEL_3V3_STACK               = 5, // CH5
     EPS_CHANNEL_3V3_CAMERA              = 6, // CH6
     EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY  = 7, // CH7
-    EPS_CHANNEL_3V3_LORA_MODULE        = 8, // CH8
+    EPS_CHANNEL_3V3_LORA_MODULE         = 8, // CH8
     EPS_CHANNEL_VBATT_CH9_UNUSED        = 9, // CH9
     EPS_CHANNEL_VBATT_CH10_UNUSED       = 10, // CH10
     EPS_CHANNEL_VBATT_CH11_UNUSED       = 11, // CH11
@@ -107,8 +107,8 @@ typedef struct {
 // Command Response: 0x52: Get PDU (Distribution Unit) Housekeeping Data (Eng)
 // Command Response: 0x54: Get PDU (Distribution Unit) Housekeeping Data (Running Average, Eng)
 typedef struct {
-    uint16_t voltage_internal_board_supply_mV;
-    uint16_t temperature_mcu_cC; // centiCelsius = 1e-2 degrees C
+    int16_t voltage_internal_board_supply_mV;
+    int16_t temperature_mcu_cC; // centiCelsius = 1e-2 degrees C
 
     EPS_vpid_eng_t vip_total_input;
     
@@ -124,8 +124,8 @@ typedef struct {
 // Command Response: 0x62: Get PBU (Battery Unit) Housekeeping Data (Eng)
 // Command Response: 0x64: Get PBU (Battery Unit) Housekeeping Data (Running Average, Eng)
 typedef struct {
-    uint16_t voltage_internal_board_supply_mV;
-    uint16_t temperature_mcu_cC; // centiCelsius = 1e-2 degrees C
+    int16_t voltage_internal_board_supply_mV;
+    int16_t temperature_mcu_cC; // centiCelsius = 1e-2 degrees C
     EPS_vpid_eng_t vip_total_input;
     uint16_t battery_pack_status_bitfield; // Table 3-18: Battery Pack Status
 
@@ -136,8 +136,8 @@ typedef struct {
 // Command Response: 0x72: Get PCU (Conditioning Unit) Housekeeping Data (Eng)
 // Command Response: 0x74: Get PCU (Conditioning Unit) Housekeeping Data (Running Average, Eng)
 typedef struct {
-    uint16_t voltage_internal_board_supply_mV;
-    uint16_t temperature_mcu_cC; // centiCelsius = 1e-2 degrees C
+    int16_t voltage_internal_board_supply_mV;
+    int16_t temperature_mcu_cC; // centiCelsius = 1e-2 degrees C
     EPS_vpid_eng_t vip_total_input;
 
     EPS_conditioning_channel_datatype_eng_t conditioning_channel_info_each_channel[4];
@@ -148,16 +148,16 @@ typedef struct {
 // Command Response: 0xA2: Get PDU (Distribution Unit) Housekeeping Data (Eng)
 // Command Response: 0xA4: Get PDU (Distribution Unit) Housekeeping Data (Running Average, Eng)
 typedef struct {
-    uint16_t voltage_internal_board_supply_mV;
-    uint16_t temperature_mcu_cC; // centiCelsius = 1e-2 degrees C
+    int16_t voltage_internal_board_supply_mV;
+    int16_t temperature_mcu_cC; // centiCelsius = 1e-2 degrees C
 
     EPS_vpid_eng_t vip_dist_input;
     EPS_vpid_eng_t vip_batt_input;
     uint16_t stat_ch_on_bitfield;
     uint16_t stat_ch_overcurrent_fault_bitfield;
     uint16_t battery_status_bitfield; // Table 3-18: Battery Pack Status
-    uint16_t battery_temp2_cC;
-    uint16_t battery_temp3_cC;
+    int16_t battery_temp2_cC;
+    int16_t battery_temp3_cC;
 
     uint16_t vd0_voltage_mV;
     uint16_t vd1_voltage_mV;
