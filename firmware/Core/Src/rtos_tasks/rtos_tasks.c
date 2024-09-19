@@ -180,19 +180,27 @@ void TASK_receive_gps_info(void *argument) {
 		// Checking if there is data in the GPS buffer
 		if(UART_gps_buffer_write_idx > 0) {
 
-			// Copy data from the UART buffer to a separate buffer
-			latest_gps_response_len = UART_gps_buffer_write_idx;
-			for (uint16_t i = 0; i < UART_gps_buffer_len; i++) {
-				latest_gps_response[i] = (char) UART_gps_buffer[i];
+			// Checking if new data has come ie No more data is being transmitted
+			const uint8_t temp_idx = UART_gps_buffer_write_idx;
+			osDelay(50);
+			if(UART_gps_buffer_write_idx == temp_idx)
+			{
+				// Copy data from the UART buffer to a separate buffer
+				latest_gps_response_len = UART_gps_buffer_write_idx;
+				for (uint16_t i = 0; i < UART_gps_buffer_len; i++) {
+					latest_gps_response[i] = (char) UART_gps_buffer[i];
+					}
+
+				// Set the null terminator at the end of the `latest_gps_response` str.
+				latest_gps_response[latest_gps_response_len] = '\0';
+
+				// Clear the buffer (memset to 0, but volatile-compatible) and reset the write pointer.
+				for (uint16_t i = 0; i < UART_gps_buffer_len; i++) {
+					UART_gps_buffer[i] = 0;
+					}
+
 			}
 
-			// Set the null terminator at the end of the `latest_gps_response` str.
-			latest_gps_response[latest_gps_response_len] = '\0';
-
-			// Clear the buffer (memset to 0, but volatile-compatible) and reset the write pointer.
-			for (uint16_t i = 0; i < UART_gps_buffer_len; i++) {
-				UART_gps_buffer[i] = 0;
-			}
 			UART_gps_buffer_write_idx = 0;
 
 		}
@@ -206,9 +214,36 @@ void TASK_receive_gps_info(void *argument) {
 		// How do I handle the incomplete data? Could drop the data
 		if(gps_header_result != 0){
 			// Failed to parse
-			break;
+			return;
 		}
 
+		GPS_bestxyza_response_t bestxyza_data;
+		if(strcmp(gps_header.log_name, "BESTXYZA") == 0)
+		{
+			const uint8_t bestxyza_parse_result = GPS_bestxyza_data_parser(latest_gps_response,&bestxyza_data);
+
+			if(bestxyza_parse_result != 0){
+				// Failed to parsing bestxyza data
+				return;
+			}
+
+			// After parsing is complete and successful
+			return;
+		}
+
+		GPS_timea_response_t timea_data;
+		if(strcmp(gps_header.log_name, "TIMEA") == 0)
+		{
+			const uint8_t timea_parse_result = GPS_time_data_parser(latest_gps_response,&timea_data);
+
+			if(timea_parse_result != 0){
+				// Failed to parsing timea data
+				return;
+			}
+
+			// After parsing is complete and successful
+			return;
+		}
 
 	} /* End Task's Main Loop */
 }
