@@ -5,21 +5,21 @@
 
 
 struct Antenna_deployment_status {
-    int antenna_1_deployed;
-    int antenna_1_deployment_time_limit_reached;
-    int antenna_1_deployment_system_active;
-    int antenna_2_deployed;
-    int antenna_2_deployment_time_limit_reached;
-    int antenna_2_deployment_system_active;
-    int antenna_3_deployed;
-    int antenna_3_deployment_time_limit_reached;
-    int antenna_3_deployment_system_active;
-    int antenna_4_deployed;
-    int antenna_4_deployment_time_limit_reached;
-    int antenna_4_deployment_system_active;
-    int independent_burn;
-    int ignoring_deployment_switches;
-    int antenna_system_armed;
+    uint8_t antenna_1_deployed;
+    uint8_t antenna_1_deployment_time_limit_reached;
+    uint8_t antenna_1_deployment_system_active;
+    uint8_t antenna_2_deployed;
+    uint8_t antenna_2_deployment_time_limit_reached;
+    uint8_t antenna_2_deployment_system_active;
+    uint8_t antenna_3_deployed;
+    uint8_t antenna_3_deployment_time_limit_reached;
+    uint8_t antenna_3_deployment_system_active;
+    uint8_t antenna_4_deployed;
+    uint8_t antenna_4_deployment_time_limit_reached;
+    uint8_t antenna_4_deployment_system_active;
+    uint8_t independent_burn;
+    uint8_t ignoring_deployment_switches;
+    uint8_t antenna_system_armed;
 };
 
 uint8_t ANT_CMD_reset();
