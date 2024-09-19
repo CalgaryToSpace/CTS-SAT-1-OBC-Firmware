@@ -1203,6 +1203,7 @@ uint8_t TCMDEXEC_available_telecommands(const char *args_str, TCMD_TelecommandCh
     return 0;
 }
 
+
 uint8_t TCMDEXEC_reboot(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     DEBUG_uart_print_str("Rebooting by telecommand request...\n");
@@ -1218,7 +1219,6 @@ uint8_t TCMDEXEC_crc(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_c
                         uint16_t response_output_buf_len){
     char input_arr[100];
     uint32_t crc_result;
-    char output_crc_result[25];
     if (sscanf(args_str, "%s", &input_arr) != 1)
     {
         snprintf(response_output_buf, response_output_buf_len, "Error: Invalid argument. Expected 1 String argument.");
@@ -1226,8 +1226,7 @@ uint8_t TCMDEXEC_crc(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_c
     }
 
     GEN_crc32_checksum(input_arr, sizeof(input_arr) - 1, &crc_result);
-    snprintf(output_crc_result, "CRC32 Checksum: %08X\n", crc_result);
-    DEBUG_uart_print_str(output_crc_result);
+    DEBUG_uart_print_str("CRC32 Checksum: %08X\n", crc_result);
 
     snprintf(response_output_buf, response_output_buf_len, "The crc result of %s is %s.\n", input_arr, crc_result);
     return 0;
