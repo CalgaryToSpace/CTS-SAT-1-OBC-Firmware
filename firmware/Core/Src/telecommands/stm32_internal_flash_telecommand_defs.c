@@ -102,10 +102,11 @@ uint8_t TCMDEXEC_internal_flash_erase(const char *args_str, TCMD_TelecommandChan
         return 1;
     }
 
-    const uint32_t res = Internal_Flash_Bank_Erase((uint16_t)start_page_erase, (uint16_t)number_of_pages_to_erase);
-    if (res != 0)
+    uint32_t page_error = 0;
+    const uint8_t erase_res = Internal_Flash_Bank_Erase((uint16_t)start_page_erase, (uint16_t)number_of_pages_to_erase, page_error);
+    if (erase_res != 0)
     {
-        snprintf(response_output_buf, response_output_buf_len, "Error: %lu", res);
+        snprintf(response_output_buf, response_output_buf_len, "Error erasing pages: %u - %u, error: %u, page error: %lu", start_page_erase, start_page_erase + number_of_pages_to_erase, erase_res, page_error);
         return 1;
     }
     return 0;

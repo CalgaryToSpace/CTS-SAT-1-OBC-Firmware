@@ -18,6 +18,6 @@ uint8_t Internal_Flash_Bank_Write(uint32_t address, uint8_t *data, uint32_t leng
 
 uint8_t Internal_Flash_Bank_Read(uint32_t address, uint8_t *buffer, uint32_t length);
 
-uint32_t Internal_Flash_Bank_Erase(uint16_t start_page_erase, uint16_t number_of_pages_to_erase);
+uint8_t Internal_Flash_Bank_Erase(uint16_t start_page_erase, uint16_t number_of_pages_to_erase, uint32_t *page_error);
 
 #endif // __INCLUDE_GUARD__STM32_INTERNAL_FLASH_H__
