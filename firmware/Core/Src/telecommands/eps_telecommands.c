@@ -95,6 +95,7 @@ uint8_t TCMDEXEC_eps_cancel_operation(
 /// @param args_str
 /// - Arg 0: New mode to switch to. Either "nominal" or "safety".
 /// @return 0 on success, 1 on failure.
+/// @note See EPS Software ICD, Page 12, Section 3 (Functional Description) for state/mode definitions.
 uint8_t TCMDEXEC_eps_switch_to_mode(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
