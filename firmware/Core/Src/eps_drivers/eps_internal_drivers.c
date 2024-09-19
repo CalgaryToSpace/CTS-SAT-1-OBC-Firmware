@@ -7,12 +7,14 @@
 #include "eps_drivers/eps_internal_drivers.h"
 #include "uart_handler/uart_handler.h"
 #include "stm_drivers/timing_helpers.h"
+#include "log/log.h"
 
 #include <stdint.h>
 #include <string.h>
 
 extern UART_HandleTypeDef *UART_eps_port_handle;
 
+// TODO: please verify these numbers in the Software ICD, and remove this comment when satisfied.
 const uint32_t EPS_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS = 50;
 const uint32_t EPS_RX_TIMEOUT_BETWEEN_BYTES_MS = 25;
 
@@ -98,11 +100,23 @@ uint8_t EPS_send_cmd_get_response(
 		}
 		else { // thus, UART_eps_buffer_write_idx > 0
 			// Check if we've timed out (between bytes)
-			if (HAL_GetTick() - UART_eps_last_write_time_ms > EPS_RX_TIMEOUT_BETWEEN_BYTES_MS) {
+			const uint32_t cur_time = HAL_GetTick();
+			// Note: Sometimes, because ISRs and C are fun, the UART_eps_last_write_time_ms is
+			// greater than `cur_time`. Thus, we must do a safety check that the time difference
+			// is positive.
+			if (
+				(cur_time > UART_eps_last_write_time_ms) // Important seemingly-obvious safety check.
+				&& ((cur_time - UART_eps_last_write_time_ms) > EPS_RX_TIMEOUT_BETWEEN_BYTES_MS)
+			) {
 				if (EPS_ENABLE_DEBUG_PRINT) {
-					DEBUG_uart_print_str("EPS->OBC WARNING: timeout between bytes\n");
+					LOG_message(
+						LOG_SYSTEM_EPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+						"EPS->OBC WARNING: timeout between bytes. UART_eps_last_write_time_ms=%lu, cur_time=%lu",
+						UART_eps_last_write_time_ms,
+						cur_time
+					);
 				}
-				// non-fatal error; try to parse what we received
+				// Non-fatal error; try to parse what we received
 				break;
 			}
 		}
