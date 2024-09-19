@@ -96,8 +96,8 @@ typedef struct {
 
 // Command Response: 0x44: Get PBU ABF Placed State
 typedef enum {
-    EPS_ABF_PIN_APPLIED = 0,
-    EPS_ABF_PIN_NOT_APPLIED = 0xAB
+    EPS_ABF_PIN_NOT_APPLIED = 0x00,
+    EPS_ABF_PIN_APPLIED = 0xAB,
 } EPS_ABF_PIN_PLACED_enum_t;
 typedef struct {
     EPS_ABF_PIN_PLACED_enum_t abf_placed_0;
