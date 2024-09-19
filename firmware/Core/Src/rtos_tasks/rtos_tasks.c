@@ -234,7 +234,7 @@ void TASK_receive_gps_info(void *argument) {
 		GPS_timea_response_t timea_data;
 		if(strcmp(gps_header.log_name, "TIMEA") == 0)
 		{
-			const uint8_t timea_parse_result = GPS_time_data_parser(latest_gps_response,&timea_data);
+			const uint8_t timea_parse_result = GPS_timea_data_parser(latest_gps_response,&timea_data);
 
 			if(timea_parse_result != 0){
 				// Failed to parsing timea data
