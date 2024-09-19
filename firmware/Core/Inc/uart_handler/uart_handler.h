@@ -29,6 +29,7 @@ extern volatile uint8_t UART_gps_buffer_last_rx_byte; // Last received byte for 
 
 
 void UART_init_uart_handlers(void);
+void GPS_set_uart_interrupt_state(uint8_t toggle_status);
 
 
 #endif // __INCLUDE_GUARD__UART_HANDLER_H__
