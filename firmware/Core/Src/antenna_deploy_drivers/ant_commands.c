@@ -161,7 +161,6 @@ uint8_t ANT_CMD_cancel_deployment_system_activation() {
     return send_status;
 }
 
-//TODO: validate this is working correctly
 /// @brief Measures the temperature at the antenna controller system.
 /// @param result a pointer to a 16 bit unsigned integer where the temperature measurement is written. Refer to the 
 /// "ISIS.ANTS.UM.001" datasheet by ISISpace for information on interpreting this measurement
