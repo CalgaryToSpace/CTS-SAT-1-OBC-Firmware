@@ -37,13 +37,37 @@ volatile uint16_t UART_mpi_rx_buffer_write_idx = 0; // extern
 // const uint16_t UART_mpi_data_buffer_len = 80000; // extern
 // volatile uint8_t UART_mpi_data_buffer[80000]; // extern
 
-// UART2 response buffer
+// UART2 (LORA) response buffer
 // TODO: Configure with peripheral required specifications
 const uint16_t UART2_rx_buffer_len = 5120; // extern
 volatile uint8_t UART2_rx_buffer[5120]; // extern // TODO: confirm that this volatile means that the contents are volatile but the pointer is not
 volatile uint16_t UART2_rx_buffer_write_idx = 0; // extern
 volatile uint32_t UART2_rx_last_write_time_ms = 0; // extern
 volatile uint8_t UART2_rx_buffer_last_rx_byte = 0; // extern
+
+// UART3 (GPS) response buffer
+// TODO: Configure with peripheral required specifications
+const uint16_t UART3_rx_buffer_len = 5120; // extern
+volatile uint8_t UART3_rx_buffer[5120]; // extern // TODO: confirm that this volatile means that the contents are volatile but the pointer is not
+volatile uint16_t UART3_rx_buffer_write_idx = 0; // extern
+volatile uint32_t UART3_rx_last_write_time_ms = 0; // extern
+volatile uint8_t UART3_rx_buffer_last_rx_byte = 0; // extern
+
+// UART4 (CAMERA) response buffer
+// TODO: Configure with peripheral required specifications
+const uint16_t UART4_rx_buffer_len = 5120; // extern
+volatile uint8_t UART4_rx_buffer[5120]; // extern // TODO: confirm that this volatile means that the contents are volatile but the pointer is not
+volatile uint16_t UART4_rx_buffer_write_idx = 0; // extern
+volatile uint32_t UART4_rx_last_write_time_ms = 0; // extern
+volatile uint8_t UART4_rx_buffer_last_rx_byte = 0; // extern
+
+// UART5 (EPS) response buffer
+// TODO: Configure with peripheral required specifications
+const uint16_t UART5_rx_buffer_len = 5120; // extern
+volatile uint8_t UART5_rx_buffer[5120]; // extern // TODO: confirm that this volatile means that the contents are volatile but the pointer is not
+volatile uint16_t UART5_rx_buffer_write_idx = 0; // extern
+volatile uint32_t UART5_rx_last_write_time_ms = 0; // extern
+volatile uint8_t UART5_rx_buffer_last_rx_byte = 0; // extern
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     // This ISR function gets called every time a byte is received on the UART.
@@ -132,6 +156,24 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         UART2_rx_last_write_time_ms = HAL_GetTick();
         HAL_UART_Receive_IT(&huart2, (uint8_t*) &UART2_rx_buffer_last_rx_byte, 1);
     }
+    // TODO: Verify implementation with peripheral connected. Currently configured to follow interrupt based receive
+    else if(huart->Instance == UART5){
+        // Add the byte to the buffer
+        if (UART5_rx_buffer_write_idx >= UART5_rx_buffer_len) {
+            // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART telecommand buffer is full\n");
+            
+            // Shift all bytes left by 1
+            for (uint16_t i = 1; i < UART5_rx_buffer_len; i++) {
+                UART5_rx_buffer[i - 1] = UART5_rx_buffer[i];
+            }
+
+            // Reset to a valid index
+            UART5_rx_buffer_write_idx = UART5_rx_buffer_len - 1;
+        }
+        UART5_rx_buffer[UART5_rx_buffer_write_idx++] = UART5_rx_buffer_last_rx_byte;
+        UART5_rx_last_write_time_ms = HAL_GetTick();
+        HAL_UART_Receive_IT(&huart5, (uint8_t*) &UART5_rx_buffer_last_rx_byte, 1);
+    }
     else {
         // FIXME: add the rest (camera, MPI, maybe others)
         DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> unknown UART instance\n"); // FIXME: remove
@@ -144,4 +186,11 @@ void UART_init_uart_handlers(void) {
     HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t*) &UART_eps_buffer_last_rx_byte, 1);
 
     // TODO: add the rest
+    // Enable the UART interrupt
+    HAL_UART_Receive_IT(&hlpuart1, (uint8_t*) &UART_telecommand_buffer_last_rx_byte, 1);
+    HAL_UART_Receive_IT(&huart2, (uint8_t*) &UART2_rx_buffer_last_rx_byte, 1);
+    HAL_UART_Receive_IT(&huart3, (uint8_t*) &UART3_rx_buffer_last_rx_byte, 1);
+    HAL_UART_Receive_IT(&huart4, (uint8_t*) &UART4_rx_buffer_last_rx_byte, 1);
+    HAL_UART_Receive_IT(&huart5, (uint8_t*) &UART5_rx_buffer_last_rx_byte, 1);
+    // TODO: Verify these when peripheral implementations are added
 }
