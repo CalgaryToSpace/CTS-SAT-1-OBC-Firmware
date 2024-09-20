@@ -22,7 +22,7 @@
 #include "timekeeping/timekeeping.h"
 #include "littlefs/littlefs_helper.h"
 #include "stm32/stm32_reboot_reason.h"
-
+#include "telecommands/eps_telecommands.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -329,6 +329,115 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
 
     // ****************** END SECTION: freertos_telecommand_defs ******************
 
+
+    /* ============================ EPS-Related (eps_telecommands.c/h) ================= */
+    {
+        .tcmd_name = "eps_watchdog",
+        .tcmd_func = TCMDEXEC_eps_watchdog,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_system_reset",
+        .tcmd_func = TCMDEXEC_eps_system_reset,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_no_operation",
+        .tcmd_func = TCMDEXEC_eps_no_operation,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_cancel_operation",
+        .tcmd_func = TCMDEXEC_eps_cancel_operation,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_switch_to_mode",
+        .tcmd_func = TCMDEXEC_eps_switch_to_mode,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_set_channel_enabled",
+        .tcmd_func = TCMDEXEC_eps_set_channel_enabled,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_get_system_status_json",
+        .tcmd_func = TCMDEXEC_eps_get_system_status_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_get_pdu_overcurrent_fault_state_json",
+        .tcmd_func = TCMDEXEC_eps_get_pdu_overcurrent_fault_state_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_get_pbu_abf_placed_state_json",
+        .tcmd_func = TCMDEXEC_eps_get_pbu_abf_placed_state_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+
+    {
+        .tcmd_name = "eps_get_pdu_housekeeping_data_eng_json",
+        .tcmd_func = TCMDEXEC_eps_get_pdu_housekeeping_data_eng_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_get_pdu_housekeeping_data_run_avg_json",
+        .tcmd_func = TCMDEXEC_eps_get_pdu_housekeeping_data_run_avg_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_get_pbu_housekeeping_data_eng_json",
+        .tcmd_func = TCMDEXEC_eps_get_pbu_housekeeping_data_eng_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_get_pbu_housekeeping_data_run_avg_json",
+        .tcmd_func = TCMDEXEC_eps_get_pbu_housekeeping_data_run_avg_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_get_pcu_housekeeping_data_eng_json",
+        .tcmd_func = TCMDEXEC_eps_get_pcu_housekeeping_data_eng_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_get_pcu_housekeeping_data_run_avg_json",
+        .tcmd_func = TCMDEXEC_eps_get_pcu_housekeeping_data_run_avg_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_get_piu_housekeeping_data_eng_json",
+        .tcmd_func = TCMDEXEC_eps_get_piu_housekeeping_data_eng_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_get_piu_housekeeping_data_run_avg_json",
+        .tcmd_func = TCMDEXEC_eps_get_piu_housekeeping_data_run_avg_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+
+    /* *************************** END EPS Section ************************************** */
+    
+    
     // ****************** SECTION: agenda_telecommand_defs ******************
 
    {

@@ -5,7 +5,7 @@
 #include "main.h"
 #include "rtos_tasks/rtos_task_helpers.h"
 
-#define TCMD_MAX_RESPONSE_BUFFER_LENGTH 1024
+#define TCMD_MAX_RESPONSE_BUFFER_LENGTH 2048
 
 void TASK_DEBUG_print_heartbeat(void *argument);
 
