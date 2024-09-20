@@ -1217,24 +1217,24 @@ uint8_t TCMDEXEC_peripheral_send_receive_data(const char *args_str, TCMD_Telecom
     else {
         // UART 2 Selected (LORA)
         if(strcmp(arg_uart_port_name, "UART2") == 0) {
-            UART_handle = &huart2;
-            UART_rx_buffer_write_idx = &UART2_rx_buffer_write_idx;
-            UART_rx_buffer_len = &UART2_rx_buffer_len;
-            UART_rx_buffer = &UART2_rx_buffer[0];
+            UART_handle = UART_lora_port_handle;
+            UART_rx_buffer_write_idx = &UART_lora_buffer_write_idx;
+            UART_rx_buffer_len = &UART_lora_buffer_len;
+            UART_rx_buffer = &UART_lora_buffer[0];
         }
         // UART 3 Selected (GPS)
         else if(strcmp(arg_uart_port_name, "UART3") == 0) {
-            UART_handle = &huart3;
-            UART_rx_buffer_write_idx = &UART3_rx_buffer_write_idx;
-            UART_rx_buffer_len = &UART3_rx_buffer_len;
-            UART_rx_buffer = &UART3_rx_buffer[0];
+            UART_handle = UART_gps_port_handle;
+            UART_rx_buffer_write_idx = &UART_gps_buffer_write_idx;
+            UART_rx_buffer_len = &UART_gps_buffer_len;
+            UART_rx_buffer = &UART_gps_buffer[0];
         }
         // UART 5 Selected (EPS)
         else if(strcmp(arg_uart_port_name, "UART5") == 0) {
-            UART_handle = &huart5;
-            UART_rx_buffer_write_idx = &UART5_rx_buffer_write_idx;
-            UART_rx_buffer_len = &UART5_rx_buffer_len;
-            UART_rx_buffer = &UART5_rx_buffer[0];
+            UART_handle = UART_eps_port_handle;
+            UART_rx_buffer_write_idx = &UART_eps_buffer_write_idx;
+            UART_rx_buffer_len = &UART_eps_buffer_len;
+            UART_rx_buffer = &UART_eps_buffer[0];
         }
         // Invalid UART selected
         else {
