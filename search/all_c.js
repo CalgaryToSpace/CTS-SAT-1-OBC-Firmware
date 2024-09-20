@@ -21,6 +21,7 @@ var searchData=
   ['external_20etc_18',['Libraries, External, etc.',['../md_docs_2C__Namespaces.html#autotoc_md35',1,'']]],
   ['external_5fsai1_5fclock_5fvalue_19',['EXTERNAL_SAI1_CLOCK_VALUE',['../stm32l4xx__hal__conf_8h.html#a3e840e13854bdb68608b69a2ecf996ab',1,'stm32l4xx_hal_conf.h']]],
   ['external_5fsai2_5fclock_5fvalue_20',['EXTERNAL_SAI2_CLOCK_VALUE',['../stm32l4xx__hal__conf_8h.html#a8f8fce2496d8c61b71331907e08c24c7',1,'stm32l4xx_hal_conf.h']]],
-  ['extract_5fc_5ffunction_5fdocstring_21',['extract_c_function_docstring',['../namespacects1__ground__support_1_1telecommand__array__parser.html#a8b7b7a6be6b2ee9650528ca3c6716c59',1,'cts1_ground_support::telecommand_array_parser']]],
-  ['extract_5ftelecommand_5farg_5flist_22',['extract_telecommand_arg_list',['../namespacects1__ground__support_1_1telecommand__array__parser.html#a17a7c4b57a1e81c9bd02673d00aa5afe',1,'cts1_ground_support::telecommand_array_parser']]]
+  ['extract_5fbit_21',['extract_bit',['../ant__commands_8c.html#a8e3df7726ae12417572e658cc648d5bd',1,'ant_commands.c']]],
+  ['extract_5fc_5ffunction_5fdocstring_22',['extract_c_function_docstring',['../namespacects1__ground__support_1_1telecommand__array__parser.html#a8b7b7a6be6b2ee9650528ca3c6716c59',1,'cts1_ground_support::telecommand_array_parser']]],
+  ['extract_5ftelecommand_5farg_5flist_23',['extract_telecommand_arg_list',['../namespacects1__ground__support_1_1telecommand__array__parser.html#a17a7c4b57a1e81c9bd02673d00aa5afe',1,'cts1_ground_support::telecommand_array_parser']]]
 ];

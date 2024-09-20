@@ -89,7 +89,8 @@ $(function(){ initResizable(false); });
 <div id="doc-content">
 <div class="header">
   <div class="summary">
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">ant_commands.c File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -131,15 +132,90 @@ Include dependency graph for ant_commands.c:</div>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a906e6b81ac1188db8914cf6f9cea20a9" id="r_a906e6b81ac1188db8914cf6f9cea20a9"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a906e6b81ac1188db8914cf6f9cea20a9">ANT_CMD_reset</a> ()</td></tr>
+<tr class="memdesc:a906e6b81ac1188db8914cf6f9cea20a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs a reset of the antenna deployment systems microcontroller.  <br /></td></tr>
+<tr class="separator:a906e6b81ac1188db8914cf6f9cea20a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e890b516f69a193dad06ca06965e8da" id="r_a6e890b516f69a193dad06ca06965e8da"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6e890b516f69a193dad06ca06965e8da">ANT_CMD_arm_antenna_system</a> ()</td></tr>
 <tr class="memdesc:a6e890b516f69a193dad06ca06965e8da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Arm the antenna deploy system.  <br /></td></tr>
 <tr class="separator:a6e890b516f69a193dad06ca06965e8da"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a78ccb85628987c5faee6df9ea5787350" id="r_a78ccb85628987c5faee6df9ea5787350"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a78ccb85628987c5faee6df9ea5787350">ANT_CMD_deploy_antenna1</a> (uint8_t activation_time_seconds)</td></tr>
-<tr class="memdesc:a78ccb85628987c5faee6df9ea5787350"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deploys antenna 1.  <br /></td></tr>
-<tr class="separator:a78ccb85628987c5faee6df9ea5787350"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a49814cb0f44d24c42491f4b66a6e9f" id="r_a0a49814cb0f44d24c42491f4b66a6e9f"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0a49814cb0f44d24c42491f4b66a6e9f">ANT_CMD_measure_temp</a> ()</td></tr>
-<tr class="memdesc:a0a49814cb0f44d24c42491f4b66a6e9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Measure the temperature of the antenna controller system.  <br /></td></tr>
-<tr class="separator:a0a49814cb0f44d24c42491f4b66a6e9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac223110d9d9b1c378b9b567b8ef60aec" id="r_ac223110d9d9b1c378b9b567b8ef60aec"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac223110d9d9b1c378b9b567b8ef60aec">ANT_CMD_disarm_antenna_system</a> ()</td></tr>
+<tr class="memdesc:ac223110d9d9b1c378b9b567b8ef60aec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disarms the antenna deploy system.  <br /></td></tr>
+<tr class="separator:ac223110d9d9b1c378b9b567b8ef60aec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abba97f74ea8fa76450677f4dfe4fa617" id="r_abba97f74ea8fa76450677f4dfe4fa617"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abba97f74ea8fa76450677f4dfe4fa617">ANT_CMD_deploy_antenna</a> (uint8_t antenna, uint8_t activation_time_seconds)</td></tr>
+<tr class="memdesc:abba97f74ea8fa76450677f4dfe4fa617"><td class="mdescLeft">&#160;</td><td class="mdescRight">activates the deployment system for the selected antenna for the specified amount of time  <br /></td></tr>
+<tr class="separator:abba97f74ea8fa76450677f4dfe4fa617"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1cba1e3e65daad7bd5f69089c8802c61" id="r_a1cba1e3e65daad7bd5f69089c8802c61"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1cba1e3e65daad7bd5f69089c8802c61">ANT_CMD_start_automated_sequential_deployment</a> (uint8_t activation_time_seconds)</td></tr>
+<tr class="memdesc:a1cba1e3e65daad7bd5f69089c8802c61"><td class="mdescLeft">&#160;</td><td class="mdescRight">deploys all antennas one by one sequentially.  <br /></td></tr>
+<tr class="separator:a1cba1e3e65daad7bd5f69089c8802c61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac353aab8395acf27cdb35e1dd5293d54" id="r_ac353aab8395acf27cdb35e1dd5293d54"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac353aab8395acf27cdb35e1dd5293d54">ANT_CMD_deploy_antenna_with_override</a> (uint8_t antenna, uint8_t activation_time_seconds)</td></tr>
+<tr class="memdesc:ac353aab8395acf27cdb35e1dd5293d54"><td class="mdescLeft">&#160;</td><td class="mdescRight">initiates deployment of the selected antenna, ignoring whether the current status of that antenna is deployed  <br /></td></tr>
+<tr class="separator:ac353aab8395acf27cdb35e1dd5293d54"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a449cd59bc748f89866f5fe6da1a8222b" id="r_a449cd59bc748f89866f5fe6da1a8222b"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a449cd59bc748f89866f5fe6da1a8222b">ANT_CMD_cancel_deployment_system_activation</a> ()</td></tr>
+<tr class="memdesc:a449cd59bc748f89866f5fe6da1a8222b"><td class="mdescLeft">&#160;</td><td class="mdescRight">cancels any active attempts to deploy an antenna  <br /></td></tr>
+<tr class="separator:a449cd59bc748f89866f5fe6da1a8222b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5bbfd2489ceda810545a6e40f213c916" id="r_a5bbfd2489ceda810545a6e40f213c916"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5bbfd2489ceda810545a6e40f213c916">ANT_CMD_measure_temp</a> (uint16_t *result)</td></tr>
+<tr class="memdesc:a5bbfd2489ceda810545a6e40f213c916"><td class="mdescLeft">&#160;</td><td class="mdescRight">Measures the temperature at the antenna controller system.  <br /></td></tr>
+<tr class="separator:a5bbfd2489ceda810545a6e40f213c916"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e3df7726ae12417572e658cc648d5bd" id="r_a8e3df7726ae12417572e658cc648d5bd"><td class="memItemLeft" align="right" valign="top">static uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8e3df7726ae12417572e658cc648d5bd">extract_bit</a> (uint8_t byte, uint8_t position)</td></tr>
+<tr class="separator:a8e3df7726ae12417572e658cc648d5bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a844454d8c72bb761846248f0ab0e5a" id="r_a4a844454d8c72bb761846248f0ab0e5a"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4a844454d8c72bb761846248f0ab0e5a">ANT_CMD_report_deployment_status</a> (struct <a class="el" href="structAntenna__deployment__status.html">Antenna_deployment_status</a> *response)</td></tr>
+<tr class="memdesc:a4a844454d8c72bb761846248f0ab0e5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">writes 2 bytes of information representing the deployment status of the antennas to the passed buffer, information on interpreting the response may be found in the ISIS Antenna System user manual. Doc ID: ISIS.ANTS.UM.001 pg. 42  <br /></td></tr>
+<tr class="separator:a4a844454d8c72bb761846248f0ab0e5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a815bf7c2258ea7be61a56f65b154d8f4" id="r_a815bf7c2258ea7be61a56f65b154d8f4"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a815bf7c2258ea7be61a56f65b154d8f4">ANT_CMD_report_antenna_deployment_activation_count</a> (uint8_t antenna, uint8_t *response)</td></tr>
+<tr class="memdesc:a815bf7c2258ea7be61a56f65b154d8f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">writes the number of times deployment has been attempted (for a specified antenna) in a response buffer.  <br /></td></tr>
+<tr class="separator:a815bf7c2258ea7be61a56f65b154d8f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1b94f6512a0646ec6248dddf6b75a2a" id="r_ac1b94f6512a0646ec6248dddf6b75a2a"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac1b94f6512a0646ec6248dddf6b75a2a">ANT_CMD_report_antenna_deployment_activation_time</a> (uint8_t antenna, uint16_t *result)</td></tr>
+<tr class="memdesc:ac1b94f6512a0646ec6248dddf6b75a2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">writes the cumulative time (in 50ms increments) that the deployment system has been active (for a specified antenna) in a response buffer.  <br /></td></tr>
+<tr class="separator:ac1b94f6512a0646ec6248dddf6b75a2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a07797173390a27482f42c3cb4d4c2dd2" id="r_a07797173390a27482f42c3cb4d4c2dd2"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a07797173390a27482f42c3cb4d4c2dd2">ANT_CMD_RESET</a> = 0xAA</td></tr>
+<tr class="separator:a07797173390a27482f42c3cb4d4c2dd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc95be5a438b7d298cc2e06fd1db3627" id="r_adc95be5a438b7d298cc2e06fd1db3627"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adc95be5a438b7d298cc2e06fd1db3627">ANT_CMD_ARM_ANTENNA_SYSTEM</a> = 0xAD</td></tr>
+<tr class="separator:adc95be5a438b7d298cc2e06fd1db3627"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc65c4f74447f5d1c10eabc947a21e09" id="r_abc65c4f74447f5d1c10eabc947a21e09"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abc65c4f74447f5d1c10eabc947a21e09">ANT_CMD_DISARM_ANTENNA_SYSTEM</a> = 0xAC</td></tr>
+<tr class="separator:abc65c4f74447f5d1c10eabc947a21e09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1234fec4c06b4f02e220ab623adbf648" id="r_a1234fec4c06b4f02e220ab623adbf648"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1234fec4c06b4f02e220ab623adbf648">ANT_CMD_DEPLOY_ANTENNA1</a> = 0xA1</td></tr>
+<tr class="separator:a1234fec4c06b4f02e220ab623adbf648"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f8566ee89d0fe0c757702d45e1b374f" id="r_a5f8566ee89d0fe0c757702d45e1b374f"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5f8566ee89d0fe0c757702d45e1b374f">ANT_CMD_DEPLOY_ANTENNA2</a> = 0xA2</td></tr>
+<tr class="separator:a5f8566ee89d0fe0c757702d45e1b374f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5b25798135a00d045381645a1cacbae" id="r_ab5b25798135a00d045381645a1cacbae"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab5b25798135a00d045381645a1cacbae">ANT_CMD_DEPLOY_ANTENNA3</a> = 0xA3</td></tr>
+<tr class="separator:ab5b25798135a00d045381645a1cacbae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeba97c29fd51c340bb7b04509077cac9" id="r_aeba97c29fd51c340bb7b04509077cac9"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeba97c29fd51c340bb7b04509077cac9">ANT_CMD_DEPLOY_ANTENNA4</a> = 0xA4</td></tr>
+<tr class="separator:aeba97c29fd51c340bb7b04509077cac9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9dd6bdc5aeb061341a13f01bcae177f2" id="r_a9dd6bdc5aeb061341a13f01bcae177f2"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9dd6bdc5aeb061341a13f01bcae177f2">ANT_CMD_DEPLOY_ALL_ANTENNAS_SEQ</a> = 0xA5</td></tr>
+<tr class="separator:a9dd6bdc5aeb061341a13f01bcae177f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb88bc101f1c561c91411fefd341fd38" id="r_aeb88bc101f1c561c91411fefd341fd38"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeb88bc101f1c561c91411fefd341fd38">ANT_CMD_DEPLOY_ANTENNA1_OVERRIDE</a> = 0xBA</td></tr>
+<tr class="separator:aeb88bc101f1c561c91411fefd341fd38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a873ba24d433f6790bc91c4b3cc7a5c66" id="r_a873ba24d433f6790bc91c4b3cc7a5c66"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a873ba24d433f6790bc91c4b3cc7a5c66">ANT_CMD_DEPLOY_ANTENNA2_OVERRIDE</a> = 0xBB</td></tr>
+<tr class="separator:a873ba24d433f6790bc91c4b3cc7a5c66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a467918bbf85038bff37b51aeadd55111" id="r_a467918bbf85038bff37b51aeadd55111"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a467918bbf85038bff37b51aeadd55111">ANT_CMD_DEPLOY_ANTENNA3_OVERRIDE</a> = 0xBC</td></tr>
+<tr class="separator:a467918bbf85038bff37b51aeadd55111"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1de04d8b27ce0bfaea3ebcf738798433" id="r_a1de04d8b27ce0bfaea3ebcf738798433"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1de04d8b27ce0bfaea3ebcf738798433">ANT_CMD_DEPLOY_ANTENNA4_OVERRIDE</a> = 0xBD</td></tr>
+<tr class="separator:a1de04d8b27ce0bfaea3ebcf738798433"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade02b59bef5b0fe61a0ec97f371d20da" id="r_ade02b59bef5b0fe61a0ec97f371d20da"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ade02b59bef5b0fe61a0ec97f371d20da">ANT_CMD_CANCEL_DEPLOYMENT</a> = 0xA9</td></tr>
+<tr class="separator:ade02b59bef5b0fe61a0ec97f371d20da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f0603629cb2f872fc76c35632525e9d" id="r_a6f0603629cb2f872fc76c35632525e9d"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6f0603629cb2f872fc76c35632525e9d">ANT_CMD_MEASURE_TEMP</a> = 0xC0</td></tr>
+<tr class="separator:a6f0603629cb2f872fc76c35632525e9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabd8678e5d6e04f027c9e69db2eec62b" id="r_aabd8678e5d6e04f027c9e69db2eec62b"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aabd8678e5d6e04f027c9e69db2eec62b">ANT_CMD_REPORT_DEPLOYMENT_STATUS</a> = 0xC3</td></tr>
+<tr class="separator:aabd8678e5d6e04f027c9e69db2eec62b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa27707b7c4749497f0500cbbd50cf398" id="r_aa27707b7c4749497f0500cbbd50cf398"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa27707b7c4749497f0500cbbd50cf398">ANT_CMD_REPORT_ANT1_DEPLOYMENT_COUNT</a> = 0xB0</td></tr>
+<tr class="separator:aa27707b7c4749497f0500cbbd50cf398"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29e2823a501ec807fee5b4a060bceea2" id="r_a29e2823a501ec807fee5b4a060bceea2"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a29e2823a501ec807fee5b4a060bceea2">ANT_CMD_REPORT_ANT2_DEPLOYMENT_COUNT</a> = 0xB1</td></tr>
+<tr class="separator:a29e2823a501ec807fee5b4a060bceea2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29a746caaeff3b3a6ebb2dcca8889cf8" id="r_a29a746caaeff3b3a6ebb2dcca8889cf8"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a29a746caaeff3b3a6ebb2dcca8889cf8">ANT_CMD_REPORT_ANT3_DEPLOYMENT_COUNT</a> = 0xB2</td></tr>
+<tr class="separator:a29a746caaeff3b3a6ebb2dcca8889cf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3010c7bc0c44860e09c7211c65921534" id="r_a3010c7bc0c44860e09c7211c65921534"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3010c7bc0c44860e09c7211c65921534">ANT_CMD_REPORT_ANT4_DEPLOYMENT_COUNT</a> = 0xB3</td></tr>
+<tr class="separator:a3010c7bc0c44860e09c7211c65921534"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab23f245a1852abf5fa04f53e2b8e3ff" id="r_aab23f245a1852abf5fa04f53e2b8e3ff"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aab23f245a1852abf5fa04f53e2b8e3ff">ANT_CMD_REPORT_ANT1_DEPLOYMENT_SYS_ACTIVATION_TIME</a> = 0xB4</td></tr>
+<tr class="separator:aab23f245a1852abf5fa04f53e2b8e3ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51da37ed170d21a731a75c5ddc2b0ae0" id="r_a51da37ed170d21a731a75c5ddc2b0ae0"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a51da37ed170d21a731a75c5ddc2b0ae0">ANT_CMD_REPORT_ANT2_DEPLOYMENT_SYS_ACTIVATION_TIME</a> = 0xB5</td></tr>
+<tr class="separator:a51da37ed170d21a731a75c5ddc2b0ae0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af68270bde0fa6a1ea721ecb6b86b33bc" id="r_af68270bde0fa6a1ea721ecb6b86b33bc"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af68270bde0fa6a1ea721ecb6b86b33bc">ANT_CMD_REPORT_ANT3_DEPLOYMENT_SYS_ACTIVATION_TIME</a> = 0xB6</td></tr>
+<tr class="separator:af68270bde0fa6a1ea721ecb6b86b33bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98e79c0080887ad023af5f163fa0f937" id="r_a98e79c0080887ad023af5f163fa0f937"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a98e79c0080887ad023af5f163fa0f937">ANT_CMD_REPORT_ANT4_DEPLOYMENT_SYS_ACTIVATION_TIME</a> = 0xB7</td></tr>
+<tr class="separator:a98e79c0080887ad023af5f163fa0f937"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a6e890b516f69a193dad06ca06965e8da" name="a6e890b516f69a193dad06ca06965e8da"></a>
@@ -158,7 +234,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Arm the antenna deploy system. </p>
-<dl class="section return"><dt>Returns</dt><dd>0 if successful, &gt;0 if error occurred </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>0 when the antenna deployment system has received the command, &gt;0 otherwise </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -182,60 +258,14 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a78ccb85628987c5faee6df9ea5787350" name="a78ccb85628987c5faee6df9ea5787350"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a78ccb85628987c5faee6df9ea5787350">&#9670;&#160;</a></span>ANT_CMD_deploy_antenna1()</h2>
+<a id="a449cd59bc748f89866f5fe6da1a8222b" name="a449cd59bc748f89866f5fe6da1a8222b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a449cd59bc748f89866f5fe6da1a8222b">&#9670;&#160;</a></span>ANT_CMD_cancel_deployment_system_activation()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint8_t ANT_CMD_deploy_antenna1 </td>
-          <td>(</td>
-          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>activation_time_seconds</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Deploys antenna 1. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">activation_time_seconds</td><td>Activation time in seconds </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>0 if successful, &gt;0 if error occurred </dd></dl>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="ant__commands_8c_a78ccb85628987c5faee6df9ea5787350_cgraph.png" border="0" usemap="#aant__commands_8c_a78ccb85628987c5faee6df9ea5787350_cgraph" alt=""/></div>
-<map name="aant__commands_8c_a78ccb85628987c5faee6df9ea5787350_cgraph" id="aant__commands_8c_a78ccb85628987c5faee6df9ea5787350_cgraph">
-<area shape="rect" title="Deploys antenna 1." alt="" coords="5,5,194,31"/>
-<area shape="rect" href="ant__internal__drivers_8c.html#a6c5b7499f9ef79f0a4d84f2057a99e06" title="Sends a command to the antenna controller." alt="" coords="242,5,357,31"/>
-<area shape="poly" title=" " alt="" coords="194,16,226,16,226,21,194,21"/>
-</map>
-</div>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="ant__commands_8c_a78ccb85628987c5faee6df9ea5787350_icgraph.png" border="0" usemap="#aant__commands_8c_a78ccb85628987c5faee6df9ea5787350_icgraph" alt=""/></div>
-<map name="aant__commands_8c_a78ccb85628987c5faee6df9ea5787350_icgraph" id="aant__commands_8c_a78ccb85628987c5faee6df9ea5787350_icgraph">
-<area shape="rect" title="Deploys antenna 1." alt="" coords="215,13,403,38"/>
-<area shape="rect" href="antenna__telecommand__defs_8c.html#aa5fd88e7af05f3d4dd6e03e077bc6bce" title="Telecommand: Deploy antenna 1." alt="" coords="5,5,167,46"/>
-<area shape="poly" title=" " alt="" coords="199,28,167,28,167,23,199,23"/>
-</map>
-</div>
-
-</div>
-</div>
-<a id="a0a49814cb0f44d24c42491f4b66a6e9f" name="a0a49814cb0f44d24c42491f4b66a6e9f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0a49814cb0f44d24c42491f4b66a6e9f">&#9670;&#160;</a></span>ANT_CMD_measure_temp()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint8_t ANT_CMD_measure_temp </td>
+          <td class="memname">uint8_t ANT_CMD_cancel_deployment_system_activation </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -243,36 +273,1019 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Measure the temperature of the antenna controller system. </p>
-<dl class="section return"><dt>Returns</dt><dd>0 if successful, &gt;0 if error occurred </dd></dl>
-<dl class="section note"><dt>Note</dt><dd>Upon success, the temperature is printed to the debug UART </dd></dl>
+<p>cancels any active attempts to deploy an antenna </p>
+<dl class="section return"><dt>Returns</dt><dd>0 when the antenna deployment system has received the command, &gt;0 otherwise </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="ant__commands_8c_a0a49814cb0f44d24c42491f4b66a6e9f_cgraph.png" border="0" usemap="#aant__commands_8c_a0a49814cb0f44d24c42491f4b66a6e9f_cgraph" alt=""/></div>
-<map name="aant__commands_8c_a0a49814cb0f44d24c42491f4b66a6e9f_cgraph" id="aant__commands_8c_a0a49814cb0f44d24c42491f4b66a6e9f_cgraph">
-<area shape="rect" title="Measure the temperature of the antenna controller system." alt="" coords="5,80,183,106"/>
-<area shape="rect" href="ant__internal__drivers_8c.html#ae6614f02f049f30d0bcaa68666730b36" title="Receives a response from the antenna controller." alt="" coords="259,5,392,31"/>
-<area shape="poly" title=" " alt="" coords="127,77,230,40,252,33,254,38,231,45,129,82"/>
-<area shape="rect" href="ant__internal__drivers_8c.html#a6c5b7499f9ef79f0a4d84f2057a99e06" title="Sends a command to the antenna controller." alt="" coords="268,55,384,80"/>
-<area shape="poly" title=" " alt="" coords="183,80,252,73,253,78,184,86"/>
-<area shape="rect" href="debug__uart_8c.html#a6899cfc3d3792f1457667bc3ae91160d" title=" " alt="" coords="231,104,421,130"/>
-<area shape="poly" title=" " alt="" coords="184,99,216,103,215,108,183,105"/>
-<area shape="rect" href="debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="469,129,619,155"/>
-<area shape="poly" title=" " alt="" coords="124,104,173,124,231,140,288,147,346,150,453,148,453,153,346,155,288,152,230,145,172,129,122,109"/>
-<area shape="poly" title=" " alt="" coords="421,125,454,129,453,134,421,131"/>
+<div class="center"><img src="ant__commands_8c_a449cd59bc748f89866f5fe6da1a8222b_cgraph.png" border="0" usemap="#aant__commands_8c_a449cd59bc748f89866f5fe6da1a8222b_cgraph" alt=""/></div>
+<map name="aant__commands_8c_a449cd59bc748f89866f5fe6da1a8222b_cgraph" id="aant__commands_8c_a449cd59bc748f89866f5fe6da1a8222b_cgraph">
+<area shape="rect" title="cancels any active attempts to deploy an antenna" alt="" coords="5,5,208,46"/>
+<area shape="rect" href="ant__internal__drivers_8c.html#a6c5b7499f9ef79f0a4d84f2057a99e06" title="Sends a command to the antenna controller." alt="" coords="256,13,371,38"/>
+<area shape="poly" title=" " alt="" coords="208,23,240,23,240,28,208,28"/>
 </map>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="ant__commands_8c_a0a49814cb0f44d24c42491f4b66a6e9f_icgraph.png" border="0" usemap="#aant__commands_8c_a0a49814cb0f44d24c42491f4b66a6e9f_icgraph" alt=""/></div>
-<map name="aant__commands_8c_a0a49814cb0f44d24c42491f4b66a6e9f_icgraph" id="aant__commands_8c_a0a49814cb0f44d24c42491f4b66a6e9f_icgraph">
-<area shape="rect" title="Measure the temperature of the antenna controller system." alt="" coords="264,5,441,31"/>
+<div class="center"><img src="ant__commands_8c_a449cd59bc748f89866f5fe6da1a8222b_icgraph.png" border="0" usemap="#aant__commands_8c_a449cd59bc748f89866f5fe6da1a8222b_icgraph" alt=""/></div>
+<map name="aant__commands_8c_a449cd59bc748f89866f5fe6da1a8222b_icgraph" id="aant__commands_8c_a449cd59bc748f89866f5fe6da1a8222b_icgraph">
+<area shape="rect" title="cancels any active attempts to deploy an antenna" alt="" coords="260,5,462,46"/>
+<area shape="rect" href="antenna__telecommand__defs_8c.html#ab1d646908ddc85cd1357d1944b86c50e" title="Cancels any active attempts to deploy an antenna." alt="" coords="5,5,212,46"/>
+<area shape="poly" title=" " alt="" coords="244,28,212,28,212,23,244,23"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="abba97f74ea8fa76450677f4dfe4fa617" name="abba97f74ea8fa76450677f4dfe4fa617"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abba97f74ea8fa76450677f4dfe4fa617">&#9670;&#160;</a></span>ANT_CMD_deploy_antenna()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t ANT_CMD_deploy_antenna </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>antenna</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>activation_time_seconds</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>activates the deployment system for the selected antenna for the specified amount of time </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">antenna</td><td>The antenna number of the antenna to deploy, this is a number between 1-4. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">activation_time_seconds</td><td>the amount of time the deployment system should be active for in seconds. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 when the antenna deployment system has received the command, &gt;0 otherwise. </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="ant__commands_8c_abba97f74ea8fa76450677f4dfe4fa617_cgraph.png" border="0" usemap="#aant__commands_8c_abba97f74ea8fa76450677f4dfe4fa617_cgraph" alt=""/></div>
+<map name="aant__commands_8c_abba97f74ea8fa76450677f4dfe4fa617_cgraph" id="aant__commands_8c_abba97f74ea8fa76450677f4dfe4fa617_cgraph">
+<area shape="rect" title="activates the deployment system for the selected antenna for the specified amount of time" alt="" coords="5,31,187,56"/>
+<area shape="rect" href="ant__internal__drivers_8c.html#a6c5b7499f9ef79f0a4d84f2057a99e06" title="Sends a command to the antenna controller." alt="" coords="252,5,368,31"/>
+<area shape="poly" title=" " alt="" coords="187,30,237,24,237,29,187,35"/>
+<area shape="rect" href="debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="235,55,385,80"/>
+<area shape="poly" title=" " alt="" coords="187,51,219,55,219,60,187,56"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="ant__commands_8c_abba97f74ea8fa76450677f4dfe4fa617_icgraph.png" border="0" usemap="#aant__commands_8c_abba97f74ea8fa76450677f4dfe4fa617_icgraph" alt=""/></div>
+<map name="aant__commands_8c_abba97f74ea8fa76450677f4dfe4fa617_icgraph" id="aant__commands_8c_abba97f74ea8fa76450677f4dfe4fa617_icgraph">
+<area shape="rect" title="activates the deployment system for the selected antenna for the specified amount of time" alt="" coords="215,13,396,38"/>
+<area shape="rect" href="antenna__telecommand__defs_8c.html#aeda4136ef35a63728a3c061711ecc003" title="Telecommand: Initiates deployment of the selected antenna." alt="" coords="5,5,167,46"/>
+<area shape="poly" title=" " alt="" coords="199,28,167,28,167,23,199,23"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="ac353aab8395acf27cdb35e1dd5293d54" name="ac353aab8395acf27cdb35e1dd5293d54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac353aab8395acf27cdb35e1dd5293d54">&#9670;&#160;</a></span>ANT_CMD_deploy_antenna_with_override()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t ANT_CMD_deploy_antenna_with_override </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>antenna</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>activation_time_seconds</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>initiates deployment of the selected antenna, ignoring whether the current status of that antenna is deployed </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">antenna</td><td>the antenna to deploy </td></tr>
+    <tr><td class="paramname">activation_time_seconds</td><td>the amount of time the deployment system should be active for in seconds. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 when the antenna deployment system has received the command, &gt;0 otherwise. </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="ant__commands_8c_ac353aab8395acf27cdb35e1dd5293d54_cgraph.png" border="0" usemap="#aant__commands_8c_ac353aab8395acf27cdb35e1dd5293d54_cgraph" alt=""/></div>
+<map name="aant__commands_8c_ac353aab8395acf27cdb35e1dd5293d54_cgraph" id="aant__commands_8c_ac353aab8395acf27cdb35e1dd5293d54_cgraph">
+<area shape="rect" title="initiates deployment of the selected antenna, ignoring whether the current status of that antenna is ..." alt="" coords="5,23,187,64"/>
+<area shape="rect" href="ant__internal__drivers_8c.html#a6c5b7499f9ef79f0a4d84f2057a99e06" title="Sends a command to the antenna controller." alt="" coords="252,5,368,31"/>
+<area shape="poly" title=" " alt="" coords="187,30,237,24,237,29,187,35"/>
+<area shape="rect" href="debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="235,55,385,80"/>
+<area shape="poly" title=" " alt="" coords="187,51,219,55,219,60,187,56"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="ant__commands_8c_ac353aab8395acf27cdb35e1dd5293d54_icgraph.png" border="0" usemap="#aant__commands_8c_ac353aab8395acf27cdb35e1dd5293d54_icgraph" alt=""/></div>
+<map name="aant__commands_8c_ac353aab8395acf27cdb35e1dd5293d54_icgraph" id="aant__commands_8c_ac353aab8395acf27cdb35e1dd5293d54_icgraph">
+<area shape="rect" title="initiates deployment of the selected antenna, ignoring whether the current status of that antenna is ..." alt="" coords="215,5,396,46"/>
+<area shape="rect" href="antenna__telecommand__defs_8c.html#af9e22621de0a8cccca89cf093277d368" title="Telecommand: Initiates deployment of the selected antenna, ignoring whether the antennas current stat..." alt="" coords="5,5,167,46"/>
+<area shape="poly" title=" " alt="" coords="199,28,167,28,167,23,199,23"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="ac223110d9d9b1c378b9b567b8ef60aec" name="ac223110d9d9b1c378b9b567b8ef60aec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac223110d9d9b1c378b9b567b8ef60aec">&#9670;&#160;</a></span>ANT_CMD_disarm_antenna_system()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t ANT_CMD_disarm_antenna_system </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Disarms the antenna deploy system. </p>
+<dl class="section return"><dt>Returns</dt><dd>0 when the antenna deployment system has received the command, &gt;0 otherwise </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="ant__commands_8c_ac223110d9d9b1c378b9b567b8ef60aec_cgraph.png" border="0" usemap="#aant__commands_8c_ac223110d9d9b1c378b9b567b8ef60aec_cgraph" alt=""/></div>
+<map name="aant__commands_8c_ac223110d9d9b1c378b9b567b8ef60aec_cgraph" id="aant__commands_8c_ac223110d9d9b1c378b9b567b8ef60aec_cgraph">
+<area shape="rect" title="Disarms the antenna deploy system." alt="" coords="5,5,189,46"/>
+<area shape="rect" href="ant__internal__drivers_8c.html#a6c5b7499f9ef79f0a4d84f2057a99e06" title="Sends a command to the antenna controller." alt="" coords="237,13,352,38"/>
+<area shape="poly" title=" " alt="" coords="189,23,221,23,221,28,189,28"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="ant__commands_8c_ac223110d9d9b1c378b9b567b8ef60aec_icgraph.png" border="0" usemap="#aant__commands_8c_ac223110d9d9b1c378b9b567b8ef60aec_icgraph" alt=""/></div>
+<map name="aant__commands_8c_ac223110d9d9b1c378b9b567b8ef60aec_icgraph" id="aant__commands_8c_ac223110d9d9b1c378b9b567b8ef60aec_icgraph">
+<area shape="rect" title="Disarms the antenna deploy system." alt="" coords="217,5,400,46"/>
+<area shape="rect" href="antenna__telecommand__defs_8c.html#a8f6b94c48f102e1cc89170f9d99aef91" title="Disarms the antenna system." alt="" coords="5,5,169,46"/>
+<area shape="poly" title=" " alt="" coords="201,28,169,28,169,23,201,23"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a5bbfd2489ceda810545a6e40f213c916" name="a5bbfd2489ceda810545a6e40f213c916"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5bbfd2489ceda810545a6e40f213c916">&#9670;&#160;</a></span>ANT_CMD_measure_temp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t ANT_CMD_measure_temp </td>
+          <td>(</td>
+          <td class="paramtype">uint16_t *</td>          <td class="paramname"><span class="paramname"><em>result</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Measures the temperature at the antenna controller system. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">result</td><td>a pointer to a 16 bit unsigned integer where the temperature measurement is written. Refer to the "ISIS.ANTS.UM.001" datasheet by ISISpace for information on interpreting this measurement </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 when the antenna deployment system has received the command, &gt; 0 otherwise. </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="ant__commands_8c_a5bbfd2489ceda810545a6e40f213c916_cgraph.png" border="0" usemap="#aant__commands_8c_a5bbfd2489ceda810545a6e40f213c916_cgraph" alt=""/></div>
+<map name="aant__commands_8c_a5bbfd2489ceda810545a6e40f213c916_cgraph" id="aant__commands_8c_a5bbfd2489ceda810545a6e40f213c916_cgraph">
+<area shape="rect" title="Measures the temperature at the antenna controller system." alt="" coords="5,31,183,56"/>
+<area shape="rect" href="ant__internal__drivers_8c.html#ae6614f02f049f30d0bcaa68666730b36" title="Receives a response from the antenna controller." alt="" coords="231,5,364,31"/>
+<area shape="poly" title=" " alt="" coords="182,30,215,26,216,31,183,35"/>
+<area shape="rect" href="ant__internal__drivers_8c.html#a6c5b7499f9ef79f0a4d84f2057a99e06" title="Sends a command to the antenna controller." alt="" coords="240,55,355,80"/>
+<area shape="poly" title=" " alt="" coords="183,51,225,56,224,62,182,57"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="ant__commands_8c_a5bbfd2489ceda810545a6e40f213c916_icgraph.png" border="0" usemap="#aant__commands_8c_a5bbfd2489ceda810545a6e40f213c916_icgraph" alt=""/></div>
+<map name="aant__commands_8c_a5bbfd2489ceda810545a6e40f213c916_icgraph" id="aant__commands_8c_a5bbfd2489ceda810545a6e40f213c916_icgraph">
+<area shape="rect" title="Measures the temperature at the antenna controller system." alt="" coords="264,5,441,31"/>
 <area shape="rect" href="antenna__telecommand__defs_8c.html#a316cf470a39e910ad64f65afa587c1b4" title="Telecommand: Measure the temperature of the antenna controller." alt="" coords="5,5,216,31"/>
 <area shape="poly" title=" " alt="" coords="248,21,216,21,216,16,248,16"/>
 </map>
 </div>
+
+</div>
+</div>
+<a id="a815bf7c2258ea7be61a56f65b154d8f4" name="a815bf7c2258ea7be61a56f65b154d8f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a815bf7c2258ea7be61a56f65b154d8f4">&#9670;&#160;</a></span>ANT_CMD_report_antenna_deployment_activation_count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t ANT_CMD_report_antenna_deployment_activation_count </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>antenna</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *</td>          <td class="paramname"><span class="paramname"><em>response</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>writes the number of times deployment has been attempted (for a specified antenna) in a response buffer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">antenna</td><td>the antenna to check </td></tr>
+    <tr><td class="paramname">response</td><td>a 1 byte buffer where the count of attempted deployments will be written </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 when the antenna deployment system has received the command, &gt;0 otherwise </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>data written to the response buffer is only valid if 0 was returned. One should check this before using the response. </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="ant__commands_8c_a815bf7c2258ea7be61a56f65b154d8f4_cgraph.png" border="0" usemap="#aant__commands_8c_a815bf7c2258ea7be61a56f65b154d8f4_cgraph" alt=""/></div>
+<map name="aant__commands_8c_a815bf7c2258ea7be61a56f65b154d8f4_cgraph" id="aant__commands_8c_a815bf7c2258ea7be61a56f65b154d8f4_cgraph">
+<area shape="rect" title="writes the number of times deployment has been attempted (for a specified antenna) in a response buff..." alt="" coords="5,47,202,88"/>
+<area shape="rect" href="ant__internal__drivers_8c.html#ae6614f02f049f30d0bcaa68666730b36" title="Receives a response from the antenna controller." alt="" coords="258,5,392,31"/>
+<area shape="poly" title=" " alt="" coords="197,44,249,32,250,37,198,49"/>
+<area shape="rect" href="ant__internal__drivers_8c.html#a6c5b7499f9ef79f0a4d84f2057a99e06" title="Sends a command to the antenna controller." alt="" coords="267,55,382,80"/>
+<area shape="poly" title=" " alt="" coords="202,65,251,65,251,70,202,70"/>
+<area shape="rect" href="debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="250,104,400,130"/>
+<area shape="poly" title=" " alt="" coords="198,86,250,98,249,103,197,91"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="ant__commands_8c_a815bf7c2258ea7be61a56f65b154d8f4_icgraph.png" border="0" usemap="#aant__commands_8c_a815bf7c2258ea7be61a56f65b154d8f4_icgraph" alt=""/></div>
+<map name="aant__commands_8c_a815bf7c2258ea7be61a56f65b154d8f4_icgraph" id="aant__commands_8c_a815bf7c2258ea7be61a56f65b154d8f4_icgraph">
+<area shape="rect" title="writes the number of times deployment has been attempted (for a specified antenna) in a response buff..." alt="" coords="211,13,407,54"/>
+<area shape="rect" href="antenna__telecommand__defs_8c.html#a29095133ad39c147334618540917eb08" title="Prints the number of times deployment was attempted on the selected antenna." alt="" coords="5,5,163,61"/>
+<area shape="poly" title=" " alt="" coords="195,36,163,36,163,30,195,30"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="ac1b94f6512a0646ec6248dddf6b75a2a" name="ac1b94f6512a0646ec6248dddf6b75a2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1b94f6512a0646ec6248dddf6b75a2a">&#9670;&#160;</a></span>ANT_CMD_report_antenna_deployment_activation_time()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t ANT_CMD_report_antenna_deployment_activation_time </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>antenna</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t *</td>          <td class="paramname"><span class="paramname"><em>result</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>writes the cumulative time (in 50ms increments) that the deployment system has been active (for a specified antenna) in a response buffer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">antenna</td><td>the antenna to check. A number between 1-4 </td></tr>
+    <tr><td class="paramname">response</td><td>a 2 byte buffer where the cumulative deployment time (in 50ms increments) will be written. divide the response by 20 to get seconds. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 when the antenna deployment system has received the command, &gt;0 otherwise </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>data written to the result buffer is only valid if 0 was returned. One should check this before using the result. </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="ant__commands_8c_ac1b94f6512a0646ec6248dddf6b75a2a_cgraph.png" border="0" usemap="#aant__commands_8c_ac1b94f6512a0646ec6248dddf6b75a2a_cgraph" alt=""/></div>
+<map name="aant__commands_8c_ac1b94f6512a0646ec6248dddf6b75a2a_cgraph" id="aant__commands_8c_ac1b94f6512a0646ec6248dddf6b75a2a_cgraph">
+<area shape="rect" title="writes the cumulative time (in 50ms increments) that the deployment system has been active (for a spe..." alt="" coords="5,47,195,88"/>
+<area shape="rect" href="ant__internal__drivers_8c.html#ae6614f02f049f30d0bcaa68666730b36" title="Receives a response from the antenna controller." alt="" coords="251,5,384,31"/>
+<area shape="poly" title=" " alt="" coords="192,44,243,32,244,37,193,49"/>
+<area shape="rect" href="ant__internal__drivers_8c.html#a6c5b7499f9ef79f0a4d84f2057a99e06" title="Sends a command to the antenna controller." alt="" coords="260,55,376,80"/>
+<area shape="poly" title=" " alt="" coords="195,65,244,65,244,70,195,70"/>
+<area shape="rect" href="debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="243,104,393,130"/>
+<area shape="poly" title=" " alt="" coords="193,86,244,98,243,103,192,91"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="ant__commands_8c_ac1b94f6512a0646ec6248dddf6b75a2a_icgraph.png" border="0" usemap="#aant__commands_8c_ac1b94f6512a0646ec6248dddf6b75a2a_icgraph" alt=""/></div>
+<map name="aant__commands_8c_ac1b94f6512a0646ec6248dddf6b75a2a_icgraph" id="aant__commands_8c_ac1b94f6512a0646ec6248dddf6b75a2a_icgraph">
+<area shape="rect" title="writes the cumulative time (in 50ms increments) that the deployment system has been active (for a spe..." alt="" coords="211,13,400,54"/>
+<area shape="rect" href="antenna__telecommand__defs_8c.html#a32f50b7d62b7cc8d5a1152273565424c" title="Prints amount of time the deployment system has been active for for the selected antenna." alt="" coords="5,5,163,61"/>
+<area shape="poly" title=" " alt="" coords="195,36,163,36,163,30,195,30"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a4a844454d8c72bb761846248f0ab0e5a" name="a4a844454d8c72bb761846248f0ab0e5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a844454d8c72bb761846248f0ab0e5a">&#9670;&#160;</a></span>ANT_CMD_report_deployment_status()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t ANT_CMD_report_deployment_status </td>
+          <td>(</td>
+          <td class="paramtype">struct <a class="el" href="structAntenna__deployment__status.html">Antenna_deployment_status</a> *</td>          <td class="paramname"><span class="paramname"><em>response</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>writes 2 bytes of information representing the deployment status of the antennas to the passed buffer, information on interpreting the response may be found in the ISIS Antenna System user manual. Doc ID: ISIS.ANTS.UM.001 pg. 42 </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">response</td><td>a two byte buffer where the status information is written to. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 when the antenna deployment system has received the command, &gt;0 otherwise </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>data written to the response struct is only valid if 0 was returned. One should check this before using the response. </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="ant__commands_8c_a4a844454d8c72bb761846248f0ab0e5a_cgraph.png" border="0" usemap="#aant__commands_8c_a4a844454d8c72bb761846248f0ab0e5a_cgraph" alt=""/></div>
+<map name="aant__commands_8c_a4a844454d8c72bb761846248f0ab0e5a_cgraph" id="aant__commands_8c_a4a844454d8c72bb761846248f0ab0e5a_cgraph">
+<area shape="rect" title="writes 2 bytes of information representing the deployment status of the antennas to the passed buffer..." alt="" coords="5,47,203,88"/>
+<area shape="rect" href="ant__internal__drivers_8c.html#ae6614f02f049f30d0bcaa68666730b36" title="Receives a response from the antenna controller." alt="" coords="251,5,384,31"/>
+<area shape="poly" title=" " alt="" coords="194,44,243,32,245,38,195,49"/>
+<area shape="rect" href="ant__internal__drivers_8c.html#a6c5b7499f9ef79f0a4d84f2057a99e06" title="Sends a command to the antenna controller." alt="" coords="260,55,375,80"/>
+<area shape="poly" title=" " alt="" coords="203,65,244,65,244,70,203,70"/>
+<area shape="rect" href="ant__commands_8c.html#a8e3df7726ae12417572e658cc648d5bd" title=" " alt="" coords="277,104,358,130"/>
+<area shape="poly" title=" " alt="" coords="195,86,262,101,261,107,194,91"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="ant__commands_8c_a4a844454d8c72bb761846248f0ab0e5a_icgraph.png" border="0" usemap="#aant__commands_8c_a4a844454d8c72bb761846248f0ab0e5a_icgraph" alt=""/></div>
+<map name="aant__commands_8c_a4a844454d8c72bb761846248f0ab0e5a_icgraph" id="aant__commands_8c_a4a844454d8c72bb761846248f0ab0e5a_icgraph">
+<area shape="rect" title="writes 2 bytes of information representing the deployment status of the antennas to the passed buffer..." alt="" coords="211,5,408,46"/>
+<area shape="rect" href="antenna__telecommand__defs_8c.html#a7e32cc56948bced4a3f71c6291e1c63c" title="Prints the deployment status of all antennas." alt="" coords="5,5,163,46"/>
+<area shape="poly" title=" " alt="" coords="195,28,163,28,163,23,195,23"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a906e6b81ac1188db8914cf6f9cea20a9" name="a906e6b81ac1188db8914cf6f9cea20a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a906e6b81ac1188db8914cf6f9cea20a9">&#9670;&#160;</a></span>ANT_CMD_reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t ANT_CMD_reset </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Performs a reset of the antenna deployment systems microcontroller. </p>
+<dl class="section return"><dt>Returns</dt><dd>0 when the antenna deployment system has received the command, &gt;0 otherwise </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="ant__commands_8c_a906e6b81ac1188db8914cf6f9cea20a9_cgraph.png" border="0" usemap="#aant__commands_8c_a906e6b81ac1188db8914cf6f9cea20a9_cgraph" alt=""/></div>
+<map name="aant__commands_8c_a906e6b81ac1188db8914cf6f9cea20a9_cgraph" id="aant__commands_8c_a906e6b81ac1188db8914cf6f9cea20a9_cgraph">
+<area shape="rect" title="Performs a reset of the antenna deployment systems microcontroller." alt="" coords="5,5,126,31"/>
+<area shape="rect" href="ant__internal__drivers_8c.html#a6c5b7499f9ef79f0a4d84f2057a99e06" title="Sends a command to the antenna controller." alt="" coords="174,5,289,31"/>
+<area shape="poly" title=" " alt="" coords="126,16,158,16,158,21,126,21"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="ant__commands_8c_a906e6b81ac1188db8914cf6f9cea20a9_icgraph.png" border="0" usemap="#aant__commands_8c_a906e6b81ac1188db8914cf6f9cea20a9_icgraph" alt=""/></div>
+<map name="aant__commands_8c_a906e6b81ac1188db8914cf6f9cea20a9_icgraph" id="aant__commands_8c_a906e6b81ac1188db8914cf6f9cea20a9_icgraph">
+<area shape="rect" title="Performs a reset of the antenna deployment systems microcontroller." alt="" coords="207,5,327,31"/>
+<area shape="rect" href="antenna__telecommand__defs_8c.html#a49f2db02be0a855e6be4c5e575018b69" title="Resets the antenna deployment system&#39;s microcontroller." alt="" coords="5,5,159,31"/>
+<area shape="poly" title=" " alt="" coords="191,21,159,21,159,16,191,16"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a1cba1e3e65daad7bd5f69089c8802c61" name="a1cba1e3e65daad7bd5f69089c8802c61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1cba1e3e65daad7bd5f69089c8802c61">&#9670;&#160;</a></span>ANT_CMD_start_automated_sequential_deployment()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t ANT_CMD_start_automated_sequential_deployment </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>activation_time_seconds</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>deploys all antennas one by one sequentially. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">activation_time_seconds</td><td>the amount of time the deployment system for each antenna should be active for in seconds. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 when the antenna deployment system has received the command, &gt;0 otherwise </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="ant__commands_8c_a1cba1e3e65daad7bd5f69089c8802c61_cgraph.png" border="0" usemap="#aant__commands_8c_a1cba1e3e65daad7bd5f69089c8802c61_cgraph" alt=""/></div>
+<map name="aant__commands_8c_a1cba1e3e65daad7bd5f69089c8802c61_cgraph" id="aant__commands_8c_a1cba1e3e65daad7bd5f69089c8802c61_cgraph">
+<area shape="rect" title="deploys all antennas one by one sequentially." alt="" coords="5,5,191,46"/>
+<area shape="rect" href="ant__internal__drivers_8c.html#a6c5b7499f9ef79f0a4d84f2057a99e06" title="Sends a command to the antenna controller." alt="" coords="239,13,354,38"/>
+<area shape="poly" title=" " alt="" coords="191,23,223,23,223,28,191,28"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="ant__commands_8c_a1cba1e3e65daad7bd5f69089c8802c61_icgraph.png" border="0" usemap="#aant__commands_8c_a1cba1e3e65daad7bd5f69089c8802c61_icgraph" alt=""/></div>
+<map name="aant__commands_8c_a1cba1e3e65daad7bd5f69089c8802c61_icgraph" id="aant__commands_8c_a1cba1e3e65daad7bd5f69089c8802c61_icgraph">
+<area shape="rect" title="deploys all antennas one by one sequentially." alt="" coords="269,5,454,46"/>
+<area shape="rect" href="antenna__telecommand__defs_8c.html#a3324fa3a66d69734ce5a7cf2fd507fb2" title="begins deployment of all antennas, one by one." alt="" coords="5,5,221,46"/>
+<area shape="poly" title=" " alt="" coords="253,28,221,28,221,23,253,23"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a8e3df7726ae12417572e658cc648d5bd" name="a8e3df7726ae12417572e658cc648d5bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e3df7726ae12417572e658cc648d5bd">&#9670;&#160;</a></span>extract_bit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static uint8_t extract_bit </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>byte</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>position</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="ant__commands_8c_a8e3df7726ae12417572e658cc648d5bd_icgraph.png" border="0" usemap="#aant__commands_8c_a8e3df7726ae12417572e658cc648d5bd_icgraph" alt=""/></div>
+<map name="aant__commands_8c_a8e3df7726ae12417572e658cc648d5bd_icgraph" id="aant__commands_8c_a8e3df7726ae12417572e658cc648d5bd_icgraph">
+<area shape="rect" title=" " alt="" coords="456,13,537,38"/>
+<area shape="rect" href="ant__commands_8c.html#a4a844454d8c72bb761846248f0ab0e5a" title="writes 2 bytes of information representing the deployment status of the antennas to the passed buffer..." alt="" coords="211,5,408,46"/>
+<area shape="poly" title=" " alt="" coords="441,28,409,28,409,23,441,23"/>
+<area shape="rect" href="antenna__telecommand__defs_8c.html#a7e32cc56948bced4a3f71c6291e1c63c" title="Prints the deployment status of all antennas." alt="" coords="5,5,163,46"/>
+<area shape="poly" title=" " alt="" coords="195,28,163,28,163,23,195,23"/>
+</map>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="adc95be5a438b7d298cc2e06fd1db3627" name="adc95be5a438b7d298cc2e06fd1db3627"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc95be5a438b7d298cc2e06fd1db3627">&#9670;&#160;</a></span>ANT_CMD_ARM_ANTENNA_SYSTEM</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ANT_CMD_ARM_ANTENNA_SYSTEM = 0xAD</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ade02b59bef5b0fe61a0ec97f371d20da" name="ade02b59bef5b0fe61a0ec97f371d20da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade02b59bef5b0fe61a0ec97f371d20da">&#9670;&#160;</a></span>ANT_CMD_CANCEL_DEPLOYMENT</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ANT_CMD_CANCEL_DEPLOYMENT = 0xA9</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9dd6bdc5aeb061341a13f01bcae177f2" name="a9dd6bdc5aeb061341a13f01bcae177f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9dd6bdc5aeb061341a13f01bcae177f2">&#9670;&#160;</a></span>ANT_CMD_DEPLOY_ALL_ANTENNAS_SEQ</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ANT_CMD_DEPLOY_ALL_ANTENNAS_SEQ = 0xA5</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1234fec4c06b4f02e220ab623adbf648" name="a1234fec4c06b4f02e220ab623adbf648"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1234fec4c06b4f02e220ab623adbf648">&#9670;&#160;</a></span>ANT_CMD_DEPLOY_ANTENNA1</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ANT_CMD_DEPLOY_ANTENNA1 = 0xA1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aeb88bc101f1c561c91411fefd341fd38" name="aeb88bc101f1c561c91411fefd341fd38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb88bc101f1c561c91411fefd341fd38">&#9670;&#160;</a></span>ANT_CMD_DEPLOY_ANTENNA1_OVERRIDE</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ANT_CMD_DEPLOY_ANTENNA1_OVERRIDE = 0xBA</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5f8566ee89d0fe0c757702d45e1b374f" name="a5f8566ee89d0fe0c757702d45e1b374f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f8566ee89d0fe0c757702d45e1b374f">&#9670;&#160;</a></span>ANT_CMD_DEPLOY_ANTENNA2</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ANT_CMD_DEPLOY_ANTENNA2 = 0xA2</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a873ba24d433f6790bc91c4b3cc7a5c66" name="a873ba24d433f6790bc91c4b3cc7a5c66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a873ba24d433f6790bc91c4b3cc7a5c66">&#9670;&#160;</a></span>ANT_CMD_DEPLOY_ANTENNA2_OVERRIDE</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ANT_CMD_DEPLOY_ANTENNA2_OVERRIDE = 0xBB</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab5b25798135a00d045381645a1cacbae" name="ab5b25798135a00d045381645a1cacbae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5b25798135a00d045381645a1cacbae">&#9670;&#160;</a></span>ANT_CMD_DEPLOY_ANTENNA3</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ANT_CMD_DEPLOY_ANTENNA3 = 0xA3</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a467918bbf85038bff37b51aeadd55111" name="a467918bbf85038bff37b51aeadd55111"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a467918bbf85038bff37b51aeadd55111">&#9670;&#160;</a></span>ANT_CMD_DEPLOY_ANTENNA3_OVERRIDE</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ANT_CMD_DEPLOY_ANTENNA3_OVERRIDE = 0xBC</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aeba97c29fd51c340bb7b04509077cac9" name="aeba97c29fd51c340bb7b04509077cac9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeba97c29fd51c340bb7b04509077cac9">&#9670;&#160;</a></span>ANT_CMD_DEPLOY_ANTENNA4</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ANT_CMD_DEPLOY_ANTENNA4 = 0xA4</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1de04d8b27ce0bfaea3ebcf738798433" name="a1de04d8b27ce0bfaea3ebcf738798433"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1de04d8b27ce0bfaea3ebcf738798433">&#9670;&#160;</a></span>ANT_CMD_DEPLOY_ANTENNA4_OVERRIDE</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ANT_CMD_DEPLOY_ANTENNA4_OVERRIDE = 0xBD</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abc65c4f74447f5d1c10eabc947a21e09" name="abc65c4f74447f5d1c10eabc947a21e09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc65c4f74447f5d1c10eabc947a21e09">&#9670;&#160;</a></span>ANT_CMD_DISARM_ANTENNA_SYSTEM</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ANT_CMD_DISARM_ANTENNA_SYSTEM = 0xAC</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6f0603629cb2f872fc76c35632525e9d" name="a6f0603629cb2f872fc76c35632525e9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f0603629cb2f872fc76c35632525e9d">&#9670;&#160;</a></span>ANT_CMD_MEASURE_TEMP</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ANT_CMD_MEASURE_TEMP = 0xC0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa27707b7c4749497f0500cbbd50cf398" name="aa27707b7c4749497f0500cbbd50cf398"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa27707b7c4749497f0500cbbd50cf398">&#9670;&#160;</a></span>ANT_CMD_REPORT_ANT1_DEPLOYMENT_COUNT</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ANT_CMD_REPORT_ANT1_DEPLOYMENT_COUNT = 0xB0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aab23f245a1852abf5fa04f53e2b8e3ff" name="aab23f245a1852abf5fa04f53e2b8e3ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab23f245a1852abf5fa04f53e2b8e3ff">&#9670;&#160;</a></span>ANT_CMD_REPORT_ANT1_DEPLOYMENT_SYS_ACTIVATION_TIME</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ANT_CMD_REPORT_ANT1_DEPLOYMENT_SYS_ACTIVATION_TIME = 0xB4</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a29e2823a501ec807fee5b4a060bceea2" name="a29e2823a501ec807fee5b4a060bceea2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29e2823a501ec807fee5b4a060bceea2">&#9670;&#160;</a></span>ANT_CMD_REPORT_ANT2_DEPLOYMENT_COUNT</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ANT_CMD_REPORT_ANT2_DEPLOYMENT_COUNT = 0xB1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a51da37ed170d21a731a75c5ddc2b0ae0" name="a51da37ed170d21a731a75c5ddc2b0ae0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51da37ed170d21a731a75c5ddc2b0ae0">&#9670;&#160;</a></span>ANT_CMD_REPORT_ANT2_DEPLOYMENT_SYS_ACTIVATION_TIME</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ANT_CMD_REPORT_ANT2_DEPLOYMENT_SYS_ACTIVATION_TIME = 0xB5</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a29a746caaeff3b3a6ebb2dcca8889cf8" name="a29a746caaeff3b3a6ebb2dcca8889cf8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29a746caaeff3b3a6ebb2dcca8889cf8">&#9670;&#160;</a></span>ANT_CMD_REPORT_ANT3_DEPLOYMENT_COUNT</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ANT_CMD_REPORT_ANT3_DEPLOYMENT_COUNT = 0xB2</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af68270bde0fa6a1ea721ecb6b86b33bc" name="af68270bde0fa6a1ea721ecb6b86b33bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af68270bde0fa6a1ea721ecb6b86b33bc">&#9670;&#160;</a></span>ANT_CMD_REPORT_ANT3_DEPLOYMENT_SYS_ACTIVATION_TIME</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ANT_CMD_REPORT_ANT3_DEPLOYMENT_SYS_ACTIVATION_TIME = 0xB6</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3010c7bc0c44860e09c7211c65921534" name="a3010c7bc0c44860e09c7211c65921534"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3010c7bc0c44860e09c7211c65921534">&#9670;&#160;</a></span>ANT_CMD_REPORT_ANT4_DEPLOYMENT_COUNT</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ANT_CMD_REPORT_ANT4_DEPLOYMENT_COUNT = 0xB3</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a98e79c0080887ad023af5f163fa0f937" name="a98e79c0080887ad023af5f163fa0f937"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98e79c0080887ad023af5f163fa0f937">&#9670;&#160;</a></span>ANT_CMD_REPORT_ANT4_DEPLOYMENT_SYS_ACTIVATION_TIME</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ANT_CMD_REPORT_ANT4_DEPLOYMENT_SYS_ACTIVATION_TIME = 0xB7</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aabd8678e5d6e04f027c9e69db2eec62b" name="aabd8678e5d6e04f027c9e69db2eec62b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabd8678e5d6e04f027c9e69db2eec62b">&#9670;&#160;</a></span>ANT_CMD_REPORT_DEPLOYMENT_STATUS</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ANT_CMD_REPORT_DEPLOYMENT_STATUS = 0xC3</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a07797173390a27482f42c3cb4d4c2dd2" name="a07797173390a27482f42c3cb4d4c2dd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07797173390a27482f42c3cb4d4c2dd2">&#9670;&#160;</a></span>ANT_CMD_RESET</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ANT_CMD_RESET = 0xAA</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>

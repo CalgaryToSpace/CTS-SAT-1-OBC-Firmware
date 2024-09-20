@@ -1,0 +1,15 @@
+<map id="TCMDEXEC_ant_report_antenna_deployment_activation_time" name="TCMDEXEC_ant_report_antenna_deployment_activation_time">
+<area shape="rect" id="Node000001" title="Prints amount of time the deployment system has been active for for the selected antenna." alt="" coords="5,90,163,146"/>
+<area shape="rect" id="Node000002" href="$ant__commands_8c.html#ac1b94f6512a0646ec6248dddf6b75a2a" title="writes the cumulative time (in 50ms increments) that the deployment system has been active (for a spe..." alt="" coords="211,58,400,98"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="163,101,195,95,196,101,164,107"/>
+<area shape="rect" id="Node000006" href="$telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="220,133,391,159"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="163,125,205,131,204,136,163,131"/>
+<area shape="rect" id="Node000003" href="$ant__internal__drivers_8c.html#ae6614f02f049f30d0bcaa68666730b36" title="Receives a response from the antenna controller." alt="" coords="458,5,591,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="382,55,459,33,461,38,383,60"/>
+<area shape="rect" id="Node000004" href="$ant__internal__drivers_8c.html#a6c5b7499f9ef79f0a4d84f2057a99e06" title="Sends a command to the antenna controller." alt="" coords="466,55,582,80"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="400,71,451,68,451,74,400,76"/>
+<area shape="rect" id="Node000005" href="$debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="449,104,599,130"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="401,92,434,98,433,104,400,98"/>
+<area shape="rect" id="Node000007" href="$telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="448,153,600,179"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="392,151,433,155,432,160,391,157"/>
+</map>

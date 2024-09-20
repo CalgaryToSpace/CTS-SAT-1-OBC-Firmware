@@ -3,8 +3,10 @@ var searchData=
   ['i2c_5fscan_5fnumber_5fof_5ftrials_0',['I2C_scan_number_of_trials',['../i2c__telecommand__defs_8c.html#ac064e7a941f2fd369bd22cf36fbef13f',1,'i2c_telecommand_defs.c']]],
   ['i2c_5fscan_5ftimeout_5fms_1',['I2C_scan_timeout_ms',['../i2c__telecommand__defs_8c.html#a537f776acbd5bf293f99f8c3007201e4',1,'i2c_telecommand_defs.c']]],
   ['id_2',['id',['../structlfs__dir.html#ae70ad1bea93d3d0e291a887519315baf',1,'lfs_dir::id'],['../structlfs__file.html#af5b7ea3db84fa0d590c7bb06c9786f29',1,'lfs_file::id'],['../structlfs_1_1lfs__mlist.html#ad9e9856ffc58a06ee13051318dffbdce',1,'lfs::lfs_mlist::id']]],
-  ['inline_5fmax_3',['inline_max',['../structlfs__config.html#acf12c7a415738fee22ecf37fdded724c',1,'lfs_config::inline_max'],['../structlfs.html#a300c919379763862375391a19f3d3383',1,'lfs::inline_max']]],
-  ['inner_5fdome_5fscan_5findex_4',['inner_dome_scan_index',['../structMPI__dataframe__t.html#a4995f7ceb4f0f17f1b1a0f54bee3cd84',1,'MPI_dataframe_t']]],
-  ['inner_5fdome_5fvoltage_5fadc_5freading_5',['inner_dome_voltage_adc_reading',['../structMPI__dataframe__t.html#a7251c137b559c1309d70960027c09261',1,'MPI_dataframe_t']]],
-  ['inner_5fdome_5fvoltage_5fsetting_6',['inner_dome_voltage_setting',['../structMPI__dataframe__t.html#a696b67e14bdf2efd343a567bdc5fbe0d',1,'MPI_dataframe_t']]]
+  ['ignoring_5fdeployment_5fswitches_3',['ignoring_deployment_switches',['../structAntenna__deployment__status.html#ab5741d36f33a12b2bd5dd6169c656aa0',1,'Antenna_deployment_status']]],
+  ['independent_5fburn_4',['independent_burn',['../structAntenna__deployment__status.html#ab9582a8f160e0472128fc24524b4bdaa',1,'Antenna_deployment_status']]],
+  ['inline_5fmax_5',['inline_max',['../structlfs__config.html#acf12c7a415738fee22ecf37fdded724c',1,'lfs_config::inline_max'],['../structlfs.html#a300c919379763862375391a19f3d3383',1,'lfs::inline_max']]],
+  ['inner_5fdome_5fscan_5findex_6',['inner_dome_scan_index',['../structMPI__dataframe__t.html#a4995f7ceb4f0f17f1b1a0f54bee3cd84',1,'MPI_dataframe_t']]],
+  ['inner_5fdome_5fvoltage_5fadc_5freading_7',['inner_dome_voltage_adc_reading',['../structMPI__dataframe__t.html#a7251c137b559c1309d70960027c09261',1,'MPI_dataframe_t']]],
+  ['inner_5fdome_5fvoltage_5fsetting_8',['inner_dome_voltage_setting',['../structMPI__dataframe__t.html#a696b67e14bdf2efd343a567bdc5fbe0d',1,'MPI_dataframe_t']]]
 ];
