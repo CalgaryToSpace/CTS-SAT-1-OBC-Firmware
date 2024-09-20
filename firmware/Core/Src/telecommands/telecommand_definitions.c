@@ -609,7 +609,7 @@ uint8_t TCMDEXEC_core_system_stats(const char *args_str, TCMD_TelecommandChannel
         time_of_last_tcmd_sent_ms_string, // time_of_last_tcmd_sent_ms
         TCMD_total_tcmd_queued_count, // total_tcmd_count
         LFS_is_lfs_mounted, // is_lfs_mounted
-        TIM_synchronization_source_letter(TIM_last_synchronization_source), // last_time_sync_source
+        TIME_sync_source_enum_to_letter_char(TIM_last_synchronization_source), // last_time_sync_source
         STM32_reset_cause_name // reboot_reason
     ); 
 
