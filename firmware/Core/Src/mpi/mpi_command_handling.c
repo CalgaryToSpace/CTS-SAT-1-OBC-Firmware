@@ -59,7 +59,7 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
     UART_mpi_rx_buffer_write_idx = 0;
     const uint32_t UART_mpi_rx_start_time_ms = HAL_GetTick();
 
-    // Receive until MPI response timesout and verify it
+    // Receive until MPI response timesout
     while (1) {
         // Check for MPI response at least until a timout event
         if ((HAL_GetTick() - UART_mpi_rx_start_time_ms) < MPI_RX_TIMEOUT_DURATION_MS) {

@@ -1167,45 +1167,79 @@ uint8_t TCMDEXEC_peripheral_send_receive_data(const char *args_str, TCMD_Telecom
         return 1;    // Error code: Error parsing args
     }
     
-    // Allocate space to receive incoming MPI response
-    const size_t rx_buffer_max_size = 5000;         // 5KBs max size for response buffer          
-    uint16_t rx_buffer_len = 0;                     // Length of MPI response buffer
-    uint8_t rx_buffer[rx_buffer_max_size];          // Buffer to store incoming response from the MPI
+    // Allocate space to receive incoming response
+    const size_t rx_buffer_max_size = 5120;         // 5KBs max size for rx buffer          
+    uint16_t rx_buffer_len = 0;                     // Length of rx buffer
+    uint8_t rx_buffer[rx_buffer_max_size];          // Buffer to store incoming response from the selected UART peripheral
     memset(rx_buffer, 0, rx_buffer_max_size);       // Initialize all elements to 0
+    
     uint8_t tx_rx_status = 0;                       // Store the result of transmit and receive status results
 
     UART_HandleTypeDef *UART_handle;                // Selected UART handle
-    volatile uint8_t *UART_rx_buffer_last_rx_byte;                // Interrupt based reception most recent byte
-    volatile uint16_t *UART_rx_buffer_write_idx;
-    const uint16_t *UART_rx_buffer_len;
-    volatile uint8_t *UART_rx_buffer;
+    volatile uint16_t *UART_rx_buffer_write_idx;    // Pointer to write index for selected UART rx buffer
+    const uint16_t *UART_rx_buffer_len;             // Pointer to the length of the selected UART rx buffer
+    volatile uint8_t *UART_rx_buffer;               // Pointer to selected UART rx buffer
 
-    // MPI UART port selected (DMA enabled reception)
+    // UART 1 selected (MPI)
     if(strcmp(arg_uart_port_name, "UART1") == 0) {
 
         // UART1 is used by the MPI. We need to store the original MPI mode, then set MPI to command mode
         MPI_current_uart_rx_mode = MPI_RX_MODE_COMMAND_MODE;
 
-        // Transmit bytes and receive response
+        // Transmit bytes and receive response (DMA enabled reception)
         tx_rx_status = MPI_send_telecommand_get_response(arg_bytes_to_send, arg_bytes_to_send_len, rx_buffer, rx_buffer_max_size, &rx_buffer_len);
+        tx_rx_status = 0;
+
+        // Send response log detail
+        switch(tx_rx_status) {
+            case 0:
+                break;
+            case 2: 
+                snprintf(response_output_buf, response_output_buf_len, "Failed UART transmission.\n");
+                return 2;
+            case 3: 
+                snprintf(response_output_buf, response_output_buf_len, "Failed UART reception.\n");
+                return 3;
+            case 4: 
+                snprintf(response_output_buf, response_output_buf_len, "Timeout waiting for 1st byte.\n");
+                return 4;
+            default:
+                snprintf(response_output_buf, response_output_buf_len, "Unknown response return: %u\n", tx_rx_status);
+                return tx_rx_status;
+        }
 
     }
     // UART 2,3,4 & 5 use interrupt based reception, set UART handle and buffers according to selection
     else {
-        // UART 2 Selected
+        // UART 2 Selected (LORA)
         if(strcmp(arg_uart_port_name, "UART2") == 0) {
             UART_handle = &huart2;
-            UART_rx_buffer_last_rx_byte = &UART2_rx_buffer_last_rx_byte;
             UART_rx_buffer_write_idx = &UART2_rx_buffer_write_idx;
             UART_rx_buffer_len = &UART2_rx_buffer_len;
             UART_rx_buffer = &UART2_rx_buffer[0];
         }
+        // UART 3 Selected (GPS)
         else if(strcmp(arg_uart_port_name, "UART3") == 0) {
+            UART_handle = &huart3;
+            UART_rx_buffer_write_idx = &UART3_rx_buffer_write_idx;
+            UART_rx_buffer_len = &UART3_rx_buffer_len;
+            UART_rx_buffer = &UART3_rx_buffer[0];
         }
+        // UART 4 Selected (CAMERA)
         else if(strcmp(arg_uart_port_name, "UART4") == 0) {
+            UART_handle = &huart4;
+            UART_rx_buffer_write_idx = &UART4_rx_buffer_write_idx;
+            UART_rx_buffer_len = &UART4_rx_buffer_len;
+            UART_rx_buffer = &UART4_rx_buffer[0];
         }
+        // UART 5 Selected (EPS)
         else if(strcmp(arg_uart_port_name, "UART5") == 0) {
+            UART_handle = &huart5;
+            UART_rx_buffer_write_idx = &UART5_rx_buffer_write_idx;
+            UART_rx_buffer_len = &UART5_rx_buffer_len;
+            UART_rx_buffer = &UART5_rx_buffer[0];
         }
+        // Invalid UART selected
         else {
             snprintf(response_output_buf, response_output_buf_len, "Invalid UART port requested: %s",arg_uart_port_name);
             return 2;   // Error code: Invalid UART port requested
@@ -1219,22 +1253,12 @@ uint8_t TCMDEXEC_peripheral_send_receive_data(const char *args_str, TCMD_Telecom
             snprintf(response_output_buf, response_output_buf_len, "Failed UART transmission.\n");
             return 2; // Error code: Failed UART transmission
         }
-
-        HAL_StatusTypeDef receive_status = HAL_UART_Receive_IT(UART_handle, (uint8_t*) &UART_rx_buffer_last_rx_byte, 1);
-        
-        // Check for UART reception errors
-        if (receive_status != HAL_OK) {
-            snprintf(response_output_buf, response_output_buf_len, "Failed UART reception.\n");
-            return 3; // Error code: Failed UART reception
-        }
-
-        // TODO: Listen until timeout add while loop byte by byte receive implementation
-        // Receive MPI response byte by byte (Note: This is done to account for potential errors from the mpi where it doesnt send back an expected response)
         
         // Reset UART buffer write index & record start time for response reception
         *UART_rx_buffer_write_idx = 0;
         const uint32_t UART_rx_last_write_time_ms = HAL_GetTick();
 
+        // Receive from peripheral until a timeout event
         while(1) {
 
             // Check for response at least until a timout event
@@ -1243,134 +1267,47 @@ uint8_t TCMDEXEC_peripheral_send_receive_data(const char *args_str, TCMD_Telecom
             }
 
             // Timeout without receiving any data
-            if ((HAL_GetTick() - UART_rx_last_write_time_ms > RX_TIMEOUT_DURATION_MS) && (*UART_rx_buffer_write_idx == 0)) {                
-                tx_rx_status = 4;
-                break;
+            if ((HAL_GetTick() - UART_rx_last_write_time_ms > RX_TIMEOUT_DURATION_MS) && (*UART_rx_buffer_write_idx == 0)) { 
+                snprintf(response_output_buf, response_output_buf_len, "Timeout waiting for 1st byte.\n");   
+                return 4;   // Error code: Timout waiting for first byte
             }
 
             // Timeout after receiving some data
-            // TODO: HANDLE CASE WHERE UART BUFFER AND LOCAL BUFFER VARY IN SIZES
             else if ((HAL_GetTick() - UART_rx_last_write_time_ms > RX_TIMEOUT_DURATION_MS) && (*UART_rx_buffer_write_idx > 0)) {
                 
+                rx_buffer_len = *UART_rx_buffer_write_idx;
+
                 // Copy the UART buffer to the last received byte index & clear the UART buffer
-                for (uint16_t i = 0; i < *UART_rx_buffer_len; i++) {
+                for (uint16_t i = 0; i < rx_buffer_len; i++) {
+                    // Copy only until the max size of rx buffer
+                    if(i == rx_buffer_max_size){
+                        break;
+                    }
+
                     rx_buffer[i] = UART_rx_buffer[i];
                 }
                 
-                // Clear the buffer (memset to 0, but volatile-compatible)
+                // Reset the UART buffer (memset to 0, but volatile-compatible)
                 for (uint16_t i = 0; i < *UART_rx_buffer_len; i++) {
                     UART_rx_buffer[i] = 0;
                 }
 
-                // Reset UART buffer write index
+                // Reset UART buffer write index                
                 *UART_rx_buffer_write_idx = 0;
                 
-                tx_rx_status = 0;
-                break;
+                tx_rx_status = 0;   // Success Code
+                break; 
             }
         }
     }
 
-    
-    
-
-    // else if(strcmp(arg_uart_port_name, "UART2") == 0) {
-
-    //     // Transmit config command to requested peripheral
-    //     HAL_StatusTypeDef transmit_status = HAL_UART_Transmit(&huart2, arg_bytes_to_send, arg_bytes_to_send_len, 200);
-
-    //     // Check UART transmission
-    //     if (transmit_status != HAL_OK) {
-    //         snprintf(response_output_buf, response_output_buf_len, "Failed UART transmission.\n");
-    //     	return 2; // Error code: Failed UART transmission
-    //     }
-
-    //     HAL_StatusTypeDef receive_status = HAL_UART_Receive_IT(&huart2, (uint8_t*) &UART2_rx_buffer_last_rx_byte, 1);
-        
-    //     // Check for UART reception errors
-    //     if (receive_status != HAL_OK) {
-    //         snprintf(response_output_buf, response_output_buf_len, "Failed UART reception.\n");
-    //         return 3; // Error code: Failed UART reception
-    //     }
-
-    //     // TODO: Listen until timeout add while loop byte by byte receive implementation
-    //     // Receive MPI response byte by byte (Note: This is done to account for potential errors from the mpi where it doesnt send back an expected response)
-        
-    //     // Reset UART buffer write index & record start time for response reception
-    //     UART2_rx_buffer_write_idx = 0;
-    //     const uint32_t UART2_rx_last_write_time_ms = HAL_GetTick();
-
-    //     while(1) {
-
-    //         // Check for response at least until a timout event
-    //         if ((HAL_GetTick() - UART2_rx_last_write_time_ms) < RX_TIMEOUT_DURATION_MS) {
-    //             continue;
-    //         }
-
-    //         // Timeout without receiving any data
-    //         if ((HAL_GetTick() - UART2_rx_last_write_time_ms > RX_TIMEOUT_DURATION_MS) && (UART2_rx_buffer_write_idx == 0)) {                
-    //             tx_rx_status = 4;
-    //             break;
-    //         }
-
-    //         // Timeout after receiving some data
-    //         // TODO: HANDLE CASE WHERE UART BUFFER AND LOCAL BUFFER VARY IN SIZES
-    //         else if ((HAL_GetTick() - UART2_rx_last_write_time_ms > RX_TIMEOUT_DURATION_MS) && (UART2_rx_buffer_write_idx > 0)) {
-                
-    //             // Copy the UART buffer to the last received byte index & clear the UART buffer
-    //             for (uint16_t i = 0; i < UART2_rx_buffer_len; i++) {
-    //                 rx_buffer[i] = UART2_rx_buffer[i];
-    //             }
-                
-    //             // Clear the buffer (memset to 0, but volatile-compatible)
-    //             for (uint16_t i = 0; i < UART2_rx_buffer_len; i++) {
-    //                 UART2_rx_buffer[i] = 0;
-    //             }
-
-    //             // Reset UART buffer write index
-    //             UART_mpi_rx_buffer_write_idx = 0;
-                
-    //             tx_rx_status = 0;
-    //             break;
-    //         }
-    //     }
-    // }
-    // else if(strcmp(arg_uart_port_name, "UART3") == 0) {
-    // }
-    // else if(strcmp(arg_uart_port_name, "UART4") == 0) {
-    // }
-    // else if(strcmp(arg_uart_port_name, "UART5") == 0) {
-    // }
-    // else {
-    //     snprintf(response_output_buf, response_output_buf_len, "Invalid UART port requested: %s",arg_uart_port_name);
-    //     return 2;   // Error code: Invalid UART port requested
-    // }
-
-    // Send response log detail
-    switch(tx_rx_status) {
-        case 0: 
-            snprintf(response_output_buf, response_output_buf_len, "Data successfully transmitted to %s port.\n", arg_uart_port_name);
-            break;
-        case 2: 
-            snprintf(response_output_buf, response_output_buf_len, "Failed UART transmission.\n");
-            break;
-        case 3: 
-            snprintf(response_output_buf, response_output_buf_len, "Failed UART reception.\n");
-            break;
-        case 4: 
-            snprintf(response_output_buf, response_output_buf_len, "Timeout waiting for 1st byte.\n");
-            break;
-        default:
-            snprintf(response_output_buf, response_output_buf_len, "Unknown response return: %u\n", tx_rx_status);
-            break;
-    }
-
-    // Send back complete response             
+    // Send back complete response           
     snprintf(
         &response_output_buf[strlen(response_output_buf)],
         response_output_buf_len - strlen(response_output_buf) - 1,
-        "Response received: "
+        "Data successfully transmitted to %s port.\nResponse received (%u bytes): ", arg_uart_port_name, rx_buffer_len
     );
+
     for (size_t i = 0; i < rx_buffer_len; i++)
     {
         snprintf(
@@ -1379,96 +1316,6 @@ uint8_t TCMDEXEC_peripheral_send_receive_data(const char *args_str, TCMD_Telecom
             "%02X ", rx_buffer[i]
         );
     }
-
-    // // Transmit config command to requested peripheral
-	// HAL_StatusTypeDef transmit_status = HAL_UART_Transmit(UART_peripheral_port, arg_bytes_to_send, arg_bytes_to_send_len, TX_TIMEOUT_DURATION_MS);
-
-    // // Check UART transmission
-	// if (transmit_status != HAL_OK) {
-	// 	return 3; // Error code: Failed UART transmission
-	// }
-
-    // // Receive response from peripheral based on configured mode
-    // if (UART_peripheral_port->hdmarx != NULL && UART_peripheral_port->hdmarx->Instance != NULL) {
-    //     // DMA is enabled for reception
-    //     snprintf(response_output_buf, response_output_buf_len, "Function identified selected port as dma enabled receive");
-        
-    //     // Receive MPI response byte by byte (Note: This is done to account for potential errors from the mpi where it doesnt send back an expected response)
-    //     HAL_StatusTypeDef receive_status = HAL_UART_Receive_DMA(UART_peripheral_port, (uint8_t*) &UART_mpi_rx_last_byte, 1);
-        
-    //     // Check for UART reception errors
-    //     if (receive_status != HAL_OK) {
-    //         HAL_UART_DMAStop(&huart1);
-    //         MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
-    //         return 3; // Error code: Failed UART reception
-    //     }
-
-    //     // Record start time for mpi response reception & reset UART buffer write index
-    //     UART_mpi_rx_buffer_write_idx = 0;
-    //     const uint32_t UART_mpi_rx_start_time_ms = HAL_GetTick();
-
-    //     // Receive until MPI response timesout and verify it
-    //     while (1) {
-    //         // Check for MPI response at least until a timout event
-    //         if ((HAL_GetTick() - UART_mpi_rx_start_time_ms) < MPI_RX_TIMEOUT_DURATION_MS) {
-    //             continue;
-    //         }
-
-    //         // Passing the length of the response buffer back
-    //         *MPI_rx_buffer_len = UART_mpi_rx_buffer_write_idx;
-
-    //         // MPI hasn't sent any data and has timed out
-    //         if ((*MPI_rx_buffer_len == 0)) {
-
-    //             // Stop reception from the MPI & Reset mpi UART mode state
-    //             HAL_UART_DMAStop(&huart1);
-    //             MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
-    //             return 4; // Error code: Timeout waiting for 1st byte
-    //         }
-
-    //         // MPI has sent some data and has timed out
-    //         else if ((*MPI_rx_buffer_len > 0) && ((HAL_GetTick() - UART_mpi_rx_last_byte_write_time_ms) > MPI_RX_TIMEOUT_DURATION_MS)) {
-
-    //             // Stop reception from the MPI & Reset mpi UART mode state
-    //             HAL_UART_DMAStop(&huart1);
-    //             MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
-
-    //             // Copy the buffer to the last received byte index & clear the UART buffer
-    //             for (uint16_t i = 0; i < *MPI_rx_buffer_len; i++) {
-    //                 MPI_rx_buffer[i] = UART_mpi_rx_buffer[i];
-    //             }
-                
-    //             // Clear the buffer (memset to 0, but volatile-compatible)
-    //             for (uint16_t i = 0; i < UART_mpi_rx_buffer_len; i++) {
-    //                 UART_mpi_rx_buffer[i] = 0;
-    //             }
-
-    //             // Reset UART buffer write index
-    //             UART_mpi_rx_buffer_write_idx = 0;
-    //         }
-    //     }
-    // }
-    // else {
-    //     // Interrupt is enabled for reception
-    //     snprintf(response_output_buf, response_output_buf_len, "Function identified selected port as Interupt enabled receive");
-    // }
-
-    // 5kb data size to receive
-
-	// HAL_StatusTypeDef receive_status;
-
-    // Handle reception from the MPI
-    // if(UART_peripheral_port == &huart1){
-    //     receive_status = HAL_UART_Receive(UART_peripheral_port, (uint8_t*) &UART_mpi_rx_last_byte, 1);
-    // }
-    
-	
-	// Check for UART reception errors
-    // if (receive_status != HAL_OK) {
-    //     return 4; // Error code: Failed UART reception
-    // }
-
-    // TODO: Parse response and validate
 
     return 0;
 }
