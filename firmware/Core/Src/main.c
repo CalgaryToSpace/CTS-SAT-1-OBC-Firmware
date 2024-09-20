@@ -111,6 +111,14 @@ const osThreadAttr_t TASK_service_eps_watchdog_Attributes = {
   .name = "TASK_service_eps_watchdog",
   .stack_size = 512, //in bytes
   .priority = (osPriority_t) osPriorityNormal, //TODO: Figure out which priority makes sense for this task
+}
+
+// TODO: Verify this
+osThreadId_t TASK_receive_gps_Handle;
+const osThreadAttr_t TASK_receive_gps_attributes = {
+  .name = "TASK_receive_gps_info",
+  .stack_size = 8192,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 
 
@@ -234,6 +242,8 @@ int main(void)
   TASK_handle_uart_telecommands_Handle = osThreadNew(TASK_handle_uart_telecommands, NULL, &TASK_handle_uart_telecommands_Attributes);
 
   TASK_execute_telecommands_Handle = osThreadNew(TASK_execute_telecommands, NULL, &TASK_execute_telecommands_Attributes);
+
+  TASK_receive_gps_Handle = osThreadNew(TASK_receive_gps_info, NULL, &TASK_receive_gps_attributes);
   
   TASK_service_eps_watchdog_Handle = osThreadNew(TASK_service_eps_watchdog, NULL, &TASK_service_eps_watchdog_Attributes);
 
