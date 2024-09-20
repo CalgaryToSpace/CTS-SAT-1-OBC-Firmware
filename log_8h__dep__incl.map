@@ -1,23 +1,25 @@
 <map id="firmware/Core/Inc/log/log.h" name="firmware/Core/Inc/log/log.h">
-<area shape="rect" id="Node000001" title=" " alt="" coords="865,5,1009,46"/>
-<area shape="rect" id="Node000002" href="$littlefs__helper_8c.html" title=" " alt="" coords="5,94,170,135"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="849,34,553,56,368,73,183,97,170,99,170,93,182,91,367,68,552,50,849,29"/>
-<area shape="rect" id="Node000003" href="$log_8c.html" title=" " alt="" coords="194,94,341,135"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="849,37,624,59,488,76,353,97,341,99,340,94,352,91,488,71,623,54,849,32"/>
-<area shape="rect" id="Node000004" href="$log__sinks_8c.html" title=" " alt="" coords="365,94,511,135"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="849,42,697,66,524,97,512,99,511,94,523,91,696,61,849,37"/>
-<area shape="rect" id="Node000005" href="$rtos__tasks_8c.html" title=" " alt="" coords="536,94,687,135"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="850,53,686,96,685,91,849,48"/>
-<area shape="rect" id="Node000006" href="$agenda__telecommand__defs_8c.html" title=" " alt="" coords="711,94,925,135"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="899,57,847,96,843,91,896,53"/>
-<area shape="rect" id="Node000007" href="$lfs__telecommand__defs_8c.html" title=" " alt="" coords="950,94,1164,135"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="978,53,1031,91,1028,96,975,57"/>
-<area shape="rect" id="Node000008" href="$log__telecommand__defs_8c.html" title=" " alt="" coords="1188,94,1403,135"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="1025,45,1214,91,1213,96,1023,51"/>
-<area shape="rect" id="Node000009" href="$telecommand__definitions_8c.html" title=" " alt="" coords="1427,94,1641,135"/>
-<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="1024,36,1415,91,1427,93,1426,99,1414,97,1024,41"/>
-<area shape="rect" id="Node000010" href="$telecommand__executor_8c.html" title=" " alt="" coords="1666,94,1880,135"/>
-<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="1024,31,1305,54,1653,91,1666,93,1665,98,1653,97,1304,60,1024,36"/>
-<area shape="rect" id="Node000011" href="$test__logging_8c.html" title=" " alt="" coords="1904,94,2055,135"/>
-<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="1025,26,1187,32,1403,44,1646,63,1892,91,1904,93,1903,99,1891,97,1646,68,1402,49,1187,37,1025,32"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="920,5,1065,46"/>
+<area shape="rect" id="Node000002" href="$eps__internal__drivers_8c.html" title=" " alt="" coords="5,94,156,150"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="905,31,763,35,579,46,373,65,168,97,156,99,155,94,167,91,373,60,579,40,763,30,905,25"/>
+<area shape="rect" id="Node000003" href="$littlefs__helper_8c.html" title=" " alt="" coords="180,102,344,142"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="905,34,657,54,507,72,357,97,327,104,326,98,356,91,506,67,657,49,904,29"/>
+<area shape="rect" id="Node000004" href="$log_8c.html" title=" " alt="" coords="369,102,515,142"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="905,38,730,60,628,77,528,97,501,103,500,98,527,91,627,71,729,55,904,33"/>
+<area shape="rect" id="Node000005" href="$log__sinks_8c.html" title=" " alt="" coords="539,102,686,142"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="906,48,699,97,674,104,673,98,697,91,905,42"/>
+<area shape="rect" id="Node000006" href="$rtos__tasks_8c.html" title=" " alt="" coords="710,102,862,142"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="936,55,830,103,828,98,934,50"/>
+<area shape="rect" id="Node000007" href="$agenda__telecommand__defs_8c.html" title=" " alt="" coords="885,102,1100,142"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="995,62,995,101,990,101,990,62"/>
+<area shape="rect" id="Node000008" href="$lfs__telecommand__defs_8c.html" title=" " alt="" coords="1124,102,1338,142"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="1057,50,1182,98,1180,103,1055,55"/>
+<area shape="rect" id="Node000009" href="$log__telecommand__defs_8c.html" title=" " alt="" coords="1363,102,1577,142"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="1081,40,1350,91,1383,98,1382,104,1349,97,1080,45"/>
+<area shape="rect" id="Node000010" href="$telecommand__definitions_8c.html" title=" " alt="" coords="1601,102,1816,142"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="1081,31,1311,54,1450,71,1589,91,1625,98,1624,103,1588,97,1449,76,1311,59,1080,37"/>
+<area shape="rect" id="Node000011" href="$telecommand__executor_8c.html" title=" " alt="" coords="1840,102,2054,142"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="1080,27,1409,47,1618,65,1828,91,1866,98,1865,104,1827,97,1617,70,1409,52,1080,33"/>
+<area shape="rect" id="Node000012" href="$test__logging_8c.html" title=" " alt="" coords="2079,102,2229,142"/>
+<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="1081,27,1586,49,1864,68,1979,79,2066,91,2096,98,2095,104,2065,97,1978,85,1863,73,1585,55,1081,33"/>
 </map>

@@ -1,0 +1,33 @@
+<map id="EPS_vpid_eng_TO_json" name="EPS_vpid_eng_TO_json">
+<area shape="rect" id="Node000001" title=" " alt="" coords="753,213,916,238"/>
+<area shape="rect" id="Node000002" href="$eps__types__to__json_8c.html#a79b16986396f114636baa74f30452043" title=" " alt="" coords="512,61,696,102"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="807,204,761,163,704,123,668,105,670,100,707,118,764,159,811,200"/>
+<area shape="rect" id="Node000003" href="$eps__types__to__json_8c.html#a793893f43c1e820bfd9cf5d0b2a8f1e2" title=" " alt="" coords="253,72,455,113"/>
+<area shape="poly" id="edge9_Node000001_Node000003" title=" " alt="" coords="795,208,752,186,704,167,576,132,455,109,456,104,577,127,706,162,755,181,798,203"/>
+<area shape="rect" id="Node000006" href="$eps__types__to__json_8c.html#a2b479b8f6373f55e12b7619263fe5bc4" title=" " alt="" coords="516,176,692,217"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="738,216,692,210,693,205,738,211"/>
+<area shape="rect" id="Node000007" href="$eps__types__to__json_8c.html#a7db7c94cf1f5d5e8648f2905df47f03e" title=" " alt="" coords="253,176,455,217"/>
+<area shape="poly" id="edge10_Node000001_Node000007" title=" " alt="" coords="738,231,705,231,604,235,560,235,503,231,437,220,438,215,503,226,560,230,604,230,705,226,737,225"/>
+<area shape="rect" id="Node000010" href="$eps__types__to__json_8c.html#acbd8103830d67344d644b90f05c3f332" title=" " alt="" coords="503,291,705,331"/>
+<area shape="poly" id="edge11_Node000001_Node000010" title=" " alt="" coords="784,247,662,293,660,288,783,242"/>
+<area shape="rect" id="Node000013" href="$eps__types__to__json_8c.html#a14fec9e6707c13583e79ce586a8fa9fe" title=" " alt="" coords="505,385,703,426"/>
+<area shape="poly" id="edge14_Node000001_Node000013" title=" " alt="" coords="812,251,765,296,707,345,644,387,641,383,704,341,761,292,808,247"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="497,89,455,91,455,85,496,84"/>
+<area shape="rect" id="Node000004" href="$eps__telecommands_8c.html#a0b71573bd1b719c711d41b9158341664" title="Get the EPS PBU (Power Battery Unit) housekeeping data, and display it as a JSON string." alt="" coords="5,5,205,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="260,70,183,49,184,44,261,65"/>
+<area shape="rect" id="Node000005" href="$eps__telecommands_8c.html#ab1fdcf2b18244b3eaa0bdb06987f7daa" title="Get the EPS PBU (Power Battery Unit) housekeeping data (running average), and display it as a JSON st..." alt="" coords="18,70,192,126"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="237,98,192,98,192,93,237,92"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="501,199,455,199,455,194,501,194"/>
+<area shape="rect" id="Node000008" href="$eps__telecommands_8c.html#a607255127381fcc7531e9028b439c89c" title="Get the EPS PCU (Power Conditioning Unit, solar panel MPPT) housekeeping data, and display it as a JS..." alt="" coords="5,171,205,211"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="237,196,205,196,205,190,237,191"/>
+<area shape="rect" id="Node000009" href="$eps__telecommands_8c.html#a84ae49b8e4aba0fe74165ae46dc3108f" title="Get the EPS PCU (Power Conditioning Unit, solar panel MPPT) housekeeping data (running average),..." alt="" coords="18,235,192,291"/>
+<area shape="poly" id="edge8_Node000007_Node000009" title=" " alt="" coords="261,224,193,242,192,237,260,219"/>
+<area shape="rect" id="Node000011" href="$eps__telecommands_8c.html#a1508bcd0d16fcb7b8b0f712444dac049" title="Get the EPS PDU (Power Distribution Unit) housekeeping data, and display it as a JSON string." alt="" coords="254,241,454,282"/>
+<area shape="poly" id="edge12_Node000010_Node000011" title=" " alt="" coords="487,291,454,284,455,279,488,285"/>
+<area shape="rect" id="Node000012" href="$eps__telecommands_8c.html#a9f9ac952a1d88fc2fc97e6094f51e2ae" title="Get the EPS PDU (Power Distribution Unit) housekeeping data (running average), and display it as a JS..." alt="" coords="267,306,440,362"/>
+<area shape="poly" id="edge13_Node000010_Node000012" title=" " alt="" coords="488,324,441,328,441,323,487,319"/>
+<area shape="rect" id="Node000014" href="$eps__telecommands_8c.html#aafff81f2fa3093ea3c00f74be6b5f68f" title="Gets the EPS PIU (Power Integrated Unit, info about all systems) housekeeping data,..." alt="" coords="254,385,454,426"/>
+<area shape="poly" id="edge15_Node000013_Node000014" title=" " alt="" coords="489,408,454,408,454,403,489,403"/>
+<area shape="rect" id="Node000015" href="$eps__telecommands_8c.html#a5d726dd38b780429b72c49ff8ae7b1f3" title="Get the EPS PIU (Power Integrated Unit, info about all systems) housekeeping data (running average),..." alt="" coords="269,450,438,506"/>
+<area shape="poly" id="edge16_Node000013_Node000015" title=" " alt="" coords="517,433,440,456,438,451,516,428"/>
+</map>
