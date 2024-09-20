@@ -1174,6 +1174,7 @@ uint8_t TCMDEXEC_peripheral_send_receive_data(const char *args_str, TCMD_Telecom
     // UART 4 Selected (CAMERA)
     else if(strcmp(arg_uart_port_name, "UART4") == 0) {
         // TODO: Implement once, DMA handling function for camera is added
+        UART_camera_is_expecting_data = 1;
     }
     // UART 2,3 & 5 use interrupt based reception, set UART handle and buffers according to selection
     else {
@@ -1183,6 +1184,7 @@ uint8_t TCMDEXEC_peripheral_send_receive_data(const char *args_str, TCMD_Telecom
             UART_rx_buffer_write_idx = &UART_lora_buffer_write_idx;
             UART_rx_buffer_len = &UART_lora_buffer_len;
             UART_rx_buffer = &UART_lora_buffer[0];
+            UART_lora_is_expecting_data = 1;
         }
         // UART 3 Selected (GPS)
         else if(strcmp(arg_uart_port_name, "UART3") == 0) {
@@ -1197,6 +1199,7 @@ uint8_t TCMDEXEC_peripheral_send_receive_data(const char *args_str, TCMD_Telecom
             UART_rx_buffer_write_idx = &UART_eps_buffer_write_idx;
             UART_rx_buffer_len = &UART_eps_buffer_len;
             UART_rx_buffer = &UART_eps_buffer[0];
+            UART_eps_is_expecting_data = 1;
         }
         // Invalid UART selected
         else {
@@ -1253,6 +1256,14 @@ uint8_t TCMDEXEC_peripheral_send_receive_data(const char *args_str, TCMD_Telecom
 
                 // Reset UART buffer write index                
                 *UART_rx_buffer_write_idx = 0;
+
+                // Reset listening flags if used by peripheral (using the interrupt reception mode)
+                if(UART_handle == UART_lora_port_handle){
+                    UART_lora_is_expecting_data = 0;
+                }
+                else if(UART_handle == UART_eps_port_handle){
+                    UART_eps_is_expecting_data = 0;
+                }
                 
                 tx_rx_status = 0;   // Success Code
                 break; 
