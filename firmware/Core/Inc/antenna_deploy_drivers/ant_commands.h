@@ -3,15 +3,38 @@
 
 #include <stdint.h>
 
-/*-----------------------------COMMAND VARIABLES-----------------------------*/
-// All commands in this section refer to the "ISIS.ANTS.UM.001" datasheet by ISISpace
 
-static const uint8_t ANT_CMD_ARM_ANTENNA_SYSTEM = 0xAD; // Arm the antenna deploy system
-static const uint8_t ANT_CMD_DEPLOY_ANTENNA1 = 0xA1; // Deploy antenna 1
-static const uint8_t ANT_CMD_MEASURE_TEMP = 0xC0; // Measure the temperature of the antenna controller system
+struct Antenna_deployment_status {
+    uint8_t antenna_1_deployed;
+    uint8_t antenna_1_deployment_time_limit_reached;
+    uint8_t antenna_1_deployment_system_active;
+    uint8_t antenna_2_deployed;
+    uint8_t antenna_2_deployment_time_limit_reached;
+    uint8_t antenna_2_deployment_system_active;
+    uint8_t antenna_3_deployed;
+    uint8_t antenna_3_deployment_time_limit_reached;
+    uint8_t antenna_3_deployment_system_active;
+    uint8_t antenna_4_deployed;
+    uint8_t antenna_4_deployment_time_limit_reached;
+    uint8_t antenna_4_deployment_system_active;
+    uint8_t independent_burn;
+    uint8_t ignoring_deployment_switches;
+    uint8_t antenna_system_armed;
+};
 
+uint8_t ANT_CMD_reset();
 uint8_t ANT_CMD_arm_antenna_system();
-uint8_t ANT_CMD_deploy_antenna1(uint8_t ativation_time_seconds);
-uint8_t ANT_CMD_measure_temp();
+uint8_t ANT_CMD_disarm_antenna_system();
+uint8_t ANT_CMD_deploy_antenna(uint8_t antenna, uint8_t activation_time_seconds);
+uint8_t ANT_CMD_start_automated_sequential_deployment(uint8_t activation_time_seconds);
+uint8_t ANT_CMD_deploy_antenna_with_override(uint8_t antenna, uint8_t activation_time_seconds);
+uint8_t ANT_CMD_cancel_deployment_system_activation();
+uint8_t ANT_CMD_measure_temp(uint16_t *result);
+uint8_t ANT_CMD_report_deployment_status(struct Antenna_deployment_status *response);
+uint8_t ANT_CMD_report_antenna_deployment_activation_count(uint8_t antenna, uint8_t *response);
+uint8_t ANT_CMD_report_antenna_deployment_activation_time(uint8_t antenna, uint16_t *result);
 
+
+
+    
 #endif /* __INCLUDE_GUARD_ANT_COMMANDS_H__ */
