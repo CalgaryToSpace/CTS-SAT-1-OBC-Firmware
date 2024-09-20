@@ -1209,7 +1209,11 @@ uint8_t TCMDEXEC_peripheral_send_receive_data(const char *args_str, TCMD_Telecom
         }
 
     }
-    // UART 2,3,4 & 5 use interrupt based reception, set UART handle and buffers according to selection
+    // UART 4 Selected (CAMERA)
+    else if(strcmp(arg_uart_port_name, "UART4") == 0) {
+        // TODO: Implement once, DMA handling function for camera is added
+    }
+    // UART 2,3 & 5 use interrupt based reception, set UART handle and buffers according to selection
     else {
         // UART 2 Selected (LORA)
         if(strcmp(arg_uart_port_name, "UART2") == 0) {
@@ -1224,13 +1228,6 @@ uint8_t TCMDEXEC_peripheral_send_receive_data(const char *args_str, TCMD_Telecom
             UART_rx_buffer_write_idx = &UART3_rx_buffer_write_idx;
             UART_rx_buffer_len = &UART3_rx_buffer_len;
             UART_rx_buffer = &UART3_rx_buffer[0];
-        }
-        // UART 4 Selected (CAMERA)
-        else if(strcmp(arg_uart_port_name, "UART4") == 0) {
-            UART_handle = &huart4;
-            UART_rx_buffer_write_idx = &UART4_rx_buffer_write_idx;
-            UART_rx_buffer_len = &UART4_rx_buffer_len;
-            UART_rx_buffer = &UART4_rx_buffer[0];
         }
         // UART 5 Selected (EPS)
         else if(strcmp(arg_uart_port_name, "UART5") == 0) {
