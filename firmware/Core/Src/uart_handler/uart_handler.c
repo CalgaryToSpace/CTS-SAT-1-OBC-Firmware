@@ -140,28 +140,24 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     }
     else if (huart->Instance == UART_gps_port_handle->Instance) {
 
-        if(UART_gps_uart_interrupt_enabled){
+        if (UART_gps_uart_interrupt_enabled) {
 
-            // add the byte to the buffer
-        if (UART_gps_buffer_write_idx >= UART_gps_buffer_len) {
-            DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART gps buffer is full\n");
-            
-            // shift all bytes left by 1
-            for (uint16_t i = 1; i < UART_gps_buffer_len; i++) {
-                UART_gps_buffer[i - 1] = UART_gps_buffer[i];
+            // Add the byte to the buffer
+            if (UART_gps_buffer_write_idx >= UART_gps_buffer_len) {
+                DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART gps buffer is full\n");
+                
+                // Shift all bytes left by 1
+                for (uint16_t i = 1; i < UART_gps_buffer_len; i++) {
+                    UART_gps_buffer[i - 1] = UART_gps_buffer[i];
+                }
+
+                // Reset to a valid index
+                UART_gps_buffer_write_idx = UART_gps_buffer_len - 1;
             }
+            UART_gps_buffer[UART_gps_buffer_write_idx++] = UART_gps_buffer_last_rx_byte;
+            UART_gps_last_write_time_ms = HAL_GetTick();
 
-            // reset to a valid index
-            UART_gps_buffer_write_idx = UART_gps_buffer_len - 1;
-        }
-        UART_gps_buffer[UART_gps_buffer_write_idx++] = UART_gps_buffer_last_rx_byte;
-        UART_gps_last_write_time_ms = HAL_GetTick();
-
-        // TODO: Call the GPS_set_uart_interrupt_state here? 
-        HAL_UART_Receive_IT(UART_gps_port_handle, (uint8_t*) &UART_gps_buffer_last_rx_byte, 1);
-
-        // TODO: Determine when to reset the interrupt flag
-        GPS_set_uart_interrupt_state(0);
+            HAL_UART_Receive_IT(UART_gps_port_handle, (uint8_t*) &UART_gps_buffer_last_rx_byte, 1);
         }
         
     }
@@ -180,14 +176,16 @@ void UART_init_uart_handlers(void) {
     // TODO: add the rest
 }
 
-// Funnction to toggle the interrupt state for the GPS
-void GPS_set_uart_interrupt_state(uint8_t toggle_status){
-    if(toggle_status)
+/// @brief Sets the UART interrupt state (enabled/disabled)
+/// @param toggle_status 1: enable interrupt; 0: disable interrupt
+void GPS_set_uart_interrupt_state(uint8_t toggle_status) {
+    if (toggle_status)
     {
         UART_gps_uart_interrupt_enabled = 1;
+
+        HAL_UART_Receive_IT(UART_gps_port_handle, (uint8_t*) &UART_gps_buffer_last_rx_byte, 1);
     }
     else {
         UART_gps_uart_interrupt_enabled = 0;
     }
-    
 }
