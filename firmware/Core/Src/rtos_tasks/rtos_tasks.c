@@ -269,7 +269,7 @@ void TASK_receive_gps_info(void *argument) {
 		// Parse may have failed due to incomplete data
 		// How do I handle the incomplete data? Could drop the data
 		if(gps_header_result == 0){
-			continue;;
+			continue;
 		}
 
 		GPS_bestxyza_response_t bestxyza_data;
@@ -288,7 +288,6 @@ void TASK_receive_gps_info(void *argument) {
 			const uint8_t timea_parse_result = GPS_timea_data_parser(latest_gps_response, &timea_data);
 
 			if(timea_parse_result == 0) {
-				// Failed to parsing timea data
 				continue;
 			}
 		}
