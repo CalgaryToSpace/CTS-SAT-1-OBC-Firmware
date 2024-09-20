@@ -142,7 +142,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     else if(huart->Instance == USART2){
         // Add the byte to the buffer
         if (UART2_rx_buffer_write_idx >= UART2_rx_buffer_len) {
-            // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART telecommand buffer is full\n");
+            // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART response buffer is full\n");
             
             // Shift all bytes left by 1
             for (uint16_t i = 1; i < UART2_rx_buffer_len; i++) {
@@ -155,6 +155,43 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         UART2_rx_buffer[UART2_rx_buffer_write_idx++] = UART2_rx_buffer_last_rx_byte;
         UART2_rx_last_write_time_ms = HAL_GetTick();
         HAL_UART_Receive_IT(&huart2, (uint8_t*) &UART2_rx_buffer_last_rx_byte, 1);
+    }
+    // TODO: Verify implementation with peripheral connected. Currently configured to follow interrupt based receive
+    else if(huart->Instance == USART3){
+        // Add the byte to the buffer
+        if (UART3_rx_buffer_write_idx >= UART3_rx_buffer_len) {
+            // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART response buffer is full\n");
+            
+            // Shift all bytes left by 1
+            for (uint16_t i = 1; i < UART3_rx_buffer_len; i++) {
+                UART3_rx_buffer[i - 1] = UART3_rx_buffer[i];
+            }
+
+            // Reset to a valid index
+            UART3_rx_buffer_write_idx = UART3_rx_buffer_len - 1;
+        }
+        UART3_rx_buffer[UART3_rx_buffer_write_idx++] = UART3_rx_buffer_last_rx_byte;
+        UART3_rx_last_write_time_ms = HAL_GetTick();
+        HAL_UART_Receive_IT(&huart3, (uint8_t*) &UART3_rx_buffer_last_rx_byte, 1);
+    }
+    // TODO: Implement function to utilize this DMA reception callback for the CAMERA
+    else if (huart->Instance == UART4) {
+        // Check if buffer is full
+        if (UART4_rx_buffer_write_idx >= UART4_rx_buffer_len) {
+            // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART response buffer is full\n");
+
+            // Shift all bytes left by 1
+            for(uint16_t i = 1; i < UART4_rx_buffer_len; i++) {
+                UART4_rx_buffer[i - 1] = UART4_rx_buffer[i];
+            }
+
+            // Reset to a valid index
+            UART4_rx_buffer_write_idx = UART4_rx_buffer_len - 1;
+        }
+
+        // Add a byte to the buffer
+        UART4_rx_buffer[UART4_rx_buffer_write_idx++] = UART4_rx_buffer_last_rx_byte;
+        UART4_rx_last_write_time_ms = HAL_GetTick();
     }
     // TODO: Verify implementation with peripheral connected. Currently configured to follow interrupt based receive
     else if(huart->Instance == UART5){
