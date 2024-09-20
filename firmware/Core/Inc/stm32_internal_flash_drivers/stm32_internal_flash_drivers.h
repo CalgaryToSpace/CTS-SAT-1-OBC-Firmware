@@ -14,10 +14,10 @@ typedef enum
     STM32_INTERNAL_FLASH_MEMORY_REGION_GOLDEN_COPY_ADDRESS = 0x8100000
 } STM32_INTERNAL_FLASH_memory_region_addresses_t;
 
-uint8_t stm32_internal_flash_write(uint32_t address, uint8_t *data, uint32_t length);
+uint8_t STM32_internal_flash_write(uint32_t address, uint8_t *data, uint32_t length);
 
-uint8_t stm32_internal_flash_read(uint32_t address, uint8_t *buffer, uint32_t length);
+uint8_t STM32_internal_flash_read(uint32_t address, uint8_t *buffer, uint32_t length);
 
-uint8_t stm32_internal_flash_erase(uint16_t start_page_erase, uint16_t number_of_pages_to_erase, uint32_t *page_error);
+uint8_t STM32_internal_flash_erase(uint16_t start_page_erase, uint16_t number_of_pages_to_erase, uint32_t *page_error);
 
 #endif // __INCLUDE_GUARD__STM32_INTERNAL_FLASH_DRIVERS_H__
