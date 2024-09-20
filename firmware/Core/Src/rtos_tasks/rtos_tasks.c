@@ -170,6 +170,9 @@ void TASK_execute_telecommands(void *argument) {
 void TASK_receive_gps_info(void *argument) {
 	TASK_HELP_start_of_task();
 
+	// CONFIGURATION PARAMETER
+	uint32_t timeout_duration_ms = 50;
+
 	char latest_gps_response[UART_gps_buffer_len];
 	uint16_t latest_gps_response_len = 0;
 
@@ -181,9 +184,7 @@ void TASK_receive_gps_info(void *argument) {
 		if(UART_gps_buffer_write_idx > 0) {
 
 			// Checking if new data has come ie No more data is being transmitted
-			const uint8_t temp_idx = UART_gps_buffer_write_idx;
-			// FIXME: Use a timeout mechanism here to determine when it's done.
-			if(UART_gps_buffer_write_idx == temp_idx)
+			if ((HAL_GetTick() - UART_gps_last_write_time_ms > timeout_duration_ms) && (UART_gps_buffer_write_idx > 0))
 			{
 				// Copy data from the UART buffer to a separate buffer
 				latest_gps_response_len = UART_gps_buffer_write_idx;
@@ -212,9 +213,8 @@ void TASK_receive_gps_info(void *argument) {
 		// TODO: Figure out what to do after this
 		// Parse may have failed due to incomplete data
 		// How do I handle the incomplete data? Could drop the data
-		if(gps_header_result != 0){
-			// Failed to parse
-			return;
+		if(gps_header_result == 0){
+			continue;;
 		}
 
 		GPS_bestxyza_response_t bestxyza_data;
@@ -222,13 +222,9 @@ void TASK_receive_gps_info(void *argument) {
 		{
 			const uint8_t bestxyza_parse_result = GPS_bestxyza_data_parser(latest_gps_response, &bestxyza_data);
 
-			if(bestxyza_parse_result != 0) {
-				// Failed to parsing bestxyza data
-				return;
+			if(bestxyza_parse_result == 0) {
+				continue;
 			}
-
-			// After parsing is complete and successful
-			return;
 		}
 
 		GPS_timea_response_t timea_data;
@@ -236,13 +232,10 @@ void TASK_receive_gps_info(void *argument) {
 		{
 			const uint8_t timea_parse_result = GPS_timea_data_parser(latest_gps_response, &timea_data);
 
-			if(timea_parse_result != 0) {
+			if(timea_parse_result == 0) {
 				// Failed to parsing timea data
-				return;
+				continue;
 			}
-
-			// After parsing is complete and successful
-			return;
 		}
 
 	} /* End Task's Main Loop */
