@@ -354,7 +354,7 @@ uint8_t TCMDEXEC_ant_report_antenna_deployment_activation_time(const char *args_
     return 0;
 }
 
-/// @brief Telecommand: Measure the temperature of the antenna controller
+/// @brief Telecommand: Measures the temperature of the antenna controller in centi-degrees celsius
 /// @param args_str No args
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ant_measure_temp(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
@@ -365,11 +365,12 @@ uint8_t TCMDEXEC_ant_measure_temp(const char *args_str, TCMD_TelecommandChannel_
         snprintf(response_output_buf, response_output_buf_len, "Error: %d", comms_err);
         return comms_err;
     }
-
+    //TODO: remove the newline in between the strings to get a JSON string
     snprintf(
         response_output_buf, 
         response_output_buf_len, 
-        "Success, Temp measurement: %d degrees centi-celsius", 
+        "{\"raw_measurement\":%d," "\n" "\"temp_measurement_centi_degrees_celsius\":%d}", 
+        measurement,
         ANT_CMD_convert_temp_measurement_to_centi_degree_celsius(measurement)
     );
     return 0;
