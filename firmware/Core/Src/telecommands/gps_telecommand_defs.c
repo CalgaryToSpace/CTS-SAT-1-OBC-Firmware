@@ -22,12 +22,11 @@ uint8_t TCMDEXEC_gps_set_enabled(const char *args_str, TCMD_TelecommandChannel_e
     // Turn on power
     // TODO: Determine the appropriate channel for the GPS
     // Power requirement can be found in the OEM7 Installation Operation Manual Page 29: 3.3VDC +-5% with less than 100mV ripple
-    const char *eps_args_str = "stack_3v3, 1";
+    const char *eps_args_str = "stack_3v3,1";
     const uint8_t eps_result = TCMDEXEC_eps_set_channel_enabled(eps_args_str, tcmd_channel, response_output_buf, response_output_buf_len);
     if(eps_result != 0)
     {
-        //Error during turing on the EPS
-        snprintf(response_output_buf, response_output_buf_len, "Error %d: EPS Error", eps_result);
+        //Error turing on the EPS
         return eps_result;
     }
 
