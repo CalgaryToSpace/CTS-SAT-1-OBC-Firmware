@@ -220,3 +220,38 @@ void TASK_service_eps_watchdog(void *argument) {
 		osDelay(sleep_duration_ms);
 	}
 }
+void TASK_monitor_freertos_highstack_watermarks(void *argument) {
+	TASK_HELP_start_of_task();
+
+	const uint32_t highstack_watermark_threshold = 50;
+	uint32_t total_run_time;
+
+	while (1) {
+
+		// Get the number of tasks
+		const UBaseType_t number_of_tasks = uxTaskGetNumberOfTasks();
+
+		// Creating a dynamic length array of the task statuses
+		TaskStatus_t task_statuses[number_of_tasks];
+
+		// Populate the task statuses
+		if(uxTaskGetSystemState(task_statuses,number_of_tasks, &total_run_time) != 0){
+			continue;
+		}
+
+		//Check the highstack watermarks for each task
+		for(UBaseType_t x = 0; x < number_of_tasks; x++){
+			if(task_statuses[x].usStackHighWaterMark < highstack_watermark_threshold)
+			{
+				LOG_message(
+					LOG_SYSTEM_OBC, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+					"Warning: Task %s is nearing stack overflow. Remaining stack size is: %u bytes.",
+					task_statuses[x].pcTaskName,
+					task_statuses[x].usStackHighWaterMark
+					);
+			}
+		}
+		osDelay(5000);
+
+	} /* End Task's Main Loop */
+}

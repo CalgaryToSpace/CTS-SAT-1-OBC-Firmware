@@ -106,13 +106,12 @@ const osThreadAttr_t TASK_execute_telecommands_Attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 
-osThreadId_t TASK_service_eps_watchdog_Handle;
-const osThreadAttr_t TASK_service_eps_watchdog_Attributes = {
-  .name = "TASK_service_eps_watchdog",
-  .stack_size = 512, //in bytes
-  .priority = (osPriority_t) osPriorityNormal, //TODO: Figure out which priority makes sense for this task
+osThreadId_t TASK_monitor_freertos_highstack_watermarks_Handle;
+const osThreadAttr_t TASK_monitor_freertos_highstack_watermarks_Attributes = {
+  .name = "TASK_monitor_freertos_highstack_watermarks",
+  .stack_size = 256,
+  .priority = (osPriority_t) osPriorityNormal,
 };
-
 
 
 /* USER CODE END PV */
@@ -234,6 +233,8 @@ int main(void)
   TASK_handle_uart_telecommands_Handle = osThreadNew(TASK_handle_uart_telecommands, NULL, &TASK_handle_uart_telecommands_Attributes);
 
   TASK_execute_telecommands_Handle = osThreadNew(TASK_execute_telecommands, NULL, &TASK_execute_telecommands_Attributes);
+
+  TASK_monitor_freertos_highstack_watermarks_Handle = osThreadNew(TASK_execute_telecommands, NULL, &TASK_monitor_freertos_highstack_watermarks_Attributes);
   
   TASK_service_eps_watchdog_Handle = osThreadNew(TASK_service_eps_watchdog, NULL, &TASK_service_eps_watchdog_Attributes);
 
