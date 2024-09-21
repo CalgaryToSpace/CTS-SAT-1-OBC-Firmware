@@ -30,7 +30,15 @@ var searchData=
   ['git_5frepo_5froot_5fpath_27',['GIT_REPO_ROOT_PATH',['../namespacefirmware__checks_1_1__02__check__c__unit__test__inventory.html#a53e2e5df36f848807ffa0d836f1392be',1,'firmware_checks._02_check_c_unit_test_inventory.GIT_REPO_ROOT_PATH'],['../namespacefirmware__checks_1_1__03__check__missing__tcmd__registrations.html#a5ec50c49ca194dc858b7fa8044d18b24',1,'firmware_checks._03_check_missing_tcmd_registrations.GIT_REPO_ROOT_PATH']]],
   ['github_20actions_28',['Automated Check Ideas (GitHub Actions)',['../md_docs_2Non-Critical__Notes_2Deployment__Final__Checks.html#autotoc_md47',1,'']]],
   ['goals_29',['Goals',['../md_cts1__ground__support_2README.html#autotoc_md1',1,'']]],
-  ['ground_20support_20software_20tt_20cts1_5fground_5fsupport_20tt_30',['CTS-SAT-1 Ground Support Software (&lt;tt&gt;cts1_ground_support&lt;/tt&gt;)',['../md_cts1__ground__support_2README.html',1,'']]],
-  ['gstate_31',['gstate',['../structlfs.html#ab4c94fb3aff01d5d1ae031b13245729d',1,'lfs']]],
-  ['guidelines_32',['C General Guidelines',['../md_docs_2C__General__Guidelines.html',1,'']]]
+  ['gps_5fpower_30',['gps_power',['../structADCS__Power__Control__struct__t.html#a57b92341c79235890f06b781d86b3261',1,'ADCS_Power_Control_struct_t']]],
+  ['gps_5freference_5fweek_31',['gps_reference_week',['../structADCS__raw__gps__time__struct__t.html#ad8d1b0028b8378418de338a7337ef2b9',1,'ADCS_raw_gps_time_struct_t']]],
+  ['gps_5froll_5fover_32',['gps_roll_over',['../structADCS__augmented__sgp4__params__struct__t.html#a62766432ea44cb2b8d96162970f7a2a1',1,'ADCS_augmented_sgp4_params_struct_t']]],
+  ['gps_5fsolution_5fstatus_33',['gps_solution_status',['../structADCS__raw__gps__status__struct__t.html#a45626a1ca5869450134b04132e3128e9',1,'ADCS_raw_gps_status_struct_t']]],
+  ['gps_5ftime_5fms_34',['gps_time_ms',['../structADCS__raw__gps__time__struct__t.html#a7879970037c44e7d985f4d72a848fdf7',1,'ADCS_raw_gps_time_struct_t']]],
+  ['ground_20support_20software_20tt_20cts1_5fground_5fsupport_20tt_35',['CTS-SAT-1 Ground Support Software (&lt;tt&gt;cts1_ground_support&lt;/tt&gt;)',['../md_cts1__ground__support_2README.html',1,'']]],
+  ['gstate_36',['gstate',['../structlfs.html#ab4c94fb3aff01d5d1ae031b13245729d',1,'lfs']]],
+  ['guidelines_37',['C General Guidelines',['../md_docs_2C__General__Guidelines.html',1,'']]],
+  ['gyro1_38',['gyro1',['../structADCS__rate__gyro__config__struct__t.html#a8e304a9043e3abe035d5465eefa0061d',1,'ADCS_rate_gyro_config_struct_t']]],
+  ['gyro2_39',['gyro2',['../structADCS__rate__gyro__config__struct__t.html#ad2ff1730e350d84e59a3196591fefa8f',1,'ADCS_rate_gyro_config_struct_t']]],
+  ['gyro3_40',['gyro3',['../structADCS__rate__gyro__config__struct__t.html#a1d7dd3c317d6d2036a8604df8e6b3397',1,'ADCS_rate_gyro_config_struct_t']]]
 ];

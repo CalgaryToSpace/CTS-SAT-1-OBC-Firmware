@@ -1,0 +1,9 @@
+<map id="ADCS_Pack_to_Rate_Gyro_Config_Struct" name="ADCS_Pack_to_Rate_Gyro_Config_Struct">
+<area shape="rect" id="Node000001" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="465,41,645,82"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a8011b3e1e89374efec0898749cd94a98" title="Instruct the ADCS to execute the ADCS_Get_Rate_Gyro_Config command." alt="" coords="249,5,402,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="449,48,403,40,403,35,450,43"/>
+<area shape="rect" id="Node000004" href="$test__adcs_8c.html#ace41444e2adf3229da45b68d98b197b2" title=" " alt="" coords="235,70,417,126"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="451,81,418,86,417,81,450,76"/>
+<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#ae69c2baec8f09d3b099cee36a472315d" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,187,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="234,28,187,28,187,23,234,23"/>
+</map>

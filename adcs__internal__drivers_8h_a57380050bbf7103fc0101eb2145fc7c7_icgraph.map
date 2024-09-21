@@ -1,0 +1,27 @@
+<map id="ADCS_convert_uint16_to_reversed_uint8_array_members" name="ADCS_convert_uint16_to_reversed_uint8_array_members">
+<area shape="rect" id="Node000001" title="Swap low and high bytes of a uint16 to turn into uint8 and put into specified index of an array." alt="" coords="518,162,684,218"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#aaaf56166667fc8b1615304a20e0789e7" title="Set the Augmented SGP4 Parameters of the ADCS." alt="" coords="304,5,462,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="566,151,522,105,469,61,446,49,448,44,471,57,526,101,570,148"/>
+<area shape="rect" id="Node000004" href="$adcs__commands_8c.html#a5c3acbea6648e201d47b70ec32b4e1f2" title="Instruct the ADCS to execute the ADCS_Set_Commanded_Attitude_Angles command." alt="" coords="301,71,465,111"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="532,157,469,127,439,114,441,109,471,122,534,152"/>
+<area shape="rect" id="Node000006" href="$adcs__commands_8c.html#a88c55b92675e6d4f66f26238f4a2dcb1" title="Instruct the ADCS to set the magnetometer configuration." alt="" coords="296,136,470,177"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="502,177,470,172,471,167,503,172"/>
+<area shape="rect" id="Node000008" href="$adcs__commands_8c.html#a802fd511c74b0b4f31728faffb616ecc" title="Instruct the ADCS to execute the ADCS_Set_Magnetorquer_Output command." alt="" coords="298,201,468,242"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="503,207,469,212,468,207,502,201"/>
+<area shape="rect" id="Node000010" href="$adcs__commands_8c.html#a8b010ac9b67283a3cc48bfdf917690b4" title="Instruct the ADCS to execute the ADCS_Set_Rate_Gyro_Config command." alt="" coords="307,267,459,307"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="533,227,471,256,441,268,439,264,469,251,530,222"/>
+<area shape="rect" id="Node000012" href="$adcs__commands_8c.html#a6a90ebf23fe76338f0c3ab85d09438b2" title="Instruct the ADCS to execute the titular command." alt="" coords="297,336,468,361"/>
+<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="570,232,526,278,471,321,437,337,435,333,469,317,523,274,566,228"/>
+<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#a010a4200d80186fa6a4d9dd131f1ba5d" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="15,5,238,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="288,28,239,28,239,23,288,23"/>
+<area shape="rect" id="Node000005" href="$telecommand__adcs_8c.html#aa54fca153c3d72b2792b90c67ea8ed01" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="11,71,242,111"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="285,94,242,94,242,88,285,88"/>
+<area shape="rect" id="Node000007" href="$telecommand__adcs_8c.html#a07baac9fec776a43fe02a541ec8dea7e" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,136,248,177"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="280,159,248,159,248,154,280,154"/>
+<area shape="rect" id="Node000009" href="$telecommand__adcs_8c.html#af2ca31f4b748a6a93be8a3f1907689e9" title="Telecommand: Set the magnetorquer output values." alt="" coords="7,201,246,242"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="282,224,246,224,246,219,282,219"/>
+<area shape="rect" id="Node000011" href="$telecommand__adcs_8c.html#a8ee861331037001ee63c66cb8b2dc32f" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="36,267,217,307"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="291,290,218,290,218,284,291,284"/>
+<area shape="rect" id="Node000013" href="$telecommand__adcs_8c.html#a31ebda15faf41b449b2a28cce5863448" title="Telecommand: Set the wheel speed of the ADCS." alt="" coords="30,332,223,373"/>
+<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="282,353,224,353,223,348,282,347"/>
+</map>

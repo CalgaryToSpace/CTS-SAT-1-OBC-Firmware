@@ -1,0 +1,9 @@
+<map id="ADCS_Pack_to_Magnetorquer_Command_Struct" name="ADCS_Pack_to_Magnetorquer_Command_Struct">
+<area shape="rect" id="Node000001" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="531,41,729,82"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a1f18dbdf17f4c4670c35d1e7da75d2ac" title="Instruct the ADCS to execute the ADCS_Get_Magnetorquer_Command command." alt="" coords="302,5,473,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="515,47,473,41,474,36,516,42"/>
+<area shape="rect" id="Node000004" href="$test__adcs_8c.html#a7f78bb4e54013b5818303072d46b8dcd" title=" " alt="" coords="292,70,483,126"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="516,81,484,86,483,81,515,76"/>
+<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#ad72532f9cd3eb97f5dfc6942b3a579a1" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,244,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="286,28,244,28,244,23,286,23"/>
+</map>

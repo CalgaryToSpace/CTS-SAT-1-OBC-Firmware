@@ -1,5 +1,19 @@
 var searchData=
 [
-  ['eps_5fabf_5fpin_5fplaced_5fenum_5ft_0',['EPS_ABF_PIN_PLACED_enum_t',['../eps__types_8h.html#ab70b1c5a2c09ac0e1d8c085f544777a7',1,'eps_types.h']]],
-  ['eps_5fchannel_5fenum_5ft_1',['EPS_CHANNEL_enum_t',['../eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4',1,'eps_types.h']]]
+  ['adcs_5faugmented_5fsgp4_5ffilter_5fenum_5ft_0',['ADCS_augmented_sgp4_filter_enum_t',['../adcs__types_8h.html#ae76b52e6ad445350217bbbb71ba74eef',1,'adcs_types.h']]],
+  ['adcs_5faxis_5fselect_5fenum_5ft_1',['ADCS_axis_select_enum_t',['../adcs__types_8h.html#af528f8453d8dce9ad7726b8c0840d8da',1,'adcs_types.h']]],
+  ['adcs_5fboot_5fcause_5fenum_5ft_2',['ADCS_boot_cause_enum_t',['../adcs__types_8h.html#af843c33fd96a779d005b4a81e84c0de9',1,'adcs_types.h']]],
+  ['adcs_5fcapture_5fresult_5fenum_5ft_3',['ADCS_capture_result_enum_t',['../adcs__types_8h.html#af9bf3f69effa3411336a4cd3d20f8cbd',1,'adcs_types.h']]],
+  ['adcs_5fcontrol_5fmode_5fenum_5ft_4',['ADCS_control_mode_enum_t',['../adcs__types_8h.html#a2856072ccf8c61187885f2fcab464457',1,'adcs_types.h']]],
+  ['adcs_5fdetect_5fresult_5fenum_5ft_5',['ADCS_detect_result_enum_t',['../adcs__types_8h.html#a91c24e9dc5285eef23e57aeaacdcda80',1,'adcs_types.h']]],
+  ['adcs_5ferror_5fflag_5fenum_5ft_6',['ADCS_error_flag_enum_t',['../adcs__types_8h.html#ac17532c1a3b0c4e40957b07060d0dd4b',1,'adcs_types.h']]],
+  ['adcs_5festimation_5fmode_5fenum_5ft_7',['ADCS_estimation_mode_enum_t',['../adcs__types_8h.html#abad297b461e7d14608bd758abd045eea',1,'adcs_types.h']]],
+  ['adcs_5fgps_5faxis_5fenum_5ft_8',['ADCS_gps_axis_enum_t',['../adcs__types_8h.html#a7980ca9404cb8dc93e3e0f56b1ee505d',1,'adcs_types.h']]],
+  ['adcs_5fgps_5fsolution_5fstatus_5fenum_5ft_9',['ADCS_gps_solution_status_enum_t',['../adcs__types_8h.html#a6571c79bf33f6776e75694e64268b9da',1,'adcs_types.h']]],
+  ['adcs_5fmagnetometer_5fmode_5fenum_5ft_10',['ADCS_magnetometer_mode_enum_t',['../adcs__types_8h.html#a488a647e1b28e34ddb5d3dbeb0bc8f49',1,'adcs_types.h']]],
+  ['adcs_5fpower_5fselect_5fenum_5ft_11',['ADCS_power_select_enum_t',['../adcs__types_8h.html#aeffb9ea82d7e3887371ee19d7c51aea5',1,'adcs_types.h']]],
+  ['adcs_5freset_5fcause_5fenum_5ft_12',['ADCS_reset_cause_enum_t',['../adcs__types_8h.html#a9cb56584ff9785781ee37194f0cb12d3',1,'adcs_types.h']]],
+  ['adcs_5frun_5fmode_5fenum_5ft_13',['ADCS_run_mode_enum_t',['../adcs__types_8h.html#af5c0e9bf3243103683424cb9e82a463a',1,'adcs_types.h']]],
+  ['adcs_5frunning_5fprogram_5fenum_5ft_14',['ADCS_running_program_enum_t',['../adcs__types_8h.html#a9f107ed5e7c6c6f668bb7e6b56edd081',1,'adcs_types.h']]],
+  ['adcs_5fwhich_5fcam_5fsensor_5fenum_5ft_15',['ADCS_which_cam_sensor_enum_t',['../adcs__types_8h.html#acbfff447ce7f23da818e29ea3b5720e0',1,'adcs_types.h']]]
 ];

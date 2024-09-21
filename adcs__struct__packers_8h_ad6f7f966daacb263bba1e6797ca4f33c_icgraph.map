@@ -1,0 +1,9 @@
+<map id="ADCS_Pack_to_Power_Control_Struct" name="ADCS_Pack_to_Power_Control_Struct">
+<area shape="rect" id="Node000001" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="478,35,634,75"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#ad6f14358cdac2402aaa62d6b5532bd68" title="Instruct the ADCS to execute the ADCS_Get_Power_Control command." alt="" coords="250,13,428,38"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="462,45,428,40,428,35,462,40"/>
+<area shape="rect" id="Node000004" href="$test__adcs_8c.html#adac79adb7b967537da76b2ae07d2bfd9" title=" " alt="" coords="248,63,430,103"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="463,70,431,74,430,69,462,64"/>
+<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#af4fbf628335658c9d9598070bb4b96a5" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,200,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="235,28,200,28,200,23,235,23"/>
+</map>

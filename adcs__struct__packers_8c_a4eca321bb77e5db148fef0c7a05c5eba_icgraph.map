@@ -1,0 +1,9 @@
+<map id="ADCS_Pack_to_Raw_Coarse_Sun_Sensor_7_to_10_Struct" name="ADCS_Pack_to_Raw_Coarse_Sun_Sensor_7_to_10_Struct">
+<area shape="rect" id="Node000001" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="501,41,695,82"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#ae81e5d4469252850f5412a96027f55e4" title="Instruct the ADCS to execute the ADCS_Raw_Coarse_Sun_Sensor_7_to_10 command." alt="" coords="271,5,437,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="485,48,437,41,438,35,486,42"/>
+<area shape="rect" id="Node000004" href="$test__adcs_8c.html#a103f488a00e0f583829846df011afdb8" title=" " alt="" coords="255,70,453,126"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="486,81,454,86,453,80,485,76"/>
+<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#ab24a7669a0bec9274709287f49aeab7f" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,207,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="255,28,207,28,207,23,255,23"/>
+</map>

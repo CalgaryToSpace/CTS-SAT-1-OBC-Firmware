@@ -1,0 +1,15 @@
+<map id="TCMDEXEC_adcs_get_tracking_controller_target_reference" name="TCMDEXEC_adcs_get_tracking_controller_target_reference">
+<area shape="rect" id="Node000001" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,75,211,115"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#ac43f25dfef72382f83feaf7a7aecbd16" title="Instruct the ADCS to execute the ADCS_Get_Tracking_Controller_Target_Reference command." alt="" coords="259,41,463,82"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="211,79,243,75,244,80,211,84"/>
+<area shape="rect" id="Node000007" href="$adcs__types__to__json_8c.html#aef4358e96a2427eb06a940751574f054" title="Converts ADCS_Tracking_Controller_Target_Struct to a JSON string." alt="" coords="276,107,446,147"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="211,105,260,112,260,117,211,111"/>
+<area shape="rect" id="Node000003" href="$adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="512,5,703,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="463,44,496,39,497,44,464,49"/>
+<area shape="rect" id="Node000006" href="$adcs__struct__packers_8c.html#afecf04e75cc6d2235bdfc4978238e013" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="511,70,704,126"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="464,74,496,79,495,84,463,79"/>
+<area shape="rect" id="Node000004" href="$adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="752,5,929,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="704,23,737,23,737,28,704,28"/>
+<area shape="rect" id="Node000005" href="$adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value." alt="" coords="977,5,1125,46"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="929,23,961,23,961,28,929,28"/>
+</map>

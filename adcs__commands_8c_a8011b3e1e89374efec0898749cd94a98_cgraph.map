@@ -1,0 +1,11 @@
+<map id="ADCS_Get_Rate_Gyro_Config" name="ADCS_Get_Rate_Gyro_Config">
+<area shape="rect" id="Node000001" title="Instruct the ADCS to execute the ADCS_Get_Rate_Gyro_Config command." alt="" coords="5,39,159,79"/>
+<area shape="rect" id="Node000002" href="$adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="207,5,398,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="158,45,191,40,192,45,159,50"/>
+<area shape="rect" id="Node000005" href="$adcs__struct__packers_8c.html#a1c06d7f89b9f530f8605c6ed4caf2aa2" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="212,71,392,111"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="159,67,197,73,196,78,158,73"/>
+<area shape="rect" id="Node000003" href="$adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="446,5,622,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="398,23,430,23,430,28,398,28"/>
+<area shape="rect" id="Node000004" href="$adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value." alt="" coords="670,5,819,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="623,23,655,23,655,28,623,28"/>
+</map>

@@ -1,0 +1,9 @@
+<map id="ADCS_Pack_to_Identification_Struct" name="ADCS_Pack_to_Identification_Struct">
+<area shape="rect" id="Node000001" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="490,27,682,68"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#af655e993a9ecfabfa9b8a45a9104cc5d" title="Instruct the ADCS to execute the ADCS_Identification command." alt="" coords="268,5,434,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="474,36,434,31,434,26,475,31"/>
+<area shape="rect" id="Node000004" href="$test__adcs_8c.html#aa9a89cf41e7be7a93c12e7a2325d5482" title=" " alt="" coords="260,55,442,96"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="475,63,443,67,442,62,474,58"/>
+<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#a7c9ae8edb2a6451d474918835f68fb3f" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,212,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="253,21,212,21,212,16,253,16"/>
+</map>

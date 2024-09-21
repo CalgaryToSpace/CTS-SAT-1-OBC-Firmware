@@ -1,11 +1,23 @@
 var searchData=
 [
-  ['flash_5ferr_5fdevice_5fbusy_5ftimeout_0',['FLASH_ERR_DEVICE_BUSY_TIMEOUT',['../flash__driver_8h.html#ad200730319d2185ff8d22fd5d0c575acab682bd6eca56ae11aea58ff93c921fa9',1,'flash_driver.h']]],
-  ['flash_5ferr_5fok_1',['FLASH_ERR_OK',['../flash__driver_8h.html#ad200730319d2185ff8d22fd5d0c575acae5789485fc2a48e0389112c61225803f',1,'flash_driver.h']]],
-  ['flash_5ferr_5fspi_5freceive_5ffailed_2',['FLASH_ERR_SPI_RECEIVE_FAILED',['../flash__driver_8h.html#ad200730319d2185ff8d22fd5d0c575aca9d77f6a345c47e797874af81868cce9a',1,'flash_driver.h']]],
-  ['flash_5ferr_5fspi_5freceive_5ftimeout_3',['FLASH_ERR_SPI_RECEIVE_TIMEOUT',['../flash__driver_8h.html#ad200730319d2185ff8d22fd5d0c575aca612118de528019f2448765a0239c4364',1,'flash_driver.h']]],
-  ['flash_5ferr_5fspi_5ftransmit_5ffailed_4',['FLASH_ERR_SPI_TRANSMIT_FAILED',['../flash__driver_8h.html#ad200730319d2185ff8d22fd5d0c575aca50110ce8d4147166fe2132d5be8b764b',1,'flash_driver.h']]],
-  ['flash_5ferr_5fspi_5ftransmit_5ftimeout_5',['FLASH_ERR_SPI_TRANSMIT_TIMEOUT',['../flash__driver_8h.html#ad200730319d2185ff8d22fd5d0c575aca93ddf41adccefe50a3ea77c3f39319ab',1,'flash_driver.h']]],
-  ['flash_5ferr_5fstatus_5freg_5ferror_6',['FLASH_ERR_STATUS_REG_ERROR',['../flash__driver_8h.html#ad200730319d2185ff8d22fd5d0c575aca5d0f3bce6e40d05d1b5e1733ab8388e3',1,'flash_driver.h']]],
-  ['flash_5ferr_5funknown_7',['FLASH_ERR_UNKNOWN',['../flash__driver_8h.html#ad200730319d2185ff8d22fd5d0c575acaf3a401eefb57d45f8a9c922df2b614c5',1,'flash_driver.h']]]
+  ['eps_5fabf_5fpin_5fapplied_0',['EPS_ABF_PIN_APPLIED',['../eps__types_8h.html#ab70b1c5a2c09ac0e1d8c085f544777a7a6da9d7d500610501398f303665f8b407',1,'eps_types.h']]],
+  ['eps_5fabf_5fpin_5fnot_5fapplied_1',['EPS_ABF_PIN_NOT_APPLIED',['../eps__types_8h.html#ab70b1c5a2c09ac0e1d8c085f544777a7aa0dabb04332d38a1cdd0e2df3e76881c',1,'eps_types.h']]],
+  ['eps_5fchannel_5f12v_5fboom_2',['EPS_CHANNEL_12V_BOOM',['../eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4acc98cdf05f9de2cfca7f67ef0c55643b',1,'eps_types.h']]],
+  ['eps_5fchannel_5f12v_5fmpi_3',['EPS_CHANNEL_12V_MPI',['../eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4a63470092ec8b8870be7b020fae9b105d',1,'eps_types.h']]],
+  ['eps_5fchannel_5f28v6_5fch16_5funused_4',['EPS_CHANNEL_28V6_CH16_UNUSED',['../eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4afb3acd947d1ceb6be22bf7003732f1cd',1,'eps_types.h']]],
+  ['eps_5fchannel_5f3v3_5fcamera_5',['EPS_CHANNEL_3V3_CAMERA',['../eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4a777391077585397bb363b23229a33a30',1,'eps_types.h']]],
+  ['eps_5fchannel_5f3v3_5fch14_5funused_6',['EPS_CHANNEL_3V3_CH14_UNUSED',['../eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4a1d2b038580190d32a959a2683af5aa25',1,'eps_types.h']]],
+  ['eps_5fchannel_5f3v3_5fch15_5funused_7',['EPS_CHANNEL_3V3_CH15_UNUSED',['../eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4a5babbb00984d3c95272c8056a7f8c52d',1,'eps_types.h']]],
+  ['eps_5fchannel_5f3v3_5flora_5fmodule_8',['EPS_CHANNEL_3V3_LORA_MODULE',['../eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4a0ed6896e89c4651f4bc7c2dd02348dc7',1,'eps_types.h']]],
+  ['eps_5fchannel_5f3v3_5fstack_9',['EPS_CHANNEL_3V3_STACK',['../eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4a5bf2bd4ae023c8c7e0d4bb116510daa6',1,'eps_types.h']]],
+  ['eps_5fchannel_5f3v3_5fuhf_5fantenna_5fdeploy_10',['EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY',['../eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4afb496b194bd7a09a30fdb59d68f0eeee',1,'eps_types.h']]],
+  ['eps_5fchannel_5f5v_5fch2_5funused_11',['EPS_CHANNEL_5V_CH2_UNUSED',['../eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4a45bc93294e9166ac670cb7fcb8f29655',1,'eps_types.h']]],
+  ['eps_5fchannel_5f5v_5fch3_5funused_12',['EPS_CHANNEL_5V_CH3_UNUSED',['../eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4a994eab730569b2e7bdccf7b9981a9784',1,'eps_types.h']]],
+  ['eps_5fchannel_5f5v_5fmpi_13',['EPS_CHANNEL_5V_MPI',['../eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4ac8271326d1502353a9f07ecc6b90bbea',1,'eps_types.h']]],
+  ['eps_5fchannel_5f5v_5fstack_14',['EPS_CHANNEL_5V_STACK',['../eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4a1e42aa74e0f1341ade5089e3d4d995b8',1,'eps_types.h']]],
+  ['eps_5fchannel_5funknown_15',['EPS_CHANNEL_UNKNOWN',['../eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4a8881ef17065fc4fb7659063992922a19',1,'eps_types.h']]],
+  ['eps_5fchannel_5fvbatt_5fch10_5funused_16',['EPS_CHANNEL_VBATT_CH10_UNUSED',['../eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4a88b70cd78f9f141c62a44ecd0cadec9a',1,'eps_types.h']]],
+  ['eps_5fchannel_5fvbatt_5fch11_5funused_17',['EPS_CHANNEL_VBATT_CH11_UNUSED',['../eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4a946ce2ba2a916d7310f658897e79940c',1,'eps_types.h']]],
+  ['eps_5fchannel_5fvbatt_5fch9_5funused_18',['EPS_CHANNEL_VBATT_CH9_UNUSED',['../eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4a68d36d582ae80945ea5d9ad583736d68',1,'eps_types.h']]],
+  ['eps_5fchannel_5fvbatt_5fstack_19',['EPS_CHANNEL_VBATT_STACK',['../eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4ac8061fa9562e50cf299d8797115c891b',1,'eps_types.h']]]
 ];

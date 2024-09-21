@@ -1,0 +1,9 @@
+<map id="ADCS_Pack_to_Measurements_Struct" name="ADCS_Pack_to_Measurements_Struct">
+<area shape="rect" id="Node000001" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="504,27,709,68"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a4d583b3f3da086f0e1ad8bb179bc24b9" title="Instruct the ADCS to execute the ADCS_Measurements command." alt="" coords="276,5,454,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="488,36,454,32,455,26,489,31"/>
+<area shape="rect" id="Node000004" href="$test__adcs_8c.html#a0565142d67adfc1b2a2dcad0c566d4f0" title=" " alt="" coords="274,55,456,96"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="489,64,457,68,456,62,488,59"/>
+<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#a5ba967c4454af43ffa856542712593c2" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,226,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="260,21,226,21,226,16,260,16"/>
+</map>

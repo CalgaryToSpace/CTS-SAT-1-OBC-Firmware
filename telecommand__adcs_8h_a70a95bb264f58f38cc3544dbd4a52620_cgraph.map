@@ -1,0 +1,15 @@
+<map id="TCMDEXEC_adcs_raw_cam2_sensor" name="TCMDEXEC_adcs_raw_cam2_sensor">
+<area shape="rect" id="Node000001" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,67,200,107"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#ae6306387b2cc19f7fe297ba672324388" title="Instruct the ADCS to execute the ADCS_Raw_Cam2_Sensor command." alt="" coords="248,45,455,70"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="200,73,232,69,233,74,200,78"/>
+<area shape="rect" id="Node000007" href="$adcs__types__to__json_8c.html#a46932d3e79899fac2eee9defd72e65d3" title="Converts ADCS_Raw_Cam_Sensor_Struct to a JSON string." alt="" coords="270,95,433,135"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="200,95,255,101,254,107,200,101"/>
+<area shape="rect" id="Node000003" href="$adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="503,5,694,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="455,42,487,37,488,43,456,47"/>
+<area shape="rect" id="Node000006" href="$adcs__struct__packers_8c.html#afb0011f797f323080a42447c4e505b25" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="506,71,692,111"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="452,68,490,74,490,79,451,74"/>
+<area shape="rect" id="Node000004" href="$adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="742,5,919,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="695,23,727,23,727,28,695,28"/>
+<area shape="rect" id="Node000005" href="$adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value." alt="" coords="967,5,1115,46"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="919,23,951,23,951,28,919,28"/>
+</map>

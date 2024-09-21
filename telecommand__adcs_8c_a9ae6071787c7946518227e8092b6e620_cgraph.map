@@ -1,0 +1,24 @@
+<map id="TCMDEXEC_adcs_set_unix_time_save_mode" name="TCMDEXEC_adcs_set_unix_time_save_mode">
+<area shape="rect" id="Node000001" title="Telecommand: Choose the circumstances to save the current Unix time." alt="" coords="5,117,188,158"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#ad6d4149c590b7da2e2d66cc2011d5abc" title="Instruct the ADCS to execute the ADCS_Set_Unix_Time_Save_Mode command." alt="" coords="245,88,398,129"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="188,123,229,118,230,123,189,128"/>
+<area shape="rect" id="Node000010" href="$telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="236,153,407,178"/>
+<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="189,146,221,150,220,156,188,152"/>
+<area shape="rect" id="Node000003" href="$adcs__internal__drivers_8c.html#aecce0bfa34eea6373e296fb13a2fb92f" title="Sends a telecommand over I2C to the ADCS, checks that it&#39;s been acknowledged, and returns the ACK err..." alt="" coords="455,88,635,129"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="398,106,440,106,440,111,398,111"/>
+<area shape="rect" id="Node000004" href="$adcs__commands_8c.html#a42fd924fb5cfd0f0cdeb3a3f6248dde1" title="Instructs the ADCS to determine whether the last command succeeded. (Doesn&#39;t work for telemetry reque..." alt="" coords="683,70,807,96"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="636,94,667,90,668,95,636,99"/>
+<area shape="rect" id="Node000009" href="$adcs__internal__drivers_8c.html#a4fd725dd59fc5c6d0304751c2a08baa4" title="Sends a telecommand over I2C to the ADCS." alt="" coords="1094,96,1295,121"/>
+<area shape="poly" id="edge8_Node000003_Node000009" title=" " alt="" coords="636,106,1079,106,1079,111,636,111"/>
+<area shape="rect" id="Node000005" href="$adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="855,5,1046,46"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="793,67,860,48,861,53,795,72"/>
+<area shape="rect" id="Node000008" href="$adcs__struct__packers_8c.html#a914351ecde8db8a1690caab528b69055" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_CMD_Ack command." alt="" coords="858,70,1042,96"/>
+<area shape="poly" id="edge7_Node000004_Node000008" title=" " alt="" coords="807,80,842,80,842,86,807,86"/>
+<area shape="rect" id="Node000006" href="$adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="1106,19,1283,59"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="1047,28,1091,31,1091,36,1046,34"/>
+<area shape="rect" id="Node000007" href="$adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value." alt="" coords="1343,60,1492,101"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="1284,53,1329,61,1328,66,1283,58"/>
+<area shape="poly" id="edge9_Node000009_Node000007" title=" " alt="" coords="1295,93,1328,89,1328,94,1296,98"/>
+<area shape="rect" id="Node000011" href="$telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="469,153,621,178"/>
+<area shape="poly" id="edge11_Node000010_Node000011" title=" " alt="" coords="408,163,454,163,454,168,408,168"/>
+</map>

@@ -1,0 +1,9 @@
+<map id="ADCS_Pack_to_Raw_GPS_Status_Struct" name="ADCS_Pack_to_Raw_GPS_Status_Struct">
+<area shape="rect" id="Node000001" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="483,35,663,75"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a4e9fe2e2667ad5e76a9779ddc3c84af4" title="Instruct the ADCS to execute the ADCS_Raw_GPS_Status command." alt="" coords="237,13,435,38"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="467,45,435,41,436,35,468,39"/>
+<area shape="rect" id="Node000004" href="$test__adcs_8c.html#ab6e25d71bfd6d1003981bc0f1024bf94" title=" " alt="" coords="239,63,433,103"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="468,70,434,74,433,69,467,65"/>
+<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#a92a46228de6b9d9a4b48ca8bda6300e9" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,189,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="221,28,189,28,189,23,221,23"/>
+</map>

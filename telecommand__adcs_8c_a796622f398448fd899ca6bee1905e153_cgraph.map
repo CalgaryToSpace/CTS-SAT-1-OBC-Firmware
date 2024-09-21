@@ -1,0 +1,15 @@
+<map id="TCMDEXEC_adcs_get_magnetometer_config" name="TCMDEXEC_adcs_get_magnetometer_config">
+<area shape="rect" id="Node000001" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,71,248,111"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#acddee901f62952e773b95ab0d9475cb4" title="Instruct the ADCS to execute the ADCS_Get_Magnetometer_Config command." alt="" coords="302,37,478,78"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="248,73,286,68,287,73,249,78"/>
+<area shape="rect" id="Node000007" href="$adcs__types__to__json_8c.html#a770b9a64b25ce17a2f8a39dd50a040c8" title="Converts ADCS_Magnetometer_Config_Struct to a JSON string." alt="" coords="296,103,484,143"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="249,103,280,107,280,112,248,108"/>
+<area shape="rect" id="Node000003" href="$adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="538,5,729,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="478,43,521,38,522,43,478,49"/>
+<area shape="rect" id="Node000006" href="$adcs__struct__packers_8c.html#aafc41800b8c99f8b757bb34b572be702" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="532,71,734,111"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="478,67,517,72,516,78,478,72"/>
+<area shape="rect" id="Node000004" href="$adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="782,5,959,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="729,23,767,23,767,28,729,28"/>
+<area shape="rect" id="Node000005" href="$adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value." alt="" coords="1007,5,1155,46"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="959,23,991,23,991,28,959,28"/>
+</map>
