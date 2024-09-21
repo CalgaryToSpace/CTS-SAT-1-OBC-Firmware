@@ -23,6 +23,7 @@
 #include "littlefs/littlefs_helper.h"
 #include "stm32/stm32_reboot_reason.h"
 #include "telecommands/eps_telecommands.h"
+#include "telecommands/gps_telecommand_defs.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -547,6 +548,17 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     // ****************** END SECTION: antenna_telecommand_defs ******************
+
+    // ****************** SECTION: gps_telecommand_defs ******************
+
+    {
+        .tcmd_name = "gps_set_enabled",
+        .tcmd_func = TCMDEXEC_gps_set_enabled,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+
+    // ****************** END SECTION: gps_telecommand_defs ******************
 };
 
 // extern
