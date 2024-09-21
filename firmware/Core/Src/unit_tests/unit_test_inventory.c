@@ -141,9 +141,9 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func_name = "TEST_EXEC__EPS_channel_from_str",
     },
     {
-        .test_func = TEST_EXEC__ANT_CMD_measure_temp,
+        .test_func = TEST_EXEC__ANT_convert_raw_temp_to_cCelsius,
         .test_file = "antenna_deploy_drivers/ant_commands",
-        .test_func_name = "ANT_CMD_measure_temp"
+        .test_func_name = "ANT_convert_raw_temp_to_cCelsius"
     },
 };
 

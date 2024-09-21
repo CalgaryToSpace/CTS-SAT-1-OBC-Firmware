@@ -369,9 +369,9 @@ uint8_t TCMDEXEC_ant_measure_temp(const char *args_str, TCMD_TelecommandChannel_
     snprintf(
         response_output_buf, 
         response_output_buf_len, 
-        "{\"raw_measurement\":%d," "\n" "\"temp_measurement_centi_degrees_celsius\":%d}", 
+        "{\"raw_temp\":%d," "\n" "\"temp_cC\":%d}", 
         measurement,
-        ANT_CMD_convert_temp_measurement_to_centi_degree_celsius(measurement)
+        ANT_convert_raw_temp_to_cCelsius(measurement)
     );
     return 0;
 }

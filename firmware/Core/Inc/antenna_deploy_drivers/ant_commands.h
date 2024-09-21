@@ -30,7 +30,7 @@ uint8_t ANT_CMD_start_automated_sequential_deployment(uint8_t activation_time_se
 uint8_t ANT_CMD_deploy_antenna_with_override(uint8_t antenna, uint8_t activation_time_seconds);
 uint8_t ANT_CMD_cancel_deployment_system_activation();
 uint8_t ANT_CMD_measure_temp(uint16_t *result);
-int16_t ANT_CMD_convert_temp_measurement_to_centi_degree_celsius(uint16_t measurement);
+int16_t ANT_convert_raw_temp_to_cCelsius(uint16_t measurement);
 uint8_t ANT_CMD_report_deployment_status(struct Antenna_deployment_status *response);
 uint8_t ANT_CMD_report_antenna_deployment_activation_count(uint8_t antenna, uint8_t *response);
 uint8_t ANT_CMD_report_antenna_deployment_activation_time(uint8_t antenna, uint16_t *result);

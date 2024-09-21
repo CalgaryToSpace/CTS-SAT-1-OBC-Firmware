@@ -1,3 +1,6 @@
+#ifndef _INCLUDE_GUARD__TEST_ANT_CMD_H__
+#define _INCLUDE_GUARD__TEST_ANT_CMD_H__
 
+uint8_t TEST_EXEC__ANT_convert_raw_temp_to_cCelsius();
 
-uint8_t TEST_EXEC__ANT_CMD_measure_temp();
+#endif
