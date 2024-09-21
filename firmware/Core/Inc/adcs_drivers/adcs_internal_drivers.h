@@ -1,7 +1,7 @@
 #ifndef INC_ADCS_INTERNAL_DRIVERS_H_
 #define INC_ADCS_INTERNAL_DRIVERS_H_
 
-#include "adcs_types.h"
+#include "adcs_drivers/adcs_types.h"
 #include "main.h" // this is necessary because &hi2c1 is defined in that file
 
 #define ADCS_i2c_HANDLE &hi2c1

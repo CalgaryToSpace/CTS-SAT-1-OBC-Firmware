@@ -1,7 +1,7 @@
 #ifndef INC_ADCS_STRUCT_PACKERS_H_
 #define INC_ADCS_STRUCT_PACKERS_H_
 
-#include "adcs_types.h"
+#include "adcs_drivers/adcs_types.h"
 
 // ADCS packer functions
 uint8_t ADCS_Pack_to_Ack_Struct(uint8_t* data_received, ADCS_cmd_ack_struct_t *result);

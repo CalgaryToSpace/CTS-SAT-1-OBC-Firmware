@@ -1,8 +1,8 @@
 #ifndef INC_ADCS_COMMANDS_H_
 #define INC_ADCS_COMMANDS_H_
 
-#include "adcs_types.h"
-#include "adcs_internal_drivers.h"
+#include "adcs_drivers/adcs_types.h"
+#include "adcs_drivers/adcs_internal_drivers.h"
 
 /* Function Definitions */
 

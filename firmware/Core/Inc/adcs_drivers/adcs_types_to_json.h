@@ -1,7 +1,7 @@
 #ifndef INC_ADCS_TYPES_TO_JSON_H_
 #define INC_ADCS_TYPES_TO_JSON_H_
 
-#include "adcs_types.h"
+#include "adcs_drivers/adcs_types.h"
 
 /* Structure: (EPS_vpid_eng_t is the struct)
 uint8_t EPS_vpid_eng_TO_json(
