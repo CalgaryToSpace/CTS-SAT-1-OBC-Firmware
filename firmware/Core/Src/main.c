@@ -190,9 +190,6 @@ int main(void)
 
   /* USER CODE END 2 */
 
-  // TODO: code for testing ADCS goes here
-  ADCS_initialise_crc8_checksum(); // TODO: ADCS_Init()
-
   /* Init scheduler */
   osKernelInitialize();
 
@@ -951,8 +948,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PIN_BOOM_PGOOD_IN_TBC_Pin PIN_GPS_PPS_IN_Pin */
-  GPIO_InitStruct.Pin = PIN_BOOM_PGOOD_IN_TBC_Pin|PIN_GPS_PPS_IN_Pin;
+  /*Configure GPIO pins : PIN_BOOM_PGOOD_IN_Pin PIN_GPS_PPS_IN_Pin */
+  GPIO_InitStruct.Pin = PIN_BOOM_PGOOD_IN_Pin|PIN_GPS_PPS_IN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
@@ -981,6 +978,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PIN_REMOVE_BEFORE_FLIGHT_LOW_IS_FLYING_IN_Pin */
+  GPIO_InitStruct.Pin = PIN_REMOVE_BEFORE_FLIGHT_LOW_IS_FLYING_IN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(PIN_REMOVE_BEFORE_FLIGHT_LOW_IS_FLYING_IN_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PIN_NRST_LORA_EU_OUT_Pin */
   GPIO_InitStruct.Pin = PIN_NRST_LORA_EU_OUT_Pin;
