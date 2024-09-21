@@ -1,0 +1,49 @@
+#ifndef __INCLUDE_GUARD__ADCS_TEST_PROTOTYPES_H__
+#define __INCLUDE_GUARD__ADCS_TEST_PROTOTYPES_H__
+
+// epsilon for comparing doubles
+static const float ADCS_TEST_EPSILON = 1e-6;
+
+// ADCS test definitions
+uint8_t TEST_EXEC__ADCS_Pack_to_Ack_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Identification_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Program_Status_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Comms_Status_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Power_Control_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Angular_Rates_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_LLH_Position_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Unix_Time_Save_Mode_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Orbit_Params_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Rated_Sensor_Rates_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Wheel_Speed_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Magnetorquer_Command_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Raw_Magnetometer_Values_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Fine_Angular_Rates_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Magnetometer_Config_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Commanded_Attitude_Angles_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Estimation_Params_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Augmented_SGP4_Params_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Tracking_Controller_Target_Reference_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Rate_Gyro_Config_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Estimated_Attitude_Angles_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Magnetic_Field_Vector_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Fine_Sun_Vector_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Nadir_Vector_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Commanded_Wheel_Speed_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_IGRF_Magnetic_Field_Vector_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Quaternion_Error_Vector_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Estimated_Gyro_Bias_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Estimation_Innovation_Vector_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Raw_Cam1_Sensor_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Raw_Cam2_Sensor_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Raw_Coarse_Sun_Sensor_1_to_6_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Raw_Coarse_Sun_Sensor_7_to_10_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_CubeControl_Current_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Raw_GPS_Status_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Raw_GPS_Time_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Raw_GPS_Struct();
+uint8_t TEST_EXEC__ADCS_Pack_to_Measurements_Struct();
+
+#endif // __INCLUDE_GUARD__ADCS_TEST_PROTOTYPES_H__
+
+

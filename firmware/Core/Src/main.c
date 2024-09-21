@@ -27,6 +27,8 @@
 #include "debug_tools/debug_uart.h"
 #include "rtos_tasks/rtos_tasks.h"
 #include "uart_handler/uart_handler.h"
+#include "adcs_drivers/adcs_types.h"
+#include "adcs_drivers/adcs_internal_drivers.h"
 #include "littlefs/flash_driver.h"
 
 /* USER CODE END Includes */
@@ -144,7 +146,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-  
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -187,6 +189,9 @@ int main(void)
   FLASH_deactivate_chip_select();
 
   /* USER CODE END 2 */
+
+  // TODO: code for testing ADCS goes here
+  ADCS_initialise_crc8_checksum(); // TODO: ADCS_Init()
 
   /* Init scheduler */
   osKernelInitialize();
