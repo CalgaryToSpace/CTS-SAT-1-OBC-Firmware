@@ -1,7 +1,6 @@
 #include "unit_tests/unit_test_helpers.h"
 #include "unit_tests/test_assorted_prototypes.h"
 #include<antenna_deploy_drivers/ant_commands.h>
-#include<debug_uart.h>
 
 uint8_t TEST_EXEC__ANT_CMD_measure_temp() {
     float result =  ANT_CMD_convert_temp_measurement_to_centi_degree_celsius(647);
