@@ -3,7 +3,7 @@
 #include<antenna_deploy_drivers/ant_commands.h>
 
 uint8_t TEST_EXEC__ANT_CMD_measure_temp() {
-    float result =  ANT_CMD_convert_temp_measurement_to_centi_degree_celsius(647);
+    int16_t result =  ANT_CMD_convert_temp_measurement_to_centi_degree_celsius(647);
     
     TEST_ASSERT(100 < result && result  < 200 );
 
