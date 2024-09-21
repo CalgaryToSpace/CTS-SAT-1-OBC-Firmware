@@ -220,12 +220,14 @@ void TASK_service_eps_watchdog(void *argument) {
 		osDelay(sleep_duration_ms);
 	}
 }
+
 void TASK_monitor_freertos_highstack_watermarks(void *argument) {
 	TASK_HELP_start_of_task();
 
-	while (1) {
+	const uint32_t highstack_watermark_threshold = 50;
+	uint32_t total_run_time;
 
-		uint32_t total_run_time;
+	while (1) {
 
 		// Get the number of tasks
 		const UBaseType_t number_of_tasks = uxTaskGetNumberOfTasks();
