@@ -181,6 +181,12 @@ uint8_t ANT_CMD_measure_temp(uint16_t *result) {
     }
     return comms_err;
 }
+/// @brief  Converts temperature measurement to degrees celsius
+/// @param measurement measurement result from ANT_CMD_measure_temp()
+/// @return returns the temperature in centi degrees celsius
+int32_t ANT_CMD_convert_temp_measurement_to_centi_degree_celsius(uint16_t measurement) {
+    return (int32_t)(((float) measurement * -0.29648 + 193.375) * 100);
+}
 
 
 static uint8_t extract_bit(uint8_t byte, uint8_t position) {return byte >> position & 1u;}

@@ -359,13 +359,18 @@ uint8_t TCMDEXEC_ant_report_antenna_deployment_activation_time(const char *args_
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ant_measure_temp(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-    uint16_t result;
-    const uint8_t comms_err = ANT_CMD_measure_temp(&result);
+    uint16_t measurement;
+    const uint8_t comms_err = ANT_CMD_measure_temp(&measurement);
     if (comms_err != 0) {
         snprintf(response_output_buf, response_output_buf_len, "Error: %d", comms_err);
         return comms_err;
     }
 
-    snprintf(response_output_buf, response_output_buf_len, "Success, Temp measurement: %u", result);
+    snprintf(
+        response_output_buf, 
+        response_output_buf_len, 
+        "Success, Temp measurement: %d degrees centi-celsius", 
+        ANT_CMD_convert_temp_measurement_to_centi_degree_celsius(measurement)
+    );
     return 0;
 }
