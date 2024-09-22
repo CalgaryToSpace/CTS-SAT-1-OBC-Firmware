@@ -14,7 +14,14 @@ typedef enum
     STM32_INTERNAL_FLASH_MEMORY_REGION_GOLDEN_COPY_ADDRESS = 0x8100000
 } STM32_INTERNAL_FLASH_memory_region_addresses_t;
 
-uint8_t STM32_internal_flash_write(uint32_t address, uint8_t *data, uint32_t length);
+typedef struct
+{
+    HAL_StatusTypeDef lock_status;
+    HAL_StatusTypeDef unlock_status;
+    HAL_StatusTypeDef write_status;
+} STM32_Internal_Flash_Write_Status_t;
+
+uint8_t STM32_internal_flash_write(uint32_t address, uint8_t *data, uint32_t length, STM32_Internal_Flash_Write_Status_t *status);
 
 uint8_t STM32_internal_flash_read(uint32_t address, uint8_t *buffer, uint32_t length);
 

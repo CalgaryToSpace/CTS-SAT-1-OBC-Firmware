@@ -14,8 +14,12 @@
 /// @note Currently, only allowed to write to golden copy region
 /// @note if data is not 8 bytes long, it will write the data given, and clear the rest of the data
 /// Ex: write: 0x01020304, will write 0x0102030400000000, clearing the 8 bytes infront
-uint8_t STM32_internal_flash_write(uint32_t address, uint8_t *data, uint32_t length)
+uint8_t STM32_internal_flash_write(uint32_t address, uint8_t *data, uint32_t length, STM32_Internal_Flash_Write_Status_t *status)
 {
+    status->lock_status = HAL_OK;
+    status->unlock_status = HAL_OK;
+    status->write_status = HAL_OK;
+
     if (address < STM32_INTERNAL_FLASH_MEMORY_REGION_GOLDEN_COPY_ADDRESS)
     {
         return 1;
@@ -28,54 +32,47 @@ uint8_t STM32_internal_flash_write(uint32_t address, uint8_t *data, uint32_t len
         return 2;
     }
 
-    if (HAL_FLASH_Unlock() != HAL_OK)
+    status->unlock_status = HAL_FLASH_Unlock();
+    if (status->unlock_status != HAL_OK)
     {
-        return 10;
+        return 3;
     }
 
     // Clear all FLASH flags before starting the operation
     __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
 
-    HAL_StatusTypeDef status = HAL_OK;
-
-    for (uint32_t currentAddress = address; currentAddress < end_address; currentAddress += 8)
+    for (uint32_t current_address = address; current_address < end_address; current_address += 8)
     {
         uint8_t data_to_write[8] = {0};
 
         // TODO: what to do if data is not 8 bytes long
         // Currently, it will set the rest of the values to 0
 
-        // currentAddress - address is the number of bytes we have written
+        // current_address - address is the number of bytes we have written
         // since the beginning of the function
-        memcpy(data_to_write, data + (currentAddress - address), 8);
+        memcpy(data_to_write, data + (current_address - address), 8);
 
         const uint64_t double_word = *(uint64_t *)(data_to_write);
 
-        status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, currentAddress, double_word);
-        if (status != HAL_OK)
+        status->write_status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, current_address, double_word);
+        if (status->write_status != HAL_OK)
         {
             break;
         }
     }
 
-    if (HAL_FLASH_Lock() != HAL_OK)
+    status->lock_status = HAL_FLASH_Lock();
+    if (status->lock_status != HAL_OK)
     {
-        return 11;
+        return 4;
     }
 
-    switch (status)
+    if (status->write_status != HAL_OK)
     {
-    case HAL_OK:
-        return 0;
-    case HAL_ERROR:
-        return 4;
-    case HAL_BUSY:
         return 5;
-    case HAL_TIMEOUT:
-        return 6;
-    default:
-        return 0;
     }
+
+    return 0;
 }
 
 /// @brief Reads data from the flash memory

@@ -31,10 +31,12 @@ uint8_t TCMDEXEC_stm32_internal_flash_write(const char *args_str, TCMD_Telecomma
         snprintf(response_output_buf, response_output_buf_len, "Error Parsing Arg 1: %u", parse_offset_res);
         return 1;
     }
-    const uint8_t write_res = STM32_internal_flash_write(STM32_INTERNAL_FLASH_MEMORY_REGION_GOLDEN_COPY_ADDRESS + offset, write_hex_buffer, write_hex_buffer_len);
+
+    STM32_Internal_Flash_Write_Status_t status;
+    const uint8_t write_res = STM32_internal_flash_write(STM32_INTERNAL_FLASH_MEMORY_REGION_GOLDEN_COPY_ADDRESS + offset, write_hex_buffer, write_hex_buffer_len, &status);
     if (write_res != 0)
     {
-        snprintf(response_output_buf, response_output_buf_len, "Error writing to flash: %u", write_res);
+        snprintf(response_output_buf, response_output_buf_len, "Error writing to flash: %u\nLock Status: %u\nUnlock Status: %u\nWrite Status: %u", write_res, status.lock_status, status.unlock_status, status.write_status);
         return 1;
     }
     return 0;
