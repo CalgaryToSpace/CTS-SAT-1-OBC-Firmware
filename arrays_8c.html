@@ -121,6 +121,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a4d9146ce5234948adb9b3845f4e91b53" id="r_a4d9146ce5234948adb9b3845f4e91b53"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4d9146ce5234948adb9b3845f4e91b53">GEN_uint64_to_str</a> (uint64_t value, char *buffer)</td></tr>
 <tr class="memdesc:a4d9146ce5234948adb9b3845f4e91b53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a uint64_t to a string.  <br /></td></tr>
 <tr class="separator:a4d9146ce5234948adb9b3845f4e91b53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a5446f3f0ab65057604e6567b5b7e06" id="r_a3a5446f3f0ab65057604e6567b5b7e06"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3a5446f3f0ab65057604e6567b5b7e06">GEN_uint64_to_padded_str</a> (uint64_t value, uint8_t padding_len, char *buffer)</td></tr>
+<tr class="memdesc:a3a5446f3f0ab65057604e6567b5b7e06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a uint64_t to a string, with leading zeros.  <br /></td></tr>
+<tr class="separator:a3a5446f3f0ab65057604e6567b5b7e06"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a56374402f5b6de9b5a1a6e5a4aa02446" id="r_a56374402f5b6de9b5a1a6e5a4aa02446"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a56374402f5b6de9b5a1a6e5a4aa02446">GEN_hex_str_to_byte_array</a> (const char *hex_str, uint8_t output_byte_array[], uint16_t output_byte_array_size, uint16_t *output_byte_array_len)</td></tr>
 <tr class="memdesc:a56374402f5b6de9b5a1a6e5a4aa02446"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a hex string to a byte array.  <br /></td></tr>
 <tr class="separator:a56374402f5b6de9b5a1a6e5a4aa02446"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -227,6 +230,56 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 if successful, &gt;0 for error </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Delimiters between bytes are ignored, but delimiters within a byte are not allowed. </dd></dl>
+
+</div>
+</div>
+<a id="a3a5446f3f0ab65057604e6567b5b7e06" name="a3a5446f3f0ab65057604e6567b5b7e06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a5446f3f0ab65057604e6567b5b7e06">&#9670;&#160;</a></span>GEN_uint64_to_padded_str()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GEN_uint64_to_padded_str </td>
+          <td>(</td>
+          <td class="paramtype">uint64_t</td>          <td class="paramname"><span class="paramname"><em>value</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>padding_len</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>buffer</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Converts a uint64_t to a string, with leading zeros. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">value</td><td>The input value to convert. </td></tr>
+    <tr><td class="paramname">padding_len</td><td>The expected length of the output string. </td></tr>
+    <tr><td class="paramname">buffer</td><td>The output buffer to write the string to. Must be <code>padding_len</code> bytes long. </td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="arrays_8c_a3a5446f3f0ab65057604e6567b5b7e06_icgraph.png" border="0" usemap="#aarrays_8c_a3a5446f3f0ab65057604e6567b5b7e06_icgraph" alt=""/></div>
+<map name="aarrays_8c_a3a5446f3f0ab65057604e6567b5b7e06_icgraph" id="aarrays_8c_a3a5446f3f0ab65057604e6567b5b7e06_icgraph">
+<area shape="rect" title="Converts a uint64_t to a string, with leading zeros." alt="" coords="468,31,648,56"/>
+<area shape="rect" href="timekeeping_8c.html#a05cd293bfd9a609af88ff87898a0fcbc" title="Use this function in a telecommand, or upon receiving a time update from the GPS." alt="" coords="274,23,420,64"/>
+<area shape="poly" title=" " alt="" coords="453,46,421,46,421,41,453,41"/>
+<area shape="rect" href="timekeeping__telecommand__defs_8c.html#a4306b41d60eb1206a50f68db97930164" title="Adjust the system time with a signed int." alt="" coords="5,5,226,31"/>
+<area shape="poly" title=" " alt="" coords="258,36,226,33,227,28,258,31"/>
+<area shape="rect" href="timekeeping__telecommand__defs_8c.html#a2f0faa6c92a8852e4ece806dbb525e58" title="Set the system time to the provided Unix epoch time in milliseconds." alt="" coords="16,55,215,80"/>
+<area shape="poly" title=" " alt="" coords="258,55,215,60,215,55,258,50"/>
+</map>
+</div>
 
 </div>
 </div>

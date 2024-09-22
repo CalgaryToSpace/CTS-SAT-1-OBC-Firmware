@@ -1,14 +1,13 @@
 <map id="TCMDEXEC_correct_system_time" name="TCMDEXEC_correct_system_time">
-<area shape="rect" id="Node000001" title="Adjust the system time with a signed int." alt="" coords="5,56,226,82"/>
+<area shape="rect" id="Node000001" title="Adjust the system time with a signed int." alt="" coords="5,63,226,88"/>
 <area shape="rect" id="Node000002" href="$telecommand__args__helpers_8c.html#a04f6462dfde5f2da552384fd1f80eded" title="Extracts an int64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="274,5,420,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="177,53,270,32,271,37,178,58"/>
-<area shape="rect" id="Node000003" href="$timekeeping_8c.html#ab806b8884c269c16f3bc4b766d1fc943" title="Returns the current unix timestamp, in milliseconds." alt="" coords="697,103,844,144"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="226,65,424,71,537,79,650,92,682,97,681,103,649,97,537,84,424,76,226,71"/>
-<area shape="rect" id="Node000004" href="$timekeeping_8c.html#a05cd293bfd9a609af88ff87898a0fcbc" title="Use this function in a telecommand, or upon receiving a time update from the GPS." alt="" coords="274,106,420,146"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="171,80,259,102,258,107,170,85"/>
-<area shape="rect" id="Node000005" href="$debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="484,107,634,132"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="420,121,468,120,468,125,420,127"/>
-<area shape="rect" id="Node000006" href="$timekeeping_8c.html#ab4b35505d2b1362ca6d14b12608fbd36" title="Efficient conversion of the synchronized epoch in ms to a decimal string." alt="" coords="468,156,649,197"/>
-<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="421,141,457,150,455,155,420,146"/>
-<area shape="poly" id="edge6_Node000006_Node000003" title=" " alt="" coords="641,153,681,143,683,148,643,158"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="170,59,277,33,278,38,171,65"/>
+<area shape="rect" id="Node000003" href="$timekeeping_8c.html#ab806b8884c269c16f3bc4b766d1fc943" title="Returns the current unix timestamp, in milliseconds." alt="" coords="274,55,420,96"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="226,73,258,73,258,78,226,78"/>
+<area shape="rect" id="Node000004" href="$timekeeping_8c.html#a05cd293bfd9a609af88ff87898a0fcbc" title="Use this function in a telecommand, or upon receiving a time update from the GPS." alt="" coords="274,120,420,161"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="164,86,259,113,258,119,163,91"/>
+<area shape="rect" id="Node000005" href="$debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="483,103,633,128"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="420,129,467,124,468,129,421,135"/>
+<area shape="rect" id="Node000006" href="$arrays_8c.html#a3a5446f3f0ab65057604e6567b5b7e06" title="Converts a uint64_t to a string, with leading zeros." alt="" coords="468,152,648,178"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="421,147,453,150,452,155,420,152"/>
 </map>

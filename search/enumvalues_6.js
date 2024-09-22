@@ -10,5 +10,6 @@ var searchData=
   ['tcmd_5ftelecommandchannel_5fradio1_7',['TCMD_TelecommandChannel_RADIO1',['../telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7caf5a1f536ea6e32c5cc954a92ca942346',1,'telecommand_types.h']]],
   ['tim_5fsource_5fgnss_8',['TIM_SOURCE_GNSS',['../timekeeping_8h.html#a13ac9e80d89db8b1563cb7e942698c4ca25324a4639a860c02faa733c79e3b8de',1,'timekeeping.h']]],
   ['tim_5fsource_5fnone_9',['TIM_SOURCE_NONE',['../timekeeping_8h.html#a13ac9e80d89db8b1563cb7e942698c4ca77fbe8f5f808d2a2232fed2b3919a7f1',1,'timekeeping.h']]],
-  ['tim_5fsource_5ftelecommand_10',['TIM_SOURCE_TELECOMMAND',['../timekeeping_8h.html#a13ac9e80d89db8b1563cb7e942698c4ca4f357bcbc3ca1747950ccc49a58d979e',1,'timekeeping.h']]]
+  ['tim_5fsource_5ftelecommand_5fabsolute_10',['TIM_SOURCE_TELECOMMAND_ABSOLUTE',['../timekeeping_8h.html#a13ac9e80d89db8b1563cb7e942698c4ca020d72927a0a3328cb93d6784d65416a',1,'timekeeping.h']]],
+  ['tim_5fsource_5ftelecommand_5fcorrection_11',['TIM_SOURCE_TELECOMMAND_CORRECTION',['../timekeeping_8h.html#a13ac9e80d89db8b1563cb7e942698c4caf6c189223826f0f01d2d3069f13352f3',1,'timekeeping.h']]]
 ];

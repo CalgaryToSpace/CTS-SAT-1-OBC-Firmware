@@ -138,7 +138,7 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:a1a72ef71730c2ed34f7a1ac9de150947" id="r_a1a72ef71730c2ed34f7a1ac9de150947"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1a72ef71730c2ed34f7a1ac9de150947">TIM_EPOCH_DECIMAL_STRING_LEN</a>&#160;&#160;&#160;14</td></tr>
+<tr class="memitem:a1a72ef71730c2ed34f7a1ac9de150947" id="r_a1a72ef71730c2ed34f7a1ac9de150947"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1a72ef71730c2ed34f7a1ac9de150947">TIM_EPOCH_DECIMAL_STRING_LEN</a>&#160;&#160;&#160;13</td></tr>
 <tr class="separator:a1a72ef71730c2ed34f7a1ac9de150947"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
@@ -150,7 +150,8 @@ Typedefs</h2></td></tr>
 Enumerations</h2></td></tr>
 <tr class="memitem:a13ac9e80d89db8b1563cb7e942698c4c" id="r_a13ac9e80d89db8b1563cb7e942698c4c"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a13ac9e80d89db8b1563cb7e942698c4c">TIM_SYNC_SOURCE</a> { <a class="el" href="#a13ac9e80d89db8b1563cb7e942698c4ca77fbe8f5f808d2a2232fed2b3919a7f1">TIM_SOURCE_NONE</a> = 0
 , <a class="el" href="#a13ac9e80d89db8b1563cb7e942698c4ca25324a4639a860c02faa733c79e3b8de">TIM_SOURCE_GNSS</a>
-, <a class="el" href="#a13ac9e80d89db8b1563cb7e942698c4ca4f357bcbc3ca1747950ccc49a58d979e">TIM_SOURCE_TELECOMMAND</a>
+, <a class="el" href="#a13ac9e80d89db8b1563cb7e942698c4ca020d72927a0a3328cb93d6784d65416a">TIM_SOURCE_TELECOMMAND_ABSOLUTE</a>
+, <a class="el" href="#a13ac9e80d89db8b1563cb7e942698c4caf6c189223826f0f01d2d3069f13352f3">TIM_SOURCE_TELECOMMAND_CORRECTION</a>
  }</td></tr>
 <tr class="separator:a13ac9e80d89db8b1563cb7e942698c4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -170,11 +171,8 @@ Functions</h2></td></tr>
 <tr class="memitem:abba2d2af7908d3fe4cbc1c0ea04a3b60" id="r_abba2d2af7908d3fe4cbc1c0ea04a3b60"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abba2d2af7908d3fe4cbc1c0ea04a3b60">TIM_get_timestamp_string_datetime</a> (char *log_str, size_t max_len)</td></tr>
 <tr class="memdesc:abba2d2af7908d3fe4cbc1c0ea04a3b60"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a human-friendly timestamp string.  <br /></td></tr>
 <tr class="separator:abba2d2af7908d3fe4cbc1c0ea04a3b60"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeade976633de1132f209ccaff49ecde0" id="r_aeade976633de1132f209ccaff49ecde0"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeade976633de1132f209ccaff49ecde0">TIM_synchronization_source_letter</a> (<a class="el" href="#a66a24392dd63fbb7edd2e23d65558399">TIM_sync_source_t</a> source)</td></tr>
-<tr class="separator:aeade976633de1132f209ccaff49ecde0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab4b35505d2b1362ca6d14b12608fbd36" id="r_ab4b35505d2b1362ca6d14b12608fbd36"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab4b35505d2b1362ca6d14b12608fbd36">TIM_epoch_ms_to_decimal_string</a> (char *str, size_t len)</td></tr>
-<tr class="memdesc:ab4b35505d2b1362ca6d14b12608fbd36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Efficient conversion of the synchronized epoch in ms to a decimal string.  <br /></td></tr>
-<tr class="separator:ab4b35505d2b1362ca6d14b12608fbd36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a909de509b8cfaf7214b1e8f0759c036d" id="r_a909de509b8cfaf7214b1e8f0759c036d"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a909de509b8cfaf7214b1e8f0759c036d">TIME_sync_source_enum_to_letter_char</a> (<a class="el" href="#a66a24392dd63fbb7edd2e23d65558399">TIM_sync_source_t</a> source)</td></tr>
+<tr class="separator:a909de509b8cfaf7214b1e8f0759c036d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
@@ -193,7 +191,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define TIM_EPOCH_DECIMAL_STRING_LEN&#160;&#160;&#160;14</td>
+          <td class="memname">#define TIM_EPOCH_DECIMAL_STRING_LEN&#160;&#160;&#160;13</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -230,169 +228,13 @@ Variables</h2></td></tr>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a13ac9e80d89db8b1563cb7e942698c4ca77fbe8f5f808d2a2232fed2b3919a7f1" name="a13ac9e80d89db8b1563cb7e942698c4ca77fbe8f5f808d2a2232fed2b3919a7f1"></a>TIM_SOURCE_NONE&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a13ac9e80d89db8b1563cb7e942698c4ca25324a4639a860c02faa733c79e3b8de" name="a13ac9e80d89db8b1563cb7e942698c4ca25324a4639a860c02faa733c79e3b8de"></a>TIM_SOURCE_GNSS&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a13ac9e80d89db8b1563cb7e942698c4ca4f357bcbc3ca1747950ccc49a58d979e" name="a13ac9e80d89db8b1563cb7e942698c4ca4f357bcbc3ca1747950ccc49a58d979e"></a>TIM_SOURCE_TELECOMMAND&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a13ac9e80d89db8b1563cb7e942698c4ca020d72927a0a3328cb93d6784d65416a" name="a13ac9e80d89db8b1563cb7e942698c4ca020d72927a0a3328cb93d6784d65416a"></a>TIM_SOURCE_TELECOMMAND_ABSOLUTE&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a13ac9e80d89db8b1563cb7e942698c4caf6c189223826f0f01d2d3069f13352f3" name="a13ac9e80d89db8b1563cb7e942698c4caf6c189223826f0f01d2d3069f13352f3"></a>TIM_SOURCE_TELECOMMAND_CORRECTION&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="ab4b35505d2b1362ca6d14b12608fbd36" name="ab4b35505d2b1362ca6d14b12608fbd36"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab4b35505d2b1362ca6d14b12608fbd36">&#9670;&#160;</a></span>TIM_epoch_ms_to_decimal_string()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void TIM_epoch_ms_to_decimal_string </td>
-          <td>(</td>
-          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>str</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>len</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Efficient conversion of the synchronized epoch in ms to a decimal string. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">str</td><td>- buffer to store result in </td></tr>
-    <tr><td class="paramname">len</td><td>- size of result buffer @detail Strategy: Keep track of the previous large part of ms This will change rarely, and most of the time only the 9 least significant decimal digits need to be updated.</td></tr>
-  </table>
-  </dd>
-</dl>
-<p>100 years from 1 Jan 2024, the value of ms will be 2_019_686_400_000. For the timestamp string, let's set aside 13 digits of the possible 20 for an unsigned 64-bit number needed to store ms since the 1970 epoch.</p>
-<p>We use snprintf to print the least-significant digits of ms on every call. With the "%lu" format string, 32 bits can be printed in one go, i.e. up to the number 4_294_967_295. We will have to restrict printing the 9 right-most digits with "%09lu", leaving the remaining digits to be calculated individually.</p>
-<p>The remaining digits to the left will have to be printed only every 3.4 days.</p>
-<p>Characters of ms_digits[] in order of most significant to least: 12 11 10 9 8 7 6 5 4 3 2 1 0 '\0' Array index 0 1 2 3 4 5 6 7 8 9 10 11 12 13 &ndash; updated at sync &ndash; | &ndash; updated every call &ndash; or typically every 3.4 days </p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="timekeeping_8h_ab4b35505d2b1362ca6d14b12608fbd36_cgraph.png" border="0" usemap="#atimekeeping_8h_ab4b35505d2b1362ca6d14b12608fbd36_cgraph" alt=""/></div>
-<map name="atimekeeping_8h_ab4b35505d2b1362ca6d14b12608fbd36_cgraph" id="atimekeeping_8h_ab4b35505d2b1362ca6d14b12608fbd36_cgraph">
-<area shape="rect" title="Efficient conversion of the synchronized epoch in ms to a decimal string." alt="" coords="5,5,187,46"/>
-<area shape="rect" href="timekeeping_8c.html#ab806b8884c269c16f3bc4b766d1fc943" title="Returns the current unix timestamp, in milliseconds." alt="" coords="235,5,381,46"/>
-<area shape="poly" title=" " alt="" coords="187,23,219,23,219,28,187,28"/>
-</map>
-</div>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="timekeeping_8h_ab4b35505d2b1362ca6d14b12608fbd36_icgraph.png" border="0" usemap="#atimekeeping_8h_ab4b35505d2b1362ca6d14b12608fbd36_icgraph" alt=""/></div>
-<map name="atimekeeping_8h_ab4b35505d2b1362ca6d14b12608fbd36_icgraph" id="atimekeeping_8h_ab4b35505d2b1362ca6d14b12608fbd36_icgraph">
-<area shape="rect" title="Efficient conversion of the synchronized epoch in ms to a decimal string." alt="" coords="1032,1367,1213,1408"/>
-<area shape="rect" href="timekeeping_8c.html#a5bfe7cf59c2f5dca9b5f4213f6ea16e7" title="Returns a computer&#45;friendly timestamp string." alt="" coords="807,1345,984,1371"/>
-<area shape="poly" title=" " alt="" coords="1016,1376,984,1372,985,1367,1016,1371"/>
-<area shape="rect" href="timekeeping_8c.html#a05cd293bfd9a609af88ff87898a0fcbc" title="Use this function in a telecommand, or upon receiving a time update from the GPS." alt="" coords="822,1395,969,1436"/>
-<area shape="poly" title=" " alt="" coords="1016,1403,969,1409,969,1404,1016,1398"/>
-<area shape="rect" href="log_8c.html#a9620661557eea5fdaf535b894ae58c84" title="Log a message to several destinations (sinks)" alt="" coords="594,1297,704,1323"/>
-<area shape="poly" title=" " alt="" coords="810,1344,704,1323,705,1318,811,1339"/>
-<area shape="rect" href="timekeeping__telecommand__defs_8c.html#a3c61964d3a1d316ef87dd76b1704b3b0" title=" " alt="" coords="550,1347,748,1372"/>
-<area shape="poly" title=" " alt="" coords="792,1361,749,1362,749,1356,792,1356"/>
-<area shape="rect" href="eps__internal__drivers_8c.html#a71bb5784347613fe7673d0077f7c8dba" title="Sends a command to the EPS, and receives the response." alt="" coords="284,455,484,480"/>
-<area shape="poly" title=" " alt="" coords="646,1282,643,1160,636,1073,624,974,605,869,577,761,539,655,489,557,471,534,450,513,408,483,411,479,454,509,475,530,493,554,543,653,582,759,610,867,629,973,641,1072,648,1160,651,1282"/>
-<area shape="rect" href="littlefs__helper_8c.html#a41ec6565fc865a9e37d275e4f6087676" title="Creates / Opens LittleFS File to append contents." alt="" coords="325,568,443,594"/>
-<area shape="poly" title=" " alt="" coords="643,1282,628,1140,599,936,578,832,553,736,523,659,507,629,489,607,468,593,443,585,444,580,470,588,493,603,511,626,528,656,558,735,583,830,604,935,633,1139,648,1282"/>
-<area shape="rect" href="littlefs__helper_8c.html#ab023cc2f985c4102f9af88af7e832a03" title="Returns the file size." alt="" coords="334,617,434,643"/>
-<area shape="poly" title=" " alt="" coords="642,1282,626,1149,595,960,574,864,550,776,521,704,506,676,489,656,463,640,433,633,434,628,465,635,493,652,510,673,526,701,555,774,580,862,601,959,632,1148,648,1282"/>
-<area shape="rect" href="littlefs__helper_8c.html#af6975bb647fe90723a568fda63d90212" title="Opens LittleFS File to read from the Memory Module." alt="" coords="333,667,434,692"/>
-<area shape="poly" title=" " alt="" coords="642,1282,624,1158,592,984,571,895,547,815,519,749,505,724,489,706,464,690,434,683,435,677,466,685,493,701,509,721,524,747,552,813,576,894,597,983,629,1157,647,1281"/>
-<area shape="rect" href="log_8c.html#a440123199704bc7c5231ec1a9743497f" title="Check logging sink status." alt="" coords="309,716,458,742"/>
-<area shape="poly" title=" " alt="" coords="641,1283,622,1168,589,1009,567,929,544,855,517,796,489,756,475,745,458,738,460,733,477,741,493,752,522,793,548,853,573,927,594,1008,627,1167,646,1282"/>
-<area shape="rect" href="log_8c.html#af31cb35d8f2dd37ff306620c600462da" title="Check whether file logging is enabled for a subsystem." alt="" coords="315,766,453,806"/>
-<area shape="poly" title=" " alt="" coords="645,1282,638,1193,629,1134,616,1070,596,1003,569,937,534,876,489,821,472,809,452,800,454,795,475,804,493,818,538,873,574,935,601,1001,621,1069,634,1133,643,1193,650,1282"/>
-<area shape="rect" href="log_8c.html#a22ffd7bd23f49bfcc5da12d9dee93fba" title="Report a sink&#39;s enabled state." alt="" coords="298,831,470,872"/>
-<area shape="poly" title=" " alt="" coords="643,1282,631,1206,605,1101,585,1045,560,990,528,938,489,892,464,875,467,870,493,888,532,935,564,987,590,1043,610,1100,636,1204,648,1281"/>
-<area shape="rect" href="log__telecommand__defs_8c.html#abce1ef40ce5022310917da89e7034e69" title="Telecommand: Report a LOG sink&#39;s enabled state." alt="" coords="39,888,195,929"/>
-<area shape="poly" title=" " alt="" coords="643,1282,633,1210,607,1114,588,1064,562,1016,529,972,490,936,468,926,438,918,362,909,276,906,196,907,196,902,276,901,362,903,439,913,470,921,492,932,533,969,566,1013,592,1061,613,1112,638,1209,648,1282"/>
-<area shape="rect" href="log_8c.html#af46fe0cc52d2bc6cd716d02ef713641c" title="Report a subsystem&#39;s file&#45;logging state." alt="" coords="303,946,464,986"/>
-<area shape="poly" title=" " alt="" coords="638,1283,621,1226,591,1152,547,1074,520,1038,489,1007,462,989,465,985,493,1003,524,1035,552,1071,596,1149,626,1224,643,1281"/>
-<area shape="rect" href="log__telecommand__defs_8c.html#ac8292cd62adf45074109795f0e5997d9" title="Telecommand: Report LOG subsystem&#39;s file logging state (and show logging filename)" alt="" coords="28,979,206,1020"/>
-<area shape="poly" title=" " alt="" coords="638,1283,619,1232,589,1168,546,1103,520,1075,490,1051,469,1041,440,1032,367,1019,284,1010,206,1005,206,1000,285,1005,368,1014,441,1027,471,1036,492,1047,523,1071,550,1100,594,1165,624,1230,643,1282"/>
-<area shape="rect" href="log_8c.html#a7580a472c0db91ca169d0e1403d4c48b" title="Turn debugging messages on or off for the specified sink." alt="" coords="296,1060,472,1101"/>
-<area shape="poly" title=" " alt="" coords="630,1285,575,1205,535,1161,489,1122,457,1104,460,1099,493,1117,539,1157,579,1202,635,1282"/>
-<area shape="rect" href="log__telecommand__defs_8c.html#ac71ba585bc4d897b74eb66122680f0f2" title="Telecommand: Enable or disable debugging messages for LOG sink." alt="" coords="22,1090,212,1130"/>
-<area shape="poly" title=" " alt="" coords="627,1287,570,1224,532,1192,490,1166,440,1150,369,1137,212,1120,213,1115,369,1132,441,1145,492,1161,535,1188,574,1220,631,1283"/>
-<area shape="rect" href="log_8c.html#add4285ec4e7fa886c86969276e630e2b" title="Enable or disable logging to a sink." alt="" coords="305,1175,462,1216"/>
-<area shape="poly" title=" " alt="" coords="608,1292,490,1237,444,1219,446,1214,492,1232,610,1287"/>
-<area shape="rect" href="log__telecommand__defs_8c.html#a9b90bca8c2c25117fbac4ce58e086b3f" title="Telecommand: Set a LOG sink&#39;s enabled state." alt="" coords="31,1204,203,1245"/>
-<area shape="poly" title=" " alt="" coords="579,1298,491,1281,203,1238,204,1233,491,1276,580,1293"/>
-<area shape="rect" href="log_8c.html#a51dd2ee0e3382333ca295b33b6fd8734" title="Turn debugging messages on or off for the specified system." alt="" coords="289,1290,478,1330"/>
-<area shape="poly" title=" " alt="" coords="579,1313,479,1313,479,1308,579,1308"/>
-<area shape="rect" href="log__telecommand__defs_8c.html#a8f5e5b89e565f4dc22294ef0d97d9688" title="Telecommand: Enable or disable debugging messages for LOG subsystem." alt="" coords="22,1323,212,1364"/>
-<area shape="poly" title=" " alt="" coords="580,1328,491,1345,345,1353,213,1351,213,1346,345,1347,491,1340,579,1323"/>
-<area shape="rect" href="log_8c.html#a57f3ced0c69b3a65c71ec7bf8bbc6cea" title="Enable or disable logging to file for a subsystem." alt="" coords="305,1404,462,1445"/>
-<area shape="poly" title=" " alt="" coords="580,1321,540,1336,526,1348,517,1361,508,1375,493,1388,458,1406,456,1402,489,1384,504,1371,512,1358,522,1345,538,1332,578,1316"/>
-<area shape="rect" href="log__telecommand__defs_8c.html#ace51251ba4b51567dc5cd698fff92866" title="Telecommand: Set a LOG subsystem&#39;s file logging enabled state." alt="" coords="22,1434,212,1474"/>
-<area shape="poly" title=" " alt="" coords="580,1317,559,1325,541,1336,528,1350,522,1365,519,1398,515,1430,507,1445,493,1459,456,1479,416,1492,374,1499,332,1500,251,1493,182,1478,183,1472,252,1488,332,1495,374,1493,415,1487,454,1474,489,1455,503,1442,510,1428,514,1397,517,1364,524,1348,537,1332,557,1320,578,1312"/>
-<area shape="rect" href="log_8c.html#a0922ecc9bb8ee94a49060ee0961c1ca1" title="Set the logging severity bitfield mask for a subsystem." alt="" coords="277,1520,491,1546"/>
-<area shape="poly" title=" " alt="" coords="580,1316,559,1324,541,1336,525,1356,518,1375,517,1417,516,1460,509,1481,493,1503,464,1522,461,1517,489,1499,504,1479,511,1459,512,1417,513,1374,521,1353,537,1332,557,1319,579,1311"/>
-<area shape="rect" href="rtos__tasks_8c.html#a7cf23bbdce878a0b7c41607751423179" title=" " alt="" coords="283,1569,485,1595"/>
-<area shape="poly" title=" " alt="" coords="580,1316,559,1323,541,1336,522,1363,514,1390,514,1418,518,1446,521,1474,521,1503,513,1532,493,1560,479,1571,476,1567,489,1556,508,1530,516,1502,516,1475,512,1446,508,1418,509,1389,517,1360,537,1332,556,1319,578,1311"/>
-<area shape="rect" href="telecommand__executor_8c.html#a515ff2956f89bf89103254f21b079a38" title="Deletes all entries from the agenda." alt="" coords="299,1619,468,1644"/>
-<area shape="poly" title=" " alt="" coords="580,1315,559,1323,541,1336,518,1369,510,1402,511,1436,518,1470,524,1505,525,1540,516,1575,493,1609,470,1625,467,1620,489,1606,512,1573,520,1539,518,1506,512,1471,506,1437,505,1402,513,1367,537,1332,556,1318,578,1310"/>
-<area shape="rect" href="telecommand__executor_8c.html#a623bdd5a8ab70e2ecfab1f8b17479e62" title="Deletes all agenda entries with a telecommand name." alt="" coords="309,1668,458,1709"/>
-<area shape="poly" title=" " alt="" coords="580,1315,559,1323,541,1336,525,1356,515,1375,506,1414,508,1454,516,1494,524,1534,527,1575,519,1617,508,1638,493,1659,478,1672,460,1681,458,1676,475,1667,489,1655,504,1635,514,1615,522,1575,519,1535,511,1495,503,1454,500,1414,510,1373,521,1353,537,1332,556,1318,578,1310"/>
-<area shape="rect" href="telecommand__executor_8c.html#afa8bba8de3269bd6abc37f9a6642fdde" title="Deletes a telecommand from the agenda by its tssent (timestamp sent) field." alt="" coords="309,1734,458,1774"/>
-<area shape="poly" title=" " alt="" coords="581,1315,559,1323,541,1336,523,1360,510,1383,503,1407,501,1430,504,1477,515,1525,527,1573,532,1622,529,1647,523,1672,511,1697,493,1723,478,1736,460,1745,458,1741,475,1732,489,1719,506,1695,518,1670,524,1646,526,1622,522,1574,510,1526,499,1478,495,1430,498,1405,506,1381,518,1357,537,1332,556,1318,579,1310"/>
-<area shape="rect" href="agenda__telecommand__defs_8c.html#a5864bb52f6db2633d0780b9f28c46d5b" title="Telecommand: Delete agenda entry by tssent timestamp." alt="" coords="25,1762,209,1802"/>
-<area shape="poly" title=" " alt="" coords="580,1315,559,1322,541,1336,531,1352,523,1373,516,1427,517,1492,521,1563,524,1633,523,1698,514,1751,505,1772,493,1788,457,1813,417,1828,374,1836,330,1837,286,1833,244,1825,172,1806,174,1801,245,1820,286,1828,330,1831,373,1830,415,1823,454,1808,489,1784,501,1769,509,1750,518,1697,519,1633,515,1563,511,1493,511,1427,518,1372,526,1350,537,1332,556,1318,579,1310"/>
-<area shape="rect" href="telecommand__executor_8c.html#a32a6ca6abb5ad21ac9274b7738f6c4b7" title="Fetches the active agendas." alt="" coords="312,1849,456,1875"/>
-<area shape="poly" title=" " alt="" coords="580,1315,559,1322,541,1336,530,1354,521,1376,513,1435,513,1505,516,1581,520,1657,520,1728,513,1788,505,1813,493,1832,477,1846,457,1856,455,1851,474,1842,489,1828,500,1810,508,1787,515,1728,515,1658,511,1581,507,1505,508,1434,516,1375,525,1351,537,1332,556,1318,578,1310"/>
-<area shape="rect" href="telecommand__executor_8c.html#aa779e85b5e4980298a22fe51742fc752" title="Executes a telecommand from the agenda immediately." alt="" coords="286,1899,482,1940"/>
-<area shape="poly" title=" " alt="" coords="580,1314,559,1322,541,1336,528,1356,519,1381,511,1446,511,1525,516,1610,522,1695,523,1774,515,1841,506,1868,493,1889,481,1901,477,1897,489,1886,501,1865,509,1839,517,1774,516,1695,511,1610,506,1525,505,1446,514,1380,524,1353,537,1332,556,1318,578,1309"/>
-<area shape="rect" href="telecommand__definitions_8c.html#ad6b8ddd16605326b8170d20f462dc78c" title="A simple telecommand that responds with &quot;Hello, world!&quot;." alt="" coords="302,1964,466,1990"/>
-<area shape="poly" title=" " alt="" coords="580,1314,559,1322,541,1336,527,1358,517,1387,511,1421,509,1460,510,1547,517,1642,524,1737,526,1826,518,1900,508,1930,493,1953,468,1971,465,1967,489,1950,503,1927,512,1899,521,1825,519,1738,512,1643,505,1548,503,1460,506,1420,512,1386,522,1356,537,1332,556,1318,578,1309"/>
-<area shape="rect" href="log__telecommand__defs_8c.html#abfd098082132b2b78de798557da612ad" title="Telecommand: Report the latest log message to the incoming telecommand channel." alt="" coords="306,2014,462,2070"/>
-<area shape="poly" title=" " alt="" coords="580,1314,559,1322,541,1336,526,1360,515,1391,509,1428,506,1469,507,1563,515,1665,522,1768,525,1863,517,1944,508,1977,493,2004,480,2017,464,2027,461,2023,476,2013,489,2001,503,1975,512,1943,520,1863,517,1768,509,1666,502,1564,500,1469,503,1427,510,1390,521,1358,537,1332,556,1318,578,1309"/>
-<area shape="rect" href="log__telecommand__defs_8c.html#a2634be22206b47e64fb2a9876b409193" title="Telecommand: Report the N latest log messages to the incoming telecommand channel." alt="" coords="297,2094,471,2150"/>
-<area shape="poly" title=" " alt="" coords="580,1314,558,1322,541,1336,524,1363,512,1398,505,1439,502,1486,505,1591,514,1705,524,1820,528,1927,526,1974,520,2017,509,2054,493,2084,473,2102,470,2098,489,2081,504,2052,514,2016,520,1974,522,1927,518,1820,509,1706,500,1591,497,1485,500,1438,507,1396,519,1361,537,1332,556,1318,578,1309"/>
-<area shape="rect" href="eps__commands_8c.html#adbf054d67fe65a8a48ab438ad747aafa" title=" " alt="" coords="36,5,198,31"/>
-<area shape="poly" title=" " alt="" coords="378,439,370,360,360,309,346,254,326,197,301,141,268,90,227,46,197,29,200,24,230,41,272,87,305,139,331,195,351,252,365,308,375,360,384,439"/>
-<area shape="rect" href="eps__commands_8c.html#a1105cd981dd0ff03c95d6985eb02d140" title=" " alt="" coords="23,55,211,96"/>
-<area shape="poly" title=" " alt="" coords="376,440,362,373,335,284,316,237,292,191,262,148,227,111,209,99,212,94,230,107,266,145,296,188,321,235,341,282,368,372,381,439"/>
-<area shape="rect" href="eps__commands_8c.html#a53f01d66f9a77feca5784bb3905f5fff" title=" " alt="" coords="36,120,198,161"/>
-<area shape="poly" title=" " alt="" coords="373,440,356,384,327,313,284,239,257,206,227,176,197,159,200,154,230,172,261,202,288,236,331,311,361,383,378,439"/>
-<area shape="rect" href="eps__commands_8c.html#a13ab9c979dae4bc0e2bdabfdf41a36e7" title=" " alt="" coords="5,186,229,226"/>
-<area shape="poly" title=" " alt="" coords="369,441,348,397,317,344,277,289,253,264,227,242,206,229,208,225,230,237,257,260,281,285,322,341,353,395,374,439"/>
-<area shape="rect" href="eps__commands_8c.html#ad34ff56e7ff004f7795e1fba0f78f547" title=" " alt="" coords="5,251,229,292"/>
-<area shape="poly" title=" " alt="" coords="363,444,308,376,270,339,227,307,203,295,205,290,230,303,273,335,311,372,367,441"/>
-<area shape="rect" href="eps__commands_8c.html#a0c66e31aed22283cfe6098314c7322cf" title=" " alt="" coords="5,316,229,357"/>
-<area shape="poly" title=" " alt="" coords="351,448,295,410,228,373,196,360,198,355,230,368,298,405,354,443"/>
-<area shape="rect" href="eps__commands_8c.html#aca41566d2093cd3754a196d3caa7c49f" title=" " alt="" coords="5,382,229,422"/>
-<area shape="poly" title=" " alt="" coords="313,453,202,426,204,421,315,448"/>
-<area shape="rect" href="eps__commands_8c.html#a9869bbab4bbeecf7b22316dc91d156af" title=" " alt="" coords="5,447,229,488"/>
-<area shape="poly" title=" " alt="" coords="268,470,229,470,229,465,268,465"/>
-<area shape="rect" href="eps__commands_8c.html#a46a4d333b86d9df48875627592f2beff" title=" " alt="" coords="5,512,229,553"/>
-<area shape="poly" title=" " alt="" coords="315,487,204,514,202,509,313,482"/>
-<area shape="rect" href="eps__commands_8c.html#aced7ad3b2418e7d2eeefb2a22e5f9afa" title=" " alt="" coords="13,578,221,618"/>
-<area shape="poly" title=" " alt="" coords="354,492,298,530,230,567,198,580,196,575,228,562,295,525,351,487"/>
-<area shape="rect" href="eps__commands_8c.html#ad75a93400d85678c0e4e71231117444e" title=" " alt="" coords="7,643,227,684"/>
-<area shape="poly" title=" " alt="" coords="353,492,316,521,279,557,265,578,257,596,248,614,230,632,209,645,206,640,227,628,244,611,252,594,260,575,275,554,312,517,349,488"/>
-<area shape="rect" href="eps__commands_8c.html#af9e2f743971b71a9c96cf9db97edd428" title=" " alt="" coords="7,708,227,749"/>
-<area shape="poly" title=" " alt="" coords="349,491,312,520,279,557,268,576,263,594,259,629,253,663,245,680,230,697,213,710,210,706,227,694,241,677,248,661,254,628,257,593,263,574,274,554,309,516,346,487"/>
-<area shape="rect" href="eps__commands_8c.html#a4e3a6aaad0b31d4d42f7f540dd3ea0bc" title=" " alt="" coords="38,774,196,814"/>
-<area shape="poly" title=" " alt="" coords="348,491,311,520,279,557,266,585,260,612,261,662,262,687,259,712,249,737,231,763,215,775,197,784,195,780,212,771,227,759,245,734,254,711,256,687,256,663,255,611,261,584,274,554,307,516,344,487"/>
-<area shape="rect" href="eps__commands_8c.html#a305bdfcca59e1a75ce93cce09e48597b" title=" " alt="" coords="20,839,214,864"/>
-<area shape="poly" title=" " alt="" coords="347,491,310,519,293,537,279,557,263,595,258,630,259,664,264,697,267,729,266,762,255,795,231,828,215,840,212,836,227,824,250,792,260,761,262,730,259,698,254,664,252,630,258,593,274,554,289,534,307,515,344,487"/>
-<area shape="poly" title=" " alt="" coords="283,876,196,895,195,890,282,871"/>
-<area shape="poly" title=" " alt="" coords="288,981,207,991,206,986,287,975"/>
-<area shape="poly" title=" " alt="" coords="280,1095,213,1102,212,1097,280,1090"/>
-<area shape="poly" title=" " alt="" coords="290,1208,204,1218,203,1213,289,1203"/>
-<area shape="poly" title=" " alt="" coords="274,1327,213,1334,212,1329,273,1321"/>
-<area shape="poly" title=" " alt="" coords="290,1438,213,1446,212,1441,289,1433"/>
-<area shape="poly" title=" " alt="" coords="294,1766,209,1775,209,1770,293,1761"/>
-<area shape="rect" href="timekeeping__telecommand__defs_8c.html#a4306b41d60eb1206a50f68db97930164" title="Adjust the system time with a signed int." alt="" coords="539,1400,759,1426"/>
-<area shape="poly" title=" " alt="" coords="807,1417,760,1417,760,1411,807,1412"/>
-<area shape="rect" href="timekeeping__telecommand__defs_8c.html#a2f0faa6c92a8852e4ece806dbb525e58" title="Set the system time to the provided Unix epoch time in milliseconds." alt="" coords="550,1449,748,1475"/>
-<area shape="poly" title=" " alt="" coords="807,1435,721,1451,720,1446,806,1430"/>
-</map>
-</div>
-
-</div>
-</div>
 <a id="a94e564d601196fe7f3e2bc83050deb12" name="a94e564d601196fe7f3e2bc83050deb12"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a94e564d601196fe7f3e2bc83050deb12">&#9670;&#160;</a></span>TIM_get_current_system_uptime_ms()</h2>
 
@@ -544,116 +386,22 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="timekeeping_8h_ab806b8884c269c16f3bc4b766d1fc943_icgraph.png" border="0" usemap="#atimekeeping_8h_ab806b8884c269c16f3bc4b766d1fc943_icgraph" alt=""/></div>
 <map name="atimekeeping_8h_ab806b8884c269c16f3bc4b766d1fc943_icgraph" id="atimekeeping_8h_ab806b8884c269c16f3bc4b766d1fc943_icgraph">
-<area shape="rect" title="Returns the current unix timestamp, in milliseconds." alt="" coords="1358,1002,1505,1043"/>
-<area shape="rect" href="rtos__tasks_8c.html#a7cf23bbdce878a0b7c41607751423179" title=" " alt="" coords="380,1647,582,1672"/>
-<area shape="poly" title=" " alt="" coords="1343,1025,1293,1030,1238,1039,1183,1053,1130,1075,1077,1106,1032,1137,993,1169,959,1202,903,1271,856,1342,809,1414,755,1486,722,1522,685,1558,641,1593,590,1627,541,1649,539,1644,587,1623,638,1588,681,1554,719,1518,751,1483,805,1411,852,1339,899,1268,955,1199,989,1165,1029,1133,1075,1101,1128,1070,1181,1048,1237,1034,1292,1025,1343,1020"/>
-<area shape="rect" href="telecommand__executor_8c.html#a6f29fb3908f76a7b826dfa263b1b38f0" title="Finds the index into TCMD_agenda (slot_num) of the next telecommand to execute." alt="" coords="909,397,1077,437"/>
-<area shape="poly" title=" " alt="" coords="1404,991,1007,439,1011,436,1409,988"/>
-<area shape="rect" href="telecommand__definitions_8c.html#acb0f11979fcc8d48883ecf8dfa2bbdfc" title=" " alt="" coords="1133,1085,1306,1125"/>
-<area shape="poly" title=" " alt="" coords="1364,1051,1275,1086,1273,1081,1362,1046"/>
-<area shape="rect" href="timekeeping__telecommand__defs_8c.html#a4306b41d60eb1206a50f68db97930164" title="Adjust the system time with a signed int." alt="" coords="636,980,857,1006"/>
-<area shape="poly" title=" " alt="" coords="1343,1021,857,1000,857,995,1343,1016"/>
-<area shape="rect" href="timekeeping_8c.html#ab4b35505d2b1362ca6d14b12608fbd36" title="Efficient conversion of the synchronized epoch in ms to a decimal string." alt="" coords="1129,919,1310,960"/>
-<area shape="poly" title=" " alt="" coords="1362,998,1273,963,1275,958,1364,993"/>
-<area shape="rect" href="timekeeping_8c.html#abba2d2af7908d3fe4cbc1c0ea04a3b60" title="Returns a human&#45;friendly timestamp string." alt="" coords="1132,1150,1308,1191"/>
-<area shape="poly" title=" " alt="" coords="1405,1056,1364,1099,1312,1139,1288,1152,1285,1147,1309,1135,1360,1095,1401,1052"/>
-<area shape="rect" href="main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,852,55,878"/>
-<area shape="poly" title=" " alt="" coords="364,1648,295,1630,223,1603,188,1584,156,1563,126,1537,100,1508,87,1484,75,1453,56,1376,43,1283,35,1184,28,996,28,878,34,878,33,996,40,1183,48,1283,61,1375,80,1452,92,1482,105,1505,130,1533,159,1558,191,1580,225,1598,297,1625,365,1642"/>
-<area shape="rect" href="rtos__tasks_8c.html#a04172000ecfd61309b0b9a892c0839ea" title=" " alt="" coords="114,29,314,55"/>
-<area shape="poly" title=" " alt="" coords="968,385,912,307,826,207,774,155,716,107,654,66,587,33,545,19,501,12,457,8,413,9,330,18,264,31,263,26,329,13,412,4,457,3,502,6,547,14,589,28,656,61,719,103,778,151,830,203,916,304,973,382"/>
-<area shape="poly" title=" " alt="" coords="107,67,105,69,95,86,87,115,72,202,60,317,50,446,39,696,34,852,29,851,33,696,45,445,54,316,67,202,82,114,91,84,100,66,103,63"/>
-<area shape="rect" href="timekeeping_8c.html#a5bfe7cf59c2f5dca9b5f4213f6ea16e7" title="Returns a computer&#45;friendly timestamp string." alt="" coords="905,869,1081,895"/>
-<area shape="poly" title=" " alt="" coords="1121,918,1046,898,1047,893,1123,912"/>
-<area shape="rect" href="timekeeping_8c.html#a05cd293bfd9a609af88ff87898a0fcbc" title="Use this function in a telecommand, or upon receiving a time update from the GPS." alt="" coords="920,919,1066,960"/>
-<area shape="poly" title=" " alt="" coords="1113,942,1066,942,1066,937,1113,937"/>
-<area shape="rect" href="log_8c.html#a9620661557eea5fdaf535b894ae58c84" title="Log a message to several destinations (sinks)" alt="" coords="692,873,801,899"/>
-<area shape="poly" title=" " alt="" coords="889,887,802,888,802,883,889,881"/>
-<area shape="rect" href="timekeeping__telecommand__defs_8c.html#a3c61964d3a1d316ef87dd76b1704b3b0" title=" " alt="" coords="647,824,846,850"/>
-<area shape="poly" title=" " alt="" coords="904,869,820,853,820,848,905,863"/>
-<area shape="poly" title=" " alt="" coords="678,893,656,902,638,916,623,942,612,975,605,1015,603,1060,605,1161,614,1270,623,1379,626,1481,623,1526,617,1567,607,1601,590,1629,566,1648,563,1644,586,1626,602,1599,612,1566,618,1526,621,1481,618,1380,609,1270,600,1161,597,1060,600,1014,607,974,618,940,634,912,653,897,676,888"/>
-<area shape="rect" href="eps__internal__drivers_8c.html#a71bb5784347613fe7673d0077f7c8dba" title="Sends a command to the EPS, and receives the response." alt="" coords="382,267,581,292"/>
-<area shape="poly" title=" " alt="" coords="676,887,653,879,634,864,621,843,611,816,603,749,604,669,610,583,615,497,616,417,608,351,599,325,586,305,574,295,578,291,590,302,604,323,613,350,621,417,621,497,615,583,609,669,608,748,617,815,626,840,638,860,656,874,678,882"/>
-<area shape="rect" href="littlefs__helper_8c.html#a41ec6565fc865a9e37d275e4f6087676" title="Creates / Opens LittleFS File to append contents." alt="" coords="422,316,540,342"/>
-<area shape="poly" title=" " alt="" coords="676,887,653,879,634,864,622,845,613,820,605,759,605,686,610,607,614,529,614,457,606,396,598,373,586,355,566,340,540,332,542,327,568,335,590,351,603,371,611,395,620,456,619,529,615,608,611,686,610,759,618,819,627,842,638,860,656,874,678,882"/>
-<area shape="rect" href="littlefs__helper_8c.html#ab023cc2f985c4102f9af88af7e832a03" title="Returns the file size." alt="" coords="432,365,531,391"/>
-<area shape="poly" title=" " alt="" coords="676,887,653,879,634,864,612,835,598,806,590,776,588,747,594,689,610,632,625,574,631,517,629,489,621,461,608,432,586,404,575,394,561,387,531,380,532,375,563,382,578,390,590,400,612,430,626,459,634,488,637,517,630,575,615,633,600,690,593,747,595,776,603,804,617,832,638,860,656,874,678,882"/>
-<area shape="rect" href="littlefs__helper_8c.html#af6975bb647fe90723a568fda63d90212" title="Opens LittleFS File to read from the Memory Module." alt="" coords="430,415,532,440"/>
-<area shape="poly" title=" " alt="" coords="676,887,654,879,634,864,615,838,601,812,594,786,591,760,597,708,610,656,622,605,628,554,625,529,618,504,605,479,587,453,562,437,532,430,533,424,564,432,590,450,610,476,623,502,630,528,633,554,628,606,615,658,602,709,597,760,599,785,606,810,619,835,638,860,656,874,678,882"/>
-<area shape="rect" href="log_8c.html#a440123199704bc7c5231ec1a9743497f" title="Check logging sink status." alt="" coords="406,464,556,490"/>
-<area shape="poly" title=" " alt="" coords="676,887,654,878,634,864,617,841,605,819,598,796,595,773,599,727,609,682,620,637,623,592,621,570,614,548,603,526,586,504,572,493,555,485,557,480,575,488,590,500,608,523,619,546,626,569,629,592,625,638,615,683,604,728,601,773,603,795,610,817,621,838,638,860,656,874,678,882"/>
-<area shape="rect" href="log_8c.html#af31cb35d8f2dd37ff306620c600462da" title="Check whether file logging is enabled for a subsystem." alt="" coords="412,514,550,555"/>
-<area shape="poly" title=" " alt="" coords="675,886,653,878,634,864,609,827,600,790,601,753,608,716,615,679,617,643,609,606,586,569,570,555,549,546,552,541,573,551,590,566,614,604,622,642,620,680,613,717,607,753,605,789,614,825,638,860,656,873,677,881"/>
-<area shape="rect" href="log_8c.html#a22ffd7bd23f49bfcc5da12d9dee93fba" title="Report a sink&#39;s enabled state." alt="" coords="395,579,567,620"/>
-<area shape="poly" title=" " alt="" coords="675,886,654,878,634,864,614,836,605,808,605,780,608,752,611,724,611,696,604,668,586,640,564,622,568,618,590,636,609,666,617,695,617,724,613,752,610,780,611,807,619,834,638,860,656,873,677,881"/>
-<area shape="rect" href="log__telecommand__defs_8c.html#abce1ef40ce5022310917da89e7034e69" title="Telecommand: Report a LOG sink&#39;s enabled state." alt="" coords="136,611,292,652"/>
-<area shape="poly" title=" " alt="" coords="676,885,654,877,634,864,617,842,610,818,609,794,611,771,612,748,611,726,603,705,587,684,566,672,537,661,460,647,373,638,293,635,293,630,374,633,461,641,538,656,568,667,590,680,608,702,616,725,618,748,616,771,614,795,615,817,622,839,638,860,656,873,678,880"/>
-<area shape="rect" href="log_8c.html#af46fe0cc52d2bc6cd716d02ef713641c" title="Report a subsystem&#39;s file&#45;logging state." alt="" coords="400,694,562,735"/>
-<area shape="poly" title=" " alt="" coords="676,884,654,876,635,864,622,851,614,837,609,809,604,781,598,768,587,755,561,737,564,733,590,751,602,765,609,780,614,808,619,835,626,848,638,860,656,871,677,879"/>
-<area shape="rect" href="log__telecommand__defs_8c.html#ac8292cd62adf45074109795f0e5997d9" title="Telecommand: Report LOG subsystem&#39;s file logging state (and show logging filename)" alt="" coords="126,723,303,764"/>
-<area shape="poly" title=" " alt="" coords="676,881,635,864,618,848,610,830,602,814,587,799,537,781,463,767,303,751,304,746,464,762,538,776,590,795,607,811,615,828,623,845,638,860,678,876"/>
-<area shape="rect" href="log_8c.html#a7580a472c0db91ca169d0e1403d4c48b" title="Turn debugging messages on or off for the specified sink." alt="" coords="393,809,569,849"/>
-<area shape="poly" title=" " alt="" coords="676,874,569,851,570,845,677,869"/>
-<area shape="rect" href="log__telecommand__defs_8c.html#ac71ba585bc4d897b74eb66122680f0f2" title="Telecommand: Enable or disable debugging messages for LOG sink." alt="" coords="119,838,310,879"/>
-<area shape="poly" title=" " alt="" coords="676,885,310,866,310,861,677,880"/>
-<area shape="rect" href="log_8c.html#add4285ec4e7fa886c86969276e630e2b" title="Enable or disable logging to a sink." alt="" coords="402,923,560,964"/>
-<area shape="poly" title=" " alt="" coords="677,904,561,929,560,924,676,899"/>
-<area shape="rect" href="log__telecommand__defs_8c.html#a9b90bca8c2c25117fbac4ce58e086b3f" title="Telecommand: Set a LOG sink&#39;s enabled state." alt="" coords="128,957,300,997"/>
-<area shape="poly" title=" " alt="" coords="678,899,638,916,623,931,616,947,607,964,590,978,554,992,517,1002,440,1011,366,1008,301,1000,301,994,367,1003,440,1005,516,997,552,987,587,973,603,961,611,945,619,928,635,912,676,894"/>
-<area shape="rect" href="log_8c.html#a51dd2ee0e3382333ca295b33b6fd8734" title="Turn debugging messages on or off for the specified system." alt="" coords="386,1038,576,1079"/>
-<area shape="poly" title=" " alt="" coords="678,896,657,904,638,916,627,928,620,941,614,967,609,994,602,1008,590,1022,563,1040,560,1035,587,1018,597,1005,604,992,609,966,615,939,622,925,635,912,654,900,676,891"/>
-<area shape="rect" href="log__telecommand__defs_8c.html#a8f5e5b89e565f4dc22294ef0d97d9688" title="Telecommand: Enable or disable debugging messages for LOG subsystem." alt="" coords="119,1067,310,1108"/>
-<area shape="poly" title=" " alt="" coords="678,895,656,903,638,916,623,937,616,959,618,1005,619,1028,617,1051,609,1072,590,1092,553,1114,513,1128,471,1135,428,1137,345,1128,275,1111,277,1106,346,1123,428,1131,471,1130,512,1123,551,1109,587,1088,604,1069,612,1049,614,1028,612,1005,611,958,618,935,634,912,654,898,676,890"/>
-<area shape="rect" href="log_8c.html#a57f3ced0c69b3a65c71ec7bf8bbc6cea" title="Enable or disable logging to file for a subsystem." alt="" coords="402,1153,560,1193"/>
-<area shape="poly" title=" " alt="" coords="678,894,656,903,638,916,619,942,611,969,611,996,614,1023,617,1050,616,1079,609,1107,590,1136,562,1157,558,1153,586,1132,604,1105,611,1078,611,1051,608,1023,605,996,606,968,615,940,634,912,654,898,676,889"/>
-<area shape="rect" href="log__telecommand__defs_8c.html#ace51251ba4b51567dc5cd698fff92866" title="Telecommand: Set a LOG subsystem&#39;s file logging enabled state." alt="" coords="119,1353,310,1393"/>
-<area shape="poly" title=" " alt="" coords="678,893,656,902,638,916,628,932,621,954,614,1008,614,1074,618,1145,622,1215,621,1280,612,1334,603,1355,590,1371,555,1395,516,1411,474,1420,431,1422,388,1420,346,1414,275,1396,276,1391,347,1408,388,1414,431,1417,473,1415,514,1406,553,1391,586,1367,598,1352,607,1332,616,1280,616,1215,613,1145,609,1074,609,1008,616,952,623,930,634,912,653,897,676,888"/>
-<area shape="rect" href="log_8c.html#a0922ecc9bb8ee94a49060ee0961c1ca1" title="Set the logging severity bitfield mask for a subsystem." alt="" coords="374,1217,588,1243"/>
-<area shape="poly" title=" " alt="" coords="678,894,656,902,638,916,615,952,607,987,608,1023,615,1059,622,1096,624,1133,615,1170,590,1207,575,1219,571,1215,586,1203,610,1168,618,1132,617,1097,610,1060,603,1024,601,987,610,949,634,912,653,898,676,889"/>
-<area shape="rect" href="telecommand__executor_8c.html#a515ff2956f89bf89103254f21b079a38" title="Deletes all entries from the agenda." alt="" coords="396,1267,566,1292"/>
-<area shape="poly" title=" " alt="" coords="678,894,656,902,638,916,622,937,612,958,603,1000,606,1042,616,1085,625,1128,628,1171,625,1193,618,1214,607,1236,590,1257,568,1273,565,1269,586,1254,603,1233,614,1212,620,1191,623,1171,620,1128,610,1086,601,1043,598,1000,607,956,618,934,634,912,654,897,676,889"/>
-<area shape="rect" href="telecommand__executor_8c.html#a623bdd5a8ab70e2ecfab1f8b17479e62" title="Deletes all agenda entries with a telecommand name." alt="" coords="406,1317,556,1357"/>
-<area shape="poly" title=" " alt="" coords="678,893,656,902,638,916,620,940,608,964,601,988,599,1012,603,1060,614,1108,625,1157,630,1206,627,1231,621,1256,608,1281,590,1307,575,1320,558,1329,555,1324,572,1315,586,1303,604,1279,616,1254,622,1230,624,1206,620,1158,609,1109,597,1061,593,1012,596,987,603,962,616,937,634,912,653,897,676,888"/>
-<area shape="rect" href="telecommand__executor_8c.html#afa8bba8de3269bd6abc37f9a6642fdde" title="Deletes a telecommand from the agenda by its tssent (timestamp sent) field." alt="" coords="406,1431,556,1472"/>
-<area shape="poly" title=" " alt="" coords="678,893,656,902,638,916,627,934,619,957,611,1016,610,1086,613,1162,617,1239,617,1310,610,1370,602,1395,590,1415,575,1429,558,1439,555,1435,572,1425,586,1411,597,1393,604,1369,612,1310,612,1239,608,1162,605,1086,605,1015,614,956,622,932,634,912,653,897,676,888"/>
-<area shape="rect" href="agenda__telecommand__defs_8c.html#a5864bb52f6db2633d0780b9f28c46d5b" title="Telecommand: Delete agenda entry by tssent timestamp." alt="" coords="123,1454,306,1495"/>
-<area shape="poly" title=" " alt="" coords="678,893,656,902,638,916,624,941,614,972,608,1010,607,1053,611,1149,620,1253,629,1357,631,1452,628,1494,620,1531,608,1562,590,1585,564,1606,539,1617,514,1622,489,1621,435,1607,373,1586,332,1568,293,1545,235,1497,238,1493,296,1540,334,1564,375,1581,437,1602,490,1616,514,1617,537,1612,561,1601,586,1582,603,1559,615,1530,622,1493,626,1452,624,1357,615,1254,605,1150,601,1053,603,1010,609,971,619,938,634,912,653,897,676,888"/>
-<area shape="rect" href="telecommand__executor_8c.html#a32a6ca6abb5ad21ac9274b7738f6c4b7" title="Fetches the active agendas." alt="" coords="410,1496,553,1522"/>
-<area shape="poly" title=" " alt="" coords="677,893,656,902,638,916,626,937,617,963,609,1031,610,1111,615,1199,621,1287,622,1368,613,1436,604,1463,590,1485,574,1499,554,1507,552,1502,571,1494,586,1482,599,1461,608,1435,617,1367,616,1287,610,1199,604,1112,603,1030,612,962,621,934,634,912,653,897,675,888"/>
-<area shape="rect" href="telecommand__executor_8c.html#aa779e85b5e4980298a22fe51742fc752" title="Executes a telecommand from the agenda immediately." alt="" coords="384,42,579,83"/>
-<area shape="poly" title=" " alt="" coords="676,887,653,879,634,864,616,835,604,798,597,755,594,706,598,597,608,480,618,362,622,253,620,204,614,161,603,125,586,96,575,85,579,81,590,93,608,122,619,160,625,203,628,252,624,362,613,480,603,598,600,706,602,754,609,797,621,833,638,860,656,874,678,882"/>
-<area shape="rect" href="telecommand__definitions_8c.html#ad6b8ddd16605326b8170d20f462dc78c" title="A simple telecommand that responds with &quot;Hello, world!&quot;." alt="" coords="399,1545,563,1571"/>
-<area shape="poly" title=" " alt="" coords="678,893,656,902,638,916,625,939,615,968,607,1041,609,1129,616,1225,622,1320,624,1408,621,1448,615,1483,605,1512,590,1536,565,1554,562,1549,586,1532,600,1510,610,1481,616,1447,619,1408,617,1320,610,1225,603,1129,601,1041,610,966,620,936,634,912,653,897,676,888"/>
-<area shape="rect" href="log__telecommand__defs_8c.html#abfd098082132b2b78de798557da612ad" title="Telecommand: Report the latest log message to the incoming telecommand channel." alt="" coords="403,106,559,162"/>
-<area shape="poly" title=" " alt="" coords="676,887,653,879,634,864,618,838,607,805,600,766,597,723,599,626,606,521,615,415,618,317,615,274,610,235,600,202,586,176,574,163,558,153,561,149,577,159,590,173,605,200,615,234,621,273,623,317,620,415,612,521,604,626,602,723,605,766,612,804,623,836,638,860,656,874,677,882"/>
-<area shape="rect" href="log__telecommand__defs_8c.html#a2634be22206b47e64fb2a9876b409193" title="Telecommand: Report the N latest log messages to the incoming telecommand channel." alt="" coords="394,186,568,242"/>
-<area shape="poly" title=" " alt="" coords="676,887,653,879,634,864,620,841,609,812,600,739,601,653,607,560,613,467,615,381,607,308,599,279,586,256,567,239,571,235,590,253,604,277,613,307,620,380,618,467,612,561,606,654,605,739,615,811,624,839,638,860,656,874,678,882"/>
-<area shape="rect" href="eps__commands_8c.html#adbf054d67fe65a8a48ab438ad747aafa" title=" " alt="" coords="133,144,296,170"/>
-<area shape="poly" title=" " alt="" coords="382,262,372,256,355,238,348,219,340,201,324,184,295,170,297,165,328,180,345,198,353,217,360,235,376,252,385,258"/>
-<area shape="rect" href="eps__commands_8c.html#a1105cd981dd0ff03c95d6985eb02d140" title=" " alt="" coords="120,194,308,235"/>
-<area shape="poly" title=" " alt="" coords="408,265,373,257,297,238,298,233,375,252,409,260"/>
-<area shape="rect" href="eps__commands_8c.html#a53f01d66f9a77feca5784bb3905f5fff" title=" " alt="" coords="134,259,295,300"/>
-<area shape="poly" title=" " alt="" coords="366,282,295,282,295,277,366,277"/>
-<area shape="rect" href="eps__commands_8c.html#a13ab9c979dae4bc0e2bdabfdf41a36e7" title=" " alt="" coords="103,325,326,365"/>
-<area shape="poly" title=" " alt="" coords="405,299,375,306,294,327,293,321,373,301,403,294"/>
-<area shape="rect" href="eps__commands_8c.html#ad34ff56e7ff004f7795e1fba0f78f547" title=" " alt="" coords="103,390,326,431"/>
-<area shape="poly" title=" " alt="" coords="382,302,376,306,360,323,352,341,344,360,328,379,306,392,304,387,324,375,340,357,347,339,355,320,372,301,379,297"/>
-<area shape="rect" href="eps__commands_8c.html#a0c66e31aed22283cfe6098314c7322cf" title=" " alt="" coords="103,455,326,496"/>
-<area shape="poly" title=" " alt="" coords="378,303,376,305,362,322,355,338,352,372,349,408,342,426,328,444,311,457,307,453,324,440,337,424,344,407,347,372,350,337,358,319,372,302,375,299"/>
-<area shape="rect" href="eps__commands_8c.html#aca41566d2093cd3754a196d3caa7c49f" title=" " alt="" coords="103,521,326,561"/>
-<area shape="poly" title=" " alt="" coords="377,304,376,305,358,330,350,354,349,379,352,404,354,430,354,457,346,483,328,509,312,522,309,518,324,506,341,481,348,456,349,431,346,405,344,379,345,353,353,327,372,302,374,300"/>
-<area shape="rect" href="eps__commands_8c.html#a9869bbab4bbeecf7b22316dc91d156af" title=" " alt="" coords="103,79,326,120"/>
-<area shape="poly" title=" " alt="" coords="378,261,372,256,359,241,351,225,347,194,343,163,336,148,324,133,309,122,312,118,328,130,341,145,348,161,352,193,357,224,363,238,376,252,381,256"/>
-<area shape="poly" title=" " alt="" coords="380,614,293,625,292,620,379,609"/>
-<area shape="poly" title=" " alt="" coords="385,727,304,736,303,731,385,722"/>
-<area shape="poly" title=" " alt="" coords="378,843,310,850,310,845,377,838"/>
-<area shape="poly" title=" " alt="" coords="387,958,301,969,300,963,387,953"/>
-<area shape="poly" title=" " alt="" coords="371,1073,310,1080,310,1074,370,1068"/>
-<area shape="poly" title=" " alt="" coords="389,1200,375,1207,330,1242,289,1282,232,1354,228,1350,285,1278,326,1238,373,1203,387,1195"/>
-<area shape="poly" title=" " alt="" coords="391,1462,307,1469,306,1464,390,1457"/>
-<area shape="poly" title=" " alt="" coords="367,56,315,52,315,47,368,51"/>
-<area shape="poly" title=" " alt="" coords="905,961,810,982,809,977,904,956"/>
-<area shape="rect" href="timekeeping__telecommand__defs_8c.html#a2f0faa6c92a8852e4ece806dbb525e58" title="Set the system time to the provided Unix epoch time in milliseconds." alt="" coords="647,927,846,952"/>
-<area shape="poly" title=" " alt="" coords="904,942,846,942,846,937,904,937"/>
+<area shape="rect" title="Returns the current unix timestamp, in milliseconds." alt="" coords="621,118,768,158"/>
+<area shape="rect" href="rtos__tasks_8c.html#a7cf23bbdce878a0b7c41607751423179" title=" " alt="" coords="103,5,305,31"/>
+<area shape="poly" title=" " alt="" coords="663,109,623,73,598,56,572,43,505,24,436,13,367,10,306,11,306,5,367,4,436,8,507,18,574,38,601,52,626,68,667,105"/>
+<area shape="rect" href="telecommand__executor_8c.html#a6f29fb3908f76a7b826dfa263b1b38f0" title="Finds the index into TCMD_agenda (slot_num) of the next telecommand to execute." alt="" coords="379,52,547,93"/>
+<area shape="poly" title=" " alt="" coords="606,116,537,96,539,91,607,111"/>
+<area shape="rect" href="telecommand__definitions_8c.html#acb0f11979fcc8d48883ecf8dfa2bbdfc" title=" " alt="" coords="376,118,550,158"/>
+<area shape="poly" title=" " alt="" coords="606,141,550,141,550,136,606,136"/>
+<area shape="rect" href="timekeeping__telecommand__defs_8c.html#a4306b41d60eb1206a50f68db97930164" title="Adjust the system time with a signed int." alt="" coords="353,183,573,208"/>
+<area shape="poly" title=" " alt="" coords="607,164,574,173,525,185,523,179,573,168,606,159"/>
+<area shape="rect" href="timekeeping_8c.html#abba2d2af7908d3fe4cbc1c0ea04a3b60" title="Returns a human&#45;friendly timestamp string." alt="" coords="375,232,551,273"/>
+<area shape="poly" title=" " alt="" coords="658,170,619,198,575,223,547,234,545,229,572,218,616,194,655,166"/>
+<area shape="rect" href="main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,32,55,58"/>
+<area shape="poly" title=" " alt="" coords="101,37,56,44,55,38,100,31"/>
+<area shape="rect" href="rtos__tasks_8c.html#a04172000ecfd61309b0b9a892c0839ea" title=" " alt="" coords="104,56,304,82"/>
+<area shape="poly" title=" " alt="" coords="363,74,305,73,305,68,363,69"/>
+<area shape="poly" title=" " alt="" coords="91,56,55,51,55,45,92,51"/>
 </map>
 </div>
 
@@ -682,7 +430,7 @@ Here is the caller graph for this function:</div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">log_str</td><td>- Pointer to buffer that stores the log string </td></tr>
-    <tr><td class="paramname">max_len</td><td>- Maximum length of log_str buffer @detail The string identifies the current Unix time, and the synchronization source (N - none; G - GNSS/GPS; T - telecommand), and the time passed in ms since the last synchronization. Example: "1719169299720_G_0000042000" </td></tr>
+    <tr><td class="paramname">max_len</td><td>- Maximum length of log_str buffer @detail The string identifies the timestamp of the last time synchronization, the synchronization source (N - none; G - GNSS/GPS; T - telecommand), and the time passed in ms since the last synchronization. Added together, the two numbers represent the current timestamp in ms. Example: "1719169299720+0000042000_N" </td></tr>
   </table>
   </dd>
 </dl>
@@ -691,15 +439,11 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="timekeeping_8h_a5bfe7cf59c2f5dca9b5f4213f6ea16e7_cgraph.png" border="0" usemap="#atimekeeping_8h_a5bfe7cf59c2f5dca9b5f4213f6ea16e7_cgraph" alt=""/></div>
 <map name="atimekeeping_8h_a5bfe7cf59c2f5dca9b5f4213f6ea16e7_cgraph" id="atimekeeping_8h_a5bfe7cf59c2f5dca9b5f4213f6ea16e7_cgraph">
-<area shape="rect" title="Returns a computer&#45;friendly timestamp string." alt="" coords="5,78,182,104"/>
-<area shape="rect" href="timekeeping_8c.html#ab4b35505d2b1362ca6d14b12608fbd36" title="Efficient conversion of the synchronized epoch in ms to a decimal string." alt="" coords="230,5,411,46"/>
-<area shape="poly" title=" " alt="" coords="140,75,232,48,233,53,141,80"/>
-<area shape="rect" href="timekeeping_8c.html#a94e564d601196fe7f3e2bc83050deb12" title=" " alt="" coords="238,71,403,111"/>
-<area shape="poly" title=" " alt="" coords="182,88,222,88,222,94,182,94"/>
-<area shape="rect" href="timekeeping_8c.html#aeade976633de1132f209ccaff49ecde0" title=" " alt="" coords="250,136,390,177"/>
-<area shape="poly" title=" " alt="" coords="141,102,236,129,235,134,140,107"/>
-<area shape="rect" href="timekeeping_8c.html#ab806b8884c269c16f3bc4b766d1fc943" title="Returns the current unix timestamp, in milliseconds." alt="" coords="459,5,605,46"/>
-<area shape="poly" title=" " alt="" coords="412,23,443,23,443,28,412,28"/>
+<area shape="rect" title="Returns a computer&#45;friendly timestamp string." alt="" coords="5,46,182,72"/>
+<area shape="rect" href="timekeeping_8c.html#a94e564d601196fe7f3e2bc83050deb12" title=" " alt="" coords="233,5,398,46"/>
+<area shape="poly" title=" " alt="" coords="182,43,217,38,217,43,182,48"/>
+<area shape="rect" href="timekeeping_8c.html#a909de509b8cfaf7214b1e8f0759c036d" title=" " alt="" coords="230,71,401,111"/>
+<area shape="poly" title=" " alt="" coords="182,69,215,74,214,79,182,74"/>
 </map>
 </div>
 <div class="dynheader">
@@ -853,12 +597,12 @@ Here is the call graph for this function:</div>
 <div class="center"><img src="timekeeping_8h_abba2d2af7908d3fe4cbc1c0ea04a3b60_cgraph.png" border="0" usemap="#atimekeeping_8h_abba2d2af7908d3fe4cbc1c0ea04a3b60_cgraph" alt=""/></div>
 <map name="atimekeeping_8h_abba2d2af7908d3fe4cbc1c0ea04a3b60_cgraph" id="atimekeeping_8h_abba2d2af7908d3fe4cbc1c0ea04a3b60_cgraph">
 <area shape="rect" title="Returns a human&#45;friendly timestamp string." alt="" coords="5,71,182,111"/>
-<area shape="rect" href="timekeeping_8c.html#a94e564d601196fe7f3e2bc83050deb12" title=" " alt="" coords="230,5,395,46"/>
-<area shape="poly" title=" " alt="" coords="163,68,226,48,228,54,165,73"/>
-<area shape="rect" href="timekeeping_8c.html#ab806b8884c269c16f3bc4b766d1fc943" title="Returns the current unix timestamp, in milliseconds." alt="" coords="239,71,386,111"/>
-<area shape="poly" title=" " alt="" coords="182,88,223,88,223,94,182,94"/>
-<area shape="rect" href="timekeeping_8c.html#aeade976633de1132f209ccaff49ecde0" title=" " alt="" coords="242,136,382,177"/>
-<area shape="poly" title=" " alt="" coords="165,109,228,128,226,134,163,114"/>
+<area shape="rect" href="timekeeping_8c.html#a94e564d601196fe7f3e2bc83050deb12" title=" " alt="" coords="233,5,398,46"/>
+<area shape="poly" title=" " alt="" coords="164,68,228,48,230,54,166,73"/>
+<area shape="rect" href="timekeeping_8c.html#ab806b8884c269c16f3bc4b766d1fc943" title="Returns the current unix timestamp, in milliseconds." alt="" coords="242,71,388,111"/>
+<area shape="poly" title=" " alt="" coords="182,88,227,88,227,94,182,94"/>
+<area shape="rect" href="timekeeping_8c.html#a909de509b8cfaf7214b1e8f0759c036d" title=" " alt="" coords="230,136,401,177"/>
+<area shape="poly" title=" " alt="" coords="166,109,230,128,228,134,164,114"/>
 </map>
 </div>
 
@@ -889,13 +633,11 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="timekeeping_8h_a05cd293bfd9a609af88ff87898a0fcbc_cgraph.png" border="0" usemap="#atimekeeping_8h_a05cd293bfd9a609af88ff87898a0fcbc_cgraph" alt=""/></div>
 <map name="atimekeeping_8h_a05cd293bfd9a609af88ff87898a0fcbc_cgraph" id="atimekeeping_8h_a05cd293bfd9a609af88ff87898a0fcbc_cgraph">
-<area shape="rect" title="Use this function in a telecommand, or upon receiving a time update from the GPS." alt="" coords="5,27,152,68"/>
-<area shape="rect" href="debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="215,5,366,31"/>
-<area shape="poly" title=" " alt="" coords="151,35,199,28,200,33,152,40"/>
-<area shape="rect" href="timekeeping_8c.html#ab4b35505d2b1362ca6d14b12608fbd36" title="Efficient conversion of the synchronized epoch in ms to a decimal string." alt="" coords="200,55,381,96"/>
-<area shape="poly" title=" " alt="" coords="152,54,185,59,184,64,151,60"/>
-<area shape="rect" href="timekeeping_8c.html#ab806b8884c269c16f3bc4b766d1fc943" title="Returns the current unix timestamp, in milliseconds." alt="" coords="429,55,575,96"/>
-<area shape="poly" title=" " alt="" coords="382,73,413,73,413,78,382,78"/>
+<area shape="rect" title="Use this function in a telecommand, or upon receiving a time update from the GPS." alt="" coords="5,23,152,64"/>
+<area shape="rect" href="debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="215,5,365,31"/>
+<area shape="poly" title=" " alt="" coords="152,32,199,26,200,32,153,37"/>
+<area shape="rect" href="arrays_8c.html#a3a5446f3f0ab65057604e6567b5b7e06" title="Converts a uint64_t to a string, with leading zeros." alt="" coords="200,55,380,80"/>
+<area shape="poly" title=" " alt="" coords="153,49,184,53,184,58,152,54"/>
 </map>
 </div>
 <div class="dynheader">
@@ -913,14 +655,14 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="aeade976633de1132f209ccaff49ecde0" name="aeade976633de1132f209ccaff49ecde0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aeade976633de1132f209ccaff49ecde0">&#9670;&#160;</a></span>TIM_synchronization_source_letter()</h2>
+<a id="a909de509b8cfaf7214b1e8f0759c036d" name="a909de509b8cfaf7214b1e8f0759c036d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a909de509b8cfaf7214b1e8f0759c036d">&#9670;&#160;</a></span>TIME_sync_source_enum_to_letter_char()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">char TIM_synchronization_source_letter </td>
+          <td class="memname">char TIME_sync_source_enum_to_letter_char </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="#a66a24392dd63fbb7edd2e23d65558399">TIM_sync_source_t</a></td>          <td class="paramname"><span class="paramname"><em>source</em></span></td><td>)</td>
           <td></td>
@@ -930,15 +672,15 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="timekeeping_8h_aeade976633de1132f209ccaff49ecde0_icgraph.png" border="0" usemap="#atimekeeping_8h_aeade976633de1132f209ccaff49ecde0_icgraph" alt=""/></div>
-<map name="atimekeeping_8h_aeade976633de1132f209ccaff49ecde0_icgraph" id="atimekeeping_8h_aeade976633de1132f209ccaff49ecde0_icgraph">
-<area shape="rect" title=" " alt="" coords="1010,1379,1150,1420"/>
+<div class="center"><img src="timekeeping_8h_a909de509b8cfaf7214b1e8f0759c036d_icgraph.png" border="0" usemap="#atimekeeping_8h_a909de509b8cfaf7214b1e8f0759c036d_icgraph" alt=""/></div>
+<map name="atimekeeping_8h_a909de509b8cfaf7214b1e8f0759c036d_icgraph" id="atimekeeping_8h_a909de509b8cfaf7214b1e8f0759c036d_icgraph">
+<area shape="rect" title=" " alt="" coords="1010,1379,1181,1420"/>
 <area shape="rect" href="telecommand__definitions_8c.html#acb0f11979fcc8d48883ecf8dfa2bbdfc" title=" " alt="" coords="787,1322,960,1362"/>
-<area shape="poly" title=" " alt="" coords="994,1379,949,1366,950,1361,996,1373"/>
+<area shape="poly" title=" " alt="" coords="999,1377,954,1366,956,1361,1000,1372"/>
 <area shape="rect" href="timekeeping_8c.html#a5bfe7cf59c2f5dca9b5f4213f6ea16e7" title="Returns a computer&#45;friendly timestamp string." alt="" coords="785,1387,962,1412"/>
 <area shape="poly" title=" " alt="" coords="994,1402,962,1402,962,1397,994,1397"/>
 <area shape="rect" href="timekeeping_8c.html#abba2d2af7908d3fe4cbc1c0ea04a3b60" title="Returns a human&#45;friendly timestamp string." alt="" coords="785,1436,962,1477"/>
-<area shape="poly" title=" " alt="" coords="996,1426,950,1438,949,1433,994,1420"/>
+<area shape="poly" title=" " alt="" coords="1000,1427,956,1438,954,1433,999,1422"/>
 <area shape="rect" href="log_8c.html#a9620661557eea5fdaf535b894ae58c84" title="Log a message to several destinations (sinks)" alt="" coords="584,1363,693,1388"/>
 <area shape="poly" title=" " alt="" coords="770,1392,693,1384,694,1378,770,1386"/>
 <area shape="rect" href="timekeeping__telecommand__defs_8c.html#a3c61964d3a1d316ef87dd76b1704b3b0" title=" " alt="" coords="539,1412,737,1438"/>
