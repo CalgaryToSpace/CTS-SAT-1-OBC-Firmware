@@ -63,6 +63,43 @@ void GEN_uint64_to_str(uint64_t value, char *buffer) {
     buffer[index] = '\0';
 }
 
+
+/// @brief Converts a uint64_t to a string, with leading zeros.
+/// @param value The input value to convert.
+/// @param padding_len The expected length of the output string.
+/// @param buffer The output buffer to write the string to. Must be `padding_len` bytes long.
+void GEN_uint64_to_padded_str(uint64_t value, uint8_t padding_len, char *buffer) {
+    // Ensure the buffer is valid and large enough
+    if (buffer == NULL) {
+        return;
+    }
+
+    char temp[32];
+    int index = 0;
+
+    // Handle the case where the value is 0
+    if (value == 0) {
+        temp[index++] = '0';
+    } else {
+        // Convert the uint64_t value to a string in reverse order
+        while (value > 0) {
+            temp[index++] = '0' + (value % 10);
+            value /= 10;
+        }
+    }
+
+    // Add padding if necessary
+    while (index < padding_len) {
+        temp[index++] = '0';
+    }
+
+    // Reverse the string to correct the order and copy to buffer
+    for (int i = 0; i < index; ++i) {
+        buffer[i] = temp[index - i - 1];
+    }
+    buffer[index] = '\0';  // Null-terminate the buffer
+}
+
 /// @brief Converts a hex string to a byte array
 /// @param hex_str  The input hex string. Can be upper or lower case. Can contain spaces and underscores between bytes.
 /// @param output_byte_array Pointer to the output destination byte array.
