@@ -10,10 +10,11 @@
 /// @param address Address in the flash memory where the data will be written.
 /// @param data uint8_t buffer containing the data to be written.
 /// @param length Length of the data to be written.
-/// @return 0 on success, > 0 on error, 10 if HAL_FLASH_Unlock() failed, 11 if HAL_FLASH_Lock() failed
+/// @return 0 on success, > 0 on error
 /// @note Currently, only allowed to write to golden copy region
-/// @note if data is not 8 bytes long, it will write the data given, and clear the rest of the data
-/// Ex: write: 0x01020304, will write 0x0102030400000000, clearing the 8 bytes infront
+/// @note Writes data in chunks of 8 bytes.
+/// Ex: Suppose we wanted to write to address 0x00, and suppose that at address 0x00, the first 8 bytes looks like the following:
+/// [1,2,3,4,5,6,7,8]. If we wanted to write [25,26,27,28], it would result in the following: [25,26,27,28,0,0,0,0], clearing the rest of the bytes.
 uint8_t STM32_internal_flash_write(uint32_t address, uint8_t *data, uint32_t length, STM32_Internal_Flash_Write_Status_t *status)
 {
     status->lock_status = HAL_OK;
