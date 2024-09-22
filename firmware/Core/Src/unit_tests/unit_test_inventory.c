@@ -11,6 +11,7 @@
 #include "unit_tests/unit_test_helpers.h"
 #include "unit_tests/test_configuration_variables.h"
 #include "unit_tests/test_eps_drivers.h"
+#include "unit_tests/test_eps_struct_packers.h"
 
 // extern
 const TEST_Definition_t TEST_definitions[] = {
@@ -378,6 +379,11 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_file = "unit_tests/test_eps_drivers",
         .test_func_name = "TEST_EXEC__EPS_channel_from_str",
     },
+    {
+        .test_func = TEST_EXEC__EPS_check_type_sizes,
+        .test_file = "unit_tests/test_eps_struct_packers",
+        .test_func_name = "TEST_EXEC__EPS_check_type_sizes",
+    }
 };
 
 // extern
