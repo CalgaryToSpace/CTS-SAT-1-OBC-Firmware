@@ -1,6 +1,9 @@
 #ifndef __INCLUDE_GUARD__STM32_INTERNAL_FLASH_DRIVERS_H__
 #define __INCLUDE_GUARD__STM32_INTERNAL_FLASH_DRIVERS_H__
+
 #include <stdint.h>
+
+#include "stm32l4xx_hal.h"
 
 /// @brief  Flash Partitions
 /// @note look in the STM32L4R5ZITx_FLASH.ld file
