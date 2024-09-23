@@ -1,10 +1,7 @@
 #ifndef INCLUDE_GUARD__BOOM_DEPLOY_DRIVERS_H
 #define INCLUDE_GUARD__BOOM_DEPLOY_DRIVERS_H
 
-
-#include "main.h"
 #include <stdint.h>
-
 
 uint8_t BOOM_get_pgood_status();
 
