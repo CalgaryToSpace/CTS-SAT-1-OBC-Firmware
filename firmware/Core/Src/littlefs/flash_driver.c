@@ -6,6 +6,9 @@
 
 #include "config/static_config.h"
 
+#include <stdio.h>
+#include <stdint.h>
+
 /// Timeout duration for HAL_SPI_READ/WRITE operations.
 // Note: FLASH_read_data has sporadic timeouts at 5ms; 10ms is a safe bet.
 // 512 bytes should take 2ms at 2Mbps.
@@ -506,8 +509,18 @@ FLASH_error_enum_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_numb
         are_bytes_correct = 0;
     }
 
+    // Extract memory capacity
+    uint32_t capacity_mib = (rx_buffer[2] * 512) / 32;  // Convert to Mebibytes (MiB)
+
+    // String to print capacity in MiB
+    char capacity_str[30];
+    snprintf(capacity_str, sizeof(capacity_str), "Capacity: %lu MiB", capacity_mib);
+
+    // Print out response and capacity in human-readable format MiB
     DEBUG_uart_print_array_hex(rx_buffer, 5);
-    DEBUG_uart_print_str("\n");
+    DEBUG_uart_print_str("\t");
+    DEBUG_uart_print_str(capacity_str);
+    DEBUG_uart_print_str("\n");    
 
     if (!are_bytes_correct) {
         // error: IDs don't match
