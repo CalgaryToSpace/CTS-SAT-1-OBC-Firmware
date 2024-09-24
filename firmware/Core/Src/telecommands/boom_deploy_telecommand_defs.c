@@ -5,7 +5,7 @@
 
 #include "telecommands/boom_deploy_telecommand_defs.h"
 
-
+#include "main.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
