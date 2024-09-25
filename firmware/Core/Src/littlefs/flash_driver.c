@@ -165,7 +165,7 @@ FLASH_error_enum_t FLASH_write_enable(SPI_HandleTypeDef *hspi, uint8_t chip_numb
         // Do this comparison AFTER checking the success condition (for speed, and to avoid timing out on a success).
         if (HAL_GetTick() - start_loop_time_ms > FLASH_LOOP_REGISTER_CHANGE_TIMEOUT_MS) {
             LOG_message(
-                LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                LOG_SYSTEM_FLASH, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
                 "Flash write enable timeout"
             );
             return FLASH_ERR_DEVICE_BUSY_TIMEOUT;
@@ -225,7 +225,7 @@ FLASH_error_enum_t FLASH_write_disable(SPI_HandleTypeDef *hspi, uint8_t chip_num
         // Do this comparison AFTER checking the success condition (for speed, and to avoid timing out on a success).
         if (HAL_GetTick() - start_loop_time_ms > FLASH_LOOP_REGISTER_CHANGE_TIMEOUT_MS) {
             LOG_message(
-                LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                LOG_SYSTEM_FLASH, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
                 "Flash write disable timeout",
                 status_reg_buffer[0]
             );
@@ -302,7 +302,7 @@ FLASH_error_enum_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs
         if ((status_reg_buffer[0] & FLASH_SR1_ERASE_ERROR_MASK) > 0) {
             // Flash module returned "erase error" via the status register.
             LOG_message(
-                LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                LOG_SYSTEM_FLASH, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
                 "Flash erase error"
             );
             return FLASH_ERR_STATUS_REG_ERROR;
@@ -316,7 +316,7 @@ FLASH_error_enum_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs
         // Do this comparison AFTER checking the success condition (for speed, and to avoid timing out on a success).
         if (HAL_GetTick() - start_loop_time_ms > FLASH_LOOP_SECTOR_ERASE_TIMEOUT_MS) {
             LOG_message(
-                LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                LOG_SYSTEM_FLASH, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
                 "Flash erase timeout"
             );
             return FLASH_ERR_DEVICE_BUSY_TIMEOUT;
@@ -403,7 +403,7 @@ FLASH_error_enum_t FLASH_write(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs
         if ((status_reg_buffer[0] & FLASH_SR1_PROGRAMMING_ERROR_MASK) > 0) {
             // Flash module returned "programming error" via the status register.
             LOG_message(
-                LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                LOG_SYSTEM_FLASH, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
                 "Flash programming error"
             );
             return FLASH_ERR_STATUS_REG_ERROR;
@@ -417,7 +417,7 @@ FLASH_error_enum_t FLASH_write(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs
         // Do this comparison AFTER checking the success condition (for speed, and to avoid timing out on a success).
         if (HAL_GetTick() - start_loop_time_ms > FLASH_LOOP_WRITE_TIMEOUT_MS) {
             LOG_message(
-                LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                LOG_SYSTEM_FLASH, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
                 "Flash write timeout"
             );
             return FLASH_ERR_DEVICE_BUSY_TIMEOUT;
@@ -542,7 +542,7 @@ FLASH_error_enum_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_numb
         are_bytes_correct = 1;
     } else {
         LOG_message(
-            LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_FLASH, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "ERROR: FLASH_is_reachable received IDs: 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X    Capacity: %lu MiB",
             rx_buffer[0],
             rx_buffer[1],
