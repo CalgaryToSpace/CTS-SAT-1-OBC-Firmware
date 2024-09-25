@@ -56,7 +56,7 @@ uint8_t ANT_send_cmd(enum Ant_i2c_bus i2c_bus, uint8_t cmd_buf[], uint8_t cmd_le
  * @return 0 upon success, 4 if read_status received HAL_ERROR
  */
 uint8_t ANT_get_response(enum Ant_i2c_bus i2c_bus, uint8_t rx_buf[], uint16_t rx_len) {
-    HAL_StatusTypeDef read_status;
+    HAL_StatusTypeDef read_status = HAL_ERROR;
     
     switch (i2c_bus) {
     case ANT_I2C_BUS_A:
