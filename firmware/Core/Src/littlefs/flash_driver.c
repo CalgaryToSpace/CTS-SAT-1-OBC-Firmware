@@ -526,12 +526,12 @@ FLASH_error_enum_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_numb
     // rx_buffer[0] is the manufacturer ID, rx_buffer[1] is the memory type,
     // and rx_buffer[2] is the memory capacity (not checked, as we have a few different capacities).
     // rx_buffer[2] is 0x20=512 for 512 Mib (mebibits)
-    // TODO: maybe check the capacity as well here, esp. in deployment
     uint8_t are_bytes_correct = 0;
     if (rx_buffer[0] == 0x01 && rx_buffer[1] == 0x02) {
         LOG_message(
             LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "SUCCESS: FLASH_is_reachable received IDs: 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X    Capacity: %lu MiB",
+            "SUCCESS: CS%d ID: 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X - Capacity: %lu MiB",
+            chip_number,
             rx_buffer[0],
             rx_buffer[1],
             rx_buffer[2],
@@ -543,7 +543,8 @@ FLASH_error_enum_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_numb
     } else {
         LOG_message(
             LOG_SYSTEM_FLASH, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "ERROR: FLASH_is_reachable received IDs: 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X    Capacity: %lu MiB",
+            "ERROR: CS%d ID: 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X - Capacity: %lu MiB",
+            chip_number,
             rx_buffer[0],
             rx_buffer[1],
             rx_buffer[2],
