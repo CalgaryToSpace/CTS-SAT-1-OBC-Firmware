@@ -6,8 +6,9 @@
 #include "debug_uart.h"
 #include <stdint.h>
 #include <string.h>
-
-const uint16_t ANT_ADDR = 0x31 << 1;
+//TODO: so much to do, mainly changing any calls to ANT_ADDR to use new names
+const uint16_t ANT_ADDR_A = 0x31 << 1;
+const uint16_t ANT_ADDR_B = 0x32 << 1;
 const uint8_t timeout = 50;
 
 extern I2C_HandleTypeDef hi2c2;
@@ -27,7 +28,7 @@ uint8_t ANT_send_cmd(enum Ant_i2c_bus i2c_bus, uint8_t cmd_buf[], uint8_t cmd_le
             transmit_status = HAL_I2C_Master_Transmit(&hi2c2, ANT_ADDR, cmd_buf, cmd_len, timeout);
             break;
         case ANT_I2C_BUS_B:
-            transmit_status = HAL_I2C_Master_Transmit(&hi2c3, ANT_ADDR, cmd_buf, cmd_len, timeout);
+            transmit_status = HAL_I2C_Master_Transmit(&hi2c3, ANT_ADDR_B, cmd_buf, cmd_len, timeout);
             break;
         default:
             DEBUG_uart_print_str("invalid i2c bus passed");

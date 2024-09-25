@@ -902,7 +902,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "ant_arm_antenna_system",
         .tcmd_func = TCMDEXEC_ant_arm_antenna_system,
-        .number_of_args = 0,
+        .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {

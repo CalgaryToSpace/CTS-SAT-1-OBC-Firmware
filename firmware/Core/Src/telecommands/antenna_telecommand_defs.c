@@ -4,6 +4,7 @@
 #include "antenna_deploy_drivers/ant_internal_drivers.h"
 #include "antenna_deploy_drivers/ant_commands.h"
 #include "telecommands/telecommand_args_helpers.h"
+#include "debug_uart.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -30,7 +31,15 @@ uint8_t TCMDEXEC_ant_reset(const char *args_str, TCMD_TelecommandChannel_enum_t 
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ant_arm_antenna_system(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-    const uint8_t comms_err = ANT_CMD_arm_antenna_system(ANT_I2C_BUS_A);
+    char i2c_bus_str [2];
+    const uint8_t parse_i2c_bus_result = TCMD_extract_string_arg(args_str, 0, i2c_bus_str, 2);
+
+    enum Ant_i2c_bus i2c_bus;
+    if (i2c_bus_str[0] == 'A') i2c_bus = ANT_I2C_BUS_A;
+    if (i2c_bus_str[0] == 'B') i2c_bus = ANT_I2C_BUS_B;
+    
+    
+    const uint8_t comms_err = ANT_CMD_arm_antenna_system(i2c_bus);
     if (comms_err != 0) {
         snprintf(response_output_buf, response_output_buf_len, "Error: %d", comms_err);
         return comms_err;
@@ -66,8 +75,20 @@ uint8_t TCMDEXEC_ant_deploy_antenna(const char *args_str, TCMD_TelecommandChanne
     char i2c_bus_str[2];
     const uint8_t parse_i2c_bus_result = TCMD_extract_string_arg(args_str, 0, i2c_bus_str, 2);
     enum Ant_i2c_bus i2c_bus;
-    if (i2c_bus_str[0] == 'A') i2c_bus = ANT_I2C_BUS_A; 
-    if (i2c_bus_str[0] == 'B') i2c_bus = ANT_I2C_BUS_B; 
+    //if (i2c_bus_str[0] == 'A') i2c_bus = ANT_I2C_BUS_A; 
+    //if (i2c_bus_str[0] == 'B') i2c_bus = ANT_I2C_BUS_B; 
+    switch (i2c_bus_str[0])
+    {
+    case 'A':
+        i2c_bus = ANT_I2C_BUS_A;
+        break;
+    case 'B':
+        i2c_bus = ANT_I2C_BUS_B;
+        break; 
+    default:
+        DEBUG_uart_print_str("WRONG i2C BUS!!!!");
+        break;
+    }
 
     uint64_t antenna;
     const uint8_t parse_antenna_result = TCMD_extract_uint64_arg(args_str, strlen(args_str),  1, &antenna);
