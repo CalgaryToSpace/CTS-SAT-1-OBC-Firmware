@@ -1,9 +1,11 @@
 <map id="TCMDEXEC_ant_measure_temp" name="TCMDEXEC_ant_measure_temp">
-<area shape="rect" id="Node000001" title="Telecommand: Measure the temperature of the antenna controller." alt="" coords="5,31,216,56"/>
-<area shape="rect" id="Node000002" href="$ant__commands_8c.html#a5bbfd2489ceda810545a6e40f213c916" title="Measures the temperature at the antenna controller system." alt="" coords="264,31,441,56"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="216,41,248,41,248,46,216,46"/>
+<area shape="rect" id="Node000001" title="Telecommand: Measures the temperature of the antenna controller in centi&#45;degrees celsius." alt="" coords="5,59,216,84"/>
+<area shape="rect" id="Node000002" href="$ant__commands_8c.html#a5bbfd2489ceda810545a6e40f213c916" title="Measures the temperature at the antenna controller system." alt="" coords="264,29,441,55"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="216,56,248,52,249,57,216,61"/>
+<area shape="rect" id="Node000005" href="$ant__commands_8c.html#ac34ae5a5494a8decc6b07b904ea8d9f9" title="Converts temperature measurement to centi&#45;degrees celsius." alt="" coords="271,79,434,120"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="216,81,256,86,255,91,216,86"/>
 <area shape="rect" id="Node000003" href="$ant__internal__drivers_8c.html#ae6614f02f049f30d0bcaa68666730b36" title="Receives a response from the antenna controller." alt="" coords="489,5,622,31"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="441,30,474,26,474,31,441,35"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="441,29,474,25,474,30,441,34"/>
 <area shape="rect" id="Node000004" href="$ant__internal__drivers_8c.html#a6c5b7499f9ef79f0a4d84f2057a99e06" title="Sends a command to the antenna controller." alt="" coords="498,55,613,80"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="441,51,483,56,483,62,441,57"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="441,51,483,56,483,61,441,56"/>
 </map>

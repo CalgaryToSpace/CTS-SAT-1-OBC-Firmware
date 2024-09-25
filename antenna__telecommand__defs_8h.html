@@ -150,7 +150,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:ab1d646908ddc85cd1357d1944b86c50e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancels any active attempts to deploy an antenna.  <br /></td></tr>
 <tr class="separator:ab1d646908ddc85cd1357d1944b86c50e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a316cf470a39e910ad64f65afa587c1b4" id="r_a316cf470a39e910ad64f65afa587c1b4"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a316cf470a39e910ad64f65afa587c1b4">TCMDEXEC_ant_measure_temp</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
-<tr class="memdesc:a316cf470a39e910ad64f65afa587c1b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Telecommand: Measure the temperature of the antenna controller.  <br /></td></tr>
+<tr class="memdesc:a316cf470a39e910ad64f65afa587c1b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Telecommand: Measures the temperature of the antenna controller in centi-degrees celsius.  <br /></td></tr>
 <tr class="separator:a316cf470a39e910ad64f65afa587c1b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7e32cc56948bced4a3f71c6291e1c63c" id="r_a7e32cc56948bced4a3f71c6291e1c63c"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7e32cc56948bced4a3f71c6291e1c63c">TCMDEXEC_ant_report_deployment_status</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
 <tr class="memdesc:a7e32cc56948bced4a3f71c6291e1c63c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints the deployment status of all antennas.  <br /></td></tr>
@@ -473,7 +473,7 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Telecommand: Measure the temperature of the antenna controller. </p>
+<p>Telecommand: Measures the temperature of the antenna controller in centi-degrees celsius. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">args_str</td><td>No args </td></tr>
@@ -486,13 +486,15 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="antenna__telecommand__defs_8h_a316cf470a39e910ad64f65afa587c1b4_cgraph.png" border="0" usemap="#aantenna__telecommand__defs_8h_a316cf470a39e910ad64f65afa587c1b4_cgraph" alt=""/></div>
 <map name="aantenna__telecommand__defs_8h_a316cf470a39e910ad64f65afa587c1b4_cgraph" id="aantenna__telecommand__defs_8h_a316cf470a39e910ad64f65afa587c1b4_cgraph">
-<area shape="rect" title="Telecommand: Measure the temperature of the antenna controller." alt="" coords="5,31,216,56"/>
-<area shape="rect" href="ant__commands_8c.html#a5bbfd2489ceda810545a6e40f213c916" title="Measures the temperature at the antenna controller system." alt="" coords="264,31,441,56"/>
-<area shape="poly" title=" " alt="" coords="216,41,248,41,248,46,216,46"/>
+<area shape="rect" title="Telecommand: Measures the temperature of the antenna controller in centi&#45;degrees celsius." alt="" coords="5,59,216,84"/>
+<area shape="rect" href="ant__commands_8c.html#a5bbfd2489ceda810545a6e40f213c916" title="Measures the temperature at the antenna controller system." alt="" coords="264,29,441,55"/>
+<area shape="poly" title=" " alt="" coords="216,56,248,52,249,57,216,61"/>
+<area shape="rect" href="ant__commands_8c.html#ac34ae5a5494a8decc6b07b904ea8d9f9" title="Converts temperature measurement to centi&#45;degrees celsius." alt="" coords="271,79,434,120"/>
+<area shape="poly" title=" " alt="" coords="216,81,256,86,255,91,216,86"/>
 <area shape="rect" href="ant__internal__drivers_8c.html#ae6614f02f049f30d0bcaa68666730b36" title="Receives a response from the antenna controller." alt="" coords="489,5,622,31"/>
-<area shape="poly" title=" " alt="" coords="441,30,474,26,474,31,441,35"/>
+<area shape="poly" title=" " alt="" coords="441,29,474,25,474,30,441,34"/>
 <area shape="rect" href="ant__internal__drivers_8c.html#a6c5b7499f9ef79f0a4d84f2057a99e06" title="Sends a command to the antenna controller." alt="" coords="498,55,613,80"/>
-<area shape="poly" title=" " alt="" coords="441,51,483,56,483,62,441,57"/>
+<area shape="poly" title=" " alt="" coords="441,51,483,56,483,61,441,56"/>
 </map>
 </div>
 

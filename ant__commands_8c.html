@@ -156,6 +156,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a5bbfd2489ceda810545a6e40f213c916" id="r_a5bbfd2489ceda810545a6e40f213c916"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5bbfd2489ceda810545a6e40f213c916">ANT_CMD_measure_temp</a> (uint16_t *result)</td></tr>
 <tr class="memdesc:a5bbfd2489ceda810545a6e40f213c916"><td class="mdescLeft">&#160;</td><td class="mdescRight">Measures the temperature at the antenna controller system.  <br /></td></tr>
 <tr class="separator:a5bbfd2489ceda810545a6e40f213c916"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac34ae5a5494a8decc6b07b904ea8d9f9" id="r_ac34ae5a5494a8decc6b07b904ea8d9f9"><td class="memItemLeft" align="right" valign="top">int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac34ae5a5494a8decc6b07b904ea8d9f9">ANT_convert_raw_temp_to_cCelsius</a> (uint16_t measurement)</td></tr>
+<tr class="memdesc:ac34ae5a5494a8decc6b07b904ea8d9f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts temperature measurement to centi-degrees celsius.  <br /></td></tr>
+<tr class="separator:ac34ae5a5494a8decc6b07b904ea8d9f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e3df7726ae12417572e658cc648d5bd" id="r_a8e3df7726ae12417572e658cc648d5bd"><td class="memItemLeft" align="right" valign="top">static uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8e3df7726ae12417572e658cc648d5bd">extract_bit</a> (uint8_t byte, uint8_t position)</td></tr>
 <tr class="separator:a8e3df7726ae12417572e658cc648d5bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4a844454d8c72bb761846248f0ab0e5a" id="r_a4a844454d8c72bb761846248f0ab0e5a"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4a844454d8c72bb761846248f0ab0e5a">ANT_CMD_report_deployment_status</a> (struct <a class="el" href="structAntenna__deployment__status.html">Antenna_deployment_status</a> *response)</td></tr>
@@ -485,7 +488,7 @@ Here is the caller graph for this function:</div>
 <div class="center"><img src="ant__commands_8c_a5bbfd2489ceda810545a6e40f213c916_icgraph.png" border="0" usemap="#aant__commands_8c_a5bbfd2489ceda810545a6e40f213c916_icgraph" alt=""/></div>
 <map name="aant__commands_8c_a5bbfd2489ceda810545a6e40f213c916_icgraph" id="aant__commands_8c_a5bbfd2489ceda810545a6e40f213c916_icgraph">
 <area shape="rect" title="Measures the temperature at the antenna controller system." alt="" coords="264,5,441,31"/>
-<area shape="rect" href="antenna__telecommand__defs_8c.html#a316cf470a39e910ad64f65afa587c1b4" title="Telecommand: Measure the temperature of the antenna controller." alt="" coords="5,5,216,31"/>
+<area shape="rect" href="antenna__telecommand__defs_8c.html#a316cf470a39e910ad64f65afa587c1b4" title="Telecommand: Measures the temperature of the antenna controller in centi&#45;degrees celsius." alt="" coords="5,5,216,31"/>
 <area shape="poly" title=" " alt="" coords="248,21,216,21,216,16,248,16"/>
 </map>
 </div>
@@ -736,6 +739,45 @@ Here is the caller graph for this function:</div>
 <area shape="rect" title="deploys all antennas one by one sequentially." alt="" coords="269,5,454,46"/>
 <area shape="rect" href="antenna__telecommand__defs_8c.html#a3324fa3a66d69734ce5a7cf2fd507fb2" title="begins deployment of all antennas, one by one." alt="" coords="5,5,221,46"/>
 <area shape="poly" title=" " alt="" coords="253,28,221,28,221,23,253,23"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="ac34ae5a5494a8decc6b07b904ea8d9f9" name="ac34ae5a5494a8decc6b07b904ea8d9f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac34ae5a5494a8decc6b07b904ea8d9f9">&#9670;&#160;</a></span>ANT_convert_raw_temp_to_cCelsius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int16_t ANT_convert_raw_temp_to_cCelsius </td>
+          <td>(</td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>measurement</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Converts temperature measurement to centi-degrees celsius. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">measurement</td><td>measurement result from <a class="el" href="#a5bbfd2489ceda810545a6e40f213c916" title="Measures the temperature at the antenna controller system.">ANT_CMD_measure_temp()</a> </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>returns the temperature in centi-degrees celsius </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>The formula used is based on the formula found in the data sheet for the LM94022. Derivation can be found on github issue#146. </dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="ant__commands_8c_ac34ae5a5494a8decc6b07b904ea8d9f9_icgraph.png" border="0" usemap="#aant__commands_8c_ac34ae5a5494a8decc6b07b904ea8d9f9_icgraph" alt=""/></div>
+<map name="aant__commands_8c_ac34ae5a5494a8decc6b07b904ea8d9f9_icgraph" id="aant__commands_8c_ac34ae5a5494a8decc6b07b904ea8d9f9_icgraph">
+<area shape="rect" title="Converts temperature measurement to centi&#45;degrees celsius." alt="" coords="264,27,426,68"/>
+<area shape="rect" href="antenna__telecommand__defs_8c.html#a316cf470a39e910ad64f65afa587c1b4" title="Telecommand: Measures the temperature of the antenna controller in centi&#45;degrees celsius." alt="" coords="5,5,216,31"/>
+<area shape="poly" title=" " alt="" coords="248,38,216,34,216,29,248,33"/>
+<area shape="rect" href="test__ant__commands_8c.html#a2e5ad0f99d8c1db940e1a2120bfbdacb" title=" " alt="" coords="17,55,204,96"/>
+<area shape="poly" title=" " alt="" coords="248,62,204,67,204,62,248,56"/>
 </map>
 </div>
 
