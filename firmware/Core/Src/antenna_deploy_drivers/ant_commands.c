@@ -38,38 +38,38 @@ static const uint8_t ANT_CMD_REPORT_ANT4_DEPLOYMENT_SYS_ACTIVATION_TIME= 0xB7;
 
 /// @brief Performs a reset of the antenna deployment systems microcontroller 
 /// @return 0 when the antenna deployment system has received the command, >0 otherwise
-uint8_t ANT_CMD_reset() {
+uint8_t ANT_CMD_reset(enum Ant_i2c_bus i2c_bus) {
     const uint8_t CMD_BUF_LEN = 1;
     uint8_t cmd_buf[CMD_BUF_LEN];
 
     cmd_buf[0] = ANT_CMD_RESET;
 
-    const uint8_t send_status = ANT_send_cmd(cmd_buf, CMD_BUF_LEN); 
+    const uint8_t send_status = ANT_send_cmd(i2c_bus, cmd_buf, CMD_BUF_LEN); 
     return send_status;
 }
 
 
 /// @brief  Arm the antenna deploy system
 /// @return 0 when the antenna deployment system has received the command, >0 otherwise
-uint8_t ANT_CMD_arm_antenna_system() {
+uint8_t ANT_CMD_arm_antenna_system(enum Ant_i2c_bus i2c_bus) {
     uint8_t cmd_len = 1;
     uint8_t cmd_buf[cmd_len];
 
     cmd_buf[0] = ANT_CMD_ARM_ANTENNA_SYSTEM;
 
-    const uint8_t comms_err = ANT_send_cmd(cmd_buf, cmd_len);
+    const uint8_t comms_err = ANT_send_cmd(i2c_bus, cmd_buf, cmd_len);
     return comms_err;
 }
 
 /// @brief Disarms the antenna deploy system
 /// @return 0 when the antenna deployment system has received the command, >0 otherwise
-uint8_t ANT_CMD_disarm_antenna_system() {
+uint8_t ANT_CMD_disarm_antenna_system(enum Ant_i2c_bus i2c_bus) {
     const uint8_t CMD_BUF_LEN = 1;
     uint8_t cmd_buf[CMD_BUF_LEN];
 
     cmd_buf[0] = ANT_CMD_DISARM_ANTENNA_SYSTEM;
 
-    const uint8_t send_status = ANT_send_cmd(cmd_buf, CMD_BUF_LEN); 
+    const uint8_t send_status = ANT_send_cmd(i2c_bus, cmd_buf, CMD_BUF_LEN); 
     return send_status;
 }
 
@@ -77,7 +77,7 @@ uint8_t ANT_CMD_disarm_antenna_system() {
 /// @param antenna The antenna number of the antenna to deploy, this is a number between 1-4.
 /// @param[in] activation_time_seconds the amount of time the deployment system should be active for in seconds.
 /// @return 0 when the antenna deployment system has received the command, >0 otherwise.
-uint8_t ANT_CMD_deploy_antenna(uint8_t antenna, uint8_t activation_time_seconds) {
+uint8_t ANT_CMD_deploy_antenna(enum Ant_i2c_bus i2c_bus ,uint8_t antenna, uint8_t activation_time_seconds) {
     const uint8_t cmd_len = 2;
     uint8_t cmd_buf[cmd_len];
 
@@ -100,21 +100,21 @@ uint8_t ANT_CMD_deploy_antenna(uint8_t antenna, uint8_t activation_time_seconds)
     }
     cmd_buf[1] = activation_time_seconds;
 
-    const uint8_t comms_err = ANT_send_cmd(cmd_buf, cmd_len);
+    const uint8_t comms_err = ANT_send_cmd(i2c_bus, cmd_buf, cmd_len);
     return comms_err;
 }
 
 /// @brief deploys all antennas one by one sequentially.
 /// @param activation_time_seconds the amount of time the deployment system for each antenna should be active for in seconds.
 /// @return 0 when the antenna deployment system has received the command, >0 otherwise
-uint8_t ANT_CMD_start_automated_sequential_deployment(uint8_t activation_time_seconds) {
+uint8_t ANT_CMD_start_automated_sequential_deployment(enum Ant_i2c_bus i2c_bus,uint8_t activation_time_seconds) {
     const uint8_t CMD_BUF_LEN = 2;
     uint8_t cmd_buf[CMD_BUF_LEN];
 
     cmd_buf[0] = ANT_CMD_DEPLOY_ALL_ANTENNAS_SEQ;
     cmd_buf[1] = activation_time_seconds;
 
-    const uint8_t send_status = ANT_send_cmd(cmd_buf, CMD_BUF_LEN); 
+    const uint8_t send_status = ANT_send_cmd(i2c_bus, cmd_buf, CMD_BUF_LEN); 
     return send_status;
 }
 
@@ -122,7 +122,7 @@ uint8_t ANT_CMD_start_automated_sequential_deployment(uint8_t activation_time_se
 /// @param antenna the antenna to deploy 
 /// @param activation_time_seconds the amount of time the deployment system should be active for in seconds.
 /// @return 0 when the antenna deployment system has received the command, >0 otherwise.
-uint8_t ANT_CMD_deploy_antenna_with_override(uint8_t antenna, uint8_t activation_time_seconds) {
+uint8_t ANT_CMD_deploy_antenna_with_override(enum Ant_i2c_bus i2c_bus,uint8_t antenna, uint8_t activation_time_seconds) {
     const uint8_t CMD_BUF_LEN = 2;
     uint8_t cmd_buf[CMD_BUF_LEN];
 
@@ -145,19 +145,19 @@ uint8_t ANT_CMD_deploy_antenna_with_override(uint8_t antenna, uint8_t activation
     }
     cmd_buf[1] = activation_time_seconds;
 
-    const uint8_t send_status = ANT_send_cmd(cmd_buf, CMD_BUF_LEN); 
+    const uint8_t send_status = ANT_send_cmd(i2c_bus, cmd_buf, CMD_BUF_LEN); 
     return send_status;
 }
 
 /// @brief cancels any active attempts to deploy an antenna
 /// @return 0 when the antenna deployment system has received the command, >0 otherwise
-uint8_t ANT_CMD_cancel_deployment_system_activation() {
+uint8_t ANT_CMD_cancel_deployment_system_activation(enum Ant_i2c_bus i2c_bus) {
     const uint8_t CMD_BUF_LEN = 1;
     uint8_t cmd_buf[CMD_BUF_LEN];
 
     cmd_buf[0] = ANT_CMD_CANCEL_DEPLOYMENT;
 
-    const uint8_t send_status = ANT_send_cmd(cmd_buf, CMD_BUF_LEN); 
+    const uint8_t send_status = ANT_send_cmd(i2c_bus, cmd_buf, CMD_BUF_LEN); 
     return send_status;
 }
 
@@ -165,7 +165,7 @@ uint8_t ANT_CMD_cancel_deployment_system_activation() {
 /// @param result a pointer to a 16 bit unsigned integer where the temperature measurement is written. Refer to the 
 /// "ISIS.ANTS.UM.001" datasheet by ISISpace for information on interpreting this measurement
 /// @return 0 when the antenna deployment system has received the command, > 0 otherwise.
-uint8_t ANT_CMD_measure_temp(uint16_t *result) {
+uint8_t ANT_CMD_measure_temp(enum Ant_i2c_bus i2c_bus, uint16_t *result) {
     const uint8_t cmd_len = 1;
     uint8_t cmd_buf[cmd_len];
 
@@ -174,9 +174,9 @@ uint8_t ANT_CMD_measure_temp(uint16_t *result) {
     uint8_t rx_len = 2;
     uint8_t rx_buf[rx_len];
 
-    uint8_t comms_err = ANT_send_cmd(cmd_buf, cmd_len);
+    uint8_t comms_err = ANT_send_cmd(i2c_bus, cmd_buf, cmd_len);
     if (comms_err == 0) {
-        comms_err = ANT_get_response(rx_buf, rx_len);
+        comms_err = ANT_get_response(i2c_bus, rx_buf, rx_len);
         *result = (rx_buf[1] << 8) | rx_buf[0];
     }
     return comms_err;
@@ -197,18 +197,18 @@ static uint8_t extract_bit(uint8_t byte, uint8_t position) {return byte >> posit
 /// @param response a two byte buffer where the status information is written to.
 /// @return 0 when the antenna deployment system has received the command, >0 otherwise
 /// @note data written to the response struct is only valid if 0 was returned. One should check this before using the response.
-uint8_t ANT_CMD_report_deployment_status(struct Antenna_deployment_status *response) {
+uint8_t ANT_CMD_report_deployment_status(enum Ant_i2c_bus i2c_bus, struct Antenna_deployment_status *response) {
     const uint8_t CMD_LEN  = 1;
     uint8_t cmd_buf[CMD_LEN];
 
     cmd_buf[0] = ANT_CMD_REPORT_DEPLOYMENT_STATUS;
 
-    uint8_t status = ANT_send_cmd(cmd_buf, CMD_LEN); 
+    uint8_t status = ANT_send_cmd(i2c_bus, cmd_buf, CMD_LEN); 
     
     if (status == 0) {
         const uint8_t response_size = 2;
         uint8_t raw_bytes[response_size];
-        status = ANT_get_response(raw_bytes, response_size);
+        status = ANT_get_response(i2c_bus, raw_bytes, response_size);
 
         response->antenna_1_deployed= !extract_bit(raw_bytes[1], 7);       
         response->antenna_1_deployment_time_limit_reached= extract_bit(raw_bytes[1], 6);       
@@ -237,7 +237,7 @@ uint8_t ANT_CMD_report_deployment_status(struct Antenna_deployment_status *respo
 /// @param response a 1 byte buffer where the count of attempted deployments will be written
 /// @return 0 when the antenna deployment system has received the command, >0 otherwise
 /// @note data written to the response buffer is only valid if 0 was returned. One should check this before using the response.
-uint8_t ANT_CMD_report_antenna_deployment_activation_count(uint8_t antenna, uint8_t *response) {
+uint8_t ANT_CMD_report_antenna_deployment_activation_count(enum Ant_i2c_bus i2c_bus, uint8_t antenna, uint8_t *response) {
     const uint8_t CMD_BUFF_SIZE = 1;
     uint8_t cmd_buf[CMD_BUFF_SIZE];
 
@@ -259,10 +259,10 @@ uint8_t ANT_CMD_report_antenna_deployment_activation_count(uint8_t antenna, uint
             return 1;
     }
 
-    uint8_t status = ANT_send_cmd(cmd_buf, CMD_BUFF_SIZE); 
+    uint8_t status = ANT_send_cmd(i2c_bus, cmd_buf, CMD_BUFF_SIZE); 
     if(status == 0) {
         const uint8_t response_len = 1;
-        status = ANT_get_response(response, response_len);
+        status = ANT_get_response(i2c_bus, response, response_len);
     }
     return status;
 }
@@ -272,7 +272,7 @@ uint8_t ANT_CMD_report_antenna_deployment_activation_count(uint8_t antenna, uint
 /// @param response a 2 byte buffer where the cumulative deployment time (in 50ms increments) will be written. divide the response by 20 to get seconds.
 /// @return 0 when the antenna deployment system has received the command, >0 otherwise
 /// @note data written to the result buffer is only valid if 0 was returned. One should check this before using the result.
-uint8_t ANT_CMD_report_antenna_deployment_activation_time(uint8_t antenna, uint16_t *result) {
+uint8_t ANT_CMD_report_antenna_deployment_activation_time(enum Ant_i2c_bus i2c_bus, uint8_t antenna, uint16_t *result) {
     const uint8_t CMD_BUFF_SIZE = 1;
     uint8_t cmd_buf[CMD_BUFF_SIZE];
 
@@ -294,11 +294,11 @@ uint8_t ANT_CMD_report_antenna_deployment_activation_time(uint8_t antenna, uint1
             return 1;
     }
 
-    uint8_t status = ANT_send_cmd(cmd_buf, CMD_BUFF_SIZE); 
+    uint8_t status = ANT_send_cmd(i2c_bus, cmd_buf, CMD_BUFF_SIZE); 
     if(status == 0) {
         const uint8_t response_len = 2; 
         uint8_t response[2];
-        status = ANT_get_response(response, response_len);
+        status = ANT_get_response(i2c_bus, response, response_len);
 
         *result = (response[1] << 8) | response[0];
     }
