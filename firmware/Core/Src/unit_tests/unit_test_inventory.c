@@ -1,6 +1,6 @@
 #include "unit_tests/unit_test_helpers.h"
 #include "unit_tests/unit_test_inventory.h"
-
+#include "unit_tests/test_ant_commands.h"
 #include "unit_tests/test_assorted_prototypes.h"
 #include "unit_tests/test_byte_transforms.h"
 #include "unit_tests/test_logging.h"
@@ -377,6 +377,11 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func = TEST_EXEC__EPS_channel_from_str,
         .test_file = "unit_tests/test_eps_drivers",
         .test_func_name = "TEST_EXEC__EPS_channel_from_str",
+    },
+    {
+        .test_func = TEST_EXEC__ANT_convert_raw_temp_to_cCelsius,
+        .test_file = "antenna_deploy_drivers/ant_commands",
+        .test_func_name = "ANT_convert_raw_temp_to_cCelsius"
     },
 };
 
