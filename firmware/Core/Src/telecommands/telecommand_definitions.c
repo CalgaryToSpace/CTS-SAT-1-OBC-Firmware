@@ -1153,10 +1153,10 @@ uint8_t TCMDEXEC_peripheral_send_receive_data(const char *args_str, TCMD_Telecom
     const uint8_t uart_port_name_parse_result = TCMD_extract_string_arg(args_str, 0, arg_uart_port_name, 10);
 
     // Parse hex-encoded config command (string to bytes)
-    const uint16_t args_bytes_to_send_size = (strlen(args_str) - strlen(arg_uart_port_name))/2;             // Expected size of config command byte array
-    uint16_t arg_bytes_to_send_len;                                                                         // Variable to store the length of the converted byte array
-    uint8_t arg_bytes_to_send[args_bytes_to_send_size];                                                     // Byte array to store the values of converted hex string
-    const uint8_t bytes_to_send_parse_result = TCMD_extract_hex_array_arg(args_str, 1, arg_bytes_to_send, args_bytes_to_send_size, &arg_bytes_to_send_len);
+    const uint16_t tx_buffer_max_size = 5120;                                      // Expected size of config command byte array
+    uint16_t arg_bytes_to_send_len;                                                // Variable to store the length of the converted byte array
+    uint8_t arg_bytes_to_send[tx_buffer_max_size];                                 // Byte array to store the values of converted hex string
+    const uint8_t bytes_to_send_parse_result = TCMD_extract_hex_array_arg(args_str, 1, arg_bytes_to_send, tx_buffer_max_size, &arg_bytes_to_send_len);
 
     // Check for parsing errors
     if(uart_port_name_parse_result != 0 || bytes_to_send_parse_result !=0) {
