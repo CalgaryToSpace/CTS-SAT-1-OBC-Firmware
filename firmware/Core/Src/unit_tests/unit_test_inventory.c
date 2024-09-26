@@ -384,6 +384,7 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_file = "unit_tests/test_eps_struct_packers",
         .test_func_name = "TEST_EXEC__EPS_check_type_sizes",
     },
+    {
         .test_func = TEST_EXEC__ANT_convert_raw_temp_to_cCelsius,
         .test_file = "antenna_deploy_drivers/ant_commands",
         .test_func_name = "ANT_convert_raw_temp_to_cCelsius"
