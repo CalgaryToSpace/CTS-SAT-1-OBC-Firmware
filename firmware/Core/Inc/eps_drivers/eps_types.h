@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+#pragma pack(push, 1)
+
 typedef enum {
     // TODO: add the 5V MPI channel
     EPS_CHANNEL_VBATT_STACK             = 0, // CH0
@@ -171,5 +173,7 @@ typedef struct {
     uint16_t stat_ch_ext_on_bitfield;
     uint16_t stat_ch_ext_overcurrent_fault_bitfield;
 } EPS_struct_piu_housekeeping_data_eng_t;
+
+#pragma pack(pop)
 
 #endif /* INCLUDE_GUARD__EPS_TYPES_H__ */

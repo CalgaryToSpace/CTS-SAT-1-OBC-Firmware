@@ -1,0 +1,8 @@
+#ifndef INCLUDE_GUARD__TEST_EPS_STRUCT_PACKERS
+#define INCLUDE_GUARD__TEST_EPS_STRUCT_PACKERS
+
+#include <stdint.h>
+
+uint8_t TEST_EXEC__EPS_check_type_sizes();
+
+#endif /* INCLUDE_GUARD__TEST_EPS_STRUCT_PACKERS */
