@@ -5,6 +5,8 @@
 
 #include "telecommands/boom_deploy_telecommand_defs.h"
 
+#include "log/log.h"
+
 #include "main.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,16 +45,29 @@ uint8_t TCMDEXEC_boom_deploy_timed(
     BOOM_set_burn_enabled(1);
 
     while (1) {
-        if (HAL_GetTick() - start_time_ms >= duration_ms) {
+        const uint32_t current_running_time_ms = HAL_GetTick() - start_time_ms;
+        if (current_running_time_ms >= duration_ms) {
             break;
         }
 
-        if (BOOM_get_pgood_status() == 0) {
-            BOOM_set_burn_enabled(0);
-            return 10;
-        }
+        LOG_message(
+            LOG_SYSTEM_BOOM, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "Boom Burning. PGOOD=%s",
+            BOOM_get_pgood_status() ? "good" : "bad"
+        );
 
-        HAL_Delay(10);
+        // if (BOOM_get_pgood_status() == 0) {
+        //     BOOM_set_burn_enabled(0);
+        //     return 10;
+        // }
+
+        // Delay for a short duration at the start, then longer after.
+        if (current_running_time_ms < 250) {
+            HAL_Delay(25);
+        }
+        else {
+            HAL_Delay(duration_ms / 10);
+        }
         // TODO: implement the EPS monitoring logic.
     }
 
