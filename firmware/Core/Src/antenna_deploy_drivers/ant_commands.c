@@ -181,6 +181,13 @@ uint8_t ANT_CMD_measure_temp(uint16_t *result) {
     }
     return comms_err;
 }
+/// @brief  Converts temperature measurement to centi-degrees celsius
+/// @param measurement measurement result from ANT_CMD_measure_temp()
+/// @return returns the temperature in centi-degrees celsius
+/// @note The formula used is based on the formula found in the data sheet for the LM94022. Derivation can be found on github issue#146.
+int16_t ANT_convert_raw_temp_to_cCelsius(uint16_t measurement) {
+    return (int16_t)(((float) measurement * -0.29648 + 193.375) * 100);
+}
 
 
 static uint8_t extract_bit(uint8_t byte, uint8_t position) {return byte >> position & 1u;}

@@ -18,6 +18,7 @@ Please add your name to the list below in your first Pull Request!
 * Kale F.
 * Marko V.
 * Vaibhav K.
+* Muhammad Ali
 
 ## License and Libraries
 
