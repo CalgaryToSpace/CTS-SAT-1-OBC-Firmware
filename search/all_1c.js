@@ -4,5 +4,6 @@ var searchData=
   ['which_5fsensor_1',['which_sensor',['../structADCS__raw__cam__sensor__struct__t.html#a17ab1a6f5e21e86815a6e1de17727663',1,'ADCS_raw_cam_sensor_struct_t']]],
   ['why_2',['Why?',['../md_docs_2C__Unit__Tests.html#autotoc_md38',1,'']]],
   ['write_20a_20test_3',['How to Write a Test',['../md_docs_2C__Unit__Tests.html#autotoc_md40',1,'']]],
-  ['write_5fstruct_5fto_5fmemory_4',['WRITE_STRUCT_TO_MEMORY',['../adcs__internal__drivers_8h.html#a09979f9863c2668236caf2293d1d5594',1,'adcs_internal_drivers.h']]]
+  ['write_5fstatus_4',['write_status',['../structSTM32__Internal__Flash__Write__Status__t.html#afa0fca8b97db66024e634ea88020702d',1,'STM32_Internal_Flash_Write_Status_t']]],
+  ['write_5fstruct_5fto_5fmemory_5',['WRITE_STRUCT_TO_MEMORY',['../adcs__internal__drivers_8h.html#a09979f9863c2668236caf2293d1d5594',1,'adcs_internal_drivers.h']]]
 ];

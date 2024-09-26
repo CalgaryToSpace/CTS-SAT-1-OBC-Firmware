@@ -26,9 +26,10 @@ var searchData=
   ['uart_5ftelecommand_5fport_5fhandle_23',['UART_telecommand_port_handle',['../uart__handler_8c.html#a1d634841634fed7a46099ea48cd46156',1,'uart_handler.c']]],
   ['ulhighfrequencytimerticks_24',['ulHighFrequencyTimerTicks',['../freertos_8c.html#a26fcf6ebc4e6dc08ead34d8f69316ec1',1,'ulHighFrequencyTimerTicks:&#160;stm32l4xx_it.c'],['../stm32l4xx__it_8c.html#a26fcf6ebc4e6dc08ead34d8f69316ec1',1,'ulHighFrequencyTimerTicks:&#160;stm32l4xx_it.c']]],
   ['unix_5ftime_5fsec_25',['unix_time_sec',['../structEPS__struct__system__status__t.html#a1b51649cab8ab7703b359951412151e1',1,'EPS_struct_system_status_t']]],
-  ['uptime_5fsec_26',['uptime_sec',['../structEPS__struct__system__status__t.html#a212c35d2afba3d4d754a1c7a68d58966',1,'EPS_struct_system_status_t']]],
-  ['use_5fcss_27',['use_css',['../structADCS__estimation__params__struct__t.html#a23e6469c3dc6223dec0c05388ae94aee',1,'ADCS_estimation_params_struct_t']]],
-  ['use_5fnadir_5fsensor_28',['use_nadir_sensor',['../structADCS__estimation__params__struct__t.html#ad0a0b1cdc7c872082a4102b202bbb3b9',1,'ADCS_estimation_params_struct_t']]],
-  ['use_5fstar_5ftracker_29',['use_star_tracker',['../structADCS__estimation__params__struct__t.html#a565e997de73a13d52320b651cb6659b3',1,'ADCS_estimation_params_struct_t']]],
-  ['use_5fsun_5fsensor_30',['use_sun_sensor',['../structADCS__estimation__params__struct__t.html#a9e968b3f5ba7ceab34eb079f33611422',1,'ADCS_estimation_params_struct_t']]]
+  ['unlock_5fstatus_26',['unlock_status',['../structSTM32__Internal__Flash__Write__Status__t.html#a977862de677540e59bd22a3e2a36578f',1,'STM32_Internal_Flash_Write_Status_t']]],
+  ['uptime_5fsec_27',['uptime_sec',['../structEPS__struct__system__status__t.html#a212c35d2afba3d4d754a1c7a68d58966',1,'EPS_struct_system_status_t']]],
+  ['use_5fcss_28',['use_css',['../structADCS__estimation__params__struct__t.html#a23e6469c3dc6223dec0c05388ae94aee',1,'ADCS_estimation_params_struct_t']]],
+  ['use_5fnadir_5fsensor_29',['use_nadir_sensor',['../structADCS__estimation__params__struct__t.html#ad0a0b1cdc7c872082a4102b202bbb3b9',1,'ADCS_estimation_params_struct_t']]],
+  ['use_5fstar_5ftracker_30',['use_star_tracker',['../structADCS__estimation__params__struct__t.html#a565e997de73a13d52320b651cb6659b3',1,'ADCS_estimation_params_struct_t']]],
+  ['use_5fsun_5fsensor_31',['use_sun_sensor',['../structADCS__estimation__params__struct__t.html#a9e968b3f5ba7ceab34eb079f33611422',1,'ADCS_estimation_params_struct_t']]]
 ];
