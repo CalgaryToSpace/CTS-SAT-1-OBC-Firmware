@@ -25,7 +25,7 @@ uint8_t ANT_send_cmd(enum Ant_i2c_bus i2c_bus, uint8_t cmd_buf[], uint8_t cmd_le
     HAL_StatusTypeDef transmit_status;
     switch(i2c_bus) {
         case ANT_I2C_BUS_A:
-            transmit_status = HAL_I2C_Master_Transmit(&hi2c2, ANT_ADDR, cmd_buf, cmd_len, timeout);
+            transmit_status = HAL_I2C_Master_Transmit(&hi2c2, ANT_ADDR_A, cmd_buf, cmd_len, timeout);
             break;
         case ANT_I2C_BUS_B:
             transmit_status = HAL_I2C_Master_Transmit(&hi2c3, ANT_ADDR_B, cmd_buf, cmd_len, timeout);
@@ -61,11 +61,11 @@ uint8_t ANT_get_response(enum Ant_i2c_bus i2c_bus, uint8_t rx_buf[], uint16_t rx
     
     switch (i2c_bus) {
     case ANT_I2C_BUS_A:
-        read_status = HAL_I2C_Master_Receive(&hi2c2, ANT_ADDR, rx_buf, rx_len, timeout);
+        read_status = HAL_I2C_Master_Receive(&hi2c2, ANT_ADDR_A, rx_buf, rx_len, timeout);
         break;
     
     case ANT_I2C_BUS_B:
-        read_status = HAL_I2C_Master_Receive(&hi2c3, ANT_ADDR, rx_buf, rx_len, timeout);
+        read_status = HAL_I2C_Master_Receive(&hi2c3, ANT_ADDR_B, rx_buf, rx_len, timeout);
         break;
 
     default:
