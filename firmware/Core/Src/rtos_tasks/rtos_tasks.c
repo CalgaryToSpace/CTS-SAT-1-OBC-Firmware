@@ -60,6 +60,7 @@ void TASK_DEBUG_print_heartbeat(void *argument) {
             DEBUG_uart_print_str(TASK_heartbeat_timing_str);
 		}
 		HAL_GPIO_TogglePin(PIN_LED_DEVKIT_LD2_GPIO_Port, PIN_LED_DEVKIT_LD2_Pin);
+		HAL_GPIO_TogglePin(PIN_LED_GP2_OUT_GPIO_Port, PIN_LED_GP2_OUT_Pin);
 		osDelay(990);
 	}
 }
