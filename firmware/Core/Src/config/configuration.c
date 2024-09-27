@@ -8,6 +8,10 @@ extern uint32_t TASK_heartbeat_period_ms;
 
 uint32_t CONFIG_int_demo_var_1 = 13345;
 uint32_t CONFIG_int_demo_var_2 = 242344;
+
+// extern
+uint32_t CONFIG_highstack_watermark_percentage_threshold;
+
 // extern
 CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
     {
