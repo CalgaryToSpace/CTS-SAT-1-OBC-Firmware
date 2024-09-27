@@ -2,7 +2,7 @@
 #define __INCLUDE_GUARD_ANT_COMMANDS_H__
 
 #include <stdint.h>
-
+#include <ant_internal_drivers.h>
 
 struct Antenna_deployment_status {
     uint8_t antenna_1_deployed;
