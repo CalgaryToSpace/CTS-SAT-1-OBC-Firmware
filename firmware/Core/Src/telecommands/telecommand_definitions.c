@@ -1017,6 +1017,13 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
     },
 
+    {
+        .tcmd_name = "stm32_internal_flash_get_option_bytes",
+        .tcmd_func = TCMDEXEC_stm32_internal_flash_get_option_bytes,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+
     // ****************** END SECTION: stm32_internal_flash_telecommand_defs ******************
 
     // ****************** SECTION: antenna_telecommand_defs ******************
