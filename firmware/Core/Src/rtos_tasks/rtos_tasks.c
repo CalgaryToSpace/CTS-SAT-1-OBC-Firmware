@@ -223,10 +223,10 @@ void TASK_service_eps_watchdog(void *argument) {
 void TASK_monitor_freertos_highstack_watermarks(void *argument) {
 	TASK_HELP_start_of_task();
 
-	const uint32_t highstack_watermark_threshold = 50;
-	uint32_t total_run_time;
-
 	while (1) {
+
+		const uint32_t highstack_watermark_threshold = 50;
+		uint32_t total_run_time;
 
 		// Get the number of tasks
 		const UBaseType_t number_of_tasks = uxTaskGetNumberOfTasks();
@@ -245,7 +245,7 @@ void TASK_monitor_freertos_highstack_watermarks(void *argument) {
 			{
 				LOG_message(
 					LOG_SYSTEM_OBC, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-					"Warning: Task %s is nearing stack overflow. Remaining stack size is: %u bytes.",
+					"Warning: Task '%s' approached a stack overflow. Worst remaining stack size was: %u words.",
 					task_statuses[x].pcTaskName,
 					task_statuses[x].usStackHighWaterMark
 					);
