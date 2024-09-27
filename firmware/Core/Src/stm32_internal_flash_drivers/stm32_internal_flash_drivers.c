@@ -139,3 +139,14 @@ uint8_t STM32_internal_flash_erase(uint16_t start_page_erase, uint16_t number_of
         return 0;
     }
 }
+
+/// @brief Gets option bytes configuration from the stm32 internal flash memory
+/// @param ob_data pointer to an FLASH_OBProgramInitTypeDef structure that
+/// contains the configuration information for the programming.
+/// @return 0 on success, > 0 on error
+uint8_t STM32_internal_flash_get_option_bytes(FLASH_OBProgramInitTypeDef *ob_data)
+{
+    // returns void
+    HAL_FLASHEx_OBGetConfig(ob_data);
+    return 0;
+}
