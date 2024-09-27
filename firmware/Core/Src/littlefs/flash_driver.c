@@ -491,7 +491,7 @@ FLASH_error_enum_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_numb
     // TODO: confirm if this works with the CS2 logical chip on each physical FLASH chip;
     // ^ Seems as though it only works for CS1.
 
-    uint8_t tx_buffer[1] = {FLASH_CMD_READ_ID};
+    uint8_t tx_buffer[1] = {FLASH_CMD_READ_ID};     // TODO: Adjust based on new FLASH chip
     uint8_t rx_buffer[5];
     memset(rx_buffer, 0, 5);
 
@@ -526,31 +526,24 @@ FLASH_error_enum_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_numb
     // rx_buffer[0] is the manufacturer ID, rx_buffer[1] is the memory type,
     // and rx_buffer[2] is the memory capacity (not checked, as we have a few different capacities).
     // rx_buffer[2] is 0x20=512 for 512 Mib (mebibits)
+    // TODO: Verify with new FLASH chip: For MICRON MT29F1G01 series FLASH, expected Manufacturer ID: 0x2C, Device ID: 0x14 is expected back from the READ ID command
     uint8_t are_bytes_correct = 0;
-    if (rx_buffer[0] == 0x01 && rx_buffer[1] == 0x02) {
+    if (rx_buffer[0] == 0x2C && rx_buffer[1] == 0x14) {
         LOG_message(
             LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "SUCCESS: CS%d ID: 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X - Capacity: %lu MiB",
+            "SUCCESS: CS%d ID: 0x%02X 0x%02X",
             chip_number,
             rx_buffer[0],
-            rx_buffer[1],
-            rx_buffer[2],
-            rx_buffer[3],
-            rx_buffer[4],
-            (rx_buffer[2] << 4)
+            rx_buffer[1]
         );
         are_bytes_correct = 1;
     } else {
         LOG_message(
             LOG_SYSTEM_FLASH, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "ERROR: CS%d ID: 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X - Capacity: %lu MiB",
+            "ERROR: CS%d ID: 0x%02X 0x%02X",
             chip_number,
             rx_buffer[0],
-            rx_buffer[1],
-            rx_buffer[2],
-            rx_buffer[3],
-            rx_buffer[4],
-            (rx_buffer[2] << 4)
+            rx_buffer[1]
         );
         are_bytes_correct = 0;
     }
