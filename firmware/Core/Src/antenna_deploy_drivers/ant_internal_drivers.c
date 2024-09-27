@@ -16,18 +16,18 @@ extern I2C_HandleTypeDef hi2c3;
 
 /**
  * @brief Sends a command to the antenna controller.
- * @param i2c_bus  
+ * @param i2c_bus_mcu  
  * @param cmd_buf Array of bytes to send to the antenna controller
  * @param cmd_len Length of the command buffer
  * @return 0 upon success, 1 if tx_status received HAL_ERROR, 2 if tx_status received HAL_BUSY, 3 if tx_status received HAL_TIMEOUT, 4 if invalid i2c bus is passed
  */
-uint8_t ANT_send_cmd(enum Ant_i2c_bus i2c_bus, uint8_t cmd_buf[], uint8_t cmd_len) {
+uint8_t ANT_send_cmd(enum Ant_i2c_bus_mcu i2c_bus_mcu, uint8_t cmd_buf[], uint8_t cmd_len) {
     HAL_StatusTypeDef transmit_status;
-    switch(i2c_bus) {
-        case ANT_I2C_BUS_A:
+    switch(i2c_bus_mcu) {
+        case ANT_I2C_BUS_A_MCU_A:
             transmit_status = HAL_I2C_Master_Transmit(&hi2c2, ANT_ADDR_A, cmd_buf, cmd_len, timeout);
             break;
-        case ANT_I2C_BUS_B:
+        case ANT_I2C_BUS_A_MCU_B:
             transmit_status = HAL_I2C_Master_Transmit(&hi2c3, ANT_ADDR_B, cmd_buf, cmd_len, timeout);
             break;
         default:
@@ -51,20 +51,20 @@ uint8_t ANT_send_cmd(enum Ant_i2c_bus i2c_bus, uint8_t cmd_buf[], uint8_t cmd_le
 
 /**
  * @brief Receives a response from the antenna controller.
- * @param i2c_bus the i2c_bus to read from. Either ANT_I2C_BUS_A or ANT_I2C_BUS_B  
+ * @param i2c_bus_mcu the i2c_bus_mcu to read from. Either ANT_I2C_BUS_A_MCU_A or ANT_I2C_BUS_A_MCU_B  
  * @param rx_buf Array to store the response from the antenna controller
  * @param rx_len Length of the response buffer
  * @return 0 upon success, 4 if read_status received HAL_ERROR
  */
-uint8_t ANT_get_response(enum Ant_i2c_bus i2c_bus, uint8_t rx_buf[], uint16_t rx_len) {
+uint8_t ANT_get_response(enum Ant_i2c_bus_mcu i2c_bus_mcu, uint8_t rx_buf[], uint16_t rx_len) {
     HAL_StatusTypeDef read_status = HAL_ERROR;
     
-    switch (i2c_bus) {
-    case ANT_I2C_BUS_A:
+    switch (i2c_bus_mcu) {
+    case ANT_I2C_BUS_A_MCU_A:
         read_status = HAL_I2C_Master_Receive(&hi2c2, ANT_ADDR_A, rx_buf, rx_len, timeout);
         break;
     
-    case ANT_I2C_BUS_B:
+    case ANT_I2C_BUS_A_MCU_B:
         read_status = HAL_I2C_Master_Receive(&hi2c3, ANT_ADDR_B, rx_buf, rx_len, timeout);
         break;
 
