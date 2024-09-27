@@ -4,7 +4,6 @@
 #include "antenna_deploy_drivers/ant_internal_drivers.h"
 #include "antenna_deploy_drivers/ant_commands.h"
 #include "telecommands/telecommand_args_helpers.h"
-#include "debug_uart.h"
 #include "log/log.h"
 
 #include <stdio.h>
