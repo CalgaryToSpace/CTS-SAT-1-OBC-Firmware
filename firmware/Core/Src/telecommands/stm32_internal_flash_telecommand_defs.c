@@ -115,3 +115,42 @@ uint8_t TCMDEXEC_stm32_internal_flash_erase(const char *args_str, TCMD_Telecomma
     }
     return 0;
 }
+
+/// @brief Get the option bytes configuration from the stm32 internal flash memory
+/// @param args_str No args
+/// @return 0 on success, > 0 on error
+uint8_t TCMDEXEC_stm32_internal_flash_get_option_bytes(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
+{
+    FLASH_OBProgramInitTypeDef option_bytes;
+    const uint8_t res = STM32_internal_flash_get_option_bytes(&option_bytes);
+    if (res != 0)
+    {
+        snprintf(response_output_buf, response_output_buf_len, "Error: %u", res);
+        return 1;
+    }
+
+    snprintf(response_output_buf, response_output_buf_len,
+             "{\n"
+             "  \"OptionType\": %lu,\n"
+             "  \"WRPArea\": %lu,\n"
+             "  \"WRPStartOffset\": %lu,\n"
+             "  \"WRPEndOffset\": %lu,\n"
+             "  \"RDPLevel\": %lu,\n"
+             "  \"USERType\": %lu,\n"
+             "  \"USERConfig\": %lu,\n"
+             "  \"PCROPConfig\": %lu,\n"
+             "  \"PCROPStartAddr\": \"0x%08X\",\n"
+             "  \"PCROPEndAddr\": \"0x%08X\"\n"
+             "}",
+             option_bytes.OptionType,
+             option_bytes.WRPArea,
+             option_bytes.WRPStartOffset,
+             option_bytes.WRPEndOffset,
+             option_bytes.RDPLevel,
+             option_bytes.USERType,
+             option_bytes.USERConfig,
+             option_bytes.PCROPConfig,
+             option_bytes.PCROPStartAddr,
+             option_bytes.PCROPEndAddr);
+    return 0;
+}
