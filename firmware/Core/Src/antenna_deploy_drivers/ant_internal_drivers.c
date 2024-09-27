@@ -3,7 +3,7 @@
 #include "stm32l4xx_hal_i2c.h"
 #include "antenna_deploy_drivers/ant_internal_drivers.h"
 #include "debug_tools/debug_i2c.h"
-#include "debug_uart.h"
+#include "debug_tools/debug_uart.h"
 #include <stdint.h>
 #include <string.h>
 //TODO: so much to do, mainly changing any calls to ANT_ADDR to use new names
