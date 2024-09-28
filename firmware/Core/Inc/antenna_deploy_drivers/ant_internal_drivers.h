@@ -11,7 +11,7 @@
 /// use in transmission and the microcontroller to transmit to.
 enum Ant_i2c_bus_mcu {
     ANT_I2C_BUS_A_MCU_A,
-    ANT_I2C_BUS_A_MCU_B
+    ANT_I2C_BUS_B_MCU_B
 };
 uint8_t ANT_send_cmd(enum Ant_i2c_bus_mcu i2c_bus_mcu, uint8_t cmd_buf[], uint8_t cmd_len);
 uint8_t ANT_get_response(enum Ant_i2c_bus_mcu i2c_bus_mcu, uint8_t rx_buf[], uint16_t rx_len);
