@@ -226,30 +226,27 @@ void TASK_monitor_freertos_highstack_watermarks(void *argument) {
 
 	while (1) {
 
-		const uint32_t highstack_watermark_threshold = 50;
-		uint32_t total_run_time;
+		for(uint32_t x = 0; x < task_handles_array_size; x++){
 
-		// Get the number of tasks
-		const UBaseType_t number_of_tasks = uxTaskGetNumberOfTasks();
-
-		// Creating a dynamic length array of the task statuses
-		TaskStatus_t task_statuses[number_of_tasks];
-
-		// Populate the task statuses
-		if(uxTaskGetSystemState(task_statuses,number_of_tasks, &total_run_time) != 0){
-			continue;
-		}
-
-		//Check the highstack watermarks for each task
-		for(UBaseType_t x = 0; x < number_of_tasks; x++){
-			if(task_statuses[x].usStackHighWaterMark < CONFIG_highstack_watermark_percentage_threshold)
+			if(task_handles_array[x].task_handle != NULL)
 			{
-				LOG_message(
-					LOG_SYSTEM_OBC, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-					"Warning: Task '%s' approached a stack overflow. Worst remaining stack size was: %u words.",
-					task_statuses[x].pcTaskName,
-					task_statuses[x].usStackHighWaterMark
-					);
+				// Dereferencing the task_handle pointer
+				osThreadId_t dereferenced_task_handle = *(task_handles_array[x].task_handle);
+
+				// Determine the threshold of the task
+				uint32_t task_threshold_words = (task_handles_array[x].stack_size_bytes * CONFIG_highstack_watermark_percentage_threshold) / 400;
+
+				// Get the highstack watermark
+				uint32_t task_highstack_watermark_words = uxTaskGetStackHighWaterMark(dereferenced_task_handle);
+
+				if(task_highstack_watermark_words < task_threshold_words){
+					LOG_message(
+						LOG_SYSTEM_OBC, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+						"Warning: Task '%s' approached a stack overflow. Worst remaining stack size was: %lu words.",
+						pcTaskGetName(dereferenced_task_handle),
+						task_highstack_watermark_words
+						);
+				}	
 			}
 		}
 		osDelay(5000);

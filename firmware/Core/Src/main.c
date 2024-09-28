@@ -109,9 +109,34 @@ const osThreadAttr_t TASK_execute_telecommands_Attributes = {
 osThreadId_t TASK_monitor_freertos_highstack_watermarks_Handle;
 const osThreadAttr_t TASK_monitor_freertos_highstack_watermarks_Attributes = {
   .name = "TASK_monitor_freertos_highstack_watermarks",
-  .stack_size = 512,
-  .priority = (osPriority_t) osPriorityNormal,
+  .stack_size = 1024,
+  .priority = (osPriority_t) osPriorityBelowNormal6,
 };
+
+const Task_Info_t task_handles_array [] = {
+  {
+    .task_handle = &defaultTaskHandle,
+    .stack_size_bytes = 128 * 4
+  },
+  {
+    .task_handle = &TASK_DEBUG_print_heartbeat_Handle,
+    .stack_size_bytes = 256
+  },
+  {
+    .task_handle = &TASK_handle_uart_telecommands_Handle,
+    .stack_size_bytes = 8192
+  },
+  {
+    .task_handle = &TASK_execute_telecommands_Handle,
+    .stack_size_bytes = 8192
+  },
+  {
+    .task_handle = &TASK_monitor_freertos_highstack_watermarks_Handle,
+    .stack_size_bytes = 1024
+  },
+};
+
+const uint32_t task_handles_array_size = sizeof(task_handles_array)/ sizeof(Task_Info_t);
 
 
 /* USER CODE END PV */
