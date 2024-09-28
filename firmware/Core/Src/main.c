@@ -109,7 +109,7 @@ const osThreadAttr_t TASK_execute_telecommands_Attributes = {
 osThreadId_t TASK_monitor_freertos_highstack_watermarks_Handle;
 const osThreadAttr_t TASK_monitor_freertos_highstack_watermarks_Attributes = {
   .name = "TASK_monitor_freertos_highstack_watermarks",
-  .stack_size = 256,
+  .stack_size = 512,
   .priority = (osPriority_t) osPriorityNormal,
 };
 
@@ -234,7 +234,7 @@ int main(void)
 
   TASK_execute_telecommands_Handle = osThreadNew(TASK_execute_telecommands, NULL, &TASK_execute_telecommands_Attributes);
 
-  TASK_monitor_freertos_highstack_watermarks_Handle = osThreadNew(TASK_execute_telecommands, NULL, &TASK_monitor_freertos_highstack_watermarks_Attributes);
+  TASK_monitor_freertos_highstack_watermarks_Handle = osThreadNew(TASK_monitor_freertos_highstack_watermarks, NULL, &TASK_monitor_freertos_highstack_watermarks_Attributes);
   
   TASK_service_eps_watchdog_Handle = osThreadNew(TASK_service_eps_watchdog, NULL, &TASK_service_eps_watchdog_Attributes);
 

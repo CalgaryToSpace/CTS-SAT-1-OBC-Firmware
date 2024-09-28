@@ -10,7 +10,7 @@
 #include "transforms/arrays.h"
 #include "stm32/stm32_reboot_reason.h"
 #include "log/log.h"
-#include "eps_drivers/eps_commands.h"
+#include "configuration.h"
 
 #include "cmsis_os.h"
 
@@ -225,7 +225,6 @@ void TASK_monitor_freertos_highstack_watermarks(void *argument) {
 
 	while (1) {
 
-		const uint32_t highstack_watermark_threshold = 50;
 		uint32_t total_run_time;
 
 		// Get the number of tasks
@@ -241,7 +240,7 @@ void TASK_monitor_freertos_highstack_watermarks(void *argument) {
 
 		//Check the highstack watermarks for each task
 		for(UBaseType_t x = 0; x < number_of_tasks; x++){
-			if(task_statuses[x].usStackHighWaterMark < highstack_watermark_threshold)
+			if(task_statuses[x].usStackHighWaterMark < CONFIG_highstack_watermark_percentage_threshold)
 			{
 				LOG_message(
 					LOG_SYSTEM_OBC, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
