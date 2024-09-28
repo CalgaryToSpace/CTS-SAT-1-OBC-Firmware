@@ -10,7 +10,7 @@
 #include "transforms/arrays.h"
 #include "stm32/stm32_reboot_reason.h"
 #include "log/log.h"
-#include "configuration.h"
+#include "config/configuration.h"
 
 #include "cmsis_os.h"
 
