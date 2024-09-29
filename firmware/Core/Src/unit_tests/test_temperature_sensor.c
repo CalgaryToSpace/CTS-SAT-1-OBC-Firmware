@@ -2,34 +2,81 @@
 #include "unit_tests/unit_test_helpers.h"
 
 
-uint8_t TEST_EXEC__TEMP_calculate_decimal_portion(void)
+uint8_t TEST_EXEC__TEMP_convert_raw_to_deg_c(void)
 {
-    // one bit precision tests
-    TEST_ASSERT(0.5 == calculate_decimal_portion(0x80, TEMP_SENSOR_ONE_BIT_PRECISION));
-    TEST_ASSERT(0 == calculate_decimal_portion(0x00, TEMP_SENSOR_ONE_BIT_PRECISION));
-    TEST_ASSERT(0.5 == calculate_decimal_portion(0xA0, TEMP_SENSOR_ONE_BIT_PRECISION));
+    uint8_t raw_data[2];
 
-    // two bit precision tests
-    TEST_ASSERT(0.25 == calculate_decimal_portion(0x40, TEMP_SENSOR_TWO_BIT_PRECISION));
-    TEST_ASSERT(0 == calculate_decimal_portion(0x00, TEMP_SENSOR_TWO_BIT_PRECISION));
-    TEST_ASSERT(0.5 == calculate_decimal_portion(0x80, TEMP_SENSOR_TWO_BIT_PRECISION));
+    // nine bit precision tests
+    raw_data[0] = 0x00;
+    raw_data[1] = 0x80;
+    TEST_ASSERT(5000 == TEMP_SENSOR_convert_raw_to_deg_c(raw_data, TEMP_SENSOR_nine_bit_precision_coefficient, TEMP_SENSOR_NINE_BIT_PRECISION_INSIGNIFICANT_BYTES));
+    raw_data[0] = 0x03;
+    raw_data[1] = 0x80;
+    TEST_ASSERT(35000 == TEMP_SENSOR_convert_raw_to_deg_c(raw_data, TEMP_SENSOR_nine_bit_precision_coefficient, TEMP_SENSOR_NINE_BIT_PRECISION_INSIGNIFICANT_BYTES));
+    raw_data[0] = 0x9C;
+    raw_data[1] = 0x80;
+    TEST_ASSERT(-995000 == TEMP_SENSOR_convert_raw_to_deg_c(raw_data, TEMP_SENSOR_nine_bit_precision_coefficient, TEMP_SENSOR_NINE_BIT_PRECISION_INSIGNIFICANT_BYTES));
 
-    // three bit precision tests
-    TEST_ASSERT(0.125 == calculate_decimal_portion(0x20, TEMP_SENSOR_THREE_BIT_PRECISION));
-    TEST_ASSERT(0 == calculate_decimal_portion(0x00, TEMP_SENSOR_THREE_BIT_PRECISION));
-    TEST_ASSERT(0.5 == calculate_decimal_portion(0x80, TEMP_SENSOR_THREE_BIT_PRECISION));
+    // ten bit precision
+    raw_data[0] = 0x14;
+    raw_data[1] = 0xC0;
+    TEST_ASSERT(207500 == TEMP_SENSOR_convert_raw_to_deg_c(raw_data, TEMP_SENSOR_ten_bit_precision_coefficient, TEMP_SENSOR_TEN_BIT_PRECISION_INSIGNIFICANT_BYTES));
+    raw_data[0] = 0x00;
+    raw_data[1] = 0x80;
+    TEST_ASSERT(5000 == TEMP_SENSOR_convert_raw_to_deg_c(raw_data, TEMP_SENSOR_ten_bit_precision_coefficient, TEMP_SENSOR_TEN_BIT_PRECISION_INSIGNIFICANT_BYTES));
+    raw_data[0] = 0xA0;
+    raw_data[1] = 0x40;
+    TEST_ASSERT(-957500 == TEMP_SENSOR_convert_raw_to_deg_c(raw_data, TEMP_SENSOR_ten_bit_precision_coefficient, TEMP_SENSOR_TEN_BIT_PRECISION_INSIGNIFICANT_BYTES));
 
+    // eleven bit precision
+    raw_data[0] = 0x0A;
+    raw_data[1] = 0x20;
+    TEST_ASSERT(101250 == TEMP_SENSOR_convert_raw_to_deg_c(raw_data, TEMP_SENSOR_eleven_bit_precision_coefficient, TEMP_SENSOR_ELEVEN_BIT_PRECISION_INSIGNIFICANT_BYTES));
+    raw_data[0] = 0x00;
+    raw_data[1] = 0x20;
+    TEST_ASSERT(1250 == TEMP_SENSOR_convert_raw_to_deg_c(raw_data, TEMP_SENSOR_eleven_bit_precision_coefficient, TEMP_SENSOR_ELEVEN_BIT_PRECISION_INSIGNIFICANT_BYTES));
+    raw_data[0] = 0xE1;
+    raw_data[1] = 0xA0;
+    TEST_ASSERT(-303750 == TEMP_SENSOR_convert_raw_to_deg_c(raw_data, TEMP_SENSOR_eleven_bit_precision_coefficient, TEMP_SENSOR_ELEVEN_BIT_PRECISION_INSIGNIFICANT_BYTES));
+    
+    // twelve bit precision
+    raw_data[0] = 0x00;
+    raw_data[1] = 0x10;
+    TEST_ASSERT(625 == TEMP_SENSOR_convert_raw_to_deg_c(raw_data, TEMP_SENSOR_twelve_bit_precision_coefficient, TEMP_SENSOR_TWELVE_BIT_PRECISION_INSIGNIFICANT_BYTES));
+    raw_data[0] = 0x50;
+    raw_data[1] = 0x30;
+    TEST_ASSERT(801875 == TEMP_SENSOR_convert_raw_to_deg_c(raw_data, TEMP_SENSOR_twelve_bit_precision_coefficient, TEMP_SENSOR_TWELVE_BIT_PRECISION_INSIGNIFICANT_BYTES));
+    raw_data[0] = 0xC8;
+    raw_data[1] = 0x10;
+    TEST_ASSERT(-559375 == TEMP_SENSOR_convert_raw_to_deg_c(raw_data, TEMP_SENSOR_twelve_bit_precision_coefficient, TEMP_SENSOR_TWELVE_BIT_PRECISION_INSIGNIFICANT_BYTES));
+    
+    // all ones
+    raw_data[0] = 0xFF;
+    raw_data[1] = 0xF0;
+    TEST_ASSERT(-625 == TEMP_SENSOR_convert_raw_to_deg_c(raw_data, TEMP_SENSOR_twelve_bit_precision_coefficient, TEMP_SENSOR_TWELVE_BIT_PRECISION_INSIGNIFICANT_BYTES));
 
-    // four bit precision tests
-    TEST_ASSERT(0.0625 == calculate_decimal_portion(0x10, TEMP_SENSOR_FOUR_BIT_PRECISION));
-    TEST_ASSERT(0 == calculate_decimal_portion(0x00, TEMP_SENSOR_FOUR_BIT_PRECISION));
-    TEST_ASSERT(0.1875 == calculate_decimal_portion(0x30, TEMP_SENSOR_FOUR_BIT_PRECISION));
+    // max negative number
+    raw_data[0] = 0xC9;
+    raw_data[1] = 0x00;
+    TEST_ASSERT(-550000 == TEMP_SENSOR_convert_raw_to_deg_c(raw_data, TEMP_SENSOR_eleven_bit_precision_coefficient, TEMP_SENSOR_ELEVEN_BIT_PRECISION_INSIGNIFICANT_BYTES));
 
+    // max positive number measurable
+    raw_data[0] = 0x7D;
+    raw_data[1] = 0x00;
+    TEST_ASSERT(1250000 == TEMP_SENSOR_convert_raw_to_deg_c(raw_data, TEMP_SENSOR_twelve_bit_precision_coefficient, TEMP_SENSOR_TWELVE_BIT_PRECISION_INSIGNIFICANT_BYTES));
+    
     // An always zero bit is set for some reason (these bits are ignored)
-    TEST_ASSERT(0 == calculate_decimal_portion(0x01, TEMP_SENSOR_ONE_BIT_PRECISION));
-    TEST_ASSERT(0 == calculate_decimal_portion(0x01, TEMP_SENSOR_TWO_BIT_PRECISION));
-    TEST_ASSERT(0 == calculate_decimal_portion(0x01, TEMP_SENSOR_THREE_BIT_PRECISION));
-    TEST_ASSERT(0 == calculate_decimal_portion(0x01, TEMP_SENSOR_FOUR_BIT_PRECISION));
+    raw_data[0] = 0x00;
+    raw_data[1] = 0x0F;
+    TEST_ASSERT(0 == TEMP_SENSOR_convert_raw_to_deg_c(raw_data, TEMP_SENSOR_twelve_bit_precision_coefficient, TEMP_SENSOR_TWELVE_BIT_PRECISION_INSIGNIFICANT_BYTES));
+
+    // zero tests
+    raw_data[0] = 0x00;
+    raw_data[1] = 0x00;
+    TEST_ASSERT(0 == TEMP_SENSOR_convert_raw_to_deg_c(raw_data, TEMP_SENSOR_nine_bit_precision_coefficient, TEMP_SENSOR_NINE_BIT_PRECISION_INSIGNIFICANT_BYTES));
+    TEST_ASSERT(0 == TEMP_SENSOR_convert_raw_to_deg_c(raw_data, TEMP_SENSOR_ten_bit_precision_coefficient, TEMP_SENSOR_TEN_BIT_PRECISION_INSIGNIFICANT_BYTES));
+    TEST_ASSERT(0 == TEMP_SENSOR_convert_raw_to_deg_c(raw_data, TEMP_SENSOR_eleven_bit_precision_coefficient, TEMP_SENSOR_ELEVEN_BIT_PRECISION_INSIGNIFICANT_BYTES));
+    TEST_ASSERT(0 == TEMP_SENSOR_convert_raw_to_deg_c(raw_data, TEMP_SENSOR_twelve_bit_precision_coefficient, TEMP_SENSOR_TWELVE_BIT_PRECISION_INSIGNIFICANT_BYTES));
 
     return 0;
 }

@@ -6,8 +6,12 @@
 
 const uint16_t TEMP_SENSOR_device_addr =  0x91;
 const uint16_t TEMP_SENSOR_temp_register_addr  = 0x00;
+
+// write to this register to change the precision
 const uint16_t TEMP_SENSOR_config_register_addr = 0x01;
-const Temperature_Sensor_Data_Precision_t TEMP_SENSOR_data_precision = TEMP_SENSOR_ONE_BIT_PRECISION;
+
+// 0x00 for nine bit, 0x01 for 10 bit, 0x02 for 11 bit, 0x03 for 12 bit
+const uint8_t TEMP_SENSOR_precision = 0x00;
 
 
 /// @brief Reads the temperature from the STDS75DS2F and stores it in the provided variable pointer result. 
@@ -16,11 +20,11 @@ const Temperature_Sensor_Data_Precision_t TEMP_SENSOR_data_precision = TEMP_SENS
 /// @param result
 /// - Arg 0: Memory location to store the temperature result.
 /// @return 0 if successful, 1 if write error, 2 if read error.
-uint8_t read_temperature(float *result)
+uint8_t read_temperature(int32_t *result)
 {
     HAL_StatusTypeDef status;
     uint8_t buf[2];
-    uint8_t precision = TEMP_SENSOR_data_precision;
+    uint8_t precision = TEMP_SENSOR_precision;
 
     // write the precision value to the config register
     status = HAL_I2C_Mem_Write(&hi2c1, TEMP_SENSOR_device_addr << 1, TEMP_SENSOR_config_register_addr, 1, &precision, 1, HAL_MAX_DELAY);
@@ -38,54 +42,37 @@ uint8_t read_temperature(float *result)
         return 2;
     }
 
-    // calculate the value to the right of the decimal.
-    float decimalPortion = calculate_decimal_portion(buf[1], TEMP_SENSOR_data_precision);
+    // convert the raw temperature bytes to degrees celsius
+    *result = TEMP_SENSOR_convert_raw_to_deg_c(buf, TEMP_SENSOR_nine_bit_precision_coefficient, TEMP_SENSOR_NINE_BIT_PRECISION_INSIGNIFICANT_BYTES);
 
-    // add the integer portion with the decimal portion and store it.
-    *result = (float)((int8_t)buf[0]) + decimalPortion;
 
     return 0;
 }
 
-/// @brief Converts the bits provided to a decimal value based on the provided precision. Works on the four MSBs.
-///        Reference https://www.st.com/resource/en/datasheet/stds75.pdf page 15 and 18 for information on calculations and
-///        format of temperature data.
-/// @param bits
-/// - Arg 0: Bits to convert to decimal value
-/// @param TEMP_SENSOR_data_precision
-/// - Arg 1: Precision to which we want the output decimal value
-/// @return the decimal after conversion.
-float calculate_decimal_portion(uint8_t bits, Temperature_Sensor_Data_Precision_t TEMP_SENSOR_data_precision)
+/// @brief Converts the raw bytes provided to a temperature value in celsius * 10000 based on the provided precision.
+///        Works on the four MSBs. Reference https://www.st.com/resource/en/datasheet/stds75.pdf page 15 and 18 for 
+///        information on calculations and format of temperature data.
+/// @param raw_bytes
+/// - Arg 0: Bytes to convert to celsius float value
+/// @param TEMP_SENSOR_data_precision_coefficient
+/// - Arg 1: Coefficient used to get the temperature in the correct precision.
+/// @param TEMP_SENSOR_data_precision_insignificant_bits
+/// - Arg 2: Value used to remove always zero bits and bits not used the provided precision.
+/// @return the temperature in celsius after conversion.
+int32_t TEMP_SENSOR_convert_raw_to_deg_c(uint8_t raw_bytes[], uint8_t TEMP_SENSOR_data_precision_coefficient, 
+                                Temperature_Sensor_Data_Precision_Insignificant_Bytes_t TEMP_SENSOR_data_precision_insignificant_bits)
 {
-    float decimal = 0.0f;
-    uint8_t masked_bits = 0;
 
-    switch (TEMP_SENSOR_data_precision)
-    {
-        case TEMP_SENSOR_ONE_BIT_PRECISION: 
-            masked_bits = bits & 0x80; // 0b100000000
-            masked_bits = masked_bits >> 7;
-            decimal = (float)masked_bits / 2;
-            break;
+    int16_t val = raw_bytes[0] << 8 | raw_bytes[1];
 
-        case TEMP_SENSOR_TWO_BIT_PRECISION:
-            masked_bits = bits & 0xC0; // 0b11000000
-            masked_bits = masked_bits >> 6;
-            decimal = (float)masked_bits / 4;
-            break;
-        
-        case TEMP_SENSOR_THREE_BIT_PRECISION:
-            masked_bits = bits & 0xE0; // 0b11100000
-            masked_bits = masked_bits >> 5;
-            decimal = (float)masked_bits / 8;
-            break;
+    // remove the always zero bytes and the bytes that are not used for our precision
+    val = val >> TEMP_SENSOR_data_precision_insignificant_bits;
 
-        case TEMP_SENSOR_FOUR_BIT_PRECISION:
-            masked_bits = bits & 0xF0; // 0b11110000
-            masked_bits = masked_bits >> 4;
-            decimal = (float)masked_bits /  16;
-            break;
-    }
+    // calculate the temperature in degrees celsius
+    float temp = (float)val / TEMP_SENSOR_data_precision_coefficient;
 
-    return decimal;
+    // multiply by 10000 to get rid of the fractional portions (C * 10000)
+    int32_t result = temp * 10000;
+
+    return result;
 }

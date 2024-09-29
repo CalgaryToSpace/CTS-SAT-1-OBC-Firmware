@@ -3,6 +3,6 @@
 
 #include <stdint.h>
 
-uint8_t TEST_EXEC__TEMP_calculate_decimal_portion(void);
+uint8_t TEST_EXEC__TEMP_convert_raw_to_deg_c(void);
 
 #endif // __INCLUDE_GUARD__TEST_TEMPERATURE_SENSOR_H__

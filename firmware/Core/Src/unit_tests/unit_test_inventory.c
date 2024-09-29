@@ -137,9 +137,9 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func_name = "TCMD_extract_int64_arg"
     },
     {
-        .test_func = TEST_EXEC__TEMP_calculate_decimal_portion,
+        .test_func = TEST_EXEC__TEMP_convert_raw_to_deg_c,
         .test_file = "temperature_sensor/temperature_sensor_driver",
-        .test_func_name = "TEST_EXEC__TEMP_calculate_decimal_portion"
+        .test_func_name = "TEST_EXEC__TEMP_convert_raw_to_deg_c"
     }
 };
 
