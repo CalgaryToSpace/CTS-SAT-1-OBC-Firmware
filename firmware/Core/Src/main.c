@@ -155,13 +155,16 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  ADCS_initialise_crc8_checksum(); // Initialise the ADCS CRC8 checksum (required for ADCS operation)
   /* USER CODE END Init */
 
   /* Configure the system clock */
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
+
+  // Wait 20ms for things to stabilize. Attempt at avoiding failure to boot.
+  // Didn't appear to make a big difference. Still seems reasonable.
+  HAL_Delay(20);
 
   /* USER CODE END SysInit */
 
@@ -183,10 +186,15 @@ int main(void)
   MX_TIM16_Init();
   /* USER CODE BEGIN 2 */
 
-  // start the callback interrupts for the UART channels
+  DEBUG_uart_print_str("\n\nMX_Init() done\n");
+
+  // Start the callback interrupts for the UART channels.
   UART_init_uart_handlers();
   
   FLASH_deactivate_chip_select();
+
+  // Initialise the ADCS CRC8 checksum (required for ADCS operation).
+  ADCS_initialise_crc8_checksum();
 
   /* USER CODE END 2 */
 

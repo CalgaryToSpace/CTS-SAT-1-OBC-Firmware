@@ -22,7 +22,7 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
     {
         .variable_name = "TASK_heartbeat_period_ms",
         .num_config_var = &TASK_heartbeat_period_ms,
-    }
+    },
 
 };
 

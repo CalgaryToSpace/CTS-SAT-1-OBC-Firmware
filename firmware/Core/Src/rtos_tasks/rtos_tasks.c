@@ -37,7 +37,15 @@ void TASK_DEBUG_print_heartbeat(void *argument) {
 		"Reset reason: %s.", STM32_reset_cause_name
 	);
 
-	osDelay(100);
+	// Blink the LED a few times to show that the boot just happened.
+	for (uint8_t i = 0; i < 6; i++) {
+		HAL_GPIO_TogglePin(PIN_LED_DEVKIT_LD2_GPIO_Port, PIN_LED_DEVKIT_LD2_Pin);
+		HAL_GPIO_TogglePin(PIN_LED_GP2_OUT_GPIO_Port, PIN_LED_GP2_OUT_Pin);
+
+		HAL_Delay(100 + (i*25));
+	}
+
+	osDelay(TASK_heartbeat_period_ms);
 
     uint64_t unix_time_ms = 0;
     time_t seconds = 0;
