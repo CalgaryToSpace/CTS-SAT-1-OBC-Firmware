@@ -116,23 +116,23 @@ const osThreadAttr_t TASK_monitor_freertos_highstack_watermarks_Attributes = {
 const Task_Info_t task_handles_array [] = {
   {
     .task_handle = &defaultTaskHandle,
-    .stack_size_bytes = 128 * 4
+    .task_attribute = &defaultTask_attributes
   },
   {
     .task_handle = &TASK_DEBUG_print_heartbeat_Handle,
-    .stack_size_bytes = 256
+    .task_attribute = &TASK_DEBUG_print_heartbeat_Attributes
   },
   {
     .task_handle = &TASK_handle_uart_telecommands_Handle,
-    .stack_size_bytes = 8192
+    .task_attribute = &TASK_handle_uart_telecommands_Attributes
   },
   {
     .task_handle = &TASK_execute_telecommands_Handle,
-    .stack_size_bytes = 8192
+    .task_attribute = &TASK_execute_telecommands_Attributes
   },
   {
     .task_handle = &TASK_monitor_freertos_highstack_watermarks_Handle,
-    .stack_size_bytes = 1024
+    .task_attribute = &TASK_monitor_freertos_highstack_watermarks_Attributes
   },
 };
 

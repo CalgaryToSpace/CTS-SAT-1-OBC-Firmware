@@ -234,17 +234,17 @@ void TASK_monitor_freertos_highstack_watermarks(void *argument) {
 				osThreadId_t dereferenced_task_handle = *(task_handles_array[x].task_handle);
 
 				// Determine the threshold of the task
-				uint32_t task_threshold_words = (task_handles_array[x].stack_size_bytes * CONFIG_highstack_watermark_percentage_threshold) / 400;
+				uint32_t task_threshold_bytes = (task_handles_array[x].task_attribute->stack_size * CONFIG_highstack_watermark_percentage_threshold) / 100;
 
 				// Get the highstack watermark
-				uint32_t task_highstack_watermark_words = uxTaskGetStackHighWaterMark(dereferenced_task_handle);
+				uint32_t task_highstack_watermark_bytes = uxTaskGetStackHighWaterMark(dereferenced_task_handle) * 4;
 
-				if(task_highstack_watermark_words < task_threshold_words){
+				if(task_highstack_watermark_bytes < task_threshold_bytes){
 					LOG_message(
 						LOG_SYSTEM_OBC, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-						"Warning: Task '%s' approached a stack overflow. Worst remaining stack size was: %lu words.",
+						"Warning: Task '%s' approached a stack overflow. Worst remaining stack size was: %lu bytes.",
 						pcTaskGetName(dereferenced_task_handle),
-						task_highstack_watermark_words
+						task_highstack_watermark_bytes
 						);
 				}	
 			}

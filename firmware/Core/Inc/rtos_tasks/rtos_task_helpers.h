@@ -5,7 +5,7 @@
 #include "cmsis_os.h"
 typedef struct {
     osThreadId_t *task_handle;
-    uint32_t stack_size_bytes;
+    const osThreadAttr_t *task_attribute;
 } Task_Info_t;
 
 // This function shall be called at the start of each task.
