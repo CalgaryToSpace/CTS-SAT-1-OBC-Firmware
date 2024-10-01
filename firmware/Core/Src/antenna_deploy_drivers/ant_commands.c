@@ -39,7 +39,7 @@ static const uint8_t ANT_CMD_REPORT_ANT4_DEPLOYMENT_SYS_ACTIVATION_TIME= 0xB7;
 /// @brief Performs a reset of the antenna deployment systems microcontroller which is specified 
 /// @param i2c_bus_mcu specifies which mcu on the antenna deployment system to reset, and which i2c bus to use
 /// @return 0 when the antenna deployment system has received the command, >0 otherwise
-uint8_t ANT_CMD_reset(enum Ant_i2c_bus_mcu i2c_bus_mcu) {
+uint8_t ANT_CMD_reset(enum ANT_i2c_bus_mcu i2c_bus_mcu) {
     const uint8_t CMD_BUF_LEN = 1;
     uint8_t cmd_buf[CMD_BUF_LEN];
 
@@ -54,7 +54,7 @@ uint8_t ANT_CMD_reset(enum Ant_i2c_bus_mcu i2c_bus_mcu) {
 /// @param i2c_bus_mcu specifies which mcu on the antenna deployment system to arm, and which i2c bus to use
 /// @return 0 when the antenna deployment system has received the command, >0 otherwise
 /// @note arming one mcu does not arm the other. Each mcu must be armed before it can be used to deploy
-uint8_t ANT_CMD_arm_antenna_system(enum Ant_i2c_bus_mcu i2c_bus_mcu) {
+uint8_t ANT_CMD_arm_antenna_system(enum ANT_i2c_bus_mcu i2c_bus_mcu) {
     uint8_t cmd_len = 1;
     uint8_t cmd_buf[cmd_len];
 
@@ -67,7 +67,7 @@ uint8_t ANT_CMD_arm_antenna_system(enum Ant_i2c_bus_mcu i2c_bus_mcu) {
 /// @brief Disarms the antenna deploy system
 /// @param i2c_bus_mcu specifies which mcu on the antenna deployment system to disarm, and which i2c bus to use
 /// @return 0 when the antenna deployment system has received the command, >0 otherwise
-uint8_t ANT_CMD_disarm_antenna_system(enum Ant_i2c_bus_mcu i2c_bus_mcu) {
+uint8_t ANT_CMD_disarm_antenna_system(enum ANT_i2c_bus_mcu i2c_bus_mcu) {
     const uint8_t CMD_BUF_LEN = 1;
     uint8_t cmd_buf[CMD_BUF_LEN];
 
@@ -82,7 +82,7 @@ uint8_t ANT_CMD_disarm_antenna_system(enum Ant_i2c_bus_mcu i2c_bus_mcu) {
 /// @param antenna The antenna number of the antenna to deploy, this is a number between 1-4.
 /// @param activation_time_seconds the amount of time the deployment system should be active for in seconds.
 /// @return 0 when the antenna deployment system has received the command, >0 otherwise.
-uint8_t ANT_CMD_deploy_antenna(enum Ant_i2c_bus_mcu i2c_bus_mcu ,uint8_t antenna, uint8_t activation_time_seconds) {
+uint8_t ANT_CMD_deploy_antenna(enum ANT_i2c_bus_mcu i2c_bus_mcu ,uint8_t antenna, uint8_t activation_time_seconds) {
     const uint8_t cmd_len = 2;
     uint8_t cmd_buf[cmd_len];
 
@@ -102,7 +102,7 @@ uint8_t ANT_CMD_deploy_antenna(enum Ant_i2c_bus_mcu i2c_bus_mcu ,uint8_t antenna
         default:
             LOG_message(
                 LOG_SYSTEM_ANTENNA_DEPLOY,
-                LOG_SEVERITY_WARNING,
+                LOG_SEVERITY_ERROR,
                 LOG_SINK_ALL, 
                 "Invalid choice for antenna: antenna must be between 1-4 inclusive."
             );
@@ -118,7 +118,7 @@ uint8_t ANT_CMD_deploy_antenna(enum Ant_i2c_bus_mcu i2c_bus_mcu ,uint8_t antenna
 /// @param i2c_bus_mcu specifies which mcu on the antenna deployment system to use, and which i2c bus to use
 /// @param activation_time_seconds the amount of time the deployment system for each antenna should be active for in seconds
 /// @return 0 when the antenna deployment system has received the command, >0 otherwise
-uint8_t ANT_CMD_start_automated_sequential_deployment(enum Ant_i2c_bus_mcu i2c_bus_mcu,uint8_t activation_time_seconds) {
+uint8_t ANT_CMD_start_automated_sequential_deployment(enum ANT_i2c_bus_mcu i2c_bus_mcu,uint8_t activation_time_seconds) {
     const uint8_t CMD_BUF_LEN = 2;
     uint8_t cmd_buf[CMD_BUF_LEN];
 
@@ -134,7 +134,7 @@ uint8_t ANT_CMD_start_automated_sequential_deployment(enum Ant_i2c_bus_mcu i2c_b
 /// @param antenna the antenna to deploy 
 /// @param activation_time_seconds the amount of time the deployment system should be active for in seconds.
 /// @return 0 when the antenna deployment system has received the command, >0 otherwise.
-uint8_t ANT_CMD_deploy_antenna_with_override(enum Ant_i2c_bus_mcu i2c_bus_mcu,uint8_t antenna, uint8_t activation_time_seconds) {
+uint8_t ANT_CMD_deploy_antenna_with_override(enum ANT_i2c_bus_mcu i2c_bus_mcu,uint8_t antenna, uint8_t activation_time_seconds) {
     const uint8_t CMD_BUF_LEN = 2;
     uint8_t cmd_buf[CMD_BUF_LEN];
 
@@ -154,7 +154,7 @@ uint8_t ANT_CMD_deploy_antenna_with_override(enum Ant_i2c_bus_mcu i2c_bus_mcu,ui
         default:
             LOG_message(
                 LOG_SYSTEM_ANTENNA_DEPLOY,
-                LOG_SEVERITY_WARNING,
+                LOG_SEVERITY_ERROR,
                 LOG_SINK_ALL, 
                 "Invalid choice for antenna: antenna must be between 1-4 inclusive."
             );
@@ -169,7 +169,7 @@ uint8_t ANT_CMD_deploy_antenna_with_override(enum Ant_i2c_bus_mcu i2c_bus_mcu,ui
 /// @brief cancels any active attempts to deploy an antenna
 /// @param i2c_bus_mcu specifies which mcu on the antenna deployment system to transmit to, and which i2c bus to use
 /// @return 0 when the antenna deployment system has received the command, >0 otherwise
-uint8_t ANT_CMD_cancel_deployment_system_activation(enum Ant_i2c_bus_mcu i2c_bus_mcu) {
+uint8_t ANT_CMD_cancel_deployment_system_activation(enum ANT_i2c_bus_mcu i2c_bus_mcu) {
     const uint8_t CMD_BUF_LEN = 1;
     uint8_t cmd_buf[CMD_BUF_LEN];
 
@@ -184,7 +184,7 @@ uint8_t ANT_CMD_cancel_deployment_system_activation(enum Ant_i2c_bus_mcu i2c_bus
 /// @param result a pointer to a 16 bit unsigned integer where the temperature measurement is written. Refer to the 
 /// "ISIS.ANTS.UM.001" datasheet by ISISpace for information on interpreting this measurement
 /// @return 0 when the antenna deployment system has received the command, > 0 otherwise.
-uint8_t ANT_CMD_measure_temp(enum Ant_i2c_bus_mcu i2c_bus_mcu, uint16_t *result) {
+uint8_t ANT_CMD_measure_temp(enum ANT_i2c_bus_mcu i2c_bus_mcu, uint16_t *result) {
     const uint8_t cmd_len = 1;
     uint8_t cmd_buf[cmd_len];
 
@@ -218,7 +218,7 @@ static uint8_t extract_bit(uint8_t byte, uint8_t position) {return byte >> posit
 /// @return 0 when the antenna deployment system has received the command, >0 otherwise
 /// @note - Data written to the response struct is only valid if 0 was returned. One should check this before using the response.
 /// @note - This command probes the micro controller specified. data from each mcu may differ.
-uint8_t ANT_CMD_report_deployment_status(enum Ant_i2c_bus_mcu i2c_bus_mcu, struct Antenna_deployment_status *response) {
+uint8_t ANT_CMD_report_deployment_status(enum ANT_i2c_bus_mcu i2c_bus_mcu, struct Antenna_deployment_status *response) {
     const uint8_t CMD_LEN  = 1;
     uint8_t cmd_buf[CMD_LEN];
 
@@ -259,7 +259,7 @@ uint8_t ANT_CMD_report_deployment_status(enum Ant_i2c_bus_mcu i2c_bus_mcu, struc
 /// @param response a 1 byte buffer where the count of attempted deployments will be written
 /// @return 0 when the antenna deployment system has received the command, >0 otherwise
 /// @note data written to the response buffer is only valid if 0 was returned. One should check this before using the response.
-uint8_t ANT_CMD_report_antenna_deployment_activation_count(enum Ant_i2c_bus_mcu i2c_bus_mcu, uint8_t antenna, uint8_t *response) {
+uint8_t ANT_CMD_report_antenna_deployment_activation_count(enum ANT_i2c_bus_mcu i2c_bus_mcu, uint8_t antenna, uint8_t *response) {
     const uint8_t CMD_BUFF_SIZE = 1;
     uint8_t cmd_buf[CMD_BUFF_SIZE];
 
@@ -279,7 +279,7 @@ uint8_t ANT_CMD_report_antenna_deployment_activation_count(enum Ant_i2c_bus_mcu 
         default:
             LOG_message(
                 LOG_SYSTEM_ANTENNA_DEPLOY,
-                LOG_SEVERITY_WARNING,
+                LOG_SEVERITY_ERROR,
                 LOG_SINK_ALL, 
                 "Invalid choice for antenna: antenna must be between 1-4 inclusive."
             );
@@ -300,7 +300,7 @@ uint8_t ANT_CMD_report_antenna_deployment_activation_count(enum Ant_i2c_bus_mcu 
 /// @param response a 2 byte buffer where the cumulative deployment time (in 50ms increments) will be written. divide the response by 20 to get seconds.
 /// @return 0 when the antenna deployment system has received the command, >0 otherwise
 /// @note data written to the result buffer is only valid if 0 was returned. One should check this before using the result.
-uint8_t ANT_CMD_report_antenna_deployment_activation_time(enum Ant_i2c_bus_mcu i2c_bus_mcu, uint8_t antenna, uint16_t *result) {
+uint8_t ANT_CMD_report_antenna_deployment_activation_time(enum ANT_i2c_bus_mcu i2c_bus_mcu, uint8_t antenna, uint16_t *result) {
     const uint8_t CMD_BUFF_SIZE = 1;
     uint8_t cmd_buf[CMD_BUFF_SIZE];
 
@@ -320,7 +320,7 @@ uint8_t ANT_CMD_report_antenna_deployment_activation_time(enum Ant_i2c_bus_mcu i
         default:
             LOG_message(
                 LOG_SYSTEM_ANTENNA_DEPLOY,
-                LOG_SEVERITY_WARNING,
+                LOG_SEVERITY_ERROR,
                 LOG_SINK_ALL, 
                 "Invalid choice for antenna: antenna must be between 1-4 inclusive."
             );

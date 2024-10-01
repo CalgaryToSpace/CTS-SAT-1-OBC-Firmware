@@ -20,7 +20,7 @@
 const uint16_t ANT_ADDR_A = 0x31 << 1; // i2c address of mcu A on ant deploy system
 const uint16_t ANT_ADDR_B = 0x32 << 1; // i2c address of mcu B on ant deploy system
 
-const uint8_t timeout = 50;
+const uint8_t timeout_ms = 50; // in milliseconds used for both receive and transmit
 
 extern I2C_HandleTypeDef hi2c2; //i2c bus A
 extern I2C_HandleTypeDef hi2c3; //i2c bus B
@@ -32,29 +32,28 @@ extern I2C_HandleTypeDef hi2c3; //i2c bus B
  * @param cmd_len Length of the command buffer
  * @return 0 upon success, 1 if tx_status received HAL_ERROR, 2 if tx_status received HAL_BUSY, 3 if tx_status received HAL_TIMEOUT, 4 if invalid i2c bus/mcu is passed
  */
-uint8_t ANT_send_cmd(enum Ant_i2c_bus_mcu i2c_bus_mcu, uint8_t cmd_buf[], uint8_t cmd_len) {
+uint8_t ANT_send_cmd(enum ANT_i2c_bus_mcu i2c_bus_mcu, uint8_t cmd_buf[], uint8_t cmd_len) {
     HAL_StatusTypeDef transmit_status;
     switch(i2c_bus_mcu) {
         case ANT_I2C_BUS_A_MCU_A:
-            transmit_status = HAL_I2C_Master_Transmit(&hi2c2, ANT_ADDR_A, cmd_buf, cmd_len, timeout);
+            transmit_status = HAL_I2C_Master_Transmit(&hi2c2, ANT_ADDR_A, cmd_buf, cmd_len, timeout_ms);
             break;
         case ANT_I2C_BUS_B_MCU_B:
-            transmit_status = HAL_I2C_Master_Transmit(&hi2c3, ANT_ADDR_B, cmd_buf, cmd_len, timeout);
+            transmit_status = HAL_I2C_Master_Transmit(&hi2c3, ANT_ADDR_B, cmd_buf, cmd_len, timeout_ms);
             break;
         default:
-            DEBUG_uart_print_str("invalid i2c bus passed");
-            LOG_message(LOG_SYSTEM_ANTENNA_DEPLOY, LOG_SEVERITY_WARNING, LOG_SINK_ALL, "Invalid choice for i2c bus/mcu");
+            LOG_message(LOG_SYSTEM_ANTENNA_DEPLOY, LOG_SEVERITY_ERROR, LOG_SINK_ALL, "Invalid choice for i2c bus/mcu");
             return 4;
     }
 
     if (transmit_status == HAL_ERROR) {
-        LOG_message(LOG_SYSTEM_ANTENNA_DEPLOY, LOG_SEVERITY_WARNING, LOG_SINK_ALL, "I2C transmit failed: HAL_ERROR");
+        LOG_message(LOG_SYSTEM_ANTENNA_DEPLOY, LOG_SEVERITY_ERROR, LOG_SINK_ALL, "I2C transmit failed: HAL_ERROR");
         return 1;
     } else if(transmit_status == HAL_BUSY) {
-        LOG_message(LOG_SYSTEM_ANTENNA_DEPLOY, LOG_SEVERITY_WARNING, LOG_SINK_ALL, "I2C transmit failed: HAL_BUSY");
+        LOG_message(LOG_SYSTEM_ANTENNA_DEPLOY, LOG_SEVERITY_ERROR, LOG_SINK_ALL, "I2C transmit failed: HAL_BUSY");
         return 2;
     } else if(transmit_status == HAL_TIMEOUT) {
-        LOG_message(LOG_SYSTEM_ANTENNA_DEPLOY, LOG_SEVERITY_WARNING, LOG_SINK_ALL, "I2C transmit failed: HAL_TIMEOUT");
+        LOG_message(LOG_SYSTEM_ANTENNA_DEPLOY, LOG_SEVERITY_ERROR, LOG_SINK_ALL, "I2C transmit failed: HAL_TIMEOUT");
         return 3;
     }
     return 0;
@@ -67,25 +66,25 @@ uint8_t ANT_send_cmd(enum Ant_i2c_bus_mcu i2c_bus_mcu, uint8_t cmd_buf[], uint8_
  * @param rx_len Length of the response buffer
  * @return 0 upon success, 1 if read_status received HAL_ERROR
  */
-uint8_t ANT_get_response(enum Ant_i2c_bus_mcu i2c_bus_mcu, uint8_t rx_buf[], uint16_t rx_len) {
+uint8_t ANT_get_response(enum ANT_i2c_bus_mcu i2c_bus_mcu, uint8_t rx_buf[], uint16_t rx_len) {
     HAL_StatusTypeDef read_status = HAL_ERROR;
     
     switch (i2c_bus_mcu) {
     case ANT_I2C_BUS_A_MCU_A:
-        read_status = HAL_I2C_Master_Receive(&hi2c2, ANT_ADDR_A, rx_buf, rx_len, timeout);
+        read_status = HAL_I2C_Master_Receive(&hi2c2, ANT_ADDR_A, rx_buf, rx_len, timeout_ms);
         break;
     
     case ANT_I2C_BUS_B_MCU_B:
-        read_status = HAL_I2C_Master_Receive(&hi2c3, ANT_ADDR_B, rx_buf, rx_len, timeout);
+        read_status = HAL_I2C_Master_Receive(&hi2c3, ANT_ADDR_B, rx_buf, rx_len, timeout_ms);
         break;
 
     default:
-        LOG_message(LOG_SYSTEM_ANTENNA_DEPLOY, LOG_SEVERITY_WARNING, LOG_SINK_ALL, "Invalid choice of i2c bus/mcu");
+        LOG_message(LOG_SYSTEM_ANTENNA_DEPLOY, LOG_SEVERITY_ERROR, LOG_SINK_ALL, "Invalid choice of i2c bus/mcu");
         break;
     }
 
     if(read_status != HAL_OK) {
-        LOG_message(LOG_SYSTEM_ANTENNA_DEPLOY, LOG_SEVERITY_WARNING, LOG_SINK_ALL, "I2C read failed: HAL_ERROR");
+        LOG_message(LOG_SYSTEM_ANTENNA_DEPLOY, LOG_SEVERITY_ERROR, LOG_SINK_ALL, "I2C read failed: HAL_ERROR");
         return 1;
     }
     return 0;
