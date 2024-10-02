@@ -394,13 +394,13 @@ FLASH_error_enum_t FLASH_write_disable(SPI_HandleTypeDef *hspi, uint8_t chip_num
  * @brief Sends Block Erase Command
  * @param hspi - Pointer to the SPI HAL handle
  * @param chip_number - the chip select number to activate
- * @param addr - block address that is to be erased
+ * @param page - page number to erase the block the page is contained in
  * @retval FLASH_ERR_OK on success, < 0 on failure
  */
-FLASH_error_enum_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t addr)
+FLASH_error_enum_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t page)
 {
     // Split address into its 3 bytes
-    uint8_t addr_bytes[3] = {(addr >> 16) & 0xFF, (addr >> 8) & 0xFF, addr & 0xFF};
+    uint8_t addr_bytes[3] = {(page >> 16) & 0xFF, (page >> 8) & 0xFF, page & 0xFF};
 
     // Set Block Lock Register to 0x00
     uint8_t block_lock_reg_buffer[1] = {0};
@@ -493,15 +493,15 @@ FLASH_error_enum_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs
  * @brief Sends Page Program Command
  * @param hspi - Pointer to the SPI HAL handle
  * @param chip_number - the chip select number to activate
- * @param addr - block address that is to be written
+ * @param page - page number the data is to be written to
  * @param packet_buffer - Pointer to buffer containing data to write
  * @param packet_buffer_len - integer that indicates the size of the data to write
  * @retval FLASH_ERR_OK on success, < 0 on failure
  */
-FLASH_error_enum_t FLASH_write_data(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t addr, uint8_t *packet_buffer, lfs_size_t packet_buffer_len)
+FLASH_error_enum_t FLASH_write_data(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t page, uint8_t *packet_buffer, lfs_size_t packet_buffer_len)
 {
     // Split main address into its 3 bytes
-    uint8_t addr_bytes[3] = {(addr >> 16) & 0xFF, (addr >> 8) & 0xFF, addr & 0xFF};
+    uint8_t addr_bytes[3] = {(page >> 16) & 0xFF, (page >> 8) & 0xFF, page & 0xFF};
     
     // Define the address where data will be stored in cache register (First 4 bits are dummy bits)
     // TODO: Is it fine to always have this at 0?
@@ -646,14 +646,14 @@ FLASH_error_enum_t FLASH_write_data(SPI_HandleTypeDef *hspi, uint8_t chip_number
  * @brief Sends Page Read Command
  * @param hspi - Pointer to the SPI HAL handle
  * @param chip_number - The chip select number to activate
- * @param addr - Address to be read
+ * @param page - page number to be read
  * @param rx_buffer - A buffer where the read data will be stored
  * @param rx_buffer_len - Integer that indicates the capacity of `rx_buffer`
  * @retval FLASH_ERR_OK on success, < 0 on failure
  */
-FLASH_error_enum_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t addr, uint8_t *rx_buffer, lfs_size_t rx_buffer_len)
+FLASH_error_enum_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t page, uint8_t *rx_buffer, lfs_size_t rx_buffer_len)
 {
-    uint8_t read_addr_bytes[3] = {0, (addr >> 8) & 0xFF, addr & 0xFF};
+    uint8_t read_addr_bytes[3] = {(page >> 16) & 0xFF, (page >> 8) & 0xFF, page & 0xFF};
 
     // Define the address where data will be read from in cache register (First 4 bits are dummy bits)
     // TODO: Is it fine to always have this at 0?
