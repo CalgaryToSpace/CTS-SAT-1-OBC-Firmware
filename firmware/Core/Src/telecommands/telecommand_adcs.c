@@ -11,7 +11,7 @@
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_commands.h"
 #include "adcs_drivers/adcs_struct_packers.h"
-#include "adcs_drivers/adcs_types_TO_json.h"
+#include "adcs_drivers/adcs_types_to_json.h"
 
 /// @brief Telecommand: execute a generic command on the ADCS
 /// @param args_str 
