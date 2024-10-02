@@ -22,7 +22,7 @@ extern I2C_HandleTypeDef hi2c1; // allows not needing the parameters
 /// @brief Instructs the ADCS to determine whether the last command succeeded. (Doesn't work for telemetry requests, by design.)
 /// @param[out] ack Structure containing the formatted information about the last command sent.
 /// @return 0 if successful, non-zero if an error occurred in transmission.
-uint8_t ADCS_CMD_Ack(ADCS_cmd_ack_struct_t *ack) {
+uint8_t ADCS_cmd_ack(ADCS_cmd_ack_struct_t *ack) {
     uint8_t data_received[8]; // define temp buffer
     uint8_t data_length = 4;
 
@@ -40,7 +40,7 @@ uint8_t ADCS_CMD_Ack(ADCS_cmd_ack_struct_t *ack) {
 
 /// @brief Instruct the ADCS to execute the ADCS_Reset command.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Reset() {
+uint8_t ADCS_reset() {
     // returns telecommand error flag
     uint8_t data_send[1] = {ADCS_MAGIC_NUMBER};
     uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_RESET, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
@@ -50,7 +50,7 @@ uint8_t ADCS_Reset() {
 /// @brief Instruct the ADCS to execute the ADCS_Identification command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Identification(ADCS_id_struct_t *output_struct) {
+uint8_t ADCS_get_identification(ADCS_id_struct_t *output_struct) {
 
     uint8_t data_length = 8;
     uint8_t data_received[data_length]; // define temp buffer
@@ -65,7 +65,7 @@ uint8_t ADCS_Get_Identification(ADCS_id_struct_t *output_struct) {
 /// @brief Instruct the ADCS to execute the ADCS_Program_Status command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Program_Status(ADCS_boot_running_status_struct_t *output_struct) {
+uint8_t ADCS_get_program_status(ADCS_boot_running_status_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -79,7 +79,7 @@ uint8_t ADCS_Get_Program_Status(ADCS_boot_running_status_struct_t *output_struct
 /// @brief Instruct the ADCS to execute the ADCS_Communication_Status command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Communication_Status(ADCS_comms_status_struct_t *output_struct) {
+uint8_t ADCS_get_communication_status(ADCS_comms_status_struct_t *output_struct) {
     // returns I2C communication status of the ADCS (Table 37)
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
@@ -93,7 +93,7 @@ uint8_t ADCS_Get_Communication_Status(ADCS_comms_status_struct_t *output_struct)
 
 /// @brief Instruct the ADCS to execute the ADCS_Deploy_Magnetometer command.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Deploy_Magnetometer(uint8_t deploy_timeout) {
+uint8_t ADCS_deploy_magnetometer(uint8_t deploy_timeout) {
     // Deploys the magnetometer boom, timeout in seconds
     uint8_t data_send[1] = {deploy_timeout};
     uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_DEPLOY_MAGNETOMETER_BOOM, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
@@ -103,7 +103,7 @@ uint8_t ADCS_Deploy_Magnetometer(uint8_t deploy_timeout) {
 /// @brief Instruct the ADCS to execute the ADCS_Set_Run_Mode command.
 /// @param[in] mode Run mode to set; can be can be off (0), enabled (1), triggered (2), or simulation (3)
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Set_Run_Mode(ADCS_run_mode_enum_t mode) {
+uint8_t ADCS_set_run_mode(ADCS_run_mode_enum_t mode) {
     uint8_t data_send[1] = {mode};
     uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_ADCS_RUN_MODE, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
@@ -111,7 +111,7 @@ uint8_t ADCS_Set_Run_Mode(ADCS_run_mode_enum_t mode) {
 
 /// @brief Instruct the ADCS to execute the ADCS_Clear_Errors command.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Clear_Errors() {
+uint8_t ADCS_clear_errors() {
     // Clears error flags
     // NOTE: THERE IS ANOTHER, SEPARATE CLEAR ERROR FLAG TC FOR THE BOOTLODER (ADCS_COMMAND_BL_CLEAR_ERRORS)
     uint8_t data_send[1] = {192}; // 0b11000000
@@ -123,7 +123,7 @@ uint8_t ADCS_Clear_Errors() {
 /// @param mode Control mode to set (Table 77 in Firmware Manual)
 /// @param timeout Timeout to set control mode
 /// @return 0 if successful, non-zero if an error occurred in transmission.
-uint8_t ADCS_Attitude_Control_Mode(ADCS_control_mode_enum_t mode, uint16_t timeout) {
+uint8_t ADCS_attitude_control_mode(ADCS_control_mode_enum_t mode, uint16_t timeout) {
     // Sets the ADCS attitude control mode
     // See User Manual, Section 4.4.3 Table 3 for requirements to switch control mode
     uint8_t data_send[3] = {mode, timeout & 0x00FF, timeout >> 8};
@@ -133,7 +133,7 @@ uint8_t ADCS_Attitude_Control_Mode(ADCS_control_mode_enum_t mode, uint16_t timeo
 
 /// @brief Instruct the ADCS to execute the ADCS_Attitude_Estimation_Mode command.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Attitude_Estimation_Mode(ADCS_estimation_mode_enum_t mode) {
+uint8_t ADCS_attitude_estimation_mode(ADCS_estimation_mode_enum_t mode) {
     // Sets the ADCS attitude estimation mode
     // Possible values for mode given in Section 6.3 Table 80 of Firmware Reference Manual (ranges from 0 to 7)
     // needs power control to be on
@@ -144,7 +144,7 @@ uint8_t ADCS_Attitude_Estimation_Mode(ADCS_estimation_mode_enum_t mode) {
 
 /// @brief Instruct the ADCS to execute the ADCS_Run_Once command.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Run_Once() {
+uint8_t ADCS_run_once() {
     // requires ADCS_Enable_Triggered to have run first
     // (if ADCS_Enable_On has run instead, then this is unnecessary)
     uint8_t data_send[1]; // 0-byte data (from manual) input into wrapper, but one-byte here to avoid warnings
@@ -155,7 +155,7 @@ uint8_t ADCS_Run_Once() {
 /// @brief Instruct the ADCS to execute the titular command.
 /// @param mode Mode to set (Table 89 in Firmware Manual)
 /// @return 0 if successful, non-zero if an error occurred in transmission.
-uint8_t ADCS_Set_Magnetometer_Mode(ADCS_magnetometer_mode_enum_t mode) {
+uint8_t ADCS_set_magnetometer_mode(ADCS_magnetometer_mode_enum_t mode) {
     uint8_t data_send[1] = {mode};
     uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SET_MODE_OF_MAGNETOMETER_OPERATION, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
@@ -163,7 +163,7 @@ uint8_t ADCS_Set_Magnetometer_Mode(ADCS_magnetometer_mode_enum_t mode) {
 
 /// @brief Instruct the ADCS to execute the ADCS_Set_Magnetorquer_Output command.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Set_Magnetorquer_Output(double x_duty, double y_duty, double z_duty) {
+uint8_t ADCS_set_magnetorquer_output(double x_duty, double y_duty, double z_duty) {
     // only valid after ADCS_Enable_Manual_Control is run
     // for the duty equations, raw parameter value is obtained using the formula: (raw parameter) = (formatted value)*1000.0
     // duty >> 8 gives upper byte, duty & 0x00FF gives lower byte
@@ -181,7 +181,7 @@ uint8_t ADCS_Set_Magnetorquer_Output(double x_duty, double y_duty, double z_duty
 /// @param y_speed Wheel speed Y value
 /// @param z_speed Wheel speed Z value
 /// @return 0 if successful, non-zero if an error occurred in transmission.
-uint8_t ADCS_Set_Wheel_Speed(int16_t x_speed, int16_t y_speed, int16_t z_speed) {
+uint8_t ADCS_set_wheel_speed(int16_t x_speed, int16_t y_speed, int16_t z_speed) {
     // only valid after ADCS_Enable_Manual_Control is run
     // for the duty equations, raw parameter value is in rpm
     uint8_t data_send[6]; // 6-byte data to send
@@ -205,7 +205,7 @@ uint8_t ADCS_Set_Wheel_Speed(int16_t x_speed, int16_t y_speed, int16_t z_speed) 
 /// @param motor_power Power control mode for motor
 /// @param gps_power Power control mode for gps
 /// @return 0 if successful, non-zero if an error occurred in transmission.
-uint8_t ADCS_Set_Power_Control(ADCS_power_select_enum_t cube_control_signal, ADCS_power_select_enum_t cube_control_motor, ADCS_power_select_enum_t cube_sense1,
+uint8_t ADCS_set_power_control(ADCS_power_select_enum_t cube_control_signal, ADCS_power_select_enum_t cube_control_motor, ADCS_power_select_enum_t cube_sense1,
         ADCS_power_select_enum_t cube_sense2, ADCS_power_select_enum_t cube_star_power, ADCS_power_select_enum_t cube_wheel1_power,
         ADCS_power_select_enum_t cube_wheel2_power, ADCS_power_select_enum_t cube_wheel3_power, ADCS_power_select_enum_t motor_power,
         ADCS_power_select_enum_t gps_power) {
@@ -221,7 +221,7 @@ uint8_t ADCS_Set_Power_Control(ADCS_power_select_enum_t cube_control_signal, ADC
 /// @brief Instruct the ADCS to execute the ADCS_Get_Power_Control command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Power_Control(ADCS_power_control_struct_t *output_struct) {
+uint8_t ADCS_get_power_control(ADCS_power_control_struct_t *output_struct) {
     uint8_t data_length = 3;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -247,7 +247,7 @@ uint8_t ADCS_Get_Power_Control(ADCS_power_control_struct_t *output_struct) {
 /// @param sensitivity_matrix_s31 Value (3, 1) of the magnetometer sensitivity matrix
 /// @param sensitivity_matrix_s32 Value (3, 2) of the magnetometer sensitivity matrix
 /// @return 0 if successful, non-zero if an error occurred in transmission.
-uint8_t ADCS_Set_Magnetometer_Config(
+uint8_t ADCS_set_magnetometer_config(
         double mounting_transform_alpha_angle,
         double mounting_transform_beta_angle,
         double mounting_transform_gamma_angle,
@@ -292,7 +292,7 @@ uint8_t ADCS_Set_Magnetometer_Config(
 
 /// @brief Instruct the ADCS to execute the ADCS_Save_Config command.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Save_Config() {
+uint8_t ADCS_save_config() {
     uint8_t data_send[1]; // 0-byte data (from manual) input into wrapper, but one-byte here to avoid warnings
     uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SAVE_CONFIG, data_send, 0, ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
@@ -300,7 +300,7 @@ uint8_t ADCS_Save_Config() {
 
 /// @brief Instruct the ADCS to execute the ADCS_Save_Orbit_Params command.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Save_Orbit_Params() {
+uint8_t ADCS_save_orbit_params() {
     uint8_t data_send[1]; // 0-byte data (from manual) input into wrapper, but one-byte here to avoid warnings
     uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SAVE_ORBIT_PARAMS, data_send, 0, ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
@@ -309,7 +309,7 @@ uint8_t ADCS_Save_Orbit_Params() {
 /// @brief Instruct the ADCS to execute the ADCS_Estimate_Angular_Rates command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Estimate_Angular_Rates(ADCS_angular_rates_struct_t *output_struct) {
+uint8_t ADCS_get_estimate_angular_rates(ADCS_angular_rates_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -323,7 +323,7 @@ uint8_t ADCS_Get_Estimate_Angular_Rates(ADCS_angular_rates_struct_t *output_stru
 /// @brief Instruct the ADCS to execute the ADCS_Get_LLH_Position command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_LLH_Position(ADCS_llh_position_struct_t *output_struct) {
+uint8_t ADCS_get_llh_position(ADCS_llh_position_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -336,7 +336,7 @@ uint8_t ADCS_Get_LLH_Position(ADCS_llh_position_struct_t *output_struct) {
 
 /// @brief Instruct the ADCS to execute the ADCS_Bootloader_Clear_Errors command.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Bootloader_Clear_Errors() {
+uint8_t ADCS_bootloader_clear_errors() {
     uint8_t data_send[1]; // 0-byte data (from manual) input into wrapper, but one-byte here to avoid warnings
     uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_BOOTLOADER_CLEAR_ERRORS, data_send, 0, ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
@@ -348,7 +348,7 @@ uint8_t ADCS_Bootloader_Clear_Errors() {
 /// @param[in] save_periodic whether to save the current Unix time periodically (bool passed as int; 1 = save periodically, 0 = don't)
 /// @param[in] period the period of saving the current Unix time
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Set_Unix_Time_Save_Mode(bool save_now, bool save_on_update, bool save_periodic, uint8_t period) {
+uint8_t ADCS_set_unix_time_save_mode(bool save_now, bool save_on_update, bool save_periodic, uint8_t period) {
     uint8_t data_send[2] = { (save_now | (save_on_update << 1) | (save_periodic << 2) ) , period}; // 2-byte data (from manual)
     uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SET_UNIX_TIME_SAVE_TO_FLASH, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
@@ -357,7 +357,7 @@ uint8_t ADCS_Set_Unix_Time_Save_Mode(bool save_now, bool save_on_update, bool sa
 /// @brief Instruct the ADCS to execute the ADCS_Get_Unix_Time_Save_Mode command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Unix_Time_Save_Mode(ADCS_set_unix_time_save_mode_struct_t *output_struct) {
+uint8_t ADCS_get_unix_time_save_mode(ADCS_set_unix_time_save_mode_struct_t *output_struct) {
     uint8_t data_length = 2;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -378,7 +378,7 @@ uint8_t ADCS_Get_Unix_Time_Save_Mode(ADCS_set_unix_time_save_mode_struct_t *outp
 /// @param[in] mean_anomaly mean anomaly (degrees)
 /// @param[in] epoch epoch (double; integer component is year, decimal component is day)
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Set_SGP4_Orbit_Params(double inclination, double eccentricity, double ascending_node_right_ascension,
+uint8_t ADCS_set_sgp4_orbit_params(double inclination, double eccentricity, double ascending_node_right_ascension,
                                 //         degrees,               dimensionless,             degrees
         double perigee_argument, double b_star_drag_term, double mean_motion, double mean_anomaly, double epoch) {
         // degrees,                    dimensionless,            orbits/day,            degrees,            years.days
@@ -402,7 +402,7 @@ uint8_t ADCS_Set_SGP4_Orbit_Params(double inclination, double eccentricity, doub
 /// @brief Instruct the ADCS to execute the ADCS_Get_SGP4_Orbit_Params command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_SGP4_Orbit_Params(ADCS_orbit_params_struct_t *output_struct) {
+uint8_t ADCS_get_sgp4_orbit_params(ADCS_orbit_params_struct_t *output_struct) {
     uint8_t data_length = 64;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -416,7 +416,7 @@ uint8_t ADCS_Get_SGP4_Orbit_Params(ADCS_orbit_params_struct_t *output_struct) {
 /// @brief Instruct the ADCS to execute the ADCS_Rate_Sensor_Rates command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Rate_Sensor_Rates(ADCS_rated_sensor_rates_struct_t *output_struct) {
+uint8_t ADCS_get_rate_sensor_rates(ADCS_rated_sensor_rates_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -430,7 +430,7 @@ uint8_t ADCS_Get_Rate_Sensor_Rates(ADCS_rated_sensor_rates_struct_t *output_stru
 /// @brief Instruct the ADCS to execute the ADCS_Get_Wheel_Speed command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Wheel_Speed(ADCS_wheel_speed_struct_t *output_struct) {
+uint8_t ADCS_get_wheel_speed(ADCS_wheel_speed_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -444,7 +444,7 @@ uint8_t ADCS_Get_Wheel_Speed(ADCS_wheel_speed_struct_t *output_struct) {
 /// @brief Instruct the ADCS to execute the ADCS_Get_Magnetorquer_Command command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Magnetorquer_Command(ADCS_magnetorquer_command_struct_t *output_struct) {
+uint8_t ADCS_get_magnetorquer_command(ADCS_magnetorquer_command_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -458,7 +458,7 @@ uint8_t ADCS_Get_Magnetorquer_Command(ADCS_magnetorquer_command_struct_t *output
 /// @brief Instruct the ADCS to execute the ADCS_Get_Raw_Magnetometer_Values command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Raw_Magnetometer_Values(ADCS_raw_magnetometer_values_struct_t *output_struct) {
+uint8_t ADCS_get_raw_magnetometer_values(ADCS_raw_magnetometer_values_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -472,7 +472,7 @@ uint8_t ADCS_Get_Raw_Magnetometer_Values(ADCS_raw_magnetometer_values_struct_t *
 /// @brief Instruct the ADCS to execute the ADCS_Estimate_Fine_Angular_Rates command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Estimate_Fine_Angular_Rates(ADCS_fine_angular_rates_struct_t *output_struct) {
+uint8_t ADCS_get_estimate_fine_angular_rates(ADCS_fine_angular_rates_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -486,7 +486,7 @@ uint8_t ADCS_Get_Estimate_Fine_Angular_Rates(ADCS_fine_angular_rates_struct_t *o
 /// @brief Instruct the ADCS to execute the ADCS_Get_Magnetometer_Config command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Magnetometer_Config(ADCS_magnetometer_config_struct_t *output_struct) {
+uint8_t ADCS_get_magnetometer_config(ADCS_magnetometer_config_struct_t *output_struct) {
     uint8_t data_length = 30;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -500,7 +500,7 @@ uint8_t ADCS_Get_Magnetometer_Config(ADCS_magnetometer_config_struct_t *output_s
 /// @brief Instruct the ADCS to execute the ADCS_Get_Commanded_Attitude_Angles command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Commanded_Attitude_Angles(ADCS_commanded_angles_struct_t *output_struct) {
+uint8_t ADCS_get_commanded_attitude_angles(ADCS_commanded_angles_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -516,7 +516,7 @@ uint8_t ADCS_Get_Commanded_Attitude_Angles(ADCS_commanded_angles_struct_t *outpu
 /// @param[in] y y attitude angle
 /// @param[in] z z attitude angle
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Set_Commanded_Attitude_Angles(double x, double y, double z) {
+uint8_t ADCS_set_commanded_attitude_angles(double x, double y, double z) {
     // raw parameter value is obtained using the formula: (raw parameter) = (formatted value)*100.0
     // angle >> 8 gives upper byte, angle & 0x00FF gives lower byte
     uint8_t data_send[6];
@@ -548,7 +548,7 @@ uint8_t ADCS_Set_Commanded_Attitude_Angles(double x, double y, double z) {
 /// @param[in] wheel_30s_power_up_delay present in CubeSupport but not in the manual -- need to test
 /// @param[in] cam1_and_cam2_sampling_period the manual calls it this, but CubeSupport calls it "error counter reset period" -- need to test
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Set_Estimation_Params(
+uint8_t ADCS_set_estimation_params(
                                 float magnetometer_rate_filter_system_noise, 
                                 float extended_kalman_filter_system_noise, 
                                 float coarse_sun_sensor_measurement_noise, 
@@ -593,7 +593,7 @@ uint8_t ADCS_Set_Estimation_Params(
 /// @brief Instruct the ADCS to execute the ADCS_Get_Estimation_Params command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Estimation_Params(ADCS_estimation_params_struct_t *output_struct) {
+uint8_t ADCS_get_estimation_params(ADCS_estimation_params_struct_t *output_struct) {
     uint8_t data_length = 31;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -621,7 +621,7 @@ uint8_t ADCS_Get_Estimation_Params(ADCS_estimation_params_struct_t *output_struc
 /// @param[in] max_lag Maximum lagged timestamp measurements to incorporate
 /// @param[in] min_samples Minimum samples to use to get Augmented_SGP4
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Set_Augmented_SGP4_Params(double incl_coefficient, double raan_coefficient, double ecc_coefficient, double aop_coefficient, double time_coefficient, double pos_coefficient, double maximum_position_error, ADCS_augmented_sgp4_filter_enum_t augmented_sgp4_filter, double xp_coefficient, double yp_coefficient, uint8_t gps_roll_over, double position_sd, double velocity_sd, uint8_t min_satellites, double time_gain, double max_lag, uint16_t min_samples) {
+uint8_t ADCS_set_augmented_sgp4_params(double incl_coefficient, double raan_coefficient, double ecc_coefficient, double aop_coefficient, double time_coefficient, double pos_coefficient, double maximum_position_error, ADCS_augmented_sgp4_filter_enum_t augmented_sgp4_filter, double xp_coefficient, double yp_coefficient, uint8_t gps_roll_over, double position_sd, double velocity_sd, uint8_t min_satellites, double time_gain, double max_lag, uint16_t min_samples) {
     uint8_t data_send[30]; // from Table 209
 
     // populate data_send
@@ -650,7 +650,7 @@ uint8_t ADCS_Set_Augmented_SGP4_Params(double incl_coefficient, double raan_coef
 /// @brief Instruct the ADCS to execute the ADCS_Get_Augmented_SGP4_Params command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Augmented_SGP4_Params(ADCS_augmented_sgp4_params_struct_t *output_struct) {
+uint8_t ADCS_get_augmented_sgp4_params(ADCS_augmented_sgp4_params_struct_t *output_struct) {
     uint8_t data_length = 30;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -664,7 +664,7 @@ uint8_t ADCS_Get_Augmented_SGP4_Params(ADCS_augmented_sgp4_params_struct_t *outp
 /// @param[in] lat latitude
 /// @param[in] alt altitude
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Set_Tracking_Controller_Target_Reference(float lon, float lat, float alt) {
+uint8_t ADCS_set_tracking_controller_target_reference(float lon, float lat, float alt) {
     uint8_t data_send[12];
 
     // float uses IEEE 754 float32, with all bytes reversed, so eg. 1.1 becomes [0xCD, 0xCC, 0x8C, 0x3F]
@@ -681,7 +681,7 @@ uint8_t ADCS_Set_Tracking_Controller_Target_Reference(float lon, float lat, floa
 /// @brief Instruct the ADCS to execute the ADCS_Get_Tracking_Controller_Target_Reference command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Tracking_Controller_Target_Reference(ADCS_tracking_controller_target_struct_t *output_struct) {
+uint8_t ADCS_get_tracking_controller_target_reference(ADCS_tracking_controller_target_struct_t *output_struct) {
     uint8_t data_length = 12;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -701,7 +701,7 @@ uint8_t ADCS_Get_Tracking_Controller_Target_Reference(ADCS_tracking_controller_t
 /// @param[in] z_rate_offset z-rate sensor offset
 /// @param[in] rate_sensor_mult multiplier of rate sensor measurement
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Set_Rate_Gyro_Config(ADCS_axis_select_enum_t gyro1, ADCS_axis_select_enum_t gyro2, ADCS_axis_select_enum_t gyro3, double x_rate_offset, double y_rate_offset, double z_rate_offset, uint8_t rate_sensor_mult) {
+uint8_t ADCS_set_rate_gyro_config(ADCS_axis_select_enum_t gyro1, ADCS_axis_select_enum_t gyro2, ADCS_axis_select_enum_t gyro3, double x_rate_offset, double y_rate_offset, double z_rate_offset, uint8_t rate_sensor_mult) {
     uint8_t data_send[10];
 
     data_send[0] = (uint8_t) gyro1;
@@ -721,7 +721,7 @@ uint8_t ADCS_Set_Rate_Gyro_Config(ADCS_axis_select_enum_t gyro1, ADCS_axis_selec
 /// @brief Instruct the ADCS to execute the ADCS_Get_Rate_Gyro_Config command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Rate_Gyro_Config(ADCS_rate_gyro_config_struct_t *output_struct) {
+uint8_t ADCS_get_rate_gyro_config(ADCS_rate_gyro_config_struct_t *output_struct) {
     uint8_t data_length = 12;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -735,7 +735,7 @@ uint8_t ADCS_Get_Rate_Gyro_Config(ADCS_rate_gyro_config_struct_t *output_struct)
 /// @brief Instruct the ADCS to execute the ADCS_Estimated_Attitude_Angles command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Estimated_Attitude_Angles(ADCS_estimated_attitude_angles_struct_t *output_struct) {
+uint8_t ADCS_get_estimated_attitude_angles(ADCS_estimated_attitude_angles_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -749,7 +749,7 @@ uint8_t ADCS_Get_Estimated_Attitude_Angles(ADCS_estimated_attitude_angles_struct
 /// @brief Instruct the ADCS to execute the ADCS_Magnetic_Field_Vector command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Magnetic_Field_Vector(ADCS_magnetic_field_vector_struct_t *output_struct) {
+uint8_t ADCS_get_magnetic_field_vector(ADCS_magnetic_field_vector_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -763,7 +763,7 @@ uint8_t ADCS_Get_Magnetic_Field_Vector(ADCS_magnetic_field_vector_struct_t *outp
 /// @brief Instruct the ADCS to execute the ADCS_Fine_Sun_Vector command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Fine_Sun_Vector(ADCS_fine_sun_vector_struct_t *output_struct) {
+uint8_t ADCS_get_fine_sun_vector(ADCS_fine_sun_vector_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -777,7 +777,7 @@ uint8_t ADCS_Get_Fine_Sun_Vector(ADCS_fine_sun_vector_struct_t *output_struct) {
 /// @brief Instruct the ADCS to execute the ADCS_Nadir_Vector command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Nadir_Vector(ADCS_nadir_vector_struct_t *output_struct) {
+uint8_t ADCS_get_nadir_vector(ADCS_nadir_vector_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -791,7 +791,7 @@ uint8_t ADCS_Get_Nadir_Vector(ADCS_nadir_vector_struct_t *output_struct) {
 /// @brief Instruct the ADCS to execute the ADCS_Commanded_Wheel_Speed command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Commanded_Wheel_Speed(ADCS_wheel_speed_struct_t *output_struct) {
+uint8_t ADCS_get_commanded_wheel_speed(ADCS_wheel_speed_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -805,7 +805,7 @@ uint8_t ADCS_Get_Commanded_Wheel_Speed(ADCS_wheel_speed_struct_t *output_struct)
 /// @brief Instruct the ADCS to execute the ADCS_IGRF_Magnetic_Field_Vector command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_IGRF_Magnetic_Field_Vector(ADCS_magnetic_field_vector_struct_t *output_struct) {
+uint8_t ADCS_get_igrf_magnetic_field_vector(ADCS_magnetic_field_vector_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -819,7 +819,7 @@ uint8_t ADCS_Get_IGRF_Magnetic_Field_Vector(ADCS_magnetic_field_vector_struct_t 
 /// @brief Instruct the ADCS to execute the ADCS_Quaternion_Error_Vector command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Quaternion_Error_Vector(ADCS_quaternion_error_vector_struct_t *output_struct) {
+uint8_t ADCS_get_quaternion_error_vector(ADCS_quaternion_error_vector_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -833,7 +833,7 @@ uint8_t ADCS_Get_Quaternion_Error_Vector(ADCS_quaternion_error_vector_struct_t *
 /// @brief Instruct the ADCS to execute the ADCS_Estimated_Gyro_Bias command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Estimated_Gyro_Bias(ADCS_estimated_gyro_bias_struct_t *output_struct) {
+uint8_t ADCS_get_estimated_gyro_bias(ADCS_estimated_gyro_bias_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -847,7 +847,7 @@ uint8_t ADCS_Get_Estimated_Gyro_Bias(ADCS_estimated_gyro_bias_struct_t *output_s
 /// @brief Instruct the ADCS to execute the ADCS_Estimation_Innovation_Vector command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Estimation_Innovation_Vector(ADCS_estimation_innovation_vector_struct_t *output_struct) {
+uint8_t ADCS_get_estimation_innovation_vector(ADCS_estimation_innovation_vector_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -861,7 +861,7 @@ uint8_t ADCS_Get_Estimation_Innovation_Vector(ADCS_estimation_innovation_vector_
 /// @brief Instruct the ADCS to execute the ADCS_Raw_Cam1_Sensor command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Raw_Cam1_Sensor(ADCS_raw_cam_sensor_struct_t *output_struct) {
+uint8_t ADCS_get_raw_cam1_sensor(ADCS_raw_cam_sensor_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -875,7 +875,7 @@ uint8_t ADCS_Get_Raw_Cam1_Sensor(ADCS_raw_cam_sensor_struct_t *output_struct) {
 /// @brief Instruct the ADCS to execute the ADCS_Raw_Cam2_Sensor command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Raw_Cam2_Sensor(ADCS_raw_cam_sensor_struct_t *output_struct) {
+uint8_t ADCS_get_raw_cam2_sensor(ADCS_raw_cam_sensor_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -889,7 +889,7 @@ uint8_t ADCS_Get_Raw_Cam2_Sensor(ADCS_raw_cam_sensor_struct_t *output_struct) {
 /// @brief Instruct the ADCS to execute the ADCS_Raw_Coarse_Sun_Sensor_1_to_6 command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Raw_Coarse_Sun_Sensor_1_to_6(ADCS_raw_coarse_sun_sensor_1_to_6_struct_t *output_struct) {
+uint8_t ADCS_get_raw_coarse_sun_sensor_1_to_6(ADCS_raw_coarse_sun_sensor_1_to_6_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -903,7 +903,7 @@ uint8_t ADCS_Get_Raw_Coarse_Sun_Sensor_1_to_6(ADCS_raw_coarse_sun_sensor_1_to_6_
 /// @brief Instruct the ADCS to execute the ADCS_Raw_Coarse_Sun_Sensor_7_to_10 command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Raw_Coarse_Sun_Sensor_7_to_10(ADCS_raw_coarse_sun_sensor_7_to_10_struct_t *output_struct) {
+uint8_t ADCS_get_raw_coarse_sun_sensor_7_to_10(ADCS_raw_coarse_sun_sensor_7_to_10_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -917,7 +917,7 @@ uint8_t ADCS_Get_Raw_Coarse_Sun_Sensor_7_to_10(ADCS_raw_coarse_sun_sensor_7_to_1
 /// @brief Instruct the ADCS to execute the ADCS_CubeControl_Current command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_CubeControl_Current(ADCS_cubecontrol_current_struct_t *output_struct) {
+uint8_t ADCS_get_cubecontrol_current(ADCS_cubecontrol_current_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -931,7 +931,7 @@ uint8_t ADCS_Get_CubeControl_Current(ADCS_cubecontrol_current_struct_t *output_s
 /// @brief Instruct the ADCS to execute the ADCS_Raw_GPS_Status command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Raw_GPS_Status(ADCS_raw_gps_status_struct_t *output_struct) {
+uint8_t ADCS_get_raw_gps_status(ADCS_raw_gps_status_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -945,7 +945,7 @@ uint8_t ADCS_Get_Raw_GPS_Status(ADCS_raw_gps_status_struct_t *output_struct) {
 /// @brief Instruct the ADCS to execute the ADCS_Raw_GPS_Time command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Raw_GPS_Time(ADCS_raw_gps_time_struct_t *output_struct) {
+uint8_t ADCS_get_raw_gps_time(ADCS_raw_gps_time_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -959,7 +959,7 @@ uint8_t ADCS_Get_Raw_GPS_Time(ADCS_raw_gps_time_struct_t *output_struct) {
 /// @brief Instruct the ADCS to execute the ADCS_Raw_GPS_X command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Raw_GPS_X(ADCS_raw_gps_struct_t *output_struct) {
+uint8_t ADCS_get_raw_gps_x(ADCS_raw_gps_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -973,7 +973,7 @@ uint8_t ADCS_Get_Raw_GPS_X(ADCS_raw_gps_struct_t *output_struct) {
 /// @brief Instruct the ADCS to execute the ADCS_Raw_GPS_Y command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Raw_GPS_Y(ADCS_raw_gps_struct_t *output_struct) {
+uint8_t ADCS_get_raw_gps_y(ADCS_raw_gps_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -987,7 +987,7 @@ uint8_t ADCS_Get_Raw_GPS_Y(ADCS_raw_gps_struct_t *output_struct) {
 /// @brief Instruct the ADCS to execute the ADCS_Raw_GPS_Z command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Raw_GPS_Z(ADCS_raw_gps_struct_t *output_struct) {
+uint8_t ADCS_get_raw_gps_z(ADCS_raw_gps_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; // define temp buffer
 
@@ -1001,7 +1001,7 @@ uint8_t ADCS_Get_Raw_GPS_Z(ADCS_raw_gps_struct_t *output_struct) {
 /// @brief Instruct the ADCS to execute the ADCS_Measurements command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_Get_Measurements(ADCS_measurements_struct_t *output_struct) {
+uint8_t ADCS_get_measurements(ADCS_measurements_struct_t *output_struct) {
     uint8_t data_length = 72;
     uint8_t data_received[data_length]; // define temp buffer
 

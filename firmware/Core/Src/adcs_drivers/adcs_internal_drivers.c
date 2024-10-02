@@ -31,7 +31,7 @@ uint8_t ADCS_i2c_send_command_and_check(uint8_t id, uint8_t* data, uint32_t data
             uint8_t ack_status;
             uint8_t num_ack_tries = 0;
             while (!ack.processed) {
-                ack_status = ADCS_CMD_Ack(&ack); // confirm telecommand validity by checking the TC Error flag of the last read TC Acknowledge Telemetry Format.
+                ack_status = ADCS_cmd_ack(&ack); // confirm telecommand validity by checking the TC Error flag of the last read TC Acknowledge Telemetry Format.
                 if (ack_status != 0 && ack_status != 4) {
                     return ack_status; // there was an error in the command not related to checksum
                 }
@@ -168,7 +168,7 @@ uint8_t ADCS_convert_uint32_to_reversed_uint8_array_members(uint8_t *array, uint
 
 static uint8_t CRC8Table[256];
 
-/// @brief Initialise the lookup table for 8-bit CRC calculation.
+/// @brief Initialise the lookup table for 8-bit CRC calculation. Code provided by ADCS Firmware Reference Manual (p.18-19).
 /// @return 0 once successful.
 uint8_t ADCS_initialise_crc8_checksum() {
     int val;
@@ -186,7 +186,7 @@ uint8_t ADCS_initialise_crc8_checksum() {
     return 0;
 }
 
-/// @brief Calculates an 8-bit CRC value
+/// @brief Calculates an 8-bit CRC value. Code provided by ADCS Firmware Reference Manual (p.19).
 /// @param[in] buffer the buffer containing data for which to calculate the crc value
 /// @param[in] len the number of bytes of valid data in the buffer
 /// @return the CRC value calculated (which is 0xFF for an empty buffer)

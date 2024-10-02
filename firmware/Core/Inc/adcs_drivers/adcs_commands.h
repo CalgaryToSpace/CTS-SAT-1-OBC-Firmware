@@ -7,29 +7,29 @@
 /* Function Definitions */
 
 // ADCS functions
-uint8_t ADCS_Reset();
-uint8_t ADCS_Get_Identification(ADCS_id_struct_t *output_struct);
-uint8_t ADCS_Get_Program_Status(ADCS_boot_running_status_struct_t *output_struct);
-uint8_t ADCS_Get_Communication_Status(ADCS_comms_status_struct_t *output_struct);
-uint8_t ADCS_Deploy_Magnetometer(uint8_t deploy_timeout);
-uint8_t ADCS_Set_Run_Mode(ADCS_run_mode_enum_t mode);
-uint8_t ADCS_Clear_Errors();
-uint8_t ADCS_Attitude_Control_Mode(ADCS_control_mode_enum_t mode, uint16_t timeout);
-uint8_t ADCS_Attitude_Estimation_Mode(ADCS_estimation_mode_enum_t mode);
-uint8_t ADCS_CMD_Ack(ADCS_cmd_ack_struct_t *ack);
-uint8_t ADCS_Run_Once();
-uint8_t ADCS_Set_Magnetometer_Mode(ADCS_magnetometer_mode_enum_t mode);
-uint8_t ADCS_Set_Magnetorquer_Output(double x_duty, double y_duty, double z_duty);
-uint8_t ADCS_Set_Wheel_Speed(int16_t x_speed, int16_t y_speed, int16_t z_speed);
-uint8_t ADCS_Save_Config();
-uint8_t ADCS_Get_Estimate_Angular_Rates(ADCS_angular_rates_struct_t *output_struct);
-uint8_t ADCS_Get_LLH_Position(ADCS_llh_position_struct_t *output_struct);
-uint8_t ADCS_Get_Power_Control(ADCS_power_control_struct_t *output_struct);
-uint8_t ADCS_Set_Power_Control(ADCS_power_select_enum_t cube_control_signal, ADCS_power_select_enum_t cube_control_motor, ADCS_power_select_enum_t cube_sense1,
+uint8_t ADCS_reset();
+uint8_t ADCS_get_identification(ADCS_id_struct_t *output_struct);
+uint8_t ADCS_get_program_status(ADCS_boot_running_status_struct_t *output_struct);
+uint8_t ADCS_get_communication_status(ADCS_comms_status_struct_t *output_struct);
+uint8_t ADCS_deploy_magnetometer(uint8_t deploy_timeout);
+uint8_t ADCS_set_run_mode(ADCS_run_mode_enum_t mode);
+uint8_t ADCS_clear_errors();
+uint8_t ADCS_attitude_control_mode(ADCS_control_mode_enum_t mode, uint16_t timeout);
+uint8_t ADCS_attitude_estimation_mode(ADCS_estimation_mode_enum_t mode);
+uint8_t ADCS_cmd_ack(ADCS_cmd_ack_struct_t *ack);
+uint8_t ADCS_run_once();
+uint8_t ADCS_set_magnetometer_mode(ADCS_magnetometer_mode_enum_t mode);
+uint8_t ADCS_set_magnetorquer_output(double x_duty, double y_duty, double z_duty);
+uint8_t ADCS_set_wheel_speed(int16_t x_speed, int16_t y_speed, int16_t z_speed);
+uint8_t ADCS_save_config();
+uint8_t ADCS_get_estimate_angular_rates(ADCS_angular_rates_struct_t *output_struct);
+uint8_t ADCS_get_llh_position(ADCS_llh_position_struct_t *output_struct);
+uint8_t ADCS_get_power_control(ADCS_power_control_struct_t *output_struct);
+uint8_t ADCS_set_power_control(ADCS_power_select_enum_t cube_control_signal, ADCS_power_select_enum_t cube_control_motor, ADCS_power_select_enum_t cube_sense1,
         ADCS_power_select_enum_t cube_sense2, ADCS_power_select_enum_t cube_star_power, ADCS_power_select_enum_t cube_wheel1_power,
         ADCS_power_select_enum_t cube_wheel2_power, ADCS_power_select_enum_t cube_wheel3_power, ADCS_power_select_enum_t motor_power,
         ADCS_power_select_enum_t gps_power);
-uint8_t ADCS_Set_Magnetometer_Config(
+uint8_t ADCS_set_magnetometer_config(
         double mounting_transform_alpha_angle,
         double mounting_transform_beta_angle,
         double mounting_transform_gamma_angle,
@@ -45,21 +45,21 @@ uint8_t ADCS_Set_Magnetometer_Config(
         double sensitivity_matrix_s23,
         double sensitivity_matrix_s31,
         double sensitivity_matrix_s32);
-uint8_t ADCS_Bootloader_Clear_Errors();
-uint8_t ADCS_Set_Unix_Time_Save_Mode(bool save_now, bool save_on_update, bool save_periodic, uint8_t period);
-uint8_t ADCS_Get_Unix_Time_Save_Mode(ADCS_set_unix_time_save_mode_struct_t *output_struct);
-uint8_t ADCS_Set_SGP4_Orbit_Params(double inclination, double eccentricity, double ascending_node_right_ascension, double perigee_argument, double b_star_drag_term, double mean_motion, double mean_anomaly, double epoch);
-uint8_t ADCS_Get_SGP4_Orbit_Params(ADCS_orbit_params_struct_t *output_struct);
-uint8_t ADCS_Save_Orbit_Params();
-uint8_t ADCS_Get_Rate_Sensor_Rates(ADCS_rated_sensor_rates_struct_t *output_struct);
-uint8_t ADCS_Get_Wheel_Speed(ADCS_wheel_speed_struct_t *output_struct);
-uint8_t ADCS_Get_Magnetorquer_Command(ADCS_magnetorquer_command_struct_t *output_struct);
-uint8_t ADCS_Get_Raw_Magnetometer_Values(ADCS_raw_magnetometer_values_struct_t *output_struct);
-uint8_t ADCS_Get_Estimate_Fine_Angular_Rates(ADCS_fine_angular_rates_struct_t *output_struct);
-uint8_t ADCS_Get_Magnetometer_Config(ADCS_magnetometer_config_struct_t *output_struct);
-uint8_t ADCS_Get_Commanded_Attitude_Angles(ADCS_commanded_angles_struct_t *output_struct);
-uint8_t ADCS_Set_Commanded_Attitude_Angles(double x, double y, double z);
-uint8_t ADCS_Set_Estimation_Params(
+uint8_t ADCS_bootloader_clear_errors();
+uint8_t ADCS_set_unix_time_save_mode(bool save_now, bool save_on_update, bool save_periodic, uint8_t period);
+uint8_t ADCS_get_unix_time_save_mode(ADCS_set_unix_time_save_mode_struct_t *output_struct);
+uint8_t ADCS_set_sgp4_orbit_params(double inclination, double eccentricity, double ascending_node_right_ascension, double perigee_argument, double b_star_drag_term, double mean_motion, double mean_anomaly, double epoch);
+uint8_t ADCS_get_sgp4_orbit_params(ADCS_orbit_params_struct_t *output_struct);
+uint8_t ADCS_save_orbit_params();
+uint8_t ADCS_get_rate_sensor_rates(ADCS_rated_sensor_rates_struct_t *output_struct);
+uint8_t ADCS_get_wheel_speed(ADCS_wheel_speed_struct_t *output_struct);
+uint8_t ADCS_get_magnetorquer_command(ADCS_magnetorquer_command_struct_t *output_struct);
+uint8_t ADCS_get_raw_magnetometer_values(ADCS_raw_magnetometer_values_struct_t *output_struct);
+uint8_t ADCS_get_estimate_fine_angular_rates(ADCS_fine_angular_rates_struct_t *output_struct);
+uint8_t ADCS_get_magnetometer_config(ADCS_magnetometer_config_struct_t *output_struct);
+uint8_t ADCS_get_commanded_attitude_angles(ADCS_commanded_angles_struct_t *output_struct);
+uint8_t ADCS_set_commanded_attitude_angles(double x, double y, double z);
+uint8_t ADCS_set_estimation_params(
                                 float magnetometer_rate_filter_system_noise, 
                                 float extended_kalman_filter_system_noise, 
                                 float coarse_sun_sensor_measurement_noise, 
@@ -78,8 +78,8 @@ uint8_t ADCS_Set_Estimation_Params(
                                 bool automatic_estimation_transition_due_to_rate_sensor_errors, 
                                 bool wheel_30s_power_up_delay, // present in CubeSupport but not in the manual -- need to test
                                 uint8_t cam1_and_cam2_sampling_period);
-uint8_t ADCS_Get_Estimation_Params(ADCS_estimation_params_struct_t *output_struct);
-uint8_t ADCS_Set_Augmented_SGP4_Params(double incl_coefficient,
+uint8_t ADCS_get_estimation_params(ADCS_estimation_params_struct_t *output_struct);
+uint8_t ADCS_set_augmented_sgp4_params(double incl_coefficient,
                            double raan_coefficient,
                            double ecc_coefficient,
                            double aop_coefficient,
@@ -96,30 +96,30 @@ uint8_t ADCS_Set_Augmented_SGP4_Params(double incl_coefficient,
                            double time_gain,
                            double max_lag,
                            uint16_t min_samples);
-uint8_t ADCS_Get_Augmented_SGP4_Params(ADCS_augmented_sgp4_params_struct_t *output_struct);
-uint8_t ADCS_Set_Tracking_Controller_Target_Reference(float lon, float lat, float alt);
-uint8_t ADCS_Get_Tracking_Controller_Target_Reference(ADCS_tracking_controller_target_struct_t *output_struct);
-uint8_t ADCS_Set_Rate_Gyro_Config(ADCS_axis_select_enum_t gyro1, ADCS_axis_select_enum_t gyro2, ADCS_axis_select_enum_t gyro3, double x_rate_offset, double y_rate_offset, double z_rate_offset, uint8_t rate_sensor_mult);
-uint8_t ADCS_Get_Rate_Gyro_Config(ADCS_rate_gyro_config_struct_t *output_struct);
-uint8_t ADCS_Get_Estimated_Attitude_Angles(ADCS_estimated_attitude_angles_struct_t *output_struct);
-uint8_t ADCS_Get_Magnetic_Field_Vector(ADCS_magnetic_field_vector_struct_t *output_struct);
-uint8_t ADCS_Get_Fine_Sun_Vector(ADCS_fine_sun_vector_struct_t *output_struct);
-uint8_t ADCS_Get_Nadir_Vector(ADCS_nadir_vector_struct_t *output_struct);
-uint8_t ADCS_Get_Commanded_Wheel_Speed(ADCS_wheel_speed_struct_t *output_struct);
-uint8_t ADCS_Get_IGRF_Magnetic_Field_Vector(ADCS_magnetic_field_vector_struct_t *output_struct);
-uint8_t ADCS_Get_Quaternion_Error_Vector(ADCS_quaternion_error_vector_struct_t *output_struct);
-uint8_t ADCS_Get_Estimated_Gyro_Bias(ADCS_estimated_gyro_bias_struct_t *output_struct);
-uint8_t ADCS_Get_Estimation_Innovation_Vector(ADCS_estimation_innovation_vector_struct_t *output_struct);
-uint8_t ADCS_Get_Raw_Cam1_Sensor(ADCS_raw_cam_sensor_struct_t *output_struct);
-uint8_t ADCS_Get_Raw_Cam2_Sensor(ADCS_raw_cam_sensor_struct_t *output_struct);
-uint8_t ADCS_Get_Raw_Coarse_Sun_Sensor_1_to_6(ADCS_raw_coarse_sun_sensor_1_to_6_struct_t *output_struct);
-uint8_t ADCS_Get_Raw_Coarse_Sun_Sensor_7_to_10(ADCS_raw_coarse_sun_sensor_7_to_10_struct_t *output_struct);
-uint8_t ADCS_Get_CubeControl_Current(ADCS_cubecontrol_current_struct_t *output_struct);
-uint8_t ADCS_Get_Raw_GPS_Status(ADCS_raw_gps_status_struct_t *output_struct);
-uint8_t ADCS_Get_Raw_GPS_Time(ADCS_raw_gps_time_struct_t *output_struct);
-uint8_t ADCS_Get_Raw_GPS_X(ADCS_raw_gps_struct_t *output_struct);
-uint8_t ADCS_Get_Raw_GPS_Y(ADCS_raw_gps_struct_t *output_struct);
-uint8_t ADCS_Get_Raw_GPS_Z(ADCS_raw_gps_struct_t *output_struct);
-uint8_t ADCS_Get_Measurements(ADCS_measurements_struct_t *output_struct);
+uint8_t ADCS_get_augmented_sgp4_params(ADCS_augmented_sgp4_params_struct_t *output_struct);
+uint8_t ADCS_set_tracking_controller_target_reference(float lon, float lat, float alt);
+uint8_t ADCS_get_tracking_controller_target_reference(ADCS_tracking_controller_target_struct_t *output_struct);
+uint8_t ADCS_set_rate_gyro_config(ADCS_axis_select_enum_t gyro1, ADCS_axis_select_enum_t gyro2, ADCS_axis_select_enum_t gyro3, double x_rate_offset, double y_rate_offset, double z_rate_offset, uint8_t rate_sensor_mult);
+uint8_t ADCS_get_rate_gyro_config(ADCS_rate_gyro_config_struct_t *output_struct);
+uint8_t ADCS_get_estimated_attitude_angles(ADCS_estimated_attitude_angles_struct_t *output_struct);
+uint8_t ADCS_get_magnetic_field_vector(ADCS_magnetic_field_vector_struct_t *output_struct);
+uint8_t ADCS_get_fine_sun_vector(ADCS_fine_sun_vector_struct_t *output_struct);
+uint8_t ADCS_get_nadir_vector(ADCS_nadir_vector_struct_t *output_struct);
+uint8_t ADCS_get_commanded_wheel_speed(ADCS_wheel_speed_struct_t *output_struct);
+uint8_t ADCS_get_igrf_magnetic_field_vector(ADCS_magnetic_field_vector_struct_t *output_struct);
+uint8_t ADCS_get_quaternion_error_vector(ADCS_quaternion_error_vector_struct_t *output_struct);
+uint8_t ADCS_get_estimated_gyro_bias(ADCS_estimated_gyro_bias_struct_t *output_struct);
+uint8_t ADCS_get_estimation_innovation_vector(ADCS_estimation_innovation_vector_struct_t *output_struct);
+uint8_t ADCS_get_raw_cam1_sensor(ADCS_raw_cam_sensor_struct_t *output_struct);
+uint8_t ADCS_get_raw_cam2_sensor(ADCS_raw_cam_sensor_struct_t *output_struct);
+uint8_t ADCS_get_raw_coarse_sun_sensor_1_to_6(ADCS_raw_coarse_sun_sensor_1_to_6_struct_t *output_struct);
+uint8_t ADCS_get_raw_coarse_sun_sensor_7_to_10(ADCS_raw_coarse_sun_sensor_7_to_10_struct_t *output_struct);
+uint8_t ADCS_get_cubecontrol_current(ADCS_cubecontrol_current_struct_t *output_struct);
+uint8_t ADCS_get_raw_gps_status(ADCS_raw_gps_status_struct_t *output_struct);
+uint8_t ADCS_get_raw_gps_time(ADCS_raw_gps_time_struct_t *output_struct);
+uint8_t ADCS_get_raw_gps_x(ADCS_raw_gps_struct_t *output_struct);
+uint8_t ADCS_get_raw_gps_y(ADCS_raw_gps_struct_t *output_struct);
+uint8_t ADCS_get_raw_gps_z(ADCS_raw_gps_struct_t *output_struct);
+uint8_t ADCS_get_measurements(ADCS_measurements_struct_t *output_struct);
 
 #endif /* INC_ADCS_COMMANDS_H_ */

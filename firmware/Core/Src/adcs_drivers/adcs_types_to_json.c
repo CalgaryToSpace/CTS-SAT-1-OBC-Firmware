@@ -11,8 +11,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-/// @brief Converts ADCS_CMD_Ack_Struct to a JSON string.
-/// @param[in] data Pointer to the ADCS_CMD_Ack_Struct.
+/// @brief Converts ADCS_cmd_ack_Struct to a JSON string.
+/// @param[in] data Pointer to the ADCS_cmd_ack_Struct.
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
