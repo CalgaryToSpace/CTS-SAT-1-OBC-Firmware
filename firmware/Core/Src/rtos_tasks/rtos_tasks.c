@@ -10,6 +10,7 @@
 #include "transforms/arrays.h"
 #include "stm32/stm32_reboot_reason.h"
 #include "log/log.h"
+#include "eps_drivers/eps_commands.h"
 
 #include "cmsis_os.h"
 
@@ -173,4 +174,34 @@ void TASK_execute_telecommands(void *argument) {
 		// TODO: should probably consider a yield here.
 
 	} /* End Task's Main Loop */
+}
+/**
+ * @brief periodically sends a command to the eps to reset the watchdog timer
+ * 
+ * @note The eps has two watchdog timers: The "watchdog reset" and the "peripheral reset".
+ * The "watchdog reset" resets the entire eps system when TTC_WDG_TIMEOUT(default 300s, 
+ * see ISIS.EPS2.ICD.SW.IVID.7 pg. 85) seconds pass without a command being received. 
+ * The "peripheral reset" resets the communication peripheral on the eps's mcu 
+ * after 0.65 * TTC_WDG_TIMEOUT seconds. The "peripheral reset" allows for more graceful 
+ * resets if the eps's communication perripheral was responsible for loss of connection.
+ */
+void TASK_trigger_eps_watchdog(void *argument) {
+	TASK_HELP_start_of_task();
+	/*task should sleep for 0.25*TTC_WDG_TIMEOUT to avoid the peripheral reset
+	* going off. Timing also ensures that in the case the peripheral reset restores
+	* communication, the watch dog timer will reset before "watchdog reset" causes a full 
+	* system reset (See ISIS.EPS2.ICD.SW.IVID.7 pg.9 for further explanation).  
+	*/
+	const uint32_t sleep_duration_ms = 7500;
+	while(1) {
+		EPS_CMD_watchdog();
+		LOG_message(
+			LOG_SYSTEM_OBC,
+			LOG_SEVERITY_NORMAL, 
+			LOG_SINK_ALL,
+			"---------------EPS WATCHDOG RESET ATTEMPTED------------------" 
+		);
+		
+		osDelay(sleep_duration_ms);
+	}
 }

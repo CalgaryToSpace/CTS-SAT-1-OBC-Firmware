@@ -106,6 +106,13 @@ const osThreadAttr_t TASK_execute_telecommands_Attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 
+osThreadId_t TASK_trigger_eps_watchdog_Handle;
+const osThreadAttr_t TASK_trigger_eps_watchdog_Attributes = {
+  .name = "TASK_trigger_eps_watchdog",
+  .stack_size = 512, //in bytes
+  .priority = (osPriority_t) osPriorityNormal, //TODO: Figure out which priority makes sense for this task
+};
+
 
 
 /* USER CODE END PV */
@@ -228,6 +235,8 @@ int main(void)
 
   TASK_execute_telecommands_Handle = osThreadNew(TASK_execute_telecommands, NULL, &TASK_execute_telecommands_Attributes);
   
+  TASK_trigger_eps_watchdog_Handle = osThreadNew(TASK_trigger_eps_watchdog, NULL, &TASK_trigger_eps_watchdog_Attributes);
+
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
