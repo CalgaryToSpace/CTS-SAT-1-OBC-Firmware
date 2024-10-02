@@ -1,15 +1,15 @@
 <map id="TCMDEXEC_adcs_ack" name="TCMDEXEC_adcs_ack">
 <area shape="rect" id="Node000001" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,70,161,96"/>
-<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a42fd924fb5cfd0f0cdeb3a3f6248dde1" title="Instructs the ADCS to determine whether the last command succeeded. (Doesn&#39;t work for telemetry reque..." alt="" coords="226,41,349,66"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="161,69,210,62,210,67,162,74"/>
-<area shape="rect" id="Node000007" href="$adcs__types__to__json_8c.html#a43c8b4bfdcf7ec2d054a6c4e2648cd26" title="Converts ADCS_CMD_Ack_Struct to a JSON string." alt="" coords="209,91,366,131"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a78314a88408de1fd947bac1eb122e96f" title="Instructs the ADCS to determine whether the last command succeeded. (Doesn&#39;t work for telemetry reque..." alt="" coords="229,41,346,66"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="161,69,213,62,213,67,162,74"/>
+<area shape="rect" id="Node000007" href="$adcs__types__to__json_8c.html#a43c8b4bfdcf7ec2d054a6c4e2648cd26" title="Converts ADCS_cmd_ack_Struct to a JSON string." alt="" coords="209,91,366,131"/>
 <area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="162,91,193,95,193,101,161,96"/>
 <area shape="rect" id="Node000003" href="$adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="414,5,605,46"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="349,43,398,37,399,42,350,49"/>
-<area shape="rect" id="Node000006" href="$adcs__struct__packers_8c.html#a914351ecde8db8a1690caab528b69055" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_CMD_Ack command." alt="" coords="418,70,602,96"/>
-<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="350,59,402,66,402,71,349,64"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="346,44,398,37,399,42,347,49"/>
+<area shape="rect" id="Node000006" href="$adcs__struct__packers_8c.html#a914351ecde8db8a1690caab528b69055" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="418,70,602,96"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="347,59,403,66,402,71,346,64"/>
 <area shape="rect" id="Node000004" href="$adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="653,5,830,46"/>
 <area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="606,23,638,23,638,28,606,28"/>
-<area shape="rect" id="Node000005" href="$adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value." alt="" coords="878,5,1026,46"/>
+<area shape="rect" id="Node000005" href="$adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="878,5,1026,46"/>
 <area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="830,23,862,23,862,28,830,28"/>
 </map>

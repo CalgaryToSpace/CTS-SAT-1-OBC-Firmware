@@ -1,0 +1,11 @@
+<map id="ADCS_get_raw_gps_x" name="ADCS_get_raw_gps_x">
+<area shape="rect" id="Node000001" title="Instruct the ADCS to execute the ADCS_Raw_GPS_X command." alt="" coords="5,46,157,72"/>
+<area shape="rect" id="Node000002" href="$adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="205,5,396,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="156,45,189,40,190,45,157,50"/>
+<area shape="rect" id="Node000005" href="$adcs__struct__packers_8c.html#a85682498f22f1a5ad7c95ce649efc169" title="Packs the ADCS received raw data into the appropriate structure for any of the three Raw_GPS commands..." alt="" coords="210,71,390,111"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="157,67,195,73,194,78,157,73"/>
+<area shape="rect" id="Node000003" href="$adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="444,5,620,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="396,23,428,23,428,28,396,28"/>
+<area shape="rect" id="Node000004" href="$adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="668,5,817,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="621,23,653,23,653,28,621,28"/>
+</map>

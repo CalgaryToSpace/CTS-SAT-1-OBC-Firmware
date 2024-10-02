@@ -1,15 +1,15 @@
 <map id="TCMDEXEC_adcs_raw_gps_time" name="TCMDEXEC_adcs_raw_gps_time">
 <area shape="rect" id="Node000001" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,74,221,100"/>
-<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#aac76a2143fc6ae423bd9106822f00657" title="Instruct the ADCS to execute the ADCS_Raw_GPS_Time command." alt="" coords="269,45,458,70"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="221,72,253,68,254,73,221,77"/>
-<area shape="rect" id="Node000007" href="$adcs__types__to__json_8c.html#a825d28e8a8260ac7b60385e998c2dbe2" title="Converts ADCS_Raw_GPS_Time_Struct to a JSON string." alt="" coords="271,95,456,135"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="221,96,255,100,255,106,221,102"/>
-<area shape="rect" id="Node000003" href="$adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="506,5,697,46"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="458,42,490,38,491,43,459,48"/>
-<area shape="rect" id="Node000006" href="$adcs__struct__packers_8c.html#aa0d9c08211de3cfe925cff627b70779e" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="512,71,692,111"/>
-<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="459,68,496,74,496,79,458,74"/>
-<area shape="rect" id="Node000004" href="$adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="745,5,922,46"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="698,23,730,23,730,28,698,28"/>
-<area shape="rect" id="Node000005" href="$adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value." alt="" coords="970,5,1118,46"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="922,23,954,23,954,28,922,28"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a120418e1d71097cc721957c3c2226001" title="Instruct the ADCS to execute the ADCS_Raw_GPS_Time command." alt="" coords="276,45,446,70"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="221,72,260,67,261,72,221,77"/>
+<area shape="rect" id="Node000007" href="$adcs__types__to__json_8c.html#a825d28e8a8260ac7b60385e998c2dbe2" title="Converts ADCS_Raw_GPS_Time_Struct to a JSON string." alt="" coords="269,95,454,135"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="221,97,253,100,253,105,221,102"/>
+<area shape="rect" id="Node000003" href="$adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="502,5,693,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="447,43,486,38,487,43,447,49"/>
+<area shape="rect" id="Node000006" href="$adcs__struct__packers_8c.html#aa0d9c08211de3cfe925cff627b70779e" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="508,71,688,111"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="447,67,492,73,492,79,447,72"/>
+<area shape="rect" id="Node000004" href="$adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="741,5,918,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="694,23,726,23,726,28,694,28"/>
+<area shape="rect" id="Node000005" href="$adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="966,5,1114,46"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="918,23,950,23,950,28,918,28"/>
 </map>

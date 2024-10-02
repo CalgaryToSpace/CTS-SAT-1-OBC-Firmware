@@ -1,7 +1,7 @@
 <map id="ADCS_Pack_to_Raw_Cam2_Sensor_Struct" name="ADCS_Pack_to_Raw_Cam2_Sensor_Struct">
-<area shape="rect" id="Node000001" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="503,5,689,46"/>
-<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#ae6306387b2cc19f7fe297ba672324388" title="Instruct the ADCS to execute the ADCS_Raw_Cam2_Sensor command." alt="" coords="248,13,455,38"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="487,28,456,28,456,23,487,23"/>
+<area shape="rect" id="Node000001" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="491,5,677,46"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#ad6165d2eb9e92347652a3f2b29e07fbe" title="Instruct the ADCS to execute the ADCS_Raw_Cam2_Sensor command." alt="" coords="248,13,443,38"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="475,28,444,28,444,23,475,23"/>
 <area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#a70a95bb264f58f38cc3544dbd4a52620" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,200,46"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="232,28,200,28,200,23,232,23"/>
 </map>

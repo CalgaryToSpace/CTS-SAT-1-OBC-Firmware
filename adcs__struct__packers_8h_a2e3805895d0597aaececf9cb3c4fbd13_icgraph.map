@@ -1,9 +1,9 @@
 <map id="ADCS_Pack_to_Estimated_Gyro_Bias_Struct" name="ADCS_Pack_to_Estimated_Gyro_Bias_Struct">
-<area shape="rect" id="Node000001" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="475,41,652,82"/>
-<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a90f4ef1604845c10a45efbdd782e5e55" title="Instruct the ADCS to execute the ADCS_Estimated_Gyro_Bias command." alt="" coords="261,5,411,46"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="459,48,411,40,412,35,460,43"/>
-<area shape="rect" id="Node000004" href="$test__adcs_8c.html#a21101599e71c8fa03b9dfe140432eca3" title=" " alt="" coords="245,70,427,126"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="460,81,428,86,427,81,459,75"/>
+<area shape="rect" id="Node000001" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="473,41,650,82"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#aa18d46532af7032871eddfe302c689a4" title="Instruct the ADCS to execute the ADCS_Estimated_Gyro_Bias command." alt="" coords="262,5,408,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="457,48,408,40,409,35,458,42"/>
+<area shape="rect" id="Node000004" href="$test__adcs_8c.html#a8b21df04ffb3e899949298275cd20748" title=" " alt="" coords="245,70,425,126"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="458,81,426,86,425,81,457,76"/>
 <area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#a0714221bfd6352a865a9c4adf93a5b06" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,197,46"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="245,28,197,28,197,23,245,23"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="246,28,197,28,197,23,246,23"/>
 </map>

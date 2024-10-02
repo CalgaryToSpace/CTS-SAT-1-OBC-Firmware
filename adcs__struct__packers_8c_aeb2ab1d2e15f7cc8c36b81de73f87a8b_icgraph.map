@@ -1,9 +1,9 @@
 <map id="ADCS_Pack_to_Orbit_Params_Struct" name="ADCS_Pack_to_Orbit_Params_Struct">
-<area shape="rect" id="Node000001" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="471,39,618,79"/>
-<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a7951213e16ffd0402079907fcdd3513a" title="Instruct the ADCS to execute the ADCS_Get_SGP4_Orbit_Params command." alt="" coords="251,5,413,46"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="455,48,413,41,414,36,456,42"/>
-<area shape="rect" id="Node000004" href="$test__adcs_8c.html#a46a93b25948d3518e78ab2cd9960a534" title=" " alt="" coords="241,71,423,111"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="456,75,424,80,423,75,455,70"/>
+<area shape="rect" id="Node000001" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="469,39,616,79"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a253104b6bb15d12c84648f84cb5b5d46" title="Instruct the ADCS to execute the ADCS_Get_SGP4_Orbit_Params command." alt="" coords="256,5,406,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="453,48,406,40,406,35,454,42"/>
+<area shape="rect" id="Node000004" href="$test__adcs_8c.html#a34ae6bf15010efb6ccc27345430b95b8" title=" " alt="" coords="241,71,421,111"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="454,75,422,80,421,75,453,70"/>
 <area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#a8b90789ba8a0c75b0bb8ba9d8322ddd7" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,193,46"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="236,28,193,28,193,23,236,23"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="241,28,193,28,193,23,241,23"/>
 </map>

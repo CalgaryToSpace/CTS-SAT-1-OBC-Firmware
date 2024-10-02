@@ -1,9 +1,9 @@
 <map id="ADCS_Pack_to_Raw_Magnetometer_Values_Struct" name="ADCS_Pack_to_Raw_Magnetometer_Values_Struct">
-<area shape="rect" id="Node000001" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="490,41,725,82"/>
-<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#aead3e4db49ccd1cd0b0624394b7a06c7" title="Instruct the ADCS to execute the ADCS_Get_Raw_Magnetometer_Values command." alt="" coords="234,5,442,46"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="474,47,442,42,443,37,475,41"/>
-<area shape="rect" id="Node000004" href="$test__adcs_8c.html#adbe2ab01e4857c0d120a7822f362594f" title=" " alt="" coords="247,70,429,126"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="475,82,430,88,429,83,474,77"/>
+<area shape="rect" id="Node000001" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="482,41,717,82"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a5e12ce0b8b13fdccac4c767876f9b136" title="Instruct the ADCS to execute the ADCS_Get_Raw_Magnetometer_Values command." alt="" coords="234,5,434,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="466,46,434,42,435,37,467,41"/>
+<area shape="rect" id="Node000004" href="$test__adcs_8c.html#a99d38e21fe9d19a6ba6f9f3307109900" title=" " alt="" coords="244,70,424,126"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="467,82,425,88,424,83,466,77"/>
 <area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#a6fc5e9650b5d6bf3da7cf1065633cc34" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,186,46"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="218,28,186,28,186,23,218,23"/>
 </map>
