@@ -3,7 +3,7 @@
 #include<antenna_deploy_drivers/ant_commands.h>
 
 // derivations for the unit tests can be found at
-//https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/146#issuecomment-2362673403
+// https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/146#issuecomment-2362673403
 uint8_t TEST_EXEC__ANT_convert_raw_temp_to_cCelsius() {
     int16_t result = ANT_convert_raw_temp_to_cCelsius(647);
     

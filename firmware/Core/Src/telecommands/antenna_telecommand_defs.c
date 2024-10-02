@@ -233,7 +233,7 @@ uint8_t TCMDEXEC_ant_report_deployment_status(const char *args_str, TCMD_Telecom
          response.antenna_3_deployed,
          response.antenna_4_deployed
         );
-        //remove the newline characters at the end of the strings to get a proper JSON string
+        // remove the newline characters at the end of the strings to get a proper JSON string
     snprintf(response_output_buf, response_output_buf_len,
         "{"
         "\"antenna_1_deployed\": %d,"   "\n"
@@ -365,7 +365,7 @@ uint8_t TCMDEXEC_ant_measure_temp(const char *args_str, TCMD_TelecommandChannel_
         snprintf(response_output_buf, response_output_buf_len, "Error: %d", comms_err);
         return comms_err;
     }
-    //TODO: remove the newline in between the strings to get a JSON string
+    // TODO: remove the newline in between the strings to get a JSON string
     snprintf(
         response_output_buf, 
         response_output_buf_len, 

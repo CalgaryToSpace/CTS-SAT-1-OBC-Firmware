@@ -81,7 +81,7 @@ uint8_t TCMDEXEC_adcs_generic_telemetry_request(const char *args_str, TCMD_Telec
     // if data_length is too short, the checksum will in almost all cases fail before this point is reached
     // but if it by chance succeeds, this will catch the error
     ADCS_comms_status_struct_t comms_status;
-    uint8_t comms_status_status = ADCS_Get_Communication_Status(&comms_status);
+    uint8_t comms_status_status = ADCS_get_communication_status(&comms_status);
 
     if (comms_status_status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -89,7 +89,7 @@ uint8_t TCMDEXEC_adcs_generic_telemetry_request(const char *args_str, TCMD_Telec
         return 1;
     } else if (comms_status.i2c_tlm_error) {
         // if number of data clocked out by ADCS was more than telemetry package, we need to reset the error flags then return an error
-        uint8_t clear_error_status = ADCS_Clear_Errors();
+        uint8_t clear_error_status = ADCS_clear_errors();
         snprintf(response_output_buf, response_output_buf_len,
             "Insufficient number of bits receieved for generic ADCS telemetry request (err %d)", comms_status.i2c_tlm_error);
         if (clear_error_status != 0) {
@@ -124,7 +124,7 @@ uint8_t TCMDEXEC_adcs_generic_telemetry_request(const char *args_str, TCMD_Telec
 uint8_t TCMDEXEC_adcs_ack(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_cmd_ack_struct_t ack;
-    uint8_t status = ADCS_CMD_Ack(&ack);
+    uint8_t status = ADCS_cmd_ack(&ack);
 
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -162,7 +162,7 @@ uint8_t TCMDEXEC_adcs_set_wheel_speed(const char *args_str, TCMD_TelecommandChan
         args_16[i] = (int16_t) arguments[i];
     }
     
-    uint8_t status = ADCS_Set_Wheel_Speed(args_16[0], args_16[1], args_16[2]); 
+    uint8_t status = ADCS_set_wheel_speed(args_16[0], args_16[1], args_16[2]); 
     return status;
 }
 
@@ -172,7 +172,7 @@ uint8_t TCMDEXEC_adcs_set_wheel_speed(const char *args_str, TCMD_TelecommandChan
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_reset(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                             char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Reset(); 
+    uint8_t status = ADCS_reset(); 
     return status;
 }                
 
@@ -183,7 +183,7 @@ uint8_t TCMDEXEC_adcs_reset(const char *args_str, TCMD_TelecommandChannel_enum_t
 uint8_t TCMDEXEC_adcs_identification(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                      char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_id_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Identification(&packed_struct); 
+    uint8_t status = ADCS_get_identification(&packed_struct); 
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -210,7 +210,7 @@ uint8_t TCMDEXEC_adcs_identification(const char *args_str, TCMD_TelecommandChann
 uint8_t TCMDEXEC_adcs_program_status(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                      char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_boot_running_status_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Program_Status(&packed_struct); 
+    uint8_t status = ADCS_get_program_status(&packed_struct); 
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -237,7 +237,7 @@ uint8_t TCMDEXEC_adcs_program_status(const char *args_str, TCMD_TelecommandChann
 uint8_t TCMDEXEC_adcs_communication_status(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                            char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_comms_status_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Communication_Status(&packed_struct); 
+    uint8_t status = ADCS_get_communication_status(&packed_struct); 
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -265,7 +265,7 @@ uint8_t TCMDEXEC_adcs_deploy_magnetometer(const char *args_str, TCMD_Telecommand
                                           char *response_output_buf, uint16_t response_output_buf_len) {
     uint64_t timeout;
     TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &timeout);
-    uint8_t status = ADCS_Deploy_Magnetometer((uint8_t) timeout);
+    uint8_t status = ADCS_deploy_magnetometer((uint8_t) timeout);
     return status;
 }                                
 
@@ -277,7 +277,7 @@ uint8_t TCMDEXEC_adcs_set_run_mode(const char *args_str, TCMD_TelecommandChannel
                                    char *response_output_buf, uint16_t response_output_buf_len) {
     uint64_t run_mode;
     TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &run_mode);
-    uint8_t status = ADCS_Set_Run_Mode((ADCS_run_mode_enum_t) run_mode); 
+    uint8_t status = ADCS_set_run_mode((ADCS_run_mode_enum_t) run_mode); 
     return status;
 }                        
 
@@ -287,7 +287,7 @@ uint8_t TCMDEXEC_adcs_set_run_mode(const char *args_str, TCMD_TelecommandChannel
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_clear_errors(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                    char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Clear_Errors();
+    uint8_t status = ADCS_clear_errors();
     return status;
 }                        
 
@@ -305,7 +305,7 @@ uint8_t TCMDEXEC_adcs_attitude_control_mode(const char *args_str, TCMD_Telecomma
         TCMD_extract_uint64_arg(args_str, strlen(args_str), i, &arguments[i]);
     }
     // then convert to correct form for input
-    uint8_t status = ADCS_Attitude_Control_Mode((ADCS_control_mode_enum_t) arguments[0], (uint16_t) arguments[1]);
+    uint8_t status = ADCS_attitude_control_mode((ADCS_control_mode_enum_t) arguments[0], (uint16_t) arguments[1]);
     return status;
 }                                                         
 
@@ -317,7 +317,7 @@ uint8_t TCMDEXEC_adcs_attitude_estimation_mode(const char *args_str, TCMD_Teleco
                                                char *response_output_buf, uint16_t response_output_buf_len) {
     uint64_t estimation_mode;
     TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &estimation_mode);
-    uint8_t status = ADCS_Attitude_Estimation_Mode((ADCS_estimation_mode_enum_t) estimation_mode); 
+    uint8_t status = ADCS_attitude_estimation_mode((ADCS_estimation_mode_enum_t) estimation_mode); 
     return status;
 }                                    
 
@@ -327,7 +327,7 @@ uint8_t TCMDEXEC_adcs_attitude_estimation_mode(const char *args_str, TCMD_Teleco
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_run_once(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Run_Once();
+    uint8_t status = ADCS_run_once();
     return status;
 }                    
 
@@ -339,7 +339,7 @@ uint8_t TCMDEXEC_adcs_set_magnetometer_mode(const char *args_str, TCMD_Telecomma
                                             char *response_output_buf, uint16_t response_output_buf_len) {
     uint64_t mode;
     TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &mode);
-    uint8_t status = ADCS_Set_Magnetometer_Mode((ADCS_magnetometer_mode_enum_t) mode);
+    uint8_t status = ADCS_set_magnetometer_mode((ADCS_magnetometer_mode_enum_t) mode);
     return status;
 }                                
 
@@ -358,7 +358,7 @@ uint8_t TCMDEXEC_adcs_set_magnetorquer_output(const char *args_str, TCMD_Telecom
         TCMD_extract_double_arg(args_str, strlen(args_str), i, &arguments[i]);
     }
     
-    uint8_t status = ADCS_Set_Magnetorquer_Output(arguments[0], arguments[1], arguments[2]);
+    uint8_t status = ADCS_set_magnetorquer_output(arguments[0], arguments[1], arguments[2]);
     return status;
 }                                    
 
@@ -368,7 +368,7 @@ uint8_t TCMDEXEC_adcs_set_magnetorquer_output(const char *args_str, TCMD_Telecom
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_save_config(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                   char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Save_Config();
+    uint8_t status = ADCS_save_config();
     return status;
 }                        
 
@@ -379,7 +379,7 @@ uint8_t TCMDEXEC_adcs_save_config(const char *args_str, TCMD_TelecommandChannel_
 uint8_t TCMDEXEC_adcs_estimate_angular_rates(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                              char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_angular_rates_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Estimate_Angular_Rates(&packed_struct);
+    uint8_t status = ADCS_get_estimate_angular_rates(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -406,7 +406,7 @@ uint8_t TCMDEXEC_adcs_estimate_angular_rates(const char *args_str, TCMD_Telecomm
 uint8_t TCMDEXEC_adcs_get_llh_position(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                        char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_llh_position_struct_t packed_struct;
-    uint8_t status = ADCS_Get_LLH_Position(&packed_struct);
+    uint8_t status = ADCS_get_llh_position(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -433,7 +433,7 @@ uint8_t TCMDEXEC_adcs_get_llh_position(const char *args_str, TCMD_TelecommandCha
 uint8_t TCMDEXEC_adcs_get_power_control(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                         char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_power_control_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Power_Control(&packed_struct);
+    uint8_t status = ADCS_get_power_control(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -478,7 +478,7 @@ uint8_t TCMDEXEC_adcs_set_power_control(const char *args_str, TCMD_TelecommandCh
         args_8[i] = (uint8_t) arguments[i];
     }
     
-    uint8_t status = ADCS_Set_Power_Control((ADCS_power_select_enum_t) args_8[0], (ADCS_power_select_enum_t) args_8[1], (ADCS_power_select_enum_t) args_8[2], (ADCS_power_select_enum_t) args_8[3], (ADCS_power_select_enum_t) args_8[4], (ADCS_power_select_enum_t) args_8[5], (ADCS_power_select_enum_t) args_8[6], (ADCS_power_select_enum_t) args_8[7], (ADCS_power_select_enum_t) args_8[8], (ADCS_power_select_enum_t) args_8[9]);
+    uint8_t status = ADCS_set_power_control((ADCS_power_select_enum_t) args_8[0], (ADCS_power_select_enum_t) args_8[1], (ADCS_power_select_enum_t) args_8[2], (ADCS_power_select_enum_t) args_8[3], (ADCS_power_select_enum_t) args_8[4], (ADCS_power_select_enum_t) args_8[5], (ADCS_power_select_enum_t) args_8[6], (ADCS_power_select_enum_t) args_8[7], (ADCS_power_select_enum_t) args_8[8], (ADCS_power_select_enum_t) args_8[9]);
     return status;
 }                            
 
@@ -510,7 +510,7 @@ uint8_t TCMDEXEC_adcs_set_magnetometer_config(const char *args_str, TCMD_Telecom
         TCMD_extract_double_arg(args_str, strlen(args_str), i, &arguments[i]);
     }
     
-    uint8_t status = ADCS_Set_Magnetometer_Config(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], arguments[6], arguments[7], arguments[8], arguments[9], arguments[10], arguments[11], arguments[12], arguments[13], arguments[14]);
+    uint8_t status = ADCS_set_magnetometer_config(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], arguments[6], arguments[7], arguments[8], arguments[9], arguments[10], arguments[11], arguments[12], arguments[13], arguments[14]);
     return status;
 }     
 
@@ -520,7 +520,7 @@ uint8_t TCMDEXEC_adcs_set_magnetometer_config(const char *args_str, TCMD_Telecom
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_bootloader_clear_errors(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Bootloader_Clear_Errors(); 
+    uint8_t status = ADCS_bootloader_clear_errors(); 
     return status;
 }                                    
 
@@ -541,7 +541,7 @@ uint8_t TCMDEXEC_adcs_set_unix_time_save_mode(const char *args_str, TCMD_Telecom
     
     TCMD_extract_uint64_arg(args_str, strlen(args_str), 3, &uint_arg);
 
-    uint8_t status = ADCS_Set_Unix_Time_Save_Mode((bool) bools[0], (bool) bools[1], (bool) bools[2], (uint8_t) uint_arg);
+    uint8_t status = ADCS_set_unix_time_save_mode((bool) bools[0], (bool) bools[1], (bool) bools[2], (uint8_t) uint_arg);
     return status;
 }                                    
 
@@ -552,7 +552,7 @@ uint8_t TCMDEXEC_adcs_set_unix_time_save_mode(const char *args_str, TCMD_Telecom
 uint8_t TCMDEXEC_adcs_get_unix_time_save_mode(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_set_unix_time_save_mode_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Unix_Time_Save_Mode(&packed_struct);
+    uint8_t status = ADCS_get_unix_time_save_mode(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -592,7 +592,7 @@ uint8_t TCMDEXEC_adcs_set_sgp4_orbit_params(const char *args_str, TCMD_Telecomma
         TCMD_extract_double_arg(args_str, strlen(args_str), i, &arguments[i]);
     }
 
-    uint8_t status = ADCS_Set_SGP4_Orbit_Params(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], arguments[6], arguments[7]);
+    uint8_t status = ADCS_set_sgp4_orbit_params(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], arguments[6], arguments[7]);
     return status;
 }                                
 
@@ -603,7 +603,7 @@ uint8_t TCMDEXEC_adcs_set_sgp4_orbit_params(const char *args_str, TCMD_Telecomma
 uint8_t TCMDEXEC_adcs_get_sgp4_orbit_params(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_orbit_params_struct_t packed_struct;
-    uint8_t status = ADCS_Get_SGP4_Orbit_Params(&packed_struct);
+    uint8_t status = ADCS_get_sgp4_orbit_params(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -629,7 +629,7 @@ uint8_t TCMDEXEC_adcs_get_sgp4_orbit_params(const char *args_str, TCMD_Telecomma
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_save_orbit_params(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                         char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_Save_Orbit_Params();
+    uint8_t status = ADCS_save_orbit_params();
     return status;
 }                            
 
@@ -640,7 +640,7 @@ uint8_t TCMDEXEC_adcs_save_orbit_params(const char *args_str, TCMD_TelecommandCh
 uint8_t TCMDEXEC_adcs_rate_sensor_rates(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                         char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_rated_sensor_rates_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Rate_Sensor_Rates(&packed_struct);
+    uint8_t status = ADCS_get_rate_sensor_rates(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -667,7 +667,7 @@ uint8_t TCMDEXEC_adcs_rate_sensor_rates(const char *args_str, TCMD_TelecommandCh
 uint8_t TCMDEXEC_adcs_get_wheel_speed(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                       char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_wheel_speed_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Wheel_Speed(&packed_struct);
+    uint8_t status = ADCS_get_wheel_speed(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -694,7 +694,7 @@ uint8_t TCMDEXEC_adcs_get_wheel_speed(const char *args_str, TCMD_TelecommandChan
 uint8_t TCMDEXEC_adcs_get_magnetorquer_command(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_magnetorquer_command_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Magnetorquer_Command(&packed_struct);
+    uint8_t status = ADCS_get_magnetorquer_command(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -721,7 +721,7 @@ uint8_t TCMDEXEC_adcs_get_magnetorquer_command(const char *args_str, TCMD_Teleco
 uint8_t TCMDEXEC_adcs_get_raw_magnetometer_values(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                   char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_raw_magnetometer_values_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Raw_Magnetometer_Values(&packed_struct);
+    uint8_t status = ADCS_get_raw_magnetometer_values(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -748,7 +748,7 @@ uint8_t TCMDEXEC_adcs_get_raw_magnetometer_values(const char *args_str, TCMD_Tel
 uint8_t TCMDEXEC_adcs_estimate_fine_angular_rates(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                   char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_fine_angular_rates_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Estimate_Fine_Angular_Rates(&packed_struct); 
+    uint8_t status = ADCS_get_estimate_fine_angular_rates(&packed_struct); 
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -775,7 +775,7 @@ uint8_t TCMDEXEC_adcs_estimate_fine_angular_rates(const char *args_str, TCMD_Tel
 uint8_t TCMDEXEC_adcs_get_magnetometer_config(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_magnetometer_config_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Magnetometer_Config(&packed_struct);
+    uint8_t status = ADCS_get_magnetometer_config(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -802,7 +802,7 @@ uint8_t TCMDEXEC_adcs_get_magnetometer_config(const char *args_str, TCMD_Telecom
 uint8_t TCMDEXEC_adcs_get_commanded_attitude_angles(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                     char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_commanded_angles_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Commanded_Attitude_Angles(&packed_struct);
+    uint8_t status = ADCS_get_commanded_attitude_angles(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -837,7 +837,7 @@ uint8_t TCMDEXEC_adcs_set_commanded_attitude_angles(const char *args_str, TCMD_T
         TCMD_extract_double_arg(args_str, strlen(args_str), i, &arguments[i]);
     }
 
-    uint8_t status = ADCS_Set_Commanded_Attitude_Angles(arguments[0], arguments[1], arguments[2]); 
+    uint8_t status = ADCS_set_commanded_attitude_angles(arguments[0], arguments[1], arguments[2]); 
     return status;
 }          
 
@@ -896,7 +896,7 @@ uint8_t TCMDEXEC_adcs_set_estimation_params(const char *args_str, TCMD_Telecomma
     enum_args[1] = (ADCS_magnetometer_mode_enum_t) uint_type_arguments[7];
     uint8_arg = (uint8_t) uint_type_arguments[10];
     
-    uint8_t status = ADCS_Set_Estimation_Params(float_args[0], float_args[1], float_args[2], float_args[3], float_args[4], float_args[5], float_args[6],
+    uint8_t status = ADCS_set_estimation_params(float_args[0], float_args[1], float_args[2], float_args[3], float_args[4], float_args[5], float_args[6],
                                                 bool_args[0], bool_args[1], bool_args[2], bool_args[3], bool_args[4], bool_args[5], 
                                                 enum_args[0], enum_args[1],
                                                 bool_args[6], bool_args[7], 
@@ -912,7 +912,7 @@ uint8_t TCMDEXEC_adcs_set_estimation_params(const char *args_str, TCMD_Telecomma
 uint8_t TCMDEXEC_adcs_get_estimation_params(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_estimation_params_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Estimation_Params(&packed_struct);
+    uint8_t status = ADCS_get_estimation_params(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -981,7 +981,7 @@ uint8_t TCMDEXEC_adcs_set_augmented_sgp4_params(const char *args_str, TCMD_Telec
         }
     }
 
-    uint8_t status = ADCS_Set_Augmented_SGP4_Params(doubles_params[0], doubles_params[1], doubles_params[2], doubles_params[3], doubles_params[4], doubles_params[5], doubles_params[6],
+    uint8_t status = ADCS_set_augmented_sgp4_params(doubles_params[0], doubles_params[1], doubles_params[2], doubles_params[3], doubles_params[4], doubles_params[5], doubles_params[6],
                                         (ADCS_augmented_sgp4_filter_enum_t) uint_params[0],
                                         doubles_params[7], doubles_params[8],
                                         (uint8_t) uint_params[1],
@@ -999,7 +999,7 @@ uint8_t TCMDEXEC_adcs_set_augmented_sgp4_params(const char *args_str, TCMD_Telec
 uint8_t TCMDEXEC_adcs_get_augmented_sgp4_params(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                        char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_augmented_sgp4_params_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Augmented_SGP4_Params(&packed_struct);
+    uint8_t status = ADCS_get_augmented_sgp4_params(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -1034,7 +1034,7 @@ uint8_t TCMDEXEC_adcs_set_tracking_controller_target_reference(const char *args_
         TCMD_extract_double_arg(args_str, strlen(args_str), i, &arguments[i]);
     }
 
-    uint8_t status = ADCS_Set_Tracking_Controller_Target_Reference((float) arguments[0], (float) arguments[1], (float) arguments[2]); 
+    uint8_t status = ADCS_set_tracking_controller_target_reference((float) arguments[0], (float) arguments[1], (float) arguments[2]); 
     
     return status;
 }                                                    
@@ -1046,7 +1046,7 @@ uint8_t TCMDEXEC_adcs_set_tracking_controller_target_reference(const char *args_
 uint8_t TCMDEXEC_adcs_get_tracking_controller_target_reference(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                                 char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_tracking_controller_target_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Tracking_Controller_Target_Reference(&packed_struct);
+    uint8_t status = ADCS_get_tracking_controller_target_reference(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -1096,7 +1096,7 @@ uint8_t TCMDEXEC_adcs_set_rate_gyro_config(const char *args_str, TCMD_Telecomman
     uint64_t rate_sensor_mult;
     TCMD_extract_uint64_arg(args_str, strlen(args_str), 6, &rate_sensor_mult);
     
-    uint8_t status = ADCS_Set_Rate_Gyro_Config((ADCS_axis_select_enum_t) axis_arguments[0], (ADCS_axis_select_enum_t) axis_arguments[1], (ADCS_axis_select_enum_t) axis_arguments[2],  offset_arguments[0], offset_arguments[1], offset_arguments[2], (uint8_t) rate_sensor_mult); 
+    uint8_t status = ADCS_set_rate_gyro_config((ADCS_axis_select_enum_t) axis_arguments[0], (ADCS_axis_select_enum_t) axis_arguments[1], (ADCS_axis_select_enum_t) axis_arguments[2],  offset_arguments[0], offset_arguments[1], offset_arguments[2], (uint8_t) rate_sensor_mult); 
     return status;
 }                                
 
@@ -1107,7 +1107,7 @@ uint8_t TCMDEXEC_adcs_set_rate_gyro_config(const char *args_str, TCMD_Telecomman
 uint8_t TCMDEXEC_adcs_get_rate_gyro_config(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                            char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_rate_gyro_config_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Rate_Gyro_Config(&packed_struct);
+    uint8_t status = ADCS_get_rate_gyro_config(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -1134,7 +1134,7 @@ uint8_t TCMDEXEC_adcs_get_rate_gyro_config(const char *args_str, TCMD_Telecomman
 uint8_t TCMDEXEC_adcs_estimated_attitude_angles(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                 char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_estimated_attitude_angles_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Estimated_Attitude_Angles(&packed_struct);
+    uint8_t status = ADCS_get_estimated_attitude_angles(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -1161,7 +1161,7 @@ uint8_t TCMDEXEC_adcs_estimated_attitude_angles(const char *args_str, TCMD_Telec
 uint8_t TCMDEXEC_adcs_magnetic_field_vector(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_magnetic_field_vector_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Magnetic_Field_Vector(&packed_struct);
+    uint8_t status = ADCS_get_magnetic_field_vector(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -1188,7 +1188,7 @@ uint8_t TCMDEXEC_adcs_magnetic_field_vector(const char *args_str, TCMD_Telecomma
 uint8_t TCMDEXEC_adcs_fine_sun_vector(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                       char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_fine_sun_vector_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Fine_Sun_Vector(&packed_struct);
+    uint8_t status = ADCS_get_fine_sun_vector(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -1215,7 +1215,7 @@ uint8_t TCMDEXEC_adcs_fine_sun_vector(const char *args_str, TCMD_TelecommandChan
 uint8_t TCMDEXEC_adcs_nadir_vector(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                    char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_nadir_vector_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Nadir_Vector(&packed_struct);
+    uint8_t status = ADCS_get_nadir_vector(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -1242,7 +1242,7 @@ uint8_t TCMDEXEC_adcs_nadir_vector(const char *args_str, TCMD_TelecommandChannel
 uint8_t TCMDEXEC_adcs_commanded_wheel_speed(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_wheel_speed_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Commanded_Wheel_Speed(&packed_struct);
+    uint8_t status = ADCS_get_commanded_wheel_speed(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -1269,7 +1269,7 @@ uint8_t TCMDEXEC_adcs_commanded_wheel_speed(const char *args_str, TCMD_Telecomma
 uint8_t TCMDEXEC_adcs_igrf_magnetic_field_vector(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                  char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_magnetic_field_vector_struct_t packed_struct;
-    uint8_t status = ADCS_Get_IGRF_Magnetic_Field_Vector(&packed_struct);
+    uint8_t status = ADCS_get_igrf_magnetic_field_vector(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -1296,7 +1296,7 @@ uint8_t TCMDEXEC_adcs_igrf_magnetic_field_vector(const char *args_str, TCMD_Tele
 uint8_t TCMDEXEC_adcs_quaternion_error_vector(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_quaternion_error_vector_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Quaternion_Error_Vector(&packed_struct);
+    uint8_t status = ADCS_get_quaternion_error_vector(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -1323,7 +1323,7 @@ uint8_t TCMDEXEC_adcs_quaternion_error_vector(const char *args_str, TCMD_Telecom
 uint8_t TCMDEXEC_adcs_estimated_gyro_bias(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                           char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_estimated_gyro_bias_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Estimated_Gyro_Bias(&packed_struct);
+    uint8_t status = ADCS_get_estimated_gyro_bias(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -1350,7 +1350,7 @@ uint8_t TCMDEXEC_adcs_estimated_gyro_bias(const char *args_str, TCMD_Telecommand
 uint8_t TCMDEXEC_adcs_estimation_innovation_vector(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                    char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_estimation_innovation_vector_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Estimation_Innovation_Vector(&packed_struct);
+    uint8_t status = ADCS_get_estimation_innovation_vector(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -1377,7 +1377,7 @@ uint8_t TCMDEXEC_adcs_estimation_innovation_vector(const char *args_str, TCMD_Te
 uint8_t TCMDEXEC_adcs_raw_cam1_sensor(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                       char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_raw_cam_sensor_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Raw_Cam1_Sensor(&packed_struct);
+    uint8_t status = ADCS_get_raw_cam1_sensor(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -1404,7 +1404,7 @@ uint8_t TCMDEXEC_adcs_raw_cam1_sensor(const char *args_str, TCMD_TelecommandChan
 uint8_t TCMDEXEC_adcs_raw_cam2_sensor(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                       char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_raw_cam_sensor_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Raw_Cam2_Sensor(&packed_struct);
+    uint8_t status = ADCS_get_raw_cam2_sensor(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -1431,7 +1431,7 @@ uint8_t TCMDEXEC_adcs_raw_cam2_sensor(const char *args_str, TCMD_TelecommandChan
 uint8_t TCMDEXEC_adcs_raw_coarse_sun_sensor_1_to_6(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                      char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_raw_coarse_sun_sensor_1_to_6_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Raw_Coarse_Sun_Sensor_1_to_6(&packed_struct);
+    uint8_t status = ADCS_get_raw_coarse_sun_sensor_1_to_6(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -1458,7 +1458,7 @@ uint8_t TCMDEXEC_adcs_raw_coarse_sun_sensor_1_to_6(const char *args_str, TCMD_Te
 uint8_t TCMDEXEC_adcs_raw_coarse_sun_sensor_7_to_10(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                       char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_raw_coarse_sun_sensor_7_to_10_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Raw_Coarse_Sun_Sensor_7_to_10(&packed_struct);
+    uint8_t status = ADCS_get_raw_coarse_sun_sensor_7_to_10(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -1485,7 +1485,7 @@ uint8_t TCMDEXEC_adcs_raw_coarse_sun_sensor_7_to_10(const char *args_str, TCMD_T
 uint8_t TCMDEXEC_adcs_cubecontrol_current(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                           char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_cubecontrol_current_struct_t packed_struct;
-    uint8_t status = ADCS_Get_CubeControl_Current(&packed_struct);
+    uint8_t status = ADCS_get_cubecontrol_current(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -1512,7 +1512,7 @@ uint8_t TCMDEXEC_adcs_cubecontrol_current(const char *args_str, TCMD_Telecommand
 uint8_t TCMDEXEC_adcs_raw_gps_status(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                      char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_raw_gps_status_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Raw_GPS_Status(&packed_struct);
+    uint8_t status = ADCS_get_raw_gps_status(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -1539,7 +1539,7 @@ uint8_t TCMDEXEC_adcs_raw_gps_status(const char *args_str, TCMD_TelecommandChann
 uint8_t TCMDEXEC_adcs_raw_gps_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                    char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_raw_gps_time_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Raw_GPS_Time(&packed_struct);
+    uint8_t status = ADCS_get_raw_gps_time(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -1566,7 +1566,7 @@ uint8_t TCMDEXEC_adcs_raw_gps_time(const char *args_str, TCMD_TelecommandChannel
 uint8_t TCMDEXEC_adcs_raw_gps_x(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                 char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_raw_gps_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Raw_GPS_X(&packed_struct);
+    uint8_t status = ADCS_get_raw_gps_x(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -1593,7 +1593,7 @@ uint8_t TCMDEXEC_adcs_raw_gps_x(const char *args_str, TCMD_TelecommandChannel_en
 uint8_t TCMDEXEC_adcs_raw_gps_y(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                 char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_raw_gps_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Raw_GPS_Y(&packed_struct);
+    uint8_t status = ADCS_get_raw_gps_y(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -1620,7 +1620,7 @@ uint8_t TCMDEXEC_adcs_raw_gps_y(const char *args_str, TCMD_TelecommandChannel_en
 uint8_t TCMDEXEC_adcs_raw_gps_z(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                 char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_raw_gps_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Raw_GPS_Z(&packed_struct);
+    uint8_t status = ADCS_get_raw_gps_z(&packed_struct);
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -1647,7 +1647,7 @@ uint8_t TCMDEXEC_adcs_raw_gps_z(const char *args_str, TCMD_TelecommandChannel_en
 uint8_t TCMDEXEC_adcs_measurements(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                    char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_measurements_struct_t packed_struct;
-    uint8_t status = ADCS_Get_Measurements(&packed_struct); 
+    uint8_t status = ADCS_get_measurements(&packed_struct); 
     
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,

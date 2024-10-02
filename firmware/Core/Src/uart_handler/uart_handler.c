@@ -34,7 +34,7 @@ volatile uint16_t UART_mpi_rx_buffer_write_idx = 0; // extern
 // const uint16_t UART_mpi_data_rx_buffer_len = 8192; // extern 
 // volatile uint8_t UART_mpi_data_rx_buffer[8192]; // extern
 // const uint16_t UART_mpi_data_buffer_len = 80000; // extern
-// volatile uint8_t UART_mpi_data_buffer[80000]; //extern
+// volatile uint8_t UART_mpi_data_buffer[80000]; // extern
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     // This ISR function gets called every time a byte is received on the UART.
@@ -101,7 +101,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
             UART_mpi_rx_last_byte_write_time_ms = HAL_GetTick();
         }
         else {
-            DEBUG_uart_print_str("Unhandled MPI Mode\n"); //TODO: HANDLE other MPI MODES
+            DEBUG_uart_print_str("Unhandled MPI Mode\n"); // TODO: HANDLE other MPI MODES
         }
     }
 

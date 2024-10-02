@@ -8,7 +8,7 @@
 #include <stdbool.h>
 
 
-/// @brief Packs the ADCS received raw data into the appropriate structure for the ADCS_CMD_Ack command.
+/// @brief Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command.
 /// @param[in] data_received Raw data bytes obtained from the ADCS over I2C.
 /// @param[out] result Structure containing the formated data for this command.
 /// @return 0 once the function is finished running.
