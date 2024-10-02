@@ -15,6 +15,9 @@
 // Total size of a singular Memory Module in bytes
 #define FLASH_CHIP_SIZE_BYTES 134217728  // 128MiB // TODO: update
 
+//Number of pages contained within a single block of memory module
+#define FLASH_CHIP_PAGES_PER_BLOCK 64
+
 /*-------------------------------FLASH FEATURES-------------------------------*/
 // Features that can be accessed using Get Feature command
 
@@ -74,9 +77,9 @@ FLASH_error_enum_t FLASH_read_status_register(SPI_HandleTypeDef *hspi, uint8_t c
 FLASH_error_enum_t FLASH_read_block_lock_register(SPI_HandleTypeDef *hspi, uint8_t chip_number, uint8_t *buf);
 FLASH_error_enum_t FLASH_write_enable(SPI_HandleTypeDef *hspi, uint8_t chip_number);
 FLASH_error_enum_t FLASH_write_disable(SPI_HandleTypeDef *hspi, uint8_t chip_number);
-FLASH_error_enum_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t addr);
-FLASH_error_enum_t FLASH_write_data(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t addr, uint8_t *packet_buffer, lfs_size_t packet_buffer_len);
-FLASH_error_enum_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t addr, uint8_t *rx_buffer, lfs_size_t rx_buffer_len);
+FLASH_error_enum_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t page);
+FLASH_error_enum_t FLASH_write_data(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t page, uint8_t *packet_buffer, lfs_size_t packet_buffer_len);
+FLASH_error_enum_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t page, uint8_t *rx_buffer, lfs_size_t rx_buffer_len);
 
 FLASH_error_enum_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_number);
 FLASH_error_enum_t FLASH_reset(SPI_HandleTypeDef *hspi, uint8_t chip_number);
