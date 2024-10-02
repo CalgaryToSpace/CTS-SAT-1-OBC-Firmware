@@ -185,7 +185,7 @@ void TASK_execute_telecommands(void *argument) {
  * after 0.65 * TTC_WDG_TIMEOUT seconds. The "peripheral reset" allows for more graceful 
  * resets if the eps's communication perripheral was responsible for loss of connection.
  */
-void TASK_trigger_eps_watchdog(void *argument) {
+void TASK_service_eps_watchdog(void *argument) {
 	TASK_HELP_start_of_task();
 	/*task should sleep for 0.25*TTC_WDG_TIMEOUT to avoid the peripheral reset
 	* going off. Timing also ensures that in the case the peripheral reset restores
