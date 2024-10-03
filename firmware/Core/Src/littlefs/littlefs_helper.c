@@ -15,6 +15,7 @@
 uint8_t LFS_is_lfs_mounted = 0;
 
 // NAND Flash Memory Datasheet https://www.farnell.com/datasheets/3151163.pdf
+// Each page is divided into a 2048-byte data storage region, and a 128 bytes spare area (2176 bytes total).
 #define FLASH_CHIP_PAGE_SIZE_BYTES 2048
 #define FLASH_CHIP_BLOCK_SIZE_BYTES FLASH_CHIP_PAGE_SIZE_BYTES * FLASH_CHIP_PAGES_PER_BLOCK
 #define FLASH_LOOKAHEAD_SIZE 16
