@@ -364,7 +364,7 @@ uint8_t EPS_struct_pbu_housekeeping_data_eng_TO_json(const EPS_struct_pbu_housek
         data->temperature_mcu_cC,
         vip_total_input_json,
         data->battery_pack_status_bitfield,
-        battery_pack_info_json[0]
+        battery_pack_info_json
         // Note: Only the first battery pack is rendered.
     );
 
