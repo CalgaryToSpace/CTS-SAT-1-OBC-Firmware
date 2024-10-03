@@ -15,5 +15,6 @@ var searchData=
   ['adcs_5freset_5fcause_5fenum_5ft_12',['ADCS_reset_cause_enum_t',['../adcs__types_8h.html#a9cb56584ff9785781ee37194f0cb12d3',1,'adcs_types.h']]],
   ['adcs_5frun_5fmode_5fenum_5ft_13',['ADCS_run_mode_enum_t',['../adcs__types_8h.html#af5c0e9bf3243103683424cb9e82a463a',1,'adcs_types.h']]],
   ['adcs_5frunning_5fprogram_5fenum_5ft_14',['ADCS_running_program_enum_t',['../adcs__types_8h.html#a9f107ed5e7c6c6f668bb7e6b56edd081',1,'adcs_types.h']]],
-  ['adcs_5fwhich_5fcam_5fsensor_5fenum_5ft_15',['ADCS_which_cam_sensor_enum_t',['../adcs__types_8h.html#acbfff447ce7f23da818e29ea3b5720e0',1,'adcs_types.h']]]
+  ['adcs_5fwhich_5fcam_5fsensor_5fenum_5ft_15',['ADCS_which_cam_sensor_enum_t',['../adcs__types_8h.html#acbfff447ce7f23da818e29ea3b5720e0',1,'adcs_types.h']]],
+  ['ant_5fi2c_5fbus_5fmcu_16',['ANT_i2c_bus_mcu',['../ant__internal__drivers_8h.html#adf53a76dc5f534589b8abf8fb6b317c8',1,'ant_internal_drivers.h']]]
 ];

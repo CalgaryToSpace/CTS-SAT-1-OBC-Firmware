@@ -1,9 +1,0 @@
-<map id="ANT_CMD_report_antenna_deployment_activation_count" name="ANT_CMD_report_antenna_deployment_activation_count">
-<area shape="rect" id="Node000001" title="writes the number of times deployment has been attempted (for a specified antenna) in a response buff..." alt="" coords="5,47,202,88"/>
-<area shape="rect" id="Node000002" href="$ant__internal__drivers_8c.html#ae6614f02f049f30d0bcaa68666730b36" title="Receives a response from the antenna controller." alt="" coords="258,5,392,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="197,44,249,32,250,37,198,49"/>
-<area shape="rect" id="Node000003" href="$ant__internal__drivers_8c.html#a6c5b7499f9ef79f0a4d84f2057a99e06" title="Sends a command to the antenna controller." alt="" coords="267,55,382,80"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="202,65,251,65,251,70,202,70"/>
-<area shape="rect" id="Node000004" href="$debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="250,104,400,130"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="198,86,250,98,249,103,197,91"/>
-</map>

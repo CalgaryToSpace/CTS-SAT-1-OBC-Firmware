@@ -104,5 +104,7 @@ var searchData=
   ['adcs_5frunning_5fprogram_5fbootloader_101',['ADCS_RUNNING_PROGRAM_BOOTLOADER',['../adcs__types_8h.html#a9f107ed5e7c6c6f668bb7e6b56edd081a4930c80fff00ef5ca9ee57988696198e',1,'adcs_types.h']]],
   ['adcs_5fwhich_5fcam_5fsensor_5fcam1_102',['ADCS_WHICH_CAM_SENSOR_CAM1',['../adcs__types_8h.html#acbfff447ce7f23da818e29ea3b5720e0aacb1fb15e26bd7124402da4a85b314ae',1,'adcs_types.h']]],
   ['adcs_5fwhich_5fcam_5fsensor_5fcam2_103',['ADCS_WHICH_CAM_SENSOR_CAM2',['../adcs__types_8h.html#acbfff447ce7f23da818e29ea3b5720e0aa49fa9a743fcb95e19eb5fe2aa253e99',1,'adcs_types.h']]],
-  ['adcs_5fwhich_5fcam_5fsensor_5fnone_104',['ADCS_WHICH_CAM_SENSOR_NONE',['../adcs__types_8h.html#acbfff447ce7f23da818e29ea3b5720e0a0d3278bec0b15de2362137f335896c69',1,'adcs_types.h']]]
+  ['adcs_5fwhich_5fcam_5fsensor_5fnone_104',['ADCS_WHICH_CAM_SENSOR_NONE',['../adcs__types_8h.html#acbfff447ce7f23da818e29ea3b5720e0a0d3278bec0b15de2362137f335896c69',1,'adcs_types.h']]],
+  ['ant_5fi2c_5fbus_5fa_5fmcu_5fa_105',['ANT_I2C_BUS_A_MCU_A',['../ant__internal__drivers_8h.html#adf53a76dc5f534589b8abf8fb6b317c8a1dfc3f132cd98080eee3b7c948522565',1,'ant_internal_drivers.h']]],
+  ['ant_5fi2c_5fbus_5fb_5fmcu_5fb_106',['ANT_I2C_BUS_B_MCU_B',['../ant__internal__drivers_8h.html#adf53a76dc5f534589b8abf8fb6b317c8a1c16c65f84c22dc6ebd98334de99dc5c',1,'ant_internal_drivers.h']]]
 ];

@@ -390,7 +390,7 @@ var searchData=
   ['timekeeping_2eh_387',['timekeeping.h',['../timekeeping_8h.html',1,'']]],
   ['timekeeping_5ftelecommand_5fdefs_2ec_388',['timekeeping_telecommand_defs.c',['../timekeeping__telecommand__defs_8c.html',1,'']]],
   ['timekeeping_5ftelecommand_5fdefs_2eh_389',['timekeeping_telecommand_defs.h',['../timekeeping__telecommand__defs_8h.html',1,'']]],
-  ['timeout_390',['timeout',['../ant__internal__drivers_8c.html#a91f6071000e844b920d249f74d6fbf42',1,'ant_internal_drivers.c']]],
+  ['timeout_5fms_390',['timeout_ms',['../ant__internal__drivers_8c.html#aa7d9694e4d8a127dec780dc52d67316d',1,'ant_internal_drivers.c']]],
   ['timestamp_20format_391',['Timestamp Format',['../md_docs_240__Logging.html#autotoc_md25',1,'']]],
   ['timestamp_20format_20rationale_392',['Timestamp Format Rationale',['../md_docs_2Non-Critical__Notes_2Timestamp__Format__Rationale.html',1,'']]],
   ['timestamp_5fformat_5frationale_2emd_393',['Timestamp_Format_Rationale.md',['../Timestamp__Format__Rationale_8md.html',1,'']]],

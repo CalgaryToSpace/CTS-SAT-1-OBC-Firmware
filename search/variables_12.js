@@ -40,7 +40,7 @@ var searchData=
   ['time_5fcoefficient_5fmilli_37',['time_coefficient_milli',['../structADCS__augmented__sgp4__params__struct__t.html#aebb3fe535218ad8e253ebdb16d1290d0',1,'ADCS_augmented_sgp4_params_struct_t']]],
   ['time_5fgain_5fmilli_38',['time_gain_milli',['../structADCS__augmented__sgp4__params__struct__t.html#a521e905c68daa0e9ead408be1e2677e2',1,'ADCS_augmented_sgp4_params_struct_t']]],
   ['time_5fsince_5fprev_5fcmd_5fsec_39',['time_since_prev_cmd_sec',['../structEPS__struct__system__status__t.html#a36766a4af9b07082e7993a2d84b54a69',1,'EPS_struct_system_status_t']]],
-  ['timeout_40',['timeout',['../ant__internal__drivers_8c.html#a91f6071000e844b920d249f74d6fbf42',1,'ant_internal_drivers.c']]],
+  ['timeout_5fms_40',['timeout_ms',['../ant__internal__drivers_8c.html#aa7d9694e4d8a127dec780dc52d67316d',1,'ant_internal_drivers.c']]],
   ['timestamp_5fsec_41',['timestamp_sec',['../classcts1__ground__support_1_1terminal__app_1_1app__types_1_1RxTxLogEntry.html#a68012c415c4a76b6c6bd6cb2e62d184e',1,'cts1_ground_support::terminal_app::app_types::RxTxLogEntry']]],
   ['timestamp_5fsent_42',['timestamp_sent',['../structTCMD__parsed__tcmd__to__execute__t.html#af9d9fb7bd782e4543ffd9566bc1c4335',1,'TCMD_parsed_tcmd_to_execute_t']]],
   ['timestamp_5fto_5fexecute_43',['timestamp_to_execute',['../structTCMD__parsed__tcmd__to__execute__t.html#a8d9de34b2c656d3d78566aadf965ad2c',1,'TCMD_parsed_tcmd_to_execute_t']]],

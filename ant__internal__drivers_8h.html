@@ -90,6 +90,7 @@ $(function(){ initResizable(false); });
 <div class="header">
   <div class="summary">
 <a href="#define-members">Macros</a> &#124;
+<a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">ant_internal_drivers.h File Reference</div></div>
 </div><!--header-->
@@ -110,13 +111,19 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="ant__internal__drivers_8h__dep__incl.png" border="0" usemap="#afirmware_2Core_2Inc_2antenna__deploy__drivers_2ant__internal__drivers_8hdep" alt=""/></div>
 <map name="afirmware_2Core_2Inc_2antenna__deploy__drivers_2ant__internal__drivers_8hdep" id="afirmware_2Core_2Inc_2antenna__deploy__drivers_2ant__internal__drivers_8hdep">
-<area shape="rect" title=" " alt="" coords="244,5,426,61"/>
-<area shape="rect" href="ant__commands_8c.html" title=" " alt="" coords="5,116,220,157"/>
-<area shape="poly" title=" " alt="" coords="263,70,157,118,155,113,261,65"/>
-<area shape="rect" href="ant__internal__drivers_8c.html" title=" " alt="" coords="244,109,426,165"/>
-<area shape="poly" title=" " alt="" coords="338,77,338,108,332,108,332,77"/>
-<area shape="rect" href="antenna__telecommand__defs_8c.html" title=" " alt="" coords="451,116,665,157"/>
-<area shape="poly" title=" " alt="" coords="410,65,516,113,513,118,407,70"/>
+<area shape="rect" title=" " alt="" coords="319,5,501,61"/>
+<area shape="rect" href="ant__commands_8h.html" title=" " alt="" coords="231,116,445,157"/>
+<area shape="poly" title=" " alt="" coords="384,75,354,118,349,115,380,72"/>
+<area shape="rect" href="ant__commands_8c.html" title=" " alt="" coords="5,213,220,253"/>
+<area shape="poly" title=" " alt="" coords="305,68,261,87,221,111,192,135,166,163,127,214,123,210,161,160,188,132,218,107,259,82,303,63"/>
+<area shape="rect" href="antenna__telecommand__defs_8c.html" title=" " alt="" coords="456,213,670,253"/>
+<area shape="poly" title=" " alt="" coords="440,72,509,163,549,211,545,214,505,166,436,75"/>
+<area shape="rect" href="ant__internal__drivers_8c.html" title=" " alt="" coords="519,109,701,165"/>
+<area shape="poly" title=" " alt="" coords="478,66,557,106,555,111,476,71"/>
+<area shape="poly" title=" " alt="" coords="278,166,161,215,159,210,275,161"/>
+<area shape="poly" title=" " alt="" coords="400,161,517,210,515,215,398,166"/>
+<area shape="rect" href="test__ant__commands_8c.html" title=" " alt="" coords="243,213,432,253"/>
+<area shape="poly" title=" " alt="" coords="340,173,340,212,335,212,335,173"/>
 </map>
 </div>
 </div>
@@ -127,14 +134,22 @@ Macros</h2></td></tr>
 <tr class="memitem:a954bdc2b379c8b0b79bba2be5fbd85ea" id="r_a954bdc2b379c8b0b79bba2be5fbd85ea"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a954bdc2b379c8b0b79bba2be5fbd85ea">ANT_DEFAULT_RX_LEN_MIN</a>&#160;&#160;&#160;5</td></tr>
 <tr class="separator:a954bdc2b379c8b0b79bba2be5fbd85ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:adf53a76dc5f534589b8abf8fb6b317c8" id="r_adf53a76dc5f534589b8abf8fb6b317c8"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adf53a76dc5f534589b8abf8fb6b317c8">ANT_i2c_bus_mcu</a> { <a class="el" href="#adf53a76dc5f534589b8abf8fb6b317c8a1dfc3f132cd98080eee3b7c948522565">ANT_I2C_BUS_A_MCU_A</a>
+, <a class="el" href="#adf53a76dc5f534589b8abf8fb6b317c8a1c16c65f84c22dc6ebd98334de99dc5c">ANT_I2C_BUS_B_MCU_B</a>
+ }</td></tr>
+<tr class="memdesc:adf53a76dc5f534589b8abf8fb6b317c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">the antenna deployment module has two different i2c connections and two different microcontrollers. The values of this enum represent a combination of the i2c line to use in transmission and the microcontroller to transmit to.  <a href="#adf53a76dc5f534589b8abf8fb6b317c8">More...</a><br /></td></tr>
+<tr class="separator:adf53a76dc5f534589b8abf8fb6b317c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a6c5b7499f9ef79f0a4d84f2057a99e06" id="r_a6c5b7499f9ef79f0a4d84f2057a99e06"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6c5b7499f9ef79f0a4d84f2057a99e06">ANT_send_cmd</a> (uint8_t cmd_buf[], uint8_t cmd_len)</td></tr>
-<tr class="memdesc:a6c5b7499f9ef79f0a4d84f2057a99e06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sends a command to the antenna controller.  <br /></td></tr>
-<tr class="separator:a6c5b7499f9ef79f0a4d84f2057a99e06"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae6614f02f049f30d0bcaa68666730b36" id="r_ae6614f02f049f30d0bcaa68666730b36"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae6614f02f049f30d0bcaa68666730b36">ANT_get_response</a> (uint8_t rx_buf[], uint16_t rx_len)</td></tr>
-<tr class="memdesc:ae6614f02f049f30d0bcaa68666730b36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receives a response from the antenna controller.  <br /></td></tr>
-<tr class="separator:ae6614f02f049f30d0bcaa68666730b36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9551990b43beb551930f8d904fd6a220" id="r_a9551990b43beb551930f8d904fd6a220"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9551990b43beb551930f8d904fd6a220">ANT_send_cmd</a> (enum <a class="el" href="#adf53a76dc5f534589b8abf8fb6b317c8">ANT_i2c_bus_mcu</a> i2c_bus_mcu, uint8_t cmd_buf[], uint8_t cmd_len)</td></tr>
+<tr class="memdesc:a9551990b43beb551930f8d904fd6a220"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sends a command to the antenna controller.  <br /></td></tr>
+<tr class="separator:a9551990b43beb551930f8d904fd6a220"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab799f0945c47a98ea73de0da1926e583" id="r_ab799f0945c47a98ea73de0da1926e583"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab799f0945c47a98ea73de0da1926e583">ANT_get_response</a> (enum <a class="el" href="#adf53a76dc5f534589b8abf8fb6b317c8">ANT_i2c_bus_mcu</a> i2c_bus_mcu, uint8_t rx_buf[], uint16_t rx_len)</td></tr>
+<tr class="memdesc:ab799f0945c47a98ea73de0da1926e583"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receives a response from the antenna controller.  <br /></td></tr>
+<tr class="separator:ab799f0945c47a98ea73de0da1926e583"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="a954bdc2b379c8b0b79bba2be5fbd85ea" name="a954bdc2b379c8b0b79bba2be5fbd85ea"></a>
@@ -151,9 +166,30 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="adf53a76dc5f534589b8abf8fb6b317c8" name="adf53a76dc5f534589b8abf8fb6b317c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf53a76dc5f534589b8abf8fb6b317c8">&#9670;&#160;</a></span>ANT_i2c_bus_mcu</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="#adf53a76dc5f534589b8abf8fb6b317c8">ANT_i2c_bus_mcu</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>the antenna deployment module has two different i2c connections and two different microcontrollers. The values of this enum represent a combination of the i2c line to use in transmission and the microcontroller to transmit to. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="adf53a76dc5f534589b8abf8fb6b317c8a1dfc3f132cd98080eee3b7c948522565" name="adf53a76dc5f534589b8abf8fb6b317c8a1dfc3f132cd98080eee3b7c948522565"></a>ANT_I2C_BUS_A_MCU_A&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="adf53a76dc5f534589b8abf8fb6b317c8a1c16c65f84c22dc6ebd98334de99dc5c" name="adf53a76dc5f534589b8abf8fb6b317c8a1c16c65f84c22dc6ebd98334de99dc5c"></a>ANT_I2C_BUS_B_MCU_B&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+</div>
+</div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="ae6614f02f049f30d0bcaa68666730b36" name="ae6614f02f049f30d0bcaa68666730b36"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae6614f02f049f30d0bcaa68666730b36">&#9670;&#160;</a></span>ANT_get_response()</h2>
+<a id="ab799f0945c47a98ea73de0da1926e583" name="ab799f0945c47a98ea73de0da1926e583"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab799f0945c47a98ea73de0da1926e583">&#9670;&#160;</a></span>ANT_get_response()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -161,6 +197,11 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">uint8_t ANT_get_response </td>
           <td>(</td>
+          <td class="paramtype">enum <a class="el" href="#adf53a76dc5f534589b8abf8fb6b317c8">ANT_i2c_bus_mcu</a></td>          <td class="paramname"><span class="paramname"><em>i2c_bus_mcu</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>rx_buf</em></span>[], </td>
         </tr>
         <tr>
@@ -174,25 +215,170 @@ Functions</h2></td></tr>
 <p>Receives a response from the antenna controller. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramname">i2c_bus_mcu</td><td>the i2c_bus_mcu to read from. Either ANT_I2C_BUS_A_MCU_A or ANT_I2C_BUS_B_MCU_B <br  />
+ </td></tr>
     <tr><td class="paramname">rx_buf</td><td>Array to store the response from the antenna controller </td></tr>
     <tr><td class="paramname">rx_len</td><td>Length of the response buffer </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>0 upon success, 4 if rx_status received HAL_ERROR </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>0 upon success, 1 if read_status received HAL_ERROR </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="ant__internal__drivers_8h_ab799f0945c47a98ea73de0da1926e583_cgraph.png" border="0" usemap="#aant__internal__drivers_8h_ab799f0945c47a98ea73de0da1926e583_cgraph" alt=""/></div>
+<map name="aant__internal__drivers_8h_ab799f0945c47a98ea73de0da1926e583_cgraph" id="aant__internal__drivers_8h_ab799f0945c47a98ea73de0da1926e583_cgraph">
+<area shape="rect" title="Receives a response from the antenna controller." alt="" coords="5,443,139,469"/>
+<area shape="rect" href="log_8c.html#a9620661557eea5fdaf535b894ae58c84" title="Log a message to several destinations (sinks)" alt="" coords="187,443,296,469"/>
+<area shape="poly" title=" " alt="" coords="139,453,171,453,171,459,139,459"/>
+<area shape="rect" href="log_8c.html#a186ca6df91a1dacb78dbf0b0385747c5" title="Get the name of a severity enum." alt="" coords="350,343,515,369"/>
+<area shape="poly" title=" " alt="" coords="255,441,293,409,343,378,356,372,358,377,345,382,296,414,258,445"/>
+<area shape="rect" href="log__sinks_8c.html#ad2518000eb3f3d175e8a4939ee3530af" title="Sends a log message to a log file." alt="" coords="387,392,477,418"/>
+<area shape="poly" title=" " alt="" coords="292,440,371,419,373,424,293,445"/>
+<area shape="rect" href="log__sinks_8c.html#af6b617d68df1389f44e9beb22ffa6d10" title="Sends a log message to the UHF radio." alt="" coords="590,443,718,469"/>
+<area shape="poly" title=" " alt="" coords="296,453,575,453,575,459,296,459"/>
+<area shape="rect" href="log__sinks_8c.html#a3f618faf2b066b771b2cb567c66154b6" title="Sends a log message to the umbilical UART." alt="" coords="577,492,731,518"/>
+<area shape="poly" title=" " alt="" coords="297,460,562,492,561,497,296,465"/>
+<area shape="rect" href="timekeeping_8c.html#a5bfe7cf59c2f5dca9b5f4213f6ea16e7" title="Returns a computer&#45;friendly timestamp string." alt="" coords="344,550,520,576"/>
+<area shape="poly" title=" " alt="" coords="261,467,299,494,345,523,382,541,380,546,343,528,296,499,258,472"/>
+<area shape="rect" href="lfs_8c.html#aa7eb46b610f8507869aa62759cfd224e" title=" " alt="" coords="606,246,702,272"/>
+<area shape="poly" title=" " alt="" coords="477,398,499,391,519,379,529,368,536,356,542,331,548,306,555,293,567,281,590,267,593,272,570,285,559,296,553,308,547,333,541,358,534,371,522,383,501,396,479,403"/>
+<area shape="rect" href="lfs_8c.html#a27b9877d2df6b72e9ac883a408d0d34c" title="File operations ///." alt="" coords="598,344,710,370"/>
+<area shape="poly" title=" " alt="" coords="477,393,582,370,584,375,478,398"/>
+<area shape="rect" href="lfs_8c.html#ad6f28a6af39c34f251a7c8db1bcc9506" title=" " alt="" coords="607,394,701,420"/>
+<area shape="poly" title=" " alt="" coords="478,403,592,404,592,409,478,408"/>
+<area shape="rect" href="lfs_8c.html#a2769dda334cd0ac276a4a929eadb930d" title=" " alt="" coords="607,295,701,321"/>
+<area shape="poly" title=" " alt="" coords="477,395,519,379,533,367,542,355,552,342,567,330,591,318,594,323,570,334,555,346,547,358,537,371,522,384,479,400"/>
+<area shape="poly" title=" " alt="" coords="478,413,581,437,579,442,477,418"/>
+<area shape="poly" title=" " alt="" coords="455,416,506,447,569,479,585,485,583,490,567,484,503,452,452,421"/>
+<area shape="rect" href="lfs_8c.html#a6913260217358cf9c612d2547f6f0bbe" title=" " alt="" coords="982,142,1085,168"/>
+<area shape="poly" title=" " alt="" coords="673,243,723,213,787,184,833,172,880,163,966,154,967,159,881,168,834,177,789,189,725,217,676,248"/>
+<area shape="rect" href="lfs_8c.html#abb00542d235be9617c878d46b6b00bb0" title=" " alt="" coords="789,320,904,346"/>
+<area shape="poly" title=" " alt="" coords="703,268,741,280,808,311,806,316,739,285,702,273"/>
+<area shape="rect" href="lfs_8c.html#a0f7d91af547222f857c7c7e0b4952836" title=" " alt="" coords="1179,142,1279,168"/>
+<area shape="poly" title=" " alt="" coords="1085,152,1164,152,1164,157,1085,157"/>
+<area shape="rect" href="lfs__util_8h.html#a9faff801530cd687a960a08af1acaaf1" title=" " alt="" coords="1197,43,1261,69"/>
+<area shape="poly" title=" " alt="" coords="1053,139,1100,109,1159,78,1181,68,1183,73,1161,82,1103,114,1056,144"/>
+<area shape="rect" href="lfs_8c.html#a730bc133994af125df2ef317c03499ea" title=" " alt="" coords="1169,92,1289,118"/>
+<area shape="poly" title=" " alt="" coords="1085,139,1160,120,1161,125,1086,144"/>
+<area shape="rect" href="lfs_8c.html#ae9d4b3e343006f3df668e4c40da0afda" title=" " alt="" coords="1354,43,1444,69"/>
+<area shape="poly" title=" " alt="" coords="1276,139,1296,128,1311,116,1320,104,1329,91,1344,78,1349,75,1352,79,1347,82,1333,95,1324,107,1315,120,1299,133,1278,144"/>
+<area shape="rect" href="lfs__util_8h.html#a6aca234f5581c98fc423e4184532185e" title=" " alt="" coords="1369,92,1428,118"/>
+<area shape="poly" title=" " alt="" coords="1275,139,1353,116,1355,121,1277,144"/>
+<area shape="rect" href="lfs_8c.html#a1938027f324f4a58980b0163cbcf8367" title=" " alt="" coords="1348,142,1450,168"/>
+<area shape="poly" title=" " alt="" coords="1279,152,1333,152,1333,157,1279,157"/>
+<area shape="rect" href="lfs_8c.html#af78645d9b58b26761464ef2e892516b0" title="Internal operations predeclared here ///." alt="" coords="1346,471,1452,497"/>
+<area shape="poly" title=" " alt="" coords="1239,167,1386,456,1382,458,1235,169"/>
+<area shape="rect" href="lfs_8c.html#ac43db7a505f104fbcdb589de700715bc" title=" " alt="" coords="1889,243,1981,269"/>
+<area shape="poly" title=" " alt="" coords="1280,163,1346,177,1505,206,1665,228,1873,249,1873,254,1664,233,1504,211,1345,183,1278,169"/>
+<area shape="rect" href="lfs_8c.html#a4eb3c4034fadfa6e58510d40f3af3565" title=" " alt="" coords="1695,395,1796,421"/>
+<area shape="poly" title=" " alt="" coords="1242,166,1284,217,1314,247,1347,272,1388,297,1432,318,1523,353,1609,378,1681,395,1680,400,1608,384,1521,358,1430,323,1386,302,1344,277,1310,251,1280,221,1238,170"/>
+<area shape="rect" href="lfs_8c.html#a64eaa825b262bc79780df365771461cd" title=" " alt="" coords="1664,444,1827,470"/>
+<area shape="poly" title=" " alt="" coords="1452,477,1649,462,1649,467,1453,483"/>
+<area shape="rect" href="lfs_8c.html#abcc4b5d45aafcd5b5e6dd00dc87f8f5b" title=" " alt="" coords="1502,496,1615,522"/>
+<area shape="poly" title=" " alt="" coords="1453,490,1487,495,1486,501,1452,495"/>
+<area shape="poly" title=" " alt="" coords="1807,442,1825,431,1859,397,1887,357,1908,317,1922,283,1927,285,1912,319,1891,360,1863,400,1828,435,1810,446"/>
+<area shape="rect" href="lfs_8c.html#a5aff506785154ea5ce756f0a436951df" title=" " alt="" coords="1875,495,1995,521"/>
+<area shape="poly" title=" " alt="" coords="1797,468,1871,488,1869,493,1796,473"/>
+<area shape="rect" href="lfs_8c.html#a214fa286eeca1ce2f09519c3d908d39b" title=" " alt="" coords="2072,672,2149,698"/>
+<area shape="poly" title=" " alt="" coords="1827,445,1868,445,1912,450,1956,461,1997,481,2024,511,2053,559,2100,657,2095,660,2048,561,2020,514,1993,485,1954,466,1911,455,1868,450,1827,450"/>
+<area shape="rect" href="lfs_8c.html#a74ea955f04467b3fb6877f7797ff5290" title=" " alt="" coords="2043,218,2177,244"/>
+<area shape="poly" title=" " alt="" coords="1981,247,2027,240,2028,245,1982,252"/>
+<area shape="rect" href="lfs_8c.html#a7abfecb79aea2e5abee149d3093e8755" title=" " alt="" coords="2225,106,2334,132"/>
+<area shape="poly" title=" " alt="" coords="2130,215,2244,138,2247,143,2133,220"/>
+<area shape="rect" href="lfs__util_8h.html#aa6d372bce9fdc63166afaab1bad985c2" title=" " alt="" coords="2248,848,2311,874"/>
+<area shape="poly" title=" " alt="" coords="2118,243,2273,833,2268,834,2112,245"/>
+<area shape="rect" href="lfs__util_8h.html#ac41c19e11c05ec073d0c42f248bb74c3" title=" " alt="" coords="2064,495,2156,521"/>
+<area shape="poly" title=" " alt="" coords="1996,505,2048,505,2048,511,1996,511"/>
+<area shape="poly" title=" " alt="" coords="1606,493,1681,472,1683,477,1608,499"/>
+<area shape="poly" title=" " alt="" coords="1615,506,1859,506,1859,511,1616,512"/>
+<area shape="poly" title=" " alt="" coords="1609,520,1781,570,1996,639,2063,664,2061,669,1994,644,1779,575,1607,525"/>
+<area shape="rect" href="lfs_8c.html#a87c48ccdc3781694d58b956062690f45" title=" " alt="" coords="1705,951,1786,977"/>
+<area shape="poly" title=" " alt="" coords="1567,521,1736,936,1731,938,1562,523"/>
+<area shape="poly" title=" " alt="" coords="1572,494,1612,462,1663,430,1680,422,1682,427,1666,434,1615,466,1576,498"/>
+<area shape="rect" href="lfs_8c.html#a24aeabb6d4894fc1392e81e3c40afff1" title="Metadata pair and directory operations ///." alt="" coords="1881,899,1989,925"/>
+<area shape="poly" title=" " alt="" coords="1786,950,1870,927,1871,932,1787,956"/>
+<area shape="rect" href="lfs_8c.html#aed935b683183b73f6ca1ba7b0ffd0f67" title=" " alt="" coords="2065,951,2155,977"/>
+<area shape="poly" title=" " alt="" coords="1787,961,2049,961,2049,967,1787,967"/>
+<area shape="poly" title=" " alt="" coords="1989,901,2232,865,2233,871,1990,907"/>
+<area shape="poly" title=" " alt="" coords="1977,897,1993,886,2031,844,2060,797,2083,751,2097,712,2102,714,2087,753,2065,800,2035,848,1997,890,1980,901"/>
+<area shape="poly" title=" " alt="" coords="1981,923,2051,944,2049,949,1980,928"/>
+<area shape="poly" title=" " alt="" coords="709,348,774,340,774,345,710,353"/>
+<area shape="rect" href="lfs_8c.html#af427c4edfdfd5f3f957708079189ddea" title="Top level file operations ///." alt="" coords="788,446,906,472"/>
+<area shape="poly" title=" " alt="" coords="711,367,741,379,784,405,821,433,818,438,781,410,738,384,709,372"/>
+<area shape="poly" title=" " alt="" coords="854,444,904,358,917,322,925,292,934,263,952,229,975,200,1001,176,1004,180,979,204,956,232,939,265,930,294,922,323,908,360,859,447"/>
+<area shape="poly" title=" " alt="" coords="907,459,1330,478,1330,484,906,464"/>
+<area shape="poly" title=" " alt="" coords="855,444,879,406,904,358,913,324,917,293,917,238,918,212,922,185,933,158,952,128,982,92,1011,64,1040,42,1071,25,1103,14,1140,7,1228,3,1936,3,1980,5,2025,13,2110,37,2186,67,2243,96,2240,100,2183,72,2109,42,2024,18,1980,11,1936,8,1228,8,1140,13,1105,19,1073,30,1043,46,1015,68,986,96,956,131,937,160,927,187,923,212,923,238,923,293,919,325,908,360,884,409,860,447"/>
+<area shape="poly" title=" " alt="" coords="853,472,909,781,956,1029,988,1054,1018,1069,1048,1076,1078,1077,1145,1069,1228,1063,1936,1063,2008,1060,2063,1049,2115,1026,2176,987,2203,964,2227,938,2262,886,2266,889,2231,941,2207,968,2179,991,2118,1031,2065,1054,2009,1065,1936,1068,1228,1068,1146,1074,1078,1082,1047,1081,1016,1074,985,1059,952,1032,903,782,848,473"/>
+<area shape="poly" title=" " alt="" coords="853,471,902,750,933,906,947,958,956,981,980,996,1012,1007,1094,1021,1194,1025,1303,1021,1415,1011,1522,998,1689,971,1690,977,1523,1003,1416,1016,1304,1026,1194,1030,1093,1027,1010,1012,978,1000,952,984,942,960,928,907,897,751,848,472"/>
+<area shape="poly" title=" " alt="" coords="852,471,863,554,884,678,898,742,915,800,934,847,956,878,987,901,1025,921,1071,938,1124,952,1242,973,1371,986,1502,991,1628,992,1827,987,1945,979,2049,968,2049,974,1946,984,1827,992,1628,997,1502,997,1370,991,1241,978,1122,957,1070,943,1023,926,984,906,952,882,930,850,910,802,893,743,879,679,858,555,847,472"/>
+<area shape="rect" href="lfs_8c.html#a4b050bae630f5ffc9452b41c16ec1a2c" title=" " alt="" coords="1500,294,1616,320"/>
+<area shape="poly" title=" " alt="" coords="862,443,901,414,953,387,1024,364,1097,345,1244,320,1378,308,1484,304,1484,309,1378,313,1244,326,1098,350,1025,369,955,392,904,419,865,448"/>
+<area shape="rect" href="lfs_8c.html#a3ae08e7148c43b3861f5dfac6bf7966d" title=" " alt="" coords="1516,723,1600,749"/>
+<area shape="poly" title=" " alt="" coords="861,470,901,512,956,558,1024,599,1098,634,1175,662,1251,684,1393,714,1501,729,1500,734,1392,720,1250,690,1173,667,1096,639,1022,604,952,562,897,516,858,474"/>
+<area shape="rect" href="lfs_8c.html#a4a32a05356587f37e44f0a73431c8fef" title=" " alt="" coords="1886,850,1984,876"/>
+<area shape="poly" title=" " alt="" coords="854,471,889,571,920,643,961,719,1013,792,1042,824,1074,853,1108,877,1145,895,1185,907,1228,911,1559,911,1644,907,1728,898,1870,874,1871,879,1729,903,1644,912,1560,916,1228,916,1184,912,1144,900,1106,881,1071,857,1038,828,1008,795,957,722,915,645,884,573,849,473"/>
+<area shape="rect" href="lfs_8c.html#a651bb8d9b7afba50f815c3a7a43abc6c" title=" " alt="" coords="954,522,1112,548"/>
+<area shape="poly" title=" " alt="" coords="882,470,987,513,985,518,880,475"/>
+<area shape="rect" href="lfs__util_8h.html#aa30d06c37906ba1f9fe84730c7326de5" title=" " alt="" coords="993,243,1073,269"/>
+<area shape="poly" title=" " alt="" coords="854,444,952,278,977,264,979,269,956,282,858,447"/>
+<area shape="rect" href="lfs_8c.html#ae594dee3729cd3ecb88e5ad60d1e21bd" title=" " alt="" coords="974,292,1093,318"/>
+<area shape="poly" title=" " alt="" coords="855,444,893,392,921,362,952,335,974,322,977,327,956,340,925,366,897,395,859,447"/>
+<area shape="poly" title=" " alt="" coords="1616,318,1788,366,1893,402,1996,444,2075,485,2072,490,1994,449,1891,407,1787,371,1615,323"/>
+<area shape="poly" title=" " alt="" coords="1580,720,1897,527,1900,531,1583,725"/>
+<area shape="poly" title=" " alt="" coords="1600,736,1703,738,1826,733,1911,721,1994,704,2056,693,2057,698,1996,709,1912,727,1827,739,1703,743,1600,741"/>
+<area shape="poly" title=" " alt="" coords="1572,748,1726,938,1722,941,1568,751"/>
+<area shape="rect" href="lfs_8c.html#ac4b5300e44b2ff4b4fa85bd4ce8a3e44" title=" " alt="" coords="1681,698,1810,724"/>
+<area shape="poly" title=" " alt="" coords="1600,728,1666,719,1667,724,1601,733"/>
+<area shape="poly" title=" " alt="" coords="1590,747,1665,777,1774,814,1871,843,1870,848,1772,819,1663,783,1588,752"/>
+<area shape="poly" title=" " alt="" coords="1795,721,2234,846,2232,851,1793,727"/>
+<area shape="poly" title=" " alt="" coords="1760,696,1791,665,1824,626,1838,602,1846,581,1855,561,1873,538,1886,527,1890,531,1877,542,1860,563,1851,583,1843,605,1829,630,1795,669,1763,700"/>
+<area shape="poly" title=" " alt="" coords="1769,695,2071,526,2073,531,1772,700"/>
+<area shape="poly" title=" " alt="" coords="1810,704,2056,686,2056,692,1810,709"/>
+<area shape="poly" title=" " alt="" coords="1761,722,1809,772,1876,829,1894,840,1891,844,1873,833,1806,776,1757,726"/>
+<area shape="poly" title=" " alt="" coords="1113,534,1298,532,1486,515,1486,521,1298,537,1113,539"/>
+<area shape="rect" href="lfs_8c.html#a445d5ee772e25ab7db5429cb54a20bd2" title=" " alt="" coords="1176,622,1282,648"/>
+<area shape="poly" title=" " alt="" coords="1062,546,1190,612,1187,617,1059,551"/>
+<area shape="rect" href="lfs_8c.html#a58e106c86442db07d9af1a7eab6ca17a" title=" " alt="" coords="1160,496,1298,522"/>
+<area shape="poly" title=" " alt="" coords="1112,522,1145,518,1145,523,1113,527"/>
+<area shape="poly" title=" " alt="" coords="1243,619,1370,505,1373,509,1247,623"/>
+<area shape="poly" title=" " alt="" coords="1283,639,1408,651,1557,657,1747,657,1916,664,2056,677,2056,682,1916,670,1747,663,1557,663,1407,656,1283,644"/>
+<area shape="poly" title=" " alt="" coords="1253,646,1320,685,1419,737,1539,791,1602,815,1665,835,1718,846,1773,854,1870,860,1870,865,1772,859,1717,852,1664,840,1600,820,1537,796,1417,742,1317,689,1251,650"/>
+<area shape="poly" title=" " alt="" coords="1298,496,1330,492,1331,497,1299,502"/>
+<area shape="poly" title=" " alt="" coords="700,392,739,380,805,351,808,356,741,385,702,398"/>
+<area shape="rect" href="lfs_8c.html#a82eccb8ccb85d49165b04885f01c8799" title=" " alt="" coords="797,799,897,825"/>
+<area shape="poly" title=" " alt="" coords="702,408,723,416,741,429,775,470,801,517,820,567,833,618,847,713,849,784,844,784,841,713,828,619,815,568,796,519,770,473,738,433,720,421,700,413"/>
+<area shape="poly" title=" " alt="" coords="846,799,852,746,868,669,882,626,900,583,923,543,952,507,1015,452,1045,434,1075,421,1108,413,1143,408,1228,405,1400,405,1472,401,1545,391,1616,374,1684,355,1805,311,1892,273,1894,278,1807,316,1686,360,1617,380,1546,396,1473,407,1400,411,1228,411,1143,413,1109,418,1077,426,1048,439,1018,457,956,511,928,546,905,586,887,628,874,670,857,747,852,799"/>
+<area shape="rect" href="lfs_8c.html#a441bab3184229d1d74c81bbd4fcb7b29" title="File index list operations ///." alt="" coords="985,1152,1081,1178"/>
+<area shape="poly" title=" " alt="" coords="851,825,855,882,869,967,882,1013,901,1059,925,1102,956,1139,972,1151,969,1155,952,1143,921,1105,896,1061,877,1015,864,968,850,883,846,825"/>
+<area shape="rect" href="lfs_8c.html#aff7596f0f9588e7958555ac5a53abd8b" title=" " alt="" coords="986,1103,1081,1129"/>
+<area shape="poly" title=" " alt="" coords="852,825,860,873,878,941,909,1016,930,1051,956,1082,973,1095,970,1099,952,1086,926,1054,904,1018,873,943,855,874,847,826"/>
+<area shape="rect" href="lfs__util_8h.html#a5356f93586b7de6dc4f36025d34e62c8" title=" " alt="" coords="1194,1152,1264,1178"/>
+<area shape="poly" title=" " alt="" coords="1082,1163,1178,1163,1178,1168,1082,1168"/>
+<area shape="poly" title=" " alt="" coords="701,311,774,321,774,326,701,317"/>
+<area shape="rect" href="lfs_8c.html#a41d53212e4b29a3f22c93f27153c4030" title=" " alt="" coords="1695,192,1796,218"/>
+<area shape="poly" title=" " alt="" coords="700,293,1031,203,1400,203,1680,203,1680,208,1400,208,1032,208,702,298"/>
+<area shape="poly" title=" " alt="" coords="1797,216,1875,237,1873,242,1795,221"/>
+<area shape="poly" title=" " alt="" coords="1796,206,2028,222,2027,228,1796,211"/>
+<area shape="rect" href="timekeeping_8c.html#a94e564d601196fe7f3e2bc83050deb12" title=" " alt="" coords="571,542,737,583"/>
+<area shape="poly" title=" " alt="" coords="521,560,556,560,556,565,521,565"/>
+<area shape="rect" href="timekeeping_8c.html#a909de509b8cfaf7214b1e8f0759c036d" title=" " alt="" coords="568,608,740,648"/>
+<area shape="poly" title=" " alt="" coords="479,573,568,600,567,605,478,579"/>
+</map>
+</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="ant__internal__drivers_8h_ae6614f02f049f30d0bcaa68666730b36_icgraph.png" border="0" usemap="#aant__internal__drivers_8h_ae6614f02f049f30d0bcaa68666730b36_icgraph" alt=""/></div>
-<map name="aant__internal__drivers_8h_ae6614f02f049f30d0bcaa68666730b36_icgraph" id="aant__internal__drivers_8h_ae6614f02f049f30d0bcaa68666730b36_icgraph">
+<div class="center"><img src="ant__internal__drivers_8h_ab799f0945c47a98ea73de0da1926e583_icgraph.png" border="0" usemap="#aant__internal__drivers_8h_ab799f0945c47a98ea73de0da1926e583_icgraph" alt=""/></div>
+<map name="aant__internal__drivers_8h_ab799f0945c47a98ea73de0da1926e583_icgraph" id="aant__internal__drivers_8h_ab799f0945c47a98ea73de0da1926e583_icgraph">
 <area shape="rect" title="Receives a response from the antenna controller." alt="" coords="509,115,642,140"/>
-<area shape="rect" href="ant__commands_8c.html#a5bbfd2489ceda810545a6e40f213c916" title="Measures the temperature at the antenna controller system." alt="" coords="274,9,451,35"/>
+<area shape="rect" href="ant__commands_8c.html#a15c39d0ab06d12b38a3fe5f4843c4cd7" title="Measures the temperature at the antenna controller system." alt="" coords="274,9,451,35"/>
 <area shape="poly" title=" " alt="" coords="543,108,504,82,460,58,409,38,411,33,462,53,507,78,546,103"/>
-<area shape="rect" href="ant__commands_8c.html#a815bf7c2258ea7be61a56f65b154d8f4" title="writes the number of times deployment has been attempted (for a specified antenna) in a response buff..." alt="" coords="264,67,460,108"/>
+<area shape="rect" href="ant__commands_8c.html#afbbf4f4105326f8ea68bb54812e3078e" title="writes the number of times deployment has been attempted (for a specified antenna and mcu) in a respo..." alt="" coords="264,67,460,108"/>
 <area shape="poly" title=" " alt="" coords="493,115,460,109,461,103,494,110"/>
-<area shape="rect" href="ant__commands_8c.html#ac1b94f6512a0646ec6248dddf6b75a2a" title="writes the cumulative time (in 50ms increments) that the deployment system has been active (for a spe..." alt="" coords="268,139,457,180"/>
+<area shape="rect" href="ant__commands_8c.html#a37835fa09d7e3b1dda02ac34d0357403" title="writes the cumulative time (in 50ms increments) that the deployment system has been active (for a spe..." alt="" coords="268,139,457,180"/>
 <area shape="poly" title=" " alt="" coords="494,142,458,148,457,143,494,137"/>
-<area shape="rect" href="ant__commands_8c.html#a4a844454d8c72bb761846248f0ab0e5a" title="writes 2 bytes of information representing the deployment status of the antennas to the passed buffer..." alt="" coords="264,207,461,248"/>
+<area shape="rect" href="ant__commands_8c.html#a73ee96b3496909a29f4fcf12bfd73bbc" title="writes 2 bytes of information representing the deployment status of the antennas to the passed buffer..." alt="" coords="264,207,461,248"/>
 <area shape="poly" title=" " alt="" coords="542,151,462,194,426,209,424,204,460,189,539,146"/>
 <area shape="rect" href="antenna__telecommand__defs_8c.html#a316cf470a39e910ad64f65afa587c1b4" title="Telecommand: Measures the temperature of the antenna controller in centi&#45;degrees celsius." alt="" coords="5,5,216,31"/>
 <area shape="poly" title=" " alt="" coords="258,23,216,23,216,17,258,18"/>
@@ -207,8 +393,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a6c5b7499f9ef79f0a4d84f2057a99e06" name="a6c5b7499f9ef79f0a4d84f2057a99e06"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6c5b7499f9ef79f0a4d84f2057a99e06">&#9670;&#160;</a></span>ANT_send_cmd()</h2>
+<a id="a9551990b43beb551930f8d904fd6a220" name="a9551990b43beb551930f8d904fd6a220"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9551990b43beb551930f8d904fd6a220">&#9670;&#160;</a></span>ANT_send_cmd()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -216,6 +402,11 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="memname">uint8_t ANT_send_cmd </td>
           <td>(</td>
+          <td class="paramtype">enum <a class="el" href="#adf53a76dc5f534589b8abf8fb6b317c8">ANT_i2c_bus_mcu</a></td>          <td class="paramname"><span class="paramname"><em>i2c_bus_mcu</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>cmd_buf</em></span>[], </td>
         </tr>
         <tr>
@@ -229,39 +420,183 @@ Here is the caller graph for this function:</div>
 <p>Sends a command to the antenna controller. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramname">i2c_bus_mcu</td><td>the i2c_bus and mcu combination to use/transmit to. Either ANT_I2C_BUS_A_MCU_A or ANT_I2C_BUS_B_MCU_B </td></tr>
     <tr><td class="paramname">cmd_buf</td><td>Array of bytes to send to the antenna controller </td></tr>
     <tr><td class="paramname">cmd_len</td><td>Length of the command buffer </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>0 upon success, 1 if tx_status received HAL_ERROR, 2 if tx_status received HAL_BUSY, 3 if tx_status received HAL_TIMEOUT </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>0 upon success, 1 if tx_status received HAL_ERROR, 2 if tx_status received HAL_BUSY, 3 if tx_status received HAL_TIMEOUT, 4 if invalid i2c bus/mcu is passed </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="ant__internal__drivers_8h_a9551990b43beb551930f8d904fd6a220_cgraph.png" border="0" usemap="#aant__internal__drivers_8h_a9551990b43beb551930f8d904fd6a220_cgraph" alt=""/></div>
+<map name="aant__internal__drivers_8h_a9551990b43beb551930f8d904fd6a220_cgraph" id="aant__internal__drivers_8h_a9551990b43beb551930f8d904fd6a220_cgraph">
+<area shape="rect" title="Sends a command to the antenna controller." alt="" coords="5,443,121,469"/>
+<area shape="rect" href="log_8c.html#a9620661557eea5fdaf535b894ae58c84" title="Log a message to several destinations (sinks)" alt="" coords="169,443,278,469"/>
+<area shape="poly" title=" " alt="" coords="121,453,153,453,153,459,121,459"/>
+<area shape="rect" href="log_8c.html#a186ca6df91a1dacb78dbf0b0385747c5" title="Get the name of a severity enum." alt="" coords="332,343,497,369"/>
+<area shape="poly" title=" " alt="" coords="237,441,275,409,325,378,338,372,340,377,327,382,278,414,240,445"/>
+<area shape="rect" href="log__sinks_8c.html#ad2518000eb3f3d175e8a4939ee3530af" title="Sends a log message to a log file." alt="" coords="369,392,459,418"/>
+<area shape="poly" title=" " alt="" coords="274,440,353,419,355,424,275,445"/>
+<area shape="rect" href="log__sinks_8c.html#af6b617d68df1389f44e9beb22ffa6d10" title="Sends a log message to the UHF radio." alt="" coords="572,443,700,469"/>
+<area shape="poly" title=" " alt="" coords="278,453,557,453,557,459,278,459"/>
+<area shape="rect" href="log__sinks_8c.html#a3f618faf2b066b771b2cb567c66154b6" title="Sends a log message to the umbilical UART." alt="" coords="559,492,713,518"/>
+<area shape="poly" title=" " alt="" coords="279,460,544,492,543,497,278,465"/>
+<area shape="rect" href="timekeeping_8c.html#a5bfe7cf59c2f5dca9b5f4213f6ea16e7" title="Returns a computer&#45;friendly timestamp string." alt="" coords="326,550,502,576"/>
+<area shape="poly" title=" " alt="" coords="243,467,281,494,327,523,364,541,362,546,325,528,278,499,240,472"/>
+<area shape="rect" href="lfs_8c.html#aa7eb46b610f8507869aa62759cfd224e" title=" " alt="" coords="588,246,684,272"/>
+<area shape="poly" title=" " alt="" coords="459,398,481,391,501,379,511,368,518,356,524,331,530,306,537,293,549,281,572,267,575,272,552,285,541,296,535,308,529,333,523,358,516,371,504,383,483,396,461,403"/>
+<area shape="rect" href="lfs_8c.html#a27b9877d2df6b72e9ac883a408d0d34c" title="File operations ///." alt="" coords="580,344,692,370"/>
+<area shape="poly" title=" " alt="" coords="459,393,564,370,566,375,460,398"/>
+<area shape="rect" href="lfs_8c.html#ad6f28a6af39c34f251a7c8db1bcc9506" title=" " alt="" coords="589,394,683,420"/>
+<area shape="poly" title=" " alt="" coords="460,403,574,404,574,409,460,408"/>
+<area shape="rect" href="lfs_8c.html#a2769dda334cd0ac276a4a929eadb930d" title=" " alt="" coords="589,295,683,321"/>
+<area shape="poly" title=" " alt="" coords="459,395,501,379,515,367,524,355,534,342,549,330,573,318,576,323,552,334,537,346,529,358,519,371,504,384,461,400"/>
+<area shape="poly" title=" " alt="" coords="460,413,563,437,561,442,459,418"/>
+<area shape="poly" title=" " alt="" coords="437,416,488,447,551,479,567,485,565,490,549,484,485,452,434,421"/>
+<area shape="rect" href="lfs_8c.html#a6913260217358cf9c612d2547f6f0bbe" title=" " alt="" coords="964,142,1067,168"/>
+<area shape="poly" title=" " alt="" coords="655,243,705,213,769,184,815,172,862,163,948,154,949,159,863,168,816,177,771,189,707,217,658,248"/>
+<area shape="rect" href="lfs_8c.html#abb00542d235be9617c878d46b6b00bb0" title=" " alt="" coords="771,320,886,346"/>
+<area shape="poly" title=" " alt="" coords="685,268,723,280,790,311,788,316,721,285,684,273"/>
+<area shape="rect" href="lfs_8c.html#a0f7d91af547222f857c7c7e0b4952836" title=" " alt="" coords="1161,142,1261,168"/>
+<area shape="poly" title=" " alt="" coords="1067,152,1146,152,1146,157,1067,157"/>
+<area shape="rect" href="lfs__util_8h.html#a9faff801530cd687a960a08af1acaaf1" title=" " alt="" coords="1179,43,1243,69"/>
+<area shape="poly" title=" " alt="" coords="1035,139,1082,109,1141,78,1163,68,1165,73,1143,82,1085,114,1038,144"/>
+<area shape="rect" href="lfs_8c.html#a730bc133994af125df2ef317c03499ea" title=" " alt="" coords="1151,92,1271,118"/>
+<area shape="poly" title=" " alt="" coords="1067,139,1142,120,1143,125,1068,144"/>
+<area shape="rect" href="lfs_8c.html#ae9d4b3e343006f3df668e4c40da0afda" title=" " alt="" coords="1336,43,1426,69"/>
+<area shape="poly" title=" " alt="" coords="1258,139,1278,128,1293,116,1302,104,1311,91,1326,78,1331,75,1334,79,1329,82,1315,95,1306,107,1297,120,1281,133,1260,144"/>
+<area shape="rect" href="lfs__util_8h.html#a6aca234f5581c98fc423e4184532185e" title=" " alt="" coords="1351,92,1410,118"/>
+<area shape="poly" title=" " alt="" coords="1257,139,1335,116,1337,121,1259,144"/>
+<area shape="rect" href="lfs_8c.html#a1938027f324f4a58980b0163cbcf8367" title=" " alt="" coords="1330,142,1432,168"/>
+<area shape="poly" title=" " alt="" coords="1261,152,1315,152,1315,157,1261,157"/>
+<area shape="rect" href="lfs_8c.html#af78645d9b58b26761464ef2e892516b0" title="Internal operations predeclared here ///." alt="" coords="1328,471,1434,497"/>
+<area shape="poly" title=" " alt="" coords="1221,167,1368,456,1364,458,1217,169"/>
+<area shape="rect" href="lfs_8c.html#ac43db7a505f104fbcdb589de700715bc" title=" " alt="" coords="1871,243,1963,269"/>
+<area shape="poly" title=" " alt="" coords="1262,163,1328,177,1487,206,1647,228,1855,249,1855,254,1646,233,1486,211,1327,183,1260,169"/>
+<area shape="rect" href="lfs_8c.html#a4eb3c4034fadfa6e58510d40f3af3565" title=" " alt="" coords="1677,395,1778,421"/>
+<area shape="poly" title=" " alt="" coords="1224,166,1266,217,1296,247,1329,272,1370,297,1414,318,1505,353,1591,378,1663,395,1662,400,1590,384,1503,358,1412,323,1368,302,1326,277,1292,251,1262,221,1220,170"/>
+<area shape="rect" href="lfs_8c.html#a64eaa825b262bc79780df365771461cd" title=" " alt="" coords="1646,444,1809,470"/>
+<area shape="poly" title=" " alt="" coords="1434,477,1631,462,1631,467,1435,483"/>
+<area shape="rect" href="lfs_8c.html#abcc4b5d45aafcd5b5e6dd00dc87f8f5b" title=" " alt="" coords="1484,496,1597,522"/>
+<area shape="poly" title=" " alt="" coords="1435,490,1469,495,1468,501,1434,495"/>
+<area shape="poly" title=" " alt="" coords="1789,442,1807,431,1841,397,1869,357,1890,317,1904,283,1909,285,1894,319,1873,360,1845,400,1810,435,1792,446"/>
+<area shape="rect" href="lfs_8c.html#a5aff506785154ea5ce756f0a436951df" title=" " alt="" coords="1857,495,1977,521"/>
+<area shape="poly" title=" " alt="" coords="1779,468,1853,488,1851,493,1778,473"/>
+<area shape="rect" href="lfs_8c.html#a214fa286eeca1ce2f09519c3d908d39b" title=" " alt="" coords="2054,672,2131,698"/>
+<area shape="poly" title=" " alt="" coords="1809,445,1850,445,1894,450,1938,461,1979,481,2006,511,2035,559,2082,657,2077,660,2030,561,2002,514,1975,485,1936,466,1893,455,1850,450,1809,450"/>
+<area shape="rect" href="lfs_8c.html#a74ea955f04467b3fb6877f7797ff5290" title=" " alt="" coords="2025,218,2159,244"/>
+<area shape="poly" title=" " alt="" coords="1963,247,2009,240,2010,245,1964,252"/>
+<area shape="rect" href="lfs_8c.html#a7abfecb79aea2e5abee149d3093e8755" title=" " alt="" coords="2207,106,2316,132"/>
+<area shape="poly" title=" " alt="" coords="2112,215,2226,138,2229,143,2115,220"/>
+<area shape="rect" href="lfs__util_8h.html#aa6d372bce9fdc63166afaab1bad985c2" title=" " alt="" coords="2230,848,2293,874"/>
+<area shape="poly" title=" " alt="" coords="2100,243,2255,833,2250,834,2094,245"/>
+<area shape="rect" href="lfs__util_8h.html#ac41c19e11c05ec073d0c42f248bb74c3" title=" " alt="" coords="2046,495,2138,521"/>
+<area shape="poly" title=" " alt="" coords="1978,505,2030,505,2030,511,1978,511"/>
+<area shape="poly" title=" " alt="" coords="1588,493,1663,472,1665,477,1590,499"/>
+<area shape="poly" title=" " alt="" coords="1597,506,1841,506,1841,511,1598,512"/>
+<area shape="poly" title=" " alt="" coords="1591,520,1763,570,1978,639,2045,664,2043,669,1976,644,1761,575,1589,525"/>
+<area shape="rect" href="lfs_8c.html#a87c48ccdc3781694d58b956062690f45" title=" " alt="" coords="1687,951,1768,977"/>
+<area shape="poly" title=" " alt="" coords="1549,521,1718,936,1713,938,1544,523"/>
+<area shape="poly" title=" " alt="" coords="1554,494,1594,462,1645,430,1662,422,1664,427,1648,434,1597,466,1558,498"/>
+<area shape="rect" href="lfs_8c.html#a24aeabb6d4894fc1392e81e3c40afff1" title="Metadata pair and directory operations ///." alt="" coords="1863,899,1971,925"/>
+<area shape="poly" title=" " alt="" coords="1768,950,1852,927,1853,932,1769,956"/>
+<area shape="rect" href="lfs_8c.html#aed935b683183b73f6ca1ba7b0ffd0f67" title=" " alt="" coords="2047,951,2137,977"/>
+<area shape="poly" title=" " alt="" coords="1769,961,2031,961,2031,967,1769,967"/>
+<area shape="poly" title=" " alt="" coords="1971,901,2214,865,2215,871,1972,907"/>
+<area shape="poly" title=" " alt="" coords="1959,897,1975,886,2013,844,2042,797,2065,751,2079,712,2084,714,2069,753,2047,800,2017,848,1979,890,1962,901"/>
+<area shape="poly" title=" " alt="" coords="1963,923,2033,944,2031,949,1962,928"/>
+<area shape="poly" title=" " alt="" coords="691,348,756,340,756,345,692,353"/>
+<area shape="rect" href="lfs_8c.html#af427c4edfdfd5f3f957708079189ddea" title="Top level file operations ///." alt="" coords="770,446,888,472"/>
+<area shape="poly" title=" " alt="" coords="693,367,723,379,766,405,803,433,800,438,763,410,720,384,691,372"/>
+<area shape="poly" title=" " alt="" coords="836,444,886,358,899,322,907,292,916,263,934,229,957,200,983,176,986,180,961,204,938,232,921,265,912,294,904,323,890,360,841,447"/>
+<area shape="poly" title=" " alt="" coords="889,459,1312,478,1312,484,888,464"/>
+<area shape="poly" title=" " alt="" coords="837,444,861,406,886,358,895,324,899,293,899,238,900,212,904,185,915,158,934,128,964,92,993,64,1022,42,1053,25,1085,14,1122,7,1210,3,1918,3,1962,5,2007,13,2092,37,2168,67,2225,96,2222,100,2165,72,2091,42,2006,18,1962,11,1918,8,1210,8,1122,13,1087,19,1055,30,1025,46,997,68,968,96,938,131,919,160,909,187,905,212,905,238,905,293,901,325,890,360,866,409,842,447"/>
+<area shape="poly" title=" " alt="" coords="835,472,891,781,938,1029,970,1054,1000,1069,1030,1076,1060,1077,1127,1069,1210,1063,1918,1063,1990,1060,2045,1049,2097,1026,2158,987,2185,964,2209,938,2244,886,2248,889,2213,941,2189,968,2161,991,2100,1031,2047,1054,1991,1065,1918,1068,1210,1068,1128,1074,1060,1082,1029,1081,998,1074,967,1059,934,1032,885,782,830,473"/>
+<area shape="poly" title=" " alt="" coords="835,471,884,750,915,906,929,958,938,981,962,996,994,1007,1076,1021,1176,1025,1285,1021,1397,1011,1504,998,1671,971,1672,977,1505,1003,1398,1016,1286,1026,1176,1030,1075,1027,992,1012,960,1000,934,984,924,960,910,907,879,751,830,472"/>
+<area shape="poly" title=" " alt="" coords="834,471,845,554,866,678,880,742,897,800,916,847,938,878,969,901,1007,921,1053,938,1106,952,1224,973,1353,986,1484,991,1610,992,1809,987,1927,979,2031,968,2031,974,1928,984,1809,992,1610,997,1484,997,1352,991,1223,978,1104,957,1052,943,1005,926,966,906,934,882,912,850,892,802,875,743,861,679,840,555,829,472"/>
+<area shape="rect" href="lfs_8c.html#a4b050bae630f5ffc9452b41c16ec1a2c" title=" " alt="" coords="1482,294,1598,320"/>
+<area shape="poly" title=" " alt="" coords="844,443,883,414,935,387,1006,364,1079,345,1226,320,1360,308,1466,304,1466,309,1360,313,1226,326,1080,350,1007,369,937,392,886,419,847,448"/>
+<area shape="rect" href="lfs_8c.html#a3ae08e7148c43b3861f5dfac6bf7966d" title=" " alt="" coords="1498,723,1582,749"/>
+<area shape="poly" title=" " alt="" coords="843,470,883,512,938,558,1006,599,1080,634,1157,662,1233,684,1375,714,1483,729,1482,734,1374,720,1232,690,1155,667,1078,639,1004,604,934,562,879,516,840,474"/>
+<area shape="rect" href="lfs_8c.html#a4a32a05356587f37e44f0a73431c8fef" title=" " alt="" coords="1868,850,1966,876"/>
+<area shape="poly" title=" " alt="" coords="836,471,871,571,902,643,943,719,995,792,1024,824,1056,853,1090,877,1127,895,1167,907,1210,911,1541,911,1626,907,1710,898,1852,874,1853,879,1711,903,1626,912,1542,916,1210,916,1166,912,1126,900,1088,881,1053,857,1020,828,990,795,939,722,897,645,866,573,831,473"/>
+<area shape="rect" href="lfs_8c.html#a651bb8d9b7afba50f815c3a7a43abc6c" title=" " alt="" coords="936,522,1094,548"/>
+<area shape="poly" title=" " alt="" coords="864,470,969,513,967,518,862,475"/>
+<area shape="rect" href="lfs__util_8h.html#aa30d06c37906ba1f9fe84730c7326de5" title=" " alt="" coords="975,243,1055,269"/>
+<area shape="poly" title=" " alt="" coords="836,444,934,278,959,264,961,269,938,282,840,447"/>
+<area shape="rect" href="lfs_8c.html#ae594dee3729cd3ecb88e5ad60d1e21bd" title=" " alt="" coords="956,292,1075,318"/>
+<area shape="poly" title=" " alt="" coords="837,444,875,392,903,362,934,335,956,322,959,327,938,340,907,366,879,395,841,447"/>
+<area shape="poly" title=" " alt="" coords="1598,318,1770,366,1875,402,1978,444,2057,485,2054,490,1976,449,1873,407,1769,371,1597,323"/>
+<area shape="poly" title=" " alt="" coords="1562,720,1879,527,1882,531,1565,725"/>
+<area shape="poly" title=" " alt="" coords="1582,736,1685,738,1808,733,1893,721,1976,704,2038,693,2039,698,1978,709,1894,727,1809,739,1685,743,1582,741"/>
+<area shape="poly" title=" " alt="" coords="1554,748,1708,938,1704,941,1550,751"/>
+<area shape="rect" href="lfs_8c.html#ac4b5300e44b2ff4b4fa85bd4ce8a3e44" title=" " alt="" coords="1663,698,1792,724"/>
+<area shape="poly" title=" " alt="" coords="1582,728,1648,719,1649,724,1583,733"/>
+<area shape="poly" title=" " alt="" coords="1572,747,1647,777,1756,814,1853,843,1852,848,1754,819,1645,783,1570,752"/>
+<area shape="poly" title=" " alt="" coords="1777,721,2216,846,2214,851,1775,727"/>
+<area shape="poly" title=" " alt="" coords="1742,696,1773,665,1806,626,1820,602,1828,581,1837,561,1855,538,1868,527,1872,531,1859,542,1842,563,1833,583,1825,605,1811,630,1777,669,1745,700"/>
+<area shape="poly" title=" " alt="" coords="1751,695,2053,526,2055,531,1754,700"/>
+<area shape="poly" title=" " alt="" coords="1792,704,2038,686,2038,692,1792,709"/>
+<area shape="poly" title=" " alt="" coords="1743,722,1791,772,1858,829,1876,840,1873,844,1855,833,1788,776,1739,726"/>
+<area shape="poly" title=" " alt="" coords="1095,534,1280,532,1468,515,1468,521,1280,537,1095,539"/>
+<area shape="rect" href="lfs_8c.html#a445d5ee772e25ab7db5429cb54a20bd2" title=" " alt="" coords="1158,622,1264,648"/>
+<area shape="poly" title=" " alt="" coords="1044,546,1172,612,1169,617,1041,551"/>
+<area shape="rect" href="lfs_8c.html#a58e106c86442db07d9af1a7eab6ca17a" title=" " alt="" coords="1142,496,1280,522"/>
+<area shape="poly" title=" " alt="" coords="1094,522,1127,518,1127,523,1095,527"/>
+<area shape="poly" title=" " alt="" coords="1225,619,1352,505,1355,509,1229,623"/>
+<area shape="poly" title=" " alt="" coords="1265,639,1390,651,1539,657,1729,657,1898,664,2038,677,2038,682,1898,670,1729,663,1539,663,1389,656,1265,644"/>
+<area shape="poly" title=" " alt="" coords="1235,646,1302,685,1401,737,1521,791,1584,815,1647,835,1700,846,1755,854,1852,860,1852,865,1754,859,1699,852,1646,840,1582,820,1519,796,1399,742,1299,689,1233,650"/>
+<area shape="poly" title=" " alt="" coords="1280,496,1312,492,1313,497,1281,502"/>
+<area shape="poly" title=" " alt="" coords="682,392,721,380,787,351,790,356,723,385,684,398"/>
+<area shape="rect" href="lfs_8c.html#a82eccb8ccb85d49165b04885f01c8799" title=" " alt="" coords="779,799,879,825"/>
+<area shape="poly" title=" " alt="" coords="684,408,705,416,723,429,757,470,783,517,802,567,815,618,829,713,831,784,826,784,823,713,810,619,797,568,778,519,752,473,720,433,702,421,682,413"/>
+<area shape="poly" title=" " alt="" coords="828,799,834,746,850,669,864,626,882,583,905,543,934,507,997,452,1027,434,1057,421,1090,413,1125,408,1210,405,1382,405,1454,401,1527,391,1598,374,1666,355,1787,311,1874,273,1876,278,1789,316,1668,360,1599,380,1528,396,1455,407,1382,411,1210,411,1125,413,1091,418,1059,426,1030,439,1000,457,938,511,910,546,887,586,869,628,856,670,839,747,834,799"/>
+<area shape="rect" href="lfs_8c.html#a441bab3184229d1d74c81bbd4fcb7b29" title="File index list operations ///." alt="" coords="967,1152,1063,1178"/>
+<area shape="poly" title=" " alt="" coords="833,825,837,882,851,967,864,1013,883,1059,907,1102,938,1139,954,1151,951,1155,934,1143,903,1105,878,1061,859,1015,846,968,832,883,828,825"/>
+<area shape="rect" href="lfs_8c.html#aff7596f0f9588e7958555ac5a53abd8b" title=" " alt="" coords="968,1103,1063,1129"/>
+<area shape="poly" title=" " alt="" coords="834,825,842,873,860,941,891,1016,912,1051,938,1082,955,1095,952,1099,934,1086,908,1054,886,1018,855,943,837,874,829,826"/>
+<area shape="rect" href="lfs__util_8h.html#a5356f93586b7de6dc4f36025d34e62c8" title=" " alt="" coords="1176,1152,1246,1178"/>
+<area shape="poly" title=" " alt="" coords="1064,1163,1160,1163,1160,1168,1064,1168"/>
+<area shape="poly" title=" " alt="" coords="683,311,756,321,756,326,683,317"/>
+<area shape="rect" href="lfs_8c.html#a41d53212e4b29a3f22c93f27153c4030" title=" " alt="" coords="1677,192,1778,218"/>
+<area shape="poly" title=" " alt="" coords="682,293,1013,203,1382,203,1662,203,1662,208,1382,208,1014,208,684,298"/>
+<area shape="poly" title=" " alt="" coords="1779,216,1857,237,1855,242,1777,221"/>
+<area shape="poly" title=" " alt="" coords="1778,206,2010,222,2009,228,1778,211"/>
+<area shape="rect" href="timekeeping_8c.html#a94e564d601196fe7f3e2bc83050deb12" title=" " alt="" coords="553,542,719,583"/>
+<area shape="poly" title=" " alt="" coords="503,560,538,560,538,565,503,565"/>
+<area shape="rect" href="timekeeping_8c.html#a909de509b8cfaf7214b1e8f0759c036d" title=" " alt="" coords="550,608,722,648"/>
+<area shape="poly" title=" " alt="" coords="461,573,550,600,549,605,460,579"/>
+</map>
+</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="ant__internal__drivers_8h_a6c5b7499f9ef79f0a4d84f2057a99e06_icgraph.png" border="0" usemap="#aant__internal__drivers_8h_a6c5b7499f9ef79f0a4d84f2057a99e06_icgraph" alt=""/></div>
-<map name="aant__internal__drivers_8h_a6c5b7499f9ef79f0a4d84f2057a99e06_icgraph" id="aant__internal__drivers_8h_a6c5b7499f9ef79f0a4d84f2057a99e06_icgraph">
+<div class="center"><img src="ant__internal__drivers_8h_a9551990b43beb551930f8d904fd6a220_icgraph.png" border="0" usemap="#aant__internal__drivers_8h_a9551990b43beb551930f8d904fd6a220_icgraph" alt=""/></div>
+<map name="aant__internal__drivers_8h_a9551990b43beb551930f8d904fd6a220_icgraph" id="aant__internal__drivers_8h_a9551990b43beb551930f8d904fd6a220_icgraph">
 <area shape="rect" title="Sends a command to the antenna controller." alt="" coords="519,332,634,357"/>
-<area shape="rect" href="ant__commands_8c.html#a6e890b516f69a193dad06ca06965e8da" title="Arm the antenna deploy system." alt="" coords="287,9,453,50"/>
+<area shape="rect" href="ant__commands_8c.html#a6dc9ca839207865f4bf9e17013142ffe" title="Arm the antenna deploy system." alt="" coords="287,9,453,50"/>
 <area shape="poly" title=" " alt="" coords="570,316,561,264,543,197,514,128,493,96,469,68,449,53,452,48,473,64,498,93,518,125,548,196,566,263,575,316"/>
-<area shape="rect" href="ant__commands_8c.html#a449cd59bc748f89866f5fe6da1a8222b" title="cancels any active attempts to deploy an antenna" alt="" coords="269,77,471,118"/>
+<area shape="rect" href="ant__commands_8c.html#aa86049a30b4df703bcb200dd4d49edbf" title="cancels any active attempts to deploy an antenna" alt="" coords="269,77,471,118"/>
 <area shape="poly" title=" " alt="" coords="566,317,553,277,534,229,506,180,469,137,445,121,448,116,473,133,510,177,538,227,558,275,571,315"/>
-<area shape="rect" href="ant__commands_8c.html#abba97f74ea8fa76450677f4dfe4fa617" title="activates the deployment system for the selected antenna for the specified amount of time" alt="" coords="279,148,460,173"/>
+<area shape="rect" href="ant__commands_8c.html#a236e28a0ade562989c5c98dbb90fef43" title="activates the deployment system for the selected antenna for the specified amount of time" alt="" coords="279,148,460,173"/>
 <area shape="poly" title=" " alt="" coords="562,318,526,254,500,220,469,192,439,176,441,171,473,187,504,217,531,251,566,316"/>
-<area shape="rect" href="ant__commands_8c.html#ac353aab8395acf27cdb35e1dd5293d54" title="initiates deployment of the selected antenna, ignoring whether the current status of that antenna is ..." alt="" coords="279,201,460,242"/>
+<area shape="rect" href="ant__commands_8c.html#a5ea8c0da2fe8ab8bb2a60b80501c12e8" title="initiates deployment of the selected antenna, ignoring whether the current status of that antenna is ..." alt="" coords="279,201,460,242"/>
 <area shape="poly" title=" " alt="" coords="551,322,514,289,470,257,443,245,446,240,472,253,518,285,554,318"/>
-<area shape="rect" href="ant__commands_8c.html#ac223110d9d9b1c378b9b567b8ef60aec" title="Disarms the antenna deploy system." alt="" coords="278,267,462,307"/>
+<area shape="rect" href="ant__commands_8c.html#a923d1438a447849c835d0acf8cfb45e1" title="Disarms the antenna deploy system." alt="" coords="278,267,462,307"/>
 <area shape="poly" title=" " alt="" coords="513,329,445,311,447,305,514,324"/>
-<area shape="rect" href="ant__commands_8c.html#a5bbfd2489ceda810545a6e40f213c916" title="Measures the temperature at the antenna controller system." alt="" coords="281,332,458,357"/>
+<area shape="rect" href="ant__commands_8c.html#a15c39d0ab06d12b38a3fe5f4843c4cd7" title="Measures the temperature at the antenna controller system." alt="" coords="281,332,458,357"/>
 <area shape="poly" title=" " alt="" coords="503,347,459,347,459,342,503,342"/>
-<area shape="rect" href="ant__commands_8c.html#a815bf7c2258ea7be61a56f65b154d8f4" title="writes the number of times deployment has been attempted (for a specified antenna) in a response buff..." alt="" coords="272,385,468,426"/>
+<area shape="rect" href="ant__commands_8c.html#afbbf4f4105326f8ea68bb54812e3078e" title="writes the number of times deployment has been attempted (for a specified antenna and mcu) in a respo..." alt="" coords="272,385,468,426"/>
 <area shape="poly" title=" " alt="" coords="517,365,442,387,440,382,515,360"/>
-<area shape="rect" href="ant__commands_8c.html#ac1b94f6512a0646ec6248dddf6b75a2a" title="writes the cumulative time (in 50ms increments) that the deployment system has been active (for a spe..." alt="" coords="275,463,464,503"/>
+<area shape="rect" href="ant__commands_8c.html#a37835fa09d7e3b1dda02ac34d0357403" title="writes the cumulative time (in 50ms increments) that the deployment system has been active (for a spe..." alt="" coords="275,463,464,503"/>
 <area shape="poly" title=" " alt="" coords="554,371,517,405,472,440,426,464,424,460,470,435,514,401,551,367"/>
-<area shape="rect" href="ant__commands_8c.html#a4a844454d8c72bb761846248f0ab0e5a" title="writes 2 bytes of information representing the deployment status of the antennas to the passed buffer..." alt="" coords="271,531,468,571"/>
+<area shape="rect" href="ant__commands_8c.html#a73ee96b3496909a29f4fcf12bfd73bbc" title="writes 2 bytes of information representing the deployment status of the antennas to the passed buffer..." alt="" coords="271,531,468,571"/>
 <area shape="poly" title=" " alt="" coords="568,373,533,444,506,483,473,517,448,532,445,528,469,513,502,480,528,441,563,370"/>
-<area shape="rect" href="ant__commands_8c.html#a906e6b81ac1188db8914cf6f9cea20a9" title="Performs a reset of the antenna deployment systems microcontroller." alt="" coords="310,605,430,630"/>
+<area shape="rect" href="ant__commands_8c.html#a2749f0e14ccc1565ed9cb09dad735288" title="Performs a reset of the antenna deployment systems microcontroller which is specified." alt="" coords="310,605,430,630"/>
 <area shape="poly" title=" " alt="" coords="573,373,562,419,543,475,514,534,495,561,473,585,453,599,432,608,429,603,451,594,469,581,491,558,509,531,538,473,557,417,568,372"/>
-<area shape="rect" href="ant__commands_8c.html#a1cba1e3e65daad7bd5f69089c8802c61" title="deploys all antennas one by one sequentially." alt="" coords="277,655,462,695"/>
+<area shape="rect" href="ant__commands_8c.html#af22573c46c8f78ec83ede466d7386179" title="deploys all antennas one by one sequentially." alt="" coords="277,655,462,695"/>
 <area shape="poly" title=" " alt="" coords="576,373,569,429,552,502,539,541,521,578,500,614,473,645,458,656,455,652,469,641,495,611,517,576,534,539,547,501,564,428,571,372"/>
 <area shape="rect" href="antenna__telecommand__defs_8c.html#a80fd2c43515bf450f5bc03b915e6feab" title="Telecommand: Arm the antenna deploy system." alt="" coords="13,5,213,46"/>
 <area shape="poly" title=" " alt="" coords="271,31,213,30,213,25,271,25"/>
@@ -271,7 +606,7 @@ Here is the caller graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="263,161,194,160,194,155,264,156"/>
 <area shape="rect" href="antenna__telecommand__defs_8c.html#af9e22621de0a8cccca89cf093277d368" title="Telecommand: Initiates deployment of the selected antenna, ignoring whether the antennas current stat..." alt="" coords="32,201,194,242"/>
 <area shape="poly" title=" " alt="" coords="263,224,194,224,194,219,263,219"/>
-<area shape="rect" href="antenna__telecommand__defs_8c.html#a8f6b94c48f102e1cc89170f9d99aef91" title="Disarms the antenna system." alt="" coords="31,267,195,307"/>
+<area shape="rect" href="antenna__telecommand__defs_8c.html#a8f6b94c48f102e1cc89170f9d99aef91" title="Disarms the specified antenna deploy system&#39;s mcu." alt="" coords="31,267,195,307"/>
 <area shape="poly" title=" " alt="" coords="263,290,195,290,195,284,263,284"/>
 <area shape="rect" href="antenna__telecommand__defs_8c.html#a316cf470a39e910ad64f65afa587c1b4" title="Telecommand: Measures the temperature of the antenna controller in centi&#45;degrees celsius." alt="" coords="8,332,218,357"/>
 <area shape="poly" title=" " alt="" coords="265,347,219,347,219,342,265,342"/>
@@ -281,7 +616,7 @@ Here is the caller graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="260,489,192,490,192,485,260,483"/>
 <area shape="rect" href="antenna__telecommand__defs_8c.html#a7e32cc56948bced4a3f71c6291e1c63c" title="Prints the deployment status of all antennas." alt="" coords="34,541,192,582"/>
 <area shape="poly" title=" " alt="" coords="256,558,192,561,192,556,256,553"/>
-<area shape="rect" href="antenna__telecommand__defs_8c.html#a49f2db02be0a855e6be4c5e575018b69" title="Resets the antenna deployment system&#39;s microcontroller." alt="" coords="36,606,190,632"/>
+<area shape="rect" href="antenna__telecommand__defs_8c.html#a49f2db02be0a855e6be4c5e575018b69" title="Resets the specified antenna deployment system&#39;s microcontroller." alt="" coords="36,606,190,632"/>
 <area shape="poly" title=" " alt="" coords="294,621,190,621,190,616,294,615"/>
 <area shape="rect" href="antenna__telecommand__defs_8c.html#a3324fa3a66d69734ce5a7cf2fd507fb2" title="begins deployment of all antennas, one by one." alt="" coords="5,656,221,697"/>
 <area shape="poly" title=" " alt="" coords="262,678,221,678,221,673,262,673"/>
