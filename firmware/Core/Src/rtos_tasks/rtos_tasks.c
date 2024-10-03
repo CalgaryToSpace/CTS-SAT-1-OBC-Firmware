@@ -193,6 +193,10 @@ void TASK_service_eps_watchdog(void *argument) {
 	// To avoid resets, we sleep for much shorter than that.
 	const uint32_t sleep_duration_ms = 20000;
 
+	// Sleep 10s at the start so that more important tasks work first.
+	// Important to service the watchdog near the start, though.
+	osDelay(10000);
+
 	while(1) {
 		const uint8_t result = EPS_CMD_watchdog();
 
