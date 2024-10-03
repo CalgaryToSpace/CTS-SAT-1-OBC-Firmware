@@ -131,6 +131,8 @@ typedef struct {
     EPS_vpid_eng_t vip_total_input;
     uint16_t battery_pack_status_bitfield; // Table 3-18: Battery Pack Status
 
+    // Note: While the data transfer spec supports 3 battery packs, we only have 1.
+    // The in the JSON function, only the first is rendered.
     EPS_battery_pack_datatype_eng_t battery_pack_info_each_pack[3];
 } EPS_struct_pbu_housekeeping_data_eng_t;
 
