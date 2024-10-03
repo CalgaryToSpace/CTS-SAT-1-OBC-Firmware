@@ -21,7 +21,7 @@ int LFS_block_device_read(const struct lfs_config *c, lfs_block_t block, lfs_off
 	return FLASH_read_data(
 		hspi_lfs_ptr,
 		LFS_get_chip_number(block),
-		(((block * c->block_size) + off)/2048),
+		((block * c->block_size) + off)/2048,
 		(uint8_t *)buffer,
 		size
 	);
@@ -37,7 +37,7 @@ int LFS_block_device_prog(const struct lfs_config *c, lfs_block_t block, lfs_off
 	return FLASH_write_data(
 		hspi_lfs_ptr,
 		LFS_get_chip_number(block),
-		(((block * c->block_size) + off)/2048),
+		((block * c->block_size) + off)/2048,
 		(uint8_t *)buffer,
 		size
 	);

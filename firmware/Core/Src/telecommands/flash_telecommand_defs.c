@@ -97,8 +97,6 @@ uint8_t TCMDEXEC_flash_each_is_reachable(const char *args_str, TCMD_TelecommandC
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_flash_read_hex(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-    //const uint16_t max_num_bytes = 256;
-    //const uint16_t max_num_bytes = 2176;
     uint64_t chip_num, flash_addr, arg_num_bytes;
 
     uint8_t arg0_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &chip_num);
@@ -170,8 +168,6 @@ uint8_t TCMDEXEC_flash_write_hex(const char *args_str, TCMD_TelecommandChannel_e
                         char *response_output_buf, uint16_t response_output_buf_len) {
     uint16_t num_bytes;
     uint64_t chip_num_u64, flash_addr_u64;
-
-    // uint8_t bytes_to_write[MAX_NUM_BYTES];
 
     const uint8_t arg0_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &chip_num_u64);
     const uint8_t arg1_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &flash_addr_u64);
