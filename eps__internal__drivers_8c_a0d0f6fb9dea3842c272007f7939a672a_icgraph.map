@@ -1,22 +1,26 @@
 <map id="EPS_run_argumentless_cmd" name="EPS_run_argumentless_cmd">
-<area shape="rect" id="Node000001" title="Sends an argumentless command to the EPS (expecting no data in the response)." alt="" coords="540,117,729,142"/>
-<area shape="rect" id="Node000002" href="$eps__commands_8c.html#a1239d6bcee7a19b86972a3e09e0247ff" title=" " alt="" coords="279,14,468,40"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="598,111,548,83,491,57,443,43,445,38,493,53,551,79,600,106"/>
-<area shape="rect" id="Node000004" href="$eps__commands_8c.html#a8089bc8e83e997e10a3495b5f55a5ffb" title=" " alt="" coords="291,68,456,93"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="547,116,445,96,446,91,548,111"/>
-<area shape="rect" id="Node000006" href="$eps__commands_8c.html#ab6412542bce7dbe93994ed2abe9173c8" title=" " alt="" coords="255,117,492,142"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="524,132,492,132,492,127,524,127"/>
-<area shape="rect" id="Node000008" href="$eps__commands_8c.html#a18d4a0b8ab0fdafe72cf1eb60f72ee99" title=" " alt="" coords="260,166,487,192"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="548,149,446,168,445,163,547,143"/>
-<area shape="rect" id="Node000009" href="$eps__commands_8c.html#a8013932ecdf126298fa09eb26101c727" title=" " alt="" coords="300,216,446,241"/>
-<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="601,153,551,181,493,207,448,219,446,214,491,202,549,176,598,149"/>
-<area shape="rect" id="Node000003" href="$eps__telecommands_8c.html#aae293647b2790f7b4b44644167132678" title="Calls the EPS cancel operation command. Likely not useful." alt="" coords="23,5,189,46"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="263,29,189,29,189,23,263,24"/>
-<area shape="rect" id="Node000005" href="$eps__telecommands_8c.html#a4455e22b479fc97978bb8e66f2067a09" title="Calls the EPS no&#45;op (no operation) command. Likely not useful." alt="" coords="5,70,207,96"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="276,84,207,85,207,79,276,79"/>
-<area shape="rect" id="Node000007" href="$eps__telecommands_8c.html#a58883cdfe628f56046086e0498cf1d30" title="Switches the EPS to &quot;nominal&quot; or &quot;safety&quot; mode." alt="" coords="23,135,189,175"/>
-<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="240,145,189,150,189,145,239,140"/>
-<area shape="poly" id="edge8_Node000008_Node000007" title=" " alt="" coords="244,170,189,165,189,160,245,165"/>
-<area shape="rect" id="Node000010" href="$eps__telecommands_8c.html#a4d084a9326abf19603b43ac28762a70e" title="Triggers/services the EPS watchdog. No args." alt="" coords="14,216,198,241"/>
-<area shape="poly" id="edge10_Node000009_Node000010" title=" " alt="" coords="285,231,198,231,198,226,285,226"/>
+<area shape="rect" id="Node000001" title="Sends an argumentless command to the EPS (expecting no data in the response)." alt="" coords="637,118,827,144"/>
+<area shape="rect" id="Node000002" href="$eps__commands_8c.html#a1239d6bcee7a19b86972a3e09e0247ff" title=" " alt="" coords="376,16,565,41"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="695,112,646,85,588,59,540,44,542,39,590,54,648,80,698,107"/>
+<area shape="rect" id="Node000004" href="$eps__commands_8c.html#a8089bc8e83e997e10a3495b5f55a5ffb" title=" " alt="" coords="388,69,553,94"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="645,117,542,98,543,93,646,112"/>
+<area shape="rect" id="Node000006" href="$eps__commands_8c.html#ab6412542bce7dbe93994ed2abe9173c8" title=" " alt="" coords="352,118,589,144"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="622,134,590,134,590,128,622,128"/>
+<area shape="rect" id="Node000008" href="$eps__commands_8c.html#a18d4a0b8ab0fdafe72cf1eb60f72ee99" title=" " alt="" coords="357,168,584,193"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="646,150,543,169,542,164,645,145"/>
+<area shape="rect" id="Node000009" href="$eps__commands_8c.html#a8013932ecdf126298fa09eb26101c727" title=" " alt="" coords="398,217,544,242"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="698,155,648,182,590,208,545,221,544,216,588,203,646,178,696,150"/>
+<area shape="rect" id="Node000003" href="$eps__telecommands_8c.html#aae293647b2790f7b4b44644167132678" title="Calls the EPS cancel operation command. Likely not useful." alt="" coords="121,5,286,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="361,30,287,29,287,24,361,25"/>
+<area shape="rect" id="Node000005" href="$eps__telecommands_8c.html#a4455e22b479fc97978bb8e66f2067a09" title="Calls the EPS no&#45;op (no operation) command. Likely not useful." alt="" coords="103,70,304,96"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="373,85,304,85,304,80,373,79"/>
+<area shape="rect" id="Node000007" href="$eps__telecommands_8c.html#a58883cdfe628f56046086e0498cf1d30" title="Switches the EPS to &quot;nominal&quot; or &quot;safety&quot; mode." alt="" coords="121,128,286,169"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="337,142,286,146,286,140,336,137"/>
+<area shape="poly" id="edge8_Node000008_Node000007" title=" " alt="" coords="342,168,286,161,287,156,343,162"/>
+<area shape="rect" id="Node000010" href="$rtos__tasks_8c.html#a32949062e454d45c5ab1f1480f359a12" title="periodically sends a command to the eps to reset the watchdog timer" alt="" coords="105,209,302,234"/>
+<area shape="poly" id="edge10_Node000009_Node000010" title=" " alt="" coords="382,230,302,227,302,222,382,224"/>
+<area shape="rect" id="Node000012" href="$eps__telecommands_8c.html#a4d084a9326abf19603b43ac28762a70e" title="Triggers/services the EPS watchdog. No args." alt="" coords="112,258,295,284"/>
+<area shape="poly" id="edge12_Node000009_Node000012" title=" " alt="" coords="382,246,291,260,291,255,382,241"/>
+<area shape="rect" id="Node000011" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,209,55,234"/>
+<area shape="poly" id="edge11_Node000010_Node000011" title=" " alt="" coords="90,224,55,224,55,219,90,219"/>
 </map>
