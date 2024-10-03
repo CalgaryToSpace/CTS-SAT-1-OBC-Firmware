@@ -1,22 +1,45 @@
 #include "main.h"
 
 #include "telecommands/antenna_telecommand_defs.h"
-#include "antenna_deploy_drivers/ant_commands.h"
 #include "antenna_deploy_drivers/ant_internal_drivers.h"
+#include "antenna_deploy_drivers/ant_commands.h"
 #include "telecommands/telecommand_args_helpers.h"
+#include "log/log.h"
 
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
 #include "inttypes.h"
 
-/// @brief Resets the antenna deployment system's microcontroller
-/// @param args_str no arguments
+/// @brief Resets the specified antenna deployment system's microcontroller
+/// @param args_str
+/// - Arg 0: specifies which mcu on the antenna deployment system to transmit to, and which i2c bus to use. Pass either "A" or "B"
 /// @return 0 on success, > 0 otherwise
 uint8_t TCMDEXEC_ant_reset(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) 
 {
-    const int status = ANT_CMD_reset();
+    char i2c_bus_str [2];
+    if(TCMD_extract_string_arg(args_str, 0, i2c_bus_str, 2) != 0 ) {
+        LOG_message(LOG_SYSTEM_TELECOMMAND,LOG_SEVERITY_ERROR,LOG_SINK_ALL, "Failed reading i2c bus/mcu");
+        return 1;
+    }
+
+    enum ANT_i2c_bus_mcu i2c_bus_mcu;
+    switch (i2c_bus_str[0])
+    {
+    case 'A':
+        i2c_bus_mcu = ANT_I2C_BUS_A_MCU_A;
+        break;
+    case 'B':
+    i2c_bus_mcu = ANT_I2C_BUS_B_MCU_B;
+        break; 
+    default:
+        LOG_message(LOG_SYSTEM_TELECOMMAND,LOG_SEVERITY_ERROR,LOG_SINK_ALL, "Invalid choice for i2c bus");
+        return 1;
+        break;
+    }
+
+    const uint8_t status = ANT_CMD_reset(i2c_bus_mcu);
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len, "Error: %d", status);
         return status;
@@ -26,11 +49,33 @@ uint8_t TCMDEXEC_ant_reset(const char *args_str, TCMD_TelecommandChannel_enum_t 
 }
 
 /// @brief Telecommand: Arm the antenna deploy system
-/// @param args_str No args
+/// @param args_str 
+/// - Arg 0: specifies which mcu on the antenna deployment system to transmit to, and which i2c bus to use. Pass either "A" or "B"
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ant_arm_antenna_system(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-    const uint8_t comms_err = ANT_CMD_arm_antenna_system();
+    char i2c_bus_str [2];
+    if(TCMD_extract_string_arg(args_str, 0, i2c_bus_str, 2) != 0 ) {
+        LOG_message(LOG_SYSTEM_TELECOMMAND,LOG_SEVERITY_ERROR,LOG_SINK_ALL, "Failed reading i2c bus");
+        return 1;
+    }
+
+    enum ANT_i2c_bus_mcu i2c_bus_mcu;
+    switch (i2c_bus_str[0])
+    {
+    case 'A':
+        i2c_bus_mcu = ANT_I2C_BUS_A_MCU_A;
+        break;
+    case 'B':
+        i2c_bus_mcu = ANT_I2C_BUS_B_MCU_B;
+        break; 
+    default:
+        LOG_message(LOG_SYSTEM_TELECOMMAND,LOG_SEVERITY_ERROR,LOG_SINK_ALL, "Invalid choice for i2c bus");
+        return 1;
+        break;
+    }
+    
+    const uint8_t comms_err = ANT_CMD_arm_antenna_system(i2c_bus_mcu);
     if (comms_err != 0) {
         snprintf(response_output_buf, response_output_buf_len, "Error: %d", comms_err);
         return comms_err;
@@ -40,12 +85,34 @@ uint8_t TCMDEXEC_ant_arm_antenna_system(const char *args_str, TCMD_TelecommandCh
     return 0;
 }
 
-/// @brief Disarms the antenna system
-/// @param args_str No arguments
+/// @brief Disarms the specified antenna deploy system's mcu 
+/// @param args_str 
+/// - Arg 0: specifies which mcu on the antenna deployment system to disarm, and which i2c bus to use 
 /// @return 0 on success, 0 > otherwise
 uint8_t TCMDEXEC_ant_disarm_antenna_system(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-    const uint8_t status = ANT_CMD_disarm_antenna_system();
+    char i2c_bus_str [2];
+    if(TCMD_extract_string_arg(args_str, 0, i2c_bus_str, 2) != 0 ) {
+        LOG_message(LOG_SYSTEM_TELECOMMAND,LOG_SEVERITY_ERROR,LOG_SINK_ALL, "Failed reading i2c bus");
+        return 1;
+    }
+
+    enum ANT_i2c_bus_mcu i2c_bus_mcu;
+    switch (i2c_bus_str[0])
+    {
+    case 'A':
+        i2c_bus_mcu = ANT_I2C_BUS_A_MCU_A;
+        break;
+    case 'B':
+        i2c_bus_mcu = ANT_I2C_BUS_B_MCU_B;
+        break; 
+    default:
+        LOG_message(LOG_SYSTEM_TELECOMMAND,LOG_SEVERITY_ERROR,LOG_SINK_ALL, "Invalid choice for i2c bus");
+        return 1;
+        break;
+    }
+
+    const uint8_t status = ANT_CMD_disarm_antenna_system(i2c_bus_mcu);
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len, "Error disarming antenna system: %d", status);
         return status;
@@ -57,14 +124,34 @@ uint8_t TCMDEXEC_ant_disarm_antenna_system(const char *args_str, TCMD_Telecomman
 
 /// @brief  Telecommand: Initiates deployment of the selected antenna
 /// @param args_str 
-/// - Arg 0: antenna number. between 1-4
-/// - Arg 1: Activation time in seconds
+/// - Arg 0: specifies which mcu on the antenna deployment system to transmit to, and which i2c bus to use. Either "A" or "B"
+/// - Arg 1: antenna number. between 1-4
+/// - Arg 2: Activation time in seconds
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ant_deploy_antenna(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
+    char i2c_bus_str [2];
+    if(TCMD_extract_string_arg(args_str, 0, i2c_bus_str, 2) != 0 ) {
+        LOG_message(LOG_SYSTEM_TELECOMMAND,LOG_SEVERITY_ERROR,LOG_SINK_ALL, "Failed reading i2c bus");
+        return 1;
+    }
+
+    enum ANT_i2c_bus_mcu i2c_bus_mcu;
+    switch (i2c_bus_str[0])
+    {
+    case 'A':
+        i2c_bus_mcu = ANT_I2C_BUS_A_MCU_A;
+        break;
+    case 'B':
+        i2c_bus_mcu = ANT_I2C_BUS_B_MCU_B;
+        break; 
+    default:
+        LOG_message(LOG_SYSTEM_TELECOMMAND,LOG_SEVERITY_ERROR,LOG_SINK_ALL, "Invalid choice for i2c bus");
+        return 1;
+    }
 
     uint64_t antenna;
-    const uint8_t parse_antenna_result = TCMD_extract_uint64_arg(args_str, strlen(args_str),  0, &antenna);
+    const uint8_t parse_antenna_result = TCMD_extract_uint64_arg(args_str, strlen(args_str),  1, &antenna);
     if (parse_antenna_result != 0) {
         // error parsing
         snprintf(
@@ -83,7 +170,7 @@ uint8_t TCMDEXEC_ant_deploy_antenna(const char *args_str, TCMD_TelecommandChanne
     }
 
     uint64_t arg_activation_time;
-    const uint8_t parse_activation_time_result = TCMD_extract_uint64_arg(args_str, strlen(args_str),  1, &arg_activation_time);
+    const uint8_t parse_activation_time_result = TCMD_extract_uint64_arg(args_str, strlen(args_str),  2, &arg_activation_time);
     if (parse_activation_time_result != 0) {
         // error parsing
         snprintf(
@@ -101,7 +188,7 @@ uint8_t TCMDEXEC_ant_deploy_antenna(const char *args_str, TCMD_TelecommandChanne
         return 4;
     }
 
-    const uint8_t comms_err = ANT_CMD_deploy_antenna((uint8_t)antenna, (uint8_t)arg_activation_time);
+    const uint8_t comms_err = ANT_CMD_deploy_antenna(i2c_bus_mcu, (uint8_t)antenna, (uint8_t)arg_activation_time);
     if (comms_err != 0) {
         snprintf(response_output_buf, response_output_buf_len, "Error: %d", comms_err);
         return comms_err;
@@ -113,13 +200,35 @@ uint8_t TCMDEXEC_ant_deploy_antenna(const char *args_str, TCMD_TelecommandChanne
 
 /// @brief begins deployment of all antennas, one by one.
 /// @param args_str 
-/// - Arg 0: Activation time in seconds
+/// - Arg 0: specifies which mcu on the antenna deployment system to transmit to, and which i2c bus to use. Pass either "A" or "B"
+/// - Arg 1: Activation time in seconds
 /// @return returns 0 on success, > 0 otherwise
 uint8_t TCMDEXEC_ant_start_automated_antenna_deployment(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) 
 {
+    char i2c_bus_str [2];
+    if(TCMD_extract_string_arg(args_str, 0, i2c_bus_str, 2) != 0 ) {
+        LOG_message(LOG_SYSTEM_TELECOMMAND,LOG_SEVERITY_ERROR,LOG_SINK_ALL, "Failed reading i2c bus");
+        return 1;
+    }
+
+    enum ANT_i2c_bus_mcu i2c_bus_mcu;
+    switch (i2c_bus_str[0])
+    {
+    case 'A':
+        i2c_bus_mcu = ANT_I2C_BUS_A_MCU_A;
+        break;
+    case 'B':
+        i2c_bus_mcu = ANT_I2C_BUS_B_MCU_B;
+        break; 
+    default:
+        LOG_message(LOG_SYSTEM_TELECOMMAND,LOG_SEVERITY_ERROR,LOG_SINK_ALL, "Invalid choice for i2c bus");
+        return 1;
+        break;
+    }
+
     uint64_t activation_time;
-    const uint8_t parse_activation_time_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &activation_time);
+    const uint8_t parse_activation_time_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &activation_time);
     if (parse_activation_time_result != 0) {
         snprintf( response_output_buf, response_output_buf_len, "Error parsing argument: %d", parse_activation_time_result);
         return 3;
@@ -129,7 +238,7 @@ uint8_t TCMDEXEC_ant_start_automated_antenna_deployment(const char *args_str, TC
         return 4;
     }
 
-    const uint8_t status = ANT_CMD_start_automated_sequential_deployment((uint8_t)activation_time);
+    const uint8_t status = ANT_CMD_start_automated_sequential_deployment(i2c_bus_mcu,(uint8_t)activation_time);
     if (status != 0) {
         snprintf( response_output_buf, response_output_buf_len, "Error: %d", status);
         return status;
@@ -140,14 +249,35 @@ uint8_t TCMDEXEC_ant_start_automated_antenna_deployment(const char *args_str, TC
 
 /// @brief  Telecommand: Initiates deployment of the selected antenna, ignoring whether the antennas current status is deployed. 
 /// @param args_str 
-/// - Arg 0: antenna number. between 1-4
-/// - Arg 1: Activation time in seconds
+/// - Arg 0: specifies which mcu on the antenna deployment system to transmit to, and which i2c bus to use. Pass either "A" or "B"
+/// - Arg 1: antenna number. between 1-4
+/// - Arg 2: Activation time in seconds
 /// @return 0 on successful communication, >0 on communications error 
 uint8_t TCMDEXEC_ant_deploy_antenna_with_override(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
+    char i2c_bus_str [2];
+    if(TCMD_extract_string_arg(args_str, 0, i2c_bus_str, 2) != 0 ) {
+        LOG_message(LOG_SYSTEM_TELECOMMAND,LOG_SEVERITY_ERROR,LOG_SINK_ALL, "Failed reading i2c bus");
+        return 1;
+    }
+
+    enum ANT_i2c_bus_mcu i2c_bus_mcu;
+    switch (i2c_bus_str[0])
+    {
+    case 'A':
+        i2c_bus_mcu = ANT_I2C_BUS_A_MCU_A;
+        break;
+    case 'B':
+        i2c_bus_mcu = ANT_I2C_BUS_B_MCU_B;
+        break; 
+    default:
+        LOG_message(LOG_SYSTEM_TELECOMMAND,LOG_SEVERITY_ERROR,LOG_SINK_ALL, "Invalid choice for i2c bus");
+        return 1;
+        break;
+    }
 
     uint64_t antenna;
-    const uint8_t parse_antenna_result = TCMD_extract_uint64_arg(args_str, strlen(args_str),  0, &antenna);
+    const uint8_t parse_antenna_result = TCMD_extract_uint64_arg(args_str, strlen(args_str),  1, &antenna);
     if (parse_antenna_result != 0) {
         // error parsing
         snprintf(
@@ -166,7 +296,7 @@ uint8_t TCMDEXEC_ant_deploy_antenna_with_override(const char *args_str, TCMD_Tel
     }
 
     uint64_t arg_activation_time;
-    const uint8_t parse_activation_time_result = TCMD_extract_uint64_arg(args_str, strlen(args_str),  1, &arg_activation_time);
+    const uint8_t parse_activation_time_result = TCMD_extract_uint64_arg(args_str, strlen(args_str),  2, &arg_activation_time);
     if (parse_activation_time_result != 0) {
         // error parsing
         snprintf(
@@ -184,7 +314,7 @@ uint8_t TCMDEXEC_ant_deploy_antenna_with_override(const char *args_str, TCMD_Tel
         return 4;
     }
 
-    const uint8_t comms_err = ANT_CMD_deploy_antenna_with_override((uint8_t)antenna, (uint8_t)arg_activation_time);
+    const uint8_t comms_err = ANT_CMD_deploy_antenna_with_override(i2c_bus_mcu,(uint8_t)antenna, (uint8_t)arg_activation_time);
     if (comms_err != 0) {
         snprintf(response_output_buf, response_output_buf_len, "Error: %d", comms_err);
         return comms_err;
@@ -195,12 +325,33 @@ uint8_t TCMDEXEC_ant_deploy_antenna_with_override(const char *args_str, TCMD_Tel
 }
 
 /// @brief Cancels any active attempts to deploy an antenna
-/// @param args_str No arguments 
+/// @param args_str 
+/// - Arg 0: specifies which mcu on the antenna deployment system to transmit to, and which i2c bus to use. Pass either "A" or "B"
 /// @return 0 on successful communication, > 0 on communications error
 uint8_t TCMDEXEC_ant_cancel_deployment_system_activation(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
+    char i2c_bus_str [2];
+    if(TCMD_extract_string_arg(args_str, 0, i2c_bus_str, 2) != 0 ) {
+        LOG_message(LOG_SYSTEM_TELECOMMAND,LOG_SEVERITY_ERROR,LOG_SINK_ALL, "Failed reading i2c bus");
+        return 1;
+    }
+
+    enum ANT_i2c_bus_mcu i2c_bus_mcu;
+    switch (i2c_bus_str[0])
+    {
+    case 'A':
+        i2c_bus_mcu = ANT_I2C_BUS_A_MCU_A;
+        break;
+    case 'B':
+        i2c_bus_mcu = ANT_I2C_BUS_B_MCU_B;
+        break; 
+    default:
+        LOG_message(LOG_SYSTEM_TELECOMMAND,LOG_SEVERITY_ERROR,LOG_SINK_ALL, "Invalid choice for i2c bus");
+        return 1;
+        break;
+    }
     
-    const uint8_t comms_err = ANT_CMD_cancel_deployment_system_activation();
+    const uint8_t comms_err = ANT_CMD_cancel_deployment_system_activation(i2c_bus_mcu);
     if (comms_err != 0) {
         snprintf(response_output_buf, response_output_buf_len, "Error: failed to cancel deployment");
         return comms_err;
@@ -212,13 +363,34 @@ uint8_t TCMDEXEC_ant_cancel_deployment_system_activation(const char *args_str, T
 
 
 /// @brief Prints the deployment status of all antennas
-/// @param args_str No arguments 
+/// @param args_str 
+/// - Arg 0: specifies which mcu on the antenna deployment system to transmit to, and which i2c bus to use. Pass either "A" or "B"
 /// @return 0 on successful communication, > 0 on communications error
 uint8_t TCMDEXEC_ant_report_deployment_status(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
+    char i2c_bus_str [2];
+    if(TCMD_extract_string_arg(args_str, 0, i2c_bus_str, 2) != 0 ) {
+        LOG_message(LOG_SYSTEM_TELECOMMAND,LOG_SEVERITY_ERROR,LOG_SINK_ALL, "Failed reading i2c bus");
+        return 1;
+    }
+
+    enum ANT_i2c_bus_mcu i2c_bus_mcu;
+    switch (i2c_bus_str[0])
+    {
+    case 'A':
+        i2c_bus_mcu = ANT_I2C_BUS_A_MCU_A;
+        break;
+    case 'B':
+        i2c_bus_mcu = ANT_I2C_BUS_B_MCU_B;
+        break; 
+    default:
+        LOG_message(LOG_SYSTEM_TELECOMMAND,LOG_SEVERITY_ERROR,LOG_SINK_ALL, "Invalid choice for i2c bus");
+        return 1;
+        break;
+    }
     
     struct Antenna_deployment_status response;
-    const uint8_t comms_err = ANT_CMD_report_deployment_status(&response);
+    const uint8_t comms_err = ANT_CMD_report_deployment_status(i2c_bus_mcu, &response);
     if (comms_err != 0) {
         snprintf(response_output_buf, response_output_buf_len, "Error: failed to report status.");
         return comms_err;
@@ -273,12 +445,34 @@ uint8_t TCMDEXEC_ant_report_deployment_status(const char *args_str, TCMD_Telecom
 
 /// @brief Prints the number of times deployment was attempted on the selected antenna
 /// @param args_str 
-/// - Arg 0: the antenna to check, between 1-4 
+/// - Arg 0: specifies which mcu on the antenna deployment system to transmit to, and which i2c bus to use. Pass either "A" or "B"
+/// - Arg 1: the antenna to check, between 1-4 
 /// @return 0 on successful communication, > 0 on communications error
 uint8_t TCMDEXEC_ant_report_antenna_deployment_activation_count(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
+    char i2c_bus_str [2];
+    if(TCMD_extract_string_arg(args_str, 0, i2c_bus_str, 2) != 0 ) {
+        LOG_message(LOG_SYSTEM_TELECOMMAND,LOG_SEVERITY_ERROR,LOG_SINK_ALL, "Failed reading i2c bus");
+        return 1;
+    }
+
+    enum ANT_i2c_bus_mcu i2c_bus_mcu;
+    switch (i2c_bus_str[0])
+    {
+    case 'A':
+        i2c_bus_mcu = ANT_I2C_BUS_A_MCU_A;
+        break;
+    case 'B':
+        i2c_bus_mcu = ANT_I2C_BUS_B_MCU_B;
+        break; 
+    default:
+        LOG_message(LOG_SYSTEM_TELECOMMAND,LOG_SEVERITY_ERROR,LOG_SINK_ALL, "Invalid choice for i2c bus");
+        return 1;
+        break;
+    }
+
     uint64_t antenna;
-    const uint8_t parse_antenna_result = TCMD_extract_uint64_arg(args_str, strlen(args_str),  0, &antenna);
+    const uint8_t parse_antenna_result = TCMD_extract_uint64_arg(args_str, strlen(args_str),  1, &antenna);
     if (parse_antenna_result != 0) {
         // error parsing
         snprintf(
@@ -297,7 +491,7 @@ uint8_t TCMDEXEC_ant_report_antenna_deployment_activation_count(const char *args
     }
 
     uint8_t response[1];
-    const uint8_t comms_status = ANT_CMD_report_antenna_deployment_activation_count((uint8_t)antenna, response);
+    const uint8_t comms_status = ANT_CMD_report_antenna_deployment_activation_count(i2c_bus_mcu, (uint8_t)antenna, response);
     if (comms_status != 0) {
         snprintf(
             response_output_buf,
@@ -315,12 +509,34 @@ uint8_t TCMDEXEC_ant_report_antenna_deployment_activation_count(const char *args
 
 /// @brief Prints amount of time the deployment system has been active for for the selected antenna
 /// @param args_str 
-/// - Arg 0: the antenna to check, between 1-4 
+/// - Arg 0: specifies which mcu on the antenna deployment system to transmit to, and which i2c bus to use. Pass either "A" or "B"
+/// - Arg 1: the antenna to check, between 1-4 
 /// @return 0 on successful communication, > 0 on communications error
 uint8_t TCMDEXEC_ant_report_antenna_deployment_activation_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
+    char i2c_bus_str [2];
+    if(TCMD_extract_string_arg(args_str, 0, i2c_bus_str, 2) != 0 ) {
+        LOG_message(LOG_SYSTEM_TELECOMMAND,LOG_SEVERITY_ERROR,LOG_SINK_ALL, "Failed reading i2c bus");
+        return 1;
+    }
+
+    enum ANT_i2c_bus_mcu i2c_bus_mcu;
+    switch (i2c_bus_str[0])
+    {
+    case 'A':
+        i2c_bus_mcu = ANT_I2C_BUS_A_MCU_A;
+        break;
+    case 'B':
+        i2c_bus_mcu = ANT_I2C_BUS_B_MCU_B;
+        break; 
+    default:
+        LOG_message(LOG_SYSTEM_TELECOMMAND,LOG_SEVERITY_ERROR,LOG_SINK_ALL, "Invalid choice for i2c bus");
+        return 1;
+        break;
+    }
+
     uint64_t antenna;
-    const uint8_t parse_antenna_result = TCMD_extract_uint64_arg(args_str, strlen(args_str),  0, &antenna);
+    const uint8_t parse_antenna_result = TCMD_extract_uint64_arg(args_str, strlen(args_str),  1, &antenna);
     if (parse_antenna_result != 0) {
         // error parsing
         snprintf(
@@ -339,7 +555,7 @@ uint8_t TCMDEXEC_ant_report_antenna_deployment_activation_time(const char *args_
     }
 
     uint16_t response;
-    const uint8_t comms_status = ANT_CMD_report_antenna_deployment_activation_time((uint8_t)antenna, &response);
+    const uint8_t comms_status = ANT_CMD_report_antenna_deployment_activation_time(i2c_bus_mcu,(uint8_t)antenna, &response);
     if (comms_status != 0) {
         snprintf(
             response_output_buf,
@@ -355,12 +571,34 @@ uint8_t TCMDEXEC_ant_report_antenna_deployment_activation_time(const char *args_
 }
 
 /// @brief Telecommand: Measures the temperature of the antenna controller in centi-degrees celsius
-/// @param args_str No args
+/// @param args_str
+/// - Arg 0: specifies which mcu on the antenna deployment system to transmit to, and which i2c bus to use. Pass either "A" or "B"
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_ant_measure_temp(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
+    char i2c_bus_str [2];
+    if(TCMD_extract_string_arg(args_str, 0, i2c_bus_str, 2) != 0 ) {
+        LOG_message(LOG_SYSTEM_TELECOMMAND,LOG_SEVERITY_ERROR,LOG_SINK_ALL, "Failed reading i2c bus");
+        return 1;
+    }
+
+    enum ANT_i2c_bus_mcu i2c_bus_mcu;
+    switch (i2c_bus_str[0])
+    {
+    case 'A':
+        i2c_bus_mcu = ANT_I2C_BUS_A_MCU_A;
+        break;
+    case 'B':
+        i2c_bus_mcu = ANT_I2C_BUS_B_MCU_B;
+        break; 
+    default:
+        LOG_message(LOG_SYSTEM_TELECOMMAND,LOG_SEVERITY_ERROR,LOG_SINK_ALL, "Invalid choice for i2c bus");
+        return 1;
+        break;
+    }
+
     uint16_t measurement;
-    const uint8_t comms_err = ANT_CMD_measure_temp(&measurement);
+    const uint8_t comms_err = ANT_CMD_measure_temp(i2c_bus_mcu,&measurement);
     if (comms_err != 0) {
         snprintf(response_output_buf, response_output_buf_len, "Error: %d", comms_err);
         return comms_err;
