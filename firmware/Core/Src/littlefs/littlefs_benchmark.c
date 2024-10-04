@@ -11,7 +11,8 @@
 /// @param write_chunk_size Number of bytes to write in each chunk.
 /// @param write_chunk_count Number of chunks to write.
 /// @param response_str 
-/// @param response_str_len 
+/// @param response_str_len
+/// @param mode Check to see if we are writing to a new file or the same file.
 /// @return 0 on success. >0 if there was an error.
 uint8_t LFS_benchmark_write_read(uint16_t write_chunk_size, uint16_t write_chunk_count, char* response_str, uint16_t response_str_len, LFS_benchmark_mode mode) {
     char file_name[100];
