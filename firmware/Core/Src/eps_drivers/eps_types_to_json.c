@@ -178,10 +178,18 @@ uint8_t EPS_struct_pdu_overcurrent_fault_state_TO_json(const EPS_struct_pdu_over
         return 1; // Error: Invalid input
     }
 
+    // Channels 0-16 (inclusive) are present on our model.
+    // Channel 17-31 are not present on our model.
+    // Sum them up in a single value, which should always be 0.
+    uint32_t overcurrent_fault_count_channel_17_plus = 0;
+    for (uint8_t ch = 17; ch <= 31; ch++) {
+        overcurrent_fault_count_channel_17_plus += data->overcurrent_fault_count_each_channel[ch];
+    }
+
     // Write JSON string to json_output_str
     int snprintf_ret = snprintf(
         json_output_str, json_output_str_len,
-        "{\"stat_ch_on_bitfield\":%u,\"stat_ch_ext_on_bitfield\":%u,\"stat_ch_overcurrent_fault_bitfield\":%u,\"stat_ch_ext_overcurrent_fault_bitfield\":%u,\"overcurrent_fault_count_each_channel\":[%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u]}",
+        "{\"stat_ch_on_bitfield\":%u,\"stat_ch_ext_on_bitfield\":%u,\"stat_ch_overcurrent_fault_bitfield\":%u,\"stat_ch_ext_overcurrent_fault_bitfield\":%u,\"overcurrent_fault_count_each_channel\":[%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%lu]}",
         data->stat_ch_on_bitfield,
         data->stat_ch_ext_on_bitfield,
         data->stat_ch_overcurrent_fault_bitfield,
@@ -194,14 +202,10 @@ uint8_t EPS_struct_pdu_overcurrent_fault_state_TO_json(const EPS_struct_pdu_over
         data->overcurrent_fault_count_each_channel[10], data->overcurrent_fault_count_each_channel[11],
         data->overcurrent_fault_count_each_channel[12], data->overcurrent_fault_count_each_channel[13],
         data->overcurrent_fault_count_each_channel[14], data->overcurrent_fault_count_each_channel[15],
-        data->overcurrent_fault_count_each_channel[16], data->overcurrent_fault_count_each_channel[17],
-        data->overcurrent_fault_count_each_channel[18], data->overcurrent_fault_count_each_channel[19],
-        data->overcurrent_fault_count_each_channel[20], data->overcurrent_fault_count_each_channel[21],
-        data->overcurrent_fault_count_each_channel[22], data->overcurrent_fault_count_each_channel[23],
-        data->overcurrent_fault_count_each_channel[24], data->overcurrent_fault_count_each_channel[25],
-        data->overcurrent_fault_count_each_channel[26], data->overcurrent_fault_count_each_channel[27],
-        data->overcurrent_fault_count_each_channel[28], data->overcurrent_fault_count_each_channel[29],
-        data->overcurrent_fault_count_each_channel[30], data->overcurrent_fault_count_each_channel[31]);
+        data->overcurrent_fault_count_each_channel[16],
+        // Put the 17-31 overcurrent count in the last slot.
+        overcurrent_fault_count_channel_17_plus
+    );
 
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error
@@ -297,12 +301,18 @@ uint8_t EPS_struct_pdu_housekeeping_data_eng_TO_json(const EPS_struct_pdu_housek
     if (ret < 0 || ret >= (json_output_str_len - offset)) return 3;
     offset += ret;
 
-    for (int i = 0; i < 32; ++i) {
+    for (uint8_t ch = 0; ch <= EPS_MAX_ACTIVE_CHANNEL_NUMBER; ch++) {
         char vip_channel_json[128];
-        ret = EPS_vpid_eng_TO_json(&data->vip_each_channel[i], vip_channel_json, sizeof(vip_channel_json));
+        ret = EPS_vpid_eng_TO_json(&data->vip_each_channel[ch], vip_channel_json, sizeof(vip_channel_json));
         if (ret != 0) return 5;
 
-        ret = snprintf(json_output_str + offset, json_output_str_len - offset, "%s%s", vip_channel_json, (i < 31) ? "," : "");
+        ret = snprintf(
+            json_output_str + offset,
+            json_output_str_len - offset,
+            "%s%s",
+            vip_channel_json,
+            (ch < EPS_MAX_ACTIVE_CHANNEL_NUMBER) ? "," : ""
+        );
         if (ret < 0 || ret >= (json_output_str_len - offset)) return 3;
         offset += ret;
     }
@@ -459,13 +469,13 @@ uint8_t EPS_struct_piu_housekeeping_data_eng_TO_json(
     // Convert vip_each_channel array
     vip_each_channel_json[0] = '\0'; // Initialize the JSON array string
     strcat(vip_each_channel_json, "[");
-    for (int i = 0; i < 16; i++) {
+    for (uint8_t ch = 0; ch <= EPS_MAX_ACTIVE_CHANNEL_NUMBER; ch++) {
         char vip_channel_json[128];
-        if (EPS_vpid_eng_TO_json(&data->vip_each_channel[i], vip_channel_json, sizeof(vip_channel_json)) != 0) {
+        if (EPS_vpid_eng_TO_json(&data->vip_each_channel[ch], vip_channel_json, sizeof(vip_channel_json)) != 0) {
             return 4; // Error converting vip_each_channel[i]
         }
         strcat(vip_each_channel_json, vip_channel_json);
-        if (i < (16 - 1)) {
+        if (ch < (16 - 1)) {
             strcat(vip_each_channel_json, ",");
         }
     }
