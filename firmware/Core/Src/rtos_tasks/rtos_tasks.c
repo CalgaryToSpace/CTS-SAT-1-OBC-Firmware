@@ -222,6 +222,8 @@ void TASK_service_eps_watchdog(void *argument) {
 		
 		osDelay(sleep_duration_ms);
 	}
+}
+
 void TASK_receive_gps_info(void *argument) {
 	TASK_HELP_start_of_task();
 

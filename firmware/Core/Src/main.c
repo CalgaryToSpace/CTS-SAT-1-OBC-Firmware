@@ -111,7 +111,7 @@ const osThreadAttr_t TASK_service_eps_watchdog_Attributes = {
   .name = "TASK_service_eps_watchdog",
   .stack_size = 512, //in bytes
   .priority = (osPriority_t) osPriorityNormal, //TODO: Figure out which priority makes sense for this task
-}
+};
 
 // TODO: Verify this
 osThreadId_t TASK_receive_gps_Handle;
