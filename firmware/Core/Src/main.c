@@ -120,26 +120,36 @@ const osThreadAttr_t TASK_monitor_freertos_highstack_watermarks_Attributes = {
   .priority = (osPriority_t) osPriorityBelowNormal6,
 };
 
-const Task_Info_t task_handles_array [] = {
+Task_Info_t task_handles_array [] = {
   {
     .task_handle = &defaultTaskHandle,
-    .task_attribute = &defaultTask_attributes
+    .task_attribute = &defaultTask_attributes,
+    .lowest_highstack_watermark_bytes = UINT32_MAX
   },
   {
     .task_handle = &TASK_DEBUG_print_heartbeat_Handle,
-    .task_attribute = &TASK_DEBUG_print_heartbeat_Attributes
+    .task_attribute = &TASK_DEBUG_print_heartbeat_Attributes,
+    .lowest_highstack_watermark_bytes = UINT32_MAX
   },
   {
     .task_handle = &TASK_handle_uart_telecommands_Handle,
-    .task_attribute = &TASK_handle_uart_telecommands_Attributes
+    .task_attribute = &TASK_handle_uart_telecommands_Attributes,
+    .lowest_highstack_watermark_bytes = UINT32_MAX
   },
   {
     .task_handle = &TASK_execute_telecommands_Handle,
-    .task_attribute = &TASK_execute_telecommands_Attributes
+    .task_attribute = &TASK_execute_telecommands_Attributes,
+    .lowest_highstack_watermark_bytes = UINT32_MAX
+  },
+  {
+    .task_handle = &TASK_service_eps_watchdog_Handle,
+    .task_attribute = &TASK_service_eps_watchdog_Attributes,
+    .lowest_highstack_watermark_bytes = UINT32_MAX
   },
   {
     .task_handle = &TASK_monitor_freertos_highstack_watermarks_Handle,
-    .task_attribute = &TASK_monitor_freertos_highstack_watermarks_Attributes
+    .task_attribute = &TASK_monitor_freertos_highstack_watermarks_Attributes,
+    .lowest_highstack_watermark_bytes = UINT32_MAX
   },
 };
 

@@ -240,7 +240,14 @@ void TASK_monitor_freertos_highstack_watermarks(void *argument) {
 				// Get the highstack watermark
 				uint32_t task_highstack_watermark_bytes = uxTaskGetStackHighWaterMark(dereferenced_task_handle) * 4;
 
-				if(task_highstack_watermark_bytes < task_threshold_bytes){
+				// Initializing the lowest highstack watermark bytes
+				if(task_handles_array[x].lowest_highstack_watermark_bytes == UINT32_MAX){
+					task_handles_array[x].lowest_highstack_watermark_bytes = task_highstack_watermark_bytes;
+				}
+
+				if(task_highstack_watermark_bytes < task_threshold_bytes && task_highstack_watermark_bytes < task_handles_array[x].lowest_highstack_watermark_bytes){
+					
+					task_handles_array[x].lowest_highstack_watermark_bytes = task_highstack_watermark_bytes;
 					LOG_message(
 						LOG_SYSTEM_OBC, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
 						"Warning: Task '%s' approached a stack overflow. Worst remaining stack size was: %lu bytes.",
