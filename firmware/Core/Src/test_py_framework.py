@@ -13,16 +13,28 @@ def config(): # config that establishes python connection to UART based off of e
     ser = serial.Serial('COM3', 115200)
     return ser
 
+def output(config,expected_response):
+    response = ""
+    for i in range(10):
+        byte_data = config.readline()
+        string_data = byte_data.decode('utf-8')
+        response = ""
+        for i in reversed(string_data):
+            response = i + response
+            if response == expected_response : 
+                return True
+    return False
+
 def test_hello_world(config): 
+   
+    # print(var)
     config.write(b'CTS1+hello_world()!')
+    check = output(config,'Hello, world!\n')
     config.close()
-    assert True
+    assert check
     
 def test_true():
     assert True
-
-def test_false():
-    assert False
 
 
 
