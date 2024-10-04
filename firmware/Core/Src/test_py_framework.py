@@ -26,15 +26,35 @@ def output(config,expected_response):
     return False
 
 def test_hello_world(config): 
-   
-    # print(var)
     config.write(b'CTS1+hello_world()!')
     check = output(config,'Hello, world!\n')
     config.close()
     assert check
     
-def test_true():
+def test_echo_args(config):
+    arg = b"hi"
+    config.write(b'CTS1+echo_back_args('+arg+b')!')
+    check = output(config,"SUCCESS: Echo Args: 'hi'\n")
+    config.close()
+    assert check
+
+def test_block_delay(config):
+    initial_time_ms = int(time.time() * 1000)
+    arg = 2000
+    config.write(b'CTS1+demo_blocking_delay(' + str(arg).encode('utf-8') + b')!')
+    output(config,"")
+    current_time_ms = int(time.time() * 1000)
+    difference = current_time_ms - initial_time_ms
+    config.close()
+    if arg<difference and difference<(arg+500): # sets a range of correctness due to overhead from reading in python
+        assert True
+    else:
+        assert False
+
+def test_get_random_byte(config):
     assert True
+
+
 
 
 
