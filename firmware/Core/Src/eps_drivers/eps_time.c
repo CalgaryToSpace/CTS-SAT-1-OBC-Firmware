@@ -1,5 +1,5 @@
 #include "eps_drivers/eps_commands.h"
-#include "timekeeping.h"
+#include "timekeeping/timekeeping.h"
 uint8_t EPS_TIME_sync_eps_time_to_obc_time() {
     EPS_struct_system_status_t status;
     uint8_t result = EPS_CMD_get_system_status(&status);
