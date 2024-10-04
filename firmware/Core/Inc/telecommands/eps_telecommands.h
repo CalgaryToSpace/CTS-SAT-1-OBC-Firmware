@@ -91,7 +91,9 @@ uint8_t TCMDEXEC_eps_get_piu_housekeeping_data_run_avg_json(
     char *response_output_buf, uint16_t response_output_buf_len
 );
 
-
+uint8_t TCMDEXEC_eps_sync_time_to_obc_time(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len); 
 
 #endif /* INCLUDE_GUARD__EPS_TELECOMMANDS_H__ */
 

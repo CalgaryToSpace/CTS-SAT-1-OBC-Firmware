@@ -2,9 +2,10 @@
 #include "eps_drivers/eps_types.h"
 #include "eps_drivers/eps_types_to_json.h"
 #include "eps_drivers/eps_channel_control.h"
-
+#include "eps_drivers/eps_time.h"
 #include "telecommands/eps_telecommands.h"
 #include "telecommands/telecommand_args_helpers.h"
+
 
 #include <stdio.h>
 #include <string.h>
@@ -520,3 +521,19 @@ uint8_t TCMDEXEC_eps_get_piu_housekeeping_data_run_avg_json(
     return 0;
 }
 
+/// @brief Sync's eps time to obc time (+/- 1 second)
+/// @return 0 on success, >0 on failure.
+uint8_t TCMDEXEC_eps_sync_time_to_obc_time(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len) 
+{
+    const uint8_t result = EPS_TIME_sync_eps_time_to_obc_time();
+    if (result != 0 ) {
+        snprintf(response_output_buf, response_output_buf_len,
+        "syncing eps time failed");
+        return result;
+    }
+    snprintf(response_output_buf, response_output_buf_len,
+    "success syncing eps time");
+    return result;
+}

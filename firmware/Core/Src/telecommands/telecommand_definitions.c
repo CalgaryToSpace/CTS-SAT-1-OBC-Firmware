@@ -841,6 +841,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
+    {
+        .tcmd_name = "eps_sync_time_to_obc_time",
+        .tcmd_func = TCMDEXEC_eps_sync_time_to_obc_time,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
 
     /* *************************** END EPS Section ************************************** */
     
