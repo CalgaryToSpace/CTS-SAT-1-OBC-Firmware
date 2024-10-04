@@ -1,20 +1,20 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2024 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.c
+ * @brief          : Main program body
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2024 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -30,6 +30,7 @@
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_internal_drivers.h"
 #include "littlefs/flash_driver.h"
+#include "log/log.h"
 
 /* USER CODE END Includes */
 
@@ -72,9 +73,9 @@ TIM_HandleTypeDef htim16;
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
-  .name = "defaultTask",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
+    .name = "defaultTask",
+    .stack_size = 128 * 4,
+    .priority = (osPriority_t)osPriorityNormal,
 };
 /* USER CODE BEGIN PV */
 
@@ -85,27 +86,28 @@ const osThreadAttr_t defaultTask_attributes = {
 
 osThreadId_t TASK_DEBUG_print_heartbeat_Handle;
 const osThreadAttr_t TASK_DEBUG_print_heartbeat_Attributes = {
-  .name = "TASK_DEBUG_print_heartbeat",
-  .stack_size = 256,
-  .priority = (osPriority_t) osPriorityBelowNormal5,
+    .name = "TASK_DEBUG_print_heartbeat",
+    .stack_size = 256,
+    .priority = (osPriority_t)osPriorityBelowNormal5,
 };
 
 osThreadId_t TASK_handle_uart_telecommands_Handle;
 const osThreadAttr_t TASK_handle_uart_telecommands_Attributes = {
-  .name = "TASK_handle_uart_telecommands",
-  // Size 2048 doesn't work with LFS settings, but 8192 does.
-  // TODO: confirm stack size
-  .stack_size = 8192,
-  .priority = (osPriority_t) osPriorityNormal,
+    .name = "TASK_handle_uart_telecommands",
+    // Size 2048 doesn't work with LFS settings, but 8192 does.
+    // TODO: confirm stack size
+    .stack_size = 8192,
+    .priority = (osPriority_t)osPriorityNormal,
 };
 
 osThreadId_t TASK_execute_telecommands_Handle;
 const osThreadAttr_t TASK_execute_telecommands_Attributes = {
-  .name = "TASK_execute_telecommands",
-  .stack_size = 8192,
-  .priority = (osPriority_t) osPriorityNormal,
+    .name = "TASK_execute_telecommands",
+    .stack_size = 8192,
+    .priority = (osPriority_t)osPriorityNormal,
 };
 
+<<<<<<< Updated upstream
 osThreadId_t TASK_service_eps_watchdog_Handle;
 const osThreadAttr_t TASK_service_eps_watchdog_Attributes = {
   .name = "TASK_service_eps_watchdog",
@@ -115,6 +117,8 @@ const osThreadAttr_t TASK_service_eps_watchdog_Attributes = {
 
 
 
+=======
+>>>>>>> Stashed changes
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -146,9 +150,9 @@ void StartDefaultTask(void *argument);
 /* USER CODE END 0 */
 
 /**
-  * @brief  The application entry point.
-  * @retval int
-  */
+ * @brief  The application entry point.
+ * @retval int
+ */
 int main(void)
 {
 
@@ -197,7 +201,7 @@ int main(void)
 
   // Start the callback interrupts for the UART channels.
   UART_init_uart_handlers();
-  
+
   FLASH_deactivate_chip_select();
 
   // Initialise the ADCS CRC8 checksum (required for ADCS operation).
@@ -234,8 +238,11 @@ int main(void)
   TASK_handle_uart_telecommands_Handle = osThreadNew(TASK_handle_uart_telecommands, NULL, &TASK_handle_uart_telecommands_Attributes);
 
   TASK_execute_telecommands_Handle = osThreadNew(TASK_execute_telecommands, NULL, &TASK_execute_telecommands_Attributes);
+<<<<<<< Updated upstream
   
   TASK_service_eps_watchdog_Handle = osThreadNew(TASK_service_eps_watchdog, NULL, &TASK_service_eps_watchdog_Attributes);
+=======
+>>>>>>> Stashed changes
 
   /* USER CODE END RTOS_THREADS */
 
@@ -252,7 +259,10 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    DEBUG_uart_print_str("This superloop point should never be reached, because the FreeRTOS Kernel is running...\n");
+    // UART replaced
+    LOG_message(
+        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "This superloop point should never be reached, because the FreeRTOS Kernel is running...\n");
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -261,24 +271,24 @@ int main(void)
 }
 
 /**
-  * @brief System Clock Configuration
-  * @retval None
-  */
+ * @brief System Clock Configuration
+ * @retval None
+ */
 void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
   /** Configure the main internal regulator output voltage
-  */
+   */
   if (HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1) != HAL_OK)
   {
     Error_Handler();
   }
 
   /** Initializes the RCC Oscillators according to the specified parameters
-  * in the RCC_OscInitTypeDef structure.
-  */
+   * in the RCC_OscInitTypeDef structure.
+   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
@@ -289,9 +299,8 @@ void SystemClock_Config(void)
   }
 
   /** Initializes the CPU, AHB and APB buses clocks
-  */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+   */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
@@ -304,10 +313,10 @@ void SystemClock_Config(void)
 }
 
 /**
-  * @brief CRC Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief CRC Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_CRC_Init(void)
 {
 
@@ -331,14 +340,13 @@ static void MX_CRC_Init(void)
   /* USER CODE BEGIN CRC_Init 2 */
 
   /* USER CODE END CRC_Init 2 */
-
 }
 
 /**
-  * @brief I2C1 Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief I2C1 Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_I2C1_Init(void)
 {
 
@@ -364,14 +372,14 @@ static void MX_I2C1_Init(void)
   }
 
   /** Configure Analogue filter
-  */
+   */
   if (HAL_I2CEx_ConfigAnalogFilter(&hi2c1, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
   {
     Error_Handler();
   }
 
   /** Configure Digital filter
-  */
+   */
   if (HAL_I2CEx_ConfigDigitalFilter(&hi2c1, 0) != HAL_OK)
   {
     Error_Handler();
@@ -379,14 +387,13 @@ static void MX_I2C1_Init(void)
   /* USER CODE BEGIN I2C1_Init 2 */
 
   /* USER CODE END I2C1_Init 2 */
-
 }
 
 /**
-  * @brief I2C2 Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief I2C2 Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_I2C2_Init(void)
 {
 
@@ -412,14 +419,14 @@ static void MX_I2C2_Init(void)
   }
 
   /** Configure Analogue filter
-  */
+   */
   if (HAL_I2CEx_ConfigAnalogFilter(&hi2c2, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
   {
     Error_Handler();
   }
 
   /** Configure Digital filter
-  */
+   */
   if (HAL_I2CEx_ConfigDigitalFilter(&hi2c2, 0) != HAL_OK)
   {
     Error_Handler();
@@ -427,14 +434,13 @@ static void MX_I2C2_Init(void)
   /* USER CODE BEGIN I2C2_Init 2 */
 
   /* USER CODE END I2C2_Init 2 */
-
 }
 
 /**
-  * @brief I2C3 Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief I2C3 Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_I2C3_Init(void)
 {
 
@@ -460,14 +466,14 @@ static void MX_I2C3_Init(void)
   }
 
   /** Configure Analogue filter
-  */
+   */
   if (HAL_I2CEx_ConfigAnalogFilter(&hi2c3, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
   {
     Error_Handler();
   }
 
   /** Configure Digital filter
-  */
+   */
   if (HAL_I2CEx_ConfigDigitalFilter(&hi2c3, 0) != HAL_OK)
   {
     Error_Handler();
@@ -475,14 +481,13 @@ static void MX_I2C3_Init(void)
   /* USER CODE BEGIN I2C3_Init 2 */
 
   /* USER CODE END I2C3_Init 2 */
-
 }
 
 /**
-  * @brief I2C4 Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief I2C4 Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_I2C4_Init(void)
 {
 
@@ -508,14 +513,14 @@ static void MX_I2C4_Init(void)
   }
 
   /** Configure Analogue filter
-  */
+   */
   if (HAL_I2CEx_ConfigAnalogFilter(&hi2c4, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
   {
     Error_Handler();
   }
 
   /** Configure Digital filter
-  */
+   */
   if (HAL_I2CEx_ConfigDigitalFilter(&hi2c4, 0) != HAL_OK)
   {
     Error_Handler();
@@ -523,14 +528,13 @@ static void MX_I2C4_Init(void)
   /* USER CODE BEGIN I2C4_Init 2 */
 
   /* USER CODE END I2C4_Init 2 */
-
 }
 
 /**
-  * @brief LPUART1 Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief LPUART1 Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_LPUART1_UART_Init(void)
 {
 
@@ -571,14 +575,13 @@ static void MX_LPUART1_UART_Init(void)
   /* USER CODE BEGIN LPUART1_Init 2 */
 
   /* USER CODE END LPUART1_Init 2 */
-
 }
 
 /**
-  * @brief UART4 Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief UART4 Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_UART4_Init(void)
 {
 
@@ -619,14 +622,13 @@ static void MX_UART4_Init(void)
   /* USER CODE BEGIN UART4_Init 2 */
 
   /* USER CODE END UART4_Init 2 */
-
 }
 
 /**
-  * @brief UART5 Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief UART5 Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_UART5_Init(void)
 {
 
@@ -667,14 +669,13 @@ static void MX_UART5_Init(void)
   /* USER CODE BEGIN UART5_Init 2 */
 
   /* USER CODE END UART5_Init 2 */
-
 }
 
 /**
-  * @brief USART1 Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief USART1 Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_USART1_UART_Init(void)
 {
 
@@ -715,14 +716,13 @@ static void MX_USART1_UART_Init(void)
   /* USER CODE BEGIN USART1_Init 2 */
 
   /* USER CODE END USART1_Init 2 */
-
 }
 
 /**
-  * @brief USART2 Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief USART2 Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_USART2_UART_Init(void)
 {
 
@@ -763,14 +763,13 @@ static void MX_USART2_UART_Init(void)
   /* USER CODE BEGIN USART2_Init 2 */
 
   /* USER CODE END USART2_Init 2 */
-
 }
 
 /**
-  * @brief USART3 Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief USART3 Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_USART3_UART_Init(void)
 {
 
@@ -811,14 +810,13 @@ static void MX_USART3_UART_Init(void)
   /* USER CODE BEGIN USART3_Init 2 */
 
   /* USER CODE END USART3_Init 2 */
-
 }
 
 /**
-  * @brief SPI1 Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief SPI1 Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_SPI1_Init(void)
 {
 
@@ -851,14 +849,13 @@ static void MX_SPI1_Init(void)
   /* USER CODE BEGIN SPI1_Init 2 */
 
   /* USER CODE END SPI1_Init 2 */
-
 }
 
 /**
-  * @brief TIM16 Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief TIM16 Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_TIM16_Init(void)
 {
 
@@ -883,12 +880,11 @@ static void MX_TIM16_Init(void)
   /* USER CODE BEGIN TIM16_Init 2 */
 
   /* USER CODE END TIM16_Init 2 */
-
 }
 
 /**
-  * Enable DMA controller clock
-  */
+ * Enable DMA controller clock
+ */
 static void MX_DMA_Init(void)
 {
 
@@ -903,19 +899,18 @@ static void MX_DMA_Init(void)
   /* DMA1_Channel2_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Channel2_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel2_IRQn);
-
 }
 
 /**
-  * @brief GPIO Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief GPIO Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_GPIO_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-/* USER CODE BEGIN MX_GPIO_Init_1 */
-/* USER CODE END MX_GPIO_Init_1 */
+  /* USER CODE BEGIN MX_GPIO_Init_1 */
+  /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOE_CLK_ENABLE();
@@ -929,52 +924,47 @@ static void MX_GPIO_Init(void)
   HAL_PWREx_EnableVddIO2();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOE, PIN_LED_GP1_OUT_Pin|PIN_LED_GP2_OUT_Pin|PIN_LED_GP3_OUT_Pin|PIN_MEM_NCS_FLASH_0_Pin
-                          |PIN_MEM_NCS_FRAM_1_Pin|PIN_MEM_NCS_FRAM_0_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOE, PIN_LED_GP1_OUT_Pin | PIN_LED_GP2_OUT_Pin | PIN_LED_GP3_OUT_Pin | PIN_MEM_NCS_FLASH_0_Pin | PIN_MEM_NCS_FRAM_1_Pin | PIN_MEM_NCS_FRAM_0_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, PIN_CAM_EN_OUT_Pin|PIN_BOOM_DEPLOY_EN_OUT_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, PIN_CAM_EN_OUT_Pin | PIN_BOOM_DEPLOY_EN_OUT_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOF, PIN_MEM_NCS_FLASH_7_Pin|PIN_MEM_NCS_FLASH_6_Pin|PIN_MEM_NCS_FLASH_5_Pin|PIN_MEM_NCS_FLASH_4_Pin
-                          |PIN_MEM_NCS_FLASH_3_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOF, PIN_MEM_NCS_FLASH_7_Pin | PIN_MEM_NCS_FLASH_6_Pin | PIN_MEM_NCS_FLASH_5_Pin | PIN_MEM_NCS_FLASH_4_Pin | PIN_MEM_NCS_FLASH_3_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOG, PIN_MEM_NCS_FLASH_2_Pin|PIN_MEM_NCS_FLASH_1_Pin|PIN_MPI_NEN_RX_MISO_OUT_Pin|PIN_MPI_EN_TX_MOSI_OUT_Pin
-                          |PIN_NRST_LORA_US_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOG, PIN_MEM_NCS_FLASH_2_Pin | PIN_MEM_NCS_FLASH_1_Pin | PIN_MPI_NEN_RX_MISO_OUT_Pin | PIN_MPI_EN_TX_MOSI_OUT_Pin | PIN_NRST_LORA_US_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, PIN_UHF_CTRL_OUT_Pin|PIN_LED_DEVKIT_LD2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, PIN_UHF_CTRL_OUT_Pin | PIN_LED_DEVKIT_LD2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(PIN_NRST_LORA_EU_OUT_GPIO_Port, PIN_NRST_LORA_EU_OUT_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : PIN_LED_GP1_OUT_Pin PIN_LED_GP2_OUT_Pin PIN_LED_GP3_OUT_Pin PIN_MEM_NCS_FLASH_0_Pin
                            PIN_MEM_NCS_FRAM_1_Pin PIN_MEM_NCS_FRAM_0_Pin */
-  GPIO_InitStruct.Pin = PIN_LED_GP1_OUT_Pin|PIN_LED_GP2_OUT_Pin|PIN_LED_GP3_OUT_Pin|PIN_MEM_NCS_FLASH_0_Pin
-                          |PIN_MEM_NCS_FRAM_1_Pin|PIN_MEM_NCS_FRAM_0_Pin;
+  GPIO_InitStruct.Pin = PIN_LED_GP1_OUT_Pin | PIN_LED_GP2_OUT_Pin | PIN_LED_GP3_OUT_Pin | PIN_MEM_NCS_FLASH_0_Pin | PIN_MEM_NCS_FRAM_1_Pin | PIN_MEM_NCS_FRAM_0_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PIN_CAM_EN_OUT_Pin PIN_BOOM_DEPLOY_EN_OUT_Pin */
-  GPIO_InitStruct.Pin = PIN_CAM_EN_OUT_Pin|PIN_BOOM_DEPLOY_EN_OUT_Pin;
+  GPIO_InitStruct.Pin = PIN_CAM_EN_OUT_Pin | PIN_BOOM_DEPLOY_EN_OUT_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PIN_BOOM_PGOOD_IN_Pin PIN_GPS_PPS_IN_Pin */
-  GPIO_InitStruct.Pin = PIN_BOOM_PGOOD_IN_Pin|PIN_GPS_PPS_IN_Pin;
+  GPIO_InitStruct.Pin = PIN_BOOM_PGOOD_IN_Pin | PIN_GPS_PPS_IN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PIN_MEM_NCS_FLASH_7_Pin PIN_MEM_NCS_FLASH_6_Pin PIN_MEM_NCS_FLASH_5_Pin PIN_MEM_NCS_FLASH_4_Pin
                            PIN_MEM_NCS_FLASH_3_Pin */
-  GPIO_InitStruct.Pin = PIN_MEM_NCS_FLASH_7_Pin|PIN_MEM_NCS_FLASH_6_Pin|PIN_MEM_NCS_FLASH_5_Pin|PIN_MEM_NCS_FLASH_4_Pin
-                          |PIN_MEM_NCS_FLASH_3_Pin;
+  GPIO_InitStruct.Pin = PIN_MEM_NCS_FLASH_7_Pin | PIN_MEM_NCS_FLASH_6_Pin | PIN_MEM_NCS_FLASH_5_Pin | PIN_MEM_NCS_FLASH_4_Pin | PIN_MEM_NCS_FLASH_3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -982,15 +972,14 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : PIN_MEM_NCS_FLASH_2_Pin PIN_MEM_NCS_FLASH_1_Pin PIN_MPI_NEN_RX_MISO_OUT_Pin PIN_MPI_EN_TX_MOSI_OUT_Pin
                            PIN_NRST_LORA_US_Pin */
-  GPIO_InitStruct.Pin = PIN_MEM_NCS_FLASH_2_Pin|PIN_MEM_NCS_FLASH_1_Pin|PIN_MPI_NEN_RX_MISO_OUT_Pin|PIN_MPI_EN_TX_MOSI_OUT_Pin
-                          |PIN_NRST_LORA_US_Pin;
+  GPIO_InitStruct.Pin = PIN_MEM_NCS_FLASH_2_Pin | PIN_MEM_NCS_FLASH_1_Pin | PIN_MPI_NEN_RX_MISO_OUT_Pin | PIN_MPI_EN_TX_MOSI_OUT_Pin | PIN_NRST_LORA_US_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PIN_UHF_CTRL_OUT_Pin PIN_LED_DEVKIT_LD2_Pin */
-  GPIO_InitStruct.Pin = PIN_UHF_CTRL_OUT_Pin|PIN_LED_DEVKIT_LD2_Pin;
+  GPIO_InitStruct.Pin = PIN_UHF_CTRL_OUT_Pin | PIN_LED_DEVKIT_LD2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -1015,27 +1004,26 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(PIN_BOOT0_GPIO_Port, &GPIO_InitStruct);
 
-/* USER CODE BEGIN MX_GPIO_Init_2 */
-/* USER CODE END MX_GPIO_Init_2 */
+  /* USER CODE BEGIN MX_GPIO_Init_2 */
+  /* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
-
 
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
 /**
-  * @brief  Function implementing the defaultTask thread.
-  * @param  argument: Not used
-  * @retval None
-  */
+ * @brief  Function implementing the defaultTask thread.
+ * @param  argument: Not used
+ * @retval None
+ */
 /* USER CODE END Header_StartDefaultTask */
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
-  for(;;)
+  for (;;)
   {
     osDelay(1);
   }
@@ -1043,19 +1031,20 @@ void StartDefaultTask(void *argument)
 }
 
 /**
-  * @brief  Period elapsed callback in non blocking mode
-  * @note   This function is called  when TIM1 interrupt took place, inside
-  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
-  * a global variable "uwTick" used as application time base.
-  * @param  htim : TIM handle
-  * @retval None
-  */
+ * @brief  Period elapsed callback in non blocking mode
+ * @note   This function is called  when TIM1 interrupt took place, inside
+ * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+ * a global variable "uwTick" used as application time base.
+ * @param  htim : TIM handle
+ * @retval None
+ */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   /* USER CODE BEGIN Callback 0 */
 
   /* USER CODE END Callback 0 */
-  if (htim->Instance == TIM1) {
+  if (htim->Instance == TIM1)
+  {
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
@@ -1064,9 +1053,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 }
 
 /**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
+ * @brief  This function is executed in case of error occurrence.
+ * @retval None
+ */
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
@@ -1075,19 +1064,22 @@ void Error_Handler(void)
   while (1)
   {
     // TODO: make this flight-ready
-    DEBUG_uart_print_str("Error_Handler() called\n");
+    // UART replaced
+    LOG_message(
+        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "Error_Handler() called\n");
   }
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
+ * @brief  Reports the name of the source file and the source line number
+ *         where the assert_param error has occurred.
+ * @param  file: pointer to the source file name
+ * @param  line: assert_param error line source number
+ * @retval None
+ */
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */

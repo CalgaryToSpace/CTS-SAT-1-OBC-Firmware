@@ -3,6 +3,7 @@
 
 #include "littlefs/flash_driver.h"
 #include "debug_tools/debug_uart.h"
+#include "log/log.h"
 
 #include "config/static_config.h"
 
@@ -10,7 +11,7 @@
 // Note: FLASH_read_data has sporadic timeouts at 5ms; 10ms is a safe bet.
 // 512 bytes should take 2ms at 2Mbps.
 // TODO: ^ investigate the HAL_SPI_Receive overhead (2ms expected, >5ms observed)
-#define FLASH_HAL_TIMEOUT_MS 10 
+#define FLASH_HAL_TIMEOUT_MS 10
 
 // The following timeout values are sourced from Section 11.3.1, Table 56: "CFI system interface string"
 // and are interpreted using: https://www.infineon.com/dgdl/Infineon-AN98488_Quick_Guide_to_Common_Flash_Interface-ApplicationNotes-v05_00-EN.pdf
@@ -43,28 +44,46 @@ void FLASH_activate_chip_select(uint8_t chip_number)
     FLASH_deactivate_chip_select();
     // NOTE: the "reset low" activate action must be AFTER all other pins are "set high"
 
-    if (chip_number == 0) {
+    if (chip_number == 0)
+    {
         HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_0_GPIO_Port, PIN_MEM_NCS_FLASH_0_Pin, GPIO_PIN_RESET);
-    } else if (chip_number == 1) {
+    }
+    else if (chip_number == 1)
+    {
         HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_1_GPIO_Port, PIN_MEM_NCS_FLASH_1_Pin, GPIO_PIN_RESET);
-    } else if (chip_number == 2) {
+    }
+    else if (chip_number == 2)
+    {
         HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_2_GPIO_Port, PIN_MEM_NCS_FLASH_2_Pin, GPIO_PIN_RESET);
-    } else if (chip_number == 3) {
+    }
+    else if (chip_number == 3)
+    {
         HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_3_GPIO_Port, PIN_MEM_NCS_FLASH_3_Pin, GPIO_PIN_RESET);
-    } else if (chip_number == 4) {
+    }
+    else if (chip_number == 4)
+    {
         HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_4_GPIO_Port, PIN_MEM_NCS_FLASH_4_Pin, GPIO_PIN_RESET);
-    } else if (chip_number == 5) {
+    }
+    else if (chip_number == 5)
+    {
         HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_5_GPIO_Port, PIN_MEM_NCS_FLASH_5_Pin, GPIO_PIN_RESET);
-    } else if (chip_number == 6) {
+    }
+    else if (chip_number == 6)
+    {
         HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_6_GPIO_Port, PIN_MEM_NCS_FLASH_6_Pin, GPIO_PIN_RESET);
-    } else if (chip_number == 7) {
+    }
+    else if (chip_number == 7)
+    {
         HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_7_GPIO_Port, PIN_MEM_NCS_FLASH_7_Pin, GPIO_PIN_RESET);
     }
-    
+
     // TODO: check if this is how we want to access the FRAM chips
-    else if (chip_number == 8) {
+    else if (chip_number == 8)
+    {
         HAL_GPIO_WritePin(PIN_MEM_NCS_FRAM_0_GPIO_Port, PIN_MEM_NCS_FRAM_0_Pin, GPIO_PIN_RESET);
-    } else if (chip_number == 9) {
+    }
+    else if (chip_number == 9)
+    {
         HAL_GPIO_WritePin(PIN_MEM_NCS_FRAM_1_GPIO_Port, PIN_MEM_NCS_FRAM_1_Pin, GPIO_PIN_RESET);
     }
 }
@@ -96,21 +115,25 @@ FLASH_error_enum_t FLASH_read_status_register(SPI_HandleTypeDef *hspi, uint8_t c
 {
     FLASH_activate_chip_select(chip_number);
     const HAL_StatusTypeDef tx_result = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_CMD_READ_STATUS_REG_1, 1, FLASH_HAL_TIMEOUT_MS);
-    if (tx_result != HAL_OK) {
+    if (tx_result != HAL_OK)
+    {
         FLASH_deactivate_chip_select();
 
-        if (tx_result == HAL_TIMEOUT) {
+        if (tx_result == HAL_TIMEOUT)
+        {
             return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
         }
-        
+
         return FLASH_ERR_SPI_TRANSMIT_FAILED;
     }
 
     const HAL_StatusTypeDef rx_result = HAL_SPI_Receive(hspi, (uint8_t *)buf, 1, FLASH_HAL_TIMEOUT_MS);
-    if (rx_result != HAL_OK) {
+    if (rx_result != HAL_OK)
+    {
         FLASH_deactivate_chip_select();
 
-        if (rx_result == HAL_TIMEOUT) {
+        if (rx_result == HAL_TIMEOUT)
+        {
             return FLASH_ERR_SPI_RECEIVE_TIMEOUT;
         }
 
@@ -135,9 +158,11 @@ FLASH_error_enum_t FLASH_write_enable(SPI_HandleTypeDef *hspi, uint8_t chip_numb
     FLASH_activate_chip_select(chip_number);
     const HAL_StatusTypeDef tx_result_1 = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_CMD_WRITE_ENABLE, 1, FLASH_HAL_TIMEOUT_MS);
     FLASH_deactivate_chip_select();
-    if (tx_result_1 != HAL_OK) {
+    if (tx_result_1 != HAL_OK)
+    {
 
-        if (tx_result_1 == HAL_TIMEOUT) {
+        if (tx_result_1 == HAL_TIMEOUT)
+        {
             return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
         }
 
@@ -149,26 +174,39 @@ FLASH_error_enum_t FLASH_write_enable(SPI_HandleTypeDef *hspi, uint8_t chip_numb
     while (1)
     {
         const FLASH_error_enum_t read_status_result = FLASH_read_status_register(hspi, chip_number, status_reg_buffer);
-        if (read_status_result != FLASH_ERR_OK) {
+        if (read_status_result != FLASH_ERR_OK)
+        {
             FLASH_deactivate_chip_select();
             return read_status_result;
         }
 
-        if ((status_reg_buffer[0] & FLASH_SR1_WRITE_ENABLE_LATCH_MASK) > 0) {
+        if ((status_reg_buffer[0] & FLASH_SR1_WRITE_ENABLE_LATCH_MASK) > 0)
+        {
             // Success condition: write enabled.
             return FLASH_ERR_OK;
         }
 
         // Do this comparison AFTER checking the success condition (for speed, and to avoid timing out on a success).
-        if (HAL_GetTick() - start_loop_time_ms > FLASH_LOOP_REGISTER_CHANGE_TIMEOUT_MS) {
-            DEBUG_uart_print_str("Flash write enable timeout\n");
+        if (HAL_GetTick() - start_loop_time_ms > FLASH_LOOP_REGISTER_CHANGE_TIMEOUT_MS)
+        {
+            // UART replaced
+            LOG_message(
+                LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                "Flash write enable timeout\n");
             return FLASH_ERR_DEVICE_BUSY_TIMEOUT;
         }
 
-        if (FLASH_enable_hot_path_debug_logs) {
-            DEBUG_uart_print_str("DEBUG: status_reg = 0x");
+        if (FLASH_enable_hot_path_debug_logs)
+        {
+            // UART replaced
+            LOG_message(
+                LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                "DEBUG: status_reg = 0x");
             DEBUG_uart_print_array_hex(status_reg_buffer, 1);
-            DEBUG_uart_print_str("\n");
+            // UART replaced
+            LOG_message(
+                LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                "\n");
         }
     }
 
@@ -190,12 +228,14 @@ FLASH_error_enum_t FLASH_write_disable(SPI_HandleTypeDef *hspi, uint8_t chip_num
     FLASH_activate_chip_select(chip_number);
     const HAL_StatusTypeDef tx_status = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_CMD_WRITE_DISABLE, 1, FLASH_HAL_TIMEOUT_MS);
     FLASH_deactivate_chip_select();
-    if (tx_status != HAL_OK) {
+    if (tx_status != HAL_OK)
+    {
 
-        if (tx_status == HAL_TIMEOUT) {
+        if (tx_status == HAL_TIMEOUT)
+        {
             return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
         }
-        
+
         return FLASH_ERR_SPI_TRANSMIT_FAILED;
     }
 
@@ -204,25 +244,37 @@ FLASH_error_enum_t FLASH_write_disable(SPI_HandleTypeDef *hspi, uint8_t chip_num
     while (1)
     {
         const FLASH_error_enum_t read_status_result = FLASH_read_status_register(hspi, chip_number, status_reg_buffer);
-        if (read_status_result != FLASH_ERR_OK) {
+        if (read_status_result != FLASH_ERR_OK)
+        {
             FLASH_deactivate_chip_select();
             return read_status_result;
         }
 
-        if ((status_reg_buffer[0] & FLASH_SR1_WRITE_ENABLE_LATCH_MASK) == 0) {
+        if ((status_reg_buffer[0] & FLASH_SR1_WRITE_ENABLE_LATCH_MASK) == 0)
+        {
             // Success condition: write disabled.
             return FLASH_ERR_OK;
         }
 
         // Do this comparison AFTER checking the success condition (for speed, and to avoid timing out on a success).
-        if (HAL_GetTick() - start_loop_time_ms > FLASH_LOOP_REGISTER_CHANGE_TIMEOUT_MS) {
-            DEBUG_uart_print_str("Flash write disable timeout\n");
+        if (HAL_GetTick() - start_loop_time_ms > FLASH_LOOP_REGISTER_CHANGE_TIMEOUT_MS)
+        {
+            // UART replaced
+            LOG_message(
+                LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                "Flash write disable timeout\n");
             return FLASH_ERR_DEVICE_BUSY_TIMEOUT;
         }
 
-        DEBUG_uart_print_str("DEBUG: status_reg = 0x");
+        // UART replaced
+        LOG_message(
+            LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "DEBUG: status_reg = 0x");
         DEBUG_uart_print_array_hex(status_reg_buffer, 1);
-        DEBUG_uart_print_str("\n");
+        // UART replaced
+        LOG_message(
+            LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "\n");
     }
 
     // Should never be reached:
@@ -243,7 +295,8 @@ FLASH_error_enum_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs
 
     // Send Write Enable Command
     const FLASH_error_enum_t wren_result = FLASH_write_enable(hspi, chip_number);
-    if (wren_result != FLASH_ERR_OK) {
+    if (wren_result != FLASH_ERR_OK)
+    {
         FLASH_deactivate_chip_select();
         return wren_result;
     }
@@ -251,20 +304,24 @@ FLASH_error_enum_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs
     // Send Sector Erase Command
     FLASH_activate_chip_select(chip_number);
     const HAL_StatusTypeDef tx_result_1 = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_CMD_SECTOR_ERASE_4_BYTE_ADDR, 1, FLASH_HAL_TIMEOUT_MS);
-    if (tx_result_1 != HAL_OK) {
+    if (tx_result_1 != HAL_OK)
+    {
         FLASH_deactivate_chip_select();
 
-        if (tx_result_1 == HAL_TIMEOUT) {
+        if (tx_result_1 == HAL_TIMEOUT)
+        {
             return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
         }
-        
+
         return FLASH_ERR_SPI_TRANSMIT_FAILED;
     }
     const HAL_StatusTypeDef tx_result_2 = HAL_SPI_Transmit(hspi, (uint8_t *)addr_bytes, 4, FLASH_HAL_TIMEOUT_MS);
-    if (tx_result_2 != HAL_OK) {
+    if (tx_result_2 != HAL_OK)
+    {
         FLASH_deactivate_chip_select();
 
-        if (tx_result_2 == HAL_TIMEOUT) {
+        if (tx_result_2 == HAL_TIMEOUT)
+        {
             return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
         }
 
@@ -280,31 +337,47 @@ FLASH_error_enum_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs
     while (1)
     {
         const FLASH_error_enum_t read_status_result = FLASH_read_status_register(hspi, chip_number, status_reg_buffer);
-        if (read_status_result != FLASH_ERR_OK) {
+        if (read_status_result != FLASH_ERR_OK)
+        {
             FLASH_deactivate_chip_select();
             return read_status_result;
         }
 
-        if ((status_reg_buffer[0] & FLASH_SR1_ERASE_ERROR_MASK) > 0) {
+        if ((status_reg_buffer[0] & FLASH_SR1_ERASE_ERROR_MASK) > 0)
+        {
             // Flash module returned "erase error" via the status register.
-            DEBUG_uart_print_str("Flash erase error\n");
+            // UART replaced
+            LOG_message(
+                LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                "Flash erase error\n");
             return FLASH_ERR_STATUS_REG_ERROR;
         }
 
-        if ((status_reg_buffer[0] & FLASH_SR1_WRITE_IN_PROGRESS_MASK) == 0) {
+        if ((status_reg_buffer[0] & FLASH_SR1_WRITE_IN_PROGRESS_MASK) == 0)
+        {
             // Success condition: write in progress has completed.
             return FLASH_ERR_OK;
         }
 
         // Do this comparison AFTER checking the success condition (for speed, and to avoid timing out on a success).
-        if (HAL_GetTick() - start_loop_time_ms > FLASH_LOOP_SECTOR_ERASE_TIMEOUT_MS) {
-            DEBUG_uart_print_str("Flash erase timeout\n");
+        if (HAL_GetTick() - start_loop_time_ms > FLASH_LOOP_SECTOR_ERASE_TIMEOUT_MS)
+        {
+            // UART replaced
+            LOG_message(
+                LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                "Flash erase timeout\n");
             return FLASH_ERR_DEVICE_BUSY_TIMEOUT;
         }
 
-        DEBUG_uart_print_str("DEBUG: status_reg = 0x");
+        // UART replaced
+        LOG_message(
+            LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "DEBUG: status_reg = 0x");
         DEBUG_uart_print_array_hex(status_reg_buffer, 1);
-        DEBUG_uart_print_str("\n");
+        // UART replaced
+        LOG_message(
+            LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "\n");
     }
 
     // Should never be reached:
@@ -327,7 +400,8 @@ FLASH_error_enum_t FLASH_write(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs
 
     // Enable WREN Command, so that we can write to the memory module
     const FLASH_error_enum_t wren_result = FLASH_write_enable(hspi, chip_number);
-    if (wren_result != FLASH_ERR_OK) {
+    if (wren_result != FLASH_ERR_OK)
+    {
         FLASH_deactivate_chip_select();
         return wren_result;
     }
@@ -335,30 +409,36 @@ FLASH_error_enum_t FLASH_write(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs
     // Send WREN Command and the Data required with the command
     FLASH_activate_chip_select(chip_number);
     const uint8_t tx_result_1 = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_CMD_WRITE_4_BYTE_ADDR, 1, FLASH_HAL_TIMEOUT_MS);
-    if (tx_result_1 != HAL_OK) {
+    if (tx_result_1 != HAL_OK)
+    {
         FLASH_deactivate_chip_select();
 
-        if (tx_result_1 == HAL_TIMEOUT) {
+        if (tx_result_1 == HAL_TIMEOUT)
+        {
             return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
         }
 
         return FLASH_ERR_SPI_TRANSMIT_FAILED;
     }
     const uint8_t tx_result_2 = HAL_SPI_Transmit(hspi, (uint8_t *)addr_bytes, 4, FLASH_HAL_TIMEOUT_MS);
-    if (tx_result_2 != HAL_OK) {
+    if (tx_result_2 != HAL_OK)
+    {
         FLASH_deactivate_chip_select();
 
-        if (tx_result_2 == HAL_TIMEOUT) {
+        if (tx_result_2 == HAL_TIMEOUT)
+        {
             return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
         }
 
         return FLASH_ERR_SPI_TRANSMIT_FAILED;
     }
     const uint8_t tx_result_3 = HAL_SPI_Transmit(hspi, (uint8_t *)packet_buffer, packet_buffer_len, FLASH_HAL_TIMEOUT_MS);
-    if (tx_result_3 != HAL_OK) {
+    if (tx_result_3 != HAL_OK)
+    {
         FLASH_deactivate_chip_select();
 
-        if (tx_result_3 == HAL_TIMEOUT) {
+        if (tx_result_3 == HAL_TIMEOUT)
+        {
             return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
         }
 
@@ -373,31 +453,47 @@ FLASH_error_enum_t FLASH_write(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs
     while (1)
     {
         const FLASH_error_enum_t read_status_result = FLASH_read_status_register(hspi, chip_number, status_reg_buffer);
-        if (read_status_result != FLASH_ERR_OK) {
+        if (read_status_result != FLASH_ERR_OK)
+        {
             FLASH_deactivate_chip_select();
             return read_status_result;
         }
 
-        if ((status_reg_buffer[0] & FLASH_SR1_PROGRAMMING_ERROR_MASK) > 0) {
+        if ((status_reg_buffer[0] & FLASH_SR1_PROGRAMMING_ERROR_MASK) > 0)
+        {
             // Flash module returned "programming error" via the status register.
-            DEBUG_uart_print_str("Flash programming error\n");
+            // UART replaced
+            LOG_message(
+                LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                "Flash programming error\n");
             return FLASH_ERR_STATUS_REG_ERROR;
         }
 
-        if ((status_reg_buffer[0] & FLASH_SR1_WRITE_IN_PROGRESS_MASK) == 0) {
+        if ((status_reg_buffer[0] & FLASH_SR1_WRITE_IN_PROGRESS_MASK) == 0)
+        {
             // Success condition: write in progress has completed.
             return FLASH_ERR_OK;
         }
 
         // Do this comparison AFTER checking the success condition (for speed, and to avoid timing out on a success).
-        if (HAL_GetTick() - start_loop_time_ms > FLASH_LOOP_WRITE_TIMEOUT_MS) {
-            DEBUG_uart_print_str("Flash write timeout\n");
+        if (HAL_GetTick() - start_loop_time_ms > FLASH_LOOP_WRITE_TIMEOUT_MS)
+        {
+            // UART replaced
+            LOG_message(
+                LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                "Flash write timeout\n");
             return FLASH_ERR_DEVICE_BUSY_TIMEOUT;
         }
 
-        DEBUG_uart_print_str("DEBUG: status_reg = 0x");
+        // UART replaced
+        LOG_message(
+            LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "DEBUG: status_reg = 0x");
         DEBUG_uart_print_array_hex(status_reg_buffer, 1);
-        DEBUG_uart_print_str("\n");
+        // UART replaced
+        LOG_message(
+            LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "\n");
     }
 
     // Should never be reached:
@@ -421,30 +517,36 @@ FLASH_error_enum_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number,
     // Send Read Command and the data required with it
     FLASH_activate_chip_select(chip_number);
     const HAL_StatusTypeDef tx_result_1 = HAL_SPI_Transmit(hspi, (uint8_t *)&FLASH_CMD_READ_4_BYTE_ADDR, 1, FLASH_HAL_TIMEOUT_MS);
-    if (tx_result_1 != HAL_OK) {
+    if (tx_result_1 != HAL_OK)
+    {
         FLASH_deactivate_chip_select();
 
-        if (tx_result_1 == HAL_TIMEOUT) {
+        if (tx_result_1 == HAL_TIMEOUT)
+        {
             return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
         }
 
         return FLASH_ERR_SPI_TRANSMIT_FAILED;
     }
     const HAL_StatusTypeDef tx_result_2 = HAL_SPI_Transmit(hspi, (uint8_t *)addr_bytes, 4, FLASH_HAL_TIMEOUT_MS);
-    if (tx_result_2 != HAL_OK) {
+    if (tx_result_2 != HAL_OK)
+    {
         FLASH_deactivate_chip_select();
 
-        if (tx_result_2 == HAL_TIMEOUT) {
+        if (tx_result_2 == HAL_TIMEOUT)
+        {
             return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
         }
 
         return FLASH_ERR_SPI_TRANSMIT_FAILED;
     }
     const HAL_StatusTypeDef rx_result_1 = HAL_SPI_Receive(hspi, (uint8_t *)rx_buffer, rx_buffer_len, FLASH_HAL_TIMEOUT_MS);
-    if (rx_result_1 != HAL_OK) {
+    if (rx_result_1 != HAL_OK)
+    {
         FLASH_deactivate_chip_select();
 
-        if (rx_result_1 == HAL_TIMEOUT) {
+        if (rx_result_1 == HAL_TIMEOUT)
+        {
             return FLASH_ERR_SPI_RECEIVE_TIMEOUT;
         }
 
@@ -468,10 +570,12 @@ FLASH_error_enum_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_numb
     // Transmit the READ_ID_CMD
     FLASH_activate_chip_select(chip_number);
     const HAL_StatusTypeDef tx_result_1 = HAL_SPI_Transmit(hspi, tx_buffer, 1, FLASH_HAL_TIMEOUT_MS);
-    if (tx_result_1 != HAL_OK) {
+    if (tx_result_1 != HAL_OK)
+    {
         FLASH_deactivate_chip_select();
 
-        if (tx_result_1 == HAL_TIMEOUT) {
+        if (tx_result_1 == HAL_TIMEOUT)
+        {
             return FLASH_ERR_SPI_TRANSMIT_TIMEOUT;
         }
 
@@ -480,10 +584,12 @@ FLASH_error_enum_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_numb
 
     // Receive the response
     const HAL_StatusTypeDef rx_result = HAL_SPI_Receive(hspi, rx_buffer, 5, FLASH_HAL_TIMEOUT_MS);
-    if (rx_result != HAL_OK) {
+    if (rx_result != HAL_OK)
+    {
         FLASH_deactivate_chip_select();
 
-        if (rx_result == HAL_TIMEOUT) {
+        if (rx_result == HAL_TIMEOUT)
+        {
             return FLASH_ERR_SPI_RECEIVE_TIMEOUT;
         }
 
@@ -498,18 +604,31 @@ FLASH_error_enum_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_numb
     // rx_buffer[2] is 0x20=512 for 512 Mib (mebibits)
     // TODO: maybe check the capacity as well here, esp. in deployment
     uint8_t are_bytes_correct = 0;
-    if (rx_buffer[0] == 0x01 && rx_buffer[1] == 0x02) {
-        DEBUG_uart_print_str("SUCCESS: FLASH_is_reachable received IDs: ");
+    if (rx_buffer[0] == 0x01 && rx_buffer[1] == 0x02)
+    {
+        // UART replaced
+        LOG_message(
+            LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "SUCCESS: FLASH_is_reachable received IDs: ");
         are_bytes_correct = 1;
-    } else {
-        DEBUG_uart_print_str("ERROR: FLASH_is_reachable received IDs: ");
+    }
+    else
+    {
+        // UART replaced
+        LOG_message(
+            LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "ERROR: FLASH_is_reachable received IDs: ");
         are_bytes_correct = 0;
     }
 
     DEBUG_uart_print_array_hex(rx_buffer, 5);
-    DEBUG_uart_print_str("\n");
+    // UART replaced
+    LOG_message(
+        LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "\n");
 
-    if (!are_bytes_correct) {
+    if (!are_bytes_correct)
+    {
         // error: IDs don't match
         return 3;
     }
