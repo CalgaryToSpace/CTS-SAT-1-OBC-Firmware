@@ -475,7 +475,7 @@ uint8_t EPS_struct_piu_housekeeping_data_eng_TO_json(
             return 4; // Error converting vip_each_channel[i]
         }
         strcat(vip_each_channel_json, vip_channel_json);
-        if (ch < (16 - 1)) {
+        if (ch < (EPS_MAX_ACTIVE_CHANNEL_NUMBER)) {
             strcat(vip_each_channel_json, ",");
         }
     }
