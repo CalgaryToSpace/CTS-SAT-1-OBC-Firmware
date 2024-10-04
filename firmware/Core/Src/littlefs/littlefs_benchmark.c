@@ -13,20 +13,28 @@
 /// @param response_str 
 /// @param response_str_len 
 /// @return 0 on success. >0 if there was an error.
-uint8_t LFS_benchmark_write_read(uint16_t write_chunk_size, uint16_t write_chunk_count, char* response_str, uint16_t response_str_len) {
-    const char dir_name[] = "benchmark_write_read";
-    // TODO: check if dir exists first; currently it gives a warning
-    LFS_make_directory(dir_name);
-    
+uint8_t LFS_benchmark_write_read(uint16_t write_chunk_size, uint16_t write_chunk_count, char* response_str, uint16_t response_str_len, LFS_benchmark_mode mode) {
     char file_name[100];
-    snprintf(
-        file_name,
-        sizeof(file_name),
-        "%s/benchmark_test_%lu.txt",
-        dir_name,
-        HAL_GetTick()
-    );
-    response_str[0] = '\0';
+    const char dir_name[] = "benchmark_write_read";
+    // FIXME: check if we care about return value
+    lfs_mkdir(&LFS_filesystem, dir_name);
+
+    
+    if(mode == LFS_SINGLE_FILE) {
+        snprintf(
+            file_name,
+            sizeof(file_name),
+            "benchmark_test.txt"
+        );
+    } else if(mode == LFS_NEW_FILE) {
+        snprintf(
+            file_name,
+            sizeof(file_name),
+            "%s/benchmark_test_%lu.txt",
+            dir_name,
+            HAL_GetTick()
+        );
+    }
 
     uint8_t expected_checksum = 0;
 
@@ -148,7 +156,7 @@ uint8_t LFS_benchmark_write_read(uint16_t write_chunk_size, uint16_t write_chunk
     snprintf(
         &response_str[strlen(response_str)],
         response_str_len - strlen(response_str),
-        "Read close: %lu ms\n", read_close_end_time - read_close_start_time);
+        "Read close: %lu ms\n\n", read_close_end_time - read_close_start_time);
     
     // Verify checksum
     if (read_checksum != expected_checksum) {
@@ -162,3 +170,34 @@ uint8_t LFS_benchmark_write_read(uint16_t write_chunk_size, uint16_t write_chunk
     return 0;
 }
 
+/// @brief Benchmarks the write/read operations on the LittleFS file system for both cases: writing to a new file and writing to an existing file.
+/// @details This function will write test data to a static filename, read it back, and verify the read data for both cases.
+/// @param write_chunk_size Number of bytes to write in each chunk.
+/// @param write_chunk_count Number of chunks to write.
+/// @param response_str 
+/// @param response_str_len 
+/// @return 0 on success. >0 if there was an error.
+uint8_t LFS_benchmark_write_read_single_and_new(uint16_t write_chunk_size, uint16_t write_chunk_count, char* response_str, uint16_t response_str_len) {
+    response_str[0] = '\0';
+
+    snprintf(
+        &response_str[strlen(response_str)],
+        response_str_len - strlen(response_str),
+        "Benchmark writing to the same file: \n");
+    uint8_t benchmark_same_file_result = LFS_benchmark_write_read(write_chunk_size, write_chunk_count, response_str, response_str_len, LFS_SINGLE_FILE);
+    if(benchmark_same_file_result != 0) {
+        return benchmark_same_file_result;
+    }
+
+    snprintf(
+       &response_str[strlen(response_str)],
+        response_str_len - strlen(response_str),
+        "Benchmark writing to a new file: \n");
+    uint8_t benchmark_new_file_result = LFS_benchmark_write_read(write_chunk_size, write_chunk_count, response_str, response_str_len, LFS_NEW_FILE);
+    if(benchmark_new_file_result != 0) {
+        return benchmark_same_file_result;
+    }
+
+    return 0;
+
+}
