@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+#pragma pack(push, 1)
+
 typedef enum {
     // TODO: add the 5V MPI channel
     EPS_CHANNEL_VBATT_STACK             = 0, // CH0
@@ -129,6 +131,8 @@ typedef struct {
     EPS_vpid_eng_t vip_total_input;
     uint16_t battery_pack_status_bitfield; // Table 3-18: Battery Pack Status
 
+    // Note: While the data transfer spec supports 3 battery packs, we only have 1.
+    // The in the JSON function, only the first is rendered.
     EPS_battery_pack_datatype_eng_t battery_pack_info_each_pack[3];
 } EPS_struct_pbu_housekeeping_data_eng_t;
 
@@ -171,5 +175,7 @@ typedef struct {
     uint16_t stat_ch_ext_on_bitfield;
     uint16_t stat_ch_ext_overcurrent_fault_bitfield;
 } EPS_struct_piu_housekeeping_data_eng_t;
+
+#pragma pack(pop)
 
 #endif /* INCLUDE_GUARD__EPS_TYPES_H__ */

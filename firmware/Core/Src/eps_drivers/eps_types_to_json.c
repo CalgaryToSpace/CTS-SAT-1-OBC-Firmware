@@ -339,18 +339,18 @@ uint8_t EPS_struct_pbu_housekeeping_data_eng_TO_json(const EPS_struct_pbu_housek
         return 2; // Error: vip_total_input conversion failed
     }
 
-    // Convert battery_pack_info_each_pack[3] to JSON
-    char battery_pack_info_json[3][300];
-    for (int i = 0; i < 3; i++) {
-        json_ret_code = EPS_battery_pack_datatype_eng_TO_json(
-            &(data->battery_pack_info_each_pack[i]),
-            battery_pack_info_json[i],
-            sizeof(battery_pack_info_json[i])
-        );
-        if (json_ret_code != 0) {
-            return 3; // Error: battery_pack_info_each_pack[i] conversion failed
-        }
+    // Convert battery_pack_info_each_pack[3] to JSON.
+    // Note: Only the first battery pack is rendered, as our EPS only has 1 battery pack.
+    char battery_pack_info_json[300];
+    json_ret_code = EPS_battery_pack_datatype_eng_TO_json(
+        &(data->battery_pack_info_each_pack[0]),
+        battery_pack_info_json,
+        sizeof(battery_pack_info_json)
+    );
+    if (json_ret_code != 0) {
+        return 3; // Error: battery_pack_info_each_pack[i] conversion failed
     }
+    
 
     // Format the full JSON string
     int snprintf_ret = snprintf(
@@ -359,14 +359,13 @@ uint8_t EPS_struct_pbu_housekeeping_data_eng_TO_json(const EPS_struct_pbu_housek
         "\"temperature_mcu_cC\":%" PRId16 ","
         "\"vip_total_input\":%s,"
         "\"battery_pack_status_bitfield\":%d,"
-        "\"battery_pack_info_each_pack\":[%s,%s,%s]}",
+        "\"battery_pack\":%s}",
         data->voltage_internal_board_supply_mV,
         data->temperature_mcu_cC,
         vip_total_input_json,
         data->battery_pack_status_bitfield,
-        battery_pack_info_json[0],
-        battery_pack_info_json[1],
-        battery_pack_info_json[2]
+        battery_pack_info_json
+        // Note: Only the first battery pack is rendered.
     );
 
     // Check for snprintf errors

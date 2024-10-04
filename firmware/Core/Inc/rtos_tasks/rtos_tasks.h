@@ -13,6 +13,8 @@ void TASK_handle_uart_telecommands(void *argument);
 
 void TASK_execute_telecommands(void *argument);
 
+void TASK_service_eps_watchdog(void *argument);
+
 void TASK_receive_gps_info(void *argument);
 
 
