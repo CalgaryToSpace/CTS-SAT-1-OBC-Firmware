@@ -11,6 +11,7 @@
 #include "stm32/stm32_reboot_reason.h"
 #include "log/log.h"
 #include "config/configuration.h"
+#include "eps_drivers/eps_commands.h"
 
 #include "cmsis_os.h"
 
