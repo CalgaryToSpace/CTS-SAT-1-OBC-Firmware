@@ -106,6 +106,13 @@ const osThreadAttr_t TASK_execute_telecommands_Attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 
+osThreadId_t TASK_service_eps_watchdog_Handle;
+const osThreadAttr_t TASK_service_eps_watchdog_Attributes = {
+  .name = "TASK_service_eps_watchdog",
+  .stack_size = 512, //in bytes
+  .priority = (osPriority_t) osPriorityNormal, //TODO: Figure out which priority makes sense for this task
+};
+
 osThreadId_t TASK_monitor_freertos_highstack_watermarks_Handle;
 const osThreadAttr_t TASK_monitor_freertos_highstack_watermarks_Attributes = {
   .name = "TASK_monitor_freertos_highstack_watermarks",
