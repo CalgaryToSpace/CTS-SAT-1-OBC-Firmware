@@ -15,10 +15,6 @@
 /// @return 0 on success. >0 if there was an error.
 uint8_t LFS_benchmark_write_read(uint16_t write_chunk_size, uint16_t write_chunk_count, char* response_str, uint16_t response_str_len, LFS_benchmark_mode mode) {
     char file_name[100];
-    const char dir_name[] = "benchmark_write_read";
-    // FIXME: check if we care about return value
-    lfs_mkdir(&LFS_filesystem, dir_name);
-
     
     if(mode == LFS_SINGLE_FILE) {
         snprintf(
@@ -27,6 +23,9 @@ uint8_t LFS_benchmark_write_read(uint16_t write_chunk_size, uint16_t write_chunk
             "benchmark_test.txt"
         );
     } else if(mode == LFS_NEW_FILE) {
+        const char dir_name[] = "benchmark_write_read";
+        // FIXME: check if we care about return value
+        lfs_mkdir(&LFS_filesystem, dir_name);
         snprintf(
             file_name,
             sizeof(file_name),
