@@ -20,7 +20,7 @@
 
 // NAND Flash Memory Datasheet https://www.farnell.com/datasheets/3151163.pdf
 // Each page is divided into a 2048-byte data storage region, and a 128 bytes spare area (2176 bytes total).
-static const uint16_t FLASH_MAX_BYTES_PER_PAGE = 2048;
+#define FLASH_MAX_BYTES_PER_PAGE 2048
 
 /*-------------------------------FLASH FEATURES-------------------------------*/
 // Features that can be accessed using Get Feature command
