@@ -5,11 +5,7 @@
 #include <stdint.h>
 #include "telecommands/telecommand_definitions.h"
 
-/*----------------------------- CONFIG VARIABLES ----------------------------- */
-// NAND Flash Memory Datasheet https://www.farnell.com/datasheets/3151163.pdf (pg.7)
-// Each page is divided into a 2048-byte data storage region, and a 128 bytes spare area (2176 bytes total).
-#define MAX_NUM_BYTES 2048
-
+/*----------------------------- TELECOMMAND DEFINITIONS ----------------------------- */
 uint8_t TCMDEXEC_flash_activate_each_cs(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len);
 

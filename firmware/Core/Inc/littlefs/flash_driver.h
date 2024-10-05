@@ -15,8 +15,12 @@
 // Total size of a singular Memory Module in bytes
 #define FLASH_CHIP_SIZE_BYTES 134217728  // 128MiB // TODO: update
 
-//Number of pages contained within a single block of memory module
+// Number of pages contained within a single block of memory module
 #define FLASH_CHIP_PAGES_PER_BLOCK 64
+
+// NAND Flash Memory Datasheet https://www.farnell.com/datasheets/3151163.pdf
+// Each page is divided into a 2048-byte data storage region, and a 128 bytes spare area (2176 bytes total).
+static const uint16_t FLASH_MAX_BYTES_PER_PAGE = 2048;
 
 /*-------------------------------FLASH FEATURES-------------------------------*/
 // Features that can be accessed using Get Feature command

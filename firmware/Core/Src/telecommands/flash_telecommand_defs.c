@@ -10,8 +10,8 @@
 #include <string.h>
 #include <inttypes.h>
 
-uint8_t read_buf[MAX_NUM_BYTES];
-uint8_t bytes_to_write[MAX_NUM_BYTES];
+uint8_t read_buf[FLASH_MAX_BYTES_PER_PAGE];
+uint8_t bytes_to_write[FLASH_MAX_BYTES_PER_PAGE];
 
 /// @brief Telecommand: Read bytes as hex from a flash address
 /// @param args_str No args.
@@ -119,11 +119,11 @@ uint8_t TCMDEXEC_flash_read_hex(const char *args_str, TCMD_TelecommandChannel_en
         return 2;
     }
 
-    if (arg_num_bytes > MAX_NUM_BYTES || arg_num_bytes == 0) {
+    if (arg_num_bytes > FLASH_MAX_BYTES_PER_PAGE || arg_num_bytes == 0) {
         snprintf(
             response_output_buf, response_output_buf_len,
             "Invalid number of bytes to read: %lu. Must be 1 to %d.",
-            (uint32_t)arg_num_bytes, MAX_NUM_BYTES); // TODO: fix this cast
+            (uint32_t)arg_num_bytes, FLASH_MAX_BYTES_PER_PAGE); // TODO: fix this cast
         return 3;
     }
 
@@ -172,7 +172,7 @@ uint8_t TCMDEXEC_flash_write_hex(const char *args_str, TCMD_TelecommandChannel_e
     const uint8_t arg0_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &chip_num_u64);
     const uint8_t arg1_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &flash_addr_u64);
     const uint8_t arg2_result = TCMD_extract_hex_array_arg(
-        args_str, 2, bytes_to_write, MAX_NUM_BYTES, &num_bytes
+        args_str, 2, bytes_to_write, FLASH_MAX_BYTES_PER_PAGE, &num_bytes
     );
     
     if (arg0_result != 0 || arg1_result != 0 || arg2_result != 0) {
