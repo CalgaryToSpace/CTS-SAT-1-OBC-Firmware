@@ -38,6 +38,11 @@ uint8_t TCMDEXEC_read_temperature(const char *args_str, TCMD_TelecommandChannel_
     return 0;
 }
 
+
+/// @brief  Set the temperature sensor temperature precision value in the config register.
+/// @param args_str
+///  Arg 0: Precision we want the temperature to be (9-12 bits).
+/// @return 0 if successful, 1 if error.
 uint8_t TCMDEXEC_set_temperature_precision(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, 
                                 char *response_output_buf, uint16_t response_output_buf_len)
 {
