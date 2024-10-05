@@ -392,12 +392,21 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     
     },
     // ****************** END SECTION: antenna_telecommand_defs ******************
+
+    // ****************** START SECTION: temperature_sensor_telecommand_defs ******************
     {
         .tcmd_name = "read_temperature",
         .tcmd_func = TCMDEXEC_read_temperature,
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
+    {
+        .tcmd_name = "set_temperature_precision",
+        .tcmd_func = TCMDEXEC_set_temperature_precision,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    }
+    // ****************** END SECTION: temperature_sensor_telecommand_defs ******************
 };
 
 // extern

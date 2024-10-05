@@ -18,8 +18,10 @@ typedef enum
 
 
 uint8_t read_temperature(int32_t *result);
-
 int32_t TEMP_SENSOR_convert_raw_to_deg_c(uint8_t raw_bytes[], uint8_t TEMP_SENSOR_data_precision_coefficient, 
                                     Temperature_Sensor_Data_Precision_Insignificant_Bytes_t TEMP_SENSOR_data_precision_insignificant_bits);
+int8_t TEMP_SENSOR__get_temp_precision(void);
+uint8_t TEMP_SENSOR__set_temp_precision(uint8_t arg_precision, uint8_t did_user_set_precision);
+
 
 #endif
