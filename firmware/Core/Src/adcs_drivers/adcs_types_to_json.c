@@ -195,12 +195,37 @@ uint8_t ADCS_set_unix_time_save_mode_struct_TO_json(const ADCS_set_unix_time_sav
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
 uint8_t ADCS_orbit_params_struct_TO_json(const ADCS_orbit_params_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
-    if (data == NULL || json_output_str == NULL || json_output_str_len < 256) {
+    if (data == NULL || json_output_str == NULL || json_output_str_len < 257) {
         return 1; // Error: invalid input
     }
-    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, "{\"inclination_deg\":%.6f,\"eccentricity\":%.6f,\"ascending_node_right_ascension_deg\":%.6f,\"perigee_argument_deg\":%.6f,\"b_star_drag_term\":%.6f,\"mean_motion_orbits_per_day\":%.6f,\"mean_anomaly_deg\":%.6f,\"epoch_year_point_day\":%.6f}",
-            data->inclination_deg, data->eccentricity, data->ascending_node_right_ascension_deg, data->perigee_argument_deg, data->b_star_drag_term, data->mean_motion_orbits_per_day, data->mean_anomaly_deg, data->epoch_year_point_day); 
+
+    // snprintf doesn't support printing floats, so we convert them into pairs of ints instead
+
+    int32_t data_int_portions[8];
     
+    data_int_portions[0] = (int32_t)(data->inclination_deg); 
+    data_int_portions[1] = (int32_t)(data->eccentricity); 
+    data_int_portions[2] = (int32_t)(data->ascending_node_right_ascension_deg); 
+    data_int_portions[3] = (int32_t)(data->perigee_argument_deg); 
+    data_int_portions[4] = (int32_t)(data->b_star_drag_term); 
+    data_int_portions[5] = (int32_t)(data->mean_motion_orbits_per_day); 
+    data_int_portions[6] = (int32_t)(data->mean_anomaly_deg); 
+    data_int_portions[7] = (int32_t)(data->epoch_year_point_day);
+
+    int32_t data_decimal_portions[8];
+    
+    data_decimal_portions[0] = (int32_t)((data->inclination_deg - data_int_portions[0]) * 1000000); 
+    data_decimal_portions[1] = (int32_t)((data->eccentricity - data_int_portions[1]) * 1000000); 
+    data_decimal_portions[2] = (int32_t)((data->ascending_node_right_ascension_deg - data_int_portions[2]) * 1000000); 
+    data_decimal_portions[3] = (int32_t)((data->perigee_argument_deg - data_int_portions[3]) * 1000000); 
+    data_decimal_portions[4] = (int32_t)((data->b_star_drag_term - data_int_portions[4]) * 1000000); 
+    data_decimal_portions[5] = (int32_t)((data->mean_motion_orbits_per_day - data_int_portions[5]) * 1000000); 
+    data_decimal_portions[6] = (int32_t)((data->mean_anomaly_deg - data_int_portions[6]) * 1000000); 
+    data_decimal_portions[7] = (int32_t)((data->epoch_year_point_day - data_int_portions[7]) * 1000000);
+
+    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, "{\"inclination_deg\":%ld.%ld,\"eccentricity\":%ld.%ld,\"ascending_node_right_ascension_deg\":%ld.%ld,\"perigee_argument_deg\":%ld.%ld,\"b_star_drag_term\":%ld.%ld,\"mean_motion_orbits_per_day\":%ld.%ld,\"mean_anomaly_deg\":%ld.%ld,\"epoch_year_point_day\":%ld.%ld}",
+            data_int_portions[0], data_decimal_portions[0], data_int_portions[1], data_decimal_portions[1], data_int_portions[2], data_decimal_portions[2], data_int_portions[3], data_decimal_portions[3], data_int_portions[4], data_decimal_portions[4], data_int_portions[5], data_decimal_portions[5], data_int_portions[6], data_decimal_portions[6], data_int_portions[7], data_decimal_portions[7]); 
+
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error
     }
@@ -774,15 +799,31 @@ uint8_t ADCS_raw_coarse_sun_sensor_7_to_10_struct_TO_json(const ADCS_raw_coarse_
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
 uint8_t ADCS_cubecontrol_current_struct_TO_json(const ADCS_cubecontrol_current_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
-    if (data == NULL || json_output_str == NULL || json_output_str_len < 117) {
+    if (data == NULL || json_output_str == NULL || json_output_str_len < 118) {
         return 1; // Error: invalid input
     }
+    
+    // snprintf doesn't support printing floats, so we convert them to a pair of ints
+
+    int16_t data_int_portions[8];
+    
+    data_int_portions[0] = (int16_t)(data->cubecontrol_3v3_current_mA); 
+    data_int_portions[1] = (int16_t)(data->cubecontrol_5v_current_mA); 
+    data_int_portions[2] = (int16_t)(data->cubecontrol_vbat_current_mA); 
+
+    uint8_t data_decimal_portions[8];
+    
+    data_decimal_portions[0] = (uint8_t)((data->cubecontrol_3v3_current_mA - data_int_portions[0]) * 10); 
+    data_decimal_portions[1] = (uint8_t)((data->cubecontrol_5v_current_mA - data_int_portions[1]) * 10); 
+    data_decimal_portions[2] = (uint8_t)((data->cubecontrol_vbat_current_mA - data_int_portions[2]) * 10); 
+  
                 // measured up to 0.1 mA (100 uA); current measured in 0.48828125 mA steps
     int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, 
-                                "{\"cubecontrol_3v3_current_mA\":%.1f,\"cubecontrol_5v_current_mA\":%.1f,"
-                                "\"cubecontrol_vbat_current_mA\":%.1f}", 
-                                data->cubecontrol_3v3_current_mA, data->cubecontrol_5v_current_mA, 
-                                data->cubecontrol_vbat_current_mA);
+                                "{\"cubecontrol_3v3_current_mA\":%d.%d,\"cubecontrol_5v_current_mA\":%d.%d,"
+                                "\"cubecontrol_vbat_current_mA\":%d.%d}", 
+                                data_int_portions[0], data_decimal_portions[0], 
+                                data_int_portions[1], data_decimal_portions[1], 
+                                data_int_portions[2], data_decimal_portions[2]);
 
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error
