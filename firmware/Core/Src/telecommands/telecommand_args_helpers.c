@@ -168,11 +168,11 @@ uint8_t TCMD_extract_int64_arg(const char *str, uint32_t str_len, uint8_t arg_in
     return 0;
 }
 
-/// @brief Extracts the nth comma-separated argument from the input string, assuming it's a string
-/// @param str Input string (null-terminated)
-/// @param arg_index Index of the argument to extract (0-based)
-/// @param result Pointer to the result, to be filled with the extracted string (null-terminated)
-/// @param result_max_len Maximum length of the result
+/// @brief Extracts the nth comma-separated argument from the input string, assuming it's a string.
+/// @param str Input string (null-terminated).
+/// @param arg_index Index of the argument to extract (0-based).
+/// @param result Pointer to the result, to be filled with the extracted string (null-terminated).
+/// @param result_max_len Maximum length of the result, including the null-terminator.
 /// @return 0 if successful, 1 if the string is empty, 2 if the string does not contain enough arguments
 ///         3 for other error
 uint8_t TCMD_extract_string_arg(const char *str, uint8_t arg_index, char *result, uint16_t result_max_len) {
@@ -214,7 +214,7 @@ uint8_t TCMD_extract_string_arg(const char *str, uint8_t arg_index, char *result
         end_index--;
     }
 
-    uint32_t token_len = end_index - start_index;
+    const uint32_t token_len = end_index - start_index;
 
     if (token_len >= result_max_len) {
         // The argument is too long for the result buffer.

@@ -1,5 +1,5 @@
 # CTS-SAT-1-OBC-Firmware
-Firmware and ground support software for the CTS-SAT-1 ("FrontierSat") mission. Firmware runs on the STM32-based Onboard Computer.
+Onboard Computer (OBC) Firmware and ground support software for the CTS-SAT-1 ("FrontierSat") mission. Firmware runs on the STM32-based Onboard Computer.
 
 ## Quick Links - Getting Started
 
@@ -18,6 +18,7 @@ Please add your name to the list below in your first Pull Request!
 * Kale F.
 * Marko V.
 * Vaibhav K.
+* Muhammad Ali
 
 ## License and Libraries
 

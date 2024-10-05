@@ -1,6 +1,4 @@
-"""\
-Generates a list of pins, in a Markdown file, from the IOC file.
-"""
+"""Generate a list of pins, in a Markdown file, from the IOC file."""
 
 from pathlib import Path
 

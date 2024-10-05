@@ -27,6 +27,8 @@
 #include "debug_tools/debug_uart.h"
 #include "rtos_tasks/rtos_tasks.h"
 #include "uart_handler/uart_handler.h"
+#include "adcs_drivers/adcs_types.h"
+#include "adcs_drivers/adcs_internal_drivers.h"
 #include "littlefs/flash_driver.h"
 
 /* USER CODE END Includes */
@@ -60,6 +62,7 @@ UART_HandleTypeDef huart5;
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart3;
+DMA_HandleTypeDef hdma_uart4_rx;
 DMA_HandleTypeDef hdma_usart1_rx;
 
 SPI_HandleTypeDef hspi1;
@@ -103,6 +106,13 @@ const osThreadAttr_t TASK_execute_telecommands_Attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 
+osThreadId_t TASK_service_eps_watchdog_Handle;
+const osThreadAttr_t TASK_service_eps_watchdog_Attributes = {
+  .name = "TASK_service_eps_watchdog",
+  .stack_size = 512, //in bytes
+  .priority = (osPriority_t) osPriorityNormal, //TODO: Figure out which priority makes sense for this task
+};
+
 
 
 /* USER CODE END PV */
@@ -143,7 +153,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-  
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -152,13 +162,16 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
   /* USER CODE END Init */
 
   /* Configure the system clock */
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
+
+  // Wait 20ms for things to stabilize. Attempt at avoiding failure to boot.
+  // Didn't appear to make a big difference. Still seems reasonable.
+  HAL_Delay(20);
 
   /* USER CODE END SysInit */
 
@@ -180,10 +193,15 @@ int main(void)
   MX_TIM16_Init();
   /* USER CODE BEGIN 2 */
 
-  // start the callback interrupts for the UART channels
+  DEBUG_uart_print_str("\n\nMX_Init() done\n");
+
+  // Start the callback interrupts for the UART channels.
   UART_init_uart_handlers();
   
   FLASH_deactivate_chip_select();
+
+  // Initialise the ADCS CRC8 checksum (required for ADCS operation).
+  ADCS_initialise_crc8_checksum();
 
   /* USER CODE END 2 */
 
@@ -217,6 +235,8 @@ int main(void)
 
   TASK_execute_telecommands_Handle = osThreadNew(TASK_execute_telecommands, NULL, &TASK_execute_telecommands_Attributes);
   
+  TASK_service_eps_watchdog_Handle = osThreadNew(TASK_service_eps_watchdog, NULL, &TASK_service_eps_watchdog_Attributes);
+
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
@@ -877,6 +897,9 @@ static void MX_DMA_Init(void)
   __HAL_RCC_DMA1_CLK_ENABLE();
 
   /* DMA interrupt init */
+  /* DMA1_Channel1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
   /* DMA1_Channel2_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Channel2_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel2_IRQn);
@@ -942,8 +965,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PIN_BOOM_PGOOD_IN_TBC_Pin PIN_GPS_PPS_IN_Pin */
-  GPIO_InitStruct.Pin = PIN_BOOM_PGOOD_IN_TBC_Pin|PIN_GPS_PPS_IN_Pin;
+  /*Configure GPIO pins : PIN_BOOM_PGOOD_IN_Pin PIN_GPS_PPS_IN_Pin */
+  GPIO_InitStruct.Pin = PIN_BOOM_PGOOD_IN_Pin|PIN_GPS_PPS_IN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
@@ -972,6 +995,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PIN_REMOVE_BEFORE_FLIGHT_LOW_IS_FLYING_IN_Pin */
+  GPIO_InitStruct.Pin = PIN_REMOVE_BEFORE_FLIGHT_LOW_IS_FLYING_IN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(PIN_REMOVE_BEFORE_FLIGHT_LOW_IS_FLYING_IN_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PIN_NRST_LORA_EU_OUT_Pin */
   GPIO_InitStruct.Pin = PIN_NRST_LORA_EU_OUT_Pin;
