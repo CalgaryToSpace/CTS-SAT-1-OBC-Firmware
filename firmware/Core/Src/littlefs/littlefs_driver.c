@@ -21,7 +21,7 @@ int LFS_block_device_read(const struct lfs_config *c, lfs_block_t block, lfs_off
 	return FLASH_read_data(
 		hspi_lfs_ptr,
 		LFS_get_chip_number(block),
-		(block * c->block_size + off),
+		((block * c->block_size) + off)/FLASH_MAX_BYTES_PER_PAGE,
 		(uint8_t *)buffer,
 		size
 	);
@@ -34,10 +34,10 @@ int LFS_block_device_read(const struct lfs_config *c, lfs_block_t block, lfs_off
  */
 int LFS_block_device_prog(const struct lfs_config *c, lfs_block_t block, lfs_off_t off, const void *buffer, lfs_size_t size)
 {
-	return FLASH_write(
+	return FLASH_write_data(
 		hspi_lfs_ptr,
 		LFS_get_chip_number(block),
-		(block * c->block_size + off),
+		((block * c->block_size) + off)/FLASH_MAX_BYTES_PER_PAGE,
 		(uint8_t *)buffer,
 		size
 	);
@@ -53,7 +53,7 @@ int LFS_block_device_erase(const struct lfs_config *c, lfs_block_t block)
 	return FLASH_erase(
 		hspi_lfs_ptr,
 		LFS_get_chip_number(block),
-		block * c->block_size
+		block * FLASH_CHIP_PAGES_PER_BLOCK
 	);
 }
 

@@ -236,7 +236,7 @@ uint8_t TCMDEXEC_fs_benchmark_write_read(const char *args_str, TCMD_TelecommandC
         return 1;
     }
 
-    const int8_t benchmark_result = LFS_benchmark_write_read(arg_write_chunk_size, arg_write_chunk_count, response_output_buf, response_output_buf_len);
+    const int8_t benchmark_result = LFS_benchmark_write_read_single_and_new(arg_write_chunk_size, arg_write_chunk_count, response_output_buf, response_output_buf_len);
     response_output_buf[response_output_buf_len - 1] = '\0'; // ensure null-terminated
 
     if (benchmark_result != 0) {
