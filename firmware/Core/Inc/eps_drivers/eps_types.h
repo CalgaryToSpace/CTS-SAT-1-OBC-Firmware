@@ -97,10 +97,11 @@ typedef struct {
 typedef struct {
     // Note: rx_buf[5] is a reserved/ignored value
     uint16_t stat_ch_on_bitfield;
-    uint16_t stat_ch_ext_on_bitfield; // channels not present on our model
+    uint16_t stat_ch_ext_on_bitfield; // Channels not present on our model.
     uint16_t stat_ch_overcurrent_fault_bitfield;
-    uint16_t stat_ch_ext_overcurrent_fault_bitfield; // channels not present on our model
-    uint16_t overcurrent_fault_count_each_channel[32]; // only channels 0-15 are present on our model
+    uint16_t stat_ch_ext_overcurrent_fault_bitfield; // Channels not present on our model.
+    // Only channels 0-16 (17 ch total) are present on our model.
+    uint16_t overcurrent_fault_count_each_channel[32];
 } EPS_struct_pdu_overcurrent_fault_state_t;
 
 // Command Response: 0x44: Get PBU ABF Placed State
