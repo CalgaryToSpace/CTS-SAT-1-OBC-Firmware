@@ -1,12 +1,21 @@
 <map id="LFS_block_device_read" name="LFS_block_device_read">
-<area shape="rect" id="Node000001" title="LittleFS read function." alt="" coords="5,66,167,92"/>
-<area shape="rect" id="Node000002" href="$flash__driver_8c.html#aad6973bad0210b2dbe8d76adc6619757" title="Sends Page Program Command." alt="" coords="226,41,356,66"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="167,66,210,61,211,66,168,72"/>
-<area shape="rect" id="Node000005" href="$littlefs__driver_8c.html#ac54becf2a06dc9a90f281df70e34d857" title=" " alt="" coords="215,90,367,116"/>
-<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="168,86,200,90,199,95,167,91"/>
-<area shape="rect" id="Node000003" href="$flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="415,5,564,46"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="355,42,399,36,400,41,356,47"/>
-<area shape="rect" id="Node000004" href="$flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="612,35,776,75"/>
-<area shape="poly" id="edge4_Node000002_Node000004" title=" " alt="" coords="356,53,415,55,564,55,597,55,597,60,564,60,415,60,356,59"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="565,34,597,38,596,44,565,39"/>
+<area shape="rect" id="Node000001" title="LittleFS read function." alt="" coords="5,112,167,138"/>
+<area shape="rect" id="Node000002" href="$flash__driver_8c.html#a395c5684cb8c564403e3fa68dcae299d" title="Sends Page Read Command." alt="" coords="226,87,356,112"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="167,112,210,107,211,112,168,118"/>
+<area shape="rect" id="Node000008" href="$littlefs__driver_8c.html#ac54becf2a06dc9a90f281df70e34d857" title=" " alt="" coords="215,136,367,162"/>
+<area shape="poly" id="edge11_Node000001_Node000008" title=" " alt="" coords="168,132,200,136,199,141,167,137"/>
+<area shape="rect" id="Node000003" href="$debug__uart_8c.html#ae1143c61f5fad27b50053b03673b9501" title=" " alt="" coords="415,37,605,63"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="351,84,434,65,436,70,352,89"/>
+<area shape="rect" id="Node000004" href="$debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="653,7,804,32"/>
+<area shape="poly" id="edge4_Node000002_Node000004" title=" " alt="" coords="306,84,352,51,382,35,414,22,471,10,530,5,638,6,638,12,530,10,472,16,416,28,385,40,355,56,309,88"/>
+<area shape="rect" id="Node000005" href="$flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="654,126,803,167"/>
+<area shape="poly" id="edge5_Node000002_Node000005" title=" " alt="" coords="350,110,415,122,532,134,639,141,639,146,531,140,415,128,349,116"/>
+<area shape="rect" id="Node000006" href="$flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="852,126,1015,167"/>
+<area shape="poly" id="edge7_Node000002_Node000006" title=" " alt="" coords="338,111,368,121,392,133,416,144,522,172,607,186,694,186,803,176,846,168,847,173,804,181,694,192,607,191,521,178,414,149,390,138,366,126,336,116"/>
+<area shape="rect" id="Node000007" href="$flash__driver_8c.html#ad86ddde592dfea7dd3c6129ca311923a" title="Read Status Register and store the values in given buffer." alt="" coords="415,87,605,112"/>
+<area shape="poly" id="edge8_Node000002_Node000007" title=" " alt="" coords="356,97,400,97,400,102,356,102"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="605,34,638,30,638,35,606,40"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="803,144,836,144,836,149,803,149"/>
+<area shape="poly" id="edge9_Node000007_Node000005" title=" " alt="" coords="574,111,639,125,638,130,573,116"/>
+<area shape="poly" id="edge10_Node000007_Node000006" title=" " alt="" coords="605,97,702,101,804,112,844,119,843,125,803,117,701,106,605,102"/>
 </map>

@@ -1,22 +1,22 @@
 <map id="FLASH_write_enable" name="FLASH_write_enable">
-<area shape="rect" id="Node000001" title="Sends Write Enable Command." alt="" coords="639,141,785,167"/>
-<area shape="rect" id="Node000002" href="$flash__driver_8c.html#ae9ff2d16b7ab58000a6720b637366839" title="Sends Sector Erase Command." alt="" coords="487,84,591,110"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="656,138,579,113,581,108,657,133"/>
-<area shape="rect" id="Node000007" href="$flash__driver_8c.html#a60239a397fffe5773a2777533bfcbca2" title="Sends Page Program Command." alt="" coords="489,169,589,195"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="625,171,590,177,589,171,624,166"/>
+<area shape="rect" id="Node000001" title="Sends Write Enable Command." alt="" coords="667,141,813,167"/>
+<area shape="rect" id="Node000002" href="$flash__driver_8c.html#ab2e0bef2e1c3f98c03a435938bd1f795" title="Sends Block Erase Command." alt="" coords="501,84,605,110"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="680,139,597,113,598,108,682,134"/>
+<area shape="rect" id="Node000007" href="$flash__driver_8c.html#a5231aa78550b4076f9fbf923f000fe6d" title="Sends Page Program Command." alt="" coords="487,169,619,195"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="652,170,620,175,619,170,651,165"/>
 <area shape="rect" id="Node000003" href="$flash__benchmark_8c.html#a9485023a9a54cf461dba878ce4d013fb" title="Benchmarks the erase/read/write operations on the flash memory module." alt="" coords="257,104,432,145"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="472,109,433,115,432,110,471,104"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="486,109,433,116,432,110,485,103"/>
 <area shape="rect" id="Node000005" href="$littlefs__driver_8c.html#ac92d3429222f40c34643f2969b93060a" title="LittleFS erase function." alt="" coords="261,5,429,31"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="504,78,438,45,406,34,408,29,440,40,506,73"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="513,79,438,45,404,34,406,29,440,40,516,74"/>
 <area shape="rect" id="Node000006" href="$flash__telecommand__defs_8c.html#abf1a62ec4474e4584deb50c95c7800c4" title="Telecommand: Erase a sector of flash memory." alt="" coords="262,55,428,80"/>
-<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="471,89,428,83,428,77,472,84"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="485,90,428,82,428,77,486,85"/>
 <area shape="rect" id="Node000004" href="$flash__telecommand__defs_8c.html#aeb4bfdf0b416966258a378a382f529ce" title="Telecommand: Benchmarks the erase/write/read operations on the flash memory module." alt="" coords="5,104,203,145"/>
 <area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="241,128,203,128,203,122,241,122"/>
-<area shape="poly" id="edge8_Node000007_Node000003" title=" " alt="" coords="478,167,416,148,417,143,479,162"/>
+<area shape="poly" id="edge8_Node000007_Node000003" title=" " alt="" coords="489,167,421,148,422,143,490,162"/>
 <area shape="rect" id="Node000008" href="$flash__testing__demos_8c.html#a195fe65949096932e071ddb8f4ff0dd6" title=" " alt="" coords="284,169,406,195"/>
-<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="473,185,407,185,407,180,473,180"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="472,185,407,185,407,180,472,180"/>
 <area shape="rect" id="Node000009" href="$littlefs__driver_8c.html#a6979423f6b81b4ac02cd878f0a93cc69" title="LittleFS write function." alt="" coords="264,219,426,244"/>
-<area shape="poly" id="edge9_Node000007_Node000009" title=" " alt="" coords="474,201,399,221,398,215,473,196"/>
+<area shape="poly" id="edge9_Node000007_Node000009" title=" " alt="" coords="482,202,403,221,402,215,480,197"/>
 <area shape="rect" id="Node000010" href="$flash__telecommand__defs_8c.html#ad09f175c2e7126e812bfaeebcd17c172" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="251,268,439,294"/>
-<area shape="poly" id="edge10_Node000007_Node000010" title=" " alt="" coords="515,207,481,234,440,259,413,270,411,265,438,254,478,230,511,203"/>
+<area shape="poly" id="edge10_Node000007_Node000010" title=" " alt="" coords="525,207,486,234,440,259,410,270,409,265,438,254,483,229,522,202"/>
 </map>

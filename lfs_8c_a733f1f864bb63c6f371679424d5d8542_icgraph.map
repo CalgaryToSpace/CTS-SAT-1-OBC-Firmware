@@ -1,7 +1,13 @@
 <map id="lfs_mkdir_" name="lfs_mkdir_">
-<area shape="rect" id="Node000001" title="Top level directory operations ///." alt="" coords="317,5,398,31"/>
-<area shape="rect" id="Node000002" href="$lfs_8c.html#ab0f9d4057fec1ab265411de6321a3ef6" title="Directory operations ///." alt="" coords="195,5,269,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="301,21,270,21,270,16,301,16"/>
-<area shape="rect" id="Node000003" href="$littlefs__helper_8c.html#acb198579963ac91d362c1daca0a07404" title="Creates directory." alt="" coords="5,5,147,31"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="179,21,147,21,147,16,179,16"/>
+<area shape="rect" id="Node000001" title="Top level directory operations ///." alt="" coords="791,38,872,64"/>
+<area shape="rect" id="Node000002" href="$lfs_8c.html#ab0f9d4057fec1ab265411de6321a3ef6" title="Directory operations ///." alt="" coords="668,38,743,64"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="775,54,743,54,743,48,775,48"/>
+<area shape="rect" id="Node000003" href="$littlefs__benchmark_8c.html#aad7b70d9138d629a5902f97637e9af52" title="Benchmarks the write/read operations on the LittleFS file system." alt="" coords="436,13,620,38"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="652,46,620,42,621,36,653,41"/>
+<area shape="rect" id="Node000006" href="$littlefs__helper_8c.html#acb198579963ac91d362c1daca0a07404" title="Creates directory." alt="" coords="458,62,599,88"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="654,61,600,68,599,63,653,55"/>
+<area shape="rect" id="Node000004" href="$littlefs__benchmark_8c.html#ae604e8b7da31b3a607f0c03f2fa44ecd" title="Benchmarks the write/read operations on the LittleFS file system for both cases: writing to a new fil..." alt="" coords="235,5,388,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="420,28,388,28,388,23,420,23"/>
+<area shape="rect" id="Node000005" href="$lfs__telecommand__defs_8c.html#a265fb9e9f253a1a4858e81f6ff6949c8" title="Telecommand: Benchmark LittleFS write and read operations." alt="" coords="5,5,187,46"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="219,28,187,28,187,23,219,23"/>
 </map>

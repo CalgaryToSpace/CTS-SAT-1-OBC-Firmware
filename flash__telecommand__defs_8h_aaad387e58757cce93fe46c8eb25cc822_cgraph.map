@@ -1,14 +1,23 @@
 <map id="TCMDEXEC_flash_read_hex" name="TCMDEXEC_flash_read_hex">
-<area shape="rect" id="Node000001" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="5,96,191,121"/>
-<area shape="rect" id="Node000002" href="$flash__driver_8c.html#aad6973bad0210b2dbe8d76adc6619757" title="Sends Page Program Command." alt="" coords="260,70,389,96"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="191,95,244,89,245,95,191,101"/>
-<area shape="rect" id="Node000005" href="$telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="239,120,410,145"/>
-<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="191,116,223,119,223,124,191,121"/>
-<area shape="rect" id="Node000003" href="$flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="460,5,609,46"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="374,67,444,48,445,53,375,72"/>
-<area shape="rect" id="Node000004" href="$flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="658,35,822,75"/>
-<area shape="poly" id="edge4_Node000002_Node000004" title=" " alt="" coords="389,76,643,59,643,64,389,81"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="610,34,643,39,642,44,609,39"/>
-<area shape="rect" id="Node000006" href="$telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="458,121,610,146"/>
-<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="411,130,442,130,442,136,411,136"/>
+<area shape="rect" id="Node000001" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="5,183,191,208"/>
+<area shape="rect" id="Node000002" href="$flash__driver_8c.html#a395c5684cb8c564403e3fa68dcae299d" title="Sends Page Read Command." alt="" coords="260,132,389,158"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="158,179,248,159,249,164,159,185"/>
+<area shape="rect" id="Node000008" href="$telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="239,207,410,232"/>
+<area shape="poly" id="edge11_Node000001_Node000008" title=" " alt="" coords="191,203,223,206,223,211,191,208"/>
+<area shape="rect" id="Node000003" href="$debug__uart_8c.html#ae1143c61f5fad27b50053b03673b9501" title=" " alt="" coords="458,107,648,132"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="389,135,442,129,443,134,390,140"/>
+<area shape="rect" id="Node000004" href="$debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="696,136,847,162"/>
+<area shape="poly" id="edge4_Node000002_Node000004" title=" " alt="" coords="389,143,681,145,681,151,389,148"/>
+<area shape="rect" id="Node000005" href="$flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="697,52,846,93"/>
+<area shape="poly" id="edge5_Node000002_Node000005" title=" " alt="" coords="352,129,401,109,457,92,515,81,574,75,682,69,682,75,574,80,516,87,459,97,402,114,354,134"/>
+<area shape="rect" id="Node000006" href="$flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="895,52,1058,93"/>
+<area shape="poly" id="edge7_Node000002_Node000006" title=" " alt="" coords="370,156,460,177,580,195,646,199,714,197,781,189,846,172,874,158,901,141,945,102,949,106,904,145,877,163,848,177,782,194,714,203,646,204,579,200,459,182,369,161"/>
+<area shape="rect" id="Node000007" href="$flash__driver_8c.html#ad86ddde592dfea7dd3c6129ca311923a" title="Read Status Register and store the values in given buffer." alt="" coords="458,5,648,31"/>
+<area shape="poly" id="edge8_Node000002_Node000007" title=" " alt="" coords="339,129,390,90,457,48,488,34,490,39,459,53,393,94,343,134"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="649,130,681,134,681,139,648,135"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="846,70,879,70,879,76,846,76"/>
+<area shape="poly" id="edge9_Node000007_Node000005" title=" " alt="" coords="608,29,682,48,681,53,607,34"/>
+<area shape="poly" id="edge10_Node000007_Node000006" title=" " alt="" coords="649,19,745,26,847,38,885,46,884,51,846,43,744,31,648,24"/>
+<area shape="rect" id="Node000009" href="$telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="477,259,629,284"/>
+<area shape="poly" id="edge12_Node000008_Node000009" title=" " alt="" coords="385,230,479,252,478,257,383,235"/>
 </map>

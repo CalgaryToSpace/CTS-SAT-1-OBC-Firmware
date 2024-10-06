@@ -89,7 +89,8 @@ $(function(){ initResizable(false); });
 <div id="doc-content">
 <div class="header">
   <div class="summary">
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">flash_telecommand_defs.c File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -172,6 +173,16 @@ Functions</h2></td></tr>
 <tr class="memitem:aeb4bfdf0b416966258a378a382f529ce" id="r_aeb4bfdf0b416966258a378a382f529ce"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeb4bfdf0b416966258a378a382f529ce">TCMDEXEC_flash_benchmark_erase_write_read</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
 <tr class="memdesc:aeb4bfdf0b416966258a378a382f529ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Telecommand: Benchmarks the erase/write/read operations on the flash memory module.  <br /></td></tr>
 <tr class="separator:aeb4bfdf0b416966258a378a382f529ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1f133dc22842f3fcdfeb446998d0dd6" id="r_ab1f133dc22842f3fcdfeb446998d0dd6"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab1f133dc22842f3fcdfeb446998d0dd6">TCMDEXEC_flash_reset</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
+<tr class="memdesc:ab1f133dc22842f3fcdfeb446998d0dd6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Telecommand: Reset the flash memory module.  <br /></td></tr>
+<tr class="separator:ab1f133dc22842f3fcdfeb446998d0dd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:ae3fb5e2dc93980e0ec243647c1761859" id="r_ae3fb5e2dc93980e0ec243647c1761859"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae3fb5e2dc93980e0ec243647c1761859">read_buf</a> [<a class="el" href="flash__driver_8h.html#ab00a8ad2233b3cce56302c33a8868c44">FLASH_MAX_BYTES_PER_PAGE</a>]</td></tr>
+<tr class="separator:ae3fb5e2dc93980e0ec243647c1761859"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac652c855a7a3b5da072aff1d855208bb" id="r_ac652c855a7a3b5da072aff1d855208bb"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac652c855a7a3b5da072aff1d855208bb">bytes_to_write</a> [<a class="el" href="flash__driver_8h.html#ab00a8ad2233b3cce56302c33a8868c44">FLASH_MAX_BYTES_PER_PAGE</a>]</td></tr>
+<tr class="separator:ac652c855a7a3b5da072aff1d855208bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="abe48337a0d7cf85f21941a23ad028493" name="abe48337a0d7cf85f21941a23ad028493"></a>
@@ -279,48 +290,60 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="flash__telecommand__defs_8c_aeb4bfdf0b416966258a378a382f529ce_cgraph.png" border="0" usemap="#aflash__telecommand__defs_8c_aeb4bfdf0b416966258a378a382f529ce_cgraph" alt=""/></div>
 <map name="aflash__telecommand__defs_8c_aeb4bfdf0b416966258a378a382f529ce_cgraph" id="aflash__telecommand__defs_8c_aeb4bfdf0b416966258a378a382f529ce_cgraph">
-<area shape="rect" title="Telecommand: Benchmarks the erase/write/read operations on the flash memory module." alt="" coords="5,303,203,344"/>
-<area shape="rect" href="flash__benchmark_8c.html#a9485023a9a54cf461dba878ce4d013fb" title="Benchmarks the erase/read/write operations on the flash memory module." alt="" coords="251,263,426,304"/>
-<area shape="poly" title=" " alt="" coords="203,304,235,298,236,304,204,309"/>
-<area shape="rect" href="telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="253,339,424,364"/>
-<area shape="poly" title=" " alt="" coords="204,333,237,337,237,342,203,338"/>
-<area shape="rect" href="flash__driver_8c.html#ae9ff2d16b7ab58000a6720b637366839" title="Sends Sector Erase Command." alt="" coords="498,309,602,335"/>
-<area shape="poly" title=" " alt="" coords="427,297,484,307,483,313,426,302"/>
-<area shape="rect" href="flash__driver_8c.html#aad6973bad0210b2dbe8d76adc6619757" title="Sends Page Program Command." alt="" coords="898,5,1028,31"/>
-<area shape="poly" title=" " alt="" coords="359,261,410,215,485,155,575,96,623,69,673,48,726,32,781,22,882,14,883,19,782,27,728,37,675,53,626,74,578,100,488,160,414,219,363,265"/>
-<area shape="rect" href="flash__driver_8c.html#a60239a397fffe5773a2777533bfcbca2" title="Sends Page Program Command." alt="" coords="500,260,600,286"/>
-<area shape="poly" title=" " alt="" coords="426,276,485,273,485,279,427,282"/>
-<area shape="rect" href="debug__uart_8c.html#ae1143c61f5fad27b50053b03673b9501" title=" " alt="" coords="868,461,1058,487"/>
-<area shape="poly" title=" " alt="" coords="604,330,628,344,639,357,646,370,652,395,658,419,665,430,676,440,717,462,761,475,807,482,852,483,852,488,807,487,760,480,715,467,673,444,660,433,653,421,647,396,641,371,635,360,625,348,601,335"/>
-<area shape="rect" href="debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="1106,436,1256,462"/>
-<area shape="poly" title=" " alt="" coords="604,329,628,344,642,363,649,382,651,421,653,456,661,473,676,488,703,506,732,519,794,535,859,539,925,533,988,519,1047,502,1139,466,1141,471,1049,507,990,525,926,538,859,544,793,540,730,524,701,510,673,492,657,476,648,458,646,421,644,383,638,366,625,348,601,334"/>
-<area shape="rect" href="flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="1106,147,1256,188"/>
-<area shape="poly" title=" " alt="" coords="602,307,625,296,639,285,648,274,658,263,673,252,725,226,779,206,835,191,892,179,999,166,1091,162,1091,168,1000,171,892,184,836,196,781,211,727,231,676,256,662,267,652,278,643,289,628,300,604,311"/>
-<area shape="rect" href="flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="1304,176,1468,217"/>
-<area shape="poly" title=" " alt="" coords="604,329,628,344,646,371,653,397,653,424,649,450,647,476,648,500,656,523,676,544,724,575,768,592,810,598,853,594,945,571,998,556,1058,544,1118,534,1165,525,1208,508,1255,472,1280,445,1302,415,1337,349,1360,285,1375,232,1380,233,1366,287,1341,351,1306,418,1284,449,1258,476,1211,512,1167,530,1119,540,1058,549,999,562,947,576,854,599,810,603,767,597,721,580,673,548,652,525,643,501,641,476,644,450,647,424,647,398,641,373,624,348,601,333"/>
-<area shape="rect" href="flash__driver_8c.html#ad86ddde592dfea7dd3c6129ca311923a" title="Read Status Register and store the values in given buffer." alt="" coords="868,208,1058,234"/>
-<area shape="poly" title=" " alt="" coords="602,307,892,235,893,240,603,312"/>
-<area shape="rect" href="flash__driver_8c.html#aedefd1fa550b34fc7c57465aa5c5874b" title="Sends Write Enable Command." alt="" coords="674,309,820,335"/>
-<area shape="poly" title=" " alt="" coords="603,320,659,320,659,325,603,325"/>
-<area shape="poly" title=" " alt="" coords="1058,460,1090,457,1091,462,1058,466"/>
-<area shape="poly" title=" " alt="" coords="1256,176,1289,180,1289,186,1256,181"/>
-<area shape="poly" title=" " alt="" coords="1018,205,1091,187,1092,192,1019,210"/>
-<area shape="poly" title=" " alt="" coords="1058,213,1288,200,1289,205,1059,218"/>
-<area shape="poly" title=" " alt="" coords="769,333,932,450,929,454,766,338"/>
-<area shape="poly" title=" " alt="" coords="805,333,922,363,1059,402,1132,428,1131,433,1057,407,921,368,803,338"/>
-<area shape="poly" title=" " alt="" coords="819,309,933,285,996,266,1057,244,1101,221,1140,195,1143,199,1103,225,1059,249,998,272,934,290,821,314"/>
-<area shape="poly" title=" " alt="" coords="820,320,933,316,995,310,1057,301,1129,284,1199,264,1319,221,1321,226,1201,269,1130,290,1059,306,996,316,933,321,820,326"/>
-<area shape="poly" title=" " alt="" coords="781,306,818,288,842,269,866,251,897,237,899,242,869,255,845,273,821,292,784,311"/>
-<area shape="poly" title=" " alt="" coords="985,29,1139,136,1136,140,982,34"/>
-<area shape="poly" title=" " alt="" coords="1028,10,1080,9,1139,13,1200,26,1258,48,1293,72,1323,101,1368,162,1364,165,1319,105,1289,76,1255,53,1198,31,1138,19,1079,14,1028,15"/>
-<area shape="poly" title=" " alt="" coords="602,280,628,295,646,319,653,344,659,367,676,389,710,408,761,426,878,455,876,460,759,431,708,413,673,394,654,370,648,345,641,321,625,299,599,285"/>
-<area shape="poly" title=" " alt="" coords="602,282,628,295,643,308,652,321,661,333,676,345,725,371,767,384,868,402,984,423,1091,437,1090,442,983,428,867,407,766,389,723,376,673,350,657,337,648,324,639,311,625,299,600,287"/>
-<area shape="poly" title=" " alt="" coords="557,258,575,233,601,202,634,172,673,149,727,131,782,121,839,115,895,115,1002,124,1092,141,1091,146,1001,130,895,120,839,121,783,126,728,137,675,154,637,176,605,206,579,236,562,261"/>
-<area shape="poly" title=" " alt="" coords="559,258,619,176,651,136,673,115,754,78,827,57,894,48,959,51,1025,63,1094,82,1257,133,1299,148,1337,167,1335,171,1296,153,1255,138,1092,87,1023,68,958,56,894,54,828,62,756,83,676,119,655,139,623,180,563,261"/>
-<area shape="poly" title=" " alt="" coords="600,262,674,250,852,229,853,234,675,255,601,267"/>
-<area shape="poly" title=" " alt="" coords="602,283,679,302,678,308,600,288"/>
-<area shape="rect" href="telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="474,359,626,384"/>
-<area shape="poly" title=" " alt="" coords="424,357,458,360,458,365,424,362"/>
+<area shape="rect" title="Telecommand: Benchmarks the erase/write/read operations on the flash memory module." alt="" coords="5,354,203,394"/>
+<area shape="rect" href="flash__benchmark_8c.html#a9485023a9a54cf461dba878ce4d013fb" title="Benchmarks the erase/read/write operations on the flash memory module." alt="" coords="251,314,426,354"/>
+<area shape="poly" title=" " alt="" coords="203,355,235,349,236,354,204,360"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="253,389,424,415"/>
+<area shape="poly" title=" " alt="" coords="204,383,237,387,237,393,203,389"/>
+<area shape="rect" href="flash__driver_8c.html#ab2e0bef2e1c3f98c03a435938bd1f795" title="Sends Block Erase Command." alt="" coords="498,285,602,311"/>
+<area shape="poly" title=" " alt="" coords="426,316,483,307,484,312,427,322"/>
+<area shape="rect" href="flash__driver_8c.html#a395c5684cb8c564403e3fa68dcae299d" title="Sends Page Read Command." alt="" coords="703,108,832,134"/>
+<area shape="poly" title=" " alt="" coords="380,311,725,138,727,143,383,316"/>
+<area shape="rect" href="flash__driver_8c.html#a5231aa78550b4076f9fbf923f000fe6d" title="Sends Page Program Command." alt="" coords="484,361,616,387"/>
+<area shape="poly" title=" " alt="" coords="427,348,469,356,468,361,426,353"/>
+<area shape="rect" href="debug__uart_8c.html#ae1143c61f5fad27b50053b03673b9501" title=" " alt="" coords="909,209,1099,235"/>
+<area shape="poly" title=" " alt="" coords="561,283,607,240,638,218,673,201,708,191,744,186,816,184,884,191,942,203,941,208,883,197,816,190,744,191,709,197,675,206,641,222,610,244,565,287"/>
+<area shape="rect" href="debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="1147,209,1297,235"/>
+<area shape="poly" title=" " alt="" coords="552,284,564,244,588,191,623,136,646,112,673,93,732,64,785,47,835,40,883,42,932,51,983,68,1100,116,1131,132,1159,153,1202,195,1198,199,1155,157,1128,137,1098,120,981,73,931,57,883,47,835,45,786,52,734,69,676,98,650,116,627,139,592,193,569,246,557,286"/>
+<area shape="rect" href="flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="1148,484,1297,525"/>
+<area shape="poly" title=" " alt="" coords="573,309,738,412,835,466,877,486,909,498,966,509,1024,514,1132,513,1132,518,1024,520,965,515,908,503,875,491,833,471,735,417,570,314"/>
+<area shape="rect" href="flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="1345,434,1509,474"/>
+<area shape="poly" title=" " alt="" coords="551,284,560,237,581,170,597,135,617,102,642,72,673,48,730,19,782,5,831,4,878,13,978,46,1035,65,1100,82,1158,90,1207,94,1251,106,1274,119,1299,139,1328,170,1353,205,1373,243,1390,282,1412,358,1424,418,1419,419,1407,359,1385,284,1368,246,1348,208,1324,173,1296,143,1271,124,1249,111,1206,100,1158,96,1098,87,1033,70,976,51,877,18,830,9,783,10,732,24,676,52,646,76,622,105,602,138,586,172,565,238,556,285"/>
+<area shape="rect" href="flash__driver_8c.html#ad86ddde592dfea7dd3c6129ca311923a" title="Read Status Register and store the values in given buffer." alt="" coords="909,311,1099,336"/>
+<area shape="poly" title=" " alt="" coords="602,293,721,290,861,295,926,304,925,310,860,301,721,295,603,298"/>
+<area shape="rect" href="flash__driver_8c.html#ac8eda1346ed63993ba67af316b2d1139" title="Unblocks all blocked blocks of memory on the NAND flash memory module." alt="" coords="674,564,861,590"/>
+<area shape="poly" title=" " alt="" coords="583,309,607,325,628,347,643,375,650,401,650,449,649,473,651,496,659,519,676,543,690,554,686,558,672,547,655,521,646,497,643,473,644,449,644,401,638,376,624,350,604,329,580,314"/>
+<area shape="rect" href="flash__driver_8c.html#aedefd1fa550b34fc7c57465aa5c5874b" title="Sends Write Enable Command." alt="" coords="695,311,840,336"/>
+<area shape="poly" title=" " alt="" coords="603,301,680,310,679,316,603,307"/>
+<area shape="poly" title=" " alt="" coords="1099,219,1131,219,1131,225,1099,225"/>
+<area shape="poly" title=" " alt="" coords="1296,484,1330,475,1331,481,1298,489"/>
+<area shape="poly" title=" " alt="" coords="1023,335,1186,472,1183,476,1019,339"/>
+<area shape="poly" title=" " alt="" coords="1059,334,1169,364,1298,404,1360,425,1358,430,1297,409,1168,370,1057,339"/>
+<area shape="poly" title=" " alt="" coords="861,571,975,561,1098,542,1151,528,1152,533,1100,547,976,566,861,576"/>
+<area shape="poly" title=" " alt="" coords="785,588,837,628,872,648,909,663,961,675,1003,677,1099,663,1157,654,1203,644,1245,627,1296,597,1328,572,1357,543,1402,486,1406,489,1361,546,1331,576,1299,602,1248,632,1204,649,1158,659,1099,669,1003,683,961,681,908,669,870,653,834,633,782,592"/>
+<area shape="rect" href="flash__driver_8c.html#a58201d7c60a31f131bbfb21bde40a388" title="Read Block Lock Register and store the values in given buffer." alt="" coords="921,614,1087,654"/>
+<area shape="poly" title=" " alt="" coords="824,588,906,608,905,613,823,593"/>
+<area shape="poly" title=" " alt="" coords="1061,611,1098,593,1143,563,1184,533,1187,537,1147,568,1100,598,1063,616"/>
+<area shape="poly" title=" " alt="" coords="1085,611,1187,578,1296,534,1342,509,1384,481,1387,486,1345,513,1298,539,1189,583,1086,616"/>
+<area shape="poly" title=" " alt="" coords="792,308,908,252,944,238,946,243,910,256,794,312"/>
+<area shape="poly" title=" " alt="" coords="828,307,1146,236,1147,241,829,313"/>
+<area shape="poly" title=" " alt="" coords="782,335,833,387,870,417,910,441,965,463,1023,479,1133,497,1132,502,1022,484,963,468,907,446,867,421,830,391,778,339"/>
+<area shape="poly" title=" " alt="" coords="827,334,1148,403,1330,436,1329,441,1146,409,826,339"/>
+<area shape="poly" title=" " alt="" coords="840,321,893,321,893,326,840,326"/>
+<area shape="poly" title=" " alt="" coords="818,132,862,150,886,169,910,188,940,201,938,206,907,192,883,174,859,155,816,137"/>
+<area shape="poly" title=" " alt="" coords="833,116,958,123,1030,133,1100,150,1150,172,1192,198,1190,203,1148,177,1098,155,1029,138,957,128,832,122"/>
+<area shape="poly" title=" " alt="" coords="828,132,1100,194,1130,225,1154,259,1173,296,1189,335,1210,409,1220,468,1215,469,1204,410,1184,336,1168,298,1149,262,1126,228,1098,199,827,137"/>
+<area shape="poly" title=" " alt="" coords="832,107,933,97,994,96,1058,100,1123,110,1187,128,1246,156,1299,195,1323,220,1345,248,1379,309,1404,369,1419,418,1414,419,1399,370,1374,312,1340,251,1319,223,1296,199,1244,161,1185,133,1122,115,1057,105,994,101,933,102,833,112"/>
+<area shape="poly" title=" " alt="" coords="785,132,910,245,975,298,972,303,907,249,781,136"/>
+<area shape="poly" title=" " alt="" coords="570,359,624,323,673,296,728,276,785,259,893,236,894,241,786,264,730,281,675,300,627,328,573,363"/>
+<area shape="poly" title=" " alt="" coords="617,384,715,396,838,400,904,396,971,387,1036,371,1098,346,1131,326,1159,299,1202,246,1206,250,1163,303,1134,330,1100,351,1038,376,972,392,905,402,838,406,714,402,616,389"/>
+<area shape="poly" title=" " alt="" coords="614,385,628,396,646,423,654,449,655,475,652,501,650,526,651,551,659,576,676,600,703,624,729,640,754,650,780,655,838,658,909,663,1007,682,1049,681,1098,664,1134,639,1164,606,1187,570,1204,538,1209,540,1192,573,1168,609,1137,643,1100,668,1050,686,1007,687,908,669,837,664,779,660,752,655,726,645,700,629,672,604,654,578,646,552,645,526,647,500,650,475,649,450,641,425,624,400,611,390"/>
+<area shape="poly" title=" " alt="" coords="615,385,628,396,650,432,658,467,656,502,650,536,644,570,643,603,652,635,676,665,704,686,729,698,755,702,781,701,838,693,872,689,909,689,1022,701,1114,714,1156,714,1199,706,1245,690,1296,661,1318,644,1338,624,1371,577,1396,530,1412,488,1417,490,1401,532,1376,580,1342,627,1322,648,1299,666,1247,695,1201,712,1157,719,1113,719,1022,707,909,694,872,694,839,698,781,707,754,708,728,703,701,691,672,669,648,637,638,604,638,570,644,536,651,501,652,467,645,433,624,400,612,390"/>
+<area shape="poly" title=" " alt="" coords="617,368,731,360,860,346,920,337,920,342,861,351,731,365,617,373"/>
+<area shape="poly" title=" " alt="" coords="613,385,628,396,643,415,650,434,653,471,656,507,663,525,676,543,691,554,688,559,672,547,658,528,651,509,648,471,645,435,638,418,624,400,610,390"/>
+<area shape="poly" title=" " alt="" coords="608,358,694,338,695,343,609,363"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="474,411,626,436"/>
+<area shape="poly" title=" " alt="" coords="424,408,459,411,458,417,424,413"/>
 </map>
 </div>
 
@@ -371,7 +394,7 @@ Here is the call graph for this function:</div>
 <area shape="rect" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="5,9,167,50"/>
 <area shape="rect" href="flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="646,5,810,46"/>
 <area shape="poly" title=" " alt="" coords="167,24,363,20,598,19,631,20,631,25,598,24,363,25,167,30"/>
-<area shape="rect" href="flash__driver_8c.html#a6bc165243d2ad49f688a477a644f4186" title=" " alt="" coords="215,70,360,96"/>
+<area shape="rect" href="flash__driver_8c.html#a6bc165243d2ad49f688a477a644f4186" title="Checks if the FLASH chip is reachable by checking it&#39;s ID." alt="" coords="215,70,360,96"/>
 <area shape="poly" title=" " alt="" coords="166,48,222,63,221,68,165,53"/>
 <area shape="poly" title=" " alt="" coords="331,67,408,48,523,34,631,26,631,31,524,39,408,54,332,72"/>
 <area shape="rect" href="debug__uart_8c.html#ae1143c61f5fad27b50053b03673b9501" title=" " alt="" coords="408,128,598,153"/>
@@ -433,34 +456,42 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="flash__telecommand__defs_8c_abf1a62ec4474e4584deb50c95c7800c4_cgraph.png" border="0" usemap="#aflash__telecommand__defs_8c_abf1a62ec4474e4584deb50c95c7800c4_cgraph" alt=""/></div>
 <map name="aflash__telecommand__defs_8c_abf1a62ec4474e4584deb50c95c7800c4_cgraph" id="aflash__telecommand__defs_8c_abf1a62ec4474e4584deb50c95c7800c4_cgraph">
-<area shape="rect" title="Telecommand: Erase a sector of flash memory." alt="" coords="5,257,171,283"/>
-<area shape="rect" href="flash__driver_8c.html#ae9ff2d16b7ab58000a6720b637366839" title="Sends Sector Erase Command." alt="" coords="252,156,356,181"/>
-<area shape="poly" title=" " alt="" coords="117,254,260,186,263,191,119,259"/>
-<area shape="rect" href="telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="219,281,390,307"/>
-<area shape="poly" title=" " alt="" coords="172,276,203,280,203,285,171,282"/>
-<area shape="rect" href="debug__uart_8c.html#ae1143c61f5fad27b50053b03673b9501" title=" " alt="" coords="638,54,829,80"/>
-<area shape="poly" title=" " alt="" coords="356,154,660,81,661,87,358,159"/>
-<area shape="rect" href="debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="877,54,1027,80"/>
-<area shape="poly" title=" " alt="" coords="327,153,377,126,437,98,542,59,629,37,717,31,829,39,883,48,882,53,828,44,717,37,629,43,544,64,439,103,379,130,330,157"/>
-<area shape="rect" href="flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="877,215,1026,255"/>
-<area shape="poly" title=" " alt="" coords="358,176,438,191,538,207,639,218,862,230,861,236,638,223,538,212,438,196,357,182"/>
-<area shape="rect" href="flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="1075,187,1238,227"/>
-<area shape="poly" title=" " alt="" coords="315,153,364,104,399,77,437,54,492,30,540,15,585,6,627,3,716,8,829,16,886,16,932,13,976,18,1028,39,1066,67,1098,102,1123,139,1142,171,1137,174,1118,142,1093,106,1062,71,1026,44,975,23,932,19,886,21,829,22,716,13,627,9,585,12,542,20,494,35,439,59,402,81,368,108,319,157"/>
-<area shape="rect" href="flash__driver_8c.html#ad86ddde592dfea7dd3c6129ca311923a" title="Read Status Register and store the values in given buffer." alt="" coords="638,308,829,333"/>
-<area shape="poly" title=" " alt="" coords="318,180,366,234,400,263,439,286,484,302,531,313,623,322,623,327,530,318,482,307,437,291,397,267,362,237,314,184"/>
-<area shape="rect" href="flash__driver_8c.html#aedefd1fa550b34fc7c57465aa5c5874b" title="Sends Write Enable Command." alt="" coords="442,156,587,181"/>
-<area shape="poly" title=" " alt="" coords="357,166,426,166,426,171,357,171"/>
-<area shape="poly" title=" " alt="" coords="829,64,861,64,861,70,829,70"/>
-<area shape="poly" title=" " alt="" coords="1026,222,1059,218,1060,223,1027,228"/>
-<area shape="poly" title=" " alt="" coords="776,304,828,286,890,260,892,265,830,291,778,309"/>
-<area shape="poly" title=" " alt="" coords="829,307,925,290,1026,265,1103,232,1105,237,1028,270,926,295,830,312"/>
-<area shape="poly" title=" " alt="" coords="535,153,581,125,637,97,672,83,674,88,639,101,584,130,538,157"/>
-<area shape="poly" title=" " alt="" coords="573,152,877,81,879,87,574,158"/>
-<area shape="poly" title=" " alt="" coords="588,177,862,219,862,224,587,182"/>
-<area shape="poly" title=" " alt="" coords="587,170,829,184,1059,198,1059,204,829,190,587,175"/>
-<area shape="poly" title=" " alt="" coords="536,180,703,296,699,301,533,184"/>
-<area shape="rect" href="telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="438,358,590,384"/>
-<area shape="poly" title=" " alt="" coords="343,305,464,350,462,355,341,310"/>
+<area shape="rect" title="Telecommand: Erase a sector of flash memory." alt="" coords="5,387,171,413"/>
+<area shape="rect" href="flash__driver_8c.html#ab2e0bef2e1c3f98c03a435938bd1f795" title="Sends Block Erase Command." alt="" coords="252,254,356,280"/>
+<area shape="poly" title=" " alt="" coords="109,385,268,286,271,290,112,389"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="219,411,390,437"/>
+<area shape="poly" title=" " alt="" coords="172,407,203,410,203,416,171,412"/>
+<area shape="rect" href="debug__uart_8c.html#ae1143c61f5fad27b50053b03673b9501" title=" " alt="" coords="672,26,863,52"/>
+<area shape="poly" title=" " alt="" coords="318,252,369,209,437,163,500,132,552,112,671,72,716,55,718,60,673,77,553,117,502,136,439,168,372,214,322,256"/>
+<area shape="rect" href="debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="911,26,1061,52"/>
+<area shape="poly" title=" " alt="" coords="311,252,359,185,395,145,436,109,496,68,547,43,601,26,672,11,736,4,801,4,862,11,916,20,915,25,862,16,801,10,736,9,673,16,603,31,549,48,499,73,440,113,399,149,363,189,316,255"/>
+<area shape="rect" href="flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="911,296,1060,337"/>
+<area shape="poly" title=" " alt="" coords="357,268,896,307,895,312,356,273"/>
+<area shape="rect" href="flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="1109,336,1272,377"/>
+<area shape="poly" title=" " alt="" coords="317,278,365,336,400,368,439,395,500,423,551,435,673,446,783,459,869,467,911,466,955,461,1003,451,1060,435,1109,412,1152,384,1155,388,1112,417,1062,440,1005,456,955,467,911,472,869,472,782,464,672,451,550,440,498,428,437,400,396,372,361,339,313,282"/>
+<area shape="rect" href="flash__driver_8c.html#ad86ddde592dfea7dd3c6129ca311923a" title="Read Status Register and store the values in given buffer." alt="" coords="672,229,863,254"/>
+<area shape="poly" title=" " alt="" coords="357,261,657,245,657,250,357,267"/>
+<area shape="rect" href="flash__driver_8c.html#ac8eda1346ed63993ba67af316b2d1139" title="Unblocks all blocked blocks of memory on the NAND flash memory module." alt="" coords="438,359,624,385"/>
+<area shape="poly" title=" " alt="" coords="335,278,489,350,487,355,333,283"/>
+<area shape="rect" href="flash__driver_8c.html#aedefd1fa550b34fc7c57465aa5c5874b" title="Sends Write Enable Command." alt="" coords="458,178,604,204"/>
+<area shape="poly" title=" " alt="" coords="344,251,475,207,477,212,346,256"/>
+<area shape="poly" title=" " alt="" coords="863,36,895,36,895,42,863,42"/>
+<area shape="poly" title=" " alt="" coords="1061,328,1094,335,1093,340,1060,333"/>
+<area shape="poly" title=" " alt="" coords="809,253,864,271,912,288,910,293,862,276,808,258"/>
+<area shape="poly" title=" " alt="" coords="863,244,960,257,1012,267,1062,282,1108,302,1148,325,1146,330,1105,306,1060,287,1011,272,959,262,863,249"/>
+<area shape="poly" title=" " alt="" coords="624,358,895,325,896,330,625,364"/>
+<area shape="poly" title=" " alt="" coords="557,383,609,409,673,430,733,438,795,440,857,437,918,429,1029,406,1119,379,1120,384,1030,411,918,434,857,442,795,445,733,443,672,435,607,414,555,388"/>
+<area shape="rect" href="flash__driver_8c.html#a58201d7c60a31f131bbfb21bde40a388" title="Read Block Lock Register and store the values in given buffer." alt="" coords="684,380,851,421"/>
+<area shape="poly" title=" " alt="" coords="625,381,669,386,669,391,625,386"/>
+<area shape="poly" title=" " alt="" coords="822,377,916,340,918,345,824,382"/>
+<area shape="poly" title=" " alt="" coords="851,389,1093,364,1094,369,851,394"/>
+<area shape="poly" title=" " alt="" coords="545,176,615,114,671,69,700,55,702,60,674,73,619,118,549,180"/>
+<area shape="poly" title=" " alt="" coords="554,175,607,148,671,119,792,81,903,53,904,58,793,86,673,124,609,152,557,180"/>
+<area shape="poly" title=" " alt="" coords="604,182,662,180,728,184,797,194,864,214,891,228,917,245,958,283,955,287,913,249,888,232,862,219,796,199,727,189,662,186,604,187"/>
+<area shape="poly" title=" " alt="" coords="604,183,672,179,786,175,875,179,918,186,961,199,1009,219,1062,247,1116,284,1160,323,1157,327,1113,288,1060,252,1006,224,960,204,916,191,875,184,785,180,672,184,604,188"/>
+<area shape="poly" title=" " alt="" coords="595,202,690,222,689,228,594,207"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="455,546,607,572"/>
+<area shape="poly" title=" " alt="" coords="321,436,371,479,439,525,469,538,467,543,437,529,368,483,318,440"/>
 </map>
 </div>
 
@@ -513,18 +544,89 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="flash__telecommand__defs_8c_aaad387e58757cce93fe46c8eb25cc822_cgraph.png" border="0" usemap="#aflash__telecommand__defs_8c_aaad387e58757cce93fe46c8eb25cc822_cgraph" alt=""/></div>
 <map name="aflash__telecommand__defs_8c_aaad387e58757cce93fe46c8eb25cc822_cgraph" id="aflash__telecommand__defs_8c_aaad387e58757cce93fe46c8eb25cc822_cgraph">
-<area shape="rect" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="5,96,191,121"/>
-<area shape="rect" href="flash__driver_8c.html#aad6973bad0210b2dbe8d76adc6619757" title="Sends Page Program Command." alt="" coords="260,70,389,96"/>
-<area shape="poly" title=" " alt="" coords="191,95,244,89,245,95,191,101"/>
-<area shape="rect" href="telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="239,120,410,145"/>
-<area shape="poly" title=" " alt="" coords="191,116,223,119,223,124,191,121"/>
-<area shape="rect" href="flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="460,5,609,46"/>
-<area shape="poly" title=" " alt="" coords="374,67,444,48,445,53,375,72"/>
-<area shape="rect" href="flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="658,35,822,75"/>
-<area shape="poly" title=" " alt="" coords="389,76,643,59,643,64,389,81"/>
-<area shape="poly" title=" " alt="" coords="610,34,643,39,642,44,609,39"/>
-<area shape="rect" href="telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="458,121,610,146"/>
-<area shape="poly" title=" " alt="" coords="411,130,442,130,442,136,411,136"/>
+<area shape="rect" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="5,183,191,208"/>
+<area shape="rect" href="flash__driver_8c.html#a395c5684cb8c564403e3fa68dcae299d" title="Sends Page Read Command." alt="" coords="260,132,389,158"/>
+<area shape="poly" title=" " alt="" coords="158,179,248,159,249,164,159,185"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="239,207,410,232"/>
+<area shape="poly" title=" " alt="" coords="191,203,223,206,223,211,191,208"/>
+<area shape="rect" href="debug__uart_8c.html#ae1143c61f5fad27b50053b03673b9501" title=" " alt="" coords="458,107,648,132"/>
+<area shape="poly" title=" " alt="" coords="389,135,442,129,443,134,390,140"/>
+<area shape="rect" href="debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="696,136,847,162"/>
+<area shape="poly" title=" " alt="" coords="389,143,681,145,681,151,389,148"/>
+<area shape="rect" href="flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="697,52,846,93"/>
+<area shape="poly" title=" " alt="" coords="352,129,401,109,457,92,515,81,574,75,682,69,682,75,574,80,516,87,459,97,402,114,354,134"/>
+<area shape="rect" href="flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="895,52,1058,93"/>
+<area shape="poly" title=" " alt="" coords="370,156,460,177,580,195,646,199,714,197,781,189,846,172,874,158,901,141,945,102,949,106,904,145,877,163,848,177,782,194,714,203,646,204,579,200,459,182,369,161"/>
+<area shape="rect" href="flash__driver_8c.html#ad86ddde592dfea7dd3c6129ca311923a" title="Read Status Register and store the values in given buffer." alt="" coords="458,5,648,31"/>
+<area shape="poly" title=" " alt="" coords="339,129,390,90,457,48,488,34,490,39,459,53,393,94,343,134"/>
+<area shape="poly" title=" " alt="" coords="649,130,681,134,681,139,648,135"/>
+<area shape="poly" title=" " alt="" coords="846,70,879,70,879,76,846,76"/>
+<area shape="poly" title=" " alt="" coords="608,29,682,48,681,53,607,34"/>
+<area shape="poly" title=" " alt="" coords="649,19,745,26,847,38,885,46,884,51,846,43,744,31,648,24"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="477,259,629,284"/>
+<area shape="poly" title=" " alt="" coords="385,230,479,252,478,257,383,235"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="ab1f133dc22842f3fcdfeb446998d0dd6" name="ab1f133dc22842f3fcdfeb446998d0dd6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1f133dc22842f3fcdfeb446998d0dd6">&#9670;&#160;</a></span>TCMDEXEC_flash_reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t TCMDEXEC_flash_reset </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>args_str</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a></td>          <td class="paramname"><span class="paramname"><em>tcmd_channel</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>response_output_buf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>response_output_buf_len</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Telecommand: Reset the flash memory module. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args_str</td><td><ul>
+<li>Arg 0: Chip Number (CS number) as uint </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, &gt;0 on error </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="flash__telecommand__defs_8c_ab1f133dc22842f3fcdfeb446998d0dd6_cgraph.png" border="0" usemap="#aflash__telecommand__defs_8c_ab1f133dc22842f3fcdfeb446998d0dd6_cgraph" alt=""/></div>
+<map name="aflash__telecommand__defs_8c_ab1f133dc22842f3fcdfeb446998d0dd6_cgraph" id="aflash__telecommand__defs_8c_ab1f133dc22842f3fcdfeb446998d0dd6_cgraph">
+<area shape="rect" title="Telecommand: Reset the flash memory module." alt="" coords="5,96,168,121"/>
+<area shape="rect" href="flash__driver_8c.html#a36fd271549f3c71b6ae2049094ada075" title="Resets the NAND flash memory module." alt="" coords="251,70,352,96"/>
+<area shape="poly" title=" " alt="" coords="168,96,235,88,236,93,168,101"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="216,120,387,145"/>
+<area shape="poly" title=" " alt="" coords="168,115,200,118,200,124,168,120"/>
+<area shape="rect" href="flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="436,5,586,46"/>
+<area shape="poly" title=" " alt="" coords="351,67,421,48,422,53,352,72"/>
+<area shape="rect" href="flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="635,35,799,75"/>
+<area shape="poly" title=" " alt="" coords="352,77,619,59,620,64,353,82"/>
+<area shape="poly" title=" " alt="" coords="587,34,620,39,619,44,586,39"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="435,121,587,146"/>
+<area shape="poly" title=" " alt="" coords="388,130,419,130,419,136,388,136"/>
 </map>
 </div>
 
@@ -577,38 +679,75 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="flash__telecommand__defs_8c_ad09f175c2e7126e812bfaeebcd17c172_cgraph.png" border="0" usemap="#aflash__telecommand__defs_8c_ad09f175c2e7126e812bfaeebcd17c172_cgraph" alt=""/></div>
 <map name="aflash__telecommand__defs_8c_ad09f175c2e7126e812bfaeebcd17c172_cgraph" id="aflash__telecommand__defs_8c_ad09f175c2e7126e812bfaeebcd17c172_cgraph">
-<area shape="rect" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="5,230,194,255"/>
-<area shape="rect" href="flash__driver_8c.html#a60239a397fffe5773a2777533bfcbca2" title="Sends Page Program Command." alt="" coords="287,155,388,181"/>
-<area shape="poly" title=" " alt="" coords="142,227,279,183,280,189,144,232"/>
-<area shape="rect" href="telecommand__args__helpers_8c.html#a3f4c71ad48b16b79e4bb91ffb13111d7" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a hex string." alt="" coords="242,230,433,255"/>
-<area shape="poly" title=" " alt="" coords="194,240,226,240,226,245,194,245"/>
-<area shape="rect" href="telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="252,331,423,357"/>
-<area shape="poly" title=" " alt="" coords="133,254,292,322,290,327,131,259"/>
-<area shape="rect" href="debug__uart_8c.html#ae1143c61f5fad27b50053b03673b9501" title=" " alt="" coords="681,54,872,79"/>
-<area shape="poly" title=" " alt="" coords="387,154,702,81,703,86,388,159"/>
-<area shape="rect" href="debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="920,54,1070,79"/>
-<area shape="poly" title=" " alt="" coords="362,152,415,125,480,96,586,58,672,37,760,31,872,39,926,47,925,53,871,44,760,37,673,42,587,63,482,101,417,130,364,157"/>
-<area shape="rect" href="flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="920,214,1070,255"/>
-<area shape="poly" title=" " alt="" coords="388,175,481,191,581,206,682,217,905,230,904,235,681,223,581,211,481,196,388,180"/>
-<area shape="rect" href="flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="1118,186,1281,227"/>
-<area shape="poly" title=" " alt="" coords="349,153,402,103,439,75,480,52,535,30,584,15,628,6,671,3,760,7,872,16,929,16,975,13,1019,18,1071,39,1109,67,1141,102,1166,138,1185,171,1180,174,1161,141,1136,105,1105,71,1069,44,1018,23,975,18,929,21,872,21,759,13,671,9,629,12,585,20,537,35,482,57,442,80,406,107,353,157"/>
-<area shape="rect" href="flash__driver_8c.html#ad86ddde592dfea7dd3c6129ca311923a" title="Read Status Register and store the values in given buffer." alt="" coords="681,307,872,333"/>
-<area shape="poly" title=" " alt="" coords="375,179,405,194,435,215,450,235,458,254,466,271,482,286,526,306,573,318,620,325,666,327,666,332,620,330,572,324,524,311,480,290,462,274,453,256,446,238,431,219,403,199,373,184"/>
-<area shape="rect" href="flash__driver_8c.html#aedefd1fa550b34fc7c57465aa5c5874b" title="Sends Write Enable Command." alt="" coords="484,155,630,181"/>
-<area shape="poly" title=" " alt="" coords="388,165,469,165,469,171,388,171"/>
-<area shape="poly" title=" " alt="" coords="872,64,904,64,904,69,872,69"/>
-<area shape="poly" title=" " alt="" coords="1069,222,1102,217,1103,223,1070,227"/>
-<area shape="poly" title=" " alt="" coords="819,304,871,285,933,259,935,264,873,290,821,309"/>
-<area shape="poly" title=" " alt="" coords="872,306,968,290,1069,264,1146,232,1148,237,1071,269,969,295,873,312"/>
-<area shape="poly" title=" " alt="" coords="578,152,624,125,680,96,715,83,717,88,682,101,627,130,581,157"/>
-<area shape="poly" title=" " alt="" coords="616,152,920,81,922,86,617,157"/>
-<area shape="poly" title=" " alt="" coords="631,176,905,218,905,224,630,182"/>
-<area shape="poly" title=" " alt="" coords="630,170,872,184,1102,198,1102,203,872,189,630,175"/>
-<area shape="poly" title=" " alt="" coords="579,179,746,296,742,300,576,184"/>
-<area shape="rect" href="telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="481,358,633,383"/>
-<area shape="poly" title=" " alt="" coords="424,352,466,357,465,362,423,357"/>
+<area shape="rect" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="5,345,194,370"/>
+<area shape="rect" href="flash__driver_8c.html#a5231aa78550b4076f9fbf923f000fe6d" title="Sends Page Program Command." alt="" coords="271,254,404,280"/>
+<area shape="poly" title=" " alt="" coords="135,342,286,283,288,288,136,347"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#a3f4c71ad48b16b79e4bb91ffb13111d7" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a hex string." alt="" coords="242,345,433,370"/>
+<area shape="poly" title=" " alt="" coords="194,355,226,355,226,360,194,360"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="252,478,423,504"/>
+<area shape="poly" title=" " alt="" coords="126,369,301,468,298,473,123,373"/>
+<area shape="rect" href="debug__uart_8c.html#ae1143c61f5fad27b50053b03673b9501" title=" " alt="" coords="715,26,906,52"/>
+<area shape="poly" title=" " alt="" coords="353,252,407,210,480,163,543,132,595,113,714,72,759,55,761,60,716,77,597,118,545,137,482,168,410,214,356,256"/>
+<area shape="rect" href="debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="954,26,1104,52"/>
+<area shape="poly" title=" " alt="" coords="345,252,397,185,436,145,479,109,540,69,590,44,644,26,715,11,779,4,844,4,905,11,959,20,958,25,905,16,844,10,779,9,716,16,646,32,592,49,542,74,483,113,440,149,401,189,350,255"/>
+<area shape="rect" href="flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="954,296,1104,337"/>
+<area shape="poly" title=" " alt="" coords="404,269,939,307,938,313,404,274"/>
+<area shape="rect" href="flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="1152,336,1315,377"/>
+<area shape="poly" title=" " alt="" coords="364,278,399,301,435,330,449,349,458,366,466,381,483,395,541,426,592,438,716,446,826,459,912,467,954,466,998,461,1046,451,1103,435,1152,412,1195,384,1198,388,1155,417,1105,440,1048,456,998,467,954,472,912,472,825,464,715,451,592,443,540,431,479,400,462,384,453,368,445,352,431,334,396,305,361,283"/>
+<area shape="rect" href="flash__driver_8c.html#ad86ddde592dfea7dd3c6129ca311923a" title="Read Status Register and store the values in given buffer." alt="" coords="715,229,906,254"/>
+<area shape="poly" title=" " alt="" coords="404,261,700,245,700,250,404,266"/>
+<area shape="rect" href="flash__driver_8c.html#ac8eda1346ed63993ba67af316b2d1139" title="Unblocks all blocked blocks of memory on the NAND flash memory module." alt="" coords="481,359,667,385"/>
+<area shape="poly" title=" " alt="" coords="369,278,531,350,528,355,367,283"/>
+<area shape="rect" href="flash__driver_8c.html#aedefd1fa550b34fc7c57465aa5c5874b" title="Sends Write Enable Command." alt="" coords="502,178,647,204"/>
+<area shape="poly" title=" " alt="" coords="379,251,516,206,518,211,381,256"/>
+<area shape="poly" title=" " alt="" coords="906,36,938,36,938,42,906,42"/>
+<area shape="poly" title=" " alt="" coords="1104,328,1137,335,1136,340,1103,333"/>
+<area shape="poly" title=" " alt="" coords="852,253,907,271,955,288,953,293,905,276,851,258"/>
+<area shape="poly" title=" " alt="" coords="906,244,1003,257,1055,267,1105,282,1151,302,1191,325,1189,330,1148,306,1103,287,1054,272,1002,262,906,249"/>
+<area shape="poly" title=" " alt="" coords="667,358,938,325,939,330,668,364"/>
+<area shape="poly" title=" " alt="" coords="600,383,652,409,716,430,776,438,838,440,900,437,961,429,1072,406,1162,379,1163,384,1073,411,961,434,900,442,838,445,776,443,715,435,650,414,598,388"/>
+<area shape="rect" href="flash__driver_8c.html#a58201d7c60a31f131bbfb21bde40a388" title="Read Block Lock Register and store the values in given buffer." alt="" coords="727,380,894,421"/>
+<area shape="poly" title=" " alt="" coords="668,381,712,386,712,391,668,386"/>
+<area shape="poly" title=" " alt="" coords="865,377,959,340,961,345,867,382"/>
+<area shape="poly" title=" " alt="" coords="894,389,1136,364,1137,369,894,394"/>
+<area shape="poly" title=" " alt="" coords="588,176,658,114,714,69,743,55,745,60,717,73,662,118,592,180"/>
+<area shape="poly" title=" " alt="" coords="597,175,650,148,714,119,835,81,946,53,947,58,836,86,716,124,652,152,600,180"/>
+<area shape="poly" title=" " alt="" coords="647,182,705,180,771,184,840,194,907,214,934,228,960,245,1001,283,998,287,956,249,931,232,905,219,839,199,770,189,705,186,647,187"/>
+<area shape="poly" title=" " alt="" coords="647,183,715,179,829,175,918,179,961,186,1004,199,1052,219,1105,247,1159,284,1203,323,1200,327,1156,288,1103,252,1049,224,1003,204,959,191,918,184,828,180,715,184,647,188"/>
+<area shape="poly" title=" " alt="" coords="638,202,733,222,732,228,637,207"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="498,546,650,572"/>
+<area shape="poly" title=" " alt="" coords="386,502,513,539,511,544,384,507"/>
 </map>
 </div>
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="ac652c855a7a3b5da072aff1d855208bb" name="ac652c855a7a3b5da072aff1d855208bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac652c855a7a3b5da072aff1d855208bb">&#9670;&#160;</a></span>bytes_to_write</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t bytes_to_write[<a class="el" href="flash__driver_8h.html#ab00a8ad2233b3cce56302c33a8868c44">FLASH_MAX_BYTES_PER_PAGE</a>]</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae3fb5e2dc93980e0ec243647c1761859" name="ae3fb5e2dc93980e0ec243647c1761859"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3fb5e2dc93980e0ec243647c1761859">&#9670;&#160;</a></span>read_buf</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t read_buf[<a class="el" href="flash__driver_8h.html#ab00a8ad2233b3cce56302c33a8868c44">FLASH_MAX_BYTES_PER_PAGE</a>]</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>
