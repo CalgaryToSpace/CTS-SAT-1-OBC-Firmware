@@ -1,5 +1,3 @@
-
-
 /*-----------------------------INCLUDES-----------------------------*/
 #include <stdint.h>
 
@@ -39,7 +37,7 @@ struct lfs_config LFS_cfg = {
     // block device configuration
     .read_size = FLASH_CHIP_PAGE_SIZE_BYTES,
     .prog_size = FLASH_CHIP_PAGE_SIZE_BYTES,
-    .block_size = FLASH_CHIP_BLOCK_SIZE_BYTES, // FIXME: Clarify block Size 256KiB or 1KiB
+    .block_size = FLASH_CHIP_BLOCK_SIZE_BYTES,
     .block_count = (FLASH_CHIP_SIZE_BYTES / FLASH_CHIP_BLOCK_SIZE_BYTES),
     .block_cycles = 100, // TODO: ASK ABOUT THIS (HOW FREQUENT ARE WE USING THE MODULE),
     .cache_size = FLASH_CHIP_PAGE_SIZE_BYTES,
@@ -57,7 +55,6 @@ struct lfs_file_config LFS_file_cfg = {
 
 // -----------------------------LITTLEFS FUNCTIONS-----------------------------
 
-
 /**
  * @brief Formats Memory Module so it can successfully mount LittleFS
  * @param None
@@ -65,14 +62,14 @@ struct lfs_file_config LFS_file_cfg = {
  */
 int8_t LFS_format()
 {
-	int8_t result = lfs_format(&LFS_filesystem, &LFS_cfg);
-	if (result < 0)
+	int8_t format_result = lfs_format(&LFS_filesystem, &LFS_cfg);
+	if (format_result < 0)
 	{
-		DEBUG_uart_print_str("Error formatting!\n");
-		return result;
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error formatting FLASH memory!");
+		return format_result;
 	}
 	
-	DEBUG_uart_print_str("Formatting successful!\n");
+	LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "FLASH Memory formatting successful!");
 	return 0;
 }
 
@@ -83,8 +80,9 @@ int8_t LFS_format()
  */
 int8_t LFS_mount()
 {
-	if (LFS_is_lfs_mounted) {
-		DEBUG_uart_print_str("LittleFS already mounted!\n");
+	if (LFS_is_lfs_mounted) 
+    {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "LittleFS already mounted!");
 		return 1;
 	}
 
@@ -92,11 +90,11 @@ int8_t LFS_mount()
     int8_t mount_result = lfs_mount(&LFS_filesystem, &LFS_cfg);
     if (mount_result < 0)
     {
-        DEBUG_uart_print_str("Mounting unsuccessful\n");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error mounting LittleFS!");
         return mount_result;
     }
 
-    DEBUG_uart_print_str("Mounting successful\n");
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "LittleFS mounting successful!");
     LFS_is_lfs_mounted = 1;
     return 0;
 }
@@ -110,7 +108,7 @@ int8_t LFS_unmount()
 {
     if (!LFS_is_lfs_mounted)
     {
-        DEBUG_uart_print_str("LittleFS not mounted.\n");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "LittleFS not mounted!");
         return 1;
     }
 
@@ -118,11 +116,11 @@ int8_t LFS_unmount()
     const int8_t unmount_result = lfs_unmount(&LFS_filesystem);
     if (unmount_result < 0)
     {
-        DEBUG_uart_print_str("Error un-mounting.\n");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error un-mounting LittleFS!");
         return unmount_result;
     }
 
-    DEBUG_uart_print_str("Successfully un-mounted LittleFS.\n");
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "LittleFS un-mounting successful!");
     LFS_is_lfs_mounted = 0;
     return 0;
 }
@@ -136,7 +134,7 @@ int8_t LFS_list_directory(const char root_directory[])
 {
     if (!LFS_is_lfs_mounted)
     {
-        DEBUG_uart_print_str("LittleFS not mounted.\n");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "LittleFS not mounted!");
         return 1;
     }
 
@@ -144,22 +142,28 @@ int8_t LFS_list_directory(const char root_directory[])
     int8_t open_dir_result = lfs_dir_open(&LFS_filesystem, &dir, root_directory);
     if (open_dir_result < 0)
     {
-        DEBUG_uart_print_str("Error opening a directory.\n");
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening directory: %s", root_directory);
         return open_dir_result;
     }
 
-    // result is positive on success, 0 at the end of directory, or  negative on failure.
+    // result is positive on success, 0 at the end of directory, or negative on failure.
     int8_t read_dir_result = 1;
-    while (read_dir_result >= 0)
+    DEBUG_uart_print_str("Name \t bytes\n");
+    while (read_dir_result > 0)
     {
         struct lfs_info info;
         read_dir_result = lfs_dir_read(&LFS_filesystem, &dir, &info);
 
         DEBUG_uart_print_str(info.name);
-        DEBUG_uart_print_str(", ");
+        if (info.type == LFS_TYPE_REG)
+        {
+            DEBUG_uart_print_str("\t");
+            DEBUG_uart_print_uint32(info.size);
+            DEBUG_uart_print_str(" bytes");
+        }
+        DEBUG_uart_print_str("\n");
         // TODO: The info struct contains information about directory contents
     }
-    DEBUG_uart_print_str("\n");
 
     if (read_dir_result < 0)
     {
