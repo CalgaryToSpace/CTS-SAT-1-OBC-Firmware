@@ -14,7 +14,6 @@ static const uint8_t EPS_MAX_ACTIVE_CHANNEL_NUMBER = 16;
 #pragma pack(push, 1)
 
 typedef enum {
-    // TODO: add the 5V MPI channel
     EPS_CHANNEL_VBATT_STACK             = 0, // CH0
     EPS_CHANNEL_5V_STACK                = 1, // CH1
     EPS_CHANNEL_5V_CH2_UNUSED           = 2, // CH2
