@@ -79,21 +79,24 @@ uint8_t TCMDEXEC_mpi_send_command_hex(const char *args_str, TCMD_TelecommandChan
             break;
     }
 
-    // Send back complete response from the MPI               
-    snprintf(
-        &response_output_buf[strlen(response_output_buf)],
-        response_output_buf_len - strlen(response_output_buf) - 1,
-        "MPI telecommand response: "
-    );
-    for (size_t i = 0; i < MPI_rx_buffer_len; i++)
-    {
+    // Send back response from the MPI (if received)
+    if(MPI_rx_buffer_len > 0) {                    
         snprintf(
             &response_output_buf[strlen(response_output_buf)],
             response_output_buf_len - strlen(response_output_buf) - 1,
-            "%02X ", MPI_rx_buffer[i]
+            "MPI telecommand response: "
         );
+        for (size_t i = 0; i < MPI_rx_buffer_len; i++)
+        {
+            snprintf(
+                &response_output_buf[strlen(response_output_buf)],
+                response_output_buf_len - strlen(response_output_buf) - 1,
+                "%02X ", MPI_rx_buffer[i]
+            );
+        }
     }
 
+    // Return response code from the MPI
     return cmd_response;
 }
 
