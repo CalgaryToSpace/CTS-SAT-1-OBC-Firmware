@@ -43,5 +43,6 @@ uint8_t ADCS_Pack_to_Raw_GPS_Time_Struct(uint8_t* data_received, ADCS_raw_gps_ti
 uint8_t ADCS_Pack_to_Raw_GPS_Struct(ADCS_gps_axis_enum_t axis, uint8_t *data_received, ADCS_raw_gps_struct_t *result);
 uint8_t ADCS_Pack_to_Measurements_Struct(uint8_t* telemetry_data, ADCS_measurements_struct_t *measurements);
 uint8_t ADCS_Pack_to_ACP_Execution_State_Struct(uint8_t* data_received, ADCS_acp_execution_state_struct_t* output_struct);
+uint8_t ADCS_pack_to_current_state_1_struct(uint8_t* data_received, ADCS_current_state_1_struct_t* output_struct);
 
 #endif /* INC_ADCS_STRUCT_PACKERS_H_ */

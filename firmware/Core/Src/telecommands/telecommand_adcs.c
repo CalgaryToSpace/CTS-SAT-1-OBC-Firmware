@@ -1693,3 +1693,30 @@ uint8_t TCMDEXEC_adcs_acp_execution_state(const char *args_str, TCMD_Telecommand
 
     return status;
 }
+
+/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_get_current_state_1(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                   char *response_output_buf, uint16_t response_output_buf_len) {
+    ADCS_current_state_1_struct_t packed_struct;
+    uint8_t status = ADCS_get_current_state_1(&packed_struct); 
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_current_state_1_struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
+    return status;
+}
