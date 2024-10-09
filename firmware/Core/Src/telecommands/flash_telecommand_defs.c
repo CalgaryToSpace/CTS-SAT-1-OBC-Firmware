@@ -348,6 +348,10 @@ uint8_t TCMDEXEC_flash_reset(const char *args_str, TCMD_TelecommandChannel_enum_
     return 0;
 }
 
+/// @brief Telecommand: Read and print Status Register value as hex from the flash memory module.
+/// @param args_str
+/// - Arg 0: Chip Number (CS number) as uint
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_flash_read_status_register(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     uint64_t chip_num_u64;
