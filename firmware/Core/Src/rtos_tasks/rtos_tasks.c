@@ -10,6 +10,7 @@
 #include "transforms/arrays.h"
 #include "stm32/stm32_reboot_reason.h"
 #include "log/log.h"
+#include "config/configuration.h"
 #include "eps_drivers/eps_commands.h"
 
 #include "cmsis_os.h"
@@ -219,4 +220,44 @@ void TASK_service_eps_watchdog(void *argument) {
 		
 		osDelay(sleep_duration_ms);
 	}
+}
+
+void TASK_monitor_freertos_highstack_watermarks(void *argument) {
+	TASK_HELP_start_of_task();
+
+	while (1) {
+
+		for(uint32_t x = 0; x < task_handles_array_size; x++){
+
+			if(task_handles_array[x].task_handle != NULL)
+			{
+				// Dereferencing the task_handle pointer
+				osThreadId_t dereferenced_task_handle = *(task_handles_array[x].task_handle);
+
+				// Determine the threshold of the task
+				uint32_t task_threshold_bytes = (task_handles_array[x].task_attribute->stack_size * CONFIG_highstack_watermark_percentage_threshold) / 100;
+
+				// Get the highstack watermark
+				uint32_t task_highstack_watermark_bytes = uxTaskGetStackHighWaterMark(dereferenced_task_handle) * 4;
+
+				// Initializing the lowest highstack watermark bytes
+				if(task_handles_array[x].lowest_highstack_watermark_bytes == UINT32_MAX){
+					task_handles_array[x].lowest_highstack_watermark_bytes = task_highstack_watermark_bytes;
+				}
+
+				if(task_highstack_watermark_bytes < task_threshold_bytes && task_highstack_watermark_bytes < task_handles_array[x].lowest_highstack_watermark_bytes){
+					
+					task_handles_array[x].lowest_highstack_watermark_bytes = task_highstack_watermark_bytes;
+					LOG_message(
+						LOG_SYSTEM_OBC, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+						"Warning: Task '%s' approached a stack overflow. Worst remaining stack size was: %lu bytes.",
+						pcTaskGetName(dereferenced_task_handle),
+						task_highstack_watermark_bytes
+						);
+				}	
+			}
+		}
+		osDelay(5000);
+
+	} /* End Task's Main Loop */
 }
