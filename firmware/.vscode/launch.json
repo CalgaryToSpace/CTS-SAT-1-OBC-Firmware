@@ -1,4 +1,5 @@
 {
+    "version": "0.2.0",
     "configurations": [
         {
             "cwd": "${workspaceFolder}",
@@ -8,7 +9,14 @@
             "type": "cortex-debug",
             "runToEntryPoint": "main",
             "showDevDebugOutput": "none",
-            "servertype": "stlink"
+            "servertype": "stlink",
+        },
+        {
+            "name": "Python Debugger: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}",
+            "console": "integratedTerminal"
         },
         {
             "showDevDebugOutput": "parsed",
