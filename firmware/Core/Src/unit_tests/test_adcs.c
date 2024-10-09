@@ -625,3 +625,18 @@ uint8_t TEST_EXEC__ADCS_pack_to_measurements_struct() {
 
     return 0;
 }
+
+
+uint8_t TEST_EXEC__ADCS_pack_to_acp_execution_state_struct() {
+
+    uint8_t input_params[3] = {0x44, 0xab, 0x03};
+    ADCS_acp_execution_state_struct_t result;
+
+    ADCS_Pack_to_ACP_Execution_State_Struct(input_params, &result);
+
+    TEST_ASSERT_TRUE(result.time_since_iteration_start_sec == 43844);
+    TEST_ASSERT_TRUE(result.current_execution_point == ADCS_CURRENT_EXECUTION_POINT_ADCS_UPDATE);
+
+    return 0;
+
+}
