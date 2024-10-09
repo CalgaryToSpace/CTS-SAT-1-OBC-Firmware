@@ -20,15 +20,7 @@ uint8_t TCMDEXEC_gps_set_enabled(const char *args_str, TCMD_TelecommandChannel_e
                         char *response_output_buf, uint16_t response_output_buf_len) {
 
     // Turn on power
-    // TODO: Determine the appropriate channel for the GPS
-    // Power requirement can be found in the OEM7 Installation Operation Manual Page 29: 3.3VDC +-5% with less than 100mV ripple
-    const char *eps_args_str = "stack_3v3,1";
-    const uint8_t eps_result = TCMDEXEC_eps_set_channel_enabled(eps_args_str, tcmd_channel, response_output_buf, response_output_buf_len);
-    if(eps_result != 0)
-    {
-        //Error turing on the EPS
-        return eps_result;
-    }
+    // TODO: Determine how to set the gps into a low power state or toggle on and off
 
     //Wait for a second
     HAL_Delay(1000);
@@ -71,6 +63,54 @@ uint8_t TCMDEXEC_gps_set_enabled(const char *args_str, TCMD_TelecommandChannel_e
     // Call GPS Uart Toggle Function
     GPS_set_uart_interrupt_state(toggle_status);
     snprintf(response_output_buf, response_output_buf_len, "GPS interrupt enable and setup completed successfully");
+
+    return 0;
+}
+
+/// @brief Telecommand: Transmit the bestxyza log command through the GPS receiver UART line
+/// @param args_str
+/// - Arg 0: Time interval for bestxyza log command in seconds (integer)
+/// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
+/// @param response_output_buf The buffer to write the response to
+/// @param response_output_buf_len The maximum length of the response_output_buf (its size)
+/// @return 0 on success, > 0 error
+uint8_t TCMDEXEC_gps_log_bestxyza(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+
+    // Unlogall to stop receiving other commands
+    // TODO: Create and use the generic gps log command function to transmit to the GPS
+
+
+    // TODO: Verify that unlogall was successful
+    // Investigate the gps response and also check that the HAL transmit was successful
+    // Checks for successful transmission and valid response from response ( 2 things )
+    // The gps response should be "OK" - Will verify this in the lab
+    
+    // Extract the time interval from the args_str and append to the bestxyza log
+    char *endptr;
+    const uint32_t time_interval_seconds = (uint32_t) strtoul(args_str, &endptr, 10);
+
+    // Error checking for the string conversion
+    if (*endptr != '\0') {
+        // Invalid input
+        snprintf(response_output_buf, response_output_buf_len, "Error: Invalid time interval argument '%s'. Provide an integer", args_str);
+        return 1;
+    }
+
+    // Check if the value is within bounds
+    if (time_interval_seconds <= 0 && time_interval_seconds > UINT32_MAX){
+        snprintf(response_output_buf, response_output_buf_len, "Error: Time interval provided out of bounds");
+        return 2;
+    }
+
+    char gps_log_command [50];
+    snprintf(gps_log_command,sizeof(gps_log_command), "LOG BESTXYZA ONTIME %lu", time_interval_seconds);
+
+
+    // Transmit the bestxyza log command
+
+    // Verify that the transmission and received the "OK" response
+    // - This could be done in the gps log command function.
 
     return 0;
 }
