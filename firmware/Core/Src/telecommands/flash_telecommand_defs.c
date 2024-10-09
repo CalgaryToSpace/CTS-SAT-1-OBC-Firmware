@@ -263,7 +263,7 @@ uint8_t TCMDEXEC_flash_erase(const char *args_str, TCMD_TelecommandChannel_enum_
     snprintf(
         &response_output_buf[strlen(response_output_buf)],
         response_output_buf_len - strlen(response_output_buf) - 1,
-        " Successfully erased page at address %lu on chip %d.\n", 
+        "Successfully erased block containing page address %lu on chip %d.\n", 
         flash_addr, chip_num);
 
     return 0;
@@ -344,6 +344,47 @@ uint8_t TCMDEXEC_flash_reset(const char *args_str, TCMD_TelecommandChannel_enum_
         response_output_buf_len - strlen(response_output_buf) - 1,
         " Successfully reset chip %d.\n", 
         (uint8_t)chip_num);
+
+    return 0;
+}
+
+uint8_t TCMDEXEC_flash_read_status_register(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    uint64_t chip_num_u64;
+
+    const uint8_t arg0_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &chip_num_u64);
+
+    if (arg0_result != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error parsing chip number argument: %d", arg0_result);
+        return 1;
+    }
+
+    if (chip_num_u64 >= FLASH_NUMBER_OF_FLASH_DEVICES) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Chip number is out of range. Must be 0 to %d.",
+            FLASH_NUMBER_OF_FLASH_DEVICES - 1);
+        return 2;
+    }
+
+    uint8_t chip_num = (uint8_t)chip_num_u64;
+    uint8_t status_reg_val;
+    const FLASH_error_enum_t comms_err = FLASH_read_status_register(&hspi1, chip_num, &status_reg_val);
+    if (comms_err != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error reading status register: %d",comms_err);
+            return 2;
+    }
+
+    // success
+    snprintf(
+        &response_output_buf[strlen(response_output_buf)],
+        response_output_buf_len - strlen(response_output_buf) - 1,
+        " Status Register Value: 0x%02X\n", 
+        status_reg_val);
 
     return 0;
 }
