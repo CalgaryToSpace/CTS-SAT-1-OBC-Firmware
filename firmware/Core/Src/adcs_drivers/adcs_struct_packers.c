@@ -596,3 +596,55 @@ uint8_t ADCS_Pack_to_ACP_Execution_State_Struct(uint8_t* data_received, ADCS_acp
     output_struct->current_execution_point = (ADCS_current_execution_point_enum_t) data_received[2];
     return 0;
 }
+
+uint8_t ADCS_pack_to_current_state_1_struct(uint8_t* data_received, ADCS_current_state_1_struct_t* output_struct) {
+    
+    output_struct->estimation_mode = (data_received[0] >> 4) & 0xf;
+    
+    output_struct->control_mode = (data_received[1]) & 0xf;  
+    
+    output_struct->run_mode = (data_received[2] >> 6) & 0x3;  
+    output_struct->asgp4_mode = (data_received[2] >> 4) & 0x3; 
+    output_struct->cubecontrol_signal_enabled = (data_received[2] >> 3) & 0x01; // 1-bit bool
+    output_struct->cubecontrol_motor_enabled = (data_received[2] >> 2) & 0x01; // 1-bit bool
+    output_struct->cubesense1_enabled = (data_received[2] >> 1) & 0x01; // 1-bit bool
+    output_struct->cubesense2_enabled = (data_received[2]) & 0x01; // 1-bit bool
+
+    output_struct->cubewheel1_enabled = (data_received[3] >> 7) & 0x01; // 1-bit bool
+    output_struct->cubewheel2_enabled = (data_received[3] >> 6) & 0x01; // 1-bit bool
+    output_struct->cubewheel3_enabled = (data_received[3] >> 5) & 0x01; // 1-bit bool
+    output_struct->cubestar_enabled = (data_received[3] >> 4) & 0x01; // 1-bit bool
+    output_struct->gps_receiver_enabled = (data_received[3] >> 3) & 0x01; // 1-bit bool
+    output_struct->gps_lna_power_enabled = (data_received[3] >> 2) & 0x01; // 1-bit bool
+    output_struct->motor_driver_enabled = (data_received[3] >> 1) & 0x01; // 1-bit bool
+    output_struct->sun_above_local_horizon = (data_received[3]) & 0x01; // 1-bit bool
+
+    output_struct->cubesense1_comm_error = (data_received[4] >> 7) & 0x01; // 1-bit bool
+    output_struct->cubesense2_comm_error = (data_received[4] >> 6) & 0x01; // 1-bit bool
+    output_struct->cubecontrol_signal_comm_error = (data_received[4] >> 5) & 0x01; // 1-bit bool
+    output_struct->cubecontrol_motor_comm_error = (data_received[4] >> 4) & 0x01; // 1-bit bool
+    output_struct->cubewheel1_comm_error = (data_received[4] >> 3) & 0x01; // 1-bit bool
+    output_struct->cubewheel2_comm_error = (data_received[4] >> 2) & 0x01; // 1-bit bool
+    output_struct->cubewheel3_comm_error = (data_received[4] >> 1) & 0x01; // 1-bit bool
+    output_struct->cubestar_comm_error = (data_received[4] >> 0) & 0x01; // 1-bit bool
+
+    output_struct->magnetometer_range_error = (data_received[5] >> 7) & 0x01; // 1-bit bool
+    output_struct->cam1_sram_overcurrent_detected = (data_received[5] >> 6) & 0x01; // 1-bit bool
+    output_struct->cam1_3v3_overcurrent_detected = (data_received[5] >> 5) & 0x01; // 1-bit bool
+    output_struct->cam1_sensor_busy_error = (data_received[5] >> 4) & 0x01; // 1-bit bool
+    output_struct->cam1_sensor_detection_error = (data_received[5] >> 3) & 0x01; // 1-bit bool
+    output_struct->sun_sensor_range_error = (data_received[5] >> 2) & 0x01; // 1-bit bool
+    output_struct->cam2_sram_overcurrent_detected = (data_received[5] >> 1) & 0x01; // 1-bit bool
+    output_struct->cam2_3v3_overcurrent_detected = (data_received[5]) & 0x01; // 1-bit bool
+
+    output_struct->cam2_sensor_busy_error = (data_received[6] >> 7) & 0x01; // 1-bit bool
+    output_struct->cam2_sensor_detection_error = (data_received[6] >> 6) & 0x01; // 1-bit bool
+    output_struct->nadir_sensor_range_error = (data_received[6] >> 5) & 0x01; // 1-bit bool
+    output_struct->rate_sensor_range_error = (data_received[6] >> 4) & 0x01; // 1-bit bool
+    output_struct->wheel_speed_range_error = (data_received[6] >> 3) & 0x01; // 1-bit bool
+    output_struct->coarse_sun_sensor_error = (data_received[6] >> 2) & 0x01; // 1-bit bool
+    output_struct->startracker_match_error = (data_received[6] >> 1) & 0x01; // 1-bit bool
+    output_struct->startracker_overcurrent_detected = (data_received[6]) & 0x01; // 1-bit bool
+
+    return 0;
+}

@@ -1023,3 +1023,64 @@ uint8_t ADCS_acp_execution_struct_TO_json(const ADCS_acp_execution_state_struct_
     
     return 0;
 }
+
+/// @brief Converts ADCS_current_state_1_struct to a JSON string.
+/// @param[in] data Pointer to the ADCS_current_state_1_struct.
+/// @param[out] json_output_str Buffer to hold the JSON string.
+/// @param[in] json_output_str_len Length of the JSON output buffer.
+/// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
+uint8_t ADCS_current_state_1_struct_TO_json(const ADCS_current_state_1_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
+    if (data == NULL || json_output_str == NULL || json_output_str_len < 80) {
+        return 1; // Error: invalid input
+    }
+    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len,
+                                    "{\"attitude_estimation_mode\":%d,\"control_mode\":%d,"
+                                    "\"adcs_run_mode\":%d,\"asgp4_mode\":%d,"
+                                    "\"cubecontrol_signal_enabled\":%d,\"cubecontrol_motor_enabled\":%d,"
+                                    "\"cubesense1_enabled\":%d,\"cubesense2_enabled\":%d,"
+                                    "\"cubewheel1_enabled\":%d,\"cubewheel2_enabled\":%d,"
+                                    "\"cubewheel3_enabled\":%d,\"cubestar_enabled\":%d,"
+                                    "\"gps_receiver_enabled\":%d,\"gps_lna_power_enabled\":%d,"
+                                    "\"motor_driver_enabled\":%d,\"sun_above_local_horizon\":%d,"
+                                    "\"cubesense1_comm_error\":%d,\"cubesense2_comm_error\":%d,"
+                                    "\"cubecontrol_signal_comm_error\":%d,\"cubecontrol_motor_comm_error\":%d,"
+                                    "\"cubewheel1_comm_error\":%d,\"cubewheel2_comm_error\":%d,"
+                                    "\"cubewheel3_comm_error\":%d,\"cubestar_comm_error\":%d,"
+                                    "\"magnetometer_range_error\":%d,\"cam1_sram_overcurrent_detected\":%d,"
+                                    "\"cam1_3v3_overcurrent_detected\":%d,\"cam1_sensor_busy_error\":%d,"
+                                    "\"cam1_sensor_detection_error\":%d,\"sun_sensor_range_error\":%d,"
+                                    "\"cam2_sram_overcurrent_detected\":%d,\"cam2_3v3_overcurrent_detected\":%d,"
+                                    "\"cam2_sensor_busy_error\":%d,\"cam2_sensor_detection_error\":%d,"
+                                    "\"nadir_sensor_range_error\":%d,\"rate_sensor_range_error\":%d,"
+                                    "\"wheel_speed_range_error\":%d,\"coarse_sun_sensor_error\":%d,"
+                                    "\"startracker_match_error\":%d,\"startracker_overcurrent_detected\":%d}",
+                                    data->estimation_mode, data->control_mode,
+                                    data->run_mode, data->asgp4_mode,
+                                    data->cubecontrol_signal_enabled, data->cubecontrol_motor_enabled,
+                                    data->cubesense1_enabled, data->cubesense2_enabled,
+                                    data->cubewheel1_enabled, data->cubewheel2_enabled,
+                                    data->cubewheel3_enabled, data->cubestar_enabled,
+                                    data->gps_receiver_enabled, data->gps_lna_power_enabled,
+                                    data->motor_driver_enabled, data->sun_above_local_horizon,
+                                    data->cubesense1_comm_error, data->cubesense2_comm_error,
+                                    data->cubecontrol_signal_comm_error, data->cubecontrol_motor_comm_error,
+                                    data->cubewheel1_comm_error, data->cubewheel2_comm_error,
+                                    data->cubewheel3_comm_error, data->cubestar_comm_error,
+                                    data->magnetometer_range_error, data->cam1_sram_overcurrent_detected,
+                                    data->cam1_3v3_overcurrent_detected, data->cam1_sensor_busy_error,
+                                    data->cam1_sensor_detection_error, data->sun_sensor_range_error,
+                                    data->cam2_sram_overcurrent_detected, data->cam2_3v3_overcurrent_detected,
+                                    data->cam2_sensor_busy_error, data->cam2_sensor_detection_error,
+                                    data->nadir_sensor_range_error, data->rate_sensor_range_error,
+                                    data->wheel_speed_range_error, data->coarse_sun_sensor_error,
+                                    data->startracker_match_error, data->startracker_overcurrent_detected);
+
+    if (snprintf_ret < 0) {
+        return 2; // Error: snprintf encoding error
+    }
+    if (snprintf_ret >= json_output_str_len) {
+        return 3; // Error: string buffer too short
+    }
+    
+    return 0;
+}

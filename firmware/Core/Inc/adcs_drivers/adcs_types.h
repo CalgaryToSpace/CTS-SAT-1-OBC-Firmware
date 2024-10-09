@@ -212,6 +212,13 @@ typedef enum ADCS_current_execution_point_enum_t {
     ADCS_CURRENT_EXECUTION_POINT_WRITING_TO_FLASH = 12
 } ADCS_current_execution_point_enum_t;
 
+typedef enum ADCS_asgp4_mode_enum_t {
+    ADCS_ASGP4_MODE_OFF = 0,
+    ADCS_ASGP4_MODE_TRIGGER = 1,
+    ADCS_ASGP4_MODE_BACKGROUND = 2,
+    ADCS_ASGP4_MODE_AUGMENT = 3,
+} ADCS_asgp4_mode_enum_t;
+
 /* Structs */
 
 typedef struct ADCS_cmd_ack_struct_t {
@@ -537,5 +544,48 @@ typedef struct ADCS_acp_execution_state_struct_t {
     uint16_t time_since_iteration_start_sec;
     ADCS_current_execution_point_enum_t current_execution_point;
 } ADCS_acp_execution_state_struct_t;
+
+typedef struct ADCS_current_state_1_struct_t {
+    ADCS_estimation_mode_enum_t estimation_mode;
+    ADCS_control_mode_enum_t control_mode;  
+    ADCS_run_mode_enum_t run_mode;  
+    ADCS_asgp4_mode_enum_t asgp4_mode; 
+    bool cubecontrol_signal_enabled:1; // 1-bit bool
+    bool cubecontrol_motor_enabled:1; // 1-bit bool
+    bool cubesense1_enabled:1; // 1-bit bool
+    bool cubesense2_enabled:1; // 1-bit bool
+    bool cubewheel1_enabled:1; // 1-bit bool
+    bool cubewheel2_enabled:1; // 1-bit bool
+    bool cubewheel3_enabled:1; // 1-bit bool
+    bool cubestar_enabled:1; // 1-bit bool
+    bool gps_receiver_enabled:1; // 1-bit bool
+    bool gps_lna_power_enabled:1; // 1-bit bool
+    bool motor_driver_enabled:1; // 1-bit bool
+    bool sun_above_local_horizon:1; // 1-bit bool
+    bool cubesense1_comm_error:1; // 1-bit bool
+    bool cubesense2_comm_error:1; // 1-bit bool
+    bool cubecontrol_signal_comm_error:1; // 1-bit bool
+    bool cubecontrol_motor_comm_error:1; // 1-bit bool
+    bool cubewheel1_comm_error:1; // 1-bit bool
+    bool cubewheel2_comm_error:1; // 1-bit bool
+    bool cubewheel3_comm_error:1; // 1-bit bool
+    bool cubestar_comm_error:1; // 1-bit bool
+    bool magnetometer_range_error:1; // 1-bit bool
+    bool cam1_sram_overcurrent_detected:1; // 1-bit bool
+    bool cam1_3v3_overcurrent_detected:1; // 1-bit bool
+    bool cam1_sensor_busy_error:1; // 1-bit bool
+    bool cam1_sensor_detection_error:1; // 1-bit bool
+    bool sun_sensor_range_error:1; // 1-bit bool
+    bool cam2_sram_overcurrent_detected:1; // 1-bit bool
+    bool cam2_3v3_overcurrent_detected:1; // 1-bit bool
+    bool cam2_sensor_busy_error:1; // 1-bit bool
+    bool cam2_sensor_detection_error:1; // 1-bit bool
+    bool nadir_sensor_range_error:1; // 1-bit bool
+    bool rate_sensor_range_error:1; // 1-bit bool
+    bool wheel_speed_range_error:1; // 1-bit bool
+    bool coarse_sun_sensor_error:1; // 1-bit bool
+    bool startracker_match_error:1; // 1-bit bool
+    bool startracker_overcurrent_detected:1; // 1-bit bool
+} ADCS_current_state_1_struct_t ;
 
 #endif /* INC_ADCS_TYPES_H_ */

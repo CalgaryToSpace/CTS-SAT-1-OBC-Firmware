@@ -640,3 +640,55 @@ uint8_t TEST_EXEC__ADCS_pack_to_acp_execution_state_struct() {
     return 0;
 
 }
+
+uint8_t TEST_EXEC__ADCS_pack_to_current_state_1_struct() {
+
+    uint8_t input_params[6] = {0x44, 0xab, 0x03, 0x44, 0xab, 0x03};
+    ADCS_current_state_1_struct_t result;
+
+    ADCS_pack_to_current_state_1_struct(input_params, &result);
+
+    TEST_ASSERT_TRUE(result.estimation_mode = ADCS_ESTIMATION_MODE_MAGNETOMETER_AND_FINE_SUN_TRIAD_ALGORITHM);
+    TEST_ASSERT_TRUE(result.control_mode = ADCS_CONTROL_MODE_Y_WHEEL_MOMENTUM_STABILIZED_STEADY_STATE);
+    TEST_ASSERT_TRUE(result.run_mode = ADCS_RUN_MODE_SIMULATION);
+    TEST_ASSERT_TRUE(result.asgp4_mode = ADCS_ASGP4_MODE_BACKGROUND);
+    TEST_ASSERT_TRUE(result.cubecontrol_signal_enabled = false);
+    TEST_ASSERT_TRUE(result.cubecontrol_motor_enabled = true);
+    TEST_ASSERT_TRUE(result.cubesense1_enabled = false);
+    TEST_ASSERT_TRUE(result.cubesense2_enabled = true);
+    TEST_ASSERT_TRUE(result.cubewheel1_enabled = true);
+    TEST_ASSERT_TRUE(result.cubewheel2_enabled = true);
+    TEST_ASSERT_TRUE(result.cubewheel3_enabled = false);
+    TEST_ASSERT_TRUE(result.cubestar_enabled = false);
+    TEST_ASSERT_TRUE(result.gps_receiver_enabled = false);
+    TEST_ASSERT_TRUE(result.gps_lna_power_enabled = false);
+    TEST_ASSERT_TRUE(result.motor_driver_enabled = false);
+    TEST_ASSERT_TRUE(result.sun_above_local_horizon = false);
+    TEST_ASSERT_TRUE(result.cubesense1_comm_error = false);
+    TEST_ASSERT_TRUE(result.cubesense2_comm_error = false);
+    TEST_ASSERT_TRUE(result.cubecontrol_signal_comm_error = true);
+    TEST_ASSERT_TRUE(result.cubecontrol_motor_comm_error = false);
+    TEST_ASSERT_TRUE(result.cubewheel1_comm_error = false);
+    TEST_ASSERT_TRUE(result.cubewheel2_comm_error = false);
+    TEST_ASSERT_TRUE(result.cubewheel3_comm_error = true);
+    TEST_ASSERT_TRUE(result.cubestar_comm_error = false);
+    TEST_ASSERT_TRUE(result.magnetometer_range_error = true);
+    TEST_ASSERT_TRUE(result.cam1_sram_overcurrent_detected = true);
+    TEST_ASSERT_TRUE(result.cam1_3v3_overcurrent_detected = false);
+    TEST_ASSERT_TRUE(result.cam1_sensor_busy_error = true);
+    TEST_ASSERT_TRUE(result.cam1_sensor_detection_error = false);
+    TEST_ASSERT_TRUE(result.sun_sensor_range_error = true);
+    TEST_ASSERT_TRUE(result.cam2_sram_overcurrent_detected = false);
+    TEST_ASSERT_TRUE(result.cam2_3v3_overcurrent_detected = true);
+    TEST_ASSERT_TRUE(result.cam2_sensor_busy_error = true);
+    TEST_ASSERT_TRUE(result.cam2_sensor_detection_error = true);
+    TEST_ASSERT_TRUE(result.nadir_sensor_range_error = false);
+    TEST_ASSERT_TRUE(result.rate_sensor_range_error = false);
+    TEST_ASSERT_TRUE(result.wheel_speed_range_error = true);
+    TEST_ASSERT_TRUE(result.coarse_sun_sensor_error = true);
+    TEST_ASSERT_TRUE(result.startracker_match_error = true);
+    TEST_ASSERT_TRUE(result.startracker_overcurrent_detected = true);
+
+    return 0;
+
+}
