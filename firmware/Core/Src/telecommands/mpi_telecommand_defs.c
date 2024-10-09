@@ -17,7 +17,7 @@
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0: Success, 1: Invalid Input, 2: Failed UART transmission, 3: Failed UART reception,
-///     4: MPI timeout before sending 1 byte, 5: MPI failed to execute CMD
+///         4: MPI timeout before sending 1 byte, 5: MPI failed to execute CMD, 6: Invalid response from the MPI
 uint8_t TCMDEXEC_mpi_send_command_hex(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                       char *response_output_buf, uint16_t response_output_buf_len) {
     
@@ -43,7 +43,13 @@ uint8_t TCMDEXEC_mpi_send_command_hex(const char *args_str, TCMD_TelecommandChan
     memset(MPI_rx_buffer, 0, MPI_rx_buffer_max_size);   // Initialize all elements to 0
 
     // Send command to MPI and receive back the response
-    const uint8_t cmd_response = MPI_send_telecommand_get_response(args_bytes, args_bytes_len, MPI_rx_buffer, MPI_rx_buffer_max_size, &MPI_rx_buffer_len);
+    uint8_t cmd_response = MPI_send_telecommand_get_response(args_bytes, args_bytes_len, MPI_rx_buffer, MPI_rx_buffer_max_size, &MPI_rx_buffer_len);
+
+    // If no errors are found during transmission and reception from the mpi, validate the response
+    if(cmd_response == 0) {
+        // Validate MPI response
+        cmd_response = MPI_validate_telecommand_response(args_bytes, MPI_rx_buffer, MPI_rx_buffer_len-1);
+    }
 
     // Send back MPI response log detail
     switch(cmd_response) {
@@ -70,20 +76,23 @@ uint8_t TCMDEXEC_mpi_send_command_hex(const char *args_str, TCMD_TelecommandChan
             break;
     }
 
-    // Send back complete response from the MPI               
-    snprintf(
-        &response_output_buf[strlen(response_output_buf)],
-        response_output_buf_len - strlen(response_output_buf) - 1,
-        "MPI telecommand response: "
-    );
-    for (size_t i = 0; i < MPI_rx_buffer_len; i++)
-    {
+    // Send back response from the MPI (if received)
+    if(MPI_rx_buffer_len > 0) {                    
         snprintf(
             &response_output_buf[strlen(response_output_buf)],
             response_output_buf_len - strlen(response_output_buf) - 1,
-            "%02X ", MPI_rx_buffer[i]
+            "MPI telecommand response: "
         );
+        for (size_t i = 0; i < MPI_rx_buffer_len; i++)
+        {
+            snprintf(
+                &response_output_buf[strlen(response_output_buf)],
+                response_output_buf_len - strlen(response_output_buf) - 1,
+                "%02X ", MPI_rx_buffer[i]
+            );
+        }
     }
 
+    // Return response code from the MPI
     return cmd_response;
 }
