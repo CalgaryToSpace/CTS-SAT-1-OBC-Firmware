@@ -196,6 +196,22 @@ typedef enum ADCS_gps_axis_enum_t {
     ADCS_GPS_AXIS_Z = 2
 } ADCS_gps_axis_enum_t;
 
+typedef enum ADCS_current_execution_point_enum_t {
+    ADCS_CURRENT_EXECUTION_POINT_BUSY_INITIALIZATION = 0,
+    ADCS_CURRENT_EXECUTION_POINT_IDLE = 1,
+    ADCS_CURRENT_EXECUTION_POINT_SENSOR_ACTUATOR_COMMS= 2,
+    ADCS_CURRENT_EXECUTION_POINT_ADCS_UPDATE = 3,
+    ADCS_CURRENT_EXECUTION_POINT_PERIPHERAL_POWER_COMMANDS = 4,
+    ADCS_CURRENT_EXECUTION_POINT_CPU_TEMPERATURE_SAMPLING = 5,
+    ADCS_CURRENT_EXECUTION_POINT_IMAGE_DOWNLOAD = 6,
+    ADCS_CURRENT_EXECUTION_POINT_IMAGE_COMPRESSION = 7,
+    ADCS_CURRENT_EXECUTION_POINT_SAVING_IMAGE_TO_SD = 8,
+    ADCS_CURRENT_EXECUTION_POINT_LOGGING = 9,
+    ADCS_CURRENT_EXECUTION_POINT_LOG_FILE_COMPRESSION = 10,
+    ADCS_CURRENT_EXECUTION_POINT_SAVING_LOG_TO_SD = 11,
+    ADCS_CURRENT_EXECUTION_POINT_WRITING_TO_FLASH = 12
+} ADCS_current_execution_point_enum_t;
+
 /* Structs */
 
 typedef struct ADCS_cmd_ack_struct_t {
@@ -516,5 +532,10 @@ typedef struct ADCS_measurements_struct_t {
     int32_t star3_orbit_y_micro;
     int32_t star3_orbit_z_micro;
 } ADCS_measurements_struct_t;
+
+typedef struct ADCS_acp_execution_state_struct_t {
+    uint16_t time_since_iteration_start_sec;
+    ADCS_current_execution_point_enum_t current_execution_point;
+} ADCS_acp_execution_state_struct_t;
 
 #endif /* INC_ADCS_TYPES_H_ */

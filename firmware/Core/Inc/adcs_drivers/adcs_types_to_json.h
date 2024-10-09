@@ -47,5 +47,6 @@ uint8_t ADCS_raw_gps_time_struct_TO_json(const ADCS_raw_gps_time_struct_t *data,
 uint8_t ADCS_raw_gps_struct_TO_json(const ADCS_raw_gps_struct_t *data, char json_output_str[], uint16_t json_output_str_len);
 uint8_t ADCS_measurements_struct_TO_json(const ADCS_measurements_struct_t *data, char json_output_str[], uint16_t json_output_str_len);
 uint8_t ADCS_generic_telemetry_uint8_array_TO_json(const uint8_t *data, const uint16_t data_length, char json_output_str[], uint16_t json_output_str_len);
+uint8_t ADCS_acp_execution_struct_TO_json(const ADCS_acp_execution_state_struct_t *data, char json_output_str[], uint16_t json_output_str_len);
 
 #endif /* INC_ADCS_TYPES_TO_JSON_H_ */

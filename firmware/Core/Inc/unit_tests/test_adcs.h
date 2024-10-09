@@ -43,6 +43,7 @@ uint8_t TEST_EXEC__ADCS_pack_to_raw_gps_status_struct();
 uint8_t TEST_EXEC__ADCS_pack_to_raw_gps_time_struct();
 uint8_t TEST_EXEC__ADCS_pack_to_raw_gps_struct();
 uint8_t TEST_EXEC__ADCS_pack_to_measurements_struct();
+uint8_t TEST_EXEC__ADCS_pack_to_acp_execution_state_struct();
 
 #endif // __INCLUDE_GUARD__ADCS_TEST_PROTOTYPES_H__
 

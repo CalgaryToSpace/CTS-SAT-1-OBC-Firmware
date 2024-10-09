@@ -1011,3 +1011,17 @@ uint8_t ADCS_get_measurements(ADCS_measurements_struct_t *output_struct) {
 
     return tlm_status;
 }
+
+/// @brief Instruct the ADCS to execute the ADCS_execution_state command.
+/// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_get_acp_execution_state(ADCS_acp_execution_state_struct_t *output_struct) {
+    uint8_t data_length = 72;
+    uint8_t data_received[data_length]; // define temp buffer
+
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_EXECUTION_STATE, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+    ADCS_Pack_to_ACP_Execution_State_Struct(data_received, output_struct);
+
+    return tlm_status;
+}

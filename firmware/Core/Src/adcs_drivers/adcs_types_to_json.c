@@ -1000,3 +1000,26 @@ uint8_t ADCS_generic_telemetry_uint8_array_TO_json(const uint8_t *data, const ui
     }
     return 0;
 }
+
+/// @brief Converts ADCS_acp_execution_struct to a JSON string.
+/// @param[in] data Pointer to the ADCS_acp_execution_struct.
+/// @param[out] json_output_str Buffer to hold the JSON string.
+/// @param[in] json_output_str_len Length of the JSON output buffer.
+/// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
+uint8_t ADCS_acp_execution_struct_TO_json(const ADCS_acp_execution_state_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
+    if (data == NULL || json_output_str == NULL || json_output_str_len < 80) {
+        return 1; // Error: invalid input
+    }
+    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, 
+                                "{\"time_since_iteration_start_sec\":%d,\"current_execution_point\":%d}", 
+                                data->time_since_iteration_start_sec, data->current_execution_point);
+
+    if (snprintf_ret < 0) {
+        return 2; // Error: snprintf encoding error
+    }
+    if (snprintf_ret >= json_output_str_len) {
+        return 3; // Error: string buffer too short
+    }
+    
+    return 0;
+}
