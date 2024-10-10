@@ -39,7 +39,13 @@ uint8_t TEMP_SENSOR__read_temperature(int32_t *result)
     // if user has not set temp precision default to 10 bit
     if (!TEMP_SENSOR_custom_precision_set)
     {
-        TEMP_SENSOR__set_temp_precision(10, 0);
+        uint8_t set_precision_result = TEMP_SENSOR__set_temp_precision(10, 0);
+
+        // if error in setting config register return error
+        if (set_precision_result == 1 || set_precision_result == 2)
+        {
+            return 1;
+        }
     }
 
 
@@ -105,7 +111,7 @@ int8_t TEMP_SENSOR__get_temp_precision()
     status = HAL_I2C_Mem_Read(&hi2c1, TEMP_SENSOR_device_addr << 1, TEMP_SENSOR_config_register_addr, 1, &buf, 1, HAL_MAX_DELAY);
     if (status != HAL_OK)
     {
-        // return 2 if unable to read from config register
+        // return -1 if unable to read from config register
         return -1;
     }
 

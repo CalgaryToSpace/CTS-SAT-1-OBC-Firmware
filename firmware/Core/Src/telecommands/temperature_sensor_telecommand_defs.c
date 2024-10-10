@@ -27,7 +27,7 @@ uint8_t TCMDEXEC_read_temperature(const char *args_str, TCMD_TelecommandChannel_
         case 0x01: precision = 10; break;
         case 0x02: precision = 11; break;
         case 0x03: precision = 12; break;
-        default: precision = 0; break; // Handle unexpected cases
+        default: precision = 10; break; // Default to 10 in unexpected cases
     }
 
     if (success_result == 0)
