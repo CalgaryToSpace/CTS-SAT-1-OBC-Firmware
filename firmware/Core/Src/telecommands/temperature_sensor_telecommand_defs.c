@@ -18,7 +18,7 @@ uint8_t TCMDEXEC_read_temperature(const char *args_str, TCMD_TelecommandChannel_
 
     int32_t temperature;
 
-    uint8_t success_result = read_temperature(&temperature);
+    uint8_t success_result = TEMP_SENSOR__read_temperature(&temperature);
 
     uint8_t precision = TEMP_SENSOR__get_temp_precision();
 
@@ -31,9 +31,13 @@ uint8_t TCMDEXEC_read_temperature(const char *args_str, TCMD_TelecommandChannel_
     }
 
     if (success_result == 0)
+    {
         snprintf(response_output_buf, response_output_buf_len, "Temperature(%d bit): %ld\n", precision, temperature);
+    }
     else
+    {
         snprintf(response_output_buf, response_output_buf_len, "Temperature read fail!\n");
+    }
 
     return 0;
 }
