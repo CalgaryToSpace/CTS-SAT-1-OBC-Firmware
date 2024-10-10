@@ -22,16 +22,16 @@ uint8_t TCMDEXEC_gps_set_enabled(const char *args_str, TCMD_TelecommandChannel_e
     // Turn on power
     // TODO: Determine the appropriate channel for the GPS
     // Power requirement can be found in the OEM7 Installation Operation Manual Page 29: 3.3VDC +-5% with less than 100mV ripple
-    const char *eps_args_str = "stack_3v3,1";
-    const uint8_t eps_result = TCMDEXEC_eps_set_channel_enabled(eps_args_str, tcmd_channel, response_output_buf, response_output_buf_len);
-    if(eps_result != 0)
-    {
-        //Error turing on the EPS
-        return eps_result;
-    }
+    // const char *eps_args_str = "stack_3v3,1";
+    // const uint8_t eps_result = TCMDEXEC_eps_set_channel_enabled(eps_args_str, tcmd_channel, response_output_buf, response_output_buf_len);
+    // if(eps_result != 0)
+    // {
+    //     //Error turing on the EPS
+    //     return eps_result;
+    // }
 
-    //Wait for a second
-    HAL_Delay(1000);
+    // //Wait for a second
+    // HAL_Delay(1000);
 
     // Converting the string response to an integer
     char *endptr;
@@ -49,12 +49,16 @@ uint8_t TCMDEXEC_gps_set_enabled(const char *args_str, TCMD_TelecommandChannel_e
         return 2;
     }
 
+    // Call GPS Uart Toggle Function
+    GPS_set_uart_interrupt_state(toggle_status);
+
 
     // Transmit setup commands for the GPS
     // TODO: Verify the set up commands and add the,
     const char *gps_setup_cmds[] = {
-        "unlogall thisport_30 true\n",
-        "log versionb once\n"
+        "unlogall COM1 true\n",
+        "log versionb once\n",
+        "log bestxyza ontime 1\n"
     };
 
     for (size_t i = 0; i < sizeof(gps_setup_cmds) / sizeof(gps_setup_cmds[0]); i++) {
@@ -68,8 +72,7 @@ uint8_t TCMDEXEC_gps_set_enabled(const char *args_str, TCMD_TelecommandChannel_e
     // Wait for half a second
     HAL_Delay(500);
 
-    // Call GPS Uart Toggle Function
-    GPS_set_uart_interrupt_state(toggle_status);
+    
     snprintf(response_output_buf, response_output_buf_len, "GPS interrupt enable and setup completed successfully");
 
     return 0;

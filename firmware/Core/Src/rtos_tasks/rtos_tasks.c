@@ -233,9 +233,18 @@ void TASK_receive_gps_info(void *argument) {
 	char latest_gps_response[UART_gps_buffer_len];
 	uint16_t latest_gps_response_len = 0;
 
+
 	while (1) {
 
 		osDelay(200);
+
+		LOG_message(
+				LOG_SYSTEM_GPS,
+				LOG_SEVERITY_NORMAL, 
+				LOG_SINK_ALL,
+				"GPS Buffer Data: %s",
+				UART_gps_buffer 
+			);
 
 		// Checking if there is data in the GPS buffer
 		if(UART_gps_buffer_write_idx > 0) {
@@ -260,6 +269,14 @@ void TASK_receive_gps_info(void *argument) {
 			}
 
 			UART_gps_buffer_write_idx = 0;
+
+			LOG_message(
+				LOG_SYSTEM_GPS,
+				LOG_SEVERITY_NORMAL, 
+				LOG_SINK_ALL,
+				"GPS Buffer Data: %s",
+				UART_gps_buffer 
+			);
 
 		}
 
