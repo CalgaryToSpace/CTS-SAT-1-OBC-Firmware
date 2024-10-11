@@ -531,9 +531,9 @@ uint8_t TCMDEXEC_eps_sync_time_to_obc_time(
     if (result != 0 ) {
         snprintf(response_output_buf, response_output_buf_len,
         "syncing eps time failed");
-        return result;
+        return 1;
     }
     snprintf(response_output_buf, response_output_buf_len,
     "success syncing eps time");
-    return result;
+    return 0;
 }
