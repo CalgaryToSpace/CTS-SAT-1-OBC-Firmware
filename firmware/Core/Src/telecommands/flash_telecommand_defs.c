@@ -393,10 +393,10 @@ uint8_t TCMDEXEC_flash_read_status_register(const char *args_str, TCMD_Telecomma
     return 0;
 }
 
-// @brief Telecommand: Set the write enable lath to high on the flash memory module
-// @param args_str
-// - Arg 0: Chip Number (CS number) as uint
-// @return 0 on success, >0 on error
+/// @brief Telecommand: Set the write enable lath to high on the flash memory module
+/// @param args_str
+/// - Arg 0: Chip Number (CS number) as uint
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_flash_write_enable(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     uint64_t chip_num_u64;
