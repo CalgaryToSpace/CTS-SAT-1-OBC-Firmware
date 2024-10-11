@@ -266,9 +266,8 @@ void TASK_receive_gps_info(void *argument) {
 					UART_gps_buffer[i] = 0;
 				}
 
+				UART_gps_buffer_write_idx = 0;
 			}
-
-			UART_gps_buffer_write_idx = 0;
 
 			LOG_message(
 				LOG_SYSTEM_GPS,
