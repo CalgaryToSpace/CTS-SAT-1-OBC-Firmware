@@ -1,6 +1,7 @@
 #include "telecommands/telecommand_definitions.h"
 #include "uart_handler/uart_handler.h"
 #include "telecommands/eps_telecommands.h"
+#include "log/log.h"
 #include "main.h"
 
 #include <stdio.h>
@@ -105,6 +106,12 @@ uint8_t TCMDEXEC_gps_log_bestxyza(const char *args_str, TCMD_TelecommandChannel_
 
     char gps_log_command [50];
     snprintf(gps_log_command,sizeof(gps_log_command), "LOG BESTXYZA ONTIME %lu", time_interval_seconds);
+
+    LOG_message(
+            LOG_SYSTEM_GPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Log Command: %s",
+            gps_log_command
+        );
 
 
     // Transmit the bestxyza log command
