@@ -26,6 +26,7 @@
 #include "debug_tools/debug_i2c.h"
 #include "debug_tools/debug_uart.h"
 #include "rtos_tasks/rtos_tasks.h"
+#include "rtos_tasks/rtos_eps_tasks.h"
 #include "uart_handler/uart_handler.h"
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_internal_drivers.h"
@@ -280,6 +281,7 @@ int main(void)
   
   TASK_service_eps_watchdog_Handle = osThreadNew(TASK_service_eps_watchdog, NULL, &TASK_service_eps_watchdog_Attributes);
 
+  TASK_sync_eps_time_to_mcu_time_Handle = osThreadNew(TASK_sync_eps_time_to_mcu_time, NULL, &TASK_sync_eps_time_to_mcu_time_Attributes);
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
