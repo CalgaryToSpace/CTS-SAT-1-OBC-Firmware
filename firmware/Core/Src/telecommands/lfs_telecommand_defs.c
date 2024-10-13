@@ -166,7 +166,7 @@ uint8_t TCMDEXEC_fs_read_text_file(const char *args_str, TCMD_TelecommandChannel
     uint8_t rx_buffer[512] = {0};
 
     char arg_file_name[64] = {0};
-    const uint8_t parse_file_name_result = TCMD_extract_string_arg((char*)args_str, 0, arg_file_name, sizeof(arg_file_name));
+    const uint8_t parse_file_name_result = TCMD_extract_string_arg(args_str, 0, arg_file_name, sizeof(arg_file_name));
     if (parse_file_name_result != 0) {
         // error parsing
         snprintf(
@@ -251,8 +251,8 @@ uint8_t TCMDEXEC_fs_benchmark_write_read(const char *args_str, TCMD_TelecommandC
     
     uint64_t arg_write_chunk_size, arg_write_chunk_count;
 
-    const uint8_t parse_write_chunk_size_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 0, &arg_write_chunk_size);
-    const uint8_t parse_write_chunk_count_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 1, &arg_write_chunk_count);
+    const uint8_t parse_write_chunk_size_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &arg_write_chunk_size);
+    const uint8_t parse_write_chunk_count_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &arg_write_chunk_count);
     if (parse_write_chunk_size_result != 0 || parse_write_chunk_count_result != 0) {
         // error parsing
         snprintf(

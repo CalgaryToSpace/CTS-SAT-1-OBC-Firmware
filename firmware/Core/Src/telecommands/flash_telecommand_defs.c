@@ -279,9 +279,9 @@ uint8_t TCMDEXEC_flash_benchmark_erase_write_read(const char *args_str, TCMD_Tel
                         char *response_output_buf, uint16_t response_output_buf_len) {
     uint64_t chip_num, test_data_address, test_data_length;
 
-    uint8_t arg0_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 0, &chip_num);
-    uint8_t arg1_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 1, &test_data_address);
-    uint8_t arg2_result = TCMD_extract_uint64_arg((char*)args_str, strlen((char*)args_str), 2, &test_data_length);
+    uint8_t arg0_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &chip_num);
+    uint8_t arg1_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &test_data_address);
+    uint8_t arg2_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 2, &test_data_length);
     
     if (arg0_result != 0 || arg1_result != 0 || arg2_result != 0) {
         snprintf(
