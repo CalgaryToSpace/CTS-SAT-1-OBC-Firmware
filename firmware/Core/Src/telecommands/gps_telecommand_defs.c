@@ -1,3 +1,4 @@
+#include "gps/gps_executor.h"
 #include "telecommands/telecommand_definitions.h"
 #include "uart_handler/uart_handler.h"
 #include "telecommands/eps_telecommands.h"
@@ -50,16 +51,19 @@ uint8_t TCMDEXEC_gps_set_enabled(const char *args_str, TCMD_TelecommandChannel_e
         "log versionb once\n"
     };
 
+
     for (size_t i = 0; i < sizeof(gps_setup_cmds) / sizeof(gps_setup_cmds[0]); i++) {
-        if (HAL_UART_Transmit(&huart3, (uint8_t *)gps_setup_cmds[i], strlen(gps_setup_cmds[i]), HAL_MAX_DELAY) != HAL_OK) {
+
+        uint8_t gps_setup_transmission_result = GPS_TCMD_transmit_log_command(gps_setup_cmds[i]);
+        if (gps_setup_transmission_result != 0) {
             // Transmission error handling
             snprintf(response_output_buf, response_output_buf_len, "Error: GPS UART transmission failed");
             return 3;
         }
-    }
 
-    // Wait for half a second
-    HAL_Delay(500);
+        // Wait for half a second
+        HAL_Delay(500);
+    }
 
     // Call GPS Uart Toggle Function
     GPS_set_uart_interrupt_state(toggle_status);
@@ -115,7 +119,14 @@ uint8_t TCMDEXEC_gps_log_bestxyza(const char *args_str, TCMD_TelecommandChannel_
 
 
     // Transmit the bestxyza log command
+    const uint8_t gps_transmit_result = GPS_TCMD_transmit_log_command(gps_log_command);
 
+    if (gps_transmit_result != 0) {
+        // Transmission error handling
+        snprintf(response_output_buf, response_output_buf_len, "Error: GPS UART transmission failed");
+        return 3;
+    }
+    
     // Verify that the transmission and received the "OK" response
     // - This could be done in the gps log command function.
 
@@ -169,6 +180,13 @@ uint8_t TCMDEXEC_gps_log_timea(const char *args_str, TCMD_TelecommandChannel_enu
 
 
     // Transmit the timea log command
+    const uint8_t gps_transmit_result = GPS_TCMD_transmit_log_command(gps_log_command);
+
+    if (gps_transmit_result != 0) {
+        // Transmission error handling
+        snprintf(response_output_buf, response_output_buf_len, "Error: GPS UART transmission failed");
+        return 3;
+    }
 
     // Verify that the transmission and received the "OK" response
     // - This could be done in the gps log command function.
