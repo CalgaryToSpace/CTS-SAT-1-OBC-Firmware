@@ -421,6 +421,11 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_file = "gps/gps_ascii_parsers",
         .test_func_name = "GPS_timea_data_parser"
     },
+    {
+        .test_func = TEST_EXEC__GPS_check_starts_with_log_prefix,
+        .test_file = "gps/gps_args_helpers",
+        .test_func_name = "GPS_check_starts_with_log_prefix"
+    },
 };
 
 // extern

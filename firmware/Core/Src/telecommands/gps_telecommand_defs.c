@@ -122,9 +122,9 @@ uint8_t TCMDEXEC_gps_log_bestxyza(const char *args_str, TCMD_TelecommandChannel_
     return 0;
 }
 
-/// @brief Telecommand: Transmit the bestxyza log command through the GPS receiver UART line
+/// @brief Telecommand: Transmit the timea log command through the GPS receiver UART line
 /// @param args_str
-/// - Arg 0: Time interval for bestxyza log command in seconds (integer)
+/// - Arg 0: Time interval for timea log command in seconds (integer)
 /// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)

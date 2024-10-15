@@ -11,4 +11,6 @@ uint8_t TEST_EXEC__GPS_header_response_parser();
 uint8_t TEST_EXEC__GPS_bestxyza_data_parser();
 uint8_t TEST_EXEC__GPS_timea_data_parser();
 
+uint8_t TEST_EXEC__GPS_check_starts_with_log_prefix();
+
 #endif // __INCLUDE_GUARD__UNIT_TEST_GPS_H__

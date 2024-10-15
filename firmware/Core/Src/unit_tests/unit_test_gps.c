@@ -2,6 +2,7 @@
 #include "unit_tests/unit_test_helpers.h"
 #include "transforms/number_comparisons.h"
 #include "gps/gps.h"
+#include "gps/gps_args_helpers.h"
 #include "gps/gps_ascii_parsers.h"
 #include "gps/gps_types.h"
 
@@ -384,5 +385,34 @@ uint8_t TEST_EXEC__GPS_timea_data_parser(){
     TEST_ASSERT_TRUE(parse_result == 7);
     
 
+    return 0;
+}
+
+
+uint8_t TEST_EXEC__GPS_check_starts_with_log_prefix(){
+    char gps_log_command[100] = "log bestxyza ontime 1";
+
+    // Successfull test cases
+    uint8_t parse_result = GPS_check_starts_with_log_prefix(gps_log_command);
+    TEST_ASSERT_TRUE(parse_result == 0);
+
+    strcpy(gps_log_command, "unlog bestposa");
+    parse_result = GPS_check_starts_with_log_prefix(gps_log_command);
+    TEST_ASSERT_TRUE(parse_result == 0);
+
+    strcpy(gps_log_command, "unlogall");
+    parse_result = GPS_check_starts_with_log_prefix(gps_log_command);
+    TEST_ASSERT_TRUE(parse_result == 0);
+
+
+    // Failure test cases
+    strcpy(gps_log_command, "");
+    parse_result = GPS_check_starts_with_log_prefix(gps_log_command);
+    TEST_ASSERT_TRUE(parse_result == 1);
+
+    strcpy(gps_log_command, "bestxyza ontime 1");
+    parse_result = GPS_check_starts_with_log_prefix(gps_log_command);
+    TEST_ASSERT_TRUE(parse_result == 1);
+    
     return 0;
 }
