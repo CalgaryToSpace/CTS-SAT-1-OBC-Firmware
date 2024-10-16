@@ -554,7 +554,7 @@ uint8_t TCMDEXEC_ant_report_antenna_deployment_activation_time(const char *args_
         return 4;
     }
 
-    uint16_t response;
+    uint32_t response;
     const uint8_t comms_status = ANT_CMD_report_antenna_deployment_activation_time(i2c_bus_mcu,(uint8_t)antenna, &response);
     if (comms_status != 0) {
         snprintf(
@@ -566,7 +566,7 @@ uint8_t TCMDEXEC_ant_report_antenna_deployment_activation_time(const char *args_
     snprintf(
         response_output_buf,
         response_output_buf_len,
-        "Success, antenna %u deployment time: %d", (uint8_t)antenna, response);
+        "Success, antenna %u deployment time: %ld", (uint8_t)antenna, response);
     return 0;
 }
 
