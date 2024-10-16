@@ -45,6 +45,7 @@ uint8_t TEST_EXEC__ADCS_pack_to_raw_gps_struct();
 uint8_t TEST_EXEC__ADCS_pack_to_measurements_struct();
 uint8_t TEST_EXEC__ADCS_pack_to_acp_execution_state_struct();
 uint8_t TEST_EXEC__ADCS_pack_to_current_state_1_struct();
+uint8_t TEST_EXEC__ADCS_pack_to_raw_star_tracker_struct();
 
 #endif // __INCLUDE_GUARD__ADCS_TEST_PROTOTYPES_H__
 

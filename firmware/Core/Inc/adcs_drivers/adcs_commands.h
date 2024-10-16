@@ -123,5 +123,6 @@ uint8_t ADCS_get_raw_gps_z(ADCS_raw_gps_struct_t *output_struct);
 uint8_t ADCS_get_measurements(ADCS_measurements_struct_t *output_struct);
 uint8_t ADCS_get_acp_execution_state(ADCS_acp_execution_state_struct_t *output_struct);
 uint8_t ADCS_get_current_state_1(ADCS_current_state_1_struct_t *output_struct);
+uint8_t ADCS_get_raw_star_tracker_data(ADCS_raw_star_tracker_struct_t *output_struct);
 
 #endif /* INC_ADCS_COMMANDS_H_ */

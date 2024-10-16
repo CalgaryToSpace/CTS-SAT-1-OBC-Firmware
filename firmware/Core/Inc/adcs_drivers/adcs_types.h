@@ -589,7 +589,45 @@ typedef struct ADCS_current_state_1_struct_t {
 } ADCS_current_state_1_struct_t;
 
 typedef struct ADCS_raw_star_tracker_struct_t {
-    uint8_t pass; // TODO: make this work
+    uint8_t num_stars_detected;
+    uint8_t star_image_noise;
+    uint8_t invalid_stars;
+    uint8_t num_stars_identified;
+    uint8_t identification_mode;
+    uint8_t image_dark_value;
+    uint16_t sample_period;
+    bool image_capture_success:1; // 1-bit bool
+    bool detection_success:1; // 1-bit bool
+    bool identification_success:1; // 1-bit bool
+    bool attitude_success:1; // 1-bit bool
+    bool processing_time_error:1; // 1-bit bool
+    bool tracking_module_enabled:1; // 1-bit bool
+    bool prediction_enabled:1; // 1-bit bool
+    bool comms_error:1; // 1-bit bool
+    uint8_t star1_confidence;
+    uint8_t star2_confidence;
+    uint8_t star3_confidence;
+    uint16_t magnitude_star1;
+    uint16_t magnitude_star2;
+    uint16_t magnitude_star3;
+    uint16_t catalogue_star1;
+    int16_t centroid_x_star1;
+    int16_t centroid_y_star1;
+    uint16_t catalogue_star2;
+    int16_t centroid_x_star2;
+    int16_t centroid_y_star2;
+    uint16_t catalogue_star3;
+    int16_t centroid_x_star3;
+    int16_t centroid_y_star3;
+    uint16_t capture_time_ms;
+    uint16_t detection_time_ms;
+    uint16_t identification_time_ms;
+    int32_t x_axis_rate_micro;
+    int32_t y_axis_rate_micro;
+    int32_t z_axis_rate_micro;
+    int32_t q0_micro;
+    int32_t q1_micro;
+    int32_t q2_micro;
 } ADCS_raw_star_tracker_struct_t;
 
 /* Commissioning Structs */

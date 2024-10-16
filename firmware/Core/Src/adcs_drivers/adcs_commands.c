@@ -1039,3 +1039,17 @@ uint8_t ADCS_get_current_state_1(ADCS_current_state_1_struct_t *output_struct) {
 
     return tlm_status;
 }
+
+/// @brief Instruct the ADCS to execute the ADCS_get_raw_star_tracker_data command. 
+/// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_get_raw_star_tracker_data(ADCS_raw_star_tracker_struct_t *output_struct) {
+    uint8_t data_length = 6;
+    uint8_t data_received[data_length]; // define temp buffer
+
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_STAR_TRACKER, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+    ADCS_pack_to_raw_star_tracker_struct(data_received, output_struct);
+
+    return tlm_status;
+}

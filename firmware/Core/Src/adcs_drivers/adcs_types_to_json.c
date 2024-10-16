@@ -1084,3 +1084,45 @@ uint8_t ADCS_current_state_1_struct_TO_json(const ADCS_current_state_1_struct_t 
     
     return 0;
 }
+
+uint8_t ADCS_raw_star_tracker_struct_TO_json(const ADCS_raw_star_tracker_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
+    if (data == NULL || json_output_str == NULL || json_output_str_len < 1400) {
+        return 1; // Error: invalid input or too short buffer
+    }
+
+    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len,
+                                    "{\"num_stars_detected\":%u,\"star_image_noise\":%u,\"invalid_stars\":%u,"
+                                    "\"num_stars_identified\":%u,\"identification_mode\":%u,\"image_dark_value\":%u,"
+                                    "\"image_capture_success\":%s,\"detection_success\":%s,\"identification_success\":%s,"
+                                    "\"attitude_success\":%s,\"processing_time_error\":%s,\"tracking_module_enabled\":%s,"
+                                    "\"prediction_enabled\":%s,\"comms_error\":%s,\"sample_period\":%u,"
+                                    "\"star1_confidence\":%u,\"star2_confidence\":%u,\"star3_confidence\":%u,"
+                                    "\"magnitude_star1\":%u,\"magnitude_star2\":%u,\"magnitude_star3\":%u,"
+                                    "\"catalogue_star1\":%u,\"centroid_x_star1\":%d,\"centroid_y_star1\":%d,"
+                                    "\"catalogue_star2\":%u,\"centroid_x_star2\":%d,\"centroid_y_star2\":%d,"
+                                    "\"catalogue_star3\":%u,\"centroid_x_star3\":%d,\"centroid_y_star3\":%d,"
+                                    "\"capture_time_ms\":%u,\"detection_time_ms\":%u,\"identification_time_ms\":%u,"
+                                    "\"x_axis_rate_micro\":%ld,\"y_axis_rate_micro\":%ld,\"z_axis_rate_micro\":%ld,"
+                                    "\"q0_micro\":%ld,\"q1_micro\":%ld,\"q2_micro\":%ld}",
+                                    data->num_stars_detected, data->star_image_noise, data->invalid_stars,
+                                    data->num_stars_identified, data->identification_mode, data->image_dark_value,
+                                    data->image_capture_success ? "true" : "false", data->detection_success ? "true" : "false",
+                                    data->identification_success ? "true" : "false", data->attitude_success ? "true" : "false",
+                                    data->processing_time_error ? "true" : "false", data->tracking_module_enabled ? "true" : "false",
+                                    data->prediction_enabled ? "true" : "false", data->comms_error ? "true" : "false",
+                                    data->sample_period, data->star1_confidence, data->star2_confidence, data->star3_confidence,
+                                    data->magnitude_star1, data->magnitude_star2, data->magnitude_star3, data->catalogue_star1,
+                                    data->centroid_x_star1, data->centroid_y_star1, data->catalogue_star2, data->centroid_x_star2,
+                                    data->centroid_y_star2, data->catalogue_star3, data->centroid_x_star3, data->centroid_y_star3,
+                                    data->capture_time_ms, data->detection_time_ms, data->identification_time_ms,
+                                    data->x_axis_rate_micro, data->y_axis_rate_micro, data->z_axis_rate_micro, data->q0_micro, data->q1_micro, data->q2_micro);
+
+    if (snprintf_ret < 0) {
+        return 2; // Error: snprintf encoding error
+    }
+    if (snprintf_ret >= json_output_str_len) {
+        return 3; // Error: string buffer too short
+    }
+
+    return 0;
+}

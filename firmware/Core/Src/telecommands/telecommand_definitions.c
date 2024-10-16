@@ -651,6 +651,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_func = TCMDEXEC_adcs_get_current_state_1,
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_get_raw_star_tracker_data",
+        .tcmd_func = TCMDEXEC_adcs_get_raw_star_tracker_data,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     }, 
     // ****************** END SECTION: telecommand_adcs ******************
 

@@ -648,47 +648,100 @@ uint8_t TEST_EXEC__ADCS_pack_to_current_state_1_struct() {
 
     ADCS_pack_to_current_state_1_struct(input_params, &result);
 
-    TEST_ASSERT_TRUE(result.estimation_mode = ADCS_ESTIMATION_MODE_MAGNETOMETER_AND_FINE_SUN_TRIAD_ALGORITHM);
-    TEST_ASSERT_TRUE(result.control_mode = ADCS_CONTROL_MODE_Y_WHEEL_MOMENTUM_STABILIZED_STEADY_STATE);
-    TEST_ASSERT_TRUE(result.run_mode = ADCS_RUN_MODE_SIMULATION);
-    TEST_ASSERT_TRUE(result.asgp4_mode = ADCS_ASGP4_MODE_BACKGROUND);
-    TEST_ASSERT_TRUE(result.cubecontrol_signal_enabled = false);
-    TEST_ASSERT_TRUE(result.cubecontrol_motor_enabled = true);
-    TEST_ASSERT_TRUE(result.cubesense1_enabled = false);
-    TEST_ASSERT_TRUE(result.cubesense2_enabled = true);
-    TEST_ASSERT_TRUE(result.cubewheel1_enabled = true);
-    TEST_ASSERT_TRUE(result.cubewheel2_enabled = true);
-    TEST_ASSERT_TRUE(result.cubewheel3_enabled = false);
-    TEST_ASSERT_TRUE(result.cubestar_enabled = false);
-    TEST_ASSERT_TRUE(result.gps_receiver_enabled = false);
-    TEST_ASSERT_TRUE(result.gps_lna_power_enabled = false);
-    TEST_ASSERT_TRUE(result.motor_driver_enabled = false);
-    TEST_ASSERT_TRUE(result.sun_above_local_horizon = false);
-    TEST_ASSERT_TRUE(result.cubesense1_comm_error = false);
-    TEST_ASSERT_TRUE(result.cubesense2_comm_error = false);
-    TEST_ASSERT_TRUE(result.cubecontrol_signal_comm_error = true);
-    TEST_ASSERT_TRUE(result.cubecontrol_motor_comm_error = false);
-    TEST_ASSERT_TRUE(result.cubewheel1_comm_error = false);
-    TEST_ASSERT_TRUE(result.cubewheel2_comm_error = false);
-    TEST_ASSERT_TRUE(result.cubewheel3_comm_error = true);
-    TEST_ASSERT_TRUE(result.cubestar_comm_error = false);
-    TEST_ASSERT_TRUE(result.magnetometer_range_error = true);
-    TEST_ASSERT_TRUE(result.cam1_sram_overcurrent_detected = true);
-    TEST_ASSERT_TRUE(result.cam1_3v3_overcurrent_detected = false);
-    TEST_ASSERT_TRUE(result.cam1_sensor_busy_error = true);
-    TEST_ASSERT_TRUE(result.cam1_sensor_detection_error = false);
-    TEST_ASSERT_TRUE(result.sun_sensor_range_error = true);
-    TEST_ASSERT_TRUE(result.cam2_sram_overcurrent_detected = false);
-    TEST_ASSERT_TRUE(result.cam2_3v3_overcurrent_detected = true);
-    TEST_ASSERT_TRUE(result.cam2_sensor_busy_error = true);
-    TEST_ASSERT_TRUE(result.cam2_sensor_detection_error = true);
-    TEST_ASSERT_TRUE(result.nadir_sensor_range_error = false);
-    TEST_ASSERT_TRUE(result.rate_sensor_range_error = false);
-    TEST_ASSERT_TRUE(result.wheel_speed_range_error = true);
-    TEST_ASSERT_TRUE(result.coarse_sun_sensor_error = true);
-    TEST_ASSERT_TRUE(result.startracker_match_error = true);
-    TEST_ASSERT_TRUE(result.startracker_overcurrent_detected = true);
+    TEST_ASSERT_TRUE(result.estimation_mode == ADCS_ESTIMATION_MODE_MAGNETOMETER_AND_FINE_SUN_TRIAD_ALGORITHM);
+    TEST_ASSERT_TRUE(result.control_mode == ADCS_CONTROL_MODE_Y_WHEEL_MOMENTUM_STABILIZED_STEADY_STATE);
+    TEST_ASSERT_TRUE(result.run_mode == ADCS_RUN_MODE_SIMULATION);
+    TEST_ASSERT_TRUE(result.asgp4_mode == ADCS_ASGP4_MODE_BACKGROUND);
+    TEST_ASSERT_TRUE(result.cubecontrol_signal_enabled == false);
+    TEST_ASSERT_TRUE(result.cubecontrol_motor_enabled == true);
+    TEST_ASSERT_TRUE(result.cubesense1_enabled == false);
+    TEST_ASSERT_TRUE(result.cubesense2_enabled == true);
+    TEST_ASSERT_TRUE(result.cubewheel1_enabled == true);
+    TEST_ASSERT_TRUE(result.cubewheel2_enabled == true);
+    TEST_ASSERT_TRUE(result.cubewheel3_enabled == false);
+    TEST_ASSERT_TRUE(result.cubestar_enabled == false);
+    TEST_ASSERT_TRUE(result.gps_receiver_enabled == false);
+    TEST_ASSERT_TRUE(result.gps_lna_power_enabled == false);
+    TEST_ASSERT_TRUE(result.motor_driver_enabled == false);
+    TEST_ASSERT_TRUE(result.sun_above_local_horizon == false);
+    TEST_ASSERT_TRUE(result.cubesense1_comm_error == false);
+    TEST_ASSERT_TRUE(result.cubesense2_comm_error == false);
+    TEST_ASSERT_TRUE(result.cubecontrol_signal_comm_error == true);
+    TEST_ASSERT_TRUE(result.cubecontrol_motor_comm_error == false);
+    TEST_ASSERT_TRUE(result.cubewheel1_comm_error == false);
+    TEST_ASSERT_TRUE(result.cubewheel2_comm_error == false);
+    TEST_ASSERT_TRUE(result.cubewheel3_comm_error == true);
+    TEST_ASSERT_TRUE(result.cubestar_comm_error == false);
+    TEST_ASSERT_TRUE(result.magnetometer_range_error == true);
+    TEST_ASSERT_TRUE(result.cam1_sram_overcurrent_detected == true);
+    TEST_ASSERT_TRUE(result.cam1_3v3_overcurrent_detected == false);
+    TEST_ASSERT_TRUE(result.cam1_sensor_busy_error == true);
+    TEST_ASSERT_TRUE(result.cam1_sensor_detection_error == false);
+    TEST_ASSERT_TRUE(result.sun_sensor_range_error == true);
+    TEST_ASSERT_TRUE(result.cam2_sram_overcurrent_detected == false);
+    TEST_ASSERT_TRUE(result.cam2_3v3_overcurrent_detected == true);
+    TEST_ASSERT_TRUE(result.cam2_sensor_busy_error == true);
+    TEST_ASSERT_TRUE(result.cam2_sensor_detection_error == true);
+    TEST_ASSERT_TRUE(result.nadir_sensor_range_error == false);
+    TEST_ASSERT_TRUE(result.rate_sensor_range_error == false);
+    TEST_ASSERT_TRUE(result.wheel_speed_range_error == false);
+    TEST_ASSERT_TRUE(result.coarse_sun_sensor_error == false);
+    TEST_ASSERT_TRUE(result.startracker_match_error == false);
+    TEST_ASSERT_TRUE(result.startracker_overcurrent_detected == false);
 
     return 0;
 
+}
+
+uint8_t TEST_EXEC__ADCS_pack_to_raw_star_tracker_struct() {
+    uint8_t input_params[57] = {0xae, 0xbc, 0x22, 0x53, 0x78, 0x37, 0x48, 0x83, 0x49, 0x85, 0x74, 0x78, 
+                                0x90, 0xab, 0x89, 0x09, 0x0e, 0x97, 0x89, 0xc8, 0x88, 0x7d, 0x09, 0x0e, 
+                                0x07, 0x90, 0xd0, 0x9c, 0xed, 0xc9, 0x07, 0xac, 0x0b, 0x70, 0xe7, 0x7d, 
+                                0xc0, 0x9e, 0xae, 0xbc, 0x22, 0x53, 0x78, 0x37, 0x48, 0x83, 0x49, 0x85, 
+                                0x74, 0x78, 0x90, 0xab, 0x89, 0xae};
+
+    ADCS_raw_star_tracker_struct_t result;
+    ADCS_pack_to_raw_star_tracker_struct(input_params, &result);
+
+    TEST_ASSERT_TRUE(result.num_stars_detected == 174);
+    TEST_ASSERT_TRUE(result.star_image_noise == 188);
+    TEST_ASSERT_TRUE(result.invalid_stars == 34);
+    TEST_ASSERT_TRUE(result.num_stars_identified == 83);
+    TEST_ASSERT_TRUE(result.identification_mode == 120);
+    TEST_ASSERT_TRUE(result.image_dark_value == 55);
+    TEST_ASSERT_TRUE(result.image_capture_success == false);
+    TEST_ASSERT_TRUE(result.detection_success == false);
+    TEST_ASSERT_TRUE(result.identification_success == false);
+    TEST_ASSERT_TRUE(result.attitude_success == true);
+    TEST_ASSERT_TRUE(result.processing_time_error == false);
+    TEST_ASSERT_TRUE(result.tracking_module_enabled == false);
+    TEST_ASSERT_TRUE(result.prediction_enabled == true);
+    TEST_ASSERT_TRUE(result.comms_error == false);
+    TEST_ASSERT_TRUE(result.sample_period == 18819);
+    TEST_ASSERT_TRUE(result.star1_confidence == 133);
+    TEST_ASSERT_TRUE(result.star2_confidence == 116);
+    TEST_ASSERT_TRUE(result.star3_confidence == 120);
+    TEST_ASSERT_TRUE(result.magnitude_star1 == 43920);
+    TEST_ASSERT_TRUE(result.magnitude_star2 == 2441);
+    TEST_ASSERT_TRUE(result.magnitude_star3 == 38670);
+    TEST_ASSERT_TRUE(result.catalogue_star1 == 51337);
+    TEST_ASSERT_TRUE(result.centroid_x_star1 == 32136);
+    TEST_ASSERT_TRUE(result.centroid_y_star1 == 3593);
+    TEST_ASSERT_TRUE(result.catalogue_star2 == 36871);
+    TEST_ASSERT_TRUE(result.centroid_x_star2 == -25392);
+    TEST_ASSERT_TRUE(result.centroid_y_star2 == -13843);
+    TEST_ASSERT_TRUE(result.catalogue_star3 == 44039);
+    TEST_ASSERT_TRUE(result.centroid_x_star3 == 28683);
+    TEST_ASSERT_TRUE(result.centroid_y_star3 == 32231);
+    TEST_ASSERT_TRUE(result.capture_time_ms == 40640);
+    TEST_ASSERT_TRUE(result.detection_time_ms == 48302);
+    TEST_ASSERT_TRUE(result.identification_time_ms == 21282);
+    TEST_ASSERT_TRUE(result.x_axis_rate_micro == 1420000);
+    TEST_ASSERT_TRUE(result.y_axis_rate_micro == -3192800);
+    TEST_ASSERT_TRUE(result.z_axis_rate_micro == -3141500);
+    TEST_ASSERT_TRUE(result.q0_micro == 3083600);
+    TEST_ASSERT_TRUE(result.q1_micro == -2161600);
+    TEST_ASSERT_TRUE(result.q2_micro == -2085500);
+
+    return 0;
 }

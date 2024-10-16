@@ -601,50 +601,95 @@ uint8_t ADCS_pack_to_current_state_1_struct(uint8_t* data_received, ADCS_current
     
     output_struct->estimation_mode = (data_received[0] >> 4) & 0xf;
     
-    output_struct->control_mode = (data_received[1]) & 0xf;  
+    output_struct->control_mode = (data_received[0]) & 0xf;  
+
+    output_struct->run_mode = (data_received[1]) & 0x3;  
+    output_struct->asgp4_mode = (data_received[1] >> 2) & 0x3; 
+    output_struct->cubecontrol_signal_enabled = (data_received[1] >> 4) & 0x01; // 1-bit bool
+    output_struct->cubecontrol_motor_enabled = (data_received[1] >> 5) & 0x01; // 1-bit bool
+    output_struct->cubesense1_enabled = (data_received[1] >> 6) & 0x01; // 1-bit bool
+    output_struct->cubesense2_enabled = (data_received[1] >> 7) & 0x01; // 1-bit bool
+
+    output_struct->cubewheel1_enabled = (data_received[2]) & 0x01; // 1-bit bool
+    output_struct->cubewheel2_enabled = (data_received[2] >> 1) & 0x01; // 1-bit bool
+    output_struct->cubewheel3_enabled = (data_received[2] >> 2) & 0x01; // 1-bit bool
+    output_struct->cubestar_enabled = (data_received[2] >> 3) & 0x01; // 1-bit bool
+    output_struct->gps_receiver_enabled = (data_received[2] >> 4) & 0x01; // 1-bit bool
+    output_struct->gps_lna_power_enabled = (data_received[2] >> 5) & 0x01; // 1-bit bool
+    output_struct->motor_driver_enabled = (data_received[2] >> 6) & 0x01; // 1-bit bool
+    output_struct->sun_above_local_horizon = (data_received[2] >> 7) & 0x01; // 1-bit bool
+
+    output_struct->cubesense1_comm_error = (data_received[3]) & 0x01; // 1-bit bool
+    output_struct->cubesense2_comm_error = (data_received[3] >> 1) & 0x01; // 1-bit bool
+    output_struct->cubecontrol_signal_comm_error = (data_received[3] >> 2) & 0x01; // 1-bit bool
+    output_struct->cubecontrol_motor_comm_error = (data_received[3] >> 3) & 0x01; // 1-bit bool
+    output_struct->cubewheel1_comm_error = (data_received[3] >> 4) & 0x01; // 1-bit bool
+    output_struct->cubewheel2_comm_error = (data_received[3] >> 5) & 0x01; // 1-bit bool
+    output_struct->cubewheel3_comm_error = (data_received[3] >> 6) & 0x01; // 1-bit bool
+    output_struct->cubestar_comm_error = (data_received[3] >> 7) & 0x01; // 1-bit bool
+
+    output_struct->magnetometer_range_error = (data_received[4]) & 0x01; // 1-bit bool
+    output_struct->cam1_sram_overcurrent_detected = (data_received[4] >> 1) & 0x01; // 1-bit bool
+    output_struct->cam1_3v3_overcurrent_detected = (data_received[4] >> 2) & 0x01; // 1-bit bool
+    output_struct->cam1_sensor_busy_error = (data_received[4] >> 3) & 0x01; // 1-bit bool
+    output_struct->cam1_sensor_detection_error = (data_received[4] >> 4) & 0x01; // 1-bit bool
+    output_struct->sun_sensor_range_error = (data_received[4] >> 5) & 0x01; // 1-bit bool
+    output_struct->cam2_sram_overcurrent_detected = (data_received[4] >> 6) & 0x01; // 1-bit bool
+    output_struct->cam2_3v3_overcurrent_detected = (data_received[4] >> 7) & 0x01; // 1-bit bool
+
+    output_struct->cam2_sensor_busy_error = (data_received[5]) & 0x01; // 1-bit bool
+    output_struct->cam2_sensor_detection_error = (data_received[5] >> 1) & 0x01; // 1-bit bool
+    output_struct->nadir_sensor_range_error = (data_received[5] >> 2) & 0x01; // 1-bit bool
+    output_struct->rate_sensor_range_error = (data_received[5] >> 3) & 0x01; // 1-bit bool
+    output_struct->wheel_speed_range_error = (data_received[5] >> 4) & 0x01; // 1-bit bool
+    output_struct->coarse_sun_sensor_error = (data_received[5] >> 5) & 0x01; // 1-bit bool
+    output_struct->startracker_match_error = (data_received[5] >> 6) & 0x01; // 1-bit bool
+    output_struct->startracker_overcurrent_detected = (data_received[5] >> 7) & 0x01; // 1-bit bool
+
+    return 0;
+}
+
+uint8_t ADCS_pack_to_raw_star_tracker_struct(uint8_t *input_data, ADCS_raw_star_tracker_struct_t *output_data) {
     
-    output_struct->run_mode = (data_received[2] >> 6) & 0x3;  
-    output_struct->asgp4_mode = (data_received[2] >> 4) & 0x3; 
-    output_struct->cubecontrol_signal_enabled = (data_received[2] >> 3) & 0x01; // 1-bit bool
-    output_struct->cubecontrol_motor_enabled = (data_received[2] >> 2) & 0x01; // 1-bit bool
-    output_struct->cubesense1_enabled = (data_received[2] >> 1) & 0x01; // 1-bit bool
-    output_struct->cubesense2_enabled = (data_received[2]) & 0x01; // 1-bit bool
-
-    output_struct->cubewheel1_enabled = (data_received[3] >> 7) & 0x01; // 1-bit bool
-    output_struct->cubewheel2_enabled = (data_received[3] >> 6) & 0x01; // 1-bit bool
-    output_struct->cubewheel3_enabled = (data_received[3] >> 5) & 0x01; // 1-bit bool
-    output_struct->cubestar_enabled = (data_received[3] >> 4) & 0x01; // 1-bit bool
-    output_struct->gps_receiver_enabled = (data_received[3] >> 3) & 0x01; // 1-bit bool
-    output_struct->gps_lna_power_enabled = (data_received[3] >> 2) & 0x01; // 1-bit bool
-    output_struct->motor_driver_enabled = (data_received[3] >> 1) & 0x01; // 1-bit bool
-    output_struct->sun_above_local_horizon = (data_received[3]) & 0x01; // 1-bit bool
-
-    output_struct->cubesense1_comm_error = (data_received[4] >> 7) & 0x01; // 1-bit bool
-    output_struct->cubesense2_comm_error = (data_received[4] >> 6) & 0x01; // 1-bit bool
-    output_struct->cubecontrol_signal_comm_error = (data_received[4] >> 5) & 0x01; // 1-bit bool
-    output_struct->cubecontrol_motor_comm_error = (data_received[4] >> 4) & 0x01; // 1-bit bool
-    output_struct->cubewheel1_comm_error = (data_received[4] >> 3) & 0x01; // 1-bit bool
-    output_struct->cubewheel2_comm_error = (data_received[4] >> 2) & 0x01; // 1-bit bool
-    output_struct->cubewheel3_comm_error = (data_received[4] >> 1) & 0x01; // 1-bit bool
-    output_struct->cubestar_comm_error = (data_received[4] >> 0) & 0x01; // 1-bit bool
-
-    output_struct->magnetometer_range_error = (data_received[5] >> 7) & 0x01; // 1-bit bool
-    output_struct->cam1_sram_overcurrent_detected = (data_received[5] >> 6) & 0x01; // 1-bit bool
-    output_struct->cam1_3v3_overcurrent_detected = (data_received[5] >> 5) & 0x01; // 1-bit bool
-    output_struct->cam1_sensor_busy_error = (data_received[5] >> 4) & 0x01; // 1-bit bool
-    output_struct->cam1_sensor_detection_error = (data_received[5] >> 3) & 0x01; // 1-bit bool
-    output_struct->sun_sensor_range_error = (data_received[5] >> 2) & 0x01; // 1-bit bool
-    output_struct->cam2_sram_overcurrent_detected = (data_received[5] >> 1) & 0x01; // 1-bit bool
-    output_struct->cam2_3v3_overcurrent_detected = (data_received[5]) & 0x01; // 1-bit bool
-
-    output_struct->cam2_sensor_busy_error = (data_received[6] >> 7) & 0x01; // 1-bit bool
-    output_struct->cam2_sensor_detection_error = (data_received[6] >> 6) & 0x01; // 1-bit bool
-    output_struct->nadir_sensor_range_error = (data_received[6] >> 5) & 0x01; // 1-bit bool
-    output_struct->rate_sensor_range_error = (data_received[6] >> 4) & 0x01; // 1-bit bool
-    output_struct->wheel_speed_range_error = (data_received[6] >> 3) & 0x01; // 1-bit bool
-    output_struct->coarse_sun_sensor_error = (data_received[6] >> 2) & 0x01; // 1-bit bool
-    output_struct->startracker_match_error = (data_received[6] >> 1) & 0x01; // 1-bit bool
-    output_struct->startracker_overcurrent_detected = (data_received[6]) & 0x01; // 1-bit bool
+    output_data->num_stars_detected = input_data[0];
+    output_data->star_image_noise = input_data[1];
+    output_data->invalid_stars = input_data[2];
+    output_data->num_stars_identified = input_data[3];
+    output_data->identification_mode = input_data[4];
+    output_data->image_dark_value = input_data[5];
+    output_data->image_capture_success = input_data[6] & 0x01;
+    output_data->detection_success = (input_data[6] >> 1) & 0x01;
+    output_data->identification_success = (input_data[6] >> 2) & 0x01;
+    output_data->attitude_success = (input_data[6] >> 3) & 0x01;
+    output_data->processing_time_error = (input_data[6] >> 4) & 0x01;
+    output_data->tracking_module_enabled = (input_data[6] >> 5) & 0x01;
+    output_data->prediction_enabled = (input_data[6] >> 6) & 0x01;
+    output_data->comms_error = (input_data[6] >> 7) & 0x01;
+    output_data->sample_period = (input_data[8] << 8) | input_data[7];
+    output_data->star1_confidence = input_data[9];
+    output_data->star2_confidence = input_data[10];
+    output_data->star3_confidence = input_data[11];
+    output_data->magnitude_star1 = (input_data[13] << 8) | input_data[12];
+    output_data->magnitude_star2 = (input_data[15] << 8) | input_data[14];
+    output_data->magnitude_star3 = (input_data[17] << 8) | input_data[16];
+    output_data->catalogue_star1 = (input_data[19] << 8) | input_data[18];
+    output_data->centroid_x_star1 = (input_data[21] << 8) | input_data[20];
+    output_data->centroid_y_star1 = (input_data[23] << 8) | input_data[22];
+    output_data->catalogue_star2 = (input_data[25] << 8) | input_data[24];
+    output_data->centroid_x_star2 = (input_data[27] << 8) | input_data[26];
+    output_data->centroid_y_star2 = (input_data[29] << 8) | input_data[28];
+    output_data->catalogue_star3 = (input_data[31] << 8) | input_data[30];
+    output_data->centroid_x_star3 = (input_data[33] << 8) | input_data[32];
+    output_data->centroid_y_star3 = (input_data[35] << 8) | input_data[34];
+    output_data->capture_time_ms = (input_data[37] << 8) | input_data[36];
+    output_data->detection_time_ms = (input_data[39] << 8) | input_data[38];
+    output_data->identification_time_ms = (input_data[41] << 8) | input_data[40];
+    output_data->x_axis_rate_micro = (int32_t) ((int16_t) ((input_data[43] << 8) | input_data[42])) * 100;
+    output_data->y_axis_rate_micro = (int32_t) ((int16_t) ((input_data[45] << 8) | input_data[44])) * 100;
+    output_data->z_axis_rate_micro = (int32_t) ((int16_t) ((input_data[47] << 8) | input_data[46])) * 100;
+    output_data->q0_micro = (int32_t) ((int16_t) ((input_data[49] << 8) | input_data[48])) * 100;
+    output_data->q1_micro = (int32_t) ((int16_t) ((input_data[51] << 8) | input_data[50])) * 100;
+    output_data->q2_micro = (int32_t) ((int16_t) ((input_data[53] << 8) | input_data[52])) * 100;
 
     return 0;
 }
