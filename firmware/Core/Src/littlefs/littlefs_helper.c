@@ -162,7 +162,6 @@ int8_t LFS_list_directory(const char root_directory[])
             DEBUG_uart_print_str(" bytes");
         }
         DEBUG_uart_print_str("\n");
-        // TODO: The info struct contains information about directory contents
     }
 
     if (read_dir_result < 0)
@@ -223,11 +222,19 @@ int8_t LFS_make_directory(const char dir_name[])
     const int8_t make_dir_result = lfs_mkdir(&LFS_filesystem, dir_name);
     if (make_dir_result < 0)
     {
-        LOG_message(
+        if (make_dir_result == LFS_ERR_EXIST) {
+            LOG_message(
+            LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "Directory %d already exists.",
+            make_dir_result
+            );
+        } else {
+            LOG_message(
             LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
             "Error %d creating directory.",
             make_dir_result
-        );
+            );
+        }
         return make_dir_result;
     }
 
