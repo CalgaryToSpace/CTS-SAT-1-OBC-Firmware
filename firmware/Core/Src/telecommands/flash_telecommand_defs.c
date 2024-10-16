@@ -89,10 +89,10 @@ uint8_t TCMDEXEC_flash_each_is_reachable(const char *args_str, TCMD_TelecommandC
 }
 
 
-/// @brief Telecommand: Read bytes as hex from a flash address
+/// @brief Telecommand: Read bytes as hex from a page number
 /// @param args_str
 /// - Arg 0: Chip Number (CS number) as uint
-/// - Arg 1: Flash Address as uint
+/// - Arg 1: Page number as uint
 /// - Arg 2: Number of bytes to read as uint
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_flash_read_hex(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
@@ -168,10 +168,10 @@ uint8_t TCMDEXEC_flash_read_hex(const char *args_str, TCMD_TelecommandChannel_en
 }
 
 
-/// @brief Telecommand: Read bytes as hex from a flash address
+/// @brief Telecommand: Write a hex string of bytes to a page number
 /// @param args_str
 /// - Arg 0: Chip Number (CS number) as uint
-/// - Arg 1: Flash Address as uint
+/// - Arg 1: Page number as uint
 /// - Arg 2: Hex string of bytes to write (any case, allows space/underscore separators)
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_flash_write_hex(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
@@ -229,10 +229,10 @@ uint8_t TCMDEXEC_flash_write_hex(const char *args_str, TCMD_TelecommandChannel_e
 }
 
 
-/// @brief Telecommand: Erase a sector of flash memory.
+/// @brief Telecommand: Erase a block of flash memory containing the given page number.
 /// @param args_str
 /// - Arg 0: Chip Number (CS number) as uint
-/// - Arg 1: Flash Address as uint
+/// - Arg 1: Page number as uint
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_flash_erase(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
