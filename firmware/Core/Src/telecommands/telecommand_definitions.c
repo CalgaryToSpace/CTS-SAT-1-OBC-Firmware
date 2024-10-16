@@ -658,6 +658,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     }, 
+    {
+        .tcmd_name = "adcs_save_image_to_sd",
+        .tcmd_func = TCMDEXEC_adcs_save_image_to_sd,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    }, 
     // ****************** END SECTION: telecommand_adcs ******************
 
     // ****************** SECTION: log_telecommand_defs ******************

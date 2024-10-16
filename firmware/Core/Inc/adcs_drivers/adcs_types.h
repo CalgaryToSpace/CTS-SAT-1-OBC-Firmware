@@ -219,6 +219,20 @@ typedef enum ADCS_asgp4_mode_enum_t {
     ADCS_ASGP4_MODE_AUGMENT = 3,
 } ADCS_asgp4_mode_enum_t;
 
+typedef enum ADCS_camera_select_enum_t {
+    ADCS_CAMERA_SELECT_1 = 0,
+    ADCS_CAMERA_SELECT_2 = 1,
+    ADCS_CAMERA_SELECT_STAR = 2,
+} ADCS_camera_select_enum_t;
+
+typedef enum ADCS_image_size_enum_t {
+    ADCS_IMAGE_SIZE_1024_X_1024_PX = 0,
+    ADCS_IMAGE_SIZE_512_X_512_PX = 1,
+    ADCS_IMAGE_SIZE_256_X_256_PX = 2,
+    ADCS_IMAGE_SIZE_128_X_128_PX = 3,
+    ADCS_IMAGE_SIZE_64_X_64_PX = 4,
+} ADCS_image_size_enum_t;
+
 /* Command Structs */
 
 typedef struct ADCS_cmd_ack_struct_t {
@@ -714,10 +728,10 @@ typedef struct ADCS_commissioning_cubestar_star_tracker_commissioning_struct_t {
     ADCS_fine_angular_rates_struct_t fine_estimated_angular_rates;
     ADCS_estimated_attitude_angles_struct_t estimated_attitude_angles;
     ADCS_rated_sensor_rates_struct_t rated_sensor_rates;
-    ADCS_raw_star_tracker_struct_t raw_star_tracker; // TODO: need Raw Star Tracker telemetry (ID 211)
+    ADCS_raw_star_tracker_struct_t raw_star_tracker; 
 } ADCS_commissioning_cubestar_star_tracker_commissioning_struct_t;
 
-// TODO: We also need the ADCS_save_image command
+// TODO: We also need to downlink ADCS data from SD card
 
 typedef struct ADCS_commissioning_zero_bias_3_axis_reaction_wheel_control_struct_t {
     uint8_t pass; // need timestamp

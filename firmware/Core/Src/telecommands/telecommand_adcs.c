@@ -1747,3 +1747,23 @@ uint8_t TCMDEXEC_adcs_get_raw_star_tracker_data(const char *args_str, TCMD_Telec
 
     return status;
 }
+
+/// @brief Telecommand: Save an image to the ADCS onboard SD card
+/// @param args_str 
+///     - Arg 0: Which camera to save the image from; can be Camera 1 (0), Camera 2 (1), or Star (2)
+///     - Arg 1: Resolution of the image to save; can be 1024x1024 (0), 512x512, (1) 256x256, (2) 128x128, (3) or 64x64 (4)
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_save_image_to_sd(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    // parse arguments: first into int64_t, then convert to correct form for input
+    const uint8_t num_args = 2;
+    uint64_t arguments[num_args]; 
+    uint8_t args_8[num_args];
+    for (uint8_t i = 0; i < num_args; i++) {
+        TCMD_extract_uint64_arg(args_str, strlen(args_str), i, &arguments[i]);
+        args_8[i] = (uint8_t) arguments[i];
+    }
+    
+    uint8_t status = ADCS_save_image_to_sd(args_8[0], args_8[1]); 
+    return status;
+}

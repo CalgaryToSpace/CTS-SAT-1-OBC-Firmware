@@ -1053,3 +1053,13 @@ uint8_t ADCS_get_raw_star_tracker_data(ADCS_raw_star_tracker_struct_t *output_st
 
     return tlm_status;
 }
+
+/// @brief Instruct the ADCS to execute the ADCS_Set_Run_Mode command.
+/// @param[in] camera_select Which camera to save the image from; can be Camera 1 (0), Camera 2 (1), or Star (2)
+/// @param[in] image_size Resolution of the image to save; can be 1024x1024 (0), 512x512, (1) 256x256, (2) 128x128, (3) or 64x64 (4)
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_save_image_to_sd(ADCS_camera_select_enum_t camera_select, ADCS_image_size_enum_t image_size) {
+    uint8_t data_send[2] = {camera_select, image_size};
+    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SAVE_IMAGE, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+    return cmd_status;
+}
