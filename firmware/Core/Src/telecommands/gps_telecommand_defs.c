@@ -109,7 +109,7 @@ uint8_t TCMDEXEC_gps_log_bestxyza(const char *args_str, TCMD_TelecommandChannel_
     }
 
     char gps_log_command [50];
-    snprintf(gps_log_command,sizeof(gps_log_command), "LOG BESTXYZA ONTIME %lu", time_interval_seconds);
+    snprintf(gps_log_command,sizeof(gps_log_command), "log bestxyza ontime %lu", time_interval_seconds);
 
     LOG_message(
             LOG_SYSTEM_GPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
@@ -170,7 +170,7 @@ uint8_t TCMDEXEC_gps_log_timea(const char *args_str, TCMD_TelecommandChannel_enu
     }
 
     char gps_log_command [50];
-    snprintf(gps_log_command,sizeof(gps_log_command), "LOG TIMEA ONTIME %lu", time_interval_seconds);
+    snprintf(gps_log_command,sizeof(gps_log_command), "log timea ontime %lu", time_interval_seconds);
 
     LOG_message(
             LOG_SYSTEM_GPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
