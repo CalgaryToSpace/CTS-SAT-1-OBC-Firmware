@@ -14,8 +14,10 @@
 // Variables to track LittleFS on Flash Memory Module
 uint8_t LFS_is_lfs_mounted = 0;
 
-#define FLASH_CHIP_PAGE_SIZE_BYTES 512
-#define FLASH_CHIP_BLOCK_SIZE_BYTES 262144
+// NAND Flash Memory Datasheet https://www.farnell.com/datasheets/3151163.pdf
+// Each page is divided into a 2048-byte data storage region, and a 128 bytes spare area (2176 bytes total).
+#define FLASH_CHIP_PAGE_SIZE_BYTES 2048
+#define FLASH_CHIP_BLOCK_SIZE_BYTES FLASH_CHIP_PAGE_SIZE_BYTES * FLASH_CHIP_PAGES_PER_BLOCK
 #define FLASH_LOOKAHEAD_SIZE 16
 
 // LittleFS Buffers for reading and writing
@@ -214,10 +216,14 @@ int8_t LFS_make_directory(const char dir_name[])
         return 1;
     }
 
-    int8_t make_dir_result = lfs_mkdir(&LFS_filesystem, dir_name);
+    const int8_t make_dir_result = lfs_mkdir(&LFS_filesystem, dir_name);
     if (make_dir_result < 0)
     {
-        DEBUG_uart_print_str("Error creating directory.\n");
+        LOG_message(
+            LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "Error %d creating directory.",
+            make_dir_result
+        );
         return make_dir_result;
     }
 

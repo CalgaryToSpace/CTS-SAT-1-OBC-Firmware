@@ -196,6 +196,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 3,
         .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
     },
+    {
+        .tcmd_name = "flash_reset",
+        .tcmd_func = TCMDEXEC_flash_reset,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_IN_PROGRESS,
+    },
     // ****************** END SECTION: flash_telecommand_defs ******************
 
     // ****************** SECTION: lfs_telecommand_defs ******************
