@@ -2,16 +2,17 @@ import pytest
 import serial
 import time
 import os
-
-# need to setup debugger in json file
-# need to set up env variable
-# need to properly unparse telecommand argument
+from dotenv import load_dotenv
+from pathlib import Path
 
 @pytest.fixture
 def config(): # config that establishes python connection to UART based off of env variables
-    # env_var = os.environ["ENV_VAR"]
-    ser = serial.Serial('COM3', 115200)
+    load_dotenv()
+    ser = serial.Serial(os.getenv("PORT"), int(os.environ["BAUDRATE"]))
     return ser
+
+def test_always_true(config):
+    assert True
 
 def output(config,expected_response):
     response = ""
@@ -51,8 +52,6 @@ def test_block_delay(config):
     else:
         assert False
 
-def test_get_random_byte(config):
-    assert True
 
 
 
