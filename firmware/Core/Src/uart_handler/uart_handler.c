@@ -150,7 +150,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     // TODO: Verify implementation with peripheral connected. Currently configured to follow interrupt based receive
     else if(huart->Instance == UART_gps_port_handle->Instance){
         // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> GPS Data\n");
-
+        
         // Add the byte to the buffer
         if (UART_gps_buffer_write_idx >= UART_gps_buffer_len) {
             // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART response buffer is full\n");
@@ -224,7 +224,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         // Restart reception for next byte
         HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t*) &UART_eps_buffer_last_rx_byte, 1);
     }
-    
+
     else {
         // FIXME: add the rest (camera, MPI, maybe others)
         DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> unknown UART instance\n"); // FIXME: remove
