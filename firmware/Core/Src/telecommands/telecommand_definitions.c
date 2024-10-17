@@ -118,7 +118,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
 
     // ****************** SECTION: uart_telecommand_defs ******************
     {
-        .tcmd_name = "uart_send_receive_data",
+        .tcmd_name = "uart_send_bytes",
         .tcmd_func = TCMDEXEC_uart_send_bytes,
         .number_of_args = 2,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
