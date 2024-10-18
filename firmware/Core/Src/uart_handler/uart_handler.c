@@ -7,6 +7,7 @@
 UART_HandleTypeDef *UART_telecommand_port_handle = &hlpuart1;
 UART_HandleTypeDef *UART_eps_port_handle = &huart5; // TODO: update this
 UART_HandleTypeDef *UART_mpi_port_handle = &huart1;
+UART_HandleTypeDef *UART_gps_port_handle = &huart3; // TODO: update this to the appropriate one
 
 // UART telecommand buffer
 const uint16_t UART_telecommand_buffer_len = 256; // extern
@@ -29,6 +30,16 @@ volatile uint8_t UART_mpi_rx_buffer[50]; // extern
 volatile uint8_t UART_mpi_rx_last_byte = 0; // extern
 volatile uint32_t UART_mpi_rx_last_byte_write_time_ms = 0; // extern
 volatile uint16_t UART_mpi_rx_buffer_write_idx = 0; // extern
+
+// UART GPS buffer
+const uint16_t UART_gps_buffer_len = 512; // extern
+volatile uint8_t UART_gps_buffer[512]; // extern // TODO: confirm that this volatile means that the contents are volatile but the pointer is not
+volatile uint16_t UART_gps_buffer_write_idx = 0; // extern
+volatile uint32_t UART_gps_last_write_time_ms = 0; // extern
+volatile uint8_t UART_gps_buffer_last_rx_byte = 0; // extern
+volatile uint8_t UART_gps_uart_interrupt_enabled = 0; //extern
+
+
 
 // UART MPI science data buffer (WILL NEED IN THE FUTURE)
 // const uint16_t UART_mpi_data_rx_buffer_len = 8192; // extern 
@@ -104,7 +115,75 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
             DEBUG_uart_print_str("Unhandled MPI Mode\n"); // TODO: HANDLE other MPI MODES
         }
     }
+    else if (huart->Instance == USART1) {
+        if (MPI_current_uart_rx_mode == MPI_RX_MODE_COMMAND_MODE) {
+            // Check if buffer is full
+            if (UART_mpi_rx_buffer_write_idx >= UART_mpi_rx_buffer_len) {
+                // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART mpi response buffer is full\n");
 
+                // Shift all bytes left by 1
+                for(uint16_t i = 1; i < UART_mpi_rx_buffer_len; i++) {
+                    UART_mpi_rx_buffer[i - 1] = UART_mpi_rx_buffer[i];
+                }
+
+                // Reset to a valid index
+                UART_mpi_rx_buffer_write_idx = UART_mpi_rx_buffer_len - 1;
+            }
+
+            // Add a byte to the buffer
+            UART_mpi_rx_buffer[UART_mpi_rx_buffer_write_idx++] = UART_mpi_rx_last_byte;
+            UART_mpi_rx_last_byte_write_time_ms = HAL_GetTick();
+        }
+        else {
+            DEBUG_uart_print_str("Unhandled MPI Mode\n"); //TODO: HANDLE other MPI MODES
+        }
+    }
+    else if (huart->Instance == USART1) {
+        if (MPI_current_uart_rx_mode == MPI_RX_MODE_COMMAND_MODE) {
+            // Check if buffer is full
+            if (UART_mpi_rx_buffer_write_idx >= UART_mpi_rx_buffer_len) {
+                // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART mpi response buffer is full\n");
+
+                // Shift all bytes left by 1
+                for(uint16_t i = 1; i < UART_mpi_rx_buffer_len; i++) {
+                    UART_mpi_rx_buffer[i - 1] = UART_mpi_rx_buffer[i];
+                }
+
+                // Reset to a valid index
+                UART_mpi_rx_buffer_write_idx = UART_mpi_rx_buffer_len - 1;
+            }
+
+            // Add a byte to the buffer
+            UART_mpi_rx_buffer[UART_mpi_rx_buffer_write_idx++] = UART_mpi_rx_last_byte;
+            UART_mpi_rx_last_byte_write_time_ms = HAL_GetTick();
+        }
+        else {
+            DEBUG_uart_print_str("Unhandled MPI Mode\n"); //TODO: HANDLE other MPI MODES
+        }
+    }
+    else if (huart->Instance == UART_gps_port_handle->Instance) {
+
+        if (UART_gps_uart_interrupt_enabled == 1) {
+
+            // Add the byte to the buffer
+            if (UART_gps_buffer_write_idx >= UART_gps_buffer_len) {
+                DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART gps buffer is full\n");
+                
+                // Shift all bytes left by 1
+                for (uint16_t i = 1; i < UART_gps_buffer_len; i++) {
+                    UART_gps_buffer[i - 1] = UART_gps_buffer[i];
+                }
+
+                // Reset to a valid index
+                UART_gps_buffer_write_idx = UART_gps_buffer_len - 1;
+            }
+            UART_gps_buffer[UART_gps_buffer_write_idx++] = UART_gps_buffer_last_rx_byte;
+            UART_gps_last_write_time_ms = HAL_GetTick();
+
+            HAL_UART_Receive_IT(UART_gps_port_handle, (uint8_t*) &UART_gps_buffer_last_rx_byte, 1);
+        }
+        
+    }
     else {
         // FIXME: add the rest (camera, MPI, maybe others)
         DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> unknown UART instance\n"); // FIXME: remove
@@ -117,4 +196,18 @@ void UART_init_uart_handlers(void) {
     HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t*) &UART_eps_buffer_last_rx_byte, 1);
 
     // TODO: add the rest
+}
+
+/// @brief Sets the UART interrupt state (enabled/disabled)
+/// @param toggle_status 1: enable interrupt; 0: disable interrupt
+void GPS_set_uart_interrupt_state(uint8_t toggle_status) {
+    if (toggle_status == 1)
+    {
+        UART_gps_uart_interrupt_enabled = 1;
+
+        HAL_UART_Receive_IT(UART_gps_port_handle, (uint8_t*) &UART_gps_buffer_last_rx_byte, 1);
+    }
+    else {
+        UART_gps_uart_interrupt_enabled = 0;
+    }
 }
