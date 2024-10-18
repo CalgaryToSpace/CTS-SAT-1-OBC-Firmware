@@ -127,10 +127,12 @@ int8_t LFS_unmount()
 
 /**
  * @brief Lists contents of LittleFS Directory
- * @param root_directory Pointer to cstring holding the root directory to open and read 
+ * @param root_directory Pointer to cstring holding the root directory to open and read
+ * @param offset Number of entries to skip before listing directory
+ * @param count Number of entries to list in total (if 0, prints all entries)
  * @retval 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
  */
-int8_t LFS_list_directory(const char root_directory[])
+int8_t LFS_list_directory(const char root_directory[], uint16_t offset, int16_t count)
 {
     if (!LFS_is_lfs_mounted)
     {
@@ -146,13 +148,29 @@ int8_t LFS_list_directory(const char root_directory[])
         return open_dir_result;
     }
 
+    if (count == 0) {
+        count = -1;
+    }
+
     // result is positive on success, 0 at the end of directory, or negative on failure.
     int8_t read_dir_result = 1;
     DEBUG_uart_print_str("Name \t bytes\n");
     while (read_dir_result > 0)
     {
+
         struct lfs_info info;
         read_dir_result = lfs_dir_read(&LFS_filesystem, &dir, &info);
+
+        if (offset > 0) {
+            offset--;
+            continue;
+        }
+
+        if (count == 0) {
+            break;
+        } else {
+            count--;
+        }
 
         DEBUG_uart_print_str(info.name);
         if (info.type == LFS_TYPE_REG)
@@ -179,30 +197,6 @@ int8_t LFS_list_directory(const char root_directory[])
         return close_dir_result;
     }
 
-    return 0;
-}
-
-/**
- * @brief Removes / deletes the file specified
- * @param file_name Pointer to cstring holding the file name to remove
- * @retval 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
- */
-int8_t LFS_delete_file(const char file_name[])
-{
-    if (!LFS_is_lfs_mounted)
-    {
-        DEBUG_uart_print_str("LittleFS not mounted.\n");
-        return 1;
-    }
-
-    int8_t remove_result = lfs_remove(&LFS_filesystem, file_name);
-    if (remove_result < 0)
-    {
-        DEBUG_uart_print_str("Error removing file/directory.\n");
-        return remove_result;
-    }
-
-    DEBUG_uart_print_str("Successfully removed file/directory.\n");
     return 0;
 }
 
@@ -239,6 +233,30 @@ int8_t LFS_make_directory(const char dir_name[])
     }
 
     DEBUG_uart_print_str("Successfully created directory.\n");
+    return 0;
+}
+
+/**
+ * @brief Removes / deletes the file specified
+ * @param file_name Pointer to cstring holding the file name to remove
+ * @retval 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
+ */
+int8_t LFS_delete_file(const char file_name[])
+{
+    if (!LFS_is_lfs_mounted)
+    {
+        DEBUG_uart_print_str("LittleFS not mounted.\n");
+        return 1;
+    }
+
+    int8_t remove_result = lfs_remove(&LFS_filesystem, file_name);
+    if (remove_result < 0)
+    {
+        DEBUG_uart_print_str("Error removing file/directory.\n");
+        return remove_result;
+    }
+
+    DEBUG_uart_print_str("Successfully removed file/directory.\n");
     return 0;
 }
 

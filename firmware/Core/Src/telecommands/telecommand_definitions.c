@@ -226,7 +226,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "fs_list_directory",
         .tcmd_func = TCMDEXEC_fs_list_directory,
-        .number_of_args = 1,
+        .number_of_args = 3,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
