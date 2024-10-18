@@ -1,5 +1,5 @@
 <map id="TCMDEXEC_flash_erase" name="TCMDEXEC_flash_erase">
-<area shape="rect" id="Node000001" title="Telecommand: Erase a sector of flash memory." alt="" coords="5,387,171,413"/>
+<area shape="rect" id="Node000001" title="Telecommand: Erase a block of flash memory containing the given page number." alt="" coords="5,387,171,413"/>
 <area shape="rect" id="Node000002" href="$flash__driver_8c.html#ab2e0bef2e1c3f98c03a435938bd1f795" title="Sends Block Erase Command." alt="" coords="252,254,356,280"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="109,385,268,286,271,290,112,389"/>
 <area shape="rect" id="Node000011" href="$telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="219,411,390,437"/>

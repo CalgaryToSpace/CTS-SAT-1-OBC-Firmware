@@ -135,13 +135,13 @@ Functions</h2></td></tr>
 <tr class="memdesc:a447d306bb6ec33d39ac84323de6aa88a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Telecommand: Read bytes as hex from a flash address.  <br /></td></tr>
 <tr class="separator:a447d306bb6ec33d39ac84323de6aa88a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaad387e58757cce93fe46c8eb25cc822" id="r_aaad387e58757cce93fe46c8eb25cc822"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaad387e58757cce93fe46c8eb25cc822">TCMDEXEC_flash_read_hex</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
-<tr class="memdesc:aaad387e58757cce93fe46c8eb25cc822"><td class="mdescLeft">&#160;</td><td class="mdescRight">Telecommand: Read bytes as hex from a flash address.  <br /></td></tr>
+<tr class="memdesc:aaad387e58757cce93fe46c8eb25cc822"><td class="mdescLeft">&#160;</td><td class="mdescRight">Telecommand: Read bytes as hex from a page number.  <br /></td></tr>
 <tr class="separator:aaad387e58757cce93fe46c8eb25cc822"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad09f175c2e7126e812bfaeebcd17c172" id="r_ad09f175c2e7126e812bfaeebcd17c172"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad09f175c2e7126e812bfaeebcd17c172">TCMDEXEC_flash_write_hex</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
-<tr class="memdesc:ad09f175c2e7126e812bfaeebcd17c172"><td class="mdescLeft">&#160;</td><td class="mdescRight">Telecommand: Read bytes as hex from a flash address.  <br /></td></tr>
+<tr class="memdesc:ad09f175c2e7126e812bfaeebcd17c172"><td class="mdescLeft">&#160;</td><td class="mdescRight">Telecommand: Write a hex string of bytes to a page number.  <br /></td></tr>
 <tr class="separator:ad09f175c2e7126e812bfaeebcd17c172"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf1a62ec4474e4584deb50c95c7800c4" id="r_abf1a62ec4474e4584deb50c95c7800c4"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abf1a62ec4474e4584deb50c95c7800c4">TCMDEXEC_flash_erase</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
-<tr class="memdesc:abf1a62ec4474e4584deb50c95c7800c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Telecommand: Erase a sector of flash memory.  <br /></td></tr>
+<tr class="memdesc:abf1a62ec4474e4584deb50c95c7800c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Telecommand: Erase a block of flash memory containing the given page number.  <br /></td></tr>
 <tr class="separator:abf1a62ec4474e4584deb50c95c7800c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeb4bfdf0b416966258a378a382f529ce" id="r_aeb4bfdf0b416966258a378a382f529ce"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeb4bfdf0b416966258a378a382f529ce">TCMDEXEC_flash_benchmark_erase_write_read</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
 <tr class="memdesc:aeb4bfdf0b416966258a378a382f529ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Telecommand: Benchmarks the erase/write/read operations on the flash memory module.  <br /></td></tr>
@@ -149,6 +149,12 @@ Functions</h2></td></tr>
 <tr class="memitem:ab1f133dc22842f3fcdfeb446998d0dd6" id="r_ab1f133dc22842f3fcdfeb446998d0dd6"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab1f133dc22842f3fcdfeb446998d0dd6">TCMDEXEC_flash_reset</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
 <tr class="memdesc:ab1f133dc22842f3fcdfeb446998d0dd6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Telecommand: Reset the flash memory module.  <br /></td></tr>
 <tr class="separator:ab1f133dc22842f3fcdfeb446998d0dd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdb77863dccc091d8e541e83e5363d83" id="r_acdb77863dccc091d8e541e83e5363d83"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acdb77863dccc091d8e541e83e5363d83">TCMDEXEC_flash_read_status_register</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
+<tr class="memdesc:acdb77863dccc091d8e541e83e5363d83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Telecommand: Read and print Status Register value as hex from the flash memory module.  <br /></td></tr>
+<tr class="separator:acdb77863dccc091d8e541e83e5363d83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a433fa04a701bd8560513d2c72496ed17" id="r_a433fa04a701bd8560513d2c72496ed17"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a433fa04a701bd8560513d2c72496ed17">TCMDEXEC_flash_write_enable</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
+<tr class="memdesc:a433fa04a701bd8560513d2c72496ed17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Telecommand: Set the write enable lath to high on the flash memory module.  <br /></td></tr>
+<tr class="separator:a433fa04a701bd8560513d2c72496ed17"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="abe48337a0d7cf85f21941a23ad028493" name="abe48337a0d7cf85f21941a23ad028493"></a>
@@ -405,12 +411,12 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Telecommand: Erase a sector of flash memory. </p>
+<p>Telecommand: Erase a block of flash memory containing the given page number. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">args_str</td><td><ul>
 <li>Arg 0: Chip Number (CS number) as uint</li>
-<li>Arg 1: Flash Address as uint </li>
+<li>Arg 1: Page number as uint </li>
 </ul>
 </td></tr>
   </table>
@@ -422,7 +428,7 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="flash__telecommand__defs_8h_abf1a62ec4474e4584deb50c95c7800c4_cgraph.png" border="0" usemap="#aflash__telecommand__defs_8h_abf1a62ec4474e4584deb50c95c7800c4_cgraph" alt=""/></div>
 <map name="aflash__telecommand__defs_8h_abf1a62ec4474e4584deb50c95c7800c4_cgraph" id="aflash__telecommand__defs_8h_abf1a62ec4474e4584deb50c95c7800c4_cgraph">
-<area shape="rect" title="Telecommand: Erase a sector of flash memory." alt="" coords="5,387,171,413"/>
+<area shape="rect" title="Telecommand: Erase a block of flash memory containing the given page number." alt="" coords="5,387,171,413"/>
 <area shape="rect" href="flash__driver_8c.html#ab2e0bef2e1c3f98c03a435938bd1f795" title="Sends Block Erase Command." alt="" coords="252,254,356,280"/>
 <area shape="poly" title=" " alt="" coords="109,385,268,286,271,290,112,389"/>
 <area shape="rect" href="telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="219,411,390,437"/>
@@ -492,12 +498,12 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Telecommand: Read bytes as hex from a flash address. </p>
+<p>Telecommand: Read bytes as hex from a page number. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">args_str</td><td><ul>
 <li>Arg 0: Chip Number (CS number) as uint</li>
-<li>Arg 1: Flash Address as uint</li>
+<li>Arg 1: Page number as uint</li>
 <li>Arg 2: Number of bytes to read as uint </li>
 </ul>
 </td></tr>
@@ -510,7 +516,7 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="flash__telecommand__defs_8h_aaad387e58757cce93fe46c8eb25cc822_cgraph.png" border="0" usemap="#aflash__telecommand__defs_8h_aaad387e58757cce93fe46c8eb25cc822_cgraph" alt=""/></div>
 <map name="aflash__telecommand__defs_8h_aaad387e58757cce93fe46c8eb25cc822_cgraph" id="aflash__telecommand__defs_8h_aaad387e58757cce93fe46c8eb25cc822_cgraph">
-<area shape="rect" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="5,183,191,208"/>
+<area shape="rect" title="Telecommand: Read bytes as hex from a page number." alt="" coords="5,183,191,208"/>
 <area shape="rect" href="flash__driver_8c.html#a395c5684cb8c564403e3fa68dcae299d" title="Sends Page Read Command." alt="" coords="260,132,389,158"/>
 <area shape="poly" title=" " alt="" coords="158,179,248,159,249,164,159,185"/>
 <area shape="rect" href="telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="239,207,410,232"/>
@@ -531,6 +537,68 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="649,19,745,26,847,38,885,46,884,51,846,43,744,31,648,24"/>
 <area shape="rect" href="telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="477,259,629,284"/>
 <area shape="poly" title=" " alt="" coords="385,230,479,252,478,257,383,235"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="acdb77863dccc091d8e541e83e5363d83" name="acdb77863dccc091d8e541e83e5363d83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdb77863dccc091d8e541e83e5363d83">&#9670;&#160;</a></span>TCMDEXEC_flash_read_status_register()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t TCMDEXEC_flash_read_status_register </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>args_str</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a></td>          <td class="paramname"><span class="paramname"><em>tcmd_channel</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>response_output_buf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>response_output_buf_len</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Telecommand: Read and print Status Register value as hex from the flash memory module. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args_str</td><td><ul>
+<li>Arg 0: Chip Number (CS number) as uint </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, &gt;0 on error </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="flash__telecommand__defs_8h_acdb77863dccc091d8e541e83e5363d83_cgraph.png" border="0" usemap="#aflash__telecommand__defs_8h_acdb77863dccc091d8e541e83e5363d83_cgraph" alt=""/></div>
+<map name="aflash__telecommand__defs_8h_acdb77863dccc091d8e541e83e5363d83_cgraph" id="aflash__telecommand__defs_8h_acdb77863dccc091d8e541e83e5363d83_cgraph">
+<area shape="rect" title="Telecommand: Read and print Status Register value as hex from the flash memory module." alt="" coords="5,88,164,129"/>
+<area shape="rect" href="flash__driver_8c.html#ad86ddde592dfea7dd3c6129ca311923a" title="Read Status Register and store the values in given buffer." alt="" coords="212,70,402,96"/>
+<area shape="poly" title=" " alt="" coords="164,97,196,93,196,98,164,102"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="221,120,392,145"/>
+<area shape="poly" title=" " alt="" coords="164,114,206,119,205,124,164,120"/>
+<area shape="rect" href="flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="452,5,601,46"/>
+<area shape="poly" title=" " alt="" coords="358,67,435,47,437,52,360,72"/>
+<area shape="rect" href="flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="650,35,814,75"/>
+<area shape="poly" title=" " alt="" coords="402,74,635,59,635,64,403,79"/>
+<area shape="poly" title=" " alt="" coords="602,34,635,39,634,44,601,39"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="450,121,602,146"/>
+<area shape="poly" title=" " alt="" coords="393,130,434,130,434,136,393,136"/>
 </map>
 </div>
 
@@ -598,6 +666,77 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
+<a id="a433fa04a701bd8560513d2c72496ed17" name="a433fa04a701bd8560513d2c72496ed17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a433fa04a701bd8560513d2c72496ed17">&#9670;&#160;</a></span>TCMDEXEC_flash_write_enable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t TCMDEXEC_flash_write_enable </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>args_str</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a></td>          <td class="paramname"><span class="paramname"><em>tcmd_channel</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>response_output_buf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>response_output_buf_len</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Telecommand: Set the write enable lath to high on the flash memory module. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args_str</td><td><ul>
+<li>Arg 0: Chip Number (CS number) as uint </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, &gt;0 on error </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="flash__telecommand__defs_8h_a433fa04a701bd8560513d2c72496ed17_cgraph.png" border="0" usemap="#aflash__telecommand__defs_8h_a433fa04a701bd8560513d2c72496ed17_cgraph" alt=""/></div>
+<map name="aflash__telecommand__defs_8h_a433fa04a701bd8560513d2c72496ed17_cgraph" id="aflash__telecommand__defs_8h_a433fa04a701bd8560513d2c72496ed17_cgraph">
+<area shape="rect" title="Telecommand: Set the write enable lath to high on the flash memory module." alt="" coords="5,175,167,216"/>
+<area shape="rect" href="flash__driver_8c.html#aedefd1fa550b34fc7c57465aa5c5874b" title="Sends Write Enable Command." alt="" coords="228,132,373,158"/>
+<area shape="poly" title=" " alt="" coords="166,174,228,159,229,164,167,179"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="215,207,386,232"/>
+<area shape="poly" title=" " alt="" coords="167,202,199,206,199,211,166,207"/>
+<area shape="rect" href="debug__uart_8c.html#ae1143c61f5fad27b50053b03673b9501" title=" " alt="" coords="434,107,624,132"/>
+<area shape="poly" title=" " alt="" coords="373,134,418,129,419,134,374,139"/>
+<area shape="rect" href="debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="672,136,823,162"/>
+<area shape="poly" title=" " alt="" coords="374,143,657,145,657,151,374,148"/>
+<area shape="rect" href="flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="673,52,822,93"/>
+<area shape="poly" title=" " alt="" coords="328,129,377,109,433,92,491,81,550,75,658,69,658,75,550,80,492,87,435,97,378,114,330,134"/>
+<area shape="rect" href="flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="871,52,1034,93"/>
+<area shape="poly" title=" " alt="" coords="346,156,436,177,556,195,622,199,690,197,757,189,822,172,850,158,877,141,921,102,925,106,880,145,853,163,824,177,758,194,690,203,622,204,555,200,435,182,345,161"/>
+<area shape="rect" href="flash__driver_8c.html#ad86ddde592dfea7dd3c6129ca311923a" title="Read Status Register and store the values in given buffer." alt="" coords="434,5,624,31"/>
+<area shape="poly" title=" " alt="" coords="315,129,366,90,433,48,464,34,466,39,435,53,369,94,319,134"/>
+<area shape="poly" title=" " alt="" coords="625,130,657,134,657,139,624,135"/>
+<area shape="poly" title=" " alt="" coords="822,70,855,70,855,76,822,76"/>
+<area shape="poly" title=" " alt="" coords="584,29,658,48,657,53,583,34"/>
+<area shape="poly" title=" " alt="" coords="625,19,721,26,823,38,861,46,860,51,822,43,720,31,624,24"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="453,259,605,284"/>
+<area shape="poly" title=" " alt="" coords="361,230,455,252,454,257,359,235"/>
+</map>
+</div>
+
+</div>
+</div>
 <a id="ad09f175c2e7126e812bfaeebcd17c172" name="ad09f175c2e7126e812bfaeebcd17c172"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad09f175c2e7126e812bfaeebcd17c172">&#9670;&#160;</a></span>TCMDEXEC_flash_write_hex()</h2>
 
@@ -627,12 +766,12 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Telecommand: Read bytes as hex from a flash address. </p>
+<p>Telecommand: Write a hex string of bytes to a page number. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">args_str</td><td><ul>
 <li>Arg 0: Chip Number (CS number) as uint</li>
-<li>Arg 1: Flash Address as uint</li>
+<li>Arg 1: Page number as uint</li>
 <li>Arg 2: Hex string of bytes to write (any case, allows space/underscore separators) </li>
 </ul>
 </td></tr>
@@ -645,7 +784,7 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="flash__telecommand__defs_8h_ad09f175c2e7126e812bfaeebcd17c172_cgraph.png" border="0" usemap="#aflash__telecommand__defs_8h_ad09f175c2e7126e812bfaeebcd17c172_cgraph" alt=""/></div>
 <map name="aflash__telecommand__defs_8h_ad09f175c2e7126e812bfaeebcd17c172_cgraph" id="aflash__telecommand__defs_8h_ad09f175c2e7126e812bfaeebcd17c172_cgraph">
-<area shape="rect" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="5,345,194,370"/>
+<area shape="rect" title="Telecommand: Write a hex string of bytes to a page number." alt="" coords="5,345,194,370"/>
 <area shape="rect" href="flash__driver_8c.html#a5231aa78550b4076f9fbf923f000fe6d" title="Sends Page Program Command." alt="" coords="271,254,404,280"/>
 <area shape="poly" title=" " alt="" coords="135,342,286,283,288,288,136,347"/>
 <area shape="rect" href="telecommand__args__helpers_8c.html#a3f4c71ad48b16b79e4bb91ffb13111d7" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a hex string." alt="" coords="242,345,433,370"/>

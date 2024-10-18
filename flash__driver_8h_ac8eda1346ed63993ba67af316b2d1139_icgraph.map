@@ -8,7 +8,7 @@
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="486,109,433,116,432,110,485,103"/>
 <area shape="rect" id="Node000005" href="$littlefs__driver_8c.html#ac92d3429222f40c34643f2969b93060a" title="LittleFS erase function." alt="" coords="261,5,429,31"/>
 <area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="513,79,438,45,404,34,406,29,440,40,516,74"/>
-<area shape="rect" id="Node000006" href="$flash__telecommand__defs_8c.html#abf1a62ec4474e4584deb50c95c7800c4" title="Telecommand: Erase a sector of flash memory." alt="" coords="262,55,428,80"/>
+<area shape="rect" id="Node000006" href="$flash__telecommand__defs_8c.html#abf1a62ec4474e4584deb50c95c7800c4" title="Telecommand: Erase a block of flash memory containing the given page number." alt="" coords="262,55,428,80"/>
 <area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="485,90,428,82,428,77,486,85"/>
 <area shape="rect" id="Node000004" href="$flash__telecommand__defs_8c.html#aeb4bfdf0b416966258a378a382f529ce" title="Telecommand: Benchmarks the erase/write/read operations on the flash memory module." alt="" coords="5,104,203,145"/>
 <area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="241,128,203,128,203,122,241,122"/>
@@ -17,6 +17,6 @@
 <area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="472,185,407,185,407,180,472,180"/>
 <area shape="rect" id="Node000009" href="$littlefs__driver_8c.html#a6979423f6b81b4ac02cd878f0a93cc69" title="LittleFS write function." alt="" coords="264,219,426,244"/>
 <area shape="poly" id="edge9_Node000007_Node000009" title=" " alt="" coords="482,202,403,221,402,215,480,197"/>
-<area shape="rect" id="Node000010" href="$flash__telecommand__defs_8c.html#ad09f175c2e7126e812bfaeebcd17c172" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="251,268,439,294"/>
+<area shape="rect" id="Node000010" href="$flash__telecommand__defs_8c.html#ad09f175c2e7126e812bfaeebcd17c172" title="Telecommand: Write a hex string of bytes to a page number." alt="" coords="251,268,439,294"/>
 <area shape="poly" id="edge10_Node000007_Node000010" title=" " alt="" coords="525,207,486,234,440,259,410,270,409,265,438,254,483,229,522,202"/>
 </map>

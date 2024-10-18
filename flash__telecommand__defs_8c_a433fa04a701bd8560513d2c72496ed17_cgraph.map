@@ -1,0 +1,23 @@
+<map id="TCMDEXEC_flash_write_enable" name="TCMDEXEC_flash_write_enable">
+<area shape="rect" id="Node000001" title="Telecommand: Set the write enable lath to high on the flash memory module." alt="" coords="5,175,167,216"/>
+<area shape="rect" id="Node000002" href="$flash__driver_8c.html#aedefd1fa550b34fc7c57465aa5c5874b" title="Sends Write Enable Command." alt="" coords="228,132,373,158"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="166,174,228,159,229,164,167,179"/>
+<area shape="rect" id="Node000008" href="$telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="215,207,386,232"/>
+<area shape="poly" id="edge11_Node000001_Node000008" title=" " alt="" coords="167,202,199,206,199,211,166,207"/>
+<area shape="rect" id="Node000003" href="$debug__uart_8c.html#ae1143c61f5fad27b50053b03673b9501" title=" " alt="" coords="434,107,624,132"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="373,134,418,129,419,134,374,139"/>
+<area shape="rect" id="Node000004" href="$debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="672,136,823,162"/>
+<area shape="poly" id="edge4_Node000002_Node000004" title=" " alt="" coords="374,143,657,145,657,151,374,148"/>
+<area shape="rect" id="Node000005" href="$flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="673,52,822,93"/>
+<area shape="poly" id="edge5_Node000002_Node000005" title=" " alt="" coords="328,129,377,109,433,92,491,81,550,75,658,69,658,75,550,80,492,87,435,97,378,114,330,134"/>
+<area shape="rect" id="Node000006" href="$flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="871,52,1034,93"/>
+<area shape="poly" id="edge7_Node000002_Node000006" title=" " alt="" coords="346,156,436,177,556,195,622,199,690,197,757,189,822,172,850,158,877,141,921,102,925,106,880,145,853,163,824,177,758,194,690,203,622,204,555,200,435,182,345,161"/>
+<area shape="rect" id="Node000007" href="$flash__driver_8c.html#ad86ddde592dfea7dd3c6129ca311923a" title="Read Status Register and store the values in given buffer." alt="" coords="434,5,624,31"/>
+<area shape="poly" id="edge8_Node000002_Node000007" title=" " alt="" coords="315,129,366,90,433,48,464,34,466,39,435,53,369,94,319,134"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="625,130,657,134,657,139,624,135"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="822,70,855,70,855,76,822,76"/>
+<area shape="poly" id="edge9_Node000007_Node000005" title=" " alt="" coords="584,29,658,48,657,53,583,34"/>
+<area shape="poly" id="edge10_Node000007_Node000006" title=" " alt="" coords="625,19,721,26,823,38,861,46,860,51,822,43,720,31,624,24"/>
+<area shape="rect" id="Node000009" href="$telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="453,259,605,284"/>
+<area shape="poly" id="edge12_Node000008_Node000009" title=" " alt="" coords="361,230,455,252,454,257,359,235"/>
+</map>

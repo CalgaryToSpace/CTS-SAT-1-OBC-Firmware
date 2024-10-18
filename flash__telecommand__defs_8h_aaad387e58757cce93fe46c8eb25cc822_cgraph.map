@@ -1,5 +1,5 @@
 <map id="TCMDEXEC_flash_read_hex" name="TCMDEXEC_flash_read_hex">
-<area shape="rect" id="Node000001" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="5,183,191,208"/>
+<area shape="rect" id="Node000001" title="Telecommand: Read bytes as hex from a page number." alt="" coords="5,183,191,208"/>
 <area shape="rect" id="Node000002" href="$flash__driver_8c.html#a395c5684cb8c564403e3fa68dcae299d" title="Sends Page Read Command." alt="" coords="260,132,389,158"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="158,179,248,159,249,164,159,185"/>
 <area shape="rect" id="Node000008" href="$telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="239,207,410,232"/>
