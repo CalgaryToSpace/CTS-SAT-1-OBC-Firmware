@@ -10,7 +10,7 @@
 #include "unit_tests/test_telecommand_arg_helpers.h"
 #include "unit_tests/unit_test_helpers.h"
 #include "unit_tests/test_configuration_variables.h"
-#include "unit_tests/test_temperature_sensor.h"
+#include "unit_tests/test_obc_temperature_sensor.h"
 
 #include "unit_tests/test_eps_drivers.h"
 #include "unit_tests/test_eps_struct_packers.h"
@@ -377,13 +377,13 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func_name = "TCMD_extract_int64_arg"
     },
     {
-        .test_func = TEST_EXEC__TEMP_configure_precision_values,
-        .test_file = "temperature_sensor/temperature_sensor_driver",
+        .test_func = TEST_EXEC__OBC_TEMP_SENSOR_configure_precision_values,
+        .test_file = "temperature_sensor/obc_temperature_sensor_driver",
         .test_func_name = "TEST_EXEC__TEMP_configure_precision_values"
     },
     {
-        .test_func = TEST_EXEC__TEMP_convert_raw_to_deg_c,
-        .test_file = "temperature_sensor/temperature_sensor_driver",
+        .test_func = TEST_EXEC__OBC_TEMP_SENSOR_convert_raw_to_deg_c,
+        .test_file = "temperature_sensor/obc_temperature_sensor_driver",
         .test_func_name = "TEST_EXEC__TEMP_convert_raw_to_deg_c"
     },
     {
