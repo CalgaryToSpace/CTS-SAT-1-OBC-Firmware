@@ -273,42 +273,41 @@ void TASK_receive_gps_info(void *argument) {
 				LOG_SYSTEM_GPS,
 				LOG_SEVERITY_NORMAL, 
 				LOG_SINK_ALL,
-				"GPS Buffer Data: %s",
+				"GPS Buffer Data (Should be empty): %s",
 				UART_gps_buffer 
 			);
 
-		}
+			// Parsing the gps data
+			GPS_header_response_t gps_header;
+			const uint8_t gps_header_result = GPS_header_response_parser(latest_gps_response, &gps_header);
 
-		// Parsing the gps data
-		GPS_header_response_t gps_header;
-		const uint8_t gps_header_result = GPS_header_response_parser(latest_gps_response, &gps_header);
-
-		// TODO: Figure out what to do after this
-		// Parse may have failed due to incomplete data
-		// How do I handle the incomplete data? Could drop the data
-		if(gps_header_result == 0){
-			continue;
-		}
-
-		GPS_bestxyza_response_t bestxyza_data;
-		if(strcmp(gps_header.log_name, "BESTXYZA") == 0)
-		{
-			const uint8_t bestxyza_parse_result = GPS_bestxyza_data_parser(latest_gps_response, &bestxyza_data);
-
-			if(bestxyza_parse_result == 0) {
+			// TODO: Figure out what to do after this
+			// Parse may have failed due to incomplete data
+			// How do I handle the incomplete data? Could drop the data
+			if(gps_header_result == 0){
 				continue;
 			}
-		}
 
-		GPS_timea_response_t timea_data;
-		if(strcmp(gps_header.log_name, "TIMEA") == 0)
-		{
-			const uint8_t timea_parse_result = GPS_timea_data_parser(latest_gps_response, &timea_data);
+			GPS_bestxyza_response_t bestxyza_data;
+			if(strcmp(gps_header.log_name, "BESTXYZA") == 0)
+			{
+				const uint8_t bestxyza_parse_result = GPS_bestxyza_data_parser(latest_gps_response, &bestxyza_data);
 
-			if(timea_parse_result == 0) {
-				continue;
+				if(bestxyza_parse_result == 0) {
+					continue;
+				}
 			}
-		}
 
+			GPS_timea_response_t timea_data;
+			if(strcmp(gps_header.log_name, "TIMEA") == 0)
+			{
+				const uint8_t timea_parse_result = GPS_timea_data_parser(latest_gps_response, &timea_data);
+
+				if(timea_parse_result == 0) {
+					continue;
+				}
+			}
+
+		} 
 	} /* End Task's Main Loop */
 }

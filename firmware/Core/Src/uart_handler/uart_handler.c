@@ -163,7 +163,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     }
     else if (huart->Instance == UART_gps_port_handle->Instance) {
 
-        if (UART_gps_uart_interrupt_enabled) {
+        if (UART_gps_uart_interrupt_enabled == 1) {
 
             // Add the byte to the buffer
             if (UART_gps_buffer_write_idx >= UART_gps_buffer_len) {

@@ -53,8 +53,8 @@ uint8_t TCMDEXEC_gps_set_enabled(const char *args_str, TCMD_TelecommandChannel_e
     // Transmit setup commands for the GPS
     // TODO: Verify the set up commands and add the,
     const char *gps_setup_cmds[] = {
-        "unlogall COM1 true\n",
-        "log versionb once\n",
+        // "unlogall COM1 true\n",
+        // "log versionb once\n",
         "log bestxyza ontime 1\n"
     };
 
