@@ -222,7 +222,7 @@ void TASK_service_eps_watchdog(void *argument) {
 	}
 }
 
-void TASK_monitor_freertos_highstack_watermarks(void *argument) {
+void TASK_monitor_freertos_memory(void *argument) {
 	TASK_HELP_start_of_task();
 
 	while (1) {

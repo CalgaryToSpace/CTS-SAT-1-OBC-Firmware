@@ -113,9 +113,9 @@ const osThreadAttr_t TASK_service_eps_watchdog_Attributes = {
   .priority = (osPriority_t) osPriorityNormal, //TODO: Figure out which priority makes sense for this task
 };
 
-osThreadId_t TASK_monitor_freertos_highstack_watermarks_Handle;
-const osThreadAttr_t TASK_monitor_freertos_highstack_watermarks_Attributes = {
-  .name = "TASK_monitor_freertos_highstack_watermarks",
+osThreadId_t TASK_monitor_freertos_memory_Handle;
+const osThreadAttr_t TASK_monitor_freertos_memory_Attributes = {
+  .name = "TASK_monitor_freertos_memory",
   .stack_size = 1024,
   .priority = (osPriority_t) osPriorityBelowNormal6,
 };
@@ -147,8 +147,8 @@ Task_Info_t task_handles_array [] = {
     .lowest_highstack_watermark_bytes = UINT32_MAX
   },
   {
-    .task_handle = &TASK_monitor_freertos_highstack_watermarks_Handle,
-    .task_attribute = &TASK_monitor_freertos_highstack_watermarks_Attributes,
+    .task_handle = &TASK_monitor_freertos_memory_Handle,
+    .task_attribute = &TASK_monitor_freertos_memory_Attributes,
     .lowest_highstack_watermark_bytes = UINT32_MAX
   },
 };
@@ -276,7 +276,7 @@ int main(void)
 
   TASK_execute_telecommands_Handle = osThreadNew(TASK_execute_telecommands, NULL, &TASK_execute_telecommands_Attributes);
 
-  TASK_monitor_freertos_highstack_watermarks_Handle = osThreadNew(TASK_monitor_freertos_highstack_watermarks, NULL, &TASK_monitor_freertos_highstack_watermarks_Attributes);
+  TASK_monitor_freertos_memory_Handle = osThreadNew(TASK_monitor_freertos_memory, NULL, &TASK_monitor_freertos_memory_Attributes);
   
   TASK_service_eps_watchdog_Handle = osThreadNew(TASK_service_eps_watchdog, NULL, &TASK_service_eps_watchdog_Attributes);
 
