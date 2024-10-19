@@ -89,19 +89,19 @@ uint8_t TCMDEXEC_flash_each_is_reachable(const char *args_str, TCMD_TelecommandC
 }
 
 
-/// @brief Telecommand: Read bytes as hex from a flash address
+/// @brief Telecommand: Read bytes as hex from a page number
 /// @param args_str
 /// - Arg 0: Chip Number (CS number) as uint
-/// - Arg 1: Flash Address as uint
+/// - Arg 1: Page number as uint
 /// - Arg 2: Number of bytes to read as uint
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_flash_read_hex(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-    uint64_t chip_num, flash_addr, arg_num_bytes;
+    uint64_t chip_num_u64, page_num_u64, num_bytes_u64;
 
-    uint8_t arg0_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &chip_num);
-    uint8_t arg1_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &flash_addr);
-    uint8_t arg2_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 2, &arg_num_bytes);
+    uint8_t arg0_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &chip_num_u64);
+    uint8_t arg1_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &page_num_u64);
+    uint8_t arg2_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 2, &num_bytes_u64);
     
     if (arg0_result != 0 || arg1_result != 0 || arg2_result != 0) {
         snprintf(
@@ -111,7 +111,7 @@ uint8_t TCMDEXEC_flash_read_hex(const char *args_str, TCMD_TelecommandChannel_en
         return 1;
     }
 
-    if (chip_num >= FLASH_NUMBER_OF_FLASH_DEVICES) {
+    if (chip_num_u64 >= FLASH_NUMBER_OF_FLASH_DEVICES) {
         snprintf(
             response_output_buf, response_output_buf_len,
             "Chip number is out of range. Must be 0 to %d.",
@@ -119,21 +119,31 @@ uint8_t TCMDEXEC_flash_read_hex(const char *args_str, TCMD_TelecommandChannel_en
         return 2;
     }
 
-    if (arg_num_bytes > FLASH_MAX_BYTES_PER_PAGE || arg_num_bytes == 0) {
+    if (page_num_u64 > (FLASH_CHIP_SIZE_BYTES/FLASH_MAX_BYTES_PER_PAGE) - 1) {
         snprintf(
             response_output_buf, response_output_buf_len,
-            "Invalid number of bytes to read: %lu. Must be 1 to %d.",
-            (uint32_t)arg_num_bytes, FLASH_MAX_BYTES_PER_PAGE); // TODO: fix this cast
+            "Page number is out of range. Must be 0 to %d.",
+            (FLASH_CHIP_SIZE_BYTES/FLASH_MAX_BYTES_PER_PAGE) - 1);
         return 3;
     }
 
-    uint32_t num_bytes = (uint32_t)arg_num_bytes;
-    FLASH_error_enum_t result = FLASH_read_data(&hspi1, chip_num, flash_addr, read_buf, num_bytes);
-
-    if (result != 0) {
+    if (num_bytes_u64 > FLASH_MAX_BYTES_PER_PAGE || num_bytes_u64 == 0) {
         snprintf(
             response_output_buf, response_output_buf_len,
-            "Error reading flash: %d", result);
+            "Invalid number of bytes to read: %lu. Must be 1 to %d.",
+            (uint32_t)num_bytes_u64, FLASH_MAX_BYTES_PER_PAGE); // TODO: fix this cast
+        return 3;
+    }
+
+    const uint8_t chip_num = (uint8_t)chip_num_u64;
+    const uint32_t page_num = (uint32_t)page_num_u64;
+    const uint32_t num_bytes = (uint32_t)num_bytes_u64;
+    const FLASH_error_enum_t read_result = FLASH_read_data(&hspi1, chip_num, page_num, read_buf, num_bytes);
+
+    if (read_result != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error reading flash: %d", read_result);
         return 4;
     }
 
@@ -158,19 +168,19 @@ uint8_t TCMDEXEC_flash_read_hex(const char *args_str, TCMD_TelecommandChannel_en
 }
 
 
-/// @brief Telecommand: Read bytes as hex from a flash address
+/// @brief Telecommand: Write a hex string of bytes to a page number
 /// @param args_str
 /// - Arg 0: Chip Number (CS number) as uint
-/// - Arg 1: Flash Address as uint
+/// - Arg 1: Page number as uint
 /// - Arg 2: Hex string of bytes to write (any case, allows space/underscore separators)
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_flash_write_hex(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     uint16_t num_bytes;
-    uint64_t chip_num_u64, flash_addr_u64;
+    uint64_t chip_num_u64, page_num_u64;
 
     const uint8_t arg0_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &chip_num_u64);
-    const uint8_t arg1_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &flash_addr_u64);
+    const uint8_t arg1_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &page_num_u64);
     const uint8_t arg2_result = TCMD_extract_hex_array_arg(
         args_str, 2, bytes_to_write, FLASH_MAX_BYTES_PER_PAGE, &num_bytes
     );
@@ -191,45 +201,45 @@ uint8_t TCMDEXEC_flash_write_hex(const char *args_str, TCMD_TelecommandChannel_e
         return 2;
     }
 
-    if (flash_addr_u64 > FLASH_CHIP_SIZE_BYTES) {
+    if (page_num_u64 > (FLASH_CHIP_SIZE_BYTES/FLASH_MAX_BYTES_PER_PAGE) - 1) {
         snprintf(
             response_output_buf, response_output_buf_len,
-            "Flash address is out of range. Must be 0 to %d.",
-            FLASH_CHIP_SIZE_BYTES - 1);
+            "Page number is out of range. Must be 0 to %d.",
+            (FLASH_CHIP_SIZE_BYTES/FLASH_MAX_BYTES_PER_PAGE) - 1);
         return 3;
     }
 
-    uint8_t chip_num = (uint8_t)chip_num_u64;
-    uint32_t flash_addr = (uint32_t)flash_addr_u64;
-    FLASH_error_enum_t result = FLASH_write_data(&hspi1, chip_num, flash_addr, bytes_to_write, num_bytes);
+    const uint8_t chip_num = (uint8_t)chip_num_u64;
+    const uint32_t page_num = (uint32_t)page_num_u64;
+    const FLASH_error_enum_t write_result = FLASH_write_data(&hspi1, chip_num, page_num, bytes_to_write, num_bytes);
 
-    if (result != 0) {
+    if (write_result != 0) {
         snprintf(
             response_output_buf, response_output_buf_len,
-            "Error writing flash: %d", result);
+            "Error writing flash: %d", write_result);
         return 4;
     }
 
     snprintf(
         response_output_buf, response_output_buf_len,
-        "Wrote %d bytes to flash at address %lu on chip %d.",
-        num_bytes, flash_addr, (uint8_t)chip_num);
+        "Wrote %d bytes to flash at page number %lu on chip %d.",
+        num_bytes, page_num, (uint8_t)chip_num);
     
     return 0;
 }
 
 
-/// @brief Telecommand: Erase a sector of flash memory.
+/// @brief Telecommand: Erase a block of flash memory containing the given page number.
 /// @param args_str
 /// - Arg 0: Chip Number (CS number) as uint
-/// - Arg 1: Flash Address as uint
+/// - Arg 1: Page number as uint
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_flash_erase(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-    uint64_t chip_num_u64, flash_addr_u64;
+    uint64_t chip_num_u64, page_num_u64;
 
-    uint8_t arg0_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &chip_num_u64);
-    uint8_t arg1_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &flash_addr_u64);
+    const uint8_t arg0_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &chip_num_u64);
+    const uint8_t arg1_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &page_num_u64);
     
     if (arg0_result != 0 || arg1_result != 0) {
         snprintf(
@@ -247,15 +257,22 @@ uint8_t TCMDEXEC_flash_erase(const char *args_str, TCMD_TelecommandChannel_enum_
         return 2;
     }
 
-    uint8_t chip_num = (uint8_t)chip_num_u64;
-    uint32_t flash_addr = (uint32_t)flash_addr_u64;
-
-    FLASH_error_enum_t result = FLASH_erase(&hspi1, chip_num, flash_addr);
-
-    if (result != 0) {
+    if (page_num_u64 > (FLASH_CHIP_SIZE_BYTES/FLASH_MAX_BYTES_PER_PAGE) - 1) {
         snprintf(
             response_output_buf, response_output_buf_len,
-            "Error reading flash: %d", result);
+            "Page number is out of range. Must be 0 to %d.",
+            (FLASH_CHIP_SIZE_BYTES/FLASH_MAX_BYTES_PER_PAGE) - 1);
+        return 3;
+    }
+
+    const uint8_t chip_num = (uint8_t)chip_num_u64;
+    const uint32_t page_num = (uint32_t)page_num_u64;
+    const FLASH_error_enum_t erase_result = FLASH_erase(&hspi1, chip_num, page_num);
+
+    if (erase_result != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error reading flash: %d", erase_result);
         return 4;
     }
     
@@ -263,8 +280,8 @@ uint8_t TCMDEXEC_flash_erase(const char *args_str, TCMD_TelecommandChannel_enum_
     snprintf(
         &response_output_buf[strlen(response_output_buf)],
         response_output_buf_len - strlen(response_output_buf) - 1,
-        " Successfully erased page at address %lu on chip %d.\n", 
-        flash_addr, chip_num);
+        "Successfully erased block containing page number %lu on chip %d.\n", 
+        page_num, chip_num);
 
     return 0;
 }
@@ -329,7 +346,7 @@ uint8_t TCMDEXEC_flash_reset(const char *args_str, TCMD_TelecommandChannel_enum_
         return 2;
     }
 
-    uint8_t chip_num = (uint8_t)chip_num_u64;
+    const uint8_t chip_num = (uint8_t)chip_num_u64;
     const uint8_t comms_err = FLASH_reset(&hspi1, chip_num);
     if (comms_err != 0) {
         snprintf(
@@ -344,6 +361,87 @@ uint8_t TCMDEXEC_flash_reset(const char *args_str, TCMD_TelecommandChannel_enum_
         response_output_buf_len - strlen(response_output_buf) - 1,
         " Successfully reset chip %d.\n", 
         (uint8_t)chip_num);
+
+    return 0;
+}
+
+/// @brief Telecommand: Read and print Status Register value as hex from the flash memory module.
+/// @param args_str
+/// - Arg 0: Chip Number (CS number) as uint
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_flash_read_status_register(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    uint64_t chip_num_u64;
+
+    const uint8_t arg0_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &chip_num_u64);
+
+    if (arg0_result != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error parsing chip number argument: %d", arg0_result);
+        return 1;
+    }
+
+    if (chip_num_u64 >= FLASH_NUMBER_OF_FLASH_DEVICES) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Chip number is out of range. Must be 0 to %d.",
+            FLASH_NUMBER_OF_FLASH_DEVICES - 1);
+        return 2;
+    }
+
+    const uint8_t chip_num = (uint8_t)chip_num_u64;
+    uint8_t status_reg_val;
+    const FLASH_error_enum_t comms_err = FLASH_read_status_register(&hspi1, chip_num, &status_reg_val);
+    if (comms_err != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error reading status register: %d",comms_err);
+        return 2;
+    }
+
+    // success
+    snprintf(
+        &response_output_buf[strlen(response_output_buf)],
+        response_output_buf_len - strlen(response_output_buf) - 1,
+        " Status Register Value: 0x%02X\n", 
+        status_reg_val);
+
+    return 0;
+}
+
+/// @brief Telecommand: Set the write enable lath to high on the flash memory module
+/// @param args_str
+/// - Arg 0: Chip Number (CS number) as uint
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_flash_write_enable(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    uint64_t chip_num_u64;
+
+    const uint8_t arg0_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &chip_num_u64);
+    if (arg0_result != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error parsing chip number argument: %d", arg0_result);
+        return 1;
+    }
+
+    if (chip_num_u64 >= FLASH_NUMBER_OF_FLASH_DEVICES) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Chip number is out of range. Must be 0 to %d.",
+            FLASH_NUMBER_OF_FLASH_DEVICES - 1);
+        return 2;
+    }
+
+    uint8_t chip_num = (uint8_t)chip_num_u64;
+    const FLASH_error_enum_t comms_err = FLASH_write_enable(&hspi1, chip_num);
+    if (comms_err != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error enabling write latch: %d",comms_err);
+        return 2;
+    }
 
     return 0;
 }
