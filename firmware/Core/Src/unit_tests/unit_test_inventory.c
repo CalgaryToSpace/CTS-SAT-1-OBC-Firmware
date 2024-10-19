@@ -57,235 +57,235 @@ const TEST_Definition_t TEST_definitions[] = {
     {
 		.test_func = TEST_EXEC__ADCS_pack_to_ack_struct,
 		.test_file = "unit_tests/test_adcs",
-		.test_func_name = "ADCS_Pack_to_Ack_Struct"
+		.test_func_name = "ADCS_pack_to_ack_struct"
 	},
 
     {
 		.test_func = TEST_EXEC__ADCS_pack_to_identification_struct,
 		.test_file = "unit_tests/test_adcs",
-		.test_func_name = "ADCS_Pack_to_Identification_Struct"
+		.test_func_name = "ADCS_pack_to_identification_struct"
 	},
 
     {
 		.test_func = TEST_EXEC__ADCS_pack_to_program_status_struct,
 		.test_file = "unit_tests/test_adcs",
-		.test_func_name = "ADCS_Pack_to_Program_Status_Struct"
+		.test_func_name = "ADCS_pack_to_program_status_struct"
 	},
 
     {
 		.test_func = TEST_EXEC__ADCS_pack_to_comms_status_struct,
 		.test_file = "unit_tests/test_adcs",
-		.test_func_name = "ADCS_Pack_to_Comms_Status_Struct"
+		.test_func_name = "ADCS_pack_to_comms_status_struct"
 	},
 
     {
         .test_func = TEST_EXEC__ADCS_pack_to_power_control_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Power_Control_Struct"
+        .test_func_name = "ADCS_pack_to_power_control_struct"
     },
 
     {
         .test_func = TEST_EXEC__ADCS_pack_to_angular_rates_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Angular_Rates_Struct"
+        .test_func_name = "ADCS_pack_to_angular_rates_struct"
     },
 
     {
         .test_func = TEST_EXEC__ADCS_pack_to_llh_position_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_LLH_Position_Struct"
+        .test_func_name = "ADCS_pack_to_llh_position_struct"
     },
 
     {
         .test_func = TEST_EXEC__ADCS_pack_to_unix_time_save_mode_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Unix_Time_Save_Mode_Struct"
+        .test_func_name = "ADCS_pack_to_unix_time_save_mode_struct"
     },
 
     {
         .test_func = TEST_EXEC__ADCS_pack_to_orbit_params_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Orbit_Params_Struct"
+        .test_func_name = "ADCS_pack_to_orbit_params_struct"
     },
 
     {
         .test_func = TEST_EXEC__ADCS_pack_to_rated_sensor_rates_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Rated_Sensor_Rates_Struct"
+        .test_func_name = "ADCS_pack_to_rated_sensor_rates_struct"
     },
 
     {
         .test_func = TEST_EXEC__ADCS_pack_to_wheel_speed_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Wheel_Speed_Struct"
+        .test_func_name = "ADCS_pack_to_wheel_speed_struct"
     },
 
     {
         .test_func = TEST_EXEC__ADCS_pack_to_magnetorquer_command_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Magnetorquer_Command_Struct"
+        .test_func_name = "ADCS_pack_to_magnetorquer_command_struct"
     },
 
     {
         .test_func = TEST_EXEC__ADCS_pack_to_raw_magnetometer_values_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Raw_Magnetometer_Values_Struct"
+        .test_func_name = "ADCS_pack_to_raw_magnetometer_values_struct"
     },
 
     {
         .test_func = TEST_EXEC__ADCS_pack_to_fine_angular_rates_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Fine_Angular_Rates_Struct"
+        .test_func_name = "ADCS_pack_to_fine_angular_rates_struct"
     },
 
     {
         .test_func = TEST_EXEC__ADCS_pack_to_magnetometer_config_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Magnetometer_Config_Struct"
+        .test_func_name = "ADCS_pack_to_magnetometer_config_struct"
     },
 
     {
         .test_func = TEST_EXEC__ADCS_pack_to_commanded_attitude_angles_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Commanded_Attitude_Angles_Struct"
+        .test_func_name = "ADCS_pack_to_commanded_attitude_angles_struct"
     },
 
     {
         .test_func = TEST_EXEC__ADCS_pack_to_estimation_params_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Estimation_Params_Struct"
+        .test_func_name = "ADCS_pack_to_estimation_params_struct"
     },
 
     {
         .test_func = TEST_EXEC__ADCS_pack_to_augmented_sgp4_params_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Augmented_SGP4_Params_Struct"
+        .test_func_name = "ADCS_pack_to_augmented_sgp4_params_struct"
     },
 
     {
         .test_func = TEST_EXEC__ADCS_pack_to_tracking_controller_target_reference_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Tracking_Controller_Target_Reference_Struct"
+        .test_func_name = "ADCS_pack_to_tracking_controller_target_reference_struct"
     },
 
     {
         .test_func = TEST_EXEC__ADCS_pack_to_rate_gyro_config_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Rate_Gyro_Config_Struct"
+        .test_func_name = "ADCS_pack_to_rate_gyro_config_struct"
     },
 
     {
         .test_func = TEST_EXEC__ADCS_pack_to_estimated_attitude_angles_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Estimated_Attitude_Angles_Struct"
+        .test_func_name = "ADCS_pack_to_estimated_attitude_angles_struct"
     },
     
     {
         .test_func = TEST_EXEC__ADCS_pack_to_magnetic_field_vector_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Magnetic_Field_Vector_Struct"
+        .test_func_name = "ADCS_pack_to_magnetic_field_vector_struct"
     },
     
     {
         .test_func = TEST_EXEC__ADCS_pack_to_fine_sun_vector_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Fine_Sun_Vector_Struct"
+        .test_func_name = "ADCS_pack_to_fine_sun_vector_struct"
     },
     
     {
         .test_func = TEST_EXEC__ADCS_pack_to_nadir_vector_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Nadir_Vector_Struct"
+        .test_func_name = "ADCS_pack_to_nadir_vector_struct"
     },
     
     {
         .test_func = TEST_EXEC__ADCS_pack_to_commanded_wheel_speed_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Commanded_Wheel_Speed_Struct"
+        .test_func_name = "ADCS_pack_to_commanded_wheel_speed_struct"
     },
     
     {
         .test_func = TEST_EXEC__ADCS_pack_to_igrf_magnetic_field_vector_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_IGRF_Magnetic_Field_Vector_Struct"
+        .test_func_name = "ADCS_pack_to_igrf_magnetic_field_vector_struct"
     },
     
     {
         .test_func = TEST_EXEC__ADCS_pack_to_quaternion_error_vector_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Quaternion_Error_Vector_Struct"
+        .test_func_name = "ADCS_pack_to_quaternion_error_vector_struct"
     },
     
     {
         .test_func = TEST_EXEC__ADCS_pack_to_estimated_gyro_bias_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Estimated_Gyro_Bias_Struct"
+        .test_func_name = "ADCS_pack_to_estimated_gyro_bias_struct"
     },
     
     {
         .test_func = TEST_EXEC__ADCS_pack_to_estimation_innovation_vector_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Estimation_Innovation_Vector_Struct"
+        .test_func_name = "ADCS_pack_to_estimation_innovation_vector_struct"
     },
     
     {
         .test_func = TEST_EXEC__ADCS_pack_to_raw_cam1_sensor_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Raw_Cam1_Sensor_Struct"
+        .test_func_name = "ADCS_pack_to_raw_cam1_sensor_struct"
     },
     
     {
         .test_func = TEST_EXEC__ADCS_pack_to_raw_cam2_sensor_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Raw_Cam2_Sensor_Struct"
+        .test_func_name = "ADCS_pack_to_raw_cam2_sensor_struct"
     },
 
     {
         .test_func = TEST_EXEC__ADCS_pack_to_raw_coarse_sun_sensor_1_to_6_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Raw_Coarse_Sun_Sensor_1_to_6_Struct"
+        .test_func_name = "ADCS_pack_to_raw_coarse_sun_sensor_1_to_6_struct"
     },
 
     {
         .test_func = TEST_EXEC__ADCS_pack_to_raw_coarse_sun_sensor_7_to_10_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Raw_Coarse_Sun_Sensor_7_to_10_Struct"
+        .test_func_name = "ADCS_pack_to_raw_coarse_sun_sensor_7_to_10_struct"
     },
 
     {
         .test_func = TEST_EXEC__ADCS_pack_to_cubecontrol_current_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_CubeControl_Current_Struct"
+        .test_func_name = "ADCS_pack_to_cubecontrol_current_struct"
     },
 
     {
         .test_func = TEST_EXEC__ADCS_pack_to_raw_gps_status_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Raw_GPS_Status_Struct"
+        .test_func_name = "ADCS_pack_to_raw_gps_status_struct"
     },
 
     {
         .test_func = TEST_EXEC__ADCS_pack_to_raw_gps_time_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Raw_GPS_Time_Struct"
+        .test_func_name = "ADCS_pack_to_raw_gps_time_struct"
     },
 
     {
         .test_func = TEST_EXEC__ADCS_pack_to_raw_gps_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Raw_GPS_Struct"
+        .test_func_name = "ADCS_pack_to_raw_gps_struct"
     },
 
     {
         .test_func = TEST_EXEC__ADCS_pack_to_measurements_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_Measurements_Struct"
+        .test_func_name = "ADCS_pack_to_measurements_struct"
     },
 
     {
         .test_func = TEST_EXEC__ADCS_pack_to_acp_execution_state_struct,
         .test_file = "unit_tests/test_adcs",
-        .test_func_name = "ADCS_Pack_to_ACP_Execution_State_Struct"
+        .test_func_name = "ADCS_pack_to_acp_execution_state_struct"
     },
     
     {
