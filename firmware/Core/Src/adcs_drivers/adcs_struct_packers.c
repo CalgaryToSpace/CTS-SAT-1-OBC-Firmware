@@ -592,7 +592,7 @@ uint8_t ADCS_Pack_to_Measurements_Struct(uint8_t* telemetry_data, ADCS_measureme
 }
 
 uint8_t ADCS_Pack_to_ACP_Execution_State_Struct(uint8_t* data_received, ADCS_acp_execution_state_struct_t* output_struct) {
-    output_struct->time_since_iteration_start_sec = (uint16_t)(data_received[1] << 8 | data_received[0]); 
+    output_struct->time_since_iteration_start_ms = (uint16_t)(data_received[1] << 8 | data_received[0]); 
     output_struct->current_execution_point = (ADCS_current_execution_point_enum_t) data_received[2];
     return 0;
 }

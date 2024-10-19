@@ -7,6 +7,7 @@
 
 // if we fail to properly extract a value, we should return the reason for that failure
 #define ABORT_CMD_FOR_FAILED_EXTRACT(x) uint8_t result = x; if (!(result)) { return result; }
+#define CHECK_ADCS_COMMAND_SUCCESS(x) if ((x)) { return x; }
 
 uint8_t TCMDEXEC_adcs_reset(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                             char *response_output_buf, uint16_t response_output_buf_len);
@@ -213,6 +214,9 @@ uint8_t TCMDEXEC_adcs_get_raw_star_tracker_data(const char *args_str, TCMD_Telec
                                    char *response_output_buf, uint16_t response_output_buf_len);
 
 uint8_t TCMDEXEC_adcs_save_image_to_sd(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len);
+
+uint8_t TCMDEXEC_adcs_request_commissioning_telemetry(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len);
 
 #endif // __INCLUDE_GUARD__TELECOMMAND_adcs_H

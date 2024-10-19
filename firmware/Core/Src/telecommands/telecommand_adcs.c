@@ -2,6 +2,7 @@
 #include "telecommands/telecommand_args_helpers.h"
 #include "transforms/arrays.h"
 #include "unit_tests/unit_test_executor.h"
+#include "timekeeping/timekeeping.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -855,10 +856,10 @@ uint8_t TCMDEXEC_adcs_set_commanded_attitude_angles(const char *args_str, TCMD_T
 ///     - Arg 9: use_css (bool; whether or not to use the CSS measurement in extended_kalman_filter)
 ///     - Arg 10: use_star_tracker (bool; whether or not to use the star tracker measurement in extended_kalman_filter)
 ///     - Arg 11: nadir_sensor_terminator_test (bool; select to ignore nadir sensor measurements when terminator is in FOV)
-///     - Arg 12: automatic_magnetometer_recovery (bool; select whether automatic switch to redundant magnetometer should occur in case of failure)
+///     - Arg 12: automatic_magnetometer_recovery (bool; select whether automatic switch to redundant magnetometer should occur in case of  {failure)
 ///     - Arg 13: magnetometer_mode (enum; select magnetometer mode for estimation and control)
 ///     - Arg 14: magnetometer_selection_for_raw_magnetometer_telemetry (enum; select magnetometer mode for the second raw telemetry frame)
-///     - Arg 15: automatic_estimation_transition_due_to_rate_sensor_errors (bool; enable/disable automatic transition from MEMS rate estimation mode to RKF in case of rate sensor error)
+///     - Arg 15: automatic_estimation_transition_due_to_rate_sensor_errors (bool; enable/disable automatic transition from MEMS rate estimation mode to RKF in case of  {rate sensor error)
 ///     - Arg 16: wheel_30s_power_up_delay (bool; present in CubeSupport but not in the manual -- need to test)
 ///     - Arg 17: cam1_and_cam2_sampling_period (uint8; the manual calls it this, but CubeSupport calls it "error counter reset period" -- need to test)
 /// @return 0 on success, >0 on error
@@ -1765,5 +1766,263 @@ uint8_t TCMDEXEC_adcs_save_image_to_sd(const char *args_str, TCMD_TelecommandCha
     }
     
     uint8_t status = ADCS_save_image_to_sd(args_8[0], args_8[1]); 
+    return status;
+}
+
+// TODO: agenda modification for repeating
+/// @brief Telecommand: Request commissioning telemetry from the ADCS and save it to the memory module
+/// @param args_str 
+///     - Arg 0: Which commissioning step to request telemetry for (1-18)
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_request_commissioning_telemetry(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    // parse arguments: first into int64_t, then convert to correct form for input
+    uint64_t argument;
+    TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &argument);
+    ADCS_commissioning_step_enum_t commissioning_step = (ADCS_commissioning_step_enum_t) argument;
+
+    ADCS_acp_execution_state_struct_t current_state;
+    do { // wait until 500ms has passed since last update
+        uint8_t state_status = ADCS_get_acp_execution_state(&current_state);
+        if (state_status) {
+            snprintf(response_output_buf, response_output_buf_len,
+                "ACP execution state telemetry request failed (err %d)", state_status);
+            return 1;
+        }
+    } while (current_state.time_since_iteration_start_ms <= 500);
+
+    uint8_t status = 0;
+
+    #define MEMORY_MODULE_FUNCTION(x) ; // TODO: delete this once memory module is implemented
+
+    switch(commissioning_step) {
+        case ADCS_COMMISISONING_STEP_DETERMINE_INITIAL_ANGULAR_RATES: {
+            ADCS_commissioning_determine_initial_angular_rates_struct_t commissioning_data;
+            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
+            status += ADCS_get_estimate_angular_rates(&commissioning_data.estimated_angular_rates);
+            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
+            status += ADCS_get_raw_magnetometer_values(&commissioning_data.raw_magnetometer_measurements);
+            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_INITIAL_DETUMBLING: {
+            ADCS_commissioning_initial_detumbling_struct_t commissioning_data;
+            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
+            status += ADCS_get_estimate_angular_rates(&commissioning_data.estimated_angular_rates);
+            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
+            status += ADCS_get_raw_magnetometer_values(&commissioning_data.raw_magnetometer_measurements);
+            status += ADCS_get_magnetorquer_command(&commissioning_data.magnetorquer_commands);
+            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_CONTINUED_DETUMBLING_TO_Y_THOMSON: {
+            ADCS_commissioning_initial_detumbling_struct_t commissioning_data;
+            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
+            status += ADCS_get_estimate_angular_rates(&commissioning_data.estimated_angular_rates);
+            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
+            status += ADCS_get_raw_magnetometer_values(&commissioning_data.raw_magnetometer_measurements);
+            status += ADCS_get_magnetorquer_command(&commissioning_data.magnetorquer_commands);
+            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_MAGNETOMETER_DEPLOYMENT: {
+            ADCS_commissioning_magnetometer_deployment_struct_t commissioning_data;
+            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
+            status += ADCS_get_estimate_fine_angular_rates(&commissioning_data.fine_estimated_angular_rates);
+            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
+            status += ADCS_get_raw_magnetometer_values(&commissioning_data.raw_magnetometer_measurements);
+            status += ADCS_get_cubecontrol_current(&commissioning_data.cubecontrol_currents);
+            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_MAGNETOMETER_CALIBRATION: {
+            ADCS_commissioning_magnetometer_calibration_struct_t commissioning_data;
+            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
+            status += ADCS_get_estimate_fine_angular_rates(&commissioning_data.fine_estimated_angular_rates);
+            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
+            status += ADCS_get_measurements(&commissioning_data.adcs_measurements);
+            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_ANGULAR_RATE_AND_PITCH_ANGLE_ESTIMATION: {
+            ADCS_commissioning_angular_rate_and_pitch_angle_estimation_struct_t commissioning_data;
+            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
+            status += ADCS_get_estimate_fine_angular_rates(&commissioning_data.fine_estimated_angular_rates);
+            status += ADCS_get_estimated_attitude_angles(&commissioning_data.estimated_attitude_angles);
+            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
+            status += ADCS_get_measurements(&commissioning_data.adcs_measurements);
+            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_Y_WHEEL_RAMP_UP_TEST: {
+            ADCS_commissioning_y_wheel_ramp_up_test_struct_t commissioning_data;
+            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
+            status += ADCS_get_estimate_fine_angular_rates(&commissioning_data.fine_estimated_angular_rates);
+            status += ADCS_get_estimated_attitude_angles(&commissioning_data.estimated_attitude_angles);
+            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
+            status += ADCS_get_wheel_speed(&commissioning_data.measured_wheel_speeds);
+            status += ADCS_get_measurements(&commissioning_data.adcs_measurements);            
+            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_INITIAL_Y_MOMENTUM_ACTIVATION: {
+            ADCS_commissioning_y_momentum_activation_struct_t commissioning_data;
+            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
+            status += ADCS_get_estimate_fine_angular_rates(&commissioning_data.fine_estimated_angular_rates);
+            status += ADCS_get_estimated_attitude_angles(&commissioning_data.estimated_attitude_angles);
+            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
+            status += ADCS_get_wheel_speed(&commissioning_data.measured_wheel_speeds);
+            status += ADCS_get_measurements(&commissioning_data.adcs_measurements);       
+            status += ADCS_get_llh_position(&commissioning_data.LLH_positions);
+            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_CONTINUED_Y_MOMENTUM_ACTIVATION_AND_MAGNETOMETER_EKF: {
+            ADCS_commissioning_y_momentum_activation_struct_t commissioning_data;
+            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
+            status += ADCS_get_estimate_fine_angular_rates(&commissioning_data.fine_estimated_angular_rates);
+            status += ADCS_get_estimated_attitude_angles(&commissioning_data.estimated_attitude_angles);
+            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
+            status += ADCS_get_wheel_speed(&commissioning_data.measured_wheel_speeds);
+            status += ADCS_get_measurements(&commissioning_data.adcs_measurements);       
+            status += ADCS_get_llh_position(&commissioning_data.LLH_positions);
+            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_CUBESENSE_SUN_NADIR: {
+            ADCS_commissioning_cubesense_sun_nadir_commissioning_struct_t commissioning_data;
+            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
+            status += ADCS_get_estimate_fine_angular_rates(&commissioning_data.fine_estimated_angular_rates);
+            status += ADCS_get_estimated_attitude_angles(&commissioning_data.estimated_attitude_angles);
+            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
+            status += ADCS_get_raw_coarse_sun_sensor_1_to_6(&commissioning_data.raw_css_1_to_6_measurements); 
+            status += ADCS_get_raw_coarse_sun_sensor_7_to_10(&commissioning_data.raw_css_7_to_10_measurements); 
+            status += ADCS_get_raw_cam1_sensor(&commissioning_data.raw_cam1_measurements);            
+            status += ADCS_get_raw_cam2_sensor(&commissioning_data.raw_cam2_measurements);
+            status += ADCS_get_fine_sun_vector(&commissioning_data.fine_sun_vector);
+            status += ADCS_get_nadir_vector(&commissioning_data.nadir_vector);
+            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_EKF_ACTIVATION_SUN_AND_NADIR: {
+            ADCS_commissioning_cubesense_sun_nadir_commissioning_struct_t commissioning_data;
+            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
+            status += ADCS_get_estimate_fine_angular_rates(&commissioning_data.fine_estimated_angular_rates);
+            status += ADCS_get_estimated_attitude_angles(&commissioning_data.estimated_attitude_angles);
+            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
+            status += ADCS_get_raw_coarse_sun_sensor_1_to_6(&commissioning_data.raw_css_1_to_6_measurements); 
+            status += ADCS_get_raw_coarse_sun_sensor_7_to_10(&commissioning_data.raw_css_7_to_10_measurements); 
+            status += ADCS_get_raw_cam1_sensor(&commissioning_data.raw_cam1_measurements);            
+            status += ADCS_get_raw_cam2_sensor(&commissioning_data.raw_cam2_measurements);
+            status += ADCS_get_fine_sun_vector(&commissioning_data.fine_sun_vector);
+            status += ADCS_get_nadir_vector(&commissioning_data.nadir_vector);
+            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_CUBESTAR_STAR_TRACKER: {
+            ADCS_commissioning_cubestar_star_tracker_commissioning_struct_t commissioning_data;
+            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
+            status += ADCS_get_estimate_fine_angular_rates(&commissioning_data.fine_estimated_angular_rates);
+            status += ADCS_get_estimated_attitude_angles(&commissioning_data.estimated_attitude_angles);
+            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
+            status += ADCS_get_raw_star_tracker_data(&commissioning_data.raw_star_tracker);
+            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_EKF_ACTIVATION_WITH_STAR_VECTOR_MEASUREMENTS: {
+            ADCS_commissioning_cubestar_star_tracker_commissioning_struct_t commissioning_data;
+            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
+            status += ADCS_get_estimate_fine_angular_rates(&commissioning_data.fine_estimated_angular_rates);
+            status += ADCS_get_estimated_attitude_angles(&commissioning_data.estimated_attitude_angles);
+            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
+            status += ADCS_get_raw_star_tracker_data(&commissioning_data.raw_star_tracker);
+            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_ZERO_BIAS_3_AXIS_REACTION_WHEEL_CONTROL: {
+            ADCS_commissioning_zero_bias_3_axis_reaction_wheel_control_struct_t commissioning_data;
+            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
+            status += ADCS_get_estimate_fine_angular_rates(&commissioning_data.fine_estimated_angular_rates);
+            status += ADCS_get_estimated_attitude_angles(&commissioning_data.estimated_attitude_angles);
+            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
+            status += ADCS_get_wheel_speed(&commissioning_data.measured_wheel_speeds);
+            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_EKF_WITH_RATE_GYRO_STAR_TRACKER_MEASUREMENTS: {
+            ADCS_commissioning_sun_tracking_3_axis_control_struct_t commissioning_data;
+            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
+            status += ADCS_get_estimate_fine_angular_rates(&commissioning_data.fine_estimated_angular_rates);
+            status += ADCS_get_estimated_attitude_angles(&commissioning_data.estimated_attitude_angles);
+            status += ADCS_get_estimated_gyro_bias(&commissioning_data.estimated_gyro_bias);
+            status += ADCS_get_estimation_innovation_vector(&commissioning_data.estimation_innovation_vector);            
+            status += ADCS_get_magnetic_field_vector(&commissioning_data.magnetic_field_vector);
+            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
+            status += ADCS_get_fine_sun_vector(&commissioning_data.fine_sun_vector);
+            status += ADCS_get_nadir_vector(&commissioning_data.nadir_vector);
+            status += ADCS_get_wheel_speed(&commissioning_data.measured_wheel_speeds);
+            status += ADCS_get_magnetorquer_command(&commissioning_data.magnetorquer_commands);
+            status += ADCS_get_igrf_magnetic_field_vector(&commissioning_data.igrf_magnetic_field_vector);
+            status += ADCS_get_quaternion_error_vector(&commissioning_data.quaternion_error_vector);
+            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_SUN_TRACKING_3_AXIS_CONTROL: {
+            ADCS_commissioning_sun_tracking_3_axis_control_struct_t commissioning_data;
+            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
+            status += ADCS_get_estimate_fine_angular_rates(&commissioning_data.fine_estimated_angular_rates);
+            status += ADCS_get_estimated_attitude_angles(&commissioning_data.estimated_attitude_angles);
+            status += ADCS_get_estimated_gyro_bias(&commissioning_data.estimated_gyro_bias);
+            status += ADCS_get_estimation_innovation_vector(&commissioning_data.estimation_innovation_vector);            
+            status += ADCS_get_magnetic_field_vector(&commissioning_data.magnetic_field_vector);
+            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
+            status += ADCS_get_fine_sun_vector(&commissioning_data.fine_sun_vector);
+            status += ADCS_get_nadir_vector(&commissioning_data.nadir_vector);
+            status += ADCS_get_wheel_speed(&commissioning_data.measured_wheel_speeds);
+            status += ADCS_get_magnetorquer_command(&commissioning_data.magnetorquer_commands);
+            status += ADCS_get_igrf_magnetic_field_vector(&commissioning_data.igrf_magnetic_field_vector);
+            status += ADCS_get_quaternion_error_vector(&commissioning_data.quaternion_error_vector);
+            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_GROUND_TARGET_TRACKING_CONTROLLER: {
+            ADCS_commissioning_ground_target_tracking_controller_struct_t commissioning_data;
+            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
+            status += ADCS_get_estimate_fine_angular_rates(&commissioning_data.fine_estimated_angular_rates);
+            status += ADCS_get_estimated_attitude_angles(&commissioning_data.estimated_attitude_angles);
+            status += ADCS_get_estimated_gyro_bias(&commissioning_data.estimated_gyro_bias);
+            status += ADCS_get_estimation_innovation_vector(&commissioning_data.estimation_innovation_vector);            
+            status += ADCS_get_magnetic_field_vector(&commissioning_data.magnetic_field_vector);
+            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
+            status += ADCS_get_fine_sun_vector(&commissioning_data.fine_sun_vector);
+            status += ADCS_get_nadir_vector(&commissioning_data.nadir_vector);
+            status += ADCS_get_wheel_speed(&commissioning_data.measured_wheel_speeds);
+            status += ADCS_get_magnetorquer_command(&commissioning_data.magnetorquer_commands);
+            status += ADCS_get_igrf_magnetic_field_vector(&commissioning_data.igrf_magnetic_field_vector);
+            status += ADCS_get_quaternion_error_vector(&commissioning_data.quaternion_error_vector);
+            status += ADCS_get_llh_position(&commissioning_data.LLH_position);
+            status += ADCS_get_commanded_attitude_angles(&commissioning_data.commanded_attitude_angles);
+            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_GPS_RECEIVER: {
+            ADCS_commissioning_gps_receiver_commissioning_struct_t commissioning_data;
+            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
+            status += ADCS_get_llh_position(&commissioning_data.LLH_position);          
+            status += ADCS_get_raw_gps_status(&commissioning_data.raw_GPS_status);
+            status += ADCS_get_raw_gps_time(&commissioning_data.raw_GPS_time);
+            status += ADCS_get_raw_gps_x(&commissioning_data.raw_GPS_x);
+            status += ADCS_get_raw_gps_y(&commissioning_data.raw_GPS_y);
+            status += ADCS_get_raw_gps_z(&commissioning_data.raw_GPS_z);            
+            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            break;
+        }           
+        default: {
+            snprintf(response_output_buf, response_output_buf_len,
+                "Commissioning step case out of range (err %d)", 1);
+            return 1;
+        }
+    }
+
     return status;
 }

@@ -1011,8 +1011,8 @@ uint8_t ADCS_acp_execution_struct_TO_json(const ADCS_acp_execution_state_struct_
         return 1; // Error: invalid input
     }
     int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, 
-                                "{\"time_since_iteration_start_sec\":%d,\"current_execution_point\":%d}", 
-                                data->time_since_iteration_start_sec, data->current_execution_point);
+                                "{\"time_since_iteration_start_ms\":%d,\"current_execution_point\":%d}", 
+                                data->time_since_iteration_start_ms, data->current_execution_point);
 
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error

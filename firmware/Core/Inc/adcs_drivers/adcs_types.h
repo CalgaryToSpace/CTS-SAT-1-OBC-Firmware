@@ -233,6 +233,27 @@ typedef enum ADCS_image_size_enum_t {
     ADCS_IMAGE_SIZE_64_X_64_PX = 4,
 } ADCS_image_size_enum_t;
 
+typedef enum ADCS_commissioning_step_enum_t {
+    ADCS_COMMISISONING_STEP_DETERMINE_INITIAL_ANGULAR_RATES = 1, 
+    ADCS_COMMISISONING_STEP_INITIAL_DETUMBLING = 2, 
+    ADCS_COMMISISONING_STEP_CONTINUED_DETUMBLING_TO_Y_THOMSON = 3, 
+    ADCS_COMMISISONING_STEP_MAGNETOMETER_DEPLOYMENT = 4, 
+    ADCS_COMMISISONING_STEP_MAGNETOMETER_CALIBRATION = 5, 
+    ADCS_COMMISISONING_STEP_ANGULAR_RATE_AND_PITCH_ANGLE_ESTIMATION = 6, 
+    ADCS_COMMISISONING_STEP_Y_WHEEL_RAMP_UP_TEST = 7, 
+    ADCS_COMMISISONING_STEP_INITIAL_Y_MOMENTUM_ACTIVATION = 8, 
+    ADCS_COMMISISONING_STEP_CONTINUED_Y_MOMENTUM_ACTIVATION_AND_MAGNETOMETER_EKF = 9, 
+    ADCS_COMMISISONING_STEP_CUBESENSE_SUN_NADIR = 10,
+    ADCS_COMMISISONING_STEP_EKF_ACTIVATION_SUN_AND_NADIR = 11,
+    ADCS_COMMISISONING_STEP_CUBESTAR_STAR_TRACKER = 12,
+    ADCS_COMMISISONING_STEP_EKF_ACTIVATION_WITH_STAR_VECTOR_MEASUREMENTS = 13,
+    ADCS_COMMISISONING_STEP_ZERO_BIAS_3_AXIS_REACTION_WHEEL_CONTROL = 14,
+    ADCS_COMMISISONING_STEP_EKF_WITH_RATE_GYRO_STAR_TRACKER_MEASUREMENTS = 15,
+    ADCS_COMMISISONING_STEP_SUN_TRACKING_3_AXIS_CONTROL = 16,
+    ADCS_COMMISISONING_STEP_GROUND_TARGET_TRACKING_CONTROLLER = 17,
+    ADCS_COMMISISONING_STEP_GPS_RECEIVER = 18
+} ADCS_commissioning_step_enum_t;
+
 /* Command Structs */
 
 typedef struct ADCS_cmd_ack_struct_t {
@@ -555,7 +576,7 @@ typedef struct ADCS_measurements_struct_t {
 } ADCS_measurements_struct_t;
 
 typedef struct ADCS_acp_execution_state_struct_t {
-    uint16_t time_since_iteration_start_sec;
+    uint16_t time_since_iteration_start_ms;
     ADCS_current_execution_point_enum_t current_execution_point;
 } ADCS_acp_execution_state_struct_t;
 
@@ -647,7 +668,7 @@ typedef struct ADCS_raw_star_tracker_struct_t {
 /* Commissioning Structs */
 
 typedef struct ADCS_commissioning_determine_initial_angular_rates_struct_t {
-    uint8_t pass; // need timestamp
+    uint64_t current_unix_time;
     ADCS_angular_rates_struct_t estimated_angular_rates;
     ADCS_rated_sensor_rates_struct_t rated_sensor_rates;
     ADCS_raw_magnetometer_values_struct_t raw_magnetometer_measurements;
@@ -655,7 +676,7 @@ typedef struct ADCS_commissioning_determine_initial_angular_rates_struct_t {
 
 typedef struct ADCS_commissioning_initial_detumbling_struct_t {
     // works for detumbling and Y-thomson continued detumbling
-    uint8_t pass; // need timestamp
+    uint64_t current_unix_time;
     ADCS_angular_rates_struct_t estimated_angular_rates;
     ADCS_rated_sensor_rates_struct_t rated_sensor_rates;
     ADCS_raw_magnetometer_values_struct_t raw_magnetometer_measurements;
@@ -663,7 +684,7 @@ typedef struct ADCS_commissioning_initial_detumbling_struct_t {
 } ADCS_commissioning_initial_detumbling_struct_t;
 
 typedef struct ADCS_commissioning_magnetometer_deployment_struct_t {
-    uint8_t pass; // need timestamp
+    uint64_t current_unix_time;
     ADCS_fine_angular_rates_struct_t fine_estimated_angular_rates;
     ADCS_rated_sensor_rates_struct_t rated_sensor_rates;
     ADCS_raw_magnetometer_values_struct_t raw_magnetometer_measurements;
@@ -671,14 +692,14 @@ typedef struct ADCS_commissioning_magnetometer_deployment_struct_t {
 } ADCS_commissioning_magnetometer_deployment_struct_t;
 
 typedef struct ADCS_commissioning_magnetometer_calibration_struct_t {
-    uint8_t pass; // need timestamp
+    uint64_t current_unix_time;
     ADCS_fine_angular_rates_struct_t fine_estimated_angular_rates;
     ADCS_rated_sensor_rates_struct_t rated_sensor_rates;
     ADCS_measurements_struct_t adcs_measurements; // only need calibrated magnetometer measurements
 } ADCS_commissioning_magnetometer_calibration_struct_t;
 
 typedef struct ADCS_commissioning_angular_rate_and_pitch_angle_estimation_struct_t {
-    uint8_t pass; // need timestamp
+    uint64_t current_unix_time;
     ADCS_fine_angular_rates_struct_t fine_estimated_angular_rates;
     ADCS_estimated_attitude_angles_struct_t estimated_attitude_angles;
     ADCS_rated_sensor_rates_struct_t rated_sensor_rates;
@@ -686,7 +707,7 @@ typedef struct ADCS_commissioning_angular_rate_and_pitch_angle_estimation_struct
 } ADCS_commissioning_angular_rate_and_pitch_angle_estimation_struct_t;
 
 typedef struct ADCS_commissioning_y_wheel_ramp_up_test_struct_t {
-    uint8_t pass; // need timestamp
+    uint64_t current_unix_time;
     ADCS_fine_angular_rates_struct_t fine_estimated_angular_rates;
     ADCS_estimated_attitude_angles_struct_t estimated_attitude_angles;
     ADCS_rated_sensor_rates_struct_t rated_sensor_rates;
@@ -694,20 +715,20 @@ typedef struct ADCS_commissioning_y_wheel_ramp_up_test_struct_t {
     ADCS_measurements_struct_t adcs_measurements; // only need calibrated magnetometer measurements
 } ADCS_commissioning_y_wheel_ramp_up_test_struct_t;
 
-typedef struct ADCS_commissioning_initial_y_momentum_activation_struct_t {
+typedef struct ADCS_commissioning_y_momentum_activation_struct_t {
     // for both initial Y-momentum activation and Magnetometer EKF Y-momentum
-    uint8_t pass; // need timestamp
+    uint64_t current_unix_time;
     ADCS_fine_angular_rates_struct_t fine_estimated_angular_rates;
     ADCS_estimated_attitude_angles_struct_t estimated_attitude_angles;
     ADCS_rated_sensor_rates_struct_t rated_sensor_rates;
     ADCS_wheel_speed_struct_t measured_wheel_speeds;
     ADCS_measurements_struct_t adcs_measurements; // only need calibrated magnetometer measurements
     ADCS_llh_position_struct_t LLH_positions;
-} ADCS_commissioning_initial_y_momentum_activation_struct_t;
+} ADCS_commissioning_y_momentum_activation_struct_t;
 
 typedef struct ADCS_commissioning_cubesense_sun_nadir_commissioning_struct_t {
     // for both initial sun/nadir commissioning and EKF sun/nadir commissioning
-    uint8_t pass; // need timestamp
+    uint64_t current_unix_time;
     ADCS_fine_angular_rates_struct_t fine_estimated_angular_rates;
     ADCS_estimated_attitude_angles_struct_t estimated_attitude_angles;
     ADCS_rated_sensor_rates_struct_t rated_sensor_rates;
@@ -724,7 +745,7 @@ typedef struct ADCS_commissioning_cubesense_sun_nadir_commissioning_struct_t {
 
 typedef struct ADCS_commissioning_cubestar_star_tracker_commissioning_struct_t {
     // for both non-EKF and EKF
-    uint8_t pass; // need timestamp
+    uint64_t current_unix_time;
     ADCS_fine_angular_rates_struct_t fine_estimated_angular_rates;
     ADCS_estimated_attitude_angles_struct_t estimated_attitude_angles;
     ADCS_rated_sensor_rates_struct_t rated_sensor_rates;
@@ -734,7 +755,7 @@ typedef struct ADCS_commissioning_cubestar_star_tracker_commissioning_struct_t {
 // TODO: We also need to downlink ADCS data from SD card
 
 typedef struct ADCS_commissioning_zero_bias_3_axis_reaction_wheel_control_struct_t {
-    uint8_t pass; // need timestamp
+    uint64_t current_unix_time;
     ADCS_fine_angular_rates_struct_t fine_estimated_angular_rates;
     ADCS_estimated_attitude_angles_struct_t estimated_attitude_angles;
     ADCS_rated_sensor_rates_struct_t rated_sensor_rates;
@@ -743,7 +764,7 @@ typedef struct ADCS_commissioning_zero_bias_3_axis_reaction_wheel_control_struct
 
 typedef struct ADCS_commissioning_sun_tracking_3_axis_control_struct_t {
     // for both EKF rate gyro and sun tracking 3-axis control
-    uint8_t pass; // need timestamp
+    uint64_t current_unix_time;
     ADCS_fine_angular_rates_struct_t fine_estimated_angular_rates;
     ADCS_estimated_attitude_angles_struct_t estimated_attitude_angles;
     ADCS_estimated_gyro_bias_struct_t estimated_gyro_bias;
@@ -760,7 +781,7 @@ typedef struct ADCS_commissioning_sun_tracking_3_axis_control_struct_t {
 } ADCS_commissioning_sun_tracking_3_axis_control_struct_t;
 
 typedef struct ADCS_commissioning_ground_target_tracking_controller_struct_t {
-    uint8_t pass; // need timestamp
+    uint64_t current_unix_time;
     ADCS_fine_angular_rates_struct_t fine_estimated_angular_rates;
     ADCS_estimated_attitude_angles_struct_t estimated_attitude_angles;
     ADCS_estimated_gyro_bias_struct_t estimated_gyro_bias;
@@ -779,7 +800,7 @@ typedef struct ADCS_commissioning_ground_target_tracking_controller_struct_t {
 } ADCS_commissioning_ground_target_tracking_controller_struct_t;
 
 typedef struct ADCS_commissioning_gps_receiver_commissioning_struct_t {
-    uint8_t pass; // need timestamp
+    uint64_t current_unix_time;
     ADCS_llh_position_struct_t LLH_position;
     ADCS_raw_gps_status_struct_t raw_GPS_status;
     ADCS_raw_gps_time_struct_t raw_GPS_time;
