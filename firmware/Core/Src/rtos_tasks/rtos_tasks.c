@@ -225,39 +225,45 @@ void TASK_service_eps_watchdog(void *argument) {
 void TASK_monitor_freertos_memory(void *argument) {
 	TASK_HELP_start_of_task();
 
+	osDelay(12000); // Delay for 12 seconds to allow other tasks to start up.
+
 	while (1) {
+		// Place the main delay at the top to avoid a "continue" statement skipping it.
+		osDelay(5000);
 
-		for(uint32_t x = 0; x < task_handles_array_size; x++){
+		for (uint16_t task_num = 0; task_num < FREERTOS_task_handles_array_size; task_num++) {
+			if (FREERTOS_task_handles_array[task_num].task_handle == NULL) {
+				continue; // Safety check. Should never happen.
+			}
+	
+			// Dereferencing the task_handle pointer
+			const osThreadId_t task_handle = *(FREERTOS_task_handles_array[task_num].task_handle);
 
-			if(task_handles_array[x].task_handle != NULL)
-			{
-				// Dereferencing the task_handle pointer
-				osThreadId_t dereferenced_task_handle = *(task_handles_array[x].task_handle);
+			// Get the highstack watermark
+			const uint32_t task_min_bytes_remaining = uxTaskGetStackHighWaterMark(task_handle) * 4;
+
+			if (task_min_bytes_remaining < FREERTOS_task_handles_array[task_num].lowest_stack_bytes_remaining) {
+				// If this is the new "lowest free space", update that value.
+				FREERTOS_task_handles_array[task_num].lowest_stack_bytes_remaining = task_min_bytes_remaining;
 
 				// Determine the threshold of the task
-				uint32_t task_threshold_bytes = (task_handles_array[x].task_attribute->stack_size * CONFIG_highstack_watermark_percentage_threshold) / 100;
-
-				// Get the highstack watermark
-				uint32_t task_highstack_watermark_bytes = uxTaskGetStackHighWaterMark(dereferenced_task_handle) * 4;
-
-				// Initializing the lowest highstack watermark bytes
-				if(task_handles_array[x].lowest_highstack_watermark_bytes == UINT32_MAX){
-					task_handles_array[x].lowest_highstack_watermark_bytes = task_highstack_watermark_bytes;
-				}
-
-				if(task_highstack_watermark_bytes < task_threshold_bytes && task_highstack_watermark_bytes < task_handles_array[x].lowest_highstack_watermark_bytes){
-					
-					task_handles_array[x].lowest_highstack_watermark_bytes = task_highstack_watermark_bytes;
+				const uint32_t task_threshold_bytes = (
+					FREERTOS_task_handles_array[task_num].task_attribute->stack_size
+					* CONFIG_freertos_min_remaining_stack_percent
+					/ 100
+				);
+				
+				// If this new "lowest free space" is below the threshold, warn the user.
+				if (task_min_bytes_remaining < task_threshold_bytes) {
 					LOG_message(
 						LOG_SYSTEM_OBC, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
 						"Warning: Task '%s' approached a stack overflow. Worst remaining stack size was: %lu bytes.",
-						pcTaskGetName(dereferenced_task_handle),
-						task_highstack_watermark_bytes
-						);
-				}	
+						pcTaskGetName(task_handle),
+						task_min_bytes_remaining
+					);
+				}
 			}
 		}
-		osDelay(5000);
 
 	} /* End Task's Main Loop */
 }

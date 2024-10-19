@@ -10,7 +10,10 @@ uint32_t CONFIG_int_demo_var_1 = 13345;
 uint32_t CONFIG_int_demo_var_2 = 242344;
 
 // extern
-const uint32_t CONFIG_highstack_watermark_percentage_threshold = 20;
+
+/// @brief The percentage of the stack space that should remain free. If the free space falls
+/// below this percentage, a warning will be logged.
+const uint32_t CONFIG_freertos_min_remaining_stack_percent = 20;
 
 // extern
 CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {

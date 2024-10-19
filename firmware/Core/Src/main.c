@@ -120,40 +120,40 @@ const osThreadAttr_t TASK_monitor_freertos_memory_Attributes = {
   .priority = (osPriority_t) osPriorityBelowNormal6,
 };
 
-Task_Info_t task_handles_array [] = {
+Task_Info_t FREERTOS_task_handles_array [] = {
   {
     .task_handle = &defaultTaskHandle,
     .task_attribute = &defaultTask_attributes,
-    .lowest_highstack_watermark_bytes = UINT32_MAX
+    .lowest_stack_bytes_remaining = UINT32_MAX
   },
   {
     .task_handle = &TASK_DEBUG_print_heartbeat_Handle,
     .task_attribute = &TASK_DEBUG_print_heartbeat_Attributes,
-    .lowest_highstack_watermark_bytes = UINT32_MAX
+    .lowest_stack_bytes_remaining = UINT32_MAX
   },
   {
     .task_handle = &TASK_handle_uart_telecommands_Handle,
     .task_attribute = &TASK_handle_uart_telecommands_Attributes,
-    .lowest_highstack_watermark_bytes = UINT32_MAX
+    .lowest_stack_bytes_remaining = UINT32_MAX
   },
   {
     .task_handle = &TASK_execute_telecommands_Handle,
     .task_attribute = &TASK_execute_telecommands_Attributes,
-    .lowest_highstack_watermark_bytes = UINT32_MAX
+    .lowest_stack_bytes_remaining = UINT32_MAX
   },
   {
     .task_handle = &TASK_service_eps_watchdog_Handle,
     .task_attribute = &TASK_service_eps_watchdog_Attributes,
-    .lowest_highstack_watermark_bytes = UINT32_MAX
+    .lowest_stack_bytes_remaining = UINT32_MAX
   },
   {
     .task_handle = &TASK_monitor_freertos_memory_Handle,
     .task_attribute = &TASK_monitor_freertos_memory_Attributes,
-    .lowest_highstack_watermark_bytes = UINT32_MAX
+    .lowest_stack_bytes_remaining = UINT32_MAX
   },
 };
 
-const uint32_t task_handles_array_size = sizeof(task_handles_array)/ sizeof(Task_Info_t);
+const uint32_t FREERTOS_task_handles_array_size = sizeof(FREERTOS_task_handles_array) / sizeof(Task_Info_t);
 
 
 /* USER CODE END PV */

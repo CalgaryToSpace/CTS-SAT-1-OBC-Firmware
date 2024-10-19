@@ -21,7 +21,7 @@ static const uint8_t CONFIG_MAX_VARIABLE_NAME_LENGTH = 50;
 static const uint8_t CONFIG_MAX_JSON_STRING_LENGTH = UINT8_MAX;
 
 // extern
-extern const uint32_t CONFIG_highstack_watermark_percentage_threshold;
+extern const uint32_t CONFIG_freertos_min_remaining_stack_percent;
 
 // extern
 extern CONFIG_integer_config_entry_t CONFIG_int_config_variables[];

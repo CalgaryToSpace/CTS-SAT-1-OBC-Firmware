@@ -60,9 +60,9 @@ extern TIM_HandleTypeDef htim16;
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
 
-extern Task_Info_t task_handles_array [];
+extern Task_Info_t FREERTOS_task_handles_array [];
 
-extern const uint32_t task_handles_array_size;
+extern const uint32_t FREERTOS_task_handles_array_size;
 
 /* USER CODE END EC */
 
