@@ -4,7 +4,7 @@
 
 #include "obc_temperature_sensor/obc_temperature_sensor.h"
 
-const uint16_t OBC_TEMP_SENSOR_device_addr =  0x48;
+const uint16_t OBC_TEMP_SENSOR_device_addr =  0x91;
 const uint16_t OBC_TEMP_SENSOR_temp_register_addr  = 0x00;
 
 // write to this register to change the precision
