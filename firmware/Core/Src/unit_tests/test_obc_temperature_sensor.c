@@ -115,7 +115,7 @@ uint8_t TEST_EXEC__OBC_TEMP_SENSOR_configure_precision_values(void)
 
     // user sets the precision to 9 bit
     TEST_ASSERT(0 == OBC_TEMP_SENSOR__configure_precision_values(9, &precision_data));
-    TEST_ASSERT(1 == precision_data.custom_precision_set);
+    TEST_ASSERT(150 == precision_data.conversion_delay_ms);
     TEST_ASSERT(OBC_TEMP_SENSOR_nine_bit_precision_coefficient == precision_data.precision_coefficient);
     TEST_ASSERT(OBC_TEMP_SENSOR_NINE_BIT_PRECISION_INSIGNIFICANT_BYTES == precision_data.precision_insignificant_bits);
     TEST_ASSERT(10 == precision_data.precision_scaling_factor);
@@ -123,7 +123,7 @@ uint8_t TEST_EXEC__OBC_TEMP_SENSOR_configure_precision_values(void)
 
     // user sets the precision to 10 bit
     TEST_ASSERT(0 == OBC_TEMP_SENSOR__configure_precision_values(10, &precision_data));
-    TEST_ASSERT(1 == precision_data.custom_precision_set);
+    TEST_ASSERT(300 == precision_data.conversion_delay_ms);
     TEST_ASSERT(OBC_TEMP_SENSOR_ten_bit_precision_coefficient == precision_data.precision_coefficient);
     TEST_ASSERT(OBC_TEMP_SENSOR_TEN_BIT_PRECISION_INSIGNIFICANT_BYTES == precision_data.precision_insignificant_bits);
     TEST_ASSERT(100 == precision_data.precision_scaling_factor);
@@ -131,7 +131,7 @@ uint8_t TEST_EXEC__OBC_TEMP_SENSOR_configure_precision_values(void)
 
     // user sets the precision to 11 bit
     TEST_ASSERT(0 == OBC_TEMP_SENSOR__configure_precision_values(11, &precision_data));
-    TEST_ASSERT(1 == precision_data.custom_precision_set);
+    TEST_ASSERT(600 == precision_data.conversion_delay_ms);
     TEST_ASSERT(OBC_TEMP_SENSOR_eleven_bit_precision_coefficient == precision_data.precision_coefficient);
     TEST_ASSERT(OBC_TEMP_SENSOR_ELEVEN_BIT_PRECISION_INSIGNIFICANT_BYTES == precision_data.precision_insignificant_bits);
     TEST_ASSERT(1000 == precision_data.precision_scaling_factor);
@@ -139,7 +139,7 @@ uint8_t TEST_EXEC__OBC_TEMP_SENSOR_configure_precision_values(void)
 
     // user sets the precision to 12 bit
     TEST_ASSERT(0 == OBC_TEMP_SENSOR__configure_precision_values(12, &precision_data));
-    TEST_ASSERT(1 == precision_data.custom_precision_set);
+    TEST_ASSERT(1200 == precision_data.conversion_delay_ms);
     TEST_ASSERT(OBC_TEMP_SENSOR_twelve_bit_precision_coefficient == precision_data.precision_coefficient);
     TEST_ASSERT(OBC_TEMP_SENSOR_TWELVE_BIT_PRECISION_INSIGNIFICANT_BYTES == precision_data.precision_insignificant_bits);
     TEST_ASSERT(10000 == precision_data.precision_scaling_factor);
@@ -148,7 +148,7 @@ uint8_t TEST_EXEC__OBC_TEMP_SENSOR_configure_precision_values(void)
     // user inputs an invalid precision number. Values should be the same as what they were previously set to.
     // as a user did not set the precision (it was an error).
     TEST_ASSERT(1 == OBC_TEMP_SENSOR__configure_precision_values(13, &precision_data));
-    TEST_ASSERT(1 == precision_data.custom_precision_set);
+    TEST_ASSERT(1200 == precision_data.conversion_delay_ms);
     TEST_ASSERT(OBC_TEMP_SENSOR_twelve_bit_precision_coefficient == precision_data.precision_coefficient);
     TEST_ASSERT(OBC_TEMP_SENSOR_TWELVE_BIT_PRECISION_INSIGNIFICANT_BYTES == precision_data.precision_insignificant_bits);
     TEST_ASSERT(10000 == precision_data.precision_scaling_factor);

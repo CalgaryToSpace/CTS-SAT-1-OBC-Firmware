@@ -16,9 +16,6 @@ const uint8_t TEMP_SENSOR_precision = 0x01 << 5;
 // number used to remove fractional portions of the temperature. Default to 100 for 10 bit precision.
 uint16_t TEMP_SENSOR_precision_scaling_factor = 100;
 
-// used to see if the user has configured the temperature precision to something other than the default.
-uint8_t TEMP_SENSOR_custom_precision_set = 0;
-
 // used in temp calculation.
 float TEMP_SENSOR_precision_coefficient = OBC_TEMP_SENSOR_ten_bit_precision_coefficient;
 
@@ -26,7 +23,7 @@ Temperature_Sensor_Data_Precision_Insignificant_Bytes_t TEMP_SENSOR_precision_in
 
 
 /// @brief Reads the temperature from the STDS75DS2F and stores it in the provided variable pointer result. 
-///         Precision can be configured from 1 to 4 bits.
+///         Precision can be configured from 9 to 12 bits.
 ///         Temperature range is -55 to 125 degrees celsius with +/- 3 degrees celsius over the whole range.
 /// @param result
 /// - Arg 0: Memory location to store the temperature result.
@@ -35,19 +32,6 @@ uint8_t OBC_TEMP_SENSOR__read_temperature(int32_t *result)
 {
     HAL_StatusTypeDef status;
     uint8_t buf[2];
-
-    // if user has not set temp precision default to 10 bit
-    if (!TEMP_SENSOR_custom_precision_set)
-    {
-        uint8_t set_precision_result = OBC_TEMP_SENSOR__set_temp_precision(10, 0);
-
-        // if error in setting config register return error
-        if (set_precision_result == 1 || set_precision_result == 2)
-        {
-            return 1;
-        }
-    }
-
 
     // read the temperature from the temp register
     status = HAL_I2C_Mem_Read(&hi2c1, TEMP_SENSOR_device_addr << 1, TEMP_SENSOR_temp_register_addr, 1, buf, 2, HAL_MAX_DELAY);
@@ -122,11 +106,11 @@ int8_t OBC_TEMP_SENSOR__get_temp_precision()
 
 /// @brief Set the temp temperature precision in the config register.
 /// @param arg_precision
-///      precision to set the temperature to in decimal (9, 10, 11, 12).
-/// @param did_user_set_precision
-///     bool indicating whether the user set the precision or we are default setting it.
+///   - Arg 0: precision to set the temperature to in decimal (9, 10, 11, 12).
+/// @param temp_precision_conversion_delay_ms
+///   - Arg 1: pointer to store the conversion delay. 
 /// @return 0 on success, 1 on write error, 2 when passed an invalid precision value.
-uint8_t OBC_TEMP_SENSOR__set_temp_precision(uint8_t arg_precision, uint8_t did_user_set_precision)
+uint8_t OBC_TEMP_SENSOR__set_temp_precision(uint8_t arg_precision, uint32_t* temp_precision_conversion_delay_ms)
 {
     HAL_StatusTypeDef status;
     struct Set_Precision_Data precision_data;
@@ -137,11 +121,11 @@ uint8_t OBC_TEMP_SENSOR__set_temp_precision(uint8_t arg_precision, uint8_t did_u
         return 2;
     }
 
-    // update whether the user set the precision
-    TEMP_SENSOR_custom_precision_set = precision_data.custom_precision_set;
+    // update globals and conversion delay
     TEMP_SENSOR_precision_coefficient = precision_data.precision_coefficient;
     TEMP_SENSOR_precision_insignificant_bits = precision_data.precision_insignificant_bits;
     TEMP_SENSOR_precision_scaling_factor = precision_data.precision_scaling_factor;
+    *temp_precision_conversion_delay_ms = precision_data.conversion_delay_ms;
 
     // write the precision value to the config register
     status = HAL_I2C_Mem_Write(&hi2c1, TEMP_SENSOR_device_addr << 1, TEMP_SENSOR_config_register_addr, 1, &(precision_data.config_write_data), 1, HAL_MAX_DELAY);
@@ -171,28 +155,28 @@ uint8_t OBC_TEMP_SENSOR__configure_precision_values(uint8_t arg_precision, struc
             precision_data->precision_insignificant_bits = OBC_TEMP_SENSOR_NINE_BIT_PRECISION_INSIGNIFICANT_BYTES;
             precision_data->precision_coefficient = OBC_TEMP_SENSOR_nine_bit_precision_coefficient;
             precision_data->config_write_data = 0;
-            precision_data->custom_precision_set = 1;
+            precision_data->conversion_delay_ms = 150;
             break;
         case 10:
             precision_data->precision_scaling_factor = OBC_TEMP_SENSOR_ten_bit_scaling_factor;
             precision_data->precision_insignificant_bits = OBC_TEMP_SENSOR_TEN_BIT_PRECISION_INSIGNIFICANT_BYTES;
             precision_data->precision_coefficient = OBC_TEMP_SENSOR_ten_bit_precision_coefficient;
             precision_data->config_write_data = 0x01 << 5;
-            precision_data->custom_precision_set = 1;
+            precision_data->conversion_delay_ms = 300;
             break;
         case 11: 
             precision_data->precision_scaling_factor = OBC_TEMP_SENSOR_eleven_bit_scaling_factor;
             precision_data->precision_insignificant_bits = OBC_TEMP_SENSOR_ELEVEN_BIT_PRECISION_INSIGNIFICANT_BYTES;
             precision_data->precision_coefficient = OBC_TEMP_SENSOR_eleven_bit_precision_coefficient;
             precision_data->config_write_data = 0x02 << 5;
-            precision_data->custom_precision_set = 1;
+            precision_data->conversion_delay_ms = 600;
             break;
         case 12: 
             precision_data->precision_scaling_factor = OBC_TEMP_SENSOR_twelve_bit_scaling_factor;
             precision_data->precision_insignificant_bits = OBC_TEMP_SENSOR_TWELVE_BIT_PRECISION_INSIGNIFICANT_BYTES;
             precision_data->precision_coefficient = OBC_TEMP_SENSOR_twelve_bit_precision_coefficient;
             precision_data->config_write_data = 0x03 << 5;
-            precision_data->custom_precision_set = 1;
+            precision_data->conversion_delay_ms = 1200;
             break;
         default:
             // invalid precision passed

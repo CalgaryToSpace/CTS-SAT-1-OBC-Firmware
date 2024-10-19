@@ -28,7 +28,7 @@ struct Set_Precision_Data
     Temperature_Sensor_Data_Precision_Insignificant_Bytes_t precision_insignificant_bits;
     float precision_coefficient;
     uint8_t config_write_data; // data to be written to the config register.
-    uint8_t custom_precision_set; // bool representing whether or not the precision was set by the user or by default.
+    uint32_t conversion_delay_ms; // time it takes for sensor to convert to specific precision
 };
 
 
@@ -36,7 +36,7 @@ uint8_t OBC_TEMP_SENSOR__read_temperature(int32_t *result);
 int32_t OBC_TEMP_SENSOR__convert_raw_to_deg_c(uint8_t raw_bytes[], uint8_t precision_coefficient, 
                                 Temperature_Sensor_Data_Precision_Insignificant_Bytes_t precision_insignificant_bits, 
                                 uint16_t precision_scaling_factor);
-uint8_t OBC_TEMP_SENSOR__set_temp_precision(uint8_t arg_precision, uint8_t did_user_set_precision);
+uint8_t OBC_TEMP_SENSOR__set_temp_precision(uint8_t arg_precision, uint32_t* temp_precision_conversion_delay);
 uint8_t OBC_TEMP_SENSOR__configure_precision_values(uint8_t arg_precision, struct Set_Precision_Data* precision_data);
 int8_t OBC_TEMP_SENSOR__get_temp_precision(void);
 
