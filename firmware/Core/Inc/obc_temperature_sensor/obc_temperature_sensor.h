@@ -38,6 +38,6 @@ int32_t OBC_TEMP_SENSOR__convert_raw_to_deg_c(uint8_t raw_bytes[], uint8_t preci
                                 uint16_t precision_scaling_factor);
 uint8_t OBC_TEMP_SENSOR__set_temp_precision(uint8_t arg_precision, uint8_t did_user_set_precision);
 uint8_t OBC_TEMP_SENSOR__configure_precision_values(uint8_t arg_precision, struct Set_Precision_Data* precision_data);
-uint8_t OBC_TEMP_SENSOR__get_temp_precision(void);
+int8_t OBC_TEMP_SENSOR__get_temp_precision(void);
 
 #endif
