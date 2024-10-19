@@ -4,22 +4,22 @@
 
 #include "obc_temperature_sensor/obc_temperature_sensor.h"
 
-const uint16_t TEMP_SENSOR_device_addr =  0x48;
-const uint16_t TEMP_SENSOR_temp_register_addr  = 0x00;
+const uint16_t OBC_TEMP_SENSOR_device_addr =  0x48;
+const uint16_t OBC_TEMP_SENSOR_temp_register_addr  = 0x00;
 
 // write to this register to change the precision
-const uint16_t TEMP_SENSOR_config_register_addr = 0x01;
+const uint16_t OBC_TEMP_SENSOR_config_register_addr = 0x01;
 
 // 0x00 for nine bit, 0x01 for 10 bit, 0x02 for 11 bit, 0x03 for 12 bit
-const uint8_t TEMP_SENSOR_precision = 0x01 << 5;
+const uint8_t OBC_TEMP_SENSOR_precision = 0x01 << 5;
 
 // number used to remove fractional portions of the temperature. Default to 100 for 10 bit precision.
-uint16_t TEMP_SENSOR_precision_scaling_factor = 100;
+uint16_t OBC_TEMP_SENSOR_precision_scaling_factor = 100;
 
 // used in temp calculation.
-float TEMP_SENSOR_precision_coefficient = OBC_TEMP_SENSOR_ten_bit_precision_coefficient;
+float OBC_TEMP_SENSOR_precision_coefficient = OBC_TEMP_SENSOR_ten_bit_precision_coefficient;
 
-Temperature_Sensor_Data_Precision_Insignificant_Bytes_t TEMP_SENSOR_precision_insignificant_bits = OBC_TEMP_SENSOR_TEN_BIT_PRECISION_INSIGNIFICANT_BYTES;
+Temperature_Sensor_Data_Precision_Insignificant_Bytes_t OBC_TEMP_SENSOR_precision_insignificant_bits = OBC_TEMP_SENSOR_TEN_BIT_PRECISION_INSIGNIFICANT_BYTES;
 
 
 /// @brief Reads the temperature from the STDS75DS2F and stores it in the provided variable pointer result. 
@@ -34,7 +34,7 @@ uint8_t OBC_TEMP_SENSOR__read_temperature(int32_t *result)
     uint8_t buf[2];
 
     // read the temperature from the temp register
-    status = HAL_I2C_Mem_Read(&hi2c1, TEMP_SENSOR_device_addr << 1, TEMP_SENSOR_temp_register_addr, 1, buf, 2, HAL_MAX_DELAY);
+    status = HAL_I2C_Mem_Read(&hi2c1, OBC_TEMP_SENSOR_device_addr << 1, OBC_TEMP_SENSOR_temp_register_addr, 1, buf, 2, HAL_MAX_DELAY);
     if (status != HAL_OK)
     {
         // read error.
@@ -42,8 +42,8 @@ uint8_t OBC_TEMP_SENSOR__read_temperature(int32_t *result)
     }
 
     // convert the raw temperature bytes to degrees celsius
-    *result = OBC_TEMP_SENSOR__convert_raw_to_deg_c(buf, TEMP_SENSOR_precision_coefficient, TEMP_SENSOR_precision_insignificant_bits, 
-                                            TEMP_SENSOR_precision_scaling_factor);
+    *result = OBC_TEMP_SENSOR__convert_raw_to_deg_c(buf, OBC_TEMP_SENSOR_precision_coefficient, OBC_TEMP_SENSOR_precision_insignificant_bits, 
+                                            OBC_TEMP_SENSOR_precision_scaling_factor);
 
     return 0;
 }
@@ -92,7 +92,7 @@ int8_t OBC_TEMP_SENSOR__get_temp_precision()
     uint8_t precision_mask = 0x60; // 0b01100000
 
 
-    status = HAL_I2C_Mem_Read(&hi2c1, TEMP_SENSOR_device_addr << 1, TEMP_SENSOR_config_register_addr, 1, &buf, 1, HAL_MAX_DELAY);
+    status = HAL_I2C_Mem_Read(&hi2c1, OBC_TEMP_SENSOR_device_addr << 1, OBC_TEMP_SENSOR_config_register_addr, 1, &buf, 1, HAL_MAX_DELAY);
     if (status != HAL_OK)
     {
         // return -1 if unable to read from config register
@@ -122,13 +122,13 @@ uint8_t OBC_TEMP_SENSOR__set_temp_precision(uint8_t arg_precision, uint32_t* tem
     }
 
     // update globals and conversion delay
-    TEMP_SENSOR_precision_coefficient = precision_data.precision_coefficient;
-    TEMP_SENSOR_precision_insignificant_bits = precision_data.precision_insignificant_bits;
-    TEMP_SENSOR_precision_scaling_factor = precision_data.precision_scaling_factor;
+    OBC_TEMP_SENSOR_precision_coefficient = precision_data.precision_coefficient;
+    OBC_TEMP_SENSOR_precision_insignificant_bits = precision_data.precision_insignificant_bits;
+    OBC_TEMP_SENSOR_precision_scaling_factor = precision_data.precision_scaling_factor;
     *temp_precision_conversion_delay_ms = precision_data.conversion_delay_ms;
 
     // write the precision value to the config register
-    status = HAL_I2C_Mem_Write(&hi2c1, TEMP_SENSOR_device_addr << 1, TEMP_SENSOR_config_register_addr, 1, &(precision_data.config_write_data), 1, HAL_MAX_DELAY);
+    status = HAL_I2C_Mem_Write(&hi2c1, OBC_TEMP_SENSOR_device_addr << 1, OBC_TEMP_SENSOR_config_register_addr, 1, &(precision_data.config_write_data), 1, HAL_MAX_DELAY);
     if (status != HAL_OK)
     {
         // write error
