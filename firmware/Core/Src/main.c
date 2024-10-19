@@ -120,7 +120,7 @@ const osThreadAttr_t TASK_monitor_freertos_memory_Attributes = {
   .priority = (osPriority_t) osPriorityBelowNormal6,
 };
 
-Task_Info_t FREERTOS_task_handles_array [] = {
+FREERTOS_task_info_struct_t FREERTOS_task_handles_array [] = {
   {
     .task_handle = &defaultTaskHandle,
     .task_attribute = &defaultTask_attributes,
@@ -153,7 +153,7 @@ Task_Info_t FREERTOS_task_handles_array [] = {
   },
 };
 
-const uint32_t FREERTOS_task_handles_array_size = sizeof(FREERTOS_task_handles_array) / sizeof(Task_Info_t);
+const uint32_t FREERTOS_task_handles_array_size = sizeof(FREERTOS_task_handles_array) / sizeof(FREERTOS_task_info_struct_t);
 
 
 /* USER CODE END PV */
