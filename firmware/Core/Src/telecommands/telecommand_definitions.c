@@ -202,6 +202,18 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_IN_PROGRESS,
     },
+    {
+        .tcmd_name = "flash_read_status_register",
+        .tcmd_func = TCMDEXEC_flash_read_status_register,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "flash_write_enable",
+        .tcmd_func = TCMDEXEC_flash_write_enable,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
     // ****************** END SECTION: flash_telecommand_defs ******************
 
     // ****************** SECTION: lfs_telecommand_defs ******************
