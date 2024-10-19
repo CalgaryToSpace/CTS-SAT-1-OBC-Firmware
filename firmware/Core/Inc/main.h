@@ -31,6 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "rtos_tasks/rtos_task_helpers.h"
 
 /* USER CODE END Includes */
 
@@ -58,6 +59,10 @@ extern TIM_HandleTypeDef htim16;
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
+
+extern FREERTOS_task_info_struct_t FREERTOS_task_handles_array [];
+
+extern const uint32_t FREERTOS_task_handles_array_size;
 
 /* USER CODE END EC */
 

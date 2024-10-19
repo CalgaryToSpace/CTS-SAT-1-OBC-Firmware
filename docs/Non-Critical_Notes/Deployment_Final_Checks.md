@@ -40,6 +40,7 @@ The following checks involve executing code and/or telecommands.
     GOLDEN_COPY (xrw) : ORIGIN = 0x8100000, LENGTH = 1024K
     ```
     This is the linker script. The length can change.
+5. Ensure all tasks are registered in the `FREERTOS_task_info_struct_t FREERTOS_task_handles_array []` array. Consider a unit test for this check, maybe.
 
 
 ## Management Checks
