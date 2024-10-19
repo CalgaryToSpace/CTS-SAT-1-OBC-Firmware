@@ -196,7 +196,65 @@ typedef enum ADCS_gps_axis_enum_t {
     ADCS_GPS_AXIS_Z = 2
 } ADCS_gps_axis_enum_t;
 
-/* Structs */
+typedef enum ADCS_current_execution_point_enum_t {
+    ADCS_CURRENT_EXECUTION_POINT_BUSY_INITIALIZATION = 0,
+    ADCS_CURRENT_EXECUTION_POINT_IDLE = 1,
+    ADCS_CURRENT_EXECUTION_POINT_SENSOR_ACTUATOR_COMMS= 2,
+    ADCS_CURRENT_EXECUTION_POINT_ADCS_UPDATE = 3,
+    ADCS_CURRENT_EXECUTION_POINT_PERIPHERAL_POWER_COMMANDS = 4,
+    ADCS_CURRENT_EXECUTION_POINT_CPU_TEMPERATURE_SAMPLING = 5,
+    ADCS_CURRENT_EXECUTION_POINT_IMAGE_DOWNLOAD = 6,
+    ADCS_CURRENT_EXECUTION_POINT_IMAGE_COMPRESSION = 7,
+    ADCS_CURRENT_EXECUTION_POINT_SAVING_IMAGE_TO_SD = 8,
+    ADCS_CURRENT_EXECUTION_POINT_LOGGING = 9,
+    ADCS_CURRENT_EXECUTION_POINT_LOG_FILE_COMPRESSION = 10,
+    ADCS_CURRENT_EXECUTION_POINT_SAVING_LOG_TO_SD = 11,
+    ADCS_CURRENT_EXECUTION_POINT_WRITING_TO_FLASH = 12
+} ADCS_current_execution_point_enum_t;
+
+typedef enum ADCS_asgp4_mode_enum_t {
+    ADCS_ASGP4_MODE_OFF = 0,
+    ADCS_ASGP4_MODE_TRIGGER = 1,
+    ADCS_ASGP4_MODE_BACKGROUND = 2,
+    ADCS_ASGP4_MODE_AUGMENT = 3,
+} ADCS_asgp4_mode_enum_t;
+
+typedef enum ADCS_camera_select_enum_t {
+    ADCS_CAMERA_SELECT_1 = 0,
+    ADCS_CAMERA_SELECT_2 = 1,
+    ADCS_CAMERA_SELECT_STAR = 2,
+} ADCS_camera_select_enum_t;
+
+typedef enum ADCS_image_size_enum_t {
+    ADCS_IMAGE_SIZE_1024_X_1024_PX = 0,
+    ADCS_IMAGE_SIZE_512_X_512_PX = 1,
+    ADCS_IMAGE_SIZE_256_X_256_PX = 2,
+    ADCS_IMAGE_SIZE_128_X_128_PX = 3,
+    ADCS_IMAGE_SIZE_64_X_64_PX = 4,
+} ADCS_image_size_enum_t;
+
+typedef enum ADCS_commissioning_step_enum_t {
+    ADCS_COMMISISONING_STEP_DETERMINE_INITIAL_ANGULAR_RATES = 1, 
+    ADCS_COMMISISONING_STEP_INITIAL_DETUMBLING = 2, 
+    ADCS_COMMISISONING_STEP_CONTINUED_DETUMBLING_TO_Y_THOMSON = 3, 
+    ADCS_COMMISISONING_STEP_MAGNETOMETER_DEPLOYMENT = 4, 
+    ADCS_COMMISISONING_STEP_MAGNETOMETER_CALIBRATION = 5, 
+    ADCS_COMMISISONING_STEP_ANGULAR_RATE_AND_PITCH_ANGLE_ESTIMATION = 6, 
+    ADCS_COMMISISONING_STEP_Y_WHEEL_RAMP_UP_TEST = 7, 
+    ADCS_COMMISISONING_STEP_INITIAL_Y_MOMENTUM_ACTIVATION = 8, 
+    ADCS_COMMISISONING_STEP_CONTINUED_Y_MOMENTUM_ACTIVATION_AND_MAGNETOMETER_EKF = 9, 
+    ADCS_COMMISISONING_STEP_CUBESENSE_SUN_NADIR = 10,
+    ADCS_COMMISISONING_STEP_EKF_ACTIVATION_SUN_AND_NADIR = 11,
+    ADCS_COMMISISONING_STEP_CUBESTAR_STAR_TRACKER = 12,
+    ADCS_COMMISISONING_STEP_EKF_ACTIVATION_WITH_STAR_VECTOR_MEASUREMENTS = 13,
+    ADCS_COMMISISONING_STEP_ZERO_BIAS_3_AXIS_REACTION_WHEEL_CONTROL = 14,
+    ADCS_COMMISISONING_STEP_EKF_WITH_RATE_GYRO_STAR_TRACKER_MEASUREMENTS = 15,
+    ADCS_COMMISISONING_STEP_SUN_TRACKING_3_AXIS_CONTROL = 16,
+    ADCS_COMMISISONING_STEP_GROUND_TARGET_TRACKING_CONTROLLER = 17,
+    ADCS_COMMISISONING_STEP_GPS_RECEIVER = 18
+} ADCS_commissioning_step_enum_t;
+
+/* Command Structs */
 
 typedef struct ADCS_cmd_ack_struct_t {
     uint8_t last_id;
@@ -516,5 +574,239 @@ typedef struct ADCS_measurements_struct_t {
     int32_t star3_orbit_y_micro;
     int32_t star3_orbit_z_micro;
 } ADCS_measurements_struct_t;
+
+typedef struct ADCS_acp_execution_state_struct_t {
+    uint16_t time_since_iteration_start_ms;
+    ADCS_current_execution_point_enum_t current_execution_point;
+} ADCS_acp_execution_state_struct_t;
+
+typedef struct ADCS_current_state_1_struct_t {
+    ADCS_estimation_mode_enum_t estimation_mode;
+    ADCS_control_mode_enum_t control_mode;  
+    ADCS_run_mode_enum_t run_mode;  
+    ADCS_asgp4_mode_enum_t asgp4_mode; 
+    bool cubecontrol_signal_enabled:1; // 1-bit bool
+    bool cubecontrol_motor_enabled:1; // 1-bit bool
+    bool cubesense1_enabled:1; // 1-bit bool
+    bool cubesense2_enabled:1; // 1-bit bool
+    bool cubewheel1_enabled:1; // 1-bit bool
+    bool cubewheel2_enabled:1; // 1-bit bool
+    bool cubewheel3_enabled:1; // 1-bit bool
+    bool cubestar_enabled:1; // 1-bit bool
+    bool gps_receiver_enabled:1; // 1-bit bool
+    bool gps_lna_power_enabled:1; // 1-bit bool
+    bool motor_driver_enabled:1; // 1-bit bool
+    bool sun_above_local_horizon:1; // 1-bit bool
+    bool cubesense1_comm_error:1; // 1-bit bool
+    bool cubesense2_comm_error:1; // 1-bit bool
+    bool cubecontrol_signal_comm_error:1; // 1-bit bool
+    bool cubecontrol_motor_comm_error:1; // 1-bit bool
+    bool cubewheel1_comm_error:1; // 1-bit bool
+    bool cubewheel2_comm_error:1; // 1-bit bool
+    bool cubewheel3_comm_error:1; // 1-bit bool
+    bool cubestar_comm_error:1; // 1-bit bool
+    bool magnetometer_range_error:1; // 1-bit bool
+    bool cam1_sram_overcurrent_detected:1; // 1-bit bool
+    bool cam1_3v3_overcurrent_detected:1; // 1-bit bool
+    bool cam1_sensor_busy_error:1; // 1-bit bool
+    bool cam1_sensor_detection_error:1; // 1-bit bool
+    bool sun_sensor_range_error:1; // 1-bit bool
+    bool cam2_sram_overcurrent_detected:1; // 1-bit bool
+    bool cam2_3v3_overcurrent_detected:1; // 1-bit bool
+    bool cam2_sensor_busy_error:1; // 1-bit bool
+    bool cam2_sensor_detection_error:1; // 1-bit bool
+    bool nadir_sensor_range_error:1; // 1-bit bool
+    bool rate_sensor_range_error:1; // 1-bit bool
+    bool wheel_speed_range_error:1; // 1-bit bool
+    bool coarse_sun_sensor_error:1; // 1-bit bool
+    bool startracker_match_error:1; // 1-bit bool
+    bool startracker_overcurrent_detected:1; // 1-bit bool
+} ADCS_current_state_1_struct_t;
+
+typedef struct ADCS_raw_star_tracker_struct_t {
+    uint8_t num_stars_detected;
+    uint8_t star_image_noise;
+    uint8_t invalid_stars;
+    uint8_t num_stars_identified;
+    uint8_t identification_mode;
+    uint8_t image_dark_value;
+    uint16_t sample_period;
+    bool image_capture_success:1; // 1-bit bool
+    bool detection_success:1; // 1-bit bool
+    bool identification_success:1; // 1-bit bool
+    bool attitude_success:1; // 1-bit bool
+    bool processing_time_error:1; // 1-bit bool
+    bool tracking_module_enabled:1; // 1-bit bool
+    bool prediction_enabled:1; // 1-bit bool
+    bool comms_error:1; // 1-bit bool
+    uint8_t star1_confidence;
+    uint8_t star2_confidence;
+    uint8_t star3_confidence;
+    uint16_t magnitude_star1;
+    uint16_t magnitude_star2;
+    uint16_t magnitude_star3;
+    uint16_t catalogue_star1;
+    int16_t centroid_x_star1;
+    int16_t centroid_y_star1;
+    uint16_t catalogue_star2;
+    int16_t centroid_x_star2;
+    int16_t centroid_y_star2;
+    uint16_t catalogue_star3;
+    int16_t centroid_x_star3;
+    int16_t centroid_y_star3;
+    uint16_t capture_time_ms;
+    uint16_t detection_time_ms;
+    uint16_t identification_time_ms;
+    int32_t x_axis_rate_micro;
+    int32_t y_axis_rate_micro;
+    int32_t z_axis_rate_micro;
+    int32_t q0_micro;
+    int32_t q1_micro;
+    int32_t q2_micro;
+} ADCS_raw_star_tracker_struct_t;
+
+/* Commissioning Structs */
+
+typedef struct ADCS_commissioning_determine_initial_angular_rates_struct_t {
+    uint64_t current_unix_time;
+    ADCS_angular_rates_struct_t estimated_angular_rates;
+    ADCS_rated_sensor_rates_struct_t rated_sensor_rates;
+    ADCS_raw_magnetometer_values_struct_t raw_magnetometer_measurements;
+} ADCS_commissioning_determine_initial_angular_rates_struct_t;
+
+typedef struct ADCS_commissioning_initial_detumbling_struct_t {
+    // works for detumbling and Y-thomson continued detumbling
+    uint64_t current_unix_time;
+    ADCS_angular_rates_struct_t estimated_angular_rates;
+    ADCS_rated_sensor_rates_struct_t rated_sensor_rates;
+    ADCS_raw_magnetometer_values_struct_t raw_magnetometer_measurements;
+    ADCS_magnetorquer_command_struct_t magnetorquer_commands;
+} ADCS_commissioning_initial_detumbling_struct_t;
+
+typedef struct ADCS_commissioning_magnetometer_deployment_struct_t {
+    uint64_t current_unix_time;
+    ADCS_fine_angular_rates_struct_t fine_estimated_angular_rates;
+    ADCS_rated_sensor_rates_struct_t rated_sensor_rates;
+    ADCS_raw_magnetometer_values_struct_t raw_magnetometer_measurements;
+    ADCS_cubecontrol_current_struct_t cubecontrol_currents;
+} ADCS_commissioning_magnetometer_deployment_struct_t;
+
+typedef struct ADCS_commissioning_magnetometer_calibration_struct_t {
+    uint64_t current_unix_time;
+    ADCS_fine_angular_rates_struct_t fine_estimated_angular_rates;
+    ADCS_rated_sensor_rates_struct_t rated_sensor_rates;
+    ADCS_measurements_struct_t adcs_measurements; // only need calibrated magnetometer measurements
+} ADCS_commissioning_magnetometer_calibration_struct_t;
+
+typedef struct ADCS_commissioning_angular_rate_and_pitch_angle_estimation_struct_t {
+    uint64_t current_unix_time;
+    ADCS_fine_angular_rates_struct_t fine_estimated_angular_rates;
+    ADCS_estimated_attitude_angles_struct_t estimated_attitude_angles;
+    ADCS_rated_sensor_rates_struct_t rated_sensor_rates;
+    ADCS_measurements_struct_t adcs_measurements; // only need calibrated magnetometer measurements
+} ADCS_commissioning_angular_rate_and_pitch_angle_estimation_struct_t;
+
+typedef struct ADCS_commissioning_y_wheel_ramp_up_test_struct_t {
+    uint64_t current_unix_time;
+    ADCS_fine_angular_rates_struct_t fine_estimated_angular_rates;
+    ADCS_estimated_attitude_angles_struct_t estimated_attitude_angles;
+    ADCS_rated_sensor_rates_struct_t rated_sensor_rates;
+    ADCS_wheel_speed_struct_t measured_wheel_speeds;
+    ADCS_measurements_struct_t adcs_measurements; // only need calibrated magnetometer measurements
+} ADCS_commissioning_y_wheel_ramp_up_test_struct_t;
+
+typedef struct ADCS_commissioning_y_momentum_activation_struct_t {
+    // for both initial Y-momentum activation and Magnetometer EKF Y-momentum
+    uint64_t current_unix_time;
+    ADCS_fine_angular_rates_struct_t fine_estimated_angular_rates;
+    ADCS_estimated_attitude_angles_struct_t estimated_attitude_angles;
+    ADCS_rated_sensor_rates_struct_t rated_sensor_rates;
+    ADCS_wheel_speed_struct_t measured_wheel_speeds;
+    ADCS_measurements_struct_t adcs_measurements; // only need calibrated magnetometer measurements
+    ADCS_llh_position_struct_t LLH_positions;
+} ADCS_commissioning_y_momentum_activation_struct_t;
+
+typedef struct ADCS_commissioning_cubesense_sun_nadir_commissioning_struct_t {
+    // for both initial sun/nadir commissioning and EKF sun/nadir commissioning
+    uint64_t current_unix_time;
+    ADCS_fine_angular_rates_struct_t fine_estimated_angular_rates;
+    ADCS_estimated_attitude_angles_struct_t estimated_attitude_angles;
+    ADCS_rated_sensor_rates_struct_t rated_sensor_rates;
+
+    ADCS_raw_coarse_sun_sensor_1_to_6_struct_t raw_css_1_to_6_measurements;
+    ADCS_raw_coarse_sun_sensor_7_to_10_struct_t raw_css_7_to_10_measurements;
+
+    ADCS_raw_cam_sensor_struct_t raw_cam1_measurements;
+    ADCS_raw_cam_sensor_struct_t raw_cam2_measurements;
+
+    ADCS_fine_sun_vector_struct_t fine_sun_vector;
+    ADCS_nadir_vector_struct_t nadir_vector;
+} ADCS_commissioning_cubesense_sun_nadir_commissioning_struct_t;
+
+typedef struct ADCS_commissioning_cubestar_star_tracker_commissioning_struct_t {
+    // for both non-EKF and EKF
+    uint64_t current_unix_time;
+    ADCS_fine_angular_rates_struct_t fine_estimated_angular_rates;
+    ADCS_estimated_attitude_angles_struct_t estimated_attitude_angles;
+    ADCS_rated_sensor_rates_struct_t rated_sensor_rates;
+    ADCS_raw_star_tracker_struct_t raw_star_tracker; 
+} ADCS_commissioning_cubestar_star_tracker_commissioning_struct_t;
+
+// TODO: We also need to downlink ADCS data from SD card
+
+typedef struct ADCS_commissioning_zero_bias_3_axis_reaction_wheel_control_struct_t {
+    uint64_t current_unix_time;
+    ADCS_fine_angular_rates_struct_t fine_estimated_angular_rates;
+    ADCS_estimated_attitude_angles_struct_t estimated_attitude_angles;
+    ADCS_rated_sensor_rates_struct_t rated_sensor_rates;
+    ADCS_wheel_speed_struct_t measured_wheel_speeds;
+} ADCS_commissioning_zero_bias_3_axis_reaction_wheel_control_struct_t;
+
+typedef struct ADCS_commissioning_sun_tracking_3_axis_control_struct_t {
+    // for both EKF rate gyro and sun tracking 3-axis control
+    uint64_t current_unix_time;
+    ADCS_fine_angular_rates_struct_t fine_estimated_angular_rates;
+    ADCS_estimated_attitude_angles_struct_t estimated_attitude_angles;
+    ADCS_estimated_gyro_bias_struct_t estimated_gyro_bias;
+    ADCS_estimation_innovation_vector_struct_t estimation_innovation_vector;
+    ADCS_magnetic_field_vector_struct_t magnetic_field_vector;
+    ADCS_fine_sun_vector_struct_t fine_sun_vector;
+    ADCS_nadir_vector_struct_t nadir_vector;
+    ADCS_rated_sensor_rates_struct_t rated_sensor_rates;
+    ADCS_wheel_speed_struct_t measured_wheel_speeds;
+    ADCS_magnetorquer_command_struct_t magnetorquer_commands;
+    ADCS_wheel_speed_struct_t commanded_wheel_speeds;
+    ADCS_magnetic_field_vector_struct_t igrf_magnetic_field_vector;
+    ADCS_quaternion_error_vector_struct_t quaternion_error_vector; 
+} ADCS_commissioning_sun_tracking_3_axis_control_struct_t;
+
+typedef struct ADCS_commissioning_ground_target_tracking_controller_struct_t {
+    uint64_t current_unix_time;
+    ADCS_fine_angular_rates_struct_t fine_estimated_angular_rates;
+    ADCS_estimated_attitude_angles_struct_t estimated_attitude_angles;
+    ADCS_estimated_gyro_bias_struct_t estimated_gyro_bias;
+    ADCS_estimation_innovation_vector_struct_t estimation_innovation_vector;
+    ADCS_magnetic_field_vector_struct_t magnetic_field_vector;
+    ADCS_fine_sun_vector_struct_t fine_sun_vector;
+    ADCS_nadir_vector_struct_t nadir_vector;
+    ADCS_rated_sensor_rates_struct_t rated_sensor_rates;
+    ADCS_wheel_speed_struct_t measured_wheel_speeds;
+    ADCS_magnetorquer_command_struct_t magnetorquer_commands;
+    ADCS_wheel_speed_struct_t commanded_wheel_speeds;
+    ADCS_magnetic_field_vector_struct_t igrf_magnetic_field_vector;
+    ADCS_quaternion_error_vector_struct_t quaternion_error_vector; 
+    ADCS_llh_position_struct_t LLH_position;
+    ADCS_commanded_angles_struct_t commanded_attitude_angles;
+} ADCS_commissioning_ground_target_tracking_controller_struct_t;
+
+typedef struct ADCS_commissioning_gps_receiver_commissioning_struct_t {
+    uint64_t current_unix_time;
+    ADCS_llh_position_struct_t LLH_position;
+    ADCS_raw_gps_status_struct_t raw_GPS_status;
+    ADCS_raw_gps_time_struct_t raw_GPS_time;
+    ADCS_raw_gps_struct_t raw_GPS_x;
+    ADCS_raw_gps_struct_t raw_GPS_y;
+    ADCS_raw_gps_struct_t raw_GPS_z;
+} ADCS_commissioning_gps_receiver_commissioning_struct_t;
 
 #endif /* INC_ADCS_TYPES_H_ */
