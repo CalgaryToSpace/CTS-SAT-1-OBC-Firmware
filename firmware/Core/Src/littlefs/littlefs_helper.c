@@ -134,12 +134,14 @@ int8_t LFS_unmount()
  */
 int8_t LFS_list_directory(const char root_directory[], uint16_t offset, int16_t count)
 {
+    // Check if LFS is mounted
     if (!LFS_is_lfs_mounted)
     {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "LittleFS not mounted!");
         return 1;
     }
 
+    // Try to open the directory
     lfs_dir_t dir;
     int8_t open_dir_result = lfs_dir_open(&LFS_filesystem, &dir, root_directory);
     if (open_dir_result < 0)
@@ -154,11 +156,10 @@ int8_t LFS_list_directory(const char root_directory[], uint16_t offset, int16_t 
 
     // result is positive on success, 0 at the end of directory, or negative on failure.
     int8_t read_dir_result = 1;
+    struct lfs_info info;
     DEBUG_uart_print_str("Name \t bytes\n");
     while (read_dir_result > 0)
     {
-
-        struct lfs_info info;
         read_dir_result = lfs_dir_read(&LFS_filesystem, &dir, &info);
 
         if (offset > 0) {

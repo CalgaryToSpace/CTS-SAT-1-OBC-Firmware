@@ -50,6 +50,8 @@ uint8_t TCMDEXEC_fs_unmount(const char *args_str, TCMD_TelecommandChannel_enum_t
 /// @brief Telecommand: List all the files and directories within a given directory
 /// @param args_str
 /// - Arg 0: Root Directory path as string
+/// - Arg 1: (Offset) Number of entries to skip at the beginning
+/// - Arg 2: (Count) Number entries to display
 uint8_t TCMDEXEC_fs_list_directory(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
 
@@ -98,7 +100,7 @@ uint8_t TCMDEXEC_fs_list_directory(const char *args_str, TCMD_TelecommandChannel
 
 /// @brief Telecommand: Create a directory
 /// @param args_str
-/// - Arg 0: Directory Name
+/// - Arg 0: Directory Name as string
 uint8_t TCMDEXEC_fs_make_directory(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
 
