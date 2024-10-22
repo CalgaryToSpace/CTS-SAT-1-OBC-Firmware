@@ -11,7 +11,8 @@
 #include "unit_tests/unit_test_helpers.h"
 #include "unit_tests/test_configuration_variables.h"
 #include "unit_tests/test_eps_drivers.h"
-#include "unit_tests/test_eps_struct_packers.h"#include "unit_tests/test_sha256.h"
+#include "unit_tests/test_eps_struct_packers.h"
+#include "unit_tests/test_sha256.h"
 
 // extern
 const TEST_Definition_t TEST_definitions[] = {

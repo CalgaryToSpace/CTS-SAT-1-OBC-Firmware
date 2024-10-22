@@ -5,6 +5,7 @@
 #include <string.h>
 #include "debug_tools/debug_uart.h"
 #include "time.h"
+#include "log/log.h"
 uint8_t TEST_EXEC__compute_sha256_hash() {
     uint8_t message[] = "abc" ;
     uint8_t expected[] = {0xba, 0x78, 0x16, 0xbf, 0x8f, 0x01, 0xcf, 0xea, 
@@ -77,12 +78,14 @@ uint8_t TEST_EXEC__compute_sha256_hash() {
 
     int32_t end_time = (int32_t) HAL_GetTick();
     int32_t time_elapsed = (end_time - start_time);
-    DEBUG_uart_print_str("time elapsed ~~~~~~~~ \n ");
-    DEBUG_uart_print_int32(time_elapsed);
-    DEBUG_uart_print_str("\n time elapsed ~~~~~~~~ \n ");
-
-
-
+    DEBUG_uart_print_str("SHA256 benchmark done. time elapsed ~~~~~~~~ \n ");
+        LOG_message(
+            LOG_SYSTEM_OBC,
+            LOG_SEVERITY_NORMAL,
+            LOG_SINK_ALL,
+            "\n~~~~~~~~~~~~~~~~~~~\nSHA256 benchmark done. time elapsed %d ms \n ~~~~~~~~~~~~~~~~~~~~\n",
+            time_elapsed
+        );
     return 0;
 
 
