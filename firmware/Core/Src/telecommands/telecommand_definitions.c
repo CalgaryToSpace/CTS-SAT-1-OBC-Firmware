@@ -20,8 +20,11 @@
 #include "telecommands/telecommand_executor.h"
 #include "telecommands/agenda_telecommands_defs.h"
 #include "telecommands/mpi_telecommand_defs.h"
+#include "telecommands/boom_deploy_telecommand_defs.h"
 #include "telecommands/eps_telecommands.h"
 #include "telecommands/stm32_internal_flash_telecommand_defs.h"
+
+
 #include "timekeeping/timekeeping.h"
 #include "littlefs/littlefs_helper.h"
 #include "stm32/stm32_reboot_reason.h"
@@ -978,6 +981,15 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     // ****************** END SECTION: antenna_telecommand_defs ******************
+
+    // ****************** SECTION: boom_deploy_telecommand_defs ******************
+    {
+        .tcmd_name = "boom_deploy_timed",
+        .tcmd_func = TCMDEXEC_boom_deploy_timed,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    // ****************** END SECTION: boom_deploy_telecommand_defs ******************
 };
 
 // extern
