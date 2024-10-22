@@ -61,7 +61,8 @@ uint8_t TCMDEXEC_freetos_list_tasks_jsonl(const char *args_str, TCMD_Telecommand
             task_statuses[x].uxCurrentPriority,
             // `usStackHighWaterMark`: The minimum amount of stack space that has remained for the task since the task was created.
             // The closer this value is to zero the closer the task has come to overflowing its stack.
-            task_statuses[x].usStackHighWaterMark,
+            // The return value of `usStackHighWaterMark` is in words, thus multiplying by 4 to get the bytes equivalent
+            (task_statuses[x].usStackHighWaterMark * 4),
             task_statuses[x].ulRunTimeCounter
         );
           
