@@ -87,11 +87,11 @@ $(function(){ initResizable(false); });
   <div class="headertitle"><div class="title">Deployment Final Checks</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md45"></a></p>
+<div class="textblock"><p><a class="anchor" id="autotoc_md39"></a></p>
 <ul>
 <li>The code should be audited for the following aspects, as a final check before the final flash.</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md46"></a>
+<h1><a class="anchor" id="autotoc_md40"></a>
 Automated Check Ideas (GitHub Actions)</h1>
 <ol type="1">
 <li>✅ Telecommand Execution (<code>TCMDEXEC_</code>) function names match their registrations in the table.<ul>
@@ -109,14 +109,14 @@ Automated Check Ideas (GitHub Actions)</h1>
 </li>
 </ol>
 <p>✅ = Automated test now exists.</p>
-<h1><a class="anchor" id="autotoc_md47"></a>
+<h1><a class="anchor" id="autotoc_md41"></a>
 Manual Execution Checks</h1>
 <p>The following checks involve executing code and/or telecommands.</p>
 <ul>
 <li>Units tests pass.</li>
 <li>Python-based system tests/checks pass.</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md48"></a>
+<h1><a class="anchor" id="autotoc_md42"></a>
 Logging Checks</h1>
 <ol type="1">
 <li>Are all logs to <code><a class="el" href="log_8h.html#a9620661557eea5fdaf535b894ae58c84" title="Log a message to several destinations (sinks)">LOG_message()</a></code>? Limited use of UART logging.</li>
@@ -124,7 +124,7 @@ Logging Checks</h1>
 <li>Are the log levels appropriate? Logs right before non-zero returns should generally be a warning/error level.</li>
 <li>Are the log format strings consistent with the actual arguments? TODO: Find a build option to enable this.</li>
 </ol>
-<h1><a class="anchor" id="autotoc_md49"></a>
+<h1><a class="anchor" id="autotoc_md43"></a>
 Other Checks</h1>
 <ol type="1">
 <li>Check the changelog of libraries (LittleFS, CSP maybe) for bug fixes.</li>
@@ -136,7 +136,7 @@ Other Checks</h1>
 <li>Ensure that the Golden Copy is mapped in STM32L4R5ZITx_FLASH.ld file as such: <div class="fragment"><div class="line">GOLDEN_COPY (xrw) : ORIGIN = 0x8100000, LENGTH = 1024K</div>
 </div><!-- fragment --> This is the linker script. The length can change.</li>
 </ol>
-<h1><a class="anchor" id="autotoc_md50"></a>
+<h1><a class="anchor" id="autotoc_md44"></a>
 Management Checks</h1>
 <ol type="1">
 <li>Are all the requirements met?</li>

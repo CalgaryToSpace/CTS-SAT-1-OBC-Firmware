@@ -18,9 +18,6 @@ var searchData=
   ['ant_5finternal_5fdrivers_2eh_15',['ant_internal_drivers.h',['../ant__internal__drivers_8h.html',1,'']]],
   ['antenna_5ftelecommand_5fdefs_2ec_16',['antenna_telecommand_defs.c',['../antenna__telecommand__defs_8c.html',1,'']]],
   ['antenna_5ftelecommand_5fdefs_2eh_17',['antenna_telecommand_defs.h',['../antenna__telecommand__defs_8h.html',1,'']]],
-  ['app_5fconfig_2epy_18',['app_config.py',['../app__config_8py.html',1,'']]],
-  ['app_5fstore_2epy_19',['app_store.py',['../app__store_8py.html',1,'']]],
-  ['app_5ftypes_2epy_20',['app_types.py',['../app__types_8py.html',1,'']]],
-  ['arrays_2ec_21',['arrays.c',['../arrays_8c.html',1,'']]],
-  ['arrays_2eh_22',['arrays.h',['../arrays_8h.html',1,'']]]
+  ['arrays_2ec_18',['arrays.c',['../arrays_8c.html',1,'']]],
+  ['arrays_2eh_19',['arrays.h',['../arrays_8h.html',1,'']]]
 ];

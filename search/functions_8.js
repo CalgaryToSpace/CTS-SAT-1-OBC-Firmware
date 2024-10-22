@@ -16,7 +16,5 @@ var searchData=
   ['hal_5fuart_5fmspdeinit_13',['HAL_UART_MspDeInit',['../stm32l4xx__hal__msp_8c.html#a718f39804e3b910d738a0e1e46151188',1,'stm32l4xx_hal_msp.c']]],
   ['hal_5fuart_5fmspinit_14',['HAL_UART_MspInit',['../stm32l4xx__hal__msp_8c.html#a0e553b32211877322f949b14801bbfa7',1,'stm32l4xx_hal_msp.c']]],
   ['hal_5fuart_5frxcpltcallback_15',['HAL_UART_RxCpltCallback',['../uart__handler_8c.html#ae494a9643f29b87d6d81e5264e60e57b',1,'uart_handler.c']]],
-  ['handle_5fuart_5fport_5fchange_16',['handle_uart_port_change',['../namespacects1__ground__support_1_1terminal__app_1_1dash__gui.html#a248ef2a1e01206097e4378065b427855',1,'cts1_ground_support::terminal_app::dash_gui']]],
-  ['hardfault_5fhandler_17',['HardFault_Handler',['../stm32l4xx__it_8h.html#a2bffc10d5bd4106753b7c30e86903bea',1,'HardFault_Handler(void):&#160;stm32l4xx_it.c'],['../stm32l4xx__it_8c.html#a2bffc10d5bd4106753b7c30e86903bea',1,'HardFault_Handler(void):&#160;stm32l4xx_it.c']]],
-  ['has_5frequired_5ffields_18',['has_required_fields',['../classcts1__ground__support_1_1telecommand__types_1_1TelecommandDefinition.html#a36e5379ca10ca6168e8b4ff113603b3e',1,'cts1_ground_support::telecommand_types::TelecommandDefinition']]]
+  ['hardfault_5fhandler_16',['HardFault_Handler',['../stm32l4xx__it_8h.html#a2bffc10d5bd4106753b7c30e86903bea',1,'HardFault_Handler(void):&#160;stm32l4xx_it.c'],['../stm32l4xx__it_8c.html#a2bffc10d5bd4106753b7c30e86903bea',1,'HardFault_Handler(void):&#160;stm32l4xx_it.c']]]
 ];

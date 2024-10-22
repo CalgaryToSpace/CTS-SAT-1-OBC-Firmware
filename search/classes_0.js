@@ -35,6 +35,5 @@ var searchData=
   ['adcs_5fset_5funix_5ftime_5fsave_5fmode_5fstruct_5ft_32',['ADCS_Set_Unix_Time_Save_Mode_struct_t',['../structADCS__Set__Unix__Time__Save__Mode__struct__t.html',1,'']]],
   ['adcs_5ftracking_5fcontroller_5ftarget_5fstruct_5ft_33',['ADCS_tracking_controller_target_struct_t',['../structADCS__tracking__controller__target__struct__t.html',1,'']]],
   ['adcs_5fwheel_5fspeed_5fstruct_5ft_34',['ADCS_wheel_speed_struct_t',['../structADCS__wheel__speed__struct__t.html',1,'']]],
-  ['antenna_5fdeployment_5fstatus_35',['Antenna_deployment_status',['../structAntenna__deployment__status.html',1,'']]],
-  ['appstore_36',['AppStore',['../classcts1__ground__support_1_1terminal__app_1_1app__store_1_1AppStore.html',1,'cts1_ground_support::terminal_app::app_store']]]
+  ['antenna_5fdeployment_5fstatus_35',['Antenna_deployment_status',['../structAntenna__deployment__status.html',1,'']]]
 ];

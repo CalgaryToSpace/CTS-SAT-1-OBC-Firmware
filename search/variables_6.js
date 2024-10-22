@@ -27,6 +27,5 @@ var searchData=
   ['flash_5fsr1_5fwrite_5fenable_5flatch_5fmask_24',['FLASH_SR1_WRITE_ENABLE_LATCH_MASK',['../flash__driver_8h.html#a348bbede557c3db424f7ccb724d879be',1,'flash_driver.h']]],
   ['flash_5fsr1_5fwrite_5fin_5fprogress_5fmask_25',['FLASH_SR1_WRITE_IN_PROGRESS_MASK',['../flash__driver_8h.html#a9918936323ed16c64ab5a780d924eade',1,'flash_driver.h']]],
   ['frame_5fcounter_26',['frame_counter',['../structMPI__dataframe__t.html#a27f74635621541244472f378e4ab764d',1,'MPI_dataframe_t']]],
-  ['full_5fdocstring_27',['full_docstring',['../classcts1__ground__support_1_1telecommand__types_1_1TelecommandDefinition.html#a7d13b8a3785dbea89be55e349152a5fd',1,'cts1_ground_support::telecommand_types::TelecommandDefinition']]],
-  ['full_5fmessage_28',['full_message',['../structLOG__memory__entry__t.html#a51ccb409dc4a3d0107dde3c98a441242',1,'LOG_memory_entry_t']]]
+  ['full_5fmessage_27',['full_message',['../structLOG__memory__entry__t.html#a51ccb409dc4a3d0107dde3c98a441242',1,'LOG_memory_entry_t']]]
 ];

@@ -10,7 +10,7 @@ var searchData=
   ['vdd_5fvalue_7',['VDD_VALUE',['../stm32l4xx__hal__conf_8h.html#aae550dad9f96d52cfce5e539adadbbb4',1,'stm32l4xx_hal_conf.h']]],
   ['velocity_5fsd_5fmilli_8',['velocity_sd_milli',['../structADCS__augmented__sgp4__params__struct__t.html#a2f52469a96b7fcd12047a5813215fe27',1,'ADCS_augmented_sgp4_params_struct_t']]],
   ['version_9',['version',['../structlfs__superblock.html#a06e9dc926560cd09cf3d6648a7554443',1,'lfs_superblock']]],
-  ['via_20i2c_10',['EPS via I2C',['../md_docs_2Sub-System__Notes_2ISISpace__EPS__Notes.html#autotoc_md61',1,'']]],
+  ['via_20i2c_10',['EPS via I2C',['../md_docs_2Sub-System__Notes_2ISISpace__EPS__Notes.html#autotoc_md55',1,'']]],
   ['vip_5fbatt_5finput_11',['vip_batt_input',['../structEPS__struct__piu__housekeeping__data__eng__t.html#a10815b69b4d4b94adae2e3ad10abae6c',1,'EPS_struct_piu_housekeeping_data_eng_t']]],
   ['vip_5fbp_5finput_12',['vip_bp_input',['../structEPS__battery__pack__datatype__eng__t.html#a89357581f87bd3666f0fd5dd414c7aa5',1,'EPS_battery_pack_datatype_eng_t']]],
   ['vip_5fcc_5foutput_13',['vip_cc_output',['../structEPS__conditioning__channel__datatype__eng__t.html#a91181a576a7bbecbccb5add81a95733c',1,'EPS_conditioning_channel_datatype_eng_t']]],
@@ -23,6 +23,6 @@ var searchData=
   ['voltage_5finternal_5fboard_5fsupply_5fmv_20',['voltage_internal_board_supply_mV',['../structEPS__struct__pdu__housekeeping__data__eng__t.html#aba8f34387433a50983fa288e6ea3bf68',1,'EPS_struct_pdu_housekeeping_data_eng_t::voltage_internal_board_supply_mV'],['../structEPS__struct__pbu__housekeeping__data__eng__t.html#a02ed6ddaf002dd4099d2f50c361e8696',1,'EPS_struct_pbu_housekeeping_data_eng_t::voltage_internal_board_supply_mV'],['../structEPS__struct__pcu__housekeeping__data__eng__t.html#ae13ee2b3d21cf4c232cad90dc0f70b07',1,'EPS_struct_pcu_housekeeping_data_eng_t::voltage_internal_board_supply_mV'],['../structEPS__struct__piu__housekeeping__data__eng__t.html#ac3d9164c3ca831dc18f9392080963fac',1,'EPS_struct_piu_housekeeping_data_eng_t::voltage_internal_board_supply_mV']]],
   ['voltage_5fmv_21',['voltage_mV',['../structEPS__vpid__eng__t.html#a15881652c4b9f1aaaed77f90b3399c83',1,'EPS_vpid_eng_t']]],
   ['vportsvchandler_22',['vPortSVCHandler',['../FreeRTOSConfig_8h.html#ad43047b3ea0a146673e30637488bf754',1,'FreeRTOSConfig.h']]],
-  ['vs_20code_23',['Tips for Navigating in VS Code',['../md_docs_230__Repo__Organization.html#autotoc_md15',1,'']]],
-  ['vs_20code_20setup_20procedure_24',['VS Code Setup Procedure',['../md_docs_200__Getting__Started.html#autotoc_md6',1,'']]]
+  ['vs_20code_23',['Tips for Navigating in VS Code',['../md_docs_230__Repo__Organization.html#autotoc_md9',1,'']]],
+  ['vs_20code_20setup_20procedure_24',['VS Code Setup Procedure',['../md_docs_200__Getting__Started.html#autotoc_md1',1,'']]]
 ];

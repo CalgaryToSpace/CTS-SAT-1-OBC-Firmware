@@ -87,10 +87,10 @@ $(function(){ initResizable(false); });
   <div class="headertitle"><div class="title">Getting Started!</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md5"></a></p>
+<div class="textblock"><p><a class="anchor" id="autotoc_md0"></a></p>
 <p>Welcome! This guide will help you get started with the CTS-SAT-1 OBC Firmware. This firmware runs on the STM32-based Onboard Computer.</p>
 <p>Follow through this guide, and follow through the rest of the numbered guides in this <code>docs/</code> folder.</p>
-<h1><a class="anchor" id="autotoc_md6"></a>
+<h1><a class="anchor" id="autotoc_md1"></a>
 VS Code Setup Procedure</h1>
 <ol type="1">
 <li>On Windows only, install the <a href="https://www.st.com/en/development-tools/stsw-link009.html">ST-Link Debugging Driver</a> for compatibility with OpenOCD.<ol type="a">
@@ -112,17 +112,17 @@ VS Code Setup Procedure</h1>
 <li>Plug in an STM32 dev kit, and flash the project using the "Flash STM32" button/command palate option.</li>
 <li>Optional: setup the Codeium extension by creating an account. Codeium is a free GitHub Copilot-like extension which can boost productivity when used effectively.</li>
 </ol>
-<h2><a class="anchor" id="autotoc_md7"></a>
+<h2><a class="anchor" id="autotoc_md2"></a>
 Troubleshooting</h2>
 <ol type="1">
 <li>Check that your MicroUSB cable supports data transfer. Many MicroUSB cables are power-only.</li>
 <li>Disable your antivirus if it starts removing the compiler.</li>
 <li>Use the Ctrl+Shift+P command palate to run "STM32: Install all the build tools ...".</li>
 </ol>
-<h1><a class="anchor" id="autotoc_md8"></a>
+<h1><a class="anchor" id="autotoc_md3"></a>
 Testing and Debugging the Firmware</h1>
 <ol type="1">
-<li><a href="https://github.com/wh201906/SerialTest/releases/">Install and use the "SerialTest" serial terminal</a> for sending commands, initially. The <a class="el" href="cts1__ground__support_2README_8md.html">ground support software</a> is also solid after your first contribution.<ul>
+<li><a href="https://github.com/wh201906/SerialTest/releases/">Install and use the "SerialTest" serial terminal</a> for sending commands, initially. The ground support software is also solid after your first contribution.<ul>
 <li>Connect to the STM32 debug serial port at baud=115200.</li>
 </ul>
 </li>
@@ -131,7 +131,7 @@ Testing and Debugging the Firmware</h1>
 <li>Send a command to the STM32 to test the firmware: <code>CTS1+hello_world()!</code>.</li>
 <li>Verify that you get a nice "Hello World!" response back.</li>
 </ol>
-<h2><a class="anchor" id="autotoc_md9"></a>
+<h2><a class="anchor" id="autotoc_md4"></a>
 Techniques for Debugging</h2>
 <ul>
 <li>Use <code><a class="el" href="log_8h.html#a9620661557eea5fdaf535b894ae58c84" title="Log a message to several destinations (sinks)">LOG_message()</a></code> (or <code>DEBUG_UART_print_str()</code>, for temporary logs) to print out intermediate values in the code.</li>
