@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['write_5fstruct_5fto_5fmemory_0',['WRITE_STRUCT_TO_MEMORY',['../adcs__internal__drivers_8h.html#a09979f9863c2668236caf2293d1d5594',1,'adcs_internal_drivers.h']]]
+  ['vdd_5fvalue_0',['VDD_VALUE',['../stm32l4xx__hal__conf_8h.html#aae550dad9f96d52cfce5e539adadbbb4',1,'stm32l4xx_hal_conf.h']]],
+  ['vportsvchandler_1',['vPortSVCHandler',['../FreeRTOSConfig_8h.html#ad43047b3ea0a146673e30637488bf754',1,'FreeRTOSConfig.h']]]
 ];
