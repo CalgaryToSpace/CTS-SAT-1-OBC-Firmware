@@ -30,10 +30,10 @@ var searchData=
   ['hal_5fuart_5fmspinit_27',['HAL_UART_MspInit',['../stm32l4xx__hal__msp_8c.html#a0e553b32211877322f949b14801bbfa7',1,'stm32l4xx_hal_msp.c']]],
   ['hal_5fuart_5frxcpltcallback_28',['HAL_UART_RxCpltCallback',['../uart__handler_8c.html#ae494a9643f29b87d6d81e5264e60e57b',1,'uart_handler.c']]],
   ['handle_5fuart_5fport_5fchange_29',['handle_uart_port_change',['../namespacects1__ground__support_1_1terminal__app_1_1dash__gui.html#a248ef2a1e01206097e4378065b427855',1,'cts1_ground_support::terminal_app::dash_gui']]],
-  ['handling_30',['Error Handling',['../md_docs_2C__General__Guidelines.html#autotoc_md29',1,'']]],
+  ['handling_30',['Error Handling',['../md_docs_2C__General__Guidelines.html#autotoc_md28',1,'']]],
   ['hardfault_5fhandler_31',['HardFault_Handler',['../stm32l4xx__it_8h.html#a2bffc10d5bd4106753b7c30e86903bea',1,'HardFault_Handler(void):&#160;stm32l4xx_it.c'],['../stm32l4xx__it_8c.html#a2bffc10d5bd4106753b7c30e86903bea',1,'HardFault_Handler(void):&#160;stm32l4xx_it.c']]],
   ['has_5frequired_5ffields_32',['has_required_fields',['../classcts1__ground__support_1_1telecommand__types_1_1TelecommandDefinition.html#a36e5379ca10ca6168e8b4ff113603b3e',1,'cts1_ground_support::telecommand_types::TelecommandDefinition']]],
-  ['hclk_20hz_204000000_33',['HCLK(Hz)                               | 4000000',['../system__stm32l4xx_8c.html#autotoc_md67',1,'']]],
+  ['hclk_20hz_204000000_33',['HCLK(Hz)                               | 4000000',['../system__stm32l4xx_8c.html#autotoc_md69',1,'']]],
   ['hcrc_34',['hcrc',['../main_8c.html#ae3358c54a01c6487322df1275618d6b1',1,'main.c']]],
   ['hdma_5fuart4_5frx_35',['hdma_uart4_rx',['../main_8c.html#a5531b2fb5af9f7c77f321c4a957d662b',1,'hdma_uart4_rx:&#160;main.c'],['../stm32l4xx__hal__msp_8c.html#a5531b2fb5af9f7c77f321c4a957d662b',1,'hdma_uart4_rx:&#160;main.c'],['../stm32l4xx__it_8c.html#a5531b2fb5af9f7c77f321c4a957d662b',1,'hdma_uart4_rx:&#160;main.c']]],
   ['hdma_5fusart1_5frx_36',['hdma_usart1_rx',['../main_8c.html#a34251392f0d5e2461e3aef615918c235',1,'hdma_usart1_rx:&#160;main.c'],['../stm32l4xx__hal__msp_8c.html#a34251392f0d5e2461e3aef615918c235',1,'hdma_usart1_rx:&#160;main.c'],['../stm32l4xx__it_8c.html#a34251392f0d5e2461e3aef615918c235',1,'hdma_usart1_rx:&#160;main.c']]],
@@ -44,8 +44,8 @@ var searchData=
   ['hi2c3_41',['hi2c3',['../main_8h.html#a5ccf4a01a8d7f08d3190181f843f7515',1,'hi2c3:&#160;main.c'],['../ant__internal__drivers_8c.html#a5ccf4a01a8d7f08d3190181f843f7515',1,'hi2c3:&#160;main.c'],['../main_8c.html#a5ccf4a01a8d7f08d3190181f843f7515',1,'hi2c3:&#160;main.c']]],
   ['hi2c4_42',['hi2c4',['../main_8h.html#a818789480a74b70bbcaf6d73e8e763ed',1,'hi2c4:&#160;main.c'],['../main_8c.html#a818789480a74b70bbcaf6d73e8e763ed',1,'hi2c4:&#160;main.c']]],
   ['hlpuart1_43',['hlpuart1',['../main_8h.html#a5c3f9dccaa7cebcc70e1657af9e5e5dc',1,'hlpuart1:&#160;main.c'],['../log__sinks_8c.html#a5c3f9dccaa7cebcc70e1657af9e5e5dc',1,'hlpuart1:&#160;main.c'],['../main_8c.html#a5c3f9dccaa7cebcc70e1657af9e5e5dc',1,'hlpuart1:&#160;main.c'],['../stm32l4xx__it_8c.html#a5c3f9dccaa7cebcc70e1657af9e5e5dc',1,'hlpuart1:&#160;main.c']]],
-  ['how_20to_20use_20tt_20log_5fmessage_20tt_44',['How to use &lt;tt&gt;LOG_message(...)&lt;/tt&gt;',['../md_docs_240__Logging.html#autotoc_md20',1,'']]],
-  ['how_20to_20write_20a_20test_45',['How to Write a Test',['../md_docs_2C__Unit__Tests.html#autotoc_md40',1,'']]],
+  ['how_20to_20use_20tt_20log_5fmessage_20tt_44',['How to use &lt;tt&gt;LOG_message(...)&lt;/tt&gt;',['../md_docs_240__Logging.html#autotoc_md19',1,'']]],
+  ['how_20to_20write_20a_20test_45',['How to Write a Test',['../md_docs_2C__Unit__Tests.html#autotoc_md39',1,'']]],
   ['hse_5fstartup_5ftimeout_46',['HSE_STARTUP_TIMEOUT',['../stm32l4xx__hal__conf_8h.html#a68ecbc9b0a1a40a1ec9d18d5e9747c4f',1,'stm32l4xx_hal_conf.h']]],
   ['hse_5fvalue_47',['HSE_VALUE',['../stm32l4xx__hal__conf_8h.html#aeafcff4f57440c60e64812dddd13e7cb',1,'HSE_VALUE:&#160;stm32l4xx_hal_conf.h'],['../group__STM32L4xx__System__Private__Defines.html#gaeafcff4f57440c60e64812dddd13e7cb',1,'HSE_VALUE:&#160;system_stm32l4xx.c']]],
   ['hsi48_5fvalue_48',['HSI48_VALUE',['../stm32l4xx__hal__conf_8h.html#a47f01e5e3f2edfa94bf74c08835f3875',1,'stm32l4xx_hal_conf.h']]],
@@ -60,6 +60,6 @@ var searchData=
   ['huart3_57',['huart3',['../main_8h.html#ab7c63c1b0f65db92b6a4ea19edf957e1',1,'huart3:&#160;main.c'],['../main_8c.html#ab7c63c1b0f65db92b6a4ea19edf957e1',1,'huart3:&#160;main.c'],['../stm32l4xx__it_8c.html#ab7c63c1b0f65db92b6a4ea19edf957e1',1,'huart3:&#160;main.c']]],
   ['huart4_58',['huart4',['../main_8h.html#ae273feb3e0dc44e38892650faa58fced',1,'huart4:&#160;main.c'],['../main_8c.html#ae273feb3e0dc44e38892650faa58fced',1,'huart4:&#160;main.c']]],
   ['huart5_59',['huart5',['../main_8h.html#a25a82fcf0cd24eb6d39977cb5864cec8',1,'huart5:&#160;main.c'],['../main_8c.html#a25a82fcf0cd24eb6d39977cb5864cec8',1,'huart5:&#160;main.c'],['../stm32l4xx__it_8c.html#a25a82fcf0cd24eb6d39977cb5864cec8',1,'huart5:&#160;main.c']]],
-  ['hunt_20activity_60',['Treasure Hunt Activity',['../md_docs_230__Repo__Organization.html#autotoc_md15',1,'']]],
-  ['hz_204000000_61',['Hz 4000000',['../system__stm32l4xx_8c.html#autotoc_md67',1,'HCLK(Hz)                               | 4000000'],['../system__stm32l4xx_8c.html#autotoc_md66',1,'SYSCLK(Hz)                             | 4000000']]]
+  ['hunt_20activity_60',['Treasure Hunt Activity',['../md_docs_230__Repo__Organization.html#autotoc_md14',1,'']]],
+  ['hz_204000000_61',['Hz 4000000',['../system__stm32l4xx_8c.html#autotoc_md69',1,'HCLK(Hz)                               | 4000000'],['../system__stm32l4xx_8c.html#autotoc_md68',1,'SYSCLK(Hz)                             | 4000000']]]
 ];

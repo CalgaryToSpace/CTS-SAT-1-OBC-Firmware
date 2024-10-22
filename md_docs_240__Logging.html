@@ -87,17 +87,17 @@ $(function(){ initResizable(false); });
   <div class="headertitle"><div class="title">Logging</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md17"></a></p>
+<div class="textblock"><p><a class="anchor" id="autotoc_md16"></a></p>
 <p>Satellites do things both as a result of us earthlings sending telecommands, as a result of scheduled telecommands, and as a result of other autonomous actions (e.g., automatically turning off subsystems when the power gets low).</p>
 <p>Nearly everything the satellite does must be logged so that it can be audited in the case of problems.</p>
-<h1><a class="anchor" id="autotoc_md18"></a>
+<h1><a class="anchor" id="autotoc_md17"></a>
 Logging in Embedded Systems</h1>
 <p>In general embedded systems development, you commonly print data to a UART terminal for debugging purposes. The <code>DEBUG_uart_print_str(...)</code> function is used for this purpose.</p>
 <p>This is a simple and effective way to debug code, but it is not a good way to log data in a satellite. We can't plug a UART cable into a satellite flying through space at 8 km/s.</p>
-<h1><a class="anchor" id="autotoc_md19"></a>
+<h1><a class="anchor" id="autotoc_md18"></a>
 Logging in Space (Orbit)</h1>
 <p>The logging system on this satellite is rather simple: call the <code>LOG_message(...)</code> function with the message you want, and it will be logged to a file, sent over the radio, stored in memory, and passed through the umbilical UART debug console (if connected on earth).</p>
-<h1><a class="anchor" id="autotoc_md20"></a>
+<h1><a class="anchor" id="autotoc_md19"></a>
 How to use <code>LOG_message(...)</code></h1>
 <p>YOU, a developer, must be use the <code>LOG_message(...)</code> function. Here's how:</p>
 <ol type="1">
@@ -113,10 +113,10 @@ How to use <code>LOG_message(...)</code></h1>
 <div class="ttc" id="alog_8h_html_afcecd2a29fae3a2fe7e586c9f0dc33bca8061bfef6d93c21e0485d8a981a51907"><div class="ttname"><a href="log_8h.html#afcecd2a29fae3a2fe7e586c9f0dc33bca8061bfef6d93c21e0485d8a981a51907">LOG_SINK_ALL</a></div><div class="ttdeci">@ LOG_SINK_ALL</div><div class="ttdef"><b>Definition</b> log.h:20</div></div>
 </div><!-- fragment --></li>
 </ol>
-<h1><a class="anchor" id="autotoc_md21"></a>
+<h1><a class="anchor" id="autotoc_md20"></a>
 <code>LOG_message(...)</code> Args:</h1>
 <p>The following are very small and specific details about the arguments to <code>LOG_message(...)</code>.</p>
-<h2><a class="anchor" id="autotoc_md22"></a>
+<h2><a class="anchor" id="autotoc_md21"></a>
 Subsystems</h2>
 <p>There are several subsystems, defined in an enum in <code><a class="el" href="log_8h.html">log/log.h</a></code>. Use the right one. </p><div class="fragment"><div class="line"><span class="keyword">typedef</span> <span class="keyword">enum</span> {</div>
 <div class="line">    <a class="code hl_enumvalue" href="log_8h.html#af364ca6837e2c4fb7720ebdbbe7811b3a7dcaceb6cd38f69e47c09700f9548eca">LOG_SYSTEM_OBC</a> = 1 &lt;&lt; 0,</div>
@@ -152,7 +152,7 @@ Subsystems</h2>
 <div class="ttc" id="alog_8h_html_af364ca6837e2c4fb7720ebdbbe7811b3af0a3f5cc7d69ce9c9f8151b3e8d5db77"><div class="ttname"><a href="log_8h.html#af364ca6837e2c4fb7720ebdbbe7811b3af0a3f5cc7d69ce9c9f8151b3e8d5db77">LOG_SYSTEM_EPS</a></div><div class="ttdeci">@ LOG_SYSTEM_EPS</div><div class="ttdef"><b>Definition</b> log.h:34</div></div>
 <div class="ttc" id="alog_8h_html_af364ca6837e2c4fb7720ebdbbe7811b3af985b1638017504a115df86c2b6882fe"><div class="ttname"><a href="log_8h.html#af364ca6837e2c4fb7720ebdbbe7811b3af985b1638017504a115df86c2b6882fe">LOG_SYSTEM_TELECOMMAND</a></div><div class="ttdeci">@ LOG_SYSTEM_TELECOMMAND</div><div class="ttdef"><b>Definition</b> log.h:41</div></div>
 <div class="ttc" id="alog_8h_html_af364ca6837e2c4fb7720ebdbbe7811b3afcafd89fce208e1cfdb4ecb4184c385f"><div class="ttname"><a href="log_8h.html#af364ca6837e2c4fb7720ebdbbe7811b3afcafd89fce208e1cfdb4ecb4184c385f">LOG_SYSTEM_BOOM</a></div><div class="ttdeci">@ LOG_SYSTEM_BOOM</div><div class="ttdef"><b>Definition</b> log.h:35</div></div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md23"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md22"></a>
 Log Levels</h2>
 <p>There are several log levels, defined in an enum.</p>
 <div class="fragment"><div class="line"><span class="keyword">typedef</span> <span class="keyword">enum</span> {</div>
@@ -168,7 +168,7 @@ Log Levels</h2>
 <div class="ttc" id="alog_8h_html_a67288ef7f22e51426f612ed5a7e0c043ab3bc0fc25a2a4bc558423156e66c7a20"><div class="ttname"><a href="log_8h.html#a67288ef7f22e51426f612ed5a7e0c043ab3bc0fc25a2a4bc558423156e66c7a20">LOG_SEVERITY_DEBUG</a></div><div class="ttdeci">@ LOG_SEVERITY_DEBUG</div><div class="ttdef"><b>Definition</b> log.h:7</div></div>
 <div class="ttc" id="alog_8h_html_a67288ef7f22e51426f612ed5a7e0c043ad168c190a9e83bfdaec5caff30289291"><div class="ttname"><a href="log_8h.html#a67288ef7f22e51426f612ed5a7e0c043ad168c190a9e83bfdaec5caff30289291">LOG_SEVERITY_ERROR</a></div><div class="ttdeci">@ LOG_SEVERITY_ERROR</div><div class="ttdef"><b>Definition</b> log.h:10</div></div>
 </div><!-- fragment --><p>Sometimes, stuff works (use <code>LOG_SEVERITY_NORMAL</code>). Sometimes it doesn't (use <code>LOG_SEVERITY_WARNING</code> or <code>LOG_SEVERITY_ERROR</code>). Sometimes, the thing not working can cause other things to not work (use <code>LOG_SEVERITY_CRITICAL</code>).</p>
-<h2><a class="anchor" id="autotoc_md24"></a>
+<h2><a class="anchor" id="autotoc_md23"></a>
 Sinks</h2>
 <p>There are several sinks (i.e., log message destinations): </p><div class="fragment"><div class="line"><span class="keyword">typedef</span> <span class="keyword">enum</span> {</div>
 <div class="line">    <a class="code hl_enumvalue" href="log_8h.html#afcecd2a29fae3a2fe7e586c9f0dc33bcaf83c583770a65599b1f9109007a14bd1">LOG_SINK_NONE</a> = 0,</div>
@@ -187,7 +187,7 @@ Sinks</h2>
 </div><!-- fragment --><p>Generally, all log messages should go to all sinks (<code>LOG_SINK_ALL</code>).</p>
 <p>Sometimes, however, there may be a time where you want to exclude a specific sink. For example, if you are logging a message saying "using the filesystem failed", you probably don't want to log that message to the failing filesystem. In such a case, use <code>LOG_all_sinks_except(LOG_SINK_FILE)</code>.</p>
 <p>Several sinks can chained together with the bitwise OR operator (<code>|</code>). For example, to log to the UART and the radio, use <code>LOG_SINK_UART | LOG_SINK_RADIO</code>. To log to everything except the filesystem and radio, use <code>LOG_all_sinks_except(LOG_SINK_FILE | LOG_SINK_RADIO)</code>.</p>
-<h1><a class="anchor" id="autotoc_md25"></a>
+<h1><a class="anchor" id="autotoc_md24"></a>
 Timestamp Format</h1>
 <p>The timekeeping clock on satellites drifts due to temperature variations, inaccuracies in the crystal oscillator, etc; it is re-synced with the GPS and/or ground station every so often.</p>
 <p>The system time is stored in "unix timestamp format" (seconds since 1970-01-01). This is a very well-known date/time representation.</p>

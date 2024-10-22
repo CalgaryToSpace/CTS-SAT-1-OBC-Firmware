@@ -87,19 +87,19 @@ $(function(){ initResizable(false); });
   <div class="headertitle"><div class="title">Timestamp Format Rationale</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md53"></a></p>
+<div class="textblock"><p><a class="anchor" id="autotoc_md55"></a></p>
 <p>Ensure you've read the <a class="el" href="40__Logging_8md.html">/docs/40_Logging.md</a> document, which explains the logging timestamp format, before reading this one.</p>
 <p>The following example, copied from <a href="https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/pull/106#discussion_r1685270996">a discussion when designing the logging system</a>, provides an example of why the sync+offset+source timestamp format is useful.</p>
-<h1><a class="anchor" id="autotoc_md54"></a>
+<h1><a class="anchor" id="autotoc_md56"></a>
 Example</h1>
-<h2><a class="anchor" id="autotoc_md55"></a>
+<h2><a class="anchor" id="autotoc_md57"></a>
 Notation</h2>
 <ul>
 <li>Timestamps will be given in the format returned by <code><a class="el" href="timekeeping_8h.html#a5bfe7cf59c2f5dca9b5f4213f6ea16e7" title="Returns a computer-friendly timestamp string.">TIM_get_timestamp_string()</a></code>, but in seconds, and at an arbitrary date.</li>
 <li>Events will be recorded below in chronological order.</li>
 <li>Assume the only sync source is telecommands, right now.</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md56"></a>
+<h2><a class="anchor" id="autotoc_md58"></a>
 Events</h2>
 <ol type="1">
 <li>Satellite powers on at time 1712345000, but assumes it's 1970.</li>

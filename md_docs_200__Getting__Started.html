@@ -136,15 +136,10 @@ Techniques for Debugging</h2>
 <ul>
 <li>Use <code><a class="el" href="log_8h.html#a9620661557eea5fdaf535b894ae58c84" title="Log a message to several destinations (sinks)">LOG_message()</a></code> (or <code>DEBUG_UART_print_str()</code>, for temporary logs) to print out intermediate values in the code.</li>
 <li>Use Breakpoints in VS Code to pause execution and explore the stack. Breakpoint are obeyed when you use the "Debug STM32" button to flash the chip.<ul>
-<li>⚠️ Beware that breakpoints with Embedded Systems can be finicky/cause unpredictable behavior, as they can interfere with interrupts.</li>
+<li>⚠️ Beware that breakpoints with Embedded Systems can be finicky/cause unpredictable behavior, as they can interfere with interrupts. </li>
 </ul>
 </li>
 </ul>
-<h1><a class="anchor" id="autotoc_md10"></a>
-Updating the IOC File/Regenerating Boilerplate</h1>
-<p>Very few people will need to do this.</p>
-<p>The IOC file must be updated using CubeMX instead of STM32CubeIDE now. Feel free to test IOC file changes, but do not commit IOC file changes nor auto-generated code changes. Instead, once you've found the ideal configuration, request the changes to a Team Lead (who will make the change directly in the <code>main</code> branch).</p>
-<p>Then, rebase off of the <code>main</code> branch. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->
