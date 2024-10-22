@@ -1,8 +1,8 @@
 #include "cts_csp/cts_csp_main.h"
 
 #include "csp/csp.h"
-#include "csp_init.h" // FIXME: why doesn't it like "csp/csp_init.h"? Because it's in the Src folder right now. 
-#include "csp_conn.h"
+#include "csp/csp_init.h" // FIXME: why doesn't it like "csp/csp_init.h"? Because it's in the Src folder right now. 
+#include "csp/csp_conn.h"
 
 #include "log/log.h"
 
