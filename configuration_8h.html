@@ -111,13 +111,15 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="configuration_8h__dep__incl.png" border="0" usemap="#afirmware_2Core_2Inc_2config_2configuration_8hdep" alt=""/></div>
 <map name="afirmware_2Core_2Inc_2config_2configuration_8hdep" id="afirmware_2Core_2Inc_2config_2configuration_8hdep">
-<area shape="rect" title=" " alt="" coords="220,5,381,46"/>
+<area shape="rect" title=" " alt="" coords="290,5,452,46"/>
 <area shape="rect" href="configuration_8c.html" title=" " alt="" coords="5,102,169,142"/>
-<area shape="poly" title=" " alt="" coords="243,55,133,103,131,98,241,50"/>
-<area shape="rect" href="config__telecommand__defs_8c.html" title=" " alt="" coords="193,102,408,142"/>
-<area shape="poly" title=" " alt="" coords="303,62,303,101,298,101,298,62"/>
-<area shape="rect" href="test__configuration__variables_8c.html" title=" " alt="" coords="432,94,595,150"/>
-<area shape="poly" title=" " alt="" coords="360,50,453,91,451,96,358,55"/>
+<area shape="poly" title=" " alt="" coords="298,54,147,103,146,98,297,49"/>
+<area shape="rect" href="rtos__tasks_8c.html" title=" " alt="" coords="193,102,344,142"/>
+<area shape="poly" title=" " alt="" coords="340,58,291,103,288,99,337,54"/>
+<area shape="rect" href="config__telecommand__defs_8c.html" title=" " alt="" coords="368,102,582,142"/>
+<area shape="poly" title=" " alt="" coords="406,54,455,99,452,103,402,58"/>
+<area shape="rect" href="test__configuration__variables_8c.html" title=" " alt="" coords="607,94,770,150"/>
+<area shape="poly" title=" " alt="" coords="453,48,607,94,605,99,451,53"/>
 </map>
 </div>
 </div>
@@ -157,6 +159,9 @@ Variables</h2></td></tr>
 <tr class="separator:ae06dc27318afc9f05043c49995e3f87a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb5e673cf6bba61f4d6e36c772bc42eb" id="r_afb5e673cf6bba61f4d6e36c772bc42eb"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afb5e673cf6bba61f4d6e36c772bc42eb">CONFIG_MAX_JSON_STRING_LENGTH</a> = UINT8_MAX</td></tr>
 <tr class="separator:afb5e673cf6bba61f4d6e36c772bc42eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ee770d0ce6263d137f7e2f58e71322e" id="r_a5ee770d0ce6263d137f7e2f58e71322e"><td class="memItemLeft" align="right" valign="top">const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5ee770d0ce6263d137f7e2f58e71322e">CONFIG_freertos_min_remaining_stack_percent</a></td></tr>
+<tr class="memdesc:a5ee770d0ce6263d137f7e2f58e71322e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The percentage of the stack space that should remain free. If the free space falls below this percentage, a warning will be logged.  <br /></td></tr>
+<tr class="separator:a5ee770d0ce6263d137f7e2f58e71322e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acfa45a32b6c48884dde5d1be9fa8c326" id="r_acfa45a32b6c48884dde5d1be9fa8c326"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structCONFIG__integer__config__entry__t.html">CONFIG_integer_config_entry_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acfa45a32b6c48884dde5d1be9fa8c326">CONFIG_int_config_variables</a> []</td></tr>
 <tr class="separator:acfa45a32b6c48884dde5d1be9fa8c326"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1145ed066ac0a3afa6cce7df8eac9bcb" id="r_a1145ed066ac0a3afa6cce7df8eac9bcb"><td class="memItemLeft" align="right" valign="top">const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1145ed066ac0a3afa6cce7df8eac9bcb">CONFIG_int_config_variables_count</a></td></tr>
@@ -492,6 +497,30 @@ Here is the caller graph for this function:</div>
 </div>
 </div>
 <h2 class="groupheader">Variable Documentation</h2>
+<a id="a5ee770d0ce6263d137f7e2f58e71322e" name="a5ee770d0ce6263d137f7e2f58e71322e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ee770d0ce6263d137f7e2f58e71322e">&#9670;&#160;</a></span>CONFIG_freertos_min_remaining_stack_percent</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint32_t CONFIG_freertos_min_remaining_stack_percent</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The percentage of the stack space that should remain free. If the free space falls below this percentage, a warning will be logged. </p>
+
+</div>
+</div>
 <a id="acfa45a32b6c48884dde5d1be9fa8c326" name="acfa45a32b6c48884dde5d1be9fa8c326"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#acfa45a32b6c48884dde5d1be9fa8c326">&#9670;&#160;</a></span>CONFIG_int_config_variables</h2>
 

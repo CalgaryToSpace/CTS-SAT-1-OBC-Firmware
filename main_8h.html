@@ -99,14 +99,19 @@ $(function(){ initResizable(false); });
 <p>: Header for <a class="el" href="main_8c.html" title=": Main program body">main.c</a> file. This file contains the common defines of the application.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;stm32l4xx_hal.h&quot;</code><br />
+<code>#include &quot;<a class="el" href="rtos__task__helpers_8h_source.html">rtos_tasks/rtos_task_helpers.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for main.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="main_8h__incl.png" border="0" usemap="#afirmware_2Core_2Inc_2main_8h" alt=""/></div>
 <map name="afirmware_2Core_2Inc_2main_8h" id="afirmware_2Core_2Inc_2main_8h">
-<area shape="rect" title=": Header for main.c file. This file contains the common defines of the application." alt="" coords="5,5,171,31"/>
-<area shape="rect" title=" " alt="" coords="31,79,145,105"/>
-<area shape="poly" title=" " alt="" coords="91,31,91,63,85,63,85,31"/>
+<area shape="rect" title=": Header for main.c file. This file contains the common defines of the application." alt="" coords="54,5,219,31"/>
+<area shape="rect" title=" " alt="" coords="5,86,119,112"/>
+<area shape="poly" title=" " alt="" coords="127,33,86,77,82,73,123,30"/>
+<area shape="rect" href="rtos__task__helpers_8h.html" title=" " alt="" coords="142,79,283,120"/>
+<area shape="poly" title=" " alt="" coords="150,30,185,66,182,70,146,33"/>
+<area shape="rect" title=" " alt="" coords="169,168,256,193"/>
+<area shape="poly" title=" " alt="" coords="215,120,215,152,210,152,210,120"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -504,6 +509,10 @@ Variables</h2></td></tr>
 <tr class="separator:a9c6222bae4d0328dd843ae099623b40b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af0bea8d8759a0d7e0e296edc9f5d6936" id="r_af0bea8d8759a0d7e0e296edc9f5d6936"><td class="memItemLeft" align="right" valign="top">TIM_HandleTypeDef&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af0bea8d8759a0d7e0e296edc9f5d6936">htim16</a></td></tr>
 <tr class="separator:af0bea8d8759a0d7e0e296edc9f5d6936"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2afe97610b1abc88aabcebd628c113c" id="r_af2afe97610b1abc88aabcebd628c113c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structFREERTOS__task__info__struct__t.html">FREERTOS_task_info_struct_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af2afe97610b1abc88aabcebd628c113c">FREERTOS_task_handles_array</a> []</td></tr>
+<tr class="separator:af2afe97610b1abc88aabcebd628c113c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5a95d91528cefab40350ada94c38d04" id="r_ad5a95d91528cefab40350ada94c38d04"><td class="memItemLeft" align="right" valign="top">const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad5a95d91528cefab40350ada94c38d04">FREERTOS_task_handles_array_size</a></td></tr>
+<tr class="separator:ad5a95d91528cefab40350ada94c38d04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>: Header for <a class="el" href="main_8c.html" title=": Main program body">main.c</a> file. This file contains the common defines of the application. </p>
@@ -2087,6 +2096,50 @@ Here is the caller graph for this function:</div>
 </div>
 </div>
 <h2 class="groupheader">Variable Documentation</h2>
+<a id="af2afe97610b1abc88aabcebd628c113c" name="af2afe97610b1abc88aabcebd628c113c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2afe97610b1abc88aabcebd628c113c">&#9670;&#160;</a></span>FREERTOS_task_handles_array</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structFREERTOS__task__info__struct__t.html">FREERTOS_task_info_struct_t</a> FREERTOS_task_handles_array[]</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad5a95d91528cefab40350ada94c38d04" name="ad5a95d91528cefab40350ada94c38d04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5a95d91528cefab40350ada94c38d04">&#9670;&#160;</a></span>FREERTOS_task_handles_array_size</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint32_t FREERTOS_task_handles_array_size</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="af7b2c26e44dadaaa798a5c3d82914ba7" name="af7b2c26e44dadaaa798a5c3d82914ba7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af7b2c26e44dadaaa798a5c3d82914ba7">&#9670;&#160;</a></span>hi2c1</h2>
 

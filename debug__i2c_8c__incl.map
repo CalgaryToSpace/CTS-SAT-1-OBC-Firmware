@@ -1,21 +1,25 @@
 <map id="firmware/Core/Src/debug_tools/debug_i2c.c" name="firmware/Core/Src/debug_tools/debug_i2c.c">
-<area shape="rect" id="Node000001" title=" " alt="" coords="276,5,441,46"/>
-<area shape="rect" id="Node000002" href="$main_8h.html" title=": Header for main.c file. This file contains the common defines of the application." alt="" coords="77,168,136,193"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="276,34,201,41,122,53,55,71,30,82,14,96,9,105,8,113,18,130,39,146,64,159,62,164,36,150,14,133,3,114,4,103,10,92,27,78,53,66,121,48,200,36,276,29"/>
-<area shape="rect" id="Node000004" href="$debug__i2c_8h.html" title=" " alt="" coords="24,94,189,120"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="296,49,161,91,159,86,295,44"/>
-<area shape="rect" id="Node000005" title=" " alt="" coords="266,168,329,193"/>
-<area shape="poly" id="edge10_Node000001_Node000005" title=" " alt="" coords="378,45,398,80,402,101,397,121,374,147,344,165,342,161,370,143,392,118,397,101,393,82,374,48"/>
-<area shape="rect" id="Node000006" href="$debug__uart_8h.html" title=" " alt="" coords="213,94,382,120"/>
-<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="345,48,318,83,314,80,341,45"/>
-<area shape="rect" id="Node000007" title=" " alt="" coords="457,94,516,120"/>
-<area shape="poly" id="edge9_Node000001_Node000007" title=" " alt="" coords="392,44,456,83,453,88,389,49"/>
-<area shape="rect" id="Node000008" title=" " alt="" coords="540,94,604,120"/>
-<area shape="poly" id="edge11_Node000001_Node000008" title=" " alt="" coords="413,44,527,86,525,91,411,49"/>
-<area shape="rect" id="Node000003" title=" " alt="" coords="50,241,163,267"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="109,194,109,226,104,226,104,194"/>
-<area shape="poly" id="edge4_Node000004_Node000002" title=" " alt="" coords="109,120,109,152,104,152,104,120"/>
-<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="140,118,252,160,250,165,138,123"/>
-<area shape="poly" id="edge7_Node000006_Node000002" title=" " alt="" coords="266,123,151,165,150,160,264,118"/>
-<area shape="poly" id="edge8_Node000006_Node000005" title=" " alt="" coords="300,120,300,152,295,152,295,120"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="306,5,471,46"/>
+<area shape="rect" id="Node000002" href="$main_8h.html" title=": Header for main.c file. This file contains the common defines of the application." alt="" coords="107,168,166,193"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="306,34,231,41,152,53,85,71,60,82,44,96,39,105,39,113,49,130,69,146,94,159,92,164,66,150,45,133,33,114,34,103,40,92,58,78,83,66,151,48,230,36,306,29"/>
+<area shape="rect" id="Node000006" href="$debug__i2c_8h.html" title=" " alt="" coords="54,94,219,120"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="327,49,191,91,189,86,325,44"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="296,168,359,193"/>
+<area shape="poly" id="edge12_Node000001_Node000007" title=" " alt="" coords="408,45,428,80,432,101,427,121,404,147,375,165,372,161,400,143,422,118,427,101,423,82,404,48"/>
+<area shape="rect" id="Node000008" href="$debug__uart_8h.html" title=" " alt="" coords="243,94,412,120"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="376,48,348,83,344,80,371,45"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="487,94,546,120"/>
+<area shape="poly" id="edge11_Node000001_Node000009" title=" " alt="" coords="422,44,486,83,483,88,419,49"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="570,94,634,120"/>
+<area shape="poly" id="edge13_Node000001_Node000010" title=" " alt="" coords="443,44,557,86,555,91,441,49"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,249,119,274"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="127,196,86,239,82,235,123,192"/>
+<area shape="rect" id="Node000004" href="$rtos__task__helpers_8h.html" title=" " alt="" coords="142,241,283,282"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="150,192,185,228,182,232,146,196"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="169,330,256,356"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="215,282,215,314,210,314,210,282"/>
+<area shape="poly" id="edge6_Node000006_Node000002" title=" " alt="" coords="139,120,139,152,134,152,134,120"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="170,118,282,160,280,165,168,123"/>
+<area shape="poly" id="edge9_Node000008_Node000002" title=" " alt="" coords="296,123,182,165,180,160,294,118"/>
+<area shape="poly" id="edge10_Node000008_Node000007" title=" " alt="" coords="330,120,330,152,325,152,325,120"/>
 </map>

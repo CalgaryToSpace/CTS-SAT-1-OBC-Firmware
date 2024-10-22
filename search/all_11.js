@@ -452,8 +452,9 @@ var searchData=
   ['lookahead_449',['lookahead',['../structlfs.html#ae966194bf52f761c9cc62a9a3d5af4aa',1,'lfs']]],
   ['lookahead_5fbuffer_450',['lookahead_buffer',['../structlfs__config.html#afee66de317d0f778157eae576744847c',1,'lfs_config']]],
   ['lookahead_5fsize_451',['lookahead_size',['../structlfs__config.html#a010570f77b49932004eb24fc3d8feb6f',1,'lfs_config']]],
-  ['lpuart1_5firqhandler_452',['LPUART1_IRQHandler',['../stm32l4xx__it_8h.html#ad6426d36e0b02912ed0ca65f3bf92719',1,'LPUART1_IRQHandler(void):&#160;stm32l4xx_it.c'],['../stm32l4xx__it_8c.html#ad6426d36e0b02912ed0ca65f3bf92719',1,'LPUART1_IRQHandler(void):&#160;stm32l4xx_it.c']]],
-  ['lse_5fstartup_5ftimeout_453',['LSE_STARTUP_TIMEOUT',['../stm32l4xx__hal__conf_8h.html#a85e6fc812dc26f7161a04be2568a5462',1,'stm32l4xx_hal_conf.h']]],
-  ['lse_5fvalue_454',['LSE_VALUE',['../stm32l4xx__hal__conf_8h.html#a7bbb9d19e5189a6ccd0fb6fa6177d20d',1,'stm32l4xx_hal_conf.h']]],
-  ['lsi_5fvalue_455',['LSI_VALUE',['../stm32l4xx__hal__conf_8h.html#a4872023e65449c0506aac3ea6bec99e9',1,'stm32l4xx_hal_conf.h']]]
+  ['lowest_5fstack_5fbytes_5fremaining_452',['lowest_stack_bytes_remaining',['../structFREERTOS__task__info__struct__t.html#a5627aed160dc1a387ec859b6a66937b7',1,'FREERTOS_task_info_struct_t']]],
+  ['lpuart1_5firqhandler_453',['LPUART1_IRQHandler',['../stm32l4xx__it_8h.html#ad6426d36e0b02912ed0ca65f3bf92719',1,'LPUART1_IRQHandler(void):&#160;stm32l4xx_it.c'],['../stm32l4xx__it_8c.html#ad6426d36e0b02912ed0ca65f3bf92719',1,'LPUART1_IRQHandler(void):&#160;stm32l4xx_it.c']]],
+  ['lse_5fstartup_5ftimeout_454',['LSE_STARTUP_TIMEOUT',['../stm32l4xx__hal__conf_8h.html#a85e6fc812dc26f7161a04be2568a5462',1,'stm32l4xx_hal_conf.h']]],
+  ['lse_5fvalue_455',['LSE_VALUE',['../stm32l4xx__hal__conf_8h.html#a7bbb9d19e5189a6ccd0fb6fa6177d20d',1,'stm32l4xx_hal_conf.h']]],
+  ['lsi_5fvalue_456',['LSI_VALUE',['../stm32l4xx__hal__conf_8h.html#a4872023e65449c0506aac3ea6bec99e9',1,'stm32l4xx_hal_conf.h']]]
 ];

@@ -88,9 +88,12 @@ var searchData=
   ['frame_5fcounter_85',['frame_counter',['../structMPI__dataframe__t.html#a27f74635621541244472f378e4ab764d',1,'MPI_dataframe_t']]],
   ['freertos_2ec_86',['freertos.c',['../freertos_8c.html',1,'']]],
   ['freertos_5fetaskstate_5fto_5fstr_87',['freertos_eTaskState_to_str',['../freertos__telecommand__defs_8c.html#a17d065c039d30596e75c4be3df153b76',1,'freertos_telecommand_defs.c']]],
-  ['freertos_5ftelecommand_5fdefs_2ec_88',['freertos_telecommand_defs.c',['../freertos__telecommand__defs_8c.html',1,'']]],
-  ['freertos_5ftelecommand_5fdefs_2eh_89',['freertos_telecommand_defs.h',['../freertos__telecommand__defs_8h.html',1,'']]],
-  ['freertosconfig_2eh_90',['FreeRTOSConfig.h',['../FreeRTOSConfig_8h.html',1,'']]],
-  ['from_20ioc_20file_91',['Pin List (from IOC file)',['../md_docs_2IOC__Pin__List.html',1,'']]],
-  ['full_5fmessage_92',['full_message',['../structLOG__memory__entry__t.html#a51ccb409dc4a3d0107dde3c98a441242',1,'LOG_memory_entry_t']]]
+  ['freertos_5ftask_5fhandles_5farray_88',['FREERTOS_task_handles_array',['../main_8h.html#af2afe97610b1abc88aabcebd628c113c',1,'FREERTOS_task_handles_array:&#160;main.c'],['../main_8c.html#af2afe97610b1abc88aabcebd628c113c',1,'FREERTOS_task_handles_array:&#160;main.c']]],
+  ['freertos_5ftask_5fhandles_5farray_5fsize_89',['FREERTOS_task_handles_array_size',['../main_8h.html#ad5a95d91528cefab40350ada94c38d04',1,'FREERTOS_task_handles_array_size:&#160;main.c'],['../main_8c.html#ad5a95d91528cefab40350ada94c38d04',1,'FREERTOS_task_handles_array_size:&#160;main.c']]],
+  ['freertos_5ftask_5finfo_5fstruct_5ft_90',['FREERTOS_task_info_struct_t',['../structFREERTOS__task__info__struct__t.html',1,'']]],
+  ['freertos_5ftelecommand_5fdefs_2ec_91',['freertos_telecommand_defs.c',['../freertos__telecommand__defs_8c.html',1,'']]],
+  ['freertos_5ftelecommand_5fdefs_2eh_92',['freertos_telecommand_defs.h',['../freertos__telecommand__defs_8h.html',1,'']]],
+  ['freertosconfig_2eh_93',['FreeRTOSConfig.h',['../FreeRTOSConfig_8h.html',1,'']]],
+  ['from_20ioc_20file_94',['Pin List (from IOC file)',['../md_docs_2IOC__Pin__List.html',1,'']]],
+  ['full_5fmessage_95',['full_message',['../structLOG__memory__entry__t.html#a51ccb409dc4a3d0107dde3c98a441242',1,'LOG_memory_entry_t']]]
 ];
