@@ -1,6 +1,6 @@
 #include "telecommands/csp_telecommand_defs.h"
 
-#include "cts_csp_main.h"
+#include "cts_csp/cts_csp_main.h"
 
 
 uint8_t TCMDEXEC_csp_demo_1(
