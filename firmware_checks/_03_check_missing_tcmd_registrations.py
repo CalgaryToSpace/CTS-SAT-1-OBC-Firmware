@@ -30,7 +30,7 @@ def get_tcmdexec_function_name_definition_list() -> list[str]:
 
 def get_tcmdexec_registered_function_name_list() -> list[str]:
     """Get the list of all `TCMDEXEC_` function names in the table."""
-    tcmd_list = parse_telecommand_list_from_repo()
+    tcmd_list = parse_telecommand_list_from_repo(GIT_REPO_ROOT_PATH)
 
     return [tcmd.tcmd_func for tcmd in tcmd_list]
 
