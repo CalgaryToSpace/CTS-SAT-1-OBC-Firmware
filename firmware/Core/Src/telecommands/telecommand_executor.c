@@ -79,6 +79,65 @@ uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd
 }
 
 
+/// @brief Adds a telecommand to the agenda (schedule/queue) of telecommands to execute, with a delay in execution.
+/// @param parsed_tcmd The parsed telecommand to add to the agenda.
+/// @param time_delay_ms The time to delay the telecommand execution.
+/// @return 0 on success, 1 if the agenda is full.
+/// @note Performs a deep copy of the `parsed_tcmd` arg into the agenda.
+uint8_t TCMD_add_delayed_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd, uint32_t time_delay_ms) {
+
+    // Find the first empty slot in the agenda.
+    for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
+        // Skip filled slots.
+        if (TCMD_agenda_is_valid[slot_num]) {
+            continue;
+        }
+
+        // Copy the parsed telecommand into the agenda.
+        TCMD_agenda[slot_num].tcmd_idx = parsed_tcmd->tcmd_idx;
+        TCMD_agenda[slot_num].tcmd_channel = parsed_tcmd->tcmd_channel;
+        TCMD_agenda[slot_num].timestamp_sent = parsed_tcmd->timestamp_sent;
+        TCMD_agenda[slot_num].timestamp_to_execute = (parsed_tcmd->timestamp_to_execute) + time_delay_ms;
+
+        for (uint16_t j = 0; j < TCMD_ARGS_STR_NO_PARENS_SIZE; j++) {
+            TCMD_agenda[slot_num].args_str_no_parens[j] = parsed_tcmd->args_str_no_parens[j];
+        }
+
+        // Mark the slot as valid.
+        TCMD_agenda_is_valid[slot_num] = 1;
+
+        // Incrementing counters used for stats 
+        TCMD_total_tcmd_queued_count++; 
+        TCMD_latest_received_tcmd_timestamp_sent = parsed_tcmd->timestamp_sent;
+
+        // DEBUG_uart_print_str("Telecommand added to agenda at slot ");
+        // DEBUG_uart_print_uint32(slot_num);
+        // DEBUG_uart_print_str("\n");
+        return 0;
+    }
+    return 1;
+}
+
+
+/// @brief Adds a telecommand to the agenda (schedule/queue) of telecommands to execute, and does so repeatedly.
+/// @param parsed_tcmd The parsed telecommand to add to the agenda.
+/// @param repeat_period_ms The period of repetition, in ms.
+/// @param times_to_repeat The number of times to repeat the telecommand.
+/// @return 0 on success, 1 if the agenda is full.
+/// @note Performs a deep copy of the `parsed_tcmd` arg into the agenda.
+uint8_t TCMD_add_repeated_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd, const uint32_t repeat_period_ms, const uint32_t times_to_repeat) {
+    uint32_t times_scheduled = 0;
+
+    while (times_scheduled < times_to_repeat) {
+
+        TCMD_add_delayed_tcmd_to_agenda(parsed_tcmd, times_scheduled * repeat_period_ms);
+
+        times_scheduled++;
+    
+    }
+    return 0;
+}
+
 /// @brief Gets the number of used slots in the agenda.
 /// @return The number of currently-filled slots in the agenda.
 /// @note This function is mostly intended for "system stats" telecommands and logging.
