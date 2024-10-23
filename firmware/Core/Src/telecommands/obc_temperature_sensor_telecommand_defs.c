@@ -18,11 +18,12 @@ uint8_t TCMDEXEC_obc_read_temperature(const char *args_str, TCMD_TelecommandChan
     int32_t temperature;
     uint8_t status;
     uint32_t temp_precision_conversion_delay_ms;
+    uint32_t temp_scaling_factor;
 
     // convert user requested precision
     const uint8_t temp_precision = atoi(args_str);
 
-    status = OBC_TEMP_SENSOR__set_temp_precision(temp_precision, &temp_precision_conversion_delay_ms);
+    status = OBC_TEMP_SENSOR__set_temp_precision(temp_precision, &temp_precision_conversion_delay_ms, &temp_scaling_factor);
     switch (status)
     {
         case 0:
@@ -48,7 +49,7 @@ uint8_t TCMDEXEC_obc_read_temperature(const char *args_str, TCMD_TelecommandChan
     // handle result
     if (success_result == 0)
     {
-        snprintf(response_output_buf, response_output_buf_len, "Temperature(%d bit): %ld\n", temp_precision, temperature);
+        snprintf(response_output_buf, response_output_buf_len, "Temperature(C * %lu): %ld\n", temp_scaling_factor, temperature);
     }
     else
     {

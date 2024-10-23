@@ -110,7 +110,8 @@ int8_t OBC_TEMP_SENSOR__get_temp_precision()
 /// @param temp_precision_conversion_delay_ms
 ///   - Arg 1: pointer to store the conversion delay. 
 /// @return 0 on success, 1 on write error, 2 when passed an invalid precision value.
-uint8_t OBC_TEMP_SENSOR__set_temp_precision(uint8_t arg_precision, uint32_t* temp_precision_conversion_delay_ms)
+uint8_t OBC_TEMP_SENSOR__set_temp_precision(uint8_t arg_precision, uint32_t* temp_precision_conversion_delay_ms,
+                                    uint32_t* temp_scaling_factor)
 {
     HAL_StatusTypeDef status;
     struct Set_Precision_Data precision_data;
@@ -126,6 +127,7 @@ uint8_t OBC_TEMP_SENSOR__set_temp_precision(uint8_t arg_precision, uint32_t* tem
     OBC_TEMP_SENSOR_precision_insignificant_bits = precision_data.precision_insignificant_bits;
     OBC_TEMP_SENSOR_precision_scaling_factor = precision_data.precision_scaling_factor;
     *temp_precision_conversion_delay_ms = precision_data.conversion_delay_ms;
+    *temp_scaling_factor = precision_data.precision_scaling_factor;
 
     // write the precision value to the config register
     status = HAL_I2C_Mem_Write(&hi2c4, OBC_TEMP_SENSOR_device_addr << 1, OBC_TEMP_SENSOR_config_register_addr, 1, &(precision_data.config_write_data), 1, HAL_MAX_DELAY);

@@ -36,7 +36,7 @@ uint8_t OBC_TEMP_SENSOR__read_temperature(int32_t *result);
 int32_t OBC_TEMP_SENSOR__convert_raw_to_deg_c(uint8_t raw_bytes[], uint8_t precision_coefficient, 
                                 Temperature_Sensor_Data_Precision_Insignificant_Bytes_t precision_insignificant_bits, 
                                 uint16_t precision_scaling_factor);
-uint8_t OBC_TEMP_SENSOR__set_temp_precision(uint8_t arg_precision, uint32_t* temp_precision_conversion_delay);
+uint8_t OBC_TEMP_SENSOR__set_temp_precision(uint8_t arg_precision, uint32_t* temp_precision_conversion_delay, uint32_t* temp_scaling_factor);
 uint8_t OBC_TEMP_SENSOR__configure_precision_values(uint8_t arg_precision, struct Set_Precision_Data* precision_data);
 int8_t OBC_TEMP_SENSOR__get_temp_precision(void);
 
