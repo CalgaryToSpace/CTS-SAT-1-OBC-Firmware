@@ -40,14 +40,3 @@ Follow through this guide, and follow through the rest of the numbered guides in
 * Use `LOG_message()` (or `DEBUG_UART_print_str()`, for temporary logs) to print out intermediate values in the code.
 * Use Breakpoints in VS Code to pause execution and explore the stack. Breakpoint are obeyed when you use the "Debug STM32" button to flash the chip.
     * ⚠️ Beware that breakpoints with Embedded Systems can be finicky/cause unpredictable behavior, as they can interfere with interrupts.
-
-## Updating the IOC File/Regenerating Boilerplate
-
-Very few people will need to do this.
-
-The IOC file must be updated using CubeMX instead of STM32CubeIDE now. Feel free to test IOC
-file changes, but do not commit IOC file changes nor auto-generated code changes. Instead, once 
-you've found the ideal configuration, request the changes to a Team Lead (who will make the change 
-directly in the `main` branch).
-
-Then, rebase off of the `main` branch.
