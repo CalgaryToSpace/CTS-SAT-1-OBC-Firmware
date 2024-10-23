@@ -14,6 +14,10 @@
 
 uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd);
 
+uint8_t TCMD_add_delayed_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd, uint32_t time_delay_ms);
+
+uint8_t TCMD_add_repeated_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd, const uint32_t repeat_period_ms, const uint32_t times_to_repeat);
+
 uint16_t TCMD_get_agenda_used_slots_count();
 
 int16_t TCMD_get_last_tcmd_agenda_slot_sent();
