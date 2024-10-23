@@ -4,7 +4,7 @@
 
 #include "obc_temperature_sensor/obc_temperature_sensor.h"
 
-const uint16_t OBC_TEMP_SENSOR_device_addr =  0x91;
+const uint16_t OBC_TEMP_SENSOR_device_addr =  0x48;
 const uint16_t OBC_TEMP_SENSOR_temp_register_addr  = 0x00;
 
 // write to this register to change the precision
@@ -34,7 +34,7 @@ uint8_t OBC_TEMP_SENSOR__read_temperature(int32_t *result)
     uint8_t buf[2];
 
     // read the temperature from the temp register
-    status = HAL_I2C_Mem_Read(&hi2c1, OBC_TEMP_SENSOR_device_addr << 1, OBC_TEMP_SENSOR_temp_register_addr, 1, buf, 2, HAL_MAX_DELAY);
+    status = HAL_I2C_Mem_Read(&hi2c4, OBC_TEMP_SENSOR_device_addr << 1, OBC_TEMP_SENSOR_temp_register_addr, 1, buf, 2, HAL_MAX_DELAY);
     if (status != HAL_OK)
     {
         // read error.
@@ -92,7 +92,7 @@ int8_t OBC_TEMP_SENSOR__get_temp_precision()
     uint8_t precision_mask = 0x60; // 0b01100000
 
 
-    status = HAL_I2C_Mem_Read(&hi2c1, OBC_TEMP_SENSOR_device_addr << 1, OBC_TEMP_SENSOR_config_register_addr, 1, &buf, 1, HAL_MAX_DELAY);
+    status = HAL_I2C_Mem_Read(&hi2c4, OBC_TEMP_SENSOR_device_addr << 1, OBC_TEMP_SENSOR_config_register_addr, 1, &buf, 1, HAL_MAX_DELAY);
     if (status != HAL_OK)
     {
         // return -1 if unable to read from config register
@@ -128,7 +128,7 @@ uint8_t OBC_TEMP_SENSOR__set_temp_precision(uint8_t arg_precision, uint32_t* tem
     *temp_precision_conversion_delay_ms = precision_data.conversion_delay_ms;
 
     // write the precision value to the config register
-    status = HAL_I2C_Mem_Write(&hi2c1, OBC_TEMP_SENSOR_device_addr << 1, OBC_TEMP_SENSOR_config_register_addr, 1, &(precision_data.config_write_data), 1, HAL_MAX_DELAY);
+    status = HAL_I2C_Mem_Write(&hi2c4, OBC_TEMP_SENSOR_device_addr << 1, OBC_TEMP_SENSOR_config_register_addr, 1, &(precision_data.config_write_data), 1, HAL_MAX_DELAY);
     if (status != HAL_OK)
     {
         // write error
