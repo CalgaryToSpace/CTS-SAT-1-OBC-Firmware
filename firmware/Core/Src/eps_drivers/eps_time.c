@@ -4,10 +4,6 @@
 
 #include <stdlib.h>
 
-/// @brief If the absolute EPS time delta between the OBC and the EPS is greater than this value,
-///        the EPS will be updated to match the OBC's time.
-uint32_t EPS_min_time_delta_to_update_eps_time_sec = 5;
-
 
 /// @brief Sets the EPS's time, based on the OBC's current time.
 /// @return 0 on success, >0 on failure.
@@ -24,13 +20,8 @@ uint8_t EPS_set_eps_time_based_on_obc_time() {
         return 1;
     }
     
-    const int32_t delta_seconds = (TIM_get_current_unix_epoch_time_ms() / 1000) - ((int64_t) status.unix_time_sec);
-
-    // No need to update the time if the delta is less than the minimum value.
-    // This prevents unnecessary time updates and jitter.
-    if (abs(delta_seconds) < EPS_min_time_delta_to_update_eps_time_sec) {
-        return 0;
-    }
+    // +500ms has the same effect as rounding properly in a float division.
+    const int32_t delta_seconds = ((TIM_get_current_unix_epoch_time_ms() + 500) / 1000) - ((int64_t) status.unix_time_sec);
 
     const uint8_t result_sync = EPS_CMD_correct_time(delta_seconds);
     LOG_message(
