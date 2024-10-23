@@ -281,7 +281,7 @@ int main(void)
   
   TASK_service_eps_watchdog_Handle = osThreadNew(TASK_service_eps_watchdog, NULL, &TASK_service_eps_watchdog_Attributes);
 
-  TASK_sync_eps_time_to_mcu_time_Handle = osThreadNew(TASK_sync_eps_time_to_mcu_time, NULL, &TASK_sync_eps_time_to_mcu_time_Attributes);
+  TASK_sync_eps_time_Handle = osThreadNew(TASK_sync_eps_time, NULL, &TASK_sync_eps_time_Attributes);
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */

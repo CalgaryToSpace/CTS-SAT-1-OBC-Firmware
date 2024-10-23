@@ -527,7 +527,7 @@ uint8_t TCMDEXEC_eps_sync_time_to_obc_time(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len) 
 {
-    const uint8_t result = EPS_TIME_sync_eps_time_to_obc_time();
+    const uint8_t result = EPS_set_eps_time_to_obc_time();
     if (result != 0 ) {
         snprintf(response_output_buf, response_output_buf_len,
         "syncing eps time failed");
