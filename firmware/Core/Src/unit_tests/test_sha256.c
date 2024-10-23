@@ -1,7 +1,7 @@
 #include "unit_tests/unit_test_helpers.h"
 #include <stdint.h>
 #include "unit_tests/sha256_unit_test_cases.h"
-#include "transforms/sha256.h"
+#include "crypto/sha256.h"
 #include <string.h>
 #include "debug_tools/debug_uart.h"
 #include "time.h"

@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include "transforms/sha256.h"
+#include "crypto/sha256.h"
 #include "log/log.h"
 /*
  * @brief compute sha256 hash for an array of bytes of length *message_length*, store the result in digest
