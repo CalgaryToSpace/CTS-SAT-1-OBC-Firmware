@@ -4,7 +4,7 @@
 #include "debug_tools/debug_uart.h"
 #include "../../Middlewares/Third_Party/STM32_Cryptographic/include/cmox_crypto.h"
 
-uint8_t compute_sha256_hash(uint8_t* message, size_t message_length, uint8_t* digest);
+uint8_t CRYPT_compute_sha256_hash(uint8_t* message, size_t message_length, uint8_t* digest);
 
 
 

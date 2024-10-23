@@ -391,9 +391,9 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func_name = "ANT_convert_raw_temp_to_cCelsius"
     },
     {
-        .test_func = TEST_EXEC__compute_sha256_hash,
+        .test_func = TEST_EXEC__CRYPT_compute_sha256_hash,
         .test_file = "transforms/sha256",
-        .test_func_name ="TEST_EXEC__compute_sha256_hash"
+        .test_func_name ="TEST_EXEC__CRYPT_compute_sha256_hash"
     }
 };
 
