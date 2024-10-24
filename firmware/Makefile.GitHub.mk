@@ -154,7 +154,8 @@ C_INCLUDES =  \
 -IMiddlewares/ST/ST_Cryptolib/Inc/TDES/CBC \
 -IMiddlewares/ST/ST_Cryptolib/Inc/TDES/Common \
 -IMiddlewares/ST/ST_Cryptolib/Inc/TDES/ECB \
--IMiddlewares/ST/ST_Cryptolib/X509/Inc
+-IMiddlewares/ST/ST_Cryptolib/X509/Inc \
+-IMiddlewares/Third_Party/STM32_Cryptographic/include \
 
 
 # compile gcc flags
