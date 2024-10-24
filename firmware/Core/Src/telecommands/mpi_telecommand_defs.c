@@ -87,3 +87,30 @@ uint8_t TCMDEXEC_mpi_send_command_hex(const char *args_str, TCMD_TelecommandChan
 
     return cmd_response;
 }
+
+/// @brief 
+/// @param args_str 
+/// @param tcmd_channel 
+/// @param response_output_buf 
+/// @param response_output_buf_len 
+/// @return 
+uint8_t TCMDEXEC_mpi_enable_active_mode(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                      char *response_output_buf, uint16_t response_output_buf_len) {
+    // TODO:
+    // Start a file with the "recording start time" timestamp.
+    // Collect the data and write it to the filesystem.
+    // Monitor temperature (from EPS), and stop experiment early if too hot
+    // Monitor temperature (from MPI), and stop experiment early if too hot
+}
+
+/// @brief 
+/// @param args_str 
+/// @param tcmd_channel 
+/// @param response_output_buf 
+/// @param response_output_buf_len 
+/// @return 
+uint8_t TCMDEXEC_mpi_disable_active_mode(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                      char *response_output_buf, uint16_t response_output_buf_len) {
+    // TODO:
+    // Disable active mode / turn off mpi if actively running
+}
