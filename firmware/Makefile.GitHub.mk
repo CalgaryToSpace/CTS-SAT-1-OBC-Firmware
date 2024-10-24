@@ -182,8 +182,8 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 LDSCRIPT = STM32L4R5ZITx_FLASH.ld
 
 # libraries
-LIBS = -lc -lm -lnosys 
-LIBDIR = \
+LIBS = -lc -lm -lnosys -lSTM32Cryptographic_CM4
+LIBDIR = -LMiddlewares/Third_Party/STM32_Cryptographic/lib
 
 
 # CTS: Additional LD Flags from config file
