@@ -154,7 +154,8 @@ C_INCLUDES =  \
 -IMiddlewares/ST/ST_Cryptolib/Inc/TDES/CBC \
 -IMiddlewares/ST/ST_Cryptolib/Inc/TDES/Common \
 -IMiddlewares/ST/ST_Cryptolib/Inc/TDES/ECB \
--IMiddlewares/ST/ST_Cryptolib/X509/Inc
+-IMiddlewares/ST/ST_Cryptolib/X509/Inc \
+-IMiddlewares/Third_Party/STM32_Cryptographic/include \
 
 
 # compile gcc flags
@@ -181,8 +182,8 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 LDSCRIPT = STM32L4R5ZITx_FLASH.ld
 
 # libraries
-LIBS = -lc -lm -lnosys 
-LIBDIR = \
+LIBS = -lc -lm -lnosys -lSTM32Cryptographic_CM4
+LIBDIR = -LMiddlewares/Third_Party/STM32_Cryptographic/lib
 
 
 # CTS: Additional LD Flags from config file
