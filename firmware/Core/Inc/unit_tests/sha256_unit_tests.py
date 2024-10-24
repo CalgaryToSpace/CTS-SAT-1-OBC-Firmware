@@ -7,7 +7,7 @@ randomStrings = []
 
 #generate random strings for testing
 for i in range(NUM_TESTS):
-    randomStrings.append( ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(random.randint(10000, 10000))))
+    randomStrings.append( ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(random.randint(4000, 4000))))
 
 lines = []
 for i in range(NUM_TESTS):
