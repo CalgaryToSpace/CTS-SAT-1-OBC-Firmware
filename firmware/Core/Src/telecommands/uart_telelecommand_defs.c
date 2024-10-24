@@ -59,7 +59,7 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
     UART_HandleTypeDef *UART_handle_ptr;                    // Pointer to selected UART handle
     volatile uint16_t *UART_rx_buffer_write_idx_ptr;        // Pointer to write index for selected UART rx buffer
     volatile uint8_t *UART_rx_buffer;                       // Pointer to selected UART rx buffer
-    const uint16_t *UART_rx_buffer_len_ptr;                 // Pointer to the length of the selected UART rx buffer //TODO: Need to implement a check to make sure the UART handler buffers have the capacity needed
+    const uint16_t *UART_rx_buffer_size_ptr;                // Pointer to the length of the selected UART rx buffer
     volatile uint32_t *UART_last_write_time_ms_ptr;         // Pointer to selected UART last write time in ms
     LOG_system_enum_t LOG_source = LOG_SYSTEM_TELECOMMAND;  // Slected system log source
     
@@ -68,9 +68,10 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
 
         // Set log source
         LOG_source = LOG_SYSTEM_MPI;
+        UART_rx_buffer_size_ptr = &UART_mpi_buffer_len;
 
         // Transmit bytes and receive response (DMA enabled reception)
-        const uint8_t MPI_tx_rx_status = MPI_send_telecommand_get_response(tx_buffer, tx_buffer_len, rx_buffer, rx_buffer_max_size, &rx_buffer_len);
+        const uint8_t MPI_tx_rx_status = MPI_send_telecommand_get_response(tx_buffer, tx_buffer_len, rx_buffer, *UART_rx_buffer_size_ptr, &rx_buffer_len);
 
         // Log successful transmission and print rx_buffer response in hex (uint8_t)
         char rx_buffer_str[rx_buffer_len*3];
@@ -137,7 +138,7 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
         UART_handle_ptr = UART_camera_port_handle;
         UART_rx_buffer_write_idx_ptr = &UART_camera_buffer_write_idx;
         UART_rx_buffer = &UART_camera_buffer[0];
-        UART_rx_buffer_len_ptr = &UART_camera_buffer_len;       // TODO: Need to implement a check to make sure the UART handler buffers have the capacity needed
+        UART_rx_buffer_size_ptr = &UART_camera_buffer_len;
         UART_camera_is_expecting_data = 1;
         UART_last_write_time_ms_ptr = &UART_camera_last_write_time_ms;
         LOG_source = LOG_SYSTEM_TELECOMMAND;                    // TODO: CAMERA is not a system log source, Currently set to TELECOMMAND for the time being
@@ -151,7 +152,7 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
             UART_handle_ptr = UART_lora_port_handle;
             UART_rx_buffer_write_idx_ptr = &UART_lora_buffer_write_idx;
             UART_rx_buffer = UART_lora_buffer;
-            UART_rx_buffer_len_ptr = &UART_lora_buffer_len;     // TODO: Need to implement a check to make sure the UART handler buffers have the capacity needed
+            UART_rx_buffer_size_ptr = &UART_lora_buffer_len;
             UART_lora_is_expecting_data = 1;
             UART_last_write_time_ms_ptr = &UART_lora_last_write_time_ms;
             LOG_source = LOG_SYSTEM_TELECOMMAND;                // TODO: LORA is not a system log source, Currently set to TELECOMMAND for the time being
@@ -162,7 +163,7 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
             UART_handle_ptr = UART_gps_port_handle;
             UART_rx_buffer_write_idx_ptr = &UART_gps_buffer_write_idx;
             UART_rx_buffer = UART_gps_buffer;
-            UART_rx_buffer_len_ptr = &UART_gps_buffer_len;      // TODO: Need to implement a check to make sure the UART handler buffers have the capacity needed
+            UART_rx_buffer_size_ptr = &UART_gps_buffer_len;
             UART_last_write_time_ms_ptr = &UART_gps_last_write_time_ms;
             LOG_source = LOG_SYSTEM_GPS;
         }
@@ -172,7 +173,7 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
             UART_handle_ptr = UART_eps_port_handle;
             UART_rx_buffer_write_idx_ptr = &UART_eps_buffer_write_idx;
             UART_rx_buffer = UART_eps_buffer;
-            UART_rx_buffer_len_ptr = &UART_eps_buffer_len;      // TODO: Need to implement a check to make sure the UART handler buffers have the capacity needed
+            UART_rx_buffer_size_ptr = &UART_eps_buffer_len;
             UART_eps_is_expecting_data = 1;
             UART_last_write_time_ms_ptr = &UART_eps_last_write_time_ms;
             LOG_source = LOG_SYSTEM_EPS;
@@ -191,8 +192,8 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
         // Reset UART buffer write index
         *UART_rx_buffer_write_idx_ptr = 0;
 
-        // Clear the MPI response buffer (Note: Can't use memset because UART_rx_buffer is Volatile)
-        for (uint16_t i = 0; i < *UART_rx_buffer_len_ptr; i++) {
+        // Clear the response buffer (Note: Can't use memset because UART_rx_buffer is Volatile)
+        for (uint16_t i = 0; i < *UART_rx_buffer_size_ptr; i++) {
             UART_rx_buffer[i] = 0;
         }
 
@@ -224,8 +225,8 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
 
         // Receive from peripheral until a timeout event
         while (1) {
-            // Check if we have received upto max buffer size
-            if (*UART_rx_buffer_write_idx_ptr >= rx_buffer_max_size) {
+            // Check if we have received upto max UART rx buffer size
+            if (*UART_rx_buffer_write_idx_ptr >= *UART_rx_buffer_size_ptr) {
                 break;
             }
 
