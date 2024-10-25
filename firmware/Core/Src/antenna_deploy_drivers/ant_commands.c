@@ -294,13 +294,13 @@ uint8_t ANT_CMD_report_antenna_deployment_activation_count(enum ANT_i2c_bus_mcu 
     return status;
 }
 
-/// @brief writes the cumulative time (in 50ms increments) that the deployment system has been active (for a specified antenna and mcu) in a response buffer.
+/// @brief writes the cumulative time (in ms increments) that the deployment system has been active (for a specified antenna and mcu) in a response buffer.
 /// @param i2c_bus_mcu specifies which mcu on the antenna deployment system to transmit to, and which i2c bus to use
 /// @param antenna the antenna to check. A number between 1-4
-/// @param response a 2 byte buffer where the cumulative deployment time (in 50ms increments) will be written. divide the response by 20 to get seconds.
+/// @param result_ms a 2 byte buffer where the cumulative deployment time (in ms increments) will be written. divide the response by 20 to get seconds.
 /// @return 0 when the antenna deployment system has received the command, >0 otherwise
 /// @note data written to the result buffer is only valid if 0 was returned. One should check this before using the result.
-uint8_t ANT_CMD_report_antenna_deployment_activation_time(enum ANT_i2c_bus_mcu i2c_bus_mcu, uint8_t antenna, uint16_t *result) {
+uint8_t ANT_CMD_get_antenna_deployment_activation_time(enum ANT_i2c_bus_mcu i2c_bus_mcu, uint8_t antenna, uint32_t *result_ms) {
     const uint8_t CMD_BUFF_SIZE = 1;
     uint8_t cmd_buf[CMD_BUFF_SIZE];
 
@@ -326,14 +326,13 @@ uint8_t ANT_CMD_report_antenna_deployment_activation_time(enum ANT_i2c_bus_mcu i
             );
             return 1;
     }
-
     uint8_t status = ANT_send_cmd(i2c_bus_mcu, cmd_buf, CMD_BUFF_SIZE); 
     if(status == 0) {
         const uint8_t response_len = 2; 
-        uint8_t response[2];
-        status = ANT_get_response(i2c_bus_mcu, response, response_len);
-
-        *result = (response[1] << 8) | response[0];
+        uint8_t response_ms[2];
+        status = ANT_get_response(i2c_bus_mcu, response_ms, response_len);
+        *result_ms = (response_ms[1] << 8) | response_ms[0];
+        *result_ms *= 50;
     }
     return status;
 }

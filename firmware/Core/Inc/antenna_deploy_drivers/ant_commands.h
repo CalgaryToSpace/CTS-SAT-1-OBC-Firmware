@@ -33,7 +33,7 @@ uint8_t ANT_CMD_measure_temp(enum ANT_i2c_bus_mcu i2c_bus_mcu, uint16_t *result)
 int16_t ANT_convert_raw_temp_to_cCelsius(uint16_t measurement);
 uint8_t ANT_CMD_report_deployment_status(enum ANT_i2c_bus_mcu i2c_bus_mcu, struct Antenna_deployment_status *response);
 uint8_t ANT_CMD_report_antenna_deployment_activation_count(enum ANT_i2c_bus_mcu i2c_bus_mcu, uint8_t antenna, uint8_t *response);
-uint8_t ANT_CMD_report_antenna_deployment_activation_time(enum ANT_i2c_bus_mcu i2c_bus_mcu, uint8_t antenna, uint16_t *result);
+uint8_t ANT_CMD_get_antenna_deployment_activation_time(enum ANT_i2c_bus_mcu i2c_bus_mcu, uint8_t antenna, uint32_t *result);
 
 
 
