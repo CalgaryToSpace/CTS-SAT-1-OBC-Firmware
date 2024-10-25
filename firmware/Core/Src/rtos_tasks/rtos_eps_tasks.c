@@ -54,16 +54,19 @@ void TASK_service_eps_watchdog(void *argument) {
     }
 }
 
-
-void TASK_sync_eps_time(void *argument) {
+/*
+* @brief on boot this thread sets the obc time to the eps time. After that it periodically
+* checks the obc time against the eps time and logs when they diverge by more than 10 seconds.
+*/
+void TASK_time_watchdog(void *argument) {
     TASK_HELP_start_of_task();
 
     // Run on boot after 5000ms, but only run every 45 seconds in normal operation.
-
     uint32_t sleep_duration_ms = 5000;
     while(1) {
         // osDelay must be at the top of the while(1) loop so that `continue;` doesn't skip it.
         osDelay(sleep_duration_ms);
+
 
         // First, try to sync EPS-to-OBC for the initial boot (or in case stuff gets funky later).
         if (TIM_last_synchronization_source == TIM_SOURCE_NONE) {
@@ -73,8 +76,15 @@ void TASK_sync_eps_time(void *argument) {
                 LOG_SINK_ALL,
                 "Setting OBC time based on EPS time because last_source == TIM_SOURCE_NONE"
             );
-            // TODO: Check return result.
-            EPS_set_obc_time_based_on_eps_time();
+
+            if (EPS_set_obc_time_based_on_eps_time() != 0) {
+                LOG_message(
+                    LOG_SYSTEM_EPS,
+                    LOG_SEVERITY_ERROR,
+                    LOG_SINK_ALL,
+                    "EPS_set_obc_time_based_on_eps_time() -> Error"
+                );
+            }
             continue;
         }
         // If the OBC's time is ever somehow less than 2010-01-01T00:00:00Z, then sync to EPS time.
@@ -85,30 +95,43 @@ void TASK_sync_eps_time(void *argument) {
                 LOG_SINK_ALL,
                 "Setting OBC time based on EPS time because current time < 2010-01-01"
             );
-            // TODO: Check return result.
-            EPS_set_obc_time_based_on_eps_time();
+            if (EPS_set_obc_time_based_on_eps_time() != 0) {
+                LOG_message(
+                    LOG_SYSTEM_EPS,
+                    LOG_SEVERITY_ERROR,
+                    LOG_SINK_ALL,
+                    "EPS_set_obc_time_based_on_eps_time() -> Error"
+                );
+            }
             continue;
         }
 
-        // For all subsequent runs, sleep for 45 seconds.
-        sleep_duration_ms = 45000;
+        // For all subsequent runs, sleep for 30 mins.
+        sleep_duration_ms = 1800000; 
       
-        const uint8_t result = EPS_set_eps_time_based_on_obc_time();
-        if (result != 0) {
+        EPS_struct_system_status_t status;
+        const uint8_t result_status = EPS_CMD_get_system_status(&status);
+        if (result_status != 0) {
             LOG_message(
                 LOG_SYSTEM_EPS,
                 LOG_SEVERITY_ERROR,
                 LOG_SINK_ALL,
-                "EPS_set_eps_time_based_on_obc_time() -> Error: %d", result
+                "EPS_CMD_get_system_status() -> Error: %d",
+                result_status
             );
             continue;
         }
-
-        LOG_message(
-            LOG_SYSTEM_EPS,
-            LOG_SEVERITY_NORMAL, 
-            LOG_SINK_ALL,
-            "EPS_set_eps_time_based_on_obc_time() -> Success."
-        );
+        const uint64_t eps_time_sec = status.unix_time_sec;
+        const uint64_t obc_time_sec = TIM_get_current_unix_epoch_time_ms() / 1000;
+        const int32_t delta_seconds = obc_time_sec - eps_time_sec;
+        if (abs(delta_seconds) > 10) {
+            LOG_message(
+                LOG_SYSTEM_EPS,
+                LOG_SEVERITY_WARNING,
+                LOG_SINK_ALL,
+                "Warning: EPS time and OBC time differ by more than 10 seconds. \n EPS time seconds: %lu,\n OBC time seconds: %lu",
+                eps_time_sec, obc_time_sec
+            );
+        }
     } // End of task while loop
 }
