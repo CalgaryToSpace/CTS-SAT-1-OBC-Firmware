@@ -102,8 +102,8 @@ Updating the IOC File in the <code>main</code> Branch</h1>
 <li>Commit with just the "IOC file update" message, describing the changes (into a feature branch for just that IOC file update).</li>
 <li>Click the "Generate Code" button.</li>
 <li><b>Quirky Step 1:</b> Revert linker script regeneration (discard changes using git), as we have changes in it.</li>
-<li><b>Quirky Step 2:</b> Remove <code>x509.c</code> and <code>x509_crypto.c</code> files as they get created, as they don't build correctly.</li>
 <li>Commit all this generated code, in a separate commit.</li>
+<li><b>Quirky Step 2:</b> Using the <code>meld</code> tool, you may have to copy changes from Makefile to <code>Makefile.GitHub.mk</code>.</li>
 <li>Push the feature branch. PR to main. Squash and merge. </li>
 </ol>
 </div></div><!-- contents -->

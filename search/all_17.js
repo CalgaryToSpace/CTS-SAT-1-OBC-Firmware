@@ -24,9 +24,8 @@ var searchData=
   ['rst_5fcnt_5fmcu_21',['rst_cnt_mcu',['../structEPS__struct__system__status__t.html#aa88d45928afb6a7a579607195f941ffa',1,'EPS_struct_system_status_t']]],
   ['rst_5fcnt_5fpwron_22',['rst_cnt_pwron',['../structEPS__struct__system__status__t.html#a5fe5b19dc93ac0643ba8cea2004a74a9',1,'EPS_struct_system_status_t']]],
   ['rst_5fcnt_5fwdg_23',['rst_cnt_wdg',['../structEPS__struct__system__status__t.html#af19a899c90cac95ce62a90b958551535',1,'EPS_struct_system_status_t']]],
-  ['rte_5fcomponents_2eh_24',['RTE_Components.h',['../RTE__Components_8h.html',1,'']]],
-  ['rtos_5ftask_5fhelpers_2ec_25',['rtos_task_helpers.c',['../rtos__task__helpers_8c.html',1,'']]],
-  ['rtos_5ftask_5fhelpers_2eh_26',['rtos_task_helpers.h',['../rtos__task__helpers_8h.html',1,'']]],
-  ['rtos_5ftasks_2ec_27',['rtos_tasks.c',['../rtos__tasks_8c.html',1,'']]],
-  ['rtos_5ftasks_2eh_28',['rtos_tasks.h',['../rtos__tasks_8h.html',1,'']]]
+  ['rtos_5ftask_5fhelpers_2ec_24',['rtos_task_helpers.c',['../rtos__task__helpers_8c.html',1,'']]],
+  ['rtos_5ftask_5fhelpers_2eh_25',['rtos_task_helpers.h',['../rtos__task__helpers_8h.html',1,'']]],
+  ['rtos_5ftasks_2ec_26',['rtos_tasks.c',['../rtos__tasks_8c.html',1,'']]],
+  ['rtos_5ftasks_2eh_27',['rtos_tasks.h',['../rtos__tasks_8h.html',1,'']]]
 ];

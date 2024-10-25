@@ -6,10 +6,10 @@ var indexSectionsWithContent =
   3: "034_abcdefilmnrstu",
   4: "_abcdefghilmnorstuv",
   5: "_abcdefghilmnopqrstuvwxyz",
-  6: "aflst",
+  6: "alst",
   7: "aeflmst",
   8: "aeflmst",
-  9: "acdefhilmpstuvwx",
+  9: "acdefhilmptuvwx",
   10: "cs",
   11: "1cdefgilnoprstu"
 };
