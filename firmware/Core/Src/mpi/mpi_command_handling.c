@@ -34,7 +34,7 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
     // Set the MPI transceiver to MOSI mode
     MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MOSI);
     
-    // Assert: MPI_rx_buffer_max_size is > the length of the bytes_to_send_len + 1 to receive the command echo
+    // Assert: MPI_rx_buffer_max_size is >= the length of the bytes_to_send_len + 1 to receive the command echo
     if (MPI_rx_buffer_max_size < (bytes_to_send_len + 1)) return 8;     // Error code: Not enough space in the MPI response buffer
     
     // Store the original MPI mode, then set MPI to command mode.

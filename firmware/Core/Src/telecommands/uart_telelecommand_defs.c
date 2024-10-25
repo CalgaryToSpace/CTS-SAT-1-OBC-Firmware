@@ -52,16 +52,17 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
     }
     
     // Allocate space to receive incoming response      
-    uint16_t rx_buffer_len = 0;                             // Length of rx buffer
-    memset(rx_buffer, 0, rx_buffer_max_size);               // Initialize all elements to 0
+    uint16_t rx_buffer_len = 0;                                
+    memset(rx_buffer, 0, rx_buffer_max_size);                   
 
-    // Assign UART Handler variables to handle reception according to selected peripheral (Interrupt case only in this function)
-    UART_HandleTypeDef *UART_handle_ptr;                    // Pointer to selected UART handle
-    volatile uint16_t *UART_rx_buffer_write_idx_ptr;        // Pointer to write index for selected UART rx buffer
-    volatile uint8_t *UART_rx_buffer;                       // Pointer to selected UART rx buffer
-    const uint16_t *UART_rx_buffer_size_ptr;                // Pointer to the length of the selected UART rx buffer
-    volatile uint32_t *UART_last_write_time_ms_ptr;         // Pointer to selected UART last write time in ms
-    LOG_system_enum_t LOG_source = LOG_SYSTEM_TELECOMMAND;  // Slected system log source
+    // Assign pointers to UART reception variables to unify the interface (Interrupt case only in this function)
+    UART_HandleTypeDef *UART_handle_ptr;                        
+    volatile uint16_t *UART_rx_buffer_write_idx_ptr;            
+    volatile uint8_t *UART_rx_buffer;
+    const uint16_t *UART_rx_buffer_size_ptr;
+    volatile uint32_t *UART_last_write_time_ms_ptr;
+
+    LOG_system_enum_t LOG_source = LOG_SYSTEM_TELECOMMAND;
     
     // UART 1 selected (MPI)
     if(strcasecmp(arg_uart_port_name, "MPI") == 0) {
@@ -141,7 +142,7 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
         UART_rx_buffer_size_ptr = &UART_camera_buffer_len;
         UART_camera_is_expecting_data = 1;
         UART_last_write_time_ms_ptr = &UART_camera_last_write_time_ms;
-        LOG_source = LOG_SYSTEM_TELECOMMAND;                    // TODO: CAMERA is not a system log source, Currently set to TELECOMMAND for the time being
+        LOG_source = LOG_SYSTEM_BOOM; // Camera is related to the Boom experiment and should hence share the log source
     }
 
     // UART 2,3 & 5 use interrupt based reception, set UART handle and buffers according to selection
@@ -155,7 +156,7 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
             UART_rx_buffer_size_ptr = &UART_lora_buffer_len;
             UART_lora_is_expecting_data = 1;
             UART_last_write_time_ms_ptr = &UART_lora_last_write_time_ms;
-            LOG_source = LOG_SYSTEM_TELECOMMAND;                // TODO: LORA is not a system log source, Currently set to TELECOMMAND for the time being
+            LOG_source = LOG_SYSTEM_TELECOMMAND; // TODO:LORA is not a system log source, Currently set to TELECOMMAND for the time being
         }
 
         // UART 3 Selected (GPS)
@@ -244,10 +245,16 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
             }
             // We have received some data but timed out (in between bytes / end of reception)
             else {
-                const uint32_t current_time = HAL_GetTick();            // Get current time
+                const uint32_t current_time = HAL_GetTick();                    // Get current time
+
+                // Get last write time (Required to dereference volatile pointer here to prevent race 
+                // condition in the folllowing if statement)
+                const uint32_t last_write_time = *UART_last_write_time_ms_ptr;  
+
+                // Check if we have timed out while receiving bytes
                 if (
-                    (current_time > *UART_last_write_time_ms_ptr)       // Important seemingly-obvious safety check.
-                    && ((current_time - *UART_last_write_time_ms_ptr) > RX_TIMEOUT_BETWEEN_BYTES_MS)
+                    (current_time > last_write_time)       // Important seemingly-obvious safety check.
+                    && ((current_time - last_write_time) > RX_TIMEOUT_BETWEEN_BYTES_MS)
                 ) {
                     rx_buffer_len = *UART_rx_buffer_write_idx_ptr;      // Set the length of the response buffer
                     break;
