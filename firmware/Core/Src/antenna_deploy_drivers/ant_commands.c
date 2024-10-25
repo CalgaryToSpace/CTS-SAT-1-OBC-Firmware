@@ -300,7 +300,7 @@ uint8_t ANT_CMD_report_antenna_deployment_activation_count(enum ANT_i2c_bus_mcu 
 /// @param result_ms a 2 byte buffer where the cumulative deployment time (in ms increments) will be written. divide the response by 20 to get seconds.
 /// @return 0 when the antenna deployment system has received the command, >0 otherwise
 /// @note data written to the result buffer is only valid if 0 was returned. One should check this before using the result.
-uint8_t ANT_CMD_report_antenna_deployment_activation_time(enum ANT_i2c_bus_mcu i2c_bus_mcu, uint8_t antenna, uint32_t *result_ms) {
+uint8_t ANT_CMD_get_antenna_deployment_activation_time(enum ANT_i2c_bus_mcu i2c_bus_mcu, uint8_t antenna, uint32_t *result_ms) {
     const uint8_t CMD_BUFF_SIZE = 1;
     uint8_t cmd_buf[CMD_BUFF_SIZE];
 
