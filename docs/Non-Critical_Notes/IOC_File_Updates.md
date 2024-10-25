@@ -21,6 +21,6 @@ Then, rebase off of the `main` branch, or merge `main` into your branch.
 3. Commit with just the "IOC file update" message, describing the changes (into a feature branch for just that IOC file update).
 4. Click the "Generate Code" button.
 6. **Quirky Step 1:** Revert linker script regeneration (discard changes using git), as we have changes in it.
-7. **Quirky Step 2:** Remove `x509.c` and `x509_crypto.c` files as they get created, as they don't build correctly.
 8. Commit all this generated code, in a separate commit.
-9. Push the feature branch. PR to main. Squash and merge.
+9. **Quirky Step 2:** Using the `meld` tool, you may have to copy changes from Makefile to `Makefile.GitHub.mk`.
+10. Push the feature branch. PR to main. Squash and merge.
