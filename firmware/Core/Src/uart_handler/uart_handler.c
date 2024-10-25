@@ -14,51 +14,51 @@ UART_HandleTypeDef *UART_eps_port_handle = &huart5;
 
 // UART telecommand buffer
 const uint16_t UART_telecommand_buffer_len = 256;           // extern
-volatile uint8_t UART_telecommand_buffer[256];              // extern       //TODO: confirm that this volatile means that the contents are volatile but the pointer is not
+volatile uint8_t UART_telecommand_buffer[256];              // extern       // TODO: confirm that this volatile means that the contents are volatile but the pointer is not
 volatile uint16_t UART_telecommand_buffer_write_idx = 0;    // extern
 volatile uint32_t UART_telecommand_last_write_time_ms = 0;  // extern
 volatile uint8_t UART_telecommand_buffer_last_rx_byte = 0;  // not an extern
 
 // UART MPI buffer
 // TODO: Update buffer sizes to accomodate for incoming science data. Currently only configured for config commands
-const uint16_t UART_mpi_buffer_len = 5120;                  // extern       //Note: Max possible MPI response buffer size allocated to 50 bytes (Considering for the telecommand echo response, NOT science data.
-volatile uint8_t UART_mpi_buffer[5120];                     // extern
+const uint16_t UART_mpi_buffer_len = 256;                   // extern       //Note: Max possible MPI response buffer size allocated to 50 bytes (Considering for the telecommand echo response, NOT science data.
+volatile uint8_t UART_mpi_buffer[256];                      // extern
 volatile uint8_t UART_mpi_last_rx_byte = 0;                 // extern
 volatile uint32_t UART_mpi_last_write_time_ms = 0;          // extern
 volatile uint16_t UART_mpi_buffer_write_idx = 0;            // extern
 
 // UART LORA buffer                                 
 //TODO: Configure with peripheral required specifications
-const uint16_t UART_lora_buffer_len = 5120;                 // extern
-volatile uint8_t UART_lora_buffer[5120];                    // extern
+const uint16_t UART_lora_buffer_len = 1024;                 // extern       // TODO: Set based on expected size requirements for reception
+volatile uint8_t UART_lora_buffer[1024];                    // extern
 volatile uint16_t UART_lora_buffer_write_idx = 0;           // extern
 volatile uint32_t UART_lora_last_write_time_ms = 0;         // extern
-volatile uint8_t UART_lora_is_expecting_data = 0;           // extern;      //TODO: Set to 1 when a command is sent, and we're awaiting a response
+volatile uint8_t UART_lora_is_expecting_data = 0;           // extern;      // TODO: Set to 1 when a command is sent, and we're awaiting a response
 volatile uint8_t UART_lora_buffer_last_rx_byte = 0;         // not an extern
 
 // UART GPS buffer
 // TODO: Configure with peripheral required specifications
-const uint16_t UART_gps_buffer_len = 5120;                  // extern
-volatile uint8_t UART_gps_buffer[5120];                     // extern
+const uint16_t UART_gps_buffer_len = 1024;                  // extern       // TODO: Set based on expected size requirements for reception
+volatile uint8_t UART_gps_buffer[1024];                     // extern
 volatile uint16_t UART_gps_buffer_write_idx = 0;            // extern
 volatile uint32_t UART_gps_last_write_time_ms = 0;          // extern
 volatile uint8_t UART_gps_buffer_last_rx_byte = 0;          // not an extern
 
 // UART CAMERA buffer
 // TODO: Configure with peripheral required specifications
-const uint16_t UART_camera_buffer_len = 5120;               // extern
-volatile uint8_t UART_camera_buffer[5120];                  // extern       //TODO: confirm that this volatile means that the contents are volatile but the pointer is not
+const uint16_t UART_camera_buffer_len = 1024;               // extern       // TODO: Set based on expected size requirements for reception
+volatile uint8_t UART_camera_buffer[1024];                  // extern       // TODO: confirm that this volatile means that the contents are volatile but the pointer is not
 volatile uint16_t UART_camera_buffer_write_idx = 0;         // extern
 volatile uint32_t UART_camera_last_write_time_ms = 0;       // extern
-volatile uint8_t UART_camera_is_expecting_data = 0;         // extern       //TODO: Set to 1 when a command is sent, and we're awaiting a response
+volatile uint8_t UART_camera_is_expecting_data = 0;         // extern       // TODO: Set to 1 when a command is sent, and we're awaiting a response
 volatile uint8_t UART_camera_buffer_last_rx_byte = 0;       // extern
 
 // UART EPS buffer
-const uint16_t UART_eps_buffer_len = 5120;                  // extern       //Note: 286 bytes max response, plus a bit for safety and tags is expected
-volatile uint8_t UART_eps_buffer[5120];                     // extern
+const uint16_t UART_eps_buffer_len = 310;                   // extern       // Note: 286 bytes max response, plus a bit for safety and tags is expected
+volatile uint8_t UART_eps_buffer[310];                      // extern
 volatile uint16_t UART_eps_buffer_write_idx = 0;            // extern
 volatile uint32_t UART_eps_last_write_time_ms = 0;          // extern
-volatile uint8_t UART_eps_is_expecting_data = 0;            // extern       //Note: set to 1 when a command is sent, and we're awaiting a response
+volatile uint8_t UART_eps_is_expecting_data = 0;            // extern       // Note: set to 1 when a command is sent, and we're awaiting a response
 volatile uint8_t UART_eps_buffer_last_rx_byte = 0;          // not an extern
 
 
