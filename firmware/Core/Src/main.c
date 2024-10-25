@@ -32,6 +32,8 @@
 #include "adcs_drivers/adcs_internal_drivers.h"
 #include "littlefs/flash_driver.h"
 
+#include "startup_sequence/antenna_deploy_startup.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -257,6 +259,7 @@ int main(void)
   // Initialise the ADCS CRC8 checksum (required for ADCS operation).
   ADCS_initialise_crc8_checksum();
 
+  START_antenna_deploy();
   /* USER CODE END 2 */
 
   /* Init scheduler */
