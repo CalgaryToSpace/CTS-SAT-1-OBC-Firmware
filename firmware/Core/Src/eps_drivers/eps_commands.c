@@ -558,8 +558,11 @@ uint8_t EPS_CMD_get_piu_housekeeping_data_run_avg(EPS_struct_piu_housekeeping_da
 	return 0;
 }
 
+/// @brief Update the EPS time.
+/// @param time_correction Time correction in unix time
+/// @return 
+/// @note Positive numbers added to time, negative values subtracted.
 uint8_t EPS_CMD_correct_time(int32_t time_correction) {
-	// Time correction in unix time (positive numbers added to time, negative values subtracted)
 	
 	const uint8_t CC = 0xC4;
 	const uint8_t cmd_len = 8;

@@ -133,6 +133,8 @@ char TIME_sync_source_enum_to_letter_char(TIM_sync_source_t source) {
             return 'T';
         case TIM_SOURCE_TELECOMMAND_CORRECTION:
             return 'C';
+        case TIM_SOURCE_EPS_RTC:
+            return 'E';
         case TIM_SOURCE_NONE:
             return 'N';
     }

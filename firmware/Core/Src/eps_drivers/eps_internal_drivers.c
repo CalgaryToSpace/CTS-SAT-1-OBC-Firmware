@@ -197,7 +197,7 @@ uint8_t EPS_send_cmd_get_response(
 			char msg[100];
 			snprintf(
 				msg, sizeof(msg),
-				"EPS returned an error in the STAT field: 0x%02x (see ESP_SICD Table 3-11)\n",
+				"EPS returned an error in the STAT field: 0x%02x (see EPS_SICD Table 3-11)\n",
 				eps_stat_field);
 			DEBUG_uart_print_str(msg);
 		}
