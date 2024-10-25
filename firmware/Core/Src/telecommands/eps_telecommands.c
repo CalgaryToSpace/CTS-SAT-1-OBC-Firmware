@@ -545,3 +545,38 @@ uint8_t TCMDEXEC_eps_get_current_battery_percent(
     
     return 0;    
 }
+
+uint8_t TCMDEXEC_eps_get_list_of_enabled_channels(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+
+    EPS_struct_piu_housekeeping_data_eng_t status;
+    const uint8_t result = EPS_CMD_get_piu_housekeeping_data_eng(&status);
+    if (result != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS_CMD_get_piu_housekeeping_data_run_avg (err %d)", result);
+        return 1;
+    }
+     
+    uint16_t status_bitfield = status.stat_ch_on_bitfield;
+    uint8_t list_of_enabled_channels[16];
+    for (int i =0; i<sizeof(status_bitfield); i++){
+        uint8_t bit_status = (status_bitfield >> i) & 1; // bit shift right and then check bit status
+
+        if (bit_status == 1) {
+            list_of_enabled_channels[i] = 1; 
+        } else {
+            list_of_enabled_channels[i] = 0;
+        }
+    }
+
+    // sprintf(buffer, "%d ", i); // Format the index into a buffer
+    //         strcat(result, buffer);    // Concatenate the index to result
+
+    snprintf(response_output_buf, response_output_buf_len,
+            "EPS_CHANNEL_VBATT_STACK: %d,  EPS_CHANNEL_5V_STACK: %d, EPS_CHANNEL_5V_CH2_UNUSED: %d "
+            ,list_of_enabled_channels[0],list_of_enabled_channels[1],list_of_enabled_channels[2]);
+
+    return 0;
+}
