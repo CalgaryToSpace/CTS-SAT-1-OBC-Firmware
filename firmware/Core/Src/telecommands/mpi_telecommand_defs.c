@@ -92,7 +92,7 @@ uint8_t TCMDEXEC_mpi_send_command_hex(const char *args_str, TCMD_TelecommandChan
 }
 
 
-///@brief Sends a message over UART to the MPI.
+/// @brief Sends a message over UART to the MPI.
 /// @param args_str No args.
 /// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
 /// @param response_output_buf The buffer to write the response to
