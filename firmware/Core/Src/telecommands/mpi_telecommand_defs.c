@@ -104,9 +104,19 @@ uint8_t TCMDEXEC_mpi_demo_tx_to_mpi(
 ) {
     // First, set transceiver state.
     MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MOSI);
+    HAL_Delay(100); // TODO: Confirm amount of delay required.
 
-    // Transmit to the MPI.
-    HAL_UART_Transmit(&huart1, (uint8_t*)"Hello, MPI!\n", strlen("Hello, MPI!\n"), HAL_MAX_DELAY);
+    const uint16_t transmit_count = 1;
+
+    // Note: 1000 sends takes 500ms at 230400 baud.
+    for (uint16_t i = 0; i < transmit_count; i++) {
+        // Transmit to the MPI.
+        const HAL_StatusTypeDef result = HAL_UART_Transmit(&huart1, (uint8_t*)"Hello, MPI!\n", strlen("Hello, MPI!\n"), HAL_MAX_DELAY);
+        if (result != HAL_OK) {
+            snprintf(response_output_buf, response_output_buf_len, "HAL error during UART transmit to MPI: %d.", result);
+            return 1;
+        }
+    }
 
     // Reset transceiver state.
     MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
