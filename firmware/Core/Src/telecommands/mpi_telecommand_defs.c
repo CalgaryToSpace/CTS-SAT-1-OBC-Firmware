@@ -2,6 +2,7 @@
 #include "telecommands/mpi_telecommand_defs.h"
 #include "mpi/mpi_command_handling.h"
 #include "transforms/arrays.h"
+#include "mpi/mpi_transceiver.h"
 
 #include <stdio.h>
 #include <stdint.h>

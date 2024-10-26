@@ -889,7 +889,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_func = TCMDEXEC_mpi_demo_tx_to_mpi,
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY, // Not useful in space.
-    }
+    },
     // ****************** END: MPI_telecommand_definitions ********************
     // ****************** START SECTION: stm32_internal_flash_telecommand_defs ******************
 
