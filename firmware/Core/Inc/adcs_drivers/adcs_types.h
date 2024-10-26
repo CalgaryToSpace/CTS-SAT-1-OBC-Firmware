@@ -298,7 +298,7 @@ typedef struct ADCS_angular_rates_struct_t {
 typedef struct ADCS_llh_position_struct_t {
     int32_t latitude_mdeg;
     int32_t longitude_mdeg;
-    int32_t altitude_meters;
+    uint32_t altitude_meters;
 } ADCS_llh_position_struct_t;
 
 typedef struct ADCS_Power_Control_struct_t{

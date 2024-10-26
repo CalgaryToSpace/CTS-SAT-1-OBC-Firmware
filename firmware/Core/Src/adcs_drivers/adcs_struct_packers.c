@@ -113,7 +113,7 @@ uint8_t ADCS_pack_to_llh_position_struct(uint8_t *data_received, ADCS_llh_positi
     // need to convert to int16 first, then double, to ensure negative numbers are represented correctly
     result->latitude_mdeg = (int32_t) ((int16_t) (data_received[1] << 8 | data_received[0])) * 10; 
     result->longitude_mdeg = (int32_t) ((int16_t) (data_received[3] << 8 | data_received[2])) * 10; 
-    result->altitude_meters  = (int32_t) ((int16_t) (data_received[5] << 8 | data_received[4])) * 10; 
+    result->altitude_meters  = (uint32_t) ((uint16_t) (data_received[5] << 8 | data_received[4])) * 10; 
     return 0;
 }
 
