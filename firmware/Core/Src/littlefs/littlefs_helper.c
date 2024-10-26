@@ -127,7 +127,7 @@ int8_t LFS_unmount()
 
 /**
  * @brief Lists contents of LittleFS Directory
- * @param root_directory Pointer to cstring holding the root directory to open and read
+ * @param root_directory cstring holding the root directory to open and read
  * @param offset Number of entries to skip before listing directory
  * @param count Number of entries to list in total (if 0, prints all entries)
  * @retval 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
@@ -162,6 +162,12 @@ int8_t LFS_list_directory(const char root_directory[], uint16_t offset, int16_t 
     {
         read_dir_result = lfs_dir_read(&LFS_filesystem, &dir, &info);
 
+        if (read_dir_result < 0)
+        {
+            DEBUG_uart_print_str("Error reading directory contents.\n");
+            break;
+        }
+
         if (offset > 0) {
             offset--;
             continue;
@@ -183,13 +189,9 @@ int8_t LFS_list_directory(const char root_directory[], uint16_t offset, int16_t 
         DEBUG_uart_print_str("\n");
     }
 
-    if (read_dir_result < 0)
-    {
-        DEBUG_uart_print_str("Error reading directory contents.\n");
-        return read_dir_result;
+    if (read_dir_result >= 0) {
+        DEBUG_uart_print_str("Successfully Listed Directory Contents.\n");
     }
-
-    DEBUG_uart_print_str("Successfully Listed Directory Contents.\n");
 
     int8_t close_dir_result = lfs_dir_close(&LFS_filesystem, &dir);
     if (close_dir_result < 0)
@@ -198,7 +200,11 @@ int8_t LFS_list_directory(const char root_directory[], uint16_t offset, int16_t 
         return close_dir_result;
     }
 
-    return 0;
+    if (read_dir_result < 0) {
+        return read_dir_result;
+    } else {
+        return 0;
+    }
 }
 
 /**
