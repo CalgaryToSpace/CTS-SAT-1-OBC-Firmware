@@ -9,6 +9,8 @@
 #include <string.h>
 #include <inttypes.h>
 
+#include "main.h"
+
 
 ///@brief Send a configuration command & params (IF ANY) to the MPI encoded in hex
 /// @param args_str 
@@ -86,4 +88,29 @@ uint8_t TCMDEXEC_mpi_send_command_hex(const char *args_str, TCMD_TelecommandChan
     }
 
     return cmd_response;
+}
+
+
+///@brief Sends a message over UART to the MPI.
+/// @param args_str No args.
+/// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
+/// @param response_output_buf The buffer to write the response to
+/// @param response_output_buf_len The maximum length of the response_output_buf (its size)
+/// @return 0: Success, >0: Failure
+uint8_t TCMDEXEC_mpi_demo_tx_to_mpi(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    // First, set transceiver state.
+    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MOSI);
+
+    // Transmit to the MPI.
+    HAL_UART_Transmit(&huart1, (uint8_t*)"Hello, MPI!\n", strlen("Hello, MPI!\n"), HAL_MAX_DELAY);
+
+    // Reset transceiver state.
+    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
+
+    // Send message to MPI
+    snprintf(response_output_buf, response_output_buf_len, "Sent message to MPI.");
+    return 0;
 }
