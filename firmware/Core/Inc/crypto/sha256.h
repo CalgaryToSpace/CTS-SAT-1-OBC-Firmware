@@ -1,4 +1,5 @@
 /*********************************************************************
+* Source:	  https://github.com/B-Con/crypto-algorithms
 * Filename:   sha256.h
 * Author:     Brad Conte (brad AT bradconte.com)
 * Copyright:
@@ -33,6 +34,6 @@ void sha256_update(SHA256_CTX *ctx, const BYTE data[], size_t len);
 void sha256_final(SHA256_CTX *ctx, BYTE hash[]);
 
 
-void CRYPT_compute_sha256_hash(uint8_t message[], size_t message_length, uint8_t hash[32]);
+void CRYPT_compute_sha256_hash(const uint8_t message[], size_t message_length, uint8_t hash[32]);
 
 #endif   // SHA256_H
