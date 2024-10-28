@@ -58,7 +58,7 @@ uint8_t EPS_send_cmd_get_response(
 	// TX TO EPS
 	const HAL_StatusTypeDef tx_status = HAL_UART_Transmit(
 		UART_eps_port_handle,
-		(uint8_t*) cmd_buf_with_tags, cmd_buf_with_tags_len, 1000); // FIXME: update the timeout
+		cmd_buf_with_tags, cmd_buf_with_tags_len, 1000); // FIXME: update the timeout
 	if (tx_status != HAL_OK) {
 		if (EPS_ENABLE_DEBUG_PRINT) {
 			char msg[200];
