@@ -162,7 +162,7 @@ void sha256_final(SHA256_CTX *ctx, BYTE hash[])
 * @param[in] message_length Length of the message in bytes
 * @param[out] hash Where the 32 byte hash is stored
 */
-void CRYPTO_compute_sha256_hash(uint8_t message[], size_t message_length, uint8_t hash[32]) {
+void CRYPT_compute_sha256_hash(uint8_t message[], size_t message_length, uint8_t hash[32]) {
 	SHA256_CTX ctx;
 	sha256_init(&ctx);
 	sha256_update(&ctx, message, message_length);

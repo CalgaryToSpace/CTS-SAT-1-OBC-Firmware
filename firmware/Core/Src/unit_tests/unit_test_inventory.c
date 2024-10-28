@@ -12,6 +12,7 @@
 #include "unit_tests/test_configuration_variables.h"
 #include "unit_tests/test_eps_drivers.h"
 #include "unit_tests/test_eps_struct_packers.h"
+#include "unit_tests/test_sha256.h"
 
 // extern
 const TEST_Definition_t TEST_definitions[] = {
@@ -388,6 +389,11 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func = TEST_EXEC__ANT_convert_raw_temp_to_cCelsius,
         .test_file = "antenna_deploy_drivers/ant_commands",
         .test_func_name = "ANT_convert_raw_temp_to_cCelsius"
+    },
+    {
+        .test_func = TEST_EXEC__CRYPT_compute_sha256_hash,
+        .test_file = "unit_tests/test_sha256",
+        .test_func_name = "TEST_EXEC__CRYPT_compute_sha256_hash",
     },
 };
 
