@@ -110,16 +110,22 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="mpi__types_8h__dep__incl.png" border="0" usemap="#afirmware_2Core_2Inc_2mpi_2mpi__types_8hdep" alt=""/></div>
 <map name="afirmware_2Core_2Inc_2mpi_2mpi__types_8hdep" id="afirmware_2Core_2Inc_2mpi_2mpi__types_8hdep">
-<area shape="rect" title=" " alt="" coords="128,5,276,46"/>
-<area shape="rect" href="mpi__command__handling_8h.html" title=" " alt="" coords="200,94,375,135"/>
-<area shape="poly" title=" " alt="" coords="234,55,270,92,266,95,230,59"/>
+<area shape="rect" title=" " alt="" coords="184,5,332,46"/>
+<area shape="rect" href="mpi__command__handling_8h.html" title=" " alt="" coords="264,94,439,135"/>
+<area shape="poly" title=" " alt="" coords="292,55,332,92,329,96,289,59"/>
 <area shape="rect" href="mpi__command__handling_8c.html" title=" " alt="" coords="5,183,181,223"/>
-<area shape="poly" title=" " alt="" coords="185,60,107,184,103,181,180,58"/>
-<area shape="poly" title=" " alt="" coords="231,144,138,185,136,180,228,139"/>
+<area shape="poly" title=" " alt="" coords="170,41,121,61,99,76,82,95,74,116,74,139,86,182,81,183,68,140,69,115,77,93,96,72,118,56,168,36"/>
+<area shape="rect" href="mpi__transceiver_8h.html" title=" " alt="" coords="92,94,240,135"/>
+<area shape="poly" title=" " alt="" coords="228,59,189,96,185,92,225,55"/>
+<area shape="rect" href="mpi__transceiver_8c.html" title=" " alt="" coords="463,94,614,135"/>
+<area shape="poly" title=" " alt="" coords="337,48,476,91,474,96,336,54"/>
+<area shape="poly" title=" " alt="" coords="279,142,153,185,151,180,278,137"/>
 <area shape="rect" href="mpi__telecommand__defs_8c.html" title=" " alt="" coords="204,183,419,223"/>
-<area shape="poly" title=" " alt="" coords="300,149,309,182,304,183,295,151"/>
+<area shape="poly" title=" " alt="" coords="339,150,323,183,318,181,334,148"/>
 <area shape="rect" href="uart__handler_8c.html" title=" " alt="" coords="443,183,599,223"/>
-<area shape="poly" title=" " alt="" coords="356,138,469,180,467,185,354,143"/>
+<area shape="poly" title=" " alt="" coords="405,140,484,180,482,185,402,144"/>
+<area shape="poly" title=" " alt="" coords="142,148,112,184,108,180,138,145"/>
+<area shape="poly" title=" " alt="" coords="214,141,280,180,277,185,211,145"/>
 </map>
 </div>
 </div>
@@ -139,6 +145,12 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:ad99b46e59f66afc27376333407cbc74a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerates the different modes under which the satellite can operate the MPI.  <a href="#ad99b46e59f66afc27376333407cbc74a">More...</a><br /></td></tr>
 <tr class="separator:ad99b46e59f66afc27376333407cbc74a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5741f814689289470b32d5ca4a2796f6" id="r_a5741f814689289470b32d5ca4a2796f6"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5741f814689289470b32d5ca4a2796f6">MPI_transceiver_state_enum_t</a> { <a class="el" href="#a5741f814689289470b32d5ca4a2796f6a8a81c3a7120069949768a8e104948773">MPI_TRANSCEIVER_MODE_INACTIVE</a>
+, <a class="el" href="#a5741f814689289470b32d5ca4a2796f6a081bd849f658576188db5715eae00a9e">MPI_TRANSCEIVER_MODE_MOSI</a>
+, <a class="el" href="#a5741f814689289470b32d5ca4a2796f6a8f720ac91e8ea44ad1d89c16bb52dc55">MPI_TRANSCEIVER_MODE_MISO</a>
+ }</td></tr>
+<tr class="memdesc:a5741f814689289470b32d5ca4a2796f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents the state of the MPI transceiver chip.  <a href="#a5741f814689289470b32d5ca4a2796f6">More...</a><br /></td></tr>
+<tr class="separator:a5741f814689289470b32d5ca4a2796f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
 <a id="ad99b46e59f66afc27376333407cbc74a" name="ad99b46e59f66afc27376333407cbc74a"></a>
@@ -158,6 +170,27 @@ Enumerations</h2></td></tr>
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ad99b46e59f66afc27376333407cbc74aa59af4f98f8927393d5650c9c57c31202" name="ad99b46e59f66afc27376333407cbc74aa59af4f98f8927393d5650c9c57c31202"></a>MPI_RX_MODE_COMMAND_MODE&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ad99b46e59f66afc27376333407cbc74aaf58d485b004ec025c41ff7515dfc7ef2" name="ad99b46e59f66afc27376333407cbc74aaf58d485b004ec025c41ff7515dfc7ef2"></a>MPI_RX_MODE_SENSING_MODE&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ad99b46e59f66afc27376333407cbc74aad223ade665bf6d16a3acb306b9abe51c" name="ad99b46e59f66afc27376333407cbc74aad223ade665bf6d16a3acb306b9abe51c"></a>MPI_RX_MODE_NOT_LISTENING_TO_MPI&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+</div>
+</div>
+<a id="a5741f814689289470b32d5ca4a2796f6" name="a5741f814689289470b32d5ca4a2796f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5741f814689289470b32d5ca4a2796f6">&#9670;&#160;</a></span>MPI_transceiver_state_enum_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="#a5741f814689289470b32d5ca4a2796f6">MPI_transceiver_state_enum_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Represents the state of the MPI transceiver chip. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a5741f814689289470b32d5ca4a2796f6a8a81c3a7120069949768a8e104948773" name="a5741f814689289470b32d5ca4a2796f6a8a81c3a7120069949768a8e104948773"></a>MPI_TRANSCEIVER_MODE_INACTIVE&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a5741f814689289470b32d5ca4a2796f6a081bd849f658576188db5715eae00a9e" name="a5741f814689289470b32d5ca4a2796f6a081bd849f658576188db5715eae00a9e"></a>MPI_TRANSCEIVER_MODE_MOSI&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a5741f814689289470b32d5ca4a2796f6a8f720ac91e8ea44ad1d89c16bb52dc55" name="a5741f814689289470b32d5ca4a2796f6a8f720ac91e8ea44ad1d89c16bb52dc55"></a>MPI_TRANSCEIVER_MODE_MISO&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
 </div>

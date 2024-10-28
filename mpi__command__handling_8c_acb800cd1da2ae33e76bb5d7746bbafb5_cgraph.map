@@ -1,5 +1,7 @@
 <map id="MPI_send_telecommand_get_response" name="MPI_send_telecommand_get_response">
-<area shape="rect" id="Node000001" title="Sends commandcode+params to the MPI as bytes." alt="" coords="5,5,171,46"/>
-<area shape="rect" id="Node000002" href="$mpi__command__handling_8c.html#ac4ddc1be72f41eb71f22491e91150a6c" title="The MPI responds to each telecommand with a response code consisting of an echo of the telecommand an..." alt="" coords="219,5,401,46"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="171,23,203,23,203,28,171,28"/>
+<area shape="rect" id="Node000001" title="Sends commandcode+params to the MPI as bytes." alt="" coords="5,39,171,79"/>
+<area shape="rect" id="Node000002" href="$mpi__transceiver_8c.html#a8152cd1b9513be2c73a97bfb50ecd497" title="Sets the transceiver state." alt="" coords="239,5,380,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="171,44,223,36,224,41,171,49"/>
+<area shape="rect" id="Node000003" href="$mpi__command__handling_8c.html#ac4ddc1be72f41eb71f22491e91150a6c" title="The MPI responds to each telecommand with a response code consisting of an echo of the telecommand an..." alt="" coords="219,71,401,111"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="171,68,204,73,203,78,171,74"/>
 </map>

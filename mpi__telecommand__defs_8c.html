@@ -97,50 +97,63 @@ $(function(){ initResizable(false); });
 <code>#include &quot;<a class="el" href="mpi__telecommand__defs_8h_source.html">telecommands/mpi_telecommand_defs.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="mpi__command__handling_8h_source.html">mpi/mpi_command_handling.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="arrays_8h_source.html">transforms/arrays.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="mpi__transceiver_8h_source.html">mpi/mpi_transceiver.h</a>&quot;</code><br />
 <code>#include &lt;stdio.h&gt;</code><br />
 <code>#include &lt;stdint.h&gt;</code><br />
 <code>#include &lt;stdlib.h&gt;</code><br />
 <code>#include &lt;string.h&gt;</code><br />
 <code>#include &lt;inttypes.h&gt;</code><br />
+<code>#include &quot;<a class="el" href="main_8h_source.html">main.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for mpi_telecommand_defs.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="mpi__telecommand__defs_8c__incl.png" border="0" usemap="#afirmware_2Core_2Src_2telecommands_2mpi__telecommand__defs_8c" alt=""/></div>
 <map name="afirmware_2Core_2Src_2telecommands_2mpi__telecommand__defs_8c" id="afirmware_2Core_2Src_2telecommands_2mpi__telecommand__defs_8c">
-<area shape="rect" title=" " alt="" coords="484,5,699,46"/>
-<area shape="rect" href="telecommand__args__helpers_8h.html" title=" " alt="" coords="5,183,194,223"/>
-<area shape="poly" title=" " alt="" coords="484,32,421,39,351,50,281,69,214,96,188,112,164,132,125,172,122,169,161,128,185,108,212,92,279,64,350,45,420,33,484,27"/>
+<area shape="rect" title=" " alt="" coords="808,5,1023,46"/>
+<area shape="rect" href="telecommand__args__helpers_8h.html" title=" " alt="" coords="5,271,194,312"/>
+<area shape="poly" title=" " alt="" coords="808,35,644,44,460,57,301,75,246,85,214,96,194,112,176,131,146,174,125,218,111,258,106,256,120,216,142,171,172,127,190,108,212,92,244,80,300,70,459,52,644,38,808,29"/>
 <area shape="rect" title=" " alt="" coords="366,360,430,386"/>
-<area shape="poly" title=" " alt="" coords="484,38,421,47,360,59,309,75,290,85,277,96,255,127,249,143,248,162,253,187,266,219,320,310,340,332,363,349,359,354,336,336,316,314,261,221,248,188,243,163,244,142,250,124,274,92,287,80,307,70,358,53,420,41,483,33"/>
-<area shape="rect" href="mpi__telecommand__defs_8h.html" title=" " alt="" coords="287,94,504,135"/>
-<area shape="poly" title=" " alt="" coords="548,49,455,90,453,85,546,44"/>
-<area shape="rect" href="mpi__command__handling_8h.html" title=" " alt="" coords="551,190,747,216"/>
-<area shape="poly" title=" " alt="" coords="584,47,571,89,570,112,575,134,593,159,616,179,612,183,589,162,570,136,565,112,566,88,579,46"/>
-<area shape="rect" href="arrays_8h.html" title=" " alt="" coords="801,190,934,216"/>
-<area shape="poly" title=" " alt="" coords="593,46,598,90,605,113,619,133,641,144,685,157,796,184,794,189,684,162,639,149,615,137,601,115,592,91,588,47"/>
-<area shape="rect" title=" " alt="" coords="628,102,688,127"/>
-<area shape="poly" title=" " alt="" coords="609,45,642,87,638,91,605,48"/>
-<area shape="rect" title=" " alt="" coords="712,102,775,127"/>
-<area shape="poly" title=" " alt="" coords="627,44,710,91,708,96,625,49"/>
-<area shape="rect" title=" " alt="" coords="798,102,862,127"/>
-<area shape="poly" title=" " alt="" coords="653,44,787,92,790,93,788,98,785,96,652,49"/>
-<area shape="rect" title=" " alt="" coords="885,102,962,127"/>
-<area shape="poly" title=" " alt="" coords="689,44,780,65,875,91,881,93,879,98,873,97,778,70,688,49"/>
-<area shape="poly" title=" " alt="" coords="117,222,158,266,185,289,214,310,248,327,285,341,352,360,351,365,283,346,246,332,211,314,182,294,155,270,113,226"/>
-<area shape="poly" title=" " alt="" coords="357,137,330,157,310,184,306,202,310,223,325,269,351,310,379,347,374,350,347,314,321,271,305,224,300,202,305,182,327,153,354,133"/>
+<area shape="poly" title=" " alt="" coords="808,33,652,40,480,52,334,71,285,83,259,96,234,128,229,143,230,162,239,186,256,217,320,310,341,332,364,349,361,354,337,336,316,314,252,220,234,188,225,163,224,143,229,125,255,92,283,78,333,65,479,47,652,35,808,28"/>
+<area shape="rect" href="mpi__telecommand__defs_8h.html" title=" " alt="" coords="269,94,485,135"/>
+<area shape="poly" title=" " alt="" coords="808,47,500,96,499,91,807,42"/>
+<area shape="rect" href="mpi__command__handling_8h.html" title=" " alt="" coords="509,102,706,127"/>
+<area shape="poly" title=" " alt="" coords="846,49,666,99,665,94,845,44"/>
+<area shape="rect" href="arrays_8h.html" title=" " alt="" coords="801,279,934,304"/>
+<area shape="poly" title=" " alt="" coords="915,47,875,264,870,263,909,46"/>
+<area shape="rect" href="mpi__transceiver_8h.html" title=" " alt="" coords="729,102,878,127"/>
+<area shape="poly" title=" " alt="" coords="892,49,832,94,829,90,888,44"/>
+<area shape="rect" title=" " alt="" coords="952,102,1012,127"/>
+<area shape="poly" title=" " alt="" coords="933,45,966,87,962,91,929,48"/>
+<area shape="rect" title=" " alt="" coords="1036,102,1099,127"/>
+<area shape="poly" title=" " alt="" coords="951,44,1034,91,1032,96,949,49"/>
+<area shape="rect" title=" " alt="" coords="1122,102,1186,127"/>
+<area shape="poly" title=" " alt="" coords="977,44,1111,92,1114,93,1112,98,1109,96,976,49"/>
+<area shape="rect" title=" " alt="" coords="1209,102,1286,127"/>
+<area shape="poly" title=" " alt="" coords="1013,44,1104,65,1199,91,1205,93,1203,98,1197,97,1102,70,1012,49"/>
+<area shape="rect" href="main_8h.html" title=": Header for main.c file. This file contains the common defines of the application." alt="" coords="1310,102,1369,127"/>
+<area shape="poly" title=" " alt="" coords="1024,36,1156,57,1229,72,1299,91,1303,93,1301,98,1297,97,1227,77,1155,62,1023,41"/>
+<area shape="poly" title=" " alt="" coords="175,310,352,357,351,362,173,315"/>
+<area shape="poly" title=" " alt="" coords="349,137,327,158,310,184,306,203,310,223,325,269,351,310,379,347,374,350,347,314,321,271,305,224,301,203,305,182,323,154,346,133"/>
 <area shape="rect" href="telecommand__definitions_8h.html" title=" " alt="" coords="320,183,508,223"/>
-<area shape="poly" title=" " alt="" coords="402,135,409,167,404,168,397,136"/>
+<area shape="poly" title=" " alt="" coords="388,134,402,167,397,169,383,136"/>
 <area shape="poly" title=" " alt="" coords="394,225,375,247,361,272,357,292,361,311,380,346,375,349,356,313,351,292,356,270,371,244,390,222"/>
 <area shape="rect" href="telecommand__types_8h.html" title=" " alt="" coords="371,271,559,312"/>
 <area shape="poly" title=" " alt="" coords="428,222,448,256,443,259,423,225"/>
 <area shape="poly" title=" " alt="" coords="450,314,420,349,416,346,446,311"/>
-<area shape="poly" title=" " alt="" coords="646,218,619,264,598,291,573,314,542,333,509,348,446,366,445,361,507,343,540,328,570,310,594,287,615,261,641,215"/>
-<area shape="rect" title=" " alt="" coords="634,279,701,304"/>
-<area shape="poly" title=" " alt="" coords="654,216,664,263,659,264,649,217"/>
-<area shape="rect" href="mpi__types_8h.html" title=" " alt="" coords="726,279,841,304"/>
-<area shape="poly" title=" " alt="" coords="669,214,753,268,750,272,666,219"/>
-<area shape="poly" title=" " alt="" coords="741,308,713,315,567,345,446,366,445,361,566,339,712,309,740,302"/>
-<area shape="poly" title=" " alt="" coords="873,216,875,263,869,290,855,314,824,333,781,348,727,359,667,366,545,374,445,375,445,370,544,368,666,361,726,353,779,343,822,328,851,310,864,288,870,263,867,217"/>
+<area shape="poly" title=" " alt="" coords="612,127,614,163,612,212,600,266,589,291,573,314,546,338,512,354,478,365,446,371,445,366,477,360,510,349,543,333,570,310,585,288,595,264,607,211,609,163,606,128"/>
+<area shape="rect" title=" " alt="" coords="634,190,701,216"/>
+<area shape="poly" title=" " alt="" coords="618,126,653,176,648,179,614,129"/>
+<area shape="rect" href="mpi__types_8h.html" title=" " alt="" coords="726,190,841,216"/>
+<area shape="poly" title=" " alt="" coords="634,125,746,181,744,185,631,130"/>
+<area shape="poly" title=" " alt="" coords="770,219,705,265,662,291,617,314,527,346,446,366,444,360,525,341,614,310,660,286,702,260,767,214"/>
+<area shape="poly" title=" " alt="" coords="801,307,446,366,445,361,800,302"/>
+<area shape="poly" title=" " alt="" coords="803,128,792,176,787,174,798,127"/>
+<area shape="rect" title=" " alt="" coords="1207,190,1320,216"/>
+<area shape="poly" title=" " alt="" coords="1331,129,1286,180,1282,177,1327,126"/>
+<area shape="rect" href="rtos__task__helpers_8h.html" title=" " alt="" coords="1344,183,1484,223"/>
+<area shape="poly" title=" " alt="" coords="1352,126,1390,169,1386,173,1348,129"/>
+<area shape="rect" title=" " alt="" coords="1370,279,1458,304"/>
+<area shape="poly" title=" " alt="" coords="1417,224,1417,263,1412,263,1412,224"/>
 </map>
 </div>
 </div><table class="memberdecls">
@@ -149,8 +162,64 @@ Functions</h2></td></tr>
 <tr class="memitem:ac8b626f01bd5421af1b7db8106d83f5b" id="r_ac8b626f01bd5421af1b7db8106d83f5b"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac8b626f01bd5421af1b7db8106d83f5b">TCMDEXEC_mpi_send_command_hex</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
 <tr class="memdesc:ac8b626f01bd5421af1b7db8106d83f5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send a configuration command &amp; params (IF ANY) to the MPI encoded in hex.  <br /></td></tr>
 <tr class="separator:ac8b626f01bd5421af1b7db8106d83f5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a251ad13b37986e577fe005cb44b979e2" id="r_a251ad13b37986e577fe005cb44b979e2"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a251ad13b37986e577fe005cb44b979e2">TCMDEXEC_mpi_demo_tx_to_mpi</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
+<tr class="memdesc:a251ad13b37986e577fe005cb44b979e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sends a message over UART to the MPI.  <br /></td></tr>
+<tr class="separator:a251ad13b37986e577fe005cb44b979e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="a251ad13b37986e577fe005cb44b979e2" name="a251ad13b37986e577fe005cb44b979e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a251ad13b37986e577fe005cb44b979e2">&#9670;&#160;</a></span>TCMDEXEC_mpi_demo_tx_to_mpi()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t TCMDEXEC_mpi_demo_tx_to_mpi </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>args_str</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a></td>          <td class="paramname"><span class="paramname"><em>tcmd_channel</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>response_output_buf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>response_output_buf_len</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sends a message over UART to the MPI. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args_str</td><td>No args. </td></tr>
+    <tr><td class="paramname">tcmd_channel</td><td>The channel on which the telecommand was received, and on which the response should be sent </td></tr>
+    <tr><td class="paramname">response_output_buf</td><td>The buffer to write the response to </td></tr>
+    <tr><td class="paramname">response_output_buf_len</td><td>The maximum length of the response_output_buf (its size) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0: Success, &gt;0: Failure </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="mpi__telecommand__defs_8c_a251ad13b37986e577fe005cb44b979e2_cgraph.png" border="0" usemap="#ampi__telecommand__defs_8c_a251ad13b37986e577fe005cb44b979e2_cgraph" alt=""/></div>
+<map name="ampi__telecommand__defs_8c_a251ad13b37986e577fe005cb44b979e2_cgraph" id="ampi__telecommand__defs_8c_a251ad13b37986e577fe005cb44b979e2_cgraph">
+<area shape="rect" title="Sends a message over UART to the MPI." alt="" coords="5,5,182,46"/>
+<area shape="rect" href="mpi__transceiver_8c.html#a8152cd1b9513be2c73a97bfb50ecd497" title="Sets the transceiver state." alt="" coords="230,5,371,46"/>
+<area shape="poly" title=" " alt="" coords="182,23,214,23,214,28,182,28"/>
+</map>
+</div>
+
+</div>
+</div>
 <a id="ac8b626f01bd5421af1b7db8106d83f5b" name="ac8b626f01bd5421af1b7db8106d83f5b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac8b626f01bd5421af1b7db8106d83f5b">&#9670;&#160;</a></span>TCMDEXEC_mpi_send_command_hex()</h2>
 
@@ -199,13 +268,15 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="mpi__telecommand__defs_8c_ac8b626f01bd5421af1b7db8106d83f5b_cgraph.png" border="0" usemap="#ampi__telecommand__defs_8c_ac8b626f01bd5421af1b7db8106d83f5b_cgraph" alt=""/></div>
 <map name="ampi__telecommand__defs_8c_ac8b626f01bd5421af1b7db8106d83f5b_cgraph" id="ampi__telecommand__defs_8c_ac8b626f01bd5421af1b7db8106d83f5b_cgraph">
-<area shape="rect" title="Send a configuration command &amp; params (IF ANY) to the MPI encoded in hex." alt="" coords="5,42,252,68"/>
-<area shape="rect" href="mpi__command__handling_8c.html#acb800cd1da2ae33e76bb5d7746bbafb5" title="Sends commandcode+params to the MPI as bytes." alt="" coords="313,5,478,46"/>
-<area shape="poly" title=" " alt="" coords="251,39,297,34,298,39,251,44"/>
-<area shape="rect" href="telecommand__args__helpers_8c.html#a3f4c71ad48b16b79e4bb91ffb13111d7" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a hex string." alt="" coords="300,70,491,96"/>
-<area shape="poly" title=" " alt="" coords="253,65,284,69,284,74,252,71"/>
-<area shape="rect" href="mpi__command__handling_8c.html#ac4ddc1be72f41eb71f22491e91150a6c" title="The MPI responds to each telecommand with a response code consisting of an echo of the telecommand an..." alt="" coords="539,5,721,46"/>
-<area shape="poly" title=" " alt="" coords="479,23,524,23,524,28,479,28"/>
+<area shape="rect" title="Send a configuration command &amp; params (IF ANY) to the MPI encoded in hex." alt="" coords="5,74,252,100"/>
+<area shape="rect" href="mpi__command__handling_8c.html#acb800cd1da2ae33e76bb5d7746bbafb5" title="Sends commandcode+params to the MPI as bytes." alt="" coords="313,37,478,78"/>
+<area shape="poly" title=" " alt="" coords="251,71,297,66,298,71,251,76"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#a3f4c71ad48b16b79e4bb91ffb13111d7" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a hex string." alt="" coords="300,102,491,128"/>
+<area shape="poly" title=" " alt="" coords="253,97,284,101,284,106,252,103"/>
+<area shape="rect" href="mpi__transceiver_8c.html#a8152cd1b9513be2c73a97bfb50ecd497" title="Sets the transceiver state." alt="" coords="560,5,701,46"/>
+<area shape="poly" title=" " alt="" coords="478,44,543,35,544,40,479,49"/>
+<area shape="rect" href="mpi__command__handling_8c.html#ac4ddc1be72f41eb71f22491e91150a6c" title="The MPI responds to each telecommand with a response code consisting of an echo of the telecommand an..." alt="" coords="539,71,721,111"/>
+<area shape="poly" title=" " alt="" coords="479,67,524,73,523,79,478,72"/>
 </map>
 </div>
 

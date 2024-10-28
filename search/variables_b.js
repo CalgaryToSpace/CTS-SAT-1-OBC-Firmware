@@ -25,8 +25,11 @@ var searchData=
   ['mounting_5ftransform_5falpha_5fangle_5fmdeg_5fper_5fsec_22',['mounting_transform_alpha_angle_mdeg_per_sec',['../structADCS__magnetometer__config__struct__t.html#a52f858c87026b3423d9bb67eac0a6b36',1,'ADCS_magnetometer_config_struct_t']]],
   ['mounting_5ftransform_5fbeta_5fangle_5fmdeg_5fper_5fsec_23',['mounting_transform_beta_angle_mdeg_per_sec',['../structADCS__magnetometer__config__struct__t.html#ad544acb7eb3acb0bfdab8fc2bb6ccaba',1,'ADCS_magnetometer_config_struct_t']]],
   ['mounting_5ftransform_5fgamma_5fangle_5fmdeg_5fper_5fsec_24',['mounting_transform_gamma_angle_mdeg_per_sec',['../structADCS__magnetometer__config__struct__t.html#af5531f396aab3a9c4a839e05f1e1a77e',1,'ADCS_magnetometer_config_struct_t']]],
-  ['mpi_5fcurrent_5fuart_5frx_5fmode_25',['MPI_current_uart_rx_mode',['../mpi__command__handling_8h.html#ae701c14e4b8c897648edf2d4ea61dc3e',1,'MPI_current_uart_rx_mode:&#160;mpi_command_handling.c'],['../mpi__command__handling_8c.html#ae701c14e4b8c897648edf2d4ea61dc3e',1,'MPI_current_uart_rx_mode:&#160;mpi_command_handling.c']]],
-  ['mpi_5funit_5fid_26',['mpi_unit_id',['../structMPI__dataframe__t.html#ac157e72ec8fbb64883b5b625b448db25',1,'MPI_dataframe_t']]],
-  ['ms_5fpast_5fsecond_27',['ms_past_second',['../structADCS__id__struct__t.html#a6994049a964ed1a8af3dd4c9c23de753',1,'ADCS_id_struct_t']]],
-  ['msirangetable_28',['MSIRangeTable',['../group__STM32L4xx__System__Private__Variables.html#ga4d9e663c3c5bd4ca3361bf97d48158bf',1,'system_stm32l4xx.c']]]
+  ['mpi_5fcurrent_5ftransceiver_5fstate_25',['MPI_current_transceiver_state',['../mpi__transceiver_8c.html#a40f954e7deb2f95418600a4916b4f840',1,'mpi_transceiver.c']]],
+  ['mpi_5fcurrent_5fuart_5frx_5fmode_26',['MPI_current_uart_rx_mode',['../mpi__command__handling_8h.html#ae701c14e4b8c897648edf2d4ea61dc3e',1,'MPI_current_uart_rx_mode:&#160;mpi_command_handling.c'],['../mpi__command__handling_8c.html#ae701c14e4b8c897648edf2d4ea61dc3e',1,'MPI_current_uart_rx_mode:&#160;mpi_command_handling.c']]],
+  ['mpi_5frx_5ftimeout_5fduration_5fms_27',['MPI_RX_TIMEOUT_DURATION_MS',['../mpi__command__handling_8c.html#af4b14a86ead3e3f59a18e5afd60715fb',1,'mpi_command_handling.c']]],
+  ['mpi_5ftx_5ftimeout_5fduration_5fms_28',['MPI_TX_TIMEOUT_DURATION_MS',['../mpi__command__handling_8c.html#ac6c64f1887aac2ff30010a2baa82cc2f',1,'mpi_command_handling.c']]],
+  ['mpi_5funit_5fid_29',['mpi_unit_id',['../structMPI__dataframe__t.html#ac157e72ec8fbb64883b5b625b448db25',1,'MPI_dataframe_t']]],
+  ['ms_5fpast_5fsecond_30',['ms_past_second',['../structADCS__id__struct__t.html#a6994049a964ed1a8af3dd4c9c23de753',1,'ADCS_id_struct_t']]],
+  ['msirangetable_31',['MSIRangeTable',['../group__STM32L4xx__System__Private__Variables.html#ga4d9e663c3c5bd4ca3361bf97d48158bf',1,'system_stm32l4xx.c']]]
 ];

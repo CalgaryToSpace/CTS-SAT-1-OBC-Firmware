@@ -131,8 +131,64 @@ Functions</h2></td></tr>
 <tr class="memitem:ac8b626f01bd5421af1b7db8106d83f5b" id="r_ac8b626f01bd5421af1b7db8106d83f5b"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac8b626f01bd5421af1b7db8106d83f5b">TCMDEXEC_mpi_send_command_hex</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
 <tr class="memdesc:ac8b626f01bd5421af1b7db8106d83f5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send a configuration command &amp; params (IF ANY) to the MPI encoded in hex.  <br /></td></tr>
 <tr class="separator:ac8b626f01bd5421af1b7db8106d83f5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a251ad13b37986e577fe005cb44b979e2" id="r_a251ad13b37986e577fe005cb44b979e2"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a251ad13b37986e577fe005cb44b979e2">TCMDEXEC_mpi_demo_tx_to_mpi</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
+<tr class="memdesc:a251ad13b37986e577fe005cb44b979e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sends a message over UART to the MPI.  <br /></td></tr>
+<tr class="separator:a251ad13b37986e577fe005cb44b979e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="a251ad13b37986e577fe005cb44b979e2" name="a251ad13b37986e577fe005cb44b979e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a251ad13b37986e577fe005cb44b979e2">&#9670;&#160;</a></span>TCMDEXEC_mpi_demo_tx_to_mpi()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t TCMDEXEC_mpi_demo_tx_to_mpi </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>args_str</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a></td>          <td class="paramname"><span class="paramname"><em>tcmd_channel</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>response_output_buf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>response_output_buf_len</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sends a message over UART to the MPI. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args_str</td><td>No args. </td></tr>
+    <tr><td class="paramname">tcmd_channel</td><td>The channel on which the telecommand was received, and on which the response should be sent </td></tr>
+    <tr><td class="paramname">response_output_buf</td><td>The buffer to write the response to </td></tr>
+    <tr><td class="paramname">response_output_buf_len</td><td>The maximum length of the response_output_buf (its size) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0: Success, &gt;0: Failure </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="mpi__telecommand__defs_8h_a251ad13b37986e577fe005cb44b979e2_cgraph.png" border="0" usemap="#ampi__telecommand__defs_8h_a251ad13b37986e577fe005cb44b979e2_cgraph" alt=""/></div>
+<map name="ampi__telecommand__defs_8h_a251ad13b37986e577fe005cb44b979e2_cgraph" id="ampi__telecommand__defs_8h_a251ad13b37986e577fe005cb44b979e2_cgraph">
+<area shape="rect" title="Sends a message over UART to the MPI." alt="" coords="5,5,182,46"/>
+<area shape="rect" href="mpi__transceiver_8c.html#a8152cd1b9513be2c73a97bfb50ecd497" title="Sets the transceiver state." alt="" coords="230,5,371,46"/>
+<area shape="poly" title=" " alt="" coords="182,23,214,23,214,28,182,28"/>
+</map>
+</div>
+
+</div>
+</div>
 <a id="ac8b626f01bd5421af1b7db8106d83f5b" name="ac8b626f01bd5421af1b7db8106d83f5b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac8b626f01bd5421af1b7db8106d83f5b">&#9670;&#160;</a></span>TCMDEXEC_mpi_send_command_hex()</h2>
 
@@ -181,13 +237,15 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="mpi__telecommand__defs_8h_ac8b626f01bd5421af1b7db8106d83f5b_cgraph.png" border="0" usemap="#ampi__telecommand__defs_8h_ac8b626f01bd5421af1b7db8106d83f5b_cgraph" alt=""/></div>
 <map name="ampi__telecommand__defs_8h_ac8b626f01bd5421af1b7db8106d83f5b_cgraph" id="ampi__telecommand__defs_8h_ac8b626f01bd5421af1b7db8106d83f5b_cgraph">
-<area shape="rect" title="Send a configuration command &amp; params (IF ANY) to the MPI encoded in hex." alt="" coords="5,42,252,68"/>
-<area shape="rect" href="mpi__command__handling_8c.html#acb800cd1da2ae33e76bb5d7746bbafb5" title="Sends commandcode+params to the MPI as bytes." alt="" coords="313,5,478,46"/>
-<area shape="poly" title=" " alt="" coords="251,39,297,34,298,39,251,44"/>
-<area shape="rect" href="telecommand__args__helpers_8c.html#a3f4c71ad48b16b79e4bb91ffb13111d7" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a hex string." alt="" coords="300,70,491,96"/>
-<area shape="poly" title=" " alt="" coords="253,65,284,69,284,74,252,71"/>
-<area shape="rect" href="mpi__command__handling_8c.html#ac4ddc1be72f41eb71f22491e91150a6c" title="The MPI responds to each telecommand with a response code consisting of an echo of the telecommand an..." alt="" coords="539,5,721,46"/>
-<area shape="poly" title=" " alt="" coords="479,23,524,23,524,28,479,28"/>
+<area shape="rect" title="Send a configuration command &amp; params (IF ANY) to the MPI encoded in hex." alt="" coords="5,74,252,100"/>
+<area shape="rect" href="mpi__command__handling_8c.html#acb800cd1da2ae33e76bb5d7746bbafb5" title="Sends commandcode+params to the MPI as bytes." alt="" coords="313,37,478,78"/>
+<area shape="poly" title=" " alt="" coords="251,71,297,66,298,71,251,76"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#a3f4c71ad48b16b79e4bb91ffb13111d7" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a hex string." alt="" coords="300,102,491,128"/>
+<area shape="poly" title=" " alt="" coords="253,97,284,101,284,106,252,103"/>
+<area shape="rect" href="mpi__transceiver_8c.html#a8152cd1b9513be2c73a97bfb50ecd497" title="Sets the transceiver state." alt="" coords="560,5,701,46"/>
+<area shape="poly" title=" " alt="" coords="478,44,543,35,544,40,479,49"/>
+<area shape="rect" href="mpi__command__handling_8c.html#ac4ddc1be72f41eb71f22491e91150a6c" title="The MPI responds to each telecommand with a response code consisting of an echo of the telecommand an..." alt="" coords="539,71,721,111"/>
+<area shape="poly" title=" " alt="" coords="479,67,524,73,523,79,478,72"/>
 </map>
 </div>
 
