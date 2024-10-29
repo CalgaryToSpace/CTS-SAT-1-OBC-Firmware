@@ -13,7 +13,7 @@
 #include "main.h"
 
 
-///@brief Send a configuration command & params (IF ANY) to the MPI encoded in hex
+/// @brief Send a configuration command & params (IF ANY) to the MPI encoded in hex
 /// @param args_str 
 /// - Arg 0: Hex-encoded string representing the configuration command + arguments (IF ANY) to send to the MPI, INCLUDING 'TC' (0x54 0x43)
 /// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent

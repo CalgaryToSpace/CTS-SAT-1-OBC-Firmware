@@ -14,10 +14,6 @@
 static const uint16_t MPI_TX_TIMEOUT_DURATION_MS = 100;
 /// @brief Timeout duration for receive in milliseconds. Same between bytes and at the start.
 static const uint16_t MPI_RX_TIMEOUT_DURATION_MS = 200;
-// TODO: Verify these numbers after testing and remove this comment
-#define MPI_TX_TIMEOUT_DURATION_MS 400	            // Timeout duration for transmit in milliseconds
-#define MPI_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS 300	    // Timeout duration for first rx byte in milliseconds
-#define MPI_RX_TIMEOUT_BETWEEN_BYTES_MS 150	        // Timeout duration for in between rx bytes in milliseconds
 
 MPI_rx_mode_t MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
 
@@ -52,6 +48,7 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
 
     // Set the MPI transceiver to MISO mode
     MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MISO);
+
     // Clear the MPI response buffer (Note: Can't use memset because UART_mpi_buffer is Volatile)
     for (uint16_t i = 0; i < UART_mpi_buffer_len; i++) {
 		UART_mpi_buffer[i] = 0;
@@ -74,26 +71,29 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
 
     // Receive until MPI response timed out
     while (1) {
-        // Check if we have received upto max buffer size
+
+        // MPI response has been received upto uart rx buffer capacity
         if (UART_mpi_buffer_write_idx >= MPI_rx_buffer_max_size) {
             break;
         }
 
-        // Check if we have timed out (Before receiving the first byte)
+        // Timeout before receiving the first byte from the MPI
         if (UART_mpi_buffer_write_idx == 0) {
-            if((HAL_GetTick() - UART_mpi_rx_start_time_ms) > MPI_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS) {
-                // Stop reception from the MPI & Reset mpi UART mode state
+            if((HAL_GetTick() - UART_mpi_rx_start_time_ms) > MPI_RX_TIMEOUT_DURATION_MS) {
+                // Stop reception from the MPI & Reset mpi UART & transceiver mode states
+                MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
                 HAL_UART_DMAStop(UART_mpi_port_handle);
                 MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
                 return 4; // Error code: Timeout waiting for 1st byte
             }            
         }
-        // We have received some data but timed out (in between bytes / end of reception)
+
+        // Timeout in between (or end of) receiving bytes from the MPI
         else {
-            const uint32_t current_time = HAL_GetTick();            // Get current time
+            const uint32_t current_time = HAL_GetTick();           // Get current time
              if (
                 (current_time > UART_mpi_last_write_time_ms)       // Important seemingly-obvious safety check.
-                && ((current_time - UART_mpi_last_write_time_ms) > MPI_RX_TIMEOUT_BETWEEN_BYTES_MS)
+                && ((current_time - UART_mpi_last_write_time_ms) > MPI_RX_TIMEOUT_DURATION_MS)
             ) {
                 *MPI_rx_buffer_len = UART_mpi_buffer_write_idx;     // Set the length of the MPI response buffer
                 break;
@@ -101,7 +101,8 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
         }
     }
 
-    // Stop reception from the MPI & Reset mpi UART mode state to previous state
+    // Stop reception from the MPI & Reset MPI transceiver mode state, Set MPI UART mode state to previous state
+    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
     HAL_UART_DMAStop(UART_mpi_port_handle);
     MPI_current_uart_rx_mode = MPI_last_uart_rx_mode;
 
