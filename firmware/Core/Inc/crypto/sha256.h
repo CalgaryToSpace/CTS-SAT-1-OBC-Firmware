@@ -22,10 +22,10 @@ typedef uint8_t BYTE;
 typedef uint32_t WORD;
 
 typedef struct {
-	BYTE data[64];
-	WORD datalen;
-	unsigned long long bitlen;
-	WORD state[8];
+    BYTE data[64];
+    WORD datalen;
+    unsigned long long bitlen;
+    WORD state[8];
 } SHA256_CTX;
 
 /*********************** FUNCTION DECLARATIONS **********************/
