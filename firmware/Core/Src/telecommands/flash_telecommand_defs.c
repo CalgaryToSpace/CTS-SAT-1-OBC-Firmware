@@ -39,7 +39,7 @@ uint8_t TCMDEXEC_flash_activate_each_cs(const char *args_str, TCMD_TelecommandCh
         // UART replaced
         LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Deactivated.\n");
+            "Deactivated.");
         FLASH_deactivate_chip_select();
         HAL_Delay(delay_time_ms);
     }

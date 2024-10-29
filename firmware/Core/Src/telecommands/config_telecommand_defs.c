@@ -6,7 +6,6 @@
 #include <string.h>
 #include <stdio.h>
 
-
 /// @brief Set an integer configuration variable
 /// @param args_str
 /// - Arg 0: variable name
@@ -15,7 +14,7 @@
 /// @param response_output_buf_len Max length of the buffer
 /// @return 0 if successful, >0 if an error occurred
 uint8_t TCMDEXEC_config_set_int_var(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                                         char *response_output_buf, uint16_t response_output_buf_len)
+                                    char *response_output_buf, uint16_t response_output_buf_len)
 {
     const int args_str_len = strlen(args_str);
     char config_var_name[CONFIG_MAX_VARIABLE_NAME_LENGTH];
@@ -52,7 +51,7 @@ uint8_t TCMDEXEC_config_set_int_var(const char *args_str, TCMD_TelecommandChanne
 /// - Arg 1: new value
 /// @return 0 if successful, >0 if an error occurred
 uint8_t TCMDEXEC_config_set_str_var(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                                         char *response_output_buf, uint16_t response_output_buf_len)
+                                    char *response_output_buf, uint16_t response_output_buf_len)
 
 {
 
@@ -81,7 +80,7 @@ uint8_t TCMDEXEC_config_set_str_var(const char *args_str, TCMD_TelecommandChanne
         return 1;
     }
 
-    snprintf(response_output_buf, response_output_buf_len, "SUCCESS: Set config var: %s to: %s", config_var_name, config_var_new_value); 
+    snprintf(response_output_buf, response_output_buf_len, "SUCCESS: Set config var: %s to: %s", config_var_name, config_var_new_value);
 
     return 0;
 }
@@ -91,7 +90,7 @@ uint8_t TCMDEXEC_config_set_str_var(const char *args_str, TCMD_TelecommandChanne
 /// - Arg 0: variable name
 /// @return 0 if successful, >0 if an error occurred
 uint8_t TCMDEXEC_config_get_int_var_json(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                                                    char *response_output_buf, uint16_t response_output_buf_len)
+                                         char *response_output_buf, uint16_t response_output_buf_len)
 {
     const uint16_t res = CONFIG_int_var_to_json(args_str, response_output_buf, response_output_buf_len);
     if (res == 1)
@@ -100,7 +99,6 @@ uint8_t TCMDEXEC_config_get_int_var_json(const char *args_str, TCMD_TelecommandC
         return 1;
     }
     return 0;
-
 }
 
 /// @brief Get a string configuration variable
@@ -119,12 +117,11 @@ uint8_t TCMDEXEC_config_get_str_var_json(const char *args_str, TCMD_TelecommandC
     return 0;
 }
 
-
 /// @brief Get all configuration variables, as JSON. One variable per line.
 /// @param args_str No arguments.
 /// @return 0 if successful, >0 if an error occurred
 uint8_t TCMDEXEC_config_get_all_vars_jsonl(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                                                 char *response_output_buf, uint16_t response_output_buf_len)
+                                           char *response_output_buf, uint16_t response_output_buf_len)
 {
     char json_str[CONFIG_MAX_JSON_STRING_LENGTH];
     for (uint8_t i = 0; i < CONFIG_int_config_variables_count; i++)
@@ -132,18 +129,16 @@ uint8_t TCMDEXEC_config_get_all_vars_jsonl(const char *args_str, TCMD_Telecomman
         CONFIG_int_var_to_json(
             CONFIG_int_config_variables[i].variable_name,
             json_str,
-            sizeof(json_str)
-        );
+            sizeof(json_str));
         DEBUG_uart_print_str(json_str);
     }
-    
+
     for (uint8_t i = 0; i < CONFIG_str_config_variables_count; i++)
     {
         CONFIG_str_var_to_json(
             CONFIG_str_config_variables[i].variable_name,
             json_str,
-            sizeof(json_str)
-        );
+            sizeof(json_str));
         DEBUG_uart_print_str(json_str);
     }
 
@@ -151,8 +146,7 @@ uint8_t TCMDEXEC_config_get_all_vars_jsonl(const char *args_str, TCMD_Telecomman
         response_output_buf, response_output_buf_len,
         "SUCCESS: Showed all config variables (%d int, %d str)",
         CONFIG_int_config_variables_count,
-        CONFIG_str_config_variables_count
-    );
+        CONFIG_str_config_variables_count);
 
     return 0;
 }

@@ -12,7 +12,7 @@ void DEBUG_i2c_scan(I2C_HandleTypeDef *hi2c)
 {
 	// UART replaced
 	LOG_message(
-		LOG_SYSTEM_UNKNOWN, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+		LOG_SYSTEM_OBC, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
 		"Starting I2C scan...\n");
 
 	char msg[5];
@@ -30,19 +30,19 @@ void DEBUG_i2c_scan(I2C_HandleTypeDef *hi2c)
 		{
 			// UART replaced
 			LOG_message(
-				LOG_SYSTEM_UNKNOWN, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+				LOG_SYSTEM_OBC, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
 				"-- ");
 		}
 
 		// UART replaced
 		if (i > 0 && (i + 1) % 16 == 0)
 			LOG_message(
-				LOG_SYSTEM_UNKNOWN, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+				LOG_SYSTEM_OBC, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
 				"\n");
 	}
 
 	// UART replaced
-	LOG_message(
-		LOG_SYSTEM_UNKNOWN, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-		"\n");
+	// LOG_message(
+	// LOG_SYSTEM_OBC, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+	//"\n");
 }

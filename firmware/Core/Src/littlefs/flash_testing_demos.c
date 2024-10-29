@@ -8,8 +8,8 @@ void demo_flash_write()
 {
     // UART replaced
     LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "Starting demo_flash_write()...\n");
+        LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "Starting demo_flash_write()...");
 
     uint8_t chip_num = 0;
     uint32_t flash_addr = 0;
@@ -24,24 +24,24 @@ void demo_flash_write()
         {
             // UART replaced
             LOG_message(
-                LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-                "Error in FLASH_write\n");
+                LOG_SYSTEM_FLASH, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+                "Error in FLASH_write");
             return;
         }
     }
 
     // UART replaced
     LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "Wrote bytes in demo_flash_write(). Done.\n");
+        LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "Wrote bytes in demo_flash_write(). Done.");
 }
 
 void demo_flash_read()
 {
     // UART replaced
     LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "Starting demo_flash_read()...\n");
+        LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "Starting demo_flash_read()...");
 
     uint8_t chip_num = 0;
     uint32_t flash_addr = 0;
@@ -55,21 +55,21 @@ void demo_flash_read()
     {
         // UART replaced
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Error in FLASH_read_data\n");
+            LOG_SYSTEM_FLASH, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error in FLASH_read_data");
         return;
     }
 
     // UART replaced
     LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "Read bytes: \n");
+        LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "Read bytes: ");
     DEBUG_uart_print_array_hex(bytes_store, num_bytes);
 
     // UART replaced
     LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "\nRead bytes in demo_flash_read(). Done.\n");
+        LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "\nRead bytes in demo_flash_read(). Done.");
 }
 
 // void demo_flash_full() {

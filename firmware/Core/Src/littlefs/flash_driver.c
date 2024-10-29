@@ -192,7 +192,7 @@ FLASH_error_enum_t FLASH_write_enable(SPI_HandleTypeDef *hspi, uint8_t chip_numb
             // UART replaced
             LOG_message(
                 LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-                "Flash write enable timeout\n");
+                "Flash write enable timeout");
             return FLASH_ERR_DEVICE_BUSY_TIMEOUT;
         }
 
@@ -204,9 +204,9 @@ FLASH_error_enum_t FLASH_write_enable(SPI_HandleTypeDef *hspi, uint8_t chip_numb
                 "DEBUG: status_reg = 0x");
             DEBUG_uart_print_array_hex(status_reg_buffer, 1);
             // UART replaced
-            LOG_message(
-                LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-                "\n");
+            // LOG_message(
+            //  LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            //"\n");
         }
     }
 
@@ -262,19 +262,19 @@ FLASH_error_enum_t FLASH_write_disable(SPI_HandleTypeDef *hspi, uint8_t chip_num
             // UART replaced
             LOG_message(
                 LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-                "Flash write disable timeout\n");
+                "Flash write disable timeout");
             return FLASH_ERR_DEVICE_BUSY_TIMEOUT;
         }
 
         // UART replaced
         LOG_message(
-            LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_FLASH, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
             "DEBUG: status_reg = 0x");
         DEBUG_uart_print_array_hex(status_reg_buffer, 1);
         // UART replaced
-        LOG_message(
-            LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "\n");
+        // LOG_message(
+        //  LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        //"\n");
     }
 
     // Should never be reached:
@@ -348,8 +348,8 @@ FLASH_error_enum_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs
             // Flash module returned "erase error" via the status register.
             // UART replaced
             LOG_message(
-                LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-                "Flash erase error\n");
+                LOG_SYSTEM_FLASH, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+                "Flash erase error");
             return FLASH_ERR_STATUS_REG_ERROR;
         }
 
@@ -365,19 +365,19 @@ FLASH_error_enum_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs
             // UART replaced
             LOG_message(
                 LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-                "Flash erase timeout\n");
+                "Flash erase timeout");
             return FLASH_ERR_DEVICE_BUSY_TIMEOUT;
         }
 
         // UART replaced
         LOG_message(
-            LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_FLASH, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
             "DEBUG: status_reg = 0x");
         DEBUG_uart_print_array_hex(status_reg_buffer, 1);
         // UART replaced
-        LOG_message(
-            LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "\n");
+        // LOG_message(
+        // LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        //"\n");
     }
 
     // Should never be reached:
@@ -464,7 +464,7 @@ FLASH_error_enum_t FLASH_write(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs
             // Flash module returned "programming error" via the status register.
             // UART replaced
             LOG_message(
-                LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                LOG_SYSTEM_FLASH, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
                 "Flash programming error\n");
             return FLASH_ERR_STATUS_REG_ERROR;
         }
@@ -480,20 +480,20 @@ FLASH_error_enum_t FLASH_write(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs
         {
             // UART replaced
             LOG_message(
-                LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                LOG_SYSTEM_FLASH, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
                 "Flash write timeout\n");
             return FLASH_ERR_DEVICE_BUSY_TIMEOUT;
         }
 
         // UART replaced
         LOG_message(
-            LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_FLASH, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
             "DEBUG: status_reg = 0x");
         DEBUG_uart_print_array_hex(status_reg_buffer, 1);
         // UART replaced
-        LOG_message(
-            LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "\n");
+        // LOG_message(
+        // LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        //"\n");
     }
 
     // Should never be reached:
@@ -616,16 +616,16 @@ FLASH_error_enum_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_numb
     {
         // UART replaced
         LOG_message(
-            LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_FLASH, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "ERROR: FLASH_is_reachable received IDs: ");
         are_bytes_correct = 0;
     }
 
     DEBUG_uart_print_array_hex(rx_buffer, 5);
     // UART replaced
-    LOG_message(
-        LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "\n");
+    // LOG_message(
+    //  LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+    //"\n");
 
     if (!are_bytes_correct)
     {

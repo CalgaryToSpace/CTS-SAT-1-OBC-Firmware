@@ -107,18 +107,13 @@ const osThreadAttr_t TASK_execute_telecommands_Attributes = {
     .priority = (osPriority_t)osPriorityNormal,
 };
 
-<<<<<<< Updated upstream
 osThreadId_t TASK_service_eps_watchdog_Handle;
 const osThreadAttr_t TASK_service_eps_watchdog_Attributes = {
-  .name = "TASK_service_eps_watchdog",
-  .stack_size = 512, //in bytes
-  .priority = (osPriority_t) osPriorityNormal, //TODO: Figure out which priority makes sense for this task
+    .name = "TASK_service_eps_watchdog",
+    .stack_size = 512,                          // in bytes
+    .priority = (osPriority_t)osPriorityNormal, // TODO: Figure out which priority makes sense for this task
 };
 
-
-
-=======
->>>>>>> Stashed changes
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -238,11 +233,8 @@ int main(void)
   TASK_handle_uart_telecommands_Handle = osThreadNew(TASK_handle_uart_telecommands, NULL, &TASK_handle_uart_telecommands_Attributes);
 
   TASK_execute_telecommands_Handle = osThreadNew(TASK_execute_telecommands, NULL, &TASK_execute_telecommands_Attributes);
-<<<<<<< Updated upstream
-  
+
   TASK_service_eps_watchdog_Handle = osThreadNew(TASK_service_eps_watchdog, NULL, &TASK_service_eps_watchdog_Attributes);
-=======
->>>>>>> Stashed changes
 
   /* USER CODE END RTOS_THREADS */
 
@@ -259,10 +251,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    // UART replaced
-    LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "This superloop point should never be reached, because the FreeRTOS Kernel is running...\n");
+    DEBUG_uart_print_str("This superloop point should never be reached, because the FreeRTOS Kernel is running...\n");
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -1064,10 +1053,7 @@ void Error_Handler(void)
   while (1)
   {
     // TODO: make this flight-ready
-    // UART replaced
-    LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "Error_Handler() called\n");
+    DEBUG_uart_print_str("Error_Handler() called\n");
   }
   /* USER CODE END Error_Handler_Debug */
 }

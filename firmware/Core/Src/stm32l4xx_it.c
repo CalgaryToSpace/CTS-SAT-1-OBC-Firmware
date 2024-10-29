@@ -106,7 +106,7 @@ void HardFault_Handler(void)
     // snprintf(msg, sizeof(msg), "HardFault_Handler() -> Hard fault\n");
     // HAL_UART_Transmit(&hlpuart1, (uint8_t *)msg, strlen(msg), 1000); // TODO: check flight-readiness
     LOG_message(
-        LOG_SYSTEM_UNKNOWN, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        LOG_SYSTEM_UNKNOWN, LOG_SEVERITY_CRITICAL, LOG_SINK_ALL,
         "HardFault_Handler() -> Hard fault\n");
     /* USER CODE END W1_HardFault_IRQn 0 */
   }
@@ -128,7 +128,7 @@ void MemManage_Handler(void)
     // snprintf(msg, sizeof(msg), "MemManage_Handler() -> Memory management fault\n");
     // HAL_UART_Transmit(&hlpuart1, (uint8_t *)msg, strlen(msg), 1000); // TODO: check flight-readiness
     LOG_message(
-        LOG_SYSTEM_UNKNOWN, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        LOG_SYSTEM_OBC, LOG_SEVERITY_CRITICAL, LOG_SINK_ALL,
         "MemManage_Handler() -> Memory management fault\n");
     /* USER CODE END W1_MemoryManagement_IRQn 0 */
   }
@@ -150,7 +150,7 @@ void BusFault_Handler(void)
     // snprintf(msg, sizeof(msg), "BusFault_Handler() -> Bus fault\n");
     // HAL_UART_Transmit(&hlpuart1, (uint8_t *)msg, strlen(msg), 1000); // TODO: check flight-readiness
     LOG_message(
-        LOG_SYSTEM_UNKNOWN, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        LOG_SYSTEM_OBC, LOG_SEVERITY_CRITICAL, LOG_SINK_ALL,
         "BusFault_Handler() -> Bus fault\n");
     /* USER CODE END W1_BusFault_IRQn 0 */
   }
@@ -172,7 +172,7 @@ void UsageFault_Handler(void)
     // snprintf(msg, sizeof(msg), "UsageFault_Handler() -> Usage fault\n");
     // HAL_UART_Transmit(&hlpuart1, (uint8_t *)msg, strlen(msg), 1000); // TODO: check flight-readiness
     LOG_message(
-        LOG_SYSTEM_UNKNOWN, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        LOG_SYSTEM_OBC, LOG_SEVERITY_CRITICAL, LOG_SINK_ALL,
         "UsageFault_Handler() -> Usage fault\n");
     /* USER CODE END W1_UsageFault_IRQn 0 */
   }

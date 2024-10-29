@@ -59,7 +59,7 @@ uint8_t TCMDEXEC_freetos_list_tasks_jsonl(const char *args_str, TCMD_Telecommand
     {
         // UART replaced
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "Error: TCMDEXEC_freetos_list_tasks_jsonl: uxTaskGetSystemState failed.\n");
         return 1;
     }

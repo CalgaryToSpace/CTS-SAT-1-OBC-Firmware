@@ -46,59 +46,59 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
         // THIS IS THE DEBUG/TELECOMMAND UART
         // UART replaced
         // LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "HAL_UART_RxCpltCallback() -> Telecommand\n");
+        //  LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        //"HAL_UART_RxCpltCallback() -> Telecommand\n");
 
-            // add the byte to the buffer
-            if (UART_telecommand_buffer_write_idx >= UART_telecommand_buffer_len)
+        // add the byte to the buffer
+        if (UART_telecommand_buffer_write_idx >= UART_telecommand_buffer_len)
+        {
+            // UART replaced
+            LOG_message(
+                LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                "HAL_UART_RxCpltCallback() -> UART telecommand buffer is full\n");
+
+            // shift all bytes left by 1
+            for (uint16_t i = 1; i < UART_telecommand_buffer_len; i++)
             {
-                // UART replaced
-                LOG_message(
-                    LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-                    "HAL_UART_RxCpltCallback() -> UART telecommand buffer is full\n");
-
-                // shift all bytes left by 1
-                for (uint16_t i = 1; i < UART_telecommand_buffer_len; i++)
-                {
-                    UART_telecommand_buffer[i - 1] = UART_telecommand_buffer[i];
-                }
-
-                // reset to a valid index
-                UART_telecommand_buffer_write_idx = UART_telecommand_buffer_len - 1;
+                UART_telecommand_buffer[i - 1] = UART_telecommand_buffer[i];
             }
-            UART_telecommand_buffer[UART_telecommand_buffer_write_idx++] = UART_telecommand_buffer_last_rx_byte;
-            UART_telecommand_last_write_time_ms = HAL_GetTick();
-            HAL_UART_Receive_IT(UART_telecommand_port_handle, (uint8_t *)&UART_telecommand_buffer_last_rx_byte, 1);
+
+            // reset to a valid index
+            UART_telecommand_buffer_write_idx = UART_telecommand_buffer_len - 1;
+        }
+        UART_telecommand_buffer[UART_telecommand_buffer_write_idx++] = UART_telecommand_buffer_last_rx_byte;
+        UART_telecommand_last_write_time_ms = HAL_GetTick();
+        HAL_UART_Receive_IT(UART_telecommand_port_handle, (uint8_t *)&UART_telecommand_buffer_last_rx_byte, 1);
     }
 
     else if (huart->Instance == UART_eps_port_handle->Instance)
     {
         // UART replaced
         // LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "HAL_UART_RxCpltCallback() -> EPS Data\n");
+        //  LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        //"HAL_UART_RxCpltCallback() -> EPS Data\n");
 
-            if (!UART_eps_is_expecting_data)
-            {
-                // not expecting data, ignore this noise
-                HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t *)&UART_eps_buffer_last_rx_byte, 1);
-                return;
-            }
-
-            if (UART_eps_buffer_write_idx >= UART_eps_buffer_len)
-            {
-                // UART replaced
-                LOG_message(
-                    LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-                    "HAL_UART_RxCpltCallback() -> UART EPS buffer is full\n");
-                HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t *)&UART_eps_buffer_last_rx_byte, 1);
-                // exit, with everything the way it is (stop appending)
-                return;
-            }
-
-            UART_eps_buffer[UART_eps_buffer_write_idx++] = UART_eps_buffer_last_rx_byte;
-            UART_eps_last_write_time_ms = HAL_GetTick();
+        if (!UART_eps_is_expecting_data)
+        {
+            // not expecting data, ignore this noise
             HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t *)&UART_eps_buffer_last_rx_byte, 1);
+            return;
+        }
+
+        if (UART_eps_buffer_write_idx >= UART_eps_buffer_len)
+        {
+            // UART replaced
+            LOG_message(
+                LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                "HAL_UART_RxCpltCallback() -> UART EPS buffer is full\n");
+            HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t *)&UART_eps_buffer_last_rx_byte, 1);
+            // exit, with everything the way it is (stop appending)
+            return;
+        }
+
+        UART_eps_buffer[UART_eps_buffer_write_idx++] = UART_eps_buffer_last_rx_byte;
+        UART_eps_last_write_time_ms = HAL_GetTick();
+        HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t *)&UART_eps_buffer_last_rx_byte, 1);
     }
 
     else if (huart->Instance == UART_mpi_port_handle->Instance)

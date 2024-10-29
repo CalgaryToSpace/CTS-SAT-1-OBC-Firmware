@@ -152,13 +152,13 @@ void TASK_handle_uart_telecommands(void *argument)
 		{
 			// UART replaced
 			LOG_message(
-				LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+				LOG_SYSTEM_OBC, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
 				"Error parsing telecommand: ");
 			DEBUG_uart_print_uint32(parse_result);
 			// UART replaced
-			LOG_message(
-				LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-				"\n");
+			// LOG_message(
+			//	LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+			//	"\n");
 			continue;
 		}
 
