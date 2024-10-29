@@ -1,11 +1,13 @@
 #include "unit_tests/unit_test_helpers.h"
-#include <stdint.h>
 #include "unit_tests/sha256_unit_test_cases.h"
 #include "crypto/sha256.h"
-#include <string.h>
 #include "debug_tools/debug_uart.h"
 #include "time.h"
 #include "log/log.h"
+
+#include <string.h>
+#include <stdint.h>
+
 uint8_t TEST_EXEC__CRYPT_compute_sha256_hash() {
     uint8_t message[] = "abc" ;
     uint8_t expected[] = {0xba, 0x78, 0x16, 0xbf, 0x8f, 0x01, 0xcf, 0xea, 
@@ -32,61 +34,58 @@ uint8_t TEST_EXEC__CRYPT_compute_sha256_hash() {
     CRYPT_compute_sha256_hash(symbol_message, 13, digest);
     TEST_ASSERT_TRUE(memcmp(digest, symbol_expected, 32) == 0);
 
-    int32_t start_time = (int32_t) HAL_GetTick() ;
-    //random tests 
-    CRYPT_compute_sha256_hash(random_message_0, random_message_0_size, digest);    
+    int32_t start_time = (int32_t) HAL_GetTick();
+    // Random tests.
+    CRYPT_compute_sha256_hash(random_message_0, random_message_0_size, digest);
     TEST_ASSERT_TRUE(memcmp(digest, random_expected_0, SHA256_BLOCK_SIZE) == 0);
-    CRYPT_compute_sha256_hash(random_message_1, random_message_1_size, digest);    
+    CRYPT_compute_sha256_hash(random_message_1, random_message_1_size, digest);
     TEST_ASSERT_TRUE(memcmp(digest, random_expected_1, SHA256_BLOCK_SIZE) == 0);
-    CRYPT_compute_sha256_hash(random_message_2, random_message_2_size, digest);    
+    CRYPT_compute_sha256_hash(random_message_2, random_message_2_size, digest);
     TEST_ASSERT_TRUE(memcmp(digest, random_expected_2, SHA256_BLOCK_SIZE) == 0);
-    CRYPT_compute_sha256_hash(random_message_3, random_message_3_size, digest);    
+    CRYPT_compute_sha256_hash(random_message_3, random_message_3_size, digest);
     TEST_ASSERT_TRUE(memcmp(digest, random_expected_3, SHA256_BLOCK_SIZE) == 0);
-    CRYPT_compute_sha256_hash(random_message_4, random_message_4_size, digest);    
+    CRYPT_compute_sha256_hash(random_message_4, random_message_4_size, digest);
     TEST_ASSERT_TRUE(memcmp(digest, random_expected_4, SHA256_BLOCK_SIZE) == 0);
-    CRYPT_compute_sha256_hash(random_message_5, random_message_5_size, digest);    
+    CRYPT_compute_sha256_hash(random_message_5, random_message_5_size, digest);
     TEST_ASSERT_TRUE(memcmp(digest, random_expected_5, SHA256_BLOCK_SIZE) == 0);
-    CRYPT_compute_sha256_hash(random_message_6, random_message_6_size, digest);    
+    CRYPT_compute_sha256_hash(random_message_6, random_message_6_size, digest);
     TEST_ASSERT_TRUE(memcmp(digest, random_expected_6, SHA256_BLOCK_SIZE) == 0);
-    CRYPT_compute_sha256_hash(random_message_7, random_message_7_size, digest);    
+    CRYPT_compute_sha256_hash(random_message_7, random_message_7_size, digest);
     TEST_ASSERT_TRUE(memcmp(digest, random_expected_7, SHA256_BLOCK_SIZE) == 0);
-    CRYPT_compute_sha256_hash(random_message_8, random_message_8_size, digest);    
+    CRYPT_compute_sha256_hash(random_message_8, random_message_8_size, digest);
     TEST_ASSERT_TRUE(memcmp(digest, random_expected_8, SHA256_BLOCK_SIZE) == 0);
-    CRYPT_compute_sha256_hash(random_message_9, random_message_9_size, digest);    
+    CRYPT_compute_sha256_hash(random_message_9, random_message_9_size, digest);
     TEST_ASSERT_TRUE(memcmp(digest, random_expected_9, SHA256_BLOCK_SIZE) == 0);
-    CRYPT_compute_sha256_hash(random_message_10, random_message_10_size, digest);    
+    CRYPT_compute_sha256_hash(random_message_10, random_message_10_size, digest);
     TEST_ASSERT_TRUE(memcmp(digest, random_expected_10, SHA256_BLOCK_SIZE) == 0);
-    CRYPT_compute_sha256_hash(random_message_11, random_message_11_size, digest);    
+    CRYPT_compute_sha256_hash(random_message_11, random_message_11_size, digest);
     TEST_ASSERT_TRUE(memcmp(digest, random_expected_11, SHA256_BLOCK_SIZE) == 0);
-    CRYPT_compute_sha256_hash(random_message_12, random_message_12_size, digest);    
+    CRYPT_compute_sha256_hash(random_message_12, random_message_12_size, digest);
     TEST_ASSERT_TRUE(memcmp(digest, random_expected_12, SHA256_BLOCK_SIZE) == 0);
-    CRYPT_compute_sha256_hash(random_message_13, random_message_13_size, digest);    
+    CRYPT_compute_sha256_hash(random_message_13, random_message_13_size, digest);
     TEST_ASSERT_TRUE(memcmp(digest, random_expected_13, SHA256_BLOCK_SIZE) == 0);
-    CRYPT_compute_sha256_hash(random_message_14, random_message_14_size, digest);    
+    CRYPT_compute_sha256_hash(random_message_14, random_message_14_size, digest);
     TEST_ASSERT_TRUE(memcmp(digest, random_expected_14, SHA256_BLOCK_SIZE) == 0);
-    CRYPT_compute_sha256_hash(random_message_15, random_message_15_size, digest);    
+    CRYPT_compute_sha256_hash(random_message_15, random_message_15_size, digest);
     TEST_ASSERT_TRUE(memcmp(digest, random_expected_15, SHA256_BLOCK_SIZE) == 0);
-    CRYPT_compute_sha256_hash(random_message_16, random_message_16_size, digest);    
+    CRYPT_compute_sha256_hash(random_message_16, random_message_16_size, digest);
     TEST_ASSERT_TRUE(memcmp(digest, random_expected_16, SHA256_BLOCK_SIZE) == 0);
-    CRYPT_compute_sha256_hash(random_message_17, random_message_17_size, digest);    
+    CRYPT_compute_sha256_hash(random_message_17, random_message_17_size, digest);
     TEST_ASSERT_TRUE(memcmp(digest, random_expected_17, SHA256_BLOCK_SIZE) == 0);
-    CRYPT_compute_sha256_hash(random_message_18, random_message_18_size, digest);    
+    CRYPT_compute_sha256_hash(random_message_18, random_message_18_size, digest);
     TEST_ASSERT_TRUE(memcmp(digest, random_expected_18, SHA256_BLOCK_SIZE) == 0);
-    CRYPT_compute_sha256_hash(random_message_19, random_message_19_size, digest);    
+    CRYPT_compute_sha256_hash(random_message_19, random_message_19_size, digest);
     TEST_ASSERT_TRUE(memcmp(digest, random_expected_19, SHA256_BLOCK_SIZE) == 0);
 
 
-    int32_t end_time = (int32_t) HAL_GetTick();
-    int32_t time_elapsed = (end_time - start_time);
-    DEBUG_uart_print_str("SHA256 benchmark done. time elapsed ~~~~~~~~ \n ");
-        LOG_message(
-            LOG_SYSTEM_OBC,
-            LOG_SEVERITY_NORMAL,
-            LOG_SINK_ALL,
-            "\n~~~~~~~~~~~~~~~~~~~\nSHA256 benchmark done. time elapsed %d ms \n ~~~~~~~~~~~~~~~~~~~~\n",
-            time_elapsed
-        );
+    const int32_t end_time = (int32_t) HAL_GetTick();
+    const int32_t time_elapsed_ms = (end_time - start_time);
+    LOG_message(
+        LOG_SYSTEM_OBC,
+        LOG_SEVERITY_NORMAL,
+        LOG_SINK_ALL,
+        "SHA256 benchmark done. Time elapsed: %d ms.",
+        time_elapsed_ms
+    );
     return 0;
-
-
 }
