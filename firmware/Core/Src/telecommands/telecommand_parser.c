@@ -191,22 +191,14 @@ uint8_t TCMD_get_suffix_tag_str(const char *str, const char *tag_name, char *val
     // Copy the value into a buffer
     char value_str[64]; // sha256 needs 64 chars max
     memset(value_str, 0, sizeof(value_str));
-    if ((uint32_t)(value_end_index - value_start_index) >= sizeof(value_str) - 1) {
-        // Failure: digit string too long
+    if ((uint32_t)(value_end_index - value_start_index) > sizeof(value_str)) {
+        // Failure: string too long
         return 5;
     }
     strncpy(value_str, str + value_start_index, value_end_index - value_start_index);
 
-    // Extract the string from the buffer
-    char result_str[64];
-    const uint8_t string_result = TCMD_extract_string_arg(value_str, 0, result_str, sizeof(value_str));
-    if (string_result != 0) {
-        return 6;
-    }
-
-
     // Set the value
-    *value_dest = *result_str;
+    snprintf(value_dest, sizeof(value_str) + 1, "%s", value_str);
     
     // Success
     return 0;
@@ -330,17 +322,17 @@ uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChann
 
     // TODO: read out the @sha256=xx hash and validate it here.
     // Extract @sha256=xxxx from the telecommand string, starting at &tcmd_str[end_of_args_idx]
-    char sha256_hash; // default value
+    char sha256_hash[64]; // default value
     if (GEN_get_index_of_substring_in_array(tcmd_suffix_tag_str, tcmd_suffix_tag_str_len, "@sha256=") >= 0) {
         // The "@sha256=" tag was found, so parse it.
-        if (TCMD_get_suffix_tag_str(tcmd_suffix_tag_str, "@sha256=", &sha256_hash) != 0) {
+        if (TCMD_get_suffix_tag_str(tcmd_suffix_tag_str, "@sha256=", sha256_hash) != 0) {
             DEBUG_uart_print_str("Error: TCMD_parse_full_telecommand: failed to parse present @sha256=xxxx.\n");
             return 85;
         }
     }
 
     DEBUG_uart_print_str("Parsed sha256 hash: ");
-    DEBUG_uart_print_uint64(sha256_hash);
+    DEBUG_uart_print_str(sha256_hash);
     DEBUG_uart_print_str("\n");
 
     // generate a string that contains 'CTS1+<tcmd_name>(<parems>)'
