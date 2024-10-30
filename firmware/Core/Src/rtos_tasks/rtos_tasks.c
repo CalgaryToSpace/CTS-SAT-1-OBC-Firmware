@@ -242,8 +242,9 @@ void TASK_receive_gps_info(void *argument) {
 				LOG_SYSTEM_GPS,
 				LOG_SEVERITY_NORMAL, 
 				LOG_SINK_ALL,
-				"GPS Buffer Data: %s",
-				UART_gps_buffer 
+				"GPS Buffer Data: %s Write Index %d",
+				UART_gps_buffer,
+				UART_gps_buffer_write_idx
 			);
 
 		// Checking if there is data in the GPS buffer
@@ -273,8 +274,9 @@ void TASK_receive_gps_info(void *argument) {
 				LOG_SYSTEM_GPS,
 				LOG_SEVERITY_NORMAL, 
 				LOG_SINK_ALL,
-				"GPS Buffer Data (Should be empty): %s",
-				UART_gps_buffer 
+				"GPS Buffer Data (Should be empty): %s Write Index %d",
+				UART_gps_buffer,
+				UART_gps_buffer_write_idx 
 			);
 
 			// Parsing the gps data

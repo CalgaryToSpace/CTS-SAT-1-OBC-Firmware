@@ -199,9 +199,9 @@ void UART_init_uart_handlers(void) {
 }
 
 /// @brief Sets the UART interrupt state (enabled/disabled)
-/// @param toggle_status 1: enable interrupt; 0: disable interrupt
-void GPS_set_uart_interrupt_state(uint8_t toggle_status) {
-    if (toggle_status == 1)
+/// @param new_enabled 1: enable interrupt; 0: disable interrupt
+void GPS_set_uart_interrupt_state(uint8_t new_enabled) {
+    if (new_enabled == 1)
     {
         UART_gps_uart_interrupt_enabled = 1;
 
