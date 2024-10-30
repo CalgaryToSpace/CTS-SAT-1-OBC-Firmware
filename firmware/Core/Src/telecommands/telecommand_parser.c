@@ -189,7 +189,7 @@ uint8_t TCMD_get_suffix_tag_str(const char *str, const char *tag_name, char *val
     }
 
     // Copy the value into a buffer
-    char value_str[32]; // uint64 needs 20 chars max
+    char value_str[64]; // sha256 needs 64 chars max
     memset(value_str, 0, sizeof(value_str));
     if ((uint32_t)(value_end_index - value_start_index) >= sizeof(value_str) - 1) {
         // Failure: digit string too long
@@ -197,8 +197,16 @@ uint8_t TCMD_get_suffix_tag_str(const char *str, const char *tag_name, char *val
     }
     strncpy(value_str, str + value_start_index, value_end_index - value_start_index);
 
+    // Extract the string from the buffer
+    char result_str[64];
+    const uint8_t string_result = TCMD_extract_string_arg(value_str, 0, result_str, sizeof(value_str));
+    if (string_result != 0) {
+        return 6;
+    }
+
+
     // Set the value
-    *value_dest = *value_str;
+    *value_dest = *result_str;
     
     // Success
     return 0;
