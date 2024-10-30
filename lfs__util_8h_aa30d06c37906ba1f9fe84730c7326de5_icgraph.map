@@ -46,10 +46,10 @@
 <area shape="poly" id="edge21_Node000018_Node000019" title=" " alt="" coords="572,835,525,872,496,889,465,902,404,920,354,931,329,931,304,926,277,917,248,901,227,882,217,860,211,836,199,808,111,660,115,658,204,806,216,834,222,858,231,879,251,897,280,912,305,921,330,925,353,925,403,915,463,896,494,884,522,867,569,831"/>
 <area shape="rect" id="Node000021" href="$ant__commands_8c.html#a5ea8c0da2fe8ab8bb2a60b80501c12e8" title="initiates deployment of the selected antenna, ignoring whether the current status of that antenna is ..." alt="" coords="13,819,194,859"/>
 <area shape="poly" id="edge22_Node000018_Node000021" title=" " alt="" coords="581,837,561,865,535,895,502,924,465,945,407,965,358,970,308,963,249,946,211,929,177,907,123,862,127,858,180,903,214,924,251,940,310,958,358,965,406,960,463,941,499,919,531,891,557,861,577,834"/>
-<area shape="rect" id="Node000023" href="$ant__commands_8c.html#afbbf4f4105326f8ea68bb54812e3078e" title="writes the number of times deployment has been attempted (for a specified antenna and mcu) in a respo..." alt="" coords="5,51,202,91"/>
+<area shape="rect" id="Node000023" href="$ant__commands_8c.html#ab7a42ab5fcf483a9db3af4a2d5015f63" title="writes the cumulative time (in ms increments) that the deployment system has been active (for a speci..." alt="" coords="9,51,198,91"/>
 <area shape="poly" id="edge23_Node000018_Node000023" title=" " alt="" coords="592,781,587,627,580,519,569,403,553,288,530,184,516,140,500,101,482,70,462,48,427,25,387,13,345,8,302,10,259,18,218,28,150,53,149,48,217,23,258,12,301,5,345,3,388,8,429,21,466,44,487,67,505,99,521,138,535,183,558,287,575,402,586,518,592,627,597,781"/>
-<area shape="rect" id="Node000025" href="$ant__commands_8c.html#a37835fa09d7e3b1dda02ac34d0357403" title="writes the cumulative time (in 50ms increments) that the deployment system has been active (for a spe..." alt="" coords="9,296,198,337"/>
-<area shape="poly" id="edge24_Node000018_Node000025" title=" " alt="" coords="589,782,573,682,547,549,529,482,509,423,487,375,462,344,444,333,418,326,351,316,274,313,199,314,199,308,274,307,352,311,420,320,446,329,466,340,491,372,514,421,534,481,552,548,579,681,594,781"/>
+<area shape="rect" id="Node000025" href="$ant__commands_8c.html#afbbf4f4105326f8ea68bb54812e3078e" title="writes the number of times deployment has been attempted (for a specified antenna and mcu) in a respo..." alt="" coords="5,296,202,337"/>
+<area shape="poly" id="edge24_Node000018_Node000025" title=" " alt="" coords="589,782,573,682,547,549,529,482,509,423,487,375,462,344,444,334,419,326,353,316,277,313,202,314,202,308,277,307,353,311,420,321,446,329,466,340,491,372,514,421,534,481,552,548,579,681,594,781"/>
 <area shape="rect" id="Node000027" href="$ant__internal__drivers_8c.html#ab799f0945c47a98ea73de0da1926e583" title="Receives a response from the antenna controller." alt="" coords="290,58,424,84"/>
 <area shape="poly" id="edge25_Node000018_Node000027" title=" " alt="" coords="591,782,582,639,560,433,543,327,522,230,495,151,479,121,462,98,444,85,423,77,425,72,447,80,466,94,484,118,499,149,527,229,549,326,566,432,587,638,596,781"/>
 <area shape="rect" id="Node000032" href="$ant__internal__drivers_8c.html#a9551990b43beb551930f8d904fd6a220" title="Sends a command to the antenna controller." alt="" coords="299,354,414,380"/>
@@ -92,12 +92,12 @@
 <area shape="poly" id="edge53_Node000018_Node000125" title=" " alt="" coords="526,812,429,812,429,807,526,807"/>
 <area shape="rect" id="Node000127" href="$telecommand__executor_8c.html#aa779e85b5e4980298a22fe51742fc752" title="Executes a telecommand from the agenda immediately." alt="" coords="259,847,454,887"/>
 <area shape="poly" id="edge54_Node000018_Node000127" title=" " alt="" coords="527,829,445,849,444,843,526,824"/>
-<area shape="poly" id="edge26_Node000027_Node000023" title=" " alt="" coords="275,74,202,74,202,68,275,68"/>
+<area shape="poly" id="edge26_Node000027_Node000023" title=" " alt="" coords="275,74,199,74,199,68,275,68"/>
 <area shape="poly" id="edge27_Node000027_Node000025" title=" " alt="" coords="276,86,251,99,225,120,201,145,162,200,133,254,115,297,110,295,128,252,157,198,197,142,221,116,248,94,274,81"/>
 <area shape="poly" id="edge29_Node000032_Node000019" title=" " alt="" coords="285,377,251,393,221,420,194,452,153,521,125,587,111,633,106,632,120,585,148,519,190,449,217,416,248,389,283,372"/>
 <area shape="poly" id="edge30_Node000032_Node000021" title=" " alt="" coords="285,374,267,381,252,393,227,426,214,457,210,489,212,521,218,590,215,629,204,672,186,715,163,756,122,820,118,817,159,753,181,713,199,670,210,628,212,590,207,521,205,488,209,456,222,423,248,389,264,377,283,369"/>
 <area shape="poly" id="edge31_Node000032_Node000023" title=" " alt="" coords="318,348,282,323,248,293,203,240,165,184,113,93,117,90,169,181,208,237,252,289,286,319,321,344"/>
-<area shape="poly" id="edge32_Node000032_Node000025" title=" " alt="" coords="283,355,198,338,199,333,284,350"/>
+<area shape="poly" id="edge32_Node000032_Node000025" title=" " alt="" coords="283,355,202,339,203,333,284,350"/>
 <area shape="rect" id="Node000133" href="$lfs_8c.html#a510f8fe2f64777b4662a914ac95aa82c" title=" " alt="" coords="973,1786,1060,1812"/>
 <area shape="poly" id="edge56_Node000132_Node000133" title=" " alt="" coords="1136,1765,1061,1789,1059,1783,1134,1760"/>
 <area shape="rect" id="Node000137" href="$lfs_8c.html#aa3ff784058aead4768173e729152f2da" title=" " alt="" coords="974,1737,1059,1762"/>

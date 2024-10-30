@@ -1,5 +1,5 @@
-<map id="ANT_CMD_report_antenna_deployment_activation_time" name="ANT_CMD_report_antenna_deployment_activation_time">
-<area shape="rect" id="Node000001" title="writes the cumulative time (in 50ms increments) that the deployment system has been active (for a spe..." alt="" coords="5,461,195,502"/>
+<map id="ANT_CMD_get_antenna_deployment_activation_time" name="ANT_CMD_get_antenna_deployment_activation_time">
+<area shape="rect" id="Node000001" title="writes the cumulative time (in ms increments) that the deployment system has been active (for a speci..." alt="" coords="5,461,195,502"/>
 <area shape="rect" id="Node000002" href="$ant__internal__drivers_8c.html#ab799f0945c47a98ea73de0da1926e583" title="Receives a response from the antenna controller." alt="" coords="243,468,376,494"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="195,479,227,479,227,484,195,484"/>
 <area shape="rect" id="Node000003" href="$log_8c.html#a9620661557eea5fdaf535b894ae58c84" title="Log a message to several destinations (sinks)" alt="" coords="424,468,533,494"/>
