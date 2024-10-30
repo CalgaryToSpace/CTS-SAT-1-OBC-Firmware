@@ -681,7 +681,20 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_func = TCMDEXEC_adcs_request_commissioning_telemetry,
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_set_current_unix_time",
+        .tcmd_func = TCMDEXEC_adcs_set_current_unix_time,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     }, 
+    {
+        .tcmd_name = "adcs_get_current_unix_time",
+        .tcmd_func = TCMDEXEC_adcs_get_current_unix_time,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    }, 
+
     // ****************** END SECTION: telecommand_adcs ******************
 
     // ****************** SECTION: log_telecommand_defs ******************

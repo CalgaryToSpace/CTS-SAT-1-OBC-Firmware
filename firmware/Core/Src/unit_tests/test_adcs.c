@@ -745,3 +745,14 @@ uint8_t TEST_EXEC__ADCS_pack_to_raw_star_tracker_struct() {
 
     return 0;
 }
+
+
+uint8_t TEST_EXEC__ADCS_pack_to_unix_time_ms() {
+    uint8_t input_params[6] = {0x56, 0x8b, 0x21, 0x67, 0x62, 0x02};
+    uint64_t result;
+
+    ADCS_pack_to_unix_time_ms(input_params, &result);
+    TEST_ASSERT_TRUE(result == 1730251606610);
+
+    return 0;
+}

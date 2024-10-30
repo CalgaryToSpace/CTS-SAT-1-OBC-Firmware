@@ -1769,6 +1769,44 @@ uint8_t TCMDEXEC_adcs_save_image_to_sd(const char *args_str, TCMD_TelecommandCha
     return status;
 }
 
+/// @brief Telecommand: Synchronise the current ADCS Unix epoch time
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_set_current_unix_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    uint8_t status = ADCS_set_current_unix_time(); 
+    return status;
+}
+
+/// @brief Telecommand: Retrieve the current ADCS Unix epoch time
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_get_current_unix_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    uint64_t unix_time_ms;
+    uint8_t status = ADCS_get_current_unix_time(&unix_time_ms); 
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS Unix time telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_unix_time_ms_TO_json(
+        &unix_time_ms, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS Unix time telemetry JSON conversion failed (err %d)", result_json);
+        return 2;
+    }
+
+    return status;
+}
+
 // TODO: agenda modification for repeating
 /// @brief Telecommand: Request commissioning telemetry from the ADCS and save it to the memory module
 /// @param args_str 

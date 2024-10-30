@@ -1126,3 +1126,20 @@ uint8_t ADCS_raw_star_tracker_struct_TO_json(const ADCS_raw_star_tracker_struct_
 
     return 0;
 }
+
+uint8_t ADCS_unix_time_ms_TO_json(const uint64_t *data, char json_output_str[], uint16_t json_output_str_len) {
+    if (data == NULL || json_output_str == NULL || json_output_str_len < 50) {
+        return 1; // Error: invalid input or too short buffer
+    }
+
+    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len,"{\"current_adcs_unix_time\":%llu}",*data);
+
+    if (snprintf_ret < 0) {
+        return 2; // Error: snprintf encoding error
+    }
+    if (snprintf_ret >= json_output_str_len) {
+        return 3; // Error: string buffer too short
+    }
+
+    return 0;
+}

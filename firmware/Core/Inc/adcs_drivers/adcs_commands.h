@@ -125,5 +125,7 @@ uint8_t ADCS_get_acp_execution_state(ADCS_acp_execution_state_struct_t *output_s
 uint8_t ADCS_get_current_state_1(ADCS_current_state_1_struct_t *output_struct);
 uint8_t ADCS_get_raw_star_tracker_data(ADCS_raw_star_tracker_struct_t *output_struct);
 uint8_t ADCS_save_image_to_sd(ADCS_camera_select_enum_t camera_select, ADCS_image_size_enum_t image_size);
+uint8_t ADCS_get_current_unix_time();
+uint8_t ADCS_set_current_unix_time();
 
 #endif /* INC_ADCS_COMMANDS_H_ */

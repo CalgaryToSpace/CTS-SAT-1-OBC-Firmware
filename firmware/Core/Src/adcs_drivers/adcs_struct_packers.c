@@ -693,3 +693,11 @@ uint8_t ADCS_pack_to_raw_star_tracker_struct(uint8_t *input_data, ADCS_raw_star_
 
     return 0;
 }
+
+uint8_t ADCS_pack_to_unix_time_ms(uint8_t *data_received, uint64_t *output_data) {
+    
+                                                                                                                    // use ULL to perform unsigned, not signed, multiplication
+    *output_data = ((data_received[3] << 24 | data_received[2] << 16 | data_received[1] << 8 | data_received[0]) * 1000ULL) + ((data_received[5] << 8) | data_received[4]);
+    return 0;
+
+}

@@ -11,6 +11,7 @@
 #include "adcs_drivers/adcs_types_to_json.h"
 #include "adcs_drivers/adcs_commands.h"
 #include "adcs_drivers/adcs_internal_drivers.h"
+#include "timekeeping/timekeeping.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -1062,4 +1063,34 @@ uint8_t ADCS_save_image_to_sd(ADCS_camera_select_enum_t camera_select, ADCS_imag
     uint8_t data_send[2] = {camera_select, image_size};
     uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SAVE_IMAGE, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
+}
+
+/// @brief Instruct the ADCS to synchronise its Unix epoch time to the current OBC Unix time.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_set_current_unix_time() {
+    uint64_t current_unix_time_ms = TIM_get_current_unix_epoch_time_ms();
+    
+    uint32_t s_component = current_unix_time_ms  / 1000;
+    uint16_t ms_component = current_unix_time_ms % 1000;
+
+    uint8_t data_send[6];
+    ADCS_convert_uint32_to_reversed_uint8_array_members(data_send, s_component, 0);
+    ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ms_component, 4);
+
+    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SET_CURRENT_UNIX_TIME, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+    return cmd_status;
+}
+
+/// @brief Instruct the ADCS to execute the ADCS_get_current_unix_time command.
+/// @param epoch_time_ms Pointer to uint64 to store the time since the Unix epoch in ms, according to the ADCS
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_get_current_unix_time(uint64_t* epoch_time_ms) {
+    uint8_t data_length = 6;
+    uint8_t data_received[data_length]; // define temp buffer
+
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_GET_CURRENT_UNIX_TIME, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+    ADCS_pack_to_unix_time_ms(data_received, epoch_time_ms);
+
+    return tlm_status;
 }
