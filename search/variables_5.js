@@ -24,5 +24,6 @@ var searchData=
   ['estimated_5fyaw_5fangle_5fmdeg_21',['estimated_yaw_angle_mdeg',['../structADCS__estimated__attitude__angles__struct__t.html#a5d78712008a13c6dcb6f155da127d841',1,'ADCS_estimated_attitude_angles_struct_t']]],
   ['estimated_5fz_5fgyro_5fbias_5fmdeg_5fper_5fsec_22',['estimated_z_gyro_bias_mdeg_per_sec',['../structADCS__estimated__gyro__bias__struct__t.html#a2005b68a8f914820e3d92d2ae52bf768',1,'ADCS_estimated_gyro_bias_struct_t']]],
   ['etag_23',['etag',['../structlfs__mdir.html#a1169f749e9b0ad1c18ff8045a3a6770f',1,'lfs_mdir']]],
-  ['extended_5fkalman_5ffilter_5fsystem_5fnoise_24',['extended_kalman_filter_system_noise',['../structADCS__estimation__params__struct__t.html#abbc8a8f77cc93f830480622b613ca043',1,'ADCS_estimation_params_struct_t']]]
+  ['expected_24',['expected',['../namespacesha256__unit__tests.html#a6dda7f113d409fd7a22906b73fd10821',1,'sha256_unit_tests']]],
+  ['extended_5fkalman_5ffilter_5fsystem_5fnoise_25',['extended_kalman_filter_system_noise',['../structADCS__estimation__params__struct__t.html#abbc8a8f77cc93f830480622b613ca043',1,'ADCS_estimation_params_struct_t']]]
 ];

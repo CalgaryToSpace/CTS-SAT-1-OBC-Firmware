@@ -1,15 +1,15 @@
 var searchData=
 [
-  ['y_5fangular_5frate_5fmdeg_5fper_5fsec_0',['y_angular_rate_mdeg_per_sec',['../structADCS__measurements__struct__t.html#adbfb108b1bd76afecf995403c9d5dd59',1,'ADCS_measurements_struct_t']]],
-  ['y_5fmdeg_1',['y_mdeg',['../structADCS__commanded__angles__struct__t.html#a929505538af73b4a2c56b5babbd56fdf',1,'ADCS_commanded_angles_struct_t']]],
-  ['y_5fmdeg_5fper_5fsec_2',['y_mdeg_per_sec',['../structADCS__rated__sensor__rates__struct__t.html#afc3ee6f52e59a9b74dfc093b992830f6',1,'ADCS_rated_sensor_rates_struct_t::y_mdeg_per_sec'],['../structADCS__fine__angular__rates__struct__t.html#a471657c5d3aa8537b9a6de0c7b0dd763',1,'ADCS_fine_angular_rates_struct_t::y_mdeg_per_sec']]],
-  ['y_5fmicro_3',['y_micro',['../structADCS__fine__sun__vector__struct__t.html#acea2d47d6054d2ec91cdb666471b432d',1,'ADCS_fine_sun_vector_struct_t::y_micro'],['../structADCS__nadir__vector__struct__t.html#a5270b8ffbff6de2f5063c4db417e99ea',1,'ADCS_nadir_vector_struct_t::y_micro']]],
-  ['y_5fms_4',['y_ms',['../structADCS__magnetorquer__command__struct__t.html#a24f513da3dc8e8432117a4c97ac7cfd9',1,'ADCS_magnetorquer_command_struct_t']]],
-  ['y_5fnt_5',['y_nT',['../structADCS__magnetic__field__vector__struct__t.html#ac3c95a5fa046ad54d226ed791ce184d7',1,'ADCS_magnetic_field_vector_struct_t']]],
-  ['y_5frate_5fmdeg_5fper_5fsec_6',['y_rate_mdeg_per_sec',['../structADCS__angular__rates__struct__t.html#aa45b6ae536d46f90c5070f6917098746',1,'ADCS_angular_rates_struct_t']]],
-  ['y_5frate_5foffset_5fmdeg_5fper_5fsec_7',['y_rate_offset_mdeg_per_sec',['../structADCS__rate__gyro__config__struct__t.html#af73f61cecd11b335f67b037b3c76e311',1,'ADCS_rate_gyro_config_struct_t']]],
-  ['y_5fraw_8',['y_raw',['../structADCS__raw__magnetometer__values__struct__t.html#a0e967ad32ab30e265806349934b2f4d4',1,'ADCS_raw_magnetometer_values_struct_t']]],
-  ['y_5frpm_9',['y_rpm',['../structADCS__wheel__speed__struct__t.html#ab67361d64c1da397ccf25b6ad5a3114d',1,'ADCS_wheel_speed_struct_t']]],
-  ['y_5fwheel_5fspeed_5frpm_10',['y_wheel_speed_rpm',['../structADCS__measurements__struct__t.html#a487afb7b978d1d13cfc1ba9755fdc20c',1,'ADCS_measurements_struct_t']]],
-  ['yp_5fcoefficient_5fnano_11',['yp_coefficient_nano',['../structADCS__augmented__sgp4__params__struct__t.html#a7120a27abe48411327f21cb95434545e',1,'ADCS_augmented_sgp4_params_struct_t']]]
+  ['x_5fangular_5frate_5fmdeg_5fper_5fsec_0',['x_angular_rate_mdeg_per_sec',['../structADCS__measurements__struct__t.html#aeb4c4f0f03d026d6b9efab15baa9fa0b',1,'ADCS_measurements_struct_t']]],
+  ['x_5fmdeg_1',['x_mdeg',['../structADCS__commanded__angles__struct__t.html#a26a44e3e2fbf2463d89b41930c9c6775',1,'ADCS_commanded_angles_struct_t']]],
+  ['x_5fmdeg_5fper_5fsec_2',['x_mdeg_per_sec',['../structADCS__rated__sensor__rates__struct__t.html#aa1755b207ebe5ec572de6aeb740311c2',1,'ADCS_rated_sensor_rates_struct_t::x_mdeg_per_sec'],['../structADCS__fine__angular__rates__struct__t.html#a8c5464469bcb6575f3cf73beba67e7dc',1,'ADCS_fine_angular_rates_struct_t::x_mdeg_per_sec']]],
+  ['x_5fmicro_3',['x_micro',['../structADCS__fine__sun__vector__struct__t.html#a9a2a71befc93f67962654844c45a0dd6',1,'ADCS_fine_sun_vector_struct_t::x_micro'],['../structADCS__nadir__vector__struct__t.html#ae06d44c64c693c9e8074d9ebed9c8b76',1,'ADCS_nadir_vector_struct_t::x_micro']]],
+  ['x_5fms_4',['x_ms',['../structADCS__magnetorquer__command__struct__t.html#acbd017142e5b5c358fa2175ee0f5333c',1,'ADCS_magnetorquer_command_struct_t']]],
+  ['x_5fnt_5',['x_nT',['../structADCS__magnetic__field__vector__struct__t.html#a813fcfaf9e0b8cf79d16e63eb7cfe3f5',1,'ADCS_magnetic_field_vector_struct_t']]],
+  ['x_5frate_5fmdeg_5fper_5fsec_6',['x_rate_mdeg_per_sec',['../structADCS__angular__rates__struct__t.html#a46643930ae8db47ad99b846098ca2969',1,'ADCS_angular_rates_struct_t']]],
+  ['x_5frate_5foffset_5fmdeg_5fper_5fsec_7',['x_rate_offset_mdeg_per_sec',['../structADCS__rate__gyro__config__struct__t.html#a7b5e834d67fbf656cac7e91be487000c',1,'ADCS_rate_gyro_config_struct_t']]],
+  ['x_5fraw_8',['x_raw',['../structADCS__raw__magnetometer__values__struct__t.html#a9cfcb41aa9639cc002df25f58ffa93fb',1,'ADCS_raw_magnetometer_values_struct_t']]],
+  ['x_5frpm_9',['x_rpm',['../structADCS__wheel__speed__struct__t.html#a510af803bc3c7a89f4ee37fce8166fb5',1,'ADCS_wheel_speed_struct_t']]],
+  ['x_5fwheel_5fspeed_5frpm_10',['x_wheel_speed_rpm',['../structADCS__measurements__struct__t.html#a9e273099e62f1738cf49dc3bde7be440',1,'ADCS_measurements_struct_t']]],
+  ['xp_5fcoefficient_5fnano_11',['xp_coefficient_nano',['../structADCS__augmented__sgp4__params__struct__t.html#a1d76a4b51e3089c318b8f98226d7ed60',1,'ADCS_augmented_sgp4_params_struct_t']]]
 ];

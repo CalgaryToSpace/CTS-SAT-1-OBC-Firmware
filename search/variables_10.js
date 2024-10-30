@@ -1,20 +1,6 @@
 var searchData=
 [
-  ['raan_5fcoefficient_5fmilli_0',['raan_coefficient_milli',['../structADCS__augmented__sgp4__params__struct__t.html#a426c804baf6cdca588b1f4cafc1fa775',1,'ADCS_augmented_sgp4_params_struct_t']]],
-  ['rate_5fsensor_5fmult_1',['rate_sensor_mult',['../structADCS__rate__gyro__config__struct__t.html#aadb9f3640144053d3733aeb8a489c20a',1,'ADCS_rate_gyro_config_struct_t']]],
-  ['rcache_2',['rcache',['../structlfs.html#a73dc13e25f54bcd6276939dabe75f92e',1,'lfs']]],
-  ['read_3',['read',['../structlfs__config.html#aba49c64d8494adc9dca00f2072f403f3',1,'lfs_config']]],
-  ['read_5fbuf_4',['read_buf',['../flash__telecommand__defs_8c.html#ae3fb5e2dc93980e0ec243647c1761859',1,'flash_telecommand_defs.c']]],
-  ['read_5fbuffer_5',['read_buffer',['../structlfs__config.html#a76a6fcf8b9770349e5a59cff7cb98ebb',1,'lfs_config']]],
-  ['read_5fsize_6',['read_size',['../structlfs__config.html#ace0b079140090710b558e3bc5febfc78',1,'lfs_config']]],
-  ['readiness_5flevel_7',['readiness_level',['../structTCMD__TelecommandDefinition__t.html#ac9c665747bb53e8bdd867c5ff71e1ac2',1,'TCMD_TelecommandDefinition_t']]],
-  ['reset_5fcause_8',['reset_cause',['../structADCS__boot__running__status__struct__t.html#a6b7437247d624abb3a5e801c7fc350ba',1,'ADCS_boot_running_status_struct_t::reset_cause'],['../structEPS__struct__system__status__t.html#a21508f6410b6caffe898e57128830d82',1,'EPS_struct_system_status_t::reset_cause']]],
-  ['response_5fmessage_5fgps_5flog_9',['response_message_gps_log',['../structADCS__raw__gps__status__struct__t.html#a599e40d653dc9b9185c3741ad77967a3',1,'ADCS_raw_gps_status_struct_t']]],
-  ['rev_10',['rev',['../structlfs__mdir.html#ab085472382ff9f45ef3bb76f610f5e15',1,'lfs_mdir']]],
-  ['root_11',['root',['../structlfs.html#a24eaf15f26f58183dce782fc9aafb3d7',1,'lfs']]],
-  ['rst_5fcnt_5fcmd_12',['rst_cnt_cmd',['../structEPS__struct__system__status__t.html#afe46fbe28af36b69793ea1afa3589a8f',1,'EPS_struct_system_status_t']]],
-  ['rst_5fcnt_5femlopo_13',['rst_cnt_emlopo',['../structEPS__struct__system__status__t.html#a25996cce7653085712d1bc5ebca24d69',1,'EPS_struct_system_status_t']]],
-  ['rst_5fcnt_5fmcu_14',['rst_cnt_mcu',['../structEPS__struct__system__status__t.html#aa88d45928afb6a7a579607195f941ffa',1,'EPS_struct_system_status_t']]],
-  ['rst_5fcnt_5fpwron_15',['rst_cnt_pwron',['../structEPS__struct__system__status__t.html#a5fe5b19dc93ac0643ba8cea2004a74a9',1,'EPS_struct_system_status_t']]],
-  ['rst_5fcnt_5fwdg_16',['rst_cnt_wdg',['../structEPS__struct__system__status__t.html#af19a899c90cac95ce62a90b958551535',1,'EPS_struct_system_status_t']]]
+  ['quaternion_5ferror_5fq1_5fmicro_0',['quaternion_error_q1_micro',['../structADCS__quaternion__error__vector__struct__t.html#a7d6387337028550012401a69faf3218e',1,'ADCS_quaternion_error_vector_struct_t']]],
+  ['quaternion_5ferror_5fq2_5fmicro_1',['quaternion_error_q2_micro',['../structADCS__quaternion__error__vector__struct__t.html#a4e5d6ab8928c21b8ee0bcf5f2b97bc6c',1,'ADCS_quaternion_error_vector_struct_t']]],
+  ['quaternion_5ferror_5fq3_5fmicro_2',['quaternion_error_q3_micro',['../structADCS__quaternion__error__vector__struct__t.html#a8325f5066e6d5fccf84ac30f3df22356',1,'ADCS_quaternion_error_vector_struct_t']]]
 ];
