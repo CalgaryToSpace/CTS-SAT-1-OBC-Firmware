@@ -66,6 +66,7 @@ uint8_t TCMDEXEC_gps_set_enabled(const char *args_str, TCMD_TelecommandChannel_e
         }
 
         // Adding a delay between each transmission. Need to verify if there is a confirmation for these log commands
+        // TODO: Verify if delay is necessary
         HAL_Delay(500);
     }
 

@@ -228,8 +228,9 @@ void TASK_receive_gps_info(void *argument) {
 	TASK_HELP_start_of_task();
 
 	// CONFIGURATION PARAMETER
-	uint32_t timeout_duration_ms = 50;
+	uint32_t GPS_receive_timeout_duration_ms = 50;
 
+	// TODO: Create an internal drivers folder and add a COMMAND Mode Function (Send a log command and receive a response, look into EPS_send_cmd_get_response)
 	char latest_gps_response[UART_gps_buffer_len];
 	uint16_t latest_gps_response_len = 0;
 
@@ -251,7 +252,7 @@ void TASK_receive_gps_info(void *argument) {
 		if(UART_gps_buffer_write_idx > 0) {
 
 			// Checking if new data has come ie No more data is being transmitted
-			if ((HAL_GetTick() - UART_gps_last_write_time_ms > timeout_duration_ms) && (UART_gps_buffer_write_idx > 0))
+			if ((HAL_GetTick() - UART_gps_last_write_time_ms > GPS_receive_timeout_duration_ms) && (UART_gps_buffer_write_idx > 0))
 			{
 				// Copy data from the UART buffer to a separate buffer
 				latest_gps_response_len = UART_gps_buffer_write_idx;
@@ -274,7 +275,7 @@ void TASK_receive_gps_info(void *argument) {
 				LOG_SYSTEM_GPS,
 				LOG_SEVERITY_NORMAL, 
 				LOG_SINK_ALL,
-				"GPS Buffer Data (Should be empty): %s Write Index %d",
+				"GPS Buffer Data (Should be empty): %s Write Index (Should be 0) %d",
 				UART_gps_buffer,
 				UART_gps_buffer_write_idx 
 			);
