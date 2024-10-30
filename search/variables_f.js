@@ -9,9 +9,12 @@ var searchData=
   ['pos_5fcoefficient_5fmilli_6',['pos_coefficient_milli',['../structADCS__augmented__sgp4__params__struct__t.html#a3c1c3633d0970d20fe724113c1c0749a',1,'ADCS_augmented_sgp4_params_struct_t']]],
   ['position_5fsd_5fmilli_7',['position_sd_milli',['../structADCS__augmented__sgp4__params__struct__t.html#afb014695a2ef33de9e559d0e3db09be5',1,'ADCS_augmented_sgp4_params_struct_t']]],
   ['power_5fcw_8',['power_cW',['../structEPS__vpid__eng__t.html#a8a14e28baeca27b42644eb249fd794c3',1,'EPS_vpid_eng_t']]],
-  ['processed_9',['processed',['../structADCS__cmd__ack__struct__t.html#ae1cabfcbea93a085cb3017ac191566a9',1,'ADCS_cmd_ack_struct_t']]],
-  ['prog_10',['prog',['../structlfs__config.html#a6df9c7458b71625fc49e2b159a0e7fe0',1,'lfs_config']]],
-  ['prog_5fbuffer_11',['prog_buffer',['../structlfs__config.html#a8f4cc43d08071d32b52c5106dac3cb56',1,'lfs_config']]],
-  ['prog_5fsize_12',['prog_size',['../structlfs__config.html#aae1956189539d586e3dcd68af5460199',1,'lfs_config']]],
-  ['ptag_13',['ptag',['../structlfs__dir__traverse.html#a5b5f3a68d6efc4b69f3ea16bb6f46dd9',1,'lfs_dir_traverse::ptag'],['../structlfs__commit.html#a99930b9579a13b93b3165e5ed195c9eb',1,'lfs_commit::ptag']]]
+  ['precision_5fcoefficient_9',['precision_coefficient',['../structSet__Precision__Data.html#aba10ea0856e8ebb042a557a916056d2f',1,'Set_Precision_Data']]],
+  ['precision_5finsignificant_5fbits_10',['precision_insignificant_bits',['../structSet__Precision__Data.html#a2dcf521a7b85b637aafcc102c9aeeb77',1,'Set_Precision_Data']]],
+  ['precision_5fscaling_5ffactor_11',['precision_scaling_factor',['../structSet__Precision__Data.html#a67c8ee6937246a7e9152d2e9ef772e82',1,'Set_Precision_Data']]],
+  ['processed_12',['processed',['../structADCS__cmd__ack__struct__t.html#ae1cabfcbea93a085cb3017ac191566a9',1,'ADCS_cmd_ack_struct_t']]],
+  ['prog_13',['prog',['../structlfs__config.html#a6df9c7458b71625fc49e2b159a0e7fe0',1,'lfs_config']]],
+  ['prog_5fbuffer_14',['prog_buffer',['../structlfs__config.html#a8f4cc43d08071d32b52c5106dac3cb56',1,'lfs_config']]],
+  ['prog_5fsize_15',['prog_size',['../structlfs__config.html#aae1956189539d586e3dcd68af5460199',1,'lfs_config']]],
+  ['ptag_16',['ptag',['../structlfs__dir__traverse.html#a5b5f3a68d6efc4b69f3ea16bb6f46dd9',1,'lfs_dir_traverse::ptag'],['../structlfs__commit.html#a99930b9579a13b93b3165e5ed195c9eb',1,'lfs_commit::ptag']]]
 ];
