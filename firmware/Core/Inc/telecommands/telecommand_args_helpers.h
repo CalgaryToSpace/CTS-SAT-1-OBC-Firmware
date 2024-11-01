@@ -15,4 +15,6 @@ uint8_t TCMD_extract_int64_arg(const char *str, uint32_t str_len, uint8_t arg_in
 uint8_t TCMD_ascii_to_double(const char *str, uint32_t str_len, double *result);
 uint8_t TCMD_extract_double_arg(const char *str, uint32_t str_len, uint8_t arg_index, double *result);
 
+uint8_t TCMD_str_to_hex_array(const char *str, uint32_t str_len, uint8_t *result);
+
 #endif // __INCLUDE_GUARD__TELECOMMAND_ARGS_HELPERS_H__
