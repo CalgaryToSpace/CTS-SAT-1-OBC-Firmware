@@ -154,7 +154,7 @@ uint8_t TCMD_get_suffix_tag_uint64(const char *str, const char *tag_name, uint64
     return 0;
 }
 
-/// @brief Searches for a `str` like `\@tag_name=xxxx`, and sets `char xxxx` into `out_value`.
+/// @brief Searches for a `str` like `\@tag_name=xxxx`, and sets uint8_t array `xxxx` into `value_dest`.
 /// @param str The string (haystack) to search with for the tag.
 /// @param tag_name The tag to search for, including the '@' and '='.
 /// @param value_dest The destination for the value. `*value_dest` will be set.
@@ -334,7 +334,7 @@ uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChann
             return 85;
         }
 
-        // generate a string that contains 'CTS1+<tcmd_name>(<parems>)'
+        // generate a string that contains 'CTS1+<tcmd_name>(<params>)'
         uint8_t tcmd_name_with_parens[end_of_args_idx + 1];
         memcpy(tcmd_name_with_parens, tcmd_str, end_of_args_idx + 1);
 
@@ -342,6 +342,7 @@ uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChann
         uint8_t expected_sha256_hash[32];
         CRYPT_compute_sha256_hash(tcmd_name_with_parens, sizeof(tcmd_name_with_parens), expected_sha256_hash);
 
+        // Compare the expected hash with the hash given in the telecommand string.
         for (uint8_t i = 0; i < 32; i++) {
             if (sha256_hash[i] != expected_sha256_hash[i]) {
                 DEBUG_uart_print_str("Error: TCMD_parse_full_telecommand: sha256 hash does not match the expected hash.\n");
