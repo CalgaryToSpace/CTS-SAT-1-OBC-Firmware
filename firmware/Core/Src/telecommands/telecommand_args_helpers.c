@@ -409,6 +409,11 @@ uint8_t TCMD_extract_double_arg(const char *str, uint32_t str_len, uint8_t arg_i
     return 0;
 }
 
+/// @brief Converts a string of hex characters to a byte array.
+/// @param str Input string containing hex characters.
+/// @param str_len Length of the input string.
+/// @param result Pointer to the result byte array.
+/// @return 0 if successful, 1 if the string is empty, 2 if the string length is not a multiple of 2.
 uint8_t TCMD_str_to_hex_array(const char *str, uint32_t str_len, uint8_t *result) {
     if(str_len == 0) {
         return 1;
@@ -427,7 +432,7 @@ uint8_t TCMD_str_to_hex_array(const char *str, uint32_t str_len, uint8_t *result
         result[i/2] = strtol(byte_str, NULL, 16);
     }
 
-    // TODO: add additional error checking
+    // TODO: add additional error checking where needed
 
     return 0;
 }
