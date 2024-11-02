@@ -23,6 +23,9 @@
 #include "telecommands/mpi_telecommand_defs.h"
 #include "telecommands/eps_telecommands.h"
 #include "telecommands/stm32_internal_flash_telecommand_defs.h"
+#include "telecommands/comms_telecommand_defs.h"
+
+
 #include "timekeeping/timekeeping.h"
 #include "littlefs/littlefs_helper.h"
 #include "stm32/stm32_reboot_reason.h"
@@ -992,8 +995,14 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_func = TCMDEXEC_obc_read_temperature,
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    }
+    },
     // ****************** END SECTION: obc_temperature_sensor_telecommand_defs ******************
+    {
+        .tcmd_name = "comms_dipole_switch_set_state",
+        .tcmd_func = TCMDEXEC_comms_dipole_switch_set_state,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
+    }
 };
 
 // extern
