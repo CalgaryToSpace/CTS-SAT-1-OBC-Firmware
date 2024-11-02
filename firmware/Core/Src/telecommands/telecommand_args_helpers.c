@@ -429,7 +429,7 @@ uint8_t TCMD_str_to_hex_array(const char *str, uint32_t str_len, uint8_t *result
         byte_str[1] = str[i+1];
         byte_str[2] = '\0';
 
-        result[i/2] = strtol(byte_str, NULL, 16);
+        result[i/2] = strtoul(byte_str, NULL, 16);
     }
 
     // TODO: add additional error checking where needed
