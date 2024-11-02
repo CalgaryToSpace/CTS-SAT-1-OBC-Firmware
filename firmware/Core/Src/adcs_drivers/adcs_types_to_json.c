@@ -1143,3 +1143,23 @@ uint8_t ADCS_unix_time_ms_TO_json(const uint64_t *data, char json_output_str[], 
 
     return 0;
 }
+
+uint8_t ADCS_sd_log_config_struct_TO_json(const ADCS_sd_log_config_struct *data, char json_output_str[], uint16_t json_output_str_len) {
+        if (data == NULL || json_output_str == NULL || json_output_str_len < 150) {
+        return 1; // Error: invalid input
+    }
+    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len,
+                                    "{\"which_log\":%d,\"log_bitmask\":0x%.2x%.2x%.2x%.2x%.2x%.2x%.2x%.2x%.2x%.2x,\"log_period\":%d,\"which_sd\":%d}",                                 
+                                    data->which_log, (data->log_bitmask)[0], (data->log_bitmask)[1], (data->log_bitmask)[2], (data->log_bitmask)[3], 
+                                    (data->log_bitmask)[4], (data->log_bitmask)[5], (data->log_bitmask)[6], (data->log_bitmask)[7], (data->log_bitmask)[8], 
+                                    (data->log_bitmask)[9], data->log_period,  data->which_sd);
+
+    if (snprintf_ret < 0) {
+        return 2; // Error: snprintf encoding error
+    }
+    if (snprintf_ret >= json_output_str_len) {
+        return 3; // Error: string buffer too short
+    }
+    
+    return 0;
+}

@@ -46,5 +46,6 @@ uint8_t ADCS_pack_to_acp_execution_state_struct(uint8_t* data_received, ADCS_acp
 uint8_t ADCS_pack_to_current_state_1_struct(uint8_t* data_received, ADCS_current_state_1_struct_t* output_struct);
 uint8_t ADCS_pack_to_raw_star_tracker_struct(uint8_t* input_data, ADCS_raw_star_tracker_struct_t* output_data);
 uint8_t ADCS_pack_to_unix_time_ms(uint8_t *data_received, uint64_t *output_data);
+uint8_t ADCS_pack_to_sd_log_config_struct(uint8_t *data_received, uint8_t which_log, ADCS_sd_log_config_struct *config);
 
 #endif /* INC_ADCS_STRUCT_PACKERS_H_ */

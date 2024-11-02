@@ -756,3 +756,20 @@ uint8_t TEST_EXEC__ADCS_pack_to_unix_time_ms() {
 
     return 0;
 }
+
+uint8_t TEST_EXEC__ADCS_pack_to_sd_log_config_struct() {
+    uint8_t input_params[13] = {0x56, 0x8b, 0x21, 0x67, 0x62, 0x02, 0x8c, 0x11, 0x62, 0x02, 0x8c, 0x11, 0x01};
+    ADCS_sd_log_config_struct result_struct;
+
+    ADCS_pack_to_sd_log_config_struct(input_params, 1, &result_struct);
+
+    for (uint8_t i = 0; i < 10; i++) {
+        TEST_ASSERT_TRUE((result_struct.log_bitmask)[i] == input_params[i]);
+    }
+    
+    TEST_ASSERT_TRUE(result_struct.log_period == 4492);
+    TEST_ASSERT_TRUE(result_struct.which_sd == ADCS_SD_LOG_DESTINATION_SECONDARY_SD);
+
+    return 0;
+}
+

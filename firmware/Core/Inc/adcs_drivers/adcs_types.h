@@ -233,6 +233,11 @@ typedef enum ADCS_image_size_enum_t {
     ADCS_IMAGE_SIZE_64_X_64_PX = 4,
 } ADCS_image_size_enum_t;
 
+typedef enum ADCS_sd_log_destination_enum_t {
+    ADCS_SD_LOG_DESTINATION_PRIMARY_SD = 0,
+    ADCS_SD_LOG_DESTINATION_SECONDARY_SD = 1,
+} ADCS_sd_log_destination_enum_t;
+
 typedef enum ADCS_commissioning_step_enum_t {
     ADCS_COMMISISONING_STEP_DETERMINE_INITIAL_ANGULAR_RATES = 1, 
     ADCS_COMMISISONING_STEP_INITIAL_DETUMBLING = 2, 
@@ -664,6 +669,13 @@ typedef struct ADCS_raw_star_tracker_struct_t {
     int32_t q1_micro;
     int32_t q2_micro;
 } ADCS_raw_star_tracker_struct_t;
+
+typedef struct ADCS_sd_log_config_struct {
+    uint8_t which_log;
+    uint8_t log_bitmask[10];
+    uint16_t log_period; // TODO: figure out whether this is ms or something else
+    ADCS_sd_log_destination_enum_t which_sd;
+} ADCS_sd_log_config_struct;
 
 /* Commissioning Structs */
 

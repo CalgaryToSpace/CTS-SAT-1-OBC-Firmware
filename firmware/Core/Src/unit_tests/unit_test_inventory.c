@@ -304,7 +304,13 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func = TEST_EXEC__ADCS_pack_to_unix_time_ms,
         .test_file = "unit_tests/test_adcs",
         .test_func_name = "ADCS_pack_to_unix_time_ms"
-    },
+    }, 
+
+    {
+        .test_func = TEST_EXEC__ADCS_pack_to_sd_log_config_struct,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_pack_to_sd_log_config_struct"
+    }, 
 
     // ****************** END SECTION: test_adcs ******************
 

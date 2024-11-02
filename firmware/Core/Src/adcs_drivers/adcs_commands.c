@@ -1055,7 +1055,7 @@ uint8_t ADCS_get_raw_star_tracker_data(ADCS_raw_star_tracker_struct_t *output_st
     return tlm_status;
 }
 
-/// @brief Instruct the ADCS to execute the ADCS_Set_Run_Mode command.
+/// @brief Instruct the ADCS to save an image to the SD card.
 /// @param[in] camera_select Which camera to save the image from; can be Camera 1 (0), Camera 2 (1), or Star (2)
 /// @param[in] image_size Resolution of the image to save; can be 1024x1024 (0), 512x512, (1) 256x256, (2) 128x128, (3) or 64x64 (4)
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
@@ -1067,7 +1067,7 @@ uint8_t ADCS_save_image_to_sd(ADCS_camera_select_enum_t camera_select, ADCS_imag
 
 /// @brief Instruct the ADCS to synchronise its Unix epoch time to the current OBC Unix time.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_set_current_unix_time() {
+uint8_t ADCS_synchronise_unix_time() {
     uint64_t current_unix_time_ms = TIM_get_current_unix_epoch_time_ms();
     
     uint32_t s_component = current_unix_time_ms  / 1000;
@@ -1091,6 +1091,62 @@ uint8_t ADCS_get_current_unix_time(uint64_t* epoch_time_ms) {
     uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_GET_CURRENT_UNIX_TIME, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
 
     ADCS_pack_to_unix_time_ms(data_received, epoch_time_ms);
+
+    return tlm_status;
+}
+
+/// @brief Instruct the ADCS to execute the ADCS_Set_Run_Mode command.
+/// @param[in] which_log 1 or 2; which specific log number to log to the SD card
+/// @param[in] log_array Pointer to list of bitmasks to set the log config
+/// @param[in] log_array_size Number of things to log
+/// @param[in] log_period Period to log data to the SD card; if zero, then disable logging
+/// @param[in] which_sd Which SD card to log to; 0 for primary, 1 for secondary 
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_set_sd_log_config(uint8_t which_log, const uint8_t **log_array, uint8_t log_array_size, uint16_t log_period, ADCS_sd_log_destination_enum_t which_sd) {
+    uint8_t data_send[13];
+    ADCS_combine_sd_log_bitmasks(log_array, log_array_size, data_send); // saves to the first 10 bytes of data_send
+    ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, log_period, 10);
+    data_send[12] = which_sd;
+    
+    uint8_t command_id;
+    switch (which_log) {
+        case 1:
+            command_id = ADCS_COMMAND_CUBEACP_SET_SD_LOG1_CONFIG;
+            break;
+        case 2:
+            command_id = ADCS_COMMAND_CUBEACP_SET_SD_LOG2_CONFIG;
+            break;
+        default:
+            return 7; // invalid log to log
+    }
+    
+    uint8_t cmd_status = ADCS_i2c_send_command_and_check(command_id, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+    return cmd_status;
+}
+
+/// @brief Instruct the ADCS to execute the ADCS_get_sd_log_config command.
+/// @param[in] config Pointer to struct to store the config data
+/// @param[in] which_log 1 or 2; which specific log number to log to the SD card
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_get_sd_log_config(uint8_t which_log, ADCS_sd_log_config_struct* config) {
+    uint8_t data_length = 13;
+    uint8_t data_received[data_length]; // define temp buffer
+
+    uint8_t command_id;
+    switch (which_log) {
+        case 1:
+            command_id = ADCS_TELEMETRY_CUBEACP_GET_SD_LOG1_CONFIG;
+            break;
+        case 2:
+            command_id = ADCS_TELEMETRY_CUBEACP_GET_SD_LOG2_CONFIG;
+            break;
+        default:
+            return 7; // invalid log to log
+    }
+
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(command_id, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+
+    ADCS_pack_to_sd_log_config_struct(data_received, which_log, config);
 
     return tlm_status;
 }

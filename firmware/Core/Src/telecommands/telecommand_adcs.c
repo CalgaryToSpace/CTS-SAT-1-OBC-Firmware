@@ -1773,9 +1773,9 @@ uint8_t TCMDEXEC_adcs_save_image_to_sd(const char *args_str, TCMD_TelecommandCha
 /// @param args_str 
 ///     - No arguments for this command
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_adcs_set_current_unix_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_adcs_synchronise_unix_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t status = ADCS_set_current_unix_time(); 
+    uint8_t status = ADCS_synchronise_unix_time(); 
     return status;
 }
 
@@ -1801,6 +1801,68 @@ uint8_t TCMDEXEC_adcs_get_current_unix_time(const char *args_str, TCMD_Telecomma
     if (result_json != 0) {
         snprintf(response_output_buf, response_output_buf_len,
             "ADCS Unix time telemetry JSON conversion failed (err %d)", result_json);
+        return 2;
+    }
+
+    return status;
+}
+
+/// @brief Telecommand: Repeatedly log given data from an SD card
+/// @param args_str 
+///     - Arg 0: which_log; 1 or 2; which specific log number to log to the SD card
+///     - Arg 1: log_array; Hex array of bitmasks for log config (10 hex bytes)
+///     - Arg 2: log_period; Period to log data to the SD card; if zero, then disable logging
+///     - Arg 3: which_sd; Which SD card to log to, 0 for primary, 1 for secondary 
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_set_sd_log_config(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    uint64_t which_log;
+    TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &which_log);
+
+    // parse hex array arguments
+    uint8_t hex_data_array[10]; 
+    uint16_t data_length;
+    TCMD_extract_hex_array_arg(args_str, 1, &hex_data_array[0], data_length, &data_length);
+
+    const uint8_t *data_pointer[1] = {hex_data_array};
+
+    uint64_t log_period;
+    TCMD_extract_uint64_arg(args_str, strlen(args_str), 2, &log_period);
+
+    uint64_t which_sd;
+    TCMD_extract_uint64_arg(args_str, strlen(args_str), 3, &which_sd);
+
+    uint8_t status = ADCS_set_sd_log_config((uint8_t) which_log, data_pointer, 1, (uint8_t) log_period, (uint8_t) which_sd);
+
+    return status;
+}
+
+/// @brief Telecommand: Retrieve the current ADCS SD log configuration
+/// @param args_str 
+///     - Arg 0: which log to retrieve the configuration for (1 or 2)
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_get_sd_log_config(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    uint64_t which_log;
+    TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &which_log);
+
+    ADCS_sd_log_config_struct result_struct;
+    uint8_t status = ADCS_get_sd_log_config((uint8_t) which_log, &result_struct); 
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS SD log config telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_sd_log_config_struct_TO_json(
+        &result_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS SD log config telemetry JSON conversion failed (err %d)", result_json);
         return 2;
     }
 

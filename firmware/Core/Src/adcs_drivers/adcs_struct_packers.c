@@ -701,3 +701,15 @@ uint8_t ADCS_pack_to_unix_time_ms(uint8_t *data_received, uint64_t *output_data)
     return 0;
 
 }
+
+uint8_t ADCS_pack_to_sd_log_config_struct(uint8_t *data_received, uint8_t which_log, ADCS_sd_log_config_struct *config) {
+    
+    for (uint8_t i = 0; i < 10; i++) {
+        (config->log_bitmask)[i] = data_received[i];
+    }
+    config->which_log = which_log;
+    config->log_period = (data_received[11] << 8) | data_received[10];
+    config->which_sd = data_received[12];
+
+    return 0;
+}

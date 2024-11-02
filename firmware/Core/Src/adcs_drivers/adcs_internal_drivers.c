@@ -166,6 +166,22 @@ uint8_t ADCS_convert_uint32_to_reversed_uint8_array_members(uint8_t *array, uint
     return 0;
 }
 
+/// @brief Take an arbitrary number (up to 63) of 10-byte uint8 arrays and return a single array which is the bitwise OR of all of them. 
+/// @param[in] array_in Array of pointers to 10-byte uint8 data arrays
+/// @param[in] array_in_size Size of the array_in array
+/// @param[out] array_out 10-byte uint8 data array to send the result to
+/// @return 0 once complete.
+uint8_t ADCS_combine_sd_log_bitmasks(const uint8_t **array_in, const uint8_t array_in_size, uint8_t *array_out) {
+    for (uint8_t i = 0; i < array_in_size; i++) {
+        for (uint8_t j = 0; j < 10; j++) {
+            // iterate through array_out and bitwise OR each element with
+            // the corresponding element in the array array_in[i]
+            array_out[j] |= array_in[i][j];
+        }
+    }
+    return 0;
+}
+
 static uint8_t CRC8Table[256];
 
 /// @brief Initialise the lookup table for 8-bit CRC calculation. Code provided by ADCS Firmware Reference Manual (p.18-19).
