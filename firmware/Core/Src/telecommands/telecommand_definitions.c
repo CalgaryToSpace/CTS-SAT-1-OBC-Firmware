@@ -997,12 +997,14 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     // ****************** END SECTION: obc_temperature_sensor_telecommand_defs ******************
+    // ****************** START SECTION: comms_telecommand_defs ******************
     {
         .tcmd_name = "comms_dipole_switch_set_state",
         .tcmd_func = TCMDEXEC_comms_dipole_switch_set_state,
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
-    }
+    },
+    // ****************** END SECTION: comms_telecommand_defs ******************
 };
 
 // extern
