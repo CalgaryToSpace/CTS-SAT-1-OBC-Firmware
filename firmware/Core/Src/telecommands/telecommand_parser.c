@@ -4,6 +4,7 @@
 #include "debug_tools/debug_uart.h"
 #include "transforms/arrays.h"
 #include "crypto/sha256.h"
+#include "log/log.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -327,14 +328,27 @@ uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChann
         }
     }
 
-    #ifdef SHA256
     // Extract @sha256=xxxx from the telecommand string, starting at &tcmd_str[end_of_args_idx]
+    #ifdef SHA256 // Enables/Disables SHA256 hash validation
+    // Check to see if sha256 suffix tag is present in the telecommand string.
+    if (GEN_get_index_of_substring_in_array(tcmd_suffix_tag_str, tcmd_suffix_tag_str_len, "@sha256=") < 0) { 
+        // Failure: sha256 suffix tag not found.
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "SHA256 validation suffix tag not found in telecommand string."
+        );
+        return 90;
+    }
+
     uint8_t sha256_hash[32];
     // Check to see if sha256 suffix tag is present in the telecommand string.
     if (TCMD_get_suffix_tag_hex_array(tcmd_suffix_tag_str, "@sha256=", sha256_hash) != 0) {
         // Failure: sha256 suffix tag not found.
-        DEBUG_uart_print_str("Error: TCMD_parse_full_telecommand: failed to parse present @sha256=xxxx.\n");
-        return 85;
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error: TCMD_parse_full_telecommand: failed to parse present @sha256=xxxx."
+        );
+        return 100;
     }
 
     // generate a string that contains 'CTS1+<tcmd_name>(<params>)'
@@ -348,18 +362,22 @@ uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChann
     // Compare the expected hash with the hash given in the telecommand string.
     for (uint8_t i = 0; i < 32; i++) {
         if (sha256_hash[i] != expected_sha256_hash[i]) {
-            DEBUG_uart_print_str("Error: TCMD_parse_full_telecommand: sha256 hash does not match the expected hash.\n");
-            return 90;
+            LOG_message(
+                LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+                "Error: TCMD_parse_full_telecommand: sha256 hash does not match the expected hash."
+            );
+            return 110;
         }
     }
-    // }
     #endif
+
+    //Error: TCMD_parse_full_telecommand: sha256 hash does not match the expected hash.
 
     // Check that the args_str_no_parens is not too long.
     // Note: `arg_len` does not include the null terminator, but `TCMD_ARGS_STR_NO_PARENS_SIZE` does.
     if (arg_len + 1 > TCMD_ARGS_STR_NO_PARENS_SIZE) {
         DEBUG_uart_print_str("Error: TCMD_parse_full_telecommand: args_str_no_parens is too long.\n");
-        return 100;
+        return 120;
     }
 
     // ensure the corrent number of args are provided
@@ -379,7 +397,7 @@ uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChann
     const int8_t correct_number_of_args_provided = (num_args_expected == 0 && arg_len == 0) || (num_commas == (num_args_expected-1) && arg_len != 0);
     if (!correct_number_of_args_provided) {
         DEBUG_uart_print_str(error_message);
-        return 105;
+        return 130;
     }
 // Reached the end of the telecommand parsing. Thus, success. Fill the output struct.
     parsed_tcmd_output->tcmd_idx = tcmd_idx;
