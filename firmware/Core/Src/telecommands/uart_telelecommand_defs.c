@@ -8,9 +8,10 @@
 #include <string.h>
 #include <stdio.h>
 
-#define TX_TIMEOUT_DURATION_MS 300	            // Timeout duration for transmit in milliseconds
-#define RX_TIMEOUT_BEFORE_FIRST_BYTE_MS 300     // Timeout duration for first rx byte in milliseconds
-#define RX_TIMEOUT_BETWEEN_BYTES_MS 250         // Timeout duration for in between rx bytes in milliseconds
+/// @brief Timeout duration for transmit HAL call, in milliseconds.
+static const uint16_t UART_TX_TIMEOUT_DURATION_MS = 200;
+/// @brief Timeout duration for receive in milliseconds. Same between bytes and at the start.
+static const uint16_t UART_RX_TIMEOUT_DURATION_MS = 300;
 
 // Allocate 5KiB of space for send and receive arrays
 const uint16_t tx_buffer_max_size = 5120;
@@ -202,7 +203,7 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
         const uint32_t UART_rx_start_time_ms = HAL_GetTick();
 
         // Transmit config command to requested peripheral
-        const HAL_StatusTypeDef transmit_status = HAL_UART_Transmit(UART_handle_ptr, tx_buffer, tx_buffer_len, TX_TIMEOUT_DURATION_MS);
+        const HAL_StatusTypeDef transmit_status = HAL_UART_Transmit(UART_handle_ptr, tx_buffer, tx_buffer_len, UART_TX_TIMEOUT_DURATION_MS);
 
         // Check UART transmission
         if (transmit_status != HAL_OK) {
@@ -226,6 +227,7 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
 
         // Receive from peripheral until a timeout event
         while (1) {
+            
             // Check if we have received upto max UART rx buffer size
             if (*UART_rx_buffer_write_idx_ptr >= *UART_rx_buffer_size_ptr) {
                 break;
@@ -233,7 +235,7 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
 
             // Check if we have timed out (Before receiving the first byte)
             if (*UART_rx_buffer_write_idx_ptr == 0) {
-                if((HAL_GetTick() - UART_rx_start_time_ms) > RX_TIMEOUT_BEFORE_FIRST_BYTE_MS) {
+                if((HAL_GetTick() - UART_rx_start_time_ms) > UART_RX_TIMEOUT_DURATION_MS) {
                     LOG_message(
                         LOG_source, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
                         "No response received from %s. Timeout waiting for 1st byte.",
@@ -243,9 +245,10 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
                     return 4; // Error code: Timeout waiting for 1st byte
                 }            
             }
+
             // We have received some data but timed out (in between bytes / end of reception)
             else {
-                const uint32_t current_time = HAL_GetTick();                    // Get current time
+                const uint32_t current_time = HAL_GetTick(); // Get current time
 
                 // Get last write time (Required to dereference volatile pointer here to prevent race 
                 // condition in the folllowing if statement)
@@ -253,10 +256,10 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
 
                 // Check if we have timed out while receiving bytes
                 if (
-                    (current_time > last_write_time)       // Important seemingly-obvious safety check.
-                    && ((current_time - last_write_time) > RX_TIMEOUT_BETWEEN_BYTES_MS)
+                    (current_time > last_write_time) // Important seemingly-obvious safety check.
+                    && ((current_time - last_write_time) > UART_RX_TIMEOUT_DURATION_MS)
                 ) {
-                    rx_buffer_len = *UART_rx_buffer_write_idx_ptr;      // Set the length of the response buffer
+                    rx_buffer_len = *UART_rx_buffer_write_idx_ptr; // Set the length of the response buffer
                     break;
                 }
             }
@@ -285,13 +288,16 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
     if(rx_buffer_len > 0) { 
 
         // Convert rx_buffer to a string for logging
-        char rx_buffer_str[rx_buffer_len*3+1];                      // 2 hex chars, 1 space, +1 for null terminator                        
+        // 2 hex chars, 1 space, +1 for null terminator
+        char rx_buffer_str[rx_buffer_len*3+1];                        
 
         for(uint16_t i = 0; i < rx_buffer_len; i++) {
-            sprintf(&rx_buffer_str[i*3], "%02X ", rx_buffer[i]);    // Format each byte as hex with a trailing space
+            // Format each byte as hex with a trailing space
+            sprintf(&rx_buffer_str[i*3], "%02X ", rx_buffer[i]); 
         }
 
-        rx_buffer_str[rx_buffer_len*3] = '\0';                      // Null terminator at the end of the string
+        // Null terminator at the end of the string
+        rx_buffer_str[rx_buffer_len*3] = '\0';
 
         // Log received response in Hex formatting
         LOG_message(

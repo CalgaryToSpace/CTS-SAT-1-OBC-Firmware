@@ -2,7 +2,6 @@
 #include "mpi/mpi_types.h"
 #include "mpi/mpi_transceiver.h"
 #include "uart_handler/uart_handler.h"
-#include "debug_tools/debug_uart.h"
 
 #include "main.h"
 #include "stm32l4xx_hal.h"
