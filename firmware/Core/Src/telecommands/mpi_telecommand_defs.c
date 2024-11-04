@@ -3,6 +3,7 @@
 #include "mpi/mpi_command_handling.h"
 #include "transforms/arrays.h"
 #include "mpi/mpi_transceiver.h"
+#include "log/log.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -56,29 +57,57 @@ uint8_t TCMDEXEC_mpi_send_command_hex(const char *args_str, TCMD_TelecommandChan
 
     // Send back MPI response log detail
     switch(cmd_response) {
-        case 0: 
-            snprintf(response_output_buf, response_output_buf_len, "MPI successfully executed the command. MPI echoed response code: %u\n", MPI_rx_buffer[args_bytes_len]);
+        case 0:
+            LOG_message(
+                LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                "MPI successfully executed the command. MPI echoed response code: %u\n", 
+                MPI_rx_buffer[args_bytes_len]
+            );
             break;
-        case 2: 
-            snprintf(response_output_buf, response_output_buf_len, "Failed UART transmission.\n");
+        case 2:
+            LOG_message(
+                LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+                "Failed UART transmission."
+            );
             break;
-        case 3: 
-            snprintf(response_output_buf, response_output_buf_len, "Failed UART reception.\n");
+        case 3:
+            LOG_message(
+                LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+                "Failed UART reception."
+            );
             break;
-        case 4: 
-            snprintf(response_output_buf, response_output_buf_len, "Timeout waiting for 1st byte from MPI.\n");
+        case 4:
+            LOG_message(
+                LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+                "Timeout waiting for 1st byte from MPI."
+            );
             break;
-        case 5: 
-            snprintf(response_output_buf, response_output_buf_len, "Timeout after receiving bytes from MPI.\n");
+        case 5:
+            LOG_message(
+                LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+                "Timeout after receiving bytes from MPI."
+            );
             break;
         case 6:
-            snprintf(response_output_buf, response_output_buf_len, "MPI failed to execute telecommand.  MPI echoed response code: %u\n", cmd_response);
+            LOG_message(
+                LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+                "MPI failed to execute telecommand. MPI echoed response code: %u\n", 
+                cmd_response
+            );
             break;
         case 7:
-            snprintf(response_output_buf, response_output_buf_len, "Invalid response from the MPI.  MPI echoed response code: %u\n", cmd_response);
+            LOG_message(
+                LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+                "Invalid response from the MPI. MPI echoed response code: %u\n", 
+                cmd_response
+            );
             break;
         default:
-            snprintf(response_output_buf, response_output_buf_len, "Unknown MPI_send_telecommand_get_response() return: %u\n", cmd_response);
+            LOG_message(
+                LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+                "Unknown MPI_send_telecommand_get_response() return: %u\n", 
+                cmd_response
+            );
             break;
     }
 
