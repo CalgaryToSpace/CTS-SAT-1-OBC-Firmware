@@ -1,5 +1,5 @@
 #ifndef INCLUDE_GUARD__CTS_CSP_MAIN_H
-#define INCLUDE_GUARD__CTS_CSP_MAIN_H
+#define INCLUDE_GUARD__CTS_CSP_MAIN_H //from parkers branch
 // https://docs.kubos.com/1.1.0/apis/libcsp/i2cdriver.html
 
 #include <csp/interfaces/csp_if_i2c.h> //my addition
@@ -24,6 +24,6 @@ int queue_len_tx, int queue_len_rx, i2c_callback_t callback); //from website
 int CSP_send_for_cts1(int handle, i2c_frame_t *frame, uint16_t timeout); //from website
 
 
-uint8_t CSP_demo_1();
+uint8_t CSP_demo_1(); // from parker's branch
 
 #endif // INCLUDE_GUARD__CTS_CSP_MAIN_H
