@@ -343,7 +343,6 @@ uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChann
     uint8_t parsed_sha256_hash[32];
     // Parse the sha256 hash from the suffix tag.
     if (TCMD_get_suffix_tag_hex_array(tcmd_suffix_tag_str, "@sha256=", parsed_sha256_hash) != 0) {
-        // Failure: sha256 suffix tag not found.
         LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "Error: TCMD_parse_full_telecommand: failed to parse present @sha256=xxxx."
@@ -370,8 +369,6 @@ uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChann
         }
     }
     #endif
-
-    //Error: TCMD_parse_full_telecommand: sha256 hash does not match the expected hash.
 
     // Check that the args_str_no_parens is not too long.
     // Note: `arg_len` does not include the null terminator, but `TCMD_ARGS_STR_NO_PARENS_SIZE` does.
