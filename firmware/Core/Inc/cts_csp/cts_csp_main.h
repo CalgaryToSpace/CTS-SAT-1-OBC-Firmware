@@ -9,10 +9,15 @@
 #define I2C_MASTER
 #define I2C_SLAVE //i2c device modes
 typedef struct i2c_frame_s i2c_frame_t; //website: "Data structure for I2C frames."
+
 /**
 INCLUDE PARAMS HERE FOR I2C_CALLBACK
 +WHATEVER EXPLANATIONS
  */
+
+
+ //seems like the i2c_callback function is similar to the callback function in the USART driver
+
 typedef void (*i2c_callback_t)(i2c_frame_t *frame, void *pxTaskWoken); //website "Initialise the I2C driver."
 /**
 INCLUDE PARAMS HERE FOR INIT
