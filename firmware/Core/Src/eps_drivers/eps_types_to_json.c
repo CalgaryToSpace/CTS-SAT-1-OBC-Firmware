@@ -6,40 +6,8 @@
 #include <stdint.h>
 #include <inttypes.h>
 
-/*
- ***** To create these eps_<type>_TO_json(...) functions, the following ChatGPT prompt was used: ***** 
 
-=================================================================================================
-Write a C code function with a signature like: 
-uint8_t eps_<type>_TO_json(const eps_<type>_t *data, char json_output_str[], uint16_t json_output_str_len).
-
-This function should convert the following struct type to a JSON string. The JSON string should be
-written to the json_output_str array. The length of the JSON string should not exceed the
-json_output_str_len. The JSON string should be null-terminated. Use snprintf to write to json_output_str.
-Do not include whitespaces in the JSON output. The function should return 1 on error.
-
-Assume that for any unknown types, a similar _TO_json function exists and can be used.
-
-typedef struct {
-	int16_t voltage_raw;
-	int16_t current_raw;
-	int16_t power_raw;
-} EPS_vpid_raw_t;
-
-For the long array, use array_name[0], array_name[1], array_name[2], etc. verbosely instead of using iteration.
-
-=================================================================================================
-
-Note that modification are sometimes required, including:
-0. In the prompt, rx_buf[5] is sometimes rx_buf[6].
-1. Byte order check to be like the example given.
-2. Function name.
-3. Start/end conditions.
-4. Update any multiplier, because LLMs are bad at guessing in advance how many bytes-per-loop are used.
-
-*/
-
-// TODO: determine how long each of these are, add to docs, add checks to each function at the start
+// TODO: Determine how long each of these are, add to docs, add checks to each function at the start.
 
 
 uint8_t EPS_vpid_eng_TO_json(const EPS_vpid_eng_t *data, char json_output_str[], uint16_t json_output_str_len) {
@@ -153,8 +121,8 @@ uint8_t EPS_struct_system_status_TO_json(const EPS_struct_system_status_t *data,
         return 1; // Error: Invalid input
     }
 
-    // TODO: add mode_str and reset_cause_str keys which decode the enum values to strings
-    int snprintf_ret = snprintf(
+    // TODO: Add mode_str and reset_cause_str keys which decode the enum values to strings.
+    const int snprintf_ret = snprintf(
         json_output_str, json_output_str_len,
         "{\"mode\":%d,\"config_changed_since_boot\":%d,\"reset_cause\":%d,\"uptime_sec\":%lu,\"error_code\":%u,\"rst_cnt_pwron\":%u,\"rst_cnt_wdg\":%u,\"rst_cnt_cmd\":%u,\"rst_cnt_mcu\":%u,\"rst_cnt_emlopo\":%u,\"time_since_prev_cmd_sec\":%u,\"unix_time_sec\":%lu,\"calendar_years_since_2000\":%u,\"calendar_month\":%u,\"calendar_day\":%u,\"calendar_hour\":%u,\"calendar_minute\":%u,\"calendar_second\":%u}",
         data->mode, data->config_changed_since_boot, data->reset_cause, data->uptime_sec,
@@ -178,10 +146,18 @@ uint8_t EPS_struct_pdu_overcurrent_fault_state_TO_json(const EPS_struct_pdu_over
         return 1; // Error: Invalid input
     }
 
+    // Channels 0-16 (inclusive) are present on our model.
+    // Channel 17-31 are not present on our model.
+    // Sum them up in a single value, which should always be 0.
+    uint32_t overcurrent_fault_count_channel_17_plus = 0;
+    for (uint8_t ch = 17; ch <= 31; ch++) {
+        overcurrent_fault_count_channel_17_plus += data->overcurrent_fault_count_each_channel[ch];
+    }
+
     // Write JSON string to json_output_str
-    int snprintf_ret = snprintf(
+    const int snprintf_ret = snprintf(
         json_output_str, json_output_str_len,
-        "{\"stat_ch_on_bitfield\":%u,\"stat_ch_ext_on_bitfield\":%u,\"stat_ch_overcurrent_fault_bitfield\":%u,\"stat_ch_ext_overcurrent_fault_bitfield\":%u,\"overcurrent_fault_count_each_channel\":[%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u]}",
+        "{\"stat_ch_on_bitfield\":%u,\"stat_ch_ext_on_bitfield\":%u,\"stat_ch_overcurrent_fault_bitfield\":%u,\"stat_ch_ext_overcurrent_fault_bitfield\":%u,\"overcurrent_fault_count_each_channel\":[%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%lu]}",
         data->stat_ch_on_bitfield,
         data->stat_ch_ext_on_bitfield,
         data->stat_ch_overcurrent_fault_bitfield,
@@ -194,14 +170,10 @@ uint8_t EPS_struct_pdu_overcurrent_fault_state_TO_json(const EPS_struct_pdu_over
         data->overcurrent_fault_count_each_channel[10], data->overcurrent_fault_count_each_channel[11],
         data->overcurrent_fault_count_each_channel[12], data->overcurrent_fault_count_each_channel[13],
         data->overcurrent_fault_count_each_channel[14], data->overcurrent_fault_count_each_channel[15],
-        data->overcurrent_fault_count_each_channel[16], data->overcurrent_fault_count_each_channel[17],
-        data->overcurrent_fault_count_each_channel[18], data->overcurrent_fault_count_each_channel[19],
-        data->overcurrent_fault_count_each_channel[20], data->overcurrent_fault_count_each_channel[21],
-        data->overcurrent_fault_count_each_channel[22], data->overcurrent_fault_count_each_channel[23],
-        data->overcurrent_fault_count_each_channel[24], data->overcurrent_fault_count_each_channel[25],
-        data->overcurrent_fault_count_each_channel[26], data->overcurrent_fault_count_each_channel[27],
-        data->overcurrent_fault_count_each_channel[28], data->overcurrent_fault_count_each_channel[29],
-        data->overcurrent_fault_count_each_channel[30], data->overcurrent_fault_count_each_channel[31]);
+        data->overcurrent_fault_count_each_channel[16],
+        // Put the 17-31 overcurrent count in the last slot.
+        overcurrent_fault_count_channel_17_plus
+    );
 
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error
@@ -218,7 +190,7 @@ uint8_t EPS_struct_pbu_abf_placed_state_TO_json(const EPS_struct_pbu_abf_placed_
     }
 
     // Write JSON string to json_output_str
-    int snprintf_ret = snprintf(
+    const int snprintf_ret = snprintf(
         json_output_str, json_output_str_len,
         "{\"abf_placed_0\":%u,\"abf_placed_1\":%u,\"abf_placed_0_str\":%s,\"abf_placed_1_str\":%s}",
         data->abf_placed_0,
@@ -297,12 +269,18 @@ uint8_t EPS_struct_pdu_housekeeping_data_eng_TO_json(const EPS_struct_pdu_housek
     if (ret < 0 || ret >= (json_output_str_len - offset)) return 3;
     offset += ret;
 
-    for (int i = 0; i < 32; ++i) {
+    for (uint8_t ch = 0; ch <= EPS_MAX_ACTIVE_CHANNEL_NUMBER; ch++) {
         char vip_channel_json[128];
-        ret = EPS_vpid_eng_TO_json(&data->vip_each_channel[i], vip_channel_json, sizeof(vip_channel_json));
+        ret = EPS_vpid_eng_TO_json(&data->vip_each_channel[ch], vip_channel_json, sizeof(vip_channel_json));
         if (ret != 0) return 5;
 
-        ret = snprintf(json_output_str + offset, json_output_str_len - offset, "%s%s", vip_channel_json, (i < 31) ? "," : "");
+        ret = snprintf(
+            json_output_str + offset,
+            json_output_str_len - offset,
+            "%s%s",
+            vip_channel_json,
+            (ch < EPS_MAX_ACTIVE_CHANNEL_NUMBER) ? "," : ""
+        );
         if (ret < 0 || ret >= (json_output_str_len - offset)) return 3;
         offset += ret;
     }
@@ -405,7 +383,7 @@ uint8_t EPS_struct_pcu_housekeeping_data_eng_TO_json(const EPS_struct_pcu_housek
     }
 
     // Prepare the final JSON string
-    int snprintf_ret = snprintf(
+    const int snprintf_ret = snprintf(
         json_output_str, json_output_str_len,
         "{"
         "\"voltage_internal_board_supply_mV\":%d,"
@@ -459,13 +437,13 @@ uint8_t EPS_struct_piu_housekeeping_data_eng_TO_json(
     // Convert vip_each_channel array
     vip_each_channel_json[0] = '\0'; // Initialize the JSON array string
     strcat(vip_each_channel_json, "[");
-    for (int i = 0; i < 16; i++) {
+    for (uint8_t ch = 0; ch <= EPS_MAX_ACTIVE_CHANNEL_NUMBER; ch++) {
         char vip_channel_json[128];
-        if (EPS_vpid_eng_TO_json(&data->vip_each_channel[i], vip_channel_json, sizeof(vip_channel_json)) != 0) {
+        if (EPS_vpid_eng_TO_json(&data->vip_each_channel[ch], vip_channel_json, sizeof(vip_channel_json)) != 0) {
             return 4; // Error converting vip_each_channel[i]
         }
         strcat(vip_each_channel_json, vip_channel_json);
-        if (i < (16 - 1)) {
+        if (ch < EPS_MAX_ACTIVE_CHANNEL_NUMBER) {
             strcat(vip_each_channel_json, ",");
         }
     }
