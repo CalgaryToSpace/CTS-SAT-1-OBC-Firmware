@@ -11,6 +11,7 @@
 
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_commands.h"
+#include "adcs_drivers/adcs_command_ids.h"
 #include "adcs_drivers/adcs_struct_packers.h"
 #include "adcs_drivers/adcs_types_to_json.h"
 
@@ -1869,17 +1870,34 @@ uint8_t TCMDEXEC_adcs_get_sd_log_config(const char *args_str, TCMD_TelecommandCh
     return status;
 }
 
-// TODO: agenda modification for repeating
 /// @brief Telecommand: Request commissioning telemetry from the ADCS and save it to the memory module
 /// @param args_str 
 ///     - Arg 0: Which commissioning step to request telemetry for (1-18)
+///     - Arg 1: Log number (1 or 2)
+///     - Arg 2: Destination SD card (0 = primary, 1 = secondary)
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_request_commissioning_telemetry(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     // parse arguments: first into int64_t, then convert to correct form for input
-    uint64_t argument;
-    TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &argument);
-    ADCS_commissioning_step_enum_t commissioning_step = (ADCS_commissioning_step_enum_t) argument;
+    uint64_t arguments[3];
+    for (uint8_t i = 0; i < 3; i++) {
+        TCMD_extract_uint64_arg(args_str, strlen(args_str), i, &arguments[i]);
+    }
+    ADCS_commissioning_step_enum_t commissioning_step = (ADCS_commissioning_step_enum_t) arguments[0];
+    uint8_t log_number = (uint8_t) arguments[1];
+    ADCS_sd_log_destination_enum_t sd_destination = (ADCS_sd_log_destination_enum_t) arguments[2];
+
+    if (log_number == 0 || log_number > 2) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "Commissioning SD log number may be only 1 or 2");
+        return 8;
+    }
+
+    if (sd_destination > 1) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "SD destination number may only be 0 (primary) or 1 (secondary)");
+        return 9;
+    }
 
     ADCS_acp_execution_state_struct_t current_state;
     do { // wait until 500ms has passed since last update
@@ -1892,231 +1910,151 @@ uint8_t TCMDEXEC_adcs_request_commissioning_telemetry(const char *args_str, TCMD
     } while (current_state.time_since_iteration_start_ms <= 500);
 
     uint8_t status = 0;
-
-    #define MEMORY_MODULE_FUNCTION(x) ; // TODO: delete this once memory module is implemented
-
+    // TODO: check perod in Commissioning Manual, and check if need to convert to ms
     switch(commissioning_step) {
         case ADCS_COMMISISONING_STEP_DETERMINE_INITIAL_ANGULAR_RATES: {
-            ADCS_commissioning_determine_initial_angular_rates_struct_t commissioning_data;
-            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
-            status += ADCS_get_estimate_angular_rates(&commissioning_data.estimated_angular_rates);
-            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
-            status += ADCS_get_raw_magnetometer_values(&commissioning_data.raw_magnetometer_measurements);
-            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            const uint8_t num_logs = 3;
+            const uint8_t period_s = 10; 
+            const uint8_t* commissioning_data[3] = {ADCS_SD_LOG_MASK_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_RAW_MAGNETOMETER};
+            status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);
             break;
         }
         case ADCS_COMMISISONING_STEP_INITIAL_DETUMBLING: {
-            ADCS_commissioning_initial_detumbling_struct_t commissioning_data;
-            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
-            status += ADCS_get_estimate_angular_rates(&commissioning_data.estimated_angular_rates);
-            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
-            status += ADCS_get_raw_magnetometer_values(&commissioning_data.raw_magnetometer_measurements);
-            status += ADCS_get_magnetorquer_command(&commissioning_data.magnetorquer_commands);
-            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            const uint8_t num_logs = 4; 
+            const uint8_t period_s = 10; 
+            const uint8_t* commissioning_data[4] = {ADCS_SD_LOG_MASK_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_RAW_MAGNETOMETER, ADCS_SD_LOG_MASK_MAGNETORQUER_COMMAND};
+            status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);
             break;
         }
         case ADCS_COMMISISONING_STEP_CONTINUED_DETUMBLING_TO_Y_THOMSON: {
-            ADCS_commissioning_initial_detumbling_struct_t commissioning_data;
-            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
-            status += ADCS_get_estimate_angular_rates(&commissioning_data.estimated_angular_rates);
-            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
-            status += ADCS_get_raw_magnetometer_values(&commissioning_data.raw_magnetometer_measurements);
-            status += ADCS_get_magnetorquer_command(&commissioning_data.magnetorquer_commands);
-            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            const uint8_t num_logs = 4; 
+            const uint8_t period_s = 10; 
+            const uint8_t* commissioning_data[4] = {ADCS_SD_LOG_MASK_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_RAW_MAGNETOMETER, ADCS_SD_LOG_MASK_MAGNETORQUER_COMMAND};
+            status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);
             break;
         }
         case ADCS_COMMISISONING_STEP_MAGNETOMETER_DEPLOYMENT: {
-            ADCS_commissioning_magnetometer_deployment_struct_t commissioning_data;
-            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
-            status += ADCS_get_estimate_fine_angular_rates(&commissioning_data.fine_estimated_angular_rates);
-            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
-            status += ADCS_get_raw_magnetometer_values(&commissioning_data.raw_magnetometer_measurements);
-            status += ADCS_get_cubecontrol_current(&commissioning_data.cubecontrol_currents);
-            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            const uint8_t num_logs = 4; 
+            const uint8_t period_s = 10; 
+            const uint8_t* commissioning_data[4] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_RAW_MAGNETOMETER, ADCS_SD_LOG_MASK_CUBECONTROL_CURRENT_MEASUREMENTS};
+            status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);
             break;
         }
         case ADCS_COMMISISONING_STEP_MAGNETOMETER_CALIBRATION: {
-            ADCS_commissioning_magnetometer_calibration_struct_t commissioning_data;
-            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
-            status += ADCS_get_estimate_fine_angular_rates(&commissioning_data.fine_estimated_angular_rates);
-            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
-            status += ADCS_get_measurements(&commissioning_data.adcs_measurements);
-            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            const uint8_t num_logs = 3; 
+            const uint8_t period_s = 10; 
+            const uint8_t* commissioning_data[3] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_MAGNETIC_FIELD_VECTOR};
+            status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);                     
+            // TODO: Magnetic Field Vector **should** be the calibrated measurements from the magnetometer, but we should see if we can check with CubeSpace about that
             break;
         }
         case ADCS_COMMISISONING_STEP_ANGULAR_RATE_AND_PITCH_ANGLE_ESTIMATION: {
-            ADCS_commissioning_angular_rate_and_pitch_angle_estimation_struct_t commissioning_data;
-            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
-            status += ADCS_get_estimate_fine_angular_rates(&commissioning_data.fine_estimated_angular_rates);
-            status += ADCS_get_estimated_attitude_angles(&commissioning_data.estimated_attitude_angles);
-            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
-            status += ADCS_get_measurements(&commissioning_data.adcs_measurements);
-            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            const uint8_t num_logs = 4; 
+            const uint8_t period_s = 10; 
+            const uint8_t* commissioning_data[4] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_MAGNETIC_FIELD_VECTOR};
+            status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);                     
             break;
         }
         case ADCS_COMMISISONING_STEP_Y_WHEEL_RAMP_UP_TEST: {
-            ADCS_commissioning_y_wheel_ramp_up_test_struct_t commissioning_data;
-            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
-            status += ADCS_get_estimate_fine_angular_rates(&commissioning_data.fine_estimated_angular_rates);
-            status += ADCS_get_estimated_attitude_angles(&commissioning_data.estimated_attitude_angles);
-            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
-            status += ADCS_get_wheel_speed(&commissioning_data.measured_wheel_speeds);
-            status += ADCS_get_measurements(&commissioning_data.adcs_measurements);            
-            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            const uint8_t num_logs = 5; 
+            const uint8_t period_s = 10; 
+            const uint8_t* commissioning_data[5] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_WHEEL_SPEED, ADCS_SD_LOG_MASK_MAGNETIC_FIELD_VECTOR};
+            status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);   
             break;
         }
         case ADCS_COMMISISONING_STEP_INITIAL_Y_MOMENTUM_ACTIVATION: {
-            ADCS_commissioning_y_momentum_activation_struct_t commissioning_data;
-            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
-            status += ADCS_get_estimate_fine_angular_rates(&commissioning_data.fine_estimated_angular_rates);
-            status += ADCS_get_estimated_attitude_angles(&commissioning_data.estimated_attitude_angles);
-            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
-            status += ADCS_get_wheel_speed(&commissioning_data.measured_wheel_speeds);
-            status += ADCS_get_measurements(&commissioning_data.adcs_measurements);       
-            status += ADCS_get_llh_position(&commissioning_data.LLH_positions);
-            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            const uint8_t num_logs = 6; 
+            const uint8_t period_s = 10; 
+            const uint8_t* commissioning_data[6] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_WHEEL_SPEED, ADCS_SD_LOG_MASK_MAGNETIC_FIELD_VECTOR, ADCS_SD_LOG_MASK_SATELLITE_POSITION_LLH};
+            status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);   
             break;
         }
         case ADCS_COMMISISONING_STEP_CONTINUED_Y_MOMENTUM_ACTIVATION_AND_MAGNETOMETER_EKF: {
-            ADCS_commissioning_y_momentum_activation_struct_t commissioning_data;
-            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
-            status += ADCS_get_estimate_fine_angular_rates(&commissioning_data.fine_estimated_angular_rates);
-            status += ADCS_get_estimated_attitude_angles(&commissioning_data.estimated_attitude_angles);
-            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
-            status += ADCS_get_wheel_speed(&commissioning_data.measured_wheel_speeds);
-            status += ADCS_get_measurements(&commissioning_data.adcs_measurements);       
-            status += ADCS_get_llh_position(&commissioning_data.LLH_positions);
-            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            const uint8_t num_logs = 6; 
+            const uint8_t period_s = 10; 
+            const uint8_t* commissioning_data[6] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_WHEEL_SPEED, ADCS_SD_LOG_MASK_MAGNETIC_FIELD_VECTOR, ADCS_SD_LOG_MASK_SATELLITE_POSITION_LLH};
+            status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);   
             break;
         }
         case ADCS_COMMISISONING_STEP_CUBESENSE_SUN_NADIR: {
-            ADCS_commissioning_cubesense_sun_nadir_commissioning_struct_t commissioning_data;
-            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
-            status += ADCS_get_estimate_fine_angular_rates(&commissioning_data.fine_estimated_angular_rates);
-            status += ADCS_get_estimated_attitude_angles(&commissioning_data.estimated_attitude_angles);
-            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
-            status += ADCS_get_raw_coarse_sun_sensor_1_to_6(&commissioning_data.raw_css_1_to_6_measurements); 
-            status += ADCS_get_raw_coarse_sun_sensor_7_to_10(&commissioning_data.raw_css_7_to_10_measurements); 
-            status += ADCS_get_raw_cam1_sensor(&commissioning_data.raw_cam1_measurements);            
-            status += ADCS_get_raw_cam2_sensor(&commissioning_data.raw_cam2_measurements);
-            status += ADCS_get_fine_sun_vector(&commissioning_data.fine_sun_vector);
-            status += ADCS_get_nadir_vector(&commissioning_data.nadir_vector);
-            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            const uint8_t num_logs = 9; 
+            const uint8_t period_s = 10; 
+            const uint8_t* commissioning_data[9] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, 
+                                                            ADCS_SD_LOG_MASK_RAW_CSS_1_TO_6, ADCS_SD_LOG_MASK_RAW_CSS_7_TO_10, ADCS_SD_LOG_MASK_RAW_CAM1_SENSOR, ADCS_SD_LOG_MASK_RAW_CAM2_SENSOR, 
+                                                            ADCS_SD_LOG_MASK_FINE_SUN_VECTOR, ADCS_SD_LOG_MASK_NADIR_VECTOR};
+            status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);   
             break;
         }
         case ADCS_COMMISISONING_STEP_EKF_ACTIVATION_SUN_AND_NADIR: {
-            ADCS_commissioning_cubesense_sun_nadir_commissioning_struct_t commissioning_data;
-            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
-            status += ADCS_get_estimate_fine_angular_rates(&commissioning_data.fine_estimated_angular_rates);
-            status += ADCS_get_estimated_attitude_angles(&commissioning_data.estimated_attitude_angles);
-            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
-            status += ADCS_get_raw_coarse_sun_sensor_1_to_6(&commissioning_data.raw_css_1_to_6_measurements); 
-            status += ADCS_get_raw_coarse_sun_sensor_7_to_10(&commissioning_data.raw_css_7_to_10_measurements); 
-            status += ADCS_get_raw_cam1_sensor(&commissioning_data.raw_cam1_measurements);            
-            status += ADCS_get_raw_cam2_sensor(&commissioning_data.raw_cam2_measurements);
-            status += ADCS_get_fine_sun_vector(&commissioning_data.fine_sun_vector);
-            status += ADCS_get_nadir_vector(&commissioning_data.nadir_vector);
-            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            const uint8_t num_logs = 9; 
+            const uint8_t period_s = 10; 
+            const uint8_t* commissioning_data[9] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, 
+                                                            ADCS_SD_LOG_MASK_RAW_CSS_1_TO_6, ADCS_SD_LOG_MASK_RAW_CSS_7_TO_10, ADCS_SD_LOG_MASK_RAW_CAM1_SENSOR, ADCS_SD_LOG_MASK_RAW_CAM2_SENSOR, 
+                                                            ADCS_SD_LOG_MASK_FINE_SUN_VECTOR, ADCS_SD_LOG_MASK_NADIR_VECTOR};
+            status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);  
             break;
         }
         case ADCS_COMMISISONING_STEP_CUBESTAR_STAR_TRACKER: {
-            ADCS_commissioning_cubestar_star_tracker_commissioning_struct_t commissioning_data;
-            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
-            status += ADCS_get_estimate_fine_angular_rates(&commissioning_data.fine_estimated_angular_rates);
-            status += ADCS_get_estimated_attitude_angles(&commissioning_data.estimated_attitude_angles);
-            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
-            status += ADCS_get_raw_star_tracker_data(&commissioning_data.raw_star_tracker);
-            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            const uint8_t num_logs = 8; 
+            const uint8_t period_s = 10; 
+            const uint8_t* commissioning_data[8] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, 
+                                                            ADCS_SD_LOG_MASK_STAR_PERFORMANCE1, ADCS_SD_LOG_MASK_STAR_PERFORMANCE2, 
+                                                            ADCS_SD_LOG_MASK_STAR_1_RAW_DATA, ADCS_SD_LOG_MASK_STAR_2_RAW_DATA, ADCS_SD_LOG_MASK_STAR_3_RAW_DATA};
+            status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);    
             break;
         }
         case ADCS_COMMISISONING_STEP_EKF_ACTIVATION_WITH_STAR_VECTOR_MEASUREMENTS: {
-            ADCS_commissioning_cubestar_star_tracker_commissioning_struct_t commissioning_data;
-            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
-            status += ADCS_get_estimate_fine_angular_rates(&commissioning_data.fine_estimated_angular_rates);
-            status += ADCS_get_estimated_attitude_angles(&commissioning_data.estimated_attitude_angles);
-            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
-            status += ADCS_get_raw_star_tracker_data(&commissioning_data.raw_star_tracker);
-            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            const uint8_t num_logs = 8; 
+            const uint8_t period_s = 10; 
+            const uint8_t* commissioning_data[8] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, 
+                                                            ADCS_SD_LOG_MASK_STAR_PERFORMANCE1, ADCS_SD_LOG_MASK_STAR_PERFORMANCE2, 
+                                                            ADCS_SD_LOG_MASK_STAR_1_RAW_DATA, ADCS_SD_LOG_MASK_STAR_2_RAW_DATA, ADCS_SD_LOG_MASK_STAR_3_RAW_DATA};
+            status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);    
             break;
         }
         case ADCS_COMMISISONING_STEP_ZERO_BIAS_3_AXIS_REACTION_WHEEL_CONTROL: {
-            ADCS_commissioning_zero_bias_3_axis_reaction_wheel_control_struct_t commissioning_data;
-            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
-            status += ADCS_get_estimate_fine_angular_rates(&commissioning_data.fine_estimated_angular_rates);
-            status += ADCS_get_estimated_attitude_angles(&commissioning_data.estimated_attitude_angles);
-            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
-            status += ADCS_get_wheel_speed(&commissioning_data.measured_wheel_speeds);
-            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            const uint8_t num_logs = 4; 
+            const uint8_t period_s = 10; 
+            const uint8_t* commissioning_data[4] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_WHEEL_SPEED};
+            status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);   
             break;
         }
         case ADCS_COMMISISONING_STEP_EKF_WITH_RATE_GYRO_STAR_TRACKER_MEASUREMENTS: {
-            ADCS_commissioning_sun_tracking_3_axis_control_struct_t commissioning_data;
-            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
-            status += ADCS_get_estimate_fine_angular_rates(&commissioning_data.fine_estimated_angular_rates);
-            status += ADCS_get_estimated_attitude_angles(&commissioning_data.estimated_attitude_angles);
-            status += ADCS_get_estimated_gyro_bias(&commissioning_data.estimated_gyro_bias);
-            status += ADCS_get_estimation_innovation_vector(&commissioning_data.estimation_innovation_vector);            
-            status += ADCS_get_magnetic_field_vector(&commissioning_data.magnetic_field_vector);
-            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
-            status += ADCS_get_fine_sun_vector(&commissioning_data.fine_sun_vector);
-            status += ADCS_get_nadir_vector(&commissioning_data.nadir_vector);
-            status += ADCS_get_wheel_speed(&commissioning_data.measured_wheel_speeds);
-            status += ADCS_get_magnetorquer_command(&commissioning_data.magnetorquer_commands);
-            status += ADCS_get_igrf_magnetic_field_vector(&commissioning_data.igrf_magnetic_field_vector);
-            status += ADCS_get_quaternion_error_vector(&commissioning_data.quaternion_error_vector);
-            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            const uint8_t num_logs = 12; 
+            const uint8_t period_s = 10; 
+            const uint8_t* commissioning_data[12] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_ESTIMATED_GYRO_BIAS, ADCS_SD_LOG_MASK_ESTIMATION_INNOVATION_VECTOR, 
+                                                            ADCS_SD_LOG_MASK_MAGNETIC_FIELD_VECTOR, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_FINE_SUN_VECTOR, ADCS_SD_LOG_MASK_NADIR_VECTOR, ADCS_SD_LOG_MASK_WHEEL_SPEED, ADCS_SD_LOG_MASK_MAGNETORQUER_COMMAND,
+                                                            ADCS_SD_LOG_MASK_IGRF_MODELLED_MAGNETIC_FIELD_VECTOR, ADCS_SD_LOG_MASK_QUATERNION_ERROR_VECTOR};
+            status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);   
             break;
         }
         case ADCS_COMMISISONING_STEP_SUN_TRACKING_3_AXIS_CONTROL: {
-            ADCS_commissioning_sun_tracking_3_axis_control_struct_t commissioning_data;
-            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
-            status += ADCS_get_estimate_fine_angular_rates(&commissioning_data.fine_estimated_angular_rates);
-            status += ADCS_get_estimated_attitude_angles(&commissioning_data.estimated_attitude_angles);
-            status += ADCS_get_estimated_gyro_bias(&commissioning_data.estimated_gyro_bias);
-            status += ADCS_get_estimation_innovation_vector(&commissioning_data.estimation_innovation_vector);            
-            status += ADCS_get_magnetic_field_vector(&commissioning_data.magnetic_field_vector);
-            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
-            status += ADCS_get_fine_sun_vector(&commissioning_data.fine_sun_vector);
-            status += ADCS_get_nadir_vector(&commissioning_data.nadir_vector);
-            status += ADCS_get_wheel_speed(&commissioning_data.measured_wheel_speeds);
-            status += ADCS_get_magnetorquer_command(&commissioning_data.magnetorquer_commands);
-            status += ADCS_get_igrf_magnetic_field_vector(&commissioning_data.igrf_magnetic_field_vector);
-            status += ADCS_get_quaternion_error_vector(&commissioning_data.quaternion_error_vector);
-            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            const uint8_t num_logs = 12; 
+            const uint8_t period_s = 10; 
+            const uint8_t* commissioning_data[12] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_ESTIMATED_GYRO_BIAS, ADCS_SD_LOG_MASK_ESTIMATION_INNOVATION_VECTOR, 
+                                                            ADCS_SD_LOG_MASK_MAGNETIC_FIELD_VECTOR, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_FINE_SUN_VECTOR, ADCS_SD_LOG_MASK_NADIR_VECTOR, ADCS_SD_LOG_MASK_WHEEL_SPEED, ADCS_SD_LOG_MASK_MAGNETORQUER_COMMAND,
+                                                            ADCS_SD_LOG_MASK_IGRF_MODELLED_MAGNETIC_FIELD_VECTOR, ADCS_SD_LOG_MASK_QUATERNION_ERROR_VECTOR};
+            status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);   
             break;
         }
         case ADCS_COMMISISONING_STEP_GROUND_TARGET_TRACKING_CONTROLLER: {
-            ADCS_commissioning_ground_target_tracking_controller_struct_t commissioning_data;
-            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
-            status += ADCS_get_estimate_fine_angular_rates(&commissioning_data.fine_estimated_angular_rates);
-            status += ADCS_get_estimated_attitude_angles(&commissioning_data.estimated_attitude_angles);
-            status += ADCS_get_estimated_gyro_bias(&commissioning_data.estimated_gyro_bias);
-            status += ADCS_get_estimation_innovation_vector(&commissioning_data.estimation_innovation_vector);            
-            status += ADCS_get_magnetic_field_vector(&commissioning_data.magnetic_field_vector);
-            status += ADCS_get_rate_sensor_rates(&commissioning_data.rated_sensor_rates);
-            status += ADCS_get_fine_sun_vector(&commissioning_data.fine_sun_vector);
-            status += ADCS_get_nadir_vector(&commissioning_data.nadir_vector);
-            status += ADCS_get_wheel_speed(&commissioning_data.measured_wheel_speeds);
-            status += ADCS_get_magnetorquer_command(&commissioning_data.magnetorquer_commands);
-            status += ADCS_get_igrf_magnetic_field_vector(&commissioning_data.igrf_magnetic_field_vector);
-            status += ADCS_get_quaternion_error_vector(&commissioning_data.quaternion_error_vector);
-            status += ADCS_get_llh_position(&commissioning_data.LLH_position);
-            status += ADCS_get_commanded_attitude_angles(&commissioning_data.commanded_attitude_angles);
-            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            const uint8_t num_logs = 14; 
+            const uint8_t period_s = 10; 
+            const uint8_t* commissioning_data[14] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_ESTIMATED_GYRO_BIAS, ADCS_SD_LOG_MASK_ESTIMATION_INNOVATION_VECTOR, 
+                                                            ADCS_SD_LOG_MASK_MAGNETIC_FIELD_VECTOR, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_FINE_SUN_VECTOR, ADCS_SD_LOG_MASK_NADIR_VECTOR, ADCS_SD_LOG_MASK_WHEEL_SPEED, ADCS_SD_LOG_MASK_MAGNETORQUER_COMMAND,
+                                                            ADCS_SD_LOG_MASK_IGRF_MODELLED_MAGNETIC_FIELD_VECTOR, ADCS_SD_LOG_MASK_QUATERNION_ERROR_VECTOR, ADCS_SD_LOG_MASK_SATELLITE_POSITION_LLH, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES};
+            status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);   
             break;
         }
         case ADCS_COMMISISONING_STEP_GPS_RECEIVER: {
-            ADCS_commissioning_gps_receiver_commissioning_struct_t commissioning_data;
-            commissioning_data.current_unix_time = TIM_get_current_unix_epoch_time_ms();
-            status += ADCS_get_llh_position(&commissioning_data.LLH_position);          
-            status += ADCS_get_raw_gps_status(&commissioning_data.raw_GPS_status);
-            status += ADCS_get_raw_gps_time(&commissioning_data.raw_GPS_time);
-            status += ADCS_get_raw_gps_x(&commissioning_data.raw_GPS_x);
-            status += ADCS_get_raw_gps_y(&commissioning_data.raw_GPS_y);
-            status += ADCS_get_raw_gps_z(&commissioning_data.raw_GPS_z);            
-            MEMORY_MODULE_FUNCTION(commissioning_data); // save to memory module
+            const uint8_t num_logs = 6; 
+            const uint8_t period_s = 10; 
+            const uint8_t* commissioning_data[6] = {ADCS_SD_LOG_MASK_SATELLITE_POSITION_LLH, ADCS_SD_LOG_MASK_RAW_GPS_STATUS, ADCS_SD_LOG_MASK_RAW_GPS_TIME, 
+                                                            ADCS_SD_LOG_MASK_RAW_GPS_X, ADCS_SD_LOG_MASK_RAW_GPS_Y, ADCS_SD_LOG_MASK_RAW_GPS_Z};
+            status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);   
             break;
-        }           
+        }    
+      
         default: {
             snprintf(response_output_buf, response_output_buf_len,
                 "Commissioning step case out of range (err %d)", 1);

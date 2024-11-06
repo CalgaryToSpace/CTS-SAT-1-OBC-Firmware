@@ -679,7 +679,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "adcs_request_commissioning_telemetry",
         .tcmd_func = TCMDEXEC_adcs_request_commissioning_telemetry,
-        .number_of_args = 1,
+        .number_of_args = 3,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
