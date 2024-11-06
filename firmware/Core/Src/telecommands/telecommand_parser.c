@@ -358,15 +358,12 @@ uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChann
     uint8_t expected_sha256_hash[32];
     CRYPT_compute_sha256_hash(tcmd_name_with_parens, sizeof(tcmd_name_with_parens), expected_sha256_hash);
 
-    // Compare the expected hash with the hash given in the telecommand string.
-    for (uint8_t i = 0; i < TCMD_HEX_ARRAY_LEN; i++) {
-        if (parsed_sha256_hash[i] != expected_sha256_hash[i]) {
-            LOG_message(
-                LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-                "Error: TCMD_parse_full_telecommand: sha256 hash does not match the expected hash."
-            );
-            return 110;
-        }
+    if (memcmp(parsed_sha256_hash, expected_sha256_hash, TCMD_HEX_ARRAY_LEN) != 0) {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error: TCMD_parse_full_telecommand: sha256 hash does not match the expected hash."
+        );
+        return 110;
     }
     #endif
 
