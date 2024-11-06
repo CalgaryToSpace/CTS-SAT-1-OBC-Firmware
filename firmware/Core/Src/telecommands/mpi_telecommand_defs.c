@@ -1,6 +1,7 @@
 #include "telecommands/telecommand_args_helpers.h"
 #include "telecommands/mpi_telecommand_defs.h"
 #include "mpi/mpi_command_handling.h"
+#include "mpi/mpi_types.h"
 #include "transforms/arrays.h"
 #include "mpi/mpi_transceiver.h"
 
@@ -125,13 +126,15 @@ uint8_t TCMDEXEC_mpi_demo_tx_to_mpi(
     snprintf(response_output_buf, response_output_buf_len, "Sent message to MPI.");
     return 0;
 }
-/// @brief 
+
+/// @brief Turn the MPI on and start recording data
 /// @param args_str 
 /// - Arg 0: Placeholder Var
 /// @param tcmd_channel 
 /// @param response_output_buf 
 /// @param response_output_buf_len 
 /// @return 
+/// @note Run duration in seconds, from 1 sec to 20 minutes.
 uint8_t TCMDEXEC_mpi_enable_active_mode(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                       char *response_output_buf, uint16_t response_output_buf_len) {
     // TODO:
@@ -140,10 +143,13 @@ uint8_t TCMDEXEC_mpi_enable_active_mode(const char *args_str, TCMD_TelecommandCh
     // Monitor temperature (from EPS), and stop experiment early if too hot
     // Monitor temperature (from MPI), and stop experiment early if too hot
 
+    // Note: Use a thread to do the actual UART-to-array-to-FS operation
+    //       Use a shared configuration variable, where the telecommand can set the variable, and the thread operated if enabled
+
     return 0;
 }
 
-/// @brief 
+/// @brief Turn the MPI off immediately, if it's active currently
 /// @param args_str 
 /// - Arg 0: Placeholder Var
 /// @param tcmd_channel 
@@ -154,6 +160,15 @@ uint8_t TCMDEXEC_mpi_disable_active_mode(const char *args_str, TCMD_TelecommandC
                                       char *response_output_buf, uint16_t response_output_buf_len) {
     // TODO:
     // Disable active mode / turn off mpi if actively running
+    // Close file if Open
+
+    // Check MPI state: If active, disable
+    if(MPI_current_uart_rx_mode == MPI_RX_MODE_SENSING_MODE) {
+        // Stop reception from the MPI & Reset MPI UART mode state
+        HAL_UART_DMAStop(&huart1);
+        MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
+        MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
+    }
 
     return 0;
 }

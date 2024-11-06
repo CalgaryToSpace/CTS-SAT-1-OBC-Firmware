@@ -113,6 +113,13 @@ const osThreadAttr_t TASK_service_eps_watchdog_Attributes = {
   .priority = (osPriority_t) osPriorityNormal, //TODO: Figure out which priority makes sense for this task
 };
 
+osThreadId_t TASK_service_record_mpi_data_Handle;
+const osThreadAttr_t TASK_service_record_mpi_data_Attributes = {
+  .name = "TASK_service_record_mpi_data",
+  .stack_size = 2048 , // 512 words * 4 bytes per word = 2048 bytes
+  .priority = (osPriority_t) osPriorityHigh, //TODO: Confirm priority of this task
+};
+
 osThreadId_t TASK_monitor_freertos_memory_Handle;
 const osThreadAttr_t TASK_monitor_freertos_memory_Attributes = {
   .name = "TASK_monitor_freertos_memory",
@@ -144,6 +151,11 @@ FREERTOS_task_info_struct_t FREERTOS_task_handles_array [] = {
   {
     .task_handle = &TASK_service_eps_watchdog_Handle,
     .task_attribute = &TASK_service_eps_watchdog_Attributes,
+    .lowest_stack_bytes_remaining = UINT32_MAX
+  },
+  {
+    .task_handle = &TASK_service_record_mpi_data_Handle,
+    .task_attribute = &TASK_service_record_mpi_data_Attributes,
     .lowest_stack_bytes_remaining = UINT32_MAX
   },
   {
@@ -279,6 +291,8 @@ int main(void)
   TASK_monitor_freertos_memory_Handle = osThreadNew(TASK_monitor_freertos_memory, NULL, &TASK_monitor_freertos_memory_Attributes);
   
   TASK_service_eps_watchdog_Handle = osThreadNew(TASK_service_eps_watchdog, NULL, &TASK_service_eps_watchdog_Attributes);
+
+  TASK_service_record_mpi_data_Handle = osThreadNew(TASK_service_record_mpi_data, NULL, &TASK_service_record_mpi_data_Attributes);
 
   /* USER CODE END RTOS_THREADS */
 

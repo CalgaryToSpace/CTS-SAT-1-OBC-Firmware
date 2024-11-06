@@ -222,6 +222,10 @@ void TASK_service_eps_watchdog(void *argument) {
 	}
 }
 
+// Todo: implement this to record data from the mpi and write it to a file upon half full buffer and timeout conditions
+void TASK_service_record_mpi_data(void *argument) {
+}
+
 void TASK_monitor_freertos_memory(void *argument) {
 	TASK_HELP_start_of_task();
 
