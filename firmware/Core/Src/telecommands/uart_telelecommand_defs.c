@@ -136,15 +136,7 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
     }
 
     // UART 4 Selected (CAMERA)
-    else if(strcasecmp(arg_uart_port_name, "CAMERA") == 0) {
-        
-        // TODO: Implement once, DMA handling function for camera is added
-        LOG_message(
-            LOG_source, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "Error: Cannot transmit to the Camera UART. The Camera UART handling is not yet implemented."
-        );
-        return 2;
-        
+    else if(strcasecmp(arg_uart_port_name, "CAMERA") == 0) {        
         UART_handle_ptr = UART_camera_port_handle;
         UART_rx_buffer_write_idx_ptr = &UART_camera_buffer_write_idx;
         UART_rx_buffer = &UART_camera_buffer[0];
@@ -152,6 +144,15 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
         UART_camera_is_expecting_data = 1;
         UART_last_write_time_ms_ptr = &UART_camera_last_write_time_ms;
         LOG_source = LOG_SYSTEM_BOOM; // Camera is related to the Boom experiment and should hence share the log source
+
+        // TODO: DMA handling function for camera is still under development.
+        // Return error code for now to indicate that the UART handling is not yet implemented. Remove this 
+        // once the UART handling is implemented for the camera. 
+        LOG_message(
+            LOG_source, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error: Cannot transmit to the Camera UART. The Camera UART handling is not yet implemented."
+        );
+        return 2;
     }
 
     // UART 2,3 & 5 use interrupt based reception, set UART handle and buffers according to selection
