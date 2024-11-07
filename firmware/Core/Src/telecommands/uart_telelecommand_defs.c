@@ -19,17 +19,18 @@ const uint16_t rx_buffer_max_size = 5120;
 static uint8_t tx_buffer[5120];
 static uint8_t rx_buffer[5120];
 
-/// @brief Send artibrary configuration commands to a peripheral
+/// @brief Send artibrary configuration commands to a UART peripheral
 /// @param args_str 
-/// - Arg 0: UART port to send data to: MPI, LORA, GPS, CAMERA, EPS (case insensitive)
+/// - Arg 0: UART port name to send data to: MPI, LORA, GPS, CAMERA, EPS (case insensitive)
 /// - Arg 1: Data to be sent (bytes specified as hex - Max 5KiB buffer)
 /// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0: Success, 1: Error parsing args, 2: Invalid uart port requested, 3: Error transmitting data, 
-///         4: Error receiving data, 5: Timeout waiting for response / No response, 6: Peripheral specific error, 7: Unhandled error
-/// @note This function doesn't support toggling the EPS to send power to the peripherals
-/// @todo Add support to send data to the camera once it's supporting functions are implemented
+///         4: Error receiving data, 5: Timeout waiting for response / No response, 6: Peripheral specific error, 
+///         7: Unhandled error
+/// @note This function doesn't toggle the EPS power lines for peripherals. Ensure they are powered on before 
+///       using this function.
 uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
 
@@ -136,7 +137,14 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
 
     // UART 4 Selected (CAMERA)
     else if(strcasecmp(arg_uart_port_name, "CAMERA") == 0) {
+        
         // TODO: Implement once, DMA handling function for camera is added
+        LOG_message(
+            LOG_source, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error: Cannot transmit to the Camera UART. The Camera UART handling is not yet implemented."
+        );
+        return 2;
+        
         UART_handle_ptr = UART_camera_port_handle;
         UART_rx_buffer_write_idx_ptr = &UART_camera_buffer_write_idx;
         UART_rx_buffer = &UART_camera_buffer[0];

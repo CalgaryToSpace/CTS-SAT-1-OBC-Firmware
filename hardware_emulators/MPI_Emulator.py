@@ -17,7 +17,7 @@ def listen_and_respond(com_port, baudrate=230400, receive_timeout=0.2):
                 incoming_cmd = ser.read(ser.in_waiting)
                 buffer.extend(incoming_cmd)
                 last_receive_time = time.time()  # Update the last receive time
-                logger.info(f"Received: {incoming_cmd.hex()}")
+                logger.info(f"OBC -> MPI_COMPUTER: {incoming_cmd.hex()}")
 
             # Check if more than 200 milliseconds have passed since the last received data
             if len(buffer) > 0 and (time.time() - last_receive_time) > receive_timeout:
@@ -26,7 +26,7 @@ def listen_and_respond(com_port, baudrate=230400, receive_timeout=0.2):
                 response = buffer + bytes([0x01])  # Append the echo byte
                 ser.write(response)
                 ser.flush()  # Ensure the data is sent immediately
-                logger.info(f"Responded:  {response.hex()}")
+                logger.info(f"MPI_COMPUTER -> OBC:  {response.hex()}")
 
                 # Clear buffer for the next transmission
                 buffer.clear()
@@ -34,7 +34,7 @@ def listen_and_respond(com_port, baudrate=230400, receive_timeout=0.2):
                 # Ensure we respond within the total 300ms window
                 time_elapsed = time.time() - last_receive_time
                 if time_elapsed > 0.3:
-                    logger.info("Warning: Response time exceeded 300ms!")
+                    logger.info("MPI_COMPUTER -> OBC: Warning: Response time exceeded 300ms!")
 
 if __name__ == "__main__":
     # Specify the COM port to listen on
