@@ -166,7 +166,8 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
             UART_rx_buffer_size_ptr = &UART_lora_buffer_len;
             UART_lora_is_expecting_data = 1;
             UART_last_write_time_ms_ptr = &UART_lora_last_write_time_ms;
-            LOG_source = LOG_SYSTEM_TELECOMMAND; // TODO:LORA is not a system log source, Currently set to TELECOMMAND for the time being
+            // TODO: LORA is not a system log source, Currently set to TELECOMMAND for the time being
+            LOG_source = LOG_SYSTEM_TELECOMMAND; 
         }
 
         // UART 3 Selected (GPS)

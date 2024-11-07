@@ -58,7 +58,8 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
     UART_mpi_buffer_write_idx = 0;                                      
     const uint32_t UART_mpi_rx_start_time_ms = HAL_GetTick();
 
-    // Receive MPI response byte by byte (Note: This is done to account for potential errors from the mpi where it doesnt send back an expected response)
+    // Receive MPI response byte by byte 
+    // @note: This is done to account for potential errors from the mpi where it doesnt send back an expected response
     const HAL_StatusTypeDef receive_status = HAL_UART_Receive_DMA(UART_mpi_port_handle, (uint8_t*) &UART_mpi_last_rx_byte, 1);
     
     // Check for UART reception errors
@@ -90,18 +91,18 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
 
         // Timeout in between (or end of) receiving bytes from the MPI
         else {
-            const uint32_t current_time = HAL_GetTick();           // Get current time
+            const uint32_t current_time = HAL_GetTick(); // Get current time
              if (
-                (current_time > UART_mpi_last_write_time_ms)       // Important seemingly-obvious safety check.
+                (current_time > UART_mpi_last_write_time_ms) // Important seemingly-obvious safety check.
                 && ((current_time - UART_mpi_last_write_time_ms) > MPI_RX_TIMEOUT_DURATION_MS)
             ) {
-                *MPI_rx_buffer_len = UART_mpi_buffer_write_idx;     // Set the length of the MPI response buffer
+                *MPI_rx_buffer_len = UART_mpi_buffer_write_idx; // Set the length of the MPI response buffer
                 break;
             }
         }
     }
 
-    // Stop reception from the MPI & Reset MPI transceiver mode state, Set MPI UART mode state to previous state
+    // Stop reception & reset MPI transceiver mode state, Set MPI UART mode state to previous state
     MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
     HAL_UART_DMAStop(UART_mpi_port_handle);
     MPI_current_uart_rx_mode = MPI_last_uart_rx_mode;
@@ -120,12 +121,15 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
     return 0;
 }
 
-/// @brief The MPI responds to each telecommand with a response code consisting of an echo of the telecommand and a success byte (either 1 for success or 0 for fail).
+/// @brief The MPI responds to each telecommand with a response code consisting of an echo of the 
+///        telecommand and a success byte (either 1 for success or 0 for fail).
 /// @param MPI_tx_buffer MPI telecommand buffer containing bytes sent
 /// @param MPI_rx_buffer MPI response buffer containing bytes received
 /// @param MPI_tx_buffer_size Size of the MPI response buffer
-/// @return 0: MPI successfully executed telecommand, 5: MPI failed to execute telecommand, 6: Invalid response from the MPI
-uint8_t MPI_validate_telecommand_response(const uint8_t *MPI_tx_buffer, uint8_t *MPI_rx_buffer, const uint16_t MPI_tx_buffer_size) {
+/// @return 0: MPI successfully executed telecommand, 5: MPI failed to execute telecommand, 
+///         6: Invalid response from the MPI
+uint8_t MPI_validate_telecommand_response(const uint8_t *MPI_tx_buffer, uint8_t *MPI_rx_buffer, 
+                                          const uint16_t MPI_tx_buffer_size) {
     
     // Verify if the MPI response echos the cmd sent
     if (memcmp(MPI_tx_buffer, MPI_rx_buffer, MPI_tx_buffer_size) != 0) {
