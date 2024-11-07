@@ -27,15 +27,12 @@ MPI_rx_mode_t MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
 /// @note If the MPI is in "science data" mode, it will be disabled after the command is executed.
 uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const size_t bytes_to_send_len, uint8_t *MPI_rx_buffer, 
                                           const size_t MPI_rx_buffer_max_size, uint16_t *MPI_rx_buffer_len) {
-    // Set the MPI transceiver to MOSI mode
-    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MOSI);
     
     // Assert: MPI_rx_buffer_max_size is >= the length of the bytes_to_send_len + 1 to receive the command echo
     if (MPI_rx_buffer_max_size < (bytes_to_send_len + 1)) return 8; // Error code: Not enough space in the MPI response buffer
     
-    // Store the original MPI mode, then set MPI to command mode.
-    MPI_rx_mode_t MPI_last_uart_rx_mode = MPI_current_uart_rx_mode;
-    MPI_current_uart_rx_mode = MPI_RX_MODE_COMMAND_MODE;
+    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MOSI); // Set the MPI transceiver to MOSI mode
+    MPI_current_uart_rx_mode = MPI_RX_MODE_COMMAND_MODE; // Set MPI to command mode.
 
     // Transmit the MPI command
     const HAL_StatusTypeDef transmit_status = HAL_UART_Transmit(UART_mpi_port_handle, bytes_to_send, bytes_to_send_len, MPI_TX_TIMEOUT_DURATION_MS);
@@ -105,7 +102,7 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
     // Stop reception & reset MPI transceiver mode state, Set MPI UART mode state to previous state
     MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
     HAL_UART_DMAStop(UART_mpi_port_handle);
-    MPI_current_uart_rx_mode = MPI_last_uart_rx_mode;
+    MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
 
     // Log the response from the MPI
     // Copy the buffer to the last received byte index & clear the UART buffer
