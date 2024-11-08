@@ -23,17 +23,20 @@ const uint32_t EPS_RX_TIMEOUT_BETWEEN_BYTES_MS = 25;
 /// @param rx_buf Buffer to store the response. Is filled with the response, without tags.
 /// @param rx_buf_len Length of the response buffer. Must be the command length.
 /// @return 0 on success, >0 if error.
+/// TODO: Update docString
 uint8_t GPS_send_cmd_get_response(const char cmd_buf, uint8_t cmd_buf_len,
-        uint8_t rx_buf[], uint16_t rx_buf_len){
+        uint8_t rx_buf[], const uint8_t rx_buf_max_size, uint16_t *rx_buf_len){
 
-	// ASSERT: rx_buf_len must be >= 5 for all commands. Raise error if it's less.
-	if (rx_buf_len < GPS_DEFAULT_RX_LEN_MIN) return 1;
+	// ASSERT: rx_buf_max_size must be >= 9 for all commands. Raise error if it's less.
+	if (rx_buf_max_size < GPS_DEFAULT_RX_LEN_MIN){
+        return 1;
+    } 
 
     // cmd_buf should contain the string of the log command to be sent.
 
     // Error checking to ensure that the log command starts with the appropriate log command prefix
+    // TODO: Remove this, not necessary. Can implement later
     const uint8_t gps_log_command_prefix_check = GPS_check_starts_with_log_prefix(cmd_buf);
-
     if(gps_log_command_prefix_check > 0){
         // Error: Invalid log command prefix
         return 2;
