@@ -101,7 +101,7 @@ void HardFault_Handler(void)
   while (1)
   {
     /* USER CODE BEGIN W1_HardFault_IRQn 0 */
-    // snf replaced
+    // snf
     // char msg[64];
     // snprintf(msg, sizeof(msg), "HardFault_Handler() -> Hard fault\n");
     // HAL_UART_Transmit(&hlpuart1, (uint8_t *)msg, strlen(msg), 1000); // TODO: check flight-readiness
