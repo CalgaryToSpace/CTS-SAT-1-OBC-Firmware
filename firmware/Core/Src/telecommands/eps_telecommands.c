@@ -560,23 +560,68 @@ uint8_t TCMDEXEC_eps_get_list_of_enabled_channels(
     }
      
     uint16_t status_bitfield = status.stat_ch_on_bitfield;
-    uint8_t list_of_enabled_channels[16];
-    for (int i =0; i<sizeof(status_bitfield); i++){
+    uint16_t status_oc_bitfield = status.stat_ch_overcurrent_fault_bitfield;
+    strcat(response_output_buf, "Current Channels Enabled: ");
+    for (int i =0; i<16; i++){ // check bit field for channels 0-15 
         uint8_t bit_status = (status_bitfield >> i) & 1; // bit shift right and then check bit status
-
         if (bit_status == 1) {
-            list_of_enabled_channels[i] = 1; 
-        } else {
-            list_of_enabled_channels[i] = 0;
+            switch (i) {
+                case EPS_CHANNEL_VBATT_STACK:
+                    strcat(response_output_buf,"VBATT_STACK, ");
+                    break;
+                case EPS_CHANNEL_5V_STACK:
+                    strcat(response_output_buf,"5V_STACK, ");
+                    break;
+                case EPS_CHANNEL_5V_CH2_UNUSED:
+                    strcat(response_output_buf,"5V_CH2_UNUSED, ");
+                    break;
+                case EPS_CHANNEL_5V_CH3_UNUSED:
+                    strcat(response_output_buf,"5V_CH3_UNUSED, ");
+                    break;
+                case EPS_CHANNEL_5V_MPI:
+                    strcat(response_output_buf,"5V_MPI, ");
+                    break;
+                case EPS_CHANNEL_3V3_STACK:
+                    strcat(response_output_buf,"3V3_STACK, ");
+                    break;
+                case EPS_CHANNEL_3V3_CAMERA:
+                    strcat(response_output_buf,"3V3_CAMERA, ");
+                    break;
+                case EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY:
+                    strcat(response_output_buf,"3V3_UHF_ANTENNA_DEPLOY, ");
+                    break;
+                case EPS_CHANNEL_3V3_LORA_MODULE:
+                    strcat(response_output_buf,"3V3_LORA_MODULE, ");
+                    break;
+                case EPS_CHANNEL_VBATT_CH9_UNUSED:
+                    strcat(response_output_buf,"VBATT_CH9_UNUSED, ");
+                    break;
+                case EPS_CHANNEL_VBATT_CH10_UNUSED:
+                    strcat(response_output_buf,"VBATT_CH10_UNUSED, ");
+                    break;
+                case EPS_CHANNEL_VBATT_CH11_UNUSED:
+                    strcat(response_output_buf,"VBATT_CH11_UNUSED, ");
+                    break;
+                case EPS_CHANNEL_12V_MPI:
+                    strcat(response_output_buf,"12V_MPI, ");
+                    break;
+                case EPS_CHANNEL_12V_BOOM:
+                    strcat(response_output_buf,"12V_BOOM, ");
+                    break;
+                case EPS_CHANNEL_3V3_CH14_UNUSED:
+                    strcat(response_output_buf,"3V3_CH14_UNUSED, ");
+                    break;
+                case EPS_CHANNEL_3V3_CH15_UNUSED:
+                    strcat(response_output_buf,"3V3_CH15_UNUSED, ");
+                    break;
+            default:
+                break;
+            }
+        } 
+        if ((status_oc_bitfield & 1)==1){ // checking status of ch16 because the info is on a different bitfield that the inital 0-15 channels
+            strcat(response_output_buf,"28V6_CH16_UNUSED, ");
         }
     }
-
-    // sprintf(buffer, "%d ", i); // Format the index into a buffer
-    //         strcat(result, buffer);    // Concatenate the index to result
-
-    snprintf(response_output_buf, response_output_buf_len,
-            "EPS_CHANNEL_VBATT_STACK: %d,  EPS_CHANNEL_5V_STACK: %d, EPS_CHANNEL_5V_CH2_UNUSED: %d "
-            ,list_of_enabled_channels[0],list_of_enabled_channels[1],list_of_enabled_channels[2]);
 
     return 0;
 }
