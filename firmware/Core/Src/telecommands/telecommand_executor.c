@@ -17,6 +17,17 @@
 uint32_t TCMD_total_tcmd_queued_count = 0;
 uint64_t TCMD_latest_received_tcmd_timestamp_sent = 0;
 
+
+//the head of the circular buffer I think this should work
+
+//make these globals AND static.
+
+
+///@brief  The head of the circular buffer of timestamps of telecommands that have been sent.
+uint8_t  TCMD_timestamp_sent_head = 0;
+/// @brief The circular buffer of timestamps of telecommands that have been sent.
+uint64_t TCMD_timestamp_sent_buffer[TCMD_TIMESTAMP_RECORD_SIZE] = {0};
+
 /// @brief  The agenda (schedule queue) of telecommands to execute.
 TCMD_parsed_tcmd_to_execute_t TCMD_agenda[TCMD_AGENDA_SIZE];
 // TODO: consider an optimization to store the args_str_no_parens in a separate buffer, to save a ton of memory.
@@ -53,6 +64,25 @@ uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd
             continue;
         }
 
+        // check to see if timestamp is in the circular buffer
+        for (uint32_t i = 0; i < TCMD_timestamp_sent_head; i++) {
+            if(parsed_tcmd->timestamp_sent == TCMD_timestamp_sent_buffer[i]) {
+                //don't add to agenda skip this telecommand
+                DEBUG_uart_print_str("Telecommand skipped due to timestamp collision\n");
+                DEBUG_uart_print_str("Timestamp sent: ");
+                DEBUG_uart_print_int32(parsed_tcmd->timestamp_sent);
+                DEBUG_uart_print_str("\n");
+                DEBUG_uart_print_str("Latest timestamp sent: ");
+                DEBUG_uart_print_int32(TCMD_timestamp_sent_buffer[i]);
+                DEBUG_uart_print_str("\n");
+                return 1; 
+            }
+        }
+        DEBUG_uart_print_str("Telecommand added to agenda\n");
+        // Add the timestamp to the circular buffer
+        TCMD_timestamp_sent_buffer[TCMD_timestamp_sent_head] = parsed_tcmd->timestamp_sent;
+        TCMD_timestamp_sent_head = (TCMD_timestamp_sent_head + 1) % TCMD_TIMESTAMP_RECORD_SIZE;
+
         // Copy the parsed telecommand into the agenda.
         TCMD_agenda[slot_num].tcmd_idx = parsed_tcmd->tcmd_idx;
         TCMD_agenda[slot_num].tcmd_channel = parsed_tcmd->tcmd_channel;
@@ -62,7 +92,6 @@ uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd
         for (uint16_t j = 0; j < TCMD_ARGS_STR_NO_PARENS_SIZE; j++) {
             TCMD_agenda[slot_num].args_str_no_parens[j] = parsed_tcmd->args_str_no_parens[j];
         }
-
         // Mark the slot as valid.
         TCMD_agenda_is_valid[slot_num] = 1;
 
