@@ -1069,7 +1069,10 @@ uint8_t TCMDEXEC_available_telecommands(const char *args_str, TCMD_TelecommandCh
 uint8_t TCMDEXEC_reboot(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len)
 {
-    DEBUG_uart_print_str("Rebooting by telecommand request...\n");
+    // UART replaced
+    LOG_message(
+        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+        "This superloop point should never be reached, because the FreeRTOS Kernel is running...\n");
 
     // Delay to flush UART buffer
     HAL_Delay(100);
