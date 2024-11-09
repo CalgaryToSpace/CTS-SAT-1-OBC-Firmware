@@ -10,7 +10,7 @@
 #include <stdint.h>
 #include <string.h>
 
-// Uncomment line below to enable SHA256 telecommand hash validation
+// Comment line below to disable SHA256 telecommand hash validation
 #define SHA256 1 
 
 /// @brief Returns whether a character is alphanumeric (0-9, A-Z, a-z).
@@ -204,7 +204,10 @@ uint8_t TCMD_get_suffix_tag_hex_array(const char *str, const char *tag_name, uin
     strncpy(value_str + (value_end_index - value_start_index), "\0", 1); // Ensure string is null-terminated
 
     // Convert the value to a hex array
-    if(TCMD_str_to_hex_array(value_str, strlen(value_str), value_dest) != 0) {
+    // if(TCMD_str_to_hex_array(value_str, strlen(value_str), value_dest) != 0) {
+    //     return 6;
+    // }
+    if (TCMD_extract_hex_array_arg(value_str, 0, value_dest, 32, NULL) != 0) {
         return 6;
     }
 
