@@ -148,10 +148,27 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
         // TODO: DMA handling function for camera is still under development.
         // Return error code for now to indicate that the UART handling is not yet implemented. Remove this 
         // once the UART handling is implemented for the camera. 
+        // Transmit the MPI command for now to test UART line
+        const HAL_StatusTypeDef transmit_status = HAL_UART_Transmit(UART_camera_port_handle, tx_buffer, tx_buffer_len, UART_TX_TIMEOUT_DURATION_MS);
+
+        // Check UART transmission status
+        if (transmit_status != HAL_OK) {
+            MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
+            return 2; // Error code: Failed UART transmission
+        }
+
+        // Log successful transmission
+        LOG_message(
+            LOG_source, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Transmitted %u byte(s) to %s.", 
+            tx_buffer_len, 
+            arg_uart_port_name
+        );
         LOG_message(
             LOG_source, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "Error: Cannot transmit to the Camera UART. The Camera UART handling is not yet implemented."
+            "Transmitted bytes to camera. The Camera UART reception is not yet implemented."
         );
+        
         return 2;
     }
 
