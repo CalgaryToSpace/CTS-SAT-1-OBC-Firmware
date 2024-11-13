@@ -5,6 +5,7 @@
 #include "stm32l4xx_hal_flash.h"
 #include "stm32l4xx_hal_flash_ex.h"
 #include <string.h>
+#include "stm32_internal_flash_drivers.h"
 
 /// @brief Writes data to the flash memory in chunks of 8 bytes.
 /// @param address Address in the flash memory where the data will be written.
@@ -149,4 +150,62 @@ uint8_t STM32_internal_flash_get_option_bytes(FLASH_OBProgramInitTypeDef *ob_dat
     // returns void
     HAL_FLASHEx_OBGetConfig(ob_data);
     return 0;
+}
+uint8_t STM32_internal_flash_dual_bank_boot_toggle(uint8_t dual_bank_mode)
+{
+
+    __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
+
+    // Unlock option bytes
+    if (HAL_FLASH_Unlock() != HAL_OK)
+    {
+        return 1;
+    }
+
+    if (HAL_FLASH_OB_Unlock() != HAL_OK)
+    {
+        return 2;
+    }
+
+    // Get current option bytes configuration
+    FLASH_OBProgramInitTypeDef obInit;
+    HAL_FLASHEx_OBGetConfig(&obInit);
+
+    // Set BFB2 bit (boot from Bank 2)
+    obInit.OptionType = OPTIONBYTE_USER;
+    obInit.USERConfig = (dual_bank_mode == 0 ? OB_BFB2_DISABLE : OB_BFB2_ENABLE); // Set BFB2
+    // obInit.USERConfig = OB_BFB2_ENABLE; // Set BFB2
+
+    // Apply the new option byte configuration
+    if (HAL_FLASHEx_OBProgram(&obInit) != HAL_OK)
+    {
+        return 3;
+    }
+
+    // Lock option bytes
+    if (HAL_FLASH_OB_Lock() != HAL_OK)
+    {
+        return 4;
+    }
+
+    if (HAL_FLASH_Lock() != HAL_OK)
+    {
+        return 5;
+    }
+
+    // Launch the option byte loading to apply changes
+    if (HAL_FLASH_OB_Launch() != HAL_OK)
+    {
+        return 6;
+    }
+
+    return 0;
+
+    return 0;
+}
+
+uint8_t STM32_internal_flash_get_active_flash_bank(void)
+{
+    volatile uint32_t MEMRMP = READ_REG(SYSCFG);
+    return 1;
 }

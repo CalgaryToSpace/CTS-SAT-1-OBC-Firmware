@@ -25,7 +25,7 @@
 #include "telecommands/stm32_internal_flash_telecommand_defs.h"
 #include "telecommands/comms_telecommand_defs.h"
 #include "telecommands/gps_telecommand_defs.h"
-
+#include "telecommands/bootloader_telecomand_defs.h"
 
 #include "timekeeping/timekeeping.h"
 #include "littlefs/littlefs_helper.h"
@@ -1087,6 +1087,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_func = TCMDEXEC_obc_read_temperature,
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+
     },
     // ****************** END SECTION: obc_temperature_sensor_telecommand_defs ******************
     // ****************** START SECTION: comms_telecommand_defs ******************
@@ -1105,6 +1106,22 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     // ****************** END SECTION: gps_telecommand_defs ******************
+
+    // ****************** START SECTION: bootloader_telecommand_defs ******************
+    {
+        .tcmd_name = "jump_to_golden_copy",
+        .tcmd_func = TCMDEXEC_jump_to_golden_copy,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "stm32_internal_flash_boot_from_bank_2",
+        .tcmd_func = TCMDEXEC_stm32_internal_flash_boot_from_bank_2,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    }
+    // ****************** END SECTION: bootloader_telecommand_defs ******************
+
 };
 
 // extern
