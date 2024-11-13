@@ -33,4 +33,8 @@ uint8_t STM32_internal_flash_erase(uint16_t start_page_erase, uint16_t number_of
 
 uint8_t STM32_internal_flash_get_option_bytes(FLASH_OBProgramInitTypeDef *ob_data);
 
+uint8_t STM32_internal_flash_dual_bank_boot_toggle(uint8_t dual_bank_mode);
+
+uint8_t STM32_internal_flash_get_active_flash_bank(void);
+
 #endif // __INCLUDE_GUARD__STM32_INTERNAL_FLASH_DRIVERS_H__
