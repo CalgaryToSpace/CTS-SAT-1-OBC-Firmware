@@ -154,3 +154,21 @@ uint8_t TCMDEXEC_stm32_internal_flash_get_option_bytes(const char *args_str, TCM
              option_bytes.PCROPEndAddr);
     return 0;
 }
+uint8_t TCMDEXEC_stm32_internal_flash_boot_from_bank_2(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
+{
+    uint64_t dual_bank_mode = 0;
+    const uint8_t arg_res = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &dual_bank_mode);
+    if (arg_res != 0)
+    {
+        snprintf(response_output_buf, response_output_buf_len, "Error Parsing Arg 0: %u", arg_res);
+        return 1;
+    }
+
+    const uint8_t res = STM32_internal_flash_dual_bank_boot_toggle((uint8_t)dual_bank_mode);
+    if (res != 0)
+    {
+        snprintf(response_output_buf, response_output_buf_len, "Error Toggling dual bank: %u", res);
+        return 2;
+    }
+    return 0;
+}

@@ -15,4 +15,6 @@ uint8_t TCMDEXEC_stm32_internal_flash_erase(const char *args_str, TCMD_Telecomma
 uint8_t TCMDEXEC_stm32_internal_flash_get_option_bytes(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                                        char *response_output_buf, uint16_t response_output_buf_len);
 
+uint8_t TCMDEXEC_stm32_internal_flash_boot_from_bank_2(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                                       char *response_output_buf, uint16_t response_output_buf_len);
 #endif /* __INCLUDE_GUARD_STM32_INTERNAL_FLASH_TELECOMMAND_DEFS_H */
