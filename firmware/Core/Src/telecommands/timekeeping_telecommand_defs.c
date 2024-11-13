@@ -55,10 +55,9 @@ uint8_t TCMDEXEC_correct_system_time(const char *args_str, TCMD_TelecommandChann
     
     return 0;
 }
-/*
-*  @brief Sync's obc time to eps time (+/- 1 second)
-*  @return 0 on success, >0 on failure.
-*/
+
+/// @brief Sync's obc time to eps time (+/- 1 second)
+/// @return 0 on success, >0 on failure.
 uint8_t TCMDEXEC_set_obc_time_based_on_eps_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     const uint8_t result = EPS_set_obc_time_based_on_eps_time();
@@ -72,20 +71,22 @@ uint8_t TCMDEXEC_set_obc_time_based_on_eps_time(const char *args_str, TCMD_Telec
     return 0;
 }
 
-/*
-*  @brief Sync's eps time to obc time (+/- 1 second)
-*  @return 0 on success, >0 on failure.
-*/
+
+/// @brief Sync's eps time to obc time (+/- 1 second)
+/// @return 0 on success, >0 on failure.
 uint8_t TCMDEXEC_set_eps_time_based_on_obc_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     const uint8_t result = EPS_set_eps_time_based_on_obc_time();
     if (result != 0 ) {
-        snprintf(response_output_buf, response_output_buf_len,
-        "syncing eps time failed");
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Syncing eps time failed."
+        );
         return 1;
     }
-    snprintf(response_output_buf, response_output_buf_len,
-    "success syncing eps time");
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "Success syncing eps time."
+    );
     return 0;
 }
-

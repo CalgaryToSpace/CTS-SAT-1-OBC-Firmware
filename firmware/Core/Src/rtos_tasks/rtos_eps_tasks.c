@@ -8,6 +8,9 @@
 
 #include "cmsis_os.h"
 
+#include <inttypes.h>
+#include <stdint.h>
+
 
 
 /// @brief periodically sends a command to the eps to reset the watchdog timer
@@ -106,8 +109,8 @@ void TASK_time_sync(void *argument) {
             continue;
         }
 
-        // For all subsequent runs, sleep for 30 mins.
-        sleep_duration_ms = 1800000; 
+        // For all subsequent runs, sleep for 10 mins.
+        sleep_duration_ms = 600000;
       
         EPS_struct_system_status_t status;
         const uint8_t result_status = EPS_CMD_get_system_status(&status);
@@ -121,15 +124,17 @@ void TASK_time_sync(void *argument) {
             );
             continue;
         }
-        const uint64_t eps_time_sec = status.unix_time_sec;
-        const uint64_t obc_time_sec = TIM_get_current_unix_epoch_time_ms() / 1000;
-        const int32_t delta_seconds = obc_time_sec - eps_time_sec;
+
+        // Use uint32_t for these values in seconds, as int32_t won't overflow until 2038.
+        const uint32_t eps_time_sec = status.unix_time_sec;
+        const uint32_t obc_time_sec = TIM_get_current_unix_epoch_time_ms() / 1000;
+        const int32_t delta_seconds = ((int32_t)obc_time_sec) - ((int32_t)eps_time_sec);
         if (abs(delta_seconds) > 10) {
             LOG_message(
                 LOG_SYSTEM_EPS,
                 LOG_SEVERITY_WARNING,
                 LOG_SINK_ALL,
-                "Warning: EPS time and OBC time differ by more than 10 seconds. \n EPS time seconds: %lu,\n OBC time seconds: %lu",
+                "Warning: EPS time and OBC time differ by more than 10 seconds. \n EPS time seconds: %" PRIi32 ",\n OBC time seconds: %" PRIi32,
                 eps_time_sec, obc_time_sec
             );
         }
