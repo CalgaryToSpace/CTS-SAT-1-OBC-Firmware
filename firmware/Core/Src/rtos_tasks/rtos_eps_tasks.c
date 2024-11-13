@@ -58,7 +58,7 @@ void TASK_service_eps_watchdog(void *argument) {
 * @brief on boot this thread sets the obc time to the eps time. After that it periodically
 * checks the obc time against the eps time and logs when they diverge by more than 10 seconds.
 */
-void TASK_time_watchdog(void *argument) {
+void TASK_time_sync(void *argument) {
     TASK_HELP_start_of_task();
 
     // Run on boot after 5000ms, but only run every 45 seconds in normal operation.

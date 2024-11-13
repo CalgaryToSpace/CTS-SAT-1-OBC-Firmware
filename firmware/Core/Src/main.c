@@ -114,9 +114,9 @@ const osThreadAttr_t TASK_service_eps_watchdog_Attributes = {
   .priority = (osPriority_t) osPriorityNormal, //TODO: Figure out which priority makes sense for this task
 };
 
-osThreadId_t TASK_time_watchdog_Handle;
-const osThreadAttr_t TASK_time_watchdog_Attributes = {
-  .name = "TASK_time_watchdog",
+osThreadId_t TASK_time_sync_Handle;
+const osThreadAttr_t TASK_time_sync_Attributes = {
+  .name = "TASK_time_sync",
   .stack_size = 512, //in bytes
   .priority = (osPriority_t) osPriorityNormal, //TODO: Figure out which priority makes sense for this task
 };
@@ -155,8 +155,8 @@ FREERTOS_task_info_struct_t FREERTOS_task_handles_array [] = {
     .lowest_stack_bytes_remaining = UINT32_MAX
   },
   {
-    .task_handle = &TASK_time_watchdog_Handle,
-    .task_attribute = &TASK_time_watchdog_Attributes,
+    .task_handle = &TASK_time_sync_Handle,
+    .task_attribute = &TASK_time_sync_Attributes,
     .lowest_stack_bytes_remaining = UINT32_MAX
   },
   {
@@ -293,7 +293,7 @@ int main(void)
   
   TASK_service_eps_watchdog_Handle = osThreadNew(TASK_service_eps_watchdog, NULL, &TASK_service_eps_watchdog_Attributes);
 
-  TASK_time_watchdog_Handle = osThreadNew(TASK_time_watchdog, NULL, &TASK_time_watchdog_Attributes);
+  TASK_time_sync_Handle = osThreadNew(TASK_time_sync, NULL, &TASK_time_sync_Attributes);
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
