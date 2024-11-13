@@ -94,7 +94,6 @@ uint8_t TCMDEXEC_fs_list_directory(const char *args_str, TCMD_TelecommandChannel
         return 1;
     }
     
-    // snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Unounted!\n");
     return 0;
 }
 
@@ -121,7 +120,6 @@ uint8_t TCMDEXEC_fs_make_directory(const char *args_str, TCMD_TelecommandChannel
         return 1;
     }
     
-    // snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Unounted!\n");
     return 0;
 }
 
