@@ -23,8 +23,7 @@ typedef void (*i2c_callback_t)(i2c_frame_t *frame, void *pxTaskWoken); //website
 INCLUDE PARAMS HERE FOR INIT
 +WHATEVER EXPLANATIONS
  */
-void CSP_init_for_cts1(int handle, int mode, uint8_t addr, uint16_t speed, 
-int queue_len_tx, int queue_len_rx, i2c_callback_t callback); //from website
+void CSP_init_for_cts1(int handle, int mode, uint8_t addr, uint16_t speed, int queue_len_tx, int queue_len_rx, i2c_callback_t callback); //from website
 
 int CSP_send_for_cts1(int handle, i2c_frame_t *frame, uint16_t timeout); //from website
 
