@@ -1,18 +1,25 @@
 <map id="TIM_get_current_unix_epoch_time_ms" name="TIM_get_current_unix_epoch_time_ms">
-<area shape="rect" id="Node000001" title="Returns the current unix timestamp, in milliseconds." alt="" coords="621,118,768,158"/>
-<area shape="rect" id="Node000002" href="$rtos__tasks_8c.html#a7cf23bbdce878a0b7c41607751423179" title=" " alt="" coords="103,5,305,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="663,109,623,73,598,56,572,43,505,24,436,13,367,10,306,11,306,5,367,4,436,8,507,18,574,38,601,52,626,68,667,105"/>
-<area shape="rect" id="Node000004" href="$telecommand__executor_8c.html#a6f29fb3908f76a7b826dfa263b1b38f0" title="Finds the index into TCMD_agenda (slot_num) of the next telecommand to execute." alt="" coords="379,52,547,93"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="606,116,537,96,539,91,607,111"/>
-<area shape="rect" id="Node000006" href="$telecommand__definitions_8c.html#acb0f11979fcc8d48883ecf8dfa2bbdfc" title=" " alt="" coords="376,118,550,158"/>
-<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="606,141,550,141,550,136,606,136"/>
-<area shape="rect" id="Node000007" href="$timekeeping__telecommand__defs_8c.html#a4306b41d60eb1206a50f68db97930164" title="Adjust the system time with a signed int." alt="" coords="353,183,573,208"/>
-<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="607,164,574,173,525,185,523,179,573,168,606,159"/>
-<area shape="rect" id="Node000008" href="$timekeeping_8c.html#abba2d2af7908d3fe4cbc1c0ea04a3b60" title="Returns a human&#45;friendly timestamp string." alt="" coords="375,232,551,273"/>
-<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="658,170,619,198,575,223,547,234,545,229,572,218,616,194,655,166"/>
-<area shape="rect" id="Node000003" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,32,55,58"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="101,37,56,44,55,38,100,31"/>
-<area shape="rect" id="Node000005" href="$rtos__tasks_8c.html#a04172000ecfd61309b0b9a892c0839ea" title=" " alt="" coords="104,56,304,82"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="363,74,305,73,305,68,363,69"/>
-<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="91,56,55,51,55,45,92,51"/>
+<area shape="rect" id="Node000001" title="Returns the current unix timestamp, in milliseconds." alt="" coords="621,171,768,211"/>
+<area shape="rect" id="Node000002" href="$eps__time_8c.html#aedd81259d3135d49f95b34346f6fde61" title="Sets the EPS&#39;s time, based on the OBC&#39;s current time." alt="" coords="376,5,550,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="667,160,626,112,600,88,572,67,537,49,539,44,575,62,603,84,629,108,671,156"/>
+<area shape="rect" id="Node000004" href="$rtos__tasks_8c.html#a7cf23bbdce878a0b7c41607751423179" title=" " alt="" coords="103,70,305,96"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="646,165,611,147,573,132,504,115,434,102,305,89,306,84,435,97,505,109,574,127,613,142,649,161"/>
+<area shape="rect" id="Node000006" href="$rtos__eps__tasks_8c.html#ad27bdbe0e838d3705b754e9af4c449b2" title=" " alt="" coords="143,121,265,146"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="609,169,573,162,490,150,406,143,265,137,266,132,407,138,491,145,574,156,610,164"/>
+<area shape="rect" id="Node000007" href="$telecommand__executor_8c.html#a6f29fb3908f76a7b826dfa263b1b38f0" title="Finds the index into TCMD_agenda (slot_num) of the next telecommand to execute." alt="" coords="379,171,547,211"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="606,194,548,194,548,188,606,188"/>
+<area shape="rect" id="Node000009" href="$telecommand__definitions_8c.html#acb0f11979fcc8d48883ecf8dfa2bbdfc" title=" " alt="" coords="376,236,550,277"/>
+<area shape="poly" id="edge10_Node000001_Node000009" title=" " alt="" coords="607,218,539,238,537,233,606,213"/>
+<area shape="rect" id="Node000010" href="$timekeeping__telecommand__defs_8c.html#a4306b41d60eb1206a50f68db97930164" title="Adjust the system time with a signed int." alt="" coords="353,301,573,326"/>
+<area shape="poly" id="edge11_Node000001_Node000010" title=" " alt="" coords="664,224,624,259,575,291,543,303,541,298,572,286,621,255,661,220"/>
+<area shape="rect" id="Node000011" href="$timekeeping_8c.html#abba2d2af7908d3fe4cbc1c0ea04a3b60" title="Returns a human&#45;friendly timestamp string." alt="" coords="375,351,551,391"/>
+<area shape="poly" id="edge12_Node000001_Node000011" title=" " alt="" coords="677,226,635,285,607,315,575,341,553,353,550,348,572,337,603,311,631,282,672,223"/>
+<area shape="rect" id="Node000003" href="$timekeeping__telecommand__defs_8c.html#a7c4f2b890bfc59877be98eb7b6c1ebec" title="Sync&#39;s eps time to obc time (+/&#45; 1 second)" alt="" coords="115,5,292,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="360,28,293,28,293,23,360,23"/>
+<area shape="rect" id="Node000005" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,121,55,146"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="132,103,103,111,56,127,54,122,102,106,130,98"/>
+<area shape="poly" id="edge6_Node000006_Node000005" title=" " alt="" coords="127,136,55,136,55,131,127,131"/>
+<area shape="rect" id="Node000008" href="$rtos__tasks_8c.html#a04172000ecfd61309b0b9a892c0839ea" title=" " alt="" coords="104,174,304,200"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="363,192,305,191,305,186,363,187"/>
+<area shape="poly" id="edge9_Node000008_Node000005" title=" " alt="" coords="137,172,102,162,54,145,56,140,103,156,138,167"/>
 </map>

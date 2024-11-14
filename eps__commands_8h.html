@@ -113,13 +113,17 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="eps__commands_8h__dep__incl.png" border="0" usemap="#afirmware_2Core_2Inc_2eps__drivers_2eps__commands_8hdep" alt=""/></div>
 <map name="afirmware_2Core_2Inc_2eps__drivers_2eps__commands_8hdep" id="afirmware_2Core_2Inc_2eps__drivers_2eps__commands_8hdep">
-<area shape="rect" title=" " alt="" coords="168,5,342,46"/>
+<area shape="rect" title=" " alt="" coords="350,5,523,46"/>
 <area shape="rect" href="eps__channel__control_8c.html" title=" " alt="" coords="5,94,156,150"/>
-<area shape="poly" title=" " alt="" coords="207,56,132,96,130,91,204,51"/>
-<area shape="rect" href="rtos__tasks_8c.html" title=" " alt="" coords="180,102,331,142"/>
-<area shape="poly" title=" " alt="" coords="258,62,258,101,252,101,252,62"/>
-<area shape="rect" href="eps__telecommands_8c.html" title=" " alt="" coords="355,102,569,142"/>
-<area shape="poly" title=" " alt="" coords="313,50,420,98,417,103,311,55"/>
+<area shape="poly" title=" " alt="" coords="339,53,169,97,157,100,156,95,168,91,338,48"/>
+<area shape="rect" href="eps__time_8c.html" title=" " alt="" coords="180,102,330,142"/>
+<area shape="poly" title=" " alt="" coords="386,56,294,103,292,99,384,51"/>
+<area shape="rect" href="rtos__eps__tasks_8c.html" title=" " alt="" coords="355,102,518,142"/>
+<area shape="poly" title=" " alt="" coords="439,62,439,101,434,101,434,62"/>
+<area shape="rect" href="rtos__tasks_8c.html" title=" " alt="" coords="542,102,694,142"/>
+<area shape="poly" title=" " alt="" coords="489,51,581,99,579,103,487,56"/>
+<area shape="rect" href="eps__telecommands_8c.html" title=" " alt="" coords="717,102,932,142"/>
+<area shape="poly" title=" " alt="" coords="533,48,744,98,742,103,532,53"/>
 </map>
 </div>
 </div>
@@ -184,6 +188,7 @@ Functions</h2></td></tr>
 <tr class="memitem:af9e2f743971b71a9c96cf9db97edd428" id="r_af9e2f743971b71a9c96cf9db97edd428"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af9e2f743971b71a9c96cf9db97edd428">EPS_CMD_get_piu_housekeeping_data_run_avg</a> (<a class="el" href="structEPS__struct__piu__housekeeping__data__eng__t.html">EPS_struct_piu_housekeeping_data_eng_t</a> *result_dest)</td></tr>
 <tr class="separator:af9e2f743971b71a9c96cf9db97edd428"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adbf054d67fe65a8a48ab438ad747aafa" id="r_adbf054d67fe65a8a48ab438ad747aafa"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adbf054d67fe65a8a48ab438ad747aafa">EPS_CMD_correct_time</a> (int32_t time_correction)</td></tr>
+<tr class="memdesc:adbf054d67fe65a8a48ab438ad747aafa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the EPS time.  <br /></td></tr>
 <tr class="separator:adbf054d67fe65a8a48ab438ad747aafa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad0603afa84de1131729c09b8cd95e784" id="r_ad0603afa84de1131729c09b8cd95e784"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad0603afa84de1131729c09b8cd95e784">EPS_CMD_zero_reset_cause_counters</a> ()</td></tr>
 <tr class="separator:ad0603afa84de1131729c09b8cd95e784"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -367,12 +372,22 @@ Here is the caller graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Update the EPS time. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">time_correction</td><td>Time correction in unix time </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd></dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Positive numbers added to time, negative values subtracted. </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="eps__commands_8h_adbf054d67fe65a8a48ab438ad747aafa_cgraph.png" border="0" usemap="#aeps__commands_8h_adbf054d67fe65a8a48ab438ad747aafa_cgraph" alt=""/></div>
 <map name="aeps__commands_8h_adbf054d67fe65a8a48ab438ad747aafa_cgraph" id="aeps__commands_8h_adbf054d67fe65a8a48ab438ad747aafa_cgraph">
-<area shape="rect" title=" " alt="" coords="5,277,168,303"/>
+<area shape="rect" title="Update the EPS time." alt="" coords="5,277,168,303"/>
 <area shape="rect" href="eps__internal__drivers_8c.html#a71bb5784347613fe7673d0077f7c8dba" title="Sends a command to the EPS, and receives the response." alt="" coords="216,277,415,303"/>
 <area shape="poly" title=" " alt="" coords="168,288,200,288,200,293,168,293"/>
 <area shape="rect" href="debug__uart_8c.html#ae1143c61f5fad27b50053b03673b9501" title=" " alt="" coords="463,277,653,303"/>
@@ -505,6 +520,18 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="856,273,876,263,891,249,900,234,908,219,924,203,932,198,935,202,927,207,913,222,904,237,895,252,879,267,858,278"/>
 <area shape="rect" href="timekeeping_8c.html#a909de509b8cfaf7214b1e8f0759c036d" title=" " alt="" coords="926,216,1097,257"/>
 <area shape="poly" title=" " alt="" coords="847,273,910,258,911,263,848,278"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="eps__commands_8h_adbf054d67fe65a8a48ab438ad747aafa_icgraph.png" border="0" usemap="#aeps__commands_8h_adbf054d67fe65a8a48ab438ad747aafa_icgraph" alt=""/></div>
+<map name="aeps__commands_8h_adbf054d67fe65a8a48ab438ad747aafa_icgraph" id="aeps__commands_8h_adbf054d67fe65a8a48ab438ad747aafa_icgraph">
+<area shape="rect" title="Update the EPS time." alt="" coords="453,13,615,38"/>
+<area shape="rect" href="eps__time_8c.html#aedd81259d3135d49f95b34346f6fde61" title="Sets the EPS&#39;s time, based on the OBC&#39;s current time." alt="" coords="231,5,405,46"/>
+<area shape="poly" title=" " alt="" coords="438,28,406,28,406,23,438,23"/>
+<area shape="rect" href="timekeeping__telecommand__defs_8c.html#a7c4f2b890bfc59877be98eb7b6c1ebec" title="Sync&#39;s eps time to obc time (+/&#45; 1 second)" alt="" coords="5,5,183,46"/>
+<area shape="poly" title=" " alt="" coords="215,28,183,28,183,23,215,23"/>
 </map>
 </div>
 
@@ -2470,9 +2497,22 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="eps__commands_8h_a4e3a6aaad0b31d4d42f7f540dd3ea0bc_icgraph.png" border="0" usemap="#aeps__commands_8h_a4e3a6aaad0b31d4d42f7f540dd3ea0bc_icgraph" alt=""/></div>
 <map name="aeps__commands_8h_a4e3a6aaad0b31d4d42f7f540dd3ea0bc_icgraph" id="aeps__commands_8h_a4e3a6aaad0b31d4d42f7f540dd3ea0bc_icgraph">
-<area shape="rect" title=" " alt="" coords="248,5,405,46"/>
-<area shape="rect" href="eps__telecommands_8c.html#a2310251491f0aae1c83fe4b4ef626d90" title="Get the EPS system status, and display it as a JSON string." alt="" coords="5,5,200,46"/>
-<area shape="poly" title=" " alt="" coords="232,28,200,28,200,23,232,23"/>
+<area shape="rect" title=" " alt="" coords="570,92,728,133"/>
+<area shape="rect" href="eps__time_8c.html#aedd81259d3135d49f95b34346f6fde61" title="Sets the EPS&#39;s time, based on the OBC&#39;s current time." alt="" coords="338,5,512,46"/>
+<area shape="poly" title=" " alt="" coords="579,88,479,49,481,44,581,83"/>
+<area shape="rect" href="eps__time_8c.html#a5a66b7a8cc792b4c410f66673b244442" title="Sets the OBC&#39;s time, based on the EPS&#39;s current time." alt="" coords="338,120,512,161"/>
+<area shape="poly" title=" " alt="" coords="555,127,513,132,512,127,554,121"/>
+<area shape="rect" href="rtos__eps__tasks_8c.html#ad27bdbe0e838d3705b754e9af4c449b2" title=" " alt="" coords="130,70,252,96"/>
+<area shape="poly" title=" " alt="" coords="555,109,253,90,253,84,555,104"/>
+<area shape="rect" href="eps__telecommands_8c.html#a2310251491f0aae1c83fe4b4ef626d90" title="Get the EPS system status, and display it as a JSON string." alt="" coords="328,185,522,226"/>
+<area shape="poly" title=" " alt="" coords="594,142,523,175,491,187,489,182,521,170,592,138"/>
+<area shape="rect" href="timekeeping__telecommand__defs_8c.html#a7c4f2b890bfc59877be98eb7b6c1ebec" title="Sync&#39;s eps time to obc time (+/&#45; 1 second)" alt="" coords="103,5,280,46"/>
+<area shape="poly" title=" " alt="" coords="323,28,280,28,280,23,323,23"/>
+<area shape="poly" title=" " alt="" coords="324,118,246,99,247,94,326,113"/>
+<area shape="rect" href="timekeeping__telecommand__defs_8c.html#a96a9620231841478e8b1c1065423a783" title="Sync&#39;s obc time to eps time (+/&#45; 1 second)" alt="" coords="103,120,280,161"/>
+<area shape="poly" title=" " alt="" coords="323,143,280,143,280,138,323,138"/>
+<area shape="rect" href="main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,70,55,96"/>
+<area shape="poly" title=" " alt="" coords="115,86,55,86,55,80,115,80"/>
 </map>
 </div>
 
@@ -4904,7 +4944,7 @@ Here is the caller graph for this function:</div>
 <div class="center"><img src="eps__commands_8h_a8013932ecdf126298fa09eb26101c727_icgraph.png" border="0" usemap="#aeps__commands_8h_a8013932ecdf126298fa09eb26101c727_icgraph" alt=""/></div>
 <map name="aeps__commands_8h_a8013932ecdf126298fa09eb26101c727_icgraph" id="aeps__commands_8h_a8013932ecdf126298fa09eb26101c727_icgraph">
 <area shape="rect" title=" " alt="" coords="347,31,493,56"/>
-<area shape="rect" href="rtos__tasks_8c.html#a32949062e454d45c5ab1f1480f359a12" title="periodically sends a command to the eps to reset the watchdog timer" alt="" coords="103,5,299,31"/>
+<area shape="rect" href="rtos__eps__tasks_8c.html#a32949062e454d45c5ab1f1480f359a12" title="periodically sends a command to the eps to reset the watchdog timer" alt="" coords="103,5,299,31"/>
 <area shape="poly" title=" " alt="" coords="331,36,299,32,300,27,332,31"/>
 <area shape="rect" href="eps__telecommands_8c.html#a4d084a9326abf19603b43ac28762a70e" title="Triggers/services the EPS watchdog. No args." alt="" coords="109,55,292,80"/>
 <area shape="poly" title=" " alt="" coords="332,56,293,60,293,55,331,51"/>
