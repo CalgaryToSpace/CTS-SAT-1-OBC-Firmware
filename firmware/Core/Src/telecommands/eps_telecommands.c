@@ -2,9 +2,10 @@
 #include "eps_drivers/eps_types.h"
 #include "eps_drivers/eps_types_to_json.h"
 #include "eps_drivers/eps_channel_control.h"
-
+#include "eps_drivers/eps_time.h"
 #include "telecommands/eps_telecommands.h"
 #include "telecommands/telecommand_args_helpers.h"
+
 
 #include <stdio.h>
 #include <string.h>
@@ -519,4 +520,3 @@ uint8_t TCMDEXEC_eps_get_piu_housekeeping_data_run_avg_json(
     }
     return 0;
 }
-
