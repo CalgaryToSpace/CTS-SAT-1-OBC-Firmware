@@ -97,6 +97,7 @@ uint8_t TCMDEXEC_gps_send_cmd_receive_response(const char *args_str, TCMD_Teleco
     }
     // TODO: Check if I need to verify this
     // Format of command is: {unlogall/log/unlog/} {log_command} {time_interval_type} {time_interval}
+    // Example : log bestxyza ontime 1 , log bestposa once etc
 
     const size_t gps_cmd_len = strlen(args_str); 
 
