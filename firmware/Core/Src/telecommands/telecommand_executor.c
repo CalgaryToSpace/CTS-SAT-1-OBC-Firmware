@@ -68,7 +68,7 @@ uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd
         for (uint32_t i = 0; i < TCMD_timestamp_sent_head; i++) {
             if(parsed_tcmd->timestamp_sent == TCMD_timestamp_sent_buffer[i]) {
                 // Skip this telecommand
-                log_message(
+                LOG_message(
                     LOG_SYSTEM_TELECOMMAND, 
                     LOG_SEVERITY_NORMAL, 
                     LOG_SINK_ALL, 
