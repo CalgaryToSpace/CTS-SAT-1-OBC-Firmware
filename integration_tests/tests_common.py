@@ -2,6 +2,7 @@ import os
 
 import pytest
 import serial
+import time
 from dotenv import load_dotenv
 
 BAUD_RATE = 115200
@@ -23,14 +24,16 @@ def port() -> serial.Serial:
     return ser
 
 
-def output(port, expected_response: str) -> bool:
-    response = ""
-    for i in range(10):
-        byte_data = port.readline()
-        string_data = byte_data.decode("utf-8")
-        response = ""
-        for i in reversed(string_data):
-            response = i + response
-            if response == expected_response:
-                return True
+def output(port, expected_response: bytes) -> bool:
+    start_time = time.time()
+    everything: bytes = b'' # currently for debugging purposes 
+    timeout = 4 # in seconds
+    while True:
+        if port.in_waiting>0: # checks if there are bytes ready to be read
+            resp: bytes = port.readline()  # will read until nextline
+            everything = everything + resp # contains all output of uart terminal (this is useful for when debugging)
+            if expected_response in resp:
+                return expected_response in resp
+        if time.time() - start_time > timeout: # timeout for 4 seconds if it is unable to read the expected output
+            break # comment out timeout if testing in debug mode or set timeout to 99 because the timeout continues when debug mode reaches a breakpoint
     return False
