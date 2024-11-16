@@ -72,13 +72,7 @@ uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd
                     LOG_SYSTEM_TELECOMMAND, 
                     LOG_SEVERITY_NORMAL, 
                     LOG_SINK_ALL, 
-                    "Telecommand skipped due to timestamp collision\n",
-                    "Timestamp sent: %d\n",
-                    parsed_tcmd->timestamp_sent,
-                    "\n"
-                    "latest timestamp sent: %d\n",
-                    TCMD_latest_received_tcmd_timestamp_sent,
-                    "\n"
+                    "Telecommand skipped due to timestamp collision\n"
                 );
                 return 1; 
             }
