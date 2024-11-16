@@ -22,13 +22,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <csp/csp.h>
 #include <csp/csp_endian.h>
-
+#include "log/log.h"
 // Ensure certain fields in the csp_i2c_frame_t matches the fields in the csp_packet_t
 CSP_STATIC_ASSERT(offsetof(csp_i2c_frame_t, len) == offsetof(csp_packet_t, length), len_field_misaligned);
 CSP_STATIC_ASSERT(offsetof(csp_i2c_frame_t, data) == offsetof(csp_packet_t, id), data_field_misaligned);
 
 int csp_i2c_tx(const csp_route_t * ifroute, csp_packet_t * packet) {
-
+	LOG_message(
+            LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "RUNNING CSP_I2C_TX"
+        );
 	/* Cast the CSP packet buffer into an i2c frame */
 	csp_i2c_frame_t * frame = (csp_i2c_frame_t *) packet;
 
@@ -91,7 +94,10 @@ void csp_i2c_rx(csp_iface_t * iface, csp_i2c_frame_t * frame, void * pxTaskWoken
 }
 
 int csp_i2c_add_interface(csp_iface_t * iface) {
-
+	LOG_message(
+        LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "starting to add i2c interface"
+    );
 	if ((iface == NULL) || (iface->name == NULL) || (iface->interface_data == NULL)) {
 		return CSP_ERR_INVAL;
 	}
@@ -107,6 +113,10 @@ int csp_i2c_add_interface(csp_iface_t * iface) {
 	}
 
         iface->nexthop = csp_i2c_tx;
-
+	
+	LOG_message(
+        LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "finished adding i2c interface"
+    );
 	return csp_iflist_add(iface);
 }

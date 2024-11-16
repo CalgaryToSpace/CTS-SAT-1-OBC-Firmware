@@ -26,13 +26,67 @@ csp_conf_t csp_conf_value_1 = {
     .conn_dfl_so = CSP_SO_NONE          // Default connection options, e.g., no special options
 };
 
+int csp_i2c_driver_tx(void * driver_data, csp_i2c_frame_t * frame){ //TODO call HAL I2C TRANSMIT FUNCTION
+    LOG_message(
+        LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "transmit_i2c_message_function"
+    );
+    return 0; //TODO need better return value for later
+}
+
+
+csp_i2c_interface_data_t i2c_data = {
+    .tx_func = csp_i2c_driver_tx
+    };
+
+
+struct csp_iface_s iface_instance = {
+    .name = "eth0",                   //!< Name, max compare length is #CSP_IFLIST_NAME_MAX
+    .interface_data =  &i2c_data,           //!< Interface data, only known/used by the interface layer, e.g. state information.
+    .driver_data = NULL,              //!< Driver data, only known/used by the driver layer, e.g. device/channel references.
+    .nexthop = csp_i2c_tx ,                  //!< Next hop (Tx) function
+    .mtu = 255,                     //!< Maximum Transmission Unit of interface FOUND FROM PAGE 27 OF AX100_MANUAL
+    .split_horizon_off = 0,           //!< Disable the route-loop prevention
+    .tx = 0,                          //!< Successfully transmitted packets
+    .rx = 0,                          //!< Successfully received packets
+    .tx_error = 0,                    //!< Transmit errors (packets)
+    .rx_error = 0,                    //!< Receive errors, e.g. too large message
+    .drop = 0,                        //!< Dropped packets
+    .autherr = 0,                     //!< Authentication errors (packets)
+    .frame = 1,                       //!< Frame format errors (packets)
+    .txbytes = 0,                     //!< Transmitted bytes
+    .rxbytes = 0,                     //!< Received bytes
+    .irq = 0,                         //!< Interrupts
+    .next = NULL                      //!< Internal, interfaces are stored in a linked list
+};
+
 void CSP_init_for_cts1() {
-
+    LOG_message(
+        LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "Starting CSP_INIT_FOR_1()"
+    );
     csp_init(&csp_conf_value_1);
-
+    LOG_message(
+        LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "COMPLETED CSP_INIT_FOR_1()"
+    );
+        LOG_message(
+        LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "Starting i2c_add_interface()"
+    );
+    int return_add_interface = csp_i2c_add_interface(&iface_instance);
+    
+    LOG_message(
+        LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "FINISHED i2c_add_interface(), with return of %d", return_add_interface
+    );
 }
 
 uint8_t CSP_demo_1() {
+    //TODO check csp_send function
+    // ADD PRINT STATEMENTS THROUGHOUT CODE TO CHECK FOR I2C CALLS
+    //TRY TO GO THROUGH EACH FUNCTION CALL IN THIS CODE
+    // TO SEE WHICH ONES MIGHT CALL I2C
     // TODO: try csp_ping(...)
     
     // From AX100 User Manual:

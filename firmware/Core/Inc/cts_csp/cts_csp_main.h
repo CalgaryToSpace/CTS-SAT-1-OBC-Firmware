@@ -8,6 +8,8 @@
 #define I2C_MTU //MAX transfer length on i2c
 #define I2C_MASTER
 #define I2C_SLAVE //i2c device modes
+#define OWN_ADDR 0X05
+#define BUS_SPEED 38
 typedef struct i2c_frame_s i2c_frame_t; //website: "Data structure for I2C frames."
 
 /**
@@ -18,14 +20,14 @@ INCLUDE PARAMS HERE FOR I2C_CALLBACK
 
  //seems like the i2c_callback function is similar to the callback function in the USART driver
 
-typedef void (*i2c_callback_t)(i2c_frame_t *frame, void *pxTaskWoken); //website "Initialise the I2C driver."
+//typedef void (*i2c_callback_t)(i2c_frame_t *frame, void *pxTaskWoken); //website "Initialise the I2C driver."
 /**
 INCLUDE PARAMS HERE FOR INIT
 +WHATEVER EXPLANATIONS
  */
-void CSP_init_for_cts1(int handle, int mode, uint8_t addr, uint16_t speed, int queue_len_tx, int queue_len_rx, i2c_callback_t callback); //from website
+void CSP_init_for_cts1(); //from website
 
-int CSP_send_for_cts1(int handle, i2c_frame_t *frame, uint16_t timeout); //from website
+int CSP_send_for_cts1(); //from website
 
 
 uint8_t CSP_demo_1(); // from parker's branch
