@@ -143,7 +143,7 @@ uint8_t START_antenna_deploy() {
             LOG_SINK_ALL, 
             "read %d bytes from deploy_antenna_on_boot_enabled.bool. Result: %d",
             num_bytes_read,
-            deploy_antenna_on_boot_enabled[0]
+            deploy_antenna_on_boot_enabled
         );
     }
     //reading the file is done now, unmount fs and close the file
@@ -154,8 +154,8 @@ uint8_t START_antenna_deploy() {
 
     if(deploy_antenna_on_boot_enabled == 1) {
         //TODO: which mcu should be armed on the antenna deploy system? Error handling
-     ANT_CMD_arm_antenna_system(ANT_i2c_bus_mcu1);
-     ANT_CMD_start_automated_sequential_deployment(ANT_i2c_bus_mcu1, 7);
+     ANT_CMD_arm_antenna_system(ANT_I2C_BUS_A_MCU_A);
+     ANT_CMD_start_automated_sequential_deployment(ANT_I2C_BUS_A_MCU_A, 7);
     }
 
 
