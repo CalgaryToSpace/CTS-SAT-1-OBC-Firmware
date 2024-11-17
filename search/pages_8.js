@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['namespaces_0',['C Namespaces',['../md_docs_2C__Namespaces.html',1,'']]],
-  ['non_20critical_20stm32_20notes_1',['Non-Critical STM32 Notes',['../md_docs_2Non-Critical__Notes_2STM32__Notes.html',1,'']]],
-  ['notes_2',['Notes',['../md_docs_2Sub-System__Notes_2ISISpace__EPS__Notes.html',1,'ISISpace EPS Notes'],['../md_docs_2Non-Critical__Notes_2STM32__Notes.html',1,'Non-Critical STM32 Notes']]]
+  ['list_20from_20ioc_20file_0',['Pin List (from IOC file)',['../md_docs_2IOC__Pin__List.html',1,'']]],
+  ['logging_1',['Logging',['../md_docs_240__Logging.html',1,'']]]
 ];

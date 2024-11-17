@@ -78,7 +78,7 @@ var searchData=
   ['reset_5fcause_75',['reset_cause',['../structADCS__boot__running__status__struct__t.html#a6b7437247d624abb3a5e801c7fc350ba',1,'ADCS_boot_running_status_struct_t::reset_cause'],['../structEPS__struct__system__status__t.html#a21508f6410b6caffe898e57128830d82',1,'EPS_struct_system_status_t::reset_cause']]],
   ['response_5fmessage_5fgps_5flog_76',['response_message_gps_log',['../structADCS__raw__gps__status__struct__t.html#a599e40d653dc9b9185c3741ad77967a3',1,'ADCS_raw_gps_status_struct_t']]],
   ['rev_77',['rev',['../structlfs__mdir.html#ab085472382ff9f45ef3bb76f610f5e15',1,'lfs_mdir']]],
-  ['rng_20clock_78',['SDIO and RNG clock                     |',['../system__stm32l4xx_8c.html#autotoc_md78',1,'']]],
+  ['rng_20clock_78',['SDIO and RNG clock                     |',['../system__stm32l4xx_8c.html#autotoc_md81',1,'']]],
   ['root_79',['root',['../structlfs.html#a24eaf15f26f58183dce782fc9aafb3d7',1,'lfs']]],
   ['rotleft_80',['ROTLEFT',['../sha256_8c.html#aa554f63b1bff923e477da72974a8ca9a',1,'sha256.c']]],
   ['rotright_81',['ROTRIGHT',['../sha256_8c.html#a3f24e956e9863a34a6f07be0b06b093a',1,'sha256.c']]],

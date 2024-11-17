@@ -148,45 +148,45 @@ Variables</h2></td></tr>
 <li><a class="el" href="group__STM32L4xx__System__Private__Functions.html#gae0c36a9591fe6e9c45ecb21a794f0f0f" title="Update SystemCoreClock variable according to Clock Register Values. The SystemCoreClock variable cont...">SystemCoreClockUpdate()</a>: Updates the variable SystemCoreClock and must be called whenever the core clock is changed during program execution.</li>
 </ul>
 <p>After each device reset the MSI (4 MHz) is used as system clock source. Then <a class="el" href="group__STM32L4xx__System__Private__Functions.html#ga93f514700ccf00d08dbdcff7f1224eb2" title="Setup the microcontroller system.">SystemInit()</a> function is called, in "startup_stm32l4xx.s" file, to configure the system clock before to branch to main program.</p>
-<h1><a class="anchor" id="autotoc_md60"></a>
+<h1><a class="anchor" id="autotoc_md63"></a>
 This file configures the system clock as follows:</h1>
 <hr  />
- <h2><a class="anchor" id="autotoc_md61"></a>
+ <h2><a class="anchor" id="autotoc_md64"></a>
 System Clock source | MSI</h2>
-<h2><a class="anchor" id="autotoc_md62"></a>
-SYSCLK(Hz) | 4000000</h2>
-<h2><a class="anchor" id="autotoc_md63"></a>
-HCLK(Hz) | 4000000</h2>
-<h2><a class="anchor" id="autotoc_md64"></a>
-AHB Prescaler | 1</h2>
 <h2><a class="anchor" id="autotoc_md65"></a>
-APB1 Prescaler | 1</h2>
+SYSCLK(Hz) | 4000000</h2>
 <h2><a class="anchor" id="autotoc_md66"></a>
-APB2 Prescaler | 1</h2>
+HCLK(Hz) | 4000000</h2>
 <h2><a class="anchor" id="autotoc_md67"></a>
-PLL_M | 1</h2>
+AHB Prescaler | 1</h2>
 <h2><a class="anchor" id="autotoc_md68"></a>
-PLL_N | 8</h2>
+APB1 Prescaler | 1</h2>
 <h2><a class="anchor" id="autotoc_md69"></a>
-PLL_P | 7</h2>
+APB2 Prescaler | 1</h2>
 <h2><a class="anchor" id="autotoc_md70"></a>
-PLL_Q | 2</h2>
+PLL_M | 1</h2>
 <h2><a class="anchor" id="autotoc_md71"></a>
-PLL_R | 2</h2>
+PLL_N | 8</h2>
 <h2><a class="anchor" id="autotoc_md72"></a>
-PLLSAI1_P | NA</h2>
+PLL_P | 7</h2>
 <h2><a class="anchor" id="autotoc_md73"></a>
-PLLSAI1_Q | NA</h2>
+PLL_Q | 2</h2>
 <h2><a class="anchor" id="autotoc_md74"></a>
-PLLSAI1_R | NA</h2>
+PLL_R | 2</h2>
 <h2><a class="anchor" id="autotoc_md75"></a>
-PLLSAI2_P | NA</h2>
+PLLSAI1_P | NA</h2>
 <h2><a class="anchor" id="autotoc_md76"></a>
-PLLSAI2_Q | NA</h2>
+PLLSAI1_Q | NA</h2>
 <h2><a class="anchor" id="autotoc_md77"></a>
+PLLSAI1_R | NA</h2>
+<h2><a class="anchor" id="autotoc_md78"></a>
+PLLSAI2_P | NA</h2>
+<h2><a class="anchor" id="autotoc_md79"></a>
+PLLSAI2_Q | NA</h2>
+<h2><a class="anchor" id="autotoc_md80"></a>
 PLLSAI2_R | NA</h2>
 <p>Require 48MHz for USB OTG FS, | Disabled </p>
-<h2><a class="anchor" id="autotoc_md78"></a>
+<h2><a class="anchor" id="autotoc_md81"></a>
 SDIO and RNG clock |</h2>
 <p>=============================================================================</p>
 <dl class="section attention"><dt>Attention</dt><dd></dd></dl>

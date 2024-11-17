@@ -87,10 +87,10 @@ $(function(){ initResizable(false); });
   <div class="headertitle"><div class="title">Telecommand Specification</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md56"></a></p>
+<div class="textblock"><p><a class="anchor" id="autotoc_md59"></a></p>
 <p>The following specification defines how telecommands are constructed to control the satellite.</p>
 <p>The same specification is used whether the commands are delivered over Debug UART or Radio.</p>
-<h1><a class="anchor" id="autotoc_md57"></a>
+<h1><a class="anchor" id="autotoc_md60"></a>
 Examples</h1>
 <div class="fragment"><div class="line">CTS1+hello_world()!</div>
 <div class="line">CTS1+run_all_unit_tests()!</div>
@@ -98,7 +98,7 @@ Examples</h1>
 <div class="line">CTS1+echo_back_uint32_args(1234,invalid_arg,32)!</div>
 <div class="line">CTS1+echo_back_args(arg1,arg2,arg3)@tssent=1716611908453@tsexec=1716611999999!</div>
 <div class="line">CTS1+echo_back_args(arg1,arg2,arg3)@tssent=1716611908453@tsexec=1716611999999#sha256=XXxxxXXXxx+xx/xx===!</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md58"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md61"></a>
 Command Format</h1>
 <p>Every command contains the following subsections, concatenated together with no delimeters:</p>
 <ol type="1">
@@ -134,7 +134,7 @@ Command Format</h1>
 </li>
 </ol>
 <p>Note: The 🚧 emoji indicates that the command part is planned, but is not yet implemented.</p>
-<h1><a class="anchor" id="autotoc_md59"></a>
+<h1><a class="anchor" id="autotoc_md62"></a>
 Notes</h1>
 <p>The following characters have special meanings, and cannot be used in any variable parts of the command:</p>
 <div class="fragment"><div class="line">+ ! @ # ( ) , = :</div>

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.12.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>CTS-SAT-1-OBC-Firmware: Non-Critical STM32 Notes</title>
+<title>CTS-SAT-1-OBC-Firmware: VS Code Setup Procedure (ARM64 Windows Computers)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -84,16 +84,40 @@ $(function(){ initResizable(false); });
 </div><!-- top -->
 <div id="doc-content">
 <div><div class="header">
-  <div class="headertitle"><div class="title">Non-Critical STM32 Notes</div></div>
+  <div class="headertitle"><div class="title">VS Code Setup Procedure (ARM64 Windows Computers)</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md51"></a></p>
-<ul>
-<li>Lower NVIC priority number means higher priority.</li>
-<li>For UART, FIFO Mode must be enabled.</li>
-<li>When starting a new FreeRTOS project, you must manually increase the total heap size. Hard faults may mean a thread is running out of stack memory.</li>
-<li>With UART DMA, calling <code>HAL_UART_Receive_DMA()</code> takes a long time (maybe, 1ms). Do not call it inside an Interrupt Service Routine (ISR). Call it only once to start the DMA receive. </li>
+<div class="textblock"><p><a class="anchor" id="autotoc_md48"></a></p>
+<p>If you're using a Windows computer with an ARM64 processor, you may need to take these extra steps to set up your development environment.</p>
+<h1><a class="anchor" id="autotoc_md49"></a>
+STM32 Driver Setup (ARM64)</h1>
+<ol type="1">
+<li><a href="https://community.st.com/t5/stm32-mcus-boards-and-hardware/stlink-stcubeprogrammer-support-on-windows-arm64/td-p/224127">ARM64 Forum</a> From the following ARM64 forum scoll down to the accepted solution. There should be a file called stsw-link009_v3_ARM64_UNSIGNED.zip from user CPop.1. Install and unzip file.</li>
+<li>Click on Windows icon &gt; Shut down or sign out &gt; hold Shift and press Restart.</li>
+<li>The computer should restart and open with options. In this order click Troubleshoot &gt; Advanced options &gt; Startup Settings &gt; Restart. The computer shouldrestart with multiple options. input the option for <code>Disable driver signature enforcement</code>.</li>
+<li>Computer should boot like normal. Run the <code>dpinst_amd64.exe</code> and follow their instrucations.</li>
+<li>Installer should now be installed.</li>
+</ol>
+<h1><a class="anchor" id="autotoc_md50"></a>
+VS Code Setup (ARM64)</h1>
+<ol type="1">
+<li>Clone this repo.</li>
+<li>Open this repo in File Explorer.</li>
+<li>Right click on the <code>firmware</code> folder in this repo, and select "Open with VS Code". <b>Do not open the entire repo with VS Code like you normally would.</b></li>
+<li>When prompted in the bottom-right corner about "A git repository was found in the parent folders...", click "Yes".</li>
+<li>Install the recommended VS Code extensions when prompted.<ul>
+<li>If you're not prompted, use Ctrl+Shift+P to navigate to "&gt;Extensions: Show Recommended Extensions".</li>
 </ul>
+</li>
+<li>Follow the <a href="https://chocolatey.org/install">Chocolatey install guide</a>.</li>
+<li>Open a powershell terminal and type <code>choco install gcc-arm-embedded</code> when prompted just respond with <code>y</code>. Repeat steps for <code>choco install make</code>, and <code>choco install openocd</code></li>
+<li>In the STM32 for VScode page, there should be a option to check for build tools and click it.</li>
+<li>There should be 3 slots for directories. If directory says <code>False</code>, replace with <code>C:\ProgramData\chocolatey\bin</code>. Then in STM32 extension click <code>Check Build Tools</code>.</li>
+</ol>
+<ol type="1">
+<li>In the "ST" extension pane, use the "Build" button to build the repo; or, use Ctrl+Shift+P to open the command palate, search for STM32, and select the Build option.</li>
+<li>Plug in an STM32 dev kit, and flash the project using the "Flash STM32" button/command palate option. </li>
+</ol>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->
