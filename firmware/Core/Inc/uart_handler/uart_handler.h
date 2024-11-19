@@ -26,7 +26,7 @@ extern volatile uint8_t UART_gps_buffer[];          // Buffer for UART telecomma
 extern volatile uint16_t UART_gps_buffer_write_idx; // Write index for UART telecommand buffer
 extern volatile uint32_t UART_gps_last_write_time_ms; // Last write time in milliseconds for UART telecommand
 extern volatile uint8_t UART_gps_buffer_last_rx_byte; // Last received byte for UART telecommand
-extern volatile uint8_t UART_gps_is_expecting_data; // Set to 1 when a command is sent, and we're awaiting a response
+extern volatile uint8_t UART_gps_uart_interrupt_enabled; // Set to 1 when a command is sent, and we're awaiting a response
 
 
 void UART_init_uart_handlers(void);
