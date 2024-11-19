@@ -250,7 +250,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     // ****************** END SECTION: lfs_telecommand_defs ******************
-    
+
     // ****************** SECTION: telecommand_adcs ******************
     {
         .tcmd_name = "adcs_ack",
@@ -627,7 +627,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "adcs_generic_command",
         .tcmd_func = TCMDEXEC_adcs_generic_command,
-        .number_of_args = 2, 
+        .number_of_args = 2,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
@@ -719,7 +719,6 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     },
 
     // ****************** END SECTION: freertos_telecommand_defs ******************
-
 
     /* ============================ EPS-Related (eps_telecommands.c/h) ================= */
     {
@@ -827,8 +826,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     },
 
     /* *************************** END EPS Section ************************************** */
-    
-    
+
     // ****************** SECTION: agenda_telecommand_defs ******************
 
     {
@@ -866,8 +864,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "mpi_send_command_hex",
         .tcmd_func = TCMDEXEC_mpi_send_command_hex,
         .number_of_args = 1,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION
-    },
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION},
     // ****************** END: MPI_telecommand_definitions ********************
     // ****************** START SECTION: stm32_internal_flash_telecommand_defs ******************
 
@@ -972,7 +969,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
-        .tcmd_name = "gps_send_command",
+        .tcmd_name = "gps_send_cmd_receive_response",
         .tcmd_func = TCMDEXEC_gps_send_cmd_receive_response,
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
@@ -995,30 +992,33 @@ const int16_t TCMD_NUM_TELECOMMANDS = sizeof(TCMD_telecommand_definitions) / siz
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0 if successful, >0 if an error occurred (but hello_world can't return an error)
 uint8_t TCMDEXEC_hello_world(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
+                             char *response_output_buf, uint16_t response_output_buf_len)
+{
     LOG_message(
         LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "Hello, world!"
-    );
+        "Hello, world!");
     return 0;
 }
 
 uint8_t TCMDEXEC_heartbeat_off(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
+                               char *response_output_buf, uint16_t response_output_buf_len)
+{
     TASK_heartbeat_is_on = 0;
     snprintf(response_output_buf, response_output_buf_len, "Heartbeat OFF");
     return 0;
 }
 
 uint8_t TCMDEXEC_heartbeat_on(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
+                              char *response_output_buf, uint16_t response_output_buf_len)
+{
     TASK_heartbeat_is_on = 1;
     snprintf(response_output_buf, response_output_buf_len, "Heartbeat ON");
     return 0;
 }
 
 uint8_t TCMDEXEC_core_system_stats(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
+                                   char *response_output_buf, uint16_t response_output_buf_len)
+{
 
     // TODO: Add temperatures (EPS, OBC, antenna, etc.)
     // TODO: Add beacon sent count
@@ -1026,30 +1026,31 @@ uint8_t TCMDEXEC_core_system_stats(const char *args_str, TCMD_TelecommandChannel
     char timestamp_string_ms[20];
     GEN_uint64_to_str(TIM_get_current_unix_epoch_time_ms(), timestamp_string_ms);
 
-    const char* STM32_reset_cause_name = STM32_reset_cause_enum_to_str(STM32_get_reset_cause());
+    const char *STM32_reset_cause_name = STM32_reset_cause_enum_to_str(STM32_get_reset_cause());
 
     char time_of_last_tcmd_sent_ms_string[20];
     GEN_uint64_to_str(TCMD_latest_received_tcmd_timestamp_sent, time_of_last_tcmd_sent_ms_string);
-    
+
     snprintf(
-        response_output_buf, response_output_buf_len, 
-        "{\"timestamp_ms\":\"%s\",\"uptime_ms\":\"%lu\",\"last_resync_ms\":\"%lu\",\"time_synced_ms_ago\":\"%lu\",\"time_of_last_tcmd_sent_ms\":\"%s\",\"total_tcmd_count\":\"%lu\",\"is_lfs_mounted\":\"%u\",\"last_time_sync_source\":\"%c\",\"reboot_reason\":\"%s\"}\n" ,
-        timestamp_string_ms, // timestamp_ms
-        TIM_get_current_system_uptime_ms(), // uptime_ms
-        TIM_system_uptime_at_last_time_resync_ms, // last_resync_ms
+        response_output_buf, response_output_buf_len,
+        "{\"timestamp_ms\":\"%s\",\"uptime_ms\":\"%lu\",\"last_resync_ms\":\"%lu\",\"time_synced_ms_ago\":\"%lu\",\"time_of_last_tcmd_sent_ms\":\"%s\",\"total_tcmd_count\":\"%lu\",\"is_lfs_mounted\":\"%u\",\"last_time_sync_source\":\"%c\",\"reboot_reason\":\"%s\"}\n",
+        timestamp_string_ms,                                                           // timestamp_ms
+        TIM_get_current_system_uptime_ms(),                                            // uptime_ms
+        TIM_system_uptime_at_last_time_resync_ms,                                      // last_resync_ms
         TIM_get_current_system_uptime_ms() - TIM_system_uptime_at_last_time_resync_ms, // time_synced_ms_ago
-        time_of_last_tcmd_sent_ms_string, // time_of_last_tcmd_sent_ms
-        TCMD_total_tcmd_queued_count, // total_tcmd_count
-        LFS_is_lfs_mounted, // is_lfs_mounted
-        TIME_sync_source_enum_to_letter_char(TIM_last_synchronization_source), // last_time_sync_source
-        STM32_reset_cause_name // reboot_reason
-    ); 
+        time_of_last_tcmd_sent_ms_string,                                              // time_of_last_tcmd_sent_ms
+        TCMD_total_tcmd_queued_count,                                                  // total_tcmd_count
+        LFS_is_lfs_mounted,                                                            // is_lfs_mounted
+        TIME_sync_source_enum_to_letter_char(TIM_last_synchronization_source),         // last_time_sync_source
+        STM32_reset_cause_name                                                         // reboot_reason
+    );
 
     return 0;
 }
 
 uint8_t TCMDEXEC_available_telecommands(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
+                                        char *response_output_buf, uint16_t response_output_buf_len)
+{
     char *p = response_output_buf;
     uint16_t remaining_space = response_output_buf_len;
 
@@ -1060,15 +1061,16 @@ uint8_t TCMDEXEC_available_telecommands(const char *args_str, TCMD_TelecommandCh
     remaining_space -= header_length;
 
     // Append each telecommand name to the response
-    for (uint16_t tcmd_idx = 0; tcmd_idx < TCMD_NUM_TELECOMMANDS; tcmd_idx++) {
+    for (uint16_t tcmd_idx = 0; tcmd_idx < TCMD_NUM_TELECOMMANDS; tcmd_idx++)
+    {
         const uint16_t line_length = snprintf(
             p,
             remaining_space,
             "%3u) %s\n",
             tcmd_idx + 1,
-            TCMD_telecommand_definitions[tcmd_idx].tcmd_name
-        );
-        if (line_length >= remaining_space) {
+            TCMD_telecommand_definitions[tcmd_idx].tcmd_name);
+        if (line_length >= remaining_space)
+        {
             // Not enough space left to append more telecommands
             break;
         }
@@ -1080,7 +1082,8 @@ uint8_t TCMDEXEC_available_telecommands(const char *args_str, TCMD_TelecommandCh
 }
 
 uint8_t TCMDEXEC_reboot(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
+                        char *response_output_buf, uint16_t response_output_buf_len)
+{
     DEBUG_uart_print_str("Rebooting by telecommand request...\n");
 
     // Delay to flush UART buffer
@@ -1089,4 +1092,3 @@ uint8_t TCMDEXEC_reboot(const char *args_str, TCMD_TelecommandChannel_enum_t tcm
     NVIC_SystemReset();
     return 0;
 }
-
