@@ -4,8 +4,6 @@
 
 #include <stdint.h>
 
-#define GPS_ENABLE_DEBUG_PRINT 1 // bool; 0 to disable
-
 uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint8_t rx_buf[],
                                   uint16_t rx_buf_len, const uint16_t rx_buf_max_size);
 
