@@ -10,7 +10,7 @@
 #define TCMD_AGENDA_SIZE 1000
 
 // Max number of timestamps that can be stored in the record at at time
-#define TCMD_TIMESTAMP_RECORD_SIZE 100
+#define TCMD_TIMESTAMP_RECORD_SIZE 500
 // NOTE: Not all functions in `telecommand_executor.c` are declared here. Only the ones that are
 //      expected to be called from other modules are declared here. This is intentional.
 

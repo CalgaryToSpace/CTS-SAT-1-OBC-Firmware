@@ -18,15 +18,10 @@ uint32_t TCMD_total_tcmd_queued_count = 0;
 uint64_t TCMD_latest_received_tcmd_timestamp_sent = 0;
 
 
-//the head of the circular buffer I think this should work
-
-//make these globals AND static.
-
-
 ///@brief  The head of the circular buffer of timestamps of telecommands that have been sent.
-uint8_t  TCMD_timestamp_sent_head = 0;
+uint16_t  TCMD_timestamp_sent_head = 0;
 /// @brief The circular buffer of timestamps of telecommands that have been sent.
-uint64_t TCMD_timestamp_sent_buffer[TCMD_TIMESTAMP_RECORD_SIZE] = {0};
+uint64_t TCMD_timestamp_sent_store[TCMD_TIMESTAMP_RECORD_SIZE] = {0};
 
 /// @brief  The agenda (schedule queue) of telecommands to execute.
 TCMD_parsed_tcmd_to_execute_t TCMD_agenda[TCMD_AGENDA_SIZE];
@@ -54,9 +49,6 @@ const char* telecommand_channel_enum_to_str(TCMD_TelecommandChannel_enum_t chann
 /// @return 0 on success, 1 if the agenda is full.
 /// @note Performs a deep copy of the `parsed_tcmd` arg into the agenda.
 uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd) {
-    // FIXME: If anyone wants please create unit tests for this. I am not sure if I should come back and add one but 
-    //we will see.
-
     // Find the first empty slot in the agenda.
     for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
         // Skip filled slots.
@@ -66,19 +58,19 @@ uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd
 
         // check to see if timestamp is in the circular buffer
         for (uint32_t i = 0; i < TCMD_timestamp_sent_head; i++) {
-            if(parsed_tcmd->timestamp_sent == TCMD_timestamp_sent_buffer[i]) {
+            if(parsed_tcmd->timestamp_sent == TCMD_timestamp_sent_store[i]) {
                 // Skip this telecommand
                 LOG_message(
                     LOG_SYSTEM_TELECOMMAND, 
-                    LOG_SEVERITY_NORMAL, 
+                    LOG_SEVERITY_WARNING, 
                     LOG_SINK_ALL, 
-                    "Telecommand skipped due to timestamp collision\n"
+                    "Telecommand skipped due to timestamp collision"
                 );
                 return 1; 
             }
         }
         // Add the timestamp to the circular buffer
-        TCMD_timestamp_sent_buffer[TCMD_timestamp_sent_head] = parsed_tcmd->timestamp_sent;
+        TCMD_timestamp_sent_store[TCMD_timestamp_sent_head] = parsed_tcmd->timestamp_sent;
         TCMD_timestamp_sent_head = (TCMD_timestamp_sent_head + 1) % TCMD_TIMESTAMP_RECORD_SIZE;
 
         // Copy the parsed telecommand into the agenda.
