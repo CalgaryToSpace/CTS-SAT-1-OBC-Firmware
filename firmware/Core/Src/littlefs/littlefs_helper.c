@@ -17,7 +17,7 @@ uint8_t LFS_is_lfs_mounted = 0;
 // NAND Flash Memory Datasheet https://www.farnell.com/datasheets/3151163.pdf
 // Each page is divided into a 2048-byte data storage region, and a 128 bytes spare area (2176 bytes total).
 #define FLASH_CHIP_PAGE_SIZE_BYTES 2048
-#define FLASH_CHIP_BLOCK_SIZE_BYTES FLASH_CHIP_PAGE_SIZE_BYTES * FLASH_CHIP_PAGES_PER_BLOCK
+#define FLASH_CHIP_BLOCK_SIZE_BYTES FLASH_CHIP_PAGE_SIZE_BYTES *FLASH_CHIP_PAGES_PER_BLOCK
 #define FLASH_LOOKAHEAD_SIZE 16
 
 // LittleFS Buffers for reading and writing
@@ -57,7 +57,6 @@ struct lfs_file_config LFS_file_cfg = {
 
 // -----------------------------LITTLEFS FUNCTIONS-----------------------------
 
-
 /**
  * @brief Formats Memory Module so it can successfully mount LittleFS
  * @param None
@@ -65,15 +64,19 @@ struct lfs_file_config LFS_file_cfg = {
  */
 int8_t LFS_format()
 {
-	int8_t result = lfs_format(&LFS_filesystem, &LFS_cfg);
-	if (result < 0)
-	{
-		DEBUG_uart_print_str("Error formatting!\n");
-		return result;
-	}
-	
-	DEBUG_uart_print_str("Formatting successful!\n");
-	return 0;
+    int8_t result = lfs_format(&LFS_filesystem, &LFS_cfg);
+    if (result < 0)
+    {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Error formatting!\n");
+        return result;
+    }
+
+    LOG_message(
+        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "Formatting successful!\n");
+    return 0;
 }
 
 /**
@@ -83,20 +86,27 @@ int8_t LFS_format()
  */
 int8_t LFS_mount()
 {
-	if (LFS_is_lfs_mounted) {
-		DEBUG_uart_print_str("LittleFS already mounted!\n");
-		return 1;
-	}
+    if (LFS_is_lfs_mounted)
+    {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "LittleFS already mounted!\n");
+        return 1;
+    }
 
     // Variable to store status of LittleFS mounting
     int8_t mount_result = lfs_mount(&LFS_filesystem, &LFS_cfg);
     if (mount_result < 0)
     {
-        DEBUG_uart_print_str("Mounting unsuccessful\n");
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Mounting unsuccessful\n");
         return mount_result;
     }
 
-    DEBUG_uart_print_str("Mounting successful\n");
+    LOG_message(
+        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "Mounting successful\n");
     LFS_is_lfs_mounted = 1;
     return 0;
 }
@@ -110,7 +120,9 @@ int8_t LFS_unmount()
 {
     if (!LFS_is_lfs_mounted)
     {
-        DEBUG_uart_print_str("LittleFS not mounted.\n");
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "LittleFS not mounted.\n");
         return 1;
     }
 
@@ -118,25 +130,31 @@ int8_t LFS_unmount()
     const int8_t unmount_result = lfs_unmount(&LFS_filesystem);
     if (unmount_result < 0)
     {
-        DEBUG_uart_print_str("Error un-mounting.\n");
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Error un-mounting.\n");
         return unmount_result;
     }
 
-    DEBUG_uart_print_str("Successfully un-mounted LittleFS.\n");
+    LOG_message(
+        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "Successfully un-mounted LittleFS.\n");
     LFS_is_lfs_mounted = 0;
     return 0;
 }
 
 /**
  * @brief Lists contents of LittleFS Directory
- * @param root_directory Pointer to cstring holding the root directory to open and read 
+ * @param root_directory Pointer to cstring holding the root directory to open and read
  * @retval 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
  */
 int8_t LFS_list_directory(const char root_directory[])
 {
     if (!LFS_is_lfs_mounted)
     {
-        DEBUG_uart_print_str("LittleFS not mounted.\n");
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "LittleFS not mounted.\n");
         return 1;
     }
 
@@ -144,7 +162,9 @@ int8_t LFS_list_directory(const char root_directory[])
     int8_t open_dir_result = lfs_dir_open(&LFS_filesystem, &dir, root_directory);
     if (open_dir_result < 0)
     {
-        DEBUG_uart_print_str("Error opening a directory.\n");
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Error opening a directory.\n");
         return open_dir_result;
     }
 
@@ -156,23 +176,33 @@ int8_t LFS_list_directory(const char root_directory[])
         read_dir_result = lfs_dir_read(&LFS_filesystem, &dir, &info);
 
         DEBUG_uart_print_str(info.name);
-        DEBUG_uart_print_str(", ");
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            ", ");
         // TODO: The info struct contains information about directory contents
     }
-    DEBUG_uart_print_str("\n");
+    LOG_message(
+        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "\n");
 
     if (read_dir_result < 0)
     {
-        DEBUG_uart_print_str("Error reading directory contents.\n");
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Error reading directory contents.\n");
         return read_dir_result;
     }
 
-    DEBUG_uart_print_str("Successfully Listed Directory Contents.\n");
+    LOG_message(
+        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "Successfully Listed Directory Contents.\n");
 
     int8_t close_dir_result = lfs_dir_close(&LFS_filesystem, &dir);
     if (close_dir_result < 0)
     {
-        DEBUG_uart_print_str("Error closing directory.\n");
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Error closing directory.\n");
         return close_dir_result;
     }
 
@@ -188,18 +218,24 @@ int8_t LFS_delete_file(const char file_name[])
 {
     if (!LFS_is_lfs_mounted)
     {
-        DEBUG_uart_print_str("LittleFS not mounted.\n");
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "LittleFS not mounted.\n");
         return 1;
     }
 
     int8_t remove_result = lfs_remove(&LFS_filesystem, file_name);
     if (remove_result < 0)
     {
-        DEBUG_uart_print_str("Error removing file/directory.\n");
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Error removing file/directory.\n");
         return remove_result;
     }
 
-    DEBUG_uart_print_str("Successfully removed file/directory.\n");
+    LOG_message(
+        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "Successfully removed file/directory.\n");
     return 0;
 }
 
@@ -212,7 +248,9 @@ int8_t LFS_make_directory(const char dir_name[])
 {
     if (!LFS_is_lfs_mounted)
     {
-        DEBUG_uart_print_str("LittleFS not mounted.\n");
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "LittleFS not mounted.\n");
         return 1;
     }
 
@@ -222,12 +260,13 @@ int8_t LFS_make_directory(const char dir_name[])
         LOG_message(
             LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
             "Error %d creating directory.",
-            make_dir_result
-        );
+            make_dir_result);
         return make_dir_result;
     }
 
-    DEBUG_uart_print_str("Successfully created directory.\n");
+    LOG_message(
+        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "Successfully created directory.\n");
     return 0;
 }
 
@@ -242,7 +281,9 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
 {
     if (!LFS_is_lfs_mounted)
     {
-        DEBUG_uart_print_str("LittleFS not mounted.\n");
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "LittleFS not mounted.\n");
         return 1;
     }
 
@@ -250,43 +291,60 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
     lfs_file_t file;
     const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC, &LFS_file_cfg);
 
-	if (open_result < 0)
-	{
-		DEBUG_uart_print_str("Error opening/creating file.\n");
-		return open_result;
-	}
-	
-    if (LFS_enable_hot_path_debug_logs) {
-        DEBUG_uart_print_str("Opened/created a file named: '");
+    if (open_result < 0)
+    {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Error opening/creating file.\n");
+        return open_result;
+    }
+
+    if (LFS_enable_hot_path_debug_logs)
+    {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Opened/created a file named: '");
         DEBUG_uart_print_str(file_name);
-        DEBUG_uart_print_str("'\n");
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "'\n");
     }
 
-	// Write data to file
-	const int8_t write_result = lfs_file_write(&LFS_filesystem, &file, write_buffer, write_buffer_len);
-	if (write_result < 0)
-	{
-		DEBUG_uart_print_str("Error writing to file!\n");
-		return write_result;
-	}
-	
-    if (LFS_enable_hot_path_debug_logs) {
-	    DEBUG_uart_print_str("Successfully wrote data to file!\n");
+    // Write data to file
+    const int8_t write_result = lfs_file_write(&LFS_filesystem, &file, write_buffer, write_buffer_len);
+    if (write_result < 0)
+    {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Error writing to file!\n");
+        return write_result;
     }
 
-	// Close the File, the storage is not updated until the file is closed successfully
-	const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
-	if (close_result < 0)
-	{
-		DEBUG_uart_print_str("Error closing the file!\n");
-		return close_result;
-	}
-	
-    if (LFS_enable_hot_path_debug_logs) {
-	    DEBUG_uart_print_str("Successfully closed the file!\n");
+    if (LFS_enable_hot_path_debug_logs)
+    {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Successfully wrote data to file!\n");
     }
 
-	return 0;
+    // Close the File, the storage is not updated until the file is closed successfully
+    const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
+    if (close_result < 0)
+    {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Error closing the file!\n");
+        return close_result;
+    }
+
+    if (LFS_enable_hot_path_debug_logs)
+    {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Successfully closed the file!\n");
+    }
+
+    return 0;
 }
 
 /**
@@ -307,34 +365,35 @@ int8_t LFS_append_file(const char file_name[], uint8_t *write_buffer, uint32_t w
     lfs_file_t file;
     const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND, &LFS_file_cfg);
 
-	if (open_result < 0)
-	{
+    if (open_result < 0)
+    {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening file");
-		return open_result;
-	}
-	
+        return open_result;
+    }
+
     const int8_t seek_result = lfs_file_seek(&LFS_filesystem, &file, 0, LFS_SEEK_END);
-    if (seek_result < 0) {
+    if (seek_result < 0)
+    {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error seeking within file");
         return seek_result;
     }
 
-	const int8_t write_result = lfs_file_write(&LFS_filesystem, &file, write_buffer, write_buffer_len);
-	if (write_result < 0)
-	{
+    const int8_t write_result = lfs_file_write(&LFS_filesystem, &file, write_buffer, write_buffer_len);
+    if (write_result < 0)
+    {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error writing to file");
-		return write_result;
-	}
-	
-	// Close the File, the storage is not updated until the file is closed successfully
-	const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
-	if (close_result < 0)
-	{
+        return write_result;
+    }
+
+    // Close the File, the storage is not updated until the file is closed successfully
+    const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
+    if (close_result < 0)
+    {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing file");
-		return close_result;
-	}
-	
-	return 0;
+        return close_result;
+    }
+
+    return 0;
 }
 
 /**
@@ -348,51 +407,54 @@ int8_t LFS_append_file(const char file_name[], uint8_t *write_buffer, uint32_t w
  */
 lfs_ssize_t LFS_read_file(const char file_name[], lfs_soff_t offset, uint8_t *read_buffer, uint32_t read_buffer_len)
 {
-	lfs_file_t file;
-	const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_RDONLY, &LFS_file_cfg);
-	if (open_result < 0)
-	{
+    lfs_file_t file;
+    const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_RDONLY, &LFS_file_cfg);
+    if (open_result < 0)
+    {
         // TODO: confirm behaviour is desired: this assumes filesystem as a
         // whole as an issue, so does not send log message to file
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening file to read");
-		return open_result;
-	}
-	
-    if (LFS_enable_hot_path_debug_logs) {
+        return open_result;
+    }
+
+    if (LFS_enable_hot_path_debug_logs)
+    {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_SINK_ALL, "Opened file to read: %s", file_name);
     }
 
     const lfs_soff_t seek_result = lfs_file_seek(&LFS_filesystem, &file, offset, LFS_SEEK_SET);
-	if (seek_result < 0)
-	{
+    if (seek_result < 0)
+    {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error seeking within file");
-		return seek_result;
-	}
+        return seek_result;
+    }
 
-	const lfs_ssize_t read_result = lfs_file_read(&LFS_filesystem, &file, read_buffer, read_buffer_len);
-	if (read_result < 0)
-	{
+    const lfs_ssize_t read_result = lfs_file_read(&LFS_filesystem, &file, read_buffer, read_buffer_len);
+    if (read_result < 0)
+    {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error reading file");
-		return read_result;
-	}
-	
-    if (LFS_enable_hot_path_debug_logs) {
+        return read_result;
+    }
+
+    if (LFS_enable_hot_path_debug_logs)
+    {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_SINK_ALL, "Successfully read file");
     }
 
-	// Close the File, the storage is not updated until the file is closed successfully
-	const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
-	if (close_result < 0)
-	{
+    // Close the File, the storage is not updated until the file is closed successfully
+    const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
+    if (close_result < 0)
+    {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing file");
-		return close_result;
-	}
-	
-    if (LFS_enable_hot_path_debug_logs) {
+        return close_result;
+    }
+
+    if (LFS_enable_hot_path_debug_logs)
+    {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully close file");
     }
 
-	return read_result;	
+    return read_result;
 }
 
 /**
@@ -403,18 +465,19 @@ lfs_ssize_t LFS_read_file(const char file_name[], lfs_soff_t offset, uint8_t *re
  */
 lfs_ssize_t LFS_file_size(const char file_name[])
 {
-	lfs_file_t file;
-	const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_RDONLY, &LFS_file_cfg);
-    if (open_result < 0) {
+    lfs_file_t file;
+    const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_RDONLY, &LFS_file_cfg);
+    if (open_result < 0)
+    {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening file");
         return open_result;
     }
     const lfs_ssize_t size = lfs_file_size(&LFS_filesystem, &file);
     const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
-	if (close_result < 0) {
+    if (close_result < 0)
+    {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing file");
-		return close_result;
-	}
+        return close_result;
+    }
     return size;
 }
-
