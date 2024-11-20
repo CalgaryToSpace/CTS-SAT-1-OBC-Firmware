@@ -163,6 +163,7 @@ uint8_t GPS_validate_log_response(const char *gps_response_buf)
 			"GPS VALIDATION ERROR: GPS response is: %s",
 			response_tag_buffer
 		);
+		// Error status: Error with the log command/gnss receiver
 		return 4;
         } else {
             LOG_message(

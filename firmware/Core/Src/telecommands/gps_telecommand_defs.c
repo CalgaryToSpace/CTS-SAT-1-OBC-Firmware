@@ -114,7 +114,8 @@ uint8_t TCMDEXEC_gps_send_log_cmd(const char *args_str, TCMD_TelecommandChannel_
     const uint8_t gps_cmd_response = GPS_send_cmd_get_response(args_str, gps_cmd_len, GPS_rx_buffer, GPS_rx_buffer_len, GPS_rx_buffer_max_size);
 
     // Handle the gps_cmd_response: Perform the error checks
-    // TODO: Figure out all the possible responses eg: <OK and <ERROR
+    // TODO: Add GPS_validate_log_response function in here to validate response from the gps receiver
+
 
     LOG_message(
         LOG_SYSTEM_GPS,
