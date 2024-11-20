@@ -312,6 +312,12 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func_name = "ADCS_pack_to_sd_log_config_struct"
     }, 
 
+    {
+        .test_func = TEST_EXEC__ADCS_convert_double_to_string,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_convert_double_to_string"
+    },
+
     // ****************** END SECTION: test_adcs ******************
 
     {

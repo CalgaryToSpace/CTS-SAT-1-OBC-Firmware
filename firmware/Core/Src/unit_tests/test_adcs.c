@@ -1,4 +1,5 @@
 #include "adcs_drivers/adcs_struct_packers.h"
+#include "adcs_drivers/adcs_internal_drivers.h"
 #include "unit_tests/unit_test_helpers.h"  // for all unit tests
 #include "unit_tests/test_adcs.h"          // for ADCS tests
 #include "transforms/number_comparisons.h" // for comparing doubles
@@ -773,3 +774,21 @@ uint8_t TEST_EXEC__ADCS_pack_to_sd_log_config_struct() {
     return 0;
 }
 
+uint8_t TEST_EXEC__ADCS_convert_double_to_string() {
+    char output_string[20];
+    
+    TEST_ASSERT_TRUE(ADCS_convert_double_to_string(-2.5,6,&output_string[0],20) == 0);
+    TEST_ASSERT_TRUE(strcmp(output_string, "-2.500000") == 0);
+
+    TEST_ASSERT_TRUE(ADCS_convert_double_to_string(1000,2,&output_string[0],20) == 0);
+    TEST_ASSERT_TRUE(strcmp(output_string, "1000.00") == 0);
+
+    TEST_ASSERT_TRUE(ADCS_convert_double_to_string(-4,3,&output_string[0],20) == 0);
+    TEST_ASSERT_TRUE(strcmp(output_string, "-4.000") == 0);
+
+    TEST_ASSERT_TRUE(ADCS_convert_double_to_string(-0.9,1,&output_string[0],20) == 0);
+    TEST_ASSERT_TRUE(strcmp(output_string, "-0.9") == 0);
+
+    return 0;
+
+}
