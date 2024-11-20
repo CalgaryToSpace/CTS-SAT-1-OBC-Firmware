@@ -1,13 +1,17 @@
 #include "mpi/mpi_command_handling.h"
 #include "mpi/mpi_types.h"
+#include "mpi/mpi_transceiver.h"
 #include "uart_handler/uart_handler.h"
 #include "main.h"
 #include "stm32l4xx_hal.h"
-#include "string.h"
+
+#include <string.h>
 #include <stdio.h>
 
-#define MPI_TX_TIMEOUT_DURATION_MS 100	// Timeout duration for transmit in milliseconds
-#define MPI_RX_TIMEOUT_DURATION_MS 200	// Timeout duration for receive in milliseconds
+/// @brief Timeout duration for transmit HAL call, in milliseconds.
+static const uint16_t MPI_TX_TIMEOUT_DURATION_MS = 100;
+/// @brief Timeout duration for receive in milliseconds. Same between bytes and at the start.
+static const uint16_t MPI_RX_TIMEOUT_DURATION_MS = 200;
 
 MPI_rx_mode_t MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
 
@@ -22,7 +26,8 @@ MPI_rx_mode_t MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
 /// @note If the MPI is in "science data" mode, it will be disabled after the command is executed.
 uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const size_t bytes_to_send_len, uint8_t *MPI_rx_buffer, 
                                           const size_t MPI_rx_buffer_max_size, uint16_t *MPI_rx_buffer_len) {
-    
+    // Set the MPI transceiver to MOSI mode
+    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MOSI);
     
     // Store the original MPI mode, then set MPI to command mode.
     MPI_current_uart_rx_mode = MPI_RX_MODE_COMMAND_MODE;
@@ -36,11 +41,15 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
         return 2; // Error code: Failed UART transmission
     }
 
+    // Set the MPI transceiver to MISO mode
+    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MISO);
+
     // Receive MPI response byte by byte (Note: This is done to account for potential errors from the mpi where it doesnt send back an expected response)
     HAL_StatusTypeDef receive_status = HAL_UART_Receive_DMA(&huart1, (uint8_t*) &UART_mpi_rx_last_byte, 1);
     
     // Check for UART reception errors
     if (receive_status != HAL_OK) {
+        MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
         HAL_UART_DMAStop(&huart1);
         MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
         return 3; // Error code: Failed UART reception
@@ -62,17 +71,20 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
 
         // MPI hasn't sent any data and has timed out
         if ((*MPI_rx_buffer_len == 0)) {
-
             // Stop reception from the MPI & Reset mpi UART mode state
+            MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
             HAL_UART_DMAStop(&huart1);
             MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
             return 4; // Error code: Timeout waiting for 1st byte
         }
 
         // MPI has sent some data and has timed out
-        else if ((*MPI_rx_buffer_len > 0) && ((HAL_GetTick() - UART_mpi_rx_last_byte_write_time_ms) > MPI_RX_TIMEOUT_DURATION_MS)) {
-
-            // Stop reception from the MPI & Reset mpi UART mode state
+        else if (
+            (*MPI_rx_buffer_len > 0)
+            && ((HAL_GetTick() - UART_mpi_rx_last_byte_write_time_ms) > MPI_RX_TIMEOUT_DURATION_MS)
+        ) {
+            // Stop reception from the MPI & Reset MPI UART mode state
+            MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
             HAL_UART_DMAStop(&huart1);
             MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
 
@@ -94,7 +106,8 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
 
             // Check for validation errors & report corresponding error code
             if (MPI_response_result > 0) {
-                // DMA is already stopped at the top of this if block & MPI UART mode has also been reset already
+                // DMA is already stopped at the top of this if block & MPI UART mode has also
+                // been reset already.
                 return MPI_response_result;
             }
 
