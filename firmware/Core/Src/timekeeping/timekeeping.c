@@ -2,6 +2,7 @@
 #include "debug_tools/debug_uart.h"
 #include "transforms/arrays.h"
 #include "stm32l4xx_hal.h"
+#include "log/log.h"
 
 #include <stdio.h>
 #include <inttypes.h>

@@ -3,6 +3,7 @@
 #include "telecommands/telecommand_args_helpers.h"
 #include "debug_tools/debug_uart.h"
 #include "transforms/arrays.h"
+#include "log/log.h"
 
 #include <stdio.h>
 #include <stdint.h>

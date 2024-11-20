@@ -5,6 +5,7 @@
 #include "debug_tools/debug_uart.h"
 
 #include "config/static_config.h"
+#include "log/log.h"
 
 /// Timeout duration for HAL_SPI_READ/WRITE operations.
 // Note: FLASH_read_data has sporadic timeouts at 5ms; 10ms is a safe bet.

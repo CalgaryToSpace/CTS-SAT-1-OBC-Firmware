@@ -8,6 +8,7 @@
 #include "telecommands/freertos_telecommand_defs.h"
 #include "debug_tools/debug_uart.h"
 #include "timekeeping/timekeeping.h"
+#include "log/log.h"
 
 #include <stdio.h>
 #include <stdint.h>

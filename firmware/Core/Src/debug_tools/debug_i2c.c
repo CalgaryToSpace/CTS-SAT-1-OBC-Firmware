@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include "log/log.h"
 
 void DEBUG_i2c_scan(I2C_HandleTypeDef *hi2c)
 {

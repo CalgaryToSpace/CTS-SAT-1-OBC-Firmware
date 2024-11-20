@@ -5,6 +5,7 @@
 #include "littlefs/flash_driver.h"
 #include "littlefs/flash_benchmark.h"
 #include "debug_tools/debug_uart.h"
+#include "log/log.h"
 
 #include <stdio.h>
 #include <string.h>

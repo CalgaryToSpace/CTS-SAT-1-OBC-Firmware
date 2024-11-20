@@ -31,6 +31,7 @@
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_internal_drivers.h"
 #include "littlefs/flash_driver.h"
+#include "log/log.h"
 
 /* USER CODE END Includes */
 
