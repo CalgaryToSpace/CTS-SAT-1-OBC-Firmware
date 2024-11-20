@@ -7,6 +7,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <math.h>
 
 #include "stm32l4xx_hal.h"
 
@@ -163,6 +164,34 @@ uint8_t ADCS_convert_uint32_to_reversed_uint8_array_members(uint8_t *array, uint
     array[index + 1] = (uint8_t)((value >> 8) & 0xFF); // Insert the second byte of the value into the array at the next index
     array[index + 2] = (uint8_t)((value >> 16) & 0xFF); // Insert the third byte of the value into the array at the next next index
     array[index + 3] = (uint8_t)(value >> 24); // Insert the high byte of the value into the array at the next next next index
+    return 0;
+}
+
+/// @brief Convert a double into a string with a given decimal precision.
+/// @param[in] input Value to convert.
+/// @param[in] precision Number of decimal places to use.
+/// @param[out] output_string Character array to write the string number to.
+/// @param[in] str_len Length of the output string.
+/// @return 0 once complete, 1 if the string is too short, 2 if there was an error printing to the string.
+uint8_t ADCS_convert_double_to_string(double input, uint8_t precision, char* output_string, uint16_t str_len) {
+    if (str_len < 3*precision) {
+        return 1;
+    }
+    
+    int64_t data_int_portion = (int64_t)(input); 
+    uint64_t data_decimal_portion = (uint64_t)(fabs((input - data_int_portion)) * pow(10, precision)); 
+    
+    int16_t snprintf_ret;
+    if (data_int_portion == 0 && input < 0) {
+        snprintf_ret = snprintf(output_string, str_len, "-%lld.%0*lld", data_int_portion, precision, data_decimal_portion);
+    } else {
+        snprintf_ret = snprintf(output_string, str_len, "%lld.%0*lld", data_int_portion, precision, data_decimal_portion);
+    }
+    
+    if (snprintf_ret < 0) {
+        return 2;
+    }
+
     return 0;
 }
 
