@@ -1,25 +1,26 @@
 <map id="firmware/Core/Inc" name="firmware/Core/Inc">
-<area shape="rect" id="node12" href="dir_cb782b0562a6503f7ebde0fdd3e675c9.html" title="rtos_tasks" alt="" coords="38,152,120,177"/>
-<area shape="poly" id="edge1" href="dir_000018_000028.html" alt="" coords="63,95,74,136,69,137,58,97"/>
-<area shape="rect" id="edge1-headlabel" href="dir_000018_000028.html" title="1" alt="" coords="75,124,82,139"/>
+<area shape="rect" id="node13" href="dir_cb782b0562a6503f7ebde0fdd3e675c9.html" title="rtos_tasks" alt="" coords="38,152,120,177"/>
+<area shape="poly" id="edge1" href="dir_000020_000030.html" alt="" coords="63,95,74,136,69,137,58,97"/>
+<area shape="rect" id="edge1-headlabel" href="dir_000020_000030.html" title="1" alt="" coords="75,124,82,139"/>
 <area shape="rect" id="node2" href="dir_fcc2a734081965ad8f6ae47743c2ac51.html" title="adcs_drivers" alt="" coords="102,70,197,96"/>
 <area shape="rect" id="node3" href="dir_5b35730a6a755c37aa405587a8514f04.html" title="antenna_deploy_drivers" alt="" coords="221,70,379,96"/>
-<area shape="rect" id="node4" href="dir_0ca8f59f8adb50cfc3a976874fc7479d.html" title="config" alt="" coords="403,70,458,96"/>
-<area shape="rect" id="node5" href="dir_b294e789b6fdddb1211d49f88aa17d9f.html" title="crypto" alt="" coords="482,70,539,96"/>
-<area shape="rect" id="node6" href="dir_64da1bd9141c39f9b757c003cced6f00.html" title="debug_tools" alt="" coords="562,70,654,96"/>
-<area shape="rect" id="node7" href="dir_fbd0c19c9458c03a0f04e78a8f3ec21d.html" title="eps_drivers" alt="" coords="677,70,766,96"/>
-<area shape="rect" id="node8" href="dir_e8357219fd1ffecc5e2eeb0bb0390168.html" title="littlefs" alt="" coords="789,70,846,96"/>
-<area shape="rect" id="node9" href="dir_ff19fdb2519e15937425e0f2ccca5ecd.html" title="log" alt="" coords="870,70,909,96"/>
-<area shape="rect" id="node10" href="dir_bd21845368ab4cb089a21d18e1e787a2.html" title="mpi" alt="" coords="932,70,974,96"/>
-<area shape="rect" id="node11" href="dir_7f14a94784ecf169719c8f342cb5cb3c.html" title="obc_temperature_sensor" alt="" coords="999,70,1164,96"/>
-<area shape="rect" id="node13" href="dir_855403395d30e8f55dbceaf0044e4806.html" title="stm32" alt="" coords="1187,70,1245,96"/>
-<area shape="rect" id="node14" href="dir_9a8a54ce3d35d33a2305fd30e42a341d.html" title="stm32_internal_flash\l_drivers" alt="" coords="1268,63,1409,104"/>
-<area shape="rect" id="node15" href="dir_3e5af4c6296ab52b5aec615037046e26.html" title="stm_drivers" alt="" coords="1433,70,1522,96"/>
-<area shape="rect" id="node16" href="dir_216243d7543618862cf69f3d24d29ab1.html" title="telecommands" alt="" coords="1546,70,1652,96"/>
-<area shape="rect" id="node17" href="dir_7c1380c66e789c0fa4d8c208bf8af1cf.html" title="timekeeping" alt="" coords="1676,70,1767,96"/>
-<area shape="rect" id="node18" href="dir_6876930f23bcb31aa04abce0ab3df18e.html" title="transforms" alt="" coords="1792,70,1875,96"/>
-<area shape="rect" id="node19" href="dir_a23c1742147cdfc8ee0affbbeb016af4.html" title="uart_handler" alt="" coords="1899,70,1992,96"/>
-<area shape="rect" id="node20" href="dir_3cd62f5379c946b753031335443421ae.html" title="unit_tests" alt="" coords="2016,70,2094,96"/>
-<area shape="rect" id="clust2" href="dir_a2104d228f4ce1660fa7790253c871fd.html" alt="" coords="27,52,2104,188"/>
-<area shape="rect" id="clust1" href="dir_344ad9cf7012f4665e17c8bfb6616899.html" title="Core" alt="" coords="16,16,2115,199"/>
+<area shape="rect" id="node4" href="dir_cb978ab32fb12940e9f24c73891714b4.html" title="comms_drivers" alt="" coords="402,70,512,96"/>
+<area shape="rect" id="node5" href="dir_0ca8f59f8adb50cfc3a976874fc7479d.html" title="config" alt="" coords="536,70,592,96"/>
+<area shape="rect" id="node6" href="dir_b294e789b6fdddb1211d49f88aa17d9f.html" title="crypto" alt="" coords="616,70,672,96"/>
+<area shape="rect" id="node7" href="dir_64da1bd9141c39f9b757c003cced6f00.html" title="debug_tools" alt="" coords="696,70,787,96"/>
+<area shape="rect" id="node8" href="dir_fbd0c19c9458c03a0f04e78a8f3ec21d.html" title="eps_drivers" alt="" coords="810,70,899,96"/>
+<area shape="rect" id="node9" href="dir_e8357219fd1ffecc5e2eeb0bb0390168.html" title="littlefs" alt="" coords="922,70,979,96"/>
+<area shape="rect" id="node10" href="dir_ff19fdb2519e15937425e0f2ccca5ecd.html" title="log" alt="" coords="1003,70,1042,96"/>
+<area shape="rect" id="node11" href="dir_bd21845368ab4cb089a21d18e1e787a2.html" title="mpi" alt="" coords="1066,70,1108,96"/>
+<area shape="rect" id="node12" href="dir_7f14a94784ecf169719c8f342cb5cb3c.html" title="obc_temperature_sensor" alt="" coords="1132,70,1297,96"/>
+<area shape="rect" id="node14" href="dir_855403395d30e8f55dbceaf0044e4806.html" title="stm32" alt="" coords="1321,70,1378,96"/>
+<area shape="rect" id="node15" href="dir_9a8a54ce3d35d33a2305fd30e42a341d.html" title="stm32_internal_flash\l_drivers" alt="" coords="1402,63,1542,104"/>
+<area shape="rect" id="node16" href="dir_3e5af4c6296ab52b5aec615037046e26.html" title="stm_drivers" alt="" coords="1566,70,1655,96"/>
+<area shape="rect" id="node17" href="dir_216243d7543618862cf69f3d24d29ab1.html" title="telecommands" alt="" coords="1679,70,1785,96"/>
+<area shape="rect" id="node18" href="dir_7c1380c66e789c0fa4d8c208bf8af1cf.html" title="timekeeping" alt="" coords="1809,70,1900,96"/>
+<area shape="rect" id="node19" href="dir_6876930f23bcb31aa04abce0ab3df18e.html" title="transforms" alt="" coords="1925,70,2008,96"/>
+<area shape="rect" id="node20" href="dir_a23c1742147cdfc8ee0affbbeb016af4.html" title="uart_handler" alt="" coords="2032,70,2125,96"/>
+<area shape="rect" id="node21" href="dir_3cd62f5379c946b753031335443421ae.html" title="unit_tests" alt="" coords="2149,70,2227,96"/>
+<area shape="rect" id="clust2" href="dir_a2104d228f4ce1660fa7790253c871fd.html" alt="" coords="27,52,2237,188"/>
+<area shape="rect" id="clust1" href="dir_344ad9cf7012f4665e17c8bfb6616899.html" title="Core" alt="" coords="16,16,2248,199"/>
 </map>
