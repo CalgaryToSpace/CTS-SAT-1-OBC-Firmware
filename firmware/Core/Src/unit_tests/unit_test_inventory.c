@@ -433,7 +433,7 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func = TEST_EXEC__GPS_timea_data_parser,
         .test_file = "gps/gps_ascii_parsers",
         .test_func_name = "GPS_timea_data_parser"
-    }
+    },
     {
         .test_func = TEST_EXEC__CRYPT_compute_sha256_hash,
         .test_file = "unit_tests/test_sha256",
