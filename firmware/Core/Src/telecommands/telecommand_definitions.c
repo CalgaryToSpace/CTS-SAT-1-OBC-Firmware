@@ -15,6 +15,7 @@
 #include "telecommands/timekeeping_telecommand_defs.h"
 #include "telecommands/antenna_telecommand_defs.h"
 #include "telecommands/i2c_telecommand_defs.h"
+#include "telecommands/temperature_sensor_telecommand_defs.h"
 #include "telecommands/config_telecommand_defs.h"
 #include "telecommands/testing_telecommand_defs.h"
 #include "telecommands/telecommand_executor.h"
@@ -22,6 +23,9 @@
 #include "telecommands/mpi_telecommand_defs.h"
 #include "telecommands/eps_telecommands.h"
 #include "telecommands/stm32_internal_flash_telecommand_defs.h"
+#include "telecommands/comms_telecommand_defs.h"
+
+
 #include "timekeeping/timekeeping.h"
 #include "littlefs/littlefs_helper.h"
 #include "stm32/stm32_reboot_reason.h"
@@ -78,6 +82,18 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "correct_system_time",
         .tcmd_func = TCMDEXEC_correct_system_time,
         .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "set_eps_time_based_on_obc_time",
+        .tcmd_func = TCMDEXEC_set_eps_time_based_on_obc_time,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "set_obc_time_based_on_eps_time",
+        .tcmd_func = TCMDEXEC_set_obc_time_based_on_eps_time,
+        .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
@@ -197,6 +213,24 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_func = TCMDEXEC_flash_benchmark_erase_write_read,
         .number_of_args = 3,
         .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
+    },
+    {
+        .tcmd_name = "flash_reset",
+        .tcmd_func = TCMDEXEC_flash_reset,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_IN_PROGRESS,
+    },
+    {
+        .tcmd_name = "flash_read_status_register",
+        .tcmd_func = TCMDEXEC_flash_read_status_register,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "flash_write_enable",
+        .tcmd_func = TCMDEXEC_flash_write_enable,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     // ****************** END SECTION: flash_telecommand_defs ******************
 
@@ -824,7 +858,6 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
-
     /* *************************** END EPS Section ************************************** */
 
     // ****************** SECTION: agenda_telecommand_defs ******************
@@ -864,7 +897,14 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "mpi_send_command_hex",
         .tcmd_func = TCMDEXEC_mpi_send_command_hex,
         .number_of_args = 1,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION},
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION
+    },
+    {
+        .tcmd_name = "mpi_demo_tx_to_mpi",
+        .tcmd_func = TCMDEXEC_mpi_demo_tx_to_mpi,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY, // Not useful in space.
+    },
     // ****************** END: MPI_telecommand_definitions ********************
     // ****************** START SECTION: stm32_internal_flash_telecommand_defs ******************
 
@@ -976,6 +1016,22 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     },
 
     // ****************** END SECTION: gps_telecommand_defs ******************
+    // ****************** START SECTION: obc_temperature_sensor_telecommand_defs ******************
+    {
+        .tcmd_name = "obc_read_temperature",
+        .tcmd_func = TCMDEXEC_obc_read_temperature,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    // ****************** END SECTION: obc_temperature_sensor_telecommand_defs ******************
+    // ****************** START SECTION: comms_telecommand_defs ******************
+    {
+        .tcmd_name = "comms_dipole_switch_set_state",
+        .tcmd_func = TCMDEXEC_comms_dipole_switch_set_state,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
+    },
+    // ****************** END SECTION: comms_telecommand_defs ******************
 };
 
 // extern

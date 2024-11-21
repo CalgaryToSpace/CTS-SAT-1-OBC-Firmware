@@ -5,7 +5,7 @@ Onboard Computer (OBC) Firmware and ground support software for the CTS-SAT-1 ("
 
 * [Getting Started Guide](/docs/00_Getting_Started.md)
 * [Firmware Documentation File List](/docs/) (start with `00_Getting_Started.md`)
-* Developing and using the CTS-SAT-1 Ground Support Software: [Ground Support README](/cts1_ground_support/README.md)
+* [CTS-SAT-1 Ground Support Software](https://github.com/CalgaryToSpace/CTS-SAT-1-Ground-Support/)
 * [Doxygen Documentation](https://calgarytospace.github.io/CTS-SAT-1-OBC-Firmware)
 
 ## Contributors
@@ -19,6 +19,7 @@ Please add your name to the list below in your first Pull Request!
 * Marko V.
 * Vaibhav K.
 * Muhammad Ali
+* Alex O.
 
 ## License and Libraries
 

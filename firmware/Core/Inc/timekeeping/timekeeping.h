@@ -11,6 +11,7 @@ typedef enum TIM_SYNC_SOURCE {
     TIM_SOURCE_GNSS,
     TIM_SOURCE_TELECOMMAND_ABSOLUTE,
     TIM_SOURCE_TELECOMMAND_CORRECTION,
+    TIM_SOURCE_EPS_RTC
 } TIM_sync_source_t;
 
 uint32_t TIM_get_current_system_uptime_ms(void);

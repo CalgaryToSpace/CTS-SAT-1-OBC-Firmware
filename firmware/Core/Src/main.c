@@ -27,6 +27,7 @@
 #include "debug_tools/debug_uart.h"
 #include "rtos_tasks/rtos_tasks.h"
 #include "rtos_tasks/gps_rtos_tasks.h"
+#include "rtos_tasks/rtos_eps_tasks.h"
 #include "uart_handler/uart_handler.h"
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_internal_drivers.h"
@@ -121,6 +122,61 @@ const osThreadAttr_t TASK_receive_gps_attributes = {
     .stack_size = 8192,
     .priority = (osPriority_t)osPriorityNormal,
 };
+osThreadId_t TASK_time_sync_Handle;
+const osThreadAttr_t TASK_time_sync_Attributes = {
+  .name = "TASK_time_sync",
+  .stack_size = 512, //in bytes
+  .priority = (osPriority_t) osPriorityNormal, //TODO: Figure out which priority makes sense for this task
+};
+
+osThreadId_t TASK_monitor_freertos_memory_Handle;
+const osThreadAttr_t TASK_monitor_freertos_memory_Attributes = {
+  .name = "TASK_monitor_freertos_memory",
+  .stack_size = 1024,
+  .priority = (osPriority_t) osPriorityBelowNormal6,
+};
+
+FREERTOS_task_info_struct_t FREERTOS_task_handles_array [] = {
+  {
+    .task_handle = &defaultTaskHandle,
+    .task_attribute = &defaultTask_attributes,
+    .lowest_stack_bytes_remaining = UINT32_MAX
+  },
+  {
+    .task_handle = &TASK_DEBUG_print_heartbeat_Handle,
+    .task_attribute = &TASK_DEBUG_print_heartbeat_Attributes,
+    .lowest_stack_bytes_remaining = UINT32_MAX
+  },
+  {
+    .task_handle = &TASK_handle_uart_telecommands_Handle,
+    .task_attribute = &TASK_handle_uart_telecommands_Attributes,
+    .lowest_stack_bytes_remaining = UINT32_MAX
+  },
+  {
+    .task_handle = &TASK_execute_telecommands_Handle,
+    .task_attribute = &TASK_execute_telecommands_Attributes,
+    .lowest_stack_bytes_remaining = UINT32_MAX
+  },
+  {
+    .task_handle = &TASK_service_eps_watchdog_Handle,
+    .task_attribute = &TASK_service_eps_watchdog_Attributes,
+    .lowest_stack_bytes_remaining = UINT32_MAX
+  },
+  {
+    .task_handle = &TASK_time_sync_Handle,
+    .task_attribute = &TASK_time_sync_Attributes,
+    .lowest_stack_bytes_remaining = UINT32_MAX
+  },
+  {
+    .task_handle = &TASK_monitor_freertos_memory_Handle,
+    .task_attribute = &TASK_monitor_freertos_memory_Attributes,
+    .lowest_stack_bytes_remaining = UINT32_MAX
+  },
+  
+};
+
+const uint32_t FREERTOS_task_handles_array_size = sizeof(FREERTOS_task_handles_array) / sizeof(FREERTOS_task_info_struct_t);
+
 
 /* USER CODE END PV */
 
@@ -244,8 +300,11 @@ int main(void)
 
   TASK_receive_gps_Handle = osThreadNew(TASK_receive_gps_info, NULL, &TASK_receive_gps_attributes);
 
+  TASK_monitor_freertos_memory_Handle = osThreadNew(TASK_monitor_freertos_memory, NULL, &TASK_monitor_freertos_memory_Attributes);
+  
   TASK_service_eps_watchdog_Handle = osThreadNew(TASK_service_eps_watchdog, NULL, &TASK_service_eps_watchdog_Attributes);
 
+  TASK_time_sync_Handle = osThreadNew(TASK_time_sync, NULL, &TASK_time_sync_Attributes);
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
