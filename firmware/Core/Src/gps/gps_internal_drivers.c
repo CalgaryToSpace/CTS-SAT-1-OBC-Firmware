@@ -23,8 +23,7 @@ const uint32_t GPS_RX_TIMEOUT = 50;
 /// @param rx_buf_len Length of the response buffer.
 /// @param rx_buf_max_size Maximum length of the response buffer.
 /// @return 0 on success, >0 if error.
-uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint8_t rx_buf[],
-								  uint16_t rx_buf_len, const uint16_t rx_buf_max_size)
+uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint8_t rx_buf[], uint16_t rx_buf_len, const uint16_t rx_buf_max_size)
 {
 
 	// TX TO GPS
@@ -116,8 +115,6 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
 	return 0;
 }
 
-
-
 /// @brief Validates the response of a log command sent to the GPS, based of the reponse tag.
 /// Refer to page 1159, table 267 of the OEM7 Commands Logs Manual
 /// @param gps_response_buf log command string to send to the GPS.
@@ -125,53 +122,56 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
 /// TODO: Implement this function with other functions
 uint8_t GPS_validate_log_response(const char *gps_response_buf)
 {
-	if(gps_response_buf == NULL){
+	if (gps_response_buf == NULL)
+	{
 		LOG_message(
 			LOG_SYSTEM_GPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-			"GPS ERROR: GPS response buffer is empty/Null"
-		);
+			"GPS ERROR: GPS response buffer is empty/Null");
 
 		// Error: Empty gps response buffer
 		return 1;
 	}
 
 	// Find the start and end of the log command response, which is < and [ resepectively
-    const char *sync_char = strchr(gps_response_buf,'<');
-    const char *delimiter_char = strchr(gps_response_buf,'[');
+	const char *sync_char = strchr(gps_response_buf, '<');
+	const char *delimiter_char = strchr(gps_response_buf, '[');
 
-    if (!sync_char || !delimiter_char) {
-        // Invalid data: No response tag in gps response
-        return 2; 
-    }
+	if (!sync_char || !delimiter_char)
+	{
+		// Invalid data: No response tag in gps response
+		return 2;
+	}
 
 	// Calculate the length of the response tag
-    const int response_tag_length = delimiter_char - sync_char + 1;
-    if (response_tag_length < 0) {
-        //Sync character occurs after delimiter character
-        return 3;
-    }
+	const int response_tag_length = delimiter_char - sync_char + 1;
+	if (response_tag_length < 0)
+	{
+		// Sync character occurs after delimiter character
+		return 3;
+	}
 
 	char response_tag_buffer[response_tag_length];
- 
-	// Copy response tag string into a buffer
-    strncpy(response_tag_buffer, sync_char, response_tag_length);
-    response_tag_buffer[response_tag_length] = '\0';  // Null-terminate the substring
 
-	if (strcmp(response_tag_buffer, "OK") != 0) {
+	// Copy response tag string into a buffer
+	strncpy(response_tag_buffer, sync_char, response_tag_length);
+	response_tag_buffer[response_tag_length] = '\0'; // Null-terminate the substring
+
+	if (strcmp(response_tag_buffer, "OK") != 0)
+	{
 		LOG_message(
 			LOG_SYSTEM_GPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
 			"GPS VALIDATION ERROR: GPS response is: %s",
-			response_tag_buffer
-		);
+			response_tag_buffer);
 		// Error status: Error with the log command/gnss receiver
 		return 4;
-        } else {
-            LOG_message(
-				LOG_SYSTEM_GPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-				"GPS VALIDATION SUCCESS: GPS response is: %s",
-				response_tag_buffer
-			);
-        }
+	}
+	else
+	{
+		LOG_message(
+			LOG_SYSTEM_GPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+			"GPS VALIDATION SUCCESS: GPS response is: %s",
+			response_tag_buffer);
+	}
 
 	return 0;
 }

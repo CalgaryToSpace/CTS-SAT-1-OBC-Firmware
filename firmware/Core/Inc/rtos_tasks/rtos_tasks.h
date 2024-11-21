@@ -15,7 +15,4 @@ void TASK_execute_telecommands(void *argument);
 
 void TASK_service_eps_watchdog(void *argument);
 
-void TASK_receive_gps_info(void *argument);
-
-
 #endif // __INCLUDE_GUARD__RTOS_TASKS_H__
