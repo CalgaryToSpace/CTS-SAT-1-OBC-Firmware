@@ -15,13 +15,19 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
             }
         }
     }
+    if (HAL_GPIO_ReadPin(PIN_GPS_PPS_IN_GPIO_Port, PIN_GPS_PPS_IN_Pin) == SET) {
+        // GPS power is off, disable interrupts
+        Disable_GPIO_EXTI();
+    }
 }
 
 void GPIO_EXTI_Init(void) {
     HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0); 
     HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+    gps_pps_enabled = 1;
 }
 
 void Disable_GPIO_EXTI(void) {
     HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
+    gps_pps_enabled = 0;
 }
