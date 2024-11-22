@@ -44,21 +44,21 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
 	}
 
 	// Reset the GPS UART interrupt variables
-	UART_gps_uart_interrupt_enabled = 0; // Lock writing to the UART_eps_buffer while we memset it
-	for (uint16_t i = 0; i < UART_gps_buffer_len; i++)
-	{
-		// Clear the buffer
-		// Can't use memset because UART_eps_buffer is volatile
-		UART_gps_buffer[i] = 0;
-	}
-	UART_gps_buffer_write_idx = 0;		 // Make it start writing from the start
+	// UART_gps_uart_interrupt_enabled = 0; // Lock writing to the UART_gps_buffer while we memset it
+	// for (uint16_t i = 0; i < UART_gps_buffer_len; i++)
+	// {
+	// 	// Clear the buffer
+	// 	// Can't use memset because UART_gps_buffer is volatile
+	// 	UART_gps_buffer[i] = 0;
+	// }
+	// UART_gps_buffer_write_idx = 0;		 // Make it start writing from the start
 	UART_gps_uart_interrupt_enabled = 1; // We are now expecting a response
 
 	// RX FROM GPS, into UART_gps_buffer
 	const uint32_t start_rx_time = HAL_GetTick();
 
 	// Checking if GPS data is being populated into the UART_gps_buffer
-	if ((UART_eps_buffer_write_idx == 0))
+	if ((UART_gps_buffer_write_idx == 0))
 	{
 		// Check if we've timed out (before the first byte)
 		if ((HAL_GetTick() - start_rx_time) > GPS_RX_TIMEOUT)
@@ -75,7 +75,7 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
 	{ // thus, UART_gps_buffer_write_idx > 0
 		// Check if we've timed out (between bytes)
 		const uint32_t cur_time = HAL_GetTick();
-		// Note: Sometimes, because ISRs and C are fun, the UART_eps_last_write_time_ms is
+		// Note: Sometimes, because ISRs and C are fun, the UART_gps_last_write_time_ms is
 		// greater than `cur_time`. Thus, we must do a safety check that the time difference
 		// is positive.
 		if (
@@ -96,7 +96,7 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
 
 	// Check that we've received what we're expecting
 	// TODO: if the following cases happen ever during testing, consider allowing them and treating them as WARNINGs
-	if (UART_eps_buffer_write_idx == 0)
+	if (UART_gps_buffer_write_idx == 0)
 	{
 		LOG_message(
 			LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
