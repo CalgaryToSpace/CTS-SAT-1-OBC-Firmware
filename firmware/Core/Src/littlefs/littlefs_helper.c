@@ -68,13 +68,13 @@ int8_t LFS_format()
     if (result < 0)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "Error formatting!\n");
         return result;
     }
 
     LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
         "Formatting successful!\n");
     return 0;
 }
@@ -89,7 +89,7 @@ int8_t LFS_mount()
     if (LFS_is_lfs_mounted)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "LittleFS already mounted!\n");
         return 1;
     }
@@ -99,13 +99,13 @@ int8_t LFS_mount()
     if (mount_result < 0)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "Mounting unsuccessful\n");
         return mount_result;
     }
 
     LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
         "Mounting successful\n");
     LFS_is_lfs_mounted = 1;
     return 0;
@@ -121,7 +121,7 @@ int8_t LFS_unmount()
     if (!LFS_is_lfs_mounted)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "LittleFS not mounted.\n");
         return 1;
     }
@@ -131,13 +131,13 @@ int8_t LFS_unmount()
     if (unmount_result < 0)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "Error un-mounting.\n");
         return unmount_result;
     }
 
     LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
         "Successfully un-mounted LittleFS.\n");
     LFS_is_lfs_mounted = 0;
     return 0;
@@ -153,7 +153,7 @@ int8_t LFS_list_directory(const char root_directory[])
     if (!LFS_is_lfs_mounted)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "LittleFS not mounted.\n");
         return 1;
     }
@@ -163,7 +163,7 @@ int8_t LFS_list_directory(const char root_directory[])
     if (open_dir_result < 0)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "Error opening a directory.\n");
         return open_dir_result;
     }
@@ -177,31 +177,31 @@ int8_t LFS_list_directory(const char root_directory[])
 
         DEBUG_uart_print_str(info.name);
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             ", ");
         // TODO: The info struct contains information about directory contents
     }
     LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
         "\n");
 
     if (read_dir_result < 0)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "Error reading directory contents.\n");
         return read_dir_result;
     }
 
     LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
         "Successfully Listed Directory Contents.\n");
 
     int8_t close_dir_result = lfs_dir_close(&LFS_filesystem, &dir);
     if (close_dir_result < 0)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "Error closing directory.\n");
         return close_dir_result;
     }
@@ -219,7 +219,7 @@ int8_t LFS_delete_file(const char file_name[])
     if (!LFS_is_lfs_mounted)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "LittleFS not mounted.\n");
         return 1;
     }
@@ -228,13 +228,13 @@ int8_t LFS_delete_file(const char file_name[])
     if (remove_result < 0)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "Error removing file/directory.\n");
         return remove_result;
     }
 
     LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
         "Successfully removed file/directory.\n");
     return 0;
 }
@@ -249,7 +249,7 @@ int8_t LFS_make_directory(const char dir_name[])
     if (!LFS_is_lfs_mounted)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "LittleFS not mounted.\n");
         return 1;
     }
@@ -265,7 +265,7 @@ int8_t LFS_make_directory(const char dir_name[])
     }
 
     LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
         "Successfully created directory.\n");
     return 0;
 }
@@ -282,7 +282,7 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
     if (!LFS_is_lfs_mounted)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "LittleFS not mounted.\n");
         return 1;
     }
@@ -294,7 +294,7 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
     if (open_result < 0)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "Error opening/creating file.\n");
         return open_result;
     }
@@ -302,11 +302,11 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
     if (LFS_enable_hot_path_debug_logs)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "Opened/created a file named: '");
         DEBUG_uart_print_str(file_name);
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "'\n");
     }
 
@@ -315,7 +315,7 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
     if (write_result < 0)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "Error writing to file!\n");
         return write_result;
     }
@@ -323,7 +323,7 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
     if (LFS_enable_hot_path_debug_logs)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "Successfully wrote data to file!\n");
     }
 
@@ -332,7 +332,7 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
     if (close_result < 0)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "Error closing the file!\n");
         return close_result;
     }
@@ -340,7 +340,7 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
     if (LFS_enable_hot_path_debug_logs)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "Successfully closed the file!\n");
     }
 

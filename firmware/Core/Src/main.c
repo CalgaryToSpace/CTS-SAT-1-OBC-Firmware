@@ -234,7 +234,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   LOG_message(
-      LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+      LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
       "\n\nMX_Init() done\n");
 
   // Start the callback interrupts for the UART channels.
@@ -298,7 +298,7 @@ int main(void)
   while (1)
   {
     LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        LOG_SYSTEM_OBC, LOG_SEVERITY_CRITICAL, LOG_SINK_ALL,
         "This superloop point should never be reached, because the FreeRTOS Kernel is running...\n");
     /* USER CODE END WHILE */
 
@@ -1102,7 +1102,7 @@ void Error_Handler(void)
   {
     // TODO: make this flight-ready
     LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
         "Error_Handler() called\n");
   }
   /* USER CODE END Error_Handler_Debug */

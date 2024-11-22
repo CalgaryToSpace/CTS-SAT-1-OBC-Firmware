@@ -2,11 +2,12 @@
 
 #include "littlefs/flash_driver.h"
 #include "debug_tools/debug_uart.h"
+#include "log/log.h"
 
 void demo_flash_write()
 {
     LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
         "Starting demo_flash_write()...\n");
 
     uint8_t chip_num = 0;
@@ -21,21 +22,21 @@ void demo_flash_write()
         if (result != 0)
         {
             LOG_message(
-                LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
                 "Error in FLASH_write\n");
             return;
         }
     }
 
     LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
         "Wrote bytes in demo_flash_write(). Done.\n");
 }
 
 void demo_flash_read()
 {
     LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
         "Starting demo_flash_read()...\n");
 
     uint8_t chip_num = 0;
@@ -49,18 +50,18 @@ void demo_flash_read()
     if (result != 0)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "Error in FLASH_read_data\n");
         return;
     }
 
     LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
         "Read bytes: \n");
     DEBUG_uart_print_array_hex(bytes_store, num_bytes);
 
     LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
         "\nRead bytes in demo_flash_read(). Done.\n");
 }
 

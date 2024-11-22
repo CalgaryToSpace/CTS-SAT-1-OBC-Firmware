@@ -51,15 +51,15 @@ uint8_t EPS_send_cmd_get_response(
 	if (EPS_ENABLE_DEBUG_PRINT)
 	{
 		LOG_message(
-			LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+			LOG_SYSTEM_EPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
 			"OBC->EPS DATA (no tags): ");
 		DEBUG_uart_print_array_hex(cmd_buf, cmd_buf_len);
 		LOG_message(
-			LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+			LOG_SYSTEM_EPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
 			"\nOBC->EPS DATA (with tags): ");
 		DEBUG_uart_print_array_hex(cmd_buf_with_tags, cmd_buf_with_tags_len);
 		LOG_message(
-			LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+			LOG_SYSTEM_EPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
 			"\n");
 	}
 
@@ -109,7 +109,7 @@ uint8_t EPS_send_cmd_get_response(
 				if (EPS_ENABLE_DEBUG_PRINT)
 				{
 					LOG_message(
-						LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+						LOG_SYSTEM_EPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
 						"EPS->OBC ERROR: timeout before first byte received\n");
 				}
 				// fatal error; return
@@ -148,11 +148,11 @@ uint8_t EPS_send_cmd_get_response(
 
 	// For now, log the received bytes
 	LOG_message(
-		LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+		LOG_SYSTEM_EPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
 		"EPS->OBC DATA (with tags): ");
 	DEBUG_uart_print_array_hex((uint8_t *)UART_eps_buffer, UART_eps_buffer_write_idx);
 	LOG_message(
-		LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+		LOG_SYSTEM_EPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
 		"\n");
 
 	// Check that we've received what we're expecting
@@ -162,7 +162,7 @@ uint8_t EPS_send_cmd_get_response(
 		if (EPS_ENABLE_DEBUG_PRINT)
 		{
 			LOG_message(
-				LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+				LOG_SYSTEM_EPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
 				"EPS->OBC ERROR: UART_eps_buffer_write_idx == 0\n");
 		}
 		return 12;
@@ -220,11 +220,11 @@ uint8_t EPS_send_cmd_get_response(
 	if (EPS_ENABLE_DEBUG_PRINT)
 	{
 		LOG_message(
-			LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+			LOG_SYSTEM_EPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
 			"EPS->OBC DATA (no tags): ");
 		DEBUG_uart_print_array_hex(rx_buf, rx_buf_len);
 		LOG_message(
-			LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+			LOG_SYSTEM_EPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
 			"\n");
 	}
 
