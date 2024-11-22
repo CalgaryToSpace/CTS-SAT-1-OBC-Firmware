@@ -2,6 +2,7 @@
 #include "debug_tools/debug_uart.h"
 #include "mpi/mpi_command_handling.h"
 #include "main.h"
+#include "log/log.h"
 
 // Name the UART interfaces
 UART_HandleTypeDef *UART_telecommand_port_handle = &hlpuart1;
