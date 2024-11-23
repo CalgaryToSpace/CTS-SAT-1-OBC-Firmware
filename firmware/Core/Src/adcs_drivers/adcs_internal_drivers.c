@@ -178,14 +178,14 @@ uint8_t ADCS_convert_double_to_string(double input, uint8_t precision, char* out
         return 1;
     }
     
-    int64_t data_int_portion = (int64_t)(input); 
-    uint64_t data_decimal_portion = (uint64_t)(fabs((input - data_int_portion)) * pow(10, precision)); 
+    int32_t data_int_portion = (int32_t)(input); 
+    uint32_t data_decimal_portion = (uint32_t)(fabs((input - data_int_portion)) * pow(10, precision)); 
     
     int16_t snprintf_ret;
     if (data_int_portion == 0 && input < 0) {
-        snprintf_ret = snprintf(output_string, str_len, "-%lld.%0*lld", data_int_portion, precision, data_decimal_portion);
+        snprintf_ret = snprintf(output_string, str_len, "-%ld.%0*lu", data_int_portion, precision, data_decimal_portion);
     } else {
-        snprintf_ret = snprintf(output_string, str_len, "%lld.%0*lld", data_int_portion, precision, data_decimal_portion);
+        snprintf_ret = snprintf(output_string, str_len, "%ld.%0*lu", data_int_portion, precision, data_decimal_portion);
     }
     
     if (snprintf_ret < 0) {
