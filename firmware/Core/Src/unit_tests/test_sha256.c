@@ -84,7 +84,7 @@ uint8_t TEST_EXEC__CRYPT_compute_sha256_hash() {
         LOG_SYSTEM_OBC,
         LOG_SEVERITY_NORMAL,
         LOG_SINK_ALL,
-        "SHA256 benchmark done. Time elapsed: %d ms.",
+        "SHA256 benchmark done. Time elapsed: %ld ms.",
         time_elapsed_ms
     );
     return 0;
