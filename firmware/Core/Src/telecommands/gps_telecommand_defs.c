@@ -53,6 +53,9 @@ uint8_t TCMDEXEC_gps_set_enabled(const char *args_str, TCMD_TelecommandChannel_e
         return 2;
     }
 
+    // Call GPS Uart Toggle Function
+    GPS_set_uart_interrupt_state(toggle_status);
+
     // Transmit setup commands for the GPS
     // TODO: Verify the set up commands and add the,
     const char *gps_setup_cmds[] = {
@@ -74,8 +77,7 @@ uint8_t TCMDEXEC_gps_set_enabled(const char *args_str, TCMD_TelecommandChannel_e
         HAL_Delay(500);
     }
 
-    // Call GPS Uart Toggle Function
-    GPS_set_uart_interrupt_state(toggle_status);
+    
 
     snprintf(response_output_buf, response_output_buf_len, "GPS interrupt enable and setup completed successfully");
 

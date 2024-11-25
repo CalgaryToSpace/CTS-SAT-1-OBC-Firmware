@@ -55,6 +55,14 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
 		return 1;
 	}
 
+	osDelay(50);
+
+	LOG_message(
+		LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+		"GPS Buffer: %s",
+		UART_gps_buffer
+	);
+
 	// RX FROM GPS, into UART_gps_buffer
 	const uint32_t start_rx_time = HAL_GetTick();
 		while (1) {
@@ -94,7 +102,7 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
 	}
 
 	// End Receiving
-	UART_gps_uart_interrupt_enabled = 0; // We are no longer expecting a response
+	// UART_gps_uart_interrupt_enabled = 0; // We are no longer expecting a response
 
 	// Logging the received response
 	// TODO: Verify if this works

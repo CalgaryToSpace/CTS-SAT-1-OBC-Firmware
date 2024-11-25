@@ -29,14 +29,14 @@ void TASK_receive_gps_info(void *argument)
 
         osDelay(200);
 
-        // LOG_message(
-        // 		LOG_SYSTEM_GPS,
-        // 		LOG_SEVERITY_NORMAL,
-        // 		LOG_SINK_ALL,
-        // 		"GPS Buffer Data: %s Write Index %d",
-        // 		UART_gps_buffer,
-        // 		UART_gps_buffer_write_idx
-        // 	);
+        LOG_message(
+        		LOG_SYSTEM_GPS,
+        		LOG_SEVERITY_NORMAL,
+        		LOG_SINK_ALL,
+        		"GPS Buffer Data: %s Write Index %d",
+        		UART_gps_buffer,
+        		UART_gps_buffer_write_idx
+        	);
 
         // Checking if there is data in the GPS buffer
         if (UART_gps_buffer_write_idx > 0)
