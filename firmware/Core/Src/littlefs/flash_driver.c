@@ -536,7 +536,7 @@ FLASH_error_enum_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs
         {
             // Flash module returned "erase error" via the status register.
             LOG_message(
-                LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                LOG_SYSTEM_FLASH, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
                 "Flash erase error\n");
             return FLASH_ERR_STATUS_REG_ERROR;
         }
@@ -714,7 +714,7 @@ FLASH_error_enum_t FLASH_write_data(SPI_HandleTypeDef *hspi, uint8_t chip_number
         {
             // Flash module returned "programming error" via the status register.
             LOG_message(
-                LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                LOG_SYSTEM_FLASH, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
                 "Flash programming error\n");
             return FLASH_ERR_STATUS_REG_ERROR;
         }
@@ -1029,7 +1029,7 @@ FLASH_error_enum_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_numb
     else
     {
         LOG_message(
-            LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_FLASH, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "ERROR: FLASH_is_reachable received IDs: ");
         are_bytes_correct = 0;
     }

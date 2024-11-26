@@ -1102,7 +1102,7 @@ void Error_Handler(void)
   {
     // TODO: make this flight-ready
     LOG_message(
-        LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        LOG_SYSTEM_OBC, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
         "Error_Handler() called\n");
   }
   /* USER CODE END Error_Handler_Debug */

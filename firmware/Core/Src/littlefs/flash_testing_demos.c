@@ -22,7 +22,7 @@ void demo_flash_write()
         if (result != 0)
         {
             LOG_message(
-                LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                LOG_SYSTEM_FLASH, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
                 "Error in FLASH_write\n");
             return;
         }
@@ -50,7 +50,7 @@ void demo_flash_read()
     if (result != 0)
     {
         LOG_message(
-            LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_FLASH, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "Error in FLASH_read_data\n");
         return;
     }

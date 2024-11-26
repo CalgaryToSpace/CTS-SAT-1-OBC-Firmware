@@ -68,7 +68,7 @@ int8_t LFS_format()
     if (result < 0)
     {
         LOG_message(
-            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "Error formatting!\n");
         return result;
     }
@@ -89,7 +89,7 @@ int8_t LFS_mount()
     if (LFS_is_lfs_mounted)
     {
         LOG_message(
-            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
             "LittleFS already mounted!\n");
         return 1;
     }
@@ -99,7 +99,7 @@ int8_t LFS_mount()
     if (mount_result < 0)
     {
         LOG_message(
-            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
             "Mounting unsuccessful\n");
         return mount_result;
     }
@@ -121,7 +121,7 @@ int8_t LFS_unmount()
     if (!LFS_is_lfs_mounted)
     {
         LOG_message(
-            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
             "LittleFS not mounted.\n");
         return 1;
     }
@@ -131,7 +131,7 @@ int8_t LFS_unmount()
     if (unmount_result < 0)
     {
         LOG_message(
-            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "Error un-mounting.\n");
         return unmount_result;
     }
@@ -153,7 +153,7 @@ int8_t LFS_list_directory(const char root_directory[])
     if (!LFS_is_lfs_mounted)
     {
         LOG_message(
-            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
             "LittleFS not mounted.\n");
         return 1;
     }
@@ -163,7 +163,7 @@ int8_t LFS_list_directory(const char root_directory[])
     if (open_dir_result < 0)
     {
         LOG_message(
-            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "Error opening a directory.\n");
         return open_dir_result;
     }
@@ -188,7 +188,7 @@ int8_t LFS_list_directory(const char root_directory[])
     if (read_dir_result < 0)
     {
         LOG_message(
-            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "Error reading directory contents.\n");
         return read_dir_result;
     }
@@ -201,7 +201,7 @@ int8_t LFS_list_directory(const char root_directory[])
     if (close_dir_result < 0)
     {
         LOG_message(
-            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "Error closing directory.\n");
         return close_dir_result;
     }
@@ -219,7 +219,7 @@ int8_t LFS_delete_file(const char file_name[])
     if (!LFS_is_lfs_mounted)
     {
         LOG_message(
-            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
             "LittleFS not mounted.\n");
         return 1;
     }
@@ -228,7 +228,7 @@ int8_t LFS_delete_file(const char file_name[])
     if (remove_result < 0)
     {
         LOG_message(
-            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "Error removing file/directory.\n");
         return remove_result;
     }
@@ -249,7 +249,7 @@ int8_t LFS_make_directory(const char dir_name[])
     if (!LFS_is_lfs_mounted)
     {
         LOG_message(
-            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
             "LittleFS not mounted.\n");
         return 1;
     }
@@ -282,7 +282,7 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
     if (!LFS_is_lfs_mounted)
     {
         LOG_message(
-            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
             "LittleFS not mounted.\n");
         return 1;
     }
@@ -294,7 +294,7 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
     if (open_result < 0)
     {
         LOG_message(
-            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "Error opening/creating file.\n");
         return open_result;
     }
@@ -315,7 +315,7 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
     if (write_result < 0)
     {
         LOG_message(
-            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "Error writing to file!\n");
         return write_result;
     }
@@ -332,7 +332,7 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
     if (close_result < 0)
     {
         LOG_message(
-            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "Error closing the file!\n");
         return close_result;
     }

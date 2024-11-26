@@ -109,7 +109,7 @@ uint8_t EPS_send_cmd_get_response(
 				if (EPS_ENABLE_DEBUG_PRINT)
 				{
 					LOG_message(
-						LOG_SYSTEM_EPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+						LOG_SYSTEM_EPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
 						"EPS->OBC ERROR: timeout before first byte received\n");
 				}
 				// fatal error; return
@@ -162,7 +162,7 @@ uint8_t EPS_send_cmd_get_response(
 		if (EPS_ENABLE_DEBUG_PRINT)
 		{
 			LOG_message(
-				LOG_SYSTEM_EPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+				LOG_SYSTEM_EPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
 				"EPS->OBC ERROR: UART_eps_buffer_write_idx == 0\n");
 		}
 		return 12;
