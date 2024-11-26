@@ -191,7 +191,7 @@ uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChann
     if (parsed_tcmd_output == NULL)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "Error: TCMD_parse_full_telecommand: parsed_tcmd_output is NULL.\n");
         return 1;
     }
@@ -199,7 +199,7 @@ uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChann
     if (tcmd_str_len == 0)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "Error: TCMD_parse_full_telecommand: called with empty string.\n");
         return 10;
     }
@@ -221,7 +221,7 @@ uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChann
     if (!TCMD_check_starts_with_device_id(tcmd_str, tcmd_str_len))
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "Error: TCMD_parse_full_telecommand: str does not start with the correct prefix.\n");
         return 20;
     }
@@ -247,7 +247,7 @@ uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChann
             {
                 // Found a second '!', which is not allowed.
                 LOG_message(
-                    LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                    LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
                     "Error: TCMD_parse_full_telecommand: found >1 '!' in the string.\n");
                 return 25;
             }
@@ -256,7 +256,7 @@ uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChann
     if (end_of_tcmd_char_str_count == 0)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "Error: TCMD_parse_full_telecommand: no '!' found at the end of the string.\n");
         return 26;
     }
@@ -266,7 +266,7 @@ uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChann
     if (tcmd_idx < 0)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "Error: TCMD_parse_full_telecommand: telecommand not found in the list.\n");
         return 30;
     }
@@ -279,14 +279,14 @@ uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChann
     if (tcmd_str_len < start_of_args_idx + 1)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "ERROR: TCMD_parse_full_telecommand: You must have parenthesis for the args.\n");
         return 40;
     }
     if (tcmd_str[start_of_args_idx] != '(')
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "ERROR: TCMD_parse_full_telecommand: You must have parenthesis for the args. You need an opening paren.\n");
         return 50;
     }
@@ -296,7 +296,7 @@ uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChann
     if (end_of_args_idx < 0)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "ERROR: TCMD_parse_full_telecommand: You must have parenthesis for the args. No closing paren found.\n");
         return 60;
     }
@@ -320,7 +320,7 @@ uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChann
         if (TCMD_get_suffix_tag_uint64(tcmd_suffix_tag_str, "@tssent=", &timestamp_sent) != 0)
         {
             LOG_message(
-                LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
                 "Error: TCMD_parse_full_telecommand: failed to parse present @tssent=xxxx.\n");
             return 70;
         }
@@ -334,7 +334,7 @@ uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChann
         if (TCMD_get_suffix_tag_uint64(tcmd_suffix_tag_str, "@tsexec=", &timestamp_to_execute) != 0)
         {
             LOG_message(
-                LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
                 "Error: TCMD_parse_full_telecommand: failed to parse present @tsexec=xxxx.\n");
             return 80;
         }
@@ -347,7 +347,7 @@ uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChann
     if (arg_len + 1 > TCMD_ARGS_STR_NO_PARENS_SIZE)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "Error: TCMD_parse_full_telecommand: args_str_no_parens is too long.\n");
         return 90;
     }
