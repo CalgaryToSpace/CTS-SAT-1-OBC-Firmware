@@ -96,7 +96,7 @@ uint8_t TCMDEXEC_eps_get_current_battery_percent(
     char *response_output_buf, uint16_t response_output_buf_len
 );
 
-uint8_t TCMDEXEC_eps_get_list_of_enabled_channels(
+uint8_t TCMDEXEC_eps_get_enabled_channels_json(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
 );

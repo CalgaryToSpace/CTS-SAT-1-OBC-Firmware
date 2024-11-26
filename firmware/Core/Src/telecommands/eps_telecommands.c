@@ -546,82 +546,24 @@ uint8_t TCMDEXEC_eps_get_current_battery_percent(
     return 0;    
 }
 
-uint8_t TCMDEXEC_eps_get_list_of_enabled_channels(
+uint8_t TCMDEXEC_eps_get_enabled_channels_json(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-    char *response_output_buf, uint16_t response_output_buf_len
-) {
+    char *response_output_buf, uint16_t response_output_buf_len) {
 
-    EPS_struct_piu_housekeeping_data_eng_t status;
-    const uint8_t result = EPS_CMD_get_piu_housekeeping_data_eng(&status);
+    EPS_struct_pdu_housekeeping_data_eng_t status;
+    const uint8_t result = EPS_CMD_get_pdu_housekeeping_data_eng(&status);
+
     if (result != 0) {
         snprintf(response_output_buf, response_output_buf_len,
             "EPS_CMD_get_piu_housekeeping_data_run_avg (err %d)", result);
         return 1;
     }
      
-    uint16_t status_bitfield = status.stat_ch_on_bitfield;
-    uint16_t status_oc_bitfield = status.stat_ch_overcurrent_fault_bitfield;
-    strcat(response_output_buf, "Current Channels Enabled: ");
-    for (int i =0; i<16; i++){ // check bit field for channels 0-15 
-        uint8_t bit_status = (status_bitfield >> i) & 1; // bit shift right and then check bit status
-        if (bit_status == 1) {
-            switch (i) {
-                case EPS_CHANNEL_VBATT_STACK:
-                    strcat(response_output_buf,"VBATT_STACK, ");
-                    break;
-                case EPS_CHANNEL_5V_STACK:
-                    strcat(response_output_buf,"5V_STACK, ");
-                    break;
-                case EPS_CHANNEL_5V_CH2_UNUSED:
-                    strcat(response_output_buf,"5V_CH2_UNUSED, ");
-                    break;
-                case EPS_CHANNEL_5V_CH3_UNUSED:
-                    strcat(response_output_buf,"5V_CH3_UNUSED, ");
-                    break;
-                case EPS_CHANNEL_5V_MPI:
-                    strcat(response_output_buf,"5V_MPI, ");
-                    break;
-                case EPS_CHANNEL_3V3_STACK:
-                    strcat(response_output_buf,"3V3_STACK, ");
-                    break;
-                case EPS_CHANNEL_3V3_CAMERA:
-                    strcat(response_output_buf,"3V3_CAMERA, ");
-                    break;
-                case EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY:
-                    strcat(response_output_buf,"3V3_UHF_ANTENNA_DEPLOY, ");
-                    break;
-                case EPS_CHANNEL_3V3_LORA_MODULE:
-                    strcat(response_output_buf,"3V3_LORA_MODULE, ");
-                    break;
-                case EPS_CHANNEL_VBATT_CH9_UNUSED:
-                    strcat(response_output_buf,"VBATT_CH9_UNUSED, ");
-                    break;
-                case EPS_CHANNEL_VBATT_CH10_UNUSED:
-                    strcat(response_output_buf,"VBATT_CH10_UNUSED, ");
-                    break;
-                case EPS_CHANNEL_VBATT_CH11_UNUSED:
-                    strcat(response_output_buf,"VBATT_CH11_UNUSED, ");
-                    break;
-                case EPS_CHANNEL_12V_MPI:
-                    strcat(response_output_buf,"12V_MPI, ");
-                    break;
-                case EPS_CHANNEL_12V_BOOM:
-                    strcat(response_output_buf,"12V_BOOM, ");
-                    break;
-                case EPS_CHANNEL_3V3_CH14_UNUSED:
-                    strcat(response_output_buf,"3V3_CH14_UNUSED, ");
-                    break;
-                case EPS_CHANNEL_3V3_CH15_UNUSED:
-                    strcat(response_output_buf,"3V3_CH15_UNUSED, ");
-                    break;
-            default:
-                break;
-            }
-        } 
-        if ((status_oc_bitfield & 1)==1){ // checking status of ch16 because the info is on a different bitfield that the inital 0-15 channels
-            strcat(response_output_buf,"28V6_CH16_UNUSED, ");
-        }
-    }
+    const uint16_t status_bitfield = status.stat_ch_on_bitfield;
+    const uint16_t status_ch_ext_bitfield = status.stat_ch_ext_on_bitfield;
+    strcat(response_output_buf, "{\"EPS_Channels_Enabled\": \"");
+    EPS_convert_stat_bit_to_string(response_output_buf, status_bitfield, status_ch_ext_bitfield);
+    strcat(response_output_buf, "\"}");
 
     return 0;
 }
