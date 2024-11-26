@@ -45,7 +45,7 @@ void TIM_set_current_unix_epoch_time_ms(uint64_t current_unix_epoch_time_ms, TIM
     if (is_this_sync_before_the_last_sync)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
             "WARNING: setting current time to before the last sync.");
         // TODO: use the logger warning function, and add other data with a format string here.
     }

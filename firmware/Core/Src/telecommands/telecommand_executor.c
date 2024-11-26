@@ -151,7 +151,7 @@ uint8_t TCMD_execute_parsed_telecommand_now(const uint16_t tcmd_idx, const char 
     if (tcmd_idx >= TCMD_NUM_TELECOMMANDS)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "Error: TCMD_execute_parsed_telecommand: tcmd_idx out of bounds.\n");
         return 254;
     }
@@ -194,7 +194,7 @@ uint8_t TCMD_execute_parsed_telecommand_now(const uint16_t tcmd_idx, const char 
     if (tcmd_result != 0)
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             " !!!!!! ERROR !!!!!!");
     }
     LOG_message(
@@ -219,7 +219,7 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
     if (!TCMD_agenda_is_valid[tcmd_agenda_slot_num])
     {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "Error: TCMD_execute_telecommand_in_agenda: slot is invalid.\n");
         return 253;
     }
