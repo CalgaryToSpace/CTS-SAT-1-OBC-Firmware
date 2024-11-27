@@ -49,7 +49,13 @@ enum {
     LOG_SYSTEM_ON = 1,
 };
 
-void LOG_message(LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_t sink_mask, const char fmt[], ...)__attribute__((format(printf, 4, 5)));
+void LOG_message(
+    LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_t sink_mask,
+    const char fmt[], ...
+) __attribute__((format(printf, 4, 5)));
+// __attribute__ part indicates that the `fmt` arg (4th arg) is a printf format string, and the
+// 5th arg is a variable argument list. Makes compiler check that fmt matches the variable arguments.
+
 uint32_t LOG_all_sinks_except(uint32_t exceptions);
 uint8_t LOG_is_sink_enabled(LOG_sink_enum_t sink);
 void LOG_set_sink_debugging_messages_enabled_state(LOG_sink_enum_t sink, uint8_t state);
