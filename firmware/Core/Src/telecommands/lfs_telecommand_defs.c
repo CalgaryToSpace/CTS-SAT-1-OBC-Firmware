@@ -52,6 +52,7 @@ uint8_t TCMDEXEC_fs_unmount(const char *args_str, TCMD_TelecommandChannel_enum_t
 /// @param args_str
 /// - Arg 0: File path as string
 /// - Arg 1: String to write to file
+/// @note Do not add quotations around either argument, write as is.
 uint8_t TCMDEXEC_fs_write_file(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
 
@@ -90,6 +91,7 @@ uint8_t TCMDEXEC_fs_write_file(const char *args_str, TCMD_TelecommandChannel_enu
 /// @brief Telecommand: Deletes a specified file in LittleFS
 /// @param args_str
 /// - Arg 0: File name to be deleted
+/// @note Do not add quotations around the argument, write as is.
 uint8_t TCMDEXEC_fs_delete_file(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     char arg_file_name[64] = {0};
@@ -112,6 +114,7 @@ uint8_t TCMDEXEC_fs_delete_file(const char *args_str, TCMD_TelecommandChannel_en
     snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Deleted File!");
     return 0;
 }
+
 /// @brief Reads a file from LittleFS, and responds with its contents as 2-digit hex bytes.
 /// @param args_str
 /// - Arg 0: File path as string
