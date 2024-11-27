@@ -27,13 +27,12 @@ uint8_t TCMDEXEC_flash_activate_each_cs(const char *args_str, TCMD_TelecommandCh
 
     for (uint8_t chip_number = 0; chip_number < FLASH_NUMBER_OF_FLASH_DEVICES; chip_number++)
     {
+        // LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"Activating CS: ");
+        // DEBUG_uart_print_uint32(chip_number);
+        // LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"...\n");
         LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Activating CS: ");
-        DEBUG_uart_print_uint32(chip_number);
-        LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "...\n");
+            "Activating CS: %lu...\n", chip_number);
         FLASH_activate_chip_select(chip_number);
         HAL_Delay(delay_time_ms);
 

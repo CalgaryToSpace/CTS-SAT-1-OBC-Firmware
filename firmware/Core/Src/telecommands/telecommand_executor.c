@@ -173,17 +173,16 @@ uint8_t TCMD_execute_parsed_telecommand_now(const uint16_t tcmd_idx, const char 
     const uint32_t tcmd_exec_duration_ms = uptime_after_tcmd_exec_ms - uptime_before_tcmd_exec_ms;
 
     // Print back the response.
+    // LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"=========================");
+    // LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, " Response (duration=");
+    // DEBUG_uart_print_int32(tcmd_exec_duration_ms);
+    // LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"ms, err=");
+    // DEBUG_uart_print_uint32(tcmd_result);
+
     LOG_message(
         LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "=========================");
-    LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        " Response (duration=");
-    DEBUG_uart_print_int32(tcmd_exec_duration_ms);
-    LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "ms, err=");
-    DEBUG_uart_print_uint32(tcmd_result);
+        "========================= Response (duration=%ld ms, err=%lu",
+        tcmd_exec_duration_ms, tcmd_result);
     if (tcmd_result != 0)
     {
         LOG_message(

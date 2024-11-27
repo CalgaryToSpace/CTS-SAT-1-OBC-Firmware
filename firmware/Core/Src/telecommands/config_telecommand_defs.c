@@ -131,7 +131,6 @@ uint8_t TCMDEXEC_config_get_all_vars_jsonl(const char *args_str, TCMD_Telecomman
             CONFIG_int_config_variables[i].variable_name,
             json_str,
             sizeof(json_str));
-        // DEBUG_uart_print_str(json_str);
         LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "%s, ", json_str);
@@ -143,7 +142,6 @@ uint8_t TCMDEXEC_config_get_all_vars_jsonl(const char *args_str, TCMD_Telecomman
             CONFIG_str_config_variables[i].variable_name,
             json_str,
             sizeof(json_str));
-        // DEBUG_uart_print_str(json_str);
         LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "%s, ", json_str);

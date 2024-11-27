@@ -147,13 +147,12 @@ void TASK_handle_uart_telecommands(void *argument)
 			latest_tcmd, TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd);
 		if (parse_result != 0)
 		{
+			// LOG_message(LOG_SYSTEM_OBC, LOG_SEVERITY_ERROR, LOG_SINK_ALL,"Error parsing telecommand: ");
+			// DEBUG_uart_print_uint32(parse_result);
+			// LOG_message(LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"\n");
 			LOG_message(
 				LOG_SYSTEM_OBC, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-				"Error parsing telecommand: ");
-			DEBUG_uart_print_uint32(parse_result);
-			LOG_message(
-				LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-				"\n");
+				"Error parsing telecommand: %lu\n", parse_result);
 			continue;
 		}
 
