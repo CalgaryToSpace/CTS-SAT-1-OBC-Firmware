@@ -175,10 +175,11 @@ int8_t LFS_list_directory(const char root_directory[])
         struct lfs_info info;
         read_dir_result = lfs_dir_read(&LFS_filesystem, &dir, &info);
 
-        DEBUG_uart_print_str(info.name);
+        // DEBUG_uart_print_str(info.name);
+        //  LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,", ");
         LOG_message(
             LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            ", ");
+            "%s, ", info.name);
         // TODO: The info struct contains information about directory contents
     }
     LOG_message(
@@ -301,13 +302,13 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
 
     if (LFS_enable_hot_path_debug_logs)
     {
+        // LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"Opened/created a file named: '");
+        // DEBUG_uart_print_str(file_name);
+        // LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"'\n");
+
         LOG_message(
             LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Opened/created a file named: '");
-        DEBUG_uart_print_str(file_name);
-        LOG_message(
-            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "'\n");
+            "Opened/created a file named: '%s'\n", file_name);
     }
 
     // Write data to file

@@ -69,7 +69,10 @@ void TASK_DEBUG_print_heartbeat(void *argument)
 				time_info->tm_year + 1900, time_info->tm_mon + 1, time_info->tm_mday,
 				time_info->tm_hour, time_info->tm_min, time_info->tm_sec, ms,
 				HAL_GetTick());
-			DEBUG_uart_print_str(TASK_heartbeat_timing_str);
+			// DEBUG_uart_print_str(TASK_heartbeat_timing_str);
+			LOG_message(
+				LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+				"%s", TASK_heartbeat_timing_str);
 		}
 		HAL_GPIO_TogglePin(PIN_LED_DEVKIT_LD2_GPIO_Port, PIN_LED_DEVKIT_LD2_Pin);
 		HAL_GPIO_TogglePin(PIN_LED_GP2_OUT_GPIO_Port, PIN_LED_GP2_OUT_Pin);
@@ -132,13 +135,13 @@ void TASK_handle_uart_telecommands(void *argument)
 			continue;
 		}
 
+		// LOG_message(LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"========================= UART Telecommand Received =========================\n");
+		// DEBUG_uart_print_str(latest_tcmd);
+		// LOG_message(LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"\n=========================\n");
 		LOG_message(
 			LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-			"========================= UART Telecommand Received =========================\n");
-		DEBUG_uart_print_str(latest_tcmd);
-		LOG_message(
-			LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-			"\n=========================\n");
+			"========================= UART Telecommand Received =========================\n%s\n=========================\n",
+			latest_tcmd);
 
 		// Parse the telecommand
 		TCMD_parsed_tcmd_to_execute_t parsed_tcmd;

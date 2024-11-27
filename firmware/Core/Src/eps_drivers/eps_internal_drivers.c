@@ -73,7 +73,10 @@ uint8_t EPS_send_cmd_get_response(
 		{
 			char msg[200];
 			sprintf(msg, "OBC->EPS ERROR: tx_status != HAL_OK (%d)\n", tx_status);
-			DEBUG_uart_print_str(msg);
+			// DEBUG_uart_print_str(msg);
+			LOG_message(
+				LOG_SYSTEM_EPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+				"%s", msg);
 		}
 		return 2;
 	}
@@ -176,7 +179,10 @@ uint8_t EPS_send_cmd_get_response(
 				msg, sizeof(msg),
 				"EPS->OBC ERROR: UART_eps_buffer_write_idx < begin_tag_len + EPS_DEFAULT_RX_LEN_MIN + end_tag_len (%d < %d)\n",
 				UART_eps_buffer_write_idx, begin_tag_len + EPS_DEFAULT_RX_LEN_MIN + end_tag_len);
-			DEBUG_uart_print_str(msg);
+			// DEBUG_uart_print_str(msg);
+			LOG_message(
+				LOG_SYSTEM_EPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+				"%s", msg);
 		}
 		return 13;
 	}
@@ -189,7 +195,10 @@ uint8_t EPS_send_cmd_get_response(
 				msg, sizeof(msg),
 				"EPS->OBC ERROR: UART_eps_buffer_write_idx < rx_len_with_tags (%d < %d)\n",
 				UART_eps_buffer_write_idx, rx_len_with_tags);
-			DEBUG_uart_print_str(msg);
+			// DEBUG_uart_print_str(msg);
+			LOG_message(
+				LOG_SYSTEM_EPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+				"%s", msg);
 		}
 		return 14;
 	}
@@ -203,7 +212,10 @@ uint8_t EPS_send_cmd_get_response(
 				msg, sizeof(msg),
 				"EPS->OBC WARNING: UART_eps_buffer_write_idx > rx_len_with_tags+2 (%d > %d+2)\n",
 				UART_eps_buffer_write_idx, rx_len_with_tags);
-			DEBUG_uart_print_str(msg);
+			// DEBUG_uart_print_str(msg);
+			LOG_message(
+				LOG_SYSTEM_EPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+				"%s", msg);
 		}
 		return 15;
 	}
@@ -240,7 +252,10 @@ uint8_t EPS_send_cmd_get_response(
 				msg, sizeof(msg),
 				"EPS returned an error in the STAT field: 0x%02x (see EPS_SICD Table 3-11)\n",
 				eps_stat_field);
-			DEBUG_uart_print_str(msg);
+			// DEBUG_uart_print_str(msg);
+			LOG_message(
+				LOG_SYSTEM_EPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+				"%s", msg);
 		}
 	}
 
