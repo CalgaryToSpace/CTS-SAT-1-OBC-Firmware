@@ -1022,11 +1022,17 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PIN_BOOM_PGOOD_IN_Pin PIN_GPS_PPS_IN_Pin */
-  GPIO_InitStruct.Pin = PIN_BOOM_PGOOD_IN_Pin|PIN_GPS_PPS_IN_Pin;
+  /*Configure GPIO pin : PIN_BOOM_PGOOD_IN_Pin */
+  GPIO_InitStruct.Pin = PIN_BOOM_PGOOD_IN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  HAL_GPIO_Init(PIN_BOOM_PGOOD_IN_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PIN_GPS_PPS_IN_Pin */
+  GPIO_InitStruct.Pin = PIN_GPS_PPS_IN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(PIN_GPS_PPS_IN_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PIN_MEM_NCS_FLASH_7_Pin PIN_MEM_NCS_FLASH_6_Pin PIN_MEM_NCS_FLASH_5_Pin PIN_MEM_NCS_FLASH_4_Pin
                            PIN_MEM_NCS_FLASH_3_Pin */
