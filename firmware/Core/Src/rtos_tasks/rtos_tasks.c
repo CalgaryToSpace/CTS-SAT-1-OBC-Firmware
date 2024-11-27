@@ -69,7 +69,6 @@ void TASK_DEBUG_print_heartbeat(void *argument)
 				time_info->tm_year + 1900, time_info->tm_mon + 1, time_info->tm_mday,
 				time_info->tm_hour, time_info->tm_min, time_info->tm_sec, ms,
 				HAL_GetTick());
-			// DEBUG_uart_print_str(TASK_heartbeat_timing_str);
 			LOG_message(
 				LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
 				"%s", TASK_heartbeat_timing_str);
@@ -136,7 +135,6 @@ void TASK_handle_uart_telecommands(void *argument)
 		}
 
 		// LOG_message(LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"========================= UART Telecommand Received =========================\n");
-		// DEBUG_uart_print_str(latest_tcmd);
 		// LOG_message(LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"\n=========================\n");
 		LOG_message(
 			LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,

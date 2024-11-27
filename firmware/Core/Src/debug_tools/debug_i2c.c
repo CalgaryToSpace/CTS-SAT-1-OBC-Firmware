@@ -23,7 +23,6 @@ void DEBUG_i2c_scan(I2C_HandleTypeDef *hi2c)
 		{
 			// We got an ack
 			sprintf(msg, "%2x ", i);
-			// DEBUG_uart_print_str(msg);
 			LOG_message(
 				LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
 				"%s", msg);

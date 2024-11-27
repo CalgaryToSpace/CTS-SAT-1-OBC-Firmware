@@ -159,14 +159,7 @@ uint8_t TCMD_execute_parsed_telecommand_now(const uint16_t tcmd_idx, const char 
 
     LOG_message(
         LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "=========================");
-    LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        " Executing telecommand '");
-    DEBUG_uart_print_str(tcmd_def.tcmd_name);
-    LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "'=========================\n");
+        "======================== Executing telecommand '%s' ========================\n", tcmd_def.tcmd_name);
 
     // Handle the telecommand by calling the appropriate function.
     // Null-terminate the args string.
@@ -197,13 +190,12 @@ uint8_t TCMD_execute_parsed_telecommand_now(const uint16_t tcmd_idx, const char 
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             " !!!!!! ERROR !!!!!!");
     }
+    // LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,") =========================\n");
+    // DEBUG_uart_print_str(response_output_buf);
+    // LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"\n===========================================================================\n");
     LOG_message(
         LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        ") =========================\n");
-    DEBUG_uart_print_str(response_output_buf);
-    LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "\n===========================================================================\n");
+        ") =========================\n%s\n===========================================================================\n", response_output_buf);
 
     return tcmd_result;
 }

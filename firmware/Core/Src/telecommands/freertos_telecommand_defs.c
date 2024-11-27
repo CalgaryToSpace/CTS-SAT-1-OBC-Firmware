@@ -79,7 +79,10 @@ uint8_t TCMDEXEC_freetos_list_tasks_jsonl(const char *args_str, TCMD_Telecommand
             (task_statuses[x].usStackHighWaterMark * 4),
             task_statuses[x].ulRunTimeCounter);
 
-        DEBUG_uart_print_str(message_buffer);
+        // DEBUG_uart_print_str(message_buffer);
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "%s, ", message_buffer);
     }
 
     snprintf(

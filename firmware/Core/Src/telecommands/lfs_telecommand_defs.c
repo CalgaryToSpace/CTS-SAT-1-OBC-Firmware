@@ -186,7 +186,10 @@ uint8_t TCMDEXEC_fs_read_text_file(const char *args_str, TCMD_TelecommandChannel
         total_bytes_read += bytes_read;
         rx_buffer[bytes_read] = '\0';
         // print to uart and radio
-        DEBUG_uart_print_str((char *)rx_buffer);
+        // DEBUG_uart_print_str((char *)rx_buffer);
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "%s", rx_buffer);
         // TODO send to radio
         LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
