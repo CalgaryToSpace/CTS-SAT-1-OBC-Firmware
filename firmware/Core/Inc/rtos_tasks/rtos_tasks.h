@@ -13,5 +13,6 @@ void TASK_handle_uart_telecommands(void *argument);
 
 void TASK_execute_telecommands(void *argument);
 
-void TASK_service_eps_watchdog(void *argument);
+void TASK_monitor_freertos_memory(void *argument);
+
 #endif // __INCLUDE_GUARD__RTOS_TASKS_H__

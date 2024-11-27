@@ -21,6 +21,7 @@ following uppercase identifiers to indicate which subsystem/region of code it be
 * `TEST_EXEC_`: unit test and integration test functions
 * `GEN_`: general-purpose functions which don't fit into any other category
 	* For example, byte manipulation functions.
+* `FREERTOS_`: related to FreeRTOS tasks/threads/metadata
 
 ## Satellite Subsystems
 
