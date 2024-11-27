@@ -50,17 +50,31 @@ uint8_t EPS_send_cmd_get_response(
 
 	if (EPS_ENABLE_DEBUG_PRINT)
 	{
+		// LOG_message(LOG_SYSTEM_EPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"OBC->EPS DATA (no tags): ");
+		// DEBUG_uart_print_array_hex(cmd_buf, cmd_buf_len);
+		// LOG_message(LOG_SYSTEM_EPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"\nOBC->EPS DATA (with tags): ");
+		// DEBUG_uart_print_array_hex(cmd_buf_with_tags, cmd_buf_with_tags_len);
+		// LOG_message(LOG_SYSTEM_EPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"\n");
+		char buffer[4 * cmd_buf_len + 1];
+		buffer[0] = '\0';
+
+		for (uint32_t i = 0; i < cmd_buf_len; i++)
+		{
+			snprintf(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "%02X ", cmd_buf[i]);
+		}
 		LOG_message(
 			LOG_SYSTEM_EPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-			"OBC->EPS DATA (no tags): ");
-		DEBUG_uart_print_array_hex(cmd_buf, cmd_buf_len);
+			"OBC->EPS DATA (no tags): %s", buffer);
+
+		buffer[0] = '\0';
+		for (uint32_t i = 0; i < cmd_buf_with_tags_len; i++)
+		{
+			snprintf(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "%02X ", cmd_buf_with_tags[i]);
+		}
+
 		LOG_message(
 			LOG_SYSTEM_EPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-			"\nOBC->EPS DATA (with tags): ");
-		DEBUG_uart_print_array_hex(cmd_buf_with_tags, cmd_buf_with_tags_len);
-		LOG_message(
-			LOG_SYSTEM_EPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-			"\n");
+			"\nOBC->EPS DATA (with tags): %s\n", buffer);
 	}
 
 	// TX TO EPS
@@ -149,13 +163,21 @@ uint8_t EPS_send_cmd_get_response(
 	UART_eps_is_expecting_data = 0; // We are no longer expecting a response
 
 	// For now, log the received bytes
+	// LOG_message(LOG_SYSTEM_EPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"EPS->OBC DATA (with tags): ");
+	// DEBUG_uart_print_array_hex((uint8_t *)UART_eps_buffer, UART_eps_buffer_write_idx);
+	// LOG_message(LOG_SYSTEM_EPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"\n");
+
+	char buffer[4 * UART_eps_buffer_write_idx + 1];
+	buffer[0] = '\0';
+
+	for (uint32_t i = 0; i < UART_eps_buffer_write_idx; i++)
+	{
+		snprintf(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "%02X ", ((uint8_t *)UART_eps_buffer)[i]);
+	}
+
 	LOG_message(
 		LOG_SYSTEM_EPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-		"EPS->OBC DATA (with tags): ");
-	DEBUG_uart_print_array_hex((uint8_t *)UART_eps_buffer, UART_eps_buffer_write_idx);
-	LOG_message(
-		LOG_SYSTEM_EPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-		"\n");
+		"EPS->OBC DATA (with tags): %s\n", buffer);
 
 	// Check that we've received what we're expecting
 	// TODO: if the following cases happen ever during testing, consider allowing them and treating them as WARNINGs
@@ -227,13 +249,21 @@ uint8_t EPS_send_cmd_get_response(
 
 	if (EPS_ENABLE_DEBUG_PRINT)
 	{
+		// LOG_message(LOG_SYSTEM_EPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"EPS->OBC DATA (no tags): ");
+		// DEBUG_uart_print_array_hex(rx_buf, rx_buf_len);
+		// LOG_message(LOG_SYSTEM_EPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"\n");
+
+		char buffer[4 * rx_buf_len + 1];
+		buffer[0] = '\0';
+
+		for (uint32_t i = 0; i < rx_buf_len; i++)
+		{
+			snprintf(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "%02X ", rx_buf[i]);
+		}
+
 		LOG_message(
 			LOG_SYSTEM_EPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-			"EPS->OBC DATA (no tags): ");
-		DEBUG_uart_print_array_hex(rx_buf, rx_buf_len);
-		LOG_message(
-			LOG_SYSTEM_EPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-			"\n");
+			"EPS->OBC DATA (no tags): %s\n", buffer);
 	}
 
 	// Check STAT field (Table 3-11) - 0x00 and 0x80 mean success

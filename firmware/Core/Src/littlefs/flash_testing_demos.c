@@ -55,14 +55,19 @@ void demo_flash_read()
         return;
     }
 
-    LOG_message(
-        LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "Read bytes: \n");
-    DEBUG_uart_print_array_hex(bytes_store, num_bytes);
+    char buffer[4 * num_bytes + 1];
+    buffer[0] = '\0';
 
+    for (uint32_t i = 0; i < num_bytes; i++)
+    {
+        snprintf(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "%02X ", bytes_store[i]);
+    }
     LOG_message(
         LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "\nRead bytes in demo_flash_read(). Done.\n");
+        "Read bytes: \n%s\nRead bytes in demo_flash_read(). Done.\n", buffer);
+    // LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"Read bytes: \n");
+    // DEBUG_uart_print_array_hex(bytes_store, num_bytes);
+    // LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"\nRead bytes in demo_flash_read(). Done.\n");
 }
 
 // void demo_flash_full() {

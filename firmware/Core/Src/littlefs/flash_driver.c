@@ -369,13 +369,21 @@ FLASH_error_enum_t FLASH_write_enable(SPI_HandleTypeDef *hspi, uint8_t chip_numb
 
         if (FLASH_enable_hot_path_debug_logs)
         {
+            // LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"DEBUG: status_reg = 0x");
+            // DEBUG_uart_print_array_hex(status_reg_buffer, 1);
+            // LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"\n");
+
+            char buffer[4 * 1 + 1];
+            buffer[0] = '\0';
+
+            for (uint32_t i = 0; i < 1; i++)
+            {
+                snprintf(buffer + i * 3, sizeof(buffer) - i * 3, "%02X ", status_reg_buffer[i]);
+            }
+
             LOG_message(
                 LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-                "DEBUG: status_reg = 0x");
-            DEBUG_uart_print_array_hex(status_reg_buffer, 1);
-            LOG_message(
-                LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-                "\n");
+                "DEBUG: status_reg = 0x%s\n", buffer);
         }
     }
 
@@ -440,13 +448,20 @@ FLASH_error_enum_t FLASH_write_disable(SPI_HandleTypeDef *hspi, uint8_t chip_num
 
         if (FLASH_enable_hot_path_debug_logs)
         {
+            // LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"DEBUG: status_reg = 0x");
+            // DEBUG_uart_print_array_hex(status_reg_buffer, 1);
+            // LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"\n");
+            char buffer[4 * 1 + 1];
+            buffer[0] = '\0';
+
+            for (uint32_t i = 0; i < 1; i++)
+            {
+                snprintf(buffer + i * 3, sizeof(buffer) - i * 3, "%02X ", status_reg_buffer[i]);
+            }
+
             LOG_message(
                 LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-                "DEBUG: status_reg = 0x");
-            DEBUG_uart_print_array_hex(status_reg_buffer, 1);
-            LOG_message(
-                LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-                "\n");
+                "DEBUG: status_reg = 0x%s\n", buffer);
         }
     }
 
@@ -558,13 +573,20 @@ FLASH_error_enum_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs
 
         if (FLASH_enable_hot_path_debug_logs)
         {
+            // LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"DEBUG: status_reg = 0x");
+            // DEBUG_uart_print_array_hex(status_reg_buffer, 1);
+            // LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"\n");
+            char buffer[4 * 1 + 1];
+            buffer[0] = '\0';
+
+            for (uint32_t i = 0; i < 1; i++)
+            {
+                snprintf(buffer + i * 3, sizeof(buffer) - i * 3, "%02X ", status_reg_buffer[i]);
+            }
+
             LOG_message(
                 LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-                "DEBUG: status_reg = 0x");
-            DEBUG_uart_print_array_hex(status_reg_buffer, 1);
-            LOG_message(
-                LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-                "\n");
+                "DEBUG: status_reg = 0x%s\n", buffer);
         }
     }
 
@@ -736,13 +758,20 @@ FLASH_error_enum_t FLASH_write_data(SPI_HandleTypeDef *hspi, uint8_t chip_number
 
         if (FLASH_enable_hot_path_debug_logs)
         {
+            // LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"DEBUG: status_reg = 0x");
+            // DEBUG_uart_print_array_hex(status_reg_buffer, 1);
+            //  LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"\n");
+            char buffer[4 * 1 + 1];
+            buffer[0] = '\0';
+
+            for (uint32_t i = 0; i < 1; i++)
+            {
+                snprintf(buffer + i * 3, sizeof(buffer) - i * 3, "%02X ", status_reg_buffer[i]);
+            }
+
             LOG_message(
                 LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-                "DEBUG: status_reg = 0x");
-            DEBUG_uart_print_array_hex(status_reg_buffer, 1);
-            LOG_message(
-                LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-                "\n");
+                "DEBUG: status_reg = 0x%s\n", buffer);
         }
     }
 
@@ -835,13 +864,20 @@ FLASH_error_enum_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number,
 
         if (FLASH_enable_hot_path_debug_logs)
         {
+            // LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"DEBUG: status_reg = 0x");
+            // DEBUG_uart_print_array_hex(status_reg_buffer, 1);
+            // LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"\n");
+            char buffer[4 * 1 + 1];
+            buffer[0] = '\0';
+
+            for (uint32_t i = 0; i < 1; i++)
+            {
+                snprintf(buffer + i * 3, sizeof(buffer) - i * 3, "%02X ", status_reg_buffer[i]);
+            }
+
             LOG_message(
                 LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-                "DEBUG: status_reg = 0x");
-            DEBUG_uart_print_array_hex(status_reg_buffer, 1);
-            LOG_message(
-                LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-                "\n");
+                "DEBUG: status_reg = 0x%s\n", buffer);
         }
     }
     FLASH_deactivate_chip_select();
@@ -1034,10 +1070,20 @@ FLASH_error_enum_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_numb
         are_bytes_correct = 0;
     }
 
-    DEBUG_uart_print_array_hex(rx_buffer, 5);
+    // DEBUG_uart_print_array_hex(rx_buffer, 5);
+    // LOG_message(LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"\n");
+
+    char buffer[4 * 5 + 1];
+    buffer[0] = '\0';
+
+    for (uint32_t i = 0; i < 5; i++)
+    {
+        snprintf(buffer + i * 3, sizeof(buffer) - i * 3, "%02X ", rx_buffer[i]);
+    }
+
     LOG_message(
         LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "\n");
+        "%s\n", buffer);
 
     if (!are_bytes_correct)
     {

@@ -205,17 +205,14 @@ uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChann
     }
 
     // Optionally, echo back the command.
+    // LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"Parsed telecommand (len=");
+    // DEBUG_uart_print_uint32(tcmd_str_len);
+    // LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"): '");
+    // DEBUG_uart_print_str(tcmd_str);
+    // LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,"'\n");
     LOG_message(
         LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "Parsed telecommand (len=");
-    DEBUG_uart_print_uint32(tcmd_str_len);
-    LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "): '");
-    DEBUG_uart_print_str(tcmd_str);
-    LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "'\n");
+        "Parsed telecommand (len=%lu): '%s'\n", tcmd_str_len, tcmd_str);
 
     // Check that the telecommand starts with the correct prefix.
     if (!TCMD_check_starts_with_device_id(tcmd_str, tcmd_str_len))
@@ -371,7 +368,10 @@ uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChann
     const int8_t correct_number_of_args_provided = (num_args_expected == 0 && arg_len == 0) || (num_commas == (num_args_expected - 1) && arg_len != 0);
     if (!correct_number_of_args_provided)
     {
-        DEBUG_uart_print_str(error_message);
+        // DEBUG_uart_print_str(error_message);
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "%s", error_message);
         return 100;
     }
     // Reached the end of the telecommand parsing. Thus, success. Fill the output struct.
