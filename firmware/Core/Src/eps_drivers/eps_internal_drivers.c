@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <stdio.h>
 
 extern UART_HandleTypeDef *UART_eps_port_handle;
 

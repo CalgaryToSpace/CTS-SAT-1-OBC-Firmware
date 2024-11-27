@@ -4,6 +4,8 @@
 #include "debug_tools/debug_uart.h"
 #include "log/log.h"
 
+#include <stdio.h>
+
 void demo_flash_write()
 {
     LOG_message(

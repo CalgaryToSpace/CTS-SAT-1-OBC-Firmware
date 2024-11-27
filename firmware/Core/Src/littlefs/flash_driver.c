@@ -7,6 +7,8 @@
 #include "config/static_config.h"
 #include "log/log.h"
 
+#include <stdio.h>
+
 /// Timeout duration for HAL_SPI_READ/WRITE operations.
 // Note: FLASH_read_data has sporadic timeouts at 5ms; 10ms is a safe bet.
 // 512 bytes should take 2ms at 2Mbps.
