@@ -69,6 +69,7 @@ DMA_HandleTypeDef hdma_usart1_rx;
 SPI_HandleTypeDef hspi1;
 
 TIM_HandleTypeDef htim16;
+CRC_HandleTypeDef hcrc1;
 
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
