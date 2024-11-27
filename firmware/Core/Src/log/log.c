@@ -331,7 +331,7 @@ void LOG_set_sink_enabled_state(LOG_sink_enum_t sink, uint8_t state)
     }
 
     // Sink not found
-    LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_SINK_ALL, "LOG_set_sink_state(): unknown system: %d", (int) system);
+    LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_SINK_ALL, "LOG_set_sink_state(): unknown system: %ld", (uint32_t) system);
     return;
 }
 
