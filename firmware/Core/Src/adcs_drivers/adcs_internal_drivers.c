@@ -167,7 +167,7 @@ uint8_t ADCS_convert_uint32_to_reversed_uint8_array_members(uint8_t *array, uint
     return 0;
 }
 
-/// @brief Convert a double into a string with a given decimal precision.
+/// @brief snprintf doesn't support printing doubles, so convert a double into a string with a given decimal precision.
 /// @param[in] input Value to convert.
 /// @param[in] precision Number of decimal places to use.
 /// @param[out] output_string Character array to write the string number to.
