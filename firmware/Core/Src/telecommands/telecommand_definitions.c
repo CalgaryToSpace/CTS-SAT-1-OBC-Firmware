@@ -23,6 +23,7 @@
 #include "telecommands/mpi_telecommand_defs.h"
 #include "telecommands/eps_telecommands.h"
 #include "telecommands/stm32_internal_flash_telecommand_defs.h"
+#include "telecommands/comms_telecommand_defs.h"
 #include "telecommands/gps_telecommand_defs.h"
 #include "telecommands/comms_telecommand_defs.h"
 #include "telecommands/gps_telecommand_defs.h"
