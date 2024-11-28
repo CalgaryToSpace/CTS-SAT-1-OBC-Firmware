@@ -4,20 +4,14 @@
 #include "main.h"
 
 uint32_t pps_counter = 0;
-volatile uint8_t gps_pps_enabled = 0;
+uint8_t gps_pps_enabled = 0;
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-    if (GPIO_Pin == PIN_GPS_PPS_IN_Pin) {
-        if (__HAL_GPIO_EXTI_GET_IT(GPIO_Pin) != RESET) {
-            __HAL_GPIO_EXTI_CLEAR_IT(GPIO_Pin);
-            if (HAL_GPIO_ReadPin(PIN_GPS_PPS_IN_GPIO_Port, PIN_GPS_PPS_IN_Pin) == GPIO_PIN_SET && gps_pps_enabled) {
-                pps_counter++;
-            }
-        }
+    if (GPIO_Pin != PIN_GPS_PPS_IN_Pin) {
+        return;
     }
-    if (HAL_GPIO_ReadPin(PIN_GPS_PPS_IN_GPIO_Port, PIN_GPS_PPS_IN_Pin) == GPIO_PIN_RESET) {
-        // GPS power is off, disable interrupts
-        Disable_GPIO_EXTI();
+    if (HAL_GPIO_ReadPin(PIN_GPS_PPS_IN_GPIO_Port, PIN_GPS_PPS_IN_Pin) == GPIO_PIN_SET && gps_pps_enabled) {
+        pps_counter++;
     }
 }
 
@@ -30,4 +24,24 @@ void GPIO_EXTI_Init(void) {
 void Disable_GPIO_EXTI(void) {
     HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
     gps_pps_enabled = 0;
+}
+
+uint8_t get_gps_pps_enabled(void) {
+    return gps_pps_enabled;
+}
+
+void set_gps_pps_enabled(void) {
+    gps_pps_enabled = 1;
+}
+
+void set_gps_pps_disabled(void) {
+    gps_pps_enabled = 0;
+}
+
+uint32_t get_pps_counter(void) {
+    return pps_counter;
+}
+
+void reset_pps_counter(void) {
+    pps_counter = 0;
 }

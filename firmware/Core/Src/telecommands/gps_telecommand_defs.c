@@ -18,27 +18,25 @@
 /// @return 0 on success, 1 gps is off.
 uint8_t TCMDEXEC_gps_set_enabled_pps_tracking(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-
-        int PIN_Status = HAL_GPIO_ReadPin(PIN_GPS_PPS_IN_GPIO_Port, PIN_GPS_PPS_IN_Pin) == GPIO_PIN_SET;
-        if (PIN_Status && gps_pps_enabled == 1) {
-            // Disable PPS tracking
+        // Check if EXTI is active
+        if (get_gps_pps_enabled()) {
+            // Disable EXTI tracking
             Disable_GPIO_EXTI();
-            gps_pps_enabled = 0;
+            set_gps_pps_disabled();
             snprintf(
                 response_output_buf, response_output_buf_len,
                 "PPS tracking disabled");
             return 0;
         } 
-        else if (PIN_Status && gps_pps_enabled == 0) {
-            // Enable PPS tracking
+        // Check if EXTI is inactive
+        else if (!get_gps_pps_enabled()) {
+            // Enable EXTI tracking
             GPIO_EXTI_Init();
+            set_gps_pps_enabled();
             snprintf(
                 response_output_buf, response_output_buf_len,
                 "PPS tracking enabled");
             return 0;
         }
-    snprintf(
-                response_output_buf, response_output_buf_len,
-                "Can not enable as GPS may not be active");
     return 1;
 }
