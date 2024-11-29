@@ -19,20 +19,20 @@
 uint8_t TCMDEXEC_gps_set_enabled_pps_tracking(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
         // Check if EXTI is active
-        if (get_gps_pps_enabled()) {
+        if (gps_pps_enabled) {
             // Disable EXTI tracking
             Disable_GPIO_EXTI();
-            set_gps_pps_disabled();
+            gps_pps_enabled = 0;
             snprintf(
                 response_output_buf, response_output_buf_len,
                 "PPS tracking disabled");
             return 0;
         } 
         // Check if EXTI is inactive
-        else if (!get_gps_pps_enabled()) {
+        else if (!gps_pps_enabled) {
             // Enable EXTI tracking
             GPIO_EXTI_Init();
-            set_gps_pps_enabled();
+            gps_pps_enabled = 1;
             snprintf(
                 response_output_buf, response_output_buf_len,
                 "PPS tracking enabled");
