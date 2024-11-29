@@ -25,23 +25,3 @@ void Disable_GPIO_EXTI(void) {
     HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
     gps_pps_enabled = 0;
 }
-
-uint8_t get_gps_pps_enabled(void) {
-    return gps_pps_enabled;
-}
-
-void set_gps_pps_enabled(void) {
-    gps_pps_enabled = 1;
-}
-
-void set_gps_pps_disabled(void) {
-    gps_pps_enabled = 0;
-}
-
-uint32_t get_pps_counter(void) {
-    return pps_counter;
-}
-
-void reset_pps_counter(void) {
-    pps_counter = 0;
-}
