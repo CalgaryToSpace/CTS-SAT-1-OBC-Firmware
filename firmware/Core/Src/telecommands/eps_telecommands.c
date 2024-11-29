@@ -540,5 +540,32 @@ uint8_t TCMDEXEC_eps_get_enabled_channels_json(
     EPS_convert_stat_bit_to_string(response_output_buf, status_bitfield, status_ch_ext_bitfield);
     strcat(response_output_buf, "\"}");
 
+    // Test plan:
+
+    // Use eps_get_pdu_housekeeping_data_eng_json to output bitfield of channels enabled
+    // CTS1+eps_get_pdu_housekeeping_data_eng_json()!
+    // read bitfield from preexisting housekeping_json file to create expectations of string output
+    // Ex. bitfield = "0011000111110011" = 12787
+    // expected response ("VBATT_STACK, 5V_STACK, 5V_MPI, 3V3_STACK, 3V3_CAMERA, 3V3_UHF_ANTENNA_DEPLOY, 3V3_LORA_MODULE, 12V_MPI, 12V_BOOM")
+    // 9 channels enabled (0,1,4,5,6,7,8,12,13)
+
+    // Call function CTS1+eps_get_enabled_channels_json()!
+    // Ex. if bitfield = "0011000111110011" = 12787
+    // expected response {"EPS_Channels_Enabled": "VBATT_STACK, 5V_STACK, 5V_MPI, 3V3_STACK, 3V3_CAMERA, 3V3_UHF_ANTENNA_DEPLOY, 3V3_LORA_MODULE, 12V_MPI, 12V_BOOM, "}
+
+    // enable/disable some channels and then recalling testing function CTS1+eps_get_enabled_channels_json()!
+
+    // Ex. if first call had bitfield=12787
+    // then applying the commands
+
+    // CTS1+eps_set_channel_enabled("stack_5v,off")! 		(channel 1)
+    // CTS1+eps_set_channel_enabled("vbatt_stack,off")! 	(channel 0)
+    // CTS1+eps_set_channel_enabled("2,on")!			(channel 2)
+    // CTS1+eps_set_channel_enabled("16,on")!			(channel 16)
+
+    // CTS1+eps_get_enabled_channels_json()!
+
+    // expected response: {"EPS_Channels_Enabled": "5V_CH2_UNUSED, 5V_MPI, 3V3_STACK, 3V3_CAMERA, 3V3_UHF_ANTENNA_DEPLOY, 3V3_LORA_MODULE, 12V_MPI, 12V_BOOM, 28V6_CH16_UNUSED, "}
+
     return 0;
 }
