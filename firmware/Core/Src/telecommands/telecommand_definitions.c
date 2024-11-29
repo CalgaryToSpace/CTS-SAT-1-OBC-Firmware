@@ -24,6 +24,7 @@
 #include "telecommands/eps_telecommands.h"
 #include "telecommands/stm32_internal_flash_telecommand_defs.h"
 #include "telecommands/comms_telecommand_defs.h"
+#include "telecommands/gps_telecommand_defs.h"
 
 
 #include "timekeeping/timekeeping.h"
@@ -1016,6 +1017,14 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
     },
     // ****************** END SECTION: comms_telecommand_defs ******************
+    // ****************** SECTION: gps_telecommand_defs ******************
+    {
+        .tcmd_name = "gps_send_log_cmd",
+        .tcmd_func = TCMDEXEC_gps_send_log_cmd,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    // ****************** END SECTION: gps_telecommand_defs ******************
 };
 
 // extern

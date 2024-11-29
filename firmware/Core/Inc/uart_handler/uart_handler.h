@@ -21,7 +21,15 @@ extern volatile uint8_t UART_mpi_rx_last_byte; // Last received byte from the MP
 extern volatile uint32_t UART_mpi_rx_last_byte_write_time_ms; // Last write time in milliseconds for MPI response
 extern volatile uint16_t UART_mpi_rx_buffer_write_idx; // Write index for MPI response buffer
 
+extern const uint16_t UART_gps_buffer_len; 
+extern volatile uint8_t UART_gps_buffer[];          
+extern volatile uint16_t UART_gps_buffer_write_idx; 
+extern volatile uint32_t UART_gps_last_write_time_ms; 
+extern volatile uint8_t UART_gps_buffer_last_rx_byte;  
+extern volatile uint8_t UART_gps_uart_interrupt_enabled; // Flag to enable or disable the UART GPS ISR
+
 void UART_init_uart_handlers(void);
+void GPS_set_uart_interrupt_state(uint8_t new_enabled) ;
 
 
 #endif // __INCLUDE_GUARD__UART_HANDLER_H__
