@@ -14,7 +14,7 @@
 
 extern UART_HandleTypeDef *UART_gps_port_handle;
 
-const uint32_t GPS_RX_TIMEOUT = 500;
+const uint32_t GPS_RX_TIMEOUT_MS = 800;
 
 /// @brief Sends a log command to the GPS, and receives the response.
 /// @param cmd_buf log command string to send to the GPS.
@@ -28,7 +28,7 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
 {
 	
 	// Reset the GPS UART interrupt variables
-	UART_gps_uart_interrupt_enabled = 0; // Lock writing to the UART_gps_buffer while we memset it
+	GPS_set_uart_interrupt_state(0); // Lock writing to the UART_gps_buffer while we memset it
 	for (uint16_t i = 0; i < UART_gps_buffer_len; i++)
 	{
 		// Clear the buffer
@@ -36,14 +36,14 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
 		UART_gps_buffer[i] = 0;
 	}
 	UART_gps_buffer_write_idx = 0;		 // Make it start writing from the start
-	UART_gps_uart_interrupt_enabled = 1; // We are now expecting a response
+	GPS_set_uart_interrupt_state(1); // We are now expecting a response
 
 	// TX TO GPS
 	const HAL_StatusTypeDef tx_status = HAL_UART_Transmit(
 		UART_gps_port_handle,
 		(uint8_t *)cmd_buf,
 		cmd_buf_len,
-		GPS_RX_TIMEOUT); // FIXME: update the timeout
+		GPS_RX_TIMEOUT_MS); // FIXME: update the timeout
 
 	if (tx_status != HAL_OK)
 	{
@@ -55,7 +55,9 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
 		return 1;
 	}
 
-	osDelay(50);
+	// FIXME: Update with the actual times, it currently works with 800 ms and 500ms does not work
+	// Gps takes time to respond, first section of log response is quick but the rest of the data response takes a while
+	
 
 	LOG_message(
 		LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
@@ -65,10 +67,10 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
 
 	// RX FROM GPS, into UART_gps_buffer
 	const uint32_t start_rx_time = HAL_GetTick();
-		while (1) {
+	while (1) {
 		if ((UART_gps_buffer_write_idx == 0)) {
 			// Check if we've timed out (before the first byte)
-			if ((HAL_GetTick() - start_rx_time) > GPS_RX_TIMEOUT) {
+			if ((HAL_GetTick() - start_rx_time) > GPS_RX_TIMEOUT_MS) {
 
 				LOG_message(
 					LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
@@ -87,7 +89,7 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
 			// is positive.
 			if (
 				(cur_time > UART_gps_last_write_time_ms) // Important seemingly-obvious safety check.
-				&& ((cur_time - UART_gps_last_write_time_ms) >  GPS_RX_TIMEOUT)
+				&& ((cur_time - UART_gps_last_write_time_ms) >  GPS_RX_TIMEOUT_MS)
 			) {
 				LOG_message(
 					LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
@@ -102,7 +104,7 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
 	}
 
 	// End Receiving
-	// UART_gps_uart_interrupt_enabled = 0; // We are no longer expecting a response
+	// GPS_set_uart_interrupt_state(0); // We are no longer expecting a response
 
 	// Logging the received response
 	// TODO: Verify if this works

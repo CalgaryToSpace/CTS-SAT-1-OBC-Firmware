@@ -104,7 +104,9 @@ uint8_t TCMDEXEC_gps_send_log_cmd(const char *args_str, TCMD_TelecommandChannel_
     // TODO : Determine if I need to perform extra error checks on arg_str ie log command format etc
 
     // Obtaining the length of the log command being sent
-    const uint16_t gps_cmd_len = strlen(args_str);
+    char cmd_buf[50];   //FIXME: Update to appropriate length to match all args in the future
+    snprintf(cmd_buf,50, "%s\n", args_str);
+    const uint16_t gps_cmd_len = strlen(cmd_buf);
 
     // Allocate space to receive incoming GPS response.
     const uint16_t GPS_rx_buffer_max_size = 512;
@@ -113,7 +115,7 @@ uint8_t TCMDEXEC_gps_send_log_cmd(const char *args_str, TCMD_TelecommandChannel_
     memset(GPS_rx_buffer, 0, GPS_rx_buffer_max_size); // Initialize all elements to 0
 
     // Send log command to GPS and receive response
-    const uint8_t gps_cmd_response = GPS_send_cmd_get_response(args_str, gps_cmd_len, GPS_rx_buffer, GPS_rx_buffer_len, GPS_rx_buffer_max_size);
+    const uint8_t gps_cmd_response = GPS_send_cmd_get_response(cmd_buf, gps_cmd_len, GPS_rx_buffer, GPS_rx_buffer_len, GPS_rx_buffer_max_size);
 
     // Handle the gps_cmd_response: Perform the error checks
     // TODO: Add GPS_validate_log_response function in here to validate response from the gps receiver

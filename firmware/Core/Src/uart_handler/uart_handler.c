@@ -7,7 +7,7 @@
 UART_HandleTypeDef *UART_telecommand_port_handle = &hlpuart1;
 UART_HandleTypeDef *UART_eps_port_handle = &huart5; // TODO: update this
 UART_HandleTypeDef *UART_mpi_port_handle = &huart1;
-UART_HandleTypeDef *UART_gps_port_handle = &huart3; // TODO: update this to the appropriate one
+UART_HandleTypeDef *UART_gps_port_handle = &huart3;
 
 // UART telecommand buffer
 const uint16_t UART_telecommand_buffer_len = 256; // extern
@@ -162,7 +162,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         }
     }
     else if (huart->Instance == UART_gps_port_handle->Instance) {
-
         if (UART_gps_uart_interrupt_enabled == 1) {
 
             // Add the byte to the buffer
