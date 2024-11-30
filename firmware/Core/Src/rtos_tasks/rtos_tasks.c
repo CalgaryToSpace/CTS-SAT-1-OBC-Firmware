@@ -229,14 +229,13 @@ void TASK_bootup(void *argument) {
 	TASK_HELP_start_of_task();
 
 	uint8_t ant_deploy_complete = 0;
-	//TODO: Unsure of how to properly terminate this task. Should it be a forever loop?
+	uint32_t delay_ms = 100;
 	while (1) {
-		//TODO: What should the delay be here? I suspect it should be smaller.
-		osDelay(2000);
+		//TODO: What should the delay be here? 
+		osDelay(delay_ms);
+		delay_ms = 60000;
 		if (!ant_deploy_complete) {
-			START_antenna_deploy();
-			//TODO: This should be changed to the commeted out code
-			if (/*START_antenna_deploy() == 0*/ 1) {
+			if (START_antenna_deploy() == 0) {
 				ant_deploy_complete = 1;	
 			}
 		}
