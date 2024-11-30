@@ -7,7 +7,7 @@
 **  Author		: STM32CubeMX
 **
 **  Abstract    : Linker script for STM32L4R5ZITx series
-**                2048Kbytes FLASH and 1088Kbytes RAM
+**                2048Kbytes FLASH and 640Kbytes RAM
 **
 **                Set heap size, stack size and stack location according
 **                to application requirements.
@@ -53,7 +53,7 @@
 ENTRY(Reset_Handler)
 
 /* Highest address of the user mode stack */
-_estack = ORIGIN(RAM) + LENGTH(RAM);    /* end of RAM */
+_estack = ORIGIN() + LENGTH();    /* end of RAM */
 /* Generate a link error if heap and stack don't fit into RAM */
 _Min_Heap_Size = 0x200;      /* required amount of heap  */
 _Min_Stack_Size = 0x400; /* required amount of stack */
@@ -61,12 +61,10 @@ _Min_Stack_Size = 0x400; /* required amount of stack */
 /* Specify the memory areas */
 MEMORY
 {
-RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 640K
+RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 192K
 RAM2 (xrw)      : ORIGIN = 0x10000000, LENGTH = 64K
 RAM3 (xrw)      : ORIGIN = 0x20040000, LENGTH = 384K
-FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 1024K
-GOLDEN_COPY (xrw) : ORIGIN = 0x8100000, LENGTH = 1024K /* Starts from FLASH origin + Flash length */ 
-
+FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 2048K
 }
 
 /* Define output sections */
@@ -161,7 +159,7 @@ SECTIONS
 
     . = ALIGN(8);
     _edata = .;        /* define a global symbol at data end */
-  } >RAM AT> FLASH
+  } > AT> FLASH
 
   
   /* Uninitialized data section */
@@ -178,7 +176,7 @@ SECTIONS
     . = ALIGN(4);
     _ebss = .;         /* define a global symbol at bss end */
     __bss_end__ = _ebss;
-  } >RAM
+  } >
 
   /* User_heap_stack section, used to check that there is enough RAM left */
   ._user_heap_stack :
@@ -189,7 +187,7 @@ SECTIONS
     . = . + _Min_Heap_Size;
     . = . + _Min_Stack_Size;
     . = ALIGN(8);
-  } >RAM
+  } >
 
   
 
@@ -201,7 +199,6 @@ SECTIONS
     libgcc.a ( * )
   }
 
-  .ARM.attributes 0 : { *(.ARM.attributes) }
 }
 
 
