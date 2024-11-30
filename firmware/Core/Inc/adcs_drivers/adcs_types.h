@@ -196,6 +196,14 @@ typedef enum ADCS_gps_axis_enum_t {
     ADCS_GPS_AXIS_Z = 2
 } ADCS_gps_axis_enum_t;
 
+
+typedef enum ADCS_file_type_enum_t {
+    ADCS_FILE_TYPE_TELEMETRY_LOG = 2,
+    ADCS_FILE_TYPE_JPG_IMAGE = 3,    
+    ADCS_FILE_TYPE_BMP_IMAGE = 4,    
+    ADCS_FILE_TYPE_INDEX = 15        
+} ADCS_file_type_enum_t;
+
 /* Structs */
 
 typedef struct ADCS_cmd_ack_struct_t {
@@ -516,5 +524,27 @@ typedef struct ADCS_measurements_struct_t {
     int32_t star3_orbit_y_micro;
     int32_t star3_orbit_z_micro;
 } ADCS_measurements_struct_t;
+
+typedef struct ADCS_file_info_telemetry_struct_t {       
+    // reordered to be slightly less memory-intensive
+    uint16_t file_crc16;      
+    uint8_t file_counter;
+    ADCS_file_type_enum_t file_type;
+    bool busy_updating:1; // 1-bit bool          
+    uint32_t file_size;      
+    uint32_t file_date_time; 
+} ADCS_file_info_telemetry_struct_t;
+
+typedef struct ADCS_download_block_ready_struct_t {
+    bool ready:1; // 1-bit bool   
+    bool parameter_error:1; // 1-bit bool
+    uint16_t block_crc16;   
+    uint16_t block_length;  
+} ADCS_download_block_ready_struct_t; 
+
+typedef struct ADCS_sd_card_format_erase_progress_struct_t {
+    bool format_busy:1; // 1-bit bool
+    bool erase_all_busy:1; // 1-bit bool
+} ADCS_sd_card_format_erase_progress_struct_t;
 
 #endif /* INC_ADCS_TYPES_H_ */
