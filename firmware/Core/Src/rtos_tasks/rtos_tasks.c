@@ -12,6 +12,7 @@
 #include "log/log.h"
 #include "config/configuration.h"
 #include "eps_drivers/eps_commands.h"
+#include "startup_sequence/antenna_deploy_startup.h"
 
 #include "cmsis_os.h"
 
@@ -220,5 +221,24 @@ void TASK_monitor_freertos_memory(void *argument) {
 			}
 		}
 
+	} /* End Task's Main Loop */
+}
+/// @brief Completes all tasks which are nesssary after the obc is powered on(or rebooted)
+/// @param argument 
+void TASK_bootup(void *argument) {
+	TASK_HELP_start_of_task();
+
+	uint8_t ant_deploy_complete = 0;
+	//TODO: Unsure of how to properly terminate this task. Should it be a forever loop?
+	while (1) {
+		//TODO: What should the delay be here? I suspect it should be smaller.
+		osDelay(2000);
+		if (!ant_deploy_complete) {
+			START_antenna_deploy();
+			//TODO: This should be changed to the commeted out code
+			if (/*START_antenna_deploy() == 0*/ 1) {
+				ant_deploy_complete = 1;	
+			}
+		}
 	} /* End Task's Main Loop */
 }
