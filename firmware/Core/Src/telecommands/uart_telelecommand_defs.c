@@ -4,6 +4,7 @@
 #include "uart_handler/uart_handler.h"
 #include "mpi/mpi_command_handling.h"
 #include "log/log.h"
+#include "debug_tools/debug_uart.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -292,7 +293,7 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
             }
         }
 
-        // For now log the response from peripheral //TODO: Change this after testing
+        // Log the response received from peripheral
         // Copy the buffer to the last received byte index & clear the UART buffer
         for (uint16_t i = 0; i < rx_buffer_len; i++) {
             rx_buffer[i] = UART_rx_buffer[i];
@@ -311,12 +312,13 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
         }
     }
 
-    // Send back complete response if received
+    // Send back complete response if any
     if(rx_buffer_len > 0) { 
 
         // Convert rx_buffer to a string for logging
         // 2 hex chars, 1 space, +1 for null terminator
-        char rx_buffer_str[rx_buffer_len*3+1];                        
+        size_t rx_buffer_str_len = rx_buffer_len*3+1;
+        char rx_buffer_str[rx_buffer_str_len];
 
         for(uint16_t i = 0; i < rx_buffer_len; i++) {
             // Format each byte as hex with a trailing space
@@ -326,14 +328,41 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
         // Null terminator at the end of the string
         rx_buffer_str[rx_buffer_len*3] = '\0';
 
-        // Log received response in Hex formatting
+        // Format log header and log response in chunks
+        size_t log_buffer_offset = 0;
+        // @note If the max log message length can be added to the header file it can be referenced here
+        size_t log_message_max_length = 256-1; // -1 for null terminator
+
+        // Log header at the start of the log message
         LOG_message(
             LOG_source, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Received %u byte(s) from %s: %s",
+            "Received %u byte(s) from %s. Response in Hex:",
             rx_buffer_len,
-            arg_uart_port_name,
-            rx_buffer_str
-        );        
+            arg_uart_port_name
+        ); 
+
+        while(log_buffer_offset < rx_buffer_str_len-1) {
+
+            // Calculate the remaining space in the buffer for the log message
+            size_t log_buffer_remaining_space = rx_buffer_str_len - 1 - log_buffer_offset;
+            // The length of the log chunk is the smaller of the remaining space or the maximum log message length
+            size_t chunk_len = (rx_buffer_str_len-1 - log_buffer_offset) < log_message_max_length ? log_buffer_remaining_space : log_message_max_length;
+            
+            // Extract the response chunk to log
+            char log_message[chunk_len+1];
+            strncpy(log_message, rx_buffer_str + log_buffer_offset, chunk_len);
+            log_message[chunk_len] = '\0';
+
+            // Log the log message chunk
+            LOG_message(
+                LOG_source, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                "%s",
+                log_message
+            );
+
+            // Move the offset forward by the chunk size
+            log_buffer_offset += chunk_len;
+        }  
     }
 
     return 0;   // Success
