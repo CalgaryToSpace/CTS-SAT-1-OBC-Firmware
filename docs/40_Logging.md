@@ -100,7 +100,7 @@ The system time is stored in "unix timestamp format" (seconds since 1970-01-01).
 
 In the log printouts, each log is shown in the format of the following example:
 ```
-1723331067154_T_0000018056 [TELECOMMAND:NORMAL]: Hello, world!
+1723331067154+0000018056_T [TELECOMMAND:NORMAL]: Hello, world!
 ```
 
 The timestamp on logs is stored in "sync time + source + offset" format. In the example above, the fields are:

@@ -9,7 +9,7 @@
 #include <stdio.h>
 
 void DEBUG_uart_print_str(const char *str) {
-    HAL_UART_Transmit(&hlpuart1, (uint8_t *)str, strlen(str), 100);
+    HAL_UART_Transmit(&hlpuart1, (uint8_t *)str, strlen(str), 300);
 }
 
 void DEBUG_uart_print_uint32(uint32_t value) {
@@ -32,7 +32,7 @@ void DEBUG_uart_print_uint64(uint64_t value) {
     DEBUG_uart_print_str(buffer);
 }
 
-void DEBUG_uart_print_array_hex(uint8_t *array, uint32_t array_len) {
+void DEBUG_uart_print_array_hex(const uint8_t *array, uint32_t array_len) {
     for (uint32_t i = 0; i < array_len; i++) {
         char buffer[4];
         snprintf(buffer, 4, "%02X ", array[i]);

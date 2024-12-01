@@ -10,6 +10,8 @@
 #include "transforms/arrays.h"
 #include "stm32/stm32_reboot_reason.h"
 #include "log/log.h"
+#include "config/configuration.h"
+#include "eps_drivers/eps_commands.h"
 
 #include "cmsis_os.h"
 
@@ -17,7 +19,8 @@
 #include <stdio.h>
 #include <time.h>
 
-volatile uint8_t TASK_heartbeat_is_on = 1;
+uint8_t TASK_heartbeat_is_on = 1;
+uint32_t TASK_heartbeat_period_ms = 990;
 
 char TASK_heartbeat_timing_str[128] = {0};
 
@@ -36,7 +39,15 @@ void TASK_DEBUG_print_heartbeat(void *argument) {
 		"Reset reason: %s.", STM32_reset_cause_name
 	);
 
-	osDelay(100);
+	// Blink the LED a few times to show that the boot just happened.
+	for (uint8_t i = 0; i < 6; i++) {
+		HAL_GPIO_TogglePin(PIN_LED_DEVKIT_LD2_GPIO_Port, PIN_LED_DEVKIT_LD2_Pin);
+		HAL_GPIO_TogglePin(PIN_LED_GP2_OUT_GPIO_Port, PIN_LED_GP2_OUT_Pin);
+
+		HAL_Delay(100 + (i*25));
+	}
+
+	osDelay(TASK_heartbeat_period_ms);
 
     uint64_t unix_time_ms = 0;
     time_t seconds = 0;
@@ -44,7 +55,7 @@ void TASK_DEBUG_print_heartbeat(void *argument) {
     struct tm *time_info;
 
 	while (1) {
-        if (TASK_heartbeat_is_on) {
+        if ((TASK_heartbeat_period_ms > 0) && TASK_heartbeat_is_on) {
             unix_time_ms = TIM_get_current_unix_epoch_time_ms();
             seconds = (time_t)(unix_time_ms/ 1000U);
             ms = unix_time_ms - 1000U * seconds;
@@ -60,7 +71,9 @@ void TASK_DEBUG_print_heartbeat(void *argument) {
             DEBUG_uart_print_str(TASK_heartbeat_timing_str);
 		}
 		HAL_GPIO_TogglePin(PIN_LED_DEVKIT_LD2_GPIO_Port, PIN_LED_DEVKIT_LD2_Pin);
-		osDelay(990);
+		HAL_GPIO_TogglePin(PIN_LED_GP2_OUT_GPIO_Port, PIN_LED_GP2_OUT_Pin);
+
+		osDelay(TASK_heartbeat_period_ms);
 	}
 }
 
@@ -160,6 +173,52 @@ void TASK_execute_telecommands(void *argument) {
 
 		// Note: No yield here; execute all pending telecommands back-to-back.
 		// TODO: should probably consider a yield here.
+
+	} /* End Task's Main Loop */
+}
+
+void TASK_monitor_freertos_memory(void *argument) {
+	TASK_HELP_start_of_task();
+
+	osDelay(12000); // Delay for 12 seconds to allow other tasks to start up.
+
+	while (1) {
+		// Place the main delay at the top to avoid a "continue" statement skipping it.
+		osDelay(5000);
+
+		for (uint16_t task_num = 0; task_num < FREERTOS_task_handles_array_size; task_num++) {
+			if (FREERTOS_task_handles_array[task_num].task_handle == NULL) {
+				continue; // Safety check. Should never happen.
+			}
+	
+			// Dereferencing the task_handle pointer
+			const osThreadId_t task_handle = *(FREERTOS_task_handles_array[task_num].task_handle);
+
+			// Get the highstack watermark
+			const uint32_t task_min_bytes_remaining = uxTaskGetStackHighWaterMark(task_handle) * 4;
+
+			if (task_min_bytes_remaining < FREERTOS_task_handles_array[task_num].lowest_stack_bytes_remaining) {
+				// If this is the new "lowest free space", update that value.
+				FREERTOS_task_handles_array[task_num].lowest_stack_bytes_remaining = task_min_bytes_remaining;
+
+				// Determine the threshold of the task
+				const uint32_t task_threshold_bytes = (
+					FREERTOS_task_handles_array[task_num].task_attribute->stack_size
+					* CONFIG_freertos_min_remaining_stack_percent
+					/ 100
+				);
+				
+				// If this new "lowest free space" is below the threshold, warn the user.
+				if (task_min_bytes_remaining < task_threshold_bytes) {
+					LOG_message(
+						LOG_SYSTEM_OBC, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+						"Warning: Task '%s' approached a stack overflow. Worst remaining stack size was: %lu bytes.",
+						pcTaskGetName(task_handle),
+						task_min_bytes_remaining
+					);
+				}
+			}
+		}
 
 	} /* End Task's Main Loop */
 }

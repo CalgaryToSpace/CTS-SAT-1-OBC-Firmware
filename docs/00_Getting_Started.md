@@ -29,7 +29,7 @@ Follow through this guide, and follow through the rest of the numbered guides in
 
 
 ## Testing and Debugging the Firmware
-1. [Install and use the "SerialTest" serial terminal](https://github.com/wh201906/SerialTest/releases/) for sending commands, initially. The [ground support software](/cts1_ground_support/README.md) is also solid after your first contribution.
+1. [Install and use the "SerialTest" serial terminal](https://github.com/wh201906/SerialTest/releases/) for sending commands, initially. The [ground support software](https://github.com/CalgaryToSpace/CTS-SAT-1-Ground-Support) is also solid after your first contribution.
     * Connect to the STM32 debug serial port at baud=115200.
 2. Flash the board (using the "Flash STM32" button from the setup above).
 3. Open the SerialTest terminal, and connect to the STM32 debug serial port at baud=115200.
@@ -40,14 +40,3 @@ Follow through this guide, and follow through the rest of the numbered guides in
 * Use `LOG_message()` (or `DEBUG_UART_print_str()`, for temporary logs) to print out intermediate values in the code.
 * Use Breakpoints in VS Code to pause execution and explore the stack. Breakpoint are obeyed when you use the "Debug STM32" button to flash the chip.
     * ⚠️ Beware that breakpoints with Embedded Systems can be finicky/cause unpredictable behavior, as they can interfere with interrupts.
-
-## Updating the IOC File/Regenerating Boilerplate
-
-Very few people will need to do this.
-
-The IOC file must be updated using CubeMX instead of STM32CubeIDE now. Feel free to test IOC
-file changes, but do not commit IOC file changes nor auto-generated code changes. Instead, once 
-you've found the ideal configuration, request the changes to a Team Lead (who will make the change 
-directly in the `main` branch).
-
-Then, rebase off of the `main` branch.

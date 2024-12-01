@@ -1,5 +1,6 @@
 
 #include "telecommands/telecommand_definitions.h"
+#include "telecommands/telecommand_adcs.h"
 #include "telecommands/telecommand_args_helpers.h"
 #include "transforms/arrays.h"
 #include "timekeeping/timekeeping.h"
@@ -14,15 +15,20 @@
 #include "telecommands/timekeeping_telecommand_defs.h"
 #include "telecommands/antenna_telecommand_defs.h"
 #include "telecommands/i2c_telecommand_defs.h"
+#include "telecommands/temperature_sensor_telecommand_defs.h"
 #include "telecommands/config_telecommand_defs.h"
 #include "telecommands/testing_telecommand_defs.h"
 #include "telecommands/telecommand_executor.h"
 #include "telecommands/agenda_telecommands_defs.h"
 #include "telecommands/mpi_telecommand_defs.h"
+#include "telecommands/eps_telecommands.h"
+#include "telecommands/stm32_internal_flash_telecommand_defs.h"
+#include "telecommands/comms_telecommand_defs.h"
+
+
 #include "timekeeping/timekeeping.h"
 #include "littlefs/littlefs_helper.h"
 #include "stm32/stm32_reboot_reason.h"
-
 
 #include <stdio.h>
 #include <stdint.h>
@@ -74,6 +80,18 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "correct_system_time",
         .tcmd_func = TCMDEXEC_correct_system_time,
         .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "set_eps_time_based_on_obc_time",
+        .tcmd_func = TCMDEXEC_set_eps_time_based_on_obc_time,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "set_obc_time_based_on_eps_time",
+        .tcmd_func = TCMDEXEC_set_obc_time_based_on_eps_time,
+        .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
@@ -194,6 +212,24 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 3,
         .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
     },
+    {
+        .tcmd_name = "flash_reset",
+        .tcmd_func = TCMDEXEC_flash_reset,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_IN_PROGRESS,
+    },
+    {
+        .tcmd_name = "flash_read_status_register",
+        .tcmd_func = TCMDEXEC_flash_read_status_register,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "flash_write_enable",
+        .tcmd_func = TCMDEXEC_flash_write_enable,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
     // ****************** END SECTION: flash_telecommand_defs ******************
 
     // ****************** SECTION: lfs_telecommand_defs ******************
@@ -246,6 +282,393 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     // ****************** END SECTION: lfs_telecommand_defs ******************
+    
+    // ****************** SECTION: telecommand_adcs ******************
+    {
+        .tcmd_name = "adcs_ack",
+        .tcmd_func = TCMDEXEC_adcs_ack,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_set_wheel_speed",
+        .tcmd_func = TCMDEXEC_adcs_set_wheel_speed,
+        .number_of_args = 3,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_reset",
+        .tcmd_func = TCMDEXEC_adcs_reset,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_identification",
+        .tcmd_func = TCMDEXEC_adcs_identification,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_program_status",
+        .tcmd_func = TCMDEXEC_adcs_program_status,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_communication_status",
+        .tcmd_func = TCMDEXEC_adcs_communication_status,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_deploy_magnetometer",
+        .tcmd_func = TCMDEXEC_adcs_deploy_magnetometer,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_set_run_mode",
+        .tcmd_func = TCMDEXEC_adcs_set_run_mode,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_clear_errors",
+        .tcmd_func = TCMDEXEC_adcs_clear_errors,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_attitude_control_mode",
+        .tcmd_func = TCMDEXEC_adcs_attitude_control_mode,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_attitude_estimation_mode",
+        .tcmd_func = TCMDEXEC_adcs_attitude_estimation_mode,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_run_once",
+        .tcmd_func = TCMDEXEC_adcs_run_once,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_set_magnetometer_mode",
+        .tcmd_func = TCMDEXEC_adcs_set_magnetometer_mode,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_set_magnetorquer_output",
+        .tcmd_func = TCMDEXEC_adcs_set_magnetorquer_output,
+        .number_of_args = 3,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_save_config",
+        .tcmd_func = TCMDEXEC_adcs_save_config,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_estimate_angular_rates",
+        .tcmd_func = TCMDEXEC_adcs_estimate_angular_rates,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_get_llh_position",
+        .tcmd_func = TCMDEXEC_adcs_get_llh_position,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_get_power_control",
+        .tcmd_func = TCMDEXEC_adcs_get_power_control,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_set_power_control",
+        .tcmd_func = TCMDEXEC_adcs_set_power_control,
+        .number_of_args = 10,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_set_magnetometer_config",
+        .tcmd_func = TCMDEXEC_adcs_set_magnetometer_config,
+        .number_of_args = 15,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_bootloader_clear_errors",
+        .tcmd_func = TCMDEXEC_adcs_bootloader_clear_errors,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_set_unix_time_save_mode",
+        .tcmd_func = TCMDEXEC_adcs_set_unix_time_save_mode,
+        .number_of_args = 4,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_get_unix_time_save_mode",
+        .tcmd_func = TCMDEXEC_adcs_get_unix_time_save_mode,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_set_sgp4_orbit_params",
+        .tcmd_func = TCMDEXEC_adcs_set_sgp4_orbit_params,
+        .number_of_args = 8,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_get_sgp4_orbit_params",
+        .tcmd_func = TCMDEXEC_adcs_get_sgp4_orbit_params,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_save_orbit_params",
+        .tcmd_func = TCMDEXEC_adcs_save_orbit_params,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_rate_sensor_rates",
+        .tcmd_func = TCMDEXEC_adcs_rate_sensor_rates,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_get_wheel_speed",
+        .tcmd_func = TCMDEXEC_adcs_get_wheel_speed,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_get_magnetorquer_command",
+        .tcmd_func = TCMDEXEC_adcs_get_magnetorquer_command,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_get_raw_magnetometer_values",
+        .tcmd_func = TCMDEXEC_adcs_get_raw_magnetometer_values,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_estimate_fine_angular_rates",
+        .tcmd_func = TCMDEXEC_adcs_estimate_fine_angular_rates,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_get_magnetometer_config",
+        .tcmd_func = TCMDEXEC_adcs_get_magnetometer_config,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_get_commanded_attitude_angles",
+        .tcmd_func = TCMDEXEC_adcs_get_commanded_attitude_angles,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_set_commanded_attitude_angles",
+        .tcmd_func = TCMDEXEC_adcs_set_commanded_attitude_angles,
+        .number_of_args = 3,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_set_estimation_params",
+        .tcmd_func = TCMDEXEC_adcs_set_estimation_params,
+        .number_of_args = 18,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_get_estimation_params",
+        .tcmd_func = TCMDEXEC_adcs_get_estimation_params,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_set_augmented_sgp4_params",
+        .tcmd_func = TCMDEXEC_adcs_set_augmented_sgp4_params,
+        .number_of_args = 17,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_get_augmented_sgp4_params",
+        .tcmd_func = TCMDEXEC_adcs_get_augmented_sgp4_params,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_set_tracking_controller_target_reference",
+        .tcmd_func = TCMDEXEC_adcs_set_tracking_controller_target_reference,
+        .number_of_args = 3,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_get_tracking_controller_target_reference",
+        .tcmd_func = TCMDEXEC_adcs_get_tracking_controller_target_reference,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_set_rate_gyro_config",
+        .tcmd_func = TCMDEXEC_adcs_set_rate_gyro_config,
+        .number_of_args = 7,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_get_rate_gyro_config",
+        .tcmd_func = TCMDEXEC_adcs_get_rate_gyro_config,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_estimated_attitude_angles",
+        .tcmd_func = TCMDEXEC_adcs_estimated_attitude_angles,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_magnetic_field_vector",
+        .tcmd_func = TCMDEXEC_adcs_magnetic_field_vector,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_fine_sun_vector",
+        .tcmd_func = TCMDEXEC_adcs_fine_sun_vector,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_nadir_vector",
+        .tcmd_func = TCMDEXEC_adcs_nadir_vector,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_commanded_wheel_speed",
+        .tcmd_func = TCMDEXEC_adcs_commanded_wheel_speed,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_igrf_magnetic_field_vector",
+        .tcmd_func = TCMDEXEC_adcs_igrf_magnetic_field_vector,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_quaternion_error_vector",
+        .tcmd_func = TCMDEXEC_adcs_quaternion_error_vector,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_estimated_gyro_bias",
+        .tcmd_func = TCMDEXEC_adcs_estimated_gyro_bias,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_estimation_innovation_vector",
+        .tcmd_func = TCMDEXEC_adcs_estimation_innovation_vector,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_raw_cam1_sensor",
+        .tcmd_func = TCMDEXEC_adcs_raw_cam1_sensor,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_raw_cam2_sensor",
+        .tcmd_func = TCMDEXEC_adcs_raw_cam2_sensor,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_raw_coarse_sun_sensor_1_to_6",
+        .tcmd_func = TCMDEXEC_adcs_raw_coarse_sun_sensor_1_to_6,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_raw_coarse_sun_sensor_7_to_10",
+        .tcmd_func = TCMDEXEC_adcs_raw_coarse_sun_sensor_7_to_10,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_cubecontrol_current",
+        .tcmd_func = TCMDEXEC_adcs_cubecontrol_current,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_raw_gps_status",
+        .tcmd_func = TCMDEXEC_adcs_raw_gps_status,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_raw_gps_time",
+        .tcmd_func = TCMDEXEC_adcs_raw_gps_time,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_raw_gps_x",
+        .tcmd_func = TCMDEXEC_adcs_raw_gps_x,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_raw_gps_y",
+        .tcmd_func = TCMDEXEC_adcs_raw_gps_y,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_raw_gps_z",
+        .tcmd_func = TCMDEXEC_adcs_raw_gps_z,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_measurements",
+        .tcmd_func = TCMDEXEC_adcs_measurements,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_generic_command",
+        .tcmd_func = TCMDEXEC_adcs_generic_command,
+        .number_of_args = 2, 
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_generic_telemetry_request",
+        .tcmd_func = TCMDEXEC_adcs_generic_telemetry_request,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    // ****************** END SECTION: telecommand_adcs ******************
 
     // ****************** SECTION: log_telecommand_defs ******************
     {
@@ -309,11 +732,11 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
 
-   // ****************** END SECTION: log_telecommand_defs ******************
+    // ****************** END SECTION: log_telecommand_defs ******************
 
-   // ****************** SECTION: freertos_telecommand_defs ******************
+    // ****************** SECTION: freertos_telecommand_defs ******************
 
-   {
+    {
         .tcmd_name = "freetos_list_tasks_jsonl",
         .tcmd_func = TCMDEXEC_freetos_list_tasks_jsonl,
         .number_of_args = 0,
@@ -329,9 +752,117 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
 
     // ****************** END SECTION: freertos_telecommand_defs ******************
 
+
+    /* ============================ EPS-Related (eps_telecommands.c/h) ================= */
+    {
+        .tcmd_name = "eps_watchdog",
+        .tcmd_func = TCMDEXEC_eps_watchdog,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_system_reset",
+        .tcmd_func = TCMDEXEC_eps_system_reset,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_no_operation",
+        .tcmd_func = TCMDEXEC_eps_no_operation,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_cancel_operation",
+        .tcmd_func = TCMDEXEC_eps_cancel_operation,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_switch_to_mode",
+        .tcmd_func = TCMDEXEC_eps_switch_to_mode,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_set_channel_enabled",
+        .tcmd_func = TCMDEXEC_eps_set_channel_enabled,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_get_system_status_json",
+        .tcmd_func = TCMDEXEC_eps_get_system_status_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_get_pdu_overcurrent_fault_state_json",
+        .tcmd_func = TCMDEXEC_eps_get_pdu_overcurrent_fault_state_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_get_pbu_abf_placed_state_json",
+        .tcmd_func = TCMDEXEC_eps_get_pbu_abf_placed_state_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+
+    {
+        .tcmd_name = "eps_get_pdu_housekeeping_data_eng_json",
+        .tcmd_func = TCMDEXEC_eps_get_pdu_housekeeping_data_eng_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_get_pdu_housekeeping_data_run_avg_json",
+        .tcmd_func = TCMDEXEC_eps_get_pdu_housekeeping_data_run_avg_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_get_pbu_housekeeping_data_eng_json",
+        .tcmd_func = TCMDEXEC_eps_get_pbu_housekeeping_data_eng_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_get_pbu_housekeeping_data_run_avg_json",
+        .tcmd_func = TCMDEXEC_eps_get_pbu_housekeeping_data_run_avg_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_get_pcu_housekeeping_data_eng_json",
+        .tcmd_func = TCMDEXEC_eps_get_pcu_housekeeping_data_eng_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_get_pcu_housekeeping_data_run_avg_json",
+        .tcmd_func = TCMDEXEC_eps_get_pcu_housekeeping_data_run_avg_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_get_piu_housekeeping_data_eng_json",
+        .tcmd_func = TCMDEXEC_eps_get_piu_housekeeping_data_eng_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "eps_get_piu_housekeeping_data_run_avg_json",
+        .tcmd_func = TCMDEXEC_eps_get_piu_housekeeping_data_run_avg_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    /* *************************** END EPS Section ************************************** */
+    
+    
     // ****************** SECTION: agenda_telecommand_defs ******************
 
-   {
+    {
         .tcmd_name = "agenda_delete_all",
         .tcmd_func = TCMDEXEC_agenda_delete_all,
         .number_of_args = 0,
@@ -344,7 +875,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
-    
+
     {
         .tcmd_name = "agenda_fetch_jsonl",
         .tcmd_func = TCMDEXEC_agenda_fetch_jsonl,
@@ -368,29 +899,123 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION
     },
+    {
+        .tcmd_name = "mpi_demo_tx_to_mpi",
+        .tcmd_func = TCMDEXEC_mpi_demo_tx_to_mpi,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY, // Not useful in space.
+    },
     // ****************** END: MPI_telecommand_definitions ********************
+    // ****************** START SECTION: stm32_internal_flash_telecommand_defs ******************
+
+    {
+        .tcmd_name = "stm32_internal_flash_read",
+        .tcmd_func = TCMDEXEC_stm32_internal_flash_read,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
+    },
+
+    {
+        .tcmd_name = "stm32_internal_flash_write",
+        .tcmd_func = TCMDEXEC_stm32_internal_flash_write,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
+    },
+
+    {
+        .tcmd_name = "stm32_internal_flash_erase",
+        .tcmd_func = TCMDEXEC_stm32_internal_flash_erase,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
+    },
+
+    // ****************** END SECTION: stm32_internal_flash_telecommand_defs ******************
 
     // ****************** SECTION: antenna_telecommand_defs ******************
     {
-        .tcmd_name = "ant_arm_antenna_system",
-        .tcmd_func = TCMDEXEC_ant_arm_antenna_system,
-        .number_of_args = 0,
+        .tcmd_name = "ant_reset",
+        .tcmd_func = TCMDEXEC_ant_reset,
+        .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
-        .tcmd_name = "ant_deploy_antenna1",
-        .tcmd_func = TCMDEXEC_ant_deploy_antenna1,
+        .tcmd_name = "ant_arm_antenna_system",
+        .tcmd_func = TCMDEXEC_ant_arm_antenna_system,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "ant_disarm_antenna_system",
+        .tcmd_func = TCMDEXEC_ant_disarm_antenna_system,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "ant_deploy_antenna",
+        .tcmd_func = TCMDEXEC_ant_deploy_antenna,
+        .number_of_args = 3,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "ant_start_automated_antenna_deployment",
+        .tcmd_func = TCMDEXEC_ant_start_automated_antenna_deployment,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "ant_deploy_antenna_with_override",
+        .tcmd_func = TCMDEXEC_ant_deploy_antenna_with_override,
+        .number_of_args = 3,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "ant_cancel_deployment_system_activation",
+        .tcmd_func = TCMDEXEC_ant_cancel_deployment_system_activation,
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
         .tcmd_name = "ant_measure_temp",
         .tcmd_func = TCMDEXEC_ant_measure_temp,
-        .number_of_args = 0,
+        .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    
+    },
+    {
+        .tcmd_name = "ant_report_deployment_status",
+        .tcmd_func = TCMDEXEC_ant_report_deployment_status,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "ant_report_antenna_deployment_activation_count",
+        .tcmd_func = TCMDEXEC_ant_report_antenna_deployment_activation_count,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "ant_report_antenna_deployment_activation_time",
+        .tcmd_func = TCMDEXEC_ant_report_antenna_deployment_activation_time,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     // ****************** END SECTION: antenna_telecommand_defs ******************
+
+    // ****************** START SECTION: obc_temperature_sensor_telecommand_defs ******************
+    {
+        .tcmd_name = "obc_read_temperature",
+        .tcmd_func = TCMDEXEC_obc_read_temperature,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    // ****************** END SECTION: obc_temperature_sensor_telecommand_defs ******************
+    // ****************** START SECTION: comms_telecommand_defs ******************
+    {
+        .tcmd_name = "comms_dipole_switch_set_state",
+        .tcmd_func = TCMDEXEC_comms_dipole_switch_set_state,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
+    },
+    // ****************** END SECTION: comms_telecommand_defs ******************
 };
 
 // extern
@@ -453,7 +1078,7 @@ uint8_t TCMDEXEC_core_system_stats(const char *args_str, TCMD_TelecommandChannel
         time_of_last_tcmd_sent_ms_string, // time_of_last_tcmd_sent_ms
         TCMD_total_tcmd_queued_count, // total_tcmd_count
         LFS_is_lfs_mounted, // is_lfs_mounted
-        TIM_synchronization_source_letter(TIM_last_synchronization_source), // last_time_sync_source
+        TIME_sync_source_enum_to_letter_char(TIM_last_synchronization_source), // last_time_sync_source
         STM32_reset_cause_name // reboot_reason
     ); 
 
@@ -493,8 +1118,8 @@ uint8_t TCMDEXEC_available_telecommands(const char *args_str, TCMD_TelecommandCh
 
 uint8_t TCMDEXEC_reboot(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-    DEBUG_uart_print_str("Rebooting by telecommand request...\n"); 
-    
+    DEBUG_uart_print_str("Rebooting by telecommand request...\n");
+
     // Delay to flush UART buffer
     HAL_Delay(100);
 
