@@ -198,8 +198,8 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
         LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
         "Executing telecommand from agenda slot %d, sent at tssent=%s, scheduled for tsexec=%s.",
         tcmd_agenda_slot_num,
-        tsexec_str,
-        tssent_str
+        tssent_str,
+        tsexec_str
     );
 
     // Execute the telecommand.
