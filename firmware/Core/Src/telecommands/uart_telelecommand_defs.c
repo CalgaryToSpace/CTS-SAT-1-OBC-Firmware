@@ -330,8 +330,7 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
 
         // Format log header and log response in chunks
         size_t log_buffer_offset = 0;
-        // @note If the max log message length can be added to the header file it can be referenced here
-        size_t log_message_max_length = 256-1; // -1 for null terminator
+        size_t log_message_max_length = LOG_FORMATTED_MESSAGE_MAX_LENGTH-1; // -1 for null terminator
 
         // Log header at the start of the log message
         LOG_message(
