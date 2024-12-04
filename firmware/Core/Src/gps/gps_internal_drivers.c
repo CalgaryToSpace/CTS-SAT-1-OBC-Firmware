@@ -13,7 +13,8 @@
 
 extern UART_HandleTypeDef *UART_gps_port_handle;
 
-const uint32_t GPS_RX_TIMEOUT_MS = 800;
+const uint32_t GPS_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS = 800;
+const uint32_t GPS_RX_TIMEOUT_BETWEEN_BYTES_MS = 800;
 
 /// @brief Sends a log command to the GPS, and receives the response.
 /// @param cmd_buf log command string to send to the GPS.
@@ -34,15 +35,14 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
 		// Can't use memset because UART_gps_buffer is volatile
 		UART_gps_buffer[i] = 0;
 	}
-	UART_gps_buffer_write_idx = 0;		 // Make it start writing from the start
-	GPS_set_uart_interrupt_state(1); // We are now expecting a response
+	UART_gps_buffer_write_idx = 0;		// Make it start writing from the start
 
 	// TX TO GPS
 	const HAL_StatusTypeDef tx_status = HAL_UART_Transmit(
 		UART_gps_port_handle,
 		(uint8_t *)cmd_buf,
 		cmd_buf_len,
-		GPS_RX_TIMEOUT_MS); // FIXME: update the timeout
+		100);
 
 	if (tx_status != HAL_OK)
 	{
@@ -54,6 +54,8 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
 		return 1;
 	}
 
+	GPS_set_uart_interrupt_state(1);	// We are now expecting a response
+
 	// FIXME: Update the timeouts with the actual times, it currently works with 800 ms and 500ms does not work
 	// GPS takes time to respond, first section of log response ie <OK\n [COM1] is quick but the rest of the data response takes a while
 	
@@ -63,12 +65,15 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
 	while (1) {
 		if ((UART_gps_buffer_write_idx == 0)) {
 			// Check if we've timed out (before the first byte)
-			if ((HAL_GetTick() - start_rx_time) > GPS_RX_TIMEOUT_MS) {
+			if ((HAL_GetTick() - start_rx_time) > GPS_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS) {
 
 				LOG_message(
 					LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
 					"GPS ERROR: Timeout before receiving any data"
 				);
+
+				// Disable the UART gps channel
+				GPS_set_uart_interrupt_state(0);
 			
 				// fatal error; return
 				return 2;
@@ -82,7 +87,7 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
 			// is positive.
 			if (
 				(cur_time > UART_gps_last_write_time_ms) // Important seemingly-obvious safety check.
-				&& ((cur_time - UART_gps_last_write_time_ms) >  GPS_RX_TIMEOUT_MS)
+				&& ((cur_time - UART_gps_last_write_time_ms) > GPS_RX_TIMEOUT_BETWEEN_BYTES_MS)
 			) {
 				LOG_message(
 					LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
@@ -109,25 +114,16 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
 	);
 
 	// Check that we've received what we're expecting
-	// TODO: if the following cases happen ever during testing, consider allowing them and treating them as WARNINGs
-	if (UART_gps_buffer_write_idx == 0)
-	{
-		LOG_message(
-			LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-			"GPS ERROR: UART_gps_buffer_write_idx == 0"
-		);
-
-		return 3;
-	}
-	else if (UART_gps_buffer_write_idx > rx_buf_max_size)
+	// TODO: If the following cases happen ever during testing, consider allowing them and treating them as WARNINGs
+	if (UART_gps_buffer_write_idx > rx_buf_max_size)
 	{
 		LOG_message(
 			LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
 			"GPS ERROR: UART_gps_buffer overflow");
-		return 4;
+		return 3;
 	}
 
-	// Copying the log response from the UART gps buffer to the rx_buf[] and clearing the buffer
+	// Copy the log response from the UART gps buffer to the rx_buf[] and clear the buffer
     for (uint16_t i = 0; i < rx_buf_len; i++) {
 		rx_buf[i] = UART_gps_buffer[i];
 	}

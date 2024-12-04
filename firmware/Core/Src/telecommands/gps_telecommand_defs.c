@@ -58,7 +58,7 @@ uint8_t TCMDEXEC_gps_send_log_cmd(const char *args_str, TCMD_TelecommandChannel_
 
     }
 
-    snprintf(response_output_buf, response_output_buf_len, "GPS Command: %s successfully transmitted", args_str);
+    snprintf(response_output_buf, response_output_buf_len, "GPS Command: '%s' successfully transmitted", args_str);
 
     return 0;
 }
