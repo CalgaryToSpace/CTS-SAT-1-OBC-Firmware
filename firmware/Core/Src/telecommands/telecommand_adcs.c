@@ -1666,3 +1666,99 @@ uint8_t TCMDEXEC_adcs_measurements(const char *args_str, TCMD_TelecommandChannel
 
     return status;
 }
+
+
+/// @brief Telecommand: Get the list of downloadable files from the ADCS SD card
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_get_sd_download_list(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                   char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    uint8_t status;
+
+    // Reset the file list read pointer
+    status = ADCS_reset_file_list_read_pointer();
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS reset file list read pointer failed (err %d)", status);
+        return 1;
+    }
+
+    uint16_t filelist_length = 0;
+    ADCS_file_info_telemetry_struct_t file_info[1024];
+
+    for (uint16_t i = 0; i < 58; i++) {
+
+        // Get the information for each file, polling until data is ready
+        do {
+            status = ADCS_get_file_info_telemetry(&file_info[i]);
+            if (status != 0) {
+                snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS get file info telemetry failed for index %d (err %d)", i, status);
+                return 1;
+            }
+        } while (file_info[i].busy_updating != false);
+
+        // if everything is zero, we have reached the end of the file list
+        if (file_info[i].file_crc16 == 0 && file_info[i].file_size == 0) {
+            filelist_length = i;
+            break;
+        }
+
+        // otherwise, advance the file list read pointer and do it all again
+        status = ADCS_advance_file_list_read_pointer();
+        if (status != 0) {
+            snprintf(response_output_buf, response_output_buf_len,
+                "ADCS advance file list read pointer failed for index %d (err %d)", i, status);
+            return 1;
+        }
+        
+    }
+
+    // pack to JSON string and output
+    const uint8_t result_json = ADCS_sd_download_list_TO_json(&file_info[0], filelist_length, response_output_buf, response_output_buf_len);
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
+    return 0;
+
+}
+
+/* TODO: not finished yet
+/// @brief Telecommand: Download a specific file from the ADCS SD card
+/// @param args_str 
+///     - Arg 0: The index of the file to download
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                   char *response_output_buf, uint16_t response_output_buf_len) {
+
+    uint8_t status;
+
+    // Load a download block from the ADCS
+    status = ADCS_load_file_download_block(filetype, counter, offset, block_length);
+
+    // Wait until the download block is ready
+    ADCS_download_block_ready_struct_t ready_struct;
+    do {
+        status = ADCS_get_download_block_ready_telemetry(&ready_struct);
+    } while (ready_struct.ready != true);
+    
+    // Initiate download burst, ignoring the hole map
+    status = ADCS_initiate_download_burst(message_length, true);
+
+     
+    /// If the Initiate File Download Burst command is issued on the I2C communications link, it is
+    /// expected to successively perform up to 1024 read transactions from the remote side, each with
+    /// 22 bytes length, again with the same format as the Download File Packet above.
+    
+    
+
+   return 0;
+
+
+}
+*/
