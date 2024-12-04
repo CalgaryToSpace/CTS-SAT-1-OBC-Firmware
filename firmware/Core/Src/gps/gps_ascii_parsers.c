@@ -1,4 +1,3 @@
-#include "gps/gps.h"
 #include "gps/gps_ascii_parsers.h"
 #include "gps/gps_types.h"
 #include "log/log.h"
