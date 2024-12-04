@@ -931,6 +931,13 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
+    {
+        .tcmd_name = "eps_read_vbat_voltage_with_adc",
+        .tcmd_func = TCMDEXEC_eps_read_vbat_voltage_with_adc,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_IN_PROGRESS,
+    },
+
     /* *************************** END EPS Section ************************************** */
     
     

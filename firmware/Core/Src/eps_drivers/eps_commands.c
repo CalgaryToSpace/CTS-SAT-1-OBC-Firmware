@@ -605,3 +605,16 @@ uint8_t EPS_CMD_zero_reset_cause_counters() {
 	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
 	return comms_err;
 }
+
+
+uint8_t EPS_read_vbat_voltage_with_ADC() {
+	//take ADC reading from HAL library
+	//test with 5V battery to see if its getting the correct voltage
+
+	uint8_t voltage = 0;
+
+	//return voltage
+
+	
+	return 0;
+}
