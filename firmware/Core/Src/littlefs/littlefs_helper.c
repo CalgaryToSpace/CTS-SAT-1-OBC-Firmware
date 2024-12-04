@@ -175,7 +175,7 @@ int8_t LFS_list_directory(const char root_directory[], uint16_t offset, int16_t 
 
         if (info.type == LFS_TYPE_REG)
         {
-            LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "%s\t%d bytes", info.name, info.size);
+            LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "%s\t%ld bytes", info.name, info.size);
         } else if (info.type == LFS_TYPE_DIR){
             LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "%s/", info.name);
         }
