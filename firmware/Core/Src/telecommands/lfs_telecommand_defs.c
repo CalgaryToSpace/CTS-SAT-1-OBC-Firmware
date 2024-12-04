@@ -11,7 +11,6 @@
 #include "telecommands/telecommand_definitions.h"
 #include "telecommands/telecommand_args_helpers.h"
 
-
 uint8_t TCMDEXEC_fs_format_storage(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     int8_t result = LFS_format();
@@ -45,6 +44,82 @@ uint8_t TCMDEXEC_fs_unmount(const char *args_str, TCMD_TelecommandChannel_enum_t
     }
     
     snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Unounted!\n");
+    return 0;
+}
+
+/// @brief Telecommand: List all the files and directories within a given directory
+/// @param args_str
+/// - Arg 0: Root Directory path as string
+/// - Arg 1: (Offset) Number of entries to skip at the beginning
+/// - Arg 2: (Count) Number entries to display
+uint8_t TCMDEXEC_fs_list_directory(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+
+    char arg_root_directory_path[64] = {0}; //TODO: Directory name could be up to 255 bytes by default
+    const uint8_t parse_directory_path_result = TCMD_extract_string_arg(args_str, 0, arg_root_directory_path, sizeof(arg_root_directory_path));
+    if (parse_directory_path_result != 0) {
+        // error parsing
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing directory path arg: Error %d", parse_directory_path_result);
+        return 1;
+    }
+
+    uint64_t arg_listing_offset = 0;
+    const uint8_t parse_listing_offset_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &arg_listing_offset);
+    if (parse_listing_offset_result != 0) {
+        // error parsing
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing offset arg: Error %d", parse_listing_offset_result);
+        return 1;
+    }
+
+    uint64_t arg_listing_count = 0;
+    const uint8_t parse_listing_count_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 2, &arg_listing_count);
+    if (parse_listing_count_result != 0) {
+        // error parsing
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing count arg: Error %d", parse_listing_count_result);
+        return 1;
+    }
+
+    int8_t list_directory_result = LFS_list_directory(arg_root_directory_path, (uint16_t) arg_listing_offset, (int16_t) arg_listing_count);
+    if (list_directory_result < 0) {
+        snprintf(response_output_buf, response_output_buf_len, "LittleFS List Directory Error: %d\n", list_directory_result);
+        return 1;
+    }
+    
+    return 0;
+}
+
+/// @brief Telecommand: Create a directory
+/// @param args_str
+/// - Arg 0: Directory Name as string
+uint8_t TCMDEXEC_fs_make_directory(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+
+    char arg_root_directory_path[64] = {0}; //TODO: Directory name could be up to 255 bytes by default
+    const uint8_t parse_directory_path_result = TCMD_extract_string_arg(args_str, 0, arg_root_directory_path, sizeof(arg_root_directory_path));
+    if (parse_directory_path_result != 0) {
+        // error parsing
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing directory path arg: Error %d", parse_directory_path_result);
+        return 1;
+    }
+
+    int8_t make_directory_result = LFS_make_directory(arg_root_directory_path);
+    if (make_directory_result < 0) {
+        snprintf(response_output_buf, response_output_buf_len, "LittleFS Make Directory Error: %d\n", make_directory_result);
+        return 1;
+    }
+    
     return 0;
 }
 
