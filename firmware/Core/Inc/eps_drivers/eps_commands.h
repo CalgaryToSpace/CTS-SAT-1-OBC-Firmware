@@ -36,5 +36,6 @@ uint8_t EPS_CMD_get_piu_housekeeping_data_eng(EPS_struct_piu_housekeeping_data_e
 uint8_t EPS_CMD_get_piu_housekeeping_data_run_avg(EPS_struct_piu_housekeeping_data_eng_t* result_dest);
 uint8_t EPS_CMD_correct_time(int32_t time_correction);
 uint8_t EPS_CMD_zero_reset_cause_counters();
+uint8_t EPS_read_vbat_voltage_with_ADC();
 
 #endif /* INCLUDE_GUARD__EPS_COMMANDS_H__ */
