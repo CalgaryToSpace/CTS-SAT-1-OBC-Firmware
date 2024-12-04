@@ -133,6 +133,8 @@ This graph shows which files directly or indirectly include this file:</div>
 Macros</h2></td></tr>
 <tr class="memitem:a198a41ec340ae5f0bce5fa5cb48418b1" id="r_a198a41ec340ae5f0bce5fa5cb48418b1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a198a41ec340ae5f0bce5fa5cb48418b1">TCMD_AGENDA_SIZE</a>&#160;&#160;&#160;1000</td></tr>
 <tr class="separator:a198a41ec340ae5f0bce5fa5cb48418b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1f7177b5b23e14f336f719e1f8397d1" id="r_aa1f7177b5b23e14f336f719e1f8397d1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa1f7177b5b23e14f336f719e1f8397d1">TCMD_TIMESTAMP_RECORD_SIZE</a>&#160;&#160;&#160;500</td></tr>
+<tr class="separator:aa1f7177b5b23e14f336f719e1f8397d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
@@ -185,6 +187,20 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a id="aa1f7177b5b23e14f336f719e1f8397d1" name="aa1f7177b5b23e14f336f719e1f8397d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1f7177b5b23e14f336f719e1f8397d1">&#9670;&#160;</a></span>TCMD_TIMESTAMP_RECORD_SIZE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TCMD_TIMESTAMP_RECORD_SIZE&#160;&#160;&#160;500</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a7cd5fe9d761280baaa479ff698aef7a5" name="a7cd5fe9d761280baaa479ff698aef7a5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7cd5fe9d761280baaa479ff698aef7a5">&#9670;&#160;</a></span>TCMD_add_tcmd_to_agenda()</h2>
@@ -210,6 +226,16 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, 1 if the agenda is full. </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Performs a deep copy of the <code>parsed_tcmd</code> arg into the agenda. </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="telecommand__executor_8h_a7cd5fe9d761280baaa479ff698aef7a5_cgraph.png" border="0" usemap="#atelecommand__executor_8h_a7cd5fe9d761280baaa479ff698aef7a5_cgraph" alt=""/></div>
+<map name="atelecommand__executor_8h_a7cd5fe9d761280baaa479ff698aef7a5_cgraph" id="atelecommand__executor_8h_a7cd5fe9d761280baaa479ff698aef7a5_cgraph">
+<area shape="rect" title="Adds a telecommand to the agenda (schedule/queue) of telecommands to execute." alt="" coords="5,5,195,31"/>
+<area shape="rect" href="log_8h.html#a3e068c70867806154541035de518012d" title=" " alt="" coords="243,5,352,31"/>
+<area shape="poly" title=" " alt="" coords="195,16,227,16,227,21,195,21"/>
+</map>
+</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">

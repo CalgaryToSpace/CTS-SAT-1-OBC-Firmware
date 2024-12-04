@@ -199,6 +199,12 @@ Variables</h2></td></tr>
 <tr class="separator:ae45aff8b05a8398882c7e07d58b0ea61"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac65134c4b8f8a9e3bc760fa4b04793da" id="r_ac65134c4b8f8a9e3bc760fa4b04793da"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac65134c4b8f8a9e3bc760fa4b04793da">TCMD_latest_received_tcmd_timestamp_sent</a> = 0</td></tr>
 <tr class="separator:ac65134c4b8f8a9e3bc760fa4b04793da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb2d8aaccc85fadb9b2e7211ec206ef8" id="r_afb2d8aaccc85fadb9b2e7211ec206ef8"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afb2d8aaccc85fadb9b2e7211ec206ef8">TCMD_timestamp_sent_head</a> = 0</td></tr>
+<tr class="memdesc:afb2d8aaccc85fadb9b2e7211ec206ef8"><td class="mdescLeft">&#160;</td><td class="mdescRight">The head of the circular buffer of timestamps of telecommands that have been sent.  <br /></td></tr>
+<tr class="separator:afb2d8aaccc85fadb9b2e7211ec206ef8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a202177f2c6803fbaa90a0271582d2993" id="r_a202177f2c6803fbaa90a0271582d2993"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a202177f2c6803fbaa90a0271582d2993">TCMD_timestamp_sent_store</a> [<a class="el" href="telecommand__executor_8h.html#aa1f7177b5b23e14f336f719e1f8397d1">TCMD_TIMESTAMP_RECORD_SIZE</a>] = {0}</td></tr>
+<tr class="memdesc:a202177f2c6803fbaa90a0271582d2993"><td class="mdescLeft">&#160;</td><td class="mdescRight">The circular buffer of timestamps of telecommands that have been sent.  <br /></td></tr>
+<tr class="separator:a202177f2c6803fbaa90a0271582d2993"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88f6cfa3dce5a9add06bb8593a1e5162" id="r_a88f6cfa3dce5a9add06bb8593a1e5162"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structTCMD__parsed__tcmd__to__execute__t.html">TCMD_parsed_tcmd_to_execute_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a88f6cfa3dce5a9add06bb8593a1e5162">TCMD_agenda</a> [<a class="el" href="telecommand__executor_8h.html#a198a41ec340ae5f0bce5fa5cb48418b1">TCMD_AGENDA_SIZE</a>]</td></tr>
 <tr class="memdesc:a88f6cfa3dce5a9add06bb8593a1e5162"><td class="mdescLeft">&#160;</td><td class="mdescRight">The agenda (schedule queue) of telecommands to execute.  <br /></td></tr>
 <tr class="separator:a88f6cfa3dce5a9add06bb8593a1e5162"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -231,6 +237,16 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, 1 if the agenda is full. </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Performs a deep copy of the <code>parsed_tcmd</code> arg into the agenda. </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="telecommand__executor_8c_a7cd5fe9d761280baaa479ff698aef7a5_cgraph.png" border="0" usemap="#atelecommand__executor_8c_a7cd5fe9d761280baaa479ff698aef7a5_cgraph" alt=""/></div>
+<map name="atelecommand__executor_8c_a7cd5fe9d761280baaa479ff698aef7a5_cgraph" id="atelecommand__executor_8c_a7cd5fe9d761280baaa479ff698aef7a5_cgraph">
+<area shape="rect" title="Adds a telecommand to the agenda (schedule/queue) of telecommands to execute." alt="" coords="5,5,195,31"/>
+<area shape="rect" href="log_8h.html#a3e068c70867806154541035de518012d" title=" " alt="" coords="243,5,352,31"/>
+<area shape="poly" title=" " alt="" coords="195,16,227,16,227,21,195,21"/>
+</map>
+</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -736,6 +752,38 @@ Here is the caller graph for this function:</div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="afb2d8aaccc85fadb9b2e7211ec206ef8" name="afb2d8aaccc85fadb9b2e7211ec206ef8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb2d8aaccc85fadb9b2e7211ec206ef8">&#9670;&#160;</a></span>TCMD_timestamp_sent_head</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t TCMD_timestamp_sent_head = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The head of the circular buffer of timestamps of telecommands that have been sent. </p>
+
+</div>
+</div>
+<a id="a202177f2c6803fbaa90a0271582d2993" name="a202177f2c6803fbaa90a0271582d2993"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a202177f2c6803fbaa90a0271582d2993">&#9670;&#160;</a></span>TCMD_timestamp_sent_store</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t TCMD_timestamp_sent_store[<a class="el" href="telecommand__executor_8h.html#aa1f7177b5b23e14f336f719e1f8397d1">TCMD_TIMESTAMP_RECORD_SIZE</a>] = {0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The circular buffer of timestamps of telecommands that have been sent. </p>
 
 </div>
 </div>
