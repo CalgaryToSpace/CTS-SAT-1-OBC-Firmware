@@ -1018,13 +1018,14 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
     },
     // ****************** END SECTION: comms_telecommand_defs ******************
-    //*******************************************Test Telecommand******************************** */
+    // ****************** START SECTION: gps_telecommand_defs ******************
     {
         .tcmd_name = "gps_set_enabled_pps_tracking",
         .tcmd_func = TCMDEXEC_gps_set_enabled_pps_tracking,
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     }
+    // ****************** END SECTION: gps_telecommand_defs ******************
 };
 
 // extern
