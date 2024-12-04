@@ -29,7 +29,7 @@ Follow through this guide, and follow through the rest of the numbered guides in
 
 
 ## Testing and Debugging the Firmware
-1. [Install and use the "SerialTest" serial terminal](https://github.com/wh201906/SerialTest/releases/) for sending commands, initially. The [ground support software](/cts1_ground_support/README.md) is also solid after your first contribution.
+1. [Install and use the "SerialTest" serial terminal](https://github.com/wh201906/SerialTest/releases/) for sending commands, initially. The [ground support software](https://github.com/CalgaryToSpace/CTS-SAT-1-Ground-Support) is also solid after your first contribution.
     * Connect to the STM32 debug serial port at baud=115200.
 2. Flash the board (using the "Flash STM32" button from the setup above).
 3. Open the SerialTest terminal, and connect to the STM32 debug serial port at baud=115200.
