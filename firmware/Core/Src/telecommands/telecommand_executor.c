@@ -17,6 +17,12 @@
 uint32_t TCMD_total_tcmd_queued_count = 0;
 uint64_t TCMD_latest_received_tcmd_timestamp_sent = 0;
 
+
+///@brief  The head of the circular buffer of timestamps of telecommands that have been sent.
+uint16_t  TCMD_timestamp_sent_head = 0;
+/// @brief The circular buffer of timestamps of telecommands that have been sent.
+uint64_t TCMD_timestamp_sent_store[TCMD_TIMESTAMP_RECORD_SIZE] = {0};
+
 /// @brief  The agenda (schedule queue) of telecommands to execute.
 TCMD_parsed_tcmd_to_execute_t TCMD_agenda[TCMD_AGENDA_SIZE];
 // TODO: consider an optimization to store the args_str_no_parens in a separate buffer, to save a ton of memory.
@@ -43,15 +49,29 @@ const char* telecommand_channel_enum_to_str(TCMD_TelecommandChannel_enum_t chann
 /// @return 0 on success, 1 if the agenda is full.
 /// @note Performs a deep copy of the `parsed_tcmd` arg into the agenda.
 uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd) {
-    // FIXME: Issue #53 - Check `parsed_tcmd.timestamp_sent` against the yet-to-be-created `TCMD_timestamp_sent_record[]`, and skip this command if it is (to prevent replays).
-    // ^ Use a config variable to override this check, if desired.
-
     // Find the first empty slot in the agenda.
     for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
         // Skip filled slots.
         if (TCMD_agenda_is_valid[slot_num]) {
             continue;
         }
+
+        // check to see if timestamp is in the circular buffer
+        for (uint32_t i = 0; i < TCMD_timestamp_sent_head; i++) {
+            if(parsed_tcmd->timestamp_sent == TCMD_timestamp_sent_store[i]) {
+                // Skip this telecommand
+                LOG_message(
+                    LOG_SYSTEM_TELECOMMAND, 
+                    LOG_SEVERITY_WARNING, 
+                    LOG_SINK_ALL, 
+                    "Telecommand skipped due to timestamp collision"
+                );
+                return 1; 
+            }
+        }
+        // Add the timestamp to the circular buffer
+        TCMD_timestamp_sent_store[TCMD_timestamp_sent_head] = parsed_tcmd->timestamp_sent;
+        TCMD_timestamp_sent_head = (TCMD_timestamp_sent_head + 1) % TCMD_TIMESTAMP_RECORD_SIZE;
 
         // Copy the parsed telecommand into the agenda.
         TCMD_agenda[slot_num].tcmd_idx = parsed_tcmd->tcmd_idx;
@@ -62,17 +82,12 @@ uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd
         for (uint16_t j = 0; j < TCMD_ARGS_STR_NO_PARENS_SIZE; j++) {
             TCMD_agenda[slot_num].args_str_no_parens[j] = parsed_tcmd->args_str_no_parens[j];
         }
-
         // Mark the slot as valid.
         TCMD_agenda_is_valid[slot_num] = 1;
 
         // Incrementing counters used for stats 
         TCMD_total_tcmd_queued_count++; 
         TCMD_latest_received_tcmd_timestamp_sent = parsed_tcmd->timestamp_sent;
-
-        // DEBUG_uart_print_str("Telecommand added to agenda at slot ");
-        // DEBUG_uart_print_uint32(slot_num);
-        // DEBUG_uart_print_str("\n");
         return 0;
     }
     return 1;

@@ -21,6 +21,7 @@ Please add your name to the list below in your first Pull Request!
 * Muhammad Ali
 * Saksham P.
 * Alex O.
+* Fardin M.
 
 ## License and Libraries
 
