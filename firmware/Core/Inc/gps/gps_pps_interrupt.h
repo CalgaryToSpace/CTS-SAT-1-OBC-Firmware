@@ -4,9 +4,7 @@
 
 #include "stm32l4xx_hal.h"
 
-extern uint32_t pps_counter;
-
-extern uint8_t gps_pps_enabled;
+extern uint32_t GPS_pps_counter;
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 
