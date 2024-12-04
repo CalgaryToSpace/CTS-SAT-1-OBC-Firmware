@@ -237,7 +237,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
     if (huart->Instance == UART_mpi_port_handle->Instance) {
         LOG_message(
             LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "MPI UART Reception Error: %d", huart->ErrorCode
+            "MPI UART Reception Error: %lu", huart->ErrorCode
         );
 
         HAL_UART_Receive_DMA(UART_mpi_port_handle, (uint8_t*)&UART_mpi_last_rx_byte, 1);
@@ -247,7 +247,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
     if (huart->Instance == UART_lora_port_handle->Instance) {
         LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "LORA UART Reception Error: %d", huart->ErrorCode
+            "LORA UART Reception Error: %lu", huart->ErrorCode
         ); // TODO: LORA is not registered as a system in the logger yet
 
         HAL_UART_Receive_IT(UART_lora_port_handle, (uint8_t*)&UART_lora_buffer_last_rx_byte, 1);
@@ -257,7 +257,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
     if (huart->Instance == UART_gps_port_handle->Instance) {
         LOG_message(
             LOG_SYSTEM_GPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "GPS UART Reception Error: %d", huart->ErrorCode
+            "GPS UART Reception Error: %lu", huart->ErrorCode
         );
 
         HAL_UART_Receive_IT(UART_gps_port_handle, (uint8_t*)&UART_gps_buffer_last_rx_byte, 1);
@@ -267,7 +267,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
     if (huart->Instance == UART_camera_port_handle->Instance) {
         LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "CAMERA UART Reception Error: %d", huart->ErrorCode
+            "CAMERA UART Reception Error: %lu", huart->ErrorCode
         ); // TODO: CAMERA is not registered as a system in the logger yet, Telecommand system used instead
 
         HAL_UART_Receive_DMA(UART_camera_port_handle, (uint8_t*)&UART_camera_buffer_last_rx_byte, 1);
@@ -277,7 +277,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
     if (huart->Instance == UART_eps_port_handle->Instance) {
         LOG_message(
             LOG_SYSTEM_EPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "EPS UART Reception Error: %d", huart->ErrorCode
+            "EPS UART Reception Error: %lu", huart->ErrorCode
         );
 
         HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t*)&UART_eps_buffer_last_rx_byte, 1);
