@@ -12,9 +12,6 @@
 #define TCMD_PREFIX_STR_LEN 5
 #define TCMD_HEX_ARRAY_LEN 32
 
-// TODO: Before launch, change value to 1
-static const uint8_t SHA256_ENABLED = 0;
-
 uint8_t TCMD_is_char_alphanumeric(char c);
 uint8_t TCMD_is_char_valid_telecommand_name_char(char c);
 
