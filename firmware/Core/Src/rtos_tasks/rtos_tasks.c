@@ -12,6 +12,7 @@
 #include "log/log.h"
 #include "config/configuration.h"
 #include "eps_drivers/eps_commands.h"
+#include "startup_sequence/antenna_deploy_startup.h"
 
 #include "cmsis_os.h"
 
@@ -220,5 +221,23 @@ void TASK_monitor_freertos_memory(void *argument) {
 			}
 		}
 
+	} /* End Task's Main Loop */
+}
+/// @brief Completes all tasks which are nesssary after the obc is powered on(or rebooted)
+/// @param argument 
+void TASK_bootup(void *argument) {
+	TASK_HELP_start_of_task();
+
+	uint8_t ant_deploy_complete = 0;
+	uint32_t delay_ms = 100;
+	while (1) {
+		//TODO: What should the delay be here? 
+		osDelay(delay_ms);
+		delay_ms = 60000;
+		if (!ant_deploy_complete) {
+			if (START_antenna_deploy() == 0) {
+				ant_deploy_complete = 1;	
+			}
+		}
 	} /* End Task's Main Loop */
 }
