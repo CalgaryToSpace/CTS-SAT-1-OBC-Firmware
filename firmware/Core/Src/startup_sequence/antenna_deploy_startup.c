@@ -10,7 +10,11 @@
 /// @return 0 on success, <0 on failure
 
 //TODO: unmount filesystem if error occurs
-static int16_t START_check_file_read_bool(const char* file_path, uint8_t* read_value) {
+
+/// @brief reads the value from the file "lifecycle/deploy_antenna_on_boot_enabled.bool"
+/// @param read_value where the read value will be stored upon success 
+/// @return 0 on success, LFS_ERR_NOENT if the file does not exist, <0 on failure 
+static int16_t read_bool_from_deploy_antenna_on_boot_enabled_file (uint8_t* read_value) {
     uint8_t unmount_on_completion = 0;
     if ( !LFS_is_lfs_mounted ) {
         unmount_on_completion = 1;
@@ -22,21 +26,20 @@ static int16_t START_check_file_read_bool(const char* file_path, uint8_t* read_v
                 LOG_SINK_ALL, 
                 "Error %d mounting LittleFS.",
                 mount_result
-            )
+            );
             return mount_result;
         }
     }
     // lfs is mounted
     
     lfs_file_t file;
-    int16_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_path, LFS_O_RDONLY, &LFS_file_cfg);
+    int16_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, "lifecycle/deploy_antenna_on_boot_enabled.bool", LFS_O_RDONLY, &LFS_file_cfg);
     if (open_result == LFS_ERR_NOENT) {
         LOG_message(
             LOG_SYSTEM_LFS, 
             LOG_SEVERITY_NORMAL, 
             LOG_SINK_ALL, 
-            "File %s does not exist. ",
-            file_path
+            "File <lifecycle/deploy_antenna_on_boot_enabled.bool> does not exist."
         );
         return LFS_ERR_NOENT;
     }
@@ -46,9 +49,8 @@ static int16_t START_check_file_read_bool(const char* file_path, uint8_t* read_v
             LOG_SYSTEM_LFS, 
             LOG_SEVERITY_NORMAL, 
             LOG_SINK_ALL, 
-            "Error %d opening file %s.",
-            open_result,
-            file_path
+            "Error %d opening file <lifecycle/deploy_antenna_on_boot_enabled.bool>.",
+            open_result
         );
         return open_result;
     }
@@ -59,9 +61,8 @@ static int16_t START_check_file_read_bool(const char* file_path, uint8_t* read_v
             LOG_SYSTEM_LFS, 
             LOG_SEVERITY_NORMAL, 
             LOG_SINK_ALL, 
-            "Error %d reading from file %s.",
-            read_result,
-            file_path
+            "Error %d reading from file <lifecycle/deploy_antenna_on_boot_enabled.bool>.",
+            read_result
         );
         return read_result;
     }
@@ -72,9 +73,8 @@ static int16_t START_check_file_read_bool(const char* file_path, uint8_t* read_v
             LOG_SYSTEM_LFS, 
             LOG_SEVERITY_NORMAL, 
             LOG_SINK_ALL, 
-            "Error %d closing file %s.",
-            close_result,
-            file_path
+            "Error %d closing file <lifecycle/deploy_antenna_on_boot_enabled.bool>.",
+            close_result
         );
         return close_result;
     }
@@ -88,19 +88,127 @@ static int16_t START_check_file_read_bool(const char* file_path, uint8_t* read_v
                 LOG_SINK_ALL, 
                 "Error %d unmounting LittleFS.",
                 unmount_result
-            )
+            );
             return unmount_result;
         }
     }
     return 0;
 }
 
-static int16_t START_create_missing_directory_and_file() {
+/// @brief creates the file "lifecycle/deploy_antenna_on_boot_enabled.bool".
+/// Creates the lifecycle directory if it does not exist.
+/// write 1 to the file
+/// @return 0 on success, <0 on failure
+static int16_t create_deploy_antenna_on_boot_enabled_file_and_write_one() {
+    int16_t mkdir_result = lfs_mkdir(&LFS_filesystem, "lifecycle");
+    if(mkdir_result != LFS_ERR_EXIST && mkdir_result != 0) {
+        LOG_message(
+            LOG_SYSTEM_LFS,
+            LOG_SEVERITY_ERROR,
+            LOG_SINK_ALL,
+            "Error %d creating lifecycle directory.",
+            mkdir_result
+        );
+        return mkdir_result;
+    }
+
+    lfs_file_t file;
+    int16_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, "lifecycle/deploy_antenna_on_boot_enabled.bool", LFS_O_WRONLY | LFS_O_CREAT, &LFS_file_cfg);
+    if (open_result != 0) {
+        LOG_message(
+            LOG_SYSTEM_LFS,
+            LOG_SEVERITY_ERROR,
+            LOG_SINK_ALL,
+            "Error %d opening file lifecycle/deploy_antenna_on_boot_enabled.bool.",
+            open_result
+        );
+        return open_result;
+    }
+
+    uint8_t write_value = 1;
+    int32_t write_result = lfs_file_write(&LFS_filesystem, &file, &write_value, sizeof(uint8_t));
+    if (write_result != 0) {
+        LOG_message(
+            LOG_SYSTEM_LFS,
+            LOG_SEVERITY_ERROR,
+            LOG_SINK_ALL,
+            "Error %d writing to file lifecycle/deploy_antenna_on_boot_enabled.bool.",
+            write_result
+        );
+        return write_result;
+    }
+
+    int32_t close_result = lfs_file_close(&LFS_filesystem, &file);
+    if (close_result != 0) {
+        LOG_message(
+            LOG_SYSTEM_LFS,
+            LOG_SEVERITY_ERROR,
+            LOG_SINK_ALL,
+            "Error %d closing file lifecycle/deploy_antenna_on_boot_enabled.bool.",
+            close_result
+        );
+        return close_result;
+    }
+    return 0;    
+}    
     
-    
+//TODO: Implement this
+static uint8_t eps_is_sufficiently_charged() {
+    return 0;
 }
 
-int16_t START_antenna_deploy() {
+
+/// @brief Attempts to arm and deploy the antennas 
+/// @return 0 if mcu successfully transmitted the arm and deploy commands, <0 otherwise
+/// @note WARNING: Care must be taken with using this function as it does not check if the eps is sufficiently charged!
+int16_t START_deploy_antenna() {
+    //TODO: which mcu should be armed on the antenna deploy system? Error handling. How long to activate?
+    int8_t arm_result = ANT_CMD_arm_antenna_system(ANT_I2C_BUS_A_MCU_A);
+    if (arm_result != 0) {
+        LOG_message(
+            LOG_SYSTEM_ANTENNA_DEPLOY, 
+            LOG_SEVERITY_ERROR, 
+            LOG_SINK_ALL, 
+            "Error %d arming antenna deploy system.",
+            arm_result
+        );
+        return arm_result;
+    }
+
+    int8_t deploy_result = ANT_CMD_start_automated_sequential_deployment(ANT_I2C_BUS_A_MCU_A, 20);
+    if (deploy_result != 0) {
+        LOG_message(
+            LOG_SYSTEM_ANTENNA_DEPLOY, 
+            LOG_SEVERITY_ERROR, 
+            LOG_SINK_ALL, 
+            "Error %d deploying antennas.",
+            deploy_result
+        );
+        return deploy_result;
+    }
+    return 0;
+}
+
+/// @brief Attempts to arm and deploy the antennas if the EPS is sufficiently charged
+/// @return 0 on success, <0 on failure 
+int16_t START_deploy_antenna_if_sufficiently_charged() {
+    if (!eps_is_sufficiently_charged()) {
+        LOG_message(
+            LOG_SYSTEM_ANTENNA_DEPLOY, 
+            LOG_SEVERITY_WARNING, 
+            LOG_SINK_ALL, 
+            "EPS is not sufficiently charged. Deploying antennas will not occur."
+        );
+        return -1;
+    }
+    return START_deploy_antenna();
+}
+
+/// @brief Reads the file "lifecycle/deploy_antenna_on_boot_enabled.bool". If the file contains 1 or does not exist then it attempts to deploy the antennas.
+/// If the file contains 0 then it does not attempt to deploy the antennas.
+/// @return 0 on success, <0 on failure
+int16_t START_read_config_and_deploy_antenna_accordingly() {
+
     //TODO: remove after validation
     LOG_message(
         LOG_SYSTEM_LFS, 
@@ -108,207 +216,48 @@ int16_t START_antenna_deploy() {
         LOG_SINK_ALL, 
         "Starting Antenna Deploy"
     );
-    const int16_t mkdir_result = lfs_mkdir(&LFS_filesystem, "lifecycle");
-    if(mkdir_result == LFS_ERR_EXIST) {
-        LOG_message(
-            LOG_SYSTEM_LFS, 
-            LOG_SEVERITY_NORMAL, 
-            LOG_SINK_ALL, 
-            "lifecycle directory already exists. Skipping creation."
-        );
-    }
 
-    if(mkdir_result != LFS_ERR_EXIST && mkdir_result != 0) {
-        LOG_message(
-            LOG_SYSTEM_LFS, 
-            LOG_SEVERITY_NORMAL, 
-            LOG_SINK_ALL, 
-            "Error %d creating lifecycle directory.",
-            mkdir_result
-        );
-        return -2;
-    }
-
-    //TODO: remove after validation
-    if(mkdir_result == 0) {
-        LOG_message(
-            LOG_SYSTEM_LFS, 
-            LOG_SEVERITY_NORMAL, 
-            LOG_SINK_ALL, 
-            "lifecycle directory created."
-        );
-    }
-    // At this point the lifecycle directory exists or has been created
-
-
-    // Create deploy_antenna_on_boot_enabled.bool file if it doesn't exist
-    lfs_file_t file;
-    int32_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, "lifecycle/deploy_antenna_on_boot_enabled.bool", LFS_O_RDONLY, &LFS_file_cfg);
-    if ( open_result == LFS_ERR_NOENT) {
-
-        // if file doesn't exist, create it and open for writing and write 1 
-        open_result = lfs_file_opencfg(&LFS_filesystem, &file, "lifecycle/deploy_antenna_on_boot_enabled.bool", LFS_O_WRONLY | LFS_O_CREAT, &LFS_file_cfg);
-        if(open_result != 0) {
-        LOG_message(
-            LOG_SYSTEM_LFS, 
-            LOG_SEVERITY_WARNING, 
-            LOG_SINK_ALL, 
-            "Error %d opening/creating deploy_antenna_on_boot_enabled.bool file.",
-            open_result
-        );
-        return open_result;
-        }
-          
-        uint8_t buff = 1;
-        int32_t write_result = lfs_file_write(&LFS_filesystem, &file, &buff, sizeof(buff));
-        if(write_result < 0) {
-            LOG_message(
-                LOG_SYSTEM_LFS, 
-                LOG_SEVERITY_WARNING, 
-                LOG_SINK_ALL, 
-                "Error %d writing to newly created deploy_antenna_on_boot_enabled.bool file.",
-                write_result
-            );
-            return write_result;
-        }
-
-        //TODO: remove after validation
-        LOG_message(
-            LOG_SYSTEM_LFS, 
-            LOG_SEVERITY_NORMAL, 
-            LOG_SINK_ALL, 
-            "file did not exist, created deploy_antenna_on_boot_enabled.bool file."
-        );
-        
-        int32_t close_result = lfs_file_close(&LFS_filesystem, &file);
-        if(close_result != 0) {
-            LOG_message(
-                LOG_SYSTEM_LFS, 
-                LOG_SEVERITY_WARNING, 
-                LOG_SINK_ALL, 
-                "Error %d closing newly created deploy_antenna_on_boot_enabled.bool file.",
-                close_result
-            );
-            return close_result;
-        }
-
-        // the file has been created and 1 has been written to it, open for reading
-        open_result = lfs_file_opencfg(&LFS_filesystem, &file, "lifecycle/deploy_antenna_on_boot_enabled.bool", LFS_O_RDONLY, &LFS_file_cfg);
-        if (open_result != 0) {
-            LOG_message(
-                LOG_SYSTEM_LFS, 
-                LOG_SEVERITY_WARNING, 
-                LOG_SINK_ALL, 
-                "Error %d opening/creating deploy_antenna_on_boot_enabled.bool file.",
-                open_result
-            );
-            return -5 ;
-        }
-        LOG_message(
-            LOG_SYSTEM_LFS, 
-            LOG_SEVERITY_NORMAL, 
-            LOG_SINK_ALL, 
-            "new file created, 1 written, opend for reading."
-        );
-    }
-        
-
-    //TODO: remove after validation
-    else if (open_result == 0) {
-        LOG_message(
-            LOG_SYSTEM_LFS, 
-            LOG_SEVERITY_NORMAL, 
-            LOG_SINK_ALL, 
-            "deploy_antenna_on_boot_enabled.bool file opened."
-        );
-    }
-    
-    // At this point the depoy_antenna_on_boot_enabled.bool file is open 
     uint8_t deploy_antenna_on_boot_enabled;
-    int32_t num_bytes_read = lfs_file_read(&LFS_filesystem, &file, &deploy_antenna_on_boot_enabled, sizeof(deploy_antenna_on_boot_enabled));
-    if(num_bytes_read < 0) { 
-        LOG_message(
-            LOG_SYSTEM_LFS, 
-            LOG_SEVERITY_WARNING, 
-            LOG_SINK_ALL, 
-            "Error %d reading deploy_antenna_on_boot_enabled.bool file.",
-            num_bytes_read
-        );
-        return num_bytes_read;
-    }
-    //TODO: remove after validation
-    if(num_bytes_read == 0) {
-        LOG_message(
-            LOG_SYSTEM_LFS, 
-            LOG_SEVERITY_NORMAL, 
-            LOG_SINK_ALL, 
-            "deploy_antenna_on_boot_enabled.bool file is empty."
-        );
-    }
-    //TODO: remove after validation
-    if(num_bytes_read > 0) {
-        LOG_message(
-            LOG_SYSTEM_LFS, 
-            LOG_SEVERITY_NORMAL, 
-            LOG_SINK_ALL, 
-            "read %d bytes from deploy_antenna_on_boot_enabled.bool. Result: %d",
-            num_bytes_read,
-            deploy_antenna_on_boot_enabled
-        );
-    }
-    //reading the file is done now,  close the file and unmount lfs if needed
-    int close_status = lfs_file_close(&LFS_filesystem, &file);
-    if( close_status != 0) {
+    int16_t read_result = read_bool_from_deploy_antenna_on_boot_enabled_file(&deploy_antenna_on_boot_enabled);
+    if (read_result != 0 && read_result != LFS_ERR_NOENT) {
         LOG_message(
             LOG_SYSTEM_LFS, 
             LOG_SEVERITY_ERROR, 
             LOG_SINK_ALL, 
-            "Error %d closing deploy_antenna_on_boot_enabled.bool file.",
-            close_status
+            "Error %d reading from file <lifecycle/deploy_antenna_on_boot_enabled.bool>.",
+            read_result
         );
-        return close_status;
+        return read_result;
     }
 
-    if(LFS_unmount_on_completion) {
-        int32_t unmount_status = lfs_unmount(&LFS_filesystem);
-        if (unmount_status != 0) {
+    if (read_result == LFS_ERR_NOENT) {
+        int16_t create_result = create_deploy_antenna_on_boot_enabled_file_and_write_one();
+        if (create_result != 0) {
             LOG_message(
                 LOG_SYSTEM_LFS, 
                 LOG_SEVERITY_ERROR, 
                 LOG_SINK_ALL, 
-                "Error %d unmounting lfs.",
-                unmount_status
+                "Error %d creating file <lifecycle/deploy_antenna_on_boot_enabled.bool>.",
+                create_result
             );
-            return unmount_status;
+            return create_result;
+        }
+        read_result = read_bool_from_deploy_antenna_on_boot_enabled_file(&deploy_antenna_on_boot_enabled);
+        if (read_result != 0) {
+            LOG_message(
+                LOG_SYSTEM_LFS, 
+                LOG_SEVERITY_ERROR, 
+                LOG_SINK_ALL, 
+                "Error %d reading from file <lifecycle/deploy_antenna_on_boot_enabled.bool>.",
+                read_result
+            );
+            return read_result;
         }
     }
 
-    if(deploy_antenna_on_boot_enabled == 1) {
-        //TODO: which mcu should be armed on the antenna deploy system? Error handling. How long to activate?
-        int8_t arm_result = ANT_CMD_arm_antenna_system(ANT_I2C_BUS_A_MCU_A);
-        if (arm_result != 0) {
-            LOG_message(
-                LOG_SYSTEM_ANTENNA_DEPLOY, 
-                LOG_SEVERITY_ERROR, 
-                LOG_SINK_ALL, 
-                "Error %d arming antenna deploy system.",
-                arm_result
-            );
-            return arm_result;
-        }
-
-        int8_t deploy_result = ANT_CMD_start_automated_sequential_deployment(ANT_I2C_BUS_A_MCU_A, 7);
-        if (deploy_result != 0) {
-            LOG_message(
-                LOG_SYSTEM_ANTENNA_DEPLOY, 
-                LOG_SEVERITY_ERROR, 
-                LOG_SINK_ALL, 
-                "Error %d deploying antennas.",
-                deploy_result
-            );
-            return deploy_result;
-        }
+    // at this point, file contents have been written into deploy_antenna_on_boot_enabled
+    if (deploy_antenna_on_boot_enabled == 0) {
+        return 0;
     }
-
-    return 0;
+    return START_deploy_antenna_if_sufficiently_charged();
 }
