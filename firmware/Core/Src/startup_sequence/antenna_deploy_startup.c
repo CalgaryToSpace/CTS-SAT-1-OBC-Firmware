@@ -8,6 +8,98 @@
 /// If 1 is stored in the file then it attempts to deploy the antenna. If the file did not
 /// exist: then it creates the file, stores a 1 in it, and attempts to deploy.
 /// @return 0 on success, <0 on failure
+
+//TODO: unmount filesystem if error occurs
+static int16_t START_check_file_read_bool(const char* file_path, uint8_t* read_value) {
+    uint8_t unmount_on_completion = 0;
+    if ( !LFS_is_lfs_mounted ) {
+        unmount_on_completion = 1;
+        int32_t mount_result = lfs_mount(&LFS_filesystem, &LFS_cfg); 
+        if (mount_result != 0) {
+            LOG_message(
+                LOG_SYSTEM_LFS, 
+                LOG_SEVERITY_ERROR, 
+                LOG_SINK_ALL, 
+                "Error %d mounting LittleFS.",
+                mount_result
+            )
+            return mount_result;
+        }
+    }
+    // lfs is mounted
+    
+    lfs_file_t file;
+    int16_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_path, LFS_O_RDONLY, &LFS_file_cfg);
+    if (open_result == LFS_ERR_NOENT) {
+        LOG_message(
+            LOG_SYSTEM_LFS, 
+            LOG_SEVERITY_NORMAL, 
+            LOG_SINK_ALL, 
+            "File %s does not exist. ",
+            file_path
+        );
+        return LFS_ERR_NOENT;
+    }
+    
+    if (open_result != 0) {
+        LOG_message(
+            LOG_SYSTEM_LFS, 
+            LOG_SEVERITY_NORMAL, 
+            LOG_SINK_ALL, 
+            "Error %d opening file %s.",
+            open_result,
+            file_path
+        );
+        return open_result;
+    }
+
+    int32_t read_result = lfs_file_read(&LFS_filesystem, &file, read_value, sizeof(uint8_t));
+    if (read_result != 0) {
+        LOG_message(
+            LOG_SYSTEM_LFS, 
+            LOG_SEVERITY_NORMAL, 
+            LOG_SINK_ALL, 
+            "Error %d reading from file %s.",
+            read_result,
+            file_path
+        );
+        return read_result;
+    }
+
+    int32_t close_result = lfs_file_close(&LFS_filesystem, &file);
+    if (close_result != 0) {
+        LOG_message(
+            LOG_SYSTEM_LFS, 
+            LOG_SEVERITY_NORMAL, 
+            LOG_SINK_ALL, 
+            "Error %d closing file %s.",
+            close_result,
+            file_path
+        );
+        return close_result;
+    }
+
+    if (unmount_on_completion) {
+        int16_t unmount_result = lfs_unmount(&LFS_filesystem);
+        if (unmount_result != 0) {  
+            LOG_message(
+                LOG_SYSTEM_LFS, 
+                LOG_SEVERITY_ERROR, 
+                LOG_SINK_ALL, 
+                "Error %d unmounting LittleFS.",
+                unmount_result
+            )
+            return unmount_result;
+        }
+    }
+    return 0;
+}
+
+static int16_t START_create_missing_directory_and_file() {
+    
+    
+}
+
 int16_t START_antenna_deploy() {
     //TODO: remove after validation
     LOG_message(
@@ -16,17 +108,7 @@ int16_t START_antenna_deploy() {
         LOG_SINK_ALL, 
         "Starting Antenna Deploy"
     );
-
-    uint8_t LFS_unmount_on_completion = 0;
-    if (!LFS_is_lfs_mounted) {
-        if (lfs_mount(&LFS_filesystem, &LFS_cfg) != 0) {
-            return -1;
-        }
-        LFS_unmount_on_completion = 1;
-    }
-
-    // Create lifecycle directory if it doesn't exist
-    const int32_t mkdir_result = lfs_mkdir(&LFS_filesystem, "lifecycle");
+    const int16_t mkdir_result = lfs_mkdir(&LFS_filesystem, "lifecycle");
     if(mkdir_result == LFS_ERR_EXIST) {
         LOG_message(
             LOG_SYSTEM_LFS, 
