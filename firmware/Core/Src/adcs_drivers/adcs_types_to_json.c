@@ -6,7 +6,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
-
+#include <time.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -195,12 +195,33 @@ uint8_t ADCS_set_unix_time_save_mode_struct_TO_json(const ADCS_set_unix_time_sav
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
 uint8_t ADCS_orbit_params_struct_TO_json(const ADCS_orbit_params_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
-    if (data == NULL || json_output_str == NULL || json_output_str_len < 256) {
+    if (data == NULL || json_output_str == NULL || json_output_str_len < 257) {
         return 1; // Error: invalid input
     }
-    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, "{\"inclination_deg\":%.6f,\"eccentricity\":%.6f,\"ascending_node_right_ascension_deg\":%.6f,\"perigee_argument_deg\":%.6f,\"b_star_drag_term\":%.6f,\"mean_motion_orbits_per_day\":%.6f,\"mean_anomaly_deg\":%.6f,\"epoch_year_point_day\":%.6f}",
-            data->inclination_deg, data->eccentricity, data->ascending_node_right_ascension_deg, data->perigee_argument_deg, data->b_star_drag_term, data->mean_motion_orbits_per_day, data->mean_anomaly_deg, data->epoch_year_point_day); 
-    
+
+    // snprintf doesn't support printing floats, so we convert them separately
+
+    char inclination_deg_str[20];
+    char eccentricity_str[20];
+    char ascending_node_right_ascension_deg_str[20];
+    char perigee_argument_deg_str[20];
+    char b_star_drag_term_str[20];
+    char mean_motion_orbits_per_day_str[20];
+    char mean_anomaly_deg_str[20];
+    char epoch_year_point_day_str[20];
+
+    ADCS_convert_double_to_string(data->inclination_deg, 6, &inclination_deg_str[0], 20); 
+    ADCS_convert_double_to_string(data->eccentricity, 6, &eccentricity_str[0], 20);
+    ADCS_convert_double_to_string(data->ascending_node_right_ascension_deg, 6, &ascending_node_right_ascension_deg_str[0], 20);
+    ADCS_convert_double_to_string(data->perigee_argument_deg, 6, &perigee_argument_deg_str[0], 20);
+    ADCS_convert_double_to_string(data->b_star_drag_term, 6, &b_star_drag_term_str[0], 20);
+    ADCS_convert_double_to_string(data->mean_motion_orbits_per_day, 6, &mean_motion_orbits_per_day_str[0], 20);
+    ADCS_convert_double_to_string(data->mean_anomaly_deg, 6, &mean_anomaly_deg_str[0], 20);
+    ADCS_convert_double_to_string(data->epoch_year_point_day, 6, &epoch_year_point_day_str[0], 20); 
+
+    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, "{\"inclination_deg\":%s,\"eccentricity\":%s,\"ascending_node_right_ascension_deg\":%s,\"perigee_argument_deg\":%s,\"b_star_drag_term\":%s,\"mean_motion_orbits_per_day\":%s,\"mean_anomaly_deg\":%s,\"epoch_year_point_day\":%s}",
+            inclination_deg_str, eccentricity_str, ascending_node_right_ascension_deg_str, perigee_argument_deg_str, b_star_drag_term_str, mean_motion_orbits_per_day_str, mean_anomaly_deg_str, epoch_year_point_day_str); 
+
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error
     }
@@ -479,13 +500,25 @@ uint8_t ADCS_augmented_sgp4_params_struct_TO_json(const ADCS_augmented_sgp4_para
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
 uint8_t ADCS_tracking_controller_target_struct_TO_json(const ADCS_tracking_controller_target_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
-    if (data == NULL || json_output_str == NULL || json_output_str_len < 40) {
+    if (data == NULL || json_output_str == NULL || json_output_str_len < 90) {
         return 1; // Error: invalid input
     }
-            // 4 decimals in %.4f longitude and latitude gives within roughly 11 m 
+
+    // snprintf doesn't support printing floats, so convert them separately
+
+    char longitude_string[20];
+    char latitude_string[20];
+    char altitude_string[20];
+    
+    ADCS_convert_double_to_string(data->longitude_degrees, 4, &longitude_string[0], 20);
+    ADCS_convert_double_to_string(data->latitude_degrees, 4, &latitude_string[0], 20);
+    ADCS_convert_double_to_string(data->altitude_meters, 4, &altitude_string[0], 20);
+  
+
+    // 4 decimals in %.4f longitude and latitude gives within roughly 11 m 
     int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, 
-                                "{\"lon\":%.4f,\"lat\":%.4f,\"alt\":%.4f}", 
-                                data->longitude_degrees, data->latitude_degrees, data->altitude_meters);
+                                "{\"lon\":%s,\"lat\":%s,\"alt\":%s}", 
+                                longitude_string, latitude_string, altitude_string);
 
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error
@@ -774,16 +807,25 @@ uint8_t ADCS_raw_coarse_sun_sensor_7_to_10_struct_TO_json(const ADCS_raw_coarse_
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
 uint8_t ADCS_cubecontrol_current_struct_TO_json(const ADCS_cubecontrol_current_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
-    if (data == NULL || json_output_str == NULL || json_output_str_len < 117) {
+    if (data == NULL || json_output_str == NULL || json_output_str_len < 118) {
         return 1; // Error: invalid input
     }
+    
+    // snprintf doesn't support printing floats, so convert them separately
+
+    char three_volt_current_string[20];
+    char five_volt_current_string[20];
+    char vbat_current_string[20];
+    
+    ADCS_convert_double_to_string(data->cubecontrol_3v3_current_mA, 1, &three_volt_current_string[0], 20);
+    ADCS_convert_double_to_string(data->cubecontrol_5v_current_mA, 1, &five_volt_current_string[0], 20);
+    ADCS_convert_double_to_string(data->cubecontrol_vbat_current_mA, 1, &vbat_current_string[0], 20);
+  
                 // measured up to 0.1 mA (100 uA); current measured in 0.48828125 mA steps
     int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, 
-                                "{\"cubecontrol_3v3_current_mA\":%.1f,\"cubecontrol_5v_current_mA\":%.1f,"
-                                "\"cubecontrol_vbat_current_mA\":%.1f}", 
-                                data->cubecontrol_3v3_current_mA, data->cubecontrol_5v_current_mA, 
-                                data->cubecontrol_vbat_current_mA);
-
+                                "{\"cubecontrol_3v3_current_mA\":%s,\"cubecontrol_5v_current_mA\":%s,"
+                                "\"cubecontrol_vbat_current_mA\":%s}", 
+                                three_volt_current_string, five_volt_current_string, vbat_current_string);
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error
     }
@@ -957,5 +999,177 @@ uint8_t ADCS_generic_telemetry_uint8_array_TO_json(const uint8_t *data, const ui
             return 3; // Error: string buffer too short
         }
     }
+    return 0;
+}
+
+/// @brief Converts ADCS_acp_execution_struct to a JSON string.
+/// @param[in] data Pointer to the ADCS_acp_execution_struct.
+/// @param[out] json_output_str Buffer to hold the JSON string.
+/// @param[in] json_output_str_len Length of the JSON output buffer.
+/// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
+uint8_t ADCS_acp_execution_struct_TO_json(const ADCS_acp_execution_state_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
+    if (data == NULL || json_output_str == NULL || json_output_str_len < 80) {
+        return 1; // Error: invalid input
+    }
+    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, 
+                                "{\"time_since_iteration_start_ms\":%d,\"current_execution_point\":%d}", 
+                                data->time_since_iteration_start_ms, data->current_execution_point);
+
+    if (snprintf_ret < 0) {
+        return 2; // Error: snprintf encoding error
+    }
+    if (snprintf_ret >= json_output_str_len) {
+        return 3; // Error: string buffer too short
+    }
+    
+    return 0;
+}
+
+/// @brief Converts ADCS_current_state_1_struct to a JSON string.
+/// @param[in] data Pointer to the ADCS_current_state_1_struct.
+/// @param[out] json_output_str Buffer to hold the JSON string.
+/// @param[in] json_output_str_len Length of the JSON output buffer.
+/// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
+uint8_t ADCS_current_state_1_struct_TO_json(const ADCS_current_state_1_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
+    if (data == NULL || json_output_str == NULL || json_output_str_len < 80) {
+        return 1; // Error: invalid input
+    }
+    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len,
+                                    "{\"attitude_estimation_mode\":%d,\"control_mode\":%d,"
+                                    "\"adcs_run_mode\":%d,\"asgp4_mode\":%d,"
+                                    "\"cubecontrol_signal_enabled\":%d,\"cubecontrol_motor_enabled\":%d,"
+                                    "\"cubesense1_enabled\":%d,\"cubesense2_enabled\":%d,"
+                                    "\"cubewheel1_enabled\":%d,\"cubewheel2_enabled\":%d,"
+                                    "\"cubewheel3_enabled\":%d,\"cubestar_enabled\":%d,"
+                                    "\"gps_receiver_enabled\":%d,\"gps_lna_power_enabled\":%d,"
+                                    "\"motor_driver_enabled\":%d,\"sun_above_local_horizon\":%d,"
+                                    "\"cubesense1_comm_error\":%d,\"cubesense2_comm_error\":%d,"
+                                    "\"cubecontrol_signal_comm_error\":%d,\"cubecontrol_motor_comm_error\":%d,"
+                                    "\"cubewheel1_comm_error\":%d,\"cubewheel2_comm_error\":%d,"
+                                    "\"cubewheel3_comm_error\":%d,\"cubestar_comm_error\":%d,"
+                                    "\"magnetometer_range_error\":%d,\"cam1_sram_overcurrent_detected\":%d,"
+                                    "\"cam1_3v3_overcurrent_detected\":%d,\"cam1_sensor_busy_error\":%d,"
+                                    "\"cam1_sensor_detection_error\":%d,\"sun_sensor_range_error\":%d,"
+                                    "\"cam2_sram_overcurrent_detected\":%d,\"cam2_3v3_overcurrent_detected\":%d,"
+                                    "\"cam2_sensor_busy_error\":%d,\"cam2_sensor_detection_error\":%d,"
+                                    "\"nadir_sensor_range_error\":%d,\"rate_sensor_range_error\":%d,"
+                                    "\"wheel_speed_range_error\":%d,\"coarse_sun_sensor_error\":%d,"
+                                    "\"startracker_match_error\":%d,\"startracker_overcurrent_detected\":%d}",
+                                    data->estimation_mode, data->control_mode,
+                                    data->run_mode, data->asgp4_mode,
+                                    data->cubecontrol_signal_enabled, data->cubecontrol_motor_enabled,
+                                    data->cubesense1_enabled, data->cubesense2_enabled,
+                                    data->cubewheel1_enabled, data->cubewheel2_enabled,
+                                    data->cubewheel3_enabled, data->cubestar_enabled,
+                                    data->gps_receiver_enabled, data->gps_lna_power_enabled,
+                                    data->motor_driver_enabled, data->sun_above_local_horizon,
+                                    data->cubesense1_comm_error, data->cubesense2_comm_error,
+                                    data->cubecontrol_signal_comm_error, data->cubecontrol_motor_comm_error,
+                                    data->cubewheel1_comm_error, data->cubewheel2_comm_error,
+                                    data->cubewheel3_comm_error, data->cubestar_comm_error,
+                                    data->magnetometer_range_error, data->cam1_sram_overcurrent_detected,
+                                    data->cam1_3v3_overcurrent_detected, data->cam1_sensor_busy_error,
+                                    data->cam1_sensor_detection_error, data->sun_sensor_range_error,
+                                    data->cam2_sram_overcurrent_detected, data->cam2_3v3_overcurrent_detected,
+                                    data->cam2_sensor_busy_error, data->cam2_sensor_detection_error,
+                                    data->nadir_sensor_range_error, data->rate_sensor_range_error,
+                                    data->wheel_speed_range_error, data->coarse_sun_sensor_error,
+                                    data->startracker_match_error, data->startracker_overcurrent_detected);
+
+    if (snprintf_ret < 0) {
+        return 2; // Error: snprintf encoding error
+    }
+    if (snprintf_ret >= json_output_str_len) {
+        return 3; // Error: string buffer too short
+    }
+    
+    return 0;
+}
+
+uint8_t ADCS_raw_star_tracker_struct_TO_json(const ADCS_raw_star_tracker_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
+    if (data == NULL || json_output_str == NULL || json_output_str_len < 1400) {
+        return 1; // Error: invalid input or too short buffer
+    }
+
+    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len,
+                                    "{\"num_stars_detected\":%u,\"star_image_noise\":%u,\"invalid_stars\":%u,"
+                                    "\"num_stars_identified\":%u,\"identification_mode\":%u,\"image_dark_value\":%u,"
+                                    "\"image_capture_success\":%s,\"detection_success\":%s,\"identification_success\":%s,"
+                                    "\"attitude_success\":%s,\"processing_time_error\":%s,\"tracking_module_enabled\":%s,"
+                                    "\"prediction_enabled\":%s,\"comms_error\":%s,\"sample_period\":%u,"
+                                    "\"star1_confidence\":%u,\"star2_confidence\":%u,\"star3_confidence\":%u,"
+                                    "\"magnitude_star1\":%u,\"magnitude_star2\":%u,\"magnitude_star3\":%u,"
+                                    "\"catalogue_star1\":%u,\"centroid_x_star1\":%d,\"centroid_y_star1\":%d,"
+                                    "\"catalogue_star2\":%u,\"centroid_x_star2\":%d,\"centroid_y_star2\":%d,"
+                                    "\"catalogue_star3\":%u,\"centroid_x_star3\":%d,\"centroid_y_star3\":%d,"
+                                    "\"capture_time_ms\":%u,\"detection_time_ms\":%u,\"identification_time_ms\":%u,"
+                                    "\"x_axis_rate_micro\":%ld,\"y_axis_rate_micro\":%ld,\"z_axis_rate_micro\":%ld,"
+                                    "\"q0_micro\":%ld,\"q1_micro\":%ld,\"q2_micro\":%ld}",
+                                    data->num_stars_detected, data->star_image_noise, data->invalid_stars,
+                                    data->num_stars_identified, data->identification_mode, data->image_dark_value,
+                                    data->image_capture_success ? "true" : "false", data->detection_success ? "true" : "false",
+                                    data->identification_success ? "true" : "false", data->attitude_success ? "true" : "false",
+                                    data->processing_time_error ? "true" : "false", data->tracking_module_enabled ? "true" : "false",
+                                    data->prediction_enabled ? "true" : "false", data->comms_error ? "true" : "false",
+                                    data->sample_period, data->star1_confidence, data->star2_confidence, data->star3_confidence,
+                                    data->magnitude_star1, data->magnitude_star2, data->magnitude_star3, data->catalogue_star1,
+                                    data->centroid_x_star1, data->centroid_y_star1, data->catalogue_star2, data->centroid_x_star2,
+                                    data->centroid_y_star2, data->catalogue_star3, data->centroid_x_star3, data->centroid_y_star3,
+                                    data->capture_time_ms, data->detection_time_ms, data->identification_time_ms,
+                                    data->x_axis_rate_micro, data->y_axis_rate_micro, data->z_axis_rate_micro, data->q0_micro, data->q1_micro, data->q2_micro);
+
+    if (snprintf_ret < 0) {
+        return 2; // Error: snprintf encoding error
+    }
+    if (snprintf_ret >= json_output_str_len) {
+        return 3; // Error: string buffer too short
+    }
+
+    return 0;
+}
+
+uint8_t ADCS_unix_time_ms_TO_json(const uint64_t *data, char json_output_str[], uint16_t json_output_str_len) {
+    if (data == NULL || json_output_str == NULL || json_output_str_len < 50) {
+        return 1; // Error: invalid input or too short buffer
+    }
+
+    uint16_t ms = *data % 1000;
+    const time_t time_s = *data / 1000;
+    struct tm  time_struct;
+    char       buf[80];
+
+    // Format time, "ddd yyyy-mm-dd hh:mm:ss"
+    time_struct = *localtime(&time_s);
+    strftime(buf, sizeof(buf), "%a %Y-%m-%d %H:%M:%S", &time_struct);
+
+    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len,"{\"current_adcs_unix_time\":%s.%d}",buf, ms);
+
+    if (snprintf_ret < 0) {
+        return 2; // Error: snprintf encoding error
+    }
+    if (snprintf_ret >= json_output_str_len) {
+        return 3; // Error: string buffer too short
+    }
+
+    return 0;
+}
+
+uint8_t ADCS_sd_log_config_struct_TO_json(const ADCS_sd_log_config_struct *data, char json_output_str[], uint16_t json_output_str_len) {
+        if (data == NULL || json_output_str == NULL || json_output_str_len < 150) {
+        return 1; // Error: invalid input
+    }
+    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len,
+                                    "{\"which_log\":%d,\"log_bitmask\":0x%.2x%.2x%.2x%.2x%.2x%.2x%.2x%.2x%.2x%.2x,\"log_period\":%d,\"which_sd\":%d}",                                 
+                                    data->which_log, (data->log_bitmask)[0], (data->log_bitmask)[1], (data->log_bitmask)[2], (data->log_bitmask)[3], 
+                                    (data->log_bitmask)[4], (data->log_bitmask)[5], (data->log_bitmask)[6], (data->log_bitmask)[7], (data->log_bitmask)[8], 
+                                    (data->log_bitmask)[9], data->log_period,  data->which_sd);
+
+    if (snprintf_ret < 0) {
+        return 2; // Error: snprintf encoding error
+    }
+    if (snprintf_ret >= json_output_str_len) {
+        return 3; // Error: string buffer too short
+    }
+    
     return 0;
 }

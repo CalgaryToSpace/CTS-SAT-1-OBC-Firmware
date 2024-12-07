@@ -24,8 +24,10 @@ Follow through this guide, and follow through the rest of the numbered guides in
 ### Troubleshooting
 
 1. Check that your MicroUSB cable supports data transfer. Many MicroUSB cables are power-only.
-2. Disable your antivirus if it starts removing the compiler.
-3. Use the Ctrl+Shift+P command palate to run "STM32: Install all the build tools ...".
+2. The dev-board has two connectors on it, only one of which (the CN1 connector) can be used to plug in the MicroUSB cable. Ensure that you are using the correct connector.
+3. Disable your antivirus if it starts removing the compiler.
+4. Use the Ctrl+Shift+P command palate to run "STM32: Install all the build tools ...".
+5. The OBC has two USB connectors which are required for uploading code (the ST-Link) and communicating with a computer (the umbilical). Ensure the correct one(s) are connected to your computer when testing with the OBC.
 
 
 ## Testing and Debugging the Firmware
