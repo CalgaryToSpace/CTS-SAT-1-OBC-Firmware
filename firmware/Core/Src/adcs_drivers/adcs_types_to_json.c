@@ -6,7 +6,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
-
+#include <time.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -500,13 +500,25 @@ uint8_t ADCS_augmented_sgp4_params_struct_TO_json(const ADCS_augmented_sgp4_para
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
 uint8_t ADCS_tracking_controller_target_struct_TO_json(const ADCS_tracking_controller_target_struct_t *data, char json_output_str[], uint16_t json_output_str_len) {
-    if (data == NULL || json_output_str == NULL || json_output_str_len < 40) {
+    if (data == NULL || json_output_str == NULL || json_output_str_len < 90) {
         return 1; // Error: invalid input
     }
-            // 4 decimals in %.4f longitude and latitude gives within roughly 11 m 
+
+    // snprintf doesn't support printing floats, so convert them separately
+
+    char longitude_string[20];
+    char latitude_string[20];
+    char altitude_string[20];
+    
+    ADCS_convert_double_to_string(data->longitude_degrees, 4, &longitude_string[0], 20);
+    ADCS_convert_double_to_string(data->latitude_degrees, 4, &latitude_string[0], 20);
+    ADCS_convert_double_to_string(data->altitude_meters, 4, &altitude_string[0], 20);
+  
+
+    // 4 decimals in %.4f longitude and latitude gives within roughly 11 m 
     int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, 
-                                "{\"lon\":%.4f,\"lat\":%.4f,\"alt\":%.4f}", 
-                                data->longitude_degrees, data->latitude_degrees, data->altitude_meters);
+                                "{\"lon\":%s,\"lat\":%s,\"alt\":%s}", 
+                                longitude_string, latitude_string, altitude_string);
 
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error
@@ -1121,7 +1133,16 @@ uint8_t ADCS_unix_time_ms_TO_json(const uint64_t *data, char json_output_str[], 
         return 1; // Error: invalid input or too short buffer
     }
 
-    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len,"{\"current_adcs_unix_time\":%llu}",*data);
+    uint16_t ms = *data % 1000;
+    const time_t time_s = *data / 1000;
+    struct tm  time_struct;
+    char       buf[80];
+
+    // Format time, "ddd yyyy-mm-dd hh:mm:ss"
+    time_struct = *localtime(&time_s);
+    strftime(buf, sizeof(buf), "%a %Y-%m-%d %H:%M:%S", &time_struct);
+
+    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len,"{\"current_adcs_unix_time\":%s.%d}",buf, ms);
 
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error
