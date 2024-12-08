@@ -200,8 +200,6 @@ uint8_t STM32_internal_flash_dual_bank_boot_toggle(uint8_t dual_bank_mode)
     }
 
     return 0;
-
-    return 0;
 }
 
 uint8_t STM32_internal_flash_get_active_flash_bank(void)
