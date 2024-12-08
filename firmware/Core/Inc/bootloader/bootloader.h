@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+
+typedef void (*pFunction)(void);
 typedef struct
 {
     uint32_t address;       // application address
