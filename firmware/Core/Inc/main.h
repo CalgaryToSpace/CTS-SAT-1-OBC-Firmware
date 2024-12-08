@@ -51,6 +51,10 @@ extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;
 extern UART_HandleTypeDef huart3;
 
+extern DMA_HandleTypeDef hdma_uart4_rx;
+extern DMA_HandleTypeDef hdma_usart1_rx;
+
+
 extern SPI_HandleTypeDef hspi1;
 
 extern TIM_HandleTypeDef htim16;
