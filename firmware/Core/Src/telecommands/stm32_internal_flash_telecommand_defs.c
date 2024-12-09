@@ -139,8 +139,8 @@ uint8_t TCMDEXEC_stm32_internal_flash_get_option_bytes(const char *args_str, TCM
              "  \"USERType\": %lu,\n"
              "  \"USERConfig\": %lu,\n"
              "  \"PCROPConfig\": %lu,\n"
-             "  \"PCROPStartAddr\": \"0x%08X\",\n"
-             "  \"PCROPEndAddr\": \"0x%08X\"\n"
+             "  \"PCROPStartAddr\": \"0x%lX\",\n"
+             "  \"PCROPEndAddr\": \"0x%lX\"\n"
              "}",
              option_bytes.OptionType,
              option_bytes.WRPArea,
