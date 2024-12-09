@@ -15,6 +15,8 @@ void BOOTLOADER_Jump_To_Application(uint32_t address);
 
 void BOOTLOADER_deinitialize_peripherals();
 
+void Deinitialize_RTOS(void);
+
 void BOOTLOADER_Jump_To_Golden_Copy();
 
 #endif // __INCLUDE_GUARD__BOOTLOADER_H__
