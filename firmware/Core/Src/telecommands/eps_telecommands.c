@@ -525,7 +525,8 @@ uint8_t TCMDEXEC_eps_read_vbat_voltage_with_adc(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
-    
-    int16_t voltage_raw;
+    uint16_t  voltage_raw;
+
+    voltage_raw = EPS_read_vbat_voltage_with_ADC();
 }
 
