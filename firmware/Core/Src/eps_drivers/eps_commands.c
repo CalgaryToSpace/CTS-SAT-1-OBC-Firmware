@@ -607,11 +607,17 @@ uint8_t EPS_CMD_zero_reset_cause_counters() {
 uint8_t EPS_read_vbat_voltage_with_ADC() {
 	//take ADC reading from HAL library
 	//test with 5V battery to see if its getting the correct voltage
+	uint16_t rawVoltage;
 
-	uint8_t voltage = 0;
 
+	HAL_ADC_Start(&hadc1);
+
+	HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
+
+	rawVoltage = HAL_ADC_GetValue(&hadc1);
+	
 	//return voltage
 
 	
-	return 0;
+	return rawVoltage;
 }

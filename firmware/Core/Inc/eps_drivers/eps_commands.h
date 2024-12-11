@@ -3,6 +3,7 @@
 #define INCLUDE_GUARD__EPS_COMMANDS_H__
 
 #include "eps_drivers/eps_types.h"
+#include "stm32l4xx_hal_adc.h"
 
 #include <stdint.h>
 
