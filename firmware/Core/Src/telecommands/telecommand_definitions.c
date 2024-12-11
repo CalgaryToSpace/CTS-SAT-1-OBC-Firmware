@@ -663,6 +663,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
+        .tcmd_name = "adcs_download_sd_file",
+        .tcmd_func = TCMDEXEC_adcs_download_sd_file,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_IN_PROGRESS, // TODO: change this once the function is done
+    }, 
+    {
         .tcmd_name = "adcs_generic_command",
         .tcmd_func = TCMDEXEC_adcs_generic_command,
         .number_of_args = 2, 

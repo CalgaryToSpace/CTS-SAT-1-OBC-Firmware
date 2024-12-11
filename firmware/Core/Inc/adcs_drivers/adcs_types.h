@@ -547,4 +547,9 @@ typedef struct ADCS_sd_card_format_erase_progress_struct_t {
     bool erase_all_busy:1; // 1-bit bool
 } ADCS_sd_card_format_erase_progress_struct_t;
 
+typedef struct ADCS_file_download_buffer_struct_t {
+    uint16_t packet_counter; 
+    uint8_t file_bytes[20];  
+} ADCS_file_download_buffer_struct_t;
+
 #endif /* INC_ADCS_TYPES_H_ */

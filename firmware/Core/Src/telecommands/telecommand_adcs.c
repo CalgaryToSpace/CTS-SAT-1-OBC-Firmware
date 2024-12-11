@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <inttypes.h>
+#include <math.h>
 
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_commands.h"
@@ -1728,7 +1729,7 @@ uint8_t TCMDEXEC_adcs_get_sd_download_list(const char *args_str, TCMD_Telecomman
 
 }
 
-/* TODO: not finished yet
+
 /// @brief Telecommand: Download a specific file from the ADCS SD card
 /// @param args_str 
 ///     - Arg 0: The index of the file to download
@@ -1738,27 +1739,104 @@ uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str, TCMD_TelecommandCha
 
     uint8_t status;
 
-    // Load a download block from the ADCS
-    status = ADCS_load_file_download_block(filetype, counter, offset, block_length);
+    // parse file index argument
+    uint64_t file_index;
+    TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &file_index);
 
-    // Wait until the download block is ready
-    ADCS_download_block_ready_struct_t ready_struct;
-    do {
-        status = ADCS_get_download_block_ready_telemetry(&ready_struct);
-    } while (ready_struct.ready != true);
-    
-    // Initiate download burst, ignoring the hole map
-    status = ADCS_initiate_download_burst(message_length, true);
+    // get the data about the file to download
+    status = ADCS_reset_file_list_read_pointer();
+    for (uint16_t i = 0; i < file_index; i++) {
+        status = ADCS_advance_file_list_read_pointer();
+    }
+    ADCS_file_info_telemetry_struct_t file_info;
+    status = ADCS_get_file_info_telemetry(&file_info);
 
-     
-    /// If the Initiate File Download Burst command is issued on the I2C communications link, it is
-    /// expected to successively perform up to 1024 read transactions from the remote side, each with
-    /// 22 bytes length, again with the same format as the Download File Packet above.
-    
-    
+    /*
+    The file is uniquely identified by the File Type and Counter parameters. The Offset and Block
+    Length parameters indicate which part of the file to buffer in memory. The maximum Block
+    Length is 20 kB. [Actually, 20480 bytes (20 bytes * 1024 packets). Some files may require multiple blocks, such as image files]
+    */
 
+    uint16_t blocks_required = ceil(file_info.file_size / 20480.0);
+    uint64_t remaining_bytes = file_info.file_size;
+
+    for (uint16_t block_counter = 0; block_counter < blocks_required; block_counter++) {
+        // repeat all this for every block
+
+        uint16_t bytes_to_load = 1024;
+        if (remaining_bytes < bytes_to_load) {
+            bytes_to_load = remaining_bytes;
+        }
+        
+        // Load a download block from the ADCS
+        status = ADCS_load_file_download_block(file_info.file_type, block_counter, 0, bytes_to_load);
+            // TODO: I'm not sure what, exactly, the 'offset' parameter in this function is for. I think the counter is the block_counter, but also not sure.
+
+        // Wait until the download block is ready
+        ADCS_download_block_ready_struct_t ready_struct;
+        do {
+            status = ADCS_get_download_block_ready_telemetry(&ready_struct);
+        } while (ready_struct.ready != true);
+        
+        // Initiate download burst, ignoring the hole map
+        status = ADCS_initiate_download_burst(bytes_to_load, true);
+            // TODO: I suspect that the message_length parameter represents the number of bytes to load, but I'm not sure.
+
+        /* 
+        If the Initiate File Download Burst command is issued on the I2C communications link, it is
+        expected to successively perform up to 1024 read transactions from the remote side, each with
+        22 bytes length, again with the same format as [TLM 241, File Download Buffer:] 
+        [...] (the number [of read transactions] depends on the Block Length specified with the Load File Download Block command), 
+        each with a payload length of 20 bytes in rapid succession. Each download packet will have a 
+        header ID that matches that of the Initiate File Download Burst command. The following two bytes 
+        will contain the counter of the packet in the burst. The counter makes it possible to keep track of
+        which packets have been received on the remote side. 
+        */
+
+        ADCS_file_download_buffer_struct_t buffer[bytes_to_load];
+        for (uint16_t i = 0; i < bytes_to_load; i++) {
+            status = ADCS_get_file_download_buffer(&(buffer[i]));
+        }
+
+        /*
+        The Hole Map is a bitmap, where each bit represents one 20-byte packet out of the complete
+        download block. Since there are at most 1024 packets in one file download block, the Hole
+        Map is also 1024 bits long, or 128 bytes.
+        To make the CubeComputer resend only the packets that have been missed by the remote
+        side, the remote component must upload the Hole Map to the CubeComputer by performing
+        up to 8 Hole Map commands (each Hole Map command contains 16 bytes of the Hole Map).
+        After uploading the Hole Map, another Initiate Download Burst command can be issued, but
+        this time with the Ignore Hole Map parameter set to false. The CubeComputer will then
+        transmit only the packets that have a corresponding ‘0’ in the Hole Map.
+        */
+
+        bool hole_map[1024];
+        for (uint16_t i = 0; i< 1024; i++) {
+            hole_map[i] = false;
+            for (uint16_t j = 0; j < bytes_to_load; j++) {
+                // iterate through the buffer and determine which packets have been received
+                if (buffer[j].packet_counter == i) {
+                    hole_map[i] = true;
+                    break;
+                }
+            }
+        }
+
+        for (uint8_t i = 1; i <= 8; i++) {
+            uint8_t hole_bytes[16];
+            // convert an appropriate slice of the array of bools into a 16-byte array
+            for (uint8_t j = ((i-1) * 128); j < (i * 128); j++) {
+                // 8 bits * 16 bytes = 128 bits per Hole Map, starting at index (i - 1) * 128
+                hole_bytes[j / 128] |= hole_map[j] << (j % 4); // TODO: test this
+            }
+
+            // now set the hole map
+            status = ADCS_set_hole_map(&hole_bytes, i);
+        }
+
+        remaining_bytes -= bytes_to_load;
+    }
    return 0;
 
 
 }
-*/

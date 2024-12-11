@@ -616,32 +616,44 @@ uint8_t ADCS_pack_to_file_info_struct(uint8_t *raw_data, ADCS_file_info_telemetr
     return 0;
 }
 
-/// @brief Unpack the Download Block Ready telemetry data into the provided struct.
+/// @brief Parse the Download Block Ready telemetry data into the provided struct.
 /// @param[in] data_received Pointer to the telemetry data array.
-/// @param[out] telemetry Pointer to the struct to populate.
+/// @param[out] result Pointer to the struct to populate.
 /// @return 0 once complete.
-uint8_t ADCS_pack_to_download_block_ready_struct(const uint8_t *data_received, ADCS_download_block_ready_struct_t *telemetry) {
+uint8_t ADCS_pack_to_download_block_ready_struct(const uint8_t *data_received, ADCS_download_block_ready_struct_t *result) {
 
 
     // Unpack Ready (1 bit) and ParameterError (1 bit) from the first byte
-    telemetry->ready = (data_received[0] & 0x01) != 0;               // Extract the 1st bit
-    telemetry->parameter_error = (data_received[0] & 0x02) != 0;    // Extract the 2nd bit
+    result->ready = (data_received[0] & 0x01) != 0;               // Extract the 1st bit
+    result->parameter_error = (data_received[0] & 0x02) != 0;    // Extract the 2nd bit
 
     // Unpack Block CRC16 (16 bits, reverse byte order)
-    telemetry->block_crc16 = (uint16_t)(data_received[2]) | ((uint16_t)(data_received[1]) << 8);
+    result->block_crc16 = (uint16_t)(data_received[2]) | ((uint16_t)(data_received[1]) << 8);
 
     // Unpack Block Length (16 bits, reverse byte order)
-    telemetry->block_length = (uint16_t)(data_received[4]) | ((uint16_t)(data_received[3]) << 8);
+    result->block_length = (uint16_t)(data_received[4]) | ((uint16_t)(data_received[3]) << 8);
 
     return 0; 
 }
 
-/// @brief Unpack the SD Card Format/Erase Progress data into the provided struct.
+/// @brief Parse the SD Card Format/Erase Progress data into the provided struct.
 /// @param[in] data_received Pointer to the telemetry data array.
-/// @param[out] telemetry Pointer to the struct to populate.
+/// @param[out] result Pointer to the struct to populate.
 /// @return 0 once complete.
 uint8_t ADCS_pack_to_sd_card_format_erase_progress_struct(uint8_t *data_received, ADCS_sd_card_format_erase_progress_struct_t *result) {
     result->format_busy = (data_received[0] & 0x01) != 0; // First bit: Format Busy
     result->erase_all_busy = (data_received[0] & 0x02) != 0; // Second bit: Erase All Busy
+    return 0;
+}
+
+/// @brief Parse the File Download Buffer data into the provided struct.
+/// @param[in] data_received Pointer to the telemetry data array.
+/// @param[out] result Pointer to the struct to populate.
+/// @return 0 once complete.
+uint8_t ADCS_pack_to_file_download_buffer_struct(uint8_t *data_received, ADCS_file_download_buffer_struct_t *result) {
+    result->packet_counter = (uint16_t)data_received[0] | ((uint16_t)data_received[1] << 8);
+    for (uint8_t i = 0; i < 20; i++) {
+        result->file_bytes[i] = data_received[2+i];
+    }
     return 0;
 }

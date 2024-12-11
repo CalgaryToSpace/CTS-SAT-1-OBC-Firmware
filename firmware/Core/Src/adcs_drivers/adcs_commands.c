@@ -1162,7 +1162,7 @@ uint8_t ADCS_erase_file(ADCS_file_type_enum_t filetype, uint8_t filecounter, boo
 }
 
 /// @brief Retrieve the SD card format/erase progress telemetry from the ADCS.
-/// @param[out] telemetry Pointer to the struct where the telemetry data will be stored.
+/// @param[out] output_struct Pointer to the struct where the telemetry data will be stored.
 /// @return 0 if successful, non-zero if an error occurred in transmission or processing.
 uint8_t ADCS_get_sd_card_format_erase_progress(ADCS_sd_card_format_erase_progress_struct_t *output_struct) {
 
@@ -1171,6 +1171,21 @@ uint8_t ADCS_get_sd_card_format_erase_progress(ADCS_sd_card_format_erase_progres
 
     // Parse the received data
     ADCS_pack_to_sd_card_format_erase_progress_struct(data_received, output_struct);
+
+    return tlm_status; // Success
+}
+
+/// @brief Retrieve the File Download Buffer telemetry from the ADCS.
+/// @param[out] output_struct Pointer to the struct where the telemetry data will be stored.
+/// @return 0 if successful, non-zero if an error occurred in transmission or processing.
+uint8_t ADCS_get_file_download_buffer(ADCS_file_download_buffer_struct_t *output_struct) {
+
+    uint8_t data_received[22]; // Buffer to hold the received telemetry data
+    
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_FILE_DOWNLOAD_BUFFER, data_received, sizeof(data_received), ADCS_INCLUDE_CHECKSUM);
+
+    // Parse the received data
+    ADCS_pack_to_file_download_buffer_struct(data_received, output_struct);
 
     return tlm_status; // Success
 }

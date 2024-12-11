@@ -132,6 +132,6 @@ uint8_t ADCS_get_hole_map(uint8_t *hole_map_struct, uint8_t which_map);
 uint8_t ADCS_format_sd();
 uint8_t ADCS_erase_file(ADCS_file_type_enum_t filetype, uint8_t filecounter, bool erase_all);
 uint8_t ADCS_get_sd_card_format_erase_progress(ADCS_sd_card_format_erase_progress_struct_t *output_struct);
-
+uint8_t ADCS_get_file_download_buffer(ADCS_file_download_buffer_struct_t *output_struct);
 
 #endif /* INC_ADCS_COMMANDS_H_ */
