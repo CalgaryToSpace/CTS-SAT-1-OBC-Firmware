@@ -66,7 +66,6 @@ RAM2 (xrw)      : ORIGIN = 0x10000000, LENGTH = 64K
 RAM3 (xrw)      : ORIGIN = 0x20040000, LENGTH = 384K
 FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 1024K
 GOLDEN_COPY (xrw) : ORIGIN = 0x8100000, LENGTH = 1024K /* Starts from FLASH origin + Flash length */ 
-
 }
 
 /* Define output sections */
