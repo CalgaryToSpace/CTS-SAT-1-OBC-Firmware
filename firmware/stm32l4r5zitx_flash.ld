@@ -7,7 +7,7 @@
 **  Author		: STM32CubeMX
 **
 **  Abstract    : Linker script for STM32L4R5ZITx series
-**                2048Kbytes FLASH and 640Kbytes RAM
+**                2048Kbytes FLASH and 1088Kbytes RAM
 **
 **                Set heap size, stack size and stack location according
 **                to application requirements.
@@ -61,10 +61,12 @@ _Min_Stack_Size = 0x400; /* required amount of stack */
 /* Specify the memory areas */
 MEMORY
 {
-RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 192K
+RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 640K
 RAM2 (xrw)      : ORIGIN = 0x10000000, LENGTH = 64K
 RAM3 (xrw)      : ORIGIN = 0x20040000, LENGTH = 384K
-FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 2048K
+FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 1024K
+GOLDEN_COPY (xrw) : ORIGIN = 0x8100000, LENGTH = 1024K /* Starts from FLASH origin + Flash length */ 
+
 }
 
 /* Define output sections */
@@ -199,6 +201,7 @@ SECTIONS
     libgcc.a ( * )
   }
 
+  .ARM.attributes 0 : { *(.ARM.attributes) }
 }
 
 
