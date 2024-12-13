@@ -10,7 +10,7 @@ uint64_t GPS_last_pps_time = 0;
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
     if (TIM_get_current_unix_epoch_time_ms() - GPS_last_pps_time > 800) {
-
+        GPS_last_pps_time = TIM_get_current_unix_epoch_time_ms();
         if (GPIO_Pin != PIN_GPS_PPS_IN_Pin) {
             return;
         }
