@@ -10,7 +10,8 @@
 
 #define TCMD_PREFIX_STR "CTS1+"
 #define TCMD_PREFIX_STR_LEN 5
-#define TCMD_HEX_ARRAY_LEN 32
+
+static const uint8_t TCMD_SHA256_LENGTH_BYTES = 32;
 
 uint8_t TCMD_is_char_alphanumeric(char c);
 uint8_t TCMD_is_char_valid_telecommand_name_char(char c);
