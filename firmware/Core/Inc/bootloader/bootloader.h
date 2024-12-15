@@ -5,17 +5,10 @@
 
 
 typedef void (*pFunction)(void);
-typedef struct
-{
-    uint32_t address;       // application address
-    uint32_t *function_ptr; // stack pointer
-} Bootloader_Jump_To_Application_Args_t;
 
 void BOOTLOADER_Jump_To_Application(uint32_t address);
 
 void BOOTLOADER_deinitialize_peripherals();
-
-void Deinitialize_RTOS(void);
 
 void BOOTLOADER_Jump_To_Golden_Copy();
 
