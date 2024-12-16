@@ -1,22 +1,15 @@
+#include "main.h"
 #include "bootloader/bootloader.h"
 #include "stm32_internal_flash_drivers/stm32_internal_flash_drivers.h"
-
-#include "main.h"
-#include "stm32l4xx_hal.h"
-#include "stm32l4xx.h"
-#include "FreeRTOS.h"
-#include "task.h"
-#include "cmsis_os2.h"
-
-
-#include "FreeRTOS.h"
-#include "task.h"
-
 #include "log.h"
 
+#include "stm32l4xx_hal.h"
+#include "stm32l4xx.h"
 
 
 
+/// @brief Deinitialize all peripherals before jumping 
+/// @param  
 void BOOTLOADER_deinitialize_peripherals(void) {
     /* Deinitialize UART peripherals */
     HAL_UART_DeInit(&hlpuart1);
@@ -116,8 +109,10 @@ void BOOTLOADER_deinitialize_peripherals(void) {
     HAL_SuspendTick();
 }
 
-
-void BOOTLOADER_Jump_To_Application(uint32_t address)
+/// @brief Jumps to any point in memory 
+/// @param address The Address to jump to
+/// @return Only returns if address is invalid, returning 1
+uint8_t BOOTLOADER_Jump_To_Application(uint32_t address)
 {
 
     pFunction JumpToApp;    
@@ -129,7 +124,7 @@ void BOOTLOADER_Jump_To_Application(uint32_t address)
     if (new_stack_pointer == 0xFFFFFFFF ||  
         new_reset_handler == 0xFFFFFFFF) {                 
         LOG_message(LOG_SYSTEM_OBC, LOG_SEVERITY_WARNING, LOG_SINK_ALL, "Invalid jump address. Values are not defined.");
-        return;
+        return 1;
     }
 
     BOOTLOADER_deinitialize_peripherals();
@@ -150,11 +145,17 @@ void BOOTLOADER_Jump_To_Application(uint32_t address)
     JumpToApp = (pFunction)new_reset_handler;
     JumpToApp();
 
+    // this should never be reached. this is to appease the compiler
+    return 0;
 
 }
 
-void BOOTLOADER_Jump_To_Golden_Copy()
+/// @brief Jumps to golden copy
+/// @return Only returns if jump is unsuccessful
+uint8_t BOOTLOADER_Jump_To_Golden_Copy()
 {
-    BOOTLOADER_Jump_To_Application(STM32_INTERNAL_FLASH_MEMORY_REGION_GOLDEN_COPY_ADDRESS);
-    return;
+
+    const uint8_t jump_failed = BOOTLOADER_Jump_To_Application(STM32_INTERNAL_FLASH_MEMORY_REGION_GOLDEN_COPY_ADDRESS);
+    
+    return jump_failed;
 }
