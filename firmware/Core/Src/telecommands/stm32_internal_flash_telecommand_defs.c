@@ -156,7 +156,8 @@ uint8_t TCMDEXEC_stm32_internal_flash_get_option_bytes(const char *args_str, TCM
 }
 
 /// @brief Given a 1 or 0, enables or disables dual bank boot option for internal flash
-/// @param args_str A single number: 1 or 0
+/// @param args_str 
+/// - Arg 0: A 1 or 0. 1 enables dual bank boot, 0 disables
 /// @param response_output_buf Prints error if it occurs
 /// @return 0 on success, > 0 otherwise
 uint8_t TCMDEXEC_stm32_internal_flash_set_dual_bank_boot(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
