@@ -1,11 +1,11 @@
+#include <string.h>
+
 #include "stm32_internal_flash_drivers/stm32_internal_flash_drivers.h"
 
 #include "stm32l4r5xx.h"
 #include "stm32l4xx_hal.h" // must include this before stm32l4xx_hal_flash.h
 #include "stm32l4xx_hal_flash.h"
 #include "stm32l4xx_hal_flash_ex.h"
-#include <string.h>
-#include "stm32_internal_flash_drivers.h"
 
 /// @brief Writes data to the flash memory in chunks of 8 bytes.
 /// @param address Address in the flash memory where the data will be written.
