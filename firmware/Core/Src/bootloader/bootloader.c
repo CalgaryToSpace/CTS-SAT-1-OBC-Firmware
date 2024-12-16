@@ -9,8 +9,7 @@
 
 
 /// @brief Deinitialize all peripherals before jumping 
-/// @param  
-void BOOTLOADER_deinitialize_peripherals(void) {
+void BOOTLOADER_deinitialize_peripherals() {
     /* Deinitialize UART peripherals */
     HAL_UART_DeInit(&hlpuart1);
     HAL_UART_DeInit(&huart4);
