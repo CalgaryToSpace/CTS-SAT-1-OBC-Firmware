@@ -151,7 +151,11 @@ uint8_t STM32_internal_flash_get_option_bytes(FLASH_OBProgramInitTypeDef *ob_dat
     HAL_FLASHEx_OBGetConfig(ob_data);
     return 0;
 }
-uint8_t STM32_internal_flash_dual_bank_boot_toggle(uint8_t dual_bank_mode)
+
+/// @brief Sets the dual bank mode on or off depending on param
+/// @param dual_bank_mode 1 or 0
+/// @return 0 on success, > 0 otherwise
+uint8_t STM32_internal_flash_set_dual_bank_boot(uint8_t dual_bank_mode)
 {
 
     __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
@@ -174,7 +178,6 @@ uint8_t STM32_internal_flash_dual_bank_boot_toggle(uint8_t dual_bank_mode)
     // Set BFB2 bit (boot from Bank 2)
     obInit.OptionType = OPTIONBYTE_USER;
     obInit.USERConfig = (dual_bank_mode == 0 ? OB_BFB2_DISABLE : OB_BFB2_ENABLE); // Set BFB2
-    // obInit.USERConfig = OB_BFB2_ENABLE; // Set BFB2
 
     // Apply the new option byte configuration
     if (HAL_FLASHEx_OBProgram(&obInit) != HAL_OK)
