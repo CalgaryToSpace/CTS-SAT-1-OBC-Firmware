@@ -1041,7 +1041,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     },
     {
         .tcmd_name = "stm32_internal_flash_boot_from_bank_2",
-        .tcmd_func = TCMDEXEC_stm32_internal_flash_boot_from_bank_2,
+        .tcmd_func = TCMDEXEC_stm32_internal_flash_set_dual_bank_boot,
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     }

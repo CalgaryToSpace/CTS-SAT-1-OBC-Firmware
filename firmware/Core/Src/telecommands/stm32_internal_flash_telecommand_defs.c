@@ -154,7 +154,12 @@ uint8_t TCMDEXEC_stm32_internal_flash_get_option_bytes(const char *args_str, TCM
              option_bytes.PCROPEndAddr);
     return 0;
 }
-uint8_t TCMDEXEC_stm32_internal_flash_boot_from_bank_2(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
+
+/// @brief Given a 1 or 0, enables or disables dual bank boot option for internal flash
+/// @param args_str A single number: 1 or 0
+/// @param response_output_buf Prints error if it occurs
+/// @return 0 on success, > 0 otherwise
+uint8_t TCMDEXEC_stm32_internal_flash_set_dual_bank_boot(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
 {
     uint64_t dual_bank_mode = 0;
     const uint8_t arg_res = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &dual_bank_mode);
@@ -164,7 +169,7 @@ uint8_t TCMDEXEC_stm32_internal_flash_boot_from_bank_2(const char *args_str, TCM
         return 1;
     }
 
-    const uint8_t res = STM32_internal_flash_dual_bank_boot_toggle((uint8_t)dual_bank_mode);
+    const uint8_t res = STM32_internal_flash_set_dual_bank_boot((uint8_t)dual_bank_mode);
     if (res != 0)
     {
         snprintf(response_output_buf, response_output_buf_len, "Error Toggling dual bank: %u", res);
@@ -172,9 +177,13 @@ uint8_t TCMDEXEC_stm32_internal_flash_boot_from_bank_2(const char *args_str, TCM
     }
     return 0;
 }
+
+/// @brief Prints the active flash bank where the firmware boots from
+/// @param response_output_buf Prints the active bank
 uint8_t TCMDEXEC_stm32_internal_flash_get_active_flash_bank(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
 {
     const uint8_t stm32_internal_active_flash_bank = STM32_internal_flash_get_active_flash_bank();
+
     const char * active_bank_str =  stm32_internal_active_flash_bank == 0 ? "Flash Bank1 mapped at 0x08000000 (and aliased @0x00000000) and Flash Bank2 mapped at 0x08080000 (and aliased at 0x00080000)"
      : "Flash Bank2 mapped at 0x08000000 (and aliased @0x00000000) and Flash Bank1 mapped at 0x08080000 (and aliased at 0x00080000)";
     snprintf(response_output_buf, response_output_buf_len, "Current active internal flash bank: %s", active_bank_str);
