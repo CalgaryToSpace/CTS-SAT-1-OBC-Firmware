@@ -1,10 +1,11 @@
+#include <string.h>
+
 #include "stm32_internal_flash_drivers/stm32_internal_flash_drivers.h"
 
 #include "stm32l4r5xx.h"
 #include "stm32l4xx_hal.h" // must include this before stm32l4xx_hal_flash.h
 #include "stm32l4xx_hal_flash.h"
 #include "stm32l4xx_hal_flash_ex.h"
-#include <string.h>
 
 /// @brief Writes data to the flash memory in chunks of 8 bytes.
 /// @param address Address in the flash memory where the data will be written.
@@ -138,4 +139,82 @@ uint8_t STM32_internal_flash_erase(uint16_t start_page_erase, uint16_t number_of
     default:
         return 0;
     }
+}
+
+/// @brief Gets option bytes configuration from the stm32 internal flash memory
+/// @param ob_data pointer to an FLASH_OBProgramInitTypeDef structure that
+/// contains the configuration information for the programming.
+/// @return 0 on success, > 0 on error
+uint8_t STM32_internal_flash_get_option_bytes(FLASH_OBProgramInitTypeDef *ob_data)
+{
+    // returns void
+    HAL_FLASHEx_OBGetConfig(ob_data);
+    return 0;
+}
+
+/// @brief Sets the dual bank mode on or off depending on param
+/// @param dual_bank_mode 1 or 0
+/// @return 0 on success, > 0 otherwise
+uint8_t STM32_internal_flash_set_dual_bank_boot(uint8_t dual_bank_mode)
+{
+
+    __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
+
+    // Unlock option bytes
+    if (HAL_FLASH_Unlock() != HAL_OK)
+    {
+        return 1;
+    }
+
+    if (HAL_FLASH_OB_Unlock() != HAL_OK)
+    {
+        return 2;
+    }
+
+    // Get current option bytes configuration
+    FLASH_OBProgramInitTypeDef obInit;
+    HAL_FLASHEx_OBGetConfig(&obInit);
+    const uint8_t wanted_bank_mode = dual_bank_mode == 0 ? OB_BFB2_DISABLE : OB_BFB2_ENABLE;
+    const uint8_t current_bank_mode = STM32_internal_flash_get_active_flash_bank();
+
+    if (wanted_bank_mode == current_bank_mode) {
+        return 3;
+    }
+
+    // Set BFB2 bit (boot from Bank 2)
+    obInit.OptionType = OPTIONBYTE_USER;
+    obInit.USERConfig = wanted_bank_mode; // Set BFB2
+
+    // Apply the new option byte configuration
+    if (HAL_FLASHEx_OBProgram(&obInit) != HAL_OK)
+    {
+        return 4;
+    }
+
+    // Lock option bytes
+    if (HAL_FLASH_OB_Lock() != HAL_OK)
+    {
+        return 5;
+    }
+
+    if (HAL_FLASH_Lock() != HAL_OK)
+    {
+        return 6;
+    }
+
+    // Launch the option byte loading to apply changes
+    if (HAL_FLASH_OB_Launch() != HAL_OK)
+    {
+        return 7;
+    }
+
+    return 0;
+}
+
+/// @brief Returns active flash bank
+/// @return 0 is Flash Bank 1, 1 is Flash Bank 2
+uint8_t STM32_internal_flash_get_active_flash_bank()
+{
+    volatile uint8_t remap = READ_BIT(FLASH->OPTR, FLASH_OPTR_BFB2);
+    return remap;
 }
