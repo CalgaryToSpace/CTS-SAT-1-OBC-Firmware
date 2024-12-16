@@ -942,6 +942,13 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     
+    {
+        .tcmd_name = "stm32_internal_flash_set_dual_bank_boot",
+        .tcmd_func = TCMDEXEC_stm32_internal_flash_set_dual_bank_boot,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    
 
     // ****************** END SECTION: stm32_internal_flash_telecommand_defs ******************
 
@@ -1037,12 +1044,6 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "jump_to_golden_copy",
         .tcmd_func = TCMDEXEC_jump_to_golden_copy,
         .number_of_args = 0,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },
-    {
-        .tcmd_name = "stm32_internal_flash_boot_from_bank_2",
-        .tcmd_func = TCMDEXEC_stm32_internal_flash_set_dual_bank_boot,
-        .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     }
     // ****************** END SECTION: bootloader_telecommand_defs ******************
