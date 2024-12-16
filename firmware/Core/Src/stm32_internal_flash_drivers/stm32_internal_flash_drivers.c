@@ -202,7 +202,8 @@ uint8_t STM32_internal_flash_dual_bank_boot_toggle(uint8_t dual_bank_mode)
     return 0;
 }
 
-uint8_t STM32_internal_flash_get_active_flash_bank(void)
+/// @brief Returns active flash bank 
+uint8_t STM32_internal_flash_get_active_flash_bank()
 {
     volatile uint32_t remap = READ_BIT(SYSCFG->MEMRMP, 0x1 << 8);
     return remap;

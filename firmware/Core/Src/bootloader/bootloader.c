@@ -1,7 +1,7 @@
 #include "main.h"
 #include "bootloader/bootloader.h"
 #include "stm32_internal_flash_drivers/stm32_internal_flash_drivers.h"
-#include "log.h"
+#include "log/log.h"
 
 #include "stm32l4xx_hal.h"
 #include "stm32l4xx.h"
