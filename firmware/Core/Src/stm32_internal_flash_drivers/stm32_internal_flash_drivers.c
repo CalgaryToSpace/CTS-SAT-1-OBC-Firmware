@@ -158,56 +158,54 @@ uint8_t STM32_internal_flash_get_option_bytes(FLASH_OBProgramInitTypeDef *ob_dat
 /// @return 0 on success, > 0 otherwise
 uint8_t STM32_internal_flash_set_dual_bank_boot(uint8_t dual_bank_mode)
 {
+    const uint8_t current_bank_mode = STM32_internal_flash_get_active_flash_bank();
+    if (dual_bank_mode == current_bank_mode) {
+        return 1;
+    }
+
 
     __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
 
 
     if (HAL_FLASH_Unlock() != HAL_OK)
     {
-        return 1;
+        return 10;
     }
 
     if (HAL_FLASH_OB_Unlock() != HAL_OK)
     {
-        return 2;
+        return 20;
     }
 
     // Get current option bytes configuration
     FLASH_OBProgramInitTypeDef option_byte_init;
     HAL_FLASHEx_OBGetConfig(&option_byte_init);
     const uint32_t wanted_bank_mode = dual_bank_mode == 0 ? OB_BFB2_DISABLE : OB_BFB2_ENABLE;
-    const uint8_t current_bank_mode = STM32_internal_flash_get_active_flash_bank();
-    LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_CRITICAL, LOG_SINK_ALL, "Wanted Bank Mode: %lu\n\nCurrent Bank Mode: %u", wanted_bank_mode, current_bank_mode);
-    if ((wanted_bank_mode == OB_BFB2_DISABLE && current_bank_mode == 0) ||
-        (wanted_bank_mode == OB_BFB2_ENABLE && current_bank_mode == 1)) {
-        return 3;
-    }
 
-    // Set BFB2 bit (boot from Bank 2)
     option_byte_init.OptionType = OPTIONBYTE_USER;
     option_byte_init.USERType = OB_USER_BFB2;
-    option_byte_init.USERConfig = wanted_bank_mode; // Set BFB2
+    option_byte_init.USERConfig = wanted_bank_mode; 
 
     // Apply the new option byte configuration
     if (HAL_FLASHEx_OBProgram(&option_byte_init) != HAL_OK)
     {
-        return 4;
+        return 30;
     }
 
     // Launch the option byte loading to apply changes
     if (HAL_FLASH_OB_Launch() != HAL_OK)
     {
-        return 5;
+        return 40;
     }
 
     if (HAL_FLASH_OB_Lock() != HAL_OK)
     {
-        return 6;
+        return 50;
     }
 
     if (HAL_FLASH_Lock() != HAL_OK)
     {
-        return 7;
+        return 60;
     }
 
     return 0;
@@ -217,6 +215,5 @@ uint8_t STM32_internal_flash_set_dual_bank_boot(uint8_t dual_bank_mode)
 /// @return 0 is Flash Bank 1, 1 is Flash Bank 2
 uint8_t STM32_internal_flash_get_active_flash_bank()
 {
-    volatile uint8_t remap = READ_BIT(FLASH->OPTR, FLASH_OPTR_BFB2);
-    return remap;
+    return READ_BIT(FLASH->OPTR, FLASH_OPTR_BFB2) >> FLASH_OPTR_BFB2_Pos;
 }
