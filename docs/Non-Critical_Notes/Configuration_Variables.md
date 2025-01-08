@@ -1,6 +1,7 @@
 # Configuration Variables List
 
 ## 📚 **Table of Contents**
+
 - [Configuration Variables](#configuration-variables)
 - [Configuration Variable Arrays](#configuration-variable-arrays)
 - [Helper Functions](#helper-functions)
