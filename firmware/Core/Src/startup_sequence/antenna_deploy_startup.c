@@ -10,6 +10,7 @@
 /// @return 0 on success, <0 on failure
 
 //TODO: unmount filesystem if error occurs
+//TODO: create initialization/destruction functions to handle file mounting/unmounting
 
 /// @brief reads the value from the file "lifecycle/deploy_antenna_on_boot_enabled.bool"
 /// @param read_value where the read value will be stored upon success 
@@ -207,6 +208,7 @@ int16_t START_deploy_antenna_if_sufficiently_charged() {
 /// @brief Reads the file "lifecycle/deploy_antenna_on_boot_enabled.bool". If the file contains 1 or does not exist then it attempts to deploy the antennas.
 /// If the file contains 0 or eps is not sufficiently then it does not attempt to deploy the antennas.
 /// @return 0 on success, <0 on failure
+/// @note this is the function which should be primarily used to deploy
 int16_t START_read_config_and_deploy_antenna_accordingly() {
 
     //TODO: remove after validation
@@ -245,6 +247,7 @@ int16_t START_read_config_and_deploy_antenna_accordingly() {
         deploy_antenna_on_boot_enabled = 1;
     }
 
+    // config file states that antenna should not be deployed, return 0
     if (deploy_antenna_on_boot_enabled == 0) {
         return 0;
     }
