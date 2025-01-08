@@ -1,36 +1,41 @@
 # Configuration Variables List
 
-## Variables
+## 📚 **Table of Contents**
+- [Configuration Variables](#configuration-variables)
+- [Configuration Variable Arrays](#configuration-variable-arrays)
+- [Helper Functions](#helper-functions)
 
-### Integer Configuration
+---
+
+## Configuration Variables
 
 **1) `TASK_heartbeat_period_ms`**: The frequency, in ms, at which the `TASK_DEBUG_print_heartbeat` telecommand is logging messages.
 
 **2) `CONFIG_freertos_min_remaining_stack_percent`**:  
  The percentage of the stack space that should remain free. If the free space falls below this percentage, a warning will be logged.
 
-**3) `CONFIG_int_config_variables[]`**:  
- An array of objects, where each object contains:
+**3) `CONFIG_int_config_variables_count`**:  
+ The number of integer configuration variables in the `CONFIG_int_config_variables[]` array.
+
+**4) `CONFIG_str_config_variables_count`**:  
+ The number of string configuration variables in the `CONFIG_str_config_variables[]` array.
+
+---
+
+## Configuration Variable Arrays
+
+**1) `CONFIG_int_config_variables[]`**:  
+ An array of integer configuration variables, where each config var consists of:
 
 - The variable name (const char \*)
 - int value (uint32_t \*)
 
-**4) `CONFIG_int_config_variables_count`**:  
- The number of entries in the `CONFIG_int_config_variables[]` array.
-
----
-
-### String Configuration
-
-**5) `CONFIG_str_config_variables[]`**:  
- An array of objects, where each object contains:
+**2) `CONFIG_str_config_variables[]`**:  
+ An array of string configuration variables, where each config var consists of:
 
 - The variable name (const char \*)
 - char value (char \*)
 - The maximum allowed string length (const uint8_t)
-
-**6) `CONFIG_str_config_variables_count`**:  
- The number of entries in the `CONFIG_str_config_variables[]` array.
 
 ---
 
@@ -65,5 +70,3 @@ uint16_t CONFIG_int_var_to_json(const char *var_name, char *json_str, const uint
 // Converts a string configuration variable to a JSON string
 uint16_t CONFIG_str_var_to_json(const char *var_name, char *json_str, const uint16_t json_str_max_len)
 ```
-
-#
