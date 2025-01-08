@@ -56,7 +56,7 @@ static int16_t read_bool_from_deploy_antenna_on_boot_enabled_file (uint8_t* read
     }
 
     int16_t read_result = lfs_file_read(&LFS_filesystem, &file, read_value, sizeof(uint8_t));
-    if (read_result != 0) {
+    if (read_result < 0) {
         LOG_message(
             LOG_SYSTEM_LFS, 
             LOG_SEVERITY_NORMAL, 
@@ -154,7 +154,7 @@ static int16_t create_deploy_antenna_on_boot_enabled_file_and_write_one() {
     
 //TODO: Implement this
 static uint8_t eps_is_sufficiently_charged() {
-    return 1;
+    return 0;
 }
 
 
