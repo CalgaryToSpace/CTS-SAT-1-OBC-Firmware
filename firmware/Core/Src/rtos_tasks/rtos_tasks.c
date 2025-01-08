@@ -224,20 +224,51 @@ void TASK_monitor_freertos_memory(void *argument) {
 	} /* End Task's Main Loop */
 }
 /// @brief Completes all tasks which are nesssary after the obc is powered on(or rebooted)
+/// @brief Completes all tasks which are necessary after the obc is powered on(or rebooted)
 /// @param argument 
 void TASK_bootup(void *argument) {
 	TASK_HELP_start_of_task();
 
+	uint16_t num_deployment_attempts = 0; 
 	uint8_t ant_deploy_complete = 0;
 	uint32_t delay_ms = 100;
 	while (1) {
 		//TODO: What should the delay be here? 
 		osDelay(delay_ms);
-		delay_ms = 60000;
-		if (!ant_deploy_complete) {
-			if (START_antenna_deploy() == 0) {
+		delay_ms = 6000;
+
+		//goto top of loop and sleep if antenna has been deployed
+		if (ant_deploy_complete) {
+			continue;
+		}
+		LOG_message(
+			LOG_SYSTEM_OBC,
+			LOG_SEVERITY_NORMAL,
+			LOG_SINK_ALL,
+			"ant deploy attempt: %u",
+			num_deployment_attempts
+		);
+
+		// initially try to read config file to determine if antenna should be deployed
+		if (num_deployment_attempts < 3 ) {
+			if (START_read_config_and_deploy_antenna_accordingly() == 0) {
 				ant_deploy_complete = 1;	
 			}
 		}
+		// if initial attempts fail assume the file system is unusable and attempt to deploy antenna
+		else if (num_deployment_attempts < 5) {
+			if (START_deploy_antenna_if_sufficiently_charged() == 0) {
+				ant_deploy_complete = 1;
+			}
+
+		}
+		// if all other attempts have failed ignore all checks and attempt to deploy
+		//TODO: before this point is reached, an attempt to deploy using the second mcu should be made
+		else {
+			if (START_deploy_antenna() == 0) {
+				ant_deploy_complete = 1;
+			}
+		}
+		num_deployment_attempts++;
 	} /* End Task's Main Loop */
 }
