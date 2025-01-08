@@ -55,7 +55,7 @@ static int16_t read_bool_from_deploy_antenna_on_boot_enabled_file (uint8_t* read
         return open_result;
     }
 
-    int32_t read_result = lfs_file_read(&LFS_filesystem, &file, read_value, sizeof(uint8_t));
+    int16_t read_result = lfs_file_read(&LFS_filesystem, &file, read_value, sizeof(uint8_t));
     if (read_result != 0) {
         LOG_message(
             LOG_SYSTEM_LFS, 
@@ -67,7 +67,7 @@ static int16_t read_bool_from_deploy_antenna_on_boot_enabled_file (uint8_t* read
         return read_result;
     }
 
-    int32_t close_result = lfs_file_close(&LFS_filesystem, &file);
+    int16_t close_result = lfs_file_close(&LFS_filesystem, &file);
     if (close_result != 0) {
         LOG_message(
             LOG_SYSTEM_LFS, 
@@ -127,7 +127,7 @@ static int16_t create_deploy_antenna_on_boot_enabled_file_and_write_one() {
 
     uint8_t write_value = 1;
     int32_t write_result = lfs_file_write(&LFS_filesystem, &file, &write_value, sizeof(uint8_t));
-    if (write_result != 0) {
+    if (write_result < 0) {
         LOG_message(
             LOG_SYSTEM_LFS,
             LOG_SEVERITY_ERROR,
@@ -154,7 +154,7 @@ static int16_t create_deploy_antenna_on_boot_enabled_file_and_write_one() {
     
 //TODO: Implement this
 static uint8_t eps_is_sufficiently_charged() {
-    return 0;
+    return 1;
 }
 
 
@@ -205,7 +205,7 @@ int16_t START_deploy_antenna_if_sufficiently_charged() {
 }
 
 /// @brief Reads the file "lifecycle/deploy_antenna_on_boot_enabled.bool". If the file contains 1 or does not exist then it attempts to deploy the antennas.
-/// If the file contains 0 then it does not attempt to deploy the antennas.
+/// If the file contains 0 or eps is not sufficiently then it does not attempt to deploy the antennas.
 /// @return 0 on success, <0 on failure
 int16_t START_read_config_and_deploy_antenna_accordingly() {
 
@@ -242,20 +242,9 @@ int16_t START_read_config_and_deploy_antenna_accordingly() {
             );
             return create_result;
         }
-        read_result = read_bool_from_deploy_antenna_on_boot_enabled_file(&deploy_antenna_on_boot_enabled);
-        if (read_result != 0) {
-            LOG_message(
-                LOG_SYSTEM_LFS, 
-                LOG_SEVERITY_ERROR, 
-                LOG_SINK_ALL, 
-                "Error %d reading from file <lifecycle/deploy_antenna_on_boot_enabled.bool>.",
-                read_result
-            );
-            return read_result;
-        }
+        deploy_antenna_on_boot_enabled = 1;
     }
 
-    // at this point, file contents have been written into deploy_antenna_on_boot_enabled
     if (deploy_antenna_on_boot_enabled == 0) {
         return 0;
     }
