@@ -925,7 +925,7 @@ uint8_t ADCS_measurements_struct_TO_json(const ADCS_measurements_struct_t *data,
 /// @param[out] json_output_str Buffer to hold the JSON string.
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
-uint8_t ADCS_sd_download_list_TO_json(ADCS_file_info_telemetry_struct_t *data, uint16_t data_length, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t ADCS_sd_download_list_TO_json(ADCS_file_info_struct_t *data, uint16_t data_length, char json_output_str[], uint16_t json_output_str_len) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < ((data_length + 1) * 45)) { // max 45 characters per entry
         return 1; // Error: invalid input
     } 
@@ -941,7 +941,7 @@ uint8_t ADCS_sd_download_list_TO_json(ADCS_file_info_telemetry_struct_t *data, u
     }
     
     for (uint16_t i = 0; i < data_length; i++) {
-        snprintf_ret = snprintf(&json_output_str[total_written], json_output_str_len, "%d\t%ld\t%d\t%ld\t%d\n", 
+        snprintf_ret = snprintf(&json_output_str[total_written], json_output_str_len, "%d\t%lld\t%d\t%ld\t%d\n", 
             data[i].file_counter, data[i].file_date_time, data[i].file_type, data[i].file_size, data[i].file_crc16);
 
         if (snprintf_ret < 0) {

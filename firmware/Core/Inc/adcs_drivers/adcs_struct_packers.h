@@ -42,7 +42,7 @@ uint8_t ADCS_Pack_to_Raw_GPS_Status_Struct(uint8_t* data_received, ADCS_raw_gps_
 uint8_t ADCS_Pack_to_Raw_GPS_Time_Struct(uint8_t* data_received, ADCS_raw_gps_time_struct_t *result);
 uint8_t ADCS_Pack_to_Raw_GPS_Struct(ADCS_gps_axis_enum_t axis, uint8_t *data_received, ADCS_raw_gps_struct_t *result);
 uint8_t ADCS_Pack_to_Measurements_Struct(uint8_t* telemetry_data, ADCS_measurements_struct_t *measurements);
-uint8_t ADCS_pack_to_file_info_struct(uint8_t *raw_data, ADCS_file_info_telemetry_struct_t *file_info_struct);
+uint8_t ADCS_pack_to_file_info_struct(uint8_t *raw_data, ADCS_file_info_struct_t *file_info_struct);
 uint8_t ADCS_pack_to_download_block_ready_struct(const uint8_t *data_received, ADCS_download_block_ready_struct_t *result);
 uint8_t ADCS_pack_to_sd_card_format_erase_progress_struct(uint8_t *data_received, ADCS_sd_card_format_erase_progress_struct_t *result);
 uint8_t ADCS_pack_to_file_download_buffer_struct(uint8_t *data_received, ADCS_file_download_buffer_struct_t *result);

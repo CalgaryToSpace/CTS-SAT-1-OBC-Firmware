@@ -10,6 +10,7 @@
 
 #include <stdint.h>
 #include <stdbool.h> 
+#include <time.h>
 
 // Bit 7 of Telecommand and Telemetry Request - Section 4.1 of Firmware Manual
 static const uint8_t ADCS_TELECOMMAND = 0;
@@ -525,15 +526,15 @@ typedef struct ADCS_measurements_struct_t {
     int32_t star3_orbit_z_micro;
 } ADCS_measurements_struct_t;
 
-typedef struct ADCS_file_info_telemetry_struct_t {       
+typedef struct ADCS_file_info_struct_t {       
     // reordered to be slightly less memory-intensive
     uint16_t file_crc16;      
     uint8_t file_counter;
     ADCS_file_type_enum_t file_type;
     bool busy_updating:1; // 1-bit bool          
     uint32_t file_size;      
-    uint32_t file_date_time; 
-} ADCS_file_info_telemetry_struct_t;
+    time_t file_date_time; 
+} ADCS_file_info_struct_t;
 
 typedef struct ADCS_download_block_ready_struct_t {
     bool ready:1; // 1-bit bool   

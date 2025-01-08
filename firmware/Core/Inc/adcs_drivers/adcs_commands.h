@@ -123,7 +123,7 @@ uint8_t ADCS_get_raw_gps_z(ADCS_raw_gps_struct_t *output_struct);
 uint8_t ADCS_get_measurements(ADCS_measurements_struct_t *output_struct);
 uint8_t ADCS_reset_file_list_read_pointer();
 uint8_t ADCS_advance_file_list_read_pointer();
-uint8_t ADCS_get_file_info_telemetry(ADCS_file_info_telemetry_struct_t *output_struct);
+uint8_t ADCS_get_file_info_telemetry(ADCS_file_info_struct_t *output_struct);
 uint8_t ADCS_load_file_download_block(ADCS_file_type_enum_t file_type, uint8_t counter, uint32_t offset, uint16_t block_length);
 uint8_t ADCS_get_download_block_ready_telemetry(ADCS_download_block_ready_struct_t *output_struct);
 uint8_t ADCS_initiate_download_burst(uint8_t message_length, bool ignore_hole_map);

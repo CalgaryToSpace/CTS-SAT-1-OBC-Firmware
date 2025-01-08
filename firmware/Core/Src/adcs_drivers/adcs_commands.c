@@ -1031,7 +1031,7 @@ uint8_t ADCS_advance_file_list_read_pointer() {
 /// @brief Request file information telemetry from the ADCS.
 /// @param[out] output_struct Pointer to the struct to store parsed telemetry data.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_get_file_info_telemetry(ADCS_file_info_telemetry_struct_t *output_struct) {
+uint8_t ADCS_get_file_info_telemetry(ADCS_file_info_struct_t *output_struct) {
     uint8_t data_length = 12;
     uint8_t data_received[data_length]; // Temporary buffer for raw telemetry data.
 

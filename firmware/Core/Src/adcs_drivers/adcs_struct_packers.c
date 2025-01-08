@@ -595,23 +595,18 @@ uint8_t ADCS_Pack_to_Measurements_Struct(uint8_t* telemetry_data, ADCS_measureme
 /// @param[in] raw_data Pointer to the raw telemetry data buffer (12 bytes).
 /// @param[out] file_info_struct Pointer to the struct to store parsed telemetry data.
 /// @return 0 once the function is finished running.
-uint8_t ADCS_pack_to_file_info_struct(uint8_t *raw_data, ADCS_file_info_telemetry_struct_t *file_info_struct) {
-
+uint8_t ADCS_pack_to_file_info_struct(uint8_t *raw_data, ADCS_file_info_struct_t *file_info_struct) {
     file_info_struct->file_type = raw_data[0] & 0x0F; // Bits 0-3
     file_info_struct->busy_updating = (raw_data[0] >> 4) & 0x01; // Bit 4
     file_info_struct->file_counter = raw_data[1]; // Byte 1
 
-    file_info_struct->file_size = (raw_data[2] << 24) |
-                                  (raw_data[3] << 16) |
-                                  (raw_data[4] << 8) |
-                                   raw_data[5]; // Bytes 2-5
+    file_info_struct->file_size = (raw_data[5] << 24) | (raw_data[4] << 16) | (raw_data[3] << 8) | raw_data[2]; // Bytes 2-5
 
-    file_info_struct->file_date_time = (raw_data[6] << 24) |
-                                       (raw_data[7] << 16) |
-                                       (raw_data[8] << 8) |
-                                        raw_data[9]; // Bytes 6-9
+    uint32_t msdos_time = (raw_data[9] << 24) | (raw_data[8] << 16) | (raw_data[7] << 8) | raw_data[6]; // Bytes 6-9
 
-    file_info_struct->file_crc16 = (raw_data[10] << 8) | raw_data[11]; // Bytes 10-11
+    file_info_struct->file_date_time = ADCS_convert_msdos_to_unix_time(msdos_time);
+
+    file_info_struct->file_crc16 = (raw_data[11] << 8) | raw_data[10]; // Bytes 10-11
 
     return 0;
 }
@@ -621,17 +616,15 @@ uint8_t ADCS_pack_to_file_info_struct(uint8_t *raw_data, ADCS_file_info_telemetr
 /// @param[out] result Pointer to the struct to populate.
 /// @return 0 once complete.
 uint8_t ADCS_pack_to_download_block_ready_struct(const uint8_t *data_received, ADCS_download_block_ready_struct_t *result) {
-
-
     // Unpack Ready (1 bit) and ParameterError (1 bit) from the first byte
     result->ready = (data_received[0] & 0x01) != 0;               // Extract the 1st bit
     result->parameter_error = (data_received[0] & 0x02) != 0;    // Extract the 2nd bit
 
     // Unpack Block CRC16 (16 bits, reverse byte order)
-    result->block_crc16 = (uint16_t)(data_received[2]) | ((uint16_t)(data_received[1]) << 8);
+    result->block_crc16 = (uint16_t)((data_received[2] << 8) | (data_received[1]));
 
     // Unpack Block Length (16 bits, reverse byte order)
-    result->block_length = (uint16_t)(data_received[4]) | ((uint16_t)(data_received[3]) << 8);
+    result->block_length = (uint16_t)((data_received[4] << 8) | (data_received[3]));
 
     return 0; 
 }

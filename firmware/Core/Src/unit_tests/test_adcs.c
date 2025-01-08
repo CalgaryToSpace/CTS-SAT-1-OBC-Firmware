@@ -625,3 +625,66 @@ uint8_t TEST_EXEC__ADCS_pack_to_measurements_struct() {
 
     return 0;
 }
+
+// TODO: during the next test, ensure that these tests all match reality
+
+uint8_t TEST_EXEC__ADCS_pack_to_file_info_struct() {
+    uint8_t input_params[12] = {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc};
+    ADCS_file_info_struct_t result;
+    ADCS_pack_to_file_info_struct(input_params, &result);
+    TEST_ASSERT_TRUE(result.busy_updating == true);
+    TEST_ASSERT_TRUE(result.file_counter == 52);
+    TEST_ASSERT_TRUE(result.file_crc16 == 48282);
+    TEST_ASSERT_TRUE(result.file_date_time == 2216010756); // assuming the MS-DOS time converter works (need a test for that still)
+    TEST_ASSERT_TRUE(result.file_size == 3164239958);
+    TEST_ASSERT_TRUE(result.file_type == ADCS_FILE_TYPE_TELEMETRY_LOG);
+    return 0;
+}
+
+uint8_t TEST_EXEC__ADCS_pack_to_download_block_ready_struct() {
+    uint8_t input_params[5] = {0x12, 0x34, 0x56, 0x78, 0x9a};
+    ADCS_download_block_ready_struct_t result;
+    ADCS_pack_to_download_block_ready_struct(input_params, &result);
+
+    TEST_ASSERT_TRUE(result.ready == false);
+    TEST_ASSERT_TRUE(result.parameter_error == true);
+    TEST_ASSERT_TRUE(result.block_crc16 == 22068);
+    TEST_ASSERT_TRUE(result.block_length == 39544);
+
+    return 0;
+}
+
+uint8_t TEST_EXEC__ADCS_pack_to_sd_card_format_erase_progress_struct() {
+    uint8_t input_params[1] = {0x02};
+    ADCS_sd_card_format_erase_progress_struct_t result;
+    ADCS_pack_to_sd_card_format_erase_progress_struct(input_params, &result);
+    TEST_ASSERT_TRUE(result.erase_all_busy == true);
+    TEST_ASSERT_TRUE(result.format_busy == false);
+
+    input_params[0] = 0x03;
+    ADCS_pack_to_sd_card_format_erase_progress_struct(input_params, &result);
+    TEST_ASSERT_TRUE(result.erase_all_busy == true);
+    TEST_ASSERT_TRUE(result.format_busy == true);
+
+    input_params[0] = 0x04;
+    ADCS_pack_to_sd_card_format_erase_progress_struct(input_params, &result);
+    TEST_ASSERT_TRUE(result.erase_all_busy == false);
+    TEST_ASSERT_TRUE(result.format_busy == false);
+
+    return 0;
+}
+
+uint8_t TEST_EXEC__ADCS_pack_to_file_download_buffer_struct() {
+    uint8_t input_params[22] = {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0x12, 0x34, 0x56, 0x78};
+    ADCS_file_download_buffer_struct_t result;
+    ADCS_pack_to_file_download_buffer_struct(input_params, &result);   
+
+    TEST_ASSERT_TRUE(result.packet_counter == 13330);
+
+    uint8_t bytes[20] = {86, 120, 154, 188, 18, 52, 86, 120, 154, 188, 18, 52, 86, 120, 154, 188, 18, 52, 86, 120};
+    for (uint8_t i = 0; i < 20; i++) {
+        TEST_ASSERT_TRUE(result.file_bytes[i] == bytes[i]);
+    }
+
+    return 0; 
+}

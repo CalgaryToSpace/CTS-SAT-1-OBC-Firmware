@@ -1687,7 +1687,7 @@ uint8_t TCMDEXEC_adcs_get_sd_download_list(const char *args_str, TCMD_Telecomman
     }
 
     uint16_t filelist_length = 0;
-    ADCS_file_info_telemetry_struct_t file_info[1024];
+    ADCS_file_info_struct_t file_info[1024];
 
     for (uint16_t i = 0; i < 58; i++) {
 
@@ -1737,7 +1737,7 @@ uint8_t TCMDEXEC_adcs_get_sd_download_list(const char *args_str, TCMD_Telecomman
 uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                    char *response_output_buf, uint16_t response_output_buf_len) {
 
-    uint8_t status;
+    uint8_t status; // TODO: check the statuses
 
     // parse file index argument
     uint64_t file_index;
@@ -1748,13 +1748,13 @@ uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str, TCMD_TelecommandCha
     for (uint16_t i = 0; i < file_index; i++) {
         status = ADCS_advance_file_list_read_pointer();
     }
-    ADCS_file_info_telemetry_struct_t file_info;
+    ADCS_file_info_struct_t file_info;
     status = ADCS_get_file_info_telemetry(&file_info);
 
     /*
     The file is uniquely identified by the File Type and Counter parameters. The Offset and Block
     Length parameters indicate which part of the file to buffer in memory. The maximum Block
-    Length is 20 kB. [Actually, 20480 bytes (20 bytes * 1024 packets). Some files may require multiple blocks, such as image files]
+    Length is 20 kB. [20480 bytes (20 bytes * 1024 packets). Some files may require multiple blocks, such as image files]
     */
 
     uint16_t blocks_required = ceil(file_info.file_size / 20480.0);
@@ -1836,7 +1836,6 @@ uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str, TCMD_TelecommandCha
 
         remaining_bytes -= bytes_to_load;
     }
+
    return 0;
-
-
 }
