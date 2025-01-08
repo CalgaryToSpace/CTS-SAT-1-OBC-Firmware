@@ -21,7 +21,7 @@ uint64_t TCMD_latest_received_tcmd_timestamp_sent = 0;
 ///@brief  The head of the circular buffer of timestamps of telecommands that have been sent.
 uint16_t  TCMD_timestamp_sent_head = 0;
 /// @brief The circular buffer of timestamps of telecommands that have been sent.
-uint64_t TCMD_timestamp_sent_store[TCMD_TIMESTAMP_RECORD_SIZE] = {0};
+uint64_t TCMD_timestamp_sent_store[TCMD_TIMESTAMP_RECORD_SIZE];
 
 /// @brief  The agenda (schedule queue) of telecommands to execute.
 TCMD_parsed_tcmd_to_execute_t TCMD_agenda[TCMD_AGENDA_SIZE];
@@ -57,9 +57,14 @@ uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd
         }
 
         // check to see if timestamp is in the circular buffer
-        for (uint32_t i = 0; i < TCMD_timestamp_sent_head; i++) {
+        for (uint32_t i = 0; i <= TCMD_timestamp_sent_head; i++) {
+            
+            // TODO; Get rid of this when telecommands do not automatically default to 0.
+            if(parsed_tcmd->timestamp_sent == 0){
+                continue;
+            }
+
             if(parsed_tcmd->timestamp_sent == TCMD_timestamp_sent_store[i]) {
-                // Skip this telecommand
                 LOG_message(
                     LOG_SYSTEM_TELECOMMAND, 
                     LOG_SEVERITY_WARNING, 
@@ -68,10 +73,13 @@ uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd
                 );
                 return 1; 
             }
+            else{
+                // Add the timestamp to the circular buffer
+                TCMD_timestamp_sent_store[TCMD_timestamp_sent_head] = parsed_tcmd->timestamp_sent;
+                TCMD_timestamp_sent_head = (TCMD_timestamp_sent_head + 1) % TCMD_TIMESTAMP_RECORD_SIZE;
+                break;
+            }
         }
-        // Add the timestamp to the circular buffer
-        TCMD_timestamp_sent_store[TCMD_timestamp_sent_head] = parsed_tcmd->timestamp_sent;
-        TCMD_timestamp_sent_head = (TCMD_timestamp_sent_head + 1) % TCMD_TIMESTAMP_RECORD_SIZE;
 
         // Copy the parsed telecommand into the agenda.
         TCMD_agenda[slot_num].tcmd_idx = parsed_tcmd->tcmd_idx;
