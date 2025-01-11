@@ -1745,6 +1745,7 @@ uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str, TCMD_TelecommandCha
 
     // get the data about the file to download
     status = ADCS_reset_file_list_read_pointer();
+    if (status != 0) {return 1;} // TODO: check the statuses
     for (uint16_t i = 0; i < file_index; i++) {
         status = ADCS_advance_file_list_read_pointer();
     }
@@ -1831,7 +1832,7 @@ uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str, TCMD_TelecommandCha
             }
 
             // now set the hole map
-            status = ADCS_set_hole_map(&hole_bytes, i);
+            status = ADCS_set_hole_map(hole_bytes, i);
         }
 
         remaining_bytes -= bytes_to_load;
