@@ -1737,7 +1737,7 @@ uint8_t TCMDEXEC_adcs_get_sd_download_list(const char *args_str, TCMD_Telecomman
 uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                    char *response_output_buf, uint16_t response_output_buf_len) {
 
-    uint8_t status; // TODO: check the statuses
+    uint8_t status;
 
     // parse file index argument
     uint64_t file_index;
@@ -1745,12 +1745,15 @@ uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str, TCMD_TelecommandCha
 
     // get the data about the file to download
     status = ADCS_reset_file_list_read_pointer();
-    if (status != 0) {return 1;} // TODO: check the statuses
+    if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS reset file pointer failed (err %d)", status); return 1;}
+
     for (uint16_t i = 0; i < file_index; i++) {
         status = ADCS_advance_file_list_read_pointer();
+        if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS advance file pointer failed at index %d (err %d)", i, status); return 1;}
     }
     ADCS_file_info_struct_t file_info;
     status = ADCS_get_file_info_telemetry(&file_info);
+    if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS get file info failed (err %d)", status); return 1;}
 
     /*
     The file is uniquely identified by the File Type and Counter parameters. The Offset and Block
@@ -1771,23 +1774,26 @@ uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str, TCMD_TelecommandCha
         
         // Load a download block from the ADCS
         status = ADCS_load_file_download_block(file_info.file_type, block_counter, 0, bytes_to_load);
+        if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS load download block failed (err %d)", status); return 1;}
             // TODO: I'm not sure what, exactly, the 'offset' parameter in this function is for. I think the counter is the block_counter, but also not sure.
 
         // Wait until the download block is ready
         ADCS_download_block_ready_struct_t ready_struct;
         do {
             status = ADCS_get_download_block_ready_telemetry(&ready_struct);
+            if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS get download ready status failed (err %d)", status); return 1;}
         } while (ready_struct.ready != true);
         
         // Initiate download burst, ignoring the hole map
         status = ADCS_initiate_download_burst(bytes_to_load, true);
+        if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS init download burst failed (err %d)", status); return 1;}
             // TODO: I suspect that the message_length parameter represents the number of bytes to load, but I'm not sure.
 
         /* 
         If the Initiate File Download Burst command is issued on the I2C communications link, it is
         expected to successively perform up to 1024 read transactions from the remote side, each with
-        22 bytes length, again with the same format as [TLM 241, File Download Buffer:] 
-        [...] (the number [of read transactions] depends on the Block Length specified with the Load File Download Block command), 
+        22 bytes length, again with the same format as [TLM 241, File Download Buffer...] 
+        (the number [of read transactions] depends on the Block Length specified with the Load File Download Block command), 
         each with a payload length of 20 bytes in rapid succession. Each download packet will have a 
         header ID that matches that of the Initiate File Download Burst command. The following two bytes 
         will contain the counter of the packet in the burst. The counter makes it possible to keep track of
@@ -1797,6 +1803,7 @@ uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str, TCMD_TelecommandCha
         ADCS_file_download_buffer_struct_t buffer[bytes_to_load];
         for (uint16_t i = 0; i < bytes_to_load; i++) {
             status = ADCS_get_file_download_buffer(&(buffer[i]));
+            if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS get download buffer failed for index %d (err %d)", i, status); return 1;}
         }
 
         /*
@@ -1823,16 +1830,18 @@ uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str, TCMD_TelecommandCha
             }
         }
 
+        // this block converts the booleans to bytes, forwardly (e.g. 0b1111000000001111 becomes 0xf0, 0x0f)
         for (uint8_t i = 1; i <= 8; i++) {
-            uint8_t hole_bytes[16];
+            uint8_t hole_bytes[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
             // convert an appropriate slice of the array of bools into a 16-byte array
-            for (uint8_t j = ((i-1) * 128); j < (i * 128); j++) {
+            for (uint16_t j = ((i-1) * 128); j < (i * 128); j++) {
                 // 8 bits * 16 bytes = 128 bits per Hole Map, starting at index (i - 1) * 128
-                hole_bytes[j / 128] |= hole_map[j] << (j % 4); // TODO: test this
+                hole_bytes[(j / 8) - ((i-1) * 16)] |= (hole_map[j] << (7 - (j % 8))); 
             }
 
             // now set the hole map
             status = ADCS_set_hole_map(hole_bytes, i);
+            if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS set hole map failed for index %d (err %d)", i, status); return 1;}
         }
 
         remaining_bytes -= bytes_to_load;
