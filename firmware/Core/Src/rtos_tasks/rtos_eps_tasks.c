@@ -140,3 +140,36 @@ void TASK_time_sync(void *argument) {
         }
     } // End of task while loop
 }
+
+void TASK_EPS_power_monitoring(void *argument) {
+    
+    TASK_HELP_start_of_task();
+
+    uint32_t sleep_duration_ms = 10000; // 10s
+
+    while (1) {
+        osDelay(sleep_duration_ms);
+        
+        char json_str[1000];
+        memset(json_str, 0, sizeof(json_str));
+        
+        EPS_struct_pdu_housekeeping_data_eng_t EPS_pdu_housekeeping_data_eng;
+        EPS_CMD_get_pdu_housekeeping_data_eng(&EPS_pdu_housekeeping_data_eng);
+
+        //Power Monitoring
+
+
+        //Power Logging
+        EPS_struct_pdu_housekeeping_data_eng_TO_json(&EPS_pdu_housekeeping_data_eng, &json_str, 1000);
+
+        LOG_message(
+            LOG_SYSTEM_EPS,
+            LOG_SEVERITY_NORMAL,
+            LOG_SINK_ALL,
+            "EPS PDU housekeeping data:\n %s",
+            json_str
+        );
+
+        sleep_duration_ms = 600000; // 10 minutes
+    }
+}
