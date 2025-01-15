@@ -4,6 +4,7 @@
 #include "log/log.h"
 #include "antenna_deploy_drivers/ant_commands.h"
 #include "antenna_deploy_drivers/ant_internal_drivers.h"
+#include "eps_commands.h"
 /// @brief Attempts to read to the file "lifecycle/deploy_antenna_on_boot_enabled.bool".
 /// If 1 is stored in the file then it attempts to deploy the antenna. If the file did not
 /// exist: then it creates the file, stores a 1 in it, and attempts to deploy.
@@ -31,7 +32,7 @@ static int16_t read_bool_from_deploy_antenna_on_boot_enabled_file (uint8_t* read
             return mount_result;
         }
     }
-    // lfs is mounted
+    // lfs is mounted at this point 
     
     lfs_file_t file;
     int16_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, "lifecycle/deploy_antenna_on_boot_enabled.bool", LFS_O_RDONLY, &LFS_file_cfg);
@@ -55,6 +56,8 @@ static int16_t read_bool_from_deploy_antenna_on_boot_enabled_file (uint8_t* read
         );
         return open_result;
     }
+
+    // file exists and is opened for reading  
 
     int16_t read_result = lfs_file_read(&LFS_filesystem, &file, read_value, sizeof(uint8_t));
     if (read_result < 0) {
@@ -98,7 +101,7 @@ static int16_t read_bool_from_deploy_antenna_on_boot_enabled_file (uint8_t* read
 
 /// @brief creates the file "lifecycle/deploy_antenna_on_boot_enabled.bool".
 /// Creates the lifecycle directory if it does not exist.
-/// write 1 to the file
+/// writes 1 to the file
 /// @return 0 on success, <0 on failure
 static int16_t create_deploy_antenna_on_boot_enabled_file_and_write_one() {
     int16_t mkdir_result = lfs_mkdir(&LFS_filesystem, "lifecycle");
@@ -113,6 +116,7 @@ static int16_t create_deploy_antenna_on_boot_enabled_file_and_write_one() {
         return mkdir_result;
     }
 
+    //at this point the directory exists
     lfs_file_t file;
     int16_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, "lifecycle/deploy_antenna_on_boot_enabled.bool", LFS_O_WRONLY | LFS_O_CREAT, &LFS_file_cfg);
     if (open_result != 0) {
@@ -155,6 +159,12 @@ static int16_t create_deploy_antenna_on_boot_enabled_file_and_write_one() {
     
 //TODO: Implement this
 static uint8_t eps_is_sufficiently_charged() {
+    // Not sure exactly which housekeeping data to use, here we are using the pbu engineering data
+    EPS_struct_pbu_housekeeping_data_eng_t pbu_data;
+    if (EPS_CMD_get_pbu_housekeeping_data_eng(&pbu_data) != 0) {
+        return 0;
+    };
+    //TODO: implement this
     return 0;
 }
 
@@ -210,8 +220,6 @@ int16_t START_deploy_antenna_if_sufficiently_charged() {
 /// @return 0 on success, <0 on failure
 /// @note this is the function which should be primarily used to deploy
 int16_t START_read_config_and_deploy_antenna_accordingly() {
-
-    //TODO: remove after validation
     LOG_message(
         LOG_SYSTEM_LFS, 
         LOG_SEVERITY_NORMAL, 
@@ -247,7 +255,7 @@ int16_t START_read_config_and_deploy_antenna_accordingly() {
         deploy_antenna_on_boot_enabled = 1;
     }
 
-    // config file states that antenna should not be deployed, return 0
+    // if true, config file states that antenna should not be deployed, return 0
     if (deploy_antenna_on_boot_enabled == 0) {
         return 0;
     }
