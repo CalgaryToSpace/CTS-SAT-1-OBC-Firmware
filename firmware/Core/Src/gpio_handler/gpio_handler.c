@@ -17,11 +17,5 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
         if (HAL_GPIO_ReadPin(PIN_GPS_PPS_IN_GPIO_Port, PIN_GPS_PPS_IN_Pin) == GPIO_PIN_SET) {
             GPS_pps_counter++;
         }
-        // char message[100];
-        // sprintf(message, "GPS PPS interrupt. Counter: %ld\r\n", GPS_pps_counter);
-        // LOG_message(
-        //     LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        //     message
-        // );
     }
 }
