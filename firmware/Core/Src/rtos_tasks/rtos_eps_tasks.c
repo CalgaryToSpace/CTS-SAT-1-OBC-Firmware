@@ -145,30 +145,72 @@ void TASK_time_sync(void *argument) {
 
 void TASK_EPS_power_monitoring(void *argument) {
     
+    //Delay for other tasks to start
     TASK_HELP_start_of_task();
+    osDelay(30000);
 
-    uint32_t sleep_duration_ms = 30000; // 30s
-
-    osDelay(sleep_duration_ms);
-    sleep_duration_ms = 1000; // 1 second
-
+    unit8_t prev_status = 1;
     EPS_struct_pdu_housekeeping_data_eng_t prev_EPS_pdu_housekeeping_data_eng;
-    EPS_CMD_get_pdu_housekeeping_data_eng(&prev_EPS_pdu_housekeeping_data_eng);
+
+    //This needs to happen. Will loop until it gets PDU data
+    while (prev_pdu_status) {
+
+        delay(10000);
+
+        prev_status = EPS_CMD_get_pdu_housekeeping_data_eng(&prev_EPS_pdu_housekeeping_data_eng);
+        if (prev_pdu_status != 0) {
+            LOG_message(
+                LOG_SYSTEM_EPS,
+                LOG_SEVERITY_ERROR,
+                LOG_SINK_ALL,
+                "EPS_CMD_get_pdu_housekeeping_data_eng() -> Error: %d",
+                prev_status
+            );
+        }
+    }
+
     EPS_vpid_eng_t prev_vpid_eng[32];
     memcpy(prev_vpid_eng, prev_EPS_pdu_housekeeping_data_eng.vip_each_channel, sizeof(EPS_vpid_eng_t) * 32);
 
+    uint16_t sleep_duration_ms = 1000
+
+    //Superloop
     while (1) {
         osDelay(sleep_duration_ms);
         
         char json_str[1000];
         
+        //Get PDU data
         EPS_struct_pdu_housekeeping_data_eng_t EPS_pdu_housekeeping_data_eng;
-        EPS_CMD_get_pdu_housekeeping_data_eng(&EPS_pdu_housekeeping_data_eng);
+        unit8_t curr_pdu_status = EPS_CMD_get_pdu_housekeeping_data_eng(&EPS_pdu_housekeeping_data_eng);
+
+        if (curr_pdu_status != 0) {
+            LOG_message(
+                LOG_SYSTEM_EPS,
+                LOG_SEVERITY_ERROR,
+                LOG_SINK_ALL,
+                "EPS_CMD_get_pdu_housekeeping_data_eng() -> Error: %d",
+                curr_pdu_status
+            );
+            continue;
+        }
+
         EPS_vpid_eng_t vpid_eng[32];
         memcpy(vpid_eng, EPS_pdu_housekeeping_data_eng.vip_each_channel, sizeof(EPS_vpid_eng_t) * 32);
 
         //Power Logging
-        EPS_struct_pdu_housekeeping_data_eng_TO_json(&EPS_pdu_housekeeping_data_eng, json_str, 1000);
+        uint8_t pdu_TO_JSON_status = EPS_struct_pdu_housekeeping_data_eng_TO_json(&EPS_pdu_housekeeping_data_eng, json_str, 1000);
+
+        if (pdu_TO_JSON_status != 0) {
+            LOG_message(
+                LOG_SYSTEM_EPS,
+                LOG_SEVERITY_ERROR,
+                LOG_SINK_ALL,
+                "EPS_struct_pdu_housekeeping_data_eng_TO_json() -> Error: %d",
+                pdu_TO_JSON_status
+            );
+            continue;
+        }
 
         LOG_message(
             LOG_SYSTEM_EPS,
@@ -182,39 +224,27 @@ void TASK_EPS_power_monitoring(void *argument) {
 
         //Power Monitoring
         for (int channel = 0; channel < 32; channel++) {
-            if (ch_bitfield & 1) {
 
-                if (vpid_eng[channel].power_cW - prev_vpid_eng[channel].power_cW > 1000             //TODO: Check if the pdu values are correct
-                    || vpid_eng[channel].voltage_mV - prev_vpid_eng[channel].voltage_mV > 1000
-                    || vpid_eng[channel].current_mA - prev_vpid_eng[channel].current_mA > 1000
-                    || vpid_eng[channel].power_cW - prev_vpid_eng[channel].power_cW < -1000
-                    || vpid_eng[channel].voltage_mV - prev_vpid_eng[channel].voltage_mV < -1000
-                    || vpid_eng[channel].current_mA - prev_vpid_eng[channel].current_mA < -1000) {
+            if (ch_bitfield & 1 //Check if channel is enabled
+                && (vpid_eng[channel].power_cW - prev_vpid_eng[channel].power_cW > 1000             //TODO: Set PDU thresh hold
+                || vpid_eng[channel].voltage_mV - prev_vpid_eng[channel].voltage_mV > 1000
+                || vpid_eng[channel].current_mA - prev_vpid_eng[channel].current_mA > 1000
+                || vpid_eng[channel].power_cW - prev_vpid_eng[channel].power_cW < -1000
+                || vpid_eng[channel].voltage_mV - prev_vpid_eng[channel].voltage_mV < -1000
+                || vpid_eng[channel].current_mA - prev_vpid_eng[channel].current_mA < -1000)) {
 
+                uint8_t disable_result = EPS_CMD_output_bus_channel_off(channel);
 
-                    uint8_t result = EPS_CMD_output_bus_channel_off(channel);
+                char log_msg[50];
+                (disable_result != 0) ? sprintf(log_msg, "EPS_CMD_output_bus_channel_off(%d) -> Error: %d", channel, result) 
+                    : sprintf(log_msg, "Channel %d was turned off. Due to a power issue.", channel);
 
-                    if (result != 0) {
-                        LOG_message(
-                            LOG_SYSTEM_EPS,
-                            LOG_SEVERITY_CRITICAL,
-                            LOG_SINK_ALL,
-                            "EPS_CMD_output_bus_channel_off(%d) -> Error: %d",
-                            channel,
-                            result
-                        );
-                    }
-                    else{
-                        LOG_message(
-                        LOG_SYSTEM_EPS,
-                        LOG_SEVERITY_CRITICAL,
-                        LOG_SINK_ALL,
-                        "Channel %d was turned off. Due to a power issue.",
-                        channel
-                        );
-                    }
-                    
-                }
+                LOG_message(
+                    LOG_SYSTEM_EPS,
+                    LOG_SEVERITY_ERROR,
+                    LOG_SINK_ALL,
+                    log_msg
+                );
             }
             ch_bitfield = ch_bitfield >> 1;
         }
