@@ -78,29 +78,29 @@ uint8_t TCMDEXEC_gps_send_cmd_ascii(const char *args_str, TCMD_TelecommandChanne
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0 on success, 1 gps is off.
 uint8_t TCMDEXEC_gps_set_enabled_pps_tracking(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
+    char *response_output_buf, uint16_t response_output_buf_len) {
 
-        static uint8_t GPS_pps_interrupt_enabled = 0;
+    static uint8_t GPS_pps_interrupt_enabled = 0;
 
-        // Check if EXTI is active
-        if (GPS_pps_interrupt_enabled) {
-            // Disable EXTI tracking
-            Disable_GPIO_EXTI();
-            GPS_pps_interrupt_enabled = 0;
-            snprintf(
-                response_output_buf, response_output_buf_len,
-                "PPS tracking disabled");
-            return 0;
-        } 
-        // Check if EXTI is inactive
-        else if (!GPS_pps_interrupt_enabled) {
-            // Enable EXTI tracking
-            GPIO_EXTI_Init();
-            GPS_pps_interrupt_enabled = 1;
-            snprintf(
-                response_output_buf, response_output_buf_len,
-                "PPS tracking enabled");
-            return 0;
-        }
+    // Check if EXTI is active
+    if (GPS_pps_interrupt_enabled) {
+        // Disable EXTI tracking
+        Disable_GPIO_EXTI();
+        GPS_pps_interrupt_enabled = 0;
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "PPS tracking disabled");
+        return 0;
+    } 
+    // Check if EXTI is inactive
+    else if (!GPS_pps_interrupt_enabled) {
+        // Enable EXTI tracking
+        GPIO_EXTI_Init();
+        GPS_pps_interrupt_enabled = 1;
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "PPS tracking enabled");
+        return 0;
+    }
     return 1;
 }
