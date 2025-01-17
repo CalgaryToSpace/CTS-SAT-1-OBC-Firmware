@@ -10,6 +10,7 @@
 #include "cmsis_os.h"
 
 #include <string.h>
+#include <stdio.h>
 #include <inttypes.h>
 #include <stdint.h>
 
