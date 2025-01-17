@@ -10,6 +10,7 @@
 #include "cmsis_os.h"
 
 #include <string.h>
+#include <stdio.h>
 #include <inttypes.h>
 #include <stdint.h>
 
@@ -149,22 +150,22 @@ void TASK_EPS_power_monitoring(void *argument) {
     TASK_HELP_start_of_task();
     osDelay(30000);
 
-    unit8_t prev_status = 1;
+    uint8_t prev_pdu_status = 1;
     EPS_struct_pdu_housekeeping_data_eng_t prev_EPS_pdu_housekeeping_data_eng;
 
     //This needs to happen. Will loop until it gets PDU data
     while (prev_pdu_status) {
 
-        delay(10000);
+        osDelay(10000);
 
-        prev_status = EPS_CMD_get_pdu_housekeeping_data_eng(&prev_EPS_pdu_housekeeping_data_eng);
+        prev_pdu_status = EPS_CMD_get_pdu_housekeeping_data_eng(&prev_EPS_pdu_housekeeping_data_eng);
         if (prev_pdu_status != 0) {
             LOG_message(
                 LOG_SYSTEM_EPS,
                 LOG_SEVERITY_ERROR,
                 LOG_SINK_ALL,
                 "EPS_CMD_get_pdu_housekeeping_data_eng() -> Error: %d",
-                prev_status
+                prev_pdu_status
             );
         }
     }
@@ -172,7 +173,7 @@ void TASK_EPS_power_monitoring(void *argument) {
     EPS_vpid_eng_t prev_vpid_eng[32];
     memcpy(prev_vpid_eng, prev_EPS_pdu_housekeeping_data_eng.vip_each_channel, sizeof(EPS_vpid_eng_t) * 32);
 
-    uint16_t sleep_duration_ms = 1000
+    uint16_t sleep_duration_ms = 1000;
 
     //Superloop
     while (1) {
@@ -182,7 +183,7 @@ void TASK_EPS_power_monitoring(void *argument) {
         
         //Get PDU data
         EPS_struct_pdu_housekeeping_data_eng_t EPS_pdu_housekeeping_data_eng;
-        unit8_t curr_pdu_status = EPS_CMD_get_pdu_housekeeping_data_eng(&EPS_pdu_housekeeping_data_eng);
+        uint8_t curr_pdu_status = EPS_CMD_get_pdu_housekeeping_data_eng(&EPS_pdu_housekeeping_data_eng);
 
         if (curr_pdu_status != 0) {
             LOG_message(
@@ -236,7 +237,7 @@ void TASK_EPS_power_monitoring(void *argument) {
                 uint8_t disable_result = EPS_CMD_output_bus_channel_off(channel);
 
                 char log_msg[50];
-                (disable_result != 0) ? sprintf(log_msg, "EPS_CMD_output_bus_channel_off(%d) -> Error: %d", channel, result) 
+                (disable_result != 0) ? sprintf(log_msg, "EPS_CMD_output_bus_channel_off(%d) -> Error: %d", channel, disable_result) 
                     : sprintf(log_msg, "Channel %d was turned off. Due to a power issue.", channel);
 
                 LOG_message(
