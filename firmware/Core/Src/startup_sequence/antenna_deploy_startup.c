@@ -4,7 +4,7 @@
 #include "log/log.h"
 #include "antenna_deploy_drivers/ant_commands.h"
 #include "antenna_deploy_drivers/ant_internal_drivers.h"
-#include "eps_commands.h"
+#include "eps_drivers/eps_commands.h"
 
 /// @brief reads the value from the file "lifecycle/deploy_antenna_on_boot_enabled.bool"
 /// @param read_value where the read value will be stored upon success 
