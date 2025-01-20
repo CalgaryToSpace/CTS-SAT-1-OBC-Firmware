@@ -1,36 +1,121 @@
 <map id="TASK_handle_uart_telecommands" name="TASK_handle_uart_telecommands">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,127,228,152"/>
-<area shape="rect" id="Node000002" href="$debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="780,25,930,51"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="142,124,202,95,275,66,394,29,490,9,588,3,713,10,778,19,777,25,712,16,588,8,491,14,396,34,277,71,204,100,145,129"/>
-<area shape="rect" id="Node000003" href="$debug__uart_8c.html#a6e361e09754cc0dcf4809c053731f12a" title=" " alt="" coords="536,25,706,51"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="184,123,538,52,539,57,185,129"/>
-<area shape="rect" id="Node000004" href="$rtos__task__helpers_8c.html#a8e6805715f064b84a74583df06db6058" title=" " alt="" coords="288,176,470,202"/>
-<area shape="poly" id="edge4_Node000001_Node000004" title=" " alt="" coords="189,150,292,170,291,175,188,156"/>
-<area shape="rect" id="Node000005" href="$telecommand__executor_8c.html#a7cd5fe9d761280baaa479ff698aef7a5" title="Adds a telecommand to the agenda (schedule/queue) of telecommands to execute." alt="" coords="284,291,474,316"/>
-<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="141,151,345,280,342,284,138,155"/>
-<area shape="rect" id="Node000007" href="$telecommand__parser_8c.html#a479be5d2e5ee3cd0fe5312818aa8742e" title="Parses a telecommand into everything needed to execute it." alt="" coords="276,127,482,152"/>
-<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="228,137,260,137,260,142,228,142"/>
-<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="707,36,764,36,764,41,707,41"/>
-<area shape="rect" id="Node000006" href="$log_8h.html#a3e068c70867806154541035de518012d" title=" " alt="" coords="566,356,676,382"/>
-<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="430,314,556,349,555,354,429,319"/>
-<area shape="poly" id="edge8_Node000007_Node000002" title=" " alt="" coords="442,123,775,52,777,57,444,129"/>
-<area shape="poly" id="edge9_Node000007_Node000003" title=" " alt="" coords="406,124,529,68,564,54,566,59,531,73,408,129"/>
-<area shape="rect" id="Node000008" href="$arrays_8c.html#af6f2987b63d15c0cc889ac8c2ea0d072" title="Returns the index of the first character of the first occurrence of a substring in an array." alt="" coords="760,119,950,160"/>
-<area shape="poly" id="edge10_Node000007_Node000008" title=" " alt="" coords="482,137,745,137,745,142,482,142"/>
-<area shape="rect" id="Node000009" href="$telecommand__parser_8c.html#ac6e1762fe10ccf9d703ce59700759a25" title="Returns whether tcmd_str starts with CTS1+ (TCMD_PREFIX_STR)." alt="" coords="769,283,941,324"/>
-<area shape="poly" id="edge11_Node000007_Node000009" title=" " alt="" coords="463,151,484,161,500,178,508,195,516,212,531,227,561,238,617,252,754,282,753,287,615,257,560,243,529,231,512,215,504,197,496,181,480,166,460,155"/>
-<area shape="rect" id="Node000010" href="$telecommand__parser_8c.html#a9ea4d9d994573e6ede05facd0bad0ee3" title="Searches for a str like \@tag_name=xxxx, and sets uint64_t xxxx into out_value." alt="" coords="549,177,693,217"/>
-<area shape="poly" id="edge12_Node000007_Node000010" title=" " alt="" coords="438,150,483,161,534,173,533,179,481,166,437,156"/>
-<area shape="rect" id="Node000013" href="$telecommand__parser_8c.html#adc031daef8bd51a82f869a4797c2683e" title="Finds an index into TCMD_telecommand_definitions for the given telecommand string." alt="" coords="530,291,712,332"/>
-<area shape="poly" id="edge16_Node000007_Node000013" title=" " alt="" coords="467,151,484,161,496,175,504,189,510,216,515,244,521,257,532,271,544,281,540,285,528,275,517,260,510,246,505,217,499,191,492,178,480,166,464,155"/>
-<area shape="poly" id="edge13_Node000010_Node000008" title=" " alt="" coords="693,177,754,162,755,167,694,182"/>
-<area shape="rect" id="Node000011" href="$telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="779,184,931,210"/>
-<area shape="poly" id="edge14_Node000010_Node000011" title=" " alt="" coords="694,194,763,194,763,200,694,200"/>
-<area shape="rect" id="Node000012" href="$telecommand__parser_8c.html#a41927fe9744597973411939a748f7ee1" title="Returns whether a character is numeric (0&#45;9)." alt="" coords="775,233,935,259"/>
-<area shape="poly" id="edge15_Node000010_Node000012" title=" " alt="" coords="694,209,776,227,775,232,693,215"/>
-<area shape="poly" id="edge17_Node000013_Node000009" title=" " alt="" coords="712,306,753,304,754,310,713,311"/>
-<area shape="rect" id="Node000014" href="$telecommand__parser_8c.html#a94afb6a62e1b5afb772aaffbae8bcded" title="Returns whether a character is a valid character in a telecommand name." alt="" coords="766,349,944,389"/>
-<area shape="poly" id="edge18_Node000013_Node000014" title=" " alt="" coords="707,330,755,342,754,347,706,335"/>
-<area shape="rect" id="Node000015" href="$telecommand__parser_8c.html#a99398160cef3734514e623985c0589b4" title="Returns whether a character is alphanumeric (0&#45;9, A&#45;Z, a&#45;z)." alt="" coords="998,356,1189,382"/>
-<area shape="poly" id="edge19_Node000014_Node000015" title=" " alt="" coords="944,366,982,366,982,372,944,372"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,126,228,152"/>
+<area shape="rect" id="Node000002" href="$debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="792,25,943,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="142,123,202,95,275,66,394,29,490,9,588,3,713,10,785,19,784,24,712,15,588,8,491,14,396,34,277,71,204,99,145,128"/>
+<area shape="rect" id="Node000003" href="$debug__uart_8c.html#a6e361e09754cc0dcf4809c053731f12a" title=" " alt="" coords="536,25,706,50"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="184,123,538,51,539,57,185,128"/>
+<area shape="rect" id="Node000004" href="$rtos__task__helpers_8c.html#a8e6805715f064b84a74583df06db6058" title=" " alt="" coords="288,175,470,201"/>
+<area shape="poly" id="edge4_Node000001_Node000004" title=" " alt="" coords="189,150,292,169,291,175,188,155"/>
+<area shape="rect" id="Node000005" href="$telecommand__executor_8c.html#a7cd5fe9d761280baaa479ff698aef7a5" title="Adds a telecommand to the agenda (schedule/queue) of telecommands to execute." alt="" coords="284,537,474,562"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="128,151,363,522,359,525,124,154"/>
+<area shape="rect" id="Node000148" href="$telecommand__parser_8c.html#a479be5d2e5ee3cd0fe5312818aa8742e" title="Parses a telecommand into everything needed to execute it." alt="" coords="276,126,482,152"/>
+<area shape="poly" id="edge57_Node000001_Node000148" title=" " alt="" coords="228,136,260,136,260,142,228,142"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="707,35,777,35,777,40,707,40"/>
+<area shape="rect" id="Node000006" href="$log_8h.html#a3e068c70867806154541035de518012d" title=" " alt="" coords="566,851,676,877"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="392,561,603,838,599,841,388,564"/>
+<area shape="rect" id="Node000007" href="$syscalls_8c.html#af9aace1b44b73111e15aa39f06f43456" title=" " alt="" coords="819,370,916,396"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="619,851,621,773,627,717,637,653,654,586,679,520,713,458,734,430,759,405,780,391,803,383,805,388,782,396,762,409,738,434,717,461,684,522,659,588,642,654,632,717,627,774,625,851"/>
+<area shape="rect" id="Node000009" href="$log_8c.html#a6efa47aededef4834dc5c25da1e432de" title="Returns all sinks, except the specified exceptions." alt="" coords="791,419,944,445"/>
+<area shape="poly" id="edge9_Node000006_Node000009" title=" " alt="" coords="620,851,625,781,632,730,644,674,661,615,685,557,717,503,759,456,776,444,779,448,762,460,721,506,690,559,666,617,649,675,637,731,630,781,625,851"/>
+<area shape="rect" id="Node000010" href="$log_8c.html#ad5a8cf2ec365951bb0385938171723bd" title="Get a pointer to the full text of the in&#45;memory log message at the specified index." alt="" coords="786,469,949,510"/>
+<area shape="poly" id="edge10_Node000006_Node000010" title=" " alt="" coords="621,850,630,791,653,702,671,653,694,605,723,559,759,520,771,510,774,515,762,524,727,562,698,607,676,655,658,703,636,792,626,851"/>
+<area shape="rect" id="Node000011" href="$log_8c.html#acce5d976dea413409a2547fc61475620" title="Get the index of the most recent in&#45;memory log message." alt="" coords="786,534,949,589"/>
+<area shape="poly" id="edge11_Node000006_Node000011" title=" " alt="" coords="623,850,637,804,664,737,704,664,729,630,759,600,771,590,774,594,762,604,733,633,708,667,669,739,642,806,628,852"/>
+<area shape="rect" id="Node000012" href="$log_8c.html#ad0799a0e4171a608ff908822382da8c9" title="Get the most recent log message text." alt="" coords="791,613,944,654"/>
+<area shape="poly" id="edge12_Node000006_Node000012" title=" " alt="" coords="626,850,644,814,673,766,712,715,759,670,776,659,779,663,762,674,716,719,677,769,649,817,631,852"/>
+<area shape="rect" id="Node000013" href="$log_8c.html#a186ca6df91a1dacb78dbf0b0385747c5" title="Get the name of a severity enum." alt="" coords="1268,735,1433,761"/>
+<area shape="poly" id="edge13_Node000006_Node000013" title=" " alt="" coords="627,850,646,819,675,781,713,743,735,727,759,714,831,690,906,677,983,674,1058,678,1129,688,1194,700,1297,728,1296,733,1193,706,1128,693,1057,684,983,680,907,683,832,695,761,719,738,731,717,747,679,784,650,822,632,852"/>
+<area shape="rect" id="Node000014" href="$log_8c.html#a440123199704bc7c5231ec1a9743497f" title="Check logging sink status." alt="" coords="793,729,942,754"/>
+<area shape="poly" id="edge14_Node000006_Node000014" title=" " alt="" coords="636,849,688,807,722,784,759,764,778,757,780,762,761,769,725,789,691,811,639,853"/>
+<area shape="rect" id="Node000137" href="$log_8c.html#af31cb35d8f2dd37ff306620c600462da" title="Check whether file logging is enabled for a subsystem." alt="" coords="798,779,937,819"/>
+<area shape="poly" id="edge38_Node000006_Node000137" title=" " alt="" coords="672,848,783,818,784,824,673,853"/>
+<area shape="rect" id="Node000138" href="$log_8c.html#a5503bd03b30497a0a43c490d68090ebc" title="Get the size in entries of the in&#45;memory log table." alt="" coords="783,1285,952,1326"/>
+<area shape="poly" id="edge40_Node000006_Node000138" title=" " alt="" coords="626,877,631,946,650,1052,668,1110,691,1168,723,1223,762,1270,772,1278,768,1282,758,1274,718,1226,687,1170,663,1112,645,1053,626,947,620,878"/>
+<area shape="rect" id="Node000139" href="$log_8c.html#a3d0d201c22a940b6800834336c24fdcc" title=" " alt="" coords="785,1351,950,1391"/>
+<area shape="poly" id="edge41_Node000006_Node000139" title=" " alt="" coords="625,878,627,956,633,1014,643,1079,660,1147,684,1215,718,1279,762,1336,773,1345,770,1349,758,1339,714,1282,679,1218,655,1149,638,1080,627,1015,622,957,619,878"/>
+<area shape="rect" id="Node000140" href="$log_8c.html#a9a7ce5e1b26859f039c363753e499d32" title=" " alt="" coords="785,1416,950,1457"/>
+<area shape="poly" id="edge42_Node000006_Node000140" title=" " alt="" coords="627,877,641,979,670,1137,689,1220,711,1296,735,1359,762,1401,773,1410,769,1414,758,1405,731,1361,706,1298,684,1221,665,1138,636,980,621,878"/>
+<area shape="rect" id="Node000141" href="$log_8c.html#a22ffd7bd23f49bfcc5da12d9dee93fba" title="Report a sink&#39;s enabled state." alt="" coords="781,844,954,885"/>
+<area shape="poly" id="edge43_Node000006_Node000141" title=" " alt="" coords="676,862,765,862,765,867,676,867"/>
+<area shape="rect" id="Node000142" href="$log_8c.html#af46fe0cc52d2bc6cd716d02ef713641c" title="Report a subsystem&#39;s file&#45;logging state." alt="" coords="787,909,948,950"/>
+<area shape="poly" id="edge45_Node000006_Node000142" title=" " alt="" coords="673,875,774,902,773,907,672,880"/>
+<area shape="rect" id="Node000143" href="$log_8c.html#a7580a472c0db91ca169d0e1403d4c48b" title="Turn debugging messages on or off for the specified sink." alt="" coords="779,1155,956,1195"/>
+<area shape="poly" id="edge47_Node000006_Node000143" title=" " alt="" coords="628,877,640,927,666,998,684,1037,705,1075,732,1110,762,1141,767,1145,764,1149,759,1145,727,1114,701,1078,679,1039,661,1000,635,928,623,878"/>
+<area shape="rect" id="Node000144" href="$log_8c.html#add4285ec4e7fa886c86969276e630e2b" title="Enable or disable logging to a sink." alt="" coords="789,1220,946,1261"/>
+<area shape="poly" id="edge49_Node000006_Node000144" title=" " alt="" coords="626,877,636,937,658,1025,676,1073,699,1121,727,1166,762,1205,776,1216,773,1220,759,1209,723,1169,694,1124,671,1075,653,1026,631,938,621,878"/>
+<area shape="rect" id="Node000145" href="$log_8c.html#a51dd2ee0e3382333ca295b33b6fd8734" title="Turn debugging messages on or off for the specified system." alt="" coords="773,975,962,1015"/>
+<area shape="poly" id="edge51_Node000006_Node000145" title=" " alt="" coords="640,876,692,916,762,959,777,966,775,971,759,964,689,921,636,880"/>
+<area shape="rect" id="Node000146" href="$log_8c.html#a57f3ced0c69b3a65c71ec7bf8bbc6cea" title="Enable or disable logging to file for a subsystem." alt="" coords="789,1040,946,1081"/>
+<area shape="poly" id="edge53_Node000006_Node000146" title=" " alt="" coords="632,876,681,947,718,988,762,1025,776,1033,774,1038,759,1029,714,992,677,950,628,879"/>
+<area shape="rect" id="Node000147" href="$log_8c.html#a0922ecc9bb8ee94a49060ee0961c1ca1" title="Set the logging severity bitfield mask for a subsystem." alt="" coords="760,1105,975,1130"/>
+<area shape="poly" id="edge55_Node000006_Node000147" title=" " alt="" coords="629,877,644,919,671,977,710,1038,734,1066,762,1090,770,1095,767,1100,759,1094,731,1070,706,1042,666,979,639,921,624,878"/>
+<area shape="rect" id="Node000008" href="$syscalls_8c.html#ad0122671640a3af49792ddaa59e8294e" title=" " alt="" coords="1071,370,1166,396"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="916,380,1055,380,1055,386,916,386"/>
+<area shape="rect" id="Node000015" href="$log_8c.html#a9620661557eea5fdaf535b894ae58c84" title="Log a message to several destinations (sinks)" alt="" coords="1064,950,1173,976"/>
+<area shape="poly" id="edge15_Node000014_Node000015" title=" " alt="" coords="944,750,976,765,1021,804,1059,850,1087,896,1107,934,1103,937,1083,898,1054,853,1017,807,973,769,942,755"/>
+<area shape="poly" id="edge16_Node000015_Node000013" title=" " alt="" coords="1132,948,1322,770,1325,774,1136,951"/>
+<area shape="rect" id="Node000016" href="$log__sinks_8c.html#ad2518000eb3f3d175e8a4939ee3530af" title="Sends a log message to a log file." alt="" coords="1305,999,1395,1025"/>
+<area shape="poly" id="edge17_Node000015_Node000016" title=" " alt="" coords="1174,972,1290,997,1289,1002,1173,977"/>
+<area shape="rect" id="Node000132" href="$log__sinks_8c.html#af6b617d68df1389f44e9beb22ffa6d10" title="Sends a log message to the UHF radio." alt="" coords="1508,1147,1636,1173"/>
+<area shape="poly" id="edge33_Node000015_Node000132" title=" " alt="" coords="1145,974,1288,1048,1386,1093,1487,1134,1505,1140,1504,1145,1485,1139,1383,1098,1285,1052,1143,979"/>
+<area shape="rect" id="Node000133" href="$log__sinks_8c.html#a3f618faf2b066b771b2cb567c66154b6" title="Sends a log message to the umbilical UART." alt="" coords="1495,901,1649,926"/>
+<area shape="poly" id="edge34_Node000015_Node000133" title=" " alt="" coords="1173,954,1479,921,1480,926,1174,960"/>
+<area shape="rect" id="Node000134" href="$timekeeping_8c.html#a5bfe7cf59c2f5dca9b5f4213f6ea16e7" title="Returns a computer&#45;friendly timestamp string." alt="" coords="1262,843,1438,869"/>
+<area shape="poly" id="edge35_Node000015_Node000134" title=" " alt="" coords="1147,947,1305,874,1308,878,1149,952"/>
+<area shape="rect" id="Node000017" href="$lfs_8c.html#aa7eb46b610f8507869aa62759cfd224e" title=" " alt="" coords="1524,1049,1620,1074"/>
+<area shape="poly" id="edge18_Node000016_Node000017" title=" " alt="" coords="1396,1020,1509,1045,1508,1050,1395,1025"/>
+<area shape="rect" id="Node000115" href="$lfs_8c.html#a27b9877d2df6b72e9ac883a408d0d34c" title="File operations ///." alt="" coords="1516,999,1628,1025"/>
+<area shape="poly" id="edge21_Node000016_Node000115" title=" " alt="" coords="1396,1010,1501,1010,1501,1015,1396,1015"/>
+<area shape="rect" id="Node000127" href="$lfs_8c.html#ad6f28a6af39c34f251a7c8db1bcc9506" title=" " alt="" coords="1525,1098,1619,1124"/>
+<area shape="poly" id="edge25_Node000016_Node000127" title=" " alt="" coords="1374,1023,1424,1054,1487,1084,1511,1093,1509,1098,1485,1089,1422,1058,1371,1028"/>
+<area shape="rect" id="Node000130" href="$lfs_8c.html#a2769dda334cd0ac276a4a929eadb930d" title=" " alt="" coords="1525,950,1619,976"/>
+<area shape="poly" id="edge28_Node000016_Node000130" title=" " alt="" coords="1395,1000,1509,974,1511,979,1396,1005"/>
+<area shape="poly" id="edge31_Node000016_Node000132" title=" " alt="" coords="1367,1023,1488,1134,1497,1139,1495,1144,1485,1138,1364,1027"/>
+<area shape="poly" id="edge32_Node000016_Node000133" title=" " alt="" coords="1371,996,1422,966,1485,935,1501,929,1503,934,1487,940,1424,971,1374,1001"/>
+<area shape="rect" id="Node000018" href="$lfs_8c.html#a6913260217358cf9c612d2547f6f0bbe" title=" " alt="" coords="1872,1026,1975,1052"/>
+<area shape="poly" id="edge19_Node000017_Node000018" title=" " alt="" coords="1621,1063,1715,1066,1824,1060,1862,1053,1863,1059,1824,1066,1715,1071,1621,1068"/>
+<area shape="rect" id="Node000114" href="$lfs_8c.html#abb00542d235be9617c878d46b6b00bb0" title=" " alt="" coords="1707,1025,1822,1050"/>
+<area shape="poly" id="edge20_Node000017_Node000114" title=" " alt="" coords="1620,1053,1691,1044,1692,1049,1621,1058"/>
+<area shape="poly" id="edge24_Node000115_Node000114" title=" " alt="" coords="1628,1017,1692,1025,1692,1031,1627,1022"/>
+<area shape="rect" id="Node000116" href="$lfs_8c.html#af427c4edfdfd5f3f957708079189ddea" title="Top level file operations ///." alt="" coords="1706,975,1824,1001"/>
+<area shape="poly" id="edge22_Node000115_Node000116" title=" " alt="" coords="1627,1003,1690,995,1691,1000,1628,1008"/>
+<area shape="poly" id="edge23_Node000116_Node000018" title=" " alt="" coords="1808,999,1868,1018,1866,1023,1807,1004"/>
+<area shape="poly" id="edge27_Node000127_Node000114" title=" " alt="" coords="1618,1097,1657,1084,1723,1055,1726,1060,1659,1089,1620,1102"/>
+<area shape="rect" id="Node000128" href="$lfs_8c.html#a82eccb8ccb85d49165b04885f01c8799" title=" " alt="" coords="1715,1126,1815,1152"/>
+<area shape="poly" id="edge26_Node000127_Node000128" title=" " alt="" coords="1619,1115,1700,1127,1699,1132,1618,1120"/>
+<area shape="poly" id="edge30_Node000130_Node000114" title=" " alt="" coords="1620,971,1659,984,1683,997,1707,1011,1717,1016,1715,1021,1704,1016,1681,1002,1657,989,1618,976"/>
+<area shape="rect" id="Node000131" href="$lfs_8c.html#a41d53212e4b29a3f22c93f27153c4030" title=" " alt="" coords="1715,926,1815,952"/>
+<area shape="poly" id="edge29_Node000130_Node000131" title=" " alt="" coords="1619,954,1699,944,1700,950,1619,960"/>
+<area shape="rect" id="Node000135" href="$timekeeping_8c.html#a94e564d601196fe7f3e2bc83050deb12" title=" " alt="" coords="1489,836,1655,877"/>
+<area shape="poly" id="edge36_Node000134_Node000135" title=" " alt="" coords="1439,854,1474,854,1474,859,1439,859"/>
+<area shape="rect" id="Node000136" href="$timekeeping_8c.html#a909de509b8cfaf7214b1e8f0759c036d" title=" " alt="" coords="1486,771,1658,811"/>
+<area shape="poly" id="edge37_Node000134_Node000136" title=" " alt="" coords="1396,840,1485,814,1486,819,1397,845"/>
+<area shape="poly" id="edge39_Node000137_Node000015" title=" " alt="" coords="938,813,976,830,1012,855,1046,883,1098,936,1094,940,1043,887,1009,859,973,835,936,818"/>
+<area shape="poly" id="edge44_Node000141_Node000015" title=" " alt="" coords="940,883,976,895,1078,940,1076,945,974,900,938,888"/>
+<area shape="poly" id="edge46_Node000142_Node000015" title=" " alt="" coords="949,938,1048,951,1048,956,948,943"/>
+<area shape="poly" id="edge48_Node000143_Node000015" title=" " alt="" coords="953,1152,973,1141,1015,1105,1051,1064,1080,1023,1101,988,1105,991,1084,1026,1055,1067,1019,1109,976,1145,956,1156"/>
+<area shape="poly" id="edge50_Node000144_Node000015" title=" " alt="" coords="945,1221,973,1205,999,1181,1022,1154,1060,1094,1088,1036,1106,990,1111,992,1093,1038,1065,1097,1026,1157,1003,1185,976,1209,948,1225"/>
+<area shape="poly" id="edge52_Node000145_Node000015" title=" " alt="" coords="962,980,1048,969,1048,974,963,985"/>
+<area shape="poly" id="edge54_Node000146_Node000015" title=" " alt="" coords="938,1037,974,1024,1075,980,1077,985,976,1029,940,1042"/>
+<area shape="poly" id="edge56_Node000147_Node000015" title=" " alt="" coords="944,1102,973,1090,1010,1067,1043,1039,1095,986,1098,990,1047,1043,1013,1071,976,1095,946,1107"/>
+<area shape="poly" id="edge58_Node000148_Node000002" title=" " alt="" coords="442,123,529,104,785,51,786,57,531,110,443,128"/>
+<area shape="poly" id="edge59_Node000148_Node000003" title=" " alt="" coords="406,123,529,67,564,54,566,59,531,72,408,128"/>
+<area shape="rect" id="Node000149" href="$arrays_8c.html#af6f2987b63d15c0cc889ac8c2ea0d072" title="Returns the index of the first character of the first occurrence of a substring in an array." alt="" coords="773,76,962,117"/>
+<area shape="poly" id="edge60_Node000148_Node000149" title=" " alt="" coords="482,127,757,103,758,108,483,133"/>
+<area shape="rect" id="Node000150" href="$telecommand__parser_8c.html#ac6e1762fe10ccf9d703ce59700759a25" title="Returns whether tcmd_str starts with CTS1+ (TCMD_PREFIX_STR)." alt="" coords="782,305,953,346"/>
+<area shape="poly" id="edge61_Node000148_Node000150" title=" " alt="" coords="468,150,484,161,498,177,505,195,508,229,511,262,518,277,532,292,557,308,586,321,646,337,708,342,766,340,766,345,708,347,645,342,584,326,555,313,528,296,514,280,506,264,502,230,500,196,493,180,480,165,465,154"/>
+<area shape="rect" id="Node000151" href="$telecommand__parser_8c.html#a9ea4d9d994573e6ede05facd0bad0ee3" title="Searches for a str like \@tag_name=xxxx, and sets uint64_t xxxx into out_value." alt="" coords="549,176,693,217"/>
+<area shape="poly" id="edge62_Node000148_Node000151" title=" " alt="" coords="438,150,483,160,534,173,533,178,481,165,437,155"/>
+<area shape="rect" id="Node000154" href="$telecommand__parser_8c.html#adc031daef8bd51a82f869a4797c2683e" title="Finds an index into TCMD_telecommand_definitions for the given telecommand string." alt="" coords="530,241,712,282"/>
+<area shape="poly" id="edge66_Node000148_Node000154" title=" " alt="" coords="463,150,484,161,500,177,509,194,517,210,532,226,539,231,536,235,528,230,512,213,504,196,496,180,480,165,460,155"/>
+<area shape="poly" id="edge63_Node000151_Node000149" title=" " alt="" coords="673,173,711,155,735,140,759,126,773,120,775,125,762,131,737,145,714,160,676,178"/>
+<area shape="rect" id="Node000152" href="$telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="791,141,944,166"/>
+<area shape="poly" id="edge64_Node000151_Node000152" title=" " alt="" coords="693,181,775,167,776,172,694,186"/>
+<area shape="rect" id="Node000153" href="$telecommand__parser_8c.html#a41927fe9744597973411939a748f7ee1" title="Returns whether a character is numeric (0&#45;9)." alt="" coords="787,190,948,216"/>
+<area shape="poly" id="edge65_Node000151_Node000153" title=" " alt="" coords="694,196,772,198,772,203,694,201"/>
+<area shape="poly" id="edge67_Node000154_Node000150" title=" " alt="" coords="703,280,773,298,772,304,702,285"/>
+<area shape="rect" id="Node000155" href="$telecommand__parser_8c.html#a94afb6a62e1b5afb772aaffbae8bcded" title="Returns whether a character is a valid character in a telecommand name." alt="" coords="779,240,956,281"/>
+<area shape="poly" id="edge68_Node000154_Node000155" title=" " alt="" coords="713,258,763,258,763,263,713,264"/>
+<area shape="rect" id="Node000156" href="$telecommand__parser_8c.html#a99398160cef3734514e623985c0589b4" title="Returns whether a character is alphanumeric (0&#45;9, A&#45;Z, a&#45;z)." alt="" coords="1023,247,1214,273"/>
+<area shape="poly" id="edge69_Node000155_Node000156" title=" " alt="" coords="957,258,1007,258,1007,263,957,263"/>
 </map>
