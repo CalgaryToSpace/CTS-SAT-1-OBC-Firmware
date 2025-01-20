@@ -1,6 +1,6 @@
 
-#ifndef __INCLUDE_GUARD__TELECOMMAND_PARSER_H__
-#define __INCLUDE_GUARD__TELECOMMAND_PARSER_H__
+#ifndef INCLUDE_GUARD__TELECOMMAND_PARSER_H__
+#define INCLUDE_GUARD__TELECOMMAND_PARSER_H__
 
 #include "telecommands/telecommand_types.h"
 #include "telecommands/telecommand_definitions.h"
@@ -22,5 +22,5 @@ uint8_t TCMD_get_suffix_tag_uint64(const char *str, const char *tag_name, uint64
 uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChannel_enum_t tcmd_channel,
         TCMD_parsed_tcmd_to_execute_t *parsed_tcmd_output);
 
-#endif // __INCLUDE_GUARD__TELECOMMAND_PARSER_H__
+#endif // INCLUDE_GUARD__TELECOMMAND_PARSER_H__
 

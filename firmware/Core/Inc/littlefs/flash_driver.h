@@ -1,5 +1,5 @@
-#ifndef __INCLUDE_GUARD__FLASH_DRIVER_H__
-#define __INCLUDE_GUARD__FLASH_DRIVER_H__
+#ifndef INCLUDE_GUARD__FLASH_DRIVER_H__
+#define INCLUDE_GUARD__FLASH_DRIVER_H__
 
 /*-----------------------------INCLUDES-----------------------------*/
 #include <stdint.h>
@@ -88,4 +88,4 @@ FLASH_error_enum_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number,
 FLASH_error_enum_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_number);
 FLASH_error_enum_t FLASH_reset(SPI_HandleTypeDef *hspi, uint8_t chip_number);
 
-#endif /* __INCLUDE_GUARD__FLASH_DRIVER_H__ */
+#endif /* INCLUDE_GUARD__FLASH_DRIVER_H__ */
