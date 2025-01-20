@@ -89,7 +89,8 @@ $(function(){ initResizable(false); });
 <div id="doc-content">
 <div class="header">
   <div class="summary">
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">telecommand_parser.c File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -98,6 +99,8 @@ $(function(){ initResizable(false); });
 <code>#include &quot;<a class="el" href="telecommand__args__helpers_8h_source.html">telecommands/telecommand_args_helpers.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="debug__uart_8h_source.html">debug_tools/debug_uart.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="arrays_8h_source.html">transforms/arrays.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sha256_8h_source.html">crypto/sha256.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="log_8h_source.html">log/log.h</a>&quot;</code><br />
 <code>#include &lt;stdio.h&gt;</code><br />
 <code>#include &lt;stdint.h&gt;</code><br />
 <code>#include &lt;string.h&gt;</code><br />
@@ -106,40 +109,48 @@ Include dependency graph for telecommand_parser.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="telecommand__parser_8c__incl.png" border="0" usemap="#afirmware_2Core_2Src_2telecommands_2telecommand__parser_8c" alt=""/></div>
 <map name="afirmware_2Core_2Src_2telecommands_2telecommand__parser_8c" id="afirmware_2Core_2Src_2telecommands_2telecommand__parser_8c">
-<area shape="rect" title=" " alt="" coords="648,5,863,46"/>
-<area shape="rect" href="telecommand__definitions_8h.html" title=" " alt="" coords="359,183,547,223"/>
-<area shape="poly" title=" " alt="" coords="648,44,547,65,506,80,480,96,469,111,461,130,455,167,449,167,456,128,464,109,476,92,504,75,546,60,647,39"/>
-<area shape="rect" title=" " alt="" coords="618,360,682,386"/>
-<area shape="poly" title=" " alt="" coords="763,46,777,125,778,174,770,224,754,263,730,298,679,351,675,348,726,295,749,260,765,223,773,174,772,125,758,47"/>
-<area shape="rect" href="telecommand__parser_8h.html" title=" " alt="" coords="491,94,679,135"/>
-<area shape="poly" title=" " alt="" coords="718,49,638,89,636,84,716,44"/>
-<area shape="rect" href="telecommand__args__helpers_8h.html" title=" " alt="" coords="831,183,1019,223"/>
-<area shape="poly" title=" " alt="" coords="776,45,897,170,894,173,772,48"/>
-<area shape="rect" href="debug__uart_8h.html" title=" " alt="" coords="236,102,406,127"/>
-<area shape="poly" title=" " alt="" coords="657,49,397,101,396,95,656,44"/>
-<area shape="rect" href="arrays_8h.html" title=" " alt="" coords="623,190,755,216"/>
-<area shape="poly" title=" " alt="" coords="751,47,701,176,696,174,746,45"/>
-<area shape="rect" title=" " alt="" coords="880,102,940,127"/>
-<area shape="poly" title=" " alt="" coords="792,44,876,91,874,96,789,49"/>
-<area shape="rect" title=" " alt="" coords="964,102,1027,127"/>
-<area shape="poly" title=" " alt="" coords="818,44,952,92,956,93,954,98,951,96,816,49"/>
-<area shape="poly" title=" " alt="" coords="455,224,460,267,467,290,480,310,507,332,539,348,572,359,603,365,602,370,571,364,537,353,504,337,476,314,462,292,454,268,449,224"/>
-<area shape="rect" href="telecommand__types_8h.html" title=" " alt="" coords="491,271,679,312"/>
-<area shape="poly" title=" " alt="" coords="484,222,544,260,541,265,481,226"/>
-<area shape="poly" title=" " alt="" coords="603,311,632,346,628,349,599,314"/>
-<area shape="poly" title=" " alt="" coords="556,137,497,176,494,172,553,133"/>
-<area shape="poly" title=" " alt="" coords="588,135,588,256,582,256,582,135"/>
-<area shape="poly" title=" " alt="" coords="911,226,869,270,842,293,813,314,754,343,698,362,696,357,752,338,810,310,839,289,865,266,907,222"/>
-<area shape="poly" title=" " alt="" coords="324,127,330,171,337,197,348,222,371,253,393,274,454,310,492,327,531,341,604,360,602,365,530,346,490,332,452,314,390,279,367,257,344,225,332,199,324,172,319,128"/>
-<area shape="rect" href="main_8h.html" title=": Header for main.c file. This file contains the common defines of the application." alt="" coords="196,190,256,216"/>
-<area shape="poly" title=" " alt="" coords="309,130,252,182,248,178,306,126"/>
-<area shape="rect" title=" " alt="" coords="170,279,283,304"/>
-<area shape="poly" title=" " alt="" coords="229,216,229,263,224,263,224,216"/>
-<area shape="rect" href="rtos__task__helpers_8h.html" title=" " alt="" coords="5,271,146,312"/>
-<area shape="poly" title=" " alt="" coords="207,219,124,266,121,261,204,214"/>
-<area shape="rect" title=" " alt="" coords="32,360,119,386"/>
-<area shape="poly" title=" " alt="" coords="78,312,78,344,73,344,73,312"/>
-<area shape="poly" title=" " alt="" coords="694,216,700,259,699,286,694,313,685,332,674,349,669,346,681,330,689,311,694,285,694,259,689,216"/>
+<area shape="rect" title=" " alt="" coords="543,5,757,46"/>
+<area shape="rect" href="telecommand__definitions_8h.html" title=" " alt="" coords="423,183,611,223"/>
+<area shape="poly" title=" " alt="" coords="638,48,543,172,539,168,633,45"/>
+<area shape="rect" title=" " alt="" coords="480,360,543,386"/>
+<area shape="poly" title=" " alt="" coords="758,38,875,60,925,75,960,92,990,120,1007,149,1012,183,1009,224,1004,274,997,294,980,314,947,332,902,346,846,357,785,364,660,372,559,374,559,369,660,367,784,359,845,351,900,341,945,327,976,310,993,291,999,272,1004,223,1007,183,1002,151,986,123,957,96,923,80,874,65,757,43"/>
+<area shape="rect" href="telecommand__parser_8h.html" title=" " alt="" coords="363,94,551,135"/>
+<area shape="poly" title=" " alt="" coords="607,49,516,90,514,85,605,44"/>
+<area shape="rect" href="telecommand__args__helpers_8h.html" title=" " alt="" coords="87,271,275,312"/>
+<area shape="poly" title=" " alt="" coords="543,31,488,38,431,50,374,69,321,96,279,132,244,176,216,220,197,259,192,256,212,217,239,173,275,128,318,92,372,64,429,45,487,33,542,26"/>
+<area shape="rect" href="debug__uart_8h.html" title=" " alt="" coords="627,102,796,127"/>
+<area shape="poly" title=" " alt="" coords="666,45,697,88,692,91,662,48"/>
+<area shape="rect" href="arrays_8h.html" title=" " alt="" coords="5,190,138,216"/>
+<area shape="poly" title=" " alt="" coords="543,30,465,35,378,46,288,66,202,96,170,114,140,136,94,180,90,176,137,132,167,110,200,92,287,61,377,41,465,29,542,24"/>
+<area shape="rect" href="sha256_8h.html" title=" " alt="" coords="834,102,946,127"/>
+<area shape="poly" title=" " alt="" coords="706,44,843,93,841,98,704,49"/>
+<area shape="rect" href="log_8h.html" title=" " alt="" coords="278,190,348,216"/>
+<area shape="poly" title=" " alt="" coords="543,42,430,64,383,79,352,96,338,113,328,134,318,175,312,174,323,132,333,110,348,92,381,74,429,59,542,37"/>
+<area shape="rect" title=" " alt="" coords="1068,102,1128,127"/>
+<area shape="poly" title=" " alt="" coords="758,36,898,57,1051,91,1057,93,1056,98,1049,97,897,63,757,41"/>
+<area shape="rect" title=" " alt="" coords="1152,102,1215,127"/>
+<area shape="poly" title=" " alt="" coords="758,31,938,51,1040,68,1140,91,1146,93,1144,98,1139,97,1039,73,938,56,758,36"/>
+<area shape="poly" title=" " alt="" coords="532,223,545,245,554,271,558,292,554,313,535,349,530,346,549,311,552,292,549,272,540,247,528,225"/>
+<area shape="rect" href="telecommand__types_8h.html" title=" " alt="" coords="351,271,539,312"/>
+<area shape="poly" title=" " alt="" coords="503,226,473,261,469,258,498,222"/>
+<area shape="poly" title=" " alt="" coords="463,311,493,346,489,349,459,314"/>
+<area shape="poly" title=" " alt="" coords="473,134,497,168,492,171,468,137"/>
+<area shape="poly" title=" " alt="" coords="441,137,425,158,413,183,410,202,412,221,426,257,421,259,407,222,405,202,408,182,420,155,436,133"/>
+<area shape="poly" title=" " alt="" coords="264,310,465,358,464,363,263,315"/>
+<area shape="poly" title=" " alt="" coords="706,129,653,209,574,314,538,351,534,347,569,310,649,205,702,126"/>
+<area shape="rect" href="main_8h.html" title=": Header for main.c file. This file contains the common defines of the application." alt="" coords="692,190,752,216"/>
+<area shape="poly" title=" " alt="" coords="716,127,722,175,716,175,710,128"/>
+<area shape="rect" title=" " alt="" coords="666,279,779,304"/>
+<area shape="poly" title=" " alt="" coords="725,216,725,263,720,263,720,216"/>
+<area shape="rect" href="rtos__task__helpers_8h.html" title=" " alt="" coords="803,271,943,312"/>
+<area shape="poly" title=" " alt="" coords="744,214,827,261,824,266,742,219"/>
+<area shape="rect" title=" " alt="" coords="829,360,916,386"/>
+<area shape="poly" title=" " alt="" coords="876,312,876,344,870,344,870,312"/>
+<area shape="poly" title=" " alt="" coords="70,217,62,263,65,288,76,310,103,329,143,343,193,354,250,361,367,369,464,370,464,375,367,374,250,367,193,359,141,348,100,333,72,314,60,290,57,262,65,216"/>
+<area shape="poly" title=" " alt="" coords="894,127,901,170,918,222,928,236,938,245,949,255,958,270,965,293,964,303,957,314,929,334,887,349,835,360,777,367,657,375,558,375,558,370,657,369,776,362,834,355,886,344,927,329,954,310,959,301,960,293,953,272,945,258,935,249,924,239,913,225,895,172,889,128"/>
+<area shape="rect" title=" " alt="" coords="927,190,994,216"/>
+<area shape="poly" title=" " alt="" coords="902,126,943,176,939,180,898,129"/>
+<area shape="poly" title=" " alt="" coords="315,216,318,262,326,288,340,310,367,333,400,349,433,359,465,365,464,370,432,364,398,354,365,337,336,314,321,290,313,263,309,217"/>
 </map>
 </div>
 </div><table class="memberdecls">
@@ -163,9 +174,17 @@ Functions</h2></td></tr>
 <tr class="memitem:a9ea4d9d994573e6ede05facd0bad0ee3" id="r_a9ea4d9d994573e6ede05facd0bad0ee3"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9ea4d9d994573e6ede05facd0bad0ee3">TCMD_get_suffix_tag_uint64</a> (const char *str, const char *tag_name, uint64_t *value_dest)</td></tr>
 <tr class="memdesc:a9ea4d9d994573e6ede05facd0bad0ee3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Searches for a <code>str</code> like <code>\@tag_name=xxxx</code>, and sets <code>uint64_t xxxx</code> into <code>out_value</code>.  <br /></td></tr>
 <tr class="separator:a9ea4d9d994573e6ede05facd0bad0ee3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cc1a24bbf98a15b35850137f30ed793" id="r_a5cc1a24bbf98a15b35850137f30ed793"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5cc1a24bbf98a15b35850137f30ed793">TCMD_get_suffix_tag_hex_array</a> (const char *str, const char *tag_name, uint8_t *value_dest)</td></tr>
+<tr class="memdesc:a5cc1a24bbf98a15b35850137f30ed793"><td class="mdescLeft">&#160;</td><td class="mdescRight">Searches for a <code>str</code> like <code>\@tag_name=xxxx</code>, and sets uint8_t array <code>xxxx</code> into <code>value_dest</code>.  <br /></td></tr>
+<tr class="separator:a5cc1a24bbf98a15b35850137f30ed793"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a479be5d2e5ee3cd0fe5312818aa8742e" id="r_a479be5d2e5ee3cd0fe5312818aa8742e"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a479be5d2e5ee3cd0fe5312818aa8742e">TCMD_parse_full_telecommand</a> (const char tcmd_str[], <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, <a class="el" href="structTCMD__parsed__tcmd__to__execute__t.html">TCMD_parsed_tcmd_to_execute_t</a> *parsed_tcmd_output)</td></tr>
 <tr class="memdesc:a479be5d2e5ee3cd0fe5312818aa8742e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses a telecommand into everything needed to execute it.  <br /></td></tr>
 <tr class="separator:a479be5d2e5ee3cd0fe5312818aa8742e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:abb5c97157e0e0735bfcc3f1d5228518e" id="r_abb5c97157e0e0735bfcc3f1d5228518e"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abb5c97157e0e0735bfcc3f1d5228518e">TCMD_require_valid_sha256</a> = 0</td></tr>
+<tr class="separator:abb5c97157e0e0735bfcc3f1d5228518e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="ac6e1762fe10ccf9d703ce59700759a25" name="ac6e1762fe10ccf9d703ce59700759a25"></a>
@@ -215,6 +234,76 @@ Here is the caller graph for this function:</div>
 <area shape="rect" href="main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,5,55,31"/>
 <area shape="poly" title=" " alt="" coords="87,21,55,21,55,16,87,16"/>
 <area shape="poly" title=" " alt="" coords="614,66,579,62,580,57,615,61"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a5cc1a24bbf98a15b35850137f30ed793" name="a5cc1a24bbf98a15b35850137f30ed793"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cc1a24bbf98a15b35850137f30ed793">&#9670;&#160;</a></span>TCMD_get_suffix_tag_hex_array()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t TCMD_get_suffix_tag_hex_array </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>str</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>tag_name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *</td>          <td class="paramname"><span class="paramname"><em>value_dest</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Searches for a <code>str</code> like <code>\@tag_name=xxxx</code>, and sets uint8_t array <code>xxxx</code> into <code>value_dest</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">str</td><td>The string to search within for the tag. Excluding the tag name, the length of the string must be 256 characters. </td></tr>
+    <tr><td class="paramname">tag_name</td><td>The tag to search for, including the '@' and '='. </td></tr>
+    <tr><td class="paramname">value_dest</td><td>The destination for the value. <code>*value_dest</code> will be set. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 if the tag was found successfully. &gt;0 if the tag was not found, or there was an error. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This function will return an error if the character after the string is not one of the following: {'#', '@', '\0', '!'}. </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="telecommand__parser_8c_a5cc1a24bbf98a15b35850137f30ed793_cgraph.png" border="0" usemap="#atelecommand__parser_8c_a5cc1a24bbf98a15b35850137f30ed793_cgraph" alt=""/></div>
+<map name="atelecommand__parser_8c_a5cc1a24bbf98a15b35850137f30ed793_cgraph" id="atelecommand__parser_8c_a5cc1a24bbf98a15b35850137f30ed793_cgraph">
+<area shape="rect" title="Searches for a str like \@tag_name=xxxx, and sets uint8_t array xxxx into value_dest." alt="" coords="5,63,150,103"/>
+<area shape="rect" href="arrays_8c.html#af6f2987b63d15c0cc889ac8c2ea0d072" title="Returns the index of the first character of the first occurrence of a substring in an array." alt="" coords="199,5,388,46"/>
+<area shape="poly" title=" " alt="" coords="149,61,199,48,200,53,151,66"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#a3f4c71ad48b16b79e4bb91ffb13111d7" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a hex string." alt="" coords="198,70,389,96"/>
+<area shape="poly" title=" " alt="" coords="150,80,182,80,182,86,150,86"/>
+<area shape="rect" href="telecommand__parser_8c.html#a94afb6a62e1b5afb772aaffbae8bcded" title="Returns whether a character is a valid character in a telecommand name." alt="" coords="205,120,382,161"/>
+<area shape="poly" title=" " alt="" coords="151,100,200,113,199,118,149,105"/>
+<area shape="rect" href="telecommand__parser_8c.html#a99398160cef3734514e623985c0589b4" title="Returns whether a character is alphanumeric (0&#45;9, A&#45;Z, a&#45;z)." alt="" coords="437,128,628,153"/>
+<area shape="poly" title=" " alt="" coords="382,138,421,138,421,143,382,143"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="telecommand__parser_8c_a5cc1a24bbf98a15b35850137f30ed793_icgraph.png" border="0" usemap="#atelecommand__parser_8c_a5cc1a24bbf98a15b35850137f30ed793_icgraph" alt=""/></div>
+<map name="atelecommand__parser_8c_a5cc1a24bbf98a15b35850137f30ed793_icgraph" id="atelecommand__parser_8c_a5cc1a24bbf98a15b35850137f30ed793_icgraph">
+<area shape="rect" title="Searches for a str like \@tag_name=xxxx, and sets uint8_t array xxxx into value_dest." alt="" coords="627,27,772,68"/>
+<area shape="rect" href="telecommand__parser_8c.html#a479be5d2e5ee3cd0fe5312818aa8742e" title="Parses a telecommand into everything needed to execute it." alt="" coords="373,35,579,60"/>
+<area shape="poly" title=" " alt="" coords="612,50,580,50,580,45,612,45"/>
+<area shape="rect" href="rtos__tasks_8c.html#a8dcebcb92690e2abce2b7ecb96e411c4" title=" " alt="" coords="103,5,325,31"/>
+<area shape="poly" title=" " alt="" coords="357,37,325,33,326,28,358,32"/>
+<area shape="rect" href="test__telecommand__parser_8c.html#aacc0add1cb7e7fbb2e1a8ec2567b201a" title=" " alt="" coords="125,55,303,96"/>
+<area shape="poly" title=" " alt="" coords="358,63,304,69,303,63,357,58"/>
+<area shape="rect" href="main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,5,55,31"/>
+<area shape="poly" title=" " alt="" coords="87,21,55,21,55,16,87,16"/>
 </map>
 </div>
 
@@ -318,21 +407,24 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="telecommand__parser_8c_a99398160cef3734514e623985c0589b4_icgraph.png" border="0" usemap="#atelecommand__parser_8c_a99398160cef3734514e623985c0589b4_icgraph" alt=""/></div>
 <map name="atelecommand__parser_8c_a99398160cef3734514e623985c0589b4_icgraph" id="atelecommand__parser_8c_a99398160cef3734514e623985c0589b4_icgraph">
-<area shape="rect" title="Returns whether a character is alphanumeric (0&#45;9, A&#45;Z, a&#45;z)." alt="" coords="1083,68,1274,94"/>
-<area shape="rect" href="telecommand__parser_8c.html#a94afb6a62e1b5afb772aaffbae8bcded" title="Returns whether a character is a valid character in a telecommand name." alt="" coords="858,27,1035,68"/>
-<area shape="poly" title=" " alt="" coords="1069,68,1035,63,1036,58,1070,63"/>
-<area shape="rect" href="test__telecommand__parser_8c.html#ac8607bf15a55beeaed93ef6d2be53929" title=" " alt="" coords="865,92,1028,133"/>
-<area shape="poly" title=" " alt="" coords="1068,99,1029,104,1028,99,1067,93"/>
-<area shape="rect" href="telecommand__parser_8c.html#adc031daef8bd51a82f869a4797c2683e" title="Finds an index into TCMD_telecommand_definitions for the given telecommand string." alt="" coords="627,27,810,68"/>
-<area shape="poly" title=" " alt="" coords="842,50,810,50,810,45,842,45"/>
-<area shape="rect" href="telecommand__parser_8c.html#a479be5d2e5ee3cd0fe5312818aa8742e" title="Parses a telecommand into everything needed to execute it." alt="" coords="373,35,579,60"/>
-<area shape="poly" title=" " alt="" coords="612,50,580,50,580,45,612,45"/>
-<area shape="rect" href="rtos__tasks_8c.html#a8dcebcb92690e2abce2b7ecb96e411c4" title=" " alt="" coords="103,5,325,31"/>
-<area shape="poly" title=" " alt="" coords="357,37,325,33,326,28,358,32"/>
-<area shape="rect" href="test__telecommand__parser_8c.html#aacc0add1cb7e7fbb2e1a8ec2567b201a" title=" " alt="" coords="125,55,303,96"/>
-<area shape="poly" title=" " alt="" coords="358,63,304,69,303,63,357,58"/>
-<area shape="rect" href="main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,5,55,31"/>
-<area shape="poly" title=" " alt="" coords="87,21,55,21,55,16,87,16"/>
+<area shape="rect" title="Returns whether a character is alphanumeric (0&#45;9, A&#45;Z, a&#45;z)." alt="" coords="1083,78,1274,104"/>
+<area shape="rect" href="telecommand__parser_8c.html#a94afb6a62e1b5afb772aaffbae8bcded" title="Returns whether a character is a valid character in a telecommand name." alt="" coords="858,37,1035,78"/>
+<area shape="poly" title=" " alt="" coords="1069,78,1035,73,1036,68,1070,73"/>
+<area shape="rect" href="test__telecommand__parser_8c.html#ac8607bf15a55beeaed93ef6d2be53929" title=" " alt="" coords="865,103,1028,143"/>
+<area shape="poly" title=" " alt="" coords="1068,109,1029,114,1028,109,1067,104"/>
+<area shape="rect" href="telecommand__parser_8c.html#a5cc1a24bbf98a15b35850137f30ed793" title="Searches for a str like \@tag_name=xxxx, and sets uint8_t array xxxx into value_dest." alt="" coords="646,5,791,46"/>
+<area shape="poly" title=" " alt="" coords="842,46,791,38,792,33,843,40"/>
+<area shape="rect" href="telecommand__parser_8c.html#adc031daef8bd51a82f869a4797c2683e" title="Finds an index into TCMD_telecommand_definitions for the given telecommand string." alt="" coords="627,71,810,111"/>
+<area shape="poly" title=" " alt="" coords="843,76,811,80,810,75,842,70"/>
+<area shape="rect" href="telecommand__parser_8c.html#a479be5d2e5ee3cd0fe5312818aa8742e" title="Parses a telecommand into everything needed to execute it." alt="" coords="373,46,579,72"/>
+<area shape="poly" title=" " alt="" coords="631,40,575,48,574,43,630,35"/>
+<area shape="rect" href="rtos__tasks_8c.html#a8dcebcb92690e2abce2b7ecb96e411c4" title=" " alt="" coords="103,17,325,42"/>
+<area shape="poly" title=" " alt="" coords="357,48,325,45,326,39,358,43"/>
+<area shape="rect" href="test__telecommand__parser_8c.html#aacc0add1cb7e7fbb2e1a8ec2567b201a" title=" " alt="" coords="125,67,303,107"/>
+<area shape="poly" title=" " alt="" coords="358,74,304,80,303,75,357,69"/>
+<area shape="rect" href="main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,17,55,42"/>
+<area shape="poly" title=" " alt="" coords="87,32,55,32,55,27,87,27"/>
+<area shape="poly" title=" " alt="" coords="612,80,578,75,579,70,612,74"/>
 </map>
 </div>
 
@@ -422,17 +514,20 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="telecommand__parser_8c_a94afb6a62e1b5afb772aaffbae8bcded_icgraph.png" border="0" usemap="#atelecommand__parser_8c_a94afb6a62e1b5afb772aaffbae8bcded_icgraph" alt=""/></div>
 <map name="atelecommand__parser_8c_a94afb6a62e1b5afb772aaffbae8bcded_icgraph" id="atelecommand__parser_8c_a94afb6a62e1b5afb772aaffbae8bcded_icgraph">
-<area shape="rect" title="Returns whether a character is a valid character in a telecommand name." alt="" coords="858,27,1035,68"/>
-<area shape="rect" href="telecommand__parser_8c.html#adc031daef8bd51a82f869a4797c2683e" title="Finds an index into TCMD_telecommand_definitions for the given telecommand string." alt="" coords="627,27,810,68"/>
-<area shape="poly" title=" " alt="" coords="842,50,810,50,810,45,842,45"/>
-<area shape="rect" href="telecommand__parser_8c.html#a479be5d2e5ee3cd0fe5312818aa8742e" title="Parses a telecommand into everything needed to execute it." alt="" coords="373,35,579,60"/>
-<area shape="poly" title=" " alt="" coords="612,50,580,50,580,45,612,45"/>
-<area shape="rect" href="rtos__tasks_8c.html#a8dcebcb92690e2abce2b7ecb96e411c4" title=" " alt="" coords="103,5,325,31"/>
-<area shape="poly" title=" " alt="" coords="357,37,325,33,326,28,358,32"/>
-<area shape="rect" href="test__telecommand__parser_8c.html#aacc0add1cb7e7fbb2e1a8ec2567b201a" title=" " alt="" coords="125,55,303,96"/>
-<area shape="poly" title=" " alt="" coords="358,63,304,69,303,63,357,58"/>
-<area shape="rect" href="main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,5,55,31"/>
-<area shape="poly" title=" " alt="" coords="87,21,55,21,55,16,87,16"/>
+<area shape="rect" title="Returns whether a character is a valid character in a telecommand name." alt="" coords="858,39,1035,79"/>
+<area shape="rect" href="telecommand__parser_8c.html#a5cc1a24bbf98a15b35850137f30ed793" title="Searches for a str like \@tag_name=xxxx, and sets uint8_t array xxxx into value_dest." alt="" coords="646,5,791,46"/>
+<area shape="poly" title=" " alt="" coords="842,46,791,39,792,34,843,41"/>
+<area shape="rect" href="telecommand__parser_8c.html#adc031daef8bd51a82f869a4797c2683e" title="Finds an index into TCMD_telecommand_definitions for the given telecommand string." alt="" coords="627,71,810,111"/>
+<area shape="poly" title=" " alt="" coords="843,76,811,81,810,76,842,71"/>
+<area shape="rect" href="telecommand__parser_8c.html#a479be5d2e5ee3cd0fe5312818aa8742e" title="Parses a telecommand into everything needed to execute it." alt="" coords="373,46,579,72"/>
+<area shape="poly" title=" " alt="" coords="631,40,575,48,574,43,630,35"/>
+<area shape="rect" href="rtos__tasks_8c.html#a8dcebcb92690e2abce2b7ecb96e411c4" title=" " alt="" coords="103,17,325,42"/>
+<area shape="poly" title=" " alt="" coords="357,48,325,45,326,39,358,43"/>
+<area shape="rect" href="test__telecommand__parser_8c.html#aacc0add1cb7e7fbb2e1a8ec2567b201a" title=" " alt="" coords="125,67,303,107"/>
+<area shape="poly" title=" " alt="" coords="358,74,304,80,303,75,357,69"/>
+<area shape="rect" href="main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,17,55,42"/>
+<area shape="poly" title=" " alt="" coords="87,32,55,32,55,27,87,27"/>
+<area shape="poly" title=" " alt="" coords="612,80,578,75,579,70,612,74"/>
 </map>
 </div>
 
@@ -476,30 +571,122 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="telecommand__parser_8c_a479be5d2e5ee3cd0fe5312818aa8742e_cgraph.png" border="0" usemap="#atelecommand__parser_8c_a479be5d2e5ee3cd0fe5312818aa8742e_cgraph" alt=""/></div>
 <map name="atelecommand__parser_8c_a479be5d2e5ee3cd0fe5312818aa8742e_cgraph" id="atelecommand__parser_8c_a479be5d2e5ee3cd0fe5312818aa8742e_cgraph">
-<area shape="rect" title="Parses a telecommand into everything needed to execute it." alt="" coords="5,119,212,144"/>
-<area shape="rect" href="debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="510,9,660,35"/>
-<area shape="poly" title=" " alt="" coords="121,116,177,68,216,43,259,24,319,10,381,4,441,3,495,7,494,12,440,9,381,9,320,15,261,29,219,48,180,72,124,120"/>
-<area shape="rect" href="debug__uart_8c.html#a6e361e09754cc0dcf4809c053731f12a" title=" " alt="" coords="266,39,436,64"/>
-<area shape="poly" title=" " alt="" coords="149,116,294,67,296,72,151,121"/>
-<area shape="rect" href="arrays_8c.html#af6f2987b63d15c0cc889ac8c2ea0d072" title="Returns the index of the first character of the first occurrence of a substring in an array." alt="" coords="490,82,679,123"/>
-<area shape="poly" title=" " alt="" coords="212,123,474,106,475,112,212,128"/>
-<area shape="rect" href="telecommand__parser_8c.html#ac6e1762fe10ccf9d703ce59700759a25" title="Returns whether tcmd_str starts with CTS1+ (TCMD_PREFIX_STR)." alt="" coords="499,246,670,287"/>
-<area shape="poly" title=" " alt="" coords="140,142,196,166,260,189,376,221,484,245,483,250,375,226,259,194,194,171,138,147"/>
-<area shape="rect" href="telecommand__parser_8c.html#a9ea4d9d994573e6ede05facd0bad0ee3" title="Searches for a str like \@tag_name=xxxx, and sets uint64_t xxxx into out_value." alt="" coords="279,139,423,180"/>
-<area shape="poly" title=" " alt="" coords="212,141,264,147,263,152,212,146"/>
-<area shape="rect" href="telecommand__parser_8c.html#adc031daef8bd51a82f869a4797c2683e" title="Finds an index into TCMD_telecommand_definitions for the given telecommand string." alt="" coords="260,254,442,295"/>
-<area shape="poly" title=" " alt="" coords="128,143,186,185,261,233,283,245,281,249,258,238,183,190,125,147"/>
-<area shape="poly" title=" " alt="" coords="436,38,494,31,494,36,437,44"/>
-<area shape="poly" title=" " alt="" coords="423,139,484,124,485,129,424,145"/>
-<area shape="rect" href="telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="508,147,661,172"/>
-<area shape="poly" title=" " alt="" coords="423,157,493,157,493,162,423,162"/>
-<area shape="rect" href="telecommand__parser_8c.html#a41927fe9744597973411939a748f7ee1" title="Returns whether a character is numeric (0&#45;9)." alt="" coords="504,196,665,222"/>
-<area shape="poly" title=" " alt="" coords="424,172,506,190,505,195,423,177"/>
-<area shape="poly" title=" " alt="" coords="442,269,483,267,483,272,442,274"/>
-<area shape="rect" href="telecommand__parser_8c.html#a94afb6a62e1b5afb772aaffbae8bcded" title="Returns whether a character is a valid character in a telecommand name." alt="" coords="496,311,673,352"/>
-<area shape="poly" title=" " alt="" coords="437,293,485,304,484,310,436,298"/>
-<area shape="rect" href="telecommand__parser_8c.html#a99398160cef3734514e623985c0589b4" title="Returns whether a character is alphanumeric (0&#45;9, A&#45;Z, a&#45;z)." alt="" coords="727,319,919,344"/>
-<area shape="poly" title=" " alt="" coords="674,329,711,329,711,334,674,334"/>
+<area shape="rect" title="Parses a telecommand into everything needed to execute it." alt="" coords="5,1313,212,1339"/>
+<area shape="rect" href="sha256_8c.html#adcfd553212e6e77eb368d5291257fee1" title="Computes the SHA256 hash of the message and stores the 32 byte hash at hash." alt="" coords="260,80,466,106"/>
+<area shape="poly" title=" " alt="" coords="107,1313,108,1166,114,1046,124,903,142,745,169,579,207,413,230,331,257,252,275,213,296,176,338,117,343,120,301,179,279,215,262,254,235,333,212,414,174,580,148,746,130,903,119,1046,114,1167,112,1313"/>
+<area shape="rect" href="debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="546,153,696,179"/>
+<area shape="poly" title=" " alt="" coords="108,1313,115,1202,137,1012,156,899,182,781,215,663,257,551,306,433,329,385,352,343,380,303,414,265,458,228,513,188,531,178,533,183,515,192,461,232,418,269,384,307,357,345,333,388,311,435,262,552,221,665,187,783,162,900,143,1012,120,1202,113,1313"/>
+<area shape="rect" href="debug__uart_8c.html#a6e361e09754cc0dcf4809c053731f12a" title=" " alt="" coords="278,564,448,590"/>
+<area shape="poly" title=" " alt="" coords="109,1312,124,1228,154,1089,198,921,226,835,257,752,299,668,341,601,346,604,304,671,262,754,231,837,203,923,159,1090,130,1229,115,1313"/>
+<area shape="rect" href="arrays_8c.html#af6f2987b63d15c0cc889ac8c2ea0d072" title="Returns the index of the first character of the first occurrence of a substring in an array." alt="" coords="526,1494,716,1534"/>
+<area shape="poly" title=" " alt="" coords="122,1338,177,1397,216,1430,261,1457,323,1480,388,1496,452,1506,511,1511,511,1516,451,1511,387,1502,321,1486,258,1462,213,1435,173,1401,118,1341"/>
+<area shape="rect" href="log_8h.html#a3e068c70867806154541035de518012d" title=" " alt="" coords="308,765,418,791"/>
+<area shape="poly" title=" " alt="" coords="113,1312,347,804,352,806,118,1314"/>
+<area shape="rect" href="telecommand__parser_8c.html#ac6e1762fe10ccf9d703ce59700759a25" title="Returns whether tcmd_str starts with CTS1+ (TCMD_PREFIX_STR)." alt="" coords="536,1428,707,1469"/>
+<area shape="poly" title=" " alt="" coords="126,1337,183,1381,220,1403,261,1421,326,1438,394,1448,460,1452,520,1452,520,1458,460,1457,393,1453,325,1443,259,1426,218,1408,180,1385,123,1342"/>
+<area shape="rect" href="telecommand__parser_8c.html#a5cc1a24bbf98a15b35850137f30ed793" title="Searches for a str like \@tag_name=xxxx, and sets uint8_t array xxxx into value_dest." alt="" coords="291,1306,435,1346"/>
+<area shape="poly" title=" " alt="" coords="212,1324,275,1324,275,1329,212,1329"/>
+<area shape="rect" href="telecommand__parser_8c.html#a9ea4d9d994573e6ede05facd0bad0ee3" title="Searches for a str like \@tag_name=xxxx, and sets uint64_t xxxx into out_value." alt="" coords="291,1547,435,1588"/>
+<area shape="poly" title=" " alt="" coords="119,1338,171,1422,213,1474,261,1520,289,1538,286,1542,258,1524,209,1477,167,1425,115,1341"/>
+<area shape="rect" href="telecommand__parser_8c.html#adc031daef8bd51a82f869a4797c2683e" title="Finds an index into TCMD_telecommand_definitions for the given telecommand string." alt="" coords="272,1371,454,1412"/>
+<area shape="poly" title=" " alt="" coords="162,1337,267,1364,266,1369,161,1342"/>
+<area shape="rect" href="sha256_8c.html#a8f4b55bd1e49af6e4620bc9ba9549397" title=" " alt="" coords="574,55,668,80"/>
+<area shape="poly" title=" " alt="" coords="466,80,558,71,559,76,467,85"/>
+<area shape="rect" href="sha256_8c.html#ade6fde6ef9ea137449d72891931c77ef" title=" " alt="" coords="578,104,665,130"/>
+<area shape="poly" title=" " alt="" coords="467,100,562,109,562,114,466,105"/>
+<area shape="rect" href="sha256_8c.html#ac98a25de627f4cded12b7312dee1ffa0" title=" " alt="" coords="566,5,676,31"/>
+<area shape="poly" title=" " alt="" coords="399,77,513,40,551,30,552,35,515,45,401,82"/>
+<area shape="rect" href="sha256_8c.html#af0b9aa0b4a0569dadbce029bb4c534b0" title=" " alt="" coords="809,31,935,56"/>
+<area shape="poly" title=" " alt="" coords="668,60,794,48,795,54,668,66"/>
+<area shape="poly" title=" " alt="" coords="677,21,795,33,794,38,676,26"/>
+<area shape="poly" title=" " alt="" coords="366,563,442,356,486,244,512,188,530,177,533,181,516,192,491,246,447,358,371,565"/>
+<area shape="rect" href="syscalls_8c.html#af9aace1b44b73111e15aa39f06f43456" title=" " alt="" coords="573,203,669,228"/>
+<area shape="poly" title=" " alt="" coords="372,763,417,696,443,650,463,601,476,548,478,500,468,414,464,373,468,332,482,290,512,246,532,229,557,220,559,224,535,234,516,249,487,293,473,333,470,373,473,414,483,500,481,549,469,603,448,653,422,699,377,766"/>
+<area shape="rect" href="log_8c.html#a6efa47aededef4834dc5c25da1e432de" title="Returns all sinks, except the specified exceptions." alt="" coords="545,499,697,524"/>
+<area shape="poly" title=" " alt="" coords="369,763,443,637,484,571,512,535,529,525,532,530,516,539,489,574,447,640,374,766"/>
+<area shape="rect" href="log_8c.html#ad5a8cf2ec365951bb0385938171723bd" title="Get a pointer to the full text of the in&#45;memory log message at the specified index." alt="" coords="540,548,702,589"/>
+<area shape="poly" title=" " alt="" coords="369,763,390,730,422,686,464,639,512,599,525,592,527,596,516,603,467,643,426,689,395,733,374,766"/>
+<area shape="rect" href="log_8c.html#acce5d976dea413409a2547fc61475620" title="Get the index of the most recent in&#45;memory log message." alt="" coords="540,613,702,669"/>
+<area shape="poly" title=" " alt="" coords="380,763,438,723,513,678,525,673,527,677,515,683,441,727,383,767"/>
+<area shape="rect" href="log_8c.html#ad0799a0e4171a608ff908822382da8c9" title="Get the most recent log message text." alt="" coords="544,692,698,733"/>
+<area shape="poly" title=" " alt="" coords="416,762,529,733,530,739,417,767"/>
+<area shape="rect" href="log_8c.html#a186ca6df91a1dacb78dbf0b0385747c5" title="Get the name of a severity enum." alt="" coords="1021,423,1186,448"/>
+<area shape="poly" title=" " alt="" coords="372,763,417,696,442,650,463,601,470,571,473,532,476,439,485,349,495,314,512,290,539,271,564,260,589,257,614,259,666,273,729,289,826,314,921,347,1003,383,1065,413,1063,418,1001,388,919,352,825,319,728,294,665,278,613,264,589,262,566,265,541,275,516,293,500,316,490,350,481,439,479,532,475,572,469,603,447,652,422,699,376,766"/>
+<area shape="rect" href="log_8c.html#a440123199704bc7c5231ec1a9743497f" title="Check logging sink status." alt="" coords="546,1264,696,1290"/>
+<area shape="poly" title=" " alt="" coords="367,791,370,871,377,929,388,995,407,1063,433,1132,469,1195,491,1224,516,1249,534,1262,531,1266,512,1254,487,1227,465,1198,428,1134,402,1065,383,996,371,930,365,871,361,792"/>
+<area shape="rect" href="log_8c.html#af31cb35d8f2dd37ff306620c600462da" title="Check whether file logging is enabled for a subsystem." alt="" coords="552,823,690,864"/>
+<area shape="poly" title=" " alt="" coords="417,789,537,820,536,825,416,794"/>
+<area shape="rect" href="log_8c.html#a5503bd03b30497a0a43c490d68090ebc" title="Get the size in entries of the in&#45;memory log table." alt="" coords="537,938,705,978"/>
+<area shape="poly" title=" " alt="" coords="376,790,431,854,470,891,515,924,524,929,522,933,513,928,467,896,427,857,372,793"/>
+<area shape="rect" href="log_8c.html#a3d0d201c22a940b6800834336c24fdcc" title=" " alt="" coords="538,1003,704,1044"/>
+<area shape="poly" title=" " alt="" coords="372,790,391,829,422,882,464,939,488,965,516,988,526,995,523,999,512,992,485,969,460,943,417,885,386,832,367,793"/>
+<area shape="rect" href="log_8c.html#a9a7ce5e1b26859f039c363753e499d32" title=" " alt="" coords="538,1068,704,1109"/>
+<area shape="poly" title=" " alt="" coords="370,791,385,840,414,911,433,949,457,987,484,1023,516,1053,526,1061,523,1065,512,1058,480,1026,452,990,429,952,409,913,380,842,365,792"/>
+<area shape="rect" href="log_8c.html#a22ffd7bd23f49bfcc5da12d9dee93fba" title="Report a sink&#39;s enabled state." alt="" coords="535,303,707,344"/>
+<area shape="poly" title=" " alt="" coords="372,763,416,696,442,650,463,601,474,565,477,532,474,472,474,443,478,415,490,386,512,355,520,347,524,351,516,359,495,388,483,416,479,444,480,471,482,532,479,566,469,603,447,652,421,699,376,766"/>
+<area shape="rect" href="log_8c.html#af46fe0cc52d2bc6cd716d02ef713641c" title="Report a subsystem&#39;s file&#45;logging state." alt="" coords="540,368,702,409"/>
+<area shape="poly" title=" " alt="" coords="371,763,415,695,441,649,464,601,472,574,476,550,478,506,484,464,495,443,512,420,525,409,529,413,516,424,499,445,489,466,483,506,481,550,477,576,468,603,445,652,420,698,376,766"/>
+<area shape="rect" href="log_8c.html#a7580a472c0db91ca169d0e1403d4c48b" title="Turn debugging messages on or off for the specified sink." alt="" coords="533,1134,709,1174"/>
+<area shape="poly" title=" " alt="" coords="369,791,380,851,406,939,425,987,450,1035,480,1080,516,1119,522,1124,518,1128,512,1123,475,1083,445,1038,420,989,401,941,375,852,363,792"/>
+<area shape="rect" href="log_8c.html#add4285ec4e7fa886c86969276e630e2b" title="Enable or disable logging to a sink." alt="" coords="542,1199,700,1240"/>
+<area shape="poly" title=" " alt="" coords="368,791,376,860,398,966,417,1024,442,1082,475,1137,516,1184,531,1195,527,1200,512,1188,471,1140,438,1085,412,1026,393,967,370,861,362,792"/>
+<area shape="rect" href="log_8c.html#a51dd2ee0e3382333ca295b33b6fd8734" title="Turn debugging messages on or off for the specified system." alt="" coords="526,434,716,474"/>
+<area shape="poly" title=" " alt="" coords="370,763,412,695,464,601,476,567,481,539,490,512,512,484,515,481,519,485,516,488,495,514,486,540,481,569,468,603,417,697,375,766"/>
+<area shape="rect" href="log_8c.html#a57f3ced0c69b3a65c71ec7bf8bbc6cea" title="Enable or disable logging to file for a subsystem." alt="" coords="542,758,700,798"/>
+<area shape="poly" title=" " alt="" coords="418,776,527,776,527,781,418,781"/>
+<area shape="rect" href="log_8c.html#a0922ecc9bb8ee94a49060ee0961c1ca1" title="Set the logging severity bitfield mask for a subsystem." alt="" coords="514,888,728,914"/>
+<area shape="poly" title=" " alt="" coords="382,789,439,831,476,854,515,873,535,881,533,886,513,878,473,858,436,835,379,794"/>
+<area shape="rect" href="syscalls_8c.html#ad0122671640a3af49792ddaa59e8294e" title=" " alt="" coords="824,203,920,228"/>
+<area shape="poly" title=" " alt="" coords="670,213,809,213,809,218,670,218"/>
+<area shape="rect" href="log_8c.html#a9620661557eea5fdaf535b894ae58c84" title="Log a message to several destinations (sinks)" alt="" coords="817,799,927,824"/>
+<area shape="poly" title=" " alt="" coords="695,1267,712,1260,727,1250,767,1203,800,1149,824,1091,842,1032,854,974,862,921,868,840,873,840,867,921,860,975,847,1033,829,1093,804,1151,772,1206,730,1253,715,1264,697,1272"/>
+<area shape="poly" title=" " alt="" coords="879,797,1084,460,1089,463,884,800"/>
+<area shape="rect" href="log__sinks_8c.html#ad2518000eb3f3d175e8a4939ee3530af" title="Sends a log message to a log file." alt="" coords="1059,836,1149,862"/>
+<area shape="poly" title=" " alt="" coords="927,818,1044,837,1043,842,927,823"/>
+<area shape="rect" href="log__sinks_8c.html#af6b617d68df1389f44e9beb22ffa6d10" title="Sends a log message to the UHF radio." alt="" coords="1262,984,1389,1010"/>
+<area shape="poly" title=" " alt="" coords="902,823,1045,890,1141,932,1241,970,1259,976,1257,981,1239,975,1139,937,1043,895,899,827"/>
+<area shape="rect" href="log__sinks_8c.html#a3f618faf2b066b771b2cb567c66154b6" title="Sends a log message to the umbilical UART." alt="" coords="1248,737,1403,763"/>
+<area shape="poly" title=" " alt="" coords="927,802,1233,760,1234,765,928,807"/>
+<area shape="rect" href="timekeeping_8c.html#a5bfe7cf59c2f5dca9b5f4213f6ea16e7" title="Returns a computer&#45;friendly timestamp string." alt="" coords="1016,680,1192,706"/>
+<area shape="poly" title=" " alt="" coords="898,796,1062,711,1064,716,900,800"/>
+<area shape="rect" href="lfs_8c.html#aa7eb46b610f8507869aa62759cfd224e" title=" " alt="" coords="1278,836,1374,862"/>
+<area shape="poly" title=" " alt="" coords="1150,846,1262,846,1262,852,1150,852"/>
+<area shape="rect" href="lfs_8c.html#a27b9877d2df6b72e9ac883a408d0d34c" title="File operations ///." alt="" coords="1270,885,1381,911"/>
+<area shape="poly" title=" " alt="" coords="1150,856,1255,880,1254,885,1149,861"/>
+<area shape="rect" href="lfs_8c.html#ad6f28a6af39c34f251a7c8db1bcc9506" title=" " alt="" coords="1279,935,1372,960"/>
+<area shape="poly" title=" " alt="" coords="1127,860,1178,890,1241,921,1265,930,1263,935,1239,926,1176,895,1125,865"/>
+<area shape="rect" href="lfs_8c.html#a2769dda334cd0ac276a4a929eadb930d" title=" " alt="" coords="1279,787,1372,812"/>
+<area shape="poly" title=" " alt="" coords="1149,836,1263,811,1264,816,1150,841"/>
+<area shape="poly" title=" " alt="" coords="1121,860,1242,971,1251,975,1249,980,1238,975,1118,864"/>
+<area shape="poly" title=" " alt="" coords="1125,833,1176,803,1239,772,1255,766,1257,771,1241,777,1178,808,1127,838"/>
+<area shape="rect" href="lfs_8c.html#a6913260217358cf9c612d2547f6f0bbe" title=" " alt="" coords="1459,836,1563,862"/>
+<area shape="poly" title=" " alt="" coords="1374,846,1444,846,1444,852,1374,852"/>
+<area shape="rect" href="timekeeping_8c.html#a94e564d601196fe7f3e2bc83050deb12" title=" " alt="" coords="1243,672,1408,713"/>
+<area shape="poly" title=" " alt="" coords="1192,690,1227,690,1227,696,1192,696"/>
+<area shape="rect" href="timekeeping_8c.html#a909de509b8cfaf7214b1e8f0759c036d" title=" " alt="" coords="1240,607,1411,648"/>
+<area shape="poly" title=" " alt="" coords="1149,677,1239,650,1240,655,1151,682"/>
+<area shape="poly" title=" " alt="" coords="691,832,802,818,802,823,691,837"/>
+<area shape="poly" title=" " alt="" coords="709,340,730,355,772,405,804,463,829,524,847,586,859,645,867,700,873,783,868,783,862,701,854,646,842,587,824,525,799,465,767,408,727,359,706,344"/>
+<area shape="poly" title=" " alt="" coords="704,403,730,420,767,462,797,510,820,561,838,613,862,710,871,783,866,783,856,711,833,615,815,563,792,513,763,466,727,424,701,407"/>
+<area shape="poly" title=" " alt="" coords="708,1131,727,1119,757,1087,783,1051,805,1013,823,973,849,898,863,839,868,840,854,899,828,975,810,1015,787,1054,761,1091,730,1123,711,1136"/>
+<area shape="poly" title=" " alt="" coords="699,1202,727,1184,762,1145,790,1099,813,1051,832,1002,855,909,866,839,871,840,860,910,837,1003,818,1053,795,1102,766,1148,730,1188,702,1206"/>
+<area shape="poly" title=" " alt="" coords="714,473,730,484,762,518,789,557,812,598,830,641,856,721,869,783,864,784,851,722,825,643,807,601,785,560,758,521,727,488,711,477"/>
+<area shape="poly" title=" " alt="" coords="701,786,802,800,801,805,700,791"/>
+<area shape="poly" title=" " alt="" coords="686,885,727,873,782,852,830,829,833,834,784,857,729,878,688,890"/>
+<area shape="poly" title=" " alt="" coords="437,1338,468,1357,481,1373,488,1389,493,1420,497,1450,504,1464,516,1479,521,1483,517,1487,512,1483,499,1467,492,1452,487,1421,483,1390,476,1376,464,1362,434,1343"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#a3f4c71ad48b16b79e4bb91ffb13111d7" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a hex string." alt="" coords="526,1313,717,1339"/>
+<area shape="poly" title=" " alt="" coords="435,1324,510,1324,510,1329,435,1329"/>
+<area shape="rect" href="telecommand__parser_8c.html#a94afb6a62e1b5afb772aaffbae8bcded" title="Returns whether a character is a valid character in a telecommand name." alt="" coords="532,1363,710,1404"/>
+<area shape="poly" title=" " alt="" coords="436,1340,518,1358,517,1363,435,1345"/>
+<area shape="rect" href="telecommand__parser_8c.html#a99398160cef3734514e623985c0589b4" title="Returns whether a character is alphanumeric (0&#45;9, A&#45;Z, a&#45;z)." alt="" coords="776,1371,968,1396"/>
+<area shape="poly" title=" " alt="" coords="710,1381,760,1381,760,1386,710,1386"/>
+<area shape="poly" title=" " alt="" coords="435,1550,511,1534,512,1539,436,1555"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="545,1559,697,1584"/>
+<area shape="poly" title=" " alt="" coords="435,1566,529,1567,529,1573,435,1571"/>
+<area shape="rect" href="telecommand__parser_8c.html#a41927fe9744597973411939a748f7ee1" title="Returns whether a character is numeric (0&#45;9)." alt="" coords="541,1608,701,1634"/>
+<area shape="poly" title=" " alt="" coords="436,1580,542,1602,540,1607,435,1585"/>
+<area shape="poly" title=" " alt="" coords="455,1409,521,1424,520,1429,454,1414"/>
+<area shape="poly" title=" " alt="" coords="455,1386,517,1384,517,1389,455,1391"/>
 </map>
 </div>
 <div class="dynheader">
@@ -576,6 +763,21 @@ Here is the caller graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="87,21,55,21,55,16,87,16"/>
 </map>
 </div>
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="abb5c97157e0e0735bfcc3f1d5228518e" name="abb5c97157e0e0735bfcc3f1d5228518e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb5c97157e0e0735bfcc3f1d5228518e">&#9670;&#160;</a></span>TCMD_require_valid_sha256</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t TCMD_require_valid_sha256 = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>
