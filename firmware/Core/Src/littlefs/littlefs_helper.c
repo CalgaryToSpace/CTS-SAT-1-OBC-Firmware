@@ -53,11 +53,10 @@ struct lfs_file_config LFS_file_cfg = {
 
 // -----------------------------LITTLEFS FUNCTIONS-----------------------------
 
-/**
- * @brief Formats Memory Module so it can successfully mount LittleFS
- * @param None
- * @retval 0 on success, negative LFS error codes on failure
- */
+/// @brief Formats Memory Module so it can successfully mount LittleFS
+/// @param None
+/// @retval 0 on success, negative LFS error codes on failure
+ 
 int8_t LFS_format()
 {
     int8_t format_result = lfs_format(&LFS_filesystem, &LFS_cfg);
@@ -70,11 +69,10 @@ int8_t LFS_format()
     return 0;
 }
 
-/**
- * @brief Mounts LittleFS to the Memory Module
- * @param None
- * @retval 0 on success, 1 if LFS is already mounted, negative LFS error codes on failure
- */
+/// @brief Mounts LittleFS to the Memory Module
+/// @param None
+/// @retval 0 on success, 1 if LFS is already mounted, negative LFS error codes on failure
+ 
 int8_t LFS_mount()
 {
     if (LFS_is_lfs_mounted) {
@@ -95,11 +93,10 @@ int8_t LFS_mount()
     return 0;
 }
 
-/**
- * @brief Unmounts LittleFS to the Memory Module
- * @param None
- * @retval 0 on success, 1 if LFS is already unmounted, negative LFS error codes on failure
- */
+/// @brief Unmounts LittleFS to the Memory Module
+/// @param None
+/// @retval 0 on success, 1 if LFS is already unmounted, negative LFS error codes on failure
+ 
 int8_t LFS_unmount()
 {
     if (!LFS_is_lfs_mounted) {
@@ -120,13 +117,12 @@ int8_t LFS_unmount()
     return 0;
 }
 
-/**
- * @brief Lists contents of LittleFS Directory
- * @param root_directory cstring holding the root directory to open and read
- * @param offset Number of entries to skip before listing directory
- * @param count Number of entries to list in total (if 0, prints all entries)
- * @retval 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
- */
+/// @brief Lists contents of LittleFS Directory
+/// @param root_directory cstring holding the root directory to open and read
+/// @param offset Number of entries to skip before listing directory
+/// @param count Number of entries to list in total (if 0, prints all entries)
+/// @retval 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
+ 
 int8_t LFS_list_directory(const char root_directory[], uint16_t offset, int16_t count)
 {
     // Check if LFS is mounted
@@ -196,11 +192,10 @@ int8_t LFS_list_directory(const char root_directory[], uint16_t offset, int16_t 
     }
 }
 
-/**
- * @brief Creates directory
- * @param dir_name Pointer to cstring holding the name of the directory
- * @retval 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
- */
+/// @brief Creates directory
+/// @param dir_name Pointer to cstring holding the name of the directory
+/// @retval 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
+ 
 int8_t LFS_make_directory(const char dir_name[])
 {
     if (!LFS_is_lfs_mounted)
@@ -226,11 +221,10 @@ int8_t LFS_make_directory(const char dir_name[])
     return 0;
 }
 
-/**
- * @brief Removes / deletes the file specified
- * @param file_name Pointer to cstring holding the file name to remove
- * @retval 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
- */
+/// @brief Removes / deletes the file specified
+/// @param file_name Pointer to cstring holding the file name to remove
+/// @retval 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
+ 
 int8_t LFS_delete_file(const char file_name[])
 {
     if (!LFS_is_lfs_mounted)
@@ -250,13 +244,12 @@ int8_t LFS_delete_file(const char file_name[])
     return 0;
 }
 
-/**
- * @brief Creates / Opens LittleFS File to write to the Memory Module
- * @param file_name - Pointer to cstring holding the file name to create or open
- * @param write_buffer - Pointer to buffer holding the data to write
- * @param write_buffer_len - Size of the data to write
- * @retval 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
- */
+/// @brief Creates / Opens LittleFS File to write to the Memory Module
+/// @param file_name - Pointer to cstring holding the file name to create or open
+/// @param write_buffer - Pointer to buffer holding the data to write
+/// @param write_buffer_len - Size of the data to write
+/// @retval 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
+ 
 int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t write_buffer_len)
 {
     if (!LFS_is_lfs_mounted)
@@ -299,13 +292,12 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
     return 0;
 }
 
-/**
- * @brief Creates / Opens LittleFS File to append contents
- * @param file_name - Pointer to cstring holding the file name to create or open
- * @param write_buffer - Pointer to buffer holding the data to write
- * @param write_buffer_len - Size of the data to write
- * @retval 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
- */
+/// @brief Creates / Opens LittleFS File to append contents
+/// @param file_name - Pointer to cstring holding the file name to create or open
+/// @param write_buffer - Pointer to buffer holding the data to write
+/// @param write_buffer_len - Size of the data to write
+/// @retval 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
+ 
 int8_t LFS_append_file(const char file_name[], uint8_t *write_buffer, uint32_t write_buffer_len)
 {
     if (!LFS_is_lfs_mounted)
@@ -345,15 +337,14 @@ int8_t LFS_append_file(const char file_name[], uint8_t *write_buffer, uint32_t w
     return 0;
 }
 
-/**
- * @brief Opens LittleFS File to read from the Memory Module
- * @param file_name - Pointer to buffer holding the file name to open
- * @param offset - position within the file to read from
- * @param read_buffer - Pointer to buffer where the read data will be stored
- * @param read_buffer_len - Size of the data to read
- * @retval Returns negative values if read or file open failed, else the
- * number of bytes read
- */
+/// @brief Opens LittleFS File to read from the Memory Module
+/// @param file_name - Pointer to buffer holding the file name to open
+/// @param offset - position within the file to read from
+/// @param read_buffer - Pointer to buffer where the read data will be stored
+/// @param read_buffer_len - Size of the data to read
+/// @retval Returns negative values if read or file open failed, else the
+/// number of bytes read
+ 
 lfs_ssize_t LFS_read_file(const char file_name[], lfs_soff_t offset, uint8_t *read_buffer, uint32_t read_buffer_len)
 {
     if (!LFS_is_lfs_mounted)
@@ -399,12 +390,11 @@ lfs_ssize_t LFS_read_file(const char file_name[], lfs_soff_t offset, uint8_t *re
     return read_result;	
 }
 
-/**
- * @brief Returns the file size
- * @param file_name - Pointer to buffer holding the file name to open
- * @retval Returns negative values if read or file open failed, else the
- * number of bytes in the file
- */
+/// @brief Returns the file size
+/// @param file_name - Pointer to buffer holding the file name to open
+/// @retval Returns negative values if read or file open failed, else the
+/// number of bytes in the file
+ 
 lfs_ssize_t LFS_file_size(const char file_name[])
 {
     if (!LFS_is_lfs_mounted) {

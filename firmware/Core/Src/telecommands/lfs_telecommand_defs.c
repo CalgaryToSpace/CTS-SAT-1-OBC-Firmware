@@ -13,7 +13,7 @@
 
 uint8_t TCMDEXEC_fs_format_storage(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-    int8_t result = LFS_format();
+    const int8_t result = LFS_format();
     if (result < 0) {
         snprintf(response_output_buf, response_output_buf_len, "LittleFS Formatting Error: %d\n", result);
         return 1;
@@ -25,7 +25,7 @@ uint8_t TCMDEXEC_fs_format_storage(const char *args_str, TCMD_TelecommandChannel
 
 uint8_t TCMDEXEC_fs_mount(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-    int8_t result = LFS_mount();
+    const int8_t result = LFS_mount();
     if (result < 0) {
         snprintf(response_output_buf, response_output_buf_len, "LittleFS Mounting Error: %d\n", result);
         return 1;
@@ -37,7 +37,7 @@ uint8_t TCMDEXEC_fs_mount(const char *args_str, TCMD_TelecommandChannel_enum_t t
 
 uint8_t TCMDEXEC_fs_unmount(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-    int8_t result = LFS_unmount();
+    const int8_t result = LFS_unmount();
     if (result < 0) {
         snprintf(response_output_buf, response_output_buf_len, "LittleFS Unmounting Error: %d\n", result);
         return 1;
@@ -88,7 +88,7 @@ uint8_t TCMDEXEC_fs_list_directory(const char *args_str, TCMD_TelecommandChannel
         return 1;
     }
 
-    int8_t list_directory_result = LFS_list_directory(arg_root_directory_path, (uint16_t) arg_listing_offset, (int16_t) arg_listing_count);
+    const int8_t list_directory_result = LFS_list_directory(arg_root_directory_path, (uint16_t) arg_listing_offset, (int16_t) arg_listing_count);
     if (list_directory_result < 0) {
         snprintf(response_output_buf, response_output_buf_len, "LittleFS List Directory Error: %d\n", list_directory_result);
         return 1;
@@ -114,7 +114,7 @@ uint8_t TCMDEXEC_fs_make_directory(const char *args_str, TCMD_TelecommandChannel
         return 1;
     }
 
-    int8_t make_directory_result = LFS_make_directory(arg_root_directory_path);
+    const int8_t make_directory_result = LFS_make_directory(arg_root_directory_path);
     if (make_directory_result < 0) {
         snprintf(response_output_buf, response_output_buf_len, "LittleFS Make Directory Error: %d\n", make_directory_result);
         return 1;
@@ -152,7 +152,7 @@ uint8_t TCMDEXEC_fs_write_file(const char *args_str, TCMD_TelecommandChannel_enu
         return 2;
     }
 
-    int8_t result = LFS_write_file(arg_file_name, (uint8_t*) arg_file_content, strlen(arg_file_content));
+    const int8_t result = LFS_write_file(arg_file_name, (uint8_t*) arg_file_content, strlen(arg_file_content));
     if (result < 0) {
         snprintf(response_output_buf, response_output_buf_len, "LittleFS Writing Error: %d\n", result);
         return 1;
