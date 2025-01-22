@@ -121,13 +121,6 @@ const osThreadAttr_t TASK_time_sync_Attributes = {
   .priority = (osPriority_t) osPriorityNormal, //TODO: Figure out which priority makes sense for this task
 };
 
-osThreadId_t TASK_EPS_power_monitoring_Handle;
-const osThreadAttr_t TASK_EPS_power_monitoring_Attributes = {
-  .name = "TASK_EPS_power_monitoring",
-  .stack_size = 512, //in bytes
-  .priority = (osPriority_t) osPriorityNormal, //TODO: Figure out which priority makes sense for this task
-};
-
 osThreadId_t TASK_monitor_freertos_memory_Handle;
 const osThreadAttr_t TASK_monitor_freertos_memory_Attributes = {
   .name = "TASK_monitor_freertos_memory",
@@ -164,11 +157,6 @@ FREERTOS_task_info_struct_t FREERTOS_task_handles_array [] = {
   {
     .task_handle = &TASK_time_sync_Handle,
     .task_attribute = &TASK_time_sync_Attributes,
-    .lowest_stack_bytes_remaining = UINT32_MAX
-  },
-    {
-    .task_handle = &TASK_EPS_power_monitoring_Handle,
-    .task_attribute = &TASK_EPS_power_monitoring_Attributes,
     .lowest_stack_bytes_remaining = UINT32_MAX
   },
   {
@@ -306,8 +294,6 @@ int main(void)
   TASK_service_eps_watchdog_Handle = osThreadNew(TASK_service_eps_watchdog, NULL, &TASK_service_eps_watchdog_Attributes);
 
   TASK_time_sync_Handle = osThreadNew(TASK_time_sync, NULL, &TASK_time_sync_Attributes);
-
-  TASK_EPS_power_monitoring_Handle = osThreadNew(TASK_EPS_power_monitoring, NULL, &TASK_EPS_power_monitoring_Attributes);
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
