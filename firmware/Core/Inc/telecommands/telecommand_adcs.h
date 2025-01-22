@@ -4,7 +4,6 @@
 
 #include <stdint.h>
 #include "telecommands/telecommand_definitions.h"
-#include "telecommands/telecommand_executor.h"
 
 // if we fail to properly extract a value, we should return the reason for that failure
 #define ABORT_CMD_FOR_FAILED_EXTRACT(x) uint8_t result = x; if (!(result)) { return result; }

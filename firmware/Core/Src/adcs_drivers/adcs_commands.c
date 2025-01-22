@@ -24,7 +24,7 @@ extern I2C_HandleTypeDef hi2c1; // allows not needing the parameters
 /// @param[out] ack Structure containing the formatted information about the last command sent.
 /// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_cmd_ack(ADCS_cmd_ack_struct_t *ack) {
-    uint8_t data_received[8]; // define temp buffer
+    uint8_t data_received[8]; 
     uint8_t data_length = 4;
 
     uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_COMMAND_ACK, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
@@ -54,9 +54,9 @@ uint8_t ADCS_reset() {
 uint8_t ADCS_get_identification(ADCS_id_struct_t *output_struct) {
 
     uint8_t data_length = 8;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_IDENTIFICATION, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_IDENTIFICATION, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_identification_struct(&data_received[0], output_struct);
 
@@ -68,7 +68,7 @@ uint8_t ADCS_get_identification(ADCS_id_struct_t *output_struct) {
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_program_status(ADCS_boot_running_status_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
     uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_BOOT_RUNNING_PROGRAM_STATUS, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
@@ -83,7 +83,7 @@ uint8_t ADCS_get_program_status(ADCS_boot_running_status_struct_t *output_struct
 uint8_t ADCS_get_communication_status(ADCS_comms_status_struct_t *output_struct) {
     // returns I2C communication status of the ADCS (Table 37)
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
     uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_SATSTATE_COMM_STATUS, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
@@ -224,7 +224,7 @@ uint8_t ADCS_set_power_control(ADCS_power_select_enum_t cube_control_signal, ADC
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_power_control(ADCS_power_control_struct_t *output_struct) {
     uint8_t data_length = 3;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
     uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_ADCS_POWER_CONTROL, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
@@ -312,7 +312,7 @@ uint8_t ADCS_save_orbit_params() {
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_estimate_angular_rates(ADCS_angular_rates_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
     uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_ESTIMATED_ANGULAR_RATES, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
@@ -326,7 +326,7 @@ uint8_t ADCS_get_estimate_angular_rates(ADCS_angular_rates_struct_t *output_stru
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_llh_position(ADCS_llh_position_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
     uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_SATELLITE_POSITION_LLH, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
@@ -360,7 +360,7 @@ uint8_t ADCS_set_unix_time_save_mode(bool save_now, bool save_on_update, bool sa
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_unix_time_save_mode(ADCS_set_unix_time_save_mode_struct_t *output_struct) {
     uint8_t data_length = 2;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
     uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_GET_UNIX_TIME_SAVE_TO_FLASH, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
@@ -405,9 +405,9 @@ uint8_t ADCS_set_sgp4_orbit_params(double inclination, double eccentricity, doub
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_sgp4_orbit_params(ADCS_orbit_params_struct_t *output_struct) {
     uint8_t data_length = 64;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_SGP4_ORBIT_PARAMETERS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_SGP4_ORBIT_PARAMETERS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_orbit_params_struct(data_received, output_struct);
 
@@ -419,9 +419,9 @@ uint8_t ADCS_get_sgp4_orbit_params(ADCS_orbit_params_struct_t *output_struct) {
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_rate_sensor_rates(ADCS_rated_sensor_rates_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RATE_SENSOR_RATES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RATE_SENSOR_RATES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_rated_sensor_rates_struct(data_received, output_struct);
 
@@ -433,9 +433,9 @@ uint8_t ADCS_get_rate_sensor_rates(ADCS_rated_sensor_rates_struct_t *output_stru
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_wheel_speed(ADCS_wheel_speed_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_WHEEL_SPEED, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_WHEEL_SPEED, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_wheel_speed_struct(data_received, output_struct);
 
@@ -447,9 +447,9 @@ uint8_t ADCS_get_wheel_speed(ADCS_wheel_speed_struct_t *output_struct) {
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_magnetorquer_command(ADCS_magnetorquer_command_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_MAGNETORQUER_COMMAND, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_MAGNETORQUER_COMMAND, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_magnetorquer_command_struct(data_received, output_struct);
 
@@ -461,9 +461,9 @@ uint8_t ADCS_get_magnetorquer_command(ADCS_magnetorquer_command_struct_t *output
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_raw_magnetometer_values(ADCS_raw_magnetometer_values_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_MAGNETOMETER, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_MAGNETOMETER, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_raw_magnetometer_values_struct(data_received, output_struct);
 
@@ -475,9 +475,9 @@ uint8_t ADCS_get_raw_magnetometer_values(ADCS_raw_magnetometer_values_struct_t *
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_estimate_fine_angular_rates(ADCS_fine_angular_rates_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_FINE_ESTIMATED_ANGULAR_RATES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_FINE_ESTIMATED_ANGULAR_RATES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_fine_angular_rates_struct(data_received, output_struct);
 
@@ -489,9 +489,9 @@ uint8_t ADCS_get_estimate_fine_angular_rates(ADCS_fine_angular_rates_struct_t *o
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_magnetometer_config(ADCS_magnetometer_config_struct_t *output_struct) {
     uint8_t data_length = 30;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_MAGNETOMETER_CONFIG, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_MAGNETOMETER_CONFIG, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_magnetometer_config_struct(data_received, output_struct);
 
@@ -503,9 +503,9 @@ uint8_t ADCS_get_magnetometer_config(ADCS_magnetometer_config_struct_t *output_s
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_commanded_attitude_angles(ADCS_commanded_angles_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_COMMANDED_ATTITUDE_ANGLES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_COMMANDED_ATTITUDE_ANGLES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_commanded_attitude_angles_struct(data_received, output_struct);
 
@@ -596,9 +596,9 @@ uint8_t ADCS_set_estimation_params(
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_estimation_params(ADCS_estimation_params_struct_t *output_struct) {
     uint8_t data_length = 31;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_ESTIMATION_PARAMETERS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_ESTIMATION_PARAMETERS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_estimation_params_struct(data_received, output_struct);
 
@@ -653,9 +653,9 @@ uint8_t ADCS_set_augmented_sgp4_params(double incl_coefficient, double raan_coef
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_augmented_sgp4_params(ADCS_augmented_sgp4_params_struct_t *output_struct) {
     uint8_t data_length = 30;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_AUGMENTED_SGP4_PARAMETERS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_AUGMENTED_SGP4_PARAMETERS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_augmented_sgp4_params_struct(data_received, output_struct);
 
@@ -684,9 +684,9 @@ uint8_t ADCS_set_tracking_controller_target_reference(float lon, float lat, floa
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_tracking_controller_target_reference(ADCS_tracking_controller_target_struct_t *output_struct) {
     uint8_t data_length = 12;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_TRACKING_CONTROLLER_TARGET_REFERENCE, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_TRACKING_CONTROLLER_TARGET_REFERENCE, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_tracking_controller_target_reference_struct(data_received, output_struct);
 
@@ -724,9 +724,9 @@ uint8_t ADCS_set_rate_gyro_config(ADCS_axis_select_enum_t gyro1, ADCS_axis_selec
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_rate_gyro_config(ADCS_rate_gyro_config_struct_t *output_struct) {
     uint8_t data_length = 12;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_RATE_GYRO_CONFIG, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_RATE_GYRO_CONFIG, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_rate_gyro_config_struct(data_received, output_struct);
 
@@ -738,9 +738,9 @@ uint8_t ADCS_get_rate_gyro_config(ADCS_rate_gyro_config_struct_t *output_struct)
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_estimated_attitude_angles(ADCS_estimated_attitude_angles_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_ESTIMATED_ATTITUDE_ANGLES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_ESTIMATED_ATTITUDE_ANGLES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_estimated_attitude_angles_struct(&data_received[0], output_struct);
 
@@ -752,9 +752,9 @@ uint8_t ADCS_get_estimated_attitude_angles(ADCS_estimated_attitude_angles_struct
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_magnetic_field_vector(ADCS_magnetic_field_vector_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_MAGNETIC_FIELD_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_MAGNETIC_FIELD_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_magnetic_field_vector_struct(&data_received[0], output_struct);
 
@@ -766,9 +766,9 @@ uint8_t ADCS_get_magnetic_field_vector(ADCS_magnetic_field_vector_struct_t *outp
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_fine_sun_vector(ADCS_fine_sun_vector_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_FINE_SUN_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_FINE_SUN_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_fine_sun_vector_struct(&data_received[0], output_struct);
 
@@ -780,9 +780,9 @@ uint8_t ADCS_get_fine_sun_vector(ADCS_fine_sun_vector_struct_t *output_struct) {
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_nadir_vector(ADCS_nadir_vector_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_NADIR_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_NADIR_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_nadir_vector_struct(&data_received[0], output_struct);
 
@@ -794,9 +794,9 @@ uint8_t ADCS_get_nadir_vector(ADCS_nadir_vector_struct_t *output_struct) {
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_commanded_wheel_speed(ADCS_wheel_speed_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_WHEEL_SPEED_COMMANDS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_WHEEL_SPEED_COMMANDS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_commanded_wheel_speed_struct(data_received, output_struct);
 
@@ -808,9 +808,9 @@ uint8_t ADCS_get_commanded_wheel_speed(ADCS_wheel_speed_struct_t *output_struct)
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_igrf_magnetic_field_vector(ADCS_magnetic_field_vector_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_IGRF_MODELLED_MAGNETIC_FIELD_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_IGRF_MODELLED_MAGNETIC_FIELD_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_igrf_magnetic_field_vector_struct(&data_received[0], output_struct);
 
@@ -822,9 +822,9 @@ uint8_t ADCS_get_igrf_magnetic_field_vector(ADCS_magnetic_field_vector_struct_t 
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_quaternion_error_vector(ADCS_quaternion_error_vector_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_QUATERNION_ERROR_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_QUATERNION_ERROR_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_quaternion_error_vector_struct(&data_received[0], output_struct);
 
@@ -836,9 +836,9 @@ uint8_t ADCS_get_quaternion_error_vector(ADCS_quaternion_error_vector_struct_t *
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_estimated_gyro_bias(ADCS_estimated_gyro_bias_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_ESTIMATED_GYRO_BIAS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_ESTIMATED_GYRO_BIAS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_estimated_gyro_bias_struct(&data_received[0], output_struct);
 
@@ -850,9 +850,9 @@ uint8_t ADCS_get_estimated_gyro_bias(ADCS_estimated_gyro_bias_struct_t *output_s
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_estimation_innovation_vector(ADCS_estimation_innovation_vector_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_ESTIMATION_INNOVATION_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_ESTIMATION_INNOVATION_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_estimation_innovation_vector_struct(&data_received[0], output_struct);
 
@@ -864,9 +864,9 @@ uint8_t ADCS_get_estimation_innovation_vector(ADCS_estimation_innovation_vector_
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_raw_cam1_sensor(ADCS_raw_cam_sensor_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_CAM1_SENSOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_CAM1_SENSOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_raw_cam1_sensor_struct(&data_received[0], output_struct);
 
@@ -878,9 +878,9 @@ uint8_t ADCS_get_raw_cam1_sensor(ADCS_raw_cam_sensor_struct_t *output_struct) {
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_raw_cam2_sensor(ADCS_raw_cam_sensor_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_CAM2_SENSOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_CAM2_SENSOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_raw_cam2_sensor_struct(&data_received[0], output_struct);
 
@@ -892,9 +892,9 @@ uint8_t ADCS_get_raw_cam2_sensor(ADCS_raw_cam_sensor_struct_t *output_struct) {
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_raw_coarse_sun_sensor_1_to_6(ADCS_raw_coarse_sun_sensor_1_to_6_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_COARSE_SUN_SENSOR_1_TO_6, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_COARSE_SUN_SENSOR_1_TO_6, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_raw_coarse_sun_sensor_1_to_6_struct(&data_received[0], output_struct);
 
@@ -906,9 +906,9 @@ uint8_t ADCS_get_raw_coarse_sun_sensor_1_to_6(ADCS_raw_coarse_sun_sensor_1_to_6_
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_raw_coarse_sun_sensor_7_to_10(ADCS_raw_coarse_sun_sensor_7_to_10_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_COARSE_SUN_SENSOR_7_TO_10, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_COARSE_SUN_SENSOR_7_TO_10, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_raw_coarse_sun_sensor_7_to_10_struct(&data_received[0], output_struct);
 
@@ -920,9 +920,9 @@ uint8_t ADCS_get_raw_coarse_sun_sensor_7_to_10(ADCS_raw_coarse_sun_sensor_7_to_1
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_cubecontrol_current(ADCS_cubecontrol_current_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_CUBECONTROL_CURRENT_MEASUREMENTS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_CUBECONTROL_CURRENT_MEASUREMENTS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_cubecontrol_current_struct(&data_received[0], output_struct);
 
@@ -934,9 +934,9 @@ uint8_t ADCS_get_cubecontrol_current(ADCS_cubecontrol_current_struct_t *output_s
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_raw_gps_status(ADCS_raw_gps_status_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_GPS_STATUS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_GPS_STATUS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_raw_gps_status_struct(&data_received[0], output_struct);
 
@@ -948,9 +948,9 @@ uint8_t ADCS_get_raw_gps_status(ADCS_raw_gps_status_struct_t *output_struct) {
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_raw_gps_time(ADCS_raw_gps_time_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_GPS_TIME, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_GPS_TIME, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_raw_gps_time_struct(data_received, output_struct);
 
@@ -962,9 +962,9 @@ uint8_t ADCS_get_raw_gps_time(ADCS_raw_gps_time_struct_t *output_struct) {
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_raw_gps_x(ADCS_raw_gps_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_GPS_X, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_GPS_X, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_raw_gps_struct(ADCS_GPS_AXIS_X, data_received, output_struct);
 
@@ -976,9 +976,9 @@ uint8_t ADCS_get_raw_gps_x(ADCS_raw_gps_struct_t *output_struct) {
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_raw_gps_y(ADCS_raw_gps_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_GPS_Y, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_GPS_Y, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_raw_gps_struct(ADCS_GPS_AXIS_Y, data_received, output_struct);
 
@@ -990,9 +990,9 @@ uint8_t ADCS_get_raw_gps_y(ADCS_raw_gps_struct_t *output_struct) {
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_raw_gps_z(ADCS_raw_gps_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_GPS_Z, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_GPS_Z, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_raw_gps_struct(ADCS_GPS_AXIS_Z, data_received, output_struct);
 
@@ -1004,9 +1004,9 @@ uint8_t ADCS_get_raw_gps_z(ADCS_raw_gps_struct_t *output_struct) {
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_measurements(ADCS_measurements_struct_t *output_struct) {
     uint8_t data_length = 72;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_ADCS_MEASUREMENTS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_ADCS_MEASUREMENTS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_measurements_struct(data_received, output_struct);
 
@@ -1018,9 +1018,9 @@ uint8_t ADCS_get_measurements(ADCS_measurements_struct_t *output_struct) {
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_acp_execution_state(ADCS_acp_execution_state_struct_t *output_struct) {
     uint8_t data_length = 3;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_EXECUTION_STATE, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_EXECUTION_STATE, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_acp_execution_state_struct(data_received, output_struct);
 
@@ -1032,9 +1032,9 @@ uint8_t ADCS_get_acp_execution_state(ADCS_acp_execution_state_struct_t *output_s
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_current_state_1(ADCS_current_state_1_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_ADCS_STATE, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_ADCS_STATE, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_current_state_1_struct(data_received, output_struct);
 
@@ -1046,9 +1046,9 @@ uint8_t ADCS_get_current_state_1(ADCS_current_state_1_struct_t *output_struct) {
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_raw_star_tracker_data(ADCS_raw_star_tracker_struct_t *output_struct) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_STAR_TRACKER, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_STAR_TRACKER, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_raw_star_tracker_struct(data_received, output_struct);
 
@@ -1086,9 +1086,9 @@ uint8_t ADCS_synchronise_unix_time() {
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_current_unix_time(uint64_t* epoch_time_ms) {
     uint8_t data_length = 6;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_GET_CURRENT_UNIX_TIME, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_GET_CURRENT_UNIX_TIME, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_unix_time_ms(data_received, epoch_time_ms);
 
@@ -1130,7 +1130,7 @@ uint8_t ADCS_set_sd_log_config(uint8_t which_log, const uint8_t **log_array, uin
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_get_sd_log_config(uint8_t which_log, ADCS_sd_log_config_struct* config) {
     uint8_t data_length = 13;
-    uint8_t data_received[data_length]; // define temp buffer
+    uint8_t data_received[data_length]; 
 
     uint8_t command_id;
     switch (which_log) {
@@ -1144,7 +1144,7 @@ uint8_t ADCS_get_sd_log_config(uint8_t which_log, ADCS_sd_log_config_struct* con
             return 7; // invalid log to log
     }
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(command_id, data_received, data_length, ADCS_INCLUDE_CHECKSUM); // populate buffer
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(command_id, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_sd_log_config_struct(data_received, which_log, config);
 
