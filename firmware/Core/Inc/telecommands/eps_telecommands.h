@@ -1,5 +1,5 @@
-#ifndef __INCLUDE_GUARD__EPS_TELECOMMANDS_H__
-#define __INCLUDE_GUARD__EPS_TELECOMMANDS_H__
+#ifndef INCLUDE_GUARD__EPS_TELECOMMANDS_H__
+#define INCLUDE_GUARD__EPS_TELECOMMANDS_H__
 
 #include <stdint.h>
 #include "telecommands/telecommand_definitions.h"
@@ -91,5 +91,5 @@ uint8_t TCMDEXEC_eps_get_piu_housekeeping_data_run_avg_json(
     char *response_output_buf, uint16_t response_output_buf_len
 );
 
-#endif // __INCLUDE_GUARD__EPS_TELECOMMANDS_H__
+#endif // INCLUDE_GUARD__EPS_TELECOMMANDS_H__
 

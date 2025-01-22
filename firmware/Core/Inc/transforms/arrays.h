@@ -1,5 +1,5 @@
-#ifndef __INCLUDE_GUARD__TRANSFORMS_ARRAYS_H__
-#define __INCLUDE_GUARD__TRANSFORMS_ARRAYS_H__
+#ifndef INCLUDE_GUARD__TRANSFORMS_ARRAYS_H__
+#define INCLUDE_GUARD__TRANSFORMS_ARRAYS_H__
 
 #include <stdint.h>
 
@@ -11,4 +11,4 @@ void GEN_uint64_to_padded_str(uint64_t value, uint8_t padding_len, char *buffer)
 uint8_t GEN_hex_str_to_byte_array(const char *hex_str, uint8_t output_byte_array[],
     uint16_t output_byte_array_size, uint16_t *output_byte_array_len);
 
-#endif // __INCLUDE_GUARD__TRANSFORMS_ARRAYS_H__
+#endif // INCLUDE_GUARD__TRANSFORMS_ARRAYS_H__

@@ -1,5 +1,5 @@
-#ifndef __INCLUDE_GUARD__TELECOMMAND_ARGS_HELPERS_H__
-#define __INCLUDE_GUARD__TELECOMMAND_ARGS_HELPERS_H__
+#ifndef INCLUDE_GUARD__TELECOMMAND_ARGS_HELPERS_H__
+#define INCLUDE_GUARD__TELECOMMAND_ARGS_HELPERS_H__
 
 #include <stdint.h>
 
@@ -15,4 +15,4 @@ uint8_t TCMD_extract_int64_arg(const char *str, uint32_t str_len, uint8_t arg_in
 uint8_t TCMD_ascii_to_double(const char *str, uint32_t str_len, double *result);
 uint8_t TCMD_extract_double_arg(const char *str, uint32_t str_len, uint8_t arg_index, double *result);
 
-#endif // __INCLUDE_GUARD__TELECOMMAND_ARGS_HELPERS_H__
+#endif // INCLUDE_GUARD__TELECOMMAND_ARGS_HELPERS_H__

@@ -5,6 +5,7 @@
 #include <string.h>
 
 extern uint32_t TASK_heartbeat_period_ms;
+extern uint32_t TCMD_require_valid_sha256;
 
 uint32_t CONFIG_int_demo_var_1 = 13345;
 uint32_t CONFIG_int_demo_var_2 = 242344;
@@ -30,7 +31,10 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
         .variable_name = "TASK_heartbeat_period_ms",
         .num_config_var = &TASK_heartbeat_period_ms,
     },
-
+    {
+        .variable_name = "TCMD_require_valid_sha256",
+        .num_config_var = &TCMD_require_valid_sha256,
+    },
 };
 
 // extern

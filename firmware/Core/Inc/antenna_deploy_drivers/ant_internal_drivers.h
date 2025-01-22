@@ -1,5 +1,5 @@
-#ifndef __INCLUDE_GUARD_ANT_INTERNAL_DRIVERS_H__
-#define __INCLUDE_GUARD_ANT_INTERNAL_DRIVERS_H__
+#ifndef INCLUDE_GUARD_ANT_INTERNAL_DRIVERS_H__
+#define INCLUDE_GUARD_ANT_INTERNAL_DRIVERS_H__
 
 #include <stdint.h>
 
@@ -16,4 +16,4 @@ enum ANT_i2c_bus_mcu {
 uint8_t ANT_send_cmd(enum ANT_i2c_bus_mcu i2c_bus_mcu, uint8_t cmd_buf[], uint8_t cmd_len);
 uint8_t ANT_get_response(enum ANT_i2c_bus_mcu i2c_bus_mcu, uint8_t rx_buf[], uint16_t rx_len);
 
-#endif /* __INCLUDE_GUARD_ANT_INTERNAL_DRIVERS_H__ */
+#endif /* INCLUDE_GUARD_ANT_INTERNAL_DRIVERS_H__ */

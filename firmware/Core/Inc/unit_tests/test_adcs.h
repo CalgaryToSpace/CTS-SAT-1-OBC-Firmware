@@ -1,5 +1,5 @@
-#ifndef __INCLUDE_GUARD__ADCS_TEST_PROTOTYPES_H__
-#define __INCLUDE_GUARD__ADCS_TEST_PROTOTYPES_H__
+#ifndef INCLUDE_GUARD__ADCS_TEST_PROTOTYPES_H__
+#define INCLUDE_GUARD__ADCS_TEST_PROTOTYPES_H__
 
 // epsilon for comparing doubles
 static const float ADCS_TEST_EPSILON = 1e-6;
@@ -50,6 +50,6 @@ uint8_t TEST_EXEC__ADCS_pack_to_unix_time_ms();
 uint8_t TEST_EXEC__ADCS_pack_to_sd_log_config_struct();
 uint8_t TEST_EXEC__ADCS_convert_double_to_string();
 
-#endif // __INCLUDE_GUARD__ADCS_TEST_PROTOTYPES_H__
+#endif // INCLUDE_GUARD__ADCS_TEST_PROTOTYPES_H__
 
 

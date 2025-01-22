@@ -1,5 +1,5 @@
-#ifndef __INCLUDE_GUARD__MPI_TELECOMMAND_DEFS_H__
-#define __INCLUDE_GUARD__MPI_TELECOMMAND_DEFS_H__
+#ifndef INCLUDE_GUARD__MPI_TELECOMMAND_DEFS_H__
+#define INCLUDE_GUARD__MPI_TELECOMMAND_DEFS_H__
 
 #include <stdint.h>
 #include "telecommands/telecommand_definitions.h"
@@ -13,4 +13,4 @@ uint8_t TCMDEXEC_mpi_demo_tx_to_mpi(
 );
 
 
-#endif /* __INCLUDE_GUARD__MPI_TELECOMMAND_DEFINITIONS_H__ */
+#endif /* INCLUDE_GUARD__MPI_TELECOMMAND_DEFINITIONS_H__ */
