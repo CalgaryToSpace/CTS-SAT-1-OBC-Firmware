@@ -1,6 +1,6 @@
 
-#ifndef __INCLUDE_GUARD__LFS_TELECOMMAND_DEFS_H__
-#define __INCLUDE_GUARD__LFS_TELECOMMAND_DEFS_H__
+#ifndef INCLUDE_GUARD__LFS_TELECOMMAND_DEFS_H__
+#define INCLUDE_GUARD__LFS_TELECOMMAND_DEFS_H__
 
 #include <stdint.h>
 #include "telecommands/telecommand_definitions.h"
@@ -36,4 +36,4 @@ uint8_t TCMDEXEC_fs_benchmark_write_read(const char *args_str, TCMD_TelecommandC
                         char *response_output_buf, uint16_t response_output_buf_len);
 
 
-#endif /* __INCLUDE_GUARD__LFS_TELECOMMAND_DEFS_H__ */
+#endif /* INCLUDE_GUARD__LFS_TELECOMMAND_DEFS_H__ */

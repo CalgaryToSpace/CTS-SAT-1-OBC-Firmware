@@ -1,6 +1,6 @@
 
-#ifndef __INCLUDE_GUARD__STATIC_CONFIG_H__
-#define __INCLUDE_GUARD__STATIC_CONFIG_H__
+#ifndef INCLUDE_GUARD__STATIC_CONFIG_H__
+#define INCLUDE_GUARD__STATIC_CONFIG_H__
 
 #include <stdint.h>
 

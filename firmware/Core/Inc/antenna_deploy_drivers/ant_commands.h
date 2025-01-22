@@ -1,5 +1,5 @@
-#ifndef __INCLUDE_GUARD_ANT_COMMANDS_H__
-#define __INCLUDE_GUARD_ANT_COMMANDS_H__
+#ifndef INCLUDE_GUARD_ANT_COMMANDS_H__
+#define INCLUDE_GUARD_ANT_COMMANDS_H__
 
 #include <stdint.h>
 #include "antenna_deploy_drivers/ant_internal_drivers.h"
@@ -38,4 +38,4 @@ uint8_t ANT_CMD_get_antenna_deployment_activation_time(enum ANT_i2c_bus_mcu i2c_
 
 
     
-#endif /* __INCLUDE_GUARD_ANT_COMMANDS_H__ */
+#endif /* INCLUDE_GUARD_ANT_COMMANDS_H__ */

@@ -1,6 +1,6 @@
 
-#ifndef __INCLUDE_GUARD__LITTLEFS_DRIVER_H__
-#define __INCLUDE_GUARD__LITTLEFS_DRIVER_H__
+#ifndef INCLUDE_GUARD__LITTLEFS_DRIVER_H__
+#define INCLUDE_GUARD__LITTLEFS_DRIVER_H__
 
 /*-----------------------------INCLUDES-----------------------------*/
 #include "littlefs/lfs.h"
@@ -13,4 +13,4 @@ int LFS_block_device_erase(const struct lfs_config *, lfs_block_t);
 int LFS_block_device_sync(const struct lfs_config *);
 
 
-#endif /* __INCLUDE_GUARD__LITTLEFS_DRIVER_H__ */
+#endif /* INCLUDE_GUARD__LITTLEFS_DRIVER_H__ */

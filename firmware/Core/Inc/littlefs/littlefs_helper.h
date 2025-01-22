@@ -5,8 +5,8 @@
  *     Author: Saksham Puri
  */
 
-#ifndef __INCLUDE_GUARD__LITTLEFS_HELPER_H__
-#define __INCLUDE_GUARD__LITTLEFS_HELPER_H__
+#ifndef INCLUDE_GUARD__LITTLEFS_HELPER_H__
+#define INCLUDE_GUARD__LITTLEFS_HELPER_H__
 
 /*-----------------------------INCLUDES-----------------------------*/
 
@@ -32,4 +32,4 @@ int8_t LFS_append_file(const char file_name[], uint8_t *write_buffer, uint32_t w
 lfs_ssize_t LFS_read_file(const char file_name[], lfs_soff_t offset, uint8_t *read_buffer, uint32_t read_buffer_len);
 lfs_ssize_t LFS_file_size(const char file_name[]);
 
-#endif /* __INCLUDE_GUARD__LITTLEFS_HELPER_H__ */
+#endif /* INCLUDE_GUARD__LITTLEFS_HELPER_H__ */

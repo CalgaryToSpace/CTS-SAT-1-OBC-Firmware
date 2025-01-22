@@ -1,6 +1,6 @@
 
-#ifndef __INCLUDE_GUARD__RTOS_TASK_HELPERS_H__
-#define __INCLUDE_GUARD__RTOS_TASK_HELPERS_H__
+#ifndef INCLUDE_GUARD__RTOS_TASK_HELPERS_H__
+#define INCLUDE_GUARD__RTOS_TASK_HELPERS_H__
 
 #include "cmsis_os.h"
 
@@ -17,4 +17,4 @@ typedef struct {
 void TASK_HELP_start_of_task(void);
 
 
-#endif // __INCLUDE_GUARD__RTOS_TASK_HELPERS_H__
+#endif // INCLUDE_GUARD__RTOS_TASK_HELPERS_H__

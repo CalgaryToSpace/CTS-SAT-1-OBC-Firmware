@@ -1,6 +1,6 @@
 
-#ifndef __INCLUDE_GUARD__UNIT_TEST_INVENTORY_H__
-#define __INCLUDE_GUARD__UNIT_TEST_INVENTORY_H__
+#ifndef INCLUDE_GUARD__UNIT_TEST_INVENTORY_H__
+#define INCLUDE_GUARD__UNIT_TEST_INVENTORY_H__
 
 #include "main.h"
 
@@ -18,4 +18,4 @@ extern const TEST_Definition_t TEST_definitions[];
 extern const int16_t TEST_definitions_count;
 
 
-#endif // __INCLUDE_GUARD__UNIT_TEST_INVENTORY_H__
+#endif // INCLUDE_GUARD__UNIT_TEST_INVENTORY_H__

@@ -1,6 +1,6 @@
 
-#ifndef __INCLUDE_GUARD__FREERTOS_TELECOMMAND_DEFINITIONS_H
-#define __INCLUDE_GUARD__FREERTOS_TELECOMMAND_DEFINITIONS_H
+#ifndef INCLUDE_GUARD__FREERTOS_TELECOMMAND_DEFINITIONS_H
+#define INCLUDE_GUARD__FREERTOS_TELECOMMAND_DEFINITIONS_H
 
 #include "telecommands/telecommand_types.h"
 
@@ -14,4 +14,4 @@ uint8_t TCMDEXEC_freertos_demo_stack_usage(
     char *response_output_buf, uint16_t response_output_buf_len
 );
 
-#endif // __INCLUDE_GUARD__FREERTOS_TELECOMMAND_DEFINITIONS_H
+#endif // INCLUDE_GUARD__FREERTOS_TELECOMMAND_DEFINITIONS_H
