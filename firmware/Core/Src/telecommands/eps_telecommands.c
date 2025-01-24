@@ -561,9 +561,9 @@ uint8_t TCMDEXEC_eps_get_enabled_channels_json(
      
     const uint16_t status_bitfield = status.stat_ch_on_bitfield;
     const uint16_t status_ch_ext_bitfield = status.stat_ch_ext_on_bitfield;
-    strcat(response_output_buf, "{\"EPS_Channels_Enabled\": \"");
+    strcat(response_output_buf, "[ ");
     EPS_convert_stat_bit_to_string(response_output_buf, status_bitfield, status_ch_ext_bitfield);
-    strcat(response_output_buf, "\"}");
+    strcat(response_output_buf, "]");
     
     return 0;
 }
