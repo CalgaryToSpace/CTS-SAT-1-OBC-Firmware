@@ -11,11 +11,10 @@ uint8_t LFS_get_chip_number(lfs_block_t block_num) {
 	return 0;
 }
 
-/**
- * @brief LittleFS read function
- * @param LittleFS Configurations, Block to write, offset, buffer, buffer size
- * @retval int - any error codes that happened in littlefs
- */
+/// @brief LittleFS read function
+/// @param LittleFS Configurations, Block to write, offset, buffer, buffer size
+/// @retval int - any error codes that happened in littlefs
+
 int LFS_block_device_read(const struct lfs_config *c, lfs_block_t block, lfs_off_t off, void *buffer, lfs_size_t size)
 {
 	return FLASH_read_data(
@@ -27,11 +26,10 @@ int LFS_block_device_read(const struct lfs_config *c, lfs_block_t block, lfs_off
 	);
 }
 
-/**
- * @brief LittleFS write function
- * @param LittleFS Configurations, Block to read, offset, buffer, buffer size
- * @retval int - any error codes that happened in littlefs
- */
+/// @brief LittleFS write function
+/// @param LittleFS Configurations, Block to read, offset, buffer, buffer size
+/// @retval int - any error codes that happened in littlefs
+
 int LFS_block_device_prog(const struct lfs_config *c, lfs_block_t block, lfs_off_t off, const void *buffer, lfs_size_t size)
 {
 	return FLASH_write_data(
@@ -43,11 +41,10 @@ int LFS_block_device_prog(const struct lfs_config *c, lfs_block_t block, lfs_off
 	);
 }
 
-/**
- * @brief LittleFS erase function
- * @param LittleFS Configurations, Block to erase
- * @retval int - any error codes that happened in littlefs
- */
+/// @brief LittleFS erase function
+/// @param LittleFS Configurations, Block to erase
+/// @retval int - any error codes that happened in littlefs
+
 int LFS_block_device_erase(const struct lfs_config *c, lfs_block_t block)
 {
 	return FLASH_erase(
@@ -57,11 +54,10 @@ int LFS_block_device_erase(const struct lfs_config *c, lfs_block_t block)
 	);
 }
 
-/**
- * @brief LittleFS sync function
- * @param c - LittleFS Configuration
- * @retval int - 0 since we are not caching reads or writes
- */
+/// @brief LittleFS sync function
+/// @param c - LittleFS Configuration
+/// @retval int - 0 since we are not caching reads or writes
+
 int LFS_block_device_sync(const struct lfs_config *c)
 {
 	// Per the README:

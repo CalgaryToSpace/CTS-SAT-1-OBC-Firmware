@@ -87,16 +87,15 @@ void FLASH_deactivate_chip_select()
     HAL_GPIO_WritePin(PIN_MEM_NCS_FRAM_1_GPIO_Port, PIN_MEM_NCS_FRAM_1_Pin, GPIO_PIN_SET);
 }
 
-/**
- * @brief Unblocks all blocked blocks of memory on the NAND flash memory module
- * 
- * @param hspi - Pointer to the SPI HAL handle
- * @param chip_number - the chip select number to activate
- * @param buf - Pointer to a buffer to store the new Block Lock Register value. Length: 1 byte.
- * @return FLASH_ERR_OK on success, < 0 on failure
- * 
- * @note unblocking blocks of memory is necessary to write to memory
- */
+/// @brief Unblocks all blocked blocks of memory on the NAND flash memory module
+/// 
+/// @param hspi - Pointer to the SPI HAL handle
+/// @param chip_number - the chip select number to activate
+/// @param buf - Pointer to a buffer to store the new Block Lock Register value. Length: 1 byte.
+/// @return FLASH_ERR_OK on success, < 0 on failure
+/// 
+/// @note unblocking blocks of memory is necessary to write to memory
+
 FLASH_error_enum_t FLASH_unblock_block_lock(SPI_HandleTypeDef *hspi, uint8_t chip_number, uint8_t *buf) {
 
     static const uint8_t data_bytes = 0x00;
@@ -160,13 +159,12 @@ FLASH_error_enum_t FLASH_unblock_block_lock(SPI_HandleTypeDef *hspi, uint8_t chi
     return FLASH_ERR_OK;
 }
 
-/**
- * @brief Read Status Register and store the values in given buffer
- * @param hspi - Pointer to the SPI HAL handle
- * @param chip_number - the chip select number to activate
- * @param buf - Pointer to a buffer to store SR1 value. Length: 1 byte.
- * @retval FLASH_ERR_OK on success, < 0 on failure
- */
+/// @brief Read Status Register and store the values in given buffer
+/// @param hspi - Pointer to the SPI HAL handle
+/// @param chip_number - the chip select number to activate
+/// @param buf - Pointer to a buffer to store SR1 value. Length: 1 byte.
+/// @retval FLASH_ERR_OK on success, < 0 on failure
+
 FLASH_error_enum_t FLASH_read_status_register(SPI_HandleTypeDef *hspi, uint8_t chip_number, uint8_t *buf)
 {
     // Send GET FEATURES command
@@ -216,13 +214,12 @@ FLASH_error_enum_t FLASH_read_status_register(SPI_HandleTypeDef *hspi, uint8_t c
     return FLASH_ERR_OK;
 }
 
-/**
- * @brief Read Block Lock Register and store the values in given buffer
- * @param hspi - Pointer to the SPI HAL handle
- * @param chip_number - the chip select number to activate
- * @param buf - Pointer to a buffer to store Block Lock Register value. Length: 1 byte.
- * @retval FLASH_ERR_OK on success, < 0 on failure
- */
+/// @brief Read Block Lock Register and store the values in given buffer
+/// @param hspi - Pointer to the SPI HAL handle
+/// @param chip_number - the chip select number to activate
+/// @param buf - Pointer to a buffer to store Block Lock Register value. Length: 1 byte.
+/// @retval FLASH_ERR_OK on success, < 0 on failure
+
 FLASH_error_enum_t FLASH_read_block_lock_register(SPI_HandleTypeDef *hspi, uint8_t chip_number, uint8_t *buf)
 {
     // Send GET FEATURES command
@@ -272,12 +269,11 @@ FLASH_error_enum_t FLASH_read_block_lock_register(SPI_HandleTypeDef *hspi, uint8
     return FLASH_ERR_OK;
 }
 
-/**
- * @brief Sends Write Enable Command
- * @param hspi - Pointer to the SPI HAL handle
- * @param chip_number - the chip select number to activate
- * @retval FLASH_ERR_OK on success, < 0 on failure
- */
+/// @brief Sends Write Enable Command
+/// @param hspi - Pointer to the SPI HAL handle
+/// @param chip_number - the chip select number to activate
+/// @retval FLASH_ERR_OK on success, < 0 on failure
+
 FLASH_error_enum_t FLASH_write_enable(SPI_HandleTypeDef *hspi, uint8_t chip_number)
 {
     // Buffer to store status register value
@@ -331,12 +327,11 @@ FLASH_error_enum_t FLASH_write_enable(SPI_HandleTypeDef *hspi, uint8_t chip_numb
     return FLASH_ERR_UNKNOWN;
 }
 
-/**
- * @brief Sends Write Disable Command
- * @param hspi - Pointer to the SPI HAL handle
- * @param chip_number - the chip select number to activate
- * @retval FLASH_ERR_OK on success, < 0 on failure
- */
+/// @brief Sends Write Disable Command
+/// @param hspi - Pointer to the SPI HAL handle
+/// @param chip_number - the chip select number to activate
+/// @retval FLASH_ERR_OK on success, < 0 on failure
+
 FLASH_error_enum_t FLASH_write_disable(SPI_HandleTypeDef *hspi, uint8_t chip_number)
 {
     // Buffer to store status register value
@@ -390,13 +385,12 @@ FLASH_error_enum_t FLASH_write_disable(SPI_HandleTypeDef *hspi, uint8_t chip_num
     return FLASH_ERR_UNKNOWN;
 }
 
-/**
- * @brief Sends Block Erase Command
- * @param hspi - Pointer to the SPI HAL handle
- * @param chip_number - the chip select number to activate
- * @param page - page number to erase the block the page is contained in
- * @retval FLASH_ERR_OK on success, < 0 on failure
- */
+/// @brief Sends Block Erase Command
+/// @param hspi - Pointer to the SPI HAL handle
+/// @param chip_number - the chip select number to activate
+/// @param page - page number to erase the block the page is contained in
+/// @retval FLASH_ERR_OK on success, < 0 on failure
+
 FLASH_error_enum_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t page)
 {
     // Split address into its 3 bytes
@@ -489,15 +483,14 @@ FLASH_error_enum_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs
     return FLASH_ERR_UNKNOWN;
 }
 
-/**
- * @brief Sends Page Program Command
- * @param hspi - Pointer to the SPI HAL handle
- * @param chip_number - the chip select number to activate
- * @param page - page number the data is to be written to
- * @param packet_buffer - Pointer to buffer containing data to write
- * @param packet_buffer_len - integer that indicates the size of the data to write
- * @retval FLASH_ERR_OK on success, < 0 on failure
- */
+/// @brief Sends Page Program Command
+/// @param hspi - Pointer to the SPI HAL handle
+/// @param chip_number - the chip select number to activate
+/// @param page - page number the data is to be written to
+/// @param packet_buffer - Pointer to buffer containing data to write
+/// @param packet_buffer_len - integer that indicates the size of the data to write
+/// @retval FLASH_ERR_OK on success, < 0 on failure
+
 FLASH_error_enum_t FLASH_write_data(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t page, uint8_t *packet_buffer, lfs_size_t packet_buffer_len)
 {
     // Split main address into its 3 bytes
@@ -642,15 +635,14 @@ FLASH_error_enum_t FLASH_write_data(SPI_HandleTypeDef *hspi, uint8_t chip_number
     return FLASH_ERR_UNKNOWN;
 }
 
-/**
- * @brief Sends Page Read Command
- * @param hspi - Pointer to the SPI HAL handle
- * @param chip_number - The chip select number to activate
- * @param page - page number to be read
- * @param rx_buffer - A buffer where the read data will be stored
- * @param rx_buffer_len - Integer that indicates the capacity of `rx_buffer`
- * @retval FLASH_ERR_OK on success, < 0 on failure
- */
+/// @brief Sends Page Read Command
+/// @param hspi - Pointer to the SPI HAL handle
+/// @param chip_number - The chip select number to activate
+/// @param page - page number to be read
+/// @param rx_buffer - A buffer where the read data will be stored
+/// @param rx_buffer_len - Integer that indicates the capacity of `rx_buffer`
+/// @retval FLASH_ERR_OK on success, < 0 on failure
+
 FLASH_error_enum_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t page, uint8_t *rx_buffer, lfs_size_t rx_buffer_len)
 {
     uint8_t read_addr_bytes[3] = {(page >> 16) & 0xFF, (page >> 8) & 0xFF, page & 0xFF};
@@ -788,12 +780,11 @@ FLASH_error_enum_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number,
     return FLASH_ERR_OK;
 }
 
-/**
- * @brief Resets the NAND flash memory module
- * @param hspi - Pointer to the SPI HAL handle
- * @param chip_number - The chip select number to activate
- * @retval FLASH_ERR_OK on success, <0 on failure
- */
+/// @brief Resets the NAND flash memory module
+/// @param hspi - Pointer to the SPI HAL handle
+/// @param chip_number - The chip select number to activate
+/// @retval FLASH_ERR_OK on success, <0 on failure
+
 FLASH_error_enum_t FLASH_reset(SPI_HandleTypeDef *hspi, uint8_t chip_number)
 {
     FLASH_activate_chip_select(chip_number);
@@ -815,12 +806,11 @@ FLASH_error_enum_t FLASH_reset(SPI_HandleTypeDef *hspi, uint8_t chip_number)
     return FLASH_ERR_OK;
 }
 
-/**
- * @brief Checks if the FLASH chip is reachable by checking it's ID
- * @param hspi - Pointer to the SPI HAL handle
- * @param chip_number - The chip select number to activate
- * @retval FLASH_ERR_OK on success, < 0 on failure
- */
+/// @brief Checks if the FLASH chip is reachable by checking it's ID
+/// @param hspi - Pointer to the SPI HAL handle
+/// @param chip_number - The chip select number to activate
+/// @retval FLASH_ERR_OK on success, < 0 on failure
+
 FLASH_error_enum_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_number)
 {
     // TODO: confirm if this works with the CS2 logical chip on each physical FLASH chip;
