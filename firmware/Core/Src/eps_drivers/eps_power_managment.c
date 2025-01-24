@@ -4,7 +4,9 @@
 EPS_struct_pdu_housekeeping_data_eng_t prev_EPS_pdu_housekeeping_data_eng;
 uint16_t power_cW_threshhold = 1000;
 uint16_t voltage_mV_threshhold = 1000;
-uint16_t current_mA_threshhold = 1000;
+uint16_t current_mA_threshhold[32] = {1000, 1000, 1000, 1000, 1000, 1000,           //TODO: Set PDU thresh hold
+    1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 
+    1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
 uint32_t disableable_channels = 0x0001ffff;
 
 /**
@@ -122,10 +124,9 @@ void EPS_channel_managment(const EPS_struct_pdu_housekeeping_data_eng_t *EPS_pdu
         if ((ch_bitfield & 1) && (prev_ch_bitfield & 1) && (modifiable_disableable_bitfield & 1)//Check if channel is enabled
             && (vpid_eng[channel].power_cW - prev_vpid_eng[channel].power_cW > power_cW_threshhold             //TODO: Set PDU thresh hold
             || vpid_eng[channel].voltage_mV - prev_vpid_eng[channel].voltage_mV > voltage_mV_threshhold
-            || vpid_eng[channel].current_mA - prev_vpid_eng[channel].current_mA > current_mA_threshhold
             || vpid_eng[channel].power_cW - prev_vpid_eng[channel].power_cW < -power_cW_threshhold
             || vpid_eng[channel].voltage_mV - prev_vpid_eng[channel].voltage_mV < -voltage_mV_threshhold
-            || vpid_eng[channel].current_mA - prev_vpid_eng[channel].current_mA < -current_mA_threshhold)) {
+            || vpid_eng[channel].current_mA > current_mA_threshhold[channel])) {
 
             uint8_t disable_result = EPS_CMD_output_bus_channel_off(channel);
 
@@ -146,31 +147,45 @@ void EPS_channel_managment(const EPS_struct_pdu_housekeeping_data_eng_t *EPS_pdu
     }
 }
 
+
 /**
- * @brief Set the thresholds for the power monitoring
+ * @brief Sets the power and voltage thresholds for power monitoring.
  *
- * @param[in] power_cW New threshold for power consumption in watts
- * @param[in] voltage_mV New threshold for voltage in millivolts
- * @param[in] current_mA New threshold for current in milliamps
+ * @param[in] power_cW New power threshold in centiwatts.
+ * @param[in] voltage_mV New voltage threshold in millivolts.
  *
- * @details This function will set the thresholds for monitoring of power consumption.
- *          The power consumption will be monitored by the function EPS_power_monitoring.
+ * @details This function will set the power and voltage thresholds for power monitoring.
+ *          The power monitoring is done by the function EPS_power_monitoring.
  *          The thresholds can be set by the user to a specific value.
  */
-void EPS_power_managment_thresholds(uint16_t power_cW, uint16_t voltage_mV, uint16_t current_mA) {
+void EPS_power_managment_thresholds(uint16_t power_cW, uint16_t voltage_mV) {
     power_cW_threshhold = power_cW;
     voltage_mV_threshhold = voltage_mV;
-    current_mA_threshhold = current_mA;
 } 
+
+/**
+ * @brief Set the current threshold for a specific channel.
+ *
+ * @param[in] current_mA New current threshold in milliamps.
+ * @param[in] channel The channel for which the current threshold is being set.
+ *
+ * @details This function updates the current threshold for the specified channel.
+ *          The threshold is used to monitor and manage the power consumption of the channel.
+ */
+
+void EPS_power_managment_thresholds_current(uint16_t current_mA, EPS_CHANNEL_enum_t channel) {
+    current_mA_threshhold[channel] = current_mA;
+}
 
 /**
  * @brief Change the disableable state of a channel.
  *
  * @param[in] channel The channel to change the disableable state of.
+ * @param[in] current_mA New threshold for current in milliamps.
+ * @param[in] channel The channel for which the current threshold is to be set.
  *
- * @details This function will toggle the disableable state of the given channel.
- *          If the channel is currently disableable, it will be set to not disableable.
- *          If the channel is currently not disableable, it will be set to disableable.
+ * @details This function assigns a new current threshold to a specific channel,
+ *          which will be used to monitor and manage the power consumption for that channel.
  */
 void EPS_change_disableable_channels(EPS_CHANNEL_enum_t channel) {
     if (disableable_channels & (1 << channel)) {
