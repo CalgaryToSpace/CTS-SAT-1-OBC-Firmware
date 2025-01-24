@@ -5,8 +5,8 @@
  * Author: Vaibhav Kapoor
  */
 
-#ifndef __INCLUDE_GUARD__MPI_TYPES_H
-#define __INCLUDE_GUARD__MPI_TYPES_H
+#ifndef INCLUDE_GUARD__MPI_TYPES_H
+#define INCLUDE_GUARD__MPI_TYPES_H
 #include <stdint.h>
 
 /**
@@ -56,4 +56,4 @@ typedef struct
     uint16_t cyclic_redundancy_check;        // CRC for data integrity check
 } MPI_dataframe_t;
 
-#endif // __INCLUDE_GUARD__MPI_TYPES_H
+#endif // INCLUDE_GUARD__MPI_TYPES_H
