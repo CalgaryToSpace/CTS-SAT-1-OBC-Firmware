@@ -69,22 +69,23 @@ uint8_t EPS_set_channel_enabled(EPS_CHANNEL_enum_t channel, uint8_t enabled) {
 /// @param status_bitfield_2 The status bitfield of channels 16-31.
 void EPS_convert_stat_bit_to_string(char *response_output_buf, uint16_t status_bitfield_1 , uint16_t status_bitfield_2){
 
-    if ((status_bitfield_1 & 1) == 1) {strcat(response_output_buf, "VBATT_STACK, ");}
-    if (((status_bitfield_1 >> 1) & 1) == 1) {strcat(response_output_buf,"5V_STACK, ");}
-    if (((status_bitfield_1 >> 2) & 1) == 1) {strcat(response_output_buf,"5V_CH2_UNUSED, ");}
-    if (((status_bitfield_1 >> 3) & 1) == 1) {strcat(response_output_buf,"5V_CH3_UNUSED, ");}
-    if (((status_bitfield_1 >> 4) & 1) == 1) {strcat(response_output_buf,"5V_MPI, ");}
-    if (((status_bitfield_1 >> 5) & 1) == 1) {strcat(response_output_buf,"3V3_STACK, ");}
-    if (((status_bitfield_1 >> 6) & 1) == 1) {strcat(response_output_buf,"3V3_CAMERA, ");}
-    if (((status_bitfield_1 >> 7) & 1) == 1) {strcat(response_output_buf,"3V3_UHF_ANTENNA_DEPLOY, ");}
-    if (((status_bitfield_1 >> 8) & 1) == 1) {strcat(response_output_buf,"3V3_LORA_MODULE, ");}
-    if (((status_bitfield_1 >> 9) & 1) == 1) {strcat(response_output_buf,"VBATT_CH9_UNUSED, ");}
-    if (((status_bitfield_1 >> 10) & 1) == 1) {strcat(response_output_buf,"VBATT_CH10_UNUSED, ");}
-    if (((status_bitfield_1 >> 11) & 1) == 1) {strcat(response_output_buf,"VBATT_CH11_UNUSED, ");}
-    if (((status_bitfield_1 >> 12) & 1) == 1) {strcat(response_output_buf,"12V_MPI, ");}
-    if (((status_bitfield_1 >> 13) & 1) == 1) {strcat(response_output_buf,"12V_BOOM, ");}
-    if (((status_bitfield_1 >> 14) & 1) == 1) {strcat(response_output_buf,"3V3_CH14_UNUSED, ");}
-    if (((status_bitfield_1 >> 15) & 1) == 1) {strcat(response_output_buf,"3V3_CH15_UNUSED, ");}
-    if ((status_bitfield_2 & 1) == 1) {strcat(response_output_buf,"28V6_CH16_UNUSED, ");}
+    if ((status_bitfield_1 & 1) == 1) {strcat(response_output_buf, "\"VBATT_STACK\",");}
+    if (((status_bitfield_1 >> 1) & 1) == 1) {strcat(response_output_buf,"\"5V_STACK\",");}
+    if (((status_bitfield_1 >> 2) & 1) == 1) {strcat(response_output_buf,"\"5V_CH2_UNUSED\",");}
+    if (((status_bitfield_1 >> 3) & 1) == 1) {strcat(response_output_buf,"\"5V_CH3_UNUSED\",");}
+    if (((status_bitfield_1 >> 4) & 1) == 1) {strcat(response_output_buf,"\"5V_MPI\",");}
+    if (((status_bitfield_1 >> 5) & 1) == 1) {strcat(response_output_buf,"\"3V3_STACK\",");}
+    if (((status_bitfield_1 >> 6) & 1) == 1) {strcat(response_output_buf,"\"3V3_CAMERA\",");}
+    if (((status_bitfield_1 >> 7) & 1) == 1) {strcat(response_output_buf,"\"3V3_UHF_ANTENNA_DEPLOY\",");}
+    if (((status_bitfield_1 >> 8) & 1) == 1) {strcat(response_output_buf,"\"3V3_LORA_MODULE\",");}
+    if (((status_bitfield_1 >> 9) & 1) == 1) {strcat(response_output_buf,"\"VBATT_CH9_UNUSED\",");}
+    if (((status_bitfield_1 >> 10) & 1) == 1) {strcat(response_output_buf,"\"VBATT_CH10_UNUSED\",");}
+    if (((status_bitfield_1 >> 11) & 1) == 1) {strcat(response_output_buf,"\"VBATT_CH11_UNUSED\",");}
+    if (((status_bitfield_1 >> 12) & 1) == 1) {strcat(response_output_buf,"\"12V_MPI\",");}
+    if (((status_bitfield_1 >> 13) & 1) == 1) {strcat(response_output_buf,"\"12V_BOOM\",");}
+    if (((status_bitfield_1 >> 14) & 1) == 1) {strcat(response_output_buf,"\"3V3_CH14_UNUSED\",");}
+    if (((status_bitfield_1 >> 15) & 1) == 1) {strcat(response_output_buf,"\"3V3_CH15_UNUSED\",");}
+    if ((status_bitfield_2 & 1) == 1) {strcat(response_output_buf,"\"28V6_CH16_UNUSED\",");}
 
+    if (strlen(response_output_buf)>2) {response_output_buf[strlen(response_output_buf)-1] = ' ';} // this removes trailling comma at end of list if the list is not empty
 }
