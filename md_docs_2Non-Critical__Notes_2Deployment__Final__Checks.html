@@ -87,11 +87,11 @@ $(function(){ initResizable(false); });
   <div class="headertitle"><div class="title">Deployment Final Checks</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md39"></a></p>
+<div class="textblock"><p><a class="anchor" id="autotoc_md50"></a></p>
 <ul>
 <li>The code should be audited for the following aspects, as a final check before the final flash.</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md40"></a>
+<h1><a class="anchor" id="autotoc_md51"></a>
 Automated Check Ideas (GitHub Actions)</h1>
 <ol type="1">
 <li>✅ Telecommand Execution (<code>TCMDEXEC_</code>) function names match their registrations in the table.<ul>
@@ -109,14 +109,14 @@ Automated Check Ideas (GitHub Actions)</h1>
 </li>
 </ol>
 <p>✅ = Automated test now exists.</p>
-<h1><a class="anchor" id="autotoc_md41"></a>
+<h1><a class="anchor" id="autotoc_md52"></a>
 Manual Execution Checks</h1>
 <p>The following checks involve executing code and/or telecommands.</p>
 <ul>
 <li>Units tests pass.</li>
 <li>Python-based system tests/checks pass.</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md42"></a>
+<h1><a class="anchor" id="autotoc_md53"></a>
 Logging Checks</h1>
 <ol type="1">
 <li>Are all logs to <code><a class="el" href="log_8h.html#a3e068c70867806154541035de518012d">LOG_message()</a></code>? Limited use of UART logging.</li>
@@ -124,7 +124,7 @@ Logging Checks</h1>
 <li>Are the log levels appropriate? Logs right before non-zero returns should generally be a warning/error level.</li>
 <li>Are the log format strings consistent with the actual arguments? TODO: Find a build option to enable this.</li>
 </ol>
-<h1><a class="anchor" id="autotoc_md43"></a>
+<h1><a class="anchor" id="autotoc_md54"></a>
 Other Checks</h1>
 <ol type="1">
 <li>Check the changelog of libraries (LittleFS, CSP maybe) for bug fixes.</li>
@@ -137,7 +137,7 @@ Other Checks</h1>
 </div><!-- fragment --> This is the linker script. The length can change.</li>
 <li>Ensure all tasks are registered in the <code><a class="el" href="structFREERTOS__task__info__struct__t.html" title="Register all tasks in an array to track their worst/highest stack usage.">FREERTOS_task_info_struct_t</a> FREERTOS_task_handles_array []</code> array. Consider a unit test for this check, maybe.</li>
 </ol>
-<h1><a class="anchor" id="autotoc_md44"></a>
+<h1><a class="anchor" id="autotoc_md55"></a>
 Management Checks</h1>
 <ol type="1">
 <li>Are all the requirements met?</li>

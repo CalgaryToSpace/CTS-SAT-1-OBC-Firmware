@@ -10,5 +10,6 @@ var searchData=
   ['config_5ftelecommand_5fdefs_2ec_7',['config_telecommand_defs.c',['../config__telecommand__defs_8c.html',1,'']]],
   ['config_5ftelecommand_5fdefs_2eh_8',['config_telecommand_defs.h',['../config__telecommand__defs_8h.html',1,'']]],
   ['configuration_2ec_9',['configuration.c',['../configuration_8c.html',1,'']]],
-  ['configuration_2eh_10',['configuration.h',['../configuration_8h.html',1,'']]]
+  ['configuration_2eh_10',['configuration.h',['../configuration_8h.html',1,'']]],
+  ['configuration_5fvariables_2emd_11',['Configuration_Variables.md',['../Configuration__Variables_8md.html',1,'']]]
 ];

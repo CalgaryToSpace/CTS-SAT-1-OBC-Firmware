@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['2_0',['2',['../system__stm32l4xx_8c.html#autotoc_md73',1,'PLL_Q                                  | 2'],['../system__stm32l4xx_8c.html#autotoc_md74',1,'PLL_R                                  | 2']]]
+  ['2_0',['2',['../system__stm32l4xx_8c.html#autotoc_md84',1,'PLL_Q                                  | 2'],['../system__stm32l4xx_8c.html#autotoc_md85',1,'PLL_R                                  | 2']]],
+  ['2_20strong_20set_20the_20value_20of_20a_20variable_20strong_1',['2. &lt;strong&gt;Set the value of a Variable&lt;/strong&gt;',['../md_docs_2Non-Critical__Notes_2Configuration__Variables.html#autotoc_md48',1,'']]]
 ];
