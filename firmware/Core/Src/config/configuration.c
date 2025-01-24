@@ -10,6 +10,13 @@ extern uint32_t TCMD_require_valid_sha256;
 uint32_t CONFIG_int_demo_var_1 = 13345;
 uint32_t CONFIG_int_demo_var_2 = 242344;
 
+uint32_t power_cW_threshhold = 1000;                             //TODO: Set PDU thresh hold
+uint32_t voltage_mV_threshhold = 1000;
+uint32_t current_mA_threshhold = 1000;
+uint32_t disableable_channels = 0x0001ffff;
+
+uint32_t watchdog_timer = 7000, EPS_monitor_timer = 1000;       //TODO: Set watchdog timer
+
 // extern
 // 1 = require, 0 = don't require
 uint32_t TCMD_require_unique_tssent = 0;
