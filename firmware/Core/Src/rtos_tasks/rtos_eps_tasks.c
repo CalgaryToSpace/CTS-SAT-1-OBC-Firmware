@@ -6,14 +6,13 @@
 #include "log/log.h"
 #include "timekeeping/timekeeping.h"
 #include "eps_drivers/eps_power_management.h"
+#include "config/configuration.h"
 
 #include "cmsis_os.h"
 
 #include <string.h>
 #include <inttypes.h>
 #include <stdint.h>
-
-uint64_t watchdog_timer = 7000, EPS_monitor_timer = 1000;
 
 
 

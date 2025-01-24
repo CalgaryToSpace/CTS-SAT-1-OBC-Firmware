@@ -9,6 +9,13 @@ extern uint32_t TASK_heartbeat_period_ms;
 uint32_t CONFIG_int_demo_var_1 = 13345;
 uint32_t CONFIG_int_demo_var_2 = 242344;
 
+uint32_t power_cW_threshhold = 1000;                             //TODO: Set PDU thresh hold
+uint32_t voltage_mV_threshhold = 1000;
+uint32_t current_mA_threshhold = 1000;
+uint32_t disableable_channels = 0x0001ffff;
+
+uint32_t watchdog_timer = 7000, EPS_monitor_timer = 1000;       //TODO: Set watchdog timer
+
 // extern
 
 /// @brief The percentage of the stack space that should remain free. If the free space falls
@@ -30,7 +37,32 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
         .variable_name = "TASK_heartbeat_period_ms",
         .num_config_var = &TASK_heartbeat_period_ms,
     },
-
+    //EPS Power Management Config
+    {
+        .variable_name = "power_cW_threshhold",
+        .num_config_var = &power_cW_threshhold,
+    },
+    {
+        .variable_name = "voltage_mV_threshhold",
+        .num_config_var = &voltage_mV_threshhold,
+    },
+    {
+        .variable_name = "current_mA_threshhold",
+        .num_config_var = &current_mA_threshhold,
+    },
+    {
+        .variable_name = "disableable_channels",
+        .num_config_var = &disableable_channels,
+    },
+    //Timer Config
+    {
+        .variable_name = "watchdog_timer",
+        .num_config_var = &watchdog_timer,
+    },
+    {
+        .variable_name = "EPS_monitor_timer",
+        .num_config_var = &EPS_monitor_timer,
+    },
 };
 
 // extern
