@@ -113,7 +113,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
             DEBUG_uart_print_str("Unhandled MPI Mode\n"); // TODO: HANDLE other MPI MODES
         }
     }
-    
+
     else if (huart->Instance == UART_gps_port_handle->Instance) {
         if (UART_gps_uart_interrupt_enabled == 1) {
 

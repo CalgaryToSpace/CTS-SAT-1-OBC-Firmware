@@ -13,7 +13,7 @@
 extern UART_HandleTypeDef *UART_gps_port_handle;
 
 const uint32_t GPS_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS = 800;
-const uint32_t GPS_RX_TIMEOUT_BETWEEN_BYTES_MS = 1200;
+const uint32_t GPS_RX_TIMEOUT_BETWEEN_BYTES_MS = 1500;
 
 /// @brief Sends a log command to the GPS, and receives the response.
 /// @param cmd_buf log command string to send to the GPS.
