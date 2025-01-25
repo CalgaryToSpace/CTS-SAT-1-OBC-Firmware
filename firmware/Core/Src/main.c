@@ -32,6 +32,8 @@
 #include "adcs_drivers/adcs_internal_drivers.h"
 #include "littlefs/flash_driver.h"
 
+#include "startup_sequence/antenna_deploy_startup.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -168,6 +170,13 @@ FREERTOS_task_info_struct_t FREERTOS_task_handles_array [] = {
 
 const uint32_t FREERTOS_task_handles_array_size = sizeof(FREERTOS_task_handles_array) / sizeof(FREERTOS_task_info_struct_t);
 
+osThreadId_t TASK_bootup_Handle;
+const osThreadAttr_t TASK_bootup_Attributes = {
+  .name = "TASK_bootup",
+  .stack_size = 1024, //in bytes. 512 is tool small and will cause crashes when lfs_close() is called!
+  .priority = (osPriority_t) osPriorityNormal, //TODO: Figure out which priority makes sense for this task
+};
+
 
 /* USER CODE END PV */
 
@@ -294,6 +303,8 @@ int main(void)
   TASK_service_eps_watchdog_Handle = osThreadNew(TASK_service_eps_watchdog, NULL, &TASK_service_eps_watchdog_Attributes);
 
   TASK_time_sync_Handle = osThreadNew(TASK_time_sync, NULL, &TASK_time_sync_Attributes);
+
+  TASK_bootup_Handle = osThreadNew(TASK_bootup, NULL, &TASK_bootup_Attributes);
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
