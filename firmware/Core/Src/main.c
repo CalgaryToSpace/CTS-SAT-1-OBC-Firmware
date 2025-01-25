@@ -298,7 +298,7 @@ int main(void)
 
   TASK_execute_telecommands_Handle = osThreadNew(TASK_execute_telecommands, NULL, &TASK_execute_telecommands_Attributes);
 
-  TASK_receive_gps_Handle = osThreadNew(TASK_receive_gps_info, NULL, &TASK_receive_gps_attributes);
+  // TASK_receive_gps_Handle = osThreadNew(TASK_receive_gps_info, NULL, &TASK_receive_gps_attributes);
 
   TASK_monitor_freertos_memory_Handle = osThreadNew(TASK_monitor_freertos_memory, NULL, &TASK_monitor_freertos_memory_Attributes);
   

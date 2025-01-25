@@ -14,7 +14,7 @@
 
 extern UART_HandleTypeDef *UART_gps_port_handle;
 
-const uint32_t GPS_RX_TIMEOUT_MS = 800;
+const uint32_t GPS_RX_TIMEOUT_MS = 1200;
 
 /// @brief Sends a log command to the GPS, and receives the response.
 /// @param cmd_buf log command string to send to the GPS.
@@ -36,14 +36,14 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
 		UART_gps_buffer[i] = 0;
 	}
 	UART_gps_buffer_write_idx = 0;		 // Make it start writing from the start
-	GPS_set_uart_interrupt_state(1); // We are now expecting a response
+	
 
 	// TX TO GPS
 	const HAL_StatusTypeDef tx_status = HAL_UART_Transmit(
 		UART_gps_port_handle,
 		(uint8_t *)cmd_buf,
 		cmd_buf_len,
-		GPS_RX_TIMEOUT_MS); // FIXME: update the timeout
+		100); // FIXME: update the timeout
 
 	if (tx_status != HAL_OK)
 	{
@@ -58,12 +58,7 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
 	// FIXME: Update with the actual times, it currently works with 800 ms and 500ms does not work
 	// Gps takes time to respond, first section of log response is quick but the rest of the data response takes a while
 	
-
-	LOG_message(
-		LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-		"GPS Buffer: %s",
-		UART_gps_buffer
-	);
+	GPS_set_uart_interrupt_state(1); // We are now expecting a response
 
 	// RX FROM GPS, into UART_gps_buffer
 	const uint32_t start_rx_time = HAL_GetTick();
@@ -104,7 +99,7 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
 	}
 
 	// End Receiving
-	// GPS_set_uart_interrupt_state(0); // We are no longer expecting a response
+	GPS_set_uart_interrupt_state(0); // We are no longer expecting a response
 
 	// Logging the received response
 	// TODO: Verify if this works
