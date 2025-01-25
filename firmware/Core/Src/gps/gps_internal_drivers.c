@@ -3,10 +3,8 @@
 #include "debug_tools/debug_uart.h"
 #include "debug_tools/debug_i2c.h"
 #include "gps/gps_internal_drivers.h"
-#include "gps/gps_args_helpers.h"
 #include "uart_handler/uart_handler.h"
 #include "stm_drivers/timing_helpers.h"
-#include "uart_handler/uart_handler.h"
 #include "log/log.h"
 
 #include <stdint.h>
@@ -14,7 +12,8 @@
 
 extern UART_HandleTypeDef *UART_gps_port_handle;
 
-const uint32_t GPS_RX_TIMEOUT_MS = 1200;
+const uint32_t GPS_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS = 800;
+const uint32_t GPS_RX_TIMEOUT_BETWEEN_BYTES_MS = 1200;
 
 /// @brief Sends a log command to the GPS, and receives the response.
 /// @param cmd_buf log command string to send to the GPS.
@@ -43,7 +42,7 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
 		UART_gps_port_handle,
 		(uint8_t *)cmd_buf,
 		cmd_buf_len,
-		100); // FIXME: update the timeout
+		100);
 
 	if (tx_status != HAL_OK)
 	{
@@ -65,12 +64,15 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
 	while (1) {
 		if ((UART_gps_buffer_write_idx == 0)) {
 			// Check if we've timed out (before the first byte)
-			if ((HAL_GetTick() - start_rx_time) > GPS_RX_TIMEOUT_MS) {
+			if ((HAL_GetTick() - start_rx_time) > GPS_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS) {
 
 				LOG_message(
 					LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
 					"GPS ERROR: Timeout before receiving any data"
 				);
+
+				// Disable the UART gps channel
+				GPS_set_uart_interrupt_state(0);
 			
 				// fatal error; return
 				return 2;
@@ -84,7 +86,7 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
 			// is positive.
 			if (
 				(cur_time > UART_gps_last_write_time_ms) // Important seemingly-obvious safety check.
-				&& ((cur_time - UART_gps_last_write_time_ms) >  GPS_RX_TIMEOUT_MS)
+				&& ((cur_time - UART_gps_last_write_time_ms) >  GPS_RX_TIMEOUT_BETWEEN_BYTES_MS)
 			) {
 				LOG_message(
 					LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
@@ -111,85 +113,25 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
 
 	// Check that we've received what we're expecting
 	// TODO: if the following cases happen ever during testing, consider allowing them and treating them as WARNINGs
-	if (UART_gps_buffer_write_idx == 0)
-	{
-		LOG_message(
-			LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-			"GPS ERROR: UART_gps_buffer_write_idx == 0"
-		);
-
-		return 3;
-	}
-	else if (UART_gps_buffer_write_idx > rx_buf_max_size)
+	if (UART_gps_buffer_write_idx > rx_buf_max_size)
 	{
 		LOG_message(
 			LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
 			"GPS ERROR: UART_gps_buffer overflow");
-		return 4;
-	}
-
-	// TODO: Add code to copy the uart_gps_buffer content to the rx_buf[] and clear the buffer
-
-	return 0;
-}
-
-/// @brief Validates the response of a log command sent to the GPS, based of the reponse tag.
-/// Refer to page 1159, table 267 of the OEM7 Commands Logs Manual
-/// @param gps_response_buf log command string to send to the GPS.
-/// @return 0 on success, > 0 if error.
-/// TODO: Implement this function with other functions
-uint8_t GPS_validate_log_response(const char *gps_response_buf)
-{
-	if (gps_response_buf == NULL)
-	{
-		LOG_message(
-			LOG_SYSTEM_GPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-			"GPS ERROR: GPS response buffer is empty/Null");
-
-		// Error: Empty gps response buffer
-		return 1;
-	}
-
-	// Find the start and end of the log command response, which is < and [ resepectively
-	const char *sync_char = strchr(gps_response_buf, '<');
-	const char *delimiter_char = strchr(gps_response_buf, '[');
-
-	if (!sync_char || !delimiter_char)
-	{
-		// Invalid data: No response tag in gps response
-		return 2;
-	}
-
-	// Calculate the length of the response tag
-	const int response_tag_length = delimiter_char - sync_char + 1;
-	if (response_tag_length < 0)
-	{
-		// Sync character occurs after delimiter character
 		return 3;
 	}
 
-	char response_tag_buffer[response_tag_length];
-
-	// Copy response tag string into a buffer
-	strncpy(response_tag_buffer, sync_char, response_tag_length);
-	response_tag_buffer[response_tag_length] = '\0'; // Null-terminate the substring
-
-	if (strcmp(response_tag_buffer, "OK") != 0)
-	{
-		LOG_message(
-			LOG_SYSTEM_GPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-			"GPS VALIDATION ERROR: GPS response is: %s",
-			response_tag_buffer);
-		// Error status: Error with the log command/gnss receiver
-		return 4;
+	// Copy the log response from the UART gps buffer to the rx_buf[] and clear the buffer
+    for (uint16_t i = 0; i < UART_gps_buffer_write_idx; i++) {
+		rx_buf[i] = UART_gps_buffer[i];
 	}
-	else
-	{
-		LOG_message(
-			LOG_SYSTEM_GPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-			"GPS VALIDATION SUCCESS: GPS response is: %s",
-			response_tag_buffer);
-	}
+
+	// Testing to see the rx buf is being filled
+	LOG_message(
+		LOG_SYSTEM_GPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "rx buffer: %s",
+        rx_buf
+	);
 
 	return 0;
 }

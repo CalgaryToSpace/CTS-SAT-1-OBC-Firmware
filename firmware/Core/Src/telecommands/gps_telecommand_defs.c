@@ -46,13 +46,13 @@ uint8_t TCMDEXEC_gps_send_log_cmd(const char *args_str, TCMD_TelecommandChannel_
     // Handle the gps_cmd_response: Perform the error checks
     // TODO: Add GPS_validate_log_response function in here to validate response from the gps receiver
 
+    if (gps_cmd_response !=0){
 
-    LOG_message(
-        LOG_SYSTEM_GPS,
-        LOG_SEVERITY_NORMAL,
-        LOG_SINK_ALL,
-        "GPS Response Code: %d",
-        gps_cmd_response);
+        LOG_message(
+            LOG_SYSTEM_GPS,LOG_SEVERITY_NORMAL,LOG_SINK_ALL,
+            "GPS Response Code: %d",
+            gps_cmd_response);
+    }
 
     return 0;
 }
