@@ -203,7 +203,6 @@ void GPS_set_uart_interrupt_state(uint8_t new_enabled) {
     if (new_enabled == 1)
     {
         UART_gps_uart_interrupt_enabled = 1;
-
         HAL_UART_Receive_IT(UART_gps_port_handle, (uint8_t*) &UART_gps_buffer_last_rx_byte, 1);
     }
     else {
