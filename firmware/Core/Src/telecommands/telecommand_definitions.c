@@ -1003,13 +1003,6 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     // ****************** END SECTION: antenna_telecommand_defs ******************
     
     // ****************** SECTION: gps_telecommand_defs ******************
-
-    {
-        .tcmd_name = "gps_set_enabled",
-        .tcmd_func = TCMDEXEC_gps_set_enabled,
-        .number_of_args = 1,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },
     {
         .tcmd_name = "gps_send_log_cmd",
         .tcmd_func = TCMDEXEC_gps_send_log_cmd,
