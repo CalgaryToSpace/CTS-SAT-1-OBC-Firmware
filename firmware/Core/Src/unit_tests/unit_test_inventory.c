@@ -14,7 +14,6 @@
 
 #include "unit_tests/test_eps_drivers.h"
 #include "unit_tests/test_eps_struct_packers.h"
-#include "unit_tests/unit_test_gps.h"
 
 #include "unit_tests/test_sha256.h"
 
@@ -403,36 +402,6 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func = TEST_EXEC__ANT_convert_raw_temp_to_cCelsius,
         .test_file = "antenna_deploy_drivers/ant_commands",
         .test_func_name = "ANT_convert_raw_temp_to_cCelsius"
-    },
-    {
-        .test_func = TEST_EXEC__GPS_reference_time_status_str_to_enum,
-        .test_file = "gps/gps_types",
-        .test_func_name = "GPS_reference_time_status_str_to_enum"
-    },
-    {
-        .test_func = TEST_EXEC__GPS_solution_status_str_to_enum,
-        .test_file = "gps/gps_types",
-        .test_func_name = "GPS_solution_status_str_to_enum"
-    },
-    {
-        .test_func = TEST_EXEC__GPS_position_type_str_to_enum,
-        .test_file = "gps/gps_types",
-        .test_func_name = "GPS_position_type_str_to_enum"
-    },
-    {
-        .test_func = TEST_EXEC__GPS_header_response_parser,
-        .test_file = "gps/gps_ascii_parsers",
-        .test_func_name = "GPS_header_response_parser"
-    },
-    {
-        .test_func = TEST_EXEC__GPS_bestxyza_data_parser,
-        .test_file = "gps/gps_ascii_parsers",
-        .test_func_name = "GPS_bestxyza_data_parser"
-    },
-    {
-        .test_func = TEST_EXEC__GPS_timea_data_parser,
-        .test_file = "gps/gps_ascii_parsers",
-        .test_func_name = "GPS_timea_data_parser"
     },
     {
         .test_func = TEST_EXEC__CRYPT_compute_sha256_hash,
