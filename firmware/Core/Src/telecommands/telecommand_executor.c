@@ -7,6 +7,7 @@
 #include "timekeeping/timekeeping.h"
 #include "log/log.h"
 #include "transforms/arrays.h"
+#include "configuration.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -22,6 +23,8 @@ uint64_t TCMD_latest_received_tcmd_timestamp_sent = 0;
 uint16_t  TCMD_timestamp_sent_head = 0;
 /// @brief The circular buffer of timestamps of telecommands that have been sent.
 uint64_t TCMD_timestamp_sent_store[TCMD_TIMESTAMP_RECORD_SIZE] = {0};
+
+uint32_t TCMD_require_unique_tssent = 0;
 
 /// @brief  The agenda (schedule queue) of telecommands to execute.
 TCMD_parsed_tcmd_to_execute_t TCMD_agenda[TCMD_AGENDA_SIZE];
@@ -56,22 +59,25 @@ uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd
             continue;
         }
 
-        // check to see if timestamp is in the circular buffer
-        for (uint32_t i = 0; i < TCMD_timestamp_sent_head; i++) {
-            if(parsed_tcmd->timestamp_sent == TCMD_timestamp_sent_store[i]) {
-                // Skip this telecommand
-                LOG_message(
-                    LOG_SYSTEM_TELECOMMAND, 
-                    LOG_SEVERITY_WARNING, 
-                    LOG_SINK_ALL, 
-                    "Telecommand skipped due to timestamp collision"
-                );
-                return 1; 
+        // skip if timstamps are not needed
+        if(TCMD_require_unique_tssent){
+                    // check to see if timestamp is in the circular buffer
+            for (uint32_t i = 0; i < TCMD_timestamp_sent_head; i++) {
+                if(parsed_tcmd->timestamp_sent == TCMD_timestamp_sent_store[i]) {
+                    // Skip this telecommand
+                    LOG_message(
+                        LOG_SYSTEM_TELECOMMAND, 
+                        LOG_SEVERITY_WARNING, 
+                        LOG_SINK_ALL, 
+                        "Telecommand skipped due to timestamp collision"
+                    );
+                    return 1; 
+                }
             }
+            // Add the timestamp to the circular buffer
+            TCMD_timestamp_sent_store[TCMD_timestamp_sent_head] = parsed_tcmd->timestamp_sent;
+            TCMD_timestamp_sent_head = (TCMD_timestamp_sent_head + 1) % TCMD_TIMESTAMP_RECORD_SIZE;
         }
-        // Add the timestamp to the circular buffer
-        TCMD_timestamp_sent_store[TCMD_timestamp_sent_head] = parsed_tcmd->timestamp_sent;
-        TCMD_timestamp_sent_head = (TCMD_timestamp_sent_head + 1) % TCMD_TIMESTAMP_RECORD_SIZE;
 
         // Copy the parsed telecommand into the agenda.
         TCMD_agenda[slot_num].tcmd_idx = parsed_tcmd->tcmd_idx;
