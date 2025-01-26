@@ -21,6 +21,9 @@
 **4) `CONFIG_str_config_variables_count`**:  
  The number of string configuration variables in the `CONFIG_str_config_variables[]` array.
 
+ **5) `TCMD_require_unique_tssent`**:
+ A boolean value set to either 0 or 1. 1 indicates that timestamps (usage of @tssent) are required and 0 indicates that timestamps are not 
+ (no need to use tssent). 
 ---
 
 ## Configuration Variable Arrays
