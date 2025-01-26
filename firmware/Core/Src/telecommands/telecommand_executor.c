@@ -24,7 +24,8 @@ uint16_t  TCMD_timestamp_sent_head = 0;
 /// @brief The circular buffer of timestamps of telecommands that have been sent.
 uint64_t TCMD_timestamp_sent_store[TCMD_TIMESTAMP_RECORD_SIZE] = {0};
 
-uint32_t TCMD_require_unique_tssent = 0;
+// 1 = require, 0 = don't require
+uint32_t TCMD_require_unique_tssent = 1; 
 
 /// @brief  The agenda (schedule queue) of telecommands to execute.
 TCMD_parsed_tcmd_to_execute_t TCMD_agenda[TCMD_AGENDA_SIZE];

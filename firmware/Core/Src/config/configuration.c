@@ -115,6 +115,11 @@ uint8_t CONFIG_set_int_variable(const char *var_name, const uint64_t new_value)
     }
     CONFIG_integer_config_entry_t config_var = CONFIG_int_config_variables[index];
 
+    if (strcmp(config_var.variable_name, "TCMD_require_unique_tssent") == 0 && (new_value != 0 && new_value != 1))
+    {
+        return 3; 
+    }
+
     *config_var.num_config_var = new_value;
     return 0;
 }
