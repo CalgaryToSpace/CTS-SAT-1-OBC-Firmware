@@ -323,7 +323,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "adcs_deploy_magnetometer",
         .tcmd_func = TCMDEXEC_adcs_deploy_magnetometer,
-        .number_of_args = 0,
+        .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
@@ -347,7 +347,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "adcs_attitude_estimation_mode",
         .tcmd_func = TCMDEXEC_adcs_attitude_estimation_mode,
-        .number_of_args = 0,
+        .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
@@ -668,6 +668,61 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 2,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
+    {
+        .tcmd_name = "adcs_acp_execution_state",
+        .tcmd_func = TCMDEXEC_adcs_acp_execution_state,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_get_current_state_1",
+        .tcmd_func = TCMDEXEC_adcs_get_current_state_1,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_get_raw_star_tracker_data",
+        .tcmd_func = TCMDEXEC_adcs_get_raw_star_tracker_data,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    }, 
+    {
+        .tcmd_name = "adcs_save_image_to_sd",
+        .tcmd_func = TCMDEXEC_adcs_save_image_to_sd,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_request_commissioning_telemetry",
+        .tcmd_func = TCMDEXEC_adcs_request_commissioning_telemetry,
+        .number_of_args = 3,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_synchronise_unix_time",
+        .tcmd_func = TCMDEXEC_adcs_synchronise_unix_time,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    }, 
+    {
+        .tcmd_name = "adcs_get_current_unix_time",
+        .tcmd_func = TCMDEXEC_adcs_get_current_unix_time,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    }, 
+    {
+        .tcmd_name = "adcs_set_sd_log_config",
+        .tcmd_func = TCMDEXEC_adcs_set_sd_log_config,
+        .number_of_args = 4,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    }, 
+    {
+        .tcmd_name = "adcs_get_sd_log_config",
+        .tcmd_func = TCMDEXEC_adcs_get_sd_log_config,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    }, 
+
     // ****************** END SECTION: telecommand_adcs ******************
 
     // ****************** SECTION: log_telecommand_defs ******************
