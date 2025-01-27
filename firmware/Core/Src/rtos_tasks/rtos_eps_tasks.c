@@ -39,10 +39,12 @@ void TASK_service_eps_watchdog(void *argument) {
     // Sleep 10s at the start so that more important tasks work first.
     // Important to service the watchdog near the start, though.
     osDelay(10000);
-    uint64_t last_time = TIM_get_current_unix_epoch_time_ms();
+    uint64_t last_time_watch_dog = TIM_get_current_unix_epoch_time_ms();
+
+    uint64_t last_time_EPS = TIM_get_current_unix_epoch_time_ms();
 
     while(1) {
-        if (TIM_get_current_unix_epoch_time_ms() - last_time > watchdog_timer) {
+        if (TIM_get_current_unix_epoch_time_ms() - last_time_watch_dog > watchdog_timer) {
             const uint8_t result = EPS_CMD_watchdog();
 
             if (result != 0) {
@@ -61,10 +63,10 @@ void TASK_service_eps_watchdog(void *argument) {
                     "EPS watchdog serviced successfully." 
                 );
             }
-            osDelay(sleep_duration_ms);
+            last_time_watch_dog = TIM_get_current_unix_epoch_time_ms();
         }
         
-        if (TIM_get_current_unix_epoch_time_ms() - last_time > EPS_monitor_timer) {
+        if (TIM_get_current_unix_epoch_time_ms() - last_time_EPS > EPS_monitor_timer) {
             const uint8_t result_power = EPS_power_monitoring();
             if (result_power != 0) {
                 LOG_message(
@@ -82,7 +84,9 @@ void TASK_service_eps_watchdog(void *argument) {
                     "EPS power monitoring serviced successfully." 
                 );
             }
+            last_time_EPS = TIM_get_current_unix_epoch_time_ms();
         }
+        osDelay(sleep_duration_ms);
     }
 }
 
