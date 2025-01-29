@@ -1,3 +1,5 @@
+#include <inttypes.h>
+
 #include "csp/drivers/usart.h"
 #include "csp/arch/csp_time.h"
 
@@ -20,8 +22,8 @@ int csp_usart_write(csp_usart_fd_t fd, const void * data, size_t data_length) {
 
     LOG_message(
         LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
-        "csp_usart_write: fd: %d, data: %s, length: %d bytes",
-        fd, data,
+        "csp_usart_write: fd: %d, data: %s, length: %" PRIu16 " bytes",
+        fd,
         data_hex_str,
         data_length
     );
