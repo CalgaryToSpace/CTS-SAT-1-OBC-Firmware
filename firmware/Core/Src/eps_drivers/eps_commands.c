@@ -6,6 +6,7 @@
 #include "eps_drivers/eps_types.h"
 #include "eps_drivers/eps_internal_drivers.h"
 #include "eps_drivers/eps_struct_packers.h"
+#include "eps_drivers/eps_power_management.h"
 #include "stm_drivers/timing_helpers.h"
 
 
@@ -104,6 +105,7 @@ uint8_t EPS_CMD_output_bus_group_state(uint16_t ch_bitfield,  uint16_t ch_extend
 	cmd_buf[7] = ch_extended_bitfield >> 8;
 
 	const uint8_t comms_err = EPS_send_cmd_get_response(cmd_buf, cmd_len, rx_buf, rx_len);
+	if (comms_err == 0) saved_pdu = 0;
 	return comms_err;
 }
 
