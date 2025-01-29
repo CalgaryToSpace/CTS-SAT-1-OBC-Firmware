@@ -443,6 +443,8 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func = TEST_EXEC__CRYPT_compute_sha256_hash,
         .test_file = "unit_tests/test_sha256",
         .test_func_name = "TEST_EXEC__CRYPT_compute_sha256_hash",
+    },
+    {
         .test_func = TEST_EXEC__test_crc_empty,
         .test_file = "crc/crc",
         .test_func_name = "GEN_crc32_checksum"

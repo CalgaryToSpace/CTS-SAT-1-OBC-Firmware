@@ -24,14 +24,13 @@
 #include "telecommands/eps_telecommands.h"
 #include "telecommands/stm32_internal_flash_telecommand_defs.h"
 #include "telecommands/comms_telecommand_defs.h"
+#include "telecommands/telecommand_crc.h"
 #include "telecommands/gps_telecommand_defs.h"
 
 
 #include "timekeeping/timekeeping.h"
 #include "littlefs/littlefs_helper.h"
 #include "stm32/stm32_reboot_reason.h"
-#include "crc/crc.h"
-#include "telecommands/telecommand_crc.h"
 
 #include <stdio.h>
 #include <stdint.h>

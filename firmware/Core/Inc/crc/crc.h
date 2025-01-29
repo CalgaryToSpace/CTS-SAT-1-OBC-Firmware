@@ -15,6 +15,5 @@ Final Xor value: 0
 #include "stm32l4xx_hal.h"
 
 // Function prototypes
-uint8_t checkPowerofTwo(uint32_t x);
-uint32_t GEN_crc32_checksum(CRC_HandleTypeDef *hcrc,uint8_t *input_arr, uint32_t input_arr_len);
+uint32_t GEN_crc32_checksum(CRC_HandleTypeDef *hcrc,uint8_t *input_message, uint32_t input_message_len);
 #endif /* __CRC_H */
