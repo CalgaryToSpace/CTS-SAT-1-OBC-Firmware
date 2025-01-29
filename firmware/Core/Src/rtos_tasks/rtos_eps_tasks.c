@@ -14,7 +14,7 @@
 #include <inttypes.h>
 #include <stdint.h>
 
-
+uint32_t watchdog_timer = 7000, EPS_monitor_timer = 1000;       //TODO: Set watchdog timer and EPS monitor timer
 
 /**
  * @brief Services the EPS watchdog periodically.

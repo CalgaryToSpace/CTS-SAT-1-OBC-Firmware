@@ -2,7 +2,10 @@
 #include "eps_drivers/eps_power_management.h"
 
 EPS_struct_pdu_housekeeping_data_eng_t prev_EPS_pdu_housekeeping_data_eng;
-uint8_t saved_pdu = 0;
+uint32_t power_cW_threshhold = 1000;                             //TODO: Set PDU thresh hold
+uint32_t voltage_mV_threshhold = 1000;
+uint32_t current_mA_threshhold = 1000;
+uint32_t disableable_channels = 0x0001ffff;
 
 /**
  * @brief Monitors the power consumption of each channel and logs the data in JSON format.
@@ -16,6 +19,8 @@ uint8_t saved_pdu = 0;
  * @return 0 if the function was successful, 1 if there was an error.
  */
 uint8_t EPS_power_monitoring() {
+
+    static uint8_t saved_pdu = 0;
 
     EPS_struct_pdu_housekeeping_data_eng_t EPS_pdu_housekeeping_data_eng;
 
