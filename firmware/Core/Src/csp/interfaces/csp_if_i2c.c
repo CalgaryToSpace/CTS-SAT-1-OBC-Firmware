@@ -23,11 +23,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <csp/csp.h>
 #include <csp/csp_endian.h>
 
+#include <log/log.h>
+
 // Ensure certain fields in the csp_i2c_frame_t matches the fields in the csp_packet_t
 CSP_STATIC_ASSERT(offsetof(csp_i2c_frame_t, len) == offsetof(csp_packet_t, length), len_field_misaligned);
 CSP_STATIC_ASSERT(offsetof(csp_i2c_frame_t, data) == offsetof(csp_packet_t, id), data_field_misaligned);
 
 int csp_i2c_tx(const csp_route_t * ifroute, csp_packet_t * packet) {
+	LOG_message(
+		LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_UHF_RADIO),
+		"Within csp_i2c_tx(...)."
+	);
 
 	/* Cast the CSP packet buffer into an i2c frame */
 	csp_i2c_frame_t * frame = (csp_i2c_frame_t *) packet;
