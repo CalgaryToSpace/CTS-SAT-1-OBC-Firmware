@@ -7,7 +7,7 @@
 #include "timekeeping/timekeeping.h"
 #include "log/log.h"
 #include "transforms/arrays.h"
-#include "configuration.h"
+#include "config/configuration.h"
 
 #include <stdio.h>
 #include <stdint.h>
