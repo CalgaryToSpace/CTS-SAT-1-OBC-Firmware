@@ -10,8 +10,9 @@ extern uint32_t TCMD_require_valid_sha256;
 uint32_t CONFIG_int_demo_var_1 = 13345;
 uint32_t CONFIG_int_demo_var_2 = 242344;
 
-//run tssent if if true
-extern uint32_t TCMD_require_unique_tssent;
+// extern
+// 1 = require, 0 = don't require
+uint32_t TCMD_require_unique_tssent = 0;
 
 /// @brief The percentage of the stack space that should remain free. If the free space falls
 /// below this percentage, a warning will be logged.
@@ -115,10 +116,6 @@ uint8_t CONFIG_set_int_variable(const char *var_name, const uint64_t new_value)
     }
     CONFIG_integer_config_entry_t config_var = CONFIG_int_config_variables[index];
 
-    if (strcmp(config_var.variable_name, "TCMD_require_unique_tssent") == 0 && (new_value != 0 && new_value != 1))
-    {
-        return 3; 
-    }
 
     *config_var.num_config_var = new_value;
     return 0;
@@ -186,4 +183,3 @@ uint16_t CONFIG_str_var_to_json(const char *var_name, char *json_str, const uint
         json_str, json_str_max_len, "{\"name\":\"%s\",\"value\":\"%s\"}\n",
         config_var.variable_name, config_var.variable_pointer);
 }
-

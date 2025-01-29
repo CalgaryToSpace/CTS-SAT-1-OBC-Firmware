@@ -35,7 +35,8 @@ extern CONFIG_string_config_entry_t CONFIG_str_config_variables[];
 // extern
 extern const uint8_t CONFIG_str_config_variables_count;
 
-extern CONFIG_integer_config_entry_t CONFIG_is_tssnent_needed;
+// extern
+extern uint32_t TCMD_require_unique_tssent;
 
 int16_t CONFIG_get_int_var_index(const char *search_name);
 
