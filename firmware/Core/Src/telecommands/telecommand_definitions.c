@@ -30,8 +30,8 @@
 #include "timekeeping/timekeeping.h"
 #include "littlefs/littlefs_helper.h"
 #include "stm32/stm32_reboot_reason.h"
-#include "telecommands/crc.h"
-#include "telecommands/telecommand_test_crc.h"
+#include "crc/crc.h"
+#include "telecommands/telecommand_crc.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -111,6 +111,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "crc",
         .tcmd_func = TCMDEXEC_crc,
         .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
 
     },
     {

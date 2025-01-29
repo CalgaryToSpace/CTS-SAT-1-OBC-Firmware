@@ -9,10 +9,11 @@
 #include <string.h>
 #include <inttypes.h>
 
+// Function only works with Hex input messages.
 uint8_t TCMDEXEC_crc(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf,
                         uint16_t response_output_buf_len)
 {
-    uint8_t buffer[256];
+    uint8_t buffer[1024];
     uint16_t result_length = 0;
     // Extract the first argument from the string (parsed into buffer)
     const uint8_t parse_result = TCMD_extract_hex_array_arg(args_str, 0, buffer, sizeof(buffer), &result_length);

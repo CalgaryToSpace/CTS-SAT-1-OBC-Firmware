@@ -31,7 +31,7 @@
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_internal_drivers.h"
 #include "littlefs/flash_driver.h"
-#include "telecommands/crc.h"
+#include "crc/crc.h"
 
 /* USER CODE END Includes */
 
