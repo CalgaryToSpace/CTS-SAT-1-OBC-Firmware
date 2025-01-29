@@ -90,12 +90,6 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 0,
     },
     {
-        .tcmd_name = "crc",
-        .tcmd_func = TCMDEXEC_crc,
-        .number_of_args = 1,
-
-    },
-    {
         .tcmd_name = "set_obc_time_based_on_eps_time",
         .tcmd_func = TCMDEXEC_set_obc_time_based_on_eps_time,
         .number_of_args = 0,
