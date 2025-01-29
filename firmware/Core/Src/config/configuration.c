@@ -116,7 +116,6 @@ uint8_t CONFIG_set_int_variable(const char *var_name, const uint64_t new_value)
     }
     CONFIG_integer_config_entry_t config_var = CONFIG_int_config_variables[index];
 
-
     *config_var.num_config_var = new_value;
     return 0;
 }
