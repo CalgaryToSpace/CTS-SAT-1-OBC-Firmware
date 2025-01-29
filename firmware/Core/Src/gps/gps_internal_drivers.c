@@ -124,17 +124,15 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
 	}
 
 	// Copy the log response from the UART gps buffer to the rx_buf[] and clear the buffer
-    for (uint16_t i = 0; i < rx_buf_len; i++) {
+    for (uint16_t i = 0; i < UART_gps_buffer_write_idx; i++) {
 		rx_buf[i] = UART_gps_buffer[i];
 	}
 
-    // Reset the GPS UART interrupt variables
-    // TODO: Needs to be tested
-	for (uint16_t i = 0; i < UART_gps_buffer_len; i++)
-	{
-		UART_gps_buffer[i] = 0;
-	}
-	UART_gps_buffer_write_idx = 0;
+	LOG_message(
+		LOG_SYSTEM_GPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "rx_buf: %s",
+        rx_buf
+	);
 
 	return 0;
 }
