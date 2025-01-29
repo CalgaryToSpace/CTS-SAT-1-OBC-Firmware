@@ -8,6 +8,8 @@
 
 #include "log/log.h"
 
+#include "main.h"
+
 // TODO: confirm global or not
 csp_conf_t csp_conf_value_1 = {
     .address = 1,                       // Unique CSP address of the cubesat
@@ -92,59 +94,115 @@ uint8_t CSP_demo_1() {
     // From AX100 User Manual:
     // TODO: try csp_sendto(CSP_PRIO_LOW, 10, 31, 0, CSP_O_NONE, beacon, 0);
 
-    LOG_message(
-        LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "Starting CSP_demo_1()"
-    );
+    // LOG_message(
+    //     LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+    //     "Starting CSP_demo_1()"
+    // );
 
-    char demo_packet_1[] = "Hello World!";
+    // char demo_packet_1[] = "help";
 
-    csp_conn_t * conn = csp_conn_allocate(CONN_CLIENT);
+    // csp_conn_t * conn = csp_conn_allocate(CONN_SERVER);
 
-    if (conn == NULL) {
-        LOG_message(
-            LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_ERROR, LOG_SINK_ALL, // FIXME: disable logging to UHF probably
-            "Could not allocate connection for demo 1"
-        );
-        return 10;
+    // if (conn == NULL) {
+    //     LOG_message(
+    //         LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_ERROR, LOG_SINK_ALL, // FIXME: disable logging to UHF probably
+    //         "Could not allocate connection for demo 1"
+    //     );
+    //     return 10;
+    // }
+
+    // csp_packet_t * packet = csp_buffer_get(256);
+
+
+    // if (packet == NULL) {
+    //     LOG_message(
+    //         LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+    //         "Could not allocate packet for demo 1"
+    //     );
+    //     return 10;
+    // }
+
+    // // Copy into packet.
+    // memcpy(packet->data, &demo_packet_1, sizeof(demo_packet_1));
+    // packet->length = sizeof(demo_packet_1);
+
+    // const int ret = csp_send(
+    //     conn,
+    //     packet,
+    //     1000 // FIXME: timeout
+    // );
+
+    // if (ret != 1) {
+    //     LOG_message(
+    //         LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+    //         "Could not send packet for demo 1. Returned %d.",
+    //         ret
+    //     );
+    //     csp_buffer_free(packet);
+    //     return 20;
+    // }
+
+    // LOG_message(
+    //     LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+    //     "Sent demo_1 packet. Returned %d.",
+    //     ret // Is always 1 by now.
+    // );
+
+    // return 0;
+
+    int8_t txBuffer[16];
+    uint8_t rxBuffer[16];
+    HAL_StatusTypeDef ret;
+
+    /* Example Command: Set CSP Node Address to 5 */
+    txBuffer[0] = 0x00;  // Address in AX100 parameter memory for 'csp_node'
+    txBuffer[1] = 0x01;  // Value to set (CSP Node ID)
+
+
+    const uint16_t AX100_I2C_ADDRESS = 0x05;
+    
+                 LOG_message(
+             LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+             "First"
+            );
+    /* Transmit the command */
+    ret = HAL_I2C_Master_Transmit(&hi2c2, AX100_I2C_ADDRESS << 1, txBuffer, 2, HAL_MAX_DELAY);
+    if (ret != HAL_OK) {
+ LOG_message(
+             LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+             "Failed Transmit. Ret: %d",
+             ret
+            );
+       return 1; 
     }
-
-    csp_packet_t * packet = csp_buffer_get(256);
-
-
-    if (packet == NULL) {
-        LOG_message(
-            LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "Could not allocate packet for demo 1"
-        );
-        return 10;
+LOG_message(
+             LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+             "Second"
+            );
+    /* Read back to verify */
+    ret = HAL_I2C_Master_Receive(&hi2c2, AX100_I2C_ADDRESS << 1, rxBuffer, 2, HAL_MAX_DELAY);
+LOG_message(
+             LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+             "Third"
+            );
+    if (ret == HAL_OK) {
+        // Successfully read data
+        if (rxBuffer[1] == 0x05) {
+            // Verification successful
+             LOG_message(
+             LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+             "Success, is 5. Returned %d. rxBuffer: %s",
+             ret,
+             rxBuffer
+            );
+        }
+    } else {
+         LOG_message(
+             LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+             "Could not send packet for demo 1. Returned %d.",
+             ret
+         );
     }
-
-    // Copy into packet.
-    memcpy(packet->data, &demo_packet_1, sizeof(demo_packet_1));
-    packet->length = sizeof(demo_packet_1);
-
-    const int ret = csp_send(
-        conn,
-        packet,
-        1000 // FIXME: timeout
-    );
-
-    if (ret != 1) {
-        LOG_message(
-            LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "Could not send packet for demo 1. Returned %d.",
-            ret
-        );
-        csp_buffer_free(packet);
-        return 20;
-    }
-
-    LOG_message(
-        LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
-        "Sent demo_1 packet. Returned %d.",
-        ret // Is always 1 by now.
-    );
 
     return 0;
 }
