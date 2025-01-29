@@ -2,6 +2,7 @@
 #include "eps_drivers/eps_power_management.h"
 
 EPS_struct_pdu_housekeeping_data_eng_t prev_EPS_pdu_housekeeping_data_eng;
+uint8_t saved_pdu = 0;
 
 /**
  * @brief Monitors the power consumption of each channel and logs the data in JSON format.
@@ -15,8 +16,6 @@ EPS_struct_pdu_housekeeping_data_eng_t prev_EPS_pdu_housekeeping_data_eng;
  * @return 0 if the function was successful, 1 if there was an error.
  */
 uint8_t EPS_power_monitoring() {
-    
-    static uint8_t saved_pdu = 0;
 
     EPS_struct_pdu_housekeeping_data_eng_t EPS_pdu_housekeeping_data_eng;
 

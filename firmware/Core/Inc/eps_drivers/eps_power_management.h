@@ -13,6 +13,7 @@
 #include "config/configuration.h"
 
 extern EPS_struct_pdu_housekeeping_data_eng_t prev_EPS_pdu_housekeeping_data_eng;
+extern uint8_t saved_pdu;
 
 uint8_t EPS_power_monitoring();
 
