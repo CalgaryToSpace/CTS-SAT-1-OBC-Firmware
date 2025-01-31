@@ -9,5 +9,6 @@ void GPIO_EXTI_Init(void) {
 }
 
 void Disable_GPIO_EXTI(void) {
+    GPS_pps_counter = 0;
     HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
 }
