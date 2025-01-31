@@ -1,5 +1,5 @@
-#ifndef __INCLUDE_GUARD__CONFIGURATION_H
-#define __INCLUDE_GUARD__CONFIGURATION_H
+#ifndef INCLUDE_GUARD__CONFIGURATION_H
+#define INCLUDE_GUARD__CONFIGURATION_H
 
 #include <stdint.h>
 
@@ -47,4 +47,4 @@ uint16_t CONFIG_int_var_to_json(const char *config_var, char *json_str, const ui
 
 uint16_t CONFIG_str_var_to_json(const char *var_name, char *json_str, const uint16_t json_str_max_len);
 
-#endif //  __INCLUDE_GUARD__CONFIGURATION_H
+#endif //  INCLUDE_GUARD__CONFIGURATION_H

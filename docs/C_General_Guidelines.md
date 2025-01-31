@@ -5,7 +5,7 @@ These are general guidelines all the C code should follow within this repository
 * Variable names should be snake case (e.g., `packet_buffer`, not `packetBuffer`).
 * Cross-file variable/function names should the namespace conventions in:  `docs/C_Namespaces.md`
     * E.g., all EPS-related functions should start with `EPS_`.
-* Include guards should follow the style `__INCLUDE_GUARD__FILE_NAME_H__`.
+* Include guards should follow the style `INCLUDE_GUARD__FILE_NAME_H`.
 
 ## Best Coding Practices
 * Please use braces around all `if/else/while/for`, even if the body is only a single line.

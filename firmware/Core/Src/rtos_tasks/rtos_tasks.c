@@ -20,6 +20,8 @@
 #include <time.h>
 
 uint8_t TASK_heartbeat_is_on = 1;
+
+/// @brief The period of the heartbeat task, in milliseconds. 0 to disable.
 uint32_t TASK_heartbeat_period_ms = 990;
 
 char TASK_heartbeat_timing_str[128] = {0};

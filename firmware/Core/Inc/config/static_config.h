@@ -1,6 +1,6 @@
 
-#ifndef __INCLUDE_GUARD__STATIC_CONFIG_H__
-#define __INCLUDE_GUARD__STATIC_CONFIG_H__
+#ifndef INCLUDE_GUARD__STATIC_CONFIG_H__
+#define INCLUDE_GUARD__STATIC_CONFIG_H__
 
 #include <stdint.h>
 
@@ -12,4 +12,4 @@ static const uint8_t FLASH_enable_hot_path_debug_logs = 0;
 /// Default: 0 (disabled)
 static const uint8_t LFS_enable_hot_path_debug_logs = 0;
 
-#endif /* __INCLUDE_GUARD__STATIC_CONFIG_H__ */
+#endif /* INCLUDE_GUARD__STATIC_CONFIG_H__ */
