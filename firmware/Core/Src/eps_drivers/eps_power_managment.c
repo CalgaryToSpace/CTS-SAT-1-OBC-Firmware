@@ -1,11 +1,16 @@
 
 #include "eps_drivers/eps_power_management.h"
 
-EPS_struct_pdu_housekeeping_data_eng_t prev_EPS_pdu_housekeeping_data_eng;
-uint32_t power_cW_threshhold = 1000;                             //TODO: Set PDU thresh hold
-uint32_t voltage_mV_threshhold = 1000;
-uint32_t current_mA_threshhold = 1000;
 uint32_t disableable_channels = 0x0001ffff;
+uint16_t current_mA_threshhold[32]= 
+    {1000, 1000, 1000, 1000, 
+    1000, 1000, 1000, 1000, 
+    1000, 1000, 1000, 1000, 
+    1000, 1000, 1000, 1000, 
+    1000, 1000, 1000, 1000, 
+    1000, 1000, 1000, 1000, 
+    1000, 1000, 1000, 1000, 
+    1000, 1000, 1000, 1000};
 
 /**
  * @brief Monitors the power consumption of each channel and logs the data in JSON format.
@@ -19,8 +24,6 @@ uint32_t disableable_channels = 0x0001ffff;
  * @return 0 if the function was successful, 1 if there was an error.
  */
 uint8_t EPS_power_monitoring() {
-
-    static uint8_t saved_pdu = 0;
 
     EPS_struct_pdu_housekeeping_data_eng_t EPS_pdu_housekeeping_data_eng;
 
@@ -37,19 +40,9 @@ uint8_t EPS_power_monitoring() {
         return 2;
     }
 
-    //Save the first PDU data
-    if (!saved_pdu) {
-        prev_EPS_pdu_housekeeping_data_eng = EPS_pdu_housekeeping_data_eng;
-        
-        saved_pdu = 1;
-        return 0;
-    }
-
     uint8_t logging_status = EPS_log_pdu_json(&EPS_pdu_housekeeping_data_eng);
 
-    EPS_channel_managment(&EPS_pdu_housekeeping_data_eng, &prev_EPS_pdu_housekeeping_data_eng);
-
-    prev_EPS_pdu_housekeeping_data_eng = EPS_pdu_housekeeping_data_eng;
+    EPS_channel_managment(&EPS_pdu_housekeeping_data_eng);
     
     return logging_status;
 }
@@ -103,29 +96,19 @@ uint8_t EPS_log_pdu_json(const EPS_struct_pdu_housekeeping_data_eng_t *EPS_pdu_h
  *       If the power consumption has increased or decreased by more than the threshold, the channel will be disabled.
  *       The function will log an error message if the channel is disabled due to a power issue.
  */
-void EPS_channel_managment(const EPS_struct_pdu_housekeeping_data_eng_t *EPS_pdu_housekeeping_data_eng, const EPS_struct_pdu_housekeeping_data_eng_t *prev_EPS_pdu_housekeeping_data_eng) {
+void EPS_channel_managment(const EPS_struct_pdu_housekeeping_data_eng_t *EPS_pdu_housekeeping_data_eng) {
 
     EPS_vpid_eng_t vpid_eng[32];
     memcpy(vpid_eng, EPS_pdu_housekeeping_data_eng->vip_each_channel, sizeof(EPS_vpid_eng_t) * 32);
 
-    EPS_vpid_eng_t prev_vpid_eng[32];
-    memcpy(prev_vpid_eng, prev_EPS_pdu_housekeeping_data_eng->vip_each_channel, sizeof(EPS_vpid_eng_t) * 32);
-
-    uint32_t ch_bitfield = (EPS_pdu_housekeeping_data_eng->stat_ch_ext_on_bitfield << 16) & EPS_pdu_housekeeping_data_eng->stat_ch_on_bitfield;
-
-    uint32_t prev_ch_bitfield = (prev_EPS_pdu_housekeeping_data_eng->stat_ch_ext_on_bitfield << 16) & prev_EPS_pdu_housekeeping_data_eng->stat_ch_on_bitfield; 
+    uint32_t ch_bitfield = (EPS_pdu_housekeeping_data_eng->stat_ch_ext_on_bitfield << 16) & EPS_pdu_housekeeping_data_eng->stat_ch_on_bitfield; 
 
     uint32_t modifiable_disableable_bitfield = disableable_channels;
     //Power Monitoring
     for (int channel = 0; channel < 32; channel++) {
 
-        if ((modifiable_disableable_bitfield & 1) && (ch_bitfield & 1) && (prev_ch_bitfield & 1)//Check if channel is enabled
-            && ((uint16_t) (vpid_eng[channel].power_cW - prev_vpid_eng[channel].power_cW) > power_cW_threshhold             
-            || (uint16_t) (vpid_eng[channel].voltage_mV - prev_vpid_eng[channel].voltage_mV) > voltage_mV_threshhold
-            || (uint16_t) (vpid_eng[channel].power_cW - prev_vpid_eng[channel].power_cW) < -power_cW_threshhold
-            || (uint16_t) (vpid_eng[channel].voltage_mV - prev_vpid_eng[channel].voltage_mV) < -voltage_mV_threshhold
-            || (uint16_t) vpid_eng[channel].current_mA > current_mA_threshhold
-            || vpid_eng[channel].current_mA <= 0)) {
+        if ((modifiable_disableable_bitfield & 1) && (ch_bitfield & 1)//Check if channel is enabled
+            && ((uint16_t) vpid_eng[channel].current_mA > current_mA_threshhold[channel])) {
 
             uint8_t disable_result = EPS_CMD_output_bus_channel_off(channel);
 
@@ -141,7 +124,10 @@ void EPS_channel_managment(const EPS_struct_pdu_housekeeping_data_eng_t *EPS_pdu
             );
         }
         ch_bitfield = ch_bitfield >> 1;
-        prev_ch_bitfield = prev_ch_bitfield >> 1;
         modifiable_disableable_bitfield = modifiable_disableable_bitfield >> 1;
     }
+}
+
+void EPS_CMD_power_managment_set_current_threshold(uint8_t channel, uint16_t threshold) {
+    current_mA_threshhold[channel] = threshold;
 }

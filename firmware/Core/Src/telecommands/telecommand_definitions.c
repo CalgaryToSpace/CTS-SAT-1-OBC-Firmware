@@ -857,6 +857,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
+    {
+        .tcmd_name = "eps_power_managment_set_current_threshold",
+        .tcmd_func = TCMDEXEC_eps_power_managment_set_current_threshold,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
     /* *************************** END EPS Section ************************************** */
     
     

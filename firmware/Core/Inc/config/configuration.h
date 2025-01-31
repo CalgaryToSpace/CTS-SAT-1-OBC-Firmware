@@ -20,11 +20,7 @@ static const uint8_t CONFIG_MAX_VARIABLE_NAME_LENGTH = 50;
 
 static const uint8_t CONFIG_MAX_JSON_STRING_LENGTH = UINT8_MAX;
 
-extern uint32_t power_cW_threshhold;
-extern uint32_t voltage_mV_threshhold;
-extern uint32_t current_mA_threshhold;
 extern uint32_t disableable_channels;
-
 extern uint32_t watchdog_timer, EPS_monitor_timer;
 
 // extern

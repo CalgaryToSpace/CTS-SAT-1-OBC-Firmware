@@ -33,18 +33,6 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
     },
     //EPS Power Management Config
     {
-        .variable_name = "power_cW_threshhold",
-        .num_config_var = &power_cW_threshhold,
-    },
-    {
-        .variable_name = "voltage_mV_threshhold",
-        .num_config_var = &voltage_mV_threshhold,
-    },
-    {
-        .variable_name = "current_mA_threshhold",
-        .num_config_var = &current_mA_threshhold,
-    },
-    {
         .variable_name = "disableable_channels",
         .num_config_var = &disableable_channels,
     },
