@@ -3,6 +3,7 @@
 #include "eps_drivers/eps_types_to_json.h"
 #include "eps_drivers/eps_channel_control.h"
 #include "eps_drivers/eps_time.h"
+#include "eps_drivers/eps_power_management.h"
 #include "telecommands/eps_telecommands.h"
 #include "telecommands/telecommand_args_helpers.h"
 
@@ -518,5 +519,52 @@ uint8_t TCMDEXEC_eps_get_piu_housekeeping_data_run_avg_json(
             "EPS_struct_piu_housekeeping_data_eng_TO_json failed (err %d)", result_json);
         return 2;
     }
+    return 0;
+}
+
+/// @brief Sets the EPS power managment threshold for the current of a specific channel.
+/// @param args_str 
+/// - Arg 0: The channel name or number (string).
+/// - Arg 1: Threshhold current (in mA) to set.
+/// @return 0 on success, >0 on failure
+/// @note Valid string values for Arg 0: "vbatt_stack", "stack_5v", "stack_3v3", "camera",
+///     "uhf_antenna_deploy", "lora_module", "mpi", "boom".
+uint8_t TCMDEXEC_eps_power_managment_set_current_threshold(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    // Extract Arg 0: The channel name/number.
+    char channel_str[30];
+    const uint8_t arg_0_result = TCMD_extract_string_arg(args_str, 0, channel_str, sizeof(channel_str));
+    if (arg_0_result != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error parsing channel arg: Error %d", arg_0_result);
+        return 1;
+    }
+
+    // Extract Arg 1: Threshold current (in mA) to set.
+    uint64_t current_threshold = 0;
+    const uint8_t arg_1_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &current_threshold);
+    if (arg_1_result != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error parsing enabled arg: Error %d", arg_1_result);
+        return 2;
+    }
+    
+    // Convert the channel string to an enum value.
+    const EPS_CHANNEL_enum_t eps_channel = EPS_channel_from_str(channel_str);
+    if (eps_channel == EPS_CHANNEL_UNKNOWN) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Unknown channel: %s", channel_str);
+        return 4;
+    }
+
+    EPS_CMD_power_managment_set_current_threshold(eps_channel, current_threshold);
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "EPS_CMD_power_managment_set_current_threshold: Channel %s, %ld", channel_str,  (uint32_t) current_threshold);
     return 0;
 }

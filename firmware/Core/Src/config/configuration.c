@@ -33,6 +33,20 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
         .variable_name = "TASK_heartbeat_period_ms",
         .num_config_var = &TASK_heartbeat_period_ms,
     },
+    //EPS Power Management Config
+    {
+        .variable_name = "disableable_channels",
+        .num_config_var = &disableable_channels,
+    },
+    //Timer Config
+    {
+        .variable_name = "watchdog_timer",
+        .num_config_var = &watchdog_timer,
+    },
+    {
+        .variable_name = "EPS_monitor_timer",
+        .num_config_var = &EPS_monitor_timer,
+    },
     {
         .variable_name = "TCMD_require_valid_sha256",
         .num_config_var = &TCMD_require_valid_sha256,
