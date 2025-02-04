@@ -559,7 +559,7 @@ uint8_t TCMDEXEC_eps_power_managment_set_current_threshold(
         snprintf(
             response_output_buf, response_output_buf_len,
             "Unknown channel: %s", channel_str);
-        return 4;
+        return 3;
     }
 
     EPS_CMD_power_managment_set_current_threshold(eps_channel, current_threshold);
