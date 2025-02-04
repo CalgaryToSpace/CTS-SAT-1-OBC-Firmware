@@ -1,16 +1,7 @@
 #ifndef INCLUDE_GUARD__EPS_POWER_MANAGMENT_H__
 #define INCLUDE_GUARD__EPS_POWER_MANAGMENT_H__
 
-#include <string.h>
-#include <stdint.h>
-#include <stdio.h>
-
-#include "rtos_tasks/rtos_eps_tasks.h"
-#include "eps_drivers/eps_types_to_json.h"
 #include "eps_drivers/eps_types.h"
-#include "eps_drivers/eps_commands.h"
-#include "log/log.h"
-#include "config/configuration.h"
 
 extern uint16_t current_mA_threshhold[32];
 

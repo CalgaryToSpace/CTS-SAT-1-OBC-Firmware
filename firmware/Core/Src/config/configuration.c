@@ -10,6 +10,9 @@ extern uint32_t TCMD_require_valid_sha256;
 uint32_t CONFIG_int_demo_var_1 = 13345;
 uint32_t CONFIG_int_demo_var_2 = 242344;
 
+uint32_t toggleable_channels = 0x0001ffff;
+uint32_t watchdog_timer = 7000, EPS_monitor_timer = 1000;       //TODO: Set watchdog timer and EPS monitor timer
+
 // extern
 // 1 = require, 0 = don't require
 uint32_t TCMD_require_unique_tssent = 0;
@@ -35,8 +38,8 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
     },
     //EPS Power Management Config
     {
-        .variable_name = "disableable_channels",
-        .num_config_var = &disableable_channels,
+        .variable_name = "toggleable_channels",
+        .num_config_var = &toggleable_channels,
     },
     //Timer Config
     {

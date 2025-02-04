@@ -1,7 +1,16 @@
 
 #include "eps_drivers/eps_power_management.h"
 
-uint32_t disableable_channels = 0x0001ffff;
+#include <string.h>
+#include <stdint.h>
+#include <stdio.h>
+
+#include "rtos_tasks/rtos_eps_tasks.h"
+#include "eps_drivers/eps_types_to_json.h"
+#include "eps_drivers/eps_commands.h"
+#include "log/log.h"
+#include "config/configuration.h"
+
 uint16_t current_mA_threshhold[32]= 
     {1000, 1000, 1000, 1000, 
     1000, 1000, 1000, 1000, 
@@ -12,17 +21,15 @@ uint16_t current_mA_threshhold[32]=
     1000, 1000, 1000, 1000, 
     1000, 1000, 1000, 1000};
 
-/**
- * @brief Monitors the power consumption of each channel and logs the data in JSON format.
- *
- * @details This function will obtain the PDU housekeeping data and log the data in JSON format.
- *          If this is the first time the function is called, it will save the data for future comparisons.
- *          It will then check if the power consumption has increased or decreased by more than a certain threshold.
- *          If it has, it will disable the channel and log an error message.
- *          The function will log an error message if the channel is disabled due to a power issue.
- *
- * @return 0 if the function was successful, 1 if there was an error.
- */
+/// @brief Monitors the power consumption of each channel and logs the data in JSON format.
+///
+/// @details This function will obtain the PDU housekeeping data and log the data in JSON format.
+///          If this is the first time the function is called, it will save the data for future comparisons.
+///          It will then check if the power consumption has increased or decreased by more than a certain threshold.
+///          If it has, it will disable the channel and log an error message.
+///          The function will log an error message if the channel is disabled due to a power issue.
+/// 
+/// @return 0 if the function was successful, 1 if there was an error.
 uint8_t EPS_power_monitoring() {
 
     EPS_struct_pdu_housekeeping_data_eng_t EPS_pdu_housekeeping_data_eng;
@@ -47,21 +54,16 @@ uint8_t EPS_power_monitoring() {
     return logging_status;
 }
 
-
-/**
- * @brief Logs the PDU housekeeping data in JSON format
- *
- * @param[in] EPS_pdu_housekeeping_data_eng PDU housekeeping data to be logged
- *
- * @note This function will log the PDU housekeeping data in JSON format to the error log.
- *       If the conversion to JSON fails, it will log an error with the error status.
- *       Otherwise, it will log the JSON string to the error log.
- */
+/// @brief Logs the PDU housekeeping data in JSON format
+/// @param[in] EPS_pdu_housekeeping_data_eng PDU housekeeping data to be logged
+/// @note This function will log the PDU housekeeping data in JSON format to the error log.   
+///     If the conversion to JSON fails, it will log an error with the error status.    
+///     Otherwise, it will log the JSON string to the error log.
 uint8_t EPS_log_pdu_json(const EPS_struct_pdu_housekeeping_data_eng_t *EPS_pdu_housekeeping_data_eng) {
 
-    char json_str[1000];
+    char json_str[800];
 
-    //Power Logging
+    //Power Logging                                                        
     int8_t pdu_TO_JSON_status = EPS_struct_pdu_housekeeping_data_eng_TO_json(EPS_pdu_housekeeping_data_eng, json_str, 1000);
 
     if (pdu_TO_JSON_status != 0) {
@@ -86,16 +88,12 @@ uint8_t EPS_log_pdu_json(const EPS_struct_pdu_housekeeping_data_eng_t *EPS_pdu_h
     return 0;
 }
 
-/**
- * @brief Monitor the power consumption of each channel and disable any channels that exceed a certain threshold
- *
- * @param[in] EPS_pdu_housekeeping_data_eng PDU housekeeping data with the current power consumption of each channel
- * @param[in] prev_EPS_pdu_housekeeping_data_eng Previous PDU housekeeping data with the previous power consumption of each channel
- *
- * @note This function will iterate over each channel and check if the power consumption has increased or decreased by more than a certain threshold.
- *       If the power consumption has increased or decreased by more than the threshold, the channel will be disabled.
- *       The function will log an error message if the channel is disabled due to a power issue.
- */
+/// @brief Monitor the power consumption of each channel and disable any channels that exceed a certain threshold
+/// @param[in] EPS_pdu_housekeeping_data_eng PDU housekeeping data with the current power consumption of each channel
+/// @param[in] prev_EPS_pdu_housekeeping_data_eng Previous PDU housekeeping data with the previous power consumption of each chan///
+/// @note This function will iterate over each channel and check if the power consumption has increased or decreased by more than a certain threshold.
+///       If the power consumption has increased or decreased by more than the threshold, the channel will be disabled.
+///       The function will log an error message if the channel is disabled due to a power issue.
 void EPS_channel_managment(const EPS_struct_pdu_housekeeping_data_eng_t *EPS_pdu_housekeeping_data_eng) {
 
     EPS_vpid_eng_t vpid_eng[32];
@@ -103,11 +101,11 @@ void EPS_channel_managment(const EPS_struct_pdu_housekeeping_data_eng_t *EPS_pdu
 
     uint32_t ch_bitfield = (EPS_pdu_housekeeping_data_eng->stat_ch_ext_on_bitfield << 16) & EPS_pdu_housekeeping_data_eng->stat_ch_on_bitfield; 
 
-    uint32_t modifiable_disableable_bitfield = disableable_channels;
+    uint32_t modifiable_toggleable_bitfield = toggleable_channels;
     //Power Monitoring
     for (int channel = 0; channel < 32; channel++) {
 
-        if ((modifiable_disableable_bitfield & 1) && (ch_bitfield & 1)//Check if channel is enabled
+        if ((modifiable_toggleable_bitfield & 1) && (ch_bitfield & 1)//Check if channel is enabled
             && ((uint16_t) vpid_eng[channel].current_mA > current_mA_threshhold[channel])) {
 
             uint8_t disable_result = EPS_CMD_output_bus_channel_off(channel);
@@ -124,7 +122,7 @@ void EPS_channel_managment(const EPS_struct_pdu_housekeeping_data_eng_t *EPS_pdu
             );
         }
         ch_bitfield = ch_bitfield >> 1;
-        modifiable_disableable_bitfield = modifiable_disableable_bitfield >> 1;
+        modifiable_toggleable_bitfield = modifiable_toggleable_bitfield >> 1;
     }
 }
 

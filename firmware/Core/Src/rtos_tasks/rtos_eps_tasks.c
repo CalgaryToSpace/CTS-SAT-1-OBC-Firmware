@@ -14,19 +14,12 @@
 #include <inttypes.h>
 #include <stdint.h>
 
-uint32_t watchdog_timer = 7000, EPS_monitor_timer = 1000;       //TODO: Set watchdog timer and EPS monitor timer
-
-/**
- * @brief Services the EPS watchdog periodically.
- *
- * The task services the watchdog periodically. If the task does not run for longer than
- * TTC_WDG_TIMEOUT, the peripheral reset will occur and communication with the EPS will be
- * interrupted. The TTC_WDG_TIMEOUT is set to 300s in the ISIS EPS2.
- *
- * The task also periodically checks the power consumption of the satellite and disables any
- * channels that exceed a certain threshold.
- *.
- */
+/// @brief Services the EPS watchdog periodically.
+/// The task services the watchdog periodically. If the task does not run for longer than
+/// TTC_WDG_TIMEOUT, the peripheral reset will occur and communication with the EPS will be
+/// interrupted. The TTC_WDG_TIMEOUT is set to 300s in the ISIS EPS2.
+/// The task also periodically checks the power consumption of the satellite and disables any
+/// channels that exceed a certain threshold.
 void TASK_service_eps_watchdog(void *argument) {
     TASK_HELP_start_of_task();
     // This task should sleep for 0.25*TTC_WDG_TIMEOUT = 75s to avoid the peripheral reset

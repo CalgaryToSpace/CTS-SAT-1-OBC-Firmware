@@ -6,7 +6,6 @@
 #include "eps_drivers/eps_types.h"
 #include "eps_drivers/eps_internal_drivers.h"
 #include "eps_drivers/eps_struct_packers.h"
-#include "eps_drivers/eps_power_management.h"
 #include "stm_drivers/timing_helpers.h"
 
 
