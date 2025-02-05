@@ -21,6 +21,15 @@
 **4) `CONFIG_str_config_variables_count`**:  
  The number of string configuration variables in the `CONFIG_str_config_variables[]` array.
 
+**5) `toggleable_channels`**:  
+ 32 bit number with each bit representing a channel (0-31). 1 indicates that the eps power managment can toggle the channel off and 0 indicating it can't.
+
+**6) `watchdog_timer`**:  
+ The time in ms in which the system will reset the watchdog timer.
+
+**7) `EPS_monitor_timer`**:  
+ The time in ms in which the system will check the channels connected to the EPS and toggle them off in case of errors. 
+
 ---
 
 ## Configuration Variable Arrays
