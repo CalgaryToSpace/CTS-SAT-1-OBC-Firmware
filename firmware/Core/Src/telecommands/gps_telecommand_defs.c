@@ -17,7 +17,7 @@
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0 on success, > 0 error
-uint8_t TCMDEXEC_gps_send_log_cmd(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_gps_send_cmd_ascii(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                   char *response_output_buf, uint16_t response_output_buf_len)
 {
 

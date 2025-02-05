@@ -102,8 +102,6 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
 	}
 
 	// End Receiving
-    // TODO: Determine where to call this. Further testing required
-    // If nothing is being populated in the UART_gps_buffer during testing, consider commenting out the line below
 	GPS_set_uart_interrupt_state(0); // We are no longer expecting a response
 
 	// Logging the received response
