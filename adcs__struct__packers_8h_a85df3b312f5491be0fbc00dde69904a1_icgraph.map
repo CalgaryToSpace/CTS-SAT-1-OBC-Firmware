@@ -1,0 +1,11 @@
+<map id="ADCS_pack_to_acp_execution_state_struct" name="ADCS_pack_to_acp_execution_state_struct">
+<area shape="rect" id="Node000001" title=" " alt="" coords="499,73,699,114"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#ae9e90757f361a1a29b13768bdf8a53a5" title="Instruct the ADCS to execute the ADCS_execution_state command." alt="" coords="275,37,447,78"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="483,79,447,73,448,68,484,74"/>
+<area shape="rect" id="Node000005" href="$test__adcs_8c.html#a9aa741e34b81b9534a63e1c795d7f2c4" title=" " alt="" coords="271,102,451,158"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="484,114,452,119,451,113,483,108"/>
+<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#a070c025295da85667dbbabf1076051cc" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,223,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="259,47,223,42,223,37,260,42"/>
+<area shape="rect" id="Node000004" href="$telecommand__adcs_8c.html#acfbac886221c0407fce13bee70ec8d5a" title="Telecommand: Request commissioning telemetry from the ADCS and save it to the memory module." alt="" coords="25,71,203,111"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="260,74,204,82,203,76,259,69"/>
+</map>

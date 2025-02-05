@@ -1,0 +1,24 @@
+<map id="ADCS_synchronise_unix_time" name="ADCS_synchronise_unix_time">
+<area shape="rect" id="Node000001" title="Instruct the ADCS to synchronise its Unix epoch time to the current OBC Unix time." alt="" coords="5,136,201,162"/>
+<area shape="rect" id="Node000002" href="$adcs__internal__drivers_8c.html#a57380050bbf7103fc0101eb2145fc7c7" title="Swap low and high bytes of a uint16 to turn into uint8 and put into specified index of an array." alt="" coords="256,5,422,61"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="127,133,247,71,258,65,261,70,250,76,130,138"/>
+<area shape="rect" id="Node000003" href="$adcs__internal__drivers_8c.html#a4d66866ec7ebc347e16aff2da8a52058" title="Reverse the order of the four bytes of a uint32 to turn into uint8 and put into specified index of an..." alt="" coords="256,85,422,141"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="191,133,240,126,241,131,192,138"/>
+<area shape="rect" id="Node000004" href="$adcs__internal__drivers_8c.html#aecce0bfa34eea6373e296fb13a2fb92f" title="Sends a telecommand over I2C to the ADCS, checks that it&#39;s been acknowledged, and returns the ACK err..." alt="" coords="249,165,429,206"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="192,160,234,166,233,172,191,165"/>
+<area shape="rect" id="Node000011" href="$timekeeping_8c.html#ab806b8884c269c16f3bc4b766d1fc943" title="Returns the current unix timestamp, in milliseconds." alt="" coords="266,230,412,271"/>
+<area shape="poly" id="edge11_Node000001_Node000011" title=" " alt="" coords="132,160,250,215,267,222,265,227,248,220,130,165"/>
+<area shape="rect" id="Node000005" href="$adcs__commands_8c.html#a78314a88408de1fd947bac1eb122e96f" title="Instructs the ADCS to determine whether the last command succeeded. (Doesn&#39;t work for telemetry reque..." alt="" coords="477,147,594,173"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="429,171,461,167,462,172,430,176"/>
+<area shape="rect" id="Node000010" href="$adcs__internal__drivers_8c.html#a4fd725dd59fc5c6d0304751c2a08baa4" title="Sends a telecommand over I2C to the ADCS." alt="" coords="882,172,1083,198"/>
+<area shape="poly" id="edge9_Node000004_Node000010" title=" " alt="" coords="430,182,866,182,866,188,430,188"/>
+<area shape="rect" id="Node000006" href="$adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="642,82,834,123"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="583,144,648,125,650,130,585,149"/>
+<area shape="rect" id="Node000009" href="$adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="649,147,827,173"/>
+<area shape="poly" id="edge8_Node000005_Node000009" title=" " alt="" coords="595,157,633,157,633,162,595,162"/>
+<area shape="rect" id="Node000007" href="$adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="894,96,1070,136"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="834,105,879,108,878,113,834,110"/>
+<area shape="rect" id="Node000008" href="$adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1131,137,1279,178"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="1071,130,1116,138,1115,143,1070,135"/>
+<area shape="poly" id="edge10_Node000010_Node000008" title=" " alt="" coords="1083,170,1115,166,1116,171,1084,175"/>
+</map>

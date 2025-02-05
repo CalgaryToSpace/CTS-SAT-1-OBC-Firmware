@@ -1,9 +1,0 @@
-<map id="ADCS_Pack_to_Fine_Sun_Vector_Struct" name="ADCS_Pack_to_Fine_Sun_Vector_Struct">
-<area shape="rect" id="Node000001" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="436,35,610,75"/>
-<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#aa968db0fbada5d61a50aacd50ebaa574" title="Instruct the ADCS to execute the ADCS_Fine_Sun_Vector command." alt="" coords="208,13,388,38"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="420,44,388,40,389,35,421,39"/>
-<area shape="rect" id="Node000004" href="$test__adcs_8c.html#a946cb73b8b87090a22fa691e07d5c89e" title=" " alt="" coords="208,63,388,103"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="421,70,389,74,388,69,420,65"/>
-<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#a1e50c54641fa0c949cb6aadc8236f3e9" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,160,46"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="192,28,160,28,160,23,192,23"/>
-</map>

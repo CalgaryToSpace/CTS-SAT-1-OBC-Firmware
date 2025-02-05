@@ -1,102 +1,102 @@
 <map id="ADCS_calculate_crc8_checksum" name="ADCS_calculate_crc8_checksum">
-<area shape="rect" id="Node000001" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1205,1239,1353,1280"/>
-<area shape="rect" id="Node000002" href="$adcs__internal__drivers_8c.html#a4fd725dd59fc5c6d0304751c2a08baa4" title="Sends a telecommand over I2C to the ADCS." alt="" coords="731,899,933,924"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1238,1232,849,927,852,923,1241,1227"/>
-<area shape="rect" id="Node000050" href="$adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="981,1267,1157,1308"/>
-<area shape="poly" id="edge26_Node000001_Node000050" title=" " alt="" coords="1190,1274,1158,1278,1157,1273,1189,1269"/>
-<area shape="rect" id="Node000003" href="$adcs__internal__drivers_8c.html#aecce0bfa34eea6373e296fb13a2fb92f" title="Sends a telecommand over I2C to the ADCS, checks that it&#39;s been acknowledged, and returns the ACK err..." alt="" coords="267,596,447,637"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="824,884,811,825,785,751,766,713,743,677,715,645,682,619,653,604,622,594,556,586,491,589,433,598,433,593,491,584,556,581,623,589,655,599,685,615,719,641,747,674,771,710,790,748,816,823,829,883"/>
+<area shape="rect" id="Node000001" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1208,1196,1356,1237"/>
+<area shape="rect" id="Node000002" href="$adcs__internal__drivers_8c.html#a4fd725dd59fc5c6d0304751c2a08baa4" title="Sends a telecommand over I2C to the ADCS." alt="" coords="734,919,936,944"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1234,1190,856,947,858,943,1237,1186"/>
+<area shape="rect" id="Node000057" href="$adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="984,1224,1160,1265"/>
+<area shape="poly" id="edge29_Node000001_Node000057" title=" " alt="" coords="1193,1231,1161,1236,1160,1230,1192,1226"/>
+<area shape="rect" id="Node000003" href="$adcs__internal__drivers_8c.html#aecce0bfa34eea6373e296fb13a2fb92f" title="Sends a telecommand over I2C to the ADCS, checks that it&#39;s been acknowledged, and returns the ACK err..." alt="" coords="267,679,447,720"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="823,905,806,857,778,800,738,745,713,721,685,702,656,689,625,680,561,671,498,673,441,681,440,676,498,668,562,666,627,674,658,684,688,697,716,717,742,741,782,798,811,855,828,903"/>
 <area shape="rect" id="Node000004" href="$adcs__commands_8c.html#a5d12721da74144783af765b02aafe64d" title="Instruct the ADCS to execute the titular command." alt="" coords="16,5,208,31"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="349,581,334,460,307,298,289,217,268,144,244,84,217,44,203,34,206,29,221,40,249,82,273,142,294,216,312,297,339,459,355,581"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="350,664,338,528,313,341,295,246,273,161,247,91,232,64,217,44,203,34,207,29,221,40,237,61,252,89,278,159,300,245,318,340,343,527,356,664"/>
 <area shape="rect" id="Node000006" href="$adcs__commands_8c.html#aa279a3c35fddc09f0fb42accbd58001b" title="Instruct the ADCS to execute the ADCS_Attitude_Estimation_Mode command." alt="" coords="5,55,219,80"/>
-<area shape="poly" id="edge4_Node000003_Node000006" title=" " alt="" coords="348,582,332,470,304,324,285,251,265,185,242,131,217,95,201,83,204,79,221,91,246,128,270,183,291,249,309,323,337,470,354,581"/>
+<area shape="poly" id="edge4_Node000003_Node000006" title=" " alt="" coords="350,664,336,537,309,366,291,279,270,201,245,137,231,113,217,95,201,83,204,79,221,91,236,110,250,135,275,199,296,278,314,365,341,536,355,663"/>
 <area shape="rect" id="Node000008" href="$adcs__commands_8c.html#a5a496e55cfdbe02ab43b7b9a8b693b68" title="Instruct the ADCS to execute the ADCS_Bootloader_Clear_Errors command." alt="" coords="32,104,192,145"/>
-<area shape="poly" id="edge5_Node000003_Node000008" title=" " alt="" coords="353,581,348,496,340,441,329,382,311,322,288,263,257,207,217,159,190,141,193,137,220,155,261,204,293,261,317,320,334,381,346,440,353,495,358,581"/>
+<area shape="poly" id="edge5_Node000003_Node000008" title=" " alt="" coords="348,664,332,550,304,398,286,322,265,253,242,197,217,159,191,141,194,137,221,155,247,194,270,251,291,321,309,397,337,549,354,663"/>
 <area shape="rect" id="Node000010" href="$adcs__commands_8c.html#a3a3b809be5bcecf6db7ca9147beb638e" title="Instruct the ADCS to execute the ADCS_Clear_Errors command." alt="" coords="46,169,178,195"/>
-<area shape="poly" id="edge6_Node000003_Node000010" title=" " alt="" coords="352,581,345,503,324,402,307,349,284,297,254,250,217,208,199,196,178,189,179,184,201,191,220,204,258,246,289,295,312,347,330,401,350,502,357,580"/>
+<area shape="poly" id="edge6_Node000003_Node000010" title=" " alt="" coords="348,664,330,559,302,422,283,353,263,292,241,242,217,208,199,196,177,188,179,183,201,191,221,204,245,239,268,290,289,352,307,420,336,558,353,664"/>
 <area shape="rect" id="Node000013" href="$adcs__commands_8c.html#a71ab45f06625b9c7ea6b6124ecd0b784" title="Instruct the ADCS to execute the ADCS_Deploy_Magnetometer command." alt="" coords="16,219,208,244"/>
-<area shape="poly" id="edge7_Node000003_Node000013" title=" " alt="" coords="350,581,340,512,318,424,300,378,278,334,251,293,217,258,201,247,204,243,220,253,255,290,283,331,305,376,323,422,345,511,355,581"/>
+<area shape="poly" id="edge7_Node000003_Node000013" title=" " alt="" coords="353,664,348,580,341,527,329,470,312,412,288,355,257,303,217,257,202,247,205,243,220,254,261,300,293,353,317,410,334,469,346,526,353,579,358,663"/>
 <area shape="rect" id="Node000015" href="$adcs__commands_8c.html#aede64efdb08acf89df5ac15de7906e58" title="Instruct the ADCS to execute the ADCS_Reset command." alt="" coords="65,268,159,294"/>
-<area shape="poly" id="edge8_Node000003_Node000015" title=" " alt="" coords="348,581,335,521,311,446,293,408,272,371,247,336,217,307,189,292,158,285,159,280,191,287,220,303,251,333,277,368,298,405,316,444,340,520,353,580"/>
+<area shape="poly" id="edge8_Node000003_Node000015" title=" " alt="" coords="351,664,343,589,322,492,305,441,282,392,253,346,217,307,189,291,158,284,159,279,191,286,220,303,257,343,287,389,310,439,327,490,349,588,357,663"/>
 <area shape="rect" id="Node000017" href="$adcs__commands_8c.html#aa4ebf975b5c8b02ef0dbfe117cbd7c14" title="Instruct the ADCS to execute the ADCS_Run_Once command." alt="" coords="53,317,171,343"/>
-<area shape="poly" id="edge9_Node000003_Node000017" title=" " alt="" coords="345,582,329,531,303,469,266,408,243,380,217,356,195,344,170,337,172,332,197,339,220,352,247,376,271,405,308,467,334,529,350,581"/>
+<area shape="poly" id="edge9_Node000003_Node000017" title=" " alt="" coords="350,664,338,598,315,514,298,471,276,429,249,390,217,356,195,343,170,336,172,331,197,338,220,352,253,386,281,426,303,468,320,512,344,597,355,663"/>
 <area shape="rect" id="Node000019" href="$adcs__commands_8c.html#af308e3206304ee5b75dd8bb6aec85177" title="Instruct the ADCS to execute the ADCS_Save_Config command." alt="" coords="45,367,179,392"/>
-<area shape="poly" id="edge10_Node000003_Node000019" title=" " alt="" coords="340,583,322,541,295,493,260,445,217,406,199,396,178,389,180,384,201,391,220,401,264,442,300,490,327,539,345,581"/>
-<area shape="rect" id="Node000021" href="$adcs__commands_8c.html#ae819a5b032d9d62d1cc83623657934a5" title="Instruct the ADCS to execute the ADCS_Save_Orbit_Params command." alt="" coords="25,416,199,442"/>
-<area shape="poly" id="edge11_Node000003_Node000021" title=" " alt="" coords="334,585,286,518,254,485,217,456,192,445,194,440,220,452,258,481,290,515,338,582"/>
-<area shape="rect" id="Node000023" href="$adcs__commands_8c.html#aed744b7e685734f1640661cb715b7a82" title="Set the Augmented SGP4 Parameters of the ADCS." alt="" coords="35,466,189,506"/>
-<area shape="poly" id="edge12_Node000003_Node000023" title=" " alt="" coords="318,589,271,554,217,522,188,510,190,505,220,517,274,550,321,584"/>
-<area shape="rect" id="Node000025" href="$adcs__commands_8c.html#a67665c09e24d46cfd738b32a596af250" title="Instruct the ADCS to execute the ADCS_Set_Commanded_Attitude_Angles command." alt="" coords="32,531,192,572"/>
-<area shape="poly" id="edge13_Node000003_Node000025" title=" " alt="" coords="263,595,190,575,192,570,264,589"/>
-<area shape="rect" id="Node000027" href="$adcs__commands_8c.html#a11601ce06ad4d9ba65907410e81bdee2" title="Instruct the ADCS to execute the ADCS_Set_Estimation_Params command." alt="" coords="37,596,187,637"/>
-<area shape="poly" id="edge14_Node000003_Node000027" title=" " alt="" coords="251,620,187,620,187,614,251,614"/>
-<area shape="rect" id="Node000029" href="$adcs__commands_8c.html#a244e37cb9b4c803699e5cdca2692ab07" title="Instruct the ADCS to set the magnetometer configuration." alt="" coords="26,662,198,702"/>
-<area shape="poly" id="edge15_Node000003_Node000029" title=" " alt="" coords="264,644,192,664,190,659,263,639"/>
-<area shape="rect" id="Node000031" href="$adcs__commands_8c.html#a3393a2f85e1384e27f10da0155c01f29" title="Instruct the ADCS to execute the titular command." alt="" coords="6,727,218,752"/>
-<area shape="poly" id="edge16_Node000003_Node000031" title=" " alt="" coords="323,649,276,685,220,717,186,729,185,724,218,712,273,680,319,645"/>
-<area shape="rect" id="Node000033" href="$adcs__commands_8c.html#ac262b765d9ea6b19e8fb1f39e50c4dd0" title="Instruct the ADCS to execute the ADCS_Set_Magnetorquer_Output command." alt="" coords="28,776,196,817"/>
-<area shape="poly" id="edge17_Node000003_Node000033" title=" " alt="" coords="335,652,287,711,255,741,220,767,198,778,196,774,217,763,252,737,283,707,331,648"/>
-<area shape="rect" id="Node000035" href="$adcs__commands_8c.html#a5a06facbb818d342cd4749fc53456287" title="Set the power control mode of each component of the ADCS; for each, 0 turns the component off,..." alt="" coords="27,841,197,867"/>
-<area shape="poly" id="edge18_Node000003_Node000035" title=" " alt="" coords="345,653,327,694,300,743,264,791,220,831,198,843,195,838,217,827,260,787,295,740,322,692,340,650"/>
-<area shape="rect" id="Node000037" href="$adcs__commands_8c.html#a3a9f4c3b3f178a53bcd12c5d4a042794" title="Instruct the ADCS to execute the ADCS_Set_Rate_Gyro_Config command." alt="" coords="41,891,183,932"/>
-<area shape="poly" id="edge19_Node000003_Node000037" title=" " alt="" coords="349,653,333,704,306,766,269,828,246,856,220,882,185,901,182,896,217,877,243,853,265,825,302,763,328,702,344,652"/>
-<area shape="rect" id="Node000039" href="$adcs__commands_8c.html#a42020a863207734cd2930378ab9349bd" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="39,956,185,982"/>
-<area shape="poly" id="edge20_Node000003_Node000039" title=" " alt="" coords="354,653,341,717,317,796,300,837,278,877,252,913,220,946,204,956,187,963,185,959,202,951,217,941,248,910,274,874,295,834,312,794,336,715,348,652"/>
-<area shape="rect" id="Node000041" href="$adcs__commands_8c.html#a155f5bcb7965f0b88875194f476ac112" title="Instruct the ADCS to execute the ADCS_Set_SGP4_Orbit_Params command." alt="" coords="37,1006,187,1046"/>
-<area shape="poly" id="edge21_Node000003_Node000041" title=" " alt="" coords="356,653,346,725,323,817,305,865,283,913,255,957,220,996,189,1016,186,1011,217,992,251,954,278,910,301,863,318,815,340,724,350,652"/>
-<area shape="rect" id="Node000043" href="$adcs__commands_8c.html#af523abd359aa91b46f1d37d9668cb82f" title="Instruct the ADCS to execute the ADCS_Set_Tracking_Controller_Target_Reference command." alt="" coords="14,1071,210,1112"/>
-<area shape="poly" id="edge22_Node000003_Node000043" title=" " alt="" coords="358,653,351,735,331,844,314,902,290,959,259,1013,221,1060,204,1073,201,1068,217,1056,255,1010,285,957,309,901,326,843,346,735,352,652"/>
-<area shape="rect" id="Node000045" href="$adcs__commands_8c.html#a54c7f98f0379ad007c03f291da751edc" title="Instruct the ADCS to execute the ADCS_Set_Unix_Time_Save_Mode command." alt="" coords="40,1136,184,1177"/>
-<area shape="poly" id="edge23_Node000003_Node000045" title=" " alt="" coords="353,653,335,760,306,901,288,972,268,1036,245,1089,221,1125,204,1138,186,1147,183,1143,201,1134,217,1122,240,1086,263,1034,283,970,301,900,330,759,348,652"/>
-<area shape="rect" id="Node000047" href="$adcs__commands_8c.html#a9f51e83fcfa4e59e44b77f355844d818" title="Instruct the ADCS to execute the titular command." alt="" coords="29,1201,195,1227"/>
-<area shape="poly" id="edge24_Node000003_Node000047" title=" " alt="" coords="354,653,339,774,312,935,294,1016,273,1089,248,1150,221,1191,197,1207,194,1202,217,1187,244,1147,268,1088,289,1015,307,934,334,773,349,653"/>
-<area shape="rect" id="Node000049" href="$telecommand__adcs_8c.html#a5e0859e51ddde0fef41f11c323dc1599" title="Telecommand: execute a generic command on the ADCS." alt="" coords="24,1251,200,1292"/>
-<area shape="poly" id="edge25_Node000003_Node000049" title=" " alt="" coords="355,653,341,782,314,958,296,1047,275,1128,250,1195,236,1221,221,1241,202,1256,199,1251,217,1238,231,1218,245,1193,270,1127,291,1046,309,957,335,781,350,652"/>
-<area shape="rect" id="Node000051" href="$adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="736,1267,928,1308"/>
-<area shape="poly" id="edge27_Node000050_Node000051" title=" " alt="" coords="965,1290,928,1290,928,1285,965,1285"/>
-<area shape="rect" id="Node000052" href="$adcs__commands_8c.html#a78314a88408de1fd947bac1eb122e96f" title="Instructs the ADCS to determine whether the last command succeeded. (Doesn&#39;t work for telemetry reque..." alt="" coords="530,629,648,655"/>
-<area shape="poly" id="edge28_Node000051_Node000052" title=" " alt="" coords="817,1253,776,1116,729,937,722,895,721,857,725,791,725,761,719,732,706,701,681,669,666,657,647,650,649,645,668,653,685,666,710,699,724,730,730,761,731,791,727,857,727,895,734,936,781,1114,822,1252"/>
-<area shape="rect" id="Node000054" href="$adcs__commands_8c.html#a2ac94c70cb2cb26963ed96de8a98fb00" title="Instruct the ADCS to execute the ADCS_Get_Augmented_SGP4_Params command." alt="" coords="512,679,666,720"/>
-<area shape="poly" id="edge30_Node000051_Node000054" title=" " alt="" coords="818,1253,729,937,720,877,719,827,717,805,711,782,700,759,681,735,664,721,668,717,685,731,705,756,716,780,722,804,724,827,725,876,734,936,823,1252"/>
-<area shape="rect" id="Node000056" href="$adcs__commands_8c.html#adff141206b24ba6923859a05680bf6fd" title="Instruct the ADCS to execute the ADCS_Get_Commanded_Attitude_Angles command." alt="" coords="509,744,669,785"/>
-<area shape="poly" id="edge31_Node000051_Node000056" title=" " alt="" coords="818,1253,744,991,705,862,681,800,666,788,669,784,685,797,710,860,750,990,824,1251"/>
-<area shape="rect" id="Node000058" href="$adcs__commands_8c.html#a2b6feff1dc11c35a570e0cb3415acfd5" title="Instruct the ADCS to execute the ADCS_Commanded_Wheel_Speed command." alt="" coords="509,810,669,850"/>
-<area shape="poly" id="edge32_Node000051_Node000058" title=" " alt="" coords="820,1253,797,1161,763,1046,723,936,702,894,681,865,665,853,669,849,685,862,707,891,728,934,769,1044,802,1160,825,1251"/>
-<area shape="rect" id="Node000060" href="$adcs__commands_8c.html#a226045a81ddd667651031e234db60f49" title="Instruct the ADCS to execute the ADCS_Communication_Status command." alt="" coords="500,875,678,916"/>
-<area shape="poly" id="edge33_Node000051_Node000060" title=" " alt="" coords="823,1252,809,1185,783,1099,765,1053,742,1009,714,968,682,931,665,918,668,914,685,927,718,964,746,1006,770,1051,788,1097,815,1183,828,1251"/>
-<area shape="rect" id="Node000062" href="$adcs__commands_8c.html#af878d89263ca1b02174eb5aa3ff65c5e" title="Instruct the ADCS to execute the ADCS_CubeControl_Current command." alt="" coords="511,940,667,981"/>
-<area shape="poly" id="edge34_Node000051_Node000062" title=" " alt="" coords="820,1253,802,1197,774,1128,734,1057,710,1025,682,996,664,984,667,980,685,992,714,1021,739,1054,779,1126,807,1195,825,1251"/>
-<area shape="rect" id="Node000064" href="$adcs__commands_8c.html#a92ee3e89465d3c9b9f9c16151a73dfee" title="Instruct the ADCS to execute the ADCS_Estimate_Angular_Rates command." alt="" coords="495,1006,683,1046"/>
-<area shape="poly" id="edge35_Node000051_Node000064" title=" " alt="" coords="814,1254,794,1210,765,1159,727,1107,682,1062,662,1049,665,1045,685,1057,731,1103,769,1156,799,1208,819,1251"/>
-<area shape="rect" id="Node000066" href="$adcs__commands_8c.html#a8ef00b896a55801bb8d08ca6d7222bab" title="Instruct the ADCS to execute the ADCS_Estimate_Fine_Angular_Rates command." alt="" coords="506,1071,672,1112"/>
-<area shape="poly" id="edge36_Node000051_Node000066" title=" " alt="" coords="806,1256,754,1191,720,1157,682,1127,659,1115,662,1110,685,1123,723,1153,758,1187,810,1252"/>
-<area shape="rect" id="Node000068" href="$adcs__commands_8c.html#af7794dcb002d5cbd53f7507c87b85211" title="Instruct the ADCS to execute the ADCS_Estimated_Attitude_Angles command." alt="" coords="516,1136,662,1177"/>
-<area shape="poly" id="edge37_Node000051_Node000068" title=" " alt="" coords="790,1260,740,1226,682,1193,654,1180,656,1175,685,1188,742,1221,793,1256"/>
-<area shape="rect" id="Node000070" href="$adcs__commands_8c.html#aa18d46532af7032871eddfe302c689a4" title="Instruct the ADCS to execute the ADCS_Estimated_Gyro_Bias command." alt="" coords="516,1202,662,1242"/>
-<area shape="poly" id="edge38_Node000051_Node000070" title=" " alt="" coords="739,1265,662,1244,663,1239,740,1260"/>
-<area shape="rect" id="Node000072" href="$adcs__commands_8c.html#a8c2002b87ae973c74818d43a315cb8f6" title="Instruct the ADCS to execute the ADCS_Estimation_Innovation_Vector command." alt="" coords="514,1267,664,1308"/>
-<area shape="poly" id="edge39_Node000051_Node000072" title=" " alt="" coords="721,1290,664,1290,664,1285,721,1285"/>
-<area shape="rect" id="Node000074" href="$adcs__commands_8c.html#ae475288294d4360303688c843dfffcb6" title="Instruct the ADCS to execute the ADCS_Get_Estimation_Params command." alt="" coords="514,1332,664,1373"/>
-<area shape="poly" id="edge40_Node000051_Node000074" title=" " alt="" coords="740,1315,665,1335,664,1330,739,1310"/>
-<area shape="rect" id="Node000076" href="$adcs__commands_8c.html#aa968db0fbada5d61a50aacd50ebaa574" title="Instruct the ADCS to execute the ADCS_Fine_Sun_Vector command." alt="" coords="499,1397,679,1423"/>
-<area shape="poly" id="edge41_Node000051_Node000076" title=" " alt="" coords="795,1319,744,1355,684,1387,652,1399,650,1394,682,1382,741,1350,792,1315"/>
-<area shape="rect" id="Node000078" href="$adcs__commands_8c.html#afd4d41668b881b9ab99ef0dec931daae" title="Instruct the ADCS to execute the ADCS_Identification command." alt="" coords="508,1447,670,1472"/>
-<area shape="poly" id="edge42_Node000051_Node000078" title=" " alt="" coords="809,1322,756,1381,722,1412,685,1438,661,1449,658,1444,682,1433,719,1408,753,1378,805,1318"/>
-<area shape="rect" id="Node000080" href="$adcs__commands_8c.html#a2499644ca56d3bfee3171a9ce957395e" title="Instruct the ADCS to execute the ADCS_IGRF_Magnetic_Field_Vector command." alt="" coords="506,1496,673,1537"/>
-<area shape="poly" id="edge43_Node000051_Node000080" title=" " alt="" coords="816,1323,794,1361,764,1405,728,1449,685,1487,666,1498,663,1494,682,1483,724,1445,760,1402,790,1358,811,1320"/>
-<area shape="rect" id="Node000082" href="$adcs__commands_8c.html#aa6c75f66c6ec79b6f136e1870867da22" title="Instruct the ADCS to execute the ADCS_Get_LLH_Position command." alt="" coords="512,1561,666,1587"/>
-<area shape="poly" id="edge44_Node000051_Node000082" title=" " alt="" coords="823,1324,805,1375,776,1436,736,1498,712,1526,685,1551,664,1563,661,1558,682,1547,708,1523,732,1495,771,1434,800,1373,818,1322"/>
-<area shape="rect" id="Node000084" href="$adcs__commands_8c.html#a0ef96d5237a334d0daa277e99bf824d2" title="Instruct the ADCS to execute the ADCS_Magnetic_Field_Vector command." alt="" coords="503,1611,675,1652"/>
-<area shape="poly" id="edge45_Node000051_Node000084" title=" " alt="" coords="826,1324,810,1383,782,1458,741,1535,715,1570,685,1602,669,1613,666,1608,682,1597,711,1567,737,1532,777,1456,805,1382,821,1322"/>
-<area shape="rect" id="Node000086" href="$adcs__commands_8c.html#a97a4008e18916e3de0ff1bdf58c57a30" title="Instruct the ADCS to execute the ADCS_Get_Magnetometer_Config command." alt="" coords="503,1676,675,1717"/>
-<area shape="poly" id="edge46_Node000051_Node000086" title=" " alt="" coords="829,1324,816,1395,791,1486,772,1534,748,1582,720,1626,685,1665,668,1678,665,1674,682,1662,715,1623,744,1579,767,1532,786,1484,811,1393,824,1323"/>
-<area shape="rect" id="Node000088" href="$adcs__commands_8c.html#ab1bcb0c9fd944e2063fe51f2074a9d73" title="Instruct the ADCS to execute the ADCS_Get_Magnetorquer_Command command." alt="" coords="505,1742,673,1782"/>
-<area shape="poly" id="edge47_Node000051_Node000088" title=" " alt="" coords="832,1323,822,1405,799,1514,780,1572,756,1629,724,1683,685,1731,669,1743,666,1739,681,1727,720,1680,751,1627,775,1570,794,1513,817,1405,826,1323"/>
-<area shape="rect" id="Node000090" href="$adcs__commands_8c.html#a8ca4b0668bd1da8eb53321052514072b" title="Instruct the ADCS to execute the ADCS_Measurements command." alt="" coords="502,1807,677,1832"/>
-<area shape="poly" id="edge48_Node000051_Node000090" title=" " alt="" coords="834,1323,830,1417,823,1478,810,1544,792,1612,766,1679,730,1741,685,1796,668,1808,665,1804,682,1792,726,1738,761,1677,787,1611,805,1543,817,1477,824,1417,829,1323"/>
-<area shape="rect" id="Node000092" href="$adcs__commands_8c.html#aa21932246048c513eb4983acb6f7e3ca" title="Instruct the ADCS to execute the ADCS_Nadir_Vector command." alt="" coords="509,1856,669,1882"/>
-<area shape="poly" id="edge49_Node000051_Node000092" title=" " alt="" coords="829,1324,810,1442,780,1598,760,1677,738,1748,713,1807,685,1847,671,1858,667,1853,681,1843,708,1804,733,1746,755,1675,775,1597,805,1441,823,1323"/>
-<area shape="rect" id="Node000094" href="$adcs__commands_8c.html#a04335a52a89b83cdbefde844b5dade69" title="Instruct the ADCS to execute the ADCS_Get_Power_Control command." alt="" coords="504,1905,674,1931"/>
-<area shape="poly" id="edge50_Node000051_Node000094" title=" " alt="" coords="829,1324,813,1451,783,1622,764,1709,741,1787,715,1852,700,1877,685,1896,671,1907,668,1903,681,1892,696,1874,710,1850,736,1786,758,1707,778,1621,808,1450,824,1323"/>
-<area shape="poly" id="edge29_Node000052_Node000003" title=" " alt="" coords="514,637,447,629,448,624,515,631"/>
+<area shape="poly" id="edge10_Node000003_Node000019" title=" " alt="" coords="347,665,333,607,308,537,291,500,270,465,246,433,217,406,199,394,178,387,180,382,201,390,220,401,250,430,275,462,296,498,313,535,338,606,352,663"/>
+<area shape="rect" id="Node000021" href="$adcs__commands_8c.html#a2d911b54220da01cfb0ab415739bea38" title="Instruct the ADCS to save an image to the SD card." alt="" coords="25,416,199,442"/>
+<area shape="poly" id="edge11_Node000003_Node000021" title=" " alt="" coords="344,665,327,617,301,560,264,503,242,477,217,455,198,444,200,439,220,451,246,473,269,499,305,557,332,615,349,663"/>
+<area shape="rect" id="Node000023" href="$adcs__commands_8c.html#ae819a5b032d9d62d1cc83623657934a5" title="Instruct the ADCS to execute the ADCS_Save_Orbit_Params command." alt="" coords="25,465,199,491"/>
+<area shape="poly" id="edge12_Node000003_Node000023" title=" " alt="" coords="338,666,319,628,292,584,258,541,217,506,194,494,196,489,220,501,262,538,297,581,324,625,343,664"/>
+<area shape="rect" id="Node000025" href="$adcs__commands_8c.html#aed744b7e685734f1640661cb715b7a82" title="Set the Augmented SGP4 Parameters of the ADCS." alt="" coords="35,515,189,556"/>
+<area shape="poly" id="edge13_Node000003_Node000025" title=" " alt="" coords="328,669,279,619,249,593,217,571,188,557,190,552,220,567,253,589,283,615,332,666"/>
+<area shape="rect" id="Node000027" href="$adcs__commands_8c.html#a67665c09e24d46cfd738b32a596af250" title="Instruct the ADCS to execute the ADCS_Set_Commanded_Attitude_Angles command." alt="" coords="32,580,192,621"/>
+<area shape="poly" id="edge14_Node000003_Node000027" title=" " alt="" coords="301,674,218,637,183,624,185,619,220,632,303,669"/>
+<area shape="rect" id="Node000029" href="$adcs__commands_8c.html#a11601ce06ad4d9ba65907410e81bdee2" title="Instruct the ADCS to execute the ADCS_Set_Estimation_Params command." alt="" coords="37,646,187,686"/>
+<area shape="poly" id="edge15_Node000003_Node000029" title=" " alt="" coords="251,688,187,679,187,674,252,683"/>
+<area shape="rect" id="Node000031" href="$adcs__commands_8c.html#a244e37cb9b4c803699e5cdca2692ab07" title="Instruct the ADCS to set the magnetometer configuration." alt="" coords="26,711,198,752"/>
+<area shape="poly" id="edge16_Node000003_Node000031" title=" " alt="" coords="251,716,199,723,198,718,251,711"/>
+<area shape="rect" id="Node000033" href="$adcs__commands_8c.html#a3393a2f85e1384e27f10da0155c01f29" title="Instruct the ADCS to execute the titular command." alt="" coords="6,776,218,802"/>
+<area shape="poly" id="edge17_Node000003_Node000033" title=" " alt="" coords="304,730,220,766,179,778,177,773,218,761,302,725"/>
+<area shape="rect" id="Node000035" href="$adcs__commands_8c.html#ac262b765d9ea6b19e8fb1f39e50c4dd0" title="Instruct the ADCS to execute the ADCS_Set_Magnetorquer_Output command." alt="" coords="28,826,196,866"/>
+<area shape="poly" id="edge18_Node000003_Node000035" title=" " alt="" coords="327,733,279,776,220,816,195,828,193,823,217,812,276,772,324,729"/>
+<area shape="rect" id="Node000037" href="$adcs__commands_8c.html#a5a06facbb818d342cd4749fc53456287" title="Set the power control mode of each component of the ADCS; for each, 0 turns the component off,..." alt="" coords="27,891,197,916"/>
+<area shape="poly" id="edge19_Node000003_Node000037" title=" " alt="" coords="341,735,321,770,294,809,260,848,220,880,196,892,193,888,217,876,256,844,289,806,316,767,336,732"/>
+<area shape="rect" id="Node000039" href="$adcs__commands_8c.html#a3a9f4c3b3f178a53bcd12c5d4a042794" title="Instruct the ADCS to execute the ADCS_Set_Rate_Gyro_Config command." alt="" coords="41,940,183,981"/>
+<area shape="poly" id="edge20_Node000003_Node000039" title=" " alt="" coords="346,736,328,780,301,833,265,886,220,931,185,950,183,945,217,927,261,882,297,830,323,778,341,734"/>
+<area shape="rect" id="Node000041" href="$adcs__commands_8c.html#a42020a863207734cd2930378ab9349bd" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="39,1005,185,1031"/>
+<area shape="poly" id="edge21_Node000003_Node000041" title=" " alt="" coords="352,736,338,793,312,863,295,899,274,934,249,967,220,995,187,1012,184,1008,217,991,245,963,270,931,290,897,308,861,332,792,347,735"/>
+<area shape="rect" id="Node000043" href="$adcs__commands_8c.html#a13c723f863160e6cf86ec2be92effab8" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="28,1055,196,1080"/>
+<area shape="poly" id="edge22_Node000003_Node000043" title=" " alt="" coords="355,736,343,803,320,886,303,930,281,972,253,1012,220,1046,198,1059,195,1055,217,1041,249,1008,276,970,298,928,315,885,338,801,349,735"/>
+<area shape="rect" id="Node000046" href="$adcs__commands_8c.html#a155f5bcb7965f0b88875194f476ac112" title="Instruct the ADCS to execute the ADCS_Set_SGP4_Orbit_Params command." alt="" coords="37,1104,187,1145"/>
+<area shape="poly" id="edge23_Node000003_Node000046" title=" " alt="" coords="356,736,347,810,325,907,308,958,285,1007,256,1054,220,1095,189,1114,186,1110,217,1091,252,1051,280,1005,303,956,320,905,342,810,351,735"/>
+<area shape="rect" id="Node000048" href="$adcs__commands_8c.html#af523abd359aa91b46f1d37d9668cb82f" title="Instruct the ADCS to execute the ADCS_Set_Tracking_Controller_Target_Reference command." alt="" coords="14,1170,210,1210"/>
+<area shape="poly" id="edge24_Node000003_Node000048" title=" " alt="" coords="358,736,352,821,345,875,333,934,316,994,292,1054,260,1109,221,1159,204,1171,201,1167,217,1155,256,1106,287,1051,311,993,328,933,340,874,347,820,353,735"/>
+<area shape="rect" id="Node000050" href="$adcs__commands_8c.html#a54c7f98f0379ad007c03f291da751edc" title="Instruct the ADCS to execute the ADCS_Set_Unix_Time_Save_Mode command." alt="" coords="40,1235,184,1276"/>
+<area shape="poly" id="edge25_Node000003_Node000050" title=" " alt="" coords="353,736,336,846,307,992,289,1065,268,1132,246,1186,221,1224,204,1237,186,1246,184,1241,202,1232,217,1220,241,1184,263,1130,284,1064,302,991,331,846,348,735"/>
+<area shape="rect" id="Node000052" href="$adcs__commands_8c.html#a9f51e83fcfa4e59e44b77f355844d818" title="Instruct the ADCS to execute the titular command." alt="" coords="29,1300,195,1326"/>
+<area shape="poly" id="edge26_Node000003_Node000052" title=" " alt="" coords="355,736,340,859,313,1025,295,1109,274,1185,249,1247,235,1271,220,1289,197,1305,194,1301,217,1286,231,1268,244,1244,269,1183,290,1108,308,1024,335,859,349,735"/>
+<area shape="rect" id="Node000054" href="$adcs__commands_8c.html#a0ee4a74615b30328d110093fb1d7e18b" title="Instruct the ADCS to synchronise its Unix epoch time to the current OBC Unix time." alt="" coords="14,1349,210,1375"/>
+<area shape="poly" id="edge27_Node000003_Node000054" title=" " alt="" coords="355,736,342,869,317,1050,299,1142,277,1225,251,1293,236,1320,221,1340,207,1351,203,1347,217,1336,232,1317,246,1291,272,1224,294,1141,312,1049,337,868,350,735"/>
+<area shape="rect" id="Node000056" href="$telecommand__adcs_8c.html#a5e0859e51ddde0fef41f11c323dc1599" title="Telecommand: execute a generic command on the ADCS." alt="" coords="24,1399,200,1440"/>
+<area shape="poly" id="edge28_Node000003_Node000056" title=" " alt="" coords="356,736,343,877,318,1073,300,1172,278,1263,252,1338,237,1367,221,1389,202,1404,199,1400,217,1386,232,1364,247,1335,273,1261,295,1171,313,1072,338,877,350,735"/>
+<area shape="rect" id="Node000058" href="$adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="739,1224,931,1265"/>
+<area shape="poly" id="edge30_Node000057_Node000058" title=" " alt="" coords="968,1248,931,1248,931,1242,968,1242"/>
+<area shape="rect" id="Node000059" href="$adcs__commands_8c.html#a78314a88408de1fd947bac1eb122e96f" title="Instructs the ADCS to determine whether the last command succeeded. (Doesn&#39;t work for telemetry reque..." alt="" coords="532,712,649,738"/>
+<area shape="poly" id="edge31_Node000058_Node000059" title=" " alt="" coords="818,1211,777,1099,732,958,725,925,722,896,722,845,721,822,715,799,704,776,684,752,668,740,649,733,651,728,671,735,688,748,708,773,720,797,726,821,728,845,728,896,730,924,737,956,782,1097,823,1209"/>
+<area shape="rect" id="Node000061" href="$adcs__commands_8c.html#ae9e90757f361a1a29b13768bdf8a53a5" title="Instruct the ADCS to execute the ADCS_execution_state command." alt="" coords="504,762,677,802"/>
+<area shape="poly" id="edge33_Node000058_Node000061" title=" " alt="" coords="819,1210,732,958,722,915,717,881,708,850,684,817,669,805,672,801,688,814,713,847,722,880,727,914,737,956,824,1209"/>
+<area shape="rect" id="Node000063" href="$adcs__commands_8c.html#a2ac94c70cb2cb26963ed96de8a98fb00" title="Instruct the ADCS to execute the ADCS_Get_Augmented_SGP4_Params command." alt="" coords="514,827,667,868"/>
+<area shape="poly" id="edge34_Node000058_Node000063" title=" " alt="" coords="821,1211,796,1132,762,1034,723,942,703,907,684,883,666,870,669,865,688,879,708,904,728,940,767,1032,801,1130,826,1209"/>
+<area shape="rect" id="Node000065" href="$adcs__commands_8c.html#adff141206b24ba6923859a05680bf6fd" title="Instruct the ADCS to execute the ADCS_Get_Commanded_Attitude_Angles command." alt="" coords="510,892,671,933"/>
+<area shape="poly" id="edge35_Node000058_Node000065" title=" " alt="" coords="823,1210,806,1153,778,1083,738,1011,713,978,685,948,667,936,670,931,688,944,717,974,743,1008,783,1081,811,1152,828,1209"/>
+<area shape="rect" id="Node000067" href="$adcs__commands_8c.html#a2b6feff1dc11c35a570e0cb3415acfd5" title="Instruct the ADCS to execute the ADCS_Commanded_Wheel_Speed command." alt="" coords="510,958,671,998"/>
+<area shape="poly" id="edge36_Node000058_Node000067" title=" " alt="" coords="818,1212,798,1167,769,1114,731,1060,685,1014,665,1001,668,997,688,1009,735,1057,773,1111,803,1165,823,1209"/>
+<area shape="rect" id="Node000069" href="$adcs__commands_8c.html#a226045a81ddd667651031e234db60f49" title="Instruct the ADCS to execute the ADCS_Communication_Status command." alt="" coords="502,1023,679,1064"/>
+<area shape="poly" id="edge37_Node000058_Node000069" title=" " alt="" coords="810,1213,758,1145,723,1110,685,1079,663,1067,665,1062,688,1075,727,1106,762,1142,814,1210"/>
+<area shape="rect" id="Node000071" href="$adcs__commands_8c.html#af878d89263ca1b02174eb5aa3ff65c5e" title="Instruct the ADCS to execute the ADCS_CubeControl_Current command." alt="" coords="512,1088,669,1129"/>
+<area shape="poly" id="edge38_Node000058_Node000071" title=" " alt="" coords="796,1217,745,1179,685,1143,660,1132,663,1127,688,1138,748,1175,799,1212"/>
+<area shape="rect" id="Node000073" href="$adcs__commands_8c.html#a919377a02bd8a8d8f3f2bd36e7c99dfc" title="Instruct the ADCS to execute the ADCS_get_current_state_1 command. (There&#39;s an ADCS_current_state_2 c..." alt="" coords="501,1153,680,1179"/>
+<area shape="poly" id="edge39_Node000058_Node000073" title=" " alt="" coords="766,1221,686,1193,648,1182,650,1177,687,1188,768,1216"/>
+<area shape="rect" id="Node000075" href="$adcs__commands_8c.html#a4119f53137daee2b797d5f3166055ac7" title="Instruct the ADCS to execute the ADCS_get_current_unix_time command." alt="" coords="495,1203,686,1228"/>
+<area shape="poly" id="edge40_Node000058_Node000075" title=" " alt="" coords="724,1234,687,1230,687,1224,724,1229"/>
+<area shape="rect" id="Node000076" href="$adcs__commands_8c.html#a92ee3e89465d3c9b9f9c16151a73dfee" title="Instruct the ADCS to execute the ADCS_Estimate_Angular_Rates command." alt="" coords="496,1252,685,1293"/>
+<area shape="poly" id="edge41_Node000058_Node000076" title=" " alt="" coords="724,1260,686,1265,685,1259,724,1255"/>
+<area shape="rect" id="Node000078" href="$adcs__commands_8c.html#a8ef00b896a55801bb8d08ca6d7222bab" title="Instruct the ADCS to execute the ADCS_Estimate_Fine_Angular_Rates command." alt="" coords="508,1318,674,1358"/>
+<area shape="poly" id="edge42_Node000058_Node000078" title=" " alt="" coords="771,1274,687,1307,653,1320,652,1315,685,1302,769,1269"/>
+<area shape="rect" id="Node000080" href="$adcs__commands_8c.html#af7794dcb002d5cbd53f7507c87b85211" title="Instruct the ADCS to execute the ADCS_Estimated_Attitude_Angles command." alt="" coords="518,1383,664,1424"/>
+<area shape="poly" id="edge43_Node000058_Node000080" title=" " alt="" coords="805,1278,753,1326,688,1372,662,1385,660,1380,685,1368,749,1322,802,1275"/>
+<area shape="rect" id="Node000082" href="$adcs__commands_8c.html#aa18d46532af7032871eddfe302c689a4" title="Instruct the ADCS to execute the ADCS_Estimated_Gyro_Bias command." alt="" coords="518,1448,664,1489"/>
+<area shape="poly" id="edge44_Node000058_Node000082" title=" " alt="" coords="818,1280,766,1359,730,1401,688,1438,666,1451,663,1446,685,1433,726,1397,762,1356,813,1277"/>
+<area shape="rect" id="Node000084" href="$adcs__commands_8c.html#a8c2002b87ae973c74818d43a315cb8f6" title="Instruct the ADCS to execute the ADCS_Estimation_Innovation_Vector command." alt="" coords="516,1514,665,1554"/>
+<area shape="poly" id="edge45_Node000058_Node000084" title=" " alt="" coords="825,1281,806,1330,777,1390,738,1450,714,1478,688,1503,667,1516,664,1512,685,1499,710,1474,733,1447,772,1387,801,1328,820,1279"/>
+<area shape="rect" id="Node000086" href="$adcs__commands_8c.html#ae475288294d4360303688c843dfffcb6" title="Instruct the ADCS to execute the ADCS_Get_Estimation_Params command." alt="" coords="516,1579,665,1620"/>
+<area shape="poly" id="edge46_Node000058_Node000086" title=" " alt="" coords="829,1281,814,1342,786,1419,768,1459,745,1499,719,1535,688,1568,667,1582,664,1578,685,1564,715,1532,741,1496,763,1457,781,1417,809,1341,824,1280"/>
+<area shape="rect" id="Node000088" href="$adcs__commands_8c.html#aa968db0fbada5d61a50aacd50ebaa574" title="Instruct the ADCS to execute the ADCS_Fine_Sun_Vector command." alt="" coords="500,1644,681,1670"/>
+<area shape="poly" id="edge47_Node000058_Node000088" title=" " alt="" coords="833,1281,822,1355,797,1450,779,1500,755,1549,725,1594,688,1634,669,1646,667,1641,685,1629,720,1591,750,1546,774,1498,792,1448,817,1354,828,1280"/>
+<area shape="rect" id="Node000090" href="$adcs__commands_8c.html#afd4d41668b881b9ab99ef0dec931daae" title="Instruct the ADCS to execute the ADCS_Identification command." alt="" coords="510,1693,671,1719"/>
+<area shape="poly" id="edge48_Node000058_Node000090" title=" " alt="" coords="835,1281,827,1363,818,1415,805,1472,786,1530,761,1586,729,1638,688,1684,672,1695,669,1691,685,1680,724,1635,756,1583,781,1528,800,1470,813,1414,822,1362,830,1280"/>
+<area shape="rect" id="Node000092" href="$adcs__commands_8c.html#a2499644ca56d3bfee3171a9ce957395e" title="Instruct the ADCS to execute the ADCS_IGRF_Magnetic_Field_Vector command." alt="" coords="507,1743,674,1784"/>
+<area shape="poly" id="edge49_Node000058_Node000092" title=" " alt="" coords="836,1281,830,1370,821,1428,809,1491,790,1556,764,1620,731,1680,688,1733,674,1745,671,1740,684,1730,726,1677,759,1618,785,1554,803,1490,816,1428,824,1370,831,1280"/>
+<area shape="rect" id="Node000094" href="$adcs__commands_8c.html#aa6c75f66c6ec79b6f136e1870867da22" title="Instruct the ADCS to execute the ADCS_Get_LLH_Position command." alt="" coords="514,1808,668,1834"/>
+<area shape="poly" id="edge50_Node000058_Node000094" title=" " alt="" coords="831,1281,813,1397,782,1552,763,1630,740,1700,715,1758,688,1797,670,1811,667,1806,684,1794,711,1755,735,1698,757,1628,777,1551,808,1396,826,1280"/>
+<area shape="poly" id="edge32_Node000059_Node000003" title=" " alt="" coords="517,720,447,712,448,707,517,714"/>
 </map>

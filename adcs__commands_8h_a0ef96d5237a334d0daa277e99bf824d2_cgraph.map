@@ -2,8 +2,8 @@
 <area shape="rect" id="Node000001" title="Instruct the ADCS to execute the ADCS_Magnetic_Field_Vector command." alt="" coords="5,39,178,79"/>
 <area shape="rect" id="Node000002" href="$adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="226,5,417,46"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="178,44,210,39,210,44,178,49"/>
-<area shape="rect" id="Node000005" href="$adcs__struct__packers_8c.html#a8adb12915dd1b9a7be50fb6d80b5ce54" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="235,71,408,111"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="178,68,220,74,219,80,178,74"/>
+<area shape="rect" id="Node000005" href="$adcs__struct__packers_8c.html#ac491b752975fbf682ace992cabedd907" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="236,71,406,111"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="178,68,221,74,221,80,178,74"/>
 <area shape="rect" id="Node000003" href="$adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="465,5,641,46"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="417,23,449,23,449,28,417,28"/>
 <area shape="rect" id="Node000004" href="$adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="689,5,838,46"/>

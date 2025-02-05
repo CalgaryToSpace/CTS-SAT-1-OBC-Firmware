@@ -2,14 +2,16 @@
 <area shape="rect" id="Node000001" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,39,207,79"/>
 <area shape="rect" id="Node000002" href="$adcs__types__to__json_8c.html#ae22686e302cec6cb55ec98383f02b190" title="Converts ADCS_CubeControl_Current_Struct to a JSON string." alt="" coords="255,5,433,46"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="207,42,239,38,240,43,207,48"/>
-<area shape="rect" id="Node000003" href="$adcs__commands_8c.html#af878d89263ca1b02174eb5aa3ff65c5e" title="Instruct the ADCS to execute the ADCS_CubeControl_Current command." alt="" coords="266,71,422,111"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="207,70,250,76,250,81,207,75"/>
-<area shape="rect" id="Node000004" href="$adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="481,37,672,78"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="422,77,465,71,466,76,423,82"/>
-<area shape="rect" id="Node000007" href="$adcs__struct__packers_8c.html#aebdb49bc0825bd309c267de770cc22de" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="482,103,672,143"/>
-<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="423,99,466,105,466,110,422,104"/>
-<area shape="rect" id="Node000005" href="$adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="720,37,897,78"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="673,55,705,55,705,60,673,60"/>
-<area shape="rect" id="Node000006" href="$adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="945,37,1093,78"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="897,55,929,55,929,60,897,60"/>
+<area shape="rect" id="Node000004" href="$adcs__commands_8c.html#af878d89263ca1b02174eb5aa3ff65c5e" title="Instruct the ADCS to execute the ADCS_CubeControl_Current command." alt="" coords="266,71,422,111"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="207,70,250,76,250,81,207,75"/>
+<area shape="rect" id="Node000003" href="$adcs__internal__drivers_8c.html#a37228af04b248067199e7f79a90cfd7a" title="Convert a double into a string with a given decimal precision." alt="" coords="500,5,653,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="433,23,485,23,485,28,433,28"/>
+<area shape="rect" id="Node000005" href="$adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="481,71,672,111"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="422,88,466,88,466,94,422,94"/>
+<area shape="rect" id="Node000008" href="$adcs__struct__packers_8c.html#a47c60b25fab3651896e4fd7975077d5a" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="484,136,669,177"/>
+<area shape="poly" id="edge7_Node000004_Node000008" title=" " alt="" coords="419,109,488,129,486,134,418,114"/>
+<area shape="rect" id="Node000006" href="$adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="720,71,897,111"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="673,88,705,88,705,94,673,94"/>
+<area shape="rect" id="Node000007" href="$adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="945,71,1093,111"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="897,88,929,88,929,94,897,94"/>
 </map>

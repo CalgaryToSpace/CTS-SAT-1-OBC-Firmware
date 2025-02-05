@@ -1,9 +1,0 @@
-<map id="ADCS_Pack_to_Commanded_Wheel_Speed_Struct" name="ADCS_Pack_to_Commanded_Wheel_Speed_Struct">
-<area shape="rect" id="Node000001" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="507,41,699,82"/>
-<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a2b6feff1dc11c35a570e0cb3415acfd5" title="Instruct the ADCS to execute the ADCS_Commanded_Wheel_Speed command." alt="" coords="279,5,439,46"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="492,48,439,40,440,35,492,43"/>
-<area shape="rect" id="Node000004" href="$test__adcs_8c.html#ae0fef60f865c524c6a1d0a48f2289ed6" title=" " alt="" coords="259,70,459,126"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="492,81,460,85,459,80,491,75"/>
-<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#a174bf27e9c02668b3cbb2191363ea56a" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,211,46"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="263,28,211,28,211,23,263,23"/>
-</map>

@@ -1,7 +1,11 @@
 <map id="ADCS_convert_uint32_to_reversed_uint8_array_members" name="ADCS_convert_uint32_to_reversed_uint8_array_members">
-<area shape="rect" id="Node000001" title="Reverse the order of the four bytes of a uint32 to turn into uint8 and put into specified index of an..." alt="" coords="478,5,644,61"/>
-<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#aed744b7e685734f1640661cb715b7a82" title="Set the Augmented SGP4 Parameters of the ADCS." alt="" coords="277,13,430,54"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="462,36,430,36,430,30,462,30"/>
-<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#a010a4200d80186fa6a4d9dd131f1ba5d" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,13,229,54"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="261,36,229,36,229,30,261,30"/>
+<area shape="rect" id="Node000001" title="Reverse the order of the four bytes of a uint32 to turn into uint8 and put into specified index of an..." alt="" coords="520,31,686,87"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#aed744b7e685734f1640661cb715b7a82" title="Set the Augmented SGP4 Parameters of the ADCS." alt="" coords="298,8,451,49"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="504,48,451,41,452,36,505,43"/>
+<area shape="rect" id="Node000004" href="$adcs__commands_8c.html#a0ee4a74615b30328d110093fb1d7e18b" title="Instruct the ADCS to synchronise its Unix epoch time to the current OBC Unix time." alt="" coords="277,74,472,100"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="505,74,473,78,472,72,504,68"/>
+<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#a010a4200d80186fa6a4d9dd131f1ba5d" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,229,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="282,30,229,29,229,24,282,25"/>
+<area shape="rect" id="Node000005" href="$telecommand__adcs_8c.html#a723a07c1c85a39edea04e241eee46de8" title="Telecommand: Synchronise the current ADCS Unix epoch time." alt="" coords="15,71,219,111"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="261,91,219,92,219,87,261,86"/>
 </map>

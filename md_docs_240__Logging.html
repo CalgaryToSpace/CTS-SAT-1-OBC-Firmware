@@ -99,7 +99,7 @@ Logging in Space (Orbit)</h1>
 <p>The logging system on this satellite is rather simple: call the <code>LOG_message(...)</code> function with the message you want, and it will be logged to a file, sent over the radio, stored in memory, and passed through the umbilical UART debug console (if connected on earth).</p>
 <h1><a class="anchor" id="autotoc_md13"></a>
 How to use <code>LOG_message(...)</code></h1>
-<p>YOU, a developer, must be use the <code>LOG_message(...)</code> function. Here's how:</p>
+<p>YOU, a developer, must use the <code>LOG_message(...)</code> function. Here's how:</p>
 <ol type="1">
 <li>In just about every <code>.c</code> file, include: <code>#include "log/log.h"</code></li>
 <li>Call <code>LOG_message(...)</code> with the message you want to log with the relevant subsystem, log severity, which sinks (<code>LOG_SINK_ALL</code> by default), a message, and any printf-like arguments for format strings in the message: <div class="fragment"><div class="line"><a class="code hl_function" href="log_8h.html#a3e068c70867806154541035de518012d">LOG_message</a>(</div>

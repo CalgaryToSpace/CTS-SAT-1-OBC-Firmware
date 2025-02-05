@@ -100,6 +100,7 @@ $(function(){ initResizable(false); });
 <code>#include &quot;<a class="el" href="adcs__types__to__json_8h_source.html">adcs_drivers/adcs_types_to_json.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="adcs__commands_8h_source.html">adcs_drivers/adcs_commands.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="adcs__internal__drivers_8h_source.html">adcs_drivers/adcs_internal_drivers.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="timekeeping_8h_source.html">timekeeping/timekeeping.h</a>&quot;</code><br />
 <code>#include &lt;string.h&gt;</code><br />
 <code>#include &lt;stdio.h&gt;</code><br />
 <code>#include &lt;stdbool.h&gt;</code><br />
@@ -109,42 +110,47 @@ Include dependency graph for adcs_commands.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="adcs__commands_8c__incl.png" border="0" usemap="#afirmware_2Core_2Src_2adcs__drivers_2adcs__commands_8c" alt=""/></div>
 <map name="afirmware_2Core_2Src_2adcs__drivers_2adcs__commands_8c" id="afirmware_2Core_2Src_2adcs__drivers_2adcs__commands_8c">
-<area shape="rect" title=" " alt="" coords="328,5,508,46"/>
-<area shape="rect" href="adcs__types_8h.html" title=" " alt="" coords="159,271,334,297"/>
-<area shape="poly" title=" " alt="" coords="328,34,250,40,169,52,100,70,74,82,58,96,38,127,32,158,38,189,58,222,75,240,96,254,144,272,142,277,93,259,71,244,53,225,34,191,26,158,33,125,54,92,72,78,98,65,168,47,249,35,327,28"/>
-<area shape="rect" title=" " alt="" coords="78,352,151,378"/>
-<area shape="poly" title=" " alt="" coords="328,32,243,38,153,50,77,68,48,81,30,96,13,125,8,157,12,191,24,226,59,290,96,339,92,343,55,293,19,228,7,192,3,157,8,123,26,92,46,76,75,63,152,44,242,33,327,27"/>
-<area shape="rect" href="adcs__command__ids_8h.html" title=" " alt="" coords="68,94,259,135"/>
-<area shape="poly" title=" " alt="" coords="361,49,237,91,235,86,360,44"/>
-<area shape="rect" href="adcs__struct__packers_8h.html" title=" " alt="" coords="68,183,235,223"/>
-<area shape="poly" title=" " alt="" coords="395,49,340,91,273,137,204,177,201,173,270,132,337,86,392,45"/>
-<area shape="rect" href="adcs__types__to__json_8h.html" title=" " alt="" coords="260,183,425,223"/>
-<area shape="poly" title=" " alt="" coords="405,48,375,95,361,132,351,169,346,167,356,131,370,93,400,45"/>
-<area shape="rect" href="adcs__commands_8h.html" title=" " alt="" coords="385,102,593,127"/>
-<area shape="poly" title=" " alt="" coords="436,45,472,88,468,91,432,48"/>
-<area shape="rect" href="adcs__internal__drivers_8h.html" title=" " alt="" coords="499,183,676,223"/>
-<area shape="poly" title=" " alt="" coords="510,34,537,43,563,55,587,71,607,93,615,111,616,131,607,169,602,168,611,131,610,112,603,95,584,75,561,59,535,48,508,40"/>
-<area shape="rect" title=" " alt="" coords="656,352,770,378"/>
-<area shape="poly" title=" " alt="" coords="510,40,571,60,601,74,629,92,656,117,676,147,691,181,702,216,714,283,716,337,711,337,709,284,697,217,686,183,671,150,651,121,626,96,599,79,569,65,508,45"/>
-<area shape="rect" title=" " alt="" coords="751,102,814,127"/>
-<area shape="poly" title=" " alt="" coords="509,40,617,62,732,91,739,93,737,99,731,97,616,67,508,45"/>
-<area shape="rect" title=" " alt="" coords="838,102,897,127"/>
-<area shape="poly" title=" " alt="" coords="509,32,660,53,744,70,827,91,831,93,829,98,825,97,743,75,659,58,509,38"/>
-<area shape="rect" title=" " alt="" coords="215,352,278,378"/>
-<area shape="poly" title=" " alt="" coords="249,297,249,337,244,337,244,297"/>
-<area shape="poly" title=" " alt="" coords="228,300,149,346,146,342,225,295"/>
-<area shape="poly" title=" " alt="" coords="177,222,222,259,218,263,173,226"/>
-<area shape="poly" title=" " alt="" coords="320,226,274,263,271,259,317,222"/>
-<area shape="poly" title=" " alt="" coords="489,128,473,175,459,202,439,225,396,252,350,270,348,265,394,248,435,221,454,199,469,173,484,127"/>
-<area shape="poly" title=" " alt="" coords="504,126,555,170,552,174,501,130"/>
-<area shape="poly" title=" " alt="" coords="503,227,314,270,313,265,502,221"/>
-<area shape="rect" href="main_8h.html" title=": Header for main.c file. This file contains the common defines of the application." alt="" coords="558,271,617,297"/>
-<area shape="poly" title=" " alt="" coords="590,224,590,256,585,256,585,224"/>
-<area shape="poly" title=" " alt="" coords="608,295,682,342,679,346,605,300"/>
-<area shape="rect" href="rtos__task__helpers_8h.html" title=" " alt="" coords="492,345,632,386"/>
-<area shape="poly" title=" " alt="" coords="586,298,576,331,571,329,581,297"/>
-<area shape="rect" title=" " alt="" coords="519,434,606,459"/>
-<area shape="poly" title=" " alt="" coords="565,386,565,418,560,418,560,386"/>
+<area shape="rect" title=" " alt="" coords="468,5,649,46"/>
+<area shape="rect" href="adcs__types_8h.html" title=" " alt="" coords="331,271,506,297"/>
+<area shape="poly" title=" " alt="" coords="504,49,471,68,445,96,426,136,418,179,416,221,418,256,412,256,410,221,412,179,421,134,440,92,468,64,502,44"/>
+<area shape="rect" title=" " alt="" coords="249,352,322,378"/>
+<area shape="poly" title=" " alt="" coords="468,36,266,58,170,75,131,85,102,96,71,113,48,130,30,152,14,184,9,201,8,218,12,233,18,248,42,274,74,296,114,315,155,331,234,352,233,357,154,336,111,320,72,301,38,278,14,251,7,235,3,218,4,200,10,182,26,149,44,126,68,109,100,92,130,80,168,70,265,53,468,31"/>
+<area shape="rect" href="adcs__command__ids_8h.html" title=" " alt="" coords="138,94,329,135"/>
+<area shape="poly" title=" " alt="" coords="485,49,323,92,321,87,484,44"/>
+<area shape="rect" href="adcs__struct__packers_8h.html" title=" " alt="" coords="24,183,192,223"/>
+<area shape="poly" title=" " alt="" coords="468,32,374,37,273,48,184,67,150,80,127,96,116,111,110,129,107,167,101,167,105,128,112,109,123,92,148,76,182,62,272,43,374,32,468,26"/>
+<area shape="rect" href="adcs__types__to__json_8h.html" title=" " alt="" coords="216,183,381,223"/>
+<area shape="poly" title=" " alt="" coords="496,49,447,69,400,96,358,133,324,172,320,168,354,129,397,92,445,64,494,44"/>
+<area shape="rect" href="adcs__commands_8h.html" title=" " alt="" coords="454,102,663,127"/>
+<area shape="poly" title=" " alt="" coords="561,47,561,86,556,86,556,47"/>
+<area shape="rect" href="adcs__internal__drivers_8h.html" title=" " alt="" coords="510,183,687,223"/>
+<area shape="poly" title=" " alt="" coords="619,44,651,64,677,93,683,114,677,136,663,157,645,175,642,171,659,154,672,134,678,114,672,95,648,68,616,49"/>
+<area shape="rect" title=" " alt="" coords="894,352,1007,378"/>
+<area shape="poly" title=" " alt="" coords="650,29,728,36,810,48,881,66,908,78,927,92,947,120,961,152,969,186,972,221,969,287,960,338,955,337,964,286,967,221,963,187,956,154,943,123,923,96,906,83,880,71,809,53,728,41,649,34"/>
+<area shape="rect" href="timekeeping_8h.html" title=" " alt="" coords="738,102,913,127"/>
+<area shape="poly" title=" " alt="" coords="620,44,774,94,773,99,619,49"/>
+<area shape="rect" title=" " alt="" coords="988,102,1052,127"/>
+<area shape="poly" title=" " alt="" coords="650,34,801,56,886,72,970,91,977,93,976,99,969,97,885,77,800,61,649,39"/>
+<area shape="rect" title=" " alt="" coords="1076,102,1135,127"/>
+<area shape="poly" title=" " alt="" coords="650,28,738,35,842,47,954,65,1065,91,1069,93,1067,98,1063,97,953,70,842,52,737,40,649,34"/>
+<area shape="rect" title=" " alt="" coords="515,352,578,378"/>
+<area shape="poly" title=" " alt="" coords="439,295,515,342,513,346,437,300"/>
+<area shape="poly" title=" " alt="" coords="400,300,320,347,317,342,397,295"/>
+<area shape="poly" title=" " alt="" coords="186,221,357,264,355,270,185,227"/>
+<area shape="poly" title=" " alt="" coords="330,222,389,260,386,265,327,226"/>
+<area shape="poly" title=" " alt="" coords="549,130,501,184,439,261,435,257,497,181,545,126"/>
+<area shape="poly" title=" " alt="" coords="567,126,586,168,581,170,562,129"/>
+<area shape="poly" title=" " alt="" coords="555,226,461,267,459,262,553,221"/>
+<area shape="rect" href="main_8h.html" title=": Header for main.c file. This file contains the common defines of the application." alt="" coords="849,271,908,297"/>
+<area shape="poly" title=" " alt="" coords="669,221,834,268,833,273,668,227"/>
+<area shape="poly" title=" " alt="" coords="892,296,932,339,928,343,888,299"/>
+<area shape="rect" href="rtos__task__helpers_8h.html" title=" " alt="" coords="730,345,870,386"/>
+<area shape="poly" title=" " alt="" coords="869,299,832,336,828,332,865,296"/>
+<area shape="rect" title=" " alt="" coords="756,434,844,459"/>
+<area shape="poly" title=" " alt="" coords="803,386,803,418,797,418,797,386"/>
+<area shape="poly" title=" " alt="" coords="826,128,816,173,805,200,789,225,744,268,692,304,640,331,594,351,592,346,637,326,689,299,740,264,785,222,800,198,810,172,821,127"/>
+<area shape="rect" title=" " alt="" coords="713,190,775,216"/>
+<area shape="poly" title=" " alt="" coords="816,129,767,181,764,177,812,126"/>
 </map>
 </div>
 </div><table class="memberdecls">
@@ -336,6 +342,30 @@ Functions</h2></td></tr>
 <tr class="memitem:a8ca4b0668bd1da8eb53321052514072b" id="r_a8ca4b0668bd1da8eb53321052514072b"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8ca4b0668bd1da8eb53321052514072b">ADCS_get_measurements</a> (<a class="el" href="structADCS__measurements__struct__t.html">ADCS_measurements_struct_t</a> *output_struct)</td></tr>
 <tr class="memdesc:a8ca4b0668bd1da8eb53321052514072b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instruct the ADCS to execute the ADCS_Measurements command.  <br /></td></tr>
 <tr class="separator:a8ca4b0668bd1da8eb53321052514072b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9e90757f361a1a29b13768bdf8a53a5" id="r_ae9e90757f361a1a29b13768bdf8a53a5"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae9e90757f361a1a29b13768bdf8a53a5">ADCS_get_acp_execution_state</a> (<a class="el" href="structADCS__acp__execution__state__struct__t.html">ADCS_acp_execution_state_struct_t</a> *output_struct)</td></tr>
+<tr class="memdesc:ae9e90757f361a1a29b13768bdf8a53a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instruct the ADCS to execute the ADCS_execution_state command.  <br /></td></tr>
+<tr class="separator:ae9e90757f361a1a29b13768bdf8a53a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a919377a02bd8a8d8f3f2bd36e7c99dfc" id="r_a919377a02bd8a8d8f3f2bd36e7c99dfc"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a919377a02bd8a8d8f3f2bd36e7c99dfc">ADCS_get_current_state_1</a> (<a class="el" href="structADCS__current__state__1__struct__t.html">ADCS_current_state_1_struct_t</a> *output_struct)</td></tr>
+<tr class="memdesc:a919377a02bd8a8d8f3f2bd36e7c99dfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instruct the ADCS to execute the ADCS_get_current_state_1 command. (There's an ADCS_current_state_2 command which is presently not implemented)  <br /></td></tr>
+<tr class="separator:a919377a02bd8a8d8f3f2bd36e7c99dfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c31fc5b05a6a20a574bbac82c60c69f" id="r_a7c31fc5b05a6a20a574bbac82c60c69f"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7c31fc5b05a6a20a574bbac82c60c69f">ADCS_get_raw_star_tracker_data</a> (<a class="el" href="structADCS__raw__star__tracker__struct__t.html">ADCS_raw_star_tracker_struct_t</a> *output_struct)</td></tr>
+<tr class="memdesc:a7c31fc5b05a6a20a574bbac82c60c69f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instruct the ADCS to execute the ADCS_get_raw_star_tracker_data command.  <br /></td></tr>
+<tr class="separator:a7c31fc5b05a6a20a574bbac82c60c69f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d911b54220da01cfb0ab415739bea38" id="r_a2d911b54220da01cfb0ab415739bea38"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2d911b54220da01cfb0ab415739bea38">ADCS_save_image_to_sd</a> (<a class="el" href="adcs__types_8h.html#a07f57fba6a7ea5b22f2d82d1caae23e7">ADCS_camera_select_enum_t</a> camera_select, <a class="el" href="adcs__types_8h.html#aadc2a2cead7bdd5d0fe8fb5bd21a9b0d">ADCS_image_size_enum_t</a> image_size)</td></tr>
+<tr class="memdesc:a2d911b54220da01cfb0ab415739bea38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instruct the ADCS to save an image to the SD card.  <br /></td></tr>
+<tr class="separator:a2d911b54220da01cfb0ab415739bea38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ee4a74615b30328d110093fb1d7e18b" id="r_a0ee4a74615b30328d110093fb1d7e18b"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0ee4a74615b30328d110093fb1d7e18b">ADCS_synchronise_unix_time</a> ()</td></tr>
+<tr class="memdesc:a0ee4a74615b30328d110093fb1d7e18b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instruct the ADCS to synchronise its Unix epoch time to the current OBC Unix time.  <br /></td></tr>
+<tr class="separator:a0ee4a74615b30328d110093fb1d7e18b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4119f53137daee2b797d5f3166055ac7" id="r_a4119f53137daee2b797d5f3166055ac7"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4119f53137daee2b797d5f3166055ac7">ADCS_get_current_unix_time</a> (uint64_t *epoch_time_ms)</td></tr>
+<tr class="memdesc:a4119f53137daee2b797d5f3166055ac7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instruct the ADCS to execute the ADCS_get_current_unix_time command.  <br /></td></tr>
+<tr class="separator:a4119f53137daee2b797d5f3166055ac7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13c723f863160e6cf86ec2be92effab8" id="r_a13c723f863160e6cf86ec2be92effab8"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a13c723f863160e6cf86ec2be92effab8">ADCS_set_sd_log_config</a> (uint8_t which_log, const uint8_t **log_array, uint8_t log_array_size, uint16_t log_period, <a class="el" href="adcs__types_8h.html#a29c83a5040b4f15dcba2f400097697aa">ADCS_sd_log_destination_enum_t</a> which_sd)</td></tr>
+<tr class="memdesc:a13c723f863160e6cf86ec2be92effab8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instruct the ADCS to execute the ADCS_Set_Run_Mode command.  <br /></td></tr>
+<tr class="separator:a13c723f863160e6cf86ec2be92effab8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa09b0d343b9884169f1a179d4dc9a435" id="r_aa09b0d343b9884169f1a179d4dc9a435"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa09b0d343b9884169f1a179d4dc9a435">ADCS_get_sd_log_config</a> (uint8_t which_log, <a class="el" href="structADCS__sd__log__config__struct.html">ADCS_sd_log_config_struct</a> *config)</td></tr>
+<tr class="memdesc:aa09b0d343b9884169f1a179d4dc9a435"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instruct the ADCS to execute the ADCS_get_sd_log_config command.  <br /></td></tr>
+<tr class="separator:aa09b0d343b9884169f1a179d4dc9a435"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
@@ -385,8 +415,8 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="427,106,863,106,863,111,427,111"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="639,5,831,46"/>
 <area shape="poly" title=" " alt="" coords="580,67,645,48,647,53,582,72"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a914351ecde8db8a1690caab528b69055" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="643,70,827,96"/>
-<area shape="poly" title=" " alt="" coords="592,80,627,80,627,86,592,86"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="646,70,824,96"/>
+<area shape="poly" title=" " alt="" coords="592,80,630,80,630,86,592,86"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="891,19,1068,59"/>
 <area shape="poly" title=" " alt="" coords="831,28,876,31,875,36,831,34"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1128,60,1276,101"/>
@@ -438,8 +468,8 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="448,106,884,106,884,111,448,111"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="660,5,852,46"/>
 <area shape="poly" title=" " alt="" coords="601,67,666,48,668,53,603,72"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a914351ecde8db8a1690caab528b69055" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="664,70,848,96"/>
-<area shape="poly" title=" " alt="" coords="613,80,648,80,648,86,613,86"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="667,70,845,96"/>
+<area shape="poly" title=" " alt="" coords="613,80,651,80,651,86,613,86"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="912,19,1088,59"/>
 <area shape="poly" title=" " alt="" coords="852,28,897,31,896,36,852,34"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1149,60,1297,101"/>
@@ -491,8 +521,8 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="394,106,830,106,830,111,394,111"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="606,5,798,46"/>
 <area shape="poly" title=" " alt="" coords="547,67,612,48,614,53,549,72"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a914351ecde8db8a1690caab528b69055" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="610,70,794,96"/>
-<area shape="poly" title=" " alt="" coords="559,80,594,80,594,86,559,86"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="613,70,791,96"/>
+<area shape="poly" title=" " alt="" coords="559,80,597,80,597,86,559,86"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="858,19,1034,59"/>
 <area shape="poly" title=" " alt="" coords="798,28,843,31,842,36,798,34"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1095,60,1243,101"/>
@@ -544,8 +574,8 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="367,106,803,106,803,111,367,111"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="579,5,771,46"/>
 <area shape="poly" title=" " alt="" coords="520,67,585,48,587,53,522,72"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a914351ecde8db8a1690caab528b69055" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="583,70,767,96"/>
-<area shape="poly" title=" " alt="" coords="532,80,567,80,567,86,532,86"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="586,70,764,96"/>
+<area shape="poly" title=" " alt="" coords="532,80,570,80,570,86,532,86"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="831,19,1008,59"/>
 <area shape="poly" title=" " alt="" coords="771,28,816,31,815,36,771,34"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1068,60,1216,101"/>
@@ -599,8 +629,8 @@ Here is the call graph for this function:</div>
 <area shape="rect" title="Instructs the ADCS to determine whether the last command succeeded. (Doesn&#39;t work for telemetry reque..." alt="" coords="5,42,123,68"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="171,5,362,46"/>
 <area shape="poly" title=" " alt="" coords="123,44,155,39,155,44,123,49"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a914351ecde8db8a1690caab528b69055" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="174,70,358,96"/>
-<area shape="poly" title=" " alt="" coords="123,60,159,65,158,71,123,66"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="177,70,356,96"/>
+<area shape="poly" title=" " alt="" coords="123,60,162,66,161,71,123,66"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="410,5,586,46"/>
 <area shape="poly" title=" " alt="" coords="362,23,394,23,394,28,362,28"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="634,5,783,46"/>
@@ -612,63 +642,69 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="adcs__commands_8c_a78314a88408de1fd947bac1eb122e96f_icgraph.png" border="0" usemap="#aadcs__commands_8c_a78314a88408de1fd947bac1eb122e96f_icgraph" alt=""/></div>
 <map name="aadcs__commands_8c_a78314a88408de1fd947bac1eb122e96f_icgraph" id="aadcs__commands_8c_a78314a88408de1fd947bac1eb122e96f_icgraph">
-<area shape="rect" title="Instructs the ADCS to determine whether the last command succeeded. (Doesn&#39;t work for telemetry reque..." alt="" coords="824,794,942,820"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#aecce0bfa34eea6373e296fb13a2fb92f" title="Sends a telecommand over I2C to the ADCS, checks that it&#39;s been acknowledged, and returns the ACK err..." alt="" coords="596,757,776,798"/>
-<area shape="poly" title=" " alt="" coords="808,799,776,794,777,788,809,793"/>
-<area shape="rect" href="telecommand__adcs_8c.html#ab69523ca5e0c61783e98c8139ea89e07" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="608,822,764,848"/>
-<area shape="poly" title=" " alt="" coords="809,820,765,827,764,821,809,815"/>
-<area shape="rect" href="adcs__commands_8c.html#a5d12721da74144783af765b02aafe64d" title="Instruct the ADCS to execute the titular command." alt="" coords="345,33,538,58"/>
-<area shape="poly" title=" " alt="" coords="679,742,666,601,640,406,622,307,601,216,575,142,561,112,546,90,526,73,503,61,505,57,529,69,550,87,566,110,580,139,606,215,627,306,646,405,671,600,685,741"/>
-<area shape="rect" href="adcs__commands_8c.html#aa279a3c35fddc09f0fb42accbd58001b" title="Instruct the ADCS to execute the ADCS_Attitude_Estimation_Mode command." alt="" coords="335,101,548,126"/>
-<area shape="poly" title=" " alt="" coords="678,742,663,615,635,442,617,355,596,275,572,209,546,163,523,143,495,130,497,125,526,139,550,160,577,207,601,274,622,354,640,441,668,614,684,742"/>
-<area shape="rect" href="adcs__commands_8c.html#a5a496e55cfdbe02ab43b7b9a8b693b68" title="Instruct the ADCS to execute the ADCS_Bootloader_Clear_Errors command." alt="" coords="362,173,521,214"/>
-<area shape="poly" title=" " alt="" coords="681,742,674,651,654,526,636,458,613,390,583,324,546,263,519,237,488,217,491,212,523,233,550,260,588,321,618,388,641,456,659,525,679,650,687,742"/>
+<area shape="rect" title="Instructs the ADCS to determine whether the last command succeeded. (Doesn&#39;t work for telemetry reque..." alt="" coords="824,890,942,916"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#aecce0bfa34eea6373e296fb13a2fb92f" title="Sends a telecommand over I2C to the ADCS, checks that it&#39;s been acknowledged, and returns the ACK err..." alt="" coords="596,853,776,894"/>
+<area shape="poly" title=" " alt="" coords="808,895,776,890,777,884,809,889"/>
+<area shape="rect" href="telecommand__adcs_8c.html#ab69523ca5e0c61783e98c8139ea89e07" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="608,918,764,944"/>
+<area shape="poly" title=" " alt="" coords="809,916,765,923,764,917,809,911"/>
+<area shape="rect" href="adcs__commands_8c.html#a5d12721da74144783af765b02aafe64d" title="Instruct the ADCS to execute the titular command." alt="" coords="345,21,538,46"/>
+<area shape="poly" title=" " alt="" coords="681,838,671,675,649,446,631,328,608,221,580,132,564,98,546,71,532,59,514,49,517,45,535,54,550,68,568,95,585,130,613,219,636,327,654,445,677,675,686,837"/>
+<area shape="rect" href="adcs__commands_8c.html#aa279a3c35fddc09f0fb42accbd58001b" title="Instruct the ADCS to execute the ADCS_Attitude_Estimation_Mode command." alt="" coords="335,82,548,108"/>
+<area shape="poly" title=" " alt="" coords="679,838,664,694,637,494,619,391,597,296,573,218,546,162,532,145,514,131,478,111,480,106,517,127,535,142,550,159,578,216,603,295,624,390,642,493,670,693,684,837"/>
+<area shape="rect" href="adcs__commands_8c.html#a5a496e55cfdbe02ab43b7b9a8b693b68" title="Instruct the ADCS to execute the ADCS_Bootloader_Clear_Errors command." alt="" coords="362,172,521,213"/>
+<area shape="poly" title=" " alt="" coords="683,838,680,732,674,661,663,583,646,501,622,417,589,337,546,263,520,236,488,215,491,211,523,232,550,260,593,335,627,416,651,499,668,582,679,661,685,732,688,838"/>
 <area shape="rect" href="adcs__commands_8c.html#a3a3b809be5bcecf6db7ca9147beb638e" title="Instruct the ADCS to execute the ADCS_Clear_Errors command." alt="" coords="375,274,508,300"/>
-<area shape="poly" title=" " alt="" coords="681,742,673,660,653,551,635,493,612,436,583,381,546,333,524,315,498,303,500,298,527,311,550,329,587,378,617,433,640,491,658,550,679,659,686,741"/>
+<area shape="poly" title=" " alt="" coords="677,838,660,724,631,574,613,498,592,429,570,372,546,333,525,315,500,303,502,298,528,311,550,329,575,370,597,427,618,496,636,573,665,724,683,837"/>
 <area shape="rect" href="adcs__commands_8c.html#a71ab45f06625b9c7ea6b6124ecd0b784" title="Instruct the ADCS to execute the ADCS_Deploy_Magnetometer command." alt="" coords="346,344,537,369"/>
-<area shape="poly" title=" " alt="" coords="680,742,671,668,650,572,633,522,610,473,581,428,546,388,522,372,524,367,550,384,586,424,615,471,637,520,655,571,677,667,686,742"/>
+<area shape="poly" title=" " alt="" coords="683,838,680,748,674,690,662,627,645,562,621,499,588,439,546,388,523,372,526,368,550,384,593,436,626,496,650,560,668,626,679,689,685,747,689,838"/>
 <area shape="rect" href="adcs__commands_8c.html#aede64efdb08acf89df5ac15de7906e58" title="Instruct the ADCS to execute the ADCS_Reset command." alt="" coords="395,398,488,424"/>
-<area shape="poly" title=" " alt="" coords="678,742,667,677,643,595,626,552,604,511,578,473,546,440,519,424,488,416,489,411,521,419,550,436,582,470,609,508,631,550,648,593,672,676,684,741"/>
-<area shape="rect" href="adcs__commands_8c.html#aa4ebf975b5c8b02ef0dbfe117cbd7c14" title="Instruct the ADCS to execute the ADCS_Run_Once command." alt="" coords="383,450,500,476"/>
-<area shape="poly" title=" " alt="" coords="674,743,658,690,633,625,596,558,573,528,546,501,524,486,500,476,502,471,527,482,550,497,577,524,600,555,638,622,663,688,679,741"/>
+<area shape="poly" title=" " alt="" coords="682,838,676,756,668,704,656,649,639,592,615,537,585,486,546,441,519,424,488,416,489,411,521,419,550,437,589,483,620,535,644,591,661,648,673,703,681,755,687,837"/>
+<area shape="rect" href="adcs__commands_8c.html#aa4ebf975b5c8b02ef0dbfe117cbd7c14" title="Instruct the ADCS to execute the ADCS_Run_Once command." alt="" coords="383,452,500,477"/>
+<area shape="poly" title=" " alt="" coords="679,838,669,768,646,677,629,629,607,583,579,539,546,501,524,486,499,476,501,471,527,481,550,497,584,536,611,580,634,627,651,675,674,767,685,837"/>
 <area shape="rect" href="adcs__commands_8c.html#af308e3206304ee5b75dd8bb6aec85177" title="Instruct the ADCS to execute the ADCS_Save_Config command." alt="" coords="375,512,508,537"/>
-<area shape="poly" title=" " alt="" coords="669,744,650,702,624,654,589,605,546,562,526,550,504,540,506,535,529,545,550,558,593,601,628,651,655,700,674,742"/>
-<area shape="rect" href="adcs__commands_8c.html#ae819a5b032d9d62d1cc83623657934a5" title="Instruct the ADCS to execute the ADCS_Save_Orbit_Params command." alt="" coords="354,573,528,598"/>
-<area shape="poly" title=" " alt="" coords="663,745,615,680,583,646,547,617,513,602,515,597,549,613,587,642,619,676,667,742"/>
-<area shape="rect" href="adcs__commands_8c.html#aed744b7e685734f1640661cb715b7a82" title="Set the Augmented SGP4 Parameters of the ADCS." alt="" coords="365,627,518,667"/>
-<area shape="poly" title=" " alt="" coords="647,750,601,715,547,683,518,670,520,665,549,678,604,711,651,745"/>
-<area shape="rect" href="adcs__commands_8c.html#a67665c09e24d46cfd738b32a596af250" title="Instruct the ADCS to execute the ADCS_Set_Commanded_Attitude_Angles command." alt="" coords="361,692,522,733"/>
-<area shape="poly" title=" " alt="" coords="592,755,520,736,521,731,593,750"/>
-<area shape="rect" href="adcs__commands_8c.html#a11601ce06ad4d9ba65907410e81bdee2" title="Instruct the ADCS to execute the ADCS_Set_Estimation_Params command." alt="" coords="367,757,516,798"/>
-<area shape="poly" title=" " alt="" coords="581,780,516,780,516,775,581,775"/>
-<area shape="rect" href="adcs__commands_8c.html#a244e37cb9b4c803699e5cdca2692ab07" title="Instruct the ADCS to set the magnetometer configuration." alt="" coords="355,823,528,863"/>
-<area shape="poly" title=" " alt="" coords="593,805,521,825,520,819,592,800"/>
-<area shape="rect" href="adcs__commands_8c.html#a3393a2f85e1384e27f10da0155c01f29" title="Instruct the ADCS to execute the titular command." alt="" coords="336,888,547,913"/>
-<area shape="poly" title=" " alt="" coords="603,808,598,812,583,828,575,844,566,861,550,877,525,889,523,885,546,873,562,858,570,842,578,825,594,808,600,804"/>
-<area shape="rect" href="adcs__commands_8c.html#ac262b765d9ea6b19e8fb1f39e50c4dd0" title="Instruct the ADCS to execute the ADCS_Set_Magnetorquer_Output command." alt="" coords="357,937,526,978"/>
-<area shape="poly" title=" " alt="" coords="600,809,598,812,586,826,580,840,575,869,570,898,562,913,550,928,527,943,524,938,546,924,558,910,565,896,570,868,575,838,582,823,594,808,597,805"/>
-<area shape="rect" href="adcs__commands_8c.html#a5a06facbb818d342cd4749fc53456287" title="Set the power control mode of each component of the ADCS; for each, 0 turns the component off,..." alt="" coords="356,1002,526,1028"/>
-<area shape="poly" title=" " alt="" coords="599,810,598,811,583,834,576,856,576,901,577,923,575,946,567,969,550,992,529,1006,526,1002,546,988,562,967,570,945,572,923,571,901,571,855,578,831,594,808,596,806"/>
-<area shape="rect" href="adcs__commands_8c.html#a3a9f4c3b3f178a53bcd12c5d4a042794" title="Instruct the ADCS to execute the ADCS_Set_Rate_Gyro_Config command." alt="" coords="370,1052,512,1093"/>
-<area shape="poly" title=" " alt="" coords="599,810,598,811,580,840,572,869,572,897,575,925,579,954,578,983,570,1013,550,1042,533,1056,514,1065,512,1060,530,1051,546,1039,565,1010,573,982,573,954,570,926,567,897,567,868,575,838,594,808,595,807"/>
-<area shape="rect" href="adcs__commands_8c.html#a42020a863207734cd2930378ab9349bd" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="368,1117,514,1142"/>
-<area shape="poly" title=" " alt="" coords="599,810,598,811,576,849,568,885,570,922,577,958,583,995,584,1032,575,1069,550,1106,534,1119,516,1127,514,1122,531,1114,546,1103,570,1067,579,1031,578,996,571,959,565,922,563,885,571,847,594,808,595,807"/>
-<area shape="rect" href="adcs__commands_8c.html#a155f5bcb7965f0b88875194f476ac112" title="Instruct the ADCS to execute the ADCS_Set_SGP4_Orbit_Params command." alt="" coords="367,1167,516,1207"/>
-<area shape="poly" title=" " alt="" coords="599,811,598,811,583,833,573,855,564,898,567,940,576,983,584,1025,587,1068,577,1112,566,1134,550,1157,535,1170,518,1179,515,1174,532,1165,546,1153,562,1132,572,1110,582,1068,579,1026,571,984,562,941,559,898,568,853,578,831,594,808,595,807"/>
-<area shape="rect" href="adcs__commands_8c.html#af523abd359aa91b46f1d37d9668cb82f" title="Instruct the ADCS to execute the ADCS_Set_Tracking_Controller_Target_Reference command." alt="" coords="344,1232,539,1273"/>
-<area shape="poly" title=" " alt="" coords="599,811,598,811,580,838,569,864,562,889,560,914,564,965,576,1015,587,1065,591,1116,589,1142,581,1168,569,1194,550,1221,536,1234,532,1230,546,1217,564,1191,576,1166,583,1141,586,1116,582,1066,570,1016,559,965,554,914,557,888,564,862,576,835,594,808,595,807"/>
-<area shape="rect" href="adcs__commands_8c.html#a54c7f98f0379ad007c03f291da751edc" title="Instruct the ADCS to execute the ADCS_Set_Unix_Time_Save_Mode command." alt="" coords="369,1297,514,1338"/>
-<area shape="poly" title=" " alt="" coords="599,811,598,811,578,842,564,872,557,902,555,931,561,989,576,1047,590,1105,596,1164,594,1194,586,1224,571,1255,550,1286,534,1300,515,1310,512,1305,531,1296,546,1283,567,1252,581,1223,588,1193,591,1164,585,1106,571,1049,556,990,550,931,552,901,559,870,573,839,594,808,595,807"/>
-<area shape="rect" href="adcs__commands_8c.html#a9f51e83fcfa4e59e44b77f355844d818" title="Instruct the ADCS to execute the titular command." alt="" coords="359,1362,524,1388"/>
-<area shape="poly" title=" " alt="" coords="599,811,598,811,587,832,579,857,571,922,572,998,577,1081,581,1164,581,1240,572,1305,563,1331,550,1351,526,1369,523,1364,546,1348,558,1328,567,1304,576,1240,576,1164,571,1081,567,998,566,921,573,856,582,829,594,808,595,807"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a5e0859e51ddde0fef41f11c323dc1599" title="Telecommand: execute a generic command on the ADCS." alt="" coords="353,1412,530,1453"/>
-<area shape="poly" title=" " alt="" coords="599,811,598,811,586,833,577,861,569,932,570,1015,576,1106,581,1196,582,1280,573,1350,564,1379,550,1402,532,1418,528,1414,546,1399,559,1377,568,1349,576,1279,576,1196,570,1106,565,1016,564,932,572,860,581,831,594,808,595,807"/>
+<area shape="poly" title=" " alt="" coords="676,838,661,780,636,707,598,632,574,597,546,566,525,551,501,540,503,535,528,546,550,562,578,594,603,629,641,705,666,778,681,837"/>
+<area shape="rect" href="adcs__commands_8c.html#a2d911b54220da01cfb0ab415739bea38" title="Instruct the ADCS to save an image to the SD card." alt="" coords="355,577,528,602"/>
+<area shape="poly" title=" " alt="" coords="672,839,655,791,629,733,593,675,571,648,546,625,510,605,512,601,550,621,575,645,597,672,634,731,660,789,677,837"/>
+<area shape="rect" href="adcs__commands_8c.html#ae819a5b032d9d62d1cc83623657934a5" title="Instruct the ADCS to execute the ADCS_Save_Orbit_Params command." alt="" coords="354,636,528,661"/>
+<area shape="poly" title=" " alt="" coords="668,841,648,803,621,759,587,716,546,680,515,664,518,659,550,675,591,713,625,756,653,800,672,838"/>
+<area shape="rect" href="adcs__commands_8c.html#aed744b7e685734f1640661cb715b7a82" title="Set the Augmented SGP4 Parameters of the ADCS." alt="" coords="365,689,518,730"/>
+<area shape="poly" title=" " alt="" coords="657,843,609,793,579,767,547,745,517,731,519,726,549,741,582,763,612,789,661,840"/>
+<area shape="rect" href="adcs__commands_8c.html#a67665c09e24d46cfd738b32a596af250" title="Instruct the ADCS to execute the ADCS_Set_Commanded_Attitude_Angles command." alt="" coords="361,755,522,795"/>
+<area shape="poly" title=" " alt="" coords="630,848,547,811,512,798,514,793,549,806,632,843"/>
+<area shape="rect" href="adcs__commands_8c.html#a11601ce06ad4d9ba65907410e81bdee2" title="Instruct the ADCS to execute the ADCS_Set_Estimation_Params command." alt="" coords="367,820,516,861"/>
+<area shape="poly" title=" " alt="" coords="580,862,516,853,517,848,581,857"/>
+<area shape="rect" href="adcs__commands_8c.html#a244e37cb9b4c803699e5cdca2692ab07" title="Instruct the ADCS to set the magnetometer configuration." alt="" coords="355,885,528,926"/>
+<area shape="poly" title=" " alt="" coords="581,890,529,897,528,892,580,885"/>
+<area shape="rect" href="adcs__commands_8c.html#a3393a2f85e1384e27f10da0155c01f29" title="Instruct the ADCS to execute the titular command." alt="" coords="336,950,547,976"/>
+<area shape="poly" title=" " alt="" coords="608,903,597,908,574,924,549,940,514,952,513,947,547,935,571,920,595,903,606,898"/>
+<area shape="rect" href="adcs__commands_8c.html#ac262b765d9ea6b19e8fb1f39e50c4dd0" title="Instruct the ADCS to execute the ADCS_Set_Magnetorquer_Output command." alt="" coords="357,1000,526,1041"/>
+<area shape="poly" title=" " alt="" coords="602,905,598,908,582,928,575,948,567,969,550,990,527,1004,524,1000,546,986,563,967,570,946,577,925,594,904,598,901"/>
+<area shape="rect" href="adcs__commands_8c.html#a5a06facbb818d342cd4749fc53456287" title="Set the power control mode of each component of the ADCS; for each, 0 turns the component off,..." alt="" coords="356,1065,526,1090"/>
+<area shape="poly" title=" " alt="" coords="600,906,598,907,585,925,578,943,576,980,573,1017,565,1036,550,1054,528,1068,525,1064,546,1050,560,1033,567,1016,570,980,573,942,580,923,594,904,596,902"/>
+<area shape="rect" href="adcs__commands_8c.html#a3a9f4c3b3f178a53bcd12c5d4a042794" title="Instruct the ADCS to execute the ADCS_Set_Rate_Gyro_Config command." alt="" coords="370,1115,512,1155"/>
+<area shape="poly" title=" " alt="" coords="599,906,598,907,582,932,574,956,573,980,575,1005,577,1029,576,1054,568,1080,550,1105,533,1118,514,1127,512,1122,530,1114,546,1101,563,1077,571,1053,572,1029,570,1005,568,980,569,955,577,930,594,904,596,902"/>
+<area shape="rect" href="adcs__commands_8c.html#a42020a863207734cd2930378ab9349bd" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="368,1180,514,1205"/>
+<area shape="poly" title=" " alt="" coords="599,906,598,907,578,940,570,973,571,1005,576,1038,581,1070,582,1103,573,1136,550,1169,534,1181,516,1189,514,1184,531,1177,546,1165,568,1134,576,1102,576,1071,571,1038,566,1006,565,972,573,938,594,904,595,903"/>
+<area shape="rect" href="adcs__commands_8c.html#a13c723f863160e6cf86ec2be92effab8" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="357,1229,526,1254"/>
+<area shape="poly" title=" " alt="" coords="599,906,598,907,584,927,575,947,567,986,569,1025,577,1063,584,1102,586,1141,576,1180,566,1200,550,1220,528,1235,525,1231,546,1216,561,1197,571,1178,581,1141,579,1103,572,1064,564,1025,562,985,570,945,580,925,594,904,595,903"/>
+<area shape="rect" href="adcs__commands_8c.html#a155f5bcb7965f0b88875194f476ac112" title="Instruct the ADCS to execute the ADCS_Set_SGP4_Orbit_Params command." alt="" coords="367,1279,516,1319"/>
+<area shape="poly" title=" " alt="" coords="599,907,598,907,582,930,572,953,563,998,566,1042,576,1087,585,1131,588,1176,585,1199,578,1222,567,1245,550,1269,535,1282,518,1291,515,1286,532,1277,546,1265,562,1243,574,1220,580,1198,583,1176,580,1132,571,1088,561,1043,558,998,567,952,578,928,594,904,595,903"/>
+<area shape="rect" href="adcs__commands_8c.html#af523abd359aa91b46f1d37d9668cb82f" title="Instruct the ADCS to execute the ADCS_Set_Tracking_Controller_Target_Reference command." alt="" coords="344,1344,539,1385"/>
+<area shape="poly" title=" " alt="" coords="599,907,598,907,580,935,568,962,561,988,558,1014,563,1067,576,1119,588,1171,593,1224,590,1250,582,1278,569,1305,550,1333,536,1346,532,1342,546,1329,565,1302,577,1276,585,1249,587,1224,583,1172,570,1120,558,1068,553,1014,556,987,563,960,575,932,594,904,595,903"/>
+<area shape="rect" href="adcs__commands_8c.html#a54c7f98f0379ad007c03f291da751edc" title="Instruct the ADCS to execute the ADCS_Set_Unix_Time_Save_Mode command." alt="" coords="369,1409,514,1450"/>
+<area shape="poly" title=" " alt="" coords="599,907,598,907,577,939,563,970,556,1001,554,1031,561,1092,576,1151,591,1211,597,1272,595,1303,587,1334,572,1366,550,1398,534,1412,515,1422,512,1417,531,1408,546,1395,567,1363,582,1333,589,1302,592,1272,586,1212,571,1153,555,1092,548,1031,551,1000,558,969,572,937,594,904,595,903"/>
+<area shape="rect" href="adcs__commands_8c.html#a9f51e83fcfa4e59e44b77f355844d818" title="Instruct the ADCS to execute the titular command." alt="" coords="359,1474,524,1500"/>
+<area shape="poly" title=" " alt="" coords="599,907,598,907,586,928,578,954,571,1021,572,1100,577,1185,581,1270,582,1349,573,1415,563,1442,550,1463,526,1481,523,1476,546,1460,559,1440,568,1414,576,1349,576,1270,571,1185,566,1100,565,1021,573,953,581,926,594,904,595,903"/>
+<area shape="rect" href="adcs__commands_8c.html#a0ee4a74615b30328d110093fb1d7e18b" title="Instruct the ADCS to synchronise its Unix epoch time to the current OBC Unix time." alt="" coords="344,1524,539,1549"/>
+<area shape="poly" title=" " alt="" coords="599,907,598,907,585,930,577,959,569,1032,571,1118,577,1211,583,1304,584,1390,575,1462,565,1491,550,1514,538,1525,534,1521,546,1511,560,1489,569,1461,579,1389,578,1304,572,1211,565,1118,564,1031,571,958,580,928,594,904,595,903"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a5e0859e51ddde0fef41f11c323dc1599" title="Telecommand: execute a generic command on the ADCS." alt="" coords="353,1573,530,1614"/>
+<area shape="poly" title=" " alt="" coords="599,906,598,907,584,932,575,963,567,1041,569,1134,576,1234,583,1335,584,1427,581,1469,575,1506,565,1538,550,1563,532,1579,528,1575,546,1560,560,1536,570,1505,576,1468,579,1427,577,1335,570,1235,563,1134,561,1041,570,962,579,930,594,904,595,903"/>
 <area shape="rect" href="telecommand__adcs_8c.html#aa4735644aa3f675981fb2b1ca33be6b1" title="Telecommand: Set the attitude control mode of the ADCS; needs Power Control to be set before working." alt="" coords="57,5,235,46"/>
-<area shape="poly" title=" " alt="" coords="329,41,235,34,235,29,330,35"/>
+<area shape="poly" title=" " alt="" coords="329,33,235,31,235,25,330,28"/>
 <area shape="rect" href="telecommand__adcs_8c.html#ae4a656bd5312eb333be28fdc369949de" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="57,71,235,111"/>
-<area shape="poly" title=" " alt="" coords="319,107,235,100,235,95,319,102"/>
+<area shape="poly" title=" " alt="" coords="319,96,235,95,235,90,319,91"/>
 <area shape="rect" href="telecommand__adcs_8c.html#abf9f994be4334fec523afdfeb94fae10" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="49,136,243,177"/>
-<area shape="poly" title=" " alt="" coords="346,184,243,171,244,166,346,179"/>
+<area shape="poly" title=" " alt="" coords="346,183,243,171,244,166,346,178"/>
 <area shape="rect" href="telecommand__adcs_8c.html#a4a392ab74792b31db922ac145686191a" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="65,201,227,242"/>
 <area shape="poly" title=" " alt="" coords="364,273,227,242,228,237,365,268"/>
 <area shape="rect" href="telecommand__adcs_8c.html#a49630bc8904515fc0b8047cd6d5c7d6a" title="Telecommand: obtain generic telemetry from the ADCS." alt="" coords="58,267,234,307"/>
@@ -678,37 +714,33 @@ Here is the caller graph for this function:</div>
 <area shape="rect" href="telecommand__adcs_8c.html#af9ce33163776cab8f4ad997c16af6ae6" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="64,397,228,422"/>
 <area shape="poly" title=" " alt="" coords="379,413,228,413,228,407,379,408"/>
 <area shape="rect" href="telecommand__adcs_8c.html#aee68180c5bab44ee52ba9dc1bbc61ba6" title="Telecommand: If ADCS run mode is Triggered, run the ADCS sensor loop." alt="" coords="52,446,240,472"/>
-<area shape="poly" title=" " alt="" coords="367,465,240,463,240,458,367,459"/>
+<area shape="poly" title=" " alt="" coords="367,466,240,463,240,458,367,460"/>
 <area shape="rect" href="telecommand__adcs_8c.html#a514f1940538cd16b1f0842183eab9fd8" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="65,496,227,537"/>
 <area shape="poly" title=" " alt="" coords="359,525,227,521,227,516,359,519"/>
-<area shape="rect" href="telecommand__adcs_8c.html#ad2bbaeb81302110c39050cfd9591c1ed" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="65,561,227,602"/>
-<area shape="poly" title=" " alt="" coords="338,587,227,585,227,580,339,582"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a010a4200d80186fa6a4d9dd131f1ba5d" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="34,627,258,667"/>
-<area shape="poly" title=" " alt="" coords="349,650,258,650,258,644,349,644"/>
-<area shape="rect" href="telecommand__adcs_8c.html#aa54fca153c3d72b2792b90c67ea8ed01" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="31,692,261,733"/>
-<area shape="poly" title=" " alt="" coords="346,715,262,715,262,710,346,710"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a267cc8fe5234dd14291d632a63d56538" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="36,757,256,798"/>
-<area shape="poly" title=" " alt="" coords="351,780,256,780,256,775,351,775"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a07baac9fec776a43fe02a541ec8dea7e" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="25,823,267,863"/>
-<area shape="poly" title=" " alt="" coords="340,846,268,846,268,840,340,840"/>
-<area shape="rect" href="telecommand__adcs_8c.html#ab7d9825783bdf895f19de393b7b23afe" title="Telecommand: Set the magnetometer mode of the ADCS." alt="" coords="5,888,287,913"/>
-<area shape="poly" title=" " alt="" coords="320,903,287,903,287,898,320,898"/>
-<area shape="rect" href="telecommand__adcs_8c.html#af2ca31f4b748a6a93be8a3f1907689e9" title="Telecommand: Set the magnetorquer output values." alt="" coords="27,937,265,978"/>
-<area shape="poly" title=" " alt="" coords="341,960,265,960,265,955,341,955"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a09cd71eec37b89e27b214acd1af6c476" title="Telecommand: Set the power control mode of each component of the ADCS; for each, 0 turns the componen..." alt="" coords="49,1003,243,1043"/>
-<area shape="poly" title=" " alt="" coords="341,1020,243,1023,243,1018,341,1015"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a8ee861331037001ee63c66cb8b2dc32f" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="55,1068,237,1109"/>
-<area shape="poly" title=" " alt="" coords="355,1080,237,1086,237,1081,355,1074"/>
-<area shape="rect" href="telecommand__adcs_8c.html#acb4aaa038a792391c026be5c1cd23bd6" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="38,1133,254,1158"/>
-<area shape="poly" title=" " alt="" coords="353,1137,255,1142,255,1137,352,1132"/>
-<area shape="rect" href="telecommand__adcs_8c.html#aeb241b357bb40b06076223d9f173a81d" title="Telecommand: Set the ADCS Simplified General Perturbations (SGP4) orbit parameters." alt="" coords="52,1183,240,1223"/>
-<area shape="poly" title=" " alt="" coords="351,1195,240,1201,240,1195,351,1189"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a80d76493935c499f9778c92197dfcaf9" title="Telecommand: Set the ADCS tracking controller target reference (location on Earth to point towards)" alt="" coords="43,1248,249,1289"/>
-<area shape="poly" title=" " alt="" coords="328,1261,249,1265,249,1260,328,1256"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a9ae6071787c7946518227e8092b6e620" title="Telecommand: Choose the circumstances to save the current Unix time." alt="" coords="55,1313,237,1354"/>
-<area shape="poly" title=" " alt="" coords="354,1325,238,1331,238,1326,353,1320"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a31ebda15faf41b449b2a28cce5863448" title="Telecommand: Set the wheel speed of the ADCS." alt="" coords="49,1379,243,1419"/>
-<area shape="poly" title=" " alt="" coords="343,1386,243,1394,243,1388,343,1380"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a0bc0d109abce87c4f6a417b203030a93" title="Telecommand: Save an image to the ADCS onboard SD card." alt="" coords="65,561,227,602"/>
+<area shape="poly" title=" " alt="" coords="339,590,228,587,228,581,339,584"/>
+<area shape="rect" href="telecommand__adcs_8c.html#ad2bbaeb81302110c39050cfd9591c1ed" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="65,627,227,667"/>
+<area shape="poly" title=" " alt="" coords="338,651,227,650,227,645,338,645"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a010a4200d80186fa6a4d9dd131f1ba5d" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="34,692,258,733"/>
+<area shape="poly" title=" " alt="" coords="349,713,258,714,258,709,349,708"/>
+<area shape="rect" href="telecommand__adcs_8c.html#aa54fca153c3d72b2792b90c67ea8ed01" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="31,757,261,798"/>
+<area shape="poly" title=" " alt="" coords="346,779,262,779,262,774,346,773"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a267cc8fe5234dd14291d632a63d56538" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="36,823,256,863"/>
+<area shape="poly" title=" " alt="" coords="351,844,256,845,256,839,351,838"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a07baac9fec776a43fe02a541ec8dea7e" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="25,888,267,929"/>
+<area shape="poly" title=" " alt="" coords="340,909,268,910,268,905,340,904"/>
+<area shape="rect" href="telecommand__adcs_8c.html#ab7d9825783bdf895f19de393b7b23afe" title="Telecommand: Set the magnetometer mode of the ADCS." alt="" coords="5,953,287,978"/>
+<area shape="poly" title=" " alt="" coords="320,967,287,967,287,962,320,961"/>
+<area shape="rect" href="telecommand__adcs_8c.html#af2ca31f4b748a6a93be8a3f1907689e9" title="Telecommand: Set the magnetorquer output values." alt="" coords="27,1003,265,1043"/>
+<area shape="poly" title=" " alt="" coords="341,1024,265,1025,265,1019,341,1019"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a09cd71eec37b89e27b214acd1af6c476" title="Telecommand: Set the power control mode of each component of the ADCS; for each, 0 turns the componen..." alt="" coords="49,1068,243,1109"/>
+<area shape="poly" title=" " alt="" coords="341,1084,243,1087,243,1082,341,1079"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a8ee861331037001ee63c66cb8b2dc32f" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="55,1133,237,1174"/>
+<area shape="poly" title=" " alt="" coords="355,1143,237,1151,237,1145,354,1138"/>
+<area shape="rect" href="telecommand__adcs_8c.html#acb4aaa038a792391c026be5c1cd23bd6" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="38,1198,254,1224"/>
+<area shape="poly" title=" " alt="" coords="353,1201,255,1207,255,1201,352,1195"/>
+<area shape="rect" href="telecommand__adcs_8c.html#acfbac886221c0407fce13bee70ec8d5a" title="Telecommand: Request commissioning telemetry from the ADCS and save it to the memory module." alt="" coords="57,1248,235,1289"/>
+<area shape="poly" title=" " alt="" coords="342,1253,235,1263,235,1258,341,1248"/>
 </map>
 </div>
 
@@ -745,8 +777,8 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="426,106,862,106,862,111,426,111"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="638,5,830,46"/>
 <area shape="poly" title=" " alt="" coords="579,67,644,48,646,53,581,72"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a914351ecde8db8a1690caab528b69055" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="642,70,826,96"/>
-<area shape="poly" title=" " alt="" coords="591,80,626,80,626,86,591,86"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="645,70,823,96"/>
+<area shape="poly" title=" " alt="" coords="591,80,629,80,629,86,591,86"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="890,19,1066,59"/>
 <area shape="poly" title=" " alt="" coords="830,28,875,31,874,36,830,34"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1127,60,1275,101"/>
@@ -762,6 +794,60 @@ Here is the caller graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Deploy_Magnetometer command." alt="" coords="225,13,416,38"/>
 <area shape="rect" href="telecommand__adcs_8c.html#a4f76ad9966b9384028ffecba4433bf12" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,177,46"/>
 <area shape="poly" title=" " alt="" coords="209,28,177,28,177,23,209,23"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="ae9e90757f361a1a29b13768bdf8a53a5" name="ae9e90757f361a1a29b13768bdf8a53a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9e90757f361a1a29b13768bdf8a53a5">&#9670;&#160;</a></span>ADCS_get_acp_execution_state()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t ADCS_get_acp_execution_state </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structADCS__acp__execution__state__struct__t.html">ADCS_acp_execution_state_struct_t</a> *</td>          <td class="paramname"><span class="paramname"><em>output_struct</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Instruct the ADCS to execute the ADCS_execution_state command. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">output_struct</td><td>Pointer to struct in which to place packed ADCS telemetry data </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 if successful, non-zero if a HAL or ADCS error occurred in transmission. </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="adcs__commands_8c_ae9e90757f361a1a29b13768bdf8a53a5_cgraph.png" border="0" usemap="#aadcs__commands_8c_ae9e90757f361a1a29b13768bdf8a53a5_cgraph" alt=""/></div>
+<map name="aadcs__commands_8c_ae9e90757f361a1a29b13768bdf8a53a5_cgraph" id="aadcs__commands_8c_ae9e90757f361a1a29b13768bdf8a53a5_cgraph">
+<area shape="rect" title="Instruct the ADCS to execute the ADCS_execution_state command." alt="" coords="5,39,178,79"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="230,5,422,46"/>
+<area shape="poly" title=" " alt="" coords="177,44,214,39,215,44,178,49"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a85df3b312f5491be0fbc00dde69904a1" title=" " alt="" coords="226,71,426,111"/>
+<area shape="poly" title=" " alt="" coords="178,68,211,73,210,78,177,73"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="474,5,650,46"/>
+<area shape="poly" title=" " alt="" coords="422,23,458,23,458,28,422,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="698,5,847,46"/>
+<area shape="poly" title=" " alt="" coords="651,23,683,23,683,28,651,28"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="adcs__commands_8c_ae9e90757f361a1a29b13768bdf8a53a5_icgraph.png" border="0" usemap="#aadcs__commands_8c_ae9e90757f361a1a29b13768bdf8a53a5_icgraph" alt=""/></div>
+<map name="aadcs__commands_8c_ae9e90757f361a1a29b13768bdf8a53a5_icgraph" id="aadcs__commands_8c_ae9e90757f361a1a29b13768bdf8a53a5_icgraph">
+<area shape="rect" title="Instruct the ADCS to execute the ADCS_execution_state command." alt="" coords="271,39,443,79"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a070c025295da85667dbbabf1076051cc" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,223,46"/>
+<area shape="poly" title=" " alt="" coords="255,48,223,43,223,38,256,42"/>
+<area shape="rect" href="telecommand__adcs_8c.html#acfbac886221c0407fce13bee70ec8d5a" title="Telecommand: Request commissioning telemetry from the ADCS and save it to the memory module." alt="" coords="25,71,203,111"/>
+<area shape="poly" title=" " alt="" coords="256,75,204,82,203,77,255,70"/>
 </map>
 </div>
 
@@ -798,8 +884,8 @@ Here is the call graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Get_Augmented_SGP4_Params command." alt="" coords="5,39,159,79"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="207,5,398,46"/>
 <area shape="poly" title=" " alt="" coords="158,45,191,40,192,45,159,50"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a52f88993669a631a8e36e7c077d987d2" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="210,71,395,111"/>
-<area shape="poly" title=" " alt="" coords="159,67,194,73,194,78,158,73"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a227d4d62d21ea2dfef8e474e266a7d84" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="212,71,393,111"/>
+<area shape="poly" title=" " alt="" coords="159,67,196,73,195,78,158,73"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="446,5,622,46"/>
 <area shape="poly" title=" " alt="" coords="398,23,430,23,430,28,398,28"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="670,5,819,46"/>
@@ -848,14 +934,14 @@ Here is the call graph for this function:</div>
 <div class="center"><img src="adcs__commands_8c_adff141206b24ba6923859a05680bf6fd_cgraph.png" border="0" usemap="#aadcs__commands_8c_adff141206b24ba6923859a05680bf6fd_cgraph" alt=""/></div>
 <map name="aadcs__commands_8c_adff141206b24ba6923859a05680bf6fd_cgraph" id="aadcs__commands_8c_adff141206b24ba6923859a05680bf6fd_cgraph">
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Get_Commanded_Attitude_Angles command." alt="" coords="5,39,166,79"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="214,5,406,46"/>
-<area shape="poly" title=" " alt="" coords="166,44,198,40,199,45,167,50"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#aaf28dc15ec780911f8aff57db63688e7" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="214,71,406,111"/>
-<area shape="poly" title=" " alt="" coords="167,68,199,72,198,78,166,73"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="454,5,630,46"/>
-<area shape="poly" title=" " alt="" coords="406,23,438,23,438,28,406,28"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="678,5,827,46"/>
-<area shape="poly" title=" " alt="" coords="631,23,663,23,663,28,631,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="214,5,405,46"/>
+<area shape="poly" title=" " alt="" coords="166,44,198,40,198,45,166,50"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#abc3acb24c93c01712cda5b5126b252ab" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="215,71,404,111"/>
+<area shape="poly" title=" " alt="" coords="166,68,200,73,199,78,166,73"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="453,5,629,46"/>
+<area shape="poly" title=" " alt="" coords="405,23,437,23,437,28,405,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="677,5,826,46"/>
+<area shape="poly" title=" " alt="" coords="630,23,662,23,662,28,630,28"/>
 </map>
 </div>
 <div class="dynheader">
@@ -900,14 +986,14 @@ Here is the call graph for this function:</div>
 <div class="center"><img src="adcs__commands_8c_a2b6feff1dc11c35a570e0cb3415acfd5_cgraph.png" border="0" usemap="#aadcs__commands_8c_a2b6feff1dc11c35a570e0cb3415acfd5_cgraph" alt=""/></div>
 <map name="aadcs__commands_8c_a2b6feff1dc11c35a570e0cb3415acfd5_cgraph" id="aadcs__commands_8c_a2b6feff1dc11c35a570e0cb3415acfd5_cgraph">
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Commanded_Wheel_Speed command." alt="" coords="5,39,166,79"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="214,5,406,46"/>
-<area shape="poly" title=" " alt="" coords="166,44,198,40,199,45,167,50"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a8490169822b7a6cdcb8a8c7f0e552d0c" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="214,71,406,111"/>
-<area shape="poly" title=" " alt="" coords="167,68,199,72,198,78,166,73"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="454,5,630,46"/>
-<area shape="poly" title=" " alt="" coords="406,23,438,23,438,28,406,28"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="678,5,827,46"/>
-<area shape="poly" title=" " alt="" coords="631,23,663,23,663,28,631,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="214,5,405,46"/>
+<area shape="poly" title=" " alt="" coords="166,44,198,40,198,45,166,50"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#ab3e360bd1f82e385a7933bce1882b48f" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="215,71,404,111"/>
+<area shape="poly" title=" " alt="" coords="166,68,200,73,199,78,166,73"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="453,5,629,46"/>
+<area shape="poly" title=" " alt="" coords="405,23,437,23,437,28,405,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="677,5,826,46"/>
+<area shape="poly" title=" " alt="" coords="630,23,662,23,662,28,630,28"/>
 </map>
 </div>
 <div class="dynheader">
@@ -954,8 +1040,8 @@ Here is the call graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Communication_Status command." alt="" coords="5,39,183,79"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="231,5,422,46"/>
 <area shape="poly" title=" " alt="" coords="182,44,215,39,215,44,183,49"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#ad5ad4abceb3e3e6010d9812fb50f54d7" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="244,71,408,111"/>
-<area shape="poly" title=" " alt="" coords="183,69,229,75,228,80,182,74"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a70de498fab0bb6378585f262084c9baa" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="246,71,406,111"/>
+<area shape="poly" title=" " alt="" coords="183,69,231,75,230,81,182,74"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="470,5,646,46"/>
 <area shape="poly" title=" " alt="" coords="422,23,454,23,454,28,422,28"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="694,5,843,46"/>
@@ -1008,8 +1094,8 @@ Here is the call graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_CubeControl_Current command." alt="" coords="5,39,162,79"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="210,5,401,46"/>
 <area shape="poly" title=" " alt="" coords="162,45,194,40,195,45,163,50"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#aebdb49bc0825bd309c267de770cc22de" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="210,71,400,111"/>
-<area shape="poly" title=" " alt="" coords="162,68,195,72,194,78,162,73"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a47c60b25fab3651896e4fd7975077d5a" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="213,71,398,111"/>
+<area shape="poly" title=" " alt="" coords="162,68,198,73,197,78,162,73"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="449,5,625,46"/>
 <area shape="poly" title=" " alt="" coords="401,23,433,23,433,28,401,28"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="673,5,822,46"/>
@@ -1024,6 +1110,100 @@ Here is the caller graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_CubeControl_Current command." alt="" coords="255,5,411,46"/>
 <area shape="rect" href="telecommand__adcs_8c.html#a1b777295ffce8613c3734f0fbac5b29f" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,207,46"/>
 <area shape="poly" title=" " alt="" coords="239,28,207,28,207,23,239,23"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a919377a02bd8a8d8f3f2bd36e7c99dfc" name="a919377a02bd8a8d8f3f2bd36e7c99dfc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a919377a02bd8a8d8f3f2bd36e7c99dfc">&#9670;&#160;</a></span>ADCS_get_current_state_1()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t ADCS_get_current_state_1 </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structADCS__current__state__1__struct__t.html">ADCS_current_state_1_struct_t</a> *</td>          <td class="paramname"><span class="paramname"><em>output_struct</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Instruct the ADCS to execute the ADCS_get_current_state_1 command. (There's an ADCS_current_state_2 command which is presently not implemented) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">output_struct</td><td>Pointer to struct in which to place packed ADCS telemetry data </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 if successful, non-zero if a HAL or ADCS error occurred in transmission. </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="adcs__commands_8c_a919377a02bd8a8d8f3f2bd36e7c99dfc_cgraph.png" border="0" usemap="#aadcs__commands_8c_a919377a02bd8a8d8f3f2bd36e7c99dfc_cgraph" alt=""/></div>
+<map name="aadcs__commands_8c_a919377a02bd8a8d8f3f2bd36e7c99dfc_cgraph" id="aadcs__commands_8c_a919377a02bd8a8d8f3f2bd36e7c99dfc_cgraph">
+<area shape="rect" title="Instruct the ADCS to execute the ADCS_get_current_state_1 command. (There&#39;s an ADCS_current_state_2 c..." alt="" coords="5,46,185,72"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="233,5,424,46"/>
+<area shape="poly" title=" " alt="" coords="184,44,217,39,217,44,185,49"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#ad1bec11a1845d30b8e11f021029d9b32" title=" " alt="" coords="250,71,407,111"/>
+<area shape="poly" title=" " alt="" coords="185,69,235,76,234,81,184,74"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="472,5,648,46"/>
+<area shape="poly" title=" " alt="" coords="424,23,456,23,456,28,424,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="696,5,845,46"/>
+<area shape="poly" title=" " alt="" coords="649,23,681,23,681,28,649,28"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="adcs__commands_8c_a919377a02bd8a8d8f3f2bd36e7c99dfc_icgraph.png" border="0" usemap="#aadcs__commands_8c_a919377a02bd8a8d8f3f2bd36e7c99dfc_icgraph" alt=""/></div>
+<map name="aadcs__commands_8c_a919377a02bd8a8d8f3f2bd36e7c99dfc_icgraph" id="aadcs__commands_8c_a919377a02bd8a8d8f3f2bd36e7c99dfc_icgraph">
+<area shape="rect" title="Instruct the ADCS to execute the ADCS_get_current_state_1 command. (There&#39;s an ADCS_current_state_2 c..." alt="" coords="253,13,432,38"/>
+<area shape="rect" href="telecommand__adcs_8c.html#aaa40d24b5454f145e9e1a2c9945d0af9" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,205,46"/>
+<area shape="poly" title=" " alt="" coords="237,28,205,28,205,23,237,23"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a4119f53137daee2b797d5f3166055ac7" name="a4119f53137daee2b797d5f3166055ac7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4119f53137daee2b797d5f3166055ac7">&#9670;&#160;</a></span>ADCS_get_current_unix_time()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t ADCS_get_current_unix_time </td>
+          <td>(</td>
+          <td class="paramtype">uint64_t *</td>          <td class="paramname"><span class="paramname"><em>epoch_time_ms</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Instruct the ADCS to execute the ADCS_get_current_unix_time command. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">epoch_time_ms</td><td>Pointer to uint64 to store the time since the Unix epoch in ms, according to the ADCS </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 if successful, non-zero if a HAL or ADCS error occurred in transmission. </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="adcs__commands_8c_a4119f53137daee2b797d5f3166055ac7_cgraph.png" border="0" usemap="#aadcs__commands_8c_a4119f53137daee2b797d5f3166055ac7_cgraph" alt=""/></div>
+<map name="aadcs__commands_8c_a4119f53137daee2b797d5f3166055ac7_cgraph" id="aadcs__commands_8c_a4119f53137daee2b797d5f3166055ac7_cgraph">
+<area shape="rect" title="Instruct the ADCS to execute the ADCS_get_current_unix_time command." alt="" coords="5,42,197,68"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="248,5,439,46"/>
+<area shape="poly" title=" " alt="" coords="197,41,232,36,232,42,197,46"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a0bfa18b3765f5b901c25eb5da9a0e5da" title=" " alt="" coords="245,70,442,96"/>
+<area shape="poly" title=" " alt="" coords="197,63,229,67,229,72,197,69"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="490,5,666,46"/>
+<area shape="poly" title=" " alt="" coords="439,23,474,23,474,28,439,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="714,5,863,46"/>
+<area shape="poly" title=" " alt="" coords="667,23,699,23,699,28,667,28"/>
 </map>
 </div>
 
@@ -1060,8 +1240,8 @@ Here is the call graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Estimate_Angular_Rates command." alt="" coords="5,39,194,79"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="242,5,433,46"/>
 <area shape="poly" title=" " alt="" coords="194,43,226,39,227,44,194,48"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a13d618a4255aec247057130fbb12b8a9" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="256,71,419,111"/>
-<area shape="poly" title=" " alt="" coords="194,69,241,75,240,81,194,74"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a8b36c8d9cd01ba9e7f22f5f2180d850f" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="258,71,417,111"/>
+<area shape="poly" title=" " alt="" coords="194,69,243,76,242,81,194,74"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="481,5,657,46"/>
 <area shape="poly" title=" " alt="" coords="433,23,465,23,465,28,433,28"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="705,5,854,46"/>
@@ -1110,14 +1290,14 @@ Here is the call graph for this function:</div>
 <div class="center"><img src="adcs__commands_8c_a8ef00b896a55801bb8d08ca6d7222bab_cgraph.png" border="0" usemap="#aadcs__commands_8c_a8ef00b896a55801bb8d08ca6d7222bab_cgraph" alt=""/></div>
 <map name="aadcs__commands_8c_a8ef00b896a55801bb8d08ca6d7222bab_cgraph" id="aadcs__commands_8c_a8ef00b896a55801bb8d08ca6d7222bab_cgraph">
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Estimate_Fine_Angular_Rates command." alt="" coords="5,39,172,79"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="222,5,413,46"/>
-<area shape="poly" title=" " alt="" coords="172,44,206,39,207,44,173,50"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#ad289383b6fd6458451e686a69c6c9a6f" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="220,71,415,111"/>
-<area shape="poly" title=" " alt="" coords="172,68,204,73,204,78,172,73"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="463,5,639,46"/>
-<area shape="poly" title=" " alt="" coords="413,23,447,23,447,28,413,28"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="687,5,836,46"/>
-<area shape="poly" title=" " alt="" coords="640,23,672,23,672,28,640,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="220,5,411,46"/>
+<area shape="poly" title=" " alt="" coords="172,44,204,39,205,45,172,49"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a99bf537c2b95c9632f5c5cae78b18941" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="222,71,408,111"/>
+<area shape="poly" title=" " alt="" coords="172,68,207,73,206,78,172,73"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="459,5,635,46"/>
+<area shape="poly" title=" " alt="" coords="411,23,443,23,443,28,411,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="683,5,832,46"/>
+<area shape="poly" title=" " alt="" coords="636,23,668,23,668,28,636,28"/>
 </map>
 </div>
 <div class="dynheader">
@@ -1164,8 +1344,8 @@ Here is the call graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Estimated_Attitude_Angles command." alt="" coords="5,39,152,79"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="200,5,391,46"/>
 <area shape="poly" title=" " alt="" coords="151,45,184,40,185,45,152,50"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a2905b69eafbe7a34160066fcd3b72b59" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="207,71,384,111"/>
-<area shape="poly" title=" " alt="" coords="152,67,192,73,191,78,151,72"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a5681417518c0eaec21b84e8b9dfbe02f" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="208,71,382,111"/>
+<area shape="poly" title=" " alt="" coords="152,67,193,73,192,79,151,72"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="439,5,615,46"/>
 <area shape="poly" title=" " alt="" coords="391,23,423,23,423,28,391,28"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="663,5,812,46"/>
@@ -1216,8 +1396,8 @@ Here is the call graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Estimated_Gyro_Bias command." alt="" coords="5,39,152,79"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="200,5,391,46"/>
 <area shape="poly" title=" " alt="" coords="151,45,184,40,185,45,152,50"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a2e3805895d0597aaececf9cb3c4fbd13" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="207,71,384,111"/>
-<area shape="poly" title=" " alt="" coords="152,67,192,73,191,78,151,72"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a798a30632cf052d4074c8ecb6aef76dd" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="208,71,382,111"/>
+<area shape="poly" title=" " alt="" coords="152,67,193,73,192,79,151,72"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="439,5,615,46"/>
 <area shape="poly" title=" " alt="" coords="391,23,423,23,423,28,391,28"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="663,5,812,46"/>
@@ -1268,8 +1448,8 @@ Here is the call graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Estimation_Innovation_Vector command." alt="" coords="5,39,155,79"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="203,5,394,46"/>
 <area shape="poly" title=" " alt="" coords="155,45,187,40,188,45,155,50"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a6a699661fd4b0886dff59471be0eb3b5" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="208,71,388,111"/>
-<area shape="poly" title=" " alt="" coords="155,67,193,73,192,78,155,73"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7202c8d459a19bdf58d1cb00ed562baa" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="210,71,387,111"/>
+<area shape="poly" title=" " alt="" coords="155,67,195,73,194,78,155,73"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="442,5,618,46"/>
 <area shape="poly" title=" " alt="" coords="394,23,426,23,426,28,394,28"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="666,5,815,46"/>
@@ -1320,8 +1500,8 @@ Here is the call graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Get_Estimation_Params command." alt="" coords="5,39,155,79"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="203,5,394,46"/>
 <area shape="poly" title=" " alt="" coords="155,45,187,40,188,45,155,50"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#ac584ce872a33aa804e91f2399a6d392b" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="208,71,388,111"/>
-<area shape="poly" title=" " alt="" coords="155,67,193,73,192,78,155,73"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a9fac6f24729e4875049a6674eb421ae6" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="210,71,387,111"/>
+<area shape="poly" title=" " alt="" coords="155,67,195,73,194,78,155,73"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="442,5,618,46"/>
 <area shape="poly" title=" " alt="" coords="394,23,426,23,426,28,394,28"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="666,5,815,46"/>
@@ -1372,8 +1552,8 @@ Here is the call graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Fine_Sun_Vector command." alt="" coords="5,46,186,72"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="234,5,425,46"/>
 <area shape="poly" title=" " alt="" coords="186,43,218,39,218,44,187,49"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#ae0210bafe1c8d650baaf297df3eed66a" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="242,71,416,111"/>
-<area shape="poly" title=" " alt="" coords="187,69,227,74,226,80,186,74"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#abbcea6279dceace29b83217861756222" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="247,71,412,111"/>
+<area shape="poly" title=" " alt="" coords="187,69,232,75,231,80,186,74"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="473,5,649,46"/>
 <area shape="poly" title=" " alt="" coords="425,23,457,23,457,28,425,28"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="697,5,846,46"/>
@@ -1423,13 +1603,13 @@ Here is the call graph for this function:</div>
 <map name="aadcs__commands_8c_afd4d41668b881b9ab99ef0dec931daae_cgraph" id="aadcs__commands_8c_afd4d41668b881b9ab99ef0dec931daae_cgraph">
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Identification command." alt="" coords="5,46,167,72"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="215,5,406,46"/>
-<area shape="poly" title=" " alt="" coords="167,44,199,40,200,45,167,50"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a31991b1a6fc3413de17a65d2993f0a43" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="215,71,407,111"/>
-<area shape="poly" title=" " alt="" coords="167,68,200,72,199,78,167,73"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="455,5,631,46"/>
-<area shape="poly" title=" " alt="" coords="407,23,439,23,439,28,407,28"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="679,5,828,46"/>
-<area shape="poly" title=" " alt="" coords="632,23,664,23,664,28,632,28"/>
+<area shape="poly" title=" " alt="" coords="166,44,199,40,200,45,167,50"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a0294c7dc02c7599b3d6d45d3973c2a34" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="216,71,405,111"/>
+<area shape="poly" title=" " alt="" coords="167,68,200,73,199,78,166,73"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="454,5,630,46"/>
+<area shape="poly" title=" " alt="" coords="406,23,438,23,438,28,406,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="678,5,827,46"/>
+<area shape="poly" title=" " alt="" coords="631,23,663,23,663,28,631,28"/>
 </map>
 </div>
 <div class="dynheader">
@@ -1474,14 +1654,14 @@ Here is the call graph for this function:</div>
 <div class="center"><img src="adcs__commands_8c_a2499644ca56d3bfee3171a9ce957395e_cgraph.png" border="0" usemap="#aadcs__commands_8c_a2499644ca56d3bfee3171a9ce957395e_cgraph" alt=""/></div>
 <map name="aadcs__commands_8c_a2499644ca56d3bfee3171a9ce957395e_cgraph" id="aadcs__commands_8c_a2499644ca56d3bfee3171a9ce957395e_cgraph">
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_IGRF_Magnetic_Field_Vector command." alt="" coords="5,39,173,79"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="230,5,422,46"/>
-<area shape="poly" title=" " alt="" coords="173,45,214,39,215,44,173,50"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a6ac59edd15b07b459b2ccee2fe1239db" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="221,71,431,111"/>
-<area shape="poly" title=" " alt="" coords="173,68,206,72,205,77,173,73"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="479,5,655,46"/>
-<area shape="poly" title=" " alt="" coords="422,23,464,23,464,28,422,28"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="703,5,852,46"/>
-<area shape="poly" title=" " alt="" coords="656,23,688,23,688,28,656,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="223,5,414,46"/>
+<area shape="poly" title=" " alt="" coords="172,44,207,39,208,44,173,50"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a6edec543d9c13b1e0beab5f01dfd1182" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="221,71,416,111"/>
+<area shape="poly" title=" " alt="" coords="173,68,206,73,205,78,172,73"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="464,5,640,46"/>
+<area shape="poly" title=" " alt="" coords="414,23,448,23,448,28,414,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="688,5,837,46"/>
+<area shape="poly" title=" " alt="" coords="641,23,673,23,673,28,641,28"/>
 </map>
 </div>
 <div class="dynheader">
@@ -1526,14 +1706,14 @@ Here is the call graph for this function:</div>
 <div class="center"><img src="adcs__commands_8c_aa6c75f66c6ec79b6f136e1870867da22_cgraph.png" border="0" usemap="#aadcs__commands_8c_aa6c75f66c6ec79b6f136e1870867da22_cgraph" alt=""/></div>
 <map name="aadcs__commands_8c_aa6c75f66c6ec79b6f136e1870867da22_cgraph" id="aadcs__commands_8c_aa6c75f66c6ec79b6f136e1870867da22_cgraph">
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Get_LLH_Position command." alt="" coords="5,46,160,72"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="212,5,403,46"/>
-<area shape="poly" title=" " alt="" coords="160,45,196,39,197,45,161,50"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a8dc3d024b74f550f7190811f129d118d" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="208,71,407,111"/>
-<area shape="poly" title=" " alt="" coords="161,67,192,72,192,77,160,73"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="455,5,631,46"/>
-<area shape="poly" title=" " alt="" coords="404,23,440,23,440,28,404,28"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="679,5,828,46"/>
-<area shape="poly" title=" " alt="" coords="632,23,664,23,664,28,632,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="208,5,399,46"/>
+<area shape="poly" title=" " alt="" coords="160,45,192,40,193,45,161,50"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#ad2b250007093c5181e0cf487e12b3bd5" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="212,71,394,111"/>
+<area shape="poly" title=" " alt="" coords="161,68,197,73,196,78,160,73"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="447,5,623,46"/>
+<area shape="poly" title=" " alt="" coords="399,23,431,23,431,28,399,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="671,5,820,46"/>
+<area shape="poly" title=" " alt="" coords="624,23,656,23,656,28,624,28"/>
 </map>
 </div>
 <div class="dynheader">
@@ -1580,8 +1760,8 @@ Here is the call graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Magnetic_Field_Vector command." alt="" coords="5,39,178,79"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="226,5,417,46"/>
 <area shape="poly" title=" " alt="" coords="178,44,210,39,210,44,178,49"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a8adb12915dd1b9a7be50fb6d80b5ce54" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="235,71,408,111"/>
-<area shape="poly" title=" " alt="" coords="178,68,220,74,219,80,178,74"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#ac491b752975fbf682ace992cabedd907" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="236,71,406,111"/>
+<area shape="poly" title=" " alt="" coords="178,68,221,74,221,80,178,74"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="465,5,641,46"/>
 <area shape="poly" title=" " alt="" coords="417,23,449,23,449,28,417,28"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="689,5,838,46"/>
@@ -1630,14 +1810,14 @@ Here is the call graph for this function:</div>
 <div class="center"><img src="adcs__commands_8c_a97a4008e18916e3de0ff1bdf58c57a30_cgraph.png" border="0" usemap="#aadcs__commands_8c_a97a4008e18916e3de0ff1bdf58c57a30_cgraph" alt=""/></div>
 <map name="aadcs__commands_8c_a97a4008e18916e3de0ff1bdf58c57a30_cgraph" id="aadcs__commands_8c_a97a4008e18916e3de0ff1bdf58c57a30_cgraph">
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Get_Magnetometer_Config command." alt="" coords="5,39,178,79"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="231,5,422,46"/>
-<area shape="poly" title=" " alt="" coords="178,44,216,39,216,44,179,49"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#aafc41800b8c99f8b757bb34b572be702" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="226,71,428,111"/>
-<area shape="poly" title=" " alt="" coords="179,68,210,72,210,78,178,73"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="476,5,652,46"/>
-<area shape="poly" title=" " alt="" coords="423,23,461,23,461,28,423,28"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="700,5,849,46"/>
-<area shape="poly" title=" " alt="" coords="653,23,685,23,685,28,653,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="230,5,422,46"/>
+<area shape="poly" title=" " alt="" coords="177,44,214,39,215,44,178,49"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a0cb72245a525879187d19c74186f3ed7" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="226,71,426,111"/>
+<area shape="poly" title=" " alt="" coords="178,68,211,73,210,78,177,73"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="474,5,650,46"/>
+<area shape="poly" title=" " alt="" coords="422,23,458,23,458,28,422,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="698,5,847,46"/>
+<area shape="poly" title=" " alt="" coords="651,23,683,23,683,28,651,28"/>
 </map>
 </div>
 <div class="dynheader">
@@ -1682,14 +1862,14 @@ Here is the call graph for this function:</div>
 <div class="center"><img src="adcs__commands_8c_ab1bcb0c9fd944e2063fe51f2074a9d73_cgraph.png" border="0" usemap="#aadcs__commands_8c_ab1bcb0c9fd944e2063fe51f2074a9d73_cgraph" alt=""/></div>
 <map name="aadcs__commands_8c_ab1bcb0c9fd944e2063fe51f2074a9d73_cgraph" id="aadcs__commands_8c_ab1bcb0c9fd944e2063fe51f2074a9d73_cgraph">
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Get_Magnetorquer_Command command." alt="" coords="5,39,174,79"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="225,5,416,46"/>
-<area shape="poly" title=" " alt="" coords="174,44,209,39,210,44,174,50"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#ade5c9e0b782ee6a88db58c6d75505b69" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="222,71,420,111"/>
-<area shape="poly" title=" " alt="" coords="174,68,206,72,206,78,174,73"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="468,5,644,46"/>
-<area shape="poly" title=" " alt="" coords="417,23,452,23,452,28,417,28"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="692,5,841,46"/>
-<area shape="poly" title=" " alt="" coords="645,23,677,23,677,28,645,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="224,5,416,46"/>
+<area shape="poly" title=" " alt="" coords="174,44,208,39,209,44,175,49"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#aeaf003f4cd848942542557400fc8248f" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="222,71,418,111"/>
+<area shape="poly" title=" " alt="" coords="175,68,206,73,206,78,174,73"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="466,5,642,46"/>
+<area shape="poly" title=" " alt="" coords="416,23,450,23,450,28,416,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="690,5,839,46"/>
+<area shape="poly" title=" " alt="" coords="643,23,675,23,675,28,643,28"/>
 </map>
 </div>
 <div class="dynheader">
@@ -1734,14 +1914,14 @@ Here is the call graph for this function:</div>
 <div class="center"><img src="adcs__commands_8c_a8ca4b0668bd1da8eb53321052514072b_cgraph.png" border="0" usemap="#aadcs__commands_8c_a8ca4b0668bd1da8eb53321052514072b_cgraph" alt=""/></div>
 <map name="aadcs__commands_8c_a8ca4b0668bd1da8eb53321052514072b_cgraph" id="aadcs__commands_8c_a8ca4b0668bd1da8eb53321052514072b_cgraph">
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Measurements command." alt="" coords="5,46,181,72"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="236,5,427,46"/>
-<area shape="poly" title=" " alt="" coords="181,44,220,39,220,44,181,49"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#ae6c7395d27e47739d4a557a3b38babcb" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="229,71,434,111"/>
-<area shape="poly" title=" " alt="" coords="181,68,213,72,213,78,181,73"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="482,5,658,46"/>
-<area shape="poly" title=" " alt="" coords="427,23,466,23,466,28,427,28"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="706,5,855,46"/>
-<area shape="poly" title=" " alt="" coords="659,23,691,23,691,28,659,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="235,5,426,46"/>
+<area shape="poly" title=" " alt="" coords="181,44,219,39,220,44,181,49"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a64cba8c75d374cb4b2b0aaebf238a535" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="229,71,432,111"/>
+<area shape="poly" title=" " alt="" coords="181,68,214,73,213,78,181,73"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="480,5,656,46"/>
+<area shape="poly" title=" " alt="" coords="427,23,464,23,464,28,427,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="704,5,853,46"/>
+<area shape="poly" title=" " alt="" coords="657,23,689,23,689,28,657,28"/>
 </map>
 </div>
 <div class="dynheader">
@@ -1788,8 +1968,8 @@ Here is the call graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Nadir_Vector command." alt="" coords="5,46,166,72"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="214,5,405,46"/>
 <area shape="poly" title=" " alt="" coords="166,44,198,40,198,45,166,50"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#ad05e7e3ade58b1b972a1936255665dcd" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="234,71,384,111"/>
-<area shape="poly" title=" " alt="" coords="166,68,219,75,218,81,166,73"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a8e2b9771a7aa8e6042234c9884fa734e" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="237,71,382,111"/>
+<area shape="poly" title=" " alt="" coords="166,68,222,76,221,81,166,73"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="453,5,629,46"/>
 <area shape="poly" title=" " alt="" coords="405,23,437,23,437,28,405,28"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="677,5,826,46"/>
@@ -1840,8 +2020,8 @@ Here is the call graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Get_Power_Control command." alt="" coords="5,46,176,72"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="224,5,415,46"/>
 <area shape="poly" title=" " alt="" coords="176,44,208,39,208,45,176,49"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#ad6f7f966daacb263bba1e6797ca4f33c" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="241,71,398,111"/>
-<area shape="poly" title=" " alt="" coords="176,68,226,75,226,81,176,74"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#ac7aa7e910116946dfa1e4f6c0e4bf0e0" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="243,71,396,111"/>
+<area shape="poly" title=" " alt="" coords="176,68,228,76,227,81,176,74"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="463,5,639,46"/>
 <area shape="poly" title=" " alt="" coords="415,23,447,23,447,28,415,28"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="687,5,836,46"/>
@@ -1892,8 +2072,8 @@ Here is the call graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Program_Status command." alt="" coords="5,46,185,72"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="233,5,424,46"/>
 <area shape="poly" title=" " alt="" coords="184,44,217,39,217,44,185,49"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a73402150f156acff3f6f02ade05fa587" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="244,71,412,111"/>
-<area shape="poly" title=" " alt="" coords="185,69,229,75,228,80,184,74"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a8d862dbc2b5ace52562ad8d233de2b1e" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="246,71,410,111"/>
+<area shape="poly" title=" " alt="" coords="185,69,231,75,230,80,184,74"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="472,5,648,46"/>
 <area shape="poly" title=" " alt="" coords="424,23,456,23,456,28,424,28"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="696,5,845,46"/>
@@ -1944,8 +2124,8 @@ Here is the call graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Quaternion_Error_Vector command." alt="" coords="5,39,155,79"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="203,5,394,46"/>
 <area shape="poly" title=" " alt="" coords="155,45,187,40,188,45,155,50"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#ab4385ae599f025721839895ad567286e" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="207,71,390,111"/>
-<area shape="poly" title=" " alt="" coords="155,67,192,73,191,78,155,73"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#aae852835981defa29721511f258c10d7" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="210,71,387,111"/>
+<area shape="poly" title=" " alt="" coords="155,67,195,73,194,78,155,73"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="442,5,618,46"/>
 <area shape="poly" title=" " alt="" coords="394,23,426,23,426,28,394,28"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="666,5,815,46"/>
@@ -1996,8 +2176,8 @@ Here is the call graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Get_Rate_Gyro_Config command." alt="" coords="5,39,148,79"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="196,5,387,46"/>
 <area shape="poly" title=" " alt="" coords="147,45,180,40,181,46,148,51"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a1c06d7f89b9f530f8605c6ed4caf2aa2" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="201,71,382,111"/>
-<area shape="poly" title=" " alt="" coords="148,67,186,73,185,78,147,72"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#adc806d95577fe2a8f7f0ed0b1807866d" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="206,71,376,111"/>
+<area shape="poly" title=" " alt="" coords="148,67,191,73,190,79,147,72"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="435,5,611,46"/>
 <area shape="poly" title=" " alt="" coords="387,23,419,23,419,28,387,28"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="659,5,808,46"/>
@@ -2048,8 +2228,8 @@ Here is the call graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Rate_Sensor_Rates command." alt="" coords="5,39,163,79"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="211,5,402,46"/>
 <area shape="poly" title=" " alt="" coords="162,45,195,40,196,45,163,50"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a11191b2b6e4cc4858f6b2b1677d2757a" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="230,71,383,111"/>
-<area shape="poly" title=" " alt="" coords="163,68,215,75,214,80,162,73"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#af8ca07096884c7648bd6892f381e8fef" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="233,71,380,111"/>
+<area shape="poly" title=" " alt="" coords="163,68,218,76,217,81,162,73"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="450,5,626,46"/>
 <area shape="poly" title=" " alt="" coords="402,23,434,23,434,28,402,28"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="674,5,823,46"/>
@@ -2100,8 +2280,8 @@ Here is the call graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Raw_Cam1_Sensor command." alt="" coords="5,46,201,72"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="249,5,440,46"/>
 <area shape="poly" title=" " alt="" coords="200,43,233,38,233,44,201,48"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a586ad07e3a5030d8f417574630c29127" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="251,71,438,111"/>
-<area shape="poly" title=" " alt="" coords="201,69,236,74,235,79,201,75"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#af4cfe3d209853cc48ef7da333376679f" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="256,71,433,111"/>
+<area shape="poly" title=" " alt="" coords="201,69,241,75,240,80,201,75"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="488,5,664,46"/>
 <area shape="poly" title=" " alt="" coords="440,23,472,23,472,28,440,28"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="712,5,861,46"/>
@@ -2152,8 +2332,8 @@ Here is the call graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Raw_Cam2_Sensor command." alt="" coords="5,46,201,72"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="249,5,440,46"/>
 <area shape="poly" title=" " alt="" coords="200,43,233,38,233,44,201,48"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#afb0011f797f323080a42447c4e505b25" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="251,71,438,111"/>
-<area shape="poly" title=" " alt="" coords="201,69,236,74,235,79,201,75"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a433385a5613b9e2172402729d72874e5" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="256,71,433,111"/>
+<area shape="poly" title=" " alt="" coords="201,69,241,75,240,80,201,75"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="488,5,664,46"/>
 <area shape="poly" title=" " alt="" coords="440,23,472,23,472,28,440,28"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="712,5,861,46"/>
@@ -2202,14 +2382,14 @@ Here is the call graph for this function:</div>
 <div class="center"><img src="adcs__commands_8c_a4c92dcfcfeb46679168dab20cc6fa5da_cgraph.png" border="0" usemap="#aadcs__commands_8c_a4c92dcfcfeb46679168dab20cc6fa5da_cgraph" alt=""/></div>
 <map name="aadcs__commands_8c_a4c92dcfcfeb46679168dab20cc6fa5da_cgraph" id="aadcs__commands_8c_a4c92dcfcfeb46679168dab20cc6fa5da_cgraph">
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Raw_Coarse_Sun_Sensor_1_to_6 command." alt="" coords="5,39,162,79"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="211,5,402,46"/>
-<area shape="poly" title=" " alt="" coords="161,45,195,40,196,45,162,50"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a79c67de7d44656a65a3a4d2a3b088935" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="210,71,403,111"/>
-<area shape="poly" title=" " alt="" coords="162,68,195,72,194,78,161,73"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="451,5,627,46"/>
-<area shape="poly" title=" " alt="" coords="403,23,435,23,435,28,403,28"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="675,5,824,46"/>
-<area shape="poly" title=" " alt="" coords="628,23,660,23,660,28,628,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="210,5,401,46"/>
+<area shape="poly" title=" " alt="" coords="162,45,194,40,195,45,163,50"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#acab027b55e2baff7018933d6977ab5e6" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="213,71,398,111"/>
+<area shape="poly" title=" " alt="" coords="162,68,198,73,197,78,162,73"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="449,5,625,46"/>
+<area shape="poly" title=" " alt="" coords="401,23,433,23,433,28,401,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="673,5,822,46"/>
+<area shape="poly" title=" " alt="" coords="626,23,658,23,658,28,626,28"/>
 </map>
 </div>
 <div class="dynheader">
@@ -2254,14 +2434,14 @@ Here is the call graph for this function:</div>
 <div class="center"><img src="adcs__commands_8c_a0a5e4e11f62ca4bdd2d96ca777c01382_cgraph.png" border="0" usemap="#aadcs__commands_8c_a0a5e4e11f62ca4bdd2d96ca777c01382_cgraph" alt=""/></div>
 <map name="aadcs__commands_8c_a0a5e4e11f62ca4bdd2d96ca777c01382_cgraph" id="aadcs__commands_8c_a0a5e4e11f62ca4bdd2d96ca777c01382_cgraph">
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Raw_Coarse_Sun_Sensor_7_to_10 command." alt="" coords="5,39,162,79"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="211,5,402,46"/>
-<area shape="poly" title=" " alt="" coords="162,45,195,40,196,45,162,50"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a4eca321bb77e5db148fef0c7a05c5eba" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="210,71,404,111"/>
-<area shape="poly" title=" " alt="" coords="162,68,195,72,194,78,162,73"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="452,5,628,46"/>
-<area shape="poly" title=" " alt="" coords="403,23,436,23,436,28,403,28"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="676,5,825,46"/>
-<area shape="poly" title=" " alt="" coords="629,23,661,23,661,28,629,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="210,5,401,46"/>
+<area shape="poly" title=" " alt="" coords="162,45,194,40,195,45,163,50"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#ac59dc76e029e3fb8cf81d00babe038e7" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="211,71,400,111"/>
+<area shape="poly" title=" " alt="" coords="162,68,196,73,195,78,162,73"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="449,5,625,46"/>
+<area shape="poly" title=" " alt="" coords="401,23,433,23,433,28,401,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="673,5,822,46"/>
+<area shape="poly" title=" " alt="" coords="626,23,658,23,658,28,626,28"/>
 </map>
 </div>
 <div class="dynheader">
@@ -2308,8 +2488,8 @@ Here is the call graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Raw_GPS_Status command." alt="" coords="5,46,187,72"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="235,5,426,46"/>
 <area shape="poly" title=" " alt="" coords="187,43,219,39,220,44,187,49"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#ac47e2984c8621021141c10d018c6fb34" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="240,71,420,111"/>
-<area shape="poly" title=" " alt="" coords="187,69,225,74,224,79,187,74"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a4c38cfbd389d014ea1e2e91fae36905f" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="247,71,414,111"/>
+<area shape="poly" title=" " alt="" coords="187,69,232,75,232,80,187,74"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="474,5,650,46"/>
 <area shape="poly" title=" " alt="" coords="426,23,458,23,458,28,426,28"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="698,5,847,46"/>
@@ -2360,8 +2540,8 @@ Here is the call graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Raw_GPS_Time command." alt="" coords="5,46,176,72"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="224,5,415,46"/>
 <area shape="poly" title=" " alt="" coords="176,44,208,39,208,45,176,49"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#aa0d9c08211de3cfe925cff627b70779e" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="229,71,410,111"/>
-<area shape="poly" title=" " alt="" coords="176,68,214,74,214,79,176,74"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a8324380f0b97e6b42f4c5a14c341c878" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="236,71,402,111"/>
+<area shape="poly" title=" " alt="" coords="176,68,221,75,220,80,176,74"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="463,5,639,46"/>
 <area shape="poly" title=" " alt="" coords="415,23,447,23,447,28,415,28"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="687,5,836,46"/>
@@ -2412,8 +2592,8 @@ Here is the call graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Raw_GPS_X command." alt="" coords="5,46,157,72"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="205,5,396,46"/>
 <area shape="poly" title=" " alt="" coords="156,45,189,40,190,45,157,50"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a85682498f22f1a5ad7c95ce649efc169" title="Packs the ADCS received raw data into the appropriate structure for any of the three Raw_GPS commands..." alt="" coords="210,71,390,111"/>
-<area shape="poly" title=" " alt="" coords="157,67,195,73,194,78,157,73"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a64e8aa241b985d49d84cfca1721945b7" title="Packs the ADCS received raw data into the appropriate structure for any of the three Raw_GPS commands..." alt="" coords="217,71,384,111"/>
+<area shape="poly" title=" " alt="" coords="157,67,202,74,201,79,157,73"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="444,5,620,46"/>
 <area shape="poly" title=" " alt="" coords="396,23,428,23,428,28,396,28"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="668,5,817,46"/>
@@ -2464,8 +2644,8 @@ Here is the call graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Raw_GPS_Y command." alt="" coords="5,46,157,72"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="205,5,396,46"/>
 <area shape="poly" title=" " alt="" coords="156,45,189,40,190,45,157,50"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a85682498f22f1a5ad7c95ce649efc169" title="Packs the ADCS received raw data into the appropriate structure for any of the three Raw_GPS commands..." alt="" coords="210,71,390,111"/>
-<area shape="poly" title=" " alt="" coords="157,67,195,73,194,78,157,73"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a64e8aa241b985d49d84cfca1721945b7" title="Packs the ADCS received raw data into the appropriate structure for any of the three Raw_GPS commands..." alt="" coords="217,71,384,111"/>
+<area shape="poly" title=" " alt="" coords="157,67,202,74,201,79,157,73"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="444,5,620,46"/>
 <area shape="poly" title=" " alt="" coords="396,23,428,23,428,28,396,28"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="668,5,817,46"/>
@@ -2516,8 +2696,8 @@ Here is the call graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Raw_GPS_Z command." alt="" coords="5,46,157,72"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="205,5,396,46"/>
 <area shape="poly" title=" " alt="" coords="156,45,189,40,190,45,157,50"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a85682498f22f1a5ad7c95ce649efc169" title="Packs the ADCS received raw data into the appropriate structure for any of the three Raw_GPS commands..." alt="" coords="210,71,390,111"/>
-<area shape="poly" title=" " alt="" coords="157,67,195,73,194,78,157,73"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a64e8aa241b985d49d84cfca1721945b7" title="Packs the ADCS received raw data into the appropriate structure for any of the three Raw_GPS commands..." alt="" coords="217,71,384,111"/>
+<area shape="poly" title=" " alt="" coords="157,67,202,74,201,79,157,73"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="444,5,620,46"/>
 <area shape="poly" title=" " alt="" coords="396,23,428,23,428,28,396,28"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="668,5,817,46"/>
@@ -2566,14 +2746,14 @@ Here is the call graph for this function:</div>
 <div class="center"><img src="adcs__commands_8c_a5e12ce0b8b13fdccac4c767876f9b136_cgraph.png" border="0" usemap="#aadcs__commands_8c_a5e12ce0b8b13fdccac4c767876f9b136_cgraph" alt=""/></div>
 <map name="aadcs__commands_8c_a5e12ce0b8b13fdccac4c767876f9b136_cgraph" id="aadcs__commands_8c_a5e12ce0b8b13fdccac4c767876f9b136_cgraph">
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Get_Raw_Magnetometer_Values command." alt="" coords="5,39,206,79"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="276,5,467,46"/>
-<area shape="poly" title=" " alt="" coords="206,44,260,37,261,42,207,49"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a86fc61e49dc64b7a37e3549a83cd7077" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="254,71,489,111"/>
-<area shape="poly" title=" " alt="" coords="207,68,238,72,238,78,206,74"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="537,5,713,46"/>
-<area shape="poly" title=" " alt="" coords="468,23,522,23,522,28,468,28"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="761,5,910,46"/>
-<area shape="poly" title=" " alt="" coords="714,23,746,23,746,28,714,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="272,5,464,46"/>
+<area shape="poly" title=" " alt="" coords="206,44,256,37,257,42,206,49"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#afbd3813988a8ab1a1cb3ba10ed8e5bbe" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="254,71,482,111"/>
+<area shape="poly" title=" " alt="" coords="206,69,239,73,238,78,206,74"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="530,5,706,46"/>
+<area shape="poly" title=" " alt="" coords="464,23,514,23,514,28,464,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="754,5,903,46"/>
+<area shape="poly" title=" " alt="" coords="707,23,739,23,739,28,707,28"/>
 </map>
 </div>
 <div class="dynheader">
@@ -2584,6 +2764,115 @@ Here is the caller graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Get_Raw_Magnetometer_Values command." alt="" coords="234,5,434,46"/>
 <area shape="rect" href="telecommand__adcs_8c.html#a6fc5e9650b5d6bf3da7cf1065633cc34" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,186,46"/>
 <area shape="poly" title=" " alt="" coords="218,28,186,28,186,23,218,23"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a7c31fc5b05a6a20a574bbac82c60c69f" name="a7c31fc5b05a6a20a574bbac82c60c69f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c31fc5b05a6a20a574bbac82c60c69f">&#9670;&#160;</a></span>ADCS_get_raw_star_tracker_data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t ADCS_get_raw_star_tracker_data </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structADCS__raw__star__tracker__struct__t.html">ADCS_raw_star_tracker_struct_t</a> *</td>          <td class="paramname"><span class="paramname"><em>output_struct</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Instruct the ADCS to execute the ADCS_get_raw_star_tracker_data command. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">output_struct</td><td>Pointer to struct in which to place packed ADCS telemetry data </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 if successful, non-zero if a HAL or ADCS error occurred in transmission. </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="adcs__commands_8c_a7c31fc5b05a6a20a574bbac82c60c69f_cgraph.png" border="0" usemap="#aadcs__commands_8c_a7c31fc5b05a6a20a574bbac82c60c69f_cgraph" alt=""/></div>
+<map name="aadcs__commands_8c_a7c31fc5b05a6a20a574bbac82c60c69f_cgraph" id="aadcs__commands_8c_a7c31fc5b05a6a20a574bbac82c60c69f_cgraph">
+<area shape="rect" title="Instruct the ADCS to execute the ADCS_get_raw_star_tracker_data command." alt="" coords="5,46,224,72"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="272,5,463,46"/>
+<area shape="poly" title=" " alt="" coords="217,43,256,38,256,43,217,48"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a018da0abce0e4946c795a68086e9bbb1" title=" " alt="" coords="284,71,451,111"/>
+<area shape="poly" title=" " alt="" coords="222,70,268,76,268,81,221,75"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="511,5,687,46"/>
+<area shape="poly" title=" " alt="" coords="463,23,495,23,495,28,463,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="735,5,884,46"/>
+<area shape="poly" title=" " alt="" coords="688,23,720,23,720,28,688,28"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="adcs__commands_8c_a7c31fc5b05a6a20a574bbac82c60c69f_icgraph.png" border="0" usemap="#aadcs__commands_8c_a7c31fc5b05a6a20a574bbac82c60c69f_icgraph" alt=""/></div>
+<map name="aadcs__commands_8c_a7c31fc5b05a6a20a574bbac82c60c69f_icgraph" id="aadcs__commands_8c_a7c31fc5b05a6a20a574bbac82c60c69f_icgraph">
+<area shape="rect" title="Instruct the ADCS to execute the ADCS_get_raw_star_tracker_data command." alt="" coords="234,13,452,38"/>
+<area shape="rect" href="telecommand__adcs_8c.html#ad3d1f706044f685fab1b24b93b4fef41" title="Telecommand: Request raw star tracker telemetry data from the ADCS." alt="" coords="5,5,186,46"/>
+<area shape="poly" title=" " alt="" coords="218,28,186,28,186,23,218,23"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="aa09b0d343b9884169f1a179d4dc9a435" name="aa09b0d343b9884169f1a179d4dc9a435"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa09b0d343b9884169f1a179d4dc9a435">&#9670;&#160;</a></span>ADCS_get_sd_log_config()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t ADCS_get_sd_log_config </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>which_log</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structADCS__sd__log__config__struct.html">ADCS_sd_log_config_struct</a> *</td>          <td class="paramname"><span class="paramname"><em>config</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Instruct the ADCS to execute the ADCS_get_sd_log_config command. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">config</td><td>Pointer to struct to store the config data </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">which_log</td><td>1 or 2; which specific log number to log to the SD card </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 if successful, non-zero if a HAL or ADCS error occurred in transmission. </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="adcs__commands_8c_aa09b0d343b9884169f1a179d4dc9a435_cgraph.png" border="0" usemap="#aadcs__commands_8c_aa09b0d343b9884169f1a179d4dc9a435_cgraph" alt=""/></div>
+<map name="aadcs__commands_8c_aa09b0d343b9884169f1a179d4dc9a435_cgraph" id="aadcs__commands_8c_aa09b0d343b9884169f1a179d4dc9a435_cgraph">
+<area shape="rect" title="Instruct the ADCS to execute the ADCS_get_sd_log_config command." alt="" coords="5,46,174,72"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="222,5,413,46"/>
+<area shape="poly" title=" " alt="" coords="174,44,206,39,207,45,174,49"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a49fa95f1c212405624d20cd5a4ebf2c1" title=" " alt="" coords="240,71,395,111"/>
+<area shape="poly" title=" " alt="" coords="174,68,224,75,224,81,174,73"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="461,5,637,46"/>
+<area shape="poly" title=" " alt="" coords="413,23,445,23,445,28,413,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="685,5,834,46"/>
+<area shape="poly" title=" " alt="" coords="638,23,670,23,670,28,638,28"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="adcs__commands_8c_aa09b0d343b9884169f1a179d4dc9a435_icgraph.png" border="0" usemap="#aadcs__commands_8c_aa09b0d343b9884169f1a179d4dc9a435_icgraph" alt=""/></div>
+<map name="aadcs__commands_8c_aa09b0d343b9884169f1a179d4dc9a435_icgraph" id="aadcs__commands_8c_aa09b0d343b9884169f1a179d4dc9a435_icgraph">
+<area shape="rect" title="Instruct the ADCS to execute the ADCS_get_sd_log_config command." alt="" coords="227,13,395,38"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a6723856444638fa1ab7749c9f0470083" title="Telecommand: Retrieve the current ADCS SD log configuration." alt="" coords="5,5,179,46"/>
+<area shape="poly" title=" " alt="" coords="211,28,179,28,179,23,211,23"/>
 </map>
 </div>
 
@@ -2620,8 +2909,8 @@ Here is the call graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Get_SGP4_Orbit_Params command." alt="" coords="5,39,155,79"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="203,5,394,46"/>
 <area shape="poly" title=" " alt="" coords="155,45,187,40,188,45,155,50"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#aeb2ab1d2e15f7cc8c36b81de73f87a8b" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="225,71,372,111"/>
-<area shape="poly" title=" " alt="" coords="155,67,210,75,209,81,155,73"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a831293eb235d8a2d67236c1ad1e2f831" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="227,71,370,111"/>
+<area shape="poly" title=" " alt="" coords="155,67,212,76,211,81,155,73"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="442,5,618,46"/>
 <area shape="poly" title=" " alt="" coords="394,23,426,23,426,28,394,28"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="666,5,815,46"/>
@@ -2670,14 +2959,14 @@ Here is the call graph for this function:</div>
 <div class="center"><img src="adcs__commands_8c_a6710422f6bf32f9ff3a377367ab36ea4_cgraph.png" border="0" usemap="#aadcs__commands_8c_a6710422f6bf32f9ff3a377367ab36ea4_cgraph" alt=""/></div>
 <map name="aadcs__commands_8c_a6710422f6bf32f9ff3a377367ab36ea4_cgraph" id="aadcs__commands_8c_a6710422f6bf32f9ff3a377367ab36ea4_cgraph">
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Get_Tracking_Controller_Target_Reference command." alt="" coords="5,41,201,82"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="250,5,441,46"/>
-<area shape="poly" title=" " alt="" coords="201,44,234,40,235,45,202,50"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#afecf04e75cc6d2235bdfc4978238e013" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="249,70,442,126"/>
-<area shape="poly" title=" " alt="" coords="202,74,233,78,233,84,201,79"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="490,5,666,46"/>
-<area shape="poly" title=" " alt="" coords="442,23,474,23,474,28,442,28"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="714,5,863,46"/>
-<area shape="poly" title=" " alt="" coords="667,23,699,23,699,28,667,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="249,5,440,46"/>
+<area shape="poly" title=" " alt="" coords="201,44,233,40,233,45,201,50"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a6edcf1756f2e585979e2bddd6825fe14" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="253,70,436,126"/>
+<area shape="poly" title=" " alt="" coords="201,74,238,79,237,84,201,79"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="488,5,664,46"/>
+<area shape="poly" title=" " alt="" coords="440,23,472,23,472,28,440,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="712,5,861,46"/>
+<area shape="poly" title=" " alt="" coords="665,23,697,23,697,28,665,28"/>
 </map>
 </div>
 <div class="dynheader">
@@ -2724,8 +3013,8 @@ Here is the call graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Get_Unix_Time_Save_Mode command." alt="" coords="5,39,150,79"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="198,5,389,46"/>
 <area shape="poly" title=" " alt="" coords="149,45,182,40,183,45,150,51"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a30345672d44791fb312f5f0ef8aed16a" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="203,71,384,111"/>
-<area shape="poly" title=" " alt="" coords="150,67,188,73,187,78,149,72"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a883fe6a6cb8021b9ed01b8d265675916" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="207,71,380,111"/>
+<area shape="poly" title=" " alt="" coords="150,67,192,73,191,79,149,72"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="437,5,613,46"/>
 <area shape="poly" title=" " alt="" coords="389,23,421,23,421,28,389,28"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="661,5,810,46"/>
@@ -2776,8 +3065,8 @@ Here is the call graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Get_Wheel_Speed command." alt="" coords="5,46,171,72"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="219,5,410,46"/>
 <area shape="poly" title=" " alt="" coords="170,44,203,39,204,45,171,50"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a672b7afd90509375de9b76c62109e0c6" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="237,71,392,111"/>
-<area shape="poly" title=" " alt="" coords="171,68,221,75,221,80,170,73"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#aee7cd679d60376e11bd541e49c89634b" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="239,71,390,111"/>
+<area shape="poly" title=" " alt="" coords="171,68,224,76,223,81,170,73"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="458,5,634,46"/>
 <area shape="poly" title=" " alt="" coords="410,23,442,23,442,28,410,28"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="682,5,831,46"/>
@@ -2828,8 +3117,8 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="328,106,764,106,764,111,328,111"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="540,5,732,46"/>
 <area shape="poly" title=" " alt="" coords="481,67,546,48,548,53,483,72"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a914351ecde8db8a1690caab528b69055" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="544,70,728,96"/>
-<area shape="poly" title=" " alt="" coords="493,80,528,80,528,86,493,86"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="547,70,725,96"/>
+<area shape="poly" title=" " alt="" coords="493,80,531,80,531,86,493,86"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="792,19,968,59"/>
 <area shape="poly" title=" " alt="" coords="732,28,777,31,776,36,732,34"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1029,60,1177,101"/>
@@ -2881,8 +3170,8 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="352,106,788,106,788,111,352,111"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="564,5,756,46"/>
 <area shape="poly" title=" " alt="" coords="505,67,570,48,572,53,507,72"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a914351ecde8db8a1690caab528b69055" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="568,70,752,96"/>
-<area shape="poly" title=" " alt="" coords="517,80,552,80,552,86,517,86"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="571,70,749,96"/>
+<area shape="poly" title=" " alt="" coords="517,80,555,80,555,86,517,86"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="816,19,992,59"/>
 <area shape="poly" title=" " alt="" coords="756,28,801,31,800,36,756,34"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1053,60,1201,101"/>
@@ -2934,8 +3223,8 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="368,106,804,106,804,111,368,111"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="580,5,772,46"/>
 <area shape="poly" title=" " alt="" coords="521,67,586,48,588,53,523,72"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a914351ecde8db8a1690caab528b69055" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="584,70,768,96"/>
-<area shape="poly" title=" " alt="" coords="533,80,568,80,568,86,533,86"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="587,70,765,96"/>
+<area shape="poly" title=" " alt="" coords="533,80,571,80,571,86,533,86"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="832,19,1008,59"/>
 <area shape="poly" title=" " alt="" coords="772,28,817,31,816,36,772,34"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1069,60,1217,101"/>
@@ -2950,6 +3239,70 @@ Here is the caller graph for this function:</div>
 <map name="aadcs__commands_8c_af308e3206304ee5b75dd8bb6aec85177_icgraph" id="aadcs__commands_8c_af308e3206304ee5b75dd8bb6aec85177_icgraph">
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Save_Config command." alt="" coords="216,13,349,38"/>
 <area shape="rect" href="telecommand__adcs_8c.html#a514f1940538cd16b1f0842183eab9fd8" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,168,46"/>
+<area shape="poly" title=" " alt="" coords="200,28,168,28,168,23,200,23"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a2d911b54220da01cfb0ab415739bea38" name="a2d911b54220da01cfb0ab415739bea38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d911b54220da01cfb0ab415739bea38">&#9670;&#160;</a></span>ADCS_save_image_to_sd()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t ADCS_save_image_to_sd </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="adcs__types_8h.html#a07f57fba6a7ea5b22f2d82d1caae23e7">ADCS_camera_select_enum_t</a></td>          <td class="paramname"><span class="paramname"><em>camera_select</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="adcs__types_8h.html#aadc2a2cead7bdd5d0fe8fb5bd21a9b0d">ADCS_image_size_enum_t</a></td>          <td class="paramname"><span class="paramname"><em>image_size</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Instruct the ADCS to save an image to the SD card. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">camera_select</td><td>Which camera to save the image from; can be Camera 1 (0), Camera 2 (1), or Star (2) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">image_size</td><td>Resolution of the image to save; can be 1024x1024 (0), 512x512, (1) 256x256, (2) 128x128, (3) or 64x64 (4) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 if successful, non-zero if a HAL or ADCS error occurred in transmission. </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="adcs__commands_8c_a2d911b54220da01cfb0ab415739bea38_cgraph.png" border="0" usemap="#aadcs__commands_8c_a2d911b54220da01cfb0ab415739bea38_cgraph" alt=""/></div>
+<map name="aadcs__commands_8c_a2d911b54220da01cfb0ab415739bea38_cgraph" id="aadcs__commands_8c_a2d911b54220da01cfb0ab415739bea38_cgraph">
+<area shape="rect" title="Instruct the ADCS to save an image to the SD card." alt="" coords="5,96,179,121"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#aecce0bfa34eea6373e296fb13a2fb92f" title="Sends a telecommand over I2C to the ADCS, checks that it&#39;s been acknowledged, and returns the ACK err..." alt="" coords="227,88,407,129"/>
+<area shape="poly" title=" " alt="" coords="179,106,211,106,211,111,179,111"/>
+<area shape="rect" href="adcs__commands_8c.html#a78314a88408de1fd947bac1eb122e96f" title="Instructs the ADCS to determine whether the last command succeeded. (Doesn&#39;t work for telemetry reque..." alt="" coords="455,70,572,96"/>
+<area shape="poly" title=" " alt="" coords="407,94,439,90,440,95,408,99"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a4fd725dd59fc5c6d0304751c2a08baa4" title="Sends a telecommand over I2C to the ADCS." alt="" coords="860,96,1061,121"/>
+<area shape="poly" title=" " alt="" coords="408,106,844,106,844,111,408,111"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="620,5,812,46"/>
+<area shape="poly" title=" " alt="" coords="561,67,626,48,628,53,563,72"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="627,70,805,96"/>
+<area shape="poly" title=" " alt="" coords="573,80,611,80,611,86,573,86"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="872,19,1048,59"/>
+<area shape="poly" title=" " alt="" coords="812,28,857,31,856,36,812,34"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1109,60,1257,101"/>
+<area shape="poly" title=" " alt="" coords="1049,53,1094,61,1093,66,1048,58"/>
+<area shape="poly" title=" " alt="" coords="1061,93,1093,89,1094,94,1062,98"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="adcs__commands_8c_a2d911b54220da01cfb0ab415739bea38_icgraph.png" border="0" usemap="#aadcs__commands_8c_a2d911b54220da01cfb0ab415739bea38_icgraph" alt=""/></div>
+<map name="aadcs__commands_8c_a2d911b54220da01cfb0ab415739bea38_icgraph" id="aadcs__commands_8c_a2d911b54220da01cfb0ab415739bea38_icgraph">
+<area shape="rect" title="Instruct the ADCS to save an image to the SD card." alt="" coords="216,13,389,38"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a0bc0d109abce87c4f6a417b203030a93" title="Telecommand: Save an image to the ADCS onboard SD card." alt="" coords="5,5,168,46"/>
 <area shape="poly" title=" " alt="" coords="200,28,168,28,168,23,200,23"/>
 </map>
 </div>
@@ -2987,8 +3340,8 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="409,106,845,106,845,111,409,111"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="621,5,813,46"/>
 <area shape="poly" title=" " alt="" coords="562,67,627,48,629,53,564,72"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a914351ecde8db8a1690caab528b69055" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="625,70,809,96"/>
-<area shape="poly" title=" " alt="" coords="574,80,609,80,609,86,574,86"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="628,70,806,96"/>
+<area shape="poly" title=" " alt="" coords="574,80,612,80,612,86,574,86"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="873,19,1050,59"/>
 <area shape="poly" title=" " alt="" coords="813,28,858,31,857,36,813,34"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1110,60,1258,101"/>
@@ -3146,8 +3499,8 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="388,182,824,182,824,188,388,188"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="600,82,792,123"/>
 <area shape="poly" title=" " alt="" coords="541,144,606,125,608,130,543,149"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a914351ecde8db8a1690caab528b69055" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="604,147,788,173"/>
-<area shape="poly" title=" " alt="" coords="553,157,588,157,588,162,553,162"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="607,147,785,173"/>
+<area shape="poly" title=" " alt="" coords="553,157,591,157,591,162,553,162"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="852,96,1028,136"/>
 <area shape="poly" title=" " alt="" coords="792,105,837,108,836,113,792,110"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1089,137,1237,178"/>
@@ -3218,8 +3571,8 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="395,106,831,106,831,111,395,111"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="607,5,799,46"/>
 <area shape="poly" title=" " alt="" coords="548,67,613,48,615,53,550,72"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a914351ecde8db8a1690caab528b69055" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="611,70,795,96"/>
-<area shape="poly" title=" " alt="" coords="560,80,595,80,595,86,560,86"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="614,70,792,96"/>
+<area shape="poly" title=" " alt="" coords="560,80,598,80,598,86,560,86"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="859,19,1036,59"/>
 <area shape="poly" title=" " alt="" coords="799,28,844,31,843,36,799,34"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1096,60,1244,101"/>
@@ -3378,8 +3731,8 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="384,106,820,106,820,111,384,111"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="596,5,788,46"/>
 <area shape="poly" title=" " alt="" coords="537,67,602,48,604,53,539,72"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a914351ecde8db8a1690caab528b69055" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="600,70,784,96"/>
-<area shape="poly" title=" " alt="" coords="549,80,584,80,584,86,549,86"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="603,70,781,96"/>
+<area shape="poly" title=" " alt="" coords="549,80,587,80,587,86,549,86"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="848,19,1024,59"/>
 <area shape="poly" title=" " alt="" coords="788,28,833,31,832,36,788,34"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1085,60,1233,101"/>
@@ -3522,8 +3875,8 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="407,106,843,106,843,111,407,111"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="619,5,811,46"/>
 <area shape="poly" title=" " alt="" coords="560,67,625,48,627,53,562,72"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a914351ecde8db8a1690caab528b69055" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="623,70,807,96"/>
-<area shape="poly" title=" " alt="" coords="572,80,607,80,607,86,572,86"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="626,70,804,96"/>
+<area shape="poly" title=" " alt="" coords="572,80,610,80,610,86,572,86"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="871,19,1048,59"/>
 <area shape="poly" title=" " alt="" coords="811,28,856,31,855,36,811,34"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1108,60,1256,101"/>
@@ -3581,8 +3934,8 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="446,106,882,106,882,111,446,111"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="658,5,850,46"/>
 <area shape="poly" title=" " alt="" coords="599,67,664,48,666,53,601,72"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a914351ecde8db8a1690caab528b69055" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="662,70,846,96"/>
-<area shape="poly" title=" " alt="" coords="611,80,646,80,646,86,611,86"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="665,70,843,96"/>
+<area shape="poly" title=" " alt="" coords="611,80,649,80,649,86,611,86"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="910,19,1086,59"/>
 <area shape="poly" title=" " alt="" coords="850,28,895,31,894,36,850,34"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1147,60,1295,101"/>
@@ -3645,8 +3998,8 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="403,106,839,106,839,111,403,111"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="615,5,807,46"/>
 <area shape="poly" title=" " alt="" coords="556,67,621,48,623,53,558,72"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a914351ecde8db8a1690caab528b69055" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="619,70,803,96"/>
-<area shape="poly" title=" " alt="" coords="568,80,603,80,603,86,568,86"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="622,70,800,96"/>
+<area shape="poly" title=" " alt="" coords="568,80,606,80,606,86,568,86"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="867,19,1044,59"/>
 <area shape="poly" title=" " alt="" coords="807,28,852,31,851,36,807,34"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1104,60,1252,101"/>
@@ -3757,8 +4110,8 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="405,106,841,106,841,111,405,111"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="617,5,809,46"/>
 <area shape="poly" title=" " alt="" coords="558,67,623,48,625,53,560,72"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a914351ecde8db8a1690caab528b69055" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="621,70,805,96"/>
-<area shape="poly" title=" " alt="" coords="570,80,605,80,605,86,570,86"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="624,70,802,96"/>
+<area shape="poly" title=" " alt="" coords="570,80,608,80,608,86,570,86"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="869,19,1046,59"/>
 <area shape="poly" title=" " alt="" coords="809,28,854,31,853,36,809,34"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1106,60,1254,101"/>
@@ -3853,8 +4206,8 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="377,106,813,106,813,111,377,111"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="589,5,781,46"/>
 <area shape="poly" title=" " alt="" coords="530,67,595,48,597,53,532,72"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a914351ecde8db8a1690caab528b69055" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="593,70,777,96"/>
-<area shape="poly" title=" " alt="" coords="542,80,577,80,577,86,542,86"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="596,70,774,96"/>
+<area shape="poly" title=" " alt="" coords="542,80,580,80,580,86,542,86"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="841,19,1018,59"/>
 <area shape="poly" title=" " alt="" coords="781,28,826,31,825,36,781,34"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1078,60,1226,101"/>
@@ -3912,8 +4265,8 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="381,106,817,106,817,111,381,111"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="593,5,785,46"/>
 <area shape="poly" title=" " alt="" coords="534,67,599,48,601,53,536,72"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a914351ecde8db8a1690caab528b69055" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="597,70,781,96"/>
-<area shape="poly" title=" " alt="" coords="546,80,581,80,581,86,546,86"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="600,70,778,96"/>
+<area shape="poly" title=" " alt="" coords="546,80,584,80,584,86,546,86"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="845,19,1022,59"/>
 <area shape="poly" title=" " alt="" coords="785,28,830,31,829,36,785,34"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1082,60,1230,101"/>
@@ -3929,6 +4282,94 @@ Here is the caller graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="270,5,416,31"/>
 <area shape="rect" href="telecommand__adcs_8c.html#acb4aaa038a792391c026be5c1cd23bd6" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,222,31"/>
 <area shape="poly" title=" " alt="" coords="254,21,222,21,222,16,254,16"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a13c723f863160e6cf86ec2be92effab8" name="a13c723f863160e6cf86ec2be92effab8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13c723f863160e6cf86ec2be92effab8">&#9670;&#160;</a></span>ADCS_set_sd_log_config()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t ADCS_set_sd_log_config </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>which_log</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t **</td>          <td class="paramname"><span class="paramname"><em>log_array</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>log_array_size</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>log_period</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="adcs__types_8h.html#a29c83a5040b4f15dcba2f400097697aa">ADCS_sd_log_destination_enum_t</a></td>          <td class="paramname"><span class="paramname"><em>which_sd</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Instruct the ADCS to execute the ADCS_Set_Run_Mode command. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">which_log</td><td>1 or 2; which specific log number to log to the SD card </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">log_array</td><td>Pointer to list of bitmasks to set the log config </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">log_array_size</td><td>Number of things to log </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">log_period</td><td>Period to log data to the SD card; if zero, then disable logging </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">which_sd</td><td>Which SD card to log to; 0 for primary, 1 for secondary </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 if successful, non-zero if a HAL or ADCS error occurred in transmission. </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="adcs__commands_8c_a13c723f863160e6cf86ec2be92effab8_cgraph.png" border="0" usemap="#aadcs__commands_8c_a13c723f863160e6cf86ec2be92effab8_cgraph" alt=""/></div>
+<map name="aadcs__commands_8c_a13c723f863160e6cf86ec2be92effab8_cgraph" id="aadcs__commands_8c_a13c723f863160e6cf86ec2be92effab8_cgraph">
+<area shape="rect" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="5,85,174,110"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#adc4c1fb96d40d40e055df7b0284b025e" title="Take an arbitrary number (up to 63) of 10&#45;byte uint8 arrays and return a single array which is the bi..." alt="" coords="233,5,391,46"/>
+<area shape="poly" title=" " alt="" coords="131,82,232,49,233,54,132,87"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a57380050bbf7103fc0101eb2145fc7c7" title="Swap low and high bytes of a uint16 to turn into uint8 and put into specified index of an array." alt="" coords="229,70,395,126"/>
+<area shape="poly" title=" " alt="" coords="174,95,213,95,213,100,174,100"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#aecce0bfa34eea6373e296fb13a2fb92f" title="Sends a telecommand over I2C to the ADCS, checks that it&#39;s been acknowledged, and returns the ACK err..." alt="" coords="222,149,402,190"/>
+<area shape="poly" title=" " alt="" coords="132,109,233,142,232,147,131,114"/>
+<area shape="rect" href="adcs__commands_8c.html#a78314a88408de1fd947bac1eb122e96f" title="Instructs the ADCS to determine whether the last command succeeded. (Doesn&#39;t work for telemetry reque..." alt="" coords="450,132,567,157"/>
+<area shape="poly" title=" " alt="" coords="402,155,434,151,435,156,403,161"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a4fd725dd59fc5c6d0304751c2a08baa4" title="Sends a telecommand over I2C to the ADCS." alt="" coords="855,157,1056,182"/>
+<area shape="poly" title=" " alt="" coords="403,167,839,167,839,172,403,172"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="615,67,807,107"/>
+<area shape="poly" title=" " alt="" coords="556,128,621,110,623,115,558,133"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="622,132,800,157"/>
+<area shape="poly" title=" " alt="" coords="568,142,606,142,606,147,568,147"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="867,80,1044,121"/>
+<area shape="poly" title=" " alt="" coords="807,90,852,92,851,97,807,95"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1104,121,1252,162"/>
+<area shape="poly" title=" " alt="" coords="1044,114,1089,123,1088,128,1043,119"/>
+<area shape="poly" title=" " alt="" coords="1056,154,1088,150,1089,156,1057,160"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="adcs__commands_8c_a13c723f863160e6cf86ec2be92effab8_icgraph.png" border="0" usemap="#aadcs__commands_8c_a13c723f863160e6cf86ec2be92effab8_icgraph" alt=""/></div>
+<map name="aadcs__commands_8c_a13c723f863160e6cf86ec2be92effab8_icgraph" id="aadcs__commands_8c_a13c723f863160e6cf86ec2be92effab8_icgraph">
+<area shape="rect" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="231,46,399,72"/>
+<area shape="rect" href="telecommand__adcs_8c.html#acfbac886221c0407fce13bee70ec8d5a" title="Telecommand: Request commissioning telemetry from the ADCS and save it to the memory module." alt="" coords="5,5,183,46"/>
+<area shape="poly" title=" " alt="" coords="215,47,183,42,184,36,216,41"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a98bf5256b122713dd604a9217a717d11" title="Telecommand: Repeatedly log given data from an SD card." alt="" coords="7,71,181,111"/>
+<area shape="poly" title=" " alt="" coords="216,76,181,81,181,76,215,71"/>
 </map>
 </div>
 
@@ -4012,8 +4453,8 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="384,106,820,106,820,111,384,111"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="596,5,788,46"/>
 <area shape="poly" title=" " alt="" coords="537,67,602,48,604,53,539,72"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a914351ecde8db8a1690caab528b69055" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="600,70,784,96"/>
-<area shape="poly" title=" " alt="" coords="549,80,584,80,584,86,549,86"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="603,70,781,96"/>
+<area shape="poly" title=" " alt="" coords="549,80,587,80,587,86,549,86"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="848,19,1024,59"/>
 <area shape="poly" title=" " alt="" coords="788,28,833,31,832,36,788,34"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1085,60,1233,101"/>
@@ -4082,8 +4523,8 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="430,106,866,106,866,111,430,111"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="642,5,834,46"/>
 <area shape="poly" title=" " alt="" coords="583,67,648,48,650,53,585,72"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a914351ecde8db8a1690caab528b69055" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="646,70,830,96"/>
-<area shape="poly" title=" " alt="" coords="595,80,630,80,630,86,595,86"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="649,70,827,96"/>
+<area shape="poly" title=" " alt="" coords="595,80,633,80,633,86,595,86"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="894,19,1070,59"/>
 <area shape="poly" title=" " alt="" coords="834,28,879,31,878,36,834,34"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1131,60,1279,101"/>
@@ -4158,8 +4599,8 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="379,106,815,106,815,111,379,111"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="591,5,783,46"/>
 <area shape="poly" title=" " alt="" coords="532,67,597,48,599,53,534,72"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a914351ecde8db8a1690caab528b69055" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="595,70,779,96"/>
-<area shape="poly" title=" " alt="" coords="544,80,579,80,579,86,544,86"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="598,70,776,96"/>
+<area shape="poly" title=" " alt="" coords="544,80,582,80,582,86,544,86"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="843,19,1020,59"/>
 <area shape="poly" title=" " alt="" coords="783,28,828,31,827,36,783,34"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1080,60,1228,101"/>
@@ -4230,8 +4671,8 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="400,106,836,106,836,111,400,111"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="612,5,804,46"/>
 <area shape="poly" title=" " alt="" coords="553,67,618,48,620,53,555,72"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a914351ecde8db8a1690caab528b69055" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="616,70,800,96"/>
-<area shape="poly" title=" " alt="" coords="565,80,600,80,600,86,565,86"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="619,70,797,96"/>
+<area shape="poly" title=" " alt="" coords="565,80,603,80,603,86,565,86"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="864,19,1040,59"/>
 <area shape="poly" title=" " alt="" coords="804,28,849,31,848,36,804,34"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1101,60,1249,101"/>
@@ -4247,6 +4688,65 @@ Here is the caller graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the titular command." alt="" coords="247,13,412,38"/>
 <area shape="rect" href="telecommand__adcs_8c.html#a31ebda15faf41b449b2a28cce5863448" title="Telecommand: Set the wheel speed of the ADCS." alt="" coords="5,5,199,46"/>
 <area shape="poly" title=" " alt="" coords="231,28,199,28,199,23,231,23"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a0ee4a74615b30328d110093fb1d7e18b" name="a0ee4a74615b30328d110093fb1d7e18b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ee4a74615b30328d110093fb1d7e18b">&#9670;&#160;</a></span>ADCS_synchronise_unix_time()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t ADCS_synchronise_unix_time </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Instruct the ADCS to synchronise its Unix epoch time to the current OBC Unix time. </p>
+<dl class="section return"><dt>Returns</dt><dd>0 if successful, non-zero if a HAL or ADCS error occurred in transmission. </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="adcs__commands_8c_a0ee4a74615b30328d110093fb1d7e18b_cgraph.png" border="0" usemap="#aadcs__commands_8c_a0ee4a74615b30328d110093fb1d7e18b_cgraph" alt=""/></div>
+<map name="aadcs__commands_8c_a0ee4a74615b30328d110093fb1d7e18b_cgraph" id="aadcs__commands_8c_a0ee4a74615b30328d110093fb1d7e18b_cgraph">
+<area shape="rect" title="Instruct the ADCS to synchronise its Unix epoch time to the current OBC Unix time." alt="" coords="5,136,201,162"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a57380050bbf7103fc0101eb2145fc7c7" title="Swap low and high bytes of a uint16 to turn into uint8 and put into specified index of an array." alt="" coords="256,5,422,61"/>
+<area shape="poly" title=" " alt="" coords="127,133,247,71,258,65,261,70,250,76,130,138"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a4d66866ec7ebc347e16aff2da8a52058" title="Reverse the order of the four bytes of a uint32 to turn into uint8 and put into specified index of an..." alt="" coords="256,85,422,141"/>
+<area shape="poly" title=" " alt="" coords="191,133,240,126,241,131,192,138"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#aecce0bfa34eea6373e296fb13a2fb92f" title="Sends a telecommand over I2C to the ADCS, checks that it&#39;s been acknowledged, and returns the ACK err..." alt="" coords="249,165,429,206"/>
+<area shape="poly" title=" " alt="" coords="192,160,234,166,233,172,191,165"/>
+<area shape="rect" href="timekeeping_8c.html#ab806b8884c269c16f3bc4b766d1fc943" title="Returns the current unix timestamp, in milliseconds." alt="" coords="266,230,412,271"/>
+<area shape="poly" title=" " alt="" coords="132,160,250,215,267,222,265,227,248,220,130,165"/>
+<area shape="rect" href="adcs__commands_8c.html#a78314a88408de1fd947bac1eb122e96f" title="Instructs the ADCS to determine whether the last command succeeded. (Doesn&#39;t work for telemetry reque..." alt="" coords="477,147,594,173"/>
+<area shape="poly" title=" " alt="" coords="429,171,461,167,462,172,430,176"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a4fd725dd59fc5c6d0304751c2a08baa4" title="Sends a telecommand over I2C to the ADCS." alt="" coords="882,172,1083,198"/>
+<area shape="poly" title=" " alt="" coords="430,182,866,182,866,188,430,188"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="642,82,834,123"/>
+<area shape="poly" title=" " alt="" coords="583,144,648,125,650,130,585,149"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="649,147,827,173"/>
+<area shape="poly" title=" " alt="" coords="595,157,633,157,633,162,595,162"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="894,96,1070,136"/>
+<area shape="poly" title=" " alt="" coords="834,105,879,108,878,113,834,110"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1131,137,1279,178"/>
+<area shape="poly" title=" " alt="" coords="1071,130,1116,138,1115,143,1070,135"/>
+<area shape="poly" title=" " alt="" coords="1083,170,1115,166,1116,171,1084,175"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="adcs__commands_8c_a0ee4a74615b30328d110093fb1d7e18b_icgraph.png" border="0" usemap="#aadcs__commands_8c_a0ee4a74615b30328d110093fb1d7e18b_icgraph" alt=""/></div>
+<map name="aadcs__commands_8c_a0ee4a74615b30328d110093fb1d7e18b_icgraph" id="aadcs__commands_8c_a0ee4a74615b30328d110093fb1d7e18b_icgraph">
+<area shape="rect" title="Instruct the ADCS to synchronise its Unix epoch time to the current OBC Unix time." alt="" coords="257,13,452,38"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a723a07c1c85a39edea04e241eee46de8" title="Telecommand: Synchronise the current ADCS Unix epoch time." alt="" coords="5,5,209,46"/>
+<area shape="poly" title=" " alt="" coords="241,28,209,28,209,23,241,23"/>
 </map>
 </div>
 

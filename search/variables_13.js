@@ -46,12 +46,14 @@ var searchData=
   ['tim_5funix_5fepoch_5ftime_5fat_5flast_5ftime_5fresync_5fms_5fstr_43',['TIM_unix_epoch_time_at_last_time_resync_ms_str',['../timekeeping_8c.html#ab25ec3e8d4397650066589819cfcefb2',1,'timekeeping.c']]],
   ['time_5fcoefficient_5fmilli_44',['time_coefficient_milli',['../structADCS__augmented__sgp4__params__struct__t.html#aebb3fe535218ad8e253ebdb16d1290d0',1,'ADCS_augmented_sgp4_params_struct_t']]],
   ['time_5fgain_5fmilli_45',['time_gain_milli',['../structADCS__augmented__sgp4__params__struct__t.html#a521e905c68daa0e9ead408be1e2677e2',1,'ADCS_augmented_sgp4_params_struct_t']]],
-  ['time_5fsince_5fprev_5fcmd_5fsec_46',['time_since_prev_cmd_sec',['../structEPS__struct__system__status__t.html#a36766a4af9b07082e7993a2d84b54a69',1,'EPS_struct_system_status_t']]],
-  ['timeout_5fms_47',['timeout_ms',['../ant__internal__drivers_8c.html#aa7d9694e4d8a127dec780dc52d67316d',1,'ant_internal_drivers.c']]],
-  ['timestamp_5fsent_48',['timestamp_sent',['../structTCMD__parsed__tcmd__to__execute__t.html#af9d9fb7bd782e4543ffd9566bc1c4335',1,'TCMD_parsed_tcmd_to_execute_t']]],
-  ['timestamp_5fto_5fexecute_49',['timestamp_to_execute',['../structTCMD__parsed__tcmd__to__execute__t.html#a8d9de34b2c656d3d78566aadf965ad2c',1,'TCMD_parsed_tcmd_to_execute_t']]],
-  ['tlm_5fcounter_50',['tlm_counter',['../structADCS__comms__status__struct__t.html#ae548e0b2c9b2fb921a69d9bd909d5821',1,'ADCS_comms_status_struct_t']]],
-  ['tmask_51',['tmask',['../structlfs__dir__traverse.html#aad87f1365fb51c601b83d36978de7832',1,'lfs_dir_traverse']]],
-  ['ttag_52',['ttag',['../structlfs__dir__traverse.html#a50a96d24a5614a6e6bb0db1a52e55ad8',1,'lfs_dir_traverse']]],
-  ['type_53',['type',['../structlfs__info.html#a94223addf36cce6dbd3819dc79936097',1,'lfs_info::type'],['../structlfs__attr.html#ae98269a6f8dfd6c85fefcfe8c70de29a',1,'lfs_attr::type'],['../structlfs__dir.html#a8adb520942b984f65a2326e64a4fbda1',1,'lfs_dir::type'],['../structlfs__file.html#aeecd5a486ef43505e598ce565f316e97',1,'lfs_file::type'],['../structlfs_1_1lfs__mlist.html#adb9140cc712a3b93d1edb743c720ed34',1,'lfs::lfs_mlist::type']]]
+  ['time_5fsince_5fiteration_5fstart_5fms_46',['time_since_iteration_start_ms',['../structADCS__acp__execution__state__struct__t.html#a1187d8c11e94d11e86d62bc763f0d955',1,'ADCS_acp_execution_state_struct_t']]],
+  ['time_5fsince_5fprev_5fcmd_5fsec_47',['time_since_prev_cmd_sec',['../structEPS__struct__system__status__t.html#a36766a4af9b07082e7993a2d84b54a69',1,'EPS_struct_system_status_t']]],
+  ['timeout_5fms_48',['timeout_ms',['../ant__internal__drivers_8c.html#aa7d9694e4d8a127dec780dc52d67316d',1,'ant_internal_drivers.c']]],
+  ['timestamp_5fsent_49',['timestamp_sent',['../structTCMD__parsed__tcmd__to__execute__t.html#af9d9fb7bd782e4543ffd9566bc1c4335',1,'TCMD_parsed_tcmd_to_execute_t']]],
+  ['timestamp_5fto_5fexecute_50',['timestamp_to_execute',['../structTCMD__parsed__tcmd__to__execute__t.html#a8d9de34b2c656d3d78566aadf965ad2c',1,'TCMD_parsed_tcmd_to_execute_t']]],
+  ['tlm_5fcounter_51',['tlm_counter',['../structADCS__comms__status__struct__t.html#ae548e0b2c9b2fb921a69d9bd909d5821',1,'ADCS_comms_status_struct_t']]],
+  ['tmask_52',['tmask',['../structlfs__dir__traverse.html#aad87f1365fb51c601b83d36978de7832',1,'lfs_dir_traverse']]],
+  ['tracking_5fmodule_5fenabled_53',['tracking_module_enabled',['../structADCS__raw__star__tracker__struct__t.html#a932673877f3afc8951bf3df5394160b8',1,'ADCS_raw_star_tracker_struct_t']]],
+  ['ttag_54',['ttag',['../structlfs__dir__traverse.html#a50a96d24a5614a6e6bb0db1a52e55ad8',1,'lfs_dir_traverse']]],
+  ['type_55',['type',['../structlfs__info.html#a94223addf36cce6dbd3819dc79936097',1,'lfs_info::type'],['../structlfs__attr.html#ae98269a6f8dfd6c85fefcfe8c70de29a',1,'lfs_attr::type'],['../structlfs__dir.html#a8adb520942b984f65a2326e64a4fbda1',1,'lfs_dir::type'],['../structlfs__file.html#aeecd5a486ef43505e598ce565f316e97',1,'lfs_file::type'],['../structlfs_1_1lfs__mlist.html#adb9140cc712a3b93d1edb743c720ed34',1,'lfs::lfs_mlist::type']]]
 ];

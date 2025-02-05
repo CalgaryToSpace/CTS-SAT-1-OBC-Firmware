@@ -1,22 +1,33 @@
 <map id="firmware/Core/Src/unit_tests/test_adcs.c" name="firmware/Core/Src/unit_tests/test_adcs.c">
-<area shape="rect" id="Node000001" title=" " alt="" coords="408,5,559,46"/>
-<area shape="rect" id="Node000002" href="$adcs__struct__packers_8h.html" title=" " alt="" coords="5,94,173,135"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="409,46,188,94,187,89,407,41"/>
-<area shape="rect" id="Node000006" href="$unit__test__helpers_8h.html" title=" " alt="" coords="196,94,328,135"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="434,49,328,90,326,85,432,44"/>
-<area shape="rect" id="Node000007" href="$test__adcs_8h.html" title=" " alt="" coords="353,102,502,127"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="473,48,446,90,441,87,469,45"/>
-<area shape="rect" id="Node000008" href="$number__comparisons_8h.html" title=" " alt="" coords="372,183,593,208"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="498,45,508,68,517,93,520,114,517,135,502,170,497,168,512,134,515,114,512,95,504,70,493,47"/>
-<area shape="rect" id="Node000009" title=" " alt="" coords="577,102,636,127"/>
-<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="513,44,579,90,576,95,510,49"/>
-<area shape="rect" id="Node000010" title=" " alt="" coords="660,102,723,127"/>
-<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="533,44,649,92,651,93,649,97,647,96,531,49"/>
-<area shape="rect" id="Node000003" href="$adcs__types_8h.html" title=" " alt="" coords="115,183,290,208"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="119,133,174,171,171,176,115,137"/>
-<area shape="rect" id="Node000004" title=" " alt="" coords="356,256,419,282"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="235,206,343,248,341,253,233,211"/>
-<area shape="rect" id="Node000005" title=" " alt="" coords="166,256,239,282"/>
-<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="205,209,205,241,200,241,200,209"/>
-<area shape="poly" id="edge8_Node000008_Node000004" title=" " alt="" coords="468,211,417,249,414,245,465,207"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="639,5,789,46"/>
+<area shape="rect" id="Node000002" href="$adcs__struct__packers_8h.html" title=" " alt="" coords="292,94,459,135"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="639,49,468,92,467,87,638,44"/>
+<area shape="rect" id="Node000006" href="$adcs__internal__drivers_8h.html" title=" " alt="" coords="91,94,268,135"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="639,40,283,96,282,91,638,35"/>
+<area shape="rect" id="Node000011" href="$unit__test__helpers_8h.html" title=" " alt="" coords="482,94,615,135"/>
+<area shape="poly" id="edge11_Node000001_Node000011" title=" " alt="" coords="678,49,601,89,598,84,675,44"/>
+<area shape="rect" id="Node000012" href="$test__adcs_8h.html" title=" " alt="" coords="639,102,789,127"/>
+<area shape="poly" id="edge12_Node000001_Node000012" title=" " alt="" coords="717,47,717,86,711,86,711,47"/>
+<area shape="rect" id="Node000013" href="$number__comparisons_8h.html" title=" " alt="" coords="601,183,822,208"/>
+<area shape="poly" id="edge13_Node000001_Node000013" title=" " alt="" coords="755,44,782,65,803,93,810,114,803,136,783,160,758,178,755,173,780,156,798,133,804,114,798,95,778,69,752,49"/>
+<area shape="rect" id="Node000014" title=" " alt="" coords="863,102,922,127"/>
+<area shape="poly" id="edge15_Node000001_Node000014" title=" " alt="" coords="756,44,855,92,853,97,753,49"/>
+<area shape="rect" id="Node000015" title=" " alt="" coords="946,102,1010,127"/>
+<area shape="poly" id="edge16_Node000001_Node000015" title=" " alt="" coords="786,44,935,91,938,93,936,98,933,97,785,49"/>
+<area shape="rect" id="Node000003" href="$adcs__types_8h.html" title=" " alt="" coords="288,183,463,208"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="378,135,378,167,373,167,373,135"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="558,264,622,290"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="409,206,545,256,543,261,407,211"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="339,264,412,290"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="378,209,378,248,373,248,373,209"/>
+<area shape="poly" id="edge6_Node000006_Node000003" title=" " alt="" coords="229,133,332,174,330,179,227,138"/>
+<area shape="rect" id="Node000007" href="$main_8h.html" title=": Header for main.c file. This file contains the common defines of the application." alt="" coords="150,183,209,208"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="182,135,182,167,177,167,177,135"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="5,264,119,290"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="163,211,94,257,91,253,160,207"/>
+<area shape="rect" id="Node000009" href="$rtos__task__helpers_8h.html" title=" " alt="" coords="142,256,283,297"/>
+<area shape="poly" id="edge9_Node000007_Node000009" title=" " alt="" coords="187,208,201,241,196,243,182,210"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="169,345,256,371"/>
+<area shape="poly" id="edge10_Node000009_Node000010" title=" " alt="" coords="215,297,215,329,210,329,210,297"/>
+<area shape="poly" id="edge14_Node000013_Node000004" title=" " alt="" coords="694,211,622,258,620,253,691,207"/>
 </map>

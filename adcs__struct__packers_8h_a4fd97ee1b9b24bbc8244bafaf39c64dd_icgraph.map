@@ -1,9 +1,0 @@
-<map id="ADCS_Pack_to_Tracking_Controller_Target_Reference_Struct" name="ADCS_Pack_to_Tracking_Controller_Target_Reference_Struct">
-<area shape="rect" id="Node000001" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="502,34,695,90"/>
-<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a6710422f6bf32f9ff3a377367ab36ea4" title="Instruct the ADCS to execute the ADCS_Get_Tracking_Controller_Target_Reference command." alt="" coords="259,5,454,46"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="486,48,454,43,455,38,487,42"/>
-<area shape="rect" id="Node000004" href="$test__adcs_8c.html#aaa5f44b3c529a09220d0e3ac128f273d" title=" " alt="" coords="266,70,446,126"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="487,81,447,87,447,82,486,76"/>
-<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#a97f5f6c7f2d9889e69c311d8ff1b59dd" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,211,46"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="243,28,211,28,211,23,243,23"/>
-</map>

@@ -1,0 +1,17 @@
+<map id="ADCS_convert_double_to_string" name="ADCS_convert_double_to_string">
+<area shape="rect" id="Node000001" title="Convert a double into a string with a given decimal precision." alt="" coords="502,104,654,145"/>
+<area shape="rect" id="Node000002" href="$adcs__types__to__json_8c.html#ae22686e302cec6cb55ec98383f02b190" title="Converts ADCS_CubeControl_Current_Struct to a JSON string." alt="" coords="267,5,446,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="527,98,453,61,421,49,423,44,455,57,529,94"/>
+<area shape="rect" id="Node000004" href="$adcs__types__to__json_8c.html#a963586f5974e360ee892bab145fdfa0b" title="Converts ADCS_Orbit_Params_Struct to a JSON string." alt="" coords="267,71,446,111"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="486,113,446,107,447,102,487,108"/>
+<area shape="rect" id="Node000006" href="$adcs__types__to__json_8c.html#aef4358e96a2427eb06a940751574f054" title="Converts ADCS_Tracking_Controller_Target_Struct to a JSON string." alt="" coords="271,136,442,177"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="487,140,442,147,441,141,486,135"/>
+<area shape="rect" id="Node000008" href="$test__adcs_8c.html#a7c3126c9ed9c6efd106e5436cbc62716" title=" " alt="" coords="259,201,454,242"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="528,155,455,191,423,203,421,198,453,186,526,150"/>
+<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#a1b777295ffce8613c3734f0fbac5b29f" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="7,5,209,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="252,28,209,28,209,23,252,23"/>
+<area shape="rect" id="Node000005" href="$telecommand__adcs_8c.html#a8b90789ba8a0c75b0bb8ba9d8322ddd7" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="14,71,202,111"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="251,94,202,94,202,88,251,88"/>
+<area shape="rect" id="Node000007" href="$telecommand__adcs_8c.html#a97f5f6c7f2d9889e69c311d8ff1b59dd" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,136,211,177"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="256,159,211,159,211,154,256,154"/>
+</map>

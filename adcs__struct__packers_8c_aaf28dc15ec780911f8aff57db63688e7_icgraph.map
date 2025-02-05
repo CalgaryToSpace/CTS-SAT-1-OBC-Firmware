@@ -1,9 +1,0 @@
-<map id="ADCS_Pack_to_Commanded_Attitude_Angles_Struct" name="ADCS_Pack_to_Commanded_Attitude_Angles_Struct">
-<area shape="rect" id="Node000001" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="512,41,704,82"/>
-<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#adff141206b24ba6923859a05680bf6fd" title="Instruct the ADCS to execute the ADCS_Get_Commanded_Attitude_Angles command." alt="" coords="294,5,454,46"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="496,47,454,41,455,35,497,42"/>
-<area shape="rect" id="Node000004" href="$test__adcs_8c.html#ab5dd4e659b16a5e56e78c9defc94eb9a" title=" " alt="" coords="284,70,464,126"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="497,81,465,86,464,81,496,76"/>
-<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#ad2ccb7360237860d25a89463dd7fb857" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,236,46"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="278,28,236,28,236,23,278,23"/>
-</map>

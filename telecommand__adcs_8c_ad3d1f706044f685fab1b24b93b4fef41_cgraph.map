@@ -1,0 +1,15 @@
+<map id="TCMDEXEC_adcs_get_raw_star_tracker_data" name="TCMDEXEC_adcs_get_raw_star_tracker_data">
+<area shape="rect" id="Node000001" title="Telecommand: Request raw star tracker telemetry data from the ADCS." alt="" coords="5,67,186,107"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a7c31fc5b05a6a20a574bbac82c60c69f" title="Instruct the ADCS to execute the ADCS_get_raw_star_tracker_data command." alt="" coords="234,45,452,70"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="186,74,218,70,218,75,187,79"/>
+<area shape="rect" id="Node000007" href="$adcs__types__to__json_8c.html#af8a018119c09f2954822be83c42db720" title=" " alt="" coords="262,95,424,135"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="187,95,247,102,246,107,186,100"/>
+<area shape="rect" id="Node000003" href="$adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="500,5,691,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="449,42,484,37,485,42,450,47"/>
+<area shape="rect" id="Node000006" href="$adcs__struct__packers_8c.html#a018da0abce0e4946c795a68086e9bbb1" title=" " alt="" coords="512,71,679,111"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="446,68,497,75,496,81,445,74"/>
+<area shape="rect" id="Node000004" href="$adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="739,5,916,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="692,23,724,23,724,28,692,28"/>
+<area shape="rect" id="Node000005" href="$adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="964,5,1112,46"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="916,23,948,23,948,28,916,28"/>
+</map>

@@ -1,0 +1,9 @@
+<map id="ADCS_pack_to_quaternion_error_vector_struct" name="ADCS_pack_to_quaternion_error_vector_struct">
+<area shape="rect" id="Node000001" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="476,41,653,82"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#af363878efd4e5f86a408550c17310cf4" title="Instruct the ADCS to execute the ADCS_Quaternion_Error_Vector command." alt="" coords="263,5,412,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="460,48,413,40,414,35,461,42"/>
+<area shape="rect" id="Node000004" href="$test__adcs_8c.html#a219b4c9bab63cad6eedd088141259ed0" title=" " alt="" coords="248,70,428,126"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="461,81,429,86,428,81,460,76"/>
+<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#a61f0f64d426376375df2a44f043fc232" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,200,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="248,28,200,28,200,23,248,23"/>
+</map>

@@ -1,9 +1,0 @@
-<map id="ADCS_Pack_to_IGRF_Magnetic_Field_Vector_Struct" name="ADCS_Pack_to_IGRF_Magnetic_Field_Vector_Struct">
-<area shape="rect" id="Node000001" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="436,41,646,82"/>
-<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a2499644ca56d3bfee3171a9ce957395e" title="Instruct the ADCS to execute the ADCS_IGRF_Magnetic_Field_Vector command." alt="" coords="214,5,382,46"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="421,47,382,41,382,35,421,41"/>
-<area shape="rect" id="Node000004" href="$test__adcs_8c.html#a05cc7a9c12f4b57fa659f9231613e3ad" title=" " alt="" coords="208,70,388,126"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="421,82,389,87,388,82,420,77"/>
-<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#ae12b1cc457f08e4844036819ff7dc176" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,160,46"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="199,28,160,28,160,23,199,23"/>
-</map>

@@ -98,15 +98,17 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="adcs__command__ids_8h__dep__incl.png" border="0" usemap="#afirmware_2Core_2Inc_2adcs__drivers_2adcs__command__ids_8hdep" alt=""/></div>
 <map name="afirmware_2Core_2Inc_2adcs__drivers_2adcs__command__ids_8hdep" id="afirmware_2Core_2Inc_2adcs__drivers_2adcs__command__ids_8hdep">
-<area shape="rect" title=" " alt="" coords="292,5,489,46"/>
+<area shape="rect" title=" " alt="" coords="394,5,592,46"/>
 <area shape="rect" href="adcs__commands_8c.html" title=" " alt="" coords="5,102,186,142"/>
-<area shape="poly" title=" " alt="" coords="315,54,158,103,156,98,314,49"/>
+<area shape="poly" title=" " alt="" coords="390,52,199,97,171,103,170,98,198,91,388,47"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html" title=" " alt="" coords="210,94,368,150"/>
-<area shape="poly" title=" " alt="" coords="360,59,320,95,316,91,356,55"/>
+<area shape="poly" title=" " alt="" coords="437,55,349,96,347,91,435,51"/>
 <area shape="rect" href="adcs__struct__packers_8c.html" title=" " alt="" coords="392,102,594,142"/>
-<area shape="poly" title=" " alt="" coords="424,54,473,99,470,103,421,58"/>
+<area shape="poly" title=" " alt="" coords="496,62,496,101,490,101,490,62"/>
 <area shape="rect" href="adcs__types__to__json_8c.html" title=" " alt="" coords="618,94,776,150"/>
-<area shape="poly" title=" " alt="" coords="470,48,619,94,617,99,468,54"/>
+<area shape="poly" title=" " alt="" coords="551,51,639,91,637,96,548,55"/>
+<area shape="rect" href="telecommand__adcs_8c.html" title=" " alt="" coords="799,102,1013,142"/>
+<area shape="poly" title=" " alt="" coords="595,47,820,98,819,103,594,53"/>
 </map>
 </div>
 </div>
@@ -280,8 +282,8 @@ Variables</h2></td></tr>
 <tr class="separator:ad1e935909de966df72a88bc462d6e36e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4bffe0332e1d3ce4e738ea499e0358b5" id="r_a4bffe0332e1d3ce4e738ea499e0358b5"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4bffe0332e1d3ce4e738ea499e0358b5">ADCS_TELEMETRY_CUBEACP_ADCS_EXECUTION_TIMES</a> = 196</td></tr>
 <tr class="separator:a4bffe0332e1d3ce4e738ea499e0358b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaaaf8cccc498586c3e369d8b740acfc5" id="r_aaaaf8cccc498586c3e369d8b740acfc5"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaaaf8cccc498586c3e369d8b740acfc5">ADCS_TELEMETRY_CUBEACP_ACP_EXECUTION_STATE</a> = 220</td></tr>
-<tr class="separator:aaaaf8cccc498586c3e369d8b740acfc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a154eaa466d79f14f563669ac0af2f211" id="r_a154eaa466d79f14f563669ac0af2f211"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a154eaa466d79f14f563669ac0af2f211">ADCS_TELEMETRY_CUBEACP_EXECUTION_STATE</a> = 220</td></tr>
+<tr class="separator:a154eaa466d79f14f563669ac0af2f211"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a29dc4b1ca5ee9d20d1eb78bc8f1b30eb" id="r_a29dc4b1ca5ee9d20d1eb78bc8f1b30eb"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a29dc4b1ca5ee9d20d1eb78bc8f1b30eb">ADCS_TELEMETRY_CUBEACP_IMAGE_CAPTURE_AND_SAVE_STATUS</a> = 233</td></tr>
 <tr class="separator:a29dc4b1ca5ee9d20d1eb78bc8f1b30eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af85c1029609d33e8b88cfd9e7232ade7" id="r_af85c1029609d33e8b88cfd9e7232ade7"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af85c1029609d33e8b88cfd9e7232ade7">ADCS_TELEMETRY_CUBEACP_MAGNETIC_FIELD_VECTOR</a> = 151</td></tr>
@@ -512,6 +514,132 @@ Variables</h2></td></tr>
 <tr class="separator:adf6d7a28f3d8c06d812e24abc71100c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9735debd74b1f12b72ab9156f7be462a" id="r_a9735debd74b1f12b72ab9156f7be462a"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9735debd74b1f12b72ab9156f7be462a">ADCS_COMMAND_BOOTLOADER_COPY_TO_FLASH</a> = 103</td></tr>
 <tr class="separator:a9735debd74b1f12b72ab9156f7be462a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad21ec5863379ccae90fd08e3411d358c" id="r_ad21ec5863379ccae90fd08e3411d358c"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad21ec5863379ccae90fd08e3411d358c">ADCS_SD_LOG_MASK_COMMUNICATION_STATUS</a> [10] = {0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:ad21ec5863379ccae90fd08e3411d358c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba1144fa6bb9f43416bd66336dff2919" id="r_aba1144fa6bb9f43416bd66336dff2919"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aba1144fa6bb9f43416bd66336dff2919">ADCS_SD_LOG_MASK_EDAC_ERROR_COUNTERS</a> [10] = {0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:aba1144fa6bb9f43416bd66336dff2919"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2c99db1c011146a9568525e09675717" id="r_af2c99db1c011146a9568525e09675717"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af2c99db1c011146a9568525e09675717">ADCS_SD_LOG_MASK_LAST_LOGGED_EVENT</a> [10] = {0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:af2c99db1c011146a9568525e09675717"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7191d203e6f4821da7d91cc7864192a" id="r_ad7191d203e6f4821da7d91cc7864192a"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad7191d203e6f4821da7d91cc7864192a">ADCS_SD_LOG_MASK_SRAM_LATCHUP_COUNTERS</a> [10] = {0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:ad7191d203e6f4821da7d91cc7864192a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1562c5521bf3b06b98f911e0e70b846b" id="r_a1562c5521bf3b06b98f911e0e70b846b"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1562c5521bf3b06b98f911e0e70b846b">ADCS_SD_LOG_MASK_MAGNETORQUER_COMMAND</a> [10] = {0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:a1562c5521bf3b06b98f911e0e70b846b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecc258538e9cb7d8b9323a1e1436bed7" id="r_aecc258538e9cb7d8b9323a1e1436bed7"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aecc258538e9cb7d8b9323a1e1436bed7">ADCS_SD_LOG_MASK_WHEEL_SPEED_COMMANDS</a> [10] = {0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:aecc258538e9cb7d8b9323a1e1436bed7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c4f40cc004d3d0527e9a830c87fcf6f" id="r_a5c4f40cc004d3d0527e9a830c87fcf6f"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5c4f40cc004d3d0527e9a830c87fcf6f">ADCS_SD_LOG_MASK_MAGNETIC_FIELD_VECTOR</a> [10] = {0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:a5c4f40cc004d3d0527e9a830c87fcf6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7a1f2bca3bf2fc430142b5d1fd5fb63" id="r_ae7a1f2bca3bf2fc430142b5d1fd5fb63"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae7a1f2bca3bf2fc430142b5d1fd5fb63">ADCS_SD_LOG_MASK_COARSE_SUN_VECTOR</a> [10] = {0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:ae7a1f2bca3bf2fc430142b5d1fd5fb63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82a2626a2e83a8c662a16a9414c65c15" id="r_a82a2626a2e83a8c662a16a9414c65c15"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a82a2626a2e83a8c662a16a9414c65c15">ADCS_SD_LOG_MASK_FINE_SUN_VECTOR</a> [10] = {0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:a82a2626a2e83a8c662a16a9414c65c15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6fdd0ec0598e1ac2db1dd8618f0482a" id="r_ae6fdd0ec0598e1ac2db1dd8618f0482a"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae6fdd0ec0598e1ac2db1dd8618f0482a">ADCS_SD_LOG_MASK_NADIR_VECTOR</a> [10] = {0x00, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:ae6fdd0ec0598e1ac2db1dd8618f0482a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca268b173bb1c1041c4012f89237d602" id="r_aca268b173bb1c1041c4012f89237d602"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aca268b173bb1c1041c4012f89237d602">ADCS_SD_LOG_MASK_RATE_SENSOR_RATES</a> [10] = {0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:aca268b173bb1c1041c4012f89237d602"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f1584b297318f6f40f211704cd63838" id="r_a3f1584b297318f6f40f211704cd63838"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3f1584b297318f6f40f211704cd63838">ADCS_SD_LOG_MASK_WHEEL_SPEED</a> [10] = {0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:a3f1584b297318f6f40f211704cd63838"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a937ec94b74ddb9151aed95d1b2f044b5" id="r_a937ec94b74ddb9151aed95d1b2f044b5"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a937ec94b74ddb9151aed95d1b2f044b5">ADCS_SD_LOG_MASK_STAR_1_BODY_VECTOR</a> [10] = {0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:a937ec94b74ddb9151aed95d1b2f044b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1c73eb85e9b067a5d783d824711136b" id="r_ae1c73eb85e9b067a5d783d824711136b"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae1c73eb85e9b067a5d783d824711136b">ADCS_SD_LOG_MASK_STAR_1_ORBIT_VECTOR</a> [10] = {0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:ae1c73eb85e9b067a5d783d824711136b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a742e32354cb16cfa66f98ed29b189bc7" id="r_a742e32354cb16cfa66f98ed29b189bc7"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a742e32354cb16cfa66f98ed29b189bc7">ADCS_SD_LOG_MASK_STAR_2_BODY_VECTOR</a> [10] = {0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:a742e32354cb16cfa66f98ed29b189bc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d59e2454ae6f2124bc96d6a378edc86" id="r_a0d59e2454ae6f2124bc96d6a378edc86"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0d59e2454ae6f2124bc96d6a378edc86">ADCS_SD_LOG_MASK_STAR_2_ORBIT_VECTOR</a> [10] = {0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:a0d59e2454ae6f2124bc96d6a378edc86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afec35192507f571d23034d3964b84d73" id="r_afec35192507f571d23034d3964b84d73"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afec35192507f571d23034d3964b84d73">ADCS_SD_LOG_MASK_STAR_3_BODY_VECTOR</a> [10] = {0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:afec35192507f571d23034d3964b84d73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17df283106c411265786a8d6cbc053a3" id="r_a17df283106c411265786a8d6cbc053a3"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a17df283106c411265786a8d6cbc053a3">ADCS_SD_LOG_MASK_STAR_3_ORBIT_VECTOR</a> [10] = {0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:a17df283106c411265786a8d6cbc053a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a098e5cf61242da07da594f31b01397c7" id="r_a098e5cf61242da07da594f31b01397c7"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a098e5cf61242da07da594f31b01397c7">ADCS_SD_LOG_MASK_CUBESENSE1_CURRENT_MEASUREMENTS</a> [10] = {0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:a098e5cf61242da07da594f31b01397c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e49c17b21f24abb1a32a6fe9b5f84e2" id="r_a2e49c17b21f24abb1a32a6fe9b5f84e2"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2e49c17b21f24abb1a32a6fe9b5f84e2">ADCS_SD_LOG_MASK_CUBECONTROL_CURRENT_MEASUREMENTS</a> [10] = {0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:a2e49c17b21f24abb1a32a6fe9b5f84e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa37eab6950bc660875a0de41316543c0" id="r_aa37eab6950bc660875a0de41316543c0"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa37eab6950bc660875a0de41316543c0">ADCS_SD_LOG_MASK_WHEEL_CURRENTS</a> [10] = {0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:aa37eab6950bc660875a0de41316543c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd114a7ad722356d90ba4a9c78b79513" id="r_acd114a7ad722356d90ba4a9c78b79513"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acd114a7ad722356d90ba4a9c78b79513">ADCS_SD_LOG_MASK_ADCS_MISC_CURRENT_MEASUREMENTS</a> [10] = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:acd114a7ad722356d90ba4a9c78b79513"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a558dc578da58bbc9ccd57095b19a2500" id="r_a558dc578da58bbc9ccd57095b19a2500"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a558dc578da58bbc9ccd57095b19a2500">ADCS_SD_LOG_MASK_ADCS_TEMPERATURES</a> [10] = {0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:a558dc578da58bbc9ccd57095b19a2500"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5364db5d27723edf1172c937e33a4bea" id="r_a5364db5d27723edf1172c937e33a4bea"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5364db5d27723edf1172c937e33a4bea">ADCS_SD_LOG_MASK_RATE_SENSOR_TEMPERATURES</a> [10] = {0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:a5364db5d27723edf1172c937e33a4bea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d7a2b9adedfa6756c7a0f5f54f6e034" id="r_a5d7a2b9adedfa6756c7a0f5f54f6e034"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5d7a2b9adedfa6756c7a0f5f54f6e034">ADCS_SD_LOG_MASK_CURRENT_ADCS_STATE</a> [10] = {0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:a5d7a2b9adedfa6756c7a0f5f54f6e034"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a515fd87d585451aca7c75dfd1b18aced" id="r_a515fd87d585451aca7c75dfd1b18aced"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a515fd87d585451aca7c75dfd1b18aced">ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES</a> [10] = {0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:a515fd87d585451aca7c75dfd1b18aced"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a315c0a158c6e4693f3cfdd259d82533d" id="r_a315c0a158c6e4693f3cfdd259d82533d"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a315c0a158c6e4693f3cfdd259d82533d">ADCS_SD_LOG_MASK_ESTIMATED_QUATERNION</a> [10] = {0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:a315c0a158c6e4693f3cfdd259d82533d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69aa4e295a9c20f8ac5a6e7b114abb51" id="r_a69aa4e295a9c20f8ac5a6e7b114abb51"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a69aa4e295a9c20f8ac5a6e7b114abb51">ADCS_SD_LOG_MASK_ESTIMATED_ANGULAR_RATES</a> [10] = {0x00, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:a69aa4e295a9c20f8ac5a6e7b114abb51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afaa08f610da3c063327547b8ee726801" id="r_afaa08f610da3c063327547b8ee726801"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afaa08f610da3c063327547b8ee726801">ADCS_SD_LOG_MASK_SATELLITE_POSITION_ECI</a> [10] = {0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:afaa08f610da3c063327547b8ee726801"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc0dd70f5b5b240b6e05a2c96f2286a5" id="r_acc0dd70f5b5b240b6e05a2c96f2286a5"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acc0dd70f5b5b240b6e05a2c96f2286a5">ADCS_SD_LOG_MASK_SATELLITE_VELOCITY_ECI</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:acc0dd70f5b5b240b6e05a2c96f2286a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b585f2a03cd842444ac573d16e205f4" id="r_a7b585f2a03cd842444ac573d16e205f4"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7b585f2a03cd842444ac573d16e205f4">ADCS_SD_LOG_MASK_SATELLITE_POSITION_LLH</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:a7b585f2a03cd842444ac573d16e205f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7609233f1b300945a99760ec02deef36" id="r_a7609233f1b300945a99760ec02deef36"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7609233f1b300945a99760ec02deef36">ADCS_SD_LOG_MASK_ECEF_POSITION</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:a7609233f1b300945a99760ec02deef36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6a1327a69f73b201fae8c335e6e01a6" id="r_af6a1327a69f73b201fae8c335e6e01a6"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af6a1327a69f73b201fae8c335e6e01a6">ADCS_SD_LOG_MASK_IGRF_MODELLED_MAGNETIC_FIELD_VECTOR</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:af6a1327a69f73b201fae8c335e6e01a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac59304db106ace41ac607a26f9af62d6" id="r_ac59304db106ace41ac607a26f9af62d6"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac59304db106ace41ac607a26f9af62d6">ADCS_SD_LOG_MASK_MODELLED_SUN_VECTOR</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:ac59304db106ace41ac607a26f9af62d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefdf517a8a5bcfcfbda30559ec9b8582" id="r_aefdf517a8a5bcfcfbda30559ec9b8582"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aefdf517a8a5bcfcfbda30559ec9b8582">ADCS_SD_LOG_MASK_ESTIMATED_GYRO_BIAS</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:aefdf517a8a5bcfcfbda30559ec9b8582"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e2db29a554194a919f061de728006dc" id="r_a6e2db29a554194a919f061de728006dc"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6e2db29a554194a919f061de728006dc">ADCS_SD_LOG_MASK_ESTIMATION_INNOVATION_VECTOR</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:a6e2db29a554194a919f061de728006dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a336e264ee42770fe687906fb21e6c5d6" id="r_a336e264ee42770fe687906fb21e6c5d6"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a336e264ee42770fe687906fb21e6c5d6">ADCS_SD_LOG_MASK_QUATERNION_ERROR_VECTOR</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:a336e264ee42770fe687906fb21e6c5d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6aad0d19f35cb082ce7077f1e0346eea" id="r_a6aad0d19f35cb082ce7077f1e0346eea"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6aad0d19f35cb082ce7077f1e0346eea">ADCS_SD_LOG_MASK_QUATERNION_COVARIANCE</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:a6aad0d19f35cb082ce7077f1e0346eea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca194ae068cf63111417d6dd59bf4847" id="r_aca194ae068cf63111417d6dd59bf4847"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aca194ae068cf63111417d6dd59bf4847">ADCS_SD_LOG_MASK_ANGULAR_RATE_COVARIANCE</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:aca194ae068cf63111417d6dd59bf4847"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc28e0503519382cf4250d451e2e973b" id="r_abc28e0503519382cf4250d451e2e973b"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abc28e0503519382cf4250d451e2e973b">ADCS_SD_LOG_MASK_RAW_GPS_STATUS</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:abc28e0503519382cf4250d451e2e973b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8006024c3f5e421748fc13583f34024" id="r_aa8006024c3f5e421748fc13583f34024"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa8006024c3f5e421748fc13583f34024">ADCS_SD_LOG_MASK_RAW_GPS_TIME</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:aa8006024c3f5e421748fc13583f34024"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa268559b493ed6f90d2e033544af26a7" id="r_aa268559b493ed6f90d2e033544af26a7"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa268559b493ed6f90d2e033544af26a7">ADCS_SD_LOG_MASK_RAW_GPS_X</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:aa268559b493ed6f90d2e033544af26a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5528cd9c0bfb730768c8db5c9f4d3eb" id="r_aa5528cd9c0bfb730768c8db5c9f4d3eb"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa5528cd9c0bfb730768c8db5c9f4d3eb">ADCS_SD_LOG_MASK_RAW_GPS_Y</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:aa5528cd9c0bfb730768c8db5c9f4d3eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f13e30a22c59f92896994c0fb1d213b" id="r_a6f13e30a22c59f92896994c0fb1d213b"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6f13e30a22c59f92896994c0fb1d213b">ADCS_SD_LOG_MASK_RAW_GPS_Z</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:a6f13e30a22c59f92896994c0fb1d213b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af17b47fb5c875c752f8375ab9f8df6e1" id="r_af17b47fb5c875c752f8375ab9f8df6e1"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af17b47fb5c875c752f8375ab9f8df6e1">ADCS_SD_LOG_MASK_RAW_CAM2_SENSOR</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:af17b47fb5c875c752f8375ab9f8df6e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f7b772cc4c45301be3e0bd2780640c1" id="r_a8f7b772cc4c45301be3e0bd2780640c1"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8f7b772cc4c45301be3e0bd2780640c1">ADCS_SD_LOG_MASK_RAW_CAM1_SENSOR</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:a8f7b772cc4c45301be3e0bd2780640c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ca38fdbab70702d9083a3a96fe0e40a" id="r_a1ca38fdbab70702d9083a3a96fe0e40a"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1ca38fdbab70702d9083a3a96fe0e40a">ADCS_SD_LOG_MASK_RAW_CSS_1_TO_6</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:a1ca38fdbab70702d9083a3a96fe0e40a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acea2c550be6e8b86992b0ab004d19b6e" id="r_acea2c550be6e8b86992b0ab004d19b6e"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acea2c550be6e8b86992b0ab004d19b6e">ADCS_SD_LOG_MASK_RAW_CSS_7_TO_10</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:acea2c550be6e8b86992b0ab004d19b6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29534d8c0de1c63d739d44436545d3f3" id="r_a29534d8c0de1c63d739d44436545d3f3"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a29534d8c0de1c63d739d44436545d3f3">ADCS_SD_LOG_MASK_RAW_MAGNETOMETER</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:a29534d8c0de1c63d739d44436545d3f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75027899cf6f7931bc8a62300cc6b488" id="r_a75027899cf6f7931bc8a62300cc6b488"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a75027899cf6f7931bc8a62300cc6b488">ADCS_SD_LOG_MASK_STAR_PERFORMANCE1</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:a75027899cf6f7931bc8a62300cc6b488"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10c0b83d801c0f0a739f9b605890da5b" id="r_a10c0b83d801c0f0a739f9b605890da5b"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a10c0b83d801c0f0a739f9b605890da5b">ADCS_SD_LOG_MASK_STAR_MAGNITUDE</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:a10c0b83d801c0f0a739f9b605890da5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f441cda724d3a0367d356914b3f35c7" id="r_a7f441cda724d3a0367d356914b3f35c7"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7f441cda724d3a0367d356914b3f35c7">ADCS_SD_LOG_MASK_STAR_1_RAW_DATA</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:a7f441cda724d3a0367d356914b3f35c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69b821274c2e402ae15e981bbb92f5ac" id="r_a69b821274c2e402ae15e981bbb92f5ac"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a69b821274c2e402ae15e981bbb92f5ac">ADCS_SD_LOG_MASK_STAR_2_RAW_DATA</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00}</td></tr>
+<tr class="separator:a69b821274c2e402ae15e981bbb92f5ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1261eb9020f3f9d1f2616c5f488e031" id="r_ab1261eb9020f3f9d1f2616c5f488e031"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab1261eb9020f3f9d1f2616c5f488e031">ADCS_SD_LOG_MASK_STAR_3_RAW_DATA</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00}</td></tr>
+<tr class="separator:ab1261eb9020f3f9d1f2616c5f488e031"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecd095e6fba386e3342268cf5b349ab4" id="r_aecd095e6fba386e3342268cf5b349ab4"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aecd095e6fba386e3342268cf5b349ab4">ADCS_SD_LOG_MASK_STAR_TIMING</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00}</td></tr>
+<tr class="separator:aecd095e6fba386e3342268cf5b349ab4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a602a333acc24f01c7927960d5bbd4780" id="r_a602a333acc24f01c7927960d5bbd4780"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a602a333acc24f01c7927960d5bbd4780">ADCS_SD_LOG_MASK_SECONDARY_MAGNETOMETER_RAW_MEASUREMENTS</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00}</td></tr>
+<tr class="separator:a602a333acc24f01c7927960d5bbd4780"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee473a0f9db7b5bcded4fd8202cc3c43" id="r_aee473a0f9db7b5bcded4fd8202cc3c43"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aee473a0f9db7b5bcded4fd8202cc3c43">ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00}</td></tr>
+<tr class="separator:aee473a0f9db7b5bcded4fd8202cc3c43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad140126bccc44b9ec03d712e0b8e806" id="r_aad140126bccc44b9ec03d712e0b8e806"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aad140126bccc44b9ec03d712e0b8e806">ADCS_SD_LOG_MASK_RAW_RATE_SENSOR</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00}</td></tr>
+<tr class="separator:aad140126bccc44b9ec03d712e0b8e806"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb91940be422ab2412ec126c6936ea6e" id="r_abb91940be422ab2412ec126c6936ea6e"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abb91940be422ab2412ec126c6936ea6e">ADCS_SD_LOG_MASK_CURRENT_ADCS_STATE_2</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00}</td></tr>
+<tr class="separator:abb91940be422ab2412ec126c6936ea6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b4db7c0cc909773ee393689486a0e71" id="r_a0b4db7c0cc909773ee393689486a0e71"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0b4db7c0cc909773ee393689486a0e71">ADCS_SD_LOG_MASK_CUBESTAR_ESTIMATED_RATES</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00}</td></tr>
+<tr class="separator:a0b4db7c0cc909773ee393689486a0e71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd6bd03c2ed2c567b9523f54e0898f68" id="r_afd6bd03c2ed2c567b9523f54e0898f68"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afd6bd03c2ed2c567b9523f54e0898f68">ADCS_SD_LOG_MASK_CUBESTAR_ESTIMATED_QUATERNION</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00}</td></tr>
+<tr class="separator:afd6bd03c2ed2c567b9523f54e0898f68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d7ca4564f6851ac15e5aaa0081b98da" id="r_a3d7ca4564f6851ac15e5aaa0081b98da"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3d7ca4564f6851ac15e5aaa0081b98da">ADCS_SD_LOG_MASK_STAR_PERFORMANCE2</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00}</td></tr>
+<tr class="separator:a3d7ca4564f6851ac15e5aaa0081b98da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39f8fd1b37d370c63852d8437ffb5204" id="r_a39f8fd1b37d370c63852d8437ffb5204"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a39f8fd1b37d370c63852d8437ffb5204">ADCS_SD_LOG_MASK_CUBESENSE2_CURRENT_MEASUREMENTS</a> [10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00}</td></tr>
+<tr class="separator:a39f8fd1b37d370c63852d8437ffb5204"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Variable Documentation</h2>
 <a id="a26e234b86d9fa255c68b5d809a58a0b0" name="a26e234b86d9fa255c68b5d809a58a0b0"></a>
@@ -2120,6 +2248,1392 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a id="acd114a7ad722356d90ba4a9c78b79513" name="acd114a7ad722356d90ba4a9c78b79513"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd114a7ad722356d90ba4a9c78b79513">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_ADCS_MISC_CURRENT_MEASUREMENTS</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_ADCS_MISC_CURRENT_MEASUREMENTS[10] = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a558dc578da58bbc9ccd57095b19a2500" name="a558dc578da58bbc9ccd57095b19a2500"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a558dc578da58bbc9ccd57095b19a2500">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_ADCS_TEMPERATURES</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_ADCS_TEMPERATURES[10] = {0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aca194ae068cf63111417d6dd59bf4847" name="aca194ae068cf63111417d6dd59bf4847"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca194ae068cf63111417d6dd59bf4847">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_ANGULAR_RATE_COVARIANCE</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_ANGULAR_RATE_COVARIANCE[10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae7a1f2bca3bf2fc430142b5d1fd5fb63" name="ae7a1f2bca3bf2fc430142b5d1fd5fb63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7a1f2bca3bf2fc430142b5d1fd5fb63">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_COARSE_SUN_VECTOR</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_COARSE_SUN_VECTOR[10] = {0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad21ec5863379ccae90fd08e3411d358c" name="ad21ec5863379ccae90fd08e3411d358c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad21ec5863379ccae90fd08e3411d358c">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_COMMUNICATION_STATUS</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_COMMUNICATION_STATUS[10] = {0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2e49c17b21f24abb1a32a6fe9b5f84e2" name="a2e49c17b21f24abb1a32a6fe9b5f84e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e49c17b21f24abb1a32a6fe9b5f84e2">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_CUBECONTROL_CURRENT_MEASUREMENTS</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_CUBECONTROL_CURRENT_MEASUREMENTS[10] = {0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a098e5cf61242da07da594f31b01397c7" name="a098e5cf61242da07da594f31b01397c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a098e5cf61242da07da594f31b01397c7">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_CUBESENSE1_CURRENT_MEASUREMENTS</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_CUBESENSE1_CURRENT_MEASUREMENTS[10] = {0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a39f8fd1b37d370c63852d8437ffb5204" name="a39f8fd1b37d370c63852d8437ffb5204"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39f8fd1b37d370c63852d8437ffb5204">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_CUBESENSE2_CURRENT_MEASUREMENTS</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_CUBESENSE2_CURRENT_MEASUREMENTS[10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afd6bd03c2ed2c567b9523f54e0898f68" name="afd6bd03c2ed2c567b9523f54e0898f68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd6bd03c2ed2c567b9523f54e0898f68">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_CUBESTAR_ESTIMATED_QUATERNION</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_CUBESTAR_ESTIMATED_QUATERNION[10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0b4db7c0cc909773ee393689486a0e71" name="a0b4db7c0cc909773ee393689486a0e71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b4db7c0cc909773ee393689486a0e71">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_CUBESTAR_ESTIMATED_RATES</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_CUBESTAR_ESTIMATED_RATES[10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5d7a2b9adedfa6756c7a0f5f54f6e034" name="a5d7a2b9adedfa6756c7a0f5f54f6e034"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d7a2b9adedfa6756c7a0f5f54f6e034">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_CURRENT_ADCS_STATE</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_CURRENT_ADCS_STATE[10] = {0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abb91940be422ab2412ec126c6936ea6e" name="abb91940be422ab2412ec126c6936ea6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb91940be422ab2412ec126c6936ea6e">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_CURRENT_ADCS_STATE_2</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_CURRENT_ADCS_STATE_2[10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7609233f1b300945a99760ec02deef36" name="a7609233f1b300945a99760ec02deef36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7609233f1b300945a99760ec02deef36">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_ECEF_POSITION</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_ECEF_POSITION[10] = {0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aba1144fa6bb9f43416bd66336dff2919" name="aba1144fa6bb9f43416bd66336dff2919"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba1144fa6bb9f43416bd66336dff2919">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_EDAC_ERROR_COUNTERS</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_EDAC_ERROR_COUNTERS[10] = {0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a69aa4e295a9c20f8ac5a6e7b114abb51" name="a69aa4e295a9c20f8ac5a6e7b114abb51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69aa4e295a9c20f8ac5a6e7b114abb51">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_ESTIMATED_ANGULAR_RATES</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_ESTIMATED_ANGULAR_RATES[10] = {0x00, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a515fd87d585451aca7c75dfd1b18aced" name="a515fd87d585451aca7c75dfd1b18aced"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a515fd87d585451aca7c75dfd1b18aced">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES[10] = {0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aefdf517a8a5bcfcfbda30559ec9b8582" name="aefdf517a8a5bcfcfbda30559ec9b8582"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aefdf517a8a5bcfcfbda30559ec9b8582">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_ESTIMATED_GYRO_BIAS</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_ESTIMATED_GYRO_BIAS[10] = {0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a315c0a158c6e4693f3cfdd259d82533d" name="a315c0a158c6e4693f3cfdd259d82533d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a315c0a158c6e4693f3cfdd259d82533d">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_ESTIMATED_QUATERNION</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_ESTIMATED_QUATERNION[10] = {0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6e2db29a554194a919f061de728006dc" name="a6e2db29a554194a919f061de728006dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e2db29a554194a919f061de728006dc">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_ESTIMATION_INNOVATION_VECTOR</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_ESTIMATION_INNOVATION_VECTOR[10] = {0x00, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aee473a0f9db7b5bcded4fd8202cc3c43" name="aee473a0f9db7b5bcded4fd8202cc3c43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee473a0f9db7b5bcded4fd8202cc3c43">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES[10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a82a2626a2e83a8c662a16a9414c65c15" name="a82a2626a2e83a8c662a16a9414c65c15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82a2626a2e83a8c662a16a9414c65c15">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_FINE_SUN_VECTOR</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_FINE_SUN_VECTOR[10] = {0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af6a1327a69f73b201fae8c335e6e01a6" name="af6a1327a69f73b201fae8c335e6e01a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6a1327a69f73b201fae8c335e6e01a6">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_IGRF_MODELLED_MAGNETIC_FIELD_VECTOR</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_IGRF_MODELLED_MAGNETIC_FIELD_VECTOR[10] = {0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af2c99db1c011146a9568525e09675717" name="af2c99db1c011146a9568525e09675717"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2c99db1c011146a9568525e09675717">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_LAST_LOGGED_EVENT</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_LAST_LOGGED_EVENT[10] = {0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5c4f40cc004d3d0527e9a830c87fcf6f" name="a5c4f40cc004d3d0527e9a830c87fcf6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c4f40cc004d3d0527e9a830c87fcf6f">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_MAGNETIC_FIELD_VECTOR</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_MAGNETIC_FIELD_VECTOR[10] = {0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1562c5521bf3b06b98f911e0e70b846b" name="a1562c5521bf3b06b98f911e0e70b846b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1562c5521bf3b06b98f911e0e70b846b">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_MAGNETORQUER_COMMAND</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_MAGNETORQUER_COMMAND[10] = {0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac59304db106ace41ac607a26f9af62d6" name="ac59304db106ace41ac607a26f9af62d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac59304db106ace41ac607a26f9af62d6">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_MODELLED_SUN_VECTOR</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_MODELLED_SUN_VECTOR[10] = {0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae6fdd0ec0598e1ac2db1dd8618f0482a" name="ae6fdd0ec0598e1ac2db1dd8618f0482a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6fdd0ec0598e1ac2db1dd8618f0482a">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_NADIR_VECTOR</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_NADIR_VECTOR[10] = {0x00, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6aad0d19f35cb082ce7077f1e0346eea" name="a6aad0d19f35cb082ce7077f1e0346eea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6aad0d19f35cb082ce7077f1e0346eea">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_QUATERNION_COVARIANCE</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_QUATERNION_COVARIANCE[10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a336e264ee42770fe687906fb21e6c5d6" name="a336e264ee42770fe687906fb21e6c5d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a336e264ee42770fe687906fb21e6c5d6">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_QUATERNION_ERROR_VECTOR</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_QUATERNION_ERROR_VECTOR[10] = {0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aca268b173bb1c1041c4012f89237d602" name="aca268b173bb1c1041c4012f89237d602"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca268b173bb1c1041c4012f89237d602">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_RATE_SENSOR_RATES</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_RATE_SENSOR_RATES[10] = {0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5364db5d27723edf1172c937e33a4bea" name="a5364db5d27723edf1172c937e33a4bea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5364db5d27723edf1172c937e33a4bea">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_RATE_SENSOR_TEMPERATURES</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_RATE_SENSOR_TEMPERATURES[10] = {0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8f7b772cc4c45301be3e0bd2780640c1" name="a8f7b772cc4c45301be3e0bd2780640c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f7b772cc4c45301be3e0bd2780640c1">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_RAW_CAM1_SENSOR</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_RAW_CAM1_SENSOR[10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af17b47fb5c875c752f8375ab9f8df6e1" name="af17b47fb5c875c752f8375ab9f8df6e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af17b47fb5c875c752f8375ab9f8df6e1">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_RAW_CAM2_SENSOR</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_RAW_CAM2_SENSOR[10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1ca38fdbab70702d9083a3a96fe0e40a" name="a1ca38fdbab70702d9083a3a96fe0e40a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ca38fdbab70702d9083a3a96fe0e40a">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_RAW_CSS_1_TO_6</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_RAW_CSS_1_TO_6[10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acea2c550be6e8b86992b0ab004d19b6e" name="acea2c550be6e8b86992b0ab004d19b6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acea2c550be6e8b86992b0ab004d19b6e">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_RAW_CSS_7_TO_10</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_RAW_CSS_7_TO_10[10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abc28e0503519382cf4250d451e2e973b" name="abc28e0503519382cf4250d451e2e973b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc28e0503519382cf4250d451e2e973b">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_RAW_GPS_STATUS</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_RAW_GPS_STATUS[10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa8006024c3f5e421748fc13583f34024" name="aa8006024c3f5e421748fc13583f34024"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8006024c3f5e421748fc13583f34024">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_RAW_GPS_TIME</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_RAW_GPS_TIME[10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa268559b493ed6f90d2e033544af26a7" name="aa268559b493ed6f90d2e033544af26a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa268559b493ed6f90d2e033544af26a7">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_RAW_GPS_X</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_RAW_GPS_X[10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa5528cd9c0bfb730768c8db5c9f4d3eb" name="aa5528cd9c0bfb730768c8db5c9f4d3eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5528cd9c0bfb730768c8db5c9f4d3eb">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_RAW_GPS_Y</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_RAW_GPS_Y[10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6f13e30a22c59f92896994c0fb1d213b" name="a6f13e30a22c59f92896994c0fb1d213b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f13e30a22c59f92896994c0fb1d213b">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_RAW_GPS_Z</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_RAW_GPS_Z[10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a29534d8c0de1c63d739d44436545d3f3" name="a29534d8c0de1c63d739d44436545d3f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29534d8c0de1c63d739d44436545d3f3">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_RAW_MAGNETOMETER</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_RAW_MAGNETOMETER[10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aad140126bccc44b9ec03d712e0b8e806" name="aad140126bccc44b9ec03d712e0b8e806"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad140126bccc44b9ec03d712e0b8e806">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_RAW_RATE_SENSOR</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_RAW_RATE_SENSOR[10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afaa08f610da3c063327547b8ee726801" name="afaa08f610da3c063327547b8ee726801"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afaa08f610da3c063327547b8ee726801">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_SATELLITE_POSITION_ECI</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_SATELLITE_POSITION_ECI[10] = {0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7b585f2a03cd842444ac573d16e205f4" name="a7b585f2a03cd842444ac573d16e205f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b585f2a03cd842444ac573d16e205f4">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_SATELLITE_POSITION_LLH</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_SATELLITE_POSITION_LLH[10] = {0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acc0dd70f5b5b240b6e05a2c96f2286a5" name="acc0dd70f5b5b240b6e05a2c96f2286a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc0dd70f5b5b240b6e05a2c96f2286a5">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_SATELLITE_VELOCITY_ECI</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_SATELLITE_VELOCITY_ECI[10] = {0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a602a333acc24f01c7927960d5bbd4780" name="a602a333acc24f01c7927960d5bbd4780"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a602a333acc24f01c7927960d5bbd4780">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_SECONDARY_MAGNETOMETER_RAW_MEASUREMENTS</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_SECONDARY_MAGNETOMETER_RAW_MEASUREMENTS[10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad7191d203e6f4821da7d91cc7864192a" name="ad7191d203e6f4821da7d91cc7864192a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7191d203e6f4821da7d91cc7864192a">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_SRAM_LATCHUP_COUNTERS</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_SRAM_LATCHUP_COUNTERS[10] = {0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a937ec94b74ddb9151aed95d1b2f044b5" name="a937ec94b74ddb9151aed95d1b2f044b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a937ec94b74ddb9151aed95d1b2f044b5">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_STAR_1_BODY_VECTOR</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_STAR_1_BODY_VECTOR[10] = {0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae1c73eb85e9b067a5d783d824711136b" name="ae1c73eb85e9b067a5d783d824711136b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1c73eb85e9b067a5d783d824711136b">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_STAR_1_ORBIT_VECTOR</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_STAR_1_ORBIT_VECTOR[10] = {0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7f441cda724d3a0367d356914b3f35c7" name="a7f441cda724d3a0367d356914b3f35c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f441cda724d3a0367d356914b3f35c7">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_STAR_1_RAW_DATA</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_STAR_1_RAW_DATA[10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a742e32354cb16cfa66f98ed29b189bc7" name="a742e32354cb16cfa66f98ed29b189bc7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a742e32354cb16cfa66f98ed29b189bc7">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_STAR_2_BODY_VECTOR</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_STAR_2_BODY_VECTOR[10] = {0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0d59e2454ae6f2124bc96d6a378edc86" name="a0d59e2454ae6f2124bc96d6a378edc86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d59e2454ae6f2124bc96d6a378edc86">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_STAR_2_ORBIT_VECTOR</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_STAR_2_ORBIT_VECTOR[10] = {0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a69b821274c2e402ae15e981bbb92f5ac" name="a69b821274c2e402ae15e981bbb92f5ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69b821274c2e402ae15e981bbb92f5ac">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_STAR_2_RAW_DATA</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_STAR_2_RAW_DATA[10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afec35192507f571d23034d3964b84d73" name="afec35192507f571d23034d3964b84d73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afec35192507f571d23034d3964b84d73">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_STAR_3_BODY_VECTOR</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_STAR_3_BODY_VECTOR[10] = {0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a17df283106c411265786a8d6cbc053a3" name="a17df283106c411265786a8d6cbc053a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17df283106c411265786a8d6cbc053a3">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_STAR_3_ORBIT_VECTOR</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_STAR_3_ORBIT_VECTOR[10] = {0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab1261eb9020f3f9d1f2616c5f488e031" name="ab1261eb9020f3f9d1f2616c5f488e031"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1261eb9020f3f9d1f2616c5f488e031">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_STAR_3_RAW_DATA</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_STAR_3_RAW_DATA[10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a10c0b83d801c0f0a739f9b605890da5b" name="a10c0b83d801c0f0a739f9b605890da5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10c0b83d801c0f0a739f9b605890da5b">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_STAR_MAGNITUDE</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_STAR_MAGNITUDE[10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a75027899cf6f7931bc8a62300cc6b488" name="a75027899cf6f7931bc8a62300cc6b488"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75027899cf6f7931bc8a62300cc6b488">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_STAR_PERFORMANCE1</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_STAR_PERFORMANCE1[10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3d7ca4564f6851ac15e5aaa0081b98da" name="a3d7ca4564f6851ac15e5aaa0081b98da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d7ca4564f6851ac15e5aaa0081b98da">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_STAR_PERFORMANCE2</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_STAR_PERFORMANCE2[10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aecd095e6fba386e3342268cf5b349ab4" name="aecd095e6fba386e3342268cf5b349ab4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecd095e6fba386e3342268cf5b349ab4">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_STAR_TIMING</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_STAR_TIMING[10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa37eab6950bc660875a0de41316543c0" name="aa37eab6950bc660875a0de41316543c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa37eab6950bc660875a0de41316543c0">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_WHEEL_CURRENTS</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_WHEEL_CURRENTS[10] = {0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3f1584b297318f6f40f211704cd63838" name="a3f1584b297318f6f40f211704cd63838"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f1584b297318f6f40f211704cd63838">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_WHEEL_SPEED</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_WHEEL_SPEED[10] = {0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aecc258538e9cb7d8b9323a1e1436bed7" name="aecc258538e9cb7d8b9323a1e1436bed7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecc258538e9cb7d8b9323a1e1436bed7">&#9670;&#160;</a></span>ADCS_SD_LOG_MASK_WHEEL_SPEED_COMMANDS</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_SD_LOG_MASK_WHEEL_SPEED_COMMANDS[10] = {0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a9bb3d4bd37c647a8164152bd7050f69d" name="a9bb3d4bd37c647a8164152bd7050f69d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9bb3d4bd37c647a8164152bd7050f69d">&#9670;&#160;</a></span>ADCS_TELEMETRY_BLOCK_CHECKSUM</h2>
 
@@ -2197,28 +3711,6 @@ Variables</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">const uint8_t ADCS_TELEMETRY_COMMAND_ACK = 240</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="aaaaf8cccc498586c3e369d8b740acfc5" name="aaaaf8cccc498586c3e369d8b740acfc5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaaaf8cccc498586c3e369d8b740acfc5">&#9670;&#160;</a></span>ADCS_TELEMETRY_CUBEACP_ACP_EXECUTION_STATE</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const uint8_t ADCS_TELEMETRY_CUBEACP_ACP_EXECUTION_STATE = 220</td>
         </tr>
       </table>
   </td>
@@ -2747,6 +4239,28 @@ Variables</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">const uint8_t ADCS_TELEMETRY_CUBEACP_ESTIMATION_INNOVATION_VECTOR = 162</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a154eaa466d79f14f563669ac0af2f211" name="a154eaa466d79f14f563669ac0af2f211"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a154eaa466d79f14f563669ac0af2f211">&#9670;&#160;</a></span>ADCS_TELEMETRY_CUBEACP_EXECUTION_STATE</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t ADCS_TELEMETRY_CUBEACP_EXECUTION_STATE = 220</td>
         </tr>
       </table>
   </td>

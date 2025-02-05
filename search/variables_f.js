@@ -12,9 +12,11 @@ var searchData=
   ['precision_5fcoefficient_9',['precision_coefficient',['../structSet__Precision__Data.html#aba10ea0856e8ebb042a557a916056d2f',1,'Set_Precision_Data']]],
   ['precision_5finsignificant_5fbits_10',['precision_insignificant_bits',['../structSet__Precision__Data.html#a2dcf521a7b85b637aafcc102c9aeeb77',1,'Set_Precision_Data']]],
   ['precision_5fscaling_5ffactor_11',['precision_scaling_factor',['../structSet__Precision__Data.html#a67c8ee6937246a7e9152d2e9ef772e82',1,'Set_Precision_Data']]],
-  ['processed_12',['processed',['../structADCS__cmd__ack__struct__t.html#ae1cabfcbea93a085cb3017ac191566a9',1,'ADCS_cmd_ack_struct_t']]],
-  ['prog_13',['prog',['../structlfs__config.html#a6df9c7458b71625fc49e2b159a0e7fe0',1,'lfs_config']]],
-  ['prog_5fbuffer_14',['prog_buffer',['../structlfs__config.html#a8f4cc43d08071d32b52c5106dac3cb56',1,'lfs_config']]],
-  ['prog_5fsize_15',['prog_size',['../structlfs__config.html#aae1956189539d586e3dcd68af5460199',1,'lfs_config']]],
-  ['ptag_16',['ptag',['../structlfs__dir__traverse.html#a5b5f3a68d6efc4b69f3ea16bb6f46dd9',1,'lfs_dir_traverse::ptag'],['../structlfs__commit.html#a99930b9579a13b93b3165e5ed195c9eb',1,'lfs_commit::ptag']]]
+  ['prediction_5fenabled_12',['prediction_enabled',['../structADCS__raw__star__tracker__struct__t.html#a3ae7437d7478ca51f181b4436de8fdda',1,'ADCS_raw_star_tracker_struct_t']]],
+  ['processed_13',['processed',['../structADCS__cmd__ack__struct__t.html#ae1cabfcbea93a085cb3017ac191566a9',1,'ADCS_cmd_ack_struct_t']]],
+  ['processing_5ftime_5ferror_14',['processing_time_error',['../structADCS__raw__star__tracker__struct__t.html#a56bfa1788d6a8e411912f89a106ec5c3',1,'ADCS_raw_star_tracker_struct_t']]],
+  ['prog_15',['prog',['../structlfs__config.html#a6df9c7458b71625fc49e2b159a0e7fe0',1,'lfs_config']]],
+  ['prog_5fbuffer_16',['prog_buffer',['../structlfs__config.html#a8f4cc43d08071d32b52c5106dac3cb56',1,'lfs_config']]],
+  ['prog_5fsize_17',['prog_size',['../structlfs__config.html#aae1956189539d586e3dcd68af5460199',1,'lfs_config']]],
+  ['ptag_18',['ptag',['../structlfs__dir__traverse.html#a5b5f3a68d6efc4b69f3ea16bb6f46dd9',1,'lfs_dir_traverse::ptag'],['../structlfs__commit.html#a99930b9579a13b93b3165e5ed195c9eb',1,'lfs_commit::ptag']]]
 ];

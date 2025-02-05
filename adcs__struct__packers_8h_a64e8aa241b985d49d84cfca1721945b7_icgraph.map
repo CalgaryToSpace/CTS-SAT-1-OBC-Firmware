@@ -1,0 +1,17 @@
+<map id="ADCS_pack_to_raw_gps_struct" name="ADCS_pack_to_raw_gps_struct">
+<area shape="rect" id="Node000001" title="Packs the ADCS received raw data into the appropriate structure for any of the three Raw_GPS commands..." alt="" coords="478,72,644,113"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a1c1766401a8ad588ea94c0107650ffce" title="Instruct the ADCS to execute the ADCS_Raw_GPS_X command." alt="" coords="264,5,416,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="495,69,429,45,394,34,395,29,431,40,497,64"/>
+<area shape="rect" id="Node000004" href="$adcs__commands_8c.html#a7fe20d3192da74dd2aded40b0f7a0a61" title="Instruct the ADCS to execute the ADCS_Raw_GPS_Y command." alt="" coords="264,55,416,80"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="463,84,416,79,416,74,463,79"/>
+<area shape="rect" id="Node000006" href="$adcs__commands_8c.html#ae24c466121c63aaffa44dab2da186725" title="Instruct the ADCS to execute the ADCS_Raw_GPS_Z command." alt="" coords="264,104,416,130"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="463,106,416,111,416,106,463,101"/>
+<area shape="rect" id="Node000008" href="$test__adcs_8c.html#aea8bb59b85cb77a72bb10260f6d87ebb" title=" " alt="" coords="250,154,430,194"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="492,122,431,145,400,156,399,151,429,140,491,117"/>
+<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#a7d95ac1399858585cf55d539e4853d07" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,202,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="249,21,202,21,202,16,249,16"/>
+<area shape="rect" id="Node000005" href="$telecommand__adcs_8c.html#a5b62215a6bc3f3fa3945b172b5991534" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,55,202,80"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="249,70,202,70,202,65,249,65"/>
+<area shape="rect" id="Node000007" href="$telecommand__adcs_8c.html#aef6a7a809041cca7d34f2c25d16273ec" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,104,202,130"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="249,120,202,120,202,114,249,114"/>
+</map>

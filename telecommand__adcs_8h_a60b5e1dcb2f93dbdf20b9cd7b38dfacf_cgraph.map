@@ -6,8 +6,8 @@
 <area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="169,95,200,99,200,104,168,100"/>
 <area shape="rect" id="Node000003" href="$adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="439,5,630,46"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="384,44,423,38,424,44,384,49"/>
-<area shape="rect" id="Node000006" href="$adcs__struct__packers_8c.html#ad05e7e3ade58b1b972a1936255665dcd" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="460,71,610,111"/>
-<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="384,67,445,75,444,81,384,72"/>
+<area shape="rect" id="Node000006" href="$adcs__struct__packers_8c.html#a8e2b9771a7aa8e6042234c9884fa734e" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="462,71,607,111"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="384,67,447,76,446,81,384,72"/>
 <area shape="rect" id="Node000004" href="$adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="678,5,855,46"/>
 <area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="631,23,663,23,663,28,631,28"/>
 <area shape="rect" id="Node000005" href="$adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="903,5,1051,46"/>
