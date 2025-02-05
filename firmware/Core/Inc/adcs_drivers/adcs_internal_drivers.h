@@ -16,6 +16,8 @@ static const uint16_t ADCS_PROCESSED_TIMEOUT = 1000;
 // byte transforms
 uint8_t ADCS_convert_uint16_to_reversed_uint8_array_members(uint8_t *array, uint16_t value, uint16_t index);
 uint8_t ADCS_convert_uint32_to_reversed_uint8_array_members(uint8_t *array, uint32_t value, uint16_t index);
+uint8_t ADCS_convert_double_to_string(double input, uint8_t precision, char* output_string, uint16_t str_len);
+uint8_t ADCS_combine_sd_log_bitmasks(const uint8_t **array_in, const uint8_t array_in_size, uint8_t *array_out);
 
 // TC/TLM functions (basic communication)
 uint8_t ADCS_i2c_send_command_and_check(uint8_t id, uint8_t* data, uint32_t data_length, uint8_t include_checksum);
