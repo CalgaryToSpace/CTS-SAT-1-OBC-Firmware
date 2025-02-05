@@ -205,7 +205,70 @@ typedef enum ADCS_file_type_enum_t {
     ADCS_FILE_TYPE_INDEX = 15        
 } ADCS_file_type_enum_t;
 
-/* Structs */
+typedef enum ADCS_current_execution_point_enum_t {
+    ADCS_CURRENT_EXECUTION_POINT_BUSY_INITIALIZATION = 0,
+    ADCS_CURRENT_EXECUTION_POINT_IDLE = 1,
+    ADCS_CURRENT_EXECUTION_POINT_SENSOR_ACTUATOR_COMMS= 2,
+    ADCS_CURRENT_EXECUTION_POINT_ADCS_UPDATE = 3,
+    ADCS_CURRENT_EXECUTION_POINT_PERIPHERAL_POWER_COMMANDS = 4,
+    ADCS_CURRENT_EXECUTION_POINT_CPU_TEMPERATURE_SAMPLING = 5,
+    ADCS_CURRENT_EXECUTION_POINT_IMAGE_DOWNLOAD = 6,
+    ADCS_CURRENT_EXECUTION_POINT_IMAGE_COMPRESSION = 7,
+    ADCS_CURRENT_EXECUTION_POINT_SAVING_IMAGE_TO_SD = 8,
+    ADCS_CURRENT_EXECUTION_POINT_LOGGING = 9,
+    ADCS_CURRENT_EXECUTION_POINT_LOG_FILE_COMPRESSION = 10,
+    ADCS_CURRENT_EXECUTION_POINT_SAVING_LOG_TO_SD = 11,
+    ADCS_CURRENT_EXECUTION_POINT_WRITING_TO_FLASH = 12
+} ADCS_current_execution_point_enum_t;
+
+typedef enum ADCS_asgp4_mode_enum_t {
+    ADCS_ASGP4_MODE_OFF = 0,
+    ADCS_ASGP4_MODE_TRIGGER = 1,
+    ADCS_ASGP4_MODE_BACKGROUND = 2,
+    ADCS_ASGP4_MODE_AUGMENT = 3,
+} ADCS_asgp4_mode_enum_t;
+
+typedef enum ADCS_camera_select_enum_t {
+    ADCS_CAMERA_SELECT_1 = 0,
+    ADCS_CAMERA_SELECT_2 = 1,
+    ADCS_CAMERA_SELECT_STAR = 2,
+} ADCS_camera_select_enum_t;
+
+typedef enum ADCS_image_size_enum_t {
+    ADCS_IMAGE_SIZE_1024_X_1024_PX = 0,
+    ADCS_IMAGE_SIZE_512_X_512_PX = 1,
+    ADCS_IMAGE_SIZE_256_X_256_PX = 2,
+    ADCS_IMAGE_SIZE_128_X_128_PX = 3,
+    ADCS_IMAGE_SIZE_64_X_64_PX = 4,
+} ADCS_image_size_enum_t;
+
+typedef enum ADCS_sd_log_destination_enum_t {
+    ADCS_SD_LOG_DESTINATION_PRIMARY_SD = 0,
+    ADCS_SD_LOG_DESTINATION_SECONDARY_SD = 1,
+} ADCS_sd_log_destination_enum_t;
+
+typedef enum ADCS_commissioning_step_enum_t {
+    ADCS_COMMISISONING_STEP_DETERMINE_INITIAL_ANGULAR_RATES = 1, 
+    ADCS_COMMISISONING_STEP_INITIAL_DETUMBLING = 2, 
+    ADCS_COMMISISONING_STEP_CONTINUED_DETUMBLING_TO_Y_THOMSON = 3, 
+    ADCS_COMMISISONING_STEP_MAGNETOMETER_DEPLOYMENT = 4, 
+    ADCS_COMMISISONING_STEP_MAGNETOMETER_CALIBRATION = 5, 
+    ADCS_COMMISISONING_STEP_ANGULAR_RATE_AND_PITCH_ANGLE_ESTIMATION = 6, 
+    ADCS_COMMISISONING_STEP_Y_WHEEL_RAMP_UP_TEST = 7, 
+    ADCS_COMMISISONING_STEP_INITIAL_Y_MOMENTUM_ACTIVATION = 8, 
+    ADCS_COMMISISONING_STEP_CONTINUED_Y_MOMENTUM_ACTIVATION_AND_MAGNETOMETER_EKF = 9, 
+    ADCS_COMMISISONING_STEP_CUBESENSE_SUN_NADIR = 10,
+    ADCS_COMMISISONING_STEP_EKF_ACTIVATION_SUN_AND_NADIR = 11,
+    ADCS_COMMISISONING_STEP_CUBESTAR_STAR_TRACKER = 12,
+    ADCS_COMMISISONING_STEP_EKF_ACTIVATION_WITH_STAR_VECTOR_MEASUREMENTS = 13,
+    ADCS_COMMISISONING_STEP_ZERO_BIAS_3_AXIS_REACTION_WHEEL_CONTROL = 14,
+    ADCS_COMMISISONING_STEP_EKF_WITH_RATE_GYRO_STAR_TRACKER_MEASUREMENTS = 15,
+    ADCS_COMMISISONING_STEP_SUN_TRACKING_3_AXIS_CONTROL = 16,
+    ADCS_COMMISISONING_STEP_GROUND_TARGET_TRACKING_CONTROLLER = 17,
+    ADCS_COMMISISONING_STEP_GPS_RECEIVER = 18
+} ADCS_commissioning_step_enum_t;
+
+/* Command Structs */
 
 typedef struct ADCS_cmd_ack_struct_t {
     uint8_t last_id;
@@ -249,7 +312,7 @@ typedef struct ADCS_angular_rates_struct_t {
 typedef struct ADCS_llh_position_struct_t {
     int32_t latitude_mdeg;
     int32_t longitude_mdeg;
-    int32_t altitude_meters;
+    uint32_t altitude_meters;
 } ADCS_llh_position_struct_t;
 
 typedef struct ADCS_Power_Control_struct_t{
@@ -552,5 +615,103 @@ typedef struct ADCS_file_download_buffer_struct_t {
     uint16_t packet_counter; 
     uint8_t file_bytes[20];  
 } ADCS_file_download_buffer_struct_t;
+typedef struct ADCS_acp_execution_state_struct_t {
+    uint16_t time_since_iteration_start_ms;
+    ADCS_current_execution_point_enum_t current_execution_point;
+} ADCS_acp_execution_state_struct_t;
+
+typedef struct ADCS_current_state_1_struct_t {
+    ADCS_estimation_mode_enum_t estimation_mode;
+    ADCS_control_mode_enum_t control_mode;  
+    ADCS_run_mode_enum_t run_mode;  
+    ADCS_asgp4_mode_enum_t asgp4_mode; 
+    bool cubecontrol_signal_enabled:1; // 1-bit bool
+    bool cubecontrol_motor_enabled:1; // 1-bit bool
+    bool cubesense1_enabled:1; // 1-bit bool
+    bool cubesense2_enabled:1; // 1-bit bool
+    bool cubewheel1_enabled:1; // 1-bit bool
+    bool cubewheel2_enabled:1; // 1-bit bool
+    bool cubewheel3_enabled:1; // 1-bit bool
+    bool cubestar_enabled:1; // 1-bit bool
+    bool gps_receiver_enabled:1; // 1-bit bool
+    bool gps_lna_power_enabled:1; // 1-bit bool
+    bool motor_driver_enabled:1; // 1-bit bool
+    bool sun_above_local_horizon:1; // 1-bit bool
+    bool cubesense1_comm_error:1; // 1-bit bool
+    bool cubesense2_comm_error:1; // 1-bit bool
+    bool cubecontrol_signal_comm_error:1; // 1-bit bool
+    bool cubecontrol_motor_comm_error:1; // 1-bit bool
+    bool cubewheel1_comm_error:1; // 1-bit bool
+    bool cubewheel2_comm_error:1; // 1-bit bool
+    bool cubewheel3_comm_error:1; // 1-bit bool
+    bool cubestar_comm_error:1; // 1-bit bool
+    bool magnetometer_range_error:1; // 1-bit bool
+    bool cam1_sram_overcurrent_detected:1; // 1-bit bool
+    bool cam1_3v3_overcurrent_detected:1; // 1-bit bool
+    bool cam1_sensor_busy_error:1; // 1-bit bool
+    bool cam1_sensor_detection_error:1; // 1-bit bool
+    bool sun_sensor_range_error:1; // 1-bit bool
+    bool cam2_sram_overcurrent_detected:1; // 1-bit bool
+    bool cam2_3v3_overcurrent_detected:1; // 1-bit bool
+    bool cam2_sensor_busy_error:1; // 1-bit bool
+    bool cam2_sensor_detection_error:1; // 1-bit bool
+    bool nadir_sensor_range_error:1; // 1-bit bool
+    bool rate_sensor_range_error:1; // 1-bit bool
+    bool wheel_speed_range_error:1; // 1-bit bool
+    bool coarse_sun_sensor_error:1; // 1-bit bool
+    bool startracker_match_error:1; // 1-bit bool
+    bool startracker_overcurrent_detected:1; // 1-bit bool
+} ADCS_current_state_1_struct_t;
+
+typedef struct ADCS_raw_star_tracker_struct_t {
+    uint8_t num_stars_detected;
+    uint8_t star_image_noise;
+    uint8_t invalid_stars;
+    uint8_t num_stars_identified;
+    uint8_t identification_mode;
+    uint8_t image_dark_value;
+    uint16_t sample_period;
+    bool image_capture_success:1; // 1-bit bool
+    bool detection_success:1; // 1-bit bool
+    bool identification_success:1; // 1-bit bool
+    bool attitude_success:1; // 1-bit bool
+    bool processing_time_error:1; // 1-bit bool
+    bool tracking_module_enabled:1; // 1-bit bool
+    bool prediction_enabled:1; // 1-bit bool
+    bool comms_error:1; // 1-bit bool
+    uint8_t star1_confidence;
+    uint8_t star2_confidence;
+    uint8_t star3_confidence;
+    uint16_t magnitude_star1;
+    uint16_t magnitude_star2;
+    uint16_t magnitude_star3;
+    uint16_t catalogue_star1;
+    int16_t centroid_x_star1;
+    int16_t centroid_y_star1;
+    uint16_t catalogue_star2;
+    int16_t centroid_x_star2;
+    int16_t centroid_y_star2;
+    uint16_t catalogue_star3;
+    int16_t centroid_x_star3;
+    int16_t centroid_y_star3;
+    uint16_t capture_time_ms;
+    uint16_t detection_time_ms;
+    uint16_t identification_time_ms;
+    int32_t x_axis_rate_micro;
+    int32_t y_axis_rate_micro;
+    int32_t z_axis_rate_micro;
+    int32_t q0_micro;
+    int32_t q1_micro;
+    int32_t q2_micro;
+} ADCS_raw_star_tracker_struct_t;
+
+typedef struct ADCS_sd_log_config_struct {
+    uint8_t which_log;
+    uint8_t log_bitmask[10];
+    uint16_t log_period; // TODO: figure out whether this is ms or something else
+    ADCS_sd_log_destination_enum_t which_sd;
+} ADCS_sd_log_config_struct;
+
+// TODO: We also need to downlink ADCS data from SD card
 
 #endif /* INC_ADCS_TYPES_H_ */

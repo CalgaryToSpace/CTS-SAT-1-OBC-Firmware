@@ -133,5 +133,14 @@ uint8_t ADCS_format_sd();
 uint8_t ADCS_erase_file(ADCS_file_type_enum_t filetype, uint8_t filecounter, bool erase_all);
 uint8_t ADCS_get_sd_card_format_erase_progress(ADCS_sd_card_format_erase_progress_struct_t *output_struct);
 uint8_t ADCS_get_file_download_buffer(ADCS_file_download_buffer_struct_t *output_struct);
+uint8_t ADCS_get_acp_execution_state(ADCS_acp_execution_state_struct_t *output_struct);
+uint8_t ADCS_get_current_state_1(ADCS_current_state_1_struct_t *output_struct);
+uint8_t ADCS_get_raw_star_tracker_data(ADCS_raw_star_tracker_struct_t *output_struct);
+uint8_t ADCS_save_image_to_sd(ADCS_camera_select_enum_t camera_select, ADCS_image_size_enum_t image_size);
+uint8_t ADCS_get_current_unix_time();
+uint8_t ADCS_synchronise_unix_time();
+uint8_t ADCS_set_sd_log_config(uint8_t which_log, const uint8_t **log_array, uint8_t log_array_size, uint16_t log_period, ADCS_sd_log_destination_enum_t which_sd);
+uint8_t ADCS_get_sd_log_config(uint8_t which_log, ADCS_sd_log_config_struct* config);
+
 
 #endif /* INC_ADCS_COMMANDS_H_ */

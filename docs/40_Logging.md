@@ -16,7 +16,7 @@ The logging system on this satellite is rather simple: call the `LOG_message(...
 
 ## How to use `LOG_message(...)`
 
-YOU, a developer, must be use the `LOG_message(...)` function. Here's how:
+YOU, a developer, must use the `LOG_message(...)` function. Here's how:
 
 1. In just about every `.c` file, include: `#include "log/log.h"`
 2. Call `LOG_message(...)` with the message you want to log with the relevant subsystem, log severity, which sinks (`LOG_SINK_ALL` by default), a message, and any printf-like arguments for format strings in the message:

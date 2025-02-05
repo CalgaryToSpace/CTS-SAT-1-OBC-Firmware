@@ -1,12 +1,13 @@
 
-#ifndef __INCLUDE_GUARD__TELECOMMAND_ADCS_H
-#define __INCLUDE_GUARD__TELECOMMAND_ADCS_H
+#ifndef INCLUDE_GUARD__TELECOMMAND_ADCS_H
+#define INCLUDE_GUARD__TELECOMMAND_ADCS_H
 
 #include <stdint.h>
 #include "telecommands/telecommand_definitions.h"
 
 // if we fail to properly extract a value, we should return the reason for that failure
 #define ABORT_CMD_FOR_FAILED_EXTRACT(x) uint8_t result = x; if (!(result)) { return result; }
+#define CHECK_ADCS_COMMAND_SUCCESS(x) if ((x)) { return x; }
 
 uint8_t TCMDEXEC_adcs_reset(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                             char *response_output_buf, uint16_t response_output_buf_len);
@@ -208,5 +209,32 @@ uint8_t TCMDEXEC_adcs_generic_telemetry_request(const char *args_str, TCMD_Telec
 
 uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
             char *response_output_buf, uint16_t response_output_buf_len);
+            
+uint8_t TCMDEXEC_adcs_acp_execution_state(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                   char *response_output_buf, uint16_t response_output_buf_len);
 
-#endif // __INCLUDE_GUARD__TELECOMMAND_adcs_H
+uint8_t TCMDEXEC_adcs_get_current_state_1(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                   char *response_output_buf, uint16_t response_output_buf_len);
+
+uint8_t TCMDEXEC_adcs_get_raw_star_tracker_data(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                   char *response_output_buf, uint16_t response_output_buf_len);
+
+uint8_t TCMDEXEC_adcs_save_image_to_sd(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len);
+
+uint8_t TCMDEXEC_adcs_request_commissioning_telemetry(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len);
+
+uint8_t TCMDEXEC_adcs_synchronise_unix_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len);
+
+uint8_t TCMDEXEC_adcs_get_current_unix_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len);
+
+uint8_t TCMDEXEC_adcs_set_sd_log_config(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len);
+
+uint8_t TCMDEXEC_adcs_get_sd_log_config(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len);
+
+#endif // INCLUDE_GUARD__TELECOMMAND_adcs_H

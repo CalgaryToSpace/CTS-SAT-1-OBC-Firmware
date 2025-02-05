@@ -48,4 +48,10 @@ uint8_t ADCS_raw_gps_struct_TO_json(const ADCS_raw_gps_struct_t *data, char json
 uint8_t ADCS_measurements_struct_TO_json(const ADCS_measurements_struct_t *data, char json_output_str[], uint16_t json_output_str_len);
 uint8_t ADCS_sd_download_list_TO_json(ADCS_file_info_struct_t *data, uint16_t data_length, char json_output_str[], uint16_t json_output_str_len);
 uint8_t ADCS_generic_telemetry_uint8_array_TO_json(const uint8_t *data, const uint16_t data_length, char json_output_str[], uint16_t json_output_str_len);
+uint8_t ADCS_acp_execution_struct_TO_json(const ADCS_acp_execution_state_struct_t *data, char json_output_str[], uint16_t json_output_str_len);
+uint8_t ADCS_current_state_1_struct_TO_json(const ADCS_current_state_1_struct_t *data, char json_output_str[], uint16_t json_output_str_len);
+uint8_t ADCS_raw_star_tracker_struct_TO_json(const ADCS_raw_star_tracker_struct_t *data, char json_output_str[], uint16_t json_output_str_len);
+uint8_t ADCS_unix_time_ms_TO_json(const uint64_t *data, char json_output_str[], uint16_t json_output_str_len);
+uint8_t ADCS_sd_log_config_struct_TO_json(const ADCS_sd_log_config_struct *data, char json_output_str[], uint16_t json_output_str_len);
+
 #endif /* INC_ADCS_TYPES_TO_JSON_H_ */
