@@ -9,6 +9,8 @@
 
 
 /// @brief Deinitialize all peripherals before jumping 
+/// @details Attempts to deinitialize the peripherals in the opposite order they
+/// are initialized in main.c
 void BOOTLOADER_deinitialize_peripherals() {
     /* Deinitialize UART peripherals */
     HAL_UART_DeInit(&hlpuart1);
@@ -103,9 +105,6 @@ void BOOTLOADER_deinitialize_peripherals() {
     __HAL_RCC_CRC_RELEASE_RESET();
     __HAL_RCC_TIM16_FORCE_RESET();
     __HAL_RCC_TIM16_RELEASE_RESET();
-
-    /* Optional: Disable SysTick if no longer needed */
-    HAL_SuspendTick();
 }
 
 /// @brief Jumps to any point in memory 
