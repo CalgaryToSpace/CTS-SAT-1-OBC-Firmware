@@ -31,6 +31,7 @@
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_internal_drivers.h"
 #include "littlefs/flash_driver.h"
+#include "log/log.h"
 
 /* USER CODE END Includes */
 
@@ -247,7 +248,11 @@ int main(void)
   MX_TIM16_Init();
   /* USER CODE BEGIN 2 */
 
-  DEBUG_uart_print_str("\n\nMX_Init() done\n");
+  LOG_message(
+    LOG_SYSTEM_OBC,
+    LOG_SEVERITY_NORMAL,
+    LOG_SINK_ALL,
+    "\n\nMX_Init() done\n");
 
   // Start the callback interrupts for the UART channels.
   UART_init_uart_handlers();
@@ -309,7 +314,11 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    DEBUG_uart_print_str("This superloop point should never be reached, because the FreeRTOS Kernel is running...\n");
+    LOG_message(
+      LOG_SYSTEM_OBC,
+      LOG_SEVERITY_CRITICAL,
+      LOG_SINK_ALL,
+      "This superloop point should never be reached, because the FreeRTOS Kernel is running...\n");
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -1132,7 +1141,11 @@ void Error_Handler(void)
   while (1)
   {
     // TODO: make this flight-ready
-    DEBUG_uart_print_str("Error_Handler() called\n");
+    LOG_message(
+      LOG_SYSTEM_OBC,
+      LOG_SEVERITY_ERROR,
+      LOG_SINK_ALL,
+      "Error_Handler() called\n");
   }
   /* USER CODE END Error_Handler_Debug */
 }
