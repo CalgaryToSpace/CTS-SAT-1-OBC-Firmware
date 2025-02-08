@@ -2,10 +2,10 @@ var searchData=
 [
   ['validate_5ftcmdexec_5fregistration_0',['validate_tcmdexec_registration',['../namespacefirmware__checks_1_1__03__check__missing__tcmd__registrations.html#a10ac30e78ec879341bcef4ad9b3fd191',1,'firmware_checks::_03_check_missing_tcmd_registrations']]],
   ['validate_5ftest_5fexec_5fregistration_1',['validate_test_exec_registration',['../namespacefirmware__checks_1_1__02__check__c__unit__test__inventory.html#a1482f2c1962cd1e6561b94d7dbadff67',1,'firmware_checks::_02_check_c_unit_test_inventory']]],
-  ['value_20of_20a_20variable_20strong_2',['2. &lt;strong&gt;Set the value of a Variable&lt;/strong&gt;',['../md_docs_2Non-Critical__Notes_2Configuration__Variables.html#autotoc_md48',1,'']]],
-  ['value_20to_20json_20string_20strong_3',['3. &lt;strong&gt;Convert value to JSON String&lt;/strong&gt;',['../md_docs_2Non-Critical__Notes_2Configuration__Variables.html#autotoc_md49',1,'']]],
-  ['variable_20arrays_4',['Configuration Variable Arrays',['../md_docs_2Non-Critical__Notes_2Configuration__Variables.html#autotoc_md44',1,'']]],
-  ['variable_20strong_5',['Variable strong',['../md_docs_2Non-Critical__Notes_2Configuration__Variables.html#autotoc_md47',1,'1. &lt;strong&gt;Get Index of a Variable&lt;/strong&gt;'],['../md_docs_2Non-Critical__Notes_2Configuration__Variables.html#autotoc_md48',1,'2. &lt;strong&gt;Set the value of a Variable&lt;/strong&gt;']]],
+  ['value_20of_20a_20variable_20strong_2',['2. &lt;strong&gt;Set the value of a Variable&lt;/strong&gt;',['../md_docs_2Non-Critical__Notes_2Configuration__Variables.html#autotoc_md47',1,'']]],
+  ['value_20to_20json_20string_20strong_3',['3. &lt;strong&gt;Convert value to JSON String&lt;/strong&gt;',['../md_docs_2Non-Critical__Notes_2Configuration__Variables.html#autotoc_md48',1,'']]],
+  ['variable_20arrays_4',['Configuration Variable Arrays',['../md_docs_2Non-Critical__Notes_2Configuration__Variables.html#autotoc_md43',1,'']]],
+  ['variable_20strong_5',['Variable strong',['../md_docs_2Non-Critical__Notes_2Configuration__Variables.html#autotoc_md46',1,'1. &lt;strong&gt;Get Index of a Variable&lt;/strong&gt;'],['../md_docs_2Non-Critical__Notes_2Configuration__Variables.html#autotoc_md47',1,'2. &lt;strong&gt;Set the value of a Variable&lt;/strong&gt;']]],
   ['variable_5fname_6',['variable_name',['../structCONFIG__integer__config__entry__t.html#a59720ad8835b796dec4cc5a88c6fb38e',1,'CONFIG_integer_config_entry_t::variable_name'],['../structCONFIG__string__config__entry__t.html#a98f862068fe5e95a3d54d04219f87a10',1,'CONFIG_string_config_entry_t::variable_name']]],
   ['variable_5fpointer_7',['variable_pointer',['../structCONFIG__string__config__entry__t.html#aafefc806e9538e16be0d53c50d5275a3',1,'CONFIG_string_config_entry_t']]],
   ['variables_8',['Configuration Variables',['../md_docs_2Non-Critical__Notes_2Configuration__Variables.html#autotoc_md42',1,'']]],
@@ -16,7 +16,7 @@ var searchData=
   ['vdd_5fvalue_13',['VDD_VALUE',['../stm32l4xx__hal__conf_8h.html#aae550dad9f96d52cfce5e539adadbbb4',1,'stm32l4xx_hal_conf.h']]],
   ['velocity_5fsd_5fmilli_14',['velocity_sd_milli',['../structADCS__augmented__sgp4__params__struct__t.html#a2f52469a96b7fcd12047a5813215fe27',1,'ADCS_augmented_sgp4_params_struct_t']]],
   ['version_15',['version',['../structlfs__superblock.html#a06e9dc926560cd09cf3d6648a7554443',1,'lfs_superblock']]],
-  ['via_20i2c_16',['EPS via I2C',['../md_docs_2Sub-System__Notes_2ISISpace__EPS__Notes.html#autotoc_md69',1,'']]],
+  ['via_20i2c_16',['EPS via I2C',['../md_docs_2Sub-System__Notes_2ISISpace__EPS__Notes.html#autotoc_md68',1,'']]],
   ['vip_5fbatt_5finput_17',['vip_batt_input',['../structEPS__struct__piu__housekeeping__data__eng__t.html#a10815b69b4d4b94adae2e3ad10abae6c',1,'EPS_struct_piu_housekeeping_data_eng_t']]],
   ['vip_5fbp_5finput_18',['vip_bp_input',['../structEPS__battery__pack__datatype__eng__t.html#a89357581f87bd3666f0fd5dd414c7aa5',1,'EPS_battery_pack_datatype_eng_t']]],
   ['vip_5fcc_5foutput_19',['vip_cc_output',['../structEPS__conditioning__channel__datatype__eng__t.html#a91181a576a7bbecbccb5add81a95733c',1,'EPS_conditioning_channel_datatype_eng_t']]],
@@ -30,7 +30,7 @@ var searchData=
   ['voltage_5fmv_27',['voltage_mV',['../structEPS__vpid__eng__t.html#a15881652c4b9f1aaaed77f90b3399c83',1,'EPS_vpid_eng_t']]],
   ['vportsvchandler_28',['vPortSVCHandler',['../FreeRTOSConfig_8h.html#ad43047b3ea0a146673e30637488bf754',1,'FreeRTOSConfig.h']]],
   ['vs_20code_29',['Tips for Navigating in VS Code',['../md_docs_230__Repo__Organization.html#autotoc_md9',1,'']]],
-  ['vs_20code_20setup_20arm64_30',['VS Code Setup (ARM64)',['../md_docs_2Non-Critical__Notes_2Setup__Guide__for__Windows__Arm64.html#autotoc_md61',1,'']]],
+  ['vs_20code_20setup_20arm64_30',['VS Code Setup (ARM64)',['../md_docs_2Non-Critical__Notes_2Setup__Guide__for__Windows__Arm64.html#autotoc_md60',1,'']]],
   ['vs_20code_20setup_20procedure_31',['VS Code Setup Procedure',['../md_docs_200__Getting__Started.html#autotoc_md1',1,'']]],
   ['vs_20code_20setup_20procedure_20arm64_20windows_20computers_32',['VS Code Setup Procedure (ARM64 Windows Computers)',['../md_docs_2Non-Critical__Notes_2Setup__Guide__for__Windows__Arm64.html',1,'']]]
 ];

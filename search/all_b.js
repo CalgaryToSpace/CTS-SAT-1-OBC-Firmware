@@ -32,5 +32,5 @@ var searchData=
   ['dma1_5fchannel1_5firqhandler_29',['DMA1_Channel1_IRQHandler',['../stm32l4xx__it_8h.html#a7b6fac3d670a4860ebec8a961d5c4a73',1,'DMA1_Channel1_IRQHandler(void):&#160;stm32l4xx_it.c'],['../stm32l4xx__it_8c.html#a7b6fac3d670a4860ebec8a961d5c4a73',1,'DMA1_Channel1_IRQHandler(void):&#160;stm32l4xx_it.c']]],
   ['dma1_5fchannel2_5firqhandler_30',['DMA1_Channel2_IRQHandler',['../stm32l4xx__it_8h.html#a0c3390d4dc5cfceccbeda71aa672d99d',1,'DMA1_Channel2_IRQHandler(void):&#160;stm32l4xx_it.c'],['../stm32l4xx__it_8c.html#a0c3390d4dc5cfceccbeda71aa672d99d',1,'DMA1_Channel2_IRQHandler(void):&#160;stm32l4xx_it.c']]],
   ['documentation_31',['Documentation',['../md_docs_2C__General__Guidelines.html#autotoc_md23',1,'']]],
-  ['driver_20setup_20arm64_32',['STM32 Driver Setup (ARM64)',['../md_docs_2Non-Critical__Notes_2Setup__Guide__for__Windows__Arm64.html#autotoc_md60',1,'']]]
+  ['driver_20setup_20arm64_32',['STM32 Driver Setup (ARM64)',['../md_docs_2Non-Critical__Notes_2Setup__Guide__for__Windows__Arm64.html#autotoc_md59',1,'']]]
 ];

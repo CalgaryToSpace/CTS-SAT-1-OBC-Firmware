@@ -148,6 +148,8 @@ Variables</h2></td></tr>
 <tr class="separator:aae86e1d1800637ec1bae49032e512936"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aab394ded9acaff686ecb119e7220ff9a" id="r_aab394ded9acaff686ecb119e7220ff9a"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aab394ded9acaff686ecb119e7220ff9a">CONFIG_int_demo_var_2</a> = 242344</td></tr>
 <tr class="separator:aab394ded9acaff686ecb119e7220ff9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8539a7aa6bbdd097c63d6a770ddf8ad" id="r_af8539a7aa6bbdd097c63d6a770ddf8ad"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af8539a7aa6bbdd097c63d6a770ddf8ad">TCMD_require_unique_tssent</a> = 0</td></tr>
+<tr class="separator:af8539a7aa6bbdd097c63d6a770ddf8ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ee770d0ce6263d137f7e2f58e71322e" id="r_a5ee770d0ce6263d137f7e2f58e71322e"><td class="memItemLeft" align="right" valign="top">const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5ee770d0ce6263d137f7e2f58e71322e">CONFIG_freertos_min_remaining_stack_percent</a> = 20</td></tr>
 <tr class="memdesc:a5ee770d0ce6263d137f7e2f58e71322e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The percentage of the stack space that should remain free. If the free space falls below this percentage, a warning will be logged.  <br /></td></tr>
 <tr class="separator:a5ee770d0ce6263d137f7e2f58e71322e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -535,11 +537,16 @@ Here is the caller graph for this function:</div>
 <div class="line">        .variable_name = <span class="stringliteral">&quot;TCMD_require_valid_sha256&quot;</span>,</div>
 <div class="line">        .num_config_var = &amp;<a class="code hl_variable" href="#abb5c97157e0e0735bfcc3f1d5228518e">TCMD_require_valid_sha256</a>,</div>
 <div class="line">    },</div>
+<div class="line">    {</div>
+<div class="line">        .variable_name = <span class="stringliteral">&quot;TCMD_require_unique_tssent&quot;</span>,</div>
+<div class="line">        .num_config_var = &amp;<a class="code hl_variable" href="configuration_8h.html#af8539a7aa6bbdd097c63d6a770ddf8ad">TCMD_require_unique_tssent</a>,</div>
+<div class="line">    },</div>
 <div class="line">}</div>
 <div class="ttc" id="aconfiguration_8c_html_a19734308211a2c3c34ebdec54d61a1c9"><div class="ttname"><a href="#a19734308211a2c3c34ebdec54d61a1c9">TASK_heartbeat_period_ms</a></div><div class="ttdeci">uint32_t TASK_heartbeat_period_ms</div><div class="ttdoc">The period of the heartbeat task, in milliseconds. 0 to disable.</div><div class="ttdef"><b>Definition</b> rtos_tasks.c:25</div></div>
 <div class="ttc" id="aconfiguration_8c_html_aab394ded9acaff686ecb119e7220ff9a"><div class="ttname"><a href="#aab394ded9acaff686ecb119e7220ff9a">CONFIG_int_demo_var_2</a></div><div class="ttdeci">uint32_t CONFIG_int_demo_var_2</div><div class="ttdef"><b>Definition</b> configuration.c:11</div></div>
 <div class="ttc" id="aconfiguration_8c_html_aae86e1d1800637ec1bae49032e512936"><div class="ttname"><a href="#aae86e1d1800637ec1bae49032e512936">CONFIG_int_demo_var_1</a></div><div class="ttdeci">uint32_t CONFIG_int_demo_var_1</div><div class="ttdef"><b>Definition</b> configuration.c:10</div></div>
 <div class="ttc" id="aconfiguration_8c_html_abb5c97157e0e0735bfcc3f1d5228518e"><div class="ttname"><a href="#abb5c97157e0e0735bfcc3f1d5228518e">TCMD_require_valid_sha256</a></div><div class="ttdeci">uint32_t TCMD_require_valid_sha256</div><div class="ttdef"><b>Definition</b> telecommand_parser.c:13</div></div>
+<div class="ttc" id="aconfiguration_8h_html_af8539a7aa6bbdd097c63d6a770ddf8ad"><div class="ttname"><a href="configuration_8h.html#af8539a7aa6bbdd097c63d6a770ddf8ad">TCMD_require_unique_tssent</a></div><div class="ttdeci">uint32_t TCMD_require_unique_tssent</div><div class="ttdef"><b>Definition</b> configuration.c:15</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -609,8 +616,8 @@ Here is the caller graph for this function:</div>
 <div class="line">    }</div>
 <div class="line"> </div>
 <div class="line">}</div>
-<div class="ttc" id="aconfiguration_8c_html_a7b718bfb73d73bea2f1fe0f7bbb679bb"><div class="ttname"><a href="#a7b718bfb73d73bea2f1fe0f7bbb679bb">CONFIG_str_demo_var_2</a></div><div class="ttdeci">char CONFIG_str_demo_var_2[50]</div><div class="ttdef"><b>Definition</b> configuration.c:44</div></div>
-<div class="ttc" id="aconfiguration_8c_html_ab68c4859b91187d89c97cf6fd483a07c"><div class="ttname"><a href="#ab68c4859b91187d89c97cf6fd483a07c">CONFIG_str_demo_var_1</a></div><div class="ttdeci">char CONFIG_str_demo_var_1[25]</div><div class="ttdef"><b>Definition</b> configuration.c:43</div></div>
+<div class="ttc" id="aconfiguration_8c_html_a7b718bfb73d73bea2f1fe0f7bbb679bb"><div class="ttname"><a href="#a7b718bfb73d73bea2f1fe0f7bbb679bb">CONFIG_str_demo_var_2</a></div><div class="ttdeci">char CONFIG_str_demo_var_2[50]</div><div class="ttdef"><b>Definition</b> configuration.c:50</div></div>
+<div class="ttc" id="aconfiguration_8c_html_ab68c4859b91187d89c97cf6fd483a07c"><div class="ttname"><a href="#ab68c4859b91187d89c97cf6fd483a07c">CONFIG_str_demo_var_1</a></div><div class="ttdeci">char CONFIG_str_demo_var_1[25]</div><div class="ttdef"><b>Definition</b> configuration.c:49</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -677,6 +684,20 @@ Here is the caller graph for this function:</div>
 </div><div class="memdoc">
 
 <p>The period of the heartbeat task, in milliseconds. 0 to disable. </p>
+
+</div>
+</div>
+<a id="af8539a7aa6bbdd097c63d6a770ddf8ad" name="af8539a7aa6bbdd097c63d6a770ddf8ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8539a7aa6bbdd097c63d6a770ddf8ad">&#9670;&#160;</a></span>TCMD_require_unique_tssent</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t TCMD_require_unique_tssent = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>

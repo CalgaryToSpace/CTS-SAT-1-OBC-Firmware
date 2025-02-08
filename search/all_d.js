@@ -3,9 +3,9 @@ var searchData=
   ['faceplate_5fvoltage_5fadc_5freading_0',['faceplate_voltage_adc_reading',['../structMPI__dataframe__t.html#a390e54d68db63b191aff333c1b1031ae',1,'MPI_dataframe_t']]],
   ['faceplate_5fvoltage_5fsetting_1',['faceplate_voltage_setting',['../structMPI__dataframe__t.html#ae69b065b7392c13e9667119b811e8e25',1,'MPI_dataframe_t']]],
   ['file_2',['Pin List (from IOC file)',['../md_docs_2IOC__Pin__List.html',1,'']]],
-  ['file_20configures_20the_20system_20clock_20as_20follows_3a_3',['This file configures the system clock as follows:',['../system__stm32l4xx_8c.html#autotoc_md74',1,'']]],
-  ['file_20in_20the_20tt_20main_20tt_20branch_4',['Updating the IOC File in the &lt;tt&gt;main&lt;/tt&gt; Branch',['../md_docs_2Non-Critical__Notes_2IOC__File__Updates.html#autotoc_md58',1,'']]],
-  ['file_20regenerating_20boilerplate_5',['Updating the IOC File/Regenerating Boilerplate',['../md_docs_2Non-Critical__Notes_2IOC__File__Updates.html#autotoc_md57',1,'']]],
+  ['file_20configures_20the_20system_20clock_20as_20follows_3a_3',['This file configures the system clock as follows:',['../system__stm32l4xx_8c.html#autotoc_md73',1,'']]],
+  ['file_20in_20the_20tt_20main_20tt_20branch_4',['Updating the IOC File in the &lt;tt&gt;main&lt;/tt&gt; Branch',['../md_docs_2Non-Critical__Notes_2IOC__File__Updates.html#autotoc_md57',1,'']]],
+  ['file_20regenerating_20boilerplate_5',['Updating the IOC File/Regenerating Boilerplate',['../md_docs_2Non-Critical__Notes_2IOC__File__Updates.html#autotoc_md56',1,'']]],
   ['file_20updates_6',['IOC File Updates',['../md_docs_2Non-Critical__Notes_2IOC__File__Updates.html',1,'']]],
   ['file_5flogging_5fenabled_7',['file_logging_enabled',['../structLOG__system__t.html#affcd053e56d3e38162e56c61b5cbc065',1,'LOG_system_t']]],
   ['file_5fmax_8',['file_max',['../structlfs__config.html#aa81a85016f23b697a01e8976d4268756',1,'lfs_config::file_max'],['../structlfs__fsinfo.html#a03e18ed8063e2783f0bf7c161556c5a2',1,'lfs_fsinfo::file_max'],['../structlfs__superblock.html#a6187a6eb92a65a3fb7a589ce3914c8e0',1,'lfs_superblock::file_max'],['../structlfs.html#a41b01b308431d6640f16bdd639e48da2',1,'lfs::file_max']]],
@@ -79,10 +79,10 @@ var searchData=
   ['flash_5fwrite_5fdata_76',['FLASH_write_data',['../flash__driver_8h.html#a5231aa78550b4076f9fbf923f000fe6d',1,'FLASH_write_data(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t page, uint8_t *packet_buffer, lfs_size_t packet_buffer_len):&#160;flash_driver.c'],['../flash__driver_8c.html#a5231aa78550b4076f9fbf923f000fe6d',1,'FLASH_write_data(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t page, uint8_t *packet_buffer, lfs_size_t packet_buffer_len):&#160;flash_driver.c']]],
   ['flash_5fwrite_5fdisable_77',['FLASH_write_disable',['../flash__driver_8h.html#a40465bf4bb4cdce119638ad6f36158b9',1,'FLASH_write_disable(SPI_HandleTypeDef *hspi, uint8_t chip_number):&#160;flash_driver.c'],['../flash__driver_8c.html#a40465bf4bb4cdce119638ad6f36158b9',1,'FLASH_write_disable(SPI_HandleTypeDef *hspi, uint8_t chip_number):&#160;flash_driver.c']]],
   ['flash_5fwrite_5fenable_78',['FLASH_write_enable',['../flash__driver_8h.html#aedefd1fa550b34fc7c57465aa5c5874b',1,'FLASH_write_enable(SPI_HandleTypeDef *hspi, uint8_t chip_number):&#160;flash_driver.c'],['../flash__driver_8c.html#aedefd1fa550b34fc7c57465aa5c5874b',1,'FLASH_write_enable(SPI_HandleTypeDef *hspi, uint8_t chip_number):&#160;flash_driver.c']]],
-  ['follows_3a_79',['This file configures the system clock as follows:',['../system__stm32l4xx_8c.html#autotoc_md74',1,'']]],
+  ['follows_3a_79',['This file configures the system clock as follows:',['../system__stm32l4xx_8c.html#autotoc_md73',1,'']]],
   ['for_20debugging_80',['Techniques for Debugging',['../md_docs_200__Getting__Started.html#autotoc_md4',1,'']]],
   ['for_20navigating_20in_20vs_20code_81',['Tips for Navigating in VS Code',['../md_docs_230__Repo__Organization.html#autotoc_md9',1,'']]],
-  ['format_82',['Format',['../md_docs_2Telecommand__Spec.html#autotoc_md72',1,'Command Format'],['../md_docs_240__Logging.html#autotoc_md18',1,'Timestamp Format']]],
+  ['format_82',['Format',['../md_docs_2Telecommand__Spec.html#autotoc_md71',1,'Command Format'],['../md_docs_240__Logging.html#autotoc_md18',1,'Timestamp Format']]],
   ['format_20rationale_83',['Timestamp Format Rationale',['../md_docs_2Non-Critical__Notes_2Timestamp__Format__Rationale.html',1,'']]],
   ['frame_5fcounter_84',['frame_counter',['../structMPI__dataframe__t.html#a27f74635621541244472f378e4ab764d',1,'MPI_dataframe_t']]],
   ['freertos_2ec_85',['freertos.c',['../freertos_8c.html',1,'']]],
@@ -95,5 +95,5 @@ var searchData=
   ['freertosconfig_2eh_92',['FreeRTOSConfig.h',['../FreeRTOSConfig_8h.html',1,'']]],
   ['from_20ioc_20file_93',['Pin List (from IOC file)',['../md_docs_2IOC__Pin__List.html',1,'']]],
   ['full_5fmessage_94',['full_message',['../structLOG__memory__entry__t.html#a51ccb409dc4a3d0107dde3c98a441242',1,'LOG_memory_entry_t']]],
-  ['functions_95',['Helper Functions',['../md_docs_2Non-Critical__Notes_2Configuration__Variables.html#autotoc_md46',1,'']]]
+  ['functions_95',['Helper Functions',['../md_docs_2Non-Critical__Notes_2Configuration__Variables.html#autotoc_md45',1,'']]]
 ];
