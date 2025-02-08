@@ -146,7 +146,7 @@ var searchData=
   ['lfs_5fgstate_5ftole32_143',['lfs_gstate_tole32',['../lfs_8c.html#ab22d34c67f3eee74244896391d43040b',1,'lfs.c']]],
   ['lfs_5fgstate_5fxor_144',['lfs_gstate_xor',['../lfs_8c.html#a59f650262d5ddc8cb43fc38425eec905',1,'lfs.c']]],
   ['lfs_5finit_145',['lfs_init',['../lfs_8c.html#a4219b606a1b9cb27f194bea14383be0f',1,'lfs.c']]],
-  ['lfs_5flist_5fdirectory_146',['LFS_list_directory',['../littlefs__helper_8h.html#a04d84e6cdd4788ce711e132eec1471f5',1,'LFS_list_directory(const char root_directory[]):&#160;littlefs_helper.c'],['../littlefs__helper_8c.html#a04d84e6cdd4788ce711e132eec1471f5',1,'LFS_list_directory(const char root_directory[]):&#160;littlefs_helper.c']]],
+  ['lfs_5flist_5fdirectory_146',['LFS_list_directory',['../littlefs__helper_8h.html#ae67160266b1c194a1e2f8cc8afcc6685',1,'LFS_list_directory(const char root_directory[], uint16_t offset, int16_t count):&#160;littlefs_helper.c'],['../littlefs__helper_8c.html#ae67160266b1c194a1e2f8cc8afcc6685',1,'LFS_list_directory(const char root_directory[], uint16_t offset, int16_t count):&#160;littlefs_helper.c']]],
   ['lfs_5fmake_5fdirectory_147',['LFS_make_directory',['../littlefs__helper_8h.html#acb198579963ac91d362c1daca0a07404',1,'LFS_make_directory(const char dir_name[]):&#160;littlefs_helper.c'],['../littlefs__helper_8c.html#acb198579963ac91d362c1daca0a07404',1,'LFS_make_directory(const char dir_name[]):&#160;littlefs_helper.c']]],
   ['lfs_5fmalloc_148',['lfs_malloc',['../lfs__util_8h.html#aa30d06c37906ba1f9fe84730c7326de5',1,'lfs_util.h']]],
   ['lfs_5fmax_149',['lfs_max',['../lfs__util_8h.html#af09bf0adf5ca35ebff23a450f50d530c',1,'lfs_util.h']]],
