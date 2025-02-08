@@ -1,7 +1,9 @@
+#include "main.h"
 #include "cts_csp/cts_csp_main.h"
 
 #include "csp/csp.h"
-
+#include "stm32l4xx_hal_i2c.h"
+#include "stm32l4xx_hal_def.h"
 // Note: Can't use "csp/csp_init.h", because header is in the Src folder right now.
 #include "csp_init.h"
 #include "csp_conn.h"
@@ -81,6 +83,9 @@ void CSP_init_for_cts1() {
         ret_add_iface
     );
 
+    //setting up the route table
+    //csp_route_table_add(10, 31, 0, &csp_cts_i2c_interface);
+
     // TODO: If ret_add_iface is not 0, log an error message.
 }
 
@@ -97,7 +102,28 @@ uint8_t CSP_demo_1() {
 
     char demo_packet_1[] = "Hello World!";
 
-    csp_conn_t * conn = csp_conn_allocate(CONN_CLIENT);
+
+
+    //csp_conn_t * conn = csp_conn_allocate(CONN_CLIENT);
+    csp_conn_t * conn = csp_connect(CSP_PRIO_LOW, 10, 31, 0, CSP_O_NONE);
+    if (conn == NULL) {
+        LOG_message(
+            LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Could not open connection for demo 1"
+        );
+        return 10;
+    }
+    csp_rtable_set(10,0,&csp_cts_i2c_interface,10);
+    csp_route_t * route = csp_rtable_find_route(conn->idout.dst);
+
+
+    LOG_message(
+        LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "Sending packet via interface: %s",route->iface->name
+    );
+    
+
+
 
     if (conn == NULL) {
         LOG_message(
@@ -108,7 +134,7 @@ uint8_t CSP_demo_1() {
     }
 
     csp_packet_t * packet = csp_buffer_get(256);
-
+    
 
     if (packet == NULL) {
         LOG_message(
@@ -121,12 +147,14 @@ uint8_t CSP_demo_1() {
     // Copy into packet.
     memcpy(packet->data, &demo_packet_1, sizeof(demo_packet_1));
     packet->length = sizeof(demo_packet_1);
+    
 
     const int ret = csp_send(
         conn,
         packet,
         1000 // FIXME: timeout
     );
+
 
     if (ret != 1) {
         LOG_message(
@@ -174,10 +202,24 @@ int CSP_i2c_driver_tx(void * driver_data, csp_i2c_frame_t * frame) {
         frame->len_rx,
         frame->len
     );
+    uint8_t * data = frame->data + 4;
+    for (int i = 0; i < frame->len; i++) {
+        LOG_message(
+            LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_UHF_RADIO),
+            "0x%02X", data[i]
+        );
+    }
+    LOG_message(
+        LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_UHF_RADIO),
+        "frame contents: %s", data
+    );
 
     // TODO: Hex print the driver_data
 
     // TODO: Add an HAL_I2C call in here.
+
+
+    //HAL_I2C_Master_Transmit& hi2c2,);
 
     return CSP_ERR_NONE;
 }
