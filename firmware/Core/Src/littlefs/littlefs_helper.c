@@ -127,7 +127,10 @@ int8_t LFS_list_directory(const char root_directory[], uint16_t offset, int16_t 
 {
     // Check if LFS is mounted
     if (!LFS_is_lfs_mounted) {
-        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "LittleFS not mounted.");
+        LOG_message(
+            LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
+            "LittleFS not mounted."
+        );
         return 1;
     }
 
@@ -136,7 +139,10 @@ int8_t LFS_list_directory(const char root_directory[], uint16_t offset, int16_t 
     int8_t open_dir_result = lfs_dir_open(&LFS_filesystem, &dir, root_directory);
     if (open_dir_result < 0)
     {
-        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening directory: %s", root_directory);
+        LOG_message(
+            LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE),
+            "Error opening directory: %s", root_directory
+        );
         return open_dir_result;
     }
 
@@ -144,17 +150,22 @@ int8_t LFS_list_directory(const char root_directory[], uint16_t offset, int16_t 
         count = -1;
     }
 
-    // result is positive on success, 0 at the end of directory, or negative on failure.
+    // Result is positive on success, 0 at the end of directory, or negative on failure.
     int8_t read_dir_result = 1;
     struct lfs_info info;
-    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Name \t\t Bytes");
+    LOG_message(
+        LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Name (Bytes)"
+    );
     while (read_dir_result > 0)
     {
         read_dir_result = lfs_dir_read(&LFS_filesystem, &dir, &info);
 
         if (read_dir_result < 0)
         {
-            LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error reading content from directory: %s", root_directory);
+            LOG_message(
+                LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE),
+                "Error reading content from directory: %s", root_directory
+            );
             break;
         }
 
@@ -171,9 +182,15 @@ int8_t LFS_list_directory(const char root_directory[], uint16_t offset, int16_t 
 
         if (info.type == LFS_TYPE_REG)
         {
-            LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "%s\t%ld bytes", info.name, info.size);
+            LOG_message(
+                LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
+                "%s (%ld B)", info.name, info.size
+            );
         } else if (info.type == LFS_TYPE_DIR){
-            LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "%s/", info.name);
+            LOG_message(
+                LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
+                "%s/", info.name
+            );
         }
     }
 
