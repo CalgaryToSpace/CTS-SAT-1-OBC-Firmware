@@ -191,11 +191,11 @@ int CSP_i2c_driver_tx(void * driver_data, csp_i2c_frame_t * frame) {
         "Starting CSP_i2c_driver_tx(...). Frame Info: "
         "Padding: [0x%02X, 0x%02X, 0x%02X], "
         "Retries: %u, "
-        "Reserved: 0x%08X, "
+        "Reserved: %lu, "
         "Dest: %u, "
         "Len Rx: %u, "
         "Len: %u",
-        frame->padding[0], frame->padding[1], frame->padding[2],
+        (uint16_t)frame->padding[0], (uint16_t)frame->padding[1], (uint16_t)frame->padding[2],
         frame->retries,
         frame->reserved,
         frame->dest,
