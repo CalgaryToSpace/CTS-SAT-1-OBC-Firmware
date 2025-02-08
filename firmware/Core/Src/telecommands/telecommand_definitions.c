@@ -252,8 +252,20 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
-        .tcmd_name = "fs_write_file",
-        .tcmd_func = TCMDEXEC_fs_write_file,
+        .tcmd_name = "fs_list_directory",
+        .tcmd_func = TCMDEXEC_fs_list_directory,
+        .number_of_args = 3,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "fs_make_directory",
+        .tcmd_func = TCMDEXEC_fs_make_directory,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "fs_write_file_str",
+        .tcmd_func = TCMDEXEC_fs_write_file_str,
         .number_of_args = 2,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
