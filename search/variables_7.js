@@ -8,10 +8,12 @@ var searchData=
   ['gps_5freceiver_5fenabled_5',['gps_receiver_enabled',['../structADCS__current__state__1__struct__t.html#ab84623f351acc687a9d79ee6f68b8dc5',1,'ADCS_current_state_1_struct_t']]],
   ['gps_5freference_5fweek_6',['gps_reference_week',['../structADCS__raw__gps__time__struct__t.html#ad8d1b0028b8378418de338a7337ef2b9',1,'ADCS_raw_gps_time_struct_t']]],
   ['gps_5froll_5fover_7',['gps_roll_over',['../structADCS__augmented__sgp4__params__struct__t.html#a62766432ea44cb2b8d96162970f7a2a1',1,'ADCS_augmented_sgp4_params_struct_t']]],
-  ['gps_5fsolution_5fstatus_8',['gps_solution_status',['../structADCS__raw__gps__status__struct__t.html#a45626a1ca5869450134b04132e3128e9',1,'ADCS_raw_gps_status_struct_t']]],
-  ['gps_5ftime_5fms_9',['gps_time_ms',['../structADCS__raw__gps__time__struct__t.html#a7879970037c44e7d985f4d72a848fdf7',1,'ADCS_raw_gps_time_struct_t']]],
-  ['gstate_10',['gstate',['../structlfs.html#ab4c94fb3aff01d5d1ae031b13245729d',1,'lfs']]],
-  ['gyro1_11',['gyro1',['../structADCS__rate__gyro__config__struct__t.html#a8e304a9043e3abe035d5465eefa0061d',1,'ADCS_rate_gyro_config_struct_t']]],
-  ['gyro2_12',['gyro2',['../structADCS__rate__gyro__config__struct__t.html#ad2ff1730e350d84e59a3196591fefa8f',1,'ADCS_rate_gyro_config_struct_t']]],
-  ['gyro3_13',['gyro3',['../structADCS__rate__gyro__config__struct__t.html#a1d7dd3c317d6d2036a8604df8e6b3397',1,'ADCS_rate_gyro_config_struct_t']]]
+  ['gps_5frx_5ftimeout_5fbefore_5ffirst_5fbyte_5fms_8',['GPS_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS',['../gps__internal__drivers_8c.html#a8bb521b4b44699443d614410b6f3c896',1,'gps_internal_drivers.c']]],
+  ['gps_5frx_5ftimeout_5fbetween_5fbytes_5fms_9',['GPS_RX_TIMEOUT_BETWEEN_BYTES_MS',['../gps__internal__drivers_8c.html#a7ea8346ce945c18f9d4de4552322a75f',1,'gps_internal_drivers.c']]],
+  ['gps_5fsolution_5fstatus_10',['gps_solution_status',['../structADCS__raw__gps__status__struct__t.html#a45626a1ca5869450134b04132e3128e9',1,'ADCS_raw_gps_status_struct_t']]],
+  ['gps_5ftime_5fms_11',['gps_time_ms',['../structADCS__raw__gps__time__struct__t.html#a7879970037c44e7d985f4d72a848fdf7',1,'ADCS_raw_gps_time_struct_t']]],
+  ['gstate_12',['gstate',['../structlfs.html#ab4c94fb3aff01d5d1ae031b13245729d',1,'lfs']]],
+  ['gyro1_13',['gyro1',['../structADCS__rate__gyro__config__struct__t.html#a8e304a9043e3abe035d5465eefa0061d',1,'ADCS_rate_gyro_config_struct_t']]],
+  ['gyro2_14',['gyro2',['../structADCS__rate__gyro__config__struct__t.html#ad2ff1730e350d84e59a3196591fefa8f',1,'ADCS_rate_gyro_config_struct_t']]],
+  ['gyro3_15',['gyro3',['../structADCS__rate__gyro__config__struct__t.html#a1d7dd3c317d6d2036a8604df8e6b3397',1,'ADCS_rate_gyro_config_struct_t']]]
 ];

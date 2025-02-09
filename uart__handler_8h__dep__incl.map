@@ -1,13 +1,17 @@
 <map id="firmware/Core/Inc/uart_handler/uart_handler.h" name="firmware/Core/Inc/uart_handler/uart_handler.h">
-<area shape="rect" id="Node000001" title=" " alt="" coords="382,5,537,46"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="558,5,713,46"/>
 <area shape="rect" id="Node000002" href="$eps__internal__drivers_8c.html" title=" " alt="" coords="5,94,156,150"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="367,49,168,97,157,100,155,94,167,91,366,44"/>
-<area shape="rect" id="Node000003" href="$main_8c.html" title=": Main program body" alt="" coords="180,109,347,135"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="406,55,290,111,287,106,404,51"/>
-<area shape="rect" id="Node000004" href="$mpi__command__handling_8c.html" title=" " alt="" coords="372,102,547,142"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="462,62,462,101,456,101,456,62"/>
-<area shape="rect" id="Node000005" href="$rtos__tasks_8c.html" title=" " alt="" coords="572,102,723,142"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="513,51,609,99,607,103,511,56"/>
-<area shape="rect" id="Node000006" href="$uart__handler_8c.html" title=" " alt="" coords="747,102,902,142"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="553,46,736,91,760,98,759,103,734,97,551,51"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="543,39,368,61,267,77,168,97,157,99,155,94,167,91,266,72,367,55,542,33"/>
+<area shape="rect" id="Node000003" href="$gps__internal__drivers_8c.html" title=" " alt="" coords="180,102,331,142"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="543,49,344,97,319,103,318,98,343,91,542,44"/>
+<area shape="rect" id="Node000004" href="$main_8c.html" title=": Main program body" alt="" coords="356,109,523,135"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="582,55,466,111,463,106,580,51"/>
+<area shape="rect" id="Node000005" href="$mpi__command__handling_8c.html" title=" " alt="" coords="548,102,723,142"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="638,62,638,101,632,101,632,62"/>
+<area shape="rect" id="Node000006" href="$rtos__tasks_8c.html" title=" " alt="" coords="748,102,899,142"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="689,51,785,99,783,103,687,56"/>
+<area shape="rect" id="Node000007" href="$gps__telecommand__defs_8c.html" title=" " alt="" coords="923,102,1137,142"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="728,46,948,98,946,103,727,52"/>
+<area shape="rect" id="Node000008" href="$uart__handler_8c.html" title=" " alt="" coords="1162,102,1317,142"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="728,32,923,54,1036,71,1149,91,1177,98,1176,103,1148,97,1036,76,922,59,728,37"/>
 </map>

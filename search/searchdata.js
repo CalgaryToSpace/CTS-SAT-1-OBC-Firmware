@@ -3,7 +3,7 @@ var indexSectionsWithContent =
   0: "0123478_abcdefghijklmnopqrstuvwxyz📚",
   1: "aceflmst",
   2: "bfmst",
-  3: "034_abcdefilmnorstu",
+  3: "034_abcdefgilmnorstu",
   4: "_abcdefghilmnorstuv",
   5: "_abcdefghiklmnopqrstuvwxyz",
   6: "ablstw",

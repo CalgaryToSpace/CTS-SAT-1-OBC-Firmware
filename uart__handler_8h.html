@@ -110,17 +110,21 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="uart__handler_8h__dep__incl.png" border="0" usemap="#afirmware_2Core_2Inc_2uart__handler_2uart__handler_8hdep" alt=""/></div>
 <map name="afirmware_2Core_2Inc_2uart__handler_2uart__handler_8hdep" id="afirmware_2Core_2Inc_2uart__handler_2uart__handler_8hdep">
-<area shape="rect" title=" " alt="" coords="382,5,537,46"/>
+<area shape="rect" title=" " alt="" coords="558,5,713,46"/>
 <area shape="rect" href="eps__internal__drivers_8c.html" title=" " alt="" coords="5,94,156,150"/>
-<area shape="poly" title=" " alt="" coords="367,49,168,97,157,100,155,94,167,91,366,44"/>
-<area shape="rect" href="main_8c.html" title=": Main program body" alt="" coords="180,109,347,135"/>
-<area shape="poly" title=" " alt="" coords="406,55,290,111,287,106,404,51"/>
-<area shape="rect" href="mpi__command__handling_8c.html" title=" " alt="" coords="372,102,547,142"/>
-<area shape="poly" title=" " alt="" coords="462,62,462,101,456,101,456,62"/>
-<area shape="rect" href="rtos__tasks_8c.html" title=" " alt="" coords="572,102,723,142"/>
-<area shape="poly" title=" " alt="" coords="513,51,609,99,607,103,511,56"/>
-<area shape="rect" href="uart__handler_8c.html" title=" " alt="" coords="747,102,902,142"/>
-<area shape="poly" title=" " alt="" coords="553,46,736,91,760,98,759,103,734,97,551,51"/>
+<area shape="poly" title=" " alt="" coords="543,39,368,61,267,77,168,97,157,99,155,94,167,91,266,72,367,55,542,33"/>
+<area shape="rect" href="gps__internal__drivers_8c.html" title=" " alt="" coords="180,102,331,142"/>
+<area shape="poly" title=" " alt="" coords="543,49,344,97,319,103,318,98,343,91,542,44"/>
+<area shape="rect" href="main_8c.html" title=": Main program body" alt="" coords="356,109,523,135"/>
+<area shape="poly" title=" " alt="" coords="582,55,466,111,463,106,580,51"/>
+<area shape="rect" href="mpi__command__handling_8c.html" title=" " alt="" coords="548,102,723,142"/>
+<area shape="poly" title=" " alt="" coords="638,62,638,101,632,101,632,62"/>
+<area shape="rect" href="rtos__tasks_8c.html" title=" " alt="" coords="748,102,899,142"/>
+<area shape="poly" title=" " alt="" coords="689,51,785,99,783,103,687,56"/>
+<area shape="rect" href="gps__telecommand__defs_8c.html" title=" " alt="" coords="923,102,1137,142"/>
+<area shape="poly" title=" " alt="" coords="728,46,948,98,946,103,727,52"/>
+<area shape="rect" href="uart__handler_8c.html" title=" " alt="" coords="1162,102,1317,142"/>
+<area shape="poly" title=" " alt="" coords="728,32,923,54,1036,71,1149,91,1177,98,1176,103,1148,97,1036,76,922,59,728,37"/>
 </map>
 </div>
 </div>
@@ -130,6 +134,9 @@ This graph shows which files directly or indirectly include this file:</div>
 Functions</h2></td></tr>
 <tr class="memitem:a59db2ba73b7115a05fe34c3d05e712c3" id="r_a59db2ba73b7115a05fe34c3d05e712c3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a59db2ba73b7115a05fe34c3d05e712c3">UART_init_uart_handlers</a> (void)</td></tr>
 <tr class="separator:a59db2ba73b7115a05fe34c3d05e712c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7063bab0936a35df980d558dcbe26ea5" id="r_a7063bab0936a35df980d558dcbe26ea5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7063bab0936a35df980d558dcbe26ea5">GPS_set_uart_interrupt_state</a> (uint8_t new_enabled)</td></tr>
+<tr class="memdesc:a7063bab0936a35df980d558dcbe26ea5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the UART interrupt state (enabled/disabled)  <br /></td></tr>
+<tr class="separator:a7063bab0936a35df980d558dcbe26ea5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
@@ -161,8 +168,57 @@ Variables</h2></td></tr>
 <tr class="separator:a5ea1847a81be6f38c10903bac3c4b60a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afd8bb0d45cc89f04c66533a32760b004" id="r_afd8bb0d45cc89f04c66533a32760b004"><td class="memItemLeft" align="right" valign="top">volatile uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afd8bb0d45cc89f04c66533a32760b004">UART_mpi_rx_buffer_write_idx</a></td></tr>
 <tr class="separator:afd8bb0d45cc89f04c66533a32760b004"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6f2be0e17824c147d835cec31084047" id="r_aa6f2be0e17824c147d835cec31084047"><td class="memItemLeft" align="right" valign="top">const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa6f2be0e17824c147d835cec31084047">UART_gps_buffer_len</a></td></tr>
+<tr class="separator:aa6f2be0e17824c147d835cec31084047"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af78a56ccb7d09184d9fb4a0719519d30" id="r_af78a56ccb7d09184d9fb4a0719519d30"><td class="memItemLeft" align="right" valign="top">volatile uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af78a56ccb7d09184d9fb4a0719519d30">UART_gps_buffer</a> []</td></tr>
+<tr class="separator:af78a56ccb7d09184d9fb4a0719519d30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc7b9e0595307a567dc411efca0cce92" id="r_abc7b9e0595307a567dc411efca0cce92"><td class="memItemLeft" align="right" valign="top">volatile uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abc7b9e0595307a567dc411efca0cce92">UART_gps_buffer_write_idx</a></td></tr>
+<tr class="separator:abc7b9e0595307a567dc411efca0cce92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bc46011763657faefcb45489524bdf2" id="r_a2bc46011763657faefcb45489524bdf2"><td class="memItemLeft" align="right" valign="top">volatile uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2bc46011763657faefcb45489524bdf2">UART_gps_last_write_time_ms</a></td></tr>
+<tr class="separator:a2bc46011763657faefcb45489524bdf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c10a56ba3638c57a782418d165c1398" id="r_a9c10a56ba3638c57a782418d165c1398"><td class="memItemLeft" align="right" valign="top">volatile uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9c10a56ba3638c57a782418d165c1398">UART_gps_buffer_last_rx_byte</a></td></tr>
+<tr class="separator:a9c10a56ba3638c57a782418d165c1398"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95c8c3eb178e7add5ac6bfb9303613f0" id="r_a95c8c3eb178e7add5ac6bfb9303613f0"><td class="memItemLeft" align="right" valign="top">volatile uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a95c8c3eb178e7add5ac6bfb9303613f0">UART_gps_uart_interrupt_enabled</a></td></tr>
+<tr class="separator:a95c8c3eb178e7add5ac6bfb9303613f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="a7063bab0936a35df980d558dcbe26ea5" name="a7063bab0936a35df980d558dcbe26ea5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7063bab0936a35df980d558dcbe26ea5">&#9670;&#160;</a></span>GPS_set_uart_interrupt_state()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GPS_set_uart_interrupt_state </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>new_enabled</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the UART interrupt state (enabled/disabled) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">new_enabled</td><td>1: enable interrupt; 0: disable interrupt </td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="uart__handler_8h_a7063bab0936a35df980d558dcbe26ea5_icgraph.png" border="0" usemap="#auart__handler_8h_a7063bab0936a35df980d558dcbe26ea5_icgraph" alt=""/></div>
+<map name="auart__handler_8h_a7063bab0936a35df980d558dcbe26ea5_icgraph" id="auart__handler_8h_a7063bab0936a35df980d558dcbe26ea5_icgraph">
+<area shape="rect" title="Sets the UART interrupt state (enabled/disabled)" alt="" coords="490,5,647,46"/>
+<area shape="rect" href="gps__internal__drivers_8c.html#a67a662deeb51008f1040910dd8160e71" title="Sends a log command to the GPS, and receives the response." alt="" coords="241,13,442,38"/>
+<area shape="poly" title=" " alt="" coords="474,28,443,28,443,23,474,23"/>
+<area shape="rect" href="gps__telecommand__defs_8c.html#ab1cb2a2088c5fb64ff8c40154606e9a6" title="Telecommand: Transmit a log command to the GPS receiver through UART." alt="" coords="5,5,193,46"/>
+<area shape="poly" title=" " alt="" coords="225,28,193,28,193,23,225,23"/>
+</map>
+</div>
+
+</div>
+</div>
 <a id="a59db2ba73b7115a05fe34c3d05e712c3" name="a59db2ba73b7115a05fe34c3d05e712c3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a59db2ba73b7115a05fe34c3d05e712c3">&#9670;&#160;</a></span>UART_init_uart_handlers()</h2>
 
@@ -290,6 +346,138 @@ Here is the caller graph for this function:</div>
       <table class="memname">
         <tr>
           <td class="memname">volatile uint32_t UART_eps_last_write_time_ms</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af78a56ccb7d09184d9fb4a0719519d30" name="af78a56ccb7d09184d9fb4a0719519d30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af78a56ccb7d09184d9fb4a0719519d30">&#9670;&#160;</a></span>UART_gps_buffer</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">volatile uint8_t UART_gps_buffer[]</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9c10a56ba3638c57a782418d165c1398" name="a9c10a56ba3638c57a782418d165c1398"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c10a56ba3638c57a782418d165c1398">&#9670;&#160;</a></span>UART_gps_buffer_last_rx_byte</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">volatile uint8_t UART_gps_buffer_last_rx_byte</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa6f2be0e17824c147d835cec31084047" name="aa6f2be0e17824c147d835cec31084047"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6f2be0e17824c147d835cec31084047">&#9670;&#160;</a></span>UART_gps_buffer_len</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint16_t UART_gps_buffer_len</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abc7b9e0595307a567dc411efca0cce92" name="abc7b9e0595307a567dc411efca0cce92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc7b9e0595307a567dc411efca0cce92">&#9670;&#160;</a></span>UART_gps_buffer_write_idx</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">volatile uint16_t UART_gps_buffer_write_idx</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2bc46011763657faefcb45489524bdf2" name="a2bc46011763657faefcb45489524bdf2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bc46011763657faefcb45489524bdf2">&#9670;&#160;</a></span>UART_gps_last_write_time_ms</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">volatile uint32_t UART_gps_last_write_time_ms</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a95c8c3eb178e7add5ac6bfb9303613f0" name="a95c8c3eb178e7add5ac6bfb9303613f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95c8c3eb178e7add5ac6bfb9303613f0">&#9670;&#160;</a></span>UART_gps_uart_interrupt_enabled</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">volatile uint8_t UART_gps_uart_interrupt_enabled</td>
         </tr>
       </table>
   </td>
