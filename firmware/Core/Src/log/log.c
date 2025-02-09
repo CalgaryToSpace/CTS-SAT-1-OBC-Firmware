@@ -17,8 +17,8 @@
 #define LOG_TIMESTAMP_MAX_LENGTH 30
 #define LOG_SINK_NAME_MAX_LENGTH 20
 #define LOG_SYSTEM_NAME_MAX_LENGTH 20
-// Messages up to 256 characters
-#define LOG_FORMATTED_MESSAGE_MAX_LENGTH 256
+// Messages up to 512 characters
+#define LOG_FORMATTED_MESSAGE_MAX_LENGTH 512
 // Includes prefix, with cushion for delimiters, newline, and null terminator
 #define LOG_FULL_MESSAGE_MAX_LENGTH ( LOG_FORMATTED_MESSAGE_MAX_LENGTH + LOG_TIMESTAMP_MAX_LENGTH + LOG_SINK_NAME_MAX_LENGTH + LOG_SYSTEM_NAME_MAX_LENGTH + 1 )
 
