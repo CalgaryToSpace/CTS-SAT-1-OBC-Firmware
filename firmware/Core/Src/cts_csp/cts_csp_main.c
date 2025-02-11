@@ -12,6 +12,11 @@
 
 #include "csp/interfaces/csp_if_i2c.h"
 
+
+extern I2C_HandleTypeDef hi2c3; //TODO: Is I2C3 the right bus?
+const uint8_t AX100_I2C_ADDR = 0x05 << 1; 
+const uint8_t timeout_ms = 75; // in milliseconds for i2c transmit
+
 // TODO: confirm global or not
 csp_conf_t csp_conf_value_1 = {
     .address = 1,                       // Unique CSP address of the cubesat
@@ -177,7 +182,7 @@ uint8_t CSP_demo_1() {
 
 
 /// @brief Driver function for CSP to send data via I2C.
-/// @param driver_data Byte array to send. Is the main data of the frame.
+/// @param driver_data Byte array to send. Is the main data of the frame. //TODO: I dont think this is right
 /// @param frame Info about the frame, including the `drive_data`'s length.
 /// @return CSP error code, to be interpreted by CSP.
 /// @note This function gets called internally by CSP, and is a function passed to CSP during config.
@@ -217,9 +222,10 @@ int CSP_i2c_driver_tx(void * driver_data, csp_i2c_frame_t * frame) {
     // TODO: Hex print the driver_data
 
     // TODO: Add an HAL_I2C call in here.
+    
+    const size_t CSP_FRAME_HEADER_SIZE = 4;
+    HAL_StatusTypeDef tx_status = HAL_I2C_Master_Transmit(&hi2c3, AX100_I2C_ADDR, (uint8_t*)(&frame), CSP_FRAME_HEADER_SIZE + frame->len , timeout_ms);
 
-
-    //HAL_I2C_Master_Transmit& hi2c2,);
 
     return CSP_ERR_NONE;
 }
