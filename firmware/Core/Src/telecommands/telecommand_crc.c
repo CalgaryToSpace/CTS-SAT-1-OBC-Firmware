@@ -11,7 +11,8 @@
 
 // Function only works with Hex input messages.
 /// @brief Allows to send a message on the terminal and provides a CRC32 Checksum.
-/// @param args_str 1 argument - Message.
+/// @param args_str 
+/// - Arg 0: Message
 /// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
