@@ -708,10 +708,8 @@ typedef struct ADCS_raw_star_tracker_struct_t {
 typedef struct ADCS_sd_log_config_struct {
     uint8_t which_log;
     uint8_t log_bitmask[10];
-    uint16_t log_period; // TODO: figure out whether this is ms or something else
+    uint16_t log_period_s; 
     ADCS_sd_log_destination_enum_t which_sd;
 } ADCS_sd_log_config_struct;
-
-// TODO: We also need to downlink ADCS data from SD card
 
 #endif /* INC_ADCS_TYPES_H_ */

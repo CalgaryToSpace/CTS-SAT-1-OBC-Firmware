@@ -968,14 +968,14 @@ uint8_t ADCS_measurements_struct_TO_json(const ADCS_measurements_struct_t *data,
 /// @param[in] json_output_str_len Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
 uint8_t ADCS_sd_download_list_TO_json(ADCS_file_info_struct_t *data, uint16_t data_length, char json_output_str[], uint16_t json_output_str_len) {
-    if (data == NULL || json_output_str == NULL || json_output_str_len < ((data_length + 1) * 45)) { // max 45 characters per entry
+    if (data == NULL || json_output_str == NULL || json_output_str_len < ((data_length + 1) * 57)) { // max 57 characters per entry
         return 1; // Error: invalid input
     } 
 
     int16_t snprintf_ret; 
     int16_t total_written = 0;
 
-    snprintf_ret = snprintf(&json_output_str[total_written], json_output_str_len, "Counter\tDatetime\tType\tSize\tCRC16\n");
+    snprintf_ret = snprintf(&json_output_str[total_written], json_output_str_len, "Counter    Datetime    Type    Size    CRC16\n");
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error
     } else {
@@ -983,7 +983,7 @@ uint8_t ADCS_sd_download_list_TO_json(ADCS_file_info_struct_t *data, uint16_t da
     }
     
     for (uint16_t i = 0; i < data_length; i++) {
-        snprintf_ret = snprintf(&json_output_str[total_written], json_output_str_len, "%d\t%lld\t%d\t%ld\t%d\n", 
+        snprintf_ret = snprintf(&json_output_str[total_written], json_output_str_len, "%d    %lld    %d    %ld    %d\n", 
             data[i].file_counter, data[i].file_date_time, data[i].file_type, data[i].file_size, data[i].file_crc16);
 
         if (snprintf_ret < 0) {
@@ -1194,14 +1194,14 @@ uint8_t ADCS_unix_time_ms_TO_json(const uint64_t *data, char json_output_str[], 
 }
 
 uint8_t ADCS_sd_log_config_struct_TO_json(const ADCS_sd_log_config_struct *data, char json_output_str[], uint16_t json_output_str_len) {
-        if (data == NULL || json_output_str == NULL || json_output_str_len < 150) {
+        if (data == NULL || json_output_str == NULL || json_output_str_len < 152) {
         return 1; // Error: invalid input
     }
     int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len,
-                                    "{\"which_log\":%d,\"log_bitmask\":0x%.2x%.2x%.2x%.2x%.2x%.2x%.2x%.2x%.2x%.2x,\"log_period\":%d,\"which_sd\":%d}",                                 
+                                    "{\"which_log\":%d,\"log_bitmask\":0x%.2x%.2x%.2x%.2x%.2x%.2x%.2x%.2x%.2x%.2x,\"log_period_s\":%d,\"which_sd\":%d}",                                 
                                     data->which_log, (data->log_bitmask)[0], (data->log_bitmask)[1], (data->log_bitmask)[2], (data->log_bitmask)[3], 
                                     (data->log_bitmask)[4], (data->log_bitmask)[5], (data->log_bitmask)[6], (data->log_bitmask)[7], (data->log_bitmask)[8], 
-                                    (data->log_bitmask)[9], data->log_period,  data->which_sd);
+                                    (data->log_bitmask)[9], data->log_period_s,  data->which_sd);
 
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error

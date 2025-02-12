@@ -828,7 +828,7 @@ uint8_t TEST_EXEC__ADCS_pack_to_sd_log_config_struct() {
         TEST_ASSERT_TRUE((result_struct.log_bitmask)[i] == input_params[i]);
     }
     
-    TEST_ASSERT_TRUE(result_struct.log_period == 4492);
+    TEST_ASSERT_TRUE(result_struct.log_period_s == 4492);
     TEST_ASSERT_TRUE(result_struct.which_sd == ADCS_SD_LOG_DESTINATION_SECONDARY_SD);
 
     return 0;

@@ -765,7 +765,7 @@ uint8_t ADCS_pack_to_sd_log_config_struct(uint8_t *data_received, uint8_t which_
         (config->log_bitmask)[i] = data_received[i];
     }
     config->which_log = which_log;
-    config->log_period = (data_received[11] << 8) | data_received[10];
+    config->log_period_s = (data_received[11] << 8) | data_received[10];
     config->which_sd = data_received[12];
 
     return 0;

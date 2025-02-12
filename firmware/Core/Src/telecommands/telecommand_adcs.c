@@ -1795,6 +1795,21 @@ uint8_t TCMDEXEC_adcs_measurements(const char *args_str, TCMD_TelecommandChannel
     return status;
 }
 
+/// @brief Telecommand: Get the list of downloadable files from the ADCS SD card (alternate method)
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_download_index_file(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                   char *response_output_buf, uint16_t response_output_buf_len) {
+    uint8_t status;
+
+    // This should work so long as there are fewer than 541 files on the SD card. 
+    // TODO: Function in progress... once the main download function is finished this will be easier.
+
+    return 33;
+
+}
+
 
 /// @brief Telecommand: Get the list of downloadable files from the ADCS SD card
 /// @param args_str 
@@ -1807,19 +1822,18 @@ uint8_t TCMDEXEC_adcs_get_sd_download_list(const char *args_str, TCMD_Telecomman
 
     // Reset the file list read pointer
     status = ADCS_reset_file_list_read_pointer();
-    if (status != 0) {
+    if (status != 0 && status != 165) {
+        // For some reason, the engineering model ADCS always returns status 165 for this command, regardless of what the status *should* be
+        // Effectively, this means we cannot effectively check the status of this command, so we must use a workaround
+        // TODO: test this with CubeSupport to see if it gets anything reasonable out of it
         snprintf(response_output_buf, response_output_buf_len,
             "ADCS reset file list read pointer failed (err %d)", status);
-            // TODO: for some reason it keeps getting 165 as status, from the actual ADCS??? 
-            // But it still works __every other time__ if we ignore "Error 165"
-            // and it does this even if we set it up for the wrong inputs!!
         return 1;
-    }
-
+    } 
     uint16_t filelist_length = 0;
-    ADCS_file_info_struct_t file_info[59]; // TODO: it did not like allocating 1024 of these; check how much needed
+    ADCS_file_info_struct_t file_info[64]; // TODO: it did not like allocating 1024 of these; check how much needed
 
-    for (uint16_t i = 0; i < 58; i++) {
+    for (uint16_t i = 0; i < 63; i++) {
 
         // Get the information for each file, polling until data is ready
         do {
@@ -1901,7 +1915,10 @@ uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str, TCMD_TelecommandCha
 
     // get the data about the file to download
     status = ADCS_reset_file_list_read_pointer();
-    if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS reset file pointer failed (err %d)", status); return 1;}
+    if (status != 0 && status != 165) {snprintf(response_output_buf, response_output_buf_len, "ADCS reset file pointer failed (err %d)", status); return 1;}
+    // For some reason, the engineering model ADCS always returns status 165 for this command, regardless of what the status *should* be
+    // Effectively, this means we cannot effectively check the status of this command, so we must use a workaround
+    // TODO: write a workaround
 
     for (uint16_t i = 0; i < file_index; i++) {
         status = ADCS_advance_file_list_read_pointer();
@@ -1919,14 +1936,20 @@ uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str, TCMD_TelecommandCha
 
     uint16_t blocks_required = ceil(file_info.file_size / 20480.0);
     uint64_t remaining_bytes = file_info.file_size;
+    
+    ADCS_file_download_buffer_struct_t file_packets[(uint64_t) ceil(file_info.file_size/20.0)];
+    uint64_t packet_index = 0;
 
     for (uint16_t block_counter = 0; block_counter < blocks_required; block_counter++) {
         // repeat all this for every block
 
-        uint16_t bytes_to_load = 1024;
+        uint16_t bytes_to_load = 1024 * 20;
         if (remaining_bytes < bytes_to_load) {
             bytes_to_load = remaining_bytes;
         }
+
+        // We can perform up to 1024 read transactions at a time. Each read transaction loads 20 payload bytes from memory. 
+        uint16_t packets_to_load = (uint16_t) ceil(bytes_to_load / 20.0);
         
         // Load a download block from the ADCS
         status = ADCS_load_file_download_block(file_info.file_type, block_counter, 0, bytes_to_load);
@@ -1942,7 +1965,7 @@ uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str, TCMD_TelecommandCha
         
         // Initiate download burst, ignoring the hole map
         status = ADCS_initiate_download_burst(bytes_to_load, true);
-        if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS init download burst failed (err %d)", status); return 1;}
+        if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS initiate download burst failed (err %d)", status); return 1;}
             // TODO: I suspect that the message_length parameter represents the number of bytes to load, but I'm not sure.
 
         /* 
@@ -1956,11 +1979,17 @@ uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str, TCMD_TelecommandCha
         which packets have been received on the remote side. 
         */
 
-        ADCS_file_download_buffer_struct_t buffer[bytes_to_load];
-        for (uint16_t i = 0; i < bytes_to_load; i++) {
+        ADCS_file_download_buffer_struct_t buffer[packets_to_load];
+        for (uint16_t i = 0; i < packets_to_load; i++) {
             status = ADCS_get_file_download_buffer(&(buffer[i]));
             if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS get download buffer failed for index %d (err %d)", i, status); return 1;}
         }
+
+        for (uint16_t i = 0; i < packets_to_load; i++) {
+            // now that we've loaded the packets, save them to the output file
+            file_packets[packet_index + i] = buffer[i]; 
+        }
+        packet_index += packets_to_load;
 
         /*
         The Hole Map is a bitmap, where each bit represents one 20-byte packet out of the complete
@@ -2006,8 +2035,21 @@ uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str, TCMD_TelecommandCha
     snprintf(response_output_buf, response_output_buf_len, "ADCS file download probably worked");
     // TODO: reassemble the file and save it to memory (and also don't say "probably")
 
+    qsort(&file_packets[0], sizeof(file_packets), sizeof(ADCS_file_download_buffer_struct_t), ADCS_compare_download_packets); // sort the file packets in ascending order of packet counter
+    
+    uint8_t file_bytes[file_info.file_size];
+    // TODO: check if we have enough RAM for this
+
+    // now that the packets are sorted, we can turn them into a regular array of bytes
+    for (uint64_t i = 0; i < ((uint64_t) ceil(file_info.file_size/20.0)); i++) {
+        file_bytes[i] = file_packets[i / 1024].file_bytes[i % 1024];
+    }
+
+    WRITE_STRUCT_TO_MEMORY(file_bytes)
+
     return 0;
 }
+
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 
 ///     - No arguments for this command
@@ -2212,7 +2254,7 @@ uint8_t TCMDEXEC_adcs_get_sd_log_config(const char *args_str, TCMD_TelecommandCh
     return status;
 }
 
-/// @brief Telecommand: Request commissioning telemetry from the ADCS and save it to the memory module
+/// @brief Telecommand: Request commissioning telemetry from the ADCS and save it to the onboard SD card
 /// @param args_str 
 ///     - Arg 0: Which commissioning step to request telemetry for (1-18)
 ///     - Arg 1: Log number (1 or 2)
@@ -2412,3 +2454,13 @@ uint8_t TCMDEXEC_adcs_request_commissioning_telemetry(const char *args_str, TCMD
 
     return status;
 }
+
+/// @brief Telecommand: Instruct the ADCS to format the SD card
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_format_sd(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                   char *response_output_buf, uint16_t response_output_buf_len) {
+    uint8_t status = ADCS_format_sd();
+    return status;
+}     

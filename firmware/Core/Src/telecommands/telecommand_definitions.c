@@ -734,6 +734,18 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     }, 
+    {
+        .tcmd_name = "adcs_format_sd",
+        .tcmd_func = TCMDEXEC_adcs_format_sd,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    }, 
+    {
+        .tcmd_name = "adcs_download_index_file",
+        .tcmd_func = TCMDEXEC_adcs_download_index_file,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_IN_PROGRESS,
+    }, 
 
     // ****************** END SECTION: telecommand_adcs ******************
 
