@@ -57,18 +57,18 @@ uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd
         }
 
         // check to see if timestamp is in the circular buffer
-        for (uint32_t i = 0; i < TCMD_timestamp_sent_head; i++) {
-            if(parsed_tcmd->timestamp_sent == TCMD_timestamp_sent_store[i]) {
-                // Skip this telecommand
-                LOG_message(
-                    LOG_SYSTEM_TELECOMMAND, 
-                    LOG_SEVERITY_WARNING, 
-                    LOG_SINK_ALL, 
-                    "Telecommand skipped due to timestamp collision"
-                );
-                return 1; 
-            }
-        }
+        // for (uint32_t i = 0; i < TCMD_timestamp_sent_head; i++) {
+        //     if(parsed_tcmd->timestamp_sent == TCMD_timestamp_sent_store[i]) {
+        //         // Skip this telecommand
+        //         LOG_message(
+        //             LOG_SYSTEM_TELECOMMAND, 
+        //             LOG_SEVERITY_WARNING, 
+        //             LOG_SINK_ALL, 
+        //             "Telecommand skipped due to timestamp collision"
+        //         );
+        //         return 1; 
+        //     }
+        // }
         // Add the timestamp to the circular buffer
         TCMD_timestamp_sent_store[TCMD_timestamp_sent_head] = parsed_tcmd->timestamp_sent;
         TCMD_timestamp_sent_head = (TCMD_timestamp_sent_head + 1) % TCMD_TIMESTAMP_RECORD_SIZE;
