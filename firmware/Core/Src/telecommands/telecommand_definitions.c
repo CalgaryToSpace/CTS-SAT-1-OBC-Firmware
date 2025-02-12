@@ -104,8 +104,6 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "crc",
         .tcmd_func = TCMDEXEC_crc,
         .number_of_args = 1,
-        .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
-
     },
     {
         .tcmd_name = "reboot",
