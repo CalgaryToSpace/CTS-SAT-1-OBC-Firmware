@@ -27,4 +27,4 @@ uint8_t TCMDEXEC_available_telecommands(const char *args_str, TCMD_TelecommandCh
 uint8_t TCMDEXEC_reboot(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len);
                         
-#endif // __INCLUDE_GUARD__TELECOMMAND_DEFINITIONS_H
+#endif // INCLUDE_GUARD__TELECOMMAND_DEFINITIONS_H

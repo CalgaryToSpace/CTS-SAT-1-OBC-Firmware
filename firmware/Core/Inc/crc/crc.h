@@ -1,5 +1,5 @@
-#ifndef __CRC_H
-#define __CRC_H
+#ifndef INCLUDE_GUARD__CRC_H
+#define INCLUDE_GUARD__CRC_H
 
 /*
 Online CRC calculator for reference: https://www.sunshine2k.de/coding/javascript/crc/crc_js.html
@@ -15,4 +15,4 @@ Final Xor value: 0
 #include "stm32l4xx_hal.h"
 
 uint32_t GEN_crc32_checksum(uint8_t *input_message, uint32_t input_message_len);
-#endif /* __CRC_H */
+#endif /* INCLUDE_GUARD__CRC_H */
