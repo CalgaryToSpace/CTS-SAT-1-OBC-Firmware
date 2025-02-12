@@ -26,8 +26,6 @@
 #include "telecommands/comms_telecommand_defs.h"
 #include "telecommands/gps_telecommand_defs.h"
 #include "telecommands/comms_telecommand_defs.h"
-#include "telecommands/gps_telecommand_defs.h"
-
 
 #include "timekeeping/timekeeping.h"
 #include "littlefs/littlefs_helper.h"
