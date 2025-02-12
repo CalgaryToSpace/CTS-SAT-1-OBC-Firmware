@@ -1,4 +1,4 @@
-#include "crc.h"
+#include "crc/crc.h"
 #include "log/log.h"
 #include "telecommands/telecommand_args_helpers.h"
 #include "telecommands/telecommand_types.h"
