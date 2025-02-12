@@ -150,7 +150,7 @@ uint8_t CSP_demo_1() {
 
     // return 0;
 
-    int8_t txBuffer[16];
+    uint8_t txBuffer[8];
     uint8_t rxBuffer[16];
     HAL_StatusTypeDef ret;
 
