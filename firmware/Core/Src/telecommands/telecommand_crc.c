@@ -10,6 +10,12 @@
 #include <inttypes.h>
 
 // Function only works with Hex input messages.
+/// @brief Allows to send a message on the terminal and provides a CRC32 Checksum.
+/// @param args_str 1 argument - Message.
+/// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
+/// @param response_output_buf The buffer to write the response to
+/// @param response_output_buf_len The maximum length of the response_output_buf (its size)
+/// @return 0: Success, >0: Failure
 uint8_t TCMDEXEC_crc(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf,
                         uint16_t response_output_buf_len)
 {
