@@ -33,7 +33,7 @@ var searchData=
   ['hardfault_5fhandler_30',['HardFault_Handler',['../stm32l4xx__it_8h.html#a2bffc10d5bd4106753b7c30e86903bea',1,'HardFault_Handler(void):&#160;stm32l4xx_it.c'],['../stm32l4xx__it_8c.html#a2bffc10d5bd4106753b7c30e86903bea',1,'HardFault_Handler(void):&#160;stm32l4xx_it.c']]],
   ['hash_5fbytes_31',['hash_bytes',['../namespacesha256__unit__tests.html#a7546d47720a99c77ae2f3f7053753b8c',1,'sha256_unit_tests']]],
   ['hclk_20hz_204000000_32',['HCLK(Hz)                               | 4000000',['../system__stm32l4xx_8c.html#autotoc_md76',1,'']]],
-  ['hcrc_33',['hcrc',['../main_8c.html#ae3358c54a01c6487322df1275618d6b1',1,'main.c']]],
+  ['hcrc_33',['hcrc',['../main_8h.html#ae3358c54a01c6487322df1275618d6b1',1,'hcrc:&#160;main.c'],['../main_8c.html#ae3358c54a01c6487322df1275618d6b1',1,'hcrc:&#160;main.c']]],
   ['hdma_5fuart4_5frx_34',['hdma_uart4_rx',['../main_8c.html#a5531b2fb5af9f7c77f321c4a957d662b',1,'hdma_uart4_rx:&#160;main.c'],['../stm32l4xx__hal__msp_8c.html#a5531b2fb5af9f7c77f321c4a957d662b',1,'hdma_uart4_rx:&#160;main.c'],['../stm32l4xx__it_8c.html#a5531b2fb5af9f7c77f321c4a957d662b',1,'hdma_uart4_rx:&#160;main.c']]],
   ['hdma_5fusart1_5frx_35',['hdma_usart1_rx',['../main_8c.html#a34251392f0d5e2461e3aef615918c235',1,'hdma_usart1_rx:&#160;main.c'],['../stm32l4xx__hal__msp_8c.html#a34251392f0d5e2461e3aef615918c235',1,'hdma_usart1_rx:&#160;main.c'],['../stm32l4xx__it_8c.html#a34251392f0d5e2461e3aef615918c235',1,'hdma_usart1_rx:&#160;main.c']]],
   ['head_36',['head',['../structlfs__dir.html#a086e8d93663f5528fcc7c2ff7802883d',1,'lfs_dir::head'],['../structlfs__file_1_1lfs__ctz.html#aff9613735c2288e388bf3000a66f4720',1,'lfs_file::lfs_ctz::head']]],
