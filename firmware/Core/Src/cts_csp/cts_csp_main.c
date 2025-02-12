@@ -160,6 +160,21 @@ uint8_t CSP_demo_1() {
         1000 // FIXME: timeout
     );
 
+    csp_packet_t * ret_packet = csp_read(conn, 1000);
+
+    if (ret_packet != NULL) {
+        LOG_message(
+            LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Received packet from demo 1: %s", ret_packet->data + 4
+        );
+        csp_buffer_free(ret_packet);
+    }
+    else {
+        LOG_message(
+            LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "ERROR: Did not receive packet from demo 1"
+        );
+    }
 
     if (ret != 1) {
         LOG_message(
