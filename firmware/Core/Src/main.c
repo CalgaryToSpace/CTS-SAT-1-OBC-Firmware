@@ -31,7 +31,6 @@
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_internal_drivers.h"
 #include "littlefs/flash_driver.h"
-#include "crc/crc.h"
 
 /* USER CODE END Includes */
 
@@ -51,6 +50,7 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+CRC_HandleTypeDef hcrc;
 
 I2C_HandleTypeDef hi2c1;
 I2C_HandleTypeDef hi2c2;
@@ -69,7 +69,6 @@ DMA_HandleTypeDef hdma_usart1_rx;
 SPI_HandleTypeDef hspi1;
 
 TIM_HandleTypeDef htim16;
-CRC_HandleTypeDef hcrc;
 
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
@@ -375,7 +374,7 @@ static void MX_CRC_Init(void)
 
   /* USER CODE BEGIN CRC_Init 1 */
 
-  /* USER CODE END CRC_Init 1 */  
+  /* USER CODE END CRC_Init 1 */
   hcrc.Instance = CRC;
   hcrc.Init.DefaultPolynomialUse = DEFAULT_POLYNOMIAL_ENABLE;
   hcrc.Init.DefaultInitValueUse = DEFAULT_INIT_VALUE_ENABLE;
