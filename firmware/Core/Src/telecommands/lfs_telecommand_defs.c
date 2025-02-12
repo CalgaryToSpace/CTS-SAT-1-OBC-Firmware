@@ -177,6 +177,33 @@ uint8_t TCMDEXEC_fs_write_file_str(const char *args_str, TCMD_TelecommandChannel
 
 // TODO: Add a `fs_write_file_hex` telecommand, which supports offsets within the file. (Issue #266)
 
+/// @brief Telecommand: Deletes a specified file in LittleFS
+/// @param args_str
+/// - Arg 0: File name to be deleted
+/// @note Do not add quotations around the argument, write as is.
+uint8_t TCMDEXEC_fs_delete_file(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    char arg_file_name[LFS_MAX_PATH_LENGTH];
+    const uint8_t parse_file_name_result = TCMD_extract_string_arg(args_str, 0, arg_file_name, sizeof(arg_file_name));
+    if (parse_file_name_result != 0) {
+        // error parsing
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing file name arg: Error %d", parse_file_name_result);
+        return 1;
+    }
+
+    int8_t result = LFS_delete_file(arg_file_name);
+    if (result < 0) {
+        snprintf(response_output_buf, response_output_buf_len, "LittleFS Deleting Error: %d\n", result);
+        return 1;
+    }
+
+    snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Deleted File!");
+    return 0;
+}
+
 /// @brief Reads a file from LittleFS, and responds with its contents as 2-digit hex bytes.
 /// @param args_str
 /// - Arg 0: File path as string
