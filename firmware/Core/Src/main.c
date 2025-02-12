@@ -69,7 +69,7 @@ DMA_HandleTypeDef hdma_usart1_rx;
 SPI_HandleTypeDef hspi1;
 
 TIM_HandleTypeDef htim16;
-CRC_HandleTypeDef hcrc1;
+CRC_HandleTypeDef hcrc;
 
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
@@ -375,14 +375,14 @@ static void MX_CRC_Init(void)
 
   /* USER CODE BEGIN CRC_Init 1 */
 
-  /* USER CODE END CRC_Init 1 */
-  hcrc1.Instance = CRC;
-  hcrc1.Init.DefaultPolynomialUse = DEFAULT_POLYNOMIAL_ENABLE;
-  hcrc1.Init.DefaultInitValueUse = DEFAULT_INIT_VALUE_ENABLE;
-  hcrc1.Init.InputDataInversionMode = CRC_INPUTDATA_INVERSION_NONE;
-  hcrc1.Init.OutputDataInversionMode = CRC_OUTPUTDATA_INVERSION_DISABLE;
-  hcrc1.InputDataFormat = CRC_INPUTDATA_FORMAT_BYTES;
-  if (HAL_CRC_Init(&hcrc1) != HAL_OK)
+  /* USER CODE END CRC_Init 1 */  
+  hcrc.Instance = CRC;
+  hcrc.Init.DefaultPolynomialUse = DEFAULT_POLYNOMIAL_ENABLE;
+  hcrc.Init.DefaultInitValueUse = DEFAULT_INIT_VALUE_ENABLE;
+  hcrc.Init.InputDataInversionMode = CRC_INPUTDATA_INVERSION_NONE;
+  hcrc.Init.OutputDataInversionMode = CRC_OUTPUTDATA_INVERSION_DISABLE;
+  hcrc.InputDataFormat = CRC_INPUTDATA_FORMAT_BYTES;
+  if (HAL_CRC_Init(&hcrc) != HAL_OK)
   {
     Error_Handler();
   }

@@ -32,7 +32,7 @@ uint8_t TCMDEXEC_crc(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_c
     }
 
     // Generate CRC32 checksum
-    uint32_t crc_result = GEN_crc32_checksum(&hcrc1, buffer, result_length);
+    uint32_t crc_result = GEN_crc32_checksum(buffer, result_length);
 
     snprintf(response_output_buf, response_output_buf_len, "The CRC result is %" PRIx32 ".\n", crc_result);
 
