@@ -35,6 +35,7 @@ uint8_t TCMDEXEC_crc(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_c
     uint32_t crc_result = GEN_crc32_checksum(buffer, result_length);
 
     snprintf(response_output_buf, response_output_buf_len, "The CRC result is %" PRIx32 ".\n", crc_result);
+    LOG_message(LOG_SYSTEM_ALL, LOG_SEVERITY_ERROR, LOG_SINK_ALL, "Checksum is %lu \n", crc_result);
 
     return 0;
 }
