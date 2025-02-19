@@ -25,9 +25,10 @@ MPI_rx_mode_t MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
 /// @return 0: Success, 2: Failed UART transmission, 3: Failed UART reception, 
 ///         4: Timeout waiting for 1st byte from MPI, 8: Not enough space in the MPI response buffer
 /// @note If the MPI is in "science data" mode, it will be disabled after the command is executed.
-uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const size_t bytes_to_send_len, uint8_t *MPI_rx_buffer, 
-                                          const size_t MPI_rx_buffer_max_size, uint16_t *MPI_rx_buffer_len) {
-    
+uint8_t MPI_send_command_get_response(
+    const uint8_t *bytes_to_send, const size_t bytes_to_send_len, uint8_t *MPI_rx_buffer, 
+    const size_t MPI_rx_buffer_max_size, uint16_t *MPI_rx_buffer_len
+) {
     // Assert: MPI_rx_buffer_max_size is >= the length of the bytes_to_send_len + 1 to receive the command echo
     if (MPI_rx_buffer_max_size < (bytes_to_send_len + 1)) return 8; // Error code: Not enough space in the MPI response buffer
     
@@ -35,7 +36,8 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
     MPI_current_uart_rx_mode = MPI_RX_MODE_COMMAND_MODE; // Set MPI to command mode.
 
     // Transmit the MPI command
-    const HAL_StatusTypeDef transmit_status = HAL_UART_Transmit(UART_mpi_port_handle, bytes_to_send, bytes_to_send_len, MPI_TX_TIMEOUT_DURATION_MS);
+    const HAL_StatusTypeDef transmit_status = HAL_UART_Transmit(
+        UART_mpi_port_handle, bytes_to_send, bytes_to_send_len, MPI_TX_TIMEOUT_DURATION_MS);
 
     // Check UART transmission status
     if (transmit_status != HAL_OK) {
@@ -55,9 +57,11 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
     UART_mpi_buffer_write_idx = 0;                                      
     const uint32_t UART_mpi_rx_start_time_ms = HAL_GetTick();
 
-    // Receive MPI response byte by byte 
-    // @note: This is done to account for potential errors from the mpi where it doesnt send back an expected response
-    const HAL_StatusTypeDef receive_status = HAL_UART_Receive_DMA(UART_mpi_port_handle, (uint8_t*) &UART_mpi_last_rx_byte, 1);
+    // Receive MPI response byte by byte.
+    // Note: This is done to account for potential errors from the MPI where it doesn't send back
+    // an expected-length response.
+    const HAL_StatusTypeDef receive_status = HAL_UART_Receive_DMA(
+        UART_mpi_port_handle, (uint8_t*) &UART_mpi_last_rx_byte, 1);
     
     // Check for UART reception errors
     if (receive_status != HAL_OK) {
@@ -69,7 +73,6 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
 
     // Receive until MPI response timed out
     while (1) {
-
         // MPI response has been received upto uart rx buffer capacity
         if (UART_mpi_buffer_write_idx >= MPI_rx_buffer_max_size) {
             break;
@@ -108,7 +111,6 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
     // Copy the buffer to the last received byte index & clear the UART buffer
     for (uint16_t i = 0; i < *MPI_rx_buffer_len; i++) {
         MPI_rx_buffer[i] = UART_mpi_buffer[i];
-        //UART_mpi_buffer[i] = 0;
     }
 
     // Reset UART buffer write index
@@ -125,9 +127,10 @@ uint8_t MPI_send_telecommand_get_response(const uint8_t *bytes_to_send, const si
 /// @param MPI_tx_buffer_size Size of the MPI response buffer
 /// @return 0: MPI successfully executed telecommand, 5: MPI failed to execute telecommand, 
 ///         6: Invalid response from the MPI
-uint8_t MPI_validate_telecommand_response(const uint8_t *MPI_tx_buffer, uint8_t *MPI_rx_buffer, 
-                                          const uint16_t MPI_tx_buffer_size) {
-    
+uint8_t MPI_validate_command_response(
+    const uint8_t *MPI_tx_buffer, uint8_t *MPI_rx_buffer, 
+    const uint16_t MPI_tx_buffer_size
+) {    
     // Verify if the MPI response echos the cmd sent
     if (memcmp(MPI_tx_buffer, MPI_rx_buffer, MPI_tx_buffer_size) != 0) {
         return 6; // Error code: Invalid response from the MPI

@@ -75,7 +75,7 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
         UART_rx_buffer_size_ptr = &UART_mpi_buffer_len;
 
         // Transmit bytes and receive response (DMA enabled reception)
-        const uint8_t MPI_tx_rx_status = MPI_send_telecommand_get_response(tx_buffer, tx_buffer_len, rx_buffer, *UART_rx_buffer_size_ptr, &rx_buffer_len);
+        const uint8_t MPI_tx_rx_status = MPI_send_command_get_response(tx_buffer, tx_buffer_len, rx_buffer, *UART_rx_buffer_size_ptr, &rx_buffer_len);
 
         // Log successful transmission and print rx_buffer response in hex (uint8_t)
         char rx_buffer_str[rx_buffer_len*3];
