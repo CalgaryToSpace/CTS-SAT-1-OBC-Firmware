@@ -15,7 +15,7 @@
 
 //extern I2C_HandleTypeDef hi2c1; //TODO: Is I2C3 the right bus?
 const uint8_t AX100_I2C_ADDR = 0x05 << 1; 
-const uint32_t timeout_mss = 1000; //TODO: how much? in milliseconds for i2c transmit
+const uint32_t timeout_mss = 3000; //TODO: how much? in milliseconds for i2c transmit
 
 // TODO: confirm global or not
 csp_conf_t csp_conf_value_1 = {
@@ -107,11 +107,22 @@ uint8_t CSP_demo_1() {
 
     char demo_packet_1[] = "Hello World!";
 
+    /*
+    * 10 = destination address of ground station
+    * 5 = net mask  
+    * &csp_cts_i2c_interface = interface to route to
+    * 5 = via, the next hop address
+    */
+    csp_rtable_set(
+        10, // destination addr
+        5,  // net mask. & this with the destinations address to get the final address which csp will use to route
+        &csp_cts_i2c_interface,// interface to route to
+        5 // next hop  address
+    );
 
-    csp_rtable_set(10,0,&csp_cts_i2c_interface,10);
-
+    
     //csp_conn_t * conn = csp_conn_allocate(CONN_CLIENT);
-    csp_conn_t * conn = csp_connect(CSP_PRIO_LOW, 10, 31, 0, CSP_O_NONE);
+    csp_conn_t * conn = csp_connect(CSP_PRIO_LOW, 10, 35, 0, CSP_O_NONE);
     if (conn == NULL) {
         LOG_message(
             LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
@@ -146,33 +157,49 @@ uint8_t CSP_demo_1() {
     memcpy(packet->data, &demo_packet_1, sizeof(demo_packet_1));
     packet->length = sizeof(demo_packet_1);
     
+    //int32_t ping_ret = csp_ping(5, timeout_mss, packet->length, CSP_O_NONE);
+    // if(ping_ret < 0) {
+    //     LOG_message(
+    //         LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+    //         "Could not send ping for demo 1"
+    //     );
+    //     return 20;
+    // }
+    // else {
+    //     LOG_message(
+    //         LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+    //         "Success pinging!!!!!"
+    //     );
+    // }
 
+    
     const int ret = csp_send(
         conn,
         packet,
         1000 // FIXME: timeout
     );
 
-    csp_packet_t * ret_packet = csp_read(conn, 1000);
+    // csp_packet_t * ret_packet = csp_read(conn, 1000);
 
-    if (ret_packet != NULL) {
-        LOG_message(
-            LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Received packet from demo 1: %s", ret_packet->data + 4
-        );
-        csp_buffer_free(ret_packet);
-    }
-    else {
-        LOG_message(
-            LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "ERROR: Did not receive packet from demo 1"
-        );
-    }
+
+    // if (ret_packet != NULL) {
+    //     LOG_message(
+    //         LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+    //         "Received packet from demo 1: %s", ret_packet->data + 4
+    //     );
+    //     csp_buffer_free(ret_packet);
+    // }
+    // else {
+    //     LOG_message(
+    //         LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+    //         "ERROR: Did not receive packet from demo 1"
+    //     );
+    // }
 
     if (ret != 1) {
         LOG_message(
             LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "Could not send packet for demo 1. Returned %d.",
+            "Could not send packet for demo 1. csp_send returned %d.",
             ret
         );
         csp_buffer_free(packet);
@@ -181,10 +208,11 @@ uint8_t CSP_demo_1() {
 
     LOG_message(
         LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
-        "Sent demo_1 packet. Returned %d.",
-        ret // Is always 1 by now.
+        "Sent demo_1 packet. csp_send returned Success."
     );
 
+
+ 
     return 0;
 }
 
@@ -215,35 +243,60 @@ int CSP_i2c_driver_tx(void * driver_data, csp_i2c_frame_t * frame) {
         frame->len_rx,
         frame->len
     );
-    uint8_t * data = frame->data + 4;
+    //uint8_t * data = (uint8_t *) frame->data;
     for (int i = 0; i < frame->len; i++) {
         LOG_message(
             LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_UHF_RADIO),
-            "0x%02X", data[i]
+            "frame->data[%d]: 0x%02X",
+            i,  frame->data[i]
         );
     }
-    LOG_message(
-        LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_UHF_RADIO),
-        "frame contents: %s", data
-    );
+    // LOG_message(
+    //     LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_UHF_RADIO),
+    //     "frame contents: %s", data
+    // );
 
     // TODO: Hex print the driver_data
 
     // TODO: Add an HAL_I2C call in here.
     
-    const size_t CSP_FRAME_HEADER_SIZE = 4;
-    //HAL_StatusTypeDef tx_status = HAL_I2C_Master_Transmit(&hi2c1, AX100_I2C_ADDR, (uint8_t*)(&frame), CSP_FRAME_HEADER_SIZE + frame->len , timeout_mss);
-    // HAL_StatusTypeDef tx_status = HAL_I2C_Mem_Write(
-        // &hi2c1, AX100_I2C_ADDR, 0x00, 1, (uint8_t*)(&frame), CSP_FRAME_HEADER_SIZE + frame->len, timeout_mss);
-
-    HAL_StatusTypeDef tx_status = HAL_I2C_Slave_Receive(&hi2c1, (uint8_t*)(&frame), CSP_FRAME_HEADER_SIZE + frame->len, timeout_mss);
-    if (tx_status != HAL_OK) {
+    const size_t CSP_FRAME_HEADER_SIZE = sizeof(csp_i2c_frame_t);
+    HAL_StatusTypeDef status = HAL_I2C_Master_Transmit(
+        &hi2c1, 
+        AX100_I2C_ADDR, 
+        frame->data, //TODO: try just sending frame->data
+        frame->len ,
+        timeout_mss);
+    if (status != HAL_OK) {
         LOG_message(
             LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_UHF_RADIO),
-            "I2C error: %d", tx_status
+            "I2C transmit error: %d", status
         );
         return CSP_ERR_TX;
     }
+    // HAL_StatusTypeDef tx_status = HAL_I2C_Mem_Write(
+        // &hi2c1, AX100_I2C_ADDR, 0x00, 1, (uint8_t*)(&frame), CSP_FRAME_HEADER_SIZE + frame->len, timeout_mss);
+    // uint8_t buffer[30];
+    // status = HAL_I2C_Slave_Receive(&hi2c1, buffer, CSP_FRAME_HEADER_SIZE + frame->len, 60000);
+    // if (status != HAL_OK) {
+    //     LOG_message(
+    //         LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_UHF_RADIO),
+    //         "I2C receive error: %d", status
+    //     );
+    //     return CSP_ERR_TX;
+    // }
+    // LOG_message(
+    //     LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_UHF_RADIO),
+    //     "Done with receive(...)."
+    // );
+
+    // for (int i = 0; i < 20; i++) {
+    //     LOG_message(
+    //         LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_UHF_RADIO),
+    //         "0x%02X", buffer[i]
+    //     );
+        
+    // }
 
 
     return CSP_ERR_NONE;
