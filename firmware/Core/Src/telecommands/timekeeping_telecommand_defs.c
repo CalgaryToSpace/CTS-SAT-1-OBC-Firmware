@@ -1,5 +1,6 @@
 #include "telecommands/timekeeping_telecommand_defs.h"
 #include "telecommand_exec/telecommand_args_helpers.h"
+#include "log/log.h"
 
 #include "timekeeping/timekeeping.h"
 #include "eps_drivers/eps_time.h"
@@ -53,6 +54,11 @@ uint8_t TCMDEXEC_correct_system_time(const char *args_str, TCMD_TelecommandChann
     );
     snprintf(response_output_buf, response_output_buf_len, "Updated system time");
     
+    if(correction_time_ms>=2000)
+    {
+        LOG_message(LOG_SYSTEM_ALL, LOG_SEVERITY_WARNING, LOG_SINK_ALL, "Synchronization has changed system time by 2000ms or more. Time deviation was %ld ms.\n", (int32_t)correction_time_ms);    
+    }
+
     return 0;
 }
 
@@ -60,14 +66,25 @@ uint8_t TCMDEXEC_correct_system_time(const char *args_str, TCMD_TelecommandChann
 /// @return 0 on success, >0 on failure.
 uint8_t TCMDEXEC_set_obc_time_based_on_eps_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
+
+    uint64_t obc_time_before_sync = TIM_get_current_unix_epoch_time_ms();
+
     const uint8_t result = EPS_set_obc_time_based_on_eps_time();
+
+    uint64_t obc_time_after_sync = TIM_get_current_unix_epoch_time_ms();
+
     if (result != 0 ) {
         snprintf(response_output_buf, response_output_buf_len,
         "syncing obc time failed");
         return 1;
     }
-    snprintf(response_output_buf, response_output_buf_len,
-    "success syncing obc time");
+    snprintf(
+        response_output_buf, response_output_buf_len,
+    "success syncing obc time"
+    );
+
+    LOG_message(LOG_SYSTEM_ALL, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, "CLock synced, OBC time before sync: %llu ms. OBC time after sync: %llu ms. Time difference: %llu \n", obc_time_before_sync, obc_time_after_sync, obc_time_after_sync-obc_time_before_sync);    
+
     return 0;
 }
 
@@ -76,7 +93,13 @@ uint8_t TCMDEXEC_set_obc_time_based_on_eps_time(const char *args_str, TCMD_Telec
 /// @return 0 on success, >0 on failure.
 uint8_t TCMDEXEC_set_eps_time_based_on_obc_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    uint64_t eps_time_before_sync = TIM_get_current_unix_epoch_time_ms();
+    
     const uint8_t result = EPS_set_eps_time_based_on_obc_time();
+    
+    uint64_t eps_time_after_sync = TIM_get_current_unix_epoch_time_ms();
+    
     if (result != 0 ) {
         snprintf(
             response_output_buf, response_output_buf_len,
@@ -88,5 +111,8 @@ uint8_t TCMDEXEC_set_eps_time_based_on_obc_time(const char *args_str, TCMD_Telec
         response_output_buf, response_output_buf_len,
         "Success syncing eps time."
     );
+
+    LOG_message(LOG_SYSTEM_ALL, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, "CLock synced, EPS time before sync: %llu ms. EPS time after sync: %llu ms. Time difference: %llu \n", eps_time_before_sync, eps_time_after_sync, eps_time_after_sync-eps_time_before_sync);    
+
     return 0;
 }
