@@ -18,10 +18,7 @@ uint8_t TEST_EXEC__EPS_convert_battery_voltage_to_percent()
     
     // Success Cases
     // Case 1: Minimum voltage (12V -> 0%)
-    battery.cell_voltage_each_cell_mV[0] = 3000;
-    battery.cell_voltage_each_cell_mV[1] = 3000;
-    battery.cell_voltage_each_cell_mV[2] = 3000;
-    battery.cell_voltage_each_cell_mV[3] = 3000;
+    battery.vip_bp_input.voltage_mV = 12000;
 
     expected_value = 0;
     
@@ -30,11 +27,7 @@ uint8_t TEST_EXEC__EPS_convert_battery_voltage_to_percent()
     TEST_ASSERT(calc <= (expected_value + TOLERANCE));
 
     // Case 2: Maximum voltage (16V -> 100%)
-    battery.cell_voltage_each_cell_mV[0] = 4000;
-    battery.cell_voltage_each_cell_mV[1] = 4000;
-    battery.cell_voltage_each_cell_mV[2] = 4000;
-    battery.cell_voltage_each_cell_mV[3] = 4000;
-
+    battery.vip_bp_input.voltage_mV = 16000;
     expected_value = 100;
     
     calc = EPS_convert_battery_voltage_to_percent(battery);
@@ -43,10 +36,7 @@ uint8_t TEST_EXEC__EPS_convert_battery_voltage_to_percent()
 
 
     // Case 3: Midpoint (14V -> 50%)
-    battery.cell_voltage_each_cell_mV[0] = 3500;
-    battery.cell_voltage_each_cell_mV[1] = 3500;
-    battery.cell_voltage_each_cell_mV[2] = 3500;
-    battery.cell_voltage_each_cell_mV[3] = 3500;
+    battery.vip_bp_input.voltage_mV = 14000;
 
     expected_value = 50;
     
@@ -56,13 +46,10 @@ uint8_t TEST_EXEC__EPS_convert_battery_voltage_to_percent()
 
 
     // Case 4: Over 16V (Should be greater than 100%)
-    battery.cell_voltage_each_cell_mV[0] = 4500;
-    battery.cell_voltage_each_cell_mV[1] = 4500;
-    battery.cell_voltage_each_cell_mV[2] = 4500;
-    battery.cell_voltage_each_cell_mV[3] = 4500;
+    battery.vip_bp_input.voltage_mV = 18000;
 
     // 16 - 12 = 4V
-    // total voltage above = 18 V
+    // voltage above = 18 V
     // 18 - 16 = 2
     // 2 / 4 = .5 = 50%, 50% above maximum total voltage
     expected_value = 150;
@@ -72,13 +59,10 @@ uint8_t TEST_EXEC__EPS_convert_battery_voltage_to_percent()
     TEST_ASSERT(calc <= (expected_value + TOLERANCE));
 
     // Case 5: Under 12V (Should be negative)
-    battery.cell_voltage_each_cell_mV[0] = 2500;
-    battery.cell_voltage_each_cell_mV[1] = 2500;
-    battery.cell_voltage_each_cell_mV[2] = 2500;
-    battery.cell_voltage_each_cell_mV[3] = 2500;
-    
+    battery.vip_bp_input.voltage_mV = 10000;
+
     // 16 - 12 = 4 V
-    // total voltage above is 1000 mV = 1 V
+    // total voltage above is 10 V
     // 10 - 12 = -2
     // -2 / 4 = -0.5 = -50%, 50% less than minimum
     expected_value = -50;
