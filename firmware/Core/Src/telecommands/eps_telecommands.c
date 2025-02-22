@@ -540,7 +540,7 @@ uint8_t TCMDEXEC_eps_get_current_battery_percent(
     const float battery_percent = EPS_convert_battery_voltage_to_percent(data.battery_pack_info_each_pack[0]);
 
     snprintf(response_output_buf, response_output_buf_len, 
-             "Battery Percentage: %0.2f", battery_percent);
+             "Battery Percentage: %0.2f%%", battery_percent);
 
     
     return 0;    
