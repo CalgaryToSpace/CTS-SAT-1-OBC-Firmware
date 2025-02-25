@@ -5,7 +5,8 @@
 #include "rtos_tasks/rtos_task_helpers.h"
 #include "log/log.h"
 #include "timekeeping/timekeeping.h"
-
+#include "eps_drivers/eps_power_management.h"
+#include "config/configuration.h"
 #include "cmsis_os.h"
 
 #include <inttypes.h>
@@ -27,22 +28,35 @@ void TASK_service_eps_watchdog(void *argument) {
     // communication, the watch dog timer will reset before "watchdog reset" causes a full 
     // system reset (See ISIS.EPS2.ICD.SW.IVID.7 pg.9 for further explanation).
     // To avoid resets, we sleep for much shorter than that.
-    const uint32_t sleep_duration_ms = 20000;
+    const uint32_t sleep_duration_ms = 1000;
 
     // Sleep 10s at the start so that more important tasks work first.
     // Important to service the watchdog near the start, though.
     osDelay(10000);
+    uint64_t last_time_watch_dog = TIM_get_current_unix_epoch_time_ms();
+    uint64_t last_time_EPS = TIM_get_current_unix_epoch_time_ms();
 
     while(1) {
-        const uint8_t result = EPS_CMD_watchdog();
+        if (TIM_get_current_unix_epoch_time_ms() - last_time_watch_dog > watchdog_timer) {
+            const uint8_t result = EPS_CMD_watchdog();
 
-        if (result != 0) {
-            LOG_message(
-                LOG_SYSTEM_EPS,
-                LOG_SEVERITY_ERROR,
-                LOG_SINK_ALL,
-                "EPS_CMD_watchdog() -> Error: %d", result
-            );
+            if (result != 0) {
+                LOG_message(
+                    LOG_SYSTEM_EPS,
+                    LOG_SEVERITY_ERROR,
+                    LOG_SINK_ALL,
+                    "EPS_CMD_watchdog() -> Error: %d", result
+                );
+            }
+            else {
+                LOG_message(
+                    LOG_SYSTEM_EPS,
+                    LOG_SEVERITY_NORMAL, 
+                    LOG_SINK_ALL,
+                    "EPS watchdog serviced successfully." 
+                );
+            }
+            last_time_watch_dog = TIM_get_current_unix_epoch_time_ms();
         }
         else {
             LOG_message(
@@ -52,7 +66,6 @@ void TASK_service_eps_watchdog(void *argument) {
                 "EPS watchdog serviced successfully." 
             );
         }
-        
         osDelay(sleep_duration_ms);
     }
 }
