@@ -1,8 +1,8 @@
 #include "telecommands/timekeeping_telecommand_defs.h"
 #include "telecommand_exec/telecommand_args_helpers.h"
 #include "log/log.h"
-#include "eps_types.h"
-#include "eps_commands.h"
+#include "eps_drivers/eps_types.h"
+#include "eps_drivers/eps_commands.h"
 
 #include "timekeeping/timekeeping.h"
 #include "eps_drivers/eps_time.h"
