@@ -111,7 +111,7 @@ const osThreadAttr_t TASK_execute_telecommands_Attributes = {
 osThreadId_t TASK_service_eps_watchdog_Handle;
 const osThreadAttr_t TASK_service_eps_watchdog_Attributes = {
   .name = "TASK_service_eps_watchdog",
-  .stack_size = 512, //in bytes
+  .stack_size = 1024, //in bytes
   .priority = (osPriority_t) osPriorityNormal, //TODO: Figure out which priority makes sense for this task
 };
 
