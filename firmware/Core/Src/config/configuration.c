@@ -14,7 +14,6 @@ uint32_t CONFIG_int_demo_var_2 = 242344;
 // extern
 uint32_t toggleable_channels = 0x0001ffff;
 uint32_t watchdog_timer = 7000, EPS_monitor_timer = 1000;       //TODO: Set watchdog timer and EPS monitor timer
-uint16_t current_mA_threshhold[32] = {1000}; //TODO: Set current threshold for each channel
 
 // extern
 // 1 = require, 0 = don't require
