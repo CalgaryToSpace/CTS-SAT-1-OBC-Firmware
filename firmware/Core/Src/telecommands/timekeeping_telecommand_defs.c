@@ -1,6 +1,8 @@
 #include "telecommands/timekeeping_telecommand_defs.h"
 #include "telecommands/telecommand_args_helpers.h"
 #include "log/log.h"
+#include "eps_types.h"
+#include "eps_commands.h"
 
 #include "timekeeping/timekeeping.h"
 #include "eps_drivers/eps_time.h"
@@ -66,12 +68,23 @@ uint8_t TCMDEXEC_correct_system_time(const char *args_str, TCMD_TelecommandChann
 /// @return 0 on success, >0 on failure.
 uint8_t TCMDEXEC_set_obc_time_based_on_eps_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
+    EPS_struct_system_status_t status;
 
-    uint64_t obc_time_before_sync = TIM_get_current_unix_epoch_time_ms();
+    const uint8_t pre_result_status = EPS_CMD_get_system_status(&status);
+    if (pre_result_status != 0) {
+        return 1;
+    }
+
+    uint64_t obc_time_before_sync = ((uint64_t) status.unix_time_sec) * 1000;
 
     const uint8_t result = EPS_set_obc_time_based_on_eps_time();
 
-    uint64_t obc_time_after_sync = TIM_get_current_unix_epoch_time_ms();
+    const uint8_t post_result_status = EPS_CMD_get_system_status(&status);
+    if (post_result_status != 0) {
+        return 1;
+    }
+
+    uint64_t obc_time_after_sync = ((uint64_t) status.unix_time_sec) * 1000;
 
     if (result != 0 ) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -80,7 +93,7 @@ uint8_t TCMDEXEC_set_obc_time_based_on_eps_time(const char *args_str, TCMD_Telec
     }
     snprintf(
         response_output_buf, response_output_buf_len,
-    "success syncing obc time"
+        "success syncing obc time"
     );
 
     LOG_message(LOG_SYSTEM_ALL, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, "CLock synced, OBC time before sync: %llu ms. OBC time after sync: %llu ms. Time difference: %llu \n", obc_time_before_sync, obc_time_after_sync, obc_time_after_sync-obc_time_before_sync);    
@@ -93,12 +106,23 @@ uint8_t TCMDEXEC_set_obc_time_based_on_eps_time(const char *args_str, TCMD_Telec
 /// @return 0 on success, >0 on failure.
 uint8_t TCMDEXEC_set_eps_time_based_on_obc_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-    
-    uint64_t eps_time_before_sync = TIM_get_current_unix_epoch_time_ms();
+    EPS_struct_system_status_t status;
+
+    const uint8_t pre_result_status = EPS_CMD_get_system_status(&status);
+    if (pre_result_status != 0) {
+        return 1;
+    }
+
+    uint64_t eps_time_before_sync =  ((uint64_t) status.unix_time_sec) * 1000;
     
     const uint8_t result = EPS_set_eps_time_based_on_obc_time();
     
-    uint64_t eps_time_after_sync = TIM_get_current_unix_epoch_time_ms();
+    const uint8_t post_result_status = EPS_CMD_get_system_status(&status);
+    if (post_result_status != 0) {
+        return 1;
+    }
+
+    uint64_t eps_time_after_sync = ((uint64_t) status.unix_time_sec) * 1000;
     
     if (result != 0 ) {
         snprintf(
