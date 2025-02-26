@@ -1803,8 +1803,97 @@ uint8_t TCMDEXEC_adcs_download_index_file(const char *args_str, TCMD_Telecommand
                                    char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t status;
 
-    // This should work so long as there are fewer than 541 files on the SD card. 
     // TODO: Function in progress... once the main download function is finished this will be easier.
+    // I'm using this as a simpler proxy for the main file download function. 
+    // This should work so long as there are fewer than 541 files on the SD card. 
+
+    /*
+    The file is uniquely identified by the File Type and Counter parameters. The Offset and Block
+    Length parameters indicate which part of the file to buffer in memory. The maximum Block
+    Length is 20 kB. [20480 bytes (20 bytes * 1024 packets). Some files may require multiple blocks, such as image files]
+    */
+
+    // We can perform up to 1024 read transactions at a time. Each read transaction loads 20 payload bytes from memory. 
+    ADCS_file_download_buffer_struct_t file_packets[1024];
+    uint64_t packet_index = 0;
+    
+    // Load a download block from the ADCS
+    status = ADCS_load_file_download_block(ADCS_FILE_TYPE_INDEX, 0, 0, 20);
+    if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS load download block failed (err %d)", status); return 1;}
+        // TODO: I'm not sure what, exactly, the 'offset' parameter in this function is for. I think the counter is the block_counter, but also not sure.
+
+    // Wait until the download block is ready
+    ADCS_download_block_ready_struct_t ready_struct;
+    do {
+        status = ADCS_get_download_block_ready_telemetry(&ready_struct);
+        if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS get download ready status failed (err %d)", status); return 1;}
+    } while (ready_struct.ready != true);
+    
+    // Initiate download burst, ignoring the hole map
+    status = ADCS_initiate_download_burst(20, true);
+    if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS initiate download burst failed (err %d)", status); return 1;}
+        // TODO: I suspect that the message_length parameter represents the number of bytes to load, but I'm not sure.
+
+    /* 
+    If the Initiate File Download Burst command is issued on the I2C communications link, it is
+    expected to successively perform up to 1024 read transactions from the remote side, each with
+    22 bytes length, again with the same format as [TLM 241, File Download Buffer...] 
+    (the number [of read transactions] depends on the Block Length specified with the Load File Download Block command), 
+    each with a payload length of 20 bytes in rapid succession. Each download packet will have a 
+    header ID that matches that of the Initiate File Download Burst command. The following two bytes 
+    will contain the counter of the packet in the burst. The counter makes it possible to keep track of
+    which packets have been received on the remote side. 
+    */
+
+    for (uint16_t i = 0; i < 1024; i++) {
+        status = ADCS_get_file_download_buffer(&(file_packets[i]));
+        if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS get download buffer failed for index %d (err %d)", i, status); return 1;}
+    }
+
+    for (uint16_t i = 0; i < 1024; i++) {
+        // now that we've loaded the packets, save them to the output file
+        file_packets[packet_index + i] = file_packets[i]; 
+    }
+
+    /*
+    The Hole Map is a bitmap, where each bit represents one 20-byte packet out of the complete
+    download block. Since there are at most 1024 packets in one file download block, the Hole
+    Map is also 1024 bits long, or 128 bytes.
+    To make the CubeComputer resend only the packets that have been missed by the remote
+    side, the remote component must upload the Hole Map to the CubeComputer by performing
+    up to 8 Hole Map commands (each Hole Map command contains 16 bytes of the Hole Map).
+    After uploading the Hole Map, another Initiate Download Burst command can be issued, but
+    this time with the Ignore Hole Map parameter set to false. The CubeComputer will then
+    transmit only the packets that have a corresponding ‘0’ in the Hole Map.
+    */
+
+    bool hole_map[1024];
+    for (uint16_t i = 0; i< 1024; i++) {
+        hole_map[i] = false;
+        for (uint16_t j = 0; j < 1024; j++) {
+            // iterate through the buffer and determine which packets have been received
+            if (file_packets[j].packet_counter == i) {
+                hole_map[i] = true;
+                break;
+            }
+        }
+    }
+
+    // this block converts the booleans to bytes, forwardly (e.g. 0b1111000000001111 becomes 0xf0, 0x0f)
+    for (uint8_t i = 1; i <= 8; i++) {
+        uint8_t hole_bytes[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        // convert an appropriate slice of the array of bools into a 16-byte array
+        for (uint16_t j = ((i-1) * 128); j < (i * 128); j++) {
+            // 8 bits * 16 bytes = 128 bits per Hole Map, starting at index (i - 1) * 128
+            hole_bytes[(j / 8) - ((i-1) * 16)] |= (hole_map[j] << (7 - (j % 8))); 
+        }
+
+        // now set the hole map
+        status = ADCS_set_hole_map(hole_bytes, i);
+        if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS set hole map failed for index %d (err %d)", i, status); return 1;}
+    }
+
+    snprintf(response_output_buf, response_output_buf_len, "ADCS file download probably worked");
 
     return 33;
 
@@ -2043,6 +2132,10 @@ uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str, TCMD_TelecommandCha
     // now that the packets are sorted, we can turn them into a regular array of bytes
     for (uint64_t i = 0; i < ((uint64_t) ceil(file_info.file_size/20.0)); i++) {
         file_bytes[i] = file_packets[i / 1024].file_bytes[i % 1024];
+    }
+
+    if (file_bytes[0] == 0) {
+        ;;;;;; // this if block is useless and only here to prevent a warning
     }
 
     WRITE_STRUCT_TO_MEMORY(file_bytes)

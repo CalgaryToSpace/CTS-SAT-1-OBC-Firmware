@@ -1333,6 +1333,10 @@ uint8_t ADCS_get_sd_log_config(uint8_t which_log, ADCS_sd_log_config_struct* con
 /// @param[in] a Pointer to struct to store the config data
 /// @param[in] b 1 or 2; which specific log number to log to the SD card
 /// @return Returns >0 if a < b, <>>0 if b > a, and 0 if they are equal.
-uint16_t ADCS_compare_download_packets(ADCS_file_download_buffer_struct_t a, ADCS_file_download_buffer_struct_t b) {
-    return a.packet_counter - b.packet_counter;
+int ADCS_compare_download_packets(const void *a, const void *b) {
+    // this has to be written this way in order to work with the qsort function
+    // TODO: is there a better way? We really don't want to return int instead of int16
+    const ADCS_file_download_buffer_struct_t *a_struct = a;
+    const ADCS_file_download_buffer_struct_t *b_struct = b;
+    return a_struct->packet_counter - b_struct->packet_counter;
 }
