@@ -10,16 +10,6 @@
 #include "log/log.h"
 #include "config/configuration.h"
 
-uint16_t current_mA_threshhold[32]= 
-    {1000, 1000, 1000, 1000, 
-    1000, 1000, 1000, 1000, 
-    1000, 1000, 1000, 1000, 
-    1000, 1000, 1000, 1000, 
-    1000, 1000, 1000, 1000, 
-    1000, 1000, 1000, 1000, 
-    1000, 1000, 1000, 1000, 
-    1000, 1000, 1000, 1000};
-
 /// @brief Monitors the power consumption of each channel and logs the data in JSON format.
 ///
 /// @details This function will obtain the PDU housekeeping data and log the data in JSON format.
