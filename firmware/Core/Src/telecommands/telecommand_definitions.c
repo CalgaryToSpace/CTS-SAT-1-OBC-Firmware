@@ -27,7 +27,6 @@
 #include "telecommands/telecommand_crc.h"
 #include "telecommands/gps_telecommand_defs.h"
 
-
 #include "timekeeping/timekeeping.h"
 #include "littlefs/littlefs_helper.h"
 #include "stm32/stm32_reboot_reason.h"
@@ -1023,6 +1022,21 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
+
+    {
+        .tcmd_name = "stm32_internal_flash_get_active_flash_bank",
+        .tcmd_func = TCMDEXEC_stm32_internal_flash_get_active_flash_bank,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    
+    {
+        .tcmd_name = "stm32_internal_flash_set_active_flash_bank",
+        .tcmd_func = TCMDEXEC_stm32_internal_flash_set_active_flash_bank,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    
 
     // ****************** END SECTION: stm32_internal_flash_telecommand_defs ******************
 
