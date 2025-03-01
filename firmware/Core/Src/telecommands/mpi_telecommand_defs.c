@@ -92,6 +92,53 @@ uint8_t TCMDEXEC_mpi_send_command_hex(const char *args_str, TCMD_TelecommandChan
 }
 
 
+/// @brief Enable the sensing mode for the MPI
+/// @param args_str No args.
+/// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
+/// @param response_output_buf The buffer to write the response to
+/// @param response_output_buf_len The maximum length of the response_output_buf (its size)
+/// @return 
+uint8_t TCMDEXEC_mpi_enable_active_mode(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len) {
+
+    if (MPI_current_uart_rx_mode == MPI_RX_MODE_SENSING_MODE) {
+        snprintf(response_output_buf, response_output_buf_len, "MPI Sensing Mode already Enabled!");
+        return 0;
+    }
+
+    // Change MPI Mode to Sensing Mode / Listening and recording the data
+    MPI_current_uart_rx_mode = MPI_RX_MODE_SENSING_MODE;
+
+    // Send a confirmation of enabling sensing mode!
+    snprintf(response_output_buf, response_output_buf_len, "MPI Sensing Mode Enabled!");
+
+    return 0;
+}
+
+/// @brief Disable the sensing mode for the MPI
+/// @param args_str No args.
+/// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
+/// @param response_output_buf The buffer to write the response to
+/// @param response_output_buf_len The maximum length of the response_output_buf (its size)
+/// @return 
+uint8_t TCMDEXEC_mpi_disable_active_mode(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    if (MPI_current_uart_rx_mode == MPI_RX_MODE_NOT_LISTENING_TO_MPI) {
+        snprintf(response_output_buf, response_output_buf_len, "MPI Sensing Mode is already disabled!");
+        return 0;
+    }
+
+    // Change MPI Mode to Inactive / Not listening
+    MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
+
+    // Send a confirmation of diabling sensing mode!
+    snprintf(response_output_buf, response_output_buf_len, "MPI Sensing Mode Disabled!");
+
+    return 0;
+}
+
+
 /// @brief Sends a message over UART to the MPI.
 /// @param args_str No args.
 /// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent

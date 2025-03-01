@@ -40,8 +40,8 @@ volatile uint8_t UART_gps_buffer_last_rx_byte = 0; // extern
 volatile uint8_t UART_gps_uart_interrupt_enabled = 0; //extern
 
 // UART MPI science data buffer (WILL NEED IN THE FUTURE)
-// const uint16_t UART_mpi_data_rx_buffer_len = 8192; // extern 
-// volatile uint8_t UART_mpi_data_rx_buffer[8192]; // extern
+const uint16_t UART_mpi_data_rx_buffer_len = 8192; // extern 
+volatile uint8_t UART_mpi_data_rx_buffer[8192]; // extern
 // const uint16_t UART_mpi_data_buffer_len = 80000; // extern
 // volatile uint8_t UART_mpi_data_buffer[80000]; // extern
 
@@ -109,8 +109,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
             UART_mpi_rx_buffer[UART_mpi_rx_buffer_write_idx++] = UART_mpi_rx_last_byte;
             UART_mpi_rx_last_byte_write_time_ms = HAL_GetTick();
         }
-        else {
-            DEBUG_uart_print_str("Unhandled MPI Mode\n"); // TODO: HANDLE other MPI MODES
+        else if (MPI_current_uart_rx_mode == MPI_RX_MODE_SENSING_MODE){
+            DEBUG_uart_print_str("Complete Callback"); // TODO: HANDLE other MPI MODES
         }
     }
     
@@ -143,10 +143,37 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     }
 }
 
+void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
+    if (huart->Instance == UART_mpi_port_handle->Instance) {
+        if (MPI_current_uart_rx_mode == MPI_RX_MODE_COMMAND_MODE) {
+            // Check if buffer is full
+            if (UART_mpi_rx_buffer_write_idx >= UART_mpi_rx_buffer_len) {
+                // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART mpi response buffer is full\n");
+
+                // Shift all bytes left by 1
+                for(uint16_t i = 1; i < UART_mpi_rx_buffer_len; i++) {
+                    UART_mpi_rx_buffer[i - 1] = UART_mpi_rx_buffer[i];
+                }
+
+                // Reset to a valid index
+                UART_mpi_rx_buffer_write_idx = UART_mpi_rx_buffer_len - 1;
+            }
+
+            // Add a byte to the buffer
+            UART_mpi_rx_buffer[UART_mpi_rx_buffer_write_idx++] = UART_mpi_rx_last_byte;
+            UART_mpi_rx_last_byte_write_time_ms = HAL_GetTick();
+        }
+        else if (MPI_current_uart_rx_mode == MPI_RX_MODE_SENSING_MODE){
+            DEBUG_uart_print_str("Half Callback"); // TODO: HANDLE other MPI MODES
+        }
+    }
+}
+
 void UART_init_uart_handlers(void) {
     // enable the UART interrupt
     HAL_UART_Receive_IT(UART_telecommand_port_handle, (uint8_t*) &UART_telecommand_buffer_last_rx_byte, 1);
     HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t*) &UART_eps_buffer_last_rx_byte, 1);
+    HAL_UART_Receive_DMA(UART_mpi_port_handle, (uint8_t*) &UART_mpi_data_rx_buffer, UART_mpi_data_rx_buffer_len);
 
     // TODO: add the rest
 }
