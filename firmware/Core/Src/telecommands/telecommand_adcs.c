@@ -165,7 +165,6 @@ uint8_t TCMDEXEC_adcs_ack(const char *args_str, TCMD_TelecommandChannel_enum_t t
     }
 
     return status;
-
 }
 
 /// @brief Telecommand: Set the wheel speed of the ADCS
@@ -1808,6 +1807,13 @@ TODO: How to do this:
    - Our use case is to downlink the data ASAP, basically
    - We don't care to store it long-term
    - There is absolutely no way to downlink 1 MB of data (1024x1024) at once
+
+    Memory module work:
+        - Create a file, put all data in the file
+        - Then memory module downlinking can be handled from this
+        - Most probably using #include "littlefs/littlefs_helper.c"
+            - Functions to use: LFS_write_file, LFS_append_file
+            - LFS_make_directory may also be helpful for organisation
 
    For now: try to get 20 bytes of data which actually makes sense
    For future: split up the PR

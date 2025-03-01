@@ -3,6 +3,7 @@
 #include "adcs_drivers/adcs_struct_packers.h"
 #include "adcs_drivers/adcs_types_to_json.h"
 #include "adcs_drivers/adcs_commands.h"
+#include "transforms/arrays.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -466,12 +467,19 @@ uint8_t ADCS_augmented_sgp4_params_struct_TO_json(const ADCS_augmented_sgp4_para
     if (data == NULL || json_output_str == NULL || json_output_str_len < 537) {
         return 1; // Error: invalid input
     }
+
+    // our compiler doesn't support %lld for printing int64_t, so substitute it for strings here
+    char xp_coefficient_nano_buffer[32];
+    GEN_int64_to_str(data->xp_coefficient_nano, &xp_coefficient_nano_buffer[0]);
+    char yp_coefficient_nano_buffer[32];
+    GEN_int64_to_str(data->yp_coefficient_nano, &yp_coefficient_nano_buffer[0]);
+
     int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, 
                                 "{\"incl_coefficient_milli\":%d,\"raan_coefficient_milli\":%d,"
                                 "\"ecc_coefficient_milli\":%d,\"aop_coefficient_milli\":%d,"
                                 "\"time_coefficient_milli\":%d,\"pos_coefficient_milli\":%d,"
                                 "\"maximum_position_error_milli\":%ld,\"augmented_sgp4_filter\":%d,"
-                                "\"xp_coefficient_nano\":%lld,\"yp_coefficient_nano\":%lld,"
+                                "\"xp_coefficient_nano\":%s,\"yp_coefficient_nano\":%s,"
                                 "\"gps_roll_over\":%d,\"position_sd_milli\":%ld,"
                                 "\"velocity_sd_milli\":%d,\"min_satellites\":%d,"
                                 "\"time_gain_milli\":%d,\"max_lag_milli\":%d,\"min_samples\":%d}", 
@@ -479,7 +487,7 @@ uint8_t ADCS_augmented_sgp4_params_struct_TO_json(const ADCS_augmented_sgp4_para
                                 data->ecc_coefficient_milli, data->aop_coefficient_milli, 
                                 data->time_coefficient_milli, data->pos_coefficient_milli, 
                                 data->maximum_position_error_milli, data->augmented_sgp4_filter, 
-                                data->xp_coefficient_nano, data->yp_coefficient_nano, 
+                                xp_coefficient_nano_buffer, yp_coefficient_nano_buffer, 
                                 data->gps_roll_over, data->position_sd_milli, 
                                 data->velocity_sd_milli, data->min_satellites, 
                                 data->time_gain_milli, data->max_lag_milli, data->min_samples);
@@ -982,9 +990,14 @@ uint8_t ADCS_sd_download_list_TO_json(ADCS_file_info_struct_t *data, uint16_t da
         total_written += snprintf_ret;
     }
     
-    for (uint16_t i = 0; i < data_length; i++) {
-        snprintf_ret = snprintf(&json_output_str[total_written], json_output_str_len, "%d    %ld    %d    %ld    %d\n", 
-            data[i].file_counter, data[i].file_date_time, data[i].file_type, data[i].file_size, data[i].file_crc16);
+    for (uint16_t i = 0; i < data_length; i++) { 
+        
+        // our compiler doesn't support %lld for printing int64_t, so substitute it for strings here
+        char datetime_buffer[32];
+        GEN_uint64_to_str(data[i].file_date_time, &datetime_buffer[0]);
+
+        snprintf_ret = snprintf(&json_output_str[total_written], json_output_str_len, "%d          %s           %d       %ld       %d\n", 
+            data[i].file_counter, datetime_buffer, data[i].file_type, data[i].file_size, data[i].file_crc16);
 
         if (snprintf_ret < 0) {
             return 2; // Error: snprintf encoding error
