@@ -2,7 +2,6 @@
 
 #include <ctype.h>
 #include <string.h>
-#include <stdlib.h>
 
 /// @brief Returns the index of the first character of the first occurrence of a substring in an array.
 /// @param haystack_arr The array to search within.
