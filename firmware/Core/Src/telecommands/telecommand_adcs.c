@@ -1795,12 +1795,115 @@ uint8_t TCMDEXEC_adcs_measurements(const char *args_str, TCMD_TelecommandChannel
     return status;
 }
 
+
+/*
+TODO: How to do this:
+   Get 20 bytes at a time
+   Declare a buffer outside of any function, which is where we can keep lots of data
+    - theoretically, we could allow this buffer to be 20 KiB 
+        - Size 3 image: 128x128 = 16 KiB (on disk, is 20 KiB)
+        - Check with Aarti about whether we will need anything bigger
+
+   Downlinking is currently IN PROGRESS by the rest of the Software team
+   - Our use case is to downlink the data ASAP, basically
+   - We don't care to store it long-term
+   - There is absolutely no way to downlink 1 MB of data (1024x1024) at once
+
+   For now: try to get 20 bytes of data which actually makes sense
+   For future: split up the PR
+
+*/
+
 /// @brief Telecommand: Get the list of downloadable files from the ADCS SD card (alternate method)
 /// @param args_str 
 ///     - No arguments for this command
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_download_index_file(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                    char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    // #include "eps_drivers/eps_commands.h"
+    // EPS_CMD_output_bus_channel_on(8); // TODO: for testing, enable EPS channel 8 (REMOVE BEFORE FLIGHT)
+
+    uint8_t status;
+
+    ADCS_file_download_buffer_struct_t download_packet;
+
+    status = ADCS_load_file_download_block(ADCS_FILE_TYPE_INDEX, 0, 0, 2);
+    if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS load download block failed (err %d)", status); return 1;}
+        // TODO: I'm not sure what, exactly, the 'offset' parameter in this function is for. I think the counter is the block_counter, but also not sure.
+
+    // Wait until the download block is ready
+    ADCS_download_block_ready_struct_t ready_struct;
+    do {
+        status = ADCS_get_download_block_ready_telemetry(&ready_struct);
+        if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS get download ready status failed (err %d)", status); return 1;}
+    } while (ready_struct.ready != true);
+
+    // Initiate download burst, ignoring the hole map
+    status = ADCS_initiate_download_burst(20, true);
+    if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS initiate download burst failed (err %d)", status); return 1;}
+        // TODO: I suspect that the message_length parameter represents the number of bytes to load, but I'm not sure.
+
+    status = ADCS_get_file_download_buffer(&(download_packet));
+    if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS get download buffer failed (err %d)", status); return 1;}
+
+    // TODO: make a JSON packer for this
+    /*snprintf(response_output_buf, response_output_buf_len, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d", 
+        download_packet.file_bytes[0], 
+        download_packet.file_bytes[1], 
+        download_packet.file_bytes[2], 
+        download_packet.file_bytes[3], 
+        download_packet.file_bytes[4], 
+        download_packet.file_bytes[5], 
+        download_packet.file_bytes[6], 
+        download_packet.file_bytes[7], 
+        download_packet.file_bytes[8], 
+        download_packet.file_bytes[9], 
+        download_packet.file_bytes[10], 
+        download_packet.file_bytes[11], 
+        download_packet.file_bytes[12], 
+        download_packet.file_bytes[13], 
+        download_packet.file_bytes[14], 
+        download_packet.file_bytes[15], 
+        download_packet.file_bytes[16], 
+        download_packet.file_bytes[17], 
+        download_packet.file_bytes[18], 
+        download_packet.file_bytes[19] 
+    );*/
+    // note: overwriting snprintf like we had before caused an error to go back in time. Don't do this.
+
+/* Those were the first twenty bytes of the first entry. Seventeen remain. */
+
+status = ADCS_get_file_download_buffer(&(download_packet));
+    if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS get download buffer failed (err %d)", status); return 1;}
+
+    // TODO: make a JSON packer for this
+    snprintf(response_output_buf, response_output_buf_len, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d", 
+        download_packet.file_bytes[0], 
+        download_packet.file_bytes[1], 
+        download_packet.file_bytes[2], 
+        download_packet.file_bytes[3], 
+        download_packet.file_bytes[4], 
+        download_packet.file_bytes[5], 
+        download_packet.file_bytes[6], 
+        download_packet.file_bytes[7], 
+        download_packet.file_bytes[8], 
+        download_packet.file_bytes[9], 
+        download_packet.file_bytes[10], 
+        download_packet.file_bytes[11], 
+        download_packet.file_bytes[12], 
+        download_packet.file_bytes[13], 
+        download_packet.file_bytes[14], 
+        download_packet.file_bytes[15], 
+        download_packet.file_bytes[16], 
+        download_packet.file_bytes[17], 
+        download_packet.file_bytes[18], 
+        download_packet.file_bytes[19] 
+    );
+
+    return 0;
+
+# if 0
     uint8_t status;
 
     // TODO: Function in progress... once the main download function is finished this will be easier.
@@ -1814,7 +1917,7 @@ uint8_t TCMDEXEC_adcs_download_index_file(const char *args_str, TCMD_Telecommand
     */
 
     // We can perform up to 1024 read transactions at a time. Each read transaction loads 20 payload bytes from memory. 
-    ADCS_file_download_buffer_struct_t file_packets[1024];
+    ADCS_file_download_buffer_struct_t file_packets[102];
     uint64_t packet_index = 0;
     
     // Load a download block from the ADCS
@@ -1822,17 +1925,22 @@ uint8_t TCMDEXEC_adcs_download_index_file(const char *args_str, TCMD_Telecommand
     if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS load download block failed (err %d)", status); return 1;}
         // TODO: I'm not sure what, exactly, the 'offset' parameter in this function is for. I think the counter is the block_counter, but also not sure.
 
+    // snprintf(response_output_buf, response_output_buf_len, "LOAD DB STATUS: %d", status); 
+
     // Wait until the download block is ready
     ADCS_download_block_ready_struct_t ready_struct;
     do {
         status = ADCS_get_download_block_ready_telemetry(&ready_struct);
         if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS get download ready status failed (err %d)", status); return 1;}
     } while (ready_struct.ready != true);
-    
+
+    // snprintf(response_output_buf, response_output_buf_len, "DBR TLM STATUS: %d", status); 
+
     // Initiate download burst, ignoring the hole map
     status = ADCS_initiate_download_burst(20, true);
     if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS initiate download burst failed (err %d)", status); return 1;}
         // TODO: I suspect that the message_length parameter represents the number of bytes to load, but I'm not sure.
+
 
     /* 
     If the Initiate File Download Burst command is issued on the I2C communications link, it is
@@ -1845,15 +1953,38 @@ uint8_t TCMDEXEC_adcs_download_index_file(const char *args_str, TCMD_Telecommand
     which packets have been received on the remote side. 
     */
 
-    for (uint16_t i = 0; i < 1024; i++) {
+    for (uint16_t i = 0; i < 102; i++) {
         status = ADCS_get_file_download_buffer(&(file_packets[i]));
         if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS get download buffer failed for index %d (err %d)", i, status); return 1;}
     }
 
-    for (uint16_t i = 0; i < 1024; i++) {
+    for (uint16_t i = 0; i < 102; i++) {
         // now that we've loaded the packets, save them to the output file
         file_packets[packet_index + i] = file_packets[i]; 
     }
+
+    snprintf(response_output_buf, response_output_buf_len, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d", 
+        file_packets[0].file_bytes[0], 
+        file_packets[0].file_bytes[1], 
+        file_packets[0].file_bytes[2], 
+        file_packets[0].file_bytes[3], 
+        file_packets[0].file_bytes[4], 
+        file_packets[0].file_bytes[5], 
+        file_packets[0].file_bytes[6], 
+        file_packets[0].file_bytes[7], 
+        file_packets[0].file_bytes[8], 
+        file_packets[0].file_bytes[9], 
+        file_packets[0].file_bytes[10], 
+        file_packets[0].file_bytes[11], 
+        file_packets[0].file_bytes[12], 
+        file_packets[0].file_bytes[13], 
+        file_packets[0].file_bytes[14], 
+        file_packets[0].file_bytes[15], 
+        file_packets[0].file_bytes[16], 
+        file_packets[0].file_bytes[17], 
+        file_packets[0].file_bytes[18], 
+        file_packets[0].file_bytes[19] 
+    );
 
     /*
     The Hole Map is a bitmap, where each bit represents one 20-byte packet out of the complete
@@ -1867,10 +1998,10 @@ uint8_t TCMDEXEC_adcs_download_index_file(const char *args_str, TCMD_Telecommand
     transmit only the packets that have a corresponding ‘0’ in the Hole Map.
     */
 
-    bool hole_map[1024];
-    for (uint16_t i = 0; i< 1024; i++) {
+    bool hole_map[102];
+    for (uint16_t i = 0; i< 102; i++) {
         hole_map[i] = false;
-        for (uint16_t j = 0; j < 1024; j++) {
+        for (uint16_t j = 0; j < 102; j++) {
             // iterate through the buffer and determine which packets have been received
             if (file_packets[j].packet_counter == i) {
                 hole_map[i] = true;
@@ -1895,6 +2026,7 @@ uint8_t TCMDEXEC_adcs_download_index_file(const char *args_str, TCMD_Telecommand
 
     snprintf(response_output_buf, response_output_buf_len, "ADCS file download probably worked");
 
+#endif
     return 33;
 
 }

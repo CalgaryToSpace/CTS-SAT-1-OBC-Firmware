@@ -1049,7 +1049,7 @@ uint8_t ADCS_get_file_info_telemetry(ADCS_file_info_struct_t *output_struct) {
 /// @param[in] file_type File type to load (e.g., telemetry log, JPG, etc.).
 /// @param[in] counter Counter value for file block.
 /// @param[in] offset Offset in the file from which to start downloading.
-/// @param[in] block_length Length of the block to load.
+/// @param[in] block_length Number of packets to send.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_load_file_download_block(ADCS_file_type_enum_t file_type, uint8_t counter, uint32_t offset, uint16_t block_length) {
     // Command data array (8 bytes as per Table 17)

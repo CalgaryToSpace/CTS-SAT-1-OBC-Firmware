@@ -983,7 +983,7 @@ uint8_t ADCS_sd_download_list_TO_json(ADCS_file_info_struct_t *data, uint16_t da
     }
     
     for (uint16_t i = 0; i < data_length; i++) {
-        snprintf_ret = snprintf(&json_output_str[total_written], json_output_str_len, "%d    %lld    %d    %ld    %d\n", 
+        snprintf_ret = snprintf(&json_output_str[total_written], json_output_str_len, "%d    %ld    %d    %ld    %d\n", 
             data[i].file_counter, data[i].file_date_time, data[i].file_type, data[i].file_size, data[i].file_crc16);
 
         if (snprintf_ret < 0) {
