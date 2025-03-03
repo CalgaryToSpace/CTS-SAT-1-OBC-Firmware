@@ -3,7 +3,6 @@
 #include <ctype.h>
 #include <string.h>
 
-
 /// @brief Returns the index of the first character of the first occurrence of a substring in an array.
 /// @param haystack_arr The array to search within.
 /// @param haystack_arr_len The length of the array to search within.
@@ -33,7 +32,7 @@ int16_t GEN_get_index_of_substring_in_array(const char *haystack_arr, int16_t ha
 
 /// @brief Converts a uint64_t to a string.
 /// @param value The input value to convert.
-/// @param buffer The output buffer to write the string to. MUST BE 32 BYTES LONG.
+/// @param buffer The output buffer to write the string to. MUST BE AT LEAST 21 BYTES LONG.
 void GEN_uint64_to_str(uint64_t value, char *buffer) {
     // Ensure the buffer is valid and large enough
     if (buffer == NULL) {
@@ -98,6 +97,30 @@ void GEN_uint64_to_padded_str(uint64_t value, uint8_t padding_len, char *buffer)
         buffer[i] = temp[index - i - 1];
     }
     buffer[index] = '\0';  // Null-terminate the buffer
+}
+
+
+/// @brief Converts an int64_t to a string.
+/// @param value The input value to convert.
+/// @param buffer The output buffer to write the string to. MUST BE AT LEAST 21 BYTES LONG.
+void GEN_int64_to_str(int64_t value, char *buffer) {
+    // Ensure the buffer is valid and large enough
+    if (buffer == NULL) {
+        return;
+    }
+
+    uint64_t absolute_value;
+    
+    // Handle negative numbers (we can't use abs() for fixed-length integers)
+    if (value < 0) {
+        buffer[0] = '-';
+        absolute_value = -value; 
+    } else {
+        absolute_value = value;
+    }
+
+    GEN_uint64_to_str(absolute_value, &buffer[(value < 0)]); // leave room for the '-' if it's negative
+    
 }
 
 /// @brief Converts a hex string to a byte array
