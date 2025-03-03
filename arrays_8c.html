@@ -124,6 +124,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a3a5446f3f0ab65057604e6567b5b7e06" id="r_a3a5446f3f0ab65057604e6567b5b7e06"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3a5446f3f0ab65057604e6567b5b7e06">GEN_uint64_to_padded_str</a> (uint64_t value, uint8_t padding_len, char *buffer)</td></tr>
 <tr class="memdesc:a3a5446f3f0ab65057604e6567b5b7e06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a uint64_t to a string, with leading zeros.  <br /></td></tr>
 <tr class="separator:a3a5446f3f0ab65057604e6567b5b7e06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e796c28ea0c777c78f1416527ecd7c0" id="r_a8e796c28ea0c777c78f1416527ecd7c0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8e796c28ea0c777c78f1416527ecd7c0">GEN_int64_to_str</a> (int64_t value, char *buffer)</td></tr>
+<tr class="memdesc:a8e796c28ea0c777c78f1416527ecd7c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts an int64_t to a string.  <br /></td></tr>
+<tr class="separator:a8e796c28ea0c777c78f1416527ecd7c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a56374402f5b6de9b5a1a6e5a4aa02446" id="r_a56374402f5b6de9b5a1a6e5a4aa02446"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a56374402f5b6de9b5a1a6e5a4aa02446">GEN_hex_str_to_byte_array</a> (const char *hex_str, uint8_t output_byte_array[], uint16_t output_byte_array_size, uint16_t *output_byte_array_len)</td></tr>
 <tr class="memdesc:a56374402f5b6de9b5a1a6e5a4aa02446"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a hex string to a byte array.  <br /></td></tr>
 <tr class="separator:a56374402f5b6de9b5a1a6e5a4aa02446"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -236,6 +239,56 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
+<a id="a8e796c28ea0c777c78f1416527ecd7c0" name="a8e796c28ea0c777c78f1416527ecd7c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e796c28ea0c777c78f1416527ecd7c0">&#9670;&#160;</a></span>GEN_int64_to_str()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GEN_int64_to_str </td>
+          <td>(</td>
+          <td class="paramtype">int64_t</td>          <td class="paramname"><span class="paramname"><em>value</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>buffer</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Converts an int64_t to a string. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">value</td><td>The input value to convert. </td></tr>
+    <tr><td class="paramname">buffer</td><td>The output buffer to write the string to. MUST BE AT LEAST 21 BYTES LONG. </td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="arrays_8c_a8e796c28ea0c777c78f1416527ecd7c0_cgraph.png" border="0" usemap="#aarrays_8c_a8e796c28ea0c777c78f1416527ecd7c0_cgraph" alt=""/></div>
+<map name="aarrays_8c_a8e796c28ea0c777c78f1416527ecd7c0_cgraph" id="aarrays_8c_a8e796c28ea0c777c78f1416527ecd7c0_cgraph">
+<area shape="rect" title="Converts an int64_t to a string." alt="" coords="5,5,130,31"/>
+<area shape="rect" href="arrays_8c.html#a4d9146ce5234948adb9b3845f4e91b53" title="Converts a uint64_t to a string." alt="" coords="178,5,309,31"/>
+<area shape="poly" title=" " alt="" coords="130,16,162,16,162,21,130,21"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="arrays_8c_a8e796c28ea0c777c78f1416527ecd7c0_icgraph.png" border="0" usemap="#aarrays_8c_a8e796c28ea0c777c78f1416527ecd7c0_icgraph" alt=""/></div>
+<map name="aarrays_8c_a8e796c28ea0c777c78f1416527ecd7c0_icgraph" id="aarrays_8c_a8e796c28ea0c777c78f1416527ecd7c0_icgraph">
+<area shape="rect" title="Converts an int64_t to a string." alt="" coords="226,13,350,38"/>
+<area shape="rect" href="test__byte__transforms_8c.html#ad9f56b2316c12ae563bbb2f45e203f8b" title=" " alt="" coords="5,5,178,46"/>
+<area shape="poly" title=" " alt="" coords="210,28,178,28,178,23,210,23"/>
+</map>
+</div>
+
+</div>
+</div>
 <a id="a3a5446f3f0ab65057604e6567b5b7e06" name="a3a5446f3f0ab65057604e6567b5b7e06"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3a5446f3f0ab65057604e6567b5b7e06">&#9670;&#160;</a></span>GEN_uint64_to_padded_str()</h2>
 
@@ -317,7 +370,7 @@ Here is the caller graph for this function:</div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">value</td><td>The input value to convert. </td></tr>
-    <tr><td class="paramname">buffer</td><td>The output buffer to write the string to. MUST BE 32 BYTES LONG. </td></tr>
+    <tr><td class="paramname">buffer</td><td>The output buffer to write the string to. MUST BE AT LEAST 21 BYTES LONG. </td></tr>
   </table>
   </dd>
 </dl>
@@ -326,26 +379,30 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="arrays_8c_a4d9146ce5234948adb9b3845f4e91b53_icgraph.png" border="0" usemap="#aarrays_8c_a4d9146ce5234948adb9b3845f4e91b53_icgraph" alt=""/></div>
 <map name="aarrays_8c_a4d9146ce5234948adb9b3845f4e91b53_icgraph" id="aarrays_8c_a4d9146ce5234948adb9b3845f4e91b53_icgraph">
-<area shape="rect" title="Converts a uint64_t to a string." alt="" coords="594,145,726,171"/>
+<area shape="rect" title="Converts a uint64_t to a string." alt="" coords="594,169,726,195"/>
 <area shape="rect" href="debug__uart_8c.html#a22493cadb29d076ea9413c69392799b7" title=" " alt="" coords="364,5,534,31"/>
-<area shape="poly" title=" " alt="" coords="638,134,599,89,573,65,545,46,519,34,521,29,548,41,576,61,602,85,642,131"/>
-<area shape="rect" href="telecommand__executor_8c.html#afa8bba8de3269bd6abc37f9a6642fdde" title="Deletes a telecommand from the agenda by its tssent (timestamp sent) field." alt="" coords="374,55,523,96"/>
-<area shape="poly" title=" " alt="" coords="610,142,502,99,504,94,612,137"/>
-<area shape="rect" href="agenda__telecommand__defs_8c.html#a5864bb52f6db2633d0780b9f28c46d5b" title="Telecommand: Delete agenda entry by tssent timestamp." alt="" coords="111,76,294,117"/>
-<area shape="poly" title=" " alt="" coords="579,150,294,112,295,106,580,145"/>
-<area shape="rect" href="telecommand__executor_8c.html#a32a6ca6abb5ad21ac9274b7738f6c4b7" title="Fetches the active agendas." alt="" coords="377,171,520,196"/>
-<area shape="poly" title=" " alt="" coords="579,171,521,178,520,172,578,165"/>
-<area shape="rect" href="telecommand__executor_8c.html#aa779e85b5e4980298a22fe51742fc752" title="Executes a telecommand from the agenda immediately." alt="" coords="351,220,546,261"/>
-<area shape="poly" title=" " alt="" coords="619,180,547,211,517,222,515,217,545,206,617,175"/>
-<area shape="rect" href="telecommand__definitions_8c.html#acb0f11979fcc8d48883ecf8dfa2bbdfc" title=" " alt="" coords="362,286,535,326"/>
-<area shape="poly" title=" " alt="" coords="642,185,602,231,576,254,548,275,523,288,521,283,545,271,572,250,598,227,638,182"/>
-<area shape="poly" title=" " alt="" coords="359,86,295,92,295,86,359,81"/>
-<area shape="rect" href="agenda__telecommand__defs_8c.html#a4184ec33267008a6cd1c0f8cf98f88c0" title="Telecommand: Fetch all pending agenda items, and log them each as JSONL." alt="" coords="114,163,292,204"/>
-<area shape="poly" title=" " alt="" coords="361,186,292,186,292,181,361,181"/>
-<area shape="rect" href="rtos__tasks_8c.html#a04172000ecfd61309b0b9a892c0839ea" title=" " alt="" coords="103,228,303,254"/>
-<area shape="poly" title=" " alt="" coords="336,244,303,244,303,238,336,238"/>
-<area shape="rect" href="main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,228,55,254"/>
-<area shape="poly" title=" " alt="" coords="87,244,55,244,55,238,87,238"/>
+<area shape="poly" title=" " alt="" coords="642,157,603,99,576,69,545,44,523,34,526,29,548,40,580,66,607,96,647,154"/>
+<area shape="rect" href="arrays_8c.html#a8e796c28ea0c777c78f1416527ecd7c0" title="Converts an int64_t to a string." alt="" coords="386,55,511,80"/>
+<area shape="poly" title=" " alt="" coords="634,161,594,127,545,95,510,82,512,77,548,90,597,123,637,157"/>
+<area shape="rect" href="telecommand__executor_8c.html#afa8bba8de3269bd6abc37f9a6642fdde" title="Deletes a telecommand from the agenda by its tssent (timestamp sent) field." alt="" coords="374,104,523,145"/>
+<area shape="poly" title=" " alt="" coords="595,167,523,148,525,143,596,162"/>
+<area shape="rect" href="agenda__telecommand__defs_8c.html#a5864bb52f6db2633d0780b9f28c46d5b" title="Telecommand: Delete agenda entry by tssent timestamp." alt="" coords="111,130,294,170"/>
+<area shape="poly" title=" " alt="" coords="579,179,295,159,295,154,579,174"/>
+<area shape="rect" href="telecommand__executor_8c.html#a32a6ca6abb5ad21ac9274b7738f6c4b7" title="Fetches the active agendas." alt="" coords="377,220,520,246"/>
+<area shape="poly" title=" " alt="" coords="589,202,506,222,505,217,588,197"/>
+<area shape="rect" href="telecommand__executor_8c.html#aa779e85b5e4980298a22fe51742fc752" title="Executes a telecommand from the agenda immediately." alt="" coords="351,270,546,310"/>
+<area shape="poly" title=" " alt="" coords="632,207,593,234,548,261,521,272,519,267,545,256,590,230,629,202"/>
+<area shape="rect" href="telecommand__definitions_8c.html#acb0f11979fcc8d48883ecf8dfa2bbdfc" title=" " alt="" coords="362,335,535,376"/>
+<area shape="poly" title=" " alt="" coords="646,210,606,267,579,298,548,324,526,337,523,332,545,320,575,294,602,264,642,207"/>
+<area shape="rect" href="test__byte__transforms_8c.html#ad9f56b2316c12ae563bbb2f45e203f8b" title=" " alt="" coords="117,47,289,88"/>
+<area shape="poly" title=" " alt="" coords="371,70,289,70,289,65,371,65"/>
+<area shape="poly" title=" " alt="" coords="359,137,295,143,295,138,359,131"/>
+<area shape="rect" href="agenda__telecommand__defs_8c.html#a4184ec33267008a6cd1c0f8cf98f88c0" title="Telecommand: Fetch all pending agenda items, and log them each as JSONL." alt="" coords="114,212,292,253"/>
+<area shape="poly" title=" " alt="" coords="361,236,292,236,292,230,361,230"/>
+<area shape="rect" href="rtos__tasks_8c.html#a04172000ecfd61309b0b9a892c0839ea" title=" " alt="" coords="103,277,303,303"/>
+<area shape="poly" title=" " alt="" coords="336,293,303,293,303,288,336,288"/>
+<area shape="rect" href="main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,277,55,303"/>
+<area shape="poly" title=" " alt="" coords="87,293,55,293,55,288,87,288"/>
 </map>
 </div>
 
