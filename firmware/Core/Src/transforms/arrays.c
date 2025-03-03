@@ -32,7 +32,7 @@ int16_t GEN_get_index_of_substring_in_array(const char *haystack_arr, int16_t ha
 
 /// @brief Converts a uint64_t to a string.
 /// @param value The input value to convert.
-/// @param buffer The output buffer to write the string to. MUST BE 32 BYTES LONG.
+/// @param buffer The output buffer to write the string to. MUST BE AT LEAST 21 BYTES LONG.
 void GEN_uint64_to_str(uint64_t value, char *buffer) {
     // Ensure the buffer is valid and large enough
     if (buffer == NULL) {
@@ -102,43 +102,25 @@ void GEN_uint64_to_padded_str(uint64_t value, uint8_t padding_len, char *buffer)
 
 /// @brief Converts an int64_t to a string.
 /// @param value The input value to convert.
-/// @param buffer The output buffer to write the string to. MUST BE 32 BYTES LONG.
+/// @param buffer The output buffer to write the string to. MUST BE AT LEAST 21 BYTES LONG.
 void GEN_int64_to_str(int64_t value, char *buffer) {
     // Ensure the buffer is valid and large enough
     if (buffer == NULL) {
         return;
     }
 
-    char temp[32];
-    int index = 0;
     uint64_t absolute_value;
     
-    // Handle the case where the value is 0
-    if (value == 0) {
-        buffer[index++] = '0';
-        buffer[index] = '\0';
-        return;
-    } 
     // Handle negative numbers
     if (value < 0) {
-        buffer[index++] = '-';
+        buffer[0] = '-';
         // we can't use abs() for fixed-length integers
         absolute_value = ~value + 1; 
     } else {
         absolute_value = value;
     }
 
-    // Convert the uint64_t value to a string in reverse order
-    while (absolute_value > 0) {
-        temp[index++] = '0' + (absolute_value % 10);
-        absolute_value /= 10;
-    }
-
-    // Reverse the string to correct the order, leaving room for '-' as necessary
-    for (int i = 0; i < index; ++i) {
-        buffer[i + (value < 0)] = temp[index - i - 1];
-    }
-    buffer[index] = '\0';
+    GEN_uint64_to_str(absolute_value, &buffer[(value < 0)]); // leave room for the '-' if it's negative
     
 }
 
