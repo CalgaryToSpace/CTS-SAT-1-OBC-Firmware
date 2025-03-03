@@ -1,5 +1,7 @@
 // File: unit_tests/test_bytes_transforms.c
 
+#include <string.h>
+
 #include "unit_tests/unit_test_helpers.h" // for all unit tests
 #include "transforms/byte_transforms.h" // for the Function-Under-Test
 #include "transforms/arrays.h"
@@ -22,30 +24,15 @@ uint8_t TEST_EXEC__GEN_int64_to_str() {
 
     test = 314159;
     GEN_int64_to_str(test, &buffer[0]);
-    TEST_ASSERT_TRUE(buffer[0] == '3');
-    TEST_ASSERT_TRUE(buffer[1] == '1');
-    TEST_ASSERT_TRUE(buffer[2] == '4');
-    TEST_ASSERT_TRUE(buffer[3] == '1');
-    TEST_ASSERT_TRUE(buffer[4] == '5');
-    TEST_ASSERT_TRUE(buffer[5] == '9');
-    TEST_ASSERT_TRUE(buffer[6] == '\0');
+    TEST_ASSERT_TRUE(strcmp(&buffer[0], "314159") == 0)
 
     test = 0;
     GEN_int64_to_str(test, &buffer[0]);
-    TEST_ASSERT_TRUE(buffer[0] == '0');
-    TEST_ASSERT_TRUE(buffer[1] == '\0');
+    TEST_ASSERT_TRUE(strcmp(&buffer[0], "0") == 0)
 
     test = -8675309;
     GEN_int64_to_str(test, &buffer[0]);
-    TEST_ASSERT_TRUE(buffer[0] == '-');
-    TEST_ASSERT_TRUE(buffer[1] == '8');
-    TEST_ASSERT_TRUE(buffer[2] == '6');
-    TEST_ASSERT_TRUE(buffer[3] == '7');
-    TEST_ASSERT_TRUE(buffer[4] == '5');
-    TEST_ASSERT_TRUE(buffer[5] == '3');
-    TEST_ASSERT_TRUE(buffer[6] == '0');
-    TEST_ASSERT_TRUE(buffer[7] == '9');
-    TEST_ASSERT_TRUE(buffer[8] == '\0');
+    TEST_ASSERT_TRUE(strcmp(&buffer[0], "-8675309") == 0)
 
     return 0;
 }
