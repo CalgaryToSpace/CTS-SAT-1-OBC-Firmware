@@ -111,11 +111,10 @@ void GEN_int64_to_str(int64_t value, char *buffer) {
 
     uint64_t absolute_value;
     
-    // Handle negative numbers
+    // Handle negative numbers (we can't use abs() for fixed-length integers)
     if (value < 0) {
         buffer[0] = '-';
-        // we can't use abs() for fixed-length integers
-        absolute_value = ~value + 1; 
+        absolute_value = -value; 
     } else {
         absolute_value = value;
     }
