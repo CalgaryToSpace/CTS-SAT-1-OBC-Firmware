@@ -1126,7 +1126,6 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     // ****************** END SECTION: gps_telecommand_defs ******************
-
 };
 
 // extern
