@@ -41,7 +41,7 @@ The following checks involve executing code and/or telecommands.
     ```
     This is the linker script. The length can change.
 5. Ensure that we have flashed the golden copy of the OS to the GOLDEN_COPY address defined in the linker script ```STM32L4R5ZITx_FLASH.ld```
-5. Ensure all tasks are registered in the `FREERTOS_task_info_struct_t FREERTOS_task_handles_array []` array. Consider a unit test for this check, maybe.
+6. Ensure all tasks are registered in the `FREERTOS_task_info_struct_t FREERTOS_task_handles_array []` array. Consider a unit test for this check, maybe.
 
 
 ## Management Checks
