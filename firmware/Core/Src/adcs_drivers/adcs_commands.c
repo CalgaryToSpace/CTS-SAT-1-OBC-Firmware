@@ -12,6 +12,7 @@
 #include "adcs_drivers/adcs_commands.h"
 #include "adcs_drivers/adcs_internal_drivers.h"
 #include "timekeeping/timekeeping.h"
+#include "littlefs/littlefs_helper.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -19,6 +20,16 @@
 #include "stm32l4xx_hal.h"
 
 extern I2C_HandleTypeDef hi2c1; // allows not needing the parameters
+
+/// @brief Initialise the ADCS CRC and file system directory. 
+/// @return 0 when successful
+uint8_t ADCS_initialise() {
+    
+    ADCS_initialise_crc8_checksum();
+    LFS_make_directory("ADCS"); // TODO: test this LFS integration
+
+    return 0;
+}
 
 /// @brief Instructs the ADCS to determine whether the last command succeeded. (Doesn't work for telemetry requests, by design.)
 /// @param[out] ack Structure containing the formatted information about the last command sent.
@@ -1327,16 +1338,4 @@ uint8_t ADCS_get_sd_log_config(uint8_t which_log, ADCS_sd_log_config_struct* con
     ADCS_pack_to_sd_log_config_struct(data_received, which_log, config);
 
     return tlm_status;
-}
-
-/// @brief Compare two download packets to see which has a greater packet counter.
-/// @param[in] a Pointer to struct to store the config data
-/// @param[in] b 1 or 2; which specific log number to log to the SD card
-/// @return Returns >0 if a < b, <>>0 if b > a, and 0 if they are equal.
-int ADCS_compare_download_packets(const void *a, const void *b) {
-    // this has to be written this way in order to work with the qsort function
-    // TODO: is there a better way? We really don't want to return int instead of int16
-    const ADCS_file_download_buffer_struct_t *a_struct = a;
-    const ADCS_file_download_buffer_struct_t *b_struct = b;
-    return a_struct->packet_counter - b_struct->packet_counter;
 }
