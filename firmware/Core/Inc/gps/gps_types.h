@@ -176,7 +176,7 @@ uint8_t GPS_reference_time_status_str_to_enum(const char *status_str, GPS_refere
 const char* GPS_reference_time_status_enum_to_str(GPS_reference_time_status_t status);
 uint8_t GPS_solution_status_str_to_enum(const char *status_str, GPS_solution_status_enum_t *status);
 uint8_t GPS_position_type_str_to_enum(const char *type_str, GPS_position_type_enum_t *type);
-const char* GPS_position_type_enum_to_str(GPS_solution_status_enum_t status);
+const char* GPS_solution_status_enum_to_str(GPS_solution_status_enum_t status);
 const char* GPS_position_type_enum_to_string(GPS_position_type_enum_t type);
 uint8_t GPS_clock_model_status_str_to_enum(const char *status_str, GPS_clock_model_status_enum_t *status);
 uint8_t GPS_utc_status_str_to_enum(const char *status_str, GPS_utc_status_enum_t *status);

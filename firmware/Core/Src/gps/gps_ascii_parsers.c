@@ -379,7 +379,7 @@ uint8_t GPS_bestxyza_data_parser(const char* data_received, GPS_bestxyza_respons
         message_buffer, sizeof(message_buffer),
         "{\"Position Solution Status\":\"%s\",\"Position Type\":\"%s\",\"Position x in mm\":\"%s\",\"Position y in mm\":\"%s\",\"Position z in mm\":\"%s\","
         "\"Position x std in mm\":\"%lu\",\"Position y std in mm\":\"%lu\",\"Position z std in mm\":\"%lu\",\"Solution Age in ms\":\"%s\",\"Differential age in ms\":\"%s\",\"CRC\":\"%ld\"}\n",
-        GPS_position_type_enum_to_str(result->position_solution_status),
+        GPS_solution_status_enum_to_str(result->position_solution_status),
         GPS_position_type_enum_to_string(result->position_type),
         pos_x,
         pos_y,

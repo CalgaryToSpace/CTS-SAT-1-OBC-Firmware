@@ -177,7 +177,7 @@ uint8_t GPS_position_type_str_to_enum(const char *type_str, GPS_position_type_en
 /// @brief Assigns a string value based on the provided GPS solution status.
 /// @param status GPS_solution_status_enum_t value.
 /// @return Returns the assigned string value for the GPS_solution_status_enum_t.
-const char* GPS_position_type_enum_to_str(GPS_solution_status_enum_t status) {
+const char* GPS_solution_status_enum_to_str(GPS_solution_status_enum_t status) {
     switch (status) {
         case GPS_SOL_STATUS_SOL_COMPUTED:
             return "SOL_COMPUTED";
