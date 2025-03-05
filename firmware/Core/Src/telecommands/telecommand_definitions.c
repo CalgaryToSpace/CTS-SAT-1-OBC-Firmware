@@ -24,6 +24,8 @@
 #include "telecommands/eps_telecommands.h"
 #include "telecommands/stm32_internal_flash_telecommand_defs.h"
 #include "telecommands/comms_telecommand_defs.h"
+#include "telecommands/telecommand_crc.h"
+#include "telecommands/gps_telecommand_defs.h"
 
 
 #include "timekeeping/timekeeping.h"
@@ -99,6 +101,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_func = TCMDEXEC_available_telecommands,
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "crc",
+        .tcmd_func = TCMDEXEC_crc,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
     },
     {
         .tcmd_name = "reboot",
@@ -252,9 +260,27 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
-        .tcmd_name = "fs_write_file",
-        .tcmd_func = TCMDEXEC_fs_write_file,
+        .tcmd_name = "fs_list_directory",
+        .tcmd_func = TCMDEXEC_fs_list_directory,
+        .number_of_args = 3,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "fs_make_directory",
+        .tcmd_func = TCMDEXEC_fs_make_directory,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "fs_write_file_str",
+        .tcmd_func = TCMDEXEC_fs_write_file_str,
         .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "fs_delete_file",
+        .tcmd_func = TCMDEXEC_fs_delete_file,
+        .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
@@ -1095,6 +1121,14 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
     },
     // ****************** END SECTION: comms_telecommand_defs ******************
+    // ****************** SECTION: gps_telecommand_defs ******************
+    {
+        .tcmd_name = "gps_send_cmd_ascii",
+        .tcmd_func = TCMDEXEC_gps_send_cmd_ascii,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    // ****************** END SECTION: gps_telecommand_defs ******************
 };
 
 // extern
@@ -1195,6 +1229,7 @@ uint8_t TCMDEXEC_available_telecommands(const char *args_str, TCMD_TelecommandCh
     return 0;
 }
 
+
 uint8_t TCMDEXEC_reboot(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     DEBUG_uart_print_str("Rebooting by telecommand request...\n");
@@ -1205,4 +1240,3 @@ uint8_t TCMDEXEC_reboot(const char *args_str, TCMD_TelecommandChannel_enum_t tcm
     NVIC_SystemReset();
     return 0;
 }
-

@@ -54,6 +54,9 @@ extern UART_HandleTypeDef huart3;
 extern SPI_HandleTypeDef hspi1;
 
 extern TIM_HandleTypeDef htim16;
+extern CRC_HandleTypeDef hcrc;
+
+
 
 /* USER CODE END ET */
 

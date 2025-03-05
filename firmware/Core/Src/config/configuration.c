@@ -11,6 +11,8 @@ uint32_t CONFIG_int_demo_var_1 = 13345;
 uint32_t CONFIG_int_demo_var_2 = 242344;
 
 // extern
+// 1 = require, 0 = don't require
+uint32_t TCMD_require_unique_tssent = 0;
 
 /// @brief The percentage of the stack space that should remain free. If the free space falls
 /// below this percentage, a warning will be logged.
@@ -34,6 +36,10 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
     {
         .variable_name = "TCMD_require_valid_sha256",
         .num_config_var = &TCMD_require_valid_sha256,
+    },
+    {
+        .variable_name = "TCMD_require_unique_tssent",
+        .num_config_var = &TCMD_require_unique_tssent,
     },
 };
 

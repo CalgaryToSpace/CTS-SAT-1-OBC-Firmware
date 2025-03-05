@@ -15,6 +15,7 @@
 #include "unit_tests/test_eps_drivers.h"
 #include "unit_tests/test_eps_struct_packers.h"
 #include "unit_tests/test_sha256.h"
+#include "unit_tests/test_crc.h"
 
 // extern
 const TEST_Definition_t TEST_definitions[] = {
@@ -53,6 +54,12 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func = TEST_EXEC__GEN_convert_big_endian_four_byte_array_to_uint32,
         .test_file = "transforms/byte_transforms",
         .test_func_name = "GEN_convert_big_endian_four_byte_array_to_uint32"
+    },
+
+    {
+        .test_func = TEST_EXEC__GEN_int64_to_str,
+        .test_file = "transforms/arrays",
+        .test_func_name = "GEN_int64_to_str"
     },
     
     // ****************** SECTION: test_adcs ******************
@@ -466,6 +473,36 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func = TEST_EXEC__CRYPT_compute_sha256_hash,
         .test_file = "unit_tests/test_sha256",
         .test_func_name = "TEST_EXEC__CRYPT_compute_sha256_hash",
+    },
+    {
+        .test_func = TEST_EXEC__test_crc_empty,
+        .test_file = "crc/crc",
+        .test_func_name = "GEN_crc32_checksum"
+    },
+    {
+        .test_func = TEST_EXEC__test_crc_max,
+        .test_file = "crc/crc",
+        .test_func_name = "GEN_crc32_checksum"
+    },
+    {
+        .test_func = TEST_EXEC__test_crc_half,
+        .test_file = "crc/crc",
+        .test_func_name = "GEN_crc32_checksum"
+    },
+    {
+        .test_func = TEST_EXEC__test_crc_random,
+        .test_file = "crc/crc",
+        .test_func_name = "GEN_crc32_checksum"
+    },
+    {
+        .test_func = TEST_EXEC__test_crc_special,
+        .test_file = "crc/crc",
+        .test_func_name = "GEN_crc32_checksum"
+    },
+    {
+        .test_func = TEST_EXEC__test_crc_odd,
+        .test_file = "crc/crc",
+        .test_func_name = "GEN_crc32_checksum"
     },
 };
 
