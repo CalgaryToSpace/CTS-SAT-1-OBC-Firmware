@@ -9,6 +9,8 @@
 #include <stdint.h>
 #include <string.h>
 
+uint64_t COMMS_last_response_time = 0;
+
 /**
  * @brief This file contains commands for communicating with the antenna deploy system(ADS). The ADS has two microcontrollers which control
  * the deployment of the antennas. It also has two seperate i2c buses which can be used to communicate with the ADS. The combination of 
@@ -87,5 +89,6 @@ uint8_t ANT_get_response(enum ANT_i2c_bus_mcu i2c_bus_mcu, uint8_t rx_buf[], uin
         LOG_message(LOG_SYSTEM_ANTENNA_DEPLOY, LOG_SEVERITY_ERROR, LOG_SINK_ALL, "I2C read failed: HAL_ERROR");
         return 1;
     }
+    COMMS_last_reponse_time = TIM_get_current_unix_epoch_time_ms();
     return 0;
 }

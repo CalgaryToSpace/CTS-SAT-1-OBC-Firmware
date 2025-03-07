@@ -35,7 +35,7 @@ void TASK_service_eps_watchdog(void *argument) {
     osDelay(10000);
     uint64_t last_time_watch_dog = TIM_get_current_unix_epoch_time_ms();
     uint64_t last_time_EPS = TIM_get_current_unix_epoch_time_ms();
-
+    uint64_t last_time_COMMS_check = TIM_get_current_unix_epoch_time_ms();
     while(1) {
         if (TIM_get_current_unix_epoch_time_ms() - last_time_watch_dog > watchdog_timer) {
             const uint8_t result = EPS_CMD_watchdog();
@@ -74,6 +74,26 @@ void TASK_service_eps_watchdog(void *argument) {
                     LOG_SEVERITY_NORMAL, 
                     LOG_SINK_ALL,
                     "EPS power monitoring serviced successfully." 
+                );
+            }
+            last_time_EPS = TIM_get_current_unix_epoch_time_ms();
+        }
+        if (TIM_get_current_unix_epoch_time_ms() - last_time_COMMS_check > COMMS_check_timer) { //TODO: Add COMMS_check_timer to configuration
+            const uint8_t result_COMMS_check = COMMS_check_connection();
+            if (result_COMMS_check != 0) {
+                LOG_message(
+                    LOG_SYSTEM_EPS,
+                    LOG_SEVERITY_ERROR,
+                    LOG_SINK_ALL,
+                    "COMMS_check_connection() No communication switching dipoles -> %d", result_COMMS_check
+                );
+            }
+            else {
+                LOG_message(
+                    LOG_SYSTEM_EPS,
+                    LOG_SEVERITY_NORMAL, 
+                    LOG_SINK_ALL,
+                    "COMMS_check_connection serviced successfully." 
                 );
             }
             last_time_EPS = TIM_get_current_unix_epoch_time_ms();
