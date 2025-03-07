@@ -82,7 +82,7 @@ uint8_t TCMDEXEC_gps_set_enabled_pps_tracking(const char *args_str, TCMD_Telecom
     if (GPS_pps_interrupt_enabled) {
 
         // Disable EXTI tracking
-        Disable_GPIO_EXTI();
+        Disable_GPS_PPS_EXTI();
 
         GPS_pps_interrupt_enabled = 0;
 
@@ -98,7 +98,7 @@ uint8_t TCMDEXEC_gps_set_enabled_pps_tracking(const char *args_str, TCMD_Telecom
     else if (!GPS_pps_interrupt_enabled) {
 
         // Enable EXTI tracking
-        GPIO_EXTI_Init();
+        GPS_PPS_EXTI_Init();
 
         GPS_pps_interrupt_enabled = 1;
 

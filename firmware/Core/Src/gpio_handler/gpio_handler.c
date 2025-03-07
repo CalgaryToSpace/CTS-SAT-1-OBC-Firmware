@@ -2,6 +2,7 @@
 #include "gpio_handler/gpio_handler.h"
 #include "log/log.h"
 #include "timekeeping/timekeeping.h"
+
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
