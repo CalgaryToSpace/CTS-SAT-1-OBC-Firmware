@@ -14,5 +14,6 @@ void TASK_handle_uart_telecommands(void *argument);
 void TASK_execute_telecommands(void *argument);
 
 void TASK_monitor_freertos_memory(void *argument);
+void TASK_bootup(void *argument);
 
 #endif // INCLUDE_GUARD__RTOS_TASKS_H__
