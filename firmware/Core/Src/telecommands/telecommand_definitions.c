@@ -5,6 +5,8 @@
 #include "transforms/arrays.h"
 #include "timekeeping/timekeeping.h"
 #include "debug_tools/debug_uart.h"
+#include "uart_handler/uart_handler.h"
+#include "mpi/mpi_command_handling.h"
 #include "log/log.h"
 
 // Additional telecommand definitions files:
@@ -16,6 +18,7 @@
 #include "telecommands/antenna_telecommand_defs.h"
 #include "telecommands/i2c_telecommand_defs.h"
 #include "telecommands/temperature_sensor_telecommand_defs.h"
+#include "telecommands/uart_telecommand_defs.h"
 #include "telecommands/config_telecommand_defs.h"
 #include "telecommands/testing_telecommand_defs.h"
 #include "telecommands/telecommand_executor.h"
@@ -118,6 +121,14 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "scan_i2c_bus",
         .tcmd_func = TCMDEXEC_scan_i2c_bus,
         .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+
+    // ****************** SECTION: uart_telecommand_defs ******************
+    {
+        .tcmd_name = "uart_send_bytes_hex",
+        .tcmd_func = TCMDEXEC_uart_send_bytes_hex,
+        .number_of_args = 2,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
 
