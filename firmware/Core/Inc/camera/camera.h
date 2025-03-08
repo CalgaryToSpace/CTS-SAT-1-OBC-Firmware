@@ -1,6 +1,8 @@
 #include <stdbool.h>
 
-enum Capture_Status{Transmit_Success, Wrong_input};
+#define SENTENCE_LEN    67
+
+enum Capture_Status{Transmit_Success, Wrong_input, Capture_Failure};
 
 
       /**
@@ -11,4 +13,4 @@ enum Capture_Status{Transmit_Success, Wrong_input};
      * 			n - night ambient light
      * 			s - solar sail contrast and light
      */
-    enum Capture_Status Capture_Image(bool enable_flash, uint8_t lighting_mode);
+    enum Capture_Status CAM_Capture_Image(bool enable_flash, uint8_t lighting_mode);

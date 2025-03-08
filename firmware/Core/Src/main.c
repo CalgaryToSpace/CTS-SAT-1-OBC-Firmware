@@ -128,6 +128,13 @@ const osThreadAttr_t TASK_monitor_freertos_memory_Attributes = {
   .priority = (osPriority_t) osPriorityBelowNormal6,
 };
 
+osThreadId_t TASK_camera_write_image_Handle;
+const osThreadAttr_t TASK_camera_write_image_Attributes = {
+  .name = "TASK_camera_write_image",
+  .stack_size = 1024,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+
 FREERTOS_task_info_struct_t FREERTOS_task_handles_array [] = {
   {
     .task_handle = &defaultTaskHandle,
@@ -162,6 +169,11 @@ FREERTOS_task_info_struct_t FREERTOS_task_handles_array [] = {
   {
     .task_handle = &TASK_monitor_freertos_memory_Handle,
     .task_attribute = &TASK_monitor_freertos_memory_Attributes,
+    .lowest_stack_bytes_remaining = UINT32_MAX
+  },
+  {
+    .task_handle = &TASK_camera_write_image_Handle,
+    .task_attribute = &TASK_camera_write_image_Attributes,
     .lowest_stack_bytes_remaining = UINT32_MAX
   },
 };
@@ -294,6 +306,8 @@ int main(void)
   TASK_service_eps_watchdog_Handle = osThreadNew(TASK_service_eps_watchdog, NULL, &TASK_service_eps_watchdog_Attributes);
 
   TASK_time_sync_Handle = osThreadNew(TASK_time_sync, NULL, &TASK_time_sync_Attributes);
+
+  TASK_camera_write_image_Handle = osThreadNew(TASK_camera_write_image, NULL, &TASK_camera_write_image_Attributes);
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */

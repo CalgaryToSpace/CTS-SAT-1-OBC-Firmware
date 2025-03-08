@@ -3,6 +3,7 @@
 #include "littlefs/littlefs_driver.h"
 #include "debug_tools/debug_uart.h"
 #include "camera/camera.h"
+#include "uart_handler/uart_handler.h"
 
 //////////////////////////
 
@@ -13,77 +14,95 @@
 
 #include "main.h"
 
+/// @brief Timeout duration for receive in milliseconds. Same between bytes and at the start.
+static const uint16_t CAMERA_RX_TIMEOUT_DURATION_MS = 20000;
+
+// uint8_t sen[67*300] = {'\0'};
+// uint8_t sen1[67*300] = {'\0'};
+// uint8_t sen2[67*300] = {'\0'};
+// uint8_t sen3[67*300] = {'\0'};
+// uint8_t camera_rx_buf[SENTENCE_LEN*125] = {'\0'};
+// UART_HandleTypeDef *UART_camera_port_handle = &huart4;
+
 
 
 // needs to be updated with littleFS
 /**
  * @brief creates temporary buffers and receives image data from camera module
  * 
+ * @return 0: Success, 3: Failed UART reception, 4: Timeout while waiting for first byte
  */
-void capture_Image(){
-		uint8_t sen[67*300] = {'\0'};
-		uint8_t sen1[67*300] = {'\0'};
-		uint8_t sen2[67*300] = {'\0'};
-		uint8_t sen3[67*300] = {'\0'};
-		HAL_UART_Receive(&huart4, sen, 67*300, 10000);
-		HAL_UART_Receive(&huart4, sen1, 67*300, 10000);
-		HAL_UART_Receive(&huart4, sen2, 67*300, 10000);
-		HAL_UART_Receive(&huart4, sen3, 67*300, 10000);
+uint8_t CAM_receive_image(){
+		// Clear the camera response buffer (Note: Can't use memset because UART_camera_buffer is Volatile)
+		for (uint16_t i = 0; i < UART_camera_buffer_len; i++) {
+			UART_camera_buffer[i] = 0;
+		}
 
+		// Reset UART interrupt buffer write index & record start time for camera response reception
+		UART_camera_buffer_write_idx = 0;
+		// CAMERA_set_expecting_data(1);
+		const uint32_t UART_camera_rx_start_time_ms = HAL_GetTick();
+		const uint8_t receive_status = CAMERA_set_expecting_data(1);
+		 // Check for UART reception errors
+		if (receive_status == 3) {
+			// HAL_UART_DMAStop(&huart4);
+			CAMERA_set_expecting_data(0);
+			// TODO set error code
+			return 3; // Error code: Failed UART reception
+		}
+		while(1){
+		// Receive until  response timed out
 
-		DEBUG_uart_print_str(sen);
-		DEBUG_uart_print_str(sen1);
-		DEBUG_uart_print_str(sen2);
+        // Timeout before receiving the first byte from the MPI
+        if (UART_camera_buffer_write_idx == 0) {
+			// DEBUG_uart_print_str("Write IDX == 0\n");
+            if((HAL_GetTick() - UART_camera_rx_start_time_ms) > CAMERA_RX_TIMEOUT_DURATION_MS) {
+                // Stop reception from the MPI & Reset mpi UART & transceiver mode states
+                // HAL_UART_DMAStop(UART_camera_port_handle);
+				CAMERA_set_expecting_data(0);
+				// TODO ERROR CODES
+                return 4; // Error code: Timeout waiting for 1st byte
+            }            
+        }
+
+        // Timeout in between (or end of) receiving bytes from the MPI
+        else {
+            const uint32_t current_time = HAL_GetTick(); // Get current time
+             if (
+                (current_time > UART_camera_last_write_time_ms) // Important seemingly-obvious safety check.
+                && ((current_time - UART_camera_last_write_time_ms) > CAMERA_RX_TIMEOUT_DURATION_MS)
+            ) {
+                // data in first half of camera uart buffer
+        // if (UART_camera_buffer_write_idx <= UART_camera_buffer_len/2) {
+            // Copy the buffer to the last received byte index & clear the UART buffer
+			for (uint16_t i = 0; i < UART_camera_buffer_len/2; i++) {
+				camera_rx_buf[i] = UART_camera_buffer[i];
+				UART_camera_buffer[i] = 0;
+			}
+            DEBUG_uart_print_str("timeout write file 1\n"); 
+			camera_write_file = 1;
+			CAMERA_set_expecting_data(0);
+        // }
+
+		// data in second half of uart camera buffer
+        // else {
+			UART_camera_buffer_write_idx = 0;
+            // Copy the buffer to the last received byte index & clear the UART buffer
+			for (uint16_t i = UART_camera_buffer_len/2; i < UART_camera_buffer_len; i++) {
+				camera_rx_buf[i-UART_camera_buffer_len/2] = UART_camera_buffer[i];
+				UART_camera_buffer[i] = 0;
+			}
+            DEBUG_uart_print_str("timeout write file 2\n"); 
+			camera_write_file = 1;
+			CAMERA_set_expecting_data(0);
+        // }
+                break;
+            }
+        }
+			// CAMERA_set_expecting_data(1);
+		}
 		
-		//parsing && littleFS
-		// LFS_mount(); //UNCOMMENT THESE LINES
-		// filename
-		char f_n[] = "image";
-
-		if(strlen(sen) != 0){
-			//nothing
-		} else{
-			return 0;
-		}
-
-		if(strlen(sen1) != 0){
-			// HAL_UART_Transmit(&hlpuart1, (uint8_t*)sen, 67*300, 10000);
-			// LFS_write_file(f_n, sen, 67*300); //UNCOMMENT THESE LINES
-		} else{
-			//trim and transmit 0
-			// HAL_UART_Transmit(&hlpuart1, (uint8_t*)sen, strlen(sen), 10000);
-			// LFS_write_file(f_n, sen, strlen(sen)); //UNCOMMENT THESE LINES
-			return 0;
-		}
-
-		if(strlen(sen2) != 0){
-			// HAL_UART_Transmit(&hlpuart1, (uint8_t*)sen1, 67*300, 10000);
-			// LFS_write_file(f_n, sen1, 67*300); //UNCOMMENT THESE LINES
-		} else{
-			//trim and send 1
-			// HAL_UART_Transmit(&hlpuart1, (uint8_t*)sen1, strlen(sen1), 10000);
-			// LFS_write_file(f_n, sen1, strlen(sen1)); //UNCOMMENT THESE LINES
-			return 0;
-		}
-
-		if(strlen(sen3) != 0){
-			// HAL_UART_Transmit(&hlpuart1, (uint8_t*)sen2, 67*300, 10000);
-			// LFS_write_file(f_n, sen2, 67*300); //UNCOMMENT THESE LINES
-			// trim and send 3
-			// HAL_UART_Transmit(&hlpuart1, (uint8_t*)sen3, strlen(sen3), 10000);
-			// LFS_write_file(f_n, sen3, strlen(sen3)); //UNCOMMENT THESE LINES
-			return 0;
-		} else{
-			//trim and send 2
-			// HAL_UART_Transmit(&hlpuart1, (uint8_t*)sen2, strlen(sen2), 10000);
-			// LFS_write_file(f_n, sen2, strlen(sen2)); //UNCOMMENT THESE LINES
-			return 0;
-		}
-		////// TESTING ONLY ///////
-		uint8_t readtest[67*600] = {'\0'};
-		// LFS_read_file(f_n, 0, readtest, 67*600); //UNCOMMENT THESE LINES
-		// LFS_unmount(); //UNCOMMENT THESE LINES
-		DEBUG_uart_print_str(readtest);
+		return 0;
   }
 
 
@@ -94,56 +113,43 @@ void capture_Image(){
      * 			m - medium ambient light
      * 			n - night ambient light
      * 			s - solar sail contrast and light
+	 * @return Transmit_Success: Successfully captured image, Wrong_input: invalid parameter input, Capture_Failure: Error in image reception
      */
-    enum Capture_Status Capture_Image(bool enable_flash, uint8_t lighting_mode){
+    enum Capture_Status CAM_Capture_Image(bool enable_flash, uint8_t lighting_mode){
 
   	  switch(lighting_mode){
   	  case 'd':
-  		  if(enable_flash){
-  			  HAL_UART_Transmit(&huart4, (uint8_t*)"D", 1, HAL_MAX_DELAY);
-  			  HAL_Delay(25);
-  		  }
-  		  else{
-  			  HAL_UART_Transmit(&huart4, (uint8_t*)"d", 1, HAL_MAX_DELAY);
-  			  HAL_Delay(25);
-  		  }
-  		//   return Transmit_Success;
+			HAL_UART_Transmit(&huart4, (uint8_t*)"d", 1, HAL_MAX_DELAY);
+			HAL_Delay(25);
+			break;
+  		  
   	  case 'm':
-  	  		  if(enable_flash){
-  	  			  HAL_UART_Transmit(&huart4, (uint8_t*)"M", 1, HAL_MAX_DELAY);
-  	  			  HAL_Delay(25);
-  	  		  }
-  	  		  else{
-  	  			  HAL_UART_Transmit(&huart4, (uint8_t*)"m", 1, HAL_MAX_DELAY);
-  	  			  HAL_Delay(25);
-  	  		  }
-  	  		// receiveImage();
-  	  		// return Transmit_Success;
+			HAL_UART_Transmit(&huart4, (uint8_t*)"m", 1, HAL_MAX_DELAY);
+			HAL_Delay(25);
+			break;
+  	  		  
   	  case 'n':
-  	  		  if(enable_flash){
-  	  			  HAL_UART_Transmit(&huart4, (uint8_t*)"N", 1, HAL_MAX_DELAY);
-  	  			  HAL_Delay(25);
-  	  		  }
-  	  		  else{
-  	  			  HAL_UART_Transmit(&huart4, (uint8_t*)"n", 1, HAL_MAX_DELAY);
-  	  			  HAL_Delay(25);
-  	  		  }
-  	  		// receiveImage();
-  	  		// return Transmit_Success;
+			HAL_UART_Transmit(&huart4, (uint8_t*)"n", 1, HAL_MAX_DELAY);
+			HAL_Delay(25);
+			break;
+  	  		  
   	  case 's':
-  	  		  if(enable_flash){
-  	  			  HAL_UART_Transmit(&huart4, (uint8_t*)"S", 1, HAL_MAX_DELAY);
-  	  			  HAL_Delay(25);
-  	  		  }
-  	  		  else{
-  	  			  HAL_UART_Transmit(&huart4, (uint8_t*)"s", 1, HAL_MAX_DELAY);
-  	  			  HAL_Delay(25);
-  	  		  }
-  	  capture_Image();
-  	  return Transmit_Success;
+			HAL_UART_Transmit(&huart4, (uint8_t*)"s", 1, HAL_MAX_DELAY);
+			HAL_Delay(25);
+			break;
+  	  		  
   	  default:
   		  return Wrong_input;
   	  }
+  	  int capture_code = CAM_receive_image();
+	  if (capture_code != 0){
+		char str[50];
+		snprintf(str, 28, "Error Capturing image: %d\n", capture_code);
+	  	DEBUG_uart_print_str(str);
+		return Capture_Failure;
+	  }
+	  DEBUG_uart_print_str("Exited capture_image, going to return out of telecommand\n");
+  	  return Transmit_Success;
 
 
     }

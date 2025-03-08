@@ -28,8 +28,20 @@ extern volatile uint32_t UART_gps_last_write_time_ms;
 extern volatile uint8_t UART_gps_buffer_last_rx_byte;  
 extern volatile uint8_t UART_gps_uart_interrupt_enabled; // Flag to enable or disable the UART GPS ISR
 
+
+extern const uint16_t UART_camera_buffer_len;
+extern volatile uint8_t UART_camera_buffer[];
+extern uint8_t camera_rx_buf[];
+extern volatile uint8_t camera_write_file;
+extern volatile uint16_t UART_camera_buffer_write_idx;
+extern volatile uint32_t UART_camera_last_write_time_ms;
+extern volatile uint8_t UART_camera_is_expecting_data;
+extern volatile uint8_t UART_camera_buffer_last_rx_byte;
+
+
 void UART_init_uart_handlers(void);
 void GPS_set_uart_interrupt_state(uint8_t new_enabled) ;
+uint8_t CAMERA_set_expecting_data(uint8_t new_enabled) ;
 
 
 #endif // INCLUDE_GUARD__UART_HANDLER_H__
