@@ -3,6 +3,7 @@
 #include "eps_drivers/eps_commands.h"
 
 #include <string.h>
+#include <stdio.h>
 
 /// @brief Converts an EPS channel name to a channel enum.
 /// @param channel_name A lowercase c-string of the channel name (e.g., "mpi"), or a number
@@ -44,6 +45,53 @@ EPS_CHANNEL_enum_t EPS_channel_from_str(const char channel_name[]) {
     return EPS_CHANNEL_UNKNOWN;
 }
 
+/// @brief Converts channel enum into an ASCII-printable name string.
+/// @param channel An enum of typedef EPS_CHANNEL_enum_t representing the different channel names of the EPS
+/// Ex. EPS_CHANNEL_VBATT_STACK , EPS_CHANNEL_5V_CH2_UNUSED or EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY
+/// @return Returns a string of the channel name corresponding to the inputted channel enum
+char* EPS_channel_to_str(EPS_CHANNEL_enum_t channel) {
+    switch (channel)
+    {
+    case EPS_CHANNEL_VBATT_STACK:
+        return "VBATT_STACK";
+    case EPS_CHANNEL_5V_STACK:
+        return "5V_STACK";
+    case EPS_CHANNEL_5V_CH2_UNUSED:
+        return "5V_CH2_UNUSED";
+    case EPS_CHANNEL_5V_CH3_UNUSED:
+        return "5V_CH3_UNUSED";
+    case EPS_CHANNEL_5V_MPI:
+        return "5V_MPI";
+    case EPS_CHANNEL_3V3_STACK:
+        return "3V3_STACK";
+    case EPS_CHANNEL_3V3_CAMERA:
+        return "3V3_CAMERA";
+    case EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY:
+        return "3V3_UHF_ANTENNA_DEPLOY";
+    case EPS_CHANNEL_3V3_LORA_MODULE:
+        return "3V3_LORA_MODULE";
+    case EPS_CHANNEL_VBATT_CH9_UNUSED:
+        return "VBATT_CH9_UNUSED";
+    case EPS_CHANNEL_VBATT_CH10_UNUSED:
+        return "VBATT_CH10_UNUSED";
+    case EPS_CHANNEL_VBATT_CH11_UNUSED:
+        return "VBATT_CH11_UNUSED";
+    case EPS_CHANNEL_12V_MPI:
+        return "12V_MPI";
+    case EPS_CHANNEL_12V_BOOM:
+        return "12V_BOOM";
+    case EPS_CHANNEL_3V3_CH14_UNUSED:
+        return "3V3_CH14_UNUSED";
+    case EPS_CHANNEL_3V3_CH15_UNUSED:
+        return "3V3_CH15_UNUSED";
+    case EPS_CHANNEL_28V6_CH16_UNUSED:
+        return "28V6_CH16_UNUSED";
+    case EPS_CHANNEL_UNKNOWN:
+        return "CHANNEL_UNKOWN";
+    }
+    return "INVALID_CHANNEL";
+}
+
 /// @brief Sets the enabled state of an EPS channel (on or off).
 /// @param channel The channel to enable or disable.
 /// @param enabled 0 to disable, >0 to enable.
@@ -53,7 +101,6 @@ uint8_t EPS_set_channel_enabled(EPS_CHANNEL_enum_t channel, uint8_t enabled) {
     if (channel == EPS_CHANNEL_UNKNOWN) {
         return 99;
     }
-    
     if (enabled) {
         return EPS_CMD_output_bus_channel_on(channel);
     }
@@ -63,29 +110,30 @@ uint8_t EPS_set_channel_enabled(EPS_CHANNEL_enum_t channel, uint8_t enabled) {
     return 100; // Unreachable
 }
 
-/// @brief Uses the status bitfield from eps and converts it to a list-of-string of available channels.
-/// @param response_output_buf The buffer to output the list-of-string of available channels
+/// @brief Takes in the status bitfields of the eps and outputs the status of the given channel number
 /// @param status_bitfield_1 The status bitfield of channels 0-15.
 /// @param status_bitfield_2 The status bitfield of channels 16-31.
-void EPS_convert_stat_bit_to_string(char *response_output_buf, uint16_t status_bitfield_1 , uint16_t status_bitfield_2){
+/// @return 0 if the channel is disabled, 1 if the channel is enabled and 2 if inputted channel number is incorrect
+uint8_t EPS_check_status_bit_of_channel(uint16_t status_bitfield_1 , uint16_t status_bitfield_2, uint8_t channel_number){
+    if (channel_number<16) { 
+        return ((status_bitfield_1 >> channel_number) & 1);
+    } else if  (channel_number<32){ 
+        return ((status_bitfield_2 >> (channel_number%16)) & 1);
+    } else {
+        return 2; // channel_number inputted to is out of bounds of status bitfields
+    }
+}
 
-    if ((status_bitfield_1 & 1) == 1) {strcat(response_output_buf, "\"VBATT_STACK\",");}
-    if (((status_bitfield_1 >> 1) & 1) == 1) {strcat(response_output_buf,"\"5V_STACK\",");}
-    if (((status_bitfield_1 >> 2) & 1) == 1) {strcat(response_output_buf,"\"5V_CH2_UNUSED\",");}
-    if (((status_bitfield_1 >> 3) & 1) == 1) {strcat(response_output_buf,"\"5V_CH3_UNUSED\",");}
-    if (((status_bitfield_1 >> 4) & 1) == 1) {strcat(response_output_buf,"\"5V_MPI\",");}
-    if (((status_bitfield_1 >> 5) & 1) == 1) {strcat(response_output_buf,"\"3V3_STACK\",");}
-    if (((status_bitfield_1 >> 6) & 1) == 1) {strcat(response_output_buf,"\"3V3_CAMERA\",");}
-    if (((status_bitfield_1 >> 7) & 1) == 1) {strcat(response_output_buf,"\"3V3_UHF_ANTENNA_DEPLOY\",");}
-    if (((status_bitfield_1 >> 8) & 1) == 1) {strcat(response_output_buf,"\"3V3_LORA_MODULE\",");}
-    if (((status_bitfield_1 >> 9) & 1) == 1) {strcat(response_output_buf,"\"VBATT_CH9_UNUSED\",");}
-    if (((status_bitfield_1 >> 10) & 1) == 1) {strcat(response_output_buf,"\"VBATT_CH10_UNUSED\",");}
-    if (((status_bitfield_1 >> 11) & 1) == 1) {strcat(response_output_buf,"\"VBATT_CH11_UNUSED\",");}
-    if (((status_bitfield_1 >> 12) & 1) == 1) {strcat(response_output_buf,"\"12V_MPI\",");}
-    if (((status_bitfield_1 >> 13) & 1) == 1) {strcat(response_output_buf,"\"12V_BOOM\",");}
-    if (((status_bitfield_1 >> 14) & 1) == 1) {strcat(response_output_buf,"\"3V3_CH14_UNUSED\",");}
-    if (((status_bitfield_1 >> 15) & 1) == 1) {strcat(response_output_buf,"\"3V3_CH15_UNUSED\",");}
-    if ((status_bitfield_2 & 1) == 1) {strcat(response_output_buf,"\"28V6_CH16_UNUSED\",");}
-
-    if (strlen(response_output_buf)>2) {response_output_buf[strlen(response_output_buf)-1] = ' ';} // this removes trailling comma at end of list if the list is not empty
+/// @brief Helper function meant to convert eps ch_number to ch_name then modify the string output to look like type of string so it can be appended to an output buffer
+/// @param response_output_buf The output buffer that will store the string
+/// @param ch_number The channel number of the EPS that will be converted to channel name
+/// @return 0 when string was properly outputted into the buffer, 1 if incorrect channel number was inputted
+uint8_t EPS_append_and_convert_ch_to_type_string(char *response_output_buf, uint8_t ch_number){
+    if (ch_number>16){
+        return 1;
+    }    
+    strcat(response_output_buf,"\"");
+    strcat(response_output_buf, EPS_channel_to_str(ch_number)); // outputs enum to channel name
+    strcat(response_output_buf,"\"");
+    return 0;
 }
