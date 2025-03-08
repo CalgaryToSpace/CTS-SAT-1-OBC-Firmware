@@ -8,6 +8,10 @@ EPS_CHANNEL_enum_t EPS_channel_from_str(const char channel_name[]);
 
 uint8_t EPS_set_channel_enabled(EPS_CHANNEL_enum_t channel, uint8_t enabled);
 
-void EPS_convert_stat_bit_to_string(char *response_output_buf, uint16_t stat_bit_1 , uint16_t stat_bit_2);
+char* EPS_channel_to_str(EPS_CHANNEL_enum_t channel);
+
+uint8_t EPS_check_status_bit_of_channel(uint16_t status_bitfield_1 , uint16_t status_bitfield_2, uint8_t channel_number);
+
+uint8_t EPS_append_and_convert_ch_to_type_string(char *response_output_buf, uint8_t ch_number);
 
 #endif // INCLUDE_GUARD__EPS_CHANNEL_CONTROL_H
