@@ -3,6 +3,7 @@
 #include "eps_drivers/eps_types_to_json.h"
 #include "eps_drivers/eps_channel_control.h"
 #include "eps_drivers/eps_time.h"
+#include "eps_drivers/eps_calculations.h"
 #include "telecommands/eps_telecommands.h"
 #include "telecommands/telecommand_args_helpers.h"
 
@@ -519,4 +520,28 @@ uint8_t TCMDEXEC_eps_get_piu_housekeeping_data_run_avg_json(
         return 2;
     }
     return 0;
+}
+
+/// @brief Get current battery voltage percent from PBU
+/// @return 0 if successful, > 0 otherwise
+uint8_t TCMDEXEC_eps_get_current_battery_percent(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len) {
+
+    EPS_struct_pbu_housekeeping_data_eng_t data;
+    const uint8_t result = EPS_CMD_get_pbu_housekeeping_data_eng(&data);
+
+    if (result != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS_CMD_get_pbu_housekeeping_data_eng (err %d)", result);
+        return 1;
+    }
+
+    const float battery_percent = EPS_convert_battery_voltage_to_percent(data.battery_pack_info_each_pack[0]);
+
+    snprintf(response_output_buf, response_output_buf_len, 
+             "Battery Percentage: %0.2f%%", battery_percent);
+
+    
+    return 0;    
 }
