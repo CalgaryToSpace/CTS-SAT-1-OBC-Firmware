@@ -1830,10 +1830,19 @@ uint8_t adcs_download_buffer[20480]; // static buffer to hold the 20 kB from the
 uint8_t TCMDEXEC_adcs_download_index_file(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                    char *response_output_buf, uint16_t response_output_buf_len) {
     
-    // #include "eps_drivers/eps_commands.h"
-    // EPS_CMD_output_bus_channel_on(8); // TODO: for testing, enable EPS channel 8 (REMOVE BEFORE FLIGHT)
+    // #define FLATSAT_TEST_MODE // TODO: REMOVE BEFORE FLIGHT
+    #ifdef FLATSAT_TEST_MODE
+    #include "eps_drivers/eps_commands.h"
+    EPS_CMD_output_bus_channel_on(8); 
+    // for testing, enable EPS channel 8 (REMOVE BEFORE FLIGHT)
 
-    uint8_t status;
+    LFS_format();
+    LFS_mount();
+    LFS_make_directory("ADCS"); 
+    // for testing, format and mount the LFS here (REMOVE BEFORE FLIGHT)
+    #endif 
+
+    int8_t status;
     
     status = LFS_delete_file("ADCS/index_file"); // if the index file doesn't exist, this will fail with code LFS_ERR_NOENT
     if (status != 0 && status != LFS_ERR_NOENT) {snprintf(response_output_buf, response_output_buf_len, "Failed to delete index file in LittleFS (err %d)", status); return 1;}
