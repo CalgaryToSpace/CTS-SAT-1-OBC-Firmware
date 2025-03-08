@@ -254,8 +254,8 @@ int main(void)
   
   FLASH_deactivate_chip_select();
 
-  // Initialise the ADCS CRC8 checksum (required for ADCS operation).
-  ADCS_initialise();
+  // Initialise the ADCS CRC8 checksum and LittleFS directory (required for ADCS operation).
+  ADCS_initialise(); // TODO: LittleFS must be formatted and mounted before this command is run
 
   /* USER CODE END 2 */
 

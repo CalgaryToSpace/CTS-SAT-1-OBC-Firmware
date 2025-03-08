@@ -1834,6 +1834,9 @@ uint8_t TCMDEXEC_adcs_download_index_file(const char *args_str, TCMD_Telecommand
     // EPS_CMD_output_bus_channel_on(8); // TODO: for testing, enable EPS channel 8 (REMOVE BEFORE FLIGHT)
 
     uint8_t status;
+    
+    status = LFS_delete_file("ADCS/index_file"); // if the index file doesn't exist, this will fail with code LFS_ERR_NOENT
+    if (status != 0 && status != LFS_ERR_NOENT) {snprintf(response_output_buf, response_output_buf_len, "Failed to delete index file in LittleFS (err %d)", status); return 1;}
 
     ADCS_file_download_buffer_struct_t download_packet;
 
@@ -1906,37 +1909,12 @@ uint8_t TCMDEXEC_adcs_download_index_file(const char *args_str, TCMD_Telecommand
 
     /* HOLE MAP STUFF ENDS HERE */
 
-
-
-        # if 0
-    // Create the index file in the filesystem
-    status = LFS_write_file("ADCS/index_file", &adcs_download_buffer[0], 20480);
+    // Create or append to the index file in the filesystem (append_file does both)
+    status = LFS_append_file("ADCS/index_file", &adcs_download_buffer[0], 20480); 
+    // TODO: this will fail for now because of a LittleFS driver bug
     if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS write to LittleFS failed (err %d)", status); return 1;}
-        #endif 
 
-    /*snprintf(response_output_buf, response_output_buf_len, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d", 
-        download_packet.file_bytes[0], 
-        download_packet.file_bytes[1], 
-        download_packet.file_bytes[2], 
-        download_packet.file_bytes[3], 
-        download_packet.file_bytes[4], 
-        download_packet.file_bytes[5], 
-        download_packet.file_bytes[6], 
-        download_packet.file_bytes[7], 
-        download_packet.file_bytes[8], 
-        download_packet.file_bytes[9], 
-        download_packet.file_bytes[10], 
-        download_packet.file_bytes[11], 
-        download_packet.file_bytes[12], 
-        download_packet.file_bytes[13], 
-        download_packet.file_bytes[14], 
-        download_packet.file_bytes[15], 
-        download_packet.file_bytes[16], 
-        download_packet.file_bytes[17], 
-        download_packet.file_bytes[18], 
-        download_packet.file_bytes[19] 
-    );*/
-    // note: overwriting snprintf like we had before caused an error to go back in time. Don't do this.
+    // To read the index file via telecommand, we can do: CTS1+fs_read_text_file(ADCS/index_file)!
 
     return 0;
 

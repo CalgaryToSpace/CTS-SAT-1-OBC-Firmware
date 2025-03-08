@@ -26,7 +26,7 @@ extern I2C_HandleTypeDef hi2c1; // allows not needing the parameters
 uint8_t ADCS_initialise() {
     
     ADCS_initialise_crc8_checksum();
-    LFS_make_directory("ADCS"); // TODO: test this LFS integration
+    LFS_make_directory("ADCS");
 
     return 0;
 }
