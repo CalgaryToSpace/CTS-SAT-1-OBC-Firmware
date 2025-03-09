@@ -14,6 +14,7 @@
 
 #include "unit_tests/test_eps_drivers.h"
 #include "unit_tests/test_eps_struct_packers.h"
+#include "unit_tests/test_eps_calculations.h"
 #include "unit_tests/test_sha256.h"
 #include "unit_tests/test_crc.h"
 
@@ -54,6 +55,12 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func = TEST_EXEC__GEN_convert_big_endian_four_byte_array_to_uint32,
         .test_file = "transforms/byte_transforms",
         .test_func_name = "GEN_convert_big_endian_four_byte_array_to_uint32"
+    },
+
+    {
+        .test_func = TEST_EXEC__GEN_int64_to_str,
+        .test_file = "transforms/arrays",
+        .test_func_name = "GEN_int64_to_str"
     },
     
     // ****************** SECTION: test_adcs ******************
@@ -433,6 +440,11 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func = TEST_EXEC__EPS_check_type_sizes,
         .test_file = "unit_tests/test_eps_struct_packers",
         .test_func_name = "TEST_EXEC__EPS_check_type_sizes",
+    },
+    {
+        .test_func = TEST_EXEC__EPS_convert_battery_voltage_to_percent,
+        .test_file = "unit_tests/test_eps_calculations",
+        .test_func_name = "TEST_EXEC__EPS_convert_battery_voltage_to_percent"
     },
     {
         .test_func = TEST_EXEC__ANT_convert_raw_temp_to_cCelsius,

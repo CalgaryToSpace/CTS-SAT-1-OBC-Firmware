@@ -21,7 +21,7 @@
         {
             "showDevDebugOutput": "parsed",
             "cwd": "${workspaceRoot}",
-            "executable": "./build/CTS-SAT-1_FW.elf",
+            "executable": "./build/debug/CTS-SAT-1_FW.elf",
             "name": "Debug STM32",
             "request": "launch",
             "type": "cortex-debug",

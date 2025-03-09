@@ -2,6 +2,6 @@
 #define INCLUDE_GUARD__TEST_BYTE_TRANSFORMS_H__
 
 uint8_t TEST_EXEC__GEN_convert_big_endian_four_byte_array_to_uint32();
-
+uint8_t TEST_EXEC__GEN_int64_to_str();
 
 #endif // INCLUDE_GUARD__TEST_BYTE_TRANSFORMS_H__
