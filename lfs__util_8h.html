@@ -178,6 +178,10 @@ Macros</h2></td></tr>
 <tr class="separator:a77cd651454e9bb6ce657b4f43811ea94"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ac9d66a98d7e872c9b286feb3ce02ce" id="r_a5ac9d66a98d7e872c9b286feb3ce02ce"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5ac9d66a98d7e872c9b286feb3ce02ce">LFS_NO_ASSERT</a>&#160;&#160;&#160;1</td></tr>
 <tr class="separator:a5ac9d66a98d7e872c9b286feb3ce02ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf4bca84c7cf809b1148842c7b485a11" id="r_aaf4bca84c7cf809b1148842c7b485a11"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaf4bca84c7cf809b1148842c7b485a11">LFS_STRINGIZE</a>(x)</td></tr>
+<tr class="separator:aaf4bca84c7cf809b1148842c7b485a11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a615b9b5cfdb8c6d8545b774312aa70f6" id="r_a615b9b5cfdb8c6d8545b774312aa70f6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a615b9b5cfdb8c6d8545b774312aa70f6">LFS_STRINGIZE2</a>(x)</td></tr>
+<tr class="separator:a615b9b5cfdb8c6d8545b774312aa70f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a0213f24914266c569ee529ee7b83a3" id="r_a2a0213f24914266c569ee529ee7b83a3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2a0213f24914266c569ee529ee7b83a3">LFS_TRACE</a>(...)</td></tr>
 <tr class="separator:a2a0213f24914266c569ee529ee7b83a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4051a9697d7cc1b427bacee357adb58f" id="r_a4051a9697d7cc1b427bacee357adb58f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4051a9697d7cc1b427bacee357adb58f">LFS_DEBUG</a>(...)</td></tr>
@@ -342,6 +346,43 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+</div>
+</div>
+<a id="aaf4bca84c7cf809b1148842c7b485a11" name="aaf4bca84c7cf809b1148842c7b485a11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf4bca84c7cf809b1148842c7b485a11">&#9670;&#160;</a></span>LFS_STRINGIZE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define LFS_STRINGIZE</td>
+          <td>(</td>
+          <td class="paramtype"></td>          <td class="paramname"><span class="paramname"><em>x</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line"><a class="code hl_define" href="#a615b9b5cfdb8c6d8545b774312aa70f6">LFS_STRINGIZE2</a>(x)</div>
+<div class="ttc" id="alfs__util_8h_html_a615b9b5cfdb8c6d8545b774312aa70f6"><div class="ttname"><a href="#a615b9b5cfdb8c6d8545b774312aa70f6">LFS_STRINGIZE2</a></div><div class="ttdeci">#define LFS_STRINGIZE2(x)</div><div class="ttdef"><b>Definition</b> lfs_util.h:24</div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a615b9b5cfdb8c6d8545b774312aa70f6" name="a615b9b5cfdb8c6d8545b774312aa70f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a615b9b5cfdb8c6d8545b774312aa70f6">&#9670;&#160;</a></span>LFS_STRINGIZE2</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define LFS_STRINGIZE2</td>
+          <td>(</td>
+          <td class="paramtype"></td>          <td class="paramname"><span class="paramname"><em>x</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line"><span class="preprocessor">#x</span></div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a2a0213f24914266c569ee529ee7b83a3" name="a2a0213f24914266c569ee529ee7b83a3"></a>
