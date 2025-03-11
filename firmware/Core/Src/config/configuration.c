@@ -10,7 +10,11 @@ extern uint32_t TCMD_require_valid_sha256;
 uint32_t CONFIG_int_demo_var_1 = 13345;
 uint32_t CONFIG_int_demo_var_2 = 242344;
 
-// extern
+// extern COMMS
+uint32_t COMMS_max_time_since_last_response_ms = 10000;
+uint32_t COMMS_check_timer = 6000000;      //TODO: Set COMMS check timer
+
+// extern EPS
 uint32_t toggleable_channels = 0x0001ffff;
 uint32_t watchdog_timer = 7000, EPS_monitor_timer = 1000;       //TODO: Set watchdog timer and EPS monitor timer
 
@@ -58,6 +62,15 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
     {
         .variable_name = "TCMD_require_unique_tssent",
         .num_config_var = &TCMD_require_unique_tssent,
+    },
+    //COMMS Config
+    {
+        .variable_name = "COMMS_max_time_since_last_response_ms",
+        .num_config_var = &COMMS_max_time_since_last_response_ms,
+    },
+    {
+        .variable_name = "COMMS_check_timer",
+        .num_config_var = &COMMS_check_timer,
     },
 };
 

@@ -1,6 +1,7 @@
 #include "comms_drivers/comms_drivers.h"
 #include "config/configuration.h"
 #include "antenna_deploy_drivers/ant_internal_drivers.h"
+#include "timekeeping/timekeeping.h"
 #include "log/log.h"
 #include "main.h"
 
@@ -27,10 +28,9 @@ void COMMS_set_dipole_switch_state(uint8_t dipole_switch_antenna_num) {
 }
 
 uint8_t COMMS_check_connection() {
-    if (COMMS_last_reponse_time < TIM_get_current_unix_epoch_time_ms() - max_time_since_last_response_ms) { //TODO: Add max_time_since_last_response_ms to configuration
+    if ((uint64_t) COMMS_last_response_time < TIM_get_current_unix_epoch_time_ms() - (uint64_t) COMMS_max_time_since_last_response_ms) { 
         COMMS_set_dipole_switch_state(HAL_GPIO_ReadPin(PIN_UHF_CTRL_OUT_GPIO_Port, PIN_UHF_CTRL_OUT_Pin) ? 1 : 2);
         return 1;
     }
-    //TODO: Set optimal antenna if not already set.
     return 0;
 }

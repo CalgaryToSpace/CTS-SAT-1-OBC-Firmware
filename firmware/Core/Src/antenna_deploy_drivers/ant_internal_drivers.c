@@ -2,6 +2,7 @@
 
 #include "stm32l4xx_hal_i2c.h"
 #include "stm32l4xx_hal_def.h"
+#include "timekeeping/timekeeping.h"
 #include "antenna_deploy_drivers/ant_internal_drivers.h"
 #include "debug_tools/debug_i2c.h"
 #include "debug_tools/debug_uart.h"
@@ -89,6 +90,6 @@ uint8_t ANT_get_response(enum ANT_i2c_bus_mcu i2c_bus_mcu, uint8_t rx_buf[], uin
         LOG_message(LOG_SYSTEM_ANTENNA_DEPLOY, LOG_SEVERITY_ERROR, LOG_SINK_ALL, "I2C read failed: HAL_ERROR");
         return 1;
     }
-    COMMS_last_reponse_time = TIM_get_current_unix_epoch_time_ms();
+    COMMS_last_response_time = TIM_get_current_unix_epoch_time_ms();
     return 0;
 }

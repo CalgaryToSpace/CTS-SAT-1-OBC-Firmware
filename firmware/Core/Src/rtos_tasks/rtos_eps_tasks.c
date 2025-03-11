@@ -7,6 +7,7 @@
 #include "timekeeping/timekeeping.h"
 #include "eps_drivers/eps_power_management.h"
 #include "config/configuration.h"
+#include "comms_drivers/comms_drivers.h"
 #include "cmsis_os.h"
 
 #include <inttypes.h>

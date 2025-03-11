@@ -20,6 +20,10 @@ static const uint8_t CONFIG_MAX_VARIABLE_NAME_LENGTH = 50;
 
 static const uint8_t CONFIG_MAX_JSON_STRING_LENGTH = UINT8_MAX;
 
+// extern for COMMS
+extern uint32_t COMMS_max_time_since_last_response_ms;
+extern uint32_t COMMS_check_timer;
+
 // extern for EPS
 extern uint32_t toggleable_channels;
 extern uint32_t watchdog_timer, EPS_monitor_timer;
