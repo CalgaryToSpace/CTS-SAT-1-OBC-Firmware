@@ -353,6 +353,11 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func_name = "ADCS_pack_to_file_download_buffer_struct"
     },
 
+    {
+        .test_func = TEST_EXEC__ADCS_combine_sd_log_bitmasks,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_combine_sd_log_bitmasks"
+    },
     // ****************** END SECTION: test_adcs ******************
 
     {

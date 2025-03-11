@@ -1290,9 +1290,9 @@ uint8_t ADCS_get_current_unix_time(uint64_t* epoch_time_ms) {
 /// @param[in] which_sd Which SD card to log to; 0 for primary, 1 for secondary 
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_set_sd_log_config(uint8_t which_log, const uint8_t **log_array, uint8_t log_array_size, uint16_t log_period, ADCS_sd_log_destination_enum_t which_sd) {
-    // TODO: for some reason, the bitmasks aren't completely matching the things...
+    // TODO: The bug with the bitmasks should be fixed! Test this.
     
-    uint8_t data_send[13];
+    uint8_t data_send[13] = {0};
     ADCS_combine_sd_log_bitmasks(log_array, log_array_size, data_send); // saves to the first 10 bytes of data_send
     ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, log_period, 10);
     data_send[12] = which_sd;

@@ -1,5 +1,6 @@
 #include "adcs_drivers/adcs_struct_packers.h"
 #include "adcs_drivers/adcs_internal_drivers.h"
+#include "adcs_drivers/adcs_command_ids.h"
 #include "unit_tests/unit_test_helpers.h"  // for all unit tests
 #include "unit_tests/test_adcs.h"          // for ADCS tests
 #include "transforms/number_comparisons.h" // for comparing doubles
@@ -848,6 +849,33 @@ uint8_t TEST_EXEC__ADCS_convert_double_to_string() {
 
     TEST_ASSERT_TRUE(ADCS_convert_double_to_string(-0.9,1,&output_string[0],20) == 0);
     TEST_ASSERT_TRUE(strcmp(output_string, "-0.9") == 0);
+
+    return 0;
+
+}
+
+uint8_t TEST_EXEC__ADCS_combine_sd_log_bitmasks() {
+    uint8_t output[10] = {0};
+    const uint8_t num_logs = 3;
+    const uint8_t* commissioning_data[3] = {ADCS_SD_LOG_MASK_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_RAW_MAGNETOMETER};
+    ADCS_combine_sd_log_bitmasks(commissioning_data, num_logs, output);
+
+    uint8_t test_array[10] = {0x00, 0x20, 0x00, 0x40, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00};
+    for (uint8_t i = 0; i < 10; i++) {
+        TEST_ASSERT_TRUE(output[i] == test_array[i]);
+    }
+
+    uint8_t output_two[10] = {0};
+    const uint8_t num_logs_two = 14;  
+    const uint8_t* commissioning_data_two[14] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_ESTIMATED_GYRO_BIAS, ADCS_SD_LOG_MASK_ESTIMATION_INNOVATION_VECTOR, 
+                                                    ADCS_SD_LOG_MASK_MAGNETIC_FIELD_VECTOR, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_FINE_SUN_VECTOR, ADCS_SD_LOG_MASK_NADIR_VECTOR, ADCS_SD_LOG_MASK_WHEEL_SPEED, ADCS_SD_LOG_MASK_MAGNETORQUER_COMMAND,
+                                                    ADCS_SD_LOG_MASK_IGRF_MODELLED_MAGNETIC_FIELD_VECTOR, ADCS_SD_LOG_MASK_QUATERNION_ERROR_VECTOR, ADCS_SD_LOG_MASK_SATELLITE_POSITION_LLH, ADCS_SD_LOG_MASK_WHEEL_SPEED_COMMANDS};
+    ADCS_combine_sd_log_bitmasks(commissioning_data_two, num_logs_two, output_two);
+
+    uint8_t test_array_two[10] = {0x80, 0x7B, 0x00, 0x10, 0xEA, 0x00, 0x00, 0x08, 0x00, 0x00};
+    for (uint8_t i = 0; i < 10; i++) {
+        TEST_ASSERT_TRUE(output_two[i] == test_array_two[i]);
+    }
 
     return 0;
 
