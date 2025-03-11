@@ -60,6 +60,10 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
         .num_config_var = &EPS_monitor_timer,
     },
     {
+        .variable_name = "COMMS_check_timer",
+        .num_config_var = &COMMS_check_timer,
+    },
+    {
         .variable_name = "TCMD_require_unique_tssent",
         .num_config_var = &TCMD_require_unique_tssent,
     },
@@ -67,10 +71,6 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
     {
         .variable_name = "COMMS_max_time_since_last_response_ms",
         .num_config_var = &COMMS_max_time_since_last_response_ms,
-    },
-    {
-        .variable_name = "COMMS_check_timer",
-        .num_config_var = &COMMS_check_timer,
     },
 };
 

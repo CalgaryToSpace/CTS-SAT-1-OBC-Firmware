@@ -32,6 +32,13 @@ A boolean value set to either 0 or 1. A value of 1 indicates that timestamps (us
 
 **8) `EPS_monitor_timer`**:  
  The time in ms in which the system will check the channels connected to the EPS and toggle them off in case of errors. 
+
+**9) `COMMS_check_timer`**:  
+ The time in ms that the system will check when the last response was.
+
+**10) `COMMS_max_time_since_last_response_ms`**:  
+ The max time in ms the system will wait without a resposne before switching ANTs.
+
  
 ## Configuration Variable Arrays
 
