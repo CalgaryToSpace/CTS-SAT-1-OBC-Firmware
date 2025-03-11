@@ -288,6 +288,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
+        .tcmd_name = "fs_write_file_hex",
+        .tcmd_func = TCMDEXEC_fs_write_file_hex,
+        .number_of_args = 3,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
         .tcmd_name = "fs_delete_file",
         .tcmd_func = TCMDEXEC_fs_delete_file,
         .number_of_args = 1,
