@@ -571,7 +571,7 @@ uint8_t TCMDEXEC_eps_get_enabled_channels_json(
         }
     }
 
-    for (uint8_t i = comma; i<17; i++) { // continues the index from the first for loop but now prepends a comma to each value
+    for (uint8_t i = comma+1; i<17; i++) { // continues the index from the first for loop but now prepends a comma to each value
         if(EPS_check_status_bit_of_channel(status_bitfield,status_ch_ext_bitfield,i)){
             strcat(response_output_buf,",");
             EPS_append_and_convert_ch_to_type_string(response_output_buf,i);
