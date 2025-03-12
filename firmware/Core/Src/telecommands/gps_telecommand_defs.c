@@ -2,6 +2,7 @@
 #include "uart_handler/uart_handler.h"
 #include "telecommands/eps_telecommands.h"
 #include "gps/gps_internal_drivers.h"
+#include "littlefs/littlefs_helper.h"
 #include "log/log.h"
 #include "main.h"
 
@@ -56,6 +57,42 @@ uint8_t TCMDEXEC_gps_send_cmd_ascii(const char *args_str, TCMD_TelecommandChanne
             "GPS Response Code: %d",
             gps_cmd_response
         );
+
+        // Check if GPS Log directory is present
+        uint8_t littlefs_response = LFS_mount();
+        
+        //TODO: Put more thought into handling the lfs error codes
+        if(littlefs_response !=0){
+            LOG_message(
+                LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+                "LFS ERROR: Not Mounted"
+            );
+        }
+
+        // Create the dir and if dir is present, throw warning
+        littlefs_response =  LFS_make_directory("gps_logs");
+        if(littlefs_response == -2){
+            LOG_message(
+                LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+                "LFS WARNING: Dicrectory already exists"
+            );
+        }
+
+        // Get the current time to name the file
+        char timeresponse [100];
+        TIM_get_timestamp_string_datetime(&timeresponse, sizeof(timeresponse));
+
+        char full_path[200];
+        snprintf(full_path, sizeof(full_path), "gps_logs/%s", timeresponse);
+
+        // write to lfs
+        LFS_write_file(full_path,GPS_rx_buffer,GPS_rx_buffer_len);
+
+        littlefs_response = LFS_unmount();
+        // Add checck for this
+
+        //TODO: To test this, use the read telecommand to see if data was actually written
+
 
     }
 
