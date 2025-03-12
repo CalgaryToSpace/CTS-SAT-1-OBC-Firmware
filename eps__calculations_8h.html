@@ -126,6 +126,7 @@ This graph shows which files directly or indirectly include this file:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ab46f752066b90fc3fbc06226a67bbee7" id="r_ab46f752066b90fc3fbc06226a67bbee7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab46f752066b90fc3fbc06226a67bbee7">EPS_convert_battery_voltage_to_percent</a> (<a class="el" href="structEPS__battery__pack__datatype__eng__t.html">EPS_battery_pack_datatype_eng_t</a> battery)</td></tr>
+<tr class="memdesc:ab46f752066b90fc3fbc06226a67bbee7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the current EPS battery voltage from a PBU telemetry struct.  <br /></td></tr>
 <tr class="separator:ab46f752066b90fc3fbc06226a67bbee7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
@@ -143,12 +144,21 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Calculate the current EPS battery voltage from a PBU telemetry struct. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">battery</td><td>Telemetry struct </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Battery percentage, as a float. Nominally, the battery percentage is between 0 and 100. However, the battery percentage can exceed 100% if the battery voltage is above the maximum voltage, and can be less than 0% if the battery voltage is below the minimum voltage. </dd></dl>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="eps__calculations_8h_ab46f752066b90fc3fbc06226a67bbee7_icgraph.png" border="0" usemap="#aeps__calculations_8h_ab46f752066b90fc3fbc06226a67bbee7_icgraph" alt=""/></div>
 <map name="aeps__calculations_8h_ab46f752066b90fc3fbc06226a67bbee7_icgraph" id="aeps__calculations_8h_ab46f752066b90fc3fbc06226a67bbee7_icgraph">
-<area shape="rect" title=" " alt="" coords="246,39,389,79"/>
+<area shape="rect" title="Calculate the current EPS battery voltage from a PBU telemetry struct." alt="" coords="246,39,389,79"/>
 <area shape="rect" href="eps__telecommands_8c.html#af2a5d6ed69b9a658666bf15b20d62d10" title="Get current battery voltage percent from PBU." alt="" coords="5,5,198,46"/>
 <area shape="poly" title=" " alt="" coords="230,48,198,43,199,38,230,43"/>
 <area shape="rect" href="test__eps__calculations_8c.html#aec06b10b0beb89edebc94bc3e2bd40e8" title=" " alt="" coords="9,71,194,111"/>
