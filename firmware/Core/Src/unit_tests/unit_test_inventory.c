@@ -437,6 +437,16 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func_name = "TEST_EXEC__EPS_channel_from_str",
     },
     {
+        .test_func = TEST_EXEC__EPS_channel_to_str,
+        .test_file = "unit_tests/test_eps_drivers",
+        .test_func_name = "TEST_EXEC__EPS_channel_to_str",
+    },
+    {
+        .test_func = TEST_EXEC__EPS_check_status_bit_of_channel,
+        .test_file = "unit_tests/test_eps_drivers",
+        .test_func_name = "TEST_EXEC__EPS_check_status_bit_of_channel",
+    },
+    {
         .test_func = TEST_EXEC__EPS_check_type_sizes,
         .test_file = "unit_tests/test_eps_struct_packers",
         .test_func_name = "TEST_EXEC__EPS_check_type_sizes",
