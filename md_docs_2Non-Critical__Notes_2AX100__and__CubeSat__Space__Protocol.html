@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.13.2"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>CTS-SAT-1-OBC-Firmware: CTS-SAT-1-OBC-Firmware</title>
+<title>CTS-SAT-1-OBC-Firmware: The AX100 and the CubeSat Space Protocol (&lt;tt&gt;libcsp&lt;/tt&gt;)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -84,47 +84,25 @@ $(function(){ initResizable(false); });
 </div><!-- top -->
 <div id="doc-content">
 <div><div class="header">
-  <div class="headertitle"><div class="title">CTS-SAT-1-OBC-Firmware</div></div>
+  <div class="headertitle"><div class="title">The AX100 and the CubeSat Space Protocol (&lt;tt&gt;libcsp&lt;/tt&gt;)</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md96"></a></p>
-<p>Onboard Computer (OBC) Firmware and ground support software for the CTS-SAT-1 ("FrontierSat") mission. Firmware runs on the STM32-based Onboard Computer.</p>
-<h1><a class="anchor" id="autotoc_md97"></a>
-Quick Links - Getting Started</h1>
-<ul>
-<li><a class="el" href="00__Getting__Started_8md.html">Getting Started Guide</a></li>
-<li><a href="/docs/">Firmware Documentation File List</a> (start with <code><a class="el" href="00__Getting__Started_8md.html">00_Getting_Started.md</a></code>)</li>
-<li><a href="https://github.com/CalgaryToSpace/CTS-SAT-1-Ground-Support/">CTS-SAT-1 Ground Support Software</a></li>
-<li><a href="https://calgarytospace.github.io/CTS-SAT-1-OBC-Firmware">Doxygen Documentation</a></li>
-</ul>
-<h1><a class="anchor" id="autotoc_md98"></a>
-Contributors</h1>
-<p>Please add your name to the list below in your first Pull Request!</p>
-<ul>
-<li>Parker L.</li>
-<li>Nadeem M.</li>
-<li>Chris K.</li>
-<li>Kale F.</li>
-<li>Marko V.</li>
-<li>Vaibhav K.</li>
-<li>Muhammad Ali</li>
-<li>Saksham P.</li>
-<li>Alex O.</li>
-<li>Fardin M.</li>
-</ul>
-<h1><a class="anchor" id="autotoc_md99"></a>
-License and Libraries</h1>
-<p>This bulk of this project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.</p>
-<p>This project includes the following libraries, each with their own licenses:</p>
-<ol type="1">
-<li><b>STM32CubeIDE HAL library</b>, which is licensed under a variety of licenses. See applicable licenses in applicable sub-folders.<ul>
-<li>The gist is that the usage is very permissive, as long as you buy real STM32 chips.</li>
-</ul>
-</li>
-<li><b>FreeRTOS</b></li>
-<li><b>CMSIS</b></li>
-<li><b>LittleFS:</b> Licensed under the BSD-3-Clause license. </li>
-</ol>
+<div class="textblock"><p><a class="anchor" id="autotoc_md39"></a></p>
+<p>The GomSpace AX100 is the radio module used on CTS-SAT-1.</p>
+<h1><a class="anchor" id="autotoc_md40"></a>
+Loading <code>libcsp</code> Code from Upstream</h1>
+<p>The <code>libcsp</code> library is loaded from the <a href="https://github.com/CalgaryToSpace/libcsp">https://github.com/CalgaryToSpace/libcsp</a> fork, in the <code>libcsp-cts-sat-1</code> branch. This branch trails the <code>libcsp-1</code> branch from the upstream repository, and contains tiny build changes to conform to our build system (and warning levels).</p>
+<p>In order to maintain a simple build system, we use a script which copies the necessary files from the upstream repository into the <code>firmware/</code> directory. This script is maintained at <code>/misc_tools/copy_in_libcsp.sh</code>.</p>
+<h1><a class="anchor" id="autotoc_md41"></a>
+Important Human Communications</h1>
+<h2><a class="anchor" id="autotoc_md42"></a>
+GomSpace Support Ticket, 2024-09-06</h2>
+<blockquote class="doxtable">
+<p>There is not much difference between GomSpace/libcsp and libcsp/libcsp. It is mostly build related changes and a few changes to Python bindings. Note that if you use libcsp/libcsp, you need to use the 1.6 tag or the libcsp-1 branch, as version 2.x is incompatible. </p>
+</blockquote>
+<blockquote class="doxtable">
+<p>Note that there is also lib*gs*csp included in the “product interface application”. This is a small wrapper library that includes a few Gomspace specific things, like hooking into Gomspace logging etc. Since you are not using the rest of the Gomspace software stack, I don’t expect there is much need for libgscsp. </p>
+</blockquote>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

@@ -32,12 +32,12 @@ var searchData=
   ['handling_29',['Error Handling',['../md_docs_2C__General__Guidelines.html#autotoc_md22',1,'']]],
   ['hardfault_5fhandler_30',['HardFault_Handler',['../stm32l4xx__it_8h.html#a2bffc10d5bd4106753b7c30e86903bea',1,'HardFault_Handler(void):&#160;stm32l4xx_it.c'],['../stm32l4xx__it_8c.html#a2bffc10d5bd4106753b7c30e86903bea',1,'HardFault_Handler(void):&#160;stm32l4xx_it.c']]],
   ['hash_5fbytes_31',['hash_bytes',['../namespacesha256__unit__tests.html#a7546d47720a99c77ae2f3f7053753b8c',1,'sha256_unit_tests']]],
-  ['hclk_20hz_204000000_32',['HCLK(Hz)                               | 4000000',['../system__stm32l4xx_8c.html#autotoc_md76',1,'']]],
+  ['hclk_20hz_204000000_32',['HCLK(Hz)                               | 4000000',['../system__stm32l4xx_8c.html#autotoc_md80',1,'']]],
   ['hcrc_33',['hcrc',['../main_8h.html#ae3358c54a01c6487322df1275618d6b1',1,'hcrc:&#160;main.c'],['../main_8c.html#ae3358c54a01c6487322df1275618d6b1',1,'hcrc:&#160;main.c']]],
   ['hdma_5fuart4_5frx_34',['hdma_uart4_rx',['../main_8c.html#a5531b2fb5af9f7c77f321c4a957d662b',1,'hdma_uart4_rx:&#160;main.c'],['../stm32l4xx__hal__msp_8c.html#a5531b2fb5af9f7c77f321c4a957d662b',1,'hdma_uart4_rx:&#160;main.c'],['../stm32l4xx__it_8c.html#a5531b2fb5af9f7c77f321c4a957d662b',1,'hdma_uart4_rx:&#160;main.c']]],
   ['hdma_5fusart1_5frx_35',['hdma_usart1_rx',['../main_8c.html#a34251392f0d5e2461e3aef615918c235',1,'hdma_usart1_rx:&#160;main.c'],['../stm32l4xx__hal__msp_8c.html#a34251392f0d5e2461e3aef615918c235',1,'hdma_usart1_rx:&#160;main.c'],['../stm32l4xx__it_8c.html#a34251392f0d5e2461e3aef615918c235',1,'hdma_usart1_rx:&#160;main.c']]],
   ['head_36',['head',['../structlfs__dir.html#a086e8d93663f5528fcc7c2ff7802883d',1,'lfs_dir::head'],['../structlfs__file_1_1lfs__ctz.html#aff9613735c2288e388bf3000a66f4720',1,'lfs_file::lfs_ctz::head']]],
-  ['helper_20functions_37',['Helper Functions',['../md_docs_2Non-Critical__Notes_2Configuration__Variables.html#autotoc_md45',1,'']]],
+  ['helper_20functions_37',['Helper Functions',['../md_docs_2Non-Critical__Notes_2Configuration__Variables.html#autotoc_md49',1,'']]],
   ['helpers_5ftest_5fepsilon_38',['HELPERS_TEST_EPSILON',['../test__telecommand__parser_8c.html#aab5058e02aa1f39a0540ec1d1bbf8a45',1,'test_telecommand_parser.c']]],
   ['hex_5fvalues_39',['hex_values',['../namespacesha256__unit__tests.html#a82c57b7b0dc12021513f64f77205f54d',1,'sha256_unit_tests']]],
   ['hi2c1_40',['hi2c1',['../main_8h.html#af7b2c26e44dadaaa798a5c3d82914ba7',1,'hi2c1:&#160;main.c'],['../adcs__commands_8c.html#af7b2c26e44dadaaa798a5c3d82914ba7',1,'hi2c1:&#160;main.c'],['../main_8c.html#af7b2c26e44dadaaa798a5c3d82914ba7',1,'hi2c1:&#160;main.c']]],
@@ -61,6 +61,7 @@ var searchData=
   ['huart3_58',['huart3',['../main_8h.html#ab7c63c1b0f65db92b6a4ea19edf957e1',1,'huart3:&#160;main.c'],['../main_8c.html#ab7c63c1b0f65db92b6a4ea19edf957e1',1,'huart3:&#160;main.c'],['../stm32l4xx__it_8c.html#ab7c63c1b0f65db92b6a4ea19edf957e1',1,'huart3:&#160;main.c']]],
   ['huart4_59',['huart4',['../main_8h.html#ae273feb3e0dc44e38892650faa58fced',1,'huart4:&#160;main.c'],['../main_8c.html#ae273feb3e0dc44e38892650faa58fced',1,'huart4:&#160;main.c']]],
   ['huart5_60',['huart5',['../main_8h.html#a25a82fcf0cd24eb6d39977cb5864cec8',1,'huart5:&#160;main.c'],['../main_8c.html#a25a82fcf0cd24eb6d39977cb5864cec8',1,'huart5:&#160;main.c'],['../stm32l4xx__it_8c.html#a25a82fcf0cd24eb6d39977cb5864cec8',1,'huart5:&#160;main.c']]],
-  ['hunt_20activity_61',['Treasure Hunt Activity',['../md_docs_230__Repo__Organization.html#autotoc_md8',1,'']]],
-  ['hz_204000000_62',['Hz 4000000',['../system__stm32l4xx_8c.html#autotoc_md76',1,'HCLK(Hz)                               | 4000000'],['../system__stm32l4xx_8c.html#autotoc_md75',1,'SYSCLK(Hz)                             | 4000000']]]
+  ['human_20communications_61',['Important Human Communications',['../md_docs_2Non-Critical__Notes_2AX100__and__CubeSat__Space__Protocol.html#autotoc_md41',1,'']]],
+  ['hunt_20activity_62',['Treasure Hunt Activity',['../md_docs_230__Repo__Organization.html#autotoc_md8',1,'']]],
+  ['hz_204000000_63',['Hz 4000000',['../system__stm32l4xx_8c.html#autotoc_md80',1,'HCLK(Hz)                               | 4000000'],['../system__stm32l4xx_8c.html#autotoc_md79',1,'SYSCLK(Hz)                             | 4000000']]]
 ];
