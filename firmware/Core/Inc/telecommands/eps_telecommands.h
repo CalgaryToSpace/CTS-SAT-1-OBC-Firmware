@@ -102,5 +102,4 @@ uint8_t TCMDEXEC_eps_get_enabled_channels_json(
 );
 
 
-#endif /* __INCLUDE_GUARD__EPS_TELECOMMANDS_H__ */
-
+#endif // INCLUDE_GUARD__EPS_TELECOMMANDS_H__

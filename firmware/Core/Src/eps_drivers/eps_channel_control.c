@@ -113,27 +113,51 @@ uint8_t EPS_set_channel_enabled(EPS_CHANNEL_enum_t channel, uint8_t enabled) {
 /// @brief Takes in the status bitfields of the eps and outputs the status of the given channel number
 /// @param status_bitfield_1 The status bitfield of channels 0-15.
 /// @param status_bitfield_2 The status bitfield of channels 16-31.
-/// @return 0 if the channel is disabled, 1 if the channel is enabled and 2 if inputted channel number is incorrect
-uint8_t EPS_check_status_bit_of_channel(uint16_t status_bitfield_1 , uint16_t status_bitfield_2, uint8_t channel_number){
-    if (channel_number<16) { 
+/// @return 0 if the channel is disabled, 1 if the channel is enabled, and 2 if channel number is invalid
+/// @note If all channels are enabled, the output buffer would be require about 300 bytes.
+uint8_t EPS_check_status_bit_of_channel(
+    uint16_t status_bitfield_1 , uint16_t status_bitfield_2, uint8_t channel_number
+) {
+    if (channel_number < 16) {
         return ((status_bitfield_1 >> channel_number) & 1);
-    } else if  (channel_number<32){ 
+    } else if  (channel_number < 32) {
         return ((status_bitfield_2 >> (channel_number%16)) & 1);
     } else {
         return 2; // channel_number inputted to is out of bounds of status bitfields
     }
 }
 
-/// @brief Helper function meant to convert eps ch_number to ch_name then modify the string output to look like type of string so it can be appended to an output buffer
+/// @brief Convert EPS ch_number to ch_name, then append as a JSON list element to response_output_buf
 /// @param response_output_buf The output buffer that will store the string
+/// @param response_output_buf_len The total length of the output buffer
 /// @param ch_number The channel number of the EPS that will be converted to channel name
-/// @return 0 when string was properly outputted into the buffer, 1 if incorrect channel number was inputted
-uint8_t EPS_append_and_convert_ch_to_type_string(char *response_output_buf, uint8_t ch_number){
-    if (ch_number>16){
+/// @return 0 when string was properly outputted into the buffer, 1 if the channel number is invalid
+uint8_t EPS_convert_ch_num_to_string_and_append(
+    char *response_output_buf,
+    uint16_t response_output_buf_len,
+    uint8_t ch_number
+) {
+    if (ch_number > 16) {
         return 1;
-    }    
-    strcat(response_output_buf,"\"");
-    strcat(response_output_buf, EPS_channel_to_str(ch_number)); // outputs enum to channel name
-    strcat(response_output_buf,"\"");
+    }
+    strncat(response_output_buf, "\"", response_output_buf_len - strlen(response_output_buf) - 1);
+    strncat(response_output_buf, EPS_channel_to_str(ch_number), response_output_buf_len - strlen(response_output_buf) - 1);
+    strncat(response_output_buf, "\"", response_output_buf_len - strlen(response_output_buf) - 1);
     return 0;
+}
+
+void EPS_get_enabled_channels_json(
+    uint16_t status_bitfield_1, uint16_t status_bitfield_2,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    snprintf(response_output_buf, response_output_buf_len, "[");
+    for (uint8_t i = 0; i <= EPS_MAX_ACTIVE_CHANNEL_NUMBER; i++) {
+        if (EPS_check_status_bit_of_channel(status_bitfield_1, status_bitfield_2, i)) {
+            if (i != 0) {
+                strncat(response_output_buf, ",", response_output_buf_len - strlen(response_output_buf) - 1);
+            }
+            EPS_convert_ch_num_to_string_and_append(response_output_buf, response_output_buf_len, i);
+        }
+    }
+    strncat(response_output_buf, "]", response_output_buf_len - strlen(response_output_buf) - 1);
 }

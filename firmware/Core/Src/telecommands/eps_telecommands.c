@@ -558,27 +558,11 @@ uint8_t TCMDEXEC_eps_get_enabled_channels_json(
             "EPS_CMD_get_piu_housekeeping_data_run_avg (err %d)", result);
         return 1;
     }
-     
-    const uint16_t status_bitfield = status.stat_ch_on_bitfield;
-    const uint16_t status_ch_ext_bitfield = status.stat_ch_ext_on_bitfield;
 
-    uint8_t comma;
-    strcat(response_output_buf, "[ ");
-    for (comma=0; comma<17; comma++){ // this for loop is make sure a comma is not prepended to the first value of the list
-        if(EPS_check_status_bit_of_channel(status_bitfield,status_ch_ext_bitfield,comma)){
-            EPS_append_and_convert_ch_to_type_string(response_output_buf,comma);
-            break;
-        }
-    }
+    EPS_get_enabled_channels_json(
+        status.stat_ch_on_bitfield, status.stat_ch_ext_on_bitfield,
+        response_output_buf, response_output_buf_len
+    );
 
-    for (uint8_t i = comma+1; i<17; i++) { // continues the index from the first for loop but now prepends a comma to each value
-        if(EPS_check_status_bit_of_channel(status_bitfield,status_ch_ext_bitfield,i)){
-            strcat(response_output_buf,",");
-            EPS_append_and_convert_ch_to_type_string(response_output_buf,i);
-
-        }
-    }
-    strcat(response_output_buf, "]");
-    
     return 0;
 }
