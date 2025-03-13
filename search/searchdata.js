@@ -1,16 +1,16 @@
 var indexSectionsWithContent =
 {
   0: "0123478_abcdefghijklmnopqrstuvwxyz📚",
-  1: "aceflmst",
+  1: "abcefhiklmpst",
   2: "bfmst",
-  3: "034_abcdefgilmnorstu",
-  4: "_abcdefghilmnorstuv",
+  3: "034_abcdefgilmnoprstu",
+  4: "_abcdefghiklmnoprstuv",
   5: "_abcdefghiklmnopqrstuvwxyz",
-  6: "ablstw",
-  7: "aeflmst",
-  8: "aeflmost",
-  9: "acdefhilmprstuvwx",
-  10: "cs",
+  6: "abclnpstw",
+  7: "aceflmst",
+  8: "abcefklmoprst",
+  9: "abcdefghilmprstuvwx",
+  10: "bcdefhimos",
   11: "1acdefgilnoprstuvw"
 };
 

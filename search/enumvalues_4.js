@@ -1,9 +1,11 @@
 var searchData=
 [
-  ['mpi_5frx_5fmode_5fcommand_5fmode_0',['MPI_RX_MODE_COMMAND_MODE',['../mpi__types_8h.html#ad99b46e59f66afc27376333407cbc74aa59af4f98f8927393d5650c9c57c31202',1,'mpi_types.h']]],
-  ['mpi_5frx_5fmode_5fnot_5flistening_5fto_5fmpi_1',['MPI_RX_MODE_NOT_LISTENING_TO_MPI',['../mpi__types_8h.html#ad99b46e59f66afc27376333407cbc74aad223ade665bf6d16a3acb306b9abe51c',1,'mpi_types.h']]],
-  ['mpi_5frx_5fmode_5fsensing_5fmode_2',['MPI_RX_MODE_SENSING_MODE',['../mpi__types_8h.html#ad99b46e59f66afc27376333407cbc74aaf58d485b004ec025c41ff7515dfc7ef2',1,'mpi_types.h']]],
-  ['mpi_5ftransceiver_5fmode_5finactive_3',['MPI_TRANSCEIVER_MODE_INACTIVE',['../mpi__types_8h.html#a5741f814689289470b32d5ca4a2796f6a8a81c3a7120069949768a8e104948773',1,'mpi_types.h']]],
-  ['mpi_5ftransceiver_5fmode_5fmiso_4',['MPI_TRANSCEIVER_MODE_MISO',['../mpi__types_8h.html#a5741f814689289470b32d5ca4a2796f6a8f720ac91e8ea44ad1d89c16bb52dc55',1,'mpi_types.h']]],
-  ['mpi_5ftransceiver_5fmode_5fmosi_5',['MPI_TRANSCEIVER_MODE_MOSI',['../mpi__types_8h.html#a5741f814689289470b32d5ca4a2796f6a081bd849f658576188db5715eae00a9e',1,'mpi_types.h']]]
+  ['flash_5ferr_5fdevice_5fbusy_5ftimeout_0',['FLASH_ERR_DEVICE_BUSY_TIMEOUT',['../flash__driver_8h.html#ad200730319d2185ff8d22fd5d0c575acab682bd6eca56ae11aea58ff93c921fa9',1,'flash_driver.h']]],
+  ['flash_5ferr_5fok_1',['FLASH_ERR_OK',['../flash__driver_8h.html#ad200730319d2185ff8d22fd5d0c575acae5789485fc2a48e0389112c61225803f',1,'flash_driver.h']]],
+  ['flash_5ferr_5fspi_5freceive_5ffailed_2',['FLASH_ERR_SPI_RECEIVE_FAILED',['../flash__driver_8h.html#ad200730319d2185ff8d22fd5d0c575aca9d77f6a345c47e797874af81868cce9a',1,'flash_driver.h']]],
+  ['flash_5ferr_5fspi_5freceive_5ftimeout_3',['FLASH_ERR_SPI_RECEIVE_TIMEOUT',['../flash__driver_8h.html#ad200730319d2185ff8d22fd5d0c575aca612118de528019f2448765a0239c4364',1,'flash_driver.h']]],
+  ['flash_5ferr_5fspi_5ftransmit_5ffailed_4',['FLASH_ERR_SPI_TRANSMIT_FAILED',['../flash__driver_8h.html#ad200730319d2185ff8d22fd5d0c575aca50110ce8d4147166fe2132d5be8b764b',1,'flash_driver.h']]],
+  ['flash_5ferr_5fspi_5ftransmit_5ftimeout_5',['FLASH_ERR_SPI_TRANSMIT_TIMEOUT',['../flash__driver_8h.html#ad200730319d2185ff8d22fd5d0c575aca93ddf41adccefe50a3ea77c3f39319ab',1,'flash_driver.h']]],
+  ['flash_5ferr_5fstatus_5freg_5ferror_6',['FLASH_ERR_STATUS_REG_ERROR',['../flash__driver_8h.html#ad200730319d2185ff8d22fd5d0c575aca5d0f3bce6e40d05d1b5e1733ab8388e3',1,'flash_driver.h']]],
+  ['flash_5ferr_5funknown_7',['FLASH_ERR_UNKNOWN',['../flash__driver_8h.html#ad200730319d2185ff8d22fd5d0c575acaf3a401eefb57d45f8a9c922df2b614c5',1,'flash_driver.h']]]
 ];

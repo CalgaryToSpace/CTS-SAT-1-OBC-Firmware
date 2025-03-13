@@ -1,10 +1,4 @@
 var searchData=
 [
-  ['readme_2emd_0',['README.md',['../README_8md.html',1,'']]],
-  ['rtos_5feps_5ftasks_2ec_1',['rtos_eps_tasks.c',['../rtos__eps__tasks_8c.html',1,'']]],
-  ['rtos_5feps_5ftasks_2eh_2',['rtos_eps_tasks.h',['../rtos__eps__tasks_8h.html',1,'']]],
-  ['rtos_5ftask_5fhelpers_2ec_3',['rtos_task_helpers.c',['../rtos__task__helpers_8c.html',1,'']]],
-  ['rtos_5ftask_5fhelpers_2eh_4',['rtos_task_helpers.h',['../rtos__task__helpers_8h.html',1,'']]],
-  ['rtos_5ftasks_2ec_5',['rtos_tasks.c',['../rtos__tasks_8c.html',1,'']]],
-  ['rtos_5ftasks_2eh_6',['rtos_tasks.h',['../rtos__tasks_8h.html',1,'']]]
+  ['pthread_5fqueue_2eh_0',['pthread_queue.h',['../pthread__queue_8h.html',1,'']]]
 ];

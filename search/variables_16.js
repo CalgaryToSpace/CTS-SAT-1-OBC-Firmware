@@ -5,5 +5,6 @@ var searchData=
   ['which_5flog_2',['which_log',['../structADCS__sd__log__config__struct.html#ad8453a68605b7296498180e8e323e47a',1,'ADCS_sd_log_config_struct']]],
   ['which_5fsd_3',['which_sd',['../structADCS__sd__log__config__struct.html#a686768abd02b1f0b5b2457b08beaa3b7',1,'ADCS_sd_log_config_struct']]],
   ['which_5fsensor_4',['which_sensor',['../structADCS__raw__cam__sensor__struct__t.html#a17ab1a6f5e21e86815a6e1de17727663',1,'ADCS_raw_cam_sensor_struct_t']]],
-  ['write_5fstatus_5',['write_status',['../structSTM32__Internal__Flash__Write__Status__t.html#afa0fca8b97db66024e634ea88020702d',1,'STM32_Internal_Flash_Write_Status_t']]]
+  ['window_5fsize_5',['window_size',['../structcsp__rdp__t.html#a36b1a9474dfab0eb39b45dcf70d2dc95',1,'csp_rdp_t']]],
+  ['write_5fstatus_6',['write_status',['../structSTM32__Internal__Flash__Write__Status__t.html#afa0fca8b97db66024e634ea88020702d',1,'STM32_Internal_Flash_Write_Status_t']]]
 ];

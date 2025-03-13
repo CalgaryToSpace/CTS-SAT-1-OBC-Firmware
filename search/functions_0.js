@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['_5f_5fattribute_5f_5f_0',['__attribute__',['../syscalls_8c.html#af9aace1b44b73111e15aa39f06f43456',1,'syscalls.c']]],
+  ['_5f_5fattribute_5f_5f_0',['__attribute__',['../unioncsp__id__t.html#a15df84e690caf842b012256fac13b877',1,'csp_id_t::__attribute__()'],['../csp__cmp_8h.html#a4402590c0b64383fa59aaf6fe78dcb34',1,'__attribute__((packed)):&#160;csp_cmp.h'],['../csp__debug_8h.html#a2a3b6c77b513ce2eb0ee539924a8858e',1,'__attribute__((weak)) csp_assert_fail_action(const char *assertion:&#160;csp_clock.c'],['../csp__clock_8c.html#af9aace1b44b73111e15aa39f06f43456',1,'__attribute__((weak)):&#160;csp_clock.c'],['../csp__xtea_8c.html#a03349f0dcbab1d0882a30b425f518d5d',1,'__attribute__((aligned(sizeof(uint32_t)))):&#160;csp_xtea.c'],['../csp__endian_8c.html#a5fbd7ce40138fdd6faab291c78e5054a',1,'__attribute__((__const__)):&#160;csp_endian.c'],['../csp__sfp_8c.html#ad09246453a4dabd919c7541484046a87',1,'__attribute__((__packed__)):&#160;csp_sfp.c'],['../syscalls_8c.html#af9aace1b44b73111e15aa39f06f43456',1,'__attribute__((weak)):&#160;syscalls.c']]],
   ['_5f_5fio_5fgetchar_1',['__io_getchar',['../syscalls_8c.html#ad0122671640a3af49792ddaa59e8294e',1,'syscalls.c']]],
   ['_5f_5fio_5fputchar_2',['__io_putchar',['../syscalls_8c.html#aa53ed4b191897a1bfc205aa1da005d24',1,'syscalls.c']]],
   ['_5fclose_3',['_close',['../syscalls_8c.html#a5aab5e2acfd600e3667dc915a2bbc7cb',1,'syscalls.c']]],

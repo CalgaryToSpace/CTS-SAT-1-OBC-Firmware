@@ -10,5 +10,12 @@ var searchData=
   ['demo_5fflash_5fread_7',['demo_flash_read',['../flash__testing__demos_8c.html#a8b820d5639e3201ec967af242a24a521',1,'flash_testing_demos.c']]],
   ['demo_5fflash_5fwrite_8',['demo_flash_write',['../flash__testing__demos_8c.html#a195fe65949096932e071ddb8f4ff0dd6',1,'flash_testing_demos.c']]],
   ['dma1_5fchannel1_5firqhandler_9',['DMA1_Channel1_IRQHandler',['../stm32l4xx__it_8h.html#a7b6fac3d670a4860ebec8a961d5c4a73',1,'DMA1_Channel1_IRQHandler(void):&#160;stm32l4xx_it.c'],['../stm32l4xx__it_8c.html#a7b6fac3d670a4860ebec8a961d5c4a73',1,'DMA1_Channel1_IRQHandler(void):&#160;stm32l4xx_it.c']]],
-  ['dma1_5fchannel2_5firqhandler_10',['DMA1_Channel2_IRQHandler',['../stm32l4xx__it_8h.html#a0c3390d4dc5cfceccbeda71aa672d99d',1,'DMA1_Channel2_IRQHandler(void):&#160;stm32l4xx_it.c'],['../stm32l4xx__it_8c.html#a0c3390d4dc5cfceccbeda71aa672d99d',1,'DMA1_Channel2_IRQHandler(void):&#160;stm32l4xx_it.c']]]
+  ['dma1_5fchannel2_5firqhandler_10',['DMA1_Channel2_IRQHandler',['../stm32l4xx__it_8h.html#a0c3390d4dc5cfceccbeda71aa672d99d',1,'DMA1_Channel2_IRQHandler(void):&#160;stm32l4xx_it.c'],['../stm32l4xx__it_8c.html#a0c3390d4dc5cfceccbeda71aa672d99d',1,'DMA1_Channel2_IRQHandler(void):&#160;stm32l4xx_it.c']]],
+  ['do_5fcmp_5fclock_11',['do_cmp_clock',['../csp__service__handler_8c.html#ac576294c3bc9bed7f963772e4103ef3d',1,'csp_service_handler.c']]],
+  ['do_5fcmp_5fident_12',['do_cmp_ident',['../csp__service__handler_8c.html#a6cc9de05c4ce0329d38d7039f2c0af0e',1,'csp_service_handler.c']]],
+  ['do_5fcmp_5fif_5fstats_13',['do_cmp_if_stats',['../csp__service__handler_8c.html#a8be759bfca84ea3fde65c1cd720d1949',1,'csp_service_handler.c']]],
+  ['do_5fcmp_5fpeek_14',['do_cmp_peek',['../csp__service__handler_8c.html#aa1296b9f02d139b50df0d270b52f3c3f',1,'csp_service_handler.c']]],
+  ['do_5fcmp_5fpoke_15',['do_cmp_poke',['../csp__service__handler_8c.html#a30abf158cb798a7e5ba7988d56fb79ec',1,'csp_service_handler.c']]],
+  ['do_5fcmp_5froute_5fset_16',['do_cmp_route_set',['../csp__service__handler_8c.html#a241ce123d49b773588637230408f3e3f',1,'csp_service_handler.c']]],
+  ['do_5fcsp_5fdebug_17',['do_csp_debug',['../csp__debug_8h.html#a5e20b8fed7889fe45e3dd7197ccfd1be',1,'csp_debug.h']]]
 ];

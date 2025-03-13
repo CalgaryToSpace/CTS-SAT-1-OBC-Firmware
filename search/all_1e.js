@@ -6,9 +6,10 @@ var searchData=
   ['which_5fsd_3',['which_sd',['../structADCS__sd__log__config__struct.html#a686768abd02b1f0b5b2457b08beaa3b7',1,'ADCS_sd_log_config_struct']]],
   ['which_5fsensor_4',['which_sensor',['../structADCS__raw__cam__sensor__struct__t.html#a17ab1a6f5e21e86815a6e1de17727663',1,'ADCS_raw_cam_sensor_struct_t']]],
   ['why_5',['Why?',['../md_docs_2C__Unit__Tests.html#autotoc_md31',1,'']]],
-  ['windows_20computers_6',['VS Code Setup Procedure (ARM64 Windows Computers)',['../md_docs_2Non-Critical__Notes_2Setup__Guide__for__Windows__Arm64.html',1,'']]],
-  ['word_7',['WORD',['../sha256_8h.html#ad7b470a7b8d92207676132730ff03501',1,'sha256.h']]],
-  ['write_20a_20test_8',['How to Write a Test',['../md_docs_2C__Unit__Tests.html#autotoc_md33',1,'']]],
-  ['write_5fstatus_9',['write_status',['../structSTM32__Internal__Flash__Write__Status__t.html#afa0fca8b97db66024e634ea88020702d',1,'STM32_Internal_Flash_Write_Status_t']]],
-  ['write_5fstruct_5fto_5fmemory_10',['WRITE_STRUCT_TO_MEMORY',['../adcs__internal__drivers_8h.html#a09979f9863c2668236caf2293d1d5594',1,'adcs_internal_drivers.h']]]
+  ['window_5fsize_6',['window_size',['../structcsp__rdp__t.html#a36b1a9474dfab0eb39b45dcf70d2dc95',1,'csp_rdp_t']]],
+  ['windows_20computers_7',['VS Code Setup Procedure (ARM64 Windows Computers)',['../md_docs_2Non-Critical__Notes_2Setup__Guide__for__Windows__Arm64.html',1,'']]],
+  ['word_8',['WORD',['../sha256_8h.html#ad7b470a7b8d92207676132730ff03501',1,'sha256.h']]],
+  ['write_20a_20test_9',['How to Write a Test',['../md_docs_2C__Unit__Tests.html#autotoc_md33',1,'']]],
+  ['write_5fstatus_10',['write_status',['../structSTM32__Internal__Flash__Write__Status__t.html#afa0fca8b97db66024e634ea88020702d',1,'STM32_Internal_Flash_Write_Status_t']]],
+  ['write_5fstruct_5fto_5fmemory_11',['WRITE_STRUCT_TO_MEMORY',['../adcs__internal__drivers_8h.html#a09979f9863c2668236caf2293d1d5594',1,'adcs_internal_drivers.h']]]
 ];

@@ -13,5 +13,8 @@ var searchData=
   ['x_5frpm_10',['x_rpm',['../structADCS__wheel__speed__struct__t.html#a510af803bc3c7a89f4ee37fce8166fb5',1,'ADCS_wheel_speed_struct_t']]],
   ['x_5fwheel_5fspeed_5frpm_11',['x_wheel_speed_rpm',['../structADCS__measurements__struct__t.html#a9e273099e62f1738cf49dc3bde7be440',1,'ADCS_measurements_struct_t']]],
   ['xp_5fcoefficient_5fnano_12',['xp_coefficient_nano',['../structADCS__augmented__sgp4__params__struct__t.html#a1d76a4b51e3089c318b8f98226d7ed60',1,'ADCS_augmented_sgp4_params_struct_t']]],
-  ['xportpendsvhandler_13',['xPortPendSVHandler',['../FreeRTOSConfig_8h.html#a6f30022da7d797dd31f1b8a11cae9a35',1,'FreeRTOSConfig.h']]]
+  ['xportpendsvhandler_13',['xPortPendSVHandler',['../FreeRTOSConfig_8h.html#a6f30022da7d797dd31f1b8a11cae9a35',1,'FreeRTOSConfig.h']]],
+  ['xtea_5fblocksize_14',['XTEA_BLOCKSIZE',['../csp__xtea_8c.html#a5cacda053f99f20de1396f557b0a4ba4',1,'csp_xtea.c']]],
+  ['xtea_5fkey_5flength_15',['XTEA_KEY_LENGTH',['../csp__xtea_8c.html#a01e721e26701c7b9eca03c66ea58522c',1,'csp_xtea.c']]],
+  ['xtea_5frounds_16',['XTEA_ROUNDS',['../csp__xtea_8c.html#a36801eebef583b6c3438709144834e3e',1,'csp_xtea.c']]]
 ];

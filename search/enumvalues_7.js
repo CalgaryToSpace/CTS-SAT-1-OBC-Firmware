@@ -1,16 +1,9 @@
 var searchData=
 [
-  ['tcmd_5freadiness_5flevel_5fflight_5ftesting_0',['TCMD_READINESS_LEVEL_FLIGHT_TESTING',['../telecommand__types_8h.html#a9fd68e85101924b8acff534610df0189a04287134a69ec53c1f3985453115c62c',1,'telecommand_types.h']]],
-  ['tcmd_5freadiness_5flevel_5ffor_5foperation_1',['TCMD_READINESS_LEVEL_FOR_OPERATION',['../telecommand__types_8h.html#a9fd68e85101924b8acff534610df0189a44d7abb7456aa924319a09865a7c8577',1,'telecommand_types.h']]],
-  ['tcmd_5freadiness_5flevel_5fground_5fusage_5fonly_2',['TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY',['../telecommand__types_8h.html#a9fd68e85101924b8acff534610df0189ae38225a770874d91ce8644af04cf5747',1,'telecommand_types.h']]],
-  ['tcmd_5freadiness_5flevel_5fidea_5fphase_3',['TCMD_READINESS_LEVEL_IDEA_PHASE',['../telecommand__types_8h.html#a9fd68e85101924b8acff534610df0189a4d38ec031f9af9eb15d76c70e8c77570',1,'telecommand_types.h']]],
-  ['tcmd_5freadiness_5flevel_5fin_5fprogress_4',['TCMD_READINESS_LEVEL_IN_PROGRESS',['../telecommand__types_8h.html#a9fd68e85101924b8acff534610df0189a71dabc27bc76560ba059af13d029cac7',1,'telecommand_types.h']]],
-  ['tcmd_5freadiness_5flevel_5fnot_5fimplemented_5',['TCMD_READINESS_LEVEL_NOT_IMPLEMENTED',['../telecommand__types_8h.html#a9fd68e85101924b8acff534610df0189a4d67288bf76c785c8b3d312617b094d8',1,'telecommand_types.h']]],
-  ['tcmd_5ftelecommandchannel_5fdebug_5fuart_6',['TCMD_TelecommandChannel_DEBUG_UART',['../telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7caebe9421fc93e8221665a22b4dbcf3cd6',1,'telecommand_types.h']]],
-  ['tcmd_5ftelecommandchannel_5fradio1_7',['TCMD_TelecommandChannel_RADIO1',['../telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7caf5a1f536ea6e32c5cc954a92ca942346',1,'telecommand_types.h']]],
-  ['tim_5fsource_5feps_5frtc_8',['TIM_SOURCE_EPS_RTC',['../timekeeping_8h.html#a13ac9e80d89db8b1563cb7e942698c4ca7ca78e778059568380c7876b897184d6',1,'timekeeping.h']]],
-  ['tim_5fsource_5fgnss_9',['TIM_SOURCE_GNSS',['../timekeeping_8h.html#a13ac9e80d89db8b1563cb7e942698c4ca25324a4639a860c02faa733c79e3b8de',1,'timekeeping.h']]],
-  ['tim_5fsource_5fnone_10',['TIM_SOURCE_NONE',['../timekeeping_8h.html#a13ac9e80d89db8b1563cb7e942698c4ca77fbe8f5f808d2a2232fed2b3919a7f1',1,'timekeeping.h']]],
-  ['tim_5fsource_5ftelecommand_5fabsolute_11',['TIM_SOURCE_TELECOMMAND_ABSOLUTE',['../timekeeping_8h.html#a13ac9e80d89db8b1563cb7e942698c4ca020d72927a0a3328cb93d6784d65416a',1,'timekeeping.h']]],
-  ['tim_5fsource_5ftelecommand_5fcorrection_12',['TIM_SOURCE_TELECOMMAND_CORRECTION',['../timekeeping_8h.html#a13ac9e80d89db8b1563cb7e942698c4caf6c189223826f0f01d2d3069f13352f3',1,'timekeeping.h']]]
+  ['mpi_5frx_5fmode_5fcommand_5fmode_0',['MPI_RX_MODE_COMMAND_MODE',['../mpi__types_8h.html#ad99b46e59f66afc27376333407cbc74aa59af4f98f8927393d5650c9c57c31202',1,'mpi_types.h']]],
+  ['mpi_5frx_5fmode_5fnot_5flistening_5fto_5fmpi_1',['MPI_RX_MODE_NOT_LISTENING_TO_MPI',['../mpi__types_8h.html#ad99b46e59f66afc27376333407cbc74aad223ade665bf6d16a3acb306b9abe51c',1,'mpi_types.h']]],
+  ['mpi_5frx_5fmode_5fsensing_5fmode_2',['MPI_RX_MODE_SENSING_MODE',['../mpi__types_8h.html#ad99b46e59f66afc27376333407cbc74aaf58d485b004ec025c41ff7515dfc7ef2',1,'mpi_types.h']]],
+  ['mpi_5ftransceiver_5fmode_5finactive_3',['MPI_TRANSCEIVER_MODE_INACTIVE',['../mpi__types_8h.html#a5741f814689289470b32d5ca4a2796f6a8a81c3a7120069949768a8e104948773',1,'mpi_types.h']]],
+  ['mpi_5ftransceiver_5fmode_5fmiso_4',['MPI_TRANSCEIVER_MODE_MISO',['../mpi__types_8h.html#a5741f814689289470b32d5ca4a2796f6a8f720ac91e8ea44ad1d89c16bb52dc55',1,'mpi_types.h']]],
+  ['mpi_5ftransceiver_5fmode_5fmosi_5',['MPI_TRANSCEIVER_MODE_MOSI',['../mpi__types_8h.html#a5741f814689289470b32d5ca4a2796f6a081bd849f658576188db5715eae00a9e',1,'mpi_types.h']]]
 ];
