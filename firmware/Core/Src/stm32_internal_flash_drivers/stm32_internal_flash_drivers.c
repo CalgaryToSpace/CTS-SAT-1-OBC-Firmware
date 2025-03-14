@@ -1,10 +1,11 @@
+#include <string.h>
+
 #include "stm32_internal_flash_drivers/stm32_internal_flash_drivers.h"
 
 #include "stm32l4r5xx.h"
 #include "stm32l4xx_hal.h" // must include this before stm32l4xx_hal_flash.h
 #include "stm32l4xx_hal_flash.h"
 #include "stm32l4xx_hal_flash_ex.h"
-#include <string.h>
 
 /// @brief Writes data to the flash memory in chunks of 8 bytes.
 /// @param address Address in the flash memory where the data will be written.
@@ -138,4 +139,86 @@ uint8_t STM32_internal_flash_erase(uint16_t start_page_erase, uint16_t number_of
     default:
         return 0;
     }
+}
+
+/// @brief Gets option bytes configuration from the stm32 internal flash memory
+/// @param ob_data pointer to an FLASH_OBProgramInitTypeDef structure that
+/// contains the configuration information for the programming.
+/// @return 0 always
+uint8_t STM32_internal_flash_get_option_bytes(FLASH_OBProgramInitTypeDef *ob_data)
+{
+    // returns void
+    HAL_FLASHEx_OBGetConfig(ob_data);
+    return 0;
+}
+
+/// @brief Sets the active flash bank to either 1 or 2 (only if it is different than the current active flash bank).
+/// @brief On Success, will load application in desired flash bank
+/// @brief By Default, the active flash bank is 1
+/// @param wanted_active_flash_bank 1 or 2
+/// @return 0 on success, > 0 otherwise
+uint8_t STM32_internal_flash_set_active_flash_bank(uint8_t wanted_active_flash_bank)
+{
+    if (wanted_active_flash_bank != 1 && wanted_active_flash_bank != 2) 
+    {
+        return 1;
+    }
+    const uint8_t current_active_flash_bank = STM32_internal_flash_get_active_flash_bank();
+    if (wanted_active_flash_bank == current_active_flash_bank) 
+    {
+        return 2;
+    }
+
+    __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
+
+
+    if (HAL_FLASH_Unlock() != HAL_OK)
+    {
+        return 10;
+    }
+
+    if (HAL_FLASH_OB_Unlock() != HAL_OK)
+    {
+        return 20;
+    }
+
+    // Get current option bytes configuration
+    FLASH_OBProgramInitTypeDef option_byte_init;
+    HAL_FLASHEx_OBGetConfig(&option_byte_init);
+    const uint32_t wanted_bank_mode = wanted_active_flash_bank == 1 ? OB_BFB2_DISABLE : OB_BFB2_ENABLE;
+
+    option_byte_init.OptionType = OPTIONBYTE_USER;
+    option_byte_init.USERType = OB_USER_BFB2;
+    option_byte_init.USERConfig = wanted_bank_mode; 
+
+    // Apply the new option byte configuration
+    if (HAL_FLASHEx_OBProgram(&option_byte_init) != HAL_OK)
+    {
+        return 30;
+    }
+
+    // Launch the option byte loading to apply changes
+    if (HAL_FLASH_OB_Launch() != HAL_OK)
+    {
+        return 40;
+    }
+
+    if (HAL_FLASH_OB_Lock() != HAL_OK)
+    {
+        return 50;
+    }
+
+    if (HAL_FLASH_Lock() != HAL_OK)
+    {
+        return 60;
+    }
+
+    return 0;
+}
+
+/// @brief Returns active flash bank
+/// @return 1 is Flash Bank 1, 2 is Flash Bank 2
+uint8_t STM32_internal_flash_get_active_flash_bank()
+{
+    return (READ_BIT(FLASH->OPTR, FLASH_OPTR_BFB2) >> FLASH_OPTR_BFB2_Pos) + 1;
 }

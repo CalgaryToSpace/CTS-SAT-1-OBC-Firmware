@@ -123,7 +123,11 @@
 /*!< Uncomment the following line if you need to relocate the vector table
      anywhere in Flash or Sram, else the vector table is kept at the automatic
      remap of boot address selected */
-/* #define USER_VECT_TAB_ADDRESS */
+// CTS-SAT-1: Defining the USER_VECT_TAB_ADDRESS allows us to change the vector table during the 
+// course of the current program. The main usecase for this is to jump from the current application
+// to another, which requires relocating the vector table (The vector table contains addresses to vital functions needed,
+// you can see the vector table default in the startup_stm32l4r5xx.s file)
+#define USER_VECT_TAB_ADDRESS 
 
 #if defined(USER_VECT_TAB_ADDRESS)
 /*!< Uncomment the following line if you need to relocate your vector Table
