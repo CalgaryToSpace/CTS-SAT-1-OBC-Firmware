@@ -1,7 +1,7 @@
 #include "main.h"
 #include "littlefs/littlefs_benchmark.h"
 #include "littlefs/littlefs_helper.h"
-#include "flash_driver.h"
+#include "littlefs/flash_driver.h"
 #include "log/log.h"
 
 #include <string.h>
