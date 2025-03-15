@@ -937,6 +937,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_func = TCMDEXEC_eps_get_piu_housekeeping_data_run_avg_json,
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    }, 
+    {
+        .tcmd_name = "eps_get_enabled_channels_json",  
+        .tcmd_func = TCMDEXEC_eps_get_enabled_channels_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
 
     {
