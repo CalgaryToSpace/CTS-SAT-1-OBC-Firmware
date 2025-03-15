@@ -151,15 +151,23 @@ void TASK_handle_uart_telecommands(void *argument) {
 void TASK_execute_telecommands(void *argument) {
 	TASK_HELP_start_of_task();
 
+	// Note: Must not be less than 200ms since last pet.
+	const uint32_t task_period_for_watchdog_pet_ms = 250;
+
+	// Cannot pet the watchdog too quickly on boot.
+	osDelay(task_period_for_watchdog_pet_ms * 2);
+
 	while (1) {
 		// DEBUG_uart_print_str("TASK_execute_telecommands -> top of while(1)\n");
+		// Pet the watchdog. Must be pet every 16 seconds. Must be >= 200ms since last pet.
+		HAL_IWDG_Refresh(&hiwdg);
 
 		// Get the next telecommand to execute.
 		int16_t next_tcmd_slot = TCMD_get_next_tcmd_agenda_slot_to_execute();
 		if (next_tcmd_slot == -1) {
 			// No telecommands to execute.
 			// DEBUG_uart_print_str("No telecommands to execute.\n");
-			osDelay(50); // TODO: benchmark the TCMD_get_next_tcmd_agenda_slot_to_execute function and adjust this delay.
+			osDelay(task_period_for_watchdog_pet_ms);
 			continue;
 		}
 
@@ -171,8 +179,8 @@ void TASK_execute_telecommands(void *argument) {
 			sizeof(response_output_buf)
 		);
 
-		// Note: No yield here; execute all pending telecommands back-to-back.
-		// TODO: should probably consider a yield here.
+		// Note: Short yield here only; execute all pending telecommands back-to-back.
+		osDelay(task_period_for_watchdog_pet_ms);
 
 	} /* End Task's Main Loop */
 }
