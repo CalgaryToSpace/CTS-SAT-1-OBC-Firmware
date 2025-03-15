@@ -159,7 +159,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         }
 
         if (UART_eps_buffer_write_idx >= UART_eps_buffer_len) {
-            // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART EPS buffer is full\n"); //TODO: Remove this later
+            // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART EPS buffer is full\n");
 
             HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t*) &UART_eps_buffer_last_rx_byte, 1);
             // Exit, with everything the way it is (stop appending)
@@ -247,6 +247,7 @@ void GPS_set_uart_interrupt_state(uint8_t new_enabled) {
     }
 }
 
+// TODO: Probably need to remove the LOG_message() calls below. Instead, set a fault flag.
 
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
     // Reception Error callback for MPI UART port
@@ -266,17 +267,19 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
             "GPS UART Reception Error: %lu", huart->ErrorCode
         );
 
-        HAL_UART_Receive_IT(UART_gps_port_handle, (uint8_t*)&UART_gps_buffer_last_rx_byte, 1);
+        if (UART_gps_uart_interrupt_enabled == 1) {
+            HAL_UART_Receive_IT(UART_gps_port_handle, (uint8_t*)&UART_gps_buffer_last_rx_byte, 1);
+        }
     }
 
     // Reception Error callback for CAMERA UART port
     if (huart->Instance == UART_camera_port_handle->Instance) {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            LOG_SYSTEM_BOOM, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "CAMERA UART Reception Error: %lu", huart->ErrorCode
         ); // TODO: CAMERA is not registered as a system in the logger yet, Telecommand system used instead
 
-        HAL_UART_Receive_DMA(UART_camera_port_handle, (uint8_t*)&UART_camera_buffer_last_rx_byte, 1);
+        // Do not re-enable the interrupt here. Afraid of negative feedback loop.
     }
 
     // Reception Error callback for EPS UART port
@@ -286,6 +289,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
             "EPS UART Reception Error: %lu", huart->ErrorCode
         );
 
+        // We trust the EPS. Always re-enable the interrupt.
         HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t*)&UART_eps_buffer_last_rx_byte, 1);
     }
 }
