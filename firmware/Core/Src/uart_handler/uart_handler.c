@@ -7,7 +7,6 @@
 // Name the UART interfaces
 UART_HandleTypeDef *UART_telecommand_port_handle = &hlpuart1;
 UART_HandleTypeDef *UART_mpi_port_handle = &huart1;
-UART_HandleTypeDef *UART_lora_port_handle = &huart2;
 UART_HandleTypeDef *UART_gps_port_handle = &huart3;
 UART_HandleTypeDef *UART_camera_port_handle = &huart4;
 UART_HandleTypeDef *UART_eps_port_handle = &huart5;
@@ -26,14 +25,6 @@ volatile uint8_t UART_mpi_buffer[256];                      // extern
 volatile uint8_t UART_mpi_last_rx_byte = 0;                 // extern
 volatile uint32_t UART_mpi_last_write_time_ms = 0;          // extern
 volatile uint16_t UART_mpi_buffer_write_idx = 0;            // extern
-
-// UART LORA buffer                                 
-const uint16_t UART_lora_buffer_len = 1024;                 // extern
-volatile uint8_t UART_lora_buffer[1024];                    // extern
-volatile uint16_t UART_lora_buffer_write_idx = 0;           // extern
-volatile uint32_t UART_lora_last_write_time_ms = 0;         // extern
-volatile uint8_t UART_lora_is_expecting_data = 0;           // extern
-volatile uint8_t UART_lora_buffer_last_rx_byte = 0;         // not an extern
 
 // UART CAMERA buffer
 // TODO: Configure with peripheral required specifications
@@ -127,35 +118,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         }
     }
 
-    else if(huart->Instance == UART_lora_port_handle->Instance){
-        // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> LoRa Data\n");
-
-        if (! UART_lora_is_expecting_data) {
-            // Not expecting data, ignore this noise. Do not re-trigger the interrupt.
-            return;
-        }
-
-        // Add the byte to the buffer
-        if (UART_lora_buffer_write_idx >= UART_lora_buffer_len) {
-            // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART response buffer is full\n");
-            
-            // Shift all bytes left by 1
-            for (uint16_t i = 1; i < UART_lora_buffer_len; i++) {
-                UART_lora_buffer[i - 1] = UART_lora_buffer[i];
-            }
-
-            // Reset to a valid index
-            UART_lora_buffer_write_idx = UART_lora_buffer_len - 1;
-        }
-
-        // Add the received byte to the buffer
-        UART_lora_buffer[UART_lora_buffer_write_idx++] = UART_lora_buffer_last_rx_byte;
-        UART_lora_last_write_time_ms = HAL_GetTick();
-
-        // Restart reception for next byte
-        HAL_UART_Receive_IT(UART_lora_port_handle, (uint8_t*) &UART_lora_buffer_last_rx_byte, 1);
-    }
-
+    
     // TODO: Implement function to utilize this DMA reception callback for the CAMERA
     else if (huart->Instance == UART_camera_port_handle->Instance) {
         // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> CAMERA Data\n");
@@ -296,16 +259,6 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
         HAL_UART_Receive_DMA(UART_mpi_port_handle, (uint8_t*)&UART_mpi_last_rx_byte, 1);
     }
 
-    // Reception Error callback for LORA UART port
-    if (huart->Instance == UART_lora_port_handle->Instance) {
-        LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "LORA UART Reception Error: %lu", huart->ErrorCode
-        ); // TODO: LORA is not registered as a system in the logger yet
-
-        HAL_UART_Receive_IT(UART_lora_port_handle, (uint8_t*)&UART_lora_buffer_last_rx_byte, 1);
-    }
-
     // Reception Error callback for GPS UART port
     if (huart->Instance == UART_gps_port_handle->Instance) {
         LOG_message(
@@ -340,7 +293,6 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 void UART_init_uart_handlers(void) {
     // Enable the UART interrupt
     HAL_UART_Receive_IT(UART_telecommand_port_handle, (uint8_t*) &UART_telecommand_buffer_last_rx_byte, 1);
-    HAL_UART_Receive_IT(UART_lora_port_handle, (uint8_t*) &UART_lora_buffer_last_rx_byte, 1);
     HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t*) &UART_eps_buffer_last_rx_byte, 1);
 
     // GPS is not initialized as always-listening. It is enabled by the GPS telecommands.

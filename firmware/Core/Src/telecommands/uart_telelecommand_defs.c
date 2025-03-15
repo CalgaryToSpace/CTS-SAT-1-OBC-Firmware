@@ -22,7 +22,7 @@ static uint8_t rx_buffer[5120];
 
 /// @brief Send arbitrary commands to a UART peripheral, and receive the response.
 /// @param args_str 
-/// - Arg 0: UART port name to send data to: MPI, LORA, GPS, CAMERA, EPS (case insensitive)
+/// - Arg 0: UART port name to send data to: MPI, GPS, CAMERA, EPS (case insensitive)
 /// - Arg 1: Data to be sent (bytes specified as hex - Max 5KiB buffer)
 /// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
 /// @param response_output_buf The buffer to write the response to
@@ -176,24 +176,10 @@ uint8_t TCMDEXEC_uart_send_hex_get_response_hex(
         return 0;
     }
 
-    // UART 2, 3 & 5 use interrupt based reception. Set UART handle and buffers accordingly.
+    // UART 2 (disabled), 3 & 5 use interrupt based reception. Set UART handle and buffers accordingly.
     else {
-
-        // UART 2 Selected (LORA)
-        if(strcasecmp(arg_uart_port_name, "LORA") == 0) {
-            UART_handle_ptr = UART_lora_port_handle;
-            UART_rx_buffer_write_idx_ptr = &UART_lora_buffer_write_idx;
-            UART_rx_buffer = UART_lora_buffer;
-            UART_rx_buffer_size_ptr = &UART_lora_buffer_len;
-            UART_lora_is_expecting_data = 1;
-            HAL_UART_Receive_IT(UART_lora_port_handle, (uint8_t*) &UART_lora_buffer_last_rx_byte, 1);
-            UART_last_write_time_ms_ptr = &UART_lora_last_write_time_ms;
-            // TODO: LORA is not a system log source, Currently set to TELECOMMAND for the time being
-            LOG_source = LOG_SYSTEM_TELECOMMAND; 
-        }
-
         // UART 3 Selected (GPS)
-        else if(strcasecmp(arg_uart_port_name, "GPS") == 0) {
+        if(strcasecmp(arg_uart_port_name, "GPS") == 0) {
             UART_handle_ptr = UART_gps_port_handle;
             UART_rx_buffer_write_idx_ptr = &UART_gps_buffer_write_idx;
             UART_rx_buffer = UART_gps_buffer;
@@ -312,17 +298,13 @@ uint8_t TCMDEXEC_uart_send_hex_get_response_hex(
         *UART_rx_buffer_write_idx_ptr = 0;
 
         // Reset listening flags if used by peripheral (interrupt reception mode case is only handled here)
-        if(UART_handle_ptr == UART_lora_port_handle){
-            UART_lora_is_expecting_data = 0;
-        }
-        else if(UART_handle_ptr == UART_eps_port_handle){
+        if (UART_handle_ptr == UART_eps_port_handle) {
             UART_eps_is_expecting_data = 0;
         }
     }
 
     // Send back complete response (as hex), if any.
     if(rx_buffer_len > 0) { 
-
         // Convert rx_buffer to a string for logging
         // 2 hex chars, 1 space, +1 for null terminator
         size_t rx_buffer_str_len = rx_buffer_len*3+1;

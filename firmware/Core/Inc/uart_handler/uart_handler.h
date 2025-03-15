@@ -8,7 +8,6 @@
 // Name the UART interfaces
 extern UART_HandleTypeDef *UART_telecommand_port_handle;  
 extern UART_HandleTypeDef *UART_mpi_port_handle;                
-extern UART_HandleTypeDef *UART_lora_port_handle;              
 extern UART_HandleTypeDef *UART_gps_port_handle;
 extern UART_HandleTypeDef *UART_camera_port_handle;
 extern UART_HandleTypeDef *UART_eps_port_handle;
