@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 
+// Messages up to 256 characters
+#define LOG_FORMATTED_MESSAGE_MAX_LENGTH 256
+
 typedef enum {
     LOG_SEVERITY_DEBUG = 1 << 0,
     LOG_SEVERITY_NORMAL = 1 << 1,
