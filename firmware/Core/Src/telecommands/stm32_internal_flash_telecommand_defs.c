@@ -130,28 +130,21 @@ uint8_t TCMDEXEC_stm32_internal_flash_get_option_bytes(const char *args_str, TCM
     }
 
     snprintf(response_output_buf, response_output_buf_len,
-             "{\n"
-             "  \"OptionType\": %lu,\n"
-             "  \"WRPArea\": %lu,\n"
-             "  \"WRPStartOffset\": %lu,\n"
-             "  \"WRPEndOffset\": %lu,\n"
-             "  \"RDPLevel\": %lu,\n"
-             "  \"USERType\": %lu,\n"
-             "  \"USERConfig\": %lu,\n"
-             "  \"PCROPConfig\": %lu,\n"
-             "  \"PCROPStartAddr\": \"0x%lX\",\n"
-             "  \"PCROPEndAddr\": \"0x%lX\"\n"
-             "}",
-             option_bytes.OptionType,
-             option_bytes.WRPArea,
-             option_bytes.WRPStartOffset,
-             option_bytes.WRPEndOffset,
-             option_bytes.RDPLevel,
-             option_bytes.USERType,
-             option_bytes.USERConfig,
-             option_bytes.PCROPConfig,
-             option_bytes.PCROPStartAddr,
-             option_bytes.PCROPEndAddr);
+         "{\"OptionType\":%lu,\"WRPArea\":%lu,\"WRPStartOffset\":%lu,"
+         "\"WRPEndOffset\":%lu,\"RDPLevel\":%lu,\"USERType\":%lu,"
+         "\"USERConfig\":%lu,\"PCROPConfig\":%lu,\"PCROPStartAddr\":\"0x%lX\","
+         "\"PCROPEndAddr\":\"0x%lX\"}",
+         option_bytes.OptionType,
+         option_bytes.WRPArea,
+         option_bytes.WRPStartOffset,
+         option_bytes.WRPEndOffset,
+         option_bytes.RDPLevel,
+         option_bytes.USERType,
+         option_bytes.USERConfig,
+         option_bytes.PCROPConfig,
+         option_bytes.PCROPStartAddr,
+         option_bytes.PCROPEndAddr);
+
     return 0;
 }
 
