@@ -3,11 +3,13 @@
 #include "transforms/arrays.h"
 #include "unit_tests/unit_test_executor.h"
 #include "timekeeping/timekeeping.h"
+#include "littlefs/littlefs_helper.h"
 
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
 #include <inttypes.h>
+#include <math.h>
 
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_commands.h"
@@ -164,7 +166,6 @@ uint8_t TCMDEXEC_adcs_ack(const char *args_str, TCMD_TelecommandChannel_enum_t t
     }
 
     return status;
-
 }
 
 /// @brief Telecommand: Set the wheel speed of the ADCS
@@ -1794,6 +1795,203 @@ uint8_t TCMDEXEC_adcs_measurements(const char *args_str, TCMD_TelecommandChannel
     return status;
 }
 
+
+/*
+TODO: How to do this:
+   Get 20 bytes at a time
+   Declare a buffer outside of any function, which is where we can keep lots of data
+    - theoretically, we could allow this buffer to be 20 KiB 
+        - Size 3 image: 128x128 = 16 KiB (on disk, is 20 KiB)
+        - Check with Aarti about whether we will need anything bigger
+
+   Downlinking is currently IN PROGRESS by the rest of the Software team
+   - Our use case is to downlink the data ASAP, basically
+   - We don't care to store it long-term
+   - There is absolutely no way to downlink 1 MB of data (1024x1024) at once
+
+    Memory module work:
+        - Create a file, put all data in the file
+        - Then memory module downlinking can be handled from this
+        - Most probably using #include "littlefs/littlefs_helper.h"
+            - Functions to use: LFS_write_file, LFS_append_file
+            - LFS_make_directory may also be helpful for organisation
+
+   For now: try to get 20 bytes of data which actually makes sense
+   For future: split up the PR
+
+*/
+
+uint8_t adcs_download_buffer[20480]; // static buffer to hold the 20 kB from the download
+
+/// @brief Telecommand: Get the list of downloadable files from the ADCS SD card (alternate method)
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_download_index_file(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                   char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    // #define FLATSAT_TEST_MODE // TODO: REMOVE BEFORE FLIGHT
+    #ifdef FLATSAT_TEST_MODE
+    #include "eps_drivers/eps_commands.h"
+    EPS_CMD_output_bus_channel_on(8); 
+    // for testing, enable EPS channel 8 (REMOVE BEFORE FLIGHT)
+
+    LFS_format();
+    LFS_mount();
+    LFS_make_directory("ADCS"); 
+    // for testing, format and mount the LFS here (REMOVE BEFORE FLIGHT)
+    #endif 
+
+    int8_t status;
+    
+    status = LFS_delete_file("ADCS/index_file"); // if the index file doesn't exist, this will fail with code LFS_ERR_NOENT
+    if (status != 0 && status != LFS_ERR_NOENT) {snprintf(response_output_buf, response_output_buf_len, "Failed to delete index file in LittleFS (err %d)", status); return 1;}
+
+    ADCS_file_download_buffer_struct_t download_packet;
+
+    status = ADCS_load_file_download_block(ADCS_FILE_TYPE_INDEX, 0, 0, 1024);
+    if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS load download block failed (err %d)", status); return 1;}
+        // TODO: I'm not sure what, exactly, the 'offset' parameter in this function is for. I think the counter is the block_counter, but also not sure.
+
+    // Wait until the download block is ready
+    ADCS_download_block_ready_struct_t ready_struct;
+    do {
+        status = ADCS_get_download_block_ready_telemetry(&ready_struct);
+        if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS get download ready status failed (err %d)", status); return 1;}
+    } while (ready_struct.ready != true);
+
+    // Initiate download burst, ignoring the hole map
+    status = ADCS_initiate_download_burst(20, true);
+    if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS initiate download burst failed (err %d)", status); return 1;}
+        // TODO: I suspect that the message_length parameter represents the number of bytes to load, but I'm not sure.
+
+    uint16_t hole_map[8];
+
+    for (uint16_t i = 0; i < 1024; i++) {
+        // load 20 bytes at a time into the download buffer
+        status = ADCS_get_file_download_buffer(&(download_packet));
+        if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS get download buffer failed (err %d)", status); return 1;}
+
+        for (uint8_t j = 0; j < 20; j++) {
+            adcs_download_buffer[20 * download_packet.packet_counter + j] = download_packet.file_bytes[j];
+                // TODO: I've assumed that the packet counter is the correct number, in case they fall out of order. Verify this!!
+        }
+
+        // generate hole map to determine any missing packets
+        hole_map[download_packet.packet_counter / 128] = hole_map[download_packet.packet_counter / 128] | download_packet.packet_counter;
+
+    }
+
+    
+    /* HOLE MAP STUFF STARTS HERE */
+
+    for (uint8_t i = 0; i < 8; i++) {
+        // now send the hole map to the ADCS
+        uint8_t hole_map_slice[16];
+        ADCS_convert_uint16_to_reversed_uint8_array_members(&hole_map_slice[0], hole_map[i], 0);
+
+        status = ADCS_set_hole_map(hole_map_slice, i);
+        if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS set hole map failed for index %d (err %d)", i, status); return 1;}
+    }
+    
+    // now, using the hole map as a guide, give us the missing packets
+    status = ADCS_initiate_download_burst(20, false);
+    if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS initiate download burst failed (err %d)", status); return 1;}
+        // TODO: I suspect that the message_length parameter represents the number of bytes to load, but I'm not sure.
+
+    for (uint16_t i = 0; i < 1024; i++) {
+        // load 20 bytes at a time into the download buffer
+        status = ADCS_get_file_download_buffer(&(download_packet));
+        if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS get download buffer failed (err %d)", status); return 1;}
+
+        for (uint8_t j = 0; j < 20; j++) {
+            adcs_download_buffer[20 * download_packet.packet_counter + j] = download_packet.file_bytes[j];
+                // TODO: I've assumed that the packet counter is the correct number, in case they fall out of order. Verify this!!
+        }
+
+        // generate hole map to determine any missing packets
+        hole_map[download_packet.packet_counter / 128] = hole_map[download_packet.packet_counter / 128] | download_packet.packet_counter;
+
+    }
+
+    // TODO: Test this. What if we need more than one go-around to get all the packets?
+
+    /* HOLE MAP STUFF ENDS HERE */
+
+    // Create or append to the index file in the filesystem (append_file does both)
+    status = LFS_append_file("ADCS/index_file", &adcs_download_buffer[0], 20480); 
+    // TODO: this will fail for now because of a LittleFS driver bug
+    if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS write to LittleFS failed (err %d)", status); return 1;}
+
+    // To read the index file via telecommand, we can do: CTS1+fs_read_text_file(ADCS/index_file)!
+
+    return 0;
+
+}
+
+
+/// @brief Telecommand: Get the list of downloadable files from the ADCS SD card
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_get_sd_download_list(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                   char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    uint8_t status;
+
+    // Reset the file list read pointer
+    status = ADCS_reset_file_list_read_pointer();
+    if (status != 0 && status != 165) {
+        // For some reason, the engineering model ADCS always returns status 165 for this command, regardless of what the status *should* be
+        // Effectively, this means we cannot effectively check the status of this command, so we must use a workaround
+        // TODO: test this with CubeSupport to see if it gets anything reasonable out of it
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS reset file list read pointer failed (err %d)", status);
+        return 1;
+    } 
+    uint16_t filelist_length = 0;
+    ADCS_file_info_struct_t file_info[64]; // TODO: it did not like allocating 1024 of these; check how much needed
+
+    for (uint16_t i = 0; i < 63; i++) {
+
+        // Get the information for each file, polling until data is ready
+        do {
+            status = ADCS_get_file_info_telemetry(&(file_info[i])); 
+            if (status != 0) {
+                snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS get file info telemetry failed for index %d (err %d)", i, status);
+                return 1;
+            }
+            
+        } while (file_info[i].busy_updating != false);
+
+        // if everything is zero, we have reached the end of the file list
+        if (file_info[i].file_crc16 == 0 && file_info[i].file_size == 0) {
+            filelist_length = i;
+            break;
+        }
+
+        // otherwise, advance the file list read pointer and do it all again
+        status = ADCS_advance_file_list_read_pointer();
+        if (status != 0) {
+            snprintf(response_output_buf, response_output_buf_len,
+                "ADCS advance file list read pointer failed for index %d (err %d)", i, status);
+            return 1;
+        }
+        
+    }
+
+    // pack to JSON string and output
+    const uint8_t result_json = ADCS_sd_download_list_TO_json(&file_info[0], filelist_length, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
+    return status;
+}
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 
 ///     - No arguments for this command
@@ -1819,6 +2017,160 @@ uint8_t TCMDEXEC_adcs_acp_execution_state(const char *args_str, TCMD_Telecommand
     }
 
     return status;
+}
+
+/// @brief Telecommand: Download a specific file from the ADCS SD card
+/// @param args_str 
+///     - Arg 0: The index of the file to download
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                   char *response_output_buf, uint16_t response_output_buf_len) {
+
+    uint8_t status;
+
+    // parse file index argument
+    uint64_t file_index;
+    TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &file_index);
+
+    // get the data about the file to download
+    status = ADCS_reset_file_list_read_pointer();
+    if (status != 0 && status != 165) {snprintf(response_output_buf, response_output_buf_len, "ADCS reset file pointer failed (err %d)", status); return 1;}
+    // For some reason, the engineering model ADCS always returns status 165 for this command, regardless of what the status *should* be
+    // Effectively, this means we cannot effectively check the status of this command, so we must use a workaround
+    // TODO: write a workaround
+
+    for (uint16_t i = 0; i < file_index; i++) {
+        status = ADCS_advance_file_list_read_pointer();
+        if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS advance file pointer failed at index %d (err %d)", i, status); return 1;}
+    }
+    ADCS_file_info_struct_t file_info;
+    status = ADCS_get_file_info_telemetry(&file_info);
+    if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS get file info failed (err %d)", status); return 1;}
+
+    /*
+    The file is uniquely identified by the File Type and Counter parameters. The Offset and Block
+    Length parameters indicate which part of the file to buffer in memory. The maximum Block
+    Length is 20 kB. [20480 bytes (20 bytes * 1024 packets). Some files may require multiple blocks, such as image files]
+    */
+
+    uint16_t blocks_required = ceil(file_info.file_size / 20480.0);
+    uint64_t remaining_bytes = file_info.file_size;
+    
+    ADCS_file_download_buffer_struct_t file_packets[(uint64_t) ceil(file_info.file_size/20.0)];
+    uint64_t packet_index = 0;
+
+    for (uint16_t block_counter = 0; block_counter < blocks_required; block_counter++) {
+        // repeat all this for every block
+
+        uint16_t bytes_to_load = 1024 * 20;
+        if (remaining_bytes < bytes_to_load) {
+            bytes_to_load = remaining_bytes;
+        }
+
+        // We can perform up to 1024 read transactions at a time. Each read transaction loads 20 payload bytes from memory. 
+        uint16_t packets_to_load = (uint16_t) ceil(bytes_to_load / 20.0);
+        
+        // Load a download block from the ADCS
+        status = ADCS_load_file_download_block(file_info.file_type, block_counter, 0, bytes_to_load);
+        if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS load download block failed (err %d)", status); return 1;}
+            // TODO: I'm not sure what, exactly, the 'offset' parameter in this function is for. I think the counter is the block_counter, but also not sure.
+
+        // Wait until the download block is ready
+        ADCS_download_block_ready_struct_t ready_struct;
+        do {
+            status = ADCS_get_download_block_ready_telemetry(&ready_struct);
+            if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS get download ready status failed (err %d)", status); return 1;}
+        } while (ready_struct.ready != true);
+        
+        // Initiate download burst, ignoring the hole map
+        status = ADCS_initiate_download_burst(bytes_to_load, true);
+        if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS initiate download burst failed (err %d)", status); return 1;}
+            // TODO: I suspect that the message_length parameter represents the number of bytes to load, but I'm not sure.
+
+        /* 
+        If the Initiate File Download Burst command is issued on the I2C communications link, it is
+        expected to successively perform up to 1024 read transactions from the remote side, each with
+        22 bytes length, again with the same format as [TLM 241, File Download Buffer...] 
+        (the number [of read transactions] depends on the Block Length specified with the Load File Download Block command), 
+        each with a payload length of 20 bytes in rapid succession. Each download packet will have a 
+        header ID that matches that of the Initiate File Download Burst command. The following two bytes 
+        will contain the counter of the packet in the burst. The counter makes it possible to keep track of
+        which packets have been received on the remote side. 
+        */
+
+        ADCS_file_download_buffer_struct_t buffer[packets_to_load];
+        for (uint16_t i = 0; i < packets_to_load; i++) {
+            status = ADCS_get_file_download_buffer(&(buffer[i]));
+            if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS get download buffer failed for index %d (err %d)", i, status); return 1;}
+        }
+
+        for (uint16_t i = 0; i < packets_to_load; i++) {
+            // now that we've loaded the packets, save them to the output file
+            file_packets[packet_index + i] = buffer[i]; 
+        }
+        packet_index += packets_to_load;
+
+        /*
+        The Hole Map is a bitmap, where each bit represents one 20-byte packet out of the complete
+        download block. Since there are at most 1024 packets in one file download block, the Hole
+        Map is also 1024 bits long, or 128 bytes.
+        To make the CubeComputer resend only the packets that have been missed by the remote
+        side, the remote component must upload the Hole Map to the CubeComputer by performing
+        up to 8 Hole Map commands (each Hole Map command contains 16 bytes of the Hole Map).
+        After uploading the Hole Map, another Initiate Download Burst command can be issued, but
+        this time with the Ignore Hole Map parameter set to false. The CubeComputer will then
+        transmit only the packets that have a corresponding ‘0’ in the Hole Map.
+        */
+
+        bool hole_map[1024];
+        for (uint16_t i = 0; i< 1024; i++) {
+            hole_map[i] = false;
+            for (uint16_t j = 0; j < bytes_to_load; j++) {
+                // iterate through the buffer and determine which packets have been received
+                if (buffer[j].packet_counter == i) {
+                    hole_map[i] = true;
+                    break;
+                }
+            }
+        }
+
+        // this block converts the booleans to bytes, forwardly (e.g. 0b1111000000001111 becomes 0xf0, 0x0f)
+        for (uint8_t i = 1; i <= 8; i++) {
+            uint8_t hole_bytes[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+            // convert an appropriate slice of the array of bools into a 16-byte array
+            for (uint16_t j = ((i-1) * 128); j < (i * 128); j++) {
+                // 8 bits * 16 bytes = 128 bits per Hole Map, starting at index (i - 1) * 128
+                hole_bytes[(j / 8) - ((i-1) * 16)] |= (hole_map[j] << (7 - (j % 8))); 
+            }
+
+            // now set the hole map
+            status = ADCS_set_hole_map(hole_bytes, i);
+            if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS set hole map failed for index %d (err %d)", i, status); return 1;}
+        }
+
+        remaining_bytes -= bytes_to_load;
+    }
+
+    snprintf(response_output_buf, response_output_buf_len, "ADCS file download probably worked");
+    // TODO: reassemble the file and save it to memory (and also don't say "probably")
+
+    //qsort(&file_packets[0], sizeof(file_packets), sizeof(ADCS_file_download_buffer_struct_t), ADCS_compare_download_packets); // sort the file packets in ascending order of packet counter
+    
+    uint8_t file_bytes[file_info.file_size];
+    // TODO: check if we have enough RAM for this
+
+    // now that the packets are sorted, we can turn them into a regular array of bytes
+    for (uint64_t i = 0; i < ((uint64_t) ceil(file_info.file_size/20.0)); i++) {
+        file_bytes[i] = file_packets[i / 1024].file_bytes[i % 1024];
+    }
+
+    if (file_bytes[0] == 0) {
+        ;;;;;; // this if block is useless and only here to prevent a warning
+    }
+
+    WRITE_STRUCT_TO_MEMORY(file_bytes)
+
+    return 0;
 }
 
 /// @brief Telecommand: Request the given telemetry data from the ADCS
@@ -2025,7 +2377,7 @@ uint8_t TCMDEXEC_adcs_get_sd_log_config(const char *args_str, TCMD_TelecommandCh
     return status;
 }
 
-/// @brief Telecommand: Request commissioning telemetry from the ADCS and save it to the memory module
+/// @brief Telecommand: Request commissioning telemetry from the ADCS and save it to the onboard SD card
 /// @param args_str 
 ///     - Arg 0: Which commissioning step to request telemetry for (1-18)
 ///     - Arg 1: Log number (1 or 2)
@@ -2070,37 +2422,38 @@ uint8_t TCMDEXEC_adcs_request_commissioning_telemetry(const char *args_str, TCMD
     } while (current_state.time_since_iteration_start_ms <= 500);
 
     uint8_t status = 0;
-    // TODO: check perod in Commissioning Manual, and check if need to convert to ms
+
     switch(commissioning_step) {
-        case ADCS_COMMISISONING_STEP_DETERMINE_INITIAL_ANGULAR_RATES: {
+
+        case ADCS_COMMISSIONING_STEP_DETERMINE_INITIAL_ANGULAR_RATES: {
             const uint8_t num_logs = 3;
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[3] = {ADCS_SD_LOG_MASK_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_RAW_MAGNETOMETER};
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);
             break;
         }
-        case ADCS_COMMISISONING_STEP_INITIAL_DETUMBLING: {
+        case ADCS_COMMISSIONING_STEP_INITIAL_DETUMBLING: {
             const uint8_t num_logs = 4; 
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[4] = {ADCS_SD_LOG_MASK_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_RAW_MAGNETOMETER, ADCS_SD_LOG_MASK_MAGNETORQUER_COMMAND};
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);
             break;
         }
-        case ADCS_COMMISISONING_STEP_CONTINUED_DETUMBLING_TO_Y_THOMSON: {
+        case ADCS_COMMISSIONING_STEP_CONTINUED_DETUMBLING_TO_Y_THOMSON: {
             const uint8_t num_logs = 4; 
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[4] = {ADCS_SD_LOG_MASK_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_RAW_MAGNETOMETER, ADCS_SD_LOG_MASK_MAGNETORQUER_COMMAND};
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);
             break;
         }
-        case ADCS_COMMISISONING_STEP_MAGNETOMETER_DEPLOYMENT: {
+        case ADCS_COMMISSIONING_STEP_MAGNETOMETER_DEPLOYMENT: {
             const uint8_t num_logs = 4; 
-            const uint8_t period_s = 10; 
+            const uint8_t period_s = 1; 
             const uint8_t* commissioning_data[4] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_RAW_MAGNETOMETER, ADCS_SD_LOG_MASK_CUBECONTROL_CURRENT_MEASUREMENTS};
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);
             break;
         }
-        case ADCS_COMMISISONING_STEP_MAGNETOMETER_CALIBRATION: {
+        case ADCS_COMMISSIONING_STEP_MAGNETOMETER_CALIBRATION: {
             const uint8_t num_logs = 3; 
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[3] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_MAGNETIC_FIELD_VECTOR};
@@ -2108,35 +2461,35 @@ uint8_t TCMDEXEC_adcs_request_commissioning_telemetry(const char *args_str, TCMD
             // TODO: Magnetic Field Vector **should** be the calibrated measurements from the magnetometer, but we should see if we can check with CubeSpace about that
             break;
         }
-        case ADCS_COMMISISONING_STEP_ANGULAR_RATE_AND_PITCH_ANGLE_ESTIMATION: {
+        case ADCS_COMMISSIONING_STEP_ANGULAR_RATE_AND_PITCH_ANGLE_ESTIMATION: {
             const uint8_t num_logs = 4; 
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[4] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_MAGNETIC_FIELD_VECTOR};
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);                     
             break;
         }
-        case ADCS_COMMISISONING_STEP_Y_WHEEL_RAMP_UP_TEST: {
+        case ADCS_COMMISSIONING_STEP_Y_WHEEL_RAMP_UP_TEST: {
             const uint8_t num_logs = 5; 
-            const uint8_t period_s = 10; 
+            const uint8_t period_s = 1; 
             const uint8_t* commissioning_data[5] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_WHEEL_SPEED, ADCS_SD_LOG_MASK_MAGNETIC_FIELD_VECTOR};
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);   
             break;
         }
-        case ADCS_COMMISISONING_STEP_INITIAL_Y_MOMENTUM_ACTIVATION: {
+        case ADCS_COMMISSIONING_STEP_INITIAL_Y_MOMENTUM_ACTIVATION: {
             const uint8_t num_logs = 6; 
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[6] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_WHEEL_SPEED, ADCS_SD_LOG_MASK_MAGNETIC_FIELD_VECTOR, ADCS_SD_LOG_MASK_SATELLITE_POSITION_LLH};
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);   
             break;
         }
-        case ADCS_COMMISISONING_STEP_CONTINUED_Y_MOMENTUM_ACTIVATION_AND_MAGNETOMETER_EKF: {
+        case ADCS_COMMISSIONING_STEP_CONTINUED_Y_MOMENTUM_ACTIVATION_AND_MAGNETOMETER_EKF: {
             const uint8_t num_logs = 6; 
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[6] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_WHEEL_SPEED, ADCS_SD_LOG_MASK_MAGNETIC_FIELD_VECTOR, ADCS_SD_LOG_MASK_SATELLITE_POSITION_LLH};
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);   
             break;
         }
-        case ADCS_COMMISISONING_STEP_CUBESENSE_SUN_NADIR: {
+        case ADCS_COMMISSIONING_STEP_CUBESENSE_SUN_NADIR: {
             const uint8_t num_logs = 9; 
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[9] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, 
@@ -2145,7 +2498,7 @@ uint8_t TCMDEXEC_adcs_request_commissioning_telemetry(const char *args_str, TCMD
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);   
             break;
         }
-        case ADCS_COMMISISONING_STEP_EKF_ACTIVATION_SUN_AND_NADIR: {
+        case ADCS_COMMISSIONING_STEP_EKF_ACTIVATION_SUN_AND_NADIR: {
             const uint8_t num_logs = 9; 
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[9] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, 
@@ -2154,7 +2507,7 @@ uint8_t TCMDEXEC_adcs_request_commissioning_telemetry(const char *args_str, TCMD
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);  
             break;
         }
-        case ADCS_COMMISISONING_STEP_CUBESTAR_STAR_TRACKER: {
+        case ADCS_COMMISSIONING_STEP_CUBESTAR_STAR_TRACKER: {
             const uint8_t num_logs = 8; 
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[8] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, 
@@ -2163,7 +2516,7 @@ uint8_t TCMDEXEC_adcs_request_commissioning_telemetry(const char *args_str, TCMD
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);    
             break;
         }
-        case ADCS_COMMISISONING_STEP_EKF_ACTIVATION_WITH_STAR_VECTOR_MEASUREMENTS: {
+        case ADCS_COMMISSIONING_STEP_EKF_ACTIVATION_WITH_STAR_VECTOR_MEASUREMENTS: {
             const uint8_t num_logs = 8; 
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[8] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, 
@@ -2172,14 +2525,14 @@ uint8_t TCMDEXEC_adcs_request_commissioning_telemetry(const char *args_str, TCMD
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);    
             break;
         }
-        case ADCS_COMMISISONING_STEP_ZERO_BIAS_3_AXIS_REACTION_WHEEL_CONTROL: {
+        case ADCS_COMMISSIONING_STEP_ZERO_BIAS_3_AXIS_REACTION_WHEEL_CONTROL: {
             const uint8_t num_logs = 4; 
-            const uint8_t period_s = 10; 
+            const uint8_t period_s = 1; 
             const uint8_t* commissioning_data[4] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_WHEEL_SPEED};
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);   
             break;
         }
-        case ADCS_COMMISISONING_STEP_EKF_WITH_RATE_GYRO_STAR_TRACKER_MEASUREMENTS: {
+        case ADCS_COMMISSIONING_STEP_EKF_WITH_RATE_GYRO_STAR_TRACKER_MEASUREMENTS: {
             const uint8_t num_logs = 12; 
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[12] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_ESTIMATED_GYRO_BIAS, ADCS_SD_LOG_MASK_ESTIMATION_INNOVATION_VECTOR, 
@@ -2188,7 +2541,7 @@ uint8_t TCMDEXEC_adcs_request_commissioning_telemetry(const char *args_str, TCMD
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);   
             break;
         }
-        case ADCS_COMMISISONING_STEP_SUN_TRACKING_3_AXIS_CONTROL: {
+        case ADCS_COMMISSIONING_STEP_SUN_TRACKING_3_AXIS_CONTROL: {
             const uint8_t num_logs = 12; 
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[12] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_ESTIMATED_GYRO_BIAS, ADCS_SD_LOG_MASK_ESTIMATION_INNOVATION_VECTOR, 
@@ -2197,16 +2550,16 @@ uint8_t TCMDEXEC_adcs_request_commissioning_telemetry(const char *args_str, TCMD
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);   
             break;
         }
-        case ADCS_COMMISISONING_STEP_GROUND_TARGET_TRACKING_CONTROLLER: {
+        case ADCS_COMMISSIONING_STEP_GROUND_TARGET_TRACKING_CONTROLLER: {
             const uint8_t num_logs = 14; 
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[14] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_ESTIMATED_GYRO_BIAS, ADCS_SD_LOG_MASK_ESTIMATION_INNOVATION_VECTOR, 
                                                             ADCS_SD_LOG_MASK_MAGNETIC_FIELD_VECTOR, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_FINE_SUN_VECTOR, ADCS_SD_LOG_MASK_NADIR_VECTOR, ADCS_SD_LOG_MASK_WHEEL_SPEED, ADCS_SD_LOG_MASK_MAGNETORQUER_COMMAND,
-                                                            ADCS_SD_LOG_MASK_IGRF_MODELLED_MAGNETIC_FIELD_VECTOR, ADCS_SD_LOG_MASK_QUATERNION_ERROR_VECTOR, ADCS_SD_LOG_MASK_SATELLITE_POSITION_LLH, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES};
+                                                            ADCS_SD_LOG_MASK_IGRF_MODELLED_MAGNETIC_FIELD_VECTOR, ADCS_SD_LOG_MASK_QUATERNION_ERROR_VECTOR, ADCS_SD_LOG_MASK_SATELLITE_POSITION_LLH, ADCS_SD_LOG_MASK_WHEEL_SPEED_COMMANDS};
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);   
             break;
         }
-        case ADCS_COMMISISONING_STEP_GPS_RECEIVER: {
+        case ADCS_COMMISSIONING_STEP_GPS_RECEIVER: {
             const uint8_t num_logs = 6; 
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[6] = {ADCS_SD_LOG_MASK_SATELLITE_POSITION_LLH, ADCS_SD_LOG_MASK_RAW_GPS_STATUS, ADCS_SD_LOG_MASK_RAW_GPS_TIME, 
@@ -2224,3 +2577,13 @@ uint8_t TCMDEXEC_adcs_request_commissioning_telemetry(const char *args_str, TCMD
 
     return status;
 }
+
+/// @brief Telecommand: Instruct the ADCS to format the SD card
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_format_sd(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                   char *response_output_buf, uint16_t response_output_buf_len) {
+    uint8_t status = ADCS_format_sd();
+    return status;
+}     
