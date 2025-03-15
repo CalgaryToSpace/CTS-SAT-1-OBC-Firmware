@@ -198,9 +198,6 @@ uint8_t TCMDEXEC_adcs_raw_gps_z(const char *args_str, TCMD_TelecommandChannel_en
 uint8_t TCMDEXEC_adcs_measurements(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                    char *response_output_buf, uint16_t response_output_buf_len);
 
-uint8_t TCMDEXEC_adcs_get_sd_download_list(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                                   char *response_output_buf, uint16_t response_output_buf_len);
-
 uint8_t TCMDEXEC_adcs_generic_command(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len);
 
