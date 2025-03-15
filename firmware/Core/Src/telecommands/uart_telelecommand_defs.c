@@ -20,7 +20,7 @@ const uint16_t rx_buffer_max_size = 5120;
 static uint8_t tx_buffer[5120];
 static uint8_t rx_buffer[5120];
 
-/// @brief Send artibrary configuration commands to a UART peripheral
+/// @brief Send arbitrary commands to a UART peripheral, and receive the response.
 /// @param args_str 
 /// - Arg 0: UART port name to send data to: MPI, LORA, GPS, CAMERA, EPS (case insensitive)
 /// - Arg 1: Data to be sent (bytes specified as hex - Max 5KiB buffer)
@@ -32,15 +32,17 @@ static uint8_t rx_buffer[5120];
 ///         7: Unhandled error
 /// @note This function doesn't toggle the EPS power lines for peripherals. Ensure they are powered on before 
 ///       using this function.
-uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
-
+/// @note The camera UART port does not support receiving data in the function. TX only.
+uint8_t TCMDEXEC_uart_send_hex_get_response_hex(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
     // Parse UART port argument
     char arg_uart_port_name[10] = "";
     const uint8_t uart_port_name_parse_result = TCMD_extract_string_arg(args_str, 0, arg_uart_port_name, 10);
 
     // Parse hex-encoded config command (string to bytes)
-    uint16_t tx_buffer_len = 0;                             // Variable to store the length of the converted byte array
+    uint16_t tx_buffer_len = 0; // Variable to store the length of the converted byte array
     const uint8_t bytes_to_send_parse_result = TCMD_extract_hex_array_arg(args_str, 1, tx_buffer, tx_buffer_max_size, &tx_buffer_len);
 
     // Check for argument parsing errors
@@ -75,7 +77,9 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
         UART_rx_buffer_size_ptr = &UART_mpi_buffer_len;
 
         // Transmit bytes and receive response (DMA enabled reception)
-        const uint8_t MPI_tx_rx_status = MPI_send_command_get_response(tx_buffer, tx_buffer_len, rx_buffer, *UART_rx_buffer_size_ptr, &rx_buffer_len);
+        const uint8_t MPI_tx_rx_status = MPI_send_command_get_response(
+            tx_buffer, tx_buffer_len, rx_buffer, *UART_rx_buffer_size_ptr, &rx_buffer_len
+        );
 
         // Log successful transmission and print rx_buffer response in hex (uint8_t)
         char rx_buffer_str[rx_buffer_len*3];
@@ -137,6 +141,7 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
     }
 
     // UART 4 Selected (CAMERA)
+    // Note: Camera does not support receiving byte-by-byte.
     else if(strcasecmp(arg_uart_port_name, "CAMERA") == 0) {        
         UART_handle_ptr = UART_camera_port_handle;
         UART_rx_buffer_write_idx_ptr = &UART_camera_buffer_write_idx;
@@ -146,11 +151,9 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
         UART_last_write_time_ms_ptr = &UART_camera_last_write_time_ms;
         LOG_source = LOG_SYSTEM_BOOM; // Camera is related to the Boom experiment and should hence share the log source
 
-        // TODO: DMA handling function for camera is still under development.
-        // Return error code for now to indicate that the UART handling is not yet implemented. Remove this 
-        // once the UART handling is implemented for the camera. 
-        // Transmit the MPI command for now to test UART line
-        const HAL_StatusTypeDef transmit_status = HAL_UART_Transmit(UART_camera_port_handle, tx_buffer, tx_buffer_len, UART_TX_TIMEOUT_DURATION_MS);
+        const HAL_StatusTypeDef transmit_status = HAL_UART_Transmit(
+            UART_camera_port_handle, tx_buffer, tx_buffer_len, UART_TX_TIMEOUT_DURATION_MS
+        );
 
         // Check UART transmission status
         if (transmit_status != HAL_OK) {
@@ -170,10 +173,10 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
             "Transmitted bytes to camera. The Camera UART reception is not yet implemented."
         );
         
-        return 2;
+        return 0;
     }
 
-    // UART 2,3 & 5 use interrupt based reception, set UART handle and buffers according to selection
+    // UART 2, 3 & 5 use interrupt based reception. Set UART handle and buffers accordingly.
     else {
 
         // UART 2 Selected (LORA)
@@ -183,6 +186,7 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
             UART_rx_buffer = UART_lora_buffer;
             UART_rx_buffer_size_ptr = &UART_lora_buffer_len;
             UART_lora_is_expecting_data = 1;
+            HAL_UART_Receive_IT(UART_lora_port_handle, (uint8_t*) &UART_lora_buffer_last_rx_byte, 1);
             UART_last_write_time_ms_ptr = &UART_lora_last_write_time_ms;
             // TODO: LORA is not a system log source, Currently set to TELECOMMAND for the time being
             LOG_source = LOG_SYSTEM_TELECOMMAND; 
@@ -196,6 +200,9 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
             UART_rx_buffer_size_ptr = &UART_gps_buffer_len;
             UART_last_write_time_ms_ptr = &UART_gps_last_write_time_ms;
             LOG_source = LOG_SYSTEM_GPS;
+
+            // Enable GPS UART interrupt. We are now listening.
+            GPS_set_uart_interrupt_state(1);
         }
 
         // UART 5 Selected (EPS)
@@ -227,11 +234,13 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
             UART_rx_buffer[i] = 0;
         }
 
+        // Transmit config command to requested peripheral
+        const HAL_StatusTypeDef transmit_status = HAL_UART_Transmit(
+            UART_handle_ptr, tx_buffer, tx_buffer_len, UART_TX_TIMEOUT_DURATION_MS
+        );
+
         // Record start time for response reception
         const uint32_t UART_rx_start_time_ms = HAL_GetTick();
-
-        // Transmit config command to requested peripheral
-        const HAL_StatusTypeDef transmit_status = HAL_UART_Transmit(UART_handle_ptr, tx_buffer, tx_buffer_len, UART_TX_TIMEOUT_DURATION_MS);
 
         // Check UART transmission
         if (transmit_status != HAL_OK) {
@@ -255,8 +264,7 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
 
         // Receive from peripheral until a timeout event
         while (1) {
-            
-            // Check if we have received upto max UART rx buffer size
+            // Check if we have received up to max UART rx buffer size.
             if (*UART_rx_buffer_write_idx_ptr >= *UART_rx_buffer_size_ptr) {
                 break;
             }
@@ -312,7 +320,7 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
         }
     }
 
-    // Send back complete response if any
+    // Send back complete response (as hex), if any.
     if(rx_buffer_len > 0) { 
 
         // Convert rx_buffer to a string for logging
@@ -341,7 +349,6 @@ uint8_t TCMDEXEC_uart_send_bytes_hex(const char *args_str, TCMD_TelecommandChann
         ); 
 
         while(log_buffer_offset < rx_buffer_str_len-1) {
-
             // Calculate the remaining space in the buffer for the log message
             size_t log_buffer_remaining_space = rx_buffer_str_len - 1 - log_buffer_offset;
             // The length of the log chunk is the smaller of the remaining space or the maximum log message length

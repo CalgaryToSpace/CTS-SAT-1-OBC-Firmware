@@ -20,7 +20,7 @@ volatile uint32_t UART_telecommand_last_write_time_ms = 0;  // extern
 volatile uint8_t UART_telecommand_buffer_last_rx_byte = 0;  // not an extern
 
 // UART MPI buffer
-// TODO: Update buffer sizes to accomodate for incoming science data. Currently only configured for config commands
+// TODO: Update buffer sizes to accommodate for incoming science data. Currently only configured for config commands
 const uint16_t UART_mpi_buffer_len = 256;                   // extern       //Note: Max possible MPI response buffer size allocated to 50 bytes (Considering for the telecommand echo response, NOT science data.
 volatile uint8_t UART_mpi_buffer[256];                      // extern
 volatile uint8_t UART_mpi_last_rx_byte = 0;                 // extern
@@ -28,12 +28,11 @@ volatile uint32_t UART_mpi_last_write_time_ms = 0;          // extern
 volatile uint16_t UART_mpi_buffer_write_idx = 0;            // extern
 
 // UART LORA buffer                                 
-//TODO: Configure with peripheral required specifications
-const uint16_t UART_lora_buffer_len = 1024;                 // extern       // TODO: Set based on expected size requirements for reception
+const uint16_t UART_lora_buffer_len = 1024;                 // extern
 volatile uint8_t UART_lora_buffer[1024];                    // extern
 volatile uint16_t UART_lora_buffer_write_idx = 0;           // extern
 volatile uint32_t UART_lora_last_write_time_ms = 0;         // extern
-volatile uint8_t UART_lora_is_expecting_data = 0;           // extern;      // TODO: Set to 1 when a command is sent, and we're awaiting a response
+volatile uint8_t UART_lora_is_expecting_data = 0;           // extern
 volatile uint8_t UART_lora_buffer_last_rx_byte = 0;         // not an extern
 
 // UART CAMERA buffer
@@ -81,7 +80,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         // THIS IS THE DEBUG/TELECOMMAND UART
         // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> Telecommand\n");
         
-        // add the byte to the buffer
+        // Add the byte to the buffer.
         if (UART_telecommand_buffer_write_idx >= UART_telecommand_buffer_len) {
             DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART telecommand buffer is full\n");
             
@@ -128,13 +127,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         }
     }
 
-    // TODO: Verify implementation with peripheral connected. Currently configured to follow interrupt based receive
     else if(huart->Instance == UART_lora_port_handle->Instance){
-        // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> LORA Data\n");
+        // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> LoRa Data\n");
 
         if (! UART_lora_is_expecting_data) {
-            // not expecting data, ignore this noise
-            HAL_UART_Receive_IT(UART_lora_port_handle, (uint8_t*) &UART_lora_buffer_last_rx_byte, 1);
+            // Not expecting data, ignore this noise. Do not re-trigger the interrupt.
             return;
         }
 
@@ -191,7 +188,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> EPS Data\n");
 
         if (! UART_eps_is_expecting_data) {
-            // Not expecting data, ignore this noise
+            // Not expecting data, ignore this noise.
+            // Intentionally re-enable the interrupt though, because the EPS is quite important,
+            // and is deemed reliable over UART. Not too worried about spurious interrupts.
             HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t*) &UART_eps_buffer_last_rx_byte, 1);
             return;
         }
@@ -237,6 +236,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     }
     
     else if (huart->Instance == UART_gps_port_handle->Instance) {
+        // Note: If the GPS is not enabled, the interrupt is not re-enabled via HAL_UART_Receive_IT().
+        // This is a safety feature against the GPS spamming null bytes, which can lock up the system.
         if (UART_gps_uart_interrupt_enabled == 1) {
 
             // Add the byte to the buffer
@@ -269,6 +270,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
 /// @brief Sets the UART interrupt state (enabled/disabled)
 /// @param new_enabled 1: enable interrupt; 0: disable interrupt
+/// @note This function must be called very carefully. This type of GPS is known to, in the wrong
+///       mode, spam null bytes, which can lock up the entire system. Thus, the interrupt is disabled
+///       by default, and must be enabled explicitly by the GPS telecommands.
 void GPS_set_uart_interrupt_state(uint8_t new_enabled) {
     if (new_enabled == 1)
     {
