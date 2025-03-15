@@ -10,7 +10,7 @@
 uint16_t erase_called = 0;
 uint16_t write_called = 0;
 uint16_t read_called = 0;
-extern uint8_t FLASH_BENCHMARK_ENABLED = 0;
+uint8_t FLASH_BENCHMARK_ENABLED = 0;
 
 /// Timeout duration for HAL_SPI_READ/WRITE operations.
 // Note: FLASH_read_data has sporadic timeouts at 5ms; 10ms is a safe bet.
