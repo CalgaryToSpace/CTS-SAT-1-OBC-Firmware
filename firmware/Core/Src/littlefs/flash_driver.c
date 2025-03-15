@@ -5,6 +5,12 @@
 #include "debug_tools/debug_uart.h"
 
 #include "config/static_config.h"
+#include "log/log.h"
+
+uint16_t erase_called = 0;
+uint16_t write_called = 0;
+uint16_t read_called = 0;
+extern uint8_t FLASH_BENCHMARK_ENABLED = 0;
 
 /// Timeout duration for HAL_SPI_READ/WRITE operations.
 // Note: FLASH_read_data has sporadic timeouts at 5ms; 10ms is a safe bet.
@@ -393,6 +399,10 @@ FLASH_error_enum_t FLASH_write_disable(SPI_HandleTypeDef *hspi, uint8_t chip_num
 
 FLASH_error_enum_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t page)
 {
+    if (FLASH_BENCHMARK_ENABLED == 1) {
+        erase_called++;
+    }
+
     // Split address into its 3 bytes
     uint8_t addr_bytes[3] = {(page >> 16) & 0xFF, (page >> 8) & 0xFF, page & 0xFF};
 
@@ -493,6 +503,10 @@ FLASH_error_enum_t FLASH_erase(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs
 
 FLASH_error_enum_t FLASH_write_data(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t page, uint8_t *packet_buffer, lfs_size_t packet_buffer_len)
 {
+    if (FLASH_BENCHMARK_ENABLED == 1) {
+        write_called++;
+    }
+
     // Split main address into its 3 bytes
     uint8_t addr_bytes[3] = {(page >> 16) & 0xFF, (page >> 8) & 0xFF, page & 0xFF};
     
@@ -645,6 +659,10 @@ FLASH_error_enum_t FLASH_write_data(SPI_HandleTypeDef *hspi, uint8_t chip_number
 
 FLASH_error_enum_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number, lfs_block_t page, uint8_t *rx_buffer, lfs_size_t rx_buffer_len)
 {
+    if (FLASH_BENCHMARK_ENABLED == 1) {
+        read_called++;
+    }
+
     uint8_t read_addr_bytes[3] = {(page >> 16) & 0xFF, (page >> 8) & 0xFF, page & 0xFF};
 
     // Define the address where data will be read from in cache register (First 4 bits are dummy bits)
@@ -887,4 +905,13 @@ FLASH_error_enum_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_numb
         return FLASH_ERR_UNKNOWN;
     }
     return FLASH_ERR_OK; // success
+}
+
+void print_calls() {
+    LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "FLASH Erase Calls: %u", erase_called);
+    LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "FLASH Write Calls: %u", write_called);
+    LOG_message(LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "FLASH Read Calls: %u", read_called);
+    write_called = 0;
+    erase_called = 0;
+    read_called = 0;
 }

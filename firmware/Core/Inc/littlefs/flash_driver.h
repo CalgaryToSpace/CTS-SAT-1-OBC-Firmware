@@ -61,6 +61,8 @@ static const uint8_t FLASH_SR1_WRITE_ENABLE_LATCH_MASK = (1 << 1);
 static const uint8_t FLASH_SR1_PROGRAMMING_ERROR_MASK = (1 << 3);
 static const uint8_t FLASH_SR1_ERASE_ERROR_MASK = (1 << 2);
 
+extern uint8_t FLASH_BENCHMARK_ENABLED;
+
 /*-----------------------------FLASH ERROR CODES-----------------------------*/
 typedef enum {
     FLASH_ERR_OK                    = 0,    // No error occurred
@@ -87,5 +89,7 @@ FLASH_error_enum_t FLASH_read_data(SPI_HandleTypeDef *hspi, uint8_t chip_number,
 
 FLASH_error_enum_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_number);
 FLASH_error_enum_t FLASH_reset(SPI_HandleTypeDef *hspi, uint8_t chip_number);
+
+void print_calls();
 
 #endif /* INCLUDE_GUARD__FLASH_DRIVER_H__ */

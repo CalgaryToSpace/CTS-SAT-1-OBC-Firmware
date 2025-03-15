@@ -338,7 +338,6 @@ uint8_t TCMDEXEC_fs_demo_write_then_read(const char *args_str, TCMD_TelecommandC
 /// - Arg 0: Write chunk size (bytes)
 /// - Arg 1: Write chunk count
 /// @return 0 on success, 1 if error parsing args, 2 if benchmark failed
-/// @note The maximum write chunk size is 127 bytes, apparently; need to investigate why so small.
 uint8_t TCMDEXEC_fs_benchmark_write_read(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     
