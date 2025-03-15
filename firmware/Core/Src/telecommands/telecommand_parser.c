@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include <string.h>
 
+/// @brief Bool. When 1, the telecommand parser will require a valid SHA256 hash in the telecommand string.
 uint32_t TCMD_require_valid_sha256 = 0;
 
 /// @brief Returns whether a character is alphanumeric (0-9, A-Z, a-z).

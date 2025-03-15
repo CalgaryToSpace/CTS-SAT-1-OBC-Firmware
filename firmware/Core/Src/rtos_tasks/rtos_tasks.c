@@ -19,8 +19,6 @@
 #include <stdio.h>
 #include <time.h>
 
-uint8_t TASK_heartbeat_is_on = 1;
-
 /// @brief The period of the heartbeat task, in milliseconds. 0 to disable.
 uint32_t TASK_heartbeat_period_ms = 990;
 
@@ -49,7 +47,7 @@ void TASK_DEBUG_print_heartbeat(void *argument) {
 		HAL_Delay(100 + (i*25));
 	}
 
-	osDelay(TASK_heartbeat_period_ms);
+	osDelay(TASK_heartbeat_period_ms > 0 ? TASK_heartbeat_period_ms : 1000);
 
     uint64_t unix_time_ms = 0;
     time_t seconds = 0;
@@ -57,7 +55,7 @@ void TASK_DEBUG_print_heartbeat(void *argument) {
     struct tm *time_info;
 
 	while (1) {
-        if ((TASK_heartbeat_period_ms > 0) && TASK_heartbeat_is_on) {
+        if ((TASK_heartbeat_period_ms > 0)) {
             unix_time_ms = TIM_get_current_unix_epoch_time_ms();
             seconds = (time_t)(unix_time_ms/ 1000U);
             ms = unix_time_ms - 1000U * seconds;
@@ -75,7 +73,7 @@ void TASK_DEBUG_print_heartbeat(void *argument) {
 		HAL_GPIO_TogglePin(PIN_LED_DEVKIT_LD2_GPIO_Port, PIN_LED_DEVKIT_LD2_Pin);
 		HAL_GPIO_TogglePin(PIN_LED_GP2_OUT_GPIO_Port, PIN_LED_GP2_OUT_Pin);
 
-		osDelay(TASK_heartbeat_period_ms);
+		osDelay(TASK_heartbeat_period_ms > 0 ? TASK_heartbeat_period_ms : 1000);
 	}
 }
 
