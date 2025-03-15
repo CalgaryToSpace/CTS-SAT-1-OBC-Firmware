@@ -96,6 +96,5 @@ var searchData=
   ['mx_5fuart4_5finit_93',['MX_UART4_Init',['../main_8c.html#ada2fde91c9d08b4055b4d171690255d0',1,'main.c']]],
   ['mx_5fuart5_5finit_94',['MX_UART5_Init',['../main_8c.html#a18142fc3a1bfec6edaf6cf0af5549764',1,'main.c']]],
   ['mx_5fusart1_5fuart_5finit_95',['MX_USART1_UART_Init',['../main_8c.html#a62f4b77e20bccafe98a183771749c20c',1,'main.c']]],
-  ['mx_5fusart2_5fuart_5finit_96',['MX_USART2_UART_Init',['../main_8c.html#a6db1014d713f6f5c0f52a13299ee0733',1,'main.c']]],
-  ['mx_5fusart3_5fuart_5finit_97',['MX_USART3_UART_Init',['../main_8c.html#a1c98cc38e233c6b46ca2bf9598a5fce8',1,'main.c']]]
+  ['mx_5fusart3_5fuart_5finit_96',['MX_USART3_UART_Init',['../main_8c.html#a1c98cc38e233c6b46ca2bf9598a5fce8',1,'main.c']]]
 ];
