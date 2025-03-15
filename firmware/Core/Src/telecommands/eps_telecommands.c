@@ -545,3 +545,24 @@ uint8_t TCMDEXEC_eps_get_current_battery_percent(
     
     return 0;    
 }
+
+uint8_t TCMDEXEC_eps_get_enabled_channels_json(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len) {
+
+    EPS_struct_pdu_housekeeping_data_eng_t status;
+    const uint8_t result = EPS_CMD_get_pdu_housekeeping_data_eng(&status);
+
+    if (result != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS_CMD_get_piu_housekeeping_data_run_avg (err %d)", result);
+        return 1;
+    }
+
+    EPS_get_enabled_channels_json(
+        status.stat_ch_on_bitfield, status.stat_ch_ext_on_bitfield,
+        response_output_buf, response_output_buf_len
+    );
+
+    return 0;
+}

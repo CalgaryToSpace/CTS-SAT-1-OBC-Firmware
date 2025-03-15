@@ -58,7 +58,16 @@ uint8_t TEST_EXEC__EPS_convert_battery_voltage_to_percent()
     TEST_ASSERT(calc >= (expected_value - TOLERANCE));
     TEST_ASSERT(calc <= (expected_value + TOLERANCE));
 
-    // Case 5: Under 12V (Should be negative)
+    // Case 5: Over 16V (Should be greater than 100%)
+    battery.vip_bp_input.voltage_mV = 30000;
+
+    expected_value = 450;
+    
+    calc = EPS_convert_battery_voltage_to_percent(battery);
+    TEST_ASSERT(calc >= (expected_value - TOLERANCE));
+    TEST_ASSERT(calc <= (expected_value + TOLERANCE));
+
+    // Case 6: Under 12V (Should be negative)
     battery.vip_bp_input.voltage_mV = 10000;
 
     // 16 - 12 = 4 V
@@ -70,6 +79,16 @@ uint8_t TEST_EXEC__EPS_convert_battery_voltage_to_percent()
     calc = EPS_convert_battery_voltage_to_percent(battery);
     TEST_ASSERT(calc >= (expected_value - TOLERANCE));
     TEST_ASSERT(calc <= (expected_value + TOLERANCE));
+ 
+    // Case 7: Under 12V (Should be negative)
+    battery.vip_bp_input.voltage_mV = 1000;
+
+    expected_value = -275;
     
+    calc = EPS_convert_battery_voltage_to_percent(battery);
+    TEST_ASSERT(calc >= (expected_value - TOLERANCE));
+    TEST_ASSERT(calc <= (expected_value + TOLERANCE));
+    
+ 
     return 0;
 }

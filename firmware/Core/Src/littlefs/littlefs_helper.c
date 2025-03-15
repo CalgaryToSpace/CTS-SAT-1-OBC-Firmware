@@ -288,7 +288,7 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
     LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Opened/created file: %s", file_name);
 
     // Write data to file
-    const int8_t write_result = lfs_file_write(&LFS_filesystem, &file, write_buffer, write_buffer_len);
+    const lfs_ssize_t write_result = lfs_file_write(&LFS_filesystem, &file, write_buffer, write_buffer_len);
     if (write_result < 0)
     {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error writing to file: %s", file_name);
@@ -332,13 +332,13 @@ int8_t LFS_append_file(const char file_name[], uint8_t *write_buffer, uint32_t w
         return open_result;
     }
     
-    const int8_t seek_result = lfs_file_seek(&LFS_filesystem, &file, 0, LFS_SEEK_END);
+    const lfs_soff_t seek_result = lfs_file_seek(&LFS_filesystem, &file, 0, LFS_SEEK_END);
     if (seek_result < 0) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error seeking within file: %s", file_name);
         return seek_result;
     }
 
-    const int8_t write_result = lfs_file_write(&LFS_filesystem, &file, write_buffer, write_buffer_len);
+    const lfs_ssize_t write_result = lfs_file_write(&LFS_filesystem, &file, write_buffer, write_buffer_len);
     if (write_result < 0) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error writing to file %s", file_name);
         return write_result;
