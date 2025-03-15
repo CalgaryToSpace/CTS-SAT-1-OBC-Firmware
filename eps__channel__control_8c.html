@@ -97,20 +97,23 @@ $(function(){ initResizable(false); });
 <code>#include &quot;<a class="el" href="eps__channel__control_8h_source.html">eps_drivers/eps_channel_control.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="eps__commands_8h_source.html">eps_drivers/eps_commands.h</a>&quot;</code><br />
 <code>#include &lt;string.h&gt;</code><br />
+<code>#include &lt;stdio.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for eps_channel_control.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="eps__channel__control_8c__incl.png" border="0" usemap="#afirmware_2Core_2Src_2eps__drivers_2eps__channel__control_8c" alt=""/></div>
 <map name="afirmware_2Core_2Src_2eps__drivers_2eps__channel__control_8c" id="afirmware_2Core_2Src_2eps__drivers_2eps__channel__control_8c">
-<area shape="rect" title=" " alt="" coords="200,5,350,61"/>
+<area shape="rect" title=" " alt="" coords="268,5,418,61"/>
 <area shape="rect" href="eps__types_8h.html" title=" " alt="" coords="127,198,289,223"/>
-<area shape="poly" title=" " alt="" coords="260,63,236,110,224,148,215,183,210,182,219,146,231,108,255,60"/>
+<area shape="poly" title=" " alt="" coords="289,64,260,84,236,110,219,147,212,183,207,182,214,145,231,108,256,80,286,59"/>
 <area shape="rect" href="eps__channel__control_8h.html" title=" " alt="" coords="5,109,171,150"/>
-<area shape="poly" title=" " alt="" coords="222,64,142,104,140,99,219,59"/>
+<area shape="poly" title=" " alt="" coords="270,64,156,106,154,101,268,59"/>
 <area shape="rect" href="eps__commands_8h.html" title=" " alt="" coords="246,116,440,142"/>
-<area shape="poly" title=" " alt="" coords="296,60,327,103,323,106,292,63"/>
+<area shape="poly" title=" " alt="" coords="345,62,345,101,340,101,340,62"/>
 <area shape="rect" title=" " alt="" coords="464,116,528,142"/>
-<area shape="poly" title=" " alt="" coords="341,59,453,107,456,108,453,113,451,111,339,64"/>
+<area shape="poly" title=" " alt="" coords="388,59,465,106,462,111,386,64"/>
+<area shape="rect" title=" " alt="" coords="552,116,611,142"/>
+<area shape="poly" title=" " alt="" coords="419,59,541,107,543,107,541,112,539,111,417,64"/>
 <area shape="rect" title=" " alt="" coords="176,271,240,297"/>
 <area shape="poly" title=" " alt="" coords="211,224,211,256,205,256,205,224"/>
 <area shape="poly" title=" " alt="" coords="119,148,179,187,176,191,116,152"/>
@@ -125,9 +128,20 @@ Functions</h2></td></tr>
 <tr class="memitem:a70f2c11717a0e7352ed1c727053e0c2d" id="r_a70f2c11717a0e7352ed1c727053e0c2d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4">EPS_CHANNEL_enum_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a70f2c11717a0e7352ed1c727053e0c2d">EPS_channel_from_str</a> (const char channel_name[])</td></tr>
 <tr class="memdesc:a70f2c11717a0e7352ed1c727053e0c2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts an EPS channel name to a channel enum.  <br /></td></tr>
 <tr class="separator:a70f2c11717a0e7352ed1c727053e0c2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05a801661add5a8a28cf4f6d2c019f54" id="r_a05a801661add5a8a28cf4f6d2c019f54"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a05a801661add5a8a28cf4f6d2c019f54">EPS_channel_to_str</a> (<a class="el" href="eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4">EPS_CHANNEL_enum_t</a> channel)</td></tr>
+<tr class="memdesc:a05a801661add5a8a28cf4f6d2c019f54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts channel enum into an ASCII-printable name string.  <br /></td></tr>
+<tr class="separator:a05a801661add5a8a28cf4f6d2c019f54"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a91245fbb2fa29818f98ac6a3c0755a40" id="r_a91245fbb2fa29818f98ac6a3c0755a40"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a91245fbb2fa29818f98ac6a3c0755a40">EPS_set_channel_enabled</a> (<a class="el" href="eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4">EPS_CHANNEL_enum_t</a> channel, uint8_t enabled)</td></tr>
 <tr class="memdesc:a91245fbb2fa29818f98ac6a3c0755a40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the enabled state of an EPS channel (on or off).  <br /></td></tr>
 <tr class="separator:a91245fbb2fa29818f98ac6a3c0755a40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af22f43756dfbad72b139b16cf5cd26d9" id="r_af22f43756dfbad72b139b16cf5cd26d9"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af22f43756dfbad72b139b16cf5cd26d9">EPS_check_status_bit_of_channel</a> (uint16_t status_bitfield_1, uint16_t status_bitfield_2, uint8_t channel_number)</td></tr>
+<tr class="memdesc:af22f43756dfbad72b139b16cf5cd26d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Takes in the status bitfields of the eps and outputs the status of the given channel number.  <br /></td></tr>
+<tr class="separator:af22f43756dfbad72b139b16cf5cd26d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae00d77de29ecb1dce9d041dc9a173c57" id="r_ae00d77de29ecb1dce9d041dc9a173c57"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae00d77de29ecb1dce9d041dc9a173c57">EPS_convert_ch_num_to_string_and_append</a> (char *response_output_buf, uint16_t response_output_buf_len, uint8_t ch_number)</td></tr>
+<tr class="memdesc:ae00d77de29ecb1dce9d041dc9a173c57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert EPS ch_number to ch_name, then append as a JSON list element to response_output_buf.  <br /></td></tr>
+<tr class="separator:ae00d77de29ecb1dce9d041dc9a173c57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61a68e76b41a16b48dabe95f60f6b703" id="r_a61a68e76b41a16b48dabe95f60f6b703"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a61a68e76b41a16b48dabe95f60f6b703">EPS_get_enabled_channels_json</a> (uint16_t status_bitfield_1, uint16_t status_bitfield_2, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
+<tr class="separator:a61a68e76b41a16b48dabe95f60f6b703"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a70f2c11717a0e7352ed1c727053e0c2d" name="a70f2c11717a0e7352ed1c727053e0c2d"></a>
@@ -163,6 +177,213 @@ Here is the caller graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="235,48,203,43,203,38,236,43"/>
 <area shape="rect" href="test__eps__drivers_8c.html#a6c88f40982e989dfff40fe569e8f247b" title=" " alt="" coords="10,71,198,111"/>
 <area shape="poly" title=" " alt="" coords="236,75,198,80,198,75,235,70"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a05a801661add5a8a28cf4f6d2c019f54" name="a05a801661add5a8a28cf4f6d2c019f54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05a801661add5a8a28cf4f6d2c019f54">&#9670;&#160;</a></span>EPS_channel_to_str()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char * EPS_channel_to_str </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4">EPS_CHANNEL_enum_t</a></td>          <td class="paramname"><span class="paramname"><em>channel</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Converts channel enum into an ASCII-printable name string. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">channel</td><td>An enum of typedef <a class="el" href="eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4">EPS_CHANNEL_enum_t</a> representing the different channel names of the EPS Ex. EPS_CHANNEL_VBATT_STACK , EPS_CHANNEL_5V_CH2_UNUSED or EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Returns a string of the channel name corresponding to the inputted channel enum </dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="eps__channel__control_8c_a05a801661add5a8a28cf4f6d2c019f54_icgraph.png" border="0" usemap="#aeps__channel__control_8c_a05a801661add5a8a28cf4f6d2c019f54_icgraph" alt=""/></div>
+<map name="aeps__channel__control_8c_a05a801661add5a8a28cf4f6d2c019f54_icgraph" id="aeps__channel__control_8c_a05a801661add5a8a28cf4f6d2c019f54_icgraph">
+<area shape="rect" title="Converts channel enum into an ASCII&#45;printable name string." alt="" coords="748,46,888,72"/>
+<area shape="rect" href="eps__channel__control_8c.html#ae00d77de29ecb1dce9d041dc9a173c57" title="Convert EPS ch_number to ch_name, then append as a JSON list element to response_output_buf." alt="" coords="529,5,684,46"/>
+<area shape="poly" title=" " alt="" coords="732,48,684,41,685,35,733,43"/>
+<area shape="rect" href="test__eps__drivers_8c.html#a9e04ee5cf14937bc0805d00237aab6dd" title=" " alt="" coords="513,71,700,111"/>
+<area shape="poly" title=" " alt="" coords="733,75,701,79,700,74,732,69"/>
+<area shape="rect" href="eps__channel__control_8c.html#a61a68e76b41a16b48dabe95f60f6b703" title=" " alt="" coords="251,13,465,38"/>
+<area shape="poly" title=" " alt="" coords="513,28,465,28,465,23,513,23"/>
+<area shape="rect" href="eps__telecommands_8c.html#a8e06602ac7e1d4da69112a6fd107b84f" title=" " alt="" coords="5,5,203,46"/>
+<area shape="poly" title=" " alt="" coords="235,28,203,28,203,23,235,23"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="af22f43756dfbad72b139b16cf5cd26d9" name="af22f43756dfbad72b139b16cf5cd26d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af22f43756dfbad72b139b16cf5cd26d9">&#9670;&#160;</a></span>EPS_check_status_bit_of_channel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t EPS_check_status_bit_of_channel </td>
+          <td>(</td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>status_bitfield_1</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>status_bitfield_2</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>channel_number</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Takes in the status bitfields of the eps and outputs the status of the given channel number. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">status_bitfield_1</td><td>The status bitfield of channels 0-15. </td></tr>
+    <tr><td class="paramname">status_bitfield_2</td><td>The status bitfield of channels 16-31. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 if the channel is disabled, 1 if the channel is enabled, and 2 if channel number is invalid </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>If all channels are enabled, the output buffer would be require about 300 bytes. </dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="eps__channel__control_8c_af22f43756dfbad72b139b16cf5cd26d9_icgraph.png" border="0" usemap="#aeps__channel__control_8c_af22f43756dfbad72b139b16cf5cd26d9_icgraph" alt=""/></div>
+<map name="aeps__channel__control_8c_af22f43756dfbad72b139b16cf5cd26d9_icgraph" id="aeps__channel__control_8c_af22f43756dfbad72b139b16cf5cd26d9_icgraph">
+<area shape="rect" title="Takes in the status bitfields of the eps and outputs the status of the given channel number." alt="" coords="513,35,666,75"/>
+<area shape="rect" href="eps__channel__control_8c.html#a61a68e76b41a16b48dabe95f60f6b703" title=" " alt="" coords="251,13,465,38"/>
+<area shape="poly" title=" " alt="" coords="497,46,464,42,465,37,498,41"/>
+<area shape="rect" href="test__eps__drivers_8c.html#a8ebce92ecc974062ba2d026505642f17" title=" " alt="" coords="269,63,446,103"/>
+<area shape="poly" title=" " alt="" coords="498,69,447,75,447,70,497,63"/>
+<area shape="rect" href="eps__telecommands_8c.html#a8e06602ac7e1d4da69112a6fd107b84f" title=" " alt="" coords="5,5,203,46"/>
+<area shape="poly" title=" " alt="" coords="235,28,203,28,203,23,235,23"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="ae00d77de29ecb1dce9d041dc9a173c57" name="ae00d77de29ecb1dce9d041dc9a173c57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae00d77de29ecb1dce9d041dc9a173c57">&#9670;&#160;</a></span>EPS_convert_ch_num_to_string_and_append()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t EPS_convert_ch_num_to_string_and_append </td>
+          <td>(</td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>response_output_buf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>response_output_buf_len</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>ch_number</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convert EPS ch_number to ch_name, then append as a JSON list element to response_output_buf. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">response_output_buf</td><td>The output buffer that will store the string </td></tr>
+    <tr><td class="paramname">response_output_buf_len</td><td>The total length of the output buffer </td></tr>
+    <tr><td class="paramname">ch_number</td><td>The channel number of the EPS that will be converted to channel name </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 when string was properly outputted into the buffer, 1 if the channel number is invalid </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="eps__channel__control_8c_ae00d77de29ecb1dce9d041dc9a173c57_cgraph.png" border="0" usemap="#aeps__channel__control_8c_ae00d77de29ecb1dce9d041dc9a173c57_cgraph" alt=""/></div>
+<map name="aeps__channel__control_8c_ae00d77de29ecb1dce9d041dc9a173c57_cgraph" id="aeps__channel__control_8c_ae00d77de29ecb1dce9d041dc9a173c57_cgraph">
+<area shape="rect" title="Convert EPS ch_number to ch_name, then append as a JSON list element to response_output_buf." alt="" coords="5,5,161,46"/>
+<area shape="rect" href="eps__channel__control_8c.html#a05a801661add5a8a28cf4f6d2c019f54" title="Converts channel enum into an ASCII&#45;printable name string." alt="" coords="209,13,348,38"/>
+<area shape="poly" title=" " alt="" coords="161,23,193,23,193,28,161,28"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="eps__channel__control_8c_ae00d77de29ecb1dce9d041dc9a173c57_icgraph.png" border="0" usemap="#aeps__channel__control_8c_ae00d77de29ecb1dce9d041dc9a173c57_icgraph" alt=""/></div>
+<map name="aeps__channel__control_8c_ae00d77de29ecb1dce9d041dc9a173c57_icgraph" id="aeps__channel__control_8c_ae00d77de29ecb1dce9d041dc9a173c57_icgraph">
+<area shape="rect" title="Convert EPS ch_number to ch_name, then append as a JSON list element to response_output_buf." alt="" coords="513,5,668,46"/>
+<area shape="rect" href="eps__channel__control_8c.html#a61a68e76b41a16b48dabe95f60f6b703" title=" " alt="" coords="251,13,465,38"/>
+<area shape="poly" title=" " alt="" coords="497,28,465,28,465,23,497,23"/>
+<area shape="rect" href="eps__telecommands_8c.html#a8e06602ac7e1d4da69112a6fd107b84f" title=" " alt="" coords="5,5,203,46"/>
+<area shape="poly" title=" " alt="" coords="235,28,203,28,203,23,235,23"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a61a68e76b41a16b48dabe95f60f6b703" name="a61a68e76b41a16b48dabe95f60f6b703"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61a68e76b41a16b48dabe95f60f6b703">&#9670;&#160;</a></span>EPS_get_enabled_channels_json()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void EPS_get_enabled_channels_json </td>
+          <td>(</td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>status_bitfield_1</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>status_bitfield_2</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>response_output_buf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>response_output_buf_len</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="eps__channel__control_8c_a61a68e76b41a16b48dabe95f60f6b703_cgraph.png" border="0" usemap="#aeps__channel__control_8c_a61a68e76b41a16b48dabe95f60f6b703_cgraph" alt=""/></div>
+<map name="aeps__channel__control_8c_a61a68e76b41a16b48dabe95f60f6b703_cgraph" id="aeps__channel__control_8c_a61a68e76b41a16b48dabe95f60f6b703_cgraph">
+<area shape="rect" title=" " alt="" coords="5,46,220,72"/>
+<area shape="rect" href="eps__channel__control_8c.html#af22f43756dfbad72b139b16cf5cd26d9" title="Takes in the status bitfields of the eps and outputs the status of the given channel number." alt="" coords="269,5,422,46"/>
+<area shape="poly" title=" " alt="" coords="206,43,253,36,253,41,207,48"/>
+<area shape="rect" href="eps__channel__control_8c.html#ae00d77de29ecb1dce9d041dc9a173c57" title="Convert EPS ch_number to ch_name, then append as a JSON list element to response_output_buf." alt="" coords="268,71,423,111"/>
+<area shape="poly" title=" " alt="" coords="211,70,252,76,252,81,210,75"/>
+<area shape="rect" href="eps__channel__control_8c.html#a05a801661add5a8a28cf4f6d2c019f54" title="Converts channel enum into an ASCII&#45;printable name string." alt="" coords="471,78,610,104"/>
+<area shape="poly" title=" " alt="" coords="423,88,455,88,455,94,423,94"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="eps__channel__control_8c_a61a68e76b41a16b48dabe95f60f6b703_icgraph.png" border="0" usemap="#aeps__channel__control_8c_a61a68e76b41a16b48dabe95f60f6b703_icgraph" alt=""/></div>
+<map name="aeps__channel__control_8c_a61a68e76b41a16b48dabe95f60f6b703_icgraph" id="aeps__channel__control_8c_a61a68e76b41a16b48dabe95f60f6b703_icgraph">
+<area shape="rect" title=" " alt="" coords="251,13,465,38"/>
+<area shape="rect" href="eps__telecommands_8c.html#a8e06602ac7e1d4da69112a6fd107b84f" title=" " alt="" coords="5,5,203,46"/>
+<area shape="poly" title=" " alt="" coords="235,28,203,28,203,23,235,23"/>
 </map>
 </div>
 

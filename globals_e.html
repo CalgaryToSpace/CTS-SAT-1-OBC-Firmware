@@ -110,11 +110,13 @@ $(function(){ initResizable(false); });
 <li>EPS_CHANNEL_5V_STACK&#160;:&#160;<a class="el" href="eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4a1e42aa74e0f1341ade5089e3d4d995b8">eps_types.h</a></li>
 <li>EPS_CHANNEL_enum_t&#160;:&#160;<a class="el" href="eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4">eps_types.h</a></li>
 <li>EPS_channel_from_str()&#160;:&#160;<a class="el" href="eps__channel__control_8h.html#a70f2c11717a0e7352ed1c727053e0c2d">eps_channel_control.h</a>, <a class="el" href="eps__channel__control_8c.html#a70f2c11717a0e7352ed1c727053e0c2d">eps_channel_control.c</a></li>
+<li>EPS_channel_to_str()&#160;:&#160;<a class="el" href="eps__channel__control_8h.html#a05a801661add5a8a28cf4f6d2c019f54">eps_channel_control.h</a>, <a class="el" href="eps__channel__control_8c.html#a05a801661add5a8a28cf4f6d2c019f54">eps_channel_control.c</a></li>
 <li>EPS_CHANNEL_UNKNOWN&#160;:&#160;<a class="el" href="eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4a8881ef17065fc4fb7659063992922a19">eps_types.h</a></li>
 <li>EPS_CHANNEL_VBATT_CH10_UNUSED&#160;:&#160;<a class="el" href="eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4a88b70cd78f9f141c62a44ecd0cadec9a">eps_types.h</a></li>
 <li>EPS_CHANNEL_VBATT_CH11_UNUSED&#160;:&#160;<a class="el" href="eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4a946ce2ba2a916d7310f658897e79940c">eps_types.h</a></li>
 <li>EPS_CHANNEL_VBATT_CH9_UNUSED&#160;:&#160;<a class="el" href="eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4a68d36d582ae80945ea5d9ad583736d68">eps_types.h</a></li>
 <li>EPS_CHANNEL_VBATT_STACK&#160;:&#160;<a class="el" href="eps__types_8h.html#a04c4509d1ae2a78d31f28b10c862cab4ac8061fa9562e50cf299d8797115c891b">eps_types.h</a></li>
+<li>EPS_check_status_bit_of_channel()&#160;:&#160;<a class="el" href="eps__channel__control_8h.html#af22f43756dfbad72b139b16cf5cd26d9">eps_channel_control.h</a>, <a class="el" href="eps__channel__control_8c.html#af22f43756dfbad72b139b16cf5cd26d9">eps_channel_control.c</a></li>
 <li>EPS_CMD_cancel_operation()&#160;:&#160;<a class="el" href="eps__commands_8h.html#a1239d6bcee7a19b86972a3e09e0247ff">eps_commands.h</a>, <a class="el" href="eps__commands_8c.html#a1239d6bcee7a19b86972a3e09e0247ff">eps_commands.c</a></li>
 <li>EPS_CMD_correct_time()&#160;:&#160;<a class="el" href="eps__commands_8h.html#adbf054d67fe65a8a48ab438ad747aafa">eps_commands.h</a>, <a class="el" href="eps__commands_8c.html#adbf054d67fe65a8a48ab438ad747aafa">eps_commands.c</a></li>
 <li>EPS_CMD_get_configuration_parameter()&#160;:&#160;<a class="el" href="eps__commands_8h.html#a1105cd981dd0ff03c95d6985eb02d140">eps_commands.h</a>, <a class="el" href="eps__commands_8c.html#a1105cd981dd0ff03c95d6985eb02d140">eps_commands.c</a></li>
@@ -151,8 +153,10 @@ $(function(){ initResizable(false); });
 <li>EPS_conditioning_channel_datatype_eng_TO_json()&#160;:&#160;<a class="el" href="eps__types__to__json_8c.html#a2b479b8f6373f55e12b7619263fe5bc4">eps_types_to_json.c</a></li>
 <li>EPS_conditioning_channel_short_datatype_eng_TO_json()&#160;:&#160;<a class="el" href="eps__types__to__json_8c.html#acf1a3fcabb59fed3e7f1bcbf89b76bcb">eps_types_to_json.c</a></li>
 <li>EPS_convert_battery_voltage_to_percent()&#160;:&#160;<a class="el" href="eps__calculations_8h.html#ab46f752066b90fc3fbc06226a67bbee7">eps_calculations.h</a>, <a class="el" href="eps__calculations_8c.html#ab46f752066b90fc3fbc06226a67bbee7">eps_calculations.c</a></li>
+<li>EPS_convert_ch_num_to_string_and_append()&#160;:&#160;<a class="el" href="eps__channel__control_8h.html#ae00d77de29ecb1dce9d041dc9a173c57">eps_channel_control.h</a>, <a class="el" href="eps__channel__control_8c.html#ae00d77de29ecb1dce9d041dc9a173c57">eps_channel_control.c</a></li>
 <li>EPS_DEFAULT_RX_LEN_MIN&#160;:&#160;<a class="el" href="eps__internal__drivers_8h.html#ac2d6b39ab5a076023a8238ec67557b4d">eps_internal_drivers.h</a></li>
 <li>EPS_ENABLE_DEBUG_PRINT&#160;:&#160;<a class="el" href="eps__internal__drivers_8h.html#a3cf45e4ef4fadafa3a4d7f8b7d73345e">eps_internal_drivers.h</a></li>
+<li>EPS_get_enabled_channels_json()&#160;:&#160;<a class="el" href="eps__channel__control_8h.html#a61a68e76b41a16b48dabe95f60f6b703">eps_channel_control.h</a>, <a class="el" href="eps__channel__control_8c.html#a61a68e76b41a16b48dabe95f60f6b703">eps_channel_control.c</a></li>
 <li>EPS_I2C_ADDR&#160;:&#160;<a class="el" href="eps__internal__drivers_8h.html#a86007072ac15384d8007d06e4bb9ede9">eps_internal_drivers.h</a></li>
 <li>EPS_MAX_ACTIVE_CHANNEL_NUMBER&#160;:&#160;<a class="el" href="eps__types_8h.html#ad9ffc9e9f9f928e850173d7e29606b6a">eps_types.h</a></li>
 <li>EPS_MAX_RESPONSE_POLL_TIME_MS&#160;:&#160;<a class="el" href="eps__internal__drivers_8h.html#a016d8a26f93a3850f8117489576d894f">eps_internal_drivers.h</a></li>
