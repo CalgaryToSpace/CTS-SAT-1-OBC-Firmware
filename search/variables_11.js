@@ -92,12 +92,14 @@ var searchData=
   ['rtable_89',['rtable',['../csp__rtable__static_8c.html#a5340a5091d5e599f0ab2d0db34ce1cbb',1,'csp_rtable_static.c']]],
   ['run_5fmode_90',['run_mode',['../structADCS__current__state__1__struct__t.html#ac4b773ab120afa3ee9c0b1740a670b6b',1,'ADCS_current_state_1_struct_t']]],
   ['rx_91',['rx',['../structcsp__iface__s.html#aa232d276e5c84659adb512686fccee03',1,'csp_iface_s']]],
-  ['rx_5fcount_92',['rx_count',['../structcsp__can__pbuf__element__t.html#a5722d5008adc4603e2c27673dc527cba',1,'csp_can_pbuf_element_t']]],
-  ['rx_5ferror_93',['rx_error',['../structcsp__iface__s.html#a50cbd254c7a518d9adb446e24e38968b',1,'csp_iface_s']]],
-  ['rx_5ffirst_94',['rx_first',['../structcsp__kiss__interface__data__t.html#a3bbeb036b9ef69fc6632b726573ace15',1,'csp_kiss_interface_data_t']]],
-  ['rx_5flength_95',['rx_length',['../structcsp__kiss__interface__data__t.html#a8c8d51b1d3b9c2bd90f9e975bac51aec',1,'csp_kiss_interface_data_t']]],
-  ['rx_5fmode_96',['rx_mode',['../structcsp__kiss__interface__data__t.html#a8640b366c92f16cdd739ba030c6bd098',1,'csp_kiss_interface_data_t']]],
-  ['rx_5fpacket_97',['rx_packet',['../structcsp__kiss__interface__data__t.html#a1b1873fa0abf68f36f75fe8c50bc33cc',1,'csp_kiss_interface_data_t']]],
-  ['rx_5fqueue_98',['rx_queue',['../structcsp__rdp__t.html#a77fc780ca88a86a4ea2053cf4eda9e13',1,'csp_rdp_t::rx_queue'],['../structcsp__conn__s.html#adc01fe839e596904ebc6249db4699b7f',1,'csp_conn_s::rx_queue']]],
-  ['rxbytes_99',['rxbytes',['../structcsp__iface__s.html#ab5f87f83d2ccf3ac794d37b91a00d060',1,'csp_iface_s']]]
+  ['rx_5fbuffer_92',['rx_buffer',['../uart__telelecommand__defs_8c.html#aa0c2f29c600b4c89f2be0edda59ab32d',1,'uart_telelecommand_defs.c']]],
+  ['rx_5fbuffer_5fmax_5fsize_93',['rx_buffer_max_size',['../uart__telelecommand__defs_8c.html#a41b0100030e0a29d3825275887386836',1,'uart_telelecommand_defs.c']]],
+  ['rx_5fcount_94',['rx_count',['../structcsp__can__pbuf__element__t.html#a5722d5008adc4603e2c27673dc527cba',1,'csp_can_pbuf_element_t']]],
+  ['rx_5ferror_95',['rx_error',['../structcsp__iface__s.html#a50cbd254c7a518d9adb446e24e38968b',1,'csp_iface_s']]],
+  ['rx_5ffirst_96',['rx_first',['../structcsp__kiss__interface__data__t.html#a3bbeb036b9ef69fc6632b726573ace15',1,'csp_kiss_interface_data_t']]],
+  ['rx_5flength_97',['rx_length',['../structcsp__kiss__interface__data__t.html#a8c8d51b1d3b9c2bd90f9e975bac51aec',1,'csp_kiss_interface_data_t']]],
+  ['rx_5fmode_98',['rx_mode',['../structcsp__kiss__interface__data__t.html#a8640b366c92f16cdd739ba030c6bd098',1,'csp_kiss_interface_data_t']]],
+  ['rx_5fpacket_99',['rx_packet',['../structcsp__kiss__interface__data__t.html#a1b1873fa0abf68f36f75fe8c50bc33cc',1,'csp_kiss_interface_data_t']]],
+  ['rx_5fqueue_100',['rx_queue',['../structcsp__rdp__t.html#a77fc780ca88a86a4ea2053cf4eda9e13',1,'csp_rdp_t::rx_queue'],['../structcsp__conn__s.html#adc01fe839e596904ebc6249db4699b7f',1,'csp_conn_s::rx_queue']]],
+  ['rxbytes_101',['rxbytes',['../structcsp__iface__s.html#ab5f87f83d2ccf3ac794d37b91a00d060',1,'csp_iface_s']]]
 ];

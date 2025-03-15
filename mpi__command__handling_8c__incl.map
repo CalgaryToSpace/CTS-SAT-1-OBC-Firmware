@@ -1,32 +1,33 @@
 <map id="firmware/Core/Src/mpi/mpi_command_handling.c" name="firmware/Core/Src/mpi/mpi_command_handling.c">
-<area shape="rect" id="Node000001" title=" " alt="" coords="401,5,576,46"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="513,5,688,46"/>
 <area shape="rect" id="Node000002" href="$mpi__command__handling_8h.html" title=" " alt="" coords="5,94,202,120"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="401,48,178,93,177,88,400,42"/>
-<area shape="rect" id="Node000005" href="$mpi__types_8h.html" title=" " alt="" coords="182,175,297,201"/>
-<area shape="poly" id="edge6_Node000001_Node000005" title=" " alt="" coords="401,36,366,43,330,55,296,73,267,96,256,110,249,126,243,160,238,159,244,125,252,107,263,92,293,68,328,50,364,38,400,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="513,43,195,94,194,88,513,38"/>
+<area shape="rect" id="Node000005" href="$mpi__types_8h.html" title=" " alt="" coords="207,175,322,201"/>
+<area shape="poly" id="edge6_Node000001_Node000005" title=" " alt="" coords="513,35,441,42,368,54,305,72,282,83,267,96,259,110,256,127,259,160,254,161,251,126,254,108,263,92,279,79,303,67,366,49,440,37,512,30"/>
 <area shape="rect" id="Node000006" href="$mpi__transceiver_8h.html" title=" " alt="" coords="277,94,426,120"/>
-<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="456,49,387,88,384,84,453,44"/>
-<area shape="rect" id="Node000007" href="$uart__handler_8h.html" title=" " alt="" coords="322,175,499,201"/>
-<area shape="poly" id="edge9_Node000001_Node000007" title=" " alt="" coords="482,48,425,162,420,160,477,45"/>
-<area shape="rect" id="Node000008" href="$main_8h.html" title=": Header for main.c file. This file contains the common defines of the application." alt="" coords="551,94,610,120"/>
-<area shape="poly" id="edge11_Node000001_Node000008" title=" " alt="" coords="513,44,557,82,553,86,510,48"/>
-<area shape="rect" id="Node000009" title=" " alt="" coords="523,175,636,201"/>
-<area shape="poly" id="edge15_Node000001_Node000009" title=" " alt="" coords="502,45,542,118,567,160,562,163,537,121,497,48"/>
-<area shape="rect" id="Node000012" title=" " alt="" coords="634,94,698,120"/>
-<area shape="poly" id="edge16_Node000001_Node000012" title=" " alt="" coords="534,44,626,85,624,90,532,49"/>
-<area shape="rect" id="Node000013" title=" " alt="" coords="722,94,781,120"/>
-<area shape="poly" id="edge17_Node000001_Node000013" title=" " alt="" coords="555,44,708,90,706,95,554,49"/>
-<area shape="rect" id="Node000003" title=" " alt="" coords="208,256,271,282"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="97,121,86,139,77,162,73,185,80,207,103,230,132,246,163,256,193,262,192,267,162,261,130,251,100,234,76,210,68,186,72,160,82,137,93,118"/>
-<area shape="rect" id="Node000004" title=" " alt="" coords="90,175,157,201"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="109,119,119,160,114,161,104,121"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="125,118,207,165,204,169,123,122"/>
-<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="242,201,242,240,237,240,237,201"/>
-<area shape="poly" id="edge8_Node000006_Node000005" title=" " alt="" coords="336,122,270,168,267,164,333,118"/>
-<area shape="poly" id="edge10_Node000007_Node000003" title=" " alt="" coords="385,204,280,252,278,247,383,199"/>
-<area shape="poly" id="edge12_Node000008_Node000009" title=" " alt="" coords="583,120,583,159,577,159,578,120"/>
-<area shape="rect" id="Node000010" href="$rtos__task__helpers_8h.html" title=" " alt="" coords="660,168,800,208"/>
-<area shape="poly" id="edge13_Node000008_Node000010" title=" " alt="" coords="605,118,681,158,679,163,602,122"/>
-<area shape="rect" id="Node000011" title=" " alt="" coords="686,256,774,282"/>
-<area shape="poly" id="edge14_Node000010_Node000011" title=" " alt="" coords="733,209,733,241,728,241,728,209"/>
+<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="539,49,405,91,404,86,538,44"/>
+<area shape="rect" id="Node000007" href="$uart__handler_8h.html" title=" " alt="" coords="450,94,627,120"/>
+<area shape="poly" id="edge9_Node000001_Node000007" title=" " alt="" coords="587,48,559,83,555,80,583,45"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="566,175,679,201"/>
+<area shape="poly" id="edge16_Node000001_Node000008" title=" " alt="" coords="617,45,631,67,641,93,642,129,635,161,630,160,637,128,636,95,626,70,613,48"/>
+<area shape="rect" id="Node000009" href="$main_8h.html" title=": Header for main.c file. This file contains the common defines of the application." alt="" coords="702,94,761,120"/>
+<area shape="poly" id="edge12_Node000001_Node000009" title=" " alt="" coords="635,44,700,83,697,88,632,49"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="785,94,848,120"/>
+<area shape="poly" id="edge17_Node000001_Node000012" title=" " alt="" coords="656,44,772,86,770,91,654,49"/>
+<area shape="rect" id="Node000013" title=" " alt="" coords="872,94,932,120"/>
+<area shape="poly" id="edge18_Node000001_Node000013" title=" " alt="" coords="679,44,858,90,856,96,678,49"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="233,256,296,282"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="102,120,95,162,97,185,106,207,128,230,157,246,188,256,218,262,217,267,187,261,155,251,125,234,101,210,92,187,90,161,97,119"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="115,175,182,201"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="113,119,137,160,132,163,108,121"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="130,118,228,166,226,171,127,123"/>
+<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="268,201,268,240,262,240,262,201"/>
+<area shape="poly" id="edge8_Node000006_Node000005" title=" " alt="" coords="340,122,291,166,287,163,337,118"/>
+<area shape="poly" id="edge11_Node000007_Node000003" title=" " alt="" coords="519,122,300,250,297,246,516,118"/>
+<area shape="poly" id="edge10_Node000007_Node000008" title=" " alt="" coords="553,118,600,163,597,166,549,122"/>
+<area shape="poly" id="edge13_Node000009_Node000008" title=" " alt="" coords="716,122,653,168,650,164,713,118"/>
+<area shape="rect" id="Node000010" href="$rtos__task__helpers_8h.html" title=" " alt="" coords="703,168,843,208"/>
+<area shape="poly" id="edge14_Node000009_Node000010" title=" " alt="" coords="740,119,758,153,753,155,735,121"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="729,256,816,282"/>
+<area shape="poly" id="edge15_Node000010_Node000011" title=" " alt="" coords="776,209,776,241,770,241,770,209"/>
 </map>

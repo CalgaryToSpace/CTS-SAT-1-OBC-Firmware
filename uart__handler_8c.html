@@ -98,36 +98,41 @@ $(function(){ initResizable(false); });
 <code>#include &quot;<a class="el" href="debug__uart_8h_source.html">debug_tools/debug_uart.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="mpi__command__handling_8h_source.html">mpi/mpi_command_handling.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="main_8h_source.html">main.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="log_8h_source.html">log/log.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for uart_handler.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="uart__handler_8c__incl.png" border="0" usemap="#afirmware_2Core_2Src_2uart__handler_2uart__handler_8c" alt=""/></div>
 <map name="afirmware_2Core_2Src_2uart__handler_2uart__handler_8c" id="afirmware_2Core_2Src_2uart__handler_2uart__handler_8c">
-<area shape="rect" title=" " alt="" coords="330,5,485,46"/>
-<area shape="rect" href="uart__handler_8h.html" title=" " alt="" coords="5,94,183,120"/>
-<area shape="poly" title=" " alt="" coords="330,49,158,92,157,87,328,44"/>
-<area shape="rect" href="debug__uart_8h.html" title=" " alt="" coords="427,94,596,120"/>
-<area shape="poly" title=" " alt="" coords="435,44,485,82,482,86,431,49"/>
-<area shape="rect" href="main_8h.html" title=": Header for main.c file. This file contains the common defines of the application." alt="" coords="544,168,604,193"/>
-<area shape="poly" title=" " alt="" coords="486,29,520,36,554,48,585,67,611,93,617,109,615,126,598,157,593,154,610,124,612,109,606,95,582,71,552,53,518,41,485,34"/>
-<area shape="rect" href="mpi__command__handling_8h.html" title=" " alt="" coords="206,94,403,120"/>
-<area shape="poly" title=" " alt="" coords="384,49,334,86,331,82,380,44"/>
-<area shape="rect" title=" " alt="" coords="248,249,311,274"/>
-<area shape="poly" title=" " alt="" coords="110,118,255,237,252,241,107,122"/>
-<area shape="poly" title=" " alt="" coords="511,121,496,157,484,177,468,195,443,210,407,225,327,250,325,245,405,220,441,205,464,191,479,174,491,155,506,119"/>
-<area shape="poly" title=" " alt="" coords="524,118,555,154,551,157,520,122"/>
-<area shape="rect" title=" " alt="" coords="543,249,656,274"/>
-<area shape="poly" title=" " alt="" coords="580,193,593,233,588,235,575,195"/>
-<area shape="rect" href="rtos__task__helpers_8h.html" title=" " alt="" coords="378,241,519,282"/>
-<area shape="poly" title=" " alt="" coords="556,196,494,235,491,231,554,191"/>
-<area shape="rect" title=" " alt="" coords="405,330,492,356"/>
-<area shape="poly" title=" " alt="" coords="451,282,451,314,446,314,446,282"/>
-<area shape="poly" title=" " alt="" coords="284,122,258,142,238,169,234,186,238,203,259,236,254,239,233,206,229,186,233,167,254,138,281,118"/>
-<area shape="rect" title=" " alt="" coords="387,168,454,193"/>
-<area shape="poly" title=" " alt="" coords="326,118,390,157,387,162,323,122"/>
-<area shape="rect" href="mpi__types_8h.html" title=" " alt="" coords="247,168,362,193"/>
-<area shape="poly" title=" " alt="" coords="307,120,307,152,302,152,302,120"/>
-<area shape="poly" title=" " alt="" coords="303,195,290,235,285,233,298,193"/>
+<area shape="rect" title=" " alt="" coords="180,5,336,46"/>
+<area shape="rect" href="uart__handler_8h.html" title=" " alt="" coords="138,168,315,193"/>
+<area shape="poly" title=" " alt="" coords="215,49,186,68,165,95,161,112,167,128,180,143,195,156,192,160,176,146,163,130,156,112,160,93,183,65,212,44"/>
+<area shape="rect" href="debug__uart_8h.html" title=" " alt="" coords="174,94,343,120"/>
+<area shape="poly" title=" " alt="" coords="261,46,261,78,256,78,256,46"/>
+<area shape="rect" href="main_8h.html" title=": Header for main.c file. This file contains the common defines of the application." alt="" coords="54,168,113,193"/>
+<area shape="poly" title=" " alt="" coords="223,49,189,70,155,96,126,126,102,156,98,153,122,123,151,92,186,66,220,44"/>
+<area shape="rect" href="mpi__command__handling_8h.html" title=" " alt="" coords="461,94,658,120"/>
+<area shape="poly" title=" " alt="" coords="334,44,499,87,497,92,333,49"/>
+<area shape="rect" href="log_8h.html" title=" " alt="" coords="368,94,437,120"/>
+<area shape="poly" title=" " alt="" coords="295,44,368,84,365,88,293,49"/>
+<area shape="rect" title=" " alt="" coords="170,249,283,274"/>
+<area shape="poly" title=" " alt="" coords="229,194,229,233,224,233,224,194"/>
+<area shape="rect" title=" " alt="" coords="372,249,435,274"/>
+<area shape="poly" title=" " alt="" coords="255,191,364,240,361,245,252,196"/>
+<area shape="poly" title=" " alt="" coords="275,118,329,166,388,235,384,238,326,170,272,122"/>
+<area shape="poly" title=" " alt="" coords="230,123,128,164,126,159,228,118"/>
+<area shape="poly" title=" " alt="" coords="106,191,192,239,190,243,104,196"/>
+<area shape="rect" href="rtos__task__helpers_8h.html" title=" " alt="" coords="5,241,146,282"/>
+<area shape="poly" title=" " alt="" coords="85,194,82,226,76,226,80,193"/>
+<area shape="rect" title=" " alt="" coords="32,330,119,356"/>
+<area shape="poly" title=" " alt="" coords="78,282,78,314,73,314,73,282"/>
+<area shape="poly" title=" " alt="" coords="542,122,513,143,481,170,449,205,422,238,418,235,445,201,478,166,509,139,539,118"/>
+<area shape="rect" title=" " alt="" coords="491,168,558,193"/>
+<area shape="poly" title=" " alt="" coords="556,121,540,155,535,152,551,119"/>
+<area shape="rect" href="mpi__types_8h.html" title=" " alt="" coords="583,168,698,193"/>
+<area shape="poly" title=" " alt="" coords="575,118,618,155,614,159,572,122"/>
+<area shape="poly" title=" " alt="" coords="605,196,451,248,449,242,603,191"/>
+<area shape="poly" title=" " alt="" coords="405,120,406,233,401,233,400,120"/>
 </map>
 </div>
 </div><table class="memberdecls">
@@ -135,22 +140,26 @@ Include dependency graph for uart_handler.c:</div>
 Functions</h2></td></tr>
 <tr class="memitem:ae494a9643f29b87d6d81e5264e60e57b" id="r_ae494a9643f29b87d6d81e5264e60e57b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae494a9643f29b87d6d81e5264e60e57b">HAL_UART_RxCpltCallback</a> (UART_HandleTypeDef *huart)</td></tr>
 <tr class="separator:ae494a9643f29b87d6d81e5264e60e57b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a59db2ba73b7115a05fe34c3d05e712c3" id="r_a59db2ba73b7115a05fe34c3d05e712c3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a59db2ba73b7115a05fe34c3d05e712c3">UART_init_uart_handlers</a> (void)</td></tr>
-<tr class="separator:a59db2ba73b7115a05fe34c3d05e712c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7063bab0936a35df980d558dcbe26ea5" id="r_a7063bab0936a35df980d558dcbe26ea5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7063bab0936a35df980d558dcbe26ea5">GPS_set_uart_interrupt_state</a> (uint8_t new_enabled)</td></tr>
 <tr class="memdesc:a7063bab0936a35df980d558dcbe26ea5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the UART interrupt state (enabled/disabled)  <br /></td></tr>
 <tr class="separator:a7063bab0936a35df980d558dcbe26ea5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e0456ea96d55db31de947fb3e954f18" id="r_a0e0456ea96d55db31de947fb3e954f18"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0e0456ea96d55db31de947fb3e954f18">HAL_UART_ErrorCallback</a> (UART_HandleTypeDef *huart)</td></tr>
+<tr class="separator:a0e0456ea96d55db31de947fb3e954f18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59db2ba73b7115a05fe34c3d05e712c3" id="r_a59db2ba73b7115a05fe34c3d05e712c3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a59db2ba73b7115a05fe34c3d05e712c3">UART_init_uart_handlers</a> (void)</td></tr>
+<tr class="separator:a59db2ba73b7115a05fe34c3d05e712c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:a1d634841634fed7a46099ea48cd46156" id="r_a1d634841634fed7a46099ea48cd46156"><td class="memItemLeft" align="right" valign="top">UART_HandleTypeDef *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1d634841634fed7a46099ea48cd46156">UART_telecommand_port_handle</a> = &amp;<a class="el" href="main_8h.html#a5c3f9dccaa7cebcc70e1657af9e5e5dc">hlpuart1</a></td></tr>
 <tr class="separator:a1d634841634fed7a46099ea48cd46156"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a00e149586b4de17dcefc24374f458e78" id="r_a00e149586b4de17dcefc24374f458e78"><td class="memItemLeft" align="right" valign="top">UART_HandleTypeDef *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a00e149586b4de17dcefc24374f458e78">UART_eps_port_handle</a> = &amp;<a class="el" href="main_8h.html#a25a82fcf0cd24eb6d39977cb5864cec8">huart5</a></td></tr>
-<tr class="separator:a00e149586b4de17dcefc24374f458e78"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a62bcb66debabe5ca47e3d1cdb598f2" id="r_a9a62bcb66debabe5ca47e3d1cdb598f2"><td class="memItemLeft" align="right" valign="top">UART_HandleTypeDef *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9a62bcb66debabe5ca47e3d1cdb598f2">UART_mpi_port_handle</a> = &amp;<a class="el" href="main_8h.html#a2cf715bef37f7e8ef385a30974a5f0d5">huart1</a></td></tr>
 <tr class="separator:a9a62bcb66debabe5ca47e3d1cdb598f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afbdce53a4580c8cc33d4498592357e11" id="r_afbdce53a4580c8cc33d4498592357e11"><td class="memItemLeft" align="right" valign="top">UART_HandleTypeDef *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afbdce53a4580c8cc33d4498592357e11">UART_gps_port_handle</a> = &amp;<a class="el" href="main_8h.html#ab7c63c1b0f65db92b6a4ea19edf957e1">huart3</a></td></tr>
 <tr class="separator:afbdce53a4580c8cc33d4498592357e11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a424e308c5bf8635292fb07f1b1abc16c" id="r_a424e308c5bf8635292fb07f1b1abc16c"><td class="memItemLeft" align="right" valign="top">UART_HandleTypeDef *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a424e308c5bf8635292fb07f1b1abc16c">UART_camera_port_handle</a> = &amp;<a class="el" href="main_8h.html#ae273feb3e0dc44e38892650faa58fced">huart4</a></td></tr>
+<tr class="separator:a424e308c5bf8635292fb07f1b1abc16c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00e149586b4de17dcefc24374f458e78" id="r_a00e149586b4de17dcefc24374f458e78"><td class="memItemLeft" align="right" valign="top">UART_HandleTypeDef *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a00e149586b4de17dcefc24374f458e78">UART_eps_port_handle</a> = &amp;<a class="el" href="main_8h.html#a25a82fcf0cd24eb6d39977cb5864cec8">huart5</a></td></tr>
+<tr class="separator:a00e149586b4de17dcefc24374f458e78"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3dc813de1b57f885a86cb49040fafcf" id="r_aa3dc813de1b57f885a86cb49040fafcf"><td class="memItemLeft" align="right" valign="top">const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa3dc813de1b57f885a86cb49040fafcf">UART_telecommand_buffer_len</a> = 256</td></tr>
 <tr class="separator:aa3dc813de1b57f885a86cb49040fafcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a48b46ff3c9c6a9a8244bc059584a6c67" id="r_a48b46ff3c9c6a9a8244bc059584a6c67"><td class="memItemLeft" align="right" valign="top">volatile uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a48b46ff3c9c6a9a8244bc059584a6c67">UART_telecommand_buffer</a> [256]</td></tr>
@@ -161,6 +170,28 @@ Variables</h2></td></tr>
 <tr class="separator:a5fc035655fe624cd899b134f514f9ced"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af362401833143981fe53788bfcf4f041" id="r_af362401833143981fe53788bfcf4f041"><td class="memItemLeft" align="right" valign="top">volatile uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af362401833143981fe53788bfcf4f041">UART_telecommand_buffer_last_rx_byte</a> = 0</td></tr>
 <tr class="separator:af362401833143981fe53788bfcf4f041"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59b298c9c7501cc2806b8ae6a2a9978e" id="r_a59b298c9c7501cc2806b8ae6a2a9978e"><td class="memItemLeft" align="right" valign="top">const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a59b298c9c7501cc2806b8ae6a2a9978e">UART_mpi_buffer_len</a> = 256</td></tr>
+<tr class="separator:a59b298c9c7501cc2806b8ae6a2a9978e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4918e1b2791e9a3ded6fa2b972ca2fc" id="r_ae4918e1b2791e9a3ded6fa2b972ca2fc"><td class="memItemLeft" align="right" valign="top">volatile uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae4918e1b2791e9a3ded6fa2b972ca2fc">UART_mpi_buffer</a> [256]</td></tr>
+<tr class="separator:ae4918e1b2791e9a3ded6fa2b972ca2fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49dbfd98d3478eb158df0061453f1f8b" id="r_a49dbfd98d3478eb158df0061453f1f8b"><td class="memItemLeft" align="right" valign="top">volatile uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a49dbfd98d3478eb158df0061453f1f8b">UART_mpi_last_rx_byte</a> = 0</td></tr>
+<tr class="separator:a49dbfd98d3478eb158df0061453f1f8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f438b2a140b12582425edc344067cd3" id="r_a5f438b2a140b12582425edc344067cd3"><td class="memItemLeft" align="right" valign="top">volatile uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5f438b2a140b12582425edc344067cd3">UART_mpi_last_write_time_ms</a> = 0</td></tr>
+<tr class="separator:a5f438b2a140b12582425edc344067cd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1b46ad1c18148b7c280c89aebfb9a16" id="r_aa1b46ad1c18148b7c280c89aebfb9a16"><td class="memItemLeft" align="right" valign="top">volatile uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa1b46ad1c18148b7c280c89aebfb9a16">UART_mpi_buffer_write_idx</a> = 0</td></tr>
+<tr class="separator:aa1b46ad1c18148b7c280c89aebfb9a16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5bae3bbe4ed3e86aa17cfa39711d87ff" id="r_a5bae3bbe4ed3e86aa17cfa39711d87ff"><td class="memItemLeft" align="right" valign="top">const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5bae3bbe4ed3e86aa17cfa39711d87ff">UART_camera_buffer_len</a> = 1024</td></tr>
+<tr class="separator:a5bae3bbe4ed3e86aa17cfa39711d87ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abce550a0e1be91572fdaa10b837d3163" id="r_abce550a0e1be91572fdaa10b837d3163"><td class="memItemLeft" align="right" valign="top">volatile uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abce550a0e1be91572fdaa10b837d3163">UART_camera_buffer</a> [1024]</td></tr>
+<tr class="separator:abce550a0e1be91572fdaa10b837d3163"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad26446ecc78bec5b73e0473eb200eb9f" id="r_ad26446ecc78bec5b73e0473eb200eb9f"><td class="memItemLeft" align="right" valign="top">volatile uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad26446ecc78bec5b73e0473eb200eb9f">UART_camera_buffer_write_idx</a> = 0</td></tr>
+<tr class="separator:ad26446ecc78bec5b73e0473eb200eb9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accf20bba6ebee7cc1bccbe27fb5fa19d" id="r_accf20bba6ebee7cc1bccbe27fb5fa19d"><td class="memItemLeft" align="right" valign="top">volatile uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#accf20bba6ebee7cc1bccbe27fb5fa19d">UART_camera_last_write_time_ms</a> = 0</td></tr>
+<tr class="separator:accf20bba6ebee7cc1bccbe27fb5fa19d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e8a732b6f5b526a50a2936ca0541cb9" id="r_a9e8a732b6f5b526a50a2936ca0541cb9"><td class="memItemLeft" align="right" valign="top">volatile uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9e8a732b6f5b526a50a2936ca0541cb9">UART_camera_is_expecting_data</a> = 0</td></tr>
+<tr class="separator:a9e8a732b6f5b526a50a2936ca0541cb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12194aed4d8422262d8df4a8f125baaa" id="r_a12194aed4d8422262d8df4a8f125baaa"><td class="memItemLeft" align="right" valign="top">volatile uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a12194aed4d8422262d8df4a8f125baaa">UART_camera_buffer_last_rx_byte</a> = 0</td></tr>
+<tr class="separator:a12194aed4d8422262d8df4a8f125baaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a41dbc9dbd6bae149024591ea75fc9fcf" id="r_a41dbc9dbd6bae149024591ea75fc9fcf"><td class="memItemLeft" align="right" valign="top">const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a41dbc9dbd6bae149024591ea75fc9fcf">UART_eps_buffer_len</a> = 310</td></tr>
 <tr class="separator:a41dbc9dbd6bae149024591ea75fc9fcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab99f9d08a530ea8db8049c4e6be61cc6" id="r_ab99f9d08a530ea8db8049c4e6be61cc6"><td class="memItemLeft" align="right" valign="top">volatile uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab99f9d08a530ea8db8049c4e6be61cc6">UART_eps_buffer</a> [310]</td></tr>
@@ -219,16 +250,159 @@ Variables</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section note"><dt>Note</dt><dd>This function must be called very carefully. This type of GPS is known to, in the wrong mode, spam null bytes, which can lock up the entire system. Thus, the interrupt is disabled by default, and must be enabled explicitly by the GPS telecommands. </dd></dl>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="uart__handler_8c_a7063bab0936a35df980d558dcbe26ea5_icgraph.png" border="0" usemap="#auart__handler_8c_a7063bab0936a35df980d558dcbe26ea5_icgraph" alt=""/></div>
 <map name="auart__handler_8c_a7063bab0936a35df980d558dcbe26ea5_icgraph" id="auart__handler_8c_a7063bab0936a35df980d558dcbe26ea5_icgraph">
-<area shape="rect" title="Sets the UART interrupt state (enabled/disabled)" alt="" coords="490,5,647,46"/>
+<area shape="rect" title="Sets the UART interrupt state (enabled/disabled)" alt="" coords="490,35,647,75"/>
 <area shape="rect" href="gps__internal__drivers_8c.html#a67a662deeb51008f1040910dd8160e71" title="Sends a log command to the GPS, and receives the response." alt="" coords="241,13,442,38"/>
-<area shape="poly" title=" " alt="" coords="474,28,443,28,443,23,474,23"/>
+<area shape="poly" title=" " alt="" coords="474,45,442,41,443,36,475,40"/>
+<area shape="rect" href="uart__telelecommand__defs_8c.html#a559929acf5cfc4bdde97856c88c93f7d" title="Send arbitrary commands to a UART peripheral, and receive the response." alt="" coords="261,63,422,103"/>
+<area shape="poly" title=" " alt="" coords="475,69,422,76,422,70,474,64"/>
 <area shape="rect" href="gps__telecommand__defs_8c.html#ab1cb2a2088c5fb64ff8c40154606e9a6" title="Telecommand: Transmit a log command to the GPS receiver through UART." alt="" coords="5,5,193,46"/>
 <area shape="poly" title=" " alt="" coords="225,28,193,28,193,23,225,23"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a0e0456ea96d55db31de947fb3e954f18" name="a0e0456ea96d55db31de947fb3e954f18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e0456ea96d55db31de947fb3e954f18">&#9670;&#160;</a></span>HAL_UART_ErrorCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void HAL_UART_ErrorCallback </td>
+          <td>(</td>
+          <td class="paramtype">UART_HandleTypeDef *</td>          <td class="paramname"><span class="paramname"><em>huart</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="uart__handler_8c_a0e0456ea96d55db31de947fb3e954f18_cgraph.png" border="0" usemap="#auart__handler_8c_a0e0456ea96d55db31de947fb3e954f18_cgraph" alt=""/></div>
+<map name="auart__handler_8c_a0e0456ea96d55db31de947fb3e954f18_cgraph" id="auart__handler_8c_a0e0456ea96d55db31de947fb3e954f18_cgraph">
+<area shape="rect" title=" " alt="" coords="5,520,181,546"/>
+<area shape="rect" href="log_8h.html#a3e068c70867806154541035de518012d" title=" " alt="" coords="229,520,338,546"/>
+<area shape="poly" title=" " alt="" coords="181,530,213,530,213,536,181,536"/>
+<area shape="rect" href="csp__cmp_8h.html#a4402590c0b64383fa59aaf6fe78dcb34" title=" " alt="" coords="445,5,541,31"/>
+<area shape="poly" title=" " alt="" coords="283,519,291,425,309,280,322,205,339,136,360,79,384,40,405,26,429,18,431,23,407,30,388,44,364,81,344,137,328,206,314,281,296,425,288,520"/>
+<area shape="rect" href="log_8c.html#a6efa47aededef4834dc5c25da1e432de" title="Returns all sinks, except the specified exceptions." alt="" coords="417,55,569,80"/>
+<area shape="poly" title=" " alt="" coords="283,519,293,433,312,305,326,237,342,176,362,125,384,91,401,79,404,83,388,95,366,128,347,178,331,239,317,305,298,434,289,520"/>
+<area shape="rect" href="log_8c.html#ad5a8cf2ec365951bb0385938171723bd" title="Get a pointer to the full text of the in&#45;memory log message at the specified index." alt="" coords="412,104,574,145"/>
+<area shape="poly" title=" " alt="" coords="281,520,282,455,293,358,305,304,323,250,349,200,384,155,397,145,400,149,388,159,354,202,328,252,310,305,298,359,287,456,287,520"/>
+<area shape="rect" href="log_8c.html#acce5d976dea413409a2547fc61475620" title="Get the index of the most recent in&#45;memory log message." alt="" coords="412,169,574,225"/>
+<area shape="poly" title=" " alt="" coords="283,519,288,468,304,392,317,350,334,309,356,270,384,235,397,224,400,228,388,239,361,273,339,311,322,352,309,393,293,468,288,520"/>
+<area shape="rect" href="log_8c.html#ad0799a0e4171a608ff908822382da8c9" title="Get the most recent log message text." alt="" coords="416,248,570,289"/>
+<area shape="poly" title=" " alt="" coords="284,519,294,478,312,421,341,360,361,331,384,306,402,293,405,297,388,309,365,334,346,362,317,423,299,480,290,520"/>
+<area shape="rect" href="log_8c.html#a186ca6df91a1dacb78dbf0b0385747c5" title="Get the name of a severity enum." alt="" coords="811,371,976,396"/>
+<area shape="poly" title=" " alt="" coords="285,519,294,483,313,435,342,387,362,366,385,349,444,323,507,309,572,305,637,309,699,319,757,333,847,362,846,367,755,338,698,325,637,315,572,311,508,314,446,328,387,354,365,370,347,390,318,438,299,485,290,520"/>
+<area shape="rect" href="log_8c.html#a440123199704bc7c5231ec1a9743497f" title="Check logging sink status." alt="" coords="418,364,568,390"/>
+<area shape="poly" title=" " alt="" coords="289,518,324,461,351,428,385,400,403,390,405,395,387,404,355,432,328,464,293,521"/>
+<area shape="rect" href="log_8c.html#af31cb35d8f2dd37ff306620c600462da" title="Check whether file logging is enabled for a subsystem." alt="" coords="424,414,562,454"/>
+<area shape="poly" title=" " alt="" coords="301,517,338,491,385,465,408,455,410,460,387,470,341,496,304,522"/>
+<area shape="rect" href="log_8c.html#a5503bd03b30497a0a43c490d68090ebc" title="Get the size in entries of the in&#45;memory log table." alt="" coords="409,920,577,961"/>
+<area shape="poly" title=" " alt="" coords="287,546,287,610,298,707,310,760,328,813,354,863,388,907,397,915,394,919,384,911,349,866,323,815,305,762,293,708,282,610,281,546"/>
+<area shape="rect" href="log_8c.html#a3d0d201c22a940b6800834336c24fdcc" title=" " alt="" coords="410,986,576,1026"/>
+<area shape="poly" title=" " alt="" coords="289,546,299,631,318,759,332,826,348,887,367,937,388,971,399,981,396,985,384,975,362,940,343,889,327,827,313,760,293,632,283,546"/>
+<area shape="rect" href="log_8c.html#a9a7ce5e1b26859f039c363753e499d32" title=" " alt="" coords="410,1051,576,1092"/>
+<area shape="poly" title=" " alt="" coords="288,546,296,642,315,790,328,867,345,938,365,997,388,1036,399,1046,395,1050,384,1040,360,999,340,940,323,868,309,791,291,643,283,546"/>
+<area shape="rect" href="log_8c.html#a22ffd7bd23f49bfcc5da12d9dee93fba" title="Report a sink&#39;s enabled state." alt="" coords="407,479,579,520"/>
+<area shape="poly" title=" " alt="" coords="338,522,391,513,392,518,339,527"/>
+<area shape="rect" href="log_8c.html#af46fe0cc52d2bc6cd716d02ef713641c" title="Report a subsystem&#39;s file&#45;logging state." alt="" coords="412,544,574,585"/>
+<area shape="poly" title=" " alt="" coords="339,539,398,548,397,553,338,544"/>
+<area shape="rect" href="log_8c.html#a7580a472c0db91ca169d0e1403d4c48b" title="Turn debugging messages on or off for the specified sink." alt="" coords="405,610,581,650"/>
+<area shape="poly" title=" " alt="" coords="304,544,341,569,387,594,404,601,402,606,385,599,339,574,301,548"/>
+<area shape="rect" href="log_8c.html#add4285ec4e7fa886c86969276e630e2b" title="Enable or disable logging to a sink." alt="" coords="414,675,572,716"/>
+<area shape="poly" title=" " alt="" coords="294,545,329,600,356,632,388,660,402,668,399,673,384,664,352,636,325,604,289,547"/>
+<area shape="rect" href="log_8c.html#a51dd2ee0e3382333ca295b33b6fd8734" title="Turn debugging messages on or off for the specified system." alt="" coords="398,740,588,781"/>
+<area shape="poly" title=" " alt="" coords="290,545,301,581,320,630,349,681,367,705,388,725,394,730,391,734,384,730,363,708,344,684,315,632,296,583,285,547"/>
+<area shape="rect" href="log_8c.html#a57f3ced0c69b3a65c71ec7bf8bbc6cea" title="Enable or disable logging to file for a subsystem." alt="" coords="414,806,572,846"/>
+<area shape="poly" title=" " alt="" coords="288,545,295,592,312,658,325,694,341,729,362,762,388,791,402,802,399,806,384,795,358,765,337,732,320,696,307,659,290,593,283,546"/>
+<area shape="rect" href="log_8c.html#a0922ecc9bb8ee94a49060ee0961c1ca1" title="Set the logging severity bitfield mask for a subsystem." alt="" coords="386,871,600,896"/>
+<area shape="poly" title=" " alt="" coords="287,546,290,603,302,687,315,733,333,778,357,820,388,856,392,860,389,864,384,860,352,823,328,780,310,734,297,688,284,603,282,546"/>
+<area shape="rect" href="log_8c.html#a9620661557eea5fdaf535b894ae58c84" title="Log a message to several destinations (sinks)" alt="" coords="648,585,758,611"/>
+<area shape="poly" title=" " alt="" coords="569,383,602,400,639,439,667,485,686,531,698,570,693,571,681,533,662,488,635,442,599,404,567,388"/>
+<area shape="poly" title=" " alt="" coords="711,583,750,530,804,464,864,405,868,409,808,468,754,533,716,586"/>
+<area shape="rect" href="log__sinks_8c.html#ad2518000eb3f3d175e8a4939ee3530af" title="Sends a log message to a log file." alt="" coords="849,635,939,660"/>
+<area shape="poly" title=" " alt="" coords="756,609,834,629,833,635,755,614"/>
+<area shape="rect" href="log__sinks_8c.html#af6b617d68df1389f44e9beb22ffa6d10" title="Sends a log message to the UHF radio." alt="" coords="1052,783,1179,808"/>
+<area shape="poly" title=" " alt="" coords="722,609,760,639,807,671,867,704,916,726,1031,769,1049,775,1047,780,1029,774,914,731,865,708,804,675,756,643,718,614"/>
+<area shape="rect" href="log__sinks_8c.html#a3f618faf2b066b771b2cb567c66154b6" title="Sends a log message to the umbilical UART." alt="" coords="1038,536,1193,562"/>
+<area shape="poly" title=" " alt="" coords="758,589,1023,557,1024,562,758,594"/>
+<area shape="rect" href="timekeeping_8c.html#a5bfe7cf59c2f5dca9b5f4213f6ea16e7" title="Returns a computer&#45;friendly timestamp string." alt="" coords="806,479,982,504"/>
+<area shape="poly" title=" " alt="" coords="726,583,854,510,857,515,729,587"/>
+<area shape="rect" href="lfs_8c.html#aa7eb46b610f8507869aa62759cfd224e" title=" " alt="" coords="1068,635,1164,660"/>
+<area shape="poly" title=" " alt="" coords="940,645,1052,645,1052,650,940,650"/>
+<area shape="rect" href="lfs_8c.html#a27b9877d2df6b72e9ac883a408d0d34c" title="File operations ///." alt="" coords="1060,684,1171,710"/>
+<area shape="poly" title=" " alt="" coords="940,655,1045,679,1044,684,939,660"/>
+<area shape="rect" href="lfs_8c.html#ad6f28a6af39c34f251a7c8db1bcc9506" title=" " alt="" coords="1069,733,1162,759"/>
+<area shape="poly" title=" " alt="" coords="917,659,968,689,1031,720,1055,728,1053,733,1029,725,966,693,915,663"/>
+<area shape="rect" href="lfs_8c.html#a2769dda334cd0ac276a4a929eadb930d" title=" " alt="" coords="1069,585,1162,611"/>
+<area shape="poly" title=" " alt="" coords="939,635,1053,609,1054,614,940,640"/>
+<area shape="poly" title=" " alt="" coords="911,659,1032,769,1041,774,1039,779,1028,774,907,663"/>
+<area shape="poly" title=" " alt="" coords="915,632,966,602,1029,570,1045,564,1047,569,1031,575,968,606,917,636"/>
+<area shape="rect" href="lfs_8c.html#a6913260217358cf9c612d2547f6f0bbe" title=" " alt="" coords="1443,460,1546,486"/>
+<area shape="poly" title=" " alt="" coords="1164,647,1210,645,1263,637,1317,622,1366,595,1384,574,1390,551,1397,527,1414,503,1431,491,1434,495,1418,507,1401,530,1395,553,1388,576,1369,599,1319,626,1265,643,1211,650,1164,652"/>
+<area shape="rect" href="lfs_8c.html#abb00542d235be9617c878d46b6b00bb0" title=" " alt="" coords="1251,660,1366,686"/>
+<area shape="poly" title=" " alt="" coords="1165,651,1236,661,1235,666,1164,656"/>
+<area shape="rect" href="lfs_8c.html#a0f7d91af547222f857c7c7e0b4952836" title=" " alt="" coords="1632,460,1732,486"/>
+<area shape="poly" title=" " alt="" coords="1547,470,1617,470,1617,476,1547,476"/>
+<area shape="rect" href="lfs__util_8h.html#a9faff801530cd687a960a08af1acaaf1" title=" " alt="" coords="1650,411,1714,436"/>
+<area shape="poly" title=" " alt="" coords="1546,457,1634,433,1636,438,1547,462"/>
+<area shape="rect" href="lfs_8c.html#a730bc133994af125df2ef317c03499ea" title=" " alt="" coords="1622,361,1742,387"/>
+<area shape="poly" title=" " alt="" coords="1515,457,1563,428,1621,396,1631,391,1633,396,1623,401,1565,432,1518,462"/>
+<area shape="rect" href="lfs_8c.html#af78645d9b58b26761464ef2e892516b0" title="Internal operations predeclared here ///." alt="" coords="1790,485,1897,511"/>
+<area shape="poly" title=" " alt="" coords="1733,478,1775,485,1774,490,1732,483"/>
+<area shape="poly" title=" " alt="" coords="1171,687,1235,679,1236,685,1172,693"/>
+<area shape="rect" href="lfs_8c.html#af427c4edfdfd5f3f957708079189ddea" title="Top level file operations ///." alt="" coords="1249,709,1368,735"/>
+<area shape="poly" title=" " alt="" coords="1172,701,1234,710,1234,715,1171,707"/>
+<area shape="poly" title=" " alt="" coords="1353,707,1366,696,1382,672,1389,649,1389,601,1389,553,1397,528,1414,503,1428,491,1431,495,1418,507,1402,531,1395,554,1394,601,1394,649,1386,674,1370,700,1356,711"/>
+<area shape="poly" title=" " alt="" coords="1352,707,1366,696,1379,678,1385,659,1387,621,1390,583,1398,564,1414,547,1433,538,1467,531,1563,517,1775,500,1775,505,1563,523,1468,536,1435,543,1417,551,1402,567,1395,584,1392,621,1390,660,1383,680,1370,700,1355,711"/>
+<area shape="rect" href="lfs_8c.html#a7abfecb79aea2e5abee149d3093e8755" title=" " alt="" coords="1441,660,1549,686"/>
+<area shape="poly" title=" " alt="" coords="1359,706,1428,688,1430,693,1361,711"/>
+<area shape="rect" href="lfs_8c.html#a4b050bae630f5ffc9452b41c16ec1a2c" title=" " alt="" coords="1437,709,1553,735"/>
+<area shape="poly" title=" " alt="" coords="1368,720,1421,720,1421,725,1368,725"/>
+<area shape="rect" href="lfs_8c.html#a3ae08e7148c43b3861f5dfac6bf7966d" title=" " alt="" coords="1453,811,1536,836"/>
+<area shape="poly" title=" " alt="" coords="1349,733,1369,744,1394,767,1403,778,1417,789,1441,802,1438,807,1414,794,1399,782,1390,771,1366,748,1346,738"/>
+<area shape="rect" href="lfs_8c.html#a87c48ccdc3781694d58b956062690f45" title=" " alt="" coords="1642,785,1723,811"/>
+<area shape="poly" title=" " alt="" coords="1364,733,1416,745,1627,786,1626,791,1415,750,1363,738"/>
+<area shape="rect" href="lfs_8c.html#a651bb8d9b7afba50f815c3a7a43abc6c" title=" " alt="" coords="1416,860,1574,886"/>
+<area shape="poly" title=" " alt="" coords="1354,733,1369,744,1381,758,1388,771,1394,798,1400,823,1406,835,1417,847,1421,850,1418,854,1414,851,1402,838,1395,825,1388,799,1383,773,1376,761,1366,748,1351,738"/>
+<area shape="rect" href="lfs__util_8h.html#aa30d06c37906ba1f9fe84730c7326de5" title=" " alt="" coords="1455,909,1535,935"/>
+<area shape="poly" title=" " alt="" coords="1356,734,1370,744,1384,764,1391,784,1393,823,1396,860,1403,878,1417,896,1441,911,1439,916,1414,900,1399,881,1391,861,1388,823,1386,785,1379,767,1366,748,1353,738"/>
+<area shape="rect" href="lfs__util_8h.html#aa6d372bce9fdc63166afaab1bad985c2" title=" " alt="" coords="1463,959,1526,984"/>
+<area shape="poly" title=" " alt="" coords="1356,733,1370,744,1387,771,1394,797,1395,823,1393,848,1391,873,1393,897,1400,921,1418,946,1432,956,1449,963,1447,968,1429,961,1414,949,1396,924,1387,898,1386,873,1388,848,1390,823,1389,798,1382,773,1366,748,1353,737"/>
+<area shape="rect" href="lfs_8c.html#ae594dee3729cd3ecb88e5ad60d1e21bd" title=" " alt="" coords="1435,1008,1554,1034"/>
+<area shape="poly" title=" " alt="" coords="1357,734,1370,744,1390,778,1397,810,1397,842,1393,873,1389,904,1389,934,1397,964,1418,995,1424,1001,1420,1005,1414,999,1392,967,1384,935,1383,903,1387,872,1392,842,1392,811,1385,780,1366,748,1354,738"/>
+<area shape="rect" href="lfs_8c.html#ad3be90a730775a5fcda8545f6f0b2455" title=" " alt="" coords="1446,561,1544,587"/>
+<area shape="poly" title=" " alt="" coords="1351,707,1366,696,1383,672,1388,647,1395,622,1402,609,1414,596,1429,586,1432,590,1417,600,1407,612,1400,624,1394,648,1387,674,1370,700,1354,711"/>
+<area shape="rect" href="lfs_8c.html#a339d3442868daf32ac39ed6ad8f74dcf" title=" " alt="" coords="1442,611,1548,636"/>
+<area shape="poly" title=" " alt="" coords="1347,707,1366,696,1380,683,1389,671,1399,658,1414,645,1426,639,1429,644,1417,650,1403,662,1394,674,1384,687,1369,700,1350,711"/>
+<area shape="poly" title=" " alt="" coords="1537,815,1626,803,1626,808,1538,821"/>
+<area shape="poly" title=" " alt="" coords="1162,733,1200,720,1248,694,1258,690,1260,695,1251,699,1202,725,1164,738"/>
+<area shape="rect" href="lfs_8c.html#a82eccb8ccb85d49165b04885f01c8799" title=" " alt="" coords="1258,759,1359,784"/>
+<area shape="poly" title=" " alt="" coords="1163,750,1243,760,1243,766,1162,755"/>
+<area shape="poly" title=" " alt="" coords="1164,607,1202,620,1270,650,1268,655,1200,625,1162,612"/>
+<area shape="rect" href="lfs_8c.html#a41d53212e4b29a3f22c93f27153c4030" title=" " alt="" coords="1258,559,1359,584"/>
+<area shape="poly" title=" " alt="" coords="1162,589,1243,578,1243,583,1163,594"/>
+<area shape="rect" href="timekeeping_8c.html#a94e564d601196fe7f3e2bc83050deb12" title=" " alt="" coords="1033,471,1198,512"/>
+<area shape="poly" title=" " alt="" coords="982,489,1017,489,1017,494,982,494"/>
+<area shape="rect" href="timekeeping_8c.html#a909de509b8cfaf7214b1e8f0759c036d" title=" " alt="" coords="1030,406,1201,446"/>
+<area shape="poly" title=" " alt="" coords="939,476,1029,449,1030,454,941,481"/>
+<area shape="poly" title=" " alt="" coords="564,447,602,465,630,489,655,517,690,570,685,573,650,520,626,493,599,470,562,451"/>
+<area shape="poly" title=" " alt="" coords="570,518,601,530,640,551,673,574,670,578,637,556,599,535,568,523"/>
+<area shape="poly" title=" " alt="" coords="574,575,633,584,633,590,574,580"/>
+<area shape="poly" title=" " alt="" coords="581,614,633,606,634,611,582,619"/>
+<area shape="poly" title=" " alt="" coords="568,672,599,660,637,640,670,618,673,622,639,644,601,665,570,677"/>
+<area shape="poly" title=" " alt="" coords="576,738,599,725,626,702,650,675,685,623,690,626,654,678,630,706,602,730,579,742"/>
+<area shape="poly" title=" " alt="" coords="571,807,599,791,634,752,661,707,680,663,692,625,697,627,685,664,665,710,638,755,602,795,574,812"/>
+<area shape="poly" title=" " alt="" coords="580,868,599,856,622,831,642,802,671,738,688,676,696,626,702,627,693,677,676,740,647,805,627,834,602,860,583,872"/>
 </map>
 </div>
 
@@ -289,6 +463,104 @@ Here is the caller graph for this function:</div>
 </div>
 </div>
 <h2 class="groupheader">Variable Documentation</h2>
+<a id="abce550a0e1be91572fdaa10b837d3163" name="abce550a0e1be91572fdaa10b837d3163"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abce550a0e1be91572fdaa10b837d3163">&#9670;&#160;</a></span>UART_camera_buffer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">volatile uint8_t UART_camera_buffer[1024]</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a12194aed4d8422262d8df4a8f125baaa" name="a12194aed4d8422262d8df4a8f125baaa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12194aed4d8422262d8df4a8f125baaa">&#9670;&#160;</a></span>UART_camera_buffer_last_rx_byte</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">volatile uint8_t UART_camera_buffer_last_rx_byte = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5bae3bbe4ed3e86aa17cfa39711d87ff" name="a5bae3bbe4ed3e86aa17cfa39711d87ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5bae3bbe4ed3e86aa17cfa39711d87ff">&#9670;&#160;</a></span>UART_camera_buffer_len</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint16_t UART_camera_buffer_len = 1024</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad26446ecc78bec5b73e0473eb200eb9f" name="ad26446ecc78bec5b73e0473eb200eb9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad26446ecc78bec5b73e0473eb200eb9f">&#9670;&#160;</a></span>UART_camera_buffer_write_idx</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">volatile uint16_t UART_camera_buffer_write_idx = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9e8a732b6f5b526a50a2936ca0541cb9" name="a9e8a732b6f5b526a50a2936ca0541cb9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e8a732b6f5b526a50a2936ca0541cb9">&#9670;&#160;</a></span>UART_camera_is_expecting_data</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">volatile uint8_t UART_camera_is_expecting_data = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="accf20bba6ebee7cc1bccbe27fb5fa19d" name="accf20bba6ebee7cc1bccbe27fb5fa19d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accf20bba6ebee7cc1bccbe27fb5fa19d">&#9670;&#160;</a></span>UART_camera_last_write_time_ms</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">volatile uint32_t UART_camera_last_write_time_ms = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a424e308c5bf8635292fb07f1b1abc16c" name="a424e308c5bf8635292fb07f1b1abc16c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a424e308c5bf8635292fb07f1b1abc16c">&#9670;&#160;</a></span>UART_camera_port_handle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">UART_HandleTypeDef* UART_camera_port_handle = &amp;<a class="el" href="main_8h.html#ae273feb3e0dc44e38892650faa58fced">huart4</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="ab99f9d08a530ea8db8049c4e6be61cc6" name="ab99f9d08a530ea8db8049c4e6be61cc6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab99f9d08a530ea8db8049c4e6be61cc6">&#9670;&#160;</a></span>UART_eps_buffer</h2>
 
@@ -479,6 +751,76 @@ Here is the caller graph for this function:</div>
       <table class="memname">
         <tr>
           <td class="memname">volatile uint8_t UART_gps_uart_interrupt_enabled = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae4918e1b2791e9a3ded6fa2b972ca2fc" name="ae4918e1b2791e9a3ded6fa2b972ca2fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4918e1b2791e9a3ded6fa2b972ca2fc">&#9670;&#160;</a></span>UART_mpi_buffer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">volatile uint8_t UART_mpi_buffer[256]</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a59b298c9c7501cc2806b8ae6a2a9978e" name="a59b298c9c7501cc2806b8ae6a2a9978e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59b298c9c7501cc2806b8ae6a2a9978e">&#9670;&#160;</a></span>UART_mpi_buffer_len</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint16_t UART_mpi_buffer_len = 256</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa1b46ad1c18148b7c280c89aebfb9a16" name="aa1b46ad1c18148b7c280c89aebfb9a16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1b46ad1c18148b7c280c89aebfb9a16">&#9670;&#160;</a></span>UART_mpi_buffer_write_idx</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">volatile uint16_t UART_mpi_buffer_write_idx = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a49dbfd98d3478eb158df0061453f1f8b" name="a49dbfd98d3478eb158df0061453f1f8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49dbfd98d3478eb158df0061453f1f8b">&#9670;&#160;</a></span>UART_mpi_last_rx_byte</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">volatile uint8_t UART_mpi_last_rx_byte = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5f438b2a140b12582425edc344067cd3" name="a5f438b2a140b12582425edc344067cd3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f438b2a140b12582425edc344067cd3">&#9670;&#160;</a></span>UART_mpi_last_write_time_ms</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">volatile uint32_t UART_mpi_last_write_time_ms = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">

@@ -33,7 +33,7 @@ var searchData=
   ['libcsp_5fversion_30',['LIBCSP_VERSION',['../csp__autoconfig_8h.html#a9f80c9aa532a5f96726fffe461d0ef20',1,'csp_autoconfig.h']]],
   ['load32h_31',['LOAD32H',['../csp__sha1_8c.html#adfc63f1dc9ae6bed655becd332d7047f',1,'csp_sha1.c']]],
   ['load32l_32',['LOAD32L',['../csp__xtea_8c.html#a2ded2110509f5e2754002e906b623862',1,'csp_xtea.c']]],
-  ['log_5fformatted_5fmessage_5fmax_5flength_33',['LOG_FORMATTED_MESSAGE_MAX_LENGTH',['../log_8c.html#a68cddde36b124d15327d45f7d2892a6a',1,'log.c']]],
+  ['log_5fformatted_5fmessage_5fmax_5flength_33',['LOG_FORMATTED_MESSAGE_MAX_LENGTH',['../log_8h.html#a68cddde36b124d15327d45f7d2892a6a',1,'log.h']]],
   ['log_5ffull_5fmessage_5fmax_5flength_34',['LOG_FULL_MESSAGE_MAX_LENGTH',['../log_8c.html#a8c584bed7eb804d4a469d9f38b338fbd',1,'log.c']]],
   ['log_5fmemory_5fnumber_5fof_5fentries_35',['LOG_MEMORY_NUMBER_OF_ENTRIES',['../log_8c.html#a8a61811827a541287cc00a065a2395e5',1,'log.c']]],
   ['log_5fsink_5fname_5fmax_5flength_36',['LOG_SINK_NAME_MAX_LENGTH',['../log_8c.html#a7cb868b15459b676dab5e02481154b89',1,'log.c']]],

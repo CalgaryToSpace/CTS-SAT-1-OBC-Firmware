@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['na_0',['NA',['../system__stm32l4xx_8c.html#autotoc_md89',1,'PLLSAI1_P                              | NA'],['../system__stm32l4xx_8c.html#autotoc_md90',1,'PLLSAI1_Q                              | NA'],['../system__stm32l4xx_8c.html#autotoc_md91',1,'PLLSAI1_R                              | NA'],['../system__stm32l4xx_8c.html#autotoc_md92',1,'PLLSAI2_P                              | NA'],['../system__stm32l4xx_8c.html#autotoc_md93',1,'PLLSAI2_Q                              | NA'],['../system__stm32l4xx_8c.html#autotoc_md94',1,'PLLSAI2_R                              | NA']]],
+  ['na_0',['NA',['../system__stm32l4xx_8c.html#autotoc_md96',1,'PLLSAI1_P                              | NA'],['../system__stm32l4xx_8c.html#autotoc_md97',1,'PLLSAI1_Q                              | NA'],['../system__stm32l4xx_8c.html#autotoc_md98',1,'PLLSAI1_R                              | NA'],['../system__stm32l4xx_8c.html#autotoc_md99',1,'PLLSAI2_P                              | NA'],['../system__stm32l4xx_8c.html#autotoc_md100',1,'PLLSAI2_Q                              | NA'],['../system__stm32l4xx_8c.html#autotoc_md101',1,'PLLSAI2_R                              | NA']]],
   ['nadir_5fsensor_5fmeasurement_5fnoise_1',['nadir_sensor_measurement_noise',['../structADCS__estimation__params__struct__t.html#a7627ad53ffa22e8dd60c4d4eccced7a9',1,'ADCS_estimation_params_struct_t']]],
   ['nadir_5fsensor_5frange_5ferror_2',['nadir_sensor_range_error',['../structADCS__current__state__1__struct__t.html#ac837cbd1908e2cfedc918aaf4a79989c',1,'ADCS_current_state_1_struct_t']]],
   ['nadir_5fsensor_5fterminator_5ftest_3',['nadir_sensor_terminator_test',['../structADCS__estimation__params__struct__t.html#a6b7aad6702b3273534048d36c3539a25',1,'ADCS_estimation_params_struct_t']]],
@@ -21,7 +21,7 @@ var searchData=
   ['non_20critical_20stm32_20notes_18',['Non-Critical STM32 Notes',['../md_docs_2Non-Critical__Notes_2STM32__Notes.html',1,'']]],
   ['non_20objectives_19',['Non-Objectives',['../md_docs_2C__Unit__Tests.html#autotoc_md32',1,'']]],
   ['notation_20',['Notation',['../md_docs_2Non-Critical__Notes_2Timestamp__Format__Rationale.html#autotoc_md68',1,'']]],
-  ['notes_21',['Notes',['../md_docs_2Sub-System__Notes_2ISISpace__EPS__Notes.html',1,'ISISpace EPS Notes'],['../md_docs_2Non-Critical__Notes_2STM32__Notes.html',1,'Non-Critical STM32 Notes'],['../md_docs_2Telecommand__Spec.html#autotoc_md76',1,'Notes']]],
+  ['notes_21',['Notes',['../md_docs_2Sub-System__Notes_2ISISpace__EPS__Notes.html',1,'ISISpace EPS Notes'],['../md_docs_2Non-Critical__Notes_2STM32__Notes.html',1,'Non-Critical STM32 Notes'],['../md_docs_2Telecommand__Spec.html#autotoc_md83',1,'Notes']]],
   ['num_5fconfig_5fvar_22',['num_config_var',['../structCONFIG__integer__config__entry__t.html#a9f73a273e6ce4de91671725cee550fb7',1,'CONFIG_integer_config_entry_t']]],
   ['num_5fstars_5fdetected_23',['num_stars_detected',['../structADCS__raw__star__tracker__struct__t.html#a3c04025fa087919ca5730ce5cc74710f',1,'ADCS_raw_star_tracker_struct_t']]],
   ['num_5fstars_5fidentified_24',['num_stars_identified',['../structADCS__raw__star__tracker__struct__t.html#a2d85af39c70add9fc1f87efc8d0749a0',1,'ADCS_raw_star_tracker_struct_t']]],

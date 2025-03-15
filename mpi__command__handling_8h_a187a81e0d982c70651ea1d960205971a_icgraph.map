@@ -1,0 +1,7 @@
+<map id="MPI_send_command_get_response" name="MPI_send_command_get_response">
+<area shape="rect" id="Node000001" title="Sends commandcode+params to the MPI as bytes." alt="" coords="300,27,469,68"/>
+<area shape="rect" id="Node000002" href="$mpi__telecommand__defs_8c.html#ac8b626f01bd5421af1b7db8106d83f5b" title="Send a configuration command &amp; params (IF ANY) to the MPI encoded in hex." alt="" coords="5,5,252,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="284,39,246,34,246,29,284,33"/>
+<area shape="rect" id="Node000003" href="$uart__telelecommand__defs_8c.html#a559929acf5cfc4bdde97856c88c93f7d" title="Send arbitrary commands to a UART peripheral, and receive the response." alt="" coords="48,55,209,96"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="284,61,210,69,209,64,284,56"/>
+</map>

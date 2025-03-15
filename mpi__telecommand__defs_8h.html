@@ -231,21 +231,128 @@ Here is the call graph for this function:</div>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>0: Success, 1: Invalid Input, 2: Failed UART transmission, 3: Failed UART reception, 4: MPI timeout before sending 1 byte, 5: MPI failed to execute CMD </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>0: Success, 1: Invalid Input, 2: Failed UART transmission, 3: Failed UART reception, 4: MPI timeout before sending 1 byte, 5: MPI failed to execute CMD, 6: Invalid response from the MPI </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="mpi__telecommand__defs_8h_ac8b626f01bd5421af1b7db8106d83f5b_cgraph.png" border="0" usemap="#ampi__telecommand__defs_8h_ac8b626f01bd5421af1b7db8106d83f5b_cgraph" alt=""/></div>
 <map name="ampi__telecommand__defs_8h_ac8b626f01bd5421af1b7db8106d83f5b_cgraph" id="ampi__telecommand__defs_8h_ac8b626f01bd5421af1b7db8106d83f5b_cgraph">
-<area shape="rect" title="Send a configuration command &amp; params (IF ANY) to the MPI encoded in hex." alt="" coords="5,74,252,100"/>
-<area shape="rect" href="mpi__command__handling_8c.html#acb800cd1da2ae33e76bb5d7746bbafb5" title="Sends commandcode+params to the MPI as bytes." alt="" coords="313,37,478,78"/>
-<area shape="poly" title=" " alt="" coords="251,71,297,66,298,71,251,76"/>
-<area shape="rect" href="telecommand__args__helpers_8c.html#a3f4c71ad48b16b79e4bb91ffb13111d7" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a hex string." alt="" coords="300,102,491,128"/>
-<area shape="poly" title=" " alt="" coords="253,97,284,101,284,106,252,103"/>
-<area shape="rect" href="mpi__transceiver_8c.html#a8152cd1b9513be2c73a97bfb50ecd497" title="Sets the transceiver state." alt="" coords="560,5,701,46"/>
-<area shape="poly" title=" " alt="" coords="478,44,543,35,544,40,479,49"/>
-<area shape="rect" href="mpi__command__handling_8c.html#ac4ddc1be72f41eb71f22491e91150a6c" title="The MPI responds to each telecommand with a response code consisting of an echo of the telecommand an..." alt="" coords="539,71,721,111"/>
-<area shape="poly" title=" " alt="" coords="479,67,524,73,523,79,478,72"/>
+<area shape="rect" title="Send a configuration command &amp; params (IF ANY) to the MPI encoded in hex." alt="" coords="5,902,252,928"/>
+<area shape="rect" href="log_8h.html#a3e068c70867806154541035de518012d" title=" " alt="" coords="341,558,450,584"/>
+<area shape="poly" title=" " alt="" coords="138,900,372,595,377,598,142,903"/>
+<area shape="rect" href="mpi__command__handling_8c.html#a187a81e0d982c70651ea1d960205971a" title="Sends commandcode+params to the MPI as bytes." alt="" coords="311,861,480,902"/>
+<area shape="poly" title=" " alt="" coords="236,899,295,892,295,897,237,904"/>
+<area shape="rect" href="mpi__command__handling_8c.html#a98a97b18137f5f914ab1895cbb33ccfb" title="The MPI responds to each telecommand with a response code consisting of an echo of the telecommand an..." alt="" coords="315,927,476,967"/>
+<area shape="poly" title=" " alt="" coords="241,926,300,933,299,938,241,931"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#a3f4c71ad48b16b79e4bb91ffb13111d7" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a hex string." alt="" coords="300,992,491,1017"/>
+<area shape="poly" title=" " alt="" coords="164,926,301,976,326,984,325,989,299,982,162,931"/>
+<area shape="rect" href="csp__cmp_8h.html#a4402590c0b64383fa59aaf6fe78dcb34" title=" " alt="" coords="598,136,694,161"/>
+<area shape="poly" title=" " alt="" coords="394,558,400,489,420,384,438,326,463,269,496,216,537,170,558,157,582,149,583,154,561,162,541,174,500,219,468,272,443,328,426,385,406,490,400,558"/>
+<area shape="rect" href="log_8c.html#a6efa47aededef4834dc5c25da1e432de" title="Returns all sinks, except the specified exceptions." alt="" coords="570,185,722,210"/>
+<area shape="poly" title=" " alt="" coords="395,557,404,496,427,405,445,355,469,306,500,260,537,221,554,210,557,214,541,225,504,264,474,309,450,357,432,407,409,497,400,558"/>
+<area shape="rect" href="log_8c.html#ad5a8cf2ec365951bb0385938171723bd" title="Get a pointer to the full text of the in&#45;memory log message at the specified index." alt="" coords="565,235,727,275"/>
+<area shape="poly" title=" " alt="" coords="397,557,410,507,436,433,455,393,478,354,505,317,537,285,550,276,553,280,541,289,509,321,482,357,460,396,441,435,415,508,402,559"/>
+<area shape="rect" href="log_8c.html#acce5d976dea413409a2547fc61475620" title="Get the index of the most recent in&#45;memory log message." alt="" coords="565,299,727,355"/>
+<area shape="poly" title=" " alt="" coords="400,557,418,520,448,468,488,413,537,365,550,356,553,361,541,369,492,417,452,471,423,522,405,559"/>
+<area shape="rect" href="log_8c.html#ad0799a0e4171a608ff908822382da8c9" title="Get the most recent log message text." alt="" coords="570,379,723,419"/>
+<area shape="poly" title=" " alt="" coords="406,556,459,499,496,465,538,435,560,424,562,428,540,440,500,469,462,503,409,560"/>
+<area shape="rect" href="log_8c.html#a186ca6df91a1dacb78dbf0b0385747c5" title="Get the name of a severity enum." alt="" coords="964,493,1130,518"/>
+<area shape="poly" title=" " alt="" coords="410,556,463,515,499,494,538,479,597,466,658,459,719,456,779,458,890,470,979,486,978,492,889,475,779,463,719,462,658,464,598,471,540,484,502,499,466,520,413,560"/>
+<area shape="rect" href="log_8c.html#a440123199704bc7c5231ec1a9743497f" title="Check logging sink status." alt="" coords="572,608,721,633"/>
+<area shape="poly" title=" " alt="" coords="451,579,563,601,562,607,450,584"/>
+<area shape="rect" href="log_8c.html#af31cb35d8f2dd37ff306620c600462da" title="Check whether file logging is enabled for a subsystem." alt="" coords="577,657,715,698"/>
+<area shape="poly" title=" " alt="" coords="420,582,474,612,540,643,563,652,561,657,538,648,471,617,417,587"/>
+<area shape="rect" href="log_8c.html#a5503bd03b30497a0a43c490d68090ebc" title="Get the size in entries of the in&#45;memory log table." alt="" coords="562,1049,730,1090"/>
+<area shape="poly" title=" " alt="" coords="404,583,443,692,494,849,503,904,505,950,513,992,523,1012,541,1034,550,1043,547,1047,537,1038,519,1015,508,993,499,951,498,905,488,850,438,694,399,585"/>
+<area shape="rect" href="log_8c.html#a3d0d201c22a940b6800834336c24fdcc" title=" " alt="" coords="564,5,729,46"/>
+<area shape="poly" title=" " alt="" coords="393,558,395,474,400,411,410,340,427,265,453,190,489,119,511,87,537,57,548,48,552,52,541,61,516,90,493,122,458,192,432,266,415,341,405,411,400,474,399,558"/>
+<area shape="rect" href="log_8c.html#a9a7ce5e1b26859f039c363753e499d32" title=" " alt="" coords="564,71,729,111"/>
+<area shape="poly" title=" " alt="" coords="394,558,398,482,405,427,417,366,434,300,460,236,493,175,537,121,548,112,552,116,541,125,498,178,464,238,440,302,422,367,410,428,404,483,399,558"/>
+<area shape="rect" href="log_8c.html#a22ffd7bd23f49bfcc5da12d9dee93fba" title="Report a sink&#39;s enabled state." alt="" coords="560,723,732,763"/>
+<area shape="poly" title=" " alt="" coords="409,582,461,642,498,677,540,707,552,714,549,718,538,712,495,681,457,646,405,586"/>
+<area shape="rect" href="log_8c.html#af46fe0cc52d2bc6cd716d02ef713641c" title="Report a subsystem&#39;s file&#45;logging state." alt="" coords="566,788,727,829"/>
+<area shape="poly" title=" " alt="" coords="405,583,422,621,452,672,491,726,515,751,541,773,553,781,550,785,537,777,511,755,487,730,447,675,418,623,400,585"/>
+<area shape="rect" href="log_8c.html#a7580a472c0db91ca169d0e1403d4c48b" title="Turn debugging messages on or off for the specified sink." alt="" coords="558,853,734,894"/>
+<area shape="poly" title=" " alt="" coords="402,583,416,631,443,700,484,774,510,808,541,838,547,843,544,847,537,842,506,812,480,777,438,702,411,633,397,585"/>
+<area shape="rect" href="log_8c.html#add4285ec4e7fa886c86969276e630e2b" title="Enable or disable logging to a sink." alt="" coords="568,919,725,959"/>
+<area shape="poly" title=" " alt="" coords="401,584,412,642,436,728,454,775,477,822,506,866,541,904,555,914,552,919,537,908,502,869,473,825,449,778,430,730,406,643,396,585"/>
+<area shape="rect" href="log_8c.html#a51dd2ee0e3382333ca295b33b6fd8734" title="Turn debugging messages on or off for the specified system." alt="" coords="552,984,741,1025"/>
+<area shape="poly" title=" " alt="" coords="404,584,479,800,541,969,545,973,542,977,537,973,474,802,399,585"/>
+<area shape="rect" href="log_8c.html#a57f3ced0c69b3a65c71ec7bf8bbc6cea" title="Enable or disable logging to file for a subsystem." alt="" coords="568,493,725,534"/>
+<area shape="poly" title=" " alt="" coords="450,556,552,532,553,538,451,561"/>
+<area shape="rect" href="log_8c.html#a0922ecc9bb8ee94a49060ee0961c1ca1" title="Set the logging severity bitfield mask for a subsystem." alt="" coords="539,558,753,584"/>
+<area shape="poly" title=" " alt="" coords="451,568,524,568,524,574,451,574"/>
+<area shape="rect" href="log_8c.html#a9620661557eea5fdaf535b894ae58c84" title="Log a message to several destinations (sinks)" alt="" coords="801,698,911,724"/>
+<area shape="poly" title=" " alt="" coords="719,631,754,643,793,664,827,686,824,691,790,668,752,648,717,636"/>
+<area shape="poly" title=" " alt="" coords="864,696,902,642,957,577,1014,526,1018,530,961,581,907,646,868,699"/>
+<area shape="rect" href="log__sinks_8c.html#ad2518000eb3f3d175e8a4939ee3530af" title="Sends a log message to a log file." alt="" coords="1002,748,1092,773"/>
+<area shape="poly" title=" " alt="" coords="909,722,987,742,986,747,908,727"/>
+<area shape="rect" href="log__sinks_8c.html#af6b617d68df1389f44e9beb22ffa6d10" title="Sends a log message to the UHF radio." alt="" coords="1205,896,1332,921"/>
+<area shape="poly" title=" " alt="" coords="875,722,913,752,960,783,1020,817,1069,839,1184,882,1202,888,1200,893,1182,887,1067,844,1018,821,957,788,909,756,871,726"/>
+<area shape="rect" href="log__sinks_8c.html#a3f618faf2b066b771b2cb567c66154b6" title="Sends a log message to the umbilical UART." alt="" coords="1192,649,1346,674"/>
+<area shape="poly" title=" " alt="" coords="911,702,1176,670,1177,675,911,707"/>
+<area shape="rect" href="timekeeping_8c.html#a5bfe7cf59c2f5dca9b5f4213f6ea16e7" title="Returns a computer&#45;friendly timestamp string." alt="" coords="959,592,1135,617"/>
+<area shape="poly" title=" " alt="" coords="879,695,1007,623,1010,627,882,700"/>
+<area shape="rect" href="lfs_8c.html#aa7eb46b610f8507869aa62759cfd224e" title=" " alt="" coords="1220,748,1317,773"/>
+<area shape="poly" title=" " alt="" coords="1093,758,1205,758,1205,763,1093,763"/>
+<area shape="rect" href="lfs_8c.html#a27b9877d2df6b72e9ac883a408d0d34c" title="File operations ///." alt="" coords="1213,797,1324,822"/>
+<area shape="poly" title=" " alt="" coords="1093,768,1198,791,1197,797,1092,773"/>
+<area shape="rect" href="lfs_8c.html#ad6f28a6af39c34f251a7c8db1bcc9506" title=" " alt="" coords="1222,846,1315,872"/>
+<area shape="poly" title=" " alt="" coords="1070,771,1121,802,1184,833,1208,841,1206,846,1182,837,1119,806,1068,776"/>
+<area shape="rect" href="lfs_8c.html#a2769dda334cd0ac276a4a929eadb930d" title=" " alt="" coords="1222,698,1315,724"/>
+<area shape="poly" title=" " alt="" coords="1092,748,1206,722,1207,727,1093,753"/>
+<area shape="poly" title=" " alt="" coords="1064,772,1185,882,1194,887,1192,892,1181,887,1060,776"/>
+<area shape="poly" title=" " alt="" coords="1068,745,1119,714,1182,683,1198,677,1200,682,1184,688,1121,719,1070,749"/>
+<area shape="rect" href="lfs_8c.html#a6913260217358cf9c612d2547f6f0bbe" title=" " alt="" coords="1596,672,1700,697"/>
+<area shape="poly" title=" " alt="" coords="1317,748,1581,695,1582,700,1318,753"/>
+<area shape="rect" href="lfs_8c.html#abb00542d235be9617c878d46b6b00bb0" title=" " alt="" coords="1404,773,1519,798"/>
+<area shape="poly" title=" " alt="" coords="1318,764,1389,773,1388,779,1317,769"/>
+<area shape="rect" href="lfs_8c.html#a0f7d91af547222f857c7c7e0b4952836" title=" " alt="" coords="1786,672,1885,697"/>
+<area shape="poly" title=" " alt="" coords="1700,682,1770,682,1770,687,1700,687"/>
+<area shape="rect" href="lfs__util_8h.html#a9faff801530cd687a960a08af1acaaf1" title=" " alt="" coords="1803,622,1867,648"/>
+<area shape="poly" title=" " alt="" coords="1699,668,1787,645,1789,650,1700,673"/>
+<area shape="rect" href="lfs_8c.html#a730bc133994af125df2ef317c03499ea" title=" " alt="" coords="1775,573,1895,598"/>
+<area shape="poly" title=" " alt="" coords="1668,669,1716,639,1774,607,1784,603,1786,607,1776,612,1718,644,1671,673"/>
+<area shape="rect" href="lfs_8c.html#af78645d9b58b26761464ef2e892516b0" title="Internal operations predeclared here ///." alt="" coords="1943,697,2050,722"/>
+<area shape="poly" title=" " alt="" coords="1886,690,1928,696,1927,702,1885,695"/>
+<area shape="poly" title=" " alt="" coords="1324,800,1388,792,1389,797,1325,805"/>
+<area shape="rect" href="lfs_8c.html#af427c4edfdfd5f3f957708079189ddea" title="Top level file operations ///." alt="" coords="1402,822,1521,848"/>
+<area shape="poly" title=" " alt="" coords="1325,814,1387,823,1387,828,1324,820"/>
+<area shape="poly" title=" " alt="" coords="1504,819,1519,809,1535,786,1542,763,1549,739,1567,714,1584,702,1587,707,1571,718,1554,741,1547,764,1540,788,1523,813,1507,824"/>
+<area shape="poly" title=" " alt="" coords="1500,819,1519,809,1533,796,1542,783,1551,770,1567,758,1597,747,1635,738,1732,724,1927,709,1928,715,1732,729,1636,743,1598,752,1570,763,1555,774,1546,786,1537,799,1522,813,1503,824"/>
+<area shape="rect" href="lfs_8c.html#a7abfecb79aea2e5abee149d3093e8755" title=" " alt="" coords="1594,872,1702,897"/>
+<area shape="poly" title=" " alt="" coords="1514,846,1583,864,1581,870,1512,851"/>
+<area shape="rect" href="lfs_8c.html#a4b050bae630f5ffc9452b41c16ec1a2c" title=" " alt="" coords="1590,921,1706,946"/>
+<area shape="poly" title=" " alt="" coords="1503,846,1522,857,1537,870,1547,883,1556,895,1570,907,1578,912,1575,916,1567,912,1552,899,1542,886,1533,874,1519,861,1500,851"/>
+<area shape="rect" href="lfs_8c.html#a3ae08e7148c43b3861f5dfac6bf7966d" title=" " alt="" coords="1606,1022,1690,1048"/>
+<area shape="poly" title=" " alt="" coords="1508,846,1523,857,1536,876,1544,895,1547,931,1551,966,1558,983,1571,1001,1594,1018,1590,1022,1567,1005,1553,986,1546,967,1542,931,1538,896,1532,879,1519,861,1505,850"/>
+<area shape="rect" href="lfs_8c.html#a87c48ccdc3781694d58b956062690f45" title=" " alt="" coords="1794,997,1876,1022"/>
+<area shape="poly" title=" " alt="" coords="1507,846,1522,857,1534,870,1540,884,1546,910,1552,934,1559,946,1570,957,1606,973,1661,986,1779,1002,1779,1008,1660,991,1605,978,1567,961,1555,949,1547,936,1541,911,1535,886,1529,873,1519,861,1504,851"/>
+<area shape="rect" href="lfs_8c.html#a651bb8d9b7afba50f815c3a7a43abc6c" title=" " alt="" coords="1569,773,1727,798"/>
+<area shape="poly" title=" " alt="" coords="1512,819,1581,800,1583,806,1514,824"/>
+<area shape="rect" href="lfs__util_8h.html#aa30d06c37906ba1f9fe84730c7326de5" title=" " alt="" coords="1608,822,1688,848"/>
+<area shape="poly" title=" " alt="" coords="1521,832,1592,832,1592,838,1521,838"/>
+<area shape="poly" title=" " alt="" coords="1690,1027,1779,1015,1779,1020,1691,1032"/>
+<area shape="poly" title=" " alt="" coords="1315,845,1353,833,1401,807,1411,803,1413,808,1404,812,1355,837,1317,850"/>
+<area shape="rect" href="lfs_8c.html#a82eccb8ccb85d49165b04885f01c8799" title=" " alt="" coords="1411,872,1512,897"/>
+<area shape="poly" title=" " alt="" coords="1316,862,1396,873,1396,878,1315,868"/>
+<area shape="poly" title=" " alt="" coords="1317,720,1355,733,1423,763,1421,768,1353,737,1315,725"/>
+<area shape="rect" href="lfs_8c.html#a41d53212e4b29a3f22c93f27153c4030" title=" " alt="" coords="1411,672,1512,697"/>
+<area shape="poly" title=" " alt="" coords="1315,702,1396,691,1396,696,1316,707"/>
+<area shape="rect" href="timekeeping_8c.html#a94e564d601196fe7f3e2bc83050deb12" title=" " alt="" coords="1186,584,1351,625"/>
+<area shape="poly" title=" " alt="" coords="1135,602,1170,602,1170,607,1135,607"/>
+<area shape="rect" href="timekeeping_8c.html#a909de509b8cfaf7214b1e8f0759c036d" title=" " alt="" coords="1183,519,1354,559"/>
+<area shape="poly" title=" " alt="" coords="1092,588,1182,562,1183,567,1094,594"/>
+<area shape="poly" title=" " alt="" coords="716,686,786,697,785,703,715,691"/>
+<area shape="poly" title=" " alt="" coords="733,727,785,719,786,724,733,732"/>
+<area shape="poly" title=" " alt="" coords="721,785,752,773,790,752,823,731,826,735,792,757,754,777,723,790"/>
+<area shape="poly" title=" " alt="" coords="729,851,752,838,779,815,803,788,838,736,843,739,807,791,783,819,755,843,732,855"/>
+<area shape="poly" title=" " alt="" coords="724,920,752,904,787,865,814,820,833,775,845,738,850,740,838,777,818,822,791,868,755,908,727,925"/>
+<area shape="poly" title=" " alt="" coords="734,981,752,969,775,943,794,914,823,850,840,788,849,739,854,740,845,789,828,852,799,917,779,947,755,973,737,986"/>
+<area shape="poly" title=" " alt="" coords="727,528,755,544,787,576,814,613,847,682,842,684,809,616,783,579,752,548,724,532"/>
+<area shape="poly" title=" " alt="" coords="732,582,755,593,782,613,806,637,841,683,837,687,802,640,778,617,752,597,729,587"/>
+<area shape="rect" href="mpi__transceiver_8c.html#a8152cd1b9513be2c73a97bfb50ecd497" title="Sets the transceiver state." alt="" coords="576,1115,717,1155"/>
+<area shape="poly" title=" " alt="" coords="477,900,493,913,510,937,517,962,517,1009,516,1032,517,1055,525,1077,541,1100,563,1116,560,1120,537,1104,520,1080,512,1056,511,1032,512,1009,512,962,505,940,489,917,474,904"/>
 </map>
 </div>
 
