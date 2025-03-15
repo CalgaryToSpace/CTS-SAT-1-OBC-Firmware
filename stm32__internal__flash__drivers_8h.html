@@ -97,16 +97,19 @@ $(function(){ initResizable(false); });
 <div class="contents">
 <div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
 <code>#include &quot;stm32l4xx_hal.h&quot;</code><br />
+<code>#include &quot;stm32l4xx_hal_flash.h&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for stm32_internal_flash_drivers.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="stm32__internal__flash__drivers_8h__incl.png" border="0" usemap="#afirmware_2Core_2Inc_2stm32__internal__flash__drivers_2stm32__internal__flash__drivers_8h" alt=""/></div>
 <map name="afirmware_2Core_2Inc_2stm32__internal__flash__drivers_2stm32__internal__flash__drivers_8h" id="afirmware_2Core_2Inc_2stm32__internal__flash__drivers_2stm32__internal__flash__drivers_8h">
-<area shape="rect" title=" " alt="" coords="5,5,206,61"/>
-<area shape="rect" title=" " alt="" coords="18,109,81,135"/>
-<area shape="poly" title=" " alt="" coords="90,63,68,97,63,94,86,60"/>
-<area shape="rect" title=" " alt="" coords="105,109,218,135"/>
-<area shape="poly" title=" " alt="" coords="125,60,148,94,143,97,121,63"/>
+<area shape="rect" title=" " alt="" coords="49,5,249,61"/>
+<area shape="rect" title=" " alt="" coords="5,109,69,135"/>
+<area shape="poly" title=" " alt="" coords="116,63,66,101,63,97,113,59"/>
+<area shape="rect" title=" " alt="" coords="92,109,206,135"/>
+<area shape="poly" title=" " alt="" coords="152,61,152,93,146,93,146,61"/>
+<area shape="rect" title=" " alt="" coords="230,109,377,135"/>
+<area shape="poly" title=" " alt="" coords="199,59,270,99,268,104,196,64"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -137,7 +140,7 @@ Enumerations</h2></td></tr>
 , <a class="el" href="#a6b81317a91f1535c2b2af4eed9262643a7ee01b1b6083c27c3430df06f3db2d16">STM32_INTERNAL_FLASH_MEMORY_REGION_RAM_3_ADDRESS</a> = 0x20040000
 , <a class="el" href="#a6b81317a91f1535c2b2af4eed9262643ab5ed4167d248a5f57a4ee6e983a10221">STM32_INTERNAL_FLASH_MEMORY_REGION_FLASH_ADDRESS</a> = 0x8000000
 , <br />
-&#160;&#160;<a class="el" href="#a6b81317a91f1535c2b2af4eed9262643a73b942f0dd96fcdd36b081d99cccc082">STM32_INTERNAL_FLASH_MEMORY_REGION_GOLDEN_COPY_ADDRESS</a> = 0x8100000
+&#160;&#160;<a class="el" href="#a6b81317a91f1535c2b2af4eed9262643a73b942f0dd96fcdd36b081d99cccc082">STM32_INTERNAL_FLASH_MEMORY_REGION_GOLDEN_COPY_ADDRESS</a> = 0x08100000
 <br />
  }</td></tr>
 <tr class="memdesc:a6b81317a91f1535c2b2af4eed9262643"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flash Partitions.  <a href="#a6b81317a91f1535c2b2af4eed9262643">More...</a><br /></td></tr>
@@ -154,6 +157,15 @@ Functions</h2></td></tr>
 <tr class="memitem:a92cbc08a76258f48ed20f28e24d01a2e" id="r_a92cbc08a76258f48ed20f28e24d01a2e"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a92cbc08a76258f48ed20f28e24d01a2e">STM32_internal_flash_erase</a> (uint16_t start_page_erase, uint16_t number_of_pages_to_erase, uint32_t *page_error)</td></tr>
 <tr class="memdesc:a92cbc08a76258f48ed20f28e24d01a2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Erase pages from bank 2 of flash memory which is located at 0x08100000.  <br /></td></tr>
 <tr class="separator:a92cbc08a76258f48ed20f28e24d01a2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0a9cf6ac194bc7aed988cbd645561b1" id="r_aa0a9cf6ac194bc7aed988cbd645561b1"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa0a9cf6ac194bc7aed988cbd645561b1">STM32_internal_flash_get_option_bytes</a> (FLASH_OBProgramInitTypeDef *ob_data)</td></tr>
+<tr class="memdesc:aa0a9cf6ac194bc7aed988cbd645561b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets option bytes configuration from the stm32 internal flash memory.  <br /></td></tr>
+<tr class="separator:aa0a9cf6ac194bc7aed988cbd645561b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a527e928828f0df4bdd438062fdf4ae5f" id="r_a527e928828f0df4bdd438062fdf4ae5f"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a527e928828f0df4bdd438062fdf4ae5f">STM32_internal_flash_set_active_flash_bank</a> (uint8_t wanted_active_flash_bank)</td></tr>
+<tr class="memdesc:a527e928828f0df4bdd438062fdf4ae5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the active flash bank to either 1 or 2 (only if it is different than the current active flash bank).  <br /></td></tr>
+<tr class="separator:a527e928828f0df4bdd438062fdf4ae5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad694ee5074dbc7c5c6eed2fa6a9cd216" id="r_ad694ee5074dbc7c5c6eed2fa6a9cd216"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad694ee5074dbc7c5c6eed2fa6a9cd216">STM32_internal_flash_get_active_flash_bank</a> ()</td></tr>
+<tr class="memdesc:ad694ee5074dbc7c5c6eed2fa6a9cd216"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns active flash bank.  <br /></td></tr>
+<tr class="separator:ad694ee5074dbc7c5c6eed2fa6a9cd216"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
 <a id="a6b81317a91f1535c2b2af4eed9262643" name="a6b81317a91f1535c2b2af4eed9262643"></a>
@@ -228,6 +240,76 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
+<a id="ad694ee5074dbc7c5c6eed2fa6a9cd216" name="ad694ee5074dbc7c5c6eed2fa6a9cd216"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad694ee5074dbc7c5c6eed2fa6a9cd216">&#9670;&#160;</a></span>STM32_internal_flash_get_active_flash_bank()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t STM32_internal_flash_get_active_flash_bank </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns active flash bank. </p>
+<dl class="section return"><dt>Returns</dt><dd>1 is Flash Bank 1, 2 is Flash Bank 2 </dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="stm32__internal__flash__drivers_8h_ad694ee5074dbc7c5c6eed2fa6a9cd216_icgraph.png" border="0" usemap="#astm32__internal__flash__drivers_8h_ad694ee5074dbc7c5c6eed2fa6a9cd216_icgraph" alt=""/></div>
+<map name="astm32__internal__flash__drivers_8h_ad694ee5074dbc7c5c6eed2fa6a9cd216_icgraph" id="astm32__internal__flash__drivers_8h_ad694ee5074dbc7c5c6eed2fa6a9cd216_icgraph">
+<area shape="rect" title="Returns active flash bank." alt="" coords="484,39,641,79"/>
+<area shape="rect" href="stm32__internal__flash__drivers_8c.html#a527e928828f0df4bdd438062fdf4ae5f" title="Sets the active flash bank to either 1 or 2 (only if it is different than the current active flash ba..." alt="" coords="262,5,419,46"/>
+<area shape="poly" title=" " alt="" coords="469,48,419,40,420,35,469,42"/>
+<area shape="rect" href="stm32__internal__flash__telecommand__defs_8c.html#a9a71c27d8fc7178698664e003b796936" title="Prints the active flash bank where the firmware boots from." alt="" coords="245,71,436,111"/>
+<area shape="poly" title=" " alt="" coords="469,75,437,80,436,75,469,70"/>
+<area shape="rect" href="stm32__internal__flash__telecommand__defs_8c.html#af44e7ac38ea6b6ee396f0f3b1408e2fa" title="Given a 1 or 2, switches to the respective flash bank and runs the application stored there if presen..." alt="" coords="5,5,197,46"/>
+<area shape="poly" title=" " alt="" coords="246,28,197,28,197,23,246,23"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="aa0a9cf6ac194bc7aed988cbd645561b1" name="aa0a9cf6ac194bc7aed988cbd645561b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0a9cf6ac194bc7aed988cbd645561b1">&#9670;&#160;</a></span>STM32_internal_flash_get_option_bytes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t STM32_internal_flash_get_option_bytes </td>
+          <td>(</td>
+          <td class="paramtype">FLASH_OBProgramInitTypeDef *</td>          <td class="paramname"><span class="paramname"><em>ob_data</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets option bytes configuration from the stm32 internal flash memory. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ob_data</td><td>pointer to an FLASH_OBProgramInitTypeDef structure that contains the configuration information for the programming. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 always </dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="stm32__internal__flash__drivers_8h_aa0a9cf6ac194bc7aed988cbd645561b1_icgraph.png" border="0" usemap="#astm32__internal__flash__drivers_8h_aa0a9cf6ac194bc7aed988cbd645561b1_icgraph" alt=""/></div>
+<map name="astm32__internal__flash__drivers_8h_aa0a9cf6ac194bc7aed988cbd645561b1_icgraph" id="astm32__internal__flash__drivers_8h_aa0a9cf6ac194bc7aed988cbd645561b1_icgraph">
+<area shape="rect" title="Gets option bytes configuration from the stm32 internal flash memory." alt="" coords="238,5,384,46"/>
+<area shape="rect" href="stm32__internal__flash__telecommand__defs_8c.html#ac9b9be74a5a35a113f60371d58256f9c" title="Get the option bytes configuration from the stm32 internal flash memory." alt="" coords="5,5,190,46"/>
+<area shape="poly" title=" " alt="" coords="222,28,190,28,190,23,222,23"/>
+</map>
+</div>
+
+</div>
+</div>
 <a id="aaee8fff830027db4c178b09f014331aa" name="aaee8fff830027db4c178b09f014331aa"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aaee8fff830027db4c178b09f014331aa">&#9670;&#160;</a></span>STM32_internal_flash_read()</h2>
 
@@ -270,6 +352,53 @@ Here is the caller graph for this function:</div>
 <area shape="rect" title="Reads data from the flash memory." alt="" coords="238,13,416,38"/>
 <area shape="rect" href="stm32__internal__flash__telecommand__defs_8c.html#a5bed13b3b3386fb764d58e4d7a2f51c7" title="Read data from the internal flash bank." alt="" coords="5,5,190,46"/>
 <area shape="poly" title=" " alt="" coords="222,28,190,28,190,23,222,23"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a527e928828f0df4bdd438062fdf4ae5f" name="a527e928828f0df4bdd438062fdf4ae5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a527e928828f0df4bdd438062fdf4ae5f">&#9670;&#160;</a></span>STM32_internal_flash_set_active_flash_bank()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t STM32_internal_flash_set_active_flash_bank </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>wanted_active_flash_bank</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the active flash bank to either 1 or 2 (only if it is different than the current active flash bank). </p>
+<p>On Success, will load application in desired flash bank</p>
+<p>By Default, the active flash bank is 1 </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">wanted_active_flash_bank</td><td>1 or 2 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, &gt; 0 otherwise </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="stm32__internal__flash__drivers_8h_a527e928828f0df4bdd438062fdf4ae5f_cgraph.png" border="0" usemap="#astm32__internal__flash__drivers_8h_a527e928828f0df4bdd438062fdf4ae5f_cgraph" alt=""/></div>
+<map name="astm32__internal__flash__drivers_8h_a527e928828f0df4bdd438062fdf4ae5f_cgraph" id="astm32__internal__flash__drivers_8h_a527e928828f0df4bdd438062fdf4ae5f_cgraph">
+<area shape="rect" title="Sets the active flash bank to either 1 or 2 (only if it is different than the current active flash ba..." alt="" coords="5,5,163,46"/>
+<area shape="rect" href="stm32__internal__flash__drivers_8c.html#ad694ee5074dbc7c5c6eed2fa6a9cd216" title="Returns active flash bank." alt="" coords="211,5,368,46"/>
+<area shape="poly" title=" " alt="" coords="163,23,195,23,195,28,163,28"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="stm32__internal__flash__drivers_8h_a527e928828f0df4bdd438062fdf4ae5f_icgraph.png" border="0" usemap="#astm32__internal__flash__drivers_8h_a527e928828f0df4bdd438062fdf4ae5f_icgraph" alt=""/></div>
+<map name="astm32__internal__flash__drivers_8h_a527e928828f0df4bdd438062fdf4ae5f_icgraph" id="astm32__internal__flash__drivers_8h_a527e928828f0df4bdd438062fdf4ae5f_icgraph">
+<area shape="rect" title="Sets the active flash bank to either 1 or 2 (only if it is different than the current active flash ba..." alt="" coords="245,5,402,46"/>
+<area shape="rect" href="stm32__internal__flash__telecommand__defs_8c.html#af44e7ac38ea6b6ee396f0f3b1408e2fa" title="Given a 1 or 2, switches to the respective flash bank and runs the application stored there if presen..." alt="" coords="5,5,197,46"/>
+<area shape="poly" title=" " alt="" coords="229,28,197,28,197,23,229,23"/>
 </map>
 </div>
 

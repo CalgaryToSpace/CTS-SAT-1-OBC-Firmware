@@ -120,5 +120,6 @@ var searchData=
   ['use_5frtos_117',['USE_RTOS',['../stm32l4xx__hal__conf_8h.html#ad048ac737242c2c2cb9f4a72953d10ce',1,'stm32l4xx_hal_conf.h']]],
   ['use_5fspi_5fcrc_118',['USE_SPI_CRC',['../stm32l4xx__hal__conf_8h.html#a4c6fab687afc7ba4469b1b2d34472358',1,'stm32l4xx_hal_conf.h']]],
   ['use_5fstar_5ftracker_119',['use_star_tracker',['../structADCS__estimation__params__struct__t.html#a565e997de73a13d52320b651cb6659b3',1,'ADCS_estimation_params_struct_t']]],
-  ['use_5fsun_5fsensor_120',['use_sun_sensor',['../structADCS__estimation__params__struct__t.html#a9e968b3f5ba7ceab34eb079f33611422',1,'ADCS_estimation_params_struct_t']]]
+  ['use_5fsun_5fsensor_120',['use_sun_sensor',['../structADCS__estimation__params__struct__t.html#a9e968b3f5ba7ceab34eb079f33611422',1,'ADCS_estimation_params_struct_t']]],
+  ['user_5fvect_5ftab_5faddress_121',['USER_VECT_TAB_ADDRESS',['../group__STM32L4xx__System__Private__Defines.html#ga23464cc13923e294b72a4bc1549fd7ef',1,'system_stm32l4xx.c']]]
 ];

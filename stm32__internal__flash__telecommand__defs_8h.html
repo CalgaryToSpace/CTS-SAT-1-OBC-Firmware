@@ -132,6 +132,15 @@ Functions</h2></td></tr>
 <tr class="memitem:ac65a2c9d46b457c0ed6a62fe02103a11" id="r_ac65a2c9d46b457c0ed6a62fe02103a11"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac65a2c9d46b457c0ed6a62fe02103a11">TCMDEXEC_stm32_internal_flash_erase</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
 <tr class="memdesc:ac65a2c9d46b457c0ed6a62fe02103a11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Erase a range of pages in the internal flash bank. Only Erases for Flash Bank 2.  <br /></td></tr>
 <tr class="separator:ac65a2c9d46b457c0ed6a62fe02103a11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9b9be74a5a35a113f60371d58256f9c" id="r_ac9b9be74a5a35a113f60371d58256f9c"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac9b9be74a5a35a113f60371d58256f9c">TCMDEXEC_stm32_internal_flash_get_option_bytes</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
+<tr class="memdesc:ac9b9be74a5a35a113f60371d58256f9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the option bytes configuration from the stm32 internal flash memory.  <br /></td></tr>
+<tr class="separator:ac9b9be74a5a35a113f60371d58256f9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af44e7ac38ea6b6ee396f0f3b1408e2fa" id="r_af44e7ac38ea6b6ee396f0f3b1408e2fa"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af44e7ac38ea6b6ee396f0f3b1408e2fa">TCMDEXEC_stm32_internal_flash_set_active_flash_bank</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
+<tr class="memdesc:af44e7ac38ea6b6ee396f0f3b1408e2fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given a 1 or 2, switches to the respective flash bank and runs the application stored there if present. Mostly useful for switching between 2 different version of the firmware (1 will be stored in Flash Bank 1, other will be stored in Flash Bank 2)  <br /></td></tr>
+<tr class="separator:af44e7ac38ea6b6ee396f0f3b1408e2fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a71c27d8fc7178698664e003b796936" id="r_a9a71c27d8fc7178698664e003b796936"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9a71c27d8fc7178698664e003b796936">TCMDEXEC_stm32_internal_flash_get_active_flash_bank</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
+<tr class="memdesc:a9a71c27d8fc7178698664e003b796936"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints the active flash bank where the firmware boots from.  <br /></td></tr>
+<tr class="separator:a9a71c27d8fc7178698664e003b796936"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="ac65a2c9d46b457c0ed6a62fe02103a11" name="ac65a2c9d46b457c0ed6a62fe02103a11"></a>
@@ -191,6 +200,105 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
+<a id="a9a71c27d8fc7178698664e003b796936" name="a9a71c27d8fc7178698664e003b796936"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a71c27d8fc7178698664e003b796936">&#9670;&#160;</a></span>TCMDEXEC_stm32_internal_flash_get_active_flash_bank()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t TCMDEXEC_stm32_internal_flash_get_active_flash_bank </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>args_str</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a></td>          <td class="paramname"><span class="paramname"><em>tcmd_channel</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>response_output_buf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>response_output_buf_len</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Prints the active flash bank where the firmware boots from. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">response_output_buf</td><td>Prints the active bank </td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="stm32__internal__flash__telecommand__defs_8h_a9a71c27d8fc7178698664e003b796936_cgraph.png" border="0" usemap="#astm32__internal__flash__telecommand__defs_8h_a9a71c27d8fc7178698664e003b796936_cgraph" alt=""/></div>
+<map name="astm32__internal__flash__telecommand__defs_8h_a9a71c27d8fc7178698664e003b796936_cgraph" id="astm32__internal__flash__telecommand__defs_8h_a9a71c27d8fc7178698664e003b796936_cgraph">
+<area shape="rect" title="Prints the active flash bank where the firmware boots from." alt="" coords="5,5,197,46"/>
+<area shape="rect" href="stm32__internal__flash__drivers_8c.html#ad694ee5074dbc7c5c6eed2fa6a9cd216" title="Returns active flash bank." alt="" coords="245,5,402,46"/>
+<area shape="poly" title=" " alt="" coords="197,23,229,23,229,28,197,28"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="ac9b9be74a5a35a113f60371d58256f9c" name="ac9b9be74a5a35a113f60371d58256f9c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9b9be74a5a35a113f60371d58256f9c">&#9670;&#160;</a></span>TCMDEXEC_stm32_internal_flash_get_option_bytes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t TCMDEXEC_stm32_internal_flash_get_option_bytes </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>args_str</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a></td>          <td class="paramname"><span class="paramname"><em>tcmd_channel</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>response_output_buf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>response_output_buf_len</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the option bytes configuration from the stm32 internal flash memory. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args_str</td><td>No args </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, &gt; 0 on error </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="stm32__internal__flash__telecommand__defs_8h_ac9b9be74a5a35a113f60371d58256f9c_cgraph.png" border="0" usemap="#astm32__internal__flash__telecommand__defs_8h_ac9b9be74a5a35a113f60371d58256f9c_cgraph" alt=""/></div>
+<map name="astm32__internal__flash__telecommand__defs_8h_ac9b9be74a5a35a113f60371d58256f9c_cgraph" id="astm32__internal__flash__telecommand__defs_8h_ac9b9be74a5a35a113f60371d58256f9c_cgraph">
+<area shape="rect" title="Get the option bytes configuration from the stm32 internal flash memory." alt="" coords="5,5,190,46"/>
+<area shape="rect" href="stm32__internal__flash__drivers_8c.html#aa0a9cf6ac194bc7aed988cbd645561b1" title="Gets option bytes configuration from the stm32 internal flash memory." alt="" coords="238,5,384,46"/>
+<area shape="poly" title=" " alt="" coords="190,23,222,23,222,28,190,28"/>
+</map>
+</div>
+
+</div>
+</div>
 <a id="a5bed13b3b3386fb764d58e4d7a2f51c7" name="a5bed13b3b3386fb764d58e4d7a2f51c7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5bed13b3b3386fb764d58e4d7a2f51c7">&#9670;&#160;</a></span>TCMDEXEC_stm32_internal_flash_read()</h2>
 
@@ -243,6 +351,66 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="190,50,226,54,226,60,189,56"/>
 <area shape="rect" href="telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="464,55,616,80"/>
 <area shape="poly" title=" " alt="" coords="413,65,448,65,448,70,413,70"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="af44e7ac38ea6b6ee396f0f3b1408e2fa" name="af44e7ac38ea6b6ee396f0f3b1408e2fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af44e7ac38ea6b6ee396f0f3b1408e2fa">&#9670;&#160;</a></span>TCMDEXEC_stm32_internal_flash_set_active_flash_bank()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t TCMDEXEC_stm32_internal_flash_set_active_flash_bank </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>args_str</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a></td>          <td class="paramname"><span class="paramname"><em>tcmd_channel</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>response_output_buf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>response_output_buf_len</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Given a 1 or 2, switches to the respective flash bank and runs the application stored there if present. Mostly useful for switching between 2 different version of the firmware (1 will be stored in Flash Bank 1, other will be stored in Flash Bank 2) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args_str</td><td><ul>
+<li>Arg 0: A 1 or 2. 1 to switch to the application present in Flash Bank 1, 2 to switch to the application present in Flash Bank 2 </li>
+</ul>
+</td></tr>
+    <tr><td class="paramname">response_output_buf</td><td>Prints error if it occurs </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, &gt; 0 otherwise </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="stm32__internal__flash__telecommand__defs_8h_af44e7ac38ea6b6ee396f0f3b1408e2fa_cgraph.png" border="0" usemap="#astm32__internal__flash__telecommand__defs_8h_af44e7ac38ea6b6ee396f0f3b1408e2fa_cgraph" alt=""/></div>
+<map name="astm32__internal__flash__telecommand__defs_8h_af44e7ac38ea6b6ee396f0f3b1408e2fa_cgraph" id="astm32__internal__flash__telecommand__defs_8h_af44e7ac38ea6b6ee396f0f3b1408e2fa_cgraph">
+<area shape="rect" title="Given a 1 or 2, switches to the respective flash bank and runs the application stored there if presen..." alt="" coords="5,35,197,75"/>
+<area shape="rect" href="stm32__internal__flash__drivers_8c.html#a527e928828f0df4bdd438062fdf4ae5f" title="Sets the active flash bank to either 1 or 2 (only if it is different than the current active flash ba..." alt="" coords="252,5,409,46"/>
+<area shape="poly" title=" " alt="" coords="197,40,236,35,236,40,197,45"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="245,70,416,96"/>
+<area shape="poly" title=" " alt="" coords="197,64,230,68,229,73,197,69"/>
+<area shape="rect" href="stm32__internal__flash__drivers_8c.html#ad694ee5074dbc7c5c6eed2fa6a9cd216" title="Returns active flash bank." alt="" coords="464,5,621,46"/>
+<area shape="poly" title=" " alt="" coords="409,23,448,23,448,28,409,28"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="466,70,619,96"/>
+<area shape="poly" title=" " alt="" coords="416,80,451,80,451,86,416,86"/>
 </map>
 </div>
 

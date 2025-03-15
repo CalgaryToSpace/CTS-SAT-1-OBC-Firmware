@@ -107,6 +107,12 @@ Macros</h2></td></tr>
 <tr class="separator:ga90e2a73d7fe4a7425c6e31fef5ce7263"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaaa8c76e274d0f6dd2cefb5d0b17fbc37" id="r_gaaa8c76e274d0f6dd2cefb5d0b17fbc37"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#gaaa8c76e274d0f6dd2cefb5d0b17fbc37">HSI_VALUE</a>&#160;&#160;&#160;16000000U</td></tr>
 <tr class="separator:gaaa8c76e274d0f6dd2cefb5d0b17fbc37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga23464cc13923e294b72a4bc1549fd7ef" id="r_ga23464cc13923e294b72a4bc1549fd7ef"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ga23464cc13923e294b72a4bc1549fd7ef">USER_VECT_TAB_ADDRESS</a></td></tr>
+<tr class="separator:ga23464cc13923e294b72a4bc1549fd7ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafdcf36f845093afd580fe2f508f7631c" id="r_gafdcf36f845093afd580fe2f508f7631c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#gafdcf36f845093afd580fe2f508f7631c">VECT_TAB_BASE_ADDRESS</a>&#160;&#160;&#160;FLASH_BASE</td></tr>
+<tr class="separator:gafdcf36f845093afd580fe2f508f7631c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga40e1495541cbb4acbe3f1819bd87a9fe" id="r_ga40e1495541cbb4acbe3f1819bd87a9fe"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ga40e1495541cbb4acbe3f1819bd87a9fe">VECT_TAB_OFFSET</a>&#160;&#160;&#160;0x00000000U</td></tr>
+<tr class="separator:ga40e1495541cbb4acbe3f1819bd87a9fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <h2 class="groupheader">Macro Definition Documentation</h2>
@@ -152,6 +158,51 @@ Macros</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Value of the Internal oscillator in Hz </p>
+
+</div>
+</div>
+<a id="ga23464cc13923e294b72a4bc1549fd7ef" name="ga23464cc13923e294b72a4bc1549fd7ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga23464cc13923e294b72a4bc1549fd7ef">&#9670;&#160;</a></span>USER_VECT_TAB_ADDRESS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define USER_VECT_TAB_ADDRESS</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>&lt; Uncomment the following line if you need to relocate the vector table anywhere in Flash or Sram, else the vector table is kept at the automatic remap of boot address selected Uncomment the following line if you need to relocate your vector Table in Sram else user remap will be done in Flash. </p>
+
+</div>
+</div>
+<a id="gafdcf36f845093afd580fe2f508f7631c" name="gafdcf36f845093afd580fe2f508f7631c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gafdcf36f845093afd580fe2f508f7631c">&#9670;&#160;</a></span>VECT_TAB_BASE_ADDRESS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define VECT_TAB_BASE_ADDRESS&#160;&#160;&#160;FLASH_BASE</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Vector Table base address field. This value must be a multiple of 0x200. </p>
+
+</div>
+</div>
+<a id="ga40e1495541cbb4acbe3f1819bd87a9fe" name="ga40e1495541cbb4acbe3f1819bd87a9fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga40e1495541cbb4acbe3f1819bd87a9fe">&#9670;&#160;</a></span>VECT_TAB_OFFSET</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define VECT_TAB_OFFSET&#160;&#160;&#160;0x00000000U</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Vector Table base offset field. This value must be a multiple of 0x200. </p>
 
 </div>
 </div>

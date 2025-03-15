@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['variables_20list_0',['Configuration Variables List',['../md_docs_2Non-Critical__Notes_2Configuration__Variables.html',1,'']]],
-  ['vs_20code_20setup_20procedure_20arm64_20windows_20computers_1',['VS Code Setup Procedure (ARM64 Windows Computers)',['../md_docs_2Non-Critical__Notes_2Setup__Guide__for__Windows__Arm64.html',1,'']]]
+  ['uart_20ports_0',['UART Ports',['../md_docs_2Non-Critical__Notes_2UART__Ports.html',1,'']]],
+  ['unit_20tests_1',['C Unit Tests',['../md_docs_2C__Unit__Tests.html',1,'']]],
+  ['updates_2',['IOC File Updates',['../md_docs_2Non-Critical__Notes_2IOC__File__Updates.html',1,'']]]
 ];
