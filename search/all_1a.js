@@ -179,9 +179,11 @@ var searchData=
   ['system_20clock_20as_20follows_3a_176',['This file configures the system clock as follows:',['../system__stm32l4xx_8c.html#autotoc_md89',1,'']]],
   ['system_20clock_20source_20msi_177',['System Clock source                    | MSI',['../system__stm32l4xx_8c.html#autotoc_md90',1,'']]],
   ['system_5fstm32l4xx_2ec_178',['system_stm32l4xx.c',['../system__stm32l4xx_8c.html',1,'']]],
-  ['systemclock_5fconfig_179',['SystemClock_Config',['../main_8c.html#a70af21c671abfcc773614a9a4f63d920',1,'main.c']]],
-  ['systemcoreclock_180',['SystemCoreClock',['../group__STM32L4xx__System__Private__Variables.html#gaa3cd3e43291e81e795d642b79b6088e6',1,'system_stm32l4xx.c']]],
-  ['systemcoreclockupdate_181',['SystemCoreClockUpdate',['../group__STM32L4xx__System__Private__Functions.html#gae0c36a9591fe6e9c45ecb21a794f0f0f',1,'system_stm32l4xx.c']]],
-  ['systeminit_182',['SystemInit',['../group__STM32L4xx__System__Private__Functions.html#ga93f514700ccf00d08dbdcff7f1224eb2',1,'system_stm32l4xx.c']]],
-  ['systems_183',['Logging in Embedded Systems',['../md_docs_240__Logging.html#autotoc_md11',1,'']]]
+  ['system_5ftelecommand_5fdefs_2ec_179',['system_telecommand_defs.c',['../system__telecommand__defs_8c.html',1,'']]],
+  ['system_5ftelecommand_5fdefs_2eh_180',['system_telecommand_defs.h',['../system__telecommand__defs_8h.html',1,'']]],
+  ['systemclock_5fconfig_181',['SystemClock_Config',['../main_8c.html#a70af21c671abfcc773614a9a4f63d920',1,'main.c']]],
+  ['systemcoreclock_182',['SystemCoreClock',['../group__STM32L4xx__System__Private__Variables.html#gaa3cd3e43291e81e795d642b79b6088e6',1,'system_stm32l4xx.c']]],
+  ['systemcoreclockupdate_183',['SystemCoreClockUpdate',['../group__STM32L4xx__System__Private__Functions.html#gae0c36a9591fe6e9c45ecb21a794f0f0f',1,'system_stm32l4xx.c']]],
+  ['systeminit_184',['SystemInit',['../group__STM32L4xx__System__Private__Functions.html#ga93f514700ccf00d08dbdcff7f1224eb2',1,'system_stm32l4xx.c']]],
+  ['systems_185',['Logging in Embedded Systems',['../md_docs_240__Logging.html#autotoc_md11',1,'']]]
 ];

@@ -143,6 +143,7 @@ Variables</h2></td></tr>
 <tr class="memdesc:a19734308211a2c3c34ebdec54d61a1c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">The period of the heartbeat task, in milliseconds. 0 to disable.  <br /></td></tr>
 <tr class="separator:a19734308211a2c3c34ebdec54d61a1c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abb5c97157e0e0735bfcc3f1d5228518e" id="r_abb5c97157e0e0735bfcc3f1d5228518e"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abb5c97157e0e0735bfcc3f1d5228518e">TCMD_require_valid_sha256</a></td></tr>
+<tr class="memdesc:abb5c97157e0e0735bfcc3f1d5228518e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bool. When 1, the telecommand parser will require a valid SHA256 hash in the telecommand string.  <br /></td></tr>
 <tr class="separator:abb5c97157e0e0735bfcc3f1d5228518e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aae86e1d1800637ec1bae49032e512936" id="r_aae86e1d1800637ec1bae49032e512936"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aae86e1d1800637ec1bae49032e512936">CONFIG_int_demo_var_1</a> = 13345</td></tr>
 <tr class="separator:aae86e1d1800637ec1bae49032e512936"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -542,10 +543,10 @@ Here is the caller graph for this function:</div>
 <div class="line">        .num_config_var = &amp;<a class="code hl_variable" href="configuration_8h.html#af8539a7aa6bbdd097c63d6a770ddf8ad">TCMD_require_unique_tssent</a>,</div>
 <div class="line">    },</div>
 <div class="line">}</div>
-<div class="ttc" id="aconfiguration_8c_html_a19734308211a2c3c34ebdec54d61a1c9"><div class="ttname"><a href="#a19734308211a2c3c34ebdec54d61a1c9">TASK_heartbeat_period_ms</a></div><div class="ttdeci">uint32_t TASK_heartbeat_period_ms</div><div class="ttdoc">The period of the heartbeat task, in milliseconds. 0 to disable.</div><div class="ttdef"><b>Definition</b> rtos_tasks.c:25</div></div>
+<div class="ttc" id="aconfiguration_8c_html_a19734308211a2c3c34ebdec54d61a1c9"><div class="ttname"><a href="#a19734308211a2c3c34ebdec54d61a1c9">TASK_heartbeat_period_ms</a></div><div class="ttdeci">uint32_t TASK_heartbeat_period_ms</div><div class="ttdoc">The period of the heartbeat task, in milliseconds. 0 to disable.</div><div class="ttdef"><b>Definition</b> rtos_tasks.c:23</div></div>
 <div class="ttc" id="aconfiguration_8c_html_aab394ded9acaff686ecb119e7220ff9a"><div class="ttname"><a href="#aab394ded9acaff686ecb119e7220ff9a">CONFIG_int_demo_var_2</a></div><div class="ttdeci">uint32_t CONFIG_int_demo_var_2</div><div class="ttdef"><b>Definition</b> configuration.c:11</div></div>
 <div class="ttc" id="aconfiguration_8c_html_aae86e1d1800637ec1bae49032e512936"><div class="ttname"><a href="#aae86e1d1800637ec1bae49032e512936">CONFIG_int_demo_var_1</a></div><div class="ttdeci">uint32_t CONFIG_int_demo_var_1</div><div class="ttdef"><b>Definition</b> configuration.c:10</div></div>
-<div class="ttc" id="aconfiguration_8c_html_abb5c97157e0e0735bfcc3f1d5228518e"><div class="ttname"><a href="#abb5c97157e0e0735bfcc3f1d5228518e">TCMD_require_valid_sha256</a></div><div class="ttdeci">uint32_t TCMD_require_valid_sha256</div><div class="ttdef"><b>Definition</b> telecommand_parser.c:13</div></div>
+<div class="ttc" id="aconfiguration_8c_html_abb5c97157e0e0735bfcc3f1d5228518e"><div class="ttname"><a href="#abb5c97157e0e0735bfcc3f1d5228518e">TCMD_require_valid_sha256</a></div><div class="ttdeci">uint32_t TCMD_require_valid_sha256</div><div class="ttdoc">Bool. When 1, the telecommand parser will require a valid SHA256 hash in the telecommand string.</div><div class="ttdef"><b>Definition</b> telecommand_parser.c:14</div></div>
 <div class="ttc" id="aconfiguration_8h_html_af8539a7aa6bbdd097c63d6a770ddf8ad"><div class="ttname"><a href="configuration_8h.html#af8539a7aa6bbdd097c63d6a770ddf8ad">TCMD_require_unique_tssent</a></div><div class="ttdeci">uint32_t TCMD_require_unique_tssent</div><div class="ttdef"><b>Definition</b> configuration.c:15</div></div>
 </div><!-- fragment -->
 </div>
@@ -720,6 +721,8 @@ Here is the caller graph for this function:</div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Bool. When 1, the telecommand parser will require a valid SHA256 hash in the telecommand string. </p>
 
 </div>
 </div>
