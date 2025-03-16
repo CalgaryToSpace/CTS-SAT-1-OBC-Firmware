@@ -159,15 +159,20 @@ uint8_t TCMD_execute_parsed_telecommand_now(const uint16_t tcmd_idx, const char 
 ) {
     // Get the telecommand definition.
     if (tcmd_idx >= TCMD_NUM_TELECOMMANDS) {
-        DEBUG_uart_print_str("Error: TCMD_execute_parsed_telecommand: tcmd_idx out of bounds.\n");
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error: TCMD_execute_parsed_telecommand: tcmd_idx out of bounds (%u).",
+            tcmd_idx
+        );
         return 254;
     }
     TCMD_TelecommandDefinition_t tcmd_def = TCMD_telecommand_definitions[tcmd_idx];
 
-    DEBUG_uart_print_str("=========================");
-    DEBUG_uart_print_str(" Executing telecommand '");
-    DEBUG_uart_print_str(tcmd_def.tcmd_name);
-    DEBUG_uart_print_str("'=========================\n");
+    LOG_message(
+        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "🚀 Executing telecommand '%s'.",
+        tcmd_def.tcmd_name
+    );
 
     // Handle the telecommand by calling the appropriate function.
     // Null-terminate the args string.
@@ -181,17 +186,20 @@ uint8_t TCMD_execute_parsed_telecommand_now(const uint16_t tcmd_idx, const char 
     const uint32_t tcmd_exec_duration_ms = uptime_after_tcmd_exec_ms - uptime_before_tcmd_exec_ms;
 
     // Print back the response.
-    DEBUG_uart_print_str("=========================");
-    DEBUG_uart_print_str(" Response (duration=");
-    DEBUG_uart_print_int32(tcmd_exec_duration_ms);
-    DEBUG_uart_print_str("ms, err=");
-    DEBUG_uart_print_uint32(tcmd_result);
-    if (tcmd_result != 0) {
-        DEBUG_uart_print_str(" !!!!!! ERROR !!!!!!");
-    }
-    DEBUG_uart_print_str(") =========================\n");
+    LOG_message(
+        LOG_SYSTEM_TELECOMMAND,
+        (tcmd_result == 0) ? LOG_SEVERITY_NORMAL : LOG_SEVERITY_ERROR,
+        LOG_SINK_ALL,
+        "%s Telecommand '%s' executed. Duration=%lums, err=%u",
+        (tcmd_result == 0) ? "🟢" : "🔴",
+        tcmd_def.tcmd_name,
+        tcmd_exec_duration_ms,
+        tcmd_result
+    );
+
+    // FIXME: Send this response buffer over the radio channel as well.
     DEBUG_uart_print_str(response_output_buf);
-    DEBUG_uart_print_str("\n===========================================================================\n");
+    DEBUG_uart_print_str("\n");
 
     return tcmd_result;
 }
@@ -205,7 +213,11 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
     char *response_output_buf, uint16_t response_output_buf_size
 ) {
     if (! TCMD_agenda_is_valid[tcmd_agenda_slot_num]) {
-        DEBUG_uart_print_str("Error: TCMD_execute_telecommand_in_agenda: slot is invalid.\n");
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error: TCMD_execute_telecommand_in_agenda: slot %u is invalidated",
+            tcmd_agenda_slot_num
+        );
         return 253;
     }
 

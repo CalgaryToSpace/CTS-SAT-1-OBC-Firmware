@@ -1,6 +1,7 @@
 #include "timekeeping/timekeeping.h"
 #include "debug_tools/debug_uart.h"
 #include "transforms/arrays.h"
+#include "log/log.h"
 #include "stm32l4xx_hal.h"
 
 #include <stdio.h>
@@ -41,8 +42,11 @@ void TIM_set_current_unix_epoch_time_ms(uint64_t current_unix_epoch_time_ms, TIM
 
     // Log a warning if the current sync time is before the last sync time.
     if (is_this_sync_before_the_last_sync) {
-        DEBUG_uart_print_str("WARNING: setting current time to before the last sync.");
-        // TODO: use the logger warning function, and add other data with a format string here.
+        LOG_message(
+            LOG_SYSTEM_OBC, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "TIM_set_current_unix_epoch_time_ms: current time is before the last sync (last_resync=%s)",
+            TIM_unix_epoch_time_at_last_time_resync_ms_str
+        );
     }
 }
 

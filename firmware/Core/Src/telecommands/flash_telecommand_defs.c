@@ -5,6 +5,7 @@
 #include "littlefs/flash_driver.h"
 #include "littlefs/flash_benchmark.h"
 #include "debug_tools/debug_uart.h"
+#include "log/log.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -24,17 +25,21 @@ uint8_t TCMDEXEC_flash_activate_each_cs(const char *args_str, TCMD_TelecommandCh
     HAL_Delay(delay_time_ms);
 
     for (uint8_t chip_number = 0; chip_number < FLASH_NUMBER_OF_FLASH_DEVICES; chip_number++) {
-        DEBUG_uart_print_str("Activating CS: ");
-        DEBUG_uart_print_uint32(chip_number);
-        DEBUG_uart_print_str("...\n");
+        LOG_message(
+            LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Activating CS: %d", chip_number
+        );
         FLASH_activate_chip_select(chip_number);
         HAL_Delay(delay_time_ms);
 
-        DEBUG_uart_print_str("Deactivated.\n");
+        LOG_message(
+            LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Deactivating CS: %d", chip_number
+        );
         FLASH_deactivate_chip_select();
         HAL_Delay(delay_time_ms);
     }
-    strcpy(response_output_buf, "All CS activated and deactivated.\n");
+    snprintf(response_output_buf, response_output_buf_len, "All CS activated and deactivated.");
     return 0;
 }
 

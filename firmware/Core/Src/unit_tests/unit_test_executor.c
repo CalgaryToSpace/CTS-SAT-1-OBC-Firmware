@@ -1,6 +1,7 @@
 #include "unit_tests/unit_test_executor.h"
 #include "unit_tests/unit_test_inventory.h"
 #include "debug_tools/debug_uart.h"
+#include "log/log.h"
 
 #include "main.h"
 
@@ -19,17 +20,16 @@ uint8_t TEST_run_all_unit_tests_and_log(char log_buffer[], uint16_t log_buffer_s
         TEST_Function_Ptr test_function = TEST_definitions[test_num].test_func;
         uint8_t result = test_function();
 
-        char test_log_buffer[200];
-        snprintf(
-            test_log_buffer,
-            sizeof(test_log_buffer),
-            "Test #%03d: %s (%s > %s)\n",
+        LOG_message(
+            LOG_SYSTEM_OBC,
+            (result == 0) ? LOG_SEVERITY_DEBUG : LOG_SEVERITY_WARNING,
+            LOG_SINK_ALL,
+            "Test #%03d: %s (%s > %s)",
             test_num,
             (result == 0) ? "PASS ✅" : "FAIL ❌",
             TEST_definitions[test_num].test_file,
             TEST_definitions[test_num].test_func_name
         );
-        DEBUG_uart_print_str(test_log_buffer);
         
         total_exec_count++;
         if (result == 0) {

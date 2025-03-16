@@ -15,9 +15,11 @@
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0 on success
-uint8_t TCMDEXEC_agenda_delete_all(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
-    DEBUG_uart_print_str("Deleting all entries from the agenda\n"); 
+uint8_t TCMDEXEC_agenda_delete_all(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    snprintf(response_output_buf, response_output_buf_len, "Cleared agenda.");
     TCMD_agenda_delete_all();
 
     return 0;
