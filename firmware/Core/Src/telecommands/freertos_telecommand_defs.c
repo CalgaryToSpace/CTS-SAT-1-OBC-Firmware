@@ -8,6 +8,7 @@
 #include "telecommands/freertos_telecommand_defs.h"
 #include "debug_tools/debug_uart.h"
 #include "timekeeping/timekeeping.h"
+#include "log/log.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -46,15 +47,17 @@ uint8_t TCMDEXEC_freetos_list_tasks_jsonl(const char *args_str, TCMD_Telecommand
     TaskStatus_t task_statuses[number_of_tasks];
 
     if (uxTaskGetSystemState(task_statuses, number_of_tasks, &total_run_time) == 0) {
-        DEBUG_uart_print_str("Error: TCMDEXEC_freetos_list_tasks_jsonl: uxTaskGetSystemState failed.\n");
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error: TCMDEXEC_freetos_list_tasks_jsonl: uxTaskGetSystemState failed."
+        );
         return 1;
     }
 
     for (UBaseType_t x = 0; x < number_of_tasks; x++) {
         // Get the task state for the x-th task
-        char message_buffer[256];
-        snprintf(
-            message_buffer, sizeof(message_buffer),
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "{\"task_name\":\"%s\",\"state\":\"%s\",\"priority\":%lu,\"stack_min_remaining_bytes\":%u,\"runtime\":%lu}\n",
             task_statuses[x].pcTaskName,
             freertos_eTaskState_to_str(task_statuses[x].eCurrentState),
@@ -65,8 +68,6 @@ uint8_t TCMDEXEC_freetos_list_tasks_jsonl(const char *args_str, TCMD_Telecommand
             (task_statuses[x].usStackHighWaterMark * 4),
             task_statuses[x].ulRunTimeCounter
         );
-          
-        DEBUG_uart_print_str(message_buffer);
     }
 
     snprintf(
