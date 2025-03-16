@@ -190,12 +190,16 @@ uint8_t TCMD_execute_parsed_telecommand_now(const uint16_t tcmd_idx, const char 
         LOG_SYSTEM_TELECOMMAND,
         (tcmd_result == 0) ? LOG_SEVERITY_NORMAL : LOG_SEVERITY_ERROR,
         LOG_SINK_ALL,
-        "%s Telecommand '%s' executed. Duration=%lums, err=%u.",
+        "%s Telecommand '%s' executed. Duration=%lums, err=%u",
         (tcmd_result == 0) ? "🟢" : "🔴",
         tcmd_def.tcmd_name,
         tcmd_exec_duration_ms,
         tcmd_result
     );
+
+    // FIXME: Send this response buffer over the radio channel as well.
+    DEBUG_uart_print_str(response_output_buf);
+    DEBUG_uart_print_str("\n");
 
     return tcmd_result;
 }

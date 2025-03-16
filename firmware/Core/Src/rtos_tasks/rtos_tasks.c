@@ -60,20 +60,16 @@ void TASK_DEBUG_print_heartbeat(void *argument) {
             seconds = (time_t)(unix_time_ms/ 1000U);
             ms = unix_time_ms - 1000U * seconds;
             time_info = gmtime(&seconds);
-            snprintf(
-                TASK_heartbeat_timing_str,
-                sizeof(TASK_heartbeat_timing_str),
-                "FrontierSat time: %d%02d%02dT%02d:%02d:%02d.%03u, Uptime: %lu ms\n",
+            
+            LOG_message(
+                LOG_SYSTEM_OBC, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+                "Heartbeat: FrontierSat time: %d%02d%02dT%02d:%02d:%02d.%03u, Uptime: %lu ms\n",
                 time_info->tm_year + 1900, time_info->tm_mon + 1, time_info->tm_mday,
                 time_info->tm_hour, time_info->tm_min, time_info->tm_sec, ms,
                 HAL_GetTick()
             );
 
             // TODO: Radio beacon here, probably.
-            LOG_message(
-                LOG_SYSTEM_OBC, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
-                TASK_heartbeat_timing_str
-            );
         }
         HAL_GPIO_TogglePin(PIN_LED_DEVKIT_LD2_GPIO_Port, PIN_LED_DEVKIT_LD2_Pin);
         HAL_GPIO_TogglePin(PIN_LED_GP2_OUT_GPIO_Port, PIN_LED_GP2_OUT_Pin);
