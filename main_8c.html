@@ -213,6 +213,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a4e631056d61a1546185e9bf5a2edd463" id="r_a4e631056d61a1546185e9bf5a2edd463"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4e631056d61a1546185e9bf5a2edd463">MX_TIM16_Init</a> (void)</td></tr>
 <tr class="memdesc:a4e631056d61a1546185e9bf5a2edd463"><td class="mdescLeft">&#160;</td><td class="mdescRight">TIM16 Initialization Function.  <br /></td></tr>
 <tr class="separator:a4e631056d61a1546185e9bf5a2edd463"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07b18455c043aa6d999242217d69a0f9" id="r_a07b18455c043aa6d999242217d69a0f9"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a07b18455c043aa6d999242217d69a0f9">MX_IWDG_Init</a> (void)</td></tr>
+<tr class="memdesc:a07b18455c043aa6d999242217d69a0f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">IWDG Initialization Function.  <br /></td></tr>
+<tr class="separator:a07b18455c043aa6d999242217d69a0f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a99d0fdb0434092bcb24d9c9af917e4e9" id="r_a99d0fdb0434092bcb24d9c9af917e4e9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a99d0fdb0434092bcb24d9c9af917e4e9">StartDefaultTask</a> (void *argument)</td></tr>
 <tr class="memdesc:a99d0fdb0434092bcb24d9c9af917e4e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function implementing the defaultTask thread.  <br /></td></tr>
 <tr class="separator:a99d0fdb0434092bcb24d9c9af917e4e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -238,6 +241,8 @@ Variables</h2></td></tr>
 <tr class="separator:a5ccf4a01a8d7f08d3190181f843f7515"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a818789480a74b70bbcaf6d73e8e763ed" id="r_a818789480a74b70bbcaf6d73e8e763ed"><td class="memItemLeft" align="right" valign="top">I2C_HandleTypeDef&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a818789480a74b70bbcaf6d73e8e763ed">hi2c4</a></td></tr>
 <tr class="separator:a818789480a74b70bbcaf6d73e8e763ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80f055e38f52ca3c57e183fc685ea477" id="r_a80f055e38f52ca3c57e183fc685ea477"><td class="memItemLeft" align="right" valign="top">IWDG_HandleTypeDef&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a80f055e38f52ca3c57e183fc685ea477">hiwdg</a></td></tr>
+<tr class="separator:a80f055e38f52ca3c57e183fc685ea477"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5c3f9dccaa7cebcc70e1657af9e5e5dc" id="r_a5c3f9dccaa7cebcc70e1657af9e5e5dc"><td class="memItemLeft" align="right" valign="top">UART_HandleTypeDef&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5c3f9dccaa7cebcc70e1657af9e5e5dc">hlpuart1</a></td></tr>
 <tr class="separator:a5c3f9dccaa7cebcc70e1657af9e5e5dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae273feb3e0dc44e38892650faa58fced" id="r_ae273feb3e0dc44e38892650faa58fced"><td class="memItemLeft" align="right" valign="top">UART_HandleTypeDef&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae273feb3e0dc44e38892650faa58fced">huart4</a></td></tr>
@@ -332,51 +337,54 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="main_8c_a1730ffe1e560465665eb47d9264826f9_icgraph.png" border="0" usemap="#amain_8c_a1730ffe1e560465665eb47d9264826f9_icgraph" alt=""/></div>
 <map name="amain_8c_a1730ffe1e560465665eb47d9264826f9_icgraph" id="amain_8c_a1730ffe1e560465665eb47d9264826f9_icgraph">
-<area shape="rect" title="This function is executed in case of error occurrence." alt="" coords="327,351,427,376"/>
+<area shape="rect" title="This function is executed in case of error occurrence." alt="" coords="327,376,427,402"/>
 <area shape="rect" href="stm32l4xx__hal__msp_8c.html#abe01a202c27b23fc150aa66af3130073" title="I2C MSP Initialization This function configures the hardware resources used in this example." alt="" coords="128,5,254,31"/>
-<area shape="poly" title=" " alt="" coords="373,335,369,275,355,196,343,155,327,115,305,77,277,44,252,29,255,25,281,40,309,74,331,112,348,153,361,195,374,274,379,335"/>
+<area shape="poly" title=" " alt="" coords="374,361,371,296,359,211,347,165,329,121,307,80,277,44,253,29,255,24,281,40,311,77,334,119,352,164,364,209,377,295,379,360"/>
 <area shape="rect" href="stm32l4xx__hal__msp_8c.html#a0e553b32211877322f949b14801bbfa7" title="UART MSP Initialization This function configures the hardware resources used in this example." alt="" coords="120,55,262,80"/>
-<area shape="poly" title=" " alt="" coords="371,336,365,284,349,219,321,151,301,120,277,94,260,82,263,78,281,89,305,117,326,149,354,217,370,283,377,335"/>
+<area shape="poly" title=" " alt="" coords="372,361,367,305,352,232,340,195,324,158,303,123,277,93,260,82,263,78,281,90,307,120,329,155,345,193,357,231,372,304,378,360"/>
 <area shape="rect" href="main_8c.html#a2614a05f739eb84097681dd41a130a3c" title="CRC Initialization Function." alt="" coords="141,104,241,130"/>
-<area shape="poly" title=" " alt="" coords="369,336,359,293,342,241,315,188,298,164,277,143,260,132,241,125,242,120,262,127,281,139,302,160,320,185,347,239,364,292,374,335"/>
+<area shape="poly" title=" " alt="" coords="370,361,362,314,346,255,318,194,300,167,277,143,260,132,241,125,243,120,263,127,281,139,304,164,323,192,351,253,367,312,376,360"/>
 <area shape="rect" href="main_8c.html#a4230d11f81d0b16e112f1cc3f40cb42f" title="I2C1 Initialization Function." alt="" coords="141,153,241,179"/>
-<area shape="poly" title=" " alt="" coords="365,337,353,303,335,264,309,225,277,192,260,182,240,175,242,170,262,177,281,188,314,222,339,262,358,301,370,335"/>
+<area shape="poly" title=" " alt="" coords="367,362,356,323,338,277,312,231,277,192,260,182,241,175,242,170,262,177,281,188,317,228,343,275,361,322,373,360"/>
 <area shape="rect" href="main_8c.html#af71812af4fbb9ebbe0f681165b657433" title="I2C2 Initialization Function." alt="" coords="141,203,241,228"/>
-<area shape="poly" title=" " alt="" coords="360,339,326,289,304,263,278,242,240,226,242,221,280,237,307,259,331,286,364,336"/>
+<area shape="poly" title=" " alt="" coords="363,363,331,301,307,269,277,242,260,232,241,225,242,220,262,227,281,237,311,265,335,298,368,360"/>
 <area shape="rect" href="main_8c.html#a21452da22b16c3f7234224c5705ddd11" title="I2C3 Initialization Function." alt="" coords="141,252,241,278"/>
-<area shape="poly" title=" " alt="" coords="350,343,317,316,278,291,241,277,243,272,280,286,320,311,353,338"/>
+<area shape="poly" title=" " alt="" coords="356,365,322,327,278,291,240,276,242,271,280,287,326,323,360,362"/>
 <area shape="rect" href="main_8c.html#af4e34667b0cb79444cb7933306644053" title="I2C4 Initialization Function." alt="" coords="141,301,241,327"/>
-<area shape="poly" title=" " alt="" coords="311,349,241,330,242,325,313,344"/>
-<area shape="rect" href="main_8c.html#a21ad298121ac0d079b93bf2c49d0fa92" title="LPUART1 Initialization Function." alt="" coords="103,351,279,376"/>
-<area shape="poly" title=" " alt="" coords="311,366,279,366,279,361,311,361"/>
-<area shape="rect" href="main_8c.html#a28dbf2494083ac5f39daa87bf09e4eb3" title="SPI1 Initialization Function." alt="" coords="140,400,242,426"/>
-<area shape="poly" title=" " alt="" coords="313,383,243,402,241,397,311,378"/>
-<area shape="rect" href="main_8c.html#a4e631056d61a1546185e9bf5a2edd463" title="TIM16 Initialization Function." alt="" coords="136,449,246,475"/>
-<area shape="poly" title=" " alt="" coords="353,389,320,416,280,441,248,453,246,448,278,436,317,411,350,384"/>
-<area shape="rect" href="main_8c.html#ada2fde91c9d08b4055b4d171690255d0" title="UART4 Initialization Function." alt="" coords="133,499,249,524"/>
-<area shape="poly" title=" " alt="" coords="364,391,331,441,307,468,280,490,251,504,248,499,278,485,304,464,326,438,360,388"/>
-<area shape="rect" href="main_8c.html#a18142fc3a1bfec6edaf6cf0af5549764" title="UART5 Initialization Function." alt="" coords="133,548,249,574"/>
-<area shape="poly" title=" " alt="" coords="370,392,358,426,339,465,314,505,281,539,251,554,248,550,277,535,309,502,335,463,353,424,365,390"/>
-<area shape="rect" href="main_8c.html#a62f4b77e20bccafe98a183771749c20c" title="USART1 Initialization Function." alt="" coords="107,597,275,623"/>
-<area shape="poly" title=" " alt="" coords="374,392,364,435,347,488,320,542,302,567,281,588,264,599,261,594,277,584,298,563,315,539,342,486,359,434,369,391"/>
-<area shape="rect" href="main_8c.html#a1c98cc38e233c6b46ca2bf9598a5fce8" title="USART3 Initialization Function." alt="" coords="107,647,275,672"/>
-<area shape="poly" title=" " alt="" coords="377,392,370,444,354,510,326,578,305,610,281,638,265,648,262,644,277,633,301,607,321,576,349,508,365,443,371,391"/>
-<area shape="rect" href="main_8c.html#a70af21c671abfcc773614a9a4f63d920" title="System Clock Configuration." alt="" coords="120,696,262,722"/>
-<area shape="poly" title=" " alt="" coords="379,392,374,453,361,532,348,574,331,615,309,653,281,687,264,699,261,694,277,683,305,650,327,612,343,572,355,531,369,452,373,392"/>
-<area shape="rect" href="main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,400,55,426"/>
-<area shape="poly" title=" " alt="" coords="128,128,104,143,81,173,62,208,50,245,41,283,33,352,33,400,28,400,28,352,36,282,44,243,58,206,76,170,101,139,125,124"/>
-<area shape="poly" title=" " alt="" coords="127,178,104,192,84,216,68,244,47,303,37,359,34,400,29,399,32,359,42,302,63,241,80,213,101,188,124,174"/>
-<area shape="poly" title=" " alt="" coords="127,228,104,242,88,259,74,280,53,325,41,368,35,400,30,399,36,367,48,323,69,277,83,256,101,237,124,223"/>
-<area shape="poly" title=" " alt="" coords="127,278,104,291,79,317,60,347,38,400,33,398,55,344,75,313,101,287,125,274"/>
-<area shape="poly" title=" " alt="" coords="127,330,104,340,68,371,42,401,38,398,64,367,101,336,125,325"/>
-<area shape="poly" title=" " alt="" coords="125,384,103,390,56,406,54,401,102,385,123,379"/>
-<area shape="poly" title=" " alt="" coords="124,416,55,416,55,410,124,410"/>
-<area shape="poly" title=" " alt="" coords="123,447,102,441,54,424,56,419,103,436,125,442"/>
-<area shape="poly" title=" " alt="" coords="117,498,101,490,64,459,38,428,42,424,68,455,104,485,119,493"/>
-<area shape="poly" title=" " alt="" coords="117,549,101,539,75,512,55,481,33,427,38,425,60,479,79,509,104,535,120,544"/>
-<area shape="poly" title=" " alt="" coords="104,591,101,588,83,570,69,548,48,503,36,459,30,426,35,425,41,458,53,501,74,546,88,566,104,584,108,587"/>
-<area shape="poly" title=" " alt="" coords="103,640,101,637,80,613,63,584,42,524,32,467,29,426,34,426,37,466,47,522,68,582,84,610,105,634,107,636"/>
-<area shape="poly" title=" " alt="" coords="105,691,101,687,76,655,58,620,44,582,36,544,28,474,28,426,33,426,33,474,41,543,50,581,62,618,81,653,105,683,109,687"/>
+<area shape="poly" title=" " alt="" coords="339,370,278,341,241,328,242,323,280,336,341,365"/>
+<area shape="rect" href="main_8c.html#a07b18455c043aa6d999242217d69a0f9" title="IWDG Initialization Function." alt="" coords="137,351,245,376"/>
+<area shape="poly" title=" " alt="" coords="312,383,245,373,246,368,312,377"/>
+<area shape="rect" href="main_8c.html#a21ad298121ac0d079b93bf2c49d0fa92" title="LPUART1 Initialization Function." alt="" coords="103,400,279,426"/>
+<area shape="poly" title=" " alt="" coords="312,400,280,404,279,399,311,395"/>
+<area shape="rect" href="main_8c.html#a28dbf2494083ac5f39daa87bf09e4eb3" title="SPI1 Initialization Function." alt="" coords="140,449,242,475"/>
+<area shape="poly" title=" " alt="" coords="341,412,280,441,243,453,241,448,278,436,339,407"/>
+<area shape="rect" href="main_8c.html#a4e631056d61a1546185e9bf5a2edd463" title="TIM16 Initialization Function." alt="" coords="136,499,246,524"/>
+<area shape="poly" title=" " alt="" coords="359,416,325,454,280,490,247,504,245,499,278,485,322,450,355,412"/>
+<area shape="rect" href="main_8c.html#ada2fde91c9d08b4055b4d171690255d0" title="UART4 Initialization Function." alt="" coords="133,548,249,574"/>
+<area shape="poly" title=" " alt="" coords="367,417,335,479,310,511,281,539,251,554,248,549,277,535,306,508,330,476,363,415"/>
+<area shape="rect" href="main_8c.html#a18142fc3a1bfec6edaf6cf0af5549764" title="UART5 Initialization Function." alt="" coords="133,597,249,623"/>
+<area shape="poly" title=" " alt="" coords="372,418,361,456,343,502,316,549,281,588,251,604,248,599,277,584,312,545,338,500,356,455,367,416"/>
+<area shape="rect" href="main_8c.html#a62f4b77e20bccafe98a183771749c20c" title="USART1 Initialization Function." alt="" coords="107,647,275,672"/>
+<area shape="poly" title=" " alt="" coords="376,417,367,465,350,524,323,585,304,613,281,638,265,648,262,644,277,633,299,610,318,582,345,522,362,464,370,416"/>
+<area shape="rect" href="main_8c.html#a1c98cc38e233c6b46ca2bf9598a5fce8" title="USART3 Initialization Function." alt="" coords="107,696,275,722"/>
+<area shape="poly" title=" " alt="" coords="378,417,372,474,357,546,345,584,328,621,307,656,281,687,266,698,263,693,277,683,303,653,324,619,340,582,352,545,367,473,372,417"/>
+<area shape="rect" href="main_8c.html#a70af21c671abfcc773614a9a4f63d920" title="System Clock Configuration." alt="" coords="120,745,262,771"/>
+<area shape="poly" title=" " alt="" coords="379,417,377,482,364,568,352,613,334,658,311,699,281,736,264,748,261,744,277,732,307,696,329,655,346,611,359,566,371,482,374,417"/>
+<area shape="rect" href="main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,425,55,451"/>
+<area shape="poly" title=" " alt="" coords="128,128,105,143,91,164,78,196,57,279,43,364,35,425,30,424,38,364,52,278,73,195,86,162,101,139,125,123"/>
+<area shape="poly" title=" " alt="" coords="128,178,104,192,82,219,65,251,53,284,44,318,35,381,34,425,28,425,30,380,39,317,48,282,60,248,78,216,101,188,125,173"/>
+<area shape="poly" title=" " alt="" coords="127,228,104,242,86,262,71,286,50,339,39,389,35,425,29,424,34,388,45,337,66,284,82,259,101,237,124,223"/>
+<area shape="poly" title=" " alt="" coords="127,278,104,291,76,323,57,361,44,397,36,425,31,424,39,396,52,358,72,320,101,287,124,273"/>
+<area shape="poly" title=" " alt="" coords="127,329,104,340,82,360,64,383,39,426,35,424,59,381,78,356,101,336,125,324"/>
+<area shape="poly" title=" " alt="" coords="123,382,104,390,74,408,48,427,45,423,71,403,101,385,121,377"/>
+<area shape="poly" title=" " alt="" coords="91,431,55,437,54,432,90,426"/>
+<area shape="poly" title=" " alt="" coords="124,455,55,444,56,439,125,450"/>
+<area shape="poly" title=" " alt="" coords="120,497,101,490,71,472,46,454,49,449,74,468,104,485,122,492"/>
+<area shape="poly" title=" " alt="" coords="117,548,101,539,78,519,60,495,35,453,40,450,64,492,82,515,104,535,120,543"/>
+<area shape="poly" title=" " alt="" coords="117,599,101,588,72,555,52,517,39,480,31,452,36,451,44,479,57,515,77,552,104,584,120,594"/>
+<area shape="poly" title=" " alt="" coords="104,640,101,637,82,616,66,591,45,538,34,488,29,452,35,451,39,487,50,537,71,589,86,613,105,634,107,636"/>
+<area shape="poly" title=" " alt="" coords="103,689,101,687,78,659,61,627,48,594,39,559,30,496,28,452,34,452,35,496,44,558,53,592,65,625,82,656,105,683,107,685"/>
+<area shape="poly" title=" " alt="" coords="105,740,101,736,86,713,73,681,52,597,38,512,30,452,35,451,43,512,57,596,78,679,91,711,105,732,109,736"/>
 </map>
 </div>
 
@@ -441,138 +449,139 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="main_8c_a840291bc02cba5474a4cb46a9b9566fe_cgraph.png" border="0" usemap="#amain_8c_a840291bc02cba5474a4cb46a9b9566fe_cgraph" alt=""/></div>
 <map name="amain_8c_a840291bc02cba5474a4cb46a9b9566fe_cgraph" id="amain_8c_a840291bc02cba5474a4cb46a9b9566fe_cgraph">
-<area shape="rect" title="The application entry point." alt="" coords="5,640,55,665"/>
+<area shape="rect" title="The application entry point." alt="" coords="5,664,55,689"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a6fc53bee2317b10356a9f9a9204045bf" title="Initialise the lookup table for 8&#45;bit CRC calculation. Code provided by ADCS Firmware Reference Manua..." alt="" coords="142,5,286,46"/>
-<area shape="poly" title=" " alt="" coords="28,639,29,529,36,357,44,266,57,182,76,112,87,84,101,63,127,42,130,46,105,66,92,86,81,113,63,183,50,267,41,357,34,530,34,639"/>
-<area shape="rect" href="debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="866,518,1016,544"/>
-<area shape="poly" title=" " alt="" coords="29,639,36,528,51,357,72,195,85,137,101,107,128,86,155,74,181,70,207,71,262,85,326,106,409,135,477,166,533,200,583,238,681,323,740,372,810,426,913,506,910,510,807,430,736,376,678,327,579,242,530,205,474,171,407,140,324,111,260,90,206,76,181,75,156,79,131,91,105,110,90,139,77,196,56,358,42,528,35,640"/>
-<area shape="rect" href="flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="132,1067,296,1107"/>
-<area shape="poly" title=" " alt="" coords="35,666,40,743,52,858,73,971,88,1016,105,1047,121,1061,117,1065,101,1050,83,1018,68,973,47,858,35,744,29,666"/>
+<area shape="poly" title=" " alt="" coords="28,663,28,550,35,370,43,275,56,187,75,114,87,85,101,63,126,42,130,46,105,66,91,87,80,115,61,188,48,276,40,370,33,550,34,663"/>
+<area shape="rect" href="debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="864,554,1014,580"/>
+<area shape="poly" title=" " alt="" coords="29,663,36,547,50,369,71,199,85,139,92,119,101,106,128,86,155,74,181,69,207,70,262,84,326,106,411,138,479,174,535,213,584,255,681,350,739,404,810,462,911,542,908,546,807,466,736,408,677,354,581,259,532,217,476,179,409,143,324,111,260,89,206,75,181,74,156,79,131,91,105,110,97,121,90,141,77,200,55,370,41,548,35,663"/>
+<area shape="rect" href="flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="132,1116,296,1157"/>
+<area shape="poly" title=" " alt="" coords="34,690,39,771,51,893,72,1015,87,1063,105,1096,121,1110,117,1114,101,1099,82,1065,67,1017,45,894,34,772,29,690"/>
 <area shape="rect" href="main_8c.html#a2614a05f739eb84097681dd41a130a3c" title="CRC Initialization Function." alt="" coords="164,121,264,146"/>
-<area shape="poly" title=" " alt="" coords="29,639,30,544,39,398,48,323,60,253,78,195,88,173,101,156,122,140,148,132,149,137,125,145,105,160,93,176,83,197,66,254,53,323,44,399,36,544,34,639"/>
-<area shape="rect" href="main_8c.html#a608dc9e9bcaf978f1611f3ec57670f64" title=" " alt="" coords="163,1132,265,1157"/>
-<area shape="poly" title=" " alt="" coords="34,665,37,755,46,892,55,963,67,1028,84,1082,105,1117,124,1131,148,1140,146,1145,122,1136,101,1121,79,1084,62,1029,50,964,41,892,31,756,29,665"/>
-<area shape="rect" href="main_8c.html#ae89fdd15729ad41a66911190fcbab23a" title="GPIO Initialization Function." alt="" coords="161,1181,267,1206"/>
-<area shape="poly" title=" " alt="" coords="34,665,35,764,43,916,52,995,64,1068,82,1128,93,1151,105,1168,124,1182,146,1190,145,1195,121,1186,101,1172,88,1154,77,1130,59,1069,46,996,38,916,30,764,29,665"/>
+<area shape="poly" title=" " alt="" coords="29,663,30,564,38,412,46,332,59,258,77,197,88,174,101,156,122,140,147,132,149,137,125,145,105,160,92,177,82,199,64,259,51,332,43,412,35,564,34,663"/>
+<area shape="rect" href="main_8c.html#a608dc9e9bcaf978f1611f3ec57670f64" title=" " alt="" coords="163,1181,265,1206"/>
+<area shape="poly" title=" " alt="" coords="34,690,36,784,45,928,53,1003,66,1072,83,1129,93,1150,105,1166,125,1181,149,1189,147,1194,122,1186,101,1170,89,1153,78,1131,61,1074,48,1004,39,929,30,784,29,690"/>
+<area shape="rect" href="main_8c.html#ae89fdd15729ad41a66911190fcbab23a" title="GPIO Initialization Function." alt="" coords="161,1230,267,1256"/>
+<area shape="poly" title=" " alt="" coords="34,689,34,793,41,952,50,1036,63,1112,81,1175,92,1199,105,1217,123,1231,146,1239,145,1244,121,1236,101,1221,87,1202,76,1177,58,1113,45,1036,36,952,29,793,28,690"/>
 <area shape="rect" href="main_8c.html#a4230d11f81d0b16e112f1cc3f40cb42f" title="I2C1 Initialization Function." alt="" coords="164,170,264,196"/>
-<area shape="poly" title=" " alt="" coords="29,639,32,552,42,422,51,354,63,292,80,240,101,205,122,190,148,182,149,187,125,195,105,209,85,242,69,293,56,355,47,422,37,552,34,639"/>
+<area shape="poly" title=" " alt="" coords="29,663,31,572,41,435,49,363,62,297,79,242,101,205,122,190,148,182,149,187,125,194,105,209,84,245,67,298,55,364,46,435,36,573,34,663"/>
 <area shape="rect" href="main_8c.html#af71812af4fbb9ebbe0f681165b657433" title="I2C2 Initialization Function." alt="" coords="164,220,264,245"/>
-<area shape="poly" title=" " alt="" coords="29,639,34,561,45,445,54,386,66,331,82,285,101,255,123,239,148,231,149,236,125,244,105,258,86,288,71,332,60,387,50,446,39,561,34,639"/>
+<area shape="poly" title=" " alt="" coords="29,663,33,580,44,458,53,394,65,336,81,287,101,255,123,239,148,231,149,236,125,244,105,258,86,290,70,337,58,395,49,458,38,581,34,663"/>
 <area shape="rect" href="main_8c.html#a21452da22b16c3f7234224c5705ddd11" title="I2C3 Initialization Function." alt="" coords="164,269,264,294"/>
-<area shape="poly" title=" " alt="" coords="30,639,35,569,48,469,69,369,84,330,101,304,123,289,148,281,149,286,125,294,105,308,88,333,74,371,53,469,41,570,35,639"/>
+<area shape="poly" title=" " alt="" coords="29,663,35,589,47,481,68,374,83,332,101,304,123,289,148,281,150,286,125,293,105,308,87,335,73,376,52,482,40,589,35,663"/>
 <area shape="rect" href="main_8c.html#af4e34667b0cb79444cb7933306644053" title="I2C4 Initialization Function." alt="" coords="164,318,264,344"/>
-<area shape="poly" title=" " alt="" coords="30,639,37,578,51,492,72,409,86,376,101,353,123,338,147,330,149,336,125,343,105,357,90,378,77,410,57,493,43,579,35,639"/>
-<area shape="rect" href="main_8c.html#a21ad298121ac0d079b93bf2c49d0fa92" title="LPUART1 Initialization Function." alt="" coords="126,368,302,393"/>
-<area shape="poly" title=" " alt="" coords="28,639,29,594,38,530,47,496,60,462,77,430,101,402,110,395,114,399,105,406,82,433,64,464,52,497,43,531,35,594,33,639"/>
-<area shape="rect" href="main_8c.html#a28dbf2494083ac5f39daa87bf09e4eb3" title="SPI1 Initialization Function." alt="" coords="163,417,265,442"/>
-<area shape="poly" title=" " alt="" coords="29,639,33,602,44,551,65,498,81,473,101,452,123,438,147,430,148,435,125,443,104,456,85,476,70,500,49,553,38,603,35,640"/>
-<area shape="rect" href="main_8c.html#a4e631056d61a1546185e9bf5a2edd463" title="TIM16 Initialization Function." alt="" coords="159,466,269,492"/>
-<area shape="poly" title=" " alt="" coords="31,639,38,610,51,572,72,534,101,501,121,489,142,482,144,487,123,494,104,505,76,537,56,575,43,611,36,640"/>
-<area shape="rect" href="main_8c.html#ada2fde91c9d08b4055b4d171690255d0" title="UART4 Initialization Function." alt="" coords="156,516,272,541"/>
-<area shape="poly" title=" " alt="" coords="35,638,59,594,78,570,101,550,139,534,141,539,104,555,82,574,63,597,39,640"/>
-<area shape="rect" href="main_8c.html#a18142fc3a1bfec6edaf6cf0af5549764" title="UART5 Initialization Function." alt="" coords="156,565,272,590"/>
-<area shape="poly" title=" " alt="" coords="44,637,70,617,102,599,140,587,141,592,104,604,73,622,48,641"/>
-<area shape="rect" href="main_8c.html#a62f4b77e20bccafe98a183771749c20c" title="USART1 Initialization Function." alt="" coords="130,614,298,640"/>
-<area shape="poly" title=" " alt="" coords="55,646,114,638,115,643,55,652"/>
-<area shape="rect" href="main_8c.html#a1c98cc38e233c6b46ca2bf9598a5fce8" title="USART3 Initialization Function." alt="" coords="130,664,298,689"/>
-<area shape="poly" title=" " alt="" coords="55,653,115,661,114,666,55,658"/>
-<area shape="rect" href="main_8c.html#a99d0fdb0434092bcb24d9c9af917e4e9" title="Function implementing the defaultTask thread." alt="" coords="154,1230,274,1256"/>
-<area shape="poly" title=" " alt="" coords="34,666,33,773,40,939,48,1027,61,1107,80,1173,91,1198,105,1217,121,1230,140,1237,138,1242,118,1234,101,1221,87,1201,75,1175,56,1108,43,1028,35,940,28,773,28,666"/>
-<area shape="rect" href="main_8c.html#a70af21c671abfcc773614a9a4f63d920" title="System Clock Configuration." alt="" coords="143,713,284,738"/>
-<area shape="poly" title=" " alt="" coords="48,663,73,682,104,699,129,708,127,713,102,704,71,687,45,668"/>
-<area shape="rect" href="rtos__tasks_8c.html#a7cf23bbdce878a0b7c41607751423179" title=" " alt="" coords="375,644,577,669"/>
-<area shape="poly" title=" " alt="" coords="39,664,62,709,80,731,104,749,163,774,189,780,214,782,239,780,265,774,324,749,340,734,347,717,355,698,371,680,381,674,384,678,375,684,359,700,352,719,344,737,326,753,267,779,240,786,214,788,188,785,161,779,101,753,77,735,57,711,34,667"/>
-<area shape="rect" href="rtos__tasks_8c.html#a04172000ecfd61309b0b9a892c0839ea" title=" " alt="" coords="114,916,314,941"/>
-<area shape="poly" title=" " alt="" coords="34,666,36,709,45,771,53,804,66,837,83,868,105,894,119,906,116,910,101,898,78,871,61,839,48,806,39,772,30,710,28,666"/>
-<area shape="rect" href="rtos__tasks_8c.html#a8dcebcb92690e2abce2b7ecb96e411c4" title=" " alt="" coords="103,814,325,840"/>
-<area shape="poly" title=" " alt="" coords="37,665,58,727,77,762,104,793,123,805,121,810,101,797,73,765,53,729,32,666"/>
-<area shape="rect" href="rtos__tasks_8c.html#a65b8e3815e64b441f35e0271bfd5b690" title=" " alt="" coords="398,857,555,898"/>
-<area shape="poly" title=" " alt="" coords="34,665,37,703,47,754,68,807,84,831,104,850,124,861,151,868,223,878,304,881,382,880,382,885,304,886,222,883,150,874,122,865,101,854,80,834,63,810,42,756,32,704,29,666"/>
-<area shape="rect" href="rtos__eps__tasks_8c.html#a32949062e454d45c5ab1f1480f359a12" title="periodically sends a command to the eps to reset the watchdog timer" alt="" coords="378,1024,574,1049"/>
-<area shape="poly" title=" " alt="" coords="35,665,43,727,56,813,77,898,90,930,104,952,140,967,209,985,378,1018,377,1023,208,990,139,972,101,956,85,933,72,899,51,814,37,728,30,666"/>
-<area shape="rect" href="rtos__eps__tasks_8c.html#ad27bdbe0e838d3705b754e9af4c449b2" title=" " alt="" coords="415,1138,537,1164"/>
-<area shape="poly" title=" " alt="" coords="35,666,40,737,52,841,74,943,88,983,105,1009,130,1029,156,1037,182,1039,209,1036,265,1032,295,1038,327,1053,344,1070,352,1089,359,1107,375,1124,401,1137,399,1142,371,1128,355,1110,347,1091,339,1073,323,1057,293,1043,265,1037,209,1042,182,1044,155,1043,128,1033,101,1013,83,985,68,945,47,842,35,738,29,666"/>
-<area shape="rect" href="uart__handler_8c.html#a59db2ba73b7115a05fe34c3d05e712c3" title=" " alt="" coords="131,1280,297,1305"/>
-<area shape="poly" title=" " alt="" coords="35,666,42,789,56,982,77,1166,90,1232,105,1267,118,1278,115,1282,101,1270,85,1233,72,1167,50,982,36,790,29,666"/>
-<area shape="rect" href="main_8c.html#a1730ffe1e560465665eb47d9264826f9" title="This function is executed in case of error occurrence." alt="" coords="426,417,526,442"/>
-<area shape="poly" title=" " alt="" coords="265,133,297,140,326,155,357,182,383,213,425,281,453,348,470,401,465,402,448,350,420,284,379,216,353,186,324,160,295,145,264,138"/>
-<area shape="poly" title=" " alt="" coords="527,426,656,431,734,442,809,459,863,481,909,507,906,512,861,486,808,464,733,447,656,437,527,431"/>
-<area shape="poly" title=" " alt="" coords="265,183,296,190,326,205,353,226,377,250,417,304,447,358,467,401,462,404,442,360,413,307,373,254,349,230,324,209,295,196,264,188"/>
-<area shape="poly" title=" " alt="" coords="265,234,296,241,326,254,371,287,409,327,440,368,462,402,457,405,435,371,405,331,367,291,324,259,294,246,264,239"/>
-<area shape="poly" title=" " alt="" coords="265,285,296,292,326,303,364,326,400,352,455,404,451,407,396,356,361,330,324,308,294,297,264,290"/>
-<area shape="poly" title=" " alt="" coords="265,337,326,352,387,379,441,406,438,411,385,383,324,358,264,342"/>
-<area shape="poly" title=" " alt="" coords="287,391,411,415,410,420,286,396"/>
-<area shape="poly" title=" " alt="" coords="265,427,410,427,410,432,265,432"/>
-<area shape="poly" title=" " alt="" coords="269,466,410,439,411,444,270,471"/>
-<area shape="poly" title=" " alt="" coords="272,519,298,512,324,502,338,492,347,482,357,471,372,459,410,443,412,448,374,464,360,474,351,485,342,496,326,507,300,517,273,524"/>
-<area shape="poly" title=" " alt="" coords="272,572,299,565,323,552,334,541,341,531,347,508,353,483,371,460,390,448,410,439,412,444,392,452,375,464,358,486,352,509,345,533,338,545,327,556,301,570,273,577"/>
-<area shape="poly" title=" " alt="" coords="297,616,323,601,337,585,344,568,347,533,350,497,357,478,371,460,389,446,410,437,412,442,392,451,375,464,362,481,355,498,352,533,349,569,342,588,327,605,300,621"/>
-<area shape="poly" title=" " alt="" coords="297,667,323,650,340,628,348,605,349,582,347,558,345,534,346,509,354,484,371,460,389,446,410,436,412,441,392,450,375,464,359,487,352,510,351,534,353,558,355,582,353,606,345,631,327,654,300,671"/>
-<area shape="poly" title=" " alt="" coords="284,720,305,713,323,700,344,671,352,642,352,613,348,583,343,553,343,522,351,491,371,460,389,445,410,436,412,441,392,450,375,463,356,493,348,523,349,552,353,583,357,613,357,643,348,674,327,704,308,717,286,725"/>
-<area shape="poly" title=" " alt="" coords="490,641,547,596,585,573,626,554,683,538,742,529,850,524,850,529,742,534,684,544,628,559,588,577,550,601,493,645"/>
-<area shape="rect" href="log_8h.html#a3e068c70867806154541035de518012d" title=" " alt="" coords="663,836,773,861"/>
-<area shape="poly" title=" " alt="" coords="560,667,581,680,600,701,609,723,615,746,629,771,657,800,687,824,683,828,654,804,625,774,610,748,604,725,596,704,578,684,558,672"/>
-<area shape="rect" href="stm32__reboot__reason_8c.html#aac62414297dbd9480448c266541a0ace" title="Obtain the STM32 system reset cause." alt="" coords="635,569,801,594"/>
-<area shape="poly" title=" " alt="" coords="519,640,658,597,660,602,521,646"/>
-<area shape="rect" href="stm32__reboot__reason_8c.html#a8caa6b410830d7592b7f1dd4c1a359b6" title="Convert a reset cause enum to a ASCII&#45;printable name string." alt="" coords="628,720,808,761"/>
-<area shape="poly" title=" " alt="" coords="543,667,580,679,605,692,629,706,641,711,639,716,626,711,602,697,578,684,542,672"/>
-<area shape="rect" href="rtos__task__helpers_8c.html#a8e6805715f064b84a74583df06db6058" title=" " alt="" coords="627,948,809,973"/>
-<area shape="poly" title=" " alt="" coords="565,668,581,680,600,703,609,726,613,749,613,772,613,820,618,845,630,872,657,907,687,936,684,940,653,911,625,875,613,847,607,821,608,772,608,750,604,728,595,706,577,684,562,672"/>
-<area shape="rect" href="timekeeping_8c.html#ab806b8884c269c16f3bc4b766d1fc943" title="Returns the current unix timestamp, in milliseconds." alt="" coords="645,1073,791,1114"/>
-<area shape="poly" title=" " alt="" coords="566,668,581,680,600,704,612,728,619,752,622,776,619,823,608,870,598,917,593,964,596,988,602,1012,613,1036,629,1060,635,1066,631,1069,625,1063,608,1038,597,1013,590,989,588,964,593,916,603,869,613,822,617,776,614,753,607,730,595,707,577,684,563,672"/>
-<area shape="rect" href="csp__cmp_8h.html#a4402590c0b64383fa59aaf6fe78dcb34" title=" " alt="" coords="893,585,989,610"/>
-<area shape="poly" title=" " alt="" coords="772,836,791,827,807,815,823,790,830,767,831,743,829,718,827,694,829,669,837,645,855,620,877,605,880,609,859,624,842,647,834,670,833,694,835,718,836,743,835,767,828,793,811,818,794,832,774,841"/>
-<area shape="rect" href="log_8c.html#a6efa47aededef4834dc5c25da1e432de" title="Returns all sinks, except the specified exceptions." alt="" coords="865,634,1017,660"/>
-<area shape="poly" title=" " alt="" coords="772,835,791,827,807,814,820,797,827,780,830,744,833,707,840,689,855,670,859,666,863,670,859,674,845,691,838,709,835,744,832,781,825,800,811,818,793,831,774,840"/>
-<area shape="rect" href="log_8c.html#ad5a8cf2ec365951bb0385938171723bd" title="Get a pointer to the full text of the in&#45;memory log message at the specified index." alt="" coords="860,684,1022,725"/>
-<area shape="poly" title=" " alt="" coords="772,833,807,814,823,795,830,776,838,755,855,734,859,731,862,735,859,738,843,758,835,777,828,798,810,818,774,838"/>
-<area shape="rect" href="log_8c.html#acce5d976dea413409a2547fc61475620" title="Get the index of the most recent in&#45;memory log message." alt="" coords="860,748,1022,804"/>
-<area shape="poly" title=" " alt="" coords="759,832,844,805,846,810,761,837"/>
-<area shape="rect" href="log_8c.html#ad0799a0e4171a608ff908822382da8c9" title="Get the most recent log message text." alt="" coords="864,828,1018,869"/>
-<area shape="poly" title=" " alt="" coords="773,846,848,846,848,851,773,851"/>
-<area shape="rect" href="log_8c.html#a186ca6df91a1dacb78dbf0b0385747c5" title="Get the name of a severity enum." alt="" coords="858,893,1024,918"/>
-<area shape="poly" title=" " alt="" coords="772,859,874,886,873,891,770,864"/>
-<area shape="rect" href="log_8c.html#a440123199704bc7c5231ec1a9743497f" title="Check logging sink status." alt="" coords="866,942,1016,968"/>
-<area shape="poly" title=" " alt="" coords="739,860,792,893,858,929,872,934,870,939,856,933,789,898,737,864"/>
-<area shape="rect" href="log_8c.html#af31cb35d8f2dd37ff306620c600462da" title="Check whether file logging is enabled for a subsystem." alt="" coords="872,992,1010,1033"/>
-<area shape="poly" title=" " alt="" coords="735,860,858,978,865,982,863,987,855,982,731,864"/>
-<area shape="rect" href="log_8c.html#a5503bd03b30497a0a43c490d68090ebc" title="Get the size in entries of the in&#45;memory log table." alt="" coords="857,1057,1025,1098"/>
-<area shape="poly" title=" " alt="" coords="739,860,774,891,811,934,826,964,832,991,840,1017,859,1043,863,1046,859,1050,855,1046,835,1019,827,993,821,966,806,936,770,895,735,864"/>
-<area shape="poly" title=" " alt="" coords="286,939,373,951,497,958,612,959,612,965,497,963,373,956,285,944"/>
-<area shape="rect" href="telecommand__executor_8c.html#aa779e85b5e4980298a22fe51742fc752" title="Executes a telecommand from the agenda immediately." alt="" coords="378,693,574,734"/>
-<area shape="poly" title=" " alt="" coords="241,913,283,887,323,851,339,823,344,796,351,770,371,744,375,741,378,745,375,747,356,772,349,798,344,825,327,854,286,891,244,917"/>
-<area shape="rect" href="telecommand__executor_8c.html#a6f29fb3908f76a7b826dfa263b1b38f0" title="Finds the index into TCMD_agenda (slot_num) of the next telecommand to execute." alt="" coords="392,1073,560,1114"/>
-<area shape="poly" title=" " alt="" coords="237,940,279,970,327,1009,350,1036,360,1048,374,1059,383,1064,380,1069,372,1064,356,1052,346,1040,323,1013,276,974,233,944"/>
-<area shape="poly" title=" " alt="" coords="548,690,578,679,626,655,677,640,718,632,759,623,807,605,832,588,855,570,895,549,898,553,858,575,835,593,810,609,760,629,720,637,679,645,628,660,580,684,550,695"/>
-<area shape="poly" title=" " alt="" coords="555,732,581,743,643,783,693,823,690,827,640,787,578,748,553,737"/>
-<area shape="poly" title=" " alt="" coords="561,1091,629,1091,629,1096,561,1096"/>
-<area shape="poly" title=" " alt="" coords="243,811,285,786,305,769,323,749,335,729,341,709,343,671,347,634,356,615,371,596,397,573,426,554,488,524,555,506,624,496,693,494,758,497,867,512,867,517,757,503,693,499,625,502,556,511,490,529,429,558,401,577,375,600,360,618,353,635,348,672,346,710,340,731,327,753,309,773,288,790,246,816"/>
-<area shape="poly" title=" " alt="" coords="236,838,296,873,334,892,374,907,434,924,496,936,612,951,611,957,495,942,433,929,372,912,332,897,294,878,234,843"/>
-<area shape="rect" href="debug__uart_8c.html#a6e361e09754cc0dcf4809c053731f12a" title=" " alt="" coords="633,670,803,696"/>
-<area shape="poly" title=" " alt="" coords="242,811,283,786,304,769,323,749,333,733,338,717,342,686,348,656,357,642,372,629,410,610,452,601,495,601,538,607,580,617,619,631,681,660,679,665,617,636,578,623,537,612,494,606,452,606,412,615,374,633,361,645,353,658,347,687,344,718,338,735,327,753,308,773,286,790,244,816"/>
-<area shape="rect" href="telecommand__executor_8c.html#a7cd5fe9d761280baaa479ff698aef7a5" title="Adds a telecommand to the agenda (schedule/queue) of telecommands to execute." alt="" coords="382,808,571,833"/>
-<area shape="poly" title=" " alt="" coords="326,821,366,820,366,826,326,827"/>
-<area shape="rect" href="telecommand__parser_8c.html#a479be5d2e5ee3cd0fe5312818aa8742e" title="Parses a telecommand into everything needed to execute it." alt="" coords="373,758,579,784"/>
-<area shape="poly" title=" " alt="" coords="277,811,397,785,398,790,278,816"/>
-<area shape="poly" title=" " alt="" coords="774,667,807,649,823,630,831,611,839,591,855,570,887,549,890,553,858,574,843,594,836,613,828,633,810,653,777,672"/>
-<area shape="poly" title=" " alt="" coords="572,829,648,838,647,843,571,834"/>
-<area shape="poly" title=" " alt="" coords="577,782,644,788,711,789,769,784,791,779,807,770,827,749,836,727,838,703,836,678,833,626,839,598,855,571,881,549,884,553,859,574,844,600,838,626,841,678,843,703,841,728,831,752,810,774,793,784,770,790,711,795,643,793,576,787"/>
-<area shape="poly" title=" " alt="" coords="543,782,580,792,628,814,664,827,662,832,626,819,578,798,542,787"/>
-<area shape="poly" title=" " alt="" coords="547,755,578,743,592,734,602,725,626,706,642,699,644,704,629,711,605,729,595,739,581,748,549,760"/>
-<area shape="poly" title=" " alt="" coords="555,865,647,854,648,859,555,871"/>
-<area shape="poly" title=" " alt="" coords="539,896,664,939,663,945,537,901"/>
-<area shape="poly" title=" " alt="" coords="493,1021,686,869,690,873,496,1025"/>
-<area shape="poly" title=" " alt="" coords="520,1020,579,1002,660,976,662,981,580,1007,521,1025"/>
-<area shape="rect" href="eps__commands_8c.html#a8013932ecdf126298fa09eb26101c727" title=" " alt="" coords="645,1024,791,1049"/>
-<area shape="poly" title=" " alt="" coords="575,1034,629,1034,629,1039,575,1039"/>
-<area shape="poly" title=" " alt="" coords="537,1144,559,1137,578,1124,595,1102,604,1080,608,1058,607,1036,607,988,613,962,625,934,653,898,684,869,687,873,657,901,630,936,618,963,613,988,613,1036,613,1058,609,1081,600,1104,581,1128,561,1141,539,1149"/>
-<area shape="poly" title=" " alt="" coords="537,1143,559,1136,578,1124,590,1111,597,1097,603,1070,608,1041,614,1025,625,1009,645,992,667,978,669,983,648,996,629,1013,619,1028,613,1042,608,1071,602,1099,594,1114,581,1128,561,1140,539,1148"/>
-<area shape="poly" title=" " alt="" coords="533,1135,629,1112,631,1117,534,1140"/>
-<area shape="rect" href="eps__commands_8c.html#a4e3a6aaad0b31d4d42f7f540dd3ea0bc" title=" " alt="" coords="862,1159,1020,1199"/>
-<area shape="poly" title=" " alt="" coords="538,1152,847,1171,847,1176,538,1157"/>
-<area shape="rect" href="eps__time_8c.html#a5a66b7a8cc792b4c410f66673b244442" title="Sets the OBC&#39;s time, based on the EPS&#39;s current time." alt="" coords="631,1188,805,1229"/>
-<area shape="poly" title=" " alt="" coords="534,1162,617,1182,615,1187,533,1167"/>
-<area shape="poly" title=" " alt="" coords="805,1194,846,1189,847,1194,806,1199"/>
+<area shape="poly" title=" " alt="" coords="30,663,36,598,50,505,71,414,85,378,101,353,123,338,148,330,149,335,125,343,105,357,89,380,76,415,55,506,42,599,35,663"/>
+<area shape="rect" href="main_8c.html#a07b18455c043aa6d999242217d69a0f9" title="IWDG Initialization Function." alt="" coords="160,368,268,393"/>
+<area shape="poly" title=" " alt="" coords="30,662,53,528,74,452,87,423,101,402,121,389,144,381,146,386,123,393,105,406,91,425,79,454,58,529,36,663"/>
+<area shape="rect" href="main_8c.html#a21ad298121ac0d079b93bf2c49d0fa92" title="LPUART1 Initialization Function." alt="" coords="126,417,302,442"/>
+<area shape="poly" title=" " alt="" coords="29,663,31,622,41,565,63,504,79,476,101,452,110,444,114,449,104,456,84,479,67,506,46,566,37,622,34,663"/>
+<area shape="rect" href="main_8c.html#a28dbf2494083ac5f39daa87bf09e4eb3" title="SPI1 Initialization Function." alt="" coords="163,466,265,492"/>
+<area shape="poly" title=" " alt="" coords="30,663,36,630,48,586,69,540,83,519,101,501,122,488,146,480,148,485,125,493,104,505,87,522,73,543,53,588,41,631,35,664"/>
+<area shape="rect" href="main_8c.html#a4e631056d61a1546185e9bf5a2edd463" title="TIM16 Initialization Function." alt="" coords="159,516,269,541"/>
+<area shape="poly" title=" " alt="" coords="33,662,55,607,75,576,101,550,121,539,143,532,144,537,123,544,104,554,79,580,60,610,37,664"/>
+<area shape="rect" href="main_8c.html#ada2fde91c9d08b4055b4d171690255d0" title="UART4 Initialization Function." alt="" coords="156,565,272,590"/>
+<area shape="poly" title=" " alt="" coords="38,661,64,630,101,599,140,584,142,589,104,604,68,634,42,665"/>
+<area shape="rect" href="main_8c.html#a18142fc3a1bfec6edaf6cf0af5549764" title="UART5 Initialization Function." alt="" coords="156,614,272,640"/>
+<area shape="poly" title=" " alt="" coords="54,665,102,648,140,639,141,644,103,654,56,670"/>
+<area shape="rect" href="main_8c.html#a62f4b77e20bccafe98a183771749c20c" title="USART1 Initialization Function." alt="" coords="130,664,298,689"/>
+<area shape="poly" title=" " alt="" coords="55,674,114,674,114,679,55,679"/>
+<area shape="rect" href="main_8c.html#a1c98cc38e233c6b46ca2bf9598a5fce8" title="USART3 Initialization Function." alt="" coords="130,713,298,738"/>
+<area shape="poly" title=" " alt="" coords="56,683,103,699,131,706,130,711,102,704,54,688"/>
+<area shape="rect" href="main_8c.html#a99d0fdb0434092bcb24d9c9af917e4e9" title="Function implementing the defaultTask thread." alt="" coords="154,1280,274,1305"/>
+<area shape="poly" title=" " alt="" coords="35,690,42,809,57,994,78,1171,91,1233,105,1267,121,1279,140,1287,138,1292,118,1284,101,1270,86,1235,73,1171,51,994,37,810,29,690"/>
+<area shape="rect" href="main_8c.html#a70af21c671abfcc773614a9a4f63d920" title="System Clock Configuration." alt="" coords="143,762,284,788"/>
+<area shape="poly" title=" " alt="" coords="42,688,68,719,104,749,130,760,127,765,101,753,64,723,38,691"/>
+<area shape="rect" href="rtos__tasks_8c.html#a7cf23bbdce878a0b7c41607751423179" title=" " alt="" coords="375,693,577,718"/>
+<area shape="poly" title=" " alt="" coords="37,689,44,714,58,745,77,775,104,798,162,825,188,832,213,833,238,831,264,824,324,798,340,784,347,766,355,747,371,729,381,723,384,728,375,733,359,750,352,768,344,787,326,803,266,829,239,836,213,839,187,837,160,830,101,803,73,778,53,747,39,716,32,690"/>
+<area shape="rect" href="rtos__tasks_8c.html#a04172000ecfd61309b0b9a892c0839ea" title=" " alt="" coords="114,965,314,990"/>
+<area shape="poly" title=" " alt="" coords="33,690,34,737,42,806,50,843,63,879,81,914,105,944,119,955,115,959,101,948,77,917,58,882,45,844,36,807,28,738,28,690"/>
+<area shape="rect" href="rtos__tasks_8c.html#a8dcebcb92690e2abce2b7ecb96e411c4" title=" " alt="" coords="103,864,325,889"/>
+<area shape="poly" title=" " alt="" coords="36,689,42,720,54,762,74,805,104,842,122,854,119,859,101,846,70,808,49,764,37,722,30,690"/>
+<area shape="rect" href="rtos__tasks_8c.html#a65b8e3815e64b441f35e0271bfd5b690" title=" " alt="" coords="398,907,555,947"/>
+<area shape="poly" title=" " alt="" coords="34,690,35,732,44,790,52,821,65,850,82,877,104,900,124,910,151,918,222,928,304,931,382,930,382,935,304,936,222,933,150,923,122,915,101,904,78,881,60,853,47,823,38,791,30,732,28,690"/>
+<area shape="rect" href="rtos__eps__tasks_8c.html#a32949062e454d45c5ab1f1480f359a12" title="periodically sends a command to the eps to reset the watchdog timer" alt="" coords="378,1073,574,1098"/>
+<area shape="poly" title=" " alt="" coords="35,689,42,755,55,850,76,942,89,978,104,1001,140,1017,209,1034,378,1067,377,1072,208,1040,138,1022,101,1005,84,980,71,943,50,851,36,756,30,690"/>
+<area shape="rect" href="rtos__eps__tasks_8c.html#ad27bdbe0e838d3705b754e9af4c449b2" title=" " alt="" coords="415,1188,537,1213"/>
+<area shape="poly" title=" " alt="" coords="35,689,39,765,51,877,72,987,87,1030,105,1059,130,1078,156,1087,182,1088,209,1086,265,1081,295,1087,327,1102,344,1120,352,1138,359,1156,375,1173,401,1186,399,1191,371,1177,355,1159,347,1140,339,1123,323,1106,293,1092,265,1087,209,1091,182,1094,155,1092,128,1083,101,1062,82,1032,67,989,46,878,34,766,29,690"/>
+<area shape="rect" href="uart__handler_8c.html#a59db2ba73b7115a05fe34c3d05e712c3" title=" " alt="" coords="131,1329,297,1354"/>
+<area shape="poly" title=" " alt="" coords="35,690,41,818,55,1018,76,1211,90,1280,97,1303,105,1316,118,1327,115,1331,101,1319,92,1305,85,1281,71,1212,50,1019,36,818,29,690"/>
+<area shape="rect" href="main_8c.html#a1730ffe1e560465665eb47d9264826f9" title="This function is executed in case of error occurrence." alt="" coords="426,453,526,478"/>
+<area shape="poly" title=" " alt="" coords="265,133,297,140,327,155,359,186,387,222,411,261,430,301,457,378,472,437,467,438,452,379,425,303,406,264,383,225,355,190,323,160,295,145,264,138"/>
+<area shape="poly" title=" " alt="" coords="527,462,656,467,734,477,809,495,862,517,907,543,905,548,860,522,808,500,733,483,656,473,527,467"/>
+<area shape="poly" title=" " alt="" coords="265,182,297,190,326,205,356,230,381,259,423,323,452,387,470,437,465,439,447,389,418,326,377,262,352,234,324,209,295,195,264,188"/>
+<area shape="poly" title=" " alt="" coords="265,233,297,240,326,254,352,274,375,296,415,346,445,396,466,438,461,440,441,399,411,349,371,300,348,278,324,259,295,245,264,238"/>
+<area shape="poly" title=" " alt="" coords="265,283,296,291,326,303,369,334,406,370,460,438,456,441,402,374,366,338,324,308,294,296,264,289"/>
+<area shape="poly" title=" " alt="" coords="265,335,296,342,326,353,363,372,397,395,452,440,448,444,394,400,360,377,324,357,294,347,264,340"/>
+<area shape="poly" title=" " alt="" coords="269,387,326,402,434,444,432,449,324,407,268,393"/>
+<area shape="poly" title=" " alt="" coords="303,439,411,454,410,459,302,444"/>
+<area shape="poly" title=" " alt="" coords="265,474,410,466,410,472,265,479"/>
+<area shape="poly" title=" " alt="" coords="269,514,324,502,410,480,411,485,326,507,270,519"/>
+<area shape="poly" title=" " alt="" coords="272,570,299,563,324,551,338,539,347,525,356,510,372,495,410,477,413,482,374,500,360,513,352,528,343,542,326,556,300,568,273,575"/>
+<area shape="poly" title=" " alt="" coords="272,622,299,615,323,601,335,589,341,577,347,550,352,523,359,509,371,496,390,483,410,474,412,479,392,488,375,500,364,512,357,525,352,552,346,579,339,592,327,605,301,619,273,627"/>
+<area shape="poly" title=" " alt="" coords="297,666,323,650,338,632,345,614,347,576,349,536,356,516,371,496,389,482,410,473,412,478,392,487,375,500,361,518,354,537,352,576,350,615,343,635,327,654,300,670"/>
+<area shape="poly" title=" " alt="" coords="297,716,323,700,341,676,349,651,350,626,347,601,345,575,345,549,353,522,371,496,389,482,410,472,412,477,392,486,375,499,358,524,351,550,350,575,353,600,355,626,354,652,346,678,327,704,300,720"/>
+<area shape="poly" title=" " alt="" coords="284,770,305,762,323,749,344,719,353,688,353,658,348,626,343,594,342,562,350,529,371,496,389,481,410,472,412,477,392,486,375,499,355,531,347,562,348,594,353,625,358,657,358,689,349,721,327,753,308,767,286,775"/>
+<area shape="poly" title=" " alt="" coords="488,691,544,639,583,612,626,590,682,573,740,564,797,559,849,559,849,564,797,565,741,569,684,579,628,595,586,616,547,644,491,694"/>
+<area shape="rect" href="log_8h.html#a3e068c70867806154541035de518012d" title=" " alt="" coords="663,872,773,897"/>
+<area shape="poly" title=" " alt="" coords="559,717,581,729,599,747,608,766,616,785,629,807,658,835,688,860,684,864,654,839,625,810,611,788,603,768,595,750,578,733,556,721"/>
+<area shape="rect" href="stm32__reboot__reason_8c.html#aac62414297dbd9480448c266541a0ace" title="Obtain the STM32 system reset cause." alt="" coords="635,605,801,630"/>
+<area shape="poly" title=" " alt="" coords="512,690,626,647,664,634,665,639,628,652,514,695"/>
+<area shape="rect" href="stm32__reboot__reason_8c.html#a8caa6b410830d7592b7f1dd4c1a359b6" title="Convert a reset cause enum to a ASCII&#45;printable name string." alt="" coords="628,756,808,797"/>
+<area shape="poly" title=" " alt="" coords="535,717,580,728,643,748,641,753,579,734,534,722"/>
+<area shape="rect" href="rtos__task__helpers_8c.html#a8e6805715f064b84a74583df06db6058" title=" " alt="" coords="627,997,809,1022"/>
+<area shape="poly" title=" " alt="" coords="564,717,581,729,599,751,609,772,613,815,614,859,619,883,630,908,659,950,692,985,688,988,655,954,625,911,614,884,609,860,608,815,604,774,594,754,578,733,561,721"/>
+<area shape="rect" href="timekeeping_8c.html#ab806b8884c269c16f3bc4b766d1fc943" title="Returns the current unix timestamp, in milliseconds." alt="" coords="645,1123,791,1163"/>
+<area shape="poly" title=" " alt="" coords="566,717,581,729,600,753,612,777,619,801,622,825,619,873,608,920,598,966,593,1014,596,1037,602,1061,613,1085,629,1109,635,1115,631,1119,625,1113,608,1088,597,1063,590,1038,588,1014,593,966,603,918,613,872,617,825,614,803,607,779,595,756,577,733,563,721"/>
+<area shape="rect" href="csp__cmp_8h.html#a4402590c0b64383fa59aaf6fe78dcb34" title=" " alt="" coords="891,657,988,682"/>
+<area shape="poly" title=" " alt="" coords="772,872,791,863,807,850,821,831,828,812,829,772,832,732,839,712,855,692,875,678,878,683,858,696,844,714,837,733,835,773,833,813,826,834,811,854,794,867,774,876"/>
+<area shape="rect" href="log_8c.html#a6efa47aededef4834dc5c25da1e432de" title="Returns all sinks, except the specified exceptions." alt="" coords="863,706,1016,732"/>
+<area shape="poly" title=" " alt="" coords="772,870,791,862,807,850,818,837,824,824,830,797,836,770,843,756,855,742,860,738,864,742,859,746,847,759,841,772,835,799,829,826,822,840,810,854,793,867,774,875"/>
+<area shape="rect" href="log_8c.html#ad5a8cf2ec365951bb0385938171723bd" title="Get a pointer to the full text of the in&#45;memory log message at the specified index." alt="" coords="858,756,1020,797"/>
+<area shape="poly" title=" " alt="" coords="767,868,807,850,821,839,831,829,840,818,855,806,863,802,866,806,858,811,844,822,835,832,825,843,810,855,769,873"/>
+<area shape="rect" href="log_8c.html#acce5d976dea413409a2547fc61475620" title="Get the index of the most recent in&#45;memory log message." alt="" coords="858,820,1020,876"/>
+<area shape="poly" title=" " alt="" coords="772,873,842,861,843,867,773,878"/>
+<area shape="rect" href="log_8c.html#ad0799a0e4171a608ff908822382da8c9" title="Get the most recent log message text." alt="" coords="863,900,1016,941"/>
+<area shape="poly" title=" " alt="" coords="773,891,848,903,847,908,772,896"/>
+<area shape="rect" href="log_8c.html#a186ca6df91a1dacb78dbf0b0385747c5" title="Get the name of a severity enum." alt="" coords="857,965,1022,990"/>
+<area shape="poly" title=" " alt="" coords="745,895,796,922,858,950,877,957,875,962,856,955,794,927,742,900"/>
+<area shape="rect" href="log_8c.html#a440123199704bc7c5231ec1a9743497f" title="Check logging sink status." alt="" coords="865,1014,1014,1040"/>
+<area shape="poly" title=" " alt="" coords="733,896,784,947,819,976,858,1001,868,1006,866,1010,855,1005,816,980,781,951,729,900"/>
+<area shape="rect" href="log_8c.html#af31cb35d8f2dd37ff306620c600462da" title="Check whether file logging is enabled for a subsystem." alt="" coords="870,1064,1008,1105"/>
+<area shape="poly" title=" " alt="" coords="734,896,811,983,833,1019,842,1034,858,1050,863,1054,860,1058,855,1054,838,1038,828,1022,807,986,730,899"/>
+<area shape="poly" title=" " alt="" coords="286,988,373,1000,497,1007,612,1009,612,1014,497,1013,373,1006,285,994"/>
+<area shape="rect" href="telecommand__executor_8c.html#aa779e85b5e4980298a22fe51742fc752" title="Executes a telecommand from the agenda immediately." alt="" coords="378,743,574,783"/>
+<area shape="poly" title=" " alt="" coords="241,962,283,936,323,900,339,872,344,846,351,819,371,793,375,790,378,794,375,797,356,822,349,847,344,874,327,903,286,941,244,967"/>
+<area shape="rect" href="telecommand__executor_8c.html#a6f29fb3908f76a7b826dfa263b1b38f0" title="Finds the index into TCMD_agenda (slot_num) of the next telecommand to execute." alt="" coords="392,1123,560,1163"/>
+<area shape="poly" title=" " alt="" coords="237,989,279,1019,327,1058,350,1086,360,1097,374,1109,383,1113,380,1118,372,1113,356,1101,346,1089,323,1062,276,1024,233,993"/>
+<area shape="poly" title=" " alt="" coords="553,740,578,729,602,710,626,691,676,672,717,664,758,657,808,641,860,614,905,586,908,591,863,619,810,645,759,662,718,669,677,677,629,696,605,714,581,733,555,745"/>
+<area shape="poly" title=" " alt="" coords="553,781,580,793,640,826,689,860,686,864,637,830,578,797,551,786"/>
+<area shape="poly" title=" " alt="" coords="561,1140,629,1140,629,1146,561,1146"/>
+<area shape="poly" title=" " alt="" coords="243,861,285,835,305,818,323,799,335,778,341,759,344,721,348,684,356,665,371,645,396,622,424,602,484,572,549,552,616,540,683,536,748,537,858,548,858,554,748,542,684,541,617,545,550,557,486,577,426,607,400,626,375,649,361,667,353,685,349,722,346,760,340,780,327,802,309,822,288,840,246,865"/>
+<area shape="poly" title=" " alt="" coords="236,887,296,923,334,941,374,956,434,973,496,986,612,1001,611,1006,495,991,433,978,372,962,332,946,294,927,234,892"/>
+<area shape="rect" href="debug__uart_8c.html#a6e361e09754cc0dcf4809c053731f12a" title=" " alt="" coords="633,706,803,732"/>
+<area shape="poly" title=" " alt="" coords="242,861,283,835,304,818,323,799,333,782,338,767,342,735,348,705,357,691,372,678,409,659,450,649,493,647,535,652,615,672,678,697,676,702,613,677,534,657,492,653,451,655,411,664,374,683,361,695,353,707,347,736,344,768,338,785,327,802,308,822,286,839,244,865"/>
+<area shape="rect" href="telecommand__executor_8c.html#a7cd5fe9d761280baaa479ff698aef7a5" title="Adds a telecommand to the agenda (schedule/queue) of telecommands to execute." alt="" coords="382,857,571,882"/>
+<area shape="poly" title=" " alt="" coords="326,871,366,870,366,875,326,876"/>
+<area shape="rect" href="telecommand__parser_8c.html#a479be5d2e5ee3cd0fe5312818aa8742e" title="Parses a telecommand into everything needed to execute it." alt="" coords="373,808,579,833"/>
+<area shape="poly" title=" " alt="" coords="277,860,397,834,398,840,278,866"/>
+<area shape="poly" title=" " alt="" coords="767,703,807,685,911,589,915,593,810,689,769,708"/>
+<area shape="poly" title=" " alt="" coords="572,873,648,877,647,883,571,878"/>
+<area shape="poly" title=" " alt="" coords="580,827,646,829,713,828,770,821,791,815,807,806,824,789,833,771,837,753,838,733,838,690,843,667,854,643,879,612,906,587,909,591,882,616,859,646,848,669,844,691,843,733,842,753,838,773,828,792,810,810,793,820,771,826,713,833,646,835,580,832"/>
+<area shape="poly" title=" " alt="" coords="538,831,580,842,659,864,658,869,579,847,536,836"/>
+<area shape="poly" title=" " alt="" coords="551,805,578,793,592,781,601,768,610,755,626,742,638,736,640,741,629,747,614,759,606,771,596,785,581,797,553,809"/>
+<area shape="poly" title=" " alt="" coords="555,911,647,894,648,899,556,916"/>
+<area shape="poly" title=" " alt="" coords="539,945,664,989,663,994,537,950"/>
+<area shape="poly" title=" " alt="" coords="491,1070,688,905,691,909,495,1074"/>
+<area shape="poly" title=" " alt="" coords="520,1070,579,1051,660,1025,662,1030,580,1056,521,1075"/>
+<area shape="rect" href="eps__commands_8c.html#a8013932ecdf126298fa09eb26101c727" title=" " alt="" coords="645,1073,791,1098"/>
+<area shape="poly" title=" " alt="" coords="575,1083,629,1083,629,1088,575,1088"/>
+<area shape="poly" title=" " alt="" coords="537,1194,559,1186,578,1173,595,1151,605,1129,608,1108,609,1085,609,1038,613,1011,625,983,655,940,688,906,692,909,659,943,630,986,619,1013,614,1038,614,1085,614,1108,610,1131,600,1154,581,1177,561,1191,539,1199"/>
+<area shape="poly" title=" " alt="" coords="537,1192,559,1185,578,1173,590,1160,597,1147,603,1119,608,1090,614,1074,625,1059,645,1041,667,1028,669,1032,648,1045,629,1062,619,1077,613,1091,608,1120,602,1149,594,1163,581,1177,561,1190,539,1197"/>
+<area shape="poly" title=" " alt="" coords="533,1184,629,1161,631,1166,534,1189"/>
+<area shape="rect" href="eps__commands_8c.html#a4e3a6aaad0b31d4d42f7f540dd3ea0bc" title=" " alt="" coords="861,1208,1018,1249"/>
+<area shape="poly" title=" " alt="" coords="538,1201,845,1220,845,1225,538,1207"/>
+<area shape="rect" href="eps__time_8c.html#a5a66b7a8cc792b4c410f66673b244442" title="Sets the OBC&#39;s time, based on the EPS&#39;s current time." alt="" coords="631,1237,805,1278"/>
+<area shape="poly" title=" " alt="" coords="534,1211,617,1231,615,1236,533,1216"/>
+<area shape="poly" title=" " alt="" coords="805,1243,845,1238,845,1243,806,1249"/>
 </map>
 </div>
 
@@ -969,6 +978,67 @@ Here is the caller graph for this function:</div>
 <div class="center"><img src="main_8c_af4e34667b0cb79444cb7933306644053_icgraph.png" border="0" usemap="#amain_8c_af4e34667b0cb79444cb7933306644053_icgraph" alt=""/></div>
 <map name="amain_8c_af4e34667b0cb79444cb7933306644053_icgraph" id="amain_8c_af4e34667b0cb79444cb7933306644053_icgraph">
 <area shape="rect" title="I2C4 Initialization Function." alt="" coords="103,5,203,31"/>
+<area shape="rect" href="main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,5,55,31"/>
+<area shape="poly" title=" " alt="" coords="87,21,55,21,55,16,87,16"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a07b18455c043aa6d999242217d69a0f9" name="a07b18455c043aa6d999242217d69a0f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07b18455c043aa6d999242217d69a0f9">&#9670;&#160;</a></span>MX_IWDG_Init()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void MX_IWDG_Init </td>
+          <td>(</td>
+          <td class="paramtype">void</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>IWDG Initialization Function. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">None</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">None</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="main_8c_a07b18455c043aa6d999242217d69a0f9_cgraph.png" border="0" usemap="#amain_8c_a07b18455c043aa6d999242217d69a0f9_cgraph" alt=""/></div>
+<map name="amain_8c_a07b18455c043aa6d999242217d69a0f9_cgraph" id="amain_8c_a07b18455c043aa6d999242217d69a0f9_cgraph">
+<area shape="rect" title="IWDG Initialization Function." alt="" coords="5,5,114,31"/>
+<area shape="rect" href="main_8c.html#a1730ffe1e560465665eb47d9264826f9" title="This function is executed in case of error occurrence." alt="" coords="162,5,262,31"/>
+<area shape="poly" title=" " alt="" coords="114,16,146,16,146,21,114,21"/>
+<area shape="rect" href="debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="310,5,460,31"/>
+<area shape="poly" title=" " alt="" coords="263,16,295,16,295,21,263,21"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="main_8c_a07b18455c043aa6d999242217d69a0f9_icgraph.png" border="0" usemap="#amain_8c_a07b18455c043aa6d999242217d69a0f9_icgraph" alt=""/></div>
+<map name="amain_8c_a07b18455c043aa6d999242217d69a0f9_icgraph" id="amain_8c_a07b18455c043aa6d999242217d69a0f9_icgraph">
+<area shape="rect" title="IWDG Initialization Function." alt="" coords="103,5,211,31"/>
 <area shape="rect" href="main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,5,55,31"/>
 <area shape="poly" title=" " alt="" coords="87,21,55,21,55,16,87,16"/>
 </map>
@@ -1648,6 +1718,20 @@ Here is the caller graph for this function:</div>
       <table class="memname">
         <tr>
           <td class="memname">I2C_HandleTypeDef hi2c4</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a80f055e38f52ca3c57e183fc685ea477" name="a80f055e38f52ca3c57e183fc685ea477"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80f055e38f52ca3c57e183fc685ea477">&#9670;&#160;</a></span>hiwdg</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">IWDG_HandleTypeDef hiwdg</td>
         </tr>
       </table>
 </div><div class="memdoc">
