@@ -167,10 +167,15 @@ Functions</h2></td></tr>
 Variables</h2></td></tr>
 <tr class="memitem:a00e149586b4de17dcefc24374f458e78" id="r_a00e149586b4de17dcefc24374f458e78"><td class="memItemLeft" align="right" valign="top">UART_HandleTypeDef *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a00e149586b4de17dcefc24374f458e78">UART_eps_port_handle</a></td></tr>
 <tr class="separator:a00e149586b4de17dcefc24374f458e78"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae19cb54e8512af98e95c2876cc412239" id="r_ae19cb54e8512af98e95c2876cc412239"><td class="memItemLeft" align="right" valign="top">const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae19cb54e8512af98e95c2876cc412239">EPS_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS</a> = 50</td></tr>
+<tr class="memitem:a44ccd52df3290491d94aa949e756e19e" id="r_a44ccd52df3290491d94aa949e756e19e"><td class="memItemLeft" align="right" valign="top">static const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a44ccd52df3290491d94aa949e756e19e">EPS_TX_TIMEOUT_MS</a> = 1000</td></tr>
+<tr class="separator:a44ccd52df3290491d94aa949e756e19e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae19cb54e8512af98e95c2876cc412239" id="r_ae19cb54e8512af98e95c2876cc412239"><td class="memItemLeft" align="right" valign="top">static const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae19cb54e8512af98e95c2876cc412239">EPS_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS</a> = 50</td></tr>
 <tr class="separator:ae19cb54e8512af98e95c2876cc412239"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af28d18e93d6ea5489aadc19dc91696f2" id="r_af28d18e93d6ea5489aadc19dc91696f2"><td class="memItemLeft" align="right" valign="top">const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af28d18e93d6ea5489aadc19dc91696f2">EPS_RX_TIMEOUT_BETWEEN_BYTES_MS</a> = 25</td></tr>
+<tr class="memitem:af28d18e93d6ea5489aadc19dc91696f2" id="r_af28d18e93d6ea5489aadc19dc91696f2"><td class="memItemLeft" align="right" valign="top">static const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af28d18e93d6ea5489aadc19dc91696f2">EPS_RX_TIMEOUT_BETWEEN_BYTES_MS</a> = 25</td></tr>
 <tr class="separator:af28d18e93d6ea5489aadc19dc91696f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aacc627b873689c6d87777bd2a134ff97" id="r_aacc627b873689c6d87777bd2a134ff97"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aacc627b873689c6d87777bd2a134ff97">CONFIG_EPS_enable_uart_debug_print</a> = 0</td></tr>
+<tr class="memdesc:aacc627b873689c6d87777bd2a134ff97"><td class="mdescLeft">&#160;</td><td class="mdescRight">When enabled, the EPS's raw data is sent to the debug UART.  <br /></td></tr>
+<tr class="separator:aacc627b873689c6d87777bd2a134ff97"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a0d0f6fb9dea3842c272007f7939a672a" name="a0d0f6fb9dea3842c272007f7939a672a"></a>
@@ -631,16 +636,40 @@ Here is the caller graph for this function:</div>
 </div>
 </div>
 <h2 class="groupheader">Variable Documentation</h2>
-<a id="ae19cb54e8512af98e95c2876cc412239" name="ae19cb54e8512af98e95c2876cc412239"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae19cb54e8512af98e95c2876cc412239">&#9670;&#160;</a></span>EPS_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS</h2>
+<a id="aacc627b873689c6d87777bd2a134ff97" name="aacc627b873689c6d87777bd2a134ff97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aacc627b873689c6d87777bd2a134ff97">&#9670;&#160;</a></span>CONFIG_EPS_enable_uart_debug_print</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
+          <td class="memname">uint32_t CONFIG_EPS_enable_uart_debug_print = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>When enabled, the EPS's raw data is sent to the debug UART. </p>
+
+</div>
+</div>
+<a id="ae19cb54e8512af98e95c2876cc412239" name="ae19cb54e8512af98e95c2876cc412239"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae19cb54e8512af98e95c2876cc412239">&#9670;&#160;</a></span>EPS_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
           <td class="memname">const uint32_t EPS_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS = 50</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 </div>
@@ -650,11 +679,41 @@ Here is the caller graph for this function:</div>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">const uint32_t EPS_RX_TIMEOUT_BETWEEN_BYTES_MS = 25</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a44ccd52df3290491d94aa949e756e19e" name="a44ccd52df3290491d94aa949e756e19e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44ccd52df3290491d94aa949e756e19e">&#9670;&#160;</a></span>EPS_TX_TIMEOUT_MS</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint32_t EPS_TX_TIMEOUT_MS = 1000</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 </div>
