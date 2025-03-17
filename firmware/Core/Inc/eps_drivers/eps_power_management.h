@@ -5,7 +5,7 @@
 
 extern uint16_t current_mA_threshhold[32];
 
-uint8_t EPS_power_monitoring();
+uint8_t EPS_monitor_and_disable_overcurrent_channels();
 
 uint8_t EPS_log_pdu_json(const EPS_struct_pdu_housekeeping_data_eng_t *EPS_pdu_housekeeping_data_eng);   // Log the PDU housekeeping data in JSON format
 
