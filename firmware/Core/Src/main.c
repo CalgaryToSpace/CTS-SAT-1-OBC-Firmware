@@ -27,6 +27,7 @@
 #include "debug_tools/debug_uart.h"
 #include "rtos_tasks/rtos_tasks.h"
 #include "rtos_tasks/rtos_eps_tasks.h"
+#include "rtos_tasks/rtos_background_upkeep.h"
 #include "uart_handler/uart_handler.h"
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_internal_drivers.h"
@@ -111,7 +112,7 @@ const osThreadAttr_t TASK_execute_telecommands_Attributes = {
 osThreadId_t TASK_service_eps_watchdog_Handle;
 const osThreadAttr_t TASK_service_eps_watchdog_Attributes = {
   .name = "TASK_service_eps_watchdog",
-  .stack_size = 1024, //in bytes
+  .stack_size = 512, //in bytes
   .priority = (osPriority_t) osPriorityNormal, //TODO: Figure out which priority makes sense for this task
 };
 
@@ -127,6 +128,13 @@ const osThreadAttr_t TASK_monitor_freertos_memory_Attributes = {
   .name = "TASK_monitor_freertos_memory",
   .stack_size = 1024,
   .priority = (osPriority_t) osPriorityBelowNormal6,
+};
+
+osThreadId_t TASK_background_upkeep_Handle;
+const osThreadAttr_t TASK_background_upkeep_Attributes = {
+  .name = "TASK_background_upkeep",
+  .stack_size = 1024,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 
 FREERTOS_task_info_struct_t FREERTOS_task_handles_array [] = {
@@ -163,6 +171,11 @@ FREERTOS_task_info_struct_t FREERTOS_task_handles_array [] = {
   {
     .task_handle = &TASK_monitor_freertos_memory_Handle,
     .task_attribute = &TASK_monitor_freertos_memory_Attributes,
+    .lowest_stack_bytes_remaining = UINT32_MAX
+  },
+  {
+    .task_handle = &TASK_background_upkeep_Handle,
+    .task_attribute = &TASK_background_upkeep_Attributes,
     .lowest_stack_bytes_remaining = UINT32_MAX
   },
 };
@@ -298,6 +311,9 @@ int main(void)
   TASK_service_eps_watchdog_Handle = osThreadNew(TASK_service_eps_watchdog, NULL, &TASK_service_eps_watchdog_Attributes);
 
   TASK_time_sync_Handle = osThreadNew(TASK_time_sync, NULL, &TASK_time_sync_Attributes);
+
+  TASK_background_upkeep_Handle = osThreadNew(TASK_background_upkeep, NULL, &TASK_background_upkeep_Attributes);
+
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
