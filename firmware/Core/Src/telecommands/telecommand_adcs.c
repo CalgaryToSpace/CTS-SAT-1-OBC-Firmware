@@ -1821,7 +1821,6 @@ TODO: How to do this:
 
 */
 
-uint8_t adcs_download_buffer[20480]; // static buffer to hold the 20 kB from the download
 // #define FLATSAT_TEST_MODE // TODO: REMOVE BEFORE FLIGHT
 
 #ifdef FLATSAT_TEST_MODE
@@ -1845,87 +1844,15 @@ uint8_t TCMDEXEC_adcs_download_index_file(const char *args_str, TCMD_Telecommand
     // for testing, format and mount the LFS here (REMOVE BEFORE FLIGHT)
     #endif 
 
-    int8_t status;
+    uint16_t status;
     
-    status = LFS_delete_file("ADCS/index_file"); // if the index file doesn't exist, this will fail, so let it do that
+    LFS_delete_file("ADCS/index_file"); // if the index file doesn't exist, this will fail, so let it do that
 
-    ADCS_file_download_buffer_struct_t download_packet;
-
-    status = ADCS_load_file_download_block(ADCS_FILE_TYPE_INDEX, 0, 0, 1024);
-    if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS load download block failed (err %d)", status); return 1;}
-        // TODO: I'm not sure what, exactly, the 'offset' parameter in this function is for. I think the counter is the block_counter, but also not sure.
-
-    // Wait until the download block is ready
-    ADCS_download_block_ready_struct_t ready_struct;
-    do {
-        status = ADCS_get_download_block_ready_telemetry(&ready_struct);
-        if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS get download ready status failed (err %d)", status); return 1;}
-    } while (ready_struct.ready != true);
-
-    // Initiate download burst, ignoring the hole map
-    status = ADCS_initiate_download_burst(20, true);
-    if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS initiate download burst failed (err %d)", status); return 1;}
-        // TODO: I suspect that the message_length parameter represents the number of bytes to load, but I'm not sure.
-
-    uint16_t hole_map[8];
-
-    for (uint16_t i = 0; i < 1024; i++) {
-        // load 20 bytes at a time into the download buffer
-        status = ADCS_get_file_download_buffer(&(download_packet));
-        if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS get download buffer failed (err %d)", status); return 1;}
-
-        for (uint8_t j = 0; j < 20; j++) {
-            adcs_download_buffer[20 * download_packet.packet_counter + j] = download_packet.file_bytes[j];
-                // TODO: I've assumed that the packet counter is the correct number, in case they fall out of order. Verify this!!
-        }
-
-        // generate hole map to determine any missing packets
-        hole_map[download_packet.packet_counter / 128] = hole_map[download_packet.packet_counter / 128] | download_packet.packet_counter;
-
-    }
-    
-    /* HOLE MAP STUFF STARTS HERE */
-
-    for (uint8_t i = 1; i <= 8; i++) {
-        // now send the hole map to the ADCS
-        uint8_t hole_map_slice[16];
-        ADCS_convert_uint16_to_reversed_uint8_array_members(&hole_map_slice[0], hole_map[i], 0);
-
-        status = ADCS_set_hole_map(hole_map_slice, i);
-        if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS set hole map failed for index %d (err %d)", i, status); return 1;}
-    }
-    
-    // now, using the hole map as a guide, give us the missing packets
-    status = ADCS_initiate_download_burst(20, false);
-    if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS initiate download burst failed (err %d)", status); return 1;}
-        // TODO: I suspect that the message_length parameter represents the number of bytes to load, but I'm not sure.
-
-    for (uint16_t i = 0; i < 1024; i++) {
-        // load 20 bytes at a time into the download buffer
-        status = ADCS_get_file_download_buffer(&(download_packet));
-        if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS get download buffer failed (err %d)", status); return 1;}
-
-        for (uint8_t j = 0; j < 20; j++) {
-            adcs_download_buffer[20 * download_packet.packet_counter + j] = download_packet.file_bytes[j];
-                // TODO: I've assumed that the packet counter is the correct number, in case they fall out of order. Verify this!!
-        }
-
-        // generate hole map to determine any missing packets
-        hole_map[download_packet.packet_counter / 128] = hole_map[download_packet.packet_counter / 128] | download_packet.packet_counter;
-
-    }
-
-    // TODO: Test this. What if we need more than one go-around to get all the packets?
-
-    /* HOLE MAP STUFF ENDS HERE */
-
-    // Create or append to the index file in the filesystem (append_file does both)
-    status = LFS_append_file("ADCS/index_file", &adcs_download_buffer[0], 20480); 
-    if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS write to LittleFS failed (err %d)", status); return 1;}
+    status = ADCS_save_sd_file_to_lfs(true, 0, "index_file", 11);
 
     // To read the index file via telecommand, we can do: CTS1+fs_read_text_file(ADCS/index_file)!
 
-    return 0;
+    return status;
 
 }
 
@@ -1936,32 +1863,11 @@ uint8_t TCMDEXEC_adcs_download_index_file(const char *args_str, TCMD_Telecommand
 uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                    char *response_output_buf, uint16_t response_output_buf_len) {
 
-    uint8_t status;
+    int16_t status;
 
     // parse file index argument
     uint64_t file_index;
     TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &file_index);
-
-    // get the data about the file to download
-    status = ADCS_reset_file_list_read_pointer();
-    if (status != 0 && status != 165) {snprintf(response_output_buf, response_output_buf_len, "ADCS reset file pointer failed (err %d)", status); return 1;}
-    // For some reason, the engineering model ADCS always returns status 165 for this command, regardless of what the status *should* be
-    // Effectively, this means we cannot effectively check the status of this command, so we must use a workaround
-    // TODO: write a workaround
-
-    for (uint16_t i = 0; i < file_index; i++) {
-        status = ADCS_advance_file_list_read_pointer();
-        if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS advance file pointer failed at index %d (err %d)", i, status); return 1;}
-    }
-    ADCS_file_info_struct_t file_info;
-    status = ADCS_get_file_info_telemetry(&file_info);
-    if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS get file info failed (err %d)", status); return 1;}
-
-    /*
-    The file is uniquely identified by the File Type and Counter parameters. The Offset and Block
-    Length parameters indicate which part of the file to buffer in memory. The maximum Block
-    Length is 20 kB. [20480 bytes (20 bytes * 1024 packets). Some files may require multiple blocks, such as image files]
-    */
 
     // uint16_t blocks_required = ceil(file_info.file_size / 20480.0);
     // uint64_t remaining_bytes = file_info.file_size;
@@ -1979,83 +1885,12 @@ uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str, TCMD_TelecommandCha
     // for testing, format and mount the LFS here (REMOVE BEFORE FLIGHT)
     #endif 
 
-    ADCS_file_download_buffer_struct_t download_packet;
-
-    status = ADCS_load_file_download_block(file_info.file_type, 0, 0, 1024);
-    if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS load download block failed (err %d)", status); return 1;}
-        // TODO: I'm not sure what, exactly, the 'offset' parameter in this function is for. I think the counter is the block_counter, but also not sure.
-
-    // Wait until the download block is ready
-    ADCS_download_block_ready_struct_t ready_struct;
-    do {
-        status = ADCS_get_download_block_ready_telemetry(&ready_struct);
-        if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS get download ready status failed (err %d)", status); return 1;}
-    } while (ready_struct.ready != true);
-
-    // Initiate download burst, ignoring the hole map
-    status = ADCS_initiate_download_burst(20, true);
-    if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS initiate download burst failed (err %d)", status); return 1;}
-        // TODO: I suspect that the message_length parameter represents the number of bytes to load, but I'm not sure.
-
-    uint16_t hole_map[8];
-
-    for (uint16_t i = 0; i < 1024; i++) {
-        // load 20 bytes at a time into the download buffer
-        status = ADCS_get_file_download_buffer(&(download_packet));
-        if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS get download buffer failed (err %d)", status); return 1;}
-
-        for (uint8_t j = 0; j < 20; j++) {
-            adcs_download_buffer[20 * download_packet.packet_counter + j] = download_packet.file_bytes[j];
-                // TODO: I've assumed that the packet counter is the correct number, in case they fall out of order. Verify this!!
-        }
-
-        // generate hole map to determine any missing packets
-        hole_map[download_packet.packet_counter / 128] = hole_map[download_packet.packet_counter / 128] | download_packet.packet_counter;
-
-    }
-    
-    /* HOLE MAP STUFF STARTS HERE */
-
-    for (uint8_t i = 1; i <= 8; i++) {
-        // now send the hole map to the ADCS
-        uint8_t hole_map_slice[16];
-        ADCS_convert_uint16_to_reversed_uint8_array_members(&hole_map_slice[0], hole_map[i], 0);
-
-        status = ADCS_set_hole_map(hole_map_slice, i);
-        if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS set hole map failed for index %d (err %d)", i, status); return 1;}
-    }
-    
-    // now, using the hole map as a guide, give us the missing packets
-    status = ADCS_initiate_download_burst(20, false);
-    if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS initiate download burst failed (err %d)", status); return 1;}
-        // TODO: I suspect that the message_length parameter represents the number of bytes to load, but I'm not sure.
-
-    for (uint16_t i = 0; i < 1024; i++) {
-        // load 20 bytes at a time into the download buffer
-        status = ADCS_get_file_download_buffer(&(download_packet));
-        if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS get download buffer failed (err %d)", status); return 1;}
-
-        for (uint8_t j = 0; j < 20; j++) {
-            adcs_download_buffer[20 * download_packet.packet_counter + j] = download_packet.file_bytes[j];
-                // TODO: I've assumed that the packet counter is the correct number, in case they fall out of order. Verify this!!
-        }
-
-        // generate hole map to determine any missing packets
-        hole_map[download_packet.packet_counter / 128] = hole_map[download_packet.packet_counter / 128] | download_packet.packet_counter;
-
-    }
-
-    // TODO: Test this. What if we need more than one go-around to get all the packets?
-
-    /* HOLE MAP STUFF ENDS HERE */
-
-    // Create or append to the file in the filesystem (append_file does both)
-    status = LFS_append_file("ADCS/test_file", &adcs_download_buffer[0], 20480);  // TODO: remove test
-    if (status != 0) {snprintf(response_output_buf, response_output_buf_len, "ADCS write to LittleFS failed (err %d)", status); return 1;}
+    status = ADCS_save_sd_file_to_lfs(false, file_index, "test_file", 11);
+            // TODO: make an auto-filenaming process
 
     // To read the file via telecommand, we can do: CTS1+fs_read_text_file(ADCS/test_file)!
 
-    return 0;
+    return status;
 }
 
 /// @brief Telecommand: Request the given telemetry data from the ADCS

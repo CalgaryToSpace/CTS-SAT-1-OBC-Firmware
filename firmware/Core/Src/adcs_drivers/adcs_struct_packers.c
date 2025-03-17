@@ -609,12 +609,21 @@ uint8_t ADCS_pack_to_file_info_struct(uint8_t *raw_data, ADCS_file_info_struct_t
     file_info_struct->file_crc16 = (raw_data[11] << 8) | raw_data[10]; // Bytes 10-11
     return 0;
 }
+
+/// @brief Parse ACP Execution State telemetry data into a struct.
+/// @param[in] data_received Pointer to the raw telemetry data buffer.
+/// @param[out] output_struct Pointer to the struct to store parsed telemetry data.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_pack_to_acp_execution_state_struct(uint8_t* data_received, ADCS_acp_execution_state_struct_t* output_struct) {
     output_struct->time_since_iteration_start_ms = (uint16_t)(data_received[1] << 8 | data_received[0]); 
     output_struct->current_execution_point = (ADCS_current_execution_point_enum_t) data_received[2];
     return 0;
 }
 
+/// @brief Parse Current State 1 telemetry data into a struct.
+/// @param[in] data_received Pointer to the raw telemetry data buffer.
+/// @param[out] output_struct Pointer to the struct to store parsed telemetry data.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_pack_to_current_state_1_struct(uint8_t* data_received, ADCS_current_state_1_struct_t* output_struct) {
     
     output_struct->estimation_mode = (data_received[0] >> 4) & 0xf;
@@ -706,6 +715,11 @@ uint8_t ADCS_pack_to_file_download_buffer_struct(uint8_t *data_received, ADCS_fi
     }
     return 0;
 }
+
+/// @brief Parse Raw Star Tracker telemetry data into a struct.
+/// @param[in] input_data Pointer to the raw telemetry data buffer.
+/// @param[out] output_data Pointer to the struct to store parsed telemetry data.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_pack_to_raw_star_tracker_struct(uint8_t *input_data, ADCS_raw_star_tracker_struct_t *output_data) {
     
     output_data->num_stars_detected = input_data[0];
@@ -751,6 +765,10 @@ uint8_t ADCS_pack_to_raw_star_tracker_struct(uint8_t *input_data, ADCS_raw_star_
     return 0;
 }
 
+/// @brief Parse Unix Time telemetry data into a uint64.
+/// @param[in] data_received Pointer to the raw telemetry data buffer.
+/// @param[out] output_data Pointer to the uint64 to store parsed telemetry data.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_pack_to_unix_time_ms(uint8_t *data_received, uint64_t *output_data) {
     
                                                                                                                     // use ULL to perform unsigned, not signed, multiplication
@@ -759,6 +777,11 @@ uint8_t ADCS_pack_to_unix_time_ms(uint8_t *data_received, uint64_t *output_data)
 
 }
 
+/// @brief Parse SD Log Config telemetry data into a struct.
+/// @param[in] data_received Pointer to the raw telemetry data buffer.
+/// @param[in] which_log Which of the two concurrent logging task configurations is requested (1 or 2). 
+/// @param[out] config Pointer to the struct to store parsed telemetry data.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_pack_to_sd_log_config_struct(uint8_t *data_received, uint8_t which_log, ADCS_sd_log_config_struct *config) {
     
     for (uint8_t i = 0; i < 10; i++) {
