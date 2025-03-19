@@ -31,6 +31,4 @@ uint8_t ADCS_send_i2c_telemetry_request(uint8_t id, uint8_t* data, uint32_t data
 uint8_t ADCS_initialise_crc8_checksum();
 uint8_t ADCS_calculate_crc8_checksum(uint8_t* buffer, uint16_t len);
 
-time_t ADCS_convert_msdos_to_unix_time(uint32_t msdostime);
-
 #endif /* INC_ADCS_INTERNAL_DRIVERS_H_ */

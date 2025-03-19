@@ -1795,32 +1795,6 @@ uint8_t TCMDEXEC_adcs_measurements(const char *args_str, TCMD_TelecommandChannel
     return status;
 }
 
-
-/*
-TODO: How to do this:
-   Get 20 bytes at a time
-   Declare a buffer outside of any function, which is where we can keep lots of data
-    - theoretically, we could allow this buffer to be 20 KiB 
-        - Size 3 image: 128x128 = 16 KiB (on disk, is 20 KiB)
-        - Check with Aarti about whether we will need anything bigger
-
-   Downlinking is currently IN PROGRESS by the rest of the Software team
-   - Our use case is to downlink the data ASAP, basically
-   - We don't care to store it long-term
-   - There is absolutely no way to downlink 1 MB of data (1024x1024) at once
-
-    Memory module work:
-        - Create a file, put all data in the file
-        - Then memory module downlinking can be handled from this
-        - Most probably using #include "littlefs/littlefs_helper.h"
-            - Functions to use: LFS_write_file, LFS_append_file
-            - LFS_make_directory may also be helpful for organisation
-
-   For now: try to get 20 bytes of data which actually makes sense
-   For future: split up the PR
-
-*/
-
 // #define FLATSAT_TEST_MODE // TODO: REMOVE BEFORE FLIGHT
 
 #ifdef FLATSAT_TEST_MODE
@@ -1880,7 +1854,6 @@ uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str, TCMD_TelecommandCha
     #endif 
 
     status = ADCS_save_sd_file_to_lfs(false, file_index);
-            // TODO: make an auto-filenaming process
 
     // To read the file via telecommand, we can do: CTS1+fs_read_text_file(ADCS/test_file)!
 

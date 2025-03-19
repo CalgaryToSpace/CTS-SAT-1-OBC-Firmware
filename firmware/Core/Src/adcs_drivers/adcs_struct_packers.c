@@ -604,7 +604,7 @@ uint8_t ADCS_pack_to_file_info_struct(uint8_t *raw_data, ADCS_file_info_struct_t
 
     uint32_t msdos_time = (raw_data[9] << 24) | (raw_data[8] << 16) | (raw_data[7] << 8) | raw_data[6]; // Bytes 6-9
 
-    file_info_struct->file_date_time = ADCS_convert_msdos_to_unix_time(msdos_time);
+    file_info_struct->file_date_time = msdos_time;
 
     file_info_struct->file_crc16 = (raw_data[11] << 8) | raw_data[10]; // Bytes 10-11
     return 0;
