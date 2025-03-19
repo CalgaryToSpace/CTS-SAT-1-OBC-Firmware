@@ -1848,7 +1848,7 @@ uint8_t TCMDEXEC_adcs_download_index_file(const char *args_str, TCMD_Telecommand
     
     LFS_delete_file("ADCS/index_file"); // if the index file doesn't exist, this will fail, so let it do that
 
-    status = ADCS_save_sd_file_to_lfs(true, 0, "index_file", 11);
+    status = ADCS_save_sd_file_to_lfs(true, 0);
 
     // To read the index file via telecommand, we can do: CTS1+fs_read_text_file(ADCS/index_file)!
 
@@ -1869,12 +1869,6 @@ uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str, TCMD_TelecommandCha
     uint64_t file_index;
     TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &file_index);
 
-    // uint16_t blocks_required = ceil(file_info.file_size / 20480.0);
-    // uint64_t remaining_bytes = file_info.file_size;
-    
-    // ADCS_file_download_buffer_struct_t file_packets[(uint64_t) ceil(file_info.file_size/20.0)];
-    // uint64_t packet_index = 0;
-
     #ifdef FLATSAT_TEST_MODE
     EPS_CMD_output_bus_channel_on(8); 
     // for testing, enable EPS channel 8 (REMOVE BEFORE FLIGHT)
@@ -1885,7 +1879,7 @@ uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str, TCMD_TelecommandCha
     // for testing, format and mount the LFS here (REMOVE BEFORE FLIGHT)
     #endif 
 
-    status = ADCS_save_sd_file_to_lfs(false, file_index, "test_file", 11);
+    status = ADCS_save_sd_file_to_lfs(false, file_index);
             // TODO: make an auto-filenaming process
 
     // To read the file via telecommand, we can do: CTS1+fs_read_text_file(ADCS/test_file)!

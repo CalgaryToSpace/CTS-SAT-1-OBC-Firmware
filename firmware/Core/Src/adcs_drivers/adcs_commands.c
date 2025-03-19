@@ -1431,13 +1431,14 @@ int16_t ADCS_load_sd_file_block_to_download_buffer(ADCS_file_info_struct_t file_
 /// @brief Save a specified file from the ADCS SD card to the ADCS subfolder in LittleFS.
 /// @param[in] index_file_bool Whether this is the index file or not
 /// @param[in] file_index Index of the file in the SD card; only used if index_file_bool is false
-/// @param[in] filename Pointer to string containing filename to save as
-/// @param[in] filename_length Length of filename
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission, negative if an LFS or snprintf error code occurred. 
 /// Specifically, assuming no HAL or LFS error: bytes 0-2 are the ADCS error, bytes 3-10 are which command failed, bytes 11-16 are the index of the failure if applicable
-int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index, char* filename, uint8_t filename_length) {
+int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
     int16_t status;
     ADCS_file_info_struct_t file_info;
+    int16_t snprintf_ret;
+
+    char filename_string[17];
 
     if (!index_file_bool) {
         // get the data about the file to download
@@ -1463,14 +1464,35 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index, char
         status = ADCS_get_file_info_telemetry(&file_info);
         if (status != 0) {; return 1;}
 
+        // name file based on type and timestamp
+        switch(file_info.file_type) {
+
+            case ADCS_FILE_TYPE_TELEMETRY_LOG:
+                snprintf_ret = snprintf(filename_string, 17, "ADCS/log%d.tlm", file_index); // TODO: check filetype
+                if (snprintf_ret != 0) {return snprintf_ret;};
+                break;
+            case ADCS_FILE_TYPE_JPG_IMAGE:
+                snprintf_ret = snprintf(filename_string, 17, "ADCS/img%d.jpg", file_index);
+                if (snprintf_ret != 0) {return snprintf_ret;};
+                break;    
+            case ADCS_FILE_TYPE_BMP_IMAGE:
+                snprintf_ret = snprintf(filename_string, 17, "ADCS/img%d.bmp", file_index);
+                if (snprintf_ret != 0) {return snprintf_ret;};
+                break;    
+            case ADCS_FILE_TYPE_INDEX:
+                snprintf_ret = snprintf(filename_string, 17, "ADCS/index_file");
+                if (snprintf_ret != 0) {return snprintf_ret;};
+                break;    
+            default:
+                return 1;
+        }
+
     } else {
+        snprintf_ret = snprintf(filename_string, 16, "ADCS/index_file");
+        if (snprintf_ret != 0) {return snprintf_ret;};
         file_info.file_size = 20479; // for the index file, we should only need a single block
     }
 
-    // create the filename string with the directory; e.g. input "index_file" becomes "ADCS/index_file"
-    char filename_string[filename_length + 5];
-    int16_t snprintf_ret = snprintf(filename_string, filename_length, "ADCS/%s", filename);
-    if (snprintf_ret != 0) {return snprintf_ret;};
     LFS_delete_file(filename_string); // this will error if the file doesn't exist. That's OK.
 
     uint8_t total_blocks = ceil(file_info.file_size / 20480.0);
@@ -1478,14 +1500,14 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index, char
 
     while (current_block < total_blocks) {
 
-        status = ADCS_load_sd_file_block_to_download_buffer(file_info, 0, filename_string, filename_length + 5); // load the first block
+        status = ADCS_load_sd_file_block_to_download_buffer(file_info, 0, filename_string, 17); // load the block
         if (status != 0) {return status;}
                                             // TODO: just to be sure, we should test LFS_write_file when a file with the same name already exists
 
         current_block++;
     }
 
-    // To read the index file via telecommand, we can do: CTS1+fs_read_text_file(ADCS/index_file)!
+    // TODO: test that CubeSupport can read the log files we download properly.
 
     return 0;
 }
