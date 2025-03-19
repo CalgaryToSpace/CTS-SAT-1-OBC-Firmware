@@ -1387,35 +1387,82 @@ int16_t ADCS_load_sd_file_block_to_download_buffer(ADCS_file_info_struct_t file_
     
     /* HOLE MAP STUFF STARTS HERE */
 
-    for (uint8_t i = 1; i <= 8; i++) {
-        // now send the hole map to the ADCS
-        uint8_t hole_map_slice[16];
-        ADCS_convert_uint16_to_reversed_uint8_array_members(&hole_map_slice[0], hole_map[i], 0);
-
-        status = ADCS_set_hole_map(hole_map_slice, i);
-        if (status != 0) {return status | (1 << 7) | (i << 11);}
+    uint16_t required_packets;
+    if (ceil(file_info.file_size / 20480.0) == (current_block + 1)) {
+        // if this is the final block, we may need to load fewer packets than the maximum
+        required_packets = (file_info.file_size - (20480 * current_block)) / 128;
+    } else {
+        required_packets = file_info.file_size / 128;
     }
     
-    // now, using the hole map as a guide, give us the missing packets
-    status = ADCS_initiate_download_burst(20, false);
-    if (status != 0) {return status | (1 << 8);}
-        // TODO: I suspect that the message_length parameter represents the number of bytes to load, but I'm not sure.
-
-    for (uint16_t i = 0; i < 1024; i++) {
-        // load 20 bytes at a time into the download buffer
-        status = ADCS_get_file_download_buffer(&(download_packet));
-        if (status != 0) {return status | (1 << 9);}
-
-        for (uint8_t j = 0; j < 20; j++) {
-            adcs_download_buffer[20 * download_packet.packet_counter + j] = download_packet.file_bytes[j];
+    uint16_t packets_received = 0;
+    
+    for (uint8_t i = 0; i < 8; i++) {
+        
+        // check if we've received all the packets
+        uint16_t temp_hole_map = hole_map[i];
+        
+        while (temp_hole_map) {
+            // count the number of ones in the uint16 (Kernighan algorithm)
+            temp_hole_map &= (temp_hole_map - 1);
+            packets_received++;
         }
-
-        // generate hole map to determine any missing packets
-        hole_map[download_packet.packet_counter / 128] = hole_map[download_packet.packet_counter / 128] | download_packet.packet_counter;
-
+        
     }
 
-    // TODO: Test this. What if we need more than one go-around to get all the packets?
+    uint8_t hole_map_attempts = 0;
+
+    while (required_packets != packets_received) { // TODO: this should work to keep filling the hole map, but test this
+
+        for (uint8_t i = 1; i <= 8; i++) {
+            // now send the hole map to the ADCS
+            uint8_t hole_map_slice[16];
+            ADCS_convert_uint16_to_reversed_uint8_array_members(&hole_map_slice[0], hole_map[i], 0);
+
+            status = ADCS_set_hole_map(hole_map_slice, i);
+            if (status != 0) {return status | (1 << 7) | (i << 11);}
+        }
+        
+        // now, using the hole map as a guide, give us the missing packets
+        status = ADCS_initiate_download_burst(20, false);
+        if (status != 0) {return status | (1 << 8);}
+            // TODO: I suspect that the message_length parameter represents the number of bytes to load, but I'm not sure.
+
+        for (uint16_t i = 0; i < 1024; i++) {
+            // load 20 bytes at a time into the download buffer
+            status = ADCS_get_file_download_buffer(&(download_packet));
+            if (status != 0) {return status | (1 << 9);}
+
+            for (uint8_t j = 0; j < 20; j++) {
+                adcs_download_buffer[20 * download_packet.packet_counter + j] = download_packet.file_bytes[j];
+            }
+
+            // generate hole map to determine any missing packets
+            hole_map[download_packet.packet_counter / 128] = hole_map[download_packet.packet_counter / 128] | download_packet.packet_counter;
+
+        }
+
+        packets_received = 0;
+
+        for (uint8_t i = 0; i < 8; i++) {
+        
+            // check if we've received all the packets
+            uint16_t temp_hole_map = hole_map[i];
+            
+            while (temp_hole_map) {
+                // count the number of ones in the uint16 (Kernighan algorithm)
+                temp_hole_map &= (temp_hole_map - 1);
+                packets_received++;
+            }
+            
+        }
+
+        hole_map_attempts++;
+        if (hole_map_attempts == 255) {
+            return 7; // hole map timeout
+        }
+
+    }
 
     /* HOLE MAP STUFF ENDS HERE */
 
@@ -1454,7 +1501,7 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
         // For some reason, the engineering model ADCS always returns status 165 for this command, regardless of what the status *should* be
         // Effectively, this means we cannot effectively check the status of this command, so we must use a workaround
         // TODO: write a workaround
-            // Possible workaround 
+            // Possible workaround pending CubeSpace reply
 
         for (uint16_t i = 0; i < file_index; i++) {
             status = ADCS_advance_file_list_read_pointer();
@@ -1468,7 +1515,7 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
         switch(file_info.file_type) {
 
             case ADCS_FILE_TYPE_TELEMETRY_LOG:
-                snprintf_ret = snprintf(filename_string, 17, "ADCS/log%d.tlm", file_index); // TODO: check filetype
+                snprintf_ret = snprintf(filename_string, 17, "ADCS/log%d.TLM", file_index);
                 if (snprintf_ret != 0) {return snprintf_ret;};
                 break;
             case ADCS_FILE_TYPE_JPG_IMAGE:
@@ -1508,6 +1555,7 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
     }
 
     // TODO: test that CubeSupport can read the log files we download properly.
+            // There seems to be an issue with this... we may need to write a parser.
 
     return 0;
 }
