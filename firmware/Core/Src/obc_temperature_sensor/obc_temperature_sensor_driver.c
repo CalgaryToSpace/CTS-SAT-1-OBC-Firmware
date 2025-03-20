@@ -6,6 +6,7 @@
 
 const uint16_t OBC_TEMP_SENSOR_device_addr =  0x48;
 const uint16_t OBC_TEMP_SENSOR_temp_register_addr  = 0x00;
+const uint32_t OBC_TEMP_SENSOR_timeout_ms = 50; // Should be very fast.
 
 // write to this register to change the precision
 const uint16_t OBC_TEMP_SENSOR_config_register_addr = 0x01;
@@ -34,7 +35,7 @@ uint8_t OBC_TEMP_SENSOR_read_temperature(int32_t *result)
     uint8_t buf[2];
 
     // Read the temperature from the temp register
-    status = HAL_I2C_Mem_Read(&hi2c4, OBC_TEMP_SENSOR_device_addr << 1, OBC_TEMP_SENSOR_temp_register_addr, 1, buf, 2, HAL_MAX_DELAY);
+    status = HAL_I2C_Mem_Read(&hi2c4, OBC_TEMP_SENSOR_device_addr << 1, OBC_TEMP_SENSOR_temp_register_addr, 1, buf, 2, OBC_TEMP_SENSOR_timeout_ms);
     if (status != HAL_OK)
     {
         // read error.
@@ -83,11 +84,14 @@ int32_t OBC_TEMP_SENSOR_convert_raw_to_deg_c(
 /// @return -1 if there is an error otherwise the temperature precision in the least significant two bits as 0x01, 0x02, 0x03, 0x04.
 int8_t OBC_TEMP_SENSOR_get_temp_precision()
 {
-    HAL_StatusTypeDef status;
     uint8_t buf;
     uint8_t precision_mask = 0x60; // 0b01100000
 
-    status = HAL_I2C_Mem_Read(&hi2c4, OBC_TEMP_SENSOR_device_addr << 1, OBC_TEMP_SENSOR_config_register_addr, 1, &buf, 1, HAL_MAX_DELAY);
+    const HAL_StatusTypeDef status = HAL_I2C_Mem_Read(
+        &hi2c4, OBC_TEMP_SENSOR_device_addr << 1,
+        OBC_TEMP_SENSOR_config_register_addr, 1,
+        &buf, 1, OBC_TEMP_SENSOR_timeout_ms
+    );
     if (status != HAL_OK)
     {
         // return -1 if unable to read from config register
@@ -109,7 +113,6 @@ uint8_t OBC_TEMP_SENSOR_set_temp_precision(
     uint32_t* temp_precision_conversion_delay_ms,
     uint32_t* temp_scaling_factor
 ) {
-    HAL_StatusTypeDef status;
     struct Set_Precision_Data precision_data;
 
     // If a user inputs an invalid precision return 2.
@@ -125,9 +128,9 @@ uint8_t OBC_TEMP_SENSOR_set_temp_precision(
     *temp_scaling_factor = precision_data.precision_scaling_factor;
 
     // Write the precision value to the config register.
-    status = HAL_I2C_Mem_Write(
+    const HAL_StatusTypeDef status = HAL_I2C_Mem_Write(
         &hi2c4, OBC_TEMP_SENSOR_device_addr << 1, OBC_TEMP_SENSOR_config_register_addr, 1,
-        &(precision_data.config_write_data), 1, HAL_MAX_DELAY
+        &(precision_data.config_write_data), 1, OBC_TEMP_SENSOR_timeout_ms
     );
     if (status != HAL_OK) {
         // write error
