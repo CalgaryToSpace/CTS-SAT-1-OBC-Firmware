@@ -116,7 +116,13 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
-
+    {
+        .tcmd_name = "system_self_check_failures_as_json",
+        .tcmd_func = TCMDEXEC_system_self_check_failures_as_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    
     // ****************** SECTION: uart_telecommand_defs ******************
     {
         .tcmd_name = "uart_send_hex_get_response_hex",
