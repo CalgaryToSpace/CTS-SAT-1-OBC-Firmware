@@ -416,7 +416,7 @@ int8_t LFS_write_file_with_offset(const char file_name[], lfs_soff_t offset, uin
                 if (write_zeros_result < 0) 
                 {
                     LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), 
-                               "Error extending file: %s (error: %d)", file_name, write_zeros_result);
+                               "Error extending file: %s (error: %ld)", file_name, write_zeros_result);
                     lfs_file_close(&LFS_filesystem, &file);
                     return write_zeros_result;
                 }
@@ -445,7 +445,7 @@ int8_t LFS_write_file_with_offset(const char file_name[], lfs_soff_t offset, uin
     if (write_result < 0)
     {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), 
-                   "Error writing to file: %s at offset %ld (error: %d)", file_name, offset, write_result);
+                   "Error writing to file: %s at offset %ld (error: %ld)", file_name, offset, write_result);
         
         // Close the file before returning
         lfs_file_close(&LFS_filesystem, &file);
