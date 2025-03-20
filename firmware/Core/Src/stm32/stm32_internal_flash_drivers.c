@@ -1,6 +1,6 @@
 #include <string.h>
 
-#include "stm32_internal_flash_drivers/stm32_internal_flash_drivers.h"
+#include "stm32/stm32_internal_flash_drivers.h"
 
 #include "stm32l4r5xx.h"
 #include "stm32l4xx_hal.h" // must include this before stm32l4xx_hal_flash.h

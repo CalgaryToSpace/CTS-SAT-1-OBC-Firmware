@@ -8,8 +8,8 @@
 #include "transforms/arrays.h"
 
 #include "telecommands/system_telecommand_defs.h"
-#include "telecommands/telecommand_definitions.h"
-#include "telecommands/telecommand_executor.h"
+#include "telecommand_exec/telecommand_definitions.h"
+#include "telecommand_exec/telecommand_executor.h"
 
 #include <stdio.h>
 #include <string.h>

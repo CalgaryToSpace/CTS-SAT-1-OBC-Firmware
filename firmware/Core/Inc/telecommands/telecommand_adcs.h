@@ -3,7 +3,7 @@
 #define INCLUDE_GUARD__TELECOMMAND_ADCS_H
 
 #include <stdint.h>
-#include "telecommands/telecommand_definitions.h"
+#include "telecommand_exec/telecommand_definitions.h"
 
 // if we fail to properly extract a value, we should return the reason for that failure
 #define ABORT_CMD_FOR_FAILED_EXTRACT(x) uint8_t result = x; if (!(result)) { return result; }

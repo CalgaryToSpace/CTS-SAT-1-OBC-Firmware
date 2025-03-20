@@ -1,7 +1,7 @@
 #include "crc/crc.h"
 #include "log/log.h"
-#include "telecommands/telecommand_args_helpers.h"
-#include "telecommands/telecommand_types.h"
+#include "telecommand_exec/telecommand_args_helpers.h"
+#include "telecommand_exec/telecommand_types.h"
 #include "main.h"
 
 #include <stdio.h>

@@ -1,5 +1,5 @@
 
-#include "telecommands/telecommand_args_helpers.h"
+#include "telecommand_exec/telecommand_args_helpers.h"
 
 #include "telecommands/flash_telecommand_defs.h"
 #include "littlefs/flash_driver.h"

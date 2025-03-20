@@ -1,8 +1,8 @@
 
-#include "telecommands/telecommand_parser.h"
-#include "telecommands/telecommand_definitions.h"
-#include "telecommands/telecommand_executor.h"
-#include "telecommands/telecommand_types.h"
+#include "telecommand_exec/telecommand_parser.h"
+#include "telecommand_exec/telecommand_definitions.h"
+#include "telecommand_exec/telecommand_executor.h"
+#include "telecommand_exec/telecommand_types.h"
 #include "debug_tools/debug_uart.h"
 #include "timekeeping/timekeeping.h"
 #include "log/log.h"

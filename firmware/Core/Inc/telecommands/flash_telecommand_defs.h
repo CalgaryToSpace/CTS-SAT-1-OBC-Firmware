@@ -3,7 +3,7 @@
 #define INCLUDE_GUARD__FLASH_TELECOMMAND_DEFS_H__
 
 #include <stdint.h>
-#include "telecommands/telecommand_definitions.h"
+#include "telecommand_exec/telecommand_definitions.h"
 
 /*----------------------------- TELECOMMAND DEFINITIONS ----------------------------- */
 uint8_t TCMDEXEC_flash_activate_each_cs(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,

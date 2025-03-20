@@ -1,5 +1,5 @@
 #include "telecommands/uart_telecommand_defs.h"
-#include "telecommands/telecommand_args_helpers.h"
+#include "telecommand_exec/telecommand_args_helpers.h"
 
 #include "uart_handler/uart_handler.h"
 #include "mpi/mpi_command_handling.h"

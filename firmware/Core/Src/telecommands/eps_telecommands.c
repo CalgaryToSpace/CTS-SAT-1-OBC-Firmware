@@ -5,7 +5,7 @@
 #include "eps_drivers/eps_time.h"
 #include "eps_drivers/eps_calculations.h"
 #include "telecommands/eps_telecommands.h"
-#include "telecommands/telecommand_args_helpers.h"
+#include "telecommand_exec/telecommand_args_helpers.h"
 
 
 #include <stdio.h>

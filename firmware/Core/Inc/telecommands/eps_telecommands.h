@@ -2,7 +2,7 @@
 #define INCLUDE_GUARD__EPS_TELECOMMANDS_H__
 
 #include <stdint.h>
-#include "telecommands/telecommand_definitions.h"
+#include "telecommand_exec/telecommand_definitions.h"
 
 
 uint8_t TCMDEXEC_eps_watchdog(

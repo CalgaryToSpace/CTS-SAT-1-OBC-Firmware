@@ -1,6 +1,6 @@
 #include "unit_tests/unit_test_helpers.h"
-#include "telecommands/telecommand_parser.h"
-#include "telecommands/telecommand_args_helpers.h"
+#include "telecommand_exec/telecommand_parser.h"
+#include "telecommand_exec/telecommand_args_helpers.h"
 #include "transforms/number_comparisons.h"
 #include "string.h"
 #define HELPERS_TEST_EPSILON 1e-6

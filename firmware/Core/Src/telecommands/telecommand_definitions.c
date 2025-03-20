@@ -1,7 +1,7 @@
 
-#include "telecommands/telecommand_definitions.h"
+#include "telecommand_exec/telecommand_definitions.h"
 #include "telecommands/telecommand_adcs.h"
-#include "telecommands/telecommand_args_helpers.h"
+#include "telecommand_exec/telecommand_args_helpers.h"
 #include "transforms/arrays.h"
 #include "timekeeping/timekeeping.h"
 #include "debug_tools/debug_uart.h"
@@ -22,7 +22,7 @@
 #include "telecommands/uart_telecommand_defs.h"
 #include "telecommands/config_telecommand_defs.h"
 #include "telecommands/testing_telecommand_defs.h"
-#include "telecommands/telecommand_executor.h"
+#include "telecommand_exec/telecommand_executor.h"
 #include "telecommands/agenda_telecommands_defs.h"
 #include "telecommands/mpi_telecommand_defs.h"
 #include "telecommands/eps_telecommands.h"

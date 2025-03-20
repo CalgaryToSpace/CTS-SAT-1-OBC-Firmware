@@ -2,7 +2,7 @@
 #define INCLUDE_GUARD__I2C_TELECOMMAND_DEFS_H__
 
 #include <stdint.h>
-#include "telecommands/telecommand_definitions.h"
+#include "telecommand_exec/telecommand_definitions.h"
 
 
 

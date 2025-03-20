@@ -1,4 +1,4 @@
-#include "telecommands/telecommand_args_helpers.h"
+#include "telecommand_exec/telecommand_args_helpers.h"
 #include "telecommands/config_telecommand_defs.h"
 #include "config/configuration.h"
 #include "debug_tools/debug_uart.h"

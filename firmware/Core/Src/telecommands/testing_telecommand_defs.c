@@ -1,6 +1,6 @@
 
-#include "telecommands/telecommand_definitions.h"
-#include "telecommands/telecommand_args_helpers.h"
+#include "telecommand_exec/telecommand_definitions.h"
+#include "telecommand_exec/telecommand_args_helpers.h"
 
 #include "telecommands/testing_telecommand_defs.h"
 #include "debug_tools/debug_uart.h"

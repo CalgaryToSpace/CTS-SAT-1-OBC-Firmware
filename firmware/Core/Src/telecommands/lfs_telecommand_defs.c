@@ -8,8 +8,8 @@
 #include "littlefs/littlefs_benchmark.h"
 #include "log/log.h"
 #include "telecommands/lfs_telecommand_defs.h"
-#include "telecommands/telecommand_definitions.h"
-#include "telecommands/telecommand_args_helpers.h"
+#include "telecommand_exec/telecommand_definitions.h"
+#include "telecommand_exec/telecommand_args_helpers.h"
 
 uint8_t TCMDEXEC_fs_format_storage(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
