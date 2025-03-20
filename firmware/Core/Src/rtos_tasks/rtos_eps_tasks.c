@@ -1,6 +1,9 @@
 
 #include "eps_drivers/eps_commands.h"
 #include "eps_drivers/eps_time.h"
+#include "eps_drivers/eps_calculations.h"
+#include "eps_drivers/eps_channel_control.h"
+#include "littlefs/littlefs_driver.h"
 #include "rtos_tasks/rtos_eps_tasks.h"
 #include "rtos_tasks/rtos_task_helpers.h"
 #include "log/log.h"
@@ -139,4 +142,42 @@ void TASK_time_sync(void *argument) {
             );
         }
     } // End of task while loop
+}
+
+
+void TASK_monitor_battery(void* argument) {
+    TASK_HELP_start_of_task();
+
+    while (1) {
+        osDelay(30000); // check every 30 seconds
+        EPS_struct_pbu_housekeeping_data_eng_t data;
+        const uint8_t result = EPS_CMD_get_pbu_housekeeping_data_eng(&data);
+
+        if (result != 0) 
+        {
+            continue;
+        }
+
+        const float battery_percent = EPS_convert_battery_voltage_to_percent(data.battery_pack_info_each_pack[0]);
+
+        if (battery_percent < 10.0F)
+        {
+            // not checking results below because we will not do anything with the result 
+
+            EPS_set_channel_enabled(EPS_CHANNEL_12V_BOOM, 0);
+            EPS_set_channel_enabled(EPS_CHANNEL_12V_MPI, 0);
+            EPS_set_channel_enabled(EPS_CHANNEL_3V3_CAMERA, 0);
+
+            // this is connected on the same channel as ADCS and GPS
+            EPS_set_channel_enabled(EPS_CHANNEL_5V_MPI, 0); 
+
+            LFS_unmount();
+
+            // TODO: Change beacon message to state that system is in low power mode
+
+        }
+        
+
+    }
+
 }

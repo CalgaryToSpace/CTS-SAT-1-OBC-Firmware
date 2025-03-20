@@ -129,6 +129,13 @@ const osThreadAttr_t TASK_monitor_freertos_memory_Attributes = {
   .priority = (osPriority_t) osPriorityBelowNormal6,
 };
 
+osThreadId_t TASK_monitor_battery_Handle;
+const osThreadAttr_t TASK_monitor_battery_Attributes = {
+  .name = "TASK_monitor_battery",
+  .stack_size = 512,
+  .priority = (osPriority_t) osPriorityAboveNormal7 // 
+};
+
 FREERTOS_task_info_struct_t FREERTOS_task_handles_array [] = {
   {
     .task_handle = &defaultTaskHandle,
@@ -165,6 +172,11 @@ FREERTOS_task_info_struct_t FREERTOS_task_handles_array [] = {
     .task_attribute = &TASK_monitor_freertos_memory_Attributes,
     .lowest_stack_bytes_remaining = UINT32_MAX
   },
+  {
+    .task_handle = &TASK_monitor_battery_Handle,
+    .task_attribute = &TASK_monitor_battery_Attributes,
+    .lowest_stack_bytes_remaining = UINT32_MAX
+  }
 };
 
 const uint32_t FREERTOS_task_handles_array_size = sizeof(FREERTOS_task_handles_array) / sizeof(FREERTOS_task_info_struct_t);
@@ -295,6 +307,8 @@ int main(void)
   TASK_service_eps_watchdog_Handle = osThreadNew(TASK_service_eps_watchdog, NULL, &TASK_service_eps_watchdog_Attributes);
 
   TASK_time_sync_Handle = osThreadNew(TASK_time_sync, NULL, &TASK_time_sync_Attributes);
+  
+  TASK_monitor_battery_Handle = osThreadNew(TASK_monitor_battery, NULL, &TASK_monitor_battery_Attributes); 
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */

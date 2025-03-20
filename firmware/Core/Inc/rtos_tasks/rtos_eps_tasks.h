@@ -5,4 +5,5 @@
 
 void TASK_service_eps_watchdog(void *argument);
 void TASK_time_sync(void *argument);
+void TASK_monitor_battery(void* argument);
 #endif // INCLUDE_GUARD_RTOS_EPS_TASKS_H__`
