@@ -161,7 +161,7 @@ uint8_t TCMDEXEC_mpi_demo_tx_to_mpi(
     for (uint16_t i = 0; i < transmit_count; i++) {
         // Transmit to the MPI.
         const HAL_StatusTypeDef result = HAL_UART_Transmit(
-            UART_mpi_port_handle, (uint8_t*)transmit_message, strlen(transmit_message), HAL_MAX_DELAY
+            UART_mpi_port_handle, (uint8_t*)transmit_message, strlen(transmit_message), 1000
         );
         if (result != HAL_OK) {
             snprintf(
