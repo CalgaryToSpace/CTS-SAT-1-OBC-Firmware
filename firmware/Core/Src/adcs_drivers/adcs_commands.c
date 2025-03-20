@@ -21,8 +21,6 @@
 
 #include "stm32l4xx_hal.h"
 
-extern I2C_HandleTypeDef hi2c1; // allows not needing the parameters
-
 /// @brief Initialize the ADCS CRC, timestamp, and file system directory. 
 /// @return 0 when successful
 uint8_t ADCS_initialize() {

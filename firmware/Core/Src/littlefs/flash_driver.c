@@ -809,8 +809,7 @@ FLASH_error_enum_t FLASH_reset(SPI_HandleTypeDef *hspi, uint8_t chip_number)
 /// @brief Checks if the FLASH chip is reachable by checking it's ID
 /// @param hspi - Pointer to the SPI HAL handle
 /// @param chip_number - The chip select number to activate
-/// @return FLASH_ERR_OK on success, < 0 on failure
-
+/// @retval FLASH_ERR_OK (0) on success, <0 on failure (from the FLASH_error_enum_t enum)
 FLASH_error_enum_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_number)
 {
     // TODO: confirm if this works with the CS2 logical chip on each physical FLASH chip;
