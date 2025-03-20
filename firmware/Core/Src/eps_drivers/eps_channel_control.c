@@ -95,7 +95,7 @@ char* EPS_channel_to_str(EPS_CHANNEL_enum_t channel) {
 /// @brief Sets the enabled state of an EPS channel (on or off).
 /// @param channel The channel to enable or disable.
 /// @param enabled 0 to disable, >0 to enable.
-/// @return 0 on success, >0 on failure. Returns 99 if channel is unknown. Propogates the
+/// @return 0 on success, >0 on failure. Returns 99 if channel is unknown. Propagates the
 ///     return value from EPS_CMD_output_bus_channel_on/off().
 uint8_t EPS_set_channel_enabled(EPS_CHANNEL_enum_t channel, uint8_t enabled) {
     if (channel == EPS_CHANNEL_UNKNOWN) {

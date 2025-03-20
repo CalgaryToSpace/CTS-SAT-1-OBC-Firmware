@@ -12,13 +12,26 @@
 #include "adcs_drivers/adcs_commands.h"
 #include "adcs_drivers/adcs_internal_drivers.h"
 #include "timekeeping/timekeeping.h"
+#include "littlefs/littlefs_helper.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <math.h>
 
 #include "stm32l4xx_hal.h"
 
 extern I2C_HandleTypeDef hi2c1; // allows not needing the parameters
+
+/// @brief Initialise the ADCS CRC, timestamp, and file system directory. 
+/// @return 0 when successful
+uint8_t ADCS_initialise() {
+    
+    ADCS_synchronise_unix_time();
+    ADCS_initialise_crc8_checksum();
+    LFS_make_directory("ADCS");
+
+    return 0;
+}
 
 /// @brief Instructs the ADCS to determine whether the last command succeeded. (Doesn't work for telemetry requests, by design.)
 /// @param[out] ack Structure containing the formatted information about the last command sent.
@@ -1013,6 +1026,82 @@ uint8_t ADCS_get_measurements(ADCS_measurements_struct_t *output_struct) {
     return tlm_status;
 }
 
+/// @brief Instruct the ADCS to execute the ADCS_reset_file_list_read_pointer command.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_reset_file_list_read_pointer() {
+    uint8_t data_send[1]; // 0-byte data (from manual) input into wrapper, but one-byte here to avoid warnings
+    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_RESET_FILELIST_READ_PTR, data_send, 0, ADCS_INCLUDE_CHECKSUM);
+    return cmd_status;
+}
+
+/// @brief Instruct the ADCS to execute the ADCS_advance_file_list_read_pointer command.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_advance_file_list_read_pointer() {
+    uint8_t data_send[1]; // 0-byte data (from manual) input into wrapper, but one-byte here to avoid warnings
+    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_ADVANCE_FILELIST_READ_PTR, data_send, 0, ADCS_INCLUDE_CHECKSUM);
+    return cmd_status;
+}
+
+/// @brief Request file information telemetry from the ADCS.
+/// @param[out] output_struct Pointer to the struct to store parsed telemetry data.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_get_file_info_telemetry(ADCS_file_info_struct_t *output_struct) {
+    uint8_t data_length = 12;
+    uint8_t data_received[data_length]; // Temporary buffer for raw telemetry data.
+
+    // Request telemetry data
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_FILE_INFO, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
+
+    // Parse the raw telemetry data into the struct
+    ADCS_pack_to_file_info_struct(data_received, output_struct);
+
+    return tlm_status; 
+}
+
+/// @brief Instruct the ADCS to load a file download block into the download buffer.
+/// @param[in] file_type File type to load (e.g., telemetry log, JPG, etc.).
+/// @param[in] counter Counter value for file block.
+/// @param[in] offset Offset in the file from which to start downloading.
+/// @param[in] block_length Number of packets to send.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_load_file_download_block(ADCS_file_type_enum_t file_type, uint8_t counter, uint32_t offset, uint16_t block_length) {
+    // Command data array (8 bytes as per Table 17)
+    uint8_t data_send[8];
+
+    // Pack File Type (8 bits)
+    data_send[0] = (uint8_t)file_type;
+
+    // Pack Counter (8 bits)
+    data_send[1] = counter;
+
+    // Pack Offset (32 bits, reverse byte order)
+    ADCS_convert_uint32_to_reversed_uint8_array_members(data_send, offset, 2);
+
+    // Pack Block Length (16 bits, reverse byte order)
+    ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, block_length, 6);
+
+    // Send the command
+    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_LOAD_FILE_DOWNLOAD_BLOCK, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+
+    return cmd_status;
+}
+
+/// @brief Request Download Block Ready telemetry from the ADCS.
+/// @param[out] output_struct Pointer to the struct to populate with telemetry data.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_get_download_block_ready_telemetry(ADCS_download_block_ready_struct_t *output_struct) {
+
+    uint8_t data_length = 5;
+    uint8_t data_received[data_length]; // Buffer to store telemetry data
+
+    // Request telemetry data from the ADCS
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_DOWNLOAD_BLOCK_READY, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
+
+    // Pack telemetry data into the struct
+    ADCS_pack_to_download_block_ready_struct(data_received, output_struct);
+    
+    return tlm_status;
+}
 /// @brief Instruct the ADCS to execute the ADCS_execution_state command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
@@ -1027,6 +1116,106 @@ uint8_t ADCS_get_acp_execution_state(ADCS_acp_execution_state_struct_t *output_s
     return tlm_status;
 }
 
+/// @brief Send the Initiate Download Burst command to the ADCS.
+/// @param[in] message_length Length of the message.
+/// @param[in] ignore_hole_map Boolean flag to ignore the hole map.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_initiate_download_burst(uint8_t message_length, bool ignore_hole_map) {
+    uint8_t data_send[2]; // Command requires 2 bytes
+
+    // Populate the command buffer
+    data_send[0] = message_length;                     // First byte: Message Length
+    data_send[1] = (ignore_hole_map ? 1 : 0);          // Second byte: Ignore Hole Map as a single bit
+
+    // Send the command via I2C and check the result
+    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_INIT_DOWNLOAD_BURST, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+
+    return cmd_status; // Return the result
+}
+
+/// @brief Send a File Upload Hole Map command to the ADCS.
+/// @param[in] hole_map Pointer to a 16-byte array representing the hole map.
+/// @param[in] which_map Number between 1 and 8 to choose the hole map to upload.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_set_hole_map(uint8_t *hole_map, uint8_t which_map) {
+
+    if (which_map < 1 || which_map > 8) {
+        // which_map is number 1-8, added to ID 119 gives IDs 120 to 127 for the hole maps
+        return 30;
+    }
+
+    uint8_t cmd_status = ADCS_i2c_send_command_and_check((ADCS_COMMAND_INIT_DOWNLOAD_BURST + which_map), hole_map, 16, ADCS_INCLUDE_CHECKSUM);
+                                                            
+    return cmd_status; // Return the result
+}
+
+/// @brief Retrieve a File Upload Hole Map telemetry from the ADCS.
+/// @param[out] hole_map_struct Pointer to an array of uint8 to store the retrieved hole map.
+/// @param[in] which_map Number between 1 and 8 to choose the hole map to upload.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_get_hole_map(uint8_t *hole_map_struct, uint8_t which_map) {
+    
+    if (which_map < 1 || which_map > 8) {
+        // which_map is number 1-8, added to ID 246 gives IDs 247 to 254 for the hole maps
+        return 30;
+    }
+
+    // Request the telemetry data
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check((ADCS_TELEMETRY_BLOCK_CHECKSUM + which_map), &hole_map_struct[0], 16, ADCS_INCLUDE_CHECKSUM);
+
+    return tlm_status; // Return the result
+}
+
+/// @brief Instruct the ADCS to format the SD card.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_format_sd() {
+    // returns telecommand error flag
+    uint8_t data_send[1] = {ADCS_MAGIC_NUMBER};
+    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_FORMAT_SD, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+    return cmd_status;
+}
+
+/// @brief Send the Erase File command to the ADCS.
+/// @param[in] erase_file_command Pointer to a struct containing the file type, file counter, and erase all flag.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_erase_file(ADCS_file_type_enum_t filetype, uint8_t filecounter, bool erase_all) {
+
+    uint8_t data_send[3] = {(uint8_t)filetype, filecounter, (uint8_t)erase_all};
+
+    // Send the command with the packed parameters
+    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_ERASE_FILE, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+
+    return cmd_status; // Return the result
+}
+
+/// @brief Retrieve the SD card format/erase progress telemetry from the ADCS.
+/// @param[out] output_struct Pointer to the struct where the telemetry data will be stored.
+/// @return 0 if successful, non-zero if an error occurred in transmission or processing.
+uint8_t ADCS_get_sd_card_format_erase_progress(ADCS_sd_card_format_erase_progress_struct_t *output_struct) {
+
+    uint8_t data_received[1]; // Array to hold the telemetry data
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_FORMAT_SD, data_received, sizeof(data_received), ADCS_INCLUDE_CHECKSUM);
+
+    // Parse the received data
+    ADCS_pack_to_sd_card_format_erase_progress_struct(data_received, output_struct);
+
+    return tlm_status; // Success
+}
+
+/// @brief Retrieve the File Download Buffer telemetry from the ADCS.
+/// @param[out] output_struct Pointer to the struct where the telemetry data will be stored.
+/// @return 0 if successful, non-zero if an error occurred in transmission or processing.
+uint8_t ADCS_get_file_download_buffer(ADCS_file_download_buffer_struct_t *output_struct) {
+
+    uint8_t data_received[22]; // Buffer to hold the received telemetry data
+    
+    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_FILE_DOWNLOAD_BUFFER, data_received, sizeof(data_received), ADCS_INCLUDE_CHECKSUM);
+
+    // Parse the received data
+    ADCS_pack_to_file_download_buffer_struct(data_received, output_struct);
+
+    return tlm_status; // Success
+}
 /// @brief Instruct the ADCS to execute the ADCS_get_current_state_1 command. (There's an ADCS_current_state_2 command which is presently not implemented)
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
@@ -1103,7 +1292,8 @@ uint8_t ADCS_get_current_unix_time(uint64_t* epoch_time_ms) {
 /// @param[in] which_sd Which SD card to log to; 0 for primary, 1 for secondary 
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_set_sd_log_config(uint8_t which_log, const uint8_t **log_array, uint8_t log_array_size, uint16_t log_period, ADCS_sd_log_destination_enum_t which_sd) {
-    uint8_t data_send[13];
+    
+    uint8_t data_send[13] = {0};
     ADCS_combine_sd_log_bitmasks(log_array, log_array_size, data_send); // saves to the first 10 bytes of data_send
     ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, log_period, 10);
     data_send[12] = which_sd;
@@ -1149,4 +1339,223 @@ uint8_t ADCS_get_sd_log_config(uint8_t which_log, ADCS_sd_log_config_struct* con
     ADCS_pack_to_sd_log_config_struct(data_received, which_log, config);
 
     return tlm_status;
+}
+
+uint8_t adcs_download_buffer[20480]; // static buffer to hold the 20 kB from the download
+
+/// @brief Save one block of the ADCS SD card file pointed to by the file pointer into the ADCS download buffer.
+/// @param[in] file_info A struct containing information about the currently-pointed-to file
+/// @param[in] current_block The block to load into the download buffer
+/// @param[in] filename Pointer to string containing filename to save as
+/// @param[in] filename_length Length of filename
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+/// Specifically: bytes 0-2 are the ADCS error, bytes 3-10 are which command failed, bytes 11-16 are the index of the failure if applicable
+int16_t ADCS_load_sd_file_block_to_download_buffer(ADCS_file_info_struct_t file_info, uint8_t current_block, char* filename_string, uint8_t filename_length) {
+    ADCS_file_download_buffer_struct_t download_packet;
+    uint16_t hole_map[8];
+    int16_t status;
+
+    status = ADCS_load_file_download_block(file_info.file_type, current_block, 0, 1024);
+    if (status != 0) {return status | (1 << 3);}
+        // TODO: I'm not sure what, exactly, the 'offset' parameter in this function is for. I think the counter is the block_counter, but also not sure.
+
+    // Wait until the download block is ready
+    ADCS_download_block_ready_struct_t ready_struct;
+    do {
+        status = ADCS_get_download_block_ready_telemetry(&ready_struct);
+        if (status != 0) {return status | (1 << 4);}
+    } while (ready_struct.ready != true);
+
+    // Initiate download burst, ignoring the hole map
+    status = ADCS_initiate_download_burst(20, true);
+    if (status != 0) {return status | (1 << 5);}
+        // TODO: I suspect that the message_length parameter represents the number of bytes to load, but I'm not sure.
+
+    for (uint16_t i = 0; i < 1024; i++) {
+        // load 20 bytes at a time into the download buffer
+        status = ADCS_get_file_download_buffer(&(download_packet));
+        if (status != 0) {return status | (1 << 6);}
+
+        for (uint8_t j = 0; j < 20; j++) {
+            adcs_download_buffer[20 * download_packet.packet_counter + j] = download_packet.file_bytes[j];
+        }
+
+        // generate hole map to determine any missing packets
+        hole_map[download_packet.packet_counter / 128] = hole_map[download_packet.packet_counter / 128] | download_packet.packet_counter;
+
+    }
+    
+    /* HOLE MAP STUFF STARTS HERE */
+
+    uint16_t required_packets;
+    if (ceil(file_info.file_size / 20480.0) == (current_block + 1)) {
+        // if this is the final block, we may need to load fewer packets than the maximum
+        required_packets = (file_info.file_size - (20480 * current_block)) / 128;
+    } else {
+        required_packets = file_info.file_size / 128;
+    }
+    
+    uint16_t packets_received = 0;
+    
+    for (uint8_t i = 0; i < 8; i++) {
+        
+        // check if we've received all the packets
+        uint16_t temp_hole_map = hole_map[i];
+        
+        while (temp_hole_map) {
+            // count the number of ones in the uint16 (Kernighan algorithm)
+            temp_hole_map &= (temp_hole_map - 1);
+            packets_received++;
+        }
+        
+    }
+
+    uint8_t hole_map_attempts = 0;
+
+    while (required_packets != packets_received) { // TODO: this should work to keep filling the hole map, but test this
+
+        for (uint8_t i = 1; i <= 8; i++) {
+            // now send the hole map to the ADCS
+            uint8_t hole_map_slice[16];
+            ADCS_convert_uint16_to_reversed_uint8_array_members(&hole_map_slice[0], hole_map[i], 0);
+
+            status = ADCS_set_hole_map(hole_map_slice, i);
+            if (status != 0) {return status | (1 << 7) | (i << 11);}
+        }
+        
+        // now, using the hole map as a guide, give us the missing packets
+        status = ADCS_initiate_download_burst(20, false);
+        if (status != 0) {return status | (1 << 8);}
+            // TODO: I suspect that the message_length parameter represents the number of bytes to load, but I'm not sure.
+
+        for (uint16_t i = 0; i < 1024; i++) {
+            // load 20 bytes at a time into the download buffer
+            status = ADCS_get_file_download_buffer(&(download_packet));
+            if (status != 0) {return status | (1 << 9);}
+
+            for (uint8_t j = 0; j < 20; j++) {
+                adcs_download_buffer[20 * download_packet.packet_counter + j] = download_packet.file_bytes[j];
+            }
+
+            // generate hole map to determine any missing packets
+            hole_map[download_packet.packet_counter / 128] = hole_map[download_packet.packet_counter / 128] | download_packet.packet_counter;
+
+        }
+
+        packets_received = 0;
+
+        for (uint8_t i = 0; i < 8; i++) {
+        
+            // check if we've received all the packets
+            uint16_t temp_hole_map = hole_map[i];
+            
+            while (temp_hole_map) {
+                // count the number of ones in the uint16 (Kernighan algorithm)
+                temp_hole_map &= (temp_hole_map - 1);
+                packets_received++;
+            }
+            
+        }
+
+        hole_map_attempts++;
+        if (hole_map_attempts == 255) {
+            return 7; // hole map timeout
+        }
+
+    }
+
+    /* HOLE MAP STUFF ENDS HERE */
+
+    // Append to the index file in the filesystem (append_file does both)
+    status = LFS_append_file(filename_string, &adcs_download_buffer[0], 20480); 
+    if (status != 0) {return status;}
+
+    return 0;
+
+}
+
+
+/// @brief Save a specified file from the ADCS SD card to the ADCS subfolder in LittleFS.
+/// @param[in] index_file_bool Whether this is the index file or not
+/// @param[in] file_index Index of the file in the SD card; only used if index_file_bool is false
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission, negative if an LFS or snprintf error code occurred. 
+/// Specifically, assuming no HAL or LFS error: bytes 0-2 are the ADCS error, bytes 3-10 are which command failed, bytes 11-16 are the index of the failure if applicable
+int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
+    int16_t status;
+    ADCS_file_info_struct_t file_info;
+    int16_t snprintf_ret;
+
+    char filename_string[17];
+
+    if (!index_file_bool) {
+        // get the data about the file to download
+
+        /*
+        The file is uniquely identified by the File Type and Counter parameters. The Offset and Block
+        Length parameters indicate which part of the file to buffer in memory. The maximum Block Length is 20 kB. 
+        [20480 bytes (20 bytes * 1024 packets). Some files may require multiple blocks, such as image files]
+        */
+            
+        status = ADCS_reset_file_list_read_pointer();
+        if (status != 0 && status != 165) {; return 1;}
+        // For some reason, the engineering model ADCS always returns status 165 for this command, regardless of what the status *should* be
+        // Effectively, this means we cannot effectively check the status of this command, so we must use a workaround
+        // TODO: write a workaround
+            // Possible workaround pending CubeSpace reply
+
+        for (uint16_t i = 0; i < file_index; i++) {
+            status = ADCS_advance_file_list_read_pointer();
+            if (status != 0) {; return 1;}
+        }
+        
+        status = ADCS_get_file_info_telemetry(&file_info);
+        if (status != 0) {; return 1;}
+
+        // name file based on type and timestamp
+        switch(file_info.file_type) {
+
+            case ADCS_FILE_TYPE_TELEMETRY_LOG:
+                snprintf_ret = snprintf(filename_string, 17, "ADCS/log%d.TLM", file_index);
+                if (snprintf_ret != 0) {return snprintf_ret;};
+                break;
+            case ADCS_FILE_TYPE_JPG_IMAGE:
+                snprintf_ret = snprintf(filename_string, 17, "ADCS/img%d.jpg", file_index);
+                if (snprintf_ret != 0) {return snprintf_ret;};
+                break;    
+            case ADCS_FILE_TYPE_BMP_IMAGE:
+                snprintf_ret = snprintf(filename_string, 17, "ADCS/img%d.bmp", file_index);
+                if (snprintf_ret != 0) {return snprintf_ret;};
+                break;    
+            case ADCS_FILE_TYPE_INDEX:
+                snprintf_ret = snprintf(filename_string, 17, "ADCS/index_file");
+                if (snprintf_ret != 0) {return snprintf_ret;};
+                break;    
+            default:
+                return 1;
+        }
+
+    } else {
+        snprintf_ret = snprintf(filename_string, 16, "ADCS/index_file");
+        if (snprintf_ret != 0) {return snprintf_ret;};
+        file_info.file_size = 20479; // for the index file, we should only need a single block
+    }
+
+    LFS_delete_file(filename_string); // this will error if the file doesn't exist. That's OK.
+
+    uint8_t total_blocks = ceil(file_info.file_size / 20480.0);
+    uint8_t current_block = 0; 
+
+    while (current_block < total_blocks) {
+
+        status = ADCS_load_sd_file_block_to_download_buffer(file_info, 0, filename_string, 17); // load the block
+        if (status != 0) {return status;}
+                                            // TODO: just to be sure, we should test LFS_write_file when a file with the same name already exists
+
+        current_block++;
+    }
+
+    // TODO: test that CubeSupport can read the log files we download properly.
+            // There seems to be an issue with this... we may need to write a parser.
+
+    return 0;
 }
