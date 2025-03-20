@@ -162,8 +162,53 @@ Functions</h2></td></tr>
 <tr class="memitem:a56374402f5b6de9b5a1a6e5a4aa02446" id="r_a56374402f5b6de9b5a1a6e5a4aa02446"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a56374402f5b6de9b5a1a6e5a4aa02446">GEN_hex_str_to_byte_array</a> (const char *hex_str, uint8_t output_byte_array[], uint16_t output_byte_array_size, uint16_t *output_byte_array_len)</td></tr>
 <tr class="memdesc:a56374402f5b6de9b5a1a6e5a4aa02446"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a hex string to a byte array.  <br /></td></tr>
 <tr class="separator:a56374402f5b6de9b5a1a6e5a4aa02446"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e2e887258f9721b430eb81be2444357" id="r_a5e2e887258f9721b430eb81be2444357"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5e2e887258f9721b430eb81be2444357">GEN_byte_array_to_hex_str</a> (const uint8_t *byte_array, uint32_t byte_array_len, char *dest_str, uint32_t dest_str_size)</td></tr>
+<tr class="memdesc:a5e2e887258f9721b430eb81be2444357"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes a byte array to a hex string.  <br /></td></tr>
+<tr class="separator:a5e2e887258f9721b430eb81be2444357"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="a5e2e887258f9721b430eb81be2444357" name="a5e2e887258f9721b430eb81be2444357"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e2e887258f9721b430eb81be2444357">&#9670;&#160;</a></span>GEN_byte_array_to_hex_str()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GEN_byte_array_to_hex_str </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *</td>          <td class="paramname"><span class="paramname"><em>byte_array</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t</td>          <td class="paramname"><span class="paramname"><em>byte_array_len</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>dest_str</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t</td>          <td class="paramname"><span class="paramname"><em>dest_str_size</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Writes a byte array to a hex string. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">byte_array</td><td>Input byte array. </td></tr>
+    <tr><td class="paramname">byte_array_len</td><td>Length of input <code>byte_array</code>. </td></tr>
+    <tr><td class="paramname">dest_str</td><td>The destination to write a C-string to. </td></tr>
+    <tr><td class="paramname">dest_str_size</td><td>The size of the <code>dest_str</code> array, allocated before calling. Must be at least <code>byte_array_len * 3 + 1</code> to fit the entire string. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="af6f2987b63d15c0cc889ac8c2ea0d072" name="af6f2987b63d15c0cc889ac8c2ea0d072"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af6f2987b63d15c0cc889ac8c2ea0d072">&#9670;&#160;</a></span>GEN_get_index_of_substring_in_array()</h2>
 

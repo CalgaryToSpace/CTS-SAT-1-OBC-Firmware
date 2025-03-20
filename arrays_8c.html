@@ -96,18 +96,21 @@ $(function(){ initResizable(false); });
 <div class="textblock"><code>#include &quot;<a class="el" href="arrays_8h_source.html">transforms/arrays.h</a>&quot;</code><br />
 <code>#include &lt;ctype.h&gt;</code><br />
 <code>#include &lt;string.h&gt;</code><br />
+<code>#include &lt;stdio.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for arrays.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="arrays_8c__incl.png" border="0" usemap="#afirmware_2Core_2Src_2transforms_2arrays_8c" alt=""/></div>
 <map name="afirmware_2Core_2Src_2transforms_2arrays_8c" id="afirmware_2Core_2Src_2transforms_2arrays_8c">
-<area shape="rect" title=" " alt="" coords="97,5,288,46"/>
+<area shape="rect" title=" " alt="" coords="140,5,331,46"/>
 <area shape="rect" href="arrays_8h.html" title=" " alt="" coords="5,94,138,120"/>
-<area shape="poly" title=" " alt="" coords="164,49,104,88,101,83,161,44"/>
+<area shape="poly" title=" " alt="" coords="196,49,111,89,109,85,193,44"/>
 <area shape="rect" title=" " alt="" coords="162,94,224,120"/>
-<area shape="poly" title=" " alt="" coords="196,46,196,78,190,78,190,46"/>
+<area shape="poly" title=" " alt="" coords="227,48,209,81,204,79,223,45"/>
 <area shape="rect" title=" " alt="" coords="248,94,311,120"/>
-<area shape="poly" title=" " alt="" coords="216,44,257,81,253,85,212,48"/>
+<area shape="poly" title=" " alt="" coords="249,45,268,79,263,82,244,48"/>
+<area shape="rect" title=" " alt="" coords="335,94,394,120"/>
+<area shape="poly" title=" " alt="" coords="269,44,334,83,331,88,266,49"/>
 <area shape="rect" title=" " alt="" coords="40,168,103,193"/>
 <area shape="poly" title=" " alt="" coords="74,120,74,152,69,152,69,120"/>
 </map>
@@ -130,8 +133,53 @@ Functions</h2></td></tr>
 <tr class="memitem:a56374402f5b6de9b5a1a6e5a4aa02446" id="r_a56374402f5b6de9b5a1a6e5a4aa02446"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a56374402f5b6de9b5a1a6e5a4aa02446">GEN_hex_str_to_byte_array</a> (const char *hex_str, uint8_t output_byte_array[], uint16_t output_byte_array_size, uint16_t *output_byte_array_len)</td></tr>
 <tr class="memdesc:a56374402f5b6de9b5a1a6e5a4aa02446"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a hex string to a byte array.  <br /></td></tr>
 <tr class="separator:a56374402f5b6de9b5a1a6e5a4aa02446"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e2e887258f9721b430eb81be2444357" id="r_a5e2e887258f9721b430eb81be2444357"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5e2e887258f9721b430eb81be2444357">GEN_byte_array_to_hex_str</a> (const uint8_t *byte_array, uint32_t byte_array_len, char *dest_str, uint32_t dest_str_size)</td></tr>
+<tr class="memdesc:a5e2e887258f9721b430eb81be2444357"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes a byte array to a hex string.  <br /></td></tr>
+<tr class="separator:a5e2e887258f9721b430eb81be2444357"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="a5e2e887258f9721b430eb81be2444357" name="a5e2e887258f9721b430eb81be2444357"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e2e887258f9721b430eb81be2444357">&#9670;&#160;</a></span>GEN_byte_array_to_hex_str()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GEN_byte_array_to_hex_str </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *</td>          <td class="paramname"><span class="paramname"><em>byte_array</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t</td>          <td class="paramname"><span class="paramname"><em>byte_array_len</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>dest_str</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t</td>          <td class="paramname"><span class="paramname"><em>dest_str_size</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Writes a byte array to a hex string. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">byte_array</td><td>Input byte array. </td></tr>
+    <tr><td class="paramname">byte_array_len</td><td>Length of input <code>byte_array</code>. </td></tr>
+    <tr><td class="paramname">dest_str</td><td>The destination to write a C-string to. </td></tr>
+    <tr><td class="paramname">dest_str_size</td><td>The size of the <code>dest_str</code> array, allocated before calling. Must be at least <code>byte_array_len * 3 + 1</code> to fit the entire string. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="af6f2987b63d15c0cc889ac8c2ea0d072" name="af6f2987b63d15c0cc889ac8c2ea0d072"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af6f2987b63d15c0cc889ac8c2ea0d072">&#9670;&#160;</a></span>GEN_get_index_of_substring_in_array()</h2>
 
