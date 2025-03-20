@@ -219,7 +219,7 @@ uint8_t TCMDEXEC_fs_write_file_hex(const char *args_str, TCMD_TelecommandChannel
         snprintf(
             response_output_buf,
             response_output_buf_len,
-            "Error parsing hex data arg: Error %d", parse_hex_result);
+            "Error parsing hex data arg: Error %lld", parse_hex_result);
         return 3;
     }
 
@@ -231,7 +231,7 @@ uint8_t TCMDEXEC_fs_write_file_hex(const char *args_str, TCMD_TelecommandChannel
     }
     
     snprintf(response_output_buf, response_output_buf_len, 
-             "LittleFS Successfully Wrote %d bytes of hex data at offset %ld!", 
+             "LittleFS Successfully Wrote %d bytes of hex data at offset %d!", 
              binary_data_length, file_offset);
     return 0;
 }
