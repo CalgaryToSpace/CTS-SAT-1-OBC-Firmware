@@ -2,12 +2,15 @@
 
 #include "adcs_drivers/adcs_internal_drivers.h"
 #include "adcs_drivers/adcs_types.h"
+#include "adcs_drivers/adcs_commands.h"
 #include "gps/gps_internal_drivers.h"
 #include "eps_drivers/eps_commands.h"
 #include "eps_drivers/eps_channel_control.h"
 #include "eps_drivers/eps_calculations.h"
 #include "mpi/mpi_transceiver.h"
 #include "mpi/mpi_command_handling.h"
+#include "antenna_deploy_drivers/ant_commands.h"
+#include "antenna_deploy_drivers/ant_internal_drivers.h"
 
 #include "uart_handler/uart_handler.h"
 #include "obc_temperature_sensor/obc_temperature_sensor.h"
@@ -30,9 +33,24 @@ uint8_t CTS1_check_is_i2c_addr_alive(I2C_HandleTypeDef* hi2c, uint8_t i2c_addr) 
 }
 
 uint8_t CTS1_check_is_adcs_alive() {
-    // TODO: ADCS_identification command, I think
-    return 0;
-
+    ADCS_id_struct_t id_struct;
+    const uint8_t status = ADCS_get_identification(&id_struct);
+    if (status != 0) {
+        return 0;
+    }
+    if (id_struct.node_type != 10) {
+        return 0;
+    }
+    if (id_struct.interface_version != 7) {
+        return 0;
+    }
+    if (id_struct.major_firmware_version != 7) {
+        return 0;
+    }
+    if (id_struct.minor_firmware_version != 12) {
+        return 0;
+    }
+    return 1;
 }
 
 // uint8_t CTS1_check_is_ax100_alive(); // TODO: Is there a way to test this?
@@ -127,7 +145,13 @@ uint8_t CTS1_check_is_mpi_dumping() {
 }
 
 uint8_t CTS1_check_mpi_cmd_works() {
-    const uint8_t cmd[] = {0x54, 0x43, 0x99}; // "TC\x99" -> non-existent command // TODO: Use a demo command.
+    EPS_set_channel_enabled(EPS_CHANNEL_12V_MPI, 1);
+    EPS_set_channel_enabled(EPS_CHANNEL_5V_MPI, 1);
+    HAL_Delay(200); // Wait for the MPI to wake up, if needed.
+
+    // Send random command: "TC" + command_2 + scan_mode_off
+    // Not certain what it does, but we power the MPI off anyway, so it gets reset anyway.
+    const uint8_t cmd[] = {0x54, 0x43, 0x02, 0x00};
 
     uint8_t MPI_buffer[100];
     uint16_t MPI_buffer_len = 0;
@@ -135,6 +159,10 @@ uint8_t CTS1_check_mpi_cmd_works() {
         cmd, sizeof(cmd),
         MPI_buffer, sizeof(MPI_buffer), &MPI_buffer_len
     );
+
+    // Clean-up: Power off the MPI.
+    EPS_set_channel_enabled(EPS_CHANNEL_12V_MPI, 0);
+    EPS_set_channel_enabled(EPS_CHANNEL_5V_MPI, 0);
 
     if (result != 0) {
         return 0;
@@ -216,9 +244,22 @@ uint8_t CTS1_check_flash_alive(uint8_t flash_chip_number) {
     return (result == FLASH_ERROR_NONE);
 }
 
+uint8_t CTS1_check_antenna_alive(enum ANT_i2c_bus_mcu antenna_number) {
+    uint16_t raw_temperature = 0;
+    const uint8_t status = ANT_CMD_measure_temp(antenna_number, &raw_temperature);
+    
+    if (status != 0) {
+        return 0;
+    }
+
+    const int16_t temperature_cCelsius = ANT_convert_raw_temp_to_cCelsius(raw_temperature);
+    return (temperature_cCelsius >= -10000) && (temperature_cCelsius <= 10000);
+}
+
 
 /// @brief Perform the system self-check and store the results in the provided result struct.
 /// @param result Pointer to the struct to store the results of the self-check.
+/// @note Powers off all systems that are tested after testing them. Powers on several systems.
 void CTS1_run_system_self_check(CTS1_system_self_check_result_struct_t *result) {
     // First, clear the result struct to avoid UB if we miss any fields.
     memset(result, 0, sizeof(CTS1_system_self_check_result_struct_t));
@@ -256,6 +297,15 @@ void CTS1_run_system_self_check(CTS1_system_self_check_result_struct_t *result) 
 
     // Camera
     result->is_camera_responsive = CTS1_check_is_camera_responsive();
+
+    // Antenna
+    EPS_set_channel_enabled(EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY, 1);
+    HAL_Delay(100);
+    result->is_antenna_i2c_addr_a_alive = CTS1_check_is_i2c_addr_alive(&hi2c2, ANT_ADDR_A);
+    result->is_antenna_i2c_addr_b_alive = CTS1_check_is_i2c_addr_alive(&hi2c2, ANT_ADDR_B);
+    result->is_antenna_a_alive = CTS1_check_antenna_alive(ANT_I2C_BUS_A_MCU_A);
+    result->is_antenna_b_alive = CTS1_check_antenna_alive(ANT_I2C_BUS_B_MCU_B);
+    EPS_set_channel_enabled(EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY, 0);
 
     // Flash
     result->flash_0_alive = CTS1_check_flash_alive(0);
