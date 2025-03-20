@@ -16,7 +16,9 @@
 #include "obc_temperature_sensor/obc_temperature_sensor.h"
 #include "littlefs/flash_driver.h"
 
+#include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 
 // TODO: Create separate self-check for the boom.
 
@@ -265,11 +267,11 @@ void CTS1_run_system_self_check(CTS1_system_self_check_result_struct_t *result) 
     memset(result, 0, sizeof(CTS1_system_self_check_result_struct_t));
 
     // OBC_TEMP_SENSOR
-    result->obc_temperature_deg_cC = OBC_TEMP_SENSOR_get_temperature_cC();
+    const int32_t obc_temperature_deg_cC = OBC_TEMP_SENSOR_get_temperature_cC();
     result->obc_temperature_works = (
         // Success condition: Between -100 and 100 degrees celsius.
         // This condition captures the known value of 99999, which is the error code.
-        (result->obc_temperature_deg_cC >= -10000) && (result->obc_temperature_deg_cC <= 10000)
+        (obc_temperature_deg_cC >= -10000) && (obc_temperature_deg_cC <= 10000)
     );
 
     // ADCS
@@ -312,4 +314,72 @@ void CTS1_run_system_self_check(CTS1_system_self_check_result_struct_t *result) 
     result->flash_1_alive = CTS1_check_flash_alive(1);
     result->flash_2_alive = CTS1_check_flash_alive(2);
     result->flash_3_alive = CTS1_check_flash_alive(3);
+}
+
+
+void CTS1_self_check_struct_TO_json_list_of_failures(
+    CTS1_system_self_check_result_struct_t self_check_struct,
+    char dest_json_str[], uint16_t dest_json_str_size
+) {
+    const char *field_names[] = {
+        "obc_temperature_works",
+        "is_adcs_i2c_addr_alive",
+        "is_adcs_alive",
+        "is_ax100_i2c_addr_alive",
+        "is_gnss_responsive",
+        "is_eps_responsive",
+        "is_eps_thriving",
+        "is_mpi_dumping",
+        "mpi_cmd_works",
+        "is_camera_responsive",
+        "is_antenna_i2c_addr_a_alive",
+        "is_antenna_i2c_addr_b_alive",
+        "is_antenna_a_alive",
+        "is_antenna_b_alive",
+        "flash_0_alive",
+        "flash_1_alive",
+        "flash_2_alive",
+        "flash_3_alive"
+    };
+    
+    uint8_t *field_values[] = {
+        &self_check_struct.obc_temperature_works,
+        &self_check_struct.is_adcs_i2c_addr_alive,
+        &self_check_struct.is_adcs_alive,
+        &self_check_struct.is_ax100_i2c_addr_alive,
+        &self_check_struct.is_gnss_responsive,
+        &self_check_struct.is_eps_responsive,
+        &self_check_struct.is_eps_thriving,
+        &self_check_struct.is_mpi_dumping,
+        &self_check_struct.mpi_cmd_works,
+        &self_check_struct.is_camera_responsive,
+        &self_check_struct.is_antenna_i2c_addr_a_alive,
+        &self_check_struct.is_antenna_i2c_addr_b_alive,
+        &self_check_struct.is_antenna_a_alive,
+        &self_check_struct.is_antenna_b_alive,
+        &self_check_struct.flash_0_alive,
+        &self_check_struct.flash_1_alive,
+        &self_check_struct.flash_2_alive,
+        &self_check_struct.flash_3_alive
+    };
+    
+    char buffer[dest_json_str_size];
+    size_t len = 0;
+    len += snprintf(buffer + len, dest_json_str_size - len, "[");
+    
+    int first = 1;
+    for (size_t i = 0; i < sizeof(field_names) / sizeof(field_names[0]); i++) {
+        if (*field_values[i] == 0) {
+            if (!first) {
+                len += snprintf(buffer + len, dest_json_str_size - len, ",");
+            }
+            len += snprintf(buffer + len, dest_json_str_size - len, "\"%s\"", field_names[i]);
+            first = 0;
+        }
+    }
+    
+    len += snprintf(buffer + len, dest_json_str_size - len, "]");
+    
+    strncpy(dest_json_str, buffer, dest_json_str_size - 1);
+    dest_json_str[dest_json_str_size - 1] = '\0';
 }
