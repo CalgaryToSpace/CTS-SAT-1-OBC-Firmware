@@ -257,10 +257,7 @@ int CSP_i2c_driver_tx(void * driver_data, csp_i2c_frame_t * frame) {
     // );
 
     // TODO: Hex print the driver_data
-
-    // TODO: Add an HAL_I2C call in here.
     
-    const size_t CSP_FRAME_HEADER_SIZE = sizeof(csp_i2c_frame_t);
     HAL_StatusTypeDef status = HAL_I2C_Master_Transmit(
         &hi2c1, 
         AX100_I2C_ADDR, 
@@ -274,6 +271,8 @@ int CSP_i2c_driver_tx(void * driver_data, csp_i2c_frame_t * frame) {
         );
         return CSP_ERR_TX;
     }
+
+    // const size_t CSP_FRAME_HEADER_SIZE = sizeof(csp_i2c_frame_t);
     // HAL_StatusTypeDef tx_status = HAL_I2C_Mem_Write(
         // &hi2c1, AX100_I2C_ADDR, 0x00, 1, (uint8_t*)(&frame), CSP_FRAME_HEADER_SIZE + frame->len, timeout_mss);
     // uint8_t buffer[30];
