@@ -371,7 +371,10 @@ void CTS1_run_system_self_check(CTS1_system_self_check_result_struct_t *result) 
     );
 }
 
-
+/// @brief Convert the self-check struct to a JSON string that lists the failures.
+/// @param self_check_struct Self-check struct to convert to JSON.
+/// @param dest_json_str Destination string to write the JSON to.
+/// @param dest_json_str_size Size of the destination string (max length to write).
 void CTS1_self_check_struct_TO_json_list_of_failures(
     CTS1_system_self_check_result_struct_t self_check_struct,
     char dest_json_str[], uint16_t dest_json_str_size
@@ -418,23 +421,29 @@ void CTS1_self_check_struct_TO_json_list_of_failures(
         &self_check_struct.flash_3_alive
     };
     
-    char buffer[dest_json_str_size];
     size_t len = 0;
-    len += snprintf(buffer + len, dest_json_str_size - len, "{\"fail\":[");
-    
-    int first = 1;
+    len += snprintf(dest_json_str + len, dest_json_str_size - len, "{\"fail\":[");
+
+    uint8_t is_first = 1;
+    uint8_t fail_count = 0;
+    uint8_t pass_count = 0;
+
     for (size_t i = 0; i < sizeof(field_names) / sizeof(field_names[0]); i++) {
         if (*field_values[i] == 0) {
-            if (!first) {
-                len += snprintf(buffer + len, dest_json_str_size - len, ",");
+            if (!is_first) {
+                len += snprintf(dest_json_str + len, dest_json_str_size - len, ",");
             }
-            len += snprintf(buffer + len, dest_json_str_size - len, "\"%s\"", field_names[i]);
-            first = 0;
+            len += snprintf(dest_json_str + len, dest_json_str_size - len, "\"%s\"", field_names[i]);
+            is_first = 0;
+            fail_count++;
+        } else {
+            pass_count++;
         }
     }
-    
-    len += snprintf(buffer + len, dest_json_str_size - len, "]}");
-    
-    strncpy(dest_json_str, buffer, dest_json_str_size - 1);
+
+    len += snprintf(dest_json_str + len, dest_json_str_size - len, "],");
+    len += snprintf(dest_json_str + len, dest_json_str_size - len, "\"fail_count\":%d,", fail_count);
+    len += snprintf(dest_json_str + len, dest_json_str_size - len, "\"pass_count\":%d}", pass_count);
+
     dest_json_str[dest_json_str_size - 1] = '\0';
 }
