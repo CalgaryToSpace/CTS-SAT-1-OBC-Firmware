@@ -231,7 +231,7 @@ uint8_t TCMDEXEC_fs_write_file_hex(const char *args_str, TCMD_TelecommandChannel
     }
     
     snprintf(response_output_buf, response_output_buf_len, 
-             "LittleFS Successfully Wrote %d bytes of hex data at offset %lu!", 
+             "LittleFS Successfully Wrote %d bytes of hex data at offset %ld!", 
              binary_data_length, file_offset);
     return 0;
 }
