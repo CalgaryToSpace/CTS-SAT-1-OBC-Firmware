@@ -5,7 +5,6 @@
 
 typedef struct {
     uint8_t obc_temperature_works;
-    int32_t obc_temperature_deg_cC;
     uint8_t is_adcs_i2c_addr_alive;
     uint8_t is_adcs_alive;
     uint8_t is_ax100_i2c_addr_alive;
@@ -32,5 +31,9 @@ typedef struct {
 
 void CTS1_run_system_self_check(CTS1_system_self_check_result_struct_t *result);
 
+void CTS1_self_check_struct_TO_json_list_of_failures(
+    CTS1_system_self_check_result_struct_t self_check_struct,
+    char dest_json_str[], uint16_t dest_json_str_size
+);
 
 #endif // INCLUDE_GUARD__COMPLETE_SELF_CHECK_H
