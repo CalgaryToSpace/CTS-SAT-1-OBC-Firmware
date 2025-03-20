@@ -15,6 +15,7 @@
 #include "uart_handler/uart_handler.h"
 #include "obc_temperature_sensor/obc_temperature_sensor.h"
 #include "littlefs/flash_driver.h"
+#include "log/log.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -24,8 +25,8 @@
 
 
 uint8_t CTS1_check_is_i2c_addr_alive(I2C_HandleTypeDef* hi2c, uint8_t i2c_addr) {
-    const uint8_t I2C_scan_number_of_trials = 3;
-    const uint32_t I2C_scan_timeout_ms = 50;
+    const uint8_t I2C_scan_number_of_trials = 2;
+    const uint32_t I2C_scan_timeout_ms = 40;
 
     const HAL_StatusTypeDef i2c_device_status = HAL_I2C_IsDeviceReady(
         hi2c, (i2c_addr<<1), I2C_scan_number_of_trials, I2C_scan_timeout_ms
@@ -266,6 +267,18 @@ void CTS1_run_system_self_check(CTS1_system_self_check_result_struct_t *result) 
     // First, clear the result struct to avoid UB if we miss any fields.
     memset(result, 0, sizeof(CTS1_system_self_check_result_struct_t));
 
+    // ADCS
+    result->is_adcs_i2c_addr_alive = CTS1_check_is_i2c_addr_alive(
+        ADCS_i2c_HANDLE, ADCS_i2c_ADDRESS
+    );
+    result->is_adcs_alive = CTS1_check_is_adcs_alive();
+    LOG_message(
+        LOG_SYSTEM_OBC, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+        "is_adcs_i2c_addr_alive: %d, is_adcs_alive: %d",
+        result->is_adcs_i2c_addr_alive,
+        result->is_adcs_alive
+    );
+
     // OBC_TEMP_SENSOR
     const int32_t obc_temperature_deg_cC = OBC_TEMP_SENSOR_get_temperature_cC();
     result->obc_temperature_works = (
@@ -273,32 +286,58 @@ void CTS1_run_system_self_check(CTS1_system_self_check_result_struct_t *result) 
         // This condition captures the known value of 99999, which is the error code.
         (obc_temperature_deg_cC >= -10000) && (obc_temperature_deg_cC <= 10000)
     );
-
-    // ADCS
-    result->is_adcs_i2c_addr_alive = CTS1_check_is_i2c_addr_alive(
-        ADCS_i2c_HANDLE, ADCS_i2c_ADDRESS
+    LOG_message(
+        LOG_SYSTEM_OBC, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+        "obc_temperature_works: %d",
+        result->obc_temperature_works
     );
-    result->is_adcs_alive = CTS1_check_is_adcs_alive();
 
     // AX100
     result->is_ax100_i2c_addr_alive = CTS1_check_is_i2c_addr_alive(
         ADCS_i2c_HANDLE, // Uses the same I2C port.
         0x05 // TODO: Set to the #define somewhere.
     );
+    LOG_message(
+        LOG_SYSTEM_OBC, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+        "is_ax100_i2c_addr_alive: %d",
+        result->is_ax100_i2c_addr_alive
+    );
 
     // GNSS
     result->is_gnss_responsive = CTS1_check_is_gnss_responsive();
+    LOG_message(
+        LOG_SYSTEM_OBC, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+        "is_gnss_responsive: %d",
+        result->is_gnss_responsive
+    );
 
     // EPS
     result->is_eps_responsive = CTS1_check_is_eps_responsive();
     result->is_eps_thriving = CTS1_check_is_eps_thriving();
+    LOG_message(
+        LOG_SYSTEM_OBC, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+        "is_eps_responsive: %d, is_eps_thriving: %d",
+        result->is_eps_responsive,
+        result->is_eps_thriving
+    );
 
     // MPI
     result->is_mpi_dumping = CTS1_check_is_mpi_dumping();
     result->mpi_cmd_works = CTS1_check_mpi_cmd_works();
+    LOG_message(
+        LOG_SYSTEM_OBC, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+        "is_mpi_dumping: %d, mpi_cmd_works: %d",
+        result->is_mpi_dumping,
+        result->mpi_cmd_works
+    );
 
     // Camera
     result->is_camera_responsive = CTS1_check_is_camera_responsive();
+    LOG_message(
+        LOG_SYSTEM_OBC, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+        "is_camera_responsive: %d",
+        result->is_camera_responsive
+    );
 
     // Antenna
     EPS_set_channel_enabled(EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY, 1);
@@ -308,12 +347,28 @@ void CTS1_run_system_self_check(CTS1_system_self_check_result_struct_t *result) 
     result->is_antenna_a_alive = CTS1_check_antenna_alive(ANT_I2C_BUS_A_MCU_A);
     result->is_antenna_b_alive = CTS1_check_antenna_alive(ANT_I2C_BUS_B_MCU_B);
     EPS_set_channel_enabled(EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY, 0);
+    LOG_message(
+        LOG_SYSTEM_OBC, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+        "is_antenna_i2c_addr_a_alive: %d, is_antenna_i2c_addr_b_alive: %d, is_antenna_a_alive: %d, is_antenna_b_alive: %d",
+        result->is_antenna_i2c_addr_a_alive,
+        result->is_antenna_i2c_addr_b_alive,
+        result->is_antenna_a_alive,
+        result->is_antenna_b_alive
+    );
 
     // Flash
     result->flash_0_alive = CTS1_check_flash_alive(0);
     result->flash_1_alive = CTS1_check_flash_alive(1);
     result->flash_2_alive = CTS1_check_flash_alive(2);
     result->flash_3_alive = CTS1_check_flash_alive(3);
+    LOG_message(
+        LOG_SYSTEM_OBC, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+        "flash_alive: [%d,%d,%d,%d]",
+        result->flash_0_alive,
+        result->flash_1_alive,
+        result->flash_2_alive,
+        result->flash_3_alive
+    );
 }
 
 
@@ -322,18 +377,18 @@ void CTS1_self_check_struct_TO_json_list_of_failures(
     char dest_json_str[], uint16_t dest_json_str_size
 ) {
     const char *field_names[] = {
-        "obc_temperature_works",
-        "is_adcs_i2c_addr_alive",
+        "obc_temperature",
+        "is_adcs_i2c_addr",
         "is_adcs_alive",
-        "is_ax100_i2c_addr_alive",
+        "is_ax100_i2c_addr",
         "is_gnss_responsive",
         "is_eps_responsive",
         "is_eps_thriving",
-        "is_mpi_dumping",
-        "mpi_cmd_works",
+        "is_mpi_dumping_science",
+        "mpi_cmd",
         "is_camera_responsive",
-        "is_antenna_i2c_addr_a_alive",
-        "is_antenna_i2c_addr_b_alive",
+        "is_antenna_i2c_addr_a",
+        "is_antenna_i2c_addr_b",
         "is_antenna_a_alive",
         "is_antenna_b_alive",
         "flash_0_alive",
@@ -365,7 +420,7 @@ void CTS1_self_check_struct_TO_json_list_of_failures(
     
     char buffer[dest_json_str_size];
     size_t len = 0;
-    len += snprintf(buffer + len, dest_json_str_size - len, "[");
+    len += snprintf(buffer + len, dest_json_str_size - len, "{\"fail\":[");
     
     int first = 1;
     for (size_t i = 0; i < sizeof(field_names) / sizeof(field_names[0]); i++) {
@@ -378,7 +433,7 @@ void CTS1_self_check_struct_TO_json_list_of_failures(
         }
     }
     
-    len += snprintf(buffer + len, dest_json_str_size - len, "]");
+    len += snprintf(buffer + len, dest_json_str_size - len, "]}");
     
     strncpy(dest_json_str, buffer, dest_json_str_size - 1);
     dest_json_str[dest_json_str_size - 1] = '\0';
