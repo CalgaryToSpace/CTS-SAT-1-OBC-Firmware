@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.13.2"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>CTS-SAT-1-OBC-Firmware: firmware/Core/Inc/stm32_internal_flash_drivers/stm32_internal_flash_drivers.h Source File</title>
+<title>CTS-SAT-1-OBC-Firmware: firmware/Core/Inc/stm32/stm32_internal_flash_drivers.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -83,7 +83,7 @@ $(function(){ initResizable(false); });
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_d9edf6c004b4a7ff14fe9ae7a92214ee.html">firmware</a></li><li class="navelem"><a class="el" href="dir_344ad9cf7012f4665e17c8bfb6616899.html">Core</a></li><li class="navelem"><a class="el" href="dir_a2104d228f4ce1660fa7790253c871fd.html">Inc</a></li><li class="navelem"><a class="el" href="dir_9a8a54ce3d35d33a2305fd30e42a341d.html">stm32_internal_flash_drivers</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_d9edf6c004b4a7ff14fe9ae7a92214ee.html">firmware</a></li><li class="navelem"><a class="el" href="dir_344ad9cf7012f4665e17c8bfb6616899.html">Core</a></li><li class="navelem"><a class="el" href="dir_a2104d228f4ce1660fa7790253c871fd.html">Inc</a></li><li class="navelem"><a class="el" href="dir_855403395d30e8f55dbceaf0044e4806.html">stm32</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div id="doc-content">
@@ -91,8 +91,8 @@ $(function(){ initResizable(false); });
   <div class="headertitle"><div class="title">stm32_internal_flash_drivers.h</div></div>
 </div><!--header-->
 <div class="contents">
-<a href="stm32__internal__flash__drivers_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef __INCLUDE_GUARD__STM32_INTERNAL_FLASH_DRIVERS_H__</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define __INCLUDE_GUARD__STM32_INTERNAL_FLASH_DRIVERS_H__</span></div>
+<a href="stm32__internal__flash__drivers_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef INCLUDE_GUARD__STM32_INTERNAL_FLASH_DRIVERS_H__</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define INCLUDE_GUARD__STM32_INTERNAL_FLASH_DRIVERS_H__</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
@@ -131,7 +131,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>uint8_t <a class="code hl_function" href="stm32__internal__flash__drivers_8h.html#ad694ee5074dbc7c5c6eed2fa6a9cd216">STM32_internal_flash_get_active_flash_bank</a>();</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="preprocessor">#endif </span><span class="comment">// __INCLUDE_GUARD__STM32_INTERNAL_FLASH_DRIVERS_H__</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="preprocessor">#endif </span><span class="comment">// INCLUDE_GUARD__STM32_INTERNAL_FLASH_DRIVERS_H__</span></div>
 <div class="ttc" id="acsp__cmp_8h_html_ac581edc71c0745a093e6bfc4bd5ca16d"><div class="ttname"><a href="csp__cmp_8h.html#ac581edc71c0745a093e6bfc4bd5ca16d">data</a></div><div class="ttdeci">char data[CSP_CMP_PEEK_MAX_LEN]</div><div class="ttdef"><b>Definition</b> csp_cmp.h:33</div></div>
 <div class="ttc" id="astm32__internal__flash__drivers_8h_html_a3b9763d5dff6c21ac6a4275efc1ed3c6"><div class="ttname"><a href="stm32__internal__flash__drivers_8h.html#a3b9763d5dff6c21ac6a4275efc1ed3c6">STM32_internal_flash_write</a></div><div class="ttdeci">uint8_t STM32_internal_flash_write(uint32_t address, uint8_t *data, uint32_t length, STM32_Internal_Flash_Write_Status_t *status)</div><div class="ttdoc">Writes data to the flash memory in chunks of 8 bytes.</div><div class="ttdef"><b>Definition</b> stm32_internal_flash_drivers.c:19</div></div>
 <div class="ttc" id="astm32__internal__flash__drivers_8h_html_a527e928828f0df4bdd438062fdf4ae5f"><div class="ttname"><a href="stm32__internal__flash__drivers_8h.html#a527e928828f0df4bdd438062fdf4ae5f">STM32_internal_flash_set_active_flash_bank</a></div><div class="ttdeci">uint8_t STM32_internal_flash_set_active_flash_bank(uint8_t wanted_active_flash_bank)</div><div class="ttdoc">Sets the active flash bank to either 1 or 2 (only if it is different than the current active flash ba...</div><div class="ttdef"><b>Definition</b> stm32_internal_flash_drivers.c:160</div></div>

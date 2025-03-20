@@ -94,8 +94,8 @@ $(function(){ initResizable(false); });
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="stm32__internal__flash__telecommand__defs_8h_source.html">telecommands/stm32_internal_flash_telecommand_defs.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="telecommand__args__helpers_8h_source.html">telecommands/telecommand_args_helpers.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="stm32__internal__flash__drivers_8h_source.html">stm32_internal_flash_drivers/stm32_internal_flash_drivers.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="telecommand__args__helpers_8h_source.html">telecommand_exec/telecommand_args_helpers.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="stm32__internal__flash__drivers_8h_source.html">stm32/stm32_internal_flash_drivers.h</a>&quot;</code><br />
 <code>#include &quot;stm32l4xx_hal.h&quot;</code><br />
 <code>#include &lt;stdio.h&gt;</code><br />
 <code>#include &lt;string.h&gt;</code><br />
@@ -104,28 +104,28 @@ Include dependency graph for stm32_internal_flash_telecommand_defs.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="stm32__internal__flash__telecommand__defs_8c__incl.png" border="0" usemap="#afirmware_2Core_2Src_2telecommands_2stm32__internal__flash__telecommand__defs_8c" alt=""/></div>
 <map name="afirmware_2Core_2Src_2telecommands_2stm32__internal__flash__telecommand__defs_8c" id="afirmware_2Core_2Src_2telecommands_2stm32__internal__flash__telecommand__defs_8c">
-<area shape="rect" title=" " alt="" coords="420,5,691,46"/>
-<area shape="rect" href="stm32__internal__flash__telecommand__defs_8h.html" title=" " alt="" coords="53,94,242,150"/>
-<area shape="poly" title=" " alt="" coords="471,49,258,98,257,93,469,44"/>
-<area shape="rect" href="telecommand__args__helpers_8h.html" title=" " alt="" coords="217,198,406,238"/>
-<area shape="poly" title=" " alt="" coords="496,49,452,69,409,96,366,140,333,186,328,183,361,137,406,92,449,64,494,44"/>
-<area shape="rect" href="stm32__internal__flash__drivers_8h.html" title=" " alt="" coords="420,94,576,150"/>
-<area shape="poly" title=" " alt="" coords="546,48,525,82,520,79,541,45"/>
-<area shape="rect" title=" " alt="" coords="652,205,766,231"/>
-<area shape="poly" title=" " alt="" coords="569,45,600,93,642,148,686,193,682,197,637,151,596,96,565,48"/>
-<area shape="rect" title=" " alt="" coords="651,109,710,135"/>
-<area shape="poly" title=" " alt="" coords="583,44,654,97,651,102,580,49"/>
-<area shape="rect" title=" " alt="" coords="734,109,798,135"/>
-<area shape="poly" title=" " alt="" coords="612,44,723,92,736,98,734,103,721,96,609,49"/>
-<area shape="rect" href="telecommand__types_8h.html" title=" " alt="" coords="5,198,194,238"/>
-<area shape="poly" title=" " alt="" coords="136,151,119,185,114,183,131,149"/>
-<area shape="rect" title=" " alt="" coords="280,286,343,312"/>
-<area shape="poly" title=" " alt="" coords="153,236,266,278,264,283,152,241"/>
-<area shape="poly" title=" " alt="" coords="314,239,314,271,309,271,309,239"/>
-<area shape="poly" title=" " alt="" coords="486,151,459,196,420,240,389,264,356,282,353,277,386,259,416,236,454,192,482,149"/>
-<area shape="poly" title=" " alt="" coords="560,148,669,196,667,201,558,153"/>
-<area shape="rect" title=" " alt="" coords="480,205,628,231"/>
-<area shape="poly" title=" " alt="" coords="517,149,542,191,537,193,512,152"/>
+<area shape="rect" title=" " alt="" coords="472,5,743,46"/>
+<area shape="rect" href="stm32__internal__flash__telecommand__defs_8h.html" title=" " alt="" coords="90,94,280,150"/>
+<area shape="poly" title=" " alt="" coords="520,49,295,99,294,94,518,44"/>
+<area shape="rect" href="telecommand__args__helpers_8h.html" title=" " alt="" coords="245,198,461,238"/>
+<area shape="poly" title=" " alt="" coords="556,49,512,70,469,96,419,141,379,187,375,184,415,138,466,92,510,65,554,44"/>
+<area shape="rect" href="stm32__internal__flash__drivers_8h.html" title=" " alt="" coords="480,102,626,142"/>
+<area shape="poly" title=" " alt="" coords="599,48,574,89,570,87,594,45"/>
+<area shape="rect" title=" " alt="" coords="707,205,820,231"/>
+<area shape="poly" title=" " alt="" coords="621,45,650,93,691,148,739,193,735,197,687,151,646,96,616,48"/>
+<area shape="rect" title=" " alt="" coords="701,109,760,135"/>
+<area shape="poly" title=" " alt="" coords="635,44,704,97,701,102,631,48"/>
+<area shape="rect" title=" " alt="" coords="784,109,847,135"/>
+<area shape="poly" title=" " alt="" coords="662,44,773,92,786,98,783,103,771,96,660,49"/>
+<area shape="rect" href="telecommand__types_8h.html" title=" " alt="" coords="5,198,221,238"/>
+<area shape="poly" title=" " alt="" coords="166,152,139,187,135,184,162,149"/>
+<area shape="rect" title=" " alt="" coords="321,286,385,312"/>
+<area shape="poly" title=" " alt="" coords="174,236,308,280,306,285,172,241"/>
+<area shape="poly" title=" " alt="" coords="356,239,356,271,350,271,350,239"/>
+<area shape="poly" title=" " alt="" coords="546,144,518,191,498,217,475,240,438,265,400,284,398,279,436,261,471,236,494,213,513,188,541,141"/>
+<area shape="poly" title=" " alt="" coords="598,140,723,196,721,201,596,145"/>
+<area shape="rect" title=" " alt="" coords="535,205,683,231"/>
+<area shape="poly" title=" " alt="" coords="567,141,597,191,592,194,562,144"/>
 </map>
 </div>
 </div><table class="memberdecls">

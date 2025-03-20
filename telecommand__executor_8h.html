@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.13.2"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>CTS-SAT-1-OBC-Firmware: firmware/Core/Inc/telecommands/telecommand_executor.h File Reference</title>
+<title>CTS-SAT-1-OBC-Firmware: firmware/Core/Inc/telecommand_exec/telecommand_executor.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -83,7 +83,7 @@ $(function(){ initResizable(false); });
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_d9edf6c004b4a7ff14fe9ae7a92214ee.html">firmware</a></li><li class="navelem"><a class="el" href="dir_344ad9cf7012f4665e17c8bfb6616899.html">Core</a></li><li class="navelem"><a class="el" href="dir_a2104d228f4ce1660fa7790253c871fd.html">Inc</a></li><li class="navelem"><a class="el" href="dir_216243d7543618862cf69f3d24d29ab1.html">telecommands</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_d9edf6c004b4a7ff14fe9ae7a92214ee.html">firmware</a></li><li class="navelem"><a class="el" href="dir_344ad9cf7012f4665e17c8bfb6616899.html">Core</a></li><li class="navelem"><a class="el" href="dir_a2104d228f4ce1660fa7790253c871fd.html">Inc</a></li><li class="navelem"><a class="el" href="dir_694ae4e95b4b8b9db04286cb9181995a.html">telecommand_exec</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div id="doc-content">
@@ -96,36 +96,36 @@ $(function(){ initResizable(false); });
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
-<code>#include &quot;<a class="el" href="telecommand__types_8h_source.html">telecommands/telecommand_types.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="telecommand__types_8h_source.html">telecommand_exec/telecommand_types.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for telecommand_executor.h:</div>
 <div class="dyncontent">
-<div class="center"><img src="telecommand__executor_8h__incl.png" border="0" usemap="#afirmware_2Core_2Inc_2telecommands_2telecommand__executor_8h" alt=""/></div>
-<map name="afirmware_2Core_2Inc_2telecommands_2telecommand__executor_8h" id="afirmware_2Core_2Inc_2telecommands_2telecommand__executor_8h">
-<area shape="rect" title=" " alt="" coords="5,5,218,46"/>
-<area shape="rect" title=" " alt="" coords="80,183,143,208"/>
-<area shape="poly" title=" " alt="" coords="98,48,85,70,74,95,70,114,74,134,93,169,88,171,69,136,65,114,69,93,80,67,94,45"/>
-<area shape="rect" href="telecommand__types_8h.html" title=" " alt="" coords="84,94,272,135"/>
-<area shape="poly" title=" " alt="" coords="129,45,156,80,152,83,125,48"/>
-<area shape="poly" title=" " alt="" coords="164,137,134,172,130,169,160,133"/>
+<div class="center"><img src="telecommand__executor_8h__incl.png" border="0" usemap="#afirmware_2Core_2Inc_2telecommand__exec_2telecommand__executor_8h" alt=""/></div>
+<map name="afirmware_2Core_2Inc_2telecommand__exec_2telecommand__executor_8h" id="afirmware_2Core_2Inc_2telecommand__exec_2telecommand__executor_8h">
+<area shape="rect" title=" " alt="" coords="5,5,211,46"/>
+<area shape="rect" title=" " alt="" coords="76,183,140,208"/>
+<area shape="poly" title=" " alt="" coords="92,48,76,70,64,95,60,114,64,134,73,153,86,169,82,173,69,155,59,136,54,114,59,93,71,67,88,45"/>
+<area shape="rect" href="telecommand__types_8h.html" title=" " alt="" coords="74,94,289,135"/>
+<area shape="poly" title=" " alt="" coords="127,45,157,80,153,84,123,48"/>
+<area shape="poly" title=" " alt="" coords="165,137,131,173,128,169,161,133"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><img src="telecommand__executor_8h__dep__incl.png" border="0" usemap="#afirmware_2Core_2Inc_2telecommands_2telecommand__executor_8hdep" alt=""/></div>
-<map name="afirmware_2Core_2Inc_2telecommands_2telecommand__executor_8hdep" id="afirmware_2Core_2Inc_2telecommands_2telecommand__executor_8hdep">
-<area shape="rect" title=" " alt="" coords="420,5,632,46"/>
+<div class="center"><img src="telecommand__executor_8h__dep__incl.png" border="0" usemap="#afirmware_2Core_2Inc_2telecommand__exec_2telecommand__executor_8hdep" alt=""/></div>
+<map name="afirmware_2Core_2Inc_2telecommand__exec_2telecommand__executor_8hdep" id="afirmware_2Core_2Inc_2telecommand__exec_2telecommand__executor_8hdep">
+<area shape="rect" title=" " alt="" coords="417,5,622,46"/>
 <area shape="rect" href="rtos__tasks_8c.html" title=" " alt="" coords="5,94,157,135"/>
-<area shape="poly" title=" " alt="" coords="405,52,170,97,158,99,157,94,168,91,404,46"/>
-<area shape="rect" href="agenda__telecommand__defs_8c.html" title=" " alt="" coords="180,94,395,135"/>
-<area shape="poly" title=" " alt="" coords="459,54,343,96,341,91,457,49"/>
-<area shape="rect" href="system__telecommand__defs_8c.html" title=" " alt="" coords="419,94,634,135"/>
-<area shape="poly" title=" " alt="" coords="529,62,529,94,524,94,524,62"/>
-<area shape="rect" href="telecommand__definitions_8c.html" title=" " alt="" coords="658,94,872,135"/>
-<area shape="poly" title=" " alt="" coords="596,49,712,91,710,96,594,54"/>
-<area shape="rect" href="telecommand__executor_8c.html" title=" " alt="" coords="896,94,1111,135"/>
-<area shape="poly" title=" " alt="" coords="648,46,897,91,896,96,647,52"/>
+<area shape="poly" title=" " alt="" coords="402,51,170,97,158,99,157,94,168,91,401,46"/>
+<area shape="rect" href="telecommand__executor_8c.html" title=" " alt="" coords="181,94,389,135"/>
+<area shape="poly" title=" " alt="" coords="453,54,339,96,338,91,452,49"/>
+<area shape="rect" href="agenda__telecommand__defs_8c.html" title=" " alt="" coords="412,94,627,135"/>
+<area shape="poly" title=" " alt="" coords="522,62,522,94,517,94,517,62"/>
+<area shape="rect" href="system__telecommand__defs_8c.html" title=" " alt="" coords="651,94,866,135"/>
+<area shape="poly" title=" " alt="" coords="589,49,705,91,703,96,587,54"/>
+<area shape="rect" href="telecommand__definitions_8c.html" title=" " alt="" coords="890,94,1104,135"/>
+<area shape="poly" title=" " alt="" coords="638,46,890,91,889,96,637,51"/>
 </map>
 </div>
 </div>

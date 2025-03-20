@@ -95,8 +95,8 @@ $(function(){ initResizable(false); });
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="crc_8h_source.html">crc/crc.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="log_8h_source.html">log/log.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="telecommand__args__helpers_8h_source.html">telecommands/telecommand_args_helpers.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="telecommand__types_8h_source.html">telecommands/telecommand_types.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="telecommand__args__helpers_8h_source.html">telecommand_exec/telecommand_args_helpers.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="telecommand__types_8h_source.html">telecommand_exec/telecommand_types.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="main_8h_source.html">main.h</a>&quot;</code><br />
 <code>#include &lt;stdio.h&gt;</code><br />
 <code>#include &lt;stdint.h&gt;</code><br />
@@ -107,36 +107,36 @@ Include dependency graph for telecommand_crc.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="telecommand__crc_8c__incl.png" border="0" usemap="#afirmware_2Core_2Src_2telecommands_2telecommand__crc_8c" alt=""/></div>
 <map name="afirmware_2Core_2Src_2telecommands_2telecommand__crc_8c" id="afirmware_2Core_2Src_2telecommands_2telecommand__crc_8c">
-<area shape="rect" title=" " alt="" coords="475,5,689,46"/>
-<area shape="rect" href="crc_8h.html" title=" " alt="" coords="546,102,618,127"/>
-<area shape="poly" title=" " alt="" coords="585,47,585,86,579,86,579,47"/>
-<area shape="rect" title=" " alt="" coords="185,190,248,216"/>
-<area shape="poly" title=" " alt="" coords="475,35,342,43,199,56,80,74,40,85,19,96,9,114,12,130,26,144,49,157,109,178,171,192,169,197,108,183,46,162,23,149,7,132,4,113,15,92,38,80,79,69,198,51,341,38,474,30"/>
-<area shape="rect" href="log_8h.html" title=" " alt="" coords="29,102,98,127"/>
-<area shape="poly" title=" " alt="" coords="475,37,303,58,206,75,111,97,104,98,103,93,109,91,205,69,302,53,474,32"/>
-<area shape="rect" href="telecommand__args__helpers_8h.html" title=" " alt="" coords="123,94,311,135"/>
-<area shape="poly" title=" " alt="" coords="499,49,315,93,314,87,498,44"/>
-<area shape="rect" href="telecommand__types_8h.html" title=" " alt="" coords="335,94,523,135"/>
-<area shape="poly" title=" " alt="" coords="549,49,478,89,475,84,546,44"/>
-<area shape="rect" href="main_8h.html" title=": Header for main.c file. This file contains the common defines of the application." alt="" coords="642,102,701,127"/>
-<area shape="poly" title=" " alt="" coords="604,45,650,89,647,93,601,48"/>
-<area shape="rect" title=" " alt="" coords="726,102,785,127"/>
-<area shape="poly" title=" " alt="" coords="623,44,719,92,717,97,620,49"/>
-<area shape="rect" title=" " alt="" coords="809,102,872,127"/>
-<area shape="poly" title=" " alt="" coords="652,44,798,91,801,93,799,98,796,97,651,49"/>
-<area shape="rect" title=" " alt="" coords="896,102,972,127"/>
-<area shape="poly" title=" " alt="" coords="690,44,786,65,886,91,892,93,890,99,884,97,784,70,689,49"/>
-<area shape="poly" title=" " alt="" coords="556,130,536,137,388,174,264,197,263,192,387,169,535,132,554,125"/>
-<area shape="rect" title=" " alt="" coords="525,190,639,216"/>
-<area shape="poly" title=" " alt="" coords="585,128,585,174,579,174,579,128"/>
-<area shape="poly" title=" " alt="" coords="86,125,183,180,181,184,83,130"/>
-<area shape="poly" title=" " alt="" coords="219,135,219,175,214,175,214,135"/>
-<area shape="poly" title=" " alt="" coords="382,138,261,186,259,181,380,133"/>
-<area shape="poly" title=" " alt="" coords="661,130,607,181,603,177,657,126"/>
-<area shape="rect" href="rtos__task__helpers_8h.html" title=" " alt="" coords="663,183,803,223"/>
-<area shape="poly" title=" " alt="" coords="682,126,713,169,708,172,678,129"/>
-<area shape="rect" title=" " alt="" coords="689,271,776,297"/>
-<area shape="poly" title=" " alt="" coords="735,224,735,256,730,256,730,224"/>
+<area shape="rect" title=" " alt="" coords="532,5,746,46"/>
+<area shape="rect" href="crc_8h.html" title=" " alt="" coords="603,102,674,127"/>
+<area shape="poly" title=" " alt="" coords="641,47,641,86,636,86,636,47"/>
+<area shape="rect" title=" " alt="" coords="199,190,262,216"/>
+<area shape="poly" title=" " alt="" coords="531,34,384,41,224,54,89,72,43,83,19,96,9,115,13,131,28,146,53,160,118,180,184,193,183,198,117,185,51,164,25,151,8,134,4,114,16,92,41,78,88,67,223,49,384,36,531,28"/>
+<area shape="rect" href="log_8h.html" title=" " alt="" coords="29,102,99,127"/>
+<area shape="poly" title=" " alt="" coords="531,35,334,55,222,72,111,97,105,98,104,93,110,91,221,67,334,49,531,30"/>
+<area shape="rect" href="telecommand__args__helpers_8h.html" title=" " alt="" coords="123,94,338,135"/>
+<area shape="poly" title=" " alt="" coords="546,49,339,93,338,88,545,44"/>
+<area shape="rect" href="telecommand__types_8h.html" title=" " alt="" coords="363,94,578,135"/>
+<area shape="poly" title=" " alt="" coords="602,49,523,89,521,84,599,44"/>
+<area shape="rect" href="main_8h.html" title=": Header for main.c file. This file contains the common defines of the application." alt="" coords="698,102,758,127"/>
+<area shape="poly" title=" " alt="" coords="661,45,707,89,703,93,657,48"/>
+<area shape="rect" title=" " alt="" coords="782,102,842,127"/>
+<area shape="poly" title=" " alt="" coords="679,44,776,92,773,97,677,49"/>
+<area shape="rect" title=" " alt="" coords="866,102,929,127"/>
+<area shape="poly" title=" " alt="" coords="709,44,854,91,858,93,856,98,853,97,707,49"/>
+<area shape="rect" title=" " alt="" coords="953,102,1029,127"/>
+<area shape="poly" title=" " alt="" coords="746,44,842,65,942,91,949,93,947,99,941,97,841,70,745,49"/>
+<area shape="poly" title=" " alt="" coords="612,130,592,137,506,159,420,176,278,198,278,193,419,171,505,154,590,132,610,125"/>
+<area shape="rect" title=" " alt="" coords="582,190,695,216"/>
+<area shape="poly" title=" " alt="" coords="641,128,641,174,636,174,636,128"/>
+<area shape="poly" title=" " alt="" coords="89,125,195,180,193,185,86,130"/>
+<area shape="poly" title=" " alt="" coords="233,135,233,175,228,175,228,135"/>
+<area shape="poly" title=" " alt="" coords="417,138,278,188,276,183,415,133"/>
+<area shape="poly" title=" " alt="" coords="717,130,664,181,660,177,714,126"/>
+<area shape="rect" href="rtos__task__helpers_8h.html" title=" " alt="" coords="719,183,860,223"/>
+<area shape="poly" title=" " alt="" coords="739,126,769,169,765,172,734,129"/>
+<area shape="rect" title=" " alt="" coords="746,271,833,297"/>
+<area shape="poly" title=" " alt="" coords="792,224,792,256,787,256,787,224"/>
 </map>
 </div>
 </div><table class="memberdecls">
