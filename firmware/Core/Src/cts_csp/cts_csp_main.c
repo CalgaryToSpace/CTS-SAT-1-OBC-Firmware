@@ -13,6 +13,8 @@
 #include "csp/interfaces/csp_if_i2c.h"
 
 
+#define TESTING_RECEIVE 0
+
 //extern I2C_HandleTypeDef hi2c1; //TODO: Is I2C3 the right bus?
 const uint8_t AX100_I2C_ADDR = 0x05 << 1; 
 const uint32_t timeout_mss = 3000; //TODO: how much? in milliseconds for i2c transmit
@@ -67,6 +69,10 @@ void CSP_init_for_cts1() {
         LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_UHF_RADIO),
         "Starting CSP_init_for_cts1()"
     );
+    
+    #if TESTING_RECEIVE
+    HAL_I2C_EnableListen_IT(&hi2c1);
+    #endif
 
     const int ret_init = csp_init(&csp_conf_value_1);
 

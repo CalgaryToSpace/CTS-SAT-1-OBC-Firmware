@@ -12,6 +12,9 @@ uint8_t framebuffer[FRAMEBUFFER_SIZE];
 void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *hi2c)
 {
 	HAL_I2C_EnableListen_IT(hi2c);
+	LOG_message(
+		LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+		"SOMETHING IS BEING SENT OVER i2c!!!!!!!!!!!!!!!!!");
 }
 
 void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode)
