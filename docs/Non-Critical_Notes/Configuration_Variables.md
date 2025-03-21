@@ -24,13 +24,7 @@
 **5) `TCMD_require_unique_tssent`**:
 A boolean value set to either 0 or 1. A value of 1 indicates that timestamps (usage of `@tssent`) are required, and a value of 0 indicates that timestamps are not required.
 
-**6) `toggleable_channels`**:  
- 32 bit number with each bit representing a channel (0-31). 1 indicates that the eps power managment can toggle the channel off and 0 indicating it can't.
-
-**7) `watchdog_timer`**:  
- The time in ms in which the system will reset the watchdog timer.
-
-**8) `EPS_monitor_timer`**:  
+**8) `EPS_monitor_interval_ms`**:  
  The time in ms in which the system will check the channels connected to the EPS and toggle them off in case of errors. 
  
 ## Configuration Variable Arrays
