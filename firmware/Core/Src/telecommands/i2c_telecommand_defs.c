@@ -142,30 +142,38 @@ uint8_t TCMDEXEC_scan_i2c_bus(
         }
     }
 
-    // Print deviating addresses
     snprintf(
-        response_output_buf, response_output_buf_len, "Majority State: %s\n", 
+        response_output_buf, response_output_buf_len,
+        "{\"majority_state\":\"%s\"",
         majority_state == 0 ? "OK" : 
         majority_state == 1 ? "ERROR" : 
         majority_state == 2 ? "BUSY" : 
         majority_state == 3 ? "TIMEOUT" : "MISC"
     );
-
+    
     size_t buf_len = strlen(response_output_buf);
+    
     for (uint16_t i = 0; i < 128; i++) {
         if (address_states[i] != majority_state) {
             const size_t remaining_space = response_output_buf_len - buf_len - 1;
             if (remaining_space <= 0) break;
-
-            char msg[32];
-            snprintf(msg, sizeof(msg), "0x%02x: %s\n", i, 
-            address_states[i] == HAL_OK ? "OK" : 
-            address_states[i] == HAL_ERROR ? "ERROR" : 
-            address_states[i] == HAL_TIMEOUT ? "TIMEOUT" : 
-            address_states[i] == HAL_BUSY ? "BUSY" : "MISC");
+    
+            const char *state_str = 
+                address_states[i] == HAL_OK ? "OK" :
+                address_states[i] == HAL_ERROR ? "ERROR" :
+                address_states[i] == HAL_BUSY ? "BUSY" :
+                address_states[i] == HAL_TIMEOUT ? "TIMEOUT" : "MISC";
+    
+            char msg[64];
+            snprintf(msg, sizeof(msg), ",\"0x%02X\":\"%s\"", i, state_str);
             strncat(response_output_buf, msg, remaining_space);
             buf_len = strlen(response_output_buf);
         }
     }
+    
+    const size_t remaining_space = response_output_buf_len - buf_len - 1;
+    if (remaining_space > 0) {
+        strncat(response_output_buf, "}", remaining_space);
+    }    
     return 0;
 }
