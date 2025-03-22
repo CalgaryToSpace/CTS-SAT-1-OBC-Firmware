@@ -1117,14 +1117,13 @@ uint8_t ADCS_get_acp_execution_state(ADCS_acp_execution_state_struct_t *output_s
 }
 
 /// @brief Send the Initiate Download Burst command to the ADCS.
-/// @param[in] message_length Length of the message.
 /// @param[in] ignore_hole_map Boolean flag to ignore the hole map.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_initiate_download_burst(uint8_t message_length, bool ignore_hole_map) {
+uint8_t ADCS_initiate_download_burst(bool ignore_hole_map) {
     uint8_t data_send[2]; // Command requires 2 bytes
 
     // Populate the command buffer
-    data_send[0] = message_length;                     // First byte: Message Length
+    data_send[0] = 20;                                  // First byte: Message Length (unused parameter according to CubeSpace)
     data_send[1] = (ignore_hole_map ? 1 : 0);          // Second byte: Ignore Hole Map as a single bit
 
     // Send the command via I2C and check the result
@@ -1357,7 +1356,8 @@ int16_t ADCS_load_sd_file_block_to_download_buffer(ADCS_file_info_struct_t file_
 
     status = ADCS_load_file_download_block(file_info.file_type, current_block, 0, 1024);
     if (status != 0) {return status | (1 << 3);}
-        // TODO: I'm not sure what, exactly, the 'offset' parameter in this function is for. I think the counter is the block_counter, but also not sure.
+        // TODO: We should be able to specify files without the Error 165 problem by using the 'counter' parameter.
+                // The 'offset' parameter should choose where in the file we're loading from (use 20 * current block).
 
     // Wait until the download block is ready
     ADCS_download_block_ready_struct_t ready_struct;
@@ -1367,10 +1367,9 @@ int16_t ADCS_load_sd_file_block_to_download_buffer(ADCS_file_info_struct_t file_
     } while (ready_struct.ready != true);
 
     // Initiate download burst, ignoring the hole map
-    status = ADCS_initiate_download_burst(20, true);
+    status = ADCS_initiate_download_burst(true);
     if (status != 0) {return status | (1 << 5);}
-        // TODO: I suspect that the message_length parameter represents the number of bytes to load, but I'm not sure.
-
+    
     for (uint16_t i = 0; i < 1024; i++) {
         // load 20 bytes at a time into the download buffer
         status = ADCS_get_file_download_buffer(&(download_packet));
@@ -1424,10 +1423,9 @@ int16_t ADCS_load_sd_file_block_to_download_buffer(ADCS_file_info_struct_t file_
         }
         
         // now, using the hole map as a guide, give us the missing packets
-        status = ADCS_initiate_download_burst(20, false);
+        status = ADCS_initiate_download_burst(false);
         if (status != 0) {return status | (1 << 8);}
-            // TODO: I suspect that the message_length parameter represents the number of bytes to load, but I'm not sure.
-
+        
         for (uint16_t i = 0; i < 1024; i++) {
             // load 20 bytes at a time into the download buffer
             status = ADCS_get_file_download_buffer(&(download_packet));
