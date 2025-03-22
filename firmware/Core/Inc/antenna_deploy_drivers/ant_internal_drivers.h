@@ -5,6 +5,9 @@
 
 #define ANT_DEFAULT_RX_LEN_MIN 5 // for commands with no response params, 5 bytes are returned
 
+static const uint16_t ANT_ADDR_A = 0x31; // I2C address of mcu A on ant deploy system
+static const uint16_t ANT_ADDR_B = 0x32; // I2C address of mcu B on ant deploy system
+
 
 /// @brief the antenna deployment module has two different i2c connections and two different
 /// microcontrollers. The values of this enum represent a combination of the i2c line to

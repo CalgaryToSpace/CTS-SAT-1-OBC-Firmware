@@ -124,12 +124,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> CAMERA Data\n");
 
         if (! UART_camera_is_expecting_data) {
-            // not expecting data, ignore this noise
-            HAL_UART_Receive_IT(UART_camera_port_handle, (uint8_t*) &UART_camera_buffer_last_rx_byte, 1);
+            // Not expecting data, ignore this noise.
             return;
         }
 
-        // Check if buffer is full
+        // Check if buffer is full.
         if (UART_camera_buffer_write_idx >= UART_camera_buffer_len) {
             // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART response buffer is full\n");
 
@@ -142,8 +141,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
             UART_camera_buffer_write_idx = UART_camera_buffer_len - 1;
         }
 
-        // Add a byte to the buffer
-        UART_camera_buffer[UART_camera_buffer_write_idx++] = UART_camera_buffer_last_rx_byte;
+        // FIXME: Actually deal with the data in here, if necessary.
+
         UART_camera_last_write_time_ms = HAL_GetTick();
     }           
 

@@ -11,10 +11,11 @@
 /// @param args_str
 /// - Arg 0: Precision we want the temperature to be (9-12 bits).
 /// @return 0 if successful, 1 if error.
-uint8_t TCMDEXEC_obc_read_temperature(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                                      char *response_output_buf, uint16_t response_output_buf_len)
-{
-
+/// @note There are better ways to get the temperature.
+uint8_t TCMDEXEC_obc_read_temperature_complex(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
     int32_t temperature;
     uint8_t status;
     uint32_t temp_precision_conversion_delay_ms;
@@ -23,7 +24,7 @@ uint8_t TCMDEXEC_obc_read_temperature(const char *args_str, TCMD_TelecommandChan
     // convert user requested precision
     const uint8_t temp_precision = atoi(args_str);
 
-    status = OBC_TEMP_SENSOR__set_temp_precision(temp_precision, &temp_precision_conversion_delay_ms, &temp_scaling_factor);
+    status = OBC_TEMP_SENSOR_set_temp_precision(temp_precision, &temp_precision_conversion_delay_ms, &temp_scaling_factor);
     switch (status)
     {
         case 0:
@@ -43,8 +44,8 @@ uint8_t TCMDEXEC_obc_read_temperature(const char *args_str, TCMD_TelecommandChan
     // give time for sensor to convert value
     HAL_Delay(temp_precision_conversion_delay_ms);
 
-    // read temperature
-    uint8_t success_result = OBC_TEMP_SENSOR__read_temperature(&temperature);
+    // Read temperature.
+    uint8_t success_result = OBC_TEMP_SENSOR_read_temperature(&temperature);
 
     // handle result
     if (success_result == 0)

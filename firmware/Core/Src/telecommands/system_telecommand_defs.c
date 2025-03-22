@@ -6,6 +6,7 @@
 #include "eps_drivers/eps_commands.h"
 #include "littlefs/littlefs_helper.h"
 #include "transforms/arrays.h"
+#include "self_checks/complete_self_check.h"
 
 #include "telecommands/system_telecommand_defs.h"
 #include "telecommand_exec/telecommand_definitions.h"
@@ -133,5 +134,22 @@ uint8_t TCMDEXEC_reboot(
     HAL_Delay(100);
 
     NVIC_SystemReset();
+    return 0;
+}
+
+/// @brief System self-check of all peripherals and systems.
+/// @param args_str No arguments expected
+/// @param response_output_buf Buffer is filled with a JSON list of strings of the FAILING checks
+/// @return 0 regardless; see the response_output_buf for the results of the self-check.
+/// @note Output is a JSON list of the failing checks (as strings). Returns 0 regardless.
+uint8_t TCMDEXEC_system_self_check_failures_as_json(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    CTS1_system_self_check_result_struct_t self_check_result;
+    CTS1_run_system_self_check(&self_check_result);
+    CTS1_self_check_struct_TO_json_list_of_failures(
+        self_check_result, response_output_buf, response_output_buf_len
+    );
     return 0;
 }
