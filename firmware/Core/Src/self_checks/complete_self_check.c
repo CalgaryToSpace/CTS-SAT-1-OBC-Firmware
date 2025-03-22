@@ -185,7 +185,8 @@ uint8_t CTS1_check_mpi_cmd_works() {
 
 uint8_t CTS1_check_is_camera_responsive() {
     EPS_set_channel_enabled(EPS_CHANNEL_3V3_CAMERA, 1);
-    HAL_Delay(200); // Wait for the camera to power up.
+    HAL_GPIO_WritePin(PIN_CAM_EN_OUT_GPIO_Port, PIN_CAM_EN_OUT_Pin, GPIO_PIN_SET);
+    HAL_Delay(2000); // Wait for the camera to power up.
 
     const uint8_t number_of_bytes_to_receive = 16;
 
@@ -194,6 +195,7 @@ uint8_t CTS1_check_is_camera_responsive() {
         UART_camera_buffer[i] = 0;
     }
 
+    UART_camera_is_expecting_data = 1;
     HAL_UART_Receive_DMA(
         UART_camera_port_handle, (uint8_t*)&UART_camera_buffer, number_of_bytes_to_receive
     );
@@ -204,7 +206,7 @@ uint8_t CTS1_check_is_camera_responsive() {
 
     const uint32_t start_time = HAL_GetTick();
     uint8_t response_received = 0;
-    while (HAL_GetTick() - start_time < 800) {
+    while (HAL_GetTick() - start_time < 1800) {
         if (UART_camera_last_write_time_ms >= (HAL_GetTick() - 100)) {
             response_received = 1;
             break;
@@ -212,7 +214,15 @@ uint8_t CTS1_check_is_camera_responsive() {
     }
 
     // Cleanup actions.
+    HAL_GPIO_WritePin(PIN_CAM_EN_OUT_GPIO_Port, PIN_CAM_EN_OUT_Pin, 0);
     EPS_set_channel_enabled(EPS_CHANNEL_3V3_CAMERA, 0);
+    HAL_UART_DMAStop(UART_camera_port_handle);
+
+    LOG_message(
+        LOG_SYSTEM_BOOM, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+        "Camera last rx time: %lu ms, duration since: %lu ms",
+        UART_camera_last_write_time_ms, HAL_GetTick() - UART_camera_last_write_time_ms
+    );
 
     if (response_received == 0) {
         return 0;
@@ -233,7 +243,6 @@ uint8_t CTS1_check_is_camera_responsive() {
             break;
         }
     }
-    HAL_UART_DMAStop(UART_camera_port_handle);
 
     return valid_response;
 }
