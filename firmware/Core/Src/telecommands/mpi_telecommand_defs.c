@@ -178,3 +178,27 @@ uint8_t TCMDEXEC_mpi_demo_tx_to_mpi(
     snprintf(response_output_buf, response_output_buf_len, "Sent message to MPI.");
     return 0;
 }
+
+/// @brief Sends a message over UART to the MPI.
+/// @param args_str
+/// - Arg 0: The target mode - "MISO" (from MPI), "MOSI" (to MPI), or anything else disables it
+/// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
+/// @param response_output_buf The buffer to write the response to
+/// @param response_output_buf_len The maximum length of the response_output_buf (its size)
+/// @return 0: Success, >0: Failure
+uint8_t TCMDEXEC_mpi_demo_set_transceiver_mode(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    if (strcasecmp(args_str, "MISO") == 0) {
+        MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MISO);
+        snprintf(response_output_buf, response_output_buf_len, "Did set MPI transceiver to MISO (MPI-to-OBC).");
+    } else if (strcasecmp(args_str, "MOSI") == 0) {
+        MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MOSI);
+        snprintf(response_output_buf, response_output_buf_len, "Did set MPI transceiver to MOSI (OBC-to-MPI).");
+    } else {
+        MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
+        snprintf(response_output_buf, response_output_buf_len, "Disabled MPI transceiver.");
+    }
+    return 0;
+}
