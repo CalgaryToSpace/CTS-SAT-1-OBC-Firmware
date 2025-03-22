@@ -132,7 +132,7 @@ osThreadId_t TASK_camera_write_image_Handle;
 const osThreadAttr_t TASK_camera_write_image_Attributes = {
   .name = "TASK_camera_write_image",
   .stack_size = 1024,
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityAboveNormal3,
 };
 
 FREERTOS_task_info_struct_t FREERTOS_task_handles_array [] = {
@@ -688,6 +688,7 @@ static void MX_UART4_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN UART4_Init 2 */
+  
 
   /* USER CODE END UART4_Init 2 */
 

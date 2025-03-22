@@ -12,6 +12,10 @@
 #include "log/log.h"
 #include "config/configuration.h"
 #include "eps_drivers/eps_commands.h"
+#include "camera/camera.h"
+#include "littlefs/littlefs_helper.h"
+#include "littlefs/lfs.h"
+#include "littlefs/littlefs_driver.h"
 
 #include "cmsis_os.h"
 
@@ -227,24 +231,21 @@ void TASK_monitor_freertos_memory(void *argument) {
 
 void TASK_camera_write_image(void *argument) {
 	TASK_HELP_start_of_task();
-	const char file_name[] = "image";
-	osDelay(12000);
-	camera_write_file = 0;
 	while (1) {
-		osDelay(1000);
+		osDelay(500);
 
-		if (camera_write_file){
-			UART_camera_last_write_time_ms = HAL_GetTick();
-			LOG_message(
-				LOG_SYSTEM_ALL, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-				"Writing file:\n %s",
-				camera_rx_buf
-			);
-			// LFS_mount();
-			// LFS_append_file(file_name, camera_rx_buf, SENTENCE_LEN*125);
-			// LFS_unmount();
-			camera_write_file = 0;
-		}
+		// if (camera_write_file){
+		// 	UART_camera_last_write_time_ms = HAL_GetTick();
+		// 	// LOG_message(
+		// 	// 	LOG_SYSTEM_ALL, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+		// 	// 	"Writing file:\n %s",
+		// 	// 	camera_rx_buf
+		// 	// );
+		// 	LFS_mount();
+		// 	LFS_append_file(file_name, camera_rx_buf, SENTENCE_LEN*125);
+		// 	LFS_unmount();
+		// 	camera_write_file = 0;
+		// }
 
 	} /* End Task's Main Loop */
 }

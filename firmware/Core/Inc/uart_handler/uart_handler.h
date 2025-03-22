@@ -32,7 +32,11 @@ extern volatile uint8_t UART_gps_uart_interrupt_enabled; // Flag to enable or di
 extern const uint16_t UART_camera_buffer_len;
 extern volatile uint8_t UART_camera_buffer[];
 extern uint8_t camera_rx_buf[];
+extern uint8_t camera_rx_half_buf[];
+extern uint8_t camera_rx_buf_hex[];
 extern volatile uint8_t camera_write_file;
+extern volatile uint8_t camera_write_half_file;
+extern volatile uint16_t camera_sentence_counter;
 extern volatile uint16_t UART_camera_buffer_write_idx;
 extern volatile uint32_t UART_camera_last_write_time_ms;
 extern volatile uint8_t UART_camera_is_expecting_data;

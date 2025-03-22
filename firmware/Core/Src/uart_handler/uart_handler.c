@@ -2,6 +2,7 @@
 #include "debug_tools/debug_uart.h"
 #include "mpi/mpi_command_handling.h"
 #include "camera/camera.h"
+#include "log/log.h"
 #include "main.h"
 
 // Name the UART interfaces
@@ -43,10 +44,13 @@ volatile uint8_t UART_gps_uart_interrupt_enabled = 0; //extern
 
 // UART CAMERA buffer
 // TODO: Configure with peripheral required specifications
-const uint16_t UART_camera_buffer_len = SENTENCE_LEN*250;               // extern       // TODO: Set based on expected size requirements for reception
-volatile uint8_t UART_camera_buffer[SENTENCE_LEN*250];                  // extern       // TODO: confirm that this volatile means that the contents are volatile but the pointer is not
-uint8_t camera_rx_buf[SENTENCE_LEN*125];
+const uint16_t UART_camera_buffer_len = SENTENCE_LEN*46;               // extern       // TODO: Set based on expected size requirements for reception
+volatile uint8_t UART_camera_buffer[SENTENCE_LEN*46];                  // extern       // TODO: confirm that this volatile means that the contents are volatile but the pointer is not
+uint8_t camera_rx_buf[SENTENCE_LEN*23];
+uint8_t camera_rx_half_buf[SENTENCE_LEN*23];
 volatile uint8_t camera_write_file = 0;
+volatile uint8_t camera_write_half_file = 0;
+volatile uint16_t camera_sentence_counter = 0;
 volatile uint16_t UART_camera_buffer_write_idx = 0;         // extern
 volatile uint32_t UART_camera_last_write_time_ms = 0;       // extern
 volatile uint8_t UART_camera_is_expecting_data = 0;         // extern       // TODO: Set to 1 when a command is sent, and we're awaiting a response
@@ -152,21 +156,28 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
     else if (huart->Instance == UART_camera_port_handle->Instance){
         // increment write_idx
-        DEBUG_uart_print_str("Hello\n");
-        DEBUG_uart_print_str("complete call back\n");
-        // char count[30];
-        // snprintf(count, 30, "buffer size: %d\n", sizeof(UART_camera_buffer));
-        // DEBUG_uart_print_str(count);
+        // DEBUG_uart_print_str("Hello\n");
+        // DEBUG_uart_print_str("complete call back\n");
+        LOG_message(
+            LOG_SYSTEM_ALL, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "complete_call_back"
+        );
+        // increment sentence counter
+        camera_sentence_counter += 23;
+        // write index = 2
         UART_camera_buffer_write_idx++;
         // if write_idx = 250 sentences -> reset idx to 0, copy into rx_buf
         // if (UART_camera_buffer_write_idx >= UART_camera_buffer_len){
             UART_camera_buffer_write_idx = 0;
+            // uint8_t counter = 0;
             for (uint16_t i = UART_camera_buffer_len/2; i < UART_camera_buffer_len; i++){
                 camera_rx_buf[i-UART_camera_buffer_len/2] = UART_camera_buffer[i];
-                // reset second half of camera_buffer to 0
-                UART_camera_buffer[i] = 0;
             }
             // set camera_write_file to 1 so camera_internal can write to mem
+			// LOG_message(
+            //     LOG_SYSTEM_ALL, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            //     "set write file to 1"
+            // );
             camera_write_file = 1;
         // }
 
@@ -179,17 +190,21 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 }
 
 void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
-    DEBUG_uart_print_str("half call back\n");
-    // char count[30];
-    // snprintf(count, 30, "buffer size: %d\n", sizeof(UART_camera_buffer));
-    // DEBUG_uart_print_str(count);
+    // DEBUG_uart_print_str("half call back\n");
+    LOG_message(
+        LOG_SYSTEM_ALL, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+        "half_call_back"
+    );
+    // increment sentence counter
+    camera_sentence_counter += 23;
+    // write idx = 1
+    UART_camera_buffer_write_idx++;
+    // uint8_t counter = 0;
     for (uint16_t i = 0; i < UART_camera_buffer_len/2; i++){
-        camera_rx_buf[i] = UART_camera_buffer[i];
-        // reset first half of camera_buffer to 0
-        UART_camera_buffer[i] = 0;
+        camera_rx_half_buf[i] = UART_camera_buffer[i];
     }
     // set camera_write_file to 1 so camera_internal can write to mem
-    camera_write_file = 1;
+    camera_write_half_file = 1;
 }
 
 void UART_init_uart_handlers(void) {
@@ -224,7 +239,7 @@ uint8_t CAMERA_set_expecting_data(uint8_t new_enabled) {
         UART_camera_is_expecting_data = 1;
         // DEBUG_uart_print_str("Set expecting data\n");
         // HAL_UART_Receive_IT(UART_camera_port_handle, (uint8_t*) &UART_camera_buffer, 1);
-		const HAL_StatusTypeDef receive_status = HAL_UART_Receive_DMA(UART_camera_port_handle,(uint8_t*) &UART_camera_buffer, SENTENCE_LEN*250);
+		const HAL_StatusTypeDef receive_status = HAL_UART_Receive_DMA(UART_camera_port_handle,(uint8_t*) &UART_camera_buffer, SENTENCE_LEN*46);
         // DEBUG_uart_print_str("after uart receive DMA\n");
         if (receive_status != HAL_OK) {
 			return 3; // Error code: Failed UART reception
