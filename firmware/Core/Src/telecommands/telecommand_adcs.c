@@ -544,6 +544,16 @@ uint8_t TCMDEXEC_adcs_set_power_control(const char *args_str, TCMD_TelecommandCh
     return status;
 }                            
 
+/// @brief Telecommand: Put the ADCS in low-power mode, with only essential component power.
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_enter_low_power_mode(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                        char *response_output_buf, uint16_t response_output_buf_len) {
+    uint8_t status = ADCS_set_power_control(ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+    return status;
+}       
+
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 
 ///     - Arg 0: Mounting transform alpha angle [deg] (double) 
