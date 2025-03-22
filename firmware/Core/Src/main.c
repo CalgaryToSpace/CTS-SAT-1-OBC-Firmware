@@ -269,6 +269,8 @@ int main(void)
   // Initialise the ADCS CRC8 checksum (required for ADCS operation).
   ADCS_initialise_crc8_checksum();
 
+  HAL_GPIO_WritePin(PIN_CAM_EN_OUT_GPIO_Port, PIN_CAM_EN_OUT_Pin, 1);
+
   /* USER CODE END 2 */
 
   /* Init scheduler */
