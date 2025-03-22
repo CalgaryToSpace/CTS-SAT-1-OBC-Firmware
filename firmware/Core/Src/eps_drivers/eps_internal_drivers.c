@@ -130,10 +130,12 @@ uint8_t EPS_send_cmd_get_response(
     // End Receiving
     UART_eps_is_expecting_data = 0; // We are no longer expecting a response
 
-    // For now, log the received bytes
-    DEBUG_uart_print_str("EPS->OBC DATA (with tags): ");
-    DEBUG_uart_print_array_hex((uint8_t*)UART_eps_buffer, UART_eps_buffer_write_idx);
-    DEBUG_uart_print_str("\n");
+    // Optionally, log the received bytes.
+    if (CONFIG_EPS_enable_uart_debug_print) {
+        DEBUG_uart_print_str("EPS->OBC DATA (with tags): ");
+        DEBUG_uart_print_array_hex((uint8_t*)UART_eps_buffer, UART_eps_buffer_write_idx);
+        DEBUG_uart_print_str("\n");
+    }
 
     // Check that we've received what we're expecting
     // TODO: if the following cases happen ever during testing, consider allowing them and treating them as WARNINGs

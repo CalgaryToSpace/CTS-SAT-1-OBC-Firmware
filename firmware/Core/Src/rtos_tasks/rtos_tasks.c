@@ -24,6 +24,11 @@ uint32_t TASK_heartbeat_period_ms = 10990;
 
 char TASK_heartbeat_timing_str[128] = {0};
 
+void set_heartbeat_led(uint8_t enabled) {
+    HAL_GPIO_WritePin(PIN_LED_DEVKIT_LD2_GPIO_Port, PIN_LED_DEVKIT_LD2_Pin, enabled);
+    HAL_GPIO_WritePin(PIN_LED_GP2_OUT_GPIO_Port, PIN_LED_GP2_OUT_Pin, enabled);
+}
+
 void TASK_DEBUG_print_heartbeat(void *argument) {
     TASK_HELP_start_of_task();
 
@@ -40,10 +45,8 @@ void TASK_DEBUG_print_heartbeat(void *argument) {
     );
 
     // Blink the LED a few times to show that the boot just happened.
-    for (uint8_t i = 0; i < 6; i++) {
-        HAL_GPIO_TogglePin(PIN_LED_DEVKIT_LD2_GPIO_Port, PIN_LED_DEVKIT_LD2_Pin);
-        HAL_GPIO_TogglePin(PIN_LED_GP2_OUT_GPIO_Port, PIN_LED_GP2_OUT_Pin);
-
+    for (uint8_t i = 0; i < 12; i++) {
+        set_heartbeat_led((i+1) % 2);
         HAL_Delay(100 + (i*25));
     }
 
@@ -71,8 +74,9 @@ void TASK_DEBUG_print_heartbeat(void *argument) {
 
             // TODO: Radio beacon here, probably.
         }
-        HAL_GPIO_TogglePin(PIN_LED_DEVKIT_LD2_GPIO_Port, PIN_LED_DEVKIT_LD2_Pin);
-        HAL_GPIO_TogglePin(PIN_LED_GP2_OUT_GPIO_Port, PIN_LED_GP2_OUT_Pin);
+        set_heartbeat_led(1);
+        osDelay(100); // Reminder: May take longer than 100ms.
+        set_heartbeat_led(0);
 
         osDelay(TASK_heartbeat_period_ms > 0 ? TASK_heartbeat_period_ms : 1000);
     }
