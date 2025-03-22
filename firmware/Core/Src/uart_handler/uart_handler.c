@@ -93,10 +93,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     }
 
     else if (huart->Instance == UART_mpi_port_handle->Instance) {
-        // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> MPI Data\n");
+        DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> MPI Data\n");
 
         if (MPI_current_uart_rx_mode == MPI_RX_MODE_COMMAND_MODE) {
             // Check if buffer is full
+            DEBUG_uart_print_str("In if statement MPI");
             if (UART_mpi_buffer_write_idx >= UART_mpi_buffer_len) {
                 // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART mpi response buffer is full\n");
 
@@ -173,7 +174,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t*) &UART_eps_buffer_last_rx_byte, 1);
     }
 
-    else if (huart->Instance == UART_mpi_port_handle->Instance) {
+    else if (huart->Instance == UART_mpi_port_handle->Instance) { // Not the correct ISR
+        DEBUG_uart_print_str("MPI ISR Routine Triggered");
         if (MPI_current_uart_rx_mode == MPI_RX_MODE_COMMAND_MODE) {
             // Check if buffer is full
             if (UART_mpi_rx_buffer_write_idx >= UART_mpi_rx_buffer_len) {
@@ -191,6 +193,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
             // Add a byte to the buffer
             UART_mpi_rx_buffer[UART_mpi_rx_buffer_write_idx++] = UART_mpi_rx_last_byte;
             UART_mpi_rx_last_byte_write_time_ms = HAL_GetTick();
+
         }
         else {
             DEBUG_uart_print_str("Unhandled MPI Mode\n"); // TODO: HANDLE other MPI MODES

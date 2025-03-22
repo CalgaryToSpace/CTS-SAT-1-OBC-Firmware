@@ -155,14 +155,16 @@ uint8_t TCMDEXEC_mpi_demo_tx_to_mpi(
 
     const uint16_t transmit_count = 1;
 
-    const char* transmit_message = "Hello, MPI!\n";
+    // const char* transmit_message = "Hello, MPI!\n";
+    const uint8_t transmit_message[] = {0x54, 0x43, 0x09};
 
     // Note: 1000 sends takes 500ms at 230400 baud.
     for (uint16_t i = 0; i < transmit_count; i++) {
         // Transmit to the MPI.
         const HAL_StatusTypeDef result = HAL_UART_Transmit(
-            UART_mpi_port_handle, (uint8_t*)transmit_message, strlen(transmit_message), 1000
+            UART_mpi_port_handle, (uint8_t*)transmit_message, 3, 1000
         );
+
         if (result != HAL_OK) {
             snprintf(
                 response_output_buf, response_output_buf_len,
@@ -170,6 +172,11 @@ uint8_t TCMDEXEC_mpi_demo_tx_to_mpi(
             return 1;
         }
     }
+
+    uint8_t response[10] = {0};
+    HAL_UART_Receive(UART_mpi_port_handle, response, 10, 1000);
+
+    LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_CRITICAL, LOG_SINK_ALL, "Received: 0x%02x 0x%02x", response[0], response[1]);
 
     // Reset transceiver state.
     MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
