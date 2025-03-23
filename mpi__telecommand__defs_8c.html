@@ -174,8 +174,67 @@ Functions</h2></td></tr>
 <tr class="memitem:a251ad13b37986e577fe005cb44b979e2" id="r_a251ad13b37986e577fe005cb44b979e2"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a251ad13b37986e577fe005cb44b979e2">TCMDEXEC_mpi_demo_tx_to_mpi</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
 <tr class="memdesc:a251ad13b37986e577fe005cb44b979e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sends a message over UART to the MPI.  <br /></td></tr>
 <tr class="separator:a251ad13b37986e577fe005cb44b979e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2b8d205e6d017acee71bf3f950479ac" id="r_ac2b8d205e6d017acee71bf3f950479ac"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac2b8d205e6d017acee71bf3f950479ac">TCMDEXEC_mpi_demo_set_transceiver_mode</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
+<tr class="memdesc:ac2b8d205e6d017acee71bf3f950479ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sends a message over UART to the MPI.  <br /></td></tr>
+<tr class="separator:ac2b8d205e6d017acee71bf3f950479ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="ac2b8d205e6d017acee71bf3f950479ac" name="ac2b8d205e6d017acee71bf3f950479ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2b8d205e6d017acee71bf3f950479ac">&#9670;&#160;</a></span>TCMDEXEC_mpi_demo_set_transceiver_mode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t TCMDEXEC_mpi_demo_set_transceiver_mode </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>args_str</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a></td>          <td class="paramname"><span class="paramname"><em>tcmd_channel</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>response_output_buf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>response_output_buf_len</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sends a message over UART to the MPI. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args_str</td><td><ul>
+<li>Arg 0: The target mode - "MISO" (from MPI), "MOSI" (to MPI), or anything else disables it </li>
+</ul>
+</td></tr>
+    <tr><td class="paramname">tcmd_channel</td><td>The channel on which the telecommand was received, and on which the response should be sent </td></tr>
+    <tr><td class="paramname">response_output_buf</td><td>The buffer to write the response to </td></tr>
+    <tr><td class="paramname">response_output_buf_len</td><td>The maximum length of the response_output_buf (its size) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0: Success, &gt;0: Failure </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="mpi__telecommand__defs_8c_ac2b8d205e6d017acee71bf3f950479ac_cgraph.png" border="0" usemap="#ampi__telecommand__defs_8c_ac2b8d205e6d017acee71bf3f950479ac_cgraph" alt=""/></div>
+<map name="ampi__telecommand__defs_8c_ac2b8d205e6d017acee71bf3f950479ac_cgraph" id="ampi__telecommand__defs_8c_ac2b8d205e6d017acee71bf3f950479ac_cgraph">
+<area shape="rect" title="Sends a message over UART to the MPI." alt="" coords="5,5,190,46"/>
+<area shape="rect" href="mpi__transceiver_8c.html#a8152cd1b9513be2c73a97bfb50ecd497" title="Sets the transceiver state." alt="" coords="238,5,379,46"/>
+<area shape="poly" title=" " alt="" coords="190,23,222,23,222,28,190,28"/>
+</map>
+</div>
+
+</div>
+</div>
 <a id="a251ad13b37986e577fe005cb44b979e2" name="a251ad13b37986e577fe005cb44b979e2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a251ad13b37986e577fe005cb44b979e2">&#9670;&#160;</a></span>TCMDEXEC_mpi_demo_tx_to_mpi()</h2>
 
