@@ -1002,6 +1002,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY, // Not useful in space.
     },
+    {
+        .tcmd_name = "mpi_demo_set_transceiver_mode",
+        .tcmd_func = TCMDEXEC_mpi_demo_set_transceiver_mode,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY, // Not useful in space.
+    },
     // ****************** END: MPI_telecommand_definitions ********************
     // ****************** START SECTION: stm32_internal_flash_telecommand_defs ******************
 

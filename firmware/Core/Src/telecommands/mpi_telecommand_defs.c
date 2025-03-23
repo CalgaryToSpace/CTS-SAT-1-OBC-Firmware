@@ -153,15 +153,19 @@ uint8_t TCMDEXEC_mpi_demo_tx_to_mpi(
     MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MOSI);
     HAL_Delay(100);
 
-    const uint16_t transmit_count = 1;
-
-    const char* transmit_message = "Hello, MPI!\n";
-
     // Note: 1000 sends takes 500ms at 230400 baud.
-    for (uint16_t i = 0; i < transmit_count; i++) {
+    // 20000 sends takes 10s at 230400 baud.
+    const uint32_t transmit_count = 1;
+
+    // const char transmit_message[] = "Hello, MPI!\n";
+
+    // Transmit the sync bytes, plus a square wave.
+    const char transmit_message[] = {0x0c, 0xff, 0xff, 0x0c, 0x00, 0x00, 'u', 'u', 'u', 'u', 0x00};
+
+    for (uint32_t i = 0; i < transmit_count; i++) {
         // Transmit to the MPI.
         const HAL_StatusTypeDef result = HAL_UART_Transmit(
-            UART_mpi_port_handle, (uint8_t*)transmit_message, strlen(transmit_message), HAL_MAX_DELAY
+            UART_mpi_port_handle, (uint8_t*)transmit_message, sizeof(transmit_message), 1000
         );
         if (result != HAL_OK) {
             snprintf(
@@ -176,5 +180,29 @@ uint8_t TCMDEXEC_mpi_demo_tx_to_mpi(
 
     // Send message to MPI
     snprintf(response_output_buf, response_output_buf_len, "Sent message to MPI.");
+    return 0;
+}
+
+/// @brief Sends a message over UART to the MPI.
+/// @param args_str
+/// - Arg 0: The target mode - "MISO" (from MPI), "MOSI" (to MPI), or anything else disables it
+/// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
+/// @param response_output_buf The buffer to write the response to
+/// @param response_output_buf_len The maximum length of the response_output_buf (its size)
+/// @return 0: Success, >0: Failure
+uint8_t TCMDEXEC_mpi_demo_set_transceiver_mode(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    if (strcasecmp(args_str, "MISO") == 0) {
+        MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MISO);
+        snprintf(response_output_buf, response_output_buf_len, "Did set MPI transceiver to MISO (MPI-to-OBC).");
+    } else if (strcasecmp(args_str, "MOSI") == 0) {
+        MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MOSI);
+        snprintf(response_output_buf, response_output_buf_len, "Did set MPI transceiver to MOSI (OBC-to-MPI).");
+    } else {
+        MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
+        snprintf(response_output_buf, response_output_buf_len, "Disabled MPI transceiver.");
+    }
     return 0;
 }
