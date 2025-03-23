@@ -137,8 +137,10 @@ uint8_t TCMDEXEC_eps_switch_to_mode(
 /// - Arg 0: The channel name or number (string).
 /// - Arg 1: 1 to enable (power on), 0 to disable (power off)
 /// @return 0 on success, >0 on failure
-/// @note Valid string values for Arg 0: "vbatt_stack", "stack_5v", "stack_3v3", "camera",
-///     "uhf_antenna_deploy", "lora_module", "mpi", "boom".
+/// @note Channel name argument: A lowercase c-string of the channel name (e.g., "mpi"), or a number
+/// representing the channel number (e.g., "1" or "16").
+/// Valid string values: "vbatt_stack", "stack_5v", "stack_3v3", "camera", "uhf_antenna_deploy",
+/// "lora_module", "mpi_5v", "mpi_12v", "boom".
 uint8_t TCMDEXEC_eps_set_channel_enabled(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
