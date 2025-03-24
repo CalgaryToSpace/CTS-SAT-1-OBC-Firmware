@@ -258,6 +258,9 @@ int main(void)
   // Initialise the ADCS CRC8 checksum (required for ADCS operation).
   ADCS_initialise_crc8_checksum();
 
+  // Always leave the Camera enable signal enabled. Easier to control it through just the EPS.
+  HAL_GPIO_WritePin(PIN_CAM_EN_OUT_GPIO_Port, PIN_CAM_EN_OUT_Pin, GPIO_PIN_SET);
+
   /* USER CODE END 2 */
 
   /* Init scheduler */
