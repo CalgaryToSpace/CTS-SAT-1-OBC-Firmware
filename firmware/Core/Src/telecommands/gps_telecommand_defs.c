@@ -21,15 +21,6 @@ uint8_t TCMDEXEC_gps_send_cmd_ascii(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
-
-    if (args_str == NULL)
-    {
-        snprintf(response_output_buf, response_output_buf_len, "Error: Empty args_str");
-        return 1;
-    }
-
-    // TODO : Determine if we need to perform extra error checks on arg_str ie log command format etc
-
     // Adding a new line character to the log command
     char gps_log_cmd[128];
     snprintf(gps_log_cmd, sizeof(gps_log_cmd), "%s\n", args_str);
@@ -50,19 +41,19 @@ uint8_t TCMDEXEC_gps_send_cmd_ascii(
     // Handle the gps_cmd_status: Perform the error checks
     // TODO: Potentially add GPS_validate_log_response function in here to validate response from the gps receiver
 
-    if(gps_cmd_status != 0){
+    if (gps_cmd_status != 0) {
         LOG_message(
             LOG_SYSTEM_GPS,
             LOG_SEVERITY_NORMAL,
             LOG_SINK_ALL,
-            "GPS Response Code: %d",
+            "GPS_send_cmd_get_response failed -> %d",
             gps_cmd_status
         );
     }
 
     snprintf(
         response_output_buf, response_output_buf_len,
-        "GPS Response(%d bytes): %s",
+        "GPS Response (%d bytes): %s",
         GPS_rx_buffer_len,
         GPS_rx_buffer
     );
