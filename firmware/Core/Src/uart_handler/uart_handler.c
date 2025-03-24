@@ -174,30 +174,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t*) &UART_eps_buffer_last_rx_byte, 1);
     }
 
-    else if (huart->Instance == UART_mpi_port_handle->Instance) {
-        if (MPI_current_uart_rx_mode == MPI_RX_MODE_COMMAND_MODE) {
-            // Check if buffer is full
-            if (UART_mpi_rx_buffer_write_idx >= UART_mpi_rx_buffer_len) {
-                // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART mpi response buffer is full\n");
-
-                // Shift all bytes left by 1
-                for(uint16_t i = 1; i < UART_mpi_rx_buffer_len; i++) {
-                    UART_mpi_rx_buffer[i - 1] = UART_mpi_rx_buffer[i];
-                }
-
-                // Reset to a valid index
-                UART_mpi_rx_buffer_write_idx = UART_mpi_rx_buffer_len - 1;
-            }
-
-            // Add a byte to the buffer
-            UART_mpi_rx_buffer[UART_mpi_rx_buffer_write_idx++] = UART_mpi_rx_last_byte;
-            UART_mpi_rx_last_byte_write_time_ms = HAL_GetTick();
-        }
-        else {
-            DEBUG_uart_print_str("Unhandled MPI Mode\n"); // TODO: HANDLE other MPI MODES
-        }
-    }
-    
     else if (huart->Instance == UART_gps_port_handle->Instance) {
         // Note: If the GPS is not enabled, the interrupt is not re-enabled via HAL_UART_Receive_IT().
         // This is a safety feature against the GPS spamming null bytes, which can lock up the system.
