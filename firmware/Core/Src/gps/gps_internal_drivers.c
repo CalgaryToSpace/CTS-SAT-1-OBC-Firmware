@@ -139,5 +139,8 @@ uint8_t GPS_send_cmd_get_response(
     rx_buf[rx_buf_max_size - 1] = '\0';
     rx_buf[*rx_buf_len_dest] = '\0';
 
+    // Ensure the final output buffer (rx_buf) is null-terminated
+    rx_buf[rx_buf_max_size - 1] = '\0';
+
     return 0;
 }
