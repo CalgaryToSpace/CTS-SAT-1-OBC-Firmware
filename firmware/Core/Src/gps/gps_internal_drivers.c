@@ -123,7 +123,6 @@ uint8_t GPS_send_cmd_get_response(
     // );
 
     // Check that we've received what we're expecting
-    // TODO: If the following cases happen ever during testing, consider allowing them and treating them as WARNINGs
     if (UART_gps_buffer_write_idx > rx_buf_max_size)
     {
         LOG_message(
@@ -132,7 +131,7 @@ uint8_t GPS_send_cmd_get_response(
         );
         
         *rx_buf_len_dest = rx_buf_max_size;
-        return 3;
+        // No need to return here. We can still pass back the data we have.
     }
 
     // Copy the log response from the UART gps buffer to the rx_buf[] and clear the buffer
@@ -140,6 +139,9 @@ uint8_t GPS_send_cmd_get_response(
         rx_buf[i] = UART_gps_buffer[i];
     }
     *rx_buf_len_dest = UART_gps_buffer_write_idx;
+
+    // Ensure the final output buffer (rx_buf) is null-terminated
+    rx_buf[rx_buf_max_size - 1] = '\0';
 
     return 0;
 }

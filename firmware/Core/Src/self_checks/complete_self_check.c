@@ -16,6 +16,7 @@
 #include "obc_temperature_sensor/obc_temperature_sensor.h"
 #include "littlefs/flash_driver.h"
 #include "log/log.h"
+#include "debug_tools/debug_uart.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -56,9 +57,10 @@ uint8_t CTS1_check_is_adcs_alive() {
     return 1;
 }
 
-// uint8_t CTS1_check_is_ax100_alive(); // TODO: Is there a way to test this?
+// uint8_t CTS1_check_is_ax100_alive() {} // TODO: Is there a way to test this?
+
 uint8_t CTS1_check_is_gnss_responsive() {
-    const char cmd[] = "DEAR GPS, PLEASE RESPOND\n"; // FIXME: What to send here?
+    const char cmd[] = "log bestxyza once\n";
 
     uint8_t rx_buf[100];
     uint16_t rx_buf_received_len = 0;
@@ -73,7 +75,18 @@ uint8_t CTS1_check_is_gnss_responsive() {
         return 0;
     }
 
+    // Ensure rx_buf is null-terminated.
+    rx_buf[sizeof(rx_buf) - 1] = '\0';
+
     // FIXME: Validate the response in the `rx_buf` (and also the length of it in `rx_buf_received_len`)
+
+    
+    LOG_message(
+        LOG_SYSTEM_GPS, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+        "GPS response (%d bytes): %s",
+        rx_buf_received_len,
+        rx_buf
+    );
 
     GPS_set_uart_interrupt_state(0); // In case: Disable the GPS UART interrupt.
     return 0;
