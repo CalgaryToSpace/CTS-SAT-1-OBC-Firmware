@@ -355,3 +355,44 @@ uint8_t TCMDEXEC_uart_send_hex_get_response_hex(
 
     return 0;   // Success
 }
+
+/// @brief Get a JSON dict of how long, in ms, SINCE each UART ISR handler was last triggered.
+/// @note Uses placeholder "-99" to mean "never triggered". A value of 50 means that handler was last
+///       triggered 50ms ago.
+/// @note Intended for debugging and testing purposes, but safe to use in flight also.
+uint8_t TCMDEXEC_uart_get_last_rx_times_json(
+    const char *args_str,
+    TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf,
+    uint16_t response_output_buf_len
+) {
+    const uint32_t now = HAL_GetTick();
+
+    const int32_t debug_delta = UART_telecommand_last_write_time_ms == 0 ? -99 : (int32_t)(now - UART_telecommand_last_write_time_ms);
+    const int32_t mpi_delta         = UART_mpi_last_write_time_ms         == 0 ? -99 : (int32_t)(now - UART_mpi_last_write_time_ms);
+    const int32_t camera_delta      = UART_camera_last_write_time_ms      == 0 ? -99 : (int32_t)(now - UART_camera_last_write_time_ms);
+    const int32_t eps_delta         = UART_eps_last_write_time_ms         == 0 ? -99 : (int32_t)(now - UART_eps_last_write_time_ms);
+    const int32_t gps_delta         = UART_gps_last_write_time_ms         == 0 ? -99 : (int32_t)(now - UART_gps_last_write_time_ms);
+
+    int used = snprintf(response_output_buf, response_output_buf_len,
+        "{"
+        "\"debug\":%ld,"
+        "\"mpi\":%ld,"
+        "\"camera\":%ld,"
+        "\"eps\":%ld,"
+        "\"gps\":%ld"
+        "}",
+        debug_delta,
+        mpi_delta,
+        camera_delta,
+        eps_delta,
+        gps_delta
+    );
+
+    if (used >= response_output_buf_len) {
+        response_output_buf[response_output_buf_len - 1] = '\0';
+        return 1; // truncated
+    }
+
+    return 0; // success
+}
