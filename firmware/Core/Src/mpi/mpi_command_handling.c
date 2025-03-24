@@ -11,10 +11,11 @@
 
 /// @brief Timeout duration for transmit HAL call, in milliseconds.
 static const uint16_t MPI_TX_TIMEOUT_DURATION_MS = 100;
+
 /// @brief Timeout duration for receive in milliseconds. Same between bytes and at the start.
 static const uint16_t MPI_RX_TIMEOUT_DURATION_MS = 200;
 
-MPI_rx_mode_t MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
+volatile MPI_rx_mode_t MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
 
 /// @brief Sends commandcode+params to the MPI as bytes
 /// @param bytes_to_send Buffer containing the telecommand + params (IF ANY) as hex bytes
