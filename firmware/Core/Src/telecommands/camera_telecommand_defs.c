@@ -42,21 +42,24 @@ uint8_t TCMDEXEC_camera_test(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len)
 {
-    uint8_t setup_status = CAM_test();
+    uint8_t test_return = CAM_test();
 
-    if (setup_status != 0) {
-        snprintf(response_output_buf, response_output_buf_len, "Error with camera");
-        return 1;
+    if (test_return != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len, "Camera test failed. CAM_test -> %d",
+            test_return
+        );
+        return test_return;
     }
 
-    snprintf(response_output_buf, response_output_buf_len, "Camera connection ready");
+    snprintf(response_output_buf, response_output_buf_len, "Camera test passed.");
     return 0;
 }
 
 
 /// @brief Debugging only. Set the baud rate of the camera to the specified value. Use `camera_setup` normally.
 /// @param args_str
-/// - Arg 1: Baudrate to change to (bits per second)
+/// - Arg 1: Baudrate to change to (bits per second). 10 options from 1200 to 921600.
 /// @return 0 if successful, >0 if an error occurred
 uint8_t TCMDEXEC_camera_change_baud_rate(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
