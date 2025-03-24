@@ -158,8 +158,9 @@ Variables</h2></td></tr>
 <tr class="memitem:af4b14a86ead3e3f59a18e5afd60715fb" id="r_af4b14a86ead3e3f59a18e5afd60715fb"><td class="memItemLeft" align="right" valign="top">static const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af4b14a86ead3e3f59a18e5afd60715fb">MPI_RX_TIMEOUT_DURATION_MS</a> = 200</td></tr>
 <tr class="memdesc:af4b14a86ead3e3f59a18e5afd60715fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Timeout duration for receive in milliseconds. Same between bytes and at the start.  <br /></td></tr>
 <tr class="separator:af4b14a86ead3e3f59a18e5afd60715fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae701c14e4b8c897648edf2d4ea61dc3e" id="r_ae701c14e4b8c897648edf2d4ea61dc3e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="mpi__types_8h.html#ad99b46e59f66afc27376333407cbc74a">MPI_rx_mode_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae701c14e4b8c897648edf2d4ea61dc3e">MPI_current_uart_rx_mode</a> = <a class="el" href="mpi__types_8h.html#ad99b46e59f66afc27376333407cbc74aad223ade665bf6d16a3acb306b9abe51c">MPI_RX_MODE_NOT_LISTENING_TO_MPI</a></td></tr>
-<tr class="separator:ae701c14e4b8c897648edf2d4ea61dc3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53c82f4c16e83f42108fcf224fa7b23a" id="r_a53c82f4c16e83f42108fcf224fa7b23a"><td class="memItemLeft" align="right" valign="top">volatile <a class="el" href="mpi__types_8h.html#ad99b46e59f66afc27376333407cbc74a">MPI_rx_mode_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a53c82f4c16e83f42108fcf224fa7b23a">MPI_current_uart_rx_mode</a> = <a class="el" href="mpi__types_8h.html#ad99b46e59f66afc27376333407cbc74aad223ade665bf6d16a3acb306b9abe51c">MPI_RX_MODE_NOT_LISTENING_TO_MPI</a></td></tr>
+<tr class="memdesc:a53c82f4c16e83f42108fcf224fa7b23a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current mode under which the MPI is being operated.  <br /></td></tr>
+<tr class="separator:a53c82f4c16e83f42108fcf224fa7b23a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a187a81e0d982c70651ea1d960205971a" name="a187a81e0d982c70651ea1d960205971a"></a>
@@ -282,17 +283,19 @@ Here is the caller graph for this function:</div>
 </div>
 </div>
 <h2 class="groupheader">Variable Documentation</h2>
-<a id="ae701c14e4b8c897648edf2d4ea61dc3e" name="ae701c14e4b8c897648edf2d4ea61dc3e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae701c14e4b8c897648edf2d4ea61dc3e">&#9670;&#160;</a></span>MPI_current_uart_rx_mode</h2>
+<a id="a53c82f4c16e83f42108fcf224fa7b23a" name="a53c82f4c16e83f42108fcf224fa7b23a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53c82f4c16e83f42108fcf224fa7b23a">&#9670;&#160;</a></span>MPI_current_uart_rx_mode</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="mpi__types_8h.html#ad99b46e59f66afc27376333407cbc74a">MPI_rx_mode_t</a> MPI_current_uart_rx_mode = <a class="el" href="mpi__types_8h.html#ad99b46e59f66afc27376333407cbc74aad223ade665bf6d16a3acb306b9abe51c">MPI_RX_MODE_NOT_LISTENING_TO_MPI</a></td>
+          <td class="memname">volatile <a class="el" href="mpi__types_8h.html#ad99b46e59f66afc27376333407cbc74a">MPI_rx_mode_t</a> MPI_current_uart_rx_mode = <a class="el" href="mpi__types_8h.html#ad99b46e59f66afc27376333407cbc74aad223ade665bf6d16a3acb306b9abe51c">MPI_RX_MODE_NOT_LISTENING_TO_MPI</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Current mode under which the MPI is being operated. </p>
 
 </div>
 </div>
