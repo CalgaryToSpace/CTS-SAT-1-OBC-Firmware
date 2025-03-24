@@ -74,7 +74,7 @@ uint8_t CAM_change_baudrate(uint32_t new_baud_rate) {
 }
 
 
-/// @brief Sets up the camera by powering on and changing the baudrate to 2400.
+/// @brief Set up the camera by powering on and changing the baudrate to 2400.
 /// @return The error code from the `CAM_change_baudrate` function, or >100 if an EPS error occurred.
 /// @note Does not perform a self-test.
 uint8_t CAM_setup() {

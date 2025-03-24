@@ -8,7 +8,7 @@
 #include <stdlib.h>
 
 
-/// @brief Setup camera by changing baudrate from default to 9600
+/// @brief Set up the camera by powering on and changing the baudrate to 2400.
 /// @param args_str
 /// @param response_output_buf Buffer to write the response to
 /// @param response_output_buf_len Max length of the buffer
@@ -19,21 +19,21 @@ uint8_t TCMDEXEC_camera_setup(
 {
     const uint8_t setup_status = CAM_setup();
 
-    if (setup_status == 1){
-    snprintf(response_output_buf, response_output_buf_len, "Error setting up camera (Most likely timeout on receive).  Error code %d\n", setup_status);
-    return 1;
+    if (setup_status != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error setting up camera.  CAM_setup() -> %d",
+            setup_status
+        );
+        return setup_status;
     }
-    else if (setup_status == 2){
-        snprintf(response_output_buf, response_output_buf_len, "Error: Invalid bitrate\n");
-        return 1;
-        }
 
-    snprintf(response_output_buf, response_output_buf_len, "Successfully changed camera buadrate to 2400\n");
+    snprintf(response_output_buf, response_output_buf_len, "Successfully changed camera baudrate.");
     return 0;
 }
 
 
-/// @brief Test to check if camera is connected
+/// @brief Send the 't' test command to the camera, and check if the response is valid.
 /// @param args_str
 /// @param response_output_buf Buffer to write the response to
 /// @param response_output_buf_len Max length of the buffer
@@ -44,17 +44,17 @@ uint8_t TCMDEXEC_camera_test(
 {
     uint8_t setup_status = CAM_test();
 
-    if (setup_status == 1){
-        snprintf(response_output_buf, response_output_buf_len, "Error with camera\n");
+    if (setup_status != 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Error with camera");
         return 1;
     }
 
-    snprintf(response_output_buf, response_output_buf_len, "Camera connection ready\n");
+    snprintf(response_output_buf, response_output_buf_len, "Camera connection ready");
     return 0;
 }
 
 
-/// @brief Test to check if camera is connected
+/// @brief Debugging only. Set the baud rate of the camera to the specified value. Use `camera_setup` normally.
 /// @param args_str
 /// - Arg 1: Baudrate to change to (bits per second)
 /// @return 0 if successful, >0 if an error occurred
