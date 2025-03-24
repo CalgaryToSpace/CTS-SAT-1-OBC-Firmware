@@ -24,6 +24,9 @@
 
 // TODO: Create separate self-check for the boom.
 
+// MPI takes 3-4 seconds to boot. Wait 5 seconds to be safe.
+static const uint16_t MPI_boot_duration_ms = 5000;
+
 
 uint8_t CTS1_check_is_i2c_addr_alive(I2C_HandleTypeDef* hi2c, uint8_t i2c_addr) {
     const uint8_t I2C_scan_number_of_trials = 2;
@@ -139,20 +142,17 @@ uint8_t CTS1_check_is_eps_thriving() {
 }
 
 uint8_t CTS1_check_is_mpi_dumping() {
-    EPS_set_channel_enabled(EPS_CHANNEL_12V_MPI, 1);
-    EPS_set_channel_enabled(EPS_CHANNEL_5V_MPI, 1);
     MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MISO); // OBC is listening.
 
     MPI_current_uart_rx_mode = MPI_RX_MODE_COMMAND_MODE;
     UART_mpi_buffer_write_idx = 0;
 
-    HAL_Delay(200); // Wait for the MPI to send some stuff.
+    // Start DMA listening.
+    HAL_UART_Receive_DMA(UART_mpi_port_handle, (uint8_t*)&UART_mpi_buffer, 100);
 
     // Check that the MPI has sent some stuff.
     const uint8_t return_val = (UART_mpi_last_write_time_ms >= (HAL_GetTick() - 100));
-        
-    EPS_set_channel_enabled(EPS_CHANNEL_12V_MPI, 0);
-    EPS_set_channel_enabled(EPS_CHANNEL_5V_MPI, 0);
+
     MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
     MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
     HAL_UART_DMAStop(UART_mpi_port_handle);
@@ -344,8 +344,13 @@ void CTS1_run_system_self_check(CTS1_system_self_check_result_struct_t *result) 
     );
 
     // MPI
+    EPS_set_channel_enabled(EPS_CHANNEL_12V_MPI, 1);
+    EPS_set_channel_enabled(EPS_CHANNEL_5V_MPI, 1);
+    HAL_Delay(MPI_boot_duration_ms); // Wait for the MPI to boot up.
     result->is_mpi_dumping = CTS1_check_is_mpi_dumping();
     result->mpi_cmd_works = CTS1_check_mpi_cmd_works();
+    EPS_set_channel_enabled(EPS_CHANNEL_12V_MPI, 0);
+    EPS_set_channel_enabled(EPS_CHANNEL_5V_MPI, 0);
     LOG_message(
         LOG_SYSTEM_OBC, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
         "is_mpi_dumping: %d, mpi_cmd_works: %d",
