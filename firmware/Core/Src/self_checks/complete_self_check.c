@@ -141,21 +141,51 @@ uint8_t CTS1_check_is_eps_thriving() {
     return 1;
 }
 
+/// @brief Check if the MPI is dumping science data by using the lazy blocking receive method.
+/// @return 1 if the MPI is dumping science data, 0 otherwise.
 uint8_t CTS1_check_is_mpi_dumping() {
     MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MISO); // OBC is listening.
 
-    MPI_current_uart_rx_mode = MPI_RX_MODE_COMMAND_MODE;
-    UART_mpi_buffer_write_idx = 0;
+    // First, cancel any ongoing DMA transfers.
+    const HAL_StatusTypeDef abort_status = HAL_UART_AbortReceive(UART_mpi_port_handle);
+    if (abort_status != HAL_OK) {
+        LOG_message(
+            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Failed to abort MPI DMA listening: HAL_Status=%d", abort_status
+        );
+        MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
+        return 0;
+    }
 
-    // Start DMA listening.
-    HAL_UART_Receive_DMA(UART_mpi_port_handle, (uint8_t*)&UART_mpi_buffer, 100);
-
-    // Check that the MPI has sent some stuff.
-    const uint8_t return_val = (UART_mpi_last_write_time_ms >= (HAL_GetTick() - 100));
-
-    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
-    MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
-    HAL_UART_DMAStop(UART_mpi_port_handle);
+    // Start listening in blocking mode.
+    uint8_t rx_buffer[350];
+    const HAL_StatusTypeDef rx_status = HAL_UART_Receive(
+        UART_mpi_port_handle,
+        rx_buffer, sizeof(rx_buffer),
+        400 // Timeout: 400ms is plenty.
+    );
+    if (rx_status != HAL_OK) {
+        LOG_message(
+            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Failed to receive MPI data (probably timeout). HAL_Status=%d", rx_status
+        );
+        MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
+        return 0;
+    }
+    
+    // Validate the response. Should contain {0x0c, 0xff, 0xff, 0x0c} (sync bytes) in it.
+    uint8_t return_val = 0;
+    for (uint16_t i = 0; i < sizeof(rx_buffer) - 3; i++) {
+        if (
+            rx_buffer[i] == 0x0c &&
+            rx_buffer[i + 1] == 0xff &&
+            rx_buffer[i + 2] == 0xff &&
+            rx_buffer[i + 3] == 0x0c
+        ) {
+            return_val = 1;
+            break;
+        }
+    }
     
     return return_val;
 }
