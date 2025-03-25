@@ -53,5 +53,7 @@ var searchData=
   ['use_5fcss_50',['use_css',['../structADCS__estimation__params__struct__t.html#a23e6469c3dc6223dec0c05388ae94aee',1,'ADCS_estimation_params_struct_t']]],
   ['use_5fnadir_5fsensor_51',['use_nadir_sensor',['../structADCS__estimation__params__struct__t.html#ad0a0b1cdc7c872082a4102b202bbb3b9',1,'ADCS_estimation_params_struct_t']]],
   ['use_5fstar_5ftracker_52',['use_star_tracker',['../structADCS__estimation__params__struct__t.html#a565e997de73a13d52320b651cb6659b3',1,'ADCS_estimation_params_struct_t']]],
-  ['use_5fsun_5fsensor_53',['use_sun_sensor',['../structADCS__estimation__params__struct__t.html#a9e968b3f5ba7ceab34eb079f33611422',1,'ADCS_estimation_params_struct_t']]]
+  ['use_5fsun_5fsensor_53',['use_sun_sensor',['../structADCS__estimation__params__struct__t.html#a9e968b3f5ba7ceab34eb079f33611422',1,'ADCS_estimation_params_struct_t']]],
+  ['utc_5foffset_54',['utc_offset',['../structGPS__timea__response__t.html#aec9e11dfd1503fd1f7e58a1b26f6aff1',1,'GPS_timea_response_t']]],
+  ['utc_5fstatus_55',['utc_status',['../structGPS__timea__response__t.html#a9445bf00d95bd3fa0a4e2845220c06a3',1,'GPS_timea_response_t']]]
 ];
