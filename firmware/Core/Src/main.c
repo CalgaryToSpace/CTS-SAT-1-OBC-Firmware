@@ -133,7 +133,7 @@ const osThreadAttr_t TASK_monitor_freertos_memory_Attributes = {
 osThreadId_t TASK_background_upkeep_Handle;
 const osThreadAttr_t TASK_background_upkeep_Attributes = {
   .name = "TASK_background_upkeep",
-  .stack_size = 1024,
+  .stack_size = 4096,
   .priority = (osPriority_t) osPriorityNormal,
 };
 

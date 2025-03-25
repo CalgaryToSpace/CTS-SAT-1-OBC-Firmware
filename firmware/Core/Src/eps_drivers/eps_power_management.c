@@ -86,10 +86,10 @@ uint8_t EPS_monitor_and_disable_overcurrent_channels() {
 ///     Otherwise, it will log the JSON string to the error log.
 uint8_t EPS_log_pdu_json(const EPS_struct_pdu_housekeeping_data_eng_t *EPS_pdu_housekeeping_data_eng) {
 
-    char json_str[800];
+    char json_str[2000];
 
     //Power Logging                                                        
-    int8_t pdu_TO_JSON_status = EPS_struct_pdu_housekeeping_data_eng_TO_json(EPS_pdu_housekeeping_data_eng, json_str, 1000);
+    int8_t pdu_TO_JSON_status = EPS_struct_pdu_housekeeping_data_eng_TO_json(EPS_pdu_housekeeping_data_eng, json_str, 2000);
 
     if (pdu_TO_JSON_status != 0) {
         LOG_message(
