@@ -179,7 +179,7 @@ uint8_t TCMDEXEC_fs_write_file_str(const char *args_str, TCMD_TelecommandChannel
 /// @param args_str
 /// - Arg 0: File path as string
 /// - Arg 1: Offset within the file to start writing (uint64)
-/// - Arg 2: Hex string to write to file (e.g., "DEADBEEF" or "DE AD BE EF")
+/// - Arg 2: Hex string to write to file (e.g., "DEADBEEF" or "DE AD BE EF"). Up to 512 bytes.
 uint8_t TCMDEXEC_fs_write_file_hex(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     char arg_file_name[LFS_MAX_PATH_LENGTH];
@@ -219,20 +219,20 @@ uint8_t TCMDEXEC_fs_write_file_hex(const char *args_str, TCMD_TelecommandChannel
         snprintf(
             response_output_buf,
             response_output_buf_len,
-            "Error parsing hex data arg: Error %lld", parse_hex_result);
+            "Error parsing hex data arg: Error %d", parse_hex_result);
         return 3;
     }
 
     // Use our new helper function to write the data at the specified offset
-    const int8_t result = LFS_write_file_with_offset(arg_file_name, file_offset, binary_data, binary_data_length);
+    const int8_t result = LFS_write_file_with_offset(arg_file_name, (lfs_soff_t)file_offset, binary_data, binary_data_length);
     if (result < 0) {
         snprintf(response_output_buf, response_output_buf_len, "LittleFS Writing Error: %d", result);
         return 4;
     }
     
     snprintf(response_output_buf, response_output_buf_len, 
-             "LittleFS Successfully Wrote %d bytes of hex data at offset %d!", 
-             binary_data_length, file_offset);
+             "LittleFS Successfully Wrote %d bytes of hex data!", 
+             binary_data_length);
     return 0;
 }
 

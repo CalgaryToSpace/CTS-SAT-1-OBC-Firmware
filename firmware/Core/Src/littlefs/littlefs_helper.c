@@ -360,7 +360,6 @@ int8_t LFS_append_file(const char file_name[], uint8_t *write_buffer, uint32_t w
 /// @param write_buffer - Pointer to buffer holding the data to write
 /// @param write_buffer_len - Size of the data to write
 /// @retval 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
- 
 int8_t LFS_write_file_with_offset(const char file_name[], lfs_soff_t offset, uint8_t *write_buffer, uint32_t write_buffer_len)
 {
     if (!LFS_is_lfs_mounted)
