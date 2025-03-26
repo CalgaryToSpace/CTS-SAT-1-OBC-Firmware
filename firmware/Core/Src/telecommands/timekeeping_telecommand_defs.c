@@ -8,6 +8,8 @@
 #include "eps_drivers/eps_time.h"
 #include <stdio.h>
 #include <string.h>
+#include <inttypes.h>
+#include <limits.h>
 
 uint8_t TCMDEXEC_get_system_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
@@ -58,7 +60,7 @@ uint8_t TCMDEXEC_correct_system_time(const char *args_str, TCMD_TelecommandChann
     
     if(correction_time_ms>=2000)
     {
-        LOG_message(LOG_SYSTEM_ALL, LOG_SEVERITY_WARNING, LOG_SINK_ALL, "Synchronization has changed system time by 2000ms or more. Time deviation was %ld ms.\n", (int32_t)correction_time_ms);    
+        LOG_message(LOG_SYSTEM_ALL, LOG_SEVERITY_WARNING, LOG_SINK_ALL, "Synchronization has changed system time by 2000ms or more. Time deviation was %ld ms.", (uint32_t)correction_time_ms);
     }
 
     return 0;
@@ -72,19 +74,27 @@ uint8_t TCMDEXEC_set_obc_time_based_on_eps_time(const char *args_str, TCMD_Telec
 
     const uint8_t pre_result_status = EPS_CMD_get_system_status(&status);
     if (pre_result_status != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "syncing obc time failed: pre-result status error"
+        );
         return 1;
     }
 
-    uint64_t obc_time_before_sync = ((uint64_t) status.unix_time_sec) * 1000;
+    int64_t obc_time_before_sync_ms = ((int64_t) status.unix_time_sec) * 1000;
 
     const uint8_t result = EPS_set_obc_time_based_on_eps_time();
 
     const uint8_t post_result_status = EPS_CMD_get_system_status(&status);
     if (post_result_status != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "syncing obc time failed: post-result status error"
+        );
         return 1;
     }
 
-    uint64_t obc_time_after_sync = ((uint64_t) status.unix_time_sec) * 1000;
+    int64_t obc_time_after_sync_ms = ((int64_t) status.unix_time_sec) * 1000;
 
     if (result != 0 ) {
         snprintf(response_output_buf, response_output_buf_len,
@@ -96,7 +106,7 @@ uint8_t TCMDEXEC_set_obc_time_based_on_eps_time(const char *args_str, TCMD_Telec
         "success syncing obc time"
     );
 
-    LOG_message(LOG_SYSTEM_ALL, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, "CLock synced, OBC time before sync: %llu ms. OBC time after sync: %llu ms. Time difference: %llu \n", obc_time_before_sync, obc_time_after_sync, obc_time_after_sync-obc_time_before_sync);    
+    LOG_message(LOG_SYSTEM_ALL, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, "CLock synced, OBC time before sync: %lld ms. OBC time after sync: %lld ms. Time difference: %lld", obc_time_before_sync_ms, obc_time_after_sync_ms, obc_time_after_sync_ms-obc_time_before_sync_ms);    
 
     return 0;
 }
@@ -110,19 +120,27 @@ uint8_t TCMDEXEC_set_eps_time_based_on_obc_time(const char *args_str, TCMD_Telec
 
     const uint8_t pre_result_status = EPS_CMD_get_system_status(&status);
     if (pre_result_status != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "syncing eps time failed: pre-result status error"
+        );
         return 1;
     }
 
-    uint64_t eps_time_before_sync =  ((uint64_t) status.unix_time_sec) * 1000;
+    int64_t eps_time_before_sync_ms =  ((int64_t) status.unix_time_sec) * 1000;
     
     const uint8_t result = EPS_set_eps_time_based_on_obc_time();
     
     const uint8_t post_result_status = EPS_CMD_get_system_status(&status);
     if (post_result_status != 0) {
+        snprintf(        
+            response_output_buf, response_output_buf_len,
+            "syncing eps time failed: post-result status error"
+        );
         return 1;
     }
 
-    uint64_t eps_time_after_sync = ((uint64_t) status.unix_time_sec) * 1000;
+    int64_t eps_time_after_sync_ms = ((int64_t) status.unix_time_sec) * 1000;
     
     if (result != 0 ) {
         snprintf(
@@ -136,7 +154,7 @@ uint8_t TCMDEXEC_set_eps_time_based_on_obc_time(const char *args_str, TCMD_Telec
         "Success syncing eps time."
     );
 
-    LOG_message(LOG_SYSTEM_ALL, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, "CLock synced, EPS time before sync: %llu ms. EPS time after sync: %llu ms. Time difference: %llu \n", eps_time_before_sync, eps_time_after_sync, eps_time_after_sync-eps_time_before_sync);    
+    LOG_message(LOG_SYSTEM_ALL, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, "CLock synced, EPS time before sync: %lld ms. EPS time after sync: %lld ms. Time difference: %lld", eps_time_before_sync_ms, eps_time_after_sync_ms, eps_time_after_sync_ms-eps_time_before_sync_ms);    
 
     return 0;
 }
