@@ -1,7 +1,7 @@
 #include "gps/gps_ascii_parsers.h"
 #include "gps/gps_types.h"
 #include "log/log.h"
-#include "telecommand_args_helpers.h"
+#include "telecommand_exec/telecommand_args_helpers.h"
 #include "transforms/arrays.h"
 
 #include <stdio.h>
