@@ -1795,7 +1795,7 @@ uint8_t TCMDEXEC_adcs_measurements(const char *args_str, TCMD_TelecommandChannel
     return status;
 }
 
-// #define FLATSAT_TEST_MODE // TODO: REMOVE BEFORE FLIGHT
+#define FLATSAT_TEST_MODE // TODO: REMOVE BEFORE FLIGHT
 
 #ifdef FLATSAT_TEST_MODE
     #include "eps_drivers/eps_commands.h"

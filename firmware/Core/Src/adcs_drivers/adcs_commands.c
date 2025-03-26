@@ -1351,7 +1351,7 @@ uint8_t adcs_download_buffer[20480]; // static buffer to hold the 20 kB from the
 /// Specifically: bytes 0-2 are the ADCS error, bytes 3-10 are which command failed, bytes 11-16 are the index of the failure if applicable
 int16_t ADCS_load_sd_file_block_to_download_buffer(ADCS_file_info_struct_t file_info, uint8_t current_block, char* filename_string, uint8_t filename_length) {
     ADCS_file_download_buffer_struct_t download_packet;
-    uint16_t hole_map[8];
+    uint16_t hole_map[8] = {0, 0, 0, 0, 0, 0, 0, 0};
     int16_t status;
 
     status = ADCS_load_file_download_block(file_info.file_type, current_block, 0, 1024);
@@ -1437,6 +1437,8 @@ int16_t ADCS_load_sd_file_block_to_download_buffer(ADCS_file_info_struct_t file_
 
             // generate hole map to determine any missing packets
             hole_map[download_packet.packet_counter / 128] = hole_map[download_packet.packet_counter / 128] | download_packet.packet_counter;
+                    // TODO: this line doesn't do what it's supposed to (i.e. anything). FIX IT. 
+                                // Or-ing it with the packet counter is e.g. (current hole map bit) | 0b00000111 for packet 7, which is clearly wrong.
 
         }
 
@@ -1456,7 +1458,10 @@ int16_t ADCS_load_sd_file_block_to_download_buffer(ADCS_file_info_struct_t file_
         }
 
         hole_map_attempts++;
-        if (hole_map_attempts == 255) {
+        if (hole_map_attempts >= 5) {
+            if (file_info.file_type == ADCS_FILE_TYPE_INDEX) {
+                break; // there's no way to ask the ADCS how large the index file is, so do this arbitrarily
+            }
             return 7; // hole map timeout
         }
 
@@ -1495,11 +1500,9 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
         */
             
         status = ADCS_reset_file_list_read_pointer();
-        if (status != 0 && status != 165) {; return 1;}
-        // For some reason, the engineering model ADCS always returns status 165 for this command, regardless of what the status *should* be
-        // Effectively, this means we cannot effectively check the status of this command, so we must use a workaround
-        // TODO: write a workaround
-            // Possible workaround pending CubeSpace reply
+        if (status != 0) {; return 1;}
+        // For some reason, the EPS causes us to get Status 165 for this telecommand when we send it while in the stack
+        // TODO: waiting on Parker L et al. to determine whether the EPS I2C connection can be severed / disabled
 
         for (uint16_t i = 0; i < file_index; i++) {
             status = ADCS_advance_file_list_read_pointer();
@@ -1514,19 +1517,19 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
 
             case ADCS_FILE_TYPE_TELEMETRY_LOG:
                 snprintf_ret = snprintf(filename_string, 17, "ADCS/log%d.TLM", file_index);
-                if (snprintf_ret != 0) {return snprintf_ret;};
+                if (snprintf_ret < 0) {return snprintf_ret;};
                 break;
             case ADCS_FILE_TYPE_JPG_IMAGE:
                 snprintf_ret = snprintf(filename_string, 17, "ADCS/img%d.jpg", file_index);
-                if (snprintf_ret != 0) {return snprintf_ret;};
+                if (snprintf_ret < 0) {return snprintf_ret;};
                 break;    
             case ADCS_FILE_TYPE_BMP_IMAGE:
                 snprintf_ret = snprintf(filename_string, 17, "ADCS/img%d.bmp", file_index);
-                if (snprintf_ret != 0) {return snprintf_ret;};
+                if (snprintf_ret < 0) {return snprintf_ret;};
                 break;    
             case ADCS_FILE_TYPE_INDEX:
                 snprintf_ret = snprintf(filename_string, 17, "ADCS/index_file");
-                if (snprintf_ret != 0) {return snprintf_ret;};
+                if (snprintf_ret < 0) {return snprintf_ret;};
                 break;    
             default:
                 return 1;
@@ -1534,8 +1537,9 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
 
     } else {
         snprintf_ret = snprintf(filename_string, 16, "ADCS/index_file");
-        if (snprintf_ret != 0) {return snprintf_ret;};
+        if (snprintf_ret < 0) {return snprintf_ret;};
         file_info.file_size = 20479; // for the index file, we should only need a single block
+        file_info.file_type = ADCS_FILE_TYPE_INDEX;
     }
 
     LFS_delete_file(filename_string); // this will error if the file doesn't exist. That's OK.
