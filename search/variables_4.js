@@ -16,10 +16,9 @@ var searchData=
   ['detector_5fstatus_13',['detector_status',['../structMPI__dataframe__t.html#a394eaffd404eae51888b6b5e52879edc',1,'MPI_dataframe_t']]],
   ['device_14',['device',['../structcsp__usart__conf.html#a0ddb2df0cce0df38ab3083c59c4b1061',1,'csp_usart_conf']]],
   ['diff_15',['diff',['../structlfs__dir__traverse.html#ac9e5f6c88484603ea9a4b4a520c94b9d',1,'lfs_dir_traverse']]],
-  ['differential_5fage_5fms_16',['differential_age_ms',['../structGPS__bestxyza__response__t.html#afca0439428bbee4cac0a672880b7ff5a',1,'GPS_bestxyza_response_t']]],
-  ['dir_17',['dir',['../structlfs__dir__traverse.html#a5ce237ce00481f751b5246c653749182',1,'lfs_dir_traverse']]],
-  ['disk_18',['disk',['../structlfs__dir__traverse.html#a8a1dcab0f825e921ca1309b8b4ac10ae',1,'lfs_dir_traverse']]],
-  ['disk_5fversion_19',['disk_version',['../structlfs__fsinfo.html#ab694efe887dc4db897369ee44031107a',1,'lfs_fsinfo']]],
-  ['driver_5fdata_20',['driver_data',['../structcsp__iface__s.html#a3d31b60ba7607d987787548e9e77b844',1,'csp_iface_s']]],
-  ['drop_21',['drop',['../structcsp__iface__s.html#acb45c590ec36b8ece57fc758b669d9b6',1,'csp_iface_s']]]
+  ['dir_16',['dir',['../structlfs__dir__traverse.html#a5ce237ce00481f751b5246c653749182',1,'lfs_dir_traverse']]],
+  ['disk_17',['disk',['../structlfs__dir__traverse.html#a8a1dcab0f825e921ca1309b8b4ac10ae',1,'lfs_dir_traverse']]],
+  ['disk_5fversion_18',['disk_version',['../structlfs__fsinfo.html#ab694efe887dc4db897369ee44031107a',1,'lfs_fsinfo']]],
+  ['driver_5fdata_19',['driver_data',['../structcsp__iface__s.html#a3d31b60ba7607d987787548e9e77b844',1,'csp_iface_s']]],
+  ['drop_20',['drop',['../structcsp__iface__s.html#acb45c590ec36b8ece57fc758b669d9b6',1,'csp_iface_s']]]
 ];
