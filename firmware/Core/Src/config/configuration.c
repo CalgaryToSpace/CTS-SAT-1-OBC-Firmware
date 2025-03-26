@@ -13,6 +13,7 @@ uint32_t CONFIG_int_demo_var_2 = 242344;
 
 // extern
 uint32_t EPS_monitor_interval_ms = 20000;
+uint32_t system_reset_interval = 604800000; 
 
 // extern
 // 1 = require, 0 = don't require

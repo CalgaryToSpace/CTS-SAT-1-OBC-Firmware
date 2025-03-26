@@ -3,6 +3,7 @@
 #include "config/configuration.h"
 #include "timekeeping/timekeeping.h"
 #include "rtos_tasks/rtos_task_helpers.h"
+#include "main.h"
 
 #include "cmsis_os.h"
 
@@ -12,7 +13,7 @@ uint64_t EPS_monitor_last_uptime = 0;
 
 void TASK_background_upkeep(void *argument) {
     TASK_HELP_start_of_task();
-
+    const uint64_t start_time_before_reset = TIM_get_current_unix_epoch_time_ms();
     while(1) {
 
         //EPS overcurrent monitor upkeep
@@ -40,6 +41,15 @@ void TASK_background_upkeep(void *argument) {
             EPS_monitor_last_uptime = current_time;
         }
         
+        if (start_time_before_reset + system_reset_interval < TIM_get_current_unix_epoch_time_ms()) {
+            LOG_message(
+                LOG_SYSTEM_OBC,
+                LOG_SEVERITY_NORMAL,
+                LOG_SINK_ALL,
+                "System reset triggered."
+            );
+            NVIC_SystemReset();
+        }
         osDelay(1000);
     }
 }
