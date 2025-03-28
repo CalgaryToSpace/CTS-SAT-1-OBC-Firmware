@@ -20,12 +20,16 @@ const uint32_t GPS_RX_TIMEOUT_BETWEEN_BYTES_MS = 800;
 /// @param cmd_buf log command string to send to the GPS.
 /// @param cmd_buf_len Exact length of the log command string.
 /// @param rx_buf Buffer to store the response.
-/// @param rx_buf_len Length of the response buffer.
 /// @param rx_buf_max_size Maximum length of the response buffer.
+/// @param rx_buf_len_dest Pointer to place to store the length of the response buffer.
 /// @return 0 on success, >0 if error.
 /// @note This function is intended for "once" log commands
-uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint8_t rx_buf[], uint16_t rx_buf_len, const uint16_t rx_buf_max_size)
-{
+uint8_t GPS_send_cmd_get_response(
+    const char *cmd_buf, uint8_t cmd_buf_len,
+    uint8_t rx_buf[],
+    const uint16_t rx_buf_max_size,
+    uint16_t* rx_buf_len_dest
+) {
     
     // Reset the GPS UART interrupt variables
     GPS_set_uart_interrupt_state(0); // Lock writing to the UART_gps_buffer while we memset it
@@ -35,14 +39,17 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
         // Can't use memset because UART_gps_buffer is volatile
         UART_gps_buffer[i] = 0;
     }
-    UART_gps_buffer_write_idx = 0;		// Make it start writing from the start
+    
+    // Make it start writing to the start of the buffer.
+    UART_gps_buffer_write_idx = 0;
 
     // TX TO GPS
     const HAL_StatusTypeDef tx_status = HAL_UART_Transmit(
         UART_gps_port_handle,
         (uint8_t *)cmd_buf,
         cmd_buf_len,
-        100);
+        100
+    );
 
     if (tx_status != HAL_OK)
     {
@@ -73,6 +80,8 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
 
                 // Disable the UART gps channel
                 GPS_set_uart_interrupt_state(0);
+
+                *rx_buf_len_dest = 0;
             
                 // fatal error; return
                 return 2;
@@ -103,33 +112,36 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
     // End Receiving
     GPS_set_uart_interrupt_state(0); // We are no longer expecting a response
 
-    // Logging the received response
-    LOG_message(
-        LOG_SYSTEM_GPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "GPS Buffer Data: %s",
-        UART_gps_buffer
-    );
+    UART_gps_buffer[UART_gps_buffer_write_idx] = '\0'; // Null-terminate the string
+
+    // Log the received response.
+    // LOG_message(
+    //     LOG_SYSTEM_GPS, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+    //     "GPS Buffer Data (%d bytes): %s",
+    //     UART_gps_buffer_write_idx,
+    //     UART_gps_buffer,
+    // );
 
     // Check that we've received what we're expecting
-    // TODO: If the following cases happen ever during testing, consider allowing them and treating them as WARNINGs
     if (UART_gps_buffer_write_idx > rx_buf_max_size)
     {
         LOG_message(
             LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-            "GPS ERROR: UART_gps_buffer overflow");
-        return 3;
+            "GPS ERROR: UART_gps_buffer overflow"
+        );
+        
+        *rx_buf_len_dest = rx_buf_max_size;
+        // No need to return here. We can still pass back the data we have.
     }
 
     // Copy the log response from the UART gps buffer to the rx_buf[] and clear the buffer
     for (uint16_t i = 0; i < UART_gps_buffer_write_idx; i++) {
         rx_buf[i] = UART_gps_buffer[i];
     }
+    *rx_buf_len_dest = UART_gps_buffer_write_idx;
 
-    LOG_message(
-        LOG_SYSTEM_GPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "rx_buf: %s",
-        rx_buf
-    );
+    // Ensure the final output buffer (rx_buf) is null-terminated
+    rx_buf[rx_buf_max_size - 1] = '\0';
 
     return 0;
 }
