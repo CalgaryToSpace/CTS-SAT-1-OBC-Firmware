@@ -1,0 +1,6 @@
+#ifndef INCLUDE_GUARD__RTOS_BACKGROUND_UPKEEP_H__
+#define INCLUDE_GUARD__RTOS_BACKGROUND_UPKEEP_H__
+
+void TASK_background_upkeep(void *argument);
+
+#endif // INCLUDE_GUARD__RTOS_BACKGROUND_UPKEEP_H__
