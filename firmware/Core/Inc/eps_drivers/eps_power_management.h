@@ -3,7 +3,7 @@
 
 #include "eps_drivers/eps_types.h"
 
-extern uint16_t current_mA_threshhold[32];
+extern uint16_t EPS_current_mA_threshhold[32];
 
 uint8_t EPS_monitor_and_disable_overcurrent_channels();
 

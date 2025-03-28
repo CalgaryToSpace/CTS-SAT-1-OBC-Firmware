@@ -10,7 +10,7 @@
 #include "log/log.h"
 
 
-uint16_t current_mA_threshhold[32]= 
+uint16_t EPS_current_mA_threshhold[32]= 
     {   
         1000,   //EPS_CHANNEL_VBATT_STACK = 0, // CH0
         1000,   //EPS_CHANNEL_5V_STACK = 1, // CH1
@@ -60,7 +60,7 @@ uint8_t EPS_monitor_and_disable_overcurrent_channels() {
     EPS_struct_pdu_housekeeping_data_eng_t EPS_pdu_housekeeping_data_eng;
 
     //Obtain the PDU data
-    uint8_t pdu_status = EPS_CMD_get_pdu_housekeeping_data_eng(&EPS_pdu_housekeeping_data_eng);
+    const uint8_t pdu_status = EPS_CMD_get_pdu_housekeeping_data_eng(&EPS_pdu_housekeeping_data_eng);
     if (pdu_status != 0) {
         LOG_message(
             LOG_SYSTEM_EPS,
@@ -72,7 +72,7 @@ uint8_t EPS_monitor_and_disable_overcurrent_channels() {
         return 2;
     }
 
-    uint8_t logging_status = EPS_log_pdu_json(&EPS_pdu_housekeeping_data_eng);
+    const uint8_t logging_status = EPS_log_pdu_json(&EPS_pdu_housekeeping_data_eng);
 
     EPS_channel_management(&EPS_pdu_housekeeping_data_eng);
 
@@ -121,18 +121,39 @@ uint8_t EPS_log_pdu_json(const EPS_struct_pdu_housekeeping_data_eng_t *EPS_pdu_h
 ///       The function will log an error message if the channel is disabled due to a power issue.
 void EPS_channel_management(const EPS_struct_pdu_housekeeping_data_eng_t *EPS_pdu_housekeeping_data_eng) {
 
-    EPS_vpid_eng_t vpid_eng[32];
-    memcpy(vpid_eng, EPS_pdu_housekeeping_data_eng->vip_each_channel, sizeof(EPS_vpid_eng_t) * 32);
-
-    uint32_t ch_bitfield = (EPS_pdu_housekeeping_data_eng->stat_ch_ext_on_bitfield << 16) & EPS_pdu_housekeeping_data_eng->stat_ch_on_bitfield; 
+    const uint32_t ch_bitfield = (EPS_pdu_housekeeping_data_eng->stat_ch_ext_on_bitfield << 16) | EPS_pdu_housekeeping_data_eng->stat_ch_on_bitfield; 
 
     //Power Monitoring
-    for (int channel = 0; channel < 32; channel++) {
+    for (uint8_t channel = 0; channel < 32; channel++) {
+        if ((ch_bitfield & (1 << channel)) == 0) { // Check if channel is enabled.
+            LOG_message(
+                LOG_SYSTEM_EPS,
+                LOG_SEVERITY_DEBUG,
+                LOG_SINK_ALL,
+                "Channel %d is disabled.", channel
+            );
+            continue;
+        }
+        if (EPS_current_mA_threshhold[channel] == 0) {
+            LOG_message(
+                LOG_SYSTEM_EPS,
+                LOG_SEVERITY_DEBUG,
+                LOG_SINK_ALL,
+                "Channel %d is has threshold 0.", channel
+            );
+            continue;
+        } 
+        if (!(EPS_pdu_housekeeping_data_eng->vip_each_channel[channel].current_mA > EPS_current_mA_threshhold[channel])) {
+            LOG_message(
+                LOG_SYSTEM_EPS,
+                LOG_SEVERITY_DEBUG,
+                LOG_SINK_ALL,
+                "Channel %d is has not exceeded the threshold.", channel
+            );
+            continue;
+        }
 
-        if ((ch_bitfield & 1) && (current_mA_threshhold[channel]) //Check if channel is enabled
-            && ((uint16_t) vpid_eng[channel].current_mA > current_mA_threshhold[channel])) {
-
-            uint8_t disable_result = EPS_CMD_output_bus_channel_off(channel);
+            const uint8_t disable_result = EPS_CMD_output_bus_channel_off(channel);
 
             if (disable_result != 0) {
                 LOG_message(
@@ -150,12 +171,10 @@ void EPS_channel_management(const EPS_struct_pdu_housekeeping_data_eng_t *EPS_pd
                     "Channel %d was turned off. Due to a overcurrent oveflow.", channel
                 );
             }       
-        }
-        ch_bitfield = ch_bitfield >> 1;
 
     }
 }
 
 void EPS_CMD_power_management_set_current_threshold(uint8_t channel, uint16_t threshold) {
-    current_mA_threshhold[channel] = threshold;
+    EPS_current_mA_threshhold[channel] = threshold;
 }
