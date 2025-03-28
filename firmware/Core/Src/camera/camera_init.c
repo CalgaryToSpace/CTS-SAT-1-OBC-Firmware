@@ -124,13 +124,13 @@ uint8_t CAM_test() {
     // Do a blocking receive of the response.
     // Seems that the test sentence response could be 201 bytes. 202 fails sometimes.
     // Receive slightly less for safety (200).
-    uint8_t UART_test_str[200];
+    char UART_test_str[200];
 
     // Preset in order to check if the response is empty.
     memset(UART_test_str, 0, sizeof(UART_test_str));
 
     const HAL_StatusTypeDef rx_status = HAL_UART_Receive(
-        UART_camera_port_handle, UART_test_str, sizeof(UART_test_str),
+        UART_camera_port_handle, (uint8_t*) UART_test_str, sizeof(UART_test_str),
         // Timeout: At 1200 baud, the command takes <=1882ms. Using 2000ms here ensures it works
         // for all baud rates (including the minimum).
         2000
@@ -148,30 +148,30 @@ uint8_t CAM_test() {
     // Safety: Ensure the string is null-terminated.
     UART_test_str[sizeof(UART_test_str) - 1] = 0;
 
-    DEBUG_uart_print_str("Camera test response:\n");
-    DEBUG_uart_print_str((char *) UART_test_str);
-    DEBUG_uart_print_str("\n");
-    DEBUG_uart_print_str("END RESPONSE\n");
+    LOG_message(
+        LOG_SYSTEM_BOOM, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+        "Camera test response:\n%s\nEND RESPONSE\n",
+        UART_test_str
+    );
 
     if (UART_test_str[0] == 0) {
-        UART_test_str[0] = 0;
         return 5;
     }
 
     // Should contain string "piCAM/FM Test String Transmission".
-    if (strstr((char *) UART_test_str, "piCAM/FM Test String Transmission") == NULL) {
+    if (strstr(UART_test_str, "piCAM/FM Test String Transmission") == NULL) {
         return 6;
     }
 
-    const char* test_resp_border_str = "@----------------------------------------------------------------";
+    const char* const test_resp_border_str = "@----------------------------------------------------------------";
 
     // Ensure string starts with the `test_resp_border_str`.
-    if (strncmp((char *) UART_test_str, test_resp_border_str, strlen(test_resp_border_str)) != 0) {
+    if (strncmp(UART_test_str, test_resp_border_str, strlen(test_resp_border_str)) != 0) {
         return 7;
     }
 
     // Ensure there's a second border string in the response.
-    if (strstr((char *) UART_test_str + strlen(test_resp_border_str), test_resp_border_str) == NULL) {
+    if (strstr(UART_test_str + strlen(test_resp_border_str), test_resp_border_str) == NULL) {
         return 8;
     }
 
