@@ -1,135 +1,138 @@
 <map id="firmware/Core/Inc/telecommand_exec/telecommand_types.h" name="firmware/Core/Inc/telecommand_exec/telecommand_types.h">
-<area shape="rect" id="Node000001" title=" " alt="" coords="4833,5,5038,46"/>
-<area shape="rect" id="Node000002" href="$telecommand__definitions_8h.html" title=" " alt="" coords="2872,94,3084,135"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="4817,35,3085,111,3085,106,4817,30"/>
-<area shape="rect" id="Node000003" href="$telecommand__parser_8h.html" title=" " alt="" coords="597,183,802,223"/>
-<area shape="poly" id="edge59_Node000001_Node000003" title=" " alt="" coords="4817,29,4210,34,3757,41,3233,53,2659,72,2054,100,1441,137,840,185,803,189,802,184,839,180,1441,132,2054,94,2658,67,3233,48,3757,35,4210,28,4817,24"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="4966,5,5172,46"/>
+<area shape="rect" id="Node000002" href="$telecommand__definitions_8h.html" title=" " alt="" coords="2636,94,2848,135"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="4951,34,2849,112,2849,106,4951,29"/>
+<area shape="rect" id="Node000003" href="$telecommand__parser_8h.html" title=" " alt="" coords="506,183,712,223"/>
+<area shape="poly" id="edge58_Node000001_Node000003" title=" " alt="" coords="4951,30,4486,34,3773,44,2924,64,2484,79,2052,97,1664,119,1282,146,712,195,712,189,1282,141,1663,114,2052,91,2483,73,2924,59,3772,39,4486,29,4951,25"/>
 <area shape="rect" id="Node000005" href="$telecommand__executor_8c.html" title=" " alt="" coords="5,279,213,320"/>
-<area shape="poly" id="edge82_Node000001_Node000005" title=" " alt="" coords="4817,30,4297,32,3482,41,2506,61,2000,77,1502,97,1315,100,1155,96,882,84,751,87,614,101,461,132,283,185,238,205,196,231,132,281,128,276,193,226,236,200,281,180,460,127,613,95,751,81,882,79,1155,91,1315,95,1502,91,1999,71,2506,56,3482,36,4297,27,4817,24"/>
-<area shape="rect" id="Node000023" href="$log__telecommand__defs_8c.html" title=" " alt="" coords="5319,279,5534,320"/>
-<area shape="poly" id="edge83_Node000001_Node000023" title=" " alt="" coords="5054,26,5352,33,5714,46,6027,65,6129,77,6161,84,6177,92,6200,125,6208,158,6200,192,6178,225,6165,234,6145,242,6086,256,6006,267,5913,277,5712,290,5534,298,5534,292,5711,285,5913,272,6006,262,6085,251,6143,237,6162,229,6174,221,6195,190,6202,158,6195,127,6174,96,6159,89,6128,82,6027,70,5714,51,5351,39,5054,32"/>
-<area shape="rect" id="Node000038" href="$telecommand__executor_8h.html" title=" " alt="" coords="2642,94,2848,135"/>
-<area shape="poly" id="edge53_Node000001_Node000038" title=" " alt="" coords="4818,31,3840,52,3274,71,3039,83,2860,97,2848,98,2848,93,2859,91,3038,78,3274,66,3840,47,4818,26"/>
-<area shape="rect" id="Node000039" href="$agenda__telecommands__defs_8h.html" title=" " alt="" coords="4240,94,4452,135"/>
-<area shape="poly" id="edge60_Node000001_Node000039" title=" " alt="" coords="4818,46,4464,97,4454,98,4453,93,4463,91,4817,40"/>
-<area shape="rect" id="Node000040" href="$config__telecommand__defs_8h.html" title=" " alt="" coords="5420,94,5632,135"/>
-<area shape="poly" id="edge63_Node000001_Node000040" title=" " alt="" coords="5054,40,5409,91,5420,93,5419,98,5409,97,5053,46"/>
-<area shape="rect" id="Node000042" href="$freertos__telecommand__defs_8h.html" title=" " alt="" coords="4712,94,4924,135"/>
-<area shape="poly" id="edge66_Node000001_Node000042" title=" " alt="" coords="4899,57,4846,96,4843,91,4896,53"/>
-<area shape="rect" id="Node000043" href="$gps__telecommand__defs_8h.html" title=" " alt="" coords="4948,94,5160,135"/>
-<area shape="poly" id="edge69_Node000001_Node000043" title=" " alt="" coords="4976,53,5029,91,5026,96,4973,57"/>
-<area shape="rect" id="Node000044" href="$stm32__internal__flash__telecommand__defs_8h.html" title=" " alt="" coords="5892,94,6163,135"/>
-<area shape="poly" id="edge71_Node000001_Node000044" title=" " alt="" coords="5054,31,5424,53,5881,91,5892,92,5891,98,5881,97,5423,59,5054,36"/>
-<area shape="rect" id="Node000046" href="$system__telecommand__defs_8h.html" title=" " alt="" coords="4476,94,4688,135"/>
-<area shape="poly" id="edge74_Node000001_Node000046" title=" " alt="" coords="4841,53,4663,96,4662,91,4840,48"/>
-<area shape="rect" id="Node000047" href="$telecommand__crc_8h.html" title=" " alt="" coords="5656,94,5868,135"/>
-<area shape="poly" id="edge77_Node000001_Node000047" title=" " alt="" coords="5054,33,5325,56,5645,91,5656,93,5655,98,5645,97,5324,62,5053,38"/>
-<area shape="rect" id="Node000048" href="$testing__telecommand__defs_8h.html" title=" " alt="" coords="5184,94,5396,135"/>
-<area shape="poly" id="edge79_Node000001_Node000048" title=" " alt="" coords="5032,48,5210,91,5209,96,5031,53"/>
-<area shape="rect" id="Node000049" href="$telecommand__crc_8c.html" title=" " alt="" coords="6238,94,6452,135"/>
-<area shape="poly" id="edge84_Node000001_Node000049" title=" " alt="" coords="5054,27,5561,45,5889,64,6220,91,6238,93,6237,99,6219,97,5889,69,5561,50,5054,32"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="2857,137,2553,160,2296,170,2069,171,1858,168,1647,164,1420,163,1164,169,861,185,803,191,803,185,861,180,1163,163,1420,157,1647,159,1858,163,2069,166,2296,165,2553,155,2856,132"/>
-<area shape="poly" id="edge43_Node000002_Node000005" title=" " alt="" coords="2857,137,2629,150,2350,154,1710,154,1384,153,1076,157,804,167,687,175,585,185,506,200,397,226,182,281,181,276,396,220,504,195,585,180,686,169,804,161,1076,151,1384,148,1710,148,2350,149,2629,144,2857,132"/>
+<area shape="poly" id="edge84_Node000001_Node000005" title=" " alt="" coords="4951,29,4401,30,3532,38,2488,58,1946,75,1413,97,1233,99,1079,93,815,76,689,77,625,82,558,92,488,106,413,126,333,152,246,185,209,205,176,230,126,280,123,277,172,226,206,200,244,180,331,147,411,121,486,101,557,86,624,77,689,72,815,71,1079,88,1233,94,1413,91,1945,70,2488,53,3532,33,4401,25,4951,24"/>
+<area shape="rect" id="Node000023" href="$log__telecommand__defs_8c.html" title=" " alt="" coords="5431,279,5646,320"/>
+<area shape="poly" id="edge85_Node000001_Node000023" title=" " alt="" coords="5187,26,5511,32,5912,44,6101,52,6260,63,6375,76,6410,83,6428,92,6451,125,6458,158,6451,192,6428,225,6413,236,6388,245,6315,261,6216,273,6101,283,5856,294,5646,299,5646,294,5855,289,6101,277,6216,268,6314,256,6386,240,6410,231,6424,221,6446,190,6453,158,6446,127,6425,96,6408,89,6374,81,6260,68,6101,58,5912,49,5511,37,5187,31"/>
+<area shape="rect" id="Node000038" href="$telecommand__executor_8h.html" title=" " alt="" coords="2064,94,2269,135"/>
+<area shape="poly" id="edge52_Node000001_Node000038" title=" " alt="" coords="4951,32,3990,56,2624,97,2270,111,2269,106,2624,91,3990,51,4951,27"/>
+<area shape="rect" id="Node000039" href="$agenda__telecommands__defs_8h.html" title=" " alt="" coords="4491,94,4703,135"/>
+<area shape="poly" id="edge59_Node000001_Node000039" title=" " alt="" coords="4952,51,4704,96,4703,91,4951,46"/>
+<area shape="rect" id="Node000040" href="$camera__telecommand__defs_8h.html" title=" " alt="" coords="5435,94,5647,135"/>
+<area shape="poly" id="edge62_Node000001_Node000040" title=" " alt="" coords="5187,46,5435,91,5434,96,5186,51"/>
+<area shape="rect" id="Node000042" href="$config__telecommand__defs_8h.html" title=" " alt="" coords="5671,94,5883,135"/>
+<area shape="poly" id="edge65_Node000001_Node000042" title=" " alt="" coords="5187,36,5407,60,5660,91,5671,93,5670,98,5659,97,5407,65,5187,41"/>
+<area shape="rect" id="Node000044" href="$freertos__telecommand__defs_8h.html" title=" " alt="" coords="4963,94,5175,135"/>
+<area shape="poly" id="edge68_Node000001_Node000044" title=" " alt="" coords="5072,62,5072,94,5066,94,5066,62"/>
+<area shape="rect" id="Node000045" href="$gps__telecommand__defs_8h.html" title=" " alt="" coords="5907,94,6119,135"/>
+<area shape="poly" id="edge71_Node000001_Node000045" title=" " alt="" coords="5187,31,5507,53,5702,70,5896,91,5907,93,5906,98,5895,97,5701,76,5507,59,5187,36"/>
+<area shape="rect" id="Node000046" href="$stm32__internal__flash__telecommand__defs_8h.html" title=" " alt="" coords="6143,94,6414,135"/>
+<area shape="poly" id="edge73_Node000001_Node000046" title=" " alt="" coords="5187,29,5605,51,5867,69,6132,91,6142,92,6142,98,6131,97,5867,74,5604,57,5187,35"/>
+<area shape="rect" id="Node000048" href="$system__telecommand__defs_8h.html" title=" " alt="" coords="4255,94,4467,135"/>
+<area shape="poly" id="edge76_Node000001_Node000048" title=" " alt="" coords="4951,41,4731,65,4479,97,4468,98,4467,93,4478,91,4731,60,4951,36"/>
+<area shape="rect" id="Node000049" href="$telecommand__crc_8h.html" title=" " alt="" coords="5199,94,5411,135"/>
+<area shape="poly" id="edge79_Node000001_Node000049" title=" " alt="" coords="5137,49,5252,91,5250,96,5136,54"/>
+<area shape="rect" id="Node000050" href="$testing__telecommand__defs_8h.html" title=" " alt="" coords="4727,94,4939,135"/>
+<area shape="poly" id="edge81_Node000001_Node000050" title=" " alt="" coords="5002,54,4888,96,4886,91,5001,49"/>
+<area shape="rect" id="Node000051" href="$telecommand__crc_8c.html" title=" " alt="" coords="6488,94,6703,135"/>
+<area shape="poly" id="edge86_Node000001_Node000051" title=" " alt="" coords="5187,26,5423,31,5742,42,6104,62,6471,91,6488,93,6488,99,6470,97,6104,67,5742,48,5423,37,5187,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="2621,124,2281,137,1846,147,1507,147,1169,155,971,167,736,185,713,188,712,183,735,180,970,161,1169,150,1507,142,1846,141,2281,132,2620,118"/>
+<area shape="poly" id="edge42_Node000002_Node000005" title=" " alt="" coords="2621,124,2281,137,1890,142,1386,143,1127,146,883,153,668,166,495,185,430,200,342,226,168,281,167,276,340,220,429,195,494,180,667,160,883,148,1127,141,1386,138,1890,136,2281,132,2620,118"/>
 <area shape="rect" id="Node000006" href="$telecommand__parser_8c.html" title=" " alt="" coords="605,279,813,320"/>
-<area shape="poly" id="edge44_Node000002_Node000006" title=" " alt="" coords="2857,137,2665,146,2431,147,1894,139,1620,138,1364,143,1138,157,1041,169,958,185,895,204,836,230,741,281,739,276,833,225,894,199,956,180,1040,164,1137,152,1363,137,1620,133,1894,134,2431,142,2665,141,2857,132"/>
-<area shape="rect" id="Node000008" href="$antenna__telecommand__defs_8h.html" title=" " alt="" coords="4066,183,4278,223"/>
-<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="3100,117,3523,136,3788,155,4055,180,4065,181,4065,187,4054,185,3788,160,3523,142,3100,122"/>
-<area shape="rect" id="Node000010" href="$telecommand__definitions_8c.html" title=" " alt="" coords="3827,279,4042,320"/>
-<area shape="poly" id="edge51_Node000002_Node000010" title=" " alt="" coords="3100,115,3268,120,3461,131,3640,151,3712,164,3767,180,3784,189,3795,199,3819,221,3903,276,3900,280,3815,225,3791,203,3781,193,3765,185,3711,169,3639,156,3460,137,3268,125,3100,120"/>
-<area shape="rect" id="Node000011" href="$comms__telecommand__defs_8h.html" title=" " alt="" coords="4302,183,4514,223"/>
-<area shape="poly" id="edge10_Node000002_Node000011" title=" " alt="" coords="3100,115,3323,120,3619,132,3953,151,4291,180,4301,181,4301,187,4290,185,3953,156,3619,137,3323,126,3100,120"/>
-<area shape="rect" id="Node000013" href="$eps__telecommands_8h.html" title=" " alt="" coords="1006,183,1218,223"/>
-<area shape="poly" id="edge13_Node000002_Node000013" title=" " alt="" coords="2857,137,2610,156,2401,164,2217,165,2045,162,1874,159,1690,160,1482,168,1237,185,1219,187,1218,182,1237,180,1482,162,1690,155,1874,154,2045,157,2217,160,2401,159,2610,151,2857,132"/>
-<area shape="rect" id="Node000015" href="$gps__telecommand__defs_8c.html" title=" " alt="" coords="836,279,1051,320"/>
-<area shape="poly" id="edge47_Node000002_Node000015" title=" " alt="" coords="2856,137,2491,140,1880,143,1566,148,1291,155,1089,167,1026,176,994,185,975,205,961,230,948,279,943,278,956,228,971,201,992,180,1025,170,1088,162,1291,150,1565,142,1880,138,2491,135,2856,132"/>
-<area shape="rect" id="Node000016" href="$flash__telecommand__defs_8h.html" title=" " alt="" coords="1530,183,1742,223"/>
-<area shape="poly" id="edge17_Node000002_Node000016" title=" " alt="" coords="2857,137,2689,151,2546,158,2303,161,2061,164,1920,171,1753,185,1743,186,1742,181,1753,180,1919,166,2061,158,2303,156,2546,153,2688,146,2856,132"/>
-<area shape="rect" id="Node000018" href="$i2c__telecommand__defs_8h.html" title=" " alt="" coords="1766,183,1978,223"/>
-<area shape="poly" id="edge20_Node000002_Node000018" title=" " alt="" coords="2857,138,2725,149,2612,156,2421,161,2231,166,2120,173,1989,185,1979,187,1978,181,1989,180,2120,168,2231,161,2421,156,2612,151,2724,144,2856,132"/>
-<area shape="rect" id="Node000020" href="$lfs__telecommand__defs_8h.html" title=" " alt="" coords="1294,183,1506,223"/>
-<area shape="poly" id="edge23_Node000002_Node000020" title=" " alt="" coords="2857,137,2653,153,2480,161,2185,161,1891,161,1720,169,1517,185,1507,186,1506,181,1517,180,1719,164,1891,156,2185,156,2480,155,2653,148,2856,132"/>
-<area shape="rect" id="Node000021" href="$lfs__telecommand__defs_8c.html" title=" " alt="" coords="1314,279,1528,320"/>
-<area shape="poly" id="edge48_Node000002_Node000021" title=" " alt="" coords="2856,137,2541,139,2022,141,1757,145,1526,153,1358,166,1307,175,1283,185,1275,197,1274,210,1280,222,1292,234,1326,257,1367,276,1365,281,1324,262,1288,238,1276,225,1269,211,1270,196,1279,181,1306,170,1358,161,1526,148,1757,140,2022,136,2541,134,2856,132"/>
-<area shape="rect" id="Node000022" href="$log__telecommand__defs_8h.html" title=" " alt="" coords="4538,183,4750,223"/>
-<area shape="poly" id="edge26_Node000002_Node000022" title=" " alt="" coords="3100,113,3359,117,3713,127,4117,147,4324,162,4527,180,4537,181,4537,186,4526,185,4324,167,4117,152,3713,133,3359,122,3100,119"/>
-<area shape="rect" id="Node000024" href="$mpi__telecommand__defs_8h.html" title=" " alt="" coords="2002,183,2214,223"/>
-<area shape="poly" id="edge29_Node000002_Node000024" title=" " alt="" coords="2857,138,2679,154,2540,161,2402,169,2227,185,2215,187,2214,182,2226,180,2401,163,2540,156,2679,149,2856,132"/>
-<area shape="rect" id="Node000026" href="$telecommand__adcs_8h.html" title=" " alt="" coords="3830,183,4042,223"/>
-<area shape="poly" id="edge32_Node000002_Node000026" title=" " alt="" coords="3100,120,3422,143,3811,180,3829,182,3829,188,3810,185,3422,148,3100,125"/>
-<area shape="rect" id="Node000027" href="$temperature__sensor__telecommand__defs_8h.html" title=" " alt="" coords="2238,183,2505,223"/>
-<area shape="poly" id="edge34_Node000002_Node000027" title=" " alt="" coords="2857,138,2506,187,2506,181,2856,132"/>
-<area shape="rect" id="Node000029" href="$timekeeping__telecommand__defs_8h.html" title=" " alt="" coords="2530,183,2752,223"/>
-<area shape="poly" id="edge37_Node000002_Node000029" title=" " alt="" coords="2887,142,2718,185,2717,180,2886,136"/>
-<area shape="rect" id="Node000031" href="$uart__telecommand__defs_8h.html" title=" " alt="" coords="2827,183,3039,223"/>
-<area shape="poly" id="edge40_Node000002_Node000031" title=" " alt="" coords="2963,150,2946,183,2941,181,2959,147"/>
-<area shape="rect" id="Node000033" href="$agenda__telecommand__defs_8c.html" title=" " alt="" coords="3302,183,3516,223"/>
-<area shape="poly" id="edge45_Node000002_Node000033" title=" " alt="" coords="3092,136,3311,179,3310,185,3091,141"/>
-<area shape="rect" id="Node000034" href="$freertos__telecommand__defs_8c.html" title=" " alt="" coords="4824,183,5039,223"/>
-<area shape="poly" id="edge46_Node000002_Node000034" title=" " alt="" coords="3100,114,3394,120,3806,131,4280,151,4763,180,4825,186,4824,191,4762,185,4280,156,3805,137,3394,125,3100,120"/>
-<area shape="rect" id="Node000035" href="$system__telecommand__defs_8c.html" title=" " alt="" coords="3540,183,3755,223"/>
-<area shape="poly" id="edge49_Node000002_Node000035" title=" " alt="" coords="3100,127,3528,180,3541,182,3540,187,3527,185,3099,132"/>
-<area shape="rect" id="Node000036" href="$telecommand__adcs_8c.html" title=" " alt="" coords="3063,183,3278,223"/>
-<area shape="poly" id="edge50_Node000002_Node000036" title=" " alt="" coords="3037,139,3128,180,3126,185,3035,144"/>
-<area shape="rect" id="Node000037" href="$testing__telecommand__defs_8c.html" title=" " alt="" coords="5112,183,5327,223"/>
-<area shape="poly" id="edge52_Node000002_Node000037" title=" " alt="" coords="3100,114,3436,117,3918,128,4479,147,4767,162,5051,180,5112,186,5112,191,5050,185,4767,167,4478,153,3918,133,3436,123,3100,119"/>
+<area shape="poly" id="edge43_Node000002_Node000006" title=" " alt="" coords="2621,124,2281,137,1606,149,1185,163,1028,173,935,185,878,205,824,230,739,281,736,276,821,225,876,200,934,180,1027,167,1185,157,1606,144,2281,132,2620,118"/>
+<area shape="rect" id="Node000008" href="$antenna__telecommand__defs_8h.html" title=" " alt="" coords="2756,183,2968,223"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="2783,142,2837,180,2834,184,2780,146"/>
+<area shape="rect" id="Node000010" href="$telecommand__definitions_8c.html" title=" " alt="" coords="3848,279,4063,320"/>
+<area shape="poly" id="edge50_Node000002_Node000010" title=" " alt="" coords="2864,116,3149,124,3493,138,3788,157,3885,168,3916,174,3932,181,3949,203,3958,229,3960,278,3955,279,3952,230,3944,205,3929,185,3914,179,3885,173,3788,162,3492,143,3149,130,2864,121"/>
+<area shape="rect" id="Node000011" href="$comms__telecommand__defs_8h.html" title=" " alt="" coords="3231,183,3443,223"/>
+<area shape="poly" id="edge10_Node000002_Node000011" title=" " alt="" coords="2864,129,3219,180,3231,182,3230,187,3218,185,2863,135"/>
+<area shape="rect" id="Node000013" href="$eps__telecommands_8h.html" title=" " alt="" coords="1222,183,1434,223"/>
+<area shape="poly" id="edge13_Node000002_Node000013" title=" " alt="" coords="2621,124,1963,155,1635,173,1445,185,1435,187,1434,181,1445,180,1635,167,1963,150,2621,119"/>
+<area shape="rect" id="Node000015" href="$gps__telecommand__defs_8c.html" title=" " alt="" coords="1075,279,1290,320"/>
+<area shape="poly" id="edge46_Node000002_Node000015" title=" " alt="" coords="2621,124,2281,137,1619,143,1390,148,1189,156,1041,168,996,176,975,185,969,193,967,202,975,222,993,237,1023,251,1098,276,1097,281,1021,256,990,241,971,225,962,203,964,191,971,181,994,171,1040,163,1188,151,1390,143,1619,137,2281,132,2620,118"/>
+<area shape="rect" id="Node000016" href="$flash__telecommand__defs_8h.html" title=" " alt="" coords="1458,183,1670,223"/>
+<area shape="poly" id="edge17_Node000002_Node000016" title=" " alt="" coords="2621,122,2204,142,1943,160,1681,185,1671,187,1670,181,1681,180,1943,155,2204,137,2621,117"/>
+<area shape="rect" id="Node000018" href="$i2c__telecommand__defs_8h.html" title=" " alt="" coords="1694,183,1906,223"/>
+<area shape="poly" id="edge20_Node000002_Node000018" title=" " alt="" coords="2621,128,1969,185,1906,192,1906,187,1969,180,2620,123"/>
+<area shape="rect" id="Node000020" href="$lfs__telecommand__defs_8h.html" title=" " alt="" coords="986,183,1198,223"/>
+<area shape="poly" id="edge23_Node000002_Node000020" title=" " alt="" coords="2621,123,1209,185,1199,186,1198,181,1209,180,2620,118"/>
+<area shape="rect" id="Node000021" href="$lfs__telecommand__defs_8c.html" title=" " alt="" coords="836,279,1051,320"/>
+<area shape="poly" id="edge47_Node000002_Node000021" title=" " alt="" coords="2621,124,2281,137,1613,144,1382,149,1179,157,1029,169,983,177,961,185,947,205,941,230,940,256,942,278,937,279,935,256,936,229,942,203,958,181,982,171,1029,164,1179,152,1382,144,1613,139,2281,132,2620,118"/>
+<area shape="rect" id="Node000022" href="$log__telecommand__defs_8h.html" title=" " alt="" coords="4519,183,4731,223"/>
+<area shape="poly" id="edge26_Node000002_Node000022" title=" " alt="" coords="2864,115,3147,121,3542,132,3995,151,4456,180,4519,186,4518,191,4455,185,3995,157,3541,138,3147,126,2864,120"/>
+<area shape="rect" id="Node000024" href="$mpi__telecommand__defs_8h.html" title=" " alt="" coords="1982,183,2194,223"/>
+<area shape="poly" id="edge29_Node000002_Node000024" title=" " alt="" coords="2621,132,2207,185,2195,187,2194,182,2206,180,2621,127"/>
+<area shape="rect" id="Node000026" href="$telecommand__adcs_8h.html" title=" " alt="" coords="4231,183,4443,223"/>
+<area shape="poly" id="edge32_Node000002_Node000026" title=" " alt="" coords="2864,114,3112,118,3448,129,3831,148,4219,180,4231,181,4230,187,4218,185,3831,154,3448,134,3112,124,2864,119"/>
+<area shape="rect" id="Node000027" href="$temperature__sensor__telecommand__defs_8h.html" title=" " alt="" coords="2218,183,2485,223"/>
+<area shape="poly" id="edge34_Node000002_Node000027" title=" " alt="" coords="2639,141,2441,185,2440,179,2638,136"/>
+<area shape="rect" id="Node000029" href="$timekeeping__telecommand__defs_8h.html" title=" " alt="" coords="2510,183,2732,223"/>
+<area shape="poly" id="edge37_Node000002_Node000029" title=" " alt="" coords="2704,146,2650,184,2647,180,2701,142"/>
+<area shape="rect" id="Node000031" href="$uart__telecommand__defs_8h.html" title=" " alt="" coords="3706,183,3918,223"/>
+<area shape="poly" id="edge40_Node000002_Node000031" title=" " alt="" coords="2864,118,3235,139,3464,157,3693,180,3705,181,3705,187,3693,185,3463,162,3235,145,2864,123"/>
+<area shape="rect" id="Node000033" href="$agenda__telecommand__defs_8c.html" title=" " alt="" coords="3992,183,4207,223"/>
+<area shape="poly" id="edge44_Node000002_Node000033" title=" " alt="" coords="2864,116,3350,134,3661,153,3975,180,3992,182,3992,187,3974,185,3661,159,3350,140,2864,121"/>
+<area shape="rect" id="Node000034" href="$freertos__telecommand__defs_8c.html" title=" " alt="" coords="5044,183,5259,223"/>
+<area shape="poly" id="edge45_Node000002_Node000034" title=" " alt="" coords="2864,115,3316,121,3942,134,4571,154,4833,166,5032,180,5045,181,5044,187,5031,185,4833,171,4571,159,3942,140,3316,127,2864,120"/>
+<area shape="rect" id="Node000035" href="$system__telecommand__defs_8c.html" title=" " alt="" coords="2992,183,3207,223"/>
+<area shape="poly" id="edge48_Node000002_Node000035" title=" " alt="" coords="2839,136,3019,180,3018,185,2838,141"/>
+<area shape="rect" id="Node000036" href="$telecommand__adcs_8c.html" title=" " alt="" coords="3467,183,3682,223"/>
+<area shape="poly" id="edge49_Node000002_Node000036" title=" " alt="" coords="2864,122,3136,145,3456,180,3467,182,3467,187,3455,185,3135,151,2864,127"/>
+<area shape="rect" id="Node000037" href="$testing__telecommand__defs_8c.html" title=" " alt="" coords="4806,183,5020,223"/>
+<area shape="poly" id="edge51_Node000002_Node000037" title=" " alt="" coords="2864,114,3189,118,3654,128,4194,148,4744,180,4805,186,4805,191,4743,185,4194,154,3654,134,3189,123,2864,119"/>
 <area shape="rect" id="Node000004" href="$rtos__tasks_8c.html" title=" " alt="" coords="237,279,389,320"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="590,230,402,274,377,281,376,276,400,269,589,225"/>
-<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="582,221,413,244,225,274,191,281,190,276,225,269,412,238,581,216"/>
-<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="706,239,710,278,704,279,700,239"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="534,231,376,281,374,276,532,226"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="492,226,226,274,193,281,192,276,224,269,491,221"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="642,232,690,277,686,280,639,236"/>
 <area shape="rect" id="Node000007" href="$test__telecommand__parser_8c.html" title=" " alt="" coords="413,271,581,327"/>
-<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="645,233,557,273,554,268,642,228"/>
-<area shape="rect" id="Node000009" href="$antenna__telecommand__defs_8c.html" title=" " alt="" coords="4066,279,4280,320"/>
-<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="4175,239,4175,278,4170,279,4169,239"/>
-<area shape="poly" id="edge9_Node000008_Node000010" title=" " alt="" coords="4109,232,3985,281,3983,276,4107,227"/>
-<area shape="poly" id="edge12_Node000011_Node000010" title=" " alt="" coords="4287,229,4055,274,4022,281,4021,276,4054,269,4286,224"/>
-<area shape="rect" id="Node000012" href="$comms__telecommand__defs_8c.html" title=" " alt="" coords="4304,279,4519,320"/>
-<area shape="poly" id="edge11_Node000011_Node000012" title=" " alt="" coords="4412,239,4414,278,4408,279,4406,239"/>
-<area shape="poly" id="edge16_Node000013_Node000010" title=" " alt="" coords="1234,217,1281,221,1552,238,1781,248,2170,257,2559,259,3060,269,3827,292,3827,297,3060,274,2559,265,2170,262,1780,253,1551,243,1281,226,1233,222"/>
-<area shape="rect" id="Node000014" href="$eps__telecommands_8c.html" title=" " alt="" coords="1075,279,1290,320"/>
-<area shape="poly" id="edge14_Node000013_Node000014" title=" " alt="" coords="1138,234,1170,277,1166,280,1133,238"/>
-<area shape="poly" id="edge15_Node000013_Node000015" title=" " alt="" coords="1065,234,980,281,978,276,1062,229"/>
-<area shape="poly" id="edge19_Node000016_Node000010" title=" " alt="" coords="1757,221,2105,236,2711,256,3827,292,3827,297,2711,262,2105,241,1757,226"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="576,235,531,273,528,269,573,231"/>
+<area shape="rect" id="Node000009" href="$antenna__telecommand__defs_8c.html" title=" " alt="" coords="2834,279,3048,320"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="2890,233,2927,277,2923,280,2886,237"/>
+<area shape="poly" id="edge9_Node000008_Node000010" title=" " alt="" coords="2984,221,3230,246,3470,266,3848,290,3848,295,3470,271,3230,252,2984,226"/>
+<area shape="poly" id="edge12_Node000011_Node000010" title=" " alt="" coords="3459,221,3848,279,3847,285,3458,226"/>
+<area shape="rect" id="Node000012" href="$comms__telecommand__defs_8c.html" title=" " alt="" coords="3230,279,3444,320"/>
+<area shape="poly" id="edge11_Node000011_Node000012" title=" " alt="" coords="3340,239,3340,278,3334,278,3334,239"/>
+<area shape="poly" id="edge16_Node000013_Node000010" title=" " alt="" coords="1450,221,1754,245,2013,258,2240,263,2453,262,2892,258,3151,260,3456,269,3848,289,3848,294,3456,274,3151,265,2892,264,2453,268,2240,268,2013,263,1754,250,1449,226"/>
+<area shape="rect" id="Node000014" href="$eps__telecommands_8c.html" title=" " alt="" coords="1314,279,1528,320"/>
+<area shape="poly" id="edge14_Node000013_Node000014" title=" " alt="" coords="1359,232,1404,277,1400,280,1356,236"/>
+<area shape="poly" id="edge15_Node000013_Node000015" title=" " alt="" coords="1286,234,1214,281,1211,276,1283,230"/>
+<area shape="poly" id="edge19_Node000016_Node000010" title=" " alt="" coords="1686,221,1955,243,2183,255,2383,260,2571,260,2959,258,3187,261,3456,269,3848,289,3848,294,3456,274,3187,266,2959,264,2571,266,2383,265,2182,260,1954,248,1685,226"/>
 <area shape="rect" id="Node000017" href="$flash__telecommand__defs_8c.html" title=" " alt="" coords="1552,279,1767,320"/>
-<area shape="poly" id="edge18_Node000016_Node000017" title=" " alt="" coords="1647,238,1657,278,1652,279,1642,239"/>
-<area shape="poly" id="edge22_Node000018_Node000010" title=" " alt="" coords="1994,221,2327,239,2859,259,3827,292,3827,297,2859,265,2327,244,1993,226"/>
+<area shape="poly" id="edge18_Node000016_Node000017" title=" " alt="" coords="1596,232,1642,277,1638,280,1592,236"/>
+<area shape="poly" id="edge22_Node000018_Node000010" title=" " alt="" coords="1921,220,1925,221,2158,239,2355,250,2690,257,3025,258,3223,261,3456,269,3848,289,3848,294,3456,274,3222,266,3025,263,2689,262,2354,256,2157,245,1925,226,1921,226"/>
 <area shape="rect" id="Node000019" href="$i2c__telecommand__defs_8c.html" title=" " alt="" coords="1791,279,2006,320"/>
-<area shape="poly" id="edge21_Node000018_Node000019" title=" " alt="" coords="1884,237,1895,278,1890,279,1879,239"/>
-<area shape="poly" id="edge25_Node000020_Node000010" title=" " alt="" coords="1522,220,3827,292,3827,297,1521,226"/>
-<area shape="poly" id="edge24_Node000020_Node000021" title=" " alt="" coords="1410,238,1419,278,1414,279,1405,239"/>
-<area shape="poly" id="edge28_Node000022_Node000010" title=" " alt="" coords="4522,227,4390,240,4287,248,4184,256,4055,274,4018,281,4017,276,4054,269,4184,251,4286,243,4390,235,4521,221"/>
-<area shape="poly" id="edge27_Node000022_Node000023" title=" " alt="" coords="4766,216,5319,282,5319,288,4765,222"/>
-<area shape="poly" id="edge31_Node000024_Node000010" title=" " alt="" coords="2230,221,2577,244,3036,265,3827,292,3827,297,3035,270,2577,250,2229,226"/>
+<area shape="poly" id="edge21_Node000018_Node000019" title=" " alt="" coords="1833,232,1880,277,1876,280,1829,236"/>
+<area shape="poly" id="edge25_Node000020_Node000010" title=" " alt="" coords="1214,221,1554,247,1843,261,2097,266,2334,265,2826,258,3115,260,3456,269,3848,288,3848,294,3456,274,3115,265,2826,264,2334,270,2097,271,1843,266,1554,253,1213,226"/>
+<area shape="poly" id="edge24_Node000020_Node000021" title=" " alt="" coords="1050,234,976,281,973,276,1047,230"/>
+<area shape="poly" id="edge28_Node000022_Node000010" title=" " alt="" coords="4504,225,4500,226,4063,286,4063,281,4499,221,4503,220"/>
+<area shape="poly" id="edge27_Node000022_Node000023" title=" " alt="" coords="4747,216,4795,221,5431,285,5431,290,4794,226,4747,221"/>
+<area shape="poly" id="edge31_Node000024_Node000010" title=" " alt="" coords="2210,221,2399,237,2560,248,2834,256,3107,258,3456,269,3848,289,3848,294,3456,274,3107,264,2833,261,2560,253,2399,243,2209,226"/>
 <area shape="rect" id="Node000025" href="$mpi__telecommand__defs_8c.html" title=" " alt="" coords="2030,279,2244,320"/>
-<area shape="poly" id="edge30_Node000024_Node000025" title=" " alt="" coords="2121,237,2133,278,2128,279,2116,239"/>
-<area shape="poly" id="edge33_Node000026_Node000010" title=" " alt="" coords="3938,239,3937,279,3932,278,3933,239"/>
-<area shape="poly" id="edge36_Node000027_Node000010" title=" " alt="" coords="2521,221,2902,250,3272,271,3827,292,3827,298,3272,276,2901,255,2521,226"/>
+<area shape="poly" id="edge30_Node000024_Node000025" title=" " alt="" coords="2107,236,2129,277,2124,280,2103,238"/>
+<area shape="poly" id="edge33_Node000026_Node000010" title=" " alt="" coords="4243,230,4036,281,4035,276,4242,225"/>
+<area shape="poly" id="edge36_Node000027_Node000010" title=" " alt="" coords="2501,221,2770,241,2980,251,3189,257,3456,269,3848,289,3848,295,3456,274,3189,263,2980,256,2770,246,2501,226"/>
 <area shape="rect" id="Node000028" href="$obc__temperature__sensor__telecommand__defs_8c.html" title=" " alt="" coords="2268,279,2563,320"/>
-<area shape="poly" id="edge35_Node000027_Node000028" title=" " alt="" coords="2390,236,2409,277,2404,280,2385,238"/>
-<area shape="poly" id="edge38_Node000029_Node000010" title=" " alt="" coords="2768,220,2771,221,3070,248,3367,268,3827,291,3826,297,3367,274,3070,253,2770,226,2767,226"/>
+<area shape="poly" id="edge35_Node000027_Node000028" title=" " alt="" coords="2376,235,2405,277,2400,280,2371,238"/>
+<area shape="poly" id="edge38_Node000029_Node000010" title=" " alt="" coords="2748,221,3256,255,3848,289,3848,294,3256,260,2748,226"/>
 <area shape="rect" id="Node000030" href="$timekeeping__telecommand__defs_8c.html" title=" " alt="" coords="2587,279,2810,320"/>
-<area shape="poly" id="edge39_Node000029_Node000030" title=" " alt="" coords="2663,235,2689,277,2684,280,2659,238"/>
-<area shape="poly" id="edge41_Node000031_Node000010" title=" " alt="" coords="3055,221,3274,245,3487,264,3827,289,3827,294,3487,269,3273,250,3054,226"/>
-<area shape="rect" id="Node000032" href="$uart__telelecommand__defs_8c.html" title=" " alt="" coords="2834,279,3048,320"/>
-<area shape="poly" id="edge42_Node000031_Node000032" title=" " alt="" coords="2939,239,2942,278,2937,279,2933,239"/>
-<area shape="poly" id="edge54_Node000038_Node000004" title=" " alt="" coords="2627,119,2157,125,1522,138,929,157,713,170,586,185,518,205,453,230,349,281,347,276,451,225,516,200,584,180,712,165,929,152,1522,132,2157,120,2627,114"/>
-<area shape="poly" id="edge55_Node000038_Node000005" title=" " alt="" coords="2627,120,2128,126,1445,139,805,159,571,171,433,185,354,205,276,230,152,281,150,276,274,225,352,199,433,180,571,166,805,153,1445,134,2128,121,2627,114"/>
-<area shape="poly" id="edge58_Node000038_Node000010" title=" " alt="" coords="2759,148,2781,188,2797,206,2816,221,2838,230,2872,238,2972,253,3103,265,3254,274,3569,287,3827,293,3826,299,3569,292,3254,280,3103,270,2971,258,2871,243,2836,235,2813,226,2793,210,2777,191,2755,151"/>
-<area shape="poly" id="edge56_Node000038_Node000033" title=" " alt="" coords="2863,132,3078,156,3289,180,3302,182,3301,187,3289,185,3077,162,2863,138"/>
-<area shape="poly" id="edge57_Node000038_Node000035" title=" " alt="" coords="2863,132,3051,149,3197,156,3343,163,3528,180,3541,182,3540,187,3527,185,3342,169,3197,162,3050,155,2863,138"/>
-<area shape="poly" id="edge62_Node000039_Node000010" title=" " alt="" coords="4468,132,4590,141,4706,147,4750,155,4778,169,4784,180,4785,193,4778,208,4764,225,4747,236,4720,244,4640,256,4535,264,4417,267,4190,270,4055,274,4016,281,4015,276,4054,269,4190,265,4417,262,4535,258,4640,251,4719,239,4745,231,4761,221,4773,205,4779,192,4779,181,4774,173,4748,160,4705,152,4590,146,4468,138"/>
-<area shape="poly" id="edge61_Node000039_Node000033" title=" " alt="" coords="4225,125,3909,148,3719,165,3529,185,3517,187,3516,182,3529,180,3719,160,3909,143,4224,120"/>
-<area shape="poly" id="edge65_Node000040_Node000010" title=" " alt="" coords="5506,149,5468,191,5444,211,5417,226,5380,236,5324,244,5165,256,4963,262,4739,265,4311,267,4150,269,4055,274,4014,281,4013,276,4054,269,4150,264,4311,261,4739,260,4963,257,5165,251,5323,239,5379,231,5415,221,5441,206,5465,187,5502,146"/>
-<area shape="rect" id="Node000041" href="$config__telecommand__defs_8c.html" title=" " alt="" coords="5552,183,5767,223"/>
-<area shape="poly" id="edge64_Node000040_Node000041" title=" " alt="" coords="5570,141,5631,180,5628,184,5568,145"/>
-<area shape="poly" id="edge68_Node000042_Node000010" title=" " alt="" coords="4940,132,5018,137,5102,137,5259,136,5318,142,5341,148,5357,156,5367,168,5367,184,5359,203,5340,225,5317,235,5272,242,5127,254,4929,261,4704,266,4278,270,4055,274,4014,281,4013,276,4054,269,4278,265,4704,261,4929,256,5127,249,5272,237,5316,230,5337,221,5354,200,5362,183,5362,170,5354,160,5339,153,5318,147,5258,142,5102,143,5018,142,4940,138"/>
-<area shape="poly" id="edge67_Node000042_Node000034" title=" " alt="" coords="4858,142,4908,180,4904,184,4854,146"/>
-<area shape="poly" id="edge70_Node000043_Node000010" title=" " alt="" coords="5176,135,5304,161,5350,172,5372,181,5382,203,5380,215,5372,225,5349,235,5303,243,5154,254,4951,262,4721,266,4283,270,4055,274,4014,281,4013,276,4054,269,4283,265,4720,261,4951,257,5153,249,5302,237,5347,230,5369,221,5375,212,5377,204,5368,185,5349,177,5302,166,5175,140"/>
-<area shape="poly" id="edge73_Node000044_Node000010" title=" " alt="" coords="5970,144,5881,185,5843,208,5826,218,5803,226,5725,242,5635,254,5425,268,5186,272,4932,269,4437,260,4225,262,4055,274,4013,281,4012,276,4054,269,4225,257,4437,255,4932,264,5186,267,5425,263,5635,249,5725,237,5802,221,5824,213,5841,203,5878,180,5968,139"/>
-<area shape="rect" id="Node000045" href="$stm32__internal__flash__telecommand__defs_8c.html" title=" " alt="" coords="5892,183,6163,223"/>
-<area shape="poly" id="edge72_Node000044_Node000045" title=" " alt="" coords="6030,150,6030,182,6025,182,6025,150"/>
-<area shape="poly" id="edge76_Node000046_Node000010" title=" " alt="" coords="4704,132,4773,137,4846,139,4982,142,5034,149,5053,154,5068,163,5076,174,5076,188,5068,205,5052,225,5034,233,4999,239,4886,249,4559,262,4228,269,4055,274,4014,281,4014,276,4054,269,4228,264,4559,257,4886,244,4998,234,5033,228,5049,221,5064,203,5071,187,5071,176,5064,167,5051,159,5033,154,4982,147,4845,144,4772,143,4704,138"/>
-<area shape="poly" id="edge75_Node000046_Node000035" title=" " alt="" coords="4461,138,4280,155,4138,164,3997,171,3817,185,3755,192,3755,186,3817,180,3997,166,4138,159,4279,150,4460,132"/>
-<area shape="poly" id="edge78_Node000047_Node000010" title=" " alt="" coords="5783,148,5793,188,5790,208,5780,225,5750,238,5689,247,5494,261,5229,268,4927,271,4354,271,4153,271,4055,274,4013,281,4012,276,4054,269,4153,266,4354,266,4927,266,5229,263,5494,255,5689,242,5748,232,5777,221,5785,206,5787,188,5777,150"/>
-<area shape="poly" id="edge80_Node000048_Node000010" title=" " alt="" coords="5346,140,5373,158,5395,179,5404,202,5403,214,5395,225,5371,235,5324,243,5173,255,4966,262,4732,267,4287,270,4055,274,4014,281,4013,276,4054,269,4287,265,4732,261,4966,257,5172,249,5323,238,5370,230,5391,221,5398,212,5399,203,5390,182,5370,163,5343,145"/>
-<area shape="poly" id="edge81_Node000048_Node000037" title=" " alt="" coords="5267,149,5238,184,5234,181,5263,145"/>
+<area shape="poly" id="edge39_Node000029_Node000030" title=" " alt="" coords="2649,234,2684,277,2680,280,2645,237"/>
+<area shape="poly" id="edge41_Node000031_Node000010" title=" " alt="" coords="3856,230,3927,276,3924,280,3853,234"/>
+<area shape="poly" id="edge53_Node000038_Node000004" title=" " alt="" coords="2049,120,1676,125,1193,137,749,156,589,169,495,185,448,205,404,230,337,280,333,276,401,225,446,200,494,180,588,164,749,151,1193,131,1676,120,2049,114"/>
+<area shape="poly" id="edge54_Node000038_Node000005" title=" " alt="" coords="2048,120,1651,128,1129,141,646,160,471,172,368,185,304,205,242,230,143,281,141,276,239,225,302,200,367,180,471,167,646,155,1129,136,1651,122,2048,115"/>
+<area shape="poly" id="edge57_Node000038_Node000010" title=" " alt="" coords="2054,142,2009,157,1975,176,1965,186,1960,197,1962,209,1971,221,1995,231,2046,240,2214,253,2443,261,2703,266,3197,268,3456,269,3848,289,3848,294,3456,274,3197,273,2703,271,2443,266,2214,258,2046,245,1994,236,1967,225,1957,210,1955,196,1961,183,1972,172,2007,152,2052,137"/>
+<area shape="poly" id="edge55_Node000038_Node000033" title=" " alt="" coords="2285,118,2624,132,2991,143,3278,148,3563,158,3931,180,3993,186,3992,191,3930,185,3563,163,3277,154,2991,148,2624,137,2284,123"/>
+<area shape="poly" id="edge56_Node000038_Node000035" title=" " alt="" coords="2285,120,2600,142,2791,159,2981,180,2993,181,2992,187,2981,185,2790,165,2599,148,2284,125"/>
+<area shape="poly" id="edge61_Node000039_Node000010" title=" " alt="" coords="4676,138,4712,155,4741,175,4751,186,4755,199,4754,212,4746,225,4732,235,4711,243,4648,257,4563,269,4464,279,4250,292,4063,298,4063,293,4250,286,4463,273,4562,264,4647,252,4709,238,4730,230,4742,221,4749,210,4750,199,4746,189,4738,179,4710,159,4674,143"/>
+<area shape="poly" id="edge60_Node000039_Node000033" title=" " alt="" coords="4476,139,4208,186,4207,180,4475,134"/>
+<area shape="poly" id="edge64_Node000040_Node000010" title=" " alt="" coords="5504,146,5434,189,5391,210,5347,226,5234,249,5084,267,4909,280,4721,289,4349,299,4063,301,4063,296,4349,294,4721,284,4909,275,5084,262,5233,244,5346,221,5389,205,5431,185,5501,142"/>
+<area shape="rect" id="Node000041" href="$camera__telecommand__defs_8c.html" title=" " alt="" coords="5484,183,5699,223"/>
+<area shape="poly" id="edge63_Node000040_Node000041" title=" " alt="" coords="5563,147,5583,181,5578,184,5558,150"/>
+<area shape="poly" id="edge67_Node000042_Node000010" title=" " alt="" coords="5768,150,5747,191,5731,210,5712,226,5685,234,5635,241,5475,254,4999,276,4467,290,4063,299,4063,293,4467,285,4999,270,5475,249,5634,236,5684,228,5709,221,5727,206,5743,188,5764,148"/>
+<area shape="rect" id="Node000043" href="$config__telecommand__defs_8c.html" title=" " alt="" coords="5772,183,5987,223"/>
+<area shape="poly" id="edge66_Node000042_Node000043" title=" " alt="" coords="5814,143,5858,180,5855,184,5810,147"/>
+<area shape="poly" id="edge70_Node000044_Node000010" title=" " alt="" coords="5191,135,5259,155,5285,167,5302,181,5311,203,5309,215,5301,225,5283,234,5248,242,5133,255,4972,267,4783,277,4382,291,4063,299,4063,293,4382,286,4782,271,4972,262,5132,250,5247,236,5281,229,5298,221,5304,212,5306,204,5298,184,5282,171,5257,159,5190,140"/>
+<area shape="poly" id="edge69_Node000044_Node000034" title=" " alt="" coords="5100,144,5135,180,5131,184,5096,148"/>
+<area shape="poly" id="edge72_Node000045_Node000010" title=" " alt="" coords="6021,150,6019,189,6013,209,6000,226,5976,232,5922,238,5739,250,5173,271,4063,298,4063,293,5173,266,5739,245,5922,233,5975,227,5997,221,6008,206,6014,188,6016,150"/>
+<area shape="poly" id="edge75_Node000046_Node000010" title=" " alt="" coords="6222,144,6107,195,6027,226,5903,241,5695,255,5122,276,4511,291,4063,299,4063,294,4511,286,5122,271,5694,249,5903,236,6026,221,6105,190,6220,139"/>
+<area shape="rect" id="Node000047" href="$stm32__internal__flash__telecommand__defs_8c.html" title=" " alt="" coords="6143,183,6414,223"/>
+<area shape="poly" id="edge74_Node000046_Node000047" title=" " alt="" coords="6281,150,6281,182,6276,182,6276,150"/>
+<area shape="poly" id="edge78_Node000048_Node000010" title=" " alt="" coords="4413,141,4438,159,4457,180,4466,202,4464,214,4458,225,4431,245,4393,261,4345,274,4290,284,4173,296,4063,300,4063,295,4173,290,4290,278,4344,269,4391,256,4429,241,4454,222,4459,212,4461,203,4453,182,4434,163,4410,145"/>
+<area shape="poly" id="edge77_Node000048_Node000035" title=" " alt="" coords="4239,121,3789,141,3505,159,3219,185,3207,187,3207,181,3218,180,3504,154,3789,135,4239,116"/>
+<area shape="poly" id="edge80_Node000049_Node000010" title=" " alt="" coords="5326,148,5336,187,5334,208,5324,225,5305,234,5269,242,5152,256,4988,267,4795,277,4387,291,4063,299,4063,293,4386,286,4794,272,4988,262,5151,250,5268,237,5304,229,5321,221,5329,206,5331,188,5321,150"/>
+<area shape="poly" id="edge82_Node000050_Node000010" title=" " alt="" coords="4955,132,5085,140,5209,145,5256,152,5286,166,5294,178,5294,191,5287,207,5272,225,5254,234,5220,241,5108,255,4766,276,4375,290,4063,298,4063,293,4375,285,4766,271,5107,249,5219,236,5252,229,5269,221,5282,204,5289,190,5289,179,5283,171,5255,158,5208,150,5085,145,4955,138"/>
+<area shape="poly" id="edge83_Node000050_Node000037" title=" " alt="" coords="4863,144,4897,180,4893,184,4859,148"/>
 </map>
