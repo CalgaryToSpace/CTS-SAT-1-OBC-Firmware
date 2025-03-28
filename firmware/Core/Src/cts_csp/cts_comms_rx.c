@@ -1,28 +1,31 @@
 //source: https://controllerstech.com/stm32-as-i2c-slave-part-1/
 #include "main.h"
-#include "cts_csp/i2c_slave.h"
 #include "stm32l4xx_hal_i2c.h"
 #include "log/log.h"
-#include <telecommand_types.h>
+#include "telecommands/telecommand_types.h"
 #include "telecommands/telecommand_parser.h"
 #include "telecommands/telecommand_executor.h"
 #include <memory.h>
 
-extern I2C_HandleTypeDef hi2c1;
-#define RX_BUFF_SIZE 255
+/* @brief This file contains code for receiving data from the ax100. 
+		This includes i2c interrupts and functions for parsing csp packets and scheduling them for execution as telecommands
+*/
+
 int rx_count = 0;
+#define RX_BUFF_SIZE 255
 uint8_t rx_buffer[RX_BUFF_SIZE];
 
-void strip_csp_packet(char *result, uint8_t *packet, size_t packet_size) {
-	memcpy(result, packet + 4, packet_size - 4);
+/// @brief Strips the csp packet header (first 4 bytes) from the packet.
+/// @return pointer to the packet data without the header
+static uint8_t* strip_csp_packet(uint8_t *packet, size_t packet_size) {
+	if (packet_size < 5) {return packet;} else {return packet + 4;}
 }
 
-/// @brief exctracts the data from a csp packet, parses it as a telecommand and adds it to the agenda
-/// @param packet raw csp packet
+/// @brief exctracts the data from a csp packet, parses it as a telecommand and adds it to the TCMD agenda.
+/// @param packet csp packet
 /// @return result, 0 on success 1 on failure 
-int32_t schedule_csp_packet_data_for_tcmd_execution(uint8_t * packet, size_t packet_size) {
-	char packet_data[255];
-	strip_csp_packet(packet_data, rx_buffer, packet_size);
+static int32_t schedule_csp_packet_data_for_tcmd_execution(uint8_t * packet, size_t packet_size) {
+	char* packet_data = (char*) strip_csp_packet( rx_buffer, packet_size);
 
 	TCMD_parsed_tcmd_to_execute_t parsed_tcmd;
 	uint8_t parse_result = TCMD_parse_full_telecommand(
@@ -41,14 +44,15 @@ int32_t schedule_csp_packet_data_for_tcmd_execution(uint8_t * packet, size_t pac
 	if (result != 0) {
 		LOG_message(
 			LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-			"Error adding telecommand to agenda: %d", result
+			"Error adding telecommand to agenda: %ld", result
 		);
 		return 1;
 	}
 	return 0;
 }
 
-
+/// @brief A callback function that is called when transmission of the data from the master is complete (at the very end of transmission when the last byte is received!)
+/// @param hi2c  the I2C handle
 void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *hi2c)
 {	
 	rx_buffer[RX_BUFF_SIZE -1] = '\0'; // enusure the buffer is null terminated
@@ -64,13 +68,12 @@ void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *hi2c)
 	HAL_I2C_EnableListen_IT(hi2c);
 }
 
+/// @brief A callback function that is called when the address of a transmission matches the address of the obc
 void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode)
 {
 	if (TransferDirection == I2C_DIRECTION_TRANSMIT)  // if the master wants to transmit the data
 	{
-		// receive using sequential function.
-		// The I2C_FIRST_AND_LAST_FRAME implies that the slave will send a NACK after receiving "entered" num of bytes
-		//TODO: is this the correct transfer mode? see hal_i2c.h file.
+		// The I2C_FIRST_FRAME implies that the first byte is to be received
 		HAL_I2C_Slave_Seq_Receive_IT(hi2c, rx_buffer + rx_count, 1, I2C_FIRST_FRAME);
 		LOG_message(
 			LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
@@ -83,29 +86,27 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, ui
 	}
 }
 
+/// @brief A callback function that is called when a single byte is successfully received
 void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
 	rx_count++;
 	if (rx_count < RX_BUFF_SIZE-1) {
+		// The I2C_NEXT_FRAME implies that we are expecting the next byte of the same transfer
 		HAL_I2C_Slave_Seq_Receive_IT(hi2c, rx_buffer + rx_count, 1, I2C_NEXT_FRAME);
 	}
 	else {
+		// if we have read the maximum number of bytes -1 , the I2C_LAST_FRAME indicates that the slave will not accept any more bytes after the next
 		HAL_I2C_Slave_Seq_Receive_IT(hi2c, rx_buffer + rx_count, 1, I2C_LAST_FRAME);
 	}
-	
-	LOG_message(
-		LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-		"byte received, data:\n%s", rx_buffer
-	);
-
-		
 }
 
+/// @brief called when an i2c error occurs
 void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c)
 {
 	rx_count = 0;
+	HAL_I2C_EnableListen_IT(hi2c);
 	LOG_message(
 		LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-		"I2C error callback triggered");
-	HAL_I2C_EnableListen_IT(hi2c);
+		"I2C error callback triggered"
+	);
 }
