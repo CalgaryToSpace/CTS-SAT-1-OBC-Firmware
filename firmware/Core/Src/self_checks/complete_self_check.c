@@ -65,11 +65,12 @@ uint8_t CTS1_check_is_adcs_alive() {
 uint8_t CTS1_check_is_gnss_responsive() {
     const char cmd[] = "log bestxyza once\n";
 
-    uint8_t rx_buf[100];
+    uint8_t rx_buf[300]; // FIXME: This should be smaller, and should not crash if it sends too much.
     uint16_t rx_buf_received_len = 0;
     const uint8_t gps_status = GPS_send_cmd_get_response(
         cmd, strlen(cmd),
-        rx_buf, sizeof(rx_buf),
+        rx_buf,
+        sizeof(rx_buf),
         &rx_buf_received_len
     );
 
