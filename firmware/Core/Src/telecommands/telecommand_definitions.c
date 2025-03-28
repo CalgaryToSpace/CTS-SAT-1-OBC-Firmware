@@ -30,6 +30,7 @@
 #include "telecommands/comms_telecommand_defs.h"
 #include "telecommands/telecommand_crc.h"
 #include "telecommands/gps_telecommand_defs.h"
+#include "telecommands/camera_telecommand_defs.h"
 
 #include "timekeeping/timekeeping.h"
 #include "littlefs/littlefs_helper.h"
@@ -1167,6 +1168,26 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     }
     // ****************** END SECTION: gps_telecommand_defs ******************
+    // ****************** SECTION: camera_telecommand_defs *******************
+    {
+        .tcmd_name = "camera_setup",
+        .tcmd_func = TCMDEXEC_camera_setup,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "camera_test",
+        .tcmd_func = TCMDEXEC_camera_test,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "camera_change_baud_rate",
+        .tcmd_func = TCMDEXEC_camera_change_baud_rate,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    // ****************** END SECTION: camera_telecommand_defs *******************
 };
 
 // extern

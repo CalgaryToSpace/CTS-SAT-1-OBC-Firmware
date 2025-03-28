@@ -113,7 +113,7 @@ uint8_t TCMDEXEC_scan_i2c_bus(
         case 3: hi2c = &hi2c3; break;
         case 4: hi2c = &hi2c4; break;
         default:
-            snprintf(response_output_buf, response_output_buf_len, "Enter a valid I2C bus!\n");
+            snprintf(response_output_buf, response_output_buf_len, "Enter a valid I2C bus!");
             return 1;
     }
 
