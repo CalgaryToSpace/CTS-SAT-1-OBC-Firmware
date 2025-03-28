@@ -1,7 +1,7 @@
 #include "main.h"
 #include "stm32l4xx_hal_i2c.h"
 #include "stm32l4xx_hal_def.h"
-#include "cts_comms_tx.h"
+#include "cts_csp/cts_comms_tx.h"
 #include "log/log.h"
 #include "memory.h"
 
@@ -60,6 +60,7 @@ static uint8_t send_csp_packet_over_i2c(uint8_t *packet, uint16_t packet_size) {
         );
         return status;
     }
+    //TODO: delete this after testing
     for (int i = 0; i < packet_size; i++) {
         LOG_message(
             LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_UHF_RADIO),
@@ -80,6 +81,8 @@ uint8_t COMMS_downlink_data(uint8_t *data, uint32_t data_len) {
 
     uint8_t packet[data_len + 4];
     perpend_csp_header(packet, data, data_len);
+
+    //any network layer things should be done here
 
     return send_csp_packet_over_i2c(packet, data_len + 4);
 }

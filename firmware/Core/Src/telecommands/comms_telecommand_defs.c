@@ -37,6 +37,10 @@ uint8_t TCMDEXEC_comms_dipole_switch_set_state(
 
     return 0;
 }
+/// @brief downlinks a string to the ground station via the ax100.
+/// @param args_str 
+/// - Arg 0: The string to downlink, for now must be less than 220 characters
+/// @return  result: 0 on success, failure otherwise
 uint8_t TCMDEXEC_comms_downlink_str(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) 
 {
