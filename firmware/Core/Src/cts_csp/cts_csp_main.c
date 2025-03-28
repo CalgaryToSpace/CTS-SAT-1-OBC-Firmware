@@ -13,7 +13,7 @@
 #include "csp/interfaces/csp_if_i2c.h"
 
 
-#define TESTING_RECEIVE 0
+#define TESTING_RECEIVE 1
 
 //extern I2C_HandleTypeDef hi2c1; //TODO: Is I2C3 the right bus?
 const uint8_t AX100_I2C_ADDR = 0x05 << 1; 
@@ -111,7 +111,7 @@ uint8_t CSP_demo_1() {
         "Starting CSP_demo_1()"
     );
 
-    char demo_packet_1[] = "Hello World!";
+    char demo_packet_1[] = "CTS1+hello_world()!";
 
     /*
     * 10 = destination address of ground station
@@ -120,15 +120,15 @@ uint8_t CSP_demo_1() {
     * 5 = via, the next hop address
     */
     csp_rtable_set(
-        10, // destination addr
+        1, // destination addr
         5,  // net mask. & this with the destinations address to get the final address which csp will use to route
         &csp_cts_i2c_interface,// interface to route to
-        5 // next hop  address
+        CSP_NO_VIA_ADDRESS // next hop  address
     );
 
     
     //csp_conn_t * conn = csp_conn_allocate(CONN_CLIENT);
-    csp_conn_t * conn = csp_connect(CSP_PRIO_LOW, 10, 35, 0, CSP_O_NONE);
+    csp_conn_t * conn = csp_connect(CSP_PRIO_LOW, 1, 35, 0, CSP_O_NONE);
     if (conn == NULL) {
         LOG_message(
             LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
@@ -221,6 +221,7 @@ uint8_t CSP_demo_1() {
  
     return 0;
 }
+
 
 
 /// @brief Driver function for CSP to send data via I2C.
