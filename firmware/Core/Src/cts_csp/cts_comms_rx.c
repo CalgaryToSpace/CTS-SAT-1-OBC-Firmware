@@ -2,9 +2,9 @@
 #include "main.h"
 #include "stm32l4xx_hal_i2c.h"
 #include "log/log.h"
-#include "telecommands/telecommand_types.h"
-#include "telecommands/telecommand_parser.h"
-#include "telecommands/telecommand_executor.h"
+#include "telecommand_exec/telecommand_parser.h"
+#include "telecommand_exec/telecommand_executor.h"
+#include "telecommand_exec/telecommand_types.h"
 #include <memory.h>
 
 /* @brief This file contains code for receiving data from the ax100. 
