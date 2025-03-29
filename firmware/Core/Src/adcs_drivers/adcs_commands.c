@@ -22,10 +22,24 @@
 
 extern I2C_HandleTypeDef hi2c1; // allows not needing the parameters
 
+#define FLATSAT_TEST_MODE // TODO: REMOVE BEFORE FLIGHT
+
+#ifdef FLATSAT_TEST_MODE
+    #include "eps_drivers/eps_commands.h"
+#endif
+
 /// @brief Initialise the ADCS CRC, timestamp, and file system directory. 
 /// @return 0 when successful
 uint8_t ADCS_initialise() {
     
+    #ifdef FLATSAT_TEST_MODE
+        EPS_CMD_output_bus_channel_on(8); 
+        LFS_format();
+        LFS_mount();
+
+        HAL_Delay(5000); // The ADCS takes 5 seconds to power on following boot-up
+    #endif
+
     ADCS_synchronise_unix_time();
     ADCS_initialise_crc8_checksum();
     LFS_make_directory("ADCS");
@@ -1245,7 +1259,7 @@ uint8_t ADCS_get_raw_star_tracker_data(ADCS_raw_star_tracker_struct_t *output_st
 
 /// @brief Instruct the ADCS to save an image to the SD card.
 /// @param[in] camera_select Which camera to save the image from; can be Camera 1 (0), Camera 2 (1), or Star (2)
-/// @param[in] image_size Resolution of the image to save; can be 1024x1024 (0), 512x512, (1) 256x256, (2) 128x128, (3) or 64x64 (4)
+/// @param[in] image_size Resolution of the image to save; can be 1024x1024 (0), 512x512 (1), 256x256 (2), 128x128 (3), or 64x64 (4)
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_save_image_to_sd(ADCS_camera_select_enum_t camera_select, ADCS_image_size_enum_t image_size) {
     uint8_t data_send[2] = {camera_select, image_size};
@@ -1342,23 +1356,22 @@ uint8_t ADCS_get_sd_log_config(uint8_t which_log, ADCS_sd_log_config_struct* con
 
 uint8_t adcs_download_buffer[20480]; // static buffer to hold the 20 kB from the download
 
-/// @brief Save one block of the ADCS SD card file pointed to by the file pointer into the ADCS download buffer.
+/// @brief Save one block of the ADCS SD card file pointed to by the file pointer into the ADCS download buffer, then append it to the file in LittleFS.
 /// @param[in] file_info A struct containing information about the currently-pointed-to file
 /// @param[in] current_block The block to load into the download buffer
 /// @param[in] filename Pointer to string containing filename to save as
 /// @param[in] filename_length Length of filename
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 /// Specifically: bytes 0-2 are the ADCS error, bytes 3-10 are which command failed, bytes 11-16 are the index of the failure if applicable
-int16_t ADCS_load_sd_file_block_to_download_buffer(ADCS_file_info_struct_t file_info, uint8_t current_block, char* filename_string, uint8_t filename_length) {
+int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info, uint8_t current_block, char* filename_string, uint8_t filename_length) {
     ADCS_file_download_buffer_struct_t download_packet;
     uint16_t hole_map[64] = {0, 0, 0, 0, 0, 0, 0, 0}; // this array is 1024 bits, one for each packet up to the maximum
     int16_t status;
 
-    status = ADCS_load_file_download_block(file_info.file_type, current_block, 0, 1024);
+    status = ADCS_load_file_download_block(file_info.file_type, file_info.file_counter, current_block * 20480, 1024);
+    // per CubeSpace, the counter is the nth file of the same type, not the block counter
     if (status != 0) {return status | (1 << 3);}
-        // TODO: We should be able to specify files without the Error 165 problem by using the 'counter' parameter.
-                // The 'offset' parameter should choose where in the file we're loading from (use 20 * current block).
-
+    
     // Wait until the download block is ready
     ADCS_download_block_ready_struct_t ready_struct;
     do {
@@ -1381,7 +1394,6 @@ int16_t ADCS_load_sd_file_block_to_download_buffer(ADCS_file_info_struct_t file_
 
         // generate hole map to determine any missing packets
         hole_map[download_packet.packet_counter / 16] |= (1 << (download_packet.packet_counter % 16));
-                // TODO: I'm assuming packet_counter is zero-indexed (0 to 1023); check this
 
     }
     
@@ -1390,9 +1402,9 @@ int16_t ADCS_load_sd_file_block_to_download_buffer(ADCS_file_info_struct_t file_
     uint16_t required_packets;
     if (ceil(file_info.file_size / 20480.0) == (current_block + 1)) {
         // if this is the final block, we may need to load fewer packets than the maximum
-        required_packets = (file_info.file_size - (20480 * current_block)) / 128;
+        required_packets = ceil((file_info.file_size - (20480 * current_block)) / 20.0);
     } else {
-        required_packets = file_info.file_size / 128;
+        required_packets = 1024; 
     }
     
     uint16_t packets_received = 0;
@@ -1412,7 +1424,7 @@ int16_t ADCS_load_sd_file_block_to_download_buffer(ADCS_file_info_struct_t file_
 
     uint8_t hole_map_attempts = 0;
 
-    while (required_packets != packets_received) { // TODO: this should work to keep filling the hole map, but test this
+    while (required_packets != packets_received) {
 
         for (uint8_t i = 0; i < 8; i++) {
             uint8_t hole_map_slice[16];
@@ -1441,15 +1453,12 @@ int16_t ADCS_load_sd_file_block_to_download_buffer(ADCS_file_info_struct_t file_
             }
 
             // generate hole map to determine any missing packets
-            hole_map[download_packet.packet_counter / 128] = hole_map[download_packet.packet_counter / 128] | download_packet.packet_counter;
-                    // TODO: this line doesn't do what it's supposed to (i.e. anything). FIX IT. 
-                                // Or-ing it with the packet counter is e.g. (current hole map bit) | 0b00000111 for packet 7, which is clearly wrong.
-
+            hole_map[download_packet.packet_counter / 16] |= (1 << (download_packet.packet_counter % 16));
         }
 
         packets_received = 0;
 
-        for (uint8_t i = 0; i < 8; i++) {
+        for (uint8_t i = 0; i < 64; i++) {
         
             // check if we've received all the packets
             uint16_t temp_hole_map = hole_map[i];
@@ -1505,17 +1514,32 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
         */
             
         status = ADCS_reset_file_list_read_pointer();
-        if (status != 0) {; return 1;}
-        // For some reason, the EPS causes us to get Status 165 for this telecommand when we send it while in the stack
-        // TODO: waiting on Parker L et al. to determine whether the EPS I2C connection can be severed / disabled
+        HAL_Delay(100);
+        if (status != 0) {
+            // to avoid interference from the EPS, do a separate ack for these commands
+            ADCS_cmd_ack_struct_t ack_status;
+            ADCS_cmd_ack(&ack_status);
+            if (ack_status.error_flag != 0) {return ack_status.error_flag;}
+        }
 
         for (uint16_t i = 0; i < file_index; i++) {
             status = ADCS_advance_file_list_read_pointer();
-            if (status != 0) {; return 1;}
+            HAL_Delay(100);
+            if (status != 0) {
+                // to avoid interference from the EPS, do a separate ack for these commands
+                ADCS_cmd_ack_struct_t ack_status;
+                ADCS_cmd_ack(&ack_status);
+                if (ack_status.error_flag != 0) {return ack_status.error_flag;}
+            }
         }
+
+        // For some reason, the EPS (?) causes us to get Status 2 for the above two telecommands when we send them while in the stack
+        // TODO: waiting on Parker L et al. to determine whether the EPS I2C connection can be severed / disabled
         
         status = ADCS_get_file_info_telemetry(&file_info);
-        if (status != 0) {; return 1;}
+        if (status != 0) {return status;}
+
+        if (file_info.file_counter != file_index) {return 12;} // make sure that we've properly advanced the file list read pointer
 
         // name file based on type and timestamp
         switch(file_info.file_type) {
@@ -1554,9 +1578,8 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
 
     while (current_block < total_blocks) {
 
-        status = ADCS_load_sd_file_block_to_download_buffer(file_info, 0, filename_string, 17); // load the block
+        status = ADCS_load_sd_file_block_to_filesystem(file_info, 0, filename_string, 17); // load the block
         if (status != 0) {return status;}
-                                            // TODO: just to be sure, we should test LFS_write_file when a file with the same name already exists
 
         current_block++;
     }

@@ -47,7 +47,7 @@ uint8_t TCMDEXEC_adcs_generic_command(const char *args_str, TCMD_TelecommandChan
     // parse hex array arguments
     uint8_t hex_data_array[504]; 
     uint16_t data_length;
-    extract_status = TCMD_extract_hex_array_arg(args_str, 1, &hex_data_array[0], data_length, &data_length);
+    extract_status = TCMD_extract_hex_array_arg(args_str, 1, &hex_data_array[0], 504, &data_length);
     if (extract_status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
             "Telecommand argument extraction failed (err %d)", extract_status);
@@ -55,6 +55,11 @@ uint8_t TCMDEXEC_adcs_generic_command(const char *args_str, TCMD_TelecommandChan
     }
     
     uint8_t status = ADCS_i2c_send_command_and_check((uint8_t) command_id, &hex_data_array[0], (uint32_t) data_length, ADCS_INCLUDE_CHECKSUM);
+    if (status == ADCS_ERROR_FLAG_WRONG_LENGTH && data_length == 1) {
+        // for zero-parameter commands, do this instead
+        status = ADCS_i2c_send_command_and_check((uint8_t) command_id, &hex_data_array[0], 0, ADCS_INCLUDE_CHECKSUM);
+    }
+    
     return status;
 }
 
@@ -1795,28 +1800,12 @@ uint8_t TCMDEXEC_adcs_measurements(const char *args_str, TCMD_TelecommandChannel
     return status;
 }
 
-#define FLATSAT_TEST_MODE // TODO: REMOVE BEFORE FLIGHT
-
-#ifdef FLATSAT_TEST_MODE
-    #include "eps_drivers/eps_commands.h"
-#endif
-
 /// @brief Telecommand: Get the list of downloadable files from the ADCS SD card (alternate method)
 /// @param args_str 
 ///     - No arguments for this command
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_download_index_file(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                    char *response_output_buf, uint16_t response_output_buf_len) {
-    
-    #ifdef FLATSAT_TEST_MODE
-    EPS_CMD_output_bus_channel_on(8); 
-    // for testing, enable EPS channel 8 (REMOVE BEFORE FLIGHT)
-
-    LFS_format();
-    LFS_mount();
-    LFS_make_directory("ADCS"); 
-    // for testing, format and mount the LFS here (REMOVE BEFORE FLIGHT)
-    #endif 
 
     uint16_t status;
     
@@ -1842,16 +1831,6 @@ uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str, TCMD_TelecommandCha
     // parse file index argument
     uint64_t file_index;
     TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &file_index);
-
-    #ifdef FLATSAT_TEST_MODE
-    EPS_CMD_output_bus_channel_on(8); 
-    // for testing, enable EPS channel 8 (REMOVE BEFORE FLIGHT)
-
-    LFS_format();
-    LFS_mount();
-    LFS_make_directory("ADCS"); 
-    // for testing, format and mount the LFS here (REMOVE BEFORE FLIGHT)
-    #endif 
 
     status = ADCS_save_sd_file_to_lfs(false, file_index);
 
@@ -1945,7 +1924,7 @@ uint8_t TCMDEXEC_adcs_get_raw_star_tracker_data(const char *args_str, TCMD_Telec
 /// @brief Telecommand: Save an image to the ADCS onboard SD card
 /// @param args_str 
 ///     - Arg 0: Which camera to save the image from; can be Camera 1 (0), Camera 2 (1), or Star (2)
-///     - Arg 1: Resolution of the image to save; can be 1024x1024 (0), 512x512, (1) 256x256, (2) 128x128, (3) or 64x64 (4)
+///     - Arg 1: Resolution of the image to save; can be 1024x1024 (0), 512x512 (1), 256x256 (2), 128x128 (3), or 64x64 (4)
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_save_image_to_sd(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {

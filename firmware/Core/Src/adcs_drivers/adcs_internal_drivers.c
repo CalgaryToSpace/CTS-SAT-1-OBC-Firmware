@@ -33,15 +33,15 @@ uint8_t ADCS_i2c_send_command_and_check(uint8_t id, uint8_t* data, uint32_t data
             uint8_t num_ack_tries = 0;
             while (!ack.processed) {
                 ack_status = ADCS_cmd_ack(&ack); // confirm telecommand validity by checking the TC Error flag of the last read TC Acknowledge Telemetry Format.
-                if (ack_status != 0 && ack_status != 4) {
-                    return ack_status; // there was an error in the command not related to checksum
-                }
                 num_ack_tries++;
                 if (num_ack_tries > ADCS_PROCESSED_TIMEOUT) {
                     return 5; // command failed to process in time
                     // note: sending another telecommand when the first has not been processed
                     // will result in an error in the next telecommand sent
                     // as the ADCS telecommand buffer has been overrun/corrupted
+                }
+                if ((ack_status != 0) && (ack_status != 4)) {
+                    return ack_status; // there was an error in the command not related to checksum
                 }
             }
         } else {
