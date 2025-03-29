@@ -1351,7 +1351,7 @@ uint8_t adcs_download_buffer[20480]; // static buffer to hold the 20 kB from the
 /// Specifically: bytes 0-2 are the ADCS error, bytes 3-10 are which command failed, bytes 11-16 are the index of the failure if applicable
 int16_t ADCS_load_sd_file_block_to_download_buffer(ADCS_file_info_struct_t file_info, uint8_t current_block, char* filename_string, uint8_t filename_length) {
     ADCS_file_download_buffer_struct_t download_packet;
-    uint16_t hole_map[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+    uint16_t hole_map[64] = {0, 0, 0, 0, 0, 0, 0, 0}; // this array is 1024 bits, one for each packet up to the maximum
     int16_t status;
 
     status = ADCS_load_file_download_block(file_info.file_type, current_block, 0, 1024);
@@ -1380,7 +1380,8 @@ int16_t ADCS_load_sd_file_block_to_download_buffer(ADCS_file_info_struct_t file_
         }
 
         // generate hole map to determine any missing packets
-        hole_map[download_packet.packet_counter / 128] = hole_map[download_packet.packet_counter / 128] | download_packet.packet_counter;
+        hole_map[download_packet.packet_counter / 16] |= (1 << (download_packet.packet_counter % 16));
+                // TODO: I'm assuming packet_counter is zero-indexed (0 to 1023); check this
 
     }
     
@@ -1396,7 +1397,7 @@ int16_t ADCS_load_sd_file_block_to_download_buffer(ADCS_file_info_struct_t file_
     
     uint16_t packets_received = 0;
     
-    for (uint8_t i = 0; i < 8; i++) {
+    for (uint8_t i = 0; i < 64; i++) {
         
         // check if we've received all the packets
         uint16_t temp_hole_map = hole_map[i];
@@ -1413,13 +1414,17 @@ int16_t ADCS_load_sd_file_block_to_download_buffer(ADCS_file_info_struct_t file_
 
     while (required_packets != packets_received) { // TODO: this should work to keep filling the hole map, but test this
 
-        for (uint8_t i = 1; i <= 8; i++) {
-            // now send the hole map to the ADCS
+        for (uint8_t i = 0; i < 8; i++) {
             uint8_t hole_map_slice[16];
-            ADCS_convert_uint16_to_reversed_uint8_array_members(&hole_map_slice[0], hole_map[i], 0);
 
-            status = ADCS_set_hole_map(hole_map_slice, i);
-            if (status != 0) {return status | (1 << 7) | (i << 11);}
+            for (uint8_t j = 0; j < 8; j++) {
+                // for each slice, create the hole map slice pertaining to it
+                ADCS_convert_uint16_to_reversed_uint8_array_members(&hole_map_slice[((i*8) + j) / 2], hole_map[((i*8) + j)], 0);
+            }
+
+            // now send the hole map to the ADCS, one-indexed
+            status = ADCS_set_hole_map(hole_map_slice, (i + 1));
+            if (status != 0) {return status | (1 << 7) | ((i + 1) << 11);}
         }
         
         // now, using the hole map as a guide, give us the missing packets
