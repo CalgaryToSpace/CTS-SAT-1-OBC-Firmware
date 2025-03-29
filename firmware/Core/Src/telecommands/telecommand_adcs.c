@@ -3,11 +3,13 @@
 #include "transforms/arrays.h"
 #include "unit_tests/unit_test_executor.h"
 #include "timekeeping/timekeeping.h"
+#include "littlefs/littlefs_helper.h"
 
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
 #include <inttypes.h>
+#include <math.h>
 
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_commands.h"
@@ -164,7 +166,6 @@ uint8_t TCMDEXEC_adcs_ack(const char *args_str, TCMD_TelecommandChannel_enum_t t
     }
 
     return status;
-
 }
 
 /// @brief Telecommand: Set the wheel speed of the ADCS
@@ -1794,18 +1795,83 @@ uint8_t TCMDEXEC_adcs_measurements(const char *args_str, TCMD_TelecommandChannel
     return status;
 }
 
+#define FLATSAT_TEST_MODE // TODO: REMOVE BEFORE FLIGHT
+
+#ifdef FLATSAT_TEST_MODE
+    #include "eps_drivers/eps_commands.h"
+#endif
+
+/// @brief Telecommand: Get the list of downloadable files from the ADCS SD card (alternate method)
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_download_index_file(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                   char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    #ifdef FLATSAT_TEST_MODE
+    EPS_CMD_output_bus_channel_on(8); 
+    // for testing, enable EPS channel 8 (REMOVE BEFORE FLIGHT)
+
+    LFS_format();
+    LFS_mount();
+    LFS_make_directory("ADCS"); 
+    // for testing, format and mount the LFS here (REMOVE BEFORE FLIGHT)
+    #endif 
+
+    uint16_t status;
+    
+    LFS_delete_file("ADCS/index_file"); // if the index file doesn't exist, this will fail, so let it do that
+
+    status = ADCS_save_sd_file_to_lfs(true, 0);
+
+    // To read the index file via telecommand, we can do: CTS1+fs_read_text_file(ADCS/index_file)!
+
+    return status;
+
+}
+
+/// @brief Telecommand: Download a specific file from the ADCS SD card
+/// @param args_str 
+///     - Arg 0: The index of the file to download
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                   char *response_output_buf, uint16_t response_output_buf_len) {
+
+    int16_t status;
+
+    // parse file index argument
+    uint64_t file_index;
+    TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &file_index);
+
+    #ifdef FLATSAT_TEST_MODE
+    EPS_CMD_output_bus_channel_on(8); 
+    // for testing, enable EPS channel 8 (REMOVE BEFORE FLIGHT)
+
+    LFS_format();
+    LFS_mount();
+    LFS_make_directory("ADCS"); 
+    // for testing, format and mount the LFS here (REMOVE BEFORE FLIGHT)
+    #endif 
+
+    status = ADCS_save_sd_file_to_lfs(false, file_index);
+
+    // To read the file via telecommand, we can do: CTS1+fs_read_text_file(ADCS/test_file)!
+
+    return status;
+}
+
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 
 ///     - No arguments for this command
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_acp_execution_state(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                                   char *response_output_buf, uint16_t response_output_buf_len) {
+    char *response_output_buf, uint16_t response_output_buf_len) {
     ADCS_acp_execution_state_struct_t packed_struct;
     uint8_t status = ADCS_get_acp_execution_state(&packed_struct); 
-    
+
     if (status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
-            "ADCS telemetry request failed (err %d)", status);
+        "ADCS telemetry request failed (err %d)", status);
         return 1;
     }
 
@@ -1814,12 +1880,13 @@ uint8_t TCMDEXEC_adcs_acp_execution_state(const char *args_str, TCMD_Telecommand
 
     if (result_json != 0) {
         snprintf(response_output_buf, response_output_buf_len,
-            "ADCS telemetry request JSON failed (err %d)", result_json);
+        "ADCS telemetry request JSON failed (err %d)", result_json);
         return 2;
     }
 
     return status;
 }
+
 
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 
@@ -2025,7 +2092,7 @@ uint8_t TCMDEXEC_adcs_get_sd_log_config(const char *args_str, TCMD_TelecommandCh
     return status;
 }
 
-/// @brief Telecommand: Request commissioning telemetry from the ADCS and save it to the memory module
+/// @brief Telecommand: Request commissioning telemetry from the ADCS and save it to the onboard SD card
 /// @param args_str 
 ///     - Arg 0: Which commissioning step to request telemetry for (1-18)
 ///     - Arg 1: Log number (1 or 2)
@@ -2070,73 +2137,73 @@ uint8_t TCMDEXEC_adcs_request_commissioning_telemetry(const char *args_str, TCMD
     } while (current_state.time_since_iteration_start_ms <= 500);
 
     uint8_t status = 0;
-    // TODO: check perod in Commissioning Manual, and check if need to convert to ms
+
     switch(commissioning_step) {
-        case ADCS_COMMISISONING_STEP_DETERMINE_INITIAL_ANGULAR_RATES: {
+
+        case ADCS_COMMISSIONING_STEP_DETERMINE_INITIAL_ANGULAR_RATES: {
             const uint8_t num_logs = 3;
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[3] = {ADCS_SD_LOG_MASK_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_RAW_MAGNETOMETER};
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);
             break;
         }
-        case ADCS_COMMISISONING_STEP_INITIAL_DETUMBLING: {
+        case ADCS_COMMISSIONING_STEP_INITIAL_DETUMBLING: {
             const uint8_t num_logs = 4; 
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[4] = {ADCS_SD_LOG_MASK_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_RAW_MAGNETOMETER, ADCS_SD_LOG_MASK_MAGNETORQUER_COMMAND};
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);
             break;
         }
-        case ADCS_COMMISISONING_STEP_CONTINUED_DETUMBLING_TO_Y_THOMSON: {
+        case ADCS_COMMISSIONING_STEP_CONTINUED_DETUMBLING_TO_Y_THOMSON: {
             const uint8_t num_logs = 4; 
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[4] = {ADCS_SD_LOG_MASK_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_RAW_MAGNETOMETER, ADCS_SD_LOG_MASK_MAGNETORQUER_COMMAND};
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);
             break;
         }
-        case ADCS_COMMISISONING_STEP_MAGNETOMETER_DEPLOYMENT: {
+        case ADCS_COMMISSIONING_STEP_MAGNETOMETER_DEPLOYMENT: {
             const uint8_t num_logs = 4; 
-            const uint8_t period_s = 10; 
+            const uint8_t period_s = 1; 
             const uint8_t* commissioning_data[4] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_RAW_MAGNETOMETER, ADCS_SD_LOG_MASK_CUBECONTROL_CURRENT_MEASUREMENTS};
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);
             break;
         }
-        case ADCS_COMMISISONING_STEP_MAGNETOMETER_CALIBRATION: {
+        case ADCS_COMMISSIONING_STEP_MAGNETOMETER_CALIBRATION: {
             const uint8_t num_logs = 3; 
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[3] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_MAGNETIC_FIELD_VECTOR};
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);                     
-            // TODO: Magnetic Field Vector **should** be the calibrated measurements from the magnetometer, but we should see if we can check with CubeSpace about that
             break;
         }
-        case ADCS_COMMISISONING_STEP_ANGULAR_RATE_AND_PITCH_ANGLE_ESTIMATION: {
+        case ADCS_COMMISSIONING_STEP_ANGULAR_RATE_AND_PITCH_ANGLE_ESTIMATION: {
             const uint8_t num_logs = 4; 
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[4] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_MAGNETIC_FIELD_VECTOR};
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);                     
             break;
         }
-        case ADCS_COMMISISONING_STEP_Y_WHEEL_RAMP_UP_TEST: {
+        case ADCS_COMMISSIONING_STEP_Y_WHEEL_RAMP_UP_TEST: {
             const uint8_t num_logs = 5; 
-            const uint8_t period_s = 10; 
+            const uint8_t period_s = 1; 
             const uint8_t* commissioning_data[5] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_WHEEL_SPEED, ADCS_SD_LOG_MASK_MAGNETIC_FIELD_VECTOR};
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);   
             break;
         }
-        case ADCS_COMMISISONING_STEP_INITIAL_Y_MOMENTUM_ACTIVATION: {
+        case ADCS_COMMISSIONING_STEP_INITIAL_Y_MOMENTUM_ACTIVATION: {
             const uint8_t num_logs = 6; 
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[6] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_WHEEL_SPEED, ADCS_SD_LOG_MASK_MAGNETIC_FIELD_VECTOR, ADCS_SD_LOG_MASK_SATELLITE_POSITION_LLH};
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);   
             break;
         }
-        case ADCS_COMMISISONING_STEP_CONTINUED_Y_MOMENTUM_ACTIVATION_AND_MAGNETOMETER_EKF: {
+        case ADCS_COMMISSIONING_STEP_CONTINUED_Y_MOMENTUM_ACTIVATION_AND_MAGNETOMETER_EKF: {
             const uint8_t num_logs = 6; 
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[6] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_WHEEL_SPEED, ADCS_SD_LOG_MASK_MAGNETIC_FIELD_VECTOR, ADCS_SD_LOG_MASK_SATELLITE_POSITION_LLH};
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);   
             break;
         }
-        case ADCS_COMMISISONING_STEP_CUBESENSE_SUN_NADIR: {
+        case ADCS_COMMISSIONING_STEP_CUBESENSE_SUN_NADIR: {
             const uint8_t num_logs = 9; 
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[9] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, 
@@ -2145,7 +2212,7 @@ uint8_t TCMDEXEC_adcs_request_commissioning_telemetry(const char *args_str, TCMD
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);   
             break;
         }
-        case ADCS_COMMISISONING_STEP_EKF_ACTIVATION_SUN_AND_NADIR: {
+        case ADCS_COMMISSIONING_STEP_EKF_ACTIVATION_SUN_AND_NADIR: {
             const uint8_t num_logs = 9; 
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[9] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, 
@@ -2154,7 +2221,7 @@ uint8_t TCMDEXEC_adcs_request_commissioning_telemetry(const char *args_str, TCMD
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);  
             break;
         }
-        case ADCS_COMMISISONING_STEP_CUBESTAR_STAR_TRACKER: {
+        case ADCS_COMMISSIONING_STEP_CUBESTAR_STAR_TRACKER: {
             const uint8_t num_logs = 8; 
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[8] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, 
@@ -2163,7 +2230,7 @@ uint8_t TCMDEXEC_adcs_request_commissioning_telemetry(const char *args_str, TCMD
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);    
             break;
         }
-        case ADCS_COMMISISONING_STEP_EKF_ACTIVATION_WITH_STAR_VECTOR_MEASUREMENTS: {
+        case ADCS_COMMISSIONING_STEP_EKF_ACTIVATION_WITH_STAR_VECTOR_MEASUREMENTS: {
             const uint8_t num_logs = 8; 
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[8] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, 
@@ -2172,14 +2239,14 @@ uint8_t TCMDEXEC_adcs_request_commissioning_telemetry(const char *args_str, TCMD
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);    
             break;
         }
-        case ADCS_COMMISISONING_STEP_ZERO_BIAS_3_AXIS_REACTION_WHEEL_CONTROL: {
+        case ADCS_COMMISSIONING_STEP_ZERO_BIAS_3_AXIS_REACTION_WHEEL_CONTROL: {
             const uint8_t num_logs = 4; 
-            const uint8_t period_s = 10; 
+            const uint8_t period_s = 1; 
             const uint8_t* commissioning_data[4] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_WHEEL_SPEED};
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);   
             break;
         }
-        case ADCS_COMMISISONING_STEP_EKF_WITH_RATE_GYRO_STAR_TRACKER_MEASUREMENTS: {
+        case ADCS_COMMISSIONING_STEP_EKF_WITH_RATE_GYRO_STAR_TRACKER_MEASUREMENTS: {
             const uint8_t num_logs = 12; 
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[12] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_ESTIMATED_GYRO_BIAS, ADCS_SD_LOG_MASK_ESTIMATION_INNOVATION_VECTOR, 
@@ -2188,7 +2255,7 @@ uint8_t TCMDEXEC_adcs_request_commissioning_telemetry(const char *args_str, TCMD
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);   
             break;
         }
-        case ADCS_COMMISISONING_STEP_SUN_TRACKING_3_AXIS_CONTROL: {
+        case ADCS_COMMISSIONING_STEP_SUN_TRACKING_3_AXIS_CONTROL: {
             const uint8_t num_logs = 12; 
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[12] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_ESTIMATED_GYRO_BIAS, ADCS_SD_LOG_MASK_ESTIMATION_INNOVATION_VECTOR, 
@@ -2197,16 +2264,16 @@ uint8_t TCMDEXEC_adcs_request_commissioning_telemetry(const char *args_str, TCMD
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);   
             break;
         }
-        case ADCS_COMMISISONING_STEP_GROUND_TARGET_TRACKING_CONTROLLER: {
+        case ADCS_COMMISSIONING_STEP_GROUND_TARGET_TRACKING_CONTROLLER: {
             const uint8_t num_logs = 14; 
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[14] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_ESTIMATED_GYRO_BIAS, ADCS_SD_LOG_MASK_ESTIMATION_INNOVATION_VECTOR, 
                                                             ADCS_SD_LOG_MASK_MAGNETIC_FIELD_VECTOR, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_FINE_SUN_VECTOR, ADCS_SD_LOG_MASK_NADIR_VECTOR, ADCS_SD_LOG_MASK_WHEEL_SPEED, ADCS_SD_LOG_MASK_MAGNETORQUER_COMMAND,
-                                                            ADCS_SD_LOG_MASK_IGRF_MODELLED_MAGNETIC_FIELD_VECTOR, ADCS_SD_LOG_MASK_QUATERNION_ERROR_VECTOR, ADCS_SD_LOG_MASK_SATELLITE_POSITION_LLH, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES};
+                                                            ADCS_SD_LOG_MASK_IGRF_MODELLED_MAGNETIC_FIELD_VECTOR, ADCS_SD_LOG_MASK_QUATERNION_ERROR_VECTOR, ADCS_SD_LOG_MASK_SATELLITE_POSITION_LLH, ADCS_SD_LOG_MASK_WHEEL_SPEED_COMMANDS};
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);   
             break;
         }
-        case ADCS_COMMISISONING_STEP_GPS_RECEIVER: {
+        case ADCS_COMMISSIONING_STEP_GPS_RECEIVER: {
             const uint8_t num_logs = 6; 
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[6] = {ADCS_SD_LOG_MASK_SATELLITE_POSITION_LLH, ADCS_SD_LOG_MASK_RAW_GPS_STATUS, ADCS_SD_LOG_MASK_RAW_GPS_TIME, 
@@ -2224,3 +2291,13 @@ uint8_t TCMDEXEC_adcs_request_commissioning_telemetry(const char *args_str, TCMD
 
     return status;
 }
+
+/// @brief Telecommand: Instruct the ADCS to format the SD card
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_format_sd(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                   char *response_output_buf, uint16_t response_output_buf_len) {
+    uint8_t status = ADCS_format_sd();
+    return status;
+}     

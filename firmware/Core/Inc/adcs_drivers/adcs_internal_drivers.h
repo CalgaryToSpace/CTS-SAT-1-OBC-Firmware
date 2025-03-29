@@ -4,6 +4,8 @@
 #include "adcs_drivers/adcs_types.h"
 #include "main.h" // this is necessary because &hi2c1 is defined in that file
 
+#include <time.h>
+
 #define ADCS_i2c_HANDLE &hi2c1
 static const uint8_t ADCS_INCLUDE_CHECKSUM = 1;
 static const uint8_t ADCS_NO_CHECKSUM = 0;
