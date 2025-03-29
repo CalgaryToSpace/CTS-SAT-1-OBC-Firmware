@@ -35,6 +35,7 @@
 #include "timekeeping/timekeeping.h"
 #include "littlefs/littlefs_helper.h"
 #include "stm32/stm32_reboot_reason.h"
+#include "telecommands/csp_telecommand_defs.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -1147,6 +1148,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
     },
+    {
+        .tcmd_name = "comms_downlink_str",
+        .tcmd_func = TCMDEXEC_comms_downlink_str,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
     // ****************** END SECTION: comms_telecommand_defs ******************
     // ****************** SECTION: gps_telecommand_defs ******************
     {
@@ -1176,6 +1183,13 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     // ****************** END SECTION: camera_telecommand_defs *******************
+    {
+        .tcmd_name = "csp_demo_1",
+        .tcmd_func = TCMDEXEC_csp_demo_1,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
+    },
+
 };
 
 // extern
