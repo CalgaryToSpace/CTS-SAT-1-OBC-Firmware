@@ -78,7 +78,7 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
                 return 2;
             }
         }
-        else { // thus, UART_eps_buffer_write_idx > 0
+        else { // thus, UART_gps_buffer_write_idx > 0
             // Check if we've timed out (between bytes)
             const uint32_t cur_time = HAL_GetTick();
             // Note: Sometimes, because ISRs and C are fun, the UART_eps_last_write_time_ms is
@@ -121,13 +121,15 @@ uint8_t GPS_send_cmd_get_response(const char *cmd_buf, uint8_t cmd_buf_len, uint
     }
 
     // Copy the log response from the UART gps buffer to the rx_buf[] and clear the buffer
-    for (uint16_t i = 0; i < UART_gps_buffer_write_idx; i++) {
+    uint16_t bytes_to_copy = (UART_gps_buffer_write_idx > rx_buf_max_size) ? rx_buf_max_size : UART_gps_buffer_write_idx;
+    for (uint16_t i = 0; i < bytes_to_copy; i++) {
         rx_buf[i] = UART_gps_buffer[i];
     }
 
     LOG_message(
         LOG_SYSTEM_GPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "rx_buf: %s",
+        "rx_buf: %.*s",
+        bytes_to_copy,
         rx_buf
     );
 
