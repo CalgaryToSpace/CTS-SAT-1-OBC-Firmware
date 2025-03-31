@@ -152,13 +152,12 @@ uint8_t TCMDEXEC_gps_enable_disable_command(const char *args_str, TCMD_Telecomma
             LOG_SEVERITY_NORMAL,
             LOG_SINK_ALL,
             "Error: GPS enable/disable command failed with code: %d",
-            gps_response
-        );
-        
+            gps_response);
+
         snprintf(response_output_buf, response_output_buf_len, "Error: GPS enable/disable command failed with code %d", gps_response);
         return 1;
     }
-        
+
     // TODO: modify this returned snprintf string to be more specific
     snprintf(response_output_buf, response_output_buf_len, "GPS command: '%s' successfully transmitted", args_str);
 
