@@ -22,6 +22,15 @@ uint8_t TCMDEXEC_gps_send_cmd_ascii(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
+
+    if (args_str == NULL)
+    {
+        snprintf(response_output_buf, response_output_buf_len, "Error: Empty args_str");
+        return 1;
+    }
+
+    // TODO : Determine if we need to perform extra error checks on arg_str ie log command format etc
+
     // Adding a new line character to the log command
     char gps_log_cmd[128];
     snprintf(gps_log_cmd, sizeof(gps_log_cmd), "%s\n", args_str);
@@ -93,7 +102,8 @@ uint8_t TCMDEXEC_gps_enable_disable_command(const char *args_str, TCMD_Telecomma
     // Extract Arg 1: 1 to enable (power on), 0 to disable (power off)
     uint64_t enable_disable_flag = 69;
     const uint8_t arg_1_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &enable_disable_flag);
-    if (arg_1_result != 0) {
+    if (arg_1_result != 0)
+    {
         snprintf(response_output_buf, response_output_buf_len, "Could not parse arg 1 for: %s", args_str);
         return 1;
     }
@@ -121,13 +131,12 @@ uint8_t TCMDEXEC_gps_enable_disable_command(const char *args_str, TCMD_Telecomma
             LOG_SEVERITY_NORMAL,
             LOG_SINK_ALL,
             "Error: GPS enable/disable command failed with code: %d",
-            gps_response
-        );
-        
+            gps_response);
+
         snprintf(response_output_buf, response_output_buf_len, "Error: GPS enable/disable command failed with code %d", gps_response);
         return 1;
     }
-        
+
     // TODO: modify this returned snprintf string to be more specific
     snprintf(response_output_buf, response_output_buf_len, "GPS command: '%s' successfully transmitted", args_str);
 
