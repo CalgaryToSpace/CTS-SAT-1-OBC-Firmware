@@ -72,7 +72,7 @@ uint8_t EPS_monitor_and_disable_overcurrent_channels() {
         return 2;
     }
 
-    //const uint8_t logging_status = EPS_log_pdu_json(&EPS_pdu_housekeeping_data_eng); // TODO: Rework EPS Logging
+    const uint8_t logging_status = EPS_log_pdu_json(&EPS_pdu_housekeeping_data_eng); // TODO: Rework EPS Logging
 
     EPS_channel_management(&EPS_pdu_housekeeping_data_eng);
 
