@@ -25,7 +25,7 @@
 A boolean value set to either 0 or 1. A value of 1 indicates that timestamps (usage of `@tssent`) are required, and a value of 0 indicates that timestamps are not required.
 
 **6) `EPS_monitor_interval_ms`**:  
- The time in ms in which the system will check the channels connected to the EPS and toggle them off in case of errors. 
+ The time in ms in which the system will check the channels connected to the EPS and toggle them off in case of sustained overcurrent. 
  
 ## Configuration Variable Arrays
 

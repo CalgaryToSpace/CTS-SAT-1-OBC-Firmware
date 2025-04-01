@@ -72,7 +72,7 @@ uint8_t EPS_monitor_and_disable_overcurrent_channels() {
         return 2;
     }
 
-    const uint8_t logging_status = EPS_log_pdu_json(&EPS_pdu_housekeeping_data_eng);
+    const uint8_t logging_status = EPS_log_pdu_json(&EPS_pdu_housekeeping_data_eng); // TODO: Rework EPS Logging
 
     EPS_channel_management(&EPS_pdu_housekeeping_data_eng);
 
@@ -88,7 +88,7 @@ uint8_t EPS_log_pdu_json(const EPS_struct_pdu_housekeeping_data_eng_t *EPS_pdu_h
 
     char json_str[2000];
 
-    //Power Logging                                                        
+    // Power Logging                                                        
     int8_t pdu_TO_JSON_status = EPS_struct_pdu_housekeeping_data_eng_TO_json(EPS_pdu_housekeeping_data_eng, json_str, 2000);
 
     if (pdu_TO_JSON_status != 0) {
@@ -126,30 +126,30 @@ void EPS_channel_management(const EPS_struct_pdu_housekeeping_data_eng_t *EPS_pd
     //Power Monitoring
     for (uint8_t channel = 0; channel < 32; channel++) {
         if ((ch_bitfield & (1 << channel)) == 0) { // Check if channel is enabled.
-            LOG_message(
-                LOG_SYSTEM_EPS,
-                LOG_SEVERITY_DEBUG,
-                LOG_SINK_ALL,
-                "Channel %d is disabled.", channel
-            );
+            // LOG_message(
+            //     LOG_SYSTEM_EPS,
+            //     LOG_SEVERITY_DEBUG,
+            //     LOG_SINK_ALL,
+            //     "Channel %d is disabled.", channel
+            // );
             continue;
         }
         if (EPS_current_mA_threshhold[channel] == 0) {
-            LOG_message(
-                LOG_SYSTEM_EPS,
-                LOG_SEVERITY_DEBUG,
-                LOG_SINK_ALL,
-                "Channel %d is has threshold 0.", channel
-            );
+            // LOG_message(
+            //     LOG_SYSTEM_EPS,
+            //     LOG_SEVERITY_DEBUG,
+            //     LOG_SINK_ALL,
+            //     "Channel %d is has threshold 0.", channel
+            // );
             continue;
         } 
         if (!(EPS_pdu_housekeeping_data_eng->vip_each_channel[channel].current_mA > EPS_current_mA_threshhold[channel])) {
-            LOG_message(
-                LOG_SYSTEM_EPS,
-                LOG_SEVERITY_DEBUG,
-                LOG_SINK_ALL,
-                "Channel %d is has not exceeded the threshold.", channel
-            );
+            // LOG_message(
+            //     LOG_SYSTEM_EPS,
+            //     LOG_SEVERITY_DEBUG,
+            //     LOG_SINK_ALL,
+            //     "Channel %d is has not exceeded the threshold.", channel
+            // );
             continue;
         }
 
