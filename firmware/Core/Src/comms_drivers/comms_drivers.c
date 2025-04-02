@@ -53,11 +53,10 @@ uint8_t COMMS_find_optimal_antenna() {
         return 0;
     }
 
-    bool is_forwards = output_struct.estimated_pitch_angle_mdeg < 90 || output_struct.estimated_pitch_angle_mdeg > 270;
-    bool is_rightsideup = output_struct.estimated_roll_angle_mdeg < 90 || output_struct.estimated_roll_angle_mdeg > 270;
+    bool dipole_b = (output_struct.estimated_roll_angle_mdeg < 45000 || output_struct.estimated_roll_angle_mdeg > 315000) || (output_struct.estimated_roll_angle_mdeg > 135000 && output_struct.estimated_roll_angle_mdeg < 225000);
 
-    if ((is_forwards && is_rightsideup) || (!is_forwards && !is_rightsideup)) {
-        return 1;
+    if (dipole_b) {
+        return 2;
     }
-    return 2;
+    return 1;
 }
