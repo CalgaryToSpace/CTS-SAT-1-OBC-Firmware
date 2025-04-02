@@ -13,6 +13,7 @@
 #include "adcs_drivers/adcs_internal_drivers.h"
 #include "timekeeping/timekeeping.h"
 #include "littlefs/littlefs_helper.h"
+#include "log/log.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -1388,12 +1389,15 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
         status = ADCS_get_file_download_buffer(&(download_packet));
         if (status != 0) {return status | (1 << 6);}
 
+        uint16_t mini_packet_counter = download_packet.packet_counter % 1024;
+        // when download_packet.packet_counter >= 1024, we access memory outside the buffer, but we want to overwrite it instead
+        
         for (uint8_t j = 0; j < 20; j++) {
-            adcs_download_buffer[20 * download_packet.packet_counter + j] = download_packet.file_bytes[j];
+            adcs_download_buffer[20 * mini_packet_counter + j] = download_packet.file_bytes[j];
         }
 
         // generate hole map to determine any missing packets
-        hole_map[download_packet.packet_counter / 16] |= (1 << (download_packet.packet_counter % 16));
+        hole_map[mini_packet_counter / 16] |= (1 << (mini_packet_counter % 16));
 
     }
     
@@ -1425,6 +1429,7 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
     uint8_t hole_map_attempts = 0;
 
     while (required_packets != packets_received) {
+        // TODO: for some reason, now that we are using mini_packet_counter, we are getting one too many packets!
 
         for (uint8_t i = 0; i < 8; i++) {
             uint8_t hole_map_slice[16];
@@ -1448,12 +1453,15 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
             status = ADCS_get_file_download_buffer(&(download_packet));
             if (status != 0) {return status | (1 << 9);}
 
+            uint16_t mini_packet_counter = download_packet.packet_counter % 1024;
+            // when download_packet.packet_counter >= 1024, we access memory outside the buffer, but we want to overwrite it instead
+
             for (uint8_t j = 0; j < 20; j++) {
-                adcs_download_buffer[20 * download_packet.packet_counter + j] = download_packet.file_bytes[j];
+                adcs_download_buffer[20 * mini_packet_counter + j] = download_packet.file_bytes[j];
             }
 
             // generate hole map to determine any missing packets
-            hole_map[download_packet.packet_counter / 16] |= (1 << (download_packet.packet_counter % 16));
+            hole_map[mini_packet_counter / 16] |= (1 << (mini_packet_counter % 16));
         }
 
         packets_received = 0;
@@ -1482,10 +1490,10 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
     }
 
     /* HOLE MAP STUFF ENDS HERE */
-
+    
     // Append to the index file in the filesystem (append_file does both)
-    status = LFS_append_file(filename_string, &adcs_download_buffer[0], 20480); 
-    if (status != 0) {return status;}
+    // status = LFS_append_file(filename_string, &adcs_download_buffer[0], 20480); 
+    // if (status != 0) {return status;}
 
     return 0;
 
@@ -1578,6 +1586,7 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
 
     while (current_block < total_blocks) {
 
+        LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, "Loading block %d from ADCS to LittleFS", current_block);
         status = ADCS_load_sd_file_block_to_filesystem(file_info, 0, filename_string, 17); // load the block
         if (status != 0) {return status;}
 
