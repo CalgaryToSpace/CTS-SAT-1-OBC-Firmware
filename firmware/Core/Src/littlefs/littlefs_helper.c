@@ -406,6 +406,16 @@ int8_t LFS_write_file_with_offset(const char file_name[], lfs_soff_t offset, uin
             
             LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), 
                        "Extending file from %ld to %ld bytes", current_size, offset);
+
+            // Start writing zeros from the current file size to the desired offset
+            const lfs_soff_t seek_result_1 = lfs_file_seek(&LFS_filesystem, &file, current_size, LFS_SEEK_SET);
+            if (seek_result_1 < 0)
+            {
+                LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), 
+                           "Error seeking to offset %ld in file: %s (error: %ld)", current_size, file_name, seek_result_1);
+                lfs_file_close(&LFS_filesystem, &file);
+                return seek_result_1;
+            }
             
             while (gap_size > 0) 
             {
@@ -427,15 +437,15 @@ int8_t LFS_write_file_with_offset(const char file_name[], lfs_soff_t offset, uin
     else 
     {
         // Seek to the specified offset
-        const lfs_soff_t seek_result = lfs_file_seek(&LFS_filesystem, &file, offset, LFS_SEEK_SET);
-        if (seek_result < 0)
+        const lfs_soff_t seek_result_2 = lfs_file_seek(&LFS_filesystem, &file, offset, LFS_SEEK_SET);
+        if (seek_result_2 < 0)
         {
             LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), 
-                       "Error seeking to offset %ld in file: %s (error: %ld)", offset, file_name, seek_result);
+                       "Error seeking to offset %ld in file: %s (error: %ld)", offset, file_name, seek_result_2);
             
             // Close the file before returning
             lfs_file_close(&LFS_filesystem, &file);
-            return seek_result;
+            return seek_result_2;
         }
     }
 
