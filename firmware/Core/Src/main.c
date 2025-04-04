@@ -32,6 +32,7 @@
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_internal_drivers.h"
 #include "littlefs/flash_driver.h"
+#include "cts_csp/cts_csp_main.h"
 
 /* USER CODE END Includes */
 
@@ -270,6 +271,8 @@ int main(void)
 
   // Initialise the ADCS CRC8 checksum (required for ADCS operation).
   ADCS_initialise_crc8_checksum();
+  
+  CSP_init_for_cts1();
 
   // Always leave the Camera enable signal enabled. Easier to control it through just the EPS.
   HAL_GPIO_WritePin(PIN_CAM_EN_OUT_GPIO_Port, PIN_CAM_EN_OUT_Pin, GPIO_PIN_SET);
@@ -429,7 +432,7 @@ static void MX_I2C1_Init(void)
   /* USER CODE END I2C1_Init 1 */
   hi2c1.Instance = I2C1;
   hi2c1.Init.Timing = 0x00503D58;
-  hi2c1.Init.OwnAddress1 = 0;
+  hi2c1.Init.OwnAddress1 = 24;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
   hi2c1.Init.OwnAddress2 = 0;
