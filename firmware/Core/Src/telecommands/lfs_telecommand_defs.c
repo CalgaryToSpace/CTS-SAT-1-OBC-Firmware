@@ -179,7 +179,8 @@ uint8_t TCMDEXEC_fs_write_file_str(const char *args_str, TCMD_TelecommandChannel
 /// @param args_str
 /// - Arg 0: File path as string
 /// - Arg 1: Offset within the file to start writing (uint64)
-/// - Arg 2: Hex string to write to file (e.g., "DEADBEEF" or "DE AD BE EF"). Up to 512 bytes.
+/// - Arg 2: Hex string to write to file (e.g., "DEADBEEF" or "DE AD BE EF")
+/// @note The maximum number of bytes that can be written is 105 bytes
 uint8_t TCMDEXEC_fs_write_file_hex(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     char arg_file_name[LFS_MAX_PATH_LENGTH];
@@ -206,7 +207,7 @@ uint8_t TCMDEXEC_fs_write_file_hex(const char *args_str, TCMD_TelecommandChannel
     }
 
     // Buffer to hold the converted hex data
-    uint8_t binary_data[512] = {0};
+    uint8_t binary_data[105] = {0};
     uint16_t binary_data_length = 0;
     
     // Extract and convert hex string to binary data
