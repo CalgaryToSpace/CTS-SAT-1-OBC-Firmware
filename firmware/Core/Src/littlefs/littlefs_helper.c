@@ -354,6 +354,128 @@ int8_t LFS_append_file(const char file_name[], uint8_t *write_buffer, uint32_t w
     return 0;
 }
 
+/// @brief Creates / Opens LittleFS File and writes data at a specific offset
+/// @param file_name - Pointer to cstring holding the file name to create or open
+/// @param offset - Position within the file to write the data
+/// @param write_buffer - Pointer to buffer holding the data to write
+/// @param write_buffer_len - Size of the data to write
+/// @retval 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
+int8_t LFS_write_file_with_offset(const char file_name[], lfs_soff_t offset, uint8_t *write_buffer, uint32_t write_buffer_len)
+{
+    if (!LFS_is_lfs_mounted)
+    {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "LittleFS not mounted");
+        return 1;
+    }
+
+    // Open the file with read-write access, create if it doesn't exist
+    lfs_file_t file;
+    const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_RDWR | LFS_O_CREAT, &LFS_file_cfg);
+    if (open_result < 0)
+    {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), 
+                   "Error opening file: %s (error: %d)", file_name, open_result);
+        return open_result;
+    }
+    
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), 
+               "Opened file for writing at offset: %s", file_name);
+
+    // Get the current file size to determine if we need to extend it
+    lfs_soff_t current_size = lfs_file_size(&LFS_filesystem, &file);
+    if (current_size < 0)
+    {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), 
+                   "Error getting file size: %s (error: %ld)", file_name, current_size);
+        lfs_file_close(&LFS_filesystem, &file);
+        return current_size;
+    }
+
+    // Check if we need to extend the file with zeros for a gap
+    if (offset > current_size)
+    {
+        // Calculate the gap size between current file end and desired offset
+        uint32_t gap_size = offset - current_size;
+        
+        // Fill the gap with zeros if needed
+        if (gap_size > 0) 
+        {
+            // For efficiency, write zeros in chunks if the gap is large
+            uint8_t zero_buffer[64] = {0}; // Buffer of zeros to write
+            uint32_t chunk_size = sizeof(zero_buffer);
+            
+            LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), 
+                       "Extending file from %ld to %ld bytes", current_size, offset);
+
+            // Start writing zeros from the current file size to the desired offset
+            const lfs_soff_t seek_result_1 = lfs_file_seek(&LFS_filesystem, &file, current_size, LFS_SEEK_SET);
+            if (seek_result_1 < 0)
+            {
+                LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), 
+                           "Error seeking to offset %ld in file: %s (error: %ld)", current_size, file_name, seek_result_1);
+                lfs_file_close(&LFS_filesystem, &file);
+                return seek_result_1;
+            }
+            
+            while (gap_size > 0) 
+            {
+                uint32_t bytes_to_write = (gap_size > chunk_size) ? chunk_size : gap_size;
+                
+                const lfs_ssize_t write_zeros_result = lfs_file_write(&LFS_filesystem, &file, zero_buffer, bytes_to_write);
+                if (write_zeros_result < 0) 
+                {
+                    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), 
+                               "Error extending file: %s (error: %ld)", file_name, write_zeros_result);
+                    lfs_file_close(&LFS_filesystem, &file);
+                    return write_zeros_result;
+                }
+                
+                gap_size -= bytes_to_write;
+            }
+        }
+    }
+    else 
+    {
+        // Seek to the specified offset
+        const lfs_soff_t seek_result_2 = lfs_file_seek(&LFS_filesystem, &file, offset, LFS_SEEK_SET);
+        if (seek_result_2 < 0)
+        {
+            LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), 
+                       "Error seeking to offset %ld in file: %s (error: %ld)", offset, file_name, seek_result_2);
+            
+            // Close the file before returning
+            lfs_file_close(&LFS_filesystem, &file);
+            return seek_result_2;
+        }
+    }
+
+    // Write data to file at the specified offset
+    const lfs_ssize_t write_result = lfs_file_write(&LFS_filesystem, &file, write_buffer, write_buffer_len);
+    if (write_result < 0)
+    {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), 
+                   "Error writing to file: %s at offset %ld (error: %ld)", file_name, offset, write_result);
+        
+        // Close the file before returning
+        lfs_file_close(&LFS_filesystem, &file);
+        return write_result;
+    }
+
+    // Close the File, the storage is not updated until the file is closed successfully
+    const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
+    if (close_result < 0)
+    {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), 
+                   "Error closing file: %s (error: %d)", file_name, close_result);
+        return close_result;
+    }
+    
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), 
+               "Successfully wrote %lu bytes to file: %s at offset %ld", write_buffer_len, file_name, offset);
+
+    return 0;
+}
+
 /// @brief Opens LittleFS File to read from the Memory Module
 /// @param file_name - Pointer to buffer holding the file name to open
 /// @param offset - position within the file to read from
