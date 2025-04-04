@@ -141,3 +141,45 @@ uint8_t GPS_send_cmd_get_response(
 
     return 0;
 }
+
+/// @brief Sends an enable/disable command to the GPS, and receives the response.
+/// @param cmd_arg the incomplete command (eg: ANTENNAPOWER)
+/// @param enable_disable_flag 1 to enable (power on), 0 to disable (power off)
+/// @param rx_buf Buffer to store the response.
+/// @param rx_buf_len Length of the response buffer.
+/// @param rx_buf_max_size Maximum length of the response buffer.
+/// @return 0 on success, >0 if error.
+uint8_t GPS_enable_disable(const char *cmd_arg, uint16_t enable_disable_flag, uint8_t rx_buf[], uint16_t rx_buf_len, const uint16_t rx_buf_max_size)
+{
+    // Extract Arg 0: incomplete command to send
+    char full_command[128];
+    snprintf(full_command, sizeof(full_command), "%s %s\n", cmd_arg, enable_disable_flag == 1 ? "ON" : "OFF");
+    const uint16_t full_command_len = strlen(full_command);
+
+    // Testing purposes to be removed once out of Draft PR state
+    LOG_message(
+        LOG_SYSTEM_GPS,
+        LOG_SEVERITY_NORMAL,
+        LOG_SINK_ALL,
+        "THIS IS THE FULL COMMAND TO BE SENT TO OEM: %s",
+        full_command);
+
+    // Send log command to GPS and receive response
+    const uint8_t gps_cmd_response = GPS_send_cmd_get_response(
+        full_command, full_command_len, rx_buf, rx_buf_len, rx_buf_max_size);
+
+    if (gps_cmd_response != 0)
+    {
+        LOG_message(
+            LOG_SYSTEM_GPS,
+            LOG_SEVERITY_NORMAL,
+            LOG_SINK_ALL,
+            "GPS Response Code: %d",
+            gps_cmd_response);
+
+        snprintf((char *)rx_buf, rx_buf_len, "GPS Command had errors: %s", full_command);
+        return 1;
+    }
+    snprintf((char *)rx_buf, rx_buf_len, "GPS Command: '%s' successfully transmitted", full_command);
+    return 0;
+}
