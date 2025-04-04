@@ -184,6 +184,9 @@ Functions</h2></td></tr>
 <tr class="memitem:af2a5d6ed69b9a658666bf15b20d62d10" id="r_af2a5d6ed69b9a658666bf15b20d62d10"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af2a5d6ed69b9a658666bf15b20d62d10">TCMDEXEC_eps_get_current_battery_percent</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
 <tr class="memdesc:af2a5d6ed69b9a658666bf15b20d62d10"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current battery voltage percent from PBU.  <br /></td></tr>
 <tr class="separator:af2a5d6ed69b9a658666bf15b20d62d10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c1eb4e8fc668caa2ac1cf0a648babae" id="r_a1c1eb4e8fc668caa2ac1cf0a648babae"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1c1eb4e8fc668caa2ac1cf0a648babae">TCMDEXEC_eps_power_management_set_current_threshold</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
+<tr class="memdesc:a1c1eb4e8fc668caa2ac1cf0a648babae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the EPS power managements max sustained current for the specified channel.  <br /></td></tr>
+<tr class="separator:a1c1eb4e8fc668caa2ac1cf0a648babae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e06602ac7e1d4da69112a6fd107b84f" id="r_a8e06602ac7e1d4da69112a6fd107b84f"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8e06602ac7e1d4da69112a6fd107b84f">TCMDEXEC_eps_get_enabled_channels_json</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
 <tr class="separator:a8e06602ac7e1d4da69112a6fd107b84f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -383,7 +386,6 @@ Here is the call graph for this function:</div>
 </div><div class="memdoc">
 
 <p>Get current battery voltage percent from PBU. </p>
-<dl class="section return"><dt>Returns</dt><dd>0 if successful, &gt; 0 otherwise </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2557,6 +2559,69 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="1385,1031,1403,1019,1426,993,1445,964,1474,900,1491,838,1500,789,1505,789,1496,839,1479,902,1450,966,1430,996,1406,1023,1388,1036"/>
 <area shape="poly" title=" " alt="" coords="1378,577,1406,593,1438,625,1465,663,1498,732,1493,734,1460,665,1434,629,1403,598,1375,582"/>
 <area shape="poly" title=" " alt="" coords="1383,632,1406,643,1433,663,1457,686,1492,733,1488,736,1453,690,1429,667,1403,647,1380,637"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a1c1eb4e8fc668caa2ac1cf0a648babae" name="a1c1eb4e8fc668caa2ac1cf0a648babae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c1eb4e8fc668caa2ac1cf0a648babae">&#9670;&#160;</a></span>TCMDEXEC_eps_power_management_set_current_threshold()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t TCMDEXEC_eps_power_management_set_current_threshold </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>args_str</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a></td>          <td class="paramname"><span class="paramname"><em>tcmd_channel</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>response_output_buf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>response_output_buf_len</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the EPS power managements max sustained current for the specified channel. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args_str</td><td><ul>
+<li>Arg 0: The channel name or number (string).</li>
+<li>Arg 1: Threshhold current (in mA) to set. </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, &gt;0 on failure </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Valid string values for Arg 0: "vbatt_stack", "stack_5v", "stack_3v3", "camera", "uhf_antenna_deploy", "lora_module", "mpi", "boom" as well as channel numbers 0-16. </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="eps__telecommands_8h_a1c1eb4e8fc668caa2ac1cf0a648babae_cgraph.png" border="0" usemap="#aeps__telecommands_8h_a1c1eb4e8fc668caa2ac1cf0a648babae_cgraph" alt=""/></div>
+<map name="aeps__telecommands_8h_a1c1eb4e8fc668caa2ac1cf0a648babae_cgraph" id="aeps__telecommands_8h_a1c1eb4e8fc668caa2ac1cf0a648babae_cgraph">
+<area shape="rect" title="Sets the EPS power managements max sustained current for the specified channel." alt="" coords="5,77,181,133"/>
+<area shape="rect" href="eps__channel__control_8c.html#a70f2c11717a0e7352ed1c727053e0c2d" title="Converts an EPS channel name to a channel enum." alt="" coords="255,5,410,31"/>
+<area shape="poly" title=" " alt="" coords="149,74,228,41,253,33,255,38,230,46,151,79"/>
+<area shape="rect" href="eps__power__management_8c.html#a7f75b82960f5fff2d2a87490c5b4b22c" title=" " alt="" coords="229,55,436,96"/>
+<area shape="poly" title=" " alt="" coords="181,91,213,87,213,93,181,97"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#a0fa1c206f35d62f732c8ca95067fb36c" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a string." alt="" coords="248,120,416,146"/>
+<area shape="poly" title=" " alt="" coords="181,112,233,119,233,124,181,118"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="247,169,418,195"/>
+<area shape="poly" title=" " alt="" coords="161,131,229,156,253,162,252,168,228,161,159,136"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="484,169,636,195"/>
+<area shape="poly" title=" " alt="" coords="418,180,468,180,468,185,418,185"/>
 </map>
 </div>
 

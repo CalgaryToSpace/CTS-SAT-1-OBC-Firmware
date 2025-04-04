@@ -1,22 +1,25 @@
 <map id="TASK_HELP_start_of_task" name="TASK_HELP_start_of_task">
-<area shape="rect" id="Node000001" title=" " alt="" coords="373,133,554,159"/>
-<area shape="rect" id="Node000002" href="$rtos__tasks_8c.html#a7cf23bbdce878a0b7c41607751423179" title=" " alt="" coords="113,5,315,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="436,124,387,83,356,62,324,45,295,34,297,29,326,40,359,58,390,79,440,120"/>
-<area shape="rect" id="Node000004" href="$rtos__tasks_8c.html#a04172000ecfd61309b0b9a892c0839ea" title=" " alt="" coords="114,55,314,80"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="418,129,324,94,284,83,285,78,326,89,420,124"/>
-<area shape="rect" id="Node000005" href="$rtos__tasks_8c.html#a8dcebcb92690e2abce2b7ecb96e411c4" title=" " alt="" coords="103,104,325,130"/>
-<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="357,136,325,133,326,127,358,131"/>
-<area shape="rect" id="Node000006" href="$rtos__tasks_8c.html#a65b8e3815e64b441f35e0271bfd5b690" title=" " alt="" coords="135,154,292,194"/>
-<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="358,161,293,168,292,163,357,155"/>
-<area shape="rect" id="Node000007" href="$rtos__eps__tasks_8c.html#a32949062e454d45c5ab1f1480f359a12" title="periodically sends a command to the eps to reset the watchdog timer" alt="" coords="116,219,312,244"/>
-<area shape="poly" id="edge9_Node000001_Node000007" title=" " alt="" coords="423,169,326,209,283,221,282,215,324,204,421,164"/>
-<area shape="rect" id="Node000008" href="$rtos__eps__tasks_8c.html#ad27bdbe0e838d3705b754e9af4c449b2" title=" " alt="" coords="153,268,275,294"/>
-<area shape="poly" id="edge11_Node000001_Node000008" title=" " alt="" coords="441,172,391,217,360,240,326,259,276,275,275,270,324,254,357,236,388,213,438,168"/>
-<area shape="rect" id="Node000003" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,133,55,159"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="111,40,104,44,81,65,63,89,39,134,34,132,58,86,77,61,101,40,108,36"/>
-<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="118,88,104,94,72,114,47,135,43,131,69,109,101,89,116,83"/>
-<area shape="poly" id="edge6_Node000005_Node000003" title=" " alt="" coords="115,135,55,145,55,140,114,130"/>
-<area shape="poly" id="edge8_Node000006_Node000003" title=" " alt="" coords="119,162,55,152,55,147,120,157"/>
-<area shape="poly" id="edge10_Node000007_Node000003" title=" " alt="" coords="118,216,101,209,67,186,41,161,45,157,71,181,104,204,120,211"/>
-<area shape="poly" id="edge12_Node000008_Node000003" title=" " alt="" coords="136,275,101,259,76,236,57,209,34,161,38,158,62,206,80,233,104,255,139,270"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="373,153,554,179"/>
+<area shape="rect" id="Node000002" href="$rtos__background__upkeep_8c.html#a6e9290aa86044f925c753a48224e083f" title=" " alt="" coords="124,5,304,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="440,143,391,92,359,66,324,45,298,34,300,29,326,40,362,62,394,89,444,140"/>
+<area shape="rect" id="Node000004" href="$rtos__tasks_8c.html#a7cf23bbdce878a0b7c41607751423179" title=" " alt="" coords="113,55,315,80"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="428,147,380,119,324,94,290,84,291,78,326,89,382,115,431,142"/>
+<area shape="rect" id="Node000005" href="$rtos__tasks_8c.html#a04172000ecfd61309b0b9a892c0839ea" title=" " alt="" coords="114,104,314,130"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="380,152,282,133,283,128,381,147"/>
+<area shape="rect" id="Node000006" href="$rtos__tasks_8c.html#a8dcebcb92690e2abce2b7ecb96e411c4" title=" " alt="" coords="103,153,325,179"/>
+<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="357,169,325,169,325,164,357,164"/>
+<area shape="rect" id="Node000007" href="$rtos__tasks_8c.html#a65b8e3815e64b441f35e0271bfd5b690" title=" " alt="" coords="135,203,292,244"/>
+<area shape="poly" id="edge9_Node000001_Node000007" title=" " alt="" coords="390,186,293,208,292,203,389,180"/>
+<area shape="rect" id="Node000008" href="$rtos__eps__tasks_8c.html#a32949062e454d45c5ab1f1480f359a12" title="periodically sends a command to the eps to reset the watchdog timer" alt="" coords="116,268,312,294"/>
+<area shape="poly" id="edge11_Node000001_Node000008" title=" " alt="" coords="436,191,386,225,326,258,290,270,289,265,324,253,384,221,433,186"/>
+<area shape="rect" id="Node000009" href="$rtos__eps__tasks_8c.html#ad27bdbe0e838d3705b754e9af4c449b2" title=" " alt="" coords="153,317,275,343"/>
+<area shape="poly" id="edge13_Node000001_Node000009" title=" " alt="" coords="447,193,397,252,364,283,326,309,302,319,276,326,275,321,300,314,324,304,361,279,394,248,443,190"/>
+<area shape="rect" id="Node000003" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,153,55,179"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="112,39,104,44,79,70,60,100,37,154,33,152,55,97,75,66,101,40,109,35"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="114,89,104,94,68,123,42,154,38,151,64,120,101,89,111,84"/>
+<area shape="poly" id="edge6_Node000005_Node000003" title=" " alt="" coords="131,136,103,143,56,159,54,154,102,138,130,131"/>
+<area shape="poly" id="edge8_Node000006_Node000003" title=" " alt="" coords="87,169,55,169,55,164,87,164"/>
+<area shape="poly" id="edge10_Node000007_Node000003" title=" " alt="" coords="123,201,102,194,54,177,56,172,104,189,125,196"/>
+<area shape="poly" id="edge12_Node000008_Node000003" title=" " alt="" coords="112,264,101,258,79,240,61,219,36,181,40,178,65,216,83,236,104,253,115,259"/>
+<area shape="poly" id="edge14_Node000009_Node000003" title=" " alt="" coords="137,326,101,308,73,278,52,242,39,207,32,180,37,179,44,206,57,240,77,275,104,304,139,321"/>
 </map>

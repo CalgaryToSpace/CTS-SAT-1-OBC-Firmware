@@ -1,11 +1,19 @@
 <map id="EPS_CMD_output_bus_channel_off" name="EPS_CMD_output_bus_channel_off">
-<area shape="rect" id="Node000001" title=" " alt="" coords="704,27,859,68"/>
-<area shape="rect" id="Node000002" href="$eps__channel__control_8c.html#a91245fbb2fa29818f98ac6a3c0755a40" title="Sets the enabled state of an EPS channel (on or off)." alt="" coords="480,35,656,60"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="689,50,657,50,657,45,689,45"/>
-<area shape="rect" id="Node000003" href="$camera__init_8c.html#adfa3d3b239068192490d519d4452cfee" title="Set up the camera by powering on and changing the baudrate to 2400." alt="" coords="289,5,378,31"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="464,37,378,26,379,21,465,32"/>
-<area shape="rect" id="Node000005" href="$eps__telecommands_8c.html#af4a26360f491c65d480eda02ae55b900" title="Sets the EPS channel to be enabled (on) or disabled (off)." alt="" coords="235,55,432,96"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="465,62,433,66,432,61,464,57"/>
-<area shape="rect" id="Node000004" href="$camera__telecommand__defs_8c.html#abfe79147115a9931e013ce9d49a41908" title="Set up the camera by powering on and changing the baudrate to 2400." alt="" coords="5,5,187,31"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="273,21,187,21,187,16,273,16"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="807,39,961,79"/>
+<area shape="rect" id="Node000002" href="$eps__power__management_8c.html#a2f6d81bd9f8bf600e4e777e36df03cf6" title="Monitor the power consumption of each channel and disable any channels that exceed a certain threshol..." alt="" coords="577,17,759,42"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="791,49,759,45,760,39,791,44"/>
+<area shape="rect" id="Node000006" href="$eps__channel__control_8c.html#a91245fbb2fa29818f98ac6a3c0755a40" title="Sets the enabled state of an EPS channel (on or off)." alt="" coords="580,70,756,96"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="791,72,757,76,756,71,791,67"/>
+<area shape="rect" id="Node000003" href="$eps__power__management_8c.html#a1db93bd2baaea0834d00a3077caaceeb" title="Monitors the power consumption of each channel and logs the data in JSON format." alt="" coords="344,5,517,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="562,31,518,30,518,24,562,25"/>
+<area shape="rect" id="Node000004" href="$rtos__background__upkeep_8c.html#a6e9290aa86044f925c753a48224e083f" title=" " alt="" coords="104,13,283,38"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="329,28,284,28,284,23,329,23"/>
+<area shape="rect" id="Node000005" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,13,55,38"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="88,28,55,28,55,23,88,23"/>
+<area shape="rect" id="Node000007" href="$camera__init_8c.html#adfa3d3b239068192490d519d4452cfee" title="Set up the camera by powering on and changing the baudrate to 2400." alt="" coords="386,70,475,96"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="564,86,475,86,475,80,564,80"/>
+<area shape="rect" id="Node000009" href="$eps__telecommands_8c.html#af4a26360f491c65d480eda02ae55b900" title="Sets the EPS channel to be enabled (on) or disabled (off)." alt="" coords="332,120,529,161"/>
+<area shape="poly" id="edge8_Node000006_Node000009" title=" " alt="" coords="598,103,519,122,517,117,596,97"/>
+<area shape="rect" id="Node000008" href="$camera__telecommand__defs_8c.html#abfe79147115a9931e013ce9d49a41908" title="Set up the camera by powering on and changing the baudrate to 2400." alt="" coords="103,70,284,96"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="371,86,284,86,284,80,371,80"/>
 </map>
