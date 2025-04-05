@@ -3,7 +3,7 @@
 #define INCLUDE_GUARD__TELECOMMAND_EXECUTOR_H
 
 #include <stdint.h>
-#include "telecommands/telecommand_types.h"
+#include "telecommand_exec/telecommand_types.h"
 
 // Max number of telecommands that can be stored in the agenda (schedule/queue).
 // Memory-constrained.

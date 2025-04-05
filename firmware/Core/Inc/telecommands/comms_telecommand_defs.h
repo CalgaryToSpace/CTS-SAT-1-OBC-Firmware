@@ -1,7 +1,7 @@
 #ifndef INCLUDE_GUARD__COMMS_TELECOMMAND_DEFS_H
 #define INCLUDE_GUARD__COMMS_TELECOMMAND_DEFS_H
 
-#include "telecommands/telecommand_definitions.h"
+#include "telecommand_exec/telecommand_definitions.h"
 
 #include <stdint.h>
 

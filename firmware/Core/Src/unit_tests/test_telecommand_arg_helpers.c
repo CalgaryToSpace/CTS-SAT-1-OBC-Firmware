@@ -1,4 +1,4 @@
-#include "telecommands/telecommand_args_helpers.h"
+#include "telecommand_exec/telecommand_args_helpers.h"
 #include "unit_tests/unit_test_helpers.h"
 
 uint8_t TEST_EXEC__TCMD_ascii_to_uint64() {

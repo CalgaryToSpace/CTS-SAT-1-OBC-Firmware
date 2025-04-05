@@ -3,7 +3,7 @@
 #include "telecommands/antenna_telecommand_defs.h"
 #include "antenna_deploy_drivers/ant_internal_drivers.h"
 #include "antenna_deploy_drivers/ant_commands.h"
-#include "telecommands/telecommand_args_helpers.h"
+#include "telecommand_exec/telecommand_args_helpers.h"
 #include "log/log.h"
 
 #include <stdio.h>

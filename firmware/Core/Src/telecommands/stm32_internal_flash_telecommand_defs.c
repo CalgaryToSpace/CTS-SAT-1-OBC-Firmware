@@ -1,6 +1,6 @@
 #include "telecommands/stm32_internal_flash_telecommand_defs.h"
-#include "telecommands/telecommand_args_helpers.h"
-#include "stm32_internal_flash_drivers/stm32_internal_flash_drivers.h"
+#include "telecommand_exec/telecommand_args_helpers.h"
+#include "stm32/stm32_internal_flash_drivers.h"
 
 #include "stm32l4xx_hal.h"
 #include <stdio.h>
@@ -113,5 +113,72 @@ uint8_t TCMDEXEC_stm32_internal_flash_erase(const char *args_str, TCMD_Telecomma
         snprintf(response_output_buf, response_output_buf_len, "Error erasing pages: %u - %u, error: %u, page error: %lu", (uint16_t)start_page_erase, (uint16_t)start_page_erase + (uint16_t)number_of_pages_to_erase, erase_res, page_error);
         return 1;
     }
+    return 0;
+}
+
+/// @brief Get the option bytes configuration from the stm32 internal flash memory
+/// @param args_str No args
+/// @return 0 on success, > 0 on error
+uint8_t TCMDEXEC_stm32_internal_flash_get_option_bytes(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
+{
+    FLASH_OBProgramInitTypeDef option_bytes;
+    const uint8_t res = STM32_internal_flash_get_option_bytes(&option_bytes);
+    if (res != 0)
+    {
+        snprintf(response_output_buf, response_output_buf_len, "Error: %u", res);
+        return 1;
+    }
+
+    snprintf(response_output_buf, response_output_buf_len,
+         "{\"OptionType\":%lu,\"WRPArea\":%lu,\"WRPStartOffset\":%lu,"
+         "\"WRPEndOffset\":%lu,\"RDPLevel\":%lu,\"USERType\":%lu,"
+         "\"USERConfig\":%lu,\"PCROPConfig\":%lu,\"PCROPStartAddr\":\"0x%lX\","
+         "\"PCROPEndAddr\":\"0x%lX\"}",
+         option_bytes.OptionType,
+         option_bytes.WRPArea,
+         option_bytes.WRPStartOffset,
+         option_bytes.WRPEndOffset,
+         option_bytes.RDPLevel,
+         option_bytes.USERType,
+         option_bytes.USERConfig,
+         option_bytes.PCROPConfig,
+         option_bytes.PCROPStartAddr,
+         option_bytes.PCROPEndAddr);
+
+    return 0;
+}
+
+/// @brief Given a 1 or 2, switches to the respective flash bank and runs the application stored there if present.
+/// Mostly useful for switching between 2 different version of the firmware (1 will be stored in Flash Bank 1, other will be stored in Flash Bank 2)
+/// @param args_str 
+/// - Arg 0: A 1 or 2. 1 to switch to the application present in Flash Bank 1, 2 to switch to the application present in Flash Bank 2
+/// @param response_output_buf Prints error if it occurs
+/// @return 0 on success, > 0 otherwise
+uint8_t TCMDEXEC_stm32_internal_flash_set_active_flash_bank(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
+{
+    uint64_t desired_active_flash_bank = 0;
+    const uint8_t arg_res = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &desired_active_flash_bank);
+    if (arg_res != 0)
+    {
+        snprintf(response_output_buf, response_output_buf_len, "Error Parsing Arg 0: %u", arg_res);
+        return 1;
+    }
+
+    const uint8_t res = STM32_internal_flash_set_active_flash_bank((uint8_t)desired_active_flash_bank);
+    if (res != 0)
+    {
+        snprintf(response_output_buf, response_output_buf_len, "Error changing flash bank: %u", res);
+        return 2;
+    }
+    return 0;
+}
+
+/// @brief Prints the active flash bank where the firmware boots from
+/// @param response_output_buf Prints the active bank
+uint8_t TCMDEXEC_stm32_internal_flash_get_active_flash_bank(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
+{
+    const uint8_t stm32_internal_active_flash_bank = STM32_internal_flash_get_active_flash_bank();
+
+    snprintf(response_output_buf, response_output_buf_len, "Active Bank: %u", stm32_internal_active_flash_bank);
     return 0;
 }

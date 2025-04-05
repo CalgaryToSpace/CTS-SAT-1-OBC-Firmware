@@ -27,6 +27,7 @@
 #include "debug_tools/debug_uart.h"
 #include "rtos_tasks/rtos_tasks.h"
 #include "rtos_tasks/rtos_eps_tasks.h"
+#include "rtos_tasks/rtos_background_upkeep.h"
 #include "uart_handler/uart_handler.h"
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_commands.h"
@@ -57,11 +58,12 @@ I2C_HandleTypeDef hi2c2;
 I2C_HandleTypeDef hi2c3;
 I2C_HandleTypeDef hi2c4;
 
+IWDG_HandleTypeDef hiwdg;
+
 UART_HandleTypeDef hlpuart1;
 UART_HandleTypeDef huart4;
 UART_HandleTypeDef huart5;
 UART_HandleTypeDef huart1;
-UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart3;
 DMA_HandleTypeDef hdma_uart4_rx;
 DMA_HandleTypeDef hdma_usart1_rx;
@@ -128,6 +130,13 @@ const osThreadAttr_t TASK_monitor_freertos_memory_Attributes = {
   .priority = (osPriority_t) osPriorityBelowNormal6,
 };
 
+osThreadId_t TASK_background_upkeep_Handle;
+const osThreadAttr_t TASK_background_upkeep_Attributes = {
+  .name = "TASK_background_upkeep",
+  .stack_size = 4096,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+
 FREERTOS_task_info_struct_t FREERTOS_task_handles_array [] = {
   {
     .task_handle = &defaultTaskHandle,
@@ -164,6 +173,11 @@ FREERTOS_task_info_struct_t FREERTOS_task_handles_array [] = {
     .task_attribute = &TASK_monitor_freertos_memory_Attributes,
     .lowest_stack_bytes_remaining = UINT32_MAX
   },
+  {
+    .task_handle = &TASK_background_upkeep_Handle,
+    .task_attribute = &TASK_background_upkeep_Attributes,
+    .lowest_stack_bytes_remaining = UINT32_MAX
+  },
 };
 
 const uint32_t FREERTOS_task_handles_array_size = sizeof(FREERTOS_task_handles_array) / sizeof(FREERTOS_task_info_struct_t);
@@ -182,12 +196,12 @@ static void MX_LPUART1_UART_Init(void);
 static void MX_UART4_Init(void);
 static void MX_UART5_Init(void);
 static void MX_USART1_UART_Init(void);
-static void MX_USART2_UART_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_I2C3_Init(void);
 static void MX_CRC_Init(void);
 static void MX_TIM16_Init(void);
+static void MX_IWDG_Init(void);
 void StartDefaultTask(void *argument);
 
 /* USER CODE BEGIN PFP */
@@ -239,12 +253,12 @@ int main(void)
   MX_UART4_Init();
   MX_UART5_Init();
   MX_USART1_UART_Init();
-  MX_USART2_UART_Init();
   MX_USART3_UART_Init();
   MX_SPI1_Init();
   MX_I2C3_Init();
   MX_CRC_Init();
   MX_TIM16_Init();
+  MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
 
   DEBUG_uart_print_str("\n\nMX_Init() done\n");
@@ -256,6 +270,9 @@ int main(void)
 
   // Initialise the ADCS CRC8 checksum, clock, and LittleFS directory (required for ADCS operation).
   ADCS_initialise(); // TODO: LittleFS must be formatted and mounted, and system time must be set, before this command is run
+
+  // Always leave the Camera enable signal enabled. Easier to control it through just the EPS.
+  HAL_GPIO_WritePin(PIN_CAM_EN_OUT_GPIO_Port, PIN_CAM_EN_OUT_Pin, GPIO_PIN_SET);
 
   /* USER CODE END 2 */
 
@@ -294,6 +311,9 @@ int main(void)
   TASK_service_eps_watchdog_Handle = osThreadNew(TASK_service_eps_watchdog, NULL, &TASK_service_eps_watchdog_Attributes);
 
   TASK_time_sync_Handle = osThreadNew(TASK_time_sync, NULL, &TASK_time_sync_Attributes);
+
+  TASK_background_upkeep_Handle = osThreadNew(TASK_background_upkeep, NULL, &TASK_background_upkeep_Attributes);
+
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
@@ -336,9 +356,10 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_LSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
@@ -584,6 +605,35 @@ static void MX_I2C4_Init(void)
 }
 
 /**
+  * @brief IWDG Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_IWDG_Init(void)
+{
+
+  /* USER CODE BEGIN IWDG_Init 0 */
+
+  /* USER CODE END IWDG_Init 0 */
+
+  /* USER CODE BEGIN IWDG_Init 1 */
+
+  /* USER CODE END IWDG_Init 1 */
+  hiwdg.Instance = IWDG;
+  hiwdg.Init.Prescaler = IWDG_PRESCALER_256;
+  hiwdg.Init.Window = 1975;
+  hiwdg.Init.Reload = 2000;
+  if (HAL_IWDG_Init(&hiwdg) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN IWDG_Init 2 */
+
+  /* USER CODE END IWDG_Init 2 */
+
+}
+
+/**
   * @brief LPUART1 Initialization Function
   * @param None
   * @retval None
@@ -772,54 +822,6 @@ static void MX_USART1_UART_Init(void)
   /* USER CODE BEGIN USART1_Init 2 */
 
   /* USER CODE END USART1_Init 2 */
-
-}
-
-/**
-  * @brief USART2 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_USART2_UART_Init(void)
-{
-
-  /* USER CODE BEGIN USART2_Init 0 */
-
-  /* USER CODE END USART2_Init 0 */
-
-  /* USER CODE BEGIN USART2_Init 1 */
-
-  /* USER CODE END USART2_Init 1 */
-  huart2.Instance = USART2;
-  huart2.Init.BaudRate = 9600;
-  huart2.Init.WordLength = UART_WORDLENGTH_8B;
-  huart2.Init.StopBits = UART_STOPBITS_1;
-  huart2.Init.Parity = UART_PARITY_NONE;
-  huart2.Init.Mode = UART_MODE_TX_RX;
-  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
-  huart2.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
-  huart2.Init.ClockPrescaler = UART_PRESCALER_DIV1;
-  huart2.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
-  if (HAL_UART_Init(&huart2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  if (HAL_UARTEx_SetTxFifoThreshold(&huart2, UART_TXFIFO_THRESHOLD_1_8) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  if (HAL_UARTEx_SetRxFifoThreshold(&huart2, UART_RXFIFO_THRESHOLD_1_8) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  if (HAL_UARTEx_EnableFifoMode(&huart2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN USART2_Init 2 */
-
-  /* USER CODE END USART2_Init 2 */
 
 }
 

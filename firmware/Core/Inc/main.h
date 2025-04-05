@@ -44,6 +44,8 @@ extern I2C_HandleTypeDef hi2c2;
 extern I2C_HandleTypeDef hi2c3;
 extern I2C_HandleTypeDef hi2c4;
 
+extern IWDG_HandleTypeDef hiwdg;
+
 extern UART_HandleTypeDef hlpuart1;
 extern UART_HandleTypeDef huart4;
 extern UART_HandleTypeDef huart5;
@@ -172,10 +174,6 @@ void Error_Handler(void);
 #define PIN_EPS_MOSI_UART_TX_GPIO_Port GPIOC
 #define PIN_EPS_MISO_UART_RX_Pin GPIO_PIN_2
 #define PIN_EPS_MISO_UART_RX_GPIO_Port GPIOD
-#define PIN_LORA_US_MOSI_UART2_TX_Pin GPIO_PIN_5
-#define PIN_LORA_US_MOSI_UART2_TX_GPIO_Port GPIOD
-#define PIN_LORA_US_MISO_UART2_RX_Pin GPIO_PIN_6
-#define PIN_LORA_US_MISO_UART2_RX_GPIO_Port GPIOD
 #define PIN_NRST_LORA_US_Pin GPIO_PIN_9
 #define PIN_NRST_LORA_US_GPIO_Port GPIOG
 #define PIN_STACK_I2C1_SDA_Pin GPIO_PIN_13

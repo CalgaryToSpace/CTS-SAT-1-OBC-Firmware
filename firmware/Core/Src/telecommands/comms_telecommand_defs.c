@@ -1,6 +1,6 @@
 #include "telecommands/comms_telecommand_defs.h"
 #include "comms_drivers/comms_drivers.h"
-#include "telecommands/telecommand_args_helpers.h"
+#include "telecommand_exec/telecommand_args_helpers.h"
 
 #include <string.h>
 #include <stdio.h>

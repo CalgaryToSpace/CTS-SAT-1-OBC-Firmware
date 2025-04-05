@@ -3,7 +3,7 @@
 #define INCLUDE_GUARD__LOG_TELECOMMAND_DEFS_H__
 
 #include <stdint.h>
-#include "telecommands/telecommand_definitions.h"
+#include "telecommand_exec/telecommand_definitions.h"
 
 uint8_t TCMDEXEC_log_set_sink_enabled_state(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len);

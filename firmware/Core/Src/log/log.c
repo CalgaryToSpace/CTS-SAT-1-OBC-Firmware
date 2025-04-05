@@ -13,12 +13,10 @@
 // Inspired by uLog: https://github.com/rdpoor/ulog
 
 // Internal interfaces and variables
-
 #define LOG_TIMESTAMP_MAX_LENGTH 30
 #define LOG_SINK_NAME_MAX_LENGTH 20
 #define LOG_SYSTEM_NAME_MAX_LENGTH 20
-// Messages up to 512 characters
-#define LOG_FORMATTED_MESSAGE_MAX_LENGTH 512
+
 // Includes prefix, with cushion for delimiters, newline, and null terminator
 #define LOG_FULL_MESSAGE_MAX_LENGTH ( LOG_FORMATTED_MESSAGE_MAX_LENGTH + LOG_TIMESTAMP_MAX_LENGTH + LOG_SINK_NAME_MAX_LENGTH + LOG_SYSTEM_NAME_MAX_LENGTH + 1 )
 
@@ -58,10 +56,11 @@ static LOG_memory_entry_t LOG_memory_table[LOG_MEMORY_NUMBER_OF_ENTRIES] = {0};
 // Start at last position in table, as first call to LOG_message will roll this to 0
 static uint8_t LOG_memory_index_of_current_log_entry = LOG_MEMORY_NUMBER_OF_ENTRIES - 1;
 
-// severity masking
+// Severity masking.
 static const uint8_t LOG_SEVERITY_MASK_ALL = 0xFF;
-// No debugging messages by default
-static const uint8_t LOG_SEVERITY_MASK_DEFAULT = LOG_SEVERITY_MASK_ALL & ~(uint8_t)LOG_SEVERITY_DEBUG;
+// TODO: Set mask to: No debugging messages by default.
+// static const uint8_t LOG_SEVERITY_MASK_DEFAULT = LOG_SEVERITY_MASK_ALL & ~(uint8_t)LOG_SEVERITY_DEBUG;
+static const uint8_t LOG_SEVERITY_MASK_DEFAULT = LOG_SEVERITY_MASK_ALL;
 
 // Note: LOG_sinks entries must have same order as LOG_sink_enum_t entries.
 // The in-memory log table is a combination of working memory for constructing

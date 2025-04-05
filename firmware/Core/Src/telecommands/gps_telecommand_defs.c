@@ -1,4 +1,4 @@
-#include "telecommands/telecommand_definitions.h"
+#include "telecommand_exec/telecommand_definitions.h"
 #include "uart_handler/uart_handler.h"
 #include "telecommands/eps_telecommands.h"
 #include "gps/gps_internal_drivers.h"

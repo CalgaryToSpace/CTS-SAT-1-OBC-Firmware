@@ -1,7 +1,7 @@
 #ifndef INCLUDE_GUARD__AGENDA_TELECOMMAND_DEFINITIONS_H
 #define INCLUDE_GUARD__AGENDA_TELECOMMAND_DEFINITIONS_H
 
-#include "telecommands/telecommand_types.h"
+#include "telecommand_exec/telecommand_types.h"
 
 #include <stdint.h>
 

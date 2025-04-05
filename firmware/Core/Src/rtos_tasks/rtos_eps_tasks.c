@@ -47,7 +47,7 @@ void TASK_service_eps_watchdog(void *argument) {
         else {
             LOG_message(
                 LOG_SYSTEM_EPS,
-                LOG_SEVERITY_NORMAL, 
+                LOG_SEVERITY_DEBUG, // Happens very frequently.
                 LOG_SINK_ALL,
                 "EPS watchdog serviced successfully." 
             );

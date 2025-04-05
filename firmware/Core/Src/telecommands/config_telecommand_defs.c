@@ -1,7 +1,8 @@
-#include "telecommands/telecommand_args_helpers.h"
+#include "telecommand_exec/telecommand_args_helpers.h"
 #include "telecommands/config_telecommand_defs.h"
 #include "config/configuration.h"
 #include "debug_tools/debug_uart.h"
+#include "log/log.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -107,9 +108,10 @@ uint8_t TCMDEXEC_config_get_int_var_json(const char *args_str, TCMD_TelecommandC
 /// @param args_str
 /// - Arg 0: variable name
 /// @return 0 if successful, >0 if an error occurred
-uint8_t TCMDEXEC_config_get_str_var_json(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
-{
-
+uint8_t TCMDEXEC_config_get_str_var_json(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
     const uint16_t res = CONFIG_str_var_to_json(args_str, response_output_buf, response_output_buf_len);
     if (res == 1)
     {
@@ -123,9 +125,10 @@ uint8_t TCMDEXEC_config_get_str_var_json(const char *args_str, TCMD_TelecommandC
 /// @brief Get all configuration variables, as JSON. One variable per line.
 /// @param args_str No arguments.
 /// @return 0 if successful, >0 if an error occurred
-uint8_t TCMDEXEC_config_get_all_vars_jsonl(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                                                 char *response_output_buf, uint16_t response_output_buf_len)
-{
+uint8_t TCMDEXEC_config_get_all_vars_jsonl(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
     char json_str[CONFIG_MAX_JSON_STRING_LENGTH];
     for (uint8_t i = 0; i < CONFIG_int_config_variables_count; i++)
     {
@@ -134,7 +137,10 @@ uint8_t TCMDEXEC_config_get_all_vars_jsonl(const char *args_str, TCMD_Telecomman
             json_str,
             sizeof(json_str)
         );
-        DEBUG_uart_print_str(json_str);
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            json_str
+        );
     }
     
     for (uint8_t i = 0; i < CONFIG_str_config_variables_count; i++)
@@ -144,7 +150,10 @@ uint8_t TCMDEXEC_config_get_all_vars_jsonl(const char *args_str, TCMD_Telecomman
             json_str,
             sizeof(json_str)
         );
-        DEBUG_uart_print_str(json_str);
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            json_str
+        );
     }
 
     snprintf(

@@ -11,6 +11,7 @@
 #include "unit_tests/unit_test_helpers.h"
 #include "unit_tests/test_configuration_variables.h"
 #include "unit_tests/test_obc_temperature_sensor.h"
+#include "unit_tests/unit_test_gps.h"
 
 #include "unit_tests/test_eps_drivers.h"
 #include "unit_tests/test_eps_struct_packers.h"
@@ -466,6 +467,16 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func_name = "TEST_EXEC__EPS_channel_from_str",
     },
     {
+        .test_func = TEST_EXEC__EPS_channel_to_str,
+        .test_file = "unit_tests/test_eps_drivers",
+        .test_func_name = "TEST_EXEC__EPS_channel_to_str",
+    },
+    {
+        .test_func = TEST_EXEC__EPS_check_status_bit_of_channel,
+        .test_file = "unit_tests/test_eps_drivers",
+        .test_func_name = "TEST_EXEC__EPS_check_status_bit_of_channel",
+    },
+    {
         .test_func = TEST_EXEC__EPS_check_type_sizes,
         .test_file = "unit_tests/test_eps_struct_packers",
         .test_func_name = "TEST_EXEC__EPS_check_type_sizes",
@@ -515,6 +526,40 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_file = "crc/crc",
         .test_func_name = "GEN_crc32_checksum"
     },
+    // ****************** SECTION: unit_test_gps ******************
+ 
+    {
+        .test_func = TEST_EXEC__GPS_reference_time_status_str_to_enum,
+        .test_file = "gps/gps_types",
+        .test_func_name = "GPS_reference_time_status_str_to_enum"
+    },
+    {
+        .test_func = TEST_EXEC__GPS_solution_status_str_to_enum,
+        .test_file = "gps/gps_types",
+        .test_func_name = "GPS_solution_status_str_to_enum"
+    },
+    {
+        .test_func = TEST_EXEC__GPS_position_type_str_to_enum,
+        .test_file = "gps/gps_types",
+        .test_func_name = "GPS_position_type_str_to_enum"
+    },
+    {
+        .test_func = TEST_EXEC__GPS_header_response_parser,
+        .test_file = "gps/gps_ascii_parsers",
+        .test_func_name = "GPS_header_response_parser"
+    },
+    {
+        .test_func = TEST_EXEC__GPS_bestxyza_data_parser,
+        .test_file = "gps/gps_ascii_parsers",
+        .test_func_name = "GPS_bestxyza_data_parser"
+    },
+    {
+        .test_func = TEST_EXEC__GPS_timea_data_parser,
+        .test_file = "gps/gps_ascii_parsers",
+        .test_func_name = "GPS_timea_data_parser"
+    },
+
+    // ****************** END SECTION: unit_test_gps ******************
 };
 
 // extern
