@@ -1,6 +1,7 @@
 #include "uart_handler/uart_handler.h"
 #include "debug_tools/debug_uart.h"
 #include "mpi/mpi_command_handling.h"
+#include "camera/camera_init.h"
 #include "main.h"
 #include "log/log.h"
 
@@ -28,8 +29,10 @@ volatile uint16_t UART_mpi_buffer_write_idx = 0;            // extern
 
 // UART CAMERA buffer
 // TODO: Configure with peripheral required specifications
-const uint16_t UART_camera_buffer_len = 1024;               // extern       // TODO: Set based on expected size requirements for reception
-volatile uint8_t UART_camera_buffer[1024];                  // extern       // TODO: confirm that this volatile means that the contents are volatile but the pointer is not
+const uint16_t UART_camera_buffer_len = SENTENCE_LEN*46;               // extern       // TODO: Set based on expected size requirements for reception
+volatile uint8_t UART_camera_buffer[SENTENCE_LEN*46];                  // extern       // TODO: confirm that this volatile means that the contents are volatile but the pointer is not
+extern uint8_t UART_camera_rx_buf[SENTENCE_LEN*23];
+extern volatile uint8_t camera_write_file = 0;
 volatile uint16_t UART_camera_buffer_write_idx = 0;         // extern
 volatile uint32_t UART_camera_last_write_time_ms = 0;       // extern
 volatile uint8_t UART_camera_is_expecting_data = 0;         // extern       // TODO: Set to 1 when a command is sent, and we're awaiting a response
