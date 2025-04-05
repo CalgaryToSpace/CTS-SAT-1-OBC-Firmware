@@ -590,6 +590,63 @@ uint8_t TCMDEXEC_adcs_enter_low_power_mode(const char *args_str, TCMD_Telecomman
 
     return 0;
 }       
+/// @brief Telecommand: Automatically track the sun with the ADCS.
+/// @note The satellite must be already in Y-Momentum mode (i.e. stable attitude) to do this successfully. Rate Gyro Offsets must be set.
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_track_sun(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                  char *response_output_buf, uint16_t response_output_buf_len) {
+
+    uint8_t status;
+
+    ADCS_current_state_1_struct_t current_state;
+    status = ADCS_get_current_state_1(&current_state);
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Failed to get ADCS state"); 
+        return status;
+    } else if ( // To switch to sun-tracking mode (an XYZ mode), we must either be in steady-state Y-momentum (Mode 4) or any of the XYZ modes (Modes 5, 6, or 7)
+            (current_state.control_mode != ADCS_CONTROL_MODE_Y_WHEEL_MOMENTUM_STABILIZED_STEADY_STATE) && 
+            (current_state.control_mode != ADCS_CONTROL_MODE_XYZ_WHEEL) &&
+            (current_state.control_mode != ADCS_CONTROL_MODE_RWHEEL_SUN_TRACKING) &&
+            (current_state.control_mode != ADCS_CONTROL_MODE_RWHEEL_TARGET_TRACKING)) {
+        snprintf(response_output_buf, response_output_buf_len, "ADCS not stabilised! ADCS must be stabilised before switching to sun-tracking mode"); 
+        return status;
+    }
+
+    status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Failed to disable ADCS peripherals"); 
+        return status;
+    }
+
+    status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MEMS_GYRO_EXTENDED_KALMAN_FILTER);
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Failed to set ADCS estimation mode"); 
+        return status;
+    }
+
+    status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_RWHEEL_SUN_TRACKING, 600);
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Failed to set ADCS control mode"); 
+        return status;
+    }
+
+    // disable SD card logging to save power
+    const uint8_t* temp_data_pointer[1] = {ADCS_SD_LOG_MASK_COMMUNICATION_STATUS};
+    status = ADCS_set_sd_log_config(1, temp_data_pointer, 0, 0, 0);                     
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Failed to stop SD logging on log 1"); 
+        return status;
+    }
+    status = ADCS_set_sd_log_config(2, temp_data_pointer, 0, 0, 0);                     
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Failed to stop SD logging on log 2");
+        return status;
+    }
+
+    return 0;
+}
 
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 
