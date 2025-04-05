@@ -2,10 +2,12 @@
 #include "debug_tools/debug_uart.h"
 #include "mpi/mpi_command_handling.h"
 #include "uart_handler/uart_error_tracking.h"
-
-#include "main.h"
+#include "camera/camera_init.h"
 #include "log/log.h"
 
+#include "main.h"
+
+#include <string.h>
 // Name the UART interfaces
 UART_HandleTypeDef *UART_telecommand_port_handle = &hlpuart1;
 UART_HandleTypeDef *UART_mpi_port_handle = &huart1;
@@ -30,8 +32,10 @@ volatile uint16_t UART_mpi_buffer_write_idx = 0;            // extern
 
 // UART CAMERA buffer
 // TODO: Configure with peripheral required specifications
-const uint16_t UART_camera_buffer_len = 1024;               // extern       // TODO: Set based on expected size requirements for reception
-volatile uint8_t UART_camera_buffer[1024];                  // extern       // TODO: confirm that this volatile means that the contents are volatile but the pointer is not
+const uint16_t UART_camera_buffer_len = CAM_SENTENCE_LEN*46;// extern       // TODO: Set based on expected size requirements for reception
+volatile uint8_t UART_camera_dma_buffer[CAM_SENTENCE_LEN*46];   // extern       // TODO: confirm that this volatile means that the contents are volatile but the pointer is not
+volatile uint8_t UART_camera_pending_fs_write_buf[CAM_SENTENCE_LEN*23];   // extern       // half-size buffer for writing to LFS in half/cplt callback
+volatile uint8_t camera_write_file = 0;
 volatile uint16_t UART_camera_buffer_write_idx = 0;         // extern
 volatile uint32_t UART_camera_last_write_time_ms = 0;       // extern
 volatile uint8_t UART_camera_is_expecting_data = 0;         // extern       // TODO: Set to 1 when a command is sent, and we're awaiting a response
@@ -124,37 +128,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         }
     }
 
-    
-    // TODO: Implement function to utilize this DMA reception callback for the CAMERA
-    else if (huart->Instance == UART_camera_port_handle->Instance) {
-        // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> CAMERA Data\n");
-
-        if (! UART_camera_is_expecting_data) {
-            // Not expecting data, ignore this noise.
-            return;
-        }
-
-        // Check if buffer is full.
-        if (UART_camera_buffer_write_idx >= UART_camera_buffer_len) {
-            // Tracking error
-            // TODO: This section may be moved because the camera might be using DMA
-            UART_error_camera_error_info.handler_buffer_full_error_count++;
-            // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART response buffer is full\n");
-
-            // Shift all bytes left by 1
-            for(uint16_t i = 1; i < UART_camera_buffer_len; i++) {
-                UART_camera_buffer[i - 1] = UART_camera_buffer[i];
-            }
-
-            // Reset to a valid index
-            UART_camera_buffer_write_idx = UART_camera_buffer_len - 1;
-        }
-
-        // FIXME: Actually deal with the data in here, if necessary.
-
-        UART_camera_last_write_time_ms = HAL_GetTick();
-    }           
-
     else if (huart->Instance == UART_eps_port_handle->Instance) {
         // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> EPS Data\n");
 
@@ -211,9 +184,52 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         
     }
 
+    else if (huart->Instance == UART_camera_port_handle->Instance){
+        // increment write_idx
+        // DEBUG_uart_print_str("Hello\n");
+        // DEBUG_uart_print_str("complete call back\n");
+        // LOG_message(
+        //     LOG_SYSTEM_ALL, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+        //     "complete_call_back"
+        // );
+        // write index = 2
+        // UART_camera_buffer_write_idx++;
+        UART_camera_buffer_write_idx = 0;
+        for (uint16_t i = UART_camera_buffer_len/2; i < UART_camera_buffer_len; i++){
+            UART_camera_pending_fs_write_buf[i-UART_camera_buffer_len/2] = UART_camera_dma_buffer[i];
+        }
+        // memcpy( UART_camera_pending_fs_write_buf, UART_camera_dma_buffer + UART_camera_buffer_len/2, UART_camera_buffer_len/2);
+        // set camera_write_file to 1 so camera_internal can write to mem
+
+        UART_camera_last_write_time_ms = HAL_GetTick();
+        camera_write_file = 1;  
+        
+    }
+
     else {
         // FIXME: add the rest (camera, MPI, maybe others)
         DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> unknown UART instance\n"); // FIXME: remove
+    }
+}
+
+void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
+    // DEBUG_uart_print_str("half call back\n");
+    if (huart->Instance == UART_camera_port_handle->Instance){
+        // LOG_message(
+        //     LOG_SYSTEM_ALL, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+        //     "half_call_back"
+        // );
+        // write idx = 1
+        UART_camera_buffer_write_idx++;
+        // uint8_t counter = 0;
+        for (uint16_t i = 0; i < UART_camera_buffer_len/2; i++){
+            UART_camera_pending_fs_write_buf[i] = UART_camera_dma_buffer[i];
+        }
+        // memcpy(UART_camera_pending_fs_write_buf, UART_camera_dma_buffer, UART_camera_buffer_len/2);
+        // DEBUG_uart_print_str("hello\n");
+        // set camera_write_file to 1 so camera_internal can write to mem
+        camera_write_file = 1;
+        UART_camera_last_write_time_ms = HAL_GetTick();
     }
 }
 
@@ -232,6 +248,26 @@ void GPS_set_uart_interrupt_state(uint8_t new_enabled) {
     }
     else {
         UART_gps_uart_interrupt_enabled = 0;
+    }
+}
+
+/// @brief Sets the UART interrupt state (enabled/disabled)
+/// @param new_enabled 1: command sent, expecting data; 0: not expecting data
+uint8_t CAMERA_set_expecting_data(uint8_t new_enabled) {
+    if (new_enabled == 1)
+    {
+        UART_camera_is_expecting_data = 1;
+		// const HAL_StatusTypeDef receive_status = HAL_UART_Receive_DMA(UART_camera_port_handle,(uint8_t*) &UART_camera_dma_buffer, CAM_SENTENCE_LEN*46);
+		const HAL_StatusTypeDef receive_status = HAL_UART_Receive_DMA(UART_camera_port_handle,(uint8_t*) &UART_camera_dma_buffer, CAM_SENTENCE_LEN*46);
+        if (receive_status != HAL_OK) {
+			return 3; // Error code: Failed UART reception
+		}
+        return 0;
+    }
+    else {
+        UART_camera_is_expecting_data = 0;
+		HAL_UART_DMAStop(UART_camera_port_handle);
+        return 0;
     }
 }
 
