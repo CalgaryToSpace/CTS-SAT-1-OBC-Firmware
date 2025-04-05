@@ -30,6 +30,8 @@ extern volatile uint32_t UART_gps_last_write_time_ms;           // Last write ti
 
 extern const uint16_t UART_camera_buffer_len;                   // Length of the CAMERA response buffer
 extern volatile uint8_t UART_camera_buffer[];                   // Buffer for CAMERA response
+extern uint8_t UART_camera_rx_buf[];
+extern volatile uint8_t camera_write_file;
 extern volatile uint16_t UART_camera_buffer_write_idx;          // Write index for CAMERA response buffer
 extern volatile uint32_t UART_camera_last_write_time_ms;        // Last write time in milliseconds for CAMERA response
 extern volatile uint8_t UART_camera_is_expecting_data;          // Set to 1 when a data is sent, and we're awaiting a response
@@ -50,6 +52,7 @@ extern volatile uint8_t UART_gps_uart_interrupt_enabled; // Flag to enable or di
 
 void UART_init_uart_handlers(void);
 void GPS_set_uart_interrupt_state(uint8_t new_enabled) ;
+uint8_t CAMERA_set_expecting_data(uint8_t new_enabled) ;
 
 
 #endif // INCLUDE_GUARD__UART_HANDLER_H__
