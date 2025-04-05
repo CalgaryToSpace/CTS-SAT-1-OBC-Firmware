@@ -1211,6 +1211,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
+    {
+        .tcmd_name = "camera_capture",
+        .tcmd_func = TCMDEXEC_camera_capture,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION
+    },
     // ****************** END SECTION: camera_telecommand_defs *******************
 };
 
