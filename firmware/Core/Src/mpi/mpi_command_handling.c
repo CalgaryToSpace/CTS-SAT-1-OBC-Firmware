@@ -14,7 +14,11 @@ static const uint16_t MPI_TX_TIMEOUT_DURATION_MS = 100;
 /// @brief Timeout duration for receive in milliseconds. Same between bytes and at the start.
 static const uint16_t MPI_RX_TIMEOUT_DURATION_MS = 200;
 
-MPI_rx_mode_t MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
+MPI_rx_mode_t MPI_current_uart_rx_mode = MPI_RX_MODE_SENSING_MODE; //TODO: CHange this to NOT LISTENING
+MPI_buffer_state_enum_t MPI_buffer_state = MPI_MEMORY_WRITE_STATUS_READY;
+
+uint16_t MPI_active_data_median_buffer_len = 4096;
+uint8_t MPI_active_data_median_buffer[4096];
 
 /// @brief Sends commandcode+params to the MPI as bytes
 /// @param bytes_to_send Buffer containing the telecommand + params (IF ANY) as hex bytes
@@ -142,4 +146,51 @@ uint8_t MPI_validate_command_response(
     }
 
     return 0; //  MPI executed the cmd successfully
+}
+
+
+uint8_t MPI_enable_active_mode() {
+
+    // Set the MPI State to send data actively
+    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MISO); // Set the MPI transceiver to MOSI mode
+    MPI_current_uart_rx_mode = MPI_RX_MODE_SENSING_MODE; // Set MPI to command mode.
+
+    // Receive MPI response actively with 8192 buffer size.
+    const HAL_StatusTypeDef receive_status = HAL_UART_Receive_DMA(UART_mpi_port_handle, (uint8_t*) UART_mpi_data_rx_buffer, UART_mpi_data_rx_buffer_len);
+    
+    // Check for UART reception errors
+    if (receive_status == HAL_BUSY) {
+        return 1; // Error code: UART Line already active
+    } 
+    else if (receive_status != HAL_OK) {
+        MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
+        HAL_UART_DMAStop(UART_mpi_port_handle);
+        MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
+        return 2; // Error code: Failed UART reception
+    }
+    
+    return 0;
+}
+
+uint8_t MPI_disable_active_mode() {
+
+    const HAL_StatusTypeDef stop_status = HAL_UART_DMAStop(UART_mpi_port_handle);
+    if (stop_status != HAL_OK) {
+        if (stop_status == HAL_BUSY) {
+            MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE); // Set the MPI transceiver to inactive
+            MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI; // Set MPI to command mode.
+            return 1;
+        } else if (stop_status == HAL_ERROR) {
+            return 2;
+        } else if (stop_status == HAL_TIMEOUT) {
+            return 3;
+        } else {
+            return 4;
+        }
+    }
+
+    // Set the MPI State to not handle any receiving data
+    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE); // Set the MPI transceiver to inactive
+    MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI; // Set MPI to command mode.
+    return 0;
 }

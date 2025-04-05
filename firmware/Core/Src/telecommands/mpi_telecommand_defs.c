@@ -138,6 +138,50 @@ uint8_t TCMDEXEC_mpi_send_command_hex(
     return cmd_response;
 }
 
+/// @brief Sets the state to receive data actively from MPI.
+/// @param args_str No args.
+/// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
+/// @param response_output_buf The buffer to write the response to
+/// @param response_output_buf_len The maximum length of the response_output_buf (its size)
+/// @return 0: Success, >0: Failure
+uint8_t TCMDEXEC_mpi_enable_active_mode(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len) {
+    uint8_t enable_result = MPI_enable_active_mode();
+
+    if (enable_result != 0) {
+        snprintf(
+            &response_output_buf[strlen(response_output_buf)],
+            response_output_buf_len - strlen(response_output_buf) - 1,
+            "MPI enable active mode Failed! Error Code: %d",
+            enable_result
+        );
+        return 1;
+    }
+
+    return 0;
+}
+
+/// @brief Sets the state to not send or receive data from MPI.
+/// @param args_str No args.
+/// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
+/// @param response_output_buf The buffer to write the response to
+/// @param response_output_buf_len The maximum length of the response_output_buf (its size)
+/// @return 0: Success, >0: Failure
+uint8_t TCMDEXEC_mpi_disable_active_mode(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len) {
+    uint8_t disable_result = MPI_disable_active_mode();
+
+    if (disable_result != 0) {
+        snprintf(
+            &response_output_buf[strlen(response_output_buf)],
+            response_output_buf_len - strlen(response_output_buf) - 1,
+            "MPI disable active mode Failed! Error Code: %d",
+            disable_result
+        );
+        return 1;
+    }
+
+    return 0;
+}
+
 
 /// @brief Sends a message over UART to the MPI.
 /// @param args_str No args.
