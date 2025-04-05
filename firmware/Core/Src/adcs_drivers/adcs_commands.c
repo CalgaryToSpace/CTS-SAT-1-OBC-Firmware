@@ -141,7 +141,6 @@ uint8_t ADCS_set_run_mode(ADCS_run_mode_enum_t mode) {
 /// @brief Instruct the ADCS to execute the ADCS_Clear_Errors command.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_clear_errors() {
-    // Clears error flags
     // NOTE: THERE IS ANOTHER, SEPARATE CLEAR ERROR FLAG TC FOR THE BOOTLODER (ADCS_COMMAND_BL_CLEAR_ERRORS)
     uint8_t data_send[1] = {192}; // 0b11000000
     uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_CLEAR_ERRORS, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
@@ -1371,18 +1370,27 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
 
     status = ADCS_load_file_download_block(file_info.file_type, file_info.file_counter, current_block * 20480, 1024);
     // per CubeSpace, the counter is the nth file of the same type, not the block counter
-    if (status != 0) {return status | (1 << 3);}
+    
+    // to avoid interference from the EPS, do a separate ack for these commands
+    ADCS_cmd_ack_struct_t ack_status;
+    ADCS_cmd_ack(&ack_status);
+    if (ack_status.error_flag != 0) {return ack_status.error_flag | (1 << 3);}
     
     // Wait until the download block is ready
     ADCS_download_block_ready_struct_t ready_struct;
+    uint8_t download_block_tries = 0;
     do {
         status = ADCS_get_download_block_ready_telemetry(&ready_struct);
         if (status != 0) {return status | (1 << 4);}
+        download_block_tries++;
+        if (download_block_tries > 100) {return 44;}
     } while (ready_struct.ready != true);
 
     // Initiate download burst, ignoring the hole map
     status = ADCS_initiate_download_burst(true);
     if (status != 0) {return status | (1 << 5);}
+
+    HAL_Delay(100); // need to allow some time for it to initiate the burst, or else the first packet may be garbage
     
     for (uint16_t i = 0; i < 1024; i++) {
         // load 20 bytes at a time into the download buffer
@@ -1410,6 +1418,8 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
     } else {
         required_packets = 1024; 
     }
+
+    LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, "Bytes at position 17034 of block %d: %x %x %x %x %x %x", current_block, adcs_download_buffer[17034], adcs_download_buffer[17035], adcs_download_buffer[17036], adcs_download_buffer[17037], adcs_download_buffer[17038], adcs_download_buffer[17039]);        
     
     uint16_t packets_received = 0;
     
@@ -1448,6 +1458,8 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
         status = ADCS_initiate_download_burst(false);
         if (status != 0) {return status | (1 << 8);}
         
+        HAL_Delay(100);
+
         for (uint16_t i = 0; i < 1024; i++) {
             // load 20 bytes at a time into the download buffer
             status = ADCS_get_file_download_buffer(&(download_packet));
@@ -1491,9 +1503,13 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
 
     /* HOLE MAP STUFF ENDS HERE */
     
-    // Append to the index file in the filesystem (append_file does both)
-    // status = LFS_append_file(filename_string, &adcs_download_buffer[0], 20480); 
-    // if (status != 0) {return status;}
+    // Write to the index file in the filesystem
+    if (current_block == 0) {
+        status = LFS_write_file(filename_string, &adcs_download_buffer[0], 20480); 
+    } else {
+        status = LFS_append_file(filename_string, &adcs_download_buffer[0], 20480);
+    }
+    if (status != 0) {return status;}
 
     return 0;
 
@@ -1579,15 +1595,13 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
         file_info.file_type = ADCS_FILE_TYPE_INDEX;
     }
 
-    LFS_delete_file(filename_string); // this will error if the file doesn't exist. That's OK.
-
     uint8_t total_blocks = ceil(file_info.file_size / 20480.0);
     uint8_t current_block = 0; 
 
     while (current_block < total_blocks) {
 
         LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, "Loading block %d from ADCS to LittleFS", current_block);
-        status = ADCS_load_sd_file_block_to_filesystem(file_info, 0, filename_string, 17); // load the block
+        status = ADCS_load_sd_file_block_to_filesystem(file_info, current_block, filename_string, 17); // load the block
         if (status != 0) {return status;}
 
         current_block++;
