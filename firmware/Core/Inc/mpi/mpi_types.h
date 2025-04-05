@@ -20,6 +20,11 @@ typedef enum {
     MPI_RX_MODE_NOT_LISTENING_TO_MPI        // MPI is recording science data but it is not being collected mode
 } MPI_rx_mode_t;
 
+typedef enum {
+    MPI_MEMORY_WRITE_STATUS_PENDING,        // MPI buffer is waiting to be fully wrote to memory
+    MPI_MEMORY_WRITE_STATUS_READY,          // MPI buffer is ready to be wrote to
+} MPI_buffer_state_enum_t;
+
 /// @brief Represents the state of the MPI transceiver chip.
 typedef enum {
     MPI_TRANSCEIVER_MODE_INACTIVE,

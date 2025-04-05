@@ -19,5 +19,10 @@ uint8_t TCMDEXEC_mpi_demo_set_transceiver_mode(
     char *response_output_buf, uint16_t response_output_buf_len
 );
 
+uint8_t TCMDEXEC_mpi_enable_active_mode(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, 
+    char *response_output_buf, uint16_t response_output_buf_len);
+
+uint8_t TCMDEXEC_mpi_disable_active_mode(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, 
+    char *response_output_buf, uint16_t response_output_buf_len);
 
 #endif /* INCLUDE_GUARD__MPI_TELECOMMAND_DEFINITIONS_H__ */
