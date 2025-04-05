@@ -23,24 +23,11 @@
 
 extern I2C_HandleTypeDef hi2c1; // allows not needing the parameters
 
-#define FLATSAT_TEST_MODE // TODO: REMOVE BEFORE FLIGHT
-
-#ifdef FLATSAT_TEST_MODE
-    #include "eps_drivers/eps_commands.h"
-#endif
-
 /// @brief Initialise the ADCS CRC, timestamp, and file system directory. 
 /// @return 0 when successful
 uint8_t ADCS_initialise() {
-    
-    #ifdef FLATSAT_TEST_MODE
-        EPS_CMD_output_bus_channel_on(8); 
-        LFS_format();
-        LFS_mount();
 
-        HAL_Delay(5000); // The ADCS takes 5 seconds to power on following boot-up
-    #endif
-
+    // TODO: LittleFS must be mounted, power must be provided to the ADCS, and OBC time must be set in order to initialise the ADCS
     ADCS_synchronise_unix_time();
     ADCS_initialise_crc8_checksum();
     LFS_make_directory("ADCS");
