@@ -628,8 +628,6 @@ uint8_t TEST_EXEC__ADCS_pack_to_measurements_struct() {
     return 0;
 }
 
-// TODO: during the next test, ensure that these tests all match reality
-
 uint8_t TEST_EXEC__ADCS_pack_to_file_info_struct() {
     uint8_t input_params[12] = {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc};
     ADCS_file_info_struct_t result;

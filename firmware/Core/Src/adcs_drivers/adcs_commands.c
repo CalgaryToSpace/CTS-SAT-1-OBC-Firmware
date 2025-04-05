@@ -1439,7 +1439,6 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
     uint8_t hole_map_attempts = 0;
 
     while (required_packets != packets_received) {
-        // TODO: for some reason, now that we are using mini_packet_counter, we are getting one too many packets!
 
         for (uint8_t i = 0; i < 8; i++) {
             uint8_t hole_map_slice[16];
@@ -1556,9 +1555,6 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
                 if (ack_status.error_flag != 0) {return ack_status.error_flag;}
             }
         }
-
-        // For some reason, the EPS (?) causes us to get Status 2 for the above two telecommands when we send them while in the stack
-        // TODO: waiting on Parker L et al. to determine whether the EPS I2C connection can be severed / disabled
         
         status = ADCS_get_file_info_telemetry(&file_info);
         if (status != 0) {return status;}
@@ -1606,9 +1602,6 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
 
         current_block++;
     }
-
-    // TODO: test that CubeSupport can read the log files we download properly.
-            // There seems to be an issue with this... we may need to write a parser.
 
     return 0;
 }
