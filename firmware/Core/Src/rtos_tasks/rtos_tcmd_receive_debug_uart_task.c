@@ -49,24 +49,31 @@ TCMD_check_result_enum_t check_for_and_handle_new_uart_tcmds() {
     }
 
     if (
-        // If timed out on reception:
-        (HAL_GetTick() - UART_telecommand_last_write_time_ms > timeout_duration_ms)
-        // AND if the end-of-message character was NOT received:
-        && (
-            GEN_get_index_of_substring_in_array(
-                (char*) UART_telecommand_buffer,
-                UART_telecommand_buffer_write_idx,
-                "!"
-            ) < 0
-        )
+        // If the end-of-message character was NOT received:
+        GEN_get_index_of_substring_in_array(
+            (char*) UART_telecommand_buffer,
+            UART_telecommand_buffer_write_idx,
+            "!"
+        ) < 0
     ) {
-        // If the telecommand is not complete, discard it.
-        LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "Received incomplete telecommand. Discarding incomplete telecommand."
-        );
-        UART_telecommand_buffer_write_idx = 0;
-        return TCMD_CHECK_STATUS_TCMD_INVALID_AND_DISCARDED;
+        // If timed out on reception:
+        if (HAL_GetTick() - UART_telecommand_last_write_time_ms > timeout_duration_ms) {
+            // If the telecommand is not complete, discard it.
+
+            // Null-terminate the string, then log it.
+            UART_telecommand_buffer[UART_telecommand_buffer_write_idx] = '\0';
+            LOG_message(
+                LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+                "Received incomplete telecommand. Discarding incomplete telecommand: '%s'",
+                UART_telecommand_buffer
+            );
+            UART_telecommand_buffer_write_idx = 0;
+            return TCMD_CHECK_STATUS_TCMD_INVALID_AND_DISCARDED;
+        }
+        else {
+            // Keep waiting for a timeout or a complete telecommand.
+            return TCMD_CHECK_STATUS_NO_TCMD;
+        }
     }
 
     // Set `latest_tcmd_len` to the length of the telecommand.
@@ -76,11 +83,10 @@ TCMD_check_result_enum_t check_for_and_handle_new_uart_tcmds() {
         "!"
     );
     if (idx_of_last_char_in_tcmd < 0) { // -1 indicates "string not found".
-        // No end-of-message character found. Use the whole buffer.
-        // Will error with "invalid telecommand" later on.
+        // If the telecommand is not complete, discard it.
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "Should never happen. UART telecommand incomplete. Discarding incomplete telecommand."
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_CRITICAL, LOG_SINK_ALL,
+            "Should not happen: incomplete telecommand. Discarding incomplete telecommand."
         );
         UART_telecommand_buffer_write_idx = 0;
         return TCMD_CHECK_STATUS_TCMD_INVALID_AND_DISCARDED;
