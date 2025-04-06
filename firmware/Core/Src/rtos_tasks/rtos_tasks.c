@@ -86,6 +86,13 @@ void TASK_execute_telecommands(void *argument) {
     TASK_HELP_start_of_task();
 
     // Note: Must not be less than 200ms since last pet.
+    // 250ms is a good period, because it takes 208 ms to uplink a max-sized (250-byte) telecommand
+    // at 9600 baud. Therefore, period=250ms makes it so that telecommands will be executed as fast
+    // as they are uplinked.
+    // Adding a short path nested loop that continues executing commands while they're available
+    // is unnecessary. It is helpful to have a slight delay between commands to prevent flooding
+    // the system with commands (hence the watchdog minimum interval being 200ms).
+    // Conclusion: All parts of the system can handle 4 commands per second.
     const uint32_t task_period_for_watchdog_pet_ms = 250;
 
     // Cannot pet the watchdog too quickly on boot.
@@ -97,7 +104,7 @@ void TASK_execute_telecommands(void *argument) {
         HAL_IWDG_Refresh(&hiwdg);
 
         // Get the next telecommand to execute.
-        int16_t next_tcmd_slot = TCMD_get_next_tcmd_agenda_slot_to_execute();
+        const int16_t next_tcmd_slot = TCMD_get_next_tcmd_agenda_slot_to_execute();
         if (next_tcmd_slot == -1) {
             // No telecommands to execute.
             // DEBUG_uart_print_str("No telecommands to execute.\n");
@@ -115,7 +122,6 @@ void TASK_execute_telecommands(void *argument) {
 
         // Note: Short yield here only; execute all pending telecommands back-to-back.
         osDelay(task_period_for_watchdog_pet_ms);
-
     } /* End Task's Main Loop */
 }
 
