@@ -18,8 +18,6 @@
 
 #include "stm32l4xx_hal.h"
 
-extern I2C_HandleTypeDef hi2c1; // allows not needing the parameters
-
 /// @brief Instructs the ADCS to determine whether the last command succeeded. (Doesn't work for telemetry requests, by design.)
 /// @param[out] ack Structure containing the formatted information about the last command sent.
 /// @return 0 if successful, non-zero if an error occurred in transmission.

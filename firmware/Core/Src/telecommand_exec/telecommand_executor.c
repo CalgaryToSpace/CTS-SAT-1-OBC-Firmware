@@ -153,7 +153,8 @@ int16_t TCMD_get_next_tcmd_agenda_slot_to_execute() {
 /// @param response_output_buf A buffer to store the response from the telecommand.
 /// @param response_output_buf_size The size of the `response_output_buf`.
 /// @return 0 on success, 254 if `tcmd_idx` is out of bounds, otherwise the error code from the telecommand function.
-uint8_t TCMD_execute_parsed_telecommand_now(const uint16_t tcmd_idx, const char args_str_no_parens[],
+uint8_t TCMD_execute_parsed_telecommand_now(
+    const uint16_t tcmd_idx, const char args_str_no_parens[],
     TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_size
 ) {
@@ -230,7 +231,7 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
     char tsexec_str[32];
     GEN_uint64_to_str(TCMD_agenda[tcmd_agenda_slot_num].timestamp_to_execute, tsexec_str);
     LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
         "Executing telecommand from agenda slot %d, sent at tssent=%s, scheduled for tsexec=%s.",
         tcmd_agenda_slot_num,
         tssent_str,
