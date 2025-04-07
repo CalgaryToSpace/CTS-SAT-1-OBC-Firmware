@@ -226,7 +226,7 @@ uint8_t TCMDEXEC_fs_write_file_hex(const char *args_str, TCMD_TelecommandChannel
 
     // Use our new helper function to write the data at the specified offset
     const int8_t result = LFS_write_file_with_offset(arg_file_name, (lfs_soff_t)file_offset, binary_data, binary_data_length);
-    if (result < 0) {
+    if (result != 0) {
         snprintf(response_output_buf, response_output_buf_len, "LittleFS Writing Error: %d", result);
         return 4;
     }
