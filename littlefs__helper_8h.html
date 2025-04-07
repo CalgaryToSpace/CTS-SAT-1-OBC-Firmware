@@ -176,6 +176,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a188f39fde7e2e69cdcb4d7e77feba88e" id="r_a188f39fde7e2e69cdcb4d7e77feba88e"><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a188f39fde7e2e69cdcb4d7e77feba88e">LFS_write_file</a> (const char file_name[], uint8_t *write_buffer, uint32_t write_buffer_len)</td></tr>
 <tr class="memdesc:a188f39fde7e2e69cdcb4d7e77feba88e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates / Opens LittleFS File to write to the Memory Module.  <br /></td></tr>
 <tr class="separator:a188f39fde7e2e69cdcb4d7e77feba88e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9fa734c723031b43247eaa177c24db0e" id="r_a9fa734c723031b43247eaa177c24db0e"><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9fa734c723031b43247eaa177c24db0e">LFS_write_file_with_offset</a> (const char file_name[], <a class="el" href="lfs_8h.html#ad8616f90884afa8f3b3232a19eb41871">lfs_soff_t</a> offset, uint8_t *write_buffer, uint32_t write_buffer_len)</td></tr>
+<tr class="memdesc:a9fa734c723031b43247eaa177c24db0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates / Opens LittleFS File and writes data at a specific offset.  <br /></td></tr>
+<tr class="separator:a9fa734c723031b43247eaa177c24db0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a41ec6565fc865a9e37d275e4f6087676" id="r_a41ec6565fc865a9e37d275e4f6087676"><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a41ec6565fc865a9e37d275e4f6087676">LFS_append_file</a> (const char file_name[], uint8_t *write_buffer, uint32_t write_buffer_len)</td></tr>
 <tr class="memdesc:a41ec6565fc865a9e37d275e4f6087676"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates / Opens LittleFS File to append contents.  <br /></td></tr>
 <tr class="separator:a41ec6565fc865a9e37d275e4f6087676"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1991,6 +1994,185 @@ Here is the caller graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="228,48,193,42,193,37,229,42"/>
 <area shape="rect" href="lfs__telecommand__defs_8c.html#ae0c451995d1ade8e8dfeeb658135a391" title="Telecommand: Write data to a file in LittleFS." alt="" coords="5,70,196,96"/>
 <area shape="poly" title=" " alt="" coords="229,67,195,72,194,67,228,62"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a9fa734c723031b43247eaa177c24db0e" name="a9fa734c723031b43247eaa177c24db0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fa734c723031b43247eaa177c24db0e">&#9670;&#160;</a></span>LFS_write_file_with_offset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int8_t LFS_write_file_with_offset </td>
+          <td>(</td>
+          <td class="paramtype">const char</td>          <td class="paramname"><span class="paramname"><em>file_name</em></span>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="lfs_8h.html#ad8616f90884afa8f3b3232a19eb41871">lfs_soff_t</a></td>          <td class="paramname"><span class="paramname"><em>offset</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *</td>          <td class="paramname"><span class="paramname"><em>write_buffer</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t</td>          <td class="paramname"><span class="paramname"><em>write_buffer_len</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates / Opens LittleFS File and writes data at a specific offset. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">file_name</td><td>- Pointer to cstring holding the file name to create or open </td></tr>
+    <tr><td class="paramname">offset</td><td>- Position within the file to write the data </td></tr>
+    <tr><td class="paramname">write_buffer</td><td>- Pointer to buffer holding the data to write </td></tr>
+    <tr><td class="paramname">write_buffer_len</td><td>- Size of the data to write </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">0</td><td>on success, 1 if LFS is unmounted, negative LFS error codes on failure </td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="littlefs__helper_8h_a9fa734c723031b43247eaa177c24db0e_cgraph.png" border="0" usemap="#alittlefs__helper_8h_a9fa734c723031b43247eaa177c24db0e_cgraph" alt=""/></div>
+<map name="alittlefs__helper_8h_a9fa734c723031b43247eaa177c24db0e_cgraph" id="alittlefs__helper_8h_a9fa734c723031b43247eaa177c24db0e_cgraph">
+<area shape="rect" title="Creates / Opens LittleFS File and writes data at a specific offset." alt="" coords="5,948,141,989"/>
+<area shape="rect" href="lfs_8c.html#aa7eb46b610f8507869aa62759cfd224e" title=" " alt="" coords="196,808,292,834"/>
+<area shape="poly" title=" " alt="" coords="87,946,129,896,157,868,187,843,192,839,195,844,190,847,160,872,133,899,91,950"/>
+<area shape="rect" href="lfs_8c.html#a27b9877d2df6b72e9ac883a408d0d34c" title="File operations ///." alt="" coords="189,857,300,883"/>
+<area shape="poly" title=" " alt="" coords="102,946,187,892,195,888,198,892,190,896,105,950"/>
+<area shape="rect" href="lfs_8c.html#ad6f28a6af39c34f251a7c8db1bcc9506" title=" " alt="" coords="198,907,291,932"/>
+<area shape="poly" title=" " alt="" coords="140,947,182,935,183,940,142,952"/>
+<area shape="rect" href="lfs_8c.html#aec2a70250aa5b0ce17d35214ac85395d" title=" " alt="" coords="200,956,288,982"/>
+<area shape="poly" title=" " alt="" coords="141,966,184,966,184,972,141,972"/>
+<area shape="rect" href="lfs_8c.html#a2769dda334cd0ac276a4a929eadb930d" title=" " alt="" coords="198,1005,291,1031"/>
+<area shape="poly" title=" " alt="" coords="142,986,183,998,182,1003,140,991"/>
+<area shape="rect" href="log_8c.html#a6efa47aededef4834dc5c25da1e432de" title="Returns all sinks, except the specified exceptions." alt="" coords="379,1057,531,1083"/>
+<area shape="poly" title=" " alt="" coords="100,987,140,1016,190,1041,233,1053,278,1062,364,1069,363,1074,277,1067,232,1059,188,1046,138,1021,97,992"/>
+<area shape="rect" href="log_8h.html#a3e068c70867806154541035de518012d" title=" " alt="" coords="190,1553,299,1579"/>
+<area shape="poly" title=" " alt="" coords="83,989,238,1538,233,1539,78,990"/>
+<area shape="rect" href="lfs_8c.html#a6913260217358cf9c612d2547f6f0bbe" title=" " alt="" coords="638,104,741,130"/>
+<area shape="poly" title=" " alt="" coords="245,807,254,751,273,665,303,565,323,514,346,466,402,363,454,287,517,220,609,147,630,134,632,139,612,151,521,224,458,290,407,366,350,469,328,517,308,567,279,667,260,752,250,808"/>
+<area shape="rect" href="lfs_8c.html#abb00542d235be9617c878d46b6b00bb0" title=" " alt="" coords="398,905,513,931"/>
+<area shape="poly" title=" " alt="" coords="283,832,302,843,316,856,326,869,335,881,349,892,384,906,382,910,347,896,331,884,321,872,312,860,298,847,280,836"/>
+<area shape="rect" href="lfs_8c.html#a0f7d91af547222f857c7c7e0b4952836" title=" " alt="" coords="829,104,928,130"/>
+<area shape="poly" title=" " alt="" coords="742,114,813,114,813,120,742,120"/>
+<area shape="rect" href="lfs__util_8h.html#a9faff801530cd687a960a08af1acaaf1" title=" " alt="" coords="846,55,910,80"/>
+<area shape="poly" title=" " alt="" coords="741,101,831,77,832,82,742,106"/>
+<area shape="rect" href="lfs_8c.html#a730bc133994af125df2ef317c03499ea" title=" " alt="" coords="818,5,938,31"/>
+<area shape="poly" title=" " alt="" coords="710,101,757,72,815,40,826,35,828,40,818,45,760,76,713,106"/>
+<area shape="rect" href="lfs_8c.html#af78645d9b58b26761464ef2e892516b0" title="Internal operations predeclared here ///." alt="" coords="988,129,1094,155"/>
+<area shape="poly" title=" " alt="" coords="929,122,973,129,972,134,928,127"/>
+<area shape="rect" href="lfs_8c.html#ac43db7a505f104fbcdb589de700715bc" title=" " alt="" coords="995,905,1087,931"/>
+<area shape="poly" title=" " alt="" coords="886,129,912,218,943,342,993,619,1038,890,1033,891,988,620,937,343,906,219,881,131"/>
+<area shape="poly" title=" " alt="" coords="301,880,349,892,383,899,382,905,347,897,300,886"/>
+<area shape="rect" href="lfs_8c.html#af427c4edfdfd5f3f957708079189ddea" title="Top level file operations ///." alt="" coords="396,480,514,506"/>
+<area shape="poly" title=" " alt="" coords="284,855,298,844,331,806,359,763,383,717,403,671,431,585,446,520,451,522,436,587,408,673,388,720,364,766,335,809,302,848,287,859"/>
+<area shape="poly" title=" " alt="" coords="462,478,506,397,560,284,572,245,577,212,585,180,608,147,623,135,626,140,612,151,590,183,582,213,577,246,565,286,510,400,466,481"/>
+<area shape="poly" title=" " alt="" coords="514,491,539,485,560,471,582,440,590,408,589,376,583,343,577,310,576,276,585,243,608,211,635,194,672,179,769,159,877,147,972,141,973,147,878,152,770,164,674,185,637,198,612,215,590,245,582,277,583,309,589,342,594,375,596,409,587,442,564,475,541,490,515,497"/>
+<area shape="rect" href="lfs_8c.html#a7abfecb79aea2e5abee149d3093e8755" title=" " alt="" coords="635,256,744,282"/>
+<area shape="poly" title=" " alt="" coords="461,478,481,441,513,390,557,337,609,291,620,284,622,289,612,295,560,341,518,394,486,444,465,481"/>
+<area shape="rect" href="lfs_8c.html#a4b050bae630f5ffc9452b41c16ec1a2c" title=" " alt="" coords="631,305,748,331"/>
+<area shape="poly" title=" " alt="" coords="464,478,521,412,562,373,609,340,617,335,620,340,612,344,566,378,525,416,468,481"/>
+<area shape="rect" href="lfs_8c.html#a3ae08e7148c43b3861f5dfac6bf7966d" title=" " alt="" coords="648,655,731,680"/>
+<area shape="poly" title=" " alt="" coords="468,505,525,570,566,608,612,641,634,652,632,657,609,646,562,612,521,573,464,508"/>
+<area shape="rect" href="lfs_8c.html#a87c48ccdc3781694d58b956062690f45" title=" " alt="" coords="838,655,919,680"/>
+<area shape="poly" title=" " alt="" coords="461,506,473,561,499,641,519,684,544,724,575,760,612,789,652,808,688,813,725,806,767,789,798,770,824,745,861,693,865,696,828,748,801,774,770,794,726,811,688,819,651,814,609,794,571,764,540,727,514,686,494,643,468,563,456,507"/>
+<area shape="rect" href="lfs_8c.html#aed935b683183b73f6ca1ba7b0ffd0f67" title=" " alt="" coords="996,555,1086,580"/>
+<area shape="poly" title=" " alt="" coords="515,491,632,497,769,509,855,522,941,541,982,550,980,555,939,546,854,528,768,514,632,502,515,497"/>
+<area shape="rect" href="lfs_8c.html#a4a32a05356587f37e44f0a73431c8fef" title=" " alt="" coords="829,556,928,582"/>
+<area shape="poly" title=" " alt="" coords="515,498,769,541,814,551,813,556,768,546,514,504"/>
+<area shape="rect" href="lfs_8c.html#a651bb8d9b7afba50f815c3a7a43abc6c" title=" " alt="" coords="610,556,769,582"/>
+<area shape="poly" title=" " alt="" coords="498,504,634,548,632,553,497,509"/>
+<area shape="rect" href="lfs__util_8h.html#aa30d06c37906ba1f9fe84730c7326de5" title=" " alt="" coords="649,605,730,631"/>
+<area shape="poly" title=" " alt="" coords="475,504,533,546,612,592,635,601,633,606,609,597,530,551,472,508"/>
+<area shape="rect" href="lfs__util_8h.html#aa6d372bce9fdc63166afaab1bad985c2" title=" " alt="" coords="658,704,721,730"/>
+<area shape="poly" title=" " alt="" coords="465,505,486,542,518,592,560,645,612,691,644,706,642,710,609,695,557,649,513,595,481,545,461,508"/>
+<area shape="rect" href="lfs_8c.html#ae594dee3729cd3ecb88e5ad60d1e21bd" title=" " alt="" coords="630,753,749,779"/>
+<area shape="poly" title=" " alt="" coords="463,505,481,550,511,613,555,682,582,713,612,740,617,744,614,748,609,744,578,717,551,685,506,616,476,552,458,507"/>
+<area shape="rect" href="lfs_8c.html#ad3be90a730775a5fcda8545f6f0b2455" title=" " alt="" coords="640,355,739,380"/>
+<area shape="poly" title=" " alt="" coords="472,477,530,435,609,389,625,383,627,387,612,394,533,439,475,482"/>
+<area shape="rect" href="lfs_8c.html#a684f435e82cfef70a3e33709b119fe21" title="Small type&#45;level utilities ///." alt="" coords="817,355,940,380"/>
+<area shape="poly" title=" " alt="" coords="460,479,524,353,568,284,589,258,609,241,651,222,689,217,726,224,770,241,801,261,828,287,865,339,861,342,824,290,798,265,767,246,725,229,688,222,653,228,612,246,593,261,572,287,529,355,465,481"/>
+<area shape="rect" href="lfs_8c.html#a339d3442868daf32ac39ed6ad8f74dcf" title=" " alt="" coords="637,404,742,430"/>
+<area shape="poly" title=" " alt="" coords="497,477,632,432,634,437,498,482"/>
+<area shape="poly" title=" " alt="" coords="732,665,823,665,823,670,732,670"/>
+<area shape="poly" title=" " alt="" coords="731,655,768,641,811,616,848,589,851,594,813,621,770,646,733,660"/>
+<area shape="poly" title=" " alt="" coords="900,652,1004,587,1007,591,903,656"/>
+<area shape="poly" title=" " alt="" coords="739,365,801,365,801,370,739,370"/>
+<area shape="poly" title=" " alt="" coords="741,401,811,382,812,387,742,406"/>
+<area shape="poly" title=" " alt="" coords="291,917,382,916,382,921,291,922"/>
+<area shape="rect" href="lfs_8c.html#a82eccb8ccb85d49165b04885f01c8799" title=" " alt="" coords="405,856,505,882"/>
+<area shape="poly" title=" " alt="" coords="291,905,347,890,389,880,391,886,349,895,292,910"/>
+<area shape="poly" title=" " alt="" coords="506,875,611,890,813,906,980,914,979,919,813,912,610,895,505,880"/>
+<area shape="rect" href="lfs_8c.html#a441bab3184229d1d74c81bbd4fcb7b29" title="File index list operations ///." alt="" coords="641,855,738,880"/>
+<area shape="poly" title=" " alt="" coords="506,866,626,865,626,871,506,871"/>
+<area shape="rect" href="lfs_8c.html#aff7596f0f9588e7958555ac5a53abd8b" title=" " alt="" coords="642,956,737,982"/>
+<area shape="poly" title=" " alt="" coords="506,872,535,879,564,890,579,901,589,912,598,923,612,935,636,947,633,952,609,939,594,927,585,916,575,905,561,895,534,884,505,877"/>
+<area shape="poly" title=" " alt="" coords="288,956,383,933,385,938,289,961"/>
+<area shape="poly" title=" " alt="" coords="289,966,626,966,626,972,289,972"/>
+<area shape="poly" title=" " alt="" coords="276,1002,299,992,413,936,415,941,301,997,278,1007"/>
+<area shape="rect" href="lfs_8c.html#a41d53212e4b29a3f22c93f27153c4030" title=" " alt="" coords="828,981,928,1007"/>
+<area shape="poly" title=" " alt="" coords="291,1014,813,994,813,999,292,1019"/>
+<area shape="poly" title=" " alt="" coords="907,978,997,935,999,940,909,983"/>
+<area shape="poly" title=" " alt="" coords="244,1553,253,1462,272,1323,285,1251,302,1185,322,1131,346,1094,364,1081,367,1085,350,1097,327,1133,307,1187,291,1252,277,1324,258,1462,249,1553"/>
+<area shape="rect" href="csp__cmp_8h.html#a4402590c0b64383fa59aaf6fe78dcb34" title=" " alt="" coords="407,1352,503,1378"/>
+<area shape="poly" title=" " alt="" coords="247,1552,258,1519,278,1474,307,1428,326,1406,346,1388,368,1376,391,1368,393,1373,370,1381,350,1392,329,1410,312,1431,283,1477,263,1521,252,1554"/>
+<area shape="rect" href="log_8c.html#ad5a8cf2ec365951bb0385938171723bd" title="Get a pointer to the full text of the in&#45;memory log message at the specified index." alt="" coords="374,1402,536,1442"/>
+<area shape="poly" title=" " alt="" coords="252,1551,289,1503,316,1476,347,1452,359,1445,361,1450,349,1456,319,1480,293,1507,256,1555"/>
+<area shape="rect" href="log_8c.html#acce5d976dea413409a2547fc61475620" title="Get the index of the most recent in&#45;memory log message." alt="" coords="374,1466,536,1522"/>
+<area shape="poly" title=" " alt="" coords="283,1550,359,1524,360,1529,285,1555"/>
+<area shape="rect" href="log_8c.html#ad0799a0e4171a608ff908822382da8c9" title="Get the most recent log message text." alt="" coords="378,1546,532,1586"/>
+<area shape="poly" title=" " alt="" coords="299,1564,363,1564,363,1569,299,1569"/>
+<area shape="rect" href="log_8c.html#a186ca6df91a1dacb78dbf0b0385747c5" title="Get the name of a severity enum." alt="" coords="372,1611,538,1636"/>
+<area shape="poly" title=" " alt="" coords="287,1577,349,1596,380,1604,379,1609,347,1601,286,1582"/>
+<area shape="rect" href="log_8c.html#a440123199704bc7c5231ec1a9743497f" title="Check logging sink status." alt="" coords="380,1660,530,1686"/>
+<area shape="poly" title=" " alt="" coords="260,1578,298,1612,323,1631,349,1646,367,1654,365,1659,347,1651,320,1635,294,1617,256,1582"/>
+<area shape="rect" href="log_8c.html#af31cb35d8f2dd37ff306620c600462da" title="Check whether file logging is enabled for a subsystem." alt="" coords="386,1710,524,1750"/>
+<area shape="poly" title=" " alt="" coords="255,1578,290,1635,317,1668,350,1696,373,1709,370,1713,346,1700,313,1672,286,1638,250,1581"/>
+<area shape="rect" href="log_8c.html#a5503bd03b30497a0a43c490d68090ebc" title="Get the size in entries of the in&#45;memory log table." alt="" coords="371,1775,539,1816"/>
+<area shape="poly" title=" " alt="" coords="251,1579,262,1615,281,1664,310,1716,329,1739,350,1760,359,1767,356,1771,346,1764,325,1743,306,1718,277,1666,257,1616,246,1580"/>
+<area shape="rect" href="log_8c.html#a3d0d201c22a940b6800834336c24fdcc" title=" " alt="" coords="372,1840,538,1881"/>
+<area shape="poly" title=" " alt="" coords="250,1579,257,1625,273,1692,286,1728,303,1763,324,1797,350,1826,361,1834,357,1838,346,1829,320,1800,298,1766,281,1730,268,1693,251,1626,244,1580"/>
+<area shape="rect" href="log_8c.html#a9a7ce5e1b26859f039c363753e499d32" title=" " alt="" coords="372,1906,538,1946"/>
+<area shape="poly" title=" " alt="" coords="248,1579,252,1636,265,1720,278,1766,296,1811,320,1854,350,1891,361,1900,357,1904,346,1895,315,1857,291,1813,273,1767,260,1721,247,1637,243,1580"/>
+<area shape="rect" href="log_8c.html#a22ffd7bd23f49bfcc5da12d9dee93fba" title="Report a sink&#39;s enabled state." alt="" coords="369,1971,541,2012"/>
+<area shape="poly" title=" " alt="" coords="250,1579,262,1656,283,1770,313,1883,331,1927,350,1956,358,1964,355,1968,346,1960,326,1929,308,1884,278,1771,256,1657,245,1580"/>
+<area shape="rect" href="log_8c.html#af46fe0cc52d2bc6cd716d02ef713641c" title="Report a subsystem&#39;s file&#45;logging state." alt="" coords="374,2036,536,2077"/>
+<area shape="poly" title=" " alt="" coords="250,1579,259,1667,279,1801,293,1870,309,1934,328,1986,350,2022,363,2033,359,2037,346,2025,324,1989,304,1936,288,1871,274,1802,254,1668,244,1580"/>
+<area shape="rect" href="log_8c.html#a7580a472c0db91ca169d0e1403d4c48b" title="Turn debugging messages on or off for the specified sink." alt="" coords="367,2102,543,2142"/>
+<area shape="poly" title=" " alt="" coords="249,1579,257,1678,275,1831,289,1912,306,1985,326,2046,350,2087,356,2093,352,2097,346,2090,321,2048,300,1987,283,1913,270,1832,252,1679,244,1579"/>
+<area shape="rect" href="log_8c.html#add4285ec4e7fa886c86969276e630e2b" title="Enable or disable logging to a sink." alt="" coords="376,1107,534,1148"/>
+<area shape="poly" title=" " alt="" coords="245,1552,256,1473,277,1355,307,1237,325,1191,346,1159,361,1147,365,1151,350,1163,330,1193,312,1239,282,1356,261,1474,250,1553"/>
+<area shape="rect" href="log_8c.html#a51dd2ee0e3382333ca295b33b6fd8734" title="Turn debugging messages on or off for the specified system." alt="" coords="360,1172,550,1213"/>
+<area shape="poly" title=" " alt="" coords="243,1553,246,1494,259,1406,271,1358,290,1310,314,1264,346,1224,350,1221,354,1225,350,1228,319,1267,294,1312,276,1359,264,1407,251,1494,248,1553"/>
+<area shape="rect" href="log_8c.html#a57f3ced0c69b3a65c71ec7bf8bbc6cea" title="Enable or disable logging to file for a subsystem." alt="" coords="376,1238,534,1278"/>
+<area shape="poly" title=" " alt="" coords="244,1553,250,1503,266,1433,279,1394,297,1356,319,1320,346,1288,361,1277,364,1282,350,1292,323,1323,301,1358,284,1396,271,1434,255,1504,249,1553"/>
+<area shape="rect" href="log_8c.html#a0922ecc9bb8ee94a49060ee0961c1ca1" title="Set the logging severity bitfield mask for a subsystem." alt="" coords="348,1303,562,1328"/>
+<area shape="poly" title=" " alt="" coords="245,1552,253,1511,271,1452,301,1390,322,1362,346,1337,350,1334,354,1339,350,1342,326,1365,306,1393,276,1454,258,1512,250,1553"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="littlefs__helper_8h_a9fa734c723031b43247eaa177c24db0e_icgraph.png" border="0" usemap="#alittlefs__helper_8h_a9fa734c723031b43247eaa177c24db0e_icgraph" alt=""/></div>
+<map name="alittlefs__helper_8h_a9fa734c723031b43247eaa177c24db0e_icgraph" id="alittlefs__helper_8h_a9fa734c723031b43247eaa177c24db0e_icgraph">
+<area shape="rect" title="Creates / Opens LittleFS File and writes data at a specific offset." alt="" coords="249,5,384,46"/>
+<area shape="rect" href="lfs__telecommand__defs_8c.html#af5483cafc404e3179c3a236747cc99ac" title="Telecommand: Write hex data to a file in LittleFS with offset support." alt="" coords="5,13,201,38"/>
+<area shape="poly" title=" " alt="" coords="233,28,201,28,201,23,233,23"/>
 </map>
 </div>
 

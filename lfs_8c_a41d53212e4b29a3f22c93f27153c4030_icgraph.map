@@ -1,130 +1,131 @@
 <map id="lfs_file_write_" name="lfs_file_write_">
-<area shape="rect" id="Node000001" title=" " alt="" coords="1674,202,1774,228"/>
-<area shape="rect" id="Node000002" href="$lfs_8c.html#a055f00fdeaac9db57a6251ab9be711e1" title=" " alt="" coords="1506,152,1626,177"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1666,199,1607,180,1609,175,1668,194"/>
-<area shape="rect" id="Node000004" href="$lfs_8c.html#a2769dda334cd0ac276a4a929eadb930d" title=" " alt="" coords="1519,226,1613,252"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="1659,228,1613,235,1613,229,1658,222"/>
-<area shape="rect" id="Node000003" href="$lfs_8c.html#ad187be568a7f0466588dd2b63ff6cf8a" title=" " alt="" coords="1310,126,1422,152"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1491,158,1423,149,1423,143,1492,152"/>
-<area shape="rect" id="Node000005" href="$littlefs__helper_8c.html#a41ec6565fc865a9e37d275e4f6087676" title="Creates / Opens LittleFS File to append contents." alt="" coords="290,1264,408,1289"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="1562,268,1515,485,1475,641,1426,806,1368,964,1336,1035,1302,1098,1267,1150,1230,1191,1191,1216,1171,1223,1151,1226,916,1226,773,1230,632,1242,409,1270,409,1265,631,1237,773,1225,916,1220,1151,1220,1170,1218,1189,1212,1226,1186,1263,1147,1298,1095,1331,1033,1363,962,1421,805,1470,640,1510,484,1557,267"/>
-<area shape="rect" id="Node000006" href="$littlefs__benchmark_8c.html#aad7b70d9138d629a5902f97637e9af52" title="Benchmarks the write/read operations on the LittleFS file system." alt="" coords="1274,176,1458,201"/>
-<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="1503,226,1419,204,1421,199,1505,221"/>
-<area shape="rect" id="Node000009" href="$littlefs__helper_8c.html#a188f39fde7e2e69cdcb4d7e77feba88e" title="Creates / Opens LittleFS File to write to the Memory Module." alt="" coords="297,41,402,66"/>
-<area shape="poly" id="edge8_Node000004_Node000009" title=" " alt="" coords="1503,242,1151,242,916,242,875,237,829,226,721,186,594,134,448,82,401,68,403,63,450,76,596,129,723,181,830,221,876,232,916,236,1151,236,1503,236"/>
-<area shape="rect" id="Node000012" href="$log__sinks_8c.html#ad2518000eb3f3d175e8a4939ee3530af" title="Sends a log message to a log file." alt="" coords="1321,425,1411,450"/>
-<area shape="poly" id="edge11_Node000004_Node000012" title=" " alt="" coords="1543,265,1383,426,1379,422,1539,261"/>
-<area shape="rect" id="Node000007" href="$littlefs__benchmark_8c.html#ae604e8b7da31b3a607f0c03f2fa44ecd" title="Benchmarks the write/read operations on the LittleFS file system for both cases: writing to a new fil..." alt="" coords="1073,161,1226,202"/>
-<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="1258,188,1226,187,1226,181,1258,182"/>
-<area shape="rect" id="Node000008" href="$lfs__telecommand__defs_8c.html#a265fb9e9f253a1a4858e81f6ff6949c8" title="Telecommand: Benchmark LittleFS write and read operations." alt="" coords="827,161,1008,202"/>
-<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="1057,184,1009,184,1009,179,1057,179"/>
-<area shape="rect" id="Node000010" href="$lfs__telecommand__defs_8c.html#ad8f1ceca7e7eeee5b869ec251392b12d" title=" " alt="" coords="11,5,196,46"/>
-<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="282,49,196,39,196,34,282,43"/>
-<area shape="rect" id="Node000011" href="$lfs__telecommand__defs_8c.html#ae0c451995d1ade8e8dfeeb658135a391" title="Telecommand: Write data to a file in LittleFS." alt="" coords="8,70,199,96"/>
-<area shape="poly" id="edge10_Node000009_Node000011" title=" " alt="" coords="282,64,199,74,199,69,282,59"/>
-<area shape="rect" id="Node000013" href="$log_8c.html#a9620661557eea5fdaf535b894ae58c84" title="Log a message to several destinations (sinks)" alt="" coords="1095,602,1204,628"/>
-<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="1339,463,1169,604,1165,599,1335,458"/>
-<area shape="rect" id="Node000014" href="$log_8c.html#a440123199704bc7c5231ec1a9743497f" title="Check logging sink status." alt="" coords="843,812,992,837"/>
-<area shape="poly" id="edge13_Node000013_Node000014" title=" " alt="" coords="1140,643,1123,680,1098,722,1066,765,1026,801,994,817,991,812,1023,797,1062,762,1094,719,1118,677,1135,641"/>
-<area shape="rect" id="Node000179" href="$log_8c.html#af31cb35d8f2dd37ff306620c600462da" title="Check whether file logging is enabled for a subsystem." alt="" coords="848,436,987,477"/>
-<area shape="poly" id="edge50_Node000013_Node000179" title=" " alt="" coords="1127,591,1083,541,1055,515,1023,492,986,475,988,470,1026,487,1058,510,1087,537,1131,588"/>
-<area shape="rect" id="Node000181" href="$log_8c.html#a22ffd7bd23f49bfcc5da12d9dee93fba" title="Report a sink&#39;s enabled state." alt="" coords="831,501,1004,542"/>
-<area shape="poly" id="edge53_Node000013_Node000181" title=" " alt="" coords="1109,597,1024,557,990,545,991,540,1026,553,1111,592"/>
-<area shape="rect" id="Node000183" href="$log_8c.html#af46fe0cc52d2bc6cd716d02ef713641c" title="Report a subsystem&#39;s file&#45;logging state." alt="" coords="837,567,998,607"/>
-<area shape="poly" id="edge57_Node000013_Node000183" title=" " alt="" coords="1079,609,998,599,999,594,1079,604"/>
-<area shape="rect" id="Node000185" href="$log_8c.html#a7580a472c0db91ca169d0e1403d4c48b" title="Turn debugging messages on or off for the specified sink." alt="" coords="829,681,1006,722"/>
-<area shape="poly" id="edge61_Node000013_Node000185" title=" " alt="" coords="1108,637,1026,672,993,683,991,678,1024,667,1106,632"/>
-<area shape="rect" id="Node000186" href="$log_8c.html#add4285ec4e7fa886c86969276e630e2b" title="Enable or disable logging to a sink." alt="" coords="839,865,996,906"/>
-<area shape="poly" id="edge64_Node000013_Node000186" title=" " alt="" coords="1143,644,1129,689,1105,744,1071,802,1050,828,1026,852,998,869,995,865,1023,848,1046,825,1067,799,1100,742,1124,687,1138,642"/>
-<area shape="rect" id="Node000187" href="$log_8c.html#a51dd2ee0e3382333ca295b33b6fd8734" title="Turn debugging messages on or off for the specified system." alt="" coords="823,747,1012,787"/>
-<area shape="poly" id="edge70_Node000013_Node000187" title=" " alt="" coords="1130,642,1085,690,1057,714,1026,736,1000,748,998,744,1023,731,1054,710,1082,686,1126,638"/>
-<area shape="rect" id="Node000188" href="$log_8c.html#a57f3ced0c69b3a65c71ec7bf8bbc6cea" title="Enable or disable logging to file for a subsystem." alt="" coords="839,352,996,393"/>
-<area shape="poly" id="edge73_Node000013_Node000188" title=" " alt="" coords="1134,589,1091,510,1060,466,1023,426,999,409,974,395,976,391,1002,405,1026,422,1064,463,1096,508,1139,587"/>
-<area shape="rect" id="Node000189" href="$log_8c.html#a0922ecc9bb8ee94a49060ee0961c1ca1" title="Set the logging severity bitfield mask for a subsystem." alt="" coords="810,632,1025,657"/>
-<area shape="poly" id="edge77_Node000013_Node000189" title=" " alt="" coords="1080,626,1024,634,1024,628,1079,621"/>
-<area shape="rect" id="Node000015" href="$log_8h.html#a3e068c70867806154541035de518012d" title=" " alt="" coords="575,653,684,678"/>
-<area shape="poly" id="edge14_Node000014_Node000015" title=" " alt="" coords="828,809,809,801,758,773,711,739,643,681,646,677,714,735,761,768,811,797,830,804"/>
-<area shape="rect" id="Node000176" href="$test__logging_8c.html#a3d3b3bdaea04662fd02f070215e9440c" title=" " alt="" coords="538,935,721,975"/>
-<area shape="poly" id="edge47_Node000014_Node000176" title=" " alt="" coords="830,846,812,856,797,872,789,889,781,907,764,924,722,944,720,939,761,919,776,904,784,887,792,869,809,852,827,841"/>
-<area shape="rect" id="Node000177" href="$test__logging_8c.html#ad30c28c87b14de656a4a18170c94e25f" title=" " alt="" coords="516,804,743,845"/>
-<area shape="poly" id="edge48_Node000014_Node000177" title=" " alt="" coords="827,827,743,827,743,822,827,822"/>
-<area shape="rect" id="Node000178" href="$test__logging_8c.html#a35a050c883020b8a3c0a5d91e833efff" title=" " alt="" coords="497,869,762,910"/>
-<area shape="poly" id="edge49_Node000014_Node000178" title=" " alt="" coords="843,844,723,871,722,866,842,839"/>
-<area shape="poly" id="edge39_Node000015_Node000005" title=" " alt="" coords="596,690,544,733,519,762,499,793,487,836,483,892,484,1027,484,1096,481,1160,471,1214,462,1235,451,1253,432,1267,410,1276,408,1271,430,1263,447,1249,458,1233,466,1212,476,1159,479,1096,479,1027,477,892,482,835,495,791,515,759,541,730,593,686"/>
-<area shape="poly" id="edge40_Node000015_Node000009" title=" " alt="" coords="559,671,525,662,509,654,495,642,481,621,472,594,463,527,464,447,469,360,475,274,476,194,468,127,460,101,447,81,426,66,401,58,403,53,429,61,451,77,464,99,473,126,481,194,480,274,475,361,469,447,468,527,477,593,486,619,499,639,512,650,527,657,561,666"/>
-<area shape="rect" id="Node000016" href="$ant__commands_8c.html#a236e28a0ade562989c5c98dbb90fef43" title="activates the deployment system for the selected antenna for the specified amount of time" alt="" coords="13,640,194,665"/>
-<area shape="poly" id="edge15_Node000015_Node000016" title=" " alt="" coords="560,667,194,657,195,652,560,661"/>
-<area shape="rect" id="Node000018" href="$ant__commands_8c.html#a5ea8c0da2fe8ab8bb2a60b80501c12e8" title="initiates deployment of the selected antenna, ignoring whether the current status of that antenna is ..." alt="" coords="13,411,194,451"/>
-<area shape="poly" id="edge16_Node000015_Node000018" title=" " alt="" coords="558,669,525,661,495,642,477,619,470,594,469,569,472,544,474,520,473,497,465,475,447,454,420,436,389,422,357,413,324,407,256,406,194,413,194,407,256,401,324,402,358,408,391,417,422,431,451,450,470,472,478,496,479,520,477,545,474,569,475,593,482,616,499,638,527,656,560,664"/>
-<area shape="rect" id="Node000020" href="$ant__commands_8c.html#ab7a42ab5fcf483a9db3af4a2d5015f63" title="writes the cumulative time (in ms increments) that the deployment system has been active (for a speci..." alt="" coords="9,552,198,593"/>
-<area shape="poly" id="edge17_Node000015_Node000020" title=" " alt="" coords="560,656,198,592,199,586,561,651"/>
-<area shape="rect" id="Node000022" href="$ant__commands_8c.html#afbbf4f4105326f8ea68bb54812e3078e" title="writes the number of times deployment has been attempted (for a specified antenna and mcu) in a respo..." alt="" coords="5,487,202,527"/>
-<area shape="poly" id="edge18_Node000015_Node000022" title=" " alt="" coords="559,669,525,660,495,642,480,623,473,603,472,563,470,525,463,508,447,492,414,473,376,461,337,457,298,457,221,469,157,489,155,484,220,464,297,452,338,451,378,456,416,468,451,488,467,505,476,524,477,563,478,602,485,621,499,638,527,655,560,663"/>
-<area shape="rect" id="Node000024" href="$ant__internal__drivers_8c.html#ab799f0945c47a98ea73de0da1926e583" title="Receives a response from the antenna controller." alt="" coords="283,552,416,577"/>
-<area shape="poly" id="edge19_Node000015_Node000024" title=" " alt="" coords="559,662,527,655,496,643,480,632,471,621,462,609,448,599,405,580,407,575,450,594,465,606,475,617,484,628,498,638,528,650,560,657"/>
-<area shape="rect" id="Node000029" href="$ant__internal__drivers_8c.html#a9551990b43beb551930f8d904fd6a220" title="Sends a command to the antenna controller." alt="" coords="292,502,407,528"/>
-<area shape="poly" id="edge22_Node000015_Node000029" title=" " alt="" coords="559,667,526,659,495,642,483,630,476,617,470,591,465,565,458,553,447,541,428,530,406,522,408,517,430,525,451,537,463,550,470,563,475,589,481,615,487,627,499,638,528,654,560,662"/>
-<area shape="rect" id="Node000040" href="$camera__init_8c.html#a2110c51d656700bd247889bac142d2e6" title="Changes the baudrate of the camera by sending it a UART command, and then changing the baudrate of th..." alt="" coords="271,754,428,780"/>
-<area shape="poly" id="edge27_Node000015_Node000040" title=" " alt="" coords="561,679,529,688,498,700,474,718,450,737,404,756,402,751,448,733,471,714,496,695,527,683,559,674"/>
-<area shape="rect" id="Node000041" href="$camera__init_8c.html#adfa3d3b239068192490d519d4452cfee" title="Set up the camera by powering on and changing the baudrate to 2400." alt="" coords="59,729,148,754"/>
-<area shape="poly" id="edge29_Node000015_Node000041" title=" " alt="" coords="560,678,149,738,148,733,559,673"/>
-<area shape="rect" id="Node000044" href="$camera__init_8c.html#a5907417f5cd0e54e69a2be090bee7b3e" title="Send the &#39;t&#39; test command to the camera, and check if the response is valid." alt="" coords="310,804,389,829"/>
-<area shape="poly" id="edge30_Node000015_Node000044" title=" " alt="" coords="560,674,528,683,499,700,488,711,482,722,476,746,469,770,462,783,451,794,421,810,390,817,389,812,419,805,447,790,458,779,464,768,470,744,477,720,484,707,495,696,526,678,559,668"/>
-<area shape="rect" id="Node000046" href="$comms__drivers_8c.html#a1aed636486abbb09704b3ced2c5c4df2" title="Sets the state of the dipole switch on the OBC to either Antenna 1 or Antenna 2." alt="" coords="258,853,440,894"/>
-<area shape="poly" id="edge31_Node000015_Node000046" title=" " alt="" coords="561,672,528,682,499,700,485,716,478,733,475,769,472,806,465,825,451,844,436,855,433,851,447,840,460,822,467,805,470,769,473,732,480,714,495,696,526,677,559,667"/>
-<area shape="rect" id="Node000048" href="$eps__power__management_8c.html#a2f6d81bd9f8bf600e4e777e36df03cf6" title="Monitor the power consumption of each channel and disable any channels that exceed a certain threshol..." alt="" coords="259,918,440,944"/>
-<area shape="poly" id="edge32_Node000015_Node000048" title=" " alt="" coords="561,671,527,681,499,700,481,724,473,750,473,775,475,801,478,828,478,854,470,881,451,908,435,920,431,915,447,904,465,879,472,854,473,828,470,802,467,775,468,749,476,722,495,696,525,676,559,666"/>
-<area shape="rect" id="Node000049" href="$eps__power__management_8c.html#a1db93bd2baaea0834d00a3077caaceeb" title="Monitors the power consumption of each channel and logs the data in JSON format." alt="" coords="17,960,190,1001"/>
-<area shape="poly" id="edge36_Node000015_Node000049" title=" " alt="" coords="561,670,527,680,499,700,484,718,475,737,467,776,471,816,480,856,488,895,490,934,487,953,480,972,468,990,451,1008,416,1030,377,1042,336,1047,294,1045,253,1038,214,1028,148,1004,150,999,215,1023,254,1033,295,1039,336,1042,376,1037,414,1025,447,1004,464,987,475,970,482,952,485,934,483,896,475,857,466,817,462,776,470,736,480,716,495,696,525,675,559,665"/>
-<area shape="rect" id="Node000052" href="$eps__power__management_8c.html#a512631c0d10437a66e6b7b04e06bcd92" title="Logs the PDU housekeeping data in JSON format." alt="" coords="284,968,414,993"/>
-<area shape="poly" id="edge34_Node000015_Node000052" title=" " alt="" coords="561,670,527,680,499,700,478,731,470,762,470,794,476,827,481,859,482,892,473,925,451,958,435,971,416,978,414,973,432,966,447,954,468,923,476,892,476,860,470,827,465,795,464,762,473,729,495,696,525,675,559,665"/>
-<area shape="rect" id="Node000053" href="$eps__internal__drivers_8c.html#a71bb5784347613fe7673d0077f7c8dba" title="Sends a command to the EPS, and receives the response." alt="" coords="250,286,449,312"/>
-<area shape="poly" id="edge37_Node000015_Node000053" title=" " alt="" coords="559,670,525,662,495,642,479,623,468,603,459,563,461,523,469,483,477,443,480,404,472,365,462,346,447,326,432,314,435,310,451,322,466,343,477,363,485,404,483,444,474,484,466,523,464,562,473,601,483,620,499,638,527,657,561,665"/>
-<area shape="rect" id="Node000055" href="$eps__time_8c.html#aedd81259d3135d49f95b34346f6fde61" title="Sets the EPS&#39;s time, based on the OBC&#39;s current time." alt="" coords="262,336,436,377"/>
-<area shape="poly" id="edge38_Node000015_Node000055" title=" " alt="" coords="559,670,525,661,495,642,473,612,464,581,463,551,468,520,472,489,473,459,466,428,447,397,426,379,429,375,451,393,471,426,478,458,477,490,473,521,469,551,469,581,478,610,499,638,527,656,560,665"/>
-<area shape="rect" id="Node000161" href="$log__telecommand__defs_8c.html#abce1ef40ce5022310917da89e7034e69" title="Telecommand: Report a LOG sink&#39;s enabled state." alt="" coords="271,156,428,197"/>
-<area shape="poly" id="edge41_Node000015_Node000161" title=" " alt="" coords="559,671,525,662,509,654,495,642,474,615,460,588,452,561,449,534,454,481,467,428,480,374,486,320,484,293,478,266,466,239,447,211,426,195,429,190,451,208,470,236,483,265,490,293,492,320,485,375,472,429,459,482,454,534,457,560,465,586,478,612,499,638,512,649,527,657,560,665"/>
-<area shape="rect" id="Node000162" href="$log__telecommand__defs_8c.html#ac8292cd62adf45074109795f0e5997d9" title="Telecommand: Report LOG subsystem&#39;s file logging state (and show logging filename)" alt="" coords="261,221,438,262"/>
-<area shape="poly" id="edge42_Node000015_Node000162" title=" " alt="" coords="559,670,525,662,509,654,495,642,477,619,464,596,457,573,454,550,457,505,468,459,478,413,482,367,480,345,474,322,463,299,447,275,435,264,439,260,451,272,468,296,479,320,485,344,488,367,483,414,473,460,463,505,459,550,462,572,469,594,481,616,499,638,512,649,527,657,560,665"/>
-<area shape="rect" id="Node000163" href="$log__telecommand__defs_8c.html#ac71ba585bc4d897b74eb66122680f0f2" title="Telecommand: Enable or disable debugging messages for LOG sink." alt="" coords="254,1068,444,1109"/>
-<area shape="poly" id="edge43_Node000015_Node000163" title=" " alt="" coords="560,670,527,680,499,700,482,721,471,742,461,785,464,827,473,871,482,914,485,959,477,1004,467,1028,451,1051,430,1070,426,1066,447,1048,462,1025,472,1003,480,959,477,915,467,872,458,828,456,784,466,740,478,718,495,696,524,675,559,665"/>
-<area shape="rect" id="Node000164" href="$log__telecommand__defs_8c.html#a9b90bca8c2c25117fbac4ce58e086b3f" title="Telecommand: Set a LOG sink&#39;s enabled state." alt="" coords="263,1199,436,1239"/>
-<area shape="poly" id="edge44_Node000015_Node000164" title=" " alt="" coords="597,690,545,734,519,762,499,794,487,822,480,849,475,901,479,950,488,996,495,1043,495,1089,482,1137,469,1162,451,1187,437,1200,434,1196,447,1184,465,1159,477,1135,490,1088,490,1043,483,997,474,950,469,901,474,848,482,820,495,791,515,759,541,730,593,686"/>
-<area shape="rect" id="Node000165" href="$log__telecommand__defs_8c.html#a8f5e5b89e565f4dc22294ef0d97d9688" title="Telecommand: Enable or disable debugging messages for LOG subsystem." alt="" coords="254,1133,444,1174"/>
-<area shape="poly" id="edge45_Node000015_Node000165" title=" " alt="" coords="578,687,535,713,515,730,499,750,485,775,476,800,469,848,473,893,482,938,490,983,491,1028,480,1074,468,1098,451,1122,437,1135,433,1131,447,1119,464,1095,475,1072,486,1027,484,983,476,939,468,894,464,847,471,799,480,773,495,747,511,726,532,709,575,683"/>
-<area shape="rect" id="Node000166" href="$log__telecommand__defs_8c.html#ace51251ba4b51567dc5cd698fff92866" title="Telecommand: Set a LOG subsystem&#39;s file logging enabled state." alt="" coords="254,91,444,131"/>
-<area shape="poly" id="edge46_Node000015_Node000166" title=" " alt="" coords="559,671,525,662,509,654,495,642,483,623,474,600,465,541,465,470,468,394,472,318,472,247,465,188,458,164,447,146,434,134,437,130,451,143,462,162,470,187,478,247,477,318,474,394,470,470,470,540,479,598,487,621,499,639,512,649,526,657,560,666"/>
-<area shape="poly" id="edge20_Node000024_Node000020" title=" " alt="" coords="267,570,199,572,198,567,267,564"/>
-<area shape="poly" id="edge21_Node000024_Node000022" title=" " alt="" coords="276,550,193,531,194,525,277,545"/>
-<area shape="poly" id="edge23_Node000029_Node000016" title=" " alt="" coords="278,529,251,541,236,556,227,572,219,589,203,606,174,626,143,641,141,637,171,622,200,602,214,586,222,569,231,553,248,537,275,524"/>
-<area shape="poly" id="edge24_Node000029_Node000018" title=" " alt="" coords="294,499,164,454,166,449,295,494"/>
-<area shape="poly" id="edge25_Node000029_Node000020" title=" " alt="" coords="277,534,194,554,193,549,276,529"/>
-<area shape="poly" id="edge26_Node000029_Node000022" title=" " alt="" coords="276,515,202,513,202,508,276,510"/>
-<area shape="poly" id="edge28_Node000040_Node000041" title=" " alt="" coords="256,760,148,749,149,744,256,755"/>
-<area shape="poly" id="edge33_Node000048_Node000049" title=" " alt="" coords="267,950,191,966,190,960,266,945"/>
-<area shape="poly" id="edge35_Node000052_Node000049" title=" " alt="" coords="269,983,191,983,191,978,269,978"/>
-<area shape="poly" id="edge51_Node000179_Node000015" title=" " alt="" coords="836,475,812,492,798,510,792,528,790,566,788,605,780,624,764,642,746,655,726,663,685,670,684,665,725,658,744,650,761,638,775,621,782,603,785,566,787,527,794,507,808,488,833,471"/>
-<area shape="rect" id="Node000180" href="$test__logging_8c.html#a2f7e7d1ca17b5d34afb96dc439088e6a" title=" " alt="" coords="526,327,734,383"/>
-<area shape="poly" id="edge52_Node000179_Node000180" title=" " alt="" coords="842,433,710,386,712,381,844,428"/>
-<area shape="poly" id="edge54_Node000181_Node000015" title=" " alt="" coords="820,551,812,557,796,578,789,599,782,621,764,642,726,661,685,668,684,663,724,655,761,638,778,619,784,598,791,575,808,553,817,547"/>
-<area shape="poly" id="edge56_Node000181_Node000161" title=" " alt="" coords="822,497,809,491,794,479,785,468,775,458,761,448,723,434,688,430,622,434,591,436,560,433,528,421,495,397,477,374,469,351,467,327,469,304,470,257,463,234,447,212,426,196,429,192,451,208,468,232,475,256,474,304,472,327,474,350,482,372,499,393,530,416,561,427,591,430,622,429,688,424,724,429,764,443,779,454,789,465,798,476,812,486,825,493"/>
-<area shape="rect" id="Node000182" href="$log__telecommand__defs_8c.html#a58ef95c60b462916b829ef0b6e6cbe19" title="Telecommand: Report all LOG sink enable states." alt="" coords="546,457,713,498"/>
-<area shape="poly" id="edge55_Node000181_Node000182" title=" " alt="" coords="816,509,713,493,714,488,816,504"/>
-<area shape="poly" id="edge58_Node000183_Node000015" title=" " alt="" coords="829,615,811,621,763,643,685,661,684,656,761,638,809,617,828,610"/>
-<area shape="poly" id="edge60_Node000183_Node000162" title=" " alt="" coords="821,573,496,512,474,482,465,453,464,423,468,393,473,363,473,334,466,305,447,275,434,264,438,260,451,272,471,303,478,333,478,364,474,394,470,423,470,452,478,480,498,507,822,568"/>
-<area shape="rect" id="Node000184" href="$log__telecommand__defs_8c.html#a396bee2cbb82010861bc1637cf42618b" title="Telecommand: Report all LOG subsystem file logging states." alt="" coords="549,572,710,628"/>
-<area shape="poly" id="edge59_Node000183_Node000184" title=" " alt="" coords="821,594,711,599,711,594,821,589"/>
-<area shape="poly" id="edge62_Node000185_Node000015" title=" " alt="" coords="813,691,684,675,685,670,814,686"/>
-<area shape="poly" id="edge63_Node000185_Node000163" title=" " alt="" coords="814,702,725,704,631,711,550,726,520,737,499,750,483,768,473,785,463,820,464,857,471,894,478,932,481,971,474,1011,465,1031,451,1051,430,1069,426,1065,447,1048,460,1029,469,1009,476,971,473,933,465,895,458,857,457,820,468,783,479,764,495,746,518,732,549,720,631,705,724,698,814,697"/>
-<area shape="poly" id="edge65_Node000186_Node000015" title=" " alt="" coords="824,861,809,852,793,838,782,825,760,794,696,730,644,681,647,677,700,726,764,791,787,821,796,834,812,847,826,856"/>
-<area shape="poly" id="edge66_Node000186_Node000164" title=" " alt="" coords="879,918,803,973,699,1045,578,1120,450,1188,420,1201,418,1196,448,1183,575,1115,696,1040,800,969,876,913"/>
-<area shape="poly" id="edge67_Node000186_Node000176" title=" " alt="" coords="824,911,718,937,717,931,823,906"/>
-<area shape="poly" id="edge68_Node000186_Node000177" title=" " alt="" coords="823,868,728,848,729,843,824,863"/>
-<area shape="poly" id="edge69_Node000186_Node000178" title=" " alt="" coords="823,890,763,890,763,885,823,884"/>
-<area shape="poly" id="edge71_Node000187_Node000015" title=" " alt="" coords="833,744,809,736,664,682,665,677,811,731,834,739"/>
-<area shape="poly" id="edge72_Node000187_Node000165" title=" " alt="" coords="807,761,719,758,628,761,549,772,520,782,499,794,482,813,470,832,463,851,460,870,462,910,470,951,480,993,484,1035,476,1079,466,1100,451,1122,437,1135,433,1131,447,1119,462,1098,471,1077,478,1035,474,994,465,952,456,910,454,870,458,849,465,829,477,810,495,790,517,777,548,767,628,756,719,753,807,756"/>
-<area shape="poly" id="edge74_Node000188_Node000015" title=" " alt="" coords="839,403,812,426,796,454,790,481,790,508,793,535,795,562,794,589,784,616,764,642,747,655,727,664,685,671,684,666,725,659,744,651,760,638,780,613,788,588,790,562,787,536,784,509,784,481,791,452,808,423,836,399"/>
-<area shape="poly" id="edge75_Node000188_Node000166" title=" " alt="" coords="850,348,762,318,721,309,685,305,621,305,591,303,561,297,529,283,495,260,482,246,475,231,470,202,465,174,459,160,447,146,430,134,433,130,451,142,463,157,470,172,475,201,480,230,487,243,499,256,532,278,562,292,592,298,621,300,685,300,722,303,763,312,852,343"/>
-<area shape="poly" id="edge76_Node000188_Node000180" title=" " alt="" coords="823,369,734,364,734,359,823,364"/>
-<area shape="poly" id="edge78_Node000189_Node000015" title=" " alt="" coords="795,656,685,664,685,659,795,651"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="1665,1006,1765,1032"/>
+<area shape="rect" id="Node000002" href="$lfs_8c.html#a055f00fdeaac9db57a6251ab9be711e1" title=" " alt="" coords="1497,941,1617,966"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1667,1002,1589,969,1591,965,1669,997"/>
+<area shape="rect" id="Node000004" href="$lfs_8c.html#a2769dda334cd0ac276a4a929eadb930d" title=" " alt="" coords="1510,1030,1604,1056"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="1650,1032,1604,1039,1604,1033,1649,1026"/>
+<area shape="rect" id="Node000003" href="$lfs_8c.html#ad187be568a7f0466588dd2b63ff6cf8a" title=" " alt="" coords="1301,904,1413,929"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1482,942,1413,929,1414,924,1483,937"/>
+<area shape="rect" id="Node000005" href="$littlefs__helper_8c.html#a41ec6565fc865a9e37d275e4f6087676" title="Creates / Opens LittleFS File to append contents." alt="" coords="286,1066,404,1092"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="1494,1039,1335,1026,1142,1019,907,1019,765,1025,625,1038,405,1071,404,1066,624,1033,765,1019,907,1014,1142,1014,1335,1021,1495,1034"/>
+<area shape="rect" id="Node000006" href="$littlefs__benchmark_8c.html#aad7b70d9138d629a5902f97637e9af52" title="Benchmarks the write/read operations on the LittleFS file system." alt="" coords="1265,1058,1449,1084"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="1495,1054,1450,1061,1449,1055,1495,1049"/>
+<area shape="rect" id="Node000009" href="$littlefs__helper_8c.html#a188f39fde7e2e69cdcb4d7e77feba88e" title="Creates / Opens LittleFS File to write to the Memory Module." alt="" coords="293,1116,397,1141"/>
+<area shape="poly" id="edge8_Node000004_Node000009" title=" " alt="" coords="1523,1066,1489,1084,1450,1099,1365,1121,1298,1131,1229,1134,1142,1134,907,1134,398,1131,398,1126,907,1128,1142,1128,1229,1128,1297,1126,1364,1116,1449,1094,1486,1079,1520,1062"/>
+<area shape="rect" id="Node000012" href="$littlefs__helper_8c.html#a9fa734c723031b43247eaa177c24db0e" title="Creates / Opens LittleFS File and writes data at a specific offset." alt="" coords="277,1165,412,1206"/>
+<area shape="poly" id="edge11_Node000004_Node000012" title=" " alt="" coords="1536,1070,1499,1106,1476,1123,1450,1137,1369,1170,1301,1183,1231,1186,1142,1186,907,1186,413,1188,413,1182,907,1180,1142,1180,1230,1181,1300,1178,1367,1164,1448,1133,1473,1119,1496,1101,1533,1066"/>
+<area shape="rect" id="Node000014" href="$log__sinks_8c.html#ad2518000eb3f3d175e8a4939ee3530af" title="Sends a log message to a log file." alt="" coords="1312,953,1402,978"/>
+<area shape="poly" id="edge13_Node000004_Node000014" title=" " alt="" coords="1511,1026,1448,1000,1398,982,1399,977,1450,995,1513,1021"/>
+<area shape="rect" id="Node000007" href="$littlefs__benchmark_8c.html#ae604e8b7da31b3a607f0c03f2fa44ecd" title="Benchmarks the write/read operations on the LittleFS file system for both cases: writing to a new fil..." alt="" coords="1064,1053,1217,1094"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="1249,1075,1217,1075,1217,1070,1249,1070"/>
+<area shape="rect" id="Node000008" href="$lfs__telecommand__defs_8c.html#a265fb9e9f253a1a4858e81f6ff6949c8" title="Telecommand: Benchmark LittleFS write and read operations." alt="" coords="818,1053,999,1094"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="1048,1076,1000,1076,1000,1071,1048,1071"/>
+<area shape="rect" id="Node000010" href="$lfs__telecommand__defs_8c.html#ad8f1ceca7e7eeee5b869ec251392b12d" title=" " alt="" coords="11,1108,196,1149"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="277,1131,196,1131,196,1126,277,1126"/>
+<area shape="rect" id="Node000011" href="$lfs__telecommand__defs_8c.html#ae0c451995d1ade8e8dfeeb658135a391" title="Telecommand: Write data to a file in LittleFS." alt="" coords="8,1058,199,1084"/>
+<area shape="poly" id="edge10_Node000009_Node000011" title=" " alt="" coords="277,1115,160,1087,162,1082,278,1110"/>
+<area shape="rect" id="Node000013" href="$lfs__telecommand__defs_8c.html#af5483cafc404e3179c3a236747cc99ac" title="Telecommand: Write hex data to a file in LittleFS with offset support." alt="" coords="6,1173,201,1198"/>
+<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="262,1188,202,1188,202,1183,262,1183"/>
+<area shape="rect" id="Node000015" href="$log_8c.html#a9620661557eea5fdaf535b894ae58c84" title="Log a message to several destinations (sinks)" alt="" coords="1086,602,1195,628"/>
+<area shape="poly" id="edge14_Node000014_Node000015" title=" " alt="" coords="1296,961,1279,954,1263,944,1230,906,1203,863,1182,818,1166,771,1147,686,1140,629,1145,628,1152,685,1171,770,1187,816,1207,861,1234,903,1267,940,1281,950,1298,956"/>
+<area shape="rect" id="Node000016" href="$log_8c.html#a440123199704bc7c5231ec1a9743497f" title="Check logging sink status." alt="" coords="834,680,983,705"/>
+<area shape="poly" id="edge15_Node000015_Node000016" title=" " alt="" coords="1099,637,1017,671,978,682,977,676,1015,666,1097,632"/>
+<area shape="rect" id="Node000181" href="$log_8c.html#af31cb35d8f2dd37ff306620c600462da" title="Check whether file logging is enabled for a subsystem." alt="" coords="839,565,978,606"/>
+<area shape="poly" id="edge51_Node000015_Node000181" title=" " alt="" coords="1070,609,978,597,978,592,1070,604"/>
+<area shape="rect" id="Node000183" href="$log_8c.html#a22ffd7bd23f49bfcc5da12d9dee93fba" title="Report a sink&#39;s enabled state." alt="" coords="822,828,995,869"/>
+<area shape="poly" id="edge54_Node000015_Node000183" title=" " alt="" coords="1126,643,1081,710,1051,748,1017,784,985,809,952,830,949,825,982,805,1014,780,1047,745,1077,707,1122,640"/>
+<area shape="rect" id="Node000185" href="$log_8c.html#af46fe0cc52d2bc6cd716d02ef713641c" title="Report a subsystem&#39;s file&#45;logging state." alt="" coords="828,287,989,327"/>
+<area shape="poly" id="edge58_Node000015_Node000185" title=" " alt="" coords="1130,588,1115,540,1092,479,1058,416,1037,386,1014,360,993,343,970,330,973,326,996,339,1018,356,1042,383,1063,413,1096,477,1120,538,1135,586"/>
+<area shape="rect" id="Node000187" href="$log_8c.html#a7580a472c0db91ca169d0e1403d4c48b" title="Turn debugging messages on or off for the specified sink." alt="" coords="820,369,997,410"/>
+<area shape="poly" id="edge62_Node000015_Node000187" title=" " alt="" coords="1126,589,1109,552,1085,508,1053,463,1014,425,994,413,996,408,1017,421,1057,460,1090,505,1114,549,1131,586"/>
+<area shape="rect" id="Node000188" href="$log_8c.html#add4285ec4e7fa886c86969276e630e2b" title="Enable or disable logging to a sink." alt="" coords="830,729,987,770"/>
+<area shape="poly" id="edge65_Node000015_Node000188" title=" " alt="" coords="1118,641,1074,681,1017,720,989,733,987,728,1014,715,1070,677,1115,637"/>
+<area shape="rect" id="Node000189" href="$log_8c.html#a51dd2ee0e3382333ca295b33b6fd8734" title="Turn debugging messages on or off for the specified system." alt="" coords="814,435,1003,475"/>
+<area shape="poly" id="edge71_Node000015_Node000189" title=" " alt="" coords="1119,591,1074,540,1046,514,1014,491,990,478,992,473,1017,486,1049,509,1078,537,1123,588"/>
+<area shape="rect" id="Node000190" href="$log_8c.html#a57f3ced0c69b3a65c71ec7bf8bbc6cea" title="Enable or disable logging to file for a subsystem." alt="" coords="830,500,987,541"/>
+<area shape="poly" id="edge74_Node000015_Node000190" title=" " alt="" coords="1100,597,1015,556,981,544,982,539,1017,551,1103,592"/>
+<area shape="rect" id="Node000191" href="$log_8c.html#a0922ecc9bb8ee94a49060ee0961c1ca1" title="Set the logging severity bitfield mask for a subsystem." alt="" coords="801,630,1016,656"/>
+<area shape="poly" id="edge78_Node000015_Node000191" title=" " alt="" coords="1070,626,1016,633,1016,627,1070,621"/>
+<area shape="rect" id="Node000017" href="$log_8h.html#a3e068c70867806154541035de518012d" title=" " alt="" coords="566,582,675,608"/>
+<area shape="poly" id="edge16_Node000016_Node000017" title=" " alt="" coords="818,679,800,671,785,659,775,646,766,634,752,623,714,608,675,601,676,595,716,603,755,618,770,630,780,643,788,655,803,666,820,674"/>
+<area shape="rect" id="Node000178" href="$test__logging_8c.html#a3d3b3bdaea04662fd02f070215e9440c" title=" " alt="" coords="530,697,712,738"/>
+<area shape="poly" id="edge48_Node000016_Node000178" title=" " alt="" coords="818,703,713,712,712,707,818,698"/>
+<area shape="rect" id="Node000179" href="$test__logging_8c.html#ad30c28c87b14de656a4a18170c94e25f" title=" " alt="" coords="508,763,734,803"/>
+<area shape="poly" id="edge49_Node000016_Node000179" title=" " alt="" coords="823,713,803,720,779,736,755,752,721,765,719,760,752,747,776,731,800,715,821,708"/>
+<area shape="rect" id="Node000180" href="$test__logging_8c.html#a35a050c883020b8a3c0a5d91e833efff" title=" " alt="" coords="488,632,753,673"/>
+<area shape="poly" id="edge50_Node000016_Node000180" title=" " alt="" coords="818,683,753,673,754,668,819,677"/>
+<area shape="poly" id="edge39_Node000017_Node000005" title=" " alt="" coords="551,595,518,604,503,611,490,622,469,648,456,675,448,701,445,727,451,781,465,835,479,889,485,944,483,972,475,1000,462,1027,442,1056,425,1069,405,1077,403,1072,422,1064,438,1052,458,1025,470,998,477,971,480,944,473,890,459,836,446,782,440,727,443,700,451,673,465,646,486,618,500,607,516,599,550,590"/>
+<area shape="poly" id="edge40_Node000017_Node000009" title=" " alt="" coords="551,595,518,604,503,611,490,622,479,639,470,661,462,718,462,787,466,861,470,936,470,1006,462,1064,454,1087,442,1106,422,1121,398,1129,397,1124,419,1116,438,1103,449,1085,457,1063,464,1005,464,936,460,862,457,787,457,718,465,660,474,637,486,619,500,607,516,599,550,590"/>
+<area shape="poly" id="edge41_Node000017_Node000012" title=" " alt="" coords="552,595,518,603,503,611,490,622,478,641,469,665,460,728,460,803,464,885,469,967,470,1043,463,1108,454,1134,442,1155,429,1167,414,1176,412,1171,426,1163,438,1152,449,1132,457,1107,465,1043,464,967,459,885,454,803,455,728,463,664,473,639,486,619,500,607,516,598,550,590"/>
+<area shape="rect" id="Node000018" href="$ant__commands_8c.html#a236e28a0ade562989c5c98dbb90fef43" title="activates the deployment system for the selected antenna for the specified amount of time" alt="" coords="13,536,194,561"/>
+<area shape="poly" id="edge17_Node000017_Node000018" title=" " alt="" coords="550,591,194,559,195,554,551,586"/>
+<area shape="rect" id="Node000020" href="$ant__commands_8c.html#a5ea8c0da2fe8ab8bb2a60b80501c12e8" title="initiates deployment of the selected antenna, ignoring whether the current status of that antenna is ..." alt="" coords="13,600,194,641"/>
+<area shape="poly" id="edge18_Node000017_Node000020" title=" " alt="" coords="551,601,195,619,194,613,550,596"/>
+<area shape="rect" id="Node000022" href="$ant__commands_8c.html#ab7a42ab5fcf483a9db3af4a2d5015f63" title="writes the cumulative time (in ms increments) that the deployment system has been active (for a speci..." alt="" coords="9,669,198,710"/>
+<area shape="poly" id="edge19_Node000017_Node000022" title=" " alt="" coords="551,603,519,610,489,623,475,634,467,648,457,662,441,673,381,694,317,705,255,707,198,705,199,700,255,702,317,699,379,689,439,669,454,658,462,645,471,631,487,618,518,605,550,597"/>
+<area shape="rect" id="Node000024" href="$ant__commands_8c.html#afbbf4f4105326f8ea68bb54812e3078e" title="writes the number of times deployment has been attempted (for a specified antenna and mcu) in a respo..." alt="" coords="5,735,202,775"/>
+<area shape="poly" id="edge20_Node000017_Node000024" title=" " alt="" coords="551,597,518,605,490,622,475,640,469,659,468,698,467,738,459,757,442,774,408,794,371,805,332,810,293,809,218,797,155,778,157,773,219,792,293,804,332,804,370,800,406,789,438,770,454,754,462,737,463,698,464,658,471,637,486,618,516,601,550,592"/>
+<area shape="rect" id="Node000026" href="$ant__internal__drivers_8c.html#ab799f0945c47a98ea73de0da1926e583" title="Receives a response from the antenna controller." alt="" coords="278,734,412,760"/>
+<area shape="poly" id="edge21_Node000017_Node000026" title=" " alt="" coords="552,599,519,607,490,622,479,633,472,644,466,667,460,692,453,705,442,717,409,736,407,731,438,713,449,702,455,690,461,666,467,642,475,630,486,618,517,602,550,594"/>
+<area shape="rect" id="Node000031" href="$ant__internal__drivers_8c.html#a9551990b43beb551930f8d904fd6a220" title="Sends a command to the antenna controller." alt="" coords="287,633,402,658"/>
+<area shape="poly" id="edge24_Node000017_Node000031" title=" " alt="" coords="551,610,403,638,402,633,550,605"/>
+<area shape="rect" id="Node000042" href="$camera__init_8c.html#a2110c51d656700bd247889bac142d2e6" title="Changes the baudrate of the camera by sending it a UART command, and then changing the baudrate of th..." alt="" coords="267,836,423,861"/>
+<area shape="poly" id="edge29_Node000017_Node000042" title=" " alt="" coords="552,597,518,605,490,622,472,645,464,668,463,692,465,716,467,741,467,767,459,793,442,818,414,837,411,833,438,814,454,790,461,766,462,742,460,717,458,692,459,667,467,643,486,618,516,600,551,591"/>
+<area shape="rect" id="Node000043" href="$camera__init_8c.html#adfa3d3b239068192490d519d4452cfee" title="Set up the camera by powering on and changing the baudrate to 2400." alt="" coords="59,861,148,886"/>
+<area shape="poly" id="edge31_Node000017_Node000043" title=" " alt="" coords="551,596,518,604,490,622,469,653,461,684,463,717,469,750,475,783,476,815,466,846,442,876,406,898,367,912,326,918,283,918,204,907,140,890,142,884,205,902,284,913,325,912,366,906,404,893,438,872,462,844,471,814,470,783,464,751,458,717,456,684,464,650,486,618,516,599,550,591"/>
+<area shape="rect" id="Node000046" href="$camera__init_8c.html#a5907417f5cd0e54e69a2be090bee7b3e" title="Send the &#39;t&#39; test command to the camera, and check if the response is valid." alt="" coords="305,266,384,292"/>
+<area shape="poly" id="edge32_Node000017_Node000046" title=" " alt="" coords="550,599,516,591,486,572,463,539,454,505,455,471,460,438,466,404,467,371,459,339,438,306,413,290,384,283,386,278,416,285,442,302,464,337,473,371,471,405,465,439,460,472,459,504,467,536,490,568,518,586,551,594"/>
+<area shape="rect" id="Node000048" href="$comms__drivers_8c.html#a1aed636486abbb09704b3ced2c5c4df2" title="Sets the state of the dipole switch on the OBC to either Antenna 1 or Antenna 2." alt="" coords="254,316,436,357"/>
+<area shape="poly" id="edge33_Node000017_Node000048" title=" " alt="" coords="551,599,516,590,486,572,467,547,459,521,457,496,460,470,462,445,462,420,455,395,438,370,425,359,429,355,442,367,460,393,467,419,468,445,465,471,463,496,464,520,472,544,490,568,518,585,552,594"/>
+<area shape="rect" id="Node000050" href="$eps__power__management_8c.html#a2f6d81bd9f8bf600e4e777e36df03cf6" title="Monitor the power consumption of each channel and disable any channels that exceed a certain threshol..." alt="" coords="254,430,436,456"/>
+<area shape="poly" id="edge34_Node000017_Node000050" title=" " alt="" coords="550,596,517,588,486,572,475,560,467,548,461,524,455,500,449,488,438,477,407,459,409,454,442,473,453,485,460,498,466,523,472,546,479,557,490,568,519,583,552,591"/>
+<area shape="rect" id="Node000051" href="$eps__power__management_8c.html#a1db93bd2baaea0834d00a3077caaceeb" title="Monitors the power consumption of each channel and logs the data in JSON format." alt="" coords="17,423,190,463"/>
+<area shape="poly" id="edge38_Node000017_Node000051" title=" " alt="" coords="551,587,487,572,439,555,170,467,172,461,441,550,489,567,552,581"/>
+<area shape="rect" id="Node000054" href="$eps__power__management_8c.html#a512631c0d10437a66e6b7b04e06bcd92" title="Logs the PDU housekeeping data in JSON format." alt="" coords="280,381,410,406"/>
+<area shape="poly" id="edge36_Node000017_Node000054" title=" " alt="" coords="550,598,516,589,486,572,471,553,463,533,461,494,459,456,452,438,438,420,425,410,409,403,411,398,427,405,442,416,457,435,464,455,466,494,468,532,475,550,490,568,518,585,551,593"/>
+<area shape="rect" id="Node000163" href="$log__telecommand__defs_8c.html#abce1ef40ce5022310917da89e7034e69" title="Telecommand: Report a LOG sink&#39;s enabled state." alt="" coords="267,1001,423,1042"/>
+<area shape="poly" id="edge42_Node000017_Node000163" title=" " alt="" coords="551,595,518,604,503,611,490,622,472,644,460,666,453,688,450,711,453,755,463,801,474,847,478,894,476,917,470,941,459,966,442,990,425,1005,421,1001,438,987,454,963,465,940,471,917,473,894,468,848,458,802,448,756,445,710,448,687,455,664,468,641,486,618,500,607,516,599,550,590"/>
+<area shape="rect" id="Node000164" href="$log__telecommand__defs_8c.html#ac8292cd62adf45074109795f0e5997d9" title="Telecommand: Report LOG subsystem&#39;s file logging state (and show logging filename)" alt="" coords="256,5,434,46"/>
+<area shape="poly" id="edge43_Node000017_Node000164" title=" " alt="" coords="550,600,516,592,500,583,486,571,473,552,464,528,455,467,455,395,459,316,463,238,464,165,456,104,449,80,438,61,425,49,429,45,442,57,454,78,462,103,469,165,468,238,464,317,460,395,461,467,469,527,478,550,490,568,503,579,517,587,551,595"/>
+<area shape="rect" id="Node000165" href="$log__telecommand__defs_8c.html#ac71ba585bc4d897b74eb66122680f0f2" title="Telecommand: Enable or disable debugging messages for LOG sink." alt="" coords="250,71,440,111"/>
+<area shape="poly" id="edge44_Node000017_Node000165" title=" " alt="" coords="550,600,516,591,500,583,486,572,464,544,450,516,441,488,438,460,443,405,457,350,471,295,478,239,476,211,469,183,457,155,438,126,425,114,428,110,442,123,462,152,474,181,481,210,483,239,476,296,462,351,449,406,444,460,447,487,455,514,469,541,490,568,503,579,518,586,551,595"/>
+<area shape="rect" id="Node000166" href="$log__telecommand__defs_8c.html#a9b90bca8c2c25117fbac4ce58e086b3f" title="Telecommand: Set a LOG sink&#39;s enabled state." alt="" coords="259,936,431,977"/>
+<area shape="poly" id="edge45_Node000017_Node000166" title=" " alt="" coords="552,596,518,604,490,622,465,658,456,693,456,729,463,765,470,802,472,841,465,880,442,919,421,938,417,933,438,916,460,878,467,840,464,803,458,766,451,729,450,692,460,655,486,618,516,599,550,591"/>
+<area shape="rect" id="Node000167" href="$log__telecommand__defs_8c.html#a8f5e5b89e565f4dc22294ef0d97d9688" title="Telecommand: Enable or disable debugging messages for LOG subsystem." alt="" coords="250,136,440,177"/>
+<area shape="poly" id="edge46_Node000017_Node000167" title=" " alt="" coords="550,600,516,591,500,583,486,572,467,548,454,524,447,500,444,477,447,429,458,382,469,335,473,288,471,264,465,240,455,216,438,191,425,179,428,175,442,188,459,213,470,238,477,263,479,288,474,336,463,383,452,430,449,476,452,499,459,522,472,545,490,568,503,579,518,586,551,595"/>
+<area shape="rect" id="Node000168" href="$log__telecommand__defs_8c.html#ace51251ba4b51567dc5cd698fff92866" title="Telecommand: Set a LOG subsystem&#39;s file logging enabled state." alt="" coords="250,201,440,242"/>
+<area shape="poly" id="edge47_Node000017_Node000168" title=" " alt="" coords="550,600,516,591,486,572,470,552,459,532,449,493,451,453,459,414,467,374,469,335,462,295,452,275,438,255,426,245,430,241,442,252,457,273,467,293,475,334,472,375,464,415,456,454,454,492,464,530,474,549,490,568,518,586,552,594"/>
+<area shape="poly" id="edge22_Node000026_Node000022" title=" " alt="" coords="272,733,192,713,193,708,273,727"/>
+<area shape="poly" id="edge23_Node000026_Node000024" title=" " alt="" coords="263,752,202,754,202,749,262,747"/>
+<area shape="poly" id="edge25_Node000031_Node000018" title=" " alt="" coords="296,629,137,564,139,559,298,624"/>
+<area shape="poly" id="edge26_Node000031_Node000020" title=" " alt="" coords="272,641,194,633,195,627,272,635"/>
+<area shape="poly" id="edge27_Node000031_Node000022" title=" " alt="" coords="273,661,199,675,198,670,272,656"/>
+<area shape="poly" id="edge28_Node000031_Node000024" title=" " alt="" coords="310,669,203,724,171,737,169,732,201,719,307,664"/>
+<area shape="poly" id="edge30_Node000042_Node000043" title=" " alt="" coords="251,861,149,872,148,866,251,855"/>
+<area shape="poly" id="edge35_Node000050_Node000051" title=" " alt="" coords="238,446,191,446,191,440,238,440"/>
+<area shape="poly" id="edge37_Node000054_Node000051" title=" " alt="" coords="265,413,191,428,190,423,264,407"/>
+<area shape="poly" id="edge52_Node000181_Node000017" title=" " alt="" coords="824,591,676,596,676,591,824,586"/>
+<area shape="rect" id="Node000182" href="$test__logging_8c.html#a2f7e7d1ca17b5d34afb96dc439088e6a" title=" " alt="" coords="516,502,725,558"/>
+<area shape="poly" id="edge53_Node000181_Node000182" title=" " alt="" coords="824,572,725,553,726,547,825,567"/>
+<area shape="poly" id="edge55_Node000183_Node000017" title=" " alt="" coords="844,822,820,805,799,783,786,761,780,739,779,698,775,659,767,641,752,622,735,611,716,603,675,596,676,590,717,598,737,606,755,618,772,638,780,658,784,697,785,738,791,759,803,780,824,801,847,818"/>
+<area shape="poly" id="edge57_Node000183_Node000163" title=" " alt="" coords="807,858,720,867,627,879,545,897,513,907,490,919,473,935,466,952,458,971,442,990,421,1003,418,999,438,986,453,969,461,950,469,932,486,914,511,902,544,892,626,874,719,861,807,853"/>
+<area shape="rect" id="Node000184" href="$log__telecommand__defs_8c.html#a58ef95c60b462916b829ef0b6e6cbe19" title="Telecommand: Report all LOG sink enable states." alt="" coords="537,928,704,969"/>
+<area shape="poly" id="edge56_Node000183_Node000184" title=" " alt="" coords="845,877,754,912,699,930,697,925,752,907,843,873"/>
+<area shape="poly" id="edge59_Node000185_Node000017" title=" " alt="" coords="829,337,803,359,787,387,781,414,781,440,783,467,786,493,784,519,775,546,755,572,738,584,718,593,676,600,675,595,716,588,735,580,751,568,771,543,779,518,780,493,778,467,775,440,776,413,782,385,799,356,826,333"/>
+<area shape="poly" id="edge61_Node000185_Node000164" title=" " alt="" coords="858,281,676,179,559,118,439,61,408,49,410,44,441,57,562,113,679,174,861,276"/>
+<area shape="rect" id="Node000186" href="$log__telecommand__defs_8c.html#a396bee2cbb82010861bc1637cf42618b" title="Telecommand: Report all LOG subsystem file logging states." alt="" coords="540,270,701,326"/>
+<area shape="poly" id="edge60_Node000185_Node000186" title=" " alt="" coords="812,307,702,303,702,298,812,301"/>
+<area shape="poly" id="edge63_Node000187_Node000017" title=" " alt="" coords="809,420,803,425,790,443,783,460,781,498,778,535,770,554,755,572,737,584,717,592,676,599,675,594,716,587,735,579,752,568,766,551,773,534,776,497,778,459,785,440,799,421,806,416"/>
+<area shape="poly" id="edge64_Node000187_Node000165" title=" " alt="" coords="804,393,715,390,622,381,540,365,509,354,486,340,466,314,457,288,456,261,459,233,462,206,462,179,455,153,438,126,424,114,427,110,442,123,460,151,467,179,467,207,464,234,461,261,462,287,470,311,490,336,511,349,542,360,623,376,716,384,805,387"/>
+<area shape="poly" id="edge66_Node000188_Node000017" title=" " alt="" coords="814,730,800,720,788,707,781,694,775,669,769,644,763,633,752,622,734,612,715,605,675,597,676,592,717,599,737,607,755,618,767,630,774,642,781,668,786,692,792,704,803,716,817,726"/>
+<area shape="poly" id="edge67_Node000188_Node000166" title=" " alt="" coords="851,779,754,818,714,828,679,833,618,837,559,845,526,855,489,872,475,883,466,894,456,907,442,920,408,938,406,933,438,915,452,903,461,891,471,879,487,867,524,850,557,839,617,832,678,828,713,823,753,812,849,774"/>
+<area shape="poly" id="edge68_Node000188_Node000178" title=" " alt="" coords="814,742,712,730,713,725,814,737"/>
+<area shape="poly" id="edge69_Node000188_Node000179" title=" " alt="" coords="814,763,734,773,734,767,814,758"/>
+<area shape="poly" id="edge70_Node000188_Node000180" title=" " alt="" coords="814,726,800,720,776,704,752,688,719,676,721,671,755,683,779,699,803,715,816,721"/>
+<area shape="poly" id="edge72_Node000189_Node000017" title=" " alt="" coords="810,485,803,490,787,510,780,531,773,552,755,572,717,590,676,597,675,592,715,585,752,568,768,549,775,529,782,507,800,486,807,481"/>
+<area shape="poly" id="edge73_Node000189_Node000167" title=" " alt="" coords="798,448,608,426,529,412,502,404,486,396,466,371,458,345,456,320,459,294,462,268,461,242,455,217,438,191,424,179,427,175,442,188,460,215,467,242,467,268,464,294,462,320,463,344,471,368,490,392,504,399,530,406,608,420,799,443"/>
+<area shape="poly" id="edge75_Node000190_Node000017" title=" " alt="" coords="826,548,802,556,754,572,676,589,675,584,753,567,801,551,825,543"/>
+<area shape="poly" id="edge76_Node000190_Node000168" title=" " alt="" coords="814,504,753,492,693,487,615,481,539,471,509,461,486,448,467,424,459,400,457,376,459,351,462,327,461,303,454,279,438,255,425,244,428,240,442,252,459,277,466,302,467,327,465,352,463,376,464,399,472,422,490,444,511,456,540,466,615,476,693,481,754,487,815,499"/>
+<area shape="poly" id="edge77_Node000190_Node000182" title=" " alt="" coords="814,526,725,529,725,524,814,521"/>
+<area shape="poly" id="edge79_Node000191_Node000017" title=" " alt="" coords="811,630,675,607,676,601,812,624"/>
 </map>
