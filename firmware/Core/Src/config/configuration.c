@@ -47,6 +47,10 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
         .variable_name = "EPS_monitor_interval_ms",
         .num_config_var = &EPS_monitor_interval_ms,
     },
+    {
+        .variable_name = "system_reset_interval",
+        .num_config_var = &system_reset_interval,
+    },
     //End Background Timer config
     {
         .variable_name = "TCMD_require_unique_tssent",
