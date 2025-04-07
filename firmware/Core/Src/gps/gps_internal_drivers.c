@@ -19,9 +19,9 @@ const uint32_t GPS_RX_TIMEOUT_BETWEEN_BYTES_MS = 800;
 /// @brief Sends a log command to the GPS, and receives the response.
 /// @param cmd_buf log command string to send to the GPS.
 /// @param cmd_buf_len Exact length of the log command string.
-/// @param rx_buf Buffer to store the response.
+/// @param rx_buf Buffer to store the response (not necessarily null terminated).
 /// @param rx_buf_max_size Maximum length of the response buffer.
-/// @param rx_buf_len_dest Pointer to place to store the length of the response buffer.
+/// @param rx_buf_len_dest Pointer to place to store the length of the response buffer (not necessarily null terminated).
 /// @return 0 on success, >0 if error.
 /// @note This function is intended for "once" log commands
 uint8_t GPS_send_cmd_get_response(
@@ -30,7 +30,6 @@ uint8_t GPS_send_cmd_get_response(
     const uint16_t rx_buf_max_size,
     uint16_t* rx_buf_len_dest
 ) {
-    
     // Reset the GPS UART interrupt variables
     GPS_set_uart_interrupt_state(0); // Lock writing to the UART_gps_buffer while we memset it
     for (uint16_t i = 0; i < UART_gps_buffer_len; i++)
@@ -83,7 +82,7 @@ uint8_t GPS_send_cmd_get_response(
 
                 *rx_buf_len_dest = 0;
             
-                // fatal error; return
+                // Fatal error; return.
                 return 2;
             }
         }
@@ -97,13 +96,14 @@ uint8_t GPS_send_cmd_get_response(
                 (cur_time > UART_gps_last_write_time_ms) // Important seemingly-obvious safety check.
                 && ((cur_time - UART_gps_last_write_time_ms) > GPS_RX_TIMEOUT_BETWEEN_BYTES_MS)
             ) {
-                LOG_message(
-                    LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-                    "GPS WARNING: Timeout during receiving of response. UART_gps_last_write_time_ms=%lu, cur_time=%lu",
-                    UART_gps_last_write_time_ms,
-                    cur_time
-                );
-                // Non-fatal error; try to parse what we received
+                // Non-fatal error. Parse what we've received.
+                break;
+            }
+
+            // TODO: Add an "end of message" check here, probably.
+            
+            // Exit if we've received all the buffer can hold.
+            if (UART_gps_buffer_write_idx >= rx_buf_max_size) {
                 break;
             }
         }
@@ -114,34 +114,30 @@ uint8_t GPS_send_cmd_get_response(
 
     UART_gps_buffer[UART_gps_buffer_write_idx] = '\0'; // Null-terminate the string
 
-    // Log the received response.
-    // LOG_message(
-    //     LOG_SYSTEM_GPS, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
-    //     "GPS Buffer Data (%d bytes): %s",
-    //     UART_gps_buffer_write_idx,
-    //     UART_gps_buffer,
-    // );
-
     // Check that we've received what we're expecting
-    if (UART_gps_buffer_write_idx > rx_buf_max_size)
-    {
+    if (UART_gps_buffer_write_idx >= rx_buf_max_size) {
         LOG_message(
             LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-            "GPS ERROR: UART_gps_buffer overflow"
+            "GPS: Received more data (>=%d bytes) than rx_buf_max_size (%d bytes)",
+            UART_gps_buffer_write_idx,
+            rx_buf_max_size
         );
         
-        *rx_buf_len_dest = rx_buf_max_size;
+        *rx_buf_len_dest = rx_buf_max_size - 1;
         // No need to return here. We can still pass back the data we have.
     }
+    else {
+        *rx_buf_len_dest = UART_gps_buffer_write_idx;
+    }
 
-    // Copy the log response from the UART gps buffer to the rx_buf[] and clear the buffer
-    for (uint16_t i = 0; i < UART_gps_buffer_write_idx; i++) {
+    // Copy the log response from the UART gps buffer to the rx_buf[] and clear the buffer.
+    for (uint16_t i = 0; i < (*rx_buf_len_dest); i++) {
         rx_buf[i] = UART_gps_buffer[i];
     }
-    *rx_buf_len_dest = UART_gps_buffer_write_idx;
 
-    // Ensure the final output buffer (rx_buf) is null-terminated
+    // Ensure the final output buffer (rx_buf) is null-terminated, no matter what.
     rx_buf[rx_buf_max_size - 1] = '\0';
+    rx_buf[*rx_buf_len_dest] = '\0';
 
     return 0;
 }
