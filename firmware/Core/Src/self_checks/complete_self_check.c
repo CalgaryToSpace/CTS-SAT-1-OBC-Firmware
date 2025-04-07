@@ -11,6 +11,7 @@
 #include "mpi/mpi_command_handling.h"
 #include "antenna_deploy_drivers/ant_commands.h"
 #include "antenna_deploy_drivers/ant_internal_drivers.h"
+#include "camera/camera_init.h"
 
 #include "uart_handler/uart_handler.h"
 #include "obc_temperature_sensor/obc_temperature_sensor.h"
@@ -43,6 +44,10 @@ uint8_t CTS1_check_is_adcs_alive() {
     ADCS_id_struct_t id_struct;
     const uint8_t status = ADCS_get_identification(&id_struct);
     if (status != 0) {
+        LOG_message(
+            LOG_SYSTEM_ADCS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "ADCS_get_identification failed: status=%d", status
+        );
         return 0;
     }
     if (id_struct.node_type != 10) {
@@ -63,9 +68,12 @@ uint8_t CTS1_check_is_adcs_alive() {
 // uint8_t CTS1_check_is_ax100_alive() {} // TODO: Is there a way to test this?
 
 uint8_t CTS1_check_is_gnss_responsive() {
-    const char cmd[] = "log bestxyza once\n";
+    // Use versiona command instead of bestxyza, as bestxyza takes a variable duration, whereas
+    // versiona appears to respond very quickly reliably.
+    const char cmd[] = "log versiona once\n";
 
-    uint8_t rx_buf[300]; // FIXME: This should be smaller, and should not crash if it sends too much.
+    // Expecting versiona may send up to about 250 bytes.
+    uint8_t rx_buf[350];
     uint16_t rx_buf_received_len = 0;
     const uint8_t gps_status = GPS_send_cmd_get_response(
         cmd, strlen(cmd),
@@ -74,26 +82,47 @@ uint8_t CTS1_check_is_gnss_responsive() {
         &rx_buf_received_len
     );
 
+    // Clean up: Disable the GPS UART interrupt.
+    GPS_set_uart_interrupt_state(0);
+    HAL_Delay(20); // Allow any pending IRQs to trigger so that upcoming UART prints/logs work.
+
     if (gps_status != 0) {
-        GPS_set_uart_interrupt_state(0); // In case: Disable the GPS UART interrupt.
+        LOG_message(
+            LOG_SYSTEM_GPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "GPS ERROR: Failed to send command to GPS. status=%d",
+            gps_status
+        );
         return 0;
     }
 
     // Ensure rx_buf is null-terminated.
     rx_buf[sizeof(rx_buf) - 1] = '\0';
-
-    // FIXME: Validate the response in the `rx_buf` (and also the length of it in `rx_buf_received_len`)
-
+    rx_buf[rx_buf_received_len] = '\0';
     
     LOG_message(
         LOG_SYSTEM_GPS, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
         "GPS response (%d bytes): %s",
         rx_buf_received_len,
-        rx_buf
+        (char*)rx_buf
     );
+    
+    // Crude validation of the GNSS response:
+    if (rx_buf_received_len < 5) {
+        return 0;
+    }
 
-    GPS_set_uart_interrupt_state(0); // In case: Disable the GPS UART interrupt.
-    return 0;
+    // Validate that the response should contain the string "versiona" in it.
+    if (strstr((char*)rx_buf, "#VERSIONA,") == NULL) {
+        return 0;
+    }
+    if (strstr((char*)rx_buf, "OK") == NULL) {
+        return 0;
+    }
+    if (strstr((char*)rx_buf, "OEM719") == NULL) {
+        return 0;
+    }
+
+    return 1; // Success.
 }
 
 uint8_t CTS1_check_is_eps_responsive() {
@@ -228,67 +257,29 @@ uint8_t CTS1_check_mpi_cmd_works() {
 }
 
 uint8_t CTS1_check_is_camera_responsive() {
-    EPS_set_channel_enabled(EPS_CHANNEL_3V3_CAMERA, 1);
-    HAL_GPIO_WritePin(PIN_CAM_EN_OUT_GPIO_Port, PIN_CAM_EN_OUT_Pin, GPIO_PIN_SET);
-    HAL_Delay(2000); // Wait for the camera to power up.
-
-    const uint8_t number_of_bytes_to_receive = 16;
-
-    // Clear the `UART_camera_buffer` before receiving the response.
-    for (uint8_t i = 0; i < number_of_bytes_to_receive; i++) {
-        UART_camera_buffer[i] = 0;
+    const uint8_t init_result = CAM_setup();
+    if (init_result != 0) {
+        return 0;
     }
-
-    UART_camera_is_expecting_data = 1;
-    HAL_UART_Receive_DMA(
-        UART_camera_port_handle, (uint8_t*)&UART_camera_buffer, number_of_bytes_to_receive
-    );
-
-    // Send the "request a test string without flash" command.
-    const char cmd[] = "t";
-    HAL_UART_Transmit(UART_camera_port_handle, (uint8_t*)cmd, strlen(cmd), 100);
-
-    const uint32_t start_time = HAL_GetTick();
-    uint8_t response_received = 0;
-    while (HAL_GetTick() - start_time < 1800) {
-        if (UART_camera_last_write_time_ms >= (HAL_GetTick() - 100)) {
-            response_received = 1;
-            break;
-        }
-    }
-
-    // Cleanup actions.
-    HAL_GPIO_WritePin(PIN_CAM_EN_OUT_GPIO_Port, PIN_CAM_EN_OUT_Pin, 0);
-    EPS_set_channel_enabled(EPS_CHANNEL_3V3_CAMERA, 0);
-    HAL_UART_DMAStop(UART_camera_port_handle);
-
-    LOG_message(
-        LOG_SYSTEM_BOOM, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
-        "Camera last rx time: %lu ms, duration since: %lu ms",
-        UART_camera_last_write_time_ms, HAL_GetTick() - UART_camera_last_write_time_ms
-    );
-
-    if (response_received == 0) {
+    
+    const uint8_t test_result = CAM_test();
+    if (test_result != 0) {
         return 0;
     }
 
-    // Validate the response - all chars should be '@', 0-9, A-F, '\n', '\r'.
-    uint8_t valid_response = 1;
-    for (uint8_t i = 0; i < 16; i++) {
-        const uint8_t c = UART_camera_buffer[i];
-        if (
-            (c < '0' || c > '9') &&
-            (c < 'A' || c > 'F') &&
-            c != '@' &&
-            c != '\n' &&
-            c != '\r'
-        ) {
-            valid_response = 0;
-            break;
-        }
+    // Clean-up: Power off the camera.
+    const uint8_t eps_status = EPS_set_channel_enabled(EPS_CHANNEL_3V3_CAMERA, 0);
+    if (eps_status != 0) {
+        // Continue anyway. Just log a warning.
+        LOG_message(
+            LOG_SYSTEM_BOOM, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "Error disabling camera power channel in CTS1_check_is_camera_responsive: status=%d. Continuing.",
+            eps_status
+        );
+        return 0;
     }
 
-    return valid_response;
+    return 1; // Success.
 }
 
 uint8_t CTS1_check_flash_alive(uint8_t flash_chip_number) {
@@ -319,6 +310,11 @@ uint8_t CTS1_check_antenna_alive(enum ANT_i2c_bus_mcu antenna_number) {
 void CTS1_run_system_self_check(CTS1_system_self_check_result_struct_t *result) {
     // First, clear the result struct to avoid UB if we miss any fields.
     memset(result, 0, sizeof(CTS1_system_self_check_result_struct_t));
+
+    // Before we start powering on EPS channels, store the fault count.
+    EPS_struct_pdu_overcurrent_fault_state_t fault_state_struct;
+    const uint8_t EPS_fault_state_result_start = EPS_CMD_get_pdu_overcurrent_fault_state(&fault_state_struct);
+    const int32_t EPS_fault_count_at_start = EPS_calculate_total_fault_count(&fault_state_struct);
 
     // ADCS
     result->is_adcs_i2c_addr_alive = CTS1_check_is_i2c_addr_alive(
@@ -399,20 +395,12 @@ void CTS1_run_system_self_check(CTS1_system_self_check_result_struct_t *result) 
 
     // Antenna
     EPS_set_channel_enabled(EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY, 1);
-    HAL_Delay(100);
+    HAL_Delay(800); // 100ms not long enough. 800ms seems adequate.
     result->is_antenna_i2c_addr_a_alive = CTS1_check_is_i2c_addr_alive(&hi2c2, ANT_ADDR_A);
-    result->is_antenna_i2c_addr_b_alive = CTS1_check_is_i2c_addr_alive(&hi2c2, ANT_ADDR_B);
+    result->is_antenna_i2c_addr_b_alive = CTS1_check_is_i2c_addr_alive(&hi2c3, ANT_ADDR_B);
     result->is_antenna_a_alive = CTS1_check_antenna_alive(ANT_I2C_BUS_A_MCU_A);
     result->is_antenna_b_alive = CTS1_check_antenna_alive(ANT_I2C_BUS_B_MCU_B);
     EPS_set_channel_enabled(EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY, 0);
-    LOG_message(
-        LOG_SYSTEM_OBC, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
-        "is_antenna_i2c_addr_a_alive: %d, is_antenna_i2c_addr_b_alive: %d, is_antenna_a_alive: %d, is_antenna_b_alive: %d",
-        result->is_antenna_i2c_addr_a_alive,
-        result->is_antenna_i2c_addr_b_alive,
-        result->is_antenna_a_alive,
-        result->is_antenna_b_alive
-    );
 
     // Flash
     result->flash_0_alive = CTS1_check_flash_alive(0);
@@ -427,6 +415,31 @@ void CTS1_run_system_self_check(CTS1_system_self_check_result_struct_t *result) 
         result->flash_2_alive,
         result->flash_3_alive
     );
+
+    // EPS Fault Count.
+    // At the end here, check the fault count again, and compare to at the start.
+    const uint8_t EPS_fault_state_result_end = EPS_CMD_get_pdu_overcurrent_fault_state(&fault_state_struct);
+    const int32_t EPS_fault_count_end = EPS_calculate_total_fault_count(&fault_state_struct);
+    if (EPS_fault_state_result_start != 0 || EPS_fault_state_result_end != 0) {
+        LOG_message(
+            LOG_SYSTEM_OBC, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Failed to get EPS fault state: %d to %d",
+            EPS_fault_state_result_start,
+            EPS_fault_state_result_end
+        );
+        result->eps_no_overcurrent_faults = 0;
+    }
+    else if (EPS_fault_count_at_start != EPS_fault_count_end) {
+        LOG_message(
+            LOG_SYSTEM_OBC, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "EPS fault count changed from %ld to %ld",
+            EPS_fault_count_at_start,
+            EPS_fault_count_end
+        );
+        result->eps_no_overcurrent_faults = 0;
+    } else {
+        result->eps_no_overcurrent_faults = 1;
+    }
 }
 
 /// @brief Convert the self-check struct to a JSON string that lists the failures.
@@ -455,7 +468,8 @@ void CTS1_self_check_struct_TO_json_list_of_failures(
         "flash_0_alive",
         "flash_1_alive",
         "flash_2_alive",
-        "flash_3_alive"
+        "flash_3_alive",
+        "eps_no_overcurrent_faults"
     };
     
     uint8_t *field_values[] = {
@@ -476,7 +490,8 @@ void CTS1_self_check_struct_TO_json_list_of_failures(
         &self_check_struct.flash_0_alive,
         &self_check_struct.flash_1_alive,
         &self_check_struct.flash_2_alive,
-        &self_check_struct.flash_3_alive
+        &self_check_struct.flash_3_alive,
+        &self_check_struct.eps_no_overcurrent_faults
     };
     
     size_t len = 0;

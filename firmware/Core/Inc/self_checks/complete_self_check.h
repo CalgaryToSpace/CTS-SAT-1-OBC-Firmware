@@ -26,6 +26,8 @@ typedef struct {
     uint8_t flash_2_alive;
     uint8_t flash_3_alive;
 
+    uint8_t eps_no_overcurrent_faults;
+
     // Note: Skipping the automated check for the boom here.
 } CTS1_system_self_check_result_struct_t;
 
