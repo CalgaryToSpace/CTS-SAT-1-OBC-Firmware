@@ -175,7 +175,67 @@ uint8_t TCMDEXEC_fs_write_file_str(const char *args_str, TCMD_TelecommandChannel
     return 0;
 }
 
-// TODO: Add a `fs_write_file_hex` telecommand, which supports offsets within the file. (Issue #266)
+/// @brief Telecommand: Write hex data to a file in LittleFS with offset support
+/// @param args_str
+/// - Arg 0: File path as string
+/// - Arg 1: Offset within the file to start writing (uint64)
+/// - Arg 2: Hex string to write to file (e.g., "DEADBEEF" or "DE AD BE EF")
+/// @note The maximum number of bytes that can be written is 105 bytes
+uint8_t TCMDEXEC_fs_write_file_hex(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    char arg_file_name[LFS_MAX_PATH_LENGTH];
+    const uint8_t parse_file_name_result = TCMD_extract_string_arg(args_str, 0, arg_file_name, sizeof(arg_file_name));
+    if (parse_file_name_result != 0) {
+        // error parsing
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing file name arg: Error %d", parse_file_name_result);
+        return 1;
+    }
+
+    // Extract the offset parameter
+    uint64_t file_offset = 0;
+    const uint8_t parse_offset_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &file_offset);
+    if (parse_offset_result != 0) {
+        // error parsing
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing offset arg: Error %d", parse_offset_result);
+        return 2;
+    }
+
+    // Buffer to hold the converted hex data
+    uint8_t binary_data[105] = {0};
+    uint16_t binary_data_length = 0;
+    
+    // Extract and convert hex string to binary data
+    const uint8_t parse_hex_result = TCMD_extract_hex_array_arg(
+        args_str, 2, binary_data, sizeof(binary_data), &binary_data_length
+    );
+    
+    if (parse_hex_result != 0) {
+        // error parsing
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing hex data arg: Error %d", parse_hex_result);
+        return 3;
+    }
+
+    // Use our new helper function to write the data at the specified offset
+    const int8_t result = LFS_write_file_with_offset(arg_file_name, (lfs_soff_t)file_offset, binary_data, binary_data_length);
+    if (result != 0) {
+        snprintf(response_output_buf, response_output_buf_len, "LittleFS Writing Error: %d", result);
+        return 4;
+    }
+    
+    snprintf(response_output_buf, response_output_buf_len, 
+             "LittleFS Successfully Wrote %d bytes of hex data!", 
+             binary_data_length);
+    return 0;
+}
 
 /// @brief Telecommand: Deletes a specified file in LittleFS
 /// @param args_str
