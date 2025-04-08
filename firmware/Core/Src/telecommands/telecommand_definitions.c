@@ -1,7 +1,7 @@
 
-#include "telecommands/telecommand_definitions.h"
+#include "telecommand_exec/telecommand_definitions.h"
 #include "telecommands/telecommand_adcs.h"
-#include "telecommands/telecommand_args_helpers.h"
+#include "telecommand_exec/telecommand_args_helpers.h"
 #include "transforms/arrays.h"
 #include "timekeeping/timekeeping.h"
 #include "debug_tools/debug_uart.h"
@@ -22,7 +22,7 @@
 #include "telecommands/uart_telecommand_defs.h"
 #include "telecommands/config_telecommand_defs.h"
 #include "telecommands/testing_telecommand_defs.h"
-#include "telecommands/telecommand_executor.h"
+#include "telecommand_exec/telecommand_executor.h"
 #include "telecommands/agenda_telecommands_defs.h"
 #include "telecommands/mpi_telecommand_defs.h"
 #include "telecommands/eps_telecommands.h"
@@ -30,6 +30,7 @@
 #include "telecommands/comms_telecommand_defs.h"
 #include "telecommands/telecommand_crc.h"
 #include "telecommands/gps_telecommand_defs.h"
+#include "telecommands/camera_telecommand_defs.h"
 
 #include "timekeeping/timekeeping.h"
 #include "littlefs/littlefs_helper.h"
@@ -109,12 +110,24 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
+    {
+        .tcmd_name = "scan_i2c_bus_verbose",
+        .tcmd_func = TCMDEXEC_scan_i2c_bus_verbose,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
 
     // ****************** SECTION: uart_telecommand_defs ******************
     {
         .tcmd_name = "uart_send_hex_get_response_hex",
         .tcmd_func = TCMDEXEC_uart_send_hex_get_response_hex,
         .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "uart_get_last_rx_times_json",
+        .tcmd_func = TCMDEXEC_uart_get_last_rx_times_json,
+        .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
 
@@ -272,6 +285,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "fs_write_file_str",
         .tcmd_func = TCMDEXEC_fs_write_file_str,
         .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "fs_write_file_hex",
+        .tcmd_func = TCMDEXEC_fs_write_file_hex,
+        .number_of_args = 3,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
@@ -948,6 +967,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION
     },
+    {
+        .tcmd_name = "eps_power_management_set_current_threshold",
+        .tcmd_func = TCMDEXEC_eps_power_management_set_current_threshold,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
     /* *************************** END EPS Section ************************************** */
     
     
@@ -994,6 +1019,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "mpi_demo_tx_to_mpi",
         .tcmd_func = TCMDEXEC_mpi_demo_tx_to_mpi,
         .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY, // Not useful in space.
+    },
+    {
+        .tcmd_name = "mpi_demo_set_transceiver_mode",
+        .tcmd_func = TCMDEXEC_mpi_demo_set_transceiver_mode,
+        .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY, // Not useful in space.
     },
     {
@@ -1149,6 +1180,26 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     // ****************** END SECTION: gps_telecommand_defs ******************
+    // ****************** SECTION: camera_telecommand_defs *******************
+    {
+        .tcmd_name = "camera_setup",
+        .tcmd_func = TCMDEXEC_camera_setup,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "camera_test",
+        .tcmd_func = TCMDEXEC_camera_test,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "camera_change_baud_rate",
+        .tcmd_func = TCMDEXEC_camera_change_baud_rate,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    // ****************** END SECTION: camera_telecommand_defs *******************
 };
 
 // extern

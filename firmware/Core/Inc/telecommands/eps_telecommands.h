@@ -2,7 +2,7 @@
 #define INCLUDE_GUARD__EPS_TELECOMMANDS_H__
 
 #include <stdint.h>
-#include "telecommands/telecommand_definitions.h"
+#include "telecommand_exec/telecommand_definitions.h"
 
 
 uint8_t TCMDEXEC_eps_watchdog(
@@ -92,6 +92,11 @@ uint8_t TCMDEXEC_eps_get_piu_housekeeping_data_run_avg_json(
 );
 
 uint8_t TCMDEXEC_eps_get_current_battery_percent(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+);
+
+uint8_t TCMDEXEC_eps_power_management_set_current_threshold(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
 );

@@ -6,8 +6,8 @@
 #include "log/log.h"
 #include "log/log_sinks.h"
 #include "telecommands/log_telecommand_defs.h"
-#include "telecommands/telecommand_args_helpers.h"
-#include "telecommands/telecommand_types.h"
+#include "telecommand_exec/telecommand_args_helpers.h"
+#include "telecommand_exec/telecommand_types.h"
 
 
 /// @brief Telecommand: Set a LOG sink's enabled state

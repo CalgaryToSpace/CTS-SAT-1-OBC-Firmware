@@ -21,7 +21,7 @@ EPS_CHANNEL_enum_t EPS_channel_from_str(const char channel_name[]) {
     if (strcmp(channel_name, "5") == 0) return EPS_CHANNEL_3V3_STACK;
     if (strcmp(channel_name, "6") == 0) return EPS_CHANNEL_3V3_CAMERA;
     if (strcmp(channel_name, "7") == 0) return EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY;
-    if (strcmp(channel_name, "8") == 0) return EPS_CHANNEL_3V3_LORA_MODULE;
+    if (strcmp(channel_name, "8") == 0) return EPS_CHANNEL_3V3_LORA_MODULE; // Engg Model ADCS
     if (strcmp(channel_name, "9") == 0) return EPS_CHANNEL_VBATT_CH9_UNUSED;
     if (strcmp(channel_name, "10") == 0) return EPS_CHANNEL_VBATT_CH10_UNUSED;
     if (strcmp(channel_name, "11") == 0) return EPS_CHANNEL_VBATT_CH11_UNUSED;
@@ -95,7 +95,7 @@ char* EPS_channel_to_str(EPS_CHANNEL_enum_t channel) {
 /// @brief Sets the enabled state of an EPS channel (on or off).
 /// @param channel The channel to enable or disable.
 /// @param enabled 0 to disable, >0 to enable.
-/// @return 0 on success, >0 on failure. Returns 99 if channel is unknown. Propogates the
+/// @return 0 on success, >0 on failure. Returns 99 if channel is unknown. Propagates the
 ///     return value from EPS_CMD_output_bus_channel_on/off().
 uint8_t EPS_set_channel_enabled(EPS_CHANNEL_enum_t channel, uint8_t enabled) {
     if (channel == EPS_CHANNEL_UNKNOWN) {

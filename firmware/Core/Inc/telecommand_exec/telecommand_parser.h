@@ -2,8 +2,8 @@
 #ifndef INCLUDE_GUARD__TELECOMMAND_PARSER_H__
 #define INCLUDE_GUARD__TELECOMMAND_PARSER_H__
 
-#include "telecommands/telecommand_types.h"
-#include "telecommands/telecommand_definitions.h"
+#include "telecommand_exec/telecommand_types.h"
+#include "telecommand_exec/telecommand_definitions.h"
 
 // Max len of `args_str_no_parens` in `TCMD_parsed_tcmd_to_execute_t`, including null terminator.
 #define TCMD_ARGS_STR_NO_PARENS_SIZE 255

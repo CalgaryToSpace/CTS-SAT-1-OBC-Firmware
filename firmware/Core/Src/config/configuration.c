@@ -12,6 +12,9 @@ uint32_t CONFIG_int_demo_var_1 = 13345;
 uint32_t CONFIG_int_demo_var_2 = 242344;
 
 // extern
+uint32_t EPS_monitor_interval_ms = 20000;
+
+// extern
 // 1 = require, 0 = don't require
 uint32_t TCMD_require_unique_tssent = 0;
 
@@ -38,6 +41,12 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
         .variable_name = "TCMD_require_valid_sha256",
         .num_config_var = &TCMD_require_valid_sha256,
     },
+    //Background Timer Config
+    {
+        .variable_name = "EPS_monitor_interval_ms",
+        .num_config_var = &EPS_monitor_interval_ms,
+    },
+    //End Background Timer config
     {
         .variable_name = "TCMD_require_unique_tssent",
         .num_config_var = &TCMD_require_unique_tssent,

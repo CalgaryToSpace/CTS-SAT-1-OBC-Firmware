@@ -1,7 +1,7 @@
 #ifndef __INCLUDE_GUARD__GPS_TELECOMMAND_DEFS_H
 #define __INCLUDE_GUARD__GPS_TELECOMMAND_DEFS_H
 
-#include "telecommands/telecommand_types.h"
+#include "telecommand_exec/telecommand_types.h"
 
 #include <stdint.h>
 

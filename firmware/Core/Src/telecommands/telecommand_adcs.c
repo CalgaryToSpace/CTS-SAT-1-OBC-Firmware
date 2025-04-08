@@ -1,5 +1,5 @@
-#include "telecommands/telecommand_definitions.h"
-#include "telecommands/telecommand_args_helpers.h"
+#include "telecommand_exec/telecommand_definitions.h"
+#include "telecommand_exec/telecommand_args_helpers.h"
 #include "transforms/arrays.h"
 #include "unit_tests/unit_test_executor.h"
 #include "timekeeping/timekeeping.h"

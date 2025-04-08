@@ -2,7 +2,7 @@
 #define INCLUDE_GUARD_CONFIG_TELECOMMAND_DEFS_H
 
 #include <stdint.h>
-#include "telecommands/telecommand_types.h"
+#include "telecommand_exec/telecommand_types.h"
 
 
 uint8_t TCMDEXEC_config_set_int_var(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,

@@ -1,5 +1,5 @@
 #include "telecommands/timekeeping_telecommand_defs.h"
-#include "telecommands/telecommand_args_helpers.h"
+#include "telecommand_exec/telecommand_args_helpers.h"
 
 #include "timekeeping/timekeeping.h"
 #include "eps_drivers/eps_time.h"
