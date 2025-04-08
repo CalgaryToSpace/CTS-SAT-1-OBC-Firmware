@@ -156,14 +156,6 @@ uint8_t GPS_enable_disable(const char *cmd_arg, uint16_t enable_disable_flag, ui
     snprintf(full_command, sizeof(full_command), "%s %s\n", cmd_arg, enable_disable_flag == 1 ? "ON" : "OFF");
     const uint16_t full_command_len = strlen(full_command);
 
-    // Testing purposes to be removed once out of Draft PR state
-    LOG_message(
-        LOG_SYSTEM_GPS,
-        LOG_SEVERITY_NORMAL,
-        LOG_SINK_ALL,
-        "THIS IS THE FULL COMMAND TO BE SENT TO OEM: %s",
-        full_command);
-
     // Send log command to GPS and receive response
     const uint8_t gps_cmd_response = GPS_send_cmd_get_response(
         full_command, full_command_len, rx_buf, rx_buf_len, rx_buf_max_size);
