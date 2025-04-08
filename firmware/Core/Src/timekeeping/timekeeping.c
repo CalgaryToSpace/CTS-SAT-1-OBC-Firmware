@@ -28,8 +28,8 @@ void TIM_set_current_unix_epoch_time_ms(uint64_t current_unix_epoch_time_ms, TIM
     const uint8_t is_this_sync_before_the_last_sync = current_unix_epoch_time_ms < TIM_unix_epoch_time_at_last_time_resync_ms;
 
     // Compute time before applying sync
-    uint64_t unix_epoch_time_before_sync_ms = TIM_get_current_unix_epoch_time_ms();
-    int64_t correction_time_ms = (int64_t)(current_unix_epoch_time_ms - unix_epoch_time_before_sync_ms);
+    const uint64_t unix_epoch_time_before_sync_ms = TIM_get_current_unix_epoch_time_ms();
+    const int64_t correction_time_ms = (int64_t)(current_unix_epoch_time_ms - unix_epoch_time_before_sync_ms);
     
     // Get timestamp string for "before"
     char old_time_str[48];
@@ -75,7 +75,7 @@ void TIM_set_current_unix_epoch_time_ms(uint64_t current_unix_epoch_time_ms, TIM
     // Log both times and the correction
     LOG_message(
         LOG_SYSTEM_ALL, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
-        "Time synchronized. Old time: %s, New time: %s, Clock shift: %s ms",
+        "Time synchronized. Old time: %s, New time: %s, Clock shift: %s ms.",
         old_time_str, new_time_str, correction_time_ms_str
     );
 }
