@@ -149,7 +149,7 @@ uint8_t GPS_send_cmd_get_response(
 /// @param rx_buf_len Length of the response buffer.
 /// @param rx_buf_max_size Maximum length of the response buffer.
 /// @return 0 on success, >0 if error.
-uint8_t GPS_enable_disable(const char *cmd_arg, uint16_t enable_disable_flag, uint8_t rx_buf[], uint16_t rx_buf_len, const uint16_t rx_buf_max_size)
+uint8_t GPS_set_power_enabled(const char *cmd_arg, uint16_t enable_disable_flag, uint8_t rx_buf[], uint16_t rx_buf_len, const uint16_t rx_buf_max_size)
 {
     // Extract Arg 0: incomplete command to send
     char full_command[128];

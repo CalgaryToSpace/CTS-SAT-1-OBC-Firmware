@@ -2,6 +2,7 @@
 #include "uart_handler/uart_handler.h"
 #include "telecommands/eps_telecommands.h"
 #include "gps/gps_internal_drivers.h"
+#include "telecommand_exec/telecommand_args_helpers.h"
 #include "log/log.h"
 #include "main.h"
 
@@ -102,7 +103,7 @@ uint8_t TCMDEXEC_gps_enable_disable_all(const char *args_str, TCMD_TelecommandCh
     memset(GPS_rx_buffer, 0, GPS_rx_buffer_max_size); // Initialize all elements to 0
 
     // Send log command to GPS and receive response
-    const uint8_t gps_response = GPS_enable_disable("ANTENNAPOWER", enable_disable_flag, GPS_rx_buffer, GPS_rx_buffer_len, GPS_rx_buffer_max_size);
+    const uint8_t gps_response = GPS_set_power_enabled("ANTENNAPOWER", enable_disable_flag, GPS_rx_buffer, GPS_rx_buffer_len, GPS_rx_buffer_max_size);
 
     if (gps_response != 0)
     {
