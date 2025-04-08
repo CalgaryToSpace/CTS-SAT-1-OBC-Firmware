@@ -14,36 +14,36 @@
 uint8_t TCMDEXEC_fs_format_storage(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     const int8_t result = LFS_format();
-    if (result < 0) {
-        snprintf(response_output_buf, response_output_buf_len, "LittleFS Formatting Error: %d", result);
+    if (result != 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Error: LFS_format() -> %d", result);
         return 1;
     }
     
-    snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Formatted!");
+    snprintf(response_output_buf, response_output_buf_len, "LittleFS successfully formatted");
     return 0;
 }
 
 uint8_t TCMDEXEC_fs_mount(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     const int8_t result = LFS_mount();
-    if (result < 0) {
-        snprintf(response_output_buf, response_output_buf_len, "LittleFS Mounting Error: %d", result);
+    if (result != 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Error: LFS_mount() -> %d", result);
         return 1;
     }
     
-    snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Mounted!");
+    snprintf(response_output_buf, response_output_buf_len, "LittleFS successfully mounted");
     return 0;
 }
 
 uint8_t TCMDEXEC_fs_unmount(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     const int8_t result = LFS_unmount();
-    if (result < 0) {
-        snprintf(response_output_buf, response_output_buf_len, "LittleFS Unmounting Error: %d", result);
+    if (result != 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Error: LFS_unmount() -> %d", result);
         return 1;
     }
     
-    snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Unounted!");
+    snprintf(response_output_buf, response_output_buf_len, "LittleFS successfully unmounted");
     return 0;
 }
 
@@ -97,7 +97,7 @@ uint8_t TCMDEXEC_fs_list_directory(const char *args_str, TCMD_TelecommandChannel
     const int8_t list_directory_result = LFS_list_directory(
         arg_root_directory_path, (uint16_t) arg_listing_offset, (int16_t) arg_listing_count
     );
-    if (list_directory_result < 0) {
+    if (list_directory_result != 0) {
         snprintf(
             response_output_buf, response_output_buf_len,
             "LittleFS List Directory Error: %d", list_directory_result
@@ -128,8 +128,8 @@ uint8_t TCMDEXEC_fs_make_directory(const char *args_str, TCMD_TelecommandChannel
     }
 
     const int8_t make_directory_result = LFS_make_directory(arg_root_directory_path);
-    if (make_directory_result < 0) {
-        snprintf(response_output_buf, response_output_buf_len, "LittleFS Make Directory Error: %d", make_directory_result);
+    if (make_directory_result != 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Error: LFS_make_directory() -> %d", make_directory_result);
         return 1;
     }
     
@@ -166,12 +166,12 @@ uint8_t TCMDEXEC_fs_write_file_str(const char *args_str, TCMD_TelecommandChannel
     }
 
     const int8_t result = LFS_write_file(arg_file_name, (uint8_t*) arg_file_content, strlen(arg_file_content));
-    if (result < 0) {
-        snprintf(response_output_buf, response_output_buf_len, "LittleFS Writing Error: %d", result);
+    if (result != 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Error: LFS_write_file() -> %d", result);
         return 1;
     }
     
-    snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Wrote Data!");
+    snprintf(response_output_buf, response_output_buf_len, "LittleFS write successful!");
     return 0;
 }
 
@@ -255,12 +255,12 @@ uint8_t TCMDEXEC_fs_delete_file(const char *args_str, TCMD_TelecommandChannel_en
     }
 
     int8_t result = LFS_delete_file(arg_file_name);
-    if (result < 0) {
-        snprintf(response_output_buf, response_output_buf_len, "LittleFS Deleting Error: %d\n", result);
+    if (result != 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Error: LFS_delete_file() -> %d", result);
         return 1;
     }
 
-    snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Deleted File!");
+    snprintf(response_output_buf, response_output_buf_len, "LittleFS successfully deleted file!");
     return 0;
 }
 
@@ -268,8 +268,10 @@ uint8_t TCMDEXEC_fs_delete_file(const char *args_str, TCMD_TelecommandChannel_en
 /// @param args_str
 /// - Arg 0: File path as string
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_fs_read_file_hex(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
+uint8_t TCMDEXEC_fs_read_file_hex(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
     uint8_t rx_buffer[512] = {0};
 
     char arg_file_name[LFS_MAX_PATH_LENGTH];
@@ -283,28 +285,32 @@ uint8_t TCMDEXEC_fs_read_file_hex(const char *args_str, TCMD_TelecommandChannel_
         return 1;
     }
 
-    lfs_ssize_t file_size = LFS_file_size(arg_file_name);
-    if (file_size <0) {
+    const lfs_ssize_t file_size = LFS_file_size(arg_file_name);
+    if (file_size < 0) {
         snprintf(response_output_buf, response_output_buf_len, "LittleFS error getting file size '%s': %ld", arg_file_name, file_size);
         return 1;
     }
-    lfs_ssize_t bytes_read = 1;
+    lfs_ssize_t last_bytes_read = 1;
     lfs_ssize_t total_bytes_read = 0;
-    while (total_bytes_read < file_size && bytes_read > 0) {
-        bytes_read = LFS_read_file(arg_file_name, total_bytes_read, rx_buffer, sizeof(rx_buffer));
-        if (bytes_read < 0) {
-            snprintf(response_output_buf, response_output_buf_len, "LittleFS error reading file '%s': %ld", arg_file_name, bytes_read);
+    while (total_bytes_read < file_size && last_bytes_read > 0) {
+        last_bytes_read = LFS_read_file(arg_file_name, total_bytes_read, rx_buffer, sizeof(rx_buffer));
+        if (last_bytes_read < 0) {
+            snprintf(response_output_buf, response_output_buf_len, "LittleFS error reading file '%s': %ld", arg_file_name, last_bytes_read);
             return 1;
         }
-        total_bytes_read += bytes_read;
-        // print to uart and radio
-        DEBUG_uart_print_array_hex(rx_buffer, bytes_read);
-        // TODO send to radio
-        DEBUG_uart_print_str("TODO: send data to radio from TCMD_fs_read_file_hex()");
-
+        total_bytes_read += last_bytes_read;
+        // Print to uart and radio.
+        DEBUG_uart_print_array_hex(rx_buffer, last_bytes_read);
+        // TODO: send to radio
+        DEBUG_uart_print_str("TODO: send data to radio from TCMD_fs_read_file_hex()\n");
     }
     
-    snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Read File '%s': '%s'!", arg_file_name, rx_buffer);
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "LittleFS successfully read file '%s': %ld bytes read",
+        arg_file_name,
+        total_bytes_read
+    );
     return 0;
 }
 
@@ -312,8 +318,10 @@ uint8_t TCMDEXEC_fs_read_file_hex(const char *args_str, TCMD_TelecommandChannel_
 /// @param args_str
 /// - Arg 0: File path as string
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_fs_read_text_file(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
+uint8_t TCMDEXEC_fs_read_text_file(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
     uint8_t rx_buffer[512] = {0};
 
     char arg_file_name[LFS_MAX_PATH_LENGTH];
@@ -329,29 +337,34 @@ uint8_t TCMDEXEC_fs_read_text_file(const char *args_str, TCMD_TelecommandChannel
         return 1;
     }
 
-    lfs_ssize_t file_size = LFS_file_size(arg_file_name);
-    if (file_size <0) {
+    const lfs_ssize_t file_size = LFS_file_size(arg_file_name);
+    if (file_size < 0) {
         snprintf(response_output_buf, response_output_buf_len, "LittleFS error getting file size '%s': %ld", arg_file_name, file_size);
         return 1;
     }
-    lfs_ssize_t bytes_read = 1;
+    lfs_ssize_t last_bytes_read = 1;
     lfs_ssize_t total_bytes_read = 0;
-    while (total_bytes_read < file_size && bytes_read > 0) {
-        bytes_read = LFS_read_file(arg_file_name, total_bytes_read, rx_buffer, sizeof(rx_buffer) - 1);
-        if (bytes_read < 0) {
-            snprintf(response_output_buf, response_output_buf_len, "LittleFS error reading file '%s': %ld", arg_file_name, bytes_read);
+    while (total_bytes_read < file_size && last_bytes_read > 0) {
+        last_bytes_read = LFS_read_file(arg_file_name, total_bytes_read, rx_buffer, sizeof(rx_buffer) - 1);
+        if (last_bytes_read < 0) {
+            snprintf(response_output_buf, response_output_buf_len, "LittleFS error reading file '%s': %ld", arg_file_name, last_bytes_read);
             return 1;
         }
-        total_bytes_read += bytes_read;
-        rx_buffer[bytes_read] = '\0';
-        // print to uart and radio
+        total_bytes_read += last_bytes_read;
+        rx_buffer[last_bytes_read] = '\0';
+        // Print to uart and radio.
         DEBUG_uart_print_str((char*)rx_buffer);
-        // TODO send to radio
-        DEBUG_uart_print_str("TODO: send data to radio from TCMD_fs_read_text_file()");
-
+        // TODO: send to radio
+        DEBUG_uart_print_str("TODO: send data to radio from TCMD_fs_read_text_file()\n");
     }
     
-    snprintf(response_output_buf, response_output_buf_len, "LittleFS Successfully Read File '%s': '%s'!", arg_file_name, rx_buffer);
+    
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "LittleFS successfully read file '%s': %ld bytes read",
+        arg_file_name,
+        total_bytes_read
+    );
     return 0;
 }
 
@@ -365,20 +378,20 @@ uint8_t TCMDEXEC_fs_demo_write_then_read(const char *args_str, TCMD_TelecommandC
     snprintf(file_content, sizeof(file_content), "Hello, World! Write timestamp: %lu", HAL_GetTick());
 
     const int8_t mount_result = LFS_mount();
-    if (mount_result < 0) {
+    if (mount_result != 0) {
         snprintf(response_output_buf, response_output_buf_len, "LittleFS mounting error: %d", mount_result);
         return 1;
     }
 
     const int8_t write_result = LFS_write_file(file_name, (uint8_t*) file_content, strlen(file_content));
-    if (write_result < 0) {
+    if (write_result != 0) {
         snprintf(response_output_buf, response_output_buf_len, "LittleFS writing error: %d", write_result);
         return 2;
     }
 
     uint8_t read_buffer[200] = {0};
     const int8_t read_result = LFS_read_file(file_name, 0, read_buffer, sizeof(read_buffer));
-    if (read_result < 0) {
+    if (read_result != 0) {
         snprintf(response_output_buf, response_output_buf_len, "LittleFS reading error: %d", read_result);
         return 3;
     }
