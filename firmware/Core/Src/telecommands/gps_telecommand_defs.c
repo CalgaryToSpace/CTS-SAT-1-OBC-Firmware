@@ -2,7 +2,6 @@
 #include "uart_handler/uart_handler.h"
 #include "telecommands/eps_telecommands.h"
 #include "gps/gps_internal_drivers.h"
-#include "telecommand_exec/telecommand_args_helpers.h"
 #include "log/log.h"
 #include "main.h"
 
