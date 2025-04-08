@@ -198,12 +198,12 @@ uint8_t ADCS_convert_double_to_string(double input, uint8_t precision, char* out
 
 /// @brief Take an arbitrary number (up to 63) of 10-byte uint8 arrays and return a single array which is the bitwise OR of all of them. 
 /// @param[in] array_in Array of pointers to 10-byte uint8 data arrays
-/// @param[in] array_in_size Size of the array_in array
+/// @param[in] array_in_len Size of the array_in array
 /// @param[out] array_out 10-byte uint8 data array to send the result to
 /// @return 0 once complete.
-uint8_t ADCS_combine_sd_log_bitmasks(const uint8_t **array_in, const uint8_t array_in_size, uint8_t *array_out) {
-    for (uint8_t i = 0; i < array_in_size; i++) {
-        for (uint8_t j = 0; j < 10; j++) {
+uint8_t ADCS_combine_sd_log_bitmasks(const uint8_t **array_in, const uint8_t array_in_len, uint8_t *array_out) {
+    for (uint8_t i = 0; i < array_in_len; i++) {
+        for (uint8_t j = 0; j < ADCS_SD_LOG_BITFIELD_LENGTH_BYTES; j++) {
             // iterate through array_out and bitwise OR each element with
             // the corresponding element in the array array_in[i]
             array_out[j] |= array_in[i][j];
