@@ -22,6 +22,7 @@ Please add your name to the list below in your first Pull Request!
 * Saksham P.
 * Alex O.
 * Fardin M.
+* Shaan Samresh
 * Kevin Hoang
 
 ## License and Libraries
