@@ -24,7 +24,7 @@ uint8_t LFS_file_buffer[FLASH_CHIP_PAGE_SIZE_BYTES];
 
 // TODO: look into the `LFS_F_INLINE` macro to increase the maximum number of files we can have
 
-// Variables LittleFS uses for various functions (all externed in littlefs_helper.h)
+// Variables LittleFS uses for various functions (all externs in littlefs_helper.h)
 lfs_t LFS_filesystem;
 struct lfs_config LFS_cfg = {
     .read = LFS_block_device_read,
@@ -51,12 +51,11 @@ struct lfs_file_config LFS_file_cfg = {
     .attr_count = 0,
     .attrs = NULL};
 
-// -----------------------------LITTLEFS FUNCTIONS-----------------------------
+// ----------------------------- LittleFS Functions -----------------------------
 
 /// @brief Formats Memory Module so it can successfully mount LittleFS
 /// @param None
-/// @retval 0 on success, negative LFS error codes on failure
- 
+/// @return 0 on success, negative LFS error codes on failure
 int8_t LFS_format()
 {
     int8_t format_result = lfs_format(&LFS_filesystem, &LFS_cfg);
@@ -71,19 +70,21 @@ int8_t LFS_format()
 
 /// @brief Mounts LittleFS to the Memory Module
 /// @param None
-/// @retval 0 on success, 1 if LFS is already mounted, negative LFS error codes on failure
- 
-int8_t LFS_mount()
-{
+/// @return 0 on success, 1 if LFS is already mounted, negative LFS error codes on failure
+int8_t LFS_mount() {
     if (LFS_is_lfs_mounted) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "LittleFS already mounted!");
         return 1;
     }
 
     // Variable to store status of LittleFS mounting
-    int8_t mount_result = lfs_mount(&LFS_filesystem, &LFS_cfg);
+    const int8_t mount_result = lfs_mount(&LFS_filesystem, &LFS_cfg);
     if (mount_result < 0) {
-        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error mounting LittleFS!");
+        LOG_message(
+            LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE),
+            "Error: lfs_mount() -> %d",
+            mount_result
+        );
         return mount_result;
     }
 
@@ -95,8 +96,7 @@ int8_t LFS_mount()
 
 /// @brief Unmounts LittleFS to the Memory Module
 /// @param None
-/// @retval 0 on success, 1 if LFS is already unmounted, negative LFS error codes on failure
- 
+/// @return 0 on success, 1 if LFS is already unmounted, negative LFS error codes on failure
 int8_t LFS_unmount()
 {
     if (!LFS_is_lfs_mounted) {
@@ -108,7 +108,11 @@ int8_t LFS_unmount()
     const int8_t unmount_result = lfs_unmount(&LFS_filesystem);
     if (unmount_result < 0)
     {
-        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error un-mounting LittleFS!");
+        LOG_message(
+            LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE),
+            "Error: lfs_unmount() -> %d",
+            unmount_result
+        );
         return unmount_result;
     }
 
@@ -121,8 +125,7 @@ int8_t LFS_unmount()
 /// @param root_directory cstring holding the root directory to open and read
 /// @param offset Number of entries to skip before listing directory
 /// @param count Number of entries to list in total (if 0, prints all entries)
-/// @retval 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
- 
+/// @return 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
 int8_t LFS_list_directory(const char root_directory[], uint16_t offset, int16_t count)
 {
     // Check if LFS is mounted
@@ -211,8 +214,7 @@ int8_t LFS_list_directory(const char root_directory[], uint16_t offset, int16_t 
 
 /// @brief Creates directory
 /// @param dir_name Pointer to cstring holding the name of the directory
-/// @retval 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
- 
+/// @return 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
 int8_t LFS_make_directory(const char dir_name[])
 {
     if (!LFS_is_lfs_mounted)
@@ -240,8 +242,7 @@ int8_t LFS_make_directory(const char dir_name[])
 
 /// @brief Removes / deletes the file specified
 /// @param file_name Pointer to cstring holding the file name to remove
-/// @retval 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
- 
+/// @return 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
 int8_t LFS_delete_file(const char file_name[])
 {
     if (!LFS_is_lfs_mounted)
@@ -253,20 +254,19 @@ int8_t LFS_delete_file(const char file_name[])
     int8_t remove_result = lfs_remove(&LFS_filesystem, file_name);
     if (remove_result < 0)
     {
-        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error removing file / directory: %s", file_name);
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error removing file/directory: %s", file_name);
         return remove_result;
     }
 
-    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully removed file / directory: %s", file_name);
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully removed file/directory: %s", file_name);
     return 0;
 }
 
-/// @brief Creates / Opens LittleFS File to write to the Memory Module
+/// @brief Creates/Opens LittleFS File to write to the Memory Module
 /// @param file_name - Pointer to cstring holding the file name to create or open
 /// @param write_buffer - Pointer to buffer holding the data to write
 /// @param write_buffer_len - Size of the data to write
-/// @retval 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
- 
+/// @return 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
 int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t write_buffer_len)
 {
     if (!LFS_is_lfs_mounted)
@@ -281,7 +281,7 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
 
     if (open_result < 0)
     {
-        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening / creating file: %s", file_name);
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening/creating file: %s", file_name);
         return open_result;
     }
     
@@ -309,12 +309,11 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
     return 0;
 }
 
-/// @brief Creates / Opens LittleFS File to append contents
+/// @brief Creates/Opens LittleFS File to append contents
 /// @param file_name - Pointer to cstring holding the file name to create or open
 /// @param write_buffer - Pointer to buffer holding the data to write
 /// @param write_buffer_len - Size of the data to write
-/// @retval 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
- 
+/// @return 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
 int8_t LFS_append_file(const char file_name[], uint8_t *write_buffer, uint32_t write_buffer_len)
 {
     if (!LFS_is_lfs_mounted)
@@ -481,9 +480,8 @@ int8_t LFS_write_file_with_offset(const char file_name[], lfs_soff_t offset, uin
 /// @param offset - position within the file to read from
 /// @param read_buffer - Pointer to buffer where the read data will be stored
 /// @param read_buffer_len - Size of the data to read
-/// @retval Returns negative values if read or file open failed, else the
+/// @return Returns negative values if read or file open failed, else the
 /// number of bytes read
- 
 lfs_ssize_t LFS_read_file(const char file_name[], lfs_soff_t offset, uint8_t *read_buffer, uint32_t read_buffer_len)
 {
     if (!LFS_is_lfs_mounted)
@@ -494,8 +492,7 @@ lfs_ssize_t LFS_read_file(const char file_name[], lfs_soff_t offset, uint8_t *re
 
     lfs_file_t file;
     const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_RDONLY, &LFS_file_cfg);
-    if (open_result < 0)
-    {
+    if (open_result < 0) {
         // TODO: confirm behaviour is desired: this assumes filesystem as a
         // whole as an issue, so does not send log message to file
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening file to read: %s", file_name);
@@ -504,15 +501,13 @@ lfs_ssize_t LFS_read_file(const char file_name[], lfs_soff_t offset, uint8_t *re
     LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Opened file to read: %s", file_name);
 
     const lfs_soff_t seek_result = lfs_file_seek(&LFS_filesystem, &file, offset, LFS_SEEK_SET);
-    if (seek_result < 0)
-    {
+    if (seek_result < 0) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error seeking within file: %s", file_name);
         return seek_result;
     }
 
     const lfs_ssize_t read_result = lfs_file_read(&LFS_filesystem, &file, read_buffer, read_buffer_len);
-    if (read_result < 0)
-    {
+    if (read_result < 0) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error reading file: %s", file_name);
         return read_result;
     }
@@ -531,14 +526,13 @@ lfs_ssize_t LFS_read_file(const char file_name[], lfs_soff_t offset, uint8_t *re
 
 /// @brief Returns the file size
 /// @param file_name - Pointer to buffer holding the file name to open
-/// @retval Returns negative values if read or file open failed, else the
+/// @return Returns negative values if read or file open failed, else the
 /// number of bytes in the file
- 
 lfs_ssize_t LFS_file_size(const char file_name[])
 {
     if (!LFS_is_lfs_mounted) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "LittleFS not mounted");
-        return 1;
+        return -12512;
     }
 
     lfs_file_t file;
