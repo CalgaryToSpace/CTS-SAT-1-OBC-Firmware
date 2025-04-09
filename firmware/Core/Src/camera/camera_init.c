@@ -17,6 +17,10 @@
 /// @brief Timeout duration for camera receive in milliseconds
 static const uint32_t CAMERA_RX_TIMEOUT_DURATION_MS =12000;
 
+/// @brief Global variables for file and file_open 
+uint8_t file_open = 0;
+lfs_file_t file;
+
 /// @brief Changes the baudrate of the camera by sending it a UART command, and then changing the
 ///     baudrate of the camera UART port.
 /// @param new_baud_rate The new baud rate to set the camera to. Ranges from 1200 to 921600.
@@ -199,8 +203,6 @@ uint8_t CAM_receive_image(){
     camera_write_file = 0;
     UART_camera_buffer_write_idx = 0;
     UART_camera_last_write_time_ms = 0;
-    uint8_t file_open = 0;
-    lfs_file_t file;
 
     // set start time and start receiving
     const uint32_t UART_camera_rx_start_time_ms = HAL_GetTick();
@@ -211,24 +213,7 @@ uint8_t CAM_receive_image(){
         return 3; // Error code: Failed UART reception
     }
 
-    // if lfs not mounted, mount
-    if (!LFS_is_lfs_mounted) {
-        LFS_mount();
-    }
-
-    // create and open file before receive loop
-    // file name hardcoded for now
-    // TODO turn file name into parameter
-    char file_name[] = "image1_0";
-    if (file_open == 0){
-        const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND, &LFS_file_cfg);
-        if (open_result < 0) {
-            LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening / creating file: %s", file_name);
-        } else {
-            LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Opened/created file: %s", file_name);
-            file_open = 1;
-        }
-    }
+    
 
     while(1){
         // receive until response timed out
@@ -341,14 +326,38 @@ uint8_t CAM_receive_image(){
 /// @return Transmit_Success: Successfully captured image, Wrong_input: invalid parameter input, Capture_Failure: Error in image reception or command transmition
 enum Capture_Status CAM_Capture_Image(bool enable_flash, uint8_t lighting_mode){
     // ignore flash for now, I'll hardcode it to False since we don't have flash anyways
+    // default file open to false
+    file_open = 0;
+    // if lfs not mounted, mount
+    if (!LFS_is_lfs_mounted) {
+        LFS_mount();
+    }
+
+    // create and open file before receive loop
+    // file name hardcoded for now
+    // TODO turn file name into parameter
+    char file_name[] = "image1_0";
+    LFS_delete_file(file_name);
+    if (file_open == 0){
+        const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND, &LFS_file_cfg);
+        if (open_result < 0) {
+            LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening / creating file: %s", file_name);
+        } else {
+            LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Opened/created file: %s", file_name);
+            file_open = 1;
+        }
+    }
     HAL_StatusTypeDef tx_status;
+    bool file_failure = false;
     switch(lighting_mode){
         case 'd':
             tx_status =  HAL_UART_Transmit(
                 UART_camera_port_handle, (uint8_t*)"d", 1, 1000
             );
             if (tx_status != HAL_OK) {
-                return Capture_Failure; // Error
+                // Error
+                file_failure = true;
+                break;
             }
             HAL_Delay(25);
             break;
@@ -357,7 +366,9 @@ enum Capture_Status CAM_Capture_Image(bool enable_flash, uint8_t lighting_mode){
                 UART_camera_port_handle, (uint8_t*)"m", 1, 1000
             );
             if (tx_status != HAL_OK) {
-                return Capture_Failure; // Error
+                // Error
+                file_failure = true;
+                break;
             }
             HAL_Delay(25);
             break;
@@ -366,7 +377,9 @@ enum Capture_Status CAM_Capture_Image(bool enable_flash, uint8_t lighting_mode){
                 UART_camera_port_handle, (uint8_t*)"n", 1, 1000
             );
             if (tx_status != HAL_OK) {
-                return Capture_Failure; // Error
+                // Error
+                file_failure = true;
+                break;
             }
             HAL_Delay(25);
             break;
@@ -375,13 +388,31 @@ enum Capture_Status CAM_Capture_Image(bool enable_flash, uint8_t lighting_mode){
                 UART_camera_port_handle, (uint8_t*)"s", 1, 1000
             );
             if (tx_status != HAL_OK) {
-                return Capture_Failure; // Error
+                // Error
+                file_failure = true;
+                break;
             }
             HAL_Delay(25);
             break;
         default:
             return Wrong_input;
     }
+
+    if (file_failure) {
+        // Error in transmition, close file and return error
+        if (file_open) {
+            const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
+            if (close_result < 0)
+            {
+                LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing file: %s", file_name);
+            } else {
+                LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "File: %s succesfully closed", file_name);
+            }
+            file_open = 0;
+        }
+        return Capture_Failure; // Error
+    }
+
     int capture_code = CAM_receive_image();
 
     if (capture_code != 0){
