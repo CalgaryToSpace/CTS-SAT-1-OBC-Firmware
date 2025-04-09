@@ -747,8 +747,8 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
-        .tcmd_name = "adcs_synchronise_unix_time",
-        .tcmd_func = TCMDEXEC_adcs_synchronise_unix_time,
+        .tcmd_name = "adcs_synchronize_unix_time",
+        .tcmd_func = TCMDEXEC_adcs_synchronize_unix_time,
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     }, 

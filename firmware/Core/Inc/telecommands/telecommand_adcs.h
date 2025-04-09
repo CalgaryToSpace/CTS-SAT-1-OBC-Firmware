@@ -222,7 +222,7 @@ uint8_t TCMDEXEC_adcs_save_image_to_sd(const char *args_str, TCMD_TelecommandCha
 uint8_t TCMDEXEC_adcs_request_commissioning_telemetry(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len);
 
-uint8_t TCMDEXEC_adcs_synchronise_unix_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_adcs_synchronize_unix_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len);
 
 uint8_t TCMDEXEC_adcs_get_current_unix_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,

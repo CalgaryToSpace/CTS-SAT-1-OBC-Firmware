@@ -214,9 +214,9 @@ uint8_t ADCS_combine_sd_log_bitmasks(const uint8_t **array_in, const uint8_t arr
 
 static uint8_t CRC8Table[256];
 
-/// @brief Initialise the lookup table for 8-bit CRC calculation. Code provided by ADCS Firmware Reference Manual (p.18-19).
+/// @brief Initialize the lookup table for 8-bit CRC calculation. Code provided by ADCS Firmware Reference Manual (p.18-19).
 /// @return 0 once successful.
-uint8_t ADCS_initialise_crc8_checksum() {
+uint8_t ADCS_initialize_crc8_checksum() {
     int val;
     for (uint16_t i = 0; i < 256; i++)
     {
