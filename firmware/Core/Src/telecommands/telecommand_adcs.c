@@ -518,16 +518,16 @@ uint8_t TCMDEXEC_adcs_get_power_control(const char *args_str, TCMD_TelecommandCh
 
 /// @brief Telecommand: Set the power control mode of each component of the ADCS; for each, 0 turns the component off, 1 turns it on, and 2 keeps it the same as previously.
 /// @param args_str 
-///     - Arg 0: Power control mode for cube control signal
-///     - Arg 1: Power control mode for cube control motor
-///     - Arg 2: Power control mode for cube sense 1
-///     - Arg 3: Power control mode for cube sense 2
-///     - Arg 4: Power control mode for cube star
-///     - Arg 5: Power control mode for cube wheel 1
-///     - Arg 6: Power control mode for cube wheel 2
-///     - Arg 7: Power control mode for cube wheel 3
-///     - Arg 8: Power control mode for motor
-///     - Arg 9: Power control mode for gps
+///     - Arg 0: CubeControl signal power control mode
+///     - Arg 1: CubeControl motor power control mode
+///     - Arg 2: CubeSense 1 power control mode
+///     - Arg 3: CubeSense 2 power control mode
+///     - Arg 4: CubeStar power control mode
+///     - Arg 5: CubeWheel 1 power control mode
+///     - Arg 6: CubeWheel 2 power control mode
+///     - Arg 7: CubeWheel 3 power control mode
+///     - Arg 8: Motor power control mode
+///     - Arg 9: GPS power control mode
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_set_power_control(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                         char *response_output_buf, uint16_t response_output_buf_len) {
@@ -2165,6 +2165,525 @@ uint8_t TCMDEXEC_adcs_get_sd_log_config(const char *args_str, TCMD_TelecommandCh
     }
 
     return status;
+}
+
+/// @brief Telecommand: Set the run, power control, estimation, and control parameters for a given commissioning step
+/// @note If a commissioning step requires other steps such as estimation parameters or TLMs, those must be supplied separately.
+/// @param args_str 
+///     - Arg 0: Which commissioning step to set the modes for (1-18)
+///     - Arg 1: Timeout in seconds before reverting to no control
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    uint64_t arguments[2];
+    for (uint8_t i = 0; i < 2; i++) {
+        const uint8_t extract_status = TCMD_extract_uint64_arg(args_str, strlen(args_str), i, &(arguments[i]));
+        if (extract_status != 0) {
+            snprintf(response_output_buf, response_output_buf_len,
+                "Telecommand argument extraction failed (err %d)", extract_status);
+            return 1;
+        }
+    }
+    ADCS_commissioning_step_enum_t commissioning_step = (ADCS_commissioning_step_enum_t) arguments[1];
+    uint16_t timeout = (uint16_t) arguments[2];
+
+    switch(commissioning_step) {
+        case ADCS_COMMISISONING_STEP_DETERMINE_INITIAL_ANGULAR_RATES: {
+            const uint8_t run_mode_status = ADCS_set_run_mode(1);
+            if (run_mode_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS run mode command failed (err %d)", run_mode_status);
+                return 1;
+            }
+            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+            if (power_control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS power control command failed (err %d)", power_control_status);
+                return 1;
+            }
+            const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER);
+            if (estimation_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS attitude estimation mode command failed (err %d)", estimation_status);
+                return 1;
+            }
+            const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_NONE, timeout);
+            if (control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS control mode command failed (err %d)", control_status);
+                return 1;
+            }
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_INITIAL_DETUMBLING: {
+            const uint8_t run_mode_status = ADCS_set_run_mode(1);
+            if (run_mode_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS run mode command failed (err %d)", run_mode_status);
+                return 1;
+            }
+            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+            if (power_control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS power control command failed (err %d)", power_control_status);
+                return 1;
+            }
+            const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER);
+            if (estimation_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS attitude estimation mode command failed (err %d)", estimation_status);
+                return 1;
+            }
+            const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_DETUMBLING, timeout);
+            if (control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS control mode command failed (err %d)", control_status);
+                return 1;
+            }
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_CONTINUED_DETUMBLING_TO_Y_THOMSON: {
+            const uint8_t run_mode_status = ADCS_set_run_mode(1);
+            if (run_mode_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS run mode command failed (err %d)", run_mode_status);
+                return 1;
+            }
+            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+            if (power_control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS power control command failed (err %d)", power_control_status);
+                return 1;
+            }
+            const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER);
+            if (estimation_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS attitude estimation mode command failed (err %d)", estimation_status);
+                return 1;
+            }
+            const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_Y_THOMSON_SPIN, timeout);
+            if (control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS control mode command failed (err %d)", control_status);
+                return 1;
+            }
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_MAGNETOMETER_DEPLOYMENT: {
+            const uint8_t run_mode_status = ADCS_set_run_mode(1);
+            if (run_mode_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS run mode command failed (err %d)", run_mode_status);
+                return 1;
+            }
+            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+            if (power_control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS power control command failed (err %d)", power_control_status);
+                return 1;
+            }
+            const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER);
+            if (estimation_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS attitude estimation mode command failed (err %d)", estimation_status);
+                return 1;
+            }
+            const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_NONE, timeout);
+            if (control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS control mode command failed (err %d)", control_status);
+                return 1;
+            }
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_MAGNETOMETER_CALIBRATION: {
+            const uint8_t run_mode_status = ADCS_set_run_mode(1);
+            if (run_mode_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS run mode command failed (err %d)", run_mode_status);
+                return 1;
+            }
+            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+            if (power_control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS power control command failed (err %d)", power_control_status);
+                return 1;
+            }
+            const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER);
+            if (estimation_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS attitude estimation mode command failed (err %d)", estimation_status);
+                return 1;
+            }
+            const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_Y_THOMSON_SPIN, timeout);
+            if (control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS control mode command failed (err %d)", control_status);
+                return 1;
+            }
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_ANGULAR_RATE_AND_PITCH_ANGLE_ESTIMATION: {
+            const uint8_t run_mode_status = ADCS_set_run_mode(1);
+            if (run_mode_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS run mode command failed (err %d)", run_mode_status);
+                return 1;
+            }           
+            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+            if (power_control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS power control command failed (err %d)", power_control_status);
+                return 1;
+            }   
+            const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER_WITH_PITCH_ESTIMATION);
+            if (estimation_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS attitude estimation mode command failed (err %d)", estimation_status);
+                return 1;
+            }
+            const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_Y_THOMSON_SPIN, timeout);
+            if (control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS control mode command failed (err %d)", control_status);
+                return 1;
+            }
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_Y_WHEEL_RAMP_UP_TEST: {
+            const uint8_t run_mode_status = ADCS_set_run_mode(1);
+            if (run_mode_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS run mode command failed (err %d)", run_mode_status);
+                return 1;
+            }
+            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+            if (power_control_status != 0) { // TODO: check which wheel is the y-wheel
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS power control command failed (err %d)", power_control_status);
+                return 1;
+            }
+            const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER_WITH_PITCH_ESTIMATION);
+            if (estimation_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS attitude estimation mode command failed (err %d)", estimation_status);
+                return 1;
+            }
+            const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_NONE, timeout);
+            if (control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS control mode command failed (err %d)", control_status);
+                return 1;
+            }
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_INITIAL_Y_MOMENTUM_ACTIVATION: {
+            const uint8_t run_mode_status = ADCS_set_run_mode(1);
+            if (run_mode_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS run mode command failed (err %d)", run_mode_status);
+                return 1;
+            }
+            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+            if (power_control_status != 0) { // TODO: check which wheel is the y-wheel
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS power control command failed (err %d)", power_control_status);
+                return 1;
+            }
+            const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER_WITH_PITCH_ESTIMATION);
+            if (estimation_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS attitude estimation mode command failed (err %d)", estimation_status);
+                return 1;
+            }
+            const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_Y_WHEEL_MOMENTUM_STABILIZED_INITIAL_PITCH_ACQUISITION, timeout);
+            if (control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS control mode command failed (err %d)", control_status);
+                return 1;
+            }
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_CONTINUED_Y_MOMENTUM_ACTIVATION_AND_MAGNETOMETER_EKF: {
+            const uint8_t run_mode_status = ADCS_set_run_mode(1);
+            if (run_mode_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS run mode command failed (err %d)", run_mode_status);
+                return 1;
+            }
+            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+            if (power_control_status != 0) { // TODO: check which wheel is the y-wheel
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS power control command failed (err %d)", power_control_status);
+                return 1;
+            }
+            const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER_WITH_PITCH_ESTIMATION);
+            if (estimation_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS attitude estimation mode command failed (err %d)", estimation_status);
+                return 1;
+            }
+            const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_Y_WHEEL_MOMENTUM_STABILIZED_STEADY_STATE, timeout);
+            if (control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS control mode command failed (err %d)", control_status);
+                return 1;
+            }
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_CUBESENSE_SUN_NADIR: {
+            const uint8_t run_mode_status = ADCS_set_run_mode(1);
+            if (run_mode_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS run mode command failed (err %d)", run_mode_status);
+                return 1;
+            } 
+            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME);
+            if (power_control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS power control command failed (err %d)", power_control_status);
+                return 1;
+            }
+            const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_FULL_STATE_EXTENDED_KALMAN_FILTER);
+            if (estimation_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS attitude estimation mode command failed (err %d)", estimation_status);
+                return 1;
+            }
+            const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_NONE, timeout);
+            if (control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS control mode command failed (err %d)", control_status);
+                return 1;
+            }
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_EKF_ACTIVATION_SUN_AND_NADIR: {
+            const uint8_t run_mode_status = ADCS_set_run_mode(1);
+            if (run_mode_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS run mode command failed (err %d)", run_mode_status);
+                return 1;
+            } 
+            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME);
+            if (power_control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS power control command failed (err %d)", power_control_status);
+                return 1;
+            }
+            const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MEMS_GYRO_EXTENDED_KALMAN_FILTER);
+            if (estimation_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS attitude estimation mode command failed (err %d)", estimation_status);
+                return 1;
+            }
+            const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_NONE, timeout);
+            if (control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS control mode command failed (err %d)", control_status);
+                return 1;
+            }
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_CUBESTAR_STAR_TRACKER: {
+            const uint8_t run_mode_status = ADCS_set_run_mode(1);
+            if (run_mode_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS run mode command failed (err %d)", run_mode_status);
+                return 1;
+            }  
+            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME);
+            if (power_control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS power control command failed (err %d)", power_control_status);
+                return 1;
+            }
+            const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MEMS_GYRO_EXTENDED_KALMAN_FILTER);
+            if (estimation_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS attitude estimation mode command failed (err %d)", estimation_status);
+                return 1;
+            }
+            const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_NONE, timeout);
+            if (control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS control mode command failed (err %d)", control_status);
+                return 1;
+            }
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_EKF_ACTIVATION_WITH_STAR_VECTOR_MEASUREMENTS: {
+            const uint8_t run_mode_status = ADCS_set_run_mode(1);
+            if (run_mode_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS run mode command failed (err %d)", run_mode_status);
+                return 1;
+            }  
+            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME);
+            if (power_control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS power control command failed (err %d)", power_control_status);
+                return 1;
+            }
+            const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MEMS_GYRO_EXTENDED_KALMAN_FILTER);
+            if (estimation_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS attitude estimation mode command failed (err %d)", estimation_status);
+                return 1;
+            }
+            const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_NONE, timeout);
+            if (control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS control mode command failed (err %d)", control_status);
+                return 1;
+            }
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_ZERO_BIAS_3_AXIS_REACTION_WHEEL_CONTROL: {
+            const uint8_t run_mode_status = ADCS_set_run_mode(1);
+            if (run_mode_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS run mode command failed (err %d)", run_mode_status);
+                return 1;
+            }
+            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+            if (power_control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS power control command failed (err %d)", power_control_status);
+                return 1;
+            }
+            const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MEMS_GYRO_EXTENDED_KALMAN_FILTER);
+            if (estimation_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS attitude estimation mode command failed (err %d)", estimation_status);
+                return 1;
+            }
+            const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_XYZ_WHEEL, timeout);
+            if (control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS control mode command failed (err %d)", control_status);
+                return 1;
+            }
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_EKF_WITH_RATE_GYRO_STAR_TRACKER_MEASUREMENTS: {
+            const uint8_t run_mode_status = ADCS_set_run_mode(1);
+            if (run_mode_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS run mode command failed (err %d)", run_mode_status);
+                return 1;
+            }  
+            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME);
+            if (power_control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS power control command failed (err %d)", power_control_status);
+                return 1;
+            }
+            const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MEMS_GYRO_EXTENDED_KALMAN_FILTER);
+            if (estimation_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS attitude estimation mode command failed (err %d)", estimation_status);
+                return 1;
+            }
+            const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_NONE, timeout);
+            if (control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS control mode command failed (err %d)", control_status);
+                return 1;
+            }
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_SUN_TRACKING_3_AXIS_CONTROL: {
+            const uint8_t run_mode_status = ADCS_set_run_mode(1);
+            if (run_mode_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS run mode command failed (err %d)", run_mode_status);
+                return 1;
+            }
+            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+            if (power_control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS power control command failed (err %d)", power_control_status);
+                return 1;
+            }
+            const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MEMS_GYRO_EXTENDED_KALMAN_FILTER);
+            if (estimation_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS attitude estimation mode command failed (err %d)", estimation_status);
+                return 1;
+            }
+            const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_RWHEEL_SUN_TRACKING, timeout);
+            if (control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS control mode command failed (err %d)", control_status);
+                return 1;
+            }
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_GROUND_TARGET_TRACKING_CONTROLLER: {
+            const uint8_t run_mode_status = ADCS_set_run_mode(1);
+            if (run_mode_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS run mode command failed (err %d)", run_mode_status);
+                return 1;
+            }
+            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+            if (power_control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS power control command failed (err %d)", power_control_status);
+                return 1;
+            }
+            const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MEMS_GYRO_EXTENDED_KALMAN_FILTER);
+            if (estimation_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS attitude estimation mode command failed (err %d)", estimation_status);
+                return 1;
+            }
+            const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_RWHEEL_TARGET_TRACKING, timeout);
+            if (control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS control mode command failed (err %d)", control_status);
+                return 1;
+            }
+            break;
+        }
+        case ADCS_COMMISISONING_STEP_GPS_RECEIVER: {
+            const uint8_t run_mode_status = ADCS_set_run_mode(1);
+            if (run_mode_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS run mode command failed (err %d)", run_mode_status);
+                return 1;
+            }
+            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_ON);
+            if (power_control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS power control command failed (err %d)", power_control_status);
+                return 1;
+            }
+            const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_NONE);
+            if (estimation_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS attitude estimation mode command failed (err %d)", estimation_status);
+                return 1;
+            }
+            const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_NONE, timeout);
+            if (control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS control mode command failed (err %d)", control_status);
+                return 1;
+            }
+            break;
+        }    
+      
+        default: {
+            snprintf(response_output_buf, response_output_buf_len,
+                "Commissioning step case out of range (err %d)", 1);
+                return 1;
+        }
+    }
+
+    return 0;
+
 }
 
 /// @brief Telecommand: Request commissioning telemetry from the ADCS and save it to the onboard SD card
