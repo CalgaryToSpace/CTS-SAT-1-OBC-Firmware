@@ -202,6 +202,7 @@ uint8_t ADCS_convert_double_to_string(double input, uint8_t precision, char* out
 /// @param[out] array_out 10-byte uint8 data array to send the result to
 /// @return 0 once complete.
 uint8_t ADCS_combine_sd_log_bitmasks(const uint8_t **array_in, const uint8_t array_in_len, uint8_t *array_out) {
+    memset(array_out, 0, ADCS_SD_LOG_BITFIELD_LENGTH_BYTES); // reset array_out to all zeroes
     for (uint8_t i = 0; i < array_in_len; i++) {
         for (uint8_t j = 0; j < ADCS_SD_LOG_BITFIELD_LENGTH_BYTES; j++) {
             // iterate through array_out and bitwise OR each element with
