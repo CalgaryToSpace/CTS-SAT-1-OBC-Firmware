@@ -1,0 +1,8 @@
+#ifndef INCLUDE_GUARD__TEST_SYSTEM_TEMPERATURE
+#define INCLUDE_GUARD__TEST_SYSTEM_TEMPERATURE
+
+#include <stdint.h>
+
+uint8_t TEST_EXEC__SYS_TEMP_get_processed_thermal_info();
+
+#endif /* INCLUDE_GUARD__TEST_SYSTEM_TEMPERATURE */
