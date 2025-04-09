@@ -89,8 +89,8 @@ uint8_t TCMDEXEC_camera_change_baud_rate(
 
 /// @brief Set an integer configuration variable
 /// @param args_str
-/// - Arg 0: variable name
-/// - Arg 1: new value
+/// - Arg 0: lighting mode
+/// - Arg 1: flash (0)
 /// @param response_output_buf Buffer to write the response to
 /// @param response_output_buf_len Max length of the buffer
 /// @return 0 if successful, >0 if an error occurred
