@@ -216,8 +216,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
     else if (huart->Instance == UART_camera_port_handle->Instance){
         // increment write_idx
-        // DEBUG_uart_print_str("Hello\n");
-        // DEBUG_uart_print_str("complete call back\n");
+        DEBUG_uart_print_str("Hello\n");
+        DEBUG_uart_print_str("complete call back\n");
         LOG_message(
             LOG_SYSTEM_ALL, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
             "complete_call_back"
@@ -240,8 +240,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 }
 
 void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
+    DEBUG_uart_print_str("half call back\n");
     if (huart->Instance == UART_camera_port_handle->Instance){
-        // DEBUG_uart_print_str("half call back\n");
         LOG_message(
             LOG_SYSTEM_ALL, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
             "half_call_back"
