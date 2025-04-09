@@ -96,14 +96,8 @@ uint8_t TCMDEXEC_gps_enable_disable_all(const char *args_str, TCMD_TelecommandCh
         return 1;
     }
 
-    // Allocate space to receive incoming GPS response.
-    const uint16_t GPS_rx_buffer_max_size = 512;
-    uint16_t GPS_rx_buffer_len = 0;
-    uint8_t GPS_rx_buffer[GPS_rx_buffer_max_size];
-    memset(GPS_rx_buffer, 0, GPS_rx_buffer_max_size); // Initialize all elements to 0
-
     // Send log command to GPS and receive response
-    const uint8_t gps_response = GPS_set_power_enabled("ANTENNAPOWER", enable_disable_flag, GPS_rx_buffer, GPS_rx_buffer_len, GPS_rx_buffer_max_size);
+    const uint8_t gps_response = GPS_set_power_enabled(enable_disable_flag);
 
     if (gps_response != 0)
     {
@@ -114,7 +108,6 @@ uint8_t TCMDEXEC_gps_enable_disable_all(const char *args_str, TCMD_TelecommandCh
             "Error: GPS enable/disable command failed with code: %d",
             gps_response);
 
-        snprintf(response_output_buf, response_output_buf_len, "Error: GPS enable/disable command failed with code %d", gps_response);
         return 1;
     }
 
