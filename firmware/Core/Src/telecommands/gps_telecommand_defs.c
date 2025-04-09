@@ -36,7 +36,7 @@ uint8_t TCMDEXEC_gps_send_cmd_ascii(const char *args_str, TCMD_TelecommandChanne
 
     // Allocate space to receive incoming GPS response.
     const uint16_t GPS_rx_buffer_max_size = 512;
-    uint16_t GPS_rx_buffer_len = 0;
+    uint16_t GPS_rx_buffer_len = 0; // This is not used within the send cmd get response functino.
     uint8_t GPS_rx_buffer[GPS_rx_buffer_max_size];
     memset(GPS_rx_buffer, 0, GPS_rx_buffer_max_size); // Initialize all elements to 0
 

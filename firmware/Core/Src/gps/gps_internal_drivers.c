@@ -19,8 +19,8 @@ const uint32_t GPS_RX_TIMEOUT_BETWEEN_BYTES_MS = 800;
 /// @brief Sends a log command to the GPS, and receives the response.
 /// @param cmd_buf log command string to send to the GPS.
 /// @param cmd_buf_len Exact length of the log command string.
-/// @param rx_buf Buffer to store the response.
-/// @param rx_buf_len Length of the response buffer.
+/// @param rx_buf Buffer to store the response. 
+/// @param rx_buf_len Length of the response buffer. Not currently used within the function.
 /// @param rx_buf_max_size Maximum length of the response buffer.
 /// @return 0 on success, >0 if error.
 /// @note This function is intended for "once" log commands
