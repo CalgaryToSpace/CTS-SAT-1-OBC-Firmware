@@ -16,6 +16,9 @@ extern UART_HandleTypeDef *UART_gps_port_handle;
 const uint32_t GPS_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS = 800;
 const uint32_t GPS_RX_TIMEOUT_BETWEEN_BYTES_MS = 800;
 
+const char *GPS_LOW_POWER_COMMANDS[] = { "ANTENNAPOWER" };
+const uint8_t GPS_LOW_POWER_COMMANDS_LEN = 1;
+
 /// @brief Sends a log command to the GPS, and receives the response.
 /// @param cmd_buf log command string to send to the GPS.
 /// @param cmd_buf_len Exact length of the log command string.
@@ -143,35 +146,42 @@ uint8_t GPS_send_cmd_get_response(
 }
 
 /// @brief Sends an enable/disable command to the GPS, and receives the response.
-/// @param cmd_arg the incomplete command (eg: ANTENNAPOWER)
 /// @param enable_disable_flag 1 to enable (power on), 0 to disable (power off)
-/// @param rx_buf Buffer to store the response.
-/// @param rx_buf_len Length of the response buffer.
-/// @param rx_buf_max_size Maximum length of the response buffer.
 /// @return 0 on success, >0 if error.
-uint8_t GPS_set_power_enabled(const char *cmd_arg, uint16_t enable_disable_flag, uint8_t rx_buf[], uint16_t rx_buf_len, const uint16_t rx_buf_max_size)
+uint8_t GPS_set_power_enabled(uint16_t enable_disable_flag)
 {
-    // Extract Arg 0: incomplete command to send
-    char full_command[128];
-    snprintf(full_command, sizeof(full_command), "%s %s\n", cmd_arg, enable_disable_flag == 1 ? "ON" : "OFF");
-    const uint16_t full_command_len = strlen(full_command);
+    // This flag is used to indicate that one of the commands had errors, and to return > 0
+    uint8_t errorFlag = 0;
 
-    // Send log command to GPS and receive response
-    const uint8_t gps_cmd_response = GPS_send_cmd_get_response(
-        full_command, full_command_len, rx_buf, rx_buf_len, rx_buf_max_size);
-
-    if (gps_cmd_response != 0)
+    // Loop through all available commands to either enable or disable
+    for (uint8_t i = 0; i < GPS_LOW_POWER_COMMANDS_LEN; i++)
     {
-        LOG_message(
-            LOG_SYSTEM_GPS,
-            LOG_SEVERITY_NORMAL,
-            LOG_SINK_ALL,
-            "GPS Response Code: %d",
-            gps_cmd_response);
+        char full_command[128];
+        snprintf(full_command, sizeof(full_command), "%s %s\n", GPS_LOW_POWER_COMMANDS[i], enable_disable_flag == 1 ? "ON" : "OFF");
+        const uint16_t full_command_len = strlen(full_command);
 
-        snprintf((char *)rx_buf, rx_buf_len, "GPS Command had errors: %s", full_command);
+        // The following buffer is created to satisfy GPS_send_cmd_get_response args, but it's not used further in this function
+        const uint16_t GPS_rx_buffer_max_size = 512;
+        uint16_t GPS_rx_buffer_len = 0;
+        uint8_t GPS_rx_buffer[GPS_rx_buffer_max_size];
+        memset(GPS_rx_buffer, 0, GPS_rx_buffer_max_size); 
+        
+        // Send log command to GPS and receive response
+        const uint8_t gps_cmd_response = GPS_send_cmd_get_response(
+            full_command, full_command_len, GPS_rx_buffer, GPS_rx_buffer_len, GPS_rx_buffer_max_size);
+
+        if (gps_cmd_response != 0)
+        {
+            // Change errorFlag to 1 to indicate that we should return > 0 AFTER all commands are attempted
+            errorFlag = 1;
+        }
+        osDelay(1000);
+    }
+
+    if (errorFlag != 0)
+    {
         return 1;
     }
-    snprintf((char *)rx_buf, rx_buf_len, "GPS Command: '%s' successfully transmitted", full_command);
+
     return 0;
 }
