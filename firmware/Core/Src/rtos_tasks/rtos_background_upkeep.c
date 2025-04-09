@@ -13,7 +13,6 @@ uint64_t EPS_monitor_last_uptime = 0;
 
 void TASK_background_upkeep(void *argument) {
     TASK_HELP_start_of_task();
-    const uint64_t start_time_before_reset = TIM_get_current_unix_epoch_time_ms();
     while(1) {
 
         //EPS overcurrent monitor upkeep
@@ -41,7 +40,7 @@ void TASK_background_upkeep(void *argument) {
             EPS_monitor_last_uptime = current_time;
         }
         
-        if (start_time_before_reset + system_reset_interval < TIM_get_current_unix_epoch_time_ms()) {
+        if (TIM_get_current_system_uptime_ms() > STM32_system_reset_interval_ms) {
             LOG_message(
                 LOG_SYSTEM_OBC,
                 LOG_SEVERITY_NORMAL,
