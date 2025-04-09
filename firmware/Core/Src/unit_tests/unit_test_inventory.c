@@ -12,6 +12,7 @@
 #include "unit_tests/test_configuration_variables.h"
 #include "unit_tests/test_obc_temperature_sensor.h"
 #include "unit_tests/unit_test_gps.h"
+#include "unit_tests/test_system_temperature.h"
 
 #include "unit_tests/test_eps_drivers.h"
 #include "unit_tests/test_eps_struct_packers.h"
@@ -531,6 +532,11 @@ const TEST_Definition_t TEST_definitions[] = {
     },
 
     // ****************** END SECTION: unit_test_gps ******************
+    {
+        .test_func = TEST_EXEC__SYS_TEMP_get_processed_thermal_info,
+        .test_file = "unit_tests/test_system_temperature",
+        .test_func_name = "TEST_EXEC__SYS_TEMP_get_processed_thermal_info"
+    },
 };
 
 // extern
