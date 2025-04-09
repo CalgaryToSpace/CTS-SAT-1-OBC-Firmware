@@ -20,6 +20,7 @@ static const uint32_t CAMERA_RX_TIMEOUT_DURATION_MS =12000;
 /// @brief Global variables for file and file_open 
 uint8_t file_open = 0;
 lfs_file_t file;
+const char file_name[] = "image1_0";
 
 /// @brief Changes the baudrate of the camera by sending it a UART command, and then changing the
 ///     baudrate of the camera UART port.
@@ -336,7 +337,6 @@ enum Capture_Status CAM_Capture_Image(bool enable_flash, uint8_t lighting_mode){
     // create and open file before receive loop
     // file name hardcoded for now
     // TODO turn file name into parameter
-    char file_name[] = "image1_0";
     LFS_delete_file(file_name);
     if (file_open == 0){
         const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND, &LFS_file_cfg);
