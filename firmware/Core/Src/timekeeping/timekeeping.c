@@ -63,7 +63,7 @@ void TIM_set_current_unix_epoch_time_ms(uint64_t current_unix_epoch_time_ms, TIM
     if(correction_time_ms>=2000 || correction_time_ms<=-2000)
     {
         LOG_message(
-            LOG_SYSTEM_ALL, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            LOG_SYSTEM_OBC, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
             "Synchronization has changed system time by 2000ms or more. Time deviation was %s ms.",
             correction_time_ms_str
         );
@@ -74,7 +74,7 @@ void TIM_set_current_unix_epoch_time_ms(uint64_t current_unix_epoch_time_ms, TIM
 
     // Log both times and the correction
     LOG_message(
-        LOG_SYSTEM_ALL, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+        LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
         "Time synchronized. Old time: %s, New time: %s, Clock shift: %s ms.",
         old_time_str, new_time_str, correction_time_ms_str
     );
