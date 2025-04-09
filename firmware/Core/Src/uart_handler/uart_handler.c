@@ -120,35 +120,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
             DEBUG_uart_print_str("Unhandled MPI Mode\n"); //TODO: HANDLE other MPI MODES
         }
     }
-
-    
-    // TODO: Implement function to utilize this DMA reception callback for the CAMERA
-    else if (huart->Instance == UART_camera_port_handle->Instance) {
-        // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> CAMERA Data\n");
-
-        if (! UART_camera_is_expecting_data) {
-            // not expecting data, ignore this noise
-            HAL_UART_Receive_IT(UART_camera_port_handle, (uint8_t*) &UART_camera_buffer_last_rx_byte, 1);
-            return;
-        }
-
-        // Check if buffer is full
-        if (UART_camera_buffer_write_idx >= UART_camera_buffer_len) {
-            // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART response buffer is full\n");
-
-            // Shift all bytes left by 1
-            for(uint16_t i = 1; i < UART_camera_buffer_len; i++) {
-                UART_camera_buffer[i - 1] = UART_camera_buffer[i];
-            }
-
-            // Reset to a valid index
-            UART_camera_buffer_write_idx = UART_camera_buffer_len - 1;
-        }
-
-        // Add a byte to the buffer
-        UART_camera_buffer[UART_camera_buffer_write_idx++] = UART_camera_buffer_last_rx_byte;
-        UART_camera_last_write_time_ms = HAL_GetTick();
-    }           
+          
 
     else if (huart->Instance == UART_eps_port_handle->Instance) {
         // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> EPS Data\n");
@@ -204,8 +176,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
     else if (huart->Instance == UART_camera_port_handle->Instance){
         // increment write_idx
-        // DEBUG_uart_print_str("Hello\n");
-        // DEBUG_uart_print_str("complete call back\n");
+        DEBUG_uart_print_str("Hello\n");
+        DEBUG_uart_print_str("complete call back\n");
         LOG_message(
             LOG_SYSTEM_ALL, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
             "complete_call_back"
@@ -228,8 +200,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 }
 
 void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
+    DEBUG_uart_print_str("half call back\n");
     if (huart->Instance == UART_camera_port_handle->Instance){
-        // DEBUG_uart_print_str("half call back\n");
         LOG_message(
             LOG_SYSTEM_ALL, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
             "half_call_back"
