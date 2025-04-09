@@ -13,7 +13,6 @@
 #include "csp/interfaces/csp_if_i2c.h"
 
 
-#define TESTING_RECEIVE 1
 
 //extern I2C_HandleTypeDef hi2c1; //TODO: Is I2C3 the right bus?
 const uint8_t AX100_I2C_ADDR = 0x05 << 1; 
@@ -69,10 +68,8 @@ void CSP_init_for_cts1() {
         LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_UHF_RADIO),
         "Starting CSP_init_for_cts1()"
     );
-    
-    #if TESTING_RECEIVE
+
     HAL_I2C_EnableListen_IT(&hi2c1);
-    #endif
 
     const int ret_init = csp_init(&csp_conf_value_1);
 
@@ -95,7 +92,13 @@ void CSP_init_for_cts1() {
     );
 
     //setting up the route table
-    //csp_route_table_add(10, 31, 0, &csp_cts_i2c_interface);
+    csp_rtable_set(
+        10, // destination addr
+        5,  // net mask. & this with the destinations address to get the final address which csp will use to route
+        &csp_cts_i2c_interface,// interface to route to
+        CSP_NO_VIA_ADDRESS // next hop  address
+    );
+
 
     // TODO: If ret_add_iface is not 0, log an error message.
 }
@@ -105,6 +108,8 @@ uint8_t CSP_demo_1() {
     
     // From AX100 User Manual:
     // TODO: try csp_sendto(CSP_PRIO_LOW, 10, 31, 0, CSP_O_NONE, beacon, 0);
+
+    HAL_I2C_DisableListen_IT(&hi2c1);
 
     LOG_message(
         LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
@@ -119,16 +124,10 @@ uint8_t CSP_demo_1() {
     * &csp_cts_i2c_interface = interface to route to
     * 5 = via, the next hop address
     */
-    csp_rtable_set(
-        1, // destination addr
-        5,  // net mask. & this with the destinations address to get the final address which csp will use to route
-        &csp_cts_i2c_interface,// interface to route to
-        CSP_NO_VIA_ADDRESS // next hop  address
-    );
 
     
     //csp_conn_t * conn = csp_conn_allocate(CONN_CLIENT);
-    csp_conn_t * conn = csp_connect(CSP_PRIO_LOW, 1, 35, 0, CSP_O_NONE);
+    csp_conn_t * conn = csp_connect(CSP_PRIO_LOW, 10, 35, 0, CSP_O_NONE);
     if (conn == NULL) {
         LOG_message(
             LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
@@ -217,7 +216,9 @@ uint8_t CSP_demo_1() {
         "Sent demo_1 packet. csp_send returned Success."
     );
 
+    csp_buffer_free(packet);
 
+    HAL_I2C_EnableListen_IT(&hi2c1);
  
     return 0;
 }
