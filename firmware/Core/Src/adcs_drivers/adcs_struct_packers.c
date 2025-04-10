@@ -626,9 +626,9 @@ uint8_t ADCS_pack_to_acp_execution_state_struct(uint8_t* data_received, ADCS_acp
 /// @return 0 once the function is finished running.
 uint8_t ADCS_pack_to_current_state_1_struct(uint8_t* data_received, ADCS_current_state_1_struct_t* output_struct) {
     
-    output_struct->estimation_mode = (data_received[0] >> 4) & 0xf;
+    output_struct->estimation_mode = (data_received[0]) & 0xf;
     
-    output_struct->control_mode = (data_received[0]) & 0xf;  
+    output_struct->control_mode = (data_received[0] >> 4) & 0xf;
 
     output_struct->run_mode = (data_received[1]) & 0x3;  
     output_struct->asgp4_mode = (data_received[1] >> 2) & 0x3; 
