@@ -552,51 +552,51 @@ uint8_t TCMDEXEC_adcs_set_power_control(const char *args_str, TCMD_TelecommandCh
 uint8_t TCMDEXEC_adcs_track_sun(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                   char *response_output_buf, uint16_t response_output_buf_len) {
 
-    uint8_t status;
-
     ADCS_current_state_1_struct_t current_state;
-    status = ADCS_get_current_state_1(&current_state);
-    if (status != 0) {
+    const uint8_t get_current_state_1_status = ADCS_get_current_state_1(&current_state);
+    if (get_current_state_1_status != 0) {
         snprintf(response_output_buf, response_output_buf_len, "Failed to get ADCS state"); 
-        return status;
+        return get_current_state_1_status;
     } else if ( // To switch to sun-tracking mode (an XYZ mode), we must either be in steady-state Y-momentum (Mode 4) or any of the XYZ modes (Modes 5, 6, or 7)
             (current_state.control_mode != ADCS_CONTROL_MODE_Y_WHEEL_MOMENTUM_STABILIZED_STEADY_STATE) && 
             (current_state.control_mode != ADCS_CONTROL_MODE_XYZ_WHEEL) &&
             (current_state.control_mode != ADCS_CONTROL_MODE_RWHEEL_SUN_TRACKING) &&
             (current_state.control_mode != ADCS_CONTROL_MODE_RWHEEL_TARGET_TRACKING)) {
         snprintf(response_output_buf, response_output_buf_len, "ADCS not stabilised! ADCS must be stabilised before switching to sun-tracking mode"); 
-        return status;
+        return 12;
     }
 
-    status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
-    if (status != 0) {
+    const uint8_t set_power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+    if (set_power_control_status != 0) {
         snprintf(response_output_buf, response_output_buf_len, "Failed to disable ADCS peripherals"); 
-        return status;
+        return set_power_control_status;
     }
 
-    status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MEMS_GYRO_EXTENDED_KALMAN_FILTER);
-    if (status != 0) {
+    osDelay(100);
+
+    const uint8_t attitude_estimation_mode_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MEMS_GYRO_EXTENDED_KALMAN_FILTER);
+    if (attitude_estimation_mode_status != 0) {
         snprintf(response_output_buf, response_output_buf_len, "Failed to set ADCS estimation mode"); 
-        return status;
+        return attitude_estimation_mode_status;
     }
 
-    status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_RWHEEL_SUN_TRACKING, 600);
-    if (status != 0) {
+    const uint8_t attitude_control_mode_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_RWHEEL_SUN_TRACKING, 600);
+    if (attitude_control_mode_status != 0) {
         snprintf(response_output_buf, response_output_buf_len, "Failed to set ADCS control mode"); 
-        return status;
+        return attitude_control_mode_status;
     }
 
     // disable SD card logging to save power
     const uint8_t* temp_data_pointer[1] = {ADCS_SD_LOG_MASK_COMMUNICATION_STATUS};
-    status = ADCS_set_sd_log_config(1, temp_data_pointer, 0, 0, 0);                     
-    if (status != 0) {
+    const uint8_t set_sd_log_config_status = ADCS_set_sd_log_config(1, temp_data_pointer, 0, 0, 0);                     
+    if (set_sd_log_config_status != 0) {
         snprintf(response_output_buf, response_output_buf_len, "Failed to stop SD logging on log 1"); 
-        return status;
+        return set_sd_log_config_status;
     }
-    status = ADCS_set_sd_log_config(2, temp_data_pointer, 0, 0, 0);                     
-    if (status != 0) {
+    const uint8_t set_sd_log_config_status_2 = ADCS_set_sd_log_config(2, temp_data_pointer, 0, 0, 0);                     
+    if (set_sd_log_config_status_2 != 0) {
         snprintf(response_output_buf, response_output_buf_len, "Failed to stop SD logging on log 2");
-        return status;
+        return set_sd_log_config_status_2;
     }
 
     return 0;
@@ -2100,8 +2100,8 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
             return 1;
         }
     }
-    ADCS_commissioning_step_enum_t commissioning_step = (ADCS_commissioning_step_enum_t) arguments[1];
-    uint16_t timeout = (uint16_t) arguments[2];
+    ADCS_commissioning_step_enum_t commissioning_step = (ADCS_commissioning_step_enum_t) arguments[0];
+    uint16_t timeout = (uint16_t) arguments[1];
 
     switch(commissioning_step) {
         case ADCS_COMMISISONING_STEP_DETERMINE_INITIAL_ANGULAR_RATES: {
@@ -2117,6 +2117,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
+            osDelay(100);
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2144,6 +2145,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
+            osDelay(100);
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2171,6 +2173,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
+            osDelay(100);
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2198,6 +2201,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
+            osDelay(100);
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2225,6 +2229,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
+            osDelay(100);
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2252,6 +2257,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }   
+            osDelay(100);
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER_WITH_PITCH_ESTIMATION);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2279,6 +2285,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
+            osDelay(100);
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER_WITH_PITCH_ESTIMATION);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2306,6 +2313,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
+            osDelay(100);
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER_WITH_PITCH_ESTIMATION);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2333,6 +2341,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
+            osDelay(100);
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER_WITH_PITCH_ESTIMATION);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2360,6 +2369,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
+            osDelay(100);
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_FULL_STATE_EXTENDED_KALMAN_FILTER);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2387,6 +2397,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
+            osDelay(100);
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MEMS_GYRO_EXTENDED_KALMAN_FILTER);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2414,6 +2425,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
+            osDelay(100);
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MEMS_GYRO_EXTENDED_KALMAN_FILTER);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2441,6 +2453,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
+            osDelay(100);
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MEMS_GYRO_EXTENDED_KALMAN_FILTER);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2468,6 +2481,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
+            osDelay(100);
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MEMS_GYRO_EXTENDED_KALMAN_FILTER);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2495,6 +2509,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
+            osDelay(100);
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MEMS_GYRO_EXTENDED_KALMAN_FILTER);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2522,6 +2537,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
+            osDelay(100);
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MEMS_GYRO_EXTENDED_KALMAN_FILTER);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2549,6 +2565,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
+            osDelay(100);
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MEMS_GYRO_EXTENDED_KALMAN_FILTER);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2556,6 +2573,8 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
                 return 1;
             }
             const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_RWHEEL_TARGET_TRACKING, timeout);
+            // If there is no target reference to track, this will set the control mode into Y-spin mode instead.
+            // Set the ground target reference using the set_target_controller_tracking_reference telecommand.
             if (control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS control mode command failed (err %d)", control_status);
@@ -2576,6 +2595,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
+            osDelay(100);
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_NONE);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
