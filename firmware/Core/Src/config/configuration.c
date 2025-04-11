@@ -13,6 +13,7 @@ uint32_t CONFIG_int_demo_var_2 = 242344;
 
 // extern
 uint32_t EPS_monitor_interval_ms = 20000;
+uint32_t STM32_system_reset_interval_ms = 604800000;    // Default 604800000 ms = 7 days
 
 // extern
 // 1 = require, 0 = don't require
@@ -45,6 +46,10 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
     {
         .variable_name = "EPS_monitor_interval_ms",
         .num_config_var = &EPS_monitor_interval_ms,
+    },
+    {
+        .variable_name = "STM32_system_reset_interval_ms",
+        .num_config_var = &STM32_system_reset_interval_ms,
     },
     //End Background Timer config
     {
