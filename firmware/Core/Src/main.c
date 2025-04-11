@@ -137,6 +137,13 @@ const osThreadAttr_t TASK_background_upkeep_Attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 
+osThreadId_t TASK_camera_write_image_Handle;
+const osThreadAttr_t TASK_camera_write_image_Attributes = {
+  .name = "TASK_camera_write_image",
+  .stack_size = 1024,
+  .priority = (osPriority_t) osPriorityAboveNormal3,
+};
+
 FREERTOS_task_info_struct_t FREERTOS_task_handles_array [] = {
   {
     .task_handle = &defaultTaskHandle,
@@ -176,6 +183,11 @@ FREERTOS_task_info_struct_t FREERTOS_task_handles_array [] = {
   {
     .task_handle = &TASK_background_upkeep_Handle,
     .task_attribute = &TASK_background_upkeep_Attributes,
+    .lowest_stack_bytes_remaining = UINT32_MAX
+  },
+  {
+    .task_handle = &TASK_camera_write_image_Handle,
+    .task_attribute = &TASK_camera_write_image_Attributes,
     .lowest_stack_bytes_remaining = UINT32_MAX
   },
 };
@@ -313,6 +325,8 @@ int main(void)
   TASK_time_sync_Handle = osThreadNew(TASK_time_sync, NULL, &TASK_time_sync_Attributes);
 
   TASK_background_upkeep_Handle = osThreadNew(TASK_background_upkeep, NULL, &TASK_background_upkeep_Attributes);
+
+  TASK_camera_write_image_Handle = osThreadNew(TASK_camera_write_image, NULL, &TASK_camera_write_image_Attributes);
 
   /* USER CODE END RTOS_THREADS */
 
