@@ -1,5 +1,12 @@
 <map id="ADCS_set_power_control" name="ADCS_set_power_control">
-<area shape="rect" id="Node000001" title="Set the power control mode of each component of the ADCS; for each, 0 turns the component off,..." alt="" coords="248,13,418,38"/>
-<area shape="rect" id="Node000002" href="$telecommand__adcs_8c.html#a09cd71eec37b89e27b214acd1af6c476" title="Telecommand: Set the power control mode of each component of the ADCS; for each, 0 turns the componen..." alt="" coords="5,5,200,46"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="232,28,200,28,200,23,232,23"/>
+<area shape="rect" id="Node000001" title="Set the power control mode of each component of the ADCS; for each, 0 turns the component off,..." alt="" coords="495,78,665,104"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a440ef61b27cd8228c1e2600758e9d207" title="Disable all ADCS peripherals and active SD card logs except the CubeSense Motor and Signal power,..." alt="" coords="226,5,438,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="513,76,411,49,413,44,514,71"/>
+<area shape="rect" id="Node000004" href="$adcs__commands_8c.html#a4693b9a170e342e3f5bb908be0462f8f" title="Disable all ADCS peripherals and active SD card logs." alt="" coords="217,71,447,111"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="479,94,448,94,448,88,479,88"/>
+<area shape="rect" id="Node000005" href="$telecommand__adcs_8c.html#a09cd71eec37b89e27b214acd1af6c476" title="Telecommand: Set the power control mode of each component of the ADCS; for each, 0 turns the componen..." alt="" coords="235,136,429,177"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="514,111,413,138,411,133,513,106"/>
+<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#a502da8be20cbdbe810b609948efef53a" title="Telecommand: Put the ADCS in low&#45;power mode, with only essential component power." alt="" coords="5,39,169,79"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="211,45,169,51,169,45,210,40"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="201,77,169,72,169,67,202,71"/>
 </map>

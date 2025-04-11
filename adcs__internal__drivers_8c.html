@@ -174,9 +174,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a37228af04b248067199e7f79a90cfd7a" id="r_a37228af04b248067199e7f79a90cfd7a"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a37228af04b248067199e7f79a90cfd7a">ADCS_convert_double_to_string</a> (double input, uint8_t precision, char *output_string, uint16_t str_len)</td></tr>
 <tr class="memdesc:a37228af04b248067199e7f79a90cfd7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a double into a string with a given decimal precision.  <br /></td></tr>
 <tr class="separator:a37228af04b248067199e7f79a90cfd7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adc4c1fb96d40d40e055df7b0284b025e" id="r_adc4c1fb96d40d40e055df7b0284b025e"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adc4c1fb96d40d40e055df7b0284b025e">ADCS_combine_sd_log_bitmasks</a> (const uint8_t **array_in, const uint8_t array_in_size, uint8_t *array_out)</td></tr>
-<tr class="memdesc:adc4c1fb96d40d40e055df7b0284b025e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Take an arbitrary number (up to 63) of 10-byte uint8 arrays and return a single array which is the bitwise OR of all of them.  <br /></td></tr>
-<tr class="separator:adc4c1fb96d40d40e055df7b0284b025e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0358a1934004652437772bce60da4239" id="r_a0358a1934004652437772bce60da4239"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0358a1934004652437772bce60da4239">ADCS_combine_sd_log_bitmasks</a> (const uint8_t **array_in, const uint8_t array_in_len, uint8_t *array_out)</td></tr>
+<tr class="memdesc:a0358a1934004652437772bce60da4239"><td class="mdescLeft">&#160;</td><td class="mdescRight">Take an arbitrary number (up to 63) of 10-byte uint8 arrays and return a single array which is the bitwise OR of all of them.  <br /></td></tr>
+<tr class="separator:a0358a1934004652437772bce60da4239"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6fc53bee2317b10356a9f9a9204045bf" id="r_a6fc53bee2317b10356a9f9a9204045bf"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6fc53bee2317b10356a9f9a9204045bf">ADCS_initialise_crc8_checksum</a> ()</td></tr>
 <tr class="memdesc:a6fc53bee2317b10356a9f9a9204045bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialise the lookup table for 8-bit CRC calculation. Code provided by ADCS Firmware Reference Manual (p.18-19).  <br /></td></tr>
 <tr class="separator:a6fc53bee2317b10356a9f9a9204045bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -268,7 +268,7 @@ Here is the caller graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="346,736,328,780,301,833,265,886,220,931,185,950,183,945,217,927,261,882,297,830,323,778,341,734"/>
 <area shape="rect" href="adcs__commands_8c.html#a42020a863207734cd2930378ab9349bd" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="39,1005,185,1031"/>
 <area shape="poly" title=" " alt="" coords="352,736,338,793,312,863,295,899,274,934,249,967,220,995,187,1012,184,1008,217,991,245,963,270,931,290,897,308,861,332,792,347,735"/>
-<area shape="rect" href="adcs__commands_8c.html#a13c723f863160e6cf86ec2be92effab8" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="28,1055,196,1080"/>
+<area shape="rect" href="adcs__commands_8c.html#afad12ab1d20dbb4d7d2d2f534e26f5f2" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="28,1055,196,1080"/>
 <area shape="poly" title=" " alt="" coords="355,736,343,803,320,886,303,930,281,972,253,1012,220,1046,198,1059,195,1055,217,1041,249,1008,276,970,298,928,315,885,338,801,349,735"/>
 <area shape="rect" href="adcs__commands_8c.html#a155f5bcb7965f0b88875194f476ac112" title="Instruct the ADCS to execute the ADCS_Set_SGP4_Orbit_Params command." alt="" coords="37,1104,187,1145"/>
 <area shape="poly" title=" " alt="" coords="356,736,347,810,325,907,308,958,285,1007,256,1054,220,1095,189,1114,186,1110,217,1091,252,1051,280,1005,303,956,320,905,342,810,351,735"/>
@@ -328,8 +328,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="adc4c1fb96d40d40e055df7b0284b025e" name="adc4c1fb96d40d40e055df7b0284b025e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adc4c1fb96d40d40e055df7b0284b025e">&#9670;&#160;</a></span>ADCS_combine_sd_log_bitmasks()</h2>
+<a id="a0358a1934004652437772bce60da4239" name="a0358a1934004652437772bce60da4239"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0358a1934004652437772bce60da4239">&#9670;&#160;</a></span>ADCS_combine_sd_log_bitmasks()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -342,7 +342,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const uint8_t</td>          <td class="paramname"><span class="paramname"><em>array_in_size</em></span>, </td>
+          <td class="paramtype">const uint8_t</td>          <td class="paramname"><span class="paramname"><em>array_in_len</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -356,7 +356,7 @@ Here is the caller graph for this function:</div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">array_in</td><td>Array of pointers to 10-byte uint8 data arrays </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">array_in_size</td><td>Size of the array_in array </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">array_in_len</td><td>Size of the array_in array </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">array_out</td><td>10-byte uint8 data array to send the result to </td></tr>
   </table>
   </dd>
@@ -365,15 +365,24 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="adcs__internal__drivers_8c_adc4c1fb96d40d40e055df7b0284b025e_icgraph.png" border="0" usemap="#aadcs__internal__drivers_8c_adc4c1fb96d40d40e055df7b0284b025e_icgraph" alt=""/></div>
-<map name="aadcs__internal__drivers_8c_adc4c1fb96d40d40e055df7b0284b025e_icgraph" id="aadcs__internal__drivers_8c_adc4c1fb96d40d40e055df7b0284b025e_icgraph">
-<area shape="rect" title="Take an arbitrary number (up to 63) of 10&#45;byte uint8 arrays and return a single array which is the bi..." alt="" coords="447,39,605,79"/>
-<area shape="rect" href="adcs__commands_8c.html#a13c723f863160e6cf86ec2be92effab8" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="231,46,399,72"/>
-<area shape="poly" title=" " alt="" coords="431,62,399,62,399,56,431,56"/>
-<area shape="rect" href="telecommand__adcs_8c.html#acfbac886221c0407fce13bee70ec8d5a" title="Telecommand: Request commissioning telemetry from the ADCS and save it to the memory module." alt="" coords="5,5,183,46"/>
-<area shape="poly" title=" " alt="" coords="215,47,183,42,184,36,216,41"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a98bf5256b122713dd604a9217a717d11" title="Telecommand: Repeatedly log given data from an SD card." alt="" coords="7,71,181,111"/>
-<area shape="poly" title=" " alt="" coords="216,76,181,81,181,76,215,71"/>
+<div class="center"><img src="adcs__internal__drivers_8c_a0358a1934004652437772bce60da4239_icgraph.png" border="0" usemap="#aadcs__internal__drivers_8c_a0358a1934004652437772bce60da4239_icgraph" alt=""/></div>
+<map name="aadcs__internal__drivers_8c_a0358a1934004652437772bce60da4239_icgraph" id="aadcs__internal__drivers_8c_a0358a1934004652437772bce60da4239_icgraph">
+<area shape="rect" title="Take an arbitrary number (up to 63) of 10&#45;byte uint8 arrays and return a single array which is the bi..." alt="" coords="938,95,1096,135"/>
+<area shape="rect" href="adcs__commands_8c.html#afad12ab1d20dbb4d7d2d2f534e26f5f2" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="721,102,890,128"/>
+<area shape="poly" title=" " alt="" coords="922,118,890,118,890,112,922,112"/>
+<area shape="rect" href="adcs__commands_8c.html#a97ee5ec87812d9c34ad86b85834e688c" title="Disable all active ADCS SD card logs." alt="" coords="495,45,673,70"/>
+<area shape="poly" title=" " alt="" coords="738,100,636,74,638,69,739,95"/>
+<area shape="rect" href="telecommand__adcs_8c.html#acfbac886221c0407fce13bee70ec8d5a" title="Telecommand: Request commissioning telemetry from the ADCS and save it to the memory module." alt="" coords="496,95,673,135"/>
+<area shape="poly" title=" " alt="" coords="706,118,673,118,673,112,706,112"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a98bf5256b122713dd604a9217a717d11" title="Telecommand: Repeatedly log given data from an SD card." alt="" coords="498,160,671,201"/>
+<area shape="poly" title=" " alt="" coords="745,135,656,162,655,157,744,130"/>
+<area shape="rect" href="adcs__commands_8c.html#a440ef61b27cd8228c1e2600758e9d207" title="Disable all ADCS peripherals and active SD card logs except the CubeSense Motor and Signal power,..." alt="" coords="226,5,438,46"/>
+<area shape="poly" title=" " alt="" coords="479,47,438,42,439,37,480,42"/>
+<area shape="rect" href="adcs__commands_8c.html#a4693b9a170e342e3f5bb908be0462f8f" title="Disable all ADCS peripherals and active SD card logs." alt="" coords="217,71,447,111"/>
+<area shape="poly" title=" " alt="" coords="480,74,448,78,447,73,479,69"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a502da8be20cbdbe810b609948efef53a" title="Telecommand: Put the ADCS in low&#45;power mode, with only essential component power." alt="" coords="5,39,169,79"/>
+<area shape="poly" title=" " alt="" coords="211,45,169,51,169,45,210,40"/>
+<area shape="poly" title=" " alt="" coords="201,77,169,72,169,67,202,71"/>
 </map>
 </div>
 
@@ -484,41 +493,50 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="adcs__internal__drivers_8c_a57380050bbf7103fc0101eb2145fc7c7_icgraph.png" border="0" usemap="#aadcs__internal__drivers_8c_a57380050bbf7103fc0101eb2145fc7c7_icgraph" alt=""/></div>
 <map name="aadcs__internal__drivers_8c_a57380050bbf7103fc0101eb2145fc7c7_icgraph" id="aadcs__internal__drivers_8c_a57380050bbf7103fc0101eb2145fc7c7_icgraph">
-<area shape="rect" title="Swap low and high bytes of a uint16 to turn into uint8 and put into specified index of an array." alt="" coords="539,227,705,283"/>
-<area shape="rect" href="adcs__commands_8c.html#aed744b7e685734f1640661cb715b7a82" title="Set the Augmented SGP4 Parameters of the ADCS." alt="" coords="317,5,470,46"/>
-<area shape="poly" title=" " alt="" coords="601,215,582,178,557,136,526,96,489,61,469,49,472,44,493,57,530,92,561,133,587,175,606,212"/>
-<area shape="rect" href="adcs__commands_8c.html#a67665c09e24d46cfd738b32a596af250" title="Instruct the ADCS to execute the ADCS_Set_Commanded_Attitude_Angles command." alt="" coords="313,71,474,111"/>
-<area shape="poly" title=" " alt="" coords="588,217,544,170,490,127,466,114,468,110,492,122,548,166,592,213"/>
-<area shape="rect" href="adcs__commands_8c.html#a244e37cb9b4c803699e5cdca2692ab07" title="Instruct the ADCS to set the magnetometer configuration." alt="" coords="307,136,480,177"/>
-<area shape="poly" title=" " alt="" coords="554,222,490,192,458,180,460,175,492,187,556,217"/>
-<area shape="rect" href="adcs__commands_8c.html#ac262b765d9ea6b19e8fb1f39e50c4dd0" title="Instruct the ADCS to execute the ADCS_Set_Magnetorquer_Output command." alt="" coords="309,201,478,242"/>
-<area shape="poly" title=" " alt="" coords="523,243,478,237,478,231,524,238"/>
-<area shape="rect" href="adcs__commands_8c.html#a3a9f4c3b3f178a53bcd12c5d4a042794" title="Instruct the ADCS to execute the ADCS_Set_Rate_Gyro_Config command." alt="" coords="322,267,464,307"/>
-<area shape="poly" title=" " alt="" coords="524,271,465,280,465,274,523,266"/>
-<area shape="rect" href="adcs__commands_8c.html#a13c723f863160e6cf86ec2be92effab8" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="309,340,478,365"/>
-<area shape="poly" title=" " alt="" coords="555,292,492,321,438,341,436,336,490,317,553,288"/>
-<area shape="rect" href="adcs__commands_8c.html#a9f51e83fcfa4e59e44b77f355844d818" title="Instruct the ADCS to execute the titular command." alt="" coords="311,413,476,438"/>
-<area shape="poly" title=" " alt="" coords="587,296,544,339,493,380,460,399,428,415,426,410,458,395,489,375,540,335,583,292"/>
-<area shape="rect" href="adcs__commands_8c.html#a0ee4a74615b30328d110093fb1d7e18b" title="Instruct the ADCS to synchronise its Unix epoch time to the current OBC Unix time." alt="" coords="296,510,491,536"/>
-<area shape="poly" title=" " alt="" coords="601,298,555,373,526,414,493,453,455,486,418,512,415,508,452,482,489,449,521,411,551,370,597,295"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a010a4200d80186fa6a4d9dd131f1ba5d" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="15,5,238,46"/>
-<area shape="poly" title=" " alt="" coords="301,28,238,28,238,23,301,23"/>
-<area shape="rect" href="telecommand__adcs_8c.html#aa54fca153c3d72b2792b90c67ea8ed01" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="11,71,242,111"/>
-<area shape="poly" title=" " alt="" coords="298,94,242,94,242,88,298,88"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a07baac9fec776a43fe02a541ec8dea7e" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,136,248,177"/>
-<area shape="poly" title=" " alt="" coords="291,159,248,159,248,154,291,154"/>
-<area shape="rect" href="telecommand__adcs_8c.html#af2ca31f4b748a6a93be8a3f1907689e9" title="Telecommand: Set the magnetorquer output values." alt="" coords="7,201,246,242"/>
-<area shape="poly" title=" " alt="" coords="294,224,246,224,246,219,294,219"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a8ee861331037001ee63c66cb8b2dc32f" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="36,267,217,307"/>
-<area shape="poly" title=" " alt="" coords="307,290,218,290,218,284,307,284"/>
-<area shape="rect" href="telecommand__adcs_8c.html#acfbac886221c0407fce13bee70ec8d5a" title="Telecommand: Request commissioning telemetry from the ADCS and save it to the memory module." alt="" coords="38,332,215,373"/>
-<area shape="poly" title=" " alt="" coords="294,355,216,355,216,350,294,350"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a98bf5256b122713dd604a9217a717d11" title="Telecommand: Repeatedly log given data from an SD card." alt="" coords="40,397,213,438"/>
-<area shape="poly" title=" " alt="" coords="324,372,213,399,212,394,323,367"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a31ebda15faf41b449b2a28cce5863448" title="Telecommand: Set the wheel speed of the ADCS." alt="" coords="30,463,223,503"/>
-<area shape="poly" title=" " alt="" coords="316,445,224,465,223,460,315,440"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a723a07c1c85a39edea04e241eee46de8" title="Telecommand: Synchronise the current ADCS Unix epoch time." alt="" coords="25,528,228,569"/>
-<area shape="poly" title=" " alt="" coords="280,536,229,541,228,536,280,531"/>
+<area shape="rect" title="Swap low and high bytes of a uint16 to turn into uint8 and put into specified index of an array." alt="" coords="1029,227,1195,283"/>
+<area shape="rect" href="adcs__commands_8c.html#aed744b7e685734f1640661cb715b7a82" title="Set the Augmented SGP4 Parameters of the ADCS." alt="" coords="806,5,960,46"/>
+<area shape="poly" title=" " alt="" coords="1090,215,1072,178,1047,136,1016,96,979,61,959,49,961,44,982,57,1020,92,1051,133,1076,175,1095,212"/>
+<area shape="rect" href="adcs__commands_8c.html#a67665c09e24d46cfd738b32a596af250" title="Instruct the ADCS to execute the ADCS_Set_Commanded_Attitude_Angles command." alt="" coords="803,71,963,111"/>
+<area shape="poly" title=" " alt="" coords="1077,217,1034,170,979,127,955,114,958,110,982,122,1037,166,1081,213"/>
+<area shape="rect" href="adcs__commands_8c.html#a244e37cb9b4c803699e5cdca2692ab07" title="Instruct the ADCS to set the magnetometer configuration." alt="" coords="797,136,969,177"/>
+<area shape="poly" title=" " alt="" coords="1043,222,980,192,948,180,949,175,982,187,1046,217"/>
+<area shape="rect" href="adcs__commands_8c.html#ac262b765d9ea6b19e8fb1f39e50c4dd0" title="Instruct the ADCS to execute the ADCS_Set_Magnetorquer_Output command." alt="" coords="799,201,967,242"/>
+<area shape="poly" title=" " alt="" coords="1013,243,967,237,968,231,1014,238"/>
+<area shape="rect" href="adcs__commands_8c.html#a3a9f4c3b3f178a53bcd12c5d4a042794" title="Instruct the ADCS to execute the ADCS_Set_Rate_Gyro_Config command." alt="" coords="812,267,954,307"/>
+<area shape="poly" title=" " alt="" coords="1014,271,955,280,954,274,1013,266"/>
+<area shape="rect" href="adcs__commands_8c.html#afad12ab1d20dbb4d7d2d2f534e26f5f2" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="799,361,967,386"/>
+<area shape="poly" title=" " alt="" coords="1044,293,911,363,908,358,1042,288"/>
+<area shape="rect" href="adcs__commands_8c.html#a9f51e83fcfa4e59e44b77f355844d818" title="Instruct the ADCS to execute the titular command." alt="" coords="800,434,966,460"/>
+<area shape="poly" title=" " alt="" coords="1083,297,1038,350,982,401,951,421,920,436,918,431,949,416,979,397,1034,346,1079,294"/>
+<area shape="rect" href="adcs__commands_8c.html#a0ee4a74615b30328d110093fb1d7e18b" title="Instruct the ADCS to synchronise its Unix epoch time to the current OBC Unix time." alt="" coords="785,532,981,557"/>
+<area shape="poly" title=" " alt="" coords="1094,298,1048,383,1018,430,983,474,945,508,908,533,905,529,942,504,979,471,1013,427,1044,380,1089,295"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a010a4200d80186fa6a4d9dd131f1ba5d" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="504,5,728,46"/>
+<area shape="poly" title=" " alt="" coords="791,28,728,28,728,23,791,23"/>
+<area shape="rect" href="telecommand__adcs_8c.html#aa54fca153c3d72b2792b90c67ea8ed01" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="501,71,731,111"/>
+<area shape="poly" title=" " alt="" coords="788,94,732,94,732,88,788,88"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a07baac9fec776a43fe02a541ec8dea7e" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="495,136,737,177"/>
+<area shape="poly" title=" " alt="" coords="781,159,738,159,738,154,781,154"/>
+<area shape="rect" href="telecommand__adcs_8c.html#af2ca31f4b748a6a93be8a3f1907689e9" title="Telecommand: Set the magnetorquer output values." alt="" coords="497,201,735,242"/>
+<area shape="poly" title=" " alt="" coords="783,224,736,224,736,219,783,219"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a8ee861331037001ee63c66cb8b2dc32f" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="526,267,707,307"/>
+<area shape="poly" title=" " alt="" coords="796,290,707,290,707,284,796,284"/>
+<area shape="rect" href="adcs__commands_8c.html#a97ee5ec87812d9c34ad86b85834e688c" title="Disable all active ADCS SD card logs." alt="" coords="527,332,705,357"/>
+<area shape="poly" title=" " alt="" coords="783,365,705,357,706,351,784,360"/>
+<area shape="rect" href="telecommand__adcs_8c.html#acfbac886221c0407fce13bee70ec8d5a" title="Telecommand: Request commissioning telemetry from the ADCS and save it to the memory module." alt="" coords="528,381,705,422"/>
+<area shape="poly" title=" " alt="" coords="784,387,706,395,705,390,783,381"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a98bf5256b122713dd604a9217a717d11" title="Telecommand: Repeatedly log given data from an SD card." alt="" coords="530,447,703,487"/>
+<area shape="poly" title=" " alt="" coords="839,396,738,436,699,449,697,444,736,431,837,391"/>
+<area shape="rect" href="adcs__commands_8c.html#a440ef61b27cd8228c1e2600758e9d207" title="Disable all ADCS peripherals and active SD card logs except the CubeSense Motor and Signal power,..." alt="" coords="226,292,438,333"/>
+<area shape="poly" title=" " alt="" coords="511,335,438,327,439,322,512,330"/>
+<area shape="rect" href="adcs__commands_8c.html#a4693b9a170e342e3f5bb908be0462f8f" title="Disable all ADCS peripherals and active SD card logs." alt="" coords="217,357,447,398"/>
+<area shape="poly" title=" " alt="" coords="512,359,448,367,447,361,511,354"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a502da8be20cbdbe810b609948efef53a" title="Telecommand: Put the ADCS in low&#45;power mode, with only essential component power." alt="" coords="5,325,169,366"/>
+<area shape="poly" title=" " alt="" coords="211,332,169,337,169,332,210,326"/>
+<area shape="poly" title=" " alt="" coords="201,363,169,359,169,354,202,358"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a31ebda15faf41b449b2a28cce5863448" title="Telecommand: Set the wheel speed of the ADCS." alt="" coords="520,512,713,553"/>
+<area shape="poly" title=" " alt="" coords="834,468,738,502,697,514,695,509,737,496,832,463"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a723a07c1c85a39edea04e241eee46de8" title="Telecommand: Synchronise the current ADCS Unix epoch time." alt="" coords="514,577,718,618"/>
+<area shape="poly" title=" " alt="" coords="801,563,719,580,718,575,800,558"/>
 </map>
 </div>
 
@@ -805,105 +823,107 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="adcs__internal__drivers_8c_aecce0bfa34eea6373e296fb13a2fb92f_icgraph.png" border="0" usemap="#aadcs__internal__drivers_8c_aecce0bfa34eea6373e296fb13a2fb92f_icgraph" alt=""/></div>
 <map name="aadcs__internal__drivers_8c_aecce0bfa34eea6373e296fb13a2fb92f_icgraph" id="aadcs__internal__drivers_8c_aecce0bfa34eea6373e296fb13a2fb92f_icgraph">
-<area shape="rect" title="Sends a telecommand over I2C to the ADCS, checks that it&#39;s been acknowledged, and returns the ACK err..." alt="" coords="596,856,776,897"/>
-<area shape="rect" href="adcs__commands_8c.html#a5d12721da74144783af765b02aafe64d" title="Instruct the ADCS to execute the titular command." alt="" coords="345,21,538,46"/>
-<area shape="poly" title=" " alt="" coords="681,840,671,677,649,447,631,329,608,221,580,132,564,98,546,71,532,59,514,49,517,45,535,54,550,68,568,95,585,130,614,220,636,328,654,446,677,677,686,840"/>
-<area shape="rect" href="adcs__commands_8c.html#aa279a3c35fddc09f0fb42accbd58001b" title="Instruct the ADCS to execute the ADCS_Attitude_Estimation_Mode command." alt="" coords="335,82,548,108"/>
-<area shape="poly" title=" " alt="" coords="679,841,664,696,637,495,619,392,598,297,573,218,546,162,532,145,514,131,478,111,480,106,517,127,535,142,550,159,578,216,603,296,624,391,642,494,670,695,684,840"/>
-<area shape="rect" href="adcs__commands_8c.html#a5a496e55cfdbe02ab43b7b9a8b693b68" title="Instruct the ADCS to execute the ADCS_Bootloader_Clear_Errors command." alt="" coords="362,172,521,213"/>
-<area shape="poly" title=" " alt="" coords="683,841,680,734,674,663,663,584,646,502,622,418,589,338,546,263,520,236,488,215,491,211,523,232,550,260,594,335,627,416,651,500,669,583,679,663,686,734,688,841"/>
-<area shape="rect" href="adcs__commands_8c.html#a3a3b809be5bcecf6db7ca9147beb638e" title="Instruct the ADCS to execute the ADCS_Clear_Errors command." alt="" coords="375,274,508,300"/>
-<area shape="poly" title=" " alt="" coords="677,841,660,727,631,575,613,499,592,429,570,372,546,333,525,315,500,303,502,298,528,311,550,329,575,370,598,428,618,497,636,574,665,726,683,840"/>
-<area shape="rect" href="adcs__commands_8c.html#a71ab45f06625b9c7ea6b6124ecd0b784" title="Instruct the ADCS to execute the ADCS_Deploy_Magnetometer command." alt="" coords="346,344,537,369"/>
-<area shape="poly" title=" " alt="" coords="683,841,679,751,672,693,661,631,644,566,620,503,587,444,546,392,516,372,519,368,550,388,592,441,625,501,649,565,666,629,678,692,684,750,688,840"/>
-<area shape="rect" href="adcs__commands_8c.html#aede64efdb08acf89df5ac15de7906e58" title="Instruct the ADCS to execute the ADCS_Reset command." alt="" coords="395,402,488,428"/>
-<area shape="poly" title=" " alt="" coords="682,840,675,759,668,708,656,652,638,596,615,541,585,490,546,445,519,428,488,420,489,415,521,423,550,441,589,487,620,538,643,594,661,651,673,707,681,758,687,840"/>
-<area shape="rect" href="adcs__commands_8c.html#aa4ebf975b5c8b02ef0dbfe117cbd7c14" title="Instruct the ADCS to execute the ADCS_Run_Once command." alt="" coords="383,456,500,481"/>
-<area shape="poly" title=" " alt="" coords="680,841,670,769,648,678,630,630,608,583,580,539,546,501,524,486,499,477,501,472,527,482,550,497,584,536,613,580,635,628,653,676,675,768,685,840"/>
-<area shape="rect" href="adcs__commands_8c.html#af308e3206304ee5b75dd8bb6aec85177" title="Instruct the ADCS to execute the ADCS_Save_Config command." alt="" coords="375,512,508,537"/>
-<area shape="poly" title=" " alt="" coords="676,841,662,782,637,709,599,633,574,598,546,566,525,551,501,540,503,535,528,546,550,562,579,594,603,630,641,707,667,781,681,840"/>
-<area shape="rect" href="adcs__commands_8c.html#a2d911b54220da01cfb0ab415739bea38" title="Instruct the ADCS to save an image to the SD card." alt="" coords="355,577,528,602"/>
-<area shape="poly" title=" " alt="" coords="672,842,655,794,629,736,592,678,571,651,546,628,527,615,505,605,507,601,529,610,550,624,575,648,597,675,633,734,660,792,677,840"/>
-<area shape="rect" href="adcs__commands_8c.html#ae819a5b032d9d62d1cc83623657934a5" title="Instruct the ADCS to execute the ADCS_Save_Orbit_Params command." alt="" coords="354,638,528,664"/>
-<area shape="poly" title=" " alt="" coords="668,843,648,805,621,762,587,719,546,683,515,667,518,662,550,678,591,715,625,759,653,803,672,841"/>
-<area shape="rect" href="adcs__commands_8c.html#aed744b7e685734f1640661cb715b7a82" title="Set the Augmented SGP4 Parameters of the ADCS." alt="" coords="365,692,518,733"/>
-<area shape="poly" title=" " alt="" coords="657,846,609,796,579,770,547,748,517,734,519,729,549,743,582,766,612,792,661,842"/>
-<area shape="rect" href="adcs__commands_8c.html#a67665c09e24d46cfd738b32a596af250" title="Instruct the ADCS to execute the ADCS_Set_Commanded_Attitude_Angles command." alt="" coords="361,757,522,798"/>
-<area shape="poly" title=" " alt="" coords="630,851,547,813,512,801,514,796,549,809,632,846"/>
-<area shape="rect" href="adcs__commands_8c.html#a11601ce06ad4d9ba65907410e81bdee2" title="Instruct the ADCS to execute the ADCS_Set_Estimation_Params command." alt="" coords="367,823,516,863"/>
-<area shape="poly" title=" " alt="" coords="580,865,516,856,517,850,581,859"/>
-<area shape="rect" href="adcs__commands_8c.html#a244e37cb9b4c803699e5cdca2692ab07" title="Instruct the ADCS to set the magnetometer configuration." alt="" coords="355,888,528,929"/>
-<area shape="poly" title=" " alt="" coords="581,893,529,900,528,894,580,888"/>
-<area shape="rect" href="adcs__commands_8c.html#a3393a2f85e1384e27f10da0155c01f29" title="Instruct the ADCS to execute the titular command." alt="" coords="336,953,547,978"/>
-<area shape="poly" title=" " alt="" coords="633,907,549,943,508,955,507,950,547,938,631,902"/>
-<area shape="rect" href="adcs__commands_8c.html#ac262b765d9ea6b19e8fb1f39e50c4dd0" title="Instruct the ADCS to execute the ADCS_Set_Magnetorquer_Output command." alt="" coords="357,1003,526,1043"/>
-<area shape="poly" title=" " alt="" coords="657,910,609,953,549,993,525,1005,522,1000,547,989,605,949,653,906"/>
-<area shape="rect" href="adcs__commands_8c.html#a5a06facbb818d342cd4749fc53456287" title="Set the power control mode of each component of the ADCS; for each, 0 turns the component off,..." alt="" coords="356,1068,526,1093"/>
-<area shape="poly" title=" " alt="" coords="670,912,650,947,623,986,589,1025,549,1057,525,1069,523,1064,547,1053,585,1021,619,983,646,944,666,909"/>
-<area shape="rect" href="adcs__commands_8c.html#a3a9f4c3b3f178a53bcd12c5d4a042794" title="Instruct the ADCS to execute the ADCS_Set_Rate_Gyro_Config command." alt="" coords="370,1117,512,1158"/>
-<area shape="poly" title=" " alt="" coords="676,912,657,957,631,1010,595,1062,550,1108,514,1127,512,1122,546,1104,591,1059,626,1007,653,955,671,910"/>
-<area shape="rect" href="adcs__commands_8c.html#a42020a863207734cd2930378ab9349bd" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="368,1182,514,1208"/>
-<area shape="poly" title=" " alt="" coords="681,913,667,970,642,1040,624,1076,604,1111,579,1144,550,1172,516,1189,513,1184,546,1168,575,1140,599,1108,620,1074,637,1038,662,968,676,912"/>
-<area shape="rect" href="adcs__commands_8c.html#a13c723f863160e6cf86ec2be92effab8" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="357,1232,526,1257"/>
-<area shape="poly" title=" " alt="" coords="684,913,673,979,650,1063,632,1107,610,1149,583,1188,550,1222,527,1236,524,1231,546,1218,579,1185,605,1146,627,1105,644,1061,668,978,679,912"/>
-<area shape="rect" href="adcs__commands_8c.html#a155f5bcb7965f0b88875194f476ac112" title="Instruct the ADCS to execute the ADCS_Set_SGP4_Orbit_Params command." alt="" coords="367,1281,516,1322"/>
-<area shape="poly" title=" " alt="" coords="685,913,676,987,654,1083,637,1134,614,1184,585,1231,550,1272,518,1291,515,1287,546,1268,581,1227,609,1182,632,1132,649,1082,671,986,680,912"/>
-<area shape="rect" href="adcs__commands_8c.html#af523abd359aa91b46f1d37d9668cb82f" title="Instruct the ADCS to execute the ADCS_Set_Tracking_Controller_Target_Reference command." alt="" coords="344,1347,539,1387"/>
-<area shape="poly" title=" " alt="" coords="687,912,682,998,674,1052,662,1111,645,1171,621,1231,590,1286,550,1336,534,1348,530,1344,546,1332,585,1283,616,1228,640,1169,657,1109,669,1051,677,997,682,912"/>
-<area shape="rect" href="adcs__commands_8c.html#a54c7f98f0379ad007c03f291da751edc" title="Instruct the ADCS to execute the ADCS_Set_Unix_Time_Save_Mode command." alt="" coords="369,1412,514,1453"/>
-<area shape="poly" title=" " alt="" coords="683,913,665,1023,637,1169,618,1242,598,1308,575,1363,550,1401,534,1414,515,1423,513,1418,531,1409,546,1397,570,1361,593,1307,613,1241,631,1168,660,1022,677,912"/>
-<area shape="rect" href="adcs__commands_8c.html#a9f51e83fcfa4e59e44b77f355844d818" title="Instruct the ADCS to execute the titular command." alt="" coords="359,1477,524,1502"/>
-<area shape="poly" title=" " alt="" coords="684,913,669,1036,642,1202,624,1286,603,1362,578,1424,565,1448,550,1466,526,1482,523,1478,546,1462,560,1445,574,1421,598,1360,619,1284,637,1201,664,1036,679,912"/>
-<area shape="rect" href="adcs__commands_8c.html#a0ee4a74615b30328d110093fb1d7e18b" title="Instruct the ADCS to synchronise its Unix epoch time to the current OBC Unix time." alt="" coords="344,1526,539,1552"/>
-<area shape="poly" title=" " alt="" coords="685,912,672,1046,646,1227,628,1319,606,1402,580,1470,566,1497,550,1517,536,1528,533,1523,546,1513,561,1494,576,1468,601,1400,623,1317,641,1226,666,1045,679,912"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a5e0859e51ddde0fef41f11c323dc1599" title="Telecommand: execute a generic command on the ADCS." alt="" coords="353,1576,530,1617"/>
-<area shape="poly" title=" " alt="" coords="685,912,673,1054,648,1250,630,1349,608,1440,581,1514,566,1544,550,1566,532,1581,528,1576,546,1562,562,1541,576,1512,603,1438,625,1348,643,1249,667,1054,680,912"/>
-<area shape="rect" href="telecommand__adcs_8c.html#aa4735644aa3f675981fb2b1ca33be6b1" title="Telecommand: Set the attitude control mode of the ADCS; needs Power Control to be set before working." alt="" coords="57,5,235,46"/>
-<area shape="poly" title=" " alt="" coords="329,33,235,31,235,25,330,28"/>
-<area shape="rect" href="telecommand__adcs_8c.html#ae4a656bd5312eb333be28fdc369949de" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="57,71,235,111"/>
-<area shape="poly" title=" " alt="" coords="319,96,235,95,235,90,319,91"/>
-<area shape="rect" href="telecommand__adcs_8c.html#abf9f994be4334fec523afdfeb94fae10" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="49,136,243,177"/>
-<area shape="poly" title=" " alt="" coords="346,183,243,171,244,166,346,178"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a4a392ab74792b31db922ac145686191a" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="65,201,227,242"/>
-<area shape="poly" title=" " alt="" coords="364,273,227,242,228,237,365,268"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a49630bc8904515fc0b8047cd6d5c7d6a" title="Telecommand: obtain generic telemetry from the ADCS." alt="" coords="58,267,234,307"/>
-<area shape="poly" title=" " alt="" coords="360,290,235,290,235,284,360,284"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a4f76ad9966b9384028ffecba4433bf12" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="60,332,232,373"/>
-<area shape="poly" title=" " alt="" coords="330,357,232,356,232,351,330,352"/>
-<area shape="rect" href="telecommand__adcs_8c.html#af9ce33163776cab8f4ad997c16af6ae6" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="64,397,228,422"/>
-<area shape="poly" title=" " alt="" coords="379,417,228,414,228,408,380,411"/>
-<area shape="rect" href="telecommand__adcs_8c.html#aee68180c5bab44ee52ba9dc1bbc61ba6" title="Telecommand: If ADCS run mode is Triggered, run the ADCS sensor loop." alt="" coords="52,446,240,472"/>
-<area shape="poly" title=" " alt="" coords="367,469,240,465,240,459,367,463"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a514f1940538cd16b1f0842183eab9fd8" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="65,496,227,537"/>
-<area shape="poly" title=" " alt="" coords="359,525,227,521,227,516,359,519"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a0bc0d109abce87c4f6a417b203030a93" title="Telecommand: Save an image to the ADCS onboard SD card." alt="" coords="65,561,227,602"/>
-<area shape="poly" title=" " alt="" coords="339,590,228,587,228,581,339,584"/>
-<area shape="rect" href="telecommand__adcs_8c.html#ad2bbaeb81302110c39050cfd9591c1ed" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="65,627,227,667"/>
-<area shape="poly" title=" " alt="" coords="338,652,227,651,227,645,339,647"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a010a4200d80186fa6a4d9dd131f1ba5d" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="34,692,258,733"/>
-<area shape="poly" title=" " alt="" coords="349,715,258,715,258,710,349,710"/>
-<area shape="rect" href="telecommand__adcs_8c.html#aa54fca153c3d72b2792b90c67ea8ed01" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="31,757,261,798"/>
-<area shape="poly" title=" " alt="" coords="346,780,262,780,262,775,346,775"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a267cc8fe5234dd14291d632a63d56538" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="36,823,256,863"/>
-<area shape="poly" title=" " alt="" coords="351,846,256,846,256,840,351,840"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a07baac9fec776a43fe02a541ec8dea7e" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="25,888,267,929"/>
-<area shape="poly" title=" " alt="" coords="340,911,268,911,268,906,340,906"/>
-<area shape="rect" href="telecommand__adcs_8c.html#ab7d9825783bdf895f19de393b7b23afe" title="Telecommand: Set the magnetometer mode of the ADCS." alt="" coords="5,953,287,978"/>
-<area shape="poly" title=" " alt="" coords="320,968,287,968,287,963,320,963"/>
-<area shape="rect" href="telecommand__adcs_8c.html#af2ca31f4b748a6a93be8a3f1907689e9" title="Telecommand: Set the magnetorquer output values." alt="" coords="27,1003,265,1043"/>
-<area shape="poly" title=" " alt="" coords="341,1026,265,1026,265,1020,341,1020"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a09cd71eec37b89e27b214acd1af6c476" title="Telecommand: Set the power control mode of each component of the ADCS; for each, 0 turns the componen..." alt="" coords="49,1068,243,1109"/>
-<area shape="poly" title=" " alt="" coords="341,1086,243,1088,243,1083,341,1080"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a8ee861331037001ee63c66cb8b2dc32f" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="55,1133,237,1174"/>
-<area shape="poly" title=" " alt="" coords="355,1145,237,1151,237,1146,355,1140"/>
-<area shape="rect" href="telecommand__adcs_8c.html#acb4aaa038a792391c026be5c1cd23bd6" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="38,1198,254,1224"/>
-<area shape="poly" title=" " alt="" coords="353,1202,255,1208,255,1202,352,1197"/>
-<area shape="rect" href="telecommand__adcs_8c.html#acfbac886221c0407fce13bee70ec8d5a" title="Telecommand: Request commissioning telemetry from the ADCS and save it to the memory module." alt="" coords="57,1248,235,1289"/>
-<area shape="poly" title=" " alt="" coords="342,1255,235,1264,235,1258,341,1250"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a98bf5256b122713dd604a9217a717d11" title="Telecommand: Repeatedly log given data from an SD card." alt="" coords="59,1313,233,1354"/>
-<area shape="poly" title=" " alt="" coords="356,1265,336,1272,312,1287,288,1303,234,1320,232,1315,286,1298,309,1283,333,1267,354,1260"/>
-<area shape="rect" href="telecommand__adcs_8c.html#aeb241b357bb40b06076223d9f173a81d" title="Telecommand: Set the ADCS Simplified General Perturbations (SGP4) orbit parameters." alt="" coords="52,1379,240,1419"/>
-<area shape="poly" title=" " alt="" coords="353,1330,336,1337,312,1353,288,1368,241,1384,239,1379,286,1363,309,1348,333,1333,351,1325"/>
+<area shape="rect" title="Sends a telecommand over I2C to the ADCS, checks that it&#39;s been acknowledged, and returns the ACK err..." alt="" coords="874,852,1055,893"/>
+<area shape="rect" href="adcs__commands_8c.html#a5d12721da74144783af765b02aafe64d" title="Instruct the ADCS to execute the titular command." alt="" coords="624,21,816,46"/>
+<area shape="poly" title=" " alt="" coords="959,836,950,674,927,445,909,328,887,220,858,132,842,98,824,71,810,59,792,49,795,45,813,54,828,68,847,95,863,130,892,219,915,327,932,444,955,674,964,836"/>
+<area shape="rect" href="adcs__commands_8c.html#aa279a3c35fddc09f0fb42accbd58001b" title="Instruct the ADCS to execute the ADCS_Attitude_Estimation_Mode command." alt="" coords="613,82,826,108"/>
+<area shape="poly" title=" " alt="" coords="957,837,943,693,915,493,897,390,876,296,851,217,824,162,810,145,793,131,756,111,759,106,796,127,814,142,829,159,856,216,881,295,902,389,921,492,948,692,963,836"/>
+<area shape="rect" href="adcs__commands_8c.html#a5a496e55cfdbe02ab43b7b9a8b693b68" title="Instruct the ADCS to execute the ADCS_Bootloader_Clear_Errors command." alt="" coords="640,172,799,213"/>
+<area shape="poly" title=" " alt="" coords="961,837,958,731,952,660,941,582,924,500,900,417,867,337,824,263,798,236,767,215,770,211,801,232,828,260,872,335,905,415,929,499,947,581,958,660,964,731,967,837"/>
+<area shape="rect" href="adcs__commands_8c.html#a3a3b809be5bcecf6db7ca9147beb638e" title="Instruct the ADCS to execute the ADCS_Clear_Errors command." alt="" coords="654,274,786,300"/>
+<area shape="poly" title=" " alt="" coords="956,837,938,724,909,573,891,498,871,429,848,372,824,333,803,315,778,303,780,298,806,311,828,329,853,369,876,427,896,496,914,572,943,723,961,837"/>
+<area shape="rect" href="adcs__commands_8c.html#a71ab45f06625b9c7ea6b6124ecd0b784" title="Instruct the ADCS to execute the ADCS_Deploy_Magnetometer command." alt="" coords="624,344,815,369"/>
+<area shape="poly" title=" " alt="" coords="962,837,958,747,952,689,941,626,923,562,899,498,867,439,825,388,801,372,804,368,828,384,871,436,904,496,929,560,946,625,957,688,963,746,967,837"/>
+<area shape="rect" href="adcs__commands_8c.html#aede64efdb08acf89df5ac15de7906e58" title="Instruct the ADCS to execute the ADCS_Reset command." alt="" coords="673,398,766,424"/>
+<area shape="poly" title=" " alt="" coords="960,836,954,755,946,704,934,648,917,592,893,537,863,486,825,441,797,424,766,416,767,411,799,419,828,437,867,483,898,534,922,590,939,647,951,703,959,754,965,836"/>
+<area shape="rect" href="adcs__commands_8c.html#aa4ebf975b5c8b02ef0dbfe117cbd7c14" title="Instruct the ADCS to execute the ADCS_Run_Once command." alt="" coords="661,452,778,477"/>
+<area shape="poly" title=" " alt="" coords="958,837,947,767,924,676,907,629,885,582,858,539,825,501,803,486,778,476,780,471,805,481,828,497,862,536,890,580,912,627,929,675,952,766,963,836"/>
+<area shape="rect" href="adcs__commands_8c.html#af308e3206304ee5b75dd8bb6aec85177" title="Instruct the ADCS to execute the ADCS_Save_Config command." alt="" coords="653,512,786,537"/>
+<area shape="poly" title=" " alt="" coords="954,837,939,779,914,706,877,632,852,597,825,566,803,551,779,540,781,535,806,546,828,562,857,594,881,629,919,704,945,777,959,836"/>
+<area shape="rect" href="adcs__commands_8c.html#a2d911b54220da01cfb0ab415739bea38" title="Instruct the ADCS to save an image to the SD card." alt="" coords="633,577,806,602"/>
+<area shape="poly" title=" " alt="" coords="951,838,933,790,907,733,871,675,849,648,825,625,788,605,791,601,828,621,853,645,875,671,912,730,938,788,956,836"/>
+<area shape="rect" href="adcs__commands_8c.html#ae819a5b032d9d62d1cc83623657934a5" title="Instruct the ADCS to execute the ADCS_Save_Orbit_Params command." alt="" coords="632,636,807,661"/>
+<area shape="poly" title=" " alt="" coords="946,839,927,801,900,758,866,715,825,679,796,664,799,659,828,674,869,711,904,755,931,798,951,837"/>
+<area shape="rect" href="adcs__commands_8c.html#aed744b7e685734f1640661cb715b7a82" title="Set the Augmented SGP4 Parameters of the ADCS." alt="" coords="643,688,796,729"/>
+<area shape="poly" title=" " alt="" coords="935,842,887,792,857,766,825,744,795,730,798,725,828,739,860,762,891,788,939,838"/>
+<area shape="rect" href="adcs__commands_8c.html#a67665c09e24d46cfd738b32a596af250" title="Instruct the ADCS to execute the ADCS_Set_Commanded_Attitude_Angles command." alt="" coords="640,753,800,794"/>
+<area shape="poly" title=" " alt="" coords="908,847,825,809,791,797,793,792,827,805,911,842"/>
+<area shape="rect" href="adcs__commands_8c.html#a11601ce06ad4d9ba65907410e81bdee2" title="Instruct the ADCS to execute the ADCS_Set_Estimation_Params command." alt="" coords="645,819,794,859"/>
+<area shape="poly" title=" " alt="" coords="859,861,794,852,795,846,859,855"/>
+<area shape="rect" href="adcs__commands_8c.html#a244e37cb9b4c803699e5cdca2692ab07" title="Instruct the ADCS to set the magnetometer configuration." alt="" coords="634,884,806,925"/>
+<area shape="poly" title=" " alt="" coords="859,889,807,896,806,890,858,884"/>
+<area shape="rect" href="adcs__commands_8c.html#a3393a2f85e1384e27f10da0155c01f29" title="Instruct the ADCS to execute the titular command." alt="" coords="614,949,825,974"/>
+<area shape="poly" title=" " alt="" coords="911,903,827,939,786,951,785,946,825,934,909,898"/>
+<area shape="rect" href="adcs__commands_8c.html#ac262b765d9ea6b19e8fb1f39e50c4dd0" title="Instruct the ADCS to execute the ADCS_Set_Magnetorquer_Output command." alt="" coords="636,999,804,1039"/>
+<area shape="poly" title=" " alt="" coords="935,906,887,949,828,989,803,1001,801,996,825,985,884,945,931,902"/>
+<area shape="rect" href="adcs__commands_8c.html#a5a06facbb818d342cd4749fc53456287" title="Set the power control mode of each component of the ADCS; for each, 0 turns the component off,..." alt="" coords="339,1117,510,1142"/>
+<area shape="poly" title=" " alt="" coords="956,908,939,955,913,1009,876,1062,854,1085,828,1104,787,1124,744,1139,700,1148,655,1153,568,1153,495,1146,496,1140,569,1148,654,1148,699,1143,743,1134,785,1119,825,1099,850,1081,872,1058,908,1006,934,953,951,907"/>
+<area shape="rect" href="adcs__commands_8c.html#a3a9f4c3b3f178a53bcd12c5d4a042794" title="Instruct the ADCS to execute the ADCS_Set_Rate_Gyro_Config command." alt="" coords="648,1164,791,1205"/>
+<area shape="poly" title=" " alt="" coords="957,908,941,961,915,1025,877,1090,854,1121,828,1148,793,1169,790,1165,825,1144,850,1117,873,1087,910,1022,936,959,952,907"/>
+<area shape="rect" href="adcs__commands_8c.html#a42020a863207734cd2930378ab9349bd" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="646,1229,793,1254"/>
+<area shape="poly" title=" " alt="" coords="962,909,951,975,928,1059,910,1103,888,1145,861,1184,828,1218,812,1229,794,1236,792,1231,810,1224,825,1214,857,1181,883,1142,905,1100,923,1057,946,974,957,908"/>
+<area shape="rect" href="adcs__commands_8c.html#afad12ab1d20dbb4d7d2d2f534e26f5f2" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="636,1064,804,1089"/>
+<area shape="poly" title=" " alt="" coords="949,908,929,943,901,982,867,1021,828,1053,803,1065,801,1060,825,1049,864,1017,897,979,924,940,944,905"/>
+<area shape="rect" href="adcs__commands_8c.html#a155f5bcb7965f0b88875194f476ac112" title="Instruct the ADCS to execute the ADCS_Set_SGP4_Orbit_Params command." alt="" coords="645,1279,794,1319"/>
+<area shape="poly" title=" " alt="" coords="964,908,955,983,933,1080,915,1131,893,1181,864,1228,828,1269,796,1289,794,1284,825,1265,860,1225,888,1178,911,1129,928,1078,950,982,959,908"/>
+<area shape="rect" href="adcs__commands_8c.html#af523abd359aa91b46f1d37d9668cb82f" title="Instruct the ADCS to execute the ADCS_Set_Tracking_Controller_Target_Reference command." alt="" coords="622,1344,817,1385"/>
+<area shape="poly" title=" " alt="" coords="966,909,960,994,953,1048,941,1107,924,1168,900,1228,868,1283,828,1333,812,1346,809,1341,824,1329,864,1280,895,1225,918,1166,936,1106,948,1048,955,993,961,908"/>
+<area shape="rect" href="adcs__commands_8c.html#a54c7f98f0379ad007c03f291da751edc" title="Instruct the ADCS to execute the ADCS_Set_Unix_Time_Save_Mode command." alt="" coords="648,1409,792,1450"/>
+<area shape="poly" title=" " alt="" coords="961,908,944,1019,915,1165,897,1239,876,1305,853,1360,828,1398,812,1411,794,1420,791,1415,809,1407,824,1395,849,1358,871,1303,892,1237,910,1164,939,1018,956,907"/>
+<area shape="rect" href="adcs__commands_8c.html#a9f51e83fcfa4e59e44b77f355844d818" title="Instruct the ADCS to execute the titular command." alt="" coords="637,1474,802,1500"/>
+<area shape="poly" title=" " alt="" coords="962,909,948,1033,921,1199,903,1283,881,1359,857,1421,843,1445,828,1464,804,1479,802,1475,825,1460,839,1442,852,1419,876,1357,898,1281,916,1198,942,1032,957,908"/>
+<area shape="rect" href="adcs__commands_8c.html#a0ee4a74615b30328d110093fb1d7e18b" title="Instruct the ADCS to synchronise its Unix epoch time to the current OBC Unix time." alt="" coords="622,1524,817,1549"/>
+<area shape="poly" title=" " alt="" coords="963,908,950,1042,925,1224,907,1316,885,1399,859,1467,844,1494,828,1514,814,1525,811,1521,824,1510,840,1491,854,1465,880,1397,901,1314,919,1223,945,1041,958,908"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a5e0859e51ddde0fef41f11c323dc1599" title="Telecommand: execute a generic command on the ADCS." alt="" coords="632,1573,808,1614"/>
+<area shape="poly" title=" " alt="" coords="963,908,951,1051,926,1246,908,1346,886,1437,860,1512,845,1541,828,1564,810,1578,807,1574,824,1560,840,1538,855,1510,881,1435,903,1345,921,1245,946,1050,958,908"/>
+<area shape="rect" href="telecommand__adcs_8c.html#aa4735644aa3f675981fb2b1ca33be6b1" title="Telecommand: Set the attitude control mode of the ADCS; needs Power Control to be set before working." alt="" coords="336,5,513,46"/>
+<area shape="poly" title=" " alt="" coords="608,33,513,31,514,25,608,28"/>
+<area shape="rect" href="telecommand__adcs_8c.html#ae4a656bd5312eb333be28fdc369949de" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="336,71,513,111"/>
+<area shape="poly" title=" " alt="" coords="598,96,513,95,513,90,598,91"/>
+<area shape="rect" href="telecommand__adcs_8c.html#abf9f994be4334fec523afdfeb94fae10" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="327,136,522,177"/>
+<area shape="poly" title=" " alt="" coords="624,183,522,171,522,166,625,178"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a4a392ab74792b31db922ac145686191a" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="343,267,506,307"/>
+<area shape="poly" title=" " alt="" coords="638,290,506,290,506,284,638,284"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a49630bc8904515fc0b8047cd6d5c7d6a" title="Telecommand: obtain generic telemetry from the ADCS." alt="" coords="336,201,512,242"/>
+<area shape="poly" title=" " alt="" coords="643,273,512,244,514,239,644,268"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a4f76ad9966b9384028ffecba4433bf12" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="339,332,510,373"/>
+<area shape="poly" title=" " alt="" coords="609,357,511,356,511,351,609,352"/>
+<area shape="rect" href="telecommand__adcs_8c.html#af9ce33163776cab8f4ad997c16af6ae6" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="343,397,506,422"/>
+<area shape="poly" title=" " alt="" coords="658,413,506,413,506,407,658,408"/>
+<area shape="rect" href="telecommand__adcs_8c.html#aee68180c5bab44ee52ba9dc1bbc61ba6" title="Telecommand: If ADCS run mode is Triggered, run the ADCS sensor loop." alt="" coords="331,446,518,472"/>
+<area shape="poly" title=" " alt="" coords="645,466,518,463,519,458,645,460"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a514f1940538cd16b1f0842183eab9fd8" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="343,496,506,537"/>
+<area shape="poly" title=" " alt="" coords="637,525,506,521,506,516,637,519"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a0bc0d109abce87c4f6a417b203030a93" title="Telecommand: Save an image to the ADCS onboard SD card." alt="" coords="343,561,506,602"/>
+<area shape="poly" title=" " alt="" coords="617,590,506,587,506,581,617,584"/>
+<area shape="rect" href="telecommand__adcs_8c.html#ad2bbaeb81302110c39050cfd9591c1ed" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="343,627,506,667"/>
+<area shape="poly" title=" " alt="" coords="617,651,506,650,506,645,617,645"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a010a4200d80186fa6a4d9dd131f1ba5d" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="313,692,536,733"/>
+<area shape="poly" title=" " alt="" coords="627,712,536,713,536,708,627,707"/>
+<area shape="rect" href="telecommand__adcs_8c.html#aa54fca153c3d72b2792b90c67ea8ed01" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="309,757,540,798"/>
+<area shape="poly" title=" " alt="" coords="624,778,540,779,540,773,624,772"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a267cc8fe5234dd14291d632a63d56538" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="315,823,534,863"/>
+<area shape="poly" title=" " alt="" coords="629,843,534,844,534,839,629,838"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a07baac9fec776a43fe02a541ec8dea7e" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="303,888,546,929"/>
+<area shape="poly" title=" " alt="" coords="618,908,546,909,546,904,618,903"/>
+<area shape="rect" href="telecommand__adcs_8c.html#ab7d9825783bdf895f19de393b7b23afe" title="Telecommand: Set the magnetometer mode of the ADCS." alt="" coords="284,953,565,978"/>
+<area shape="poly" title=" " alt="" coords="598,966,566,966,565,961,598,961"/>
+<area shape="rect" href="telecommand__adcs_8c.html#af2ca31f4b748a6a93be8a3f1907689e9" title="Telecommand: Set the magnetorquer output values." alt="" coords="305,1003,544,1043"/>
+<area shape="poly" title=" " alt="" coords="620,1023,544,1024,544,1019,620,1018"/>
+<area shape="rect" href="adcs__commands_8c.html#a440ef61b27cd8228c1e2600758e9d207" title="Disable all ADCS peripherals and active SD card logs except the CubeSense Motor and Signal power,..." alt="" coords="14,1109,227,1150"/>
+<area shape="poly" title=" " alt="" coords="324,1132,227,1132,227,1127,324,1127"/>
+<area shape="rect" href="adcs__commands_8c.html#a4693b9a170e342e3f5bb908be0462f8f" title="Disable all ADCS peripherals and active SD card logs." alt="" coords="5,1044,236,1085"/>
+<area shape="poly" title=" " alt="" coords="324,1116,283,1108,198,1088,199,1083,284,1103,325,1111"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a09cd71eec37b89e27b214acd1af6c476" title="Telecommand: Set the power control mode of each component of the ADCS; for each, 0 turns the componen..." alt="" coords="23,1175,218,1215"/>
+<area shape="poly" title=" " alt="" coords="329,1149,284,1158,203,1177,202,1171,283,1152,328,1143"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a8ee861331037001ee63c66cb8b2dc32f" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="334,1167,515,1207"/>
+<area shape="poly" title=" " alt="" coords="633,1188,516,1189,515,1184,633,1182"/>
+<area shape="rect" href="telecommand__adcs_8c.html#acb4aaa038a792391c026be5c1cd23bd6" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="316,1232,532,1257"/>
+<area shape="poly" title=" " alt="" coords="631,1245,533,1246,533,1241,631,1240"/>
+<area shape="rect" href="adcs__commands_8c.html#a97ee5ec87812d9c34ad86b85834e688c" title="Disable all active ADCS SD card logs." alt="" coords="335,1068,514,1093"/>
+<area shape="poly" title=" " alt="" coords="620,1080,514,1082,514,1076,620,1075"/>
+<area shape="poly" title=" " alt="" coords="326,1099,228,1115,227,1110,325,1094"/>
+<area shape="poly" title=" " alt="" coords="319,1077,236,1073,236,1068,320,1072"/>
 </map>
 </div>
 
@@ -1035,7 +1055,7 @@ Here is the caller graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="676,912,657,957,631,1010,595,1062,550,1108,514,1127,512,1122,546,1104,591,1059,626,1007,653,955,671,910"/>
 <area shape="rect" href="adcs__commands_8c.html#a42020a863207734cd2930378ab9349bd" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="368,1182,514,1208"/>
 <area shape="poly" title=" " alt="" coords="681,913,667,970,642,1040,624,1076,604,1111,579,1144,550,1172,516,1189,513,1184,546,1168,575,1140,599,1108,620,1074,637,1038,662,968,676,912"/>
-<area shape="rect" href="adcs__commands_8c.html#a13c723f863160e6cf86ec2be92effab8" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="357,1232,526,1257"/>
+<area shape="rect" href="adcs__commands_8c.html#afad12ab1d20dbb4d7d2d2f534e26f5f2" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="357,1232,526,1257"/>
 <area shape="poly" title=" " alt="" coords="684,913,673,979,650,1063,632,1107,610,1149,583,1188,550,1222,527,1236,524,1231,546,1218,579,1185,605,1146,627,1105,644,1061,668,978,679,912"/>
 <area shape="rect" href="adcs__commands_8c.html#a155f5bcb7965f0b88875194f476ac112" title="Instruct the ADCS to execute the ADCS_Set_SGP4_Orbit_Params command." alt="" coords="367,1281,516,1322"/>
 <area shape="poly" title=" " alt="" coords="685,913,676,987,654,1083,637,1134,614,1184,585,1231,550,1272,518,1291,515,1287,546,1268,581,1227,609,1182,632,1132,649,1082,671,986,680,912"/>
@@ -1083,16 +1103,16 @@ Here is the caller graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="320,968,287,968,287,963,320,963"/>
 <area shape="rect" href="telecommand__adcs_8c.html#af2ca31f4b748a6a93be8a3f1907689e9" title="Telecommand: Set the magnetorquer output values." alt="" coords="27,1003,265,1043"/>
 <area shape="poly" title=" " alt="" coords="341,1026,265,1026,265,1020,341,1020"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a09cd71eec37b89e27b214acd1af6c476" title="Telecommand: Set the power control mode of each component of the ADCS; for each, 0 turns the componen..." alt="" coords="49,1068,243,1109"/>
-<area shape="poly" title=" " alt="" coords="341,1086,243,1088,243,1083,341,1080"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a8ee861331037001ee63c66cb8b2dc32f" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="55,1133,237,1174"/>
-<area shape="poly" title=" " alt="" coords="355,1145,237,1151,237,1146,355,1140"/>
-<area shape="rect" href="telecommand__adcs_8c.html#acb4aaa038a792391c026be5c1cd23bd6" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="38,1198,254,1224"/>
-<area shape="poly" title=" " alt="" coords="353,1202,255,1208,255,1202,352,1197"/>
-<area shape="rect" href="telecommand__adcs_8c.html#acfbac886221c0407fce13bee70ec8d5a" title="Telecommand: Request commissioning telemetry from the ADCS and save it to the memory module." alt="" coords="57,1248,235,1289"/>
-<area shape="poly" title=" " alt="" coords="342,1255,235,1264,235,1258,341,1250"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a98bf5256b122713dd604a9217a717d11" title="Telecommand: Repeatedly log given data from an SD card." alt="" coords="59,1313,233,1354"/>
-<area shape="poly" title=" " alt="" coords="356,1265,336,1272,312,1287,288,1303,234,1320,232,1315,286,1298,309,1283,333,1267,354,1260"/>
+<area shape="rect" href="adcs__commands_8c.html#a440ef61b27cd8228c1e2600758e9d207" title="Disable all ADCS peripherals and active SD card logs except the CubeSense Motor and Signal power,..." alt="" coords="40,1068,252,1109"/>
+<area shape="poly" title=" " alt="" coords="341,1086,252,1088,252,1083,341,1080"/>
+<area shape="rect" href="adcs__commands_8c.html#a4693b9a170e342e3f5bb908be0462f8f" title="Disable all ADCS peripherals and active SD card logs." alt="" coords="31,1133,261,1174"/>
+<area shape="poly" title=" " alt="" coords="367,1100,335,1108,287,1123,239,1135,238,1130,286,1118,334,1103,366,1095"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a09cd71eec37b89e27b214acd1af6c476" title="Telecommand: Set the power control mode of each component of the ADCS; for each, 0 turns the componen..." alt="" coords="49,1199,243,1239"/>
+<area shape="poly" title=" " alt="" coords="344,1103,336,1108,320,1126,313,1147,306,1168,288,1188,267,1200,245,1209,243,1204,265,1195,285,1184,301,1165,308,1145,315,1124,333,1104,342,1098"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a8ee861331037001ee63c66cb8b2dc32f" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="55,1264,237,1305"/>
+<area shape="poly" title=" " alt="" coords="357,1159,336,1172,320,1191,313,1212,306,1233,288,1253,264,1267,238,1277,236,1272,262,1262,285,1249,301,1230,308,1210,316,1189,333,1168,354,1155"/>
+<area shape="rect" href="telecommand__adcs_8c.html#acb4aaa038a792391c026be5c1cd23bd6" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="38,1329,254,1354"/>
+<area shape="poly" title=" " alt="" coords="355,1210,336,1221,325,1232,319,1244,314,1269,308,1294,300,1307,288,1318,256,1335,254,1331,285,1314,296,1303,303,1292,308,1267,314,1242,321,1229,333,1217,352,1206"/>
 </map>
 </div>
 

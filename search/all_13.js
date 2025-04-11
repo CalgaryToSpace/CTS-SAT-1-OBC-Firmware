@@ -384,7 +384,7 @@ var searchData=
   ['log_2ec_381',['log.c',['../log_8c.html',1,'']]],
   ['log_2eh_382',['log.h',['../log_8h.html',1,'']]],
   ['log_5fall_5fsinks_5fexcept_383',['LOG_all_sinks_except',['../log_8h.html#af0773c8a129e47dc63240296ed10cddb',1,'LOG_all_sinks_except(uint32_t exceptions):&#160;log.c'],['../log_8c.html#a6efa47aededef4834dc5c25da1e432de',1,'LOG_all_sinks_except(uint32_t sink_exceptions_mask):&#160;log.c']]],
-  ['log_5fbitmask_384',['log_bitmask',['../structADCS__sd__log__config__struct.html#a61d3e3853d37ca59892db4b669ca41d8',1,'ADCS_sd_log_config_struct']]],
+  ['log_5fbitmask_384',['log_bitmask',['../structADCS__sd__log__config__struct.html#aa6c0f5884926a9bcbbd3e3b330c6db27',1,'ADCS_sd_log_config_struct']]],
   ['log_5ffile_5fpath_385',['log_file_path',['../structLOG__system__t.html#a0fdb1aefdd9e43ccca13e333b9947041',1,'LOG_system_t']]],
   ['log_5fformatted_5flog_5fmessage_386',['LOG_formatted_log_message',['../log_8c.html#a2015e7056b183fc3e3dde9d7532324c0',1,'log.c']]],
   ['log_5fformatted_5fmessage_5fmax_5flength_387',['LOG_FORMATTED_MESSAGE_MAX_LENGTH',['../log_8h.html#a68cddde36b124d15327d45f7d2892a6a',1,'log.h']]],

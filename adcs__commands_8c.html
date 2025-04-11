@@ -360,12 +360,21 @@ Functions</h2></td></tr>
 <tr class="memitem:a4119f53137daee2b797d5f3166055ac7" id="r_a4119f53137daee2b797d5f3166055ac7"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4119f53137daee2b797d5f3166055ac7">ADCS_get_current_unix_time</a> (uint64_t *epoch_time_ms)</td></tr>
 <tr class="memdesc:a4119f53137daee2b797d5f3166055ac7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instruct the ADCS to execute the ADCS_get_current_unix_time command.  <br /></td></tr>
 <tr class="separator:a4119f53137daee2b797d5f3166055ac7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a13c723f863160e6cf86ec2be92effab8" id="r_a13c723f863160e6cf86ec2be92effab8"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a13c723f863160e6cf86ec2be92effab8">ADCS_set_sd_log_config</a> (uint8_t which_log, const uint8_t **log_array, uint8_t log_array_size, uint16_t log_period, <a class="el" href="adcs__types_8h.html#a29c83a5040b4f15dcba2f400097697aa">ADCS_sd_log_destination_enum_t</a> which_sd)</td></tr>
-<tr class="memdesc:a13c723f863160e6cf86ec2be92effab8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instruct the ADCS to execute the ADCS_Set_Run_Mode command.  <br /></td></tr>
-<tr class="separator:a13c723f863160e6cf86ec2be92effab8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afad12ab1d20dbb4d7d2d2f534e26f5f2" id="r_afad12ab1d20dbb4d7d2d2f534e26f5f2"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afad12ab1d20dbb4d7d2d2f534e26f5f2">ADCS_set_sd_log_config</a> (uint8_t which_log, const uint8_t **log_array, uint8_t log_array_len, uint16_t log_period, <a class="el" href="adcs__types_8h.html#a29c83a5040b4f15dcba2f400097697aa">ADCS_sd_log_destination_enum_t</a> which_sd)</td></tr>
+<tr class="memdesc:afad12ab1d20dbb4d7d2d2f534e26f5f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instruct the ADCS to execute the ADCS_Set_Run_Mode command.  <br /></td></tr>
+<tr class="separator:afad12ab1d20dbb4d7d2d2f534e26f5f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa09b0d343b9884169f1a179d4dc9a435" id="r_aa09b0d343b9884169f1a179d4dc9a435"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa09b0d343b9884169f1a179d4dc9a435">ADCS_get_sd_log_config</a> (uint8_t which_log, <a class="el" href="structADCS__sd__log__config__struct.html">ADCS_sd_log_config_struct</a> *config)</td></tr>
 <tr class="memdesc:aa09b0d343b9884169f1a179d4dc9a435"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instruct the ADCS to execute the ADCS_get_sd_log_config command.  <br /></td></tr>
 <tr class="separator:aa09b0d343b9884169f1a179d4dc9a435"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97ee5ec87812d9c34ad86b85834e688c" id="r_a97ee5ec87812d9c34ad86b85834e688c"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a97ee5ec87812d9c34ad86b85834e688c">ADCS_disable_SD_logging</a> ()</td></tr>
+<tr class="memdesc:a97ee5ec87812d9c34ad86b85834e688c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disable all active ADCS SD card logs.  <br /></td></tr>
+<tr class="separator:a97ee5ec87812d9c34ad86b85834e688c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4693b9a170e342e3f5bb908be0462f8f" id="r_a4693b9a170e342e3f5bb908be0462f8f"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4693b9a170e342e3f5bb908be0462f8f">ADCS_disable_peripherals_and_SD_logs_without_stabilisation</a> ()</td></tr>
+<tr class="memdesc:a4693b9a170e342e3f5bb908be0462f8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disable all ADCS peripherals and active SD card logs.  <br /></td></tr>
+<tr class="separator:a4693b9a170e342e3f5bb908be0462f8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a440ef61b27cd8228c1e2600758e9d207" id="r_a440ef61b27cd8228c1e2600758e9d207"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a440ef61b27cd8228c1e2600758e9d207">ADCS_disable_peripherals_and_SD_logs_with_stabilisation</a> ()</td></tr>
+<tr class="memdesc:a440ef61b27cd8228c1e2600758e9d207"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disable all ADCS peripherals and active SD card logs except the CubeSense Motor and Signal power, required for attitude stabilisation.  <br /></td></tr>
+<tr class="separator:a440ef61b27cd8228c1e2600758e9d207"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
@@ -685,7 +694,7 @@ Here is the caller graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="599,906,598,907,582,932,574,956,573,980,575,1005,577,1029,576,1054,568,1080,550,1105,533,1118,514,1127,512,1122,530,1114,546,1101,563,1077,571,1053,572,1029,570,1005,568,980,569,955,577,930,594,904,596,902"/>
 <area shape="rect" href="adcs__commands_8c.html#a42020a863207734cd2930378ab9349bd" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="368,1180,514,1205"/>
 <area shape="poly" title=" " alt="" coords="599,906,598,907,578,940,570,973,571,1005,576,1038,581,1070,582,1103,573,1136,550,1169,534,1181,516,1189,514,1184,531,1177,546,1165,568,1134,576,1102,576,1071,571,1038,566,1006,565,972,573,938,594,904,595,903"/>
-<area shape="rect" href="adcs__commands_8c.html#a13c723f863160e6cf86ec2be92effab8" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="357,1229,526,1254"/>
+<area shape="rect" href="adcs__commands_8c.html#afad12ab1d20dbb4d7d2d2f534e26f5f2" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="357,1229,526,1254"/>
 <area shape="poly" title=" " alt="" coords="599,906,598,907,584,927,575,947,567,986,569,1025,577,1063,584,1102,586,1141,576,1180,566,1200,550,1220,528,1235,525,1231,546,1216,561,1197,571,1178,581,1141,579,1103,572,1064,564,1025,562,985,570,945,580,925,594,904,595,903"/>
 <area shape="rect" href="adcs__commands_8c.html#a155f5bcb7965f0b88875194f476ac112" title="Instruct the ADCS to execute the ADCS_Set_SGP4_Orbit_Params command." alt="" coords="367,1279,516,1319"/>
 <area shape="poly" title=" " alt="" coords="599,907,598,907,582,930,572,953,563,998,566,1042,576,1087,585,1131,588,1176,585,1199,578,1222,567,1245,550,1269,535,1282,518,1291,515,1286,532,1277,546,1265,562,1243,574,1220,580,1198,583,1176,580,1132,571,1088,561,1043,558,998,567,952,578,928,594,904,595,903"/>
@@ -733,14 +742,14 @@ Here is the caller graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="320,967,287,967,287,962,320,961"/>
 <area shape="rect" href="telecommand__adcs_8c.html#af2ca31f4b748a6a93be8a3f1907689e9" title="Telecommand: Set the magnetorquer output values." alt="" coords="27,1003,265,1043"/>
 <area shape="poly" title=" " alt="" coords="341,1024,265,1025,265,1019,341,1019"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a09cd71eec37b89e27b214acd1af6c476" title="Telecommand: Set the power control mode of each component of the ADCS; for each, 0 turns the componen..." alt="" coords="49,1068,243,1109"/>
-<area shape="poly" title=" " alt="" coords="341,1084,243,1087,243,1082,341,1079"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a8ee861331037001ee63c66cb8b2dc32f" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="55,1133,237,1174"/>
-<area shape="poly" title=" " alt="" coords="355,1143,237,1151,237,1145,354,1138"/>
-<area shape="rect" href="telecommand__adcs_8c.html#acb4aaa038a792391c026be5c1cd23bd6" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="38,1198,254,1224"/>
-<area shape="poly" title=" " alt="" coords="353,1201,255,1207,255,1201,352,1195"/>
-<area shape="rect" href="telecommand__adcs_8c.html#acfbac886221c0407fce13bee70ec8d5a" title="Telecommand: Request commissioning telemetry from the ADCS and save it to the memory module." alt="" coords="57,1248,235,1289"/>
-<area shape="poly" title=" " alt="" coords="342,1253,235,1263,235,1258,341,1248"/>
+<area shape="rect" href="adcs__commands_8c.html#a440ef61b27cd8228c1e2600758e9d207" title="Disable all ADCS peripherals and active SD card logs except the CubeSense Motor and Signal power,..." alt="" coords="40,1068,252,1109"/>
+<area shape="poly" title=" " alt="" coords="341,1084,252,1087,252,1082,341,1079"/>
+<area shape="rect" href="adcs__commands_8c.html#a4693b9a170e342e3f5bb908be0462f8f" title="Disable all ADCS peripherals and active SD card logs." alt="" coords="31,1133,261,1174"/>
+<area shape="poly" title=" " alt="" coords="365,1097,335,1106,287,1123,242,1135,241,1130,286,1118,334,1100,364,1092"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a09cd71eec37b89e27b214acd1af6c476" title="Telecommand: Set the power control mode of each component of the ADCS; for each, 0 turns the componen..." alt="" coords="49,1199,243,1239"/>
+<area shape="poly" title=" " alt="" coords="344,1100,336,1105,320,1124,313,1145,306,1167,288,1188,267,1200,245,1209,243,1204,265,1196,285,1184,301,1164,308,1144,315,1122,333,1101,341,1095"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a8ee861331037001ee63c66cb8b2dc32f" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="55,1264,237,1305"/>
+<area shape="poly" title=" " alt="" coords="357,1156,336,1169,320,1189,314,1210,306,1232,288,1253,264,1267,238,1277,236,1272,262,1262,285,1249,302,1229,308,1209,315,1187,333,1165,355,1152"/>
 </map>
 </div>
 
@@ -794,6 +803,201 @@ Here is the caller graph for this function:</div>
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Deploy_Magnetometer command." alt="" coords="225,13,416,38"/>
 <area shape="rect" href="telecommand__adcs_8c.html#a4f76ad9966b9384028ffecba4433bf12" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,177,46"/>
 <area shape="poly" title=" " alt="" coords="209,28,177,28,177,23,209,23"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a440ef61b27cd8228c1e2600758e9d207" name="a440ef61b27cd8228c1e2600758e9d207"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a440ef61b27cd8228c1e2600758e9d207">&#9670;&#160;</a></span>ADCS_disable_peripherals_and_SD_logs_with_stabilisation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t ADCS_disable_peripherals_and_SD_logs_with_stabilisation </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Disable all ADCS peripherals and active SD card logs except the CubeSense Motor and Signal power, required for attitude stabilisation. </p>
+<dl class="section note"><dt>Note</dt><dd>If CubeSense Motor and/or Signal Power are already off, they will remain off. </dd>
+<dd>
+Compared to without_stabilisation, this costs average 250 mW, maximum 1 W extra. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>0 if successful, non-zero if a HAL or ADCS error occurred. </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="adcs__commands_8c_a440ef61b27cd8228c1e2600758e9d207_cgraph.png" border="0" usemap="#aadcs__commands_8c_a440ef61b27cd8228c1e2600758e9d207_cgraph" alt=""/></div>
+<map name="aadcs__commands_8c_a440ef61b27cd8228c1e2600758e9d207_cgraph" id="aadcs__commands_8c_a440ef61b27cd8228c1e2600758e9d207_cgraph">
+<area shape="rect" title="Disable all ADCS peripherals and active SD card logs except the CubeSense Motor and Signal power,..." alt="" coords="5,111,218,151"/>
+<area shape="rect" href="adcs__commands_8c.html#a97ee5ec87812d9c34ad86b85834e688c" title="Disable all active ADCS SD card logs." alt="" coords="266,88,444,113"/>
+<area shape="poly" title=" " alt="" coords="218,115,250,111,251,116,218,120"/>
+<area shape="rect" href="adcs__commands_8c.html#a5a06facbb818d342cd4749fc53456287" title="Set the power control mode of each component of the ADCS; for each, 0 turns the component off,..." alt="" coords="492,154,662,180"/>
+<area shape="poly" title=" " alt="" coords="218,137,477,157,477,162,218,142"/>
+<area shape="rect" href="adcs__commands_8c.html#afad12ab1d20dbb4d7d2d2f534e26f5f2" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="493,86,661,112"/>
+<area shape="poly" title=" " alt="" coords="444,97,477,97,477,102,444,102"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a0358a1934004652437772bce60da4239" title="Take an arbitrary number (up to 63) of 10&#45;byte uint8 arrays and return a single array which is the bi..." alt="" coords="721,5,880,46"/>
+<area shape="poly" title=" " alt="" coords="618,83,721,49,722,54,620,88"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a57380050bbf7103fc0101eb2145fc7c7" title="Swap low and high bytes of a uint16 to turn into uint8 and put into specified index of an array." alt="" coords="717,70,884,126"/>
+<area shape="poly" title=" " alt="" coords="662,96,701,96,701,101,662,101"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#aecce0bfa34eea6373e296fb13a2fb92f" title="Sends a telecommand over I2C to the ADCS, checks that it&#39;s been acknowledged, and returns the ACK err..." alt="" coords="710,149,891,190"/>
+<area shape="poly" title=" " alt="" coords="621,110,720,142,719,147,620,115"/>
+<area shape="rect" href="adcs__commands_8c.html#a78314a88408de1fd947bac1eb122e96f" title="Instructs the ADCS to determine whether the last command succeeded. (Doesn&#39;t work for telemetry reque..." alt="" coords="939,132,1056,157"/>
+<area shape="poly" title=" " alt="" coords="891,155,923,151,924,156,891,161"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a4fd725dd59fc5c6d0304751c2a08baa4" title="Sends a telecommand over I2C to the ADCS." alt="" coords="1343,157,1545,182"/>
+<area shape="poly" title=" " alt="" coords="891,167,1328,167,1328,172,891,172"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="1104,67,1295,107"/>
+<area shape="poly" title=" " alt="" coords="1045,128,1110,110,1111,115,1046,133"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="1110,132,1289,157"/>
+<area shape="poly" title=" " alt="" coords="1056,142,1095,142,1095,147,1056,147"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="1356,80,1532,121"/>
+<area shape="poly" title=" " alt="" coords="1296,90,1340,92,1340,97,1296,95"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1593,121,1741,162"/>
+<area shape="poly" title=" " alt="" coords="1533,114,1578,123,1577,128,1532,119"/>
+<area shape="poly" title=" " alt="" coords="1545,154,1577,150,1578,156,1545,160"/>
+<area shape="poly" title=" " alt="" coords="663,165,695,166,695,171,663,171"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="adcs__commands_8c_a440ef61b27cd8228c1e2600758e9d207_icgraph.png" border="0" usemap="#aadcs__commands_8c_a440ef61b27cd8228c1e2600758e9d207_icgraph" alt=""/></div>
+<map name="aadcs__commands_8c_a440ef61b27cd8228c1e2600758e9d207_icgraph" id="aadcs__commands_8c_a440ef61b27cd8228c1e2600758e9d207_icgraph">
+<area shape="rect" title="Disable all ADCS peripherals and active SD card logs except the CubeSense Motor and Signal power,..." alt="" coords="217,5,429,46"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a502da8be20cbdbe810b609948efef53a" title="Telecommand: Put the ADCS in low&#45;power mode, with only essential component power." alt="" coords="5,5,169,46"/>
+<area shape="poly" title=" " alt="" coords="201,28,169,28,169,23,201,23"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a4693b9a170e342e3f5bb908be0462f8f" name="a4693b9a170e342e3f5bb908be0462f8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4693b9a170e342e3f5bb908be0462f8f">&#9670;&#160;</a></span>ADCS_disable_peripherals_and_SD_logs_without_stabilisation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t ADCS_disable_peripherals_and_SD_logs_without_stabilisation </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Disable all ADCS peripherals and active SD card logs. </p>
+<dl class="section return"><dt>Returns</dt><dd>0 if successful, non-zero if a HAL or ADCS error occurred. </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="adcs__commands_8c_a4693b9a170e342e3f5bb908be0462f8f_cgraph.png" border="0" usemap="#aadcs__commands_8c_a4693b9a170e342e3f5bb908be0462f8f_cgraph" alt=""/></div>
+<map name="aadcs__commands_8c_a4693b9a170e342e3f5bb908be0462f8f_cgraph" id="aadcs__commands_8c_a4693b9a170e342e3f5bb908be0462f8f_cgraph">
+<area shape="rect" title="Disable all ADCS peripherals and active SD card logs." alt="" coords="5,111,236,151"/>
+<area shape="rect" href="adcs__commands_8c.html#a97ee5ec87812d9c34ad86b85834e688c" title="Disable all active ADCS SD card logs." alt="" coords="284,88,462,113"/>
+<area shape="poly" title=" " alt="" coords="236,114,268,110,268,116,236,120"/>
+<area shape="rect" href="adcs__commands_8c.html#a5a06facbb818d342cd4749fc53456287" title="Set the power control mode of each component of the ADCS; for each, 0 turns the component off,..." alt="" coords="510,154,680,180"/>
+<area shape="poly" title=" " alt="" coords="236,137,494,157,494,162,236,142"/>
+<area shape="rect" href="adcs__commands_8c.html#afad12ab1d20dbb4d7d2d2f534e26f5f2" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="511,86,679,112"/>
+<area shape="poly" title=" " alt="" coords="462,97,495,97,495,102,462,102"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a0358a1934004652437772bce60da4239" title="Take an arbitrary number (up to 63) of 10&#45;byte uint8 arrays and return a single array which is the bi..." alt="" coords="739,5,898,46"/>
+<area shape="poly" title=" " alt="" coords="636,83,739,49,740,54,638,88"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a57380050bbf7103fc0101eb2145fc7c7" title="Swap low and high bytes of a uint16 to turn into uint8 and put into specified index of an array." alt="" coords="735,70,902,126"/>
+<area shape="poly" title=" " alt="" coords="680,96,719,96,719,101,680,101"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#aecce0bfa34eea6373e296fb13a2fb92f" title="Sends a telecommand over I2C to the ADCS, checks that it&#39;s been acknowledged, and returns the ACK err..." alt="" coords="728,149,909,190"/>
+<area shape="poly" title=" " alt="" coords="639,110,738,142,737,147,638,115"/>
+<area shape="rect" href="adcs__commands_8c.html#a78314a88408de1fd947bac1eb122e96f" title="Instructs the ADCS to determine whether the last command succeeded. (Doesn&#39;t work for telemetry reque..." alt="" coords="957,132,1074,157"/>
+<area shape="poly" title=" " alt="" coords="909,155,941,151,942,156,909,161"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a4fd725dd59fc5c6d0304751c2a08baa4" title="Sends a telecommand over I2C to the ADCS." alt="" coords="1361,157,1563,182"/>
+<area shape="poly" title=" " alt="" coords="909,167,1346,167,1346,172,909,172"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="1122,67,1313,107"/>
+<area shape="poly" title=" " alt="" coords="1063,128,1128,110,1129,115,1064,133"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="1128,132,1307,157"/>
+<area shape="poly" title=" " alt="" coords="1074,142,1113,142,1113,147,1074,147"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="1374,80,1550,121"/>
+<area shape="poly" title=" " alt="" coords="1314,90,1358,92,1358,97,1314,95"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1611,121,1759,162"/>
+<area shape="poly" title=" " alt="" coords="1551,114,1596,123,1595,128,1550,119"/>
+<area shape="poly" title=" " alt="" coords="1563,154,1595,150,1596,156,1563,160"/>
+<area shape="poly" title=" " alt="" coords="681,165,713,166,713,171,681,171"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="adcs__commands_8c_a4693b9a170e342e3f5bb908be0462f8f_icgraph.png" border="0" usemap="#aadcs__commands_8c_a4693b9a170e342e3f5bb908be0462f8f_icgraph" alt=""/></div>
+<map name="aadcs__commands_8c_a4693b9a170e342e3f5bb908be0462f8f_icgraph" id="aadcs__commands_8c_a4693b9a170e342e3f5bb908be0462f8f_icgraph">
+<area shape="rect" title="Disable all ADCS peripherals and active SD card logs." alt="" coords="217,5,447,46"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a502da8be20cbdbe810b609948efef53a" title="Telecommand: Put the ADCS in low&#45;power mode, with only essential component power." alt="" coords="5,5,169,46"/>
+<area shape="poly" title=" " alt="" coords="201,28,169,28,169,23,201,23"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a97ee5ec87812d9c34ad86b85834e688c" name="a97ee5ec87812d9c34ad86b85834e688c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97ee5ec87812d9c34ad86b85834e688c">&#9670;&#160;</a></span>ADCS_disable_SD_logging()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t ADCS_disable_SD_logging </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Disable all active ADCS SD card logs. </p>
+<dl class="section return"><dt>Returns</dt><dd>0 if successful, non-zero if a HAL or ADCS error occurred. </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="adcs__commands_8c_a97ee5ec87812d9c34ad86b85834e688c_cgraph.png" border="0" usemap="#aadcs__commands_8c_a97ee5ec87812d9c34ad86b85834e688c_cgraph" alt=""/></div>
+<map name="aadcs__commands_8c_a97ee5ec87812d9c34ad86b85834e688c_cgraph" id="aadcs__commands_8c_a97ee5ec87812d9c34ad86b85834e688c_cgraph">
+<area shape="rect" title="Disable all active ADCS SD card logs." alt="" coords="5,85,184,110"/>
+<area shape="rect" href="adcs__commands_8c.html#afad12ab1d20dbb4d7d2d2f534e26f5f2" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="232,85,400,110"/>
+<area shape="poly" title=" " alt="" coords="184,95,216,95,216,100,184,100"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a0358a1934004652437772bce60da4239" title="Take an arbitrary number (up to 63) of 10&#45;byte uint8 arrays and return a single array which is the bi..." alt="" coords="459,5,617,46"/>
+<area shape="poly" title=" " alt="" coords="357,82,458,49,460,54,359,87"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a57380050bbf7103fc0101eb2145fc7c7" title="Swap low and high bytes of a uint16 to turn into uint8 and put into specified index of an array." alt="" coords="455,70,621,126"/>
+<area shape="poly" title=" " alt="" coords="400,95,439,95,439,100,400,100"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#aecce0bfa34eea6373e296fb13a2fb92f" title="Sends a telecommand over I2C to the ADCS, checks that it&#39;s been acknowledged, and returns the ACK err..." alt="" coords="448,149,628,190"/>
+<area shape="poly" title=" " alt="" coords="359,109,460,142,458,147,357,114"/>
+<area shape="rect" href="adcs__commands_8c.html#a78314a88408de1fd947bac1eb122e96f" title="Instructs the ADCS to determine whether the last command succeeded. (Doesn&#39;t work for telemetry reque..." alt="" coords="676,132,794,157"/>
+<area shape="poly" title=" " alt="" coords="628,155,661,151,661,156,629,161"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a4fd725dd59fc5c6d0304751c2a08baa4" title="Sends a telecommand over I2C to the ADCS." alt="" coords="1081,157,1282,182"/>
+<area shape="poly" title=" " alt="" coords="629,167,1065,167,1065,172,629,172"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="842,67,1033,107"/>
+<area shape="poly" title=" " alt="" coords="782,128,848,110,849,115,784,133"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="848,132,1026,157"/>
+<area shape="poly" title=" " alt="" coords="794,142,833,142,833,147,794,147"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="1094,80,1270,121"/>
+<area shape="poly" title=" " alt="" coords="1034,90,1078,92,1078,97,1033,95"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1330,121,1479,162"/>
+<area shape="poly" title=" " alt="" coords="1271,114,1316,123,1315,128,1270,119"/>
+<area shape="poly" title=" " alt="" coords="1282,154,1315,150,1315,156,1283,160"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="adcs__commands_8c_a97ee5ec87812d9c34ad86b85834e688c_icgraph.png" border="0" usemap="#aadcs__commands_8c_a97ee5ec87812d9c34ad86b85834e688c_icgraph" alt=""/></div>
+<map name="aadcs__commands_8c_a97ee5ec87812d9c34ad86b85834e688c_icgraph" id="aadcs__commands_8c_a97ee5ec87812d9c34ad86b85834e688c_icgraph">
+<area shape="rect" title="Disable all active ADCS SD card logs." alt="" coords="495,46,673,72"/>
+<area shape="rect" href="adcs__commands_8c.html#a440ef61b27cd8228c1e2600758e9d207" title="Disable all ADCS peripherals and active SD card logs except the CubeSense Motor and Signal power,..." alt="" coords="226,5,438,46"/>
+<area shape="poly" title=" " alt="" coords="479,48,438,42,439,37,480,43"/>
+<area shape="rect" href="adcs__commands_8c.html#a4693b9a170e342e3f5bb908be0462f8f" title="Disable all ADCS peripherals and active SD card logs." alt="" coords="217,71,447,111"/>
+<area shape="poly" title=" " alt="" coords="480,75,448,79,447,74,479,70"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a502da8be20cbdbe810b609948efef53a" title="Telecommand: Put the ADCS in low&#45;power mode, with only essential component power." alt="" coords="5,39,169,79"/>
+<area shape="poly" title=" " alt="" coords="211,45,169,51,169,45,210,40"/>
+<area shape="poly" title=" " alt="" coords="201,77,169,72,169,67,202,71"/>
 </map>
 </div>
 
@@ -4124,9 +4328,16 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="adcs__commands_8c_a5a06facbb818d342cd4749fc53456287_icgraph.png" border="0" usemap="#aadcs__commands_8c_a5a06facbb818d342cd4749fc53456287_icgraph" alt=""/></div>
 <map name="aadcs__commands_8c_a5a06facbb818d342cd4749fc53456287_icgraph" id="aadcs__commands_8c_a5a06facbb818d342cd4749fc53456287_icgraph">
-<area shape="rect" title="Set the power control mode of each component of the ADCS; for each, 0 turns the component off,..." alt="" coords="248,13,418,38"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a09cd71eec37b89e27b214acd1af6c476" title="Telecommand: Set the power control mode of each component of the ADCS; for each, 0 turns the componen..." alt="" coords="5,5,200,46"/>
-<area shape="poly" title=" " alt="" coords="232,28,200,28,200,23,232,23"/>
+<area shape="rect" title="Set the power control mode of each component of the ADCS; for each, 0 turns the component off,..." alt="" coords="495,78,665,104"/>
+<area shape="rect" href="adcs__commands_8c.html#a440ef61b27cd8228c1e2600758e9d207" title="Disable all ADCS peripherals and active SD card logs except the CubeSense Motor and Signal power,..." alt="" coords="226,5,438,46"/>
+<area shape="poly" title=" " alt="" coords="513,76,411,49,413,44,514,71"/>
+<area shape="rect" href="adcs__commands_8c.html#a4693b9a170e342e3f5bb908be0462f8f" title="Disable all ADCS peripherals and active SD card logs." alt="" coords="217,71,447,111"/>
+<area shape="poly" title=" " alt="" coords="479,94,448,94,448,88,479,88"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a09cd71eec37b89e27b214acd1af6c476" title="Telecommand: Set the power control mode of each component of the ADCS; for each, 0 turns the componen..." alt="" coords="235,136,429,177"/>
+<area shape="poly" title=" " alt="" coords="514,111,413,138,411,133,513,106"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a502da8be20cbdbe810b609948efef53a" title="Telecommand: Put the ADCS in low&#45;power mode, with only essential component power." alt="" coords="5,39,169,79"/>
+<area shape="poly" title=" " alt="" coords="211,45,169,51,169,45,210,40"/>
+<area shape="poly" title=" " alt="" coords="201,77,169,72,169,67,202,71"/>
 </map>
 </div>
 
@@ -4287,8 +4498,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a13c723f863160e6cf86ec2be92effab8" name="a13c723f863160e6cf86ec2be92effab8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a13c723f863160e6cf86ec2be92effab8">&#9670;&#160;</a></span>ADCS_set_sd_log_config()</h2>
+<a id="afad12ab1d20dbb4d7d2d2f534e26f5f2" name="afad12ab1d20dbb4d7d2d2f534e26f5f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afad12ab1d20dbb4d7d2d2f534e26f5f2">&#9670;&#160;</a></span>ADCS_set_sd_log_config()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -4306,7 +4517,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>log_array_size</em></span>, </td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>log_array_len</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -4326,7 +4537,7 @@ Here is the caller graph for this function:</div>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">which_log</td><td>1 or 2; which specific log number to log to the SD card </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">log_array</td><td>Pointer to list of bitmasks to set the log config </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">log_array_size</td><td>Number of things to log </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">log_array_len</td><td>Number of things to log </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">log_period</td><td>Period to log data to the SD card; if zero, then disable logging </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">which_sd</td><td>Which SD card to log to; 0 for primary, 1 for secondary </td></tr>
   </table>
@@ -4336,10 +4547,10 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="adcs__commands_8c_a13c723f863160e6cf86ec2be92effab8_cgraph.png" border="0" usemap="#aadcs__commands_8c_a13c723f863160e6cf86ec2be92effab8_cgraph" alt=""/></div>
-<map name="aadcs__commands_8c_a13c723f863160e6cf86ec2be92effab8_cgraph" id="aadcs__commands_8c_a13c723f863160e6cf86ec2be92effab8_cgraph">
+<div class="center"><img src="adcs__commands_8c_afad12ab1d20dbb4d7d2d2f534e26f5f2_cgraph.png" border="0" usemap="#aadcs__commands_8c_afad12ab1d20dbb4d7d2d2f534e26f5f2_cgraph" alt=""/></div>
+<map name="aadcs__commands_8c_afad12ab1d20dbb4d7d2d2f534e26f5f2_cgraph" id="aadcs__commands_8c_afad12ab1d20dbb4d7d2d2f534e26f5f2_cgraph">
 <area shape="rect" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="5,85,174,110"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#adc4c1fb96d40d40e055df7b0284b025e" title="Take an arbitrary number (up to 63) of 10&#45;byte uint8 arrays and return a single array which is the bi..." alt="" coords="233,5,391,46"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a0358a1934004652437772bce60da4239" title="Take an arbitrary number (up to 63) of 10&#45;byte uint8 arrays and return a single array which is the bi..." alt="" coords="233,5,391,46"/>
 <area shape="poly" title=" " alt="" coords="131,82,232,49,233,54,132,87"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a57380050bbf7103fc0101eb2145fc7c7" title="Swap low and high bytes of a uint16 to turn into uint8 and put into specified index of an array." alt="" coords="229,70,395,126"/>
 <area shape="poly" title=" " alt="" coords="174,95,213,95,213,100,174,100"/>
@@ -4363,13 +4574,22 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="adcs__commands_8c_a13c723f863160e6cf86ec2be92effab8_icgraph.png" border="0" usemap="#aadcs__commands_8c_a13c723f863160e6cf86ec2be92effab8_icgraph" alt=""/></div>
-<map name="aadcs__commands_8c_a13c723f863160e6cf86ec2be92effab8_icgraph" id="aadcs__commands_8c_a13c723f863160e6cf86ec2be92effab8_icgraph">
-<area shape="rect" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="231,46,399,72"/>
-<area shape="rect" href="telecommand__adcs_8c.html#acfbac886221c0407fce13bee70ec8d5a" title="Telecommand: Request commissioning telemetry from the ADCS and save it to the memory module." alt="" coords="5,5,183,46"/>
-<area shape="poly" title=" " alt="" coords="215,47,183,42,184,36,216,41"/>
-<area shape="rect" href="telecommand__adcs_8c.html#a98bf5256b122713dd604a9217a717d11" title="Telecommand: Repeatedly log given data from an SD card." alt="" coords="7,71,181,111"/>
-<area shape="poly" title=" " alt="" coords="216,76,181,81,181,76,215,71"/>
+<div class="center"><img src="adcs__commands_8c_afad12ab1d20dbb4d7d2d2f534e26f5f2_icgraph.png" border="0" usemap="#aadcs__commands_8c_afad12ab1d20dbb4d7d2d2f534e26f5f2_icgraph" alt=""/></div>
+<map name="aadcs__commands_8c_afad12ab1d20dbb4d7d2d2f534e26f5f2_icgraph" id="aadcs__commands_8c_afad12ab1d20dbb4d7d2d2f534e26f5f2_icgraph">
+<area shape="rect" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="721,102,890,128"/>
+<area shape="rect" href="adcs__commands_8c.html#a97ee5ec87812d9c34ad86b85834e688c" title="Disable all active ADCS SD card logs." alt="" coords="495,45,673,70"/>
+<area shape="poly" title=" " alt="" coords="738,100,636,74,638,69,739,95"/>
+<area shape="rect" href="telecommand__adcs_8c.html#acfbac886221c0407fce13bee70ec8d5a" title="Telecommand: Request commissioning telemetry from the ADCS and save it to the memory module." alt="" coords="496,95,673,135"/>
+<area shape="poly" title=" " alt="" coords="706,118,673,118,673,112,706,112"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a98bf5256b122713dd604a9217a717d11" title="Telecommand: Repeatedly log given data from an SD card." alt="" coords="498,160,671,201"/>
+<area shape="poly" title=" " alt="" coords="745,135,656,162,655,157,744,130"/>
+<area shape="rect" href="adcs__commands_8c.html#a440ef61b27cd8228c1e2600758e9d207" title="Disable all ADCS peripherals and active SD card logs except the CubeSense Motor and Signal power,..." alt="" coords="226,5,438,46"/>
+<area shape="poly" title=" " alt="" coords="479,47,438,42,439,37,480,42"/>
+<area shape="rect" href="adcs__commands_8c.html#a4693b9a170e342e3f5bb908be0462f8f" title="Disable all ADCS peripherals and active SD card logs." alt="" coords="217,71,447,111"/>
+<area shape="poly" title=" " alt="" coords="480,74,448,78,447,73,479,69"/>
+<area shape="rect" href="telecommand__adcs_8c.html#a502da8be20cbdbe810b609948efef53a" title="Telecommand: Put the ADCS in low&#45;power mode, with only essential component power." alt="" coords="5,39,169,79"/>
+<area shape="poly" title=" " alt="" coords="211,45,169,51,169,45,210,40"/>
+<area shape="poly" title=" " alt="" coords="201,77,169,72,169,67,202,71"/>
 </map>
 </div>
 
