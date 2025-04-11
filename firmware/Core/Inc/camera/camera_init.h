@@ -22,7 +22,7 @@ uint8_t CAM_setup();
 uint8_t CAM_test();
 
 
-enum Capture_Status{Transmit_Success, Wrong_input, Capture_Failure};
+typedef enum Capture_Status_enum{Transmit_Success, Wrong_input, Capture_Failure} Capture_Status_enum;
 
 
 
@@ -34,6 +34,6 @@ enum Capture_Status{Transmit_Success, Wrong_input, Capture_Failure};
  * 			n - night ambient light
  * 			s - solar sail contrast and light
  */
-enum Capture_Status CAM_Capture_Image(bool enable_flash, uint8_t lighting_mode);
+Capture_Status_enum CAM_Capture_Image(bool enable_flash, uint8_t lighting_mode);
 
 #endif // INCLUDE_GUARD__CAMERA_INIT_H

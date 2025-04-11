@@ -332,7 +332,7 @@ uint8_t CAM_receive_image(){
 ///         n - night ambient light
 ///         s - solar sail contrast and light
 /// @return Transmit_Success: Successfully captured image, Wrong_input: invalid parameter input, Capture_Failure: Error in image reception or command transmition
-enum Capture_Status CAM_Capture_Image(bool enable_flash, uint8_t lighting_mode){
+Capture_Status_enum CAM_Capture_Image(bool enable_flash, uint8_t lighting_mode){
     // ignore flash for now, I'll hardcode it to False since we don't have flash anyways
     // default file open to false and define file name
     file_open = 0;
