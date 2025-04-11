@@ -5,7 +5,7 @@
 
 #define ANT_DEFAULT_RX_LEN_MIN 5 // for commands with no response params, 5 bytes are returned
 
-extern uint64_t last_response_ms;
+extern uint64_t AX100_last_received_uplink_uptime_ms;
 
 /// @brief the antenna deployment module has two different i2c connections and two different
 /// microcontrollers. The values of this enum represent a combination of the i2c line to
