@@ -1,11 +1,13 @@
 <map id="TCMD_parse_telecommand_get_index" name="TCMD_parse_telecommand_get_index">
-<area shape="rect" id="Node000001" title="Finds an index into TCMD_telecommand_definitions for the given telecommand string." alt="" coords="627,27,810,68"/>
-<area shape="rect" id="Node000002" href="$telecommand__parser_8c.html#a479be5d2e5ee3cd0fe5312818aa8742e" title="Parses a telecommand into everything needed to execute it." alt="" coords="373,35,579,60"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="612,50,580,50,580,45,612,45"/>
-<area shape="rect" id="Node000003" href="$rtos__tasks_8c.html#a8dcebcb92690e2abce2b7ecb96e411c4" title=" " alt="" coords="103,5,325,31"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="357,37,325,33,326,28,358,32"/>
-<area shape="rect" id="Node000005" href="$test__telecommand__parser_8c.html#aacc0add1cb7e7fbb2e1a8ec2567b201a" title=" " alt="" coords="125,55,303,96"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="358,63,304,69,303,63,357,58"/>
-<area shape="rect" id="Node000004" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,5,55,31"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="87,21,55,21,55,16,87,16"/>
+<area shape="rect" id="Node000001" title="Finds an index into TCMD_telecommand_definitions for the given telecommand string." alt="" coords="854,39,1036,79"/>
+<area shape="rect" id="Node000002" href="$telecommand__parser_8c.html#a479be5d2e5ee3cd0fe5312818aa8742e" title="Parses a telecommand into everything needed to execute it." alt="" coords="599,46,806,72"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="838,62,806,62,806,56,838,56"/>
+<area shape="rect" id="Node000003" href="$rtos__tcmd__receive__debug__uart__task_8c.html#a65e8ee8f463491afc5e06e0bece8f341" title="Checks for an available telecommand in the UART buffer, and schedules it for execution." alt="" coords="386,5,538,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="590,46,538,39,539,34,591,41"/>
+<area shape="rect" id="Node000006" href="$test__telecommand__parser_8c.html#aacc0add1cb7e7fbb2e1a8ec2567b201a" title=" " alt="" coords="373,71,551,111"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="586,77,552,82,551,76,586,72"/>
+<area shape="rect" id="Node000004" href="$rtos__tcmd__receive__debug__uart__task_8c.html#a8dcebcb92690e2abce2b7ecb96e411c4" title=" " alt="" coords="103,13,325,38"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="371,28,325,28,325,23,371,23"/>
+<area shape="rect" id="Node000005" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,13,55,38"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="87,28,55,28,55,23,87,23"/>
 </map>

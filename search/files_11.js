@@ -8,5 +8,7 @@ var searchData=
   ['rtos_5ftask_5fhelpers_2ec_5',['rtos_task_helpers.c',['../rtos__task__helpers_8c.html',1,'']]],
   ['rtos_5ftask_5fhelpers_2eh_6',['rtos_task_helpers.h',['../rtos__task__helpers_8h.html',1,'']]],
   ['rtos_5ftasks_2ec_7',['rtos_tasks.c',['../rtos__tasks_8c.html',1,'']]],
-  ['rtos_5ftasks_2eh_8',['rtos_tasks.h',['../rtos__tasks_8h.html',1,'']]]
+  ['rtos_5ftasks_2eh_8',['rtos_tasks.h',['../rtos__tasks_8h.html',1,'']]],
+  ['rtos_5ftcmd_5freceive_5fdebug_5fuart_5ftask_2ec_9',['rtos_tcmd_receive_debug_uart_task.c',['../rtos__tcmd__receive__debug__uart__task_8c.html',1,'']]],
+  ['rtos_5ftcmd_5freceive_5fdebug_5fuart_5ftask_2eh_10',['rtos_tcmd_receive_debug_uart_task.h',['../rtos__tcmd__receive__debug__uart__task_8h.html',1,'']]]
 ];

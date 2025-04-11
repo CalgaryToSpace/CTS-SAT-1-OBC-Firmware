@@ -1,25 +1,27 @@
 <map id="firmware/Core/Inc/uart_handler/uart_handler.h" name="firmware/Core/Inc/uart_handler/uart_handler.h">
-<area shape="rect" id="Node000001" title=" " alt="" coords="942,5,1097,46"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="1034,5,1189,46"/>
 <area shape="rect" id="Node000002" href="$camera__init_8c.html" title=" " alt="" coords="5,102,178,142"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="927,32,784,37,600,49,395,68,191,97,159,103,157,98,190,91,395,63,599,43,783,32,926,26"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1018,31,861,35,654,46,423,65,191,97,158,104,157,98,190,91,422,60,654,40,860,30,1018,25"/>
 <area shape="rect" id="Node000003" href="$eps__internal__drivers_8c.html" title=" " alt="" coords="202,94,352,150"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="927,33,672,52,517,71,364,97,353,99,352,94,363,91,517,66,671,47,926,28"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="1018,32,889,38,725,49,544,68,364,97,353,99,352,94,363,91,544,63,724,44,888,32,1018,26"/>
 <area shape="rect" id="Node000004" href="$gps__internal__drivers_8c.html" title=" " alt="" coords="376,102,527,142"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="927,38,747,60,643,77,540,97,513,103,512,98,539,91,642,71,746,55,926,33"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="1019,36,799,56,669,74,540,97,512,103,511,98,539,91,668,68,799,51,1018,30"/>
 <area shape="rect" id="Node000005" href="$main_8c.html" title=": Main program body" alt="" coords="552,109,719,135"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="928,50,732,97,679,111,677,106,731,91,926,45"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="1019,44,883,66,732,97,677,111,675,106,731,91,882,61,1018,38"/>
 <area shape="rect" id="Node000006" href="$mpi__command__handling_8c.html" title=" " alt="" coords="744,102,919,142"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="968,56,872,103,870,99,965,51"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="1039,54,891,103,889,98,1037,49"/>
 <area shape="rect" id="Node000007" href="$rtos__tasks_8c.html" title=" " alt="" coords="944,102,1095,142"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="1022,62,1022,101,1017,101,1017,62"/>
-<area shape="rect" id="Node000008" href="$gps__telecommand__defs_8c.html" title=" " alt="" coords="1119,102,1333,142"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="1078,50,1184,98,1182,103,1076,55"/>
-<area shape="rect" id="Node000009" href="$mpi__telecommand__defs_8c.html" title=" " alt="" coords="1358,102,1572,142"/>
-<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="1113,43,1345,91,1378,98,1376,104,1344,97,1112,48"/>
-<area shape="rect" id="Node000010" href="$telecommand__definitions_8c.html" title=" " alt="" coords="1596,102,1811,142"/>
-<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="1113,33,1329,55,1584,91,1620,98,1619,104,1583,97,1328,61,1112,38"/>
-<area shape="rect" id="Node000011" href="$uart__telelecommand__defs_8c.html" title=" " alt="" coords="1835,102,2049,142"/>
-<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="1112,28,1428,48,1625,66,1823,91,1861,98,1860,104,1822,97,1624,71,1428,53,1112,33"/>
-<area shape="rect" id="Node000012" href="$uart__handler_8c.html" title=" " alt="" coords="2074,102,2229,142"/>
-<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="1112,23,1289,25,1525,34,1793,55,1929,71,2061,91,2092,98,2091,104,2060,97,1928,76,1792,60,1525,40,1289,31,1112,29"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="1084,59,1040,103,1037,99,1080,55"/>
+<area shape="rect" id="Node000008" href="$rtos__tcmd__receive__debug__uart__task_8c.html" title=" " alt="" coords="1119,94,1290,150"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="1143,55,1180,91,1176,95,1140,59"/>
+<area shape="rect" id="Node000009" href="$gps__telecommand__defs_8c.html" title=" " alt="" coords="1315,102,1529,142"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="1192,48,1358,98,1356,103,1190,53"/>
+<area shape="rect" id="Node000010" href="$mpi__telecommand__defs_8c.html" title=" " alt="" coords="1554,102,1768,142"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="1205,37,1363,61,1541,91,1576,98,1575,103,1540,97,1362,66,1204,42"/>
+<area shape="rect" id="Node000011" href="$telecommand__definitions_8c.html" title=" " alt="" coords="1792,102,2007,142"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="1205,30,1465,52,1622,69,1780,91,1817,98,1816,103,1779,97,1622,75,1464,57,1205,36"/>
+<area shape="rect" id="Node000012" href="$uart__telelecommand__defs_8c.html" title=" " alt="" coords="2031,102,2245,142"/>
+<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="1205,27,1360,33,1563,45,1790,64,2019,91,2058,98,2057,104,2018,97,1789,69,1562,50,1359,38,1204,32"/>
+<area shape="rect" id="Node000013" href="$uart__handler_8c.html" title=" " alt="" coords="2270,102,2425,142"/>
+<area shape="poly" id="edge12_Node000001_Node000013" title=" " alt="" coords="1205,27,1744,49,2041,68,2164,79,2257,91,2288,98,2287,103,2256,97,2163,84,2040,73,1744,54,1205,32"/>
 </map>

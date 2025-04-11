@@ -1,15 +1,17 @@
 <map id="sha256_update" name="sha256_update">
-<area shape="rect" id="Node000001" title=" " alt="" coords="886,63,995,88"/>
-<area shape="rect" id="Node000002" href="$sha256_8c.html#adcfd553212e6e77eb368d5291257fee1" title="Computes the SHA256 hash of the message and stores the 32 byte hash at hash." alt="" coords="631,63,838,88"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="870,78,838,78,838,73,870,73"/>
-<area shape="rect" id="Node000003" href="$telecommand__parser_8c.html#a479be5d2e5ee3cd0fe5312818aa8742e" title="Parses a telecommand into everything needed to execute it." alt="" coords="375,33,581,59"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="615,65,582,61,582,55,616,59"/>
-<area shape="rect" id="Node000007" href="$test__sha256_8c.html#a8fa37e6568e47bd78bf68835898a4dab" title=" " alt="" coords="373,83,583,124"/>
-<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="616,91,584,95,584,89,616,86"/>
-<area shape="rect" id="Node000004" href="$rtos__tasks_8c.html#a8dcebcb92690e2abce2b7ecb96e411c4" title=" " alt="" coords="103,5,325,31"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="359,36,325,33,326,27,360,31"/>
-<area shape="rect" id="Node000006" href="$test__telecommand__parser_8c.html#aacc0add1cb7e7fbb2e1a8ec2567b201a" title=" " alt="" coords="125,55,303,96"/>
-<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="360,62,304,68,303,63,359,57"/>
-<area shape="rect" id="Node000005" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,5,55,31"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="87,21,55,21,55,16,87,16"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="1112,74,1221,100"/>
+<area shape="rect" id="Node000002" href="$sha256_8c.html#adcfd553212e6e77eb368d5291257fee1" title="Computes the SHA256 hash of the message and stores the 32 byte hash at hash." alt="" coords="858,74,1064,100"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1096,90,1064,90,1064,84,1096,84"/>
+<area shape="rect" id="Node000003" href="$telecommand__parser_8c.html#a479be5d2e5ee3cd0fe5312818aa8742e" title="Parses a telecommand into everything needed to execute it." alt="" coords="601,45,808,70"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="842,76,808,72,809,67,842,71"/>
+<area shape="rect" id="Node000008" href="$test__sha256_8c.html#a8fa37e6568e47bd78bf68835898a4dab" title=" " alt="" coords="599,95,810,135"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="842,103,811,106,810,101,842,97"/>
+<area shape="rect" id="Node000004" href="$rtos__tcmd__receive__debug__uart__task_8c.html#a65e8ee8f463491afc5e06e0bece8f341" title="Checks for an available telecommand in the UART buffer, and schedules it for execution." alt="" coords="386,5,538,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="587,45,538,38,539,33,587,40"/>
+<area shape="rect" id="Node000007" href="$test__telecommand__parser_8c.html#aacc0add1cb7e7fbb2e1a8ec2567b201a" title=" " alt="" coords="373,71,551,111"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="592,76,552,81,551,76,591,71"/>
+<area shape="rect" id="Node000005" href="$rtos__tcmd__receive__debug__uart__task_8c.html#a8dcebcb92690e2abce2b7ecb96e411c4" title=" " alt="" coords="103,13,325,38"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="371,28,325,28,325,23,371,23"/>
+<area shape="rect" id="Node000006" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,13,55,38"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="87,28,55,28,55,23,87,23"/>
 </map>
