@@ -5,6 +5,15 @@
 #include <stdbool.h>
 
 #define SENTENCE_LEN    67
+/// @brief Timeout duration for camera receive in milliseconds
+static const uint32_t CAMERA_RX_TIMEOUT_DURATION_MS =12000;
+
+/// @brief Global variables for file and file_open 
+uint8_t file_open = 0;
+lfs_file_t file;
+char file_name[] = "image1_0";
+uint32_t UART_camera_rx_start_time_ms;
+bool cam_receive_error;
 
 uint8_t CAM_change_baudrate(uint32_t bitrate);
 
