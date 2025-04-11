@@ -7,7 +7,7 @@
 
 // This just includes a main function to show why the original indexing was not working.
 
-
+// As an alternative to using __builtin_ctz() to convert the bitmask to an array index, could we just remove the bit shifts from the enum?
 typedef enum {
     LOG_SYSTEM_OBC = 1 << 0,
     LOG_SYSTEM_UHF_RADIO = 1 << 1,
