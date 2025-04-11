@@ -23,7 +23,7 @@ static const uint8_t CONFIG_MAX_JSON_STRING_LENGTH = UINT8_MAX;
 // extern for background upkeep
 extern uint32_t EPS_monitor_interval_ms;
 extern uint32_t STM32_system_reset_interval_ms;
-extern uint32_t persistent_dipole_interval_ms;
+extern uint32_t AX100_ADCS_based_ant_selection_interval_ms;
 
 // extern
 extern const uint32_t CONFIG_freertos_min_remaining_stack_percent;

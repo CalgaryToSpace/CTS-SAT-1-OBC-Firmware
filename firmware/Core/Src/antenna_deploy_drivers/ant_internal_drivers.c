@@ -10,7 +10,7 @@
 #include <stdint.h>
 #include <string.h>
 
-uint64_t last_response_ms = 0;
+uint64_t AX100_last_received_uplink_uptime_ms = 0;
 
 /**
  * @brief This file contains commands for communicating with the antenna deploy system(ADS). The ADS has two microcontrollers which control
@@ -89,6 +89,6 @@ uint8_t ANT_get_response(enum ANT_i2c_bus_mcu i2c_bus_mcu, uint8_t rx_buf[], uin
         LOG_message(LOG_SYSTEM_ANTENNA_DEPLOY, LOG_SEVERITY_ERROR, LOG_SINK_ALL, "I2C read failed: HAL_ERROR");
         return 1;
     }
-    last_response_ms = TIM_get_current_unix_epoch_time_ms();
+    AX100_last_received_uplink_uptime_ms = TIM_get_current_system_uptime_ms();
     return 0;
 }
