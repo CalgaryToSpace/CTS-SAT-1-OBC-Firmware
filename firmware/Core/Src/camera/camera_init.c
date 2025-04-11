@@ -14,6 +14,13 @@
 
 #include "main.h"
 
+/// @brief extern var definition
+uint8_t file_open = 0;
+char *file_name = "image1_0";
+bool cam_receive_error = false;
+uint32_t UART_camera_rx_start_time_ms = 0;
+lfs_file_t file;
+
 
 
 /// @brief Changes the baudrate of the camera by sending it a UART command, and then changing the
@@ -199,6 +206,7 @@ uint8_t CAM_receive_image(){
     UART_camera_buffer_write_idx = 0;
     UART_camera_last_write_time_ms = 0;
     cam_receive_error = false;
+    
 
     // set start time and start receiving
     UART_camera_rx_start_time_ms = HAL_GetTick();
@@ -326,8 +334,9 @@ uint8_t CAM_receive_image(){
 /// @return Transmit_Success: Successfully captured image, Wrong_input: invalid parameter input, Capture_Failure: Error in image reception or command transmition
 enum Capture_Status CAM_Capture_Image(bool enable_flash, uint8_t lighting_mode){
     // ignore flash for now, I'll hardcode it to False since we don't have flash anyways
-    // default file open to false
+    // default file open to false and define file name
     file_open = 0;
+    file_name = "image1_0";
     // if lfs not mounted, mount
     if (!LFS_is_lfs_mounted) {
         LFS_mount();
@@ -347,6 +356,18 @@ enum Capture_Status CAM_Capture_Image(bool enable_flash, uint8_t lighting_mode){
             file_open = 1;
         }
     }
+
+    // First, turn on the camera.
+    uint8_t eps_status = EPS_set_channel_enabled(EPS_CHANNEL_3V3_CAMERA, 1);
+    if (eps_status != 0) {
+        // Continue anyway. Just log a warning.
+        LOG_message(
+            LOG_SYSTEM_BOOM, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "Error enabling camera power channel in CAM_setup: status=%d. Continuing.",
+            eps_status
+        );
+    }
+    
     HAL_StatusTypeDef tx_status;
     bool file_failure = false;
     switch(lighting_mode){
@@ -414,6 +435,17 @@ enum Capture_Status CAM_Capture_Image(bool enable_flash, uint8_t lighting_mode){
     }
 
     int capture_code = CAM_receive_image();
+
+    // turn off camera
+    eps_status = EPS_set_channel_enabled(EPS_CHANNEL_3V3_CAMERA, 0);
+    if (eps_status != 0) {
+        // Continue anyway. Just log a warning.
+        LOG_message(
+            LOG_SYSTEM_BOOM, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "Error enabling camera power channel in CAM_setup: status=%d. Continuing.",
+            eps_status
+        );
+    }
 
     if (capture_code != 0){
         LOG_message(
