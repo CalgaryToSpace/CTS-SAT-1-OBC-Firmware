@@ -13,6 +13,8 @@
 #include "config/configuration.h"
 #include "eps_drivers/eps_commands.h"
 #include "littlefs/littlefs_helper.h"
+#include "littlefs/lfs.h"
+#include "littlefs/littlefs_driver.h"
 #include "camera/camera_init.h"
 
 #include "cmsis_os.h"
