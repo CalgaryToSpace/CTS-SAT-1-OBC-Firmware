@@ -35,6 +35,9 @@ static const uint8_t ADCS_CRC_POLY = 0x91;
 // define for timeout
 static const uint16_t ADCS_HAL_TIMEOUT = 1000;
 
+// define for SD bitmask array length
+#define ADCS_SD_LOG_BITFIELD_LENGTH_BYTES 10
+
 /* Enumerated Values */
 
 // Telecommand Error Flags - Section 5.2.2 Figure 6 of Firmware Manual
@@ -672,8 +675,8 @@ typedef struct ADCS_raw_star_tracker_struct_t {
 
 typedef struct ADCS_sd_log_config_struct {
     uint8_t which_log;
-    uint8_t log_bitmask[10];
-    uint16_t log_period; // TODO: figure out whether this is ms or something else
+    uint8_t log_bitmask[ADCS_SD_LOG_BITFIELD_LENGTH_BYTES];
+    uint16_t log_period; 
     ADCS_sd_log_destination_enum_t which_sd;
 } ADCS_sd_log_config_struct;
 
