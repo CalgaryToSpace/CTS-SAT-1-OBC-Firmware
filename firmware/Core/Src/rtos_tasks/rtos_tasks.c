@@ -12,6 +12,8 @@
 #include "log/log.h"
 #include "config/configuration.h"
 #include "eps_drivers/eps_commands.h"
+#include "littlefs/littlefs_helper.h"
+#include "camera/camera_init.h"
 
 #include "cmsis_os.h"
 
@@ -169,4 +171,83 @@ void TASK_monitor_freertos_memory(void *argument) {
         }
 
     } /* End Task's Main Loop */
+}
+
+void TASK_camera_write_image(void *argument) {
+	TASK_HELP_start_of_task();
+	while (1) {
+		osDelay(500);
+        // if camera is receiving data start while loop
+        if (UART_camera_is_expecting_data){
+                // receive until response timed out
+
+            // write file after half and complete callbacks
+            if (camera_write_file){
+                // debug string DELETE THIS AFTER TESTING
+                DEBUG_uart_print_str("in write file\n");
+                UART_camera_last_write_time_ms = HAL_GetTick();
+
+                // Write data to file
+                const lfs_ssize_t write_result = lfs_file_write(&LFS_filesystem, &file, UART_camera_rx_buf, SENTENCE_LEN*23);
+                if (write_result < 0)
+                {
+                    LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error writing to file: %s", file_name);
+                }
+
+                camera_write_file = 0;
+            }
+
+
+            // Timeout conditions
+            if (UART_camera_buffer_write_idx == 0){
+                // if write index is 0 and timeout occurs
+                if ((HAL_GetTick() - UART_camera_rx_start_time_ms) > CAMERA_RX_TIMEOUT_DURATION_MS) {
+                    // if last write time = 0 nothing was written, error 4
+                    if (UART_camera_last_write_time_ms == 0){
+                        cam_receive_error = true;
+                        CAMERA_set_expecting_data(0);
+                        continue; // Error code: Timeout waiting for first byte
+                    }
+                    else{
+                        // otherwise there may be data in first half of buffer
+                        // copy data and set write to 1 to write after exiting loop
+                        for (uint16_t i = 0; i < UART_camera_buffer_len/2; i++){
+                            UART_camera_rx_buf[i] = UART_camera_buffer[i];
+                            UART_camera_buffer[i] = 0;
+                        }
+                        // PRINT FOR TESTING DELETE AFTER
+                        DEBUG_uart_print_str("timeout write file 1\n");
+                        camera_write_file = 1;
+                        // finish receiving and break out of loop
+                        CAMERA_set_expecting_data(0);
+                        continue;
+                    }
+                }
+            }
+
+            // if write idx is not 0 then it must be 1
+            else{
+                // if write idx is 1 then there may be data in second half of buffer
+                const uint32_t current_time = HAL_GetTick();
+                if (
+                    (current_time > UART_camera_last_write_time_ms) // obvious safety check
+                    && ((current_time - UART_camera_last_write_time_ms) > CAMERA_RX_TIMEOUT_DURATION_MS))
+                    {
+                        // copy data from second half and set write file to true
+                        for (uint16_t i = UART_camera_buffer_len/2; i < UART_camera_buffer_len; i++) {
+                            UART_camera_rx_buf[i-UART_camera_buffer_len/2] = UART_camera_buffer[i];
+                            UART_camera_buffer[i] = 0;
+                        }
+                        // PRINT FOR TESTING DELETE AFTER
+                        DEBUG_uart_print_str("timeout write file 2\n"); 
+                        camera_write_file = 1;
+                        // finish receiving and break out of loop
+                        CAMERA_set_expecting_data(0);
+                        continue;
+                    }
+            }
+
+        }
+
+	} /* End Task's Main Loop */
 }
