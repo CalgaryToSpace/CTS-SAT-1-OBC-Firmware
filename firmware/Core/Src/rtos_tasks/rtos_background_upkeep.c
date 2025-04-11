@@ -45,7 +45,8 @@ void TASK_background_upkeep(void *argument) {
                 LOG_SYSTEM_OBC,
                 LOG_SEVERITY_NORMAL,
                 LOG_SINK_ALL,
-                "System reset triggered."
+                "System reset triggered due to max uptime exceeded: %ld ms",
+                STM32_system_reset_interval_ms
             );
             NVIC_SystemReset();
         }
