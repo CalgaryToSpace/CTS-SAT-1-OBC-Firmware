@@ -705,6 +705,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
+        .tcmd_name = "adcs_download_sd_file",
+        .tcmd_func = TCMDEXEC_adcs_download_sd_file,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_IN_PROGRESS, // TODO: change this once the function is done
+    }, 
+    {
         .tcmd_name = "adcs_generic_command",
         .tcmd_func = TCMDEXEC_adcs_generic_command,
         .number_of_args = 2, 
@@ -747,8 +753,8 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
-        .tcmd_name = "adcs_synchronise_unix_time",
-        .tcmd_func = TCMDEXEC_adcs_synchronise_unix_time,
+        .tcmd_name = "adcs_synchronize_unix_time",
+        .tcmd_func = TCMDEXEC_adcs_synchronize_unix_time,
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     }, 
@@ -768,6 +774,18 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "adcs_get_sd_log_config",
         .tcmd_func = TCMDEXEC_adcs_get_sd_log_config,
         .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    }, 
+    {
+        .tcmd_name = "adcs_format_sd",
+        .tcmd_func = TCMDEXEC_adcs_format_sd,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    }, 
+    {
+        .tcmd_name = "adcs_download_index_file",
+        .tcmd_func = TCMDEXEC_adcs_download_index_file,
+        .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     }, 
 

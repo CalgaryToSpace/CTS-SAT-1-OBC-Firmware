@@ -31,7 +31,7 @@
 #include "rtos_tasks/rtos_tcmd_receive_debug_uart_task.h"
 #include "uart_handler/uart_handler.h"
 #include "adcs_drivers/adcs_types.h"
-#include "adcs_drivers/adcs_internal_drivers.h"
+#include "adcs_drivers/adcs_commands.h"
 #include "littlefs/flash_driver.h"
 
 /* USER CODE END Includes */
@@ -269,8 +269,8 @@ int main(void)
   
   FLASH_deactivate_chip_select();
 
-  // Initialise the ADCS CRC8 checksum (required for ADCS operation).
-  ADCS_initialise_crc8_checksum();
+  // Initialize the ADCS CRC8 checksum, clock, and LittleFS directory (required for ADCS operation).
+  ADCS_initialize(); // TODO: LittleFS must be formatted and mounted, and system time must be set, before this command is run
 
   // Always leave the Camera enable signal enabled. Easier to control it through just the EPS.
   HAL_GPIO_WritePin(PIN_CAM_EN_OUT_GPIO_Port, PIN_CAM_EN_OUT_Pin, GPIO_PIN_SET);

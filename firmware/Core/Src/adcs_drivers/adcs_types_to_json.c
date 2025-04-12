@@ -3,6 +3,7 @@
 #include "adcs_drivers/adcs_struct_packers.h"
 #include "adcs_drivers/adcs_types_to_json.h"
 #include "adcs_drivers/adcs_commands.h"
+#include "transforms/arrays.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -466,12 +467,19 @@ uint8_t ADCS_augmented_sgp4_params_struct_TO_json(const ADCS_augmented_sgp4_para
     if (data == NULL || json_output_str == NULL || json_output_str_len < 537) {
         return 1; // Error: invalid input
     }
+
+    // our compiler doesn't support %lld for printing int64_t, so substitute it for strings here
+    char xp_coefficient_nano_buffer[32];
+    GEN_int64_to_str(data->xp_coefficient_nano, &xp_coefficient_nano_buffer[0]);
+    char yp_coefficient_nano_buffer[32];
+    GEN_int64_to_str(data->yp_coefficient_nano, &yp_coefficient_nano_buffer[0]);
+
     int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len, 
                                 "{\"incl_coefficient_milli\":%d,\"raan_coefficient_milli\":%d,"
                                 "\"ecc_coefficient_milli\":%d,\"aop_coefficient_milli\":%d,"
                                 "\"time_coefficient_milli\":%d,\"pos_coefficient_milli\":%d,"
                                 "\"maximum_position_error_milli\":%ld,\"augmented_sgp4_filter\":%d,"
-                                "\"xp_coefficient_nano\":%lld,\"yp_coefficient_nano\":%lld,"
+                                "\"xp_coefficient_nano\":%s,\"yp_coefficient_nano\":%s,"
                                 "\"gps_roll_over\":%d,\"position_sd_milli\":%ld,"
                                 "\"velocity_sd_milli\":%d,\"min_satellites\":%d,"
                                 "\"time_gain_milli\":%d,\"max_lag_milli\":%d,\"min_samples\":%d}", 
@@ -479,7 +487,7 @@ uint8_t ADCS_augmented_sgp4_params_struct_TO_json(const ADCS_augmented_sgp4_para
                                 data->ecc_coefficient_milli, data->aop_coefficient_milli, 
                                 data->time_coefficient_milli, data->pos_coefficient_milli, 
                                 data->maximum_position_error_milli, data->augmented_sgp4_filter, 
-                                data->xp_coefficient_nano, data->yp_coefficient_nano, 
+                                xp_coefficient_nano_buffer, yp_coefficient_nano_buffer, 
                                 data->gps_roll_over, data->position_sd_milli, 
                                 data->velocity_sd_milli, data->min_satellites, 
                                 data->time_gain_milli, data->max_lag_milli, data->min_samples);
@@ -961,6 +969,50 @@ uint8_t ADCS_measurements_struct_TO_json(const ADCS_measurements_struct_t *data,
     return 0;
 }
 
+/// @brief Converts an ADCS download list array to a JSON string.
+/// @param[in] data Pointer to the array.
+/// @param[in] data_length Length of the array.
+/// @param[out] json_output_str Buffer to hold the JSON string.
+/// @param[in] json_output_str_len Length of the JSON output buffer.
+/// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
+uint8_t ADCS_sd_download_list_TO_json(ADCS_file_info_struct_t *data, uint16_t data_length, char json_output_str[], uint16_t json_output_str_len) {
+    if (data == NULL || json_output_str == NULL || json_output_str_len < ((data_length + 1) * 57)) { // max 57 characters per entry
+        return 1; // Error: invalid input
+    } 
+
+    int16_t snprintf_ret; 
+    int16_t total_written = 0;
+
+    snprintf_ret = snprintf(&json_output_str[total_written], json_output_str_len, "Counter    Datetime    Type    Size    CRC16\n");
+    if (snprintf_ret < 0) {
+        return 2; // Error: snprintf encoding error
+    } else {
+        total_written += snprintf_ret;
+    }
+    
+    for (uint16_t i = 0; i < data_length; i++) { 
+        
+        // our compiler doesn't support %lld for printing int64_t, so substitute it for strings here
+        char datetime_buffer[32];
+        GEN_uint64_to_str(data[i].file_date_time, &datetime_buffer[0]);
+
+        snprintf_ret = snprintf(&json_output_str[total_written], json_output_str_len, "%d          %s           %d       %ld       %d\n", 
+            data[i].file_counter, datetime_buffer, data[i].file_type, data[i].file_size, data[i].file_crc16);
+
+        if (snprintf_ret < 0) {
+            return 2; // Error: snprintf encoding error
+        } else {
+            total_written += snprintf_ret;
+        }
+
+        if (total_written >= json_output_str_len) {
+            return 3; // Error: string buffer too short
+        }
+    }
+    return 0;
+
+}
+
 /// @brief Converts a generic array of ADCS telemetry to a JSON string.
 /// @param[in] data Pointer to the array.
 /// @param[in] data_length Length of the array.
@@ -1155,14 +1207,14 @@ uint8_t ADCS_unix_time_ms_TO_json(const uint64_t *data, char json_output_str[], 
 }
 
 uint8_t ADCS_sd_log_config_struct_TO_json(const ADCS_sd_log_config_struct *data, char json_output_str[], uint16_t json_output_str_len) {
-        if (data == NULL || json_output_str == NULL || json_output_str_len < 150) {
+        if (data == NULL || json_output_str == NULL || json_output_str_len < 152) {
         return 1; // Error: invalid input
     }
     int16_t snprintf_ret = snprintf(json_output_str, json_output_str_len,
-                                    "{\"which_log\":%d,\"log_bitmask\":0x%.2x%.2x%.2x%.2x%.2x%.2x%.2x%.2x%.2x%.2x,\"log_period\":%d,\"which_sd\":%d}",                                 
+                                    "{\"which_log\":%d,\"log_bitmask\":0x%.2x%.2x%.2x%.2x%.2x%.2x%.2x%.2x%.2x%.2x,\"log_period_s\":%d,\"which_sd\":%d}",                                 
                                     data->which_log, (data->log_bitmask)[0], (data->log_bitmask)[1], (data->log_bitmask)[2], (data->log_bitmask)[3], 
                                     (data->log_bitmask)[4], (data->log_bitmask)[5], (data->log_bitmask)[6], (data->log_bitmask)[7], (data->log_bitmask)[8], 
-                                    (data->log_bitmask)[9], data->log_period,  data->which_sd);
+                                    (data->log_bitmask)[9], data->log_period_s,  data->which_sd);
 
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error
