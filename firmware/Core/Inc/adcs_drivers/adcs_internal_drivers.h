@@ -4,6 +4,8 @@
 #include "adcs_drivers/adcs_types.h"
 #include "main.h" // this is necessary because &hi2c1 is defined in that file
 
+#include <time.h>
+
 #define ADCS_i2c_HANDLE &hi2c1
 static const uint8_t ADCS_INCLUDE_CHECKSUM = 1;
 static const uint8_t ADCS_NO_CHECKSUM = 0;
@@ -26,7 +28,7 @@ uint8_t ADCS_send_i2c_telecommand(uint8_t id, uint8_t* data, uint32_t data_lengt
 uint8_t ADCS_send_i2c_telemetry_request(uint8_t id, uint8_t* data, uint32_t data_length, uint8_t include_checksum);
 
 // CRC functions
-uint8_t ADCS_initialise_crc8_checksum();
+uint8_t ADCS_initialize_crc8_checksum();
 uint8_t ADCS_calculate_crc8_checksum(uint8_t* buffer, uint16_t len);
 
 #endif /* INC_ADCS_INTERNAL_DRIVERS_H_ */
