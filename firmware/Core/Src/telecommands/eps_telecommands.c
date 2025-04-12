@@ -167,10 +167,10 @@ uint8_t TCMDEXEC_eps_set_channel_enabled(
     }
     char enabled_str[20] = "?";
     if (enabled_val_u64 == 0) {
-        strcpy(enabled_str, "disabled");
+        strcpy(enabled_str, "disable");
     }
     else if (enabled_val_u64 == 1) {
-        strcpy(enabled_str, "enabled");
+        strcpy(enabled_str, "enable");
     }
     else {
         snprintf(
@@ -211,18 +211,21 @@ uint8_t TCMDEXEC_eps_set_channel_enabled(
     if (eps_result != 0) {
         snprintf(
             response_output_buf, response_output_buf_len,
-            "EPS set channel %d (%s) %s failed (err %d)",
-            eps_channel_num, eps_channel_name_str,
+            "EPS %s channel %d (%s) failed (err %d).",
             enabled_str,
+            eps_channel_num, eps_channel_name_str,
             eps_result
         );
         return 5;
     }
     snprintf(
         response_output_buf, response_output_buf_len,
-        "EPS set channel %d (%s) %s successful.",
-        eps_channel_num, eps_channel_name_str,
-        enabled_str
+        // Note: The word "success" is intentionally omitted here, because attempting to disable
+        // certain channels (e..g, the always-on stack channels) will return success, but will not
+        // actually disable the channel.
+        "EPS %s channel %d (%s) executed.",
+        enabled_str,
+        eps_channel_num, eps_channel_name_str
     );
     return 0;
 }
