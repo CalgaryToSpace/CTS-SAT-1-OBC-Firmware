@@ -1287,14 +1287,13 @@ uint8_t ADCS_get_current_unix_time(uint64_t* epoch_time_ms) {
 /// @brief Instruct the ADCS to execute the ADCS_Set_Run_Mode command.
 /// @param[in] which_log 1 or 2; which specific log number to log to the SD card
 /// @param[in] log_array Pointer to list of bitmasks to set the log config
-/// @param[in] log_array_size Number of things to log
+/// @param[in] log_array_len Number of things to log
 /// @param[in] log_period Period to log data to the SD card; if zero, then disable logging
 /// @param[in] which_sd Which SD card to log to; 0 for primary, 1 for secondary 
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_set_sd_log_config(uint8_t which_log, const uint8_t **log_array, uint8_t log_array_size, uint16_t log_period, ADCS_sd_log_destination_enum_t which_sd) {
-    
-    uint8_t data_send[13] = {0};
-    ADCS_combine_sd_log_bitmasks(log_array, log_array_size, data_send); // saves to the first 10 bytes of data_send
+uint8_t ADCS_set_sd_log_config(uint8_t which_log, const uint8_t **log_array, uint8_t log_array_len, uint16_t log_period, ADCS_sd_log_destination_enum_t which_sd) {
+    uint8_t data_send[13];
+    ADCS_combine_sd_log_bitmasks(log_array, log_array_len, data_send); // saves to the first 10 bytes of data_send
     ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, log_period, 10);
     data_send[12] = which_sd;
     
@@ -1629,4 +1628,40 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
     }
 
     return 0;
+}
+/// @brief Disable all active ADCS SD card logs.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred.
+uint8_t ADCS_disable_SD_logging() {
+    // Disable SD card logging
+    const uint8_t* temp_data_pointer[1] = {ADCS_SD_LOG_MASK_COMMUNICATION_STATUS};
+    const uint8_t sd_log_1_stop_status = ADCS_set_sd_log_config(1, temp_data_pointer, 0, 0, 0);                     
+    if (sd_log_1_stop_status != 0) {
+        return sd_log_1_stop_status;
+    }
+    const uint8_t sd_log_2_stop_status = ADCS_set_sd_log_config(2, temp_data_pointer, 0, 0, 0);                     
+    return sd_log_2_stop_status;
+}
+
+/// @brief Disable all ADCS peripherals and active SD card logs.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred.
+uint8_t ADCS_disable_peripherals_and_SD_logs_without_stabilisation() {
+    const uint8_t power_status = ADCS_set_power_control(ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+    if (power_status != 0) {
+        return power_status;
+    }
+    const uint8_t sd_status = ADCS_disable_SD_logging();
+    return sd_status;
+}
+
+/// @brief Disable all ADCS peripherals and active SD card logs except the CubeSense Motor and Signal power, required for attitude stabilisation.
+/// @note If CubeSense Motor and/or Signal Power are already off, they will remain off.
+/// @note Compared to without_stabilisation, this costs average 250 mW, maximum 1 W extra.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred.
+uint8_t ADCS_disable_peripherals_and_SD_logs_with_stabilisation() {
+    const uint8_t power_status = ADCS_set_power_control(ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+    if (power_status != 0) {
+        return power_status;
+    }
+    const uint8_t sd_status = ADCS_disable_SD_logging();
+    return sd_status;
 }

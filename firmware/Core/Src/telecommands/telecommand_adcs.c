@@ -550,6 +550,47 @@ uint8_t TCMDEXEC_adcs_set_power_control(const char *args_str, TCMD_TelecommandCh
     return status;
 }                            
 
+/// @brief Telecommand: Put the ADCS in low-power mode, with only essential component power.
+/// @param args_str 
+///     - Arg 0: Enable stable attitude mode. 1 to keep the attitude of the satellite stable (costs average 250 mW, maximum 1 W extra), 0 to disable control entirely (satellite will slowly start to tumble).
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_enter_low_power_mode(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                        char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    uint64_t mode;
+    const uint8_t status = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &mode);
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "Telecommand argument extraction failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t attitude_mode = (uint8_t) mode;
+    if (attitude_mode > 1) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "Stable-attitude mode must be 0 (off) or 1 (on); got %d", attitude_mode);
+        return 1;
+    } else if (attitude_mode) {
+        // In stable-attitude mode, we keep the CubeControl Signal and Motor power on if they were already on. If the satellite wasn't already stabilised, this will do nothing.
+        // Power cost: min 390 mW, average 470 mW, peak 1.05 W
+        const uint8_t power_control_status = ADCS_disable_peripherals_and_SD_logs_without_stabilisation();
+        if (power_control_status != 0) {
+            snprintf(response_output_buf, response_output_buf_len, "Failed to disable ADCS peripherals"); 
+            return power_control_status;
+        }
+    } else {
+        // Outside of stable-attitude mode, we turn all the ADCS peripherals off
+        // Power cost: min 120 mW, max 200 mW
+        const uint8_t power_control_status = ADCS_disable_peripherals_and_SD_logs_with_stabilisation();
+        if (power_control_status != 0) {
+            snprintf(response_output_buf, response_output_buf_len, "Failed to disable ADCS peripherals"); 
+            return power_control_status;
+        }
+    }
+
+    return 0;
+}       
+
 /// @brief Telecommand: Request the given telemetry data from the ADCS
 /// @param args_str 
 ///     - Arg 0: Mounting transform alpha angle [deg] (double) 
@@ -2001,7 +2042,7 @@ uint8_t TCMDEXEC_adcs_set_sd_log_config(const char *args_str, TCMD_TelecommandCh
     }
 
     // parse hex array arguments
-    uint8_t hex_data_array[10]; 
+    uint8_t hex_data_array[ADCS_SD_LOG_BITFIELD_LENGTH_BYTES]; 
     uint16_t data_length;
     extract_status = TCMD_extract_hex_array_arg(args_str, 1, &hex_data_array[0], data_length, &data_length);
     if (extract_status != 0) {

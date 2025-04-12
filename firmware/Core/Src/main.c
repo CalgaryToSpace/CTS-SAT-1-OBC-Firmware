@@ -28,6 +28,7 @@
 #include "rtos_tasks/rtos_tasks.h"
 #include "rtos_tasks/rtos_eps_tasks.h"
 #include "rtos_tasks/rtos_background_upkeep.h"
+#include "rtos_tasks/rtos_tcmd_receive_debug_uart_task.h"
 #include "uart_handler/uart_handler.h"
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_commands.h"
@@ -429,7 +430,7 @@ static void MX_I2C1_Init(void)
   /* USER CODE END I2C1_Init 1 */
   hi2c1.Instance = I2C1;
   hi2c1.Init.Timing = 0x00503D58;
-  hi2c1.Init.OwnAddress1 = 0;
+  hi2c1.Init.OwnAddress1 = 24;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
   hi2c1.Init.OwnAddress2 = 0;
