@@ -7,7 +7,7 @@
 #include "eps_drivers/eps_power_management.h"
 #include "telecommands/eps_telecommands.h"
 #include "telecommand_exec/telecommand_args_helpers.h"
-
+#include "log/log.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -188,13 +188,18 @@ uint8_t TCMDEXEC_eps_set_channel_enabled(
         return 4;
     }
 
+    // Convert to a nice string/channel number.
+    const char *eps_channel_name_str = EPS_channel_to_str(eps_channel);
+    const uint8_t eps_channel_num = (uint8_t) eps_channel;
+
 
     const uint8_t eps_result = EPS_set_channel_enabled(eps_channel, (uint8_t)enabled_val_u64);
 
     if (eps_result != 0) {
         snprintf(
             response_output_buf, response_output_buf_len,
-            "EPS set channel %s failed (err %d)",
+            "EPS set channel %d (%s) %s failed (err %d)",
+            eps_channel_num, eps_channel_name_str,
             enabled_str,
             eps_result
         );
@@ -202,7 +207,8 @@ uint8_t TCMDEXEC_eps_set_channel_enabled(
     }
     snprintf(
         response_output_buf, response_output_buf_len,
-        "EPS set channel %s successful.",
+        "EPS set channel %d (%s) %s successful.",
+        eps_channel_num, eps_channel_name_str,
         enabled_str
     );
     return 0;
