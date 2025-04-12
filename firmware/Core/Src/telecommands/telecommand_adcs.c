@@ -618,13 +618,15 @@ uint8_t TCMDEXEC_adcs_track_sun(const char *args_str, TCMD_TelecommandChannel_en
         return set_power_control_status;
     }
 
-    osDelay(100);
+    HAL_Delay(250);
 
     const uint8_t attitude_estimation_mode_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MEMS_GYRO_EXTENDED_KALMAN_FILTER);
     if (attitude_estimation_mode_status != 0) {
         snprintf(response_output_buf, response_output_buf_len, "Failed to set ADCS estimation mode"); 
         return attitude_estimation_mode_status;
     }
+
+    HAL_Delay(250);
 
     const uint8_t attitude_control_mode_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_RWHEEL_SUN_TRACKING, 600);
     if (attitude_control_mode_status != 0) {
@@ -2188,26 +2190,28 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
     uint16_t timeout = (uint16_t) arguments[1];
 
     switch(commissioning_step) {
-        case ADCS_COMMISISONING_STEP_DETERMINE_INITIAL_ANGULAR_RATES: {
+        case ADCS_COMMISSIONING_STEP_DETERMINE_INITIAL_ANGULAR_RATES: {
             const uint8_t run_mode_status = ADCS_set_run_mode(1);
             if (run_mode_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS run mode command failed (err %d)", run_mode_status);
                 return 1;
             }
+            HAL_Delay(250); // delay to set run mode: 250ms of buffer time to match the others
             const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
             if (power_control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
-            osDelay(100);
+            HAL_Delay(250); // delay to set power mode: 100ms doesn't work, 250 ms does
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS attitude estimation mode command failed (err %d)", estimation_status);
                 return 1;
             }
+            HAL_Delay(250); // delay to set estimation mode: 125ms works alright, 125ms of buffer time
             const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_NONE, timeout);
             if (control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2216,26 +2220,28 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
             }
             break;
         }
-        case ADCS_COMMISISONING_STEP_INITIAL_DETUMBLING: {
+        case ADCS_COMMISSIONING_STEP_INITIAL_DETUMBLING: {
             const uint8_t run_mode_status = ADCS_set_run_mode(1);
             if (run_mode_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS run mode command failed (err %d)", run_mode_status);
                 return 1;
             }
+            HAL_Delay(250); // delay to set run mode: 250ms of buffer time to match the others
             const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
             if (power_control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
-            osDelay(100);
+            HAL_Delay(250); // delay to set power mode: 100ms doesn't work, 250 ms does
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS attitude estimation mode command failed (err %d)", estimation_status);
                 return 1;
             }
+            HAL_Delay(250); // delay to set estimation mode: 125ms works alright, 125ms of buffer time
             const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_DETUMBLING, timeout);
             if (control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2244,26 +2250,28 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
             }
             break;
         }
-        case ADCS_COMMISISONING_STEP_CONTINUED_DETUMBLING_TO_Y_THOMSON: {
+        case ADCS_COMMISSIONING_STEP_CONTINUED_DETUMBLING_TO_Y_THOMSON: {
             const uint8_t run_mode_status = ADCS_set_run_mode(1);
             if (run_mode_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS run mode command failed (err %d)", run_mode_status);
                 return 1;
             }
+            HAL_Delay(250); // delay to set run mode: 250ms of buffer time to match the others
             const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
             if (power_control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
-            osDelay(100);
+            HAL_Delay(250); // delay to set power mode: 100ms doesn't work, 250 ms does
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS attitude estimation mode command failed (err %d)", estimation_status);
                 return 1;
             }
+            HAL_Delay(250); // delay to set estimation mode: 125ms works alright, 125ms of buffer time
             const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_Y_THOMSON_SPIN, timeout);
             if (control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2272,26 +2280,28 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
             }
             break;
         }
-        case ADCS_COMMISISONING_STEP_MAGNETOMETER_DEPLOYMENT: {
+        case ADCS_COMMISSIONING_STEP_MAGNETOMETER_DEPLOYMENT: {
             const uint8_t run_mode_status = ADCS_set_run_mode(1);
             if (run_mode_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS run mode command failed (err %d)", run_mode_status);
                 return 1;
             }
+            HAL_Delay(250); // delay to set run mode: 250ms of buffer time to match the others
             const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
             if (power_control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
-            osDelay(100);
+            HAL_Delay(250); // delay to set power mode: 100ms doesn't work, 250 ms does
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS attitude estimation mode command failed (err %d)", estimation_status);
                 return 1;
             }
+            HAL_Delay(250); // delay to set estimation mode: 125ms works alright, 125ms of buffer time
             const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_NONE, timeout);
             if (control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2300,26 +2310,28 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
             }
             break;
         }
-        case ADCS_COMMISISONING_STEP_MAGNETOMETER_CALIBRATION: {
+        case ADCS_COMMISSIONING_STEP_MAGNETOMETER_CALIBRATION: {
             const uint8_t run_mode_status = ADCS_set_run_mode(1);
             if (run_mode_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS run mode command failed (err %d)", run_mode_status);
                 return 1;
             }
+            HAL_Delay(250); // delay to set run mode: 250ms of buffer time to match the others
             const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
             if (power_control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
-            osDelay(100);
+            HAL_Delay(250); // delay to set power mode: 100ms doesn't work, 250 ms does
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS attitude estimation mode command failed (err %d)", estimation_status);
                 return 1;
             }
+            HAL_Delay(250); // delay to set estimation mode: 125ms works alright, 125ms of buffer time
             const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_Y_THOMSON_SPIN, timeout);
             if (control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2328,7 +2340,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
             }
             break;
         }
-        case ADCS_COMMISISONING_STEP_ANGULAR_RATE_AND_PITCH_ANGLE_ESTIMATION: {
+        case ADCS_COMMISSIONING_STEP_ANGULAR_RATE_AND_PITCH_ANGLE_ESTIMATION: {
             const uint8_t run_mode_status = ADCS_set_run_mode(1);
             if (run_mode_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2341,13 +2353,14 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }   
-            osDelay(100);
+            HAL_Delay(250); // delay to set power mode: 100ms doesn't work, 250 ms does
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER_WITH_PITCH_ESTIMATION);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS attitude estimation mode command failed (err %d)", estimation_status);
                 return 1;
             }
+            HAL_Delay(250); // delay to set estimation mode: 125ms works alright, 125ms of buffer time
             const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_Y_THOMSON_SPIN, timeout);
             if (control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2356,26 +2369,28 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
             }
             break;
         }
-        case ADCS_COMMISISONING_STEP_Y_WHEEL_RAMP_UP_TEST: {
+        case ADCS_COMMISSIONING_STEP_Y_WHEEL_RAMP_UP_TEST: {
             const uint8_t run_mode_status = ADCS_set_run_mode(1);
             if (run_mode_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS run mode command failed (err %d)", run_mode_status);
                 return 1;
             }
-            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
-            if (power_control_status != 0) { // TODO: check which wheel is the y-wheel
+            HAL_Delay(250); // delay to set run mode: 250ms of buffer time to match the others
+            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+            if (power_control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
-            osDelay(100);
+            HAL_Delay(250); // delay to set power mode: 100ms doesn't work, 250 ms does
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER_WITH_PITCH_ESTIMATION);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS attitude estimation mode command failed (err %d)", estimation_status);
                 return 1;
             }
+            HAL_Delay(250); // delay to set estimation mode: 125ms works alright, 125ms of buffer time
             const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_NONE, timeout);
             if (control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2384,26 +2399,28 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
             }
             break;
         }
-        case ADCS_COMMISISONING_STEP_INITIAL_Y_MOMENTUM_ACTIVATION: {
+        case ADCS_COMMISSIONING_STEP_INITIAL_Y_MOMENTUM_ACTIVATION: {
             const uint8_t run_mode_status = ADCS_set_run_mode(1);
             if (run_mode_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS run mode command failed (err %d)", run_mode_status);
                 return 1;
             }
-            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
-            if (power_control_status != 0) { // TODO: check which wheel is the y-wheel
+            HAL_Delay(250); // delay to set run mode: 250ms of buffer time to match the others
+            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+            if (power_control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
-            osDelay(100);
+            HAL_Delay(250); // delay to set power mode: 100ms doesn't work, 250 ms does
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER_WITH_PITCH_ESTIMATION);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS attitude estimation mode command failed (err %d)", estimation_status);
                 return 1;
             }
+            HAL_Delay(250); // delay to set estimation mode: 125ms works alright, 125ms of buffer time
             const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_Y_WHEEL_MOMENTUM_STABILIZED_INITIAL_PITCH_ACQUISITION, timeout);
             if (control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2412,26 +2429,28 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
             }
             break;
         }
-        case ADCS_COMMISISONING_STEP_CONTINUED_Y_MOMENTUM_ACTIVATION_AND_MAGNETOMETER_EKF: {
+        case ADCS_COMMISSIONING_STEP_CONTINUED_Y_MOMENTUM_ACTIVATION_AND_MAGNETOMETER_EKF: {
             const uint8_t run_mode_status = ADCS_set_run_mode(1);
             if (run_mode_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS run mode command failed (err %d)", run_mode_status);
                 return 1;
             }
-            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
-            if (power_control_status != 0) { // TODO: check which wheel is the y-wheel
+            HAL_Delay(250); // delay to set run mode: 250ms of buffer time to match the others
+            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+            if (power_control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
-            osDelay(100);
+            HAL_Delay(250); // delay to set power mode: 100ms doesn't work, 250 ms does
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER_WITH_PITCH_ESTIMATION);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS attitude estimation mode command failed (err %d)", estimation_status);
                 return 1;
             }
+            HAL_Delay(250); // delay to set estimation mode: 125ms works alright, 125ms of buffer time
             const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_Y_WHEEL_MOMENTUM_STABILIZED_STEADY_STATE, timeout);
             if (control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2440,7 +2459,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
             }
             break;
         }
-        case ADCS_COMMISISONING_STEP_CUBESENSE_SUN_NADIR: {
+        case ADCS_COMMISSIONING_STEP_CUBESENSE_SUN_NADIR: {
             const uint8_t run_mode_status = ADCS_set_run_mode(1);
             if (run_mode_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2453,13 +2472,14 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
-            osDelay(100);
+            HAL_Delay(250); // delay to set power mode: 100ms doesn't work, 250 ms does
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_FULL_STATE_EXTENDED_KALMAN_FILTER);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS attitude estimation mode command failed (err %d)", estimation_status);
                 return 1;
             }
+            HAL_Delay(250); // delay to set estimation mode: 125ms works alright, 125ms of buffer time
             const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_NONE, timeout);
             if (control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2468,7 +2488,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
             }
             break;
         }
-        case ADCS_COMMISISONING_STEP_EKF_ACTIVATION_SUN_AND_NADIR: {
+        case ADCS_COMMISSIONING_STEP_EKF_ACTIVATION_SUN_AND_NADIR: {
             const uint8_t run_mode_status = ADCS_set_run_mode(1);
             if (run_mode_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2481,13 +2501,14 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
-            osDelay(100);
+            HAL_Delay(250); // delay to set power mode: 100ms doesn't work, 250 ms does
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MEMS_GYRO_EXTENDED_KALMAN_FILTER);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS attitude estimation mode command failed (err %d)", estimation_status);
                 return 1;
             }
+            HAL_Delay(250); // delay to set estimation mode: 125ms works alright, 125ms of buffer time
             const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_NONE, timeout);
             if (control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2496,7 +2517,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
             }
             break;
         }
-        case ADCS_COMMISISONING_STEP_CUBESTAR_STAR_TRACKER: {
+        case ADCS_COMMISSIONING_STEP_CUBESTAR_STAR_TRACKER: {
             const uint8_t run_mode_status = ADCS_set_run_mode(1);
             if (run_mode_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2509,13 +2530,14 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
-            osDelay(100);
+            HAL_Delay(250); // delay to set power mode: 100ms doesn't work, 250 ms does
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MEMS_GYRO_EXTENDED_KALMAN_FILTER);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS attitude estimation mode command failed (err %d)", estimation_status);
                 return 1;
             }
+            HAL_Delay(250); // delay to set estimation mode: 125ms works alright, 125ms of buffer time
             const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_NONE, timeout);
             if (control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2524,7 +2546,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
             }
             break;
         }
-        case ADCS_COMMISISONING_STEP_EKF_ACTIVATION_WITH_STAR_VECTOR_MEASUREMENTS: {
+        case ADCS_COMMISSIONING_STEP_EKF_ACTIVATION_WITH_STAR_VECTOR_MEASUREMENTS: {
             const uint8_t run_mode_status = ADCS_set_run_mode(1);
             if (run_mode_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2537,13 +2559,14 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
-            osDelay(100);
+            HAL_Delay(250); // delay to set power mode: 100ms doesn't work, 250 ms does
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MEMS_GYRO_EXTENDED_KALMAN_FILTER);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS attitude estimation mode command failed (err %d)", estimation_status);
                 return 1;
             }
+            HAL_Delay(250); // delay to set estimation mode: 125ms works alright, 125ms of buffer time
             const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_NONE, timeout);
             if (control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2552,26 +2575,28 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
             }
             break;
         }
-        case ADCS_COMMISISONING_STEP_ZERO_BIAS_3_AXIS_REACTION_WHEEL_CONTROL: {
+        case ADCS_COMMISSIONING_STEP_ZERO_BIAS_3_AXIS_REACTION_WHEEL_CONTROL: {
             const uint8_t run_mode_status = ADCS_set_run_mode(1);
             if (run_mode_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS run mode command failed (err %d)", run_mode_status);
                 return 1;
             }
+            HAL_Delay(250); // delay to set run mode: 250ms of buffer time to match the others
             const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
             if (power_control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
-            osDelay(100);
+            HAL_Delay(250); // delay to set power mode: 100ms doesn't work, 250 ms does
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MEMS_GYRO_EXTENDED_KALMAN_FILTER);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS attitude estimation mode command failed (err %d)", estimation_status);
                 return 1;
             }
+            HAL_Delay(250); // delay to set estimation mode: 125ms works alright, 125ms of buffer time
             const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_XYZ_WHEEL, timeout);
             if (control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2580,7 +2605,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
             }
             break;
         }
-        case ADCS_COMMISISONING_STEP_EKF_WITH_RATE_GYRO_STAR_TRACKER_MEASUREMENTS: {
+        case ADCS_COMMISSIONING_STEP_EKF_WITH_RATE_GYRO_STAR_TRACKER_MEASUREMENTS: {
             const uint8_t run_mode_status = ADCS_set_run_mode(1);
             if (run_mode_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2593,13 +2618,14 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
-            osDelay(100);
+            HAL_Delay(250); // delay to set power mode: 100ms doesn't work, 250 ms does
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MEMS_GYRO_EXTENDED_KALMAN_FILTER);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS attitude estimation mode command failed (err %d)", estimation_status);
                 return 1;
             }
+            HAL_Delay(250); // delay to set estimation mode: 125ms works alright, 125ms of buffer time
             const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_NONE, timeout);
             if (control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2608,26 +2634,28 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
             }
             break;
         }
-        case ADCS_COMMISISONING_STEP_SUN_TRACKING_3_AXIS_CONTROL: {
+        case ADCS_COMMISSIONING_STEP_SUN_TRACKING_3_AXIS_CONTROL: {
             const uint8_t run_mode_status = ADCS_set_run_mode(1);
             if (run_mode_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS run mode command failed (err %d)", run_mode_status);
                 return 1;
             }
+            HAL_Delay(250); // delay to set run mode: 250ms of buffer time to match the others
             const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
             if (power_control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
-            osDelay(100);
+            HAL_Delay(250); // delay to set power mode: 100ms doesn't work, 250 ms does
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MEMS_GYRO_EXTENDED_KALMAN_FILTER);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS attitude estimation mode command failed (err %d)", estimation_status);
                 return 1;
             }
+            HAL_Delay(250); // delay to set estimation mode: 125ms works alright, 125ms of buffer time
             const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_RWHEEL_SUN_TRACKING, timeout);
             if (control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2636,26 +2664,28 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
             }
             break;
         }
-        case ADCS_COMMISISONING_STEP_GROUND_TARGET_TRACKING_CONTROLLER: {
+        case ADCS_COMMISSIONING_STEP_GROUND_TARGET_TRACKING_CONTROLLER: {
             const uint8_t run_mode_status = ADCS_set_run_mode(1);
             if (run_mode_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS run mode command failed (err %d)", run_mode_status);
                 return 1;
             }
+            HAL_Delay(250); // delay to set run mode: 250ms of buffer time to match the others
             const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
             if (power_control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
-            osDelay(100);
+            HAL_Delay(250); // delay to set power mode: 100ms doesn't work, 250 ms does
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MEMS_GYRO_EXTENDED_KALMAN_FILTER);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS attitude estimation mode command failed (err %d)", estimation_status);
                 return 1;
             }
+            HAL_Delay(250); // delay to set estimation mode: 125ms works alright, 125ms of buffer time
             const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_RWHEEL_TARGET_TRACKING, timeout);
             // If there is no target reference to track, this will set the control mode into Y-spin mode instead.
             // Set the ground target reference using the set_target_controller_tracking_reference telecommand.
@@ -2666,26 +2696,28 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
             }
             break;
         }
-        case ADCS_COMMISISONING_STEP_GPS_RECEIVER: {
+        case ADCS_COMMISSIONING_STEP_GPS_RECEIVER: {
             const uint8_t run_mode_status = ADCS_set_run_mode(1);
             if (run_mode_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS run mode command failed (err %d)", run_mode_status);
                 return 1;
             }
+            HAL_Delay(250); // delay to set run mode: 250ms of buffer time to match the others
             const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_ON);
             if (power_control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
             }
-            osDelay(100);
+            HAL_Delay(250); // delay to set power mode: 100ms doesn't work, 250 ms does
             const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_NONE);
             if (estimation_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS attitude estimation mode command failed (err %d)", estimation_status);
                 return 1;
             }
+            HAL_Delay(250); // delay to set estimation mode: 125ms works alright, 125ms of buffer time
             const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_NONE, timeout);
             if (control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
