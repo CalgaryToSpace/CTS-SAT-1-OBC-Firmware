@@ -113,7 +113,7 @@ void LOG_message(LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_
     // Needed to maintain good hot-path performance
     if (severity == LOG_SEVERITY_DEBUG) {
         // Return early if debugging is not enabled for this system
-        // Use __builtin_ctz to count trailing zeros in source to convert bitmask to array index
+        // Use __builtin_ctz to count trailing zeros in source to convert bitshifted enum to array index
         if (!(severity & LOG_systems[__builtin_ctz(source)].severity_mask)) { 
             return;
         }
