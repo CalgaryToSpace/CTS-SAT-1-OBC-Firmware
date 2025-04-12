@@ -3,6 +3,8 @@
 #include "config/configuration.h"
 #include "timekeeping/timekeeping.h"
 #include "rtos_tasks/rtos_task_helpers.h"
+#include "system/system_safe_mode.h"
+
 #include "main.h"
 
 #include "cmsis_os.h"
@@ -50,6 +52,13 @@ void TASK_background_upkeep(void *argument) {
             );
             NVIC_SystemReset();
         }
+
+        // check if EPS goes into low power mode, enter safe mode if it does
+        SYS_eps_status_safe_mode_check();
+
+        // check if battery is below 10%, enter safe mode if it is
+        SYS_battery_safe_mode_check();
+        
         osDelay(1000);
     }
 }
