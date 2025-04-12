@@ -98,10 +98,12 @@ $(function(){ initResizable(false); });
 <code>#include &quot;<a class="el" href="arrays_8h_source.html">transforms/arrays.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="unit__test__executor_8h_source.html">unit_tests/unit_test_executor.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="timekeeping_8h_source.html">timekeeping/timekeeping.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="littlefs__helper_8h_source.html">littlefs/littlefs_helper.h</a>&quot;</code><br />
 <code>#include &lt;stdio.h&gt;</code><br />
 <code>#include &lt;stdint.h&gt;</code><br />
 <code>#include &lt;string.h&gt;</code><br />
 <code>#include &lt;inttypes.h&gt;</code><br />
+<code>#include &lt;math.h&gt;</code><br />
 <code>#include &quot;<a class="el" href="adcs__types_8h_source.html">adcs_drivers/adcs_types.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="adcs__commands_8h_source.html">adcs_drivers/adcs_commands.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="adcs__command__ids_8h_source.html">adcs_drivers/adcs_command_ids.h</a>&quot;</code><br />
@@ -112,65 +114,86 @@ Include dependency graph for telecommand_adcs.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="telecommand__adcs_8c__incl.png" border="0" usemap="#afirmware_2Core_2Src_2telecommands_2telecommand__adcs_8c" alt=""/></div>
 <map name="afirmware_2Core_2Src_2telecommands_2telecommand__adcs_8c" id="afirmware_2Core_2Src_2telecommands_2telecommand__adcs_8c">
-<area shape="rect" title=" " alt="" coords="956,5,1171,46"/>
-<area shape="rect" href="telecommand__definitions_8h.html" title=" " alt="" coords="599,183,814,223"/>
-<area shape="poly" title=" " alt="" coords="963,49,898,69,834,96,780,134,736,174,733,170,777,129,832,92,896,64,962,44"/>
-<area shape="rect" title=" " alt="" coords="529,368,593,393"/>
-<area shape="poly" title=" " alt="" coords="956,32,868,38,766,49,659,68,555,97,454,126,373,153,339,170,306,195,276,228,246,273,239,290,237,305,241,318,249,329,278,348,319,361,369,370,421,375,514,378,514,383,421,380,368,375,318,366,276,353,245,333,236,320,232,305,233,288,241,270,272,225,303,191,336,166,371,148,453,121,554,91,658,63,766,44,868,32,956,26"/>
-<area shape="rect" href="telecommand__args__helpers_8h.html" title=" " alt="" coords="256,271,471,312"/>
-<area shape="poly" title=" " alt="" coords="956,33,883,39,802,51,718,69,637,96,565,133,498,178,440,223,396,262,393,258,437,219,495,174,562,128,635,92,716,64,801,46,883,34,956,27"/>
-<area shape="rect" href="arrays_8h.html" title=" " alt="" coords="495,279,627,304"/>
-<area shape="poly" title=" " alt="" coords="957,32,865,45,815,56,764,71,714,90,668,116,625,147,588,184,577,203,570,223,564,264,558,263,565,222,572,200,584,181,622,143,665,111,712,86,762,66,813,50,864,39,956,27"/>
-<area shape="rect" href="unit__test__executor_8h.html" title=" " alt="" coords="1223,94,1355,135"/>
-<area shape="poly" title=" " alt="" coords="1116,44,1224,85,1222,90,1114,49"/>
-<area shape="rect" href="timekeeping_8h.html" title=" " alt="" coords="5,102,181,127"/>
-<area shape="poly" title=" " alt="" coords="956,35,618,56,409,74,200,97,170,101,169,96,199,91,409,68,618,50,956,29"/>
-<area shape="rect" title=" " alt="" coords="1379,102,1439,127"/>
-<area shape="poly" title=" " alt="" coords="1172,42,1268,63,1368,91,1372,93,1370,98,1367,97,1267,68,1171,48"/>
-<area shape="rect" title=" " alt="" coords="1463,102,1526,127"/>
-<area shape="poly" title=" " alt="" coords="1172,36,1306,57,1380,73,1451,91,1456,93,1454,98,1450,97,1378,78,1305,63,1171,41"/>
-<area shape="rect" title=" " alt="" coords="1550,102,1626,127"/>
-<area shape="poly" title=" " alt="" coords="1171,32,1345,53,1443,70,1539,91,1546,93,1545,99,1538,97,1442,75,1344,59,1171,38"/>
-<area shape="rect" href="adcs__types_8h.html" title=" " alt="" coords="941,279,1117,304"/>
-<area shape="poly" title=" " alt="" coords="957,44,913,64,895,78,879,95,873,111,874,129,887,170,907,205,919,222,951,249,986,270,984,274,948,253,915,225,903,208,883,172,868,130,868,110,875,93,891,74,911,59,955,39"/>
-<area shape="rect" href="adcs__commands_8h.html" title=" " alt="" coords="889,102,1097,127"/>
-<area shape="poly" title=" " alt="" coords="1050,48,1014,91,1010,88,1046,45"/>
-<area shape="rect" href="adcs__command__ids_8h.html" title=" " alt="" coords="1649,94,1841,135"/>
-<area shape="poly" title=" " alt="" coords="1172,35,1382,58,1635,91,1634,96,1381,63,1171,40"/>
-<area shape="rect" href="adcs__struct__packers_8h.html" title=" " alt="" coords="940,183,1107,223"/>
-<area shape="poly" title=" " alt="" coords="1084,45,1098,64,1110,86,1116,111,1111,136,1096,158,1076,176,1073,172,1092,154,1107,134,1111,111,1105,88,1094,66,1080,48"/>
-<area shape="rect" href="adcs__types__to__json_8h.html" title=" " alt="" coords="1332,183,1497,223"/>
-<area shape="poly" title=" " alt="" coords="1087,44,1142,88,1212,132,1266,156,1322,175,1320,180,1264,161,1209,137,1139,92,1084,49"/>
-<area shape="poly" title=" " alt="" coords="790,221,834,237,870,257,882,269,889,283,889,298,880,314,862,329,834,341,761,360,680,372,608,379,608,373,679,367,760,355,832,336,859,324,876,310,884,297,884,284,878,273,867,261,832,242,788,226"/>
-<area shape="rect" href="telecommand__types_8h.html" title=" " alt="" coords="651,271,866,312"/>
-<area shape="poly" title=" " alt="" coords="720,222,741,257,737,259,716,225"/>
-<area shape="poly" title=" " alt="" coords="715,315,604,363,601,358,712,310"/>
-<area shape="poly" title=" " alt="" coords="410,310,521,358,518,363,407,315"/>
-<area shape="poly" title=" " alt="" coords="564,305,564,352,558,352,558,305"/>
-<area shape="rect" href="main_8h.html" title=": Header for main.c file. This file contains the common defines of the application." alt="" coords="1505,279,1564,304"/>
-<area shape="poly" title=" " alt="" coords="1356,130,1452,157,1490,170,1511,181,1524,200,1532,221,1538,263,1532,264,1527,223,1519,202,1507,185,1488,175,1450,162,1355,135"/>
-<area shape="rect" href="unit__test__inventory_8h.html" title=" " alt="" coords="1572,190,1712,216"/>
-<area shape="poly" title=" " alt="" coords="1356,129,1578,183,1577,189,1355,134"/>
-<area shape="rect" title=" " alt="" coords="1402,368,1515,393"/>
-<area shape="poly" title=" " alt="" coords="1526,307,1481,358,1477,354,1522,303"/>
-<area shape="rect" href="rtos__task__helpers_8h.html" title=" " alt="" coords="1539,360,1679,401"/>
-<area shape="poly" title=" " alt="" coords="1547,303,1584,347,1580,350,1543,307"/>
-<area shape="rect" title=" " alt="" coords="1565,449,1653,474"/>
-<area shape="poly" title=" " alt="" coords="1612,401,1612,433,1606,433,1606,401"/>
-<area shape="poly" title=" " alt="" coords="1629,218,1563,271,1560,267,1626,214"/>
-<area shape="poly" title=" " alt="" coords="95,128,96,171,101,197,110,222,128,253,146,275,169,292,201,310,241,328,283,342,369,362,449,372,514,376,514,381,449,378,368,367,282,347,239,333,198,314,166,297,143,279,124,256,105,224,96,199,91,172,89,128"/>
-<area shape="rect" title=" " alt="" coords="119,190,182,216"/>
-<area shape="poly" title=" " alt="" coords="103,126,136,176,132,179,99,129"/>
-<area shape="poly" title=" " alt="" coords="963,308,608,373,607,368,962,303"/>
-<area shape="rect" title=" " alt="" coords="992,368,1066,393"/>
-<area shape="poly" title=" " alt="" coords="1032,305,1032,352,1026,352,1026,305"/>
-<area shape="poly" title=" " alt="" coords="977,130,951,153,930,184,925,203,930,222,953,250,984,270,981,274,950,254,925,225,919,203,925,182,947,149,973,126"/>
-<area shape="rect" href="adcs__internal__drivers_8h.html" title=" " alt="" coords="1132,183,1308,223"/>
-<area shape="poly" title=" " alt="" coords="1026,125,1155,174,1153,179,1024,130"/>
-<area shape="poly" title=" " alt="" coords="1292,221,1491,276,1489,281,1291,227"/>
-<area shape="poly" title=" " alt="" coords="1177,226,1071,274,1068,270,1175,221"/>
-<area shape="poly" title=" " alt="" coords="1028,224,1030,263,1025,264,1022,224"/>
-<area shape="poly" title=" " alt="" coords="1332,225,1099,278,1098,272,1331,220"/>
+<area shape="rect" title=" " alt="" coords="856,5,1070,46"/>
+<area shape="rect" href="telecommand__definitions_8h.html" title=" " alt="" coords="43,271,258,312"/>
+<area shape="poly" title=" " alt="" coords="855,29,741,33,603,43,454,64,380,78,309,97,251,110,204,122,184,130,166,142,148,160,130,184,124,201,124,220,134,257,129,258,118,220,119,200,126,181,144,156,162,138,182,125,203,117,250,105,307,91,379,73,454,58,602,38,740,28,855,24"/>
+<area shape="rect" title=" " alt="" coords="459,449,522,474"/>
+<area shape="poly" title=" " alt="" coords="855,32,687,38,488,50,302,69,226,82,169,97,109,113,57,128,37,139,21,154,12,174,8,202,8,293,11,328,22,355,41,377,69,398,98,412,139,424,242,441,352,451,444,456,443,461,352,456,242,446,138,429,97,417,67,403,37,381,17,357,6,329,3,293,3,201,6,173,17,151,34,135,55,124,107,108,167,91,225,76,301,64,488,45,686,33,855,27"/>
+<area shape="rect" href="telecommand__args__helpers_8h.html" title=" " alt="" coords="140,183,356,223"/>
+<area shape="poly" title=" " alt="" coords="855,34,730,42,592,55,465,73,414,84,376,96,347,112,320,132,276,173,272,169,317,127,344,108,374,92,413,79,464,67,591,50,730,37,855,29"/>
+<area shape="rect" href="arrays_8h.html" title=" " alt="" coords="359,279,492,304"/>
+<area shape="poly" title=" " alt="" coords="856,35,728,44,592,57,478,75,440,85,420,96,408,114,401,135,398,181,405,226,417,264,412,265,400,228,392,182,396,134,403,112,417,92,438,80,477,70,591,52,728,39,855,30"/>
+<area shape="rect" href="unit__test__executor_8h.html" title=" " alt="" coords="1612,94,1745,135"/>
+<area shape="poly" title=" " alt="" coords="1071,32,1311,54,1453,71,1594,91,1598,92,1597,97,1593,97,1452,76,1310,59,1070,37"/>
+<area shape="rect" href="timekeeping_8h.html" title=" " alt="" coords="431,102,606,127"/>
+<area shape="poly" title=" " alt="" coords="862,49,596,101,595,95,861,44"/>
+<area shape="rect" href="littlefs__helper_8h.html" title=" " alt="" coords="1214,102,1362,127"/>
+<area shape="poly" title=" " alt="" coords="1038,44,1228,94,1227,100,1036,49"/>
+<area shape="rect" title=" " alt="" coords="1427,449,1490,474"/>
+<area shape="poly" title=" " alt="" coords="1071,29,1140,36,1218,47,1297,66,1374,91,1430,110,1478,126,1498,138,1513,153,1523,174,1527,202,1527,293,1521,349,1501,402,1480,437,1476,435,1496,400,1516,348,1521,293,1521,202,1518,175,1509,156,1495,142,1476,131,1428,115,1372,97,1296,71,1217,53,1140,41,1070,34"/>
+<area shape="rect" title=" " alt="" coords="1522,449,1598,474"/>
+<area shape="poly" title=" " alt="" coords="1071,32,1281,54,1380,71,1450,91,1498,111,1538,129,1555,141,1567,157,1575,177,1577,202,1577,293,1574,370,1566,433,1561,433,1568,369,1572,293,1572,202,1569,178,1562,159,1551,145,1536,134,1496,116,1448,97,1379,76,1281,60,1070,37"/>
+<area shape="rect" title=" " alt="" coords="1769,102,1828,127"/>
+<area shape="poly" title=" " alt="" coords="1071,29,1436,51,1623,69,1700,79,1758,91,1763,93,1761,98,1757,97,1699,85,1622,74,1436,56,1070,34"/>
+<area shape="rect" title=" " alt="" coords="1852,102,1913,127"/>
+<area shape="poly" title=" " alt="" coords="1070,28,1256,36,1477,49,1688,67,1775,79,1841,91,1846,93,1845,98,1839,97,1774,84,1687,73,1477,54,1255,41,1070,33"/>
+<area shape="rect" href="adcs__types_8h.html" title=" " alt="" coords="834,279,1009,304"/>
+<area shape="poly" title=" " alt="" coords="856,44,789,62,720,90,688,108,657,130,630,155,608,184,597,211,598,222,603,232,621,249,651,263,688,273,731,280,818,287,818,293,730,286,687,278,649,268,618,254,598,235,593,223,592,210,603,181,626,151,654,126,685,104,718,85,787,57,854,39"/>
+<area shape="rect" href="adcs__commands_8h.html" title=" " alt="" coords="929,102,1138,127"/>
+<area shape="poly" title=" " alt="" coords="981,45,1016,88,1012,91,977,48"/>
+<area shape="rect" href="adcs__command__ids_8h.html" title=" " alt="" coords="1936,94,2128,135"/>
+<area shape="poly" title=" " alt="" coords="1070,28,1443,48,1680,66,1921,91,1921,96,1679,71,1443,53,1070,33"/>
+<area shape="rect" href="adcs__struct__packers_8h.html" title=" " alt="" coords="618,183,785,223"/>
+<area shape="poly" title=" " alt="" coords="935,49,745,176,742,172,932,44"/>
+<area shape="rect" href="adcs__types__to__json_8h.html" title=" " alt="" coords="809,183,975,223"/>
+<area shape="poly" title=" " alt="" coords="949,48,920,95,907,132,899,168,894,167,902,131,915,93,944,45"/>
+<area shape="poly" title=" " alt="" coords="125,314,103,334,85,356,76,378,77,389,83,399,107,416,145,430,191,441,244,448,353,456,444,458,444,463,352,461,243,453,190,446,143,435,105,421,79,402,72,391,71,378,80,353,99,330,121,310"/>
+<area shape="rect" href="telecommand__types_8h.html" title=" " alt="" coords="94,360,309,401"/>
+<area shape="poly" title=" " alt="" coords="164,311,184,345,180,348,160,314"/>
+<area shape="poly" title=" " alt="" coords="274,399,444,445,443,450,273,404"/>
+<area shape="poly" title=" " alt="" coords="268,222,349,310,470,436,466,439,345,314,264,226"/>
+<area shape="poly" title=" " alt="" coords="433,304,483,433,478,435,428,306"/>
+<area shape="rect" href="main_8h.html" title=": Header for main.c file. This file contains the common defines of the application." alt="" coords="1626,279,1686,304"/>
+<area shape="poly" title=" " alt="" coords="1677,135,1669,183,1661,263,1655,263,1664,182,1672,135"/>
+<area shape="rect" href="unit__test__inventory_8h.html" title=" " alt="" coords="1679,190,1820,216"/>
+<area shape="poly" title=" " alt="" coords="1697,133,1732,177,1728,180,1693,137"/>
+<area shape="rect" title=" " alt="" coords="1613,368,1726,393"/>
+<area shape="poly" title=" " alt="" coords="1660,305,1668,352,1663,353,1655,305"/>
+<area shape="rect" href="rtos__task__helpers_8h.html" title=" " alt="" coords="1750,360,1890,401"/>
+<area shape="poly" title=" " alt="" coords="1680,303,1771,350,1769,355,1678,308"/>
+<area shape="rect" title=" " alt="" coords="1776,449,1864,474"/>
+<area shape="poly" title=" " alt="" coords="1823,401,1823,433,1817,433,1817,401"/>
+<area shape="poly" title=" " alt="" coords="1738,218,1681,271,1678,267,1735,214"/>
+<area shape="poly" title=" " alt="" coords="520,128,507,312,496,433,491,433,501,312,515,127"/>
+<area shape="rect" title=" " alt="" coords="430,190,492,216"/>
+<area shape="poly" title=" " alt="" coords="513,129,480,179,475,176,508,126"/>
+<area shape="poly" title=" " alt="" coords="1287,128,1269,181,1233,258,1208,300,1178,339,1143,375,1103,403,1055,421,991,435,914,446,831,453,666,461,538,463,538,458,666,456,831,448,914,440,990,430,1054,416,1100,398,1140,371,1174,336,1204,297,1228,256,1264,179,1282,126"/>
+<area shape="rect" href="flash__driver_8h.html" title=" " alt="" coords="1350,190,1487,216"/>
+<area shape="poly" title=" " alt="" coords="1308,125,1389,179,1386,183,1305,130"/>
+<area shape="rect" href="lfs_8h.html" title=" " alt="" coords="1296,279,1381,304"/>
+<area shape="poly" title=" " alt="" coords="1294,127,1334,263,1328,265,1289,128"/>
+<area shape="poly" title=" " alt="" coords="1421,217,1416,261,1408,288,1396,313,1371,347,1346,370,1317,387,1278,403,1213,421,1125,434,912,452,697,460,538,463,538,457,697,455,912,447,1125,429,1212,416,1276,398,1315,382,1343,366,1367,344,1391,311,1403,286,1410,260,1416,216"/>
+<area shape="poly" title=" " alt="" coords="1453,214,1613,272,1611,277,1451,219"/>
+<area shape="poly" title=" " alt="" coords="1409,218,1362,269,1358,266,1406,214"/>
+<area shape="rect" href="lfs__util_8h.html" title=" " alt="" coords="1417,368,1487,393"/>
+<area shape="poly" title=" " alt="" coords="1356,303,1426,356,1423,360,1353,307"/>
+<area shape="poly" title=" " alt="" coords="1423,396,1399,403,1321,416,1217,426,966,443,538,461,538,456,966,438,1216,421,1320,410,1398,398,1422,391"/>
+<area shape="rect" title=" " alt="" coords="1111,449,1185,474"/>
+<area shape="poly" title=" " alt="" coords="1421,396,1399,403,1294,431,1201,452,1200,447,1292,426,1398,398,1419,391"/>
+<area shape="poly" title=" " alt="" coords="1456,393,1459,433,1454,433,1450,394"/>
+<area shape="poly" title=" " alt="" coords="1470,391,1533,437,1530,441,1467,396"/>
+<area shape="poly" title=" " alt="" coords="891,308,537,445,535,440,889,303"/>
+<area shape="poly" title=" " alt="" coords="932,303,969,348,995,375,1023,399,1061,422,1100,440,1098,445,1059,427,1020,403,991,379,965,352,928,307"/>
+<area shape="rect" title=" " alt="" coords="1033,368,1090,393"/>
+<area shape="poly" title=" " alt="" coords="942,303,1030,357,1027,361,939,307"/>
+<area shape="poly" title=" " alt="" coords="1032,129,1016,172,989,225,949,270,945,266,984,222,1011,170,1027,127"/>
+<area shape="rect" href="adcs__internal__drivers_8h.html" title=" " alt="" coords="1049,183,1226,223"/>
+<area shape="poly" title=" " alt="" coords="1049,126,1104,171,1100,175,1046,130"/>
+<area shape="poly" title=" " alt="" coords="1226,216,1611,280,1611,285,1225,222"/>
+<area shape="poly" title=" " alt="" coords="1089,226,966,275,964,270,1087,221"/>
+<area shape="poly" title=" " alt="" coords="1131,225,1075,354,1070,352,1126,223"/>
+<area shape="poly" title=" " alt="" coords="752,221,877,270,876,275,750,226"/>
+<area shape="poly" title=" " alt="" coords="901,223,915,263,910,265,896,225"/>
 </map>
 </div>
 </div><table class="memberdecls">
@@ -371,6 +394,12 @@ Functions</h2></td></tr>
 <tr class="memitem:a5ba967c4454af43ffa856542712593c2" id="r_a5ba967c4454af43ffa856542712593c2"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5ba967c4454af43ffa856542712593c2">TCMDEXEC_adcs_measurements</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
 <tr class="memdesc:a5ba967c4454af43ffa856542712593c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Telecommand: Request the given telemetry data from the ADCS.  <br /></td></tr>
 <tr class="separator:a5ba967c4454af43ffa856542712593c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62dccd4164e3df1707e298b25a404da9" id="r_a62dccd4164e3df1707e298b25a404da9"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a62dccd4164e3df1707e298b25a404da9">TCMDEXEC_adcs_download_index_file</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
+<tr class="memdesc:a62dccd4164e3df1707e298b25a404da9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Telecommand: Get the list of downloadable files from the ADCS SD card (alternate method)  <br /></td></tr>
+<tr class="separator:a62dccd4164e3df1707e298b25a404da9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fd84b61a84542c3dfdc577d53ecb4d3" id="r_a4fd84b61a84542c3dfdc577d53ecb4d3"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4fd84b61a84542c3dfdc577d53ecb4d3">TCMDEXEC_adcs_download_sd_file</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
+<tr class="memdesc:a4fd84b61a84542c3dfdc577d53ecb4d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Telecommand: Download a specific file from the ADCS SD card.  <br /></td></tr>
+<tr class="separator:a4fd84b61a84542c3dfdc577d53ecb4d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a070c025295da85667dbbabf1076051cc" id="r_a070c025295da85667dbbabf1076051cc"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a070c025295da85667dbbabf1076051cc">TCMDEXEC_adcs_acp_execution_state</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
 <tr class="memdesc:a070c025295da85667dbbabf1076051cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Telecommand: Request the given telemetry data from the ADCS.  <br /></td></tr>
 <tr class="separator:a070c025295da85667dbbabf1076051cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -383,9 +412,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a0bc0d109abce87c4f6a417b203030a93" id="r_a0bc0d109abce87c4f6a417b203030a93"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0bc0d109abce87c4f6a417b203030a93">TCMDEXEC_adcs_save_image_to_sd</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
 <tr class="memdesc:a0bc0d109abce87c4f6a417b203030a93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Telecommand: Save an image to the ADCS onboard SD card.  <br /></td></tr>
 <tr class="separator:a0bc0d109abce87c4f6a417b203030a93"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a723a07c1c85a39edea04e241eee46de8" id="r_a723a07c1c85a39edea04e241eee46de8"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a723a07c1c85a39edea04e241eee46de8">TCMDEXEC_adcs_synchronise_unix_time</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
-<tr class="memdesc:a723a07c1c85a39edea04e241eee46de8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Telecommand: Synchronise the current ADCS Unix epoch time.  <br /></td></tr>
-<tr class="separator:a723a07c1c85a39edea04e241eee46de8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a131f3800fd9c78cad1b1cc44781f03cc" id="r_a131f3800fd9c78cad1b1cc44781f03cc"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a131f3800fd9c78cad1b1cc44781f03cc">TCMDEXEC_adcs_synchronize_unix_time</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
+<tr class="memdesc:a131f3800fd9c78cad1b1cc44781f03cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Telecommand: Synchronize the current ADCS Unix epoch time.  <br /></td></tr>
+<tr class="separator:a131f3800fd9c78cad1b1cc44781f03cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a559b98d537d22add9ffd6fcc88b0ad72" id="r_a559b98d537d22add9ffd6fcc88b0ad72"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a559b98d537d22add9ffd6fcc88b0ad72">TCMDEXEC_adcs_get_current_unix_time</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
 <tr class="memdesc:a559b98d537d22add9ffd6fcc88b0ad72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Telecommand: Retrieve the current ADCS Unix epoch time.  <br /></td></tr>
 <tr class="separator:a559b98d537d22add9ffd6fcc88b0ad72"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -396,8 +425,11 @@ Functions</h2></td></tr>
 <tr class="memdesc:a6723856444638fa1ab7749c9f0470083"><td class="mdescLeft">&#160;</td><td class="mdescRight">Telecommand: Retrieve the current ADCS SD log configuration.  <br /></td></tr>
 <tr class="separator:a6723856444638fa1ab7749c9f0470083"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acfbac886221c0407fce13bee70ec8d5a" id="r_acfbac886221c0407fce13bee70ec8d5a"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acfbac886221c0407fce13bee70ec8d5a">TCMDEXEC_adcs_request_commissioning_telemetry</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
-<tr class="memdesc:acfbac886221c0407fce13bee70ec8d5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Telecommand: Request commissioning telemetry from the ADCS and save it to the memory module.  <br /></td></tr>
+<tr class="memdesc:acfbac886221c0407fce13bee70ec8d5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Telecommand: Request commissioning telemetry from the ADCS and save it to the onboard SD card.  <br /></td></tr>
 <tr class="separator:acfbac886221c0407fce13bee70ec8d5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adddbfc85bb1fd767c897484aea1ab53b" id="r_adddbfc85bb1fd767c897484aea1ab53b"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adddbfc85bb1fd767c897484aea1ab53b">TCMDEXEC_adcs_format_sd</a> (const char *args_str, <a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a> tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)</td></tr>
+<tr class="memdesc:adddbfc85bb1fd767c897484aea1ab53b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Telecommand: Instruct the ADCS to format the SD card.  <br /></td></tr>
+<tr class="separator:adddbfc85bb1fd767c897484aea1ab53b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="ab69523ca5e0c61783e98c8139ea89e07" name="ab69523ca5e0c61783e98c8139ea89e07"></a>
@@ -515,7 +547,7 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="223,71,255,75,254,80,223,76"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="496,37,687,78"/>
 <area shape="poly" title=" " alt="" coords="443,76,480,71,480,76,443,81"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a85df3b312f5491be0fbc00dde69904a1" title=" " alt="" coords="491,103,691,143"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a85df3b312f5491be0fbc00dde69904a1" title="Parse ACP Execution State telemetry data into a struct." alt="" coords="491,103,691,143"/>
 <area shape="poly" title=" " alt="" coords="443,100,476,105,475,110,443,105"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="739,37,916,78"/>
 <area shape="poly" title=" " alt="" coords="687,55,724,55,724,60,687,60"/>
@@ -1070,6 +1102,351 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
+<a id="a62dccd4164e3df1707e298b25a404da9" name="a62dccd4164e3df1707e298b25a404da9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62dccd4164e3df1707e298b25a404da9">&#9670;&#160;</a></span>TCMDEXEC_adcs_download_index_file()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t TCMDEXEC_adcs_download_index_file </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>args_str</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a></td>          <td class="paramname"><span class="paramname"><em>tcmd_channel</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>response_output_buf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>response_output_buf_len</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Telecommand: Get the list of downloadable files from the ADCS SD card (alternate method) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args_str</td><td><ul>
+<li>No arguments for this command </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, &gt;0 on error </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="telecommand__adcs_8c_a62dccd4164e3df1707e298b25a404da9_cgraph.png" border="0" usemap="#atelecommand__adcs_8c_a62dccd4164e3df1707e298b25a404da9_cgraph" alt=""/></div>
+<map name="atelecommand__adcs_8c_a62dccd4164e3df1707e298b25a404da9_cgraph" id="atelecommand__adcs_8c_a62dccd4164e3df1707e298b25a404da9_cgraph">
+<area shape="rect" title="Telecommand: Get the list of downloadable files from the ADCS SD card (alternate method)" alt="" coords="5,645,195,686"/>
+<area shape="rect" href="adcs__commands_8c.html#a0b73bd919e2d8a9fd7d2372c4a076ce0" title="Save a specified file from the ADCS SD card to the ADCS subfolder in LittleFS." alt="" coords="243,252,418,278"/>
+<area shape="poly" title=" " alt="" coords="111,643,312,290,316,293,116,646"/>
+<area shape="rect" href="littlefs__helper_8c.html#a7db1865ca760a2f95e872df244d21d47" title="Removes / deletes the file specified." alt="" coords="720,1014,831,1039"/>
+<area shape="poly" title=" " alt="" coords="121,684,174,742,254,820,355,901,410,937,467,968,527,991,590,1006,651,1016,704,1021,704,1027,650,1021,589,1012,526,996,465,973,407,942,352,905,251,824,170,746,117,688"/>
+<area shape="rect" href="adcs__commands_8c.html#ab3064b7b36053169e1f4b46f0b0e475f" title="Instruct the ADCS to execute the ADCS_advance_file_list_read_pointer command." alt="" coords="471,245,631,286"/>
+<area shape="poly" title=" " alt="" coords="419,263,455,263,455,268,419,268"/>
+<area shape="rect" href="adcs__commands_8c.html#a78314a88408de1fd947bac1eb122e96f" title="Instructs the ADCS to determine whether the last command succeeded. (Doesn&#39;t work for telemetry reque..." alt="" coords="1206,162,1324,187"/>
+<area shape="poly" title=" " alt="" coords="333,251,347,211,373,156,412,101,437,77,465,58,516,34,568,18,623,8,679,3,735,4,791,8,900,28,1003,57,1095,91,1171,124,1227,152,1225,156,1169,129,1093,96,1002,62,899,33,790,14,734,9,679,9,624,13,570,23,517,39,467,62,440,81,416,104,378,159,352,213,338,253"/>
+<area shape="rect" href="adcs__commands_8c.html#a74bd85d79adcad17e1cda6a638a5bf53" title="Request file information telemetry from the ADCS." alt="" coords="484,72,618,112"/>
+<area shape="poly" title=" " alt="" coords="347,250,510,120,514,124,350,254"/>
+<area shape="rect" href="adcs__commands_8c.html#a7db69548592a87c7405a784e7dfd8825" title="Save one block of the ADCS SD card file pointed to by the file pointer into the ADCS download buffer,..." alt="" coords="466,461,636,502"/>
+<area shape="poly" title=" " alt="" coords="347,276,520,448,516,452,343,280"/>
+<area shape="rect" href="log_8h.html#a3e068c70867806154541035de518012d" title=" " alt="" coords="958,1018,1067,1043"/>
+<area shape="poly" title=" " alt="" coords="337,278,366,385,394,468,431,562,478,661,536,759,605,852,644,893,686,931,731,955,797,978,943,1014,941,1019,796,983,728,960,683,935,640,897,601,855,532,762,474,663,426,564,389,470,361,387,332,279"/>
+<area shape="rect" href="adcs__commands_8c.html#a9c428db6fa83378f03c9e311a2765b09" title="Instruct the ADCS to execute the ADCS_reset_file_list_read_pointer command." alt="" coords="481,180,621,220"/>
+<area shape="poly" title=" " alt="" coords="376,249,466,222,467,227,377,254"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#aecce0bfa34eea6373e296fb13a2fb92f" title="Sends a telecommand over I2C to the ADCS, checks that it&#39;s been acknowledged, and returns the ACK err..." alt="" coords="922,212,1102,252"/>
+<area shape="poly" title=" " alt="" coords="632,257,906,237,907,242,632,262"/>
+<area shape="poly" title=" " alt="" coords="1102,209,1190,189,1192,194,1104,214"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a4fd725dd59fc5c6d0304751c2a08baa4" title="Sends a telecommand over I2C to the ADCS." alt="" coords="1164,219,1366,245"/>
+<area shape="poly" title=" " alt="" coords="1103,229,1149,229,1149,235,1103,235"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="1420,352,1612,392"/>
+<area shape="poly" title=" " alt="" coords="1325,183,1350,192,1374,204,1412,235,1446,270,1497,337,1492,340,1442,273,1409,238,1371,209,1348,197,1323,188"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="1427,162,1605,187"/>
+<area shape="poly" title=" " alt="" coords="1324,172,1411,172,1411,177,1324,177"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="1660,352,1836,392"/>
+<area shape="poly" title=" " alt="" coords="1612,369,1644,369,1644,375,1612,375"/>
+<area shape="poly" title=" " alt="" coords="618,70,684,57,885,32,969,24,1047,24,1123,33,1201,55,1283,92,1374,147,1405,179,1439,230,1499,336,1495,339,1435,233,1401,182,1371,151,1280,97,1199,60,1122,39,1047,29,969,30,885,37,685,63,619,75"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#abda96baeaa9c1791d3ec0cf8d2312dfc" title="Parse File Information telemetry data into a struct." alt="" coords="695,72,856,112"/>
+<area shape="poly" title=" " alt="" coords="618,89,680,89,680,95,618,95"/>
+<area shape="poly" title=" " alt="" coords="558,459,575,420,602,370,638,319,683,274,743,235,809,206,878,186,949,172,1017,165,1082,162,1191,164,1191,170,1082,167,1018,170,949,177,880,191,811,211,745,240,686,278,642,322,606,373,580,422,563,461"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a57380050bbf7103fc0101eb2145fc7c7" title="Swap low and high bytes of a uint16 to turn into uint8 and put into specified index of an array." alt="" coords="929,356,1096,412"/>
+<area shape="poly" title=" " alt="" coords="637,483,748,478,808,469,866,453,890,439,913,422,923,417,926,421,916,426,893,443,868,458,809,474,748,484,637,488"/>
+<area shape="rect" href="adcs__commands_8c.html#a54e04bdce18f78f3843ef407c20e048d" title="Request Download Block Ready telemetry from the ADCS." alt="" coords="684,518,867,559"/>
+<area shape="poly" title=" " alt="" coords="634,500,679,511,678,516,632,505"/>
+<area shape="rect" href="adcs__commands_8c.html#a84faa2ce0aa0006f1d710b817d1110df" title="Retrieve the File Download Buffer telemetry from the ADCS." alt="" coords="692,584,859,624"/>
+<area shape="poly" title=" " alt="" coords="581,500,628,534,686,568,699,575,697,579,683,573,625,538,578,504"/>
+<area shape="rect" href="adcs__commands_8c.html#ad4a5adf7161ecfe01f1e5d44d2c06f73" title="Send the Initiate Download Burst command to the ADCS." alt="" coords="693,338,858,379"/>
+<area shape="poly" title=" " alt="" coords="578,458,625,424,683,390,697,383,699,388,686,394,628,428,581,463"/>
+<area shape="rect" href="adcs__commands_8c.html#a814e5cceffac9e0b5e597cabc3083d9e" title="Instruct the ADCS to load a file download block into the download buffer." alt="" coords="689,404,862,444"/>
+<area shape="poly" title=" " alt="" coords="632,458,678,446,679,451,634,463"/>
+<area shape="rect" href="adcs__commands_8c.html#afe378dcb71143c07045078f1685b5802" title="Send a File Upload Hole Map command to the ADCS." alt="" coords="703,288,848,314"/>
+<area shape="poly" title=" " alt="" coords="562,459,609,392,643,356,683,324,694,318,696,323,686,329,647,360,614,396,567,462"/>
+<area shape="rect" href="littlefs__helper_8c.html#a41ec6565fc865a9e37d275e4f6087676" title="Creates/Opens LittleFS File to append contents." alt="" coords="716,767,835,793"/>
+<area shape="poly" title=" " alt="" coords="570,500,757,753,753,756,566,503"/>
+<area shape="poly" title=" " alt="" coords="557,502,565,569,586,663,603,714,625,765,652,813,686,855,708,875,728,888,770,901,815,910,840,918,868,931,930,969,983,1006,980,1010,927,973,865,936,838,923,813,915,768,906,726,893,705,879,682,859,648,816,620,767,598,716,581,664,560,569,551,502"/>
+<area shape="rect" href="littlefs__helper_8c.html#a188f39fde7e2e69cdcb4d7e77feba88e" title="Creates/Opens LittleFS File to write to the Memory Module." alt="" coords="723,819,828,845"/>
+<area shape="poly" title=" " alt="" coords="557,502,568,561,590,643,607,686,628,729,654,769,686,803,710,818,707,822,683,807,650,772,623,731,602,688,585,644,562,562,552,503"/>
+<area shape="poly" title=" " alt="" coords="867,525,983,509,1109,485,1285,440,1436,395,1437,400,1287,445,1111,490,984,514,868,531"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#aeb356ed4570c3bb21b28e3bd2169c244" title="Parse the Download Block Ready telemetry data into the provided struct." alt="" coords="926,436,1098,476"/>
+<area shape="poly" title=" " alt="" coords="835,515,937,479,938,484,837,520"/>
+<area shape="poly" title=" " alt="" coords="859,589,1134,540,1273,509,1329,493,1371,477,1431,441,1481,401,1484,405,1434,446,1373,482,1331,498,1274,514,1136,545,860,594"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a5bf24e67ef7b76c489daaa9e1fa415c1" title="Parse the File Download Buffer data into the provided struct." alt="" coords="915,601,1110,642"/>
+<area shape="poly" title=" " alt="" coords="860,607,899,610,899,616,859,613"/>
+<area shape="poly" title=" " alt="" coords="847,335,865,324,880,309,888,294,897,278,913,262,919,258,922,262,916,266,901,281,893,296,884,312,868,329,849,340"/>
+<area shape="poly" title=" " alt="" coords="849,401,865,389,877,373,884,358,888,327,892,295,900,278,913,262,915,260,919,264,917,266,904,281,897,296,893,327,889,359,882,376,869,392,852,405"/>
+<area shape="poly" title=" " alt="" coords="862,407,913,398,914,403,863,412"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a4d66866ec7ebc347e16aff2da8a52058" title="Reverse the order of the four bytes of a uint32 to turn into uint8 and put into specified index of an..." alt="" coords="929,276,1096,332"/>
+<area shape="poly" title=" " alt="" coords="842,401,865,388,879,377,889,366,898,354,913,342,921,337,923,342,916,346,902,358,893,369,883,381,868,393,844,405"/>
+<area shape="poly" title=" " alt="" coords="821,285,925,255,927,260,823,290"/>
+<area shape="rect" href="lfs_8c.html#aa7eb46b610f8507869aa62759cfd224e" title=" " alt="" coords="964,816,1060,842"/>
+<area shape="poly" title=" " alt="" coords="836,790,949,814,948,819,835,795"/>
+<area shape="rect" href="lfs_8c.html#a27b9877d2df6b72e9ac883a408d0d34c" title="File operations ///." alt="" coords="957,866,1068,891"/>
+<area shape="poly" title=" " alt="" coords="836,790,868,804,883,817,893,829,902,841,916,852,942,864,940,869,913,857,898,845,888,832,879,820,865,809,834,795"/>
+<area shape="rect" href="lfs_8c.html#ad6f28a6af39c34f251a7c8db1bcc9506" title=" " alt="" coords="966,666,1059,691"/>
+<area shape="poly" title=" " alt="" coords="799,764,851,737,914,708,951,694,953,699,916,713,854,742,802,769"/>
+<area shape="rect" href="lfs_8c.html#a2769dda334cd0ac276a4a929eadb930d" title=" " alt="" coords="966,767,1059,793"/>
+<area shape="poly" title=" " alt="" coords="835,777,950,777,950,783,835,783"/>
+<area shape="rect" href="log_8c.html#a6efa47aededef4834dc5c25da1e432de" title="Returns all sinks, except the specified exceptions." alt="" coords="1189,602,1341,627"/>
+<area shape="poly" title=" " alt="" coords="835,766,997,733,1069,715,1109,702,1124,687,1132,671,1140,654,1156,638,1174,629,1176,633,1160,642,1144,657,1136,673,1128,690,1111,706,1071,720,998,738,836,771"/>
+<area shape="poly" title=" " alt="" coords="836,787,868,804,888,828,898,851,904,875,917,903,955,958,992,1004,988,1007,951,961,912,905,899,877,892,852,884,830,865,809,834,792"/>
+<area shape="poly" title=" " alt="" coords="1066,1021,1089,1012,1108,997,1124,974,1135,952,1141,929,1143,907,1139,863,1129,818,1120,774,1117,729,1120,706,1127,683,1139,661,1156,638,1173,625,1177,629,1160,642,1143,664,1132,686,1125,707,1122,729,1125,773,1135,817,1144,862,1148,907,1146,930,1140,953,1129,977,1112,1000,1092,1017,1068,1026"/>
+<area shape="rect" href="csp__cmp_8h.html#a4402590c0b64383fa59aaf6fe78dcb34" title=" " alt="" coords="1217,896,1313,922"/>
+<area shape="poly" title=" " alt="" coords="1066,1017,1088,1008,1108,996,1123,981,1131,965,1140,948,1156,932,1178,921,1201,914,1203,919,1180,926,1160,937,1144,951,1136,967,1128,984,1112,1001,1091,1013,1068,1021"/>
+<area shape="rect" href="log_8c.html#ad5a8cf2ec365951bb0385938171723bd" title="Get a pointer to the full text of the in&#45;memory log message at the specified index." alt="" coords="1184,946,1346,987"/>
+<area shape="poly" title=" " alt="" coords="1065,1015,1168,988,1169,993,1067,1020"/>
+<area shape="rect" href="log_8c.html#acce5d976dea413409a2547fc61475620" title="Get the index of the most recent in&#45;memory log message." alt="" coords="1184,1011,1346,1066"/>
+<area shape="poly" title=" " alt="" coords="1067,1030,1169,1033,1169,1038,1067,1035"/>
+<area shape="rect" href="log_8c.html#ad0799a0e4171a608ff908822382da8c9" title="Get the most recent log message text." alt="" coords="1188,1090,1342,1131"/>
+<area shape="poly" title=" " alt="" coords="1054,1041,1159,1076,1180,1083,1178,1088,1157,1081,1052,1046"/>
+<area shape="rect" href="log_8c.html#a186ca6df91a1dacb78dbf0b0385747c5" title="Get the name of a severity enum." alt="" coords="1182,1155,1348,1181"/>
+<area shape="poly" title=" " alt="" coords="1028,1042,1083,1090,1119,1117,1159,1140,1177,1147,1175,1152,1157,1145,1116,1122,1079,1094,1025,1046"/>
+<area shape="rect" href="log_8c.html#a440123199704bc7c5231ec1a9743497f" title="Check logging sink status." alt="" coords="1190,1204,1340,1230"/>
+<area shape="poly" title=" " alt="" coords="1024,1043,1044,1074,1074,1114,1113,1156,1159,1191,1177,1200,1175,1204,1157,1195,1110,1160,1070,1118,1039,1077,1019,1045"/>
+<area shape="rect" href="log_8c.html#af31cb35d8f2dd37ff306620c600462da" title="Check whether file logging is enabled for a subsystem." alt="" coords="1196,1254,1334,1295"/>
+<area shape="poly" title=" " alt="" coords="1021,1043,1039,1082,1068,1135,1109,1192,1133,1218,1160,1240,1183,1254,1180,1258,1156,1245,1129,1222,1105,1195,1064,1138,1034,1084,1016,1045"/>
+<area shape="rect" href="log_8c.html#a5503bd03b30497a0a43c490d68090ebc" title="Get the size in entries of the in&#45;memory log table." alt="" coords="1181,1320,1349,1360"/>
+<area shape="poly" title=" " alt="" coords="1019,1043,1033,1092,1060,1163,1079,1201,1102,1239,1129,1274,1160,1305,1169,1311,1166,1316,1156,1309,1125,1277,1098,1242,1075,1204,1056,1165,1028,1094,1014,1045"/>
+<area shape="rect" href="log_8c.html#a3d0d201c22a940b6800834336c24fdcc" title=" " alt="" coords="1182,1385,1348,1426"/>
+<area shape="poly" title=" " alt="" coords="1018,1043,1028,1103,1053,1191,1071,1239,1095,1286,1124,1331,1160,1370,1170,1378,1167,1382,1156,1374,1120,1334,1090,1289,1066,1241,1048,1192,1023,1104,1013,1044"/>
+<area shape="rect" href="log_8c.html#a9a7ce5e1b26859f039c363753e499d32" title=" " alt="" coords="1182,1450,1348,1491"/>
+<area shape="poly" title=" " alt="" coords="1019,1043,1039,1123,1073,1242,1115,1359,1137,1405,1160,1435,1171,1444,1167,1448,1156,1439,1133,1407,1110,1361,1068,1243,1034,1125,1014,1045"/>
+<area shape="rect" href="log_8c.html#a22ffd7bd23f49bfcc5da12d9dee93fba" title="Report a sink&#39;s enabled state." alt="" coords="1179,1516,1351,1556"/>
+<area shape="poly" title=" " alt="" coords="1020,1043,1091,1294,1134,1433,1160,1501,1168,1507,1164,1511,1156,1504,1129,1435,1086,1295,1015,1044"/>
+<area shape="rect" href="log_8c.html#af46fe0cc52d2bc6cd716d02ef713641c" title="Report a subsystem&#39;s file&#45;logging state." alt="" coords="1184,1581,1346,1622"/>
+<area shape="poly" title=" " alt="" coords="1020,1043,1113,1375,1121,1433,1122,1480,1125,1501,1131,1522,1142,1543,1160,1566,1173,1577,1169,1581,1156,1570,1137,1546,1126,1524,1120,1502,1117,1480,1116,1433,1107,1376,1015,1044"/>
+<area shape="rect" href="log_8c.html#a7580a472c0db91ca169d0e1403d4c48b" title="Turn debugging messages on or off for the specified sink." alt="" coords="1177,1646,1353,1687"/>
+<area shape="poly" title=" " alt="" coords="1020,1043,1060,1177,1113,1375,1119,1416,1120,1452,1118,1514,1118,1543,1124,1571,1137,1600,1160,1631,1166,1638,1162,1641,1156,1635,1133,1603,1119,1573,1113,1544,1112,1514,1115,1452,1114,1416,1107,1376,1055,1178,1015,1044"/>
+<area shape="rect" href="log_8c.html#add4285ec4e7fa886c86969276e630e2b" title="Enable or disable logging to a sink." alt="" coords="1186,652,1344,692"/>
+<area shape="poly" title=" " alt="" coords="1067,1021,1089,1012,1108,997,1131,960,1139,924,1137,888,1131,852,1125,816,1123,779,1132,741,1156,703,1171,691,1174,695,1160,707,1137,743,1129,779,1130,815,1136,851,1143,888,1144,925,1136,962,1112,1000,1092,1016,1069,1026"/>
+<area shape="rect" href="log_8c.html#a51dd2ee0e3382333ca295b33b6fd8734" title="Turn debugging messages on or off for the specified system." alt="" coords="1170,717,1360,758"/>
+<area shape="poly" title=" " alt="" coords="1066,1021,1089,1011,1108,997,1127,969,1134,941,1134,913,1131,885,1128,856,1128,827,1136,798,1156,769,1159,766,1163,769,1160,772,1141,800,1133,828,1133,856,1136,884,1140,913,1139,941,1131,971,1112,1000,1092,1016,1068,1026"/>
+<area shape="rect" href="log_8c.html#a57f3ced0c69b3a65c71ec7bf8bbc6cea" title="Enable or disable logging to file for a subsystem." alt="" coords="1186,782,1344,823"/>
+<area shape="poly" title=" " alt="" coords="1066,1020,1089,1011,1108,997,1123,977,1130,957,1131,916,1133,875,1140,854,1156,833,1171,821,1174,825,1160,836,1145,856,1138,876,1136,916,1135,958,1127,979,1112,1000,1091,1016,1068,1025"/>
+<area shape="rect" href="log_8c.html#a0922ecc9bb8ee94a49060ee0961c1ca1" title="Set the logging severity bitfield mask for a subsystem." alt="" coords="1158,847,1372,873"/>
+<area shape="poly" title=" " alt="" coords="1066,1019,1089,1010,1108,997,1120,983,1126,969,1131,940,1136,911,1143,896,1156,882,1160,879,1164,883,1160,886,1148,899,1141,912,1136,941,1131,971,1124,986,1112,1001,1091,1015,1068,1024"/>
+<area shape="poly" title=" " alt="" coords="828,829,949,827,949,833,828,834"/>
+<area shape="poly" title=" " alt="" coords="829,840,942,862,941,867,828,845"/>
+<area shape="poly" title=" " alt="" coords="828,818,950,791,951,796,829,823"/>
+<area shape="poly" title=" " alt="" coords="814,843,868,868,892,887,901,895,916,901,972,920,1019,932,1041,933,1062,928,1085,919,1108,902,1133,873,1142,842,1141,810,1135,776,1128,742,1126,707,1134,672,1156,638,1173,625,1176,629,1160,642,1139,674,1131,707,1134,741,1140,775,1146,809,1147,843,1137,875,1112,906,1087,923,1064,934,1041,938,1018,937,970,925,914,906,898,899,888,891,865,873,811,848"/>
+<area shape="poly" title=" " alt="" coords="824,843,847,854,868,869,886,888,895,906,903,925,917,946,949,979,982,1006,978,1010,945,983,913,950,898,928,890,909,881,891,865,873,844,858,821,848"/>
+<area shape="poly" title=" " alt="" coords="622,202,907,222,907,227,621,207"/>
+<area shape="poly" title=" " alt="" coords="831,1013,997,977,1070,957,1095,947,1108,939,1122,921,1132,903,1140,866,1138,828,1131,791,1124,753,1122,715,1131,676,1141,657,1156,638,1173,625,1176,629,1160,642,1146,660,1136,678,1127,715,1129,752,1136,790,1144,828,1146,866,1137,905,1127,924,1112,943,1097,952,1072,962,998,982,832,1019"/>
+<area shape="poly" title=" " alt="" coords="832,1025,942,1027,942,1032,832,1030"/>
+<area shape="rect" href="lfs_8c.html#a99955c5cacbb59f461648ade799b29c5" title="General operations ///." alt="" coords="970,1388,1055,1414"/>
+<area shape="poly" title=" " alt="" coords="787,1038,997,1374,992,1377,783,1041"/>
+<area shape="rect" href="lfs_8c.html#a0ed15be6bddff24f357f24cbcd59d201" title=" " alt="" coords="1219,1711,1311,1737"/>
+<area shape="poly" title=" " alt="" coords="1019,1414,1031,1467,1056,1544,1075,1585,1098,1626,1126,1664,1160,1696,1181,1709,1205,1716,1203,1722,1179,1714,1156,1701,1122,1668,1094,1629,1070,1588,1051,1546,1026,1468,1013,1415"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a4fd84b61a84542c3dfdc577d53ecb4d3" name="a4fd84b61a84542c3dfdc577d53ecb4d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fd84b61a84542c3dfdc577d53ecb4d3">&#9670;&#160;</a></span>TCMDEXEC_adcs_download_sd_file()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t TCMDEXEC_adcs_download_sd_file </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>args_str</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a></td>          <td class="paramname"><span class="paramname"><em>tcmd_channel</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>response_output_buf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>response_output_buf_len</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Telecommand: Download a specific file from the ADCS SD card. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args_str</td><td><ul>
+<li>Arg 0: The index of the file to download </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, &gt;0 on error </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="telecommand__adcs_8c_a4fd84b61a84542c3dfdc577d53ecb4d3_cgraph.png" border="0" usemap="#atelecommand__adcs_8c_a4fd84b61a84542c3dfdc577d53ecb4d3_cgraph" alt=""/></div>
+<map name="atelecommand__adcs_8c_a4fd84b61a84542c3dfdc577d53ecb4d3_cgraph" id="atelecommand__adcs_8c_a4fd84b61a84542c3dfdc577d53ecb4d3_cgraph">
+<area shape="rect" title="Telecommand: Download a specific file from the ADCS SD card." alt="" coords="5,1740,195,1781"/>
+<area shape="rect" href="adcs__commands_8c.html#a0b73bd919e2d8a9fd7d2372c4a076ce0" title="Save a specified file from the ADCS SD card to the ADCS subfolder in LittleFS." alt="" coords="243,1657,418,1683"/>
+<area shape="poly" title=" " alt="" coords="153,1738,280,1687,282,1692,155,1743"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="245,1772,416,1798"/>
+<area shape="poly" title=" " alt="" coords="196,1768,229,1772,229,1777,195,1773"/>
+<area shape="rect" href="adcs__commands_8c.html#ab3064b7b36053169e1f4b46f0b0e475f" title="Instruct the ADCS to execute the ADCS_advance_file_list_read_pointer command." alt="" coords="471,1772,631,1813"/>
+<area shape="poly" title=" " alt="" coords="351,1681,402,1718,467,1757,480,1763,478,1768,465,1762,399,1722,348,1686"/>
+<area shape="rect" href="adcs__commands_8c.html#a78314a88408de1fd947bac1eb122e96f" title="Instructs the ADCS to determine whether the last command succeeded. (Doesn&#39;t work for telemetry reque..." alt="" coords="1206,1552,1324,1578"/>
+<area shape="poly" title=" " alt="" coords="418,1677,553,1686,727,1689,822,1685,919,1676,1016,1663,1109,1642,1143,1631,1176,1616,1231,1584,1234,1589,1178,1621,1145,1636,1111,1647,1017,1668,920,1682,822,1690,727,1694,553,1691,418,1682"/>
+<area shape="rect" href="adcs__commands_8c.html#a74bd85d79adcad17e1cda6a638a5bf53" title="Request file information telemetry from the ADCS." alt="" coords="484,858,618,898"/>
+<area shape="poly" title=" " alt="" coords="333,1656,538,913,543,914,338,1658"/>
+<area shape="rect" href="adcs__commands_8c.html#a7db69548592a87c7405a784e7dfd8825" title="Save one block of the ADCS SD card file pointed to by the file pointer into the ADCS download buffer,..." alt="" coords="466,1434,636,1474"/>
+<area shape="poly" title=" " alt="" coords="343,1655,516,1484,520,1487,347,1659"/>
+<area shape="rect" href="log_8h.html#a3e068c70867806154541035de518012d" title=" " alt="" coords="958,661,1067,687"/>
+<area shape="poly" title=" " alt="" coords="330,1657,338,1510,360,1267,378,1138,400,1017,429,916,445,876,464,845,487,817,512,793,569,753,633,723,700,700,768,685,833,676,942,670,942,675,833,681,769,691,702,706,635,727,572,758,515,797,490,821,468,848,450,878,434,917,406,1018,383,1139,365,1268,343,1510,335,1657"/>
+<area shape="rect" href="adcs__commands_8c.html#a9c428db6fa83378f03c9e311a2765b09" title="Instruct the ADCS to execute the ADCS_reset_file_list_read_pointer command." alt="" coords="481,1707,621,1748"/>
+<area shape="poly" title=" " alt="" coords="383,1681,466,1703,465,1708,382,1686"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#aecce0bfa34eea6373e296fb13a2fb92f" title="Sends a telecommand over I2C to the ADCS, checks that it&#39;s been acknowledged, and returns the ACK err..." alt="" coords="922,1707,1102,1748"/>
+<area shape="poly" title=" " alt="" coords="632,1790,743,1784,866,1769,938,1751,939,1756,867,1774,744,1790,632,1795"/>
+<area shape="poly" title=" " alt="" coords="1072,1704,1109,1687,1181,1636,1238,1586,1241,1590,1184,1640,1111,1691,1075,1709"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a4fd725dd59fc5c6d0304751c2a08baa4" title="Sends a telecommand over I2C to the ADCS." alt="" coords="1164,1715,1366,1740"/>
+<area shape="poly" title=" " alt="" coords="1103,1725,1149,1725,1149,1730,1103,1730"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="1420,1267,1612,1308"/>
+<area shape="poly" title=" " alt="" coords="1276,1550,1484,1318,1488,1321,1280,1553"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="1427,1552,1605,1578"/>
+<area shape="poly" title=" " alt="" coords="1324,1562,1411,1562,1411,1568,1324,1568"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="1660,1267,1836,1308"/>
+<area shape="poly" title=" " alt="" coords="1612,1285,1644,1285,1644,1290,1612,1290"/>
+<area shape="poly" title=" " alt="" coords="618,860,722,844,785,839,852,839,921,845,988,859,1053,883,1112,919,1127,934,1134,951,1138,985,1140,1019,1147,1035,1160,1051,1186,1069,1211,1078,1236,1081,1262,1080,1315,1080,1343,1086,1374,1101,1415,1135,1450,1175,1479,1216,1500,1252,1495,1254,1474,1219,1446,1178,1411,1139,1371,1106,1342,1091,1314,1085,1262,1085,1236,1086,1210,1083,1184,1074,1156,1055,1142,1038,1135,1021,1133,986,1129,952,1122,937,1108,923,1051,888,987,864,920,850,852,844,785,844,723,849,619,865"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#abda96baeaa9c1791d3ec0cf8d2312dfc" title="Parse File Information telemetry data into a struct." alt="" coords="695,750,856,790"/>
+<area shape="poly" title=" " alt="" coords="589,855,683,806,709,795,711,799,686,811,591,860"/>
+<area shape="poly" title=" " alt="" coords="637,1445,735,1442,854,1445,983,1457,1048,1468,1111,1482,1178,1509,1233,1541,1231,1545,1176,1514,1109,1487,1047,1473,983,1462,854,1450,735,1448,637,1451"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a57380050bbf7103fc0101eb2145fc7c7" title="Swap low and high bytes of a uint16 to turn into uint8 and put into specified index of an array." alt="" coords="929,1497,1096,1553"/>
+<area shape="poly" title=" " alt="" coords="637,1464,914,1507,913,1512,636,1470"/>
+<area shape="rect" href="adcs__commands_8c.html#a54e04bdce18f78f3843ef407c20e048d" title="Request Download Block Ready telemetry from the ADCS." alt="" coords="684,1267,867,1308"/>
+<area shape="poly" title=" " alt="" coords="579,1431,733,1315,736,1319,582,1436"/>
+<area shape="rect" href="adcs__commands_8c.html#a84faa2ce0aa0006f1d710b817d1110df" title="Retrieve the File Download Buffer telemetry from the ADCS." alt="" coords="692,1376,859,1417"/>
+<area shape="poly" title=" " alt="" coords="632,1431,678,1419,679,1424,634,1436"/>
+<area shape="rect" href="adcs__commands_8c.html#ad4a5adf7161ecfe01f1e5d44d2c06f73" title="Send the Initiate Download Burst command to the ADCS." alt="" coords="693,1707,858,1748"/>
+<area shape="poly" title=" " alt="" coords="567,1473,616,1550,686,1643,739,1695,736,1699,682,1647,612,1553,562,1476"/>
+<area shape="rect" href="adcs__commands_8c.html#a814e5cceffac9e0b5e597cabc3083d9e" title="Instruct the ADCS to load a file download block into the download buffer." alt="" coords="689,1542,862,1582"/>
+<area shape="poly" title=" " alt="" coords="591,1473,686,1521,711,1533,709,1538,683,1526,589,1477"/>
+<area shape="rect" href="adcs__commands_8c.html#afe378dcb71143c07045078f1685b5802" title="Send a File Upload Hole Map command to the ADCS." alt="" coords="703,1607,848,1632"/>
+<area shape="poly" title=" " alt="" coords="569,1473,616,1533,649,1565,686,1592,697,1598,695,1603,683,1596,645,1569,612,1536,564,1477"/>
+<area shape="rect" href="littlefs__helper_8c.html#a41ec6565fc865a9e37d275e4f6087676" title="Creates/Opens LittleFS File to append contents." alt="" coords="716,1065,835,1091"/>
+<area shape="poly" title=" " alt="" coords="562,1432,756,1103,761,1106,567,1435"/>
+<area shape="poly" title=" " alt="" coords="552,1433,561,1355,583,1239,600,1173,622,1106,649,1040,682,978,728,928,813,848,983,695,986,699,816,852,732,932,687,981,654,1042,627,1108,606,1175,589,1240,567,1356,557,1434"/>
+<area shape="rect" href="littlefs__helper_8c.html#a188f39fde7e2e69cdcb4d7e77feba88e" title="Creates/Opens LittleFS File to write to the Memory Module." alt="" coords="723,992,828,1018"/>
+<area shape="poly" title=" " alt="" coords="551,1433,560,1363,581,1263,598,1208,620,1152,648,1099,682,1051,699,1035,719,1023,722,1027,703,1039,686,1055,653,1102,625,1155,603,1209,586,1264,565,1364,557,1434"/>
+<area shape="poly" title=" " alt="" coords="853,1264,914,1253,1046,1245,1179,1247,1302,1256,1405,1268,1404,1273,1301,1261,1178,1252,1046,1250,915,1258,854,1269"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#aeb356ed4570c3bb21b28e3bd2169c244" title="Parse the Download Block Ready telemetry data into the provided struct." alt="" coords="926,1267,1098,1308"/>
+<area shape="poly" title=" " alt="" coords="867,1285,911,1285,911,1290,867,1290"/>
+<area shape="poly" title=" " alt="" coords="859,1377,914,1368,1178,1328,1404,1298,1405,1303,1179,1333,915,1373,860,1383"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a5bf24e67ef7b76c489daaa9e1fa415c1" title="Parse the File Download Buffer data into the provided struct." alt="" coords="915,1382,1110,1422"/>
+<area shape="poly" title=" " alt="" coords="859,1396,899,1397,899,1402,859,1401"/>
+<area shape="poly" title=" " alt="" coords="858,1725,907,1725,907,1730,858,1730"/>
+<area shape="poly" title=" " alt="" coords="847,1581,868,1592,884,1604,894,1616,917,1643,976,1695,972,1699,913,1647,890,1620,880,1608,865,1596,845,1585"/>
+<area shape="poly" title=" " alt="" coords="862,1546,913,1538,914,1543,863,1551"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a4d66866ec7ebc347e16aff2da8a52058" title="Reverse the order of the four bytes of a uint32 to turn into uint8 and put into specified index of an..." alt="" coords="929,1577,1096,1633"/>
+<area shape="poly" title=" " alt="" coords="863,1575,914,1585,913,1590,862,1580"/>
+<area shape="poly" title=" " alt="" coords="807,1631,953,1698,951,1703,805,1635"/>
+<area shape="rect" href="lfs_8c.html#aa7eb46b610f8507869aa62759cfd224e" title=" " alt="" coords="964,1065,1060,1091"/>
+<area shape="poly" title=" " alt="" coords="835,1076,949,1076,949,1081,835,1081"/>
+<area shape="rect" href="lfs_8c.html#a27b9877d2df6b72e9ac883a408d0d34c" title="File operations ///." alt="" coords="957,967,1068,992"/>
+<area shape="poly" title=" " alt="" coords="801,1062,865,1028,889,1013,914,1001,941,992,943,997,916,1006,891,1018,868,1032,803,1067"/>
+<area shape="rect" href="lfs_8c.html#ad6f28a6af39c34f251a7c8db1bcc9506" title=" " alt="" coords="966,1167,1059,1192"/>
+<area shape="poly" title=" " alt="" coords="802,1089,854,1116,916,1145,953,1159,951,1164,914,1150,851,1121,799,1094"/>
+<area shape="rect" href="lfs_8c.html#a2769dda334cd0ac276a4a929eadb930d" title=" " alt="" coords="966,1016,1059,1042"/>
+<area shape="poly" title=" " alt="" coords="835,1063,950,1039,951,1044,836,1068"/>
+<area shape="rect" href="log_8c.html#a6efa47aededef4834dc5c25da1e432de" title="Returns all sinks, except the specified exceptions." alt="" coords="1189,1116,1341,1142"/>
+<area shape="poly" title=" " alt="" coords="836,1088,915,1101,1051,1114,1174,1122,1173,1128,1050,1120,914,1106,835,1093"/>
+<area shape="poly" title=" " alt="" coords="814,1062,841,1048,865,1028,883,1003,902,966,941,874,1000,701,1005,703,946,876,907,969,887,1006,869,1032,844,1052,817,1067"/>
+<area shape="poly" title=" " alt="" coords="1022,686,1061,779,1113,909,1124,951,1130,984,1139,1016,1160,1051,1190,1082,1225,1106,1222,1110,1187,1086,1156,1054,1135,1018,1125,985,1119,952,1107,911,1056,781,1017,688"/>
+<area shape="rect" href="csp__cmp_8h.html#a4402590c0b64383fa59aaf6fe78dcb34" title=" " alt="" coords="1217,251,1313,276"/>
+<area shape="poly" title=" " alt="" coords="1012,660,1019,594,1041,493,1059,437,1084,382,1116,331,1156,287,1177,273,1201,265,1203,271,1180,278,1160,291,1120,334,1088,385,1064,439,1046,494,1024,595,1017,661"/>
+<area shape="rect" href="log_8c.html#ad5a8cf2ec365951bb0385938171723bd" title="Get a pointer to the full text of the in&#45;memory log message at the specified index." alt="" coords="1184,300,1346,341"/>
+<area shape="poly" title=" " alt="" coords="1013,660,1025,604,1050,521,1069,475,1092,430,1121,388,1156,351,1169,342,1172,346,1160,355,1126,391,1097,433,1073,477,1055,522,1030,605,1018,661"/>
+<area shape="rect" href="log_8c.html#acce5d976dea413409a2547fc61475620" title="Get the index of the most recent in&#45;memory log message." alt="" coords="1184,365,1346,421"/>
+<area shape="poly" title=" " alt="" coords="1015,660,1032,617,1061,556,1102,489,1128,458,1156,431,1169,421,1172,426,1160,435,1132,462,1107,492,1066,558,1037,619,1020,662"/>
+<area shape="rect" href="log_8c.html#ad0799a0e4171a608ff908822382da8c9" title="Get the most recent log message text." alt="" coords="1188,444,1342,485"/>
+<area shape="poly" title=" " alt="" coords="1019,660,1038,627,1069,583,1109,536,1156,496,1173,486,1176,491,1160,500,1113,540,1073,586,1043,630,1023,662"/>
+<area shape="rect" href="log_8c.html#a186ca6df91a1dacb78dbf0b0385747c5" title="Get the name of a severity enum." alt="" coords="1665,832,1830,858"/>
+<area shape="poly" title=" " alt="" coords="1023,686,1097,829,1137,902,1160,936,1195,953,1231,966,1270,974,1309,978,1388,975,1467,960,1541,938,1608,912,1710,863,1712,868,1611,917,1543,943,1468,965,1389,980,1309,983,1269,979,1230,971,1193,958,1156,940,1133,905,1092,831,1018,689"/>
+<area shape="rect" href="log_8c.html#a440123199704bc7c5231ec1a9743497f" title="Check logging sink status." alt="" coords="1190,5,1340,31"/>
+<area shape="poly" title=" " alt="" coords="1012,661,1025,543,1052,356,1072,257,1095,167,1123,92,1139,63,1156,42,1174,28,1177,33,1160,45,1144,66,1128,94,1101,168,1077,258,1057,357,1030,543,1017,661"/>
+<area shape="rect" href="log_8c.html#af31cb35d8f2dd37ff306620c600462da" title="Check whether file logging is enabled for a subsystem." alt="" coords="1196,55,1334,96"/>
+<area shape="poly" title=" " alt="" coords="1013,661,1028,554,1058,387,1078,300,1101,219,1127,153,1141,127,1156,107,1180,90,1183,94,1160,111,1146,130,1132,155,1106,221,1083,301,1063,388,1033,555,1018,661"/>
+<area shape="rect" href="log_8c.html#a5503bd03b30497a0a43c490d68090ebc" title="Get the size in entries of the in&#45;memory log table." alt="" coords="1181,1000,1349,1041"/>
+<area shape="poly" title=" " alt="" coords="1024,686,1063,759,1112,858,1124,895,1130,925,1139,952,1160,980,1172,990,1169,994,1156,984,1134,954,1125,926,1119,896,1108,861,1058,761,1019,689"/>
+<area shape="rect" href="log_8c.html#a3d0d201c22a940b6800834336c24fdcc" title=" " alt="" coords="1182,120,1348,161"/>
+<area shape="poly" title=" " alt="" coords="1011,661,1013,578,1018,517,1029,448,1047,375,1073,302,1109,233,1131,201,1156,172,1167,163,1171,167,1160,176,1135,205,1113,236,1078,304,1052,376,1034,449,1024,517,1018,578,1016,661"/>
+<area shape="rect" href="log_8c.html#a9a7ce5e1b26859f039c363753e499d32" title=" " alt="" coords="1182,186,1348,226"/>
+<area shape="poly" title=" " alt="" coords="1011,661,1017,587,1024,534,1036,473,1054,410,1079,347,1113,288,1156,236,1167,227,1171,231,1160,240,1117,291,1084,350,1059,412,1041,475,1029,535,1022,588,1017,661"/>
+<area shape="rect" href="log_8c.html#a22ffd7bd23f49bfcc5da12d9dee93fba" title="Report a sink&#39;s enabled state." alt="" coords="1179,510,1351,550"/>
+<area shape="poly" title=" " alt="" coords="1026,659,1081,612,1117,585,1157,561,1171,554,1173,559,1159,566,1120,589,1084,616,1029,663"/>
+<area shape="rect" href="log_8c.html#af46fe0cc52d2bc6cd716d02ef713641c" title="Report a subsystem&#39;s file&#45;logging state." alt="" coords="1184,575,1346,616"/>
+<area shape="poly" title=" " alt="" coords="1055,658,1182,619,1183,624,1057,663"/>
+<area shape="rect" href="log_8c.html#a7580a472c0db91ca169d0e1403d4c48b" title="Turn debugging messages on or off for the specified sink." alt="" coords="1177,640,1353,681"/>
+<area shape="poly" title=" " alt="" coords="1067,669,1161,664,1162,669,1067,674"/>
+<area shape="rect" href="log_8c.html#add4285ec4e7fa886c86969276e630e2b" title="Enable or disable logging to a sink." alt="" coords="1186,706,1344,746"/>
+<area shape="poly" title=" " alt="" coords="1068,683,1172,704,1171,710,1067,688"/>
+<area shape="rect" href="log_8c.html#a51dd2ee0e3382333ca295b33b6fd8734" title="Turn debugging messages on or off for the specified system." alt="" coords="1170,886,1360,926"/>
+<area shape="poly" title=" " alt="" coords="1022,686,1040,723,1070,773,1110,826,1134,851,1160,872,1165,876,1162,880,1156,876,1130,855,1106,830,1065,776,1035,725,1017,688"/>
+<area shape="rect" href="log_8c.html#a57f3ced0c69b3a65c71ec7bf8bbc6cea" title="Enable or disable logging to file for a subsystem." alt="" coords="1186,771,1344,812"/>
+<area shape="poly" title=" " alt="" coords="1035,685,1090,720,1159,756,1177,763,1175,768,1157,761,1087,724,1032,690"/>
+<area shape="rect" href="log_8c.html#a0922ecc9bb8ee94a49060ee0961c1ca1" title="Set the logging severity bitfield mask for a subsystem." alt="" coords="1158,836,1372,862"/>
+<area shape="poly" title=" " alt="" coords="1024,686,1076,751,1115,789,1159,821,1173,828,1170,833,1157,826,1112,793,1072,755,1020,689"/>
+<area shape="rect" href="log_8c.html#a9620661557eea5fdaf535b894ae58c84" title="Log a message to several destinations (sinks)" alt="" coords="1461,681,1571,707"/>
+<area shape="poly" title=" " alt="" coords="1342,22,1359,30,1374,42,1391,63,1406,91,1433,163,1456,250,1475,346,1502,534,1515,666,1510,666,1496,534,1470,347,1451,251,1428,164,1401,93,1386,66,1370,45,1356,35,1339,27"/>
+<area shape="poly" title=" " alt="" coords="1539,705,1716,821,1713,826,1536,710"/>
+<area shape="poly" title=" " alt="" coords="1336,83,1356,93,1374,107,1403,151,1428,215,1450,293,1469,379,1498,546,1514,666,1509,666,1493,547,1464,380,1445,295,1423,217,1398,154,1370,111,1354,97,1333,88"/>
+<area shape="poly" title=" " alt="" coords="1347,549,1374,561,1410,586,1444,614,1496,668,1492,671,1440,618,1407,590,1371,566,1345,553"/>
+<area shape="poly" title=" " alt="" coords="1338,614,1373,626,1476,672,1474,677,1371,631,1336,619"/>
+<area shape="poly" title=" " alt="" coords="1354,670,1446,682,1445,688,1354,675"/>
+<area shape="poly" title=" " alt="" coords="1344,713,1445,700,1446,706,1345,719"/>
+<area shape="poly" title=" " alt="" coords="1351,883,1371,872,1413,837,1449,795,1478,754,1499,719,1503,722,1482,757,1453,798,1416,840,1374,876,1354,888"/>
+<area shape="poly" title=" " alt="" coords="1336,768,1371,756,1472,712,1475,717,1373,761,1338,773"/>
+<area shape="poly" title=" " alt="" coords="1342,833,1371,821,1407,798,1441,771,1492,717,1496,721,1444,774,1411,802,1374,826,1344,838"/>
+<area shape="poly" title=" " alt="" coords="812,1016,915,1052,950,1061,948,1066,914,1057,810,1021"/>
+<area shape="poly" title=" " alt="" coords="828,997,941,984,941,990,829,1002"/>
+<area shape="poly" title=" " alt="" coords="828,1007,951,1020,950,1025,828,1013"/>
+<area shape="poly" title=" " alt="" coords="798,989,857,960,896,944,939,932,984,924,1029,923,1072,932,1112,952,1128,968,1136,986,1139,1023,1140,1060,1147,1078,1160,1095,1176,1107,1173,1111,1156,1099,1142,1080,1135,1061,1134,1023,1131,987,1124,971,1108,956,1070,937,1028,929,984,929,940,937,898,949,859,965,800,994"/>
+<area shape="poly" title=" " alt="" coords="784,990,991,698,995,701,788,993"/>
+<area shape="poly" title=" " alt="" coords="622,1745,685,1757,775,1764,866,1757,916,1749,917,1754,867,1762,775,1769,684,1762,621,1750"/>
+<area shape="rect" href="telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="475,1837,627,1863"/>
+<area shape="poly" title=" " alt="" coords="377,1796,491,1830,490,1835,376,1801"/>
+</map>
+</div>
+
+</div>
+</div>
 <a id="a502da8be20cbdbe810b609948efef53a" name="a502da8be20cbdbe810b609948efef53a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a502da8be20cbdbe810b609948efef53a">&#9670;&#160;</a></span>TCMDEXEC_adcs_enter_low_power_mode()</h2>
 
@@ -1535,6 +1912,74 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
+<a id="adddbfc85bb1fd767c897484aea1ab53b" name="adddbfc85bb1fd767c897484aea1ab53b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adddbfc85bb1fd767c897484aea1ab53b">&#9670;&#160;</a></span>TCMDEXEC_adcs_format_sd()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t TCMDEXEC_adcs_format_sd </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>args_str</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="telecommand__types_8h.html#ae7b2ad17e7a3bbfa03b0d463b3a86d7c">TCMD_TelecommandChannel_enum_t</a></td>          <td class="paramname"><span class="paramname"><em>tcmd_channel</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>response_output_buf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>response_output_buf_len</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Telecommand: Instruct the ADCS to format the SD card. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args_str</td><td><ul>
+<li>No arguments for this command </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, &gt;0 on error </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="telecommand__adcs_8c_adddbfc85bb1fd767c897484aea1ab53b_cgraph.png" border="0" usemap="#atelecommand__adcs_8c_adddbfc85bb1fd767c897484aea1ab53b_cgraph" alt=""/></div>
+<map name="atelecommand__adcs_8c_adddbfc85bb1fd767c897484aea1ab53b_cgraph" id="atelecommand__adcs_8c_adddbfc85bb1fd767c897484aea1ab53b_cgraph">
+<area shape="rect" title="Telecommand: Instruct the ADCS to format the SD card." alt="" coords="5,96,198,121"/>
+<area shape="rect" href="adcs__commands_8c.html#ab9cc24d69b65c361afc36f0a3ac3a669" title="Instruct the ADCS to format the SD card." alt="" coords="246,96,368,121"/>
+<area shape="poly" title=" " alt="" coords="198,106,230,106,230,111,198,111"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#aecce0bfa34eea6373e296fb13a2fb92f" title="Sends a telecommand over I2C to the ADCS, checks that it&#39;s been acknowledged, and returns the ACK err..." alt="" coords="416,88,596,129"/>
+<area shape="poly" title=" " alt="" coords="368,106,400,106,400,111,368,111"/>
+<area shape="rect" href="adcs__commands_8c.html#a78314a88408de1fd947bac1eb122e96f" title="Instructs the ADCS to determine whether the last command succeeded. (Doesn&#39;t work for telemetry reque..." alt="" coords="644,70,762,96"/>
+<area shape="poly" title=" " alt="" coords="596,94,629,90,629,95,597,99"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a4fd725dd59fc5c6d0304751c2a08baa4" title="Sends a telecommand over I2C to the ADCS." alt="" coords="1049,96,1250,121"/>
+<area shape="poly" title=" " alt="" coords="597,106,1033,106,1033,111,597,111"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="810,5,1001,46"/>
+<area shape="poly" title=" " alt="" coords="750,67,816,48,817,53,752,72"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="816,70,994,96"/>
+<area shape="poly" title=" " alt="" coords="762,80,801,80,801,86,762,86"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="1062,19,1238,59"/>
+<area shape="poly" title=" " alt="" coords="1002,28,1046,31,1046,36,1001,34"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1298,60,1447,101"/>
+<area shape="poly" title=" " alt="" coords="1239,53,1284,61,1283,66,1238,58"/>
+<area shape="poly" title=" " alt="" coords="1250,93,1283,89,1283,94,1251,98"/>
+</map>
+</div>
+
+</div>
+</div>
 <a id="a5e0859e51ddde0fef41f11c323dc1599" name="a5e0859e51ddde0fef41f11c323dc1599"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5e0859e51ddde0fef41f11c323dc1599">&#9670;&#160;</a></span>TCMDEXEC_adcs_generic_command()</h2>
 
@@ -1739,14 +2184,18 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="229,41,261,37,261,42,230,46"/>
 <area shape="rect" href="adcs__commands_8c.html#a2ac94c70cb2cb26963ed96de8a98fb00" title="Instruct the ADCS to execute the ADCS_Get_Augmented_SGP4_Params command." alt="" coords="284,71,437,111"/>
 <area shape="poly" title=" " alt="" coords="230,71,268,76,268,82,229,76"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="492,37,683,78"/>
-<area shape="poly" title=" " alt="" coords="437,77,476,71,477,77,437,82"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a227d4d62d21ea2dfef8e474e266a7d84" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="497,103,678,143"/>
-<area shape="poly" title=" " alt="" coords="437,99,482,105,481,111,437,104"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="731,37,908,78"/>
-<area shape="poly" title=" " alt="" coords="684,55,716,55,716,60,684,60"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="956,37,1104,78"/>
-<area shape="poly" title=" " alt="" coords="908,55,940,55,940,60,908,60"/>
+<area shape="rect" href="arrays_8c.html#a8e796c28ea0c777c78f1416527ecd7c0" title="Converts an int64_t to a string." alt="" coords="526,13,650,38"/>
+<area shape="poly" title=" " alt="" coords="444,23,510,23,510,28,444,28"/>
+<area shape="rect" href="arrays_8c.html#a4d9146ce5234948adb9b3845f4e91b53" title="Converts a uint64_t to a string." alt="" coords="754,13,885,38"/>
+<area shape="poly" title=" " alt="" coords="650,23,738,23,738,28,650,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="492,67,683,107"/>
+<area shape="poly" title=" " alt="" coords="437,87,476,86,477,92,437,92"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a227d4d62d21ea2dfef8e474e266a7d84" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="497,132,678,173"/>
+<area shape="poly" title=" " alt="" coords="438,109,496,125,494,130,436,114"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="731,67,908,107"/>
+<area shape="poly" title=" " alt="" coords="684,84,716,84,716,90,684,90"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="956,67,1104,107"/>
+<area shape="poly" title=" " alt="" coords="908,84,940,84,940,90,908,90"/>
 </map>
 </div>
 
@@ -1867,7 +2316,7 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="205,64,238,68,237,73,205,69"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="480,29,671,70"/>
 <area shape="poly" title=" " alt="" coords="432,68,464,63,465,68,433,73"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#ad1bec11a1845d30b8e11f021029d9b32" title=" " alt="" coords="497,95,654,135"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#ad1bec11a1845d30b8e11f021029d9b32" title="Parse Current State 1 telemetry data into a struct." alt="" coords="497,95,654,135"/>
 <area shape="poly" title=" " alt="" coords="433,93,482,100,481,105,432,98"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="719,29,896,70"/>
 <area shape="poly" title=" " alt="" coords="672,47,704,47,704,52,672,52"/>
@@ -1923,11 +2372,19 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="telecommand__adcs_8c_a559b98d537d22add9ffd6fcc88b0ad72_cgraph.png" border="0" usemap="#atelecommand__adcs_8c_a559b98d537d22add9ffd6fcc88b0ad72_cgraph" alt=""/></div>
 <map name="atelecommand__adcs_8c_a559b98d537d22add9ffd6fcc88b0ad72_cgraph" id="atelecommand__adcs_8c_a559b98d537d22add9ffd6fcc88b0ad72_cgraph">
-<area shape="rect" title="Telecommand: Retrieve the current ADCS Unix epoch time." alt="" coords="5,23,205,64"/>
-<area shape="rect" href="adcs__commands_8h.html#abe27cb5090541044ad26d20310e219ac" title=" " alt="" coords="257,5,448,31"/>
-<area shape="poly" title=" " alt="" coords="205,31,241,27,242,32,205,36"/>
-<area shape="rect" href="adcs__types__to__json_8c.html#a3497a4964fa675934ae9912032889400" title=" " alt="" coords="253,55,453,80"/>
-<area shape="poly" title=" " alt="" coords="205,51,237,54,237,59,205,56"/>
+<area shape="rect" title="Telecommand: Retrieve the current ADCS Unix epoch time." alt="" coords="5,59,205,99"/>
+<area shape="rect" href="adcs__commands_8c.html#a4119f53137daee2b797d5f3166055ac7" title="Instruct the ADCS to execute the ADCS_get_current_unix_time command." alt="" coords="257,41,448,66"/>
+<area shape="poly" title=" " alt="" coords="205,66,241,62,242,68,205,71"/>
+<area shape="rect" href="adcs__types__to__json_8c.html#a3497a4964fa675934ae9912032889400" title=" " alt="" coords="253,90,453,116"/>
+<area shape="poly" title=" " alt="" coords="205,86,237,89,237,94,205,91"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="504,5,695,46"/>
+<area shape="poly" title=" " alt="" coords="449,40,488,36,489,41,449,45"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a0bfa18b3765f5b901c25eb5da9a0e5da" title="Parse Unix Time telemetry data into a uint64." alt="" coords="501,70,698,96"/>
+<area shape="poly" title=" " alt="" coords="449,62,486,67,485,72,449,68"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="746,5,923,46"/>
+<area shape="poly" title=" " alt="" coords="696,23,731,23,731,28,696,28"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="971,5,1119,46"/>
+<area shape="poly" title=" " alt="" coords="923,23,955,23,955,28,923,28"/>
 </map>
 </div>
 
@@ -2426,7 +2883,7 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="187,95,247,102,246,107,186,100"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="500,5,691,46"/>
 <area shape="poly" title=" " alt="" coords="449,42,484,37,485,42,450,47"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a018da0abce0e4946c795a68086e9bbb1" title=" " alt="" coords="512,71,679,111"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a018da0abce0e4946c795a68086e9bbb1" title="Parse Raw Star Tracker telemetry data into a struct." alt="" coords="512,71,679,111"/>
 <area shape="poly" title=" " alt="" coords="446,68,497,75,496,81,445,74"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="739,5,916,46"/>
 <area shape="poly" title=" " alt="" coords="692,23,724,23,724,28,692,28"/>
@@ -2491,7 +2948,7 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="173,137,246,156,245,162,172,142"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="446,5,637,46"/>
 <area shape="poly" title=" " alt="" coords="396,46,430,40,431,46,397,51"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a49fa95f1c212405624d20cd5a4ebf2c1" title=" " alt="" coords="464,71,619,111"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a49fa95f1c212405624d20cd5a4ebf2c1" title="Parse SD Log Config telemetry data into a struct." alt="" coords="464,71,619,111"/>
 <area shape="poly" title=" " alt="" coords="397,70,449,77,448,82,396,75"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="685,5,862,46"/>
 <area shape="poly" title=" " alt="" coords="638,23,670,23,670,28,638,28"/>
@@ -3860,7 +4317,7 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Telecommand: Request commissioning telemetry from the ADCS and save it to the memory module. </p>
+<p>Telecommand: Request commissioning telemetry from the ADCS and save it to the onboard SD card. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">args_str</td><td><ul>
@@ -3878,7 +4335,7 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="telecommand__adcs_8c_acfbac886221c0407fce13bee70ec8d5a_cgraph.png" border="0" usemap="#atelecommand__adcs_8c_acfbac886221c0407fce13bee70ec8d5a_cgraph" alt=""/></div>
 <map name="atelecommand__adcs_8c_acfbac886221c0407fce13bee70ec8d5a_cgraph" id="atelecommand__adcs_8c_acfbac886221c0407fce13bee70ec8d5a_cgraph">
-<area shape="rect" title="Telecommand: Request commissioning telemetry from the ADCS and save it to the memory module." alt="" coords="5,166,183,206"/>
+<area shape="rect" title="Telecommand: Request commissioning telemetry from the ADCS and save it to the onboard SD card." alt="" coords="5,166,183,206"/>
 <area shape="rect" href="adcs__commands_8c.html#ae9e90757f361a1a29b13768bdf8a53a5" title="Instruct the ADCS to execute the ADCS_execution_state command." alt="" coords="231,28,403,69"/>
 <area shape="poly" title=" " alt="" coords="127,163,268,75,271,80,130,167"/>
 <area shape="rect" href="adcs__commands_8c.html#afad12ab1d20dbb4d7d2d2f534e26f5f2" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="233,173,401,199"/>
@@ -3887,7 +4344,7 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="148,204,270,254,268,259,146,209"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="865,130,1056,170"/>
 <area shape="poly" title=" " alt="" coords="391,25,451,14,552,3,596,5,652,14,725,34,796,62,912,119,910,124,794,67,724,39,651,19,595,10,552,8,451,19,392,30"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a85df3b312f5491be0fbc00dde69904a1" title=" " alt="" coords="451,28,651,69"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a85df3b312f5491be0fbc00dde69904a1" title="Parse ACP Execution State telemetry data into a struct." alt="" coords="451,28,651,69"/>
 <area shape="poly" title=" " alt="" coords="403,46,435,46,435,51,403,51"/>
 <area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="1116,143,1293,184"/>
 <area shape="poly" title=" " alt="" coords="1057,152,1101,155,1101,160,1056,158"/>
@@ -4151,8 +4608,8 @@ Here is the call graph for this function:</div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">args_str</td><td><ul>
-<li>Arg 0: Which camera to save the image from; can be Camera 1 (0), Camera 2 (1), or Star (2)</li>
-<li>Arg 1: Resolution of the image to save; can be 1024x1024 (0), 512x512, (1) 256x256, (2) 128x128, (3) or 64x64 (4) </li>
+<li>Arg 0: (int) Which camera to save the image from; can be Camera 1 (0), Camera 2 (1), or Star (2)</li>
+<li>Arg 1: (int) Resolution of the image to save; can be 1024x1024 (0), 512x512 (1), 256x256 (2), 128x128 (3), or 64x64 (4) </li>
 </ul>
 </td></tr>
   </table>
@@ -5382,14 +5839,14 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="a723a07c1c85a39edea04e241eee46de8" name="a723a07c1c85a39edea04e241eee46de8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a723a07c1c85a39edea04e241eee46de8">&#9670;&#160;</a></span>TCMDEXEC_adcs_synchronise_unix_time()</h2>
+<a id="a131f3800fd9c78cad1b1cc44781f03cc" name="a131f3800fd9c78cad1b1cc44781f03cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a131f3800fd9c78cad1b1cc44781f03cc">&#9670;&#160;</a></span>TCMDEXEC_adcs_synchronize_unix_time()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint8_t TCMDEXEC_adcs_synchronise_unix_time </td>
+          <td class="memname">uint8_t TCMDEXEC_adcs_synchronize_unix_time </td>
           <td>(</td>
           <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>args_str</em></span>, </td>
         </tr>
@@ -5411,7 +5868,7 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Telecommand: Synchronise the current ADCS Unix epoch time. </p>
+<p>Telecommand: Synchronize the current ADCS Unix epoch time. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">args_str</td><td><ul>
@@ -5425,32 +5882,32 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="telecommand__adcs_8c_a723a07c1c85a39edea04e241eee46de8_cgraph.png" border="0" usemap="#atelecommand__adcs_8c_a723a07c1c85a39edea04e241eee46de8_cgraph" alt=""/></div>
-<map name="atelecommand__adcs_8c_a723a07c1c85a39edea04e241eee46de8_cgraph" id="atelecommand__adcs_8c_a723a07c1c85a39edea04e241eee46de8_cgraph">
-<area shape="rect" title="Telecommand: Synchronise the current ADCS Unix epoch time." alt="" coords="5,129,209,170"/>
-<area shape="rect" href="adcs__commands_8c.html#a0ee4a74615b30328d110093fb1d7e18b" title="Instruct the ADCS to synchronise its Unix epoch time to the current OBC Unix time." alt="" coords="257,136,452,162"/>
-<area shape="poly" title=" " alt="" coords="209,146,241,146,241,152,209,152"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a57380050bbf7103fc0101eb2145fc7c7" title="Swap low and high bytes of a uint16 to turn into uint8 and put into specified index of an array." alt="" coords="507,5,673,61"/>
-<area shape="poly" title=" " alt="" coords="379,133,499,71,510,65,512,70,501,76,381,138"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a4d66866ec7ebc347e16aff2da8a52058" title="Reverse the order of the four bytes of a uint32 to turn into uint8 and put into specified index of an..." alt="" coords="507,85,673,141"/>
-<area shape="poly" title=" " alt="" coords="442,133,491,126,492,131,443,138"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#aecce0bfa34eea6373e296fb13a2fb92f" title="Sends a telecommand over I2C to the ADCS, checks that it&#39;s been acknowledged, and returns the ACK err..." alt="" coords="500,165,680,206"/>
-<area shape="poly" title=" " alt="" coords="443,160,485,166,484,172,442,165"/>
-<area shape="rect" href="timekeeping_8c.html#ab806b8884c269c16f3bc4b766d1fc943" title="Returns the current unix timestamp, in milliseconds." alt="" coords="517,230,663,271"/>
-<area shape="poly" title=" " alt="" coords="384,160,501,215,518,222,516,227,499,220,381,165"/>
-<area shape="rect" href="adcs__commands_8c.html#a78314a88408de1fd947bac1eb122e96f" title="Instructs the ADCS to determine whether the last command succeeded. (Doesn&#39;t work for telemetry reque..." alt="" coords="728,147,846,173"/>
-<area shape="poly" title=" " alt="" coords="680,171,713,167,713,172,681,176"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a4fd725dd59fc5c6d0304751c2a08baa4" title="Sends a telecommand over I2C to the ADCS." alt="" coords="1133,172,1334,198"/>
-<area shape="poly" title=" " alt="" coords="681,182,1117,182,1117,188,681,188"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="894,82,1085,123"/>
-<area shape="poly" title=" " alt="" coords="834,144,900,125,901,130,836,149"/>
-<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="900,147,1078,173"/>
-<area shape="poly" title=" " alt="" coords="846,157,885,157,885,162,846,162"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="1146,96,1322,136"/>
-<area shape="poly" title=" " alt="" coords="1086,105,1130,108,1130,113,1085,110"/>
-<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1382,137,1531,178"/>
-<area shape="poly" title=" " alt="" coords="1323,130,1368,138,1367,143,1322,135"/>
-<area shape="poly" title=" " alt="" coords="1334,170,1367,166,1367,171,1335,175"/>
+<div class="center"><img src="telecommand__adcs_8c_a131f3800fd9c78cad1b1cc44781f03cc_cgraph.png" border="0" usemap="#atelecommand__adcs_8c_a131f3800fd9c78cad1b1cc44781f03cc_cgraph" alt=""/></div>
+<map name="atelecommand__adcs_8c_a131f3800fd9c78cad1b1cc44781f03cc_cgraph" id="atelecommand__adcs_8c_a131f3800fd9c78cad1b1cc44781f03cc_cgraph">
+<area shape="rect" title="Telecommand: Synchronize the current ADCS Unix epoch time." alt="" coords="5,129,208,170"/>
+<area shape="rect" href="adcs__commands_8c.html#a987f0ba7fba4f951fdba35a16bf36bfe" title="Instruct the ADCS to synchronize its Unix epoch time to the current OBC Unix time." alt="" coords="256,136,450,162"/>
+<area shape="poly" title=" " alt="" coords="208,146,240,146,240,152,208,152"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a57380050bbf7103fc0101eb2145fc7c7" title="Swap low and high bytes of a uint16 to turn into uint8 and put into specified index of an array." alt="" coords="505,5,671,61"/>
+<area shape="poly" title=" " alt="" coords="377,133,497,71,508,65,510,70,499,76,380,138"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a4d66866ec7ebc347e16aff2da8a52058" title="Reverse the order of the four bytes of a uint32 to turn into uint8 and put into specified index of an..." alt="" coords="505,85,671,141"/>
+<area shape="poly" title=" " alt="" coords="440,133,489,126,490,131,441,138"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#aecce0bfa34eea6373e296fb13a2fb92f" title="Sends a telecommand over I2C to the ADCS, checks that it&#39;s been acknowledged, and returns the ACK err..." alt="" coords="498,165,678,206"/>
+<area shape="poly" title=" " alt="" coords="441,160,483,166,482,172,440,165"/>
+<area shape="rect" href="timekeeping_8c.html#ab806b8884c269c16f3bc4b766d1fc943" title="Returns the current unix timestamp, in milliseconds." alt="" coords="515,230,661,271"/>
+<area shape="poly" title=" " alt="" coords="382,160,499,215,516,222,514,227,497,220,380,165"/>
+<area shape="rect" href="adcs__commands_8c.html#a78314a88408de1fd947bac1eb122e96f" title="Instructs the ADCS to determine whether the last command succeeded. (Doesn&#39;t work for telemetry reque..." alt="" coords="726,147,844,173"/>
+<area shape="poly" title=" " alt="" coords="678,171,711,167,711,172,679,176"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a4fd725dd59fc5c6d0304751c2a08baa4" title="Sends a telecommand over I2C to the ADCS." alt="" coords="1131,172,1332,198"/>
+<area shape="poly" title=" " alt="" coords="679,182,1115,182,1115,188,679,188"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="892,82,1083,123"/>
+<area shape="poly" title=" " alt="" coords="832,144,898,125,899,130,834,149"/>
+<area shape="rect" href="adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="898,147,1076,173"/>
+<area shape="poly" title=" " alt="" coords="844,157,883,157,883,162,844,162"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="1144,96,1320,136"/>
+<area shape="poly" title=" " alt="" coords="1084,105,1128,108,1128,113,1083,110"/>
+<area shape="rect" href="adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="1380,137,1529,178"/>
+<area shape="poly" title=" " alt="" coords="1321,130,1366,138,1365,143,1320,135"/>
+<area shape="poly" title=" " alt="" coords="1332,170,1365,166,1365,171,1333,175"/>
 </map>
 </div>
 

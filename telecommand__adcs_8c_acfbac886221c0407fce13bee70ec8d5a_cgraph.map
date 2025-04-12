@@ -1,5 +1,5 @@
 <map id="TCMDEXEC_adcs_request_commissioning_telemetry" name="TCMDEXEC_adcs_request_commissioning_telemetry">
-<area shape="rect" id="Node000001" title="Telecommand: Request commissioning telemetry from the ADCS and save it to the memory module." alt="" coords="5,166,183,206"/>
+<area shape="rect" id="Node000001" title="Telecommand: Request commissioning telemetry from the ADCS and save it to the onboard SD card." alt="" coords="5,166,183,206"/>
 <area shape="rect" id="Node000002" href="$adcs__commands_8c.html#ae9e90757f361a1a29b13768bdf8a53a5" title="Instruct the ADCS to execute the ADCS_execution_state command." alt="" coords="231,28,403,69"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="127,163,268,75,271,80,130,167"/>
 <area shape="rect" id="Node000007" href="$adcs__commands_8c.html#afad12ab1d20dbb4d7d2d2f534e26f5f2" title="Instruct the ADCS to execute the ADCS_Set_Run_Mode command." alt="" coords="233,173,401,199"/>
@@ -8,7 +8,7 @@
 <area shape="poly" id="edge15_Node000001_Node000014" title=" " alt="" coords="148,204,270,254,268,259,146,209"/>
 <area shape="rect" id="Node000003" href="$adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="865,130,1056,170"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="391,25,451,14,552,3,596,5,652,14,725,34,796,62,912,119,910,124,794,67,724,39,651,19,595,10,552,8,451,19,392,30"/>
-<area shape="rect" id="Node000006" href="$adcs__struct__packers_8c.html#a85df3b312f5491be0fbc00dde69904a1" title=" " alt="" coords="451,28,651,69"/>
+<area shape="rect" id="Node000006" href="$adcs__struct__packers_8c.html#a85df3b312f5491be0fbc00dde69904a1" title="Parse ACP Execution State telemetry data into a struct." alt="" coords="451,28,651,69"/>
 <area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="403,46,435,46,435,51,403,51"/>
 <area shape="rect" id="Node000004" href="$adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="1116,143,1293,184"/>
 <area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="1057,152,1101,155,1101,160,1056,158"/>

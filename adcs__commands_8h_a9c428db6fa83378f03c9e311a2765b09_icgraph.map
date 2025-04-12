@@ -1,0 +1,9 @@
+<map id="ADCS_reset_file_list_read_pointer" name="ADCS_reset_file_list_read_pointer">
+<area shape="rect" id="Node000001" title="Instruct the ADCS to execute the ADCS_reset_file_list_read_pointer command." alt="" coords="466,39,606,79"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a0b73bd919e2d8a9fd7d2372c4a076ce0" title="Save a specified file from the ADCS SD card to the ADCS subfolder in LittleFS." alt="" coords="243,46,418,72"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="450,62,418,62,418,56,450,56"/>
+<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#a62dccd4164e3df1707e298b25a404da9" title="Telecommand: Get the list of downloadable files from the ADCS SD card (alternate method)" alt="" coords="5,5,195,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="227,47,195,42,195,37,228,41"/>
+<area shape="rect" id="Node000004" href="$telecommand__adcs_8c.html#a4fd84b61a84542c3dfdc577d53ecb4d3" title="Telecommand: Download a specific file from the ADCS SD card." alt="" coords="5,71,195,111"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="228,76,195,80,195,75,227,71"/>
+</map>

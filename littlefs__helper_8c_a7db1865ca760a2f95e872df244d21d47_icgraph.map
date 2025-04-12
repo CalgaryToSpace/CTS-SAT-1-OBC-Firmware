@@ -1,5 +1,7 @@
 <map id="LFS_delete_file" name="LFS_delete_file">
-<area shape="rect" id="Node000001" title="Removes / deletes the file specified." alt="" coords="229,5,340,31"/>
-<area shape="rect" id="Node000002" href="$lfs__telecommand__defs_8c.html#ade50443d986b8e91de2c36b9ce18603f" title="Telecommand: Deletes a specified file in LittleFS." alt="" coords="5,5,181,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="213,21,181,21,181,16,213,16"/>
+<area shape="rect" id="Node000001" title="Removes / deletes the file specified." alt="" coords="243,42,354,68"/>
+<area shape="rect" id="Node000002" href="$telecommand__adcs_8c.html#a62dccd4164e3df1707e298b25a404da9" title="Telecommand: Get the list of downloadable files from the ADCS SD card (alternate method)" alt="" coords="5,5,195,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="227,47,195,42,196,37,228,42"/>
+<area shape="rect" id="Node000003" href="$lfs__telecommand__defs_8c.html#ade50443d986b8e91de2c36b9ce18603f" title="Telecommand: Deletes a specified file in LittleFS." alt="" coords="12,70,188,96"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="228,68,189,73,188,68,227,62"/>
 </map>

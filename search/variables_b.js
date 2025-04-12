@@ -29,7 +29,7 @@ var searchData=
   ['log_5fname_26',['log_name',['../structGPS__header__response__t.html#a902094febc0d4127ad45b9a9119a104f',1,'GPS_header_response_t']]],
   ['log_5fnumber_5fof_5fsinks_27',['LOG_NUMBER_OF_SINKS',['../log_8c.html#ad0854d02778148c794e1227aa85fd5a1',1,'log.c']]],
   ['log_5fnumber_5fof_5fsystems_28',['LOG_NUMBER_OF_SYSTEMS',['../log_8c.html#a3f576f897b5eaac37550383ec3b11be6',1,'log.c']]],
-  ['log_5fperiod_29',['log_period',['../structADCS__sd__log__config__struct.html#aa98bd3a38966a0caecc385e10fec7fbc',1,'ADCS_sd_log_config_struct']]],
+  ['log_5fperiod_5fs_29',['log_period_s',['../structADCS__sd__log__config__struct.html#a9b9240787adff337e12b66f4a5d01564',1,'ADCS_sd_log_config_struct']]],
   ['log_5fseverity_5fmask_5fall_30',['LOG_SEVERITY_MASK_ALL',['../log_8c.html#a857c663d6415c340a1d5402278719d3c',1,'log.c']]],
   ['log_5fseverity_5fmask_5fdefault_31',['LOG_SEVERITY_MASK_DEFAULT',['../log_8c.html#a0484eca13390ff5afcd5f9bd94a3c8f1',1,'log.c']]],
   ['log_5fsinks_32',['LOG_sinks',['../log_8c.html#ad205fdee48ff8220064b2ec2a4e75325',1,'log.c']]],

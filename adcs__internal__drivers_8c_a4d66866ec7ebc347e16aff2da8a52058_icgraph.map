@@ -1,11 +1,25 @@
 <map id="ADCS_convert_uint32_to_reversed_uint8_array_members" name="ADCS_convert_uint32_to_reversed_uint8_array_members">
-<area shape="rect" id="Node000001" title="Reverse the order of the four bytes of a uint32 to turn into uint8 and put into specified index of an..." alt="" coords="520,31,686,87"/>
-<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#aed744b7e685734f1640661cb715b7a82" title="Set the Augmented SGP4 Parameters of the ADCS." alt="" coords="298,8,451,49"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="504,48,451,41,452,36,505,43"/>
-<area shape="rect" id="Node000004" href="$adcs__commands_8c.html#a0ee4a74615b30328d110093fb1d7e18b" title="Instruct the ADCS to synchronise its Unix epoch time to the current OBC Unix time." alt="" coords="277,74,472,100"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="505,74,473,78,472,72,504,68"/>
-<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#a010a4200d80186fa6a4d9dd131f1ba5d" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,229,46"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="282,30,229,29,229,24,282,25"/>
-<area shape="rect" id="Node000005" href="$telecommand__adcs_8c.html#a723a07c1c85a39edea04e241eee46de8" title="Telecommand: Synchronise the current ADCS Unix epoch time." alt="" coords="15,71,219,111"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="261,91,219,92,219,87,261,86"/>
+<area shape="rect" id="Node000001" title="Reverse the order of the four bytes of a uint32 to turn into uint8 and put into specified index of an..." alt="" coords="980,95,1146,151"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a814e5cceffac9e0b5e597cabc3083d9e" title="Instruct the ADCS to load a file download block into the download buffer." alt="" coords="748,37,921,78"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="964,98,907,81,909,76,966,92"/>
+<area shape="rect" id="Node000007" href="$adcs__commands_8c.html#aed744b7e685734f1640661cb715b7a82" title="Set the Augmented SGP4 Parameters of the ADCS." alt="" coords="758,103,911,143"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="964,126,912,126,912,120,964,120"/>
+<area shape="rect" id="Node000009" href="$adcs__commands_8c.html#a987f0ba7fba4f951fdba35a16bf36bfe" title="Instruct the ADCS to synchronize its Unix epoch time to the current OBC Unix time." alt="" coords="737,168,932,193"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="965,150,889,169,888,164,964,145"/>
+<area shape="rect" id="Node000003" href="$adcs__commands_8c.html#a7db69548592a87c7405a784e7dfd8825" title="Save one block of the ADCS SD card file pointed to by the file pointer into the ADCS download buffer,..." alt="" coords="492,37,663,78"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="733,60,663,60,663,55,733,55"/>
+<area shape="rect" id="Node000004" href="$adcs__commands_8c.html#a0b73bd919e2d8a9fd7d2372c4a076ce0" title="Save a specified file from the ADCS SD card to the ADCS subfolder in LittleFS." alt="" coords="243,45,418,70"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="477,60,419,60,419,55,477,55"/>
+<area shape="rect" id="Node000005" href="$telecommand__adcs_8c.html#a62dccd4164e3df1707e298b25a404da9" title="Telecommand: Get the list of downloadable files from the ADCS SD card (alternate method)" alt="" coords="5,5,195,46"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="227,46,195,41,195,36,228,41"/>
+<area shape="rect" id="Node000006" href="$telecommand__adcs_8c.html#a4fd84b61a84542c3dfdc577d53ecb4d3" title="Telecommand: Download a specific file from the ADCS SD card." alt="" coords="5,71,195,111"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="228,75,195,80,195,75,227,70"/>
+<area shape="rect" id="Node000008" href="$telecommand__adcs_8c.html#a010a4200d80186fa6a4d9dd131f1ba5d" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="466,103,689,143"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="742,126,690,126,690,120,742,120"/>
+<area shape="rect" id="Node000010" href="$adcs__commands_8c.html#ad5983ef7345cb4ffee4c23a9c9726610" title="Initialize the ADCS CRC, timestamp, and file system directory." alt="" coords="522,168,633,193"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="721,183,633,183,633,178,721,178"/>
+<area shape="rect" id="Node000012" href="$telecommand__adcs_8c.html#a131f3800fd9c78cad1b1cc44781f03cc" title="Telecommand: Synchronize the current ADCS Unix epoch time." alt="" coords="476,217,679,258"/>
+<area shape="poly" id="edge11_Node000009_Node000012" title=" " alt="" coords="760,200,673,219,671,214,758,194"/>
+<area shape="rect" id="Node000011" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="306,168,355,193"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="507,183,355,183,355,178,507,178"/>
 </map>

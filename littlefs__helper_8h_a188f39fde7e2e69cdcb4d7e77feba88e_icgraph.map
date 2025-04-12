@@ -1,7 +1,15 @@
 <map id="LFS_write_file" name="LFS_write_file">
-<area shape="rect" id="Node000001" title="Creates/Opens LittleFS File to write to the Memory Module." alt="" coords="244,42,348,68"/>
-<area shape="rect" id="Node000002" href="$lfs__telecommand__defs_8c.html#ad8f1ceca7e7eeee5b869ec251392b12d" title=" " alt="" coords="8,5,193,46"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="228,48,193,42,193,37,229,42"/>
-<area shape="rect" id="Node000003" href="$lfs__telecommand__defs_8c.html#ae0c451995d1ade8e8dfeeb658135a391" title="Telecommand: Write data to a file in LittleFS." alt="" coords="5,70,196,96"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="229,67,195,72,194,67,228,62"/>
+<area shape="rect" id="Node000001" title="Creates/Opens LittleFS File to write to the Memory Module." alt="" coords="704,112,809,137"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a7db69548592a87c7405a784e7dfd8825" title="Save one block of the ADCS SD card file pointed to by the file pointer into the ADCS download buffer,..." alt="" coords="476,39,646,79"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="701,109,623,82,625,77,702,104"/>
+<area shape="rect" id="Node000006" href="$lfs__telecommand__defs_8c.html#ad8f1ceca7e7eeee5b869ec251392b12d" title=" " alt="" coords="469,104,653,145"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="689,127,654,127,654,122,689,122"/>
+<area shape="rect" id="Node000007" href="$lfs__telecommand__defs_8c.html#ae0c451995d1ade8e8dfeeb658135a391" title="Telecommand: Write data to a file in LittleFS." alt="" coords="466,169,656,194"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="702,145,657,159,615,171,614,166,656,154,700,140"/>
+<area shape="rect" id="Node000003" href="$adcs__commands_8c.html#a0b73bd919e2d8a9fd7d2372c4a076ce0" title="Save a specified file from the ADCS SD card to the ADCS subfolder in LittleFS." alt="" coords="243,46,418,72"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="460,62,418,62,418,56,460,56"/>
+<area shape="rect" id="Node000004" href="$telecommand__adcs_8c.html#a62dccd4164e3df1707e298b25a404da9" title="Telecommand: Get the list of downloadable files from the ADCS SD card (alternate method)" alt="" coords="5,5,195,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="227,47,195,42,195,37,228,41"/>
+<area shape="rect" id="Node000005" href="$telecommand__adcs_8c.html#a4fd84b61a84542c3dfdc577d53ecb4d3" title="Telecommand: Download a specific file from the ADCS SD card." alt="" coords="5,71,195,111"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="228,76,195,80,195,75,227,71"/>
 </map>

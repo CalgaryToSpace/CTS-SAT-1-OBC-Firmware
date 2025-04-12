@@ -1,0 +1,15 @@
+<map id="ADCS_pack_to_file_download_buffer_struct" name="ADCS_pack_to_file_download_buffer_struct">
+<area shape="rect" id="Node000001" title="Parse the File Download Buffer data into the provided struct." alt="" coords="913,75,1108,115"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a84faa2ce0aa0006f1d710b817d1110df" title="Retrieve the File Download Buffer telemetry from the ADCS." alt="" coords="691,39,858,79"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="897,80,858,74,859,69,897,75"/>
+<area shape="rect" id="Node000007" href="$test__adcs_8c.html#a8c410a615faad7d641f27fcba17defbc" title=" " alt="" coords="684,103,865,159"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="898,115,866,120,865,115,897,110"/>
+<area shape="rect" id="Node000003" href="$adcs__commands_8c.html#a7db69548592a87c7405a784e7dfd8825" title="Save one block of the ADCS SD card file pointed to by the file pointer into the ADCS download buffer,..." alt="" coords="466,39,636,79"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="675,62,637,62,637,56,675,56"/>
+<area shape="rect" id="Node000004" href="$adcs__commands_8c.html#a0b73bd919e2d8a9fd7d2372c4a076ce0" title="Save a specified file from the ADCS SD card to the ADCS subfolder in LittleFS." alt="" coords="243,46,418,72"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="450,62,418,62,418,56,450,56"/>
+<area shape="rect" id="Node000005" href="$telecommand__adcs_8c.html#a62dccd4164e3df1707e298b25a404da9" title="Telecommand: Get the list of downloadable files from the ADCS SD card (alternate method)" alt="" coords="5,5,195,46"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="227,47,195,42,195,37,228,41"/>
+<area shape="rect" id="Node000006" href="$telecommand__adcs_8c.html#a4fd84b61a84542c3dfdc577d53ecb4d3" title="Telecommand: Download a specific file from the ADCS SD card." alt="" coords="5,71,195,111"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="228,76,195,80,195,75,227,71"/>
+</map>
