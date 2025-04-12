@@ -177,8 +177,7 @@ void TASK_monitor_freertos_memory(void *argument) {
 
 void TASK_camera_write_image(void *argument) {
 	TASK_HELP_start_of_task();
-	while (1) {
-		osDelay(500);
+	while (1) {;
         // if camera is receiving data start while loop
         if (UART_camera_is_expecting_data){
                 // receive until response timed out

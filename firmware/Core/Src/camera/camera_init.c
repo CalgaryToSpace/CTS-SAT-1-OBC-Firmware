@@ -289,6 +289,7 @@ uint8_t CAM_receive_image(){
     // }
     // outside of while loop
     // write remaining data if any
+    osDelay(15000);
         if (!UART_camera_is_expecting_data) {
             // if cam receive error, error code 4
             if (cam_receive_error){
@@ -435,7 +436,6 @@ Capture_Status_enum CAM_Capture_Image(bool enable_flash, uint8_t lighting_mode){
     }
 
     int capture_code = CAM_receive_image();
-
     // turn off camera
     eps_status = EPS_set_channel_enabled(EPS_CHANNEL_3V3_CAMERA, 0);
     if (eps_status != 0) {
