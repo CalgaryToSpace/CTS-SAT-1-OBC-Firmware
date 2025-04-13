@@ -84,7 +84,7 @@ uint8_t SYS_eps_status_safe_mode_check()
     if (result_safe_mode != 0) {
         char systems_error_during_shutdown_json[256] = {0};
         // not checking return because buffer is
-        // definitely not null and size is definitely > 0
+        // definitely not null and size is definitely > 200
         SYS_safe_mode_error_result_to_json(result_safe_mode, systems_error_during_shutdown_json, sizeof(systems_error_during_shutdown_json));
         LOG_message(
             LOG_SYSTEM_OBC,
@@ -127,7 +127,7 @@ uint8_t SYS_battery_safe_mode_check()
     if (result_safe_mode != 0) {
         char systems_error_during_shutdown_json[256] = {0};
         // not checking return because buffer is
-        // definitely not null and size is definitely > 0
+        // definitely not null and size is definitely > 200
         SYS_safe_mode_error_result_to_json(result_safe_mode, systems_error_during_shutdown_json, sizeof(systems_error_during_shutdown_json));
         LOG_message(
             LOG_SYSTEM_OBC,
