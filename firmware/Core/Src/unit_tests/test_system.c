@@ -98,7 +98,7 @@ uint8_t TEST_EXEC__safe_mode_error_result_to_json(void)
 
     // Test case 6: NULL buffer
     SYS_safe_mode_error_enum_t null_buffer_error = SYS_SAFE_MODE_ERROR_ADCS;
-    uint8_t null_buffer_result = SYS_safe_mode_error_result_to_json(null_buffer_error, NULL, 100);
+    uint8_t null_buffer_result = SYS_safe_mode_error_result_to_json(null_buffer_error, NULL, sizeof(buffer));
     TEST_ASSERT(null_buffer_result == 1); // Expecting failure due to NULL buffer
 
     return 0;
