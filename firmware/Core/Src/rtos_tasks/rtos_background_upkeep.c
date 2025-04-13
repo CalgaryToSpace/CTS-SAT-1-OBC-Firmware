@@ -139,9 +139,11 @@ void TASK_background_upkeep(void *argument) {
         subtask_update_rf_switch();
         osDelay(10); // Yield.
         
+        // TODO: Is it ok if both happen?
+
         // check if EPS goes into low power mode, enter safe mode if it does
         SYS_eps_status_safe_mode_check();
-
+        
         // check if battery is below 10%, enter safe mode if it is
         SYS_battery_safe_mode_check();
         
