@@ -79,20 +79,21 @@ uint8_t SYS_eps_status_safe_mode_check()
             LOG_SINK_ALL,
             "SYS SAFE MODE CHECK -> EPS in low power mode. Entering Safe Mode!"
         );
-    }
-    const uint8_t result_safe_mode = SYS_enter_safe_mode();
-    if (result_safe_mode != 0) {
-        char systems_error_during_shutdown_json[256] = {0};
-        // not checking return because buffer is
-        // definitely not null and size is definitely > 200
-        SYS_safe_mode_error_result_to_json(result_safe_mode, systems_error_during_shutdown_json, sizeof(systems_error_during_shutdown_json));
-        LOG_message(
-            LOG_SYSTEM_OBC,
-            LOG_SEVERITY_ERROR,
-            LOG_SINK_ALL,
-            "%s",
-            systems_error_during_shutdown_json
-        );
+    
+        const uint8_t result_safe_mode = SYS_enter_safe_mode();
+        if (result_safe_mode != 0) {
+            char systems_error_during_shutdown_json[256] = {0};
+            // not checking return because buffer is
+            // definitely not null and size is definitely > 200
+            SYS_safe_mode_error_result_to_json(result_safe_mode, systems_error_during_shutdown_json, sizeof(systems_error_during_shutdown_json));
+            LOG_message(
+                LOG_SYSTEM_OBC,
+                LOG_SEVERITY_ERROR,
+                LOG_SINK_ALL,
+                "%s",
+                systems_error_during_shutdown_json
+            );
+        }
     }
     return 0;
 }
@@ -122,20 +123,21 @@ uint8_t SYS_battery_safe_mode_check()
             LOG_SINK_ALL,
             "SYS SAFE MODE CHECK -> Battery percentage is low: %0.2f%%. Entering Safe Mode!", battery_percent
         );
-    }
-    const uint8_t result_safe_mode = SYS_enter_safe_mode();
-    if (result_safe_mode != 0) {
-        char systems_error_during_shutdown_json[256] = {0};
-        // not checking return because buffer is
-        // definitely not null and size is definitely > 200
-        SYS_safe_mode_error_result_to_json(result_safe_mode, systems_error_during_shutdown_json, sizeof(systems_error_during_shutdown_json));
-        LOG_message(
-            LOG_SYSTEM_OBC,
-            LOG_SEVERITY_ERROR,
-            LOG_SINK_ALL,
-            "%s",
-            systems_error_during_shutdown_json
-        );
+    
+        const uint8_t result_safe_mode = SYS_enter_safe_mode();
+        if (result_safe_mode != 0) {
+            char systems_error_during_shutdown_json[256] = {0};
+            // not checking return because buffer is
+            // definitely not null and size is definitely > 200
+            SYS_safe_mode_error_result_to_json(result_safe_mode, systems_error_during_shutdown_json, sizeof(systems_error_during_shutdown_json));
+            LOG_message(
+                LOG_SYSTEM_OBC,
+                LOG_SEVERITY_ERROR,
+                LOG_SINK_ALL,
+                "%s",
+                systems_error_during_shutdown_json
+            );
+        }
     }
     return 0;
 }
