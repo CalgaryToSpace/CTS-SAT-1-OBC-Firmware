@@ -2,7 +2,6 @@
 #include "system/system_safe_mode.h"
 #include "unit_tests/unit_test_helpers.h"
 #include <string.h>
-#include "test_system.h"
 
 
 uint8_t TEST_EXEC__safe_mode_error_enum_to_string(void)
