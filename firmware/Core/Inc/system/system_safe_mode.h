@@ -16,6 +16,6 @@ uint8_t SYS_enter_safe_mode();
 uint8_t SYS_eps_status_safe_mode_check();
 uint8_t SYS_battery_safe_mode_check();
 char* SYS_safe_mode_error_enum_to_string(SYS_safe_mode_error_enum_t error_mask);
-uint8_t SYS_safe_mode_error_enum_to_json(SYS_safe_mode_error_enum_t error, char *buffer, size_t buffer_size);
+uint8_t SYS_safe_mode_error_result_to_json(SYS_safe_mode_error_enum_t error, char *buffer, uint16_t buffer_size);
 
 #endif // INCLUDE_GUARD__SYS_SAFE_MODE
