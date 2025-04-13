@@ -289,7 +289,7 @@ uint8_t CAM_receive_image(){
     // }
     // outside of while loop
     // write remaining data if any
-    osDelay(15000);
+    osDelay(100);
         if (!UART_camera_is_expecting_data) {
             // if cam receive error, error code 4
             if (cam_receive_error){

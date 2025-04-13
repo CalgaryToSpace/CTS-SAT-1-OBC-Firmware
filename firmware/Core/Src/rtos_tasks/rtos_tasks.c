@@ -248,6 +248,8 @@ void TASK_camera_write_image(void *argument) {
                     }
             }
 
+        } else {
+            osDelay(1000);
         }
 
 	} /* End Task's Main Loop */
