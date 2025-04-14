@@ -3,6 +3,7 @@
 #include "eps_drivers/eps_commands.h"
 #include "eps_drivers/eps_calculations.h"
 #include "adcs_drivers/adcs_commands.h"
+#include "littlefs/littlefs_helper.h"
 #include "log/log.h"
 
 #include <stdio.h>
@@ -49,6 +50,12 @@ uint8_t SYS_enter_safe_mode()
     const uint8_t disable_boom = EPS_set_channel_enabled(EPS_CHANNEL_12V_BOOM, 0);
     if (disable_boom != 0) {
         error_ret |= SYS_SAFE_MODE_ERROR_BOOM;
+    }
+
+    // Unmount LFS
+    const uint8_t unmount_lfs = LFS_unmount();
+    if (unmount_lfs != 0) {
+        error_ret |= SYS_SAFE_MODE_ERROR_LFS;
     }
 
     return error_ret;
@@ -160,6 +167,8 @@ char *SYS_safe_mode_error_enum_to_string(SYS_safe_mode_error_enum_t error_mask)
             return "Camera";
         case SYS_SAFE_MODE_ERROR_BOOM:
             return "Boom";
+        case SYS_SAFE_MODE_ERROR_LFS:
+            return "LFS";
         default:
             return "Unknown"; // Unknown error
     }
@@ -168,29 +177,55 @@ char *SYS_safe_mode_error_enum_to_string(SYS_safe_mode_error_enum_t error_mask)
 /// @brief Converts the error result of safe mode to a JSON string, showing whether shutting down that system was a success or failure
 /// @param error Value of the error result from entering safe mode
 /// @param buffer Resulting JSON string
-/// @param buffer_size Size of the buffer, minimum 200
+/// @param buffer_size Size of the buffer, minimum 256
 /// @return 0 on success, 1 on failure
 uint8_t SYS_safe_mode_error_result_to_json(SYS_safe_mode_error_enum_t error, char *buffer, uint16_t buffer_size) 
 {
-    // check unit tests, maximum string len is ~200
-    if (buffer == NULL || buffer_size < 200) {
+    if (buffer == NULL || buffer_size < 255) {
         return 1;
     }
 
-    snprintf(buffer, buffer_size, "{");
+    uint16_t offset = 0;
+    offset += snprintf(buffer + offset, buffer_size - offset, "{");
 
-    for (uint8_t i = 0; i < 6; i++) {
+    // loop through all systems disabled by channels
+    for (uint8_t i = 0; i < 4; i++) {
         SYS_safe_mode_error_enum_t error_mask = (SYS_safe_mode_error_enum_t)(1 << i);
         const char *subsystem = SYS_safe_mode_error_enum_to_string(error_mask);
         const char *shutdown_status = (error & error_mask) ? "Error Disabling" : "Successfully Disabled";
 
         if (i != 0) {
-            strncat(buffer, ", ", buffer_size - strlen(buffer) - 1);
+            offset += snprintf(buffer + offset, buffer_size - offset, ", ");
         }
 
-        snprintf(buffer + strlen(buffer), buffer_size - strlen(buffer) - 1, "\"%s\":\"%s\"", subsystem, shutdown_status);
+        offset += snprintf(buffer + offset, buffer_size - offset, "\"%s\":\"%s\"", subsystem, shutdown_status);
     }
 
-    strncat(buffer, "}", buffer_size - strlen(buffer) - 1);
+    const uint8_t GPS_error = (error & SYS_SAFE_MODE_ERROR_GPS);
+    offset += snprintf(buffer + offset, 
+                       buffer_size - offset, 
+                       ", \"GPS\":\"%s\"",
+                       GPS_error ? 
+                       "Error Setting Low Power Mode" :
+                       "Successfully Set Low Power Mode");
+
+    const uint8_t ADCS_error = (error & SYS_SAFE_MODE_ERROR_ADCS);
+    offset += snprintf(buffer + offset, 
+                       buffer_size - offset,
+                       ", \"ADCS\":\"%s\"",
+                       ADCS_error ? 
+                       "Error Setting Low Power Mode" :
+                       "Successfully Set Low Power Mode");
+
+    const uint8_t LFS_error = (error & SYS_SAFE_MODE_ERROR_LFS);
+    offset += snprintf(buffer + offset,
+                       buffer_size - offset,
+                       ", \"LFS\":\"%s\"",
+                       LFS_error ?
+                       "Error Unmounting" :
+                       "Successfully Unmounted");
+
+    snprintf(buffer + offset, buffer_size - offset, "}");
+
     return 0;
 }

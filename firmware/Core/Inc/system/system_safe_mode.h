@@ -2,14 +2,15 @@
 #define INCLUDE_GUARD__SYS_SAFE_MODE
 
 #include <stdint.h>
-
+// Order matters here as all the systems disabled using channels are first
 typedef enum {
-    SYS_SAFE_MODE_ERROR_GPS = 1 << 0,
-    SYS_SAFE_MODE_ERROR_ADCS = 1 << 1,
-    SYS_SAFE_MODE_ERROR_MPI_5V = 1 << 2,
-    SYS_SAFE_MODE_ERROR_MPI_12V = 1 << 3,
-    SYS_SAFE_MODE_ERROR_CAMERA = 1 << 4,
-    SYS_SAFE_MODE_ERROR_BOOM = 1 << 5,
+    SYS_SAFE_MODE_ERROR_MPI_5V = 1 << 0,
+    SYS_SAFE_MODE_ERROR_MPI_12V = 1 << 1,
+    SYS_SAFE_MODE_ERROR_CAMERA = 1 << 2,
+    SYS_SAFE_MODE_ERROR_BOOM = 1 << 3,
+    SYS_SAFE_MODE_ERROR_GPS = 1 << 4,
+    SYS_SAFE_MODE_ERROR_ADCS = 1 << 5,
+    SYS_SAFE_MODE_ERROR_LFS = 1 << 6,
 } SYS_safe_mode_error_enum_t;
 
 uint8_t SYS_enter_safe_mode();
