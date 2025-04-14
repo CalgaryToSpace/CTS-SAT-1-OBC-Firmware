@@ -42,6 +42,12 @@ uint8_t TEST_EXEC__safe_mode_error_enum_to_string(void)
     const char* boom_str = SYS_safe_mode_error_enum_to_string(boom_error);
     TEST_ASSERT(strcmp(boom_str, boom_expected_string) == 0);
 
+    // LFS
+    SYS_safe_mode_error_enum_t lfs_error = SYS_SAFE_MODE_ERROR_LFS;
+    const char* lfs_expected_string = "LFS";
+    const char* lfs_str = SYS_safe_mode_error_enum_to_string(lfs_error);
+    TEST_ASSERT(strcmp(lfs_str, lfs_expected_string) == 0);
+
     // Unknown 
     SYS_safe_mode_error_enum_t invalid_error = 0xFF;
     const char* invalid_expected_string = "Unknown";
