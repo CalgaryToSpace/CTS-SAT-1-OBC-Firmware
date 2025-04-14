@@ -55,7 +55,7 @@ uint8_t TEST_EXEC__safe_mode_error_result_to_json(void)
     char buffer[256] = {0};
 
     // Test case 1: All systems successfully disabled
-    const char *all_success_json = "{\"GPS\":\"Successfully Disabled\", \"ADCS\":\"Successfully Disabled\", \"MPI 5V\":\"Successfully Disabled\", \"MPI 12V\":\"Successfully Disabled\", \"Camera\":\"Successfully Disabled\", \"Boom\":\"Successfully Disabled\"}";
+    const char *all_success_json = "{\"MPI 5V\":\"Successfully Disabled\", \"MPI 12V\":\"Successfully Disabled\", \"Camera\":\"Successfully Disabled\", \"Boom\":\"Successfully Disabled\", \"GPS\":\"Successfully Set Low Power Mode\", \"ADCS\":\"Successfully Set Low Power Mode\", \"LFS\":\"Successfully Unmounted\"}";
     SYS_safe_mode_error_enum_t all_success = 0;
     uint8_t all_success_result = SYS_safe_mode_error_result_to_json(all_success, buffer, sizeof(buffer));
     TEST_ASSERT(all_success_result == 0);
@@ -63,17 +63,19 @@ uint8_t TEST_EXEC__safe_mode_error_result_to_json(void)
 
     memset(buffer, 0, sizeof(buffer));
 
-    // Test case 2: All systems failed to disable
-    const char *all_error_json = "{\"GPS\":\"Error Disabling\", \"ADCS\":\"Error Disabling\", \"MPI 5V\":\"Error Disabling\", \"MPI 12V\":\"Error Disabling\", \"Camera\":\"Error Disabling\", \"Boom\":\"Error Disabling\"}";
-    SYS_safe_mode_error_enum_t all_error = SYS_SAFE_MODE_ERROR_GPS | SYS_SAFE_MODE_ERROR_ADCS | SYS_SAFE_MODE_ERROR_MPI_5V | SYS_SAFE_MODE_ERROR_MPI_12V | SYS_SAFE_MODE_ERROR_CAMERA | SYS_SAFE_MODE_ERROR_BOOM;
+    // Test case 2: All systems failed
+    const char *all_error_json = "{\"MPI 5V\":\"Error Disabling\", \"MPI 12V\":\"Error Disabling\", \"Camera\":\"Error Disabling\", \"Boom\":\"Error Disabling\", \"GPS\":\"Error Setting Low Power Mode\", \"ADCS\":\"Error Setting Low Power Mode\", \"LFS\":\"Error Unmounting\"}";
+    SYS_safe_mode_error_enum_t all_error = SYS_SAFE_MODE_ERROR_MPI_5V | SYS_SAFE_MODE_ERROR_MPI_12V |
+                                           SYS_SAFE_MODE_ERROR_CAMERA | SYS_SAFE_MODE_ERROR_BOOM |
+                                           SYS_SAFE_MODE_ERROR_GPS | SYS_SAFE_MODE_ERROR_ADCS |
+                                           SYS_SAFE_MODE_ERROR_LFS;
     uint8_t all_error_result = SYS_safe_mode_error_result_to_json(all_error, buffer, sizeof(buffer));
     TEST_ASSERT(all_error_result == 0);
     TEST_ASSERT(strcmp(buffer, all_error_json) == 0);
-   
     memset(buffer, 0, sizeof(buffer));
     
     // Test case 3: Mixed results, ADCS and MPI 12V failed
-    const char *adcs_mpi12v_error_json = "{\"GPS\":\"Successfully Disabled\", \"ADCS\":\"Error Disabling\", \"MPI 5V\":\"Successfully Disabled\", \"MPI 12V\":\"Error Disabling\", \"Camera\":\"Successfully Disabled\", \"Boom\":\"Successfully Disabled\"}";
+    const char *adcs_mpi12v_error_json = "{\"MPI 5V\":\"Successfully Disabled\", \"MPI 12V\":\"Error Disabling\", \"Camera\":\"Successfully Disabled\", \"Boom\":\"Successfully Disabled\", \"GPS\":\"Successfully Set Low Power Mode\", \"ADCS\":\"Error Setting Low Power Mode\", \"LFS\":\"Successfully Unmounted\"}";
     SYS_safe_mode_error_enum_t adcs_mpi12v_error = SYS_SAFE_MODE_ERROR_ADCS | SYS_SAFE_MODE_ERROR_MPI_12V;
     uint8_t adcs_mpi12v_result = SYS_safe_mode_error_result_to_json(adcs_mpi12v_error, buffer, sizeof(buffer));
     TEST_ASSERT(adcs_mpi12v_result == 0);
