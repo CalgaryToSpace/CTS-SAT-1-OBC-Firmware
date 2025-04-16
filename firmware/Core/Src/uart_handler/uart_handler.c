@@ -94,7 +94,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     }
     else if (huart->Instance == UART_mpi_port_handle->Instance) {        
         // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> MPI Data\n");
-        LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Received 4096 Bytes!");
+        // LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Received 4096 Bytes!");
 
         if (MPI_current_uart_rx_mode == MPI_RX_MODE_COMMAND_MODE) {
             // Check if buffer is full
@@ -220,7 +220,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
 void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
     if (huart->Instance == UART_mpi_port_handle->Instance) {
-        LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Received 4096 Bytes!");
+        // DEBUG_uart_print_str("Half callback being called!");
+        // LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "HALF CALLBACK - Received 4096 Bytes!");
         if (MPI_current_uart_rx_mode == MPI_RX_MODE_SENSING_MODE) {
             if (MPI_buffer_state == MPI_MEMORY_WRITE_STATUS_READY) {
                 for(uint16_t i = 0; i < UART_mpi_data_rx_buffer_len/2; i++) {
@@ -304,7 +305,7 @@ void UART_init_uart_handlers(void) {
     HAL_UART_Receive_IT(UART_telecommand_port_handle, (uint8_t*) &UART_telecommand_buffer_last_rx_byte, 1);
     HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t*) &UART_eps_buffer_last_rx_byte, 1);
     // HAL_UART_Receive_DMA(UART_mpi_port_handle, (uint8_t*) &UART_mpi_last_rx_byte, 1);
-    // MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MISO); // Set the MPI transceiver to MISO mode
+    
     // MPI_buffer_state = MPI_MEMORY_WRITE_STATUS_PENDING;
 
     // GPS is not initialized as always-listening. It is enabled by the GPS telecommands.
