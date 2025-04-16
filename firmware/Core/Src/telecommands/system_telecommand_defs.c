@@ -177,8 +177,8 @@ uint8_t TCMDEXEC_get_all_system_thermal_info(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
-    SYS_TEMP_parameter_t raw_temp_info;
-    SYS_TEMP_temperature_output_t output_temp_info;
+    SYS_TEMP_raw_thermal_info_t raw_temp_info;
+    SYS_TEMP_thermal_info_t output_temp_info;
 
     uint8_t result = SYS_TEMP_get_raw_thermal_info(&raw_temp_info);
     if (result != 0) {
@@ -187,23 +187,18 @@ uint8_t TCMDEXEC_get_all_system_thermal_info(
         return 1;
     }
 
-    SYS_TEMP_get_processed_thermal_info(&raw_temp_info, &output_temp_info);
+    SYS_TEMP_pack_to_system_thermal_info(&raw_temp_info, &output_temp_info);
 
     snprintf(
         response_output_buf, response_output_buf_len, 
         "{"
-        "\"OBC_temperature_cC\":\"%ld\","
-        "\"ANT_temperature_i2c_bus_A_cC\":\"%ld\","
-        "\"ANT_temperature_i2c_bus_B_cC\":\"%ld\","
-        "\"solar_panel_1_power_generation\":\"%ld\","
-        "\"solar_panel_2_power_generation\":\"%ld\","
-        "\"solar_panel_3_power_generation\":\"%ld\","
-        "\"solar_panel_4_power_generation\":\"%ld\","
+        "\"obc_temperature_cC\":\"%ld\","
+        "\"ant_temperature_i2c_bus_A_cC\":\"%ld\","
+        "\"ant_temperature_i2c_bus_B_cC\":\"%ld\","
+        "\"solar_panel_power_gen\": [%ld,%ld,%ld,%ld],"
         "\"eps_battery_percent\":\"%0.02f\","
-        "\"battery_heater_status\":\"%d\","
-        "\"battery_sensor_1_temp_cC\":%d\","
-        "\"battery_sensor_2_temp_cC\":%d\","
-        "\"battery_sensor_3_temp_cC\":%d"
+        "\"battery_heater_active\":\"%d\","
+        "\"battery_sensor_temp_cC\": [%d,%d,%d]"
         "}\n", 
         output_temp_info.system_OBC_temperature_cC,
         output_temp_info.system_ANT_temperature_i2c_bus_A_cC,

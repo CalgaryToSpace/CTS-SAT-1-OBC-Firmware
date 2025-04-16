@@ -6,10 +6,10 @@
 
 uint8_t TEST_EXEC__SYS_TEMP_get_processed_thermal_info(){
 
-    SYS_TEMP_temperature_output_t result;
+    SYS_TEMP_thermal_info_t result;
     
     // Case 1: Success on regular inputs + Heater bit is enabled
-    SYS_TEMP_parameter_t case1;
+    SYS_TEMP_raw_thermal_info_t case1;
     
     case1.system_OBC_temperature_C=50;
     case1.system_ANT_temperature_i2c_bus_A_raw=500;
@@ -23,7 +23,7 @@ uint8_t TEST_EXEC__SYS_TEMP_get_processed_thermal_info(){
     case1.system_eps_conditioning_channel_info_each_channel[2] = (EPS_conditioning_channel_datatype_eng_t) {vpid_case1, 100,100,1000,1000};
     case1.system_eps_conditioning_channel_info_each_channel[3] = (EPS_conditioning_channel_datatype_eng_t) {vpid_case1, 1,5,1000,1000};
 
-    SYS_TEMP_get_processed_thermal_info(&case1 , &result);
+    SYS_TEMP_pack_to_system_thermal_info(&case1 , &result);
     TEST_ASSERT(result.system_OBC_temperature_cC == 5000);
     TEST_ASSERT(result.system_ANT_temperature_i2c_bus_A_cC == 4513);
     TEST_ASSERT(result.system_ANT_temperature_i2c_bus_B_cC == 4513);
@@ -40,7 +40,7 @@ uint8_t TEST_EXEC__SYS_TEMP_get_processed_thermal_info(){
 
 
     //Case 2: Success on regular inputs + Heater bit is disabled
-    SYS_TEMP_parameter_t case2;
+    SYS_TEMP_raw_thermal_info_t case2;
     
     case2.system_OBC_temperature_C=10;
     case2.system_ANT_temperature_i2c_bus_A_raw=450;
@@ -54,7 +54,7 @@ uint8_t TEST_EXEC__SYS_TEMP_get_processed_thermal_info(){
     case2.system_eps_conditioning_channel_info_each_channel[2] = (EPS_conditioning_channel_datatype_eng_t) {vpid_case2, 6,8000,1000,1000};
     case2.system_eps_conditioning_channel_info_each_channel[3] = (EPS_conditioning_channel_datatype_eng_t) {vpid_case2, 1,5,1000,1000};
 
-    SYS_TEMP_get_processed_thermal_info(&case2 , &result);
+    SYS_TEMP_pack_to_system_thermal_info(&case2 , &result);
     TEST_ASSERT(result.system_OBC_temperature_cC == 1000);
     TEST_ASSERT(result.system_ANT_temperature_i2c_bus_A_cC == 5995);
     TEST_ASSERT(result.system_ANT_temperature_i2c_bus_B_cC == 4513);
