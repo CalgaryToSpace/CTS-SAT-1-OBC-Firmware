@@ -33,15 +33,15 @@ uint8_t ADCS_i2c_send_command_and_check(uint8_t id, uint8_t* data, uint32_t data
             uint8_t num_ack_tries = 0;
             while (!ack.processed) {
                 ack_status = ADCS_cmd_ack(&ack); // confirm telecommand validity by checking the TC Error flag of the last read TC Acknowledge Telemetry Format.
-                if (ack_status != 0 && ack_status != 4) {
-                    return ack_status; // there was an error in the command not related to checksum
-                }
                 num_ack_tries++;
                 if (num_ack_tries > ADCS_PROCESSED_TIMEOUT) {
                     return 5; // command failed to process in time
                     // note: sending another telecommand when the first has not been processed
                     // will result in an error in the next telecommand sent
                     // as the ADCS telecommand buffer has been overrun/corrupted
+                }
+                if ((ack_status != 0) && (ack_status != 4)) {
+                    return ack_status; // there was an error in the command not related to checksum
                 }
             }
         } else {
@@ -198,12 +198,13 @@ uint8_t ADCS_convert_double_to_string(double input, uint8_t precision, char* out
 
 /// @brief Take an arbitrary number (up to 63) of 10-byte uint8 arrays and return a single array which is the bitwise OR of all of them. 
 /// @param[in] array_in Array of pointers to 10-byte uint8 data arrays
-/// @param[in] array_in_size Size of the array_in array
+/// @param[in] array_in_len Size of the array_in array
 /// @param[out] array_out 10-byte uint8 data array to send the result to
 /// @return 0 once complete.
-uint8_t ADCS_combine_sd_log_bitmasks(const uint8_t **array_in, const uint8_t array_in_size, uint8_t *array_out) {
-    for (uint8_t i = 0; i < array_in_size; i++) {
-        for (uint8_t j = 0; j < 10; j++) {
+uint8_t ADCS_combine_sd_log_bitmasks(const uint8_t **array_in, const uint8_t array_in_len, uint8_t *array_out) {
+    memset(array_out, 0, ADCS_SD_LOG_BITFIELD_LENGTH_BYTES); // reset array_out to all zeroes
+    for (uint8_t i = 0; i < array_in_len; i++) {
+        for (uint8_t j = 0; j < ADCS_SD_LOG_BITFIELD_LENGTH_BYTES; j++) {
             // iterate through array_out and bitwise OR each element with
             // the corresponding element in the array array_in[i]
             array_out[j] |= array_in[i][j];
@@ -214,9 +215,9 @@ uint8_t ADCS_combine_sd_log_bitmasks(const uint8_t **array_in, const uint8_t arr
 
 static uint8_t CRC8Table[256];
 
-/// @brief Initialise the lookup table for 8-bit CRC calculation. Code provided by ADCS Firmware Reference Manual (p.18-19).
+/// @brief Initialize the lookup table for 8-bit CRC calculation. Code provided by ADCS Firmware Reference Manual (p.18-19).
 /// @return 0 once successful.
-uint8_t ADCS_initialise_crc8_checksum() {
+uint8_t ADCS_initialize_crc8_checksum() {
     int val;
     for (uint16_t i = 0; i < 256; i++)
     {

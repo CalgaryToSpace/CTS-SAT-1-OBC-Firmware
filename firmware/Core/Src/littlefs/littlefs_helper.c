@@ -231,7 +231,7 @@ int8_t LFS_make_directory(const char dir_name[])
             "Directory %s already exists.", dir_name);
         } else {
             LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
-            "Recieved error: %d while creating directory: %s.", make_dir_result, dir_name);
+            "Received error: %d while creating directory: %s.", make_dir_result, dir_name);
         }
         return make_dir_result;
     }

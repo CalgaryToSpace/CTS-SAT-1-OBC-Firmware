@@ -1,5 +1,6 @@
 #include "adcs_drivers/adcs_struct_packers.h"
 #include "adcs_drivers/adcs_internal_drivers.h"
+#include "adcs_drivers/adcs_command_ids.h"
 #include "unit_tests/unit_test_helpers.h"  // for all unit tests
 #include "unit_tests/test_adcs.h"          // for ADCS tests
 #include "transforms/number_comparisons.h" // for comparing doubles
@@ -627,6 +628,31 @@ uint8_t TEST_EXEC__ADCS_pack_to_measurements_struct() {
     return 0;
 }
 
+uint8_t TEST_EXEC__ADCS_pack_to_file_info_struct() {
+    uint8_t input_params[12] = {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc};
+    ADCS_file_info_struct_t result;
+    ADCS_pack_to_file_info_struct(input_params, &result);
+    TEST_ASSERT_TRUE(result.busy_updating == true);
+    TEST_ASSERT_TRUE(result.file_counter == 52);
+    TEST_ASSERT_TRUE(result.file_crc16 == 48282);
+    TEST_ASSERT_TRUE(result.file_date_time == 2216010756); // assuming the MS-DOS time converter works (need a test for that still)
+    TEST_ASSERT_TRUE(result.file_size == 3164239958);
+    TEST_ASSERT_TRUE(result.file_type == ADCS_FILE_TYPE_TELEMETRY_LOG);
+    return 0;
+}
+
+uint8_t TEST_EXEC__ADCS_pack_to_download_block_ready_struct() {
+    uint8_t input_params[5] = {0x12, 0x34, 0x56, 0x78, 0x9a};
+    ADCS_download_block_ready_struct_t result;
+    ADCS_pack_to_download_block_ready_struct(input_params, &result);
+
+    TEST_ASSERT_TRUE(result.ready == false);
+    TEST_ASSERT_TRUE(result.parameter_error == true);
+    TEST_ASSERT_TRUE(result.block_crc16 == 22068);
+    TEST_ASSERT_TRUE(result.block_length == 39544);
+
+    return 0;
+}
 
 uint8_t TEST_EXEC__ADCS_pack_to_acp_execution_state_struct() {
 
@@ -747,6 +773,25 @@ uint8_t TEST_EXEC__ADCS_pack_to_raw_star_tracker_struct() {
     return 0;
 }
 
+uint8_t TEST_EXEC__ADCS_pack_to_sd_card_format_erase_progress_struct() {
+    uint8_t input_params[1] = {0x02};
+    ADCS_sd_card_format_erase_progress_struct_t result;
+    ADCS_pack_to_sd_card_format_erase_progress_struct(input_params, &result);
+    TEST_ASSERT_TRUE(result.erase_all_busy == true);
+    TEST_ASSERT_TRUE(result.format_busy == false);
+
+    input_params[0] = 0x03;
+    ADCS_pack_to_sd_card_format_erase_progress_struct(input_params, &result);
+    TEST_ASSERT_TRUE(result.erase_all_busy == true);
+    TEST_ASSERT_TRUE(result.format_busy == true);
+
+    input_params[0] = 0x04;
+    ADCS_pack_to_sd_card_format_erase_progress_struct(input_params, &result);
+    TEST_ASSERT_TRUE(result.erase_all_busy == false);
+    TEST_ASSERT_TRUE(result.format_busy == false);
+
+    return 0;
+}
 
 uint8_t TEST_EXEC__ADCS_pack_to_unix_time_ms() {
     uint8_t input_params[6] = {0x56, 0x8b, 0x21, 0x67, 0x62, 0x02};
@@ -758,6 +803,20 @@ uint8_t TEST_EXEC__ADCS_pack_to_unix_time_ms() {
     return 0;
 }
 
+uint8_t TEST_EXEC__ADCS_pack_to_file_download_buffer_struct() {
+    uint8_t input_params[22] = {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0x12, 0x34, 0x56, 0x78};
+    ADCS_file_download_buffer_struct_t result;
+    ADCS_pack_to_file_download_buffer_struct(input_params, &result);   
+
+    TEST_ASSERT_TRUE(result.packet_counter == 13330);
+
+    uint8_t bytes[20] = {86, 120, 154, 188, 18, 52, 86, 120, 154, 188, 18, 52, 86, 120, 154, 188, 18, 52, 86, 120};
+    for (uint8_t i = 0; i < 20; i++) {
+        TEST_ASSERT_TRUE(result.file_bytes[i] == bytes[i]);
+    }
+
+    return 0; 
+}
 uint8_t TEST_EXEC__ADCS_pack_to_sd_log_config_struct() {
     uint8_t input_params[13] = {0x56, 0x8b, 0x21, 0x67, 0x62, 0x02, 0x8c, 0x11, 0x62, 0x02, 0x8c, 0x11, 0x01};
     ADCS_sd_log_config_struct result_struct;
@@ -768,7 +827,7 @@ uint8_t TEST_EXEC__ADCS_pack_to_sd_log_config_struct() {
         TEST_ASSERT_TRUE((result_struct.log_bitmask)[i] == input_params[i]);
     }
     
-    TEST_ASSERT_TRUE(result_struct.log_period == 4492);
+    TEST_ASSERT_TRUE(result_struct.log_period_s == 4492);
     TEST_ASSERT_TRUE(result_struct.which_sd == ADCS_SD_LOG_DESTINATION_SECONDARY_SD);
 
     return 0;
@@ -788,6 +847,33 @@ uint8_t TEST_EXEC__ADCS_convert_double_to_string() {
 
     TEST_ASSERT_TRUE(ADCS_convert_double_to_string(-0.9,1,&output_string[0],20) == 0);
     TEST_ASSERT_TRUE(strcmp(output_string, "-0.9") == 0);
+
+    return 0;
+
+}
+
+uint8_t TEST_EXEC__ADCS_combine_sd_log_bitmasks() {
+    uint8_t output[10] = {0};
+    const uint8_t num_logs = 3;
+    const uint8_t* commissioning_data[3] = {ADCS_SD_LOG_MASK_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_RAW_MAGNETOMETER};
+    ADCS_combine_sd_log_bitmasks(commissioning_data, num_logs, output);
+
+    uint8_t test_array[10] = {0x00, 0x20, 0x00, 0x40, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00};
+    for (uint8_t i = 0; i < 10; i++) {
+        TEST_ASSERT_TRUE(output[i] == test_array[i]);
+    }
+
+    uint8_t output_two[10] = {0};
+    const uint8_t num_logs_two = 14;  
+    const uint8_t* commissioning_data_two[14] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_ESTIMATED_GYRO_BIAS, ADCS_SD_LOG_MASK_ESTIMATION_INNOVATION_VECTOR, 
+                                                    ADCS_SD_LOG_MASK_MAGNETIC_FIELD_VECTOR, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_FINE_SUN_VECTOR, ADCS_SD_LOG_MASK_NADIR_VECTOR, ADCS_SD_LOG_MASK_WHEEL_SPEED, ADCS_SD_LOG_MASK_MAGNETORQUER_COMMAND,
+                                                    ADCS_SD_LOG_MASK_IGRF_MODELLED_MAGNETIC_FIELD_VECTOR, ADCS_SD_LOG_MASK_QUATERNION_ERROR_VECTOR, ADCS_SD_LOG_MASK_SATELLITE_POSITION_LLH, ADCS_SD_LOG_MASK_WHEEL_SPEED_COMMANDS};
+    ADCS_combine_sd_log_bitmasks(commissioning_data_two, num_logs_two, output_two);
+
+    uint8_t test_array_two[10] = {0x80, 0x7B, 0x00, 0x10, 0xEA, 0x00, 0x00, 0x08, 0x00, 0x00};
+    for (uint8_t i = 0; i < 10; i++) {
+        TEST_ASSERT_TRUE(output_two[i] == test_array_two[i]);
+    }
 
     return 0;
 
