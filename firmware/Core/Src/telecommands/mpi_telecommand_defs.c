@@ -3,6 +3,7 @@
 #include "mpi/mpi_command_handling.h"
 #include "transforms/arrays.h"
 #include "mpi/mpi_transceiver.h"
+#include "littlefs/littlefs_helper.h"
 #include "log/log.h"
 #include "uart_handler/uart_handler.h"
 
@@ -137,6 +138,29 @@ uint8_t TCMDEXEC_mpi_send_command_hex(
     // Return response code from the MPI
     return cmd_response;
 }
+
+/// @brief Prepares LFS to start accepting MPI data.
+/// @param args_str No args.
+/// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
+/// @param response_output_buf The buffer to write the response to
+/// @param response_output_buf_len The maximum length of the response_output_buf (its size)
+/// @return 0: Success, !0: Failure
+uint8_t TCMDEXEC_mpi_prepare_receive_data(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len) {
+    int8_t prepare_result = MPI_prepare_receive_data();
+    
+    if (prepare_result != 0) {
+        snprintf(
+            &response_output_buf[strlen(response_output_buf)],
+            response_output_buf_len - strlen(response_output_buf) - 1,
+            "MPI prepare receive data Failed! Error Code: %d",
+            prepare_result
+        );
+        return 1;
+    }
+
+    return 0;
+}
+
 
 /// @brief Sets the state to receive data actively from MPI.
 /// @param args_str No args.

@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include "mpi/mpi_types.h"
+#include "littlefs/lfs.h"
 
 /// @brief Current mode under which the MPI is being operated.
 extern volatile MPI_rx_mode_t MPI_current_uart_rx_mode;
@@ -14,11 +15,17 @@ extern MPI_buffer_state_enum_t MPI_buffer_state;  // Current state of the buffer
 extern uint16_t MPI_active_data_median_buffer_len;
 extern uint8_t MPI_active_data_median_buffer[];
 
+extern uint8_t MPI_receive_prepared;
+extern lfs_file_t MPI_science_data_file_pointer;
+
 uint8_t MPI_send_command_get_response(
     const uint8_t *bytes_to_send, const size_t bytes_to_send_len, uint8_t *MPI_rx_buffer,
     const size_t MPI_rx_buffer_max_size, uint16_t *MPI_rx_buffer_len
 );
 
+int8_t MPI_prepare_receive_data();
+uint8_t MPI_enable_active_mode();
+uint8_t MPI_disable_active_mode();
 uint8_t MPI_validate_command_response(
     const uint8_t *MPI_tx_buffer, uint8_t *MPI_rx_buffer, const uint16_t MPI_tx_buffer_size
 );

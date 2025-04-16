@@ -2,6 +2,8 @@
 #include "mpi/mpi_types.h"
 #include "mpi/mpi_transceiver.h"
 #include "uart_handler/uart_handler.h"
+#include "littlefs/littlefs_helper.h"
+#include "log/log.h"
 
 #include "main.h"
 #include "stm32l4xx_hal.h"
@@ -21,6 +23,9 @@ MPI_buffer_state_enum_t MPI_buffer_state = MPI_MEMORY_WRITE_STATUS_READY;
 
 uint16_t MPI_active_data_median_buffer_len = 4096;
 uint8_t MPI_active_data_median_buffer[4096];
+
+uint8_t MPI_receive_prepared = 0;
+lfs_file_t MPI_science_data_file_pointer;
 
 /// @brief Sends commandcode+params to the MPI as bytes
 /// @param bytes_to_send Buffer containing the telecommand + params (IF ANY) as hex bytes
@@ -150,11 +155,37 @@ uint8_t MPI_validate_command_response(
     return 0; //  MPI executed the cmd successfully
 }
 
+int8_t MPI_prepare_receive_data() {
+    // Mount LFS if not already mounted
+    if (!LFS_is_lfs_mounted) {
+        LFS_mount();
+    }
+        
+    // Create file name
+    char MPI_science_data_file_name[60];
+    sprintf(MPI_science_data_file_name, "mpi_active_data_file%lu", HAL_GetTick());
+
+    // Open / Create the file
+    const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &MPI_science_data_file_pointer, MPI_science_data_file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND, &LFS_file_cfg);
+    if (open_result < 0) {
+        LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening / creating file: %s", MPI_science_data_file_name);
+        MPI_receive_prepared = 0;
+        return open_result;
+    } else {
+        LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Opened/created file: %s", MPI_science_data_file_name);
+        MPI_receive_prepared = 1;   
+    }
+    return 0;
+}
 
 uint8_t MPI_enable_active_mode() {
 
+    if (MPI_receive_prepared != 1) {
+        return 3;
+    }
+
     // Set the MPI State to send data actively
-    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MISO); // Set the MPI transceiver to MOSI mode
+    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MISO); // Set the MPI transceiver to MISO mode
     MPI_current_uart_rx_mode = MPI_RX_MODE_SENSING_MODE; // Set MPI to command mode.
 
     // Receive MPI response actively with 8192 buffer size.
@@ -163,14 +194,20 @@ uint8_t MPI_enable_active_mode() {
     // Check for UART reception errors
     if (receive_status == HAL_BUSY) {
         return 1; // Error code: UART Line already active
-    } 
-    else if (receive_status != HAL_OK) {
+    }
+    else if (receive_status == HAL_TIMEOUT) {
+        return 3; // Error code: Timeout while trying to set DMA
+    }
+    else if (receive_status == HAL_ERROR) {
         MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
         HAL_UART_DMAStop(UART_mpi_port_handle);
         MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
         return 2; // Error code: Failed UART reception
     }
-    
+
+    // Indicates to MPI thread that we are able to receive data
+    // If mpi uart mode is changed, we can close file
+    MPI_receive_prepared = 2;
     return 0;
 }
 
