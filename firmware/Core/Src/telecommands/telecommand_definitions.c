@@ -1227,7 +1227,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_func = TCMDEXEC_gps_enable_disable_all,
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    }
+    },
     // ****************** END SECTION: gps_telecommand_defs ******************
     // ****************** SECTION: camera_telecommand_defs *******************
     {
