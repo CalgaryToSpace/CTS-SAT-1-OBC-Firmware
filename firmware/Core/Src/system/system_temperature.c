@@ -12,7 +12,7 @@
 /// @brief Grabs required data/data structures from drivers containing thermal information.
 /// @param result Struct that contains various raw thermal data.
 /// @return 0 if data was successfully stored, 1 if error unable to get data.
-uint8_t SYS_TEMP_get_raw_thermal_info(SYS_TEMP_parameter_t* result){
+uint8_t SYS_TEMP_get_raw_thermal_info(SYS_TEMP_raw_thermal_info_t* result){
 
     int32_t obc_temp_result;
     uint8_t stat = OBC_TEMP_SENSOR__read_temperature(&obc_temp_result);
@@ -65,7 +65,7 @@ uint8_t SYS_TEMP_get_raw_thermal_info(SYS_TEMP_parameter_t* result){
 /// @param input The structure containing various raw thermal data. 
 /// @param result The structure containing the processed thermal data. 
 /// @return 0 on successful conversion, otherwise failed.
-uint8_t SYS_TEMP_get_processed_thermal_info(SYS_TEMP_parameter_t* input, SYS_TEMP_temperature_output_t* result) {
+uint8_t SYS_TEMP_pack_to_system_thermal_info(SYS_TEMP_raw_thermal_info_t* input, SYS_TEMP_thermal_info_t* result) {
 
     result->system_OBC_temperature_cC = input->system_OBC_temperature_C * 100;
 
