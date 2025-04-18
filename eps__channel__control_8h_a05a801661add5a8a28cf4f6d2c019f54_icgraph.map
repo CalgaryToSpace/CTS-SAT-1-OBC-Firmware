@@ -1,11 +1,13 @@
 <map id="EPS_channel_to_str" name="EPS_channel_to_str">
-<area shape="rect" id="Node000001" title="Converts channel enum into an ASCII&#45;printable name string." alt="" coords="748,46,888,72"/>
-<area shape="rect" id="Node000002" href="$eps__channel__control_8c.html#ae00d77de29ecb1dce9d041dc9a173c57" title="Convert EPS ch_number to ch_name, then append as a JSON list element to response_output_buf." alt="" coords="529,5,684,46"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="732,48,684,41,685,35,733,43"/>
-<area shape="rect" id="Node000005" href="$test__eps__drivers_8c.html#a9e04ee5cf14937bc0805d00237aab6dd" title=" " alt="" coords="513,71,700,111"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="733,75,701,79,700,74,732,69"/>
+<area shape="rect" id="Node000001" title="Converts channel enum into an ASCII&#45;printable name string." alt="" coords="758,78,898,104"/>
+<area shape="rect" id="Node000002" href="$eps__channel__control_8c.html#ae00d77de29ecb1dce9d041dc9a173c57" title="Convert EPS ch_number to ch_name, then append as a JSON list element to response_output_buf." alt="" coords="534,5,689,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="768,76,681,49,682,44,769,71"/>
+<area shape="rect" id="Node000005" href="$eps__telecommands_8c.html#af4a26360f491c65d480eda02ae55b900" title="Sets the EPS channel to be enabled (on) or disabled (off)." alt="" coords="513,71,710,111"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="743,94,711,94,711,88,743,88"/>
+<area shape="rect" id="Node000006" href="$test__eps__drivers_8c.html#a9e04ee5cf14937bc0805d00237aab6dd" title=" " alt="" coords="518,136,705,177"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="769,111,682,138,681,133,768,106"/>
 <area shape="rect" id="Node000003" href="$eps__channel__control_8c.html#a61a68e76b41a16b48dabe95f60f6b703" title=" " alt="" coords="251,13,465,38"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="513,28,465,28,465,23,513,23"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="519,28,465,28,465,23,519,23"/>
 <area shape="rect" id="Node000004" href="$eps__telecommands_8c.html#a8e06602ac7e1d4da69112a6fd107b84f" title=" " alt="" coords="5,5,203,46"/>
 <area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="235,28,203,28,203,23,235,23"/>
 </map>
