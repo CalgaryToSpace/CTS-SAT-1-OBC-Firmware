@@ -7,7 +7,7 @@
 #include "eps_drivers/eps_power_management.h"
 #include "telecommands/eps_telecommands.h"
 #include "telecommand_exec/telecommand_args_helpers.h"
-
+#include "log/log.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -167,10 +167,10 @@ uint8_t TCMDEXEC_eps_set_channel_enabled(
     }
     char enabled_str[20] = "?";
     if (enabled_val_u64 == 0) {
-        strcpy(enabled_str, "disabled");
+        strcpy(enabled_str, "disable");
     }
     else if (enabled_val_u64 == 1) {
-        strcpy(enabled_str, "enabled");
+        strcpy(enabled_str, "enable");
     }
     else {
         snprintf(
@@ -188,22 +188,44 @@ uint8_t TCMDEXEC_eps_set_channel_enabled(
         return 4;
     }
 
+    // Convert to a nice string/channel number.
+    const char *eps_channel_name_str = EPS_channel_to_str(eps_channel);
+    const uint8_t eps_channel_num = (uint8_t) eps_channel;
+
+    if (
+        ((eps_channel == EPS_CHANNEL_3V3_STACK)
+        || (eps_channel == EPS_CHANNEL_5V_STACK)
+        || (eps_channel == EPS_CHANNEL_VBATT_STACK))
+        && (enabled_val_u64 == 0)
+    ) {
+        LOG_message(
+            LOG_SYSTEM_EPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "Cannot disable the stack channels: %s. Trying anyway.",
+            eps_channel_name_str
+        );
+        return 8;
+    }
 
     const uint8_t eps_result = EPS_set_channel_enabled(eps_channel, (uint8_t)enabled_val_u64);
 
     if (eps_result != 0) {
         snprintf(
             response_output_buf, response_output_buf_len,
-            "EPS set channel %s failed (err %d)",
+            "EPS %s channel %d (%s) failed (err %d).",
             enabled_str,
+            eps_channel_num, eps_channel_name_str,
             eps_result
         );
         return 5;
     }
     snprintf(
         response_output_buf, response_output_buf_len,
-        "EPS set channel %s successful.",
-        enabled_str
+        // Note: The word "success" is intentionally omitted here, because attempting to disable
+        // certain channels (e..g, the always-on stack channels) will return success, but will not
+        // actually disable the channel.
+        "EPS %s channel %d (%s) executed.",
+        enabled_str,
+        eps_channel_num, eps_channel_name_str
     );
     return 0;
 }
