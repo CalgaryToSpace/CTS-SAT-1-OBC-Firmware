@@ -120,10 +120,14 @@ uint8_t TCMDEXEC_camera_capture(const char *args_str, TCMD_TelecommandChannel_en
         return 1;
     }
 
-    enum Capture_Status img = CAM_Capture_Image((bool)flash, lighting[0]);
+    enum CAM_capture_status_enum img = CAM_Capture_Image((bool)flash, lighting[0]);
 
-    if (img != Transmit_Success){
+    if (img == CAM_CAPTURE_STATUS_WRONG_INPUT){
         snprintf(response_output_buf, response_output_buf_len, "Wrong lighting input.\n");
+        return 1;
+    }
+    else if (img == CAM_CAPTURE_STATUS_CAPTURE_FAILURE){
+        snprintf(response_output_buf, response_output_buf_len, "Camera Capture Failure\n");
         return 1;
     }
 
