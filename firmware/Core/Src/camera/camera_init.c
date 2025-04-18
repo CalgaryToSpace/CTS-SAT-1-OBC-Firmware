@@ -222,7 +222,7 @@ uint8_t CAM_receive_image(){
         // write file after half and complete callbacks
         if (camera_write_file){
             // debug string DELETE THIS AFTER TESTING
-            DEBUG_uart_print_str("in write file\n");
+            // DEBUG_uart_print_str("in write file\n");
             UART_camera_last_write_time_ms = HAL_GetTick();
 
             // Write data to file
@@ -253,7 +253,7 @@ uint8_t CAM_receive_image(){
                         UART_camera_buffer[i] = 0;
                     }
                     // PRINT FOR TESTING DELETE AFTER
-                    DEBUG_uart_print_str("timeout write file 1\n");
+                    // DEBUG_uart_print_str("timeout write file 1\n");
                     camera_write_file = 1;
                     // finish receiving and break out of loop
                     CAMERA_set_expecting_data(0);
@@ -276,7 +276,7 @@ uint8_t CAM_receive_image(){
                         UART_camera_buffer[i] = 0;
                     }
                     // PRINT FOR TESTING DELETE AFTER
-                    DEBUG_uart_print_str("timeout write file 2\n"); 
+                    // DEBUG_uart_print_str("timeout write file 2\n"); 
                     camera_write_file = 1;
                     // finish receiving and break out of loop
                     CAMERA_set_expecting_data(0);

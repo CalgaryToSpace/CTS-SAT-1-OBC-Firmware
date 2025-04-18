@@ -203,12 +203,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
     else if (huart->Instance == UART_camera_port_handle->Instance){
         // increment write_idx
-        DEBUG_uart_print_str("Hello\n");
-        DEBUG_uart_print_str("complete call back\n");
-        LOG_message(
-            LOG_SYSTEM_ALL, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-            "complete_call_back"
-        );
+        // DEBUG_uart_print_str("Hello\n");
+        // DEBUG_uart_print_str("complete call back\n");
+        // LOG_message(
+        //     LOG_SYSTEM_ALL, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+        //     "complete_call_back"
+        // );
         // write index = 2
         UART_camera_buffer_write_idx++;
         UART_camera_buffer_write_idx = 0;
@@ -217,7 +217,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         }
         // set camera_write_file to 1 so camera_internal can write to mem
         camera_write_file = 1;  
-
+        
     }
 
     else {
@@ -227,18 +227,19 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 }
 
 void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
-    DEBUG_uart_print_str("half call back\n");
+    // DEBUG_uart_print_str("half call back\n");
     if (huart->Instance == UART_camera_port_handle->Instance){
-        LOG_message(
-            LOG_SYSTEM_ALL, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-            "half_call_back"
-        );
+        // LOG_message(
+        //     LOG_SYSTEM_ALL, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+        //     "half_call_back"
+        // );
         // write idx = 1
         UART_camera_buffer_write_idx++;
         // uint8_t counter = 0;
         for (uint16_t i = 0; i < UART_camera_buffer_len/2; i++){
             UART_camera_rx_buf[i] = UART_camera_buffer[i];
         }
+        // DEBUG_uart_print_str(UART_camera_buffer);
         // set camera_write_file to 1 so camera_internal can write to mem
         camera_write_file = 1;
     }
