@@ -29,9 +29,9 @@ volatile uint16_t UART_mpi_buffer_write_idx = 0;            // extern
 
 // UART CAMERA buffer
 // TODO: Configure with peripheral required specifications
-const uint16_t UART_camera_buffer_len = SENTENCE_LEN*46;               // extern       // TODO: Set based on expected size requirements for reception
-volatile uint8_t UART_camera_buffer[SENTENCE_LEN*46];                  // extern       // TODO: confirm that this volatile means that the contents are volatile but the pointer is not
-uint8_t UART_camera_rx_buf[SENTENCE_LEN*23];
+const uint16_t UART_camera_buffer_len = CAM_SENTENCE_LEN*46;               // extern       // TODO: Set based on expected size requirements for reception
+volatile uint8_t UART_camera_buffer[CAM_SENTENCE_LEN*46];                  // extern       // TODO: confirm that this volatile means that the contents are volatile but the pointer is not
+uint8_t UART_camera_rx_buf[CAM_SENTENCE_LEN*23];
 volatile uint8_t camera_write_file = 0;
 volatile uint16_t UART_camera_buffer_write_idx = 0;         // extern
 volatile uint32_t UART_camera_last_write_time_ms = 0;       // extern
@@ -268,7 +268,7 @@ uint8_t CAMERA_set_expecting_data(uint8_t new_enabled) {
     if (new_enabled == 1)
     {
         UART_camera_is_expecting_data = 1;
-		const HAL_StatusTypeDef receive_status = HAL_UART_Receive_DMA(UART_camera_port_handle,(uint8_t*) &UART_camera_buffer, SENTENCE_LEN*46);
+		const HAL_StatusTypeDef receive_status = HAL_UART_Receive_DMA(UART_camera_port_handle,(uint8_t*) &UART_camera_buffer, CAM_SENTENCE_LEN*46);
         if (receive_status != HAL_OK) {
 			return 3; // Error code: Failed UART reception
 		}
