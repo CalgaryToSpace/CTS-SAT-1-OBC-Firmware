@@ -27,6 +27,14 @@ void TIM_set_current_unix_epoch_time_ms(uint64_t current_unix_epoch_time_ms, TIM
     // Don't log it right away; update the time info, then log after.
     const uint8_t is_this_sync_before_the_last_sync = current_unix_epoch_time_ms < TIM_unix_epoch_time_at_last_time_resync_ms;
 
+    // Compute time before applying sync
+    const uint64_t unix_epoch_time_before_sync_ms = TIM_get_current_unix_epoch_time_ms();
+    const int64_t correction_time_ms = (int64_t)(current_unix_epoch_time_ms - unix_epoch_time_before_sync_ms);
+    
+    // Get timestamp string for "before"
+    char old_time_str[48];
+    TIM_get_timestamp_string_datetime(old_time_str, sizeof(old_time_str));    
+
     // Update the time.
     TIM_system_uptime_at_last_time_resync_ms = HAL_GetTick();
     TIM_unix_epoch_time_at_last_time_resync_ms = current_unix_epoch_time_ms;
@@ -48,6 +56,28 @@ void TIM_set_current_unix_epoch_time_ms(uint64_t current_unix_epoch_time_ms, TIM
             TIM_unix_epoch_time_at_last_time_resync_ms_str
         );
     }
+
+    // Log a warning if the time sync changes the time by more than 2 seconds.
+    char correction_time_ms_str[21];
+    GEN_int64_to_str(correction_time_ms, correction_time_ms_str);
+    if(correction_time_ms>=2000 || correction_time_ms<=-2000)
+    {
+        LOG_message(
+            LOG_SYSTEM_OBC, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "Synchronization has changed system time by 2000ms or more. Time deviation was %s ms.",
+            correction_time_ms_str
+        );
+    }
+    // Get timestamp string for "after"
+    char new_time_str[48];
+    TIM_get_timestamp_string_datetime(new_time_str, sizeof(new_time_str));    
+
+    // Log both times and the correction
+    LOG_message(
+        LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "Time synchronized. Old time: %s, New time: %s, Clock shift: %s ms.",
+        old_time_str, new_time_str, correction_time_ms_str
+    );
 }
 
 /// @brief Returns the current unix timestamp, in milliseconds

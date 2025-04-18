@@ -9,8 +9,6 @@
 
 void TASK_DEBUG_print_heartbeat(void *argument);
 
-void TASK_handle_uart_telecommands(void *argument);
-
 void TASK_execute_telecommands(void *argument);
 
 void TASK_monitor_freertos_memory(void *argument);

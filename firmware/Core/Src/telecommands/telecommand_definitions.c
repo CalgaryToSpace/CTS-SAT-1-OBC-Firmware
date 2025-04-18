@@ -288,6 +288,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
+        .tcmd_name = "fs_write_file_hex",
+        .tcmd_func = TCMDEXEC_fs_write_file_hex,
+        .number_of_args = 3,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
         .tcmd_name = "fs_delete_file",
         .tcmd_func = TCMDEXEC_fs_delete_file,
         .number_of_args = 1,
@@ -432,6 +438,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "adcs_set_power_control",
         .tcmd_func = TCMDEXEC_adcs_set_power_control,
         .number_of_args = 10,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    }, 
+    {
+        .tcmd_name = "adcs_enter_low_power_mode",
+        .tcmd_func = TCMDEXEC_adcs_enter_low_power_mode,
+        .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
@@ -693,6 +705,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
+        .tcmd_name = "adcs_download_sd_file",
+        .tcmd_func = TCMDEXEC_adcs_download_sd_file,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_IN_PROGRESS, // TODO: change this once the function is done
+    }, 
+    {
         .tcmd_name = "adcs_generic_command",
         .tcmd_func = TCMDEXEC_adcs_generic_command,
         .number_of_args = 2, 
@@ -735,8 +753,8 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
-        .tcmd_name = "adcs_synchronise_unix_time",
-        .tcmd_func = TCMDEXEC_adcs_synchronise_unix_time,
+        .tcmd_name = "adcs_synchronize_unix_time",
+        .tcmd_func = TCMDEXEC_adcs_synchronize_unix_time,
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     }, 
@@ -756,6 +774,18 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "adcs_get_sd_log_config",
         .tcmd_func = TCMDEXEC_adcs_get_sd_log_config,
         .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    }, 
+    {
+        .tcmd_name = "adcs_format_sd",
+        .tcmd_func = TCMDEXEC_adcs_format_sd,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    }, 
+    {
+        .tcmd_name = "adcs_download_index_file",
+        .tcmd_func = TCMDEXEC_adcs_download_index_file,
+        .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     }, 
 

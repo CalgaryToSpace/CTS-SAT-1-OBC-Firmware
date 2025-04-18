@@ -26,6 +26,9 @@ A boolean value set to either 0 or 1. A value of 1 indicates that timestamps (us
 
 **6) `EPS_monitor_interval_ms`**:  
  The time in ms in which the system will check the channels connected to the EPS and toggle them off in case of sustained overcurrent. 
+
+ **7) `STM32_system_reset_interval_ms`**:  
+ Will reset the OBC after this interval in ms.
  
 ## Configuration Variable Arrays
 

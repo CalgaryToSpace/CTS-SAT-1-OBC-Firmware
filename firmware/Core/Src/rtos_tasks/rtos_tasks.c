@@ -86,82 +86,17 @@ void TASK_DEBUG_print_heartbeat(void *argument) {
     }
 }
 
-
-void TASK_handle_uart_telecommands(void *argument) {
-    TASK_HELP_start_of_task();
-
-    // CONFIGURATION PARAMETER
-    uint32_t timeout_duration_ms = 100;
-
-    char latest_tcmd[UART_telecommand_buffer_len];
-    uint16_t latest_tcmd_len = 0;
-
-    while (1) {
-        // place the main delay at the top to avoid a "continue" statement skipping it
-        osDelay(400);
-
-        // DEBUG_uart_print_str("TASK_handle_uart_telecommands -> top of while(1)\n");
-
-        memset(latest_tcmd, 0, UART_telecommand_buffer_len);
-        latest_tcmd_len = 0; // 0 means no telecommand available
-
-        // log the status
-        // char msg[256];
-        // snprintf(msg, sizeof(msg), "UART telecommand buffer: write_index=%d, last_time=%lums\n", UART_telecommand_buffer_write_idx, UART_telecommand_last_write_time_ms);
-        // DEBUG_uart_print_str(msg);
-
-        if ((HAL_GetTick() - UART_telecommand_last_write_time_ms > timeout_duration_ms) && (UART_telecommand_buffer_write_idx > 0)) {
-            // Copy the buffer to the latest_tcmd buffer.
-            latest_tcmd_len = UART_telecommand_buffer_write_idx;
-            
-            // MEMCPY, but with volatile-compatible casts.
-            // Copy the whole buffer to ensure nulls get copied too.
-            for (uint16_t i = 0; i < UART_telecommand_buffer_len; i++) {
-                latest_tcmd[i] = (char) UART_telecommand_buffer[i];
-            }
-
-            // Set the null terminator at the end of the `latest_tcmd` str.
-            latest_tcmd[latest_tcmd_len] = '\0';
-
-            // Clear the buffer (memset to 0, but volatile-compatible) and reset the write pointer.
-            for (uint16_t i = 0; i < UART_telecommand_buffer_len; i++) {
-                UART_telecommand_buffer[i] = 0;
-            }
-            UART_telecommand_buffer_write_idx = 0;
-            // TODO: could do it so that it only clears the part of the buffer which contains a command, to allow multiple commands per buffer
-        }
-
-        if (latest_tcmd_len == 0) {
-            continue;
-        }
-
-        // DEBUG_uart_print_str("========================= UART Telecommand Received =========================\n");
-        // DEBUG_uart_print_str(latest_tcmd);
-        // DEBUG_uart_print_str("\n=========================\n");
-
-        // Parse the telecommand
-        TCMD_parsed_tcmd_to_execute_t parsed_tcmd;
-        uint8_t parse_result = TCMD_parse_full_telecommand(
-            latest_tcmd, TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd
-        );
-        if (parse_result != 0) {
-            LOG_message(
-                LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-                "Error parsing telecommand: %u", parse_result
-            );
-            continue;
-        }
-
-        // Add the telecommand to the agenda (regardless of whether it's in the future).
-        TCMD_add_tcmd_to_agenda(&parsed_tcmd);
-    
-    } /* End Task's Main Loop */
-}
-
 void TASK_execute_telecommands(void *argument) {
     TASK_HELP_start_of_task();
 
     // Note: Must not be less than 200ms since last pet.
+    // 250ms is a good period, because it takes 208 ms to uplink a max-sized (250-byte) telecommand
+    // at 9600 baud. Therefore, period=250ms makes it so that telecommands will be executed as fast
+    // as they are uplinked.
+    // Adding a short path nested loop that continues executing commands while they're available
+    // is unnecessary. It is helpful to have a slight delay between commands to prevent flooding
+    // the system with commands (hence the watchdog minimum interval being 200ms).
+    // Conclusion: All parts of the system can handle 4 commands per second.
     const uint32_t task_period_for_watchdog_pet_ms = 250;
 
     // Cannot pet the watchdog too quickly on boot.
@@ -173,7 +108,7 @@ void TASK_execute_telecommands(void *argument) {
         HAL_IWDG_Refresh(&hiwdg);
 
         // Get the next telecommand to execute.
-        int16_t next_tcmd_slot = TCMD_get_next_tcmd_agenda_slot_to_execute();
+        const int16_t next_tcmd_slot = TCMD_get_next_tcmd_agenda_slot_to_execute();
         if (next_tcmd_slot == -1) {
             // No telecommands to execute.
             // DEBUG_uart_print_str("No telecommands to execute.\n");
@@ -191,7 +126,6 @@ void TASK_execute_telecommands(void *argument) {
 
         // Note: Short yield here only; execute all pending telecommands back-to-back.
         osDelay(task_period_for_watchdog_pet_ms);
-
     } /* End Task's Main Loop */
 }
 
@@ -243,8 +177,7 @@ void TASK_monitor_freertos_memory(void *argument) {
 
 void TASK_camera_write_image(void *argument) {
 	TASK_HELP_start_of_task();
-	while (1) {
-		osDelay(500);
+	while (1) {;
         // if camera is receiving data start while loop
         if (UART_camera_is_expecting_data){
                 // receive until response timed out
@@ -315,6 +248,8 @@ void TASK_camera_write_image(void *argument) {
                     }
             }
 
+        } else {
+            osDelay(1000);
         }
 
 	} /* End Task's Main Loop */
