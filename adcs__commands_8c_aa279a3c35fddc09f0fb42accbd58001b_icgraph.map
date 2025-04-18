@@ -1,5 +1,9 @@
 <map id="ADCS_attitude_estimation_mode" name="ADCS_attitude_estimation_mode">
-<area shape="rect" id="Node000001" title="Instruct the ADCS to execute the ADCS_Attitude_Estimation_Mode command." alt="" coords="231,13,444,38"/>
-<area shape="rect" id="Node000002" href="$telecommand__adcs_8c.html#ae4a656bd5312eb333be28fdc369949de" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,183,46"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="215,28,183,28,183,23,215,23"/>
+<area shape="rect" id="Node000001" title="Instruct the ADCS to execute the ADCS_Attitude_Estimation_Mode command." alt="" coords="300,78,513,104"/>
+<area shape="rect" id="Node000002" href="$telecommand__adcs_8c.html#ae4a656bd5312eb333be28fdc369949de" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="40,5,217,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="333,77,217,49,218,44,335,72"/>
+<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#a88194e9fb6f90d0367f3869b4854852c" title="Telecommand: Set the run, power control, estimation, and control parameters for a given commissioning..." alt="" coords="5,71,252,111"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="284,94,252,94,252,88,284,88"/>
+<area shape="rect" id="Node000004" href="$telecommand__adcs_8c.html#a77b755281f46ce929d06ebd14999b25f" title="Telecommand: Automatically track the sun with the ADCS." alt="" coords="33,136,224,161"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="326,110,252,126,195,138,194,132,251,120,325,105"/>
 </map>
