@@ -1,6 +1,7 @@
 #include "uart_handler/uart_handler.h"
 #include "debug_tools/debug_uart.h"
 #include "mpi/mpi_command_handling.h"
+#include "mpi/mpi_transceiver.h"
 #include "main.h"
 #include "log/log.h"
 
@@ -59,8 +60,8 @@ volatile uint8_t UART_gps_buffer_last_rx_byte = 0; // extern
 volatile uint8_t UART_gps_uart_interrupt_enabled = 0; //extern
 
 // UART MPI science data buffer (WILL NEED IN THE FUTURE)
-// const uint16_t UART_mpi_data_rx_buffer_len = 8192; // extern 
-// volatile uint8_t UART_mpi_data_rx_buffer[8192]; // extern
+const uint16_t UART_mpi_data_rx_buffer_len = 8192; // extern 
+volatile uint8_t UART_mpi_data_rx_buffer[8192]; // extern
 // const uint16_t UART_mpi_data_buffer_len = 80000; // extern
 // volatile uint8_t UART_mpi_data_buffer[80000]; // extern
 
@@ -91,9 +92,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         // Restart reception for next byte
         HAL_UART_Receive_IT(UART_telecommand_port_handle, (uint8_t*) &UART_telecommand_buffer_last_rx_byte, 1);
     }
-
-    else if (huart->Instance == UART_mpi_port_handle->Instance) {
+    else if (huart->Instance == UART_mpi_port_handle->Instance) {        
         // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> MPI Data\n");
+        // LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Received 4096 Bytes!");
 
         if (MPI_current_uart_rx_mode == MPI_RX_MODE_COMMAND_MODE) {
             // Check if buffer is full
@@ -112,6 +113,18 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
             // Add the received byte to the buffer
             UART_mpi_buffer[UART_mpi_buffer_write_idx++] = UART_mpi_last_rx_byte;
             UART_mpi_last_write_time_ms = HAL_GetTick();
+        }
+        else if (MPI_current_uart_rx_mode == MPI_RX_MODE_SENSING_MODE) {
+            // Store the second half into another buffer
+            if (MPI_buffer_state == MPI_MEMORY_WRITE_STATUS_READY) {
+                for(uint16_t i = (UART_mpi_data_rx_buffer_len/2); i < UART_mpi_data_rx_buffer_len; i++) {
+                    MPI_active_data_median_buffer[i-(UART_mpi_data_rx_buffer_len/2)] = UART_mpi_data_rx_buffer[i];
+                    UART_mpi_data_rx_buffer[i] = 0x00;
+                }
+                MPI_buffer_state = MPI_MEMORY_WRITE_STATUS_PENDING;
+            } else {
+                DEBUG_uart_print_str("COMPLETE - Bytes are being lost!\n");
+            }
         }
         else {
             DEBUG_uart_print_str("Unhandled MPI Mode\n"); //TODO: HANDLE other MPI MODES
@@ -205,6 +218,23 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     }
 }
 
+void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
+    if (huart->Instance == UART_mpi_port_handle->Instance) {
+        // DEBUG_uart_print_str("Half callback being called!");
+        // LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "HALF CALLBACK - Received 4096 Bytes!");
+        if (MPI_current_uart_rx_mode == MPI_RX_MODE_SENSING_MODE) {
+            if (MPI_buffer_state == MPI_MEMORY_WRITE_STATUS_READY) {
+                for(uint16_t i = 0; i < UART_mpi_data_rx_buffer_len/2; i++) {
+                    MPI_active_data_median_buffer[i] = UART_mpi_data_rx_buffer[i];
+                    UART_mpi_data_rx_buffer[i] = 0x00;
+                }
+                MPI_buffer_state = MPI_MEMORY_WRITE_STATUS_PENDING;
+            } else {
+                DEBUG_uart_print_str("HALF - Bytes are being lost!\n");
+            }
+        }
+    }
+}
 
 
 /// @brief Sets the UART interrupt state (enabled/disabled)
@@ -274,6 +304,9 @@ void UART_init_uart_handlers(void) {
     // Enable the UART interrupt
     HAL_UART_Receive_IT(UART_telecommand_port_handle, (uint8_t*) &UART_telecommand_buffer_last_rx_byte, 1);
     HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t*) &UART_eps_buffer_last_rx_byte, 1);
+    // HAL_UART_Receive_DMA(UART_mpi_port_handle, (uint8_t*) &UART_mpi_last_rx_byte, 1);
+    
+    // MPI_buffer_state = MPI_MEMORY_WRITE_STATUS_PENDING;
 
     // GPS is not initialized as always-listening. It is enabled by the GPS telecommands.
     // Reason: The GPS has a mode where it spams null bytes, which can lock up the entire system.
