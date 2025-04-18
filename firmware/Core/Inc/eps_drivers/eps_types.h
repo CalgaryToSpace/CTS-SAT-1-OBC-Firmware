@@ -10,6 +10,8 @@ static const uint8_t EPS_ACTIVE_CHANNEL_COUNT = 17;
 /// @brief The highest EPS channel number, starting from 0. 16 means there are 17 channels total.
 static const uint8_t EPS_MAX_ACTIVE_CHANNEL_NUMBER = 16;
 
+/// @brief The number of EPS channels, including those not really present on our model.
+static const uint8_t EPS_TOTAL_CHANNEL_COUNT = 32;
 
 #pragma pack(push, 1)
 

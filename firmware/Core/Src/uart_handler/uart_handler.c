@@ -124,12 +124,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> CAMERA Data\n");
 
         if (! UART_camera_is_expecting_data) {
-            // not expecting data, ignore this noise
-            HAL_UART_Receive_IT(UART_camera_port_handle, (uint8_t*) &UART_camera_buffer_last_rx_byte, 1);
+            // Not expecting data, ignore this noise.
             return;
         }
 
-        // Check if buffer is full
+        // Check if buffer is full.
         if (UART_camera_buffer_write_idx >= UART_camera_buffer_len) {
             // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART response buffer is full\n");
 
@@ -142,8 +141,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
             UART_camera_buffer_write_idx = UART_camera_buffer_len - 1;
         }
 
-        // Add a byte to the buffer
-        UART_camera_buffer[UART_camera_buffer_write_idx++] = UART_camera_buffer_last_rx_byte;
+        // FIXME: Actually deal with the data in here, if necessary.
+
         UART_camera_last_write_time_ms = HAL_GetTick();
     }           
 
@@ -226,11 +225,13 @@ void GPS_set_uart_interrupt_state(uint8_t new_enabled) {
 // TODO: Probably need to remove the LOG_message() calls below. Instead, set a fault flag.
 
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
+    // Docs for error codes: https://community.st.com/t5/stm32-mcus-products/identifying-and-solving-uart-error/td-p/135754
+    
     // Reception Error callback for MPI UART port
     if (huart->Instance == UART_mpi_port_handle->Instance) {
         LOG_message(
             LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "MPI UART Reception Error: %lu", huart->ErrorCode
+            "HAL_UART_ErrorCallback for MPI: %lu", huart->ErrorCode
         );
 
         HAL_UART_Receive_DMA(UART_mpi_port_handle, (uint8_t*)&UART_mpi_last_rx_byte, 1);
@@ -240,7 +241,9 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
     if (huart->Instance == UART_gps_port_handle->Instance) {
         LOG_message(
             LOG_SYSTEM_GPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "GPS UART Reception Error: %lu", huart->ErrorCode
+            "HAL_UART_ErrorCallback for GPS: %lu, %s",
+            huart->ErrorCode,
+            (UART_gps_uart_interrupt_enabled == 1) ? "re-enabling interrupt" : "interrupt disabled"
         );
 
         if (UART_gps_uart_interrupt_enabled == 1) {
@@ -252,7 +255,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
     if (huart->Instance == UART_camera_port_handle->Instance) {
         LOG_message(
             LOG_SYSTEM_BOOM, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "CAMERA UART Reception Error: %lu", huart->ErrorCode
+            "HAL_UART_ErrorCallback for Camera: %lu", huart->ErrorCode
         ); // TODO: CAMERA is not registered as a system in the logger yet, Telecommand system used instead
 
         // Do not re-enable the interrupt here. Afraid of negative feedback loop.
@@ -262,7 +265,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
     if (huart->Instance == UART_eps_port_handle->Instance) {
         LOG_message(
             LOG_SYSTEM_EPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "EPS UART Reception Error: %lu", huart->ErrorCode
+            "HAL_UART_ErrorCallback for EPS: %lu", huart->ErrorCode
         );
 
         // We trust the EPS. Always re-enable the interrupt.
