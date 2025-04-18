@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 #include "main.h"
 
 /// @brief  Reads the temperature from the STDS75DS2F and stores it in the provided variable temperature.
@@ -62,6 +63,32 @@ uint8_t TCMDEXEC_obc_read_temperature_complex(
         "Temperature(C * %lu): %ld",
         temp_scaling_factor,
         temperature
+    );
+
+    return 0;
+}
+
+/// @brief Reads the temperature from the STDS75DS2F in centi-Celsius.
+/// @return 0 if successful, >0 if error.
+/// @note Temperature range is -55 to 125 degrees celsius with +/- 3 degrees celsius accuracy over the whole range.
+uint8_t TCMDEXEC_obc_read_temperature(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    const int32_t temp_cC = OBC_TEMP_SENSOR_get_temperature_cC();
+    if (temp_cC == OBC_TEMP_SENSOR_ERROR_TEMPERATURE_CC) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Temperature read fail! Temperature: %" PRIi32 " cC",
+            temp_cC
+        );
+        return 1;
+    }
+
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "OBC Temperature: %" PRIi32 " cC",
+        temp_cC
     );
 
     return 0;

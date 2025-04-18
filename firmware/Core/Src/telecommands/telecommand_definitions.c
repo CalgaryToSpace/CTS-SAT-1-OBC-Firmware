@@ -1175,6 +1175,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
+    {
+        .tcmd_name = "obc_read_temperature",
+        .tcmd_func = TCMDEXEC_obc_read_temperature,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
     // ****************** END SECTION: obc_temperature_sensor_telecommand_defs ******************
     // ****************** START SECTION: comms_telecommand_defs ******************
     {

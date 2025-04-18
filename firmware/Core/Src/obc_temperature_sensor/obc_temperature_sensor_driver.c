@@ -189,7 +189,7 @@ uint8_t OBC_TEMP_SENSOR_configure_precision_values(uint8_t arg_precision, struct
 }
 
 /// @brief The simplest and most foolproof way to get the OBC temperature in centi-celsius.
-/// @return The temperature in cC, if successful. 99999 if unsuccessful.
+/// @return The temperature in cC, if successful. 99999 (OBC_TEMP_SENSOR_ERROR_TEMPERATURE_CC) if unsuccessful.
 int32_t OBC_TEMP_SENSOR_get_temperature_cC() {
     const uint8_t temp_precision = 10; // 10 is good for cC.
 
@@ -200,7 +200,7 @@ int32_t OBC_TEMP_SENSOR_get_temperature_cC() {
     );
 
     if (set_precision_status != 0) {
-        return 99999;
+        return OBC_TEMP_SENSOR_ERROR_TEMPERATURE_CC;
     }
 
     // Give time for sensor to convert value.
@@ -211,7 +211,7 @@ int32_t OBC_TEMP_SENSOR_get_temperature_cC() {
     const uint8_t success_result = OBC_TEMP_SENSOR_read_temperature(&temperature);
 
     if (success_result != 0) {
-        return 99999;
+        return OBC_TEMP_SENSOR_ERROR_TEMPERATURE_CC;
     }
 
     // Convert to cC.

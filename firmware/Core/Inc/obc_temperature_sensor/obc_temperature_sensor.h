@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 
+/// @brief A fake temperature, in cC, which indicates an error in reading the temperature.
+static const int32_t OBC_TEMP_SENSOR_ERROR_TEMPERATURE_CC = 99999;
+
 static const float OBC_TEMP_SENSOR_nine_bit_precision_coefficient = 2;
 static const float OBC_TEMP_SENSOR_ten_bit_precision_coefficient = 4;
 static const float OBC_TEMP_SENSOR_eleven_bit_precision_coefficient = 8;
