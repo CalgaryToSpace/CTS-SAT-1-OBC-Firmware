@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define SENTENCE_LEN    67
+#define CAM_SENTENCE_LEN    67
 
 uint8_t CAM_change_baudrate(uint32_t bitrate);
 
@@ -12,7 +12,8 @@ uint8_t CAM_setup();
 uint8_t CAM_test();
 
 
-enum Capture_Status{Transmit_Success, Wrong_input, Capture_Failure};
+
+typedef enum CAM_capture_status_enum{CAM_CAPTURE_STATUS_TRANSMIT_SUCCESS, CAM_CAPTURE_STATUS_WRONG_INPUT, CAM_CAPTURE_STATUS_CAPTURE_FAILURE} CAM_capture_status_enum;
 
 
 /**
@@ -23,6 +24,6 @@ enum Capture_Status{Transmit_Success, Wrong_input, Capture_Failure};
  * 			n - night ambient light
  * 			s - solar sail contrast and light
  */
-enum Capture_Status CAM_Capture_Image(bool enable_flash, uint8_t lighting_mode);
+enum CAM_capture_status_enum CAM_Capture_Image(bool enable_flash, char lighting_mode);
 
 #endif // INCLUDE_GUARD__CAMERA_INIT_H

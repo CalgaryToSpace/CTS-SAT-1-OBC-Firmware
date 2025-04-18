@@ -103,8 +103,8 @@ uint8_t CAM_setup() {
     // Wait a sec for camera bootup.
     HAL_Delay(500);
 
-    // Change baudrate to 2400 on camera.
-    const uint8_t bitrate_status = CAM_change_baudrate(2400);
+    // Change baudrate to 230400 on camera.
+    const uint8_t bitrate_status = CAM_change_baudrate(230400);
     if (bitrate_status != 0) {
         LOG_message(
             LOG_SYSTEM_BOOM, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
@@ -197,7 +197,7 @@ uint8_t CAM_receive_image(){
         UART_camera_buffer[i] = 0;
     }
     // clear rx buf
-    for (uint16_t i = 0; i < SENTENCE_LEN*23; i++){
+    for (uint16_t i = 0; i < CAM_SENTENCE_LEN*23; i++){
         UART_camera_rx_buf[i] = 0;
     }
     // reset variables
@@ -226,7 +226,7 @@ uint8_t CAM_receive_image(){
             UART_camera_last_write_time_ms = HAL_GetTick();
 
             // Write data to file
-            const lfs_ssize_t write_result = lfs_file_write(&LFS_filesystem, &file, UART_camera_rx_buf, SENTENCE_LEN*23);
+            const lfs_ssize_t write_result = lfs_file_write(&LFS_filesystem, &file, UART_camera_rx_buf, CAM_SENTENCE_LEN*23);
             if (write_result < 0)
             {
                 LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error writing to file: %s", file_name);
@@ -293,7 +293,7 @@ uint8_t CAM_receive_image(){
         UART_camera_last_write_time_ms = HAL_GetTick();
 
         // Write data to file
-        const lfs_ssize_t write_result = lfs_file_write(&LFS_filesystem, &file, UART_camera_rx_buf, SENTENCE_LEN*23);
+        const lfs_ssize_t write_result = lfs_file_write(&LFS_filesystem, &file, UART_camera_rx_buf, CAM_SENTENCE_LEN*23);
         if (write_result < 0)
         {
             LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error writing to file: %s", file_name);
@@ -325,7 +325,7 @@ uint8_t CAM_receive_image(){
 ///         n - night ambient light
 ///         s - solar sail contrast and light
 /// @return Transmit_Success: Successfully captured image, Wrong_input: invalid parameter input, Capture_Failure: Error in image reception or command transmition
-enum Capture_Status CAM_Capture_Image(bool enable_flash, uint8_t lighting_mode){
+enum CAM_capture_status_enum CAM_Capture_Image(bool enable_flash, char lighting_mode){
     // ignore flash for now, I'll hardcode it to False since we don't have flash anyways
     // default file open to false
     file_open = 0;
@@ -395,7 +395,7 @@ enum Capture_Status CAM_Capture_Image(bool enable_flash, uint8_t lighting_mode){
             HAL_Delay(25);
             break;
         default:
-            return Wrong_input;
+            return CAM_CAPTURE_STATUS_WRONG_INPUT;
     }
 
     if (file_failure) {
@@ -410,10 +410,21 @@ enum Capture_Status CAM_Capture_Image(bool enable_flash, uint8_t lighting_mode){
             }
             file_open = 0;
         }
-        return Capture_Failure; // Error
+        return CAM_CAPTURE_STATUS_CAPTURE_FAILURE; // Error
     }
 
     int capture_code = CAM_receive_image();
+
+    // Turn off the camera.
+    const uint8_t eps_off_status = EPS_set_channel_enabled(EPS_CHANNEL_3V3_CAMERA, 0);
+    if (eps_off_status != 0) {
+        // Continue anyway. Just log a warning.
+        LOG_message(
+            LOG_SYSTEM_BOOM, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "Error disabling camera power channel in CAM_Capture_Image: status=%d. Continuing.",
+            eps_off_status
+        );
+    }
 
     if (capture_code != 0){
         LOG_message(
@@ -421,7 +432,7 @@ enum Capture_Status CAM_Capture_Image(bool enable_flash, uint8_t lighting_mode){
             "Error receiving camera image: Capture Code = %d",
             capture_code
         );
-        return Capture_Failure;
+        return CAM_CAPTURE_STATUS_CAPTURE_FAILURE;
     }
-    return Transmit_Success;
+    return CAM_CAPTURE_STATUS_TRANSMIT_SUCCESS;
 }
