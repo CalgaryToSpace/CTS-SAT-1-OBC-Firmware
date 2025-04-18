@@ -1,4 +1,4 @@
-#include "telecommands/temperature_sensor_telecommand_defs.h"
+#include "telecommands/obc_temperature_sensor_telecommand_defs.h"
 #include "obc_temperature_sensor/obc_temperature_sensor.h"
 
 #include <stdio.h>

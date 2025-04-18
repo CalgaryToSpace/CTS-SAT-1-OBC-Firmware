@@ -18,7 +18,7 @@
 #include "telecommands/timekeeping_telecommand_defs.h"
 #include "telecommands/antenna_telecommand_defs.h"
 #include "telecommands/i2c_telecommand_defs.h"
-#include "telecommands/temperature_sensor_telecommand_defs.h"
+#include "telecommands/obc_temperature_sensor_telecommand_defs.h"
 #include "telecommands/uart_telecommand_defs.h"
 #include "telecommands/config_telecommand_defs.h"
 #include "telecommands/testing_telecommand_defs.h"
