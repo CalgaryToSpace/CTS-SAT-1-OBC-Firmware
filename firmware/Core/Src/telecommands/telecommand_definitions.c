@@ -35,7 +35,6 @@
 #include "timekeeping/timekeeping.h"
 #include "littlefs/littlefs_helper.h"
 #include "stm32/stm32_reboot_reason.h"
-#include "telecommands/csp_telecommand_defs.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -1219,14 +1218,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     // ****************** END SECTION: camera_telecommand_defs *******************
-    {
-        .tcmd_name = "csp_demo_1",
-        .tcmd_func = TCMDEXEC_csp_demo_1,
-        .number_of_args = 0,
-        .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
-    },
-
-};
+  };
 
 // extern
 const int16_t TCMD_NUM_TELECOMMANDS = sizeof(TCMD_telecommand_definitions) / sizeof(TCMD_TelecommandDefinition_t);
