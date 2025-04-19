@@ -31,9 +31,9 @@ volatile uint16_t UART_mpi_buffer_write_idx = 0;            // extern
 
 // UART CAMERA buffer
 // TODO: Configure with peripheral required specifications
-const uint16_t UART_camera_buffer_len = CAM_SENTENCE_LEN*46;               // extern       // TODO: Set based on expected size requirements for reception
-volatile uint8_t UART_camera_buffer[CAM_SENTENCE_LEN*46];                  // extern       // TODO: confirm that this volatile means that the contents are volatile but the pointer is not
-uint8_t UART_camera_rx_buf[CAM_SENTENCE_LEN*23];
+const uint16_t UART_camera_buffer_len = CAM_SENTENCE_LEN*46;// extern       // TODO: Set based on expected size requirements for reception
+volatile uint8_t UART_camera_buffer[CAM_SENTENCE_LEN*46];   // extern       // TODO: confirm that this volatile means that the contents are volatile but the pointer is not
+uint8_t UART_camera_rx_buf[CAM_SENTENCE_LEN*23];            // extern       // half-size buffer for writing to LFS in half/cplt callback
 volatile uint8_t camera_write_file = 0;
 volatile uint16_t UART_camera_buffer_write_idx = 0;         // extern
 volatile uint32_t UART_camera_last_write_time_ms = 0;       // extern

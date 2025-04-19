@@ -192,14 +192,6 @@ uint8_t CAM_test() {
 /// @brief deals with receiving image in chunks and writing to LFS
 /// @return 0: Success, 3: Failed UART reception, 4: Timeout while waiting for data
 uint8_t CAM_receive_image(){
-    // Clear camera response buffer (Note: Can't use memset because UART_camera_buffer is Volatile)
-    for (uint16_t i = 0; i < UART_camera_buffer_len; i++) {
-        UART_camera_buffer[i] = 0;
-    }
-    // clear rx buf
-    for (uint16_t i = 0; i < CAM_SENTENCE_LEN*23; i++){
-        UART_camera_rx_buf[i] = 0;
-    }
     // reset variables
     camera_write_file = 0;
     UART_camera_buffer_write_idx = 0;
@@ -229,7 +221,7 @@ uint8_t CAM_receive_image(){
             const lfs_ssize_t write_result = lfs_file_write(&LFS_filesystem, &file, UART_camera_rx_buf, CAM_SENTENCE_LEN*23);
             if (write_result < 0)
             {
-                LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error writing to file: %s", file_name);
+                LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error writing to file: %s", file_name);
             }
 
             camera_write_file = 0;
@@ -296,7 +288,7 @@ uint8_t CAM_receive_image(){
         const lfs_ssize_t write_result = lfs_file_write(&LFS_filesystem, &file, UART_camera_rx_buf, CAM_SENTENCE_LEN*23);
         if (write_result < 0)
         {
-            LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error writing to file: %s", file_name);
+            LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error writing to file: %s", file_name);
         }
 
         camera_write_file = 0;
@@ -307,9 +299,9 @@ uint8_t CAM_receive_image(){
         const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
         if (close_result < 0)
         {
-            LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing file: %s", file_name);
+            LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing file: %s", file_name);
         } else {
-            LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "File: %s succesfully closed", file_name);
+            LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "File: %s succesfully closed", file_name);
         }
         file_open = 0;
     }
@@ -341,11 +333,19 @@ enum CAM_capture_status_enum CAM_Capture_Image(bool enable_flash, char lighting_
     if (file_open == 0){
         const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND, &LFS_file_cfg);
         if (open_result < 0) {
-            LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening / creating file: %s", file_name);
+            LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening / creating file: %s", file_name);
         } else {
-            LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Opened/created file: %s", file_name);
+            LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Opened/created file: %s", file_name);
             file_open = 1;
         }
+    }
+    // Clear camera response buffer (Note: Can't use memset because UART_camera_buffer is Volatile)
+    for (uint16_t i = 0; i < UART_camera_buffer_len; i++) {
+        UART_camera_buffer[i] = 0;
+    }
+    // clear rx buf
+    for (uint16_t i = 0; i < CAM_SENTENCE_LEN*23; i++){
+        UART_camera_rx_buf[i] = 0;
     }
     HAL_StatusTypeDef tx_status;
     bool file_failure = false;
@@ -404,9 +404,9 @@ enum CAM_capture_status_enum CAM_Capture_Image(bool enable_flash, char lighting_
             const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
             if (close_result < 0)
             {
-                LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing file: %s", file_name);
+                LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing file: %s", file_name);
             } else {
-                LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "File: %s succesfully closed", file_name);
+                LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "File: %s succesfully closed", file_name);
             }
             file_open = 0;
         }
