@@ -94,7 +94,7 @@ uint8_t CAM_setup() {
     if (eps_status != 0) {
         // Continue anyway. Just log a warning.
         LOG_message(
-            LOG_SYSTEM_BOOM, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            LOG_SYSTEM_EPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
             "Error enabling camera power channel in CAM_setup: status=%d. Continuing.",
             eps_status
         );
@@ -420,7 +420,7 @@ enum CAM_capture_status_enum CAM_Capture_Image(bool enable_flash, char lighting_
     if (eps_off_status != 0) {
         // Continue anyway. Just log a warning.
         LOG_message(
-            LOG_SYSTEM_BOOM, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            LOG_SYSTEM_EPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
             "Error disabling camera power channel in CAM_Capture_Image: status=%d. Continuing.",
             eps_off_status
         );
@@ -428,7 +428,7 @@ enum CAM_capture_status_enum CAM_Capture_Image(bool enable_flash, char lighting_
 
     if (capture_code != 0){
         LOG_message(
-            LOG_SYSTEM_BOOM, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "Error receiving camera image: Capture Code = %d",
             capture_code
         );
