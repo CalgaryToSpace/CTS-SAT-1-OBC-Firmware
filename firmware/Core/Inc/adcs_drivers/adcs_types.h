@@ -599,7 +599,7 @@ typedef struct ADCS_file_info_struct_t {
     ADCS_file_type_enum_t file_type;
     bool busy_updating:1; // 1-bit bool          
     uint32_t file_size;      
-    time_t file_date_time; 
+    uint32_t file_date_time_msdos; 
 } ADCS_file_info_struct_t;
 
 typedef struct ADCS_download_block_ready_struct_t {

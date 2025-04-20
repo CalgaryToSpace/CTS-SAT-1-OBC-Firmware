@@ -635,7 +635,7 @@ uint8_t TEST_EXEC__ADCS_pack_to_file_info_struct() {
     TEST_ASSERT_TRUE(result.busy_updating == true);
     TEST_ASSERT_TRUE(result.file_counter == 52);
     TEST_ASSERT_TRUE(result.file_crc16 == 48282);
-    TEST_ASSERT_TRUE(result.file_date_time == 2216010756); // assuming the MS-DOS time converter works (need a test for that still)
+    TEST_ASSERT_TRUE(result.file_date_time_msdos == 2018915346); 
     TEST_ASSERT_TRUE(result.file_size == 3164239958);
     TEST_ASSERT_TRUE(result.file_type == ADCS_FILE_TYPE_TELEMETRY_LOG);
     return 0;
