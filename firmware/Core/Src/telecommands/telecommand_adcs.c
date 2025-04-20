@@ -200,6 +200,7 @@ uint8_t TCMDEXEC_adcs_set_wheel_speed(const char *args_str, TCMD_TelecommandChan
 }
 
 /// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @note The ADCS will become unresponsive after sending this command for at least 15 seconds.
 /// @param args_str 
 ///     - No arguments for this command
 /// @return 0 on success, >0 on error
