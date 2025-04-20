@@ -1631,7 +1631,7 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred.
 uint8_t ADCS_disable_SD_logging() {
     // Disable SD card logging
-    const uint8_t* temp_data_pointer[1] = {ADCS_SD_LOG_MASK_COMMUNICATION_STATUS};
+    const uint8_t* temp_data_pointer[1] = {ADCS_SD_LOG_MASK_NONE};
     const uint8_t sd_log_1_stop_status = ADCS_set_sd_log_config(1, temp_data_pointer, 0, 0, 0);                     
     if (sd_log_1_stop_status != 0) {
         return sd_log_1_stop_status;
