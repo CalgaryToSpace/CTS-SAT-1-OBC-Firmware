@@ -55,11 +55,11 @@ uint8_t ADCS_cmd_ack(ADCS_cmd_ack_struct_t *ack) {
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Reset command.
-/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
 uint8_t ADCS_reset() {
-    // returns telecommand error flag
     uint8_t data_send[1] = {ADCS_MAGIC_NUMBER};
-    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_RESET, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+    const uint8_t cmd_status = ADCS_send_i2c_telecommand(ADCS_COMMAND_RESET, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+        // note: because the ADCS will become unresponsive afterward for at least 15 seconds, do not poll for a response
     return cmd_status;
 }
 
