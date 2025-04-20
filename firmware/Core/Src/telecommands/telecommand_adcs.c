@@ -2948,3 +2948,33 @@ uint8_t TCMDEXEC_adcs_format_sd(const char *args_str, TCMD_TelecommandChannel_en
     const uint8_t status = ADCS_format_sd();
     return status;
 }     
+
+/// @brief Telecommand: Stop SD logging.
+/// @param args_str 
+///     - Arg 0: Which log to stop logging (1 or 2)
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_disable_sd_logging(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                                        char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    uint64_t which_log;
+    uint8_t extract_status = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &which_log);
+    if (extract_status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "Telecommand argument extraction failed (err %d)", extract_status);
+        return 1;
+    } else if ((which_log != 1) && (which_log != 2)) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "Chosen log is neither 1 nor 2");
+        return 1;
+    }
+    
+    const uint8_t* temp_data_pointer[1] = {ADCS_SD_LOG_MASK_NONE};
+   
+    const uint8_t sd_status = ADCS_set_sd_log_config(which_log, temp_data_pointer, 0, 0, 0);                     
+    if (sd_status != 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Failed to stop SD logging (error %d)", sd_status); 
+        return sd_status;
+    }
+    
+    return 0;
+}       
