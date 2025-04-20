@@ -602,9 +602,7 @@ uint8_t ADCS_pack_to_file_info_struct(uint8_t *raw_data, ADCS_file_info_struct_t
 
     file_info_struct->file_size = (raw_data[5] << 24) | (raw_data[4] << 16) | (raw_data[3] << 8) | raw_data[2]; // Bytes 2-5
 
-    uint32_t msdos_time = (raw_data[9] << 24) | (raw_data[8] << 16) | (raw_data[7] << 8) | raw_data[6]; // Bytes 6-9
-
-    file_info_struct->file_date_time = msdos_time;
+    file_info_struct->file_date_time_msdos = (raw_data[9] << 24) | (raw_data[8] << 16) | (raw_data[7] << 8) | raw_data[6]; // Bytes 6-9
 
     file_info_struct->file_crc16 = (raw_data[11] << 8) | raw_data[10]; // Bytes 10-11
     return 0;

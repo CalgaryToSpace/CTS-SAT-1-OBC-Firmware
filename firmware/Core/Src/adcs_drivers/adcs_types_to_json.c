@@ -994,7 +994,7 @@ uint8_t ADCS_sd_download_list_TO_json(ADCS_file_info_struct_t *data, uint16_t da
         
         // our compiler doesn't support %lld for printing int64_t, so substitute it for strings here
         char datetime_buffer[32];
-        GEN_uint64_to_str(data[i].file_date_time, &datetime_buffer[0]);
+        GEN_uint64_to_str(data[i].file_date_time_msdos, &datetime_buffer[0]);
 
         snprintf_ret = snprintf(&json_output_str[total_written], json_output_str_len, "%d          %s           %d       %ld       %d\n", 
             data[i].file_counter, datetime_buffer, data[i].file_type, data[i].file_size, data[i].file_crc16);
