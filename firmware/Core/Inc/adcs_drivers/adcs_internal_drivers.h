@@ -11,7 +11,6 @@ static const uint8_t ADCS_INCLUDE_CHECKSUM = 1;
 static const uint8_t ADCS_NO_CHECKSUM = 0;
 static const uint8_t ADCS_CHECKSUM_TIMEOUT = 100;
 static const uint16_t ADCS_PROCESSED_TIMEOUT = 1000;
-#define WRITE_STRUCT_TO_MEMORY(struct_to_write) // memory module function: write struct to memory
 
 /* Function Definitions */
 
