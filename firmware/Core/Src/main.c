@@ -993,7 +993,7 @@ static void MX_GPIO_Init(void)
                           |PIN_MEM_NCS_FRAM_1_Pin|PIN_MEM_NCS_FRAM_0_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, PIN_CAM_EN_OUT_Pin|PIN_BOOM_DEPLOY_EN_OUT_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, PIN_CAM_EN_OUT_Pin|PIN_BOOM_DEPLOY_EN_1_OUT_Pin|PIN_BOOM_DEPLOY_EN_2_OUT_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOF, PIN_MEM_NCS_FLASH_7_Pin|PIN_MEM_NCS_FLASH_6_Pin|PIN_MEM_NCS_FLASH_5_Pin|PIN_MEM_NCS_FLASH_4_Pin
@@ -1018,18 +1018,18 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PIN_CAM_EN_OUT_Pin PIN_BOOM_DEPLOY_EN_OUT_Pin */
-  GPIO_InitStruct.Pin = PIN_CAM_EN_OUT_Pin|PIN_BOOM_DEPLOY_EN_OUT_Pin;
+  /*Configure GPIO pins : PIN_CAM_EN_OUT_Pin PIN_BOOM_DEPLOY_EN_1_OUT_Pin PIN_BOOM_DEPLOY_EN_2_OUT_Pin */
+  GPIO_InitStruct.Pin = PIN_CAM_EN_OUT_Pin|PIN_BOOM_DEPLOY_EN_1_OUT_Pin|PIN_BOOM_DEPLOY_EN_2_OUT_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PIN_BOOM_PGOOD_IN_Pin PIN_GPS_PPS_IN_Pin */
-  GPIO_InitStruct.Pin = PIN_BOOM_PGOOD_IN_Pin|PIN_GPS_PPS_IN_Pin;
+  /*Configure GPIO pin : PIN_GPS_PPS_IN_Pin */
+  GPIO_InitStruct.Pin = PIN_GPS_PPS_IN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  HAL_GPIO_Init(PIN_GPS_PPS_IN_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PIN_MEM_NCS_FLASH_7_Pin PIN_MEM_NCS_FLASH_6_Pin PIN_MEM_NCS_FLASH_5_Pin PIN_MEM_NCS_FLASH_4_Pin
                            PIN_MEM_NCS_FLASH_3_Pin */
