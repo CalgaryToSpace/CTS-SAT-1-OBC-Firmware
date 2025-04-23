@@ -39,6 +39,9 @@ static const uint16_t ADCS_HAL_TIMEOUT = 1000;
 // define for SD bitmask array length
 #define ADCS_SD_LOG_BITFIELD_LENGTH_BYTES 10
 
+// define for HAL delay (ms) in commissioning mode setter function
+#define ADCS_COMMISSIONING_HAL_DELAY 300
+
 /* Enumerated Values */
 
 // Telecommand Error Flags - Section 5.2.2 Figure 6 of Firmware Manual
