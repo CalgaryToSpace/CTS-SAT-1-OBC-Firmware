@@ -229,6 +229,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
             UART_camera_rx_buf[i-UART_camera_buffer_len/2] = UART_camera_buffer[i];
         }
         // set camera_write_file to 1 so camera_internal can write to mem
+
+        UART_camera_last_write_time_ms = HAL_GetTick();
         camera_write_file = 1;  
         
     }
@@ -255,6 +257,7 @@ void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
         // DEBUG_uart_print_str(UART_camera_buffer);
         // set camera_write_file to 1 so camera_internal can write to mem
         camera_write_file = 1;
+        UART_camera_last_write_time_ms = HAL_GetTick();
     }
 }
 
