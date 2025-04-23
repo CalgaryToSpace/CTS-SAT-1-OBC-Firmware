@@ -20,3 +20,16 @@ float EPS_convert_battery_voltage_to_percent(EPS_battery_pack_datatype_eng_t bat
     // convert to percent
     return calc * 100.0;
 }
+
+/// @brief Sum the total fault count for all channels.
+/// @param fault_state A pointer to the fault state struct.
+/// @return The summed fault count for all channels.
+int32_t EPS_calculate_total_fault_count(EPS_struct_pdu_overcurrent_fault_state_t *fault_state) {
+    int32_t fault_count = 0;
+
+    for (uint8_t ch_num = 0; ch_num < EPS_TOTAL_CHANNEL_COUNT; ch_num++) {
+        fault_count += fault_state->overcurrent_fault_count_each_channel[ch_num];
+    }
+
+    return fault_count;
+}

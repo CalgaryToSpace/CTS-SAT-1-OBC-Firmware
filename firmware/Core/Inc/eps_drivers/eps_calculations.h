@@ -3,7 +3,10 @@
 
 #include "eps_drivers/eps_types.h"
 
+#include <stdint.h>
+
 float EPS_convert_battery_voltage_to_percent(EPS_battery_pack_datatype_eng_t battery);
 
-#endif // INCLUDE_GUARD__EPS_CALCULATIONS
+int32_t EPS_calculate_total_fault_count(EPS_struct_pdu_overcurrent_fault_state_t *fault_state);
 
+#endif // INCLUDE_GUARD__EPS_CALCULATIONS
