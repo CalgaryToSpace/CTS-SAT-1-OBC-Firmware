@@ -1433,6 +1433,8 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
 
     while (required_packets < packets_received) {
 
+        HAL_IWDG_Refresh(WATCHDOG); // pet the watchdog so the system doesn't reboot
+
         for (uint8_t i = 0; i < 8; i++) {
             uint8_t hole_map_slice[16];
 
