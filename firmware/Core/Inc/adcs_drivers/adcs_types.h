@@ -40,7 +40,7 @@ static const uint16_t ADCS_HAL_TIMEOUT = 1000;
 #define ADCS_SD_LOG_BITFIELD_LENGTH_BYTES 10
 
 // define for HAL delay (ms) in commissioning mode setter function
-#define ADCS_COMMISSIONING_HAL_DELAY 300
+#define ADCS_COMMISSIONING_HAL_DELAY_MS 300
 
 /* Enumerated Values */
 
