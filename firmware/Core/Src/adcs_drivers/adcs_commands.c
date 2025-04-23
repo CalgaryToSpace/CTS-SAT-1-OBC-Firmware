@@ -1410,9 +1410,7 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
         required_packets = ceil((file_info.file_size - (20480 * current_block)) / 20.0);
     } else {
         required_packets = 1024; 
-    }
-
-    LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, "Bytes at position 17034 of block %d: %x %x %x %x %x %x", current_block, adcs_download_buffer[17034], adcs_download_buffer[17035], adcs_download_buffer[17036], adcs_download_buffer[17037], adcs_download_buffer[17038], adcs_download_buffer[17039]);        
+    }        
     
     uint16_t packets_received = 0;
     
