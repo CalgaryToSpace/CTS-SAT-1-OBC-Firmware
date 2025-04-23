@@ -996,8 +996,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOA, PIN_CAM_EN_OUT_Pin|PIN_BOOM_DEPLOY_EN_1_OUT_Pin|PIN_BOOM_DEPLOY_EN_2_OUT_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOF, PIN_MEM_NCS_FLASH_7_Pin|PIN_MEM_NCS_FLASH_6_Pin|PIN_MEM_NCS_FLASH_5_Pin|PIN_MEM_NCS_FLASH_4_Pin
-                          |PIN_MEM_NCS_FLASH_3_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_3_GPIO_Port, PIN_MEM_NCS_FLASH_3_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOG, PIN_MEM_NCS_FLASH_2_Pin|PIN_MEM_NCS_FLASH_1_Pin|PIN_MPI_NEN_RX_MISO_OUT_Pin|PIN_MPI_EN_TX_MOSI_OUT_Pin
@@ -1031,14 +1030,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(PIN_GPS_PPS_IN_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PIN_MEM_NCS_FLASH_7_Pin PIN_MEM_NCS_FLASH_6_Pin PIN_MEM_NCS_FLASH_5_Pin PIN_MEM_NCS_FLASH_4_Pin
-                           PIN_MEM_NCS_FLASH_3_Pin */
-  GPIO_InitStruct.Pin = PIN_MEM_NCS_FLASH_7_Pin|PIN_MEM_NCS_FLASH_6_Pin|PIN_MEM_NCS_FLASH_5_Pin|PIN_MEM_NCS_FLASH_4_Pin
-                          |PIN_MEM_NCS_FLASH_3_Pin;
+  /*Configure GPIO pin : PIN_MEM_NCS_FLASH_3_Pin */
+  GPIO_InitStruct.Pin = PIN_MEM_NCS_FLASH_3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
+  HAL_GPIO_Init(PIN_MEM_NCS_FLASH_3_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PIN_MEM_NCS_FLASH_2_Pin PIN_MEM_NCS_FLASH_1_Pin PIN_MPI_NEN_RX_MISO_OUT_Pin PIN_MPI_EN_TX_MOSI_OUT_Pin
                            PIN_NRST_LORA_US_Pin */
