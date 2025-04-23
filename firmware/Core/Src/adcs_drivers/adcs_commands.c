@@ -1498,13 +1498,21 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
     }
 
     /* HOLE MAP STUFF ENDS HERE */
+
+    uint64_t bytes_to_write;
+    if (ceil(file_info.file_size / 20480.0) == (current_block + 1)) {
+        // if this is the final block, we may need to write fewer bytes than the maximum
+        bytes_to_write = ceil((file_info.file_size - (20480 * current_block)));
+    } else {
+        bytes_to_write = 20480; // TODO: test to make sure the correct number of bytes are written
+    }     
     
     // Write to the index file in the filesystem
     uint8_t lfs_status;
     if (current_block == 0) {
-        lfs_status = LFS_write_file(filename_string, &adcs_download_buffer[0], 20480); 
+        lfs_status = LFS_write_file(filename_string, &adcs_download_buffer[0], bytes_to_write); 
     } else {
-        lfs_status = LFS_append_file(filename_string, &adcs_download_buffer[0], 20480);
+        lfs_status = LFS_append_file(filename_string, &adcs_download_buffer[0], bytes_to_write);
     }
     if (lfs_status != 0) {
         return lfs_status;
