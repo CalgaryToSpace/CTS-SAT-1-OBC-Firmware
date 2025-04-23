@@ -1,7 +1,5 @@
 #include "main.h"
 
-#include "stm32l4xx_hal_i2c.h"
-#include "stm32l4xx_hal_def.h"
 #include "antenna_deploy_drivers/ant_internal_drivers.h"
 #include "debug_tools/debug_i2c.h"
 #include "debug_tools/debug_uart.h"
@@ -11,16 +9,15 @@
 
 /**
  * @brief This file contains commands for communicating with the antenna deploy system(ADS). The ADS has two microcontrollers which control
- * the deployment of the antennas. It also has two seperate i2c buses which can be used to communicate with the ADS. The combination of 
+ * the deployment of the antennas. It also has two separate i2c buses which can be used to communicate with the ADS. The combination of 
  * microcontroller (mcu) to communicate to and i2c line to use is specified using a value from the Ant_i2c_bus_mcu enum. 
  * 
  */
  
 
-const uint16_t ANT_ADDR_A = 0x31 << 1; // i2c address of mcu A on ant deploy system
-const uint16_t ANT_ADDR_B = 0x32 << 1; // i2c address of mcu B on ant deploy system
-
-const uint8_t timeout_ms = 50; // in milliseconds used for both receive and transmit
+/// @brief Timeout (ms) for both RX and TX I2C operations.
+/// 50ms seems adequate, but perhaps right on the limit.
+const uint8_t ANT_i2c_timeout_ms = 100;
 
 extern I2C_HandleTypeDef hi2c2; //i2c bus A
 extern I2C_HandleTypeDef hi2c3; //i2c bus B
@@ -36,10 +33,10 @@ uint8_t ANT_send_cmd(enum ANT_i2c_bus_mcu i2c_bus_mcu, uint8_t cmd_buf[], uint8_
     HAL_StatusTypeDef transmit_status;
     switch(i2c_bus_mcu) {
         case ANT_I2C_BUS_A_MCU_A:
-            transmit_status = HAL_I2C_Master_Transmit(&hi2c2, ANT_ADDR_A, cmd_buf, cmd_len, timeout_ms);
+            transmit_status = HAL_I2C_Master_Transmit(&hi2c2, ANT_ADDR_A << 1, cmd_buf, cmd_len, ANT_i2c_timeout_ms);
             break;
         case ANT_I2C_BUS_B_MCU_B:
-            transmit_status = HAL_I2C_Master_Transmit(&hi2c3, ANT_ADDR_B, cmd_buf, cmd_len, timeout_ms);
+            transmit_status = HAL_I2C_Master_Transmit(&hi2c3, ANT_ADDR_B << 1, cmd_buf, cmd_len, ANT_i2c_timeout_ms);
             break;
         default:
             LOG_message(LOG_SYSTEM_ANTENNA_DEPLOY, LOG_SEVERITY_ERROR, LOG_SINK_ALL, "Invalid choice for i2c bus/mcu");
@@ -71,11 +68,11 @@ uint8_t ANT_get_response(enum ANT_i2c_bus_mcu i2c_bus_mcu, uint8_t rx_buf[], uin
     
     switch (i2c_bus_mcu) {
     case ANT_I2C_BUS_A_MCU_A:
-        read_status = HAL_I2C_Master_Receive(&hi2c2, ANT_ADDR_A, rx_buf, rx_len, timeout_ms);
+        read_status = HAL_I2C_Master_Receive(&hi2c2, ANT_ADDR_A << 1, rx_buf, rx_len, ANT_i2c_timeout_ms);
         break;
     
     case ANT_I2C_BUS_B_MCU_B:
-        read_status = HAL_I2C_Master_Receive(&hi2c3, ANT_ADDR_B, rx_buf, rx_len, timeout_ms);
+        read_status = HAL_I2C_Master_Receive(&hi2c3, ANT_ADDR_B << 1, rx_buf, rx_len, ANT_i2c_timeout_ms);
         break;
 
     default:
