@@ -16,3 +16,26 @@ In order to maintain a simple build system, we use a script which copies the nec
 > There is not much difference between GomSpace/libcsp and libcsp/libcsp. It is mostly build related changes and a few changes to Python bindings. Note that if you use libcsp/libcsp, you need to use the 1.6 tag or the libcsp-1 branch, as version 2.x is incompatible.
 
 > Note that there is also lib*gs*csp included in the “product interface application”. This is a small wrapper library that includes a few Gomspace specific things, like hooking into Gomspace logging etc. Since you are not using the rest of the Gomspace software stack, I don’t expect there is much need for libgscsp.
+
+## Network Map
+
+* Ground Station CSP Address = d10
+* AX100's CSP Address = d5
+    * Important for configuring the AX100 on-orbit.
+    * Note: AX100's I2C address id d5.
+* OBC's CSP Address = d1
+    * Note: OBC's I2C Address is d12
+
+## AX100 Configuration
+
+### Routing Table
+
+The following configures uplink and downlink routing.
+
+```
+param set csp_rtable "1/5 I2C 12, 10/5 AX100"
+```
+
+* To address d1 (with netmask 5 - use all 5 bits as the destination address), use I2C with destination (slave/OBC) I2C address d12.
+* To address d10 (with netmask 5 - use all 5 bits as the destination address), use AX100.
+    * Ground station address is d10.
