@@ -20,7 +20,7 @@ static const uint32_t CAMERA_RX_TIMEOUT_DURATION_MS = 8000;
 /// @brief Global variables for file and file_open 
 uint8_t file_open = 0;
 lfs_file_t file;
-const char file_name[] = "image1_0";
+char file_name[11];
 
 /// @brief Changes the baudrate of the camera by sending it a UART command, and then changing the
 ///     baudrate of the camera UART port.
@@ -88,7 +88,7 @@ uint8_t CAM_change_baudrate(uint32_t new_baud_rate) {
 /// @brief Set up the camera by powering on and changing the baudrate to 2400.
 /// @return 0 on success. The error code from the `CAM_change_baudrate` function, or >100 if an EPS error occurred.
 /// @note Does not perform a self-test.
-uint8_t CAM_setup() {
+uint8_t CAM_setup(char FileName[]) {
     // First, turn on the camera.
     const uint8_t eps_status = EPS_set_channel_enabled(EPS_CHANNEL_3V3_CAMERA, 1);
     if (eps_status != 0) {
@@ -114,7 +114,9 @@ uint8_t CAM_setup() {
         return 2;
     }
 
-    // ignore flash for now, I'll hardcode it to False since we don't have flash anyways
+    // Set file name and enforce max char length
+    strncpy(file_name, FileName, sizeof(file_name) - 1);
+    file_name[10] = '\0';
     // default file open to false
     file_open = 0;
     // if lfs not mounted, mount
@@ -343,7 +345,7 @@ uint8_t CAM_receive_image(){
 ///         n - night ambient light
 ///         s - solar sail contrast and light
 /// @return Transmit_Success: Successfully captured image, Wrong_input: invalid parameter input, Capture_Failure: Error in image reception or command transmition
-enum CAM_capture_status_enum CAM_Capture_Image(bool enable_flash, char lighting_mode){
+enum CAM_capture_status_enum CAM_Capture_Image(char lighting_mode){
     
     HAL_StatusTypeDef tx_status;
     bool file_failure = false;
