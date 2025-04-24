@@ -1,5 +1,6 @@
 #ifndef INCLUDE_GUARD__COMMS_TX_H__
 #define INCLUDE_GUARD__COMMS_TX_H__
+
 #include "comms_drivers/ax100_tx.h"
 
 typedef enum {
@@ -10,12 +11,12 @@ typedef enum {
     COMMS_PACKET_TYPE_DOWNLINK_FIRST_PACKET = 0x05,
     COMMS_PACKET_TYPE_DOWNLINK_NEXT_PACKET = 0x06,
     COMMS_PACKET_TYPE_DOWNLINK_LAST_PACKET = 0x07
-} COMMS_packet_type_t;
+} COMMS_packet_type_enum_t;
 
 #pragma pack(push, 1)
 
 typedef struct {
-    COMMS_packet_type_t packet_type; // Always COMMS_PACKET_TYPE_TCMD_RESPONSE for this packet
+    uint8_t packet_type; // COMMS_packet_type_enum_t - Always COMMS_PACKET_TYPE_TCMD_RESPONSE for this packet
 
     uint64_t ts_sent;        // 8 bytes
     uint8_t response_code;   // 1 byte
