@@ -21,7 +21,7 @@ uint8_t COMMS_downlink_tcmd_response(
     uint64_t ts_sent, 
     uint8_t respose_code, 
     uint16_t duration_ms, 
-    uint8_t *respose,
+    char *respose,
     uint32_t respose_len
 );
 #endif // INCLUDE_GUARD__COMMS_TX_H__

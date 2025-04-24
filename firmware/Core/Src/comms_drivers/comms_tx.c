@@ -5,7 +5,7 @@ uint8_t COMMS_downlink_tcmd_response(
     uint64_t ts_sent, 
     uint8_t respose_code, 
     uint16_t duration_ms, 
-    uint8_t *respose,
+    char *respose,
     uint32_t respose_len
 ) {
     CTS_packet_t packet;
@@ -28,5 +28,5 @@ uint8_t COMMS_downlink_tcmd_response(
     packet_len += sizeof(respose_len);
     
 
-    return AX100_downlink_bytes(packet.data, packet_len);
+    return AX100_downlink_bytes((uint8_t *)(&packet), packet_len);
 }
