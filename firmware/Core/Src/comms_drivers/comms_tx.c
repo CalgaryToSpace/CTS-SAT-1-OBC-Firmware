@@ -14,7 +14,10 @@ uint8_t COMMS_downlink_tcmd_response(
     packet.response_code = response_code;
     packet.duration_ms = duration_ms;
 
-    const uint8_t header_len = sizeof(ts_sent) + sizeof(response_code) + sizeof(duration_ms);
+    const uint8_t header_len = (
+        sizeof(packet.packet_type)
+        + sizeof(ts_sent) + sizeof(response_code) + sizeof(duration_ms)
+    );
 
     if (response_len > AX100_DOWNLINK_MAX_BYTES - header_len) {
         response_len = AX100_DOWNLINK_MAX_BYTES - header_len;

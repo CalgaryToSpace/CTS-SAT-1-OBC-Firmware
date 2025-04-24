@@ -5,31 +5,23 @@
 #include <string.h>
 
 
-const uint32_t csp_priority = 3u << 30; //priority
+static const uint32_t csp_priority = 3u << 30; // priority
 
-const uint32_t own_csp_addr = 1 << 25 ; //src address
-const uint32_t ground_station_csp_addr = 10 << 20; //dst address
+static const uint32_t own_csp_addr = 1u << 25 ; // src address
+static const uint32_t ground_station_csp_addr = 10u << 20; // dst address
 
-const uint32_t ground_station_csp_port = 10 << 14; //dst port
-const uint32_t own_csp_port = 10 << 8; //src port
+static const uint32_t ground_station_csp_port = 10u << 14; // dst port
+static const uint32_t own_csp_port = 10u << 8; // src port
 
-const uint32_t use_hmac = 0 << 3; //hmac
-const uint32_t use_xtea = 0 << 2; //xtea
-const uint32_t use_rdp = 0 << 1; //rdp
-const uint32_t use_crc = 0; //crc
-
-
-const uint32_t ax100_uart_timeout_ms = 1000;
+static const uint32_t use_hmac = 0 << 3; // hmac
+static const uint32_t use_xtea = 0 << 2; // xtea
+static const uint32_t use_rdp = 0 << 1; // rdp
+static const uint32_t use_crc = 0; // crc
 
 
-const uint8_t ax100_i2c_addr = 0x05 << 1;
-const uint32_t ax100_i2c_timeout_ms = 1000;
+static const uint8_t ax100_i2c_addr = 0x05 << 1;
+static const uint32_t ax100_i2c_timeout_ms = 1000;
 
-
-#define FEND 0xC0
-#define FESC 0xDB
-#define TFEND 0xDC
-#define TFESC 0xDD
 
 /// @brief Write the csp header (4 bytes) to the beginning of the packet, then copy the rest of `data` into `destination`.
 /// @param destination where the assembled packet will be stored
@@ -54,57 +46,18 @@ static void prepend_csp_header(uint8_t *destination, uint8_t *data, uint32_t dat
     memcpy(destination + 4, data, data_len);
 }
 
-/// @brief 
-/// @param data 
-/// @param data_len 
-/// @param result Pointer to output destination array. Must be 255 bytes long.
-/// @param result_len 
-static void wrap_data_in_kiss_frame(uint8_t *data, uint8_t data_len, uint8_t *result, uint8_t *result_len) {
-    result[0] = 0xC0;
-    result[1] = 0x00;
-    uint8_t i = 2;
-    while (i < data_len + 1) {
-        // AX100 MTU for KISS is 255, if data is too long, truncate
-        if (i >= 253) {
-            LOG_message(
-                LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-                "KISS frame too long! Data was truncated."
-            );
-            result[i] = 0xC0;
-            *result_len = i + 1;
-            return;
-        }
-        
-        // Escape special characters.
-        if (data[i] == FEND) {
-            result[i] = FESC;
-            result[i+1] = TFEND; 
-            i += 2;
-        }
-        else if (data[i] == FESC) {
-            result[i+0] = FESC;
-            result[i+1] = TFESC;
-            i += 2;
-        }
-        else {
-            result[i+1] = data[i];
-            i++;
-        }
-    }
-    result[i] = 0xC0;
-    *result_len = i+1;
-}
 
-
-//@brief only for use in this file, sends a csp packet over i2c 
+/// @brief Send a csp packet over i2c to the AX100 for downlink.
+/// @note Only use in this file.
 static uint8_t send_bytes_to_ax100(uint8_t *packet, uint16_t packet_size) {
-    HAL_StatusTypeDef status = HAL_I2C_Master_Transmit(
+    const HAL_StatusTypeDef status = HAL_I2C_Master_Transmit(
         &hi2c1, 
         ax100_i2c_addr, 
         packet,
         packet_size, 
         ax100_i2c_timeout_ms
     );
+    
     if (status != HAL_OK) {
         LOG_message(
             LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_UHF_RADIO),
@@ -112,13 +65,7 @@ static uint8_t send_bytes_to_ax100(uint8_t *packet, uint16_t packet_size) {
         );
         return status;
     }
-    //TODO: delete this after testing
-    for (int i = 0; i < packet_size; i++) {
-        LOG_message(
-            LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_UHF_RADIO),
-            " %x ", packet[i]
-        );
-    }
+    
     return 0;
 }
 
