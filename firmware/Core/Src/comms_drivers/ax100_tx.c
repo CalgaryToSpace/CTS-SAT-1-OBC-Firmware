@@ -88,7 +88,7 @@ static uint8_t send_bytes_to_ax100(uint8_t *data, uint16_t data_len) {
     wrap_data_in_kiss_frame(data, data_len, kiss_frame, &kiss_frame_len);
     
     const HAL_StatusTypeDef status = HAL_UART_Transmit(
-        &huart1, // FIXME: verify this is the right uart
+        &huart2, // FIXME: verify this is the right uart
         kiss_frame,
         kiss_frame_len, 
         ax100_uart_timeout_ms
