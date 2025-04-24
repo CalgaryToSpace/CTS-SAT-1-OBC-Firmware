@@ -17,7 +17,7 @@ typedef struct {
 } SYS_TEMP_thermal_info_t;
 
 typedef struct {
-    int32_t system_OBC_temperature_C;
+    int32_t system_OBC_temperature_cC;
     uint16_t system_ANT_temperature_i2c_bus_A_raw;
     uint16_t system_ANT_temperature_i2c_bus_B_raw;
     EPS_conditioning_channel_datatype_eng_t system_eps_conditioning_channel_info_each_channel[EPS_COND_CHANNEL_SIZE];
