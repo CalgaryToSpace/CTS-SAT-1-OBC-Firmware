@@ -8,6 +8,7 @@
 #include "transforms/arrays.h"
 #include "config/configuration.h"
 #include "littlefs/littlefs_helper.h"
+#include "comms_drivers/comms_tx.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -155,12 +156,16 @@ int16_t TCMD_get_next_tcmd_agenda_slot_to_execute() {
 /// @brief Executes a telecommand immediately, based on the minimum info required to execute a telecommand.
 /// @param tcmd_idx The index into `TCMD_telecommand_definitions` for the telecommand to execute.
 /// @param args_str_no_parens A cstring containing the arguments for the telecommand. Null-terminated.
+/// @param timestamp_sent The value of the `@tssent` field when the telecommand was received.
 /// @param response_output_buf A buffer to store the response from the telecommand.
 /// @param response_output_buf_size The size of the `response_output_buf`.
 /// @return 0 on success, 254 if `tcmd_idx` is out of bounds, otherwise the error code from the telecommand function.
-uint8_t TCMD_execute_parsed_telecommand_now(
-    const uint16_t tcmd_idx, const char args_str_no_parens[],
-    TCMD_TelecommandChannel_enum_t tcmd_channel, const char * tcmd_resp_fname,
+static uint8_t TCMD_execute_parsed_telecommand_now(
+    const uint16_t tcmd_idx,
+    const char args_str_no_parens[],
+    const uint64_t timestamp_sent,
+    TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char * tcmd_resp_fname,
     char *response_output_buf, uint16_t response_output_buf_size
 ) {
     // Get the telecommand definition.
@@ -203,7 +208,14 @@ uint8_t TCMD_execute_parsed_telecommand_now(
         tcmd_result
     );
 
-    // FIXME: Send this response buffer over the radio channel as well.
+    COMMS_downlink_tcmd_response(
+        timestamp_sent,
+        tcmd_result,
+        tcmd_exec_duration_ms,
+        response_output_buf,
+        response_output_buf_size
+    );
+
     DEBUG_uart_print_str(response_output_buf);
     DEBUG_uart_print_str("\n");
 
@@ -254,6 +266,7 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
     return TCMD_execute_parsed_telecommand_now(
         TCMD_agenda[tcmd_agenda_slot_num].tcmd_idx,
         TCMD_agenda[tcmd_agenda_slot_num].args_str_no_parens,
+        TCMD_agenda[tcmd_agenda_slot_num].timestamp_sent,
         TCMD_agenda[tcmd_agenda_slot_num].tcmd_channel,
         TCMD_agenda[tcmd_agenda_slot_num].resp_fname,
         response_output_buf,
