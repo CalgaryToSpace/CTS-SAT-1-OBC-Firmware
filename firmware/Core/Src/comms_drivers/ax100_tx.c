@@ -21,6 +21,11 @@ const uint32_t use_crc = 0; //crc
 
 const uint32_t ax100_uart_timeout_ms = 1000;
 
+
+const uint8_t ax100_i2c_addr = 0x05 << 1;
+const uint32_t ax100_i2c_timeout_ms = 1000;
+
+
 #define FEND 0xC0
 #define FESC 0xDB
 #define TFEND 0xDC
@@ -90,38 +95,33 @@ static void wrap_data_in_kiss_frame(uint8_t *data, uint8_t data_len, uint8_t *re
     *result_len = i+1;
 }
 
-/// @brief Sends a csp packet to the AX100 over UART.
-/// @note Static. Only for use in this file.
-static uint8_t send_bytes_to_ax100(uint8_t *data, uint16_t data_len) {
-    if (data_len > AX100_DOWNLINK_MAX_BYTES) {
-        data_len = AX100_DOWNLINK_MAX_BYTES;
-    }
-    uint8_t kiss_frame[255];
-    uint8_t kiss_frame_len = 0;
 
-    wrap_data_in_kiss_frame(data, data_len, kiss_frame, &kiss_frame_len);
-
-    LOG_message(
-        LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_UHF_RADIO),
-        "Sending %d bytes to ax100.", kiss_frame_len
+//@brief only for use in this file, sends a csp packet over i2c 
+static uint8_t send_bytes_to_ax100(uint8_t *packet, uint16_t packet_size) {
+    HAL_StatusTypeDef status = HAL_I2C_Master_Transmit(
+        &hi2c1, 
+        ax100_i2c_addr, 
+        packet,
+        packet_size, 
+        ax100_i2c_timeout_ms
     );
-    
-    const HAL_StatusTypeDef status = HAL_UART_Transmit(
-        &huart2, // FIXME: verify this is the right uart
-        kiss_frame,
-        kiss_frame_len, 
-        ax100_uart_timeout_ms
-    );
-
     if (status != HAL_OK) {
         LOG_message(
             LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_UHF_RADIO),
-            "HAL UART transmit error: %d", status
+            "HAL I2C transmit error: %d", status
         );
         return status;
     }
+    //TODO: delete this after testing
+    for (int i = 0; i < packet_size; i++) {
+        LOG_message(
+            LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_UHF_RADIO),
+            " %x ", packet[i]
+        );
+    }
     return 0;
 }
+
 
 
 /// @brief send data to the ax100 for downlink
