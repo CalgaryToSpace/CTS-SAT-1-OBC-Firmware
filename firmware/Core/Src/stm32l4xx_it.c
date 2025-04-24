@@ -63,6 +63,7 @@ extern DMA_HandleTypeDef hdma_uart4_rx;
 extern DMA_HandleTypeDef hdma_usart1_rx;
 extern UART_HandleTypeDef hlpuart1;
 extern UART_HandleTypeDef huart5;
+extern UART_HandleTypeDef huart2;
 extern UART_HandleTypeDef huart3;
 extern TIM_HandleTypeDef htim16;
 extern TIM_HandleTypeDef htim1;
@@ -255,6 +256,20 @@ void I2C1_ER_IRQHandler(void)
   /* USER CODE BEGIN I2C1_ER_IRQn 1 */
 
   /* USER CODE END I2C1_ER_IRQn 1 */
+}
+
+/**
+  * @brief This function handles USART2 global interrupt.
+  */
+void USART2_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART2_IRQn 0 */
+
+  /* USER CODE END USART2_IRQn 0 */
+  HAL_UART_IRQHandler(&huart2);
+  /* USER CODE BEGIN USART2_IRQn 1 */
+
+  /* USER CODE END USART2_IRQn 1 */
 }
 
 /**
