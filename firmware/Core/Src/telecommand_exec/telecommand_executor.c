@@ -213,7 +213,7 @@ static uint8_t TCMD_execute_parsed_telecommand_now(
         tcmd_result,
         tcmd_exec_duration_ms,
         response_output_buf,
-        response_output_buf_size
+        strnlen(response_output_buf, response_output_buf_size) + 1 // +1 for null terminator
     );
 
     DEBUG_uart_print_str(response_output_buf);

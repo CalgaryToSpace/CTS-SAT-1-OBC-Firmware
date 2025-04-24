@@ -17,7 +17,7 @@
 #include <string.h>
 
 
-/// @brief A simple telecommand that responds with "Hello, world!"
+/// @brief A simple telecommand that responds with "Hello, world!" (log message and TCMD response)
 /// @param args_str No arguments expected
 /// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
 /// @param response_output_buf The buffer to write the response to
@@ -30,6 +30,10 @@ uint8_t TCMDEXEC_hello_world(
     LOG_message(
         LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
         "Hello, world!"
+    );
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "Hello, world"
     );
     return 0;
 }
