@@ -33,9 +33,27 @@ In order to maintain a simple build system, we use a script which copies the nec
 The following configures uplink and downlink routing.
 
 ```
+param mem 0
 param set csp_rtable "1/5 I2C 12, 10/5 AX100"
 ```
 
 * To address d1 (with netmask 5 - use all 5 bits as the destination address), use I2C with destination (slave/OBC) I2C address d12.
 * To address d10 (with netmask 5 - use all 5 bits as the destination address), use AX100.
     * Ground station address is d10.
+
+* To save, run `param save 0 0`, then `reset`.
+
+* Run `route`, and see the following:
+
+``` 
+5/5 LOOP
+1/5 I2C 12
+10/5 AX100
+```
+
+## Troubleshooting
+
+* `ifc` shows packet counts
+* `debug frame debug` enables debug logs for all frames in all directions
+* `route` shows the currently-active routing table
+    * Useful to check that you remembered to reboot, and that the `csp_rtable` parameter is valid.

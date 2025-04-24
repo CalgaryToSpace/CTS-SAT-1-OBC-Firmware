@@ -13,6 +13,7 @@
         This includes i2c interrupts and functions for parsing csp packets and scheduling them for execution as telecommands
 */
 
+uint8_t AX100_last_byte_rx = 0;
 uint8_t AX100_rx_buffer_write_idx = 0;
 
 #define AX100_RX_BUFFER_SIZE 255
@@ -53,7 +54,7 @@ static uint8_t schedule_csp_packet_for_tcmd_execution(uint8_t * packet, size_t p
     if (result != 0) {
         LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "Error adding telecommand to agenda: %ld", result
+            "Error adding telecommand to agenda: %d", result
         );
         return 2;
     }
@@ -83,8 +84,13 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, ui
 {
     if (TransferDirection == I2C_DIRECTION_TRANSMIT)  // If the AX100 (acting as master) wants to transmit the data.
     {
+        LOG_message(
+            LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+            "HAL_I2C_AddrCallback(), I2C_DIRECTION_TRANSMIT"
+        );
+
         // The I2C_FIRST_FRAME implies that the first byte is to be received
-        HAL_I2C_Slave_Seq_Receive_IT(hi2c, AX100_rx_buffer + AX100_rx_buffer_write_idx, 1, I2C_FIRST_FRAME);
+        HAL_I2C_Slave_Seq_Receive_IT(hi2c, &AX100_last_byte_rx, 1, I2C_FIRST_FRAME);
         LOG_message(
             LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "first byte received"
@@ -98,14 +104,19 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, ui
 
 /// @brief A callback function that is called when a single byte is successfully received
 void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c) {
-    AX100_rx_buffer_write_idx++;	
-    if (AX100_rx_buffer[AX100_rx_buffer_write_idx -1] == '!' || AX100_rx_buffer_write_idx >= AX100_RX_BUFFER_SIZE-1) {
+    LOG_message(
+        LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+        "I2C slave rx byte ISR, data: 0x%x", AX100_last_byte_rx
+    );
+    AX100_rx_buffer[AX100_rx_buffer_write_idx++] = AX100_last_byte_rx;
+    
+    if (AX100_rx_buffer[AX100_rx_buffer_write_idx - 1] == '!' || AX100_rx_buffer_write_idx >= AX100_RX_BUFFER_SIZE-1) {
         // if we have read the maximum number of bytes -1 , the I2C_LAST_FRAME indicates that the slave will not accept any more bytes after the next
-        HAL_I2C_Slave_Seq_Receive_IT(hi2c, AX100_rx_buffer + AX100_rx_buffer_write_idx, 1, I2C_LAST_FRAME);
+        HAL_I2C_Slave_Seq_Receive_IT(hi2c, &AX100_last_byte_rx, 1, I2C_LAST_FRAME);
     }
     else {
         // The I2C_NEXT_FRAME implies that we are expecting the next byte of the same transfer
-        HAL_I2C_Slave_Seq_Receive_IT(hi2c, AX100_rx_buffer + AX100_rx_buffer_write_idx, 1, I2C_NEXT_FRAME);
+        HAL_I2C_Slave_Seq_Receive_IT(hi2c, &AX100_last_byte_rx, 1, I2C_NEXT_FRAME);
     }
 }
 
