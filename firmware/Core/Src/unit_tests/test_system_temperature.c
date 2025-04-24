@@ -11,7 +11,7 @@ uint8_t TEST_EXEC__SYS_TEMP_get_processed_thermal_info(){
     // Case 1: Success on regular inputs + Heater bit is enabled
     SYS_TEMP_raw_thermal_info_t case1;
     
-    case1.system_OBC_temperature_C=50;
+    case1.system_OBC_temperature_cC=5000;
     case1.system_ANT_temperature_i2c_bus_A_raw=500;
     case1.system_ANT_temperature_i2c_bus_B_raw=500;
 
@@ -42,7 +42,7 @@ uint8_t TEST_EXEC__SYS_TEMP_get_processed_thermal_info(){
     //Case 2: Success on regular inputs + Heater bit is disabled
     SYS_TEMP_raw_thermal_info_t case2;
     
-    case2.system_OBC_temperature_C=10;
+    case2.system_OBC_temperature_cC=1000;
     case2.system_ANT_temperature_i2c_bus_A_raw=450;
     case2.system_ANT_temperature_i2c_bus_B_raw=500;
     

@@ -8,19 +8,17 @@
 #include "antenna_deploy_drivers/ant_commands.h"
 #include "eps_drivers/eps_calculations.h"
 #include "eps_drivers/eps_commands.h"
+#include "obc_temperature_sensor/obc_temperature_sensor.h"
 
 /// @brief Grabs required data/data structures from drivers containing thermal information.
 /// @param result Struct that contains various raw thermal data.
 /// @return 0 if data was successfully stored, 1 if error unable to get data.
 uint8_t SYS_TEMP_get_raw_thermal_info(SYS_TEMP_raw_thermal_info_t* result){
 
-    int32_t obc_temp_result;
-    uint8_t stat = OBC_TEMP_SENSOR__read_temperature(&obc_temp_result);
-    if (stat!=0){
-        return 1;
-    }
-    
+    int32_t obc_temp_result = OBC_TEMP_SENSOR_get_temperature_cC();
 
+    uint8_t stat;
+    
     uint16_t ANT_raw_temp_A;
     stat = ANT_CMD_measure_temp(ANT_I2C_BUS_A_MCU_A, &ANT_raw_temp_A);
     if (stat!=0){
@@ -47,7 +45,7 @@ uint8_t SYS_TEMP_get_raw_thermal_info(SYS_TEMP_raw_thermal_info_t* result){
         return 1;
     }
 
-    result->system_OBC_temperature_C = obc_temp_result;
+    result->system_OBC_temperature_cC = obc_temp_result;
 
     result->system_ANT_temperature_i2c_bus_A_raw = ANT_raw_temp_A;
     result->system_ANT_temperature_i2c_bus_B_raw = ANT_raw_temp_B;
@@ -67,7 +65,7 @@ uint8_t SYS_TEMP_get_raw_thermal_info(SYS_TEMP_raw_thermal_info_t* result){
 /// @return 0 on successful conversion, otherwise failed.
 uint8_t SYS_TEMP_pack_to_system_thermal_info(SYS_TEMP_raw_thermal_info_t* input, SYS_TEMP_thermal_info_t* result) {
 
-    result->system_OBC_temperature_cC = input->system_OBC_temperature_C * 100;
+    result->system_OBC_temperature_cC = input->system_OBC_temperature_cC ;
 
     result->system_ANT_temperature_i2c_bus_A_cC = ANT_convert_raw_temp_to_cCelsius(input->system_ANT_temperature_i2c_bus_A_raw);
     result->system_ANT_temperature_i2c_bus_B_cC = ANT_convert_raw_temp_to_cCelsius(input->system_ANT_temperature_i2c_bus_B_raw);
