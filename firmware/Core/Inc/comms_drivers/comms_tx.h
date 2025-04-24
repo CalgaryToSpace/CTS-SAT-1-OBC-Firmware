@@ -12,16 +12,26 @@ typedef enum {
     COMMS_PACKET_TYPE_DOWNLINK_LAST_PACKET = 0x07
 } COMMS_packet_type_t;
 
+#pragma pack(push, 1)
+
 typedef struct {
-    COMMS_packet_type_t packet_type;
+    COMMS_packet_type_t packet_type; // Always COMMS_PACKET_TYPE_TCMD_RESPONSE for this packet
+
+    uint64_t ts_sent;        // 8 bytes
+    uint8_t response_code;   // 1 byte
+    uint16_t duration_ms;    // 2 bytes
+
     uint8_t data[AX100_DOWNLINK_MAX_BYTES];
-} CTS_packet_t;
+} COMMS_tcmd_response_packet_t;
+
+#pragma pack(pop)
+
 
 uint8_t COMMS_downlink_tcmd_response(
     uint64_t ts_sent, 
-    uint8_t respose_code, 
+    uint8_t response_code, 
     uint16_t duration_ms, 
-    char *respose,
-    uint32_t respose_len
+    char *response,
+    uint32_t response_len
 );
 #endif // INCLUDE_GUARD__COMMS_TX_H__

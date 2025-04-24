@@ -1,7 +1,8 @@
 #include "main.h"
 #include "comms_drivers/ax100_tx.h"
 #include "log/log.h"
-#include "memory.h"
+
+#include <string.h>
 
 
 const uint32_t csp_priority = 3u << 30; //priority
@@ -25,41 +26,51 @@ const uint32_t ax100_uart_timeout_ms = 1000;
 #define TFEND 0xDC
 #define TFESC 0xDD
 
-/// @brief perpend the csp header to the data
-/// @param result where the assembled packet will be stored
+/// @brief Write the csp header (4 bytes) to the beginning of the packet, then copy the rest of `data` into `destination`.
+/// @param destination where the assembled packet will be stored
 /// @param data data to place in the packet
 /// @param data_len length of data
-static void perpend_csp_header(uint8_t *result, uint8_t *data, uint32_t data_len) {
-    //construct csp header as uint32
+static void prepend_csp_header(uint8_t *destination, uint8_t *data, uint32_t data_len) {
+    // Construct csp header as uint32.
     uint8_t csp_header[4];
-      *((uint32_t *)csp_header) = ( csp_priority | own_csp_addr | ground_station_csp_addr | ground_station_csp_port | own_csp_port | use_hmac | use_xtea | use_rdp | use_crc);    
+
+    *((uint32_t *)csp_header) = (
+        csp_priority | own_csp_addr | ground_station_csp_addr | ground_station_csp_port
+        | own_csp_port | use_hmac | use_xtea | use_rdp | use_crc
+    );
 
     // put in big endian
-    result[0] = csp_header[3];
-    result[1] = csp_header[2];
-    result[2] = csp_header[1];
-    result[3] = csp_header[0];
+    destination[0] = csp_header[3];
+    destination[1] = csp_header[2];
+    destination[2] = csp_header[1];
+    destination[3] = csp_header[0];
 
-    //copy data into packet
-    memcpy(result + 4, data, data_len);
+    // Copy data into packet
+    memcpy(destination + 4, data, data_len);
 }
 
+/// @brief 
+/// @param data 
+/// @param data_len 
+/// @param result Pointer to output destination array. Must be 255 bytes long.
+/// @param result_len 
 static void wrap_data_in_kiss_frame(uint8_t *data, uint8_t data_len, uint8_t *result, uint8_t *result_len) {
     result[0] = 0xC0;
-    uint8_t i = 1;
+    result[1] = 0x00;
+    uint8_t i = 2;
     while (i < data_len + 1) {
-        //AX100 MTU for KISS is 255, if data is too long, truncate
+        // AX100 MTU for KISS is 255, if data is too long, truncate
         if (i >= 253) {
             LOG_message(
                 LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-                "KISS frame too long!! data was truncated"
+                "KISS frame too long! Data was truncated."
             );
             result[i] = 0xC0;
             *result_len = i + 1;
             return;
         }
         
-        // ensure special characters are escaped
+        // Escape special characters.
         if (data[i] == FEND) {
             result[i] = FESC;
             result[i+1] = TFEND; 
@@ -79,13 +90,21 @@ static void wrap_data_in_kiss_frame(uint8_t *data, uint8_t data_len, uint8_t *re
     *result_len = i+1;
 }
 
-/// @brief only for use in this file, sends a csp packet over i2c 
+/// @brief Sends a csp packet to the AX100 over UART.
+/// @note Static. Only for use in this file.
 static uint8_t send_bytes_to_ax100(uint8_t *data, uint16_t data_len) {
-    if (data_len > AX100_DOWNLINK_MAX_BYTES) {return 1;}
+    if (data_len > AX100_DOWNLINK_MAX_BYTES) {
+        data_len = AX100_DOWNLINK_MAX_BYTES;
+    }
     uint8_t kiss_frame[255];
     uint8_t kiss_frame_len = 0;
 
     wrap_data_in_kiss_frame(data, data_len, kiss_frame, &kiss_frame_len);
+
+    LOG_message(
+        LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_UHF_RADIO),
+        "Sending %d bytes to ax100.", kiss_frame_len
+    );
     
     const HAL_StatusTypeDef status = HAL_UART_Transmit(
         &huart2, // FIXME: verify this is the right uart
@@ -97,7 +116,7 @@ static uint8_t send_bytes_to_ax100(uint8_t *data, uint16_t data_len) {
     if (status != HAL_OK) {
         LOG_message(
             LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_UHF_RADIO),
-            "HAL I2C transmit error: %d", status
+            "HAL UART transmit error: %d", status
         );
         return status;
     }
@@ -111,16 +130,15 @@ static uint8_t send_bytes_to_ax100(uint8_t *data, uint16_t data_len) {
 /// @return 0 on success, 1 on failure
 uint8_t AX100_downlink_bytes(uint8_t *data, uint32_t data_len) {
     //TODO: For now, only send as much data as can fit in one packet, we could use/implement rdp to allow downlinking of arbitrary amounts of data.
-    if (data_len + 4 > AX100_DOWNLINK_MAX_BYTES) {return 1;}
+    if (data_len + 4 > AX100_DOWNLINK_MAX_BYTES) {
+        // TODO: Maybe chunk into several frames instead of truncating here.
+        data_len = AX100_DOWNLINK_MAX_BYTES - 4;
+    }
 
     uint8_t packet[data_len + 4];
-    perpend_csp_header(packet, data, data_len);
+    prepend_csp_header(packet, data, data_len);
 
-    //any network layer things should be done here
+    // Any network layer (CSP) things should be done here (e.g., XTEA, CRC, etc.)
 
     return send_bytes_to_ax100(packet, data_len + 4);
 }
-
-
-
-
