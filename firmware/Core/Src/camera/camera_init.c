@@ -19,7 +19,7 @@ static const uint32_t CAMERA_RX_TIMEOUT_DURATION_MS = 8000;
 
 /// @brief Global variables for file and file_open 
 uint8_t file_open = 0;
-lfs_file_t file;
+lfs_file_t camera_file;
 char file_name[11];
 
 /// @brief Changes the baudrate of the camera by sending it a UART command, and then changing the
@@ -129,7 +129,7 @@ uint8_t CAM_setup(char FileName[]) {
     // TODO turn file name into parameter
     LFS_delete_file(file_name);
     if (file_open == 0){
-        const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND, &LFS_file_cfg);
+        const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &camera_file, file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND, &LFS_file_cfg);
         if (open_result < 0) {
             LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening / creating file: %s", file_name);
         } else {
@@ -246,7 +246,7 @@ uint8_t CAM_receive_image(){
             // DEBUG_uart_print_str("in write file\n");
 
             // Write data to file
-            const lfs_ssize_t write_result = lfs_file_write(&LFS_filesystem, &file, UART_camera_rx_buf, CAM_SENTENCE_LEN*23);
+            const lfs_ssize_t write_result = lfs_file_write(&LFS_filesystem, &camera_file, UART_camera_rx_buf, CAM_SENTENCE_LEN*23);
             if (write_result < 0)
             {
                 LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error writing to file: %s", file_name);
@@ -313,7 +313,7 @@ uint8_t CAM_receive_image(){
         UART_camera_last_write_time_ms = HAL_GetTick();
 
         // Write data to file
-        const lfs_ssize_t write_result = lfs_file_write(&LFS_filesystem, &file, UART_camera_rx_buf, CAM_SENTENCE_LEN*23);
+        const lfs_ssize_t write_result = lfs_file_write(&LFS_filesystem, &camera_file, UART_camera_rx_buf, CAM_SENTENCE_LEN*23);
         if (write_result < 0)
         {
             LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error writing to file: %s", file_name);
@@ -324,7 +324,7 @@ uint8_t CAM_receive_image(){
 
     // close file before leaving function if file open
     if (file_open) {
-        const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
+        const int8_t close_result = lfs_file_close(&LFS_filesystem, &camera_file);
         if (close_result < 0)
         {
             LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing file: %s", file_name);
@@ -401,7 +401,7 @@ enum CAM_capture_status_enum CAM_Capture_Image(char lighting_mode){
     if (file_failure) {
         // Error in transmition, close file and return error
         if (file_open) {
-            const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
+            const int8_t close_result = lfs_file_close(&LFS_filesystem, &camera_file);
             if (close_result < 0)
             {
                 LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing file: %s", file_name);
