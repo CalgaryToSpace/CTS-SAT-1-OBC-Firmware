@@ -1,9 +1,12 @@
 #include "telecommands/comms_telecommand_defs.h"
 #include "comms_drivers/comms_drivers.h"
 #include "telecommand_exec/telecommand_args_helpers.h"
+#include "timekeeping/timekeeping.h"
 
 #include <string.h>
 #include <stdio.h>
+
+uint64_t AX100_last_user_set_ant_uptime_ms = 0;
 
 /// @brief Sets the state of the dipole switch on the OBC to either Antenna 1 or Antenna 2.
 /// @param args_str 
@@ -34,6 +37,7 @@ uint8_t TCMDEXEC_comms_dipole_switch_set_state(
 
     COMMS_current_ant_mode = COMMS_ANTENNA_SELECTION_MODE_OVERRIDE_BY_TELECOMMAND_FOR_30_MINUTES;
     COMMS_set_dipole_switch_state((uint8_t)antenna_num_u64);
+    AX100_last_user_set_ant_uptime_ms = TIM_get_current_system_uptime_ms();
 
     return 0;
 }

@@ -10,6 +10,7 @@
 #include "eps_drivers/eps_power_management.h"
 #include "comms_drivers/comms_drivers.h"
 #include "antenna_deploy_drivers/ant_internal_drivers.h"
+#include "telecommands/comms_telecommand_defs.h"
 
 
 uint64_t EPS_monitor_last_uptime = 0;
@@ -123,7 +124,7 @@ void TASK_background_upkeep(void *argument) {
         // End Beacon logic
 
         // User override Antenna selection
-        if (COMMS_current_ant_mode == COMMS_ANTENNA_SELECTION_MODE_OVERRIDE_BY_TELECOMMAND_FOR_30_MINUTES && AX100_ADCS_based_ant_selection_last_uptime + AX100_override_selected_ant_interval_ms < current_time) {
+        if (COMMS_current_ant_mode == COMMS_ANTENNA_SELECTION_MODE_OVERRIDE_BY_TELECOMMAND_FOR_30_MINUTES && AX100_last_user_set_ant_uptime_ms + AX100_override_selected_ant_interval_ms < current_time) {
             COMMS_current_ant_mode = COMMS_ANTENNA_SELECTION_MODE_USE_ADCS;
             LOG_message(
                 LOG_SYSTEM_UHF_RADIO,
