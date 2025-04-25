@@ -22,7 +22,7 @@ uint8_t TCMDEXEC_camera_setup(
     // Ensure file_name is null terminated
     // TODO : enforce string length?
     char FileName[11];
-    const uint8_t FileName_result = TCMD_extract_string_arg(args_str, 1, FileName, sizeof(FileName));
+    const uint8_t FileName_result = TCMD_extract_string_arg(args_str, 0, FileName, sizeof(FileName));
     if (FileName_result > 0){
         snprintf(response_output_buf, response_output_buf_len, "Could not parse arg 1 for: %s", args_str);
         return 1;
