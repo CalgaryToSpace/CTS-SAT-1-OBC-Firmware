@@ -45,6 +45,7 @@ uint8_t COMMS_determine_and_update_dipole_antenna_switch() {
 /// @brief Determines the optimal antenna to use based on the satellite's attitude angles.
 /// @return 1 if Antenna 1 is optimal, 2 if Antenna 2 is optimal, 0 if an error occurs in retrieving attitude data.
 /// @note Utilizes estimated roll and pitch angles from the ADCS to make a decision on antenna orientation.
+/// @note Angles were based of of the following logic -> https://docs.google.com/document/d/1kpgU5hM9LwyNtvdzwdpbq_XNiqCRhPLB0nauKUpm5I4/edit?tab=t.0
 uint8_t COMMS_find_optimal_antenna() {
 
     ADCS_estimated_attitude_angles_struct_t output_struct;
