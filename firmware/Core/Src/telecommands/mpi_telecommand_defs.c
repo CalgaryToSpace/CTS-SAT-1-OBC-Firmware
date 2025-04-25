@@ -172,12 +172,8 @@ uint8_t TCMDEXEC_mpi_enable_active_mode(const char *args_str, TCMD_TelecommandCh
     uint8_t enable_result = MPI_enable_active_mode();
 
     if (enable_result != 0) {
-        snprintf(
-            &response_output_buf[strlen(response_output_buf)],
-            response_output_buf_len - strlen(response_output_buf) - 1,
-            "MPI enable active mode Failed! Error Code: %d",
-            enable_result
-        );
+        snprintf(response_output_buf, response_output_buf_len,
+            "MPI enable active mode Failed! Error Code: %d", enable_result);
         return 1;
     }
 
@@ -194,12 +190,8 @@ uint8_t TCMDEXEC_mpi_disable_active_mode(const char *args_str, TCMD_TelecommandC
     uint8_t disable_result = MPI_disable_active_mode();
 
     if (disable_result != 0) {
-        snprintf(
-            &response_output_buf[strlen(response_output_buf)],
-            response_output_buf_len - strlen(response_output_buf) - 1,
-            "MPI disable active mode Failed! Error Code: %d",
-            disable_result
-        );
+        snprintf(response_output_buf, response_output_buf_len,
+            "MPI disable active mode Failed! Error Code: %d", disable_result);
         return 1;
     }
 

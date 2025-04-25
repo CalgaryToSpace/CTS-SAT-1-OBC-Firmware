@@ -163,7 +163,7 @@ int8_t MPI_prepare_receive_data() {
         
     // Create file name
     char MPI_science_data_file_name[60];
-    sprintf(MPI_science_data_file_name, "mpi_active_data_file%lu", HAL_GetTick());
+    sprintf(MPI_science_data_file_name, "mpi_active_data_file_%lu", HAL_GetTick());
 
     // Open / Create the file
     const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &MPI_science_data_file_pointer, MPI_science_data_file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND, &LFS_file_cfg);
@@ -171,65 +171,51 @@ int8_t MPI_prepare_receive_data() {
         LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening / creating file: %s", MPI_science_data_file_name);
         MPI_receive_prepared = 0;
         return open_result;
-    } else {
-        LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Opened/created file: %s", MPI_science_data_file_name);
-        MPI_receive_prepared = 1;   
-    }
+    }        
+    
+    LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Opened/created file: %s", MPI_science_data_file_name);
+    MPI_receive_prepared = 1;   
     return 0;
 }
 
 uint8_t MPI_enable_active_mode() {
 
     if (MPI_receive_prepared != 1) {
-        return 3;
+        return 3; // Error code: System hasn't been prepared for MPI reading
     }
-
-    // Set the MPI State to send data actively
-    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MISO); // Set the MPI transceiver to MISO mode
-    MPI_current_uart_rx_mode = MPI_RX_MODE_SENSING_MODE; // Set MPI to command mode.
 
     // Receive MPI response actively with 8192 buffer size.
     const HAL_StatusTypeDef receive_status = HAL_UART_Receive_DMA(UART_mpi_port_handle, (uint8_t*) UART_mpi_data_rx_buffer, UART_mpi_data_rx_buffer_len);
     
-    // Check for UART reception errors
-    if (receive_status == HAL_BUSY) {
-        return 1; // Error code: UART Line already active
-    }
-    else if (receive_status == HAL_TIMEOUT) {
-        return 3; // Error code: Timeout while trying to set DMA
-    }
-    else if (receive_status == HAL_ERROR) {
-        MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
-        HAL_UART_DMAStop(UART_mpi_port_handle);
-        MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
-        return 2; // Error code: Failed UART reception
-    }
+    switch (receive_status) {
+        case HAL_OK:
+            MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MISO); // Set the MPI transceiver to MISO mode
+            MPI_current_uart_rx_mode = MPI_RX_MODE_SENSING_MODE; // Set MPI to command mode.
+            
+            // Indicates to MPI thread that we are able to receive data
+            // If mpi uart mode is changed, we can close file
+            MPI_receive_prepared = 2;
+            return 0;
 
-    // Indicates to MPI thread that we are able to receive data
-    // If mpi uart mode is changed, we can close file
-    MPI_receive_prepared = 2;
-    return 0;
+        case HAL_BUSY:
+            return 1; // Error code: UART Line already active
+        
+        default:
+            HAL_UART_DMAStop(UART_mpi_port_handle);
+            return 2; // Error code: Timeout or another error occured
+    }
 }
 
 uint8_t MPI_disable_active_mode() {
 
-    const HAL_StatusTypeDef stop_status = HAL_UART_DMAStop(UART_mpi_port_handle);
-    if (stop_status != HAL_OK) {
-        if (stop_status == HAL_BUSY) {
-            MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE); // Set the MPI transceiver to inactive
-            MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI; // Set MPI to command mode.
-            return 1;
-        } else if (stop_status == HAL_ERROR) {
-            return 2;
-        } else if (stop_status == HAL_TIMEOUT) {
-            return 3;
-        } else {
-            return 4;
-        }
-    }
-
     // Set the MPI State to not handle any receiving data
     MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE); // Set the MPI transceiver to inactive
-    MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI; // Set MPI to command mode.
+    MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI; // Set UART mode to not listening.
+    const HAL_StatusTypeDef stop_status = HAL_UART_DMAStop(UART_mpi_port_handle);
+
+    if (stop_status != HAL_OK) {
+        return 1;
+    }
+
     return 0;
 }
