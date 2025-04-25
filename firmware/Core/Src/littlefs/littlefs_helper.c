@@ -58,6 +58,12 @@ struct lfs_file_config LFS_file_cfg = {
 /// @return 0 on success, negative LFS error codes on failure
 int8_t LFS_format()
 {
+    if (LFS_is_lfs_mounted) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), 
+        "FLASH Memory cannot be formatted while LFS is mounted!");
+        return 1;
+    }
+    
     int8_t format_result = lfs_format(&LFS_filesystem, &LFS_cfg);
     if (format_result < 0) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error formatting FLASH memory!");
