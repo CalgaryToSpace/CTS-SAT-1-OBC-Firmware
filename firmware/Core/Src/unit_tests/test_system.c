@@ -1,6 +1,7 @@
 #include "unit_tests/test_system.h"
 #include "system/system_low_power_mode.h"
 #include "unit_tests/unit_test_helpers.h"
+#include "log/log.h"
 #include <string.h>
 
 
@@ -58,7 +59,7 @@ uint8_t TEST_EXEC__SYS_low_power_mode_error_enum_to_string(void)
 }
 uint8_t TEST_EXEC__SYS_low_power_mode_error_result_to_json(void)
 {
-    char buffer[256] = {0};
+    char buffer[LOW_POWER_MODE_JSON_STRING_LEN] = {0};
 
     // Test case 1: All systems successfully disabled
     const char *all_success_json = 

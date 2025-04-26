@@ -95,7 +95,7 @@ uint8_t SYS_check_eps_and_enter_low_power_mode()
         if (result_low_power_mode != 0) {
             char systems_error_during_shutdown_json[LOW_POWER_MODE_JSON_STRING_LEN] = {0};
             // Not checking return because buffer is
-            // definitely not null and size is definitely >= LOW_POWER_MODE_JSON_STRING_LEN
+            // definitely not null and size is definitely >= low_power_mode_json_string_len
             SYS_low_power_mode_error_result_to_json(result_low_power_mode, systems_error_during_shutdown_json, sizeof(systems_error_during_shutdown_json));
             LOG_message(
                 LOG_SYSTEM_OBC,
@@ -140,7 +140,7 @@ uint8_t SYS_check_battery_and_enter_low_power_mode()
         if (result_low_power_mode != 0) {
             char systems_error_during_shutdown_json[LOW_POWER_MODE_JSON_STRING_LEN] = {0};
             // Not checking return because buffer is
-            // definitely not null and size is definitely >= LOW_POWER_MODE_JSON_STRING_LEN
+            // definitely not null and size is definitely >= low_power_mode_json_string_len
             SYS_low_power_mode_error_result_to_json(result_low_power_mode, systems_error_during_shutdown_json, sizeof(systems_error_during_shutdown_json));
             LOG_message(
                 LOG_SYSTEM_OBC,
@@ -183,7 +183,7 @@ char *SYS_low_power_mode_error_enum_to_string(SYS_low_power_mode_error_enum_t er
 /// @brief Converts the error result of low power mode to a JSON string, showing whether shutting down that system was a success or failure
 /// @param error Value of the error result from entering low power mode
 /// @param buffer Resulting JSON string
-/// @param buffer_size Size of the buffer, minimum 256
+/// @param buffer_size Size of the buffer, minimum LOW_POWER_MODE_JSON_STR_LEN
 /// @return 0 on success, 1 on failure
 uint8_t SYS_low_power_mode_error_result_to_json(SYS_low_power_mode_error_enum_t error, char *buffer, uint16_t buffer_size) 
 {
