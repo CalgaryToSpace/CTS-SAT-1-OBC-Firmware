@@ -413,8 +413,9 @@ uint8_t TCMD_parse_full_telecommand(
         case 2: return 100;
         case 3: return 110;
         default: break; // add additional cases as needed
-    }   
-
+    }
+    // Extract @log_filename=xxxx from the telecommand string, starting at &tcmd_str[end_of_args_idx]
+    TCMD_process_suffix_tag_log_filename(tcmd_suffix_tag_str);
 
     // Check that the args_str_no_parens is not too long.
     // Note: `arg_len` does not include the null terminator, but `TCMD_ARGS_STR_NO_PARENS_SIZE` does.
@@ -454,7 +455,14 @@ uint8_t TCMD_parse_full_telecommand(
     return 0;
 }
 
-
+void TCMD_process_suffix_tag_log_filename(const char *tcmd_suffix_tag_str)
+{
+    char buf[100] = {0};
+    const uint8_t res = TCMD_get_suffix_tag_str(tcmd_suffix_tag_str, "@log_filename=", buf, sizeof(buf));
+    LOG_message(
+        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+        "TCMD_parse_full_telecommand: res: %u, log_filename tag: %s", res, buf);
+}
 /// @brief Parses the @tssent=xxxx tag from the telecommand string.
 /// @param tcmd_suffix_tag_str The telecommand suffix tag string. 
 /// @param tcmd_suffix_tag_str_len The length of the telecommand suffix tag string. 
