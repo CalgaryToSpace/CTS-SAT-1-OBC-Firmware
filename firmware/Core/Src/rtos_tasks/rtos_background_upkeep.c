@@ -126,6 +126,9 @@ static void subtask_send_beacon(void) {
 
 void TASK_background_upkeep(void *argument) {
     TASK_HELP_start_of_task();
+
+    uint32_t last_time_checked_for_low_power_mode = 0;
+    const uint32_t low_power_mode_interval_ms = 600000; // 10 minutes
     while(1) {
         subtask_send_beacon();
         osDelay(10); // Yield.

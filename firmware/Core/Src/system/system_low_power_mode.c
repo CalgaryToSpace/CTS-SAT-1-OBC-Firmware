@@ -93,16 +93,16 @@ uint8_t SYS_check_eps_and_enter_low_power_mode()
     
         const uint8_t result_low_power_mode = SYS_enter_low_power_mode();
         if (result_low_power_mode != 0) {
-            char systems_error_during_shutdown_json[LOW_POWER_MODE_JSON_STRING_LEN] = {0};
+            char error_entering_low_power_mode_json[LOW_POWER_MODE_JSON_STRING_LEN] = {0};
             // Not checking return because buffer is
             // definitely not null and size is definitely >= low_power_mode_json_string_len
-            SYS_low_power_mode_error_result_to_json(result_low_power_mode, systems_error_during_shutdown_json, sizeof(systems_error_during_shutdown_json));
+            SYS_low_power_mode_error_result_to_json(result_low_power_mode, error_entering_low_power_mode_json, sizeof(error_entering_low_power_mode_json));
             LOG_message(
                 LOG_SYSTEM_OBC,
                 LOG_SEVERITY_ERROR,
                 LOG_SINK_ALL,
                 "%s",
-                systems_error_during_shutdown_json
+                error_entering_low_power_mode_json
             );
         }
     }
@@ -138,16 +138,16 @@ uint8_t SYS_check_battery_and_enter_low_power_mode()
     
         const uint8_t result_low_power_mode = SYS_enter_low_power_mode();
         if (result_low_power_mode != 0) {
-            char systems_error_during_shutdown_json[LOW_POWER_MODE_JSON_STRING_LEN] = {0};
+            char error_entering_low_power_mode_json[LOW_POWER_MODE_JSON_STRING_LEN] = {0};
             // Not checking return because buffer is
             // definitely not null and size is definitely >= low_power_mode_json_string_len
-            SYS_low_power_mode_error_result_to_json(result_low_power_mode, systems_error_during_shutdown_json, sizeof(systems_error_during_shutdown_json));
+            SYS_low_power_mode_error_result_to_json(result_low_power_mode, error_entering_low_power_mode_json, sizeof(error_entering_low_power_mode_json));
             LOG_message(
                 LOG_SYSTEM_OBC,
                 LOG_SEVERITY_ERROR,
                 LOG_SINK_ALL,
                 "%s",
-                systems_error_during_shutdown_json
+                error_entering_low_power_mode_json
             );
 
         }
