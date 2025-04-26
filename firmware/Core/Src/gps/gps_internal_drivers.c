@@ -168,7 +168,7 @@ uint8_t GPS_set_power_enabled(uint16_t enable_disable_flag)
         
         // Send log command to GPS and receive response
         const uint8_t gps_cmd_response = GPS_send_cmd_get_response(
-            full_command, full_command_len, GPS_rx_buffer, GPS_rx_buffer_len, GPS_rx_buffer_max_size);
+            full_command, full_command_len, GPS_rx_buffer, GPS_rx_buffer_max_size, &GPS_rx_buffer_len);
 
         if (gps_cmd_response != 0)
         {
