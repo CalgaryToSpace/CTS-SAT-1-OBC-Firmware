@@ -1,6 +1,7 @@
 #include "uart_handler/uart_handler.h"
 #include "debug_tools/debug_uart.h"
 #include "mpi/mpi_command_handling.h"
+
 #include "main.h"
 #include "log/log.h"
 
@@ -263,6 +264,13 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 
     // Reception Error callback for EPS UART port
     if (huart->Instance == UART_eps_port_handle->Instance) {
+        const uint8_t error_code = huart->ErrorCode;
+        const uint32_t up_time_ms = HAL_GetTick();
+        // if the error code is no error or it has been less than 100 ms since start up, ignore
+        if (error_code == HAL_UART_ERROR_NONE || up_time_ms < 100 ) {
+            return;
+        }
+
         LOG_message(
             LOG_SYSTEM_EPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "HAL_UART_ErrorCallback for EPS: %lu", huart->ErrorCode
