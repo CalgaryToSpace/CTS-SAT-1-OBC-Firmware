@@ -153,7 +153,8 @@ typedef enum ADCS_axis_select_enum_t {
     ADCS_AXIS_SELECT_NEGATIVE_Y = 3,
     ADCS_AXIS_SELECT_POSITIVE_Z = 4,
     ADCS_AXIS_SELECT_NEGATIVE_Z = 5,
-    ADCS_AXIS_SELECT_NOT_USED = 6
+    ADCS_AXIS_SELECT_NOT_USED = 6,
+    ADCS_AXIS_SELECT_POSITIVE_XY_45_DEGREE = 7
 } ADCS_axis_select_enum_t;
 
 typedef enum ADCS_capture_result_enum_t {

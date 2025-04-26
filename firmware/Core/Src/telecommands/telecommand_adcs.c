@@ -2041,6 +2041,8 @@ uint8_t TCMDEXEC_adcs_save_image_to_sd(const char *args_str, TCMD_TelecommandCha
         args_8[i] = (uint8_t) arguments[i];
     }
     
+    snprintf(response_output_buf, response_output_buf_len,"arg 0: %d arg 1 %d", args_8[0], args_8[1]);
+
     const uint8_t status = ADCS_save_image_to_sd(args_8[0], args_8[1]); 
     return status;
 }
@@ -2378,7 +2380,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
                 return 1;
             }
             HAL_Delay(ADCS_COMMISSIONING_HAL_DELAY_MS); // delay to set run mode: 250ms of buffer time to match the others
-            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
             if (power_control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS power control command failed (err %d)", power_control_status);
@@ -2408,7 +2410,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
                 return 1;
             }
             HAL_Delay(ADCS_COMMISSIONING_HAL_DELAY_MS); // delay to set run mode: 250ms of buffer time to match the others
-            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
             if (power_control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS power control command failed (err %d)", power_control_status);
@@ -2438,7 +2440,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
                 return 1;
             }
             HAL_Delay(ADCS_COMMISSIONING_HAL_DELAY_MS); // delay to set run mode: 250ms of buffer time to match the others
-            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
             if (power_control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS power control command failed (err %d)", power_control_status);
@@ -2894,20 +2896,20 @@ uint8_t TCMDEXEC_adcs_request_commissioning_telemetry(const char *args_str, TCMD
             break;
         }
         case ADCS_COMMISSIONING_STEP_EKF_WITH_RATE_GYRO_STAR_TRACKER_MEASUREMENTS: {
-            const uint8_t num_logs = 12; 
+            const uint8_t num_logs = 13; 
             const uint8_t period_s = 10; 
-            const uint8_t* commissioning_data[12] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_ESTIMATED_GYRO_BIAS, ADCS_SD_LOG_MASK_ESTIMATION_INNOVATION_VECTOR, 
+            const uint8_t* commissioning_data[13] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_ESTIMATED_GYRO_BIAS, ADCS_SD_LOG_MASK_ESTIMATION_INNOVATION_VECTOR, 
                                                             ADCS_SD_LOG_MASK_MAGNETIC_FIELD_VECTOR, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_FINE_SUN_VECTOR, ADCS_SD_LOG_MASK_NADIR_VECTOR, ADCS_SD_LOG_MASK_WHEEL_SPEED, ADCS_SD_LOG_MASK_MAGNETORQUER_COMMAND,
-                                                            ADCS_SD_LOG_MASK_IGRF_MODELLED_MAGNETIC_FIELD_VECTOR, ADCS_SD_LOG_MASK_QUATERNION_ERROR_VECTOR};
+                                                            ADCS_SD_LOG_MASK_IGRF_MODELLED_MAGNETIC_FIELD_VECTOR, ADCS_SD_LOG_MASK_QUATERNION_ERROR_VECTOR, ADCS_SD_LOG_MASK_WHEEL_SPEED_COMMANDS};
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);   
             break;
         }
         case ADCS_COMMISSIONING_STEP_SUN_TRACKING_3_AXIS_CONTROL: {
-            const uint8_t num_logs = 12; 
+            const uint8_t num_logs = 13; 
             const uint8_t period_s = 10; 
-            const uint8_t* commissioning_data[12] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_ESTIMATED_GYRO_BIAS, ADCS_SD_LOG_MASK_ESTIMATION_INNOVATION_VECTOR, 
+            const uint8_t* commissioning_data[13] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_ESTIMATED_GYRO_BIAS, ADCS_SD_LOG_MASK_ESTIMATION_INNOVATION_VECTOR, 
                                                             ADCS_SD_LOG_MASK_MAGNETIC_FIELD_VECTOR, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_FINE_SUN_VECTOR, ADCS_SD_LOG_MASK_NADIR_VECTOR, ADCS_SD_LOG_MASK_WHEEL_SPEED, ADCS_SD_LOG_MASK_MAGNETORQUER_COMMAND,
-                                                            ADCS_SD_LOG_MASK_IGRF_MODELLED_MAGNETIC_FIELD_VECTOR, ADCS_SD_LOG_MASK_QUATERNION_ERROR_VECTOR};
+                                                            ADCS_SD_LOG_MASK_IGRF_MODELLED_MAGNETIC_FIELD_VECTOR, ADCS_SD_LOG_MASK_QUATERNION_ERROR_VECTOR, ADCS_SD_LOG_MASK_WHEEL_SPEED_COMMANDS};
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);   
             break;
         }
@@ -2947,34 +2949,4 @@ uint8_t TCMDEXEC_adcs_format_sd(const char *args_str, TCMD_TelecommandChannel_en
                                    char *response_output_buf, uint16_t response_output_buf_len) {
     const uint8_t status = ADCS_format_sd();
     return status;
-}     
-
-/// @brief Telecommand: Stop SD logging.
-/// @param args_str 
-///     - Arg 0: Which log to stop logging (1 or 2)
-/// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_adcs_disable_sd_logging(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                                        char *response_output_buf, uint16_t response_output_buf_len) {
-    
-    uint64_t which_log;
-    uint8_t extract_status = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &which_log);
-    if (extract_status != 0) {
-        snprintf(response_output_buf, response_output_buf_len,
-            "Telecommand argument extraction failed (err %d)", extract_status);
-        return 1;
-    } else if ((which_log != 1) && (which_log != 2)) {
-        snprintf(response_output_buf, response_output_buf_len,
-            "Chosen log is neither 1 nor 2");
-        return 1;
-    }
-    
-    const uint8_t* temp_data_pointer[1] = {ADCS_SD_LOG_MASK_NONE};
-   
-    const uint8_t sd_status = ADCS_set_sd_log_config(which_log, temp_data_pointer, 0, 0, 0);                     
-    if (sd_status != 0) {
-        snprintf(response_output_buf, response_output_buf_len, "Failed to stop SD logging (error %d)", sd_status); 
-        return sd_status;
-    }
-    
-    return 0;
-}       
+}            

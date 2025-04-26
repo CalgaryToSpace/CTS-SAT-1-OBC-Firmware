@@ -1380,7 +1380,7 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
     }
 
     HAL_Delay(100); // need to allow some time (100ms) for it to initiate the burst, or else the first packet may be garbage
-    HAL_IWDG_Refresh(WATCHDOG); // pet the watchdog so the system doesn't reboot; must be at least 200ms since last pet
+    HAL_IWDG_Refresh(&hiwdg); // pet the watchdog so the system doesn't reboot; must be at least 200ms since last pet
 
     for (uint16_t i = 0; i < 1024; i++) {
         // load 20 bytes at a time into the download buffer
@@ -1452,7 +1452,7 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
         }
         
         HAL_Delay(100);
-        HAL_IWDG_Refresh(WATCHDOG); // pet the watchdog so the system doesn't reboot; must be at least 200ms since last pet
+        HAL_IWDG_Refresh(&hiwdg); // pet the watchdog so the system doesn't reboot; must be at least 200ms since last pet
 
         for (uint16_t i = 0; i < 1024; i++) {
             // load 20 bytes at a time into the download buffer
@@ -1666,11 +1666,11 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
 uint8_t ADCS_disable_SD_logging() {
     // Disable SD card logging
     const uint8_t* temp_data_pointer[1] = {ADCS_SD_LOG_MASK_NONE};
-    const uint8_t sd_log_1_stop_status = ADCS_set_sd_log_config(1, temp_data_pointer, 0, 0, 0);                     
+    const uint8_t sd_log_1_stop_status = ADCS_set_sd_log_config(1, temp_data_pointer, 1, 0, 0);                     
     if (sd_log_1_stop_status != 0) {
         return sd_log_1_stop_status;
     }
-    const uint8_t sd_log_2_stop_status = ADCS_set_sd_log_config(2, temp_data_pointer, 0, 0, 0);                     
+    const uint8_t sd_log_2_stop_status = ADCS_set_sd_log_config(2, temp_data_pointer, 1, 0, 0);                     
     return sd_log_2_stop_status;
 }
 

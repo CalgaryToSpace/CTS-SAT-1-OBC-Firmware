@@ -813,12 +813,6 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 2,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
-    {
-        .tcmd_name = "adcs_disable_sd_logging",
-        .tcmd_func = TCMDEXEC_adcs_disable_sd_logging,
-        .number_of_args = 1,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },  
 
     // ****************** END SECTION: telecommand_adcs ******************
 
