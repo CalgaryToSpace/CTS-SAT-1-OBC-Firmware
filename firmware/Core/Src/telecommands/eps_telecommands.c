@@ -346,7 +346,9 @@ uint8_t TCMDEXEC_eps_get_pdu_housekeeping_data_eng_json(
 }
 
 
-/// @brief Get power/current/voltage data from the EPS PDU (Power Distribution Unit), and display it as a JSON string.
+/// @brief Sets the EPS channel to be enabled (on) or disabled (off).
+/// @param args_str 
+/// - Arg 0: The channel name or number (string).
 /// @return 0 on success, >0 on failure.
 uint8_t TCMDEXEC_eps_get_pdu_data_for_single_channel_json(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
