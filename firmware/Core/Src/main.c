@@ -33,7 +33,7 @@
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_commands.h"
 #include "littlefs/flash_driver.h"
-
+#include "system/system_bootup.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -278,6 +278,8 @@ int main(void)
   // Always leave the Camera enable signal enabled. Easier to control it through just the EPS.
   HAL_GPIO_WritePin(PIN_CAM_EN_OUT_GPIO_Port, PIN_CAM_EN_OUT_Pin, GPIO_PIN_SET);
 
+  // Disable systems on bootup
+  SYS_disable_systems_bootup();
   /* USER CODE END 2 */
 
   /* Init scheduler */
