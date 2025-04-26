@@ -7,6 +7,7 @@
 #include <time.h>
 
 #define ADCS_i2c_HANDLE &hi2c1
+#define WATCHDOG &hiwdg
 static const uint8_t ADCS_INCLUDE_CHECKSUM = 1;
 static const uint8_t ADCS_NO_CHECKSUM = 0;
 static const uint8_t ADCS_CHECKSUM_TIMEOUT = 100;

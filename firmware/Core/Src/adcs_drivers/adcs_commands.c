@@ -12,7 +12,6 @@
 #include "adcs_drivers/adcs_commands.h"
 #include "adcs_drivers/adcs_internal_drivers.h"
 #include "timekeeping/timekeeping.h"
-#include "littlefs/littlefs_helper.h"
 #include "log/log.h"
 #include <string.h>
 #include <stdio.h>
@@ -1343,11 +1342,10 @@ uint8_t adcs_download_buffer[20480]; // static buffer to hold the 20 KiB from th
 /// @brief Save one block of the ADCS SD card file pointed to by the file pointer into the ADCS download buffer, then append it to the file in LittleFS.
 /// @param[in] file_info A struct containing information about the currently-pointed-to file
 /// @param[in] current_block The block to load into the download buffer
-/// @param[in] filename Pointer to string containing filename to save as
-/// @param[in] filename_length Length of filename
+/// @param[in] file Pointer to LittleFS file to store everything to
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 /// Specifically: bytes 0-2 are the ADCS error, bytes 3-10 are which command failed, bytes 11-16 are the index of the failure if applicable
-int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info, uint8_t current_block, char* filename_string, uint8_t filename_length) {
+int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info, uint8_t current_block, lfs_file_t* file) {
     ADCS_file_download_buffer_struct_t download_packet;
     uint16_t hole_map[64] = {0, 0, 0, 0, 0, 0, 0, 0}; // this array is 1024 bits, one for each packet up to the maximum
 
@@ -1381,8 +1379,9 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
         return download_burst_status | (1 << 5);
     }
 
-    HAL_Delay(100); // need to allow some time for it to initiate the burst, or else the first packet may be garbage
-    
+    HAL_Delay(100); // need to allow some time (100ms) for it to initiate the burst, or else the first packet may be garbage
+    HAL_IWDG_Refresh(WATCHDOG); // pet the watchdog so the system doesn't reboot; must be at least 200ms since last pet
+
     for (uint16_t i = 0; i < 1024; i++) {
         // load 20 bytes at a time into the download buffer
         const uint8_t download_buffer_status = ADCS_get_file_download_buffer(&(download_packet));
@@ -1453,6 +1452,7 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
         }
         
         HAL_Delay(100);
+        HAL_IWDG_Refresh(WATCHDOG); // pet the watchdog so the system doesn't reboot; must be at least 200ms since last pet
 
         for (uint16_t i = 0; i < 1024; i++) {
             // load 20 bytes at a time into the download buffer
@@ -1504,18 +1504,21 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
         // if this is the final block, we may need to write fewer bytes than the maximum
         bytes_to_write = ceil((file_info.file_size - (20480 * current_block)));
     } else {
-        bytes_to_write = 20480; // TODO: test to make sure the correct number of bytes are written
+        bytes_to_write = 20480;
     }     
     
-    // Write to the index file in the filesystem
-    uint8_t lfs_status;
-    if (current_block == 0) {
-        lfs_status = LFS_write_file(filename_string, &adcs_download_buffer[0], bytes_to_write); 
-    } else {
-        lfs_status = LFS_append_file(filename_string, &adcs_download_buffer[0], bytes_to_write);
+    // Write to the file in the filesystem
+    if (current_block != 0) { // If this isn't the first block, seek to the end of the file and prepare to append
+        const lfs_soff_t seek_result = lfs_file_seek(&LFS_filesystem, file, 0, LFS_SEEK_END);
+        if (seek_result < 0) {
+            LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error seeking within file.");
+            return seek_result;
+        }
     }
-    if (lfs_status != 0) {
-        return lfs_status;
+    const lfs_ssize_t write_result = lfs_file_write(&LFS_filesystem, file, &adcs_download_buffer[0], bytes_to_write);
+    if (write_result < 0) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error writing to file.");
+        return write_result;
     }
 
     return 0;
@@ -1545,7 +1548,7 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
         */
             
         const uint8_t reset_pointer_status = ADCS_reset_file_list_read_pointer();
-        HAL_Delay(100);
+        HAL_Delay(200);
         if (reset_pointer_status != 0) {
             // to avoid interference from the EPS, do a separate ack for these commands
             ADCS_cmd_ack_struct_t ack_status;
@@ -1617,13 +1620,29 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
         file_info.file_type = ADCS_FILE_TYPE_INDEX;
     }
 
+    // Check that LittleFS is mounted
+    if (!LFS_is_lfs_mounted) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "LittleFS not mounted."); 
+        return 1;
+    }
+
+    // Now that we have the filename string, we can create the file (any existing file will be overwritten)
+    lfs_file_t file;
+    const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, filename_string, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC, &LFS_file_cfg);
+    if (open_result < 0) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening/creating file: %s", filename_string);
+        return open_result;
+    }
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully created file: %s", filename_string);
+
+
     uint8_t total_blocks = ceil(file_info.file_size / 20480.0);
     uint8_t current_block = 0; 
 
     while (current_block < total_blocks) {
 
         LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, "Loading block %d from ADCS to LittleFS", current_block);
-        const uint8_t load_block_status = ADCS_load_sd_file_block_to_filesystem(file_info, current_block, filename_string, 17); // load the block
+        const uint8_t load_block_status = ADCS_load_sd_file_block_to_filesystem(file_info, current_block, &file); // load the block
         if (load_block_status != 0) {
             return load_block_status;
         }
@@ -1631,8 +1650,17 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
         current_block++;
     }
 
+    // Once we've written all the blocks, close the file; it won't be updated in LittleFS until the file is closed.
+    const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
+    if (close_result < 0) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing file.");
+        return close_result;
+    }
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully wrote data to file: %s", filename_string);
+
     return 0;
 }
+
 /// @brief Disable all active ADCS SD card logs.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred.
 uint8_t ADCS_disable_SD_logging() {

@@ -3,6 +3,7 @@
 
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_internal_drivers.h"
+#include "littlefs/littlefs_helper.h"
 
 /* Function Definitions */
 
@@ -142,7 +143,7 @@ uint8_t ADCS_get_current_unix_time(uint64_t* epoch_time_ms);
 uint8_t ADCS_synchronize_unix_time();
 uint8_t ADCS_set_sd_log_config(uint8_t which_log, const uint8_t **log_array, uint8_t log_array_size, uint16_t log_period, ADCS_sd_log_destination_enum_t which_sd);
 uint8_t ADCS_get_sd_log_config(uint8_t which_log, ADCS_sd_log_config_struct* config);
-int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info, uint8_t current_block, char* filename_string, uint8_t filename_length);
+int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info, uint8_t current_block, lfs_file_t* file);
 int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index);
 uint8_t ADCS_disable_SD_logging();
 uint8_t ADCS_disable_peripherals_and_SD_logs_without_stabilisation();
