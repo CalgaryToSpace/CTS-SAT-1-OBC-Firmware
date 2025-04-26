@@ -400,7 +400,7 @@ uint8_t TCMD_parse_full_telecommand(
 
     // Extract @tsexec=xxxx from the telecommand string, starting at &tcmd_str[end_of_args_idx]
     uint64_t timestamp_to_execute = 0; // default value: execute immediately
-    const uint8_t parse_tsexec_result = TCMD_process_suffix_tag_exec(tcmd_suffix_tag_str, tcmd_suffix_tag_str_len, &timestamp_to_execute);
+    const uint8_t parse_tsexec_result = TCMD_process_suffix_tag_tsexec(tcmd_suffix_tag_str, tcmd_suffix_tag_str_len, &timestamp_to_execute);
     if (parse_tsexec_result != 0) {
         return 80;
     }    
@@ -494,7 +494,7 @@ uint8_t TCMD_process_suffix_tag_tssent(const char* tcmd_suffix_tag_str, const ui
 /// @param tsexec_time_ms The destination for the timestamp to execute.
 /// @details The timestamp to execute is the time at which the telecommand should be executed. 
 /// @return 0 if the tag was found successfully or the tag is not present. >0 if there was an error.
-uint8_t TCMD_process_suffix_tag_exec(const char *tcmd_suffix_tag_str, const uint16_t tcmd_suffix_tag_str_len, uint64_t *tsexec_time_ms)
+uint8_t TCMD_process_suffix_tag_tsexec(const char *tcmd_suffix_tag_str, const uint16_t tcmd_suffix_tag_str_len, uint64_t *tsexec_time_ms)
 {
     const int16_t tsexec_index = GEN_get_index_of_substring_in_array(tcmd_suffix_tag_str, tcmd_suffix_tag_str_len, "@tsexec=");
     if (tsexec_index == -1) {

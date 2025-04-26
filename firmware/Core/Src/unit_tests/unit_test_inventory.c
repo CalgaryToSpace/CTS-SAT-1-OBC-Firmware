@@ -59,7 +59,7 @@ const TEST_Definition_t TEST_definitions[] = {
     {
         .test_func = TEST_EXEC__TCMD_process_suffix_tag_tsexec,
         .test_file = "telecommands/telecommand_parser",
-        .test_func_name = "TCMD_process_suffix_tag_exec"
+        .test_func_name = "TCMD_process_suffix_tag_tsexec"
     },
     {
         .test_func = TEST_EXEC__TCMD_process_suffix_tag_tssent,

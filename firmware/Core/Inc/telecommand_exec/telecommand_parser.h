@@ -20,7 +20,7 @@ uint8_t TCMD_check_starts_with_device_id(const char *tcmd_str, uint32_t tcmd_str
 int32_t TCMD_parse_telecommand_get_index(const char *tcmd_str, uint32_t tcmd_str_len);
 
 uint8_t TCMD_process_suffix_tag_tssent(const char* tcmd_suffix_tag_str, const uint16_t tcmd_suffix_tag_str_len, uint64_t *tssent_time_ms); 
-uint8_t TCMD_process_suffix_tag_exec(const char* tcmd_suffix_tag_str, const uint16_t tcmd_suffix_tag_str_len, uint64_t *tsexec_time_ms);
+uint8_t TCMD_process_suffix_tag_tsexec(const char* tcmd_suffix_tag_str, const uint16_t tcmd_suffix_tag_str_len, uint64_t *tsexec_time_ms);
 uint8_t TCMD_process_suffix_tag_sha256(const char *tcmd_suffix_tag_str, const uint16_t tcmd_suffix_tag_str_len, const char * tcmd_str, const int32_t end_of_args_idx);
 uint8_t TCMD_process_suffix_tag_log_filename(const char *tcmd_suffix_tag_str, const uint16_t tcmd_suffix_tag_str_len, const char * tcmd_str, const int32_t end_of_args_idx);
 

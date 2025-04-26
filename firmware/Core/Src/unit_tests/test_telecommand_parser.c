@@ -183,17 +183,17 @@ uint8_t TEST_EXEC__TCMD_process_suffix_tag_tsexec() {
     uint64_t tsexec_time_ms = 0;
 
     // Test case: Valid @tsexec tag
-    TEST_ASSERT(TCMD_process_suffix_tag_exec("@tsexec=9876543210", strlen("@tsexec=9876543210"), &tsexec_time_ms) == 0);
+    TEST_ASSERT(TCMD_process_suffix_tag_tsexec("@tsexec=9876543210", strlen("@tsexec=9876543210"), &tsexec_time_ms) == 0);
     TEST_ASSERT(tsexec_time_ms == 9876543210);
 
     // Test case: Missing @tsexec tag
-    TEST_ASSERT(TCMD_process_suffix_tag_exec("@tssent=9876543210", strlen("@tssent=9876543210"), &tsexec_time_ms) == 0);
+    TEST_ASSERT(TCMD_process_suffix_tag_tsexec("@tssent=9876543210", strlen("@tssent=9876543210"), &tsexec_time_ms) == 0);
 
     // Test case: Invalid @tsexec tag format
-    TEST_ASSERT(TCMD_process_suffix_tag_exec("@tsexec=abcd", strlen("@tsexec=abcd"), &tsexec_time_ms) == 1);
+    TEST_ASSERT(TCMD_process_suffix_tag_tsexec("@tsexec=abcd", strlen("@tsexec=abcd"), &tsexec_time_ms) == 1);
 
     // Test case: Empty string
-    TEST_ASSERT(TCMD_process_suffix_tag_exec("", 0, &tsexec_time_ms) == 0);
+    TEST_ASSERT(TCMD_process_suffix_tag_tsexec("", 0, &tsexec_time_ms) == 0);
 
     return 0;
 }
