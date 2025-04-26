@@ -5,7 +5,7 @@
 
 
 /// @brief Sets the boom deploy enable pin state (on or off).
-/// @param boom_channel_num 1 for channel 1 (BOOM_CTRL_2), 2 for channel 2 (BOOM_CTRL_2).
+/// @param boom_channel_num 1 for channel 1 (BOOM_CTRL_1), 2 for channel 2 (BOOM_CTRL_2).
 /// @param enabled 0 to disable, 1 to enable.
 /// @return 0 on success, 1 on failure (invalid channel).
 uint8_t BOOM_set_burn_enabled(uint8_t boom_channel_num, uint8_t enabled) {
