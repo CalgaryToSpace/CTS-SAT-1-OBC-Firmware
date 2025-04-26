@@ -88,23 +88,22 @@ uint8_t SYS_check_eps_and_enter_low_power_mode()
             LOG_SYSTEM_EPS,
             LOG_SEVERITY_CRITICAL,
             LOG_SINK_ALL,
-            "SYS LOW POWER MODE CHECK -> EPS in low power mode. Entering Low Power Mode!"
+            "SYS LOW POWER MODE CHECK -> EPS System Status mode: %u. Entering Low Power Mode!",
+            EPS_system_status.mode
         );
     
         const uint8_t result_low_power_mode = SYS_enter_low_power_mode();
-        if (result_low_power_mode != 0) {
-            char error_entering_low_power_mode_json[LOW_POWER_MODE_JSON_STRING_LEN] = {0};
-            // Not checking return because buffer is
-            // definitely not null and size is definitely >= low_power_mode_json_string_len
-            SYS_low_power_mode_error_result_to_json(result_low_power_mode, error_entering_low_power_mode_json, sizeof(error_entering_low_power_mode_json));
-            LOG_message(
-                LOG_SYSTEM_OBC,
-                LOG_SEVERITY_ERROR,
-                LOG_SINK_ALL,
-                "%s",
-                error_entering_low_power_mode_json
-            );
-        }
+        char enter_low_power_mode_json[LOW_POWER_MODE_JSON_STRING_LEN] = {0};
+        // Not checking return because buffer is
+        // definitely not null and size is definitely >= low_power_mode_json_string_len
+        SYS_low_power_mode_result_to_json(result_low_power_mode, enter_low_power_mode_json, sizeof(enter_low_power_mode_json));
+        LOG_message(
+            LOG_SYSTEM_OBC,
+            LOG_SEVERITY_ERROR,
+            LOG_SINK_ALL,
+            "%s",
+            enter_low_power_mode_json
+        );
     }
     return 0;
 }
@@ -137,20 +136,18 @@ uint8_t SYS_check_battery_and_enter_low_power_mode()
         );
     
         const uint8_t result_low_power_mode = SYS_enter_low_power_mode();
-        if (result_low_power_mode != 0) {
-            char error_entering_low_power_mode_json[LOW_POWER_MODE_JSON_STRING_LEN] = {0};
-            // Not checking return because buffer is
-            // definitely not null and size is definitely >= low_power_mode_json_string_len
-            SYS_low_power_mode_error_result_to_json(result_low_power_mode, error_entering_low_power_mode_json, sizeof(error_entering_low_power_mode_json));
-            LOG_message(
-                LOG_SYSTEM_OBC,
-                LOG_SEVERITY_ERROR,
-                LOG_SINK_ALL,
-                "%s",
-                error_entering_low_power_mode_json
-            );
+        char enter_low_power_mode_json[LOW_POWER_MODE_JSON_STRING_LEN] = {0};
+        // Not checking return because buffer is
+        // definitely not null and size is definitely >= low_power_mode_json_string_len
+        SYS_low_power_mode_result_to_json(result_low_power_mode, enter_low_power_mode_json, sizeof(enter_low_power_mode_json));
+        LOG_message(
+            LOG_SYSTEM_OBC,
+            LOG_SEVERITY_ERROR,
+            LOG_SINK_ALL,
+            "%s",
+            enter_low_power_mode_json
+        );
 
-        }
     }
     return 0;
 }
@@ -185,7 +182,7 @@ char *SYS_low_power_mode_error_enum_to_string(SYS_low_power_mode_error_enum_t er
 /// @param buffer Resulting JSON string
 /// @param buffer_size Size of the buffer, minimum LOW_POWER_MODE_JSON_STR_LEN
 /// @return 0 on success, 1 on failure
-uint8_t SYS_low_power_mode_error_result_to_json(SYS_low_power_mode_error_enum_t error, char *buffer, uint16_t buffer_size) 
+uint8_t SYS_low_power_mode_result_to_json(SYS_low_power_mode_error_enum_t error, char *buffer, uint16_t buffer_size) 
 {
     if (buffer == NULL || buffer_size < LOW_POWER_MODE_JSON_STRING_LEN) {
         return 1;

@@ -57,7 +57,7 @@ uint8_t TEST_EXEC__SYS_low_power_mode_error_enum_to_string(void)
     
     return 0;
 }
-uint8_t TEST_EXEC__SYS_low_power_mode_error_result_to_json(void)
+uint8_t TEST_EXEC__SYS_low_power_mode_result_to_json(void)
 {
     char buffer[LOW_POWER_MODE_JSON_STRING_LEN] = {0};
 
@@ -72,7 +72,7 @@ uint8_t TEST_EXEC__SYS_low_power_mode_error_result_to_json(void)
     "\"ADCS\":\"Successfully Set Low Power Mode\"}";
 
     SYS_low_power_mode_error_enum_t all_success = 0;
-    uint8_t all_success_result = SYS_low_power_mode_error_result_to_json(all_success, buffer, sizeof(buffer));
+    uint8_t all_success_result = SYS_low_power_mode_result_to_json(all_success, buffer, sizeof(buffer));
     TEST_ASSERT(all_success_result == 0);
     TEST_ASSERT(strcmp(buffer, all_success_json) == 0);
 
@@ -95,7 +95,7 @@ uint8_t TEST_EXEC__SYS_low_power_mode_error_result_to_json(void)
                                                SYS_LOW_POWER_MODE_ERROR_BOOM_PINS | 
                                                SYS_LOW_POWER_MODE_ERROR_GPS | 
                                                SYS_LOW_POWER_MODE_ERROR_ADCS;
-    uint8_t all_error_result = SYS_low_power_mode_error_result_to_json(all_error, buffer, sizeof(buffer));
+    uint8_t all_error_result = SYS_low_power_mode_result_to_json(all_error, buffer, sizeof(buffer));
     TEST_ASSERT(all_error_result == 0);
     TEST_ASSERT(strcmp(buffer, all_error_json) == 0);
 
@@ -112,7 +112,7 @@ uint8_t TEST_EXEC__SYS_low_power_mode_error_result_to_json(void)
     "\"ADCS\":\"Error Setting Low Power Mode\"}";
 
     SYS_low_power_mode_error_enum_t adcs_mpi12v_error = SYS_LOW_POWER_MODE_ERROR_ADCS | SYS_LOW_POWER_MODE_ERROR_MPI_12V;
-    uint8_t adcs_mpi12v_result = SYS_low_power_mode_error_result_to_json(adcs_mpi12v_error, buffer, sizeof(buffer));
+    uint8_t adcs_mpi12v_result = SYS_low_power_mode_result_to_json(adcs_mpi12v_error, buffer, sizeof(buffer));
     TEST_ASSERT(adcs_mpi12v_result == 0);
     TEST_ASSERT(strcmp(buffer, adcs_mpi12v_error_json) == 0);
 
@@ -129,7 +129,7 @@ uint8_t TEST_EXEC__SYS_low_power_mode_error_result_to_json(void)
     "\"ADCS\":\"Successfully Set Low Power Mode\"}";
 
     SYS_low_power_mode_error_enum_t boom_gps_error = SYS_LOW_POWER_MODE_ERROR_BOOM_PINS | SYS_LOW_POWER_MODE_ERROR_GPS;
-    uint8_t boom_gps_result = SYS_low_power_mode_error_result_to_json(boom_gps_error, buffer, sizeof(buffer));
+    uint8_t boom_gps_result = SYS_low_power_mode_result_to_json(boom_gps_error, buffer, sizeof(buffer));
     TEST_ASSERT(boom_gps_result == 0);
     TEST_ASSERT(strcmp(buffer, boom_gps_error_json) == 0);
 
@@ -137,20 +137,20 @@ uint8_t TEST_EXEC__SYS_low_power_mode_error_result_to_json(void)
 
     // Test case 4: Zero buffer size
     SYS_low_power_mode_error_enum_t zero_size_error = SYS_LOW_POWER_MODE_ERROR_MPI_5V;
-    uint8_t zero_size_result = SYS_low_power_mode_error_result_to_json(zero_size_error, buffer, 0);
+    uint8_t zero_size_result = SYS_low_power_mode_result_to_json(zero_size_error, buffer, 0);
     TEST_ASSERT(zero_size_result == 1); // Expecting failure due to zero buffer size
     TEST_ASSERT(strcmp(buffer, "") == 0); // Buffer should remain empty
 
     // Test case 5: Buffer too small
     char small_buffer[10] = {0};
     SYS_low_power_mode_error_enum_t small_buffer_error = SYS_LOW_POWER_MODE_ERROR_GPS;
-    uint8_t small_buffer_result = SYS_low_power_mode_error_result_to_json(small_buffer_error, small_buffer, sizeof(small_buffer));
+    uint8_t small_buffer_result = SYS_low_power_mode_result_to_json(small_buffer_error, small_buffer, sizeof(small_buffer));
     TEST_ASSERT(small_buffer_result == 1);
     TEST_ASSERT(strcmp(small_buffer, "") == 0); // Buffer should remain empty
 
     // Test case 6: NULL buffer
     SYS_low_power_mode_error_enum_t null_buffer_error = SYS_LOW_POWER_MODE_ERROR_ADCS;
-    uint8_t null_buffer_result = SYS_low_power_mode_error_result_to_json(null_buffer_error, NULL, sizeof(buffer));
+    uint8_t null_buffer_result = SYS_low_power_mode_result_to_json(null_buffer_error, NULL, sizeof(buffer));
     TEST_ASSERT(null_buffer_result == 1); // Expecting failure due to NULL buffer
 
     return 0;
