@@ -317,7 +317,7 @@ uint8_t EPS_struct_pbu_housekeeping_data_eng_TO_json(const EPS_struct_pbu_housek
         return 2; // Error: vip_total_input conversion failed
     }
 
-    // Convert battery_pack_info_each_pack[3] to JSON.
+    // Convert battery_pack_info_each_pack[0] to JSON.
     // Note: Only the first battery pack is rendered, as our EPS only has 1 battery pack.
     char battery_pack_info_json[300];
     json_ret_code = EPS_battery_pack_datatype_eng_TO_json(
@@ -326,7 +326,7 @@ uint8_t EPS_struct_pbu_housekeeping_data_eng_TO_json(const EPS_struct_pbu_housek
         sizeof(battery_pack_info_json)
     );
     if (json_ret_code != 0) {
-        return 3; // Error: battery_pack_info_each_pack[i] conversion failed
+        return 3; // Error: battery_pack_info_each_pack[0] conversion failed
     }
     
 
