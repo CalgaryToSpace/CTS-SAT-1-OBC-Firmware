@@ -51,6 +51,11 @@ uint8_t TCMDEXEC_eps_get_pbu_abf_placed_state_json(
     char *response_output_buf, uint16_t response_output_buf_len
 );
 
+uint8_t TCMDEXEC_eps_get_pdu_data_for_single_channel_json(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+);
+
 uint8_t TCMDEXEC_eps_get_pdu_housekeeping_data_eng_json(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
