@@ -1383,8 +1383,9 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
         return download_burst_status | (1 << 5);
     }
 
-    HAL_Delay(100); // need to allow some time for it to initiate the burst, or else the first packet may be garbage
-    
+    HAL_Delay(200); // need to allow some time (100ms) for it to initiate the burst, or else the first packet may be garbage
+    HAL_IWDG_Refresh(WATCHDOG); // pet the watchdog so the system doesn't reboot; must be at least 200ms since last pet
+
     for (uint16_t i = 0; i < 1024; i++) {
         // load 20 bytes at a time into the download buffer
         const uint8_t download_buffer_status = ADCS_get_file_download_buffer(&(download_packet));
@@ -1433,8 +1434,6 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
 
     while (required_packets < packets_received) {
 
-        HAL_IWDG_Refresh(WATCHDOG); // pet the watchdog so the system doesn't reboot
-
         for (uint8_t i = 0; i < 8; i++) {
             uint8_t hole_map_slice[16];
 
@@ -1456,7 +1455,8 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
             return download_burst_status | (1 << 8);
         }
         
-        HAL_Delay(100);
+        HAL_Delay(200);
+        HAL_IWDG_Refresh(WATCHDOG); // pet the watchdog so the system doesn't reboot; must be at least 200ms since last pet
 
         for (uint16_t i = 0; i < 1024; i++) {
             // load 20 bytes at a time into the download buffer
@@ -1508,7 +1508,7 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
         // if this is the final block, we may need to write fewer bytes than the maximum
         bytes_to_write = ceil((file_info.file_size - (20480 * current_block)));
     } else {
-        bytes_to_write = 20480; // TODO: test to make sure the correct number of bytes are written
+        bytes_to_write = 20480;
     }     
     
     // Write to the index file in the filesystem
@@ -1549,7 +1549,7 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
         */
             
         const uint8_t reset_pointer_status = ADCS_reset_file_list_read_pointer();
-        HAL_Delay(100);
+        HAL_Delay(200);
         if (reset_pointer_status != 0) {
             // to avoid interference from the EPS, do a separate ack for these commands
             ADCS_cmd_ack_struct_t ack_status;
