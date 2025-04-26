@@ -30,7 +30,12 @@ uint8_t EPS_vpid_eng_TO_json(const EPS_vpid_eng_t *data, char json_output_str[],
 }
 
 
-uint8_t EPS_battery_pack_datatype_eng_TO_json(const EPS_battery_pack_datatype_eng_t *data, char json_output_str[], uint16_t json_output_str_len) {
+uint8_t EPS_battery_pack_datatype_eng_TO_json(
+    const EPS_battery_pack_datatype_eng_t *data,
+    char json_output_str[],
+    uint16_t json_output_str_len,
+    uint8_t enable_show_unsupported_fields // 0=hide; normal option
+) {
     if (data == NULL || json_output_str == NULL || json_output_str_len < 10) {
         return 1; // Error: Invalid input
     }
@@ -41,18 +46,33 @@ uint8_t EPS_battery_pack_datatype_eng_TO_json(const EPS_battery_pack_datatype_en
         return json_ret_code + 32; // Error: subfunction error
     }
 
-    int snprintf_ret = snprintf(
-        json_output_str, json_output_str_len,
-        "{\"vip_bp_input\":%s,\"bp_status_bitfield\":%d,\"cell_voltage_each_cell_mV\":[%d,%d,%d,%d],\"battery_temperature_each_sensor_cC\":[%d,%d,%d]}",
-        vip_bp_input_json,
-        data->bp_status_bitfield,
-        data->cell_voltage_each_cell_mV[0],
-        data->cell_voltage_each_cell_mV[1],
-        data->cell_voltage_each_cell_mV[2],
-        data->cell_voltage_each_cell_mV[3],
-        data->battery_temperature_each_sensor_cC[0],
-        data->battery_temperature_each_sensor_cC[1],
-        data->battery_temperature_each_sensor_cC[2]);
+    int snprintf_ret;
+    if (enable_show_unsupported_fields) {
+        snprintf_ret = snprintf(
+            json_output_str, json_output_str_len,
+            "{\"vip_bp_input\":%s,\"bp_status_bitfield\":%d,\"cell_voltage_each_cell_mV\":[%d,%d,%d,%d],\"battery_temperature_each_sensor_cC\":[%d,%d,%d]}",
+            vip_bp_input_json,
+            data->bp_status_bitfield,
+            data->cell_voltage_each_cell_mV[0],
+            data->cell_voltage_each_cell_mV[1],
+            data->cell_voltage_each_cell_mV[2],
+            data->cell_voltage_each_cell_mV[3],
+            data->battery_temperature_each_sensor_cC[0],
+            data->battery_temperature_each_sensor_cC[1],
+            data->battery_temperature_each_sensor_cC[2]
+        );
+    }
+    else {
+        // Hide battery_temperature_each_sensor_cC[0], and remove the "cell_voltage_each_cell_mV" key entirely.
+        snprintf_ret = snprintf(
+            json_output_str, json_output_str_len,
+            "{\"vip_bp_input\":%s,\"bp_status_bitfield\":%d,\"battery_temperature_each_sensor_cC\":[%d,%d]}",
+            vip_bp_input_json,
+            data->bp_status_bitfield,
+            data->battery_temperature_each_sensor_cC[1],
+            data->battery_temperature_each_sensor_cC[2]
+        );
+    }
 
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error
@@ -323,7 +343,8 @@ uint8_t EPS_struct_pbu_housekeeping_data_eng_TO_json(const EPS_struct_pbu_housek
     json_ret_code = EPS_battery_pack_datatype_eng_TO_json(
         &(data->battery_pack_info_each_pack[0]),
         battery_pack_info_json,
-        sizeof(battery_pack_info_json)
+        sizeof(battery_pack_info_json),
+        0 // Disable showing unsupported fields
     );
     if (json_ret_code != 0) {
         return 3; // Error: battery_pack_info_each_pack[0] conversion failed
