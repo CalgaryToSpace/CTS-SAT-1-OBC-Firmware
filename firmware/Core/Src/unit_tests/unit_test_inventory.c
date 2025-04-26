@@ -571,9 +571,9 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func_name = "low_power_mode_error_enum_to_string"
     },
     {
-        .test_func = TEST_EXEC__SYS_low_power_mode_error_result_to_json,
+        .test_func = TEST_EXEC__SYS_low_power_mode_result_to_json,
         .test_file = "system/system_low_power_mode",
-        .test_func_name = "low_power_mode_error_result_to_json"
+        .test_func_name = "low_power_mode_result_to_json"
     },
     // ****************** END SECTION: test_system ******************
 };
