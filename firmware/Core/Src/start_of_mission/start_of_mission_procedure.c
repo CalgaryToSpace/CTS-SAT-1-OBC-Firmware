@@ -43,14 +43,12 @@ uint32_t DETECT_tumble()
     float angular_velocity[3] = {0.0f, 0.0f, 0.0f};
 
     // Get angular velocity from ADCS sensors
-    struct packed_velocities {
-        uint32_t values[3];
-    } vel_out;
+    ADCS_angular_rates_struct_t vel_out;
     if (ADCS_get_estimate_angular_rates(&vel_out) == 0)
     {
-        angular_velocity[0] = (float)vel_out.values[0];
-        angular_velocity[1] = (float)vel_out.values[1];
-        angular_velocity[2] = (float)vel_out.values[2];
+        angular_velocity[0] = (float)vel_out.x_rate_mdeg_per_sec / 1000.0f;
+        angular_velocity[1] = (float)vel_out.y_rate_mdeg_per_sec / 1000.0f;
+        angular_velocity[2] = (float)vel_out.z_rate_mdeg_per_sec / 1000.0f;
 
         // Check if angular velocity exceeds threshold for tumbling
         float MIN_THRESHOLD_X = -0.2f;
@@ -76,9 +74,4 @@ uint32_t DETECT_tumble()
         tumble_detected = 2; // Default to not tumbling if error occurs
     }
     return tumble_detected;
-}
-
-uint32_t SET_power_control()
-{
-    uint8_t magnetometer_mode = 0;
 }
