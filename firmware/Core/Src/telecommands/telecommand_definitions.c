@@ -1241,7 +1241,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "boom_deploy_timed",
         .tcmd_func = TCMDEXEC_boom_deploy_timed,
-        .number_of_args = 1,
+        .number_of_args = 2,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     // ****************** END SECTION: boom_deploy_telecommand_defs ******************
