@@ -218,6 +218,54 @@ uint8_t TCMD_get_suffix_tag_hex_array(const char *str, const char *tag_name, uin
     return 0;
 }
 
+
+/// @brief Searches for a `str` like `\@tag_name=xxxx`, and sets uint8_t array `xxxx` into `value_dest`.
+/// @param str The string to search within for the tag. Excluding the tag name, the length of the string must be 256 characters.
+/// @param tag_name The tag to search for, including the '@' and '='.
+/// @param value_dest The destination for the value. `*value_dest` will be set.
+/// @return 0 if the tag was found successfully. >0 if the tag was not found, or there was an error.
+/// @note This function will return an error if the character after the string is not one of the following: {'#', '@', '\0', '!'}.
+uint8_t TCMD_get_suffix_tag_str(const char *str, const char *tag_name, char *value_dest, uint16_t value_dest_max_len) {
+   
+    // Find the tag in the string
+    const int16_t tag_index = GEN_get_index_of_substring_in_array(str, strlen(str), tag_name);
+    if (tag_index < 0) {
+        return 1;
+    }
+    // Find the start of the value, then do safety check.
+    const uint16_t value_start_index = tag_index + strlen(tag_name);
+    if (value_start_index >= strlen(str)) {
+        return 2;
+    }
+    // Find the end of the value
+    uint16_t value_end_index = value_start_index;
+    
+    // This check is sufficient as a string can be a combination of chars,numbers,and '_'
+    while (TCMD_is_char_valid_telecommand_name_char(str[value_end_index])) {
+        value_end_index++;
+    }
+    const uint16_t value_len = value_end_index - value_start_index;
+
+    if (value_len == 0) {
+        return 3;
+    }
+    
+    if (value_len >= value_dest_max_len) {
+        return 4;
+    }
+
+    // Check that the character after the number is any of '#', '@', '!', or '\0'
+    if (str[value_end_index] != '#' && str[value_end_index] != '@' && str[value_end_index] != '\0' && str[value_end_index] != '!') {
+        return 5;
+    }
+    
+    strncpy(value_dest, str + value_start_index, value_len);
+    value_dest[value_len] = '\0'; // Ensure string is null-terminated
+    
+    return 0;
+}
+
+
 /// @brief Parses a telecommand into everything needed to execute it.
 /// @param tcmd_str The telecommand string to parse. Must be null-terminated.
 /// @param parsed_tcmd_output Pointer to the output struct, which is modified by this function.
