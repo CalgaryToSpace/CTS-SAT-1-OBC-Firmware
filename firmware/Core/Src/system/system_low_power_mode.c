@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 
-/// @brief Enters low power mode by disabling all non-essential channels.
+/// @brief Enters low power mode by disabling all non-essential channels, disabling Boom pins
 /// @note Essential channels are: EPS, OBC, COMMS
 /// @note GPS and ADCS Channels are always on, must enter "low power mode" instead of disabling channels
 /// @return 0 on success, more than 0 on failure.
@@ -99,7 +99,7 @@ uint8_t SYS_check_eps_and_enter_low_power_mode()
         SYS_low_power_mode_result_to_json(result_low_power_mode, enter_low_power_mode_json, sizeof(enter_low_power_mode_json));
         LOG_message(
             LOG_SYSTEM_OBC,
-            LOG_SEVERITY_ERROR,
+            result_low_power_mode ? LOG_SEVERITY_ERROR : LOG_SEVERITY_NORMAL,
             LOG_SINK_ALL,
             "%s",
             enter_low_power_mode_json
@@ -142,7 +142,7 @@ uint8_t SYS_check_battery_and_enter_low_power_mode()
         SYS_low_power_mode_result_to_json(result_low_power_mode, enter_low_power_mode_json, sizeof(enter_low_power_mode_json));
         LOG_message(
             LOG_SYSTEM_OBC,
-            LOG_SEVERITY_ERROR,
+            result_low_power_mode ? LOG_SEVERITY_ERROR : LOG_SEVERITY_NORMAL,
             LOG_SINK_ALL,
             "%s",
             enter_low_power_mode_json
