@@ -159,3 +159,65 @@ uint8_t TEST_EXEC_TCMD_parse_full_telecommand() {
 
     return 0;
 }
+
+uint8_t TEST_EXEC__TCMD_process_suffix_tag_tssent() {
+    uint64_t tssent_time_ms = 0;
+
+    // Test case: Valid @tssent tag
+    TEST_ASSERT(TCMD_process_suffix_tag_tssent("@tssent=1234567890", strlen("@tssent=1234567890"), &tssent_time_ms) == 0);
+    TEST_ASSERT(tssent_time_ms == 1234567890);
+
+    // Test case: Missing @tssent tag
+    TEST_ASSERT(TCMD_process_suffix_tag_tssent("@tsexec=1234567890", strlen("@tsexec=1234567890"), &tssent_time_ms) == 0);
+
+    // Test case: Invalid @tssent tag format
+    TEST_ASSERT(TCMD_process_suffix_tag_tssent("@tssent=abcd", strlen("@tssent=abcd"), &tssent_time_ms) == 1);
+
+    // Test case: Empty string
+    TEST_ASSERT(TCMD_process_suffix_tag_tssent("", 0, &tssent_time_ms) == 0);
+
+    return 0;
+}
+
+uint8_t TEST_EXEC__TCMD_process_suffix_tag_tsexec() {
+    uint64_t tsexec_time_ms = 0;
+
+    // Test case: Valid @tsexec tag
+    TEST_ASSERT(TCMD_process_suffix_tag_exec("@tsexec=9876543210", strlen("@tsexec=9876543210"), &tsexec_time_ms) == 0);
+    TEST_ASSERT(tsexec_time_ms == 9876543210);
+
+    // Test case: Missing @tsexec tag
+    TEST_ASSERT(TCMD_process_suffix_tag_exec("@tssent=9876543210", strlen("@tssent=9876543210"), &tsexec_time_ms) == 0);
+
+    // Test case: Invalid @tsexec tag format
+    TEST_ASSERT(TCMD_process_suffix_tag_exec("@tsexec=abcd", strlen("@tsexec=abcd"), &tsexec_time_ms) == 1);
+
+    // Test case: Empty string
+    TEST_ASSERT(TCMD_process_suffix_tag_exec("", 0, &tsexec_time_ms) == 0);
+
+    return 0;
+}
+
+uint8_t TEST_EXEC__TCMD_process_suffix_tag_sha256() {
+    const char *tcmd_str = "CTS1+hello_world()!";
+    const int32_t end_of_args_idx = strlen("CTS1+hello_world()") - 1;
+
+    // Test case: Valid @sha256 tag
+    // Used the following website to compute: https://emn178.github.io/online-tools/sha256.html
+    const char *valid_suffix = "@sha256=9f2c356aee31c00991e024189ec6c602aaee9358dc5cc2d26182e55f98dce181";
+    TEST_ASSERT(TCMD_process_suffix_tag_sha256(valid_suffix, strlen(valid_suffix), tcmd_str, end_of_args_idx) == 0);
+
+    // Test case: Missing @sha256 tag (not required)
+    const char *missing_suffix = "@tssent=1234567890";
+    TEST_ASSERT(TCMD_process_suffix_tag_sha256(missing_suffix, strlen(missing_suffix), tcmd_str, end_of_args_idx) == 0);
+
+    // Test case: Invalid @sha256 tag format
+    const char *invalid_suffix = "@sha256=invalidhash";
+    TEST_ASSERT(TCMD_process_suffix_tag_sha256(invalid_suffix, strlen(invalid_suffix), tcmd_str, end_of_args_idx) == 2);
+
+    // Test case: Mismatched SHA256 hash
+    const char *mismatched_suffix = "@sha256=ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+    TEST_ASSERT(TCMD_process_suffix_tag_sha256(mismatched_suffix, strlen(mismatched_suffix), tcmd_str, end_of_args_idx) == 3);
+
+    return 0;
+}

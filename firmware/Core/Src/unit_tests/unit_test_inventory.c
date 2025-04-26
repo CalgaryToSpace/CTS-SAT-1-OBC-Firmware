@@ -51,7 +51,21 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_file = "telecommands/telecommand_parser",
         .test_func_name = "TCMD_check_starts_with_device_id"
     },
-    
+    {
+        .test_func = TEST_EXEC__TCMD_process_suffix_tag_sha256,
+        .test_file = "telecommands/telecommand_parser",
+        .test_func_name = "TCMD_process_suffix_tag_sha256"
+    },
+    {
+        .test_func = TEST_EXEC__TCMD_process_suffix_tag_tsexec,
+        .test_file = "telecommands/telecommand_parser",
+        .test_func_name = "TCMD_process_suffix_tag_exec"
+    },
+    {
+        .test_func = TEST_EXEC__TCMD_process_suffix_tag_tssent,
+        .test_file = "telecommands/telecommand_parser",
+        .test_func_name = "TCMD_process_suffix_tag_tssent"
+    },
     {
         .test_func = TEST_EXEC__GEN_convert_big_endian_four_byte_array_to_uint32,
         .test_file = "transforms/byte_transforms",

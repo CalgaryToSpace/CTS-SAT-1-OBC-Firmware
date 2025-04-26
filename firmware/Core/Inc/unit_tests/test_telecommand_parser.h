@@ -14,4 +14,8 @@ uint8_t TEST_EXEC__TCMD_ascii_to_double();
 
 uint8_t TEST_EXEC_TCMD_parse_full_telecommand();
 
+uint8_t TEST_EXEC__TCMD_process_suffix_tag_tssent();
+uint8_t TEST_EXEC__TCMD_process_suffix_tag_tsexec();
+uint8_t TEST_EXEC__TCMD_process_suffix_tag_sha256();
+
 #endif // INCLUDE_GUARD__TEST_COMMAND_PARSER_H__
