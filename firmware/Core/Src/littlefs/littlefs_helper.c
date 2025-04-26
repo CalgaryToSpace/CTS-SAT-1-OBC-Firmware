@@ -55,7 +55,7 @@ struct lfs_file_config LFS_file_cfg = {
 
 /// @brief Formats Memory Module so it can successfully mount LittleFS
 /// @param None
-/// @return 0 on success, negative LFS error codes on failure
+/// @return 0 on success, 1 if LFS is already mounted, negative LFS error codes on failure
 int8_t LFS_format()
 {
     if (LFS_is_lfs_mounted) {
