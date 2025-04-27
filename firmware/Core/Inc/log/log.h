@@ -52,6 +52,8 @@ enum {
     LOG_SYSTEM_ON = 1,
 };
 
+extern uint8_t LOG_toggled_sources[15];
+
 void LOG_message(
     LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_t sink_mask,
     const char fmt[], ...
@@ -76,5 +78,6 @@ uint8_t LOG_memory_table_max_entries(void);
 uint8_t LOG_get_memory_table_index_of_most_recent_log_entry(void);
 const char *LOG_get_memory_table_full_message_at_index(uint8_t index);
 const char *LOG_get_most_recent_log_message_text(void);
+LOG_system_enum_t LOG_source_from_str(const char source_name[]);
 
 #endif // __INCLUDE__GUARD__LOG_H_

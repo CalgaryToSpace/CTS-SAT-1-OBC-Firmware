@@ -12,6 +12,25 @@
 
 // Inspired by uLog: https://github.com/rdpoor/ulog
 
+uint8_t LOG_toggled_sources[15] = 
+{
+    1, // LOG_SYSTEM_OBC
+    1, // LOG_SYSTEM_UHF_RADIO
+    1, // LOG_SYSTEM_UMBILICAL_UART
+    1, // LOG_SYSTEM_GPS
+    1, // LOG_SYSTEM_MPI
+    1, // LOG_SYSTEM_EPS
+    1, // LOG_SYSTEM_BOOM
+    1, // LOG_SYSTEM_ADCS
+    1, // LOG_SYSTEM_LFS
+    1, // LOG_SYSTEM_FLASH
+    1, // LOG_SYSTEM_ANTENNA_DEPLOY
+    1, // LOG_SYSTEM_LOG
+    1, // LOG_SYSTEM_TELECOMMAND
+    1, // LOG_SYSTEM_UNIT_TEST
+    1, // LOG_SYSTEM_ALL
+};
+
 // Internal interfaces and variables
 #define LOG_TIMESTAMP_MAX_LENGTH 30
 #define LOG_SINK_NAME_MAX_LENGTH 20
@@ -109,6 +128,9 @@ static const uint16_t LOG_NUMBER_OF_SYSTEMS = sizeof(LOG_systems) / sizeof(LOG_s
 ///     Exclude one or more sinks using LOG_all_sinks_except(...)
 void LOG_message(LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_t sink_mask, const char fmt[], ...)
 {
+    if (LOG_toggled_sources[source] == 0) {
+        return; // Logging is disabled for this source
+    }
     // Ensure quick return if debugging is disabled
     // Needed to maintain good hot-path performance
     if (severity == LOG_SEVERITY_DEBUG) {
@@ -453,3 +475,42 @@ const char *LOG_get_most_recent_log_message_text(void)
     return LOG_memory_table[LOG_memory_index_of_current_log_entry].full_message;
 }
 
+
+LOG_system_enum_t LOG_source_from_str(const char source_name[]) {
+    // Parse Numbers.
+    if (strcmp(source_name, "0") == 0) return LOG_SYSTEM_OBC;
+    if (strcmp(source_name, "1") == 0) return LOG_SYSTEM_UHF_RADIO;
+    if (strcmp(source_name, "2") == 0) return LOG_SYSTEM_UMBILICAL_UART;
+    if (strcmp(source_name, "3") == 0) return LOG_SYSTEM_GPS;
+    if (strcmp(source_name, "4") == 0) return LOG_SYSTEM_MPI;
+    if (strcmp(source_name, "5") == 0) return LOG_SYSTEM_EPS;
+    if (strcmp(source_name, "6") == 0) return LOG_SYSTEM_BOOM;
+    if (strcmp(source_name, "7") == 0) return LOG_SYSTEM_ADCS;
+    if (strcmp(source_name, "8") == 0) return LOG_SYSTEM_LFS; // Engg Model ADCS
+    if (strcmp(source_name, "9") == 0) return LOG_SYSTEM_FLASH;
+    if (strcmp(source_name, "10") == 0) return LOG_SYSTEM_ANTENNA_DEPLOY;
+    if (strcmp(source_name, "11") == 0) return LOG_SYSTEM_LOG;
+    if (strcmp(source_name, "12") == 0) return LOG_SYSTEM_TELECOMMAND;
+    if (strcmp(source_name, "13") == 0) return LOG_SYSTEM_UNIT_TEST;
+    if (strcmp(source_name, "14") == 0) return LOG_SYSTEM_ALL;
+
+    
+    // Parse Strings.
+    if (strcmp(source_name, "OBC") == 0) return LOG_SYSTEM_OBC;
+    if (strcmp(source_name, "UHF_RADIO") == 0) return LOG_SYSTEM_UHF_RADIO;
+    if (strcmp(source_name, "UMBILICAL_UART") == 0) return LOG_SYSTEM_UMBILICAL_UART;
+    if (strcmp(source_name, "GPS") == 0) return LOG_SYSTEM_GPS;
+    if (strcmp(source_name, "MPI") == 0) return LOG_SYSTEM_MPI;
+    if (strcmp(source_name, "EPS") == 0) return LOG_SYSTEM_EPS;
+    if (strcmp(source_name, "BOOM") == 0) return LOG_SYSTEM_BOOM;
+    if (strcmp(source_name, "ADCS") == 0) return LOG_SYSTEM_ADCS;
+    if (strcmp(source_name, "LFS") == 0) return LOG_SYSTEM_LFS; // Engg Model ADCS
+    if (strcmp(source_name, "FLASH") == 0) return LOG_SYSTEM_FLASH;
+    if (strcmp(source_name, "ANTENNA_DEPLOY") == 0) return LOG_SYSTEM_ANTENNA_DEPLOY;
+    if (strcmp(source_name, "LOG") == 0) return LOG_SYSTEM_LOG;
+    if (strcmp(source_name, "TELECOMMAND") == 0) return LOG_SYSTEM_TELECOMMAND;
+    if (strcmp(source_name, "UNIT_TEST") == 0) return LOG_SYSTEM_UNIT_TEST;
+    if (strcmp(source_name, "ALL") == 0) return LOG_SYSTEM_ALL;
+    
+    return LOG_SYSTEM_UNKNOWN;
+}
