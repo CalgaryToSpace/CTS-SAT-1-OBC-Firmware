@@ -368,15 +368,6 @@ uint8_t TCMDEXEC_eps_get_pdu_data_for_single_channel_json(
         return 1;
     }
 
-    // TODO: Remove this log message after testing.
-    LOG_message(
-        LOG_SYSTEM_ANTENNA_DEPLOY,
-        LOG_SEVERITY_ERROR,
-        LOG_SINK_ALL, 
-        "this is the channel name provided from params: %s",
-        channel_str
-    );
-
     // Convert the channel string to an enum value.
     const EPS_CHANNEL_enum_t eps_channel = EPS_channel_from_str(channel_str);
     if (eps_channel == EPS_CHANNEL_UNKNOWN) {
@@ -388,18 +379,6 @@ uint8_t TCMDEXEC_eps_get_pdu_data_for_single_channel_json(
 
     // Convert to a nice channel number.
     const uint8_t eps_channel_num = (uint8_t) eps_channel;
-
-    // TODO: Remove this log message after testing.
-    LOG_message(
-        LOG_SYSTEM_ANTENNA_DEPLOY,
-        LOG_SEVERITY_ERROR,
-        LOG_SINK_ALL, 
-        "eps_channel_num:%d",
-        eps_channel_num
-    );
-
-    // ------------- above is destructuing the args to get valid channel number -------------
-    // ------------- below is getting data from EPS and formatting it -------------
 
     // Define the destination of where data is written into 
     EPS_struct_pdu_housekeeping_data_eng_t data;
