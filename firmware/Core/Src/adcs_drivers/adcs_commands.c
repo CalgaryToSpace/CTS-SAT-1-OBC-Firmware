@@ -1576,10 +1576,6 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
             return file_info_status;
         }
 
-        if (file_info.file_counter != file_index) {
-            return 12;
-        } // make sure that we've properly advanced the file list read pointer
-
         // name file based on type and timestamp
         switch(file_info.file_type) {
 
