@@ -2578,7 +2578,37 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
             }
             break;
         }
-        case ADCS_COMMISSIONING_STEP_ZERO_BIAS_3_AXIS_REACTION_WHEEL_CONTROL: {
+        case ADCS_COMMISSIONING_STEP_X_Z_WHEEL_POLARITY_TEST: {
+            const uint8_t run_mode_status = ADCS_set_run_mode(1);
+            if (run_mode_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS run mode command failed (err %d)", run_mode_status);
+                return 1;
+            }
+            HAL_Delay(ADCS_COMMISSIONING_HAL_DELAY_MS); // delay to set run mode: 250ms of buffer time to match the others
+            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+            if (power_control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS power control command failed (err %d)", power_control_status);
+                return 1;
+            }
+            HAL_Delay(ADCS_COMMISSIONING_HAL_DELAY_MS); // delay to set power mode: 100ms doesn't work, 250 ms does
+            const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MEMS_GYRO_EXTENDED_KALMAN_FILTER);
+            if (estimation_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS attitude estimation mode command failed (err %d)", estimation_status);
+                return 1;
+            }
+            HAL_Delay(ADCS_COMMISSIONING_HAL_DELAY_MS); // delay to set estimation mode: 125ms works alright, 125ms of buffer time
+            const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_NONE, timeout);
+            if (control_status != 0) {
+                 snprintf(response_output_buf, response_output_buf_len,
+                    "ADCS control mode command failed (err %d)", control_status);
+                return 1;
+            }
+            break;
+        }
+        case ADCS_COMMISSIONING_STEP_3_AXIS_REACTION_WHEEL_CONTROL: {
             const uint8_t run_mode_status = ADCS_set_run_mode(1);
             if (run_mode_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
@@ -2601,35 +2631,6 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
             }
             HAL_Delay(ADCS_COMMISSIONING_HAL_DELAY_MS); // delay to set estimation mode: 125ms works alright, 125ms of buffer time
             const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_XYZ_WHEEL, timeout);
-            if (control_status != 0) {
-                 snprintf(response_output_buf, response_output_buf_len,
-                    "ADCS control mode command failed (err %d)", control_status);
-                return 1;
-            }
-            break;
-        }
-        case ADCS_COMMISSIONING_STEP_EKF_WITH_RATE_GYRO_STAR_TRACKER_MEASUREMENTS: {
-            const uint8_t run_mode_status = ADCS_set_run_mode(1);
-            if (run_mode_status != 0) {
-                 snprintf(response_output_buf, response_output_buf_len,
-                    "ADCS run mode command failed (err %d)", run_mode_status);
-                return 1;
-            }  
-            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME);
-            if (power_control_status != 0) {
-                 snprintf(response_output_buf, response_output_buf_len,
-                    "ADCS power control command failed (err %d)", power_control_status);
-                return 1;
-            }
-            HAL_Delay(ADCS_COMMISSIONING_HAL_DELAY_MS); // delay to set power mode: 100ms doesn't work, 250 ms does
-            const uint8_t estimation_status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MEMS_GYRO_EXTENDED_KALMAN_FILTER);
-            if (estimation_status != 0) {
-                 snprintf(response_output_buf, response_output_buf_len,
-                    "ADCS attitude estimation mode command failed (err %d)", estimation_status);
-                return 1;
-            }
-            HAL_Delay(ADCS_COMMISSIONING_HAL_DELAY_MS); // delay to set estimation mode: 125ms works alright, 125ms of buffer time
-            const uint8_t control_status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_NONE, timeout);
             if (control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS control mode command failed (err %d)", control_status);
@@ -2888,14 +2889,14 @@ uint8_t TCMDEXEC_adcs_request_commissioning_telemetry(const char *args_str, TCMD
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);    
             break;
         }
-        case ADCS_COMMISSIONING_STEP_ZERO_BIAS_3_AXIS_REACTION_WHEEL_CONTROL: {
+        case ADCS_COMMISSIONING_STEP_X_Z_WHEEL_POLARITY_TEST: {
             const uint8_t num_logs = 4; 
             const uint8_t period_s = 1; 
             const uint8_t* commissioning_data[4] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_RATE_SENSOR_RATES, ADCS_SD_LOG_MASK_WHEEL_SPEED};
             status = ADCS_set_sd_log_config(log_number, commissioning_data, num_logs, period_s, sd_destination);   
             break;
         }
-        case ADCS_COMMISSIONING_STEP_EKF_WITH_RATE_GYRO_STAR_TRACKER_MEASUREMENTS: {
+        case ADCS_COMMISSIONING_STEP_3_AXIS_REACTION_WHEEL_CONTROL: {
             const uint8_t num_logs = 13; 
             const uint8_t period_s = 10; 
             const uint8_t* commissioning_data[13] = {ADCS_SD_LOG_MASK_FINE_ESTIMATED_ANGULAR_RATES, ADCS_SD_LOG_MASK_ESTIMATED_ATTITUDE_ANGLES, ADCS_SD_LOG_MASK_ESTIMATED_GYRO_BIAS, ADCS_SD_LOG_MASK_ESTIMATION_INNOVATION_VECTOR, 
