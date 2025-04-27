@@ -1,6 +1,7 @@
 #include "telecommand_exec/telecommand_definitions.h"
 #include "telecommand_exec/telecommand_parser.h"
 #include "telecommand_exec/telecommand_args_helpers.h"
+#include "telecommand_exec/telecommand_types.h"
 #include "debug_tools/debug_uart.h"
 #include "transforms/arrays.h"
 #include "crypto/sha256.h"
@@ -219,29 +220,40 @@ uint8_t TCMD_get_suffix_tag_hex_array(const char *str, const char *tag_name, uin
 }
 
 
-/// @brief Searches for a `str` like `\@tag_name=xxxx`, and sets uint8_t array `xxxx` into `value_dest`.
-/// @param str The string to search within for the tag. Excluding the tag name, the length of the string must be 256 characters.
+/// @brief Searches for a `str` like `\@tag_name=xxxx`, and sets char array `xxxx` into `value_dest`.
+/// @param str The string to search within for the tag. Excluding the tag name, the length of the string must be TCMD_MAX_LOG_FILENAME_LEN.
 /// @param tag_name The tag to search for, including the '@' and '='.
 /// @param value_dest The destination for the value. `*value_dest` will be set.
 /// @return 0 if the tag was found successfully. >0 if the tag was not found, or there was an error.
 /// @note This function will return an error if the character after the string is not one of the following: {'#', '@', '\0', '!'}.
 uint8_t TCMD_get_suffix_tag_str(const char *str, const char *tag_name, char *value_dest, uint16_t value_dest_max_len) {
-   
+ 
+    if (str == NULL || tag_name == NULL || value_dest == NULL || value_dest_max_len == 0) {
+        return 10; // invalid arguments
+    }
+
+    const uint16_t str_len = strlen(str);
+
     // Find the tag in the string
-    const int16_t tag_index = GEN_get_index_of_substring_in_array(str, strlen(str), tag_name);
+    const int16_t tag_index = GEN_get_index_of_substring_in_array(str, str_len, tag_name);
     if (tag_index < 0) {
         return 1;
     }
+
     // Find the start of the value, then do safety check.
-    const uint16_t value_start_index = tag_index + strlen(tag_name);
-    if (value_start_index >= strlen(str)) {
+    const uint16_t tag_len = strlen(tag_name);
+    const uint16_t value_start_index = tag_index + tag_len;
+    if (value_start_index >= str_len) {
         return 2;
     }
     // Find the end of the value
     uint16_t value_end_index = value_start_index;
     
     // This check is sufficient as a string can be a combination of chars,numbers,and '_'
-    while (TCMD_is_char_valid_telecommand_name_char(str[value_end_index])) {
+    while (value_end_index < str_len &&  
+          (TCMD_is_char_valid_telecommand_name_char(str[value_end_index]) || 
+           str[value_end_index] == '.' || str[value_end_index] == '-')) 
+    {
         value_end_index++;
     }
     const uint16_t value_len = value_end_index - value_start_index;
@@ -414,8 +426,13 @@ uint8_t TCMD_parse_full_telecommand(
         case 3: return 110;
         default: break; // add additional cases as needed
     }
+
     // Extract @log_filename=xxxx from the telecommand string, starting at &tcmd_str[end_of_args_idx]
-    TCMD_process_suffix_tag_log_filename(tcmd_suffix_tag_str);
+    char tcmd_suffix_log_filename[TCMD_MAX_LOG_FILENAME_LEN] = {0};
+    const uint8_t log_filename_result= TCMD_process_suffix_tag_log_filename(tcmd_suffix_tag_str, tcmd_suffix_tag_str_len, tcmd_suffix_log_filename, sizeof(tcmd_suffix_log_filename));
+    if (log_filename_result != 0) {
+        return 115;
+    }
 
     // Check that the args_str_no_parens is not too long.
     // Note: `arg_len` does not include the null terminator, but `TCMD_ARGS_STR_NO_PARENS_SIZE` does.
@@ -452,17 +469,12 @@ uint8_t TCMD_parse_full_telecommand(
     parsed_tcmd_output->timestamp_sent = timestamp_sent;
     parsed_tcmd_output->timestamp_to_execute = timestamp_to_execute;
     parsed_tcmd_output->tcmd_channel = tcmd_channel;
+    memcpy(parsed_tcmd_output->log_filename, tcmd_suffix_log_filename, sizeof(tcmd_suffix_log_filename));
+
     return 0;
 }
 
-void TCMD_process_suffix_tag_log_filename(const char *tcmd_suffix_tag_str)
-{
-    char buf[100] = {0};
-    const uint8_t res = TCMD_get_suffix_tag_str(tcmd_suffix_tag_str, "@log_filename=", buf, sizeof(buf));
-    LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-        "TCMD_parse_full_telecommand: res: %u, log_filename tag: %s", res, buf);
-}
+
 /// @brief Parses the @tssent=xxxx tag from the telecommand string.
 /// @param tcmd_suffix_tag_str The telecommand suffix tag string. 
 /// @param tcmd_suffix_tag_str_len The length of the telecommand suffix tag string. 
@@ -562,5 +574,32 @@ uint8_t TCMD_process_suffix_tag_sha256(const char *tcmd_suffix_tag_str, const ui
         );
         return 3;
     }
+    return 0;
+}
+
+/// @brief Parses the @log_filename=xxxx tag from the telecommand string.
+/// @param tcmd_suffix_tag_str The telecommand suffix tag string. 
+/// @param tcmd_suffix_tag_str_len The length of the telecommand suffix tag string.
+/// @param log_filename The destination for the log filename.
+/// @param log_filename_len The length of the log filename.
+/// @details The log filename is the name of the file to which the telecommand will be logged.
+/// @details If the length of the filename is > TCMD_MAX_LOG_FILENAME_LEN, the filename will be truncated.
+/// @return 0 if the tag was found successfully or the tag is not present. >0 if there was an error. 
+uint8_t TCMD_process_suffix_tag_log_filename(const char *tcmd_suffix_tag_str, const uint16_t tcmd_suffix_tag_str_len, char * log_filename, const uint8_t log_filename_len)
+{
+    if (GEN_get_index_of_substring_in_array(tcmd_suffix_tag_str, tcmd_suffix_tag_str_len, "@log_filename=") < 0) { 
+        // The "@log_filename=" tag was not found, so return 0.
+        return 0;
+    } 
+
+    // The "@log_filename=" tag was found, so parse it.
+    if (TCMD_get_suffix_tag_str(tcmd_suffix_tag_str, "@log_filename=", log_filename, log_filename_len) != 0) {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error: TCMD_parse_full_telecommand: failed to parse present @log_filename=xxxx."
+        );
+        return 1;
+    }
+
     return 0;
 }

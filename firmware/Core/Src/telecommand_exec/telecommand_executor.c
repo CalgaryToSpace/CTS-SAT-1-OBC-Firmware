@@ -1,4 +1,3 @@
-
 #include "telecommand_exec/telecommand_parser.h"
 #include "telecommand_exec/telecommand_definitions.h"
 #include "telecommand_exec/telecommand_executor.h"
@@ -8,6 +7,7 @@
 #include "log/log.h"
 #include "transforms/arrays.h"
 #include "config/configuration.h"
+#include "littlefs/littlefs_helper.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -155,7 +155,7 @@ int16_t TCMD_get_next_tcmd_agenda_slot_to_execute() {
 /// @return 0 on success, 254 if `tcmd_idx` is out of bounds, otherwise the error code from the telecommand function.
 uint8_t TCMD_execute_parsed_telecommand_now(
     const uint16_t tcmd_idx, const char args_str_no_parens[],
-    TCMD_TelecommandChannel_enum_t tcmd_channel,
+    TCMD_TelecommandChannel_enum_t tcmd_channel, const char * tcmd_log_filename,
     char *response_output_buf, uint16_t response_output_buf_size
 ) {
     // Get the telecommand definition.
@@ -202,6 +202,11 @@ uint8_t TCMD_execute_parsed_telecommand_now(
     DEBUG_uart_print_str(response_output_buf);
     DEBUG_uart_print_str("\n");
 
+    // If the filename is not empty, log the telecommand to the file.
+    if (tcmd_log_filename != NULL && strlen(tcmd_log_filename) > 0) {
+        // Internally Logs errors, no point in collecting error here
+        TCMD_log_to_file(tcmd_log_filename, response_output_buf);
+    }
     return tcmd_result;
 }
 
@@ -243,10 +248,40 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
         TCMD_agenda[tcmd_agenda_slot_num].tcmd_idx,
         TCMD_agenda[tcmd_agenda_slot_num].args_str_no_parens,
         TCMD_agenda[tcmd_agenda_slot_num].tcmd_channel,
+        TCMD_agenda[tcmd_agenda_slot_num].log_filename,
         response_output_buf,
         response_output_buf_size
     );
 }
+
+/// @brief Logs a message to a file.
+/// @param filename The name of the file to log to.
+/// @param message The message to log.
+/// @return 0 on success, 1 if writing to the file failed.
+/// @note This function is used to log telecommand responses to a file.
+uint8_t TCMD_log_to_file(const char *filename, const char *message)
+{
+    const int8_t write_file_return = LFS_write_file(
+        filename,
+        (uint8_t *)message,
+        strlen(message)
+    );
+    if (write_file_return != 0) {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error: TCMD_log_to_file: Failed to write to file '%s'. Error code: %d",
+            filename,
+            write_file_return
+        );
+        return 1;
+    }
+    LOG_message(
+        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "TCMD_log_to_file: Successfully wrote to file '%s'.",
+        filename
+    );
+    return 0;
+} 
 
 /// @brief Deletes all entries from the agenda.
 /// @return Cannot fail, so no return value.
