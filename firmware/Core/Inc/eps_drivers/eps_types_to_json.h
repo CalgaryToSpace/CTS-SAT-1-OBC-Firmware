@@ -14,7 +14,8 @@ uint8_t EPS_vpid_eng_TO_json(
 uint8_t EPS_battery_pack_datatype_eng_TO_json(
     const EPS_battery_pack_datatype_eng_t *data,
     char json_output_str[],
-    uint16_t json_output_str_len
+    uint16_t json_output_str_len,
+    uint8_t enable_show_unsupported_fields
 );
 
 uint8_t EPS_struct_system_status_TO_json(
