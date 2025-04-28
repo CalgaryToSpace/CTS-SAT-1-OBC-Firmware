@@ -1,5 +1,6 @@
 #include "main.h"
 #include "comms_drivers/ax100_tx.h"
+#include "comms_drivers/ax100_hw.h"
 #include "log/log.h"
 
 #include <string.h>
@@ -19,8 +20,7 @@ static const uint32_t use_rdp = 0 << 1; // rdp
 static const uint32_t use_crc = 0; // crc
 
 
-static const uint8_t ax100_i2c_addr = 0x05 << 1;
-static const uint32_t ax100_i2c_timeout_ms = 1000;
+static const uint32_t AX100_i2c_tx_timeout_ms = 100;
 
 
 /// @brief Write the csp header (4 bytes) to the beginning of the packet, then copy the rest of `data` into `destination`.
@@ -29,21 +29,22 @@ static const uint32_t ax100_i2c_timeout_ms = 1000;
 /// @param data_len length of data
 static void prepend_csp_header(uint8_t *destination, uint8_t *data, uint32_t data_len) {
     // Construct csp header as uint32.
-    uint8_t csp_header[4];
+    uint8_t csp_header[AX100_CSP_HEADER_LENGTH_BYTES];
 
+    // TODO: Rewrite this to do the shifting in the construction here.
     *((uint32_t *)csp_header) = (
         csp_priority | own_csp_addr | ground_station_csp_addr | ground_station_csp_port
         | own_csp_port | use_hmac | use_xtea | use_rdp | use_crc
     );
 
-    // put in big endian
+    // Put in big endian.
     destination[0] = csp_header[3];
     destination[1] = csp_header[2];
     destination[2] = csp_header[1];
     destination[3] = csp_header[0];
 
-    // Copy data into packet
-    memcpy(destination + 4, data, data_len);
+    // Copy data into packet.
+    memcpy(destination + AX100_CSP_HEADER_LENGTH_BYTES, data, data_len);
 }
 
 
@@ -51,11 +52,11 @@ static void prepend_csp_header(uint8_t *destination, uint8_t *data, uint32_t dat
 /// @note Only use in this file.
 static uint8_t send_bytes_to_ax100(uint8_t *packet, uint16_t packet_size) {
     const HAL_StatusTypeDef status = HAL_I2C_Master_Transmit(
-        &hi2c1, 
-        ax100_i2c_addr, 
+        AX100_I2C_HANDLE,
+        AX100_I2C_ADDR << 1, 
         packet,
         packet_size, 
-        ax100_i2c_timeout_ms
+        AX100_i2c_tx_timeout_ms
     );
     
     if (status != HAL_OK) {
@@ -71,15 +72,13 @@ static uint8_t send_bytes_to_ax100(uint8_t *packet, uint16_t packet_size) {
 
 
 
-/// @brief send data to the ax100 for downlink
+/// @brief Send data to the ax100 for downlink
 /// @param data pointer to the data to downlink
 /// @param data_len length of the data
-/// @return 0 on success, 1 on failure
+/// @return 0 on success, >0 on error/failure
 uint8_t AX100_downlink_bytes(uint8_t *data, uint32_t data_len) {
-    //TODO: For now, only send as much data as can fit in one packet, we could use/implement rdp to allow downlinking of arbitrary amounts of data.
-    if (data_len + 4 > AX100_DOWNLINK_MAX_BYTES) {
-        // TODO: Maybe chunk into several frames instead of truncating here.
-        data_len = AX100_DOWNLINK_MAX_BYTES - 4;
+    if (data_len + AX100_CSP_HEADER_LENGTH_BYTES > AX100_DOWNLINK_MAX_BYTES) {
+        data_len = AX100_DOWNLINK_MAX_BYTES - AX100_CSP_HEADER_LENGTH_BYTES;
     }
 
     uint8_t packet[data_len + 4];

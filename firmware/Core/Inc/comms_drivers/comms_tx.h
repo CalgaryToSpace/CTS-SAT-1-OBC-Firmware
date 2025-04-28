@@ -13,6 +13,9 @@ typedef enum {
     COMMS_PACKET_TYPE_DOWNLINK_LAST_PACKET = 0x07
 } COMMS_packet_type_enum_t;
 
+// (AX100_DOWNLINK_MAX_BYTES - 1-8-1-2-1-1)
+#define COMMS_TCMD_RESPONSE_PACKET_MAX_DATA_BYTES_PER_PACKET 186
+
 #pragma pack(push, 1)
 
 typedef struct {
@@ -21,8 +24,10 @@ typedef struct {
     uint64_t ts_sent;        // 8 bytes
     uint8_t response_code;   // 1 byte
     uint16_t duration_ms;    // 2 bytes
+    uint8_t response_seq_num; // 1 byte
+    uint8_t response_max_seq_num;   // 1 byte
 
-    uint8_t data[AX100_DOWNLINK_MAX_BYTES];
+    uint8_t data[COMMS_TCMD_RESPONSE_PACKET_MAX_DATA_BYTES_PER_PACKET];
 } COMMS_tcmd_response_packet_t;
 
 #pragma pack(pop)

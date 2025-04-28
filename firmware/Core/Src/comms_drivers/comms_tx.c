@@ -15,15 +15,35 @@ uint8_t COMMS_downlink_tcmd_response(
     packet.duration_ms = duration_ms;
 
     const uint8_t header_len = (
-        sizeof(packet.packet_type)
-        + sizeof(ts_sent) + sizeof(response_code) + sizeof(duration_ms)
+        AX100_DOWNLINK_MAX_BYTES - COMMS_TCMD_RESPONSE_PACKET_MAX_DATA_BYTES_PER_PACKET
     );
 
-    if (response_len > AX100_DOWNLINK_MAX_BYTES - header_len) {
-        response_len = AX100_DOWNLINK_MAX_BYTES - header_len;
+    int32_t remaining_len = response_len;
+    uint8_t response_seq_num = 1;
+    while (remaining_len > 0) {
+        uint16_t this_packet_len = 0;
+        if (remaining_len > COMMS_TCMD_RESPONSE_PACKET_MAX_DATA_BYTES_PER_PACKET) {
+            packet.response_max_seq_num = response_seq_num;
+            packet.response_seq_num = response_seq_num++;
+
+            this_packet_len = COMMS_TCMD_RESPONSE_PACKET_MAX_DATA_BYTES_PER_PACKET;
+        } else {
+            packet.response_max_seq_num = response_seq_num;
+            packet.response_seq_num = response_seq_num++;
+
+            this_packet_len = response_len;
+        }
+        remaining_len -= this_packet_len;
+
+        // Copy the data into the packet
+        memcpy(
+            packet.data, response, this_packet_len
+        );
+
+        const uint8_t success = AX100_downlink_bytes((uint8_t *)(&packet), response_len + header_len);
+        if (success != 0) {
+            return success;
+        }
     }
-
-    memcpy(packet.data, response, response_len);
-
-    return AX100_downlink_bytes((uint8_t *)(&packet), response_len + header_len);
+    return 0;
 }
