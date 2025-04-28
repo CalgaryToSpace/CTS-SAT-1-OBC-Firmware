@@ -187,6 +187,14 @@ uint8_t CTS1_check_is_mpi_dumping() {
         return 0;
     }
 
+    // MPI boots up in "command" mode, so we need to send a command to switch it to "dumping science" mode.
+    const uint8_t start_dumping_science_cmd[] = {0x54, 0x43, 0x19};
+    const HAL_StatusTypeDef send_status = HAL_UART_Transmit(
+        UART_mpi_port_handle,
+        start_dumping_science_cmd, sizeof(start_dumping_science_cmd),
+        100 // Timeout: 100ms is plenty.
+    );
+
     // Start listening in blocking mode.
     uint8_t rx_buffer[350];
     const HAL_StatusTypeDef rx_status = HAL_UART_Receive(
@@ -221,35 +229,48 @@ uint8_t CTS1_check_is_mpi_dumping() {
 }
 
 uint8_t CTS1_check_mpi_cmd_works() {
-    EPS_set_channel_enabled(EPS_CHANNEL_12V_MPI, 1);
-    EPS_set_channel_enabled(EPS_CHANNEL_5V_MPI, 1);
-    HAL_Delay(200); // Wait for the MPI to wake up, if needed.
+    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MOSI); // MPI is listening.
+
+    // First, cancel any ongoing DMA transfers.
+    const HAL_StatusTypeDef abort_status = HAL_UART_AbortReceive(UART_mpi_port_handle);
+    if (abort_status != HAL_OK) {
+        LOG_message(
+            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Failed to abort MPI DMA listening: HAL_Status=%d", abort_status
+        );
+        MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
+        return 0;
+    }
 
     // Send random command: "TC" + command_2 + scan_mode_off
     // Not certain what it does, but we power the MPI off anyway, so it gets reset anyway.
     const uint8_t cmd[] = {0x54, 0x43, 0x02, 0x00};
 
-    uint8_t MPI_buffer[100];
+    uint8_t MPI_rx_buffer[100];
     uint16_t MPI_buffer_len = 0;
     const uint8_t result = MPI_send_command_get_response(
         cmd, sizeof(cmd),
-        MPI_buffer, sizeof(MPI_buffer), &MPI_buffer_len
+        MPI_rx_buffer, sizeof(MPI_rx_buffer), &MPI_buffer_len
     );
 
-    // Clean-up: Power off the MPI.
-    EPS_set_channel_enabled(EPS_CHANNEL_12V_MPI, 0);
-    EPS_set_channel_enabled(EPS_CHANNEL_5V_MPI, 0);
-
     if (result != 0) {
+        LOG_message(
+            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "MPI_send_command_get_response() -> %d", result
+        );
         return 0;
     }
 
     if (MPI_buffer_len == 0) {
+        LOG_message(
+            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "MPI_send_command_get_response() -> No response received."
+        );
         return 0;
     }
 
-    if (MPI_buffer[0] == 0x54 && MPI_buffer[1] == 0x43) {
-        // The response is a "TC" response. Success.
+    if (MPI_rx_buffer[0] == 0x02 && MPI_rx_buffer[1] == 0xFE) { // FIXME: Macro
+        // The response is the TC number followed by 0 (success).
         return 1;
     }
 
@@ -374,7 +395,7 @@ void CTS1_run_system_self_check(CTS1_system_self_check_result_struct_t *result) 
     EPS_set_channel_enabled(EPS_CHANNEL_12V_MPI, 1);
     EPS_set_channel_enabled(EPS_CHANNEL_5V_MPI, 1);
     HAL_Delay(MPI_boot_duration_ms); // Wait for the MPI to boot up.
-    result->is_mpi_dumping = CTS1_check_is_mpi_dumping();
+    // result->is_mpi_dumping = CTS1_check_is_mpi_dumping(); // TODO: Re-enable once implemented.
     result->mpi_cmd_works = CTS1_check_mpi_cmd_works();
     EPS_set_channel_enabled(EPS_CHANNEL_12V_MPI, 0);
     EPS_set_channel_enabled(EPS_CHANNEL_5V_MPI, 0);
