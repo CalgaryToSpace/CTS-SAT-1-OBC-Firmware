@@ -12,7 +12,7 @@ typedef struct {
     uint8_t is_gnss_responsive;
     uint8_t is_eps_responsive;
     uint8_t is_eps_thriving;
-    uint8_t is_mpi_dumping;
+    uint8_t mpi_science_rx;
     uint8_t mpi_cmd_works;
     uint8_t is_camera_responsive;
 

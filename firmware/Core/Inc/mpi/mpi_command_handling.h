@@ -6,6 +6,8 @@
 
 #include "mpi/mpi_types.h"
 
+static const uint8_t MPI_COMMAND_SUCCESS_RESPONSE_VALUE = 0xFE; // 0xFE = 254
+
 /// @brief Current mode under which the MPI is being operated.
 extern volatile MPI_rx_mode_t MPI_current_uart_rx_mode;
 
