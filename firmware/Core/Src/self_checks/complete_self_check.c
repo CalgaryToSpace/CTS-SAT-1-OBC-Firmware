@@ -196,6 +196,14 @@ uint8_t CTS1_check_mpi_science_rx() {
         start_dumping_science_cmd, sizeof(start_dumping_science_cmd),
         100 // Timeout: 100ms is plenty.
     );
+    if (send_status != HAL_OK) {
+        LOG_message(
+            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Failed to send MPI command: HAL_Status=%d", send_status
+        );
+        MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
+        return 0;
+    }
 
     MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MISO); // Receive from MPI.
 
@@ -280,6 +288,7 @@ uint8_t CTS1_check_mpi_cmd_works() {
         LOG_message(
             LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "MPI_send_command_get_response() response was %d bytes. Starting with: [d%d, d%d]",
+            MPI_buffer_len,
             MPI_rx_buffer[0], MPI_rx_buffer[1]
         );
         return 0;
