@@ -534,10 +534,9 @@ uint8_t TCMD_process_suffix_tag_tsexec(const char *tcmd_suffix_tag_str, const ui
 /// @return 0 if the tag was found successfully or the tag is not present (and not required) . >0 if there was an error. 
 uint8_t TCMD_process_suffix_tag_sha256(const char *tcmd_suffix_tag_str, const uint16_t tcmd_suffix_tag_str_len, const char * tcmd_str, const int32_t end_of_args_idx)
 {
-    uint8_t sha256_tag_is_present = 0;
-    if (GEN_get_index_of_substring_in_array(tcmd_suffix_tag_str, tcmd_suffix_tag_str_len, "@sha256=") >= 0) { 
-        sha256_tag_is_present = 1;
-    } 
+    // will be -1 if the tag is not present, and >= 0 if it is present.
+    // int16_t because max value of int8_t is 127, and this could be past that point in the string
+    int16_t sha256_tag_is_present = GEN_get_index_of_substring_in_array(tcmd_suffix_tag_str, tcmd_suffix_tag_str_len, "@sha256=") >= 0;
 
     if (!TCMD_require_valid_sha256 && !sha256_tag_is_present) {
         // No sha256 tag is present, and we don't require it. So return 0.
