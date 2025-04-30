@@ -58,43 +58,82 @@ uint8_t TCMDEXEC_gps_send_cmd_ascii(const char *args_str, TCMD_TelecommandChanne
             "GPS Response Code: %d",
             gps_cmd_response
         );
+    }
 
-        // Check if GPS Log directory is present
-        int8_t littlefs_response = LFS_mount();
-        
-        //TODO: Put more thought into handling the lfs error codes
-        if(littlefs_response !=0){
-            LOG_message(
-                LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-                "LFS ERROR: Not Mounted"
-            );
-        }
+    LOG_message(
+        LOG_SYSTEM_GPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "GPS_rx_buffer: %s",
+        GPS_rx_buffer
+    );
 
-        // Create the dir and if dir is present, throw warning
-        littlefs_response =  LFS_make_directory("gps_logs");
-        if(littlefs_response == -2){
-            LOG_message(
-                LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-                "LFS WARNING: Dicrectory already exists"
-            );
-        }
+    // Mount the Memory Module
+    const int8_t mount_result = LFS_mount();
+    if(mount_result !=0){
+        LOG_message(
+            LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "LFS ERROR: Mounting error: %d",
+            mount_result
+        );
 
-        // Get the current time to name the file
-        char timeresponse [100];
-        TIM_get_timestamp_string_datetime(timeresponse, sizeof(timeresponse));
+        // TODO: Handle Mounting Error. Treating it as a warning
+    }
 
-        char full_path[200];
-        snprintf(full_path, sizeof(full_path), "gps_logs/%s", timeresponse);
+    // Create the gps file directory and if the directory is present, throw warning
+    const int8_t dir_creation_response =  LFS_make_directory("gps_logs");
+    if(dir_creation_response == -2){
+        LOG_message(
+            LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "LFS WARNING: Dicrectory already exists"
+        );
+    }
 
-        // write to lfs
-        LFS_write_file(full_path,GPS_rx_buffer,GPS_rx_buffer_len);
+    // Creating the file name to store the gps response using the timestamp of the file creation as an identifier
+    char timeresponse [50];
+    TIM_get_timestamp_string_datetime(timeresponse, sizeof(timeresponse));
 
-        littlefs_response = LFS_unmount();
-        // Add checck for this
+    char gps_file_path[100];
+    snprintf(gps_file_path, sizeof(gps_file_path), "gps_logs/%s.txt", timeresponse);
 
-        //TODO: To test this, use the read telecommand to see if data was actually written
+    // Wwrite GPS response to the designated file path
+    const int8_t write_response = LFS_write_file(gps_file_path,GPS_rx_buffer,GPS_rx_buffer_len);
+    if(write_response < 0 )
+    {
+        LOG_message(
+            LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "LFS ERROR: Writing error: %d",
+            write_response
+        );
+    }
 
+    // Test through reading to verify write contents
+    uint8_t test_read_buffer[512] = {0};
+    const int8_t read_result = LFS_read_file(gps_file_path, 0, test_read_buffer, sizeof(test_read_buffer));
+    if(read_result < 0 )
+    {
+        LOG_message(
+            LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "LFS ERROR: Reading error: %d",
+            read_result
+        );
+    }
 
+    test_read_buffer[sizeof(test_read_buffer) - 1] = '\0'; 
+
+    LOG_message(
+        LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+        "LFS Successfully Read File '%s'. System uptime: %lu, File Content: '%s'!",
+        gps_file_path, HAL_GetTick(), (char*)test_read_buffer
+    );
+
+    // Unmounting Memory Module
+    const int8_t unmount_response = LFS_unmount();
+    if(unmount_response < 0)
+    {
+        LOG_message(
+            LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "LFS ERROR: Unmounting error: %d",
+            unmount_response
+        );
     }
 
     snprintf(response_output_buf, response_output_buf_len, "GPS Command: '%s' successfully transmitted", args_str);
