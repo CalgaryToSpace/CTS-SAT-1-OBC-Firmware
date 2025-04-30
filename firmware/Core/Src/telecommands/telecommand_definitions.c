@@ -124,8 +124,8 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
-        .tcmd_name = "obc_get_rbf",
-        .tcmd_func = TCMDEXEC_obc_get_rbf,
+        .tcmd_name = "obc_get_rbf_state",
+        .tcmd_func = TCMDEXEC_obc_get_rbf_state,
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },

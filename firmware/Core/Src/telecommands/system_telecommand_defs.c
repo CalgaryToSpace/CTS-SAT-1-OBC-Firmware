@@ -7,6 +7,7 @@
 #include "littlefs/littlefs_helper.h"
 #include "transforms/arrays.h"
 #include "self_checks/complete_self_check.h"
+#include "system/obc_internal_drivers.h"
 
 #include "telecommands/system_telecommand_defs.h"
 #include "telecommand_exec/telecommand_definitions.h"
@@ -154,13 +155,18 @@ uint8_t TCMDEXEC_system_self_check_failures_as_json(
     return 0;
 }
 
-uint8_t TCMDEXEC_obc_get_rbf(
+uint8_t TCMDEXEC_obc_get_rbf_state(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
-    GPIO_PinState rbf_state = HAL_GPIO_ReadPin(PIN_REMOVE_BEFORE_FLIGHT_LOW_IS_FLYING_IN_GPIO_Port,
-        PIN_REMOVE_BEFORE_FLIGHT_LOW_IS_FLYING_IN_Pin   
+    const obc_rbf_state_enum_t rbf_state = obc_get_rbf_state();
+    const char *rbf_state_str = (rbf_state == OBC_RBF_STATE_FLYING) ? "FLYING" : "BENCH";
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "{"
+        "\"rbf_state\":\"%s\""
+        "}\n",
+        rbf_state_str
     );
-    snprintf(response_output_buf, response_output_buf_len, "{\"rbf_state\":%u}\n", rbf_state);
     return 0;
 }
