@@ -153,3 +153,14 @@ uint8_t TCMDEXEC_system_self_check_failures_as_json(
     );
     return 0;
 }
+
+uint8_t TCMDEXEC_obc_get_rbf(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    GPIO_PinState rbf_state = HAL_GPIO_ReadPin(PIN_REMOVE_BEFORE_FLIGHT_LOW_IS_FLYING_IN_GPIO_Port,
+        PIN_REMOVE_BEFORE_FLIGHT_LOW_IS_FLYING_IN_Pin   
+    );
+    snprintf(response_output_buf, response_output_buf_len, "{\"rbf_state\":%u}\n", rbf_state);
+    return 0;
+}
