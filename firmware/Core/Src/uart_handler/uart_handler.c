@@ -1,6 +1,7 @@
 #include "uart_handler/uart_handler.h"
 #include "debug_tools/debug_uart.h"
 #include "mpi/mpi_command_handling.h"
+#include "uart_handler/uart_error_tracking.h"
 
 #include "main.h"
 #include "log/log.h"
@@ -230,25 +231,19 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
     const uint32_t error_code = huart->ErrorCode;
     const uint32_t up_time_ms = HAL_GetTick();
     // if the error code is no error or it has been less than 100 ms since start up, ignore
-    if (error_code == HAL_UART_ERROR_NONE || up_time_ms < 100) {
+    if ((error_code == HAL_UART_ERROR_NONE) || up_time_ms < 100) {
         return;
     }
 
+    UART_Error_tracking(huart->Instance, error_code);
+
     // Reception Error callback for MPI UART port
     if (huart->Instance == UART_mpi_port_handle->Instance) {
-
         HAL_UART_Receive_DMA(UART_mpi_port_handle, (uint8_t*)&UART_mpi_last_rx_byte, 1);
     }
 
     // Reception Error callback for GPS UART port
     if (huart->Instance == UART_gps_port_handle->Instance) {
-        LOG_message(
-            LOG_SYSTEM_GPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "HAL_UART_ErrorCallback for GPS: %lu, %s",
-            huart->ErrorCode,
-            (UART_gps_uart_interrupt_enabled == 1) ? "re-enabling interrupt" : "interrupt disabled"
-        );
-
         if (UART_gps_uart_interrupt_enabled == 1) {
             HAL_UART_Receive_IT(UART_gps_port_handle, (uint8_t*)&UART_gps_buffer_last_rx_byte, 1);
         }
@@ -256,23 +251,11 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 
     // Reception Error callback for CAMERA UART port
     if (huart->Instance == UART_camera_port_handle->Instance) {
-        LOG_message(
-            LOG_SYSTEM_BOOM, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "HAL_UART_ErrorCallback for Camera: %lu", huart->ErrorCode
-        ); // TODO: CAMERA is not registered as a system in the logger yet, Telecommand system used instead
-
         // Do not re-enable the interrupt here. Afraid of negative feedback loop.
     }
 
     // Reception Error callback for EPS UART port
     if (huart->Instance == UART_eps_port_handle->Instance) {
-
-
-        LOG_message(
-            LOG_SYSTEM_EPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "HAL_UART_ErrorCallback for EPS: %lu", huart->ErrorCode
-        );
-
         // We trust the EPS. Always re-enable the interrupt.
         HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t*)&UART_eps_buffer_last_rx_byte, 1);
     }
