@@ -111,6 +111,16 @@ uint8_t CAM_setup(char FileName[]) {
             "Error changing camera baudrate: CAM_change_baudrate returned %d",
             bitrate_status
         );
+        // turn off camera before exiting
+        const uint8_t eps_off_status = EPS_set_channel_enabled(EPS_CHANNEL_3V3_CAMERA, 0);
+        if (eps_off_status != 0) {
+            // Continue anyway. Just log a warning.
+            LOG_message(
+                LOG_SYSTEM_EPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+                "Error disabling camera power channel in CAM_Capture_Image: status=%d. Continuing.",
+                eps_off_status
+            );
+        }
         return 2;
     }
 
@@ -132,6 +142,17 @@ uint8_t CAM_setup(char FileName[]) {
         const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &camera_file, file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND, &LFS_file_cfg);
         if (open_result < 0) {
             LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening / creating file: %s", file_name);
+            // turn off camera before exiting
+            const uint8_t eps_off_status = EPS_set_channel_enabled(EPS_CHANNEL_3V3_CAMERA, 0);
+            if (eps_off_status != 0) {
+                // Continue anyway. Just log a warning.
+                LOG_message(
+                    LOG_SYSTEM_EPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+                    "Error disabling camera power channel in CAM_Capture_Image: status=%d. Continuing.",
+                    eps_off_status
+                );
+            }
+            return 2;
         } else {
             LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Opened/created file: %s", file_name);
             file_open = 1;
