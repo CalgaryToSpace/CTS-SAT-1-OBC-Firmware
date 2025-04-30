@@ -244,7 +244,7 @@ uint8_t CTS1_check_mpi_cmd_works() {
 
     // Send random command: "TC" + command_2 + scan_mode_off
     // Not certain what it does, but we power the MPI off anyway, so it gets reset anyway.
-    const uint8_t cmd[] = {0x54, 0x43, 0x02, 0x00};
+    const uint8_t cmd[] = {0x54, 0x43, 0x08};
 
     uint8_t MPI_rx_buffer[100];
     uint16_t MPI_buffer_len = 0;
