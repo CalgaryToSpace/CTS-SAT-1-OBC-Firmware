@@ -227,13 +227,15 @@ void GPS_set_uart_interrupt_state(uint8_t new_enabled) {
 
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
     // Docs for error codes: https://community.st.com/t5/stm32-mcus-products/identifying-and-solving-uart-error/td-p/135754
-    
+    const uint32_t error_code = huart->ErrorCode;
+    const uint32_t up_time_ms = HAL_GetTick();
+    // if the error code is no error or it has been less than 100 ms since start up, ignore
+    if (error_code == HAL_UART_ERROR_NONE || up_time_ms < 100) {
+        return;
+    }
+
     // Reception Error callback for MPI UART port
     if (huart->Instance == UART_mpi_port_handle->Instance) {
-        LOG_message(
-            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "HAL_UART_ErrorCallback for MPI: %lu", huart->ErrorCode
-        );
 
         HAL_UART_Receive_DMA(UART_mpi_port_handle, (uint8_t*)&UART_mpi_last_rx_byte, 1);
     }
@@ -264,12 +266,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 
     // Reception Error callback for EPS UART port
     if (huart->Instance == UART_eps_port_handle->Instance) {
-        const uint8_t error_code = huart->ErrorCode;
-        const uint32_t up_time_ms = HAL_GetTick();
-        // if the error code is no error or it has been less than 100 ms since start up, ignore
-        if (error_code == HAL_UART_ERROR_NONE || up_time_ms < 100 ) {
-            return;
-        }
+
 
         LOG_message(
             LOG_SYSTEM_EPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
