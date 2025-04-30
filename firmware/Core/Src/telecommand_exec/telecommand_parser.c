@@ -424,7 +424,7 @@ uint8_t TCMD_parse_full_telecommand(
         case 1: return 90;
         case 2: return 100;
         case 3: return 110;
-        default: break; // add additional cases as needed
+        default: return 111; // Error not accounted for, add case
     }
 
     // Extract @log_filename=xxxx from the telecommand string, starting at &tcmd_str[end_of_args_idx]
