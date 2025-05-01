@@ -20,6 +20,7 @@
 #include "telecommands/i2c_telecommand_defs.h"
 #include "telecommands/obc_temperature_sensor_telecommand_defs.h"
 #include "telecommands/uart_telecommand_defs.h"
+#include "telecommands/uart_error_tracking_telecommands.h"
 #include "telecommands/config_telecommand_defs.h"
 #include "telecommands/testing_telecommand_defs.h"
 #include "telecommand_exec/telecommand_executor.h"
@@ -140,6 +141,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "uart_get_last_rx_times_json",
         .tcmd_func = TCMDEXEC_uart_get_last_rx_times_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "uart_error_tracking_get_errors_json",
+        .tcmd_func = TCMDEXEC_uart_error_tracking_get_errors_json,
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
