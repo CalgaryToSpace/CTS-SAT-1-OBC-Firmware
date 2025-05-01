@@ -104,7 +104,7 @@ uint8_t CAM_setup(char FileName[]) {
     HAL_Delay(500);
 
     // Change baudrate to 460800 on camera.
-    const uint8_t bitrate_status = CAM_change_baudrate(460800);
+    const uint8_t bitrate_status = CAM_change_baudrate(230400);
     if (bitrate_status != 0) {
         LOG_message(
             LOG_SYSTEM_BOOM, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
