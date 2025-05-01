@@ -250,6 +250,8 @@ uint8_t CAM_receive_image(){
     
 
     // set start time and start receiving
+    osDelay(4000);
+    HAL_IWDG_Refresh(&hiwdg);
     const uint32_t UART_camera_rx_start_time_ms = HAL_GetTick();
     const uint8_t receive_status = CAMERA_set_expecting_data(1);
     // Check for UART reception errors
