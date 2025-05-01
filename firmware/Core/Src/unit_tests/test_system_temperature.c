@@ -10,6 +10,7 @@ uint8_t TEST_EXEC__SYS_TEMP_get_processed_thermal_info(){
     
     // Case 1: Success on regular inputs + Heater bit is enabled
     SYS_TEMP_raw_thermal_info_t case1;
+    uint8_t err_case_1 = 0;
     
     case1.system_OBC_temperature_cC=5000;
     case1.system_ANT_temperature_i2c_bus_A_raw=500;
@@ -23,7 +24,7 @@ uint8_t TEST_EXEC__SYS_TEMP_get_processed_thermal_info(){
     case1.system_eps_conditioning_channel_info_each_channel[2] = (EPS_conditioning_channel_datatype_eng_t) {vpid_case1, 100,100,1000,1000};
     case1.system_eps_conditioning_channel_info_each_channel[3] = (EPS_conditioning_channel_datatype_eng_t) {vpid_case1, 1,5,1000,1000};
 
-    SYS_TEMP_pack_to_system_thermal_info(&case1 , &result);
+    SYS_TEMP_pack_to_system_thermal_info(&case1 , &result, err_case_1);
     TEST_ASSERT(result.system_OBC_temperature_cC == 5000);
     TEST_ASSERT(result.system_ANT_temperature_i2c_bus_A_cC == 4513);
     TEST_ASSERT(result.system_ANT_temperature_i2c_bus_B_cC == 4513);
@@ -41,6 +42,7 @@ uint8_t TEST_EXEC__SYS_TEMP_get_processed_thermal_info(){
 
     //Case 2: Success on regular inputs + Heater bit is disabled
     SYS_TEMP_raw_thermal_info_t case2;
+    uint8_t err_case_2 = 0;
     
     case2.system_OBC_temperature_cC=1000;
     case2.system_ANT_temperature_i2c_bus_A_raw=450;
@@ -54,7 +56,7 @@ uint8_t TEST_EXEC__SYS_TEMP_get_processed_thermal_info(){
     case2.system_eps_conditioning_channel_info_each_channel[2] = (EPS_conditioning_channel_datatype_eng_t) {vpid_case2, 6,8000,1000,1000};
     case2.system_eps_conditioning_channel_info_each_channel[3] = (EPS_conditioning_channel_datatype_eng_t) {vpid_case2, 1,5,1000,1000};
 
-    SYS_TEMP_pack_to_system_thermal_info(&case2 , &result);
+    SYS_TEMP_pack_to_system_thermal_info(&case2 , &result, err_case_2);
     TEST_ASSERT(result.system_OBC_temperature_cC == 1000);
     TEST_ASSERT(result.system_ANT_temperature_i2c_bus_A_cC == 5995);
     TEST_ASSERT(result.system_ANT_temperature_i2c_bus_B_cC == 4513);
@@ -67,6 +69,46 @@ uint8_t TEST_EXEC__SYS_TEMP_get_processed_thermal_info(){
     TEST_ASSERT(result.system_eps_battery_each_sensor_temperature_cC[0]==100);
     TEST_ASSERT(result.system_eps_battery_each_sensor_temperature_cC[1]==20);
     TEST_ASSERT(result.system_eps_battery_each_sensor_temperature_cC[2]==320);
+
+    //Case 3: Error on ANT B and PCU
+    uint8_t err_case_3 = 0;
+    err_case_3 |= SYS_TEMP_ANT_B_STATUS;
+    err_case_3 |= SYS_TEMP_PCU_STATUS;
+
+    SYS_TEMP_pack_to_system_thermal_info(&case1 , &result, err_case_3);
+
+    TEST_ASSERT(result.system_OBC_temperature_cC == 5000);
+    TEST_ASSERT(result.system_ANT_temperature_i2c_bus_A_cC == 4513);
+    TEST_ASSERT(result.system_ANT_temperature_i2c_bus_B_cC == -99999);
+    TEST_ASSERT(result.system_solar_panel_power_generation_mW[0] == -99999);
+    TEST_ASSERT(result.system_solar_panel_power_generation_mW[1] == -99999);
+    TEST_ASSERT(result.system_solar_panel_power_generation_mW[2] == -99999);
+    TEST_ASSERT(result.system_solar_panel_power_generation_mW[3] == -99999);
+    TEST_ASSERT(result.system_eps_battery_heater_status_bit == 1);
+    TEST_ASSERT(result.system_eps_battery_percent == 75);
+    TEST_ASSERT(result.system_eps_battery_each_sensor_temperature_cC[0]==400);
+    TEST_ASSERT(result.system_eps_battery_each_sensor_temperature_cC[1]==0);
+    TEST_ASSERT(result.system_eps_battery_each_sensor_temperature_cC[2]==550);
+
+    //Case 4: Error on PBU
+    uint8_t err_case_4 = 0;
+    err_case_4 |= SYS_TEMP_ANT_A_STATUS;
+    err_case_4 |= SYS_TEMP_PBU_STATUS;
+
+    SYS_TEMP_pack_to_system_thermal_info(&case1 , &result, err_case_4);
+
+    TEST_ASSERT(result.system_OBC_temperature_cC == 5000);
+    TEST_ASSERT(result.system_ANT_temperature_i2c_bus_A_cC == -99999);
+    TEST_ASSERT(result.system_ANT_temperature_i2c_bus_B_cC == 4513);
+    TEST_ASSERT(result.system_solar_panel_power_generation_mW[0] == 1000000);
+    TEST_ASSERT(result.system_solar_panel_power_generation_mW[1] == 100000);
+    TEST_ASSERT(result.system_solar_panel_power_generation_mW[2] == 10000);
+    TEST_ASSERT(result.system_solar_panel_power_generation_mW[3] == 5);
+    TEST_ASSERT(result.system_eps_battery_heater_status_bit == 9999);
+    TEST_ASSERT(result.system_eps_battery_percent == -99999);
+    TEST_ASSERT(result.system_eps_battery_each_sensor_temperature_cC[0]==-9999);
+    TEST_ASSERT(result.system_eps_battery_each_sensor_temperature_cC[1]==-9999);
+    TEST_ASSERT(result.system_eps_battery_each_sensor_temperature_cC[2]==-9999);
 
     return 0;
 }
