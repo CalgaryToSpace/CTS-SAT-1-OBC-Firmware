@@ -590,6 +590,11 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_file = "unit_tests/test_uart_error_tracking",
         .test_func_name = "UART_Error_tracking_get_tracking_struct_from_uart_instance"
     },
+    {
+        .test_func = TEST_EXEC__UART_Error_tracking_subsystem_error_info_to_json,
+        .test_file = "unit_tests/test_uart_error_tracking",
+        .test_func_name = "UART_Error_tracking_subsytem_error_info_to_json"
+    },
 };
 
 // extern

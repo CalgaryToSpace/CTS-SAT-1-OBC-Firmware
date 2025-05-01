@@ -4,5 +4,6 @@
 #include <stdint.h>
 
 uint8_t TEST_EXEC__UART_Error_tracking_get_tracking_struct_from_uart_instance();
+uint8_t TEST_EXEC__UART_Error_tracking_subsystem_error_info_to_json();
 
 #endif // INLUCDE_GUARD__TEST_UART_ERROR_TRACKING_H
