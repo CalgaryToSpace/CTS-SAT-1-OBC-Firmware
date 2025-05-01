@@ -179,15 +179,16 @@ uint8_t TCMDEXEC_get_all_system_thermal_info(
 ) {
     SYS_TEMP_raw_thermal_info_t raw_temp_info;
     SYS_TEMP_thermal_info_t output_temp_info;
+    uint8_t error_ret = 0;
 
-    uint8_t result = SYS_TEMP_get_raw_thermal_info(&raw_temp_info);
+    uint8_t result = SYS_TEMP_get_raw_thermal_info(&raw_temp_info, &error_ret);
     if (result != 0) {
         snprintf(response_output_buf, response_output_buf_len,
             "SYS_TEMP_get_raw_thermal_info (err %d)", result);
         return 1;
     }
 
-    SYS_TEMP_pack_to_system_thermal_info(&raw_temp_info, &output_temp_info);
+    SYS_TEMP_pack_to_system_thermal_info(&raw_temp_info, &output_temp_info, error_ret);
 
     snprintf(
         response_output_buf, response_output_buf_len, 

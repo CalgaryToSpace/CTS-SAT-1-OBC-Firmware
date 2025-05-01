@@ -24,7 +24,14 @@ typedef struct {
     EPS_battery_pack_datatype_eng_t system_eps_battery_datatype_struct;
 } SYS_TEMP_raw_thermal_info_t;
 
-uint8_t SYS_TEMP_get_raw_thermal_info(SYS_TEMP_raw_thermal_info_t* result);
-uint8_t SYS_TEMP_pack_to_system_thermal_info(SYS_TEMP_raw_thermal_info_t* input, SYS_TEMP_thermal_info_t* result);
+typedef enum {
+    SYS_TEMP_ANT_A_STATUS = 1 << 0,
+    SYS_TEMP_ANT_B_STATUS = 1 << 1,
+    SYS_TEMP_PCU_STATUS = 1 << 2,
+    SYS_TEMP_PBU_STATUS = 1 << 3,
+} SYS_TEMP_thermal_info_error_enum_t;
+
+uint8_t SYS_TEMP_get_raw_thermal_info(SYS_TEMP_raw_thermal_info_t* result, uint8_t* error_ret);
+uint8_t SYS_TEMP_pack_to_system_thermal_info(SYS_TEMP_raw_thermal_info_t* input, SYS_TEMP_thermal_info_t* result, uint8_t error_ret);
 
 #endif
