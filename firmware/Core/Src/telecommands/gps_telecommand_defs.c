@@ -66,18 +66,13 @@ uint8_t TCMDEXEC_gps_send_cmd_ascii(const char *args_str, TCMD_TelecommandChanne
         GPS_rx_buffer
     );
 
-    // Splitting the response into 200 character chunks so we can write them into the memory module
-    // TODO: Put it into its own function for readability
-    const uint8_t chunk_size = 200;
+    char gps_text_response[512] = {0};
+    for(uint16_t i = 0; i< 511 ;i++ )
+    {
+        gps_text_response[i] = GPS_rx_buffer[i];
 
-    // Get the no of data chunks : Should be 3
-    // TODO: Make it more dynamic with GPS_rx_buffer_len as some responses could be less
-    // uint8_t chunk_no = (GPS_rx_buffer_max_size/chunk_size)+1;
-    // uint8_t chunk_no = (GPS_rx_buffer_len + chunk_size - 1) / chunk_size; // To handle any remainder
-    
-    char gps_text_response[201];
-    memcpy(gps_text_response, GPS_rx_buffer, chunk_size);
-    gps_text_response[201] = '\0';
+    }
+    gps_text_response[512] = '\0';
     
 
     // Mount the Memory Module
@@ -108,31 +103,6 @@ uint8_t TCMDEXEC_gps_send_cmd_ascii(const char *args_str, TCMD_TelecommandChanne
     char gps_file_path[100];
     snprintf(gps_file_path, sizeof(gps_file_path), "gps_logs/%s.txt", timeresponse);
 
-    // for (uint8_t i = 0; i < chunk_no; i++) {
-    //     // Prepare the chunk: calculate the start and end indices for the current chunk
-    //     uint16_t start_index = i * chunk_size;
-    //     uint16_t end_index = start_index + chunk_size;
-        
-    //     // Ensure we don't exceed the length of the data in the buffer
-    //     if (end_index > GPS_rx_buffer_len) {
-    //         break; 
-    //     }
-
-    //     // Copy the chunk into a temporary array
-    //     char gps_text_response[chunk_size + 1];  // +1 for null terminator
-    //     memcpy(gps_text_response, &GPS_rx_buffer[start_index], chunk_size);
-    //     gps_text_response[chunk_size + 1] = '\0';  // Null-terminate the string
-
-    //     // Write the chunk to the file
-    //     const int8_t write_response = LFS_write_file(gps_file_path, (uint8_t *)gps_text_response, strlen(gps_text_response));
-    //     if (write_response < 0) {
-    //         LOG_message(LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-    //                     "LFS ERROR: Writing error for chunk %d: %d", i, write_response);
-    //         // Handle Write Error. Treating it as a warning
-    //         continue;
-    //     }
-    // }
-
     // Write GPS response to the designated file path
     const int8_t write_response = LFS_write_file(gps_file_path,(uint8_t *) gps_text_response,strlen(gps_text_response));
     if(write_response < 0 )
@@ -160,7 +130,7 @@ uint8_t TCMDEXEC_gps_send_cmd_ascii(const char *args_str, TCMD_TelecommandChanne
 
     LOG_message(
         LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-        "LFS Successfully Read File '%s'. System uptime: %lu, File Content: '%s'!",
+        "LFS Successfully Read File '%s'. System uptime: %lu, File Content: %s",
         gps_file_path, HAL_GetTick(), (char*)test_read_buffer
     );
 
