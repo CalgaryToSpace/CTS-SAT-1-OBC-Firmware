@@ -90,6 +90,11 @@ uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd
         for (uint16_t j = 0; j < TCMD_ARGS_STR_NO_PARENS_SIZE; j++) {
             TCMD_agenda[slot_num].args_str_no_parens[j] = parsed_tcmd->args_str_no_parens[j];
         }
+
+        // Copy the log filename into the agenda.
+        for (uint16_t j = 0; j < TCMD_MAX_LOG_FILENAME_LEN; j++) {
+            TCMD_agenda[slot_num].log_filename[j] = parsed_tcmd->log_filename[j];
+        }
         // Mark the slot as valid.
         TCMD_agenda_is_valid[slot_num] = 1;
 
@@ -235,12 +240,14 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
     GEN_uint64_to_str(TCMD_agenda[tcmd_agenda_slot_num].timestamp_sent, tssent_str);
     char tsexec_str[32];
     GEN_uint64_to_str(TCMD_agenda[tcmd_agenda_slot_num].timestamp_to_execute, tsexec_str);
+    uint8_t log_filename_len = strlen(TCMD_agenda[tcmd_agenda_slot_num].log_filename);
     LOG_message(
         LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
-        "Executing telecommand from agenda slot %d, sent at tssent=%s, scheduled for tsexec=%s.",
+        "Executing telecommand from agenda slot %d, sent at tssent=%s, scheduled for tsexec=%s, logging to file: '%s'.",
         tcmd_agenda_slot_num,
         tssent_str,
-        tsexec_str
+        tsexec_str,
+        (log_filename_len > 0) ? TCMD_agenda[tcmd_agenda_slot_num].log_filename : "None"
     );
 
     // Execute the telecommand.
@@ -257,10 +264,22 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
 /// @brief Logs a message to a file.
 /// @param filename The name of the file to log to.
 /// @param message The message to log.
-/// @return 0 on success, 1 if writing to the file failed.
+/// @return 0 on success, 1 if mounting LFS failed, 2 if writing to the file failed.
 /// @note This function is used to log telecommand responses to a file.
 uint8_t TCMD_log_to_file(const char *filename, const char *message)
 {
+    if (!LFS_is_lfs_mounted) {
+        const int8_t mount_ret = LFS_mount();
+        if (mount_ret < 0) {
+            LOG_message(
+                LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+                "Error: TCMD_log_to_file: Failed to mount LFS. Error code: %d",
+                mount_ret
+            );
+            return 1;
+        }
+    }
+
     const int8_t write_file_return = LFS_write_file(
         filename,
         (uint8_t *)message,
@@ -273,7 +292,7 @@ uint8_t TCMD_log_to_file(const char *filename, const char *message)
             filename,
             write_file_return
         );
-        return 1;
+        return 2;
     }
     LOG_message(
         LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,

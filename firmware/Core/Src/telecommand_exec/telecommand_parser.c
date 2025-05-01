@@ -469,7 +469,7 @@ uint8_t TCMD_parse_full_telecommand(
     parsed_tcmd_output->timestamp_sent = timestamp_sent;
     parsed_tcmd_output->timestamp_to_execute = timestamp_to_execute;
     parsed_tcmd_output->tcmd_channel = tcmd_channel;
-    memcpy(parsed_tcmd_output->log_filename, tcmd_suffix_log_filename, sizeof(tcmd_suffix_log_filename));
+    memcpy(parsed_tcmd_output->log_filename, tcmd_suffix_log_filename, TCMD_MAX_LOG_FILENAME_LEN);
 
     return 0;
 }
@@ -592,10 +592,11 @@ uint8_t TCMD_process_suffix_tag_log_filename(const char *tcmd_suffix_tag_str, co
     } 
 
     // The "@log_filename=" tag was found, so parse it.
-    if (TCMD_get_suffix_tag_str(tcmd_suffix_tag_str, "@log_filename=", log_filename, log_filename_len) != 0) {
+    const uint8_t parse_result = TCMD_get_suffix_tag_str(tcmd_suffix_tag_str, "@log_filename=", log_filename, log_filename_len);
+    if (parse_result != 0) {
         LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "Error: TCMD_parse_full_telecommand: failed to parse present @log_filename=xxxx."
+            "Error parsing @log_filename. Error value: %u.", parse_result
         );
         return 1;
     }
