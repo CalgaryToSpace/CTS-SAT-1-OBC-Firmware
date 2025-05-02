@@ -7,6 +7,7 @@
 
 #include "main.h"
 
+#include <string.h>
 // Name the UART interfaces
 UART_HandleTypeDef *UART_telecommand_port_handle = &hlpuart1;
 UART_HandleTypeDef *UART_mpi_port_handle = &huart1;
@@ -127,37 +128,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         }
     }
 
-    
-    // TODO: Implement function to utilize this DMA reception callback for the CAMERA
-    else if (huart->Instance == UART_camera_port_handle->Instance) {
-        // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> CAMERA Data\n");
-
-        if (! UART_camera_is_expecting_data) {
-            // Not expecting data, ignore this noise.
-            return;
-        }
-
-        // Check if buffer is full.
-        if (UART_camera_buffer_write_idx >= UART_camera_buffer_len) {
-            // Tracking error
-            // TODO: This section may be moved because the camera might be using DMA
-            UART_error_camera_error_info.handler_buffer_full_error_count++;
-            // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART response buffer is full\n");
-
-            // Shift all bytes left by 1
-            for(uint16_t i = 1; i < UART_camera_buffer_len; i++) {
-                UART_camera_buffer[i - 1] = UART_camera_buffer[i];
-            }
-
-            // Reset to a valid index
-            UART_camera_buffer_write_idx = UART_camera_buffer_len - 1;
-        }
-
-        // FIXME: Actually deal with the data in here, if necessary.
-
-        UART_camera_last_write_time_ms = HAL_GetTick();
-    }           
-
     else if (huart->Instance == UART_eps_port_handle->Instance) {
         // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> EPS Data\n");
 
@@ -223,11 +193,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         //     "complete_call_back"
         // );
         // write index = 2
-        UART_camera_buffer_write_idx++;
+        // UART_camera_buffer_write_idx++;
         UART_camera_buffer_write_idx = 0;
         for (uint16_t i = UART_camera_buffer_len/2; i < UART_camera_buffer_len; i++){
             UART_camera_rx_buf[i-UART_camera_buffer_len/2] = UART_camera_buffer[i];
         }
+        // memcpy( UART_camera_rx_buf, UART_camera_buffer + UART_camera_buffer_len/2, UART_camera_buffer_len/2);
         // set camera_write_file to 1 so camera_internal can write to mem
 
         UART_camera_last_write_time_ms = HAL_GetTick();
@@ -254,7 +225,8 @@ void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
         for (uint16_t i = 0; i < UART_camera_buffer_len/2; i++){
             UART_camera_rx_buf[i] = UART_camera_buffer[i];
         }
-        // DEBUG_uart_print_str(UART_camera_buffer);
+        // memcpy(UART_camera_rx_buf, UART_camera_buffer, UART_camera_buffer_len/2);
+        // DEBUG_uart_print_str("hello\n");
         // set camera_write_file to 1 so camera_internal can write to mem
         camera_write_file = 1;
         UART_camera_last_write_time_ms = HAL_GetTick();
@@ -285,6 +257,7 @@ uint8_t CAMERA_set_expecting_data(uint8_t new_enabled) {
     if (new_enabled == 1)
     {
         UART_camera_is_expecting_data = 1;
+		// const HAL_StatusTypeDef receive_status = HAL_UART_Receive_DMA(UART_camera_port_handle,(uint8_t*) &UART_camera_buffer, CAM_SENTENCE_LEN*46);
 		const HAL_StatusTypeDef receive_status = HAL_UART_Receive_DMA(UART_camera_port_handle,(uint8_t*) &UART_camera_buffer, CAM_SENTENCE_LEN*46);
         if (receive_status != HAL_OK) {
 			return 3; // Error code: Failed UART reception
