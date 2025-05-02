@@ -377,8 +377,7 @@ uint8_t TCMDEXEC_eps_get_pdu_data_for_single_channel_json(
         return 4;
     }
 
-    // Convert to a nice string/channel number.
-    const char *eps_channel_name_str = EPS_channel_to_str(eps_channel);
+    // Convert to a nice channel number
     const uint8_t eps_channel_num = (uint8_t) eps_channel;
 
     // Define the destination of where data is written into 
@@ -395,8 +394,7 @@ uint8_t TCMDEXEC_eps_get_pdu_data_for_single_channel_json(
 
     // Format the data to JSON string
     const uint8_t result_json = EPS_struct_single_channel_data_eng_TO_json(
-
-        &data, eps_channel_num, eps_channel_name_str, response_output_buf, response_output_buf_len);
+        &data, eps_channel_num, response_output_buf, response_output_buf_len);
     if (result_json != 0) {
         snprintf(response_output_buf, response_output_buf_len,
             "EPS_struct_single_channel_data_eng_TO_json failed (err %d)", result_json);

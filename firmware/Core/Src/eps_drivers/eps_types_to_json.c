@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <inttypes.h>
+#include <eps_channel_control.h>
 
 
 // TODO: Determine how long each of these are, add to docs, add checks to each function at the start.
@@ -322,44 +323,28 @@ uint8_t EPS_struct_pdu_housekeeping_data_eng_TO_json(const EPS_struct_pdu_housek
 
 
 
-uint8_t EPS_struct_single_channel_data_eng_TO_json(const EPS_struct_pdu_housekeeping_data_eng_t *data, const uint8_t eps_channel, const char *eps_channel_name, char json_output_str[], uint16_t json_output_str_size) {
+uint8_t EPS_struct_single_channel_data_eng_TO_json(const EPS_struct_pdu_housekeeping_data_eng_t *data, const uint8_t eps_channel, char json_output_str[], uint16_t json_output_str_size) {
     if (data == NULL || json_output_str == NULL || json_output_str_size < 10) {
         return 1; // Error: Invalid input
     }
-    int ret, offset = 0;
 
-    // Start the JSON string
-    offset = snprintf(json_output_str, json_output_str_size, "{");
-    
-    ret = snprintf(json_output_str + offset, json_output_str_size - offset, "\"ch_num\":%d,\"ch_name\":%s", eps_channel, eps_channel_name);
-    if (ret < 0 || ret >= (json_output_str_size - offset)) return 3;
-    offset += ret;
+    // Get the string channel name
+    const char *eps_channel_name = EPS_channel_to_str(eps_channel);
 
-    char vip_channel_json[128];
-    ret = EPS_vpid_eng_TO_json(&data->vip_each_channel[eps_channel], vip_channel_json, sizeof(vip_channel_json));
-    if (ret != 0) return 5;
+    const EPS_vpid_eng_t *channel_data = &data->vip_each_channel[eps_channel];
 
-    // Strip the trailing curly brace
-    vip_channel_json[strlen(vip_channel_json) - 1] = '\0';
+    int snprintf_ret = snprintf(
+        json_output_str, json_output_str_size,
+        "{\"ch_num\":%d,\"ch_name\":\"%s\",\"mV\":%d,\"mA\":%d,\"cW\":%d}",
+        eps_channel, eps_channel_name,channel_data->voltage_mV, channel_data->current_mA, channel_data->power_cW);
 
-    ret = snprintf(
-        json_output_str + offset,
-        json_output_str_size - offset,
-        "%s",
-        vip_channel_json + 1 // Skip the opening brace
-    );
-    if (ret < 0 || ret >= (json_output_str_size - offset)) return 3;
-    offset += ret;
-
-    // End the JSON string
-    ret = snprintf(json_output_str + offset, json_output_str_size - offset, "}");
-    if (ret < 0 || ret >= (json_output_str_size - offset)) return 3;
-    offset += ret;
-
-    // Copy to output
-    if (offset >= json_output_str_size) {
-        return 3; // Output json_output_str too small
+    if (snprintf_ret < 0) {
+        return 2; // Error: snprintf encoding error
     }
+    if (snprintf_ret >= json_output_str_size) {
+        return 3; // Error: json_output_str too short
+    }
+
     return 0;
 }
 
