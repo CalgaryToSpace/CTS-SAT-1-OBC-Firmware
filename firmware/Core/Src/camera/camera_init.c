@@ -250,7 +250,7 @@ uint8_t CAM_receive_image(){
     
 
     // set start time and start receiving
-    osDelay(4000);
+    osDelay(3000);
     HAL_IWDG_Refresh(&hiwdg);
     const uint32_t UART_camera_rx_start_time_ms = HAL_GetTick();
     const uint8_t receive_status = CAMERA_set_expecting_data(1);
@@ -288,20 +288,19 @@ uint8_t CAM_receive_image(){
                     CAMERA_set_expecting_data(0);
                     return 4; // Error code: Timeout waiting for first byte
                 }
-                else{
-                    // otherwise there may be data in first half of buffer
-                    // copy data and set write to 1 to write after exiting loop
-                    for (uint16_t i = 0; i < UART_camera_buffer_len/2; i++){
-                        UART_camera_rx_buf[i] = UART_camera_buffer[i];
-                        UART_camera_buffer[i] = 0;
-                    }
-                    // PRINT FOR TESTING DELETE AFTER
-                    // DEBUG_uart_print_str("timeout write file 1\n");
-                    camera_write_file = 1;
-                    // finish receiving and break out of loop
-                    CAMERA_set_expecting_data(0);
-                    break;
+                // otherwise there may be data in first half of buffer
+                // copy data and set write to 1 to write after exiting loop
+                for (uint16_t i = 0; i < UART_camera_buffer_len / 2; i++)
+                {
+                    UART_camera_rx_buf[i] = UART_camera_buffer[i];
+                    UART_camera_buffer[i] = 0;
                 }
+                // PRINT FOR TESTING DELETE AFTER
+                // DEBUG_uart_print_str("timeout write file 1\n");
+                camera_write_file = 1;
+                // finish receiving and break out of loop
+                CAMERA_set_expecting_data(0);
+                break;
             }
         }
 
