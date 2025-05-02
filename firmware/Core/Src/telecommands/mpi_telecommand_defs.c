@@ -63,6 +63,11 @@ uint8_t TCMDEXEC_mpi_send_command_hex(
     if(cmd_response == 0) {
         // Validate MPI response
         cmd_response = MPI_validate_command_response(args_bytes[2], MPI_rx_buffer, MPI_rx_buffer_len);
+            LOG_message(
+                LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                "----->MPI data (%d bytes): 0x%02X 0x%02X", MPI_rx_buffer_len, MPI_rx_buffer[0], MPI_rx_buffer[1]
+            );
+
     }
 
     // Send back MPI response log detail

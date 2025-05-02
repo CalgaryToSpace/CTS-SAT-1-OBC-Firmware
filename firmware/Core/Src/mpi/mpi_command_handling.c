@@ -10,10 +10,10 @@
 #include <stdio.h>
 
 /// @brief Timeout duration for transmit HAL call, in milliseconds.
-static const uint16_t MPI_TX_TIMEOUT_DURATION_MS = 100;
+static const uint16_t MPI_TX_TIMEOUT_DURATION_MS = 10;
 
 /// @brief Timeout duration for receive in milliseconds. Same between bytes and at the start.
-static const uint16_t MPI_RX_TIMEOUT_DURATION_MS = 100;
+static const uint16_t MPI_RX_TIMEOUT_DURATION_MS = 1000;
 
 volatile MPI_rx_mode_t MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
 
