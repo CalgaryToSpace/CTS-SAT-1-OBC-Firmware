@@ -42,18 +42,19 @@ uint8_t TCMDEXEC_comms_dipole_switch_set_state(
     return 0;
 }
 
-/// @brief Sets the mode that the antenna selection system is in.
-/// @param args_str 
-/// - Arg 0: The state of the dipole switch. Either "1" or "2".
-/// @return 
+/// @brief Sets the mode for antenna selection.
+/// @param args_str
+/// - Arg 0: The mode name/number. Possible values are "use_adcs", "toggle_before_every_beacon", or "override_by_telecommand_for_30_minutes".
+/// @note To override_by_telecommand_for_30_minutes, use the telecommand: comms_dipole_switch_set_state.
+/// @return
 uint8_t TCMDEXEC_COMMS_set_mode_for_antenna_selection(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
 
-    // Extract Arg 0: The channel name/number.
-    char channel_str[30];
-    const uint8_t arg_0_result = TCMD_extract_string_arg(args_str, 0, channel_str, sizeof(channel_str));
+    // Extract Arg 0: The mode name/number.
+    char mode_str[30];
+    const uint8_t arg_0_result = TCMD_extract_string_arg(args_str, 0, mode_str, sizeof(mode_str));
     if (arg_0_result != 0) {
         snprintf(
             response_output_buf, response_output_buf_len,
@@ -62,11 +63,11 @@ uint8_t TCMDEXEC_COMMS_set_mode_for_antenna_selection(
     }
 
     // Convert the channel string to an enum value.
-    const COMMS_antenna_selection_mode_enum_t comms_mode = COMMS_mode_from_str(channel_str);
+    const COMMS_antenna_selection_mode_enum_t comms_mode = COMMS_mode_from_str(mode_str);
     if (comms_mode == COMMS_ANTENNA_SELECTION_MODE_UNKNOWN) {
         snprintf(
             response_output_buf, response_output_buf_len,
-            "Unknown mode: %s", channel_str);
+            "Unknown mode: %s", mode_str);
         return 2;
     }
 
@@ -83,7 +84,7 @@ uint8_t TCMDEXEC_COMMS_set_mode_for_antenna_selection(
     // Log the change.
     snprintf(
         response_output_buf, response_output_buf_len,
-        "COMMS antenna selection mode set to: %s", channel_str);
-    // Return success.
+        "COMMS antenna selection mode set to: %s", mode_str);
+
     return 0;
 }

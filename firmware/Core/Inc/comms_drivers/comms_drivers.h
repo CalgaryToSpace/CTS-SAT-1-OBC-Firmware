@@ -15,7 +15,7 @@ extern COMMS_antenna_selection_mode_enum_t COMMS_current_ant_mode;
 
 void COMMS_set_dipole_switch_state(uint8_t dipole_switch_antenna_num);
 
-uint8_t COMMS_determine_and_update_dipole_antenna_switch();
+void COMMS_determine_and_update_dipole_antenna_switch(uint64_t current_time);
 
 uint8_t COMMS_find_optimal_antenna();
 
