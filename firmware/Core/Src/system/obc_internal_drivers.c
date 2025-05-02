@@ -4,8 +4,9 @@
 
 #include "stm32l4xx_hal.h"
 
-obc_rbf_state_enum_t obc_get_rbf_state() {
-    const GPIO_PinState rbf_state = HAL_GPIO_ReadPin(PIN_REMOVE_BEFORE_FLIGHT_LOW_IS_FLYING_IN_GPIO_Port,
+OBC_rbf_state_enum_t OBC_get_rbf_state() {
+    const GPIO_PinState rbf_state = HAL_GPIO_ReadPin(
+        PIN_REMOVE_BEFORE_FLIGHT_LOW_IS_FLYING_IN_GPIO_Port,
         PIN_REMOVE_BEFORE_FLIGHT_LOW_IS_FLYING_IN_Pin   
     );
     return (rbf_state == GPIO_PIN_SET) ? OBC_RBF_STATE_BENCH : OBC_RBF_STATE_FLYING;

@@ -159,13 +159,11 @@ uint8_t TCMDEXEC_obc_get_rbf_state(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
-    const obc_rbf_state_enum_t rbf_state = obc_get_rbf_state();
+    const OBC_rbf_state_enum_t rbf_state = OBC_get_rbf_state();
     const char *rbf_state_str = (rbf_state == OBC_RBF_STATE_FLYING) ? "FLYING" : "BENCH";
     snprintf(
         response_output_buf, response_output_buf_len,
-        "{"
-        "\"rbf_state\":\"%s\""
-        "}\n",
+        "{\"rbf_state\":\"%s\"}",
         rbf_state_str
     );
     return 0;
