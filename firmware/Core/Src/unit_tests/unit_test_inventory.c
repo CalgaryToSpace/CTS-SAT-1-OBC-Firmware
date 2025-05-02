@@ -586,9 +586,9 @@ const TEST_Definition_t TEST_definitions[] = {
     // ****************** END SECTION: unit_test_gps ******************
     // ****************** SECTION: unit_test_uart_error_tracking ******************
     {
-        .test_func = TEST_EXEC__UART_Error_tracking_subsystem_error_info_to_json,
+        .test_func = TEST_EXEC__UART_single_subsystem_error_info_to_json,
         .test_file = "unit_tests/test_uart_error_tracking",
-        .test_func_name = "UART_Error_tracking_subsytem_error_info_to_json"
+        .test_func_name = "UART_single_subsystem_error_info_to_json"
     },
 };
 

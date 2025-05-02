@@ -91,7 +91,7 @@ void UART_track_error_from_isr(USART_TypeDef *huart_instance, uint32_t error_cod
 }
 
 
-uint8_t UART_Error_tracking_subsystem_error_info_to_json(UART_error_counts_single_subsystem_struct_t *error_info_struct, char *json_buffer, uint16_t json_buffer_len)
+uint8_t UART_single_subsystem_error_info_to_json(UART_error_counts_single_subsystem_struct_t *error_info_struct, char *json_buffer, uint16_t json_buffer_len)
 {
     // Check if the buffer is large enough
     if (json_buffer_len < UART_ERROR_TRACKING_JSON_BUFFER_LEN / 4) {
@@ -110,7 +110,7 @@ uint8_t UART_Error_tracking_subsystem_error_info_to_json(UART_error_counts_singl
     return 0;
 }
 
-uint8_t UART_Error_tracking_get_errors_json(char *json_buf, uint16_t json_buf_len)
+uint8_t UART_get_errors_json(char *json_buf, uint16_t json_buf_len)
 {
     if (json_buf == NULL || json_buf_len < UART_ERROR_TRACKING_JSON_BUFFER_LEN) {
         return 1; // Buffer is NULL or too small
@@ -124,28 +124,28 @@ uint8_t UART_Error_tracking_get_errors_json(char *json_buf, uint16_t json_buf_le
 
     // --- Append mpi_errors ---
     memset(buf, 0, sizeof(buf));
-    if (UART_Error_tracking_subsystem_error_info_to_json(&UART_error_mpi_error_info, buf, sizeof(buf))) { return 3;}
+    if (UART_single_subsystem_error_info_to_json(&UART_error_mpi_error_info, buf, sizeof(buf))) { return 3;}
     written = snprintf(json_buf + offset, json_buf_len - offset, "\"mpi_errors\":%s", buf);
     if (written < 0 || written >= json_buf_len - offset) { return 4;}
     offset += written;
 
     // --- Append gps_errors ---
     memset(buf, 0, sizeof(buf));
-    if (UART_Error_tracking_subsystem_error_info_to_json(&UART_error_mpi_error_info, buf, sizeof(buf))) { return 3;}
+    if (UART_single_subsystem_error_info_to_json(&UART_error_gps_error_info, buf, sizeof(buf))) { return 3;}
     written = snprintf(json_buf + offset, json_buf_len - offset, ",\"gps_errors\":%s", buf);
     if (written < 0 || written >= json_buf_len - offset) { return 4;}
     offset += written;
 
     // --- Append camera_errors ---
     memset(buf, 0, sizeof(buf));
-    if (UART_Error_tracking_subsystem_error_info_to_json(&UART_error_mpi_error_info, buf, sizeof(buf))) { return 3;}
+    if (UART_single_subsystem_error_info_to_json(&UART_error_camera_error_info, buf, sizeof(buf))) { return 3;}
     written = snprintf(json_buf + offset, json_buf_len - offset, ",\"camera_errors\":%s", buf);
     if (written < 0 || written >= json_buf_len - offset) { return 4;}
     offset += written;
 
     // --- Append eps_errors ---
     memset(buf, 0, sizeof(buf));
-    if (UART_Error_tracking_subsystem_error_info_to_json(&UART_error_mpi_error_info, buf, sizeof(buf))) { return 3;}
+    if (UART_single_subsystem_error_info_to_json(&UART_error_eps_error_info, buf, sizeof(buf))) { return 3;}
     written = snprintf(json_buf + offset, json_buf_len - offset, ",\"eps_errors\":%s", buf);
     if (written < 0 || written >= json_buf_len - offset) { return 4;}
     offset += written;
