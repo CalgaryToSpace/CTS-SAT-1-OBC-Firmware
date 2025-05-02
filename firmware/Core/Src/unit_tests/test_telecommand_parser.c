@@ -127,10 +127,10 @@ uint8_t TEST_EXEC__TCMD_get_suffix_tag_str() {
     memset(result_val, 0, result_val_len);
 
     // -------------------------------
-    // Test 6: Special characters '.' and '-' allowed
-    result_err = TCMD_get_suffix_tag_str("@resp_fname=log-file.v1", "@resp_fname=", result_val, result_val_len);
+    // Test 6: Special characters '.', '-', '/' allowed
+    result_err = TCMD_get_suffix_tag_str("@resp_fname=dir/log-file.v1", "@resp_fname=", result_val, result_val_len);
     TEST_ASSERT(result_err == 0);
-    TEST_ASSERT(strcmp(result_val, "log-file.v1") == 0);
+    TEST_ASSERT(strcmp(result_val, "dir/log-file.v1") == 0);
 
     memset(result_val, 0, result_val_len);
 

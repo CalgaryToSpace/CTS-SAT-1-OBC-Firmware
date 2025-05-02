@@ -208,7 +208,7 @@ uint8_t TCMD_execute_parsed_telecommand_now(
     DEBUG_uart_print_str("\n");
 
     // If the filename is not empty, log the telecommand to the file.
-    if (tcmd_resp_fname != NULL && strlen(tcmd_resp_fname) > 0) {
+    if (tcmd_resp_fname != NULL && strnlen(tcmd_resp_fname, TCMD_MAX_RESP_FNAME_LEN) > 0) {
         // Internally Logs errors, no point in collecting error here
         TCMD_log_to_file(tcmd_resp_fname, response_output_buf);
     }

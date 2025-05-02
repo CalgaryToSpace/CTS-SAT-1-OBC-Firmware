@@ -252,7 +252,7 @@ uint8_t TCMD_get_suffix_tag_str(const char *str, const char *tag_name, char *val
     // This check is sufficient as a string can be a combination of chars,numbers,and '_'
     while (value_end_index < str_len &&  
           (TCMD_is_char_valid_telecommand_name_char(str[value_end_index]) || 
-           str[value_end_index] == '.' || str[value_end_index] == '-')) 
+           str[value_end_index] == '.' || str[value_end_index] == '-' || str[value_end_index] == '/')) 
     {
         value_end_index++;
     }

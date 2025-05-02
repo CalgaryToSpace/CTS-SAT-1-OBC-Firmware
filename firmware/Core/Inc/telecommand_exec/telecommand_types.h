@@ -4,7 +4,7 @@
 
 #include <stdint.h>
 
-#define TCMD_MAX_RESP_FNAME_LEN 32
+#define TCMD_MAX_RESP_FNAME_LEN 64
 
 typedef enum {
     TCMD_TelecommandChannel_DEBUG_UART,
