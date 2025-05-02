@@ -10,10 +10,10 @@
 #include <stdio.h>
 
 /// @brief Timeout duration for transmit HAL call, in milliseconds.
-static const uint16_t MPI_TX_TIMEOUT_DURATION_MS = 10;
+static const uint16_t MPI_TX_TIMEOUT_DURATION_MS = 100;
 
 /// @brief Timeout duration for receive in milliseconds. Same between bytes and at the start.
-static const uint16_t MPI_RX_TIMEOUT_DURATION_MS = 200;
+static const uint16_t MPI_RX_TIMEOUT_DURATION_MS = 2000;
 
 volatile MPI_rx_mode_t MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
 
@@ -33,7 +33,7 @@ uint8_t MPI_send_command_get_response(
     // Assert: MPI_rx_buffer_max_size is >= the length of the bytes_to_send_len + 1 to receive the command echo
     if (MPI_rx_buffer_max_size < (bytes_to_send_len + 1)) return 8; // Error code: Not enough space in the MPI response buffer
     
-    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MOSI); // Set the MPI transceiver to MOSI mode
+    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_DUPLEX); // Set the MPI transceiver to MOSI mode
     MPI_current_uart_rx_mode = MPI_RX_MODE_COMMAND_MODE; // Set MPI to command mode.
 
     // Transmit the MPI command
@@ -47,7 +47,7 @@ uint8_t MPI_send_command_get_response(
     }
 
     // Set the MPI transceiver to MISO mode
-    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MISO);
+    // MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MISO);
 
     // Clear the MPI response buffer (Note: Can't use memset because UART_mpi_buffer is Volatile)
     for (uint16_t i = 0; i < UART_mpi_buffer_len; i++) {
