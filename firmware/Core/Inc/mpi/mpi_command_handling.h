@@ -20,4 +20,9 @@ uint8_t MPI_validate_command_response(
     const uint8_t MPI_command_code, uint8_t *MPI_rx_buffer, const uint16_t MPI_rx_buffer_len
 );
 
+uint8_t MPI_send_command_get_validated_response(
+    const uint8_t *bytes_to_send, const size_t bytes_to_send_len, uint8_t *MPI_rx_buffer, 
+    const size_t MPI_rx_buffer_max_size, uint16_t *MPI_rx_buffer_len
+); 
+
 #endif /* INC_MPI_COMMAND_HANDLING_H_ */

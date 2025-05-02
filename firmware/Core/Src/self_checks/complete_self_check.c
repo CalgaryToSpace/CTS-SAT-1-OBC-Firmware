@@ -174,37 +174,27 @@ uint8_t CTS1_check_is_eps_thriving() {
 /// @brief Check if the MPI is dumping science data by using the lazy blocking receive method.
 /// @return 1 if the MPI is dumping science data, 0 otherwise.
 uint8_t CTS1_check_mpi_science_rx() {
-    // First, cancel any ongoing DMA transfers.
-    const HAL_StatusTypeDef abort_status = HAL_UART_AbortReceive(UART_mpi_port_handle);
-    if (abort_status != HAL_OK) {
-        LOG_message(
-            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "Failed to abort MPI DMA listening: HAL_Status=%d", abort_status
-        );
-        MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
-        return 0;
-    }
-
-    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MOSI); // Send to MPI.
-    HAL_Delay(50);
-
     // MPI boots up in "command" mode, so we need to send a command to switch it to "dumping science" mode.
-    const uint8_t start_dumping_science_cmd[] = {0x54, 0x43, 0x19};
-    const HAL_StatusTypeDef send_status = HAL_UART_Transmit(
-        UART_mpi_port_handle,
-        start_dumping_science_cmd, sizeof(start_dumping_science_cmd),
-        100 // Timeout: 100ms is plenty.
+    uint8_t MPI_command_code = 0x16;
+    uint8_t cmd[3] = {0x54, 0x43, 0x00};
+    cmd[2] = MPI_command_code;
+    // MPI should respond with 2 bytes
+    uint8_t MPI_rx_buffer[2];
+    uint16_t MPI_number_of_bytes_received = 0;
+    uint8_t result = MPI_send_command_get_validated_response(
+        cmd, sizeof(cmd),
+        MPI_rx_buffer, sizeof(MPI_rx_buffer), &MPI_number_of_bytes_received
     );
-    if (send_status != HAL_OK) {
+
+    if (result != 0) {
         LOG_message(
             LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "Failed to send MPI command: HAL_Status=%d", send_status
+            "MPI_send_command_get_validated_response() response was %d. MPI_rx_buffer: [0x%02X,0x%02X]",
+            result,
+            MPI_rx_buffer[0], MPI_rx_buffer[1]
         );
-        MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
         return 0;
     }
-
-    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MISO); // Receive from MPI.
 
     // Start listening in blocking mode.
     uint8_t rx_buffer[350];
@@ -216,9 +206,8 @@ uint8_t CTS1_check_mpi_science_rx() {
     if (rx_status != HAL_OK) {
         LOG_message(
             LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "Failed to receive MPI data (probably timeout). HAL_Status=%d", rx_status
+            "Failed to receive MPI data. HAL_Status=%d", rx_status
         );
-        MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
         return 0;
     }
     
@@ -240,54 +229,23 @@ uint8_t CTS1_check_mpi_science_rx() {
 }
 
 uint8_t CTS1_check_mpi_cmd_works() {
-    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MOSI); // MPI is listening.
-
-    // First, cancel any ongoing DMA transfers.
-    const HAL_StatusTypeDef abort_status = HAL_UART_AbortReceive(UART_mpi_port_handle);
-    if (abort_status != HAL_OK) {
-        LOG_message(
-            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "Failed to abort MPI DMA listening: HAL_Status=%d", abort_status
-        );
-        MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
-        return 0;
-    }
-
-    // Send random command: "TC" + command_2 + scan_mode_off
-    // Not certain what it does, but we power the MPI off anyway, so it gets reset anyway.
-    // Dr. B approves this as a reasonable testing command.
-    const uint8_t cmd[] = {0x54, 0x43, 0x02, 0x00};
-
-    uint8_t MPI_rx_buffer[100];
-    uint16_t MPI_buffer_len = 0;
-    const uint8_t result = MPI_send_command_get_response(
+    // Enter bootloader
+    uint8_t MPI_command_code = 0x08;
+    uint8_t cmd[3] = {0x54, 0x43, 0x00};
+    cmd[2] = MPI_command_code;
+    // MPI should respond with 2 bytes
+    uint8_t MPI_rx_buffer[2];
+    uint16_t MPI_number_of_bytes_received = 0;
+    uint8_t result = MPI_send_command_get_validated_response(
         cmd, sizeof(cmd),
-        MPI_rx_buffer, sizeof(MPI_rx_buffer), &MPI_buffer_len
+        MPI_rx_buffer, sizeof(MPI_rx_buffer), &MPI_number_of_bytes_received
     );
 
     if (result != 0) {
         LOG_message(
             LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "MPI_send_command_get_response() -> %d", result
-        );
-        return 0;
-    }
-
-    if (MPI_buffer_len < 2 || MPI_buffer_len > 10) {
-        LOG_message(
-            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "MPI_send_command_get_response() -> Received %d bytes (expected 2 <= x <= 10).",
-            MPI_buffer_len
-        );
-        return 0;
-    }
-
-    if (MPI_rx_buffer[0] != 0x02 || MPI_rx_buffer[1] != MPI_COMMAND_SUCCESS_RESPONSE_VALUE) {
-        // The success response should be the TC number followed by the success code.
-        LOG_message(
-            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "MPI_send_command_get_response() response was %d bytes. Starting with: [d%d, d%d]",
-            MPI_buffer_len,
+            "MPI_send_command_get_validated_response() response was %d. MPI_rx_buffer: [0x%02X,0x%02X]",
+            result,
             MPI_rx_buffer[0], MPI_rx_buffer[1]
         );
         return 0;

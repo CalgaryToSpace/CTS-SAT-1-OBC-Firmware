@@ -29,7 +29,7 @@ static uint8_t rx_buffer[5120];
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0: Success, 1: Error parsing args, 2: Invalid uart port requested, 3: Error transmitting data, 
 ///         4: Error receiving data, 5: Timeout waiting for response / No response, 6: Peripheral specific error, 
-///         7: Unhandled error
+///         7: Unhandled error, 8: subsystem error reported
 /// @note This function doesn't toggle the EPS power lines for peripherals. Ensure they are powered on before 
 ///       using this function.
 /// @note The camera UART port does not support receiving data in the function. TX only.
@@ -72,72 +72,45 @@ uint8_t TCMDEXEC_uart_send_hex_get_response_hex(
     // UART 1 selected (MPI)
     if(strcasecmp(arg_uart_port_name, "MPI") == 0) {
 
-        // Set log source
+        if (tx_buffer_len < 3) {
+            // MPI expects commands to have at least 3 bytes
+            LOG_message(
+                    LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+                    "MPI expects commands to have at least 3 bytes, got %d bytes", tx_buffer_len
+                    );
+            return 8;
+        }
+
+        // Set log source for MPI
         LOG_source = LOG_SYSTEM_MPI;
         UART_rx_buffer_size_ptr = &UART_mpi_buffer_len;
 
-        // Transmit bytes and receive response (DMA enabled reception)
-        const uint8_t MPI_tx_rx_status = MPI_send_command_get_response(
-            tx_buffer, tx_buffer_len, rx_buffer, *UART_rx_buffer_size_ptr, &rx_buffer_len
-        );
+        // MPI should respond with 2 bytes
+        uint16_t MPI_number_of_bytes_received = 0;
+        uint8_t result = MPI_send_command_get_response(
+                tx_buffer, tx_buffer_len,
+                rx_buffer, 2, &MPI_number_of_bytes_received
+                );
 
-        // Log successful transmission and print rx_buffer response in hex (uint8_t)
-        char rx_buffer_str[rx_buffer_len*3];
-
-        for(uint16_t i = 0; i < rx_buffer_len; i++) {
-            // Copy received bytes into a string to log it
-            sprintf(&rx_buffer_str[i*3], "%02X ", rx_buffer[i]);
+        if (result != 0) {
+            LOG_message(
+                    LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+                    "MPI_send_command_get_response() -> %d", result
+                    );
+            return 8;
         }
 
-        // Log mpi response
-        switch(MPI_tx_rx_status) {
-            case 0:
-                LOG_message(
-                    LOG_source, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-                    "Transmitted %u byte(s) to %s.", 
-                    tx_buffer_len, 
-                    arg_uart_port_name
-                );
-                LOG_message(
-                    LOG_source, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-                    "Received %u byte(s) from %s: %s",
-                    rx_buffer_len,
-                    arg_uart_port_name,
-                    rx_buffer_str
-                );
-                return 0;   // Success
-            case 2:
-                LOG_message(
-                    LOG_source, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-                    "Failed UART transmission."
-                );
-                return 3;   // Error code: Error transmitting data
-            case 3:
-                LOG_message(
-                    LOG_source, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-                    "Failed UART reception."
-                );
-                return 4;   // Error code: Error receiving data
-            case 4:
-                LOG_message(
-                    LOG_source, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-                    "No response received. Timeout waiting for 1st byte."
-                ); 
-                return 5;   // Error code: Error receiving data
-            case 8:
-                LOG_message(
-                    LOG_source, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-                    "Not enough space in the MPI response buffer"
-                ); 
-                return 6;   // Error code: Error receiving data
-            default:
-                LOG_message(
-                    LOG_source, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-                    "Unknown response return: %u", 
-                    MPI_tx_rx_status
-                );
-                return 7;   // Error code: Unhandled error
+        result = MPI_validate_command_response(tx_buffer[2], rx_buffer, MPI_number_of_bytes_received);
+        if (result != 0) {
+            LOG_message(
+                    LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+                    "MPI_send_command_get_response() response was %d. MPI_rx_buffer: [0x%02X,0x%02X]",
+                    result,
+                    rx_buffer[0], rx_buffer[1]
+                    );
+            return 8;
         }
+
     }
 
     // UART 4 Selected (CAMERA)
