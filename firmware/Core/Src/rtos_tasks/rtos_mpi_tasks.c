@@ -43,10 +43,10 @@ void TASK_service_write_mpi_data(void *argument) {
                 if (close_result < 0)
                 {
                     LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing file: %d", close_result);
-                } else {
-                    LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "File succesfully closed");
-                }
+                } 
+                LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "File succesfully closed");
                 MPI_receive_prepared = 0;
+                MPI_science_data_file_is_open = 0;
             }
         }
         if (MPI_current_uart_rx_mode == MPI_RX_MODE_SENSING_MODE) {

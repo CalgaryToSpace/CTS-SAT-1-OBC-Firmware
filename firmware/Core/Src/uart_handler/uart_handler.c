@@ -134,6 +134,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         }
         else {
             DEBUG_uart_print_str("Unhandled MPI Mode\n"); //TODO: HANDLE other MPI MODES
+            DEBUG_uart_print_str("COMPLETE - Receiving some sort of MPI Data!\n");
         }
     }
 
@@ -244,6 +245,8 @@ void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
             } else {
                 DEBUG_uart_print_str("HALF - Bytes are being lost!\n");
             }
+        } else {
+            DEBUG_uart_print_str("HALF - Receiving some sort of MPI Data!\n");
         }
     }
 }
@@ -306,10 +309,7 @@ void UART_init_uart_handlers(void) {
     // Enable the UART interrupt
     HAL_UART_Receive_IT(UART_telecommand_port_handle, (uint8_t*) &UART_telecommand_buffer_last_rx_byte, 1);
     HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t*) &UART_eps_buffer_last_rx_byte, 1);
-    // HAL_UART_Receive_DMA(UART_mpi_port_handle, (uint8_t*) &UART_mpi_last_rx_byte, 1);
     
-    // MPI_buffer_state = MPI_MEMORY_WRITE_STATUS_PENDING;
-
     // GPS is not initialized as always-listening. It is enabled by the GPS telecommands.
     // Reason: The GPS has a mode where it spams null bytes, which can lock up the entire system.
     // Thus, its interrupt is disabled by default.

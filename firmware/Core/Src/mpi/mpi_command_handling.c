@@ -1,6 +1,7 @@
 #include "mpi/mpi_command_handling.h"
 #include "mpi/mpi_types.h"
 #include "mpi/mpi_transceiver.h"
+#include "eps_drivers/eps_channel_control.h"
 #include "uart_handler/uart_handler.h"
 #include "littlefs/littlefs_helper.h"
 #include "log/log.h"
@@ -25,6 +26,7 @@ uint16_t MPI_active_data_median_buffer_len = 4096;
 uint8_t MPI_active_data_median_buffer[4096];
 
 uint8_t MPI_receive_prepared = 0;
+uint8_t MPI_science_data_file_is_open = 0;
 lfs_file_t MPI_science_data_file_pointer;
 
 /// @brief Sends commandcode+params to the MPI as bytes
@@ -155,7 +157,67 @@ uint8_t MPI_validate_command_response(
     return 0; //  MPI executed the cmd successfully
 }
 
+/// @brief Turns MPI on or off
+/// @param MPI_enable enabling or disabling the MPI (power on or off)
+/// @return 0: MPI successfully powered on or off, > 0: Error
+uint8_t MPI_power_change(const char *MPI_channel, uint8_t MPI_enable) {
+    // Convert the channel string to an enum value.
+    const EPS_CHANNEL_enum_t eps_channel = EPS_channel_from_str(MPI_channel);
+    if (eps_channel == EPS_CHANNEL_UNKNOWN) {
+        return 1;
+    }
+
+    // Convert to a nice string/channel number.
+    const char *eps_channel_name_str = EPS_channel_to_str(eps_channel);
+
+    // Make sure we can disable the MPI if disabling
+    if (((eps_channel == EPS_CHANNEL_3V3_STACK)
+        || (eps_channel == EPS_CHANNEL_5V_STACK)
+        || (eps_channel == EPS_CHANNEL_VBATT_STACK))
+        && (MPI_enable == 0)
+    ) {
+        LOG_message(
+            LOG_SYSTEM_EPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "Cannot disable the stack channels: %s. Trying anyway.",
+            eps_channel_name_str
+        );
+        return 2;
+    }
+
+    // Disable or Enable MPI
+    const uint8_t eps_result = EPS_set_channel_enabled(eps_channel, (uint8_t) MPI_enable);
+    if (eps_result != 0) {
+        return 3;
+    }
+
+    return 0;
+}
+
+/// @brief Turns on MPI and prepares a LFS file to store MPI data in.
+/// @return 0: System successfuly prepared for MPI data, < 0: Error
 int8_t MPI_prepare_receive_data() {
+
+    //TODO: Might need to add a check to see if MPI is already powered on
+
+    // Power On MPI 5v; 1 = Power on; 0 = Power Off
+    uint8_t mpi_power_result = MPI_power_change("mpi_5v", 1);
+    if (mpi_power_result != 0) {
+        LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL, 
+            "MPI 5v could not be powered on (MPI_power_change result: %d)", mpi_power_result);
+        // return 1;
+    }
+
+    // Power On MPI 12v; 1 = Power on; 0 = Power Off
+    mpi_power_result = MPI_power_change("mpi_12v", 1);
+    if (mpi_power_result != 0) {
+        LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL, 
+            "MPI 12v could not be powered on (MPI_power_change result: %d)", mpi_power_result);
+        // return 1;
+    }
+
+    // Start the timer to track time past since we powered on MPI
+    uint32_t start_time = HAL_GetTick();
+
     // Mount LFS if not already mounted
     if (!LFS_is_lfs_mounted) {
         LFS_mount();
@@ -165,26 +227,80 @@ int8_t MPI_prepare_receive_data() {
     char MPI_science_data_file_name[60];
     sprintf(MPI_science_data_file_name, "mpi_active_data_file_%lu", HAL_GetTick());
 
+    // If the old file is open, close the file
+    if (MPI_science_data_file_is_open == 1) {
+        const int8_t close_result = lfs_file_close(&LFS_filesystem, &MPI_science_data_file_pointer);
+        if (close_result < 0) {
+            LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing old file: %d", close_result);
+            MPI_receive_prepared = 0;
+            return close_result;
+        }
+        LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Old File succesfully closed");
+        MPI_science_data_file_is_open = 0;
+    }
+
     // Open / Create the file
     const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &MPI_science_data_file_pointer, MPI_science_data_file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND, &LFS_file_cfg);
+    
+    // Check if open successful
     if (open_result < 0) {
         LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening / creating file: %s", MPI_science_data_file_name);
         MPI_receive_prepared = 0;
         return open_result;
-    }        
-    
+    }
+    MPI_science_data_file_is_open = 1;
     LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Opened/created file: %s", MPI_science_data_file_name);
-    MPI_receive_prepared = 1;   
+    MPI_receive_prepared = 1;
+    
+    // Total 5 second delay to make sure MPI is booted
+    HAL_Delay(5000 - (HAL_GetTick() - start_time));
     return 0;
 }
 
+/// @brief Turns on MPI science mode and Enables DMA interrupt for MPI channel.
+/// @return 0: MPI and DMA successfuly enabled, < 0: Error
 uint8_t MPI_enable_active_mode() {
 
-    if (MPI_receive_prepared != 1) {
-        return 3; // Error code: System hasn't been prepared for MPI reading
+    //FIXME: There are a few issues in the code
+    //       If UART port starts receiving data when it's not listening, the port will be blocked once listening
+    //       If UART port/DMA is stopped while actively receiving data, the port will be blocked once listening again
+    //       The more files there are, the longer the first initial write takes to LFS 
+    
+    // Turn on the MPI and setup LFS
+    uint8_t prepare_result = MPI_prepare_receive_data();
+    if (prepare_result != 0) {
+        LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL, 
+            "MPI could not be powered on (MPI_prepare_receive_data result: %d)", prepare_result);
+        return 5;
+    }
+
+    // Allocate space to receive incoming MPI response.
+    const size_t MPI_rx_buffer_max_size = 256;          // TODO: Verify max size
+    uint16_t MPI_rx_buffer_len = 0;                     // Length of MPI response buffer
+    uint8_t MPI_rx_buffer[MPI_rx_buffer_max_size];      // Buffer to store incoming response from the MPI
+    memset(MPI_rx_buffer, 0, MPI_rx_buffer_max_size);   // Initialize all elements to 0
+    uint8_t MPI_tx_buffer[] = {0x54, 0x43, 0x19};       // Initialize command to enable science data
+    uint16_t MPI_tx_buffer_len = 3;                     // Length of the command buffer
+
+    // Send command to MPI and receive back the response
+    uint8_t cmd_response = MPI_send_command_get_response(
+        MPI_tx_buffer, MPI_tx_buffer_len, MPI_rx_buffer, MPI_rx_buffer_max_size, &MPI_rx_buffer_len);
+
+    if (cmd_response != 0) {
+        LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL, 
+            "MPI command response error (MPI_send_command_get_response result: %d)", cmd_response);
+        return 4;
+    }
+
+    uint8_t validate_response = MPI_validate_command_response(MPI_tx_buffer, MPI_rx_buffer, MPI_rx_buffer_len-1);
+    if (validate_response != 0) {
+        LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL, 
+            "MPI response validate error (MPI_validate_command_response result: %d)", validate_response);
+        return 6;
     }
 
     // Receive MPI response actively with 8192 buffer size.
+    __HAL_UART_CLEAR_OREFLAG(UART_mpi_port_handle);
     const HAL_StatusTypeDef receive_status = HAL_UART_Receive_DMA(UART_mpi_port_handle, (uint8_t*) UART_mpi_data_rx_buffer, UART_mpi_data_rx_buffer_len);
     
     switch (receive_status) {
@@ -207,6 +323,31 @@ uint8_t MPI_enable_active_mode() {
 }
 
 uint8_t MPI_disable_active_mode() {
+
+    // Allocate space to receive incoming MPI response.
+    const size_t MPI_rx_buffer_max_size = 256;          // TODO: Verify max size
+    uint16_t MPI_rx_buffer_len = 0;                     // Length of MPI response buffer
+    uint8_t MPI_rx_buffer[MPI_rx_buffer_max_size];      // Buffer to store incoming response from the MPI
+    memset(MPI_rx_buffer, 0, MPI_rx_buffer_max_size);   // Initialize all elements to 0
+    uint8_t MPI_tx_buffer[] = {0x54, 0x43, 0x20};       // TODO: Change this to disable science data commmand
+    uint16_t MPI_tx_buffer_len = 3;                     // Length of the command buffer
+
+    // Send command to MPI and receive back the response
+    uint8_t cmd_response = MPI_send_command_get_response(
+        MPI_tx_buffer, MPI_tx_buffer_len, MPI_rx_buffer, MPI_rx_buffer_max_size, &MPI_rx_buffer_len);
+
+    if (cmd_response != 0) {
+        LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL, 
+            "MPI command response error (MPI_send_command_get_response result: %d)", cmd_response);
+        return 4;
+    }
+
+    uint8_t validate_response = MPI_validate_command_response(MPI_tx_buffer, MPI_rx_buffer, MPI_rx_buffer_len-1);
+    if (validate_response != 0) {
+        LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL, 
+            "MPI response validate error (MPI_validate_command_response result: %d)", validate_response);
+        return 6;
+    }
 
     // Set the MPI State to not handle any receiving data
     MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE); // Set the MPI transceiver to inactive

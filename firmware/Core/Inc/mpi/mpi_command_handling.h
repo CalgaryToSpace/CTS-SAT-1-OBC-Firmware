@@ -16,6 +16,7 @@ extern uint16_t MPI_active_data_median_buffer_len;
 extern uint8_t MPI_active_data_median_buffer[];
 
 extern uint8_t MPI_receive_prepared;
+extern uint8_t MPI_science_data_file_is_open;
 extern lfs_file_t MPI_science_data_file_pointer;
 
 uint8_t MPI_send_command_get_response(
