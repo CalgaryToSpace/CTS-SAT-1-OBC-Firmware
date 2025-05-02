@@ -10,7 +10,7 @@
 #include <stdio.h>
 
 /// @brief Timeout duration for transmit HAL call, in milliseconds.
-static const uint16_t MPI_TX_TIMEOUT_DURATION_MS = 100;
+static const uint16_t MPI_TX_TIMEOUT_DURATION_MS = 10;
 
 /// @brief Timeout duration for receive in milliseconds. Same between bytes and at the start.
 static const uint16_t MPI_RX_TIMEOUT_DURATION_MS = 200;
@@ -122,23 +122,29 @@ uint8_t MPI_send_command_get_response(
 }
 
 /// @brief The MPI responds to each telecommand with a response code consisting of an echo of the 
-///        telecommand and a success byte (either 1 for success or 0 for fail).
+///        telecommand code byte and a status byte (either 254 or OxFE) for success or error code otherwise.
 /// @param MPI_tx_buffer MPI telecommand buffer containing bytes sent
 /// @param MPI_rx_buffer MPI response buffer containing bytes received
 /// @param MPI_tx_buffer_size Size of the MPI response buffer
 /// @return 0: MPI successfully executed telecommand, 5: MPI failed to execute telecommand, 
 ///         6: Invalid response from the MPI
 uint8_t MPI_validate_command_response(
-    const uint8_t *MPI_tx_buffer, uint8_t *MPI_rx_buffer, 
-    const uint16_t MPI_tx_buffer_size
-) {    
+    const uint8_t MPI_command_code, uint8_t *MPI_rx_buffer, 
+    const uint16_t MPI_rx_buffer_len
+) {  
+    // Ensure enough bytes were received  
+    if (MPI_rx_buffer_len < 2) {
+        return 7; // Error code: MPI rx buffer too small
+    }
+
     // Verify if the MPI response echos the cmd sent
-    if (memcmp(MPI_tx_buffer, MPI_rx_buffer, MPI_tx_buffer_size) != 0) {
+    if (MPI_command_code != MPI_rx_buffer[0]) {
         return 6; // Error code: Invalid response from the MPI
     }
 
     // Verify if the MPI response responds with a success byte
-    if (MPI_rx_buffer[MPI_tx_buffer_size] != 0x01) {
+    uint8_t command_status = MPI_rx_buffer[1];
+    if (command_status != MPI_COMMAND_SUCCESS_RESPONSE_VALUE) {
         return 5; // Error code: MPI failed to execute command
     }
 
