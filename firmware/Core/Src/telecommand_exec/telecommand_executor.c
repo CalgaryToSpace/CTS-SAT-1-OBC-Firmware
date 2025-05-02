@@ -92,8 +92,8 @@ uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd
         }
 
         // Copy the log filename into the agenda.
-        for (uint16_t j = 0; j < TCMD_MAX_LOG_FILENAME_LEN; j++) {
-            TCMD_agenda[slot_num].log_filename[j] = parsed_tcmd->log_filename[j];
+        for (uint16_t j = 0; j < TCMD_MAX_RESP_FNAME_LEN; j++) {
+            TCMD_agenda[slot_num].resp_fname[j] = parsed_tcmd->resp_fname[j];
         }
         // Mark the slot as valid.
         TCMD_agenda_is_valid[slot_num] = 1;
@@ -160,7 +160,7 @@ int16_t TCMD_get_next_tcmd_agenda_slot_to_execute() {
 /// @return 0 on success, 254 if `tcmd_idx` is out of bounds, otherwise the error code from the telecommand function.
 uint8_t TCMD_execute_parsed_telecommand_now(
     const uint16_t tcmd_idx, const char args_str_no_parens[],
-    TCMD_TelecommandChannel_enum_t tcmd_channel, const char * tcmd_log_filename,
+    TCMD_TelecommandChannel_enum_t tcmd_channel, const char * tcmd_resp_fname,
     char *response_output_buf, uint16_t response_output_buf_size
 ) {
     // Get the telecommand definition.
@@ -208,9 +208,9 @@ uint8_t TCMD_execute_parsed_telecommand_now(
     DEBUG_uart_print_str("\n");
 
     // If the filename is not empty, log the telecommand to the file.
-    if (tcmd_log_filename != NULL && strlen(tcmd_log_filename) > 0) {
+    if (tcmd_resp_fname != NULL && strlen(tcmd_resp_fname) > 0) {
         // Internally Logs errors, no point in collecting error here
-        TCMD_log_to_file(tcmd_log_filename, response_output_buf);
+        TCMD_log_to_file(tcmd_resp_fname, response_output_buf);
     }
     return tcmd_result;
 }
@@ -240,14 +240,14 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
     GEN_uint64_to_str(TCMD_agenda[tcmd_agenda_slot_num].timestamp_sent, tssent_str);
     char tsexec_str[32];
     GEN_uint64_to_str(TCMD_agenda[tcmd_agenda_slot_num].timestamp_to_execute, tsexec_str);
-    uint8_t log_filename_len = strlen(TCMD_agenda[tcmd_agenda_slot_num].log_filename);
+    uint8_t resp_fname_len = strlen(TCMD_agenda[tcmd_agenda_slot_num].resp_fname);
     LOG_message(
         LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
         "Executing telecommand from agenda slot %d, sent at tssent=%s, scheduled for tsexec=%s, logging to file: '%s'.",
         tcmd_agenda_slot_num,
         tssent_str,
         tsexec_str,
-        (log_filename_len > 0) ? TCMD_agenda[tcmd_agenda_slot_num].log_filename : "None"
+        (resp_fname_len > 0) ? TCMD_agenda[tcmd_agenda_slot_num].resp_fname : "None"
     );
 
     // Execute the telecommand.
@@ -255,7 +255,7 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
         TCMD_agenda[tcmd_agenda_slot_num].tcmd_idx,
         TCMD_agenda[tcmd_agenda_slot_num].args_str_no_parens,
         TCMD_agenda[tcmd_agenda_slot_num].tcmd_channel,
-        TCMD_agenda[tcmd_agenda_slot_num].log_filename,
+        TCMD_agenda[tcmd_agenda_slot_num].resp_fname,
         response_output_buf,
         response_output_buf_size
     );

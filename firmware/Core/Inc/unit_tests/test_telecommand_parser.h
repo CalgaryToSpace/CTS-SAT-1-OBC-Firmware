@@ -18,6 +18,6 @@ uint8_t TEST_EXEC_TCMD_parse_full_telecommand();
 uint8_t TEST_EXEC__TCMD_process_suffix_tag_tssent();
 uint8_t TEST_EXEC__TCMD_process_suffix_tag_tsexec();
 uint8_t TEST_EXEC__TCMD_process_suffix_tag_sha256();
-uint8_t TEST_EXEC__TCMD_process_suffix_tag_log_filename();
+uint8_t TEST_EXEC__TCMD_process_suffix_tag_resp_fname();
 
 #endif // INCLUDE_GUARD__TEST_COMMAND_PARSER_H__

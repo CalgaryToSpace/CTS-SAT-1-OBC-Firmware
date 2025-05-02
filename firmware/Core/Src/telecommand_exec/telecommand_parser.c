@@ -221,7 +221,7 @@ uint8_t TCMD_get_suffix_tag_hex_array(const char *str, const char *tag_name, uin
 
 
 /// @brief Searches for a `str` like `\@tag_name=xxxx`, and sets char array `xxxx` into `value_dest`.
-/// @param str The string to search within for the tag. Excluding the tag name, the length of the string must be TCMD_MAX_LOG_FILENAME_LEN.
+/// @param str The string to search within for the tag. Excluding the tag name, the length of the string must be TCMD_MAX_RESP_FNAME_LEN.
 /// @param tag_name The tag to search for, including the '@' and '='.
 /// @param value_dest The destination for the value. `*value_dest` will be set.
 /// @return 0 if the tag was found successfully. >0 if the tag was not found, or there was an error.
@@ -427,10 +427,10 @@ uint8_t TCMD_parse_full_telecommand(
         default: return 111; // Error not accounted for, add case
     }
 
-    // Extract @log_filename=xxxx from the telecommand string, starting at &tcmd_str[end_of_args_idx]
-    char tcmd_suffix_log_filename[TCMD_MAX_LOG_FILENAME_LEN] = {0};
-    const uint8_t log_filename_result= TCMD_process_suffix_tag_log_filename(tcmd_suffix_tag_str, tcmd_suffix_tag_str_len, tcmd_suffix_log_filename, sizeof(tcmd_suffix_log_filename));
-    if (log_filename_result != 0) {
+    // Extract @resp_fname=xxxx from the telecommand string, starting at &tcmd_str[end_of_args_idx]
+    char tcmd_suffix_resp_fname[TCMD_MAX_RESP_FNAME_LEN] = {0};
+    const uint8_t resp_fname_result= TCMD_process_suffix_tag_resp_fname(tcmd_suffix_tag_str, tcmd_suffix_tag_str_len, tcmd_suffix_resp_fname, sizeof(tcmd_suffix_resp_fname));
+    if (resp_fname_result != 0) {
         return 115;
     }
 
@@ -469,7 +469,7 @@ uint8_t TCMD_parse_full_telecommand(
     parsed_tcmd_output->timestamp_sent = timestamp_sent;
     parsed_tcmd_output->timestamp_to_execute = timestamp_to_execute;
     parsed_tcmd_output->tcmd_channel = tcmd_channel;
-    memcpy(parsed_tcmd_output->log_filename, tcmd_suffix_log_filename, TCMD_MAX_LOG_FILENAME_LEN);
+    memcpy(parsed_tcmd_output->resp_fname, tcmd_suffix_resp_fname, TCMD_MAX_RESP_FNAME_LEN);
 
     return 0;
 }
@@ -576,27 +576,27 @@ uint8_t TCMD_process_suffix_tag_sha256(const char *tcmd_suffix_tag_str, const ui
     return 0;
 }
 
-/// @brief Parses the @log_filename=xxxx tag from the telecommand string.
+/// @brief Parses the @resp_fname=xxxx tag from the telecommand string.
 /// @param tcmd_suffix_tag_str The telecommand suffix tag string. 
 /// @param tcmd_suffix_tag_str_len The length of the telecommand suffix tag string.
-/// @param log_filename The destination for the log filename.
-/// @param log_filename_len The length of the log filename.
+/// @param resp_fname The destination for the log filename.
+/// @param resp_fname_len The length of the log filename.
 /// @details The log filename is the name of the file to which the telecommand will be logged.
-/// @details If the length of the filename is > TCMD_MAX_LOG_FILENAME_LEN, the filename will be truncated.
+/// @details If the length of the filename is > TCMD_MAX_RESP_FNAME_LEN, the filename will be truncated.
 /// @return 0 if the tag was found successfully or the tag is not present. >0 if there was an error. 
-uint8_t TCMD_process_suffix_tag_log_filename(const char *tcmd_suffix_tag_str, const uint16_t tcmd_suffix_tag_str_len, char * log_filename, const uint8_t log_filename_len)
+uint8_t TCMD_process_suffix_tag_resp_fname(const char *tcmd_suffix_tag_str, const uint16_t tcmd_suffix_tag_str_len, char * resp_fname, const uint8_t resp_fname_len)
 {
-    if (GEN_get_index_of_substring_in_array(tcmd_suffix_tag_str, tcmd_suffix_tag_str_len, "@log_filename=") < 0) { 
-        // The "@log_filename=" tag was not found, so return 0.
+    if (GEN_get_index_of_substring_in_array(tcmd_suffix_tag_str, tcmd_suffix_tag_str_len, "@resp_fname=") < 0) { 
+        // The "@resp_fname=" tag was not found, so return 0.
         return 0;
     } 
 
-    // The "@log_filename=" tag was found, so parse it.
-    const uint8_t parse_result = TCMD_get_suffix_tag_str(tcmd_suffix_tag_str, "@log_filename=", log_filename, log_filename_len);
+    // The "@resp_fname=" tag was found, so parse it.
+    const uint8_t parse_result = TCMD_get_suffix_tag_str(tcmd_suffix_tag_str, "@resp_fname=", resp_fname, resp_fname_len);
     if (parse_result != 0) {
         LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "Error parsing @log_filename. Error value: %u.", parse_result
+            "Error parsing @resp_fname. Error value: %u.", parse_result
         );
         return 1;
     }

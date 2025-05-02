@@ -83,12 +83,12 @@ uint8_t TEST_EXEC__TCMD_get_suffix_tag_uint64() {
 
 uint8_t TEST_EXEC__TCMD_get_suffix_tag_str() {
     uint8_t result_err = 0;
-    char result_val[TCMD_MAX_LOG_FILENAME_LEN] = {0};
+    char result_val[TCMD_MAX_RESP_FNAME_LEN] = {0};
     uint16_t result_val_len = sizeof(result_val);
 
     // -------------------------------
     // Test 1: Valid tag and value
-    result_err = TCMD_get_suffix_tag_str("@log_filename=log.txt", "@log_filename=", result_val, result_val_len);
+    result_err = TCMD_get_suffix_tag_str("@resp_fname=log.txt", "@resp_fname=", result_val, result_val_len);
     TEST_ASSERT(result_err == 0);
     TEST_ASSERT(strcmp(result_val, "log.txt") == 0);
 
@@ -96,7 +96,7 @@ uint8_t TEST_EXEC__TCMD_get_suffix_tag_str() {
 
     // -------------------------------
     // Test 2: Missing tag
-    result_err = TCMD_get_suffix_tag_str("@log_filename=log.txt", "@missing_tag=", result_val, result_val_len);
+    result_err = TCMD_get_suffix_tag_str("@resp_fname=log.txt", "@missing_tag=", result_val, result_val_len);
     TEST_ASSERT(result_err == 1);
     TEST_ASSERT(strcmp(result_val, "") == 0); // should stay empty
 
@@ -104,7 +104,7 @@ uint8_t TEST_EXEC__TCMD_get_suffix_tag_str() {
 
     // -------------------------------
     // Test 3: Empty value after tag
-    result_err = TCMD_get_suffix_tag_str("@log_filename=", "@log_filename=", result_val, result_val_len);
+    result_err = TCMD_get_suffix_tag_str("@resp_fname=", "@resp_fname=", result_val, result_val_len);
     TEST_ASSERT(result_err == 2); // because no value after =
     TEST_ASSERT(strcmp(result_val, "") == 0);
 
@@ -112,7 +112,7 @@ uint8_t TEST_EXEC__TCMD_get_suffix_tag_str() {
 
     // -------------------------------
     // Test 4: Buffer too small
-    result_err = TCMD_get_suffix_tag_str("@log_filename=log.txt", "@log_filename=", result_val, 5);
+    result_err = TCMD_get_suffix_tag_str("@resp_fname=log.txt", "@resp_fname=", result_val, 5);
     TEST_ASSERT(result_err == 4); // value_len (7) > 5-1
     TEST_ASSERT(strcmp(result_val, "") == 0);
 
@@ -120,7 +120,7 @@ uint8_t TEST_EXEC__TCMD_get_suffix_tag_str() {
 
     // -------------------------------
     // Test 5: Invalid terminator after value
-    result_err = TCMD_get_suffix_tag_str("@log_filename=log.txt$", "@log_filename=", result_val, result_val_len);
+    result_err = TCMD_get_suffix_tag_str("@resp_fname=log.txt$", "@resp_fname=", result_val, result_val_len);
     TEST_ASSERT(result_err == 5); // '$' is invalid terminator
     TEST_ASSERT(strcmp(result_val, "") == 0);
 
@@ -128,7 +128,7 @@ uint8_t TEST_EXEC__TCMD_get_suffix_tag_str() {
 
     // -------------------------------
     // Test 6: Special characters '.' and '-' allowed
-    result_err = TCMD_get_suffix_tag_str("@log_filename=log-file.v1", "@log_filename=", result_val, result_val_len);
+    result_err = TCMD_get_suffix_tag_str("@resp_fname=log-file.v1", "@resp_fname=", result_val, result_val_len);
     TEST_ASSERT(result_err == 0);
     TEST_ASSERT(strcmp(result_val, "log-file.v1") == 0);
 
@@ -136,16 +136,16 @@ uint8_t TEST_EXEC__TCMD_get_suffix_tag_str() {
 
     // -------------------------------
     // Test 7: NULL input checks
-    result_err = TCMD_get_suffix_tag_str(NULL, "@log_filename=", result_val, result_val_len);
+    result_err = TCMD_get_suffix_tag_str(NULL, "@resp_fname=", result_val, result_val_len);
     TEST_ASSERT(result_err == 10);
 
-    result_err = TCMD_get_suffix_tag_str("@log_filename=log.txt", NULL, result_val, result_val_len);
+    result_err = TCMD_get_suffix_tag_str("@resp_fname=log.txt", NULL, result_val, result_val_len);
     TEST_ASSERT(result_err == 10);
 
-    result_err = TCMD_get_suffix_tag_str("@log_filename=log.txt", "@log_filename=", NULL, result_val_len);
+    result_err = TCMD_get_suffix_tag_str("@resp_fname=log.txt", "@resp_fname=", NULL, result_val_len);
     TEST_ASSERT(result_err == 10);
 
-    result_err = TCMD_get_suffix_tag_str("@log_filename=log.txt", "@log_filename=", result_val, 0);
+    result_err = TCMD_get_suffix_tag_str("@resp_fname=log.txt", "@resp_fname=", result_val, 0);
     TEST_ASSERT(result_err == 10);
 
     memset(result_val, 0, result_val_len);
@@ -154,7 +154,7 @@ uint8_t TEST_EXEC__TCMD_get_suffix_tag_str() {
     // Test 8: Value exactly fits buffer (edge case)
     // value_len == value_dest_max_len - 1
     char buffer[10] = {0}; // "log.txt" is 7 chars
-    result_err = TCMD_get_suffix_tag_str("@log_filename=log.txt", "@log_filename=", buffer, 8); // 7+1 null
+    result_err = TCMD_get_suffix_tag_str("@resp_fname=log.txt", "@resp_fname=", buffer, 8); // 7+1 null
     TEST_ASSERT(result_err == 0);
     TEST_ASSERT(strcmp(buffer, "log.txt") == 0);
 
@@ -305,48 +305,48 @@ uint8_t TEST_EXEC__TCMD_process_suffix_tag_sha256() {
     return 0;
 }
 
-uint8_t TEST_EXEC__TCMD_process_suffix_tag_log_filename()
+uint8_t TEST_EXEC__TCMD_process_suffix_tag_resp_fname()
 {
-    char log_filename[TCMD_MAX_LOG_FILENAME_LEN] = {0};
-    uint8_t log_filename_len = sizeof(log_filename);
+    char resp_fname[TCMD_MAX_RESP_FNAME_LEN] = {0};
+    uint8_t resp_fname_len = sizeof(resp_fname);
 
     // -------------------------------
     // Case: Correct log filename
-    const char *valid_suffix = "@log_filename=log.txt";
-    TEST_ASSERT(TCMD_process_suffix_tag_log_filename(valid_suffix, strlen(valid_suffix), log_filename, log_filename_len) == 0);
-    TEST_ASSERT(strcmp(log_filename, "log.txt") == 0);
+    const char *valid_suffix = "@resp_fname=log.txt";
+    TEST_ASSERT(TCMD_process_suffix_tag_resp_fname(valid_suffix, strlen(valid_suffix), resp_fname, resp_fname_len) == 0);
+    TEST_ASSERT(strcmp(resp_fname, "log.txt") == 0);
 
-    memset(log_filename, 0, log_filename_len); 
+    memset(resp_fname, 0, resp_fname_len); 
 
     // -------------------------------
     // Case: Log filename with _ and numbers
-    const char *valid_suffix_2 = "@log_filename=log_123.file";
-    TEST_ASSERT(TCMD_process_suffix_tag_log_filename(valid_suffix_2, strlen(valid_suffix_2), log_filename, log_filename_len) == 0);
-    TEST_ASSERT(strcmp(log_filename, "log_123.file") == 0);
+    const char *valid_suffix_2 = "@resp_fname=log_123.file";
+    TEST_ASSERT(TCMD_process_suffix_tag_resp_fname(valid_suffix_2, strlen(valid_suffix_2), resp_fname, resp_fname_len) == 0);
+    TEST_ASSERT(strcmp(resp_fname, "log_123.file") == 0);
 
-    memset(log_filename, 0, log_filename_len); 
+    memset(resp_fname, 0, resp_fname_len); 
 
     // -------------------------------
-    // Case: Missing @log_filename tag
+    // Case: Missing @resp_fname tag
     const char *no_suffix = "@tssent=1234567890";
-    TEST_ASSERT(TCMD_process_suffix_tag_log_filename(no_suffix, strlen(no_suffix), log_filename, log_filename_len) == 0);
-    TEST_ASSERT(log_filename[0] == '\0'); // empty string
+    TEST_ASSERT(TCMD_process_suffix_tag_resp_fname(no_suffix, strlen(no_suffix), resp_fname, resp_fname_len) == 0);
+    TEST_ASSERT(resp_fname[0] == '\0'); // empty string
 
-    memset(log_filename, 0, log_filename_len); 
+    memset(resp_fname, 0, resp_fname_len); 
 
     // -------------------------------
     // Case: Empty log filename
-    const char *empty_suffix = "@log_filename=";
-    TEST_ASSERT(TCMD_process_suffix_tag_log_filename(empty_suffix, strlen(empty_suffix), log_filename, log_filename_len) == 1);
-    TEST_ASSERT(log_filename[0] == '\0'); // empty string
+    const char *empty_suffix = "@resp_fname=";
+    TEST_ASSERT(TCMD_process_suffix_tag_resp_fname(empty_suffix, strlen(empty_suffix), resp_fname, resp_fname_len) == 1);
+    TEST_ASSERT(resp_fname[0] == '\0'); // empty string
 
-    memset(log_filename, 0, log_filename_len); 
+    memset(resp_fname, 0, resp_fname_len); 
 
     // -------------------------------
     // Case: Tag not at position 0
-    const char *offset_tag = "@other=1@log_filename=test.log";
-    TEST_ASSERT(TCMD_process_suffix_tag_log_filename(offset_tag, strlen(offset_tag), log_filename, log_filename_len) == 0);
-    TEST_ASSERT(strcmp(log_filename, "test.log") == 0);
+    const char *offset_tag = "@other=1@resp_fname=test.log";
+    TEST_ASSERT(TCMD_process_suffix_tag_resp_fname(offset_tag, strlen(offset_tag), resp_fname, resp_fname_len) == 0);
+    TEST_ASSERT(strcmp(resp_fname, "test.log") == 0);
 
     return 0;
 }

@@ -67,9 +67,9 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func_name = "TCMD_process_suffix_tag_tssent"
     },
     {
-        .test_func = TEST_EXEC__TCMD_process_suffix_tag_log_filename,
+        .test_func = TEST_EXEC__TCMD_process_suffix_tag_resp_fname,
         .test_file = "telecommands/telecommand_parser",
-        .test_func_name = "TCMD_process_suffix_tag_log_filename"
+        .test_func_name = "TCMD_process_suffix_tag_resp_fname"
     },
     {
         .test_func = TEST_EXEC__GEN_convert_big_endian_four_byte_array_to_uint32,
