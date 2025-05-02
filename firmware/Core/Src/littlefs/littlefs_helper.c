@@ -1,5 +1,6 @@
 /*-----------------------------INCLUDES-----------------------------*/
 #include <stdint.h>
+#include <stdio.h>
 
 #include "littlefs/littlefs_helper.h"
 #include "littlefs/lfs.h"
@@ -265,6 +266,113 @@ int8_t LFS_delete_file(const char file_name[])
     }
 
     LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully removed file/directory: %s", file_name);
+    return 0;
+}
+
+int8_t LFS_delete_directory(const char directory[]) {
+    if (directory == NULL) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Directory name is NULL");
+        return -1; // Invalid argument
+    }
+
+    lfs_dir_t dir;
+    int8_t open_dir_result = lfs_dir_open(&LFS_filesystem, &dir, directory);
+    if (open_dir_result < 0) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening directory: %s", directory);
+        return open_dir_result; // Return the error code from lfs_dir_open
+    }
+
+    struct lfs_info info;
+    char dir_content[LFS_MAX_PATH_LENGTH];
+    int8_t read_dir_result;
+
+    // Iterate through the directory contents
+    while ((read_dir_result = lfs_dir_read(&LFS_filesystem, &dir, &info)) > 0) {
+        // Skip the "." and ".." entries
+        if (strcmp(info.name, ".") == 0 || strcmp(info.name, "..") == 0) {
+            continue;
+        }
+
+        // Construct the full path of the entry
+        snprintf(dir_content, sizeof(dir_content), "%s/%s", directory, info.name);
+
+        if (info.type == LFS_TYPE_REG) {
+            // Delete the file
+            int8_t delete_file_ret = LFS_delete_file(dir_content);
+            if (delete_file_ret < 0) {
+                LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error deleting file: %s", dir_content);
+                lfs_dir_close(&LFS_filesystem, &dir); // Ensure the directory is closed
+                return delete_file_ret; // Return the error code
+            }
+            LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully deleted file: %s", dir_content);
+        } else if (info.type == LFS_TYPE_DIR) {
+            // Recursively delete the subdirectory
+            int8_t delete_dir_ret = LFS_delete_directory(dir_content);
+            if (delete_dir_ret < 0) {
+                LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error deleting directory: %s", dir_content);
+                lfs_dir_close(&LFS_filesystem, &dir); // Ensure the directory is closed
+                return delete_dir_ret; // Return the error code
+            }
+            LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully deleted directory: %s", dir_content);
+        }
+    }
+
+    if (read_dir_result < 0) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error reading directory: %s", directory);
+        lfs_dir_close(&LFS_filesystem, &dir); // Ensure the directory is closed
+        return read_dir_result; // Return the error code
+    }
+
+    // Close the directory
+    int8_t close_dir_result = lfs_dir_close(&LFS_filesystem, &dir);
+    if (close_dir_result < 0) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing directory: %s", directory);
+        return close_dir_result; // Return the error code
+    }
+
+    // Finally, delete the directory itself
+    int8_t remove_result = lfs_remove(&LFS_filesystem, directory);
+    if (remove_result < 0) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error removing directory: %s", directory);
+        return remove_result; // Return the error code
+    }
+
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully deleted directory: %s", directory);
+    return 0; // Success
+}
+
+
+/// @brief Removes / deletes the file specified
+/// @param file_name Pointer to cstring holding the file name to remove
+/// @return 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
+int8_t LFS_recursively_delete_directory(const char directory_path[])
+{
+    if (!LFS_is_lfs_mounted)
+    {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "LittleFS not mounted.");
+        return 1;
+    }
+
+    // Open the directory
+    lfs_dir_t dir;
+    int8_t open_dir_result = lfs_dir_open(&LFS_filesystem, &dir, directory_path);
+    if (open_dir_result < 0)
+    {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening directory: %s", directory_path);
+        return open_dir_result;
+    }
+
+    // close the directory to prepare for deletion
+    int8_t close_dir_result = lfs_dir_close(&LFS_filesystem, &dir);
+    if (close_dir_result < 0)
+    {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing directory: %s", directory_path);
+        return close_dir_result;
+    }
+
+    const int8_t delete_dir_result = LFS_delete_directory(directory_path);
+
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully removed file/directory: %s", directory_path);
     return 0;
 }
 
