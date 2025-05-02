@@ -346,63 +346,6 @@ uint8_t TCMDEXEC_eps_get_pdu_housekeeping_data_eng_json(
 }
 
 
-/// @brief Gets the Voltage, Current, and Power for a single channel on the EPS.
-/// @param args_str 
-/// - Arg 0: The channel name or number (string).
-/// @return 0 on success, >0 on failure.
-/// @note Channel name argument: A lowercase c-string of the channel name (e.g., "mpi"), or a number
-/// representing the channel number (e.g., "1" or "16").
-/// Valid string values: "vbatt_stack", "stack_5v", "stack_3v3", "camera", "uhf_antenna_deploy",
-/// "gnss", "mpi_5v", "mpi_12v", "boom".
-uint8_t TCMDEXEC_eps_get_pdu_data_for_channel_json(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-    char *response_output_buf, uint16_t response_output_buf_len
-) {
-    // Extract Arg 0: The channel name/number.
-    char channel_str[30];
-    const uint8_t arg_0_result = TCMD_extract_string_arg(args_str, 0, channel_str, sizeof(channel_str));
-    if (arg_0_result != 0) {
-        snprintf(
-            response_output_buf, response_output_buf_len,
-            "Error parsing channel arg: Error %d", arg_0_result);
-        return 1;
-    }
-
-    // Convert the channel string to an enum value.
-    const EPS_CHANNEL_enum_t eps_channel = EPS_channel_from_str(channel_str);
-    if (eps_channel == EPS_CHANNEL_UNKNOWN) {
-        snprintf(
-            response_output_buf, response_output_buf_len,
-            "Unknown channel: %s", channel_str);
-        return 4;
-    }
-
-    // Convert to a nice channel number
-    const uint8_t eps_channel_num = (uint8_t) eps_channel;
-
-    // Define the destination of where data is written into 
-    EPS_struct_pdu_housekeeping_data_eng_t data;
-
-    // Get data from EPS
-    const uint8_t result_from_eps = EPS_CMD_get_pdu_housekeeping_data_eng(&data);
-
-    if (result_from_eps != 0) {
-        snprintf(response_output_buf, response_output_buf_len,
-            "EPS_CMD_get_pdu_housekeeping_data_eng (err %d)", result_from_eps);
-        return 1;
-    }
-
-    // Format the data to JSON string
-    const uint8_t result_json = EPS_struct_single_channel_data_eng_TO_json(
-        &data, eps_channel_num, response_output_buf, response_output_buf_len);
-    if (result_json != 0) {
-        snprintf(response_output_buf, response_output_buf_len,
-            "EPS_struct_single_channel_data_eng_TO_json failed (err %d)", result_json);
-        return 2;
-    }
-    return 0;
-}
-
 
 /// @brief Get the EPS PDU (Power Distribution Unit) housekeeping data (running average), and display it as a JSON string.
 /// @return 0 on success, >0 on failure.
