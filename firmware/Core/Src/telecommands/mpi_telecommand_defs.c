@@ -22,7 +22,8 @@
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0: Success, 1: Invalid Input, 2: Failed UART transmission, 3: Failed UART reception,
-///         4: MPI timeout before sending 1 byte, 5: MPI failed to execute CMD, 6: Invalid response from the MPI
+///         4: MPI timeout before sending 1 byte, 5: MPI failed to execute CMD, 6: Invalid response from the MPI, 
+///         7: Invalid MPI command length
 uint8_t TCMDEXEC_mpi_send_command_hex(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
@@ -41,6 +42,11 @@ uint8_t TCMDEXEC_mpi_send_command_hex(
         return 1; // Error code: Invalid input
     }
 
+    if (args_bytes_size < 3) {
+        snprintf(response_output_buf, response_output_buf_len, "MPI command insufficent command length");
+        return 7; // Error code: Invalid input
+    }
+
     // Allocate space to receive incoming MPI response.
     // Max possible MPI response buffer size allocated to 256 bytes (Considering for the telecommand echo response,
     // NOT science data. MPI command + arguments can be 7 bytes + 2^N bytes of variable payload). 
@@ -56,7 +62,7 @@ uint8_t TCMDEXEC_mpi_send_command_hex(
     // If no errors are found during transmission and reception from the mpi, validate the response
     if(cmd_response == 0) {
         // Validate MPI response
-        cmd_response = MPI_validate_command_response(args_bytes, MPI_rx_buffer, MPI_rx_buffer_len-1);
+        cmd_response = MPI_validate_command_response(args_bytes[2], MPI_rx_buffer, MPI_rx_buffer_len);
     }
 
     // Send back MPI response log detail
@@ -196,10 +202,13 @@ uint8_t TCMDEXEC_mpi_demo_set_transceiver_mode(
 ) {
     if (strcasecmp(args_str, "MISO") == 0) {
         MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MISO);
-        snprintf(response_output_buf, response_output_buf_len, "Did set MPI transceiver to MISO (MPI-to-OBC).");
+        snprintf(response_output_buf, response_output_buf_len, "Did set MPI transceiver to MISO (OBC<--MPI).");
     } else if (strcasecmp(args_str, "MOSI") == 0) {
         MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MOSI);
-        snprintf(response_output_buf, response_output_buf_len, "Did set MPI transceiver to MOSI (OBC-to-MPI).");
+        snprintf(response_output_buf, response_output_buf_len, "Did set MPI transceiver to MOSI (OBC-->MPI).");
+    } else if (strcasecmp(args_str, "DUPLEX") == 0) {
+        MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_DUPLEX);
+        snprintf(response_output_buf, response_output_buf_len, "Did set MPI transceiver to DUPLEX (OBC<->MPI).");
     } else {
         MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
         snprintf(response_output_buf, response_output_buf_len, "Disabled MPI transceiver.");

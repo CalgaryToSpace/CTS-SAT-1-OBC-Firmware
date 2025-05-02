@@ -17,7 +17,7 @@ uint8_t MPI_send_command_get_response(
 );
 
 uint8_t MPI_validate_command_response(
-    const uint8_t *MPI_tx_buffer, uint8_t *MPI_rx_buffer, const uint16_t MPI_tx_buffer_size
+    const uint8_t MPI_command_code, uint8_t *MPI_rx_buffer, const uint16_t MPI_rx_buffer_len
 );
 
 #endif /* INC_MPI_COMMAND_HANDLING_H_ */
