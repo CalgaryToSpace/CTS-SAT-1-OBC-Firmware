@@ -235,7 +235,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
         return;
     }
 
-    UART_Error_tracking(huart->Instance, error_code);
+    UART_track_error_from_isr(huart->Instance, error_code);
 
     // Reception Error callback for MPI UART port
     if (huart->Instance == UART_mpi_port_handle->Instance) {

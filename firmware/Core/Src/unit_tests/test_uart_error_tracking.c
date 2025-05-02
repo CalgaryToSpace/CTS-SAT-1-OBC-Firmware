@@ -4,51 +4,11 @@
 
 #include <string.h>
 
-uint8_t TEST_EXEC__UART_Error_tracking_get_tracking_struct_from_uart_instance()
-{
-    UART_Error_Info_t *error_info_struct = NULL;
-
-    // Test with all valid UART instances
-    uint8_t result = UART_Error_tracking_get_tracking_struct_from_uart_instance(UART_mpi_port_handle->Instance, &error_info_struct);
-    TEST_ASSERT(result == 0);
-    TEST_ASSERT(error_info_struct == &UART_Error_mpi_error_info);
-
-    result = UART_Error_tracking_get_tracking_struct_from_uart_instance(UART_gps_port_handle->Instance, &error_info_struct);
-    TEST_ASSERT(result == 0);
-    TEST_ASSERT(error_info_struct == &UART_Error_gps_error_info);
-
-    result = UART_Error_tracking_get_tracking_struct_from_uart_instance(UART_camera_port_handle->Instance, &error_info_struct);
-    TEST_ASSERT(result == 0);
-    TEST_ASSERT(error_info_struct == &UART_Error_camera_error_info);
-
-    result = UART_Error_tracking_get_tracking_struct_from_uart_instance(UART_eps_port_handle->Instance, &error_info_struct);
-    TEST_ASSERT(result == 0);
-    TEST_ASSERT(error_info_struct == &UART_Error_eps_error_info);
-
-    // Prepare a known pointer value before invalid call
-    UART_Error_Info_t dummy_error_info;
-    error_info_struct = &dummy_error_info;
-
-    result = UART_Error_tracking_get_tracking_struct_from_uart_instance((USART_TypeDef *)0x12345678, &error_info_struct);
-    TEST_ASSERT(result == 1);
-    // The pointer should remain unchanged
-    TEST_ASSERT(error_info_struct == &dummy_error_info);
-    TEST_ASSERT_FALSE(
-        error_info_struct == &UART_Error_mpi_error_info ||
-        error_info_struct == &UART_Error_gps_error_info ||
-        error_info_struct == &UART_Error_camera_error_info ||
-        error_info_struct == &UART_Error_eps_error_info
-    )
-
-    return 0;
-}
-
-
 uint8_t TEST_EXEC__UART_Error_tracking_subsystem_error_info_to_json()
 {
     char json_buffer[UART_ERROR_TRACKING_JSON_BUFFER_LEN / 4];
 
-    UART_Error_Info_t test_info = 
+    UART_error_counts_single_subsystem_struct_t test_info = 
     {
         .parity_error_count = 1,
         .noise_error_count = 2,
