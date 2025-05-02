@@ -31,8 +31,6 @@ extern UART_error_counts_single_subsystem_struct_t UART_error_eps_error_info;
 
 void UART_track_error_from_isr(USART_TypeDef *huart_instance, uint32_t error_code);
 
-uint8_t UART_Error_tracking_get_tracking_struct_from_uart_instance(USART_TypeDef *huart_instance, UART_error_counts_single_subsystem_struct_t **result_error_info_struct);
-
 uint8_t UART_Error_tracking_subsystem_error_info_to_json(UART_error_counts_single_subsystem_struct_t *error_info_struct, char *json_buffer, uint16_t json_buffer_len);
 
 uint8_t UART_Error_tracking_get_errors_json(char * json_buf, uint16_t json_buf_len);

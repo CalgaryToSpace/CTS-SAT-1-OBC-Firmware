@@ -50,11 +50,25 @@ UART_error_counts_single_subsystem_struct_t UART_error_eps_error_info = {
 /// @note There can't be any Log_message as this will be called in the HAL_UART_ErrorCallback function 
 void UART_track_error_from_isr(USART_TypeDef *huart_instance, uint32_t error_code)
 {
-    UART_error_counts_single_subsystem_struct_t *error_info_struct;
+    // Assign correct subsystem error info struct
 
-    if (UART_Error_tracking_get_tracking_struct_from_uart_instance(huart_instance, &error_info_struct) != 0) {
+    UART_error_counts_single_subsystem_struct_t *error_info_struct;
+    if (huart_instance == NULL) {
         return;
     }
+
+    if (huart_instance == UART_mpi_port_handle->Instance) {
+        error_info_struct = &UART_error_mpi_error_info;
+    } else if (huart_instance == UART_gps_port_handle->Instance) {
+        error_info_struct = &UART_error_gps_error_info;
+    } else if (huart_instance == UART_camera_port_handle->Instance) {
+        error_info_struct = &UART_error_camera_error_info;
+    } else if (huart_instance == UART_eps_port_handle->Instance) {
+        error_info_struct = &UART_error_eps_error_info;
+    } else {
+        return; // Unknown UART instance
+    }
+
     // Check if the error code is a known error
     if (error_code & HAL_UART_ERROR_PE) {
         error_info_struct->parity_error_count++;
@@ -76,35 +90,6 @@ void UART_track_error_from_isr(USART_TypeDef *huart_instance, uint32_t error_cod
     }
 }
 
-/// @brief Get the error tracking struct for a given UART instance
-/// @param huart_instance The uart instance we are tracking the error for 
-/// @param result_error_info_struct Pointer to the error info struct to be filled 
-/// @return 0 if the struct was found, 1 if not 
-/// @note Need double pointer because I need to set the pointer's value to the address of the appropriate struct
-uint8_t UART_Error_tracking_get_tracking_struct_from_uart_instance(USART_TypeDef *huart_instance, UART_error_counts_single_subsystem_struct_t **result_error_info_struct) 
-{
-    if (huart_instance == UART_mpi_port_handle->Instance) {
-        *result_error_info_struct = &UART_error_mpi_error_info;
-        return 0;
-    }
-
-    if (huart_instance == UART_gps_port_handle->Instance) {
-        *result_error_info_struct = &UART_error_gps_error_info;
-        return 0;
-    }
-
-    if (huart_instance == UART_camera_port_handle->Instance) {
-        *result_error_info_struct = &UART_error_camera_error_info;
-        return 0;
-    }
-
-    if (huart_instance == UART_eps_port_handle->Instance) {
-        *result_error_info_struct = &UART_error_eps_error_info;
-        return 0;
-    }
-
-    return 1;
-}
 
 uint8_t UART_Error_tracking_subsystem_error_info_to_json(UART_error_counts_single_subsystem_struct_t *error_info_struct, char *json_buffer, uint16_t json_buffer_len)
 {
