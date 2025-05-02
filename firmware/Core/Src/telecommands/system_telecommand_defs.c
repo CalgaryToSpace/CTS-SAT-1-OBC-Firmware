@@ -7,6 +7,7 @@
 #include "littlefs/littlefs_helper.h"
 #include "transforms/arrays.h"
 #include "self_checks/complete_self_check.h"
+#include "system/obc_internal_drivers.h"
 
 #include "telecommands/system_telecommand_defs.h"
 #include "telecommand_exec/telecommand_definitions.h"
@@ -150,6 +151,20 @@ uint8_t TCMDEXEC_system_self_check_failures_as_json(
     CTS1_run_system_self_check(&self_check_result);
     CTS1_self_check_struct_TO_json_list_of_failures(
         self_check_result, response_output_buf, response_output_buf_len
+    );
+    return 0;
+}
+
+uint8_t TCMDEXEC_obc_get_rbf_state(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    const OBC_rbf_state_enum_t rbf_state = OBC_get_rbf_state();
+    const char *rbf_state_str = (rbf_state == OBC_RBF_STATE_FLYING) ? "FLYING" : "BENCH";
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "{\"rbf_state\":\"%s\"}",
+        rbf_state_str
     );
     return 0;
 }
