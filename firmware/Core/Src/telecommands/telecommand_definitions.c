@@ -804,7 +804,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "adcs_download_index_file",
         .tcmd_func = TCMDEXEC_adcs_download_index_file,
-        .number_of_args = 0,
+        .number_of_args = 2,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     }, 
     {

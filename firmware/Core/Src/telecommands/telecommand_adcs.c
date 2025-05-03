@@ -1903,16 +1903,21 @@ uint8_t TCMDEXEC_adcs_measurements(const char *args_str, TCMD_TelecommandChannel
 
 /// @brief Telecommand: Get the list of downloadable files from the ADCS SD card (alternate method)
 /// @param args_str 
-///     - No arguments for this command
+///     - Arg 0: The number of files to get
+///     - Arg 1: The offset indx to start reading (starts at 0)
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_download_index_file(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                    char *response_output_buf, uint16_t response_output_buf_len) {
+    uint64_t num_to_read;
+    uint64_t index_offset;
 
-    uint16_t status;
-    
-    LFS_delete_file("ADCS/index_file"); // if the index file doesn't exist, this will fail, so let it do that
+    TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &num_to_read);
+    TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &index_offset);
 
-    status = ADCS_save_sd_file_to_lfs(true, 0);
+    const uint8_t status = ADCS_get_sd_card_file_list((uint16_t) num_to_read, (uint16_t) index_offset, response_output_buf, response_output_buf_len);
+    // const uint8_t status = ADCS_save_sd_file_to_lfs(true, 0);
+                                    // TODO: this was failing. Was it because we tried to delete the file beforehand?
+                                            // Either way, test the new version
 
     // To read the index file via telecommand, we can do: CTS1+fs_read_text_file(ADCS/index_file)!
 
