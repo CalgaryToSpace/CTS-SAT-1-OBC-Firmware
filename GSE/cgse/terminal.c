@@ -92,6 +92,7 @@ int parse_input(CGSE_program_state_t *ps)
             // Print the command to the command window
             command_window_print(ps, "%s> %s", ps->command_prefix, ps->command_buffer);
             CGSE_execute_command(ps, ps->command_buffer);
+            fprintf(ps->logfile, "%s> %s\n", ps->command_prefix, ps->command_buffer);
             // Reset the editing buffer
             ps->cursor_position = 0;
             ps->command_buffer[0] = '\0';
@@ -175,9 +176,11 @@ void parse_telemetry(CGSE_program_state_t *ps)
                 if (strlen(bufline) > 0) {
                     if (lines_treated == 0 && !last_line_complete) {
                         wprintw(ps->main_window, "%s", bufline);
+                        fprintf(ps->logfile, "%s", bufline);
                     }
                     else {
                         wprintw(ps->main_window, "\n%s: %s", ps->time_buffer, bufline);
+                        fprintf(ps->logfile, "\n%s: %s", ps->time_buffer, bufline);
                     }
                 }
                 lines_treated++;
@@ -189,8 +192,10 @@ void parse_telemetry(CGSE_program_state_t *ps)
             if (prepend_timestamp != ps->prepend_timestamp) {
                 wprintw(ps->main_window, "\n");
                 prepend_timestamp = ps->prepend_timestamp;
+                fprintf(ps->logfile, "\n");
             }
             wprintw(ps->main_window, "%s", ps->receive_buffer);
+            fprintf(ps->logfile, "%s", ps->receive_buffer);
         }
     }
 

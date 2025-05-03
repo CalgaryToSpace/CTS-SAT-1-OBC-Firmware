@@ -13,8 +13,8 @@ else (CMAKE_BUILD_TYPE STREQUAL Debug)
 endif(CMAKE_BUILD_TYPE STREQUAL Debug)
 
 # CURSES
-find_library(CURSES ncursesw HINTS /usr/local/lib)
-include_directories(/usr/local/include)
+find_library(CURSES ncurses HINTS /usr/lib)
+include_directories(/usr/local/include /usr/include)
 
 add_executable(cgse main.c terminal.c commands.c command_history.c command_queue.c base64.c telecommand_definitions.c)
 target_link_libraries(cgse ${CURSES})

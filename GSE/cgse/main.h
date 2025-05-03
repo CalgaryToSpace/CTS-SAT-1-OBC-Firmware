@@ -60,6 +60,8 @@ typedef struct {
     int cursor_position;
     int editing_cursor_position;
     char command_history_file_path[FILENAME_MAX];
+    char log_file_path[FILENAME_MAX];
+    FILE *logfile;
 
     char telecommand_buffer[TCMD_BUFFER_SIZE];
     char command_startup_queue_file_path[FILENAME_MAX];
@@ -87,6 +89,7 @@ void CGSE_about(void);
 void CGSE_commandline_help(char *name);
 
 void CGSE_time_string(char *time_str);
+void CGSE_init_log_filename(CGSE_program_state_t *ps);
 
 int CGSE_init(CGSE_program_state_t *ps);
 void CGSE_shutdown(CGSE_program_state_t *ps);

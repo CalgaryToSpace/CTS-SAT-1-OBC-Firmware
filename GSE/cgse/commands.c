@@ -8,14 +8,17 @@
 #include "telecommands/telecommand_definitions.h"
 
 #include <stdio.h>
+#include <inttypes.h>
 #include <dirent.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/_types/_ssize_t.h>
 #include <unistd.h>
 #include <time.h>
 #include <sys/time.h>
 #include <stdarg.h>
+#include <errno.h>
 
 #include <ncurses.h>
 
@@ -147,7 +150,7 @@ int CGSE_terminal_sync_timestamp(CGSE_program_state_t *ps, const char *cmd_strin
     uint64_t epoch_ms = (uint64_t)epoch.tv_sec * 1000 + epoch.tv_usec/1000;
     // TODO account for a calibrated delay in
     // communicating with the satellite
-    snprintf(tcmd, 256, "%s+set_system_time(%llu)!", ps->command_prefix, epoch_ms);
+    snprintf(tcmd, 256, "%s+set_system_time(%"PRIu64")!", ps->command_prefix, epoch_ms);
     if (ps->satellite_connected) {
         int bytes_sent = write(ps->satellite_link, tcmd, strlen(tcmd));
         if (bytes_sent <= 0) {
@@ -439,7 +442,10 @@ int CGSE_execute_command(CGSE_program_state_t *ps, const char *command)
         snprintf(ps->telecommand_buffer, TCMD_BUFFER_SIZE, "%s+%s!", ps->command_prefix, command);
         if (buffer_len > 0) {
             if (ps->satellite_connected) {
-                write(ps->satellite_link, ps->telecommand_buffer, strlen(ps->telecommand_buffer));
+                ssize_t write_result = write(ps->satellite_link, ps->telecommand_buffer, strlen(ps->telecommand_buffer));
+                if (write_result < 0) {
+                    command_window_print(ps, "Error sending command: %s", strerror(errno));
+                }
             }
             else {
                 command_window_print(ps, "Not connected to satellite");

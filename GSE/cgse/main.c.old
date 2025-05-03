@@ -209,20 +209,10 @@ void CGSE_time_string(char *time_str)
     gettimeofday(&tv, NULL);
     struct tm *t = gmtime(&tv.tv_sec);
     snprintf(time_str, CGSE_TIME_STR_MAX_LEN, "UTC=%4d-%02d-%02dT%02d:%02d:%02d.%06d", t->tm_year+1900, t->tm_mon+1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec, tv.tv_usec);
+    char *result = strdup(time_str);
 
     return;
 }
-
-void CGSE_init_log_filename(CGSE_program_state_t *ps)
-{
-    struct timeval tv = {0};
-    gettimeofday(&tv, NULL);
-    struct tm *t = gmtime(&tv.tv_sec);
-    snprintf(ps->log_file_path, FILENAME_MAX, "log-file-UTC_%4d%02d%02dT%02d%02d%02d.%06d.log", t->tm_year+1900, t->tm_mon+1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec, tv.tv_usec);
-
-    return;
-}
-
 
 int CGSE_init(CGSE_program_state_t *ps)
 {
@@ -232,7 +222,9 @@ int CGSE_init(CGSE_program_state_t *ps)
     intact.sa_handler = interrupthandler;
     sigaction(SIGINT, &intact, NULL);
 
-    CGSE_init_log_filename(ps);
+    char timestr[33] = {0}
+    CGSE_time_string(timestr);
+    snprintf(ps->log_file_path, FILENAME_MAX, "log-file-%s.log", timestr);
     ps->logfile = fopen(ps->log_file_path, "w");
     if (ps->logfile == NULL) {
         fprintf(stderr, "Unable to initialize log file %s.\n", ps->log_file_path);
