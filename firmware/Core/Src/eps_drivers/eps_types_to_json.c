@@ -1,11 +1,11 @@
 
 #include "eps_drivers/eps_types_to_json.h"
+#include "eps_drivers/eps_channel_control.h"
 
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
 #include <inttypes.h>
-#include <eps_channel_control.h>
 
 
 // TODO: Determine how long each of these are, add to docs, add checks to each function at the start.
