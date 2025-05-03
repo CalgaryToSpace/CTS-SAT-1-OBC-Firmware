@@ -10,7 +10,6 @@
 
 /// @brief Set up the camera by powering on and changing the baudrate to 2400.
 /// @param args_str
-/// - Arg 0: File Name for image file (MAX 10 characters)
 /// @param response_output_buf Buffer to write the response to
 /// @param response_output_buf_len Max length of the buffer
 /// @return 0 if successful, >0 if an error occurred
@@ -18,21 +17,7 @@ uint8_t TCMDEXEC_camera_setup(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len)
 {
-    // Extract arg 0 - string for file_name
-    // Ensure file_name is null terminated
-    // TODO : enforce string length?
-    char FileName[11];
-    const uint8_t FileName_result = TCMD_extract_string_arg(args_str, 0, FileName, sizeof(FileName));
-    if (FileName_result > 0){
-        snprintf(response_output_buf, response_output_buf_len, "Could not parse arg 1 for: %s", args_str);
-        return 1;
-    }
-    if (strlen(FileName) == 0) {
-        snprintf(response_output_buf, response_output_buf_len, "FileName cannot be empty!");
-        return 1;
-    }
-
-    const uint8_t setup_status = CAM_setup(FileName);
+    const uint8_t setup_status = CAM_setup();
 
     if (setup_status != 0) {
         snprintf(
@@ -104,24 +89,27 @@ uint8_t TCMDEXEC_camera_change_baud_rate(
 
 /// @brief Send telecommand to camera and capture an image. RUN CAM_SETUP BEFORE THIS EVERY TIME!
 /// @param args_str
-/// - Arg 0: lighting mode
+/// - Arg 0: filename to save the image to
+/// - Arg 1: lighting mode (single character: d,m,n,s)
 /// @param response_output_buf Buffer to write the response to
 /// @param response_output_buf_len Max length of the buffer
 /// @return 0 if successful, >0 if an error occurred
 uint8_t TCMDEXEC_camera_capture(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len)
 {
+    // FIXME: Extract filename here.
+
     // Extract arg 0 - single char for lighting mode (d,m,n,s)
     char lighting[2];
     // memset(config_var_name, 0, CONFIG_MAX_VARIABLE_NAME_LENGTH);
-    const uint8_t parse_result = TCMD_extract_string_arg(args_str, 0, lighting, sizeof(lighting));
+    const uint8_t parse_result = TCMD_extract_string_arg(args_str, 1, lighting, sizeof(lighting));
     if (parse_result > 0)
     {
         snprintf(response_output_buf, response_output_buf_len, "Could not parse arg 0 for: %s", args_str);
         return 1;
     }
 
-    enum CAM_capture_status_enum img = CAM_Capture_Image(lighting[0]);
+    enum CAM_capture_status_enum img = CAM_capture_image("image.ascii", lighting[0]);
 
     if (img == CAM_CAPTURE_STATUS_WRONG_INPUT){
         snprintf(response_output_buf, response_output_buf_len, "Wrong lighting input.\n");

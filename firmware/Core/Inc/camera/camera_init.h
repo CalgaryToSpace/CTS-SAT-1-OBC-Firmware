@@ -8,12 +8,13 @@
 
 uint8_t CAM_change_baudrate(uint32_t bitrate);
 
-uint8_t CAM_setup(char FileName[]);
+uint8_t CAM_setup();
 uint8_t CAM_test();
 
 
 
-typedef enum CAM_capture_status_enum{CAM_CAPTURE_STATUS_TRANSMIT_SUCCESS, CAM_CAPTURE_STATUS_WRONG_INPUT, CAM_CAPTURE_STATUS_CAPTURE_FAILURE} CAM_capture_status_enum;
+typedef enum CAM_capture_status_enum{
+    CAM_CAPTURE_STATUS_TRANSMIT_SUCCESS, CAM_CAPTURE_STATUS_WRONG_INPUT, CAM_CAPTURE_STATUS_CAPTURE_FAILURE} CAM_capture_status_enum;
 
 
 /**
@@ -24,6 +25,8 @@ typedef enum CAM_capture_status_enum{CAM_CAPTURE_STATUS_TRANSMIT_SUCCESS, CAM_CA
  * 			n - night ambient light
  * 			s - solar sail contrast and light
  */
-enum CAM_capture_status_enum CAM_Capture_Image(char lighting_mode);
+enum CAM_capture_status_enum CAM_capture_image(char filename_str[], char lighting_mode);
+
+void CAM_end_camera_receive_due_to_error();
 
 #endif // INCLUDE_GUARD__CAMERA_INIT_H

@@ -13,14 +13,11 @@
 #include <stdio.h>
 
 #include "main.h"
+#include "camera_init.h"
 
 /// @brief Timeout duration for camera receive in milliseconds
-static const uint32_t CAMERA_RX_TIMEOUT_DURATION_MS = 8000;
+static const uint32_t CAMERA_RX_TOTAL_TIMEOUT_DURATION_MS = 8000;
 
-/// @brief Global variables for file and file_open 
-uint8_t file_open = 0;
-lfs_file_t camera_file;
-char file_name[11];
 
 /// @brief Changes the baudrate of the camera by sending it a UART command, and then changing the
 ///     baudrate of the camera UART port.
@@ -88,7 +85,7 @@ uint8_t CAM_change_baudrate(uint32_t new_baud_rate) {
 /// @brief Set up the camera by powering on and changing the baudrate to 2400.
 /// @return 0 on success. The error code from the `CAM_change_baudrate` function, or >100 if an EPS error occurred.
 /// @note Does not perform a self-test.
-uint8_t CAM_setup(char FileName[]) {
+uint8_t CAM_setup() {
     // First, turn on the camera.
     const uint8_t eps_status = EPS_set_channel_enabled(EPS_CHANNEL_3V3_CAMERA, 1);
     if (eps_status != 0) {
@@ -111,64 +108,19 @@ uint8_t CAM_setup(char FileName[]) {
             "Error changing camera baudrate: CAM_change_baudrate returned %d",
             bitrate_status
         );
-        // turn off camera before exiting
+
+        // Turn off camera before exiting
         const uint8_t eps_off_status = EPS_set_channel_enabled(EPS_CHANNEL_3V3_CAMERA, 0);
         if (eps_off_status != 0) {
             // Continue anyway. Just log a warning.
             LOG_message(
                 LOG_SYSTEM_EPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-                "Error disabling camera power channel in CAM_Capture_Image: status=%d. Continuing.",
+                "Error disabling camera power channel in CAM_capture_image: status=%d. Continuing.",
                 eps_off_status
             );
         }
         return 2;
     }
-
-    // Set file name and enforce max char length
-    strncpy(file_name, FileName, sizeof(file_name) - 1);
-    file_name[10] = '\0';
-    // default file open to false
-    file_open = 0;
-    // if lfs not mounted, mount
-    if (!LFS_is_lfs_mounted) {
-        LFS_mount();
-    }
-
-    // create and open file before receive loop
-    // file name hardcoded for now
-    // TODO turn file name into parameter
-    LFS_delete_file(file_name);
-    if (file_open == 0){
-        const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &camera_file, file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND, &LFS_file_cfg);
-        if (open_result < 0) {
-            LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening / creating file: %s", file_name);
-            // turn off camera before exiting
-            const uint8_t eps_off_status = EPS_set_channel_enabled(EPS_CHANNEL_3V3_CAMERA, 0);
-            if (eps_off_status != 0) {
-                // Continue anyway. Just log a warning.
-                LOG_message(
-                    LOG_SYSTEM_EPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-                    "Error disabling camera power channel in CAM_Capture_Image: status=%d. Continuing.",
-                    eps_off_status
-                );
-            }
-            return 2;
-        } else {
-            LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Opened/created file: %s", file_name);
-            file_open = 1;
-        }
-    }
-    // Clear camera response buffer (Note: Can't use memset because UART_camera_dma_buffer is Volatile)
-    for (uint16_t i = 0; i < UART_camera_buffer_len; i++) {
-        UART_camera_dma_buffer[i] = 0;
-    }
-    // clear rx buf
-    for (uint16_t i = 0; i < CAM_SENTENCE_LEN*23; i++){
-        UART_camera_pending_fs_write_buf[i] = 0;
-    }
-
-    
-    
     return 0; // Success
 }
 
@@ -244,14 +196,10 @@ uint8_t CAM_test() {
     return 0;
 }
 
-/// @brief deals with receiving image in chunks and writing to LFS
+/// @brief Capture an image, writing to a file in LFS.
 /// @return 0: Success, 3: Failed UART reception, 4: Timeout while waiting for data
-uint8_t CAM_receive_image(){
-    
-
-    // set start time and start receiving
-    // osDelay(3000);
-    // HAL_IWDG_Refresh(&hiwdg);
+uint8_t CAM_receive_image(lfs_file_t* img_file) {
+    // Set start time and start receiving.
     const uint32_t UART_camera_rx_start_time_ms = HAL_GetTick();
     const uint8_t receive_status = CAMERA_set_expecting_data(1);
     // Check for UART reception errors
@@ -260,182 +208,164 @@ uint8_t CAM_receive_image(){
         return 3; // Error code: Failed UART reception
     }
 
-    while(1){
-        // receive until response timed out
-
-        // write file after half and complete callbacks
-        if (camera_write_file){
-            // debug string DELETE THIS AFTER TESTING
-            // DEBUG_uart_print_str("in write file\n");
-
+    while(1) {
+        // Write file after half callback (Half 1).
+        if (CAMERA_uart_half_1_state == CAMERA_UART_WRITE_STATE_HALF_FILLED_WAITING_FS_WRITE) {
             // Write data to file
-            const lfs_ssize_t write_result = lfs_file_write(&LFS_filesystem, &camera_file, (const uint8_t *)UART_camera_pending_fs_write_buf, CAM_SENTENCE_LEN*23);
-            if (write_result < 0)
-            {
-                LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error writing to file: %s", file_name);
+            const lfs_ssize_t write_result = lfs_file_write(
+                &LFS_filesystem, img_file,
+                (const uint8_t *)UART_camera_pending_fs_write_half_1_buf, CAM_SENTENCE_LEN*23
+            );
+            if (write_result < 0) {
+                LOG_message(
+                    LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
+                    "LFS error writing half 1 to img file."
+                );
             }
 
-            camera_write_file = 0;
+            CAMERA_uart_half_1_state = CAMERA_UART_WRITE_STATE_HALF_WRITTEN_TO_FS;
         }
 
+        // Write file after complete callback (Half 2).
+        if (CAMERA_uart_half_2_state == CAMERA_UART_WRITE_STATE_HALF_FILLED_WAITING_FS_WRITE) {
+            // Write data to file
+            const lfs_ssize_t write_result = lfs_file_write(
+                &LFS_filesystem, img_file,
+                (const uint8_t *)UART_camera_pending_fs_write_half_2_buf, CAM_SENTENCE_LEN*23
+            );
+            if (write_result < 0) {
+                LOG_message(
+                    LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
+                    "LFS error writing half 2 to img file."
+                );
+            }
 
-        // Timeout conditions
-        if (UART_camera_buffer_write_idx == 0){
-            // if write index is 0 and timeout occurs
-            if ((HAL_GetTick() - UART_camera_rx_start_time_ms) > CAMERA_RX_TIMEOUT_DURATION_MS) {
-                // if last write time = 0 nothing was written, error 4
-                if (UART_camera_last_write_time_ms == 0){
-                    CAMERA_set_expecting_data(0);
-                    return 4; // Error code: Timeout waiting for first byte
-                }
-                // otherwise there may be data in first half of buffer
-                // copy data and set write to 1 to write after exiting loop
-                for (uint16_t i = 0; i < UART_camera_buffer_len / 2; i++)
-                {
-                    UART_camera_pending_fs_write_buf[i] = UART_camera_dma_buffer[i];
-                    UART_camera_dma_buffer[i] = 0;
-                }
-                // PRINT FOR TESTING DELETE AFTER
-                // DEBUG_uart_print_str("timeout write file 1\n");
-                camera_write_file = 1;
-                // finish receiving and break out of loop
+            CAMERA_uart_half_2_state = CAMERA_UART_WRITE_STATE_HALF_WRITTEN_TO_FS;
+        }
+
+        // Timeout condition: If the total time has exceeded 10 seconds.
+        if ((HAL_GetTick() - UART_camera_rx_start_time_ms) > CAMERA_RX_TOTAL_TIMEOUT_DURATION_MS) {
+            // If both states are still idle (ie, no data received), return error 4.
+            if (CAMERA_uart_half_1_state == CAMERA_UART_WRITE_STATE_IDLE &&
+                CAMERA_uart_half_2_state == CAMERA_UART_WRITE_STATE_IDLE) {
                 CAMERA_set_expecting_data(0);
-                break;
+                return 4; // Error code: Timeout waiting for first byte
             }
+
+            // Otherwise, break out of the loop and write any remaining data.
+            break;
         }
 
-        // if write idx is not 0 then it must be 1
-        else{
-            // if write idx is 1 then there may be data in second half of buffer
-            const uint32_t current_time = HAL_GetTick();
-            if (
-                (current_time > UART_camera_last_write_time_ms) // obvious safety check
-                && ((current_time - UART_camera_last_write_time_ms) > CAMERA_RX_TIMEOUT_DURATION_MS))
-                {
-                    // copy data from second half and set write file to true
-                    for (uint16_t i = UART_camera_buffer_len/2; i < UART_camera_buffer_len; i++) {
-                        UART_camera_pending_fs_write_buf[i-UART_camera_buffer_len/2] = UART_camera_dma_buffer[i];
-                        UART_camera_dma_buffer[i] = 0;
-                    }
-                    // PRINT FOR TESTING DELETE AFTER
-                    // DEBUG_uart_print_str("timeout write file 2\n"); 
-                    camera_write_file = 1;
-                    // finish receiving and break out of loop
-                    CAMERA_set_expecting_data(0);
-                    break;
-                }
-        }
+        // FIXME: Should add a between-messages timeout here, which looks at UART_camera_last_write_time_ms
     }
+
+    // FIXME: Need to handle reading the final half of the data (implemented somewhat in the following commented block)
+    
+    //     // if write idx is not 0 then it must be 1
+    //     else{
+    //         // if write idx is 1 then there may be data in second half of buffer
+    //         const uint32_t current_time = HAL_GetTick();
+    //         if (
+    //             (current_time > UART_camera_last_write_time_ms) // obvious safety check
+    //             && ((current_time - UART_camera_last_write_time_ms) > CAMERA_RX_TIMEOUT_DURATION_MS))
+    //             {
+    //                 // copy data from second half and set write file to true
+    //                 for (uint16_t i = UART_camera_buffer_len/2; i < UART_camera_buffer_len; i++) {
+    //                     UART_camera_pending_fs_write_buf[i-UART_camera_buffer_len/2] = UART_camera_dma_buffer[i];
+    //                     UART_camera_dma_buffer[i] = 0;
+    //                 }
+    //                 // PRINT FOR TESTING DELETE AFTER
+    //                 // DEBUG_uart_print_str("timeout write file 2\n"); 
+    //                 camera_write_file = 1;
+    //                 // finish receiving and break out of loop
+    //                 CAMERA_set_expecting_data(0);
+    //                 break;
+    //             }
+    //     }
+    // }
     // outside of while loop
     // write remaining data if any
-
-    if (camera_write_file){
-        // debug string DELETE THIS AFTER TESTING
-        DEBUG_uart_print_str("in write file - outside loop\n");
-        UART_camera_last_write_time_ms = HAL_GetTick();
-
-        // Write data to file
-        const lfs_ssize_t write_result = lfs_file_write(&LFS_filesystem, &camera_file, (const uint8_t *)UART_camera_pending_fs_write_buf, CAM_SENTENCE_LEN*23);
-        if (write_result < 0)
-        {
-            LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error writing to file: %s", file_name);
-        }
-
-        camera_write_file = 0;
-    }
-
-    // close file before leaving function if file open
-    if (file_open) {
-        const int8_t close_result = lfs_file_close(&LFS_filesystem, &camera_file);
-        if (close_result < 0)
-        {
-            LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing file: %s", file_name);
-        } else {
-            LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "File: %s succesfully closed", file_name);
-        }
-        file_open = 0;
-    }
+    
 
     return 0;
 }
 
 
-/// @brief Transmits ASCII telecommand to take image with different lighting modes
-/// @param lighting Should be a lower-case char
+/// @brief Capture an image, writing to a file in LFS.
+/// @param filename_str The name of the file to write to.
+/// @param lighting_mode Should be a lower-case char
 ///         d - daylight ambient light
 ///         m - medium ambient light
 ///         n - night ambient light
 ///         s - solar sail contrast and light
-/// @return Transmit_Success: Successfully captured image, Wrong_input: invalid parameter input, Capture_Failure: Error in image reception or command transmition
-enum CAM_capture_status_enum CAM_Capture_Image(char lighting_mode){
-    
-    HAL_StatusTypeDef tx_status;
-    bool file_failure = false;
-    switch(lighting_mode){
-        case 'd':
-            tx_status =  HAL_UART_Transmit(
-                UART_camera_port_handle, (uint8_t*)"d", 1, 1000
-            );
-            if (tx_status != HAL_OK) {
-                // Error
-                file_failure = true;
-                break;
-            }
-            HAL_Delay(25);
-            break;
-        case 'm':
-            tx_status =  HAL_UART_Transmit(
-                UART_camera_port_handle, (uint8_t*)"m", 1, 1000
-            );
-            if (tx_status != HAL_OK) {
-                // Error
-                file_failure = true;
-                break;
-            }
-            HAL_Delay(25);
-            break;
-        case 'n':
-            tx_status =  HAL_UART_Transmit(
-                UART_camera_port_handle, (uint8_t*)"n", 1, 1000
-            );
-            if (tx_status != HAL_OK) {
-                // Error
-                file_failure = true;
-                break;
-            }
-            HAL_Delay(25);
-            break;
-        case 's':
-            tx_status =  HAL_UART_Transmit(
-                UART_camera_port_handle, (uint8_t*)"s", 1, 1000
-            );
-            if (tx_status != HAL_OK) {
-                // Error
-                file_failure = true;
-                break;
-            }
-            HAL_Delay(25);
-            break;
-        default:
-            return CAM_CAPTURE_STATUS_WRONG_INPUT;
+/// @return 0: Successfully captured image, Wrong_input: invalid parameter input, Capture_Failure: Error in image reception or command transmission
+enum CAM_capture_status_enum CAM_capture_image(char filename_str[], char lighting_mode) {
+    if (!(lighting_mode == 'd' || lighting_mode == 'm' || lighting_mode == 'n' || lighting_mode == 's')) {
+        return CAM_CAPTURE_STATUS_WRONG_INPUT;
     }
 
-    if (file_failure) {
-        // Error in transmition, close file and return error
-        if (file_open) {
-            const int8_t close_result = lfs_file_close(&LFS_filesystem, &camera_file);
-            if (close_result < 0)
-            {
-                LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing file: %s", file_name);
-            } else {
-                LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "File: %s succesfully closed", file_name);
-            }
-            file_open = 0;
+    // If lfs not mounted, mount.
+    if (!LFS_is_lfs_mounted) {
+        if (LFS_mount() != 0) {
+            LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_SINK_ALL, "Error mounting LFS filesystem");
+            return 1;
         }
-        return CAM_CAPTURE_STATUS_CAPTURE_FAILURE; // Error
     }
 
-    int capture_code = CAM_receive_image();
+    // Create and open file before receive loop.
+    LFS_delete_file(filename_str);
+    lfs_file_t img_file;
+    
+    const int8_t open_result = lfs_file_opencfg(
+        &LFS_filesystem, &img_file,
+        filename_str,
+        LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND,
+        &LFS_file_cfg
+    );
+
+    if (open_result < 0) {
+        LOG_message(
+            LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
+            "Error opening / creating file: %s", filename_str
+        );
+        CAM_end_camera_receive_due_to_error(&img_file);
+        return 2;
+    }
+    
+    LOG_message(
+        LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
+        "Opened image file: %s",
+        filename_str
+    );
+    
+    // Clear camera response buffer (volatile-safe memset).
+    for (uint16_t i = 0; i < UART_camera_buffer_len; i++) {
+        UART_camera_dma_buffer[i] = 0;
+    }
+    // Clear rx buf (probably not essential).
+    for (uint16_t i = 0; i < CAM_SENTENCE_LEN*23; i++){
+        UART_camera_pending_fs_write_half_1_buf[i] = 0;
+        UART_camera_pending_fs_write_half_2_buf[i] = 0;
+    }
+    CAMERA_uart_half_1_state = CAMERA_UART_WRITE_STATE_IDLE;
+    CAMERA_uart_half_2_state = CAMERA_UART_WRITE_STATE_IDLE;
+
+    // Trigger the camera to start capturing.
+    const HAL_StatusTypeDef tx_status = HAL_UART_Transmit(
+        UART_camera_port_handle, (uint8_t*)&lighting_mode, 1, 1000
+    );
+        
+    if (tx_status != HAL_OK) {
+        LOG_message(
+            LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error sending camera command: HAL_UART_Transmit status=%d",
+            tx_status);
+        // Close file.
+        CAM_end_camera_receive_due_to_error(&img_file);
+        return CAM_CAPTURE_STATUS_CAPTURE_FAILURE;
+    }
+
+    const uint8_t capture_code = CAM_receive_image(&img_file);
 
     // Turn off the camera.
     const uint8_t eps_off_status = EPS_set_channel_enabled(EPS_CHANNEL_3V3_CAMERA, 0);
@@ -443,12 +373,22 @@ enum CAM_capture_status_enum CAM_Capture_Image(char lighting_mode){
         // Continue anyway. Just log a warning.
         LOG_message(
             LOG_SYSTEM_EPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-            "Error disabling camera power channel in CAM_Capture_Image: status=%d. Continuing.",
+            "Error disabling camera power channel in CAM_capture_image: status=%d. Continuing.",
             eps_off_status
         );
     }
 
-    if (capture_code != 0){
+    // Close file.
+    const int8_t close_result = lfs_file_close(&LFS_filesystem, &img_file);
+    if (close_result != 0) {
+        LOG_message(
+            LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
+            "Error closing file: %s", filename_str
+        );
+        return CAM_CAPTURE_STATUS_CAPTURE_FAILURE;
+    }
+
+    if (capture_code != 0) {
         LOG_message(
             LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "Error receiving camera image: Capture Code = %d",
@@ -457,4 +397,28 @@ enum CAM_capture_status_enum CAM_Capture_Image(char lighting_mode){
         return CAM_CAPTURE_STATUS_CAPTURE_FAILURE;
     }
     return CAM_CAPTURE_STATUS_TRANSMIT_SUCCESS;
+}
+
+void CAM_end_camera_receive_due_to_error(lfs_file_t* img_file) {
+    // Close file if open.
+    if (img_file != NULL) {
+        const int8_t close_result = lfs_file_close(&LFS_filesystem, img_file);
+        if (close_result != 0) {
+            LOG_message(
+                LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING,
+                LOG_all_sinks_except(LOG_SINK_FILE), "Error closing file (err %d)", close_result);
+        }
+    }
+
+    // Turn off camera before exiting.
+    const uint8_t eps_off_status = EPS_set_channel_enabled(EPS_CHANNEL_3V3_CAMERA, 0);
+    if (eps_off_status != 0)
+    {
+        // Continue anyway. Just log a warning.
+        LOG_message(
+            LOG_SYSTEM_EPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "Error disabling camera power channel in CAM_capture_image: status=%d. Continuing.",
+            eps_off_status
+        );
+    }
 }
