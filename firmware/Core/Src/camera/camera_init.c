@@ -104,7 +104,7 @@ uint8_t CAM_setup(char FileName[]) {
     HAL_Delay(500);
 
     // Change baudrate to 460800 on camera.
-    const uint8_t bitrate_status = CAM_change_baudrate(230400);
+    const uint8_t bitrate_status = CAM_change_baudrate(115200);
     if (bitrate_status != 0) {
         LOG_message(
             LOG_SYSTEM_BOOM, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
@@ -158,13 +158,13 @@ uint8_t CAM_setup(char FileName[]) {
             file_open = 1;
         }
     }
-    // Clear camera response buffer (Note: Can't use memset because UART_camera_buffer is Volatile)
+    // Clear camera response buffer (Note: Can't use memset because UART_camera_dma_buffer is Volatile)
     for (uint16_t i = 0; i < UART_camera_buffer_len; i++) {
-        UART_camera_buffer[i] = 0;
+        UART_camera_dma_buffer[i] = 0;
     }
     // clear rx buf
     for (uint16_t i = 0; i < CAM_SENTENCE_LEN*23; i++){
-        UART_camera_rx_buf[i] = 0;
+        UART_camera_pending_fs_write_buf[i] = 0;
     }
 
     
@@ -250,8 +250,8 @@ uint8_t CAM_receive_image(){
     
 
     // set start time and start receiving
-    osDelay(3000);
-    HAL_IWDG_Refresh(&hiwdg);
+    // osDelay(3000);
+    // HAL_IWDG_Refresh(&hiwdg);
     const uint32_t UART_camera_rx_start_time_ms = HAL_GetTick();
     const uint8_t receive_status = CAMERA_set_expecting_data(1);
     // Check for UART reception errors
@@ -269,7 +269,7 @@ uint8_t CAM_receive_image(){
             // DEBUG_uart_print_str("in write file\n");
 
             // Write data to file
-            const lfs_ssize_t write_result = lfs_file_write(&LFS_filesystem, &camera_file, UART_camera_rx_buf, CAM_SENTENCE_LEN*23);
+            const lfs_ssize_t write_result = lfs_file_write(&LFS_filesystem, &camera_file, (const uint8_t *)UART_camera_pending_fs_write_buf, CAM_SENTENCE_LEN*23);
             if (write_result < 0)
             {
                 LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error writing to file: %s", file_name);
@@ -292,8 +292,8 @@ uint8_t CAM_receive_image(){
                 // copy data and set write to 1 to write after exiting loop
                 for (uint16_t i = 0; i < UART_camera_buffer_len / 2; i++)
                 {
-                    UART_camera_rx_buf[i] = UART_camera_buffer[i];
-                    UART_camera_buffer[i] = 0;
+                    UART_camera_pending_fs_write_buf[i] = UART_camera_dma_buffer[i];
+                    UART_camera_dma_buffer[i] = 0;
                 }
                 // PRINT FOR TESTING DELETE AFTER
                 // DEBUG_uart_print_str("timeout write file 1\n");
@@ -314,8 +314,8 @@ uint8_t CAM_receive_image(){
                 {
                     // copy data from second half and set write file to true
                     for (uint16_t i = UART_camera_buffer_len/2; i < UART_camera_buffer_len; i++) {
-                        UART_camera_rx_buf[i-UART_camera_buffer_len/2] = UART_camera_buffer[i];
-                        UART_camera_buffer[i] = 0;
+                        UART_camera_pending_fs_write_buf[i-UART_camera_buffer_len/2] = UART_camera_dma_buffer[i];
+                        UART_camera_dma_buffer[i] = 0;
                     }
                     // PRINT FOR TESTING DELETE AFTER
                     // DEBUG_uart_print_str("timeout write file 2\n"); 
@@ -335,7 +335,7 @@ uint8_t CAM_receive_image(){
         UART_camera_last_write_time_ms = HAL_GetTick();
 
         // Write data to file
-        const lfs_ssize_t write_result = lfs_file_write(&LFS_filesystem, &camera_file, UART_camera_rx_buf, CAM_SENTENCE_LEN*23);
+        const lfs_ssize_t write_result = lfs_file_write(&LFS_filesystem, &camera_file, (const uint8_t *)UART_camera_pending_fs_write_buf, CAM_SENTENCE_LEN*23);
         if (write_result < 0)
         {
             LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error writing to file: %s", file_name);
