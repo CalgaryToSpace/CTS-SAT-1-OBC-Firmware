@@ -1247,6 +1247,14 @@ uint8_t ADCS_get_raw_star_tracker_data(ADCS_raw_star_tracker_struct_t *output_st
 uint8_t ADCS_save_image_to_sd(ADCS_camera_select_enum_t camera_select, ADCS_image_size_enum_t image_size) {
     uint8_t data_send[2] = {camera_select, image_size};
     const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SAVE_IMAGE, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+
+    // to avoid interference, do a separate ack for these commands
+    if (cmd_status != 0) {
+        ADCS_cmd_ack_struct_t ack_status;
+        ADCS_cmd_ack(&ack_status);
+        return ack_status.error_flag; // TODO: verify that this works
+    }
+
     return cmd_status;
 }
 
