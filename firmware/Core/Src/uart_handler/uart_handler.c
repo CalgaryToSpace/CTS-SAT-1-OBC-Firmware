@@ -32,14 +32,14 @@ volatile uint16_t UART_mpi_buffer_write_idx = 0;            // extern
 
 // UART CAMERA buffer
 // TODO: Configure with peripheral required specifications
-const uint16_t UART_camera_buffer_len = CAM_SENTENCE_LEN*46;// extern       // TODO: Set based on expected size requirements for reception
+const uint16_t UART_camera_buffer_len = CAM_SENTENCE_LEN*46; // extern       // TODO: Set based on expected size requirements for reception
 volatile uint8_t UART_camera_dma_buffer[CAM_SENTENCE_LEN*46];   // extern       // TODO: confirm that this volatile means that the contents are volatile but the pointer is not
-volatile uint8_t UART_camera_pending_fs_write_buf[CAM_SENTENCE_LEN*23];   // extern       // half-size buffer for writing to LFS in half/cplt callback
-volatile uint8_t camera_write_file = 0;
-volatile uint16_t UART_camera_buffer_write_idx = 0;         // extern
+volatile uint8_t UART_camera_pending_fs_write_half_1_buf[CAM_SENTENCE_LEN*23];   // extern       // half-size buffer for writing to LFS in half/cplt callback
+volatile uint8_t UART_camera_pending_fs_write_half_2_buf[CAM_SENTENCE_LEN*23];   // extern       // half-size buffer for writing to LFS in half/cplt callback
 volatile uint32_t UART_camera_last_write_time_ms = 0;       // extern
-volatile uint8_t UART_camera_is_expecting_data = 0;         // extern       // TODO: Set to 1 when a command is sent, and we're awaiting a response
 volatile uint8_t UART_camera_buffer_last_rx_byte = 0;       // extern
+volatile CAMERA_uart_write_state_enum_t CAMERA_uart_half_1_state = CAMERA_UART_WRITE_STATE_IDLE; // extern
+volatile CAMERA_uart_write_state_enum_t CAMERA_uart_half_2_state = CAMERA_UART_WRITE_STATE_IDLE; // extern
 
 // UART EPS buffer
 const uint16_t UART_eps_buffer_len = 310;                   // extern       // Note: 286 bytes max response, plus a bit for safety and tags is expected
@@ -184,26 +184,19 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         
     }
 
-    else if (huart->Instance == UART_camera_port_handle->Instance){
-        // increment write_idx
-        // DEBUG_uart_print_str("Hello\n");
-        // DEBUG_uart_print_str("complete call back\n");
-        // LOG_message(
-        //     LOG_SYSTEM_ALL, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-        //     "complete_call_back"
-        // );
-        // write index = 2
-        // UART_camera_buffer_write_idx++;
-        UART_camera_buffer_write_idx = 0;
-        for (uint16_t i = UART_camera_buffer_len/2; i < UART_camera_buffer_len; i++){
-            UART_camera_pending_fs_write_buf[i-UART_camera_buffer_len/2] = UART_camera_dma_buffer[i];
+    else if (huart->Instance == UART_camera_port_handle->Instance) {
+        CAMERA_uart_half_2_state = CAMERA_UART_WRITE_STATE_HALF_FILLED_WAITING_FS_WRITE;
+
+        // Volatile-safe memcpy.
+        const uint16_t UART_camera_buffer_len_half = UART_camera_buffer_len / 2;
+        for (uint16_t i = UART_camera_buffer_len_half; i < UART_camera_buffer_len; i++) {
+            UART_camera_pending_fs_write_half_2_buf[i-UART_camera_buffer_len_half] = UART_camera_dma_buffer[i];
+
+            // Clear the DMA buffer so that the len of the final read can be detected easily.
+            UART_camera_dma_buffer[i] = 0;
         }
-        // memcpy( UART_camera_pending_fs_write_buf, UART_camera_dma_buffer + UART_camera_buffer_len/2, UART_camera_buffer_len/2);
-        // set camera_write_file to 1 so camera_internal can write to mem
 
         UART_camera_last_write_time_ms = HAL_GetTick();
-        camera_write_file = 1;  
-        
     }
 
     else {
@@ -214,21 +207,17 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
 void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
     // DEBUG_uart_print_str("half call back\n");
-    if (huart->Instance == UART_camera_port_handle->Instance){
-        // LOG_message(
-        //     LOG_SYSTEM_ALL, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-        //     "half_call_back"
-        // );
-        // write idx = 1
-        UART_camera_buffer_write_idx++;
-        // uint8_t counter = 0;
-        for (uint16_t i = 0; i < UART_camera_buffer_len/2; i++){
-            UART_camera_pending_fs_write_buf[i] = UART_camera_dma_buffer[i];
+    if (huart->Instance == UART_camera_port_handle->Instance) {
+        CAMERA_uart_half_1_state = CAMERA_UART_WRITE_STATE_HALF_FILLED_WAITING_FS_WRITE;
+
+        const uint16_t UART_camera_buffer_len_half = UART_camera_buffer_len / 2;
+
+        for (uint16_t i = 0; i < UART_camera_buffer_len_half; i++) {
+            UART_camera_pending_fs_write_half_1_buf[i] = UART_camera_dma_buffer[i];
+
+            // Clear the DMA buffer so that the len of the final read can be detected easily.
+            UART_camera_dma_buffer[i] = 0;
         }
-        // memcpy(UART_camera_pending_fs_write_buf, UART_camera_dma_buffer, UART_camera_buffer_len/2);
-        // DEBUG_uart_print_str("hello\n");
-        // set camera_write_file to 1 so camera_internal can write to mem
-        camera_write_file = 1;
         UART_camera_last_write_time_ms = HAL_GetTick();
     }
 }
@@ -256,16 +245,16 @@ void GPS_set_uart_interrupt_state(uint8_t new_enabled) {
 uint8_t CAMERA_set_expecting_data(uint8_t new_enabled) {
     if (new_enabled == 1)
     {
-        UART_camera_is_expecting_data = 1;
-		// const HAL_StatusTypeDef receive_status = HAL_UART_Receive_DMA(UART_camera_port_handle,(uint8_t*) &UART_camera_dma_buffer, CAM_SENTENCE_LEN*46);
-		const HAL_StatusTypeDef receive_status = HAL_UART_Receive_DMA(UART_camera_port_handle,(uint8_t*) &UART_camera_dma_buffer, CAM_SENTENCE_LEN*46);
+		const HAL_StatusTypeDef receive_status = HAL_UART_Receive_DMA(
+            UART_camera_port_handle,(uint8_t*) &UART_camera_dma_buffer, CAM_SENTENCE_LEN*46
+        );
+
         if (receive_status != HAL_OK) {
 			return 3; // Error code: Failed UART reception
 		}
         return 0;
     }
     else {
-        UART_camera_is_expecting_data = 0;
 		HAL_UART_DMAStop(UART_camera_port_handle);
         return 0;
     }
