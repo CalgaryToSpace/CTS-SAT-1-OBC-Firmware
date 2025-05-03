@@ -949,8 +949,8 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
-        .tcmd_name = "eps_get_pdu_data_for_single_channel_json",
-        .tcmd_func = TCMDEXEC_eps_get_pdu_data_for_single_channel_json,
+        .tcmd_name = "eps_get_pdu_data_for_channel_json",
+        .tcmd_func = TCMDEXEC_eps_get_pdu_data_for_channel_json,
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
