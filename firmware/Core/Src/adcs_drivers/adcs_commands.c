@@ -1564,6 +1564,18 @@ uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) 
                     return ack_status.error_flag;
                 }
             }
+            
+            const uint8_t file_info_status = ADCS_get_file_info_telemetry(&file_info);
+            if (file_info_status != 0) {
+                LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE), "Failed to get file information (index %d).", i);
+                return file_info_status;
+            }
+
+            if (file_info.file_crc16 == 0 && file_info.file_date_time_msdos == 0 && file_info.file_size == 0) {
+                // if all the file_info parameters are zero, we've reached the end of the file list.
+                LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "End of file list reached at index %d.", i);
+                return 6;
+            }
         }
     }
 
