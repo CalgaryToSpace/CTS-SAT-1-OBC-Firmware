@@ -86,11 +86,11 @@ uint8_t MPI_send_command_get_response(
             break;
         }
 
-        const uint32_t current_time = HAL_GetTick();
+        const uint32_t current_time_ms = HAL_GetTick();
 
         // Timeout before receiving the first byte from the MPI
         // Wrap-around of the HAL_GetTick counter triggers a timeout
-        uint32_t time_elapsed = current_time - UART_mpi_rx_start_time_ms;
+        uint32_t time_elapsed = current_time_ms - UART_mpi_rx_start_time_ms;
         if (UART_mpi_buffer_write_idx == 0) {
             if(time_elapsed > MPI_RX_TIMEOUT_DURATION_MS) {
                 // Stop reception from the MPI & Reset mpi UART & transceiver mode states
@@ -102,7 +102,7 @@ uint8_t MPI_send_command_get_response(
         }
 
         // At least 1 byte received, update elapsed time to be since the last DMA write time
-        time_elapsed = current_time - UART_mpi_last_write_time_ms;
+        time_elapsed = current_time_ms - UART_mpi_last_write_time_ms;
         if (time_elapsed > MPI_RX_TIMEOUT_DURATION_MS) {
             *MPI_rx_buffer_len = UART_mpi_buffer_write_idx;
             break;
