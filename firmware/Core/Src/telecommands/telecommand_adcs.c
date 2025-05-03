@@ -4,6 +4,7 @@
 #include "unit_tests/unit_test_executor.h"
 #include "timekeeping/timekeeping.h"
 #include "littlefs/littlefs_helper.h"
+#include "log/log.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -1903,8 +1904,8 @@ uint8_t TCMDEXEC_adcs_measurements(const char *args_str, TCMD_TelecommandChannel
 
 /// @brief Telecommand: Get the list of downloadable files from the ADCS SD card (alternate method)
 /// @param args_str 
-///     - Arg 0: The number of files to get
-///     - Arg 1: The offset indx to start reading (starts at 0)
+///     - Arg 0: The number of files to get (should be less than 70 to avoid the watchdog)
+///     - Arg 1: The offset index to start reading (starts at 0)
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_download_index_file(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                    char *response_output_buf, uint16_t response_output_buf_len) {
@@ -1914,13 +1915,13 @@ uint8_t TCMDEXEC_adcs_download_index_file(const char *args_str, TCMD_Telecommand
     TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &num_to_read);
     TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &index_offset);
 
-    const uint8_t status = ADCS_get_sd_card_file_list((uint16_t) num_to_read, (uint16_t) index_offset, response_output_buf, response_output_buf_len);
-    // const uint8_t status = ADCS_save_sd_file_to_lfs(true, 0);
-                                    // TODO: this was failing. Was it because we tried to delete the file beforehand?
-                                            // Either way, test the new version
+    if (num_to_read > 70) {
+        LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Number of files requested is greater than 70. Requesting 70 to avoid watchdog.");
+        num_to_read = 70;
+    }
 
-    // To read the index file via telecommand, we can do: CTS1+fs_read_text_file(ADCS/index_file)!
-
+    const uint8_t status = ADCS_get_sd_card_file_list((uint16_t) num_to_read, (uint16_t) index_offset);
+    
     return status;
 
 }
@@ -2386,7 +2387,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_Telecom
             }
             HAL_Delay(ADCS_COMMISSIONING_HAL_DELAY_MS); // delay to set run mode: 250ms of buffer time to match the others
             const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
-            if (power_control_status != 0) {
+            if (power_control_status != 0) {                            // TODO: once we receive the configuration from CubeSpace, we can confirm which wheel we need to power for this command
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;
