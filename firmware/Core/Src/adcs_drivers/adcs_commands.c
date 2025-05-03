@@ -1252,7 +1252,7 @@ uint8_t ADCS_save_image_to_sd(ADCS_camera_select_enum_t camera_select, ADCS_imag
     if (cmd_status != 0) {
         ADCS_cmd_ack_struct_t ack_status;
         ADCS_cmd_ack(&ack_status);
-        return ack_status.error_flag; // TODO: verify that this works
+        return ack_status.error_flag;
     }
 
     return cmd_status;
@@ -1660,7 +1660,7 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
 
         for (uint16_t i = 0; i < file_index; i++) {
             const uint8_t advance_pointer_status = ADCS_advance_file_list_read_pointer();
-            HAL_Delay(100);
+            HAL_Delay(200);
             if (advance_pointer_status != 0) {
                 // to avoid interference from the EPS, do a separate ack for these commands
                 ADCS_cmd_ack_struct_t ack_status;

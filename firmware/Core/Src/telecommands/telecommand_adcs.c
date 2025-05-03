@@ -1065,7 +1065,6 @@ uint8_t TCMDEXEC_adcs_set_estimation_params(const char *args_str, TCMD_Telecomma
     // followed by a uint8 (9)
 
     // in other words, seven double-types followed by ten uint64-types
-    // TODO: test that the removal of the Wheel 30s parameter works as expected
     
     const uint8_t num_args = 7;
     double double_type_arguments[num_args]; 
@@ -1093,8 +1092,10 @@ uint8_t TCMDEXEC_adcs_set_estimation_params(const char *args_str, TCMD_Telecomma
                 "Telecommand argument extraction failed in position %d (err %d)", i + 7, extract_status);
             return 1;
         }
-        if (i < 6 || i == 8) {
+        if (i < 6) {
             bool_args[i] = (bool) uint_type_arguments[i];
+        } else if (i == 8) {
+            bool_args[6] = (bool) uint_type_arguments[i];
         }
     }
     enum_args[0] = (ADCS_magnetometer_mode_enum_t) uint_type_arguments[6];
@@ -1915,9 +1916,9 @@ uint8_t TCMDEXEC_adcs_download_index_file(const char *args_str, TCMD_Telecommand
     TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &num_to_read);
     TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &index_offset);
 
-    if (num_to_read > 70) {
-        LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Number of files requested is greater than 70. Requesting 70 to avoid watchdog.");
-        num_to_read = 70;
+    if (num_to_read > 32) {
+        LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Number of files requested is greater than 32. Requesting 32 to avoid watchdog.");
+        num_to_read = 32;
     }
 
     const uint8_t status = ADCS_get_sd_card_file_list((uint16_t) num_to_read, (uint16_t) index_offset);
@@ -2047,8 +2048,6 @@ uint8_t TCMDEXEC_adcs_save_image_to_sd(const char *args_str, TCMD_TelecommandCha
         args_8[i] = (uint8_t) arguments[i];
     }
     
-    snprintf(response_output_buf, response_output_buf_len,"arg 0: %d arg 1 %d", args_8[0], args_8[1]);
-
     const uint8_t status = ADCS_save_image_to_sd(args_8[0], args_8[1]); 
     return status;
 }
@@ -2182,7 +2181,7 @@ uint8_t TCMDEXEC_adcs_get_sd_log_config(const char *args_str, TCMD_TelecommandCh
 /// @note If a commissioning step requires other steps such as estimation parameters or TLMs, those must be supplied separately.
 /// @param args_str 
 ///     - Arg 0: Which commissioning step to set the modes for (1-18)
-///     - Arg 1: Timeout in seconds before reverting to no control
+///     - Arg 1: Timeout in seconds before reverting to no control (0 = indefinite)
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
