@@ -2,6 +2,7 @@
 #include "comms_drivers/ax100_tx.h"
 #include "comms_drivers/ax100_hw.h"
 #include "log/log.h"
+#include "debug_tools/debug_uart.h"
 
 #include <string.h>
 
@@ -85,6 +86,9 @@ uint8_t AX100_downlink_bytes(uint8_t *data, uint32_t data_len) {
     prepend_csp_header(packet, data, data_len);
 
     // Any network layer (CSP) things should be done here (e.g., XTEA, CRC, etc.)
+
+    // Debugging write to UART.
+    DEBUG_uart_print_mixed_array(packet, data_len + 4, "AX100 Down");
 
     return send_bytes_to_ax100(packet, data_len + 4);
 }
