@@ -1532,6 +1532,81 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
 
 }
 
+/// @brief Get the list of files from the SD card.
+/// @param[in] num_to_read The maximum number of file entries to read.
+/// @param[in] index_offset The index (starting at 0) from which to start reading files.
+/// @param[out] output_buffer Output string buffer.
+/// @param[in] output_buffer_size Length of the output string buffer.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission, negative if an LFS or snprintf error code occurred. 
+uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset, char output_buffer[], uint16_t output_buffer_size) {
+    
+    const uint8_t reset_pointer_status = ADCS_reset_file_list_read_pointer();
+    HAL_Delay(200);
+    if (reset_pointer_status != 0) {
+        // to avoid interference from the EPS, do a separate ack for these commands
+        ADCS_cmd_ack_struct_t ack_status;
+        ADCS_cmd_ack(&ack_status);
+        if (ack_status.error_flag != 0) {
+            return ack_status.error_flag;
+        }
+    }
+
+    ADCS_file_info_struct_t file_info;
+    uint16_t bytes_written = 0;
+
+    for (uint16_t i = index_offset; i < num_to_read; i++) {
+        
+        // get info about the current file
+        const uint8_t file_info_status = ADCS_get_file_info_telemetry(&file_info);
+        if (file_info_status != 0) {
+            return file_info_status;
+        }
+
+        if (file_info.file_crc16 == 0 && file_info.file_date_time_msdos == 0 && file_info.file_size == 0) {
+            // if all the file_info parameters are zero, we've reached the end of the file list.
+            break;
+        }
+
+        if (bytes_written += 126 > output_buffer_size) {
+            return 5;
+            break;
+        }
+
+        // convert the MS-DOS time from the file info struct into human-readable time; code from Firmware Reference Manual Section 6.2.2
+        const uint16_t seconds = (file_info.file_date_time_msdos & 0x1f) << 1; // 5bits – 32
+        const uint16_t minutes = (file_info.file_date_time_msdos >> 5) & 0x3f; // 6bits – 64
+        const uint16_t hour = (file_info.file_date_time_msdos >> 11) & 0x1f; // 5bits – 32
+        const uint16_t day = (file_info.file_date_time_msdos >> 16) & 0x1f; // 5bits – 32
+        const uint16_t month = (file_info.file_date_time_msdos >> 21) & 0x0f; // 4bits – 16
+        const uint16_t year = (file_info.file_date_time_msdos >> 25) + 1980; // 7bits – 128 (1980 to 21..)
+
+        // now pack it into a string
+        const int16_t snprintf_ret = snprintf(&output_buffer[bytes_written], 126, 
+            "Index:%d,Type:%d,Busy Updating:%d,Counter:%d,Size:%ld,Datetime:%d-%d-%d %d:%d:%d,CRC16:%d\n",
+            i, file_info.file_type, file_info.busy_updating, file_info.file_counter, file_info.file_size, year, 
+            month, day, hour, minutes, seconds, file_info.file_crc16);
+        if (snprintf_ret < 0) {
+            return snprintf_ret;
+        } else {
+            bytes_written += snprintf_ret;
+        }
+
+        // now advance the file list read pointer to do it all again
+        const uint8_t advance_pointer_status = ADCS_advance_file_list_read_pointer();
+        HAL_Delay(100);
+        if (advance_pointer_status != 0) {
+            // to avoid interference from the EPS, do a separate ack for these commands
+            ADCS_cmd_ack_struct_t ack_status;
+            ADCS_cmd_ack(&ack_status);
+            if (ack_status.error_flag != 0) {
+                return ack_status.error_flag;
+            }
+        }
+    }
+    
+    return 0;
+}
+
 
 /// @brief Save a specified file from the ADCS SD card to the ADCS subfolder in LittleFS.
 /// @param[in] index_file_bool Whether this is the index file or not
