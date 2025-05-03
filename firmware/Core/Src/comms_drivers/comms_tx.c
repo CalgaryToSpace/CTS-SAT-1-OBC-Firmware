@@ -23,10 +23,11 @@ uint8_t COMMS_downlink_tcmd_response(
         / COMMS_TCMD_RESPONSE_PACKET_MAX_DATA_BYTES_PER_PACKET
     );
 
+    uint16_t response_start_idx = 0;
     int32_t remaining_len = response_len;
     uint8_t response_seq_num = 1;
     while (remaining_len > 0) {
-        uint16_t this_packet_len = (remaining_len > COMMS_TCMD_RESPONSE_PACKET_MAX_DATA_BYTES_PER_PACKET)
+        const uint16_t this_packet_len = (remaining_len > COMMS_TCMD_RESPONSE_PACKET_MAX_DATA_BYTES_PER_PACKET)
             ? COMMS_TCMD_RESPONSE_PACKET_MAX_DATA_BYTES_PER_PACKET
             : remaining_len;
 
@@ -34,9 +35,9 @@ uint8_t COMMS_downlink_tcmd_response(
         packet.response_seq_num = response_seq_num++;
 
         // Copy the data into the packet
-        memcpy(packet.data, response, this_packet_len);
-        response += this_packet_len;
+        memcpy(packet.data, &response[response_start_idx], this_packet_len);
         remaining_len -= this_packet_len;
+        response_start_idx += this_packet_len;
 
         const uint8_t success = AX100_downlink_bytes((uint8_t *)(&packet), this_packet_len + header_len);
         if (success != 0) {

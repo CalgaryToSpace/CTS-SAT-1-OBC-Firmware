@@ -66,7 +66,7 @@ void DEBUG_uart_print_mixed_array(const uint8_t *array, uint16_t array_len, cons
 
         // Write aligned ASCII part: 2 spaces + character/dot
         ascii_line[ascii_index++] = ' ';
-        ascii_line[ascii_index++] = isprint(array[i]) ? array[i] : ' ';
+        ascii_line[ascii_index++] = (isprint(array[i]) && (array[i] != '\n')) ? array[i] : ' ';
         ascii_line[ascii_index++] = ' ';
     }
 
