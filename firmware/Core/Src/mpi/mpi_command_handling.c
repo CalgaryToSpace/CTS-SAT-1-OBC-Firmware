@@ -33,12 +33,13 @@ uint8_t MPI_send_command_get_response(
     // Assert: MPI_rx_buffer_max_size is >= the length of the bytes_to_send_len + 1 to receive the command echo
     if (MPI_rx_buffer_max_size < (bytes_to_send_len + 1)) return 8; // Error code: Not enough space in the MPI response buffer
 
-    // Clear the MPI response buffer (Note: Can't use memset because UART_mpi_buffer is Volatile)
+    MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
     const HAL_StatusTypeDef abort_status = HAL_UART_AbortReceive(UART_mpi_port_handle);
     if (abort_status != HAL_OK) {
         MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
         return 1;
     }
+    // Clear the MPI response buffer (Note: Can't use memset because UART_mpi_buffer is Volatile)
     UART_mpi_buffer_write_idx = 0;                                      
     for (uint16_t i = 0; i < UART_mpi_buffer_len; i++) {
         UART_mpi_buffer[i] = 0;
