@@ -30,9 +30,10 @@ Every command contains the following subsections, concatenated together with no 
     * Commands with duplicate/repeated `tssent` values will be ignored, allowing you to uplink the same telecommand multiple times without executing it multiple times.
 5. Command Suffix Tag 2 - Delayed Execution Timestamp: `@tsexec=xxx`, where `xxx` is the UInt64 unix timestamp (milliseconds) in base10 when the command should be executed, or 0 to execute immediately. Absence of this tag means to execute immediately.
     * Why? This allows for scheduling commands in the future.
-6. Command Suffix Tag 4 - Log Filename: `@log_filename=xxxx.txt`, where `xxxx` is the name of the log file to store the telecommand response in.
+6. Command Suffix Tag 4 - Response Filename: `@resp_fname=xxxx.txt`, where `xxxx` is the path of the file to store the telecommand response in.
     * Why? This allows for storing the telecommand response in a file (e.g., for storing power data during science data collection).
-    * Max length is 31 characters (32 bytes including null terminator).
+    * Max length is 63 characters (64 bytes including null terminator).
+    * Note that if a directory is present in the path, that directory must exist beforehand, otherwise, writing will fail. Ex.`@resp_fname=dir1/file1.txt`, `dir1` must exist beforehand.
 7. 🚧 Command Suffix Tag 3 - Authenticated SHA256 Hash: `#sha256=xxx`, where `xxx` is the 32-byte base64 representation of the sha256 hash of all characters preceding, concatenated with the secure key used to authenticate communications with the satellite.
     * Why? This ensures that the command was not malformed in transit, and is a way of validating that the command was sent by the CTS team and not a malicious actor.
 8. End-of-Command Marker: `!`
