@@ -28,7 +28,6 @@ uint8_t EPS_struct_pdu_overcurrent_fault_state_TO_json(const EPS_struct_pdu_over
 uint8_t EPS_struct_pbu_abf_placed_state_TO_json(const EPS_struct_pbu_abf_placed_state_t *data, char json_output_str[], uint16_t json_output_str_size);
 
 uint8_t EPS_struct_pdu_housekeeping_data_eng_TO_json(const EPS_struct_pdu_housekeeping_data_eng_t *data, char json_output_str[], uint16_t json_output_str_size);
-uint8_t EPS_struct_single_channel_data_eng_TO_json(const EPS_struct_pdu_housekeeping_data_eng_t *data, const uint8_t eps_channel, const char *eps_channel_name, char json_output_str[], uint16_t json_output_str_size);
 uint8_t EPS_struct_pbu_housekeeping_data_eng_TO_json(const EPS_struct_pbu_housekeeping_data_eng_t *data, char json_output_str[], uint16_t json_output_str_size);
 uint8_t EPS_struct_pcu_housekeeping_data_eng_TO_json(const EPS_struct_pcu_housekeeping_data_eng_t *data, char json_output_str[], uint16_t json_output_str_size);
 uint8_t EPS_struct_piu_housekeeping_data_eng_TO_json(const EPS_struct_piu_housekeeping_data_eng_t *data, char json_output_str[], uint16_t json_output_str_size);
