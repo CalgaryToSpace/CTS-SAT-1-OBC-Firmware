@@ -48,8 +48,7 @@ uint8_t MPI_send_command_get_response(
         return 2; // Error code: Failed UART transmission
     }
 
-    // Set the MPI transceiver to MISO mode
-    // MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MISO);
+    // Note: We would set the MPI transceiver to MISO mode here, if not using duplex above.
 
     // Clear the MPI response buffer (Note: Can't use memset because UART_mpi_buffer is Volatile)
     for (uint16_t i = 0; i < UART_mpi_buffer_len; i++) {

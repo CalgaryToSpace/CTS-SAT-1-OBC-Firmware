@@ -186,7 +186,7 @@ uint8_t CTS1_check_mpi_science_rx() {
         return 0;
     }
 
-    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MOSI); // Send to MPI.
+    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_DUPLEX); // Send to MPI.
     HAL_Delay(50);
 
     // MPI boots up in "command" mode, so we need to send a command to switch it to "dumping science" mode.
@@ -205,7 +205,7 @@ uint8_t CTS1_check_mpi_science_rx() {
         return 0;
     }
 
-    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MISO); // Receive from MPI.
+    // Note: We would set the MPI transceiver to MISO mode here, if not using duplex above.
 
     // Start listening in blocking mode.
     uint8_t rx_buffer[350];
@@ -241,7 +241,7 @@ uint8_t CTS1_check_mpi_science_rx() {
 }
 
 uint8_t CTS1_check_mpi_cmd_works() {
-    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MOSI); // MPI is listening.
+    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_DUPLEX); // MPI is listening.
 
     // First, cancel any ongoing DMA transfers.
     const HAL_StatusTypeDef abort_status = HAL_UART_AbortReceive(UART_mpi_port_handle);
