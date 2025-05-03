@@ -211,10 +211,16 @@ uint8_t CAM_receive_image(lfs_file_t* img_file) {
     while(1) {
         // Write file after half callback (Half 1).
         if (CAMERA_uart_half_1_state == CAMERA_UART_WRITE_STATE_HALF_FILLED_WAITING_FS_WRITE) {
+            DEBUG_uart_print_str("From while loop, half 1 filled: ");
+            DEBUG_uart_print_str_max_len(
+                (const char*)UART_camera_pending_fs_write_half_1_buf, 11
+            );
+            DEBUG_uart_print_str("\n");
+
             // Write data to file
             const lfs_ssize_t write_result = lfs_file_write(
                 &LFS_filesystem, img_file,
-                (const uint8_t *)UART_camera_pending_fs_write_half_1_buf, CAM_SENTENCE_LEN*23
+                (const uint8_t *)UART_camera_pending_fs_write_half_1_buf, CAM_SENTENCE_LEN*CAM_SENTENCES_PER_HALF_CALLBACK
             );
             if (write_result < 0) {
                 LOG_message(
@@ -224,14 +230,21 @@ uint8_t CAM_receive_image(lfs_file_t* img_file) {
             }
 
             CAMERA_uart_half_1_state = CAMERA_UART_WRITE_STATE_HALF_WRITTEN_TO_FS;
+            // return 0; // FIXME: THIS RETURN SHOULD BE REMOVED. For debug only. // FIXME: Start here, consider issue of probably need to delete the file better maybe.
         }
 
         // Write file after complete callback (Half 2).
         if (CAMERA_uart_half_2_state == CAMERA_UART_WRITE_STATE_HALF_FILLED_WAITING_FS_WRITE) {
+            DEBUG_uart_print_str("From while loop, half 2 filled: ");
+            DEBUG_uart_print_str_max_len(
+                (const char*)UART_camera_pending_fs_write_half_2_buf, 11
+            );
+            DEBUG_uart_print_str("\n");
+
             // Write data to file
             const lfs_ssize_t write_result = lfs_file_write(
                 &LFS_filesystem, img_file,
-                (const uint8_t *)UART_camera_pending_fs_write_half_2_buf, CAM_SENTENCE_LEN*23
+                (const uint8_t *)UART_camera_pending_fs_write_half_2_buf, CAM_SENTENCE_LEN*CAM_SENTENCES_PER_HALF_CALLBACK
             );
             if (write_result < 0) {
                 LOG_message(
@@ -314,15 +327,15 @@ enum CAM_capture_status_enum CAM_capture_image(char filename_str[], char lightin
 
     // Create and open file before receive loop.
     LFS_delete_file(filename_str);
-    lfs_file_t img_file;
     
+    // Open LFS file for writing.
+    lfs_file_t img_file;
     const int8_t open_result = lfs_file_opencfg(
         &LFS_filesystem, &img_file,
         filename_str,
         LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND,
         &LFS_file_cfg
     );
-
     if (open_result < 0) {
         LOG_message(
             LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
@@ -330,6 +343,21 @@ enum CAM_capture_status_enum CAM_capture_image(char filename_str[], char lightin
         );
         CAM_end_camera_receive_due_to_error(&img_file);
         return 2;
+    }
+
+    // Write a tiny header to file, as the first write takes longer than subsequent writes.
+    const char * const header_str = "START_CAM:";
+    const lfs_ssize_t write_result = lfs_file_write(
+        &LFS_filesystem, &img_file,
+        (const uint8_t *)header_str, strlen(header_str)
+    );
+    if (write_result < 0) {
+        LOG_message(
+            LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
+            "LFS error writing header to img file."
+        );
+        CAM_end_camera_receive_due_to_error(&img_file);
+        return 3;
     }
     
     LOG_message(
@@ -343,7 +371,7 @@ enum CAM_capture_status_enum CAM_capture_image(char filename_str[], char lightin
         UART_camera_dma_buffer[i] = 0;
     }
     // Clear rx buf (probably not essential).
-    for (uint16_t i = 0; i < CAM_SENTENCE_LEN*23; i++){
+    for (uint16_t i = 0; i < CAM_SENTENCE_LEN*CAM_SENTENCES_PER_HALF_CALLBACK; i++){
         UART_camera_pending_fs_write_half_1_buf[i] = 0;
         UART_camera_pending_fs_write_half_2_buf[i] = 0;
     }
