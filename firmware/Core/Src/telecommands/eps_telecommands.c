@@ -346,7 +346,7 @@ uint8_t TCMDEXEC_eps_get_pdu_housekeeping_data_eng_json(
 }
 
 
-/// @brief Sets the EPS channel to be enabled (on) or disabled (off).
+/// @brief Gets the Voltage, Current, and Power for a single channel on the EPS.
 /// @param args_str 
 /// - Arg 0: The channel name or number (string).
 /// @return 0 on success, >0 on failure.
