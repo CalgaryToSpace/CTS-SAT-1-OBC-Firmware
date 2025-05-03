@@ -18,32 +18,31 @@ uint8_t COMMS_downlink_tcmd_response(
         AX100_DOWNLINK_MAX_BYTES - COMMS_TCMD_RESPONSE_PACKET_MAX_DATA_BYTES_PER_PACKET
     );
 
+    const uint8_t max_seq_num = (
+        (response_len + COMMS_TCMD_RESPONSE_PACKET_MAX_DATA_BYTES_PER_PACKET - 1)
+        / COMMS_TCMD_RESPONSE_PACKET_MAX_DATA_BYTES_PER_PACKET
+    );
+
     int32_t remaining_len = response_len;
     uint8_t response_seq_num = 1;
     while (remaining_len > 0) {
-        uint16_t this_packet_len = 0;
-        if (remaining_len > COMMS_TCMD_RESPONSE_PACKET_MAX_DATA_BYTES_PER_PACKET) {
-            packet.response_max_seq_num = response_seq_num;
-            packet.response_seq_num = response_seq_num++;
+        uint16_t this_packet_len = (remaining_len > COMMS_TCMD_RESPONSE_PACKET_MAX_DATA_BYTES_PER_PACKET)
+            ? COMMS_TCMD_RESPONSE_PACKET_MAX_DATA_BYTES_PER_PACKET
+            : remaining_len;
 
-            this_packet_len = COMMS_TCMD_RESPONSE_PACKET_MAX_DATA_BYTES_PER_PACKET;
-        } else {
-            packet.response_max_seq_num = response_seq_num;
-            packet.response_seq_num = response_seq_num++;
-
-            this_packet_len = response_len;
-        }
-        remaining_len -= this_packet_len;
+        packet.response_max_seq_num = max_seq_num;
+        packet.response_seq_num = response_seq_num++;
 
         // Copy the data into the packet
-        memcpy(
-            packet.data, response, this_packet_len
-        );
+        memcpy(packet.data, response, this_packet_len);
+        response += this_packet_len;
+        remaining_len -= this_packet_len;
 
-        const uint8_t success = AX100_downlink_bytes((uint8_t *)(&packet), response_len + header_len);
+        const uint8_t success = AX100_downlink_bytes((uint8_t *)(&packet), this_packet_len + header_len);
         if (success != 0) {
             return success;
         }
     }
+
     return 0;
 }
