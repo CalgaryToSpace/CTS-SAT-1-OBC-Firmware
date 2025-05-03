@@ -13,7 +13,7 @@
 static const uint16_t MPI_TX_TIMEOUT_DURATION_MS = 100;
 
 /// @brief Timeout duration for receive in milliseconds. Same between bytes and at the start.
-static const uint16_t MPI_RX_TIMEOUT_DURATION_MS = 2000;
+static const uint16_t MPI_RX_TIMEOUT_DURATION_MS = 200;
 
 volatile MPI_rx_mode_t MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
 
@@ -52,8 +52,8 @@ uint8_t MPI_send_command_get_response(
 
     // Clear the MPI response buffer (Note: Can't use memset because UART_mpi_buffer is Volatile)
     for (uint16_t i = 0; i < UART_mpi_buffer_len; i++) {
-		UART_mpi_buffer[i] = 0;
-	}
+        UART_mpi_buffer[i] = 0;
+    }
 
     // Reset UART interrupt buffer write index & record start time for mpi response reception
     UART_mpi_buffer_write_idx = 0;                                      
@@ -78,6 +78,7 @@ uint8_t MPI_send_command_get_response(
     while (1) {
         // MPI response has been received upto uart rx buffer capacity
         if (UART_mpi_buffer_write_idx >= MPI_rx_buffer_max_size) {
+            *MPI_rx_buffer_len = UART_mpi_buffer_write_idx; // Set the length of the MPI response buffer
             break;
         }
 
