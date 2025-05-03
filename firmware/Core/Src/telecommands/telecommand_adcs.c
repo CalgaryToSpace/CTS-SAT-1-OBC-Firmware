@@ -1053,18 +1053,18 @@ uint8_t TCMDEXEC_adcs_set_commanded_attitude_angles(const char *args_str, TCMD_T
 ///     - Arg 13: magnetometer_mode (enum; select magnetometer mode for estimation and control)
 ///     - Arg 14: magnetometer_selection_for_raw_magnetometer_telemetry (enum; select magnetometer mode for the second raw telemetry frame)
 ///     - Arg 15: automatic_estimation_transition_due_to_rate_sensor_errors (bool; enable/disable automatic transition from MEMS rate estimation mode to RKF in case of rate sensor error)
-///     - Arg 16: wheel_30s_power_up_delay (bool; present in CubeSupport but not in the manual -- need to test)
-///     - Arg 17: cam1_and_cam2_sampling_period (uint8; the manual calls it this, but CubeSupport calls it "error counter reset period" -- need to test)
+///     - Arg 16: error_counter_reset_period_min (uint8; period after which a node's power cycle reset counter is cleared if no errors occurred)
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_set_estimation_params(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
     // the first seven are floats (0-6)
     // the next six are bools (0-5)
     // after that there are two enums (6-7)
-    // and then two more bools (8-9)
-    // followed by a uint8 (10)
+    // and then one more bool (8)
+    // followed by a uint8 (9)
 
-    // in other words, seven double-types followed by eleven uint64-types
+    // in other words, seven double-types followed by ten uint64-types
+    // TODO: test that the removal of the Wheel 30s parameter works as expected
     
     const uint8_t num_args = 7;
     double double_type_arguments[num_args]; 
@@ -1079,9 +1079,9 @@ uint8_t TCMDEXEC_adcs_set_estimation_params(const char *args_str, TCMD_Telecomma
         float_args[i] = double_type_arguments[i];
     }
 
-    uint8_t new_num_args = 11;
+    uint8_t new_num_args = 10;
     uint64_t uint_type_arguments[new_num_args]; 
-    bool bool_args[8];
+    bool bool_args[7];
     ADCS_magnetometer_mode_enum_t enum_args[2];
     uint8_t uint8_arg;
 
@@ -1092,18 +1092,18 @@ uint8_t TCMDEXEC_adcs_set_estimation_params(const char *args_str, TCMD_Telecomma
                 "Telecommand argument extraction failed in position %d (err %d)", i + 7, extract_status);
             return 1;
         }
-        if (i < 6 || i == 8 || i == 9) {
+        if (i < 6 || i == 8) {
             bool_args[i] = (bool) uint_type_arguments[i];
         }
     }
     enum_args[0] = (ADCS_magnetometer_mode_enum_t) uint_type_arguments[6];
     enum_args[1] = (ADCS_magnetometer_mode_enum_t) uint_type_arguments[7];
-    uint8_arg = (uint8_t) uint_type_arguments[10];
+    uint8_arg = (uint8_t) uint_type_arguments[9];
     
     const uint8_t status = ADCS_set_estimation_params(float_args[0], float_args[1], float_args[2], float_args[3], float_args[4], float_args[5], float_args[6],
                                                 bool_args[0], bool_args[1], bool_args[2], bool_args[3], bool_args[4], bool_args[5], 
                                                 enum_args[0], enum_args[1],
-                                                bool_args[6], bool_args[7], 
+                                                bool_args[6], false, // this boolean parameter is unused by the ADCS 
                                                 uint8_arg); 
     
     return status;

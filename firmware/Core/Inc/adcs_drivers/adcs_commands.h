@@ -78,8 +78,8 @@ uint8_t ADCS_set_estimation_params(
                                 ADCS_magnetometer_mode_enum_t magnetometer_mode, // this is actually the same one as for ID 56!
                                 ADCS_magnetometer_mode_enum_t magnetometer_selection_for_raw_magnetometer_telemetry, // and so is this, actually!
                                 bool automatic_estimation_transition_due_to_rate_sensor_errors, 
-                                bool wheel_30s_power_up_delay, // present in CubeSupport but not in the manual -- need to test
-                                uint8_t cam1_and_cam2_sampling_period);
+                                bool wheel_30s_power_up_delay, // unused parameter by the ADCS
+                                uint8_t error_counter_reset_period_min);
 uint8_t ADCS_get_estimation_params(ADCS_estimation_params_struct_t *output_struct);
 uint8_t ADCS_set_augmented_sgp4_params(double incl_coefficient,
                            double raan_coefficient,

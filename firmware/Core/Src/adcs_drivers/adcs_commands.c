@@ -558,7 +558,7 @@ uint8_t ADCS_set_commanded_attitude_angles(double x, double y, double z) {
 /// @param[in] magnetometer_selection_for_raw_magnetometer_telemetry select magnetometer mode for the second raw telemetry frame
 /// @param[in] automatic_estimation_transition_due_to_rate_sensor_errors enable/disable automatic transition from MEMS rate estimation mode to RKF in case of rate sensor error
 /// @param[in] wheel_30s_power_up_delay present in CubeSupport but not in the manual -- need to test
-/// @param[in] cam1_and_cam2_sampling_period the manual calls it this, but CubeSupport calls it "error counter reset period" -- need to test
+/// @param[in] error_counter_reset_period_min reset period for error counter
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_set_estimation_params(
                                 float magnetometer_rate_filter_system_noise, 
@@ -578,9 +578,8 @@ uint8_t ADCS_set_estimation_params(
                                 ADCS_magnetometer_mode_enum_t magnetometer_selection_for_raw_magnetometer_telemetry, // and so is this, actually!
                                 bool automatic_estimation_transition_due_to_rate_sensor_errors, 
                                 bool wheel_30s_power_up_delay, // present in CubeSupport but not in the manual -- need to test
-                                uint8_t cam1_and_cam2_sampling_period) { // the manual calls it this, but CubeSupport calls it "error counter reset period" -- need to test
+                                uint8_t error_counter_reset_period_min) { 
     // float uses IEEE 754 float32, with all bytes reversed, so eg. 1.1 becomes [0xCD, 0xCC, 0x8C, 0x3F]
-    // the float type should already be reversed, but need to test in implementation
     uint8_t data_send[31];
 
     // convert floats to reversed arrays of uint8_t
@@ -596,7 +595,7 @@ uint8_t ADCS_set_estimation_params(
     data_send[28] = (magnetometer_mode << 6) | (automatic_magnetometer_recovery << 5) | (nadir_sensor_terminator_test << 4) | (use_star_tracker << 3) | (use_css << 2) | (use_nadir_sensor << 1) | (use_sun_sensor);
     data_send[29] = (wheel_30s_power_up_delay << 3) | (automatic_estimation_transition_due_to_rate_sensor_errors << 2) | (magnetometer_selection_for_raw_magnetometer_telemetry);
 
-    data_send[30] = cam1_and_cam2_sampling_period; // lower four bits are for cam1 and upper four are for cam2 if the manual is correct, not CubeSupport
+    data_send[30] = error_counter_reset_period_min; 
 
     const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_CUBEACP_SET_ESTIMATION_PARAMETERS, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
     return cmd_status;

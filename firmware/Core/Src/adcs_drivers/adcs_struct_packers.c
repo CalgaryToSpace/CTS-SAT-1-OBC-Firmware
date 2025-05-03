@@ -266,7 +266,7 @@ uint8_t ADCS_pack_to_estimation_params_struct(uint8_t* data_received, ADCS_estim
     result->magnetometer_selection_for_raw_magnetometer_telemetry = (data_received[29] & 0x3); // 0b00000011
     result->automatic_estimation_transition_due_to_rate_sensor_errors = (data_received[29] & 4) >> 2; // 0b00000100
     result->wheel_30s_power_up_delay = (data_received[29] & 0x8) >> 3; // 0b00001000
-    result->cam1_and_cam2_sampling_period = data_received[30];
+    result->error_counter_reset_period_min = data_received[30];
 
     return 0;
 }

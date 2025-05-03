@@ -426,7 +426,7 @@ typedef struct ADCS_estimation_params_struct_t {
     ADCS_magnetometer_mode_enum_t magnetometer_selection_for_raw_magnetometer_telemetry;
     bool automatic_estimation_transition_due_to_rate_sensor_errors:1; // 1-bit bool
     bool wheel_30s_power_up_delay:1; // 1-bit bool
-    uint8_t cam1_and_cam2_sampling_period;
+    uint8_t error_counter_reset_period_min;
 } ADCS_estimation_params_struct_t;
 
 typedef struct ADCS_augmented_sgp4_params_struct_t {

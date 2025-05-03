@@ -558,7 +558,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "adcs_set_estimation_params",
         .tcmd_func = TCMDEXEC_adcs_set_estimation_params,
-        .number_of_args = 18,
+        .number_of_args = 17,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
