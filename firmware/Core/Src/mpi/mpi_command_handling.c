@@ -31,7 +31,9 @@ uint8_t MPI_send_command_get_response(
     const size_t MPI_rx_buffer_max_size, uint16_t *MPI_rx_buffer_len
 ) {
     // Assert: MPI_rx_buffer_max_size is >= the length of the bytes_to_send_len + 1 to receive the command echo
-    if (MPI_rx_buffer_max_size < (bytes_to_send_len + 1)) return 8; // Error code: Not enough space in the MPI response buffer
+    if (MPI_rx_buffer_max_size < (bytes_to_send_len + 1)) {
+        return 8; // Error code: Not enough space in the MPI response buffer
+    }
     
     MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_DUPLEX); // Set the MPI transceiver to MOSI mode
     MPI_current_uart_rx_mode = MPI_RX_MODE_COMMAND_MODE; // Set MPI to command mode.
@@ -62,7 +64,8 @@ uint8_t MPI_send_command_get_response(
     // Note: This is done to account for potential errors from the MPI where it doesn't send back
     // an expected-length response.
     const HAL_StatusTypeDef receive_status = HAL_UART_Receive_DMA(
-        UART_mpi_port_handle, (uint8_t*) &UART_mpi_last_rx_byte, 1);
+        UART_mpi_port_handle, (uint8_t*) &UART_mpi_last_rx_byte, 1
+    );
     
     // Check for UART reception errors
     if (receive_status != HAL_OK) {
