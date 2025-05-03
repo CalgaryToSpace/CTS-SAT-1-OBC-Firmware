@@ -5,6 +5,7 @@
 #include <stdbool.h>
 
 #define CAM_SENTENCE_LEN    67
+#define CAM_SENTENCES_PER_HALF_CALLBACK 23
 
 uint8_t CAM_change_baudrate(uint32_t bitrate);
 
