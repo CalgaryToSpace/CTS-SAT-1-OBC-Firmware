@@ -1,5 +1,6 @@
 
 #include "eps_drivers/eps_types_to_json.h"
+#include "eps_drivers/eps_channel_control.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -317,6 +318,33 @@ uint8_t EPS_struct_pdu_housekeeping_data_eng_TO_json(const EPS_struct_pdu_housek
     if (offset >= json_output_str_size) {
         return 3; // Output json_output_str too small
     }
+    return 0;
+}
+
+
+
+uint8_t EPS_struct_single_channel_data_eng_TO_json(const EPS_struct_pdu_housekeeping_data_eng_t *data, const uint8_t eps_channel, char json_output_str[], uint16_t json_output_str_size) {
+    if (data == NULL || json_output_str == NULL || json_output_str_size < 10) {
+        return 1; // Error: Invalid input
+    }
+
+    // Get the string channel name
+    const char *eps_channel_name = EPS_channel_to_str(eps_channel);
+
+    const EPS_vpid_eng_t *channel_data = &data->vip_each_channel[eps_channel];
+
+    int snprintf_ret = snprintf(
+        json_output_str, json_output_str_size,
+        "{\"ch_num\":%d,\"ch_name\":\"%s\",\"mV\":%d,\"mA\":%d,\"cW\":%d}",
+        eps_channel, eps_channel_name,channel_data->voltage_mV, channel_data->current_mA, channel_data->power_cW);
+
+    if (snprintf_ret < 0) {
+        return 2; // Error: snprintf encoding error
+    }
+    if (snprintf_ret >= json_output_str_size) {
+        return 3; // Error: json_output_str too short
+    }
+
     return 0;
 }
 
