@@ -77,7 +77,7 @@ static uint8_t send_bytes_to_ax100(uint8_t *packet, uint16_t packet_size) {
 /// @param data pointer to the data to downlink
 /// @param data_len length of the data
 /// @return 0 on success, >0 on error/failure
-uint8_t AX100_downlink_bytes(uint8_t *data, uint32_t data_len) {
+uint8_t AX100_downlink_bytes(uint8_t *data, uint16_t data_len) {
     if (data_len > AX100_DOWNLINK_MAX_BYTES) {
         LOG_message(
             LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_UHF_RADIO),

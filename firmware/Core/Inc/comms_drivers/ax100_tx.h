@@ -9,6 +9,6 @@
 
 #define AX100_CSP_HEADER_LENGTH_BYTES 4
 
-uint8_t AX100_downlink_bytes(uint8_t *data, uint32_t data_len);
+uint8_t AX100_downlink_bytes(uint8_t *data, uint16_t data_len);
 
 #endif // INCLUDE_GUARD__AX100_TX_H__
