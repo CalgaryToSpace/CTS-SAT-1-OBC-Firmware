@@ -10,5 +10,5 @@ Helpful tips/reminders of telecommand features and usage.
 * Telecommands can be executed right away, or scheduled in the agenda for later.
 * Telecommands are denoted by a unique ID (tssent) which is a 64-bit integer.
     * Commands with duplicate/repeated `tssent` values will be ignored, allowing you to uplink the same telecommand multiple times without executing it multiple times.
-* Send the `@log_filename=xxxx.txt` suffix tag to store the telecommand response in a file.
+* Send the `@resp_fname=xxxx.txt` suffix tag to store the telecommand response in a file.
     * This is especially helpful for storing power data during science data collection, for example.
