@@ -3,6 +3,7 @@
 #include "telecommand_exec/telecommand_args_helpers.h"
 #include "transforms/number_comparisons.h"
 #include "string.h"
+
 #define HELPERS_TEST_EPSILON 1e-6
 
 uint8_t TEST_EXEC__TCMD_is_char_alphanumeric() {
@@ -79,6 +80,88 @@ uint8_t TEST_EXEC__TCMD_get_suffix_tag_uint64() {
 
     return 0;
 }
+
+uint8_t TEST_EXEC__TCMD_get_suffix_tag_str() {
+    uint8_t result_err = 0;
+    char result_val[TCMD_MAX_RESP_FNAME_LEN] = {0};
+    uint16_t result_val_len = sizeof(result_val);
+
+    // -------------------------------
+    // Test 1: Valid tag and value
+    result_err = TCMD_get_suffix_tag_str("@resp_fname=log.txt", "@resp_fname=", result_val, result_val_len);
+    TEST_ASSERT(result_err == 0);
+    TEST_ASSERT(strcmp(result_val, "log.txt") == 0);
+
+    memset(result_val, 0, result_val_len);
+
+    // -------------------------------
+    // Test 2: Missing tag
+    result_err = TCMD_get_suffix_tag_str("@resp_fname=log.txt", "@missing_tag=", result_val, result_val_len);
+    TEST_ASSERT(result_err == 1);
+    TEST_ASSERT(strcmp(result_val, "") == 0); // should stay empty
+
+    memset(result_val, 0, result_val_len);
+
+    // -------------------------------
+    // Test 3: Empty value after tag
+    result_err = TCMD_get_suffix_tag_str("@resp_fname=", "@resp_fname=", result_val, result_val_len);
+    TEST_ASSERT(result_err == 2); // because no value after =
+    TEST_ASSERT(strcmp(result_val, "") == 0);
+
+    memset(result_val, 0, result_val_len);
+
+    // -------------------------------
+    // Test 4: Buffer too small
+    result_err = TCMD_get_suffix_tag_str("@resp_fname=log.txt", "@resp_fname=", result_val, 5);
+    TEST_ASSERT(result_err == 4); // value_len (7) > 5-1
+    TEST_ASSERT(strcmp(result_val, "") == 0);
+
+    memset(result_val, 0, result_val_len);
+
+    // -------------------------------
+    // Test 5: Invalid terminator after value
+    result_err = TCMD_get_suffix_tag_str("@resp_fname=log.txt$", "@resp_fname=", result_val, result_val_len);
+    TEST_ASSERT(result_err == 5); // '$' is invalid terminator
+    TEST_ASSERT(strcmp(result_val, "") == 0);
+
+    memset(result_val, 0, result_val_len);
+
+    // -------------------------------
+    // Test 6: Special characters '.', '-', '/' allowed
+    result_err = TCMD_get_suffix_tag_str("@resp_fname=dir/log-file.v1", "@resp_fname=", result_val, result_val_len);
+    TEST_ASSERT(result_err == 0);
+    TEST_ASSERT(strcmp(result_val, "dir/log-file.v1") == 0);
+
+    memset(result_val, 0, result_val_len);
+
+    // -------------------------------
+    // Test 7: NULL input checks
+    result_err = TCMD_get_suffix_tag_str(NULL, "@resp_fname=", result_val, result_val_len);
+    TEST_ASSERT(result_err == 10);
+
+    result_err = TCMD_get_suffix_tag_str("@resp_fname=log.txt", NULL, result_val, result_val_len);
+    TEST_ASSERT(result_err == 10);
+
+    result_err = TCMD_get_suffix_tag_str("@resp_fname=log.txt", "@resp_fname=", NULL, result_val_len);
+    TEST_ASSERT(result_err == 10);
+
+    result_err = TCMD_get_suffix_tag_str("@resp_fname=log.txt", "@resp_fname=", result_val, 0);
+    TEST_ASSERT(result_err == 10);
+
+    memset(result_val, 0, result_val_len);
+
+    // -------------------------------
+    // Test 8: Value exactly fits buffer (edge case)
+    // value_len == value_dest_max_len - 1
+    char buffer[10] = {0}; // "log.txt" is 7 chars
+    result_err = TCMD_get_suffix_tag_str("@resp_fname=log.txt", "@resp_fname=", buffer, 8); // 7+1 null
+    TEST_ASSERT(result_err == 0);
+    TEST_ASSERT(strcmp(buffer, "log.txt") == 0);
+
+    return 0;
+}
+
+
 uint8_t TEST_EXEC__TCMD_ascii_to_double() {
     double output_val;
 
@@ -156,6 +239,114 @@ uint8_t TEST_EXEC_TCMD_parse_full_telecommand() {
     TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+flash_read_hex(,0,0,0)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 130);
     TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+flash_read_hex(,0,0,0)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 130);
     TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+flash_read_hex(0,0)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 130);
+
+    return 0;
+}
+
+uint8_t TEST_EXEC__TCMD_process_suffix_tag_tssent() {
+    uint64_t tssent_time_ms = 0;
+
+    // Test case: Valid @tssent tag
+    TEST_ASSERT(TCMD_process_suffix_tag_tssent("@tssent=1234567890", strlen("@tssent=1234567890"), &tssent_time_ms) == 0);
+    TEST_ASSERT(tssent_time_ms == 1234567890);
+
+    // Test case: Missing @tssent tag
+    TEST_ASSERT(TCMD_process_suffix_tag_tssent("@tsexec=1234567890", strlen("@tsexec=1234567890"), &tssent_time_ms) == 0);
+
+    // Test case: Invalid @tssent tag format
+    TEST_ASSERT(TCMD_process_suffix_tag_tssent("@tssent=abcd", strlen("@tssent=abcd"), &tssent_time_ms) == 1);
+
+    // Test case: Empty string
+    TEST_ASSERT(TCMD_process_suffix_tag_tssent("", 0, &tssent_time_ms) == 0);
+
+    return 0;
+}
+
+uint8_t TEST_EXEC__TCMD_process_suffix_tag_tsexec() {
+    uint64_t tsexec_time_ms = 0;
+
+    // Test case: Valid @tsexec tag
+    TEST_ASSERT(TCMD_process_suffix_tag_tsexec("@tsexec=9876543210", strlen("@tsexec=9876543210"), &tsexec_time_ms) == 0);
+    TEST_ASSERT(tsexec_time_ms == 9876543210);
+
+    // Test case: Missing @tsexec tag
+    TEST_ASSERT(TCMD_process_suffix_tag_tsexec("@tssent=9876543210", strlen("@tssent=9876543210"), &tsexec_time_ms) == 0);
+
+    // Test case: Invalid @tsexec tag format
+    TEST_ASSERT(TCMD_process_suffix_tag_tsexec("@tsexec=abcd", strlen("@tsexec=abcd"), &tsexec_time_ms) == 1);
+
+    // Test case: Empty string
+    TEST_ASSERT(TCMD_process_suffix_tag_tsexec("", 0, &tsexec_time_ms) == 0);
+
+    return 0;
+}
+
+uint8_t TEST_EXEC__TCMD_process_suffix_tag_sha256() {
+    const char *tcmd_str = "CTS1+hello_world()!";
+    const int32_t end_of_args_idx = strlen("CTS1+hello_world()") - 1;
+
+    // Test case: Valid @sha256 tag
+    // Used the following website to compute: https://emn178.github.io/online-tools/sha256.html
+    const char *valid_suffix = "@sha256=9f2c356aee31c00991e024189ec6c602aaee9358dc5cc2d26182e55f98dce181";
+    TEST_ASSERT(TCMD_process_suffix_tag_sha256(valid_suffix, strlen(valid_suffix), tcmd_str, end_of_args_idx) == 0);
+
+    // Test case: Missing @sha256 tag (not required)
+    const char *missing_suffix = "@tssent=1234567890";
+    TEST_ASSERT(TCMD_process_suffix_tag_sha256(missing_suffix, strlen(missing_suffix), tcmd_str, end_of_args_idx) == 0);
+
+    // Test case: Invalid @sha256 tag format
+    const char *invalid_suffix = "@sha256=invalidhash";
+    TEST_ASSERT(TCMD_process_suffix_tag_sha256(invalid_suffix, strlen(invalid_suffix), tcmd_str, end_of_args_idx) == 2);
+
+    // Test case: Mismatched SHA256 hash
+    const char *mismatched_suffix = "@sha256=ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+    TEST_ASSERT(TCMD_process_suffix_tag_sha256(mismatched_suffix, strlen(mismatched_suffix), tcmd_str, end_of_args_idx) == 3);
+
+    return 0;
+}
+
+uint8_t TEST_EXEC__TCMD_process_suffix_tag_resp_fname()
+{
+    char resp_fname[TCMD_MAX_RESP_FNAME_LEN] = {0};
+    uint8_t resp_fname_len = sizeof(resp_fname);
+
+    // -------------------------------
+    // Case: Correct log filename
+    const char *valid_suffix = "@resp_fname=log.txt";
+    TEST_ASSERT(TCMD_process_suffix_tag_resp_fname(valid_suffix, strlen(valid_suffix), resp_fname, resp_fname_len) == 0);
+    TEST_ASSERT(strcmp(resp_fname, "log.txt") == 0);
+
+    memset(resp_fname, 0, resp_fname_len); 
+
+    // -------------------------------
+    // Case: Log filename with _ and numbers
+    const char *valid_suffix_2 = "@resp_fname=log_123.file";
+    TEST_ASSERT(TCMD_process_suffix_tag_resp_fname(valid_suffix_2, strlen(valid_suffix_2), resp_fname, resp_fname_len) == 0);
+    TEST_ASSERT(strcmp(resp_fname, "log_123.file") == 0);
+
+    memset(resp_fname, 0, resp_fname_len); 
+
+    // -------------------------------
+    // Case: Missing @resp_fname tag
+    const char *no_suffix = "@tssent=1234567890";
+    TEST_ASSERT(TCMD_process_suffix_tag_resp_fname(no_suffix, strlen(no_suffix), resp_fname, resp_fname_len) == 0);
+    TEST_ASSERT(resp_fname[0] == '\0'); // empty string
+
+    memset(resp_fname, 0, resp_fname_len); 
+
+    // -------------------------------
+    // Case: Empty log filename
+    const char *empty_suffix = "@resp_fname=";
+    TEST_ASSERT(TCMD_process_suffix_tag_resp_fname(empty_suffix, strlen(empty_suffix), resp_fname, resp_fname_len) == 1);
+    TEST_ASSERT(resp_fname[0] == '\0'); // empty string
+
+    memset(resp_fname, 0, resp_fname_len); 
+
+    // -------------------------------
+    // Case: Tag not at position 0
+    const char *offset_tag = "@other=1@resp_fname=test.log";
+    TEST_ASSERT(TCMD_process_suffix_tag_resp_fname(offset_tag, strlen(offset_tag), resp_fname, resp_fname_len) == 0);
+    TEST_ASSERT(strcmp(resp_fname, "test.log") == 0);
 
     return 0;
 }

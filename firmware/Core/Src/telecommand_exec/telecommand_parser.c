@@ -1,6 +1,7 @@
 #include "telecommand_exec/telecommand_definitions.h"
 #include "telecommand_exec/telecommand_parser.h"
 #include "telecommand_exec/telecommand_args_helpers.h"
+#include "telecommand_exec/telecommand_types.h"
 #include "debug_tools/debug_uart.h"
 #include "transforms/arrays.h"
 #include "crypto/sha256.h"
@@ -218,6 +219,65 @@ uint8_t TCMD_get_suffix_tag_hex_array(const char *str, const char *tag_name, uin
     return 0;
 }
 
+
+/// @brief Searches for a `str` like `\@tag_name=xxxx`, and sets char array `xxxx` into `value_dest`.
+/// @param str The string to search within for the tag. Excluding the tag name, the length of the string must be TCMD_MAX_RESP_FNAME_LEN.
+/// @param tag_name The tag to search for, including the '@' and '='.
+/// @param value_dest The destination for the value. `*value_dest` will be set.
+/// @return 0 if the tag was found successfully. >0 if the tag was not found, or there was an error.
+/// @note This function will return an error if the character after the string is not one of the following: {'#', '@', '\0', '!'}.
+uint8_t TCMD_get_suffix_tag_str(const char *str, const char *tag_name, char *value_dest, uint16_t value_dest_max_len) {
+ 
+    if (str == NULL || tag_name == NULL || value_dest == NULL || value_dest_max_len == 0) {
+        return 10; // invalid arguments
+    }
+
+    const uint16_t str_len = strlen(str);
+
+    // Find the tag in the string
+    const int16_t tag_index = GEN_get_index_of_substring_in_array(str, str_len, tag_name);
+    if (tag_index < 0) {
+        return 1;
+    }
+
+    // Find the start of the value, then do safety check.
+    const uint16_t tag_len = strlen(tag_name);
+    const uint16_t value_start_index = tag_index + tag_len;
+    if (value_start_index >= str_len) {
+        return 2;
+    }
+    // Find the end of the value
+    uint16_t value_end_index = value_start_index;
+    
+    // This check is sufficient as a string can be a combination of chars,numbers,and '_'
+    while (value_end_index < str_len &&  
+          (TCMD_is_char_valid_telecommand_name_char(str[value_end_index]) || 
+           str[value_end_index] == '.' || str[value_end_index] == '-' || str[value_end_index] == '/')) 
+    {
+        value_end_index++;
+    }
+    const uint16_t value_len = value_end_index - value_start_index;
+
+    if (value_len == 0) {
+        return 3;
+    }
+    
+    if (value_len >= value_dest_max_len) {
+        return 4;
+    }
+
+    // Check that the character after the number is any of '#', '@', '!', or '\0'
+    if (str[value_end_index] != '#' && str[value_end_index] != '@' && str[value_end_index] != '\0' && str[value_end_index] != '!') {
+        return 5;
+    }
+    
+    strncpy(value_dest, str + value_start_index, value_len);
+    value_dest[value_len] = '\0'; // Ensure string is null-terminated
+    
+    return 0;
+}
+
+
 /// @brief Parses a telecommand into everything needed to execute it.
 /// @param tcmd_str The telecommand string to parse. Must be null-terminated.
 /// @param parsed_tcmd_output Pointer to the output struct, which is modified by this function.
@@ -344,66 +404,34 @@ uint8_t TCMD_parse_full_telecommand(
 
     // Extract @tssent=xxxx from the telecommand string, starting at &tcmd_str[end_of_args_idx]
     uint64_t timestamp_sent = 0; // default value
-    if (GEN_get_index_of_substring_in_array(tcmd_suffix_tag_str, tcmd_suffix_tag_str_len, "@tssent=") >= 0) {
-        // The "@tssent=" tag was found, so parse it.
-        if (TCMD_get_suffix_tag_uint64(tcmd_suffix_tag_str, "@tssent=", &timestamp_sent) != 0) {
-            LOG_message(
-                LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-                "TCMD_parse_full_telecommand: failed to parse present @tssent=xxxx."
-            );
-            return 70;
-        }
+    const uint8_t parse_tssent_result = TCMD_process_suffix_tag_tssent(tcmd_suffix_tag_str, tcmd_suffix_tag_str_len, &timestamp_sent);  
+    if (parse_tssent_result != 0) {
+        return 70;
     }
+
 
     // Extract @tsexec=xxxx from the telecommand string, starting at &tcmd_str[end_of_args_idx]
     uint64_t timestamp_to_execute = 0; // default value: execute immediately
-    if (GEN_get_index_of_substring_in_array(tcmd_suffix_tag_str, tcmd_suffix_tag_str_len, "@tsexec=") >= 0) {
-        // The "@tsexec=" tag was found, so parse it.
-        if (TCMD_get_suffix_tag_uint64(tcmd_suffix_tag_str, "@tsexec=", &timestamp_to_execute) != 0) {
-            LOG_message(
-                LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-                "TCMD_parse_full_telecommand: failed to parse present @tsexec=xxxx."
-            );
-            return 80;
-        }
-    }
+    const uint8_t parse_tsexec_result = TCMD_process_suffix_tag_tsexec(tcmd_suffix_tag_str, tcmd_suffix_tag_str_len, &timestamp_to_execute);
+    if (parse_tsexec_result != 0) {
+        return 80;
+    }    
 
     // Extract @sha256=xxxx from the telecommand string, starting at &tcmd_str[end_of_args_idx]
-    uint8_t tag_is_present = 0;
-    if (GEN_get_index_of_substring_in_array(tcmd_suffix_tag_str, tcmd_suffix_tag_str_len, "@sha256=") >= 0) { 
-        tag_is_present = 1;
+    const uint8_t sha256_result = TCMD_process_suffix_tag_sha256(tcmd_suffix_tag_str, tcmd_suffix_tag_str_len, tcmd_str, end_of_args_idx);
+    switch (sha256_result) {
+        case 0: break; // Success
+        case 1: return 90;
+        case 2: return 100;
+        case 3: return 110;
+        default: return 111; // Error not accounted for, add case
     }
 
-    if (TCMD_require_valid_sha256 && !tag_is_present) {
-        LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "Error: TCMD_parse_full_telecommand: @sha256=xxxx tag is required but not present."
-        );
-        return 90;
-    }
-
-    if(tag_is_present) {
-        uint8_t parsed_sha256_hash[32];
-        // Parse the sha256 hash from the suffix tag.
-        if (TCMD_get_suffix_tag_hex_array(tcmd_suffix_tag_str, "@sha256=", parsed_sha256_hash) != 0) {
-            LOG_message(
-                LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-                "Error: TCMD_parse_full_telecommand: failed to parse present @sha256=xxxx."
-            );
-            return 100;
-        }
-
-        // After successfully parsing sha256, check to see if hash given matches the calculated hash generated by `CRYPT_compute_sha256_hash()`.
-        uint8_t calculated_sha256_hash[32];
-        CRYPT_compute_sha256_hash((uint8_t *)tcmd_str, end_of_args_idx + 1, calculated_sha256_hash);
-
-        if (memcmp(parsed_sha256_hash, calculated_sha256_hash, TCMD_SHA256_LENGTH_BYTES) != 0) {
-            LOG_message(
-                LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-                "Error: TCMD_parse_full_telecommand: sha256 hash does not match the expected hash."
-            );
-            return 110;
-        }
+    // Extract @resp_fname=xxxx from the telecommand string, starting at &tcmd_str[end_of_args_idx]
+    char tcmd_suffix_resp_fname[TCMD_MAX_RESP_FNAME_LEN] = {0};
+    const uint8_t resp_fname_result= TCMD_process_suffix_tag_resp_fname(tcmd_suffix_tag_str, tcmd_suffix_tag_str_len, tcmd_suffix_resp_fname, sizeof(tcmd_suffix_resp_fname));
+    if (resp_fname_result != 0) {
+        return 115;
     }
 
     // Check that the args_str_no_parens is not too long.
@@ -441,5 +469,137 @@ uint8_t TCMD_parse_full_telecommand(
     parsed_tcmd_output->timestamp_sent = timestamp_sent;
     parsed_tcmd_output->timestamp_to_execute = timestamp_to_execute;
     parsed_tcmd_output->tcmd_channel = tcmd_channel;
+    memcpy(parsed_tcmd_output->resp_fname, tcmd_suffix_resp_fname, TCMD_MAX_RESP_FNAME_LEN);
+
+    return 0;
+}
+
+
+/// @brief Parses the @tssent=xxxx tag from the telecommand string.
+/// @param tcmd_suffix_tag_str The telecommand suffix tag string. 
+/// @param tcmd_suffix_tag_str_len The length of the telecommand suffix tag string. 
+/// @param tssent_time_ms The destination for the timestamp sent. 
+/// @return  0 if the tag was found successfully or there is no tssent tag. >0 if there was an error.
+uint8_t TCMD_process_suffix_tag_tssent(const char* tcmd_suffix_tag_str, const uint16_t tcmd_suffix_tag_str_len, uint64_t *tssent_time_ms) {
+    int16_t tssent_index = GEN_get_index_of_substring_in_array(tcmd_suffix_tag_str, tcmd_suffix_tag_str_len, "@tssent=");
+    if (tssent_index == -1) {
+        return 0;
+    }
+    
+    // The "@tssent=" tag was found, so parse it.
+    if (TCMD_get_suffix_tag_uint64(tcmd_suffix_tag_str, "@tssent=", tssent_time_ms) != 0) {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "TCMD_parse_full_telecommand: failed to parse present @tssent=xxxx."
+        );
+        return 1;
+    }
+
+    return 0;
+}
+
+
+/// @brief Parses the @tsexec=xxxx tag from the telecommand string.
+/// @details This function checks that the timestamp to execute is valid.
+/// @param tcmd_suffix_tag_str The telecommand suffix tag string.
+/// @param tcmd_suffix_tag_str_len The length of the telecommand suffix tag string. 
+/// @param tsexec_time_ms The destination for the timestamp to execute.
+/// @details The timestamp to execute is the time at which the telecommand should be executed. 
+/// @return 0 if the tag was found successfully or the tag is not present. >0 if there was an error.
+uint8_t TCMD_process_suffix_tag_tsexec(const char *tcmd_suffix_tag_str, const uint16_t tcmd_suffix_tag_str_len, uint64_t *tsexec_time_ms)
+{
+    const int16_t tsexec_index = GEN_get_index_of_substring_in_array(tcmd_suffix_tag_str, tcmd_suffix_tag_str_len, "@tsexec=");
+    if (tsexec_index == -1) {
+        // The "@tsexec=" tag was not found, so return 0.
+        return 0;
+    }
+    // The "@tsexec=" tag was found, so parse it.
+    if (TCMD_get_suffix_tag_uint64(tcmd_suffix_tag_str, "@tsexec=", tsexec_time_ms) != 0) {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "TCMD_parse_full_telecommand: failed to parse present @tsexec=xxxx."
+        );
+        return 1;
+    }
+    return 0;
+}
+
+
+/// @brief Parses the @sha256=xxxx tag from the telecommand string.
+/// @details This function checks that the SHA256 hash of the telecommand string matches the hash provided in the tag.
+/// @param tcmd_suffix_tag_str The telecommand suffix tag string. 
+/// @param tcmd_str The telecommand string. 
+/// @param end_of_args_idx The index of the end of the arguments in the telecommand string. 
+/// @param sha256_hash The destination for the SHA256 hash. 
+/// @return 0 if the tag was found successfully or the tag is not present (and not required) . >0 if there was an error. 
+uint8_t TCMD_process_suffix_tag_sha256(const char *tcmd_suffix_tag_str, const uint16_t tcmd_suffix_tag_str_len, const char * tcmd_str, const int32_t end_of_args_idx)
+{
+    // will be -1 if the tag is not present, and >= 0 if it is present.
+    // int16_t because max value of int8_t is 127, and this could be past that point in the string
+    int16_t sha256_tag_is_present = GEN_get_index_of_substring_in_array(tcmd_suffix_tag_str, tcmd_suffix_tag_str_len, "@sha256=") >= 0;
+
+    if (!TCMD_require_valid_sha256 && !sha256_tag_is_present) {
+        // No sha256 tag is present, and we don't require it. So return 0.
+        return 0;
+    }
+
+    // If we require a valid sha256 tag, and it is not present, return an error.
+    if (TCMD_require_valid_sha256 && !sha256_tag_is_present) {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error: TCMD_parse_full_telecommand: @sha256=xxxx tag is required but not present."
+        );
+        return 1;
+    }
+
+    uint8_t parsed_sha256_hash[32];
+    // Parse the sha256 hash from the suffix tag.
+    if (TCMD_get_suffix_tag_hex_array(tcmd_suffix_tag_str, "@sha256=", parsed_sha256_hash) != 0) {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error: TCMD_parse_full_telecommand: failed to parse present @sha256=xxxx."
+        );
+        return 2; 
+    }
+
+    // After successfully parsing sha256, check to see if hash given matches the calculated hash generated by `CRYPT_compute_sha256_hash()`.
+    uint8_t calculated_sha256_hash[32];
+    CRYPT_compute_sha256_hash((uint8_t *)tcmd_str, end_of_args_idx + 1, calculated_sha256_hash);
+
+    if (memcmp(parsed_sha256_hash, calculated_sha256_hash, TCMD_SHA256_LENGTH_BYTES) != 0) {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error: TCMD_parse_full_telecommand: sha256 hash does not match the expected hash."
+        );
+        return 3;
+    }
+    return 0;
+}
+
+/// @brief Parses the @resp_fname=xxxx tag from the telecommand string.
+/// @param tcmd_suffix_tag_str The telecommand suffix tag string. 
+/// @param tcmd_suffix_tag_str_len The length of the telecommand suffix tag string.
+/// @param resp_fname The destination for the log filename.
+/// @param resp_fname_len The length of the log filename.
+/// @details The log filename is the name of the file to which the telecommand will be logged.
+/// @details If the length of the filename is > TCMD_MAX_RESP_FNAME_LEN, the filename will be truncated.
+/// @return 0 if the tag was found successfully or the tag is not present. >0 if there was an error. 
+uint8_t TCMD_process_suffix_tag_resp_fname(const char *tcmd_suffix_tag_str, const uint16_t tcmd_suffix_tag_str_len, char * resp_fname, const uint8_t resp_fname_len)
+{
+    if (GEN_get_index_of_substring_in_array(tcmd_suffix_tag_str, tcmd_suffix_tag_str_len, "@resp_fname=") < 0) { 
+        // The "@resp_fname=" tag was not found, so return 0.
+        return 0;
+    } 
+
+    // The "@resp_fname=" tag was found, so parse it.
+    const uint8_t parse_result = TCMD_get_suffix_tag_str(tcmd_suffix_tag_str, "@resp_fname=", resp_fname, resp_fname_len);
+    if (parse_result != 0) {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error parsing @resp_fname. Error value: %u.", parse_result
+        );
+        return 1;
+    }
+
     return 0;
 }
