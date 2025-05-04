@@ -75,6 +75,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         
         // Add the byte to the buffer.
         if (UART_telecommand_buffer_write_idx >= UART_telecommand_buffer_len) {
+            // Tracking error
+            UART_error_telecommand_error_info.handler_buffer_full_error_count++;
             DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART telecommand buffer is full\n");
             
             // shift all bytes left by 1
@@ -100,6 +102,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         if (MPI_current_uart_rx_mode == MPI_RX_MODE_COMMAND_MODE) {
             // Check if buffer is full
             if (UART_mpi_buffer_write_idx >= UART_mpi_buffer_len) {
+                // Tracking error
+                UART_error_mpi_error_info.handler_buffer_full_error_count++;
                 // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART mpi response buffer is full\n");
 
                 // Shift all bytes left by 1
@@ -132,6 +136,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
         // Check if buffer is full.
         if (UART_camera_buffer_write_idx >= UART_camera_buffer_len) {
+            // Tracking error
+            // TODO: This section may be moved because the camera might be using DMA
+            UART_error_camera_error_info.handler_buffer_full_error_count++;
             // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART response buffer is full\n");
 
             // Shift all bytes left by 1
@@ -160,6 +167,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         }
 
         if (UART_eps_buffer_write_idx >= UART_eps_buffer_len) {
+            // Tracking error
+            UART_error_eps_error_info.handler_buffer_full_error_count++;
             // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART EPS buffer is full\n");
 
             HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t*) &UART_eps_buffer_last_rx_byte, 1);
@@ -182,6 +191,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
             // Add the byte to the buffer
             if (UART_gps_buffer_write_idx >= UART_gps_buffer_len) {
+                // Tracking error
+                UART_error_gps_error_info.handler_buffer_full_error_count++;
                 DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART gps buffer is full\n");
                 
                 // Shift all bytes left by 1

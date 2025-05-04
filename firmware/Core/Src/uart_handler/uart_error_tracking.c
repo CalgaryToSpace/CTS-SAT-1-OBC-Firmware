@@ -74,6 +74,8 @@ void UART_track_error_from_isr(USART_TypeDef *huart_instance, uint32_t error_cod
         error_info_struct = &UART_error_camera_error_info;
     } else if (huart_instance == UART_eps_port_handle->Instance) {
         error_info_struct = &UART_error_eps_error_info;
+    } else if (huart_instance == UART_telecommand_port_handle->Instance) {
+        error_info_struct = &UART_error_telecommand_error_info;
     } else {
         return; // Unknown UART instance
     }
@@ -97,6 +99,10 @@ void UART_track_error_from_isr(USART_TypeDef *huart_instance, uint32_t error_cod
     if (error_code & HAL_UART_ERROR_RTO) {
         error_info_struct->receiver_timeout_error_count++;
     }
+
+    // The handler_buffer_full_error_count is a custom error that we define
+    // to track if the buffer in the ISR handler becomes full
+    // Thus, it will be manully incremented in the HAL_UART_RxCpltCallback function
 }
 
 
@@ -108,13 +114,20 @@ uint8_t UART_single_subsystem_error_info_to_json(UART_error_counts_single_subsys
     }
     // Create the JSON string
     snprintf(json_buffer, json_buffer_len,
-        "{\"parity\":%u,\"noise\":%u,\"frame\":%u,\"overrun\":%u,\"dma_transfer\":%u,\"receiver_timeout\":%u}",
+        "{\"parity\":%u,"
+        "\"noise\":%u,"
+        "\"frame\":%u,"
+        "\"overrun\":%u,"
+        "\"dma_transfer\":%u,"
+        "\"receiver_timeout\":%u,"
+        "\"handler_buffer_full\":%u}",
         error_info_struct->parity_error_count,
         error_info_struct->noise_error_count,
         error_info_struct->frame_error_count,
         error_info_struct->overrun_error_count,
         error_info_struct->dma_transfer_error_count,
-        error_info_struct->receiver_timeout_error_count
+        error_info_struct->receiver_timeout_error_count,
+        error_info_struct->handler_buffer_full_error_count
     );
     return 0;
 }

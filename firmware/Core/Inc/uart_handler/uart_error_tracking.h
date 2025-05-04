@@ -5,7 +5,7 @@
 #include "stm32l4xx_hal.h" // Need to include this before including line below
 #include "stm32l4xx_hal_uart.h"
 
-#define UART_ERROR_TRACKING_JSON_BUFFER_LEN 512
+#define UART_ERROR_TRACKING_JSON_BUFFER_LEN 768 // 512 + 256
 
 /// @brief These will be an error defined in the stm32l4xx_hal_uart.h file.
 /// @note UART_Error_Definition: stm32l4xx_hal_uart.h
@@ -18,6 +18,7 @@ typedef struct
     uint16_t overrun_error_count; // HAL_UART_ERROR_ORE
     uint16_t dma_transfer_error_count; // HAL_UART_ERROR_DMA
     uint16_t receiver_timeout_error_count; // HAL_UART_ERROR_RTO
+    uint16_t handler_buffer_full_error_count; // Custom field to track if buffer in ISR handler becomes full
 } UART_error_counts_single_subsystem_struct_t;
 
 extern UART_error_counts_single_subsystem_struct_t UART_error_mpi_error_info;

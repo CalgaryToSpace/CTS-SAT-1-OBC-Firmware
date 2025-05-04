@@ -15,7 +15,8 @@ uint8_t TEST_EXEC__UART_single_subsystem_error_info_to_json()
         .frame_error_count = 3,
         .overrun_error_count = 4,
         .dma_transfer_error_count = 5,
-        .receiver_timeout_error_count = 6
+        .receiver_timeout_error_count = 6,
+        .handler_buffer_full_error_count = 7 
     };
 
     // Case 1: Valid buffer size
@@ -28,7 +29,8 @@ uint8_t TEST_EXEC__UART_single_subsystem_error_info_to_json()
     "\"frame\":3,"
     "\"overrun\":4,"
     "\"dma_transfer\":5,"
-    "\"receiver_timeout\":6}";
+    "\"receiver_timeout\":6,"
+    "\"handler_buffer_full\":7}";
 
     TEST_ASSERT(strcmp(json_buffer, expected_json) == 0);
 
