@@ -28,6 +28,8 @@ extern UART_error_counts_single_subsystem_struct_t UART_error_camera_error_info;
 
 extern UART_error_counts_single_subsystem_struct_t UART_error_eps_error_info;
 
+extern UART_error_counts_single_subsystem_struct_t UART_error_telecommand_error_info;
+
 
 void UART_track_error_from_isr(USART_TypeDef *huart_instance, uint32_t error_code);
 

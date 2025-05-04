@@ -43,6 +43,15 @@ UART_error_counts_single_subsystem_struct_t UART_error_eps_error_info = {
     .receiver_timeout_error_count = 0,
 };
 
+UART_error_counts_single_subsystem_struct_t UART_error_telecommand_error_info = {
+    .parity_error_count = 0,
+    .noise_error_count = 0,
+    .frame_error_count = 0,
+    .overrun_error_count = 0,
+    .dma_transfer_error_count = 0,
+    .receiver_timeout_error_count = 0,
+};
+
 /// @brief Track the error for a given UART instance
 /// @param huart_instance The uart instance we are tracking the error for 
 /// @param error_code The error code to track
@@ -147,6 +156,14 @@ uint8_t UART_get_errors_json(char *json_buf, uint16_t json_buf_len)
     memset(buf, 0, sizeof(buf));
     if (UART_single_subsystem_error_info_to_json(&UART_error_eps_error_info, buf, sizeof(buf))) { return 3;}
     written = snprintf(json_buf + offset, json_buf_len - offset, ",\"eps_errors\":%s", buf);
+    if (written < 0 || written >= json_buf_len - offset) { return 4;}
+    offset += written;
+
+
+    // --- Append telecommand_errors ---
+    memset(buf, 0, sizeof(buf));
+    if (UART_single_subsystem_error_info_to_json(&UART_error_telecommand_error_info, buf, sizeof(buf))) { return 3;}
+    written = snprintf(json_buf + offset, json_buf_len - offset, ",\"telecommand_errors\":%s", buf);
     if (written < 0 || written >= json_buf_len - offset) { return 4;}
     offset += written;
 
