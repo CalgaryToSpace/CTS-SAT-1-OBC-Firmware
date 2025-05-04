@@ -7,7 +7,6 @@
 
 #include "main.h"
 
-#include <string.h>
 // Name the UART interfaces
 UART_HandleTypeDef *UART_telecommand_port_handle = &hlpuart1;
 UART_HandleTypeDef *UART_mpi_port_handle = &huart1;
@@ -270,8 +269,6 @@ uint8_t CAMERA_set_expecting_data(uint8_t new_enabled) {
         return 0;
     }
 }
-
-// TODO: Probably need to remove the LOG_message() calls below. Instead, set a fault flag.
 
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
     // Docs for error codes: https://community.st.com/t5/stm32-mcus-products/identifying-and-solving-uart-error/td-p/135754
