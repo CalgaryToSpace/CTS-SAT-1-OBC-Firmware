@@ -3,6 +3,7 @@
 #include "adcs_drivers/adcs_internal_drivers.h"
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_commands.h"
+#include "comms_drivers/ax100_hw.h"
 #include "gps/gps_internal_drivers.h"
 #include "eps_drivers/eps_commands.h"
 #include "eps_drivers/eps_channel_control.h"
@@ -343,8 +344,7 @@ void CTS1_run_system_self_check(CTS1_system_self_check_result_struct_t *result) 
 
     // AX100
     result->is_ax100_i2c_addr_alive = CTS1_check_is_i2c_addr_alive(
-        ADCS_i2c_HANDLE, // Uses the same I2C port.
-        0x05 // TODO: Set to the #define somewhere.
+        AX100_I2C_HANDLE, AX100_I2C_ADDR
     );
     LOG_message(
         LOG_SYSTEM_OBC, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,

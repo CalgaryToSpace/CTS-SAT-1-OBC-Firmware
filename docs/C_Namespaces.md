@@ -32,7 +32,6 @@ following uppercase identifiers to indicate which subsystem/region of code it be
 * `COMMS_ANT_`: related to the I2C communications for the deployable communications antenna
 * `AX100_`: related to the AX100 communication module, at a low level
 * `COMMS_`: related to higher-level functions for command and data handling, which calls into the `AX100_` prefix
-	* Note: we may want to discard either `COMMS_` or `AX100_` as we begin implementation
 * `BOOM_`: related to the burn wire driver for the deployable composite latice boom (DCLB) subsystem
 * `CAM_`: related to the UART camera
 * `LORA_`: related to the UART LoRaWAN communications systems, if integrated
