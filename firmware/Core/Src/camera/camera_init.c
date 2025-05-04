@@ -100,8 +100,8 @@ uint8_t CAM_setup() {
     // Wait a sec for camera bootup.
     HAL_Delay(500);
 
-    // Change baudrate to 460800 on camera.
-    const uint8_t bitrate_status = CAM_change_baudrate(115200);
+    // Viable baud rate options: 115200, 230400.
+    const uint8_t bitrate_status = CAM_change_baudrate(230400);
     if (bitrate_status != 0) {
         LOG_message(
             LOG_SYSTEM_BOOM, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
@@ -208,6 +208,8 @@ uint8_t CAM_receive_image(lfs_file_t* img_file) {
         return 3; // Error code: Failed UART reception
     }
 
+    uint32_t total_bytes_written = 0;
+
     while(1) {
         // Write file after half callback (Half 1).
         if (CAMERA_uart_half_1_state == CAMERA_UART_WRITE_STATE_HALF_FILLED_WAITING_FS_WRITE) {
@@ -220,13 +222,17 @@ uint8_t CAM_receive_image(lfs_file_t* img_file) {
             // Write data to file
             const lfs_ssize_t write_result = lfs_file_write(
                 &LFS_filesystem, img_file,
-                (const uint8_t *)UART_camera_pending_fs_write_half_1_buf, CAM_SENTENCE_LEN*CAM_SENTENCES_PER_HALF_CALLBACK
+                (const uint8_t *)UART_camera_pending_fs_write_half_1_buf,
+                CAM_SENTENCE_LEN*CAM_SENTENCES_PER_HALF_CALLBACK
             );
             if (write_result < 0) {
                 LOG_message(
                     LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
                     "LFS error writing half 1 to img file."
                 );
+            }
+            else {
+                total_bytes_written += write_result;
             }
 
             CAMERA_uart_half_1_state = CAMERA_UART_WRITE_STATE_HALF_WRITTEN_TO_FS;
@@ -252,6 +258,9 @@ uint8_t CAM_receive_image(lfs_file_t* img_file) {
                     "LFS error writing half 2 to img file."
                 );
             }
+            else {
+                total_bytes_written += write_result;
+            }
 
             CAMERA_uart_half_2_state = CAMERA_UART_WRITE_STATE_HALF_WRITTEN_TO_FS;
         }
@@ -272,34 +281,34 @@ uint8_t CAM_receive_image(lfs_file_t* img_file) {
         // FIXME: Should add a between-messages timeout here, which looks at UART_camera_last_write_time_ms
     }
 
+    LOG_message(
+        LOG_SYSTEM_BOOM, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_FILE),
+        "Camera receive loop finished. Total bytes written: %ld", total_bytes_written
+    );
+
+    // Try to read any remaining data in the DMA buffer.
+    HAL_UART_DMAStop(UART_camera_port_handle);
+    if (CAMERA_uart_half_1_state == CAMERA_UART_WRITE_STATE_HALF_FILLING
+        && CAMERA_uart_half_2_state == CAMERA_UART_WRITE_STATE_HALF_FILLING
+    ) {
+        LOG_message(
+            LOG_SYSTEM_BOOM, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
+            "Weird state where both halfs say they're filling (after the rx loop)."
+        );
+    }
+
+    // FIXME: Read out the rest of the data in the buffers here.
+
+    LOG_message(
+        LOG_SYSTEM_BOOM, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_FILE),
+        "Total bytes written to file: %ld (approx %ld = 0x%04lX sentences)",
+        total_bytes_written,
+        total_bytes_written / CAM_SENTENCE_LEN,
+        total_bytes_written / CAM_SENTENCE_LEN
+    );
+
     // FIXME: Need to handle reading the final half of the data (implemented somewhat in the following commented block)
     
-    //     // if write idx is not 0 then it must be 1
-    //     else{
-    //         // if write idx is 1 then there may be data in second half of buffer
-    //         const uint32_t current_time = HAL_GetTick();
-    //         if (
-    //             (current_time > UART_camera_last_write_time_ms) // obvious safety check
-    //             && ((current_time - UART_camera_last_write_time_ms) > CAMERA_RX_TIMEOUT_DURATION_MS))
-    //             {
-    //                 // copy data from second half and set write file to true
-    //                 for (uint16_t i = UART_camera_buffer_len/2; i < UART_camera_buffer_len; i++) {
-    //                     UART_camera_pending_fs_write_buf[i-UART_camera_buffer_len/2] = UART_camera_dma_buffer[i];
-    //                     UART_camera_dma_buffer[i] = 0;
-    //                 }
-    //                 // PRINT FOR TESTING DELETE AFTER
-    //                 // DEBUG_uart_print_str("timeout write file 2\n"); 
-    //                 camera_write_file = 1;
-    //                 // finish receiving and break out of loop
-    //                 CAMERA_set_expecting_data(0);
-    //                 break;
-    //             }
-    //     }
-    // }
-    // outside of while loop
-    // write remaining data if any
-    
-
     return 0;
 }
 

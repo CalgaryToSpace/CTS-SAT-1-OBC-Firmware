@@ -5,7 +5,9 @@
 #include <stdbool.h>
 
 #define CAM_SENTENCE_LEN    67
-#define CAM_SENTENCES_PER_HALF_CALLBACK 230
+
+// Note: 23 sentences is too few. 100 sometimes is too few. 250 is a good number, I think.
+#define CAM_SENTENCES_PER_HALF_CALLBACK 250
 
 uint8_t CAM_change_baudrate(uint32_t bitrate);
 
