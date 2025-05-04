@@ -188,7 +188,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         if (CAMERA_uart_half_2_state == CAMERA_UART_WRITE_STATE_HALF_FILLED_WAITING_FS_WRITE) {
             // Error: Data coming in too fast. Previous half not written yet.
             // TODO: Store this error to the ISR error tracker system.
-            DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> Camera data coming in too fast\n");
+            DEBUG_uart_print_str("Cam Full ISR() -> Data too fast\n");
         }
 
         // Volatile-safe memcpy.
@@ -213,10 +213,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
     // DEBUG_uart_print_str("half call back\n");
     if (huart->Instance == UART_camera_port_handle->Instance) {
-        if (CAMERA_uart_half_2_state == CAMERA_UART_WRITE_STATE_HALF_FILLED_WAITING_FS_WRITE) {
+        if (CAMERA_uart_half_1_state == CAMERA_UART_WRITE_STATE_HALF_FILLED_WAITING_FS_WRITE) {
             // Error: Data coming in too fast. Previous half not written yet.
             // TODO: Store this error to the ISR error tracker system.
-            DEBUG_uart_print_str("HAL_UART_RxHalfCpltCallback() -> Camera data coming in too fast\n");
+            DEBUG_uart_print_str("Cam Half ISR -> Data too fast\n");
         }
 
         const uint16_t UART_camera_buffer_len_half = UART_camera_buffer_len / 2;

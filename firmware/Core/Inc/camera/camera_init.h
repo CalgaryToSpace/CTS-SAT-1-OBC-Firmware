@@ -5,7 +5,7 @@
 #include <stdbool.h>
 
 #define CAM_SENTENCE_LEN    67
-#define CAM_SENTENCES_PER_HALF_CALLBACK 23
+#define CAM_SENTENCES_PER_HALF_CALLBACK 230
 
 uint8_t CAM_change_baudrate(uint32_t bitrate);
 
@@ -27,7 +27,5 @@ typedef enum CAM_capture_status_enum{
  * 			s - solar sail contrast and light
  */
 enum CAM_capture_status_enum CAM_capture_image(char filename_str[], char lighting_mode);
-
-void CAM_end_camera_receive_due_to_error();
 
 #endif // INCLUDE_GUARD__CAMERA_INIT_H

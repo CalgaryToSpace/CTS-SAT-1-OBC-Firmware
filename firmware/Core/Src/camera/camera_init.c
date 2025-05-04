@@ -304,6 +304,32 @@ uint8_t CAM_receive_image(lfs_file_t* img_file) {
 }
 
 
+static void CAM_end_camera_receive_due_to_error(lfs_file_t* img_file) {
+    // Close file if open.
+    if (img_file != NULL) {
+        const int8_t close_result = lfs_file_close(&LFS_filesystem, img_file);
+        if (close_result != 0) {
+            LOG_message(
+                LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING,
+                LOG_all_sinks_except(LOG_SINK_FILE), "Error closing file (err %d)", close_result
+            );
+        }
+    }
+
+    // Turn off camera before exiting.
+    const uint8_t eps_off_status = EPS_set_channel_enabled(EPS_CHANNEL_3V3_CAMERA, 0);
+    if (eps_off_status != 0)
+    {
+        // Continue anyway. Just log a warning.
+        LOG_message(
+            LOG_SYSTEM_EPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "Error disabling camera power channel in CAM_capture_image: status=%d. Continuing.",
+            eps_off_status
+        );
+    }
+}
+
+
 /// @brief Capture an image, writing to a file in LFS.
 /// @param filename_str The name of the file to write to.
 /// @param lighting_mode Should be a lower-case char
@@ -425,28 +451,4 @@ enum CAM_capture_status_enum CAM_capture_image(char filename_str[], char lightin
         return CAM_CAPTURE_STATUS_CAPTURE_FAILURE;
     }
     return CAM_CAPTURE_STATUS_TRANSMIT_SUCCESS;
-}
-
-void CAM_end_camera_receive_due_to_error(lfs_file_t* img_file) {
-    // Close file if open.
-    if (img_file != NULL) {
-        const int8_t close_result = lfs_file_close(&LFS_filesystem, img_file);
-        if (close_result != 0) {
-            LOG_message(
-                LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING,
-                LOG_all_sinks_except(LOG_SINK_FILE), "Error closing file (err %d)", close_result);
-        }
-    }
-
-    // Turn off camera before exiting.
-    const uint8_t eps_off_status = EPS_set_channel_enabled(EPS_CHANNEL_3V3_CAMERA, 0);
-    if (eps_off_status != 0)
-    {
-        // Continue anyway. Just log a warning.
-        LOG_message(
-            LOG_SYSTEM_EPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-            "Error disabling camera power channel in CAM_capture_image: status=%d. Continuing.",
-            eps_off_status
-        );
-    }
 }
