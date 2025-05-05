@@ -279,6 +279,9 @@ uint8_t TCMDEXEC_log_report_n_latest_messages_from_memory(const char *args_str, 
 /// @param args_str
 /// - Arg 0: Source enum
 /// - Arg 1: State 0: disable source logging, 1: enable source logging
+/// @note Valid string values for Arg 0: "obc", "uhf_radio", "umbilical_uart", "gps",
+///     "mpi", "eps", "boom", "adcs", "lfs", "flash", "antenna_deploy", "log",
+///     "telecommand", "unit_test"
 uint8_t TCMDEXEC_toggle_source_logging(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
 
@@ -308,7 +311,7 @@ uint8_t TCMDEXEC_toggle_source_logging(const char *args_str, TCMD_TelecommandCha
     
     for (uint16_t i = 0; LOG_source >> i; i++) {
         if (LOG_source & (1 << i)) {
-            source[i] = state;
+            LOG_toggled_sources[i] = state;
         }
     }
     snprintf(response_output_buf, response_output_buf_len, "Toggled source %s to %d", source, (uint16_t) state);
