@@ -21,7 +21,7 @@ EPS_CHANNEL_enum_t EPS_channel_from_str(const char channel_name[]) {
     if (strcmp(channel_name, "5") == 0) return EPS_CHANNEL_3V3_STACK;
     if (strcmp(channel_name, "6") == 0) return EPS_CHANNEL_3V3_CAMERA;
     if (strcmp(channel_name, "7") == 0) return EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY;
-    if (strcmp(channel_name, "8") == 0) return EPS_CHANNEL_3V3_LORA_MODULE; // Engg Model ADCS
+    if (strcmp(channel_name, "8") == 0) return EPS_CHANNEL_3V3_GNSS; // Engg Model ADCS
     if (strcmp(channel_name, "9") == 0) return EPS_CHANNEL_VBATT_CH9_UNUSED;
     if (strcmp(channel_name, "10") == 0) return EPS_CHANNEL_VBATT_CH10_UNUSED;
     if (strcmp(channel_name, "11") == 0) return EPS_CHANNEL_VBATT_CH11_UNUSED;
@@ -37,7 +37,7 @@ EPS_CHANNEL_enum_t EPS_channel_from_str(const char channel_name[]) {
     if (strcmp(channel_name, "stack_3v3") == 0) return EPS_CHANNEL_3V3_STACK;
     if (strcmp(channel_name, "camera") == 0) return EPS_CHANNEL_3V3_CAMERA;
     if (strcmp(channel_name, "uhf_antenna_deploy") == 0) return EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY;
-    if (strcmp(channel_name, "gnss") == 0) return EPS_CHANNEL_3V3_LORA_MODULE;
+    if (strcmp(channel_name, "gnss") == 0) return EPS_CHANNEL_3V3_GNSS;
     if (strcmp(channel_name, "mpi_5v") == 0) return EPS_CHANNEL_5V_MPI;
     if (strcmp(channel_name, "mpi_12v") == 0) return EPS_CHANNEL_12V_MPI;
     if (strcmp(channel_name, "boom") == 0) return EPS_CHANNEL_12V_BOOM;
@@ -68,7 +68,7 @@ char* EPS_channel_to_str(EPS_CHANNEL_enum_t channel) {
         return "3V3_CAMERA";
     case EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY:
         return "3V3_UHF_ANTENNA_DEPLOY";
-    case EPS_CHANNEL_3V3_LORA_MODULE:
+    case EPS_CHANNEL_3V3_GNSS:
         return "3V3_LORA_MODULE";
     case EPS_CHANNEL_VBATT_CH9_UNUSED:
         return "VBATT_CH9_UNUSED";
