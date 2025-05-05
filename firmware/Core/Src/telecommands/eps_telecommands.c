@@ -141,7 +141,7 @@ uint8_t TCMDEXEC_eps_switch_to_mode(
 /// @note Channel name argument: A lowercase c-string of the channel name (e.g., "mpi"), or a number
 /// representing the channel number (e.g., "1" or "16").
 /// Valid string values: "vbatt_stack", "stack_5v", "stack_3v3", "camera", "uhf_antenna_deploy",
-/// "lora_module", "mpi_5v", "mpi_12v", "boom".
+/// "gnss", "mpi_5v", "mpi_12v", "boom".
 uint8_t TCMDEXEC_eps_set_channel_enabled(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
@@ -353,7 +353,7 @@ uint8_t TCMDEXEC_eps_get_pdu_housekeeping_data_eng_json(
 /// @note Channel name argument: A lowercase c-string of the channel name (e.g., "mpi"), or a number
 /// representing the channel number (e.g., "1" or "16").
 /// Valid string values: "vbatt_stack", "stack_5v", "stack_3v3", "camera", "uhf_antenna_deploy",
-/// "lora_module", "mpi_5v", "mpi_12v", "boom".
+/// "gnss", "mpi_5v", "mpi_12v", "boom".
 uint8_t TCMDEXEC_eps_get_pdu_data_for_channel_json(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
@@ -650,10 +650,10 @@ uint8_t TCMDEXEC_eps_get_enabled_channels_json(
 /// @brief Sets the EPS power managements max sustained current for the specified channel.
 /// @param args_str 
 /// - Arg 0: The channel name or number (string).
-/// - Arg 1: Threshhold current (in mA) to set.
+/// - Arg 1: Threshold current (in mA) to set.
 /// @return 0 on success, >0 on failure
-/// @note Valid string values for Arg 0: "vbatt_stack", "stack_5v", "stack_3v3", "camera",
-///     "uhf_antenna_deploy", "lora_module", "mpi", "boom" as well as channel numbers 0-16.
+/// @note Valid string values (Arg 0): "vbatt_stack", "stack_5v", "stack_3v3", "camera",
+/// "uhf_antenna_deploy", "gnss", "mpi_5v", "mpi_12v", "boom".
 uint8_t TCMDEXEC_eps_power_management_set_current_threshold(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
