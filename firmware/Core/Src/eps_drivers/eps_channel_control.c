@@ -69,7 +69,7 @@ char* EPS_channel_to_str(EPS_CHANNEL_enum_t channel) {
     case EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY:
         return "3V3_UHF_ANTENNA_DEPLOY";
     case EPS_CHANNEL_3V3_GNSS:
-        return "3V3_LORA_MODULE";
+        return "3V3_GNSS";
     case EPS_CHANNEL_VBATT_CH9_UNUSED:
         return "VBATT_CH9_UNUSED";
     case EPS_CHANNEL_VBATT_CH10_UNUSED:

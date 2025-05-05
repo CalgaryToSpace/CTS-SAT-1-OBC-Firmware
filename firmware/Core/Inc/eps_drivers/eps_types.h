@@ -24,7 +24,7 @@ typedef enum {
     EPS_CHANNEL_3V3_STACK               = 5, // CH5
     EPS_CHANNEL_3V3_CAMERA              = 6, // CH6
     EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY  = 7, // CH7
-    EPS_CHANNEL_3V3_GNSS         = 8, // CH8
+    EPS_CHANNEL_3V3_GNSS                = 8, // CH8
     EPS_CHANNEL_VBATT_CH9_UNUSED        = 9, // CH9
     EPS_CHANNEL_VBATT_CH10_UNUSED       = 10, // CH10
     EPS_CHANNEL_VBATT_CH11_UNUSED       = 11, // CH11
