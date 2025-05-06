@@ -28,7 +28,7 @@
 #include "rtos_tasks/rtos_tasks.h"
 #include "rtos_tasks/rtos_eps_tasks.h"
 #include "rtos_tasks/rtos_background_upkeep.h"
-#include "rtos_tasks/rtos_tcmd_receive_debug_uart_task.h"
+#include "rtos_tasks/rtos_tasks_rx_telecommands.h"
 #include "uart_handler/uart_handler.h"
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_commands.h"
@@ -104,6 +104,15 @@ const osThreadAttr_t TASK_handle_uart_telecommands_Attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 
+osThreadId_t TASK_handle_ax100_kiss_telecommands_Handle;
+const osThreadAttr_t TASK_handle_ax100_kiss_telecommands_Attributes = {
+  .name = "TASK_handle_ax100_kiss_telecommands",
+  // Presumably applicable: size 2048 doesn't work with LFS settings, but 8192 does.
+  // TODO: confirm stack size
+  .stack_size = 8192,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+
 osThreadId_t TASK_execute_telecommands_Handle;
 const osThreadAttr_t TASK_execute_telecommands_Attributes = {
   .name = "TASK_execute_telecommands",
@@ -153,6 +162,11 @@ FREERTOS_task_info_struct_t FREERTOS_task_handles_array [] = {
   {
     .task_handle = &TASK_handle_uart_telecommands_Handle,
     .task_attribute = &TASK_handle_uart_telecommands_Attributes,
+    .lowest_stack_bytes_remaining = UINT32_MAX
+  },
+  {
+    .task_handle = &TASK_handle_ax100_kiss_telecommands_Handle,
+    .task_attribute = &TASK_handle_ax100_kiss_telecommands_Attributes,
     .lowest_stack_bytes_remaining = UINT32_MAX
   },
   {
@@ -309,6 +323,8 @@ int main(void)
   TASK_DEBUG_print_heartbeat_Handle = osThreadNew(TASK_DEBUG_print_heartbeat, NULL, &TASK_DEBUG_print_heartbeat_Attributes);
 
   TASK_handle_uart_telecommands_Handle = osThreadNew(TASK_handle_uart_telecommands, NULL, &TASK_handle_uart_telecommands_Attributes);
+
+  TASK_handle_ax100_kiss_telecommands_Handle = osThreadNew(TASK_handle_ax100_kiss_telecommands, NULL, &TASK_handle_ax100_kiss_telecommands_Attributes);
 
   TASK_execute_telecommands_Handle = osThreadNew(TASK_execute_telecommands, NULL, &TASK_execute_telecommands_Attributes);
 
