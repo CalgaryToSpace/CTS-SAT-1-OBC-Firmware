@@ -32,8 +32,6 @@ volatile uint32_t UART_mpi_last_write_time_ms = 0;          // extern
 volatile uint16_t UART_mpi_buffer_write_idx = 0;            // extern
 
 // UART AX100 buffer
-const uint16_t UART_ax100_buffer_len = 512;                 // extern
-volatile uint8_t UART_ax100_buffer[512];                    // extern
 volatile uint16_t UART_ax100_buffer_write_idx = 0;          // extern
 volatile uint32_t UART_ax100_last_write_time_ms = 0;        // extern
 volatile uint8_t UART_ax100_buffer_last_rx_byte = 0;       // extern
@@ -218,6 +216,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
                 }
             }
         }
+
+        UART_ax100_last_write_time_ms = HAL_GetTick();
     
         HAL_UART_Receive_IT(UART_ax100_port_handle, (uint8_t*) &UART_ax100_buffer_last_rx_byte, 1);
     }

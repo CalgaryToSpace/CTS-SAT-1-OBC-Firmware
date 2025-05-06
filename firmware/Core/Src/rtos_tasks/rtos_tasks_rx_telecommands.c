@@ -17,6 +17,9 @@
 #include <stdio.h>
 #include <time.h>
 
+/// @brief The system uptime, as of the last time a telecommand was received by the AX100 (and sent to OBC via KISS)
+uint32_t AX100_uptime_at_last_received_kiss_tcmd_ms = 0;
+
 typedef enum {
     TCMD_CHECK_STATUS_NO_TCMD = 0,
     TCMD_CHECK_STATUS_TCMD_SCHEDULED = 1,
@@ -139,6 +142,8 @@ static TCMD_check_result_enum_t check_for_and_handle_new_uart_tcmds() {
     // Add the telecommand to the agenda (regardless of whether it's in the future).
     TCMD_add_tcmd_to_agenda(&parsed_tcmd);
 
+    AX100_uptime_at_last_received_kiss_tcmd_ms = HAL_GetTick();
+
     return TCMD_CHECK_STATUS_TCMD_SCHEDULED;
 }
 
@@ -187,11 +192,11 @@ void TASK_handle_uart_telecommands(void *argument) {
 static TCMD_check_result_enum_t check_for_and_handle_new_ax100_kiss_tcmd(
     uint8_t csp_packet_array[], uint16_t csp_packet_array_len
 ) {
-    char latest_tcmd[UART_ax100_buffer_len];
+    char latest_tcmd[csp_packet_array_len];
     uint16_t latest_tcmd_len = 0;
     
     // Unnecessary, but good for safety.
-    memset(latest_tcmd, 0, UART_ax100_buffer_len);
+    memset(latest_tcmd, 0, csp_packet_array_len);
     latest_tcmd_len = 0; // 0 means no telecommand available (checked later).
 
     if (csp_packet_array_len == 0) {

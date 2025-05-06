@@ -24,9 +24,6 @@ extern volatile uint16_t UART_mpi_buffer_write_idx;             // Write index f
 extern volatile uint32_t UART_mpi_last_write_time_ms;           // Last write time in milliseconds for MPI response
 extern volatile uint8_t UART_mpi_last_rx_byte;                  // Last received byte from the MPI response
 
-extern const uint16_t UART_ax100_buffer_len;                  // Length of the AX100 response buffer
-extern volatile uint8_t UART_ax100_buffer[];                  // Buffer for AX100 response
-extern volatile uint16_t UART_ax100_buffer_write_idx;         // Write index for AX100 response buffer
 extern volatile uint32_t UART_ax100_last_write_time_ms;       // Last write time in milliseconds for AX100 response
 
 extern const uint16_t UART_gps_buffer_len;                      // Length of the GPS response buffer
