@@ -53,7 +53,7 @@ extern volatile uint8_t UART_gps_uart_interrupt_enabled; // Flag to enable or di
 
 
 #define AX100_MAX_KISS_FRAMES_IN_RX_QUEUE  8
-#define AX100_MAX_KISS_FRAME_SIZE_BYTES    500 // Should actually be 256, I'm pretty sure.
+#define AX100_MAX_KISS_FRAME_SIZE_BYTES    500 // Could be as low as 256, probably.
 
 typedef struct {
     uint8_t data[AX100_MAX_KISS_FRAME_SIZE_BYTES];
