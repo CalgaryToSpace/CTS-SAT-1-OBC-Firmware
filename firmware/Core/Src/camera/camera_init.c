@@ -16,7 +16,7 @@
 #include "camera_init.h"
 
 /// @brief Timeout duration for camera receive in milliseconds
-static const uint32_t CAMERA_RX_TOTAL_TIMEOUT_DURATION_MS = 8000;
+static const uint32_t CAMERA_RX_TOTAL_TIMEOUT_DURATION_MS = 12000;
 
 
 /// @brief Changes the baudrate of the camera by sending it a UART command, and then changing the
@@ -253,6 +253,13 @@ uint8_t CAM_receive_image(lfs_file_t* img_file) {
             );
             DEBUG_uart_print_str("\n");
 
+
+            DEBUG_uart_print_str("Last sentence half 2: ");
+            const uint16_t last_sentence_start = CAM_SENTENCE_LEN * (CAM_SENTENCES_PER_HALF_CALLBACK - 1); 
+            DEBUG_uart_print_str_max_len(
+                (const char*)UART_camera_pending_fs_write_half_2_buf + last_sentence_start, CAM_SENTENCE_LEN
+            );
+            DEBUG_uart_print_str("\n");
             // Write data to file
             const lfs_ssize_t write_result = lfs_file_write(
                 &LFS_filesystem, img_file,
@@ -313,7 +320,7 @@ uint8_t CAM_receive_image(lfs_file_t* img_file) {
             (const char *)UART_camera_dma_buffer, CAM_SENTENCE_LEN);
         uint16_t bytes_to_write = 0;
         
-        for (uint16_t i = 0; i < CAM_SENTENCE_LEN * CAM_SENTENCES_PER_HALF_CALLBACK; i++)
+        for (uint16_t i = 0; i < UART_camera_buffer_len / 2; i++)
         {
             uint8_t data = UART_camera_dma_buffer[i];
             if (data == '\0')
@@ -344,7 +351,7 @@ uint8_t CAM_receive_image(lfs_file_t* img_file) {
     }
     
 
-    starts_with_null_terminator = UART_camera_dma_buffer[CAM_SENTENCE_LEN*CAM_SENTENCES_PER_HALF_CALLBACK] == '\0';
+    starts_with_null_terminator = UART_camera_dma_buffer[UART_camera_buffer_len / 2] == '\0';
 
     if (starts_with_null_terminator == 0) {
         // Print 2nd half
@@ -354,13 +361,13 @@ uint8_t CAM_receive_image(lfs_file_t* img_file) {
             CAM_SENTENCE_LEN);
         uint16_t bytes_to_write = 0;
 
-        for (uint16_t j = CAM_SENTENCE_LEN * CAM_SENTENCES_PER_HALF_CALLBACK; j < UART_camera_buffer_len; j++)
+        for (uint16_t j = UART_camera_buffer_len / 2; j < UART_camera_buffer_len; j++)
         {
             uint8_t data = UART_camera_dma_buffer[j];
             if (data == '\0') {
                 break;
             }
-            UART_camera_pending_fs_write_half_2_buf[j] = UART_camera_dma_buffer[j];
+            UART_camera_pending_fs_write_half_2_buf[j - UART_camera_buffer_len / 2 ] = UART_camera_dma_buffer[j];
             bytes_to_write++;
         }
         // write the second half to the file
