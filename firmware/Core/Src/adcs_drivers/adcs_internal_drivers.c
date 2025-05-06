@@ -4,6 +4,8 @@
 #include "adcs_drivers/adcs_types_to_json.h"
 #include "adcs_drivers/adcs_commands.h"
 #include "adcs_drivers/adcs_internal_drivers.h"
+#include "comms_drivers/i2c_sharing.h"
+
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -78,8 +80,6 @@ uint8_t ADCS_i2c_request_telemetry_and_check(uint8_t id, uint8_t* data, uint32_t
 /// @param[in] include_checksum Tells the ADCS whether to use a CRC8 checksum; should be either ADCS_INCLUDE_CHECKSUM or ADCS_NO_CHECKSUM 
 /// @return 0 if successful, 4 if the checksums don't match, other numbers if the HAL failed to transmit or receive data.
 uint8_t ADCS_send_i2c_telecommand(uint8_t id, uint8_t* data, uint32_t data_length, uint8_t include_checksum) {
-    uint8_t ADCS_CMD_status; 
-    
     // allocate only required memory
     uint8_t buf[data_length + include_checksum]; // add additional bit for checksum if needed
 
@@ -91,7 +91,11 @@ uint8_t ADCS_send_i2c_telecommand(uint8_t id, uint8_t* data, uint32_t data_lengt
     // include checksum following data if enabled
     if (include_checksum) {buf[data_length] = ADCS_calculate_crc8_checksum(data, data_length);}
 
-    ADCS_CMD_status = HAL_I2C_Mem_Write(ADCS_i2c_HANDLE, ADCS_i2c_ADDRESS << 1, id, 1, buf, sizeof(buf), ADCS_HAL_TIMEOUT);
+    I2C_borrow_bus_1();
+    const uint8_t ADCS_CMD_status = HAL_I2C_Mem_Write(
+        ADCS_i2c_HANDLE, ADCS_i2c_ADDRESS << 1, id, 1, buf, sizeof(buf), ADCS_HAL_TIMEOUT
+    );
+    I2C_done_borrowing_bus_1();
 
     /* When sending a command to the CubeACP, it is possible to include an 8-bit CRC checksum.
     For instance, when sending a command that has a length of 8 bytes, it is possible to include a
@@ -118,17 +122,21 @@ uint8_t ADCS_send_i2c_telemetry_request(uint8_t id, uint8_t* data, uint32_t data
     /* When requesting telemetry through I2C, it is possible to read one extra byte past the allowed
     length of the telemetry frame. In this case, the extra byte will also be an 8-bit checksum
     computed by the CubeACP and can be used by the interfacing OBC to validate the message.*/
-    uint8_t adcs_tlm_status;
 
     // Allocate only required memory
     uint8_t temp_data[data_length + include_checksum];
         // temp data used for checksum checking
 
-    adcs_tlm_status = HAL_I2C_Mem_Read(ADCS_i2c_HANDLE, ADCS_i2c_ADDRESS << 1, id, 1, temp_data, sizeof(temp_data), ADCS_HAL_TIMEOUT);
+    // Send telemetry request
+    I2C_borrow_bus_1();
+    const uint8_t adcs_tlm_status = HAL_I2C_Mem_Read(
+        ADCS_i2c_HANDLE, ADCS_i2c_ADDRESS << 1, id, 1, temp_data, sizeof(temp_data), ADCS_HAL_TIMEOUT
+    );
+    I2C_done_borrowing_bus_1();
 
     for (uint32_t i = 0; i < data_length; i++) {
-            // populate external data, except for checksum byte
-            data[i] = temp_data[i];
+        // populate external data, except for checksum byte
+        data[i] = temp_data[i];
     }
 
     if (include_checksum) {

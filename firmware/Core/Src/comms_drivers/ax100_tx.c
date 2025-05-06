@@ -1,6 +1,7 @@
 #include "main.h"
 #include "comms_drivers/ax100_tx.h"
 #include "comms_drivers/ax100_hw.h"
+#include "comms_drivers/i2c_sharing.h"
 #include "log/log.h"
 #include "debug_tools/debug_uart.h"
 
@@ -52,6 +53,8 @@ static void prepend_csp_header(uint8_t *destination, uint8_t *data, uint32_t dat
 /// @brief Send a csp packet over i2c to the AX100 for downlink.
 /// @note Only use in this file.
 static uint8_t send_bytes_to_ax100(uint8_t *packet, uint16_t packet_size) {
+    I2C_borrow_bus_1();
+
     const HAL_StatusTypeDef status = HAL_I2C_Master_Transmit(
         AX100_I2C_HANDLE,
         AX100_I2C_ADDR << 1, 
@@ -59,6 +62,7 @@ static uint8_t send_bytes_to_ax100(uint8_t *packet, uint16_t packet_size) {
         packet_size, 
         AX100_i2c_tx_timeout_ms
     );
+    I2C_done_borrowing_bus_1();
     
     if (status != HAL_OK) {
         LOG_message(

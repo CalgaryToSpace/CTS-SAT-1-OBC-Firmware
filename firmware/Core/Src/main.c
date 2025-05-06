@@ -34,6 +34,7 @@
 #include "adcs_drivers/adcs_commands.h"
 #include "littlefs/flash_driver.h"
 #include "system/system_bootup.h"
+#include "comms_drivers/i2c_sharing.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -273,7 +274,7 @@ int main(void)
   FLASH_deactivate_chip_select();
 
   // Begin listening for ax100 packets
-  HAL_I2C_EnableListen_IT(&hi2c1);
+  I2C_init_bus_1_interrupt_for_rx();
 
   // Initialize the ADCS CRC8 checksum, clock, and LittleFS directory (required for ADCS operation).
   ADCS_initialize(); // TODO: LittleFS must be formatted and mounted, and system time must be set, before this command is run

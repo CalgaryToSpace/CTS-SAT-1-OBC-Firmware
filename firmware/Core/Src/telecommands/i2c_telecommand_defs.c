@@ -1,4 +1,6 @@
 #include "telecommands/i2c_telecommand_defs.h"
+#include "comms_drivers/i2c_sharing.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -45,6 +47,11 @@ uint8_t TCMDEXEC_scan_i2c_bus_verbose(
     uint8_t count_busy = 0;
     uint8_t count_misc = 0;
 
+    if (bus_to_scan == 1) {
+        // Borrow the bus for a short time
+        I2C_borrow_bus_1();
+    }
+
     // Go through all possible i2c addresses
     for (uint16_t i = 0; i < 128; i++) {
         const HAL_StatusTypeDef i2c_device_status = HAL_I2C_IsDeviceReady(hi2c, (i<<1), I2C_scan_number_of_trials, I2C_scan_timeout_ms);
@@ -85,6 +92,8 @@ uint8_t TCMDEXEC_scan_i2c_bus_verbose(
         strncat(response_output_buf, msg, remaining_space);
     }
 
+    I2C_done_borrowing_bus_1();
+
     // Add counts to the end of the response.
     snprintf(
         &response_output_buf[strlen(response_output_buf)],
@@ -120,6 +129,11 @@ uint8_t TCMDEXEC_scan_i2c_bus(
     uint8_t state_counts[5] = {0}; // [OK, ERROR, BUSY, TIMEOUT, MISC]
     HAL_StatusTypeDef address_states[128];
 
+    if (bus_to_scan == 1) {
+        // Borrow the bus for a short time
+        I2C_borrow_bus_1();
+    }
+
     // Scan the bus
     for (uint16_t i = 0; i < 128; i++) {
         address_states[i] = HAL_I2C_IsDeviceReady(hi2c, (i<<1), I2C_scan_number_of_trials, I2C_scan_timeout_ms);
@@ -131,6 +145,8 @@ uint8_t TCMDEXEC_scan_i2c_bus(
             default: state_counts[4]++; break;
         }
     }
+
+    I2C_done_borrowing_bus_1();
 
     // Determine majority state
     uint8_t majority_state = 0;
@@ -174,6 +190,7 @@ uint8_t TCMDEXEC_scan_i2c_bus(
     const size_t remaining_space = response_output_buf_len - buf_len - 1;
     if (remaining_space > 0) {
         strncat(response_output_buf, "}", remaining_space);
-    }    
+    }
+    
     return 0;
 }
