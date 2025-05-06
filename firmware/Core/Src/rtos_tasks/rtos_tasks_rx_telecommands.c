@@ -202,11 +202,27 @@ static TCMD_check_result_enum_t check_for_and_handle_new_ax100_kiss_tcmd(
     // Example of nominal array state:
     // C0 00 C2 18 D1 00 43 54 53 31 2B 68 65 6C 6C 6F 5F 77 6F 72 6C 64 28 29 21 00 27 37 87 EC C0
     // [KISS][---CSP---] C  T  S  1  +  h  e  l  l  o  _  w  o  r  l  d  (  )  !  \0 [---CRC---] [KISS]
+    // By this function, csp_packet_array does not have the KISS header (except may start with 0x00).
+
+    if (csp_packet_array_len < 6) {
+        // If the packet is too short to contain a telecommand, discard it.
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Received too short of telecommand. Discarding incomplete telecommand."
+        );
+        return TCMD_CHECK_STATUS_TCMD_INVALID_AND_DISCARDED;
+    }
+
+    // Find starting index.
+    uint16_t start_idx = 4; // Skip 4 bytes of CSP header.
+    if (csp_packet_array[0] == 0) {
+        start_idx++; // Skip the KISS header.
+    }
     
     // Set `latest_tcmd_len` to the length of the telecommand.
     const int16_t idx_of_last_char_in_tcmd = GEN_get_index_of_substring_in_array(
-        (const char*)&csp_packet_array[4], // Skip the first 4 bytes of CSP header
-        csp_packet_array_len - 4,
+        (const char*)&csp_packet_array[start_idx], // Skip the first 4 bytes of CSP header
+        csp_packet_array_len - start_idx,
         "!"
     );
     if (idx_of_last_char_in_tcmd < 0) { // -1 indicates "string not found".
@@ -224,7 +240,7 @@ static TCMD_check_result_enum_t check_for_and_handle_new_ax100_kiss_tcmd(
     
     // `memcpy()`, but volatile-compatible.
     for (uint16_t i = 0; i < latest_tcmd_len; i++) {
-        latest_tcmd[i] = csp_packet_array[4 + i];
+        latest_tcmd[i] = csp_packet_array[start_idx + i];
     }
     // Set the null terminator at the end of the `latest_tcmd` str.
     latest_tcmd[latest_tcmd_len] = '\0';
@@ -232,6 +248,17 @@ static TCMD_check_result_enum_t check_for_and_handle_new_ax100_kiss_tcmd(
     if (latest_tcmd_len == 0) {
         return TCMD_CHECK_STATUS_NO_TCMD;
     }
+
+    #if 0
+    DEBUG_uart_print_mixed_array(
+        csp_packet_array, csp_packet_array_len,
+        "TCMD from AX100 (KISS + CSP + DATA): "
+    );
+    DEBUG_uart_print_mixed_array(
+        (const uint8_t*)latest_tcmd, latest_tcmd_len+1,
+        "TCMD from AX100 (DATA): "
+    );
+    #endif
 
     // Parse the telecommand
     TCMD_parsed_tcmd_to_execute_t parsed_tcmd;
