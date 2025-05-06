@@ -63,14 +63,14 @@ static uint8_t schedule_csp_packet_for_tcmd_execution(uint8_t * packet, size_t p
 }
 
 
-/// @brief A callback function that is called when the address of a transmission matches the address of the obc
+/// @brief ISR called when the address of a transmission matches the address of the OBC.
 void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode)
 {
     if (TransferDirection == I2C_DIRECTION_TRANSMIT)  // If the AX100 (acting as master) wants to transmit the data.
     {
         LOG_message(
             LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
-            "HAL_I2C_AddrCallback() [first byte rx'd], I2C_DIRECTION_TRANSMIT"
+            "HAL_I2C_AddrCallback() [starting rx transaction], I2C_DIRECTION_TRANSMIT"
         );
 
         // The I2C_FIRST_FRAME implies that the first byte is to be received
@@ -84,7 +84,7 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, ui
 }
 
 
-/// @brief A callback function that is called when transmission of the data from the master is complete (at the very end of transmission when the last byte is received!)
+/// @brief ISR called when transmission of the data from the master is complete (at the very end of transmission when the last byte is received!)
 /// @param hi2c  the I2C handle
 void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *hi2c) {
     // LOG_message(
@@ -102,7 +102,7 @@ void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *hi2c) {
     HAL_I2C_EnableListen_IT(hi2c);
 }
 
-/// @brief A callback function that is called when a single byte is successfully received
+/// @brief ISR called when a single byte is successfully received
 void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c) {
     AX100_rx_buffer[AX100_rx_buffer_write_idx++] = AX100_last_byte_rx;
 
