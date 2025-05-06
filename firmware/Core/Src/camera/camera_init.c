@@ -296,7 +296,7 @@ uint8_t CAM_receive_image(lfs_file_t* img_file) {
 
     LOG_message(
         LOG_SYSTEM_BOOM, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_FILE),
-        "Camera receive loop finished. Total bytes written: %ld", total_bytes_written
+        "Total bytes written after loop: %ld", total_bytes_written
     );
 
     // Try to read any remaining data in the DMA buffer.

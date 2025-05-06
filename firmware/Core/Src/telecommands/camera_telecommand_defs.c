@@ -2,6 +2,7 @@
 #include "telecommands/camera_telecommand_defs.h"
 #include "config/configuration.h"
 #include "camera/camera_init.h"
+#include "log/log.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -17,6 +18,18 @@ uint8_t TCMDEXEC_camera_setup(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len)
 {
+    // First, set baudrate to 115200 to reset the camera
+    // This is to avoid the camera stalling and being in a weird state
+    const uint8_t baudrate_status = CAM_change_baudrate(115200);
+    if (baudrate_status != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error changing camera baudrate to 115200. Error code %d",
+            baudrate_status
+        );
+        return baudrate_status;
+    }
+
     const uint8_t setup_status = CAM_setup();
 
     if (setup_status != 0) {
@@ -49,6 +62,14 @@ uint8_t TCMDEXEC_camera_test(
             response_output_buf, response_output_buf_len, "Camera test failed. CAM_test -> %d",
             test_return
         );
+        LOG_message(
+            LOG_SYSTEM_BOOM, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "If this repeatadly fails, do the following:\n"
+            "1. Turn off the EPS channel for the camera.\n"
+            "2. Wait a minute.\n"
+            "3. Manually change the baudrate of the camera to 115200.\n"
+            "4. Start the process again from camera_setup.");
+
         return test_return;
     }
 
@@ -109,18 +130,25 @@ uint8_t TCMDEXEC_camera_capture(const char *args_str, TCMD_TelecommandChannel_en
         return 1;
     }
 
-    enum CAM_capture_status_enum img = CAM_capture_image("image.ascii", lighting[0]);
+    CAM_capture_status_enum img_status = CAM_capture_image("image.ascii", lighting[0]);
 
-    if (img == CAM_CAPTURE_STATUS_WRONG_INPUT){
-        snprintf(response_output_buf, response_output_buf_len, "Wrong lighting input.\n");
-        return 1;
-    }
-    else if (img == CAM_CAPTURE_STATUS_CAPTURE_FAILURE){
-        snprintf(response_output_buf, response_output_buf_len, "Camera Capture Failure\n");
-        return 1;
+    if (img_status != CAM_CAPTURE_STATUS_TRANSMIT_SUCCESS) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            img_status == CAM_CAPTURE_STATUS_WRONG_INPUT ?
+            "Error: Wrong lighting input.\n" :
+            "Error: Camera Capture Failure.\n"
+        );
+        LOG_message(
+            LOG_SYSTEM_BOOM, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "If this repeatadly fails, do the following:\n"
+            "1. Turn off the EPS channel for the camera.\n"
+            "2. Wait a minute.\n"
+            "3. Manually change the baudrate of the camera to 115200.\n"
+            "4. Start the process again from camera_setup.");
+        return img_status;
     }
 
-    // snprintf(response_output_buf, response_output_buf_len, "SUCCESS: Set config var: %s to: %lu", config_var_name, (uint32_t)config_var_new_value);
     snprintf(response_output_buf, response_output_buf_len, "Successfully captured image\n");
     return 0;
 }
