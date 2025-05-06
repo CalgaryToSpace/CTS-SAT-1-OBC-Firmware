@@ -54,6 +54,21 @@ extern volatile uint32_t UART_gps_last_write_time_ms;
 extern volatile uint8_t UART_gps_buffer_last_rx_byte;  
 extern volatile uint8_t UART_gps_uart_interrupt_enabled; // Flag to enable or disable the UART GPS ISR
 
+
+#define AX100_MAX_KISS_FRAMES_IN_RX_QUEUE  8
+#define AX100_MAX_KISS_FRAME_SIZE_BYTES    500 // Should actually be 256, I'm pretty sure.
+
+typedef struct {
+    uint8_t data[AX100_MAX_KISS_FRAME_SIZE_BYTES];
+    uint16_t len;
+} AX100_kiss_frame_struct_t;
+
+extern volatile AX100_kiss_frame_struct_t UART_AX100_kiss_frame_queue[AX100_MAX_KISS_FRAMES_IN_RX_QUEUE];
+extern volatile uint8_t UART_AX100_kiss_frame_queue_head;
+extern volatile uint8_t UART_AX100_kiss_frame_queue_tail;
+
+
+
 void UART_init_uart_handlers(void);
 void GPS_set_uart_interrupt_state(uint8_t new_enabled) ;
 

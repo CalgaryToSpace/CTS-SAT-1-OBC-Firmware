@@ -181,14 +181,12 @@ void TASK_handle_uart_telecommands(void *argument) {
 
 /// @brief Checks for an available telecommand in the UART buffer, and schedules it for execution.
 /// @return 0 if no telecommand was available; 1 if a telecommand was found and executed.
+/// @param csp_packet_array The CSP packet to read, starting with 4 bytes of CSP, and reading until null-termination after the CSP header.
+/// @param csp_packet_array_len The length of the `csp_packet_array`.
 /// @note This function is only used in this file.
-/// @note Global extern variables used:
-///     - UART_ax100_buffer
-///     - UART_ax100_buffer_write_idx
-///     - UART_ax100_last_write_time_ms
-static TCMD_check_result_enum_t check_for_and_handle_new_ax100_kiss_tcmds() {
-    const uint32_t timeout_duration_ms = 100; // CONFIGURATION PARAMETER
-
+static TCMD_check_result_enum_t check_for_and_handle_new_ax100_kiss_tcmd(
+    uint8_t csp_packet_array[], uint16_t csp_packet_array_len
+) {
     char latest_tcmd[UART_ax100_buffer_len];
     uint16_t latest_tcmd_len = 0;
     
@@ -196,20 +194,7 @@ static TCMD_check_result_enum_t check_for_and_handle_new_ax100_kiss_tcmds() {
     memset(latest_tcmd, 0, UART_ax100_buffer_len);
     latest_tcmd_len = 0; // 0 means no telecommand available (checked later).
 
-    // Debugging: Log the state of the AX100 UART buffer (esp. to view KISS parts).
-    #if 1
-    char msg[256];
-    snprintf(
-        msg, sizeof(msg),
-        "AX100 telecommand buffer: write_index=%d, a=%lums:\n",
-        UART_ax100_buffer_write_idx, UART_ax100_last_write_time_ms
-    );
-    DEBUG_uart_print_str(msg);
-    DEBUG_uart_print_array_hex((const uint8_t*) UART_ax100_buffer, UART_ax100_buffer_write_idx);
-    DEBUG_uart_print_str("\n");
-    #endif
-
-    if (UART_ax100_buffer_write_idx == 0) {
+    if (csp_packet_array_len == 0) {
         // If we haven't received any telecommands, there is nothing to do here.
         return TCMD_CHECK_STATUS_NO_TCMD;
     }
@@ -218,65 +203,18 @@ static TCMD_check_result_enum_t check_for_and_handle_new_ax100_kiss_tcmds() {
     // C0 00 C2 18 D1 00 43 54 53 31 2B 68 65 6C 6C 6F 5F 77 6F 72 6C 64 28 29 21 00 27 37 87 EC C0
     // [KISS][---CSP---] C  T  S  1  +  h  e  l  l  o  _  w  o  r  l  d  (  )  !  \0 [---CRC---] [KISS]
     
-    // First, find the start-of-command delimiter.
-    const uint8_t start_of_command_delim[] = { 0xC0, 0x00 };
-    const int32_t start_of_command_idx = GEN_get_index_of_subarray_in_array(
-        (const uint8_t*) UART_ax100_buffer, UART_ax100_buffer_write_idx,
-        start_of_command_delim, sizeof(start_of_command_delim)
-    );
-    if (start_of_command_idx < 0) {
-        // If there's no start-of-command delimiter, discard the current garbage.
-        LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "AX100 KISS buffer is missing start-of-command delimiter. Discarding garbage (%d bytes).",
-            UART_ax100_buffer_write_idx
-        );
-        UART_ax100_buffer_write_idx = 0;
-
-        return TCMD_CHECK_STATUS_TCMD_INVALID_AND_DISCARDED;
-    }
-
-    if (
-        // If the end-of-message character was NOT received:
-        GEN_get_index_of_substring_in_array(
-            (char*) UART_ax100_buffer,
-            UART_ax100_buffer_write_idx,
-            "!"
-        ) < 0
-    ) {
-        // If timed out on reception:
-        if (HAL_GetTick() - UART_ax100_last_write_time_ms > timeout_duration_ms) {
-            // If the telecommand is not complete, discard it.
-
-            // Null-terminate the string, then log it.
-            UART_ax100_buffer[UART_ax100_buffer_write_idx] = '\0';
-            LOG_message(
-                LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-                "Received incomplete telecommand. Discarding incomplete telecommand: '%s'",
-                UART_ax100_buffer
-            );
-            UART_ax100_buffer_write_idx = 0;
-            return TCMD_CHECK_STATUS_TCMD_INVALID_AND_DISCARDED;
-        }
-        else {
-            // Keep waiting for a timeout or a complete telecommand.
-            return TCMD_CHECK_STATUS_NO_TCMD;
-        }
-    }
-
     // Set `latest_tcmd_len` to the length of the telecommand.
     const int16_t idx_of_last_char_in_tcmd = GEN_get_index_of_substring_in_array(
-        (char*) UART_ax100_buffer,
-        UART_ax100_buffer_write_idx,
+        (const char*)&csp_packet_array[4], // Skip the first 4 bytes of CSP header
+        csp_packet_array_len - 4,
         "!"
     );
     if (idx_of_last_char_in_tcmd < 0) { // -1 indicates "string not found".
         // If the telecommand is not complete, discard it.
         LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_CRITICAL, LOG_SINK_ALL,
-            "Should not happen: incomplete telecommand. Discarding incomplete telecommand."
+            "Incomplete telecommand received from AX100. Discarding incomplete telecommand."
         );
-        UART_ax100_buffer_write_idx = 0;
         return TCMD_CHECK_STATUS_TCMD_INVALID_AND_DISCARDED;
     }
     else {
@@ -286,24 +224,10 @@ static TCMD_check_result_enum_t check_for_and_handle_new_ax100_kiss_tcmds() {
     
     // `memcpy()`, but volatile-compatible.
     for (uint16_t i = 0; i < latest_tcmd_len; i++) {
-        latest_tcmd[i] = (char) UART_ax100_buffer[i];
+        latest_tcmd[i] = csp_packet_array[4 + i];
     }
     // Set the null terminator at the end of the `latest_tcmd` str.
     latest_tcmd[latest_tcmd_len] = '\0';
-
-    // Shift or clear the buffer.
-    if (latest_tcmd_len == UART_ax100_buffer_write_idx) {
-        // If the telecommand is the whole buffer, simply clear the buffer.
-        UART_ax100_buffer_write_idx = 0;
-    }
-    else {
-        // Shift the buffer to the left by `latest_tcmd_len` bytes. Can't use memcpy.
-        for (uint16_t i = latest_tcmd_len; i < UART_ax100_buffer_write_idx; i++) {
-            UART_ax100_buffer[i - latest_tcmd_len] = (char) UART_ax100_buffer[i];
-        }
-        // Update the write index.
-        UART_ax100_buffer_write_idx -= latest_tcmd_len;
-    }
 
     if (latest_tcmd_len == 0) {
         return TCMD_CHECK_STATUS_NO_TCMD;
@@ -337,29 +261,15 @@ void TASK_handle_ax100_kiss_telecommands(void *argument) {
         osDelay(400);
 
         // Continue checking and scheduling telecommands until there are no more to process.
-        while (1) {
-            const TCMD_check_result_enum_t check_result = check_for_and_handle_new_ax100_kiss_tcmds();
+        while (UART_AX100_kiss_frame_queue_tail != UART_AX100_kiss_frame_queue_head) {
+            AX100_kiss_frame_struct_t *f = (AX100_kiss_frame_struct_t*)&UART_AX100_kiss_frame_queue[UART_AX100_kiss_frame_queue_tail];
+            
+            check_for_and_handle_new_ax100_kiss_tcmd(
+                f->data, f->len
+            );
+            // Don't bother checking the result; keep processing all queued frames.
 
-            if (check_result == TCMD_CHECK_STATUS_NO_TCMD) {
-                break;
-            }
-            else if (check_result == TCMD_CHECK_STATUS_TCMD_SCHEDULED) {
-                // Nothing to do. Keep looping.
-                continue;
-            }
-            else if (check_result == TCMD_CHECK_STATUS_TCMD_INVALID_AND_DISCARDED) {
-                // Could either continue OR break here. Will break though, which just means that
-                // rapid invalid telecommands will get parsed rather slowly.
-                break;
-            }
-            else {
-                // This should never happen.
-                LOG_message(
-                    LOG_SYSTEM_OBC, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-                    "Error: check_for_and_handle_new_ax100_kiss_tcmds() returned an invalid value: %u",
-                    check_result
-                );
-            }
+            UART_AX100_kiss_frame_queue_tail = (UART_AX100_kiss_frame_queue_tail + 1) % AX100_MAX_KISS_FRAMES_IN_RX_QUEUE;
         }
     } /* End Task's Main Loop */
 }
