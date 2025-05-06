@@ -15,6 +15,15 @@ UART_error_counts_single_subsystem_struct_t UART_error_mpi_error_info = {
     .receiver_timeout_error_count = 0,
 };
 
+UART_error_counts_single_subsystem_struct_t UART_error_ax100_error_info = {
+    .parity_error_count = 0,
+    .noise_error_count = 0,
+    .frame_error_count = 0,
+    .overrun_error_count = 0,
+    .dma_transfer_error_count = 0,
+    .receiver_timeout_error_count = 0,
+};
+
 UART_error_counts_single_subsystem_struct_t UART_error_gps_error_info = {
     .parity_error_count = 0,
     .noise_error_count = 0,
@@ -68,6 +77,8 @@ void UART_track_error_from_isr(USART_TypeDef *huart_instance, uint32_t error_cod
 
     if (huart_instance == UART_mpi_port_handle->Instance) {
         error_info_struct = &UART_error_mpi_error_info;
+    } else if (huart_instance == UART_ax100_port_handle->Instance) {
+        error_info_struct = &UART_error_ax100_error_info;
     } else if (huart_instance == UART_gps_port_handle->Instance) {
         error_info_struct = &UART_error_gps_error_info;
     } else if (huart_instance == UART_camera_port_handle->Instance) {
@@ -100,9 +111,9 @@ void UART_track_error_from_isr(USART_TypeDef *huart_instance, uint32_t error_cod
         error_info_struct->receiver_timeout_error_count++;
     }
 
-    // The handler_buffer_full_error_count is a custom error that we define
-    // to track if the buffer in the ISR handler becomes full
-    // Thus, it will be manully incremented in the HAL_UART_RxCpltCallback function
+    // The `handler_buffer_full_error_count` is a custom error that we define
+    // to track if the buffer in the ISR handler becomes full.
+    // Thus, it will be manully incremented in the HAL_UART_RxCpltCallback function.
 }
 
 
@@ -148,6 +159,13 @@ uint8_t UART_get_errors_json(char *json_buf, uint16_t json_buf_len)
     memset(buf, 0, sizeof(buf));
     if (UART_single_subsystem_error_info_to_json(&UART_error_mpi_error_info, buf, sizeof(buf))) { return 3;}
     written = snprintf(json_buf + offset, json_buf_len - offset, "\"mpi_errors\":%s", buf);
+    if (written < 0 || written >= json_buf_len - offset) { return 4;}
+    offset += written;
+
+    // --- Append ax100_errors ---
+    memset(buf, 0, sizeof(buf));
+    if (UART_single_subsystem_error_info_to_json(&UART_error_ax100_error_info, buf, sizeof(buf))) { return 3;}
+    written = snprintf(json_buf + offset, json_buf_len - offset, ",\"ax100_errors\":%s", buf);
     if (written < 0 || written >= json_buf_len - offset) { return 4;}
     offset += written;
 

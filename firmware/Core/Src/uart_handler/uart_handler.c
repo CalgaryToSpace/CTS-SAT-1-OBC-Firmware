@@ -287,6 +287,11 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
         HAL_UART_Receive_DMA(UART_mpi_port_handle, (uint8_t*)&UART_mpi_last_rx_byte, 1);
     }
 
+    // Reception Error callback for AX100 UART port
+    if (huart->Instance == UART_ax100_port_handle->Instance) {
+        HAL_UART_Receive_IT(UART_ax100_port_handle, (uint8_t*)&UART_ax100_buffer_last_rx_byte, 1);
+    }
+
     // Reception Error callback for GPS UART port
     if (huart->Instance == UART_gps_port_handle->Instance) {
         if (UART_gps_uart_interrupt_enabled == 1) {

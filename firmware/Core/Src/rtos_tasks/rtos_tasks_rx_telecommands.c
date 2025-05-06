@@ -9,6 +9,7 @@
 #include "uart_handler/uart_handler.h"
 #include "transforms/arrays.h"
 #include "log/log.h"
+#include "debug_tools/debug_uart.h"
 
 #include "cmsis_os.h"
 
@@ -195,10 +196,18 @@ static TCMD_check_result_enum_t check_for_and_handle_new_ax100_kiss_tcmds() {
     memset(latest_tcmd, 0, UART_ax100_buffer_len);
     latest_tcmd_len = 0; // 0 means no telecommand available (checked later).
 
-    // Debugging: Log the state of the UART buffer.
-    // char msg[256];
-    // snprintf(msg, sizeof(msg), "UART telecommand buffer: write_index=%d, last_time=%lums\n", UART_ax100_buffer_write_idx, UART_ax100_last_write_time_ms);
-    // DEBUG_uart_print_str(msg);
+    // Debugging: Log the state of the AX100 UART buffer (esp. to view KISS parts).
+    #if 0
+    char msg[256];
+    snprintf(
+        msg, sizeof(msg),
+        "AX100 telecommand buffer: write_index=%d, a=%lums:\n",
+        UART_ax100_buffer_write_idx, UART_ax100_last_write_time_ms
+    );
+    DEBUG_uart_print_str(msg);
+    DEBUG_uart_print_array_hex((const uint8_t*) UART_ax100_buffer, UART_ax100_buffer_write_idx);
+    DEBUG_uart_print_str("\n");
+    #endif
 
     if (UART_ax100_buffer_write_idx == 0) {
         // If we haven't received any telecommands, there is nothing to do here.
