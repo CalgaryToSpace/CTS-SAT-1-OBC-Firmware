@@ -9,6 +9,7 @@
 // Name the UART interfaces
 UART_HandleTypeDef *UART_telecommand_port_handle = &hlpuart1;
 UART_HandleTypeDef *UART_mpi_port_handle = &huart1;
+UART_HandleTypeDef *UART_ax100_port_handle = &huart2;
 UART_HandleTypeDef *UART_gps_port_handle = &huart3;
 UART_HandleTypeDef *UART_camera_port_handle = &huart4;
 UART_HandleTypeDef *UART_eps_port_handle = &huart5;
@@ -27,6 +28,13 @@ volatile uint8_t UART_mpi_buffer[256];                      // extern
 volatile uint8_t UART_mpi_last_rx_byte = 0;                 // extern
 volatile uint32_t UART_mpi_last_write_time_ms = 0;          // extern
 volatile uint16_t UART_mpi_buffer_write_idx = 0;            // extern
+
+// UART AX100 buffer
+const uint16_t UART_ax100_buffer_len = 512;                 // extern
+volatile uint8_t UART_ax100_buffer[512];                    // extern
+volatile uint16_t UART_ax100_buffer_write_idx = 0;          // extern
+volatile uint32_t UART_ax100_last_write_time_ms = 0;        // extern
+volatile uint8_t UART_ax100_buffer_last_rx_byte = 0;       // extern
 
 // UART CAMERA buffer
 // TODO: Configure with peripheral required specifications
@@ -122,6 +130,32 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         else {
             DEBUG_uart_print_str("Unhandled MPI Mode\n"); //TODO: HANDLE other MPI MODES
         }
+    }
+
+    else if (huart->Instance == UART_ax100_port_handle->Instance) {
+        // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> AX100 Data\n");
+
+        // Check if buffer is full
+        if (UART_ax100_buffer_write_idx >= UART_ax100_buffer_len) {
+            UART_error_mpi_error_info.handler_buffer_full_error_count++; // Track the error.
+
+            // Shift all bytes left by 1
+            for(uint16_t i = 1; i < UART_ax100_buffer_len; i++) {
+                UART_ax100_buffer[i - 1] = UART_ax100_buffer[i];
+            }
+
+            // Reset to a valid index
+            UART_ax100_buffer_write_idx = UART_ax100_buffer_len - 1;
+        }
+
+        // Add the received byte to the buffer
+        UART_ax100_buffer[UART_ax100_buffer_write_idx++] = UART_ax100_buffer_last_rx_byte;
+        UART_ax100_last_write_time_ms = HAL_GetTick();
+
+        // FIXME: Implement KISS handling for control bytes in here.
+        
+        // Restart reception for next byte.
+        HAL_UART_Receive_IT(UART_ax100_port_handle, (uint8_t*) &UART_ax100_buffer_last_rx_byte, 1);
     }
 
     
@@ -276,6 +310,7 @@ void UART_init_uart_handlers(void) {
     // Enable the UART interrupt
     HAL_UART_Receive_IT(UART_telecommand_port_handle, (uint8_t*) &UART_telecommand_buffer_last_rx_byte, 1);
     HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t*) &UART_eps_buffer_last_rx_byte, 1);
+    HAL_UART_Receive_IT(UART_ax100_port_handle, (uint8_t*) &UART_ax100_buffer_last_rx_byte, 1);
 
     // GPS is not initialized as always-listening. It is enabled by the GPS telecommands.
     // Reason: The GPS has a mode where it spams null bytes, which can lock up the entire system.
