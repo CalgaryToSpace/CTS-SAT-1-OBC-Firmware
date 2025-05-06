@@ -8,8 +8,8 @@
 uint8_t TEST_EXEC__SYS_low_power_mode_error_enum_to_string(void)
 {
     // GPS
-    SYS_low_power_mode_error_enum_t gps_error = SYS_LOW_POWER_MODE_ERROR_GPS;
-    const char* gps_expected_string = "GPS";
+    SYS_low_power_mode_error_enum_t gps_error = SYS_LOW_POWER_MODE_ERROR_GNSS_3V3;
+    const char* gps_expected_string = "GNSS_3V3";
     const char* gps_str = SYS_low_power_mode_error_enum_to_string(gps_error);
     TEST_ASSERT(strcmp(gps_str, gps_expected_string) == 0);
 
@@ -32,8 +32,8 @@ uint8_t TEST_EXEC__SYS_low_power_mode_error_enum_to_string(void)
     TEST_ASSERT(strcmp(mpi_12v_str, mpi_12v_expected_string) == 0);
 
     // Camera
-    SYS_low_power_mode_error_enum_t camera_error = SYS_LOW_POWER_MODE_ERROR_CAMERA;
-    const char* camera_expected_string = "CAMERA";
+    SYS_low_power_mode_error_enum_t camera_error = SYS_LOW_POWER_MODE_ERROR_CAMERA_3V3;
+    const char* camera_expected_string = "CAMERA_3V3";
     const char* camera_str = SYS_low_power_mode_error_enum_to_string(camera_error);
     TEST_ASSERT(strcmp(camera_str, camera_expected_string) == 0);
 
@@ -65,10 +65,10 @@ uint8_t TEST_EXEC__SYS_low_power_mode_result_to_json(void)
     const char *all_success_json = 
     "{\"MPI_5V\":\"Successfully Disabled\", "
     "\"MPI_12V\":\"Successfully Disabled\", "
-    "\"CAMERA\":\"Successfully Disabled\", "
+    "\"CAMERA_3V3\":\"Successfully Disabled\", "
+    "\"GNSS_3V3\":\"Successfully Disabled\", "
     "\"BOOM_12V\":\"Successfully Disabled\", "
     "\"BOOM_PINS\":\"Successfully Disabled Boom Pins\", "
-    "\"GPS\":\"Successfully Set Low Power Mode\", "
     "\"ADCS\":\"Successfully Set Low Power Mode\"}";
 
     SYS_low_power_mode_error_enum_t all_success = 0;
@@ -82,18 +82,18 @@ uint8_t TEST_EXEC__SYS_low_power_mode_result_to_json(void)
     const char *all_error_json = 
     "{\"MPI_5V\":\"Error Disabling\", "
     "\"MPI_12V\":\"Error Disabling\", "
-    "\"CAMERA\":\"Error Disabling\", "
+    "\"CAMERA_3V3\":\"Error Disabling\", "
+    "\"GNSS_3V3\":\"Error Disabling\", "
     "\"BOOM_12V\":\"Error Disabling\", "
     "\"BOOM_PINS\":\"Error Disabling Boom Pins\", "
-    "\"GPS\":\"Error Setting Low Power Mode\", "
     "\"ADCS\":\"Error Setting Low Power Mode\"}";
 
     SYS_low_power_mode_error_enum_t all_error = SYS_LOW_POWER_MODE_ERROR_MPI_5V | 
                                                SYS_LOW_POWER_MODE_ERROR_MPI_12V | 
-                                               SYS_LOW_POWER_MODE_ERROR_CAMERA | 
+                                               SYS_LOW_POWER_MODE_ERROR_CAMERA_3V3 | 
+                                               SYS_LOW_POWER_MODE_ERROR_GNSS_3V3 | 
                                                SYS_LOW_POWER_MODE_ERROR_BOOM_12V | 
                                                SYS_LOW_POWER_MODE_ERROR_BOOM_PINS | 
-                                               SYS_LOW_POWER_MODE_ERROR_GPS | 
                                                SYS_LOW_POWER_MODE_ERROR_ADCS;
     uint8_t all_error_result = SYS_low_power_mode_result_to_json(all_error, buffer, sizeof(buffer));
     TEST_ASSERT(all_error_result == 0);
@@ -105,10 +105,10 @@ uint8_t TEST_EXEC__SYS_low_power_mode_result_to_json(void)
     const char *adcs_mpi12v_error_json = 
     "{\"MPI_5V\":\"Successfully Disabled\", "
     "\"MPI_12V\":\"Error Disabling\", "
-    "\"CAMERA\":\"Successfully Disabled\", "
+    "\"CAMERA_3V3\":\"Successfully Disabled\", "
+    "\"GNSS_3V3\":\"Successfully Disabled\", "
     "\"BOOM_12V\":\"Successfully Disabled\", "
     "\"BOOM_PINS\":\"Successfully Disabled Boom Pins\", "
-    "\"GPS\":\"Successfully Set Low Power Mode\", "
     "\"ADCS\":\"Error Setting Low Power Mode\"}";
 
     SYS_low_power_mode_error_enum_t adcs_mpi12v_error = SYS_LOW_POWER_MODE_ERROR_ADCS | SYS_LOW_POWER_MODE_ERROR_MPI_12V;
@@ -122,13 +122,13 @@ uint8_t TEST_EXEC__SYS_low_power_mode_result_to_json(void)
     const char *boom_gps_error_json = 
     "{\"MPI_5V\":\"Successfully Disabled\", "
     "\"MPI_12V\":\"Successfully Disabled\", "
-    "\"CAMERA\":\"Successfully Disabled\", "
+    "\"CAMERA_3V3\":\"Successfully Disabled\", "
+    "\"GNSS_3V3\":\"Error Disabling\", "
     "\"BOOM_12V\":\"Successfully Disabled\", "
     "\"BOOM_PINS\":\"Error Disabling Boom Pins\", "
-    "\"GPS\":\"Error Setting Low Power Mode\", "
     "\"ADCS\":\"Successfully Set Low Power Mode\"}";
 
-    SYS_low_power_mode_error_enum_t boom_gps_error = SYS_LOW_POWER_MODE_ERROR_BOOM_PINS | SYS_LOW_POWER_MODE_ERROR_GPS;
+    SYS_low_power_mode_error_enum_t boom_gps_error = SYS_LOW_POWER_MODE_ERROR_BOOM_PINS | SYS_LOW_POWER_MODE_ERROR_GNSS_3V3;
     uint8_t boom_gps_result = SYS_low_power_mode_result_to_json(boom_gps_error, buffer, sizeof(buffer));
     TEST_ASSERT(boom_gps_result == 0);
     TEST_ASSERT(strcmp(buffer, boom_gps_error_json) == 0);
@@ -143,7 +143,7 @@ uint8_t TEST_EXEC__SYS_low_power_mode_result_to_json(void)
 
     // Test case 5: Buffer too small
     char small_buffer[10] = {0};
-    SYS_low_power_mode_error_enum_t small_buffer_error = SYS_LOW_POWER_MODE_ERROR_GPS;
+    SYS_low_power_mode_error_enum_t small_buffer_error = SYS_LOW_POWER_MODE_ERROR_GNSS_3V3;
     uint8_t small_buffer_result = SYS_low_power_mode_result_to_json(small_buffer_error, small_buffer, sizeof(small_buffer));
     TEST_ASSERT(small_buffer_result == 1);
     TEST_ASSERT(strcmp(small_buffer, "") == 0); // Buffer should remain empty
