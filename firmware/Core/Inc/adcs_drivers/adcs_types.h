@@ -39,6 +39,9 @@ static const uint16_t ADCS_HAL_TIMEOUT = 1000;
 // define for SD bitmask array length
 #define ADCS_SD_LOG_BITFIELD_LENGTH_BYTES 10
 
+// define for HAL delay (ms) in commissioning mode setter function
+#define ADCS_COMMISSIONING_HAL_DELAY_MS 300
+
 /* Enumerated Values */
 
 // Telecommand Error Flags - Section 5.2.2 Figure 6 of Firmware Manual
@@ -150,7 +153,8 @@ typedef enum ADCS_axis_select_enum_t {
     ADCS_AXIS_SELECT_NEGATIVE_Y = 3,
     ADCS_AXIS_SELECT_POSITIVE_Z = 4,
     ADCS_AXIS_SELECT_NEGATIVE_Z = 5,
-    ADCS_AXIS_SELECT_NOT_USED = 6
+    ADCS_AXIS_SELECT_NOT_USED = 6,
+    ADCS_AXIS_SELECT_POSITIVE_XY_45_DEGREE = 7
 } ADCS_axis_select_enum_t;
 
 typedef enum ADCS_capture_result_enum_t {
@@ -264,8 +268,8 @@ typedef enum ADCS_commissioning_step_enum_t {
     ADCS_COMMISSIONING_STEP_EKF_ACTIVATION_SUN_AND_NADIR = 11,
     ADCS_COMMISSIONING_STEP_CUBESTAR_STAR_TRACKER = 12,
     ADCS_COMMISSIONING_STEP_EKF_ACTIVATION_WITH_STAR_VECTOR_MEASUREMENTS = 13,
-    ADCS_COMMISSIONING_STEP_ZERO_BIAS_3_AXIS_REACTION_WHEEL_CONTROL = 14,
-    ADCS_COMMISSIONING_STEP_EKF_WITH_RATE_GYRO_STAR_TRACKER_MEASUREMENTS = 15,
+    ADCS_COMMISSIONING_STEP_X_Z_WHEEL_POLARITY_TEST = 14,
+    ADCS_COMMISSIONING_STEP_3_AXIS_REACTION_WHEEL_CONTROL = 15,
     ADCS_COMMISSIONING_STEP_SUN_TRACKING_3_AXIS_CONTROL = 16,
     ADCS_COMMISSIONING_STEP_GROUND_TARGET_TRACKING_CONTROLLER = 17,
     ADCS_COMMISSIONING_STEP_GPS_RECEIVER = 18
@@ -422,7 +426,7 @@ typedef struct ADCS_estimation_params_struct_t {
     ADCS_magnetometer_mode_enum_t magnetometer_selection_for_raw_magnetometer_telemetry;
     bool automatic_estimation_transition_due_to_rate_sensor_errors:1; // 1-bit bool
     bool wheel_30s_power_up_delay:1; // 1-bit bool
-    uint8_t cam1_and_cam2_sampling_period;
+    uint8_t error_counter_reset_period_min;
 } ADCS_estimation_params_struct_t;
 
 typedef struct ADCS_augmented_sgp4_params_struct_t {
@@ -599,7 +603,7 @@ typedef struct ADCS_file_info_struct_t {
     ADCS_file_type_enum_t file_type;
     bool busy_updating:1; // 1-bit bool          
     uint32_t file_size;      
-    time_t file_date_time; 
+    uint32_t file_date_time_msdos; 
 } ADCS_file_info_struct_t;
 
 typedef struct ADCS_download_block_ready_struct_t {
