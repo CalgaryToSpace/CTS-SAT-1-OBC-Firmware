@@ -197,7 +197,7 @@ static TCMD_check_result_enum_t check_for_and_handle_new_ax100_kiss_tcmds() {
     latest_tcmd_len = 0; // 0 means no telecommand available (checked later).
 
     // Debugging: Log the state of the AX100 UART buffer (esp. to view KISS parts).
-    #if 0
+    #if 1
     char msg[256];
     snprintf(
         msg, sizeof(msg),
@@ -212,6 +212,28 @@ static TCMD_check_result_enum_t check_for_and_handle_new_ax100_kiss_tcmds() {
     if (UART_ax100_buffer_write_idx == 0) {
         // If we haven't received any telecommands, there is nothing to do here.
         return TCMD_CHECK_STATUS_NO_TCMD;
+    }
+
+    // Example of nominal array state:
+    // C0 00 C2 18 D1 00 43 54 53 31 2B 68 65 6C 6C 6F 5F 77 6F 72 6C 64 28 29 21 00 27 37 87 EC C0
+    // [KISS][---CSP---] C  T  S  1  +  h  e  l  l  o  _  w  o  r  l  d  (  )  !  \0 [---CRC---] [KISS]
+    
+    // First, find the start-of-command delimiter.
+    const uint8_t start_of_command_delim[] = { 0xC0, 0x00 };
+    const int32_t start_of_command_idx = GEN_get_index_of_subarray_in_array(
+        (const uint8_t*) UART_ax100_buffer, UART_ax100_buffer_write_idx,
+        start_of_command_delim, sizeof(start_of_command_delim)
+    );
+    if (start_of_command_idx < 0) {
+        // If there's no start-of-command delimiter, discard the current garbage.
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "AX100 KISS buffer is missing start-of-command delimiter. Discarding garbage (%d bytes).",
+            UART_ax100_buffer_write_idx
+        );
+        UART_ax100_buffer_write_idx = 0;
+
+        return TCMD_CHECK_STATUS_TCMD_INVALID_AND_DISCARDED;
     }
 
     if (
