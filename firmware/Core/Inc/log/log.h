@@ -52,7 +52,7 @@ enum {
     LOG_SYSTEM_ON = 1,
 };
 
-extern uint8_t LOG_toggled_sources[15];
+extern uint16_t LOG_sources_enabled;
 
 void LOG_message(
     LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_t sink_mask,

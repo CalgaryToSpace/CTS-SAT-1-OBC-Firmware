@@ -281,8 +281,8 @@ uint8_t TCMDEXEC_log_report_n_latest_messages_from_memory(const char *args_str, 
 /// - Arg 1: State 0: disable source logging, 1: enable source logging
 /// @note Valid string values for Arg 0: "obc", "uhf_radio", "umbilical_uart", "gps",
 ///     "mpi", "eps", "boom", "adcs", "lfs", "flash", "antenna_deploy", "log",
-///     "telecommand", "unit_test"
-uint8_t TCMDEXEC_toggle_source_logging(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+///     "telecommand", "unit_test" (case insensitive)
+uint8_t TCMDEXEC_log_set_logging_source_enabled(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
 
     char source[30];
@@ -305,15 +305,18 @@ uint8_t TCMDEXEC_toggle_source_logging(const char *args_str, TCMD_TelecommandCha
     if (LOG_source == LOG_SYSTEM_UNKNOWN) {
         snprintf(
             response_output_buf, response_output_buf_len,
-            "Error parsing channel arg: Unknown source %s", source);
+            "Error parsing source arg: Unknown source %s", source);
         return 2;
     }
-    
-    for (uint16_t i = 0; LOG_source >> i; i++) {
-        if (LOG_source & (1 << i)) {
-            LOG_toggled_sources[i] = state;
-        }
+
+    if (state) {
+        // Enable the source
+        LOG_sources_enabled = (LOG_sources_enabled & (~LOG_source)) | LOG_source;
+    } else{
+        // Disable the source
+        LOG_sources_enabled = (LOG_sources_enabled & (~LOG_source)) | 0;
     }
+
     snprintf(response_output_buf, response_output_buf_len, "Toggled source %s to %d", source, (uint16_t) state);
     return 0;
 }
