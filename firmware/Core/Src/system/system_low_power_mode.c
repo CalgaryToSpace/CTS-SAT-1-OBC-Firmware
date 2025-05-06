@@ -16,7 +16,11 @@
 uint8_t SYS_enter_low_power_mode()
 {
     uint8_t error_ret = 0;
-    // TODO: Disable GPS
+    // Disable GNSS
+    const uint8_t disable_gnss_3v3 = EPS_set_channel_enabled(EPS_CHANNEL_3V3_GNSS, 0);
+    if (disable_gnss_3v3 != 0) {
+        error_ret |= SYS_LOW_POWER_MODE_ERROR_GNSS_3V3;
+    }
 
     // Disable ADCS: 
 
@@ -43,7 +47,7 @@ uint8_t SYS_enter_low_power_mode()
     // Disable Camera
     const uint8_t disable_camera = EPS_set_channel_enabled(EPS_CHANNEL_3V3_CAMERA, 0);
     if (disable_camera != 0) {
-        error_ret |= SYS_LOW_POWER_MODE_ERROR_CAMERA;
+        error_ret |= SYS_LOW_POWER_MODE_ERROR_CAMERA_3V3;
     }
 
     // Disable Boom
@@ -158,16 +162,16 @@ uint8_t SYS_check_battery_and_enter_low_power_mode()
 char *SYS_low_power_mode_error_enum_to_string(SYS_low_power_mode_error_enum_t error_mask)
 {
     switch (error_mask) {
-        case SYS_LOW_POWER_MODE_ERROR_GPS:
-            return "GPS";
+        case SYS_LOW_POWER_MODE_ERROR_GNSS_3V3:
+            return "GNSS_3V3";
         case SYS_LOW_POWER_MODE_ERROR_ADCS:
             return "ADCS";
         case SYS_LOW_POWER_MODE_ERROR_MPI_5V:
             return "MPI_5V";
         case SYS_LOW_POWER_MODE_ERROR_MPI_12V:
             return "MPI_12V";
-        case SYS_LOW_POWER_MODE_ERROR_CAMERA:
-            return "CAMERA";
+        case SYS_LOW_POWER_MODE_ERROR_CAMERA_3V3:
+            return "CAMERA_3V3";
         case SYS_LOW_POWER_MODE_ERROR_BOOM_12V:
             return "BOOM_12V";
         case SYS_LOW_POWER_MODE_ERROR_BOOM_PINS:
@@ -211,14 +215,6 @@ uint8_t SYS_low_power_mode_result_to_json(SYS_low_power_mode_error_enum_t error,
                        BOOM_pins_error ? 
                        "Error Disabling Boom Pins" :
                        "Successfully Disabled Boom Pins");
-
-    const uint8_t GPS_error = (error & SYS_LOW_POWER_MODE_ERROR_GPS);
-    offset += snprintf(buffer + offset, 
-                       buffer_size - offset, 
-                       ", \"GPS\":\"%s\"",
-                       GPS_error ? 
-                       "Error Setting Low Power Mode" :
-                       "Successfully Set Low Power Mode");
 
     const uint8_t ADCS_error = (error & SYS_LOW_POWER_MODE_ERROR_ADCS);
     offset += snprintf(buffer + offset, 

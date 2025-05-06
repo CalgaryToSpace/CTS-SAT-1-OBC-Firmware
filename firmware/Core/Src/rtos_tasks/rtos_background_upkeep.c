@@ -144,12 +144,15 @@ void TASK_background_upkeep(void *argument) {
         
         // TODO: Is it ok if both happen?
 
-        // Check if EPS goes into low power mode, enter low power mode if it does.
-        SYS_check_eps_and_enter_low_power_mode();
-        
-        // check if battery is below 10%, enter safe mode if it is
-        SYS_battery_safe_mode_check();
-        
+        if (HAL_GetTick() - last_time_checked_for_low_power_mode > low_power_mode_interval_ms) {
+            last_time_checked_for_low_power_mode = HAL_GetTick();
+            // Check if EPS goes into low power mode, enter low power mode if it does.
+            SYS_check_eps_and_enter_low_power_mode();
+            
+            // Check if battery is below 10%, enter low power mode if it is
+            SYS_check_battery_and_enter_low_power_mode();
+        }
+                
         osDelay(3000);
     }
 }
