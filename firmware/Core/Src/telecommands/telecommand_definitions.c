@@ -1041,6 +1041,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION
     },
     {
+        .tcmd_name = "mpi_send_command_blocking_hex",
+        .tcmd_func = TCMDEXEC_mpi_send_command_blocking_hex,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION
+    },
+    {
         .tcmd_name = "mpi_demo_tx_to_mpi",
         .tcmd_func = TCMDEXEC_mpi_demo_tx_to_mpi,
         .number_of_args = 0,

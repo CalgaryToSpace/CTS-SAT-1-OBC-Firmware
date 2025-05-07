@@ -9,6 +9,11 @@ uint8_t TCMDEXEC_mpi_send_command_hex(
     char *response_output_buf, uint16_t response_output_buf_len
 );
 
+uint8_t TCMDEXEC_mpi_send_command_blocking_hex(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+);
+
 uint8_t TCMDEXEC_mpi_demo_tx_to_mpi(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
