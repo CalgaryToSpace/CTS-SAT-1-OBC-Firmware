@@ -3,6 +3,7 @@
 #include "config/configuration.h"
 #include "camera/camera_init.h"
 #include "log/log.h"
+#include "debug_tools/debug_uart.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -120,12 +121,11 @@ uint8_t TCMDEXEC_camera_capture(const char *args_str, TCMD_TelecommandChannel_en
         return 1;
     }
 
-
     // Extract arg 1 - single char for lighting mode (d,m,n,s)
     char lighting[2];
     const uint8_t parse_result_lighting_mode = TCMD_extract_string_arg(args_str, 1, lighting, sizeof(lighting));
     if (parse_result_lighting_mode > 0) {
-        snprintf(response_output_buf, response_output_buf_len, "Could not lighting mode (arg 1) for: %s. Error: %u", args_str, parse_result_lighting_mode);
+        snprintf(response_output_buf, response_output_buf_len, "Could not parse lighting mode (arg 1) for: %s. Error: %u", args_str, parse_result_lighting_mode);
         return 2;
     }
 
@@ -134,10 +134,7 @@ uint8_t TCMDEXEC_camera_capture(const char *args_str, TCMD_TelecommandChannel_en
     if (img_status != CAM_CAPTURE_STATUS_TRANSMIT_SUCCESS) {
         snprintf(
             response_output_buf, response_output_buf_len,
-            img_status == CAM_CAPTURE_STATUS_WRONG_INPUT ?
-            "Error: Wrong lighting input.\n" :
-            "Error: Camera Capture Failure.\n"
-        );
+            "Error capturing image. CAM_capture_image() -> %d", img_status);
         CAM_repeated_error_log_message();
         return img_status;
     }

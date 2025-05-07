@@ -81,7 +81,7 @@ uint8_t CAM_change_baudrate(uint32_t new_baud_rate) {
 }
 
 
-/// @brief Set up the camera by powering on and changing the baudrate to 2400.
+/// @brief Set up the camera by powering on and changing the baudrate to 230400.
 /// @return 0 on success. The error code from the `CAM_change_baudrate` function, or >100 if an EPS error occurred.
 /// @note Does not perform a self-test.
 uint8_t CAM_setup() {
@@ -235,8 +235,7 @@ uint8_t CAM_receive_image(lfs_file_t* img_file) {
                     LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
                     "LFS error writing half 1 to img file."
                 );
-            }
-            else {
+            } else {
                 total_bytes_written += write_result;
             }
 
@@ -371,14 +370,11 @@ uint8_t CAM_receive_image(lfs_file_t* img_file) {
             &LFS_filesystem, img_file,
             (const uint8_t *)UART_camera_pending_fs_write_half_2_buf,
             bytes_to_write);
-        if (write_result_2 < 0)
-        {
+        if (write_result_2 < 0) {
             LOG_message(
                 LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
                 "LFS error writing half 2 to img file after while loop.");
-        }
-        else
-        {
+        } else {
             total_bytes_written += write_result_2;
         }
     }
@@ -427,9 +423,14 @@ static void CAM_end_camera_receive_due_to_error(lfs_file_t* img_file) {
 ///         m - medium ambient light
 ///         n - night ambient light
 ///         s - solar sail contrast and light
-/// @return 0: Successfully captured image, Wrong_input: invalid parameter input, Capture_Failure: Error in image reception or command transmission
-enum CAM_capture_status_enum CAM_capture_image(char filename_str[], char lighting_mode) {
+/// @return 0: Successfully captured image, more than 0, error occurred
+/// @note This function does not validate that the camera is connected or powered on.
+CAM_capture_status_enum CAM_capture_image(char filename_str[], char lighting_mode) {
     if (!(lighting_mode == 'd' || lighting_mode == 'm' || lighting_mode == 'n' || lighting_mode == 's')) {
+        LOG_message(
+            LOG_SYSTEM_BOOM, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error: Invalid lighting mode: %c", lighting_mode
+        );
         return CAM_CAPTURE_STATUS_WRONG_INPUT;
     }
 
@@ -437,7 +438,7 @@ enum CAM_capture_status_enum CAM_capture_image(char filename_str[], char lightin
     if (!LFS_is_lfs_mounted) {
         if (LFS_mount() != 0) {
             LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_SINK_ALL, "Error mounting LFS filesystem");
-            return 1;
+            return CAM_CAPTURE_STATUS_LFS_NOT_MOUNTED;
         }
     }
 
@@ -458,7 +459,7 @@ enum CAM_capture_status_enum CAM_capture_image(char filename_str[], char lightin
             "Error opening / creating file: %s", filename_str
         );
         CAM_end_camera_receive_due_to_error(&img_file);
-        return 2;
+        return CAM_CAPTURE_STATUS_LFS_FAILED_OPENING_CREATING_FILE;
     }
 
     // Write a tiny header to file, as the first write takes longer than subsequent writes.
@@ -473,7 +474,7 @@ enum CAM_capture_status_enum CAM_capture_image(char filename_str[], char lightin
             "LFS error writing header to img file."
         );
         CAM_end_camera_receive_due_to_error(&img_file);
-        return 3;
+        return CAM_CAPTURE_STATUS_LFS_FAILED_WRITING_HEADER;
     }
     
     LOG_message(
@@ -487,7 +488,7 @@ enum CAM_capture_status_enum CAM_capture_image(char filename_str[], char lightin
         UART_camera_dma_buffer[i] = 0;
     }
     // Clear rx buf (probably not essential).
-    for (uint16_t i = 0; i < UART_camera_dma_buffer_len_half; i++){
+    for (uint16_t i = 0; i < UART_camera_dma_buffer_len_half; i++) {
         UART_camera_pending_fs_write_half_1_buf[i] = 0;
         UART_camera_pending_fs_write_half_2_buf[i] = 0;
     }
@@ -506,7 +507,7 @@ enum CAM_capture_status_enum CAM_capture_image(char filename_str[], char lightin
             tx_status);
         // Close file.
         CAM_end_camera_receive_due_to_error(&img_file);
-        return CAM_CAPTURE_STATUS_CAPTURE_FAILURE;
+        return CAM_CAPTURE_STATUS_FAILED_TRANSMITTING_LIGHTING_MODE;
     }
 
     const uint8_t capture_code = CAM_receive_image(&img_file);
@@ -529,7 +530,7 @@ enum CAM_capture_status_enum CAM_capture_image(char filename_str[], char lightin
             LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
             "Error closing file: %s", filename_str
         );
-        return CAM_CAPTURE_STATUS_CAPTURE_FAILURE;
+        return CAM_CAPTURE_STATUS_LFS_FAILED_CLOSING_FILE;
     }
 
     if (capture_code != 0) {
@@ -543,8 +544,7 @@ enum CAM_capture_status_enum CAM_capture_image(char filename_str[], char lightin
     return CAM_CAPTURE_STATUS_TRANSMIT_SUCCESS;
 }
 
-void CAM_repeated_error_log_message()
-{
+void CAM_repeated_error_log_message() {
     LOG_message(
         LOG_SYSTEM_BOOM, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
         "If this repeatadly fails, do the following:\n"
