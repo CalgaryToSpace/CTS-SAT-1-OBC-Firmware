@@ -467,7 +467,7 @@ enum CAM_capture_status_enum CAM_capture_image(char filename_str[], char lightin
     }
 
     // Write a tiny header to file, as the first write takes longer than subsequent writes.
-    const char * const header_str = "START_CAM:";
+    const char * const header_str = "START_CAM:\n";
     const lfs_ssize_t write_result = lfs_file_write(
         &LFS_filesystem, &img_file,
         (const uint8_t *)header_str, strlen(header_str)

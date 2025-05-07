@@ -191,8 +191,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
             DEBUG_uart_print_str("Cam Full ISR() -> Data too fast\n");
         }
 
+        CAMERA_uart_half_2_state = CAMERA_UART_WRITE_STATE_HALF_FILLING;
+
         // Volatile-safe memcpy.
-        const uint16_t UART_camera_buffer_len_half = UART_camera_buffer_len / 2;
         for (uint16_t i = UART_camera_buffer_len_half; i < UART_camera_buffer_len; i++) {
             UART_camera_pending_fs_write_half_2_buf[i-UART_camera_buffer_len_half] = UART_camera_dma_buffer[i];
 
@@ -219,7 +220,7 @@ void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
             DEBUG_uart_print_str("Cam Half ISR -> Data too fast\n");
         }
 
-        const uint16_t UART_camera_buffer_len_half = UART_camera_buffer_len / 2;
+        CAMERA_uart_half_1_state = CAMERA_UART_WRITE_STATE_HALF_FILLING;
 
         for (uint16_t i = 0; i < UART_camera_buffer_len_half; i++) {
             UART_camera_pending_fs_write_half_1_buf[i] = UART_camera_dma_buffer[i];
