@@ -228,7 +228,7 @@ uint8_t CAM_receive_image(lfs_file_t* img_file) {
             const lfs_ssize_t write_result = lfs_file_write(
                 &LFS_filesystem, img_file,
                 (const uint8_t *)UART_camera_pending_fs_write_half_1_buf,
-                UART_camera_buffer_len_half
+                UART_camera_dma_buffer_len_half
             );
             if (write_result < 0) {
                 LOG_message(
@@ -241,7 +241,6 @@ uint8_t CAM_receive_image(lfs_file_t* img_file) {
             }
 
             CAMERA_uart_half_1_state = CAMERA_UART_WRITE_STATE_HALF_WRITTEN_TO_FS;
-            // return 0; // FIXME: THIS RETURN SHOULD BE REMOVED. For debug only. // FIXME: Start here, consider issue of probably need to delete the file better maybe.
         }
 
         // Write file after complete callback (Half 2).
@@ -262,7 +261,7 @@ uint8_t CAM_receive_image(lfs_file_t* img_file) {
             // Write data to file
             const lfs_ssize_t write_result = lfs_file_write(
                 &LFS_filesystem, img_file,
-                (const uint8_t *)UART_camera_pending_fs_write_half_2_buf, UART_camera_buffer_len_half
+                (const uint8_t *)UART_camera_pending_fs_write_half_2_buf, UART_camera_dma_buffer_len_half
             );
             if (write_result < 0) {
                 LOG_message(
@@ -317,18 +316,17 @@ uint8_t CAM_receive_image(lfs_file_t* img_file) {
         DEBUG_uart_print_str("Remaining data in half 1: ");
         DEBUG_uart_print_str_max_len(
             (const char *)UART_camera_dma_buffer, CAM_SENTENCE_LEN);
-        uint16_t bytes_to_write = 0;
-        
-        for (uint16_t i = 0; i < UART_camera_buffer_len_half; i++)
+        uint16_t index = 0;
+        for (; index < UART_camera_dma_buffer_len_half; index++)
         {
-            uint8_t data = UART_camera_dma_buffer[i];
-            if (data == '\0')
-            {
+            const uint8_t data = UART_camera_dma_buffer[index];
+            if (data == '\0') {
                 break;
             }
-            UART_camera_pending_fs_write_half_1_buf[i] = data;
-            bytes_to_write++;
+            UART_camera_pending_fs_write_half_1_buf[index] = data;
         }
+        const uint16_t bytes_to_write = index;
+
         DEBUG_uart_print_str("First loop bytes to write: ");
         DEBUG_uart_print_uint32(bytes_to_write);
         DEBUG_uart_print_str("\n");
@@ -337,38 +335,37 @@ uint8_t CAM_receive_image(lfs_file_t* img_file) {
             &LFS_filesystem, img_file,
             (const uint8_t *)UART_camera_pending_fs_write_half_1_buf,
             bytes_to_write);
-        if (write_result < 0)
-        {
+        
+        if (write_result < 0) {
             LOG_message(
                 LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
                 "LFS error writing half 1 to img file after while loop.");
-        }
-        else
-        {
+        } else {
             total_bytes_written += write_result;
         }
     }
     
 
-    starts_with_null_terminator = UART_camera_dma_buffer[UART_camera_buffer_len_half] == '\0';
+    starts_with_null_terminator = UART_camera_dma_buffer[UART_camera_dma_buffer_len_half] == '\0';
 
     if (starts_with_null_terminator == 0) {
         // Print 2nd half
         DEBUG_uart_print_str("Remaining data in half 2: ");
         DEBUG_uart_print_str_max_len(
-            (const char *)UART_camera_dma_buffer + UART_camera_buffer_len_half,
+            (const char *)UART_camera_dma_buffer + UART_camera_dma_buffer_len_half,
             CAM_SENTENCE_LEN);
-        uint16_t bytes_to_write = 0;
 
-        for (uint16_t j = UART_camera_buffer_len_half; j < UART_camera_buffer_len; j++)
+        uint16_t j = UART_camera_dma_buffer_len_half;
+        for (; j < UART_camera_dma_buffer_len; j++)
         {
             uint8_t data = UART_camera_dma_buffer[j];
             if (data == '\0') {
                 break;
             }
-            UART_camera_pending_fs_write_half_2_buf[j - UART_camera_buffer_len_half ] = UART_camera_dma_buffer[j];
-            bytes_to_write++;
+            UART_camera_pending_fs_write_half_2_buf[j - UART_camera_dma_buffer_len_half] = UART_camera_dma_buffer[j];
         }
+        uint16_t bytes_to_write = j - UART_camera_dma_buffer_len_half;
+
         // write the second half to the file
         const lfs_ssize_t write_result_2 = lfs_file_write(
             &LFS_filesystem, img_file,
@@ -393,8 +390,6 @@ uint8_t CAM_receive_image(lfs_file_t* img_file) {
         total_bytes_written / CAM_SENTENCE_LEN
     );
 
-    // FIXME: Need to handle reading the final half of the data (implemented somewhat in the following commented block)
-    
     return 0;
 }
 
@@ -488,11 +483,11 @@ enum CAM_capture_status_enum CAM_capture_image(char filename_str[], char lightin
     );
     
     // Clear camera response buffer (volatile-safe memset).
-    for (uint16_t i = 0; i < UART_camera_buffer_len; i++) {
+    for (uint16_t i = 0; i < UART_camera_dma_buffer_len; i++) {
         UART_camera_dma_buffer[i] = 0;
     }
     // Clear rx buf (probably not essential).
-    for (uint16_t i = 0; i < UART_camera_buffer_len_half; i++){
+    for (uint16_t i = 0; i < UART_camera_dma_buffer_len_half; i++){
         UART_camera_pending_fs_write_half_1_buf[i] = 0;
         UART_camera_pending_fs_write_half_2_buf[i] = 0;
     }
