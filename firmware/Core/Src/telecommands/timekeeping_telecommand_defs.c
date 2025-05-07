@@ -90,3 +90,21 @@ uint8_t TCMDEXEC_set_eps_time_based_on_obc_time(const char *args_str, TCMD_Telec
     );
     return 0;
 }
+
+uint8_t TCMDEXEC_sync_obc_time_with_gps_pps(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    const uint8_t result = TIM_handle_PPS_sync();
+    if (result != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Syncing OBC time with GPS PPS failed."
+        );
+        return 1;
+    }
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "Successfully synced OBC time with GPS PPS."
+    );
+    return 0;
+}
+
