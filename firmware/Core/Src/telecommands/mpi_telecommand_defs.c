@@ -191,7 +191,7 @@ uint8_t TCMDEXEC_mpi_demo_tx_to_mpi(
 
 /// @brief Sends a message over UART to the MPI.
 /// @param args_str
-/// - Arg 0: The target mode - "MISO" (from MPI), "MOSI" (to MPI), or anything else disables it
+/// - Arg 0: The target mode - "MISO" (from MPI), "MOSI" (to MPI), "DUPLEX", or anything else disables it
 /// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
