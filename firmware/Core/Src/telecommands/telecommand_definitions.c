@@ -695,36 +695,6 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
-        .tcmd_name = "adcs_raw_gps_status",
-        .tcmd_func = TCMDEXEC_adcs_raw_gps_status,
-        .number_of_args = 0,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },
-    {
-        .tcmd_name = "adcs_raw_gps_time",
-        .tcmd_func = TCMDEXEC_adcs_raw_gps_time,
-        .number_of_args = 0,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },
-    {
-        .tcmd_name = "adcs_raw_gps_x",
-        .tcmd_func = TCMDEXEC_adcs_raw_gps_x,
-        .number_of_args = 0,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },
-    {
-        .tcmd_name = "adcs_raw_gps_y",
-        .tcmd_func = TCMDEXEC_adcs_raw_gps_y,
-        .number_of_args = 0,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },
-    {
-        .tcmd_name = "adcs_raw_gps_z",
-        .tcmd_func = TCMDEXEC_adcs_raw_gps_z,
-        .number_of_args = 0,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },
-    {
         .tcmd_name = "adcs_measurements",
         .tcmd_func = TCMDEXEC_adcs_measurements,
         .number_of_args = 0,

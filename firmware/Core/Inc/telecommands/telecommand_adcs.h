@@ -186,21 +186,6 @@ uint8_t TCMDEXEC_adcs_raw_coarse_sun_sensor_7_to_10(const char *args_str, TCMD_T
 uint8_t TCMDEXEC_adcs_cubecontrol_current(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                           char *response_output_buf, uint16_t response_output_buf_len);
 
-uint8_t TCMDEXEC_adcs_raw_gps_status(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                                     char *response_output_buf, uint16_t response_output_buf_len);
-
-uint8_t TCMDEXEC_adcs_raw_gps_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                                   char *response_output_buf, uint16_t response_output_buf_len);
-
-uint8_t TCMDEXEC_adcs_raw_gps_x(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                                char *response_output_buf, uint16_t response_output_buf_len);
-
-uint8_t TCMDEXEC_adcs_raw_gps_y(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                                char *response_output_buf, uint16_t response_output_buf_len);
-
-uint8_t TCMDEXEC_adcs_raw_gps_z(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                                char *response_output_buf, uint16_t response_output_buf_len);
-
 uint8_t TCMDEXEC_adcs_measurements(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                    char *response_output_buf, uint16_t response_output_buf_len);
 
