@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
 /// @brief Set up the camera by powering on and changing the baudrate to 2400.
 /// @param args_str
 /// @param response_output_buf Buffer to write the response to
@@ -18,8 +17,9 @@ uint8_t TCMDEXEC_camera_setup(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len)
 {
-    // First, set baudrate to 115200 to reset the camera
-    // This is to avoid the camera stalling and being in a weird state
+    // First, set baudrate to 115200 to reset the camera and OBC UART handler baudrates.
+    // This is to avoid the camera stalling and being in a weird state where
+    // the OBC UART handler's baudrate and the camera's baudrate are different.
     const uint8_t baudrate_status = CAM_change_baudrate(115200);
     if (baudrate_status != 0) {
         snprintf(
@@ -103,7 +103,7 @@ uint8_t TCMDEXEC_camera_change_baud_rate(
 
 /// @brief Send telecommand to camera and capture an image. RUN CAM_SETUP BEFORE THIS EVERY TIME!
 /// @param args_str
-/// - Arg 0: filename to save the image to
+/// - Arg 0: filename to save the image to (max 32 chars)
 /// - Arg 1: lighting mode (single character: d,m,n,s)
 /// @param response_output_buf Buffer to write the response to
 /// @param response_output_buf_len Max length of the buffer
@@ -111,19 +111,25 @@ uint8_t TCMDEXEC_camera_change_baud_rate(
 uint8_t TCMDEXEC_camera_capture(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len)
 {
-    // FIXME: Extract filename here.
-
-    // Extract arg 0 - single char for lighting mode (d,m,n,s)
-    char lighting[2];
-    // memset(config_var_name, 0, CONFIG_MAX_VARIABLE_NAME_LENGTH);
-    const uint8_t parse_result = TCMD_extract_string_arg(args_str, 1, lighting, sizeof(lighting));
-    if (parse_result > 0)
-    {
-        snprintf(response_output_buf, response_output_buf_len, "Could not parse arg 0 for: %s", args_str);
+    // Extract arg 0 - filename
+    // Note: extract_string function null-terminates the string
+    char filename[32] = {0};
+    const uint8_t parse_result_filename = TCMD_extract_string_arg(args_str, 0, filename, sizeof(filename));
+    if (parse_result_filename > 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Could not parse filename (arg 0) for: %s: Error:  %u", args_str, parse_result_filename);
         return 1;
     }
 
-    CAM_capture_status_enum img_status = CAM_capture_image("image.ascii", lighting[0]);
+
+    // Extract arg 1 - single char for lighting mode (d,m,n,s)
+    char lighting[2];
+    const uint8_t parse_result_lighting_mode = TCMD_extract_string_arg(args_str, 1, lighting, sizeof(lighting));
+    if (parse_result_lighting_mode > 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Could not lighting mode (arg 1) for: %s. Error: %u", args_str, parse_result_lighting_mode);
+        return 2;
+    }
+
+    CAM_capture_status_enum img_status = CAM_capture_image(filename, lighting[0]);
 
     if (img_status != CAM_CAPTURE_STATUS_TRANSMIT_SUCCESS) {
         snprintf(
