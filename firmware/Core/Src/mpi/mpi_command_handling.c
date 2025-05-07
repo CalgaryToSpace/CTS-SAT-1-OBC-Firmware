@@ -2,6 +2,8 @@
 #include "mpi/mpi_types.h"
 #include "mpi/mpi_transceiver.h"
 #include "uart_handler/uart_handler.h"
+#include "log/log.h"
+#include "debug_tools/debug_uart.h"
 
 #include "main.h"
 #include "stm32l4xx_hal.h"
@@ -13,7 +15,7 @@
 static const uint16_t MPI_TX_TIMEOUT_DURATION_MS = 100;
 
 /// @brief Timeout duration for receive in milliseconds. Same between bytes and at the start.
-static const uint16_t MPI_RX_TIMEOUT_DURATION_MS = 200;
+static const uint16_t MPI_RX_TIMEOUT_DURATION_MS = 500;
 
 volatile MPI_rx_mode_t MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
 
@@ -34,9 +36,19 @@ uint8_t MPI_send_command_get_response(
     if (MPI_rx_buffer_max_size < (bytes_to_send_len + 1)) {
         return 8; // Error code: Not enough space in the MPI response buffer
     }
+
+    // Stop reception from the MPI before sending the command.
+    HAL_UART_DMAStop(UART_mpi_port_handle);
+
+    // Clear the MPI response buffer (Note: Can't use memset because UART_mpi_buffer is Volatile)
+    for (uint16_t i = 0; i < UART_mpi_buffer_len; i++) {
+        UART_mpi_buffer[i] = 0;
+    }
     
     MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_DUPLEX); // Set the MPI transceiver to MOSI mode
     MPI_current_uart_rx_mode = MPI_RX_MODE_COMMAND_MODE; // Set MPI to command mode.
+
+    HAL_Delay(50); // Wait for the transceiver to stabilize (should take <1ms)
 
     // Transmit the MPI command
     const HAL_StatusTypeDef transmit_status = HAL_UART_Transmit(
@@ -50,13 +62,8 @@ uint8_t MPI_send_command_get_response(
 
     // Note: We would set the MPI transceiver to MISO mode here, if not using duplex above.
 
-    // Clear the MPI response buffer (Note: Can't use memset because UART_mpi_buffer is Volatile)
-    for (uint16_t i = 0; i < UART_mpi_buffer_len; i++) {
-        UART_mpi_buffer[i] = 0;
-    }
-
     // Reset UART interrupt buffer write index & record start time for mpi response reception
-    UART_mpi_buffer_write_idx = 0;                                      
+    UART_mpi_buffer_write_idx = 0;
     const uint32_t UART_mpi_rx_start_time_ms = HAL_GetTick();
 
     // Receive MPI response byte by byte.
@@ -69,7 +76,7 @@ uint8_t MPI_send_command_get_response(
     // Check for UART reception errors
     if (receive_status != HAL_OK) {
         MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
-        HAL_UART_DMAStop(&huart1);
+        HAL_UART_DMAStop(UART_mpi_port_handle);
         MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
         return 3; // Error code: Failed UART reception
     }
@@ -85,6 +92,15 @@ uint8_t MPI_send_command_get_response(
         // Timeout before receiving the first byte from the MPI
         if (UART_mpi_buffer_write_idx == 0) {
             if((HAL_GetTick() - UART_mpi_rx_start_time_ms) > MPI_RX_TIMEOUT_DURATION_MS) {
+                LOG_message(
+                    LOG_SYSTEM_MPI, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+                    "No MPI response received. Timeout waiting for 1st byte. UART_mpi_buffer_write_idx=%u",
+                    UART_mpi_buffer_write_idx
+                );
+                DEBUG_uart_print_str("UART_mpi_buffer[0:10]: ");
+                DEBUG_uart_print_array_hex((uint8_t*)UART_mpi_buffer, 10);
+                DEBUG_uart_print_str("\n");
+
                 // Stop reception from the MPI & Reset mpi UART & transceiver mode states
                 MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
                 HAL_UART_DMAStop(UART_mpi_port_handle);
@@ -105,6 +121,13 @@ uint8_t MPI_send_command_get_response(
             }
         }
     }
+
+    LOG_message(
+        LOG_SYSTEM_MPI, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+        "MPI response received: MPI_rx_buffer_len=%u, UART_mpi_buffer_write_idx=%d",
+        *MPI_rx_buffer_len,
+        UART_mpi_buffer_write_idx
+    );
 
     // Stop reception & reset MPI transceiver mode state, Set MPI UART mode state to previous state
     MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
@@ -137,18 +160,18 @@ uint8_t MPI_validate_command_response(
 ) {  
     // Ensure enough bytes were received  
     if (MPI_rx_buffer_len < 2) {
-        return 7; // Error code: MPI rx buffer too small
+        return 17; // Error code: MPI rx buffer too small
     }
 
     // Verify if the MPI response echos the cmd sent
     if (MPI_command_code != MPI_rx_buffer[0]) {
-        return 6; // Error code: Invalid response from the MPI
+        return 16; // Error code: Invalid response from the MPI
     }
 
     // Verify if the MPI response responds with a success byte
-    uint8_t command_status = MPI_rx_buffer[1];
+    const uint8_t command_status = MPI_rx_buffer[1];
     if (command_status != MPI_COMMAND_SUCCESS_RESPONSE_VALUE) {
-        return 5; // Error code: MPI failed to execute command
+        return 15; // Error code: MPI failed to execute command
     }
 
     return 0; //  MPI executed the cmd successfully
