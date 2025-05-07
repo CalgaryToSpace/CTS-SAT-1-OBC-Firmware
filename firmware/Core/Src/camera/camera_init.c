@@ -13,7 +13,6 @@
 #include <stdio.h>
 
 #include "main.h"
-#include "camera_init.h"
 
 /// @brief Timeout duration for camera receive in milliseconds
 static const uint32_t CAMERA_RX_TOTAL_TIMEOUT_DURATION_MS = 12000;
