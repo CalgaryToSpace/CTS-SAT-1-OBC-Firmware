@@ -13,7 +13,7 @@ uint8_t CAM_change_baudrate(uint32_t bitrate);
 
 uint8_t CAM_setup();
 uint8_t CAM_test();
-
+void CAM_repeated_error_log_message();
 
 
 typedef enum CAM_capture_status_enum{

@@ -62,14 +62,7 @@ uint8_t TCMDEXEC_camera_test(
             response_output_buf, response_output_buf_len, "Camera test failed. CAM_test -> %d",
             test_return
         );
-        LOG_message(
-            LOG_SYSTEM_BOOM, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "If this repeatadly fails, do the following:\n"
-            "1. Turn off the EPS channel for the camera.\n"
-            "2. Wait a minute.\n"
-            "3. Manually change the baudrate of the camera to 115200.\n"
-            "4. Start the process again from camera_setup.");
-
+        CAM_repeated_error_log_message();
         return test_return;
     }
 
@@ -139,13 +132,7 @@ uint8_t TCMDEXEC_camera_capture(const char *args_str, TCMD_TelecommandChannel_en
             "Error: Wrong lighting input.\n" :
             "Error: Camera Capture Failure.\n"
         );
-        LOG_message(
-            LOG_SYSTEM_BOOM, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "If this repeatadly fails, do the following:\n"
-            "1. Turn off the EPS channel for the camera.\n"
-            "2. Wait a minute.\n"
-            "3. Manually change the baudrate of the camera to 115200.\n"
-            "4. Start the process again from camera_setup.");
+        CAM_repeated_error_log_message();
         return img_status;
     }
 

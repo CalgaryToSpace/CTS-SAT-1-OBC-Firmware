@@ -542,3 +542,14 @@ enum CAM_capture_status_enum CAM_capture_image(char filename_str[], char lightin
     }
     return CAM_CAPTURE_STATUS_TRANSMIT_SUCCESS;
 }
+
+void CAM_repeated_error_log_message()
+{
+    LOG_message(
+        LOG_SYSTEM_BOOM, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+        "If this repeatadly fails, do the following:\n"
+        "1. Turn off the EPS channel for the camera.\n"
+        "2. Wait a minute.\n"
+        "3. Manually change the baudrate of the camera to 115200.\n"
+        "4. Start the process again from camera_setup.");
+}
