@@ -2,7 +2,7 @@
 #include "littlefs/lfs.h"
 #include "littlefs/littlefs_driver.h"
 #include "debug_tools/debug_uart.h"
-#include "camera/camera_init.h"
+#include "camera/camera_commands.h"
 #include "uart_handler/uart_handler.h"
 #include "log/log.h"
 #include "eps_drivers/eps_channel_control.h"

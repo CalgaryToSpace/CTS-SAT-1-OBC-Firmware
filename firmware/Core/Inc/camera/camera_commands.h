@@ -1,5 +1,5 @@
-#ifndef INCLUDE_GUARD__CAMERA_INIT_H
-#define INCLUDE_GUARD__CAMERA_INIT_H
+#ifndef INCLUDE_GUARD__CAMERA_COMMANDS_H
+#define INCLUDE_GUARD__CAMERA_COMMANDS_H
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -36,6 +36,6 @@ typedef enum CAM_capture_status_enum {
  * 			n - night ambient light
  * 			s - solar sail contrast and light
  */
-enum CAM_capture_status_enum CAM_capture_image(char filename_str[], char lighting_mode);
+CAM_capture_status_enum CAM_capture_image(char filename_str[], char lighting_mode);
 
-#endif // INCLUDE_GUARD__CAMERA_INIT_H
+#endif // INCLUDE_GUARD__CAMERA_CAMERA_COMMANDS_H
