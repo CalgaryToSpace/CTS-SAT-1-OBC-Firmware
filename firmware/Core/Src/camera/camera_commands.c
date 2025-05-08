@@ -288,7 +288,20 @@ uint8_t CAM_receive_image(lfs_file_t* img_file) {
             break;
         }
 
-        // FIXME: Should add a between-messages timeout here, which looks at UART_camera_last_write_time_ms
+        // Between messages timeout condition: 
+        // If it has been more than 5 seconds since starting to capture image AND
+        // if it has been more than 2 seconds since the last write time
+        // (indicating that the camera is not sending data).
+        // Break out of the loop.
+        const uint32_t current_time = HAL_GetTick();
+        if (((current_time - UART_camera_rx_start_time_ms) > 5000) && // TODO: Ensure these values make sense by testing lots of pictures
+            ((current_time - UART_camera_last_write_time_ms) > 2000)) {
+            LOG_message(
+                LOG_SYSTEM_BOOM, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
+                "Camera hasn't written data in 2 seconds. Breaking out of loop."
+            );
+            break;
+        }
     }
 
     LOG_message(
