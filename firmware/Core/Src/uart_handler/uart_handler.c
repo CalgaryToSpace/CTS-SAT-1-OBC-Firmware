@@ -6,9 +6,12 @@
 #include "main.h"
 #include "log/log.h"
 
+#include <string.h>
+
 // Name the UART interfaces
 UART_HandleTypeDef *UART_telecommand_port_handle = &hlpuart1;
 UART_HandleTypeDef *UART_mpi_port_handle = &huart1;
+UART_HandleTypeDef *UART_ax100_port_handle = &huart2;
 UART_HandleTypeDef *UART_gps_port_handle = &huart3;
 UART_HandleTypeDef *UART_camera_port_handle = &huart4;
 UART_HandleTypeDef *UART_eps_port_handle = &huart5;
@@ -27,6 +30,11 @@ volatile uint8_t UART_mpi_buffer[256];                      // extern
 volatile uint8_t UART_mpi_last_rx_byte = 0;                 // extern
 volatile uint32_t UART_mpi_last_write_time_ms = 0;          // extern
 volatile uint16_t UART_mpi_buffer_write_idx = 0;            // extern
+
+// UART AX100 buffer
+volatile uint16_t UART_ax100_buffer_write_idx = 0;          // extern
+volatile uint32_t UART_ax100_last_write_time_ms = 0;        // extern
+volatile uint8_t UART_ax100_buffer_last_rx_byte = 0;       // extern
 
 // UART CAMERA buffer
 // TODO: Configure with peripheral required specifications
@@ -65,6 +73,52 @@ volatile uint8_t UART_gps_uart_interrupt_enabled = 0; //extern
 // volatile uint8_t UART_mpi_data_rx_buffer[8192]; // extern
 // const uint16_t UART_mpi_data_buffer_len = 80000; // extern
 // volatile uint8_t UART_mpi_data_buffer[80000]; // extern
+
+#define KISS_FEND  0xC0
+#define KISS_FESC  0xDB
+#define KISS_TFEND 0xDC
+#define KISS_TFESC 0xDD
+
+
+volatile AX100_kiss_frame_struct_t UART_AX100_kiss_frame_queue[AX100_MAX_KISS_FRAMES_IN_RX_QUEUE];
+volatile uint8_t UART_AX100_kiss_frame_queue_head = 0;
+volatile uint8_t UART_AX100_kiss_frame_queue_tail = 0;
+
+
+/// Indicates whether we are currently inside a KISS frame.
+/// Set to 1 after receiving KISS_FEND, and reset on frame completion or error.
+static uint8_t kiss_in_frame = 0;
+
+/// Indicates whether the previous byte was KISS_FESC, meaning the next byte
+/// should be interpreted as an escaped control character (TFEND or TFESC).
+static uint8_t kiss_escaped = 0;
+
+/// Temporary buffer to hold the decoded contents of the current KISS frame.
+/// Reset when a frame is completed or an error occurs (e.g. overflow or bad escape).
+static uint8_t kiss_decode_buf[AX100_MAX_KISS_FRAME_SIZE_BYTES];
+
+/// Current write index into kiss_decode_buf, tracking how many decoded bytes
+/// have been accumulated in the current frame.
+static uint16_t kiss_decode_len = 0;
+
+static inline uint8_t kiss_queue_is_full(void) {
+    return ((UART_AX100_kiss_frame_queue_head + 1) % AX100_MAX_KISS_FRAMES_IN_RX_QUEUE) == UART_AX100_kiss_frame_queue_tail;
+}
+
+static inline void kiss_enqueue_frame(const uint8_t *data, uint16_t len) {
+    if (kiss_queue_is_full()) {
+        // Tracking error
+        UART_error_ax100_error_info.handler_buffer_full_error_count++;
+        // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> KISS frame queue is full\n");
+        return;
+    }
+
+    AX100_kiss_frame_struct_t *dst = (AX100_kiss_frame_struct_t*)&UART_AX100_kiss_frame_queue[UART_AX100_kiss_frame_queue_head];
+    dst->len = len > AX100_MAX_KISS_FRAME_SIZE_BYTES ? AX100_MAX_KISS_FRAME_SIZE_BYTES : len;
+    memcpy(dst->data, data, dst->len);
+    UART_AX100_kiss_frame_queue_head = (UART_AX100_kiss_frame_queue_head + 1) % AX100_MAX_KISS_FRAMES_IN_RX_QUEUE;
+}
+
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     // This ISR function gets called every time a byte is received on the UART.
@@ -122,6 +176,50 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         else {
             DEBUG_uart_print_str("Unhandled MPI Mode\n"); //TODO: HANDLE other MPI MODES
         }
+    }
+
+    else if (huart->Instance == UART_ax100_port_handle->Instance) {
+        uint8_t rx = UART_ax100_buffer_last_rx_byte;
+    
+        if (rx == KISS_FEND) {
+            if (kiss_in_frame && kiss_decode_len > 0) {
+                // Queue completed frame
+                kiss_enqueue_frame(kiss_decode_buf, kiss_decode_len);
+            }
+    
+            // Start new frame
+            kiss_in_frame = 1;
+            kiss_escaped = 0;
+            kiss_decode_len = 0;
+        } else if (kiss_in_frame) {
+            if (kiss_escaped) {
+                if (rx == KISS_TFEND) {
+                    rx = KISS_FEND;
+                } else if (rx == KISS_TFESC) {
+                    rx = KISS_FESC;
+                } else {
+                    // Invalid escape sequence - abort frame
+                    kiss_in_frame = 0;
+                    kiss_decode_len = 0;
+                }
+                kiss_escaped = 0;
+            } else if (rx == KISS_FESC) {
+                kiss_escaped = 1;
+            } else {
+                if (kiss_decode_len < AX100_MAX_KISS_FRAME_SIZE_BYTES) {
+                    kiss_decode_buf[kiss_decode_len++] = rx;
+                } else {
+                    // Frame too long - discard
+                    kiss_in_frame = 0;
+                    kiss_decode_len = 0;
+                    kiss_escaped = 0;
+                }
+            }
+        }
+
+        UART_ax100_last_write_time_ms = HAL_GetTick();
+    
+        HAL_UART_Receive_IT(UART_ax100_port_handle, (uint8_t*) &UART_ax100_buffer_last_rx_byte, 1);
     }
 
     
@@ -253,6 +351,11 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
         HAL_UART_Receive_DMA(UART_mpi_port_handle, (uint8_t*)&UART_mpi_last_rx_byte, 1);
     }
 
+    // Reception Error callback for AX100 UART port
+    if (huart->Instance == UART_ax100_port_handle->Instance) {
+        HAL_UART_Receive_IT(UART_ax100_port_handle, (uint8_t*)&UART_ax100_buffer_last_rx_byte, 1);
+    }
+
     // Reception Error callback for GPS UART port
     if (huart->Instance == UART_gps_port_handle->Instance) {
         if (UART_gps_uart_interrupt_enabled == 1) {
@@ -276,6 +379,7 @@ void UART_init_uart_handlers(void) {
     // Enable the UART interrupt
     HAL_UART_Receive_IT(UART_telecommand_port_handle, (uint8_t*) &UART_telecommand_buffer_last_rx_byte, 1);
     HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t*) &UART_eps_buffer_last_rx_byte, 1);
+    HAL_UART_Receive_IT(UART_ax100_port_handle, (uint8_t*) &UART_ax100_buffer_last_rx_byte, 1);
 
     // GPS is not initialized as always-listening. It is enabled by the GPS telecommands.
     // Reason: The GPS has a mode where it spams null bytes, which can lock up the entire system.
