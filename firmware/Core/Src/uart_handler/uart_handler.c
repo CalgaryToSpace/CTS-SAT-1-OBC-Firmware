@@ -173,9 +173,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
             UART_mpi_buffer[UART_mpi_buffer_write_idx++] = UART_mpi_last_rx_byte;
             UART_mpi_last_write_time_ms = HAL_GetTick();
 
-            HAL_UART_Receive_DMA(
-                UART_mpi_port_handle, (uint8_t*) &UART_mpi_last_rx_byte, 1
-            );
+            // Note: Don't need to recall DMA receive here because circular mode is used.
+            // HAL_UART_Receive_DMA(
+            //     UART_mpi_port_handle, (uint8_t*) &UART_mpi_last_rx_byte, 1
+            // );
         }
         else {
             DEBUG_uart_print_str("Unhandled MPI Mode\n"); //TODO: HANDLE other MPI MODES

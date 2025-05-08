@@ -39,7 +39,8 @@ uint8_t MPI_send_command_get_response(
     }
 
     // Stop reception from the MPI before sending the command.
-    HAL_UART_DMAStop(UART_mpi_port_handle);
+    // Very important.
+    HAL_UART_AbortReceive(UART_mpi_port_handle);
 
     // Clear the MPI response buffer (Note: Can't use memset because UART_mpi_buffer is Volatile)
     for (uint16_t i = 0; i < UART_mpi_buffer_len; i++) {
@@ -66,7 +67,7 @@ uint8_t MPI_send_command_get_response(
 
     // Reset UART interrupt buffer write index & record start time for mpi response reception
     UART_mpi_buffer_write_idx = 0;
-    const uint32_t UART_mpi_rx_start_time_ms = HAL_GetTick();
+    const uint32_t rx_start_time_ms = HAL_GetTick();
 
     // Receive MPI response byte by byte.
     // Note: This is done to account for potential errors from the MPI where it doesn't send back
@@ -93,7 +94,7 @@ uint8_t MPI_send_command_get_response(
 
         // Timeout before receiving the first byte from the MPI
         if (UART_mpi_buffer_write_idx == 0) {
-            if((HAL_GetTick() - UART_mpi_rx_start_time_ms) > MPI_RX_TIMEOUT_DURATION_MS) {
+            if((HAL_GetTick() - rx_start_time_ms) > MPI_RX_TIMEOUT_DURATION_MS) {
                 LOG_message(
                     LOG_SYSTEM_MPI, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
                     "No MPI response received. Timeout waiting for 1st byte. UART_mpi_buffer_write_idx=%u",
@@ -160,6 +161,7 @@ uint8_t MPI_send_command_get_response_blocking(
 
     // Stop any ongoing DMA reception
     HAL_UART_DMAStop(UART_mpi_port_handle);
+    HAL_UART_AbortReceive(UART_mpi_port_handle);
 
     // Clear volatile buffer manually
     for (uint16_t i = 0; i < UART_mpi_buffer_len; i++) {
