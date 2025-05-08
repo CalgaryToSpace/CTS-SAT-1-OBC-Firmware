@@ -20,10 +20,8 @@ static const uint16_t MPI_RX_TIMEOUT_DURATION_MS = 200;
 
 volatile MPI_rx_mode_t MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
 
-MPI_buffer_state_enum_t MPI_buffer_state = MPI_MEMORY_WRITE_STATUS_READY;
-
-uint16_t MPI_active_data_median_buffer_len = 4096;
-uint8_t MPI_active_data_median_buffer[4096];
+/// @brief Current state of the `MPI_active_data_median_buffer` (pending write vs. written).
+volatile MPI_buffer_state_enum_t MPI_buffer_state = MPI_MEMORY_WRITE_STATUS_READY;
 
 uint8_t MPI_receive_prepared = 0;
 uint8_t MPI_science_data_file_is_open = 0;
@@ -260,6 +258,9 @@ uint8_t MPI_enable_active_mode() {
         return 4;
     }
 
+    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MISO); // Set the MPI transceiver to MISO mode
+    MPI_current_uart_rx_mode = MPI_RX_MODE_SENSING_MODE;
+
     // Receive MPI response actively with 8192 buffer size.
     __HAL_UART_CLEAR_OREFLAG(UART_mpi_port_handle);
     const HAL_StatusTypeDef rx_status = HAL_UART_Receive_DMA(
@@ -275,9 +276,6 @@ uint8_t MPI_enable_active_mode() {
         );
         return 3; // Error code: Failed to start UART reception
     }
-
-    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MISO); // Set the MPI transceiver to MISO mode
-    MPI_current_uart_rx_mode = MPI_RX_MODE_SENSING_MODE;
     
     // Indicates to MPI thread that we are able to receive data
     // If mpi uart mode is changed, we can close file

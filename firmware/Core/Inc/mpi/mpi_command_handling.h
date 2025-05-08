@@ -10,11 +10,6 @@
 /// @brief Current mode under which the MPI is being operated.
 extern volatile MPI_rx_mode_t MPI_current_uart_rx_mode;
 
-extern MPI_buffer_state_enum_t MPI_buffer_state;  // Current state of the buffer that thread uses to store data to memory
-
-extern uint16_t MPI_active_data_median_buffer_len;
-extern uint8_t MPI_active_data_median_buffer[];
-
 extern uint8_t MPI_receive_prepared;
 extern uint8_t MPI_science_data_file_is_open;
 extern lfs_file_t MPI_science_data_file_pointer;

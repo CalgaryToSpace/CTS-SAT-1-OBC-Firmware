@@ -67,6 +67,9 @@ volatile uint8_t UART_mpi_data_rx_buffer[8192]; // extern
 // const uint16_t UART_mpi_data_buffer_len = 80000; // extern
 // volatile uint8_t UART_mpi_data_buffer[80000]; // extern
 
+const uint16_t MPI_active_data_median_buffer_len = 4096;
+volatile uint8_t MPI_active_data_median_buffer[4096];
+
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     // This ISR function gets called every time a byte is received on the UART.
 
