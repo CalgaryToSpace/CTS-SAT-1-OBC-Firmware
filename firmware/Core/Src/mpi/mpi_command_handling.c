@@ -240,6 +240,10 @@ uint8_t MPI_enable_active_mode() {
         return 5;
     }
 
+    // Abort any previous reception.
+    // Very important. Makes everything work.
+    HAL_UART_AbortReceive(UART_mpi_port_handle);
+
     MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MOSI); // Set the MPI transceiver to MOSI mode
     HAL_Delay(50);
 
