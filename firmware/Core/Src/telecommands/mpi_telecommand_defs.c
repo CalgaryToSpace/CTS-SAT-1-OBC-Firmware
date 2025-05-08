@@ -146,12 +146,12 @@ uint8_t TCMDEXEC_mpi_send_command_hex(
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0: Success, >0: Failure
 uint8_t TCMDEXEC_mpi_enable_active_mode(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t enable_result = MPI_enable_active_mode();
+    const uint8_t enable_result = MPI_enable_active_mode();
 
     if (enable_result != 0) {
         snprintf(response_output_buf, response_output_buf_len,
             "MPI enable active mode Failed! Error Code: %d", enable_result);
-        return 1;
+        return enable_result;
     }
 
     return 0;
@@ -164,12 +164,12 @@ uint8_t TCMDEXEC_mpi_enable_active_mode(const char *args_str, TCMD_TelecommandCh
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0: Success, >0: Failure
 uint8_t TCMDEXEC_mpi_disable_active_mode(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len) {
-    uint8_t disable_result = MPI_disable_active_mode();
+    const uint8_t disable_result = MPI_disable_active_mode();
 
     if (disable_result != 0) {
         snprintf(response_output_buf, response_output_buf_len,
             "MPI disable active mode Failed! Error Code: %d", disable_result);
-        return 1;
+        return disable_result;
     }
 
     return 0;

@@ -48,7 +48,7 @@ extern volatile uint32_t UART_gps_last_write_time_ms;
 extern volatile uint8_t UART_gps_buffer_last_rx_byte;  
 extern volatile uint8_t UART_gps_uart_interrupt_enabled; // Flag to enable or disable the UART GPS ISR
 
-// UART MPI science data buffer (WILL NEED IN THE FUTURE)
+// UART MPI science data buffer
 extern const uint16_t UART_mpi_data_rx_buffer_len; // extern 
 extern volatile uint8_t UART_mpi_data_rx_buffer[]; // extern
 
