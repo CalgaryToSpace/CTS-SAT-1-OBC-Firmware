@@ -101,7 +101,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     }
     else if (huart->Instance == UART_mpi_port_handle->Instance) {        
         // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> MPI Data\n");
-        // LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Received 4096 Bytes!");
 
         if (MPI_current_uart_rx_mode == MPI_RX_MODE_COMMAND_MODE) {
             // Check if buffer is full
@@ -131,6 +130,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
                     UART_mpi_data_rx_buffer[i] = 0x00;
                 }
                 MPI_buffer_state = MPI_MEMORY_WRITE_STATUS_PENDING;
+                DEBUG_uart_print_str("COMPLETE - Received 4096 Bytes!\n");
+
             } else {
                 DEBUG_uart_print_str("COMPLETE - Bytes are being lost!\n");
             }
@@ -139,6 +140,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
             DEBUG_uart_print_str("Unhandled MPI Mode\n"); //TODO: HANDLE other MPI MODES
             DEBUG_uart_print_str("COMPLETE - Receiving some sort of MPI Data!\n");
         }
+
+        UART_mpi_last_write_time_ms = HAL_GetTick();
     }
 
     
