@@ -242,6 +242,9 @@ uint8_t MPI_enable_active_mode() {
         return 5;
     }
 
+    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MOSI); // Set the MPI transceiver to MOSI mode
+    HAL_Delay(50);
+
     // Send command to start MPI science data.
     const uint8_t tx_buffer[3] = {0x54, 0x43, 0x13}; // Start data command (0x13 = d19 = START)
     const HAL_StatusTypeDef tx_result = HAL_UART_Transmit(
@@ -308,6 +311,9 @@ uint8_t MPI_disable_active_mode() {
     if (stop_status != HAL_OK) {
         return 1;
     }
+
+    // TODO: Log stats about the data received
+    // File size, start time, stop time, current EPS power, number of interrupts, any dropped bytes, etc.
 
     return 0;
 }

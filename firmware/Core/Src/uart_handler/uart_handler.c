@@ -234,7 +234,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
     if (huart->Instance == UART_mpi_port_handle->Instance) {
         // DEBUG_uart_print_str("Half callback being called!");
-        // LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "HALF CALLBACK - Received 4096 Bytes!");
+
         if (MPI_current_uart_rx_mode == MPI_RX_MODE_SENSING_MODE) {
             if (MPI_buffer_state == MPI_MEMORY_WRITE_STATUS_READY) {
                 for(uint16_t i = 0; i < UART_mpi_data_rx_buffer_len/2; i++) {
