@@ -9,6 +9,8 @@
 // Note: 23 sentences is too few. 100 sometimes is too few. 250 is a good number, I think.
 #define CAM_SENTENCES_PER_HALF_CALLBACK 250
 
+#define CAM_BYTES_TO_RECEIVE_PER_HALF_CALLBACK ((CAM_SENTENCE_LEN) * (CAM_SENTENCES_PER_HALF_CALLBACK))
+
 uint8_t CAM_change_baudrate(uint32_t bitrate);
 
 uint8_t CAM_setup();

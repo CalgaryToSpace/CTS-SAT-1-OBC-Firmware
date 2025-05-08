@@ -31,11 +31,11 @@ volatile uint16_t UART_mpi_buffer_write_idx = 0;            // extern
 
 // UART CAMERA buffer
 // TODO: Configure with peripheral required specifications
-const uint16_t UART_camera_dma_buffer_len = CAM_SENTENCE_LEN*CAM_SENTENCES_PER_HALF_CALLBACK*2; // extern       // TODO: Set based on expected size requirements for reception
-const uint16_t UART_camera_dma_buffer_len_half = CAM_SENTENCE_LEN*CAM_SENTENCES_PER_HALF_CALLBACK; // extern       // TODO: Set based on expected size requirements for reception
-volatile uint8_t UART_camera_dma_buffer[CAM_SENTENCE_LEN*CAM_SENTENCES_PER_HALF_CALLBACK*2];   // extern       
-volatile uint8_t UART_camera_pending_fs_write_half_1_buf[CAM_SENTENCE_LEN*CAM_SENTENCES_PER_HALF_CALLBACK];   // extern       // half-size buffer for writing to LFS in half/cplt callback
-volatile uint8_t UART_camera_pending_fs_write_half_2_buf[CAM_SENTENCE_LEN*CAM_SENTENCES_PER_HALF_CALLBACK];   // extern       // half-size buffer for writing to LFS in half/cplt callback
+const uint16_t UART_camera_dma_buffer_len = CAM_BYTES_TO_RECEIVE_PER_HALF_CALLBACK*2; // extern       // TODO: Set based on expected size requirements for reception
+const uint16_t UART_camera_dma_buffer_len_half = CAM_BYTES_TO_RECEIVE_PER_HALF_CALLBACK; // extern       // TODO: Set based on expected size requirements for reception
+volatile uint8_t UART_camera_dma_buffer[CAM_BYTES_TO_RECEIVE_PER_HALF_CALLBACK*2];   // extern       
+volatile uint8_t UART_camera_pending_fs_write_half_1_buf[CAM_BYTES_TO_RECEIVE_PER_HALF_CALLBACK];   // extern       // half-size buffer for writing to LFS in half/cplt callback
+volatile uint8_t UART_camera_pending_fs_write_half_2_buf[CAM_BYTES_TO_RECEIVE_PER_HALF_CALLBACK];   // extern       // half-size buffer for writing to LFS in half/cplt callback
 volatile uint32_t UART_camera_last_write_time_ms = 0;       // extern
 volatile uint8_t UART_camera_buffer_last_rx_byte = 0;       // extern
 volatile CAMERA_uart_write_state_enum_t CAMERA_uart_half_1_state = CAMERA_UART_WRITE_STATE_IDLE; // extern
