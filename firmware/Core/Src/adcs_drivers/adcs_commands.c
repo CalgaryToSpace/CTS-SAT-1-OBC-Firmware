@@ -12,7 +12,6 @@
 #include "adcs_drivers/adcs_commands.h"
 #include "adcs_drivers/adcs_internal_drivers.h"
 #include "timekeeping/timekeeping.h"
-#include "littlefs/littlefs_helper.h"
 #include "log/log.h"
 #include <string.h>
 #include <stdio.h>
@@ -53,11 +52,11 @@ uint8_t ADCS_cmd_ack(ADCS_cmd_ack_struct_t *ack) {
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Reset command.
-/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
 uint8_t ADCS_reset() {
-    // returns telecommand error flag
     uint8_t data_send[1] = {ADCS_MAGIC_NUMBER};
-    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_RESET, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+    const uint8_t cmd_status = ADCS_send_i2c_telecommand(ADCS_COMMAND_RESET, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+        // note: because the ADCS will become unresponsive afterward for at least 15 seconds, do not poll for a response
     return cmd_status;
 }
 
@@ -559,7 +558,7 @@ uint8_t ADCS_set_commanded_attitude_angles(double x, double y, double z) {
 /// @param[in] magnetometer_selection_for_raw_magnetometer_telemetry select magnetometer mode for the second raw telemetry frame
 /// @param[in] automatic_estimation_transition_due_to_rate_sensor_errors enable/disable automatic transition from MEMS rate estimation mode to RKF in case of rate sensor error
 /// @param[in] wheel_30s_power_up_delay present in CubeSupport but not in the manual -- need to test
-/// @param[in] cam1_and_cam2_sampling_period the manual calls it this, but CubeSupport calls it "error counter reset period" -- need to test
+/// @param[in] error_counter_reset_period_min reset period for error counter
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_set_estimation_params(
                                 float magnetometer_rate_filter_system_noise, 
@@ -579,9 +578,8 @@ uint8_t ADCS_set_estimation_params(
                                 ADCS_magnetometer_mode_enum_t magnetometer_selection_for_raw_magnetometer_telemetry, // and so is this, actually!
                                 bool automatic_estimation_transition_due_to_rate_sensor_errors, 
                                 bool wheel_30s_power_up_delay, // present in CubeSupport but not in the manual -- need to test
-                                uint8_t cam1_and_cam2_sampling_period) { // the manual calls it this, but CubeSupport calls it "error counter reset period" -- need to test
+                                uint8_t error_counter_reset_period_min) { 
     // float uses IEEE 754 float32, with all bytes reversed, so eg. 1.1 becomes [0xCD, 0xCC, 0x8C, 0x3F]
-    // the float type should already be reversed, but need to test in implementation
     uint8_t data_send[31];
 
     // convert floats to reversed arrays of uint8_t
@@ -597,7 +595,7 @@ uint8_t ADCS_set_estimation_params(
     data_send[28] = (magnetometer_mode << 6) | (automatic_magnetometer_recovery << 5) | (nadir_sensor_terminator_test << 4) | (use_star_tracker << 3) | (use_css << 2) | (use_nadir_sensor << 1) | (use_sun_sensor);
     data_send[29] = (wheel_30s_power_up_delay << 3) | (automatic_estimation_transition_due_to_rate_sensor_errors << 2) | (magnetometer_selection_for_raw_magnetometer_telemetry);
 
-    data_send[30] = cam1_and_cam2_sampling_period; // lower four bits are for cam1 and upper four are for cam2 if the manual is correct, not CubeSupport
+    data_send[30] = error_counter_reset_period_min; 
 
     const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_CUBEACP_SET_ESTIMATION_PARAMETERS, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
@@ -941,76 +939,6 @@ uint8_t ADCS_get_cubecontrol_current(ADCS_cubecontrol_current_struct_t *output_s
     return tlm_status;
 }
 
-/// @brief Instruct the ADCS to execute the ADCS_Raw_GPS_Status command.
-/// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
-/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_get_raw_gps_status(ADCS_raw_gps_status_struct_t *output_struct) {
-    uint8_t data_length = 6;
-    uint8_t data_received[data_length]; 
-
-    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_GPS_STATUS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
-
-    ADCS_pack_to_raw_gps_status_struct(&data_received[0], output_struct);
-
-    return tlm_status;
-}
-
-/// @brief Instruct the ADCS to execute the ADCS_Raw_GPS_Time command.
-/// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
-/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_get_raw_gps_time(ADCS_raw_gps_time_struct_t *output_struct) {
-    uint8_t data_length = 6;
-    uint8_t data_received[data_length]; 
-
-    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_GPS_TIME, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
-
-    ADCS_pack_to_raw_gps_time_struct(data_received, output_struct);
-
-    return tlm_status;
-}
-
-/// @brief Instruct the ADCS to execute the ADCS_Raw_GPS_X command.
-/// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
-/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_get_raw_gps_x(ADCS_raw_gps_struct_t *output_struct) {
-    uint8_t data_length = 6;
-    uint8_t data_received[data_length]; 
-
-    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_GPS_X, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
-
-    ADCS_pack_to_raw_gps_struct(ADCS_GPS_AXIS_X, data_received, output_struct);
-
-    return tlm_status;
-}
-
-/// @brief Instruct the ADCS to execute the ADCS_Raw_GPS_Y command.
-/// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
-/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_get_raw_gps_y(ADCS_raw_gps_struct_t *output_struct) {
-    uint8_t data_length = 6;
-    uint8_t data_received[data_length]; 
-
-    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_GPS_Y, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
-
-    ADCS_pack_to_raw_gps_struct(ADCS_GPS_AXIS_Y, data_received, output_struct);
-
-    return tlm_status;
-}
-
-/// @brief Instruct the ADCS to execute the ADCS_Raw_GPS_Z command.
-/// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
-/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_get_raw_gps_z(ADCS_raw_gps_struct_t *output_struct) {
-    uint8_t data_length = 6;
-    uint8_t data_received[data_length]; 
-
-    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_GPS_Z, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
-
-    ADCS_pack_to_raw_gps_struct(ADCS_GPS_AXIS_Z, data_received, output_struct);
-
-    return tlm_status;
-}
-
 /// @brief Instruct the ADCS to execute the ADCS_Measurements command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
@@ -1249,6 +1177,14 @@ uint8_t ADCS_get_raw_star_tracker_data(ADCS_raw_star_tracker_struct_t *output_st
 uint8_t ADCS_save_image_to_sd(ADCS_camera_select_enum_t camera_select, ADCS_image_size_enum_t image_size) {
     uint8_t data_send[2] = {camera_select, image_size};
     const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SAVE_IMAGE, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+
+    // to avoid interference, do a separate ack for these commands
+    if (cmd_status != 0) {
+        ADCS_cmd_ack_struct_t ack_status;
+        ADCS_cmd_ack(&ack_status);
+        return ack_status.error_flag;
+    }
+
     return cmd_status;
 }
 
@@ -1343,11 +1279,10 @@ uint8_t adcs_download_buffer[20480]; // static buffer to hold the 20 KiB from th
 /// @brief Save one block of the ADCS SD card file pointed to by the file pointer into the ADCS download buffer, then append it to the file in LittleFS.
 /// @param[in] file_info A struct containing information about the currently-pointed-to file
 /// @param[in] current_block The block to load into the download buffer
-/// @param[in] filename Pointer to string containing filename to save as
-/// @param[in] filename_length Length of filename
+/// @param[in] file Pointer to LittleFS file to store everything to
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 /// Specifically: bytes 0-2 are the ADCS error, bytes 3-10 are which command failed, bytes 11-16 are the index of the failure if applicable
-int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info, uint8_t current_block, char* filename_string, uint8_t filename_length) {
+int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info, uint8_t current_block, lfs_file_t* file) {
     ADCS_file_download_buffer_struct_t download_packet;
     uint16_t hole_map[64] = {0, 0, 0, 0, 0, 0, 0, 0}; // this array is 1024 bits, one for each packet up to the maximum
 
@@ -1381,8 +1316,9 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
         return download_burst_status | (1 << 5);
     }
 
-    HAL_Delay(100); // need to allow some time for it to initiate the burst, or else the first packet may be garbage
-    
+    HAL_Delay(100); // need to allow some time (100ms) for it to initiate the burst, or else the first packet may be garbage
+    HAL_IWDG_Refresh(&hiwdg); // pet the watchdog so the system doesn't reboot; must be at least 200ms since last pet
+
     for (uint16_t i = 0; i < 1024; i++) {
         // load 20 bytes at a time into the download buffer
         const uint8_t download_buffer_status = ADCS_get_file_download_buffer(&(download_packet));
@@ -1410,9 +1346,7 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
         required_packets = ceil((file_info.file_size - (20480 * current_block)) / 20.0);
     } else {
         required_packets = 1024; 
-    }
-
-    LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, "Bytes at position 17034 of block %d: %x %x %x %x %x %x", current_block, adcs_download_buffer[17034], adcs_download_buffer[17035], adcs_download_buffer[17036], adcs_download_buffer[17037], adcs_download_buffer[17038], adcs_download_buffer[17039]);        
+    }        
     
     uint16_t packets_received = 0;
     
@@ -1455,6 +1389,7 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
         }
         
         HAL_Delay(100);
+        HAL_IWDG_Refresh(&hiwdg); // pet the watchdog so the system doesn't reboot; must be at least 200ms since last pet
 
         for (uint16_t i = 0; i < 1024; i++) {
             // load 20 bytes at a time into the download buffer
@@ -1500,20 +1435,124 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
     }
 
     /* HOLE MAP STUFF ENDS HERE */
-    
-    // Write to the index file in the filesystem
-    uint8_t lfs_status;
-    if (current_block == 0) {
-        lfs_status = LFS_write_file(filename_string, &adcs_download_buffer[0], 20480); 
+
+    uint64_t bytes_to_write;
+    if (ceil(file_info.file_size / 20480.0) == (current_block + 1)) {
+        // if this is the final block, we may need to write fewer bytes than the maximum
+        bytes_to_write = ceil((file_info.file_size - (20480 * current_block)));
     } else {
-        lfs_status = LFS_append_file(filename_string, &adcs_download_buffer[0], 20480);
+        bytes_to_write = 20480;
+    }     
+    
+    // Write to the file in the filesystem
+    if (current_block != 0) { // If this isn't the first block, seek to the end of the file and prepare to append
+        const lfs_soff_t seek_result = lfs_file_seek(&LFS_filesystem, file, 0, LFS_SEEK_END);
+        if (seek_result < 0) {
+            LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error seeking within file.");
+            return seek_result;
+        }
     }
-    if (lfs_status != 0) {
-        return lfs_status;
+    const lfs_ssize_t write_result = lfs_file_write(&LFS_filesystem, file, &adcs_download_buffer[0], bytes_to_write);
+    if (write_result < 0) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error writing to file.");
+        return write_result;
     }
 
     return 0;
 
+}
+
+/// @brief Get the list of files from the SD card.
+/// @param[in] num_to_read The maximum number of file entries to read.
+/// @param[in] index_offset The index (starting at 0) from which to start reading files.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission, negative if an LFS or snprintf error code occurred. 
+uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) {
+    
+    const uint8_t reset_pointer_status = ADCS_reset_file_list_read_pointer();
+    HAL_Delay(200);
+    if (reset_pointer_status != 0) {
+        // to avoid interference from the EPS, do a separate ack for these commands
+        ADCS_cmd_ack_struct_t ack_status;
+        ADCS_cmd_ack(&ack_status);
+        if (ack_status.error_flag != 0) {
+            return ack_status.error_flag;
+        }
+    }
+
+    ADCS_file_info_struct_t file_info;
+
+    if (index_offset > 0) {
+        // if the offset is greater than 0, we need to advance the file list read pointer to reach the correct offset
+        for (uint16_t i = 0; i < index_offset; i++) {
+            const uint8_t advance_pointer_status = ADCS_advance_file_list_read_pointer();
+            HAL_Delay(100);
+            if (advance_pointer_status != 0) {
+                // to avoid interference from the EPS, do a separate ack for these commands
+                ADCS_cmd_ack_struct_t ack_status;
+                ADCS_cmd_ack(&ack_status);
+                if (ack_status.error_flag != 0) {
+                    return ack_status.error_flag;
+                }
+            }
+            
+            const uint8_t file_info_status = ADCS_get_file_info_telemetry(&file_info);
+            if (file_info_status != 0) {
+                LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE), "Failed to get file information (index %d).", i);
+                return file_info_status;
+            }
+
+            if (file_info.file_crc16 == 0 && file_info.file_date_time_msdos == 0 && file_info.file_size == 0) {
+                // if all the file_info parameters are zero, we've reached the end of the file list.
+                LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "End of file list reached at index %d.", i);
+                return 6;
+            }
+        }
+    }
+
+    for (uint16_t i = index_offset; i < (num_to_read + index_offset); i++) {
+        
+        // get info about the current file
+        const uint8_t file_info_status = ADCS_get_file_info_telemetry(&file_info);
+        if (file_info_status != 0) {
+            LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE), "Failed to get file information (index %d).", i);
+            return file_info_status;
+        }
+
+        if (file_info.file_crc16 == 0 && file_info.file_date_time_msdos == 0 && file_info.file_size == 0) {
+            // if all the file_info parameters are zero, we've reached the end of the file list.
+            LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "End of file list reached.");
+            break;
+        }
+
+        // convert the MS-DOS time from the file info struct into human-readable time; code from Firmware Reference Manual Section 6.2.2
+        const uint16_t seconds = (file_info.file_date_time_msdos & 0x1f) << 1; // 5bits – 32
+        const uint16_t minutes = (file_info.file_date_time_msdos >> 5) & 0x3f; // 6bits – 64
+        const uint16_t hour = (file_info.file_date_time_msdos >> 11) & 0x1f; // 5bits – 32
+        const uint16_t day = (file_info.file_date_time_msdos >> 16) & 0x1f; // 5bits – 32
+        const uint16_t month = (file_info.file_date_time_msdos >> 21) & 0x0f; // 4bits – 16
+        const uint16_t year = (file_info.file_date_time_msdos >> 25) + 1980; // 7bits – 128 (1980 to 21..)
+
+        // now pack it into a string 
+        // TODO: check to see where the log should be sent
+        LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
+            "Index:%d,Type:%d,Busy Updating:%d,Counter:%d,Size:%ld,Datetime:%04d-%02d-%02d %02d:%02d:%02d,CRC16:0x%x\n",
+            i, file_info.file_type, file_info.busy_updating, file_info.file_counter, file_info.file_size, year, 
+            month, day, hour, minutes, seconds, file_info.file_crc16);
+
+        // now advance the file list read pointer to do it all again
+        const uint8_t advance_pointer_status = ADCS_advance_file_list_read_pointer();
+        HAL_Delay(100);
+        if (advance_pointer_status != 0) {
+            // to avoid interference from the EPS, do a separate ack for these commands
+            ADCS_cmd_ack_struct_t ack_status;
+            ADCS_cmd_ack(&ack_status);
+            if (ack_status.error_flag != 0) {
+                return ack_status.error_flag;
+            }
+        }
+    }
+    
+    return 0;
 }
 
 
@@ -1539,7 +1578,7 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
         */
             
         const uint8_t reset_pointer_status = ADCS_reset_file_list_read_pointer();
-        HAL_Delay(100);
+        HAL_Delay(200);
         if (reset_pointer_status != 0) {
             // to avoid interference from the EPS, do a separate ack for these commands
             ADCS_cmd_ack_struct_t ack_status;
@@ -1551,7 +1590,7 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
 
         for (uint16_t i = 0; i < file_index; i++) {
             const uint8_t advance_pointer_status = ADCS_advance_file_list_read_pointer();
-            HAL_Delay(100);
+            HAL_Delay(200);
             if (advance_pointer_status != 0) {
                 // to avoid interference from the EPS, do a separate ack for these commands
                 ADCS_cmd_ack_struct_t ack_status;
@@ -1566,10 +1605,6 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
         if (file_info_status != 0) {
             return file_info_status;
         }
-
-        if (file_info.file_counter != file_index) {
-            return 12;
-        } // make sure that we've properly advanced the file list read pointer
 
         // name file based on type and timestamp
         switch(file_info.file_type) {
@@ -1611,13 +1646,29 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
         file_info.file_type = ADCS_FILE_TYPE_INDEX;
     }
 
+    // Check that LittleFS is mounted
+    if (!LFS_is_lfs_mounted) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "LittleFS not mounted."); 
+        return 1;
+    }
+
+    // Now that we have the filename string, we can create the file (any existing file will be overwritten)
+    lfs_file_t file;
+    const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, filename_string, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC, &LFS_file_cfg);
+    if (open_result < 0) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening/creating file: %s", filename_string);
+        return open_result;
+    }
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully created file: %s", filename_string);
+
+
     uint8_t total_blocks = ceil(file_info.file_size / 20480.0);
     uint8_t current_block = 0; 
 
     while (current_block < total_blocks) {
 
         LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, "Loading block %d from ADCS to LittleFS", current_block);
-        const uint8_t load_block_status = ADCS_load_sd_file_block_to_filesystem(file_info, current_block, filename_string, 17); // load the block
+        const uint8_t load_block_status = ADCS_load_sd_file_block_to_filesystem(file_info, current_block, &file); // load the block
         if (load_block_status != 0) {
             return load_block_status;
         }
@@ -1625,18 +1676,27 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
         current_block++;
     }
 
+    // Once we've written all the blocks, close the file; it won't be updated in LittleFS until the file is closed.
+    const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
+    if (close_result < 0) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing file.");
+        return close_result;
+    }
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully wrote data to file: %s", filename_string);
+
     return 0;
 }
+
 /// @brief Disable all active ADCS SD card logs.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred.
 uint8_t ADCS_disable_SD_logging() {
     // Disable SD card logging
-    const uint8_t* temp_data_pointer[1] = {ADCS_SD_LOG_MASK_COMMUNICATION_STATUS};
-    const uint8_t sd_log_1_stop_status = ADCS_set_sd_log_config(1, temp_data_pointer, 0, 0, 0);                     
+    const uint8_t* temp_data_pointer[1] = {ADCS_SD_LOG_MASK_NONE};
+    const uint8_t sd_log_1_stop_status = ADCS_set_sd_log_config(1, temp_data_pointer, 1, 0, 0);                     
     if (sd_log_1_stop_status != 0) {
         return sd_log_1_stop_status;
     }
-    const uint8_t sd_log_2_stop_status = ADCS_set_sd_log_config(2, temp_data_pointer, 0, 0, 0);                     
+    const uint8_t sd_log_2_stop_status = ADCS_set_sd_log_config(2, temp_data_pointer, 1, 0, 0);                     
     return sd_log_2_stop_status;
 }
 

@@ -3,6 +3,7 @@
 
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_internal_drivers.h"
+#include "littlefs/littlefs_helper.h"
 
 /* Function Definitions */
 
@@ -77,8 +78,8 @@ uint8_t ADCS_set_estimation_params(
                                 ADCS_magnetometer_mode_enum_t magnetometer_mode, // this is actually the same one as for ID 56!
                                 ADCS_magnetometer_mode_enum_t magnetometer_selection_for_raw_magnetometer_telemetry, // and so is this, actually!
                                 bool automatic_estimation_transition_due_to_rate_sensor_errors, 
-                                bool wheel_30s_power_up_delay, // present in CubeSupport but not in the manual -- need to test
-                                uint8_t cam1_and_cam2_sampling_period);
+                                bool wheel_30s_power_up_delay, // unused parameter by the ADCS
+                                uint8_t error_counter_reset_period_min);
 uint8_t ADCS_get_estimation_params(ADCS_estimation_params_struct_t *output_struct);
 uint8_t ADCS_set_augmented_sgp4_params(double incl_coefficient,
                            double raan_coefficient,
@@ -142,10 +143,11 @@ uint8_t ADCS_get_current_unix_time(uint64_t* epoch_time_ms);
 uint8_t ADCS_synchronize_unix_time();
 uint8_t ADCS_set_sd_log_config(uint8_t which_log, const uint8_t **log_array, uint8_t log_array_size, uint16_t log_period, ADCS_sd_log_destination_enum_t which_sd);
 uint8_t ADCS_get_sd_log_config(uint8_t which_log, ADCS_sd_log_config_struct* config);
-int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info, uint8_t current_block, char* filename_string, uint8_t filename_length);
+int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info, uint8_t current_block, lfs_file_t* file);
 int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index);
 uint8_t ADCS_disable_SD_logging();
 uint8_t ADCS_disable_peripherals_and_SD_logs_without_stabilisation();
 uint8_t ADCS_disable_peripherals_and_SD_logs_with_stabilisation();
+uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset);
 
 #endif /* INC_ADCS_COMMANDS_H_ */

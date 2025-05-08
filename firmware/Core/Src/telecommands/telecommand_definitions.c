@@ -565,7 +565,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "adcs_set_estimation_params",
         .tcmd_func = TCMDEXEC_adcs_set_estimation_params,
-        .number_of_args = 18,
+        .number_of_args = 17,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
@@ -695,36 +695,6 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
-        .tcmd_name = "adcs_raw_gps_status",
-        .tcmd_func = TCMDEXEC_adcs_raw_gps_status,
-        .number_of_args = 0,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },
-    {
-        .tcmd_name = "adcs_raw_gps_time",
-        .tcmd_func = TCMDEXEC_adcs_raw_gps_time,
-        .number_of_args = 0,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },
-    {
-        .tcmd_name = "adcs_raw_gps_x",
-        .tcmd_func = TCMDEXEC_adcs_raw_gps_x,
-        .number_of_args = 0,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },
-    {
-        .tcmd_name = "adcs_raw_gps_y",
-        .tcmd_func = TCMDEXEC_adcs_raw_gps_y,
-        .number_of_args = 0,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },
-    {
-        .tcmd_name = "adcs_raw_gps_z",
-        .tcmd_func = TCMDEXEC_adcs_raw_gps_z,
-        .number_of_args = 0,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },
-    {
         .tcmd_name = "adcs_measurements",
         .tcmd_func = TCMDEXEC_adcs_measurements,
         .number_of_args = 0,
@@ -734,7 +704,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "adcs_download_sd_file",
         .tcmd_func = TCMDEXEC_adcs_download_sd_file,
         .number_of_args = 1,
-        .readiness_level = TCMD_READINESS_LEVEL_IN_PROGRESS, // TODO: change this once the function is done
+        .readiness_level = TCMD_READINESS_LEVEL_IN_PROGRESS,
     }, 
     {
         .tcmd_name = "adcs_generic_command",
@@ -760,12 +730,6 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
-    {
-        .tcmd_name = "adcs_get_raw_star_tracker_data",
-        .tcmd_func = TCMDEXEC_adcs_get_raw_star_tracker_data,
-        .number_of_args = 0,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    }, 
     {
         .tcmd_name = "adcs_save_image_to_sd",
         .tcmd_func = TCMDEXEC_adcs_save_image_to_sd,
@@ -811,7 +775,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "adcs_download_index_file",
         .tcmd_func = TCMDEXEC_adcs_download_index_file,
-        .number_of_args = 0,
+        .number_of_args = 2,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     }, 
     {
@@ -819,7 +783,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_func = TCMDEXEC_adcs_set_commissioning_modes,
         .number_of_args = 2,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },  
+    },
 
     // ****************** END SECTION: telecommand_adcs ******************
 

@@ -356,7 +356,7 @@ uint8_t TCMDEXEC_fs_read_text_file(
         DEBUG_uart_print_str((char*)rx_buffer);
         // TODO: send to radio
         DEBUG_uart_print_str("TODO: send data to radio from TCMD_fs_read_text_file()\n");
-        osDelay(500);
+        osDelay(300);
         HAL_IWDG_Refresh(&hiwdg);
     }
     

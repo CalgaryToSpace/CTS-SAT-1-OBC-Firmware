@@ -146,7 +146,7 @@ uint8_t TCMDEXEC_uart_send_hex_get_response_hex(
         // UART_handle_ptr = UART_camera_port_handle;
         // UART_rx_buffer_write_idx_ptr = &UART_camera_buffer_write_idx;
         // UART_rx_buffer = &UART_camera_dma_buffer[0];
-        // UART_rx_buffer_size_ptr = &UART_camera_buffer_len;
+        // UART_rx_buffer_size_ptr = &UART_camera_dma_buffer_len;
         // UART_last_write_time_ms_ptr = &UART_camera_last_write_time_ms;
         // LOG_source = LOG_SYSTEM_BOOM; // Camera is related to the Boom experiment and should hence share the log source
 

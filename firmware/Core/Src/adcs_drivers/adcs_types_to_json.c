@@ -427,7 +427,7 @@ uint8_t ADCS_estimation_params_struct_TO_json(const ADCS_estimation_params_struc
         "\"magnetometer_selection_for_raw_magnetometer_telemetry\":%d,"
         "\"automatic_estimation_transition_due_to_rate_sensor_errors\":%d,"
         "\"wheel_30s_power_up_delay\":%d,"
-        "\"cam1_and_cam2_sampling_period\":%d}", 
+        "\"error_counter_reset_period_min\":%d}", 
         data->magnetometer_rate_filter_system_noise,
         data->extended_kalman_filter_system_noise,
         data->coarse_sun_sensor_measurement_noise,
@@ -445,7 +445,7 @@ uint8_t ADCS_estimation_params_struct_TO_json(const ADCS_estimation_params_struc
         data->magnetometer_selection_for_raw_magnetometer_telemetry,
         data->automatic_estimation_transition_due_to_rate_sensor_errors,
         data->wheel_30s_power_up_delay,
-        data->cam1_and_cam2_sampling_period);
+        data->error_counter_reset_period_min);
 
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error
@@ -994,7 +994,7 @@ uint8_t ADCS_sd_download_list_TO_json(ADCS_file_info_struct_t *data, uint16_t da
         
         // our compiler doesn't support %lld for printing int64_t, so substitute it for strings here
         char datetime_buffer[32];
-        GEN_uint64_to_str(data[i].file_date_time, &datetime_buffer[0]);
+        GEN_uint64_to_str(data[i].file_date_time_msdos, &datetime_buffer[0]);
 
         snprintf_ret = snprintf(&json_output_str[total_written], json_output_str_size, "%d          %s           %d       %ld       %d\n", 
             data[i].file_counter, datetime_buffer, data[i].file_type, data[i].file_size, data[i].file_crc16);

@@ -2,7 +2,7 @@
 #include "littlefs/lfs.h"
 #include "littlefs/littlefs_driver.h"
 #include "debug_tools/debug_uart.h"
-#include "camera/camera_init.h"
+#include "camera/camera_commands.h"
 #include "uart_handler/uart_handler.h"
 #include "log/log.h"
 #include "eps_drivers/eps_channel_control.h"
@@ -13,7 +13,6 @@
 #include <stdio.h>
 
 #include "main.h"
-#include "camera_init.h"
 
 /// @brief Timeout duration for camera receive in milliseconds
 static const uint32_t CAMERA_RX_TOTAL_TIMEOUT_DURATION_MS = 12000;
@@ -82,7 +81,7 @@ uint8_t CAM_change_baudrate(uint32_t new_baud_rate) {
 }
 
 
-/// @brief Set up the camera by powering on and changing the baudrate to 2400.
+/// @brief Set up the camera by powering on and changing the baudrate to 230400.
 /// @return 0 on success. The error code from the `CAM_change_baudrate` function, or >100 if an EPS error occurred.
 /// @note Does not perform a self-test.
 uint8_t CAM_setup() {
@@ -229,20 +228,18 @@ uint8_t CAM_receive_image(lfs_file_t* img_file) {
             const lfs_ssize_t write_result = lfs_file_write(
                 &LFS_filesystem, img_file,
                 (const uint8_t *)UART_camera_pending_fs_write_half_1_buf,
-                CAM_SENTENCE_LEN*CAM_SENTENCES_PER_HALF_CALLBACK
+                UART_camera_dma_buffer_len_half
             );
             if (write_result < 0) {
                 LOG_message(
                     LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
                     "LFS error writing half 1 to img file."
                 );
-            }
-            else {
+            } else {
                 total_bytes_written += write_result;
             }
 
             CAMERA_uart_half_1_state = CAMERA_UART_WRITE_STATE_HALF_WRITTEN_TO_FS;
-            // return 0; // FIXME: THIS RETURN SHOULD BE REMOVED. For debug only. // FIXME: Start here, consider issue of probably need to delete the file better maybe.
         }
 
         // Write file after complete callback (Half 2).
@@ -263,7 +260,7 @@ uint8_t CAM_receive_image(lfs_file_t* img_file) {
             // Write data to file
             const lfs_ssize_t write_result = lfs_file_write(
                 &LFS_filesystem, img_file,
-                (const uint8_t *)UART_camera_pending_fs_write_half_2_buf, CAM_SENTENCE_LEN*CAM_SENTENCES_PER_HALF_CALLBACK
+                (const uint8_t *)UART_camera_pending_fs_write_half_2_buf, UART_camera_dma_buffer_len_half
             );
             if (write_result < 0) {
                 LOG_message(
@@ -291,12 +288,25 @@ uint8_t CAM_receive_image(lfs_file_t* img_file) {
             break;
         }
 
-        // FIXME: Should add a between-messages timeout here, which looks at UART_camera_last_write_time_ms
+        // Between messages timeout condition: 
+        // If it has been more than 5 seconds since starting to capture image AND
+        // if it has been more than 2 seconds since the last write time
+        // (indicating that the camera is not sending data).
+        // Break out of the loop.
+        const uint32_t current_time = HAL_GetTick();
+        if (((current_time - UART_camera_rx_start_time_ms) > 5000) && // TODO: Ensure these values make sense by testing lots of pictures
+            ((current_time - UART_camera_last_write_time_ms) > 2000)) {
+            LOG_message(
+                LOG_SYSTEM_BOOM, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
+                "Camera hasn't written data in 2 seconds. Breaking out of loop."
+            );
+            break;
+        }
     }
 
     LOG_message(
         LOG_SYSTEM_BOOM, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_FILE),
-        "Camera receive loop finished. Total bytes written: %ld", total_bytes_written
+        "Total bytes written after loop: %ld", total_bytes_written
     );
 
     // Try to read any remaining data in the DMA buffer.
@@ -318,18 +328,17 @@ uint8_t CAM_receive_image(lfs_file_t* img_file) {
         DEBUG_uart_print_str("Remaining data in half 1: ");
         DEBUG_uart_print_str_max_len(
             (const char *)UART_camera_dma_buffer, CAM_SENTENCE_LEN);
-        uint16_t bytes_to_write = 0;
-        
-        for (uint16_t i = 0; i < UART_camera_buffer_len / 2; i++)
+        uint16_t index = 0;
+        for (; index < UART_camera_dma_buffer_len_half; index++)
         {
-            uint8_t data = UART_camera_dma_buffer[i];
-            if (data == '\0')
-            {
+            const uint8_t data = UART_camera_dma_buffer[index];
+            if (data == '\0') {
                 break;
             }
-            UART_camera_pending_fs_write_half_1_buf[i] = data;
-            bytes_to_write++;
+            UART_camera_pending_fs_write_half_1_buf[index] = data;
         }
+        const uint16_t bytes_to_write = index;
+
         DEBUG_uart_print_str("First loop bytes to write: ");
         DEBUG_uart_print_uint32(bytes_to_write);
         DEBUG_uart_print_str("\n");
@@ -338,51 +347,47 @@ uint8_t CAM_receive_image(lfs_file_t* img_file) {
             &LFS_filesystem, img_file,
             (const uint8_t *)UART_camera_pending_fs_write_half_1_buf,
             bytes_to_write);
-        if (write_result < 0)
-        {
+        
+        if (write_result < 0) {
             LOG_message(
                 LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
                 "LFS error writing half 1 to img file after while loop.");
-        }
-        else
-        {
+        } else {
             total_bytes_written += write_result;
         }
     }
     
 
-    starts_with_null_terminator = UART_camera_dma_buffer[UART_camera_buffer_len / 2] == '\0';
+    starts_with_null_terminator = UART_camera_dma_buffer[UART_camera_dma_buffer_len_half] == '\0';
 
     if (starts_with_null_terminator == 0) {
         // Print 2nd half
         DEBUG_uart_print_str("Remaining data in half 2: ");
         DEBUG_uart_print_str_max_len(
-            (const char *)UART_camera_dma_buffer + CAM_SENTENCE_LEN * CAM_SENTENCES_PER_HALF_CALLBACK,
+            (const char *)UART_camera_dma_buffer + UART_camera_dma_buffer_len_half,
             CAM_SENTENCE_LEN);
-        uint16_t bytes_to_write = 0;
 
-        for (uint16_t j = UART_camera_buffer_len / 2; j < UART_camera_buffer_len; j++)
+        uint16_t j = UART_camera_dma_buffer_len_half;
+        for (; j < UART_camera_dma_buffer_len; j++)
         {
             uint8_t data = UART_camera_dma_buffer[j];
             if (data == '\0') {
                 break;
             }
-            UART_camera_pending_fs_write_half_2_buf[j - UART_camera_buffer_len / 2 ] = UART_camera_dma_buffer[j];
-            bytes_to_write++;
+            UART_camera_pending_fs_write_half_2_buf[j - UART_camera_dma_buffer_len_half] = UART_camera_dma_buffer[j];
         }
+        uint16_t bytes_to_write = j - UART_camera_dma_buffer_len_half;
+
         // write the second half to the file
         const lfs_ssize_t write_result_2 = lfs_file_write(
             &LFS_filesystem, img_file,
             (const uint8_t *)UART_camera_pending_fs_write_half_2_buf,
             bytes_to_write);
-        if (write_result_2 < 0)
-        {
+        if (write_result_2 < 0) {
             LOG_message(
                 LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
                 "LFS error writing half 2 to img file after while loop.");
-        }
-        else
-        {
+        } else {
             total_bytes_written += write_result_2;
         }
     }
@@ -394,8 +399,6 @@ uint8_t CAM_receive_image(lfs_file_t* img_file) {
         total_bytes_written / CAM_SENTENCE_LEN
     );
 
-    // FIXME: Need to handle reading the final half of the data (implemented somewhat in the following commented block)
-    
     return 0;
 }
 
@@ -433,9 +436,14 @@ static void CAM_end_camera_receive_due_to_error(lfs_file_t* img_file) {
 ///         m - medium ambient light
 ///         n - night ambient light
 ///         s - solar sail contrast and light
-/// @return 0: Successfully captured image, Wrong_input: invalid parameter input, Capture_Failure: Error in image reception or command transmission
-enum CAM_capture_status_enum CAM_capture_image(char filename_str[], char lighting_mode) {
+/// @return 0: Successfully captured image, more than 0, error occurred
+/// @note This function does not validate that the camera is connected or powered on.
+CAM_capture_status_enum CAM_capture_image(char filename_str[], char lighting_mode) {
     if (!(lighting_mode == 'd' || lighting_mode == 'm' || lighting_mode == 'n' || lighting_mode == 's')) {
+        LOG_message(
+            LOG_SYSTEM_BOOM, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error: Invalid lighting mode: %c", lighting_mode
+        );
         return CAM_CAPTURE_STATUS_WRONG_INPUT;
     }
 
@@ -443,7 +451,7 @@ enum CAM_capture_status_enum CAM_capture_image(char filename_str[], char lightin
     if (!LFS_is_lfs_mounted) {
         if (LFS_mount() != 0) {
             LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_SINK_ALL, "Error mounting LFS filesystem");
-            return 1;
+            return CAM_CAPTURE_STATUS_LFS_NOT_MOUNTED;
         }
     }
 
@@ -464,11 +472,11 @@ enum CAM_capture_status_enum CAM_capture_image(char filename_str[], char lightin
             "Error opening / creating file: %s", filename_str
         );
         CAM_end_camera_receive_due_to_error(&img_file);
-        return 2;
+        return CAM_CAPTURE_STATUS_LFS_FAILED_OPENING_CREATING_FILE;
     }
 
     // Write a tiny header to file, as the first write takes longer than subsequent writes.
-    const char * const header_str = "START_CAM:";
+    const char * const header_str = "START_CAM:\n";
     const lfs_ssize_t write_result = lfs_file_write(
         &LFS_filesystem, &img_file,
         (const uint8_t *)header_str, strlen(header_str)
@@ -479,7 +487,7 @@ enum CAM_capture_status_enum CAM_capture_image(char filename_str[], char lightin
             "LFS error writing header to img file."
         );
         CAM_end_camera_receive_due_to_error(&img_file);
-        return 3;
+        return CAM_CAPTURE_STATUS_LFS_FAILED_WRITING_HEADER;
     }
     
     LOG_message(
@@ -489,11 +497,11 @@ enum CAM_capture_status_enum CAM_capture_image(char filename_str[], char lightin
     );
     
     // Clear camera response buffer (volatile-safe memset).
-    for (uint16_t i = 0; i < UART_camera_buffer_len; i++) {
+    for (uint16_t i = 0; i < UART_camera_dma_buffer_len; i++) {
         UART_camera_dma_buffer[i] = 0;
     }
     // Clear rx buf (probably not essential).
-    for (uint16_t i = 0; i < CAM_SENTENCE_LEN*CAM_SENTENCES_PER_HALF_CALLBACK; i++){
+    for (uint16_t i = 0; i < UART_camera_dma_buffer_len_half; i++) {
         UART_camera_pending_fs_write_half_1_buf[i] = 0;
         UART_camera_pending_fs_write_half_2_buf[i] = 0;
     }
@@ -512,7 +520,7 @@ enum CAM_capture_status_enum CAM_capture_image(char filename_str[], char lightin
             tx_status);
         // Close file.
         CAM_end_camera_receive_due_to_error(&img_file);
-        return CAM_CAPTURE_STATUS_CAPTURE_FAILURE;
+        return CAM_CAPTURE_STATUS_FAILED_TRANSMITTING_LIGHTING_MODE;
     }
 
     const uint8_t capture_code = CAM_receive_image(&img_file);
@@ -535,7 +543,7 @@ enum CAM_capture_status_enum CAM_capture_image(char filename_str[], char lightin
             LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
             "Error closing file: %s", filename_str
         );
-        return CAM_CAPTURE_STATUS_CAPTURE_FAILURE;
+        return CAM_CAPTURE_STATUS_LFS_FAILED_CLOSING_FILE;
     }
 
     if (capture_code != 0) {
@@ -547,4 +555,14 @@ enum CAM_capture_status_enum CAM_capture_image(char filename_str[], char lightin
         return CAM_CAPTURE_STATUS_CAPTURE_FAILURE;
     }
     return CAM_CAPTURE_STATUS_TRANSMIT_SUCCESS;
+}
+
+void CAM_repeated_error_log_message() {
+    LOG_message(
+        LOG_SYSTEM_BOOM, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+        "If this repeatadly fails, do the following:\n"
+        "1. Turn off the EPS channel for the camera.\n"
+        "2. Wait a minute.\n"
+        "3. Manually change the baudrate of the camera to 115200.\n"
+        "4. Start the process again from camera_setup.");
 }

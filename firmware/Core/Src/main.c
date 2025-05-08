@@ -847,7 +847,7 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
+  huart2.Init.BaudRate = 500000;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -1052,14 +1052,10 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_3_GPIO_Port, PIN_MEM_NCS_FLASH_3_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOG, PIN_MEM_NCS_FLASH_2_Pin|PIN_MEM_NCS_FLASH_1_Pin|PIN_MPI_NEN_RX_MISO_OUT_Pin|PIN_MPI_EN_TX_MOSI_OUT_Pin
-                          |PIN_NRST_LORA_US_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOG, PIN_MEM_NCS_FLASH_2_Pin|PIN_MEM_NCS_FLASH_1_Pin|PIN_MPI_NEN_RX_MISO_OUT_Pin|PIN_MPI_EN_TX_MOSI_OUT_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, PIN_UHF_CTRL_OUT_Pin|PIN_LED_DEVKIT_LD2_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(PIN_NRST_LORA_EU_OUT_GPIO_Port, PIN_NRST_LORA_EU_OUT_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : PIN_LED_GP1_OUT_Pin PIN_LED_GP2_OUT_Pin PIN_LED_GP3_OUT_Pin PIN_MEM_NCS_FLASH_0_Pin
                            PIN_MEM_NCS_FRAM_1_Pin PIN_MEM_NCS_FRAM_0_Pin */
@@ -1090,10 +1086,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(PIN_MEM_NCS_FLASH_3_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PIN_MEM_NCS_FLASH_2_Pin PIN_MEM_NCS_FLASH_1_Pin PIN_MPI_NEN_RX_MISO_OUT_Pin PIN_MPI_EN_TX_MOSI_OUT_Pin
-                           PIN_NRST_LORA_US_Pin */
-  GPIO_InitStruct.Pin = PIN_MEM_NCS_FLASH_2_Pin|PIN_MEM_NCS_FLASH_1_Pin|PIN_MPI_NEN_RX_MISO_OUT_Pin|PIN_MPI_EN_TX_MOSI_OUT_Pin
-                          |PIN_NRST_LORA_US_Pin;
+  /*Configure GPIO pins : PIN_MEM_NCS_FLASH_2_Pin PIN_MEM_NCS_FLASH_1_Pin PIN_MPI_NEN_RX_MISO_OUT_Pin PIN_MPI_EN_TX_MOSI_OUT_Pin */
+  GPIO_InitStruct.Pin = PIN_MEM_NCS_FLASH_2_Pin|PIN_MEM_NCS_FLASH_1_Pin|PIN_MPI_NEN_RX_MISO_OUT_Pin|PIN_MPI_EN_TX_MOSI_OUT_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -1111,13 +1105,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(PIN_REMOVE_BEFORE_FLIGHT_LOW_IS_FLYING_IN_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : PIN_NRST_LORA_EU_OUT_Pin */
-  GPIO_InitStruct.Pin = PIN_NRST_LORA_EU_OUT_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(PIN_NRST_LORA_EU_OUT_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PIN_BOOT0_Pin */
   GPIO_InitStruct.Pin = PIN_BOOT0_Pin;
