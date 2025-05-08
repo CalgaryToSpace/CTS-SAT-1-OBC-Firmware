@@ -38,13 +38,12 @@ extern volatile uint8_t UART_gps_buffer[];                      // Buffer for GP
 extern volatile uint16_t UART_gps_buffer_write_idx;             // Write index for GPS response buffer
 extern volatile uint32_t UART_gps_last_write_time_ms;           // Last write time in milliseconds for GPS response
 
-extern const uint16_t UART_camera_dma_buffer_len;                   // Length of the CAMERA response buffer
-extern const uint16_t UART_camera_dma_buffer_len_half;              // Half length of the CAMERA response buffer
-extern volatile uint8_t UART_camera_dma_buffer[];               // Buffer for CAMERA response
+extern const uint16_t UART_camera_dma_buffer_len;               // Length of the CAMERA DMA buffer
+extern const uint16_t UART_camera_dma_buffer_len_half;          // Half length of the CAMERA DMA buffer
+extern volatile uint8_t UART_camera_dma_buffer[];               // Buffer for CAMERA UART response
 extern volatile uint8_t UART_camera_pending_fs_write_half_1_buf[];
 extern volatile uint8_t UART_camera_pending_fs_write_half_2_buf[];
 extern volatile uint32_t UART_camera_last_write_time_ms;        // Last write time in milliseconds for CAMERA response
-extern volatile uint8_t UART_camera_buffer_last_rx_byte;        // Last received byte for CAMERA response
 
 extern const uint16_t UART_eps_buffer_len;                      // Length of the EPS response buffer
 extern volatile uint8_t UART_eps_buffer[];                      // Buffer for EPS response

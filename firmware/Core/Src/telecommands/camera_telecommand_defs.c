@@ -1,9 +1,8 @@
 #include "telecommand_exec/telecommand_args_helpers.h"
 #include "telecommands/camera_telecommand_defs.h"
 #include "config/configuration.h"
-#include "camera/camera_init.h"
+#include "camera/camera_commands.h"
 #include "log/log.h"
-#include "debug_tools/debug_uart.h"
 
 #include <string.h>
 #include <stdio.h>
