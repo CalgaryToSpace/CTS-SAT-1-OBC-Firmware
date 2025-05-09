@@ -191,25 +191,41 @@ int8_t MPI_prepare_receive_data() {
     if (MPI_science_data_file_is_open == 1) {
         const int8_t close_result = lfs_file_close(&LFS_filesystem, &MPI_science_data_file_pointer);
         if (close_result < 0) {
-            LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing old file: %d", close_result);
+            LOG_message(
+                LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
+                "Error closing old file: %d", close_result
+            );
             MPI_receive_prepared = 0;
             return close_result;
         }
-        LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Old File successfully closed");
+        LOG_message(
+            LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
+            "Old File successfully closed"
+        );
         MPI_science_data_file_is_open = 0;
     }
 
     // Open / Create the file
-    const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &MPI_science_data_file_pointer, MPI_science_data_file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND, &LFS_file_cfg);
+    const int8_t open_result = lfs_file_opencfg(
+        &LFS_filesystem, &MPI_science_data_file_pointer,
+        MPI_science_data_file_name,
+        LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND, &LFS_file_cfg
+    );
     
     // Check if open successful
     if (open_result < 0) {
-        LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening / creating file: %s", MPI_science_data_file_name);
+        LOG_message(
+            LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
+            "Error opening / creating file: %s", MPI_science_data_file_name
+        );
         MPI_receive_prepared = 0;
         return open_result;
     }
     MPI_science_data_file_is_open = 1;
-    LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Opened/created file: %s", MPI_science_data_file_name);
+    LOG_message(
+        LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
+        "Opened/created file: %s", MPI_science_data_file_name
+    );
     MPI_receive_prepared = 1;
     
     // Total 5 second delay to make sure MPI is booted
