@@ -591,6 +591,7 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func = TEST_EXEC__UART_single_subsystem_error_info_to_json,
         .test_file = "unit_tests/test_uart_error_tracking",
         .test_func_name = "UART_single_subsystem_error_info_to_json"
+    },
     {
         .test_func = TEST_EXEC__SYS_TEMP_get_processed_thermal_info,
         .test_file = "unit_tests/test_system_temperature",
