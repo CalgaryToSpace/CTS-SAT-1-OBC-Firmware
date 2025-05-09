@@ -29,6 +29,7 @@
 #include "rtos_tasks/rtos_eps_tasks.h"
 #include "rtos_tasks/rtos_background_upkeep.h"
 #include "rtos_tasks/rtos_tasks_rx_telecommands.h"
+#include "rtos_tasks/rtos_mpi_tasks.h"
 #include "uart_handler/uart_handler.h"
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_commands.h"
@@ -127,6 +128,13 @@ const osThreadAttr_t TASK_service_eps_watchdog_Attributes = {
   .priority = (osPriority_t) osPriorityNormal, //TODO: Figure out which priority makes sense for this task
 };
 
+osThreadId_t TASK_service_write_mpi_data_Handle;
+const osThreadAttr_t TASK_service_write_mpi_data_Attributes = {
+  .name = "TASK_service_write_mpi_data",
+  .stack_size = 512, //in bytes
+  .priority = (osPriority_t) osPriorityNormal, //TODO: Figure out which priority makes sense for this task
+};
+
 osThreadId_t TASK_time_sync_Handle;
 const osThreadAttr_t TASK_time_sync_Attributes = {
   .name = "TASK_time_sync",
@@ -177,6 +185,11 @@ FREERTOS_task_info_struct_t FREERTOS_task_handles_array [] = {
   {
     .task_handle = &TASK_service_eps_watchdog_Handle,
     .task_attribute = &TASK_service_eps_watchdog_Attributes,
+    .lowest_stack_bytes_remaining = UINT32_MAX
+  },
+  {
+    .task_handle = &TASK_service_write_mpi_data_Handle,
+    .task_attribute = &TASK_service_write_mpi_data_Attributes,
     .lowest_stack_bytes_remaining = UINT32_MAX
   },
   {
@@ -331,6 +344,8 @@ int main(void)
   TASK_monitor_freertos_memory_Handle = osThreadNew(TASK_monitor_freertos_memory, NULL, &TASK_monitor_freertos_memory_Attributes);
   
   TASK_service_eps_watchdog_Handle = osThreadNew(TASK_service_eps_watchdog, NULL, &TASK_service_eps_watchdog_Attributes);
+
+  TASK_service_write_mpi_data_Handle = osThreadNew(TASK_service_write_mpi_data, NULL, &TASK_service_write_mpi_data_Attributes);
 
   TASK_time_sync_Handle = osThreadNew(TASK_time_sync, NULL, &TASK_time_sync_Attributes);
 

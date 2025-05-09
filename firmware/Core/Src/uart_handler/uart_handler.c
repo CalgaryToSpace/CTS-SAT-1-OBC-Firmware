@@ -3,6 +3,7 @@
 #include "mpi/mpi_command_handling.h"
 #include "uart_handler/uart_error_tracking.h"
 
+#include "mpi/mpi_transceiver.h"
 #include "main.h"
 #include "log/log.h"
 
@@ -69,10 +70,11 @@ volatile uint8_t UART_gps_buffer_last_rx_byte = 0; // extern
 volatile uint8_t UART_gps_uart_interrupt_enabled = 0; //extern
 
 // UART MPI science data buffer (WILL NEED IN THE FUTURE)
-// const uint16_t UART_mpi_data_rx_buffer_len = 8192; // extern 
-// volatile uint8_t UART_mpi_data_rx_buffer[8192]; // extern
-// const uint16_t UART_mpi_data_buffer_len = 80000; // extern
-// volatile uint8_t UART_mpi_data_buffer[80000]; // extern
+const uint16_t UART_mpi_data_rx_buffer_len = 8192; // extern 
+volatile uint8_t UART_mpi_data_rx_buffer[8192]; // extern
+const uint16_t MPI_active_data_median_buffer_len = 4096;
+volatile uint8_t MPI_active_data_median_buffer[4096];
+
 
 #define KISS_FEND  0xC0
 #define KISS_FESC  0xDB
@@ -119,7 +121,6 @@ static inline void kiss_enqueue_frame(const uint8_t *data, uint16_t len) {
     UART_AX100_kiss_frame_queue_head = (UART_AX100_kiss_frame_queue_head + 1) % AX100_MAX_KISS_FRAMES_IN_RX_QUEUE;
 }
 
-
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     // This ISR function gets called every time a byte is received on the UART.
 
@@ -149,17 +150,33 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         // Restart reception for next byte
         HAL_UART_Receive_IT(UART_telecommand_port_handle, (uint8_t*) &UART_telecommand_buffer_last_rx_byte, 1);
     }
-
-    else if (huart->Instance == UART_mpi_port_handle->Instance) {
+    else if (huart->Instance == UART_mpi_port_handle->Instance) {        
         // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> MPI Data\n");
         UART_mpi_last_write_time_ms = HAL_GetTick();
 
         if (MPI_current_uart_rx_mode == MPI_RX_MODE_COMMAND_MODE) {
             // Command mode is blocking. Nothing to do here.
         }
+        else if (MPI_current_uart_rx_mode == MPI_RX_MODE_SENSING_MODE) {
+            // Store the second half into another buffer
+            if (MPI_buffer_state == MPI_MEMORY_WRITE_STATUS_READY) {
+                for(uint16_t i = (UART_mpi_data_rx_buffer_len/2); i < UART_mpi_data_rx_buffer_len; i++) {
+                    MPI_active_data_median_buffer[i-(UART_mpi_data_rx_buffer_len/2)] = UART_mpi_data_rx_buffer[i];
+                    UART_mpi_data_rx_buffer[i] = 0x00;
+                }
+                MPI_buffer_state = MPI_MEMORY_WRITE_STATUS_PENDING;
+                DEBUG_uart_print_str("COMPLETE - Received 4096 Bytes!\n");
+
+            } else {
+                DEBUG_uart_print_str("COMPLETE - Bytes are being lost!\n");
+            }
+        }
         else {
             DEBUG_uart_print_str("Unhandled MPI Mode\n"); //TODO: HANDLE other MPI MODES
+            DEBUG_uart_print_str("COMPLETE - Receiving some sort of MPI Data!\n");
         }
+
+        UART_mpi_last_write_time_ms = HAL_GetTick();
     }
 
     else if (huart->Instance == UART_ax100_port_handle->Instance) {
@@ -299,6 +316,25 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     }
 }
 
+void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
+    if (huart->Instance == UART_mpi_port_handle->Instance) {
+        // DEBUG_uart_print_str("Half callback being called!");
+
+        if (MPI_current_uart_rx_mode == MPI_RX_MODE_SENSING_MODE) {
+            if (MPI_buffer_state == MPI_MEMORY_WRITE_STATUS_READY) {
+                for(uint16_t i = 0; i < UART_mpi_data_rx_buffer_len/2; i++) {
+                    MPI_active_data_median_buffer[i] = UART_mpi_data_rx_buffer[i];
+                    UART_mpi_data_rx_buffer[i] = 0x00;
+                }
+                MPI_buffer_state = MPI_MEMORY_WRITE_STATUS_PENDING;
+            } else {
+                DEBUG_uart_print_str("HALF - Bytes are being lost!\n");
+            }
+        } else {
+            DEBUG_uart_print_str("HALF - Receiving some sort of MPI Data!\n");
+        }
+    }
+}
 
 
 /// @brief Sets the UART interrupt state (enabled/disabled)
