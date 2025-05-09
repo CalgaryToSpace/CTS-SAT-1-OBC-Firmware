@@ -12,7 +12,7 @@ typedef struct {
     int32_t system_ANT_temperature_i2c_bus_B_cC;
     int32_t system_solar_panel_power_generation_mW[EPS_COND_CHANNEL_SIZE];
     float system_eps_battery_percent;
-    uint16_t system_eps_battery_heater_status_bit;
+    uint8_t system_eps_battery_heater_status_bit;
     int16_t system_eps_battery_each_sensor_temperature_cC[EPS_BATTERY_PACK_SENSOR_SIZE];
 } SYS_TEMP_thermal_info_t;
 

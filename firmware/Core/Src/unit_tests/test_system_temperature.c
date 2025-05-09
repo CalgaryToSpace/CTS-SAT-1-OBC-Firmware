@@ -104,7 +104,7 @@ uint8_t TEST_EXEC__SYS_TEMP_get_processed_thermal_info(){
     TEST_ASSERT(result.system_solar_panel_power_generation_mW[1] == 100000);
     TEST_ASSERT(result.system_solar_panel_power_generation_mW[2] == 10000);
     TEST_ASSERT(result.system_solar_panel_power_generation_mW[3] == 5);
-    TEST_ASSERT(result.system_eps_battery_heater_status_bit == 9999);
+    TEST_ASSERT(result.system_eps_battery_heater_status_bit == 2);
     TEST_ASSERT(result.system_eps_battery_percent == -99999);
     TEST_ASSERT(result.system_eps_battery_each_sensor_temperature_cC[0]==-9999);
     TEST_ASSERT(result.system_eps_battery_each_sensor_temperature_cC[1]==-9999);
