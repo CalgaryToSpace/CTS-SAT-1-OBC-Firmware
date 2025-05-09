@@ -57,10 +57,13 @@ static uint8_t CAM_receive_image(lfs_file_t* img_file) {
     }
 
     uint32_t total_bytes_written = 0;
+    uint8_t total_buffers_filled = 0;
 
     while(1) {
         // Write file after half callback (Half 1).
         if (CAMERA_uart_half_1_state == CAMERA_UART_WRITE_STATE_HALF_FILLED_WAITING_FS_WRITE) {
+            total_buffers_filled++;
+
             DEBUG_uart_print_str("From while loop, half 1 filled: ");
             DEBUG_uart_print_str_max_len(
                 (const char*)UART_camera_pending_fs_write_half_1_buf, 11
@@ -73,6 +76,7 @@ static uint8_t CAM_receive_image(lfs_file_t* img_file) {
                 (const char*)UART_camera_pending_fs_write_half_1_buf + last_sentence_start, CAM_SENTENCE_LEN
             );
             DEBUG_uart_print_str("\n");
+            
             // Write data to file
             const lfs_ssize_t write_result = lfs_file_write(
                 &LFS_filesystem, img_file,
@@ -82,7 +86,8 @@ static uint8_t CAM_receive_image(lfs_file_t* img_file) {
             if (write_result < 0) {
                 LOG_message(
                     LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
-                    "LFS error writing half 1 to img file."
+                    "LFS error writing half 1 to img file: %d.",
+                    write_result
                 );
             } else {
                 total_bytes_written += write_result;
@@ -93,12 +98,13 @@ static uint8_t CAM_receive_image(lfs_file_t* img_file) {
 
         // Write file after complete callback (Half 2).
         if (CAMERA_uart_half_2_state == CAMERA_UART_WRITE_STATE_HALF_FILLED_WAITING_FS_WRITE) {
+            total_buffers_filled++;
+
             DEBUG_uart_print_str("From while loop, half 2 filled: ");
             DEBUG_uart_print_str_max_len(
                 (const char*)UART_camera_pending_fs_write_half_2_buf, 11
             );
             DEBUG_uart_print_str("\n");
-
 
             DEBUG_uart_print_str("Last sentence half 2: ");
             const uint16_t last_sentence_start = CAM_SENTENCE_LEN * (CAM_SENTENCES_PER_HALF_CALLBACK - 1); 
@@ -106,6 +112,7 @@ static uint8_t CAM_receive_image(lfs_file_t* img_file) {
                 (const char*)UART_camera_pending_fs_write_half_2_buf + last_sentence_start, CAM_SENTENCE_LEN
             );
             DEBUG_uart_print_str("\n");
+
             // Write data to file
             const lfs_ssize_t write_result = lfs_file_write(
                 &LFS_filesystem, img_file,
@@ -114,7 +121,8 @@ static uint8_t CAM_receive_image(lfs_file_t* img_file) {
             if (write_result < 0) {
                 LOG_message(
                     LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
-                    "LFS error writing half 2 to img file."
+                    "LFS error writing half 2 to img file: %d.",
+                    write_result
                 );
             }
             else {
@@ -124,7 +132,7 @@ static uint8_t CAM_receive_image(lfs_file_t* img_file) {
             CAMERA_uart_half_2_state = CAMERA_UART_WRITE_STATE_HALF_WRITTEN_TO_FS;
         }
 
-        // Timeout condition: If the total time has exceeded 10 seconds.
+        // Timeout condition: If the total time has exceeded CAMERA_RX_TOTAL_TIMEOUT_DURATION_MS.
         if ((HAL_GetTick() - UART_camera_rx_start_time_ms) > CAMERA_RX_TOTAL_TIMEOUT_DURATION_MS) {
             // If both states are still idle (ie, no data received), return error 4.
             if (CAMERA_uart_half_1_state == CAMERA_UART_WRITE_STATE_IDLE &&
@@ -154,8 +162,10 @@ static uint8_t CAM_receive_image(lfs_file_t* img_file) {
     }
 
     LOG_message(
-        LOG_SYSTEM_BOOM, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_FILE),
-        "Total bytes written after loop: %ld", total_bytes_written
+        LOG_SYSTEM_BOOM, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
+        "Camera loop finished. total_bytes_written=%ld. total_buffers_filled=%d",
+        total_bytes_written,
+        total_buffers_filled
     );
 
     // Try to read any remaining data in the DMA buffer.
@@ -242,10 +252,11 @@ static uint8_t CAM_receive_image(lfs_file_t* img_file) {
     }
     LOG_message(
         LOG_SYSTEM_BOOM, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_FILE),
-        "Total bytes written to file: %ld (approx %ld = 0x%04lX sentences)",
+        "Total bytes written to file: %ld (approx %ld = 0x%04lX sentences). total_buffers_filled=%d",
         total_bytes_written,
         total_bytes_written / CAM_SENTENCE_LEN,
-        total_bytes_written / CAM_SENTENCE_LEN
+        total_bytes_written / CAM_SENTENCE_LEN,
+        total_buffers_filled
     );
 
     return 0;
