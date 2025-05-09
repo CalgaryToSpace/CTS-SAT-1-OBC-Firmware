@@ -160,6 +160,78 @@ static uint8_t CAM_receive_image(lfs_file_t* img_file) {
         //     break;
         // }
     }
+    // CODE FROM ALIS BRANCH TO DEAL WITH REMAINING DATA AFTER LOOP
+    
+    uint8_t starts_with_null_terminator = UART_camera_dma_buffer[0] == '\0';
+
+    if (starts_with_null_terminator == 0) {
+        // Print 1st half
+        DEBUG_uart_print_str("Remaining data in half 1: ");
+        DEBUG_uart_print_str_max_len(
+            (const char *)UART_camera_dma_buffer, CAM_SENTENCE_LEN);
+        uint16_t index = 0;
+        for (; index < UART_camera_dma_buffer_len_half; index++)
+        {
+            const uint8_t data = UART_camera_dma_buffer[index];
+            if (data == '\0') {
+                break;
+            }
+            UART_camera_pending_fs_write_half_1_buf[index] = data;
+        }
+        const uint16_t bytes_to_write = index;
+
+        DEBUG_uart_print_str("First loop bytes to write: ");
+        DEBUG_uart_print_uint32(bytes_to_write);
+        DEBUG_uart_print_str("\n");
+        // write the first half to the file
+        const lfs_ssize_t write_result = lfs_file_write(
+            &LFS_filesystem, img_file,
+            (const uint8_t *)UART_camera_pending_fs_write_half_1_buf,
+            bytes_to_write);
+        
+        if (write_result < 0) {
+            LOG_message(
+                LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
+                "LFS error writing half 1 to img file after while loop.");
+        } else {
+            total_bytes_written += write_result;
+        }
+    }
+    
+
+    starts_with_null_terminator = UART_camera_dma_buffer[UART_camera_dma_buffer_len_half] == '\0';
+
+    if (starts_with_null_terminator == 0) {
+        // Print 2nd half
+        DEBUG_uart_print_str("Remaining data in half 2: ");
+        DEBUG_uart_print_str_max_len(
+            (const char *)UART_camera_dma_buffer + UART_camera_dma_buffer_len_half,
+            CAM_SENTENCE_LEN);
+
+        uint16_t j = UART_camera_dma_buffer_len_half;
+        for (; j < UART_camera_dma_buffer_len; j++)
+        {
+            uint8_t data = UART_camera_dma_buffer[j];
+            if (data == '\0') {
+                break;
+            }
+            UART_camera_pending_fs_write_half_2_buf[j - UART_camera_dma_buffer_len_half] = UART_camera_dma_buffer[j];
+        }
+        uint16_t bytes_to_write = j - UART_camera_dma_buffer_len_half;
+
+        // write the second half to the file
+        const lfs_ssize_t write_result_2 = lfs_file_write(
+            &LFS_filesystem, img_file,
+            (const uint8_t *)UART_camera_pending_fs_write_half_2_buf,
+            bytes_to_write);
+        if (write_result_2 < 0) {
+            LOG_message(
+                LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
+                "LFS error writing half 2 to img file after while loop.");
+        } else {
+            total_bytes_written += write_result_2;
+        }
+    }
 
     LOG_message(
         LOG_SYSTEM_BOOM, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
