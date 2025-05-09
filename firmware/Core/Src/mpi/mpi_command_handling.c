@@ -146,10 +146,7 @@ uint8_t MPI_validate_command_response(
     return 0; //  MPI executed the cmd successfully
 }
 
-
-/// @brief Turns on MPI and prepares a LFS file to store MPI data in.
-/// @return 0: System successfully prepared for MPI data, < 0: Error
-int8_t MPI_prepare_receive_data() {
+static void MPI_power_on() {
     // Power On MPI 5v
     const uint8_t mpi_5v_result = EPS_set_channel_enabled(EPS_CHANNEL_5V_MPI, 1);
     if (mpi_5v_result != 0) {
@@ -167,6 +164,12 @@ int8_t MPI_prepare_receive_data() {
             mpi_12v_result
         );
     }
+}
+
+/// @brief Turns on MPI and prepares a LFS file to store MPI data in.
+/// @return 0: System successfully prepared for MPI data, < 0: Error
+int8_t MPI_prepare_receive_data() {
+    MPI_power_on();
 
     // Start the timer to track time past since we powered on MPI
     const uint32_t start_time = HAL_GetTick();
@@ -278,7 +281,7 @@ uint8_t MPI_enable_active_mode() {
     return 0;
 }
 
-uint8_t MPI_disable_active_mode() {
+static void MPI_power_off() {
     // Power off the MPI 5v
     const uint8_t mpi_5v_result = EPS_set_channel_enabled(EPS_CHANNEL_5V_MPI, 0);
     if (mpi_5v_result != 0) {
@@ -295,6 +298,10 @@ uint8_t MPI_disable_active_mode() {
             mpi_12v_result
         );
     }
+}
+
+uint8_t MPI_disable_active_mode() {
+    MPI_power_off();
 
     // Set the MPI State to not handle any receiving data
     MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE); // Set the MPI transceiver to inactive
