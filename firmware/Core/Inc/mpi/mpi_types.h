@@ -24,9 +24,9 @@ typedef enum {
 typedef enum {
     MPI_TRANSCEIVER_MODE_INACTIVE,
     MPI_TRANSCEIVER_MODE_MOSI,
-    MPI_TRANSCEIVER_MODE_MISO
+    MPI_TRANSCEIVER_MODE_MISO,
+    MPI_TRANSCEIVER_MODE_DUPLEX
 } MPI_transceiver_state_enum_t;
-
 
 /**
  * @brief Represents an data frame received from the MPI

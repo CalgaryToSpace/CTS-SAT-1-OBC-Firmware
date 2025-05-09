@@ -174,9 +174,7 @@ uint8_t CTS1_check_is_eps_thriving() {
 
 /// @brief Check if the MPI is dumping science data by using the lazy blocking receive method.
 /// @return 1 if the MPI is dumping science data, 0 otherwise.
-uint8_t CTS1_check_is_mpi_dumping() {
-    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MISO); // OBC is listening.
-
+uint8_t CTS1_check_mpi_science_rx() {
     // First, cancel any ongoing DMA transfers.
     const HAL_StatusTypeDef abort_status = HAL_UART_AbortReceive(UART_mpi_port_handle);
     if (abort_status != HAL_OK) {
@@ -187,6 +185,27 @@ uint8_t CTS1_check_is_mpi_dumping() {
         MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
         return 0;
     }
+
+    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_DUPLEX); // Send to MPI.
+    HAL_Delay(50);
+
+    // MPI boots up in "command" mode, so we need to send a command to switch it to "dumping science" mode.
+    const uint8_t start_dumping_science_cmd[] = {0x54, 0x43, 0x19};
+    const HAL_StatusTypeDef send_status = HAL_UART_Transmit(
+        UART_mpi_port_handle,
+        start_dumping_science_cmd, sizeof(start_dumping_science_cmd),
+        100 // Timeout: 100ms is plenty.
+    );
+    if (send_status != HAL_OK) {
+        LOG_message(
+            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Failed to send MPI command: HAL_Status=%d", send_status
+        );
+        MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
+        return 0;
+    }
+
+    // Note: We would set the MPI transceiver to MISO mode here, if not using duplex above.
 
     // Start listening in blocking mode.
     uint8_t rx_buffer[350];
@@ -222,39 +241,60 @@ uint8_t CTS1_check_is_mpi_dumping() {
 }
 
 uint8_t CTS1_check_mpi_cmd_works() {
-    EPS_set_channel_enabled(EPS_CHANNEL_12V_MPI, 1);
-    EPS_set_channel_enabled(EPS_CHANNEL_5V_MPI, 1);
-    HAL_Delay(200); // Wait for the MPI to wake up, if needed.
+    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_DUPLEX); // MPI is listening.
+
+    // First, cancel any ongoing DMA transfers.
+    const HAL_StatusTypeDef abort_status = HAL_UART_AbortReceive(UART_mpi_port_handle);
+    if (abort_status != HAL_OK) {
+        LOG_message(
+            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Failed to abort MPI DMA listening: HAL_Status=%d", abort_status
+        );
+        MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
+        return 0;
+    }
 
     // Send random command: "TC" + command_2 + scan_mode_off
     // Not certain what it does, but we power the MPI off anyway, so it gets reset anyway.
+    // Dr. B approves this as a reasonable testing command.
     const uint8_t cmd[] = {0x54, 0x43, 0x02, 0x00};
 
-    uint8_t MPI_buffer[100];
+    uint8_t MPI_rx_buffer[100];
     uint16_t MPI_buffer_len = 0;
     const uint8_t result = MPI_send_command_get_response(
         cmd, sizeof(cmd),
-        MPI_buffer, sizeof(MPI_buffer), &MPI_buffer_len
+        MPI_rx_buffer, sizeof(MPI_rx_buffer), &MPI_buffer_len
     );
 
-    // Clean-up: Power off the MPI.
-    EPS_set_channel_enabled(EPS_CHANNEL_12V_MPI, 0);
-    EPS_set_channel_enabled(EPS_CHANNEL_5V_MPI, 0);
-
     if (result != 0) {
+        LOG_message(
+            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "MPI_send_command_get_response() -> %d", result
+        );
         return 0;
     }
 
-    if (MPI_buffer_len == 0) {
+    if (MPI_buffer_len < 2 || MPI_buffer_len > 10) {
+        LOG_message(
+            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "MPI_send_command_get_response() -> Received %d bytes (expected 2 <= x <= 10).",
+            MPI_buffer_len
+        );
         return 0;
     }
 
-    if (MPI_buffer[0] == 0x54 && MPI_buffer[1] == 0x43) {
-        // The response is a "TC" response. Success.
-        return 1;
+    if (MPI_rx_buffer[0] != 0x02 || MPI_rx_buffer[1] != MPI_COMMAND_SUCCESS_RESPONSE_VALUE) {
+        // The success response should be the TC number followed by the success code.
+        LOG_message(
+            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "MPI_send_command_get_response() response was %d bytes. Starting with: [d%d, d%d]",
+            MPI_buffer_len,
+            MPI_rx_buffer[0], MPI_rx_buffer[1]
+        );
+        return 0;
     }
 
-    return 0;
+    return 1;
 }
 
 uint8_t CTS1_check_is_camera_responsive() {
@@ -374,14 +414,14 @@ void CTS1_run_system_self_check(CTS1_system_self_check_result_struct_t *result) 
     EPS_set_channel_enabled(EPS_CHANNEL_12V_MPI, 1);
     EPS_set_channel_enabled(EPS_CHANNEL_5V_MPI, 1);
     HAL_Delay(MPI_boot_duration_ms); // Wait for the MPI to boot up.
-    result->is_mpi_dumping = CTS1_check_is_mpi_dumping();
+    // result->mpi_science_rx = CTS1_check_mpi_science_rx(); // TODO: Re-enable once implemented.
     result->mpi_cmd_works = CTS1_check_mpi_cmd_works();
     EPS_set_channel_enabled(EPS_CHANNEL_12V_MPI, 0);
     EPS_set_channel_enabled(EPS_CHANNEL_5V_MPI, 0);
     LOG_message(
         LOG_SYSTEM_OBC, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
-        "is_mpi_dumping: %d, mpi_cmd_works: %d",
-        result->is_mpi_dumping,
+        "mpi_science_rx: %d, mpi_cmd_works: %d",
+        result->mpi_science_rx,
         result->mpi_cmd_works
     );
 
@@ -458,7 +498,7 @@ void CTS1_self_check_struct_TO_json_list_of_failures(
         "is_gnss_responsive",
         "is_eps_responsive",
         "is_eps_thriving",
-        "is_mpi_dumping_science",
+        "mpi_science_rx",
         "mpi_cmd",
         "is_camera_responsive",
         "is_antenna_i2c_addr_a",
@@ -480,7 +520,7 @@ void CTS1_self_check_struct_TO_json_list_of_failures(
         &self_check_struct.is_gnss_responsive,
         &self_check_struct.is_eps_responsive,
         &self_check_struct.is_eps_thriving,
-        &self_check_struct.is_mpi_dumping,
+        &self_check_struct.mpi_science_rx,
         &self_check_struct.mpi_cmd_works,
         &self_check_struct.is_camera_responsive,
         &self_check_struct.is_antenna_i2c_addr_a_alive,

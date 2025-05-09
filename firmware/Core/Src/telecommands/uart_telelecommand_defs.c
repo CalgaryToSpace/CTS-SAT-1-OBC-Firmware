@@ -273,7 +273,7 @@ uint8_t TCMDEXEC_uart_send_hex_get_response_hex(
                 const uint32_t current_time = HAL_GetTick(); // Get current time
 
                 // Get last write time (Required to dereference volatile pointer here to prevent race 
-                // condition in the folllowing if statement)
+                // condition in the following if statement)
                 const uint32_t last_write_time = *UART_last_write_time_ms_ptr;  
 
                 // Check if we have timed out while receiving bytes
