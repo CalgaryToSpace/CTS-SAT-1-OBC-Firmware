@@ -143,13 +143,14 @@ uint8_t TCMDEXEC_uart_send_hex_get_response_hex(
     // UART 4 Selected (CAMERA)
     // Note: Camera does not support receiving byte-by-byte.
     else if(strcasecmp(arg_uart_port_name, "CAMERA") == 0) {        
-        UART_handle_ptr = UART_camera_port_handle;
-        UART_rx_buffer_write_idx_ptr = &UART_camera_buffer_write_idx;
-        UART_rx_buffer = &UART_camera_buffer[0];
-        UART_rx_buffer_size_ptr = &UART_camera_buffer_len;
-        UART_camera_is_expecting_data = 1;
-        UART_last_write_time_ms_ptr = &UART_camera_last_write_time_ms;
-        LOG_source = LOG_SYSTEM_BOOM; // Camera is related to the Boom experiment and should hence share the log source
+        // UART_handle_ptr = UART_camera_port_handle;
+        // UART_rx_buffer_write_idx_ptr = &UART_camera_buffer_write_idx;
+        // UART_rx_buffer = &UART_camera_dma_buffer[0];
+        // UART_rx_buffer_size_ptr = &UART_camera_dma_buffer_len;
+        // UART_last_write_time_ms_ptr = &UART_camera_last_write_time_ms;
+        // LOG_source = LOG_SYSTEM_BOOM; // Camera is related to the Boom experiment and should hence share the log source
+
+        // FIXME: Fix this to use blocking receive probably (see CAM_test for details)
 
         const HAL_StatusTypeDef transmit_status = HAL_UART_Transmit(
             UART_camera_port_handle, tx_buffer, tx_buffer_len, UART_TX_TIMEOUT_DURATION_MS

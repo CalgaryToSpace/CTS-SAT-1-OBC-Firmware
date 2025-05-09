@@ -1,5 +1,6 @@
 #include "debug_tools/debug_uart.h"
 #include "camera/camera_init.h"
+#include "camera/camera_capture.h"
 #include "uart_handler/uart_handler.h"
 #include "log/log.h"
 #include "eps_drivers/eps_channel_control.h"
@@ -10,6 +11,7 @@
 #include <stdio.h>
 
 #include "main.h"
+
 
 /// @brief Changes the baudrate of the camera by sending it a UART command, and then changing the
 ///     baudrate of the camera UART port.
@@ -74,7 +76,7 @@ uint8_t CAM_change_baudrate(uint32_t new_baud_rate) {
 }
 
 
-/// @brief Set up the camera by powering on and changing the baudrate to 2400.
+/// @brief Set up the camera by powering on and changing the baudrate to 230400.
 /// @return 0 on success. The error code from the `CAM_change_baudrate` function, or >100 if an EPS error occurred.
 /// @note Does not perform a self-test.
 uint8_t CAM_setup() {
@@ -83,7 +85,7 @@ uint8_t CAM_setup() {
     if (eps_status != 0) {
         // Continue anyway. Just log a warning.
         LOG_message(
-            LOG_SYSTEM_BOOM, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            LOG_SYSTEM_EPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
             "Error enabling camera power channel in CAM_setup: status=%d. Continuing.",
             eps_status
         );
@@ -92,17 +94,27 @@ uint8_t CAM_setup() {
     // Wait a sec for camera bootup.
     HAL_Delay(500);
 
-    // Change baudrate to 2400 on camera.
-    const uint8_t bitrate_status = CAM_change_baudrate(2400);
+    // Viable baud rate options: 115200, 230400.
+    const uint8_t bitrate_status = CAM_change_baudrate(230400);
     if (bitrate_status != 0) {
         LOG_message(
             LOG_SYSTEM_BOOM, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "Error changing camera baudrate: CAM_change_baudrate returned %d",
             bitrate_status
         );
+
+        // Turn off camera before exiting
+        const uint8_t eps_off_status = EPS_set_channel_enabled(EPS_CHANNEL_3V3_CAMERA, 0);
+        if (eps_off_status != 0) {
+            // Continue anyway. Just log a warning.
+            LOG_message(
+                LOG_SYSTEM_EPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+                "Error disabling camera power channel in CAM_capture_image: status=%d. Continuing.",
+                eps_off_status
+            );
+        }
         return 2;
     }
-    
     return 0; // Success
 }
 
