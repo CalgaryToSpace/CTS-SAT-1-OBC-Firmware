@@ -12,7 +12,7 @@
 #include "mpi/mpi_command_handling.h"
 #include "antenna_deploy_drivers/ant_commands.h"
 #include "antenna_deploy_drivers/ant_internal_drivers.h"
-#include "camera/camera_commands.h"
+#include "camera/camera_init.h"
 
 #include "uart_handler/uart_handler.h"
 #include "obc_temperature_sensor/obc_temperature_sensor.h"

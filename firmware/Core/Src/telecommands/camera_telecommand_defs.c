@@ -1,7 +1,8 @@
 #include "telecommand_exec/telecommand_args_helpers.h"
 #include "telecommands/camera_telecommand_defs.h"
 #include "config/configuration.h"
-#include "camera/camera_commands.h"
+#include "camera/camera_init.h"
+#include "camera/camera_capture.h"
 #include "log/log.h"
 
 #include <string.h>
@@ -17,7 +18,7 @@ uint8_t TCMDEXEC_camera_setup(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len)
 {
-    // First, set baudrate to 115200 to reset the camera and OBC UART handler baudrates.
+    // First, set baudrate to 115200 to reset the camera and OBC UART baud rate.
     // This is to avoid the camera stalling and being in a weird state where
     // the OBC UART handler's baudrate and the camera's baudrate are different.
     const uint8_t baudrate_status = CAM_change_baudrate(115200);
