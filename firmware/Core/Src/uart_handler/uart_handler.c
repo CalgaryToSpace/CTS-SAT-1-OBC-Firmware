@@ -152,31 +152,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
     else if (huart->Instance == UART_mpi_port_handle->Instance) {
         // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> MPI Data\n");
+        UART_mpi_last_write_time_ms = HAL_GetTick();
 
         if (MPI_current_uart_rx_mode == MPI_RX_MODE_COMMAND_MODE) {
-            // Check if buffer is full
-            if (UART_mpi_buffer_write_idx >= UART_mpi_buffer_len) {
-                // Tracking error
-                UART_error_mpi_error_info.handler_buffer_full_error_count++;
-                // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART mpi response buffer is full\n");
-
-                // Shift all bytes left by 1
-                for(uint16_t i = 1; i < UART_mpi_buffer_len; i++) {
-                    UART_mpi_buffer[i - 1] = UART_mpi_buffer[i];
-                }
-
-                // Reset to a valid index
-                UART_mpi_buffer_write_idx = UART_mpi_buffer_len - 1;
-            }
-
-            // Add the received byte to the buffer
-            UART_mpi_buffer[UART_mpi_buffer_write_idx++] = UART_mpi_last_rx_byte;
-            UART_mpi_last_write_time_ms = HAL_GetTick();
-
-            // Note: Don't need to recall DMA receive here because circular mode is used.
-            // HAL_UART_Receive_DMA(
-            //     UART_mpi_port_handle, (uint8_t*) &UART_mpi_last_rx_byte, 1
-            // );
+            // Command mode is blocking. Nothing to do here.
         }
         else {
             DEBUG_uart_print_str("Unhandled MPI Mode\n"); //TODO: HANDLE other MPI MODES
