@@ -133,12 +133,12 @@ uint32_t DETECT_tumble()
         angular_velocity[2] = (float)vel_out.z_rate_mdeg_per_sec / 1000.0f;
 
         // Check if angular velocity exceeds threshold for tumbling
-        float MIN_THRESHOLD_X = -1.5f;
-        float MAX_THRESHOLD_X = 1.5f;
-        float MAX_THRESHOLD_Y = -1; // Might be either -1 or -2 with +- tolerance instead of range
-        float MIN_THRESHOLD_Y = -2;
-        float MIN_THRESHOLD_Z = -1.5f;
-        float MAX_THRESHOLD_Z = 1.5f;
+        const float MIN_THRESHOLD_X = -1.5f;
+        const float MAX_THRESHOLD_X = 1.5f;
+        const float MAX_THRESHOLD_Y = -1; // Might be either -1 or -2 with +- tolerance instead of range
+        const float MIN_THRESHOLD_Y = -2;
+        const float MIN_THRESHOLD_Z = -1.5f;
+        const float MAX_THRESHOLD_Z = 1.5f;
 
         if ((angular_velocity[0] < MIN_THRESHOLD_X || angular_velocity[0] > MAX_THRESHOLD_X) || 
             (angular_velocity[1] < MIN_THRESHOLD_Y || angular_velocity[1] > MAX_THRESHOLD_Y) || 
@@ -153,7 +153,49 @@ uint32_t DETECT_tumble()
     }
     else
     {
-        tumble_detected = 2; // Default to not tumbling if error occurs
+        tumble_detected = 2; // Default if error occurs
     }
     return tumble_detected;
+}
+
+uint32_t DETUMBLE_procedure(void)
+{
+    uint8_t status;
+
+    // STEP 1: Power on CubeControl Signal and Motor (Magnetometer and MEMS rate sensor)
+    status = ADCS_set_power_control(
+        ADCS_POWER_SELECT_ON,   // CubeControl Signal Power
+        ADCS_POWER_SELECT_ON,   // CubeControl Motor Power
+        ADCS_POWER_SELECT_OFF,  // CubeSense1
+        ADCS_POWER_SELECT_OFF,  // CubeSense2
+        ADCS_POWER_SELECT_OFF,  // CubeStar
+        ADCS_POWER_SELECT_OFF,  // CubeWheel1
+        ADCS_POWER_SELECT_OFF,  // CubeWheel2
+        ADCS_POWER_SELECT_OFF,  // CubeWheel3
+        ADCS_POWER_SELECT_OFF,  // Motor
+        ADCS_POWER_SELECT_OFF   // GPS
+    );
+    if (status != 0) return 1;
+
+    // STEP 2: Enable ADCS Run Mode
+    status = ADCS_set_run_mode(1); // 1 = Enable
+    if (status != 0) return 2;
+
+    // STEP 3: Set estimation mode to Magnetometer rate filter (2)
+    status = ADCS_attitude_estimation_mode(ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER);
+    if (status != 0) return 3;
+
+    // STEP 4: Set Attitude Control Mode to Detumbling (1), timeout 600s
+    status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_DETUMBLING, 600);
+    if (status != 0) return 4;
+
+    // STEP 5: Set Attitude Control Mode to Y-Thomson (2), timeout 600s
+    status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_Y_THOMSON_SPIN, 600);
+    if (status != 0) return 5;
+
+    // STEP 6: Set Attitude Control Mode to Y-Thomson (2), timeout 0s (continuous)
+    status = ADCS_attitude_control_mode(ADCS_CONTROL_MODE_Y_THOMSON_SPIN, 0);
+    if (status != 0) return 6;
+
+    return 0;
 }
