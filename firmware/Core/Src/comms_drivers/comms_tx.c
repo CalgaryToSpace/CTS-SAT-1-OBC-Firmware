@@ -39,7 +39,7 @@ uint8_t COMMS_downlink_tcmd_response(
         remaining_len -= this_data_len;
         response_start_idx += this_data_len;
 
-        const uint8_t success = AX100_downlink_bytes((uint8_t *)(&packet), this_data_len + header_len);
+        const uint8_t success = AX100_downlink_bytes((uint8_t *)(&packet), header_len + this_data_len);
         if (success != 0) {
             return success;
         }
@@ -49,9 +49,17 @@ uint8_t COMMS_downlink_tcmd_response(
 }
 
 
+// Note: This packet is allocated in the data segment (global) to avoid requiring lots of stack space
+// in every task that emits a log. Could be stack-allocated, but would need to increase all stack sizes
+// by about 256 bytes.
+// Only used within `COMMS_downlink_log_message`.
+static COMMS_log_message_packet_t log_msg_packet;
+
 uint8_t COMMS_downlink_log_message(const char log_message_str[]) {
-    COMMS_log_message_packet_t packet;
-    packet.packet_type = COMMS_PACKET_TYPE_LOG_MESSAGE;
+    // Safety: Clear the packet because we reuse it.
+    memset(&log_msg_packet, 0, sizeof(log_msg_packet));
+
+    log_msg_packet.packet_type = COMMS_PACKET_TYPE_LOG_MESSAGE;
 
     const uint8_t header_len = (
         AX100_DOWNLINK_MAX_BYTES - COMMS_LOG_MESSAGE_PACKET_MAX_DATA_BYTES_PER_PACKET
@@ -63,9 +71,10 @@ uint8_t COMMS_downlink_log_message(const char log_message_str[]) {
         : log_message_len;
 
     // Copy the data into the packet.
-    memcpy(packet.data, log_message_str, this_data_len);
+    memcpy(log_msg_packet.data, log_message_str, this_data_len);
 
-    const uint8_t success = AX100_downlink_bytes((uint8_t *)(&packet), this_data_len + header_len);
+    const uint8_t success = AX100_downlink_bytes((uint8_t *)(&log_msg_packet), header_len + this_data_len);
+
     if (success != 0) {
         return success;
     }

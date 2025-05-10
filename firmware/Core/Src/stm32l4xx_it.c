@@ -104,6 +104,7 @@ void HardFault_Handler(void)
     char msg[64];
     snprintf(msg, sizeof(msg), "HardFault_Handler() -> Hard fault\n");
     HAL_UART_Transmit(&hlpuart1, (uint8_t *)msg, strlen(msg), 1000); // TODO: check flight-readiness
+    HAL_Delay(100); // Don't go TOO rapid-fire.
     
     /* USER CODE END W1_HardFault_IRQn 0 */
   }

@@ -29,7 +29,6 @@ typedef enum {
 #error "COMMS_LOG_MESSAGE_PACKET_MAX_DATA_BYTES_PER_PACKET is incorrect"
 #endif
 
-// TODO: Add sizeof assertions in unit tests related to the packets above.
 
 
 #pragma pack(push, 1)
@@ -37,7 +36,7 @@ typedef enum {
 typedef struct {
     uint8_t packet_type; // COMMS_packet_type_enum_t - Always COMMS_PACKET_TYPE_LOG_MESSAGE for this packet
 
-    uint8_t data[COMMS_TCMD_RESPONSE_PACKET_MAX_DATA_BYTES_PER_PACKET];
+    uint8_t data[COMMS_LOG_MESSAGE_PACKET_MAX_DATA_BYTES_PER_PACKET];
 } COMMS_log_message_packet_t;
 
 
@@ -52,6 +51,10 @@ typedef struct {
 
     uint8_t data[COMMS_TCMD_RESPONSE_PACKET_MAX_DATA_BYTES_PER_PACKET];
 } COMMS_tcmd_response_packet_t;
+
+// TODO: Add sizeof assertions in unit tests related to the packets above.
+// assert(sizeof(COMMS_log_message_packet_t) == AX100_DOWNLINK_MAX_BYTES);
+// assert(sizeof(COMMS_tcmd_response_packet_t) == AX100_DOWNLINK_MAX_BYTES);
 
 #pragma pack(pop)
 
