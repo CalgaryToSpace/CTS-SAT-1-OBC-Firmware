@@ -3,6 +3,6 @@
 
 #include <stdint.h>
 
-uint32_t DETECT_tumble();
+uint32_t DETECT_tumble(void);
 
 #endif /* INCLUDE_GUARD__MISSION_PROCEDURE_H */
