@@ -694,7 +694,7 @@ uint8_t TCMDEXEC_eps_power_management_set_current_threshold(
     return 0;
 }
 
-uint8_t TCMDEXEC_eps_read_VBAT_volage(
+uint8_t TCMDEXEC_eps_read_vbat_volage(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
