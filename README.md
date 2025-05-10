@@ -20,6 +20,7 @@ Please add your name to the list below in your first Pull Request!
 * Vaibhav K.
 * Muhammad Ali
 * Saksham P.
+* Shaan S.
 * Alex O.
 * Fardin M.
 * Kevin Hoang
