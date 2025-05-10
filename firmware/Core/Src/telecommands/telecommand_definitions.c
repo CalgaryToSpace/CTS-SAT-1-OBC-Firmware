@@ -1083,7 +1083,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "mpi_enable_active_mode",
         .tcmd_func = TCMDEXEC_mpi_enable_active_mode,
-        .number_of_args = 0,
+        .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {

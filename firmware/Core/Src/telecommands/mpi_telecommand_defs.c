@@ -88,14 +88,27 @@ uint8_t TCMDEXEC_mpi_send_command_get_response_hex(
 }
 
 /// @brief Enables systems to start receiving data actively from MPI and storing using LFS.
-/// @param args_str No args.
+/// @param args_str
+/// - Arg 0: File name as a string
 /// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0: Success, >0: Failure
 uint8_t TCMDEXEC_mpi_enable_active_mode(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len) {
-    const uint8_t enable_result = MPI_enable_active_mode();
-
+    
+    // Get the file name from the telecommand argument
+    char arg_file_name[LFS_MAX_PATH_LENGTH];
+    const uint8_t parse_file_name_result = TCMD_extract_string_arg(args_str, 0, arg_file_name, sizeof(arg_file_name));
+    if (parse_file_name_result != 0) {
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing file name arg: Error %d", parse_file_name_result);
+        return 1;
+    }
+    
+    // Enable MPI Science Mode
+    const uint8_t enable_result = MPI_enable_active_mode(arg_file_name);
     if (enable_result != 0) {
         snprintf(response_output_buf, response_output_buf_len,
             "MPI enable active mode Failed! Error Code: %d", enable_result);
