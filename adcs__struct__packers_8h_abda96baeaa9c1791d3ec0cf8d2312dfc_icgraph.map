@@ -1,0 +1,15 @@
+<map id="ADCS_pack_to_file_info_struct" name="ADCS_pack_to_file_info_struct">
+<area shape="rect" id="Node000001" title="Parse File Information telemetry data into a struct." alt="" coords="701,69,863,110"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a74bd85d79adcad17e1cda6a638a5bf53" title="Request file information telemetry from the ADCS." alt="" coords="496,36,630,77"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="685,78,630,69,631,64,686,72"/>
+<area shape="rect" id="Node000007" href="$test__adcs_8c.html#ac718f64a2b353283a4c781b2f75105b3" title=" " alt="" coords="473,101,653,142"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="686,106,654,111,653,106,686,101"/>
+<area shape="rect" id="Node000003" href="$adcs__commands_8c.html#ae3631d808de5cd484902090f6fe92026" title="Get the list of files from the SD card." alt="" coords="243,17,425,42"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="481,50,425,43,426,38,482,44"/>
+<area shape="rect" id="Node000005" href="$adcs__commands_8c.html#a0b73bd919e2d8a9fd7d2372c4a076ce0" title="Save a specified file from the ADCS SD card to the ADCS subfolder in LittleFS." alt="" coords="246,70,422,96"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="482,68,422,75,422,70,481,63"/>
+<area shape="rect" id="Node000004" href="$telecommand__adcs_8c.html#a62dccd4164e3df1707e298b25a404da9" title="Telecommand: Get the list of downloadable files from the ADCS SD card (alternate method)" alt="" coords="5,5,195,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="227,31,195,30,195,25,227,25"/>
+<area shape="rect" id="Node000006" href="$telecommand__adcs_8c.html#a4fd84b61a84542c3dfdc577d53ecb4d3" title="Telecommand: Download a specific file from the ADCS SD card." alt="" coords="5,71,195,111"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="231,89,195,90,195,85,230,84"/>
+</map>

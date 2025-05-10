@@ -1,0 +1,56 @@
+<map id="TCMDEXEC_flash_benchmark_erase_write_read" name="TCMDEXEC_flash_benchmark_erase_write_read">
+<area shape="rect" id="Node000001" title="Telecommand: Benchmarks the erase/write/read operations on the flash memory module." alt="" coords="5,354,203,394"/>
+<area shape="rect" id="Node000002" href="$flash__benchmark_8c.html#a9485023a9a54cf461dba878ce4d013fb" title="Benchmarks the erase/read/write operations on the flash memory module." alt="" coords="251,314,426,354"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="203,355,235,349,236,354,204,360"/>
+<area shape="rect" id="Node000014" href="$telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="253,389,424,415"/>
+<area shape="poly" id="edge38_Node000001_Node000014" title=" " alt="" coords="204,383,237,387,237,393,203,389"/>
+<area shape="rect" id="Node000003" href="$flash__driver_8c.html#ab2e0bef2e1c3f98c03a435938bd1f795" title="Sends Block Erase Command." alt="" coords="498,285,602,311"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="426,316,483,307,484,312,427,322"/>
+<area shape="rect" id="Node000012" href="$flash__driver_8c.html#a395c5684cb8c564403e3fa68dcae299d" title="Sends Page Read Command." alt="" coords="703,108,832,134"/>
+<area shape="poly" id="edge24_Node000002_Node000012" title=" " alt="" coords="380,311,725,138,727,143,383,316"/>
+<area shape="rect" id="Node000013" href="$flash__driver_8c.html#a5231aa78550b4076f9fbf923f000fe6d" title="Sends Page Program Command." alt="" coords="484,361,616,387"/>
+<area shape="poly" id="edge30_Node000002_Node000013" title=" " alt="" coords="427,348,469,356,468,361,426,353"/>
+<area shape="rect" id="Node000004" href="$debug__uart_8c.html#ae1143c61f5fad27b50053b03673b9501" title="Print an array of bytes in hex format, like 00 01 02 ..." alt="" coords="909,209,1099,235"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="561,283,607,240,638,218,673,201,708,191,744,186,816,184,884,191,942,203,941,208,883,197,816,190,744,191,709,197,675,206,641,222,610,244,565,287"/>
+<area shape="rect" id="Node000005" href="$debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="1147,209,1297,235"/>
+<area shape="poly" id="edge5_Node000003_Node000005" title=" " alt="" coords="552,284,564,244,588,191,623,136,646,112,673,93,732,64,785,47,835,40,883,42,932,51,983,68,1100,116,1131,132,1159,153,1202,195,1198,199,1155,157,1128,137,1098,120,981,73,931,57,883,47,835,45,786,52,734,69,676,98,650,116,627,139,592,193,569,246,557,286"/>
+<area shape="rect" id="Node000006" href="$flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="1148,484,1297,525"/>
+<area shape="poly" id="edge6_Node000003_Node000006" title=" " alt="" coords="573,309,738,412,835,466,877,486,909,498,966,509,1024,514,1132,513,1132,518,1024,520,965,515,908,503,875,491,833,471,735,417,570,314"/>
+<area shape="rect" id="Node000007" href="$flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="1345,434,1509,474"/>
+<area shape="poly" id="edge8_Node000003_Node000007" title=" " alt="" coords="551,284,560,237,581,170,597,135,617,102,642,72,673,48,730,19,782,5,831,4,878,13,978,46,1035,65,1100,82,1158,90,1207,94,1251,106,1274,119,1299,139,1328,170,1353,205,1373,243,1390,282,1412,358,1424,418,1419,419,1407,359,1385,284,1368,246,1348,208,1324,173,1296,143,1271,124,1249,111,1206,100,1158,96,1098,87,1033,70,976,51,877,18,830,9,783,10,732,24,676,52,646,76,622,105,602,138,586,172,565,238,556,285"/>
+<area shape="rect" id="Node000008" href="$flash__driver_8c.html#ad86ddde592dfea7dd3c6129ca311923a" title="Read Status Register and store the values in given buffer." alt="" coords="909,311,1099,336"/>
+<area shape="poly" id="edge9_Node000003_Node000008" title=" " alt="" coords="602,293,721,290,861,295,926,304,925,310,860,301,721,295,603,298"/>
+<area shape="rect" id="Node000009" href="$flash__driver_8c.html#ac8eda1346ed63993ba67af316b2d1139" title="Unblocks all blocked blocks of memory on the NAND flash memory module." alt="" coords="674,564,861,590"/>
+<area shape="poly" id="edge12_Node000003_Node000009" title=" " alt="" coords="583,309,607,325,628,347,643,375,650,401,650,449,649,473,651,496,659,519,676,543,690,554,686,558,672,547,655,521,646,497,643,473,644,449,644,401,638,376,624,350,604,329,580,314"/>
+<area shape="rect" id="Node000011" href="$flash__driver_8c.html#aedefd1fa550b34fc7c57465aa5c5874b" title="Sends Write Enable Command." alt="" coords="695,311,840,336"/>
+<area shape="poly" id="edge18_Node000003_Node000011" title=" " alt="" coords="603,301,680,310,679,316,603,307"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="1099,219,1131,219,1131,225,1099,225"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="1296,484,1330,475,1331,481,1298,489"/>
+<area shape="poly" id="edge10_Node000008_Node000006" title=" " alt="" coords="1023,335,1186,472,1183,476,1019,339"/>
+<area shape="poly" id="edge11_Node000008_Node000007" title=" " alt="" coords="1059,334,1169,364,1298,404,1360,425,1358,430,1297,409,1168,370,1057,339"/>
+<area shape="poly" id="edge13_Node000009_Node000006" title=" " alt="" coords="861,571,975,561,1098,542,1151,528,1152,533,1100,547,976,566,861,576"/>
+<area shape="poly" id="edge14_Node000009_Node000007" title=" " alt="" coords="785,588,837,628,872,648,909,663,961,675,1003,677,1099,663,1157,654,1203,644,1245,627,1296,597,1328,572,1357,543,1402,486,1406,489,1361,546,1331,576,1299,602,1248,632,1204,649,1158,659,1099,669,1003,683,961,681,908,669,870,653,834,633,782,592"/>
+<area shape="rect" id="Node000010" href="$flash__driver_8c.html#a58201d7c60a31f131bbfb21bde40a388" title="Read Block Lock Register and store the values in given buffer." alt="" coords="921,614,1087,654"/>
+<area shape="poly" id="edge15_Node000009_Node000010" title=" " alt="" coords="824,588,906,608,905,613,823,593"/>
+<area shape="poly" id="edge16_Node000010_Node000006" title=" " alt="" coords="1061,611,1098,593,1143,563,1184,533,1187,537,1147,568,1100,598,1063,616"/>
+<area shape="poly" id="edge17_Node000010_Node000007" title=" " alt="" coords="1085,611,1187,578,1296,534,1342,509,1384,481,1387,486,1345,513,1298,539,1189,583,1086,616"/>
+<area shape="poly" id="edge19_Node000011_Node000004" title=" " alt="" coords="792,308,908,252,944,238,946,243,910,256,794,312"/>
+<area shape="poly" id="edge20_Node000011_Node000005" title=" " alt="" coords="828,307,1146,236,1147,241,829,313"/>
+<area shape="poly" id="edge21_Node000011_Node000006" title=" " alt="" coords="782,335,833,387,870,417,910,441,965,463,1023,479,1133,497,1132,502,1022,484,963,468,907,446,867,421,830,391,778,339"/>
+<area shape="poly" id="edge22_Node000011_Node000007" title=" " alt="" coords="827,334,1148,403,1330,436,1329,441,1146,409,826,339"/>
+<area shape="poly" id="edge23_Node000011_Node000008" title=" " alt="" coords="840,321,893,321,893,326,840,326"/>
+<area shape="poly" id="edge25_Node000012_Node000004" title=" " alt="" coords="818,132,862,150,886,169,910,188,940,201,938,206,907,192,883,174,859,155,816,137"/>
+<area shape="poly" id="edge26_Node000012_Node000005" title=" " alt="" coords="833,116,958,123,1030,133,1100,150,1150,172,1192,198,1190,203,1148,177,1098,155,1029,138,957,128,832,122"/>
+<area shape="poly" id="edge27_Node000012_Node000006" title=" " alt="" coords="828,132,1100,194,1130,225,1154,259,1173,296,1189,335,1210,409,1220,468,1215,469,1204,410,1184,336,1168,298,1149,262,1126,228,1098,199,827,137"/>
+<area shape="poly" id="edge28_Node000012_Node000007" title=" " alt="" coords="832,107,933,97,994,96,1058,100,1123,110,1187,128,1246,156,1299,195,1323,220,1345,248,1379,309,1404,369,1419,418,1414,419,1399,370,1374,312,1340,251,1319,223,1296,199,1244,161,1185,133,1122,115,1057,105,994,101,933,102,833,112"/>
+<area shape="poly" id="edge29_Node000012_Node000008" title=" " alt="" coords="785,132,910,245,975,298,972,303,907,249,781,136"/>
+<area shape="poly" id="edge31_Node000013_Node000004" title=" " alt="" coords="570,359,624,323,673,296,728,276,785,259,893,236,894,241,786,264,730,281,675,300,627,328,573,363"/>
+<area shape="poly" id="edge32_Node000013_Node000005" title=" " alt="" coords="617,384,715,396,838,400,904,396,971,387,1036,371,1098,346,1131,326,1159,299,1202,246,1206,250,1163,303,1134,330,1100,351,1038,376,972,392,905,402,838,406,714,402,616,389"/>
+<area shape="poly" id="edge33_Node000013_Node000006" title=" " alt="" coords="614,385,628,396,646,423,654,449,655,475,652,501,650,526,651,551,659,576,676,600,703,624,729,640,754,650,780,655,838,658,909,663,1007,682,1049,681,1098,664,1134,639,1164,606,1187,570,1204,538,1209,540,1192,573,1168,609,1137,643,1100,668,1050,686,1007,687,908,669,837,664,779,660,752,655,726,645,700,629,672,604,654,578,646,552,645,526,647,500,650,475,649,450,641,425,624,400,611,390"/>
+<area shape="poly" id="edge34_Node000013_Node000007" title=" " alt="" coords="615,385,628,396,650,432,658,467,656,502,650,536,644,570,643,603,652,635,676,665,704,686,729,698,755,702,781,701,838,693,872,689,909,689,1022,701,1114,714,1156,714,1199,706,1245,690,1296,661,1318,644,1338,624,1371,577,1396,530,1412,488,1417,490,1401,532,1376,580,1342,627,1322,648,1299,666,1247,695,1201,712,1157,719,1113,719,1022,707,909,694,872,694,839,698,781,707,754,708,728,703,701,691,672,669,648,637,638,604,638,570,644,536,651,501,652,467,645,433,624,400,612,390"/>
+<area shape="poly" id="edge35_Node000013_Node000008" title=" " alt="" coords="617,368,731,360,860,346,920,337,920,342,861,351,731,365,617,373"/>
+<area shape="poly" id="edge36_Node000013_Node000009" title=" " alt="" coords="613,385,628,396,643,415,650,434,653,471,656,507,663,525,676,543,691,554,688,559,672,547,658,528,651,509,648,471,645,435,638,418,624,400,610,390"/>
+<area shape="poly" id="edge37_Node000013_Node000011" title=" " alt="" coords="608,358,694,338,695,343,609,363"/>
+<area shape="rect" id="Node000015" href="$telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="474,411,626,436"/>
+<area shape="poly" id="edge39_Node000014_Node000015" title=" " alt="" coords="424,408,459,411,458,417,424,413"/>
+</map>

@@ -1,0 +1,9 @@
+<map id="EPS_set_obc_time_based_on_eps_time" name="EPS_set_obc_time_based_on_eps_time">
+<area shape="rect" id="Node000001" title="Sets the OBC&#39;s time, based on the EPS&#39;s current time." alt="" coords="328,27,502,68"/>
+<area shape="rect" id="Node000002" href="$rtos__eps__tasks_8c.html#ad27bdbe0e838d3705b754e9af4c449b2" title=" " alt="" coords="130,5,252,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="313,37,253,29,253,24,313,31"/>
+<area shape="rect" id="Node000004" href="$timekeeping__telecommand__defs_8c.html#a96a9620231841478e8b1c1065423a783" title="Sync&#39;s obc time to eps time (+/&#45; 1 second)" alt="" coords="103,55,280,96"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="313,63,281,67,280,62,312,58"/>
+<area shape="rect" id="Node000003" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,5,55,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="115,21,55,21,55,16,115,16"/>
+</map>

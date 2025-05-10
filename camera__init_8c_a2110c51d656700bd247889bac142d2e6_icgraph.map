@@ -1,0 +1,15 @@
+<map id="CAM_change_baudrate" name="CAM_change_baudrate">
+<area shape="rect" id="Node000001" title="Changes the baudrate of the camera by sending it a UART command, and then changing the baudrate of th..." alt="" coords="896,70,1052,96"/>
+<area shape="rect" id="Node000002" href="$camera__init_8c.html#adfa3d3b239068192490d519d4452cfee" title="Set up the camera by powering on and changing the baudrate to 2400." alt="" coords="707,41,797,66"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="880,73,796,62,797,57,881,68"/>
+<area shape="rect" id="Node000007" href="$camera__telecommand__defs_8c.html#a7ad48b830b9f0ea76b58bf4acfc0400b" title="Debugging only. Set the baud rate of the camera to the specified value. Use camera_setup normally." alt="" coords="656,91,848,131"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="881,97,848,102,848,96,880,92"/>
+<area shape="rect" id="Node000003" href="$complete__self__check_8c.html#a55d4f769a9d77ec139334ba21af7e5f0" title=" " alt="" coords="436,5,599,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="692,49,600,38,600,33,693,44"/>
+<area shape="rect" id="Node000006" href="$camera__telecommand__defs_8c.html#abfe79147115a9931e013ce9d49a41908" title="Set up the camera by powering on and changing the baudrate to 2400." alt="" coords="427,70,608,96"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="692,64,609,74,609,69,692,58"/>
+<area shape="rect" id="Node000004" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="223,5,379,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="420,28,379,28,379,23,420,23"/>
+<area shape="rect" id="Node000005" href="$system__telecommand__defs_8c.html#ad62425492ed28fac500f9c495fe7d4ba" title="System self&#45;check of all peripherals and systems." alt="" coords="5,5,175,46"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="208,28,175,28,175,23,208,23"/>
+</map>

@@ -1,0 +1,13 @@
+<map id="OBC_TEMP_SENSOR_set_temp_precision" name="OBC_TEMP_SENSOR_set_temp_precision">
+<area shape="rect" id="Node000001" title="Set the temp temperature precision in the config register." alt="" coords="775,67,955,107"/>
+<area shape="rect" id="Node000002" href="$obc__temperature__sensor__driver_8c.html#a034c03979b5a3d762425556fef1d2b97" title="The simplest and most foolproof way to get the OBC temperature in centi&#45;celsius." alt="" coords="524,33,703,74"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="760,76,703,68,704,63,760,70"/>
+<area shape="rect" id="Node000006" href="$obc__temperature__sensor__telecommand__defs_8c.html#a5451b6bfc63db7040b72d489f68389e6" title="Reads the temperature from the STDS75DS2F and stores it in the provided variable temperature...." alt="" coords="499,99,727,139"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="760,103,728,107,727,102,759,98"/>
+<area shape="rect" id="Node000003" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="259,5,415,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="508,46,415,36,416,31,508,40"/>
+<area shape="rect" id="Node000005" href="$obc__temperature__sensor__telecommand__defs_8c.html#a693867fabe195fdfc4e6d34ec382a698" title="Reads the temperature from the STDS75DS2F in centi&#45;Celsius." alt="" coords="223,70,451,96"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="508,67,452,73,451,68,507,62"/>
+<area shape="rect" id="Node000004" href="$system__telecommand__defs_8c.html#ad62425492ed28fac500f9c495fe7d4ba" title="System self&#45;check of all peripherals and systems." alt="" coords="5,5,175,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="243,28,175,28,175,23,243,23"/>
+</map>

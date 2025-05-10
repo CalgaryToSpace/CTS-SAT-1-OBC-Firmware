@@ -1,0 +1,20 @@
+<map id="DEBUG_uart_print_mixed_array" name="DEBUG_uart_print_mixed_array">
+<area shape="rect" id="Node000001" title="Print array in hex + ASCII format for UART debugging, aligned." alt="" coords="1237,39,1407,79"/>
+<area shape="rect" id="Node000002" href="$ax100__tx_8c.html#ad4380f894206940a97ed67e940056354" title="Send data to the ax100 for downlink." alt="" coords="1031,17,1187,42"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1222,48,1187,43,1188,38,1222,43"/>
+<area shape="rect" id="Node000008" href="$rtos__tasks__rx__telecommands_8c.html#a11fd07513b07836623c0abab0cec607f" title="Checks for an available telecommand in the UART buffer, and schedules it for execution." alt="" coords="1029,67,1189,107"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="1222,75,1190,79,1189,74,1222,70"/>
+<area shape="rect" id="Node000003" href="$comms__tx_8c.html#a55024d4cf7238350f13cde1b1d7f6543" title=" " alt="" coords="816,8,981,49"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1016,32,981,32,982,26,1016,26"/>
+<area shape="rect" id="Node000004" href="$telecommand__executor_8c.html#a25f47a9d2a2618ba258fb31054bced40" title="Executes a telecommand immediately, based on the minimum info required to execute a telecommand." alt="" coords="603,5,759,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="800,30,760,29,760,24,800,24"/>
+<area shape="rect" id="Node000005" href="$telecommand__executor_8c.html#aa779e85b5e4980298a22fe51742fc752" title="Executes a telecommand from the agenda immediately." alt="" coords="351,8,546,49"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="587,29,547,30,547,25,587,24"/>
+<area shape="rect" id="Node000006" href="$rtos__tasks_8c.html#a04172000ecfd61309b0b9a892c0839ea" title=" " alt="" coords="103,21,303,46"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="336,33,303,34,303,29,335,28"/>
+<area shape="rect" id="Node000007" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,49,55,74"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="105,52,55,60,55,55,104,47"/>
+<area shape="rect" id="Node000009" href="$rtos__tasks__rx__telecommands_8c.html#a2e20de6bd195e8f23688ec86a6504b54" title=" " alt="" coords="594,71,768,111"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="1014,91,768,93,768,88,1014,85"/>
+<area shape="poly" id="edge9_Node000009_Node000007" title=" " alt="" coords="579,89,55,65,55,60,579,84"/>
+</map>

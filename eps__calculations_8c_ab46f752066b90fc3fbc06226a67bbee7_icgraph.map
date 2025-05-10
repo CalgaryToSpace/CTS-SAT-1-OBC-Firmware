@@ -1,0 +1,15 @@
+<map id="EPS_convert_battery_voltage_to_percent" name="EPS_convert_battery_voltage_to_percent">
+<area shape="rect" id="Node000001" title="Calculate the current EPS battery voltage from a PBU telemetry struct." alt="" coords="667,96,811,137"/>
+<area shape="rect" id="Node000002" href="$complete__self__check_8c.html#a034650729877a551e8919e536ae032e8" title=" " alt="" coords="428,13,618,38"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="691,90,618,53,583,42,585,37,620,49,694,86"/>
+<area shape="rect" id="Node000005" href="$system__telecommand__defs_8c.html#acb0f11979fcc8d48883ecf8dfa2bbdfc" title=" " alt="" coords="436,63,610,103"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="651,106,610,99,611,94,652,100"/>
+<area shape="rect" id="Node000006" href="$eps__telecommands_8c.html#af2a5d6ed69b9a658666bf15b20d62d10" title="Get current battery voltage percent from PBU." alt="" coords="427,128,619,169"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="652,132,620,137,619,131,651,127"/>
+<area shape="rect" id="Node000007" href="$test__eps__calculations_8c.html#aec06b10b0beb89edebc94bc3e2bd40e8" title=" " alt="" coords="430,193,616,234"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="691,147,620,183,589,195,587,190,618,178,688,142"/>
+<area shape="rect" id="Node000003" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="223,5,379,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="412,28,380,28,380,23,412,23"/>
+<area shape="rect" id="Node000004" href="$system__telecommand__defs_8c.html#ad62425492ed28fac500f9c495fe7d4ba" title="System self&#45;check of all peripherals and systems." alt="" coords="5,5,175,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="208,28,175,28,175,23,208,23"/>
+</map>

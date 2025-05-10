@@ -1,0 +1,11 @@
+<map id="ANT_CMD_measure_temp" name="ANT_CMD_measure_temp">
+<area shape="rect" id="Node000001" title="Measures the temperature at the antenna controller system." alt="" coords="685,42,863,68"/>
+<area shape="rect" id="Node000002" href="$complete__self__check_8c.html#a1453f8979f0191fab393db68e0ae6479" title=" " alt="" coords="458,5,607,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="670,45,607,37,608,32,670,40"/>
+<area shape="rect" id="Node000005" href="$antenna__telecommand__defs_8c.html#a316cf470a39e910ad64f65afa587c1b4" title="Telecommand: Measures the temperature of the antenna controller in centi&#45;degrees celsius." alt="" coords="427,70,637,96"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="670,70,638,73,638,68,670,64"/>
+<area shape="rect" id="Node000003" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="223,5,379,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="442,28,380,28,380,23,442,23"/>
+<area shape="rect" id="Node000004" href="$system__telecommand__defs_8c.html#ad62425492ed28fac500f9c495fe7d4ba" title="System self&#45;check of all peripherals and systems." alt="" coords="5,5,175,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="208,28,175,28,175,23,208,23"/>
+</map>

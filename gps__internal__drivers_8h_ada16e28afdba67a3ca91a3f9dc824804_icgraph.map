@@ -1,0 +1,11 @@
+<map id="GPS_send_cmd_get_response" name="GPS_send_cmd_get_response">
+<area shape="rect" id="Node000001" title="Sends a log command to the GPS, and receives the response." alt="" coords="662,46,864,72"/>
+<area shape="rect" id="Node000002" href="$complete__self__check_8c.html#a82ad8e5243469f7636ca7833d4b27266" title=" " alt="" coords="446,5,595,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="650,46,595,38,596,33,650,41"/>
+<area shape="rect" id="Node000005" href="$gps__telecommand__defs_8c.html#ab1cb2a2088c5fb64ff8c40154606e9a6" title="Telecommand: Transmit a log command to the GPS receiver through UART." alt="" coords="427,71,614,111"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="647,77,615,81,614,76,646,72"/>
+<area shape="rect" id="Node000003" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="223,5,379,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="431,28,379,28,379,23,431,23"/>
+<area shape="rect" id="Node000004" href="$system__telecommand__defs_8c.html#ad62425492ed28fac500f9c495fe7d4ba" title="System self&#45;check of all peripherals and systems." alt="" coords="5,5,175,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="208,28,175,28,175,23,208,23"/>
+</map>
