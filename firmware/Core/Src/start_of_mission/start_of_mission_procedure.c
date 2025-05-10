@@ -16,7 +16,7 @@
  */
 uint32_t START_deployment_timer(void)
 {
-    HAL_Delay(3600000); // 60 minutes in milliseconds
+    osDelay(1800000); // 30 minutes in milliseconds
     return 0;
 }
 
@@ -55,7 +55,7 @@ uint32_t CHECK_battery_level(void) {
         if(battery_level >= 30.0f) {
             return 1;
         }
-        HAL_Delay(60000); // Wait 1 minute before checking again
+        osDelay(60000); // Wait 1 minute before checking again
     }
 }
 
@@ -88,7 +88,7 @@ uint32_t DEPLOY_comms_antenna(void) {
 
         attempt++;
         if (attempt < max_attempts) {
-            HAL_Delay(300000); // 5 minute delay between attempts
+            osDelay(300000); // 5 minute delay between attempts
         }
     }
     
@@ -133,12 +133,12 @@ uint32_t DETECT_tumble()
         angular_velocity[2] = (float)vel_out.z_rate_mdeg_per_sec / 1000.0f;
 
         // Check if angular velocity exceeds threshold for tumbling
-        float MIN_THRESHOLD_X = -0.2f;
-        float MAX_THRESHOLD_X = 0.2f;
+        float MIN_THRESHOLD_X = -1.5f;
+        float MAX_THRESHOLD_X = 1.5f;
         float MAX_THRESHOLD_Y = -1; // Might be either -1 or -2 with +- tolerance instead of range
         float MIN_THRESHOLD_Y = -2;
-        float MIN_THRESHOLD_Z = -0.2f;
-        float MAX_THRESHOLD_Z = 0.2f;
+        float MIN_THRESHOLD_Z = -1.5f;
+        float MAX_THRESHOLD_Z = 1.5f;
 
         if ((angular_velocity[0] < MIN_THRESHOLD_X || angular_velocity[0] > MAX_THRESHOLD_X) || 
             (angular_velocity[1] < MIN_THRESHOLD_Y || angular_velocity[1] > MAX_THRESHOLD_Y) || 
