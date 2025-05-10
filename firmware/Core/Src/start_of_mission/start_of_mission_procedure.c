@@ -10,7 +10,6 @@
 #include "eps_drivers/eps_types.h"
 
 #include <stdint.h>
-#include <eps_types.h>
 
 /*
  * Starts a 60 minute timer after deployment
