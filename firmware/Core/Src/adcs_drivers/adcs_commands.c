@@ -12,13 +12,25 @@
 #include "adcs_drivers/adcs_commands.h"
 #include "adcs_drivers/adcs_internal_drivers.h"
 #include "timekeeping/timekeeping.h"
+#include "log/log.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <math.h>
 
 #include "stm32l4xx_hal.h"
 
-extern I2C_HandleTypeDef hi2c1; // allows not needing the parameters
+/// @brief Initialize the ADCS CRC, timestamp, and file system directory. 
+/// @return 0 when successful
+uint8_t ADCS_initialize() {
+
+    // TODO: LittleFS must be mounted, power must be provided to the ADCS, and OBC time must be set in order to initialize the ADCS
+    ADCS_synchronize_unix_time();
+    ADCS_initialize_crc8_checksum();
+    LFS_make_directory("ADCS");
+
+    return 0;
+}
 
 /// @brief Instructs the ADCS to determine whether the last command succeeded. (Doesn't work for telemetry requests, by design.)
 /// @param[out] ack Structure containing the formatted information about the last command sent.
@@ -27,7 +39,7 @@ uint8_t ADCS_cmd_ack(ADCS_cmd_ack_struct_t *ack) {
     uint8_t data_received[8]; 
     uint8_t data_length = 4;
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_COMMAND_ACK, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_COMMAND_ACK, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
     // map temp buffer to Ack struct
     ADCS_pack_to_ack_struct(&data_received[0], ack);
@@ -40,11 +52,11 @@ uint8_t ADCS_cmd_ack(ADCS_cmd_ack_struct_t *ack) {
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Reset command.
-/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+/// @return 0 if successful, non-zero if a HAL error occurred in transmission.
 uint8_t ADCS_reset() {
-    // returns telecommand error flag
     uint8_t data_send[1] = {ADCS_MAGIC_NUMBER};
-    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_RESET, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+    const uint8_t cmd_status = ADCS_send_i2c_telecommand(ADCS_COMMAND_RESET, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+        // note: because the ADCS will become unresponsive afterward for at least 15 seconds, do not poll for a response
     return cmd_status;
 }
 
@@ -56,7 +68,7 @@ uint8_t ADCS_get_identification(ADCS_id_struct_t *output_struct) {
     uint8_t data_length = 8;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_IDENTIFICATION, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_IDENTIFICATION, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_identification_struct(&data_received[0], output_struct);
 
@@ -70,7 +82,7 @@ uint8_t ADCS_get_program_status(ADCS_boot_running_status_struct_t *output_struct
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_BOOT_RUNNING_PROGRAM_STATUS, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_BOOT_RUNNING_PROGRAM_STATUS, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
     ADCS_pack_to_program_status_struct(&data_received[0], output_struct);
 
@@ -85,7 +97,7 @@ uint8_t ADCS_get_communication_status(ADCS_comms_status_struct_t *output_struct)
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_SATSTATE_COMM_STATUS, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_SATSTATE_COMM_STATUS, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
     ADCS_pack_to_comms_status_struct(&data_received[0], output_struct);
 
@@ -97,7 +109,7 @@ uint8_t ADCS_get_communication_status(ADCS_comms_status_struct_t *output_struct)
 uint8_t ADCS_deploy_magnetometer(uint8_t deploy_timeout) {
     // Deploys the magnetometer boom, timeout in seconds
     uint8_t data_send[1] = {deploy_timeout};
-    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_DEPLOY_MAGNETOMETER_BOOM, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_DEPLOY_MAGNETOMETER_BOOM, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
 }
 
@@ -106,17 +118,16 @@ uint8_t ADCS_deploy_magnetometer(uint8_t deploy_timeout) {
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_set_run_mode(ADCS_run_mode_enum_t mode) {
     uint8_t data_send[1] = {mode};
-    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_ADCS_RUN_MODE, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_ADCS_RUN_MODE, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Clear_Errors command.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_clear_errors() {
-    // Clears error flags
     // NOTE: THERE IS ANOTHER, SEPARATE CLEAR ERROR FLAG TC FOR THE BOOTLODER (ADCS_COMMAND_BL_CLEAR_ERRORS)
     uint8_t data_send[1] = {192}; // 0b11000000
-    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_CLEAR_ERRORS, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_CLEAR_ERRORS, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
 }
 
@@ -128,7 +139,7 @@ uint8_t ADCS_attitude_control_mode(ADCS_control_mode_enum_t mode, uint16_t timeo
     // Sets the ADCS attitude control mode
     // See User Manual, Section 4.4.3 Table 3 for requirements to switch control mode
     uint8_t data_send[3] = {mode, timeout & 0x00FF, timeout >> 8};
-    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SET_ATTITUDE_CONTROL_MODE, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SET_ATTITUDE_CONTROL_MODE, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
 }
 
@@ -139,7 +150,7 @@ uint8_t ADCS_attitude_estimation_mode(ADCS_estimation_mode_enum_t mode) {
     // Possible values for mode given in Section 6.3 Table 80 of Firmware Reference Manual (ranges from 0 to 7)
     // needs power control to be on
     uint8_t data_send[1] = {mode};
-    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SET_ATTITUDE_ESTIMATION_MODE, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SET_ATTITUDE_ESTIMATION_MODE, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
 }
 
@@ -149,7 +160,7 @@ uint8_t ADCS_run_once() {
     // requires ADCS_Enable_Triggered to have run first
     // (if ADCS_Enable_On has run instead, then this is unnecessary)
     uint8_t data_send[1]; // 0-byte data (from manual) input into wrapper, but one-byte here to avoid warnings
-    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_TRIGGER_ADCS_LOOP, data_send, 0, ADCS_INCLUDE_CHECKSUM);
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_TRIGGER_ADCS_LOOP, data_send, 0, ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
 }
 
@@ -158,7 +169,7 @@ uint8_t ADCS_run_once() {
 /// @return 0 if successful, non-zero if an error occurred in transmission.
 uint8_t ADCS_set_magnetometer_mode(ADCS_magnetometer_mode_enum_t mode) {
     uint8_t data_send[1] = {mode};
-    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SET_MODE_OF_MAGNETOMETER_OPERATION, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SET_MODE_OF_MAGNETOMETER_OPERATION, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
 }
 
@@ -173,7 +184,7 @@ uint8_t ADCS_set_magnetorquer_output(double x_duty, double y_duty, double z_duty
     ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ((uint16_t) (x_duty * 1000)), 0);
     ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ((uint16_t) (y_duty * 1000)), 2);
     ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ((uint16_t) (z_duty * 1000)), 4);
-    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SET_MAGNETORQUER_OUTPUT, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SET_MAGNETORQUER_OUTPUT, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
 }
 
@@ -190,7 +201,7 @@ uint8_t ADCS_set_wheel_speed(int16_t x_speed, int16_t y_speed, int16_t z_speed) 
     ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, x_speed, 0);
     ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, y_speed, 2);
     ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, z_speed, 4);
-    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SET_WHEEL_SPEED, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SET_WHEEL_SPEED, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
 }
 
@@ -215,7 +226,7 @@ uint8_t ADCS_set_power_control(ADCS_power_select_enum_t cube_control_signal, ADC
     data_send[0] = (cube_control_signal) | (cube_control_motor << 2) | (cube_sense1 << 4) | (cube_sense2 << 6);
     data_send[1] = (cube_star_power) | (cube_wheel1_power << 2) | (cube_wheel2_power << 4) | (cube_wheel3_power << 6);
     data_send[2] = (motor_power) | (gps_power << 2);
-    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_CUBEACP_SET_ADCS_POWER_CONTROL, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_CUBEACP_SET_ADCS_POWER_CONTROL, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
 }
 
@@ -226,7 +237,7 @@ uint8_t ADCS_get_power_control(ADCS_power_control_struct_t *output_struct) {
     uint8_t data_length = 3;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_ADCS_POWER_CONTROL, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_ADCS_POWER_CONTROL, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
     ADCS_pack_to_power_control_struct(data_received, output_struct);
 
@@ -286,7 +297,7 @@ uint8_t ADCS_set_magnetometer_config(
     ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ((int16_t) (sensitivity_matrix_s31 * 1000)), 26);
     ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ((int16_t) (sensitivity_matrix_s32 * 1000)), 28);
 
-    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_CUBEACP_SET_MAGNETOMETER_CONFIG, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_CUBEACP_SET_MAGNETOMETER_CONFIG, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
 
 }
@@ -295,7 +306,7 @@ uint8_t ADCS_set_magnetometer_config(
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_save_config() {
     uint8_t data_send[1]; // 0-byte data (from manual) input into wrapper, but one-byte here to avoid warnings
-    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SAVE_CONFIG, data_send, 0, ADCS_INCLUDE_CHECKSUM);
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SAVE_CONFIG, data_send, 0, ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
 }
 
@@ -303,7 +314,7 @@ uint8_t ADCS_save_config() {
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_save_orbit_params() {
     uint8_t data_send[1]; // 0-byte data (from manual) input into wrapper, but one-byte here to avoid warnings
-    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SAVE_ORBIT_PARAMS, data_send, 0, ADCS_INCLUDE_CHECKSUM);
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SAVE_ORBIT_PARAMS, data_send, 0, ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
 }
 
@@ -314,7 +325,7 @@ uint8_t ADCS_get_estimate_angular_rates(ADCS_angular_rates_struct_t *output_stru
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_ESTIMATED_ANGULAR_RATES, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_ESTIMATED_ANGULAR_RATES, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
     ADCS_pack_to_angular_rates_struct(data_received, output_struct);
 
@@ -328,7 +339,7 @@ uint8_t ADCS_get_llh_position(ADCS_llh_position_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_SATELLITE_POSITION_LLH, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_SATELLITE_POSITION_LLH, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
     ADCS_pack_to_llh_position_struct(data_received, output_struct);
 
@@ -339,7 +350,7 @@ uint8_t ADCS_get_llh_position(ADCS_llh_position_struct_t *output_struct) {
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_bootloader_clear_errors() {
     uint8_t data_send[1]; // 0-byte data (from manual) input into wrapper, but one-byte here to avoid warnings
-    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_BOOTLOADER_CLEAR_ERRORS, data_send, 0, ADCS_INCLUDE_CHECKSUM);
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_BOOTLOADER_CLEAR_ERRORS, data_send, 0, ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
 }
 
@@ -351,7 +362,7 @@ uint8_t ADCS_bootloader_clear_errors() {
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_set_unix_time_save_mode(bool save_now, bool save_on_update, bool save_periodic, uint8_t period) {
     uint8_t data_send[2] = { (save_now | (save_on_update << 1) | (save_periodic << 2) ) , period}; // 2-byte data (from manual)
-    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SET_UNIX_TIME_SAVE_TO_FLASH, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SET_UNIX_TIME_SAVE_TO_FLASH, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
 }
 
@@ -362,7 +373,7 @@ uint8_t ADCS_get_unix_time_save_mode(ADCS_set_unix_time_save_mode_struct_t *outp
     uint8_t data_length = 2;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_GET_UNIX_TIME_SAVE_TO_FLASH, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_GET_UNIX_TIME_SAVE_TO_FLASH, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
 
     ADCS_pack_to_unix_time_save_mode_struct(data_received, output_struct);
 
@@ -396,7 +407,7 @@ uint8_t ADCS_set_sgp4_orbit_params(double inclination, double eccentricity, doub
     memcpy(&data_send[48], &mean_anomaly, sizeof(mean_anomaly));
     memcpy(&data_send[56], &epoch, sizeof(epoch));
 
-    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_CUBEACP_SET_SGP4_ORBIT_PARAMETERS, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_CUBEACP_SET_SGP4_ORBIT_PARAMETERS, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
 }
 
@@ -407,7 +418,7 @@ uint8_t ADCS_get_sgp4_orbit_params(ADCS_orbit_params_struct_t *output_struct) {
     uint8_t data_length = 64;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_SGP4_ORBIT_PARAMETERS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_SGP4_ORBIT_PARAMETERS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_orbit_params_struct(data_received, output_struct);
 
@@ -421,7 +432,7 @@ uint8_t ADCS_get_rate_sensor_rates(ADCS_rated_sensor_rates_struct_t *output_stru
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RATE_SENSOR_RATES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RATE_SENSOR_RATES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_rated_sensor_rates_struct(data_received, output_struct);
 
@@ -435,7 +446,7 @@ uint8_t ADCS_get_wheel_speed(ADCS_wheel_speed_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_WHEEL_SPEED, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_WHEEL_SPEED, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_wheel_speed_struct(data_received, output_struct);
 
@@ -449,7 +460,7 @@ uint8_t ADCS_get_magnetorquer_command(ADCS_magnetorquer_command_struct_t *output
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_MAGNETORQUER_COMMAND, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_MAGNETORQUER_COMMAND, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_magnetorquer_command_struct(data_received, output_struct);
 
@@ -463,7 +474,7 @@ uint8_t ADCS_get_raw_magnetometer_values(ADCS_raw_magnetometer_values_struct_t *
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_MAGNETOMETER, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_MAGNETOMETER, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_raw_magnetometer_values_struct(data_received, output_struct);
 
@@ -477,7 +488,7 @@ uint8_t ADCS_get_estimate_fine_angular_rates(ADCS_fine_angular_rates_struct_t *o
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_FINE_ESTIMATED_ANGULAR_RATES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_FINE_ESTIMATED_ANGULAR_RATES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_fine_angular_rates_struct(data_received, output_struct);
 
@@ -491,7 +502,7 @@ uint8_t ADCS_get_magnetometer_config(ADCS_magnetometer_config_struct_t *output_s
     uint8_t data_length = 30;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_MAGNETOMETER_CONFIG, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_MAGNETOMETER_CONFIG, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_magnetometer_config_struct(data_received, output_struct);
 
@@ -505,7 +516,7 @@ uint8_t ADCS_get_commanded_attitude_angles(ADCS_commanded_angles_struct_t *outpu
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_COMMANDED_ATTITUDE_ANGLES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_COMMANDED_ATTITUDE_ANGLES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_commanded_attitude_angles_struct(data_received, output_struct);
 
@@ -525,7 +536,7 @@ uint8_t ADCS_set_commanded_attitude_angles(double x, double y, double z) {
     ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ((int16_t) (x * 100)), 0);
     ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ((int16_t) (y * 100)), 2);
     ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ((int16_t) (z * 100)), 4);
-    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_CUBEACP_SET_COMMANDED_ATTITUDE_ANGLES, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_CUBEACP_SET_COMMANDED_ATTITUDE_ANGLES, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
 }
 
@@ -547,7 +558,7 @@ uint8_t ADCS_set_commanded_attitude_angles(double x, double y, double z) {
 /// @param[in] magnetometer_selection_for_raw_magnetometer_telemetry select magnetometer mode for the second raw telemetry frame
 /// @param[in] automatic_estimation_transition_due_to_rate_sensor_errors enable/disable automatic transition from MEMS rate estimation mode to RKF in case of rate sensor error
 /// @param[in] wheel_30s_power_up_delay present in CubeSupport but not in the manual -- need to test
-/// @param[in] cam1_and_cam2_sampling_period the manual calls it this, but CubeSupport calls it "error counter reset period" -- need to test
+/// @param[in] error_counter_reset_period_min reset period for error counter
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_set_estimation_params(
                                 float magnetometer_rate_filter_system_noise, 
@@ -567,9 +578,8 @@ uint8_t ADCS_set_estimation_params(
                                 ADCS_magnetometer_mode_enum_t magnetometer_selection_for_raw_magnetometer_telemetry, // and so is this, actually!
                                 bool automatic_estimation_transition_due_to_rate_sensor_errors, 
                                 bool wheel_30s_power_up_delay, // present in CubeSupport but not in the manual -- need to test
-                                uint8_t cam1_and_cam2_sampling_period) { // the manual calls it this, but CubeSupport calls it "error counter reset period" -- need to test
+                                uint8_t error_counter_reset_period_min) { 
     // float uses IEEE 754 float32, with all bytes reversed, so eg. 1.1 becomes [0xCD, 0xCC, 0x8C, 0x3F]
-    // the float type should already be reversed, but need to test in implementation
     uint8_t data_send[31];
 
     // convert floats to reversed arrays of uint8_t
@@ -585,9 +595,9 @@ uint8_t ADCS_set_estimation_params(
     data_send[28] = (magnetometer_mode << 6) | (automatic_magnetometer_recovery << 5) | (nadir_sensor_terminator_test << 4) | (use_star_tracker << 3) | (use_css << 2) | (use_nadir_sensor << 1) | (use_sun_sensor);
     data_send[29] = (wheel_30s_power_up_delay << 3) | (automatic_estimation_transition_due_to_rate_sensor_errors << 2) | (magnetometer_selection_for_raw_magnetometer_telemetry);
 
-    data_send[30] = cam1_and_cam2_sampling_period; // lower four bits are for cam1 and upper four are for cam2 if the manual is correct, not CubeSupport
+    data_send[30] = error_counter_reset_period_min; 
 
-    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_CUBEACP_SET_ESTIMATION_PARAMETERS, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_CUBEACP_SET_ESTIMATION_PARAMETERS, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
 }
 
@@ -598,7 +608,7 @@ uint8_t ADCS_get_estimation_params(ADCS_estimation_params_struct_t *output_struc
     uint8_t data_length = 31;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_ESTIMATION_PARAMETERS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_ESTIMATION_PARAMETERS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_estimation_params_struct(data_received, output_struct);
 
@@ -644,7 +654,7 @@ uint8_t ADCS_set_augmented_sgp4_params(double incl_coefficient, double raan_coef
     data_send[27] = (uint8_t) (max_lag * 100);
     ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, min_samples, 28);
 
-    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_CUBEACP_SET_AUGMENTED_SGP4_PARAMETERS, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_CUBEACP_SET_AUGMENTED_SGP4_PARAMETERS, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
 }
 
@@ -655,7 +665,7 @@ uint8_t ADCS_get_augmented_sgp4_params(ADCS_augmented_sgp4_params_struct_t *outp
     uint8_t data_length = 30;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_AUGMENTED_SGP4_PARAMETERS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_AUGMENTED_SGP4_PARAMETERS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_augmented_sgp4_params_struct(data_received, output_struct);
 
@@ -675,7 +685,7 @@ uint8_t ADCS_set_tracking_controller_target_reference(float lon, float lat, floa
     memcpy(&data_send[4],  &lat, sizeof(lat));
     memcpy(&data_send[8],  &alt, sizeof(alt));
 
-    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_CUBEACP_SET_TRACKING_CONTROLLER_TARGET_REFERENCE, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_CUBEACP_SET_TRACKING_CONTROLLER_TARGET_REFERENCE, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
 }
 
@@ -686,7 +696,7 @@ uint8_t ADCS_get_tracking_controller_target_reference(ADCS_tracking_controller_t
     uint8_t data_length = 12;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_TRACKING_CONTROLLER_TARGET_REFERENCE, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_TRACKING_CONTROLLER_TARGET_REFERENCE, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_tracking_controller_target_reference_struct(data_received, output_struct);
 
@@ -715,7 +725,7 @@ uint8_t ADCS_set_rate_gyro_config(ADCS_axis_select_enum_t gyro1, ADCS_axis_selec
 
     data_send[9] = rate_sensor_mult;
 
-    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_CUBEACP_SET_RATE_GYRO_CONFIG, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_CUBEACP_SET_RATE_GYRO_CONFIG, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
 }
 
@@ -726,7 +736,7 @@ uint8_t ADCS_get_rate_gyro_config(ADCS_rate_gyro_config_struct_t *output_struct)
     uint8_t data_length = 12;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_RATE_GYRO_CONFIG, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_GET_RATE_GYRO_CONFIG, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_rate_gyro_config_struct(data_received, output_struct);
 
@@ -740,7 +750,7 @@ uint8_t ADCS_get_estimated_attitude_angles(ADCS_estimated_attitude_angles_struct
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_ESTIMATED_ATTITUDE_ANGLES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_ESTIMATED_ATTITUDE_ANGLES, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_estimated_attitude_angles_struct(&data_received[0], output_struct);
 
@@ -754,7 +764,7 @@ uint8_t ADCS_get_magnetic_field_vector(ADCS_magnetic_field_vector_struct_t *outp
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_MAGNETIC_FIELD_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_MAGNETIC_FIELD_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_magnetic_field_vector_struct(&data_received[0], output_struct);
 
@@ -768,7 +778,7 @@ uint8_t ADCS_get_fine_sun_vector(ADCS_fine_sun_vector_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_FINE_SUN_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_FINE_SUN_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_fine_sun_vector_struct(&data_received[0], output_struct);
 
@@ -782,7 +792,7 @@ uint8_t ADCS_get_nadir_vector(ADCS_nadir_vector_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_NADIR_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_NADIR_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_nadir_vector_struct(&data_received[0], output_struct);
 
@@ -796,7 +806,7 @@ uint8_t ADCS_get_commanded_wheel_speed(ADCS_wheel_speed_struct_t *output_struct)
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_WHEEL_SPEED_COMMANDS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_WHEEL_SPEED_COMMANDS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_commanded_wheel_speed_struct(data_received, output_struct);
 
@@ -810,7 +820,7 @@ uint8_t ADCS_get_igrf_magnetic_field_vector(ADCS_magnetic_field_vector_struct_t 
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_IGRF_MODELLED_MAGNETIC_FIELD_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_IGRF_MODELLED_MAGNETIC_FIELD_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_igrf_magnetic_field_vector_struct(&data_received[0], output_struct);
 
@@ -824,7 +834,7 @@ uint8_t ADCS_get_quaternion_error_vector(ADCS_quaternion_error_vector_struct_t *
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_QUATERNION_ERROR_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_QUATERNION_ERROR_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_quaternion_error_vector_struct(&data_received[0], output_struct);
 
@@ -838,7 +848,7 @@ uint8_t ADCS_get_estimated_gyro_bias(ADCS_estimated_gyro_bias_struct_t *output_s
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_ESTIMATED_GYRO_BIAS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_ESTIMATED_GYRO_BIAS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_estimated_gyro_bias_struct(&data_received[0], output_struct);
 
@@ -852,7 +862,7 @@ uint8_t ADCS_get_estimation_innovation_vector(ADCS_estimation_innovation_vector_
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_ESTIMATION_INNOVATION_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_ESTIMATION_INNOVATION_VECTOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_estimation_innovation_vector_struct(&data_received[0], output_struct);
 
@@ -866,7 +876,7 @@ uint8_t ADCS_get_raw_cam1_sensor(ADCS_raw_cam_sensor_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_CAM1_SENSOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_CAM1_SENSOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_raw_cam1_sensor_struct(&data_received[0], output_struct);
 
@@ -880,7 +890,7 @@ uint8_t ADCS_get_raw_cam2_sensor(ADCS_raw_cam_sensor_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_CAM2_SENSOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_CAM2_SENSOR, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_raw_cam2_sensor_struct(&data_received[0], output_struct);
 
@@ -894,7 +904,7 @@ uint8_t ADCS_get_raw_coarse_sun_sensor_1_to_6(ADCS_raw_coarse_sun_sensor_1_to_6_
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_COARSE_SUN_SENSOR_1_TO_6, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_COARSE_SUN_SENSOR_1_TO_6, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_raw_coarse_sun_sensor_1_to_6_struct(&data_received[0], output_struct);
 
@@ -908,7 +918,7 @@ uint8_t ADCS_get_raw_coarse_sun_sensor_7_to_10(ADCS_raw_coarse_sun_sensor_7_to_1
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_COARSE_SUN_SENSOR_7_TO_10, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_COARSE_SUN_SENSOR_7_TO_10, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_raw_coarse_sun_sensor_7_to_10_struct(&data_received[0], output_struct);
 
@@ -922,79 +932,9 @@ uint8_t ADCS_get_cubecontrol_current(ADCS_cubecontrol_current_struct_t *output_s
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_CUBECONTROL_CURRENT_MEASUREMENTS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_CUBECONTROL_CURRENT_MEASUREMENTS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_cubecontrol_current_struct(&data_received[0], output_struct);
-
-    return tlm_status;
-}
-
-/// @brief Instruct the ADCS to execute the ADCS_Raw_GPS_Status command.
-/// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
-/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_get_raw_gps_status(ADCS_raw_gps_status_struct_t *output_struct) {
-    uint8_t data_length = 6;
-    uint8_t data_received[data_length]; 
-
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_GPS_STATUS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
-
-    ADCS_pack_to_raw_gps_status_struct(&data_received[0], output_struct);
-
-    return tlm_status;
-}
-
-/// @brief Instruct the ADCS to execute the ADCS_Raw_GPS_Time command.
-/// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
-/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_get_raw_gps_time(ADCS_raw_gps_time_struct_t *output_struct) {
-    uint8_t data_length = 6;
-    uint8_t data_received[data_length]; 
-
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_GPS_TIME, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
-
-    ADCS_pack_to_raw_gps_time_struct(data_received, output_struct);
-
-    return tlm_status;
-}
-
-/// @brief Instruct the ADCS to execute the ADCS_Raw_GPS_X command.
-/// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
-/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_get_raw_gps_x(ADCS_raw_gps_struct_t *output_struct) {
-    uint8_t data_length = 6;
-    uint8_t data_received[data_length]; 
-
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_GPS_X, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
-
-    ADCS_pack_to_raw_gps_struct(ADCS_GPS_AXIS_X, data_received, output_struct);
-
-    return tlm_status;
-}
-
-/// @brief Instruct the ADCS to execute the ADCS_Raw_GPS_Y command.
-/// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
-/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_get_raw_gps_y(ADCS_raw_gps_struct_t *output_struct) {
-    uint8_t data_length = 6;
-    uint8_t data_received[data_length]; 
-
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_GPS_Y, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
-
-    ADCS_pack_to_raw_gps_struct(ADCS_GPS_AXIS_Y, data_received, output_struct);
-
-    return tlm_status;
-}
-
-/// @brief Instruct the ADCS to execute the ADCS_Raw_GPS_Z command.
-/// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
-/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_get_raw_gps_z(ADCS_raw_gps_struct_t *output_struct) {
-    uint8_t data_length = 6;
-    uint8_t data_received[data_length]; 
-
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_GPS_Z, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
-
-    ADCS_pack_to_raw_gps_struct(ADCS_GPS_AXIS_Z, data_received, output_struct);
 
     return tlm_status;
 }
@@ -1006,13 +946,89 @@ uint8_t ADCS_get_measurements(ADCS_measurements_struct_t *output_struct) {
     uint8_t data_length = 72;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_ADCS_MEASUREMENTS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_ADCS_MEASUREMENTS, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_measurements_struct(data_received, output_struct);
 
     return tlm_status;
 }
 
+/// @brief Instruct the ADCS to execute the ADCS_reset_file_list_read_pointer command.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_reset_file_list_read_pointer() {
+    uint8_t data_send[1]; // 0-byte data (from manual) input into wrapper, but one-byte here to avoid warnings
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_RESET_FILELIST_READ_PTR, data_send, 0, ADCS_INCLUDE_CHECKSUM);
+    return cmd_status;
+}
+
+/// @brief Instruct the ADCS to execute the ADCS_advance_file_list_read_pointer command.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_advance_file_list_read_pointer() {
+    uint8_t data_send[1]; // 0-byte data (from manual) input into wrapper, but one-byte here to avoid warnings
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_ADVANCE_FILELIST_READ_PTR, data_send, 0, ADCS_INCLUDE_CHECKSUM);
+    return cmd_status;
+}
+
+/// @brief Request file information telemetry from the ADCS.
+/// @param[out] output_struct Pointer to the struct to store parsed telemetry data.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_get_file_info_telemetry(ADCS_file_info_struct_t *output_struct) {
+    uint8_t data_length = 12;
+    uint8_t data_received[data_length]; // Temporary buffer for raw telemetry data.
+
+    // Request telemetry data
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_FILE_INFO, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
+
+    // Parse the raw telemetry data into the struct
+    ADCS_pack_to_file_info_struct(data_received, output_struct);
+
+    return tlm_status; 
+}
+
+/// @brief Instruct the ADCS to load a file download block into the download buffer.
+/// @param[in] file_type File type to load (e.g., telemetry log, JPG, etc.).
+/// @param[in] counter Counter value for file block.
+/// @param[in] offset Offset in the file from which to start downloading.
+/// @param[in] block_length Number of packets to send.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_load_file_download_block(ADCS_file_type_enum_t file_type, uint8_t counter, uint32_t offset, uint16_t block_length) {
+    // Command data array (8 bytes as per Table 17)
+    uint8_t data_send[8];
+
+    // Pack File Type (8 bits)
+    data_send[0] = (uint8_t)file_type;
+
+    // Pack Counter (8 bits)
+    data_send[1] = counter;
+
+    // Pack Offset (32 bits, reverse byte order)
+    ADCS_convert_uint32_to_reversed_uint8_array_members(data_send, offset, 2);
+
+    // Pack Block Length (16 bits, reverse byte order)
+    ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, block_length, 6);
+
+    // Send the command
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_LOAD_FILE_DOWNLOAD_BLOCK, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+
+    return cmd_status;
+}
+
+/// @brief Request Download Block Ready telemetry from the ADCS.
+/// @param[out] output_struct Pointer to the struct to populate with telemetry data.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_get_download_block_ready_telemetry(ADCS_download_block_ready_struct_t *output_struct) {
+
+    uint8_t data_length = 5;
+    uint8_t data_received[data_length]; // Buffer to store telemetry data
+
+    // Request telemetry data from the ADCS
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_DOWNLOAD_BLOCK_READY, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
+
+    // Pack telemetry data into the struct
+    ADCS_pack_to_download_block_ready_struct(data_received, output_struct);
+    
+    return tlm_status;
+}
 /// @brief Instruct the ADCS to execute the ADCS_execution_state command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
@@ -1020,13 +1036,112 @@ uint8_t ADCS_get_acp_execution_state(ADCS_acp_execution_state_struct_t *output_s
     uint8_t data_length = 3;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_EXECUTION_STATE, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_EXECUTION_STATE, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_acp_execution_state_struct(data_received, output_struct);
 
     return tlm_status;
 }
 
+/// @brief Send the Initiate Download Burst command to the ADCS.
+/// @param[in] ignore_hole_map Boolean flag to ignore the hole map.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_initiate_download_burst(bool ignore_hole_map) {
+    uint8_t data_send[2]; // Command requires 2 bytes
+
+    // Populate the command buffer
+    data_send[0] = 20;                                  // First byte: Message Length (unused parameter according to CubeSpace)
+    data_send[1] = (ignore_hole_map ? 1 : 0);          // Second byte: Ignore Hole Map as a single bit
+
+    // Send the command via I2C and check the result
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_INIT_DOWNLOAD_BURST, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+
+    return cmd_status; // Return the result
+}
+
+/// @brief Send a File Upload Hole Map command to the ADCS.
+/// @param[in] hole_map Pointer to a 16-byte array representing the hole map.
+/// @param[in] which_map Number between 1 and 8 to choose the hole map to upload.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_set_hole_map(uint8_t *hole_map, uint8_t which_map) {
+
+    if (which_map < 1 || which_map > 8) {
+        // which_map is number 1-8, added to ID 119 gives IDs 120 to 127 for the hole maps
+        return 30;
+    }
+
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check((ADCS_COMMAND_INIT_DOWNLOAD_BURST + which_map), hole_map, 16, ADCS_INCLUDE_CHECKSUM);
+                                                            
+    return cmd_status; // Return the result
+}
+
+/// @brief Retrieve a File Upload Hole Map telemetry from the ADCS.
+/// @param[out] hole_map_struct Pointer to an array of uint8 to store the retrieved hole map.
+/// @param[in] which_map Number between 1 and 8 to choose the hole map to upload.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_get_hole_map(uint8_t *hole_map_struct, uint8_t which_map) {
+    
+    if (which_map < 1 || which_map > 8) {
+        // which_map is number 1-8, added to ID 246 gives IDs 247 to 254 for the hole maps
+        return 30;
+    }
+
+    // Request the telemetry data
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check((ADCS_TELEMETRY_BLOCK_CHECKSUM + which_map), &hole_map_struct[0], 16, ADCS_INCLUDE_CHECKSUM);
+
+    return tlm_status; // Return the result
+}
+
+/// @brief Instruct the ADCS to format the SD card.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_format_sd() {
+    // returns telecommand error flag
+    uint8_t data_send[1] = {ADCS_MAGIC_NUMBER};
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_FORMAT_SD, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+    return cmd_status;
+}
+
+/// @brief Send the Erase File command to the ADCS.
+/// @param[in] erase_file_command Pointer to a struct containing the file type, file counter, and erase all flag.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_erase_file(ADCS_file_type_enum_t filetype, uint8_t filecounter, bool erase_all) {
+
+    uint8_t data_send[3] = {(uint8_t)filetype, filecounter, (uint8_t)erase_all};
+
+    // Send the command with the packed parameters
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_ERASE_FILE, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+
+    return cmd_status; // Return the result
+}
+
+/// @brief Retrieve the SD card format/erase progress telemetry from the ADCS.
+/// @param[out] output_struct Pointer to the struct where the telemetry data will be stored.
+/// @return 0 if successful, non-zero if an error occurred in transmission or processing.
+uint8_t ADCS_get_sd_card_format_erase_progress(ADCS_sd_card_format_erase_progress_struct_t *output_struct) {
+
+    uint8_t data_received[1]; // Array to hold the telemetry data
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_FORMAT_SD, data_received, sizeof(data_received), ADCS_INCLUDE_CHECKSUM);
+
+    // Parse the received data
+    ADCS_pack_to_sd_card_format_erase_progress_struct(data_received, output_struct);
+
+    return tlm_status; // Success
+}
+
+/// @brief Retrieve the File Download Buffer telemetry from the ADCS.
+/// @param[out] output_struct Pointer to the struct where the telemetry data will be stored.
+/// @return 0 if successful, non-zero if an error occurred in transmission or processing.
+uint8_t ADCS_get_file_download_buffer(ADCS_file_download_buffer_struct_t *output_struct) {
+
+    uint8_t data_received[22]; // Buffer to hold the received telemetry data
+    
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_FILE_DOWNLOAD_BUFFER, data_received, sizeof(data_received), ADCS_INCLUDE_CHECKSUM);
+
+    // Parse the received data
+    ADCS_pack_to_file_download_buffer_struct(data_received, output_struct);
+
+    return tlm_status; // Success
+}
 /// @brief Instruct the ADCS to execute the ADCS_get_current_state_1 command. (There's an ADCS_current_state_2 command which is presently not implemented)
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
@@ -1034,7 +1149,7 @@ uint8_t ADCS_get_current_state_1(ADCS_current_state_1_struct_t *output_struct) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_ADCS_STATE, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_ADCS_STATE, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_current_state_1_struct(data_received, output_struct);
 
@@ -1048,7 +1163,7 @@ uint8_t ADCS_get_raw_star_tracker_data(ADCS_raw_star_tracker_struct_t *output_st
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_STAR_TRACKER, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_RAW_STAR_TRACKER, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_raw_star_tracker_struct(data_received, output_struct);
 
@@ -1056,18 +1171,26 @@ uint8_t ADCS_get_raw_star_tracker_data(ADCS_raw_star_tracker_struct_t *output_st
 }
 
 /// @brief Instruct the ADCS to save an image to the SD card.
-/// @param[in] camera_select Which camera to save the image from; can be Camera 1 (0), Camera 2 (1), or Star (2)
-/// @param[in] image_size Resolution of the image to save; can be 1024x1024 (0), 512x512, (1) 256x256, (2) 128x128, (3) or 64x64 (4)
+/// @param[in] camera_select (int) Which camera to save the image from; can be Camera 1 (0), Camera 2 (1), or Star (2)
+/// @param[in] image_size (int) Resolution of the image to save; can be 1024x1024 (0), 512x512 (1), 256x256 (2), 128x128 (3), or 64x64 (4)
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_save_image_to_sd(ADCS_camera_select_enum_t camera_select, ADCS_image_size_enum_t image_size) {
     uint8_t data_send[2] = {camera_select, image_size};
-    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SAVE_IMAGE, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SAVE_IMAGE, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+
+    // to avoid interference, do a separate ack for these commands
+    if (cmd_status != 0) {
+        ADCS_cmd_ack_struct_t ack_status;
+        ADCS_cmd_ack(&ack_status);
+        return ack_status.error_flag;
+    }
+
     return cmd_status;
 }
 
-/// @brief Instruct the ADCS to synchronise its Unix epoch time to the current OBC Unix time.
+/// @brief Instruct the ADCS to synchronize its Unix epoch time to the current OBC Unix time.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_synchronise_unix_time() {
+uint8_t ADCS_synchronize_unix_time() {
     uint64_t current_unix_time_ms = TIM_get_current_unix_epoch_time_ms();
     
     uint32_t s_component = current_unix_time_ms  / 1000;
@@ -1077,7 +1200,7 @@ uint8_t ADCS_synchronise_unix_time() {
     ADCS_convert_uint32_to_reversed_uint8_array_members(data_send, s_component, 0);
     ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, ms_component, 4);
 
-    uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SET_CURRENT_UNIX_TIME, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SET_CURRENT_UNIX_TIME, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
 }
 
@@ -1088,7 +1211,7 @@ uint8_t ADCS_get_current_unix_time(uint64_t* epoch_time_ms) {
     uint8_t data_length = 6;
     uint8_t data_received[data_length]; 
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_GET_CURRENT_UNIX_TIME, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_GET_CURRENT_UNIX_TIME, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_unix_time_ms(data_received, epoch_time_ms);
 
@@ -1098,13 +1221,13 @@ uint8_t ADCS_get_current_unix_time(uint64_t* epoch_time_ms) {
 /// @brief Instruct the ADCS to execute the ADCS_Set_Run_Mode command.
 /// @param[in] which_log 1 or 2; which specific log number to log to the SD card
 /// @param[in] log_array Pointer to list of bitmasks to set the log config
-/// @param[in] log_array_size Number of things to log
+/// @param[in] log_array_len Number of things to log
 /// @param[in] log_period Period to log data to the SD card; if zero, then disable logging
 /// @param[in] which_sd Which SD card to log to; 0 for primary, 1 for secondary 
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_set_sd_log_config(uint8_t which_log, const uint8_t **log_array, uint8_t log_array_size, uint16_t log_period, ADCS_sd_log_destination_enum_t which_sd) {
+uint8_t ADCS_set_sd_log_config(uint8_t which_log, const uint8_t **log_array, uint8_t log_array_len, uint16_t log_period, ADCS_sd_log_destination_enum_t which_sd) {
     uint8_t data_send[13];
-    ADCS_combine_sd_log_bitmasks(log_array, log_array_size, data_send); // saves to the first 10 bytes of data_send
+    ADCS_combine_sd_log_bitmasks(log_array, log_array_len, data_send); // saves to the first 10 bytes of data_send
     ADCS_convert_uint16_to_reversed_uint8_array_members(data_send, log_period, 10);
     data_send[12] = which_sd;
     
@@ -1120,7 +1243,7 @@ uint8_t ADCS_set_sd_log_config(uint8_t which_log, const uint8_t **log_array, uin
             return 7; // invalid log to log
     }
     
-    uint8_t cmd_status = ADCS_i2c_send_command_and_check(command_id, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(command_id, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
 }
 
@@ -1144,9 +1267,459 @@ uint8_t ADCS_get_sd_log_config(uint8_t which_log, ADCS_sd_log_config_struct* con
             return 7; // invalid log to log
     }
 
-    uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(command_id, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(command_id, data_received, data_length, ADCS_INCLUDE_CHECKSUM); 
 
     ADCS_pack_to_sd_log_config_struct(data_received, which_log, config);
 
     return tlm_status;
+}
+
+uint8_t adcs_download_buffer[20480]; // static buffer to hold the 20 KiB from the download
+
+/// @brief Save one block of the ADCS SD card file pointed to by the file pointer into the ADCS download buffer, then append it to the file in LittleFS.
+/// @param[in] file_info A struct containing information about the currently-pointed-to file
+/// @param[in] current_block The block to load into the download buffer
+/// @param[in] file Pointer to LittleFS file to store everything to
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+/// Specifically: bytes 0-2 are the ADCS error, bytes 3-10 are which command failed, bytes 11-16 are the index of the failure if applicable
+int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info, uint8_t current_block, lfs_file_t* file) {
+    ADCS_file_download_buffer_struct_t download_packet;
+    uint16_t hole_map[64] = {0, 0, 0, 0, 0, 0, 0, 0}; // this array is 1024 bits, one for each packet up to the maximum
+
+    ADCS_load_file_download_block(file_info.file_type, file_info.file_counter, current_block * 20480, 1024);
+    // per CubeSpace, the counter is the nth file of the same type, not the block counter
+    
+    // to avoid interference from the EPS, do a separate ack for these commands
+    ADCS_cmd_ack_struct_t ack_status;
+    ADCS_cmd_ack(&ack_status);
+    if (ack_status.error_flag != 0) {
+        return ack_status.error_flag | (1 << 3);
+    }
+    
+    // Wait until the download block is ready
+    ADCS_download_block_ready_struct_t ready_struct;
+    uint8_t download_block_tries = 0;
+    do {
+        const uint8_t block_ready_status = ADCS_get_download_block_ready_telemetry(&ready_struct);
+        if (block_ready_status != 0) {
+            return block_ready_status | (1 << 4);
+        }
+        download_block_tries++;
+        if (download_block_tries > 100) {
+            return 44;
+        }
+    } while (ready_struct.ready != true);
+
+    // Initiate download burst, ignoring the hole map
+    const uint8_t download_burst_status = ADCS_initiate_download_burst(true);
+    if (download_burst_status != 0) {
+        return download_burst_status | (1 << 5);
+    }
+
+    HAL_Delay(100); // need to allow some time (100ms) for it to initiate the burst, or else the first packet may be garbage
+    HAL_IWDG_Refresh(&hiwdg); // pet the watchdog so the system doesn't reboot; must be at least 200ms since last pet
+
+    for (uint16_t i = 0; i < 1024; i++) {
+        // load 20 bytes at a time into the download buffer
+        const uint8_t download_buffer_status = ADCS_get_file_download_buffer(&(download_packet));
+        if (download_buffer_status != 0) {
+            return download_buffer_status | (1 << 6);
+        }
+
+        const uint16_t mini_packet_counter = download_packet.packet_counter % 1024;
+        // when download_packet.packet_counter >= 1024, we access memory outside the buffer, but we want to overwrite it instead
+        
+        for (uint8_t j = 0; j < 20; j++) {
+            adcs_download_buffer[20 * mini_packet_counter + j] = download_packet.file_bytes[j];
+        }
+
+        // generate hole map to determine any missing packets
+        hole_map[mini_packet_counter / 16] |= (1 << (mini_packet_counter % 16));
+
+    }
+    
+    /* HOLE MAP STUFF STARTS HERE */
+
+    uint16_t required_packets;
+    if (ceil(file_info.file_size / 20480.0) == (current_block + 1)) {
+        // if this is the final block, we may need to load fewer packets than the maximum
+        required_packets = ceil((file_info.file_size - (20480 * current_block)) / 20.0);
+    } else {
+        required_packets = 1024; 
+    }        
+    
+    uint16_t packets_received = 0;
+    
+    for (uint8_t i = 0; i < 64; i++) {
+        
+        // check if we've received all the packets
+        uint16_t temp_hole_map = hole_map[i];
+        
+        while (temp_hole_map) {
+            // count the number of ones in the uint16 (Kernighan algorithm)
+            temp_hole_map &= (temp_hole_map - 1);
+            packets_received++;
+        }
+        
+    }
+
+    uint8_t hole_map_attempts = 0;
+
+    while (required_packets < packets_received) {
+
+        for (uint8_t i = 0; i < 8; i++) {
+            uint8_t hole_map_slice[16];
+
+            for (uint8_t j = 0; j < 8; j++) {
+                // for each slice, create the hole map slice pertaining to it
+                ADCS_convert_uint16_to_reversed_uint8_array_members(&hole_map_slice[((i*8) + j) / 2], hole_map[((i*8) + j)], 0);
+            }
+
+            // now send the hole map to the ADCS, one-indexed
+            const uint8_t hole_map_status = ADCS_set_hole_map(hole_map_slice, (i + 1));
+            if (hole_map_status != 0) {
+                return hole_map_status | (1 << 7) | ((i + 1) << 11);
+            }
+        }
+        
+        // now, using the hole map as a guide, give us the missing packets
+        const uint8_t download_burst_status = ADCS_initiate_download_burst(false);
+        if (download_burst_status != 0) {
+            return download_burst_status | (1 << 8);
+        }
+        
+        HAL_Delay(100);
+        HAL_IWDG_Refresh(&hiwdg); // pet the watchdog so the system doesn't reboot; must be at least 200ms since last pet
+
+        for (uint16_t i = 0; i < 1024; i++) {
+            // load 20 bytes at a time into the download buffer
+            const uint8_t download_buffer_status = ADCS_get_file_download_buffer(&(download_packet));
+            if (download_buffer_status != 0) {
+                return download_buffer_status | (1 << 9);
+            }
+
+            const uint16_t mini_packet_counter = download_packet.packet_counter % 1024;
+            // when download_packet.packet_counter >= 1024, we access memory outside the buffer, but we want to overwrite it instead
+
+            for (uint8_t j = 0; j < 20; j++) {
+                adcs_download_buffer[20 * mini_packet_counter + j] = download_packet.file_bytes[j];
+            }
+
+            // generate hole map to determine any missing packets
+            hole_map[mini_packet_counter / 16] |= (1 << (mini_packet_counter % 16));
+        }
+
+        packets_received = 0;
+
+        for (uint8_t i = 0; i < 64; i++) {
+        
+            // check if we've received all the packets
+            uint16_t temp_hole_map = hole_map[i];
+            
+            while (temp_hole_map) {
+                // count the number of ones in the uint16 (Kernighan algorithm)
+                temp_hole_map &= (temp_hole_map - 1);
+                packets_received++;
+            }
+            
+        }
+
+        hole_map_attempts++;
+        if (hole_map_attempts >= 5) {
+            if (file_info.file_type == ADCS_FILE_TYPE_INDEX) {
+                break; // there's no way to ask the ADCS how large the index file is, so do this arbitrarily
+            }
+            return 7; // hole map timeout
+        }
+
+    }
+
+    /* HOLE MAP STUFF ENDS HERE */
+
+    uint64_t bytes_to_write;
+    if (ceil(file_info.file_size / 20480.0) == (current_block + 1)) {
+        // if this is the final block, we may need to write fewer bytes than the maximum
+        bytes_to_write = ceil((file_info.file_size - (20480 * current_block)));
+    } else {
+        bytes_to_write = 20480;
+    }     
+    
+    // Write to the file in the filesystem
+    if (current_block != 0) { // If this isn't the first block, seek to the end of the file and prepare to append
+        const lfs_soff_t seek_result = lfs_file_seek(&LFS_filesystem, file, 0, LFS_SEEK_END);
+        if (seek_result < 0) {
+            LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error seeking within file.");
+            return seek_result;
+        }
+    }
+    const lfs_ssize_t write_result = lfs_file_write(&LFS_filesystem, file, &adcs_download_buffer[0], bytes_to_write);
+    if (write_result < 0) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error writing to file.");
+        return write_result;
+    }
+
+    return 0;
+
+}
+
+/// @brief Get the list of files from the SD card.
+/// @param[in] num_to_read The maximum number of file entries to read.
+/// @param[in] index_offset The index (starting at 0) from which to start reading files.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission, negative if an LFS or snprintf error code occurred. 
+uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) {
+    
+    const uint8_t reset_pointer_status = ADCS_reset_file_list_read_pointer();
+    HAL_Delay(200);
+    if (reset_pointer_status != 0) {
+        // to avoid interference from the EPS, do a separate ack for these commands
+        ADCS_cmd_ack_struct_t ack_status;
+        ADCS_cmd_ack(&ack_status);
+        if (ack_status.error_flag != 0) {
+            return ack_status.error_flag;
+        }
+    }
+
+    ADCS_file_info_struct_t file_info;
+
+    if (index_offset > 0) {
+        // if the offset is greater than 0, we need to advance the file list read pointer to reach the correct offset
+        for (uint16_t i = 0; i < index_offset; i++) {
+            const uint8_t advance_pointer_status = ADCS_advance_file_list_read_pointer();
+            HAL_Delay(100);
+            if (advance_pointer_status != 0) {
+                // to avoid interference from the EPS, do a separate ack for these commands
+                ADCS_cmd_ack_struct_t ack_status;
+                ADCS_cmd_ack(&ack_status);
+                if (ack_status.error_flag != 0) {
+                    return ack_status.error_flag;
+                }
+            }
+            
+            const uint8_t file_info_status = ADCS_get_file_info_telemetry(&file_info);
+            if (file_info_status != 0) {
+                LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE), "Failed to get file information (index %d).", i);
+                return file_info_status;
+            }
+
+            if (file_info.file_crc16 == 0 && file_info.file_date_time_msdos == 0 && file_info.file_size == 0) {
+                // if all the file_info parameters are zero, we've reached the end of the file list.
+                LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "End of file list reached at index %d.", i);
+                return 6;
+            }
+        }
+    }
+
+    for (uint16_t i = index_offset; i < (num_to_read + index_offset); i++) {
+        
+        // get info about the current file
+        const uint8_t file_info_status = ADCS_get_file_info_telemetry(&file_info);
+        if (file_info_status != 0) {
+            LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE), "Failed to get file information (index %d).", i);
+            return file_info_status;
+        }
+
+        if (file_info.file_crc16 == 0 && file_info.file_date_time_msdos == 0 && file_info.file_size == 0) {
+            // if all the file_info parameters are zero, we've reached the end of the file list.
+            LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "End of file list reached.");
+            break;
+        }
+
+        // convert the MS-DOS time from the file info struct into human-readable time; code from Firmware Reference Manual Section 6.2.2
+        const uint16_t seconds = (file_info.file_date_time_msdos & 0x1f) << 1; // 5bits – 32
+        const uint16_t minutes = (file_info.file_date_time_msdos >> 5) & 0x3f; // 6bits – 64
+        const uint16_t hour = (file_info.file_date_time_msdos >> 11) & 0x1f; // 5bits – 32
+        const uint16_t day = (file_info.file_date_time_msdos >> 16) & 0x1f; // 5bits – 32
+        const uint16_t month = (file_info.file_date_time_msdos >> 21) & 0x0f; // 4bits – 16
+        const uint16_t year = (file_info.file_date_time_msdos >> 25) + 1980; // 7bits – 128 (1980 to 21..)
+
+        // now pack it into a string 
+        // TODO: check to see where the log should be sent
+        LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
+            "Index:%d,Type:%d,Busy Updating:%d,Counter:%d,Size:%ld,Datetime:%04d-%02d-%02d %02d:%02d:%02d,CRC16:0x%x\n",
+            i, file_info.file_type, file_info.busy_updating, file_info.file_counter, file_info.file_size, year, 
+            month, day, hour, minutes, seconds, file_info.file_crc16);
+
+        // now advance the file list read pointer to do it all again
+        const uint8_t advance_pointer_status = ADCS_advance_file_list_read_pointer();
+        HAL_Delay(100);
+        if (advance_pointer_status != 0) {
+            // to avoid interference from the EPS, do a separate ack for these commands
+            ADCS_cmd_ack_struct_t ack_status;
+            ADCS_cmd_ack(&ack_status);
+            if (ack_status.error_flag != 0) {
+                return ack_status.error_flag;
+            }
+        }
+    }
+    
+    return 0;
+}
+
+
+/// @brief Save a specified file from the ADCS SD card to the ADCS subfolder in LittleFS.
+/// @param[in] index_file_bool Whether this is the index file or not
+/// @param[in] file_index Index of the file in the SD card; only used if index_file_bool is false
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission, negative if an LFS or snprintf error code occurred. 
+/// Specifically, assuming no HAL or LFS error: bytes 0-2 are the ADCS error, bytes 3-10 are which command failed, bytes 11-16 are the index of the failure if applicable
+int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
+
+    ADCS_file_info_struct_t file_info;
+    int16_t snprintf_ret;
+
+    char filename_string[17];
+
+    if (!index_file_bool) {
+        // get the data about the file to download
+
+        /*
+        The file is uniquely identified by the File Type and Counter parameters. The Offset and Block
+        Length parameters indicate which part of the file to buffer in memory. The maximum Block Length is [20 KiB]. 
+        [20480 bytes (20 bytes * 1024 packets). Some files may require multiple blocks, such as image files]
+        */
+            
+        const uint8_t reset_pointer_status = ADCS_reset_file_list_read_pointer();
+        HAL_Delay(200);
+        if (reset_pointer_status != 0) {
+            // to avoid interference from the EPS, do a separate ack for these commands
+            ADCS_cmd_ack_struct_t ack_status;
+            ADCS_cmd_ack(&ack_status);
+            if (ack_status.error_flag != 0) {
+                return ack_status.error_flag;
+            }
+        }
+
+        for (uint16_t i = 0; i < file_index; i++) {
+            const uint8_t advance_pointer_status = ADCS_advance_file_list_read_pointer();
+            HAL_Delay(200);
+            if (advance_pointer_status != 0) {
+                // to avoid interference from the EPS, do a separate ack for these commands
+                ADCS_cmd_ack_struct_t ack_status;
+                ADCS_cmd_ack(&ack_status);
+                if (ack_status.error_flag != 0) {
+                    return ack_status.error_flag;
+                }
+            }
+        }
+        
+        const uint8_t file_info_status = ADCS_get_file_info_telemetry(&file_info);
+        if (file_info_status != 0) {
+            return file_info_status;
+        }
+
+        // name file based on type and timestamp
+        switch(file_info.file_type) {
+
+            case ADCS_FILE_TYPE_TELEMETRY_LOG:
+                snprintf_ret = snprintf(filename_string, 17, "ADCS/log%d.TLM", file_index);
+                if (snprintf_ret < 0) {
+                    return snprintf_ret;
+                };
+                break;
+            case ADCS_FILE_TYPE_JPG_IMAGE:
+                snprintf_ret = snprintf(filename_string, 17, "ADCS/img%d.jpg", file_index);
+                if (snprintf_ret < 0) {
+                    return snprintf_ret;
+                };
+                break;    
+            case ADCS_FILE_TYPE_BMP_IMAGE:
+                snprintf_ret = snprintf(filename_string, 17, "ADCS/img%d.bmp", file_index);
+                if (snprintf_ret < 0) {
+                    return snprintf_ret;
+                };
+                break;    
+            case ADCS_FILE_TYPE_INDEX:
+                snprintf_ret = snprintf(filename_string, 17, "ADCS/index_file");
+                if (snprintf_ret < 0) {
+                    return snprintf_ret;
+                };
+                break;    
+            default:
+                return 1;
+        }
+
+    } else {
+        snprintf_ret = snprintf(filename_string, 16, "ADCS/index_file");
+        if (snprintf_ret < 0) {
+            return snprintf_ret;
+        };
+        file_info.file_size = 20479; // for the index file, we should only need a single block
+        file_info.file_type = ADCS_FILE_TYPE_INDEX;
+    }
+
+    // Check that LittleFS is mounted
+    if (!LFS_is_lfs_mounted) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "LittleFS not mounted."); 
+        return 1;
+    }
+
+    // Now that we have the filename string, we can create the file (any existing file will be overwritten)
+    lfs_file_t file;
+    const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, filename_string, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC, &LFS_file_cfg);
+    if (open_result < 0) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening/creating file: %s", filename_string);
+        return open_result;
+    }
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully created file: %s", filename_string);
+
+
+    uint8_t total_blocks = ceil(file_info.file_size / 20480.0);
+    uint8_t current_block = 0; 
+
+    while (current_block < total_blocks) {
+
+        LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, "Loading block %d from ADCS to LittleFS", current_block);
+        const uint8_t load_block_status = ADCS_load_sd_file_block_to_filesystem(file_info, current_block, &file); // load the block
+        if (load_block_status != 0) {
+            return load_block_status;
+        }
+
+        current_block++;
+    }
+
+    // Once we've written all the blocks, close the file; it won't be updated in LittleFS until the file is closed.
+    const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
+    if (close_result < 0) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing file.");
+        return close_result;
+    }
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully wrote data to file: %s", filename_string);
+
+    return 0;
+}
+
+/// @brief Disable all active ADCS SD card logs.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred.
+uint8_t ADCS_disable_SD_logging() {
+    // Disable SD card logging
+    const uint8_t* temp_data_pointer[1] = {ADCS_SD_LOG_MASK_NONE};
+    const uint8_t sd_log_1_stop_status = ADCS_set_sd_log_config(1, temp_data_pointer, 1, 0, 0);                     
+    if (sd_log_1_stop_status != 0) {
+        return sd_log_1_stop_status;
+    }
+    const uint8_t sd_log_2_stop_status = ADCS_set_sd_log_config(2, temp_data_pointer, 1, 0, 0);                     
+    return sd_log_2_stop_status;
+}
+
+/// @brief Disable all ADCS peripherals and active SD card logs.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred.
+uint8_t ADCS_disable_peripherals_and_SD_logs_without_stabilisation() {
+    const uint8_t power_status = ADCS_set_power_control(ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+    if (power_status != 0) {
+        return power_status;
+    }
+    const uint8_t sd_status = ADCS_disable_SD_logging();
+    return sd_status;
+}
+
+/// @brief Disable all ADCS peripherals and active SD card logs except the CubeSense Motor and Signal power, required for attitude stabilisation.
+/// @note If CubeSense Motor and/or Signal Power are already off, they will remain off.
+/// @note Compared to without_stabilisation, this costs average 250 mW, maximum 1 W extra.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred.
+uint8_t ADCS_disable_peripherals_and_SD_logs_with_stabilisation() {
+    const uint8_t power_status = ADCS_set_power_control(ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+    if (power_status != 0) {
+        return power_status;
+    }
+    const uint8_t sd_status = ADCS_disable_SD_logging();
+    return sd_status;
 }

@@ -1,4 +1,3 @@
-
 #include "telecommand_exec/telecommand_parser.h"
 #include "telecommand_exec/telecommand_definitions.h"
 #include "telecommand_exec/telecommand_executor.h"
@@ -8,6 +7,8 @@
 #include "log/log.h"
 #include "transforms/arrays.h"
 #include "config/configuration.h"
+#include "littlefs/littlefs_helper.h"
+#include "comms_drivers/comms_tx.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -90,6 +91,11 @@ uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd
         for (uint16_t j = 0; j < TCMD_ARGS_STR_NO_PARENS_SIZE; j++) {
             TCMD_agenda[slot_num].args_str_no_parens[j] = parsed_tcmd->args_str_no_parens[j];
         }
+
+        // Copy the log filename into the agenda.
+        for (uint16_t j = 0; j < TCMD_MAX_RESP_FNAME_LEN; j++) {
+            TCMD_agenda[slot_num].resp_fname[j] = parsed_tcmd->resp_fname[j];
+        }
         // Mark the slot as valid.
         TCMD_agenda_is_valid[slot_num] = 1;
 
@@ -150,11 +156,16 @@ int16_t TCMD_get_next_tcmd_agenda_slot_to_execute() {
 /// @brief Executes a telecommand immediately, based on the minimum info required to execute a telecommand.
 /// @param tcmd_idx The index into `TCMD_telecommand_definitions` for the telecommand to execute.
 /// @param args_str_no_parens A cstring containing the arguments for the telecommand. Null-terminated.
+/// @param timestamp_sent The value of the `@tssent` field when the telecommand was received.
 /// @param response_output_buf A buffer to store the response from the telecommand.
 /// @param response_output_buf_size The size of the `response_output_buf`.
 /// @return 0 on success, 254 if `tcmd_idx` is out of bounds, otherwise the error code from the telecommand function.
-uint8_t TCMD_execute_parsed_telecommand_now(const uint16_t tcmd_idx, const char args_str_no_parens[],
+static uint8_t TCMD_execute_parsed_telecommand_now(
+    const uint16_t tcmd_idx,
+    const char args_str_no_parens[],
+    const uint64_t timestamp_sent,
     TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char * tcmd_resp_fname,
     char *response_output_buf, uint16_t response_output_buf_size
 ) {
     // Get the telecommand definition.
@@ -197,10 +208,22 @@ uint8_t TCMD_execute_parsed_telecommand_now(const uint16_t tcmd_idx, const char 
         tcmd_result
     );
 
-    // FIXME: Send this response buffer over the radio channel as well.
+    COMMS_downlink_tcmd_response(
+        timestamp_sent,
+        tcmd_result,
+        tcmd_exec_duration_ms,
+        response_output_buf,
+        strnlen(response_output_buf, response_output_buf_size) + 1 // +1 for null terminator
+    );
+
     DEBUG_uart_print_str(response_output_buf);
     DEBUG_uart_print_str("\n");
 
+    // If the filename is not empty, log the telecommand to the file.
+    if (tcmd_resp_fname != NULL && strnlen(tcmd_resp_fname, TCMD_MAX_RESP_FNAME_LEN) > 0) {
+        // Internally Logs errors, no point in collecting error here
+        TCMD_log_to_file(tcmd_resp_fname, response_output_buf);
+    }
     return tcmd_result;
 }
 
@@ -229,23 +252,68 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
     GEN_uint64_to_str(TCMD_agenda[tcmd_agenda_slot_num].timestamp_sent, tssent_str);
     char tsexec_str[32];
     GEN_uint64_to_str(TCMD_agenda[tcmd_agenda_slot_num].timestamp_to_execute, tsexec_str);
+    uint8_t resp_fname_len = strlen(TCMD_agenda[tcmd_agenda_slot_num].resp_fname);
     LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "Executing telecommand from agenda slot %d, sent at tssent=%s, scheduled for tsexec=%s.",
+        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+        "Executing telecommand from agenda slot %d, sent at tssent=%s, scheduled for tsexec=%s, logging to file: '%s'.",
         tcmd_agenda_slot_num,
         tssent_str,
-        tsexec_str
+        tsexec_str,
+        (resp_fname_len > 0) ? TCMD_agenda[tcmd_agenda_slot_num].resp_fname : "None"
     );
 
     // Execute the telecommand.
     return TCMD_execute_parsed_telecommand_now(
         TCMD_agenda[tcmd_agenda_slot_num].tcmd_idx,
         TCMD_agenda[tcmd_agenda_slot_num].args_str_no_parens,
+        TCMD_agenda[tcmd_agenda_slot_num].timestamp_sent,
         TCMD_agenda[tcmd_agenda_slot_num].tcmd_channel,
+        TCMD_agenda[tcmd_agenda_slot_num].resp_fname,
         response_output_buf,
         response_output_buf_size
     );
 }
+
+/// @brief Logs a message to a file.
+/// @param filename The name of the file to log to.
+/// @param message The message to log.
+/// @return 0 on success, 1 if mounting LFS failed, 2 if writing to the file failed.
+/// @note This function is used to log telecommand responses to a file.
+uint8_t TCMD_log_to_file(const char *filename, const char *message)
+{
+    if (!LFS_is_lfs_mounted) {
+        const int8_t mount_ret = LFS_mount();
+        if (mount_ret < 0) {
+            LOG_message(
+                LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+                "Error: TCMD_log_to_file: Failed to mount LFS. Error code: %d",
+                mount_ret
+            );
+            return 1;
+        }
+    }
+
+    const int8_t write_file_return = LFS_write_file(
+        filename,
+        (uint8_t *)message,
+        strlen(message)
+    );
+    if (write_file_return != 0) {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error: TCMD_log_to_file: Failed to write to file '%s'. Error code: %d",
+            filename,
+            write_file_return
+        );
+        return 2;
+    }
+    LOG_message(
+        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "TCMD_log_to_file: Successfully wrote to file '%s'.",
+        filename
+    );
+    return 0;
+} 
 
 /// @brief Deletes all entries from the agenda.
 /// @return Cannot fail, so no return value.

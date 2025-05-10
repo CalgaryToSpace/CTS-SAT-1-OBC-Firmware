@@ -7,7 +7,8 @@
 
 // Name the UART interfaces
 extern UART_HandleTypeDef *UART_telecommand_port_handle;  
-extern UART_HandleTypeDef *UART_mpi_port_handle;                
+extern UART_HandleTypeDef *UART_mpi_port_handle;
+extern UART_HandleTypeDef *UART_ax100_port_handle;
 extern UART_HandleTypeDef *UART_gps_port_handle;
 extern UART_HandleTypeDef *UART_camera_port_handle;
 extern UART_HandleTypeDef *UART_eps_port_handle;
@@ -23,12 +24,7 @@ extern volatile uint16_t UART_mpi_buffer_write_idx;             // Write index f
 extern volatile uint32_t UART_mpi_last_write_time_ms;           // Last write time in milliseconds for MPI response
 extern volatile uint8_t UART_mpi_last_rx_byte;                  // Last received byte from the MPI response
 
-extern const uint16_t UART_lora_buffer_len;                     // Length of the LORA response buffer
-extern volatile uint8_t UART_lora_buffer[];                     // Buffer for LORA response
-extern volatile uint16_t UART_lora_buffer_write_idx;            // Write index for LORA response buffer
-extern volatile uint32_t UART_lora_last_write_time_ms;          // Last write time in milliseconds for LORA response
-extern volatile uint8_t UART_lora_is_expecting_data;            // Set to 1 when a data is sent, and we're awaiting a response
-extern volatile uint8_t UART_lora_buffer_last_rx_byte;          // Last received byte for LORA response
+extern volatile uint32_t UART_ax100_last_write_time_ms;       // Last write time in milliseconds for AX100 response
 
 extern const uint16_t UART_gps_buffer_len;                      // Length of the GPS response buffer
 extern volatile uint8_t UART_gps_buffer[];                      // Buffer for GPS response
@@ -54,6 +50,21 @@ extern volatile uint16_t UART_gps_buffer_write_idx;
 extern volatile uint32_t UART_gps_last_write_time_ms; 
 extern volatile uint8_t UART_gps_buffer_last_rx_byte;  
 extern volatile uint8_t UART_gps_uart_interrupt_enabled; // Flag to enable or disable the UART GPS ISR
+
+
+#define AX100_MAX_KISS_FRAMES_IN_RX_QUEUE  8
+#define AX100_MAX_KISS_FRAME_SIZE_BYTES    500 // Could be as low as 256, probably.
+
+typedef struct {
+    uint8_t data[AX100_MAX_KISS_FRAME_SIZE_BYTES];
+    uint16_t len;
+} AX100_kiss_frame_struct_t;
+
+extern volatile AX100_kiss_frame_struct_t UART_AX100_kiss_frame_queue[AX100_MAX_KISS_FRAMES_IN_RX_QUEUE];
+extern volatile uint8_t UART_AX100_kiss_frame_queue_head;
+extern volatile uint8_t UART_AX100_kiss_frame_queue_tail;
+
+
 
 void UART_init_uart_handlers(void);
 void GPS_set_uart_interrupt_state(uint8_t new_enabled) ;

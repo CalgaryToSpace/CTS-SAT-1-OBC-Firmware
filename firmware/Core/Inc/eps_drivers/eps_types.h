@@ -10,24 +10,26 @@ static const uint8_t EPS_ACTIVE_CHANNEL_COUNT = 17;
 /// @brief The highest EPS channel number, starting from 0. 16 means there are 17 channels total.
 static const uint8_t EPS_MAX_ACTIVE_CHANNEL_NUMBER = 16;
 
+/// @brief The number of EPS channels, including those not really present on our model.
+static const uint8_t EPS_TOTAL_CHANNEL_COUNT = 32;
 
 #pragma pack(push, 1)
 
 typedef enum {
-    EPS_CHANNEL_VBATT_STACK             = 0, // CH0
-    EPS_CHANNEL_5V_STACK                = 1, // CH1
-    EPS_CHANNEL_5V_CH2_UNUSED           = 2, // CH2
-    EPS_CHANNEL_5V_CH3_UNUSED           = 3, // CH3
-    EPS_CHANNEL_5V_MPI                  = 4, // CH4
-    EPS_CHANNEL_3V3_STACK               = 5, // CH5
-    EPS_CHANNEL_3V3_CAMERA              = 6, // CH6
-    EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY  = 7, // CH7
-    EPS_CHANNEL_3V3_LORA_MODULE         = 8, // CH8
+    EPS_CHANNEL_VBATT_STACK             = 0, // CH0 (Pin H2-45 and H2-46)
+    EPS_CHANNEL_5V_STACK                = 1, // CH1 (Pin H2-25 and H2-26)
+    EPS_CHANNEL_5V_CH2_UNUSED           = 2, // CH2 (Pin H1-47)
+    EPS_CHANNEL_5V_CH3_UNUSED           = 3, // CH3 (Pin H1-49)
+    EPS_CHANNEL_5V_MPI                  = 4, // CH4 (Pin H1-51)
+    EPS_CHANNEL_3V3_STACK               = 5, // CH5 (Pin H2-27 and H2-28)
+    EPS_CHANNEL_3V3_CAMERA              = 6, // CH6 (Pin H1-48)
+    EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY  = 7, // CH7 (Pin H1-50)
+    EPS_CHANNEL_3V3_GNSS                = 8, // CH8 (Pin H1-52)
     EPS_CHANNEL_VBATT_CH9_UNUSED        = 9, // CH9
     EPS_CHANNEL_VBATT_CH10_UNUSED       = 10, // CH10
     EPS_CHANNEL_VBATT_CH11_UNUSED       = 11, // CH11
-    EPS_CHANNEL_12V_MPI                 = 12, // CH12
-    EPS_CHANNEL_12V_BOOM                = 13, // CH13
+    EPS_CHANNEL_12V_MPI                 = 12, // CH12 (Harness)
+    EPS_CHANNEL_12V_BOOM                = 13, // CH13 (Harness)
     EPS_CHANNEL_3V3_CH14_UNUSED         = 14, // CH14
     EPS_CHANNEL_3V3_CH15_UNUSED         = 15, // CH15
     EPS_CHANNEL_28V6_CH16_UNUSED        = 16, // CH16

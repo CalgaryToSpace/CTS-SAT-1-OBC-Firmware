@@ -25,20 +25,20 @@ following uppercase identifiers to indicate which subsystem/region of code it be
 
 ## Satellite Subsystems
 
-* `ADCS_`: duh
+* `ADCS_`: Attitude Determination and Control System
 * `EPS_`: related to the Electrical Power System
 * `EPS_CMD_`: functions which trigger a command to the EPS subsystem
-* `GPS_`: duh
+* `GPS_`: GPS/GNSS receiver
 * `COMMS_ANT_`: related to the I2C communications for the deployable communications antenna
 * `AX100_`: related to the AX100 communication module, at a low level
 * `COMMS_`: related to higher-level functions for command and data handling, which calls into the `AX100_` prefix
-	* Note: we may want to discard either `COMMS_` or `AX100_` as we begin implementation
 * `BOOM_`: related to the burn wire driver for the deployable composite latice boom (DCLB) subsystem
 * `CAM_`: related to the UART camera
 * `LORA_`: related to the UART LoRaWAN communications systems, if integrated
 * `ENVIRO_`: related to monitoring the environment (e.g., the on-OBC temperature sensor)
 * `FLASH_`: driver functions for the SPI flash system, which the `lfs_` implementation can call into
 * `STM32_`: driver functions for features within the STM32, including internal flash, boot metadata, etc.
+* `CTS1_`: related to CTS-SAT-1/FrontierSat as a whole
 
 ## Other Categories
 * `TIM_`: related to the timer peripheral, or timing in general

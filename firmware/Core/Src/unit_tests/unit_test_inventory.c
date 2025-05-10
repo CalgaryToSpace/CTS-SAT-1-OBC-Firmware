@@ -12,7 +12,7 @@
 #include "unit_tests/test_configuration_variables.h"
 #include "unit_tests/test_obc_temperature_sensor.h"
 #include "unit_tests/unit_test_gps.h"
-
+#include "unit_tests/test_uart_error_tracking.h"
 #include "unit_tests/test_eps_drivers.h"
 #include "unit_tests/test_eps_struct_packers.h"
 #include "unit_tests/test_eps_calculations.h"
@@ -51,7 +51,26 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_file = "telecommands/telecommand_parser",
         .test_func_name = "TCMD_check_starts_with_device_id"
     },
-    
+    {
+        .test_func = TEST_EXEC__TCMD_process_suffix_tag_sha256,
+        .test_file = "telecommands/telecommand_parser",
+        .test_func_name = "TCMD_process_suffix_tag_sha256"
+    },
+    {
+        .test_func = TEST_EXEC__TCMD_process_suffix_tag_tsexec,
+        .test_file = "telecommands/telecommand_parser",
+        .test_func_name = "TCMD_process_suffix_tag_tsexec"
+    },
+    {
+        .test_func = TEST_EXEC__TCMD_process_suffix_tag_tssent,
+        .test_file = "telecommands/telecommand_parser",
+        .test_func_name = "TCMD_process_suffix_tag_tssent"
+    },
+    {
+        .test_func = TEST_EXEC__TCMD_process_suffix_tag_resp_fname,
+        .test_file = "telecommands/telecommand_parser",
+        .test_func_name = "TCMD_process_suffix_tag_resp_fname"
+    },
     {
         .test_func = TEST_EXEC__GEN_convert_big_endian_four_byte_array_to_uint32,
         .test_file = "transforms/byte_transforms",
@@ -330,12 +349,46 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func_name = "ADCS_convert_double_to_string"
     },
 
+    {
+        .test_func = TEST_EXEC__ADCS_pack_to_file_info_struct,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_pack_to_file_info_struct"
+    },
+
+    {
+        .test_func = TEST_EXEC__ADCS_pack_to_download_block_ready_struct,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_pack_to_download_block_ready_struct"
+    },
+
+    {
+        .test_func = TEST_EXEC__ADCS_pack_to_sd_card_format_erase_progress_struct,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_pack_to_sd_card_format_erase_progress_struct"
+    },
+
+    {
+        .test_func = TEST_EXEC__ADCS_pack_to_file_download_buffer_struct,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_pack_to_file_download_buffer_struct"
+    },
+
+    {
+        .test_func = TEST_EXEC__ADCS_combine_sd_log_bitmasks,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_combine_sd_log_bitmasks"
+    },
     // ****************** END SECTION: test_adcs ******************
 
     {
         .test_func = TEST_EXEC__TCMD_get_suffix_tag_uint64,
         .test_file = "telecommands/telecommand_parser",
         .test_func_name = "TCMD_get_suffix_tag_uint64"
+    },
+    {
+        .test_func = TEST_EXEC__TCMD_get_suffix_tag_str,
+        .test_file = "telecommands/telecommand_parser",
+        .test_func_name = "TCMD_get_suffix_tag_str"
     },
     {
         .test_func = TEST_EXEC__TCMD_extract_hex_array_arg,
@@ -531,6 +584,12 @@ const TEST_Definition_t TEST_definitions[] = {
     },
 
     // ****************** END SECTION: unit_test_gps ******************
+    // ****************** SECTION: unit_test_uart_error_tracking ******************
+    {
+        .test_func = TEST_EXEC__UART_single_subsystem_error_info_to_json,
+        .test_file = "unit_tests/test_uart_error_tracking",
+        .test_func_name = "UART_single_subsystem_error_info_to_json"
+    },
 };
 
 // extern

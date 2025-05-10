@@ -273,7 +273,7 @@ uint8_t TCMDEXEC_uart_send_hex_get_response_hex(
                 const uint32_t current_time = HAL_GetTick(); // Get current time
 
                 // Get last write time (Required to dereference volatile pointer here to prevent race 
-                // condition in the folllowing if statement)
+                // condition in the following if statement)
                 const uint32_t last_write_time = *UART_last_write_time_ms_ptr;  
 
                 // Check if we have timed out while receiving bytes
@@ -368,22 +368,25 @@ uint8_t TCMDEXEC_uart_get_last_rx_times_json(
 ) {
     const uint32_t now = HAL_GetTick();
 
-    const int32_t debug_delta = UART_telecommand_last_write_time_ms == 0 ? -99 : (int32_t)(now - UART_telecommand_last_write_time_ms);
-    const int32_t mpi_delta         = UART_mpi_last_write_time_ms         == 0 ? -99 : (int32_t)(now - UART_mpi_last_write_time_ms);
-    const int32_t camera_delta      = UART_camera_last_write_time_ms      == 0 ? -99 : (int32_t)(now - UART_camera_last_write_time_ms);
-    const int32_t eps_delta         = UART_eps_last_write_time_ms         == 0 ? -99 : (int32_t)(now - UART_eps_last_write_time_ms);
-    const int32_t gps_delta         = UART_gps_last_write_time_ms         == 0 ? -99 : (int32_t)(now - UART_gps_last_write_time_ms);
+    const int32_t debug_delta  = UART_telecommand_last_write_time_ms == 0 ? -99 : (int32_t)(now - UART_telecommand_last_write_time_ms);
+    const int32_t mpi_delta    = UART_mpi_last_write_time_ms         == 0 ? -99 : (int32_t)(now - UART_mpi_last_write_time_ms);
+    const int32_t ax100_delta  = UART_ax100_last_write_time_ms       == 0 ? -99 : (int32_t)(now - UART_ax100_last_write_time_ms);
+    const int32_t camera_delta = UART_camera_last_write_time_ms      == 0 ? -99 : (int32_t)(now - UART_camera_last_write_time_ms);
+    const int32_t eps_delta    = UART_eps_last_write_time_ms         == 0 ? -99 : (int32_t)(now - UART_eps_last_write_time_ms);
+    const int32_t gps_delta    = UART_gps_last_write_time_ms         == 0 ? -99 : (int32_t)(now - UART_gps_last_write_time_ms);
 
     int used = snprintf(response_output_buf, response_output_buf_len,
         "{"
         "\"debug\":%ld,"
         "\"mpi\":%ld,"
+        "\"ax100\":%ld,"
         "\"camera\":%ld,"
         "\"eps\":%ld,"
         "\"gps\":%ld"
         "}",
         debug_delta,
         mpi_delta,
+        ax100_delta,
         camera_delta,
         eps_delta,
         gps_delta

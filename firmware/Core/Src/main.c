@@ -28,11 +28,12 @@
 #include "rtos_tasks/rtos_tasks.h"
 #include "rtos_tasks/rtos_eps_tasks.h"
 #include "rtos_tasks/rtos_background_upkeep.h"
+#include "rtos_tasks/rtos_tasks_rx_telecommands.h"
 #include "uart_handler/uart_handler.h"
 #include "adcs_drivers/adcs_types.h"
-#include "adcs_drivers/adcs_internal_drivers.h"
+#include "adcs_drivers/adcs_commands.h"
 #include "littlefs/flash_driver.h"
-
+#include "system/system_bootup.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -64,6 +65,7 @@ UART_HandleTypeDef hlpuart1;
 UART_HandleTypeDef huart4;
 UART_HandleTypeDef huart5;
 UART_HandleTypeDef huart1;
+UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart3;
 DMA_HandleTypeDef hdma_uart4_rx;
 DMA_HandleTypeDef hdma_usart1_rx;
@@ -97,6 +99,15 @@ osThreadId_t TASK_handle_uart_telecommands_Handle;
 const osThreadAttr_t TASK_handle_uart_telecommands_Attributes = {
   .name = "TASK_handle_uart_telecommands",
   // Size 2048 doesn't work with LFS settings, but 8192 does.
+  // TODO: confirm stack size
+  .stack_size = 8192,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+
+osThreadId_t TASK_handle_ax100_kiss_telecommands_Handle;
+const osThreadAttr_t TASK_handle_ax100_kiss_telecommands_Attributes = {
+  .name = "TASK_handle_ax100_kiss_telecommands",
+  // Presumably applicable: size 2048 doesn't work with LFS settings, but 8192 does.
   // TODO: confirm stack size
   .stack_size = 8192,
   .priority = (osPriority_t) osPriorityNormal,
@@ -154,6 +165,11 @@ FREERTOS_task_info_struct_t FREERTOS_task_handles_array [] = {
     .lowest_stack_bytes_remaining = UINT32_MAX
   },
   {
+    .task_handle = &TASK_handle_ax100_kiss_telecommands_Handle,
+    .task_attribute = &TASK_handle_ax100_kiss_telecommands_Attributes,
+    .lowest_stack_bytes_remaining = UINT32_MAX
+  },
+  {
     .task_handle = &TASK_execute_telecommands_Handle,
     .task_attribute = &TASK_execute_telecommands_Attributes,
     .lowest_stack_bytes_remaining = UINT32_MAX
@@ -202,6 +218,7 @@ static void MX_I2C3_Init(void);
 static void MX_CRC_Init(void);
 static void MX_TIM16_Init(void);
 static void MX_IWDG_Init(void);
+static void MX_USART2_UART_Init(void);
 void StartDefaultTask(void *argument);
 
 /* USER CODE BEGIN PFP */
@@ -259,6 +276,7 @@ int main(void)
   MX_CRC_Init();
   MX_TIM16_Init();
   MX_IWDG_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
   DEBUG_uart_print_str("\n\nMX_Init() done\n");
@@ -268,12 +286,14 @@ int main(void)
   
   FLASH_deactivate_chip_select();
 
-  // Initialise the ADCS CRC8 checksum (required for ADCS operation).
-  ADCS_initialise_crc8_checksum();
+  // Initialize the ADCS CRC8 checksum, clock, and LittleFS directory (required for ADCS operation).
+  ADCS_initialize(); // TODO: LittleFS must be formatted and mounted, and system time must be set, before this command is run
 
   // Always leave the Camera enable signal enabled. Easier to control it through just the EPS.
   HAL_GPIO_WritePin(PIN_CAM_EN_OUT_GPIO_Port, PIN_CAM_EN_OUT_Pin, GPIO_PIN_SET);
 
+  // Disable systems on bootup
+  SYS_disable_systems_bootup();
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -303,6 +323,8 @@ int main(void)
   TASK_DEBUG_print_heartbeat_Handle = osThreadNew(TASK_DEBUG_print_heartbeat, NULL, &TASK_DEBUG_print_heartbeat_Attributes);
 
   TASK_handle_uart_telecommands_Handle = osThreadNew(TASK_handle_uart_telecommands, NULL, &TASK_handle_uart_telecommands_Attributes);
+
+  TASK_handle_ax100_kiss_telecommands_Handle = osThreadNew(TASK_handle_ax100_kiss_telecommands, NULL, &TASK_handle_ax100_kiss_telecommands_Attributes);
 
   TASK_execute_telecommands_Handle = osThreadNew(TASK_execute_telecommands, NULL, &TASK_execute_telecommands_Attributes);
 
@@ -429,7 +451,7 @@ static void MX_I2C1_Init(void)
   /* USER CODE END I2C1_Init 1 */
   hi2c1.Instance = I2C1;
   hi2c1.Init.Timing = 0x00503D58;
-  hi2c1.Init.OwnAddress1 = 0;
+  hi2c1.Init.OwnAddress1 = 24;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
   hi2c1.Init.OwnAddress2 = 0;
@@ -826,6 +848,54 @@ static void MX_USART1_UART_Init(void)
 }
 
 /**
+  * @brief USART2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART2_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART2_Init 0 */
+
+  /* USER CODE END USART2_Init 0 */
+
+  /* USER CODE BEGIN USART2_Init 1 */
+
+  /* USER CODE END USART2_Init 1 */
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 230400;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  huart2.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+  huart2.Init.ClockPrescaler = UART_PRESCALER_DIV1;
+  huart2.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_SetTxFifoThreshold(&huart2, UART_TXFIFO_THRESHOLD_1_8) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_SetRxFifoThreshold(&huart2, UART_RXFIFO_THRESHOLD_1_8) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_DisableFifoMode(&huart2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART2_Init 2 */
+
+  /* USER CODE END USART2_Init 2 */
+
+}
+
+/**
   * @brief USART3 Initialization Function
   * @param None
   * @retval None
@@ -992,21 +1062,16 @@ static void MX_GPIO_Init(void)
                           |PIN_MEM_NCS_FRAM_1_Pin|PIN_MEM_NCS_FRAM_0_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, PIN_CAM_EN_OUT_Pin|PIN_BOOM_DEPLOY_EN_OUT_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, PIN_CAM_EN_OUT_Pin|PIN_BOOM_DEPLOY_EN_1_OUT_Pin|PIN_BOOM_DEPLOY_EN_2_OUT_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOF, PIN_MEM_NCS_FLASH_7_Pin|PIN_MEM_NCS_FLASH_6_Pin|PIN_MEM_NCS_FLASH_5_Pin|PIN_MEM_NCS_FLASH_4_Pin
-                          |PIN_MEM_NCS_FLASH_3_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_3_GPIO_Port, PIN_MEM_NCS_FLASH_3_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOG, PIN_MEM_NCS_FLASH_2_Pin|PIN_MEM_NCS_FLASH_1_Pin|PIN_MPI_NEN_RX_MISO_OUT_Pin|PIN_MPI_EN_TX_MOSI_OUT_Pin
-                          |PIN_NRST_LORA_US_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOG, PIN_MEM_NCS_FLASH_2_Pin|PIN_MEM_NCS_FLASH_1_Pin|PIN_MPI_NEN_RX_MISO_OUT_Pin|PIN_MPI_EN_TX_MOSI_OUT_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, PIN_UHF_CTRL_OUT_Pin|PIN_LED_DEVKIT_LD2_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(PIN_NRST_LORA_EU_OUT_GPIO_Port, PIN_NRST_LORA_EU_OUT_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : PIN_LED_GP1_OUT_Pin PIN_LED_GP2_OUT_Pin PIN_LED_GP3_OUT_Pin PIN_MEM_NCS_FLASH_0_Pin
                            PIN_MEM_NCS_FRAM_1_Pin PIN_MEM_NCS_FRAM_0_Pin */
@@ -1017,32 +1082,28 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PIN_CAM_EN_OUT_Pin PIN_BOOM_DEPLOY_EN_OUT_Pin */
-  GPIO_InitStruct.Pin = PIN_CAM_EN_OUT_Pin|PIN_BOOM_DEPLOY_EN_OUT_Pin;
+  /*Configure GPIO pins : PIN_CAM_EN_OUT_Pin PIN_BOOM_DEPLOY_EN_1_OUT_Pin PIN_BOOM_DEPLOY_EN_2_OUT_Pin */
+  GPIO_InitStruct.Pin = PIN_CAM_EN_OUT_Pin|PIN_BOOM_DEPLOY_EN_1_OUT_Pin|PIN_BOOM_DEPLOY_EN_2_OUT_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PIN_BOOM_PGOOD_IN_Pin PIN_GPS_PPS_IN_Pin */
-  GPIO_InitStruct.Pin = PIN_BOOM_PGOOD_IN_Pin|PIN_GPS_PPS_IN_Pin;
+  /*Configure GPIO pin : PIN_GPS_PPS_IN_Pin */
+  GPIO_InitStruct.Pin = PIN_GPS_PPS_IN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  HAL_GPIO_Init(PIN_GPS_PPS_IN_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PIN_MEM_NCS_FLASH_7_Pin PIN_MEM_NCS_FLASH_6_Pin PIN_MEM_NCS_FLASH_5_Pin PIN_MEM_NCS_FLASH_4_Pin
-                           PIN_MEM_NCS_FLASH_3_Pin */
-  GPIO_InitStruct.Pin = PIN_MEM_NCS_FLASH_7_Pin|PIN_MEM_NCS_FLASH_6_Pin|PIN_MEM_NCS_FLASH_5_Pin|PIN_MEM_NCS_FLASH_4_Pin
-                          |PIN_MEM_NCS_FLASH_3_Pin;
+  /*Configure GPIO pin : PIN_MEM_NCS_FLASH_3_Pin */
+  GPIO_InitStruct.Pin = PIN_MEM_NCS_FLASH_3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
+  HAL_GPIO_Init(PIN_MEM_NCS_FLASH_3_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PIN_MEM_NCS_FLASH_2_Pin PIN_MEM_NCS_FLASH_1_Pin PIN_MPI_NEN_RX_MISO_OUT_Pin PIN_MPI_EN_TX_MOSI_OUT_Pin
-                           PIN_NRST_LORA_US_Pin */
-  GPIO_InitStruct.Pin = PIN_MEM_NCS_FLASH_2_Pin|PIN_MEM_NCS_FLASH_1_Pin|PIN_MPI_NEN_RX_MISO_OUT_Pin|PIN_MPI_EN_TX_MOSI_OUT_Pin
-                          |PIN_NRST_LORA_US_Pin;
+  /*Configure GPIO pins : PIN_MEM_NCS_FLASH_2_Pin PIN_MEM_NCS_FLASH_1_Pin PIN_MPI_NEN_RX_MISO_OUT_Pin PIN_MPI_EN_TX_MOSI_OUT_Pin */
+  GPIO_InitStruct.Pin = PIN_MEM_NCS_FLASH_2_Pin|PIN_MEM_NCS_FLASH_1_Pin|PIN_MPI_NEN_RX_MISO_OUT_Pin|PIN_MPI_EN_TX_MOSI_OUT_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -1060,13 +1121,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(PIN_REMOVE_BEFORE_FLIGHT_LOW_IS_FLYING_IN_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : PIN_NRST_LORA_EU_OUT_Pin */
-  GPIO_InitStruct.Pin = PIN_NRST_LORA_EU_OUT_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(PIN_NRST_LORA_EU_OUT_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PIN_BOOT0_Pin */
   GPIO_InitStruct.Pin = PIN_BOOT0_Pin;

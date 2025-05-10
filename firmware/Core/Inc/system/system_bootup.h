@@ -1,0 +1,6 @@
+#ifndef INCLUDE_GUARD__SYSTEM_BOOTUP
+#define INCLUDE_GUARD__SYSTEM_BOOTUP
+
+void SYS_disable_systems_bootup();
+
+#endif // INCLUDE_GUARD__SYSTEM_BOOTUP

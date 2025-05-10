@@ -3,10 +3,12 @@
 
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_internal_drivers.h"
+#include "littlefs/littlefs_helper.h"
 
 /* Function Definitions */
 
 // ADCS functions
+uint8_t ADCS_initialize();
 uint8_t ADCS_reset();
 uint8_t ADCS_get_identification(ADCS_id_struct_t *output_struct);
 uint8_t ADCS_get_program_status(ADCS_boot_running_status_struct_t *output_struct);
@@ -76,8 +78,8 @@ uint8_t ADCS_set_estimation_params(
                                 ADCS_magnetometer_mode_enum_t magnetometer_mode, // this is actually the same one as for ID 56!
                                 ADCS_magnetometer_mode_enum_t magnetometer_selection_for_raw_magnetometer_telemetry, // and so is this, actually!
                                 bool automatic_estimation_transition_due_to_rate_sensor_errors, 
-                                bool wheel_30s_power_up_delay, // present in CubeSupport but not in the manual -- need to test
-                                uint8_t cam1_and_cam2_sampling_period);
+                                bool wheel_30s_power_up_delay, // unused parameter by the ADCS
+                                uint8_t error_counter_reset_period_min);
 uint8_t ADCS_get_estimation_params(ADCS_estimation_params_struct_t *output_struct);
 uint8_t ADCS_set_augmented_sgp4_params(double incl_coefficient,
                            double raan_coefficient,
@@ -121,14 +123,31 @@ uint8_t ADCS_get_raw_gps_x(ADCS_raw_gps_struct_t *output_struct);
 uint8_t ADCS_get_raw_gps_y(ADCS_raw_gps_struct_t *output_struct);
 uint8_t ADCS_get_raw_gps_z(ADCS_raw_gps_struct_t *output_struct);
 uint8_t ADCS_get_measurements(ADCS_measurements_struct_t *output_struct);
+uint8_t ADCS_reset_file_list_read_pointer();
+uint8_t ADCS_advance_file_list_read_pointer();
+uint8_t ADCS_get_file_info_telemetry(ADCS_file_info_struct_t *output_struct);
+uint8_t ADCS_load_file_download_block(ADCS_file_type_enum_t file_type, uint8_t counter, uint32_t offset, uint16_t block_length);
+uint8_t ADCS_get_download_block_ready_telemetry(ADCS_download_block_ready_struct_t *output_struct);
+uint8_t ADCS_initiate_download_burst(bool ignore_hole_map);
+uint8_t ADCS_set_hole_map(uint8_t *hole_map, uint8_t which_map);
+uint8_t ADCS_get_hole_map(uint8_t *hole_map_struct, uint8_t which_map);
+uint8_t ADCS_format_sd();
+uint8_t ADCS_erase_file(ADCS_file_type_enum_t filetype, uint8_t filecounter, bool erase_all);
+uint8_t ADCS_get_sd_card_format_erase_progress(ADCS_sd_card_format_erase_progress_struct_t *output_struct);
+uint8_t ADCS_get_file_download_buffer(ADCS_file_download_buffer_struct_t *output_struct);
 uint8_t ADCS_get_acp_execution_state(ADCS_acp_execution_state_struct_t *output_struct);
 uint8_t ADCS_get_current_state_1(ADCS_current_state_1_struct_t *output_struct);
 uint8_t ADCS_get_raw_star_tracker_data(ADCS_raw_star_tracker_struct_t *output_struct);
 uint8_t ADCS_save_image_to_sd(ADCS_camera_select_enum_t camera_select, ADCS_image_size_enum_t image_size);
-uint8_t ADCS_get_current_unix_time();
-uint8_t ADCS_synchronise_unix_time();
+uint8_t ADCS_get_current_unix_time(uint64_t* epoch_time_ms);
+uint8_t ADCS_synchronize_unix_time();
 uint8_t ADCS_set_sd_log_config(uint8_t which_log, const uint8_t **log_array, uint8_t log_array_size, uint16_t log_period, ADCS_sd_log_destination_enum_t which_sd);
 uint8_t ADCS_get_sd_log_config(uint8_t which_log, ADCS_sd_log_config_struct* config);
-
+int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info, uint8_t current_block, lfs_file_t* file);
+int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index);
+uint8_t ADCS_disable_SD_logging();
+uint8_t ADCS_disable_peripherals_and_SD_logs_without_stabilisation();
+uint8_t ADCS_disable_peripherals_and_SD_logs_with_stabilisation();
+uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset);
 
 #endif /* INC_ADCS_COMMANDS_H_ */

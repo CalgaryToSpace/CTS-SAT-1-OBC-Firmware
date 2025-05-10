@@ -10,6 +10,7 @@
 
 #include <stdint.h>
 #include <stdbool.h> 
+#include <time.h>
 
 // Bit 7 of Telecommand and Telemetry Request - Section 4.1 of Firmware Manual
 static const uint8_t ADCS_TELECOMMAND = 0;
@@ -34,6 +35,12 @@ static const uint8_t ADCS_CRC_POLY = 0x91;
 
 // define for timeout
 static const uint16_t ADCS_HAL_TIMEOUT = 1000;
+
+// define for SD bitmask array length
+#define ADCS_SD_LOG_BITFIELD_LENGTH_BYTES 10
+
+// define for HAL delay (ms) in commissioning mode setter function
+#define ADCS_COMMISSIONING_HAL_DELAY_MS 300
 
 /* Enumerated Values */
 
@@ -116,8 +123,8 @@ typedef enum ADCS_estimation_mode_enum_t {
     ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER = 2,
     ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER_WITH_PITCH_ESTIMATION = 3,
     ADCS_ESTIMATION_MODE_MAGNETOMETER_AND_FINE_SUN_TRIAD_ALGORITHM = 4,
-    ADCS_ESTIMATION_MODE_FULL_STATE_extended_kalman_filter = 5,
-    ADCS_ESTIMATION_MODE_MEMS_GYRO_extended_kalman_filter = 6,
+    ADCS_ESTIMATION_MODE_FULL_STATE_EXTENDED_KALMAN_FILTER = 5,
+    ADCS_ESTIMATION_MODE_MEMS_GYRO_EXTENDED_KALMAN_FILTER = 6,
     ADCS_ESTIMATION_MODE_USER_CODED_ESTIMATION_MODE = 7
 } ADCS_estimation_mode_enum_t;
 
@@ -146,7 +153,8 @@ typedef enum ADCS_axis_select_enum_t {
     ADCS_AXIS_SELECT_NEGATIVE_Y = 3,
     ADCS_AXIS_SELECT_POSITIVE_Z = 4,
     ADCS_AXIS_SELECT_NEGATIVE_Z = 5,
-    ADCS_AXIS_SELECT_NOT_USED = 6
+    ADCS_AXIS_SELECT_NOT_USED = 6,
+    ADCS_AXIS_SELECT_POSITIVE_XY_45_DEGREE = 7
 } ADCS_axis_select_enum_t;
 
 typedef enum ADCS_capture_result_enum_t {
@@ -196,6 +204,14 @@ typedef enum ADCS_gps_axis_enum_t {
     ADCS_GPS_AXIS_Z = 2
 } ADCS_gps_axis_enum_t;
 
+
+typedef enum ADCS_file_type_enum_t {
+    ADCS_FILE_TYPE_TELEMETRY_LOG = 2,
+    ADCS_FILE_TYPE_JPG_IMAGE = 3,    
+    ADCS_FILE_TYPE_BMP_IMAGE = 4,    
+    ADCS_FILE_TYPE_INDEX = 15        
+} ADCS_file_type_enum_t;
+
 typedef enum ADCS_current_execution_point_enum_t {
     ADCS_CURRENT_EXECUTION_POINT_BUSY_INITIALIZATION = 0,
     ADCS_CURRENT_EXECUTION_POINT_IDLE = 1,
@@ -239,24 +255,24 @@ typedef enum ADCS_sd_log_destination_enum_t {
 } ADCS_sd_log_destination_enum_t;
 
 typedef enum ADCS_commissioning_step_enum_t {
-    ADCS_COMMISISONING_STEP_DETERMINE_INITIAL_ANGULAR_RATES = 1, 
-    ADCS_COMMISISONING_STEP_INITIAL_DETUMBLING = 2, 
-    ADCS_COMMISISONING_STEP_CONTINUED_DETUMBLING_TO_Y_THOMSON = 3, 
-    ADCS_COMMISISONING_STEP_MAGNETOMETER_DEPLOYMENT = 4, 
-    ADCS_COMMISISONING_STEP_MAGNETOMETER_CALIBRATION = 5, 
-    ADCS_COMMISISONING_STEP_ANGULAR_RATE_AND_PITCH_ANGLE_ESTIMATION = 6, 
-    ADCS_COMMISISONING_STEP_Y_WHEEL_RAMP_UP_TEST = 7, 
-    ADCS_COMMISISONING_STEP_INITIAL_Y_MOMENTUM_ACTIVATION = 8, 
-    ADCS_COMMISISONING_STEP_CONTINUED_Y_MOMENTUM_ACTIVATION_AND_MAGNETOMETER_EKF = 9, 
-    ADCS_COMMISISONING_STEP_CUBESENSE_SUN_NADIR = 10,
-    ADCS_COMMISISONING_STEP_EKF_ACTIVATION_SUN_AND_NADIR = 11,
-    ADCS_COMMISISONING_STEP_CUBESTAR_STAR_TRACKER = 12,
-    ADCS_COMMISISONING_STEP_EKF_ACTIVATION_WITH_STAR_VECTOR_MEASUREMENTS = 13,
-    ADCS_COMMISISONING_STEP_ZERO_BIAS_3_AXIS_REACTION_WHEEL_CONTROL = 14,
-    ADCS_COMMISISONING_STEP_EKF_WITH_RATE_GYRO_STAR_TRACKER_MEASUREMENTS = 15,
-    ADCS_COMMISISONING_STEP_SUN_TRACKING_3_AXIS_CONTROL = 16,
-    ADCS_COMMISISONING_STEP_GROUND_TARGET_TRACKING_CONTROLLER = 17,
-    ADCS_COMMISISONING_STEP_GPS_RECEIVER = 18
+    ADCS_COMMISSIONING_STEP_DETERMINE_INITIAL_ANGULAR_RATES = 1, 
+    ADCS_COMMISSIONING_STEP_INITIAL_DETUMBLING = 2, 
+    ADCS_COMMISSIONING_STEP_CONTINUED_DETUMBLING_TO_Y_THOMSON = 3, 
+    ADCS_COMMISSIONING_STEP_MAGNETOMETER_DEPLOYMENT = 4, 
+    ADCS_COMMISSIONING_STEP_MAGNETOMETER_CALIBRATION = 5, 
+    ADCS_COMMISSIONING_STEP_ANGULAR_RATE_AND_PITCH_ANGLE_ESTIMATION = 6, 
+    ADCS_COMMISSIONING_STEP_Y_WHEEL_RAMP_UP_TEST = 7, 
+    ADCS_COMMISSIONING_STEP_INITIAL_Y_MOMENTUM_ACTIVATION = 8, 
+    ADCS_COMMISSIONING_STEP_CONTINUED_Y_MOMENTUM_ACTIVATION_AND_MAGNETOMETER_EKF = 9, 
+    ADCS_COMMISSIONING_STEP_CUBESENSE_SUN_NADIR = 10,
+    ADCS_COMMISSIONING_STEP_EKF_ACTIVATION_SUN_AND_NADIR = 11,
+    ADCS_COMMISSIONING_STEP_CUBESTAR_STAR_TRACKER = 12,
+    ADCS_COMMISSIONING_STEP_EKF_ACTIVATION_WITH_STAR_VECTOR_MEASUREMENTS = 13,
+    ADCS_COMMISSIONING_STEP_X_Z_WHEEL_POLARITY_TEST = 14,
+    ADCS_COMMISSIONING_STEP_3_AXIS_REACTION_WHEEL_CONTROL = 15,
+    ADCS_COMMISSIONING_STEP_SUN_TRACKING_3_AXIS_CONTROL = 16,
+    ADCS_COMMISSIONING_STEP_GROUND_TARGET_TRACKING_CONTROLLER = 17,
+    ADCS_COMMISSIONING_STEP_GPS_RECEIVER = 18
 } ADCS_commissioning_step_enum_t;
 
 /* Command Structs */
@@ -410,7 +426,7 @@ typedef struct ADCS_estimation_params_struct_t {
     ADCS_magnetometer_mode_enum_t magnetometer_selection_for_raw_magnetometer_telemetry;
     bool automatic_estimation_transition_due_to_rate_sensor_errors:1; // 1-bit bool
     bool wheel_30s_power_up_delay:1; // 1-bit bool
-    uint8_t cam1_and_cam2_sampling_period;
+    uint8_t error_counter_reset_period_min;
 } ADCS_estimation_params_struct_t;
 
 typedef struct ADCS_augmented_sgp4_params_struct_t {
@@ -580,6 +596,32 @@ typedef struct ADCS_measurements_struct_t {
     int32_t star3_orbit_z_micro;
 } ADCS_measurements_struct_t;
 
+typedef struct ADCS_file_info_struct_t {       
+    // reordered to be slightly less memory-intensive
+    uint16_t file_crc16;      
+    uint8_t file_counter;
+    ADCS_file_type_enum_t file_type;
+    bool busy_updating:1; // 1-bit bool          
+    uint32_t file_size;      
+    uint32_t file_date_time_msdos; 
+} ADCS_file_info_struct_t;
+
+typedef struct ADCS_download_block_ready_struct_t {
+    bool ready:1; // 1-bit bool   
+    bool parameter_error:1; // 1-bit bool
+    uint16_t block_crc16;   
+    uint16_t block_length;  
+} ADCS_download_block_ready_struct_t; 
+
+typedef struct ADCS_sd_card_format_erase_progress_struct_t {
+    bool format_busy:1; // 1-bit bool
+    bool erase_all_busy:1; // 1-bit bool
+} ADCS_sd_card_format_erase_progress_struct_t;
+
+typedef struct ADCS_file_download_buffer_struct_t {
+    uint16_t packet_counter; 
+    uint8_t file_bytes[20];  
+} ADCS_file_download_buffer_struct_t;
 typedef struct ADCS_acp_execution_state_struct_t {
     uint16_t time_since_iteration_start_ms;
     ADCS_current_execution_point_enum_t current_execution_point;
@@ -672,11 +714,9 @@ typedef struct ADCS_raw_star_tracker_struct_t {
 
 typedef struct ADCS_sd_log_config_struct {
     uint8_t which_log;
-    uint8_t log_bitmask[10];
-    uint16_t log_period; // TODO: figure out whether this is ms or something else
+    uint8_t log_bitmask[ADCS_SD_LOG_BITFIELD_LENGTH_BYTES];
+    uint16_t log_period_s; 
     ADCS_sd_log_destination_enum_t which_sd;
 } ADCS_sd_log_config_struct;
-
-// TODO: We also need to downlink ADCS data from SD card
 
 #endif /* INC_ADCS_TYPES_H_ */

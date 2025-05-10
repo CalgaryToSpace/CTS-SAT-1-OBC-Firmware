@@ -43,12 +43,17 @@ uint8_t TEST_EXEC__ADCS_pack_to_raw_gps_status_struct();
 uint8_t TEST_EXEC__ADCS_pack_to_raw_gps_time_struct();
 uint8_t TEST_EXEC__ADCS_pack_to_raw_gps_struct();
 uint8_t TEST_EXEC__ADCS_pack_to_measurements_struct();
+uint8_t TEST_EXEC__ADCS_pack_to_file_info_struct(); 
+uint8_t TEST_EXEC__ADCS_pack_to_download_block_ready_struct(); 
+uint8_t TEST_EXEC__ADCS_pack_to_sd_card_format_erase_progress_struct(); 
+uint8_t TEST_EXEC__ADCS_pack_to_file_download_buffer_struct(); 
 uint8_t TEST_EXEC__ADCS_pack_to_acp_execution_state_struct();
 uint8_t TEST_EXEC__ADCS_pack_to_current_state_1_struct();
 uint8_t TEST_EXEC__ADCS_pack_to_raw_star_tracker_struct();
 uint8_t TEST_EXEC__ADCS_pack_to_unix_time_ms();
 uint8_t TEST_EXEC__ADCS_pack_to_sd_log_config_struct();
 uint8_t TEST_EXEC__ADCS_convert_double_to_string();
+uint8_t TEST_EXEC__ADCS_combine_sd_log_bitmasks();
 
 #endif // INCLUDE_GUARD__ADCS_TEST_PROTOTYPES_H__
 

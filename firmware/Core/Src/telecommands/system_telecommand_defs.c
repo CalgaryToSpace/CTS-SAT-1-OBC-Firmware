@@ -6,6 +6,8 @@
 #include "eps_drivers/eps_commands.h"
 #include "littlefs/littlefs_helper.h"
 #include "transforms/arrays.h"
+#include "self_checks/complete_self_check.h"
+#include "system/obc_internal_drivers.h"
 
 #include "telecommands/system_telecommand_defs.h"
 #include "telecommand_exec/telecommand_definitions.h"
@@ -15,7 +17,7 @@
 #include <string.h>
 
 
-/// @brief A simple telecommand that responds with "Hello, world!"
+/// @brief A simple telecommand that responds with "Hello, world!" (log message and TCMD response)
 /// @param args_str No arguments expected
 /// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
 /// @param response_output_buf The buffer to write the response to
@@ -28,6 +30,10 @@ uint8_t TCMDEXEC_hello_world(
     LOG_message(
         LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
         "Hello, world!"
+    );
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "Hello, world"
     );
     return 0;
 }
@@ -133,5 +139,36 @@ uint8_t TCMDEXEC_reboot(
     HAL_Delay(100);
 
     NVIC_SystemReset();
+    return 0;
+}
+
+/// @brief System self-check of all peripherals and systems.
+/// @param args_str No arguments expected
+/// @param response_output_buf Buffer is filled with a JSON list of strings of the FAILING checks
+/// @return 0 regardless; see the response_output_buf for the results of the self-check.
+/// @note Output is a JSON list of the failing checks (as strings). Returns 0 regardless.
+uint8_t TCMDEXEC_system_self_check_failures_as_json(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    CTS1_system_self_check_result_struct_t self_check_result;
+    CTS1_run_system_self_check(&self_check_result);
+    CTS1_self_check_struct_TO_json_list_of_failures(
+        self_check_result, response_output_buf, response_output_buf_len
+    );
+    return 0;
+}
+
+uint8_t TCMDEXEC_obc_get_rbf_state(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    const OBC_rbf_state_enum_t rbf_state = OBC_get_rbf_state();
+    const char *rbf_state_str = (rbf_state == OBC_RBF_STATE_FLYING) ? "FLYING" : "BENCH";
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "{\"rbf_state\":\"%s\"}",
+        rbf_state_str
+    );
     return 0;
 }

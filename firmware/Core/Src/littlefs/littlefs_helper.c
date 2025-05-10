@@ -55,9 +55,15 @@ struct lfs_file_config LFS_file_cfg = {
 
 /// @brief Formats Memory Module so it can successfully mount LittleFS
 /// @param None
-/// @return 0 on success, negative LFS error codes on failure
+/// @return 0 on success, 1 if LFS is already mounted, negative LFS error codes on failure
 int8_t LFS_format()
 {
+    if (LFS_is_lfs_mounted) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), 
+        "FLASH Memory cannot be formatted while LFS is mounted!");
+        return 1;
+    }
+    
     int8_t format_result = lfs_format(&LFS_filesystem, &LFS_cfg);
     if (format_result < 0) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error formatting FLASH memory!");
@@ -231,7 +237,7 @@ int8_t LFS_make_directory(const char dir_name[])
             "Directory %s already exists.", dir_name);
         } else {
             LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
-            "Recieved error: %d while creating directory: %s.", make_dir_result, dir_name);
+            "Received error: %d while creating directory: %s.", make_dir_result, dir_name);
         }
         return make_dir_result;
     }
@@ -303,8 +309,7 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
         return close_result;
     }
     
-    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully closed file: %s", file_name);
-    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully wrote data to file: %s", file_name);
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully wrote data to file: %s", file_name);
 
     return 0;
 }
@@ -487,7 +492,7 @@ lfs_ssize_t LFS_read_file(const char file_name[], lfs_soff_t offset, uint8_t *re
     if (!LFS_is_lfs_mounted)
     {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "LittleFS not mounted");
-        return 1;
+        return -12512;
     }
 
     lfs_file_t file;

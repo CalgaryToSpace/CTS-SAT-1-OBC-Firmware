@@ -7,8 +7,8 @@
 /// @brief Returns the index of the first character of the first occurrence of a substring in an array.
 /// @param haystack_arr The array to search within.
 /// @param haystack_arr_len The length of the array to search within.
-/// @param substring The substring to search for. Must be a null-terminated C-string.
-/// @return The index of the start of the first occurrence of the substring in the array, or -1 if not found
+/// @param needle_str The substring to search for. Must be a null-terminated C-string.
+/// @return The index of the start of the first occurrence of the needle_str in the array, or -1 if not found
 int16_t GEN_get_index_of_substring_in_array(const char *haystack_arr, int16_t haystack_arr_len, const char *needle_str) {
     uint16_t needle_str_len = strlen(needle_str);
     
@@ -23,6 +23,35 @@ int16_t GEN_get_index_of_substring_in_array(const char *haystack_arr, int16_t ha
         }
         // If we completed the inner loop, we found the substring
         if (j == needle_str_len) {
+            return i;
+        }
+    }
+
+    // If the substring was not found, return -1
+    return -1;
+}
+
+/// @brief Returns the index of the first element of the first occurrence of a sub-array in an array.
+/// @param haystack_arr The array to search within.
+/// @param haystack_arr_len The length of the array to search within.
+/// @param needle_arr The substring/sub-array to search for.
+/// @param needle_arr_len The length of the substring/sub-array to search for.
+/// @return The index of the start of the first occurrence of the substring in the array, or -1 if not found
+int16_t GEN_get_index_of_subarray_in_array(
+    const uint8_t *haystack_arr, int16_t haystack_arr_len,
+    const uint8_t *needle_arr, int16_t needle_arr_len
+) {    
+    // Iterate through the haystack array
+    for (int16_t i = 0; i <= haystack_arr_len - needle_arr_len; i++) {
+        // Check if the substring matches at position i
+        int16_t j;
+        for (j = 0; j < needle_arr_len; j++) {
+            if (haystack_arr[i + j] != needle_arr[j]) {
+                break;
+            }
+        }
+        // If we completed the inner loop, we found the substring
+        if (j == needle_arr_len) {
             return i;
         }
     }

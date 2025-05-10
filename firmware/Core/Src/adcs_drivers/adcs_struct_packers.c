@@ -266,7 +266,7 @@ uint8_t ADCS_pack_to_estimation_params_struct(uint8_t* data_received, ADCS_estim
     result->magnetometer_selection_for_raw_magnetometer_telemetry = (data_received[29] & 0x3); // 0b00000011
     result->automatic_estimation_transition_due_to_rate_sensor_errors = (data_received[29] & 4) >> 2; // 0b00000100
     result->wheel_30s_power_up_delay = (data_received[29] & 0x8) >> 3; // 0b00001000
-    result->cam1_and_cam2_sampling_period = data_received[30];
+    result->error_counter_reset_period_min = data_received[30];
 
     return 0;
 }
@@ -591,17 +591,42 @@ uint8_t ADCS_pack_to_measurements_struct(uint8_t* telemetry_data, ADCS_measureme
     return 0;
 }
 
+/// @brief Parse File Information telemetry data into a struct.
+/// @param[in] raw_data Pointer to the raw telemetry data buffer (12 bytes).
+/// @param[out] file_info_struct Pointer to the struct to store parsed telemetry data.
+/// @return 0 once the function is finished running.
+uint8_t ADCS_pack_to_file_info_struct(uint8_t *raw_data, ADCS_file_info_struct_t *file_info_struct) {
+    file_info_struct->file_type = raw_data[0] & 0x0F; // Bits 0-3
+    file_info_struct->busy_updating = (raw_data[0] >> 4) & 0x01; // Bit 4
+    file_info_struct->file_counter = raw_data[1]; // Byte 1
+
+    file_info_struct->file_size = (raw_data[5] << 24) | (raw_data[4] << 16) | (raw_data[3] << 8) | raw_data[2]; // Bytes 2-5
+
+    file_info_struct->file_date_time_msdos = (raw_data[9] << 24) | (raw_data[8] << 16) | (raw_data[7] << 8) | raw_data[6]; // Bytes 6-9
+
+    file_info_struct->file_crc16 = (raw_data[11] << 8) | raw_data[10]; // Bytes 10-11
+    return 0;
+}
+
+/// @brief Parse ACP Execution State telemetry data into a struct.
+/// @param[in] data_received Pointer to the raw telemetry data buffer.
+/// @param[out] output_struct Pointer to the struct to store parsed telemetry data.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_pack_to_acp_execution_state_struct(uint8_t* data_received, ADCS_acp_execution_state_struct_t* output_struct) {
     output_struct->time_since_iteration_start_ms = (uint16_t)(data_received[1] << 8 | data_received[0]); 
     output_struct->current_execution_point = (ADCS_current_execution_point_enum_t) data_received[2];
     return 0;
 }
 
+/// @brief Parse Current State 1 telemetry data into a struct.
+/// @param[in] data_received Pointer to the raw telemetry data buffer.
+/// @param[out] output_struct Pointer to the struct to store parsed telemetry data.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_pack_to_current_state_1_struct(uint8_t* data_received, ADCS_current_state_1_struct_t* output_struct) {
     
-    output_struct->estimation_mode = (data_received[0] >> 4) & 0xf;
+    output_struct->estimation_mode = (data_received[0]) & 0xf;
     
-    output_struct->control_mode = (data_received[0]) & 0xf;  
+    output_struct->control_mode = (data_received[0] >> 4) & 0xf;
 
     output_struct->run_mode = (data_received[1]) & 0x3;  
     output_struct->asgp4_mode = (data_received[1] >> 2) & 0x3; 
@@ -649,6 +674,50 @@ uint8_t ADCS_pack_to_current_state_1_struct(uint8_t* data_received, ADCS_current
     return 0;
 }
 
+/// @brief Parse the Download Block Ready telemetry data into the provided struct.
+/// @param[in] data_received Pointer to the telemetry data array.
+/// @param[out] result Pointer to the struct to populate.
+/// @return 0 once complete.
+uint8_t ADCS_pack_to_download_block_ready_struct(const uint8_t *data_received, ADCS_download_block_ready_struct_t *result) {
+    // Unpack Ready (1 bit) and ParameterError (1 bit) from the first byte
+    result->ready = (data_received[0] & 0x01) != 0;               // Extract the 1st bit
+    result->parameter_error = (data_received[0] & 0x02) != 0;    // Extract the 2nd bit
+
+    // Unpack Block CRC16 (16 bits, reverse byte order)
+    result->block_crc16 = (uint16_t)((data_received[2] << 8) | (data_received[1]));
+
+    // Unpack Block Length (16 bits, reverse byte order)
+    result->block_length = (uint16_t)((data_received[4] << 8) | (data_received[3]));
+
+    return 0; 
+}
+
+/// @brief Parse the SD Card Format/Erase Progress data into the provided struct.
+/// @param[in] data_received Pointer to the telemetry data array.
+/// @param[out] result Pointer to the struct to populate.
+/// @return 0 once complete.
+uint8_t ADCS_pack_to_sd_card_format_erase_progress_struct(uint8_t *data_received, ADCS_sd_card_format_erase_progress_struct_t *result) {
+    result->format_busy = (data_received[0] & 0x01) != 0; // First bit: Format Busy
+    result->erase_all_busy = (data_received[0] & 0x02) != 0; // Second bit: Erase All Busy
+    return 0;
+}
+
+/// @brief Parse the File Download Buffer data into the provided struct.
+/// @param[in] data_received Pointer to the telemetry data array.
+/// @param[out] result Pointer to the struct to populate.
+/// @return 0 once complete.
+uint8_t ADCS_pack_to_file_download_buffer_struct(uint8_t *data_received, ADCS_file_download_buffer_struct_t *result) {
+    result->packet_counter = (uint16_t)data_received[0] | ((uint16_t)data_received[1] << 8);
+    for (uint8_t i = 0; i < 20; i++) {
+        result->file_bytes[i] = data_received[2+i];
+    }
+    return 0;
+}
+
+/// @brief Parse Raw Star Tracker telemetry data into a struct.
+/// @param[in] input_data Pointer to the raw telemetry data buffer.
+/// @param[out] output_data Pointer to the struct to store parsed telemetry data.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_pack_to_raw_star_tracker_struct(uint8_t *input_data, ADCS_raw_star_tracker_struct_t *output_data) {
     
     output_data->num_stars_detected = input_data[0];
@@ -694,6 +763,10 @@ uint8_t ADCS_pack_to_raw_star_tracker_struct(uint8_t *input_data, ADCS_raw_star_
     return 0;
 }
 
+/// @brief Parse Unix Time telemetry data into a uint64.
+/// @param[in] data_received Pointer to the raw telemetry data buffer.
+/// @param[out] output_data Pointer to the uint64 to store parsed telemetry data.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_pack_to_unix_time_ms(uint8_t *data_received, uint64_t *output_data) {
     
                                                                                                                     // use ULL to perform unsigned, not signed, multiplication
@@ -702,13 +775,18 @@ uint8_t ADCS_pack_to_unix_time_ms(uint8_t *data_received, uint64_t *output_data)
 
 }
 
+/// @brief Parse SD Log Config telemetry data into a struct.
+/// @param[in] data_received Pointer to the raw telemetry data buffer.
+/// @param[in] which_log Which of the two concurrent logging task configurations is requested (1 or 2). 
+/// @param[out] config Pointer to the struct to store parsed telemetry data.
+/// @return 0 once the function is finished running.
 uint8_t ADCS_pack_to_sd_log_config_struct(uint8_t *data_received, uint8_t which_log, ADCS_sd_log_config_struct *config) {
     
     for (uint8_t i = 0; i < 10; i++) {
         (config->log_bitmask)[i] = data_received[i];
     }
     config->which_log = which_log;
-    config->log_period = (data_received[11] << 8) | data_received[10];
+    config->log_period_s = (data_received[11] << 8) | data_received[10];
     config->which_sd = data_received[12];
 
     return 0;

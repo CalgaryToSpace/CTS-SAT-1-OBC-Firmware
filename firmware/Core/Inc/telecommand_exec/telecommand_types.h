@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#define TCMD_MAX_RESP_FNAME_LEN 64
 
 typedef enum {
     TCMD_TelecommandChannel_DEBUG_UART,
@@ -46,6 +47,8 @@ typedef struct {
     uint64_t timestamp_sent;
     /// @brief The value of the `@tsexec` field when the telecommand was received.
     uint64_t timestamp_to_execute;
+    /// @brief Name of file that response should be written to, empty string otherwise
+    char resp_fname[TCMD_MAX_RESP_FNAME_LEN];
     /// @brief The channel on which the telecommand was received, and on which the response should be sent.
     TCMD_TelecommandChannel_enum_t tcmd_channel;
 } TCMD_parsed_tcmd_to_execute_t;
