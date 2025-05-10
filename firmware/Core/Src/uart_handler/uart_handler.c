@@ -168,10 +168,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
                     UART_mpi_data_rx_buffer[i] = 0x00;
                 }
                 MPI_buffer_state = MPI_MEMORY_WRITE_STATUS_PENDING;
-                DEBUG_uart_print_str("COMPLETE - Received 4096 Bytes!\n");
+                // DEBUG_uart_print_str("COMPLETE - Received 4096 Bytes!\n");
 
             } else {
-                DEBUG_uart_print_str("COMPLETE - Bytes are being lost!\n");
+                DEBUG_uart_print_str("COMPLETE - *Assumed* 4096 Bytes are being lost!\n");
+                MPI_science_data_bytes_lost += 4096;
             }
         }
         else {
@@ -344,6 +345,7 @@ void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
             else {
                 UART_error_mpi_error_info.handler_buffer_full_error_count++;
                 DEBUG_uart_print_str("MPI Half ISR - Data too fast!\n");
+                MPI_science_data_bytes_lost += UART_mpi_data_rx_buffer_len;
             }
         }
         else {
