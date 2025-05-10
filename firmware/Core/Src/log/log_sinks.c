@@ -18,7 +18,7 @@ void LOG_to_file(const char filename[], const char msg[])
     if (!LFS_is_lfs_mounted) {
         LOG_to_umbilical_uart("\nError writing to system log file: LFS not mounted\n");
         LOG_to_uhf_radio("\nError writing to system log file: LFS not mounted\n");
-        // FIXME: log to memory buffer
+        // FIXME(Issue #398): log to memory buffer
         return;
     }
 
@@ -35,14 +35,14 @@ void LOG_to_file(const char filename[], const char msg[])
         // of the ground station
         LOG_to_umbilical_uart("\nError opening system log file\n");
         LOG_to_uhf_radio("\nError opening system log file\n");
-        // FIXME: log to memory buffer
+        // FIXME(Issue #398): log to memory buffer
 		return;
 	}
     const lfs_soff_t offset = lfs_file_seek(&LFS_filesystem, &file, 0, LFS_SEEK_END);
     if (offset < 0) {
         LOG_to_umbilical_uart("\nError seeking to end of system log file\n");
         LOG_to_uhf_radio("\nError seeking to end of system log file\n");
-        // FIXME: log to memory buffer
+        // FIXME(Issue #398): log to memory buffer
         return;
     }
 
@@ -50,7 +50,7 @@ void LOG_to_file(const char filename[], const char msg[])
 	if (bytes_written < 0) {
         LOG_to_umbilical_uart("\nError writing to system log file\n");
         LOG_to_uhf_radio("\nError writing to system log file\n");
-        // FIXME: log to memory buffer
+        // FIXME(Issue #398): log to memory buffer
 		return;
 	}
 	
@@ -59,7 +59,7 @@ void LOG_to_file(const char filename[], const char msg[])
 	if (close_result < 0) {
         LOG_to_umbilical_uart("\nError closing system log file\n");
         LOG_to_uhf_radio("\nError closing system log file\n");
-        // FIXME: log to memory buffer
+        // FIXME(Issue #398): log to memory buffer
 		return;
 	}
 	
@@ -84,7 +84,7 @@ void LOG_to_uhf_radio(const char msg[])
     const uint8_t result = COMMS_downlink_log_message(msg);
     if (result != 0) {
         LOG_to_umbilical_uart("\nError sending log message to UHF radio\n");
-        // FIXME: log to memory buffer
+        // FIXME(Issue #398): log to memory buffer
     }
     return;
 }
