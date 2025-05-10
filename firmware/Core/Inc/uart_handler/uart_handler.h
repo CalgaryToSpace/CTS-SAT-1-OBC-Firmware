@@ -5,6 +5,8 @@
 #include "stm32l4xx_hal.h"
 #include <stdint.h>
 
+#include "mpi/mpi_types.h"
+
 // Name the UART interfaces
 extern UART_HandleTypeDef *UART_telecommand_port_handle;  
 extern UART_HandleTypeDef *UART_mpi_port_handle;
@@ -50,6 +52,16 @@ extern volatile uint16_t UART_gps_buffer_write_idx;
 extern volatile uint32_t UART_gps_last_write_time_ms; 
 extern volatile uint8_t UART_gps_buffer_last_rx_byte;  
 extern volatile uint8_t UART_gps_uart_interrupt_enabled; // Flag to enable or disable the UART GPS ISR
+
+// UART MPI science data buffer
+extern const uint16_t UART_mpi_data_rx_buffer_len; // extern 
+extern volatile uint8_t UART_mpi_data_rx_buffer[]; // extern
+
+extern volatile MPI_buffer_state_enum_t MPI_buffer_state;
+
+extern const uint16_t MPI_active_data_median_buffer_len;
+extern volatile uint8_t MPI_active_data_median_buffer[];
+
 
 
 #define AX100_MAX_KISS_FRAMES_IN_RX_QUEUE  8
