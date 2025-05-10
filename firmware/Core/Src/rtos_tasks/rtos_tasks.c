@@ -12,6 +12,7 @@
 #include "log/log.h"
 #include "config/configuration.h"
 #include "eps_drivers/eps_commands.h"
+#include "system/obc_internal_drivers.h"
 
 #include "cmsis_os.h"
 
@@ -24,9 +25,8 @@ uint32_t TASK_heartbeat_period_ms = 10990;
 
 char TASK_heartbeat_timing_str[128] = {0};
 
-void set_heartbeat_led(uint8_t enabled) {
-    HAL_GPIO_WritePin(PIN_LED_DEVKIT_LD2_GPIO_Port, PIN_LED_DEVKIT_LD2_Pin, enabled);
-    HAL_GPIO_WritePin(PIN_LED_GP2_OUT_GPIO_Port, PIN_LED_GP2_OUT_Pin, enabled);
+static void set_heartbeat_led(uint8_t enabled) {
+    OBC_set_external_led(enabled);
 }
 
 void TASK_DEBUG_print_heartbeat(void *argument) {
