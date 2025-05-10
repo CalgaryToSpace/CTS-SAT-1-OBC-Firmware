@@ -14,6 +14,14 @@ void DEBUG_uart_print_str(const char *str) {
     HAL_UART_Transmit(&hlpuart1, (uint8_t *)str, strlen(str), 300);
 }
 
+void DEBUG_uart_print_str_max_len(const char* str, size_t n) {
+    char buf[n+1];
+    strncpy(buf, str, n);
+    buf[n] = '\0'; // Null-terminate the string
+    DEBUG_uart_print_str(buf);
+    DEBUG_uart_print_str("\n");
+}
+
 void DEBUG_uart_print_uint32(uint32_t value) {
     char buffer[16];
     snprintf(buffer, sizeof(buffer), "%lu", value);

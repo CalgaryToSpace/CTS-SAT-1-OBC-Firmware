@@ -298,11 +298,6 @@ uint8_t CTS1_check_mpi_cmd_works() {
 }
 
 uint8_t CTS1_check_is_camera_responsive() {
-    const uint8_t init_result = CAM_setup();
-    if (init_result != 0) {
-        return 0;
-    }
-    
     const uint8_t test_result = CAM_test();
     if (test_result != 0) {
         return 0;

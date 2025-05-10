@@ -13,6 +13,7 @@ UART_error_counts_single_subsystem_struct_t UART_error_mpi_error_info = {
     .overrun_error_count = 0,
     .dma_transfer_error_count = 0,
     .receiver_timeout_error_count = 0,
+    .handler_buffer_full_error_count = 0,
 };
 
 UART_error_counts_single_subsystem_struct_t UART_error_ax100_error_info = {
@@ -31,6 +32,7 @@ UART_error_counts_single_subsystem_struct_t UART_error_gps_error_info = {
     .overrun_error_count = 0,
     .dma_transfer_error_count = 0,
     .receiver_timeout_error_count = 0,
+    .handler_buffer_full_error_count = 0,
 };
 
 UART_error_counts_single_subsystem_struct_t UART_error_camera_error_info = {
@@ -40,7 +42,7 @@ UART_error_counts_single_subsystem_struct_t UART_error_camera_error_info = {
     .overrun_error_count = 0,
     .dma_transfer_error_count = 0,
     .receiver_timeout_error_count = 0,
-
+    .handler_buffer_full_error_count = 0,
 };
 
 UART_error_counts_single_subsystem_struct_t UART_error_eps_error_info = {
@@ -50,6 +52,7 @@ UART_error_counts_single_subsystem_struct_t UART_error_eps_error_info = {
     .overrun_error_count = 0,
     .dma_transfer_error_count = 0,
     .receiver_timeout_error_count = 0,
+    .handler_buffer_full_error_count = 0,
 };
 
 UART_error_counts_single_subsystem_struct_t UART_error_telecommand_error_info = {
@@ -59,6 +62,7 @@ UART_error_counts_single_subsystem_struct_t UART_error_telecommand_error_info = 
     .overrun_error_count = 0,
     .dma_transfer_error_count = 0,
     .receiver_timeout_error_count = 0,
+    .handler_buffer_full_error_count = 0,
 };
 
 /// @brief Track the error for a given UART instance
