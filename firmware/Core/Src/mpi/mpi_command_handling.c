@@ -24,8 +24,9 @@ volatile MPI_rx_mode_t MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_M
 /// @brief Current state of the `MPI_active_data_median_buffer` (pending write vs. written).
 volatile MPI_buffer_state_enum_t MPI_buffer_state = MPI_MEMORY_WRITE_STATUS_READY;
 
-uint8_t MPI_receive_prepared = 0;
+uint8_t MPI_science_file_can_close = 0;
 uint8_t MPI_science_data_file_is_open = 0;
+uint32_t MPI_science_data_bytes_lost = 0;
 lfs_file_t MPI_science_data_file_pointer;
 
 /// @brief Sends commandcode+params to the MPI as bytes
@@ -146,6 +147,7 @@ uint8_t MPI_validate_command_response(
     return 0; //  MPI executed the cmd successfully
 }
 
+/// @brief Turns on MPI by setting the corresponding EPS channel.
 static void MPI_power_on() {
     // Power On MPI 5v
     const uint8_t mpi_5v_result = EPS_set_channel_enabled(EPS_CHANNEL_5V_MPI, 1);
@@ -168,7 +170,7 @@ static void MPI_power_on() {
 
 /// @brief Turns on MPI and prepares a LFS file to store MPI data in.
 /// @return 0: System successfully prepared for MPI data, < 0: Error
-int8_t MPI_prepare_receive_data() {
+int8_t MPI_prepare_receive_data(const char MPI_science_file_name[]) {
     MPI_power_on();
 
     // Start the timer to track time past since we powered on MPI
@@ -178,14 +180,6 @@ int8_t MPI_prepare_receive_data() {
     if (!LFS_is_lfs_mounted) {
         LFS_mount();
     }
-        
-    // Create file name
-    char MPI_science_data_file_name[60]; // FIXME: This should be an argument.
-    snprintf(
-        MPI_science_data_file_name,
-        sizeof(MPI_science_data_file_name),
-        "mpi_active_data_file_%lu", HAL_GetTick()
-    );
 
     // If the old file is open, close the file
     if (MPI_science_data_file_is_open == 1) {
@@ -195,7 +189,6 @@ int8_t MPI_prepare_receive_data() {
                 LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
                 "Error closing old file: %d", close_result
             );
-            MPI_receive_prepared = 0;
             return close_result;
         }
         LOG_message(
@@ -208,7 +201,7 @@ int8_t MPI_prepare_receive_data() {
     // Open / Create the file
     const int8_t open_result = lfs_file_opencfg(
         &LFS_filesystem, &MPI_science_data_file_pointer,
-        MPI_science_data_file_name,
+        MPI_science_file_name,
         LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND, &LFS_file_cfg
     );
     
@@ -216,17 +209,17 @@ int8_t MPI_prepare_receive_data() {
     if (open_result < 0) {
         LOG_message(
             LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
-            "Error opening / creating file: %s", MPI_science_data_file_name
+            "Error opening / creating file: %s", MPI_science_file_name
         );
-        MPI_receive_prepared = 0;
         return open_result;
     }
+
+    // Change the state to state file is open
     MPI_science_data_file_is_open = 1;
     LOG_message(
         LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
-        "Opened/created file: %s", MPI_science_data_file_name
+        "Opened/created file: %s", MPI_science_file_name
     );
-    MPI_receive_prepared = 1;
     
     // Total 5 second delay to make sure MPI is booted
     HAL_Delay(5000 - (HAL_GetTick() - start_time));
@@ -235,15 +228,10 @@ int8_t MPI_prepare_receive_data() {
 
 /// @brief Turns on MPI science mode and Enables DMA interrupt for MPI channel.
 /// @return 0: MPI and DMA successfully enabled, < 0: Error
-uint8_t MPI_enable_active_mode() {
-
-    //FIXME: There are a few issues in the code
-    //       If UART port starts receiving data when it's not listening, the port will be blocked once listening
-    //       If UART port/DMA is stopped while actively receiving data, the port will be blocked once listening again
-    //       The more files there are, the longer the first initial write takes to LFS 
+uint8_t MPI_enable_active_mode(const char MPI_science_file_name[]) {
     
     // Turn on the MPI and setup LFS
-    const uint8_t prepare_result = MPI_prepare_receive_data();
+    const uint8_t prepare_result = MPI_prepare_receive_data(MPI_science_file_name);
     if (prepare_result != 0) {
         LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL, 
             "MPI could not be powered on (MPI_prepare_receive_data result: %d)", prepare_result);
@@ -275,8 +263,10 @@ uint8_t MPI_enable_active_mode() {
     MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MISO); // Set the MPI transceiver to MISO mode
     MPI_current_uart_rx_mode = MPI_RX_MODE_SENSING_MODE;
 
-    // Receive MPI response actively with 8192 buffer size.
+    // FIXME: Do we need this? Had this before to fix an issue now fixed by AbortReceive
     __HAL_UART_CLEAR_OREFLAG(UART_mpi_port_handle);
+    
+    // Receive MPI response actively with 8192 buffer size.
     const HAL_StatusTypeDef rx_status = HAL_UART_Receive_DMA(
         UART_mpi_port_handle, (uint8_t*) UART_mpi_data_rx_buffer, UART_mpi_data_rx_buffer_len);
     
@@ -288,15 +278,14 @@ uint8_t MPI_enable_active_mode() {
             LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL, 
             "MPI HAL_UART_Receive_DMA error (HAL_UART_Receive_DMA result: %d)", rx_status
         );
+
         return 3; // Error code: Failed to start UART reception
     }
-    
-    // Indicates to MPI thread that we are able to receive data
-    // If mpi uart mode is changed, we can close file
-    MPI_receive_prepared = 2;
+
     return 0;
 }
 
+/// @brief Turns off MPI by resetting the corresponding EPS channel.
 static void MPI_power_off() {
     // Power off the MPI 5v
     const uint8_t mpi_5v_result = EPS_set_channel_enabled(EPS_CHANNEL_5V_MPI, 0);
@@ -319,17 +308,42 @@ static void MPI_power_off() {
 uint8_t MPI_disable_active_mode() {
     MPI_power_off();
 
+    // TODO: Triple Check with Dr. Burchill if we need to turn off science mode before turning off MPI 
+    // MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MOSI); // Set the MPI transceiver to MOSI mode
+    // HAL_Delay(50);
+
+    // // Send command to stop MPI science data.
+    // const uint8_t tx_buffer[3] = {0x54, 0x43, 0x14}; // Stop data command (0x14 = d20 = STOP)
+    // const HAL_StatusTypeDef tx_result = HAL_UART_Transmit(
+    //     UART_mpi_port_handle,
+    //     tx_buffer, sizeof(tx_buffer),
+    //     MPI_TX_TIMEOUT_DURATION_MS
+    // );
+    // if (tx_result != HAL_OK) {
+    //     LOG_message(
+    //         LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL, 
+    //         "MPI HAL_UART_Transmit error (HAL_UART_Transmit result: %d)", tx_result
+    //     );
+    //     return 4;
+    // }
+
     // Set the MPI State to not handle any receiving data
     MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE); // Set the MPI transceiver to inactive
     MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI; // Set UART mode to not listening.
     const HAL_StatusTypeDef stop_status = HAL_UART_DMAStop(UART_mpi_port_handle);
 
     if (stop_status != HAL_OK) {
+        LOG_message(
+            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL, 
+            "MPI HAL_UART_DMAStop error (HAL_UART_DMAStop result: %d)", stop_status
+        );
         return 1;
     }
 
+    MPI_science_file_can_close = 1;
+    
     // TODO: Log stats about the data received
+    // Current Logs printed in thread: File Size, Bytes Lost, Total Time Taken
     // File size, start time, stop time, current EPS power, number of interrupts, any dropped bytes, etc.
-
     return 0;
 }
