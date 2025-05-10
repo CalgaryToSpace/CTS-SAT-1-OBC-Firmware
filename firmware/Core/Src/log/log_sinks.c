@@ -81,7 +81,11 @@ void LOG_to_umbilical_uart(const char msg[])
 /// @return void
 void LOG_to_uhf_radio(const char msg[])
 {
-    COMMS_downlink_log_message(msg);
+    const uint8_t result = COMMS_downlink_log_message(msg);
+    if (result != 0) {
+        LOG_to_umbilical_uart("\nError sending log message to UHF radio\n");
+        // FIXME: log to memory buffer
+    }
     return;
 }
 

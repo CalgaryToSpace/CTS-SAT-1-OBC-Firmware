@@ -168,9 +168,8 @@ void LOG_message(LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_
     );
 
     // Send message to enabled sinks
-    LOG_sink_t *c;
     for (uint16_t i = 0; i < LOG_NUMBER_OF_SINKS; i++) {
-        c = &LOG_sinks[i];
+        const LOG_sink_t *c = &LOG_sinks[i];
         if (c->enabled && (c->sink & sink_mask) && (severity & c->severity_mask) && (severity & system->severity_mask)) {
             switch (c->sink) {
                 case LOG_SINK_FILE:
