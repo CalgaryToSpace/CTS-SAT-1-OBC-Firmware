@@ -165,10 +165,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
                     UART_mpi_data_rx_buffer[i] = 0x00;
                 }
                 MPI_buffer_state = MPI_MEMORY_WRITE_STATUS_PENDING;
-                DEBUG_uart_print_str("COMPLETE - Received 4096 Bytes!\n");
+                // DEBUG_uart_print_str("COMPLETE - Received 4096 Bytes!\n");
 
             } else {
-                DEBUG_uart_print_str("COMPLETE - Bytes are being lost!\n");
+                DEBUG_uart_print_str("COMPLETE - *Assumed* 4096 Bytes are being lost!\n");
+                MPI_science_data_bytes_lost += 4096;
             }
         }
         else {
@@ -327,10 +328,13 @@ void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
                     UART_mpi_data_rx_buffer[i] = 0x00;
                 }
                 MPI_buffer_state = MPI_MEMORY_WRITE_STATUS_PENDING;
+                // DEBUG_uart_print_str("HALF - Received 4096 Bytes!\n");
             } else {
-                DEBUG_uart_print_str("HALF - Bytes are being lost!\n");
+                DEBUG_uart_print_str("HALF - *Assumed* 4096 Bytes are being lost!\n");
+                MPI_science_data_bytes_lost += 4096;
             }
         } else {
+            DEBUG_uart_print_str("Unhandled MPI Mode\n"); //TODO: HANDLE other MPI MODES
             DEBUG_uart_print_str("HALF - Receiving some sort of MPI Data!\n");
         }
     }
