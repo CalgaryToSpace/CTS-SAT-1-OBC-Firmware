@@ -7,6 +7,7 @@
 #include "start_of_mission/start_of_mission_procedure.h"
 #include "eps_drivers/eps_calculations.h"
 #include "eps_drivers/eps_struct_packers.h"
+#include "eps_drivers/eps_types.h"
 
 #include <stdint.h>
 #include <eps_types.h>
