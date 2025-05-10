@@ -2,6 +2,7 @@
 #include "log/log_sinks.h"
 #include "littlefs/lfs.h"
 #include "littlefs/littlefs_helper.h"
+#include "comms_drivers/comms_tx.h"
 
 extern UART_HandleTypeDef hlpuart1;
 extern uint8_t LFS_is_lfs_mounted;
@@ -23,7 +24,11 @@ void LOG_to_file(const char filename[], const char msg[])
 
     // We cannot use LFS_append_file due to recursion of the logging system
     lfs_file_t file;
-    const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, filename, LFS_O_RDWR | LFS_O_CREAT | LFS_O_APPEND, &LFS_file_cfg);
+    const int8_t open_result = lfs_file_opencfg(
+        &LFS_filesystem, &file, filename,
+        LFS_O_RDWR | LFS_O_CREAT | LFS_O_APPEND,
+        &LFS_file_cfg
+    );
 	if (open_result < 0)
 	{
         // This error cannot be logged, except via UART or during an overpass 
@@ -76,10 +81,7 @@ void LOG_to_umbilical_uart(const char msg[])
 /// @return void
 void LOG_to_uhf_radio(const char msg[])
 {
-    // FIXME: replace with UHF radio transmission
-    // For debugging and prototyping, implement comms on a second UART
-    // Using the umbilical here messes up log messages on the umbilical
-    // LOG_to_umbilical_uart("TODO: replace this with a UHF RADIO transmission\n");
+    COMMS_downlink_log_message(msg);
     return;
 }
 
