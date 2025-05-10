@@ -1,5 +1,6 @@
-#include "telecommands/obc_temperature_sensor_telecommand_defs.h"
+#include "telecommands/obc_systems_telecommand_defs.h"
 #include "obc_temperature_sensor/obc_temperature_sensor.h"
+#include "obc_systems/adc_vbat_monitor.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -91,5 +92,24 @@ uint8_t TCMDEXEC_obc_read_temperature(
         temp_cC
     );
 
+    return 0;
+}
+
+/// @brief Read the battery voltage using the ADC. Returns the result in mV. Voltage divider ratio is already applied.
+/// @param args_str No arguments.
+/// @return 
+uint8_t TCMDEXEC_obc_adc_read_vbat_voltage(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    // Read the voltage from the ADC.
+    const int16_t vbat_mV = OBC_read_vbat_with_adc_mV();
+
+    if (vbat_mV == -9999) {
+        snprintf(response_output_buf, response_output_buf_len, "VBAT ADC read error.");
+        return 1;
+    }
+    
+    snprintf(response_output_buf, response_output_buf_len, "{\"vbat_voltage_mV\":%d}", vbat_mV);
     return 0;
 }
