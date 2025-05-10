@@ -231,4 +231,7 @@ uint8_t TCMDEXEC_adcs_download_index_file(const char *args_str, TCMD_Telecommand
 uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len);
 
+uint8_t TCMDEXEC_adcs_erase_sd_file(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len);
+
 #endif // INCLUDE_GUARD__TELECOMMAND_adcs_H
