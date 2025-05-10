@@ -8,7 +8,7 @@
 #include "telecommands/eps_telecommands.h"
 #include "telecommand_exec/telecommand_args_helpers.h"
 #include "log/log.h"
-
+#include "obc_systems/adc_vbat_monitor.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -691,5 +691,20 @@ uint8_t TCMDEXEC_eps_power_management_set_current_threshold(
     snprintf(
         response_output_buf, response_output_buf_len,
         "EPS_CMD_power_management_set_current_threshold: Channel %s, %ld", channel_str,  (uint32_t) current_threshold);
+    return 0;
+}
+
+uint8_t TCMDEXEC_eps_read_VBAT_volage(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    //getting the raw value from the vbat    
+    float voltage = return_VBAT_Voltage();
+
+    double VBAT = voltage_VBAT(voltage);
+    
+    snprintf(response_output_buf, response_output_buf_len, "VBAT VOLTAGE (mV):%.2f ", VBAT);
+
+    //converting the raw value to a voltage
     return 0;
 }
