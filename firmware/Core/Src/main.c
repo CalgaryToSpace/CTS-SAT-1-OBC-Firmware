@@ -90,8 +90,8 @@ const osThreadAttr_t defaultTask_attributes = {
 // Don't forget to add the thread much farther down, also.
 // Per the IOC file, the "TOTAL_HEAP_SIZE" (where task stacks are allocated) is 32,768 bytes of RAM.
 
-// Minimum stack size: 128 normal, 256 for LOG_message
-#define TASK_MINIMUM_STACK_SIZE_BYTES 1024 //in bytes
+// 512 may work okay, but 1024 is a safe bet.
+#define TASK_MINIMUM_STACK_SIZE_BYTES 1024
 
 osThreadId_t TASK_DEBUG_print_heartbeat_Handle;
 const osThreadAttr_t TASK_DEBUG_print_heartbeat_Attributes = {
