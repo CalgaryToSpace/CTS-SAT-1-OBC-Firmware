@@ -241,9 +241,9 @@ static uint8_t CAM_receive_image(lfs_file_t* img_file) {
     
     LOG_message(
         LOG_SYSTEM_BOOM, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
-        "Total final bytes written to file: %ld (approx %ld = 0x%04lX sentences). total_buffers_filled=%d",
+        "Total camera write to file: %ld bytes (%.2f = 0x%04lX sentences). total_buffers_filled=%d.",
         total_bytes_written,
-        total_bytes_written / CAM_SENTENCE_LEN,
+        ((float)total_bytes_written) / ((float)CAM_SENTENCE_LEN),
         total_bytes_written / CAM_SENTENCE_LEN,
         total_buffers_filled
     );
