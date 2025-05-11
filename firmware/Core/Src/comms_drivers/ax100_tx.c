@@ -29,23 +29,20 @@ static const uint32_t AX100_i2c_tx_timeout_ms = 100;
 /// @param data data to place in the packet
 /// @param data_len length of data
 static void prepend_csp_header(uint8_t *destination, uint8_t *data, uint32_t data_len) {
-    // Construct csp header as uint32.
-    uint8_t csp_header[AX100_CSP_HEADER_LENGTH_BYTES];
-
     // TODO: Rewrite this to do the shifting in the construction here.
-    *((uint32_t *)csp_header) = (
-        csp_priority | own_csp_addr | ground_station_csp_addr | ground_station_csp_port
-        | own_csp_port | use_hmac | use_xtea | use_rdp | use_crc
+    
+    const uint32_t csp_header = (
+        csp_priority | own_csp_addr | ground_station_csp_addr |
+        ground_station_csp_port | own_csp_port | use_hmac | use_xtea | use_rdp | use_crc
     );
 
-    // Put in big endian.
-    destination[0] = csp_header[3];
-    destination[1] = csp_header[2];
-    destination[2] = csp_header[1];
-    destination[3] = csp_header[0];
+    destination[0] = (csp_header >> 24) & 0xFF;
+    destination[1] = (csp_header >> 16) & 0xFF;
+    destination[2] = (csp_header >> 8) & 0xFF;
+    destination[3] = csp_header & 0xFF;
 
     // Copy data into packet.
-    memcpy(destination + AX100_CSP_HEADER_LENGTH_BYTES, data, data_len);
+    memcpy(&destination[AX100_CSP_HEADER_LENGTH_BYTES], data, data_len);
 }
 
 
@@ -71,7 +68,9 @@ static uint8_t send_bytes_to_ax100(uint8_t *packet, uint16_t packet_size) {
     return 0;
 }
 
-
+// Statically allocated packet buffer for downlink.
+// Note: Only used in `AX100_downlink_bytes`
+static uint8_t packet_buffer_including_csp_header[AX100_DOWNLINK_MAX_BYTES + AX100_CSP_HEADER_LENGTH_BYTES];
 
 /// @brief Send data to the ax100 for downlink
 /// @param data pointer to the data to downlink
@@ -80,19 +79,21 @@ static uint8_t send_bytes_to_ax100(uint8_t *packet, uint16_t packet_size) {
 uint8_t AX100_downlink_bytes(uint8_t *data, uint16_t data_len) {
     if (data_len > AX100_DOWNLINK_MAX_BYTES) {
         LOG_message(
-            LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_UHF_RADIO),
+            LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_UHF_RADIO),
             "AX100 downlink data length too long: %d > %d", data_len, AX100_DOWNLINK_MAX_BYTES
         );
         data_len = AX100_DOWNLINK_MAX_BYTES;
     }
 
-    uint8_t packet[data_len + 4];
-    prepend_csp_header(packet, data, data_len);
+    prepend_csp_header(packet_buffer_including_csp_header, data, data_len);
 
     // Any network layer (CSP) things should be done here (e.g., XTEA, CRC, etc.)
 
     // Debugging write to UART.
-    DEBUG_uart_print_mixed_array(packet, data_len + 4, "AX100 Down");
+    DEBUG_uart_print_mixed_array(
+        packet_buffer_including_csp_header, data_len + AX100_CSP_HEADER_LENGTH_BYTES,
+        "AX100 Down"
+    );
 
-    return send_bytes_to_ax100(packet, data_len + 4);
+    return send_bytes_to_ax100(packet_buffer_including_csp_header, data_len + AX100_CSP_HEADER_LENGTH_BYTES);
 }
