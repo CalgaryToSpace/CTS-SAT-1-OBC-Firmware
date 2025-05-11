@@ -16,7 +16,29 @@ typedef enum {
 // (AX100_DOWNLINK_MAX_BYTES - 1-8-1-2-1-1)
 #define COMMS_TCMD_RESPONSE_PACKET_MAX_DATA_BYTES_PER_PACKET 186
 
+
+#if COMMS_TCMD_RESPONSE_PACKET_MAX_DATA_BYTES_PER_PACKET != (AX100_DOWNLINK_MAX_BYTES - 1 - 8 - 1 - 2 - 1 - 1)
+#error "COMMS_TCMD_RESPONSE_PACKET_MAX_DATA_BYTES_PER_PACKET is incorrect"
+#endif
+
+
+// (AX100_DOWNLINK_MAX_BYTES - 1)
+#define COMMS_LOG_MESSAGE_PACKET_MAX_DATA_BYTES_PER_PACKET 199
+
+#if COMMS_LOG_MESSAGE_PACKET_MAX_DATA_BYTES_PER_PACKET != (AX100_DOWNLINK_MAX_BYTES - 1)
+#error "COMMS_LOG_MESSAGE_PACKET_MAX_DATA_BYTES_PER_PACKET is incorrect"
+#endif
+
+
+
 #pragma pack(push, 1)
+
+typedef struct {
+    uint8_t packet_type; // COMMS_packet_type_enum_t - Always COMMS_PACKET_TYPE_LOG_MESSAGE for this packet
+
+    uint8_t data[COMMS_LOG_MESSAGE_PACKET_MAX_DATA_BYTES_PER_PACKET];
+} COMMS_log_message_packet_t;
+
 
 typedef struct {
     uint8_t packet_type; // COMMS_packet_type_enum_t - Always COMMS_PACKET_TYPE_TCMD_RESPONSE for this packet
@@ -30,6 +52,10 @@ typedef struct {
     uint8_t data[COMMS_TCMD_RESPONSE_PACKET_MAX_DATA_BYTES_PER_PACKET];
 } COMMS_tcmd_response_packet_t;
 
+// TODO: Add sizeof assertions in unit tests related to the packets above.
+// assert(sizeof(COMMS_log_message_packet_t) == AX100_DOWNLINK_MAX_BYTES);
+// assert(sizeof(COMMS_tcmd_response_packet_t) == AX100_DOWNLINK_MAX_BYTES);
+
 #pragma pack(pop)
 
 
@@ -40,4 +66,7 @@ uint8_t COMMS_downlink_tcmd_response(
     char *response,
     uint32_t response_len
 );
+
+uint8_t COMMS_downlink_log_message(const char log_message_str[]);
+
 #endif // INCLUDE_GUARD__COMMS_TX_H__

@@ -68,7 +68,7 @@ static const uint8_t LOG_SEVERITY_MASK_DEFAULT = LOG_SEVERITY_MASK_ALL;
 // least one channel. It cannot be turned off. It is not included in the
 // array of sinks.
 static LOG_sink_t LOG_sinks[] = {
-    {LOG_SINK_UHF_RADIO, "UHF radio", LOG_SINK_OFF, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SINK_UHF_RADIO, "UHF radio", LOG_SINK_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SINK_FILE, "log files", LOG_SINK_OFF, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SINK_UMBILICAL_UART, "umbilical UART", LOG_SINK_ON, LOG_SEVERITY_MASK_DEFAULT},
 };
@@ -168,9 +168,8 @@ void LOG_message(LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_
     );
 
     // Send message to enabled sinks
-    LOG_sink_t *c;
     for (uint16_t i = 0; i < LOG_NUMBER_OF_SINKS; i++) {
-        c = &LOG_sinks[i];
+        const LOG_sink_t *c = &LOG_sinks[i];
         if (c->enabled && (c->sink & sink_mask) && (severity & c->severity_mask) && (severity & system->severity_mask)) {
             switch (c->sink) {
                 case LOG_SINK_FILE:

@@ -2,6 +2,7 @@
 #include "log/log_sinks.h"
 #include "littlefs/lfs.h"
 #include "littlefs/littlefs_helper.h"
+#include "comms_drivers/comms_tx.h"
 
 extern UART_HandleTypeDef hlpuart1;
 extern uint8_t LFS_is_lfs_mounted;
@@ -17,27 +18,31 @@ void LOG_to_file(const char filename[], const char msg[])
     if (!LFS_is_lfs_mounted) {
         LOG_to_umbilical_uart("\nError writing to system log file: LFS not mounted\n");
         LOG_to_uhf_radio("\nError writing to system log file: LFS not mounted\n");
-        // FIXME: log to memory buffer
+        // FIXME(Issue #398): log to memory buffer
         return;
     }
 
     // We cannot use LFS_append_file due to recursion of the logging system
     lfs_file_t file;
-    const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, filename, LFS_O_RDWR | LFS_O_CREAT | LFS_O_APPEND, &LFS_file_cfg);
+    const int8_t open_result = lfs_file_opencfg(
+        &LFS_filesystem, &file, filename,
+        LFS_O_RDWR | LFS_O_CREAT | LFS_O_APPEND,
+        &LFS_file_cfg
+    );
 	if (open_result < 0)
 	{
         // This error cannot be logged, except via UART or during an overpass 
         // of the ground station
         LOG_to_umbilical_uart("\nError opening system log file\n");
         LOG_to_uhf_radio("\nError opening system log file\n");
-        // FIXME: log to memory buffer
+        // FIXME(Issue #398): log to memory buffer
 		return;
 	}
     const lfs_soff_t offset = lfs_file_seek(&LFS_filesystem, &file, 0, LFS_SEEK_END);
     if (offset < 0) {
         LOG_to_umbilical_uart("\nError seeking to end of system log file\n");
         LOG_to_uhf_radio("\nError seeking to end of system log file\n");
-        // FIXME: log to memory buffer
+        // FIXME(Issue #398): log to memory buffer
         return;
     }
 
@@ -45,7 +50,7 @@ void LOG_to_file(const char filename[], const char msg[])
 	if (bytes_written < 0) {
         LOG_to_umbilical_uart("\nError writing to system log file\n");
         LOG_to_uhf_radio("\nError writing to system log file\n");
-        // FIXME: log to memory buffer
+        // FIXME(Issue #398): log to memory buffer
 		return;
 	}
 	
@@ -54,7 +59,7 @@ void LOG_to_file(const char filename[], const char msg[])
 	if (close_result < 0) {
         LOG_to_umbilical_uart("\nError closing system log file\n");
         LOG_to_uhf_radio("\nError closing system log file\n");
-        // FIXME: log to memory buffer
+        // FIXME(Issue #398): log to memory buffer
 		return;
 	}
 	
@@ -76,10 +81,11 @@ void LOG_to_umbilical_uart(const char msg[])
 /// @return void
 void LOG_to_uhf_radio(const char msg[])
 {
-    // FIXME: replace with UHF radio transmission
-    // For debugging and prototyping, implement comms on a second UART
-    // Using the umbilical here messes up log messages on the umbilical
-    // LOG_to_umbilical_uart("TODO: replace this with a UHF RADIO transmission\n");
+    const uint8_t result = COMMS_downlink_log_message(msg);
+    if (result != 0) {
+        LOG_to_umbilical_uart("\nError sending log message to UHF radio\n");
+        // FIXME(Issue #398): log to memory buffer
+    }
     return;
 }
 
