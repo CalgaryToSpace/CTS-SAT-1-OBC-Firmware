@@ -1,14 +1,13 @@
 #include "system/system_bootup.h"
 #include "eps_drivers/eps_channel_control.h"
 #include "boom_deploy_drivers/boom_deploy_drivers.h"
+#include "mpi/mpi_transceiver.h"
 #include "log/log.h"
 
-/// @brief Disables systems on bootup (Non-Default EPS Channels, Boom GPIO Pins)
+/// @brief Disables systems on bootup (Non-Default EPS Channels, Boom GPIO Pins, MPI transceiver)
 /// @details This function is called during the bootup process
-void SYS_disable_systems_bootup()
-{
-    // Disabling non-default channels
-
+void SYS_disable_systems_bootup() {
+    // Disable non-default EPS channels.
     uint8_t fail_count = 0;
     for (EPS_CHANNEL_enum_t channel_enum_value = EPS_CHANNEL_VBATT_STACK; channel_enum_value < EPS_ACTIVE_CHANNEL_COUNT; channel_enum_value++) {
         if ((channel_enum_value == EPS_CHANNEL_VBATT_STACK) ||
@@ -24,16 +23,20 @@ void SYS_disable_systems_bootup()
     }
 
     if (fail_count) {
-        // not disabling 3 channels, so not counting them
+        // Not disabling 3 channels, so not counting them.
         const uint8_t success_count = EPS_ACTIVE_CHANNEL_COUNT - 3 - fail_count;
         LOG_message(LOG_SYSTEM_EPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL, "Successfully disabled: %u channels. Failed to disable %u channels!", success_count, fail_count);
         return;
     }
-
-    LOG_message(LOG_SYSTEM_EPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, "All non-default channels disabled successfully!");
+    else {
+        LOG_message(LOG_SYSTEM_EPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, "All non-default channels disabled successfully!");
+    }
 
     // Disable GPIO Pins for BOOM
-
     BOOM_disable_all_burns();
-    LOG_message(LOG_SYSTEM_BOOM, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, "All burns disabled!"); 
+    LOG_message(LOG_SYSTEM_BOOM, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, "All burns disabled!");
+
+    // Disable the MPI transceiver
+    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
+    LOG_message(LOG_SYSTEM_BOOM, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, "Disabled MPI transceiver!");
 }
