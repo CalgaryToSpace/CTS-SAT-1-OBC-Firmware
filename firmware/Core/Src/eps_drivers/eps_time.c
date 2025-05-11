@@ -37,12 +37,12 @@ uint8_t EPS_set_eps_time_based_on_obc_time() {
 }
 
 /// @brief Sets the OBC's time, based on the EPS's current time.
-/// @return 0 on success, >0 on failure.
+/// @return 0 on success, >0 on failure (error code from EPS_CMD_get_system_status).
 uint8_t EPS_set_obc_time_based_on_eps_time() {
     EPS_struct_system_status_t status;
     const uint8_t result_status = EPS_CMD_get_system_status(&status);
     if (result_status != 0) {
-        return 1;
+        return result_status;
     }
 
     TIM_set_current_unix_epoch_time_ms(

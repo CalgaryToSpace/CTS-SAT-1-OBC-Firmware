@@ -80,18 +80,22 @@ void TASK_time_sync(void *argument) {
                 "Setting OBC time based on EPS time because last_source == TIM_SOURCE_NONE"
             );
 
-            if (EPS_set_obc_time_based_on_eps_time() != 0) {
+            const uint8_t result = EPS_set_obc_time_based_on_eps_time();
+            if (result != 0) {
                 LOG_message(
                     LOG_SYSTEM_EPS,
                     LOG_SEVERITY_ERROR,
                     LOG_SINK_ALL,
-                    "EPS_set_obc_time_based_on_eps_time() -> Error"
+                    "EPS_set_obc_time_based_on_eps_time() -> Error %d",
+                    result
                 );
             }
             continue;
         }
         // If the OBC's time is ever somehow less than 2010-01-01T00:00:00Z, then sync to EPS time.
         if (TIM_get_current_unix_epoch_time_ms() < 1262329200000) {
+            const uint8_t result = EPS_set_obc_time_based_on_eps_time();
+
             LOG_message(
                 LOG_SYSTEM_EPS,
                 LOG_SEVERITY_NORMAL, 
@@ -103,7 +107,8 @@ void TASK_time_sync(void *argument) {
                     LOG_SYSTEM_EPS,
                     LOG_SEVERITY_ERROR,
                     LOG_SINK_ALL,
-                    "EPS_set_obc_time_based_on_eps_time() -> Error"
+                    "EPS_set_obc_time_based_on_eps_time() -> Error %d",
+                    result
                 );
             }
             continue;

@@ -29,10 +29,9 @@ uint32_t CONFIG_EPS_enable_uart_debug_print = 0;
 /// @param rx_buf_len Length of the response buffer. Must be the command length.
 /// @return 0 on success, >0 if error.
 uint8_t EPS_send_cmd_get_response(
-        const uint8_t cmd_buf[], uint8_t cmd_buf_len,
-        uint8_t rx_buf[], uint16_t rx_buf_len
-    ) {
-
+    const uint8_t cmd_buf[], uint8_t cmd_buf_len,
+    uint8_t rx_buf[], uint16_t rx_buf_len
+) {
     // ASSERT: rx_buf_len must be >= 5 for all commands. Raise error if it's less.
     if (rx_buf_len < EPS_DEFAULT_RX_LEN_MIN) return 1;
 
