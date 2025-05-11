@@ -8,7 +8,8 @@
 
 #include <stdio.h>
 
-uint32_t start_time;
+uint32_t total_start_time;
+uint8_t time_stored = 0;
 
 void TASK_service_write_mpi_data(void *argument) {
     TASK_HELP_start_of_task();
@@ -19,8 +20,16 @@ void TASK_service_write_mpi_data(void *argument) {
         // If median buffer contains data to write
         if (MPI_buffer_state == MPI_MEMORY_WRITE_STATUS_PENDING) {
 
+            // Store the current time if not already done
+            if (time_stored == 0) {
+                total_start_time = HAL_GetTick();
+                time_stored = 1;
+            }
+
+            // Store the current time for this iteration
+            uint32_t start_time = HAL_GetTick();
+
             // Mount LittleFS to memory (Shouldn't generally happen)
-            start_time = HAL_GetTick();
             if (!LFS_is_lfs_mounted) {
                 const int8_t mount_result = LFS_mount();
                 LOG_message(
@@ -39,7 +48,7 @@ void TASK_service_write_mpi_data(void *argument) {
             );
             if (write_result < 0) {
                 LOG_message(
-                    LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+                    LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
                     "MPI Task: Error writing to file: %ld", write_result
                 );
             }
@@ -64,14 +73,14 @@ void TASK_service_write_mpi_data(void *argument) {
             const int8_t close_result = lfs_file_close(&LFS_filesystem, &MPI_science_data_file_pointer);
             if (close_result < 0) {
                 LOG_message(
-                    LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+                    LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
                     "MPI Task: Error closing file: %d", close_result
                 );
             }
 
             // Log that file has been successfully closed 
             LOG_message(
-                LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                LOG_SYSTEM_MPI, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
                 "MPI Task: File closed successfully"
             );
 
@@ -89,12 +98,13 @@ void TASK_service_write_mpi_data(void *argument) {
             LOG_message(
                 LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
                 "\nData Successfully Stored: %ld bytes\nData Lost: %lu bytes\nTotal Time Taken: %lu ms",
-                file_size, MPI_science_data_bytes_lost, HAL_GetTick() - start_time 
+                file_size, MPI_science_data_bytes_lost, HAL_GetTick() - total_start_time 
             );
 
             MPI_science_file_can_close = 0;
             MPI_science_data_file_is_open = 0;
             MPI_science_data_bytes_lost = 0;
+            time_stored = 0;
         }
 
         // FIXME: Are these delays fine? Should the be less/more?
