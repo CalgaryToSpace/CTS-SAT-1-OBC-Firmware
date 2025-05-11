@@ -289,8 +289,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
             DEBUG_uart_print_str("Cam Full ISR() -> Data too fast\n");
         }
 
-        CAMERA_uart_half_2_state = CAMERA_UART_WRITE_STATE_HALF_FILLING;
-
         // Volatile-safe memcpy.
         for (uint16_t i = UART_camera_dma_buffer_len_half; i < UART_camera_dma_buffer_len; i++) {
             UART_camera_pending_fs_write_half_2_buf[i-UART_camera_dma_buffer_len_half] = UART_camera_dma_buffer[i];
@@ -301,6 +299,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
         UART_camera_last_write_time_ms = HAL_GetTick();
         CAMERA_uart_half_2_state = CAMERA_UART_WRITE_STATE_HALF_FILLED_WAITING_FS_WRITE;
+        CAMERA_uart_half_1_state = CAMERA_UART_WRITE_STATE_HALF_FILLING;
     }
 
     else {
@@ -318,8 +317,6 @@ void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
             DEBUG_uart_print_str("Cam Half ISR -> Data too fast\n");
         }
 
-        CAMERA_uart_half_1_state = CAMERA_UART_WRITE_STATE_HALF_FILLING;
-
         for (uint16_t i = 0; i < UART_camera_dma_buffer_len_half; i++) {
             UART_camera_pending_fs_write_half_1_buf[i] = UART_camera_dma_buffer[i];
 
@@ -329,6 +326,7 @@ void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
         UART_camera_last_write_time_ms = HAL_GetTick();
 
         CAMERA_uart_half_1_state = CAMERA_UART_WRITE_STATE_HALF_FILLED_WAITING_FS_WRITE;
+        CAMERA_uart_half_2_state = CAMERA_UART_WRITE_STATE_HALF_FILLING;
     }
 }
 
@@ -354,8 +352,11 @@ void GPS_set_uart_interrupt_state(uint8_t new_enabled) {
 /// @param new_enabled 1: command sent, expecting data; 0: not expecting data
 uint8_t CAMERA_set_expecting_data(uint8_t new_enabled) {
     if (new_enabled == 1) {
+        CAMERA_uart_half_1_state = CAMERA_UART_WRITE_STATE_HALF_FILLING;
+        
 		const HAL_StatusTypeDef receive_status = HAL_UART_Receive_DMA(
-            UART_camera_port_handle,(uint8_t*) &UART_camera_dma_buffer,UART_camera_dma_buffer_len);
+            UART_camera_port_handle,(uint8_t*) &UART_camera_dma_buffer, UART_camera_dma_buffer_len
+        );
 
         if (receive_status != HAL_OK) {
 			return 3; // Error code: Failed UART reception

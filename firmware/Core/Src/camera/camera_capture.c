@@ -47,6 +47,9 @@ static void CAM_end_camera_receive_due_to_error(lfs_file_t* img_file) {
 /// @brief Capture an image, writing to a file in LFS.
 /// @return 0: Success, 3: Failed UART reception, 4: Timeout while waiting for data
 static uint8_t CAM_receive_image(lfs_file_t* img_file) {
+    CAMERA_uart_half_1_state = CAMERA_UART_WRITE_STATE_IDLE;
+    CAMERA_uart_half_2_state = CAMERA_UART_WRITE_STATE_IDLE;
+
     // Set start time and start receiving.
     const uint32_t UART_camera_rx_start_time_ms = HAL_GetTick();
     const uint8_t receive_status = CAMERA_set_expecting_data(1);
@@ -134,9 +137,15 @@ static uint8_t CAM_receive_image(lfs_file_t* img_file) {
 
         // Timeout condition: If the total time has exceeded CAMERA_RX_TOTAL_TIMEOUT_DURATION_MS.
         if ((HAL_GetTick() - UART_camera_rx_start_time_ms) > CAMERA_RX_TOTAL_TIMEOUT_DURATION_MS) {
+            LOG_message(
+                LOG_SYSTEM_BOOM, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+                "Camera receiving exceeded CAMERA_RX_TOTAL_TIMEOUT_DURATION_MS duration (%ldms). Breaking out of loop.",
+                CAMERA_RX_TOTAL_TIMEOUT_DURATION_MS
+            );
+
             // If both states are still idle (ie, no data received), return error 4.
-            if (CAMERA_uart_half_1_state == CAMERA_UART_WRITE_STATE_IDLE &&
-                CAMERA_uart_half_2_state == CAMERA_UART_WRITE_STATE_IDLE) {
+            if ((CAMERA_uart_half_1_state == CAMERA_UART_WRITE_STATE_IDLE) &&
+                (CAMERA_uart_half_2_state == CAMERA_UART_WRITE_STATE_IDLE)) {
                 CAMERA_set_expecting_data(0);
                 return 4; // Error code: Timeout waiting for first byte
             }
@@ -146,90 +155,20 @@ static uint8_t CAM_receive_image(lfs_file_t* img_file) {
         }
 
         // Between messages timeout condition: 
-        // If it has been more than 5 seconds since starting to capture image AND
+        // If it has been more than 6 seconds since starting to capture image AND
         // if it has been more than 2 seconds since the last write time
         // (indicating that the camera is not sending data).
         // Break out of the loop.
-        // const uint32_t current_time = HAL_GetTick();
-        // if (((current_time - UART_camera_rx_start_time_ms) > 5000) && // TODO: Ensure these values make sense by testing lots of pictures
-        //     ((current_time - UART_camera_last_write_time_ms) > 2000)) {
-        //     LOG_message(
-        //         LOG_SYSTEM_BOOM, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
-        //         "Camera hasn't written data in 2 seconds. Breaking out of loop."
-        //     );
-        //     break;
-        // }
-    }
-    // CODE FROM ALIS BRANCH TO DEAL WITH REMAINING DATA AFTER LOOP
-    
-    uint8_t starts_with_null_terminator = UART_camera_dma_buffer[0] == '\0';
-
-    if (starts_with_null_terminator == 0) {
-        // Print 1st half
-        DEBUG_uart_print_str("Remaining data in half 1: ");
-        DEBUG_uart_print_str_max_len(
-            (const char *)UART_camera_dma_buffer, CAM_SENTENCE_LEN);
-        uint16_t index = 0;
-        for (; index < UART_camera_dma_buffer_len_half; index++)
-        {
-            const uint8_t data = UART_camera_dma_buffer[index];
-            if (data == '\0') {
-                break;
-            }
-            UART_camera_pending_fs_write_half_1_buf[index] = data;
-        }
-        const uint16_t bytes_to_write = index;
-
-        DEBUG_uart_print_str("First loop bytes to write: ");
-        DEBUG_uart_print_uint32(bytes_to_write);
-        DEBUG_uart_print_str("\n");
-        // write the first half to the file
-        const lfs_ssize_t write_result = lfs_file_write(
-            &LFS_filesystem, img_file,
-            (const uint8_t *)UART_camera_pending_fs_write_half_1_buf,
-            bytes_to_write);
-        
-        if (write_result < 0) {
+        // This is the nominal exit condition.
+        const uint32_t current_time = HAL_GetTick();
+        if (((current_time - UART_camera_rx_start_time_ms) > 6000) && // Allow 6000ms for the first message
+            ((current_time - UART_camera_last_write_time_ms) > 2000)
+        ) {
             LOG_message(
-                LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
-                "LFS error writing half 1 to img file after while loop.");
-        } else {
-            total_bytes_written += write_result;
-        }
-    }
-    
-
-    starts_with_null_terminator = UART_camera_dma_buffer[UART_camera_dma_buffer_len_half] == '\0';
-
-    if (starts_with_null_terminator == 0) {
-        // Print 2nd half
-        DEBUG_uart_print_str("Remaining data in half 2: ");
-        DEBUG_uart_print_str_max_len(
-            (const char *)UART_camera_dma_buffer + UART_camera_dma_buffer_len_half,
-            CAM_SENTENCE_LEN);
-
-        uint16_t j = UART_camera_dma_buffer_len_half;
-        for (; j < UART_camera_dma_buffer_len; j++)
-        {
-            uint8_t data = UART_camera_dma_buffer[j];
-            if (data == '\0') {
-                break;
-            }
-            UART_camera_pending_fs_write_half_2_buf[j - UART_camera_dma_buffer_len_half] = UART_camera_dma_buffer[j];
-        }
-        uint16_t bytes_to_write = j - UART_camera_dma_buffer_len_half;
-
-        // write the second half to the file
-        const lfs_ssize_t write_result_2 = lfs_file_write(
-            &LFS_filesystem, img_file,
-            (const uint8_t *)UART_camera_pending_fs_write_half_2_buf,
-            bytes_to_write);
-        if (write_result_2 < 0) {
-            LOG_message(
-                LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
-                "LFS error writing half 2 to img file after while loop.");
-        } else {
-            total_bytes_written += write_result_2;
+                LOG_SYSTEM_BOOM, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+                "Camera hasn't written data in 2 seconds (assuming done). Breaking out of loop."
+            );
+            break;
         }
     }
 
@@ -240,7 +179,8 @@ static uint8_t CAM_receive_image(lfs_file_t* img_file) {
         total_buffers_filled
     );
 
-    HAL_UART_DMAStop(UART_camera_port_handle);
+    CAMERA_set_expecting_data(0);
+
     if (CAMERA_uart_half_1_state == CAMERA_UART_WRITE_STATE_HALF_FILLING
         && CAMERA_uart_half_2_state == CAMERA_UART_WRITE_STATE_HALF_FILLING
     ) {
@@ -251,11 +191,20 @@ static uint8_t CAM_receive_image(lfs_file_t* img_file) {
     }
     
     // Read any remaining data in the DMA buffer.
-    uint8_t *remaining_data_array = NULL;
+    volatile uint8_t *remaining_data_array = NULL; // Pointer to a volatile array.
     if (CAMERA_uart_half_1_state == CAMERA_UART_WRITE_STATE_HALF_FILLING) {
         remaining_data_array = (uint8_t*) &UART_camera_dma_buffer[0];
     } else if (CAMERA_uart_half_2_state == CAMERA_UART_WRITE_STATE_HALF_FILLING) {
         remaining_data_array = (uint8_t*) &UART_camera_dma_buffer[UART_camera_dma_buffer_len_half];
+    }
+    else {
+        remaining_data_array = NULL;
+
+        // No remaining data to write
+        LOG_message(
+            LOG_SYSTEM_BOOM, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+            "No remaining data to write."
+        );
     }
 
     if (remaining_data_array != NULL) {
@@ -291,8 +240,8 @@ static uint8_t CAM_receive_image(lfs_file_t* img_file) {
     }
     
     LOG_message(
-        LOG_SYSTEM_BOOM, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_FILE),
-        "Total bytes written to file: %ld (approx %ld = 0x%04lX sentences). total_buffers_filled=%d",
+        LOG_SYSTEM_BOOM, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
+        "Total final bytes written to file: %ld (approx %ld = 0x%04lX sentences). total_buffers_filled=%d",
         total_bytes_written,
         total_bytes_written / CAM_SENTENCE_LEN,
         total_bytes_written / CAM_SENTENCE_LEN,
