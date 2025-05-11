@@ -266,9 +266,6 @@ uint8_t MPI_enable_active_mode(const char MPI_science_file_name[]) {
 
     MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MISO); // Set the MPI transceiver to MISO mode
     MPI_current_uart_rx_mode = MPI_RX_MODE_SENSING_MODE;
-
-    // FIXME: Do we need this? Had this before to fix an issue now fixed by AbortReceive
-    __HAL_UART_CLEAR_OREFLAG(UART_mpi_port_handle);
     
     // Receive MPI response actively with 8192 buffer size.
     const HAL_StatusTypeDef rx_status = HAL_UART_Receive_DMA(
