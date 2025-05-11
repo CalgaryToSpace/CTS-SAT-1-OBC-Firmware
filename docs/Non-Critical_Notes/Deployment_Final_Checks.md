@@ -45,6 +45,7 @@ The following checks involve executing code and/or telecommands.
 7. Ensure the BOOT0 pin configuration is applied using STM32CubeProgrammer.
     * nSWBOOT0 = Unchecked (use software config)
     * nBOOT0 = Checked (boot from system memory)
+8. Check that the sum of the stack sizes of all the tasks (in `main.c`) sums to less than the `configTOTAL_HEAP_SIZE` in `FreeRTOSConfig.h` (plus a margin).
 
 ## Management Checks
 
