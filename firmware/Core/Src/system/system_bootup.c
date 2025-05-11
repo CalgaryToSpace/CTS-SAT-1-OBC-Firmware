@@ -26,7 +26,6 @@ void SYS_disable_systems_bootup() {
         // Not disabling 3 channels, so not counting them.
         const uint8_t success_count = EPS_ACTIVE_CHANNEL_COUNT - 3 - fail_count;
         LOG_message(LOG_SYSTEM_EPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL, "Successfully disabled: %u channels. Failed to disable %u channels!", success_count, fail_count);
-        return;
     }
     else {
         LOG_message(LOG_SYSTEM_EPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, "All non-default channels disabled successfully!");
