@@ -222,7 +222,11 @@ int8_t MPI_prepare_receive_data(const char MPI_science_file_name[]) {
     );
     
     // Total 5 second delay to make sure MPI is booted
-    HAL_Delay(5000 - (HAL_GetTick() - start_time));
+    int32_t power_on_delay = (5000 - (HAL_GetTick() - start_time));
+    if (power_on_delay > 0) {
+        HAL_Delay(power_on_delay);
+    }
+    
     return 0;
 }
 
@@ -308,25 +312,6 @@ static void MPI_power_off() {
 uint8_t MPI_disable_active_mode() {
     MPI_power_off();
 
-    // TODO: Triple Check with Dr. Burchill if we need to turn off science mode before turning off MPI 
-    // MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MOSI); // Set the MPI transceiver to MOSI mode
-    // HAL_Delay(50);
-
-    // // Send command to stop MPI science data.
-    // const uint8_t tx_buffer[3] = {0x54, 0x43, 0x14}; // Stop data command (0x14 = d20 = STOP)
-    // const HAL_StatusTypeDef tx_result = HAL_UART_Transmit(
-    //     UART_mpi_port_handle,
-    //     tx_buffer, sizeof(tx_buffer),
-    //     MPI_TX_TIMEOUT_DURATION_MS
-    // );
-    // if (tx_result != HAL_OK) {
-    //     LOG_message(
-    //         LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL, 
-    //         "MPI HAL_UART_Transmit error (HAL_UART_Transmit result: %d)", tx_result
-    //     );
-    //     return 4;
-    // }
-
     // Set the MPI State to not handle any receiving data
     MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE); // Set the MPI transceiver to inactive
     MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI; // Set UART mode to not listening.
@@ -342,8 +327,9 @@ uint8_t MPI_disable_active_mode() {
 
     MPI_science_file_can_close = 1;
     
-    // TODO: Log stats about the data received
     // Current Logs printed in thread: File Size, Bytes Lost, Total Time Taken
+    
+    // TODO: Log stats about the data received
     // File size, start time, stop time, current EPS power, number of interrupts, any dropped bytes, etc.
     return 0;
 }
