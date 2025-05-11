@@ -72,11 +72,11 @@ volatile uint32_t UART_gps_last_write_time_ms = 0; // extern
 volatile uint8_t UART_gps_buffer_last_rx_byte = 0; // extern
 volatile uint8_t UART_gps_uart_interrupt_enabled = 0; //extern
 
-// UART MPI science data buffer (WILL NEED IN THE FUTURE)
-const uint16_t UART_mpi_data_rx_buffer_len = 8192; // extern 
-volatile uint8_t UART_mpi_data_rx_buffer[8192]; // extern
-const uint16_t MPI_active_data_median_buffer_len = 4096;
-volatile uint8_t MPI_active_data_median_buffer[4096];
+// UART MPI science data buffer
+const uint16_t UART_mpi_data_rx_buffer_len = 40960; // extern 
+volatile uint8_t UART_mpi_data_rx_buffer[40960]; // extern
+const uint16_t MPI_active_data_median_buffer_len = 20480;
+volatile uint8_t MPI_active_data_median_buffer[20480];
 
 
 #define KISS_FEND  0xC0
@@ -172,7 +172,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
             } else {
                 DEBUG_uart_print_str("COMPLETE - *Assumed* 4096 Bytes are being lost!\n");
-                MPI_science_data_bytes_lost += 4096;
+                MPI_science_data_bytes_lost += MPI_active_data_median_buffer_len;
             }
         }
         else {
@@ -344,8 +344,9 @@ void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
             }
             else {
                 UART_error_mpi_error_info.handler_buffer_full_error_count++;
+                MPI_science_data_bytes_lost += MPI_active_data_median_buffer_len;
+
                 DEBUG_uart_print_str("MPI Half ISR - Data too fast!\n");
-                MPI_science_data_bytes_lost += UART_mpi_data_rx_buffer_len;
             }
         }
         else {
