@@ -44,7 +44,7 @@ uint8_t TCMDEXEC_comms_dipole_switch_set_state(
 /// - Arg 0: File path to downlink as string
 /// - Arg 1: Start offset in file (uint32)
 /// - Arg 2: The maximum number of bytes to downlink. Maximum value is 1000000 (1 MB, COMMS_bulk_file_downlink_total_bytes), for safety (to avoid a very very long-running downlink chain). Values >1 MB will be limited to 1 MB, and value 0 will be set to 1 MB.
-/// @return 0 on success. Non-zero on failure.
+/// @return 0 on success. Non-zero on failure. -2 = File does not exist.
 /// @note 1 MB takes about 15 minutes to downlink at 9600 baud.
 /// @note This function is safe to call at any point (including mid-downlink, or mid-pause).
 ///       It will close the previous file and start a new downlink.
