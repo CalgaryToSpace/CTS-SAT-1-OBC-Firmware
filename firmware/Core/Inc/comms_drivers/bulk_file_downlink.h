@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #include "littlefs/lfs.h" // For lfs_file_t type.
+#include "littlefs/littlefs_helper.h" // For LFS_MAX_PATH_LENGTH
 
 typedef enum {
     COMMS_BULK_FILE_DOWNLINK_STATE_IDLE,
@@ -12,7 +13,7 @@ typedef enum {
 } COMMS_bulk_file_downlink_state_enum_t;
 
 
-extern char COMMS_bulk_file_downlink_file_path[200];
+extern char COMMS_bulk_file_downlink_file_path[LFS_MAX_PATH_LENGTH];
 extern uint32_t COMMS_bulk_file_downlink_absolute_start_offset;
 extern uint32_t COMMS_bulk_file_downlink_next_start_offset;
 extern uint32_t COMMS_bulk_file_downlink_total_bytes;
