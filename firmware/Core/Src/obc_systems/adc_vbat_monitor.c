@@ -4,11 +4,20 @@
 #include "stm32l4xx_hal_adc.h"
 #include "main.h"
 
+#include <stdint.h>
+
 
 /// @brief Read the voltage reported by the ADC at the VBAT_MONITOR pin.
 /// @return The voltage in mV. -9999 if error.
 /// @note This does not apply the voltage divider factor. The voltage divider is 11:1, so the actual battery voltage is 11 times this value.
 static double OBC_read_vbat_monitor_with_adc_mV() {
+    // Do calibration. Relatively cheap operation, so fine to do it every time.
+    const HAL_StatusTypeDef calibrate_result = HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
+
+    if (calibrate_result != HAL_OK) {
+        return -9999;
+    }
+
     const HAL_StatusTypeDef start_result = HAL_ADC_Start(&hadc1);
     if (start_result != HAL_OK) {
         return -9999;
