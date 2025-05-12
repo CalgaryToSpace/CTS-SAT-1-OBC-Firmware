@@ -280,7 +280,6 @@ CAM_capture_status_enum CAM_capture_image(char filename_str[], char lighting_mod
     }
 
     // Create and open file before receive loop.
-    // LFS_delete_file(filename_str);
     
     // Open LFS file for writing.
     lfs_file_t img_file;
