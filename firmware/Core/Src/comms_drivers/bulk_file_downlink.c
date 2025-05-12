@@ -98,7 +98,7 @@ int32_t COMMS_bulk_file_downlink_start(char *file_path, uint32_t start_offset, u
     }
     else if (max_bytes == 0) {
         LOG_message(
-            LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
+            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
             "COMMS_bulk_file_downlink_start: max_bytes %ld being set to 1 MB (1,000,000 bytes)",
             max_bytes
         );
@@ -109,7 +109,7 @@ int32_t COMMS_bulk_file_downlink_start(char *file_path, uint32_t start_offset, u
     if (max_bytes > (size_bytes - start_offset)) {
         LOG_message(
             LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
-            "COMMS_bulk_file_downlink_start: Downlinking the result of the file by setting max_bytes to %ld bytes",
+            "COMMS_bulk_file_downlink_start: Downlinking the rest of the file by setting max_bytes to %ld bytes",
             size_bytes - start_offset
         );
         max_bytes = size_bytes - start_offset;
