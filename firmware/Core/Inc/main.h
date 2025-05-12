@@ -39,6 +39,7 @@ extern "C" {
 /* USER CODE BEGIN ET */
 
 // These externs expose peripherals for use across the project.
+extern ADC_HandleTypeDef hadc1;
 extern I2C_HandleTypeDef hi2c1;
 extern I2C_HandleTypeDef hi2c2;
 extern I2C_HandleTypeDef hi2c3;

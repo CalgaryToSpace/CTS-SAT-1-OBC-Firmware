@@ -8,7 +8,7 @@
 #include "telecommands/eps_telecommands.h"
 #include "telecommand_exec/telecommand_args_helpers.h"
 #include "log/log.h"
-
+#include "obc_systems/adc_vbat_monitor.h"
 #include <stdio.h>
 #include <string.h>
 

@@ -18,7 +18,7 @@
 #include "telecommands/timekeeping_telecommand_defs.h"
 #include "telecommands/antenna_telecommand_defs.h"
 #include "telecommands/i2c_telecommand_defs.h"
-#include "telecommands/obc_temperature_sensor_telecommand_defs.h"
+#include "telecommands/obc_systems_telecommand_defs.h"
 #include "telecommands/uart_telecommand_defs.h"
 #include "telecommands/uart_error_tracking_telecommands.h"
 #include "telecommands/config_telecommand_defs.h"
@@ -1169,7 +1169,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     },
     // ****************** END SECTION: antenna_telecommand_defs ******************
 
-    // ****************** START SECTION: obc_temperature_sensor_telecommand_defs ******************
+    // ****************** START SECTION: obc_systems_telecommand_defs ******************
     {
         .tcmd_name = "obc_read_temperature_complex",
         .tcmd_func = TCMDEXEC_obc_read_temperature_complex,
@@ -1182,7 +1182,14 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
-    // ****************** END SECTION: obc_temperature_sensor_telecommand_defs ******************
+
+    {
+        .tcmd_name = "obc_adc_read_vbat_voltage",
+        .tcmd_func = TCMDEXEC_obc_adc_read_vbat_voltage,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    // ****************** END SECTION: obc_systems_telecommand_defs ******************
     // ****************** START SECTION: comms_telecommand_defs ******************
     {
         .tcmd_name = "comms_dipole_switch_set_state",
