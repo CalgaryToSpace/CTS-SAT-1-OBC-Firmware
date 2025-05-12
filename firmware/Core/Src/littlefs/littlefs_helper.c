@@ -537,7 +537,7 @@ lfs_ssize_t LFS_file_size(const char file_name[])
 {
     if (!LFS_is_lfs_mounted) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "LittleFS not mounted");
-        return -12512;
+        return -12512; // Totally arbitrary error code.
     }
 
     lfs_file_t file;
