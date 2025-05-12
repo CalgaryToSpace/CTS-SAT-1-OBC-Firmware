@@ -35,11 +35,11 @@ int32_t COMMS_bulk_file_downlink_start(char *file_path, uint32_t start_offset, u
     ) {
         // Must return to idle.
         // Close the file.
-        const int8_t close_status = lfs_file_close(&LFS_filesystem, &COMMS_bulk_file_downlink_file);
+        const int32_t close_status = lfs_file_close(&LFS_filesystem, &COMMS_bulk_file_downlink_file);
         if (close_status != 0) {
             LOG_message(
                 LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-                "During COMMS_bulk_file_downlink_start idle return, lfs_file_close()->%d",
+                "During COMMS_bulk_file_downlink_start idle return, lfs_file_close() -> %ld",
                 close_status
             );
             // Steamroll (contain on anyway).
@@ -52,10 +52,18 @@ int32_t COMMS_bulk_file_downlink_start(char *file_path, uint32_t start_offset, u
     const int32_t open_result = lfs_file_opencfg(
         &LFS_filesystem, &COMMS_bulk_file_downlink_file, file_path, LFS_O_RDONLY, &LFS_file_cfg
     );
-    if (open_result < 0) {
+    if (open_result == LFS_ERR_NOENT) {
         LOG_message(
             LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE),
-            "COMMS_bulk_file_downlink_start lfs_file_opencfg()->%ld",
+            "COMMS_bulk_file_downlink_start lfs_file_opencfg() -> %ld (FILE NOT FOUND)",
+            open_result
+        );
+        return open_result;
+    }
+    else if (open_result < 0) {
+        LOG_message(
+            LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE),
+            "COMMS_bulk_file_downlink_start lfs_file_opencfg() -> %ld",
             open_result
         );
         return open_result;
