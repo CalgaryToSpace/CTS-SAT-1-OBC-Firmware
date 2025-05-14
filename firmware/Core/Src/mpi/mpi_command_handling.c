@@ -24,7 +24,6 @@ volatile MPI_rx_mode_t MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_M
 /// @brief Current state of the `MPI_active_data_median_buffer` (pending write vs. written).
 volatile MPI_buffer_state_enum_t MPI_buffer_state = MPI_MEMORY_WRITE_STATUS_READY;
 
-uint8_t MPI_science_file_can_close = 0;
 uint8_t MPI_science_data_file_is_open = 0;
 uint32_t MPI_science_data_bytes_lost = 0;
 lfs_file_t MPI_science_data_file_pointer;
@@ -318,22 +317,60 @@ uint8_t MPI_disable_active_mode() {
 
     // Set the MPI State to not handle any receiving data
     MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE); // Set the MPI transceiver to inactive
-    MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI; // Set UART mode to not listening.
     const HAL_StatusTypeDef stop_status = HAL_UART_DMAStop(UART_mpi_port_handle);
-
     if (stop_status != HAL_OK) {
         LOG_message(
             LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL, 
             "MPI HAL_UART_DMAStop error (HAL_UART_DMAStop result: %d)", stop_status
         );
+        // Steamroll here. Still want to close the file.
+    }
+
+    if (MPI_current_uart_rx_mode != MPI_RX_MODE_SENSING_MODE) {
+        LOG_message(
+            LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "MPI stop command called when not currently in sensing mode. Can't close file."
+        );
+        MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI; // Reset the state.
         return 1;
     }
 
-    MPI_science_file_can_close = 1;
+    MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI; // Set UART mode to not listening.
+
+    // Close the file. The file in storage is not updated until the file is closed successfully.
+    const int8_t close_result = lfs_file_close(&LFS_filesystem, &MPI_science_data_file_pointer);
+    MPI_science_data_file_is_open = 0;
+    if (close_result < 0) {
+        LOG_message(
+            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "MPI stop: Error closing file: %d", close_result
+        );
+        return 2;
+    }
+
+    // Log that file has been successfully closed 
+    LOG_message(
+        LOG_SYSTEM_MPI, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+        "MPI stop: File closed successfully"
+    );
+
+    // Get the file size before closing the file
+    const lfs_ssize_t file_size = lfs_file_size(&LFS_filesystem, &MPI_science_data_file_pointer);
+    if (file_size < 0) {
+        LOG_message(
+            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "MPI stop: Error getting file size: %ld", file_size
+        );
+    }
     
-    // Current Logs printed in thread: File Size, Bytes Lost, Total Time Taken
-    
-    // TODO: Log stats about the data received
-    // File size, start time, stop time, current EPS power, number of interrupts, any dropped bytes, etc.
+    // Log MPI science data stats  
+    LOG_message(
+        LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "{\"data_stored_bytes\": %ld, \"data_lost_bytes\": %lu, \"time_taken_ms\": %lu }",
+        file_size,
+        MPI_science_data_bytes_lost,
+        HAL_GetTick() - MPI_recording_start_uptime_ms 
+    );
+
     return 0;
 }
