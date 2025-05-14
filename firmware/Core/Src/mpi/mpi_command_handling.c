@@ -172,7 +172,7 @@ static void MPI_power_on() {
 
 /// @brief Turns on MPI and prepares a LFS file to store MPI data in.
 /// @return 0: System successfully prepared for MPI data, < 0: Error
-int8_t MPI_prepare_receive_data(const char MPI_science_file_name[]) {
+int8_t MPI_prepare_receive_data(const char output_file_path[]) {
     MPI_power_on();
 
     // Start the timer to track time past since we powered on MPI
@@ -203,7 +203,7 @@ int8_t MPI_prepare_receive_data(const char MPI_science_file_name[]) {
     // Open / Create the file
     const int8_t open_result = lfs_file_opencfg(
         &LFS_filesystem, &MPI_science_data_file_pointer,
-        MPI_science_file_name,
+        output_file_path,
         LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND, &LFS_file_cfg
     );
     
@@ -211,7 +211,7 @@ int8_t MPI_prepare_receive_data(const char MPI_science_file_name[]) {
     if (open_result < 0) {
         LOG_message(
             LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
-            "Error opening / creating file: %s", MPI_science_file_name
+            "Error opening / creating file: %s", output_file_path
         );
         return open_result;
     }
@@ -220,11 +220,11 @@ int8_t MPI_prepare_receive_data(const char MPI_science_file_name[]) {
     MPI_science_data_file_is_open = 1;
     LOG_message(
         LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
-        "Opened/created file: %s", MPI_science_file_name
+        "Opened/created file: %s", output_file_path
     );
     
     // Total 5 second delay to make sure MPI is booted
-    int32_t power_on_delay = (5000 - (HAL_GetTick() - start_time));
+    const int32_t power_on_delay = (5000 - (HAL_GetTick() - start_time));
     if (power_on_delay > 0) {
         HAL_Delay(power_on_delay);
     }
@@ -234,10 +234,10 @@ int8_t MPI_prepare_receive_data(const char MPI_science_file_name[]) {
 
 /// @brief Turns on MPI science mode and Enables DMA interrupt for MPI channel.
 /// @return 0: MPI and DMA successfully enabled, < 0: Error
-uint8_t MPI_enable_active_mode(const char MPI_science_file_name[]) {
+uint8_t MPI_enable_active_mode(const char output_file_path[]) {
     
     // Turn on the MPI and setup LFS
-    const uint8_t prepare_result = MPI_prepare_receive_data(MPI_science_file_name);
+    const uint8_t prepare_result = MPI_prepare_receive_data(output_file_path);
     if (prepare_result != 0) {
         LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL, 
             "MPI could not be powered on (MPI_prepare_receive_data result: %d)", prepare_result);
@@ -268,7 +268,11 @@ uint8_t MPI_enable_active_mode(const char MPI_science_file_name[]) {
 
     MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MISO); // Set the MPI transceiver to MISO mode (better power efficiency than DUPLEX).
     MPI_current_uart_rx_mode = MPI_RX_MODE_SENSING_MODE;
+    
+    // Init counters, etc.
+    MPI_science_data_bytes_lost = 0;
     MPI_recording_start_uptime_ms = HAL_GetTick();
+
     
     // Receive MPI response actively with 8192 buffer size.
     const HAL_StatusTypeDef rx_status = HAL_UART_Receive_DMA(

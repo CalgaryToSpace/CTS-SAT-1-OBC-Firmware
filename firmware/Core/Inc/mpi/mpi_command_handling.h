@@ -24,8 +24,8 @@ uint8_t MPI_send_command_get_response(
     uint16_t *rx_buffer_len
 );
 
-int8_t MPI_prepare_receive_data(const char MPI_science_file_name[]);
-uint8_t MPI_enable_active_mode(const char MPI_science_file_name[]);
+int8_t MPI_prepare_receive_data(const char output_file_path[]);
+uint8_t MPI_enable_active_mode(const char output_file_path[]);
 uint8_t MPI_disable_active_mode();
 uint8_t MPI_validate_command_response(
     const uint8_t command_code, uint8_t *rx_buffer, const uint16_t rx_buffer_len
