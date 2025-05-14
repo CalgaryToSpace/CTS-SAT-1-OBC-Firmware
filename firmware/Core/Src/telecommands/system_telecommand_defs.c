@@ -61,19 +61,19 @@ uint8_t TCMDEXEC_core_system_stats(
         const float battery_percent = EPS_convert_battery_voltage_to_percent(
             eps_pbu_data.battery_pack_info_each_pack[0]
         );
-        snprintf(eps_battery_percent_str, sizeof(eps_battery_percent_str), "%0.2f%%", battery_percent);
+        snprintf(eps_battery_percent_str, sizeof(eps_battery_percent_str), "%0.2f", battery_percent);
     }
     
     snprintf(
         response_output_buf, response_output_buf_len, 
         "{"
-        "\"timestamp_ms\":\"%s\","
-        "\"uptime_ms\":\"%lu\","
-        "\"last_resync_ms\":\"%lu\","
-        "\"time_synced_ms_ago\":\"%lu\","
-        "\"time_of_last_tcmd_sent_ms\":\"%s\","
-        "\"total_tcmd_count\":\"%lu\","
-        "\"is_lfs_mounted\":\"%u\","
+        "\"timestamp_ms\":%s,"
+        "\"uptime_ms\":%lu,"
+        "\"last_resync_ms\":%lu,"
+        "\"time_synced_ms_ago\":%lu,"
+        "\"time_of_last_tcmd_sent_ms\":%s,"
+        "\"total_tcmd_count\":%lu,"
+        "\"is_lfs_mounted\":%u,"
         "\"last_time_sync_source\":\"%c\","
         "\"reboot_reason\":\"%s\","
         "\"eps_battery_percent\":%s"
