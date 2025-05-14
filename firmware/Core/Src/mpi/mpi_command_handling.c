@@ -28,6 +28,8 @@ uint8_t MPI_science_file_can_close = 0;
 uint8_t MPI_science_data_file_is_open = 0;
 uint32_t MPI_science_data_bytes_lost = 0;
 lfs_file_t MPI_science_data_file_pointer;
+uint32_t MPI_recording_start_uptime_ms;
+
 
 /// @brief Sends commandcode+params to the MPI as bytes
 /// @param bytes_to_send Buffer containing the telecommand + params (IF ANY) as hex bytes
@@ -264,8 +266,9 @@ uint8_t MPI_enable_active_mode(const char MPI_science_file_name[]) {
         return 4;
     }
 
-    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MISO); // Set the MPI transceiver to MISO mode
+    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MISO); // Set the MPI transceiver to MISO mode (better power efficiency than DUPLEX).
     MPI_current_uart_rx_mode = MPI_RX_MODE_SENSING_MODE;
+    MPI_recording_start_uptime_ms = HAL_GetTick();
     
     // Receive MPI response actively with 8192 buffer size.
     const HAL_StatusTypeDef rx_status = HAL_UART_Receive_DMA(

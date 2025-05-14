@@ -16,6 +16,7 @@ extern uint8_t MPI_science_file_can_close;
 extern uint8_t MPI_science_data_file_is_open;
 extern uint32_t MPI_science_data_bytes_lost;
 extern lfs_file_t MPI_science_data_file_pointer;
+extern uint32_t MPI_recording_start_uptime_ms;
 
 uint8_t MPI_send_command_get_response(
     const uint8_t *bytes_to_send, const size_t bytes_to_send_len, 
