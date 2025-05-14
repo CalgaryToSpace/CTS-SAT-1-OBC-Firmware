@@ -8,26 +8,16 @@
 
 #include <stdio.h>
 
-uint32_t total_start_time;
-uint8_t time_stored = 0;
 
 void TASK_service_write_mpi_data(void *argument) {
     TASK_HELP_start_of_task();
-    osDelay(1000); // FIXME: What should be a good delay here?
+    osDelay(5000);
 
     while(1) {
-
         // If median buffer contains data to write
         if (MPI_buffer_state == MPI_MEMORY_WRITE_STATUS_PENDING) {
-
-            // Store the current time if not already done
-            if (time_stored == 0) {
-                total_start_time = HAL_GetTick();
-                time_stored = 1;
-            }
-
             // Store the current time for this iteration
-            uint32_t start_time = HAL_GetTick();
+            const uint32_t start_time = HAL_GetTick();
 
             // Mount LittleFS to memory (Shouldn't generally happen)
             if (!LFS_is_lfs_mounted) {
@@ -98,22 +88,15 @@ void TASK_service_write_mpi_data(void *argument) {
             LOG_message(
                 LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
                 "\nData Successfully Stored: %ld bytes\nData Lost: %lu bytes\nTotal Time Taken: %lu ms",
-                file_size, MPI_science_data_bytes_lost, HAL_GetTick() - total_start_time 
+                file_size, MPI_science_data_bytes_lost, HAL_GetTick() - MPI_recording_start_uptime_ms 
             );
 
             MPI_science_file_can_close = 0;
             MPI_science_data_file_is_open = 0;
             MPI_science_data_bytes_lost = 0;
-            time_stored = 0;
         }
 
-        // FIXME: Are these delays fine? Should the be less/more?
-        // If MPI_UART in sensing mode, do a shorter delay, otherwise 1s delay
-        if (MPI_current_uart_rx_mode == MPI_RX_MODE_SENSING_MODE) {
-            osDelay(100);
-        }
-        else {
-            osDelay(1000);
-        }
+        // Do a short delay to allow recording to start right away once enabled.
+        osDelay(100);
     }
 }
