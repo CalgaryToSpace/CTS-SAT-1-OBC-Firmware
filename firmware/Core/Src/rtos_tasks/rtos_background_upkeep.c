@@ -8,15 +8,19 @@
 #include "cmsis_os.h"
 
 #include "eps_drivers/eps_power_management.h"
+#include "comms_drivers/comms_drivers.h"
+#include "antenna_deploy_drivers/ant_internal_drivers.h"
+
 
 uint64_t EPS_monitor_last_uptime = 0;
 
 void TASK_background_upkeep(void *argument) {
     TASK_HELP_start_of_task();
+
     while(1) {
 
-        //EPS overcurrent monitor upkeep
-        const uint64_t current_time = TIM_get_current_unix_epoch_time_ms();
+        // EPS overcurrent monitor upkeep
+        const uint64_t current_time = TIM_get_current_system_uptime_ms();
         if (EPS_monitor_last_uptime + EPS_monitor_interval_ms < current_time) {
 
             const uint8_t EPS_monitor_result = EPS_monitor_and_disable_overcurrent_channels();
@@ -39,6 +43,7 @@ void TASK_background_upkeep(void *argument) {
             }
             EPS_monitor_last_uptime = current_time;
         }
+        // End EPS overcurrent monitor upkeep
         
         if (TIM_get_current_system_uptime_ms() > STM32_system_reset_interval_ms) {
             LOG_message(
@@ -50,6 +55,9 @@ void TASK_background_upkeep(void *argument) {
             );
             NVIC_SystemReset();
         }
+        
+        COMMS_determine_and_update_dipole_antenna_switch(current_time);
+
         osDelay(1000);
     }
 }
