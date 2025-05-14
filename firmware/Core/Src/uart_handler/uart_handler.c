@@ -167,21 +167,21 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         else if (MPI_current_uart_rx_mode == MPI_RX_MODE_SENSING_MODE) {
             // Store the second half into another buffer
             if (MPI_buffer_state == MPI_MEMORY_WRITE_STATUS_READY) {
-                for(uint16_t i = (UART_mpi_data_rx_buffer_len/2); i < UART_mpi_data_rx_buffer_len; i++) {
-                    MPI_active_data_median_buffer[i-(UART_mpi_data_rx_buffer_len/2)] = UART_mpi_data_rx_buffer[i];
+                for(uint16_t i = MPI_active_data_median_buffer_len; i < UART_mpi_data_rx_buffer_len; i++) {
+                    MPI_active_data_median_buffer[i - MPI_active_data_median_buffer_len] = UART_mpi_data_rx_buffer[i];
                     UART_mpi_data_rx_buffer[i] = 0x00;
                 }
                 MPI_buffer_state = MPI_MEMORY_WRITE_STATUS_PENDING;
-                // DEBUG_uart_print_str("COMPLETE - Received 4096 Bytes!\n");
-
-            } else {
-                DEBUG_uart_print_str("COMPLETE - *Assumed* 4096 Bytes are being lost!\n");
+            }
+            else {
+                UART_error_mpi_error_info.handler_buffer_full_error_count++;
                 MPI_science_data_bytes_lost += MPI_active_data_median_buffer_len;
+
+                DEBUG_uart_print_str("MPI Full ISR - Data too fast!\n");
             }
         }
         else {
-            DEBUG_uart_print_str("Unhandled MPI Mode\n"); //TODO: HANDLE other MPI MODES
-            DEBUG_uart_print_str("COMPLETE - Receiving some sort of MPI Data!\n");
+            DEBUG_uart_print_str("MPI Full ISR - Received MPI Data, rx_mode != SENSING though!\n");
         }
 
         UART_mpi_last_write_time_ms = HAL_GetTick();
@@ -343,7 +343,7 @@ void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
 
         if (MPI_current_uart_rx_mode == MPI_RX_MODE_SENSING_MODE) {
             if (MPI_buffer_state == MPI_MEMORY_WRITE_STATUS_READY) {
-                for (uint16_t i = 0; i < UART_mpi_data_rx_buffer_len/2; i++) {
+                for (uint16_t i = 0; i < MPI_active_data_median_buffer_len; i++) {
                     MPI_active_data_median_buffer[i] = UART_mpi_data_rx_buffer[i];
                     UART_mpi_data_rx_buffer[i] = 0x00;
                 }
