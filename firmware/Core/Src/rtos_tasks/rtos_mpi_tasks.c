@@ -55,47 +55,7 @@ void TASK_service_write_mpi_data(void *argument) {
                 "MPI Task: Write Time: %lu", HAL_GetTick() - start_time
             );
         }
-
-        // If user has sent disable active mode telecommand 
-        else if (MPI_science_file_can_close == 1 && MPI_current_uart_rx_mode != MPI_RX_MODE_SENSING_MODE) {
-
-            // Close the File, the storage is not updated until the file is closed successfully
-            const int8_t close_result = lfs_file_close(&LFS_filesystem, &MPI_science_data_file_pointer);
-            if (close_result < 0) {
-                LOG_message(
-                    LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-                    "MPI Task: Error closing file: %d", close_result
-                );
-            }
-
-            // Log that file has been successfully closed 
-            LOG_message(
-                LOG_SYSTEM_MPI, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
-                "MPI Task: File closed successfully"
-            );
-
-            // Get the file size before closing the file
-            const lfs_ssize_t file_size = lfs_file_size(&LFS_filesystem, &MPI_science_data_file_pointer);
-
-            if (file_size < 0) {
-                LOG_message(
-                    LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-                    "MPI Task: Error getting file size: %ld", file_size
-                );
-            }
-            
-            // Log MPI science data stats  
-            LOG_message(
-                LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-                "\nData Successfully Stored: %ld bytes\nData Lost: %lu bytes\nTotal Time Taken: %lu ms",
-                file_size, MPI_science_data_bytes_lost, HAL_GetTick() - MPI_recording_start_uptime_ms 
-            );
-
-            MPI_science_file_can_close = 0;
-            MPI_science_data_file_is_open = 0;
-            MPI_science_data_bytes_lost = 0;
-        }
-
+        
         // Do a short delay to allow recording to start right away once enabled.
         osDelay(100);
     }
