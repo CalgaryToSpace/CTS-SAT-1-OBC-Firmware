@@ -2794,3 +2794,19 @@ uint8_t TCMDEXEC_adcs_format_sd(const char *args_str, TCMD_TelecommandChannel_en
     const uint8_t status = ADCS_format_sd();
     return status;
 }            
+
+/// @brief Telecommand: Instruct the ADCS to erase a file from the SD card
+/// @param args_str 
+///     - Arg 0: Index of the file to erase
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_erase_sd_file(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    // parse file index argument
+    uint64_t file_index;
+    TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &file_index);
+
+    const int16_t status = ADCS_erase_sd_file_by_index(file_index);
+
+    return status;
+}

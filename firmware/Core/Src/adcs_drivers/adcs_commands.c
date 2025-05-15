@@ -1029,6 +1029,7 @@ uint8_t ADCS_get_download_block_ready_telemetry(ADCS_download_block_ready_struct
     
     return tlm_status;
 }
+
 /// @brief Instruct the ADCS to execute the ADCS_execution_state command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
@@ -1535,7 +1536,7 @@ uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) 
         // now pack it into a string 
         // TODO: check to see where the log should be sent
         LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
-            "Index:%d,Type:%d,Busy Updating:%d,Counter:%d,Size:%ld,Datetime:%04d-%02d-%02d %02d:%02d:%02d,CRC16:0x%x\n",
+            "Index:%d,Type:%d,Busy Updating:%d,Counter:%d,Size:%ld,Datetime:%04d-%02d-%02d %02d:%02d:%02d,CRC16:0x%x",
             i, file_info.file_type, file_info.busy_updating, file_info.file_counter, file_info.file_size, year, 
             month, day, hour, minutes, seconds, file_info.file_crc16);
 
@@ -1722,4 +1723,47 @@ uint8_t ADCS_disable_peripherals_and_SD_logs_with_stabilisation() {
     }
     const uint8_t sd_status = ADCS_disable_SD_logging();
     return sd_status;
+}
+
+/// @brief Given the index on the SD card of a file, erase that file.
+/// @param[in] file_index The index of the file.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred.
+uint8_t ADCS_erase_sd_file_by_index(uint16_t file_index) {
+    
+    ADCS_file_info_struct_t file_info;
+
+    // get the required File Type and Counter parameters about the file to erase
+
+    const uint8_t reset_pointer_status = ADCS_reset_file_list_read_pointer();
+    HAL_Delay(200);
+    if (reset_pointer_status != 0) {
+        // to avoid interference from the EPS, do a separate ack for these commands
+        ADCS_cmd_ack_struct_t ack_status;
+        ADCS_cmd_ack(&ack_status);
+        if (ack_status.error_flag != 0) {
+            return ack_status.error_flag;
+        }
+    }
+
+    for (uint16_t i = 0; i < file_index; i++) {
+        const uint8_t advance_pointer_status = ADCS_advance_file_list_read_pointer();
+        HAL_Delay(200);
+        if (advance_pointer_status != 0) {
+            // to avoid interference from the EPS, do a separate ack for these commands
+            ADCS_cmd_ack_struct_t ack_status;
+            ADCS_cmd_ack(&ack_status);
+            if (ack_status.error_flag != 0) {
+                return ack_status.error_flag;
+            }
+        }
+    }
+
+    const uint8_t file_info_status = ADCS_get_file_info_telemetry(&file_info);
+    if (file_info_status != 0) {
+        return file_info_status;
+    }
+
+    const uint8_t erase_status = ADCS_erase_file(file_info.file_type, file_info.file_counter, false);
+
+    return erase_status;
 }
