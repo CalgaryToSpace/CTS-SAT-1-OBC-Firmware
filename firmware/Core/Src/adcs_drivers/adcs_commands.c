@@ -1567,6 +1567,11 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
     ADCS_file_info_struct_t file_info;
     int16_t snprintf_ret;
 
+    if (file_index > 255) {
+        LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE), "File index is greater than 255. Aborting...");
+        return 73;
+    }
+
     char filename_string[17];
 
     if (!index_file_bool) {
@@ -1599,6 +1604,21 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
                 if (ack_status.error_flag != 0) {
                     return ack_status.error_flag;
                 }
+            }
+            
+            if (i % 70 == 0) {
+                // pet the watchdog every 70 files so we don't run out of time
+                HAL_IWDG_Refresh(&hiwdg); 
+            }
+
+            const uint8_t temp_file_info_status = ADCS_get_file_info_telemetry(&file_info);
+            if (temp_file_info_status != 0) {
+                return temp_file_info_status;
+            }
+            if (file_info.file_crc16 == 0 && file_info.file_date_time_msdos == 0 && file_info.file_size == 0) {
+                // if all the file_info parameters are zero, we've reached the end of the file list.
+                LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "End of file list reached at index %d.", i);
+                return 6;
             }
         }
         
@@ -1732,6 +1752,11 @@ uint8_t ADCS_erase_sd_file_by_index(uint16_t file_index) {
     
     ADCS_file_info_struct_t file_info;
 
+    if (file_index > 255) {
+        LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE), "File index is greater than 255. Aborting...");
+        return 73;
+    }
+
     // get the required File Type and Counter parameters about the file to erase
 
     const uint8_t reset_pointer_status = ADCS_reset_file_list_read_pointer();
@@ -1755,6 +1780,21 @@ uint8_t ADCS_erase_sd_file_by_index(uint16_t file_index) {
             if (ack_status.error_flag != 0) {
                 return ack_status.error_flag;
             }
+        }
+
+        if (i % 70 == 0) {
+            // pet the watchdog every 70 files so we don't run out of time
+            HAL_IWDG_Refresh(&hiwdg); 
+        }
+
+        const uint8_t temp_file_info_status = ADCS_get_file_info_telemetry(&file_info);
+        if (temp_file_info_status != 0) {
+            return temp_file_info_status;
+        }
+        if (file_info.file_crc16 == 0 && file_info.file_date_time_msdos == 0 && file_info.file_size == 0) {
+            // if all the file_info parameters are zero, we've reached the end of the file list.
+            LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "End of file list reached at index %d.", i);
+            return 6;
         }
     }
 
