@@ -5,6 +5,7 @@
 #include "comms_drivers/comms_tx.h" // For `COMMS_bulk_file_downlink_next_seq_num`
 
 #include <string.h>
+#include <stdio.h>
 
 // Note: These are all externs:
 char COMMS_bulk_file_downlink_file_path[LFS_MAX_PATH_LENGTH];
@@ -146,7 +147,12 @@ int32_t COMMS_bulk_file_downlink_start(char *file_path, uint32_t start_offset, u
         (max_bytes + COMMS_BULK_FILE_DOWNLINK_PACKET_MAX_DATA_BYTES_PER_PACKET - 1)
         / COMMS_BULK_FILE_DOWNLINK_PACKET_MAX_DATA_BYTES_PER_PACKET
     );
-    strncpy(COMMS_bulk_file_downlink_file_path, file_path, LFS_MAX_PATH_LENGTH);
+    snprintf(
+        COMMS_bulk_file_downlink_file_path,
+        LFS_MAX_PATH_LENGTH,
+        "%s",
+        file_path
+    );
 
     // Finally, set the new state to activate it.
     COMMS_bulk_file_downlink_state = COMMS_BULK_FILE_DOWNLINK_STATE_DOWNLINKING;
