@@ -5,9 +5,14 @@ import random
 
 random.seed(42)
 
+# Run this program before sending enable_active_mode command
+# Data will only start transmitting once this script receieves {0x54, 0x43, 0x13} 
+
 # Setup the serial port
 com_port = "COM7"  # Replace with the actual COM port
 baud_rate = 230400  # Baud rate
+
+MPI_on = False
 
 # Function to create the data frame
 def create_data_frame():
@@ -72,6 +77,7 @@ def create_data_frame():
 
 # Main function to send data over COM port
 def send_data():
+    global MPI_on
     ser = serial.Serial(com_port, baud_rate, timeout=1)  # Open COM port
     
     bytes_sent = 0
@@ -84,15 +90,24 @@ def send_data():
         # print(hex_data)
 
         # Send data frame over the COM port
-        ser.write(data)
-        bytes_sent += len(data)
+        if MPI_on == True:
+            ser.write(data)
+            bytes_sent += len(data)
 
+        received_hex = ''
         # If we do end up reading, the 32 frames in a second won't happen
         if ser.in_waiting > 0:
             
             # Read the data available from the buffer
             incoming_data = ser.read(ser.in_waiting)  # Read all available data
-            print(f"Received data: \n{incoming_data.decode('utf-8', errors='replace')}")
+            received_hex = ' '.join([f'{byte:02X}' for byte in incoming_data])
+
+            if "54 43 13" in received_hex:
+                MPI_on = True
+                print("MPI is ON")
+            elif "54 43 14" in received_hex:
+                MPI_on = False
+                print("MPI is Off")
         
         # Wait for 0.0262 second before sending the next frame (trying to match the rate of sending 32 frames in a second)
         # We should be sending 5120 bytes per second
