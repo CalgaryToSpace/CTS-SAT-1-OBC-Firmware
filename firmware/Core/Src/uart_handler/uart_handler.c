@@ -176,10 +176,15 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
             else if (UART_mpi_science_data_buffer_index < 40960
                 && MPI_buffer_two_state == MPI_MEMORY_WRITE_STATUS_READY) {
                     write_ptr = (uint8_t*)&MPI_science_data_buffer_second[UART_mpi_science_data_buffer_index - MPI_science_data_buffer_len];
+            } else {
+                UART_error_mpi_error_info.handler_buffer_full_error_count++;
+                MPI_science_data_bytes_lost += UART_mpi_data_rx_buffer_len;
+
+                DEBUG_uart_print_str("MPI Full ISR - Data too fast!\n");
             }
 
             // Once decided, copy the data to large buffer
-            if (write_ptr) {
+            if (write_ptr != NULL) {
                 memcpy(write_ptr, (uint8_t*)UART_mpi_data_rx_buffer, 160);
                 UART_mpi_science_data_buffer_index += 160;
 
