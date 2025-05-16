@@ -22,7 +22,8 @@ static const uint16_t MPI_RX_TIMEOUT_DURATION_MS = 2000;
 volatile MPI_rx_mode_t MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
 
 /// @brief Current state of the `MPI_active_data_median_buffer` (pending write vs. written).
-volatile MPI_buffer_state_enum_t MPI_buffer_state = MPI_MEMORY_WRITE_STATUS_READY;
+volatile MPI_buffer_state_enum_t MPI_buffer_one_state = MPI_MEMORY_WRITE_STATUS_READY;
+volatile MPI_buffer_state_enum_t MPI_buffer_two_state = MPI_MEMORY_WRITE_STATUS_READY;
 
 uint8_t MPI_science_data_file_is_open = 0;
 uint32_t MPI_science_data_bytes_lost = 0;
@@ -272,11 +273,11 @@ uint8_t MPI_enable_active_mode(const char output_file_path[]) {
     MPI_science_data_bytes_lost = 0;
     MPI_recording_start_uptime_ms = HAL_GetTick();
 
-    
+
     // Receive MPI response actively with 8192 buffer size.
     const HAL_StatusTypeDef rx_status = HAL_UART_Receive_DMA(
         UART_mpi_port_handle, (uint8_t*) UART_mpi_data_rx_buffer, UART_mpi_data_rx_buffer_len);
-    
+
     if (rx_status != HAL_OK) {
         // Note: Saksham's original code didn't call HAL_UART_DMAStop here if HAL_BUSY.
         HAL_UART_DMAStop(UART_mpi_port_handle);
