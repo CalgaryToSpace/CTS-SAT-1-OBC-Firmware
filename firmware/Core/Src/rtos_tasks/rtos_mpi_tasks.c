@@ -58,9 +58,11 @@ void TASK_service_write_mpi_data(void *argument) {
         // If the first large buffer contains data to write
         if (MPI_buffer_one_state == MPI_MEMORY_WRITE_STATUS_PENDING) {
             write_mpi_data_to_memory(MPI_science_data_buffer_first);
+            MPI_buffer_one_state = MPI_MEMORY_WRITE_STATUS_READY;
         }
         else if (MPI_buffer_two_state == MPI_MEMORY_WRITE_STATUS_PENDING) {
             write_mpi_data_to_memory(MPI_science_data_buffer_second);
+            MPI_buffer_two_state = MPI_MEMORY_WRITE_STATUS_READY;
         }
         
         // Do a short delay to allow recording to start right away once enabled.
