@@ -40,11 +40,11 @@ time_t portable_timegm(struct tm *tm) {
  * and converts them to a Unix timestamp in milliseconds.
  *
  * @param input_str The GPS response string (e.g., from a TIMEA log).
- * @return uint64_t Unix timestamp in milliseconds, or 0 on failure.
+ * @return uint64_t Unix timestamp in milliseconds, or >0 on failure.
  */
 uint64_t GPS_format_and_convert_to_unix_epoch(char* input_str) {
     
-    if (!input_str) return 0;
+    if (!input_str) return 1;
 
     // Create a safe, modifiable copy of the input
     char copy_of_input_str[512];
@@ -76,7 +76,7 @@ uint64_t GPS_format_and_convert_to_unix_epoch(char* input_str) {
 
     // Reject invalid UTC status
     if (strcmp(utc_status, "VALID") != 0) {
-        return 0;  // UTC time is not valid
+        return 1;  // UTC time is not valid
     }
 
     int second = millisecond / 1000;
@@ -92,7 +92,7 @@ uint64_t GPS_format_and_convert_to_unix_epoch(char* input_str) {
 
     // Convert to Unix epoch time (UTC)
     time_t epoch_seconds = portable_timegm(&t);
-    if (epoch_seconds == -1) return 0;
+    if (epoch_seconds == -1) return 1;
 
     // Return Unix timestamp in milliseconds
     return (uint64_t)epoch_seconds * 1000 + millisecond;
@@ -136,13 +136,17 @@ uint8_t GPS_set_obc_time_based_on_gps_time() {
         GPS_rx_buffer[GPS_rx_buffer_max_size - 1] = '\0';  // Prevent overflow
     }
 
-    // Make response buffer a string
+    // Parse and convert GPS time string to epoch
     char* response_str = (char*)GPS_rx_buffer;
-
-    // Function to parse AND FORMAT the GPS response (add unit test) -> will return timestamp value
     const uint64_t formatted_time = GPS_format_and_convert_to_unix_epoch(response_str);
 
-    // TODO: Uncomment the following call `TIM_set_current_unix_epoch_time_ms` after GPS_format_and_convert_to_unix_epoch is finished
+    // Error check to make sure GPS_format_and_convert_to_unix_epoch executed successfully
+    if (formatted_time == 1 ) {
+        // There was an error in GPS_format_and_convert_to_unix_epoch
+        return 1;
+    }
+
+    // Set the system time based on GPS time
     TIM_set_current_unix_epoch_time_ms(
         formatted_time,
         TIM_SOURCE_GNSS
