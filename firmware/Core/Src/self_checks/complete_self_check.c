@@ -66,12 +66,24 @@ uint8_t CTS1_check_is_adcs_alive() {
     return 1;
 }
 
-// uint8_t CTS1_check_is_ax100_alive() {} // TODO: Is there a way to test this?
 
 uint8_t CTS1_check_is_gnss_responsive() {
     // Use versiona command instead of bestxyza, as bestxyza takes a variable duration, whereas
     // versiona appears to respond very quickly reliably.
     const char cmd[] = "log versiona once\n";
+
+    // Power on GNSS.
+    const uint8_t eps_status = EPS_set_channel_enabled(EPS_CHANNEL_3V3_GNSS, 1);
+    if (eps_status != 0) {
+        LOG_message(
+            LOG_SYSTEM_GPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error enabling GPS power channel in CTS1_check_is_gnss_responsive: status=%d",
+            eps_status
+        );
+        EPS_set_channel_enabled(EPS_CHANNEL_3V3_GNSS, 0); // Power off the GPS.
+        return 0;
+    }
+    HAL_Delay(500); // Allow time for the GPS to power on.
 
     // Expecting versiona may send up to about 250 bytes.
     uint8_t rx_buf[350];
@@ -86,6 +98,8 @@ uint8_t CTS1_check_is_gnss_responsive() {
     // Clean up: Disable the GPS UART interrupt.
     GPS_set_uart_interrupt_state(0);
     HAL_Delay(20); // Allow any pending IRQs to trigger so that upcoming UART prints/logs work.
+
+    EPS_set_channel_enabled(EPS_CHANNEL_3V3_GNSS, 0); // Power off the GPS.
 
     if (gps_status != 0) {
         LOG_message(
