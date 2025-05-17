@@ -56,10 +56,9 @@ uint16_t EPS_current_mA_threshhold[32]=
 /// 
 /// @return 0 if the function was successful, 1 if there was an error.
 uint8_t EPS_monitor_and_disable_overcurrent_channels() {
-
     EPS_struct_pdu_housekeeping_data_eng_t EPS_pdu_housekeeping_data_eng;
 
-    //Obtain the PDU data
+    // Obtain the PDU data
     const uint8_t pdu_status = EPS_CMD_get_pdu_housekeeping_data_eng(&EPS_pdu_housekeeping_data_eng);
     if (pdu_status != 0) {
         LOG_message(
@@ -85,28 +84,28 @@ uint8_t EPS_monitor_and_disable_overcurrent_channels() {
 ///     If the conversion to JSON fails, it will log an error with the error status.    
 ///     Otherwise, it will log the JSON string to the error log.
 uint8_t EPS_log_pdu_json(const EPS_struct_pdu_housekeeping_data_eng_t *EPS_pdu_housekeeping_data_eng) {
-
-    char json_str[2000];
+    char json_str[1000];
 
     // Power Logging                                                        
-    int8_t pdu_TO_JSON_status = EPS_struct_pdu_housekeeping_data_eng_TO_json(EPS_pdu_housekeeping_data_eng, json_str, 2000);
+    const int8_t to_json_status = EPS_struct_pdu_housekeeping_data_eng_TO_json(
+        EPS_pdu_housekeeping_data_eng, json_str, 1000);
 
-    if (pdu_TO_JSON_status != 0) {
+    if (to_json_status != 0) {
         LOG_message(
             LOG_SYSTEM_EPS,
             LOG_SEVERITY_ERROR,
             LOG_SINK_ALL,
             "EPS_struct_pdu_housekeeping_data_eng_TO_json() -> Error: %d",
-            pdu_TO_JSON_status
+            to_json_status
         );
-        return 1;
+        return to_json_status;
     }
     else {
         LOG_message(
             LOG_SYSTEM_EPS,
             LOG_SEVERITY_NORMAL,
             LOG_SINK_ALL,
-            "EPS PDU housekeeping data:\n %s",
+            "EPS PDU housekeeping data: %s",
             json_str
         );
     }
