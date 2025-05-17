@@ -30,7 +30,6 @@
 #include "telecommands/eps_telecommands.h"
 #include "telecommands/stm32_internal_flash_telecommand_defs.h"
 #include "telecommands/comms_telecommand_defs.h"
-#include "telecommands/telecommand_crc.h"
 #include "telecommands/gps_telecommand_defs.h"
 #include "telecommands/camera_telecommand_defs.h"
 
@@ -93,12 +92,6 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_func = TCMDEXEC_available_telecommands,
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },
-    {
-        .tcmd_name = "crc",
-        .tcmd_func = TCMDEXEC_crc,
-        .number_of_args = 1,
-        .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
     },
     {
         .tcmd_name = "reboot",
