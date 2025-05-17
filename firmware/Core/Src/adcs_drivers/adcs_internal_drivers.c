@@ -34,7 +34,7 @@ uint8_t ADCS_i2c_send_command_and_check(uint8_t id, uint8_t* data, uint32_t data
             while (!ack.processed) {
                 ack_status = ADCS_cmd_ack(&ack); // confirm telecommand validity by checking the TC Error flag of the last read TC Acknowledge Telemetry Format.
                 num_ack_tries++;
-                if (num_ack_tries > ADCS_PROCESSED_TIMEOUT) {
+                if (num_ack_tries > ADCS_PROCESSED_TIMEOUT_MS) {
                     return 5; // command failed to process in time
                     // note: sending another telecommand when the first has not been processed
                     // will result in an error in the next telecommand sent
@@ -48,7 +48,7 @@ uint8_t ADCS_i2c_send_command_and_check(uint8_t id, uint8_t* data, uint32_t data
             return cmd_status; // if the HAL had an error, tell us what that is
         }
         num_checksum_tries++;
-    } while (ack.error_flag == ADCS_ERROR_FLAG_CRC && num_checksum_tries < ADCS_CHECKSUM_TIMEOUT);  // if the checksum doesn't check out, keep resending the request
+    } while (ack.error_flag == ADCS_ERROR_FLAG_CRC && num_checksum_tries < ADCS_CHECKSUM_TIMEOUT_MS);  // if the checksum doesn't check out, keep resending the request
 
     return ack.error_flag; // if the HAL was successful and the ADCS command had an error, tell us what it is
 }
@@ -62,7 +62,7 @@ uint8_t ADCS_i2c_send_command_and_check(uint8_t id, uint8_t* data, uint32_t data
 uint8_t ADCS_i2c_request_telemetry_and_check(uint8_t id, uint8_t* data, uint32_t data_length, uint8_t include_checksum) {
     uint8_t checksum_check = ADCS_send_i2c_telemetry_request(id, data, data_length, include_checksum);
     uint8_t num_checksum_tries = 0;
-    while (checksum_check == 4 && num_checksum_tries < ADCS_CHECKSUM_TIMEOUT) {
+    while (checksum_check == 4 && num_checksum_tries < ADCS_CHECKSUM_TIMEOUT_MS) {
         // if the checksum doesn't check out, keep resending the request up to timeout
         checksum_check = ADCS_send_i2c_telemetry_request(id, data, data_length, include_checksum);
         num_checksum_tries++;
