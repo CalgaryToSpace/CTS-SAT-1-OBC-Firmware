@@ -389,7 +389,7 @@ uint8_t TCMDEXEC_ant_report_deployment_status(const char *args_str, TCMD_Telecom
         break;
     }
     
-    struct Antenna_deployment_status response;
+    ANT_deployment_status_struct_t response;
     const uint8_t comms_err = ANT_CMD_report_deployment_status(i2c_bus_mcu, &response);
     if (comms_err != 0) {
         snprintf(response_output_buf, response_output_buf_len, "Error: failed to report status.");
