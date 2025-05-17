@@ -1,0 +1,16 @@
+<map id="GPS_set_uart_interrupt_state" name="GPS_set_uart_interrupt_state">
+<area shape="rect" id="Node000001" title="Sets the UART interrupt state (enabled/disabled)" alt="" coords="912,56,1069,97"/>
+<area shape="rect" id="Node000002" href="$complete__self__check_8c.html#a82ad8e5243469f7636ca7833d4b27266" title=" " alt="" coords="446,5,595,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="896,59,863,54,721,39,595,31,595,26,721,34,864,48,897,54"/>
+<area shape="rect" id="Node000005" href="$gps__internal__drivers_8c.html#ada16e28afdba67a3ca91a3f9dc824804" title="Sends a log command to the GPS, and receives the response." alt="" coords="662,64,864,89"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="896,79,864,79,864,74,896,74"/>
+<area shape="rect" id="Node000007" href="$uart__telelecommand__defs_8c.html#a559929acf5cfc4bdde97856c88c93f7d" title="Send arbitrary commands to a UART peripheral, and receive the response." alt="" coords="683,113,843,154"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="897,103,844,116,843,111,896,97"/>
+<area shape="rect" id="Node000003" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="223,5,379,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="431,28,379,28,379,23,431,23"/>
+<area shape="rect" id="Node000004" href="$system__telecommand__defs_8c.html#ad62425492ed28fac500f9c495fe7d4ba" title="System self&#45;check of all peripherals and systems." alt="" coords="5,5,175,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="208,28,175,28,175,23,208,23"/>
+<area shape="poly" id="edge5_Node000005_Node000002" title=" " alt="" coords="683,62,595,44,596,39,684,57"/>
+<area shape="rect" id="Node000006" href="$gps__telecommand__defs_8c.html#ab1cb2a2088c5fb64ff8c40154606e9a6" title="Telecommand: Transmit a log command to the GPS receiver through UART." alt="" coords="427,71,614,111"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="647,86,615,88,615,83,647,81"/>
+</map>

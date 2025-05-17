@@ -1,0 +1,13 @@
+<map id="MPI_send_command_get_response" name="MPI_send_command_get_response">
+<area shape="rect" id="Node000001" title=" " alt="" coords="694,71,864,111"/>
+<area shape="rect" id="Node000002" href="$complete__self__check_8c.html#a69e42b25a674c78c4b0bd7d93ed2eefa" title=" " alt="" coords="458,5,615,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="686,69,614,49,616,44,687,64"/>
+<area shape="rect" id="Node000005" href="$mpi__telecommand__defs_8c.html#a74a15909de626b62b9710fd560db550a" title="Send a configuration command &amp; params (IF ANY) to the MPI encoded in hex." alt="" coords="427,71,646,111"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="679,94,647,94,647,88,679,88"/>
+<area shape="rect" id="Node000006" href="$uart__telelecommand__defs_8c.html#a559929acf5cfc4bdde97856c88c93f7d" title="Send arbitrary commands to a UART peripheral, and receive the response." alt="" coords="456,136,617,177"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="687,118,616,138,614,133,686,113"/>
+<area shape="rect" id="Node000003" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="223,5,379,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="443,28,379,28,379,23,443,23"/>
+<area shape="rect" id="Node000004" href="$system__telecommand__defs_8c.html#ad62425492ed28fac500f9c495fe7d4ba" title="System self&#45;check of all peripherals and systems." alt="" coords="5,5,175,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="208,28,175,28,175,23,208,23"/>
+</map>

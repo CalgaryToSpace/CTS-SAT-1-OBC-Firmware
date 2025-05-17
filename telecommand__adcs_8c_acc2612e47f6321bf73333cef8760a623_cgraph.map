@@ -1,0 +1,15 @@
+<map id="TCMDEXEC_adcs_raw_cam1_sensor" name="TCMDEXEC_adcs_raw_cam1_sensor">
+<area shape="rect" id="Node000001" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,67,200,107"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#affd1f507016f2b7aaf513b1dc8d32c70" title="Instruct the ADCS to execute the ADCS_Raw_Cam1_Sensor command." alt="" coords="248,45,443,70"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="200,73,232,69,233,74,200,78"/>
+<area shape="rect" id="Node000007" href="$adcs__types__to__json_8c.html#a47da38d0be089e7f93346ed095bc93d0" title="Converts ADCS_Raw_Cam_Sensor_Struct to a JSON string." alt="" coords="264,95,427,135"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="200,96,248,101,248,106,200,101"/>
+<area shape="rect" id="Node000003" href="$adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="491,5,682,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="443,42,475,38,476,43,444,47"/>
+<area shape="rect" id="Node000006" href="$adcs__struct__packers_8c.html#af4cfe3d209853cc48ef7da333376679f" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="498,71,675,111"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="443,68,483,74,482,79,443,74"/>
+<area shape="rect" id="Node000004" href="$adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="730,5,907,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="683,23,715,23,715,28,683,28"/>
+<area shape="rect" id="Node000005" href="$adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="955,5,1103,46"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="907,23,939,23,939,28,907,28"/>
+</map>

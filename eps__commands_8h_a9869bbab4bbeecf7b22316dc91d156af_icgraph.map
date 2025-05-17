@@ -1,0 +1,19 @@
+<map id="EPS_CMD_get_pdu_housekeeping_data_eng" name="EPS_CMD_get_pdu_housekeeping_data_eng">
+<area shape="rect" id="Node000001" title=" " alt="" coords="771,136,994,177"/>
+<area shape="rect" id="Node000002" href="$eps__power__management_8c.html#a1db93bd2baaea0834d00a3077caaceeb" title="Monitors the power consumption of each channel and logs the data in JSON format." alt="" coords="536,5,710,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="838,129,783,95,722,61,691,49,693,44,724,57,786,90,841,125"/>
+<area shape="rect" id="Node000006" href="$boom__deploy__telecommand__defs_8c.html#a599fce6b9a99061808d7c9aa003fb611" title="Activate the burn wire for the specified duration." alt="" coords="535,71,711,111"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="783,134,706,115,707,109,785,129"/>
+<area shape="rect" id="Node000007" href="$eps__telecommands_8c.html#a8e06602ac7e1d4da69112a6fd107b84f" title=" " alt="" coords="524,136,722,177"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="755,159,722,159,722,154,755,154"/>
+<area shape="rect" id="Node000008" href="$eps__telecommands_8c.html#a2828ec54366e8d3e2efe3a997913fd9d" title="Gets the Voltage, Current, and Power for a single channel on the EPS." alt="" coords="536,201,710,242"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="785,184,707,203,706,198,783,178"/>
+<area shape="rect" id="Node000009" href="$eps__telecommands_8c.html#a1508bcd0d16fcb7b8b0f712444dac049" title="Get the EPS PDU (Power Distribution Unit) housekeeping data, and display it as a JSON string." alt="" coords="523,267,723,307"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="841,188,786,222,724,256,693,269,691,264,722,251,783,218,838,183"/>
+<area shape="rect" id="Node000003" href="$rtos__background__upkeep_8c.html#a25224a327fa1610178f861fbb70efa20" title=" " alt="" coords="330,5,475,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="521,28,476,28,476,23,521,23"/>
+<area shape="rect" id="Node000004" href="$rtos__background__upkeep_8c.html#a6e9290aa86044f925c753a48224e083f" title=" " alt="" coords="103,13,282,38"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="315,28,283,28,283,23,315,23"/>
+<area shape="rect" id="Node000005" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,13,55,38"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="87,28,55,28,55,23,87,23"/>
+</map>

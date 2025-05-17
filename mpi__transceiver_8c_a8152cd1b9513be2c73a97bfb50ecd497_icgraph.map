@@ -1,0 +1,26 @@
+<map id="MPI_set_transceiver_state" name="MPI_set_transceiver_state">
+<area shape="rect" id="Node000001" title="Sets the transceiver state." alt="" coords="936,147,1077,187"/>
+<area shape="rect" id="Node000002" href="$complete__self__check_8c.html#a69e42b25a674c78c4b0bd7d93ed2eefa" title=" " alt="" coords="458,5,615,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="980,136,940,91,915,70,887,53,818,31,746,19,677,17,615,19,615,14,677,11,747,14,819,26,889,49,918,66,944,87,984,132"/>
+<area shape="rect" id="Node000005" href="$complete__self__check_8c.html#a82df99a816e20eec7c29612bc4307e49" title="Check if the MPI is dumping science data by using the lazy blocking receive method." alt="" coords="694,64,888,89"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="959,141,887,104,851,92,853,87,889,99,961,136"/>
+<area shape="rect" id="Node000006" href="$mpi__command__handling_8c.html#ab2668371a34bc2899d53aa5eed93f45d" title=" " alt="" coords="706,113,876,154"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="920,156,876,149,877,144,921,151"/>
+<area shape="rect" id="Node000009" href="$system__bootup_8c.html#a02e34be4ecc8a3b086ce78a1e3901bc5" title="Disables systems on bootup (Non&#45;Default EPS Channels, Boom GPIO Pins, MPI transceiver)" alt="" coords="715,179,867,219"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="921,182,868,190,867,185,920,177"/>
+<area shape="rect" id="Node000011" href="$mpi__telecommand__defs_8c.html#ac2b8d205e6d017acee71bf3f950479ac" title="Sends a message over UART to the MPI." alt="" coords="699,244,883,285"/>
+<area shape="poly" id="edge11_Node000001_Node000011" title=" " alt="" coords="958,198,889,233,857,246,855,241,887,229,956,193"/>
+<area shape="rect" id="Node000012" href="$mpi__telecommand__defs_8c.html#a251ad13b37986e577fe005cb44b979e2" title="Sends a message over UART to the MPI." alt="" coords="703,309,879,350"/>
+<area shape="poly" id="edge12_Node000001_Node000012" title=" " alt="" coords="984,202,943,251,918,277,889,299,866,311,863,306,886,294,914,273,940,248,980,199"/>
+<area shape="rect" id="Node000003" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="223,5,379,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="443,28,379,28,379,23,443,23"/>
+<area shape="rect" id="Node000004" href="$system__telecommand__defs_8c.html#ad62425492ed28fac500f9c495fe7d4ba" title="System self&#45;check of all peripherals and systems." alt="" coords="5,5,175,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="208,28,175,28,175,23,208,23"/>
+<area shape="poly" id="edge6_Node000006_Node000002" title=" " alt="" coords="702,109,693,104,678,93,668,82,659,72,645,61,614,47,617,43,648,57,663,68,672,78,682,89,696,99,705,104"/>
+<area shape="rect" id="Node000007" href="$mpi__telecommand__defs_8c.html#a74a15909de626b62b9710fd560db550a" title="Send a configuration command &amp; params (IF ANY) to the MPI encoded in hex." alt="" coords="427,71,646,111"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="691,120,647,112,647,107,691,114"/>
+<area shape="rect" id="Node000008" href="$uart__telelecommand__defs_8c.html#a559929acf5cfc4bdde97856c88c93f7d" title="Send arbitrary commands to a UART peripheral, and receive the response." alt="" coords="456,136,617,177"/>
+<area shape="poly" id="edge8_Node000006_Node000008" title=" " alt="" coords="691,145,617,152,617,147,691,140"/>
+<area shape="rect" id="Node000010" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="512,201,561,226"/>
+<area shape="poly" id="edge10_Node000009_Node000010" title=" " alt="" coords="700,207,562,215,561,210,699,202"/>
+</map>

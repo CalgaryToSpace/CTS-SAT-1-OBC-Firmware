@@ -1,0 +1,17 @@
+<map id="EPS_struct_pdu_housekeeping_data_eng_TO_json" name="EPS_struct_pdu_housekeeping_data_eng_TO_json">
+<area shape="rect" id="Node000001" title=" " alt="" coords="992,63,1194,103"/>
+<area shape="rect" id="Node000002" href="$eps__power__management_8c.html#a512631c0d10437a66e6b7b04e06bcd92" title="Logs the PDU housekeeping data in JSON format." alt="" coords="779,13,910,38"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="987,61,903,42,904,37,988,56"/>
+<area shape="rect" id="Node000007" href="$eps__telecommands_8c.html#a1508bcd0d16fcb7b8b0f712444dac049" title="Get the EPS PDU (Power Distribution Unit) housekeeping data, and display it as a JSON string." alt="" coords="745,63,944,103"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="976,86,945,86,945,80,976,80"/>
+<area shape="rect" id="Node000008" href="$eps__telecommands_8c.html#a9f9ac952a1d88fc2fc97e6094f51e2ae" title="Get the EPS PDU (Power Distribution Unit) housekeeping data (running average), and display it as a JS..." alt="" coords="758,127,931,183"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="1007,111,932,132,931,127,1005,106"/>
+<area shape="rect" id="Node000003" href="$eps__power__management_8c.html#a1db93bd2baaea0834d00a3077caaceeb" title="Monitors the power consumption of each channel and logs the data in JSON format." alt="" coords="523,5,697,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="764,28,697,28,697,23,764,23"/>
+<area shape="rect" id="Node000004" href="$rtos__background__upkeep_8c.html#a25224a327fa1610178f861fbb70efa20" title=" " alt="" coords="330,5,475,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="508,28,476,28,476,23,508,23"/>
+<area shape="rect" id="Node000005" href="$rtos__background__upkeep_8c.html#a6e9290aa86044f925c753a48224e083f" title=" " alt="" coords="103,13,282,38"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="315,28,283,28,283,23,315,23"/>
+<area shape="rect" id="Node000006" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,13,55,38"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="87,28,55,28,55,23,87,23"/>
+</map>

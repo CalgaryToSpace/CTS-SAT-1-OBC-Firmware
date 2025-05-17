@@ -1,0 +1,27 @@
+<map id="EPS_set_channel_enabled" name="EPS_set_channel_enabled">
+<area shape="rect" id="Node000001" title="Sets the enabled state of an EPS channel (on or off)." alt="" coords="720,165,897,191"/>
+<area shape="rect" id="Node000002" href="$camera__capture_8c.html#a4edcff225af5552d0375645344171950" title="Capture an image, writing to a file in LFS." alt="" coords="265,22,408,48"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="791,153,771,123,744,90,710,58,671,34,636,21,598,13,522,8,450,14,391,24,390,19,450,9,522,3,599,8,637,16,673,29,714,54,748,86,775,120,795,151"/>
+<area shape="rect" id="Node000004" href="$camera__capture_8c.html#a3d05909e7b9c75c89d936ec99c96ed2d" title=" " alt="" coords="485,43,662,84"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="775,158,727,128,671,98,644,87,646,82,673,93,730,123,778,154"/>
+<area shape="rect" id="Node000005" href="$camera__init_8c.html#adfa3d3b239068192490d519d4452cfee" title="Set up the camera by powering on and changing the baudrate to 230400." alt="" coords="529,108,618,133"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="737,163,618,134,620,129,739,158"/>
+<area shape="rect" id="Node000007" href="$complete__self__check_8c.html#a55d4f769a9d77ec139334ba21af7e5f0" title=" " alt="" coords="492,158,655,198"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="705,181,656,181,656,175,705,175"/>
+<area shape="rect" id="Node000008" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="258,186,414,226"/>
+<area shape="poly" id="edge10_Node000001_Node000008" title=" " alt="" coords="748,198,673,213,605,218,536,219,415,215,415,210,536,214,605,213,672,207,747,193"/>
+<area shape="rect" id="Node000010" href="$system__bootup_8c.html#a02e34be4ecc8a3b086ce78a1e3901bc5" title="Disables systems on bootup (Non&#45;Default EPS Channels, Boom GPIO Pins, MPI transceiver)" alt="" coords="498,272,650,313"/>
+<area shape="poly" id="edge11_Node000001_Node000010" title=" " alt="" coords="774,201,674,256,632,274,630,269,671,252,772,197"/>
+<area shape="rect" id="Node000012" href="$eps__telecommands_8c.html#af4a26360f491c65d480eda02ae55b900" title="Sets the EPS channel to be enabled (on) or disabled (off)." alt="" coords="475,338,672,378"/>
+<area shape="poly" id="edge13_Node000001_Node000012" title=" " alt="" coords="792,205,743,266,710,298,674,327,650,339,648,335,671,322,707,294,739,262,788,202"/>
+<area shape="rect" id="Node000003" href="$camera__telecommand__defs_8c.html#afb614c0d0a16fe7e66596bf15ced2162" title="Send telecommand to camera and capture an image. RUN CAM_SETUP BEFORE THIS EVERY TIME!" alt="" coords="5,22,198,48"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="250,38,198,38,198,33,250,33"/>
+<area shape="poly" id="edge4_Node000004_Node000002" title=" " alt="" coords="469,54,408,46,408,41,470,48"/>
+<area shape="rect" id="Node000006" href="$camera__telecommand__defs_8c.html#abfe79147115a9931e013ce9d49a41908" title="Set up the camera by powering on and changing the baudrate to 2400." alt="" coords="246,108,427,133"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="514,123,427,123,427,118,514,118"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="477,192,415,199,415,194,476,187"/>
+<area shape="rect" id="Node000009" href="$system__telecommand__defs_8c.html#ad62425492ed28fac500f9c495fe7d4ba" title="System self&#45;check of all peripherals and systems." alt="" coords="17,186,186,226"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="242,209,187,209,187,203,242,203"/>
+<area shape="rect" id="Node000011" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="312,280,361,305"/>
+<area shape="poly" id="edge12_Node000010_Node000011" title=" " alt="" coords="482,295,361,295,361,290,482,290"/>
+</map>

@@ -1,0 +1,21 @@
+<map id="EPS_pack_eps_result_pbu_housekeeping_data_eng" name="EPS_pack_eps_result_pbu_housekeeping_data_eng">
+<area shape="rect" id="Node000001" title=" " alt="" coords="946,197,1142,238"/>
+<area shape="rect" id="Node000002" href="$eps__commands_8c.html#a13ab9c979dae4bc0e2bdabfdf41a36e7" title=" " alt="" coords="674,128,898,169"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="950,195,864,172,865,167,951,190"/>
+<area shape="rect" id="Node000009" href="$eps__commands_8c.html#ad34ff56e7ff004f7795e1fba0f78f547" title=" " alt="" coords="674,229,898,270"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="931,234,898,238,898,233,930,229"/>
+<area shape="rect" id="Node000003" href="$complete__self__check_8c.html#a034650729877a551e8919e536ae032e8" title=" " alt="" coords="432,13,622,38"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="743,121,688,86,625,53,591,42,593,37,627,49,691,81,746,117"/>
+<area shape="rect" id="Node000006" href="$system__telecommand__defs_8c.html#acb0f11979fcc8d48883ecf8dfa2bbdfc" title=" " alt="" coords="440,63,613,103"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="687,126,610,107,611,101,688,121"/>
+<area shape="rect" id="Node000007" href="$eps__telecommands_8c.html#af2a5d6ed69b9a658666bf15b20d62d10" title="Get current battery voltage percent from PBU." alt="" coords="430,128,623,169"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="659,151,623,151,623,146,659,146"/>
+<area shape="rect" id="Node000008" href="$eps__telecommands_8c.html#a0b71573bd1b719c711d41b9158341664" title="Get the EPS PBU (Power Battery Unit) housekeeping data, and display it as a JSON string." alt="" coords="427,193,626,234"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="688,176,611,195,610,190,687,170"/>
+<area shape="rect" id="Node000004" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="223,5,379,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="416,28,380,28,380,23,416,23"/>
+<area shape="rect" id="Node000005" href="$system__telecommand__defs_8c.html#ad62425492ed28fac500f9c495fe7d4ba" title="System self&#45;check of all peripherals and systems." alt="" coords="5,5,175,46"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="208,28,175,28,175,23,208,23"/>
+<area shape="rect" id="Node000010" href="$eps__telecommands_8c.html#ab1fdcf2b18244b3eaa0bdb06987f7daa" title="Get the EPS PBU (Power Battery Unit) housekeeping data (running average), and display it as a JSON st..." alt="" coords="440,258,613,314"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="659,270,614,276,614,271,658,265"/>
+</map>

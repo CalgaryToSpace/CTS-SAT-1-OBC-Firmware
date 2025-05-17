@@ -1,0 +1,9 @@
+<map id="ADCS_synchronize_unix_time" name="ADCS_synchronize_unix_time">
+<area shape="rect" id="Node000001" title="Instruct the ADCS to synchronize its Unix epoch time to the current OBC Unix time." alt="" coords="353,35,547,60"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#ad5983ef7345cb4ffee4c23a9c9726610" title="Initialize the ADCS CRC, timestamp, and file system directory." alt="" coords="149,5,259,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="337,37,259,27,260,22,338,31"/>
+<area shape="rect" id="Node000004" href="$telecommand__adcs_8c.html#a131f3800fd9c78cad1b1cc44781f03cc" title="Telecommand: Synchronize the current ADCS Unix epoch time." alt="" coords="103,55,305,96"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="338,63,306,67,305,61,337,58"/>
+<area shape="rect" id="Node000003" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,5,55,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="133,21,55,21,55,16,133,16"/>
+</map>
