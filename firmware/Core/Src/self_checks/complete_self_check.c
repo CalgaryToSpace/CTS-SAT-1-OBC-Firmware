@@ -499,6 +499,11 @@ const char *CTS1_system_self_check_result_struct_field_names[] = {
     "eps_no_overcurrent_faults"
 };
 
+/// @brief Convert the self-check struct to a JSON string.
+/// @param self_check_struct Self-check struct to convert to JSON.
+/// @param dest_json_str Destination string to write the JSON to.
+/// @param dest_json_str_size Size of the destination string (max length to write).
+/// @param show_passes If 1, include the passed checks in the JSON.
 void CTS1_self_check_struct_TO_json_list(
     CTS1_system_self_check_result_struct_t self_check_struct,
     char dest_json_str[], uint16_t dest_json_str_size,
