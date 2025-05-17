@@ -25,10 +25,6 @@ uint32_t TASK_heartbeat_period_ms = 10990;
 
 char TASK_heartbeat_timing_str[128] = {0};
 
-static void set_heartbeat_led(uint8_t enabled) {
-    OBC_set_external_led(enabled);
-}
-
 void TASK_DEBUG_print_heartbeat(void *argument) {
     TASK_HELP_start_of_task();
 
@@ -43,12 +39,6 @@ void TASK_DEBUG_print_heartbeat(void *argument) {
         LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
         "Reset reason: %s.", STM32_reset_cause_name
     );
-
-    // Blink the LED a few times to show that the boot just happened.
-    for (uint8_t i = 0; i < 12; i++) {
-        set_heartbeat_led((i+1) % 2);
-        HAL_Delay(100 + (i*25));
-    }
 
     osDelay(TASK_heartbeat_period_ms > 0 ? TASK_heartbeat_period_ms : 1000);
 
@@ -74,9 +64,6 @@ void TASK_DEBUG_print_heartbeat(void *argument) {
 
             // TODO: Radio beacon here, probably.
         }
-        set_heartbeat_led(1);
-        osDelay(100); // Reminder: May take longer than 100ms.
-        set_heartbeat_led(0);
 
         osDelay(TASK_heartbeat_period_ms > 0 ? TASK_heartbeat_period_ms : 1000);
     }

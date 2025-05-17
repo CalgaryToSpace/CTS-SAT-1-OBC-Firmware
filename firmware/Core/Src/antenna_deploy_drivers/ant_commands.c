@@ -209,17 +209,19 @@ int16_t ANT_convert_raw_temp_to_cCelsius(uint16_t measurement) {
 }
 
 
-static uint8_t extract_bit(uint8_t byte, uint8_t position) {return byte >> position & 1u;}
+static uint8_t extract_bit(uint8_t byte, uint8_t position) {
+    return (byte >> position) & 1u;
+}
 
-/// @brief writes 2 bytes of information representing the deployment status of the antennas to the passed buffer,
+/// @brief Writes 2 bytes of information representing the deployment status of the antennas to the passed buffer,
 ///         information on interpreting the response may be found in the ISIS Antenna System user manual. Doc ID: ISIS.ANTS.UM.001 pg. 42
 /// @param i2c_bus_mcu specifies which mcu on the antenna deployment system to transmit to, and which i2c bus to use
 /// @param response a two byte buffer where the status information is written to.
 /// @return 0 when the antenna deployment system has received the command, >0 otherwise
 /// @note - Data written to the response struct is only valid if 0 was returned. One should check this before using the response.
 /// @note - This command probes the micro controller specified. data from each mcu may differ.
-uint8_t ANT_CMD_report_deployment_status(enum ANT_i2c_bus_mcu i2c_bus_mcu, struct Antenna_deployment_status *response) {
-    const uint8_t CMD_LEN  = 1;
+uint8_t ANT_CMD_report_deployment_status(enum ANT_i2c_bus_mcu i2c_bus_mcu, ANT_deployment_status_struct_t *response) {
+    const uint8_t CMD_LEN = 1;
     uint8_t cmd_buf[CMD_LEN];
 
     cmd_buf[0] = ANT_CMD_REPORT_DEPLOYMENT_STATUS;
@@ -231,20 +233,20 @@ uint8_t ANT_CMD_report_deployment_status(enum ANT_i2c_bus_mcu i2c_bus_mcu, struc
         uint8_t raw_bytes[response_size];
         status = ANT_get_response(i2c_bus_mcu, raw_bytes, response_size);
 
-        response->antenna_1_deployed= !extract_bit(raw_bytes[1], 7);       
-        response->antenna_1_deployment_time_limit_reached= extract_bit(raw_bytes[1], 6);       
+        response->antenna_1_deployed = !extract_bit(raw_bytes[1], 7);       
+        response->antenna_1_deployment_time_limit_reached = extract_bit(raw_bytes[1], 6);       
         response->antenna_1_deployment_system_active= extract_bit(raw_bytes[1], 5);       
 
-        response->antenna_2_deployed= !extract_bit(raw_bytes[1], 3);       
-        response->antenna_2_deployment_time_limit_reached= extract_bit(raw_bytes[1], 2);       
+        response->antenna_2_deployed = !extract_bit(raw_bytes[1], 3);       
+        response->antenna_2_deployment_time_limit_reached = extract_bit(raw_bytes[1], 2);       
         response->antenna_2_deployment_system_active= extract_bit(raw_bytes[1], 1);
 
-        response->antenna_3_deployed= !extract_bit(raw_bytes[0], 7);       
-        response->antenna_3_deployment_time_limit_reached= extract_bit(raw_bytes[0], 6);       
+        response->antenna_3_deployed = !extract_bit(raw_bytes[0], 7);       
+        response->antenna_3_deployment_time_limit_reached = extract_bit(raw_bytes[0], 6);       
         response->antenna_3_deployment_system_active= extract_bit(raw_bytes[0], 5);       
 
-        response->antenna_4_deployed= !extract_bit(raw_bytes[0], 3);       
-        response->antenna_4_deployment_time_limit_reached= extract_bit(raw_bytes[0], 2);       
+        response->antenna_4_deployed = !extract_bit(raw_bytes[0], 3);       
+        response->antenna_4_deployment_time_limit_reached = extract_bit(raw_bytes[0], 2);       
         response->antenna_4_deployment_system_active= extract_bit(raw_bytes[0], 1);
 
         response->ignoring_deployment_switches = extract_bit(raw_bytes[1], 0);

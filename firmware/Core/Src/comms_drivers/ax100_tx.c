@@ -3,6 +3,7 @@
 #include "comms_drivers/ax100_hw.h"
 #include "log/log.h"
 #include "debug_tools/debug_uart.h"
+#include "rtos_tasks/rtos_bootup_operation_fsm_task.h"
 
 #include <string.h>
 #include <stdint.h>
@@ -51,6 +52,16 @@ static void prepend_csp_header(uint8_t *destination, uint8_t *data, uint32_t dat
 /// @brief Send a csp packet over i2c to the AX100 for downlink.
 /// @note Only use in this file.
 static uint8_t send_bytes_to_ax100(uint8_t *packet, uint16_t packet_size) {
+    if (CTS1_operation_state != CTS1_OPERATION_STATE_NOMINAL_WITH_RADIO_TX) {
+        // Recall: Do not transmit on the AX100 until the antenna is deployed.
+        // The Bootup Operation FSM task will set the operation mode to NOMINAL_WITH_RADIO_TX
+        // when the antenna is deployed.
+        DEBUG_uart_print_str("AX100 downlink inhibited: CTS1_operation_state != NOMINAL_WITH_RADIO_TX.\n");
+        
+        // Return success to avoid lots of errors. It's not really an error case, as this is expected during early ops.
+        return 0;
+    }
+
     const HAL_StatusTypeDef status = HAL_I2C_Master_Transmit(
         AX100_I2C_HANDLE,
         AX100_I2C_ADDR << 1, 
