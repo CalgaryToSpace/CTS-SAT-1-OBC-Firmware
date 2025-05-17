@@ -29,6 +29,7 @@
 #include "rtos_tasks/rtos_eps_tasks.h"
 #include "rtos_tasks/rtos_background_upkeep.h"
 #include "rtos_tasks/rtos_tasks_rx_telecommands.h"
+#include "rtos_tasks/rtos_bulk_downlink_task.h"
 #include "uart_handler/uart_handler.h"
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_commands.h"
@@ -118,6 +119,13 @@ const osThreadAttr_t TASK_handle_ax100_kiss_telecommands_Attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 
+osThreadId_t TASK_bulk_downlink_Handle;
+const osThreadAttr_t TASK_bulk_downlink_Attributes = {
+  .name = "TASK_bulk_downlink",
+  .stack_size = 4096,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+
 osThreadId_t TASK_execute_telecommands_Handle;
 const osThreadAttr_t TASK_execute_telecommands_Attributes = {
   .name = "TASK_execute_telecommands",
@@ -172,6 +180,11 @@ FREERTOS_task_info_struct_t FREERTOS_task_handles_array [] = {
   {
     .task_handle = &TASK_handle_ax100_kiss_telecommands_Handle,
     .task_attribute = &TASK_handle_ax100_kiss_telecommands_Attributes,
+    .lowest_stack_bytes_remaining = UINT32_MAX
+  },
+  {
+    .task_handle = &TASK_bulk_downlink_Handle,
+    .task_attribute = &TASK_bulk_downlink_Attributes,
     .lowest_stack_bytes_remaining = UINT32_MAX
   },
   {
@@ -332,6 +345,8 @@ int main(void)
   TASK_handle_uart_telecommands_Handle = osThreadNew(TASK_handle_uart_telecommands, NULL, &TASK_handle_uart_telecommands_Attributes);
 
   TASK_handle_ax100_kiss_telecommands_Handle = osThreadNew(TASK_handle_ax100_kiss_telecommands, NULL, &TASK_handle_ax100_kiss_telecommands_Attributes);
+
+  TASK_bulk_downlink_Handle = osThreadNew(TASK_bulk_downlink, NULL, &TASK_bulk_downlink_Attributes);
 
   TASK_execute_telecommands_Handle = osThreadNew(TASK_execute_telecommands, NULL, &TASK_execute_telecommands_Attributes);
 
