@@ -248,7 +248,7 @@ static inline void SUBTASK_bootup_operation_mode_do_led_indication_action(void) 
     else if (CTS1_operation_state == CTS1_OPERATION_STATE_NOMINAL_WITHOUT_RADIO_TX) {
         // LED Indicator: Pulses twice per 3 seconds.
         pulse_external_led_blocking(40);
-        osDelay(400);
+        HAL_Delay(180);
         pulse_external_led_blocking(40);
         
         osDelay(3000);
