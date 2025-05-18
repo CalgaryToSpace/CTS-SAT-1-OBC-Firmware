@@ -11,7 +11,7 @@ COMMS_rf_switch_control_mode_enum_t COMMS_rf_switch_control_mode = COMMS_RF_SWIT
 
 /// @brief If the satellite goes this long without receiving an uplink, the 
 ///        `COMMS_rf_switch_control_mode` will be set back to `TOGGLE_BEFORE_EVERY_BEACON`.
-uint32_t CONFIG_max_duration_without_uplink_before_setting_default_rf_switch_mode_sec = 15 * 60;
+uint32_t COMMS_max_duration_without_uplink_before_setting_default_rf_switch_mode_sec = 15 * 60;
 
 
 /// @brief Sets the state of the dipole switch on the OBC to either Antenna 1 or Antenna 2.

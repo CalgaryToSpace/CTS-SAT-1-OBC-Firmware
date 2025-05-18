@@ -15,7 +15,7 @@ typedef enum {
 
 extern uint8_t COMMS_active_rf_switch_antenna;
 extern COMMS_rf_switch_control_mode_enum_t COMMS_rf_switch_control_mode;
-extern uint32_t CONFIG_max_duration_without_uplink_before_setting_default_rf_switch_mode_sec;
+extern uint32_t COMMS_max_duration_without_uplink_before_setting_default_rf_switch_mode_sec;
 
 void COMMS_set_rf_switch_state(uint8_t antenna_num);
 
