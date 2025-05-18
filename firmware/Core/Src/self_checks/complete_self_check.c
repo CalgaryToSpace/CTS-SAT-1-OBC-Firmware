@@ -477,36 +477,38 @@ void CTS1_run_system_self_check(CTS1_system_self_check_result_struct_t *result) 
     }
 }
 
-/// @brief Convert the self-check struct to a JSON string that lists the failures.
+const char *CTS1_system_self_check_result_struct_field_names[] = {
+    "obc_temperature",
+    "is_adcs_i2c_addr",
+    "is_adcs_alive",
+    "is_ax100_i2c_addr",
+    "is_gnss_responsive",
+    "is_eps_responsive",
+    "is_eps_thriving",
+    "mpi_science_rx",
+    "mpi_cmd",
+    "is_camera_responsive",
+    "is_antenna_i2c_addr_a",
+    "is_antenna_i2c_addr_b",
+    "is_antenna_a_alive",
+    "is_antenna_b_alive",
+    "flash_0_alive",
+    "flash_1_alive",
+    "flash_2_alive",
+    "flash_3_alive",
+    "eps_no_overcurrent_faults"
+};
+
+/// @brief Convert the self-check struct to a JSON string.
 /// @param self_check_struct Self-check struct to convert to JSON.
 /// @param dest_json_str Destination string to write the JSON to.
 /// @param dest_json_str_size Size of the destination string (max length to write).
-void CTS1_self_check_struct_TO_json_list_of_failures(
+/// @param show_passes If 1, include the passed checks in the JSON.
+void CTS1_self_check_struct_TO_json_list(
     CTS1_system_self_check_result_struct_t self_check_struct,
-    char dest_json_str[], uint16_t dest_json_str_size
+    char dest_json_str[], uint16_t dest_json_str_size,
+    uint8_t show_passes
 ) {
-    const char *field_names[] = {
-        "obc_temperature",
-        "is_adcs_i2c_addr",
-        "is_adcs_alive",
-        "is_ax100_i2c_addr",
-        "is_gnss_responsive",
-        "is_eps_responsive",
-        "is_eps_thriving",
-        "mpi_science_rx",
-        "mpi_cmd",
-        "is_camera_responsive",
-        "is_antenna_i2c_addr_a",
-        "is_antenna_i2c_addr_b",
-        "is_antenna_a_alive",
-        "is_antenna_b_alive",
-        "flash_0_alive",
-        "flash_1_alive",
-        "flash_2_alive",
-        "flash_3_alive",
-        "eps_no_overcurrent_faults"
-    };
-    
     uint8_t *field_values[] = {
         &self_check_struct.obc_temperature_works,
         &self_check_struct.is_adcs_i2c_addr_alive,
@@ -528,30 +530,57 @@ void CTS1_self_check_struct_TO_json_list_of_failures(
         &self_check_struct.flash_3_alive,
         &self_check_struct.eps_no_overcurrent_faults
     };
-    
-    size_t len = 0;
-    len += snprintf(dest_json_str + len, dest_json_str_size - len, "{\"fail\":[");
 
-    uint8_t is_first = 1;
+    size_t len = 0;
+    uint8_t is_first_fail = 1;
+    uint8_t is_first_pass = 1;
     uint8_t fail_count = 0;
     uint8_t pass_count = 0;
 
-    for (size_t i = 0; i < sizeof(field_names) / sizeof(field_names[0]); i++) {
+    len += snprintf(dest_json_str + len, dest_json_str_size - len, "{");
+
+    // Write "fail" array
+    len += snprintf(dest_json_str + len, dest_json_str_size - len, "\"fail\":[");
+    for (size_t i = 0; i < sizeof(CTS1_system_self_check_result_struct_field_names) / sizeof(CTS1_system_self_check_result_struct_field_names[0]); i++) {
         if (*field_values[i] == 0) {
-            if (!is_first) {
+            if (!is_first_fail) {
                 len += snprintf(dest_json_str + len, dest_json_str_size - len, ",");
             }
-            len += snprintf(dest_json_str + len, dest_json_str_size - len, "\"%s\"", field_names[i]);
-            is_first = 0;
+            len += snprintf(dest_json_str + len, dest_json_str_size - len, "\"%s\"", CTS1_system_self_check_result_struct_field_names[i]);
+            is_first_fail = 0;
             fail_count++;
-        } else {
-            pass_count++;
+        }
+    }
+    len += snprintf(dest_json_str + len, dest_json_str_size - len, "]");
+
+    // Optionally write "pass" array
+    if (show_passes) {
+        len += snprintf(dest_json_str + len, dest_json_str_size - len, ",\"pass\":[");
+        for (size_t i = 0; i < sizeof(CTS1_system_self_check_result_struct_field_names) / sizeof(CTS1_system_self_check_result_struct_field_names[0]); i++) {
+            if (*field_values[i] != 0) {
+                if (!is_first_pass) {
+                    len += snprintf(dest_json_str + len, dest_json_str_size - len, ",");
+                }
+                len += snprintf(dest_json_str + len, dest_json_str_size - len, "\"%s\"", CTS1_system_self_check_result_struct_field_names[i]);
+                is_first_pass = 0;
+                pass_count++;
+            }
+        }
+    } else {
+        // Still count passes even if not showing
+        for (size_t i = 0; i < sizeof(CTS1_system_self_check_result_struct_field_names) / sizeof(CTS1_system_self_check_result_struct_field_names[0]); i++) {
+            if (*field_values[i] != 0) {
+                pass_count++;
+            }
         }
     }
 
-    len += snprintf(dest_json_str + len, dest_json_str_size - len, "],");
-    len += snprintf(dest_json_str + len, dest_json_str_size - len, "\"fail_count\":%d,", fail_count);
-    len += snprintf(dest_json_str + len, dest_json_str_size - len, "\"pass_count\":%d}", pass_count);
+    // Append counts
+    len += snprintf(
+        dest_json_str + len, dest_json_str_size - len,
+        ",\"fail_count\":%d,\"pass_count\":%d}",
+        fail_count, pass_count
+    );
 
-    dest_json_str[dest_json_str_size - 1] = '\0';
+    dest_json_str[dest_json_str_size - 1] = '\0'; // Ensure null-termination
 }
