@@ -105,10 +105,10 @@ uint8_t TCMDEXEC_eps_switch_to_mode(
 ) {
     uint8_t result = 42;
 
-    if (strcmp(args_str, "nominal") == 0) {
+    if (strcasecmp(args_str, "nominal") == 0) {
         result = EPS_CMD_switch_to_nominal_mode();
     }
-    else if (strcmp(args_str, "safety") == 0) {
+    else if (strcasecmp(args_str, "safety") == 0) {
         result = EPS_CMD_switch_to_safety_mode();
     }
     else {

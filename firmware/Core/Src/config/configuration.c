@@ -94,7 +94,7 @@ int16_t CONFIG_get_int_var_index(const char *search_name)
 {
     for (uint8_t i = 0; i < CONFIG_int_config_variables_count; i++)
     {
-        if (strcmp(search_name, CONFIG_int_config_variables[i].variable_name) == 0)
+        if (strcasecmp(search_name, CONFIG_int_config_variables[i].variable_name) == 0)
         {
             return i;
         }
@@ -109,7 +109,7 @@ int16_t CONFIG_get_str_var_index(const char *search_name)
 {
     for (uint8_t i = 0; i < CONFIG_str_config_variables_count; i++)
     {
-        if (strcmp(search_name, CONFIG_str_config_variables[i].variable_name) == 0)
+        if (strcasecmp(search_name, CONFIG_str_config_variables[i].variable_name) == 0)
         {
             return i;
         }
