@@ -67,14 +67,15 @@ static void subtask_reset_system_after_very_long_uptime(void) {
 static void subtask_update_rf_switch(void) {
     const uint32_t duration_since_last_uplink_sec = (TIM_get_current_system_uptime_ms() - AX100_uptime_at_last_received_kiss_tcmd_ms) / 1000;
 
-    if (duration_since_last_uplink_sec > COMMS_max_duration_without_uplink_before_setting_default_rf_switch_mode_sec) {
+    if ((COMMS_rf_switch_control_mode != COMMS_RF_SWITCH_CONTROL_MODE_TOGGLE_BEFORE_EVERY_BEACON) // Log minimiation condition.
+        && (duration_since_last_uplink_sec > COMMS_max_duration_without_uplink_before_setting_default_rf_switch_mode_sec)
+    ) {
         COMMS_rf_switch_control_mode = COMMS_RF_SWITCH_CONTROL_MODE_TOGGLE_BEFORE_EVERY_BEACON;
         LOG_message(
-            LOG_SYSTEM_OBC,
-            LOG_SEVERITY_DEBUG,
-            LOG_SINK_ALL,
-            "RF switch control mode set to default due to no uplinks: %ld sec",
-            duration_since_last_uplink_sec
+            LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "RF switch control mode set to default due to no uplinks: %ld sec > %ld sec",
+            duration_since_last_uplink_sec,
+            COMMS_max_duration_without_uplink_before_setting_default_rf_switch_mode_sec
         );
         return;
     }
