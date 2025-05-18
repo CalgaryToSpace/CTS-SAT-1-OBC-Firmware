@@ -289,6 +289,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
+        .tcmd_name = "fs_list_directory_json",
+        .tcmd_func = TCMDEXEC_fs_list_directory_json,
+        .number_of_args = 3,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
         .tcmd_name = "fs_make_directory",
         .tcmd_func = TCMDEXEC_fs_make_directory,
         .number_of_args = 1,
