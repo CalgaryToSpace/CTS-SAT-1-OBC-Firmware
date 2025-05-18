@@ -1426,7 +1426,7 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
         }
 
         hole_map_attempts++;
-        if (hole_map_attempts >= 5) {
+        if (hole_map_attempts >= 3) {
             if (file_info.file_type == ADCS_FILE_TYPE_INDEX) {
                 break; // there's no way to ask the ADCS how large the index file is, so do this arbitrarily
             }
@@ -1468,6 +1468,8 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
 /// @param[in] index_offset The index (starting at 0) from which to start reading files.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission, negative if an LFS or snprintf error code occurred. 
 uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) {
+
+    const uint32_t function_start_time = HAL_GetTick();
     
     const uint8_t reset_pointer_status = ADCS_reset_file_list_read_pointer();
     HAL_Delay(200);
@@ -1506,6 +1508,11 @@ uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) 
                 // if all the file_info parameters are zero, we've reached the end of the file list.
                 LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "End of file list reached at index %d.", i);
                 return 6;
+            }
+
+            if (HAL_GetTick() - function_start_time > ADCS_FILE_POINTER_TIMEOUT_MS) {
+                // if we've timed out, exit and return an error
+                return 7;
             }
         }
     }
@@ -1564,8 +1571,15 @@ uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) 
 /// Specifically, assuming no HAL or LFS error: bytes 0-2 are the ADCS error, bytes 3-10 are which command failed, bytes 11-16 are the index of the failure if applicable
 int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
 
+    const uint32_t function_start_time = HAL_GetTick();
+
     ADCS_file_info_struct_t file_info;
     int16_t snprintf_ret;
+
+    if (file_index > 255) {
+        LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE), "File index is greater than 255. Aborting...");
+        return 73;
+    }
 
     char filename_string[17];
 
@@ -1599,6 +1613,21 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
                 if (ack_status.error_flag != 0) {
                     return ack_status.error_flag;
                 }
+            }
+            
+            if (i % 70 == 0) {
+                // pet the watchdog every 70 files so we don't run out of time
+                HAL_IWDG_Refresh(&hiwdg); 
+            }
+
+            const uint8_t temp_file_info_status = ADCS_get_file_info_telemetry(&file_info);
+            if (temp_file_info_status != 0) {
+                return temp_file_info_status;
+            }
+            if (file_info.file_crc16 == 0 && file_info.file_date_time_msdos == 0 && file_info.file_size == 0) {
+                // if all the file_info parameters are zero, we've reached the end of the file list.
+                LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "End of file list reached at index %d.", i);
+                return 6;
             }
         }
         
@@ -1650,7 +1679,7 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
     // Check that LittleFS is mounted
     if (!LFS_is_lfs_mounted) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "LittleFS not mounted."); 
-        return 1;
+        return 43;
     }
 
     // Now that we have the filename string, we can create the file (any existing file will be overwritten)
@@ -1666,6 +1695,8 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
     uint8_t total_blocks = ceil(file_info.file_size / 20480.0);
     uint8_t current_block = 0; 
 
+    uint8_t timeout_err = 0;
+
     while (current_block < total_blocks) {
 
         LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, "Loading block %d from ADCS to LittleFS", current_block);
@@ -1675,6 +1706,12 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
         }
 
         current_block++;
+
+        if (HAL_GetTick() - function_start_time > ADCS_FILE_DOWNLOAD_TIMEOUT_MS) {
+            // if we've timed out, exit the loop to close the file and then return an error
+            timeout_err = 7;
+            break;
+        }
     }
 
     // Once we've written all the blocks, close the file; it won't be updated in LittleFS until the file is closed.
@@ -1685,7 +1722,7 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
     }
     LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully wrote data to file: %s", filename_string);
 
-    return 0;
+    return timeout_err;
 }
 
 /// @brief Disable all active ADCS SD card logs.
@@ -1729,8 +1766,15 @@ uint8_t ADCS_disable_peripherals_and_SD_logs_with_stabilisation() {
 /// @param[in] file_index The index of the file.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred.
 uint8_t ADCS_erase_sd_file_by_index(uint16_t file_index) {
+
+    const uint32_t function_start_time = HAL_GetTick();
     
     ADCS_file_info_struct_t file_info;
+
+    if (file_index > 255) {
+        LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE), "File index is greater than 255. Aborting...");
+        return 73;
+    }
 
     // get the required File Type and Counter parameters about the file to erase
 
@@ -1747,6 +1791,11 @@ uint8_t ADCS_erase_sd_file_by_index(uint16_t file_index) {
 
     for (uint16_t i = 0; i < file_index; i++) {
         const uint8_t advance_pointer_status = ADCS_advance_file_list_read_pointer();
+        
+        if (HAL_GetTick() - function_start_time > ADCS_FILE_POINTER_TIMEOUT_MS) {
+            return 7;
+        }
+        
         HAL_Delay(200);
         if (advance_pointer_status != 0) {
             // to avoid interference from the EPS, do a separate ack for these commands
@@ -1755,6 +1804,21 @@ uint8_t ADCS_erase_sd_file_by_index(uint16_t file_index) {
             if (ack_status.error_flag != 0) {
                 return ack_status.error_flag;
             }
+        }
+
+        if (i % 70 == 0) {
+            // pet the watchdog every 70 files so we don't run out of time
+            HAL_IWDG_Refresh(&hiwdg); 
+        }
+
+        const uint8_t temp_file_info_status = ADCS_get_file_info_telemetry(&file_info);
+        if (temp_file_info_status != 0) {
+            return temp_file_info_status;
+        }
+        if (file_info.file_crc16 == 0 && file_info.file_date_time_msdos == 0 && file_info.file_size == 0) {
+            // if all the file_info parameters are zero, we've reached the end of the file list.
+            LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "End of file list reached at index %d.", i);
+            return 6;
         }
     }
 
