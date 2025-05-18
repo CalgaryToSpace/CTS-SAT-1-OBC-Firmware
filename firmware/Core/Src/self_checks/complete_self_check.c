@@ -566,6 +566,7 @@ void CTS1_self_check_struct_TO_json_list(
                 pass_count++;
             }
         }
+        len += snprintf(dest_json_str + len, dest_json_str_size - len, "]");
     } else {
         // Still count passes even if not showing
         for (size_t i = 0; i < sizeof(CTS1_system_self_check_result_struct_field_names) / sizeof(CTS1_system_self_check_result_struct_field_names[0]); i++) {
