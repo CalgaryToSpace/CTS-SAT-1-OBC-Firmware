@@ -51,7 +51,29 @@ int32_t LFS_list_directory_json_dict(
 
         // Construct full path
         char full_path[LFS_MAX_PATH_LENGTH + 100];
-        snprintf(full_path, sizeof(full_path), "%s/%s", root_directory, info.name);
+        if (strcmp(root_directory, "/") == 0) {
+            // root_directory is exactly "/", so avoid double slash
+            snprintf(full_path, sizeof(full_path), "/%s", info.name);
+        } else {
+            // Copy root_directory to a temporary buffer to trim any trailing slash
+            char trimmed_root[LFS_MAX_PATH_LENGTH];
+            strncpy(trimmed_root, root_directory, sizeof(trimmed_root) - 1);
+            trimmed_root[sizeof(trimmed_root) - 1] = '\0';
+
+            // Trim trailing slash if present
+            size_t len = strlen(trimmed_root);
+            if (len > 0 && trimmed_root[len - 1] == '/') {
+                trimmed_root[len - 1] = '\0';
+            }
+
+            // Combine trimmed root and filename
+            snprintf(
+                full_path, sizeof(full_path), "%s%s/%s",
+                (trimmed_root[0] == '/') ? "" : "/", // Ensure leading slash
+                trimmed_root,
+                info.name
+            );
+        }
 
         if (info.type == LFS_TYPE_REG) {
             buf_used += snprintf(
@@ -61,7 +83,7 @@ int32_t LFS_list_directory_json_dict(
         } else if (info.type == LFS_TYPE_DIR) {
             buf_used += snprintf(
                 json_output_buf + buf_used, json_output_buf_size - buf_used,
-                "\"%s\":null", full_path
+                "\"%s/\":null", full_path
             );
         }
 
