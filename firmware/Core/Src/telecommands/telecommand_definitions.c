@@ -1203,8 +1203,8 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     // ****************** END SECTION: obc_systems_telecommand_defs ******************
     // ****************** START SECTION: comms_telecommand_defs ******************
     {
-        .tcmd_name = "comms_dipole_switch_set_state",
-        .tcmd_func = TCMDEXEC_comms_dipole_switch_set_state,
+        .tcmd_name = "comms_set_rf_switch_control_mode",
+        .tcmd_func = TCMDEXEC_comms_set_rf_switch_control_mode,
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
     },

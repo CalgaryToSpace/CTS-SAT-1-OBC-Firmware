@@ -1,5 +1,5 @@
 #include "telecommands/comms_telecommand_defs.h"
-#include "comms_drivers/comms_drivers.h"
+#include "comms_drivers/rf_antenna_switch.h"
 #include "telecommand_exec/telecommand_args_helpers.h"
 
 #include <string.h>
@@ -9,7 +9,7 @@
 /// @param args_str 
 /// - Arg 0: The state of the dipole switch. Either "1" or "2".
 /// @return 
-uint8_t TCMDEXEC_comms_dipole_switch_set_state(
+uint8_t TCMDEXEC_comms_set_rf_switch_control_mode(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
@@ -32,7 +32,31 @@ uint8_t TCMDEXEC_comms_dipole_switch_set_state(
         return 2;
     }
 
-    COMMS_set_dipole_switch_state((uint8_t)antenna_num_u64);
+    COMMS_set_rf_switch_state((uint8_t)antenna_num_u64);
+
+    return 0;
+}
+
+/// @brief Fetch the optimal antenna to use based on the satellite's attitude angles.
+/// @param args_str No args.
+/// @return 
+uint8_t TCMDEXEC_comms_use_adcs_to_get_optimal_antenna(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    uint8_t antenna_num = COMMS_find_optimal_antenna_using_adcs();
+    if (antenna_num == 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error: Unable to determine optimal antenna using ADCS.");
+        return 1;
+    }
+
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "{\"optimal_antenna\":%d}",
+        antenna_num
+    );
 
     return 0;
 }

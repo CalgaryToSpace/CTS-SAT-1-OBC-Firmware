@@ -4,6 +4,8 @@
 #include "timekeeping/timekeeping.h"
 #include "rtos_tasks/rtos_task_helpers.h"
 #include "main.h"
+#include "rtos_tasks/rtos_tasks_rx_telecommands.h"
+#include "comms_drivers/rf_antenna_switch.h"
 
 #include "cmsis_os.h"
 
@@ -59,6 +61,52 @@ static void subtask_reset_system_after_very_long_uptime(void) {
     }
 }
 
+/// @brief Update the RF switch state based on the current mode.
+/// @note Implemented per https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/228
+static void subtask_update_rf_switch(void) {
+    const uint32_t duration_since_last_uplink_sec = (TIM_get_current_system_uptime_ms() - AX100_uptime_at_last_received_kiss_tcmd_ms) / 1000;
+
+    if (duration_since_last_uplink_sec > CONFIG_max_duration_without_uplink_before_setting_default_rf_switch_mode_sec) {
+        COMMS_rf_switch_control_mode = COMMS_RF_SWITCH_CONTROL_MODE_TOGGLE_BEFORE_EVERY_BEACON;
+        LOG_message(
+            LOG_SYSTEM_OBC,
+            LOG_SEVERITY_DEBUG,
+            LOG_SINK_ALL,
+            "RF switch control mode set to default due to no uplinks: %ld sec",
+            duration_since_last_uplink_sec
+        );
+        return;
+    }
+
+    if (COMMS_rf_switch_control_mode == COMMS_RF_SWITCH_CONTROL_MODE_FORCE_ANT1) {
+        COMMS_set_rf_switch_state(1);
+    }
+    else if (COMMS_rf_switch_control_mode == COMMS_RF_SWITCH_CONTROL_MODE_FORCE_ANT2) {
+        COMMS_set_rf_switch_state(2);
+    }
+    else if ((COMMS_rf_switch_control_mode == COMMS_RF_SWITCH_CONTROL_MODE_USE_ADCS_NORMAL)
+        || (COMMS_rf_switch_control_mode == COMMS_RF_SWITCH_CONTROL_MODE_USE_ADCS_FLIPPED)
+    ) {
+        const uint8_t antenna_num = COMMS_find_optimal_antenna_using_adcs();
+        if (antenna_num == 0) {
+            LOG_message(
+                LOG_SYSTEM_ADCS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+                "Failed to find optimal antenna using ADCS. Resetting to TOGGLE_BEFORE_EVERY_BEACON mode."
+            );
+            COMMS_rf_switch_control_mode = COMMS_RF_SWITCH_CONTROL_MODE_TOGGLE_BEFORE_EVERY_BEACON;
+            return;
+        }
+        
+        // Main update: Set the RF switch state based on the ADCS recommendation.
+        if (COMMS_rf_switch_control_mode == COMMS_RF_SWITCH_CONTROL_MODE_USE_ADCS_FLIPPED) {
+            COMMS_set_rf_switch_state(3 - antenna_num); // 1 -> 2, 2 -> 1
+        }
+        else {
+            COMMS_set_rf_switch_state(antenna_num);
+        }
+    }
+}
+
 void TASK_background_upkeep(void *argument) {
     TASK_HELP_start_of_task();
     while(1) {
@@ -67,7 +115,10 @@ void TASK_background_upkeep(void *argument) {
 
         subtask_reset_system_after_very_long_uptime();
         osDelay(10); // Yield.
+
+        subtask_update_rf_switch();
+        osDelay(10); // Yield.
         
-        osDelay(1000);
+        osDelay(3000);
     }
 }
