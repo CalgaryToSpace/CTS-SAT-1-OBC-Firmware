@@ -82,7 +82,7 @@ uint8_t COMMS_find_optimal_antenna_using_adcs() {
 
 /// @brief Toggles the active antenna (selected by RF switch), from 1 to 2 or from 2 to 1.
 /// @note This function can be used to manually toggle the active antenna, regardless of the result of COMMS_find_optimal_antenna.
-void COMMS_toggle_rf_switch_antenna() {
+void COMMS_toggle_rf_switch_state() {
     if (COMMS_active_rf_switch_antenna == 1) {
         COMMS_set_rf_switch_state(2);
     }

@@ -6,6 +6,7 @@
 #include "main.h"
 #include "rtos_tasks/rtos_tasks_rx_telecommands.h"
 #include "comms_drivers/rf_antenna_switch.h"
+#include "comms_drivers/comms_tx.h"
 
 #include "cmsis_os.h"
 
@@ -107,9 +108,25 @@ static void subtask_update_rf_switch(void) {
     }
 }
 
+static void subtask_send_beacon(void) {
+    if (COMMS_rf_switch_control_mode == COMMS_RF_SWITCH_CONTROL_MODE_TOGGLE_BEFORE_EVERY_BEACON) {
+        COMMS_toggle_rf_switch_state();
+
+        HAL_Delay(20); // Wait for the RF switch to settle. Should only take <100 nanoseconds.
+    }
+
+    // TODO: Add configuration for beacon interval.
+    COMMS_downlink_beacon_basic_packet();
+
+    // TOOD: If complex beacon packet is enabled, also send that too.
+}
+
 void TASK_background_upkeep(void *argument) {
     TASK_HELP_start_of_task();
     while(1) {
+        subtask_send_beacon();
+        osDelay(10); // Yield.
+
         subtask_monitor_eps_power();
         osDelay(10); // Yield.
 

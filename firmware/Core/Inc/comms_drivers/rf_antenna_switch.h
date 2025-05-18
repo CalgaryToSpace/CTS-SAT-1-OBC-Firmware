@@ -20,6 +20,7 @@ extern uint32_t CONFIG_max_duration_without_uplink_before_setting_default_rf_swi
 void COMMS_set_rf_switch_state(uint8_t antenna_num);
 
 uint8_t COMMS_find_optimal_antenna_using_adcs();
+void COMMS_toggle_rf_switch_state();
 
 COMMS_rf_switch_control_mode_enum_t COMMS_rf_switch_control_mode_enum_from_string(const char *str);
 const char* COMMS_rf_switch_control_mode_enum_to_string(COMMS_rf_switch_control_mode_enum_t mode);
