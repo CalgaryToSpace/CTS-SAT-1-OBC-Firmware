@@ -7,6 +7,9 @@
 #include "timekeeping/timekeeping.h"
 #include "log/log.h"
 
+/// @brief The uptime, as defined in the Launch Provider ICD, at which the antennas should be deployed.
+uint32_t COMMS_uptime_to_start_ant_deployment_sec = 30 * 60;
+
 CTS1_operation_state_enum_t CTS1_operation_state = CTS1_OPERATION_STATE_BOOTED_AND_WAITING;
 
 static void set_operation_mode_and_log_if_changed(CTS1_operation_state_enum_t new_mode, const char *reason_str) {
@@ -124,7 +127,7 @@ static inline void SUBTASK_bootup_operation_mode_check_for_state_transitions(voi
     if (CTS1_operation_state == CTS1_OPERATION_STATE_BOOTED_AND_WAITING) {
         // Condition 4: If (RBF_STATE == FLYING) && (uptime > 30 minutes) -> DEPLOYING
         // Reason: Nominal post-ejection transition
-        if ((OBC_get_rbf_state() == OBC_RBF_STATE_FLYING) && (TIM_get_current_system_uptime_ms() > 30 * 60 * 1000)) {
+        if ((OBC_get_rbf_state() == OBC_RBF_STATE_FLYING) && (TIM_get_current_system_uptime_ms() > (COMMS_uptime_to_start_ant_deployment_sec * 1000))) {
             set_operation_mode_and_log_if_changed(
                 CTS1_OPERATION_STATE_DEPLOYING,
                 "Condition 4: RBF == DEPLOY AND uptime > 30 minutes"

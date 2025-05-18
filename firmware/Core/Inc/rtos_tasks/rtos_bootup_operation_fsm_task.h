@@ -1,6 +1,10 @@
 #ifndef INCLUDE_GUARD__RTOS_BOOTUP_OPERATION_FSM_TASK_H
 #define INCLUDE_GUARD__RTOS_BOOTUP_OPERATION_FSM_TASK_H
 
+#include <stdint.h>
+
+extern uint32_t COMMS_uptime_to_start_ant_deployment_sec;
+
 typedef enum {
     // Entry point. Booted, and awaiting a trigger to deployment. Emulate a 30-minute countdown to antenna deployment.
     CTS1_OPERATION_STATE_BOOTED_AND_WAITING,

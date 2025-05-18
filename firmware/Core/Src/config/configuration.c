@@ -1,4 +1,5 @@
 #include "config/configuration.h"
+#include "rtos_tasks/rtos_bootup_operation_fsm_task.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -60,7 +61,12 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
     {
         .variable_name = "CONFIG_EPS_enable_uart_debug_print",
         .num_config_var = &CONFIG_EPS_enable_uart_debug_print,
-    }
+    },
+    // ******** Start Comms Section ********
+    {
+        .variable_name = "COMMS_uptime_to_start_ant_deployment_sec",
+        .num_config_var = &COMMS_uptime_to_start_ant_deployment_sec,
+    },
 };
 
 // extern
