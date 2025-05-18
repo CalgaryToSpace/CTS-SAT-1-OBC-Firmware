@@ -1208,6 +1208,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
     },
+    {
+        .tcmd_name = "comms_get_rf_switch_info",
+        .tcmd_func = TCMDEXEC_comms_get_rf_switch_info,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
     // ****************** END SECTION: comms_telecommand_defs ******************
     // ****************** SECTION: gps_telecommand_defs ******************
     {

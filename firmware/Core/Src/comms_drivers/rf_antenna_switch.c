@@ -93,6 +93,9 @@ void COMMS_toggle_rf_switch_antenna() {
 
 COMMS_rf_switch_control_mode_enum_t COMMS_rf_switch_control_mode_enum_from_string(const char *str) {
     if ((strcasecmp(str, "TOGGLE_BEFORE_EVERY_BEACON") == 0)
+        || (strcasecmp(str, "before_every_beacon") == 0)
+        || (strcasecmp(str, "before_beacon") == 0)
+        || (strcasecmp(str, "TOGGLE_BEFORE_BEACON") == 0)
         || (strcasecmp(str, "TOGGLE") == 0)
         || (strcasecmp(str, "0") == 0)
         || (strcasecmp(str, "DEFAULT") == 0)
@@ -135,5 +138,22 @@ COMMS_rf_switch_control_mode_enum_t COMMS_rf_switch_control_mode_enum_from_strin
     }
     else {
         return COMMS_RF_SWITCH_CONTROL_MODE_UNKNOWN; // Default.
+    }
+}
+
+const char* COMMS_rf_switch_control_mode_enum_to_string(COMMS_rf_switch_control_mode_enum_t mode) {
+    switch (mode) {
+        case COMMS_RF_SWITCH_CONTROL_MODE_TOGGLE_BEFORE_EVERY_BEACON:
+            return "TOGGLE_BEFORE_EVERY_BEACON";
+        case COMMS_RF_SWITCH_CONTROL_MODE_FORCE_ANT1:
+            return "FORCE_ANT1";
+        case COMMS_RF_SWITCH_CONTROL_MODE_FORCE_ANT2:
+            return "FORCE_ANT2";
+        case COMMS_RF_SWITCH_CONTROL_MODE_USE_ADCS_NORMAL:
+            return "USE_ADCS_NORMAL";
+        case COMMS_RF_SWITCH_CONTROL_MODE_USE_ADCS_FLIPPED:
+            return "USE_ADCS_FLIPPED";
+        default:
+            return "UNKNOWN";
     }
 }
