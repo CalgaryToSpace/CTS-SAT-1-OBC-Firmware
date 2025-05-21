@@ -1,0 +1,7 @@
+<map id="OBC_read_vbat_monitor_with_adc_mV" name="OBC_read_vbat_monitor_with_adc_mV">
+<area shape="rect" id="Node000001" title="Read the voltage reported by the ADC at the VBAT_MONITOR pin." alt="" coords="426,5,589,46"/>
+<area shape="rect" id="Node000002" href="$adc__vbat__monitor_8c.html#af7a3381e550be2335871a40d79e76ab1" title="Read the battery voltage using the ADC." alt="" coords="234,5,378,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="411,28,378,28,378,23,411,23"/>
+<area shape="rect" id="Node000003" href="$obc__systems__telecommand__defs_8c.html#aa017359ff58731f4c005020cc939685b" title="Read the battery voltage using the ADC. Returns the result in mV. Voltage divider ratio is already ap..." alt="" coords="5,5,186,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="218,28,186,28,186,23,218,23"/>
+</map>

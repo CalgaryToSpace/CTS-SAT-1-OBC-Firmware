@@ -1,0 +1,16 @@
+<map id="CTS1_check_flash_alive" name="CTS1_check_flash_alive">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,17,170,42"/>
+<area shape="rect" id="Node000002" href="$flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="649,5,813,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="170,24,366,20,601,19,634,20,634,25,601,24,366,25,170,30"/>
+<area shape="rect" id="Node000003" href="$flash__driver_8c.html#a6bc165243d2ad49f688a477a644f4186" title="Checks if the FLASH chip is reachable by checking it&#39;s ID." alt="" coords="218,70,363,96"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="140,41,224,63,223,68,139,46"/>
+<area shape="poly" id="edge8_Node000003_Node000002" title=" " alt="" coords="334,67,411,48,526,34,634,26,634,31,527,39,411,54,335,72"/>
+<area shape="rect" id="Node000004" href="$debug__uart_8c.html#ae1143c61f5fad27b50053b03673b9501" title="Print an array of bytes in hex format, like 00 01 02 ..." alt="" coords="411,128,601,153"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="342,94,441,120,440,126,341,99"/>
+<area shape="rect" id="Node000005" href="$debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="656,153,806,178"/>
+<area shape="poly" id="edge5_Node000003_Node000005" title=" " alt="" coords="307,94,351,131,380,149,412,163,470,176,529,181,588,181,640,177,641,182,588,186,529,187,469,181,410,168,378,154,348,135,303,98"/>
+<area shape="rect" id="Node000006" href="$flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="432,63,581,103"/>
+<area shape="poly" id="edge6_Node000003_Node000006" title=" " alt="" coords="363,80,416,80,416,86,363,86"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="602,148,640,153,640,158,601,154"/>
+<area shape="poly" id="edge7_Node000006_Node000002" title=" " alt="" coords="581,61,633,48,635,53,582,66"/>
+</map>

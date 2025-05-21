@@ -1,0 +1,11 @@
+<map id="OBC_TEMP_SENSOR_get_temperature_cC" name="OBC_TEMP_SENSOR_get_temperature_cC">
+<area shape="rect" id="Node000001" title="The simplest and most foolproof way to get the OBC temperature in centi&#45;celsius." alt="" coords="499,67,678,107"/>
+<area shape="rect" id="Node000002" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="259,37,415,78"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="483,77,415,69,416,64,484,72"/>
+<area shape="rect" id="Node000005" href="$obc__systems__telecommand__defs_8c.html#a693867fabe195fdfc4e6d34ec382a698" title="Reads the temperature from the STDS75DS2F in centi&#45;Celsius." alt="" coords="223,102,451,128"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="484,101,452,105,451,100,483,96"/>
+<area shape="rect" id="Node000003" href="$system__telecommand__defs_8c.html#ab5d9cbdf1fd0c01f5a10f20d39971092" title="System self&#45;check of all peripherals and systems." alt="" coords="5,5,175,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="243,48,175,39,176,34,243,43"/>
+<area shape="rect" id="Node000004" href="$system__telecommand__defs_8c.html#ad62425492ed28fac500f9c495fe7d4ba" title="System self&#45;check of all peripherals and systems." alt="" coords="5,71,175,111"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="243,73,176,82,175,77,243,68"/>
+</map>

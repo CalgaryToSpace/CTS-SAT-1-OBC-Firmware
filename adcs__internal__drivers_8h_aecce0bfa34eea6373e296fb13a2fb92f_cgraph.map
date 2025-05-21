@@ -1,0 +1,16 @@
+<map id="ADCS_i2c_send_command_and_check" name="ADCS_i2c_send_command_and_check">
+<area shape="rect" id="Node000001" title="Sends a telecommand over I2C to the ADCS, checks that it&#39;s been acknowledged, and returns the ACK err..." alt="" coords="5,88,186,129"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a78314a88408de1fd947bac1eb122e96f" title="Instructs the ADCS to determine whether the last command succeeded. (Doesn&#39;t work for telemetry reque..." alt="" coords="234,70,351,96"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="186,94,218,90,219,95,186,99"/>
+<area shape="rect" id="Node000007" href="$adcs__internal__drivers_8c.html#a4fd725dd59fc5c6d0304751c2a08baa4" title="Sends a telecommand over I2C to the ADCS." alt="" coords="638,96,840,121"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="186,106,623,106,623,111,186,111"/>
+<area shape="rect" id="Node000003" href="$adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="399,5,590,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="340,67,405,48,406,53,341,72"/>
+<area shape="rect" id="Node000006" href="$adcs__struct__packers_8c.html#a7d2724ecc73e63b175cfd0f0da82ff1d" title="Packs the ADCS received raw data into the appropriate structure for the ADCS_cmd_ack command." alt="" coords="406,70,584,96"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="351,80,390,80,390,86,351,86"/>
+<area shape="rect" id="Node000004" href="$adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="651,19,827,59"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="591,28,635,31,635,36,591,34"/>
+<area shape="rect" id="Node000005" href="$adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="888,60,1036,101"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="828,53,873,61,872,66,827,58"/>
+<area shape="poly" id="edge7_Node000007_Node000005" title=" " alt="" coords="840,93,872,89,873,94,840,98"/>
+</map>

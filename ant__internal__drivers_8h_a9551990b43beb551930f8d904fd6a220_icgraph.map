@@ -1,0 +1,55 @@
+<map id="ANT_send_cmd" name="ANT_send_cmd">
+<area shape="rect" id="Node000001" title="Sends a command to the antenna controller." alt="" coords="941,346,1056,372"/>
+<area shape="rect" id="Node000002" href="$ant__commands_8c.html#a6dc9ca839207865f4bf9e17013142ffe" title="Arm the antenna deploy system." alt="" coords="708,9,875,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="992,331,984,276,967,206,954,168,937,132,916,98,891,68,870,53,874,48,894,64,920,95,942,129,959,166,972,204,990,275,997,330"/>
+<area shape="rect" id="Node000004" href="$ant__commands_8c.html#aa86049a30b4df703bcb200dd4d49edbf" title="cancels any active attempts to deploy an antenna" alt="" coords="690,77,893,118"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="989,332,977,290,957,238,929,185,891,138,865,121,868,116,894,134,933,182,962,236,982,288,994,330"/>
+<area shape="rect" id="Node000006" href="$ant__commands_8c.html#a236e28a0ade562989c5c98dbb90fef43" title="activates the deployment system for the selected antenna for the specified amount of time" alt="" coords="701,149,882,174"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="985,333,950,264,924,226,891,194,859,177,861,173,894,190,928,223,955,261,990,331"/>
+<area shape="rect" id="Node000008" href="$ant__commands_8c.html#a5ea8c0da2fe8ab8bb2a60b80501c12e8" title="initiates deployment of the selected antenna, ignoring whether the current status of that antenna is ..." alt="" coords="701,204,882,245"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="975,336,938,298,891,261,864,248,866,243,894,257,942,294,979,333"/>
+<area shape="rect" id="Node000010" href="$ant__commands_8c.html#a923d1438a447849c835d0acf8cfb45e1" title="Disarms the antenna deploy system." alt="" coords="700,271,883,311"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="942,343,855,314,856,309,943,338"/>
+<area shape="rect" id="Node000012" href="$ant__commands_8c.html#ab7a42ab5fcf483a9db3af4a2d5015f63" title="writes the cumulative time (in ms increments) that the deployment system has been active (for a speci..." alt="" coords="697,339,886,379"/>
+<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="925,362,887,362,887,356,925,356"/>
+<area shape="rect" id="Node000014" href="$ant__commands_8c.html#a15c39d0ab06d12b38a3fe5f4843c4cd7" title="Measures the temperature at the antenna controller system." alt="" coords="703,418,880,444"/>
+<area shape="poly" id="edge13_Node000001_Node000014" title=" " alt="" coords="946,380,832,420,830,415,944,375"/>
+<area shape="rect" id="Node000020" href="$ant__commands_8c.html#afbbf4f4105326f8ea68bb54812e3078e" title="writes the number of times deployment has been attempted (for a specified antenna and mcu) in a respo..." alt="" coords="693,485,890,526"/>
+<area shape="poly" id="edge19_Node000001_Node000020" title=" " alt="" coords="977,385,940,422,894,459,843,487,841,482,891,454,936,418,973,382"/>
+<area shape="rect" id="Node000022" href="$ant__commands_8c.html#a73ee96b3496909a29f4fcf12bfd73bbc" title="writes 2 bytes of information representing the deployment status of the antennas to the passed buffer..." alt="" coords="693,587,890,627"/>
+<area shape="poly" id="edge21_Node000001_Node000022" title=" " alt="" coords="988,388,951,460,925,501,895,540,864,567,832,588,829,584,861,562,891,536,921,498,947,457,983,385"/>
+<area shape="rect" id="Node000024" href="$ant__commands_8c.html#a2749f0e14ccc1565ed9cb09dad735288" title="Performs a reset of the antenna deployment systems microcontroller which is specified." alt="" coords="731,661,852,686"/>
+<area shape="poly" id="edge23_Node000001_Node000024" title=" " alt="" coords="997,388,988,441,971,508,940,579,920,612,894,641,875,655,853,665,851,660,872,651,891,637,915,609,936,576,966,507,983,440,992,387"/>
+<area shape="rect" id="Node000026" href="$ant__commands_8c.html#af22573c46c8f78ec83ede466d7386179" title="deploys all antennas one by one sequentially." alt="" coords="699,711,884,751"/>
+<area shape="poly" id="edge25_Node000001_Node000026" title=" " alt="" coords="999,388,994,451,979,535,966,580,948,623,924,664,895,701,880,712,877,708,891,697,920,661,943,621,961,578,974,534,989,451,994,387"/>
+<area shape="rect" id="Node000003" href="$antenna__telecommand__defs_8c.html#a80fd2c43515bf450f5bc03b915e6feab" title="Telecommand: Arm the antenna deploy system." alt="" coords="435,5,634,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="693,31,635,30,635,25,693,25"/>
+<area shape="rect" id="Node000005" href="$antenna__telecommand__defs_8c.html#ab1d646908ddc85cd1357d1944b86c50e" title="Cancels any active attempts to deploy an antenna." alt="" coords="432,71,638,111"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="674,97,638,96,638,91,675,92"/>
+<area shape="rect" id="Node000007" href="$antenna__telecommand__defs_8c.html#aeda4136ef35a63728a3c061711ecc003" title="Telecommand: Initiates deployment of the selected antenna." alt="" coords="454,136,615,177"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="685,162,616,161,616,155,685,157"/>
+<area shape="rect" id="Node000009" href="$antenna__telecommand__defs_8c.html#af9e22621de0a8cccca89cf093277d368" title="Telecommand: Initiates deployment of the selected antenna, ignoring whether the antennas current stat..." alt="" coords="454,201,615,242"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="685,226,616,225,616,220,685,221"/>
+<area shape="rect" id="Node000011" href="$antenna__telecommand__defs_8c.html#a8f6b94c48f102e1cc89170f9d99aef91" title="Disarms the specified antenna deploy system&#39;s mcu." alt="" coords="453,267,616,307"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="685,292,617,291,617,286,685,287"/>
+<area shape="rect" id="Node000013" href="$antenna__telecommand__defs_8c.html#a32f50b7d62b7cc8d5a1152273565424c" title="Prints amount of time the deployment system has been active for for the selected antenna." alt="" coords="456,331,613,387"/>
+<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="681,362,614,362,614,356,681,356"/>
+<area shape="rect" id="Node000015" href="$complete__self__check_8c.html#a1453f8979f0191fab393db68e0ae6479" title=" " alt="" coords="460,411,609,451"/>
+<area shape="poly" id="edge14_Node000014_Node000015" title=" " alt="" coords="687,434,610,434,610,428,687,428"/>
+<area shape="rect" id="Node000019" href="$antenna__telecommand__defs_8c.html#a316cf470a39e910ad64f65afa587c1b4" title="Telecommand: Measures the temperature of the antenna controller in centi&#45;degrees celsius." alt="" coords="430,476,640,501"/>
+<area shape="poly" id="edge18_Node000014_Node000019" title=" " alt="" coords="716,450,596,477,595,472,715,445"/>
+<area shape="rect" id="Node000016" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="223,411,379,451"/>
+<area shape="poly" id="edge15_Node000015_Node000016" title=" " alt="" coords="444,434,380,434,380,428,444,428"/>
+<area shape="rect" id="Node000017" href="$system__telecommand__defs_8c.html#ab5d9cbdf1fd0c01f5a10f20d39971092" title="System self&#45;check of all peripherals and systems." alt="" coords="5,377,175,418"/>
+<area shape="poly" id="edge16_Node000016_Node000017" title=" " alt="" coords="207,419,175,414,176,408,208,414"/>
+<area shape="rect" id="Node000018" href="$system__telecommand__defs_8c.html#ad62425492ed28fac500f9c495fe7d4ba" title="System self&#45;check of all peripherals and systems." alt="" coords="5,443,175,483"/>
+<area shape="poly" id="edge17_Node000016_Node000018" title=" " alt="" coords="208,448,176,453,175,447,207,442"/>
+<area shape="rect" id="Node000021" href="$antenna__telecommand__defs_8c.html#a29095133ad39c147334618540917eb08" title="Prints the number of times deployment was attempted on the selected antenna." alt="" coords="456,526,613,582"/>
+<area shape="poly" id="edge20_Node000020_Node000021" title=" " alt="" coords="679,529,614,542,613,536,678,524"/>
+<area shape="rect" id="Node000023" href="$antenna__telecommand__defs_8c.html#a7e32cc56948bced4a3f71c6291e1c63c" title="Prints the deployment status of all antennas." alt="" coords="456,605,613,646"/>
+<area shape="poly" id="edge22_Node000022_Node000023" title=" " alt="" coords="678,618,614,623,614,617,677,613"/>
+<area shape="rect" id="Node000025" href="$antenna__telecommand__defs_8c.html#a49f2db02be0a855e6be4c5e575018b69" title="Resets the specified antenna deployment system&#39;s microcontroller." alt="" coords="458,670,611,696"/>
+<area shape="poly" id="edge24_Node000024_Node000025" title=" " alt="" coords="716,679,612,683,611,678,716,674"/>
+<area shape="rect" id="Node000027" href="$antenna__telecommand__defs_8c.html#a3324fa3a66d69734ce5a7cf2fd507fb2" title="begins deployment of all antennas, one by one." alt="" coords="427,720,642,761"/>
+<area shape="poly" id="edge26_Node000026_Node000027" title=" " alt="" coords="683,738,643,739,643,734,683,732"/>
+</map>

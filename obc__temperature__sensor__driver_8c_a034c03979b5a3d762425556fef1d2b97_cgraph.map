@@ -1,0 +1,11 @@
+<map id="OBC_TEMP_SENSOR_get_temperature_cC" name="OBC_TEMP_SENSOR_get_temperature_cC">
+<area shape="rect" id="Node000001" title="The simplest and most foolproof way to get the OBC temperature in centi&#45;celsius." alt="" coords="5,39,185,79"/>
+<area shape="rect" id="Node000002" href="$obc__temperature__sensor__driver_8c.html#ab36edbe59017664d4c87f2f7987df1d7" title="Reads the temperature from the STDS75DS2F and stores it in the provided variable pointer result...." alt="" coords="233,5,419,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="185,43,217,39,217,44,186,49"/>
+<area shape="rect" id="Node000004" href="$obc__temperature__sensor__driver_8c.html#a8590badd50274075af7b427928d80ab0" title="Set the temp temperature precision in the config register." alt="" coords="236,71,416,111"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="186,69,221,74,221,79,185,74"/>
+<area shape="rect" id="Node000003" href="$obc__temperature__sensor__driver_8c.html#ac14775c099c95483ad42b8638530317e" title="Converts the raw bytes provided to a temperature in celsius and multiplied by a scaling factor based ..." alt="" coords="472,5,676,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="420,23,456,23,456,28,420,28"/>
+<area shape="rect" id="Node000005" href="$obc__temperature__sensor__driver_8c.html#a2d09ddfc2abe3f5e44c45a5d25af35c8" title="Configures the precision global variables in preparation for setting the precision." alt="" coords="467,71,680,111"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="416,88,452,88,452,94,416,94"/>
+</map>

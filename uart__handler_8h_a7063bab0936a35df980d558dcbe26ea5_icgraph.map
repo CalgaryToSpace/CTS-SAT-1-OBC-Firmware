@@ -1,0 +1,18 @@
+<map id="GPS_set_uart_interrupt_state" name="GPS_set_uart_interrupt_state">
+<area shape="rect" id="Node000001" title="Sets the UART interrupt state (enabled/disabled)" alt="" coords="912,89,1069,130"/>
+<area shape="rect" id="Node000002" href="$complete__self__check_8c.html#a82ad8e5243469f7636ca7833d4b27266" title=" " alt="" coords="446,39,595,79"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="896,92,863,87,721,72,595,64,595,59,721,67,864,82,897,87"/>
+<area shape="rect" id="Node000006" href="$gps__internal__drivers_8c.html#ada16e28afdba67a3ca91a3f9dc824804" title="Sends a log command to the GPS, and receives the response." alt="" coords="662,97,864,122"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="896,112,864,112,864,107,896,107"/>
+<area shape="rect" id="Node000008" href="$uart__telelecommand__defs_8c.html#a559929acf5cfc4bdde97856c88c93f7d" title="Send arbitrary commands to a UART peripheral, and receive the response." alt="" coords="683,147,843,187"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="897,136,844,149,843,144,896,131"/>
+<area shape="rect" id="Node000003" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="223,39,379,79"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="431,62,379,62,379,56,431,56"/>
+<area shape="rect" id="Node000004" href="$system__telecommand__defs_8c.html#ab5d9cbdf1fd0c01f5a10f20d39971092" title="System self&#45;check of all peripherals and systems." alt="" coords="5,5,175,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="207,47,175,42,176,36,208,42"/>
+<area shape="rect" id="Node000005" href="$system__telecommand__defs_8c.html#ad62425492ed28fac500f9c495fe7d4ba" title="System self&#45;check of all peripherals and systems." alt="" coords="5,71,175,111"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="208,76,176,81,175,75,207,70"/>
+<area shape="poly" id="edge6_Node000006_Node000002" title=" " alt="" coords="683,96,595,77,596,72,684,90"/>
+<area shape="rect" id="Node000007" href="$gps__telecommand__defs_8c.html#ab1cb2a2088c5fb64ff8c40154606e9a6" title="Telecommand: Transmit a log command to the GPS receiver through UART." alt="" coords="427,104,614,145"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="647,119,615,121,615,116,647,114"/>
+</map>

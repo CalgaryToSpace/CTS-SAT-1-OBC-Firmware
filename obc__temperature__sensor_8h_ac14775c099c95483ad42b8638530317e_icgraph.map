@@ -1,0 +1,19 @@
+<map id="OBC_TEMP_SENSOR_convert_raw_to_deg_c" name="OBC_TEMP_SENSOR_convert_raw_to_deg_c">
+<area shape="rect" id="Node000001" title="Converts the raw bytes provided to a temperature in celsius and multiplied by a scaling factor based ..." alt="" coords="1010,133,1214,174"/>
+<area shape="rect" id="Node000002" href="$obc__temperature__sensor__driver_8c.html#ab36edbe59017664d4c87f2f7987df1d7" title="Reads the temperature from the STDS75DS2F and stores it in the provided variable pointer result...." alt="" coords="775,97,962,138"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="994,139,962,134,963,129,994,134"/>
+<area shape="rect" id="Node000009" href="$test__obc__temperature__sensor_8c.html#a9d52c01f248ecb60a2d75ec6579f0048" title=" " alt="" coords="778,162,959,218"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="995,174,960,179,959,174,994,168"/>
+<area shape="rect" id="Node000003" href="$obc__temperature__sensor__driver_8c.html#a034c03979b5a3d762425556fef1d2b97" title="The simplest and most foolproof way to get the OBC temperature in centi&#45;celsius." alt="" coords="524,65,703,106"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="760,107,703,100,704,94,760,101"/>
+<area shape="rect" id="Node000008" href="$obc__systems__telecommand__defs_8c.html#a5451b6bfc63db7040b72d489f68389e6" title="Reads the temperature from the STDS75DS2F and stores it in the provided variable temperature...." alt="" coords="499,131,727,171"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="760,134,728,139,727,133,760,129"/>
+<area shape="rect" id="Node000004" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="259,37,415,78"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="508,78,415,68,416,63,508,72"/>
+<area shape="rect" id="Node000007" href="$obc__systems__telecommand__defs_8c.html#a693867fabe195fdfc4e6d34ec382a698" title="Reads the temperature from the STDS75DS2F in centi&#45;Celsius." alt="" coords="223,102,451,128"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="508,99,452,105,451,100,507,94"/>
+<area shape="rect" id="Node000005" href="$system__telecommand__defs_8c.html#ab5d9cbdf1fd0c01f5a10f20d39971092" title="System self&#45;check of all peripherals and systems." alt="" coords="5,5,175,46"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="243,48,175,39,176,34,243,43"/>
+<area shape="rect" id="Node000006" href="$system__telecommand__defs_8c.html#ad62425492ed28fac500f9c495fe7d4ba" title="System self&#45;check of all peripherals and systems." alt="" coords="5,71,175,111"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="243,73,176,82,175,77,243,68"/>
+</map>

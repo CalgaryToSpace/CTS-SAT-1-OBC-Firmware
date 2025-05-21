@@ -1,0 +1,17 @@
+<map id="TIM_get_timestamp_string_datetime" name="TIM_get_timestamp_string_datetime">
+<area shape="rect" id="Node000001" title="Returns a human&#45;friendly timestamp string." alt="" coords="791,83,967,124"/>
+<area shape="rect" id="Node000002" href="$timekeeping_8c.html#a05cd293bfd9a609af88ff87898a0fcbc" title="Use this function in a telecommand, or upon receiving a time update from the GPS." alt="" coords="596,83,743,124"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="775,106,743,106,743,101,775,101"/>
+<area shape="rect" id="Node000003" href="$eps__time_8c.html#a5a66b7a8cc792b4c410f66673b244442" title="Sets the OBC&#39;s time, based on the EPS&#39;s current time." alt="" coords="351,26,525,66"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="581,84,522,70,524,65,582,79"/>
+<area shape="rect" id="Node000007" href="$timekeeping__telecommand__defs_8c.html#a4306b41d60eb1206a50f68db97930164" title="Adjust the system time with a signed int." alt="" coords="328,91,548,116"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="581,106,549,106,549,101,581,101"/>
+<area shape="rect" id="Node000008" href="$timekeeping__telecommand__defs_8c.html#a2f0faa6c92a8852e4ece806dbb525e58" title="Set the system time to the provided Unix epoch time in milliseconds." alt="" coords="339,140,537,166"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="582,125,502,142,501,137,580,120"/>
+<area shape="rect" id="Node000004" href="$rtos__eps__tasks_8c.html#ad27bdbe0e838d3705b754e9af4c449b2" title=" " alt="" coords="130,5,252,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="335,37,253,28,253,22,336,32"/>
+<area shape="rect" id="Node000006" href="$timekeeping__telecommand__defs_8c.html#a96a9620231841478e8b1c1065423a783" title="Sync&#39;s obc time to eps time (+/&#45; 1 second)" alt="" coords="103,55,280,96"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="336,61,281,68,280,62,335,56"/>
+<area shape="rect" id="Node000005" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,5,55,31"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="115,21,55,21,55,16,115,16"/>
+</map>
