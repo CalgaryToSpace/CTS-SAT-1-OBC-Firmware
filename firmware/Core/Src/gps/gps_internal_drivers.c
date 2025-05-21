@@ -43,20 +43,25 @@ uint8_t GPS_send_cmd_get_response(
     UART_gps_buffer_write_idx = 0;
 
     // TX TO GPS
-    const HAL_StatusTypeDef tx_status = HAL_UART_Transmit(
+    const HAL_StatusTypeDef tx_status_1 = HAL_UART_Transmit(
         UART_gps_port_handle,
         (uint8_t *)cmd_buf,
         cmd_buf_len,
         100
     );
+    const HAL_StatusTypeDef tx_status_2 = HAL_UART_Transmit(
+        UART_gps_port_handle,
+        (uint8_t *)"\r\n",
+        3,
+        100
+    );
 
-    if (tx_status != HAL_OK)
-    {
+    if (tx_status_1 != HAL_OK || tx_status_2 != HAL_OK) {
         LOG_message(
             LOG_SYSTEM_GPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-            "GPS ERROR: tx_status != HAL_OK (%d)\n",
-            tx_status);
-
+            "GPS ERROR: tx_status != HAL_OK (%d, %d)",
+            tx_status_1, tx_status_2
+        );
         return 1;
     }
 
@@ -82,8 +87,7 @@ uint8_t GPS_send_cmd_get_response(
 
                 *rx_buf_len_dest = 0;
             
-                // Fatal error; return.
-                return 2;
+                return 2; // Error: Timeout before receiving any data.
             }
         }
         else { // thus, UART_eps_buffer_write_idx > 0

@@ -27,25 +27,23 @@ uint8_t TCMDEXEC_gps_send_cmd_ascii(
     const uint16_t gps_log_cmd_len = strlen(gps_log_cmd);
 
     // Allocate space to receive incoming GPS response.
-    const uint16_t GPS_rx_buffer_max_size = 512;
-    uint16_t GPS_rx_buffer_len = 0;
-    uint8_t GPS_rx_buffer[GPS_rx_buffer_max_size];
-    memset(GPS_rx_buffer, 0, GPS_rx_buffer_max_size); // Initialize all elements to 0
+    const uint16_t rx_buffer_max_size = 512;
+    uint16_t rx_buffer_len = 0;
+    uint8_t rx_buffer[rx_buffer_max_size];
+    memset(rx_buffer, 0, rx_buffer_max_size); // Initialize all elements to 0
 
     // Send log command to GPS and receive response
     const uint8_t gps_cmd_status = GPS_send_cmd_get_response(
-        gps_log_cmd, gps_log_cmd_len, GPS_rx_buffer, GPS_rx_buffer_max_size,
-        &GPS_rx_buffer_len // Will be mutated.
+        gps_log_cmd, gps_log_cmd_len, rx_buffer, rx_buffer_max_size,
+        &rx_buffer_len // Will be mutated.
     );
 
     // Handle the gps_cmd_status: Perform the error checks
     // TODO: Potentially add GPS_validate_log_response function in here to validate response from the gps receiver
 
     if (gps_cmd_status != 0) {
-        LOG_message(
-            LOG_SYSTEM_GPS,
-            LOG_SEVERITY_NORMAL,
-            LOG_SINK_ALL,
+        snprintf(
+            response_output_buf, response_output_buf_len,
             "GPS_send_cmd_get_response failed -> %d",
             gps_cmd_status
         );
@@ -54,9 +52,9 @@ uint8_t TCMDEXEC_gps_send_cmd_ascii(
     snprintf(
         response_output_buf, response_output_buf_len,
         "GPS Response (%d bytes): %s",
-        GPS_rx_buffer_len,
-        GPS_rx_buffer
+        rx_buffer_len,
+        rx_buffer
     );
 
-    return 0;
+    return gps_cmd_status;
 }
