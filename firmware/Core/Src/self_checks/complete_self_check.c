@@ -83,7 +83,12 @@ uint8_t CTS1_check_is_gnss_responsive() {
         EPS_set_channel_enabled(EPS_CHANNEL_3V3_GNSS, 0); // Power off the GPS.
         return 0;
     }
-    HAL_Delay(500); // Allow time for the GPS to power on.
+
+    LOG_message(
+        LOG_SYSTEM_GPS, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+        "GPS power channel enabled. Waiting for GPS to power on (10 sec)..."
+    );
+    HAL_Delay(10000); // Allow time for the GPS to power on. Needs a very long time. 5 sec too short. 7 sec works.
 
     // Expecting versiona may send up to about 250 bytes.
     uint8_t rx_buf[350];
@@ -401,13 +406,16 @@ void CTS1_run_system_self_check(CTS1_system_self_check_result_struct_t *result) 
         result->is_ax100_i2c_addr_alive
     );
 
-    // GNSS
+    // GNSS (very long duration)
     result->is_gnss_responsive = CTS1_check_is_gnss_responsive();
     LOG_message(
         LOG_SYSTEM_OBC, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
         "is_gnss_responsive: %d",
         result->is_gnss_responsive
     );
+    
+    // The GNSS takes a very long time to power on. Pet the watchdog here to keep it happy.
+    HAL_IWDG_Refresh(&hiwdg);
 
     // EPS
     result->is_eps_responsive = CTS1_check_is_eps_responsive();

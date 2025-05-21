@@ -258,8 +258,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
                 // Reset to a valid index
                 UART_gps_buffer_write_idx = UART_gps_buffer_len - 1;
             }
-            UART_gps_buffer[UART_gps_buffer_write_idx++] = UART_gps_buffer_last_rx_byte;
-            UART_gps_last_write_time_ms = HAL_GetTick();
+
+            if (UART_gps_buffer_last_rx_byte != '\0') {
+                UART_gps_buffer[UART_gps_buffer_write_idx++] = UART_gps_buffer_last_rx_byte;
+                UART_gps_last_write_time_ms = HAL_GetTick();
+            }
 
             HAL_UART_Receive_IT(UART_gps_port_handle, (uint8_t*) &UART_gps_buffer_last_rx_byte, 1);
         }
