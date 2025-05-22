@@ -3,6 +3,7 @@
 #include "comms_drivers/ax100_hw.h"
 #include "log/log.h"
 #include "debug_tools/debug_uart.h"
+#include "comms_drivers/rf_antenna_switch.h"
 
 #include <string.h>
 
@@ -92,7 +93,7 @@ uint8_t AX100_downlink_bytes(uint8_t *data, uint16_t data_len) {
     // Debugging write to UART.
     DEBUG_uart_print_mixed_array(
         packet_buffer_including_csp_header, data_len + AX100_CSP_HEADER_LENGTH_BYTES,
-        "AX100 Down"
+        ((COMMS_active_rf_switch_antenna == 1) ? "AX100 Down [ANT1]" : "AX100 Down [ANT2]")
     );
 
     return send_bytes_to_ax100(packet_buffer_including_csp_header, data_len + AX100_CSP_HEADER_LENGTH_BYTES);

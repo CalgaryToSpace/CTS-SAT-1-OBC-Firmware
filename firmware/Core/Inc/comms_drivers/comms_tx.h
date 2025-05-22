@@ -4,8 +4,8 @@
 #include "comms_drivers/ax100_tx.h"
 
 typedef enum {
-    COMMS_PACKET_TYPE_BEACON_MINIMAL = 0x01,
-    COMMS_PACKET_TYPE_BEACON_FULL = 0x02,
+    COMMS_PACKET_TYPE_BEACON_BASIC = 0x01,
+    COMMS_PACKET_TYPE_BEACON_PERIPHERAL = 0x02,
     COMMS_PACKET_TYPE_LOG_MESSAGE = 0x03,
     COMMS_PACKET_TYPE_TCMD_RESPONSE = 0x04,
     COMMS_PACKET_TYPE_DOWNLINK_FIRST_PACKET = 0x05,
@@ -33,6 +33,28 @@ typedef enum {
 
 #pragma pack(push, 1)
 
+
+typedef struct {
+    uint8_t packet_type; // COMMS_packet_type_enum_t - Always COMMS_PACKET_TYPE_BEACON_BASIC for this packet
+
+    char satellite_name[4]; // 4 bytes: "CTS1" :)
+
+    uint8_t active_rf_switch_antenna; // Either 1 or 2.
+    uint8_t active_rf_switch_control_mode; // Enum: COMMS_rf_switch_control_mode_enum_t
+    uint32_t uptime_ms;
+
+    uint32_t duration_since_last_uplink_ms;
+    uint64_t unix_epoch_time_ms;
+
+    uint8_t is_fs_mounted;
+
+    // TODO: LEOPS operation mode
+
+    // TODO: Many more from https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/338
+    
+} COMMS_beacon_basic_packet_t;
+
+
 typedef struct {
     uint8_t packet_type; // COMMS_packet_type_enum_t - Always COMMS_PACKET_TYPE_LOG_MESSAGE for this packet
 
@@ -55,6 +77,7 @@ typedef struct {
 // TODO: Add sizeof assertions in unit tests related to the packets above.
 // assert(sizeof(COMMS_log_message_packet_t) == AX100_DOWNLINK_MAX_BYTES);
 // assert(sizeof(COMMS_tcmd_response_packet_t) == AX100_DOWNLINK_MAX_BYTES);
+// assert(sizeof(COMMS_beacon_basic_packet_t) <= AX100_DOWNLINK_MAX_BYTES);
 
 #pragma pack(pop)
 
@@ -68,5 +91,7 @@ uint8_t COMMS_downlink_tcmd_response(
 );
 
 uint8_t COMMS_downlink_log_message(const char log_message_str[]);
+
+uint8_t COMMS_downlink_beacon_basic_packet();
 
 #endif // INCLUDE_GUARD__COMMS_TX_H__

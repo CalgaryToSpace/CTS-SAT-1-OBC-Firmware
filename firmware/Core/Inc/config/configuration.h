@@ -16,7 +16,7 @@ typedef struct
     const uint8_t max_length; // max length, including the null terminator
 } CONFIG_string_config_entry_t;
 
-static const uint8_t CONFIG_MAX_VARIABLE_NAME_LENGTH = 50;
+static const uint8_t CONFIG_MAX_VARIABLE_NAME_LENGTH = 200;
 
 static const uint8_t CONFIG_MAX_JSON_STRING_LENGTH = UINT8_MAX;
 

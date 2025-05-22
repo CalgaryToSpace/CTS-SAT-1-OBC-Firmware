@@ -1,4 +1,5 @@
 #include "config/configuration.h"
+#include "comms_drivers/rf_antenna_switch.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -60,7 +61,14 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
     {
         .variable_name = "CONFIG_EPS_enable_uart_debug_print",
         .num_config_var = &CONFIG_EPS_enable_uart_debug_print,
-    }
+    },
+    // ****** START Communication System Configs ******
+    {
+        .variable_name = "COMMS_max_duration_without_uplink_before_setting_default_rf_switch_mode_sec",
+        .num_config_var = &COMMS_max_duration_without_uplink_before_setting_default_rf_switch_mode_sec,
+    },
+    // ****** END Communication System Configs ******
+    
 };
 
 // extern
