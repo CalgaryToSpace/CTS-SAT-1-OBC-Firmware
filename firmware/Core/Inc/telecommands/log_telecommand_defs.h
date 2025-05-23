@@ -35,7 +35,7 @@ uint8_t TCMDEXEC_log_report_latest_message_from_memory(const char *args_str, TCM
 uint8_t TCMDEXEC_log_report_n_latest_messages_from_memory(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len);
 
-uint8_t TCMDEXEC_log_set_logging_source_enabled(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_log_set_system_severity_mask(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len);
 
 #endif /* INCLUDE_GUARD__LOG_TELECOMMAND_DEFS_H__ */
