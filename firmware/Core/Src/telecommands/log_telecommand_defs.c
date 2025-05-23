@@ -274,3 +274,57 @@ uint8_t TCMDEXEC_log_report_n_latest_messages_from_memory(const char *args_str, 
     
     return 0;
 }
+
+/// @brief Telecommand: Set the severity mask for a LOG subsystem
+/// @param args_str
+/// - Arg 0: Subsystem enum
+/// - Arg 1: Severity mask
+/// @note Valid string values for Arg 0: "obc", "uhf_radio", "umbilical_uart", "gps",
+///     "mpi", "eps", "boom", "adcs", "lfs", "flash", "antenna_deploy", "log",
+///     "telecommand", "unit_test" (case insensitive)
+/// @note Severity levels are:
+///     LOG_SEVERITY_DEBUG = 1 << 0
+///     LOG_SEVERITY_NORMAL = 1 << 1
+///     LOG_SEVERITY_WARNING = 1 << 2
+///     LOG_SEVERITY_ERROR = 1 << 3
+///     LOG_SEVERITY_CRITICAL = 1 << 4
+uint8_t TCMDEXEC_log_set_system_severity_mask(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+
+    char source[30];
+    const uint8_t arg_0_result = TCMD_extract_string_arg(args_str, 0, source, sizeof(source));
+    if (arg_0_result != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error parsing channel arg: Error %d", arg_0_result);
+        return 1;
+    }
+    
+    uint64_t severity_mask = 0;
+    uint8_t arg_1_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &severity_mask);
+    if (arg_1_result) {
+        snprintf(response_output_buf, response_output_buf_len, "Unable to parse severity_mask from second telecommand argument");
+        return 1;
+    }
+
+    if (severity_mask > 32) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error parsing severity_mask arg: Severity mask %d is too large", (uint16_t) severity_mask);
+        return 2;
+    }
+
+    LOG_system_enum_t LOG_source = LOG_source_from_str(source);
+    if (LOG_source == LOG_SYSTEM_UNKNOWN) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error parsing source arg: Unknown source %s", source);
+        return 2;
+    }
+
+    LOG_set_system_severity_mask(LOG_source, (uint8_t) severity_mask);
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "Success: %s set to %d", source, (uint16_t) severity_mask);
+    return 0;
+}

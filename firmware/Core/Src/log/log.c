@@ -109,6 +109,22 @@ static const uint16_t LOG_NUMBER_OF_SYSTEMS = sizeof(LOG_systems) / sizeof(LOG_s
 ///     Exclude one or more sinks using LOG_all_sinks_except(...)
 void LOG_message(LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_t sink_mask, const char fmt[], ...)
 {
+    LOG_system_t *LOG_source = NULL;
+    for (uint16_t i = 0; i < LOG_NUMBER_OF_SYSTEMS; i++) {
+        if (LOG_systems[i].system == source) {
+            LOG_source = &LOG_systems[i];
+            break;
+        }
+    }
+    if (LOG_source == NULL) {
+        // Source not found
+        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_SINK_ALL, "LOG_message(): unknown source: %d", source);
+        return;
+    }
+
+    if (LOG_source->file_logging_enabled && (severity & LOG_source->severity_mask)) {
+        return; // Logging is disabled for this source and/or severity
+    }
     // Ensure quick return if debugging is disabled
     // Needed to maintain good hot-path performance
     if (severity == LOG_SEVERITY_DEBUG) {
@@ -452,3 +468,42 @@ const char *LOG_get_most_recent_log_message_text(void)
     return LOG_memory_table[LOG_memory_index_of_current_log_entry].full_message;
 }
 
+
+LOG_system_enum_t LOG_source_from_str(const char source_name[]) {
+    // Parse Numbers.
+    if (strcasecmp(source_name, "0") == 0) return LOG_SYSTEM_OBC;
+    if (strcasecmp(source_name, "1") == 0) return LOG_SYSTEM_UHF_RADIO;
+    if (strcasecmp(source_name, "2") == 0) return LOG_SYSTEM_UMBILICAL_UART;
+    if (strcasecmp(source_name, "3") == 0) return LOG_SYSTEM_GPS;
+    if (strcasecmp(source_name, "4") == 0) return LOG_SYSTEM_MPI;
+    if (strcasecmp(source_name, "5") == 0) return LOG_SYSTEM_EPS;
+    if (strcasecmp(source_name, "6") == 0) return LOG_SYSTEM_BOOM;
+    if (strcasecmp(source_name, "7") == 0) return LOG_SYSTEM_ADCS;
+    if (strcasecmp(source_name, "8") == 0) return LOG_SYSTEM_LFS;
+    if (strcasecmp(source_name, "9") == 0) return LOG_SYSTEM_FLASH;
+    if (strcasecmp(source_name, "10") == 0) return LOG_SYSTEM_ANTENNA_DEPLOY;
+    if (strcasecmp(source_name, "11") == 0) return LOG_SYSTEM_LOG;
+    if (strcasecmp(source_name, "12") == 0) return LOG_SYSTEM_TELECOMMAND;
+    if (strcasecmp(source_name, "13") == 0) return LOG_SYSTEM_UNIT_TEST;
+    if (strcasecmp(source_name, "14") == 0) return LOG_SYSTEM_ALL;
+
+    
+    // Parse Strings.
+    if (strcasecmp(source_name, "OBC") == 0) return LOG_SYSTEM_OBC;
+    if (strcasecmp(source_name, "UHF_RADIO") == 0) return LOG_SYSTEM_UHF_RADIO;
+    if (strcasecmp(source_name, "UMBILICAL_UART") == 0) return LOG_SYSTEM_UMBILICAL_UART;
+    if (strcasecmp(source_name, "GPS") == 0) return LOG_SYSTEM_GPS;
+    if (strcasecmp(source_name, "MPI") == 0) return LOG_SYSTEM_MPI;
+    if (strcasecmp(source_name, "EPS") == 0) return LOG_SYSTEM_EPS;
+    if (strcasecmp(source_name, "BOOM") == 0) return LOG_SYSTEM_BOOM;
+    if (strcasecmp(source_name, "ADCS") == 0) return LOG_SYSTEM_ADCS;
+    if (strcasecmp(source_name, "LFS") == 0) return LOG_SYSTEM_LFS;
+    if (strcasecmp(source_name, "FLASH") == 0) return LOG_SYSTEM_FLASH;
+    if (strcasecmp(source_name, "ANTENNA_DEPLOY") == 0) return LOG_SYSTEM_ANTENNA_DEPLOY;
+    if (strcasecmp(source_name, "LOG") == 0) return LOG_SYSTEM_LOG;
+    if (strcasecmp(source_name, "TELECOMMAND") == 0) return LOG_SYSTEM_TELECOMMAND;
+    if (strcasecmp(source_name, "UNIT_TEST") == 0) return LOG_SYSTEM_UNIT_TEST;
+    if (strcasecmp(source_name, "ALL") == 0) return LOG_SYSTEM_ALL;
+    
+    return LOG_SYSTEM_UNKNOWN;
+}
