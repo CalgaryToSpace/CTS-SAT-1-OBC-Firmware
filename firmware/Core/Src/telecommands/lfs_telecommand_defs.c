@@ -460,7 +460,7 @@ uint8_t TCMDEXEC_fs_demo_write_then_read(const char *args_str, TCMD_TelecommandC
 
     uint8_t read_buffer[200] = {0};
     const int8_t read_result = LFS_read_file(file_name, 0, read_buffer, sizeof(read_buffer));
-    if (read_result != 0) {
+    if (read_result < 0) {
         snprintf(response_output_buf, response_output_buf_len, "LittleFS reading error: %d", read_result);
         return 3;
     }
