@@ -11,7 +11,7 @@
 #include "unit_tests/unit_test_helpers.h"
 #include "unit_tests/test_configuration_variables.h"
 #include "unit_tests/test_obc_temperature_sensor.h"
-#include "unit_tests/unit_test_gps.h"
+#include "unit_tests/unit_test_gnss.h"
 #include "unit_tests/test_uart_error_tracking.h"
 #include "unit_tests/test_eps_drivers.h"
 #include "unit_tests/test_eps_struct_packers.h"

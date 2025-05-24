@@ -1,4 +1,4 @@
-#include "unit_tests/unit_test_gps.h"
+#include "unit_tests/unit_test_gnss.h"
 #include "unit_tests/unit_test_helpers.h"
 #include "transforms/number_comparisons.h"
 #include "gnss_receiver/gnss_ascii_parsers.h"
