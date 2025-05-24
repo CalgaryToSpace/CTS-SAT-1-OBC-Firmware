@@ -49,6 +49,12 @@ uint8_t ADCS_i2c_send_command_and_check(uint8_t id, uint8_t* data, uint32_t data
         }
         num_checksum_tries++;
     } while (ack.error_flag == ADCS_ERROR_FLAG_CRC && num_checksum_tries < ADCS_CHECKSUM_TIMEOUT_TRIES);  // if the checksum doesn't check out, keep resending the request
+    
+    HAL_Delay(4);
+    const uint8_t ack_status = ADCS_cmd_ack(&ack);
+    if ((ack_status != 0) && (ack_status != 4)) {
+        return ack_status; // there was an error in the command not related to checksum
+    }
 
     return ack.error_flag; // if the HAL was successful and the ADCS command had an error, tell us what it is
 }

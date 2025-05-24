@@ -795,6 +795,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     }, 
+    {
+        .tcmd_name = "adcs_exit_bootloader",
+        .tcmd_func = TCMDEXEC_adcs_exit_bootloader,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
 
     // ****************** END SECTION: telecommand_adcs ******************
 

@@ -1219,7 +1219,7 @@ uint8_t ADCS_get_current_unix_time(uint64_t* epoch_time_ms) {
     return tlm_status;
 }
 
-/// @brief Instruct the ADCS to execute the ADCS_Set_Run_Mode command.
+/// @brief Instruct the ADCS to execute the ADCS_set_sd_log_config command.
 /// @param[in] which_log 1 or 2; which specific log number to log to the SD card
 /// @param[in] log_array Pointer to list of bitmasks to set the log config
 /// @param[in] log_array_len Number of things to log
@@ -1830,4 +1830,14 @@ uint8_t ADCS_erase_sd_file_by_index(uint16_t file_index) {
     const uint8_t erase_status = ADCS_erase_file(file_info.file_type, file_info.file_counter, false);
 
     return erase_status;
+}
+
+/// @brief Run the internal flash program.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred.
+/// @note This function always returns an error, because if the ADCS leaves the bootloader it can't confirm this command, which commands it to leave the bootloader
+uint8_t ADCS_bootloader_run_program() {
+    uint8_t data_send[1] = {ADCS_COMMAND_BOOTLOADER_RUN_PROGRAM};
+    const uint8_t hal_status = HAL_I2C_Master_Transmit(ADCS_i2c_HANDLE, ADCS_i2c_ADDRESS << 1, data_send, 1, ADCS_HAL_TIMEOUT);
+        // The bootloader doesn't support checksum, and this is a zero-parameter command, so HAL_I2C_Mem_Write can't be used (zero length message).
+    return hal_status;
 }
