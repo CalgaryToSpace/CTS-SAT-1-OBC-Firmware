@@ -272,7 +272,7 @@ int8_t LFS_delete_file(const char file_name[])
 /// @param write_buffer - Pointer to buffer holding the data to write
 /// @param write_buffer_len - Size of the data to write
 /// @return 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
-lfs_ssize_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t write_buffer_len)
+int32_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t write_buffer_len)
 {
     if (!LFS_is_lfs_mounted)
     {
@@ -318,7 +318,7 @@ lfs_ssize_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32
 /// @param write_buffer - Pointer to buffer holding the data to write
 /// @param write_buffer_len - Size of the data to write
 /// @return 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
-lfs_ssize_t LFS_append_file(const char file_name[], uint8_t *write_buffer, uint32_t write_buffer_len)
+int32_t LFS_append_file(const char file_name[], uint8_t *write_buffer, uint32_t write_buffer_len)
 {
     if (!LFS_is_lfs_mounted)
     {
@@ -363,7 +363,7 @@ lfs_ssize_t LFS_append_file(const char file_name[], uint8_t *write_buffer, uint3
 /// @param write_buffer - Pointer to buffer holding the data to write
 /// @param write_buffer_len - Size of the data to write
 /// @retval 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
-lfs_ssize_t LFS_write_file_with_offset(const char file_name[], lfs_soff_t offset, uint8_t *write_buffer, uint32_t write_buffer_len)
+int32_t LFS_write_file_with_offset(const char file_name[], lfs_soff_t offset, uint8_t *write_buffer, uint32_t write_buffer_len)
 {
     if (!LFS_is_lfs_mounted)
     {
@@ -486,7 +486,7 @@ lfs_ssize_t LFS_write_file_with_offset(const char file_name[], lfs_soff_t offset
 /// @param read_buffer_len - Size of the data to read
 /// @return Returns negative values if read or file open failed, else the
 /// number of bytes read
-lfs_ssize_t LFS_read_file(const char file_name[], lfs_soff_t offset, uint8_t *read_buffer, uint32_t read_buffer_len)
+int32_t LFS_read_file(const char file_name[], lfs_soff_t offset, uint8_t *read_buffer, uint32_t read_buffer_len)
 {
     if (!LFS_is_lfs_mounted)
     {
@@ -532,7 +532,7 @@ lfs_ssize_t LFS_read_file(const char file_name[], lfs_soff_t offset, uint8_t *re
 /// @param file_name - Pointer to buffer holding the file name to open
 /// @return Returns negative values if read or file open failed, else the
 /// number of bytes in the file
-lfs_ssize_t LFS_file_size(const char file_name[])
+int32_t LFS_file_size(const char file_name[])
 {
     if (!LFS_is_lfs_mounted) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "LittleFS not mounted");

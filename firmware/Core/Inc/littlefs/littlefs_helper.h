@@ -31,10 +31,10 @@ int8_t LFS_unmount();
 int8_t LFS_list_directory(const char root_directory[], uint16_t offset, int16_t count);
 int8_t LFS_make_directory(const char dir_name[]);
 int8_t LFS_delete_file(const char file_name[]);
-lfs_ssize_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t write_buffer_len);
-lfs_ssize_t LFS_write_file_with_offset(const char file_name[], lfs_soff_t offset, uint8_t *write_buffer, uint32_t write_buffer_len);
-lfs_ssize_t LFS_append_file(const char file_name[], uint8_t *write_buffer, uint32_t write_buffer_len);
-lfs_ssize_t LFS_read_file(const char file_name[], lfs_soff_t offset, uint8_t *read_buffer, uint32_t read_buffer_len);
-lfs_ssize_t LFS_file_size(const char file_name[]);
+int32_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t write_buffer_len);
+int32_t LFS_write_file_with_offset(const char file_name[], lfs_soff_t offset, uint8_t *write_buffer, uint32_t write_buffer_len);
+int32_t LFS_append_file(const char file_name[], uint8_t *write_buffer, uint32_t write_buffer_len);
+int32_t LFS_read_file(const char file_name[], lfs_soff_t offset, uint8_t *read_buffer, uint32_t read_buffer_len);
+int32_t LFS_file_size(const char file_name[]);
 
 #endif /* INCLUDE_GUARD__LITTLEFS_HELPER_H__ */
