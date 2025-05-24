@@ -294,7 +294,7 @@ uint8_t TCMD_log_to_file(const char *filename, const char *message)
     }
 
     // FIXME(Issue #389): Should write a timestamp probably. Maybe a telecommand name too, and maybe the arg string.
-    const int8_t write_file_return = LFS_write_file(
+    const int32_t write_file_return = LFS_write_file(
         filename,
         (uint8_t *)message,
         strlen(message)

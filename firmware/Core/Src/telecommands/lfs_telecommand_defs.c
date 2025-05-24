@@ -230,7 +230,7 @@ uint8_t TCMDEXEC_fs_write_file_str(const char *args_str, TCMD_TelecommandChannel
         return 2;
     }
 
-    const int8_t result = LFS_write_file(arg_file_name, (uint8_t*) arg_file_content, strlen(arg_file_content));
+    const int32_t result = LFS_write_file(arg_file_name, (uint8_t*) arg_file_content, strlen(arg_file_content));
     if (result != 0) {
         snprintf(response_output_buf, response_output_buf_len, "Error: LFS_write_file() -> %d", result);
         return 1;
@@ -290,7 +290,7 @@ uint8_t TCMDEXEC_fs_write_file_hex(const char *args_str, TCMD_TelecommandChannel
     }
 
     // Use our new helper function to write the data at the specified offset
-    const int8_t result = LFS_write_file_with_offset(arg_file_name, (lfs_soff_t)file_offset, binary_data, binary_data_length);
+    const int32_t result = LFS_write_file_with_offset(arg_file_name, (lfs_soff_t)file_offset, binary_data, binary_data_length);
     if (result != 0) {
         snprintf(response_output_buf, response_output_buf_len, "LittleFS Writing Error: %d", result);
         return 4;
@@ -452,14 +452,14 @@ uint8_t TCMDEXEC_fs_demo_write_then_read(const char *args_str, TCMD_TelecommandC
         return 1;
     }
 
-    const int8_t write_result = LFS_write_file(file_name, (uint8_t*) file_content, strlen(file_content));
+    const int32_t write_result = LFS_write_file(file_name, (uint8_t*) file_content, strlen(file_content));
     if (write_result != 0) {
         snprintf(response_output_buf, response_output_buf_len, "LittleFS writing error: %d", write_result);
         return 2;
     }
 
     uint8_t read_buffer[200] = {0};
-    const int8_t read_result = LFS_read_file(file_name, 0, read_buffer, sizeof(read_buffer));
+    const int32_t read_result = LFS_read_file(file_name, 0, read_buffer, sizeof(read_buffer));
     if (read_result != 0) {
         snprintf(response_output_buf, response_output_buf_len, "LittleFS reading error: %d", read_result);
         return 3;
