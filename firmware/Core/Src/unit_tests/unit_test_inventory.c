@@ -519,40 +519,40 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_file = "unit_tests/test_sha256",
         .test_func_name = "TEST_EXEC__CRYPT_compute_sha256_hash",
     },
-    // ****************** SECTION: unit_test_gps ******************
+    // ****************** SECTION: unit_test_gnss ******************
  
     {
-        .test_func = TEST_EXEC__GPS_reference_time_status_str_to_enum,
-        .test_file = "gps/gps_types",
-        .test_func_name = "GPS_reference_time_status_str_to_enum"
+        .test_func = TEST_EXEC__GNSS_reference_time_status_str_to_enum,
+        .test_file = "gnss_receiver/gnss_types",
+        .test_func_name = "gnss_reference_time_status_str_to_enum"
     },
     {
-        .test_func = TEST_EXEC__GPS_solution_status_str_to_enum,
-        .test_file = "gps/gps_types",
-        .test_func_name = "GPS_solution_status_str_to_enum"
+        .test_func = TEST_EXEC__GNSS_solution_status_str_to_enum,
+        .test_file = "gnss_receiver/gnss_types",
+        .test_func_name = "gnss_solution_status_str_to_enum"
     },
     {
-        .test_func = TEST_EXEC__GPS_position_type_str_to_enum,
-        .test_file = "gps/gps_types",
-        .test_func_name = "GPS_position_type_str_to_enum"
+        .test_func = TEST_EXEC__GNSS_position_type_str_to_enum,
+        .test_file = "gnss_receiver/gnss_types",
+        .test_func_name = "gnss_position_type_str_to_enum"
     },
     {
-        .test_func = TEST_EXEC__GPS_header_response_parser,
-        .test_file = "gps/gps_ascii_parsers",
-        .test_func_name = "GPS_header_response_parser"
+        .test_func = TEST_EXEC__GNSS_header_response_parser,
+        .test_file = "gnss_receiver/gnss_ascii_parsers",
+        .test_func_name = "gnss_header_response_parser"
     },
     {
-        .test_func = TEST_EXEC__GPS_bestxyza_data_parser,
-        .test_file = "gps/gps_ascii_parsers",
-        .test_func_name = "GPS_bestxyza_data_parser"
+        .test_func = TEST_EXEC__GNSS_bestxyza_data_parser,
+        .test_file = "gnss_receiver/gnss_ascii_parsers",
+        .test_func_name = "gnss_bestxyza_data_parser"
     },
     {
-        .test_func = TEST_EXEC__GPS_timea_data_parser,
-        .test_file = "gps/gps_ascii_parsers",
-        .test_func_name = "GPS_timea_data_parser"
+        .test_func = TEST_EXEC__GNSS_timea_data_parser,
+        .test_file = "gnss_receiver/gnss_ascii_parsers",
+        .test_func_name = "gnss_timea_data_parser"
     },
 
-    // ****************** END SECTION: unit_test_gps ******************
+    // ****************** END SECTION: unit_test_gnss ******************
     // ****************** SECTION: unit_test_uart_error_tracking ******************
     {
         .test_func = TEST_EXEC__UART_single_subsystem_error_info_to_json,

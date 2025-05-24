@@ -20,7 +20,7 @@ uint32_t TIM_get_current_system_uptime_ms(void) {
     return HAL_GetTick();
 }
 
-/// @brief Use this function in a telecommand, or upon receiving a time update from the GPS. 
+/// @brief Use this function in a telecommand, or upon receiving a time update from the GNSS. 
 void TIM_set_current_unix_epoch_time_ms(uint64_t current_unix_epoch_time_ms, TIM_sync_source_t source) {
     // Determine whether the current sync time is before the last sync time.
     // It would be a warning scenario which makes logs difficult to decipher.
@@ -89,7 +89,7 @@ uint64_t TIM_get_current_unix_epoch_time_ms() {
 /// @param log_str - Pointer to buffer that stores the log string 
 /// @param max_len - Maximum length of log_str buffer
 /// @detail The string identifies the timestamp of the last time synchronization,
-/// the synchronization source (N - none; G - GNSS/GPS; T - telecommand), 
+/// the synchronization source (N - none; G - GNSS; T - telecommand), 
 /// and the time passed in ms since the last synchronization.
 /// Added together, the two numbers represent the current timestamp in ms.
 /// Example: "1719169299720+0000042000_N"
@@ -132,7 +132,7 @@ void TIM_get_timestamp_string(char *log_str, size_t max_len) {
 /// MM: minute (00 to 59)
 /// SS: second (00 to 60)
 /// sss: millisecond
-/// X: last synchronization source, one of N (none), G (GNSS/GPS), T (telecommand)
+/// X: last synchronization source, one of N (none), G (GNSS), T (telecommand)
 /// rrr... milliseconds since last time synchronization
 /// Example output: 20240623T180132.142_T_420204
 void TIM_get_timestamp_string_datetime(char *log_str, size_t max_len) {
