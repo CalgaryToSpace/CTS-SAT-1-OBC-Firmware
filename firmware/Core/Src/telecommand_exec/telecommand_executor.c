@@ -302,7 +302,7 @@ uint8_t TCMD_log_to_file(const char *filename, const char *message)
     if (write_file_return != 0) {
         LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "Error: TCMD_log_to_file: Failed to write to file '%s'. Error code: %d",
+            "Error: TCMD_log_to_file: Failed to write to file '%s'. Error code: %ld",
             filename,
             write_file_return
         );
