@@ -40,7 +40,7 @@ time_t portable_timegm(struct tm *tm) {
  * and converts them to a Unix timestamp in milliseconds.
  *
  * @param input_str The GNSS response string (e.g., from a TIMEA log).
- * @return uint64_t Unix timestamp in milliseconds, or 0 on failure.
+ * @return uint64_t Unix timestamp in milliseconds, or >0 on failure.
  */
 uint64_t GNSS_format_and_convert_to_unix_epoch(char* input_str) {
     
@@ -114,14 +114,14 @@ uint8_t GNSS_set_obc_time_based_on_gnss_time() {
     const uint8_t full_command_len = strlen(full_command);
 
     // The following buffer will have data written into from the response from GNSS Transmitter
-    const uint16_t GNSS_rx_buffer_max_size = 512;
-    uint16_t GNSS_rx_buffer_len = 0;
-    uint8_t GNSS_rx_buffer[GNSS_rx_buffer_max_size];
-    memset(GNSS_rx_buffer, 0, GNSS_rx_buffer_max_size);
+    const size_t rx_buffer_max_size = 512;
+    uint16_t rx_buffer_len = 0;
+    uint8_t rx_buffer[rx_buffer_max_size];
+    memset(rx_buffer, 0, rx_buffer_max_size);
 
     // Send the command to the GNSS receiver to get UTC time (and other data)
     const uint8_t gnss_cmd_response = GNSS_send_cmd_get_response(
-        full_command, full_command_len, GNSS_rx_buffer, GNSS_rx_buffer_max_size, &GNSS_rx_buffer_len);
+        full_command, full_command_len, rx_buffer, rx_buffer_max_size, &rx_buffer_len);
 
     // Error check to make sure we've even received a response from the GNSS receiver
     if (gnss_cmd_response != 0 ) {
@@ -130,14 +130,14 @@ uint8_t GNSS_set_obc_time_based_on_gnss_time() {
     }
 
     // Null termination of the received buffer
-    if (GNSS_rx_buffer_len < GNSS_rx_buffer_max_size) {
-        GNSS_rx_buffer[GNSS_rx_buffer_len] = '\0';  // Ensure null-termination
+    if (rx_buffer_len < rx_buffer_max_size) {
+        rx_buffer[rx_buffer_len] = '\0';  // Ensure null-termination
     } else {
-        GNSS_rx_buffer[GNSS_rx_buffer_max_size - 1] = '\0';  // Prevent overflow
+        rx_buffer[rx_buffer_max_size - 1] = '\0';  // Prevent overflow
     }
 
     // Parse and convert GNSS time string to epoch
-    char* response_str = (char*)GNSS_rx_buffer;
+    char* response_str = (char*)rx_buffer;
     const uint64_t formatted_time = GNSS_format_and_convert_to_unix_epoch(response_str);
 
     // Error check to make sure GNSS_format_and_convert_to_unix_epoch executed successfully
