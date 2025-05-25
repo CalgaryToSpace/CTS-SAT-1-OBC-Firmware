@@ -430,7 +430,7 @@ uint8_t TCMD_agenda_fetch(){
 /// @brief Deletes all agenda entries with a telecommand name.
 /// @param telecommand_name The name of the telecommand in the agenda to delete. (e.g, hello_world)
 /// @return 0 on success, > 0 on error.
-/// @note Calls `LOG_message()` before all returns.
+/// @note Calls `LOG_message()` before all returns. Argument is case-insensitive.
 uint8_t TCMD_agenda_delete_by_name(const char *telecommand_name) {
 
     // Get count of active agendas
@@ -447,7 +447,7 @@ uint8_t TCMD_agenda_delete_by_name(const char *telecommand_name) {
     // Loop through the telecommand definitions and check if the passed function name is valid
     bool is_valid_telecommand_name = false;
     for (uint16_t idx = 0; idx < TCMD_NUM_TELECOMMANDS; idx++) {
-        if (strcmp(TCMD_telecommand_definitions[idx].tcmd_name,telecommand_name) == 0) {
+        if (strcasecmp(TCMD_telecommand_definitions[idx].tcmd_name, telecommand_name) == 0) {
             is_valid_telecommand_name = true;
             break;
         }
@@ -469,8 +469,7 @@ uint8_t TCMD_agenda_delete_by_name(const char *telecommand_name) {
             const uint8_t telecommand_index = TCMD_agenda[slot_num].tcmd_idx;
 
             // Perform a string comparision
-            if(strcmp(TCMD_telecommand_definitions[telecommand_index].tcmd_name,telecommand_name) == 0){
-                
+            if (strcasecmp(TCMD_telecommand_definitions[telecommand_index].tcmd_name, telecommand_name) == 0) {
                 // Set agenda as invalid
                 TCMD_agenda_is_valid[slot_num] = 0;
             }
