@@ -1,10 +1,10 @@
 
-#ifndef INCLUDE_GUARD__GPS_INTERNAL_DRIVERS_H__
-#define INCLUDE_GUARD__GPS_INTERNAL_DRIVERS_H__
+#ifndef INCLUDE_GUARD__GNSS_INTERNAL_DRIVERS_H__
+#define INCLUDE_GUARD__GNSS_INTERNAL_DRIVERS_H__
 
 #include <stdint.h>
 
-uint8_t GPS_send_cmd_get_response(
+uint8_t GNSS_send_cmd_get_response(
     const char *cmd_buf, uint8_t cmd_buf_len,
     uint8_t rx_buf[],
     const uint16_t rx_buf_max_size,
@@ -12,4 +12,4 @@ uint8_t GPS_send_cmd_get_response(
 );
 
 
-#endif /* INCLUDE_GUARD__GPS_INTERNAL_DRIVERS_H__ */
+#endif /* INCLUDE_GUARD__GNSS_INTERNAL_DRIVERS_H__ */

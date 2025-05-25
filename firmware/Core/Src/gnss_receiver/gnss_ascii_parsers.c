@@ -1,5 +1,5 @@
-#include "gps/gps_ascii_parsers.h"
-#include "gps/gps_types.h"
+#include "gnss_receiver/gnss_ascii_parsers.h"
+#include "gnss_receiver/gnss_types.h"
 #include "log/log.h"
 #include "telecommand_exec/telecommand_args_helpers.h"
 #include "transforms/arrays.h"
@@ -10,11 +10,11 @@
 #include <stdint.h>
 
 
-/// @brief Parse the received GPS header into a struct
-/// @param data_received - The string obtained from the buffer that is to be parsed into the GPS_header_response_t struct
-/// @param result - GPS_header_response_t struct that is returned
+/// @brief Parse the received GNSS header into a struct
+/// @param data_received - The string obtained from the buffer that is to be parsed into the GNSS_header_response_t struct
+/// @param result - GNSS_header_response_t struct that is returned
 /// @return 0 if successful, > 0 if an error occurred
-uint8_t GPS_header_response_parser(const char *data_received, GPS_header_response_t *result){
+uint8_t GNSS_header_response_parser(const char *data_received, GNSS_header_response_t *result){
 
     // TODO: What if there are multiple responses in the string?
 
@@ -29,7 +29,7 @@ uint8_t GPS_header_response_parser(const char *data_received, GPS_header_respons
     const char *delimiter_char = strchr(data_received,';');
 
     if (!sync_char || !delimiter_char) {
-        // Invalid data: No header in gps response
+        // Invalid data: No header in gnss response
         return 2; 
     }
 
@@ -66,7 +66,7 @@ uint8_t GPS_header_response_parser(const char *data_received, GPS_header_respons
     if (parse_result != 0) {  
         return parse_result;  
     }
-    const uint8_t status_result = GPS_reference_time_status_str_to_enum(token_buffer, &result->time_status);
+    const uint8_t status_result = GNSS_reference_time_status_str_to_enum(token_buffer, &result->time_status);
     if (status_result != 0) {
         // Time Status not recognized
         return status_result;
@@ -77,7 +77,7 @@ uint8_t GPS_header_response_parser(const char *data_received, GPS_header_respons
         message_buffer, sizeof(message_buffer),
         "{\"log_name\":\"%s\",\"time_status\":\"%s\"}\n",
         result->log_name,
-        GPS_reference_time_status_enum_to_str(result->time_status)
+        GNSS_reference_time_status_enum_to_str(result->time_status)
     );
     
     LOG_message(
@@ -93,7 +93,7 @@ uint8_t GPS_header_response_parser(const char *data_received, GPS_header_respons
 /// @brief Parse Received Data
 /// @param data_received - Number of bytes in the data block
 /// @return 0 if successful, >0 if an error occurred
-uint8_t GPS_bestxyza_data_parser(const char* data_received, GPS_bestxyza_response_t *result) {
+uint8_t GNSS_bestxyza_data_parser(const char* data_received, GNSS_bestxyza_response_t *result) {
 
     // Check if the buffer is empty
     if (data_received[0] == '\0') {
@@ -105,14 +105,14 @@ uint8_t GPS_bestxyza_data_parser(const char* data_received, GPS_bestxyza_respons
         return 1;
     }
 
-    GPS_header_response_t bestxyza_header;
-    const uint8_t header_parse_result = GPS_header_response_parser(data_received,&bestxyza_header);
+    GNSS_header_response_t bestxyza_header;
+    const uint8_t header_parse_result = GNSS_header_response_parser(data_received,&bestxyza_header);
 
     if(header_parse_result != 0){
         // Error in parsing header section
         LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Error 2: Error parising the gps header"
+            "Error 2: Error parising the gnss header"
         );
         return 2;
     }
@@ -132,7 +132,7 @@ uint8_t GPS_bestxyza_data_parser(const char* data_received, GPS_bestxyza_respons
     const char* asterisk = strchr(bestxyza_data_start, '*');  
 
     if(strcmp(bestxyza_data_start, "\0") == 0){
-        // No data after the gps header within the response
+        // No data after the gnss header within the response
         LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "Error 4: Missing Data after the header"
@@ -173,7 +173,7 @@ uint8_t GPS_bestxyza_data_parser(const char* data_received, GPS_bestxyza_respons
     if (parse_result != 0) {  
         return parse_result;  
     }
-    uint8_t status_result = GPS_solution_status_str_to_enum(token_buffer, &result->position_solution_status);
+    uint8_t status_result = GNSS_solution_status_str_to_enum(token_buffer, &result->position_solution_status);
     if(status_result != 0){
         // Invalid string passed
         return status_result;
@@ -184,7 +184,7 @@ uint8_t GPS_bestxyza_data_parser(const char* data_received, GPS_bestxyza_respons
     if (parse_result != 0) {  
         return parse_result;  
     }
-    status_result = GPS_position_type_str_to_enum(token_buffer, &result->position_type);
+    status_result = GNSS_position_type_str_to_enum(token_buffer, &result->position_type);
     if(status_result != 0){
         // Invalid string passed
         return status_result;
@@ -379,8 +379,8 @@ uint8_t GPS_bestxyza_data_parser(const char* data_received, GPS_bestxyza_respons
         message_buffer, sizeof(message_buffer),
         "{\"Position Solution Status\":\"%s\",\"Position Type\":\"%s\",\"Position x in mm\":\"%s\",\"Position y in mm\":\"%s\",\"Position z in mm\":\"%s\","
         "\"Position x std in mm\":\"%lu\",\"Position y std in mm\":\"%lu\",\"Position z std in mm\":\"%lu\",\"Solution Age in ms\":\"%s\",\"Differential age in ms\":\"%s\",\"CRC\":\"%ld\"}\n",
-        GPS_solution_status_enum_to_str(result->position_solution_status),
-        GPS_position_type_enum_to_string(result->position_type),
+        GNSS_solution_status_enum_to_str(result->position_solution_status),
+        GNSS_position_type_enum_to_string(result->position_type),
         pos_x,
         pos_y,
         pos_z,
@@ -405,7 +405,7 @@ uint8_t GPS_bestxyza_data_parser(const char* data_received, GPS_bestxyza_respons
 /// @brief Parse Received Data
 /// @param data_received - Number of bytes in the data block
 /// @return 0 if successful, >0 if an error occurred
-uint8_t GPS_timea_data_parser(const char* data_received, GPS_timea_response_t *result) {
+uint8_t GNSS_timea_data_parser(const char* data_received, GNSS_timea_response_t *result) {
 
     // Check if the buffer is empty
     if (data_received[0] == '\0') {
@@ -417,8 +417,8 @@ uint8_t GPS_timea_data_parser(const char* data_received, GPS_timea_response_t *r
         return 1;
     }
 
-    GPS_header_response_t timea_header;
-    const uint8_t header_parse_result = GPS_header_response_parser(data_received,&timea_header);
+    GNSS_header_response_t timea_header;
+    const uint8_t header_parse_result = GNSS_header_response_parser(data_received,&timea_header);
 
     if(header_parse_result != 0){
         // Error in parsing header section
@@ -446,7 +446,7 @@ uint8_t GPS_timea_data_parser(const char* data_received, GPS_timea_response_t *r
     const int timea_data_length = asterisk - timea_data_start + 1;
 
     if(strcmp(timea_data_start, "\0") == 0){
-        // No data after the gps header within the response
+        // No data after the gnss header within the response
         LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "Error 4: Missing Data after the header"
@@ -487,7 +487,7 @@ uint8_t GPS_timea_data_parser(const char* data_received, GPS_timea_response_t *r
     if (parse_result != 0) {  
         return parse_result;  
     }
-    uint8_t status_result = GPS_clock_model_status_str_to_enum(token_buffer, &result->clock_status);
+    uint8_t status_result = GNSS_clock_model_status_str_to_enum(token_buffer, &result->clock_status);
     if(status_result != 0){
         // Invalid string passed
         return status_result;
@@ -524,7 +524,7 @@ uint8_t GPS_timea_data_parser(const char* data_received, GPS_timea_response_t *r
     if (asterisk_pos) {
         *asterisk_pos = '\0';  
     }
-    status_result = GPS_utc_status_str_to_enum(token_buffer, &result->utc_status);
+    status_result = GNSS_utc_status_str_to_enum(token_buffer, &result->utc_status);
     if(status_result != 0){
         // Invalid string passed
         return status_result;
@@ -543,9 +543,9 @@ uint8_t GPS_timea_data_parser(const char* data_received, GPS_timea_response_t *r
     snprintf(
         message_buffer, sizeof(message_buffer),
         "{\"Clock Status\":\"%s\",\"UTC Status\":%s,\"UTC Offset\":\"%s\",\"CRC\":%lx}\n",
-        GPS_clock_model_status_enum_to_string(result->clock_status),
+        GNSS_clock_model_status_enum_to_string(result->clock_status),
         utc_offset,
-        GPS_utc_status_enum_to_string(result->utc_status),
+        GNSS_utc_status_enum_to_string(result->utc_status),
         result->crc
     );
     

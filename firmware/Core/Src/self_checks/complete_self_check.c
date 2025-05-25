@@ -4,7 +4,7 @@
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_commands.h"
 #include "comms_drivers/ax100_hw.h"
-#include "gps/gps_internal_drivers.h"
+#include "gnss_receiver/gnss_internal_drivers.h"
 #include "eps_drivers/eps_commands.h"
 #include "eps_drivers/eps_channel_control.h"
 #include "eps_drivers/eps_calculations.h"
@@ -76,41 +76,41 @@ uint8_t CTS1_check_is_gnss_responsive() {
     const uint8_t eps_status = EPS_set_channel_enabled(EPS_CHANNEL_3V3_GNSS, 1);
     if (eps_status != 0) {
         LOG_message(
-            LOG_SYSTEM_GPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "Error enabling GPS power channel in CTS1_check_is_gnss_responsive: status=%d",
+            LOG_SYSTEM_GNSS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error enabling GNSS power channel in CTS1_check_is_gnss_responsive: status=%d",
             eps_status
         );
-        EPS_set_channel_enabled(EPS_CHANNEL_3V3_GNSS, 0); // Power off the GPS.
+        EPS_set_channel_enabled(EPS_CHANNEL_3V3_GNSS, 0); // Power off the GNSS.
         return 0;
     }
 
     LOG_message(
-        LOG_SYSTEM_GPS, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
-        "GPS power channel enabled. Waiting for GPS to power on (10 sec)..."
+        LOG_SYSTEM_GNSS, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+        "GNSS power channel enabled. Waiting for GNSS to power on (10 sec)..."
     );
-    HAL_Delay(10000); // Allow time for the GPS to power on. Needs a very long time. 5 sec too short. 7 sec works.
+    HAL_Delay(10000); // Allow time for the GNSS to power on. Needs a very long time. 5 sec too short. 7 sec works.
 
     // Expecting versiona may send up to about 250 bytes.
     uint8_t rx_buf[350];
     uint16_t rx_buf_received_len = 0;
-    const uint8_t gps_status = GPS_send_cmd_get_response(
+    const uint8_t gnss_status = GNSS_send_cmd_get_response(
         cmd, strlen(cmd),
         rx_buf,
         sizeof(rx_buf),
         &rx_buf_received_len
     );
 
-    // Clean up: Disable the GPS UART interrupt.
-    GPS_set_uart_interrupt_state(0);
+    // Clean up: Disable the GNSS UART interrupt.
+    GNSS_set_uart_interrupt_state(0);
     HAL_Delay(20); // Allow any pending IRQs to trigger so that upcoming UART prints/logs work.
 
-    EPS_set_channel_enabled(EPS_CHANNEL_3V3_GNSS, 0); // Power off the GPS.
+    EPS_set_channel_enabled(EPS_CHANNEL_3V3_GNSS, 0); // Power off the GNSS.
 
-    if (gps_status != 0) {
+    if (gnss_status != 0) {
         LOG_message(
-            LOG_SYSTEM_GPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "GPS ERROR: Failed to send command to GPS. status=%d",
-            gps_status
+            LOG_SYSTEM_GNSS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "GNSS ERROR: Failed to send command to GNSS. status=%d",
+            gnss_status
         );
         return 0;
     }
@@ -120,8 +120,8 @@ uint8_t CTS1_check_is_gnss_responsive() {
     rx_buf[rx_buf_received_len] = '\0';
     
     LOG_message(
-        LOG_SYSTEM_GPS, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
-        "GPS response (%d bytes): %s",
+        LOG_SYSTEM_GNSS, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+        "GNSS response (%d bytes): %s",
         rx_buf_received_len,
         (char*)rx_buf
     );
