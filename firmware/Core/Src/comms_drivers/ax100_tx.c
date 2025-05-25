@@ -5,7 +5,9 @@
 #include "debug_tools/debug_uart.h"
 
 #include <string.h>
+#include <stdint.h>
 
+uint32_t COMMS_enable_ax100_downlink_uart_logs = 0;
 
 static const uint32_t csp_priority = 3u << 30; // priority
 
@@ -90,10 +92,12 @@ uint8_t AX100_downlink_bytes(uint8_t *data, uint16_t data_len) {
     // Any network layer (CSP) things should be done here (e.g., XTEA, CRC, etc.)
 
     // Debugging write to UART.
-    DEBUG_uart_print_mixed_array(
-        packet_buffer_including_csp_header, data_len + AX100_CSP_HEADER_LENGTH_BYTES,
-        "AX100 Down"
-    );
+    if (COMMS_enable_ax100_downlink_uart_logs) {
+        DEBUG_uart_print_mixed_array(
+            packet_buffer_including_csp_header, data_len + AX100_CSP_HEADER_LENGTH_BYTES,
+            "AX100 Down"
+        );
+    }
 
     return send_bytes_to_ax100(packet_buffer_including_csp_header, data_len + AX100_CSP_HEADER_LENGTH_BYTES);
 }
