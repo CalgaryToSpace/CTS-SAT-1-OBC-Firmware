@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 /// @brief Converts an EPS channel name to a channel enum.
-/// @param channel_name A lowercase c-string of the channel name (e.g., "mpi"), or a number
+/// @param channel_name A case-insensitive c-string of the channel name (e.g., "mpi"), or a number
 /// representing the channel number (e.g., "1" or "16").
 /// Valid string values: "vbatt_stack", "stack_5v", "stack_3v3", "camera", "uhf_antenna_deploy",
 /// "gnss", "mpi_5v", "mpi_12v", "boom".
