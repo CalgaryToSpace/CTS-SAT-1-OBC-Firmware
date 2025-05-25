@@ -90,7 +90,7 @@ uint8_t COMMS_downlink_bulk_file_downlink(
     uint16_t data_len
 ) {
     COMMS_bulk_file_downlink_packet_t packet;
-    packet.packet_type = COMMS_PACKET_TYPE_DOWNLINK_FIRST_PACKET;
+    packet.packet_type = COMMS_PACKET_TYPE_BULK_FILE_DOWNLINK;
     packet.file_seq_num = file_seq_num;
     packet.file_max_seq_num = file_max_seq_num;
     packet.file_offset = file_offset;

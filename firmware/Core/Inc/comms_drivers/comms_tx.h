@@ -3,12 +3,14 @@
 
 #include "comms_drivers/ax100_tx.h"
 
+/// @brief Packet types for the COMMS downlink packets.
+/// @details This is the first byte (after the CSP header) of the downlink packets.
 typedef enum {
     COMMS_PACKET_TYPE_BEACON_MINIMAL = 0x01,
     COMMS_PACKET_TYPE_BEACON_FULL = 0x02,
     COMMS_PACKET_TYPE_LOG_MESSAGE = 0x03,
     COMMS_PACKET_TYPE_TCMD_RESPONSE = 0x04,
-    COMMS_PACKET_TYPE_DOWNLINK_FIRST_PACKET = 0x10,
+    COMMS_PACKET_TYPE_BULK_FILE_DOWNLINK = 0x10,
 } COMMS_packet_type_enum_t;
 
 
@@ -57,7 +59,7 @@ typedef struct {
 } COMMS_tcmd_response_packet_t;
 
 typedef struct {
-    uint8_t packet_type; // COMMS_packet_type_enum_t - Always COMMS_PACKET_TYPE_DOWNLINK_FIRST_PACKET for this packet
+    uint8_t packet_type; // COMMS_packet_type_enum_t - Always COMMS_PACKET_TYPE_BULK_FILE_DOWNLINK for this packet
 
     uint8_t file_seq_num;   // 1 byte
     uint8_t file_max_seq_num;   // 1 byte
