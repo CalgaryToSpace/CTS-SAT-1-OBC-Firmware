@@ -72,18 +72,18 @@ uint8_t TCMDEXEC_set_obc_time_based_on_eps_time(const char *args_str, TCMD_Telec
     return 0;
 }
 
-/// @brief Sync's obc time to gps time (+/- 1 second)
+/// @brief Sync's obc time to gnss time (+/- 1 second)
 /// @return 0 on success, >0 on failure.
-uint8_t TCMDEXEC_set_obc_time_based_on_gps_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_set_obc_time_based_on_gnss_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
-    const uint8_t result = GPS_set_obc_time_based_on_gps_time();
+    const uint8_t result = GNSS_set_obc_time_based_on_gnss_time();
     if (result != 0 ) {
         snprintf(response_output_buf, response_output_buf_len,
-        "syncing obc time based on gps time failed");
+        "syncing obc time based on gnss time failed");
         return 1;
     }
     snprintf(response_output_buf, response_output_buf_len,
-    "success syncing obc time based on gps time");
+    "success syncing obc time based on gnss time");
     return 0;
 }            
 

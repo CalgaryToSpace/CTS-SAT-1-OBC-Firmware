@@ -33,16 +33,16 @@ time_t portable_timegm(struct tm *tm) {
 }
 
 /**
- * @brief Parses a GPS TIMEA message and converts it into Unix epoch time in milliseconds.
+ * @brief Parses a GNSS TIMEA message and converts it into Unix epoch time in milliseconds.
  *
  * The function expects a full TIMEA log string as input (e.g., starting with "#TIMEA,...").
  * It tokenizes the string, extracts UTC date and time fields, validates their integrity,
  * and converts them to a Unix timestamp in milliseconds.
  *
- * @param input_str The GPS response string (e.g., from a TIMEA log).
+ * @param input_str The GNSS response string (e.g., from a TIMEA log).
  * @return uint64_t Unix timestamp in milliseconds, or >0 on failure.
  */
-uint64_t GPS_format_and_convert_to_unix_epoch(char* input_str) {
+uint64_t GNSS_format_and_convert_to_unix_epoch(char* input_str) {
     
     if (!input_str) return 1;
 
@@ -99,54 +99,54 @@ uint64_t GPS_format_and_convert_to_unix_epoch(char* input_str) {
 }
 
 /**
- * @brief Sets the OBC's time, based on the GPS's current time.
+ * @brief Sets the OBC's time, based on the GNSS's current time.
  *
- * This function sends a command to the GPS receiver to fetch the current time,
+ * This function sends a command to the GNSS receiver to fetch the current time,
  * parses the TIMEA response to extract UTC time, converts it to Unix epoch time,
  * and sets the system clock accordingly.
  *
  * @return 0 on success, >0 on failure.
  */
-uint8_t GPS_set_obc_time_based_on_gps_time() {
+uint8_t GNSS_set_obc_time_based_on_gnss_time() {
 
     // TODO: Does this need to be a global variable? Or is it okay being locally scoped.
     const char *full_command = "log timea once";
     const uint8_t full_command_len = strlen(full_command);
 
     // The following buffer will have data written into from the response from GNSS Transmitter
-    const uint16_t GPS_rx_buffer_max_size = 512;
-    uint16_t GPS_rx_buffer_len = 0;
-    uint8_t GPS_rx_buffer[GPS_rx_buffer_max_size];
-    memset(GPS_rx_buffer, 0, GPS_rx_buffer_max_size);
+    const size_t rx_buffer_max_size = 512;
+    uint16_t rx_buffer_len = 0;
+    uint8_t rx_buffer[rx_buffer_max_size];
+    memset(rx_buffer, 0, rx_buffer_max_size);
 
-    // Send the command to the GPS receiver to get UTC time (and other data)
-    const uint8_t gps_cmd_response = GPS_send_cmd_get_response(
-        full_command, full_command_len, GPS_rx_buffer, GPS_rx_buffer_max_size, &GPS_rx_buffer_len);
+    // Send the command to the GNSS receiver to get UTC time (and other data)
+    const uint8_t gnss_cmd_response = GPS_send_cmd_get_response(
+        full_command, full_command_len, rx_buffer, rx_buffer_max_size, &rx_buffer_len);
 
-    // Error check to make sure we've even received a response from the GPS receiver
-    if (gps_cmd_response != 0 ) {
+    // Error check to make sure we've even received a response from the GNSS receiver
+    if (gnss_cmd_response != 0 ) {
         // TODO: Do we need to log this error? If so, we need to pass in buffers to this function
         return 1;
     }
 
     // Null termination of the received buffer
-    if (GPS_rx_buffer_len < GPS_rx_buffer_max_size) {
-        GPS_rx_buffer[GPS_rx_buffer_len] = '\0';  // Ensure null-termination
+    if (rx_buffer_len < rx_buffer_max_size) {
+        rx_buffer[rx_buffer_len] = '\0';  // Ensure null-termination
     } else {
-        GPS_rx_buffer[GPS_rx_buffer_max_size - 1] = '\0';  // Prevent overflow
+        rx_buffer[rx_buffer_max_size - 1] = '\0';  // Prevent overflow
     }
 
-    // Parse and convert GPS time string to epoch
-    char* response_str = (char*)GPS_rx_buffer;
-    const uint64_t formatted_time = GPS_format_and_convert_to_unix_epoch(response_str);
+    // Parse and convert GNSS time string to epoch
+    char* response_str = (char*)rx_buffer;
+    const uint64_t formatted_time = GNSS_format_and_convert_to_unix_epoch(response_str);
 
-    // Error check to make sure GPS_format_and_convert_to_unix_epoch executed successfully
+    // Error check to make sure GNSS_format_and_convert_to_unix_epoch executed successfully
     if (formatted_time == 1 ) {
-        // There was an error in GPS_format_and_convert_to_unix_epoch
+        // There was an error in GNSS_format_and_convert_to_unix_epoch
         return 1;
     }
 
-    // Set the system time based on GPS time
+    // Set the system time based on GNSS time
     TIM_set_current_unix_epoch_time_ms(
         formatted_time,
         TIM_SOURCE_GNSS
