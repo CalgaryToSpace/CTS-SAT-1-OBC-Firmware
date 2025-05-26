@@ -3,6 +3,8 @@
 #include "config/configuration.h"
 #include "timekeeping/timekeeping.h"
 #include "rtos_tasks/rtos_task_helpers.h"
+#include "system/system_low_power_mode.h"
+
 #include "main.h"
 
 #include "cmsis_os.h"
@@ -61,6 +63,9 @@ static void subtask_reset_system_after_very_long_uptime(void) {
 
 void TASK_background_upkeep(void *argument) {
     TASK_HELP_start_of_task();
+
+    uint32_t last_time_checked_for_low_power_mode = 0;
+    const uint32_t low_power_mode_interval_ms = 600000; // 10 minutes
     while(1) {
         subtask_monitor_eps_power();
         osDelay(10); // Yield.
@@ -68,6 +73,17 @@ void TASK_background_upkeep(void *argument) {
         subtask_reset_system_after_very_long_uptime();
         osDelay(10); // Yield.
         
+        // TODO: Is it ok if both happen?
+
+        if (HAL_GetTick() - last_time_checked_for_low_power_mode > low_power_mode_interval_ms) {
+            last_time_checked_for_low_power_mode = HAL_GetTick();
+            // Check if EPS goes into low power mode, enter low power mode if it does.
+            SYS_check_eps_and_enter_low_power_mode();
+            
+            // Check if battery is below 10%, enter low power mode if it is
+            SYS_check_battery_and_enter_low_power_mode();
+        }
+                
         osDelay(1000);
     }
 }
