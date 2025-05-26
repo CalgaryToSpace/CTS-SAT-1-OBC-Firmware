@@ -346,13 +346,13 @@ uint8_t TCMDEXEC_fs_delete_dir(const char *args_str, TCMD_TelecommandChannel_enu
         return 1;
     }
 
-    int8_t result = LFS_delete_file(arg_file_name);
+    int8_t result = LFS_recursively_delete_directory(arg_file_name);
     if (result != 0) {
-        snprintf(response_output_buf, response_output_buf_len, "Error: LFS_delete_file() -> %d", result);
+        snprintf(response_output_buf, response_output_buf_len, "Error: LFS_recursively_delete_directory() -> %d", result);
         return 1;
     }
 
-    snprintf(response_output_buf, response_output_buf_len, "LittleFS successfully deleted file!");
+    snprintf(response_output_buf, response_output_buf_len, "LittleFS successfully deleted directory!");
     return 0;
 }
 

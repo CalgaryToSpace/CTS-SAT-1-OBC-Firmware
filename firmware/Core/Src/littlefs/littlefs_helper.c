@@ -260,11 +260,11 @@ int8_t LFS_delete_file(const char file_name[])
     int8_t remove_result = lfs_remove(&LFS_filesystem, file_name);
     if (remove_result < 0)
     {
-        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error removing file/directory: %s", file_name);
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error removing file: %s", file_name);
         return remove_result;
     }
 
-    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully removed file/directory: %s", file_name);
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully removed file: %s", file_name);
     return 0;
 }
 
@@ -282,7 +282,7 @@ int8_t LFS_delete_directory(const char directory[]) {
     }
 
     struct lfs_info info;
-    char dir_content[LFS_MAX_PATH_LENGTH];
+    char dir_content[LFS_MAX_PATH_LENGTH * 3];
     int8_t read_dir_result;
 
     // Iterate through the directory contents
@@ -312,7 +312,7 @@ int8_t LFS_delete_directory(const char directory[]) {
                 lfs_dir_close(&LFS_filesystem, &dir); // Ensure the directory is closed
                 return delete_dir_ret; // Return the error code
             }
-            LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully deleted directory: %s", dir_content);
+            // LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully deleted directory: %s", dir_content);
         }
     }
 
@@ -370,8 +370,13 @@ int8_t LFS_recursively_delete_directory(const char directory_path[])
     }
 
     const int8_t delete_dir_result = LFS_delete_directory(directory_path);
+    if (delete_dir_result < 0)
+    {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error deleting directory: %s", directory_path);
+        return delete_dir_result;
+    }
 
-    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully removed file/directory: %s", directory_path);
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Recursively deleted directory: %s", directory_path);
     return 0;
 }
 
