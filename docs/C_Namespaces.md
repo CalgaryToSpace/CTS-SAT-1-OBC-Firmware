@@ -28,7 +28,7 @@ following uppercase identifiers to indicate which subsystem/region of code it be
 * `ADCS_`: Attitude Determination and Control System
 * `EPS_`: related to the Electrical Power System
 * `EPS_CMD_`: functions which trigger a command to the EPS subsystem
-* `GPS_`: GPS/GNSS receiver
+* `GNSS_`: GNSS/GNSS receiver
 * `COMMS_ANT_`: related to the I2C communications for the deployable communications antenna
 * `AX100_`: related to the AX100 communication module, at a low level
 * `COMMS_`: related to higher-level functions for command and data handling, which calls into the `AX100_` prefix
