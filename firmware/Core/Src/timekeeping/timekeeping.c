@@ -20,7 +20,7 @@ uint32_t TIM_get_current_system_uptime_ms(void) {
     return HAL_GetTick();
 }
 
-/// @brief Use this function in a telecommand, or upon receiving a time update from the GPS. 
+/// @brief Use this function in a telecommand, or upon receiving a time update from the GNSS. 
 void TIM_set_current_unix_epoch_time_ms(uint64_t current_unix_epoch_time_ms, TIM_sync_source_t source) {
     // Determine whether the current sync time is before the last sync time.
     // It would be a warning scenario which makes logs difficult to decipher.
