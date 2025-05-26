@@ -84,46 +84,81 @@ void HAL_MspInit(void)
 }
 
 /**
-* @brief CRC MSP Initialization
+* @brief ADC MSP Initialization
 * This function configures the hardware resources used in this example
-* @param hcrc: CRC handle pointer
+* @param hadc: ADC handle pointer
 * @retval None
 */
-void HAL_CRC_MspInit(CRC_HandleTypeDef* hcrc)
+void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
 {
-  if(hcrc->Instance==CRC)
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+  RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
+  if(hadc->Instance==ADC1)
   {
-  /* USER CODE BEGIN CRC_MspInit 0 */
+  /* USER CODE BEGIN ADC1_MspInit 0 */
 
-  /* USER CODE END CRC_MspInit 0 */
+  /* USER CODE END ADC1_MspInit 0 */
+
+  /** Initializes the peripherals clock
+  */
+    PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC;
+    PeriphClkInit.AdcClockSelection = RCC_ADCCLKSOURCE_PLLSAI1;
+    PeriphClkInit.PLLSAI1.PLLSAI1Source = RCC_PLLSOURCE_HSI;
+    PeriphClkInit.PLLSAI1.PLLSAI1M = 1;
+    PeriphClkInit.PLLSAI1.PLLSAI1N = 8;
+    PeriphClkInit.PLLSAI1.PLLSAI1P = RCC_PLLP_DIV2;
+    PeriphClkInit.PLLSAI1.PLLSAI1Q = RCC_PLLQ_DIV2;
+    PeriphClkInit.PLLSAI1.PLLSAI1R = RCC_PLLR_DIV2;
+    PeriphClkInit.PLLSAI1.PLLSAI1ClockOut = RCC_PLLSAI1_ADC1CLK;
+    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
+    {
+      Error_Handler();
+    }
+
     /* Peripheral clock enable */
-    __HAL_RCC_CRC_CLK_ENABLE();
-  /* USER CODE BEGIN CRC_MspInit 1 */
+    __HAL_RCC_ADC_CLK_ENABLE();
 
-  /* USER CODE END CRC_MspInit 1 */
+    __HAL_RCC_GPIOC_CLK_ENABLE();
+    /**ADC1 GPIO Configuration
+    PC2     ------> ADC1_IN3
+    */
+    GPIO_InitStruct.Pin = PIN_ADC_READ_VBAT_VOLTAGE_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG_ADC_CONTROL;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(PIN_ADC_READ_VBAT_VOLTAGE_GPIO_Port, &GPIO_InitStruct);
+
+  /* USER CODE BEGIN ADC1_MspInit 1 */
+
+  /* USER CODE END ADC1_MspInit 1 */
 
   }
 
 }
 
 /**
-* @brief CRC MSP De-Initialization
+* @brief ADC MSP De-Initialization
 * This function freeze the hardware resources used in this example
-* @param hcrc: CRC handle pointer
+* @param hadc: ADC handle pointer
 * @retval None
 */
-void HAL_CRC_MspDeInit(CRC_HandleTypeDef* hcrc)
+void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)
 {
-  if(hcrc->Instance==CRC)
+  if(hadc->Instance==ADC1)
   {
-  /* USER CODE BEGIN CRC_MspDeInit 0 */
+  /* USER CODE BEGIN ADC1_MspDeInit 0 */
 
-  /* USER CODE END CRC_MspDeInit 0 */
+  /* USER CODE END ADC1_MspDeInit 0 */
     /* Peripheral clock disable */
-    __HAL_RCC_CRC_CLK_DISABLE();
-  /* USER CODE BEGIN CRC_MspDeInit 1 */
+    __HAL_RCC_ADC_CLK_DISABLE();
 
-  /* USER CODE END CRC_MspDeInit 1 */
+    /**ADC1 GPIO Configuration
+    PC2     ------> ADC1_IN3
+    */
+    HAL_GPIO_DeInit(PIN_ADC_READ_VBAT_VOLTAGE_GPIO_Port, PIN_ADC_READ_VBAT_VOLTAGE_Pin);
+
+  /* USER CODE BEGIN ADC1_MspDeInit 1 */
+
+  /* USER CODE END ADC1_MspDeInit 1 */
   }
 
 }
@@ -593,7 +628,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
     PD5     ------> USART2_TX
     PD6     ------> USART2_RX
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_5|GPIO_PIN_6;
+    GPIO_InitStruct.Pin = PIN_AX100_MISO_USART2_RX_Pin|PIN_AX100_MOSI_USART2_TX_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
@@ -630,7 +665,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
     PC4     ------> USART3_TX
     PC5     ------> USART3_RX
     */
-    GPIO_InitStruct.Pin = PIN_GPS_MOSI_USART3_TX_Pin|PIN_GPS_MISO_USART3_RX_Pin;
+    GPIO_InitStruct.Pin = PIN_GNSS_MOSI_USART3_TX_Pin|PIN_GNSS_MISO_USART3_RX_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
@@ -749,7 +784,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* huart)
     PD5     ------> USART2_TX
     PD6     ------> USART2_RX
     */
-    HAL_GPIO_DeInit(GPIOD, GPIO_PIN_5|GPIO_PIN_6);
+    HAL_GPIO_DeInit(GPIOD, PIN_AX100_MISO_USART2_RX_Pin|PIN_AX100_MOSI_USART2_TX_Pin);
 
     /* USART2 interrupt DeInit */
     HAL_NVIC_DisableIRQ(USART2_IRQn);
@@ -769,7 +804,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* huart)
     PC4     ------> USART3_TX
     PC5     ------> USART3_RX
     */
-    HAL_GPIO_DeInit(GPIOC, PIN_GPS_MOSI_USART3_TX_Pin|PIN_GPS_MISO_USART3_RX_Pin);
+    HAL_GPIO_DeInit(GPIOC, PIN_GNSS_MOSI_USART3_TX_Pin|PIN_GNSS_MISO_USART3_RX_Pin);
 
     /* USART3 interrupt DeInit */
     HAL_NVIC_DisableIRQ(USART3_IRQn);

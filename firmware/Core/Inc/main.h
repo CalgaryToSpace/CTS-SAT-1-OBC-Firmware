@@ -39,6 +39,7 @@ extern "C" {
 /* USER CODE BEGIN ET */
 
 // These externs expose peripherals for use across the project.
+extern ADC_HandleTypeDef hadc1;
 extern I2C_HandleTypeDef hi2c1;
 extern I2C_HandleTypeDef hi2c2;
 extern I2C_HandleTypeDef hi2c3;
@@ -56,7 +57,6 @@ extern UART_HandleTypeDef huart3;
 extern SPI_HandleTypeDef hspi1;
 
 extern TIM_HandleTypeDef htim16;
-extern CRC_HandleTypeDef hcrc;
 
 
 
@@ -102,6 +102,8 @@ void Error_Handler(void);
 #define PIN_ANTENNA_B_I2C3_SCL_GPIO_Port GPIOC
 #define PIN_ANTENNA_B_I2C3_SDA_Pin GPIO_PIN_1
 #define PIN_ANTENNA_B_I2C3_SDA_GPIO_Port GPIOC
+#define PIN_ADC_READ_VBAT_VOLTAGE_Pin GPIO_PIN_2
+#define PIN_ADC_READ_VBAT_VOLTAGE_GPIO_Port GPIOC
 #define PIN_CAMERA_MOSI_UART4_TX_Pin GPIO_PIN_0
 #define PIN_CAMERA_MOSI_UART4_TX_GPIO_Port GPIOA
 #define PIN_CAMERA_MISO_UART4_RX_Pin GPIO_PIN_1
@@ -112,12 +114,12 @@ void Error_Handler(void);
 #define PIN_BOOM_DEPLOY_EN_1_OUT_GPIO_Port GPIOA
 #define PIN_BOOM_DEPLOY_EN_2_OUT_Pin GPIO_PIN_4
 #define PIN_BOOM_DEPLOY_EN_2_OUT_GPIO_Port GPIOA
-#define PIN_GPS_PPS_IN_Pin GPIO_PIN_6
-#define PIN_GPS_PPS_IN_GPIO_Port GPIOA
-#define PIN_GPS_MOSI_USART3_TX_Pin GPIO_PIN_4
-#define PIN_GPS_MOSI_USART3_TX_GPIO_Port GPIOC
-#define PIN_GPS_MISO_USART3_RX_Pin GPIO_PIN_5
-#define PIN_GPS_MISO_USART3_RX_GPIO_Port GPIOC
+#define PIN_GNSS_PPS_IN_Pin GPIO_PIN_6
+#define PIN_GNSS_PPS_IN_GPIO_Port GPIOA
+#define PIN_GNSS_MOSI_USART3_TX_Pin GPIO_PIN_4
+#define PIN_GNSS_MOSI_USART3_TX_GPIO_Port GPIOC
+#define PIN_GNSS_MISO_USART3_RX_Pin GPIO_PIN_5
+#define PIN_GNSS_MISO_USART3_RX_GPIO_Port GPIOC
 #define PIN_MEM_NCS_FLASH_3_Pin GPIO_PIN_15
 #define PIN_MEM_NCS_FLASH_3_GPIO_Port GPIOF
 #define PIN_MEM_NCS_FLASH_2_Pin GPIO_PIN_0
@@ -160,14 +162,14 @@ void Error_Handler(void);
 #define PIN_SWDIO_GPIO_Port GPIOA
 #define PIN_SWCLK_Pin GPIO_PIN_14
 #define PIN_SWCLK_GPIO_Port GPIOA
-#define PIN_NRST_LORA_EU_OUT_Pin GPIO_PIN_11
-#define PIN_NRST_LORA_EU_OUT_GPIO_Port GPIOC
 #define PIN_EPS_MOSI_UART_TX_Pin GPIO_PIN_12
 #define PIN_EPS_MOSI_UART_TX_GPIO_Port GPIOC
 #define PIN_EPS_MISO_UART_RX_Pin GPIO_PIN_2
 #define PIN_EPS_MISO_UART_RX_GPIO_Port GPIOD
-#define PIN_NRST_LORA_US_Pin GPIO_PIN_9
-#define PIN_NRST_LORA_US_GPIO_Port GPIOG
+#define PIN_AX100_MISO_USART2_RX_Pin GPIO_PIN_5
+#define PIN_AX100_MISO_USART2_RX_GPIO_Port GPIOD
+#define PIN_AX100_MOSI_USART2_TX_Pin GPIO_PIN_6
+#define PIN_AX100_MOSI_USART2_TX_GPIO_Port GPIOD
 #define PIN_STACK_I2C1_SDA_Pin GPIO_PIN_13
 #define PIN_STACK_I2C1_SDA_GPIO_Port GPIOG
 #define PIN_STACK_I2C1_SCL_Pin GPIO_PIN_14

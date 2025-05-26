@@ -7,11 +7,13 @@
 #include <time.h>
 
 #define ADCS_i2c_HANDLE &hi2c1
+
 static const uint8_t ADCS_INCLUDE_CHECKSUM = 1;
 static const uint8_t ADCS_NO_CHECKSUM = 0;
-static const uint8_t ADCS_CHECKSUM_TIMEOUT = 100;
-static const uint16_t ADCS_PROCESSED_TIMEOUT = 1000;
-#define WRITE_STRUCT_TO_MEMORY(struct_to_write) // memory module function: write struct to memory
+static const uint8_t ADCS_CHECKSUM_TIMEOUT_TRIES = 100;
+static const uint16_t ADCS_PROCESSED_TIMEOUT_TRIES = 1000;
+static const uint16_t ADCS_FILE_POINTER_TIMEOUT_MS  =  60000; // worst-case navigation time for the file pointer is 51 seconds (255 files)
+static const uint32_t ADCS_FILE_DOWNLOAD_TIMEOUT_MS = 290000; // we expect about 4.675 minutes to download 1024x1024px files, which are the largest. 
 
 /* Function Definitions */
 

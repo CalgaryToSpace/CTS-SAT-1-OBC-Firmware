@@ -1,4 +1,5 @@
 #include "config/configuration.h"
+#include "comms_drivers/ax100_tx.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -60,7 +61,15 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
     {
         .variable_name = "CONFIG_EPS_enable_uart_debug_print",
         .num_config_var = &CONFIG_EPS_enable_uart_debug_print,
-    }
+    },
+
+    // ******** COMMS Configuration ********
+    {
+        .variable_name = "COMMS_enable_ax100_downlink_uart_logs",
+        .num_config_var = &COMMS_enable_ax100_downlink_uart_logs,
+    },
+    // ******** END COMMS Configuration ********
+    
 };
 
 // extern
@@ -94,7 +103,7 @@ int16_t CONFIG_get_int_var_index(const char *search_name)
 {
     for (uint8_t i = 0; i < CONFIG_int_config_variables_count; i++)
     {
-        if (strcmp(search_name, CONFIG_int_config_variables[i].variable_name) == 0)
+        if (strcasecmp(search_name, CONFIG_int_config_variables[i].variable_name) == 0)
         {
             return i;
         }
@@ -109,7 +118,7 @@ int16_t CONFIG_get_str_var_index(const char *search_name)
 {
     for (uint8_t i = 0; i < CONFIG_str_config_variables_count; i++)
     {
-        if (strcmp(search_name, CONFIG_str_config_variables[i].variable_name) == 0)
+        if (strcasecmp(search_name, CONFIG_str_config_variables[i].variable_name) == 0)
         {
             return i;
         }

@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-// Messages up to 256 characters
-#define LOG_FORMATTED_MESSAGE_MAX_LENGTH 256
+// Restricted by radio packet length
+#define LOG_FORMATTED_MESSAGE_MAX_LENGTH 185
 
 typedef enum {
     LOG_SEVERITY_DEBUG = 1 << 0,
@@ -32,7 +32,7 @@ typedef enum {
     LOG_SYSTEM_OBC = 1 << 0,
     LOG_SYSTEM_UHF_RADIO = 1 << 1,
     LOG_SYSTEM_UMBILICAL_UART = 1 << 2,
-    LOG_SYSTEM_GPS = 1 << 3,
+    LOG_SYSTEM_GNSS = 1 << 3,
     LOG_SYSTEM_MPI = 1 << 4,
     LOG_SYSTEM_EPS = 1 << 5,
     LOG_SYSTEM_BOOM = 1 << 6,

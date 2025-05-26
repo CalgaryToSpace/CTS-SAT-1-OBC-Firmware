@@ -28,7 +28,8 @@
 #include "rtos_tasks/rtos_tasks.h"
 #include "rtos_tasks/rtos_eps_tasks.h"
 #include "rtos_tasks/rtos_background_upkeep.h"
-#include "rtos_tasks/rtos_tcmd_receive_debug_uart_task.h"
+#include "rtos_tasks/rtos_tasks_rx_telecommands.h"
+#include "rtos_tasks/rtos_bulk_downlink_task.h"
 #include "uart_handler/uart_handler.h"
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_commands.h"
@@ -52,7 +53,7 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-CRC_HandleTypeDef hcrc;
+ADC_HandleTypeDef hadc1;
 
 I2C_HandleTypeDef hi2c1;
 I2C_HandleTypeDef hi2c2;
@@ -86,12 +87,15 @@ const osThreadAttr_t defaultTask_attributes = {
 // The STM32 has 640 KB of RAM.
 // For CTS-SAT-1, please create threads here (and not in the IOC file).
 // Don't forget to add the thread much farther down, also.
-// Per the IOC file, the "TOTAL_HEAP_SIZE" (where task stacks are allocated) is 32,768 bytes of RAM.
+// Per the IOC file, the "TOTAL_HEAP_SIZE" (where task stacks are allocated) is 65,536 bytes of RAM.
+
+// 512 may work okay, but 1024 is a safe bet.
+#define TASK_MINIMUM_STACK_SIZE_BYTES 1024
 
 osThreadId_t TASK_DEBUG_print_heartbeat_Handle;
 const osThreadAttr_t TASK_DEBUG_print_heartbeat_Attributes = {
   .name = "TASK_DEBUG_print_heartbeat",
-  .stack_size = 256,
+  .stack_size = TASK_MINIMUM_STACK_SIZE_BYTES,
   .priority = (osPriority_t) osPriorityBelowNormal5,
 };
 
@@ -101,6 +105,22 @@ const osThreadAttr_t TASK_handle_uart_telecommands_Attributes = {
   // Size 2048 doesn't work with LFS settings, but 8192 does.
   // TODO: confirm stack size
   .stack_size = 8192,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+
+osThreadId_t TASK_handle_ax100_kiss_telecommands_Handle;
+const osThreadAttr_t TASK_handle_ax100_kiss_telecommands_Attributes = {
+  .name = "TASK_handle_ax100_kiss_telecommands",
+  // Presumably applicable: size 2048 doesn't work with LFS settings, but 8192 does.
+  // TODO: confirm stack size
+  .stack_size = 8192,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+
+osThreadId_t TASK_bulk_downlink_Handle;
+const osThreadAttr_t TASK_bulk_downlink_Attributes = {
+  .name = "TASK_bulk_downlink",
+  .stack_size = 4096,
   .priority = (osPriority_t) osPriorityNormal,
 };
 
@@ -114,21 +134,21 @@ const osThreadAttr_t TASK_execute_telecommands_Attributes = {
 osThreadId_t TASK_service_eps_watchdog_Handle;
 const osThreadAttr_t TASK_service_eps_watchdog_Attributes = {
   .name = "TASK_service_eps_watchdog",
-  .stack_size = 512, //in bytes
+  .stack_size = TASK_MINIMUM_STACK_SIZE_BYTES, //in bytes
   .priority = (osPriority_t) osPriorityNormal, //TODO: Figure out which priority makes sense for this task
 };
 
 osThreadId_t TASK_time_sync_Handle;
 const osThreadAttr_t TASK_time_sync_Attributes = {
   .name = "TASK_time_sync",
-  .stack_size = 512, //in bytes
+  .stack_size = TASK_MINIMUM_STACK_SIZE_BYTES, //in bytes
   .priority = (osPriority_t) osPriorityNormal, //TODO: Figure out which priority makes sense for this task
 };
 
 osThreadId_t TASK_monitor_freertos_memory_Handle;
 const osThreadAttr_t TASK_monitor_freertos_memory_Attributes = {
   .name = "TASK_monitor_freertos_memory",
-  .stack_size = 1024,
+  .stack_size = 2048,
   .priority = (osPriority_t) osPriorityBelowNormal6,
 };
 
@@ -153,6 +173,16 @@ FREERTOS_task_info_struct_t FREERTOS_task_handles_array [] = {
   {
     .task_handle = &TASK_handle_uart_telecommands_Handle,
     .task_attribute = &TASK_handle_uart_telecommands_Attributes,
+    .lowest_stack_bytes_remaining = UINT32_MAX
+  },
+  {
+    .task_handle = &TASK_handle_ax100_kiss_telecommands_Handle,
+    .task_attribute = &TASK_handle_ax100_kiss_telecommands_Attributes,
+    .lowest_stack_bytes_remaining = UINT32_MAX
+  },
+  {
+    .task_handle = &TASK_bulk_downlink_Handle,
+    .task_attribute = &TASK_bulk_downlink_Attributes,
     .lowest_stack_bytes_remaining = UINT32_MAX
   },
   {
@@ -201,10 +231,10 @@ static void MX_USART1_UART_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_I2C3_Init(void);
-static void MX_CRC_Init(void);
 static void MX_TIM16_Init(void);
 static void MX_IWDG_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_ADC1_Init(void);
 void StartDefaultTask(void *argument);
 
 /* USER CODE BEGIN PFP */
@@ -259,10 +289,10 @@ int main(void)
   MX_USART3_UART_Init();
   MX_SPI1_Init();
   MX_I2C3_Init();
-  MX_CRC_Init();
   MX_TIM16_Init();
   MX_IWDG_Init();
   MX_USART2_UART_Init();
+  MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
 
   DEBUG_uart_print_str("\n\nMX_Init() done\n");
@@ -309,6 +339,10 @@ int main(void)
   TASK_DEBUG_print_heartbeat_Handle = osThreadNew(TASK_DEBUG_print_heartbeat, NULL, &TASK_DEBUG_print_heartbeat_Attributes);
 
   TASK_handle_uart_telecommands_Handle = osThreadNew(TASK_handle_uart_telecommands, NULL, &TASK_handle_uart_telecommands_Attributes);
+
+  TASK_handle_ax100_kiss_telecommands_Handle = osThreadNew(TASK_handle_ax100_kiss_telecommands, NULL, &TASK_handle_ax100_kiss_telecommands_Attributes);
+
+  TASK_bulk_downlink_Handle = osThreadNew(TASK_bulk_downlink, NULL, &TASK_bulk_downlink_Attributes);
 
   TASK_execute_telecommands_Handle = osThreadNew(TASK_execute_telecommands, NULL, &TASK_execute_telecommands_Attributes);
 
@@ -388,33 +422,60 @@ void SystemClock_Config(void)
 }
 
 /**
-  * @brief CRC Initialization Function
+  * @brief ADC1 Initialization Function
   * @param None
   * @retval None
   */
-static void MX_CRC_Init(void)
+static void MX_ADC1_Init(void)
 {
 
-  /* USER CODE BEGIN CRC_Init 0 */
+  /* USER CODE BEGIN ADC1_Init 0 */
 
-  /* USER CODE END CRC_Init 0 */
+  /* USER CODE END ADC1_Init 0 */
 
-  /* USER CODE BEGIN CRC_Init 1 */
+  ADC_ChannelConfTypeDef sConfig = {0};
 
-  /* USER CODE END CRC_Init 1 */
-  hcrc.Instance = CRC;
-  hcrc.Init.DefaultPolynomialUse = DEFAULT_POLYNOMIAL_ENABLE;
-  hcrc.Init.DefaultInitValueUse = DEFAULT_INIT_VALUE_ENABLE;
-  hcrc.Init.InputDataInversionMode = CRC_INPUTDATA_INVERSION_NONE;
-  hcrc.Init.OutputDataInversionMode = CRC_OUTPUTDATA_INVERSION_DISABLE;
-  hcrc.InputDataFormat = CRC_INPUTDATA_FORMAT_BYTES;
-  if (HAL_CRC_Init(&hcrc) != HAL_OK)
+  /* USER CODE BEGIN ADC1_Init 1 */
+
+  /* USER CODE END ADC1_Init 1 */
+
+  /** Common config
+  */
+  hadc1.Instance = ADC1;
+  hadc1.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV8;
+  hadc1.Init.Resolution = ADC_RESOLUTION_12B;
+  hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+  hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
+  hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+  hadc1.Init.LowPowerAutoWait = DISABLE;
+  hadc1.Init.ContinuousConvMode = DISABLE;
+  hadc1.Init.NbrOfConversion = 1;
+  hadc1.Init.DiscontinuousConvMode = DISABLE;
+  hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+  hadc1.Init.DMAContinuousRequests = DISABLE;
+  hadc1.Init.Overrun = ADC_OVR_DATA_PRESERVED;
+  hadc1.Init.OversamplingMode = DISABLE;
+  if (HAL_ADC_Init(&hadc1) != HAL_OK)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN CRC_Init 2 */
 
-  /* USER CODE END CRC_Init 2 */
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_3;
+  sConfig.Rank = ADC_REGULAR_RANK_1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
+  sConfig.SingleDiff = ADC_SINGLE_ENDED;
+  sConfig.OffsetNumber = ADC_OFFSET_NONE;
+  sConfig.Offset = 0;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN ADC1_Init 2 */
+
+  /* USER CODE END ADC1_Init 2 */
 
 }
 
@@ -847,7 +908,7 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
+  huart2.Init.BaudRate = 230400;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -1052,14 +1113,10 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_3_GPIO_Port, PIN_MEM_NCS_FLASH_3_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOG, PIN_MEM_NCS_FLASH_2_Pin|PIN_MEM_NCS_FLASH_1_Pin|PIN_MPI_NEN_RX_MISO_OUT_Pin|PIN_MPI_EN_TX_MOSI_OUT_Pin
-                          |PIN_NRST_LORA_US_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOG, PIN_MEM_NCS_FLASH_2_Pin|PIN_MEM_NCS_FLASH_1_Pin|PIN_MPI_NEN_RX_MISO_OUT_Pin|PIN_MPI_EN_TX_MOSI_OUT_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, PIN_UHF_CTRL_OUT_Pin|PIN_LED_DEVKIT_LD2_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(PIN_NRST_LORA_EU_OUT_GPIO_Port, PIN_NRST_LORA_EU_OUT_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : PIN_LED_GP1_OUT_Pin PIN_LED_GP2_OUT_Pin PIN_LED_GP3_OUT_Pin PIN_MEM_NCS_FLASH_0_Pin
                            PIN_MEM_NCS_FRAM_1_Pin PIN_MEM_NCS_FRAM_0_Pin */
@@ -1077,11 +1134,11 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PIN_GPS_PPS_IN_Pin */
-  GPIO_InitStruct.Pin = PIN_GPS_PPS_IN_Pin;
+  /*Configure GPIO pin : PIN_GNSS_PPS_IN_Pin */
+  GPIO_InitStruct.Pin = PIN_GNSS_PPS_IN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(PIN_GPS_PPS_IN_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(PIN_GNSS_PPS_IN_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PIN_MEM_NCS_FLASH_3_Pin */
   GPIO_InitStruct.Pin = PIN_MEM_NCS_FLASH_3_Pin;
@@ -1090,10 +1147,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(PIN_MEM_NCS_FLASH_3_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PIN_MEM_NCS_FLASH_2_Pin PIN_MEM_NCS_FLASH_1_Pin PIN_MPI_NEN_RX_MISO_OUT_Pin PIN_MPI_EN_TX_MOSI_OUT_Pin
-                           PIN_NRST_LORA_US_Pin */
-  GPIO_InitStruct.Pin = PIN_MEM_NCS_FLASH_2_Pin|PIN_MEM_NCS_FLASH_1_Pin|PIN_MPI_NEN_RX_MISO_OUT_Pin|PIN_MPI_EN_TX_MOSI_OUT_Pin
-                          |PIN_NRST_LORA_US_Pin;
+  /*Configure GPIO pins : PIN_MEM_NCS_FLASH_2_Pin PIN_MEM_NCS_FLASH_1_Pin PIN_MPI_NEN_RX_MISO_OUT_Pin PIN_MPI_EN_TX_MOSI_OUT_Pin */
+  GPIO_InitStruct.Pin = PIN_MEM_NCS_FLASH_2_Pin|PIN_MEM_NCS_FLASH_1_Pin|PIN_MPI_NEN_RX_MISO_OUT_Pin|PIN_MPI_EN_TX_MOSI_OUT_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -1111,13 +1166,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(PIN_REMOVE_BEFORE_FLIGHT_LOW_IS_FLYING_IN_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : PIN_NRST_LORA_EU_OUT_Pin */
-  GPIO_InitStruct.Pin = PIN_NRST_LORA_EU_OUT_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(PIN_NRST_LORA_EU_OUT_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PIN_BOOT0_Pin */
   GPIO_InitStruct.Pin = PIN_BOOT0_Pin;

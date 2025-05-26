@@ -128,13 +128,12 @@ int8_t LFS_unmount()
     return 0;
 }
 
-/// @brief Lists contents of LittleFS Directory
+/// @brief Lists contents of LittleFS Directory, where each entry is sent as a log message.
 /// @param root_directory cstring holding the root directory to open and read
 /// @param offset Number of entries to skip before listing directory
 /// @param count Number of entries to list in total (if 0, prints all entries)
 /// @return 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
-int8_t LFS_list_directory(const char root_directory[], uint16_t offset, int16_t count)
-{
+int8_t LFS_list_directory(const char root_directory[], uint16_t offset, int16_t count) {
     // Check if LFS is mounted
     if (!LFS_is_lfs_mounted) {
         LOG_message(
@@ -146,7 +145,7 @@ int8_t LFS_list_directory(const char root_directory[], uint16_t offset, int16_t 
 
     // Try to open the directory
     lfs_dir_t dir;
-    int8_t open_dir_result = lfs_dir_open(&LFS_filesystem, &dir, root_directory);
+    const int8_t open_dir_result = lfs_dir_open(&LFS_filesystem, &dir, root_directory);
     if (open_dir_result < 0)
     {
         LOG_message(
@@ -204,7 +203,7 @@ int8_t LFS_list_directory(const char root_directory[], uint16_t offset, int16_t 
         }
     }
 
-    int8_t close_dir_result = lfs_dir_close(&LFS_filesystem, &dir);
+    const int8_t close_dir_result = lfs_dir_close(&LFS_filesystem, &dir);
     if (close_dir_result < 0)
     {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing directory: %s", root_directory);
@@ -645,7 +644,7 @@ lfs_ssize_t LFS_file_size(const char file_name[])
 {
     if (!LFS_is_lfs_mounted) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "LittleFS not mounted");
-        return -12512;
+        return -12512; // Totally arbitrary error code.
     }
 
     lfs_file_t file;

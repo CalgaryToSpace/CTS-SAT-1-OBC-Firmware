@@ -9,9 +9,7 @@ The first byte of the packet (after the 4-byte CSP header) is the packet type. T
     * `0x02` - beacon (peripheral telemetry)
     * `0x03` - log message
     * `0x04` - telecommand response
-    * `0x10` - bulk downlink (first chunk)
-    * `0x11` - bulk downlink (more chunks coming)
-    * `0x12` - bulk downlink (last chunk, or "only chunk")
+    * `0x10` - bulk file downlink
 
 ## Bytes 1-200 of the Packet, for each Packet Type
 
@@ -26,9 +24,13 @@ TODO: Fill in the format here. For now, see https://github.com/CalgaryToSpace/CT
 
 ### Bytes 1-200 of Log Message Packets (Packet Type `0x03`)
 
+This packet type does not have sequence numbers. All log messages fit within (or are truncated to fit within) a single packet.
+
 Plain text content, same as UART messages.
 
-### Bytes 1-200 of Telecommand Response First Part (Packet Type `0x04`)
+### Bytes 1-200 of Telecommand Response Packets (Packet Type `0x04`)
+
+This packet type has sequence numbers.
 
 * Bytes 1,2,3,4,5,6,7,8: uint64_t of tssent (unique ID of the associated uplinked telecommand)
 * Byte 9: uint8_t of response code (0 for success)
@@ -38,10 +40,14 @@ Plain text content, same as UART messages.
 * Bytes 14-200: Plain text content of the `response_output_buf`, null terminated
 
 
-### Bytes 1-200 of Bulk Downlink Packets (Packet Type `0x10`, `0x11`, `0x12`)
+### Bytes 1-200 of Bulk File Downlink Packets (Packet Type `0x10`)
 
-* Bytes 1,2,3,4: uint32_t of byte offset within file
-* Bytes 5-200: Content of file
+This packet type has sequence numbers.
+
+* Byte 1: sequence number of file downlink packet (starting from 1)
+* Byte 2: total number of file downlink packets (e.g., 1 if <183 bytes)
+* Bytes 3,4,5,6: uint32_t of byte offset within file
+* Bytes 7-200: Content of file
 
 
 ## Other Details

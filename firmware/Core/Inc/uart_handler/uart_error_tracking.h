@@ -22,8 +22,9 @@ typedef struct
 } UART_error_counts_single_subsystem_struct_t;
 
 extern UART_error_counts_single_subsystem_struct_t UART_error_mpi_error_info;
+extern UART_error_counts_single_subsystem_struct_t UART_error_ax100_error_info;
 
-extern UART_error_counts_single_subsystem_struct_t UART_error_gps_error_info;
+extern UART_error_counts_single_subsystem_struct_t UART_error_gnss_error_info;
 
 extern UART_error_counts_single_subsystem_struct_t UART_error_camera_error_info;
 

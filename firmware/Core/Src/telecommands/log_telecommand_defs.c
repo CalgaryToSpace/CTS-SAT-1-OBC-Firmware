@@ -49,7 +49,7 @@ uint8_t TCMDEXEC_log_set_sink_enabled_state(const char *args_str, TCMD_Telecomma
 ///    LOG_SYSTEM_OBC = 1
 ///    LOG_SYSTEM_UHF_RADIO = 2
 ///    LOG_SYSTEM_UMBILICAL_UART = 4
-///    LOG_SYSTEM_GPS = 8
+///    LOG_SYSTEM_GNSS = 8
 ///    LOG_SYSTEM_MPI = 16
 ///    LOG_SYSTEM_EPS = 32
 ///    LOG_SYSTEM_BOOM = 64

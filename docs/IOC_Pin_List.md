@@ -24,9 +24,9 @@ This is a representation of the IOC file, as of `2024-09-21 13:09:08-06:00 (Comm
 | PIN_DEBUG_MOSI_LPUART1_TX       | PG7    | LPUART1_TX  | Asynchronous       | true   |
 | PIN_EPS_MISO_UART_RX            | PD2    | UART5_RX    | Asynchronous       | true   |
 | PIN_EPS_MOSI_UART_TX            | PC12   | UART5_TX    | Asynchronous       | true   |
-| PIN_GPS_MISO_USART3_RX          | PC5    | USART3_RX   | Asynchronous       | true   |
-| PIN_GPS_MOSI_USART3_TX          | PC4    | USART3_TX   | Asynchronous       | true   |
-| PIN_GPS_PPS_IN                  | PA6    | GPIO_Input  |                    | true   |
+| PIN_GNSS_MISO_USART3_RX          | PC5    | USART3_RX   | Asynchronous       | true   |
+| PIN_GNSS_MOSI_USART3_TX          | PC4    | USART3_TX   | Asynchronous       | true   |
+| PIN_GNSS_PPS_IN                  | PA6    | GPIO_Input  |                    | true   |
 | PIN_LED_DEVKIT_LD2              | PB7    | GPIO_Output |                    | true   |
 | PIN_LED_GP1_OUT                 | PE2    | GPIO_Output |                    | true   |
 | PIN_LED_GP2_OUT                 | PE3    | GPIO_Output |                    | true   |

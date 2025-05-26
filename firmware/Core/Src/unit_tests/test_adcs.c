@@ -275,7 +275,7 @@ uint8_t TEST_EXEC__ADCS_pack_to_estimation_params_struct()
     TEST_ASSERT_TRUE(result.magnetometer_selection_for_raw_magnetometer_telemetry == ADCS_MAGNETOMETER_MODE_REDUNDANT_SIGNAL);
     TEST_ASSERT_TRUE(result.automatic_estimation_transition_due_to_rate_sensor_errors == true);
     TEST_ASSERT_TRUE(result.wheel_30s_power_up_delay == true);
-    TEST_ASSERT_TRUE(result.cam1_and_cam2_sampling_period == 44); // error counter reset period?
+    TEST_ASSERT_TRUE(result.error_counter_reset_period_min == 44);
 
     return 0;
 }
@@ -635,7 +635,7 @@ uint8_t TEST_EXEC__ADCS_pack_to_file_info_struct() {
     TEST_ASSERT_TRUE(result.busy_updating == true);
     TEST_ASSERT_TRUE(result.file_counter == 52);
     TEST_ASSERT_TRUE(result.file_crc16 == 48282);
-    TEST_ASSERT_TRUE(result.file_date_time == 2216010756); // assuming the MS-DOS time converter works (need a test for that still)
+    TEST_ASSERT_TRUE(result.file_date_time_msdos == 2018915346); 
     TEST_ASSERT_TRUE(result.file_size == 3164239958);
     TEST_ASSERT_TRUE(result.file_type == ADCS_FILE_TYPE_TELEMETRY_LOG);
     return 0;

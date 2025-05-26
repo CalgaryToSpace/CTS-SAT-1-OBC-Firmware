@@ -224,6 +224,7 @@ static const uint8_t ADCS_COMMAND_BOOTLOADER_READ_INFO = 102;
 static const uint8_t ADCS_COMMAND_BOOTLOADER_COPY_TO_FLASH = 103;
 
 // SD Log Bit Masks - Section 8 Table 216 of Firmware Manual
+static const uint8_t ADCS_SD_LOG_MASK_NONE[ADCS_SD_LOG_BITFIELD_LENGTH_BYTES] =                                    {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}; 
 static const uint8_t ADCS_SD_LOG_MASK_COMMUNICATION_STATUS[ADCS_SD_LOG_BITFIELD_LENGTH_BYTES] =                    {0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}; 
 static const uint8_t ADCS_SD_LOG_MASK_EDAC_ERROR_COUNTERS[ADCS_SD_LOG_BITFIELD_LENGTH_BYTES] =                     {0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}; 
 static const uint8_t ADCS_SD_LOG_MASK_LAST_LOGGED_EVENT[ADCS_SD_LOG_BITFIELD_LENGTH_BYTES] =                       {0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}; 

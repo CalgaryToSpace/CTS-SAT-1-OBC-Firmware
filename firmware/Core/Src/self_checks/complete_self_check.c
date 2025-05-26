@@ -4,7 +4,7 @@
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_commands.h"
 #include "comms_drivers/ax100_hw.h"
-#include "gps/gps_internal_drivers.h"
+#include "gnss_receiver/gnss_internal_drivers.h"
 #include "eps_drivers/eps_commands.h"
 #include "eps_drivers/eps_channel_control.h"
 #include "eps_drivers/eps_calculations.h"
@@ -66,32 +66,51 @@ uint8_t CTS1_check_is_adcs_alive() {
     return 1;
 }
 
-// uint8_t CTS1_check_is_ax100_alive() {} // TODO: Is there a way to test this?
 
 uint8_t CTS1_check_is_gnss_responsive() {
     // Use versiona command instead of bestxyza, as bestxyza takes a variable duration, whereas
     // versiona appears to respond very quickly reliably.
     const char cmd[] = "log versiona once\n";
 
+    // Power on GNSS.
+    const uint8_t eps_status = EPS_set_channel_enabled(EPS_CHANNEL_3V3_GNSS, 1);
+    if (eps_status != 0) {
+        LOG_message(
+            LOG_SYSTEM_GNSS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error enabling GNSS power channel in CTS1_check_is_gnss_responsive: status=%d",
+            eps_status
+        );
+        EPS_set_channel_enabled(EPS_CHANNEL_3V3_GNSS, 0); // Power off the GNSS.
+        return 0;
+    }
+
+    LOG_message(
+        LOG_SYSTEM_GNSS, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+        "GNSS power channel enabled. Waiting for GNSS to power on (10 sec)..."
+    );
+    HAL_Delay(10000); // Allow time for the GNSS to power on. Needs a very long time. 5 sec too short. 7 sec works.
+
     // Expecting versiona may send up to about 250 bytes.
     uint8_t rx_buf[350];
     uint16_t rx_buf_received_len = 0;
-    const uint8_t gps_status = GPS_send_cmd_get_response(
+    const uint8_t gnss_status = GNSS_send_cmd_get_response(
         cmd, strlen(cmd),
         rx_buf,
         sizeof(rx_buf),
         &rx_buf_received_len
     );
 
-    // Clean up: Disable the GPS UART interrupt.
-    GPS_set_uart_interrupt_state(0);
+    // Clean up: Disable the GNSS UART interrupt.
+    GNSS_set_uart_interrupt_state(0);
     HAL_Delay(20); // Allow any pending IRQs to trigger so that upcoming UART prints/logs work.
 
-    if (gps_status != 0) {
+    EPS_set_channel_enabled(EPS_CHANNEL_3V3_GNSS, 0); // Power off the GNSS.
+
+    if (gnss_status != 0) {
         LOG_message(
-            LOG_SYSTEM_GPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "GPS ERROR: Failed to send command to GPS. status=%d",
-            gps_status
+            LOG_SYSTEM_GNSS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "GNSS ERROR: Failed to send command to GNSS. status=%d",
+            gnss_status
         );
         return 0;
     }
@@ -101,8 +120,8 @@ uint8_t CTS1_check_is_gnss_responsive() {
     rx_buf[rx_buf_received_len] = '\0';
     
     LOG_message(
-        LOG_SYSTEM_GPS, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
-        "GPS response (%d bytes): %s",
+        LOG_SYSTEM_GNSS, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+        "GNSS response (%d bytes): %s",
         rx_buf_received_len,
         (char*)rx_buf
     );
@@ -174,9 +193,7 @@ uint8_t CTS1_check_is_eps_thriving() {
 
 /// @brief Check if the MPI is dumping science data by using the lazy blocking receive method.
 /// @return 1 if the MPI is dumping science data, 0 otherwise.
-uint8_t CTS1_check_is_mpi_dumping() {
-    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_MISO); // OBC is listening.
-
+uint8_t CTS1_check_mpi_science_rx() {
     // First, cancel any ongoing DMA transfers.
     const HAL_StatusTypeDef abort_status = HAL_UART_AbortReceive(UART_mpi_port_handle);
     if (abort_status != HAL_OK) {
@@ -187,6 +204,27 @@ uint8_t CTS1_check_is_mpi_dumping() {
         MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
         return 0;
     }
+
+    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_DUPLEX); // Send to MPI.
+    HAL_Delay(50);
+
+    // MPI boots up in "command" mode, so we need to send a command to switch it to "dumping science" mode.
+    const uint8_t start_dumping_science_cmd[] = {0x54, 0x43, 0x19};
+    const HAL_StatusTypeDef send_status = HAL_UART_Transmit(
+        UART_mpi_port_handle,
+        start_dumping_science_cmd, sizeof(start_dumping_science_cmd),
+        100 // Timeout: 100ms is plenty.
+    );
+    if (send_status != HAL_OK) {
+        LOG_message(
+            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Failed to send MPI command: HAL_Status=%d", send_status
+        );
+        MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
+        return 0;
+    }
+
+    // Note: We would set the MPI transceiver to MISO mode here, if not using duplex above.
 
     // Start listening in blocking mode.
     uint8_t rx_buffer[350];
@@ -222,47 +260,63 @@ uint8_t CTS1_check_is_mpi_dumping() {
 }
 
 uint8_t CTS1_check_mpi_cmd_works() {
-    EPS_set_channel_enabled(EPS_CHANNEL_12V_MPI, 1);
-    EPS_set_channel_enabled(EPS_CHANNEL_5V_MPI, 1);
-    HAL_Delay(200); // Wait for the MPI to wake up, if needed.
+    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_DUPLEX); // MPI is listening.
+
+    // First, cancel any ongoing DMA transfers.
+    const HAL_StatusTypeDef abort_status = HAL_UART_AbortReceive(UART_mpi_port_handle);
+    if (abort_status != HAL_OK) {
+        LOG_message(
+            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Failed to abort MPI DMA listening: HAL_Status=%d", abort_status
+        );
+        MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
+        return 0;
+    }
 
     // Send random command: "TC" + command_2 + scan_mode_off
     // Not certain what it does, but we power the MPI off anyway, so it gets reset anyway.
+    // Dr. B approves this as a reasonable testing command.
     const uint8_t cmd[] = {0x54, 0x43, 0x02, 0x00};
 
-    uint8_t MPI_buffer[100];
+    uint8_t MPI_rx_buffer[100];
     uint16_t MPI_buffer_len = 0;
     const uint8_t result = MPI_send_command_get_response(
         cmd, sizeof(cmd),
-        MPI_buffer, sizeof(MPI_buffer), &MPI_buffer_len
+        MPI_rx_buffer, sizeof(MPI_rx_buffer), &MPI_buffer_len
     );
 
-    // Clean-up: Power off the MPI.
-    EPS_set_channel_enabled(EPS_CHANNEL_12V_MPI, 0);
-    EPS_set_channel_enabled(EPS_CHANNEL_5V_MPI, 0);
-
     if (result != 0) {
+        LOG_message(
+            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "MPI_send_command_get_response() -> %d", result
+        );
         return 0;
     }
 
-    if (MPI_buffer_len == 0) {
+    if (MPI_buffer_len < 2 || MPI_buffer_len > 10) {
+        LOG_message(
+            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "MPI_send_command_get_response() -> Received %d bytes (expected 2 <= x <= 10).",
+            MPI_buffer_len
+        );
         return 0;
     }
 
-    if (MPI_buffer[0] == 0x54 && MPI_buffer[1] == 0x43) {
-        // The response is a "TC" response. Success.
-        return 1;
+    if (MPI_rx_buffer[0] != 0x02 || MPI_rx_buffer[1] != MPI_COMMAND_SUCCESS_RESPONSE_VALUE) {
+        // The success response should be the TC number followed by the success code.
+        LOG_message(
+            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "MPI_send_command_get_response() response was %d bytes. Starting with: [d%d, d%d]",
+            MPI_buffer_len,
+            MPI_rx_buffer[0], MPI_rx_buffer[1]
+        );
+        return 0;
     }
 
-    return 0;
+    return 1;
 }
 
 uint8_t CTS1_check_is_camera_responsive() {
-    const uint8_t init_result = CAM_setup();
-    if (init_result != 0) {
-        return 0;
-    }
-    
     const uint8_t test_result = CAM_test();
     if (test_result != 0) {
         return 0;
@@ -352,13 +406,16 @@ void CTS1_run_system_self_check(CTS1_system_self_check_result_struct_t *result) 
         result->is_ax100_i2c_addr_alive
     );
 
-    // GNSS
+    // GNSS (very long duration)
     result->is_gnss_responsive = CTS1_check_is_gnss_responsive();
     LOG_message(
         LOG_SYSTEM_OBC, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
         "is_gnss_responsive: %d",
         result->is_gnss_responsive
     );
+    
+    // The GNSS takes a very long time to power on. Pet the watchdog here to keep it happy.
+    HAL_IWDG_Refresh(&hiwdg);
 
     // EPS
     result->is_eps_responsive = CTS1_check_is_eps_responsive();
@@ -374,14 +431,14 @@ void CTS1_run_system_self_check(CTS1_system_self_check_result_struct_t *result) 
     EPS_set_channel_enabled(EPS_CHANNEL_12V_MPI, 1);
     EPS_set_channel_enabled(EPS_CHANNEL_5V_MPI, 1);
     HAL_Delay(MPI_boot_duration_ms); // Wait for the MPI to boot up.
-    result->is_mpi_dumping = CTS1_check_is_mpi_dumping();
+    // result->mpi_science_rx = CTS1_check_mpi_science_rx(); // TODO: Re-enable once implemented.
     result->mpi_cmd_works = CTS1_check_mpi_cmd_works();
     EPS_set_channel_enabled(EPS_CHANNEL_12V_MPI, 0);
     EPS_set_channel_enabled(EPS_CHANNEL_5V_MPI, 0);
     LOG_message(
         LOG_SYSTEM_OBC, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
-        "is_mpi_dumping: %d, mpi_cmd_works: %d",
-        result->is_mpi_dumping,
+        "mpi_science_rx: %d, mpi_cmd_works: %d",
+        result->mpi_science_rx,
         result->mpi_cmd_works
     );
 
@@ -442,36 +499,38 @@ void CTS1_run_system_self_check(CTS1_system_self_check_result_struct_t *result) 
     }
 }
 
-/// @brief Convert the self-check struct to a JSON string that lists the failures.
+const char *CTS1_system_self_check_result_struct_field_names[] = {
+    "obc_temperature",
+    "is_adcs_i2c_addr",
+    "is_adcs_alive",
+    "is_ax100_i2c_addr",
+    "is_gnss_responsive",
+    "is_eps_responsive",
+    "is_eps_thriving",
+    "mpi_science_rx",
+    "mpi_cmd",
+    "is_camera_responsive",
+    "is_antenna_i2c_addr_a",
+    "is_antenna_i2c_addr_b",
+    "is_antenna_a_alive",
+    "is_antenna_b_alive",
+    "flash_0_alive",
+    "flash_1_alive",
+    "flash_2_alive",
+    "flash_3_alive",
+    "eps_no_overcurrent_faults"
+};
+
+/// @brief Convert the self-check struct to a JSON string.
 /// @param self_check_struct Self-check struct to convert to JSON.
 /// @param dest_json_str Destination string to write the JSON to.
 /// @param dest_json_str_size Size of the destination string (max length to write).
-void CTS1_self_check_struct_TO_json_list_of_failures(
+/// @param show_passes If 1, include the passed checks in the JSON.
+void CTS1_self_check_struct_TO_json_list(
     CTS1_system_self_check_result_struct_t self_check_struct,
-    char dest_json_str[], uint16_t dest_json_str_size
+    char dest_json_str[], uint16_t dest_json_str_size,
+    uint8_t show_passes
 ) {
-    const char *field_names[] = {
-        "obc_temperature",
-        "is_adcs_i2c_addr",
-        "is_adcs_alive",
-        "is_ax100_i2c_addr",
-        "is_gnss_responsive",
-        "is_eps_responsive",
-        "is_eps_thriving",
-        "is_mpi_dumping_science",
-        "mpi_cmd",
-        "is_camera_responsive",
-        "is_antenna_i2c_addr_a",
-        "is_antenna_i2c_addr_b",
-        "is_antenna_a_alive",
-        "is_antenna_b_alive",
-        "flash_0_alive",
-        "flash_1_alive",
-        "flash_2_alive",
-        "flash_3_alive",
-        "eps_no_overcurrent_faults"
-    };
-    
     uint8_t *field_values[] = {
         &self_check_struct.obc_temperature_works,
         &self_check_struct.is_adcs_i2c_addr_alive,
@@ -480,7 +539,7 @@ void CTS1_self_check_struct_TO_json_list_of_failures(
         &self_check_struct.is_gnss_responsive,
         &self_check_struct.is_eps_responsive,
         &self_check_struct.is_eps_thriving,
-        &self_check_struct.is_mpi_dumping,
+        &self_check_struct.mpi_science_rx,
         &self_check_struct.mpi_cmd_works,
         &self_check_struct.is_camera_responsive,
         &self_check_struct.is_antenna_i2c_addr_a_alive,
@@ -493,30 +552,58 @@ void CTS1_self_check_struct_TO_json_list_of_failures(
         &self_check_struct.flash_3_alive,
         &self_check_struct.eps_no_overcurrent_faults
     };
-    
-    size_t len = 0;
-    len += snprintf(dest_json_str + len, dest_json_str_size - len, "{\"fail\":[");
 
-    uint8_t is_first = 1;
+    size_t len = 0;
+    uint8_t is_first_fail = 1;
+    uint8_t is_first_pass = 1;
     uint8_t fail_count = 0;
     uint8_t pass_count = 0;
 
-    for (size_t i = 0; i < sizeof(field_names) / sizeof(field_names[0]); i++) {
+    len += snprintf(dest_json_str + len, dest_json_str_size - len, "{");
+
+    // Write "fail" array
+    len += snprintf(dest_json_str + len, dest_json_str_size - len, "\"fail\":[");
+    for (size_t i = 0; i < sizeof(CTS1_system_self_check_result_struct_field_names) / sizeof(CTS1_system_self_check_result_struct_field_names[0]); i++) {
         if (*field_values[i] == 0) {
-            if (!is_first) {
+            if (!is_first_fail) {
                 len += snprintf(dest_json_str + len, dest_json_str_size - len, ",");
             }
-            len += snprintf(dest_json_str + len, dest_json_str_size - len, "\"%s\"", field_names[i]);
-            is_first = 0;
+            len += snprintf(dest_json_str + len, dest_json_str_size - len, "\"%s\"", CTS1_system_self_check_result_struct_field_names[i]);
+            is_first_fail = 0;
             fail_count++;
-        } else {
-            pass_count++;
+        }
+    }
+    len += snprintf(dest_json_str + len, dest_json_str_size - len, "]");
+
+    // Optionally write "pass" array
+    if (show_passes) {
+        len += snprintf(dest_json_str + len, dest_json_str_size - len, ",\"pass\":[");
+        for (size_t i = 0; i < sizeof(CTS1_system_self_check_result_struct_field_names) / sizeof(CTS1_system_self_check_result_struct_field_names[0]); i++) {
+            if (*field_values[i] != 0) {
+                if (!is_first_pass) {
+                    len += snprintf(dest_json_str + len, dest_json_str_size - len, ",");
+                }
+                len += snprintf(dest_json_str + len, dest_json_str_size - len, "\"%s\"", CTS1_system_self_check_result_struct_field_names[i]);
+                is_first_pass = 0;
+                pass_count++;
+            }
+        }
+        len += snprintf(dest_json_str + len, dest_json_str_size - len, "]");
+    } else {
+        // Still count passes even if not showing
+        for (size_t i = 0; i < sizeof(CTS1_system_self_check_result_struct_field_names) / sizeof(CTS1_system_self_check_result_struct_field_names[0]); i++) {
+            if (*field_values[i] != 0) {
+                pass_count++;
+            }
         }
     }
 
-    len += snprintf(dest_json_str + len, dest_json_str_size - len, "],");
-    len += snprintf(dest_json_str + len, dest_json_str_size - len, "\"fail_count\":%d,", fail_count);
-    len += snprintf(dest_json_str + len, dest_json_str_size - len, "\"pass_count\":%d}", pass_count);
+    // Append counts
+    len += snprintf(
+        dest_json_str + len, dest_json_str_size - len,
+        ",\"fail_count\":%d,\"pass_count\":%d}",
+        fail_count, pass_count
+    );
 
-    dest_json_str[dest_json_str_size - 1] = '\0';
+    dest_json_str[dest_json_str_size - 1] = '\0'; // Ensure null-termination
 }

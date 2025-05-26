@@ -22,7 +22,7 @@ static uint8_t rx_buffer[5120];
 
 /// @brief Send arbitrary commands to a UART peripheral, and receive the response.
 /// @param args_str 
-/// - Arg 0: UART port name to send data to: MPI, GPS, CAMERA, EPS (case insensitive)
+/// - Arg 0: UART port name to send data to: MPI, GNSS, CAMERA, EPS (case insensitive)
 /// - Arg 1: Data to be sent (bytes specified as hex - Max 5KiB buffer)
 /// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
 /// @param response_output_buf The buffer to write the response to
@@ -143,13 +143,14 @@ uint8_t TCMDEXEC_uart_send_hex_get_response_hex(
     // UART 4 Selected (CAMERA)
     // Note: Camera does not support receiving byte-by-byte.
     else if(strcasecmp(arg_uart_port_name, "CAMERA") == 0) {        
-        UART_handle_ptr = UART_camera_port_handle;
-        UART_rx_buffer_write_idx_ptr = &UART_camera_buffer_write_idx;
-        UART_rx_buffer = &UART_camera_buffer[0];
-        UART_rx_buffer_size_ptr = &UART_camera_buffer_len;
-        UART_camera_is_expecting_data = 1;
-        UART_last_write_time_ms_ptr = &UART_camera_last_write_time_ms;
-        LOG_source = LOG_SYSTEM_BOOM; // Camera is related to the Boom experiment and should hence share the log source
+        // UART_handle_ptr = UART_camera_port_handle;
+        // UART_rx_buffer_write_idx_ptr = &UART_camera_buffer_write_idx;
+        // UART_rx_buffer = &UART_camera_dma_buffer[0];
+        // UART_rx_buffer_size_ptr = &UART_camera_dma_buffer_len;
+        // UART_last_write_time_ms_ptr = &UART_camera_last_write_time_ms;
+        // LOG_source = LOG_SYSTEM_BOOM; // Camera is related to the Boom experiment and should hence share the log source
+
+        // FIXME: Fix this to use blocking receive probably (see CAM_test for details)
 
         const HAL_StatusTypeDef transmit_status = HAL_UART_Transmit(
             UART_camera_port_handle, tx_buffer, tx_buffer_len, UART_TX_TIMEOUT_DURATION_MS
@@ -178,17 +179,17 @@ uint8_t TCMDEXEC_uart_send_hex_get_response_hex(
 
     // UART 2 (disabled), 3 & 5 use interrupt based reception. Set UART handle and buffers accordingly.
     else {
-        // UART 3 Selected (GPS)
-        if(strcasecmp(arg_uart_port_name, "GPS") == 0) {
-            UART_handle_ptr = UART_gps_port_handle;
-            UART_rx_buffer_write_idx_ptr = &UART_gps_buffer_write_idx;
-            UART_rx_buffer = UART_gps_buffer;
-            UART_rx_buffer_size_ptr = &UART_gps_buffer_len;
-            UART_last_write_time_ms_ptr = &UART_gps_last_write_time_ms;
-            LOG_source = LOG_SYSTEM_GPS;
+        // UART 3 Selected (GNSS)
+        if(strcasecmp(arg_uart_port_name, "GNSS") == 0) {
+            UART_handle_ptr = UART_gnss_port_handle;
+            UART_rx_buffer_write_idx_ptr = &UART_gnss_buffer_write_idx;
+            UART_rx_buffer = UART_gnss_buffer;
+            UART_rx_buffer_size_ptr = &UART_gnss_buffer_len;
+            UART_last_write_time_ms_ptr = &UART_gnss_last_write_time_ms;
+            LOG_source = LOG_SYSTEM_GNSS;
 
-            // Enable GPS UART interrupt. We are now listening.
-            GPS_set_uart_interrupt_state(1);
+            // Enable GNSS UART interrupt. We are now listening.
+            GNSS_set_uart_interrupt_state(1);
         }
 
         // UART 5 Selected (EPS)
@@ -273,7 +274,7 @@ uint8_t TCMDEXEC_uart_send_hex_get_response_hex(
                 const uint32_t current_time = HAL_GetTick(); // Get current time
 
                 // Get last write time (Required to dereference volatile pointer here to prevent race 
-                // condition in the folllowing if statement)
+                // condition in the following if statement)
                 const uint32_t last_write_time = *UART_last_write_time_ms_ptr;  
 
                 // Check if we have timed out while receiving bytes
@@ -368,25 +369,28 @@ uint8_t TCMDEXEC_uart_get_last_rx_times_json(
 ) {
     const uint32_t now = HAL_GetTick();
 
-    const int32_t debug_delta = UART_telecommand_last_write_time_ms == 0 ? -99 : (int32_t)(now - UART_telecommand_last_write_time_ms);
-    const int32_t mpi_delta         = UART_mpi_last_write_time_ms         == 0 ? -99 : (int32_t)(now - UART_mpi_last_write_time_ms);
-    const int32_t camera_delta      = UART_camera_last_write_time_ms      == 0 ? -99 : (int32_t)(now - UART_camera_last_write_time_ms);
-    const int32_t eps_delta         = UART_eps_last_write_time_ms         == 0 ? -99 : (int32_t)(now - UART_eps_last_write_time_ms);
-    const int32_t gps_delta         = UART_gps_last_write_time_ms         == 0 ? -99 : (int32_t)(now - UART_gps_last_write_time_ms);
+    const int32_t debug_delta  = UART_telecommand_last_write_time_ms == 0 ? -99 : (int32_t)(now - UART_telecommand_last_write_time_ms);
+    const int32_t mpi_delta    = UART_mpi_last_write_time_ms         == 0 ? -99 : (int32_t)(now - UART_mpi_last_write_time_ms);
+    const int32_t ax100_delta  = UART_ax100_last_write_time_ms       == 0 ? -99 : (int32_t)(now - UART_ax100_last_write_time_ms);
+    const int32_t camera_delta = UART_camera_last_write_time_ms      == 0 ? -99 : (int32_t)(now - UART_camera_last_write_time_ms);
+    const int32_t eps_delta    = UART_eps_last_write_time_ms         == 0 ? -99 : (int32_t)(now - UART_eps_last_write_time_ms);
+    const int32_t gnss_delta   = UART_gnss_last_write_time_ms        == 0 ? -99 : (int32_t)(now - UART_gnss_last_write_time_ms);
 
     int used = snprintf(response_output_buf, response_output_buf_len,
         "{"
         "\"debug\":%ld,"
         "\"mpi\":%ld,"
+        "\"ax100\":%ld,"
         "\"camera\":%ld,"
         "\"eps\":%ld,"
-        "\"gps\":%ld"
+        "\"gnss\":%ld"
         "}",
         debug_delta,
         mpi_delta,
+        ax100_delta,
         camera_delta,
         eps_delta,
-        gps_delta
+        gnss_delta
     );
 
     if (used >= response_output_buf_len) {
