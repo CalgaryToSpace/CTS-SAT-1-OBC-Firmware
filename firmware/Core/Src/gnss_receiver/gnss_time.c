@@ -1,6 +1,7 @@
 #define _GNU_SOURCE
 #include "gnss_receiver/gnss_internal_drivers.h"
 #include "timekeeping/timekeeping.h"
+#include "log/log.h"
 
 #include <stdio.h>
 #include <time.h>
@@ -57,11 +58,11 @@ uint64_t GNSS_format_and_convert_to_unix_epoch(char* input_str) {
     char* token = strtok(copy_of_input_str, ",;");
     while (token != NULL && count < 25) {
         tokens[count++] = token;
-        token = strtok(NULL, ",");
+        token = strtok(NULL, ",;");
     }
 
     // Extract UTC date/time components
-    // TODO: Might be better to use tokens[x] instead of tokens[count - y]
+    // TODO: Might be better to use tokens[x] instead of tokens[count - y], Note: check if 8-13 works
     int year       = atoi(tokens[count - 7]);
     int month      = atoi(tokens[count - 6]);
     int day        = atoi(tokens[count - 5]);
@@ -109,7 +110,7 @@ uint64_t GNSS_format_and_convert_to_unix_epoch(char* input_str) {
  */
 uint8_t GNSS_set_obc_time_based_on_gnss_time() {
 
-    // TODO: Does this need to be a global variable? Or is it okay being locally scoped.
+    // Initialize GNSS command "log timea once"
     const char *full_command = "log timea once";
     const uint8_t full_command_len = strlen(full_command);
 
@@ -125,7 +126,10 @@ uint8_t GNSS_set_obc_time_based_on_gnss_time() {
 
     // Error check to make sure we've even received a response from the GNSS receiver
     if (gnss_cmd_response != 0 ) {
-        // TODO: Do we need to log this error? If so, we need to pass in buffers to this function
+        LOG_message(
+            LOG_SYSTEM_GPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "GNSS TIMEA request failed (cmd_response=%u)", gnss_cmd_response
+        );
         return 1;
     }
 
@@ -141,8 +145,11 @@ uint8_t GNSS_set_obc_time_based_on_gnss_time() {
     const uint64_t formatted_time = GNSS_format_and_convert_to_unix_epoch(response_str);
 
     // Error check to make sure GNSS_format_and_convert_to_unix_epoch executed successfully
-    if (formatted_time == 1 ) {
-        // There was an error in GNSS_format_and_convert_to_unix_epoch
+    if (formatted_time == 1) {
+        LOG_message(
+            LOG_SYSTEM_GPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            "Failed to parse GNSS TIMEA response: %s", response_str
+        );
         return 1;
     }
 
@@ -151,6 +158,5 @@ uint8_t GNSS_set_obc_time_based_on_gnss_time() {
         formatted_time,
         TIM_SOURCE_GNSS
     );
-
     return 0;
 }
