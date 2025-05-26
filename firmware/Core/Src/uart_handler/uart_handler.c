@@ -108,7 +108,7 @@ static inline uint8_t kiss_queue_is_full(void) {
     return ((UART_AX100_kiss_frame_queue_head + 1) % AX100_MAX_KISS_FRAMES_IN_RX_QUEUE) == UART_AX100_kiss_frame_queue_tail;
 }
 
-static inline void kiss_enqueue_frame(const uint8_t *data, uint16_t len) {
+static inline void kiss_enqueue_frame(const volatile uint8_t *data, uint16_t len) {
     if (kiss_queue_is_full()) {
         // Tracking error
         UART_error_ax100_error_info.handler_buffer_full_error_count++;
@@ -118,7 +118,11 @@ static inline void kiss_enqueue_frame(const uint8_t *data, uint16_t len) {
 
     AX100_kiss_frame_struct_t *dst = (AX100_kiss_frame_struct_t*)&UART_AX100_kiss_frame_queue[UART_AX100_kiss_frame_queue_head];
     dst->len = len > AX100_MAX_KISS_FRAME_SIZE_BYTES ? AX100_MAX_KISS_FRAME_SIZE_BYTES : len;
-    memcpy(dst->data, data, dst->len);
+    
+    // Volatile-safe memcpy(dst->data, data, dst->len);
+    for (uint16_t i = 0; i < dst->len; i++) {
+        dst->data[i] = data[i];
+    }
     UART_AX100_kiss_frame_queue_head = (UART_AX100_kiss_frame_queue_head + 1) % AX100_MAX_KISS_FRAMES_IN_RX_QUEUE;
 }
 
