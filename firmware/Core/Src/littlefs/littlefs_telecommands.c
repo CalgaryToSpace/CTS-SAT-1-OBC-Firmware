@@ -50,7 +50,7 @@ int32_t LFS_list_directory_json_dict(
         first_entry = false;
 
         // Construct full path
-        char full_path[LFS_MAX_PATH_LENGTH + 100];
+        char full_path[LFS_MAX_PATH_LENGTH * 3];
         if (strcmp(root_directory, "/") == 0) {
             // root_directory is exactly "/", so avoid double slash
             snprintf(full_path, sizeof(full_path), "/%s", info.name);
