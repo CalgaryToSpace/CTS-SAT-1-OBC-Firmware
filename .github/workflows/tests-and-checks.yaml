@@ -11,6 +11,10 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y make gcc-arm-none-eabi
+
+      - name: Print C compiler version
+        run: |
+          arm-none-eabi-gcc --version
       
       - name: Build C firmware
         working-directory: firmware
