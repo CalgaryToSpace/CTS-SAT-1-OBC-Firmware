@@ -12,17 +12,17 @@ typedef enum {
     // Intermediate state. Very short-lived nominally. Deploy deployable antennas here.
     CTS1_OPERATION_STATE_DEPLOYING,
 
-    // Normal operation mode, with radio transmission enabled (e.g., flying through space).
+    // Normal operation state, with radio transmission enabled (e.g., flying through space).
     CTS1_OPERATION_STATE_NOMINAL_WITH_RADIO_TX,
 
-    // Normal operation mode, with radio transmission disabled (e.g., during bench testing).
+    // Normal operation state, with radio transmission disabled (e.g., during bench testing).
     CTS1_OPERATION_STATE_NOMINAL_WITHOUT_RADIO_TX
 } CTS1_operation_state_enum_t;
 
 extern CTS1_operation_state_enum_t CTS1_operation_state;
 
 
-char* CTS1_operation_state_enum_TO_str(CTS1_operation_state_enum_t mode);
+char* CTS1_operation_state_enum_TO_str(CTS1_operation_state_enum_t state);
 
 
 void TASK_bootup_operation_fsm(void *argument);

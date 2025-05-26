@@ -12,23 +12,22 @@ uint32_t COMMS_uptime_to_start_ant_deployment_sec = 30 * 60;
 
 CTS1_operation_state_enum_t CTS1_operation_state = CTS1_OPERATION_STATE_BOOTED_AND_WAITING;
 
-static void set_operation_mode_and_log_if_changed(CTS1_operation_state_enum_t new_mode, const char *reason_str) {
-    if (CTS1_operation_state == new_mode) {
+static void set_operation_state_and_log_if_changed(CTS1_operation_state_enum_t new_state, const char *reason_str) {
+    if (CTS1_operation_state == new_state) {
         return; // No change.
     }
 
-    // Set the new mode. Ensure it's update BEFORE the LOG_message, so that the log message
-    // is called with the new mode active (i.e., so it can be sent over the radio).
-    CTS1_operation_state = new_mode;
+    // Set the new state. Ensure it's update BEFORE the LOG_message, so that the log message
+    // is called with the new state active (i.e., so it can be sent over the radio).
+    CTS1_operation_state = new_state;
 
-    // Set the new mode.
     LOG_message(
         LOG_SYSTEM_OBC,
         LOG_SEVERITY_NORMAL,
         LOG_SINK_ALL,
-        "CTS1 operation mode changed from %s to %s (%s).",
+        "CTS1 operation state changed from %s to %s (%s).",
         CTS1_operation_state_enum_TO_str(CTS1_operation_state),
-        CTS1_operation_state_enum_TO_str(new_mode),
+        CTS1_operation_state_enum_TO_str(new_state),
         reason_str
     );
 }
@@ -85,16 +84,16 @@ static uint8_t have_all_antennas_deployed(enum ANT_i2c_bus_mcu ant_bus) {
     );
 }
 
-/// @brief State machine for the bootup operation mode.
+/// @brief State machine for the bootup operation state.
 /// @note Implemented per https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/420
-static inline void SUBTASK_bootup_operation_mode_check_for_state_transitions(void) {
+static inline void SUBTASK_bootup_operation_state_check_for_state_transitions(void) {
     // First group: Conditions checked in every state.
     {
         // Condition 1: If any uplink has been received - if (AX100_uptime_at_last_received_kiss_tcmd_ms > 1000) -> NOMINAL_WITH_RADIO_TX
         // Reason: Simple override to allow the satellite to function once we've asked it to.
         // Saves us in case successful antenna deployment occurs but is not detected.
         if (AX100_uptime_at_last_received_kiss_tcmd_ms > 1000) {
-            set_operation_mode_and_log_if_changed(
+            set_operation_state_and_log_if_changed(
                 CTS1_OPERATION_STATE_NOMINAL_WITH_RADIO_TX,
                 "Condition 1: Uplink received"
             );
@@ -104,7 +103,7 @@ static inline void SUBTASK_bootup_operation_mode_check_for_state_transitions(voi
         // Condition 2: If (RBF_STATE == BENCH) -> NOMINAL_WITHOUT_RADIO_TX
         // Reason: On bench testing, bypass the countdown, but disable the radio.
         if (OBC_get_rbf_state() == OBC_RBF_STATE_BENCH) {
-            set_operation_mode_and_log_if_changed(
+            set_operation_state_and_log_if_changed(
                 CTS1_OPERATION_STATE_NOMINAL_WITHOUT_RADIO_TX,
                 "Condition 2: RBF == BENCH"
             );
@@ -115,10 +114,10 @@ static inline void SUBTASK_bootup_operation_mode_check_for_state_transitions(voi
         // Reason: On reboots (after day 1 of mission), bypass the waiting stage.
         // This serves as a way to add an override if there's an issue with the deployment board detection, for example.
         if (
-            (CTS1_operation_state != CTS1_OPERATION_STATE_NOMINAL_WITH_RADIO_TX) // Optimization: Don't check if already in this mode.
+            (CTS1_operation_state != CTS1_OPERATION_STATE_NOMINAL_WITH_RADIO_TX) // Optimization: Don't check if already in this state.
             && does_filesystem_have_bypass_deployment_and_enable_radio_file()
         ) {
-            set_operation_mode_and_log_if_changed(
+            set_operation_state_and_log_if_changed(
                 CTS1_OPERATION_STATE_NOMINAL_WITH_RADIO_TX,
                 "Condition 3: Bypass file exists"
             );
@@ -131,7 +130,7 @@ static inline void SUBTASK_bootup_operation_mode_check_for_state_transitions(voi
         // Condition 4: If (RBF_STATE == FLYING) && (uptime > 30 minutes) -> DEPLOYING
         // Reason: Nominal post-ejection transition
         if ((OBC_get_rbf_state() == OBC_RBF_STATE_FLYING) && (TIM_get_current_system_uptime_ms() > (COMMS_uptime_to_start_ant_deployment_sec * 1000))) {
-            set_operation_mode_and_log_if_changed(
+            set_operation_state_and_log_if_changed(
                 CTS1_OPERATION_STATE_DEPLOYING,
                 "Condition 4: RBF == DEPLOY AND uptime > 30 minutes"
             );
@@ -141,14 +140,14 @@ static inline void SUBTASK_bootup_operation_mode_check_for_state_transitions(voi
         // Condition 5: If all four antennas have been deployed - check using ANT_ commands -> NOMINAL_WITH_RADIO_TX
         // Reason: On reboot after day 1 of mission, bypass the waiting stage.
         if (have_all_antennas_deployed(ANT_I2C_BUS_A_MCU_A)) {
-            set_operation_mode_and_log_if_changed(
+            set_operation_state_and_log_if_changed(
                 CTS1_OPERATION_STATE_NOMINAL_WITH_RADIO_TX,
                 "Condition 5A: All antennas deployed [BUS_MCU_A]"
             );
             return;
         }
         if (have_all_antennas_deployed(ANT_I2C_BUS_B_MCU_B)) {
-            set_operation_mode_and_log_if_changed(
+            set_operation_state_and_log_if_changed(
                 CTS1_OPERATION_STATE_NOMINAL_WITH_RADIO_TX,
                 "Condition 5B: All antennas deployed [BUS_MCU_B]"
             );
@@ -161,14 +160,14 @@ static inline void SUBTASK_bootup_operation_mode_check_for_state_transitions(voi
         // Note: Same as Condition 5, but from the DEPLOYING state.
         // Reason: Nominal exit after successful deployment.
         if (have_all_antennas_deployed(ANT_I2C_BUS_A_MCU_A)) {
-            set_operation_mode_and_log_if_changed(
+            set_operation_state_and_log_if_changed(
                 CTS1_OPERATION_STATE_NOMINAL_WITH_RADIO_TX,
                 "Condition 6A: All antennas deployed [BUS_MCU_A]"
             );
             return;
         }
         if (have_all_antennas_deployed(ANT_I2C_BUS_B_MCU_B)) {
-            set_operation_mode_and_log_if_changed(
+            set_operation_state_and_log_if_changed(
                 CTS1_OPERATION_STATE_NOMINAL_WITH_RADIO_TX,
                 "Condition 6B: All antennas deployed [BUS_MCU_B]"
             );
@@ -178,7 +177,7 @@ static inline void SUBTASK_bootup_operation_mode_check_for_state_transitions(voi
         // Condition 7: If uptime > 4 hours -> NOMINAL_WITH_RADIO_TX
         // Reason: If deployment goes wrong for 3.5 hours, assume the issue is that the "is deployed" sensors failed.
         if (TIM_get_current_system_uptime_ms() > (4 * 60 * 60 * 1000)) {
-            set_operation_mode_and_log_if_changed(
+            set_operation_state_and_log_if_changed(
                 CTS1_OPERATION_STATE_NOMINAL_WITH_RADIO_TX,
                 "Condition 7: Uptime > 4 hours"
             );
@@ -220,7 +219,7 @@ static void pulse_external_led_blocking(uint32_t pulse_duration_ms) {
     OBC_set_external_led(0);
 }
 
-static inline void SUBTASK_bootup_operation_mode_do_led_indication_action(void) {
+static inline void SUBTASK_bootup_operation_state_do_led_indication_action(void) {
     if (CTS1_operation_state == CTS1_OPERATION_STATE_BOOTED_AND_WAITING) {
         if (TIM_get_current_system_uptime_ms() < (25 * 60 * 1000)) {
             // LED Indicator: From boot until 25 minutes uptime, external LED pulses 40ms per 1000ms.
@@ -258,7 +257,7 @@ static inline void SUBTASK_bootup_operation_mode_do_led_indication_action(void) 
     }
 }
 
-/// @brief FreeRTOS task - FSM which handles the bootup and operation mode/state.
+/// @brief FreeRTOS task - FSM which handles the bootup and operation state/state.
 /// @details During LEOPS (launch and early operations), it deploys the comms antennas and permits radio TX.
 ///          During the rest of the mission, it bypasses the 30 minute deployment wait time, and also
 ///          blinks the LED to indicate the current state.
@@ -278,8 +277,8 @@ void TASK_bootup_operation_fsm(void *argument) {
 
     // Main loop.
     while (1) {
-        SUBTASK_bootup_operation_mode_check_for_state_transitions();
-        SUBTASK_bootup_operation_mode_do_led_indication_action(); // Calls the osDelay() function.
+        SUBTASK_bootup_operation_state_check_for_state_transitions();
+        SUBTASK_bootup_operation_state_do_led_indication_action(); // Calls the osDelay() function.
 
         if (CTS1_operation_state == CTS1_OPERATION_STATE_DEPLOYING) {
             SUBTASK_deployment_state_execute();
@@ -290,8 +289,8 @@ void TASK_bootup_operation_fsm(void *argument) {
 }
 
 
-char* CTS1_operation_state_enum_TO_str(CTS1_operation_state_enum_t mode) {
-    switch (mode) {
+char* CTS1_operation_state_enum_TO_str(CTS1_operation_state_enum_t state) {
+    switch (state) {
         case CTS1_OPERATION_STATE_BOOTED_AND_WAITING:
             return "BOOTED_AND_WAITING";
         case CTS1_OPERATION_STATE_DEPLOYING:
