@@ -55,6 +55,7 @@ static uint8_t does_filesystem_have_bypass_deployment_and_enable_radio_file(void
 
 /// @brief Power on EPS channel, check if all antennas have been deployed.
 /// @note This function returns the same result on failure as on "antennas not deployed". The distinction is not useful to the caller.
+/// @return 1 if all antennas are deployed. 0 if not all antennas are deployed. 0 if an error occurs.
 static uint8_t have_all_antennas_deployed(enum ANT_i2c_bus_mcu ant_bus) {
     // Check if all antennas have deployed.
     EPS_set_channel_enabled(EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY, 1);
