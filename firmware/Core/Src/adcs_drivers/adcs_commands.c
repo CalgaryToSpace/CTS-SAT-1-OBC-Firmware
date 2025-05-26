@@ -1832,7 +1832,7 @@ uint8_t ADCS_erase_sd_file_by_index(uint16_t file_index) {
     return erase_status;
 }
 
-/// @brief Run the internal flash program.
+/// @brief Run the internal flash (CubeACP) program, exiting the bootloader. If CubeACP is already running, this function does nothing.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred.
 /// @note This function always returns an error, because if the ADCS leaves the bootloader it can't confirm this command, which commands it to leave the bootloader
 uint8_t ADCS_bootloader_run_program() {

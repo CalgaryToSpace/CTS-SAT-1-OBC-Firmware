@@ -2812,7 +2812,8 @@ uint8_t TCMDEXEC_adcs_erase_sd_file(const char *args_str, TCMD_TelecommandChanne
     return status;
 }
 
-/// @brief Telecommand: If the ADCS is currently stuck in the bootloader, run the internal flash program
+/// @brief Telecommand: If the ADCS is currently stuck in the bootloader, run the internal flash program (CubeACP) to exit the bootloader
+/// @note This command will do nothing if not in the bootloader
 /// @param args_str 
 ///     - No arguments for this command
 /// @return 0 on success, >0 on error
@@ -2833,14 +2834,14 @@ uint8_t TCMDEXEC_adcs_exit_bootloader(const char *args_str, TCMD_TelecommandChan
     if (id_status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
             "ADCS telemetry request failed (err %d)", id_status);
-        return 1;
+        return 2;
     }
-    else if (identification.major_firmware_version > 6) {
-        return 0;
-    } else {
-        /*snprintf(response_output_buf, response_output_buf_len,
-            "Failed to load ADCS internal memory program");*/
-        return 1;
-    }
+    else if (identification.major_firmware_version <= 6) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "Failed to exit the bootloader; CubeACP not running");
+        return 3;
+    } 
+
+    return 0;
 
 }
