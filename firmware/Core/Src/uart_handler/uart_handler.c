@@ -90,19 +90,19 @@ volatile uint8_t UART_AX100_kiss_frame_queue_tail = 0;
 
 /// Indicates whether we are currently inside a KISS frame.
 /// Set to 1 after receiving KISS_FEND, and reset on frame completion or error.
-static uint8_t kiss_in_frame = 0;
+static volatile uint8_t kiss_in_frame = 0;
 
 /// Indicates whether the previous byte was KISS_FESC, meaning the next byte
 /// should be interpreted as an escaped control character (TFEND or TFESC).
-static uint8_t kiss_escaped = 0;
+static volatile uint8_t kiss_escaped = 0;
 
 /// Temporary buffer to hold the decoded contents of the current KISS frame.
 /// Reset when a frame is completed or an error occurs (e.g. overflow or bad escape).
-static uint8_t kiss_decode_buf[AX100_MAX_KISS_FRAME_SIZE_BYTES];
+static volatile uint8_t kiss_decode_buf[AX100_MAX_KISS_FRAME_SIZE_BYTES];
 
 /// Current write index into kiss_decode_buf, tracking how many decoded bytes
 /// have been accumulated in the current frame.
-static uint16_t kiss_decode_len = 0;
+static volatile uint16_t kiss_decode_len = 0;
 
 static inline uint8_t kiss_queue_is_full(void) {
     return ((UART_AX100_kiss_frame_queue_head + 1) % AX100_MAX_KISS_FRAMES_IN_RX_QUEUE) == UART_AX100_kiss_frame_queue_tail;
