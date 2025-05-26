@@ -17,6 +17,10 @@ static void set_operation_mode_and_log_if_changed(CTS1_operation_state_enum_t ne
         return; // No change.
     }
 
+    // Set the new mode. Ensure it's update BEFORE the LOG_message, so that the log message
+    // is called with the new mode active (i.e., so it can be sent over the radio).
+    CTS1_operation_state = new_mode;
+
     // Set the new mode.
     LOG_message(
         LOG_SYSTEM_OBC,
@@ -27,7 +31,6 @@ static void set_operation_mode_and_log_if_changed(CTS1_operation_state_enum_t ne
         CTS1_operation_state_enum_TO_str(new_mode),
         reason_str
     );
-    CTS1_operation_state = new_mode;
 }
 
 /// @brief Check if the filesystem has the file "/bypass_deployment_and_enable_radio.txt".
