@@ -127,7 +127,7 @@ uint8_t GNSS_set_obc_time_based_on_gnss_time() {
     // Error check to make sure we've even received a response from the GNSS receiver
     if (gnss_cmd_response != 0 ) {
         LOG_message(
-            LOG_SYSTEM_GPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_GNSS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "GNSS TIMEA request failed (cmd_response=%u)", gnss_cmd_response
         );
         return 1;
@@ -147,7 +147,7 @@ uint8_t GNSS_set_obc_time_based_on_gnss_time() {
     // Error check to make sure GNSS_format_and_convert_to_unix_epoch executed successfully
     if (formatted_time == 1) {
         LOG_message(
-            LOG_SYSTEM_GPS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+            LOG_SYSTEM_GNSS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "Failed to parse GNSS TIMEA response: %s", response_str
         );
         return 1;
