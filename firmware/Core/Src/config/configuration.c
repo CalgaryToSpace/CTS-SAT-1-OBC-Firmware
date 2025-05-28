@@ -1,5 +1,6 @@
 #include "config/configuration.h"
 #include "comms_drivers/ax100_tx.h"
+#include "rtos_tasks/rtos_bootup_operation_fsm_task.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -68,8 +69,11 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
         .variable_name = "COMMS_enable_ax100_downlink_uart_logs",
         .num_config_var = &COMMS_enable_ax100_downlink_uart_logs,
     },
+    {
+        .variable_name = "COMMS_uptime_to_start_ant_deployment_sec",
+        .num_config_var = &COMMS_uptime_to_start_ant_deployment_sec,
+    },
     // ******** END COMMS Configuration ********
-    
 };
 
 // extern
