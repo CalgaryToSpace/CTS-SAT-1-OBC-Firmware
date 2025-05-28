@@ -68,7 +68,7 @@ uint64_t GNSS_format_and_convert_to_unix_epoch(char* input_str) {
     int day        = atoi(tokens[16]);
     int hour       = atoi(tokens[17]);
     int minute     = atoi(tokens[18]);
-    int millisecond= atoi(tokens[19]); // TODO: Fix milliseconds.
+    int m_second   = atoi(tokens[19]); // TODO: Fix milliseconds.
     char* utc_status = tokens[20];
     
 
@@ -81,8 +81,9 @@ uint64_t GNSS_format_and_convert_to_unix_epoch(char* input_str) {
         return 1;  // UTC time is not valid
     }
 
-    int second = millisecond / 1000;
-    millisecond %= 1000;
+    int second = m_second / 1000;
+    int millisecond = m_second % 1000;
+
 
     struct tm t = {0};
     t.tm_year = year - 1900;
@@ -94,9 +95,11 @@ uint64_t GNSS_format_and_convert_to_unix_epoch(char* input_str) {
 
     // Convert to Unix epoch time (UTC)
     time_t epoch_seconds = portable_timegm(&t);
-    if (epoch_seconds == -1) return 1;
+    if (epoch_seconds == -1) {
+        return 1;
+    }
 
-    // Return Unix timestamp in milliseconds
+    // Combine seconds and milliseconds
     return (uint64_t)epoch_seconds * 1000 + millisecond;
 }
 
