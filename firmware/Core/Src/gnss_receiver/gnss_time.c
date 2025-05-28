@@ -55,21 +55,22 @@ uint64_t GNSS_format_and_convert_to_unix_epoch(char* input_str) {
     // Tokenize input using both comma and semicolon as delimiters
     char* tokens[25];  
     int count = 0;
-    char* token = strtok(copy_of_input_str, ",;");
+    char* token = strtok(copy_of_input_str, ",;*");
     while (token != NULL && count < 25) {
         tokens[count++] = token;
-        token = strtok(NULL, ",;");
+        token = strtok(NULL, ",;*");
     }
 
     // Extract UTC date/time components
     // TODO: Might be better to use tokens[x] instead of tokens[count - y], Note: check if 8-13 works
-    int year       = atoi(tokens[count - 7]);
-    int month      = atoi(tokens[count - 6]);
-    int day        = atoi(tokens[count - 5]);
-    int hour       = atoi(tokens[count - 4]);
-    int minute     = atoi(tokens[count - 3]);
-    int millisecond= atoi(tokens[count - 2]);
-    char* utc_status = tokens[count - 1];
+    int year       = atoi(tokens[14]);
+    int month      = atoi(tokens[15]);
+    int day        = atoi(tokens[16]);
+    int hour       = atoi(tokens[17]);
+    int minute     = atoi(tokens[18]);
+    int millisecond= atoi(tokens[19]); // TODO: Fix milliseconds.
+    char* utc_status = tokens[20];
+    
 
     // Clean up any trailing newlines in the status field
     char* newline = strchr(utc_status, '\n');
@@ -115,7 +116,7 @@ uint8_t GNSS_set_obc_time_based_on_gnss_time() {
     const uint8_t full_command_len = strlen(full_command);
 
     // The following buffer will have data written into from the response from GNSS Transmitter
-    const size_t rx_buffer_max_size = 512;
+    const uint16_t rx_buffer_max_size = 512;
     uint16_t rx_buffer_len = 0;
     uint8_t rx_buffer[rx_buffer_max_size];
     memset(rx_buffer, 0, rx_buffer_max_size);
