@@ -71,6 +71,10 @@ uint64_t GNSS_format_and_convert_to_unix_epoch(char* input_str) {
     int m_second   = atoi(tokens[19]); // TODO: Fix milliseconds.
     char* utc_status = tokens[20];
     
+    LOG_message(
+        LOG_SYSTEM_GNSS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "Milliseconds: %d", m_second
+    );
 
     // Clean up any trailing newlines in the status field
     char* newline = strchr(utc_status, '\n');
@@ -84,6 +88,10 @@ uint64_t GNSS_format_and_convert_to_unix_epoch(char* input_str) {
     int second = m_second / 1000;
     int millisecond = m_second % 1000;
 
+    LOG_message(
+        LOG_SYSTEM_GNSS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "Milliseconds: %d", millisecond
+    );
 
     struct tm t = {0};
     t.tm_year = year - 1900;
@@ -98,7 +106,7 @@ uint64_t GNSS_format_and_convert_to_unix_epoch(char* input_str) {
     if (epoch_seconds == -1) {
         return 1;
     }
-
+    
     // Combine seconds and milliseconds
     return (uint64_t)epoch_seconds * 1000 + millisecond;
 }
