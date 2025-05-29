@@ -17,6 +17,8 @@ static void set_operation_state_and_log_if_changed(CTS1_operation_state_enum_t n
         return; // No change.
     }
 
+    const CTS1_operation_state_enum_t old_state = CTS1_operation_state;
+
     // Set the new state. Ensure it's update BEFORE the LOG_message, so that the log message
     // is called with the new state active (i.e., so it can be sent over the radio).
     CTS1_operation_state = new_state;
@@ -26,7 +28,7 @@ static void set_operation_state_and_log_if_changed(CTS1_operation_state_enum_t n
         LOG_SEVERITY_NORMAL,
         LOG_SINK_ALL,
         "CTS1 operation state changed from %s to %s (%s).",
-        CTS1_operation_state_enum_TO_str(CTS1_operation_state),
+        CTS1_operation_state_enum_TO_str(old_state),
         CTS1_operation_state_enum_TO_str(new_state),
         reason_str
     );
