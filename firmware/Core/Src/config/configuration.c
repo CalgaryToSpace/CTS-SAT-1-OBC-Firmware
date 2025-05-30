@@ -1,6 +1,7 @@
 #include "config/configuration.h"
 #include "comms_drivers/ax100_tx.h"
 #include "rtos_tasks/rtos_bootup_operation_fsm_task.h"
+#include "comms_drivers/rf_antenna_switch.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -72,6 +73,11 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
     {
         .variable_name = "COMMS_uptime_to_start_ant_deployment_sec",
         .num_config_var = &COMMS_uptime_to_start_ant_deployment_sec,
+    },
+
+    {
+        .variable_name = "COMMS_max_duration_without_uplink_before_setting_default_rf_switch_mode_sec",
+        .num_config_var = &COMMS_max_duration_without_uplink_before_setting_default_rf_switch_mode_sec,
     },
     // ******** END COMMS Configuration ********
 };

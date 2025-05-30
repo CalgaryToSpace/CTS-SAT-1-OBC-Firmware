@@ -1,4 +1,5 @@
 #include "comms_drivers/comms_tx.h"
+#include "comms_drivers/beacon.h"
 #include <string.h>
 
 uint8_t COMMS_downlink_tcmd_response(
@@ -113,4 +114,19 @@ uint8_t COMMS_downlink_bulk_file_downlink(
     }
 
     return 0;
+}
+
+static COMMS_beacon_basic_packet_t beacon_basic_packet;
+
+uint8_t COMMS_downlink_beacon_basic_packet() {
+    // Pack the packet with the current system state.
+    // This is a function that only reads from memory (and can't fail), so no error handling.
+    COMMS_fill_beacon_basic_packet(&beacon_basic_packet);
+
+    const uint8_t success = AX100_downlink_bytes(
+        (uint8_t *)(&beacon_basic_packet), 
+        sizeof(COMMS_beacon_basic_packet_t)
+    );
+
+    return success;
 }

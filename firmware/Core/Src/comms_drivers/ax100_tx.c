@@ -4,6 +4,7 @@
 #include "log/log.h"
 #include "debug_tools/debug_uart.h"
 #include "rtos_tasks/rtos_bootup_operation_fsm_task.h"
+#include "comms_drivers/rf_antenna_switch.h"
 
 #include <string.h>
 #include <stdint.h>
@@ -106,7 +107,7 @@ uint8_t AX100_downlink_bytes(uint8_t *data, uint16_t data_len) {
     if (COMMS_enable_ax100_downlink_uart_logs) {
         DEBUG_uart_print_mixed_array(
             packet_buffer_including_csp_header, data_len + AX100_CSP_HEADER_LENGTH_BYTES,
-            "AX100 Down"
+            ((COMMS_active_rf_switch_antenna == 1) ? "AX100 Down [ANT1]" : "AX100 Down [ANT2]")
         );
     }
 
