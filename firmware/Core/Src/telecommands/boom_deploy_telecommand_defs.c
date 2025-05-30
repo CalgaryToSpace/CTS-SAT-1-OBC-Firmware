@@ -153,84 +153,132 @@ uint8_t TCMDEXEC_boom_deploy_timed(
     return 0;
 }
 
+static void boom_self_check_cleanup() {
+    // Disable all boom control signals
+    BOOM_disable_all_burns();
+
+    // Turn off EPS boom channel
+    EPS_set_channel_enabled(EPS_CHANNEL_12V_BOOM, 0);
+}
+
 /// @brief Run the self-check on the boom deployment system.
 /// @param args_str None.
 /// @return 0 on success, >0 on error.
+/// @note If this function glitches (which it shouldn't/doesn't), it has the potential to deploy the boom.
 uint8_t TCMDEXEC_boom_self_check(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
+    const uint16_t boom_on_duration_ms = 75;
+
     // Step 1: Disable boom control signals
-    BOOM_set_burn_enabled(1, 0);
-    BOOM_set_burn_enabled(2, 0);
+    BOOM_disable_all_burns();
 
     // Step 2: Turn on EPS boom channel
-    EPS_set_channel_enabled(EPS_CHANNEL_12V_BOOM, 1);
+    if (EPS_set_channel_enabled(EPS_CHANNEL_12V_BOOM, 1) != 0) {
+        boom_self_check_cleanup();
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "EPS enable failure"
+        );
+        return 2;
+    }
 
     // Step 3: Wait 100 ms and measure current
     HAL_Delay(100);
 
     EPS_struct_pdu_housekeeping_data_eng_t status;
     if (EPS_CMD_get_pdu_housekeeping_data_eng(&status) != 0) {
+        boom_self_check_cleanup();
         snprintf(
             response_output_buf, response_output_buf_len,
-            "{\"error\": \"EPS_CMD_get_pdu_housekeeping_data_eng failed at step 3\"}"
+            "EPS data fetch failure"
         );
         return 3;
     }
     const int16_t boom_disabled_mA = status.vip_each_channel[EPS_CHANNEL_12V_BOOM].current_mA;
-    const int16_t voltage_mV = status.vip_each_channel[EPS_CHANNEL_12V_BOOM].voltage_mV;
+    const int16_t boom_disabled_mV = status.vip_each_channel[EPS_CHANNEL_12V_BOOM].voltage_mV;
 
-    // Step 4: Turn on BOOM_CTRL_1 and wait 50 ms
+    // Step 4: Turn on BOOM_CTRL_1 and wait boom_on_duration_ms
     BOOM_set_burn_enabled(1, 1);
-    HAL_Delay(50);
+    HAL_Delay(boom_on_duration_ms);
     if (EPS_CMD_get_pdu_housekeeping_data_eng(&status) != 0) {
+        boom_self_check_cleanup();
         snprintf(
             response_output_buf, response_output_buf_len,
-            "{\"error\": \"EPS_CMD_get_pdu_housekeeping_data_eng failed at step 4\"}"
+            "EPS data fetch failure"
         );
         return 4;
     }
     const int16_t boom_1_mA = status.vip_each_channel[EPS_CHANNEL_12V_BOOM].current_mA;
-    BOOM_set_burn_enabled(1, 0);
+    
+    BOOM_disable_all_burns();
+    HAL_Delay(100); // Wait to stabilize off.
 
-    // Step 5: Turn on BOOM_CTRL_2 and wait 50 ms
+    // Step 5: Turn on BOOM_CTRL_2
     BOOM_set_burn_enabled(2, 1);
-    HAL_Delay(50);
+    HAL_Delay(boom_on_duration_ms);
     if (EPS_CMD_get_pdu_housekeeping_data_eng(&status) != 0) {
+        boom_self_check_cleanup();
         snprintf(
             response_output_buf, response_output_buf_len,
-            "{\"error\": \"EPS_CMD_get_pdu_housekeeping_data_eng failed at step 5\"}"
+            "EPS data fetch failure"
         );
         return 5;
     }
     const int16_t boom_2_mA = status.vip_each_channel[EPS_CHANNEL_12V_BOOM].current_mA;
-    BOOM_set_burn_enabled(2, 0);
 
-    // Step 6: Turn off EPS boom channel
-    EPS_set_channel_enabled(EPS_CHANNEL_12V_BOOM, 0);
-
-    // Final step: Disable all burns
     BOOM_disable_all_burns();
+    HAL_Delay(1000); // Give a second to cool off before the next step.
+
+    // Step 6: Turn on both BOOM_CTRL_1 and BOOM_CTRL_2
+    BOOM_set_burn_enabled(1, 1);
+    BOOM_set_burn_enabled(2, 1);
+    HAL_Delay(boom_on_duration_ms);
+    if (EPS_CMD_get_pdu_housekeeping_data_eng(&status) != 0) {
+        boom_self_check_cleanup();
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "EPS data fetch failure"
+        );
+        return 6;
+    }
+    const int16_t boom_both_mA = status.vip_each_channel[EPS_CHANNEL_12V_BOOM].current_mA;
+
+    // Step 8: Clean up - Disable all boom control signals and EPS channel.
+    boom_self_check_cleanup();
+
+    // Step 7: Check that the channel is still on (and thus didn't experience an overcurrent fault).
+    const char* stayed_enabled_status = status.stat_ch_on_bitfield & (1 << EPS_CHANNEL_12V_BOOM) ? "PASS" : "FAIL";
+    const char* no_overcurrent_fault_str = status.stat_ch_overcurrent_fault_bitfield & (1 << EPS_CHANNEL_12V_BOOM)  ? "FAIL" : "PASS";
 
     // Evaluate pass/fail
-    const char* status_str = (boom_disabled_mA < 20 &&
-                              boom_1_mA >= 200 && boom_1_mA <= 400 &&
-                              boom_2_mA >= 200 && boom_2_mA <= 400 &&
-                              voltage_mV >= 11000 && voltage_mV <= 13000)
-                                 ? "pass"
-                                 : "fail";
+    const char* status_str = (
+        boom_disabled_mA < 20 &&
+        boom_1_mA >= 200 && boom_1_mA <= 400 &&
+        boom_2_mA >= 200 && boom_2_mA <= 400 &&
+        boom_both_mA >= 400 && boom_both_mA <= 800 &&
+        boom_disabled_mV >= 11000 && boom_disabled_mV <= 13000
+    ) ? "PASS" : "FAIL";
 
     // Construct JSON output
     snprintf(
         response_output_buf, response_output_buf_len,
         "{"
+        "\"boom_disabled_mV\": %d, "
         "\"boom_disabled_mA\": %d, "
         "\"boom_1_mA\": %d, "
         "\"boom_2_mA\": %d, "
-        "\"status\": \"%s\""
+        "\"boom_both_mA\": %d, "
+        "\"number_thresholds_status\": \"%s\", "
+        "\"stayed_enabled_status\": \"%s\", "
+        "\"no_overcurrent_fault_status\": \"%s\", "
         "}",
-        boom_disabled_mA, boom_1_mA, boom_2_mA, status_str
+        boom_disabled_mV,
+        boom_disabled_mA, boom_1_mA, boom_2_mA, boom_both_mA,
+        status_str,
+        stayed_enabled_status,
+        no_overcurrent_fault_str
     );
 
     return 0;
