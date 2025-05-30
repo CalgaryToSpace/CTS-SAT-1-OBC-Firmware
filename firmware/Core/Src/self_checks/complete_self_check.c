@@ -19,6 +19,7 @@
 #include "littlefs/flash_driver.h"
 #include "log/log.h"
 #include "debug_tools/debug_uart.h"
+#include "stm32/stm32_watchdog.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -415,7 +416,7 @@ void CTS1_run_system_self_check(CTS1_system_self_check_result_struct_t *result) 
     );
     
     // The GNSS takes a very long time to power on. Pet the watchdog here to keep it happy.
-    HAL_IWDG_Refresh(&hiwdg);
+    STM32_pet_watchdog();
 
     // EPS
     result->is_eps_responsive = CTS1_check_is_eps_responsive();

@@ -9,6 +9,7 @@
 #include "uart_handler/uart_handler.h"
 #include "transforms/arrays.h"
 #include "stm32/stm32_reboot_reason.h"
+#include "stm32/stm32_watchdog.h"
 #include "log/log.h"
 #include "config/configuration.h"
 #include "eps_drivers/eps_commands.h"
@@ -87,8 +88,8 @@ void TASK_execute_telecommands(void *argument) {
 
     while (1) {
         // DEBUG_uart_print_str("TASK_execute_telecommands -> top of while(1)\n");
-        // Pet the watchdog. Must be pet every 16 seconds. Must be >= 200ms since last pet.
-        HAL_IWDG_Refresh(&hiwdg);
+        // Pet the watchdog. Has min and max intervals. This is the nominal place the watchdog is petted.
+        STM32_pet_watchdog();
 
         // Get the next telecommand to execute.
         const int16_t next_tcmd_slot = TCMD_get_next_tcmd_agenda_slot_to_execute();
