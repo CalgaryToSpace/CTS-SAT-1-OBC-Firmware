@@ -9,34 +9,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/// @brief Set up the camera by powering on and changing the baudrate to 2400.
+/// @brief Set up the camera by powering on and changing the baudrate to 230400.
 /// @param args_str
 /// @param response_output_buf Buffer to write the response to
 /// @param response_output_buf_len Max length of the buffer
 /// @return 0 if successful, >0 if an error occurred
 uint8_t TCMDEXEC_camera_setup(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-    char *response_output_buf, uint16_t response_output_buf_len)
-{
-    // First, set baudrate to 115200 to reset the camera and OBC UART baud rate.
-    // This is to avoid the camera stalling and being in a weird state where
-    // the OBC UART handler's baudrate and the camera's baudrate are different.
-    const uint8_t baudrate_status = CAM_change_baudrate(115200);
-    if (baudrate_status != 0) {
-        snprintf(
-            response_output_buf, response_output_buf_len,
-            "Error changing camera baudrate to 115200. Error code %d",
-            baudrate_status
-        );
-        return baudrate_status;
-    }
-
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
     const uint8_t setup_status = CAM_setup();
 
     if (setup_status != 0) {
         snprintf(
             response_output_buf, response_output_buf_len,
-            "Error setting up camera.  CAM_setup() -> %d",
+            "Error setting up camera. CAM_setup() -> %d",
             setup_status
         );
         return setup_status;

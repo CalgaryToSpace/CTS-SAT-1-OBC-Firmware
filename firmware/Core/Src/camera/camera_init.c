@@ -80,6 +80,21 @@ uint8_t CAM_change_baudrate(uint32_t new_baud_rate) {
 /// @return 0 on success. The error code from the `CAM_change_baudrate` function, or >100 if an EPS error occurred.
 /// @note Does not perform a self-test.
 uint8_t CAM_setup() {
+    // First, set baudrate to 115200 to reset the camera and OBC UART baud rate.
+    // When the camera boots up, it defaults to 115200 baud. In order to command it
+    // past that, we need to set the baud rate to 115200 first, then change it to 230400.
+    // This is to avoid the camera stalling and being in a weird state where
+    // the OBC UART handler's baudrate and the camera's baudrate are different.
+    const uint8_t baudrate_reset_status = CAM_change_baudrate(115200);
+    if (baudrate_reset_status != 0) {
+        LOG_message(
+            LOG_SYSTEM_BOOM, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error changing camera baudrate to 115200. Error code %d",
+            baudrate_reset_status
+        );
+        return baudrate_reset_status;
+    }
+
     // First, turn on the camera.
     const uint8_t eps_status = EPS_set_channel_enabled(EPS_CHANNEL_3V3_CAMERA, 1);
     if (eps_status != 0) {
@@ -95,12 +110,12 @@ uint8_t CAM_setup() {
     HAL_Delay(500);
 
     // Viable baud rate options: 115200, 230400.
-    const uint8_t bitrate_status = CAM_change_baudrate(230400);
-    if (bitrate_status != 0) {
+    const uint8_t baudrate_set_status = CAM_change_baudrate(230400);
+    if (baudrate_set_status != 0) {
         LOG_message(
             LOG_SYSTEM_BOOM, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "Error changing camera baudrate: CAM_change_baudrate returned %d",
-            bitrate_status
+            baudrate_set_status
         );
 
         // Turn off camera before exiting
