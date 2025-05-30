@@ -15,32 +15,23 @@
  */
 uint8_t TEST_EXEC__GNSS_format_and_convert_to_unix_epoch() {
     // Example valid GNSS TIMEA message
-    char test_str_valid[] = "#TIMEA,0,0,0,0,0,0,0,0,0,0,0,0,2024,5,23,12,34,567,VALID*checksum";
+    char test_str_valid[] = "<OK[COM1]#TIMEA,COM1,0,80.0,FINESTEERING,2367,411646.000,02040000,9924,17402;VALID,-4.474795457e-08,9.384349250e-09,-18.00000000000,2025,5,22,18,20,28526,VALID*a2ff113a";
 
-    // Expected epoch milliseconds for 2024-05-23 12:34:00 UTC
+    // Expected epoch milliseconds for 2025-05-22 18:20:28.526 UTC
     struct tm t = {0};
-    t.tm_year = 2024 - 1900;
+    t.tm_year = 2025 - 1900;
     t.tm_mon  = 5 - 1;
-    t.tm_mday = 23;
-    t.tm_hour = 12;
-    t.tm_min  = 34;
-    t.tm_sec  = 0;
+    t.tm_mday = 22;
+    t.tm_hour = 18;
+    t.tm_min  = 20;
+    t.tm_sec  = 28;
 
     time_t expected_seconds = portable_timegm(&t);
-    uint64_t expected_ms = (uint64_t)expected_seconds * 1000 + 567;
+    uint64_t expected_ms = (uint64_t)expected_seconds * 1000 + 526;
 
     // Test valid case
     uint64_t result = GNSS_format_and_convert_to_unix_epoch(test_str_valid);
     TEST_ASSERT_TRUE(result == expected_ms);
-
-    // // Test invalid UTC status
-    // char test_str_invalid_status[] = "#TIMEA,0,0,0,0,0,0,0,0,0,0,0,0,2024,5,23,12,34,567,INVALID*checksum";
-    // result = GNSS_format_and_convert_to_unix_epoch(test_str_invalid_status);
-    // TEST_ASSERT_TRUE(result == 1);
-
-    // Test null input
-    // result = GNSS_format_and_convert_to_unix_epoch(NULL);
-    // TEST_ASSERT_TRUE(result == 1);
 
     return 0;  // Indicate test passed
 }
