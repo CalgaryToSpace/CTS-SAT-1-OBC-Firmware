@@ -224,8 +224,8 @@ static void pulse_external_led_blocking(uint32_t pulse_duration_ms) {
 
 static inline void SUBTASK_bootup_operation_state_do_led_indication_action(void) {
     if (CTS1_operation_state == CTS1_OPERATION_STATE_BOOTED_AND_WAITING) {
-        if (TIM_get_current_system_uptime_ms() < (25 * 60 * 1000)) {
-            // LED Indicator: From boot until 25 minutes uptime, external LED pulses 40ms per 1000ms.
+        if ((TIM_get_current_system_uptime_ms() / 1000) < (COMMS_uptime_to_start_ant_deployment_sec - (5 * 60))) {
+            // LED Indicator: From boot until 25 minutes uptime (5 minutes before COMMS_uptime_to_start_ant_deployment_sec), external LED pulses 40ms per 1000ms.
             pulse_external_led_blocking(40);
             
             osDelay(960);
