@@ -13,6 +13,8 @@
 #include "adcs_drivers/adcs_internal_drivers.h"
 #include "timekeeping/timekeeping.h"
 #include "log/log.h"
+#include "stm32/stm32_watchdog.h"
+
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -1318,7 +1320,7 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
     }
 
     HAL_Delay(100); // need to allow some time (100ms) for it to initiate the burst, or else the first packet may be garbage
-    HAL_IWDG_Refresh(&hiwdg); // pet the watchdog so the system doesn't reboot; must be at least 200ms since last pet
+    STM32_pet_watchdog(); // pet the watchdog so the system doesn't reboot; must be at least 200ms since last pet
 
     for (uint16_t i = 0; i < 1024; i++) {
         // load 20 bytes at a time into the download buffer
@@ -1390,7 +1392,7 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
         }
         
         HAL_Delay(100);
-        HAL_IWDG_Refresh(&hiwdg); // pet the watchdog so the system doesn't reboot; must be at least 200ms since last pet
+        STM32_pet_watchdog(); // pet the watchdog so the system doesn't reboot; must be at least 200ms since last pet
 
         for (uint16_t i = 0; i < 1024; i++) {
             // load 20 bytes at a time into the download buffer
@@ -1617,7 +1619,7 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
             
             if (i % 70 == 0) {
                 // pet the watchdog every 70 files so we don't run out of time
-                HAL_IWDG_Refresh(&hiwdg); 
+                STM32_pet_watchdog(); 
             }
 
             const uint8_t temp_file_info_status = ADCS_get_file_info_telemetry(&file_info);
@@ -1808,7 +1810,7 @@ uint8_t ADCS_erase_sd_file_by_index(uint16_t file_index) {
 
         if (i % 70 == 0) {
             // pet the watchdog every 70 files so we don't run out of time
-            HAL_IWDG_Refresh(&hiwdg); 
+            STM32_pet_watchdog(); 
         }
 
         const uint8_t temp_file_info_status = ADCS_get_file_info_telemetry(&file_info);
