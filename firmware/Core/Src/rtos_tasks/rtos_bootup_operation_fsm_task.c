@@ -203,6 +203,13 @@ static inline void SUBTASK_deployment_state_execute(void) {
     else {
         bus = ANT_I2C_BUS_B_MCU_B;
     }
+    LOG_message(
+        LOG_SYSTEM_ANTENNA_DEPLOY, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "Deploying antennas using bus %c.",
+        (bus == ANT_I2C_BUS_A_MCU_A) ? 'A' : 'B'
+    );
+
+    // TODO: Validate if we need to attempt to enter EPS nominal mode here.
     
     // Enable power to the antennas.
     EPS_set_channel_enabled(EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY, 1);
@@ -222,33 +229,38 @@ static void pulse_external_led_blocking(uint32_t pulse_duration_ms) {
     OBC_set_external_led(0);
 }
 
-static inline void SUBTASK_bootup_operation_state_do_led_indication_action(void) {
+/// @brief Do the LED indication action for the current operation state, and return the LED operation period.
+/// @return The time to yield for, in milliseconds.
+static inline uint32_t SUBTASK_bootup_operation_state_do_led_indication_action_return_yield_time_ms(void) {
+    // Note: We return the yield time to ensure that the LED indication task runs at a fixed rate,
+    // regardless of how long the other SUBTASK functions take.
     if (CTS1_operation_state == CTS1_OPERATION_STATE_BOOTED_AND_WAITING) {
         if ((TIM_get_current_system_uptime_ms() / 1000) < (COMMS_uptime_to_start_ant_deployment_sec - (5 * 60))) {
             // LED Indicator: From boot until 25 minutes uptime (5 minutes before COMMS_uptime_to_start_ant_deployment_sec), external LED pulses 40ms per 1000ms.
             pulse_external_led_blocking(40);
             
-            osDelay(960);
+            return (960);
         }
         else {
             // LED Indicator: From 25 minutes uptime to 30 minutes uptime, external LED blinks 40ms per 333ms
             // (warning indicator that the satellite is about to deploy its antenna).
             pulse_external_led_blocking(40);
 
-            osDelay(333);
+            return (333);
         }
     }
     else if (CTS1_operation_state == CTS1_OPERATION_STATE_DEPLOYING) {
         // LED Indicator: Solid on.
         OBC_set_external_led(1);
 
-        osDelay(100); // Allow other tasks to run.
+        // Only restart attempting to deploy every 30 seconds.
+        return (30000);
     }
     else if (CTS1_operation_state == CTS1_OPERATION_STATE_NOMINAL_WITH_RADIO_TX) {
         // LED Indicator: Pulses once per 10 seconds.
         pulse_external_led_blocking(40);
 
-        osDelay(10000);
+        return (10000);
     }
     else if (CTS1_operation_state == CTS1_OPERATION_STATE_NOMINAL_WITHOUT_RADIO_TX) {
         // LED Indicator: Pulses twice per 3 seconds.
@@ -256,8 +268,18 @@ static inline void SUBTASK_bootup_operation_state_do_led_indication_action(void)
         HAL_Delay(180);
         pulse_external_led_blocking(40);
         
-        osDelay(3000);
+        return (3000);
     }
+    else {
+        // Safety: Warn, then do RTOS yield.
+        LOG_message(
+            LOG_SYSTEM_OBC, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Unknown/invalid CTS1 operation state. Current state: %d",
+            CTS1_operation_state
+        );
+        return 10;
+    }
+    return 10;
 }
 
 /// @brief FreeRTOS task - FSM which handles the bootup and operation state/state.
@@ -280,14 +302,24 @@ void TASK_bootup_operation_fsm(void *argument) {
 
     // Main loop.
     while (1) {
+        const uint32_t task_entry_ms = HAL_GetTick();
+
         SUBTASK_bootup_operation_state_check_for_state_transitions();
-        SUBTASK_bootup_operation_state_do_led_indication_action(); // Calls the osDelay() function.
+        const uint32_t yield_time_ms = SUBTASK_bootup_operation_state_do_led_indication_action_return_yield_time_ms();
 
         if (CTS1_operation_state == CTS1_OPERATION_STATE_DEPLOYING) {
             SUBTASK_deployment_state_execute();
         }
-        
-        osDelay(10); // Yield, just in case.
+
+        // Yield for the LED indication time.
+        const uint32_t yield_until_time = task_entry_ms + yield_time_ms;
+        if (yield_until_time > HAL_GetTick()) {
+            osDelayUntil(yield_until_time);
+        }
+        else {
+            // If the yield time is already past, just yield for 10ms.
+            osDelay(10);
+        }
     }
 }
 

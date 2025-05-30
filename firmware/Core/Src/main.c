@@ -143,7 +143,7 @@ osThreadId_t TASK_bootup_operation_fsm_Handle;
 const osThreadAttr_t TASK_bootup_operation_fsm_Attributes = {
   .name = "TASK_bootup_operation_fsm",
   .stack_size = 4096,
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityAboveNormal5, // Higher priority for LED blinking at correct rate.
 };
 
 osThreadId_t TASK_time_sync_Handle;
