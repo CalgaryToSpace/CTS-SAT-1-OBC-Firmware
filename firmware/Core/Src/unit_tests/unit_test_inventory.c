@@ -17,6 +17,7 @@
 #include "unit_tests/test_eps_struct_packers.h"
 #include "unit_tests/test_eps_calculations.h"
 #include "unit_tests/test_sha256.h"
+#include "unit_tests/test_gnss_time.h"
 
 // extern
 const TEST_Definition_t TEST_definitions[] = {
@@ -81,7 +82,13 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_file = "transforms/arrays",
         .test_func_name = "GEN_int64_to_str"
     },
-    
+    // ****************** SECTION: test_gnss_time ******************
+    {
+        .test_func = TEST_EXEC__GNSS_format_and_convert_to_unix_epoch,
+        .test_file = "gnss_receiver/gnss_time",
+        .test_func_name = "GNSS_format_and_convert_to_unix_epoch"
+    },
+    // ****************** END SECTION: test_gnss_time ******************
     // ****************** SECTION: test_adcs ******************
     
     {
