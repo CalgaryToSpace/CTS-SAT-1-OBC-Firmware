@@ -26,4 +26,3 @@ void COMMS_fill_beacon_basic_packet(
     
     // TODO: Add more fields
 }
-

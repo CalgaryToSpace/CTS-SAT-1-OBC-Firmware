@@ -1,6 +1,6 @@
 #include "rtos_tasks/rtos_bootup_operation_fsm_task.h"
 #include "rtos_tasks/rtos_tasks_rx_telecommands.h"
-#include "system/obc_internal_drivers.h"
+#include "obc_systems/external_led_and_rbf.h"
 #include "littlefs/littlefs_helper.h"
 #include "eps_drivers/eps_channel_control.h"
 #include "antenna_deploy_drivers/ant_commands.h"

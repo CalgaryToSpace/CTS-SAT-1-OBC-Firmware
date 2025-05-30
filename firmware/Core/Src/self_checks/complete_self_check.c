@@ -15,7 +15,7 @@
 #include "camera/camera_init.h"
 
 #include "uart_handler/uart_handler.h"
-#include "obc_temperature_sensor/obc_temperature_sensor.h"
+#include "obc_systems/obc_temperature_sensor.h"
 #include "littlefs/flash_driver.h"
 #include "log/log.h"
 #include "debug_tools/debug_uart.h"

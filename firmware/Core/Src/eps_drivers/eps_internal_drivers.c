@@ -6,7 +6,7 @@
 #include "eps_drivers/eps_types.h"
 #include "eps_drivers/eps_internal_drivers.h"
 #include "uart_handler/uart_handler.h"
-#include "stm_drivers/timing_helpers.h"
+#include "stm32/stm32_timing_helpers.h"
 #include "log/log.h"
 
 #include <stdint.h>

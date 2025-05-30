@@ -12,7 +12,7 @@
 #include "log/log.h"
 #include "config/configuration.h"
 #include "eps_drivers/eps_commands.h"
-#include "system/obc_internal_drivers.h"
+#include "obc_systems/external_led_and_rbf.h"
 
 #include "cmsis_os.h"
 

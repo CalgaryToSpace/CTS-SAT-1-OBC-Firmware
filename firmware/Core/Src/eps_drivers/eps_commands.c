@@ -6,7 +6,7 @@
 #include "eps_drivers/eps_types.h"
 #include "eps_drivers/eps_internal_drivers.h"
 #include "eps_drivers/eps_struct_packers.h"
-#include "stm_drivers/timing_helpers.h"
+#include "stm32/stm32_timing_helpers.h"
 
 
 uint8_t EPS_CMD_system_reset() {

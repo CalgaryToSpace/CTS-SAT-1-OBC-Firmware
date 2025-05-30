@@ -1,5 +1,5 @@
-#ifndef INCLUDE_GUARD_TEMPERATURE_SENSOR_H__
-#define INCLUDE_GUARD_TEMPERATURE_SENSOR_H__
+#ifndef INCLUDE_GUARD__OBC_TEMPERATURE_SENSOR_H
+#define INCLUDE_GUARD__OBC_TEMPERATURE_SENSOR_H
 
 #include <stdint.h>
 
@@ -47,4 +47,4 @@ int8_t OBC_TEMP_SENSOR_get_temp_precision(void);
 
 int32_t OBC_TEMP_SENSOR_get_temperature_cC();
 
-#endif
+#endif /* INCLUDE_GUARD__OBC_TEMPERATURE_SENSOR_H */

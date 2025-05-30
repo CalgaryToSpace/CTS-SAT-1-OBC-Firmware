@@ -4,7 +4,7 @@
 #include "debug_tools/debug_i2c.h"
 #include "gnss_receiver/gnss_internal_drivers.h"
 #include "uart_handler/uart_handler.h"
-#include "stm_drivers/timing_helpers.h"
+#include "stm32/stm32_timing_helpers.h"
 #include "uart_handler/uart_handler.h"
 #include "log/log.h"
 
