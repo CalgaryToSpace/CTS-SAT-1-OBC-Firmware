@@ -170,6 +170,7 @@ uint8_t TCMDEXEC_boom_self_check(
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     const uint16_t boom_on_duration_ms = 75;
+    const uint16_t general_wait_duration_ms = 1000;
 
     // Step 1: Disable boom control signals
     BOOM_disable_all_burns();
@@ -184,8 +185,8 @@ uint8_t TCMDEXEC_boom_self_check(
         return 2;
     }
 
-    // Step 3: Wait 100 ms and measure current
-    HAL_Delay(100);
+    // Step 3: Wait then measure current.
+    HAL_Delay(general_wait_duration_ms);
 
     EPS_struct_pdu_housekeeping_data_eng_t status;
     if (EPS_CMD_get_pdu_housekeeping_data_eng(&status) != 0) {
@@ -213,7 +214,7 @@ uint8_t TCMDEXEC_boom_self_check(
     const int16_t boom_1_mA = status.vip_each_channel[EPS_CHANNEL_12V_BOOM].current_mA;
     
     BOOM_disable_all_burns();
-    HAL_Delay(100); // Wait to stabilize off.
+    HAL_Delay(general_wait_duration_ms); // Wait to stabilize off.
 
     // Step 5: Turn on BOOM_CTRL_2
     BOOM_set_burn_enabled(2, 1);
@@ -229,7 +230,7 @@ uint8_t TCMDEXEC_boom_self_check(
     const int16_t boom_2_mA = status.vip_each_channel[EPS_CHANNEL_12V_BOOM].current_mA;
 
     BOOM_disable_all_burns();
-    HAL_Delay(1000); // Give a second to cool off before the next step.
+    HAL_Delay(general_wait_duration_ms); // Give a second to cool off before the next step.
 
     // Step 6: Turn on both BOOM_CTRL_1 and BOOM_CTRL_2
     BOOM_set_burn_enabled(1, 1);
@@ -272,7 +273,7 @@ uint8_t TCMDEXEC_boom_self_check(
         "\"boom_both_mA\": %d, "
         "\"number_thresholds_status\": \"%s\", "
         "\"stayed_enabled_status\": \"%s\", "
-        "\"no_overcurrent_fault_status\": \"%s\", "
+        "\"no_overcurrent_fault_status\": \"%s\""
         "}",
         boom_disabled_mV,
         boom_disabled_mA, boom_1_mA, boom_2_mA, boom_both_mA,
