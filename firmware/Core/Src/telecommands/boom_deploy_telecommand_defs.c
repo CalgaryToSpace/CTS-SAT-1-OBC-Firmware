@@ -169,7 +169,7 @@ uint8_t TCMDEXEC_boom_self_check(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
-    const uint16_t boom_on_duration_ms = 75;
+    const uint16_t boom_on_duration_ms = 1000;
     const uint16_t general_wait_duration_ms = 1000;
 
     // Step 1: Disable boom control signals
