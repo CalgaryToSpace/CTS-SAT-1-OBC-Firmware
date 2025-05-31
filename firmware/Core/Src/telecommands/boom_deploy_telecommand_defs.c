@@ -25,6 +25,8 @@
 /// @return 0 on success, 1-2 on parsing error, 20 on EPS failure
 /// @note Does not enable the EPS channel. You must manually enable the EPS channel before
 ///     calling this function.
+/// @note If you need longer than the max duration, you can of course call this function
+/// multiple times back-to-back, relying on the heat capacity of the resistors to stay hot.
 uint8_t TCMDEXEC_boom_deploy_timed(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
