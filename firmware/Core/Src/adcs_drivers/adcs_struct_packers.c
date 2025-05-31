@@ -125,7 +125,7 @@ uint8_t ADCS_pack_to_unix_time_save_mode_struct(uint8_t *data_received, ADCS_set
     result->save_now = data_received[0] & 0x1; // 0b00000001
     result->save_on_update = (data_received[0] & 0x2) >> 1; // 0b00000010
     result->save_periodic = (data_received[0] & 0x4) >> 2; // 0b00000100
-    result->period = data_received[1];
+    result->period_s = data_received[1];
     return 0;
 }
 
