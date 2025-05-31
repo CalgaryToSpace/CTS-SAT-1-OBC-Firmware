@@ -40,7 +40,7 @@ typedef enum {
     LOG_SYSTEM_OBC = 1 << 0,
     LOG_SYSTEM_UHF_RADIO = 1 << 1,
     LOG_SYSTEM_UMBILICAL_UART = 1 << 2,
-    LOG_SYSTEM_GPS = 1 << 3,
+    LOG_SYSTEM_GNSS = 1 << 3,
     LOG_SYSTEM_MPI = 1 << 4,
     LOG_SYSTEM_EPS = 1 << 5,
     LOG_SYSTEM_BOOM = 1 << 6,
@@ -94,7 +94,7 @@ Several sinks can chained together with the bitwise OR operator (`|`). For examp
 
 ## Timestamp Format
 
-The timekeeping clock on satellites drifts due to temperature variations, inaccuracies in the crystal oscillator, etc; it is re-synced with the GPS and/or ground station every so often.
+The timekeeping clock on satellites drifts due to temperature variations, inaccuracies in the crystal oscillator, etc; it is re-synced with the GNSS and/or ground station every so often.
 
 The system time is stored in "unix timestamp format" (seconds since 1970-01-01). This is a very well-known date/time representation.
 

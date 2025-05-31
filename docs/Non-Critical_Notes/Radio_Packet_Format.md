@@ -9,7 +9,7 @@ The first byte of the packet (after the 4-byte CSP header) is the packet type. T
     * `0x02` - beacon (peripheral telemetry)
     * `0x03` - log message
     * `0x04` - telecommand response
-    * `0x10` - bulk downlink a file from the filesystem
+    * `0x10` - bulk file downlink
 
 ## Bytes 1-200 of the Packet, for each Packet Type
 
@@ -28,7 +28,7 @@ This packet type does not have sequence numbers. All log messages fit within (or
 
 Plain text content, same as UART messages.
 
-### Bytes 1-200 of Telecommand Response (Packet Type `0x04`)
+### Bytes 1-200 of Telecommand Response Packets (Packet Type `0x04`)
 
 This packet type has sequence numbers.
 
@@ -40,13 +40,13 @@ This packet type has sequence numbers.
 * Bytes 14-200: Plain text content of the `response_output_buf`, null terminated
 
 
-### Bytes 1-200 of Bulk Downlink Packets (Packet Type `0x10`)
+### Bytes 1-200 of Bulk File Downlink Packets (Packet Type `0x10`)
 
 This packet type has sequence numbers.
 
-* Bytes 1,2,3,4: uint32_t of byte offset within file
-* Byte 5: sequence number of file downlink packet (starting from 1)
-* Byte 6: total number of file downlink packets (e.g., 1 if <183 bytes)
+* Byte 1: sequence number of file downlink packet (starting from 1)
+* Byte 2: total number of file downlink packets (e.g., 1 if <183 bytes)
+* Bytes 3,4,5,6: uint32_t of byte offset within file
 * Bytes 7-200: Content of file
 
 

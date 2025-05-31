@@ -48,7 +48,7 @@ uint8_t ADCS_set_magnetometer_config(
         double sensitivity_matrix_s31,
         double sensitivity_matrix_s32);
 uint8_t ADCS_bootloader_clear_errors();
-uint8_t ADCS_set_unix_time_save_mode(bool save_now, bool save_on_update, bool save_periodic, uint8_t period);
+uint8_t ADCS_set_unix_time_save_mode(bool save_now, bool save_on_update, bool save_periodic, uint8_t period_s);
 uint8_t ADCS_get_unix_time_save_mode(ADCS_set_unix_time_save_mode_struct_t *output_struct);
 uint8_t ADCS_set_sgp4_orbit_params(double inclination, double eccentricity, double ascending_node_right_ascension, double perigee_argument, double b_star_drag_term, double mean_motion, double mean_anomaly, double epoch);
 uint8_t ADCS_get_sgp4_orbit_params(ADCS_orbit_params_struct_t *output_struct);
@@ -149,5 +149,7 @@ uint8_t ADCS_disable_SD_logging();
 uint8_t ADCS_disable_peripherals_and_SD_logs_without_stabilisation();
 uint8_t ADCS_disable_peripherals_and_SD_logs_with_stabilisation();
 uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset);
+uint8_t ADCS_erase_sd_file_by_index(uint16_t file_index);
+uint8_t ADCS_bootloader_run_program();
 
 #endif /* INC_ADCS_COMMANDS_H_ */

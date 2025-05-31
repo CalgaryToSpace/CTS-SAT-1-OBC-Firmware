@@ -7,7 +7,7 @@
 #include "littlefs/littlefs_helper.h"
 #include "transforms/arrays.h"
 #include "self_checks/complete_self_check.h"
-#include "system/obc_internal_drivers.h"
+#include "obc_systems/external_led_and_rbf.h"
 
 #include "telecommands/system_telecommand_defs.h"
 #include "telecommand_exec/telecommand_definitions.h"
@@ -61,19 +61,19 @@ uint8_t TCMDEXEC_core_system_stats(
         const float battery_percent = EPS_convert_battery_voltage_to_percent(
             eps_pbu_data.battery_pack_info_each_pack[0]
         );
-        snprintf(eps_battery_percent_str, sizeof(eps_battery_percent_str), "%0.2f%%", battery_percent);
+        snprintf(eps_battery_percent_str, sizeof(eps_battery_percent_str), "%0.2f", battery_percent);
     }
     
     snprintf(
         response_output_buf, response_output_buf_len, 
         "{"
-        "\"timestamp_ms\":\"%s\","
-        "\"uptime_ms\":\"%lu\","
-        "\"last_resync_ms\":\"%lu\","
-        "\"time_synced_ms_ago\":\"%lu\","
-        "\"time_of_last_tcmd_sent_ms\":\"%s\","
-        "\"total_tcmd_count\":\"%lu\","
-        "\"is_lfs_mounted\":\"%u\","
+        "\"timestamp_ms\":%s,"
+        "\"uptime_ms\":%lu,"
+        "\"last_resync_ms\":%lu,"
+        "\"time_synced_ms_ago\":%lu,"
+        "\"time_of_last_tcmd_sent_ms\":%s,"
+        "\"total_tcmd_count\":%lu,"
+        "\"is_lfs_mounted\":%u,"
         "\"last_time_sync_source\":\"%c\","
         "\"reboot_reason\":\"%s\","
         "\"eps_battery_percent\":%s"
@@ -153,8 +153,27 @@ uint8_t TCMDEXEC_system_self_check_failures_as_json(
 ) {
     CTS1_system_self_check_result_struct_t self_check_result;
     CTS1_run_system_self_check(&self_check_result);
-    CTS1_self_check_struct_TO_json_list_of_failures(
-        self_check_result, response_output_buf, response_output_buf_len
+    CTS1_self_check_struct_TO_json_list(
+        self_check_result, response_output_buf, response_output_buf_len,
+        0 // Don't show passed checks.
+    );
+    return 0;
+}
+
+/// @brief System self-check of all peripherals and systems.
+/// @param args_str No arguments expected
+/// @param response_output_buf Buffer is filled with a JSON list of strings of the FAILING checks
+/// @return 0 regardless; see the response_output_buf for the results of the self-check.
+/// @note Output is a JSON list of the failing checks (as strings). Returns 0 regardless.
+uint8_t TCMDEXEC_system_self_check_as_json(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    CTS1_system_self_check_result_struct_t self_check_result;
+    CTS1_run_system_self_check(&self_check_result);
+    CTS1_self_check_struct_TO_json_list(
+        self_check_result, response_output_buf, response_output_buf_len,
+        1 // Show passed checks.
     );
     return 0;
 }

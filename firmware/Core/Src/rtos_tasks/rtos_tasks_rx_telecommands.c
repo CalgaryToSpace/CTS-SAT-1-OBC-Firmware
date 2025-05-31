@@ -142,8 +142,6 @@ static TCMD_check_result_enum_t check_for_and_handle_new_uart_tcmds() {
     // Add the telecommand to the agenda (regardless of whether it's in the future).
     TCMD_add_tcmd_to_agenda(&parsed_tcmd);
 
-    AX100_uptime_at_last_received_kiss_tcmd_ms = HAL_GetTick();
-
     return TCMD_CHECK_STATUS_TCMD_SCHEDULED;
 }
 
@@ -280,6 +278,8 @@ static TCMD_check_result_enum_t check_for_and_handle_new_ax100_kiss_tcmd(
 
     // Add the telecommand to the agenda (regardless of whether it's in the future).
     TCMD_add_tcmd_to_agenda(&parsed_tcmd);
+
+    AX100_uptime_at_last_received_kiss_tcmd_ms = HAL_GetTick();
 
     return TCMD_CHECK_STATUS_TCMD_SCHEDULED;
 }

@@ -30,6 +30,8 @@
 #include "rtos_tasks/rtos_background_upkeep.h"
 #include "rtos_tasks/rtos_tasks_rx_telecommands.h"
 #include "rtos_tasks/rtos_mpi_tasks.h"
+#include "rtos_tasks/rtos_bulk_downlink_task.h"
+#include "rtos_tasks/rtos_bootup_operation_fsm_task.h"
 #include "uart_handler/uart_handler.h"
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_commands.h"
@@ -54,8 +56,6 @@
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
-
-CRC_HandleTypeDef hcrc;
 
 I2C_HandleTypeDef hi2c1;
 I2C_HandleTypeDef hi2c2;
@@ -119,6 +119,13 @@ const osThreadAttr_t TASK_handle_ax100_kiss_telecommands_Attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 
+osThreadId_t TASK_bulk_downlink_Handle;
+const osThreadAttr_t TASK_bulk_downlink_Attributes = {
+  .name = "TASK_bulk_downlink",
+  .stack_size = 4096,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+
 osThreadId_t TASK_execute_telecommands_Handle;
 const osThreadAttr_t TASK_execute_telecommands_Attributes = {
   .name = "TASK_execute_telecommands",
@@ -138,6 +145,13 @@ const osThreadAttr_t TASK_service_write_mpi_data_Attributes = {
   .name = "TASK_service_write_mpi_data",
   .stack_size = 512, //in bytes
   .priority = (osPriority_t) osPriorityNormal, //TODO: Figure out which priority makes sense for this task
+};
+
+osThreadId_t TASK_bootup_operation_fsm_Handle;
+const osThreadAttr_t TASK_bootup_operation_fsm_Attributes = {
+  .name = "TASK_bootup_operation_fsm",
+  .stack_size = 4096,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 
 osThreadId_t TASK_time_sync_Handle;
@@ -183,6 +197,11 @@ FREERTOS_task_info_struct_t FREERTOS_task_handles_array [] = {
     .lowest_stack_bytes_remaining = UINT32_MAX
   },
   {
+    .task_handle = &TASK_bulk_downlink_Handle,
+    .task_attribute = &TASK_bulk_downlink_Attributes,
+    .lowest_stack_bytes_remaining = UINT32_MAX
+  },
+  {
     .task_handle = &TASK_execute_telecommands_Handle,
     .task_attribute = &TASK_execute_telecommands_Attributes,
     .lowest_stack_bytes_remaining = UINT32_MAX
@@ -195,6 +214,11 @@ FREERTOS_task_info_struct_t FREERTOS_task_handles_array [] = {
   {
     .task_handle = &TASK_service_write_mpi_data_Handle,
     .task_attribute = &TASK_service_write_mpi_data_Attributes,
+    .lowest_stack_bytes_remaining = UINT32_MAX
+  },
+  {
+    .task_handle = &TASK_bootup_operation_fsm_Handle,
+    .task_attribute = &TASK_bootup_operation_fsm_Attributes,
     .lowest_stack_bytes_remaining = UINT32_MAX
   },
   {
@@ -233,7 +257,6 @@ static void MX_USART1_UART_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_I2C3_Init(void);
-static void MX_CRC_Init(void);
 static void MX_TIM16_Init(void);
 static void MX_IWDG_Init(void);
 static void MX_USART2_UART_Init(void);
@@ -292,7 +315,6 @@ int main(void)
   MX_USART3_UART_Init();
   MX_SPI1_Init();
   MX_I2C3_Init();
-  MX_CRC_Init();
   MX_TIM16_Init();
   MX_IWDG_Init();
   MX_USART2_UART_Init();
@@ -346,6 +368,8 @@ int main(void)
 
   TASK_handle_ax100_kiss_telecommands_Handle = osThreadNew(TASK_handle_ax100_kiss_telecommands, NULL, &TASK_handle_ax100_kiss_telecommands_Attributes);
 
+  TASK_bulk_downlink_Handle = osThreadNew(TASK_bulk_downlink, NULL, &TASK_bulk_downlink_Attributes);
+
   TASK_execute_telecommands_Handle = osThreadNew(TASK_execute_telecommands, NULL, &TASK_execute_telecommands_Attributes);
 
   TASK_monitor_freertos_memory_Handle = osThreadNew(TASK_monitor_freertos_memory, NULL, &TASK_monitor_freertos_memory_Attributes);
@@ -353,6 +377,8 @@ int main(void)
   TASK_service_eps_watchdog_Handle = osThreadNew(TASK_service_eps_watchdog, NULL, &TASK_service_eps_watchdog_Attributes);
 
   TASK_service_write_mpi_data_Handle = osThreadNew(TASK_service_write_mpi_data, NULL, &TASK_service_write_mpi_data_Attributes);
+  
+  TASK_bootup_operation_fsm_Handle = osThreadNew(TASK_bootup_operation_fsm, NULL, &TASK_bootup_operation_fsm_Attributes);
 
   TASK_time_sync_Handle = osThreadNew(TASK_time_sync, NULL, &TASK_time_sync_Attributes);
 
@@ -480,37 +506,6 @@ static void MX_ADC1_Init(void)
   /* USER CODE BEGIN ADC1_Init 2 */
 
   /* USER CODE END ADC1_Init 2 */
-
-}
-
-/**
-  * @brief CRC Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_CRC_Init(void)
-{
-
-  /* USER CODE BEGIN CRC_Init 0 */
-
-  /* USER CODE END CRC_Init 0 */
-
-  /* USER CODE BEGIN CRC_Init 1 */
-
-  /* USER CODE END CRC_Init 1 */
-  hcrc.Instance = CRC;
-  hcrc.Init.DefaultPolynomialUse = DEFAULT_POLYNOMIAL_ENABLE;
-  hcrc.Init.DefaultInitValueUse = DEFAULT_INIT_VALUE_ENABLE;
-  hcrc.Init.InputDataInversionMode = CRC_INPUTDATA_INVERSION_NONE;
-  hcrc.Init.OutputDataInversionMode = CRC_OUTPUTDATA_INVERSION_DISABLE;
-  hcrc.InputDataFormat = CRC_INPUTDATA_FORMAT_BYTES;
-  if (HAL_CRC_Init(&hcrc) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN CRC_Init 2 */
-
-  /* USER CODE END CRC_Init 2 */
 
 }
 
@@ -1169,11 +1164,11 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PIN_GPS_PPS_IN_Pin */
-  GPIO_InitStruct.Pin = PIN_GPS_PPS_IN_Pin;
+  /*Configure GPIO pin : PIN_GNSS_PPS_IN_Pin */
+  GPIO_InitStruct.Pin = PIN_GNSS_PPS_IN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(PIN_GPS_PPS_IN_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(PIN_GNSS_PPS_IN_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PIN_MEM_NCS_FLASH_3_Pin */
   GPIO_InitStruct.Pin = PIN_MEM_NCS_FLASH_3_Pin;

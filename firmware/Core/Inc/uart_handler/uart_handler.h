@@ -21,7 +21,7 @@ extern volatile CAMERA_uart_write_state_enum_t CAMERA_uart_half_2_state;
 extern UART_HandleTypeDef *UART_telecommand_port_handle;  
 extern UART_HandleTypeDef *UART_mpi_port_handle;
 extern UART_HandleTypeDef *UART_ax100_port_handle;
-extern UART_HandleTypeDef *UART_gps_port_handle;
+extern UART_HandleTypeDef *UART_gnss_port_handle;
 extern UART_HandleTypeDef *UART_camera_port_handle;
 extern UART_HandleTypeDef *UART_eps_port_handle;
 
@@ -38,10 +38,10 @@ extern volatile uint8_t UART_mpi_last_rx_byte;                  // Last received
 
 extern volatile uint32_t UART_ax100_last_write_time_ms;       // Last write time in milliseconds for AX100 response
 
-extern const uint16_t UART_gps_buffer_len;                      // Length of the GPS response buffer
-extern volatile uint8_t UART_gps_buffer[];                      // Buffer for GPS response
-extern volatile uint16_t UART_gps_buffer_write_idx;             // Write index for GPS response buffer
-extern volatile uint32_t UART_gps_last_write_time_ms;           // Last write time in milliseconds for GPS response
+extern const uint16_t UART_gnss_buffer_len;                      // Length of the GNSS response buffer
+extern volatile uint8_t UART_gnss_buffer[];                      // Buffer for GNSS response
+extern volatile uint16_t UART_gnss_buffer_write_idx;             // Write index for GNSS response buffer
+extern volatile uint32_t UART_gnss_last_write_time_ms;           // Last write time in milliseconds for GNSS response
 
 extern const uint16_t UART_camera_dma_buffer_len;               // Length of the CAMERA DMA buffer
 extern const uint16_t UART_camera_dma_buffer_len_half;          // Half length of the CAMERA DMA buffer
@@ -56,12 +56,12 @@ extern volatile uint16_t UART_eps_buffer_write_idx;             // Write index f
 extern volatile uint32_t UART_eps_last_write_time_ms;           // Last write time in milliseconds for EPS response
 extern volatile uint8_t UART_eps_is_expecting_data;             // Set to 1 when a command is sent, and we're awaiting a response
 
-extern const uint16_t UART_gps_buffer_len; 
-extern volatile uint8_t UART_gps_buffer[];          
-extern volatile uint16_t UART_gps_buffer_write_idx; 
-extern volatile uint32_t UART_gps_last_write_time_ms; 
-extern volatile uint8_t UART_gps_buffer_last_rx_byte;  
-extern volatile uint8_t UART_gps_uart_interrupt_enabled; // Flag to enable or disable the UART GPS ISR
+extern const uint16_t UART_gnss_buffer_len; 
+extern volatile uint8_t UART_gnss_buffer[];          
+extern volatile uint16_t UART_gnss_buffer_write_idx; 
+extern volatile uint32_t UART_gnss_last_write_time_ms; 
+extern volatile uint8_t UART_gnss_buffer_last_rx_byte;  
+extern volatile uint8_t UART_gnss_uart_interrupt_enabled; // Flag to enable or disable the UART GNSS ISR
 
 // UART MPI Science data buffer 2.0
 extern const uint8_t UART_mpi_data_rx_buffer_len;      // extern 
@@ -89,7 +89,7 @@ extern volatile uint8_t UART_AX100_kiss_frame_queue_tail;
 
 
 void UART_init_uart_handlers(void);
-void GPS_set_uart_interrupt_state(uint8_t new_enabled) ;
+void GNSS_set_uart_interrupt_state(uint8_t new_enabled) ;
 uint8_t CAMERA_set_expecting_data(uint8_t new_enabled) ;
 
 #endif // INCLUDE_GUARD__UART_HANDLER_H__

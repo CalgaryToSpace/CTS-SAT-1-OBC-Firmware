@@ -30,8 +30,7 @@
 #include "telecommands/eps_telecommands.h"
 #include "telecommands/stm32_internal_flash_telecommand_defs.h"
 #include "telecommands/comms_telecommand_defs.h"
-#include "telecommands/telecommand_crc.h"
-#include "telecommands/gps_telecommand_defs.h"
+#include "telecommands/gnss_telecommand_defs.h"
 #include "telecommands/camera_telecommand_defs.h"
 
 #include "timekeeping/timekeeping.h"
@@ -95,12 +94,6 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
-        .tcmd_name = "crc",
-        .tcmd_func = TCMDEXEC_crc,
-        .number_of_args = 1,
-        .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
-    },
-    {
         .tcmd_name = "reboot",
         .tcmd_func = TCMDEXEC_reboot,
         .number_of_args = 0,
@@ -121,6 +114,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "system_self_check_failures_as_json",
         .tcmd_func = TCMDEXEC_system_self_check_failures_as_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "system_self_check_as_json",
+        .tcmd_func = TCMDEXEC_system_self_check_as_json,
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
@@ -292,6 +291,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "fs_list_directory",
         .tcmd_func = TCMDEXEC_fs_list_directory,
+        .number_of_args = 3,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "fs_list_directory_json",
+        .tcmd_func = TCMDEXEC_fs_list_directory_json,
         .number_of_args = 3,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
@@ -784,6 +789,18 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 2,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
+    {
+        .tcmd_name = "adcs_erase_sd_file",
+        .tcmd_func = TCMDEXEC_adcs_erase_sd_file,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    }, 
+    {
+        .tcmd_name = "adcs_exit_bootloader",
+        .tcmd_func = TCMDEXEC_adcs_exit_bootloader,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
 
     // ****************** END SECTION: telecommand_adcs ******************
 
@@ -1204,20 +1221,44 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     // ****************** END SECTION: obc_systems_telecommand_defs ******************
     // ****************** START SECTION: comms_telecommand_defs ******************
     {
-        .tcmd_name = "comms_dipole_switch_set_state",
-        .tcmd_func = TCMDEXEC_comms_dipole_switch_set_state,
+        .tcmd_name = "comms_set_rf_switch_control_mode",
+        .tcmd_func = TCMDEXEC_comms_set_rf_switch_control_mode,
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
     },
-    // ****************** END SECTION: comms_telecommand_defs ******************
-    // ****************** SECTION: gps_telecommand_defs ******************
     {
-        .tcmd_name = "gps_send_cmd_ascii",
-        .tcmd_func = TCMDEXEC_gps_send_cmd_ascii,
+        .tcmd_name = "comms_get_rf_switch_info",
+        .tcmd_func = TCMDEXEC_comms_get_rf_switch_info,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "comms_bulk_file_downlink_start",
+        .tcmd_func = TCMDEXEC_comms_bulk_file_downlink_start,
+        .number_of_args = 3,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "comms_bulk_file_downlink_pause",
+        .tcmd_func = TCMDEXEC_comms_bulk_file_downlink_pause,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "comms_bulk_file_downlink_resume",
+        .tcmd_func = TCMDEXEC_comms_bulk_file_downlink_resume,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    // ****************** END SECTION: comms_telecommand_defs ******************
+    // ****************** SECTION: gnss_telecommand_defs ******************
+    {
+        .tcmd_name = "gnss_send_cmd_ascii",
+        .tcmd_func = TCMDEXEC_gnss_send_cmd_ascii,
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
-    // ****************** END SECTION: gps_telecommand_defs ******************
+    // ****************** END SECTION: gnss_telecommand_defs ******************
     // ****************** SECTION: camera_telecommand_defs *******************
     {
         .tcmd_name = "camera_setup",
@@ -1249,6 +1290,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "boom_deploy_timed",
         .tcmd_func = TCMDEXEC_boom_deploy_timed,
         .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "boom_self_check",
+        .tcmd_func = TCMDEXEC_boom_self_check,
+        .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     // ****************** END SECTION: boom_deploy_telecommand_defs ******************

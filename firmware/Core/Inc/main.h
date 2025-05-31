@@ -45,8 +45,6 @@ extern I2C_HandleTypeDef hi2c2;
 extern I2C_HandleTypeDef hi2c3;
 extern I2C_HandleTypeDef hi2c4;
 
-extern IWDG_HandleTypeDef hiwdg;
-
 extern UART_HandleTypeDef hlpuart1;
 extern UART_HandleTypeDef huart4;
 extern UART_HandleTypeDef huart5;
@@ -57,7 +55,6 @@ extern UART_HandleTypeDef huart3;
 extern SPI_HandleTypeDef hspi1;
 
 extern TIM_HandleTypeDef htim16;
-extern CRC_HandleTypeDef hcrc;
 
 
 
@@ -115,12 +112,12 @@ void Error_Handler(void);
 #define PIN_BOOM_DEPLOY_EN_1_OUT_GPIO_Port GPIOA
 #define PIN_BOOM_DEPLOY_EN_2_OUT_Pin GPIO_PIN_4
 #define PIN_BOOM_DEPLOY_EN_2_OUT_GPIO_Port GPIOA
-#define PIN_GPS_PPS_IN_Pin GPIO_PIN_6
-#define PIN_GPS_PPS_IN_GPIO_Port GPIOA
-#define PIN_GPS_MOSI_USART3_TX_Pin GPIO_PIN_4
-#define PIN_GPS_MOSI_USART3_TX_GPIO_Port GPIOC
-#define PIN_GPS_MISO_USART3_RX_Pin GPIO_PIN_5
-#define PIN_GPS_MISO_USART3_RX_GPIO_Port GPIOC
+#define PIN_GNSS_PPS_IN_Pin GPIO_PIN_6
+#define PIN_GNSS_PPS_IN_GPIO_Port GPIOA
+#define PIN_GNSS_MOSI_USART3_TX_Pin GPIO_PIN_4
+#define PIN_GNSS_MOSI_USART3_TX_GPIO_Port GPIOC
+#define PIN_GNSS_MISO_USART3_RX_Pin GPIO_PIN_5
+#define PIN_GNSS_MISO_USART3_RX_GPIO_Port GPIOC
 #define PIN_MEM_NCS_FLASH_3_Pin GPIO_PIN_15
 #define PIN_MEM_NCS_FLASH_3_GPIO_Port GPIOF
 #define PIN_MEM_NCS_FLASH_2_Pin GPIO_PIN_0

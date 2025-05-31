@@ -22,7 +22,7 @@ extern uint8_t LFS_is_lfs_mounted;
 
 /// @brief The maximum path length supported by CTS-SAT-1, including the null terminator.
 /// @note LittleFS supports up to 255 bytes by default, but we'll restrict a bit under.
-static const uint16_t LFS_MAX_PATH_LENGTH = 250;
+#define LFS_MAX_PATH_LENGTH 250
 
 /*---------------------------FUNCTIONS---------------------------*/
 int8_t LFS_format();

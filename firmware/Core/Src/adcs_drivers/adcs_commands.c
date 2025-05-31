@@ -13,6 +13,8 @@
 #include "adcs_drivers/adcs_internal_drivers.h"
 #include "timekeeping/timekeeping.h"
 #include "log/log.h"
+#include "stm32/stm32_watchdog.h"
+
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -349,19 +351,20 @@ uint8_t ADCS_get_llh_position(ADCS_llh_position_struct_t *output_struct) {
 /// @brief Instruct the ADCS to execute the ADCS_Bootloader_Clear_Errors command.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_bootloader_clear_errors() {
-    uint8_t data_send[1]; // 0-byte data (from manual) input into wrapper, but one-byte here to avoid warnings
-    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_BOOTLOADER_CLEAR_ERRORS, data_send, 0, ADCS_INCLUDE_CHECKSUM);
-    return cmd_status;
+    uint8_t data_send[1] = {ADCS_COMMAND_BOOTLOADER_CLEAR_ERRORS}; // 0-byte data (from manual) input into wrapper, but one-byte here to avoid warnings
+    const uint8_t hal_status = HAL_I2C_Master_Transmit(ADCS_i2c_HANDLE, ADCS_i2c_ADDRESS << 1, data_send, 1, ADCS_HAL_TIMEOUT);
+        // The bootloader doesn't support checksum, and this is a zero-parameter command, so HAL_I2C_Mem_Write can't be used (zero length message).
+    return hal_status;
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Set_Unix_Time_Save_Mode command.
 /// @param[in] save_now whether to save the current Unix time immediately (bool passed as int; 1 = save immediately, 0 = don't save immediately)
 /// @param[in] save_on_update whether to save the current Unix time whenever a command is used to update it (bool passed as int; 1 = save on command, 0 = don't)
 /// @param[in] save_periodic whether to save the current Unix time periodically (bool passed as int; 1 = save periodically, 0 = don't)
-/// @param[in] period the period of saving the current Unix time
+/// @param[in] period_s the period of saving the current Unix time
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_set_unix_time_save_mode(bool save_now, bool save_on_update, bool save_periodic, uint8_t period) {
-    uint8_t data_send[2] = { (save_now | (save_on_update << 1) | (save_periodic << 2) ) , period}; // 2-byte data (from manual)
+uint8_t ADCS_set_unix_time_save_mode(bool save_now, bool save_on_update, bool save_periodic, uint8_t period_s) {
+    uint8_t data_send[2] = { (save_now | (save_on_update << 1) | (save_periodic << 2) ) , period_s}; // 2-byte data (from manual)
     const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SET_UNIX_TIME_SAVE_TO_FLASH, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
 }
@@ -1029,6 +1032,7 @@ uint8_t ADCS_get_download_block_ready_telemetry(ADCS_download_block_ready_struct
     
     return tlm_status;
 }
+
 /// @brief Instruct the ADCS to execute the ADCS_execution_state command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
@@ -1218,7 +1222,7 @@ uint8_t ADCS_get_current_unix_time(uint64_t* epoch_time_ms) {
     return tlm_status;
 }
 
-/// @brief Instruct the ADCS to execute the ADCS_Set_Run_Mode command.
+/// @brief Instruct the ADCS to execute the ADCS_set_sd_log_config command.
 /// @param[in] which_log 1 or 2; which specific log number to log to the SD card
 /// @param[in] log_array Pointer to list of bitmasks to set the log config
 /// @param[in] log_array_len Number of things to log
@@ -1317,7 +1321,7 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
     }
 
     HAL_Delay(100); // need to allow some time (100ms) for it to initiate the burst, or else the first packet may be garbage
-    HAL_IWDG_Refresh(&hiwdg); // pet the watchdog so the system doesn't reboot; must be at least 200ms since last pet
+    STM32_pet_watchdog(); // pet the watchdog so the system doesn't reboot; must be at least 200ms since last pet
 
     for (uint16_t i = 0; i < 1024; i++) {
         // load 20 bytes at a time into the download buffer
@@ -1389,7 +1393,7 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
         }
         
         HAL_Delay(100);
-        HAL_IWDG_Refresh(&hiwdg); // pet the watchdog so the system doesn't reboot; must be at least 200ms since last pet
+        STM32_pet_watchdog(); // pet the watchdog so the system doesn't reboot; must be at least 200ms since last pet
 
         for (uint16_t i = 0; i < 1024; i++) {
             // load 20 bytes at a time into the download buffer
@@ -1425,7 +1429,7 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
         }
 
         hole_map_attempts++;
-        if (hole_map_attempts >= 5) {
+        if (hole_map_attempts >= 3) {
             if (file_info.file_type == ADCS_FILE_TYPE_INDEX) {
                 break; // there's no way to ask the ADCS how large the index file is, so do this arbitrarily
             }
@@ -1467,6 +1471,8 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
 /// @param[in] index_offset The index (starting at 0) from which to start reading files.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission, negative if an LFS or snprintf error code occurred. 
 uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) {
+
+    const uint32_t function_start_time = HAL_GetTick();
     
     const uint8_t reset_pointer_status = ADCS_reset_file_list_read_pointer();
     HAL_Delay(200);
@@ -1506,6 +1512,11 @@ uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) 
                 LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "End of file list reached at index %d.", i);
                 return 6;
             }
+
+            if (HAL_GetTick() - function_start_time > ADCS_FILE_POINTER_TIMEOUT_MS) {
+                // if we've timed out, exit and return an error
+                return 7;
+            }
         }
     }
 
@@ -1535,7 +1546,7 @@ uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) 
         // now pack it into a string 
         // TODO: check to see where the log should be sent
         LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
-            "Index:%d,Type:%d,Busy Updating:%d,Counter:%d,Size:%ld,Datetime:%04d-%02d-%02d %02d:%02d:%02d,CRC16:0x%x\n",
+            "Index:%d,Type:%d,Busy Updating:%d,Counter:%d,Size:%ld,Datetime:%04d-%02d-%02d %02d:%02d:%02d,CRC16:0x%x",
             i, file_info.file_type, file_info.busy_updating, file_info.file_counter, file_info.file_size, year, 
             month, day, hour, minutes, seconds, file_info.file_crc16);
 
@@ -1563,8 +1574,15 @@ uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) 
 /// Specifically, assuming no HAL or LFS error: bytes 0-2 are the ADCS error, bytes 3-10 are which command failed, bytes 11-16 are the index of the failure if applicable
 int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
 
+    const uint32_t function_start_time = HAL_GetTick();
+
     ADCS_file_info_struct_t file_info;
     int16_t snprintf_ret;
+
+    if (file_index > 255) {
+        LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE), "File index is greater than 255. Aborting...");
+        return 73;
+    }
 
     char filename_string[17];
 
@@ -1598,6 +1616,21 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
                 if (ack_status.error_flag != 0) {
                     return ack_status.error_flag;
                 }
+            }
+            
+            if (i % 70 == 0) {
+                // pet the watchdog every 70 files so we don't run out of time
+                STM32_pet_watchdog(); 
+            }
+
+            const uint8_t temp_file_info_status = ADCS_get_file_info_telemetry(&file_info);
+            if (temp_file_info_status != 0) {
+                return temp_file_info_status;
+            }
+            if (file_info.file_crc16 == 0 && file_info.file_date_time_msdos == 0 && file_info.file_size == 0) {
+                // if all the file_info parameters are zero, we've reached the end of the file list.
+                LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "End of file list reached at index %d.", i);
+                return 6;
             }
         }
         
@@ -1649,7 +1682,7 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
     // Check that LittleFS is mounted
     if (!LFS_is_lfs_mounted) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "LittleFS not mounted."); 
-        return 1;
+        return 43;
     }
 
     // Now that we have the filename string, we can create the file (any existing file will be overwritten)
@@ -1665,6 +1698,8 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
     uint8_t total_blocks = ceil(file_info.file_size / 20480.0);
     uint8_t current_block = 0; 
 
+    uint8_t timeout_err = 0;
+
     while (current_block < total_blocks) {
 
         LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, "Loading block %d from ADCS to LittleFS", current_block);
@@ -1674,6 +1709,12 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
         }
 
         current_block++;
+
+        if (HAL_GetTick() - function_start_time > ADCS_FILE_DOWNLOAD_TIMEOUT_MS) {
+            // if we've timed out, exit the loop to close the file and then return an error
+            timeout_err = 7;
+            break;
+        }
     }
 
     // Once we've written all the blocks, close the file; it won't be updated in LittleFS until the file is closed.
@@ -1684,7 +1725,7 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
     }
     LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully wrote data to file: %s", filename_string);
 
-    return 0;
+    return timeout_err;
 }
 
 /// @brief Disable all active ADCS SD card logs.
@@ -1722,4 +1763,84 @@ uint8_t ADCS_disable_peripherals_and_SD_logs_with_stabilisation() {
     }
     const uint8_t sd_status = ADCS_disable_SD_logging();
     return sd_status;
+}
+
+/// @brief Given the index on the SD card of a file, erase that file.
+/// @param[in] file_index The index of the file.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred.
+uint8_t ADCS_erase_sd_file_by_index(uint16_t file_index) {
+
+    const uint32_t function_start_time = HAL_GetTick();
+    
+    ADCS_file_info_struct_t file_info;
+
+    if (file_index > 255) {
+        LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE), "File index is greater than 255. Aborting...");
+        return 73;
+    }
+
+    // get the required File Type and Counter parameters about the file to erase
+
+    const uint8_t reset_pointer_status = ADCS_reset_file_list_read_pointer();
+    HAL_Delay(200);
+    if (reset_pointer_status != 0) {
+        // to avoid interference from the EPS, do a separate ack for these commands
+        ADCS_cmd_ack_struct_t ack_status;
+        ADCS_cmd_ack(&ack_status);
+        if (ack_status.error_flag != 0) {
+            return ack_status.error_flag;
+        }
+    }
+
+    for (uint16_t i = 0; i < file_index; i++) {
+        const uint8_t advance_pointer_status = ADCS_advance_file_list_read_pointer();
+        
+        if (HAL_GetTick() - function_start_time > ADCS_FILE_POINTER_TIMEOUT_MS) {
+            return 7;
+        }
+        
+        HAL_Delay(200);
+        if (advance_pointer_status != 0) {
+            // to avoid interference from the EPS, do a separate ack for these commands
+            ADCS_cmd_ack_struct_t ack_status;
+            ADCS_cmd_ack(&ack_status);
+            if (ack_status.error_flag != 0) {
+                return ack_status.error_flag;
+            }
+        }
+
+        if (i % 70 == 0) {
+            // pet the watchdog every 70 files so we don't run out of time
+            STM32_pet_watchdog(); 
+        }
+
+        const uint8_t temp_file_info_status = ADCS_get_file_info_telemetry(&file_info);
+        if (temp_file_info_status != 0) {
+            return temp_file_info_status;
+        }
+        if (file_info.file_crc16 == 0 && file_info.file_date_time_msdos == 0 && file_info.file_size == 0) {
+            // if all the file_info parameters are zero, we've reached the end of the file list.
+            LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "End of file list reached at index %d.", i);
+            return 6;
+        }
+    }
+
+    const uint8_t file_info_status = ADCS_get_file_info_telemetry(&file_info);
+    if (file_info_status != 0) {
+        return file_info_status;
+    }
+
+    const uint8_t erase_status = ADCS_erase_file(file_info.file_type, file_info.file_counter, false);
+
+    return erase_status;
+}
+
+/// @brief Run the internal flash (CubeACP) program, exiting the bootloader. If CubeACP is already running, this function does nothing.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred.
+/// @note This function always returns an error, because if the ADCS leaves the bootloader it can't confirm this command, which commands it to leave the bootloader
+uint8_t ADCS_bootloader_run_program() {
+    uint8_t data_send[1] = {ADCS_COMMAND_BOOTLOADER_RUN_PROGRAM};
+    const uint8_t hal_status = HAL_I2C_Master_Transmit(ADCS_i2c_HANDLE, ADCS_i2c_ADDRESS << 1, data_send, 1, ADCS_HAL_TIMEOUT);
+        // The bootloader doesn't support checksum, and this is a zero-parameter command, so HAL_I2C_Mem_Write can't be used (zero length message).
+    return hal_status;
 }

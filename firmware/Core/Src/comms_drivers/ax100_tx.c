@@ -3,9 +3,13 @@
 #include "comms_drivers/ax100_hw.h"
 #include "log/log.h"
 #include "debug_tools/debug_uart.h"
+#include "rtos_tasks/rtos_bootup_operation_fsm_task.h"
+#include "comms_drivers/rf_antenna_switch.h"
 
 #include <string.h>
+#include <stdint.h>
 
+uint32_t COMMS_enable_ax100_downlink_uart_logs = 0;
 
 static const uint32_t csp_priority = 3u << 30; // priority
 
@@ -49,6 +53,16 @@ static void prepend_csp_header(uint8_t *destination, uint8_t *data, uint32_t dat
 /// @brief Send a csp packet over i2c to the AX100 for downlink.
 /// @note Only use in this file.
 static uint8_t send_bytes_to_ax100(uint8_t *packet, uint16_t packet_size) {
+    if (CTS1_operation_state != CTS1_OPERATION_STATE_NOMINAL_WITH_RADIO_TX) {
+        // Recall: Do not transmit on the AX100 until the antenna is deployed.
+        // The Bootup Operation FSM task will set the operation mode to NOMINAL_WITH_RADIO_TX
+        // when the antenna is deployed.
+        DEBUG_uart_print_str("AX100 downlink inhibited: CTS1_operation_state != NOMINAL_WITH_RADIO_TX.\n");
+        
+        // Return success to avoid lots of errors. It's not really an error case, as this is expected during early ops.
+        return 0;
+    }
+
     const HAL_StatusTypeDef status = HAL_I2C_Master_Transmit(
         AX100_I2C_HANDLE,
         AX100_I2C_ADDR << 1, 
@@ -90,10 +104,12 @@ uint8_t AX100_downlink_bytes(uint8_t *data, uint16_t data_len) {
     // Any network layer (CSP) things should be done here (e.g., XTEA, CRC, etc.)
 
     // Debugging write to UART.
-    DEBUG_uart_print_mixed_array(
-        packet_buffer_including_csp_header, data_len + AX100_CSP_HEADER_LENGTH_BYTES,
-        "AX100 Down"
-    );
+    if (COMMS_enable_ax100_downlink_uart_logs) {
+        DEBUG_uart_print_mixed_array(
+            packet_buffer_including_csp_header, data_len + AX100_CSP_HEADER_LENGTH_BYTES,
+            ((COMMS_active_rf_switch_antenna == 1) ? "AX100 Down [ANT1]" : "AX100 Down [ANT2]")
+        );
+    }
 
     return send_bytes_to_ax100(packet_buffer_including_csp_header, data_len + AX100_CSP_HEADER_LENGTH_BYTES);
 }

@@ -7,15 +7,20 @@ Each UART port and associated subsystem behaves at least a little bit differentl
 * High baud rate - 230400 baud
 * DMA access
 
-## UART2 - Spare, Disabled
+## UART2 - AX100
 
-Disabled. Was going to be used for LoRa.
+* Baud rate: 230400 baud
+* Used exclusively to receive uplinks.
+* AX100 sends data encoded with KISS encoding (escape/start/end special bytes).
+* Interrupt-based.
+* Messages can be received at any time.
+* Note that, for simplicity of implementation, downlink is commanded over I2C to the AX100.
 
-## UART3 - GPS
+## UART3 - GNSS
 
 * Baud rate: 115200 baud
 * Interrupt-based.
-* Interrupt disabled by default. Very cautious about enabling it, as the GPS is known to spam null bytes if misconfigured.
+* Interrupt disabled by default. Very cautious about enabling it, as the GNSS is known to spam null bytes if misconfigured.
 
 ## UART4 - Camera
 

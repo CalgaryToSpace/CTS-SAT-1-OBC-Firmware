@@ -14,7 +14,7 @@
 UART_HandleTypeDef *UART_telecommand_port_handle = &hlpuart1;
 UART_HandleTypeDef *UART_mpi_port_handle = &huart1;
 UART_HandleTypeDef *UART_ax100_port_handle = &huart2;
-UART_HandleTypeDef *UART_gps_port_handle = &huart3;
+UART_HandleTypeDef *UART_gnss_port_handle = &huart3;
 UART_HandleTypeDef *UART_camera_port_handle = &huart4;
 UART_HandleTypeDef *UART_eps_port_handle = &huart5;
 
@@ -64,13 +64,13 @@ volatile uint8_t UART_mpi_rx_last_byte = 0; // extern
 volatile uint32_t UART_mpi_rx_last_byte_write_time_ms = 0; // extern
 volatile uint16_t UART_mpi_rx_buffer_write_idx = 0; // extern
 
-// UART GPS buffer
-const uint16_t UART_gps_buffer_len = 512; // extern
-volatile uint8_t UART_gps_buffer[512]; // extern
-volatile uint16_t UART_gps_buffer_write_idx = 0; // extern
-volatile uint32_t UART_gps_last_write_time_ms = 0; // extern
-volatile uint8_t UART_gps_buffer_last_rx_byte = 0; // extern
-volatile uint8_t UART_gps_uart_interrupt_enabled = 0; //extern
+// UART GNSS buffer
+const uint16_t UART_gnss_buffer_len = 512; // extern
+volatile uint8_t UART_gnss_buffer[512]; // extern
+volatile uint16_t UART_gnss_buffer_write_idx = 0; // extern
+volatile uint32_t UART_gnss_last_write_time_ms = 0; // extern
+volatile uint8_t UART_gnss_buffer_last_rx_byte = 0; // extern
+volatile uint8_t UART_gnss_uart_interrupt_enabled = 0; //extern
 
 const uint8_t UART_mpi_data_rx_buffer_len = 160;
 volatile uint8_t UART_mpi_data_rx_buffer[160];     // extern
@@ -95,25 +95,25 @@ volatile uint8_t UART_AX100_kiss_frame_queue_tail = 0;
 
 /// Indicates whether we are currently inside a KISS frame.
 /// Set to 1 after receiving KISS_FEND, and reset on frame completion or error.
-static uint8_t kiss_in_frame = 0;
+static volatile uint8_t kiss_in_frame = 0;
 
 /// Indicates whether the previous byte was KISS_FESC, meaning the next byte
 /// should be interpreted as an escaped control character (TFEND or TFESC).
-static uint8_t kiss_escaped = 0;
+static volatile uint8_t kiss_escaped = 0;
 
 /// Temporary buffer to hold the decoded contents of the current KISS frame.
 /// Reset when a frame is completed or an error occurs (e.g. overflow or bad escape).
-static uint8_t kiss_decode_buf[AX100_MAX_KISS_FRAME_SIZE_BYTES];
+static volatile uint8_t kiss_decode_buf[AX100_MAX_KISS_FRAME_SIZE_BYTES];
 
 /// Current write index into kiss_decode_buf, tracking how many decoded bytes
 /// have been accumulated in the current frame.
-static uint16_t kiss_decode_len = 0;
+static volatile uint16_t kiss_decode_len = 0;
 
 static inline uint8_t kiss_queue_is_full(void) {
     return ((UART_AX100_kiss_frame_queue_head + 1) % AX100_MAX_KISS_FRAMES_IN_RX_QUEUE) == UART_AX100_kiss_frame_queue_tail;
 }
 
-static inline void kiss_enqueue_frame(const uint8_t *data, uint16_t len) {
+static inline void kiss_enqueue_frame(const volatile uint8_t *data, uint16_t len) {
     if (kiss_queue_is_full()) {
         // Tracking error
         UART_error_ax100_error_info.handler_buffer_full_error_count++;
@@ -123,7 +123,11 @@ static inline void kiss_enqueue_frame(const uint8_t *data, uint16_t len) {
 
     AX100_kiss_frame_struct_t *dst = (AX100_kiss_frame_struct_t*)&UART_AX100_kiss_frame_queue[UART_AX100_kiss_frame_queue_head];
     dst->len = len > AX100_MAX_KISS_FRAME_SIZE_BYTES ? AX100_MAX_KISS_FRAME_SIZE_BYTES : len;
-    memcpy(dst->data, data, dst->len);
+    
+    // Volatile-safe memcpy(dst->data, data, dst->len);
+    for (uint16_t i = 0; i < dst->len; i++) {
+        dst->data[i] = data[i];
+    }
     UART_AX100_kiss_frame_queue_head = (UART_AX100_kiss_frame_queue_head + 1) % AX100_MAX_KISS_FRAMES_IN_RX_QUEUE;
 }
 
@@ -278,29 +282,32 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t*) &UART_eps_buffer_last_rx_byte, 1);
     }
 
-    else if (huart->Instance == UART_gps_port_handle->Instance) {
-        // Note: If the GPS is not enabled, the interrupt is not re-enabled via HAL_UART_Receive_IT().
-        // This is a safety feature against the GPS spamming null bytes, which can lock up the system.
-        if (UART_gps_uart_interrupt_enabled == 1) {
+    else if (huart->Instance == UART_gnss_port_handle->Instance) {
+        // Note: If the GNSS is not enabled, the interrupt is not re-enabled via HAL_UART_Receive_IT().
+        // This is a safety feature against the GNSS spamming null bytes, which can lock up the system.
+        if (UART_gnss_uart_interrupt_enabled == 1) {
 
             // Add the byte to the buffer
-            if (UART_gps_buffer_write_idx >= UART_gps_buffer_len) {
+            if (UART_gnss_buffer_write_idx >= UART_gnss_buffer_len) {
                 // Tracking error
-                UART_error_gps_error_info.handler_buffer_full_error_count++;
-                DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART gps buffer is full\n");
+                UART_error_gnss_error_info.handler_buffer_full_error_count++;
+                DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART gnss buffer is full\n");
                 
                 // Shift all bytes left by 1
-                for (uint16_t i = 1; i < UART_gps_buffer_len; i++) {
-                    UART_gps_buffer[i - 1] = UART_gps_buffer[i];
+                for (uint16_t i = 1; i < UART_gnss_buffer_len; i++) {
+                    UART_gnss_buffer[i - 1] = UART_gnss_buffer[i];
                 }
 
                 // Reset to a valid index
-                UART_gps_buffer_write_idx = UART_gps_buffer_len - 1;
+                UART_gnss_buffer_write_idx = UART_gnss_buffer_len - 1;
             }
-            UART_gps_buffer[UART_gps_buffer_write_idx++] = UART_gps_buffer_last_rx_byte;
-            UART_gps_last_write_time_ms = HAL_GetTick();
 
-            HAL_UART_Receive_IT(UART_gps_port_handle, (uint8_t*) &UART_gps_buffer_last_rx_byte, 1);
+            if (UART_gnss_buffer_last_rx_byte != '\0') {
+                UART_gnss_buffer[UART_gnss_buffer_write_idx++] = UART_gnss_buffer_last_rx_byte;
+                UART_gnss_last_write_time_ms = HAL_GetTick();
+            }
+
+            HAL_UART_Receive_IT(UART_gnss_port_handle, (uint8_t*) &UART_gnss_buffer_last_rx_byte, 1);
         }
         
     }
@@ -367,17 +374,17 @@ void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
 
 /// @brief Sets the UART interrupt state (enabled/disabled)
 /// @param new_enabled 1: enable interrupt; 0: disable interrupt
-/// @note This function must be called very carefully. This type of GPS is known to, in the wrong
+/// @note This function must be called very carefully. This type of GNSS is known to, in the wrong
 ///       mode, spam null bytes, which can lock up the entire system. Thus, the interrupt is disabled
-///       by default, and must be enabled explicitly by the GPS telecommands.
-void GPS_set_uart_interrupt_state(uint8_t new_enabled) {
+///       by default, and must be enabled explicitly by the GNSS telecommands.
+void GNSS_set_uart_interrupt_state(uint8_t new_enabled) {
     if (new_enabled == 1)
     {
-        UART_gps_uart_interrupt_enabled = 1;
-        HAL_UART_Receive_IT(UART_gps_port_handle, (uint8_t*) &UART_gps_buffer_last_rx_byte, 1);
+        UART_gnss_uart_interrupt_enabled = 1;
+        HAL_UART_Receive_IT(UART_gnss_port_handle, (uint8_t*) &UART_gnss_buffer_last_rx_byte, 1);
     }
     else {
-        UART_gps_uart_interrupt_enabled = 0;
+        UART_gnss_uart_interrupt_enabled = 0;
     }
 }
 
@@ -422,10 +429,10 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
         HAL_UART_Receive_IT(UART_ax100_port_handle, (uint8_t*)&UART_ax100_buffer_last_rx_byte, 1);
     }
 
-    // Reception Error callback for GPS UART port
-    if (huart->Instance == UART_gps_port_handle->Instance) {
-        if (UART_gps_uart_interrupt_enabled == 1) {
-            HAL_UART_Receive_IT(UART_gps_port_handle, (uint8_t*)&UART_gps_buffer_last_rx_byte, 1);
+    // Reception Error callback for GNSS UART port
+    if (huart->Instance == UART_gnss_port_handle->Instance) {
+        if (UART_gnss_uart_interrupt_enabled == 1) {
+            HAL_UART_Receive_IT(UART_gnss_port_handle, (uint8_t*)&UART_gnss_buffer_last_rx_byte, 1);
         }
     }
 
@@ -447,8 +454,8 @@ void UART_init_uart_handlers(void) {
     HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t*) &UART_eps_buffer_last_rx_byte, 1);
     HAL_UART_Receive_IT(UART_ax100_port_handle, (uint8_t*) &UART_ax100_buffer_last_rx_byte, 1);
 
-    // GPS is not initialized as always-listening. It is enabled by the GPS telecommands.
-    // Reason: The GPS has a mode where it spams null bytes, which can lock up the entire system.
+    // GNSS is not initialized as always-listening. It is enabled by the GNSS telecommands.
+    // Reason: The GNSS has a mode where it spams null bytes, which can lock up the entire system.
     // Thus, its interrupt is disabled by default.
 
     // TODO: Verify these when peripheral implementations are added

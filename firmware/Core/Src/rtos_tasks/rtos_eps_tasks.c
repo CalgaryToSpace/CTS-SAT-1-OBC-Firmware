@@ -70,7 +70,6 @@ void TASK_time_sync(void *argument) {
         // osDelay must be at the top of the while(1) loop so that `continue;` doesn't skip it.
         osDelay(sleep_duration_ms);
 
-
         // First, try to sync EPS-to-OBC for the initial boot (or in case stuff gets funky later).
         if (TIM_last_synchronization_source == TIM_SOURCE_NONE) {
             LOG_message(
@@ -86,28 +85,32 @@ void TASK_time_sync(void *argument) {
                     LOG_SYSTEM_EPS,
                     LOG_SEVERITY_ERROR,
                     LOG_SINK_ALL,
-                    "EPS_set_obc_time_based_on_eps_time() -> Error %d",
+                    "In time syncing, EPS_set_obc_time_based_on_eps_time() -> Error %d",
                     result
                 );
             }
             continue;
         }
-        // If the OBC's time is ever somehow less than 2010-01-01T00:00:00Z, then sync to EPS time.
-        if (TIM_get_current_unix_epoch_time_ms() < 1262329200000) {
+
+        // If the OBC's time is ever somehow less than 1999-01-01T00:00:00Z, set OBC based on EPS.
+        // 1999 is selected as the initial bootup time will be 1970. Then, after setting to the EPS's time,
+        // the OBC's time will be >=2000. Don't want to keep resyncing the OBC time to the EPS time
+        // if the OBC's time is already set to a valid time.
+        if (TIM_get_current_unix_epoch_time_ms() < 915148800000) {
             const uint8_t result = EPS_set_obc_time_based_on_eps_time();
 
             LOG_message(
                 LOG_SYSTEM_EPS,
                 LOG_SEVERITY_NORMAL, 
                 LOG_SINK_ALL,
-                "Setting OBC time based on EPS time because current time < 2010-01-01"
+                "Setting OBC time based on EPS time because current time < 1999-01-01"
             );
-            if (EPS_set_obc_time_based_on_eps_time() != 0) {
+            if (result != 0) {
                 LOG_message(
                     LOG_SYSTEM_EPS,
                     LOG_SEVERITY_ERROR,
                     LOG_SINK_ALL,
-                    "EPS_set_obc_time_based_on_eps_time() -> Error %d",
+                    "In time syncing, EPS_set_obc_time_based_on_eps_time() -> Error %d",
                     result
                 );
             }
@@ -124,7 +127,7 @@ void TASK_time_sync(void *argument) {
                 LOG_SYSTEM_EPS,
                 LOG_SEVERITY_ERROR,
                 LOG_SINK_ALL,
-                "EPS_CMD_get_system_status() -> Error: %d",
+                "In time syncing, EPS_CMD_get_system_status() -> Error: %d",
                 result_status
             );
             continue;
