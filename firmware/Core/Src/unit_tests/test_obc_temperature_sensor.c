@@ -1,6 +1,6 @@
 #include "stddef.h"
 
-#include "obc_temperature_sensor/obc_temperature_sensor.h"
+#include "obc_systems/obc_temperature_sensor.h"
 #include "unit_tests/unit_test_helpers.h"
 
 

@@ -22,6 +22,7 @@
 /// @param args_str 
 ///     - Arg 0: ID of the telecommand to send (see Firmware Reference Manual)
 ///     - Arg 1: hex array of data bytes of length up to 504 (longest command is almost ADCS Configuration (ID 26/204) at 504 bytes)
+/// @note All hex bytes must be two-digit (e.g. 00 instead of 0); for zero-parameter commands, use 00
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_generic_command(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
@@ -704,7 +705,7 @@ uint8_t TCMDEXEC_adcs_bootloader_clear_errors(const char *args_str, TCMD_Telecom
 ///     - Arg 0: whether to save the current Unix time immediately (bool passed as int; 1 = save immediately, 0 = don't save immediately)
 ///     - Arg 1: whether to save the current Unix time whenever a command is used to update it (bool passed as int; 1 = save on command, 0 = don't)
 ///     - Arg 2: whether to save the current Unix time periodically (bool passed as int; 1 = save periodically, 0 = don't)
-///     - Arg 3: the period of saving the current Unix time
+///     - Arg 3: the period of saving the current Unix time (in seconds)
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_set_unix_time_save_mode(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {
@@ -2809,4 +2810,38 @@ uint8_t TCMDEXEC_adcs_erase_sd_file(const char *args_str, TCMD_TelecommandChanne
     const int16_t status = ADCS_erase_sd_file_by_index(file_index);
 
     return status;
+}
+
+/// @brief Telecommand: If the ADCS is currently stuck in the bootloader, run the internal flash program (CubeACP) to exit the bootloader
+/// @note This command will do nothing if not in the bootloader
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_exit_bootloader(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len) {
+
+    const uint8_t run_status = ADCS_bootloader_run_program(); // we cannot verify this command with a return value, so check below
+    if (run_status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS run program command failed (err %d)", run_status);
+        return 1;
+    }
+
+    HAL_Delay(1000); // it takes some time to switch out of the bootloader
+    
+    ADCS_id_struct_t identification;
+    const uint8_t id_status = ADCS_get_identification(&identification);
+    if (id_status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", id_status);
+        return 2;
+    }
+    else if (identification.major_firmware_version <= 6) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "Failed to exit the bootloader; CubeACP not running");
+        return 3;
+    } 
+
+    return 0;
+
 }

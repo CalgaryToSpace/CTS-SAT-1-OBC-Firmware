@@ -90,25 +90,25 @@ volatile uint8_t UART_AX100_kiss_frame_queue_tail = 0;
 
 /// Indicates whether we are currently inside a KISS frame.
 /// Set to 1 after receiving KISS_FEND, and reset on frame completion or error.
-static uint8_t kiss_in_frame = 0;
+static volatile uint8_t kiss_in_frame = 0;
 
 /// Indicates whether the previous byte was KISS_FESC, meaning the next byte
 /// should be interpreted as an escaped control character (TFEND or TFESC).
-static uint8_t kiss_escaped = 0;
+static volatile uint8_t kiss_escaped = 0;
 
 /// Temporary buffer to hold the decoded contents of the current KISS frame.
 /// Reset when a frame is completed or an error occurs (e.g. overflow or bad escape).
-static uint8_t kiss_decode_buf[AX100_MAX_KISS_FRAME_SIZE_BYTES];
+static volatile uint8_t kiss_decode_buf[AX100_MAX_KISS_FRAME_SIZE_BYTES];
 
 /// Current write index into kiss_decode_buf, tracking how many decoded bytes
 /// have been accumulated in the current frame.
-static uint16_t kiss_decode_len = 0;
+static volatile uint16_t kiss_decode_len = 0;
 
 static inline uint8_t kiss_queue_is_full(void) {
     return ((UART_AX100_kiss_frame_queue_head + 1) % AX100_MAX_KISS_FRAMES_IN_RX_QUEUE) == UART_AX100_kiss_frame_queue_tail;
 }
 
-static inline void kiss_enqueue_frame(const uint8_t *data, uint16_t len) {
+static inline void kiss_enqueue_frame(const volatile uint8_t *data, uint16_t len) {
     if (kiss_queue_is_full()) {
         // Tracking error
         UART_error_ax100_error_info.handler_buffer_full_error_count++;
@@ -118,7 +118,11 @@ static inline void kiss_enqueue_frame(const uint8_t *data, uint16_t len) {
 
     AX100_kiss_frame_struct_t *dst = (AX100_kiss_frame_struct_t*)&UART_AX100_kiss_frame_queue[UART_AX100_kiss_frame_queue_head];
     dst->len = len > AX100_MAX_KISS_FRAME_SIZE_BYTES ? AX100_MAX_KISS_FRAME_SIZE_BYTES : len;
-    memcpy(dst->data, data, dst->len);
+    
+    // Volatile-safe memcpy(dst->data, data, dst->len);
+    for (uint16_t i = 0; i < dst->len; i++) {
+        dst->data[i] = data[i];
+    }
     UART_AX100_kiss_frame_queue_head = (UART_AX100_kiss_frame_queue_head + 1) % AX100_MAX_KISS_FRAMES_IN_RX_QUEUE;
 }
 

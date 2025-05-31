@@ -449,9 +449,6 @@ uint8_t TCMDEXEC_fs_read_text_file(
         // TODO: send to radio
         DEBUG_uart_print_str("TODO: send data to radio from TCMD_fs_read_text_file()\n");
 
-        // The following block is to enable printing out camera data. Not permissible in normal operation.
-        // osDelay(300);
-        // HAL_IWDG_Refresh(&hiwdg);
     }
     
     

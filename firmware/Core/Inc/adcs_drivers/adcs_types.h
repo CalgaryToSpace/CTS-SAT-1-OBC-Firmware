@@ -335,11 +335,11 @@ typedef struct ADCS_Power_Control_struct_t{
     ADCS_power_select_enum_t gps_power;
 } ADCS_power_control_struct_t;
 
-typedef struct ADCS_Set_Unix_Time_Save_Mode_struct_t{
+typedef struct ADCS_set_unix_time_save_mode_struct_t{
     bool save_now:1; // 1-bit bool
     bool save_on_update:1; // 1-bit bool
     bool save_periodic:1; // 1-bit bool
-    uint8_t period;
+    uint8_t period_s;
 } ADCS_set_unix_time_save_mode_struct_t;
 
 typedef struct ADCS_orbit_params_struct_t {

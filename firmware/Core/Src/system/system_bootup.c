@@ -10,15 +10,21 @@ void SYS_disable_systems_bootup() {
     // Disable non-default EPS channels.
     uint8_t fail_count = 0;
     for (EPS_CHANNEL_enum_t channel_enum_value = EPS_CHANNEL_VBATT_STACK; channel_enum_value < EPS_ACTIVE_CHANNEL_COUNT; channel_enum_value++) {
-        if ((channel_enum_value == EPS_CHANNEL_VBATT_STACK) ||
-            (channel_enum_value == EPS_CHANNEL_5V_STACK)    ||
-            (channel_enum_value == EPS_CHANNEL_3V3_STACK)) {
-                continue;
-            }
+        if (
+            (channel_enum_value == EPS_CHANNEL_VBATT_STACK)
+            || (channel_enum_value == EPS_CHANNEL_5V_STACK)
+            || (channel_enum_value == EPS_CHANNEL_3V3_STACK)
+        ) {
+            continue;
+        }
         const uint8_t disable_result = EPS_set_channel_enabled(channel_enum_value, 0);   
         if (disable_result != 0) {
             fail_count++;
-            LOG_message(LOG_SYSTEM_EPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL, "Error Disabling Channel: %s. Error: %u", EPS_channel_to_str(channel_enum_value), disable_result);            
+            LOG_message(
+                LOG_SYSTEM_EPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+                "Bootup: Error disabling EPS channel %s. Error: %u",
+                EPS_channel_to_str(channel_enum_value), disable_result
+            );
         }
     }
 

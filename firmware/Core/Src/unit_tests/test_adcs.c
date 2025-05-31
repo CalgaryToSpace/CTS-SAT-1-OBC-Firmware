@@ -117,7 +117,7 @@ uint8_t TEST_EXEC__ADCS_pack_to_unix_time_save_mode_struct() {
     TEST_ASSERT_TRUE(result.save_now == true);
     TEST_ASSERT_TRUE(result.save_on_update == false);
     TEST_ASSERT_TRUE(result.save_periodic == false);
-    TEST_ASSERT_TRUE(result.period == 34);
+    TEST_ASSERT_TRUE(result.period_s == 34);
 
     return 0;
 }

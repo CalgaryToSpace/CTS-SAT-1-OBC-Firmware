@@ -801,6 +801,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     }, 
+    {
+        .tcmd_name = "adcs_exit_bootloader",
+        .tcmd_func = TCMDEXEC_adcs_exit_bootloader,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
 
     // ****************** END SECTION: telecommand_adcs ******************
 
@@ -1209,10 +1215,16 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     // ****************** END SECTION: obc_systems_telecommand_defs ******************
     // ****************** START SECTION: comms_telecommand_defs ******************
     {
-        .tcmd_name = "comms_dipole_switch_set_state",
-        .tcmd_func = TCMDEXEC_comms_dipole_switch_set_state,
+        .tcmd_name = "comms_set_rf_switch_control_mode",
+        .tcmd_func = TCMDEXEC_comms_set_rf_switch_control_mode,
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
+    },
+    {
+        .tcmd_name = "comms_get_rf_switch_info",
+        .tcmd_func = TCMDEXEC_comms_get_rf_switch_info,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
         .tcmd_name = "comms_bulk_file_downlink_start",
@@ -1272,6 +1284,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "boom_deploy_timed",
         .tcmd_func = TCMDEXEC_boom_deploy_timed,
         .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "boom_self_check",
+        .tcmd_func = TCMDEXEC_boom_self_check,
+        .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     // ****************** END SECTION: boom_deploy_telecommand_defs ******************

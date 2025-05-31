@@ -15,10 +15,11 @@
 #include "camera/camera_init.h"
 
 #include "uart_handler/uart_handler.h"
-#include "obc_temperature_sensor/obc_temperature_sensor.h"
+#include "obc_systems/obc_temperature_sensor.h"
 #include "littlefs/flash_driver.h"
 #include "log/log.h"
 #include "debug_tools/debug_uart.h"
+#include "stm32/stm32_watchdog.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -415,7 +416,7 @@ void CTS1_run_system_self_check(CTS1_system_self_check_result_struct_t *result) 
     );
     
     // The GNSS takes a very long time to power on. Pet the watchdog here to keep it happy.
-    HAL_IWDG_Refresh(&hiwdg);
+    STM32_pet_watchdog();
 
     // EPS
     result->is_eps_responsive = CTS1_check_is_eps_responsive();
@@ -452,7 +453,7 @@ void CTS1_run_system_self_check(CTS1_system_self_check_result_struct_t *result) 
 
     // Antenna
     EPS_set_channel_enabled(EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY, 1);
-    HAL_Delay(800); // 100ms not long enough. 800ms seems adequate.
+    HAL_Delay(ANT_POWER_ON_BOOTUP_DURATION_MS);
     result->is_antenna_i2c_addr_a_alive = CTS1_check_is_i2c_addr_alive(&hi2c2, ANT_ADDR_A);
     result->is_antenna_i2c_addr_b_alive = CTS1_check_is_i2c_addr_alive(&hi2c3, ANT_ADDR_B);
     result->is_antenna_a_alive = CTS1_check_antenna_alive(ANT_I2C_BUS_A_MCU_A);

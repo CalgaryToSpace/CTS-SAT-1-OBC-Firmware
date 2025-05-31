@@ -7,7 +7,7 @@
 #include "littlefs/littlefs_helper.h"
 #include "transforms/arrays.h"
 #include "self_checks/complete_self_check.h"
-#include "system/obc_internal_drivers.h"
+#include "obc_systems/external_led_and_rbf.h"
 
 #include "telecommands/system_telecommand_defs.h"
 #include "telecommand_exec/telecommand_definitions.h"

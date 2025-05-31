@@ -1,5 +1,5 @@
-#ifndef INCLUDE_GUARD__OBC_INTERNAL_DRIVERS_
-#define INCLUDE_GUARD__OBC_INTERNAL_DRIVERS_
+#ifndef INCLUDE_GUARD__EXTERNAL_LED_AND_RBF_H
+#define INCLUDE_GUARD__EXTERNAL_LED_AND_RBF_H
 
 #include <stdint.h>
 
@@ -13,4 +13,4 @@ OBC_rbf_state_enum_t OBC_get_rbf_state();
 
 void OBC_set_external_led(uint8_t enabled);
 
-#endif // INCLUDE_GUARD__OBC_INTERNAL_DRIVERS_
+#endif // INCLUDE_GUARD__EXTERNAL_LED_AND_RBF_H

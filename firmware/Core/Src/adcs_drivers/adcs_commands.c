@@ -13,6 +13,8 @@
 #include "adcs_drivers/adcs_internal_drivers.h"
 #include "timekeeping/timekeeping.h"
 #include "log/log.h"
+#include "stm32/stm32_watchdog.h"
+
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -358,10 +360,10 @@ uint8_t ADCS_bootloader_clear_errors() {
 /// @param[in] save_now whether to save the current Unix time immediately (bool passed as int; 1 = save immediately, 0 = don't save immediately)
 /// @param[in] save_on_update whether to save the current Unix time whenever a command is used to update it (bool passed as int; 1 = save on command, 0 = don't)
 /// @param[in] save_periodic whether to save the current Unix time periodically (bool passed as int; 1 = save periodically, 0 = don't)
-/// @param[in] period the period of saving the current Unix time
+/// @param[in] period_s the period of saving the current Unix time
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_set_unix_time_save_mode(bool save_now, bool save_on_update, bool save_periodic, uint8_t period) {
-    uint8_t data_send[2] = { (save_now | (save_on_update << 1) | (save_periodic << 2) ) , period}; // 2-byte data (from manual)
+uint8_t ADCS_set_unix_time_save_mode(bool save_now, bool save_on_update, bool save_periodic, uint8_t period_s) {
+    uint8_t data_send[2] = { (save_now | (save_on_update << 1) | (save_periodic << 2) ) , period_s}; // 2-byte data (from manual)
     const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_SET_UNIX_TIME_SAVE_TO_FLASH, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
     return cmd_status;
 }
@@ -1219,7 +1221,7 @@ uint8_t ADCS_get_current_unix_time(uint64_t* epoch_time_ms) {
     return tlm_status;
 }
 
-/// @brief Instruct the ADCS to execute the ADCS_Set_Run_Mode command.
+/// @brief Instruct the ADCS to execute the ADCS_set_sd_log_config command.
 /// @param[in] which_log 1 or 2; which specific log number to log to the SD card
 /// @param[in] log_array Pointer to list of bitmasks to set the log config
 /// @param[in] log_array_len Number of things to log
@@ -1318,7 +1320,7 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
     }
 
     HAL_Delay(100); // need to allow some time (100ms) for it to initiate the burst, or else the first packet may be garbage
-    HAL_IWDG_Refresh(&hiwdg); // pet the watchdog so the system doesn't reboot; must be at least 200ms since last pet
+    STM32_pet_watchdog(); // pet the watchdog so the system doesn't reboot; must be at least 200ms since last pet
 
     for (uint16_t i = 0; i < 1024; i++) {
         // load 20 bytes at a time into the download buffer
@@ -1390,7 +1392,7 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
         }
         
         HAL_Delay(100);
-        HAL_IWDG_Refresh(&hiwdg); // pet the watchdog so the system doesn't reboot; must be at least 200ms since last pet
+        STM32_pet_watchdog(); // pet the watchdog so the system doesn't reboot; must be at least 200ms since last pet
 
         for (uint16_t i = 0; i < 1024; i++) {
             // load 20 bytes at a time into the download buffer
@@ -1617,7 +1619,7 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
             
             if (i % 70 == 0) {
                 // pet the watchdog every 70 files so we don't run out of time
-                HAL_IWDG_Refresh(&hiwdg); 
+                STM32_pet_watchdog(); 
             }
 
             const uint8_t temp_file_info_status = ADCS_get_file_info_telemetry(&file_info);
@@ -1808,7 +1810,7 @@ uint8_t ADCS_erase_sd_file_by_index(uint16_t file_index) {
 
         if (i % 70 == 0) {
             // pet the watchdog every 70 files so we don't run out of time
-            HAL_IWDG_Refresh(&hiwdg); 
+            STM32_pet_watchdog(); 
         }
 
         const uint8_t temp_file_info_status = ADCS_get_file_info_telemetry(&file_info);
@@ -1830,4 +1832,14 @@ uint8_t ADCS_erase_sd_file_by_index(uint16_t file_index) {
     const uint8_t erase_status = ADCS_erase_file(file_info.file_type, file_info.file_counter, false);
 
     return erase_status;
+}
+
+/// @brief Run the internal flash (CubeACP) program, exiting the bootloader. If CubeACP is already running, this function does nothing.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred.
+/// @note This function always returns an error, because if the ADCS leaves the bootloader it can't confirm this command, which commands it to leave the bootloader
+uint8_t ADCS_bootloader_run_program() {
+    uint8_t data_send[1] = {ADCS_COMMAND_BOOTLOADER_RUN_PROGRAM};
+    const uint8_t hal_status = HAL_I2C_Master_Transmit(ADCS_i2c_HANDLE, ADCS_i2c_ADDRESS << 1, data_send, 1, ADCS_HAL_TIMEOUT);
+        // The bootloader doesn't support checksum, and this is a zero-parameter command, so HAL_I2C_Mem_Write can't be used (zero length message).
+    return hal_status;
 }

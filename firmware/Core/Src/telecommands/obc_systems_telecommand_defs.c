@@ -1,5 +1,5 @@
 #include "telecommands/obc_systems_telecommand_defs.h"
-#include "obc_temperature_sensor/obc_temperature_sensor.h"
+#include "obc_systems/obc_temperature_sensor.h"
 #include "obc_systems/adc_vbat_monitor.h"
 
 #include <stdio.h>
