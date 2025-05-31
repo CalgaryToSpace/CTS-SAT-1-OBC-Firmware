@@ -704,7 +704,7 @@ uint8_t TCMDEXEC_adcs_bootloader_clear_errors(const char *args_str, TCMD_Telecom
 ///     - Arg 0: whether to save the current Unix time immediately (bool passed as int; 1 = save immediately, 0 = don't save immediately)
 ///     - Arg 1: whether to save the current Unix time whenever a command is used to update it (bool passed as int; 1 = save on command, 0 = don't)
 ///     - Arg 2: whether to save the current Unix time periodically (bool passed as int; 1 = save periodically, 0 = don't)
-///     - Arg 3: the period of saving the current Unix time
+///     - Arg 3: the period of saving the current Unix time (in seconds)
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_set_unix_time_save_mode(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                                               char *response_output_buf, uint16_t response_output_buf_len) {

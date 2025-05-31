@@ -174,11 +174,11 @@ uint8_t ADCS_power_control_struct_TO_json(const ADCS_power_control_struct_t *dat
 /// @param[in] json_output_str_size Length of the JSON output buffer.
 /// @return 0 if successful, 1 for invalid input, 2 for snprintf encoding error, 3 for too short string buffer
 uint8_t ADCS_set_unix_time_save_mode_struct_TO_json(const ADCS_set_unix_time_save_mode_struct_t *data, char json_output_str[], uint16_t json_output_str_size) {
-    if (data == NULL || json_output_str == NULL || json_output_str_size < 82) {
+    if (data == NULL || json_output_str == NULL || json_output_str_size < 84) {
         return 1; // Error: invalid input
     }
-    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_size, "{\"save_now\":%u,\"save_on_update\":%u,\"save_periodic\":%u,\"period\":%u}",
-            data->save_now, data->save_on_update, data->save_periodic, data->period);
+    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_size, "{\"save_now\":%u,\"save_on_update\":%u,\"save_periodic\":%u,\"period_s\":%u}",
+            data->save_now, data->save_on_update, data->save_periodic, data->period_s);
     
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error
