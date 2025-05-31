@@ -1,0 +1,13 @@
+<map id="FLASH_is_reachable" name="FLASH_is_reachable">
+<area shape="rect" id="Node000001" title="Checks if the FLASH chip is reachable by checking it&#39;s ID." alt="" coords="639,76,785,101"/>
+<area shape="rect" id="Node000002" href="$complete__self__check_8c.html#a8bb426c47d721c2dcfb23e918f3dae85" title=" " alt="" coords="427,46,591,72"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="624,78,592,74,592,68,624,73"/>
+<area shape="rect" id="Node000006" href="$flash__telecommand__defs_8c.html#a447d306bb6ec33d39ac84323de6aa88a" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="428,96,590,137"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="624,103,591,108,590,103,624,98"/>
+<area shape="rect" id="Node000003" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="223,39,379,79"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="411,62,380,62,380,56,411,56"/>
+<area shape="rect" id="Node000004" href="$system__telecommand__defs_8c.html#ab5d9cbdf1fd0c01f5a10f20d39971092" title="System self&#45;check of all peripherals and systems." alt="" coords="5,5,175,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="207,47,175,42,176,36,208,42"/>
+<area shape="rect" id="Node000005" href="$system__telecommand__defs_8c.html#ad62425492ed28fac500f9c495fe7d4ba" title="System self&#45;check of all peripherals and systems." alt="" coords="5,71,175,111"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="208,76,176,81,175,75,207,70"/>
+</map>

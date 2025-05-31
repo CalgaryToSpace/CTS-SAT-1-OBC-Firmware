@@ -1,0 +1,15 @@
+<map id="ANT_convert_raw_temp_to_cCelsius" name="ANT_convert_raw_temp_to_cCelsius">
+<area shape="rect" id="Node000001" title="Converts temperature measurement to centi&#45;degrees celsius." alt="" coords="685,96,848,137"/>
+<area shape="rect" id="Node000002" href="$complete__self__check_8c.html#a1453f8979f0191fab393db68e0ae6479" title=" " alt="" coords="458,39,607,79"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="670,95,606,80,608,75,671,90"/>
+<area shape="rect" id="Node000006" href="$antenna__telecommand__defs_8c.html#a316cf470a39e910ad64f65afa587c1b4" title="Telecommand: Measures the temperature of the antenna controller in centi&#45;degrees celsius." alt="" coords="427,104,637,129"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="670,119,638,119,638,114,670,114"/>
+<area shape="rect" id="Node000007" href="$test__ant__commands_8c.html#a2e5ad0f99d8c1db940e1a2120bfbdacb" title=" " alt="" coords="439,153,625,194"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="671,142,619,155,617,150,669,137"/>
+<area shape="rect" id="Node000003" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="223,39,379,79"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="442,62,380,62,380,56,442,56"/>
+<area shape="rect" id="Node000004" href="$system__telecommand__defs_8c.html#ab5d9cbdf1fd0c01f5a10f20d39971092" title="System self&#45;check of all peripherals and systems." alt="" coords="5,5,175,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="207,47,175,42,176,36,208,42"/>
+<area shape="rect" id="Node000005" href="$system__telecommand__defs_8c.html#ad62425492ed28fac500f9c495fe7d4ba" title="System self&#45;check of all peripherals and systems." alt="" coords="5,71,175,111"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="208,76,176,81,175,75,207,70"/>
+</map>

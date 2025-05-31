@@ -1,0 +1,15 @@
+<map id="LFS_file_size" name="LFS_file_size">
+<area shape="rect" id="Node000001" title="Returns the file size." alt="" coords="822,86,921,111"/>
+<area shape="rect" id="Node000002" href="$rtos__bootup__operation__fsm__task_8c.html#a82da930bbd6588a7cd64503dfe4df708" title="Check if the filesystem has the file &quot;/bypass_deployment_and_enable_radio.txt&quot;." alt="" coords="592,5,762,61"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="816,83,761,64,763,59,817,78"/>
+<area shape="rect" id="Node000006" href="$lfs__telecommand__defs_8c.html#adcd5c5bb896cd90680be830952d3ae65" title="Reads a file from LittleFS, and responds with its contents as 2&#45;digit hex bytes." alt="" coords="581,86,773,111"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="806,101,774,101,774,96,806,96"/>
+<area shape="rect" id="Node000007" href="$lfs__telecommand__defs_8c.html#a3987d15fbe2d9a0e39633747d99aebe1" title="Reads a file from LittleFS, and responds with its contents as 2&#45;digit hex bytes." alt="" coords="580,135,774,161"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="807,118,774,126,733,137,732,132,773,121,806,113"/>
+<area shape="rect" id="Node000003" href="$rtos__bootup__operation__fsm__task_8c.html#a247e169d6de2ab3a01ac64796b2ef083" title="State machine for the bootup operation state." alt="" coords="342,5,532,61"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="576,36,533,36,533,30,576,30"/>
+<area shape="rect" id="Node000004" href="$rtos__bootup__operation__fsm__task_8c.html#a6d56b04a815b7769ed167bbd4a1921d6" title="FreeRTOS task &#45; FSM which handles the bootup and operation state/state." alt="" coords="103,20,294,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="326,36,295,36,295,30,326,30"/>
+<area shape="rect" id="Node000005" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,20,55,46"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="87,36,55,36,55,30,87,30"/>
+</map>

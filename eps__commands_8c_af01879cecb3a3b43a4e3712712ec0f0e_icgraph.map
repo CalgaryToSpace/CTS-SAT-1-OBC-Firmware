@@ -1,0 +1,58 @@
+<map id="EPS_CMD_output_bus_channel_off" name="EPS_CMD_output_bus_channel_off">
+<area shape="rect" id="Node000001" title=" " alt="" coords="1056,312,1210,353"/>
+<area shape="rect" id="Node000002" href="$eps__power__management_8c.html#a2f6d81bd9f8bf600e4e777e36df03cf6" title="Monitor the power consumption of each channel and disable any channels that exceed a certain threshol..." alt="" coords="827,154,1008,180"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1091,304,934,182,937,178,1095,300"/>
+<area shape="rect" id="Node000007" href="$eps__channel__control_8c.html#a91245fbb2fa29818f98ac6a3c0755a40" title="Sets the enabled state of an EPS channel (on or off)." alt="" coords="829,344,1006,369"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="1041,345,1006,349,1006,344,1040,340"/>
+<area shape="rect" id="Node000003" href="$eps__power__management_8c.html#a1db93bd2baaea0834d00a3077caaceeb" title="Monitors the power consumption of each channel and logs the data in JSON format." alt="" coords="593,5,767,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="890,145,840,102,777,60,753,49,755,44,780,55,843,98,894,141"/>
+<area shape="rect" id="Node000004" href="$rtos__background__upkeep_8c.html#a25224a327fa1610178f861fbb70efa20" title=" " alt="" coords="366,16,511,57"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="578,33,511,36,511,30,578,28"/>
+<area shape="rect" id="Node000005" href="$rtos__background__upkeep_8c.html#a6e9290aa86044f925c753a48224e083f" title=" " alt="" coords="109,80,288,105"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="351,59,258,81,256,76,350,54"/>
+<area shape="rect" id="Node000006" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,510,55,536"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="169,117,135,149,105,190,85,234,68,281,47,375,37,456,34,510,29,510,32,456,42,374,63,279,80,232,100,187,131,146,165,113"/>
+<area shape="rect" id="Node000008" href="$boom__deploy__telecommand__defs_8c.html#aa8bdec2d4efc30396a42059fe7a7ca2a" title=" " alt="" coords="592,70,768,96"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="899,331,829,204,777,117,744,99,746,94,781,113,833,201,904,328"/>
+<area shape="rect" id="Node000009" href="$boom__deploy__telecommand__defs_8c.html#a8265cbf29b2f1fcabe9461379ac73476" title="Run the self&#45;check on the boom deployment system." alt="" coords="358,103,518,143"/>
+<area shape="poly" id="edge30_Node000007_Node000009" title=" " alt="" coords="901,331,882,296,855,254,819,213,777,180,714,151,645,134,578,125,518,122,519,117,579,120,646,128,715,146,780,175,823,209,859,251,887,293,906,328"/>
+<area shape="rect" id="Node000010" href="$camera__capture_8c.html#a4edcff225af5552d0375645344171950" title="Capture an image, writing to a file in LFS." alt="" coords="367,201,509,226"/>
+<area shape="poly" id="edge9_Node000007_Node000010" title=" " alt="" coords="899,332,879,302,851,268,817,236,778,212,741,199,703,192,626,187,553,192,493,203,492,198,552,187,626,181,704,186,743,194,780,207,820,232,855,264,883,299,903,329"/>
+<area shape="rect" id="Node000012" href="$camera__capture_8c.html#a3d05909e7b9c75c89d936ec99c96ed2d" title=" " alt="" coords="591,221,769,262"/>
+<area shape="poly" id="edge11_Node000007_Node000012" title=" " alt="" coords="883,337,834,306,778,276,750,265,752,260,780,271,837,301,886,332"/>
+<area shape="rect" id="Node000013" href="$camera__init_8c.html#adfa3d3b239068192490d519d4452cfee" title="Set up the camera by powering on and changing the baudrate to 230400." alt="" coords="635,286,725,312"/>
+<area shape="poly" id="edge13_Node000007_Node000013" title=" " alt="" coords="846,342,724,312,726,307,847,337"/>
+<area shape="rect" id="Node000015" href="$complete__self__check_8c.html#a55d4f769a9d77ec139334ba21af7e5f0" title=" " alt="" coords="598,336,762,377"/>
+<area shape="poly" id="edge15_Node000007_Node000015" title=" " alt="" coords="814,359,762,359,762,354,814,354"/>
+<area shape="rect" id="Node000016" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="360,393,516,434"/>
+<area shape="poly" id="edge21_Node000007_Node000016" title=" " alt="" coords="853,376,779,391,640,406,517,414,517,409,640,401,778,386,852,371"/>
+<area shape="rect" id="Node000019" href="$complete__self__check_8c.html#a82ad8e5243469f7636ca7833d4b27266" title=" " alt="" coords="606,451,754,491"/>
+<area shape="poly" id="edge19_Node000007_Node000019" title=" " alt="" coords="882,380,780,435,739,453,736,448,778,430,880,375"/>
+<area shape="rect" id="Node000020" href="$rtos__bootup__operation__fsm__task_8c.html#a09921283012a049cd629296f67fad44c" title="Power on EPS channel, check if all antennas have been deployed." alt="" coords="586,516,774,541"/>
+<area shape="poly" id="edge22_Node000007_Node000020" title=" " alt="" coords="901,384,852,445,818,478,780,505,753,517,751,512,777,501,814,474,848,442,897,381"/>
+<area shape="rect" id="Node000023" href="$rtos__bootup__operation__fsm__task_8c.html#ab2eda5d81c07b81254f9ff57e3e7e372" title=" " alt="" coords="360,552,517,593"/>
+<area shape="poly" id="edge26_Node000007_Node000023" title=" " alt="" coords="909,384,891,425,864,472,827,519,805,539,780,556,748,571,715,582,645,593,577,594,517,589,517,584,577,589,645,588,713,576,746,566,777,551,801,535,823,515,859,469,886,422,904,382"/>
+<area shape="rect" id="Node000024" href="$system__bootup_8c.html#a02e34be4ecc8a3b086ce78a1e3901bc5" title="Disables systems on bootup (Non&#45;Default EPS Channels, Boom GPIO Pins, MPI transceiver)" alt="" coords="123,577,275,618"/>
+<area shape="poly" id="edge28_Node000007_Node000024" title=" " alt="" coords="912,385,897,434,871,494,854,524,833,553,808,579,780,600,716,630,647,649,577,658,506,659,437,654,373,645,267,621,269,616,374,639,438,648,506,653,576,652,646,643,714,625,777,595,805,575,829,550,849,522,867,492,892,432,907,383"/>
+<area shape="rect" id="Node000025" href="$eps__telecommands_8c.html#af4a26360f491c65d480eda02ae55b900" title="Sets the EPS channel to be enabled (on) or disabled (off)." alt="" coords="581,667,779,707"/>
+<area shape="poly" id="edge31_Node000007_Node000025" title=" " alt="" coords="913,385,898,440,872,511,833,585,809,619,780,650,754,668,751,664,777,646,805,616,829,582,867,509,893,438,908,384"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="584,102,519,112,518,107,583,96"/>
+<area shape="rect" id="Node000011" href="$camera__telecommand__defs_8c.html#afb614c0d0a16fe7e66596bf15ced2162" title="Send telecommand to camera and capture an image. RUN CAM_SETUP BEFORE THIS EVERY TIME!" alt="" coords="103,201,295,226"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="351,216,295,216,295,211,351,211"/>
+<area shape="poly" id="edge12_Node000012_Node000010" title=" " alt="" coords="575,232,510,225,510,219,576,227"/>
+<area shape="rect" id="Node000014" href="$camera__telecommand__defs_8c.html#abfe79147115a9931e013ce9d49a41908" title="Set up the camera by powering on and changing the baudrate to 230400." alt="" coords="348,286,529,312"/>
+<area shape="poly" id="edge14_Node000013_Node000014" title=" " alt="" coords="619,302,529,302,529,296,619,296"/>
+<area shape="poly" id="edge16_Node000015_Node000016" title=" " alt="" coords="584,382,517,398,516,393,583,377"/>
+<area shape="rect" id="Node000017" href="$system__telecommand__defs_8c.html#ab5d9cbdf1fd0c01f5a10f20d39971092" title="System self&#45;check of all peripherals and systems." alt="" coords="114,371,284,411"/>
+<area shape="poly" id="edge17_Node000016_Node000017" title=" " alt="" coords="344,407,284,402,284,396,345,402"/>
+<area shape="rect" id="Node000018" href="$system__telecommand__defs_8c.html#ad62425492ed28fac500f9c495fe7d4ba" title="System self&#45;check of all peripherals and systems." alt="" coords="114,436,284,477"/>
+<area shape="poly" id="edge18_Node000016_Node000018" title=" " alt="" coords="345,433,284,444,283,439,344,428"/>
+<area shape="poly" id="edge20_Node000019_Node000016" title=" " alt="" coords="590,453,516,435,517,430,591,447"/>
+<area shape="rect" id="Node000021" href="$rtos__bootup__operation__fsm__task_8c.html#a247e169d6de2ab3a01ac64796b2ef083" title="State machine for the bootup operation state." alt="" coords="343,472,533,528"/>
+<area shape="poly" id="edge23_Node000020_Node000021" title=" " alt="" coords="571,518,534,514,534,509,571,513"/>
+<area shape="rect" id="Node000022" href="$rtos__bootup__operation__fsm__task_8c.html#a6d56b04a815b7769ed167bbd4a1921d6" title="FreeRTOS task &#45; FSM which handles the bootup and operation state/state." alt="" coords="103,510,294,536"/>
+<area shape="poly" id="edge24_Node000021_Node000022" title=" " alt="" coords="328,513,295,517,295,511,327,508"/>
+<area shape="poly" id="edge25_Node000022_Node000006" title=" " alt="" coords="88,526,55,526,55,520,88,520"/>
+<area shape="poly" id="edge27_Node000023_Node000022" title=" " alt="" coords="344,556,264,539,265,534,345,550"/>
+<area shape="poly" id="edge29_Node000024_Node000006" title=" " alt="" coords="136,573,54,536,56,531,138,568"/>
+</map>

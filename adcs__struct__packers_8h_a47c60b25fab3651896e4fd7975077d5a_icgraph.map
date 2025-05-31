@@ -1,0 +1,9 @@
+<map id="ADCS_pack_to_cubecontrol_current_struct" name="ADCS_pack_to_cubecontrol_current_struct">
+<area shape="rect" id="Node000001" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="483,41,667,82"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#af878d89263ca1b02174eb5aa3ff65c5e" title="Instruct the ADCS to execute the ADCS_CubeControl_Current command." alt="" coords="267,5,423,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="467,48,423,41,424,35,468,42"/>
+<area shape="rect" id="Node000004" href="$test__adcs_8c.html#ab4413729d8bcd7eed288d0db9cf1f734" title=" " alt="" coords="255,70,435,126"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="468,81,436,86,435,81,467,76"/>
+<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#a1b777295ffce8613c3734f0fbac5b29f" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,207,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="251,28,207,28,207,23,251,23"/>
+</map>

@@ -1,0 +1,18 @@
+<map id="GNSS_set_uart_interrupt_state" name="GNSS_set_uart_interrupt_state">
+<area shape="rect" id="Node000001" title="Sets the UART interrupt state (enabled/disabled)" alt="" coords="897,89,1064,130"/>
+<area shape="rect" id="Node000002" href="$complete__self__check_8c.html#a82ad8e5243469f7636ca7833d4b27266" title=" " alt="" coords="434,39,582,79"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="881,92,848,87,707,72,582,65,583,59,707,67,849,82,882,87"/>
+<area shape="rect" id="Node000006" href="$gnss__internal__drivers_8c.html#a417c5024470d52a67aa04aa5212d8343" title="Sends a log command to the GNSS, and receives the response." alt="" coords="637,97,849,122"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="881,112,849,112,849,107,881,107"/>
+<area shape="rect" id="Node000008" href="$uart__telelecommand__defs_8c.html#a559929acf5cfc4bdde97856c88c93f7d" title="Send arbitrary commands to a UART peripheral, and receive the response." alt="" coords="663,147,823,187"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="882,136,824,150,823,145,881,131"/>
+<area shape="rect" id="Node000003" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="223,39,379,79"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="418,62,379,62,379,56,418,56"/>
+<area shape="rect" id="Node000004" href="$system__telecommand__defs_8c.html#ab5d9cbdf1fd0c01f5a10f20d39971092" title="System self&#45;check of all peripherals and systems." alt="" coords="5,5,175,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="207,47,175,42,176,36,208,42"/>
+<area shape="rect" id="Node000005" href="$system__telecommand__defs_8c.html#ad62425492ed28fac500f9c495fe7d4ba" title="System self&#45;check of all peripherals and systems." alt="" coords="5,71,175,111"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="208,76,176,81,175,75,207,70"/>
+<area shape="poly" id="edge6_Node000006_Node000002" title=" " alt="" coords="665,96,582,78,584,72,666,90"/>
+<area shape="rect" id="Node000007" href="$gnss__telecommand__defs_8c.html#a65486e8911140b6f285d88bf0048fa35" title="Telecommand: Transmit a log command to the GNSS receiver through UART." alt="" coords="427,104,589,145"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="622,120,590,122,590,117,621,115"/>
+</map>

@@ -1,0 +1,13 @@
+<map id="ADCS_pack_to_file_download_buffer_struct" name="ADCS_pack_to_file_download_buffer_struct">
+<area shape="rect" id="Node000001" title="Parse the File Download Buffer data into the provided struct." alt="" coords="913,41,1108,82"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a84faa2ce0aa0006f1d710b817d1110df" title="Retrieve the File Download Buffer telemetry from the ADCS." alt="" coords="691,5,858,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="897,47,858,41,859,36,897,42"/>
+<area shape="rect" id="Node000006" href="$test__adcs_8c.html#a8c410a615faad7d641f27fcba17defbc" title=" " alt="" coords="684,70,865,126"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="898,82,866,86,865,81,897,76"/>
+<area shape="rect" id="Node000003" href="$adcs__commands_8c.html#a99fbcd4000d29b26c5dbf7c922503186" title="Save one block of the ADCS SD card file pointed to by the file pointer into the ADCS download buffer,..." alt="" coords="466,5,636,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="675,28,637,28,637,23,675,23"/>
+<area shape="rect" id="Node000004" href="$adcs__commands_8c.html#a0b73bd919e2d8a9fd7d2372c4a076ce0" title="Save a specified file from the ADCS SD card to the ADCS subfolder in LittleFS." alt="" coords="243,13,418,38"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="450,28,418,28,418,23,450,23"/>
+<area shape="rect" id="Node000005" href="$telecommand__adcs_8c.html#a4fd84b61a84542c3dfdc577d53ecb4d3" title="Telecommand: Download a specific file from the ADCS SD card." alt="" coords="5,5,195,46"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="227,28,195,28,195,23,227,23"/>
+</map>

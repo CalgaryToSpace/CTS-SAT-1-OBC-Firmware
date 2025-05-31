@@ -1,0 +1,29 @@
+<map id="EPS_CMD_get_system_status" name="EPS_CMD_get_system_status">
+<area shape="rect" id="Node000001" title=" " alt="" coords="707,152,865,193"/>
+<area shape="rect" id="Node000002" href="$complete__self__check_8c.html#ac0c76300da6dcc6c29c7fbc390b23cfe" title=" " alt="" coords="448,24,659,49"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="755,142,712,100,686,80,658,63,632,52,634,47,661,58,689,75,716,96,759,138"/>
+<area shape="rect" id="Node000006" href="$complete__self__check_8c.html#a034650729877a551e8919e536ae032e8" title=" " alt="" coords="458,73,649,98"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="733,147,658,113,619,102,620,96,660,109,735,142"/>
+<area shape="rect" id="Node000007" href="$eps__time_8c.html#aedd81259d3135d49f95b34346f6fde61" title="Sets the EPS&#39;s time, based on the OBC&#39;s current time." alt="" coords="466,123,641,163"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="691,163,641,157,642,151,692,158"/>
+<area shape="rect" id="Node000009" href="$eps__time_8c.html#a5a66b7a8cc792b4c410f66673b244442" title="Sets the OBC&#39;s time, based on the EPS&#39;s current time." alt="" coords="466,237,641,278"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="715,201,660,221,612,239,610,234,658,217,714,196"/>
+<area shape="rect" id="Node000010" href="$rtos__eps__tasks_8c.html#ad27bdbe0e838d3705b754e9af4c449b2" title=" " alt="" coords="250,188,372,213"/>
+<area shape="poly" id="edge13_Node000001_Node000010" title=" " alt="" coords="692,181,373,199,373,194,691,175"/>
+<area shape="rect" id="Node000013" href="$eps__telecommands_8c.html#a2310251491f0aae1c83fe4b4ef626d90" title="Get the EPS system status, and display it as a JSON string." alt="" coords="456,303,651,343"/>
+<area shape="poly" id="edge14_Node000001_Node000013" title=" " alt="" coords="760,206,716,250,661,292,635,305,632,300,658,287,712,246,756,202"/>
+<area shape="rect" id="Node000003" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="233,37,390,78"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="433,50,390,53,390,48,432,44"/>
+<area shape="rect" id="Node000004" href="$system__telecommand__defs_8c.html#ab5d9cbdf1fd0c01f5a10f20d39971092" title="System self&#45;check of all peripherals and systems." alt="" coords="5,5,175,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="217,47,175,41,176,35,218,42"/>
+<area shape="rect" id="Node000005" href="$system__telecommand__defs_8c.html#ad62425492ed28fac500f9c495fe7d4ba" title="System self&#45;check of all peripherals and systems." alt="" coords="5,71,175,111"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="218,74,176,81,175,76,217,69"/>
+<area shape="poly" id="edge6_Node000006_Node000003" title=" " alt="" coords="443,76,390,69,390,64,443,70"/>
+<area shape="rect" id="Node000008" href="$timekeeping__telecommand__defs_8c.html#a7c4f2b890bfc59877be98eb7b6c1ebec" title="Sync&#39;s eps time to obc time (+/&#45; 1 second)" alt="" coords="223,123,400,163"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="451,146,401,146,401,140,451,140"/>
+<area shape="poly" id="edge10_Node000009_Node000010" title=" " alt="" coords="451,236,368,216,370,211,452,231"/>
+<area shape="rect" id="Node000012" href="$timekeeping__telecommand__defs_8c.html#a96a9620231841478e8b1c1065423a783" title="Sync&#39;s obc time to eps time (+/&#45; 1 second)" alt="" coords="223,237,400,278"/>
+<area shape="poly" id="edge12_Node000009_Node000012" title=" " alt="" coords="451,260,401,260,401,255,451,255"/>
+<area shape="rect" id="Node000011" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="65,188,115,213"/>
+<area shape="poly" id="edge11_Node000010_Node000011" title=" " alt="" coords="235,203,115,203,115,198,235,198"/>
+</map>

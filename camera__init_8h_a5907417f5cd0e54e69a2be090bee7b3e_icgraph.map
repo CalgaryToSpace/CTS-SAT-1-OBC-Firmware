@@ -1,0 +1,13 @@
+<map id="CAM_test" name="CAM_test">
+<area shape="rect" id="Node000001" title="Send the &#39;t&#39; test command to the camera, and check if the response is valid." alt="" coords="646,76,726,101"/>
+<area shape="rect" id="Node000002" href="$complete__self__check_8c.html#a55d4f769a9d77ec139334ba21af7e5f0" title=" " alt="" coords="431,39,594,79"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="630,82,594,76,595,70,631,76"/>
+<area shape="rect" id="Node000006" href="$camera__telecommand__defs_8c.html#a33012d9baa34bbda254922e8dd9fa022" title="Send the &#39;t&#39; test command to the camera, and check if the response is valid." alt="" coords="427,104,598,129"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="631,100,597,105,596,100,630,95"/>
+<area shape="rect" id="Node000003" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="223,39,379,79"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="415,62,379,62,379,56,415,56"/>
+<area shape="rect" id="Node000004" href="$system__telecommand__defs_8c.html#ab5d9cbdf1fd0c01f5a10f20d39971092" title="System self&#45;check of all peripherals and systems." alt="" coords="5,5,175,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="207,47,175,42,176,36,208,42"/>
+<area shape="rect" id="Node000005" href="$system__telecommand__defs_8c.html#ad62425492ed28fac500f9c495fe7d4ba" title="System self&#45;check of all peripherals and systems." alt="" coords="5,71,175,111"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="208,76,176,81,175,75,207,70"/>
+</map>

@@ -1,0 +1,9 @@
+<map id="EPS_get_enabled_channels_json" name="EPS_get_enabled_channels_json">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,46,220,72"/>
+<area shape="rect" id="Node000002" href="$eps__channel__control_8c.html#af22f43756dfbad72b139b16cf5cd26d9" title="Takes in the status bitfields of the eps and outputs the status of the given channel number." alt="" coords="269,5,422,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="206,43,253,36,253,41,207,48"/>
+<area shape="rect" id="Node000003" href="$eps__channel__control_8c.html#ae00d77de29ecb1dce9d041dc9a173c57" title="Convert EPS ch_number to ch_name, then append as a JSON list element to response_output_buf." alt="" coords="268,71,423,111"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="211,70,252,76,252,81,210,75"/>
+<area shape="rect" id="Node000004" href="$eps__channel__control_8c.html#a05a801661add5a8a28cf4f6d2c019f54" title="Converts channel enum into an ASCII&#45;printable name string." alt="" coords="471,78,610,104"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="423,88,455,88,455,94,423,94"/>
+</map>

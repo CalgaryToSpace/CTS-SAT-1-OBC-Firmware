@@ -1,0 +1,13 @@
+<map id="ANT_CMD_report_deployment_status" name="ANT_CMD_report_deployment_status">
+<area shape="rect" id="Node000001" title="Writes 2 bytes of information representing the deployment status of the antennas to the passed buffer..." alt="" coords="816,42,1013,83"/>
+<area shape="rect" id="Node000002" href="$rtos__bootup__operation__fsm__task_8c.html#a09921283012a049cd629296f67fad44c" title="Power on EPS channel, check if all antennas have been deployed." alt="" coords="580,20,768,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="800,51,768,47,768,42,801,46"/>
+<area shape="rect" id="Node000006" href="$antenna__telecommand__defs_8c.html#a7e32cc56948bced4a3f71c6291e1c63c" title="Prints the deployment status of all antennas." alt="" coords="595,70,753,111"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="800,78,753,84,753,79,800,73"/>
+<area shape="rect" id="Node000003" href="$rtos__bootup__operation__fsm__task_8c.html#a247e169d6de2ab3a01ac64796b2ef083" title="State machine for the bootup operation state." alt="" coords="342,5,532,61"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="565,36,533,36,533,30,565,30"/>
+<area shape="rect" id="Node000004" href="$rtos__bootup__operation__fsm__task_8c.html#a6d56b04a815b7769ed167bbd4a1921d6" title="FreeRTOS task &#45; FSM which handles the bootup and operation state/state." alt="" coords="103,20,294,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="326,36,295,36,295,30,326,30"/>
+<area shape="rect" id="Node000005" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,20,55,46"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="87,36,55,36,55,30,87,30"/>
+</map>

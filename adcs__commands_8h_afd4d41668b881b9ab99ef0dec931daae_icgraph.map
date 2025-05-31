@@ -1,0 +1,15 @@
+<map id="ADCS_get_identification" name="ADCS_get_identification">
+<area shape="rect" id="Node000001" title="Instruct the ADCS to execute the ADCS_Identification command." alt="" coords="681,112,843,137"/>
+<area shape="rect" id="Node000002" href="$complete__self__check_8c.html#ad5f83918d9421f7dd75ee89a1282a4e1" title=" " alt="" coords="456,39,604,79"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="698,109,604,83,606,77,700,104"/>
+<area shape="rect" id="Node000006" href="$telecommand__adcs_8c.html#a4b92a7ab6d365796a649c2984502fb16" title="Telecommand: If the ADCS is currently stuck in the bootloader, run the internal flash program (CubeAC..." alt="" coords="453,104,607,145"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="666,127,608,127,608,122,666,122"/>
+<area shape="rect" id="Node000007" href="$telecommand__adcs_8c.html#a7c9ae8edb2a6451d474918835f68fb3f" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="427,169,633,194"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="694,144,634,159,586,171,585,166,633,154,692,139"/>
+<area shape="rect" id="Node000003" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="223,39,379,79"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="441,62,379,62,379,56,441,56"/>
+<area shape="rect" id="Node000004" href="$system__telecommand__defs_8c.html#ab5d9cbdf1fd0c01f5a10f20d39971092" title="System self&#45;check of all peripherals and systems." alt="" coords="5,5,175,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="207,47,175,42,176,36,208,42"/>
+<area shape="rect" id="Node000005" href="$system__telecommand__defs_8c.html#ad62425492ed28fac500f9c495fe7d4ba" title="System self&#45;check of all peripherals and systems." alt="" coords="5,71,175,111"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="208,76,176,81,175,75,207,70"/>
+</map>

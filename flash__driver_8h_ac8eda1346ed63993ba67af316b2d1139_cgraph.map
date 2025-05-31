@@ -1,0 +1,12 @@
+<map id="FLASH_unblock_block_lock" name="FLASH_unblock_block_lock">
+<area shape="rect" id="Node000001" title="Unblocks all blocked blocks of memory on the NAND flash memory module." alt="" coords="5,29,192,54"/>
+<area shape="rect" id="Node000002" href="$flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="454,25,603,66"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="192,40,438,42,438,47,192,45"/>
+<area shape="rect" id="Node000003" href="$flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="651,25,815,66"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="182,25,269,14,375,6,489,3,604,11,647,18,646,24,603,16,489,9,375,11,270,20,182,30"/>
+<area shape="rect" id="Node000004" href="$flash__driver_8c.html#a58201d7c60a31f131bbfb21bde40a388" title="Read Block Lock Register and store the values in given buffer." alt="" coords="240,78,406,119"/>
+<area shape="poly" id="edge4_Node000001_Node000004" title=" " alt="" coords="152,52,226,71,225,76,151,57"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="604,43,636,43,636,48,604,48"/>
+<area shape="poly" id="edge5_Node000004_Node000002" title=" " alt="" coords="403,75,438,66,440,71,405,80"/>
+<area shape="poly" id="edge6_Node000004_Node000003" title=" " alt="" coords="406,93,501,87,603,75,641,67,642,72,604,80,501,92,407,99"/>
+</map>

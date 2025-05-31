@@ -1,0 +1,13 @@
+<map id="EPS_pack_eps_result_pdu_overcurrent_fault_state" name="EPS_pack_eps_result_pdu_overcurrent_fault_state">
+<area shape="rect" id="Node000001" title=" " alt="" coords="719,71,909,111"/>
+<area shape="rect" id="Node000002" href="$eps__commands_8c.html#aced7ad3b2418e7d2eeefb2a22e5f9afa" title=" " alt="" coords="463,71,671,111"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="704,94,672,94,672,88,704,88"/>
+<area shape="rect" id="Node000003" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="241,37,397,78"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="447,78,397,71,398,66,448,72"/>
+<area shape="rect" id="Node000006" href="$eps__telecommands_8c.html#a9c4259fb7c2ee09d4bf928c2e7d02290" title="Get the EPS PDU (Power Distribution Unit) overcurrent fault status, and display it as a JSON string." alt="" coords="223,103,415,143"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="448,109,416,113,415,108,447,104"/>
+<area shape="rect" id="Node000004" href="$system__telecommand__defs_8c.html#ab5d9cbdf1fd0c01f5a10f20d39971092" title="System self&#45;check of all peripherals and systems." alt="" coords="5,5,175,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="225,47,175,40,176,35,226,42"/>
+<area shape="rect" id="Node000005" href="$system__telecommand__defs_8c.html#ad62425492ed28fac500f9c495fe7d4ba" title="System self&#45;check of all peripherals and systems." alt="" coords="5,71,175,111"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="226,74,176,81,175,76,225,69"/>
+</map>

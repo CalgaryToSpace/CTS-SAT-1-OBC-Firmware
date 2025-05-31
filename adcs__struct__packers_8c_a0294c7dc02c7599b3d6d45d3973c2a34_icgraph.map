@@ -1,0 +1,19 @@
+<map id="ADCS_pack_to_identification_struct" name="ADCS_pack_to_identification_struct">
+<area shape="rect" id="Node000001" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="910,133,1099,174"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#afd4d41668b881b9ab99ef0dec931daae" title="Instruct the ADCS to execute the ADCS_Identification command." alt="" coords="691,112,852,137"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="894,142,852,137,853,132,895,137"/>
+<area shape="rect" id="Node000009" href="$test__adcs_8c.html#a38fbb965d3618665acf066dc409696b3" title=" " alt="" coords="681,161,862,202"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="895,170,863,173,862,168,894,164"/>
+<area shape="rect" id="Node000003" href="$complete__self__check_8c.html#ad5f83918d9421f7dd75ee89a1282a4e1" title=" " alt="" coords="456,39,604,79"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="706,109,604,82,605,76,707,104"/>
+<area shape="rect" id="Node000007" href="$telecommand__adcs_8c.html#a4b92a7ab6d365796a649c2984502fb16" title="Telecommand: If the ADCS is currently stuck in the bootloader, run the internal flash program (CubeAC..." alt="" coords="453,104,607,145"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="675,127,608,127,608,122,675,122"/>
+<area shape="rect" id="Node000008" href="$telecommand__adcs_8c.html#a7c9ae8edb2a6451d474918835f68fb3f" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="427,169,633,194"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="700,144,588,171,587,166,699,139"/>
+<area shape="rect" id="Node000004" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="223,39,379,79"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="441,62,379,62,379,56,441,56"/>
+<area shape="rect" id="Node000005" href="$system__telecommand__defs_8c.html#ab5d9cbdf1fd0c01f5a10f20d39971092" title="System self&#45;check of all peripherals and systems." alt="" coords="5,5,175,46"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="207,47,175,42,176,36,208,42"/>
+<area shape="rect" id="Node000006" href="$system__telecommand__defs_8c.html#ad62425492ed28fac500f9c495fe7d4ba" title="System self&#45;check of all peripherals and systems." alt="" coords="5,71,175,111"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="208,76,176,81,175,75,207,70"/>
+</map>

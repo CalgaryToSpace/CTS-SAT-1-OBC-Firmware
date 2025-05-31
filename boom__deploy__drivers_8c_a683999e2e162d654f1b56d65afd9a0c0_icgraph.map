@@ -1,0 +1,14 @@
+<map id="BOOM_disable_all_burns" name="BOOM_disable_all_burns">
+<area shape="rect" id="Node000001" title="Disable all boom deploy enable channels. No EPS change." alt="" coords="436,85,604,111"/>
+<area shape="rect" id="Node000002" href="$boom__deploy__telecommand__defs_8c.html#aa8bdec2d4efc30396a42059fe7a7ca2a" title=" " alt="" coords="213,5,388,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="468,82,337,34,339,29,469,77"/>
+<area shape="rect" id="Node000003" href="$boom__deploy__telecommand__defs_8c.html#a8265cbf29b2f1fcabe9461379ac73476" title="Run the self&#45;check on the boom deployment system." alt="" coords="5,23,165,64"/>
+<area shape="poly" id="edge6_Node000001_Node000003" title=" " alt="" coords="420,88,165,56,165,51,421,83"/>
+<area shape="rect" id="Node000004" href="$system__bootup_8c.html#a02e34be4ecc8a3b086ce78a1e3901bc5" title="Disables systems on bootup (Non&#45;Default EPS Channels, Boom GPIO Pins, MPI transceiver)" alt="" coords="224,106,376,146"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="421,114,377,119,377,114,420,108"/>
+<area shape="rect" id="Node000006" href="$boom__deploy__telecommand__defs_8c.html#a599fce6b9a99061808d7c9aa003fb611" title="Activate the burn wire for the specified duration." alt="" coords="213,171,388,212"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="478,120,389,161,358,173,356,168,387,156,476,116"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="198,33,166,37,165,31,197,28"/>
+<area shape="rect" id="Node000005" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="60,113,110,139"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="209,129,110,129,110,124,209,124"/>
+</map>

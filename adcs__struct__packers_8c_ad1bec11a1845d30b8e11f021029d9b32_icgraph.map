@@ -1,0 +1,11 @@
+<map id="ADCS_pack_to_current_state_1_struct" name="ADCS_pack_to_current_state_1_struct">
+<area shape="rect" id="Node000001" title="Parse Current State 1 telemetry data into a struct." alt="" coords="481,63,638,103"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a919377a02bd8a8d8f3f2bd36e7c99dfc" title="Instruct the ADCS to execute the ADCS_get_current_state_1 command. (There&#39;s an ADCS_current_state_2 c..." alt="" coords="253,41,432,66"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="465,73,433,68,433,63,466,68"/>
+<area shape="rect" id="Node000005" href="$test__adcs_8c.html#a829f72c99a67770f58a0630c0fdc86fe" title=" " alt="" coords="253,91,433,131"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="466,98,434,102,433,97,465,93"/>
+<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#aaa40d24b5454f145e9e1a2c9945d0af9" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,205,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="237,44,205,40,206,35,238,39"/>
+<area shape="rect" id="Node000004" href="$telecommand__adcs_8c.html#a77b755281f46ce929d06ebd14999b25f" title="Telecommand: Automatically track the sun with the ADCS." alt="" coords="9,70,201,96"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="238,69,202,74,201,69,237,64"/>
+</map>

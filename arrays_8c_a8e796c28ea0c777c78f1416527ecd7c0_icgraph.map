@@ -1,0 +1,31 @@
+<map id="GEN_int64_to_str" name="GEN_int64_to_str">
+<area shape="rect" id="Node000001" title="Converts an int64_t to a string." alt="" coords="821,138,945,164"/>
+<area shape="rect" id="Node000002" href="$adcs__types__to__json_8c.html#ac99f7fbf55e4ccc2a62193ba05cbfc9c" title="Converts ADCS_Augmented_SGP4_Params_Struct to a JSON string." alt="" coords="602,7,770,47"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="856,129,818,95,771,63,747,50,749,46,774,58,821,91,859,125"/>
+<area shape="rect" id="Node000004" href="$gnss__ascii__parsers_8c.html#acf908ef6d77dd1af9037fa3d349723a8" title="Parse Received Data." alt="" coords="612,72,760,113"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="822,136,756,116,758,111,823,131"/>
+<area shape="rect" id="Node000006" href="$gnss__ascii__parsers_8c.html#a0fa77615203b5b5b2443f0b2cf0706ce" title="Parse Received Data." alt="" coords="599,138,773,164"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="805,154,773,154,773,148,805,148"/>
+<area shape="rect" id="Node000008" href="$test__byte__transforms_8c.html#ad9f56b2316c12ae563bbb2f45e203f8b" title=" " alt="" coords="600,188,772,229"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="822,171,759,190,758,185,821,166"/>
+<area shape="rect" id="Node000009" href="$timekeeping_8c.html#a05cd293bfd9a609af88ff87898a0fcbc" title="Use this function in a telecommand, or upon receiving a time update from the GNSS." alt="" coords="613,255,759,295"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="859,176,821,210,774,243,747,257,744,252,771,238,817,206,856,172"/>
+<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#aeb093f20bc1da7de49f2dbd7037a3c16" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="328,5,551,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="587,29,552,29,552,24,587,24"/>
+<area shape="rect" id="Node000005" href="$unit__test__gnss_8c.html#adb748e8aa31449316f5ab7049a2927a8" title=" " alt="" coords="338,71,542,111"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="596,95,542,94,542,89,596,89"/>
+<area shape="rect" id="Node000007" href="$unit__test__gnss_8c.html#a44013ec4b05dd7cf6257e9ca82a93f85" title=" " alt="" coords="346,136,533,177"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="584,156,533,157,533,152,584,151"/>
+<area shape="rect" id="Node000010" href="$eps__time_8c.html#a5a66b7a8cc792b4c410f66673b244442" title="Sets the OBC&#39;s time, based on the EPS&#39;s current time." alt="" coords="352,201,527,242"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="597,259,527,243,528,238,598,253"/>
+<area shape="rect" id="Node000014" href="$timekeeping__telecommand__defs_8c.html#a4306b41d60eb1206a50f68db97930164" title="Adjust the system time with a signed int." alt="" coords="330,266,550,292"/>
+<area shape="poly" id="edge13_Node000009_Node000014" title=" " alt="" coords="597,279,550,280,550,275,597,274"/>
+<area shape="rect" id="Node000015" href="$timekeeping__telecommand__defs_8c.html#a2f0faa6c92a8852e4ece806dbb525e58" title="Set the system time to the provided Unix epoch time in milliseconds." alt="" coords="340,316,539,341"/>
+<area shape="poly" id="edge14_Node000009_Node000015" title=" " alt="" coords="598,297,552,307,503,318,502,312,551,302,597,292"/>
+<area shape="rect" id="Node000011" href="$rtos__eps__tasks_8c.html#ad27bdbe0e838d3705b754e9af4c449b2" title=" " alt="" coords="130,181,252,206"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="337,213,253,203,253,198,337,207"/>
+<area shape="rect" id="Node000013" href="$timekeeping__telecommand__defs_8c.html#a96a9620231841478e8b1c1065423a783" title="Sync&#39;s obc time to eps time (+/&#45; 1 second)" alt="" coords="103,231,280,271"/>
+<area shape="poly" id="edge12_Node000010_Node000013" title=" " alt="" coords="337,236,281,243,280,238,337,231"/>
+<area shape="rect" id="Node000012" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,181,55,206"/>
+<area shape="poly" id="edge11_Node000011_Node000012" title=" " alt="" coords="115,196,55,196,55,191,115,191"/>
+</map>

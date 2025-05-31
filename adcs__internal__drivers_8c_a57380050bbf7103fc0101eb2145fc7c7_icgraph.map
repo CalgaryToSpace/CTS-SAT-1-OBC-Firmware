@@ -1,0 +1,61 @@
+<map id="ADCS_convert_uint16_to_reversed_uint8_array_members" name="ADCS_convert_uint16_to_reversed_uint8_array_members">
+<area shape="rect" id="Node000001" title="Swap low and high bytes of a uint16 to turn into uint8 and put into specified index of an array." alt="" coords="1054,276,1220,332"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a814e5cceffac9e0b5e597cabc3083d9e" title="Instruct the ADCS to load a file download block into the download buffer." alt="" coords="822,5,995,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1120,262,1103,217,1078,165,1045,112,1004,66,977,49,980,44,1007,62,1049,109,1082,162,1107,215,1125,260"/>
+<area shape="rect" id="Node000003" href="$adcs__commands_8c.html#a99fbcd4000d29b26c5dbf7c922503186" title="Save one block of the ADCS SD card file pointed to by the file pointer into the ADCS download buffer,..." alt="" coords="557,31,727,71"/>
+<area shape="poly" id="edge5_Node000001_Node000003" title=" " alt="" coords="1117,263,1099,225,1075,183,1043,143,1004,111,956,92,884,77,727,59,728,54,885,72,957,87,1007,106,1047,140,1079,180,1104,223,1122,261"/>
+<area shape="rect" id="Node000006" href="$adcs__commands_8c.html#aed744b7e685734f1640661cb715b7a82" title="Set the Augmented SGP4 Parameters of the ADCS." alt="" coords="832,120,985,161"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="1102,266,1059,219,1004,176,980,164,983,159,1007,171,1062,215,1106,263"/>
+<area shape="rect" id="Node000008" href="$adcs__commands_8c.html#a67665c09e24d46cfd738b32a596af250" title="Instruct the ADCS to execute the ADCS_Set_Commanded_Attitude_Angles command." alt="" coords="828,185,989,226"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="1068,271,1005,241,973,229,975,224,1007,237,1071,267"/>
+<area shape="rect" id="Node000010" href="$adcs__commands_8c.html#a244e37cb9b4c803699e5cdca2692ab07" title="Instruct the ADCS to set the magnetometer configuration." alt="" coords="822,251,995,291"/>
+<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="1038,293,995,286,996,281,1039,287"/>
+<area shape="rect" id="Node000012" href="$adcs__commands_8c.html#ac262b765d9ea6b19e8fb1f39e50c4dd0" title="Instruct the ADCS to execute the ADCS_Set_Magnetorquer_Output command." alt="" coords="824,316,993,357"/>
+<area shape="poly" id="edge12_Node000001_Node000012" title=" " alt="" coords="1039,321,993,327,993,322,1038,315"/>
+<area shape="rect" id="Node000014" href="$adcs__commands_8c.html#a3a9f4c3b3f178a53bcd12c5d4a042794" title="Instruct the ADCS to execute the ADCS_Set_Rate_Gyro_Config command." alt="" coords="837,381,980,422"/>
+<area shape="poly" id="edge14_Node000001_Node000014" title=" " alt="" coords="1070,342,1007,371,975,383,973,378,1005,366,1067,337"/>
+<area shape="rect" id="Node000016" href="$adcs__commands_8c.html#afad12ab1d20dbb4d7d2d2f534e26f5f2" title="Instruct the ADCS to execute the ADCS_set_sd_log_config command." alt="" coords="824,504,993,529"/>
+<area shape="poly" id="edge16_Node000001_Node000016" title=" " alt="" coords="1099,346,1007,436,928,505,924,501,1004,432,1096,342"/>
+<area shape="rect" id="Node000024" href="$adcs__commands_8c.html#a9f51e83fcfa4e59e44b77f355844d818" title="Instruct the ADCS to execute the titular command." alt="" coords="826,618,991,644"/>
+<area shape="poly" id="edge25_Node000001_Node000024" title=" " alt="" coords="1120,348,1074,440,1043,493,1008,543,967,587,929,620,926,616,964,583,1004,540,1038,490,1069,438,1115,345"/>
+<area shape="rect" id="Node000026" href="$adcs__commands_8c.html#a987f0ba7fba4f951fdba35a16bf36bfe" title="Instruct the ADCS to synchronize its Unix epoch time to the current OBC Unix time." alt="" coords="811,741,1006,766"/>
+<area shape="poly" id="edge27_Node000001_Node000026" title=" " alt="" coords="1128,348,1112,411,1086,491,1052,576,1008,658,968,707,929,742,925,738,964,703,1003,655,1047,574,1081,489,1107,410,1123,347"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="806,38,728,46,727,40,806,33"/>
+<area shape="rect" id="Node000004" href="$adcs__commands_8c.html#a0b73bd919e2d8a9fd7d2372c4a076ce0" title="Save a specified file from the ADCS SD card to the ADCS subfolder in LittleFS." alt="" coords="270,38,446,64"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="542,54,446,54,446,48,542,48"/>
+<area shape="rect" id="Node000005" href="$telecommand__adcs_8c.html#a4fd84b61a84542c3dfdc577d53ecb4d3" title="Telecommand: Download a specific file from the ADCS SD card." alt="" coords="5,31,195,71"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="255,54,195,54,195,48,255,48"/>
+<area shape="rect" id="Node000007" href="$telecommand__adcs_8c.html#a010a4200d80186fa6a4d9dd131f1ba5d" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="530,120,754,161"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="816,143,754,143,754,138,816,138"/>
+<area shape="rect" id="Node000009" href="$telecommand__adcs_8c.html#aa54fca153c3d72b2792b90c67ea8ed01" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="527,185,757,226"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="812,208,758,208,758,203,812,203"/>
+<area shape="rect" id="Node000011" href="$telecommand__adcs_8c.html#a07baac9fec776a43fe02a541ec8dea7e" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="521,251,763,291"/>
+<area shape="poly" id="edge11_Node000010_Node000011" title=" " alt="" coords="807,274,764,274,764,268,807,268"/>
+<area shape="rect" id="Node000013" href="$telecommand__adcs_8c.html#af2ca31f4b748a6a93be8a3f1907689e9" title="Telecommand: Set the magnetorquer output values." alt="" coords="523,316,761,357"/>
+<area shape="poly" id="edge13_Node000012_Node000013" title=" " alt="" coords="809,339,762,339,762,334,809,334"/>
+<area shape="rect" id="Node000015" href="$telecommand__adcs_8c.html#a8ee861331037001ee63c66cb8b2dc32f" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="552,381,733,422"/>
+<area shape="poly" id="edge15_Node000014_Node000015" title=" " alt="" coords="822,404,733,404,733,399,822,399"/>
+<area shape="rect" id="Node000017" href="$adcs__commands_8c.html#a97ee5ec87812d9c34ad86b85834e688c" title="Disable all active ADCS SD card logs." alt="" coords="553,446,731,472"/>
+<area shape="poly" id="edge17_Node000016_Node000017" title=" " alt="" coords="832,502,763,487,707,475,708,470,764,482,833,497"/>
+<area shape="rect" id="Node000021" href="$telecommand__adcs_8c.html#acfbac886221c0407fce13bee70ec8d5a" title="Telecommand: Request commissioning telemetry from the ADCS and save it to the onboard SD card." alt="" coords="554,496,731,537"/>
+<area shape="poly" id="edge22_Node000016_Node000021" title=" " alt="" coords="809,519,731,519,731,514,809,514"/>
+<area shape="rect" id="Node000022" href="$telecommand__adcs_8c.html#a98bf5256b122713dd604a9217a717d11" title="Telecommand: Repeatedly log given data from an SD card." alt="" coords="556,561,729,602"/>
+<area shape="poly" id="edge23_Node000016_Node000022" title=" " alt="" coords="839,536,729,563,727,558,838,531"/>
+<area shape="rect" id="Node000023" href="$telecommand__adcs_8c.html#a77b755281f46ce929d06ebd14999b25f" title="Telecommand: Automatically track the sun with the ADCS." alt="" coords="546,626,738,652"/>
+<area shape="poly" id="edge24_Node000016_Node000023" title=" " alt="" coords="882,541,830,580,764,616,728,628,726,623,762,611,827,576,879,537"/>
+<area shape="rect" id="Node000018" href="$adcs__commands_8c.html#a440ef61b27cd8228c1e2600758e9d207" title="Disable all ADCS peripherals and active SD card logs except the CubeSense Motor and Signal power,..." alt="" coords="252,407,464,447"/>
+<area shape="poly" id="edge18_Node000017_Node000018" title=" " alt="" coords="537,450,464,442,465,436,538,445"/>
+<area shape="rect" id="Node000020" href="$adcs__commands_8c.html#a4693b9a170e342e3f5bb908be0462f8f" title="Disable all ADCS peripherals and active SD card logs." alt="" coords="243,472,473,513"/>
+<area shape="poly" id="edge20_Node000017_Node000020" title=" " alt="" coords="538,474,474,481,473,476,537,469"/>
+<area shape="rect" id="Node000019" href="$telecommand__adcs_8c.html#a502da8be20cbdbe810b609948efef53a" title="Telecommand: Put the ADCS in low&#45;power mode, with only essential component power." alt="" coords="18,439,182,479"/>
+<area shape="poly" id="edge19_Node000018_Node000019" title=" " alt="" coords="237,445,183,452,182,446,236,439"/>
+<area shape="poly" id="edge21_Node000020_Node000019" title=" " alt="" coords="227,478,182,472,182,467,228,473"/>
+<area shape="rect" id="Node000025" href="$telecommand__adcs_8c.html#a31ebda15faf41b449b2a28cce5863448" title="Telecommand: Set the wheel speed of the ADCS." alt="" coords="546,676,739,717"/>
+<area shape="poly" id="edge26_Node000024_Node000025" title=" " alt="" coords="839,651,729,678,727,673,838,645"/>
+<area shape="rect" id="Node000027" href="$adcs__commands_8c.html#ad5983ef7345cb4ffee4c23a9c9726610" title="Initialize the ADCS CRC, timestamp, and file system directory." alt="" coords="587,741,697,766"/>
+<area shape="poly" id="edge28_Node000026_Node000027" title=" " alt="" coords="796,756,698,756,698,751,796,751"/>
+<area shape="rect" id="Node000029" href="$telecommand__adcs_8c.html#a131f3800fd9c78cad1b1cc44781f03cc" title="Telecommand: Synchronize the current ADCS Unix epoch time." alt="" coords="541,791,743,831"/>
+<area shape="poly" id="edge30_Node000026_Node000029" title=" " alt="" coords="831,773,741,793,739,787,830,768"/>
+<area shape="rect" id="Node000028" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="333,741,382,766"/>
+<area shape="poly" id="edge29_Node000027_Node000028" title=" " alt="" coords="571,756,383,756,383,751,571,751"/>
+</map>
