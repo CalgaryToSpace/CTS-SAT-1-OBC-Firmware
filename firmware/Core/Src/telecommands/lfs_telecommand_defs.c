@@ -416,7 +416,8 @@ uint8_t TCMDEXEC_fs_read_file_hex(
         return 10;
     }
 
-    GEN_byte_array_to_hex_str(read_buf, max_length_bytes, response_output_buf, response_output_buf_len);
+    // Note: `read_result` is now the number of bytes read into `read_buf`.
+    GEN_byte_array_to_hex_str(read_buf, read_result, response_output_buf, response_output_buf_len);
     return 0;
 }
 
