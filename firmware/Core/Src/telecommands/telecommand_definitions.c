@@ -327,13 +327,13 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "fs_read_file_hex",
         .tcmd_func = TCMDEXEC_fs_read_file_hex,
-        .number_of_args = 1,
+        .number_of_args = 3,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
         .tcmd_name = "fs_read_text_file",
         .tcmd_func = TCMDEXEC_fs_read_text_file,
-        .number_of_args = 1,
+        .number_of_args = 3,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {

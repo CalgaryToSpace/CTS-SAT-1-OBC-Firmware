@@ -483,11 +483,10 @@ int8_t LFS_write_file_with_offset(const char file_name[], lfs_soff_t offset, uin
 /// @param file_name - Pointer to buffer holding the file name to open
 /// @param offset - position within the file to read from
 /// @param read_buffer - Pointer to buffer where the read data will be stored
-/// @param read_buffer_len - Size of the data to read
+/// @param read_buffer_size - Size of the data to read
 /// @return Returns negative values if read or file open failed, else the
-/// number of bytes read
-lfs_ssize_t LFS_read_file(const char file_name[], lfs_soff_t offset, uint8_t *read_buffer, uint32_t read_buffer_len)
-{
+///         number of bytes read.
+lfs_ssize_t LFS_read_file(const char file_name[], lfs_soff_t offset, uint8_t *read_buffer, uint32_t read_buffer_size) {
     if (!LFS_is_lfs_mounted)
     {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "LittleFS not mounted");
@@ -510,7 +509,7 @@ lfs_ssize_t LFS_read_file(const char file_name[], lfs_soff_t offset, uint8_t *re
         return seek_result;
     }
 
-    const lfs_ssize_t read_result = lfs_file_read(&LFS_filesystem, &file, read_buffer, read_buffer_len);
+    const lfs_ssize_t read_result = lfs_file_read(&LFS_filesystem, &file, read_buffer, read_buffer_size);
     if (read_result < 0) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error reading file: %s", file_name);
         return read_result;

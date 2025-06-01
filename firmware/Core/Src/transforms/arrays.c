@@ -218,7 +218,7 @@ uint8_t GEN_hex_str_to_byte_array(const char *hex_str, uint8_t output_byte_array
     return 0;
 }
 
-/// @brief Writes a byte array to a hex string
+/// @brief Writes a byte array to a hex string (no spaces between bytes).
 /// @param byte_array Input byte array.
 /// @param byte_array_len Length of input `byte_array`.
 /// @param dest_str The destination to write a C-string to.
@@ -227,13 +227,17 @@ uint8_t GEN_hex_str_to_byte_array(const char *hex_str, uint8_t output_byte_array
 void GEN_byte_array_to_hex_str(
     const uint8_t *byte_array, uint32_t byte_array_len, char *dest_str, uint32_t dest_str_size
 ) {
-    dest_str[0] = '\0';
-    uint32_t remaining_size = dest_str_size;
-    for (uint32_t i = 0; i < byte_array_len; i++) {
-        remaining_size -= snprintf(
-            dest_str + strlen(dest_str), remaining_size,
-            "%02X ",
-            byte_array[i]
-        );
+    if (dest_str_size == 0) return; // no space at all
+    char *ptr = dest_str;
+    uint32_t remaining = dest_str_size;
+
+    for (uint32_t i = 0; i < byte_array_len; ++i) {
+        if (remaining < 3) break;  // not enough space for 2 chars + null terminator
+        int written = snprintf(ptr, remaining, "%02X", byte_array[i]);
+        if (written != 2) break;   // safety check (should always write 2 characters)
+        ptr += 2;
+        remaining -= 2;
     }
+
+    *ptr = '\0'; // null-terminate even if truncated
 }
