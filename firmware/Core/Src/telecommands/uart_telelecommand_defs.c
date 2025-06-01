@@ -5,6 +5,7 @@
 #include "mpi/mpi_command_handling.h"
 #include "log/log.h"
 #include "debug_tools/debug_uart.h"
+#include "uart_handler/uart_control.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -399,4 +400,82 @@ uint8_t TCMDEXEC_uart_get_last_rx_times_json(
     }
 
     return 0; // success
+}
+
+
+/// @brief Set the STM32 UART peripheral's baud rate to a different value.
+/// @param args_str
+/// - Arg 0: UART port name to set the baud rate for: GNSS, CAMERA, EPS, AX100, DEBUG (case insensitive)
+/// - Arg 1: Baud rate to set the STM32 UART peripheral to (in bits per second). Common values are 9600, 115200, 230400, etc.
+/// @note This does not command the subsystem device to change its baud rate. This only updates the STM32.
+/// @example If the GNSS receiver does a factory reset, its baud rate is set to a different value. This command
+///        can be used to change the STM32's UART baud rate to match the GNSS receiver's default baud rate to recover it.
+uint8_t TCMDEXEC_uart_set_baud_rate(
+    const char *args_str,
+    TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf,
+    uint16_t response_output_buf_len
+) {
+    // Parse UART port argument
+    char arg_uart_port_name[50];
+    const uint8_t uart_port_name_parse_result = TCMD_extract_string_arg(args_str, 0, arg_uart_port_name, 10);
+
+    // Parse baud rate argument
+    uint64_t new_baud_rate_u64 = 0;
+    const uint8_t baud_rate_parse_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &new_baud_rate_u64);
+
+    // Check max bound to convert to uint32_t.
+    if (new_baud_rate_u64 > 921600) {
+        return 99; // Error code: Invalid baud rate (too high)
+    }
+
+    const uint32_t new_baud_rate = (uint32_t)new_baud_rate_u64;
+
+    // Check for argument parsing errors
+    if(uart_port_name_parse_result != 0 || baud_rate_parse_result != 0) {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error parsing uart port/baud rate arg: Arg 0 Err=%d, Arg 1 Err=%d", 
+            uart_port_name_parse_result, 
+            baud_rate_parse_result
+        );
+        return 100; // Error code: Error parsing args
+    }
+
+    // Get the UART port handle by name
+    UART_HandleTypeDef *UART_handle_ptr = UART_get_port_handle_by_name(arg_uart_port_name);
+    
+    // Check if the UART port is valid
+    if (UART_handle_ptr == NULL) {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Invalid UART port requested: %s", 
+            arg_uart_port_name
+        );
+        return 101; // Error code: Invalid UART port requested
+    }
+
+    // Set the new baud rate
+    const uint8_t set_baud_rate_status = UART_set_baud_rate(UART_handle_ptr, new_baud_rate);
+    
+    // Check if setting the baud rate was successful
+    if (set_baud_rate_status != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Failed to set baud rate for %s to %lu. UART_set_baud_rate() -> %u", 
+            arg_uart_port_name,
+            new_baud_rate,
+            set_baud_rate_status
+        );
+        return set_baud_rate_status;
+    }
+
+    // Log success and return
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "Successfully set %s baud rate to %lu.",
+        arg_uart_port_name,
+        new_baud_rate
+    );
+    return 0;
 }

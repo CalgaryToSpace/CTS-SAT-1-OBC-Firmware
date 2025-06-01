@@ -2,6 +2,7 @@
 #include "camera/camera_init.h"
 #include "camera/camera_capture.h"
 #include "uart_handler/uart_handler.h"
+#include "uart_handler/uart_control.h"
 #include "log/log.h"
 #include "eps_drivers/eps_channel_control.h"
 
@@ -42,37 +43,20 @@ uint8_t CAM_change_baudrate(uint32_t new_baud_rate) {
     } else if (new_baud_rate == 921600) {
         set_baudrate_tx_code = "9";
     } else {
-        return 1; // Invalid baud rate
+        return 10; // Invalid baud rate
     }
 
     const HAL_StatusTypeDef tx_status = HAL_UART_Transmit(
         UART_camera_port_handle, (uint8_t*)set_baudrate_tx_code, 1, 1000
     );
     if (tx_status != HAL_OK) {
-        return 2; // Error
+        return 11; // Error
     }
 
     // Wait for UART transmission to complete.
     HAL_Delay(50); // 25 is probably enough.
 
-    // Deinit camera uart port and reinitialize with new baudrate.
-    const HAL_StatusTypeDef de_init_status = HAL_UART_DeInit(UART_camera_port_handle);
-    if (de_init_status != HAL_OK) {
-        LOG_message(
-            LOG_SYSTEM_BOOM, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-            "Error de-init camera UART port in CAM_change_baudrate: status=%d. Continuing.",
-            de_init_status
-        );
-        // Note: Do not return here. Continue on, even if it fails.
-    }
-
-    UART_camera_port_handle->Init.BaudRate = new_baud_rate;
-    const HAL_StatusTypeDef init_status = HAL_UART_Init(UART_camera_port_handle);
-    if (init_status != HAL_OK) {
-        return 3;
-    }
-
-    return 0; // Success
+    return UART_set_baud_rate(UART_camera_port_handle, new_baud_rate);
 }
 
 
