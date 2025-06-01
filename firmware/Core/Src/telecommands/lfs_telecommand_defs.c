@@ -7,6 +7,7 @@
 #include "littlefs/littlefs_helper.h"
 #include "littlefs/littlefs_telecommands.h"
 #include "littlefs/littlefs_benchmark.h"
+#include "littlefs/littlefs_checksums.h"
 #include "log/log.h"
 #include "telecommands/lfs_telecommand_defs.h"
 #include "telecommand_exec/telecommand_definitions.h"
@@ -462,6 +463,69 @@ uint8_t TCMDEXEC_fs_read_text_file(
     // Ensure null-termination.
     response_output_buf[response_output_buf_len - 1] = '\0';
     
+    return 0;
+}
+
+/// @brief Calculates the SHA256 hash of a file in LittleFS and returns it as a little-endian hex string.
+/// @param args_str
+/// - Arg 0: File path as string
+/// - Arg 1: Start offset (bytes). Nominally, pick 0.
+/// - Arg 2: Length to read (bytes). 0 to read max.
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_fs_read_file_sha256_hash_json(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    char arg_file_name[LFS_MAX_PATH_LENGTH];
+    uint32_t file_offset = 0;
+    uint32_t max_length;
+
+    const uint8_t parse_result = parse_arg_str_for_file_offset_length(
+        args_str, arg_file_name, sizeof(arg_file_name), &file_offset, &max_length
+    );
+    if (parse_result != 0) {
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing file name/offset/length args: Error %d",
+            parse_result
+        );
+        return 1;
+    }
+
+    // Prepare the SHA256 destination buffer.
+    uint8_t sha256_dest[32] = {0}; // 32 bytes for SHA256
+
+    // Calculate the SHA256 hash of the file.
+    const int8_t sha256_result = LFS_read_file_checksum_sha256(
+        arg_file_name, file_offset, max_length, sha256_dest
+    );
+
+    if (sha256_result != 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Error calculating SHA256: Err=%d", sha256_result);
+        return 2;
+    }
+
+    // Fetch the full file size.
+    const int32_t file_size_bytes = LFS_file_size(arg_file_name);
+    if (file_size_bytes < 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Error getting file size: Err=%ld", file_size_bytes);
+        return 3;
+    }
+    const uint32_t real_length_hashed = (max_length == 0 || max_length >= (uint32_t)file_size_bytes) ? (uint32_t)file_size_bytes : max_length;
+
+    // Convert the SHA256 hash to a little-endian hex string.
+    char hex_hash_str[100]; // Should be 64 chars.
+    GEN_byte_array_to_hex_str(sha256_dest, sizeof(sha256_dest), hex_hash_str, sizeof(hex_hash_str));
+
+    // Format like JSON.
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "{\"sha256\":\"%s\",\"offset\":%lu,\"length\":%lu,\"file_size\": %ld}",
+        hex_hash_str,
+        file_offset, real_length_hashed,
+        file_size_bytes
+    );
     return 0;
 }
 
