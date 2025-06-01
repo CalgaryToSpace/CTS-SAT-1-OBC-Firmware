@@ -28,6 +28,8 @@ extern uint8_t LFS_is_lfs_mounted;
 int8_t LFS_format();
 int8_t LFS_mount();
 int8_t LFS_unmount();
+int8_t LFS_ensure_mounted();
+int8_t LFS_ensure_unmounted();
 int8_t LFS_list_directory(const char root_directory[], uint16_t offset, int16_t count);
 int8_t LFS_make_directory(const char dir_name[]);
 int8_t LFS_delete_file(const char file_name[]);

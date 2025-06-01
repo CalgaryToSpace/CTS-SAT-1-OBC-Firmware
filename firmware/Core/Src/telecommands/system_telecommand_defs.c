@@ -131,9 +131,12 @@ uint8_t TCMDEXEC_reboot(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
+    LFS_ensure_unmounted();
+
     LOG_message(
         LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "Rebooting by telecommand request\n");
+        "Rebooting by telecommand request"
+    );
 
     // Delay to flush UART buffer
     HAL_Delay(100);
