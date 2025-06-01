@@ -14,8 +14,12 @@
 #include "telecommand_exec/telecommand_args_helpers.h"
 #include "transforms/arrays.h"
 
-uint8_t TCMDEXEC_fs_format_storage(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
+uint8_t TCMDEXEC_fs_format_storage(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+        char *response_output_buf, uint16_t response_output_buf_len
+) {
+    LFS_ensure_unmounted();
+
     const int8_t result = LFS_format();
     if (result != 0) {
         snprintf(response_output_buf, response_output_buf_len, "Error: LFS_format() -> %d", result);

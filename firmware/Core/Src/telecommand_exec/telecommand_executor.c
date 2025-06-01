@@ -215,7 +215,7 @@ static int8_t TCMD_store_resp_to_file(
         "\"tcmd\":\"%s\","
         "\"duration_ms\":%lu,"
         "\"return\":%u,"
-        "\"args\":\"%s\","
+        "\"args\":\"%s\""
         "}\n",
         timestamp_sent_str,
         timestamp_done_str,
