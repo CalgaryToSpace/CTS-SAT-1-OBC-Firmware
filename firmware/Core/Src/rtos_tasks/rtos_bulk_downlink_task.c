@@ -11,6 +11,7 @@
 
 /// @brief The period to wait between downlink packets.
 /// @note A 250-byte packet at 9600 baud takes about 208 ms to transmit.
+/// @example If you reconfigure the AX100 and increase the baudrate of the radio, decrease this value.
 uint32_t COMMS_bulk_downlink_delay_per_packet_ms = 208;
 
 static uint8_t bulk_file_data[COMMS_BULK_FILE_DOWNLINK_PACKET_MAX_DATA_BYTES_PER_PACKET];
