@@ -155,34 +155,128 @@ int16_t TCMD_get_next_tcmd_agenda_slot_to_execute() {
 
 
 /// @brief Logs a message to a file.
-/// @param filename The name of the file to log to.
-/// @param message The message to log.
-/// @return 0 on success, 1 if mounting LFS failed, 2 if writing to the file failed.
+/// @param resp_fname The name of the file to log to.
+/// @param response_output_buf The message to log.
+/// @return 0 on success, LFS error code on failure.
 /// @note This function is used to log telecommand responses to a file.
-static uint8_t TCMD_store_resp_to_file(const char *filename, const char *message) {
-    const int8_t mount_ret = LFS_mount();
+static int8_t TCMD_store_resp_to_file(
+    const char *resp_fname, const char *response_output_buf,
+    uint64_t timestamp_sent,
+    const char args_str_no_parens[],
+    uint8_t tcmd_idx,
+    uint32_t duration_ms,
+    uint8_t return_code
+) {
+    if (resp_fname == NULL || response_output_buf == NULL) {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error: TCMD_store_resp_to_file: Null pointer passed for resp_fname or response_output_buf."
+        );
+        return -1; // Invalid argument error
+    }
+
+    const int8_t mount_ret = LFS_ensure_mounted();
     if (mount_ret < 0) {
         LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "Error: TCMD_store_resp_to_file: Failed to mount LFS. Error code: %d",
             mount_ret
         );
-        return 1;
+        return mount_ret;
     }
 
-    // FIXME(Issue #389): Should write a timestamp probably. Maybe a telecommand name too, and maybe the arg string.
-    const int8_t write_file_return = LFS_write_file(
-        filename,
-        (uint8_t *)message,
-        strlen(message)
+    lfs_file_t file;
+    const int8_t open_result = lfs_file_opencfg(
+        &LFS_filesystem, &file, resp_fname,
+        LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND,
+        &LFS_file_cfg
     );
-    if (write_file_return != 0) {
+    if (open_result < 0) {
         LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "Error: TCMD_store_resp_to_file: Failed to write to file. LFS_write_file() -> %d",
-            write_file_return
+            "Error: TCMD_store_resp_to_file: Failed to open file. LFS error code: %d",
+            open_result
         );
-        return 2;
+        return open_result;
+    }
+
+    // Write the header to the file.
+    char timestamp_sent_str[30];
+    GEN_uint64_to_str(timestamp_sent, timestamp_sent_str);
+    char timestamp_done_str[30];
+    GEN_uint64_to_str(TIM_get_current_unix_epoch_time_ms(), timestamp_done_str);
+
+    char header_msg[100 + TCMD_ARGS_STR_NO_PARENS_SIZE];
+    snprintf(
+        header_msg, sizeof(header_msg),
+        "{"
+        "\"ts_sent\":%s,"
+        "\"ts_done\":%s,"
+        "\"tcmd\":\"%s\","
+        "\"duration_ms\":%lu,"
+        "\"return\":%u,"
+        "\"args\":\"%s\","
+        "}\n",
+        timestamp_sent_str,
+        timestamp_done_str,
+        TCMD_telecommand_definitions[tcmd_idx].tcmd_name,
+        duration_ms,
+        return_code,
+        args_str_no_parens
+    );
+
+    const lfs_ssize_t header_write_result = lfs_file_write(
+        &LFS_filesystem, &file, (const uint8_t *)header_msg, strlen(header_msg)
+    );
+    if (header_write_result < 0) {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error: TCMD_store_resp_to_file: Failed to write to file. LFS error code: %ld",
+            header_write_result
+        );
+        lfs_file_close(&LFS_filesystem, &file);
+        return header_write_result;
+    }
+
+    // Write the response to the file.
+    const lfs_ssize_t response_write_result = lfs_file_write(
+        &LFS_filesystem, &file, response_output_buf, strlen(response_output_buf)
+    );
+    if (response_write_result < 0) {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error: TCMD_store_resp_to_file: Failed to write response to file. LFS error code: %ld",
+            response_write_result
+        );
+        lfs_file_close(&LFS_filesystem, &file);
+        return response_write_result;
+    }
+
+
+    // Write a delimiter to the file, in case multiple telecommands are logged to the same file.
+    const char *delimiter = "\n[END_RESPONSE]\n";
+    const lfs_ssize_t delim_write_result = lfs_file_write(
+        &LFS_filesystem, &file, delimiter, strlen(delimiter)
+    );
+    if (delim_write_result < 0) {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error: TCMD_store_resp_to_file: Failed to write end delim to file. LFS error code: %ld",
+            delim_write_result
+        );
+        lfs_file_close(&LFS_filesystem, &file);
+        return delim_write_result;
+    }
+
+    // Close the file.
+    const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
+    if (close_result < 0) {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error: TCMD_store_resp_to_file: Failed to close file. LFS error code: %d",
+            close_result
+        );
+        return close_result;
     }
     
     return 0;
@@ -251,13 +345,21 @@ static uint8_t TCMD_execute_parsed_telecommand_now(
         strnlen(response_output_buf, response_output_buf_size) + 1 // +1 for null terminator
     );
 
+    DEBUG_uart_print_str("==========================\n");
     DEBUG_uart_print_str(response_output_buf);
-    DEBUG_uart_print_str("\n");
+    DEBUG_uart_print_str("\n==========================\n");
 
     // If the filename is not empty, log the telecommand to the file.
     if (tcmd_resp_fname != NULL && strnlen(tcmd_resp_fname, TCMD_MAX_RESP_FNAME_LEN) > 0) {
         // Internally Logs errors, no point in collecting error here
-        TCMD_store_resp_to_file(tcmd_resp_fname, response_output_buf);
+        TCMD_store_resp_to_file(
+            tcmd_resp_fname, response_output_buf,
+            timestamp_sent,
+            args_str_no_parens,
+            tcmd_idx,
+            tcmd_exec_duration_ms,
+            tcmd_result
+        );
     }
     return tcmd_result;
 }
