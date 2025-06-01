@@ -91,7 +91,7 @@ static LOG_system_t LOG_systems[] = {
     {LOG_SYSTEM_LOG, "LOG", "/logs/log_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_TELECOMMAND, "TELECOMMAND", "/logs/telecommand_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_UNIT_TEST, "UNIT_TEST", "/logs/unit_test_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
-// LOG_SYSTEM_UNKNOWN must be the LAST entry to make it easy to find below
+    // LOG_SYSTEM_UNKNOWN must be the LAST entry to make it easy to find below.
     {LOG_SYSTEM_UNKNOWN, "UNKNOWN", "/logs/unknown_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
 };
 static const uint16_t LOG_NUMBER_OF_SYSTEMS = sizeof(LOG_systems) / sizeof(LOG_system_t);
@@ -152,30 +152,35 @@ void LOG_message(LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_
     // Prepare the full message including time and severity
     // Defaults to "UNKNOWN" system
     const char *severity_text = LOG_get_severity_name(severity);
-    LOG_system_t *system = &LOG_systems[LOG_NUMBER_OF_SYSTEMS - 1];
+    LOG_system_t *system_config = &LOG_systems[LOG_NUMBER_OF_SYSTEMS - 1];
     for (uint16_t i = 0; i < LOG_NUMBER_OF_SYSTEMS; i++) {
         if (LOG_systems[i].system == source) {
-            system = &LOG_systems[i];
+            system_config = &LOG_systems[i];
             break;
         }
     }
     snprintf(current_log_entry->full_message, LOG_FULL_MESSAGE_MAX_LENGTH, 
             "%s [%s:%s]: %s\n", 
             LOG_timestamp_string, 
-            system->name, 
+            system_config->name, 
             severity_text, 
             LOG_formatted_log_message
     );
 
-    // Send message to enabled sinks
+    // Send message to each enabled sink.
     for (uint16_t i = 0; i < LOG_NUMBER_OF_SINKS; i++) {
-        const LOG_sink_t *c = &LOG_sinks[i];
-        if (c->enabled && (c->sink & sink_mask) && (severity & c->severity_mask) && (severity & system->severity_mask)) {
-            switch (c->sink) {
+        const LOG_sink_t *sink_config = &LOG_sinks[i];
+        if (
+            sink_config->enabled
+            && (sink_config->sink & sink_mask)
+            && (severity & sink_config->severity_mask)
+            && (severity & system_config->severity_mask)
+        ) {
+            switch (sink_config->sink) {
                 case LOG_SINK_FILE:
                     // Send to log file if subsystem logging is enabled
-                    if (system->file_logging_enabled) {
-                        LOG_to_file(system->log_file_path, current_log_entry->full_message);
+                    if (system_config->file_logging_enabled) {
+                        LOG_to_file(system_config->log_file_path, current_log_entry->full_message);
                     }
                     break;
                 case LOG_SINK_UHF_RADIO:
@@ -337,8 +342,7 @@ void LOG_set_sink_enabled_state(LOG_sink_enum_t sink, uint8_t state)
 /// @brief Enable or disable logging to file for a subsystem
 /// @param system specified subsystem
 /// @state 0: disable  1:  enable
-void LOG_set_system_file_logging_enabled_state(LOG_system_enum_t system, uint8_t state)
-{
+void LOG_set_system_file_logging_enabled_state(LOG_system_enum_t system, uint8_t state) {
     for (uint16_t i = 0; i < LOG_NUMBER_OF_SYSTEMS; i++) {
         if (LOG_systems[i].system == system) {
             LOG_systems[i].file_logging_enabled = state;
@@ -358,11 +362,13 @@ void LOG_set_system_file_logging_enabled_state(LOG_system_enum_t system, uint8_t
 
 /// @brief Report a sink's enabled state
 /// @param sink specified sink
-void LOG_report_sink_enabled_state(LOG_sink_enum_t sink)
-{
+void LOG_report_sink_enabled_state(LOG_sink_enum_t sink) {
     for (uint16_t i = 0; i < LOG_NUMBER_OF_SINKS; i++) {
         if (LOG_sinks[i].sink == sink) {
-            LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, "%20s: %s",  LOG_sinks[i].name, LOG_sinks[i].enabled ? "enabled" : "DISABLED");
+            LOG_message(
+                LOG_SYSTEM_LOG, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                "%20s: %s",  LOG_sinks[i].name, LOG_sinks[i].enabled ? "enabled" : "DISABLED"
+            );
             return;
         }
     }
@@ -376,11 +382,15 @@ void LOG_report_sink_enabled_state(LOG_sink_enum_t sink)
 /// @brief Report a subsystem's file-logging state
 /// @param sink specified sink
 /// @note includes the subsystem's log filename
-void LOG_report_system_file_logging_state(LOG_system_enum_t system)
-{
+void LOG_report_system_file_logging_state(LOG_system_enum_t system) {
     for (uint16_t i = 0; i < LOG_NUMBER_OF_SYSTEMS; i++) {
         if (LOG_systems[i].system == system) {
-            LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, "%20s: %9s (log file: '%s')",  LOG_systems[i].name, LOG_systems[i].file_logging_enabled ? "enabled" : "DISABLED", LOG_systems[i].log_file_path);
+            LOG_message(
+                LOG_SYSTEM_LOG, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                "%20s: %9s (log file: '%s')",
+                LOG_systems[i].name, LOG_systems[i].file_logging_enabled ? "enabled" : "DISABLED",
+                LOG_systems[i].log_file_path
+            );
             return;
         }
     }
