@@ -1092,6 +1092,11 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
+        .tcmd_name = "mpi_send_firmware_upgrade",
+        .tcmd_func = TCMDEXEC_mpi_send_firmware_upgrade,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
     // ****************** END: MPI_telecommand_definitions ********************
     // ****************** START SECTION: stm32_internal_flash_telecommand_defs ******************
 
