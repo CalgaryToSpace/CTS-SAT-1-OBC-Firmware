@@ -153,6 +153,41 @@ int16_t TCMD_get_next_tcmd_agenda_slot_to_execute() {
     return earliest_slot_num;
 }
 
+
+/// @brief Logs a message to a file.
+/// @param filename The name of the file to log to.
+/// @param message The message to log.
+/// @return 0 on success, 1 if mounting LFS failed, 2 if writing to the file failed.
+/// @note This function is used to log telecommand responses to a file.
+static uint8_t TCMD_store_resp_to_file(const char *filename, const char *message) {
+    const int8_t mount_ret = LFS_mount();
+    if (mount_ret < 0) {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error: TCMD_store_resp_to_file: Failed to mount LFS. Error code: %d",
+            mount_ret
+        );
+        return 1;
+    }
+
+    // FIXME(Issue #389): Should write a timestamp probably. Maybe a telecommand name too, and maybe the arg string.
+    const int8_t write_file_return = LFS_write_file(
+        filename,
+        (uint8_t *)message,
+        strlen(message)
+    );
+    if (write_file_return != 0) {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error: TCMD_store_resp_to_file: Failed to write to file. LFS_write_file() -> %d",
+            write_file_return
+        );
+        return 2;
+    }
+    
+    return 0;
+}
+
 /// @brief Executes a telecommand immediately, based on the minimum info required to execute a telecommand.
 /// @param tcmd_idx The index into `TCMD_telecommand_definitions` for the telecommand to execute.
 /// @param args_str_no_parens A cstring containing the arguments for the telecommand. Null-terminated.
@@ -222,7 +257,7 @@ static uint8_t TCMD_execute_parsed_telecommand_now(
     // If the filename is not empty, log the telecommand to the file.
     if (tcmd_resp_fname != NULL && strnlen(tcmd_resp_fname, TCMD_MAX_RESP_FNAME_LEN) > 0) {
         // Internally Logs errors, no point in collecting error here
-        TCMD_log_to_file(tcmd_resp_fname, response_output_buf);
+        TCMD_store_resp_to_file(tcmd_resp_fname, response_output_buf);
     }
     return tcmd_result;
 }
@@ -274,47 +309,6 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
     );
 }
 
-/// @brief Logs a message to a file.
-/// @param filename The name of the file to log to.
-/// @param message The message to log.
-/// @return 0 on success, 1 if mounting LFS failed, 2 if writing to the file failed.
-/// @note This function is used to log telecommand responses to a file.
-uint8_t TCMD_log_to_file(const char *filename, const char *message)
-{
-    if (!LFS_is_lfs_mounted) {
-        const int8_t mount_ret = LFS_mount();
-        if (mount_ret < 0) {
-            LOG_message(
-                LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-                "Error: TCMD_log_to_file: Failed to mount LFS. Error code: %d",
-                mount_ret
-            );
-            return 1;
-        }
-    }
-
-    // FIXME(Issue #389): Should write a timestamp probably. Maybe a telecommand name too, and maybe the arg string.
-    const int8_t write_file_return = LFS_write_file(
-        filename,
-        (uint8_t *)message,
-        strlen(message)
-    );
-    if (write_file_return != 0) {
-        LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "Error: TCMD_log_to_file: Failed to write to file '%s'. Error code: %d",
-            filename,
-            write_file_return
-        );
-        return 2;
-    }
-    LOG_message(
-        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "TCMD_log_to_file: Successfully wrote to file '%s'.",
-        filename
-    );
-    return 0;
-} 
 
 /// @brief Deletes all entries from the agenda.
 /// @return Cannot fail, so no return value.
@@ -368,7 +362,7 @@ uint8_t TCMD_agenda_delete_by_tssent(uint64_t tssent) {
 
 /// @brief Fetches the active agendas.
 /// @return 0 on success, 1 if there are no active agendas.
-uint8_t TCMD_agenda_fetch(){
+uint8_t TCMD_agenda_fetch() {
     uint16_t active_agendas = 0;
     uint16_t logged_agendas = 0;
     
@@ -380,7 +374,7 @@ uint8_t TCMD_agenda_fetch(){
     }
 
     // if no active agendas, return 1
-    if(active_agendas == 0){
+    if (active_agendas == 0){
         LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "TCMD_agenda_fetch: No entries in the agenda."
@@ -432,7 +426,6 @@ uint8_t TCMD_agenda_fetch(){
 /// @return 0 on success, > 0 on error.
 /// @note Calls `LOG_message()` before all returns. Argument is case-insensitive.
 uint8_t TCMD_agenda_delete_by_name(const char *telecommand_name) {
-
     // Get count of active agendas
     const uint8_t active_agendas = TCMD_get_agenda_used_slots_count();
 
@@ -453,7 +446,7 @@ uint8_t TCMD_agenda_delete_by_name(const char *telecommand_name) {
         }
     }
 
-    if(!is_valid_telecommand_name){
+    if (!is_valid_telecommand_name) {
         LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "TCMD_agenda_delete_by_telecommand_name: Invalid telecommand name passed in the function."
@@ -484,6 +477,4 @@ uint8_t TCMD_agenda_delete_by_name(const char *telecommand_name) {
     );
 
     return 0;
-
 }
- 

@@ -41,9 +41,7 @@ static uint8_t does_filesystem_have_bypass_deployment_and_enable_radio_file(void
     // Check if the file exists in the filesystem.
     const char* filename = "/bypass_deployment_and_enable_radio.txt";
     
-    if (!LFS_is_lfs_mounted) {
-        LFS_mount(); // Steamroll on error.
-    }
+    LFS_ensure_mounted(); // Steamroll on error.
 
     // Check if the file exists.
     lfs_soff_t file_size = LFS_file_size(filename);
