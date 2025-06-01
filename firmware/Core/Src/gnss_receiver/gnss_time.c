@@ -1,4 +1,3 @@
-#define _GNU_SOURCE
 #include "gnss_receiver/gnss_internal_drivers.h"
 #include "timekeeping/timekeeping.h"
 #include "log/log.h"
@@ -8,15 +7,10 @@
 #include <stdint.h>
 #include <string.h>
 
-/**
- * @brief Portable version of timegm(). Converts a struct tm (UTC) to Unix epoch time.
- *
- * This function temporarily sets the environment timezone to UTC and uses mktime(),
- * which normally interprets the struct tm as local time.
- *
- * @param tm Pointer to a struct tm that represents UTC time.
- * @return time_t The Unix epoch time, or (time_t)-1 on error.
- */
+/// @brief Portable version of timegm(). Converts a struct tm (UTC) to Unix epoch time. This function temporarily sets the environment timezone to UTC and uses mktime(), which normally interprets the struct tm as local time.
+/// @param tm Pointer to a struct tm that represents UTC time.
+/// @return time_t The Unix epoch time, or (time_t)-1 on error.
+
 time_t portable_timegm(struct tm *tm) {
     char *tz = getenv("TZ");
     setenv("TZ", "", 1);  // Temporarily set timezone to UTC
