@@ -3,6 +3,7 @@
 
 #include "littlefs/flash_driver.h"
 #include "debug_tools/debug_uart.h"
+#include "log/log.h"
 
 #include "config/static_config.h"
 
@@ -799,11 +800,7 @@ FLASH_error_enum_t FLASH_reset(SPI_HandleTypeDef *hspi, uint8_t chip_number)
 /// @param hspi - Pointer to the SPI HAL handle
 /// @param chip_number - The chip select number to activate
 /// @retval FLASH_ERR_OK (0) on success, <0 on failure (from the FLASH_error_enum_t enum)
-FLASH_error_enum_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_number)
-{
-    // TODO: confirm if this works with the CS2 logical chip on each physical FLASH chip;
-    // ^ Seems as though it only works for CS1.
-
+FLASH_error_enum_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_number) {
     uint8_t tx_buffer[1] = {FLASH_CMD_READ_ID};
     uint8_t rx_buffer[5];
     memset(rx_buffer, 0, 5);
@@ -856,23 +853,19 @@ FLASH_error_enum_t FLASH_is_reachable(SPI_HandleTypeDef *hspi, uint8_t chip_numb
     // Check the received ID (modify according to the expected ID of your memory module)
     // rx_buffer[0] is the manufacturer ID, rx_buffer[1] is the memory type,
     // and rx_buffer[2] is the memory capacity (not checked, as we have a few different capacities).
-    // rx_buffer[2] is 0x20=512 for 512 Mib (mebibits)
-    // TODO: maybe check the capacity as well here, esp. in deployment
-    uint8_t are_bytes_correct = 0;
-    if (rx_buffer[0] == 0x2C && rx_buffer[1] == 0x14) {
-        DEBUG_uart_print_str("SUCCESS: FLASH_is_reachable received IDs: ");
-        are_bytes_correct = 1;
-    } else {
-        DEBUG_uart_print_str("ERROR: FLASH_is_reachable received IDs: ");
-        are_bytes_correct = 0;
-    }
+    // rx_buffer[2] is 0x20=512 for 512 Mib (mebibits).
+    const uint8_t are_bytes_correct = (rx_buffer[0] == 0x2C && rx_buffer[1] == 0x14);
 
-    DEBUG_uart_print_array_hex(rx_buffer, 5);
-    DEBUG_uart_print_str("\n");
+    LOG_message(
+        LOG_SYSTEM_FLASH, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
+        "%s: Flash IDs: 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X",
+        are_bytes_correct ? "SUCCESS" : "ERROR",
+        rx_buffer[0], rx_buffer[1], rx_buffer[2], rx_buffer[3], rx_buffer[4]
+    );
 
     if (!are_bytes_correct) {
-        // error: IDs don't match
+        // Error: IDs don't match.
         return FLASH_ERR_UNKNOWN;
     }
-    return FLASH_ERR_OK; // success
+    return FLASH_ERR_OK; // Success
 }
