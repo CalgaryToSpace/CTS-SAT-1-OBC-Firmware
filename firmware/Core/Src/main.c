@@ -35,7 +35,9 @@
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_commands.h"
 #include "littlefs/flash_driver.h"
+#include "littlefs/littlefs_helper.h"
 #include "system/system_bootup.h"
+#include "eps_drivers/eps_time.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -315,14 +317,19 @@ int main(void)
   
   FLASH_deactivate_chip_select();
 
+  LFS_ensure_mounted();
+  
+  EPS_set_obc_time_based_on_eps_time(); // Sync approx time for ADCS.
+
   // Initialize the ADCS CRC8 checksum, clock, and LittleFS directory (required for ADCS operation).
-  ADCS_initialize(); // TODO: LittleFS must be formatted and mounted, and system time must be set, before this command is run
+  ADCS_initialize(); // Note: LittleFS must be formatted and mounted, and system time must be set, before this command is run
 
   // Always leave the Camera enable signal enabled. Easier to control it through just the EPS.
   HAL_GPIO_WritePin(PIN_CAM_EN_OUT_GPIO_Port, PIN_CAM_EN_OUT_Pin, GPIO_PIN_SET);
 
   // Disable systems on bootup
   SYS_disable_systems_bootup();
+
   /* USER CODE END 2 */
 
   /* Init scheduler */
