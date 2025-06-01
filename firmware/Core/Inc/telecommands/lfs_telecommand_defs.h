@@ -40,6 +40,11 @@ uint8_t TCMDEXEC_fs_read_file_hex(const char *args_str, TCMD_TelecommandChannel_
 uint8_t TCMDEXEC_fs_read_text_file(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len);
 
+uint8_t TCMDEXEC_fs_read_file_sha256_hash_json(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+);
+
 uint8_t TCMDEXEC_fs_demo_write_then_read(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len);
 

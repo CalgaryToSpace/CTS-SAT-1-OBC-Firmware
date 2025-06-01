@@ -1,3 +1,4 @@
+import hashlib
 import re
 import sys
 from pathlib import Path
@@ -58,7 +59,23 @@ def reconstruct_bulk_downlinked_file(log_file_path: Path, output_file_path: Path
         )
 
 
-if __name__ == "__main__":
+def calculate_sha256(file_path: Path) -> str:
+    """Calculates the SHA-256 hash of a file.
+
+    Args:
+        file_path: Path to the file.
+
+    Returns:
+        The SHA-256 hash of the file as a hexadecimal string.
+    """
+    sha256_hash = hashlib.sha256()
+    with open(file_path, "rb") as f:
+        for byte_block in iter(lambda: f.read(4096), b""):
+            sha256_hash.update(byte_block)
+    return sha256_hash.hexdigest()
+
+
+def main() -> None:
     if len(sys.argv) != 3:
         print(
             "Usage: python extract_radio_packets_from_logs.py <log_file_path> <output_file_path>"
@@ -74,3 +91,10 @@ if __name__ == "__main__":
 
     reconstruct_bulk_downlinked_file(log_file_path, output_file_path)
     print(f"Reconstructed file saved to: {output_file_path}")
+
+    print(f"Output file size: {output_file_path.stat().st_size:,} bytes")
+    print(f"SHA-256 hash: {calculate_sha256(output_file_path)}")
+
+
+if __name__ == "__main__":
+    main()
