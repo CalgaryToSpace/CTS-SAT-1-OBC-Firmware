@@ -453,12 +453,3 @@ const char *LOG_get_memory_table_full_message_at_index(uint8_t index)
 {
     return LOG_memory_table[index].full_message;
 }
-
-/// @brief Get the most recent log message text 
-/// @return pointer to the full text of the most recent message
-/// (statically allocated)
-const char *LOG_get_most_recent_log_message_text(void)
-{
-    return LOG_memory_table[LOG_memory_index_of_current_log_entry].full_message;
-}
-

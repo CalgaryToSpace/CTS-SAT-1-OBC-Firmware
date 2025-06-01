@@ -239,16 +239,6 @@ uint8_t TCMDEXEC_log_set_system_debugging_messages_state(
     return 0;
 }
 
-/// @brief Telecommand: Report the latest log message
-uint8_t TCMDEXEC_log_report_latest_message_from_memory(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-    char *response_output_buf, uint16_t response_output_buf_len
-) {
-    const char *log_text = LOG_get_most_recent_log_message_text();
-    snprintf(response_output_buf, response_output_buf_len, "%s", log_text);
-    return 0;
-}
-
 /// @brief Telecommand: Report the N latest log messages into response_output_buf
 /// @param args_str
 /// - Arg 0: Number of latest log messages to report

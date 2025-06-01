@@ -75,6 +75,5 @@ const char* LOG_get_severity_name(LOG_severity_enum_t severity);
 uint8_t LOG_memory_table_max_entries(void);
 uint8_t LOG_get_memory_table_index_of_most_recent_log_entry(void);
 const char *LOG_get_memory_table_full_message_at_index(uint8_t index);
-const char *LOG_get_most_recent_log_message_text(void);
 
 #endif // __INCLUDE__GUARD__LOG_H_
