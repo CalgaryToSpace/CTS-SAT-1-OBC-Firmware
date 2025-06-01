@@ -301,7 +301,7 @@ uint8_t TCMDEXEC_log_set_system_severity_mask(const char *args_str, TCMD_Telecom
     }
     
     uint64_t severity_mask = 0;
-    uint8_t arg_1_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &severity_mask);
+    const uint8_t arg_1_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &severity_mask);
     if (arg_1_result) {
         snprintf(response_output_buf, response_output_buf_len, "Unable to parse severity_mask from second telecommand argument");
         return 1;
@@ -314,7 +314,7 @@ uint8_t TCMDEXEC_log_set_system_severity_mask(const char *args_str, TCMD_Telecom
         return 2;
     }
 
-    LOG_system_enum_t LOG_source = LOG_source_from_str(source);
+    const LOG_system_enum_t LOG_source = LOG_source_from_str(source);
     if (LOG_source == LOG_SYSTEM_UNKNOWN) {
         snprintf(
             response_output_buf, response_output_buf_len,

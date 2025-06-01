@@ -109,22 +109,6 @@ static const uint16_t LOG_NUMBER_OF_SYSTEMS = sizeof(LOG_systems) / sizeof(LOG_s
 ///     Exclude one or more sinks using LOG_all_sinks_except(...)
 void LOG_message(LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_t sink_mask, const char fmt[], ...)
 {
-    LOG_system_t *LOG_source = NULL;
-    for (uint16_t i = 0; i < LOG_NUMBER_OF_SYSTEMS; i++) {
-        if (LOG_systems[i].system == source) {
-            LOG_source = &LOG_systems[i];
-            break;
-        }
-    }
-    if (LOG_source == NULL) {
-        // Source not found
-        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_SINK_ALL, "LOG_message(): unknown source: %d", source);
-        return;
-    }
-
-    if (LOG_source->file_logging_enabled && (severity & LOG_source->severity_mask)) {
-        return; // Logging is disabled for this source and/or severity
-    }
     // Ensure quick return if debugging is disabled
     // Needed to maintain good hot-path performance
     if (severity == LOG_SEVERITY_DEBUG) {
@@ -174,6 +158,9 @@ void LOG_message(LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_
             system = &LOG_systems[i];
             break;
         }
+    }
+    if (system->file_logging_enabled && (severity & system->severity_mask)) {
+        return; // Logging is disabled for this source and/or severity
     }
     snprintf(current_log_entry->full_message, LOG_FULL_MESSAGE_MAX_LENGTH, 
             "%s [%s:%s]: %s\n", 
