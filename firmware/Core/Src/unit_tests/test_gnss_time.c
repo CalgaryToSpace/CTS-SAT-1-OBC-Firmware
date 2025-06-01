@@ -1,4 +1,3 @@
-#define _GNU_SOURCE
 #include "gnss_receiver/gnss_internal_drivers.h"
 #include "gnss_receiver/gnss_time.h"
 #include "timekeeping/timekeeping.h"
