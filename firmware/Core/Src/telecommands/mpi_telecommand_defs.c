@@ -95,7 +95,6 @@ uint8_t TCMDEXEC_mpi_send_command_get_response_hex(
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0: Success, >0: Failure
 uint8_t TCMDEXEC_mpi_enable_active_mode(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len) {
-    
     // Get the file name from the telecommand argument
     char arg_file_name[LFS_MAX_PATH_LENGTH];
     const uint8_t parse_file_name_result = TCMD_extract_string_arg(args_str, 0, arg_file_name, sizeof(arg_file_name));

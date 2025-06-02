@@ -10,6 +10,50 @@
 
 #include <stdio.h>
 
+static int8_t write_mpi_timestamp_to_file(uint32_t buffer_filled_uptime_ms) {
+    // Write timestamp data (the time the buffer finished filling) to file.
+    const uint32_t uptime_ms = TIME_get_current_system_uptime_ms();
+
+    const uint64_t timestamp_ms = TIME_convert_uptime_to_unix_epoch_time_ms(uptime_ms);
+    char timestamp_ms_str[32];
+    GEN_uint64_to_str(timestamp_ms, timestamp_ms_str);
+
+    char datetime_fmt_str[40];
+    TIME_format_utc_datetime_str(
+        datetime_fmt_str, sizeof(datetime_fmt_str),
+        timestamp_ms, TIME_last_synchronization_source
+    );
+
+    char timestamp_fmt_str[40];
+    TIME_format_timestamp_str(
+        timestamp_fmt_str, sizeof(timestamp_fmt_str),
+        timestamp_ms, TIME_last_synchronization_source
+    );
+
+    char buffer_footer_str[200];
+    snprintf(
+        buffer_footer_str, sizeof(buffer_footer_str),
+        "{\"uptime_ms\":%ld,\"timestamp\":\"%s\",\"datetime\":\"%s\",\"timestamp_ms\":%s}",
+        uptime_ms,
+        timestamp_fmt_str,
+        datetime_fmt_str,
+        timestamp_ms_str
+    );
+
+    const lfs_ssize_t write_timestamp_result = lfs_file_write(
+        &LFS_filesystem, &MPI_science_data_file_pointer,
+        buffer_footer_str, strlen(buffer_footer_str)
+    );
+    if (write_timestamp_result < 0) {
+        LOG_message(
+            LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "MPI Header: Error writing timestamp to file: %ld", write_timestamp_result
+        );
+        return write_timestamp_result;
+    }
+    return 0; // Success
+}
+
 static void write_mpi_data_to_memory(volatile uint8_t* large_buffer, uint32_t buffer_filled_uptime_ms) {
     // Store the current time for this iteration
     const uint32_t start_time = HAL_GetTick();
@@ -30,40 +74,13 @@ static void write_mpi_data_to_memory(volatile uint8_t* large_buffer, uint32_t bu
         return; // Exit early if write failed
     }
 
-    // Write timestamp data (the time the buffer finished filling) to file.
-    // TODO: Wrap this in a configuration boolean.
-    // TODO: Consider a binary format instead.
-    const uint64_t buffer_filled_timestamp_ms = TIME_convert_uptime_to_unix_epoch_time_ms(
-        buffer_filled_uptime_ms
-    );
-    char timestamp_ms_str[32];
-    GEN_uint64_to_str(buffer_filled_uptime_ms, timestamp_ms_str);
-
-    char timestamp_log_fmt_str[60];
-    TIME_format_utc_datetime_str(
-        timestamp_log_fmt_str, sizeof(timestamp_log_fmt_str),
-        buffer_filled_timestamp_ms, TIME_last_synchronization_source
-    );
-
-    char buffer_footer_str[150];
-    snprintf(
-        buffer_footer_str, sizeof(buffer_footer_str),
-        "{\"uptime_ms\": %ld, \"timestamp\": \"%s\", \"timestamp_ms\": %s}",
-        buffer_filled_uptime_ms,
-        timestamp_log_fmt_str,
-        timestamp_ms_str
-    );
-
-    const lfs_ssize_t write_timestamp_result = lfs_file_write(
-        &LFS_filesystem, &MPI_science_data_file_pointer,
-        buffer_footer_str, strlen(buffer_footer_str)
-    );
+    const int8_t write_timestamp_result = write_mpi_timestamp_to_file(buffer_filled_uptime_ms);
     if (write_timestamp_result < 0) {
         LOG_message(
             LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-            "MPI Task: Error writing timestamp to file: %ld", write_timestamp_result
+            "MPI Task: Error writing timestamp to file: %d", write_timestamp_result
         );
-        return; // Exit early if write failed
+        return; // Exit early if timestamp write failed
     }
 
     LOG_message(

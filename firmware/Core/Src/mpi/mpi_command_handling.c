@@ -6,6 +6,8 @@
 #include "log/log.h"
 #include "debug_tools/debug_uart.h"
 #include "littlefs/littlefs_helper.h"
+#include "timekeeping/timekeeping.h"
+#include "transforms/arrays.h"
 
 #include "main.h"
 #include "stm32l4xx_hal.h"
@@ -167,6 +169,55 @@ static void MPI_power_on() {
     }
 }
 
+static int8_t MPI_write_file_header() {
+    // Write timestamp data (the time the buffer finished filling) to file.
+    const uint32_t uptime_ms = TIME_get_current_system_uptime_ms();
+
+    const uint64_t timestamp_ms = TIME_convert_uptime_to_unix_epoch_time_ms(uptime_ms);
+    char timestamp_ms_str[32];
+    GEN_uint64_to_str(timestamp_ms, timestamp_ms_str);
+
+    char datetime_fmt_str[40];
+    TIME_format_utc_datetime_str(
+        datetime_fmt_str, sizeof(datetime_fmt_str),
+        timestamp_ms, TIME_last_synchronization_source
+    );
+
+    char timestamp_fmt_str[40];
+    TIME_format_timestamp_str(
+        timestamp_fmt_str, sizeof(timestamp_fmt_str),
+        timestamp_ms, TIME_last_synchronization_source
+    );
+
+    char header_str[200];
+    snprintf(
+        header_str, sizeof(header_str),
+        "{\"mpi_start\":1,\"uptime_ms\":%ld,\"timestamp\":\"%s\",\"datetime\":\"%s\",\"timestamp_ms\":%s}",
+        uptime_ms,
+        timestamp_fmt_str,
+        datetime_fmt_str,
+        timestamp_ms_str
+    );
+
+    const lfs_ssize_t write_timestamp_result = lfs_file_write(
+        &LFS_filesystem, &MPI_science_data_file_pointer,
+        header_str, strlen(header_str)
+    );
+    if (write_timestamp_result < 0) {
+        LOG_message(
+            LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "MPI Header: Error writing timestamp to file: %ld", write_timestamp_result
+        );
+        return write_timestamp_result;
+    }
+
+    LOG_message(
+        LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
+        "MPI Header: File header written successfully"
+    );
+    return 0; // Success.
+}
+
 /// @brief Turns on MPI and prepares a LFS file to store MPI data in.
 /// @return 0: System successfully prepared for MPI data, < 0: Error
 static int8_t MPI_prepare_receive_data(const char output_file_path[]) {
@@ -219,6 +270,15 @@ static int8_t MPI_prepare_receive_data(const char output_file_path[]) {
         LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
         "Opened/created file: %s", output_file_path
     );
+
+    const int8_t header_status = MPI_write_file_header();
+    if (header_status < 0) {
+        LOG_message(
+            LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
+            "Error writing file header: %d", header_status
+        );
+        return header_status; // Error writing file header
+    }
     
     // Total 5 second delay to make sure MPI is booted
     const int32_t power_on_delay = (5000 - (HAL_GetTick() - start_time));
@@ -229,6 +289,7 @@ static int8_t MPI_prepare_receive_data(const char output_file_path[]) {
     return 0;
 }
 
+
 /// @brief Turns on MPI science mode and Enables DMA interrupt for MPI channel.
 /// @return 0: MPI and DMA successfully enabled, < 0: Error
 uint8_t MPI_enable_active_mode(const char output_file_path[]) {
@@ -236,7 +297,7 @@ uint8_t MPI_enable_active_mode(const char output_file_path[]) {
     const uint8_t prepare_result = MPI_prepare_receive_data(output_file_path);
     if (prepare_result != 0) {
         LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL, 
-            "MPI could not be powered on (MPI_prepare_receive_data result: %d)", prepare_result);
+            "MPI could not be powered on (MPI_prepare_receive_data err: %d)", prepare_result);
         return 5;
     }
 
