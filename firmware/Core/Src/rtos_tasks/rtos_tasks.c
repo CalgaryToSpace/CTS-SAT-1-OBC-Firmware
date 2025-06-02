@@ -43,23 +43,15 @@ void TASK_DEBUG_print_heartbeat(void *argument) {
 
     osDelay(TASK_heartbeat_period_ms > 0 ? TASK_heartbeat_period_ms : 1000);
 
-    uint64_t unix_time_ms = 0;
-    time_t seconds = 0;
-    uint16_t ms = 0;
-    struct tm *time_info;
-
     while (1) {
         if ((TASK_heartbeat_period_ms > 0)) {
-            unix_time_ms = TIME_get_current_unix_epoch_time_ms();
-            seconds = (time_t)(unix_time_ms/ 1000U);
-            ms = unix_time_ms - 1000U * seconds;
-            time_info = gmtime(&seconds);
+            char current_time_str[48] = {0};
+            TIME_get_current_utc_datetime_str(current_time_str, sizeof(current_time_str));
             
             LOG_message(
-                LOG_SYSTEM_OBC, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
-                "Heartbeat: FrontierSat time: %d%02d%02dT%02d:%02d:%02d.%03u, Uptime: %lu ms\n",
-                time_info->tm_year + 1900, time_info->tm_mon + 1, time_info->tm_mday,
-                time_info->tm_hour, time_info->tm_min, time_info->tm_sec, ms,
+                LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+                "Heartbeat: Datetime: %s, Uptime: %lu ms",
+                current_time_str,
                 HAL_GetTick()
             );
 
