@@ -27,23 +27,51 @@ static void write_mpi_data_to_memory(volatile uint8_t* large_buffer, uint32_t bu
             LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
             "MPI Task: Error writing to file: %ld", write_data_result
         );
-    }
-    else {
-        LOG_message(
-            LOG_SYSTEM_MPI, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
-            "MPI Task: Successfully wrote %ld bytes to file in %lums",
-            write_data_result,
-            HAL_GetTick() - start_time
-        );
+        return; // Exit early if write failed
     }
 
-    // Write timestamp data to file.
+    // Write timestamp data (the time the buffer finished filling) to file.
+    // TODO: Wrap this in a configuration boolean.
+    // TODO: Consider a binary format instead.
     const uint64_t buffer_filled_timestamp_ms = TIME_convert_uptime_to_unix_epoch_time_ms(
         buffer_filled_uptime_ms
     );
     char timestamp_ms_str[32];
-    // char timestamp_log_fmt_str[60]; // TODO: Use timekeeping string format also.
-    GEN_uint64_to_str(buffer_filled_uptime_ms, timestamp_ms_str);    
+    GEN_uint64_to_str(buffer_filled_uptime_ms, timestamp_ms_str);
+
+    char timestamp_log_fmt_str[60];
+    TIME_format_utc_datetime_str(
+        timestamp_log_fmt_str, sizeof(timestamp_log_fmt_str),
+        buffer_filled_timestamp_ms, TIME_last_synchronization_source
+    );
+
+    char buffer_footer_str[150];
+    snprintf(
+        buffer_footer_str, sizeof(buffer_footer_str),
+        "{\"uptime_ms\": %ld, \"timestamp\": \"%s\", \"timestamp_ms\": %s}",
+        buffer_filled_uptime_ms,
+        timestamp_log_fmt_str,
+        timestamp_ms_str
+    );
+
+    const lfs_ssize_t write_timestamp_result = lfs_file_write(
+        &LFS_filesystem, &MPI_science_data_file_pointer,
+        buffer_footer_str, strlen(buffer_footer_str)
+    );
+    if (write_timestamp_result < 0) {
+        LOG_message(
+            LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "MPI Task: Error writing timestamp to file: %ld", write_timestamp_result
+        );
+        return; // Exit early if write failed
+    }
+
+    LOG_message(
+        LOG_SYSTEM_MPI, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+        "MPI Task: Successfully wrote %ld bytes to file in %lums",
+        write_data_result,
+        HAL_GetTick() - start_time
+    );
 }
 
 
