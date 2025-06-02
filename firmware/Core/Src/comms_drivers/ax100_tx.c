@@ -9,7 +9,15 @@
 #include <string.h>
 #include <stdint.h>
 
-uint32_t COMMS_enable_ax100_downlink_uart_logs = 0;
+/// @brief When enabled, the radio packets will be sent to the Debug UART for debugging purposes.
+/// @note Only useful for configuration in ground testing.
+uint32_t AX100_enable_downlink_uart_logs = 0;
+
+/// @brief When enabled, log messages like "Downlink inhibited: ..." will be sent to the Debug UART.
+/// @note Logs are important to ensure that radio downlinks aren't sent before the antenna is deployed.
+///       These logs get very annoying though, so they can be turned off with this variable.
+/// @note Only useful for configuration in ground testing.
+uint32_t AX100_enable_downlink_inhibited_uart_logs = 1;
 
 static const uint32_t csp_priority = 3u << 30; // priority
 
@@ -57,7 +65,9 @@ static uint8_t send_bytes_to_ax100(uint8_t *packet, uint16_t packet_size) {
         // Recall: Do not transmit on the AX100 until the antenna is deployed.
         // The Bootup Operation FSM task will set the operation mode to NOMINAL_WITH_RADIO_TX
         // when the antenna is deployed.
-        DEBUG_uart_print_str("AX100 downlink inhibited: CTS1_operation_state != NOMINAL_WITH_RADIO_TX.\n");
+        if (AX100_enable_downlink_inhibited_uart_logs) {
+            DEBUG_uart_print_str("AX100 downlink inhibited: CTS1_operation_state != NOMINAL_WITH_RADIO_TX.\n");
+        }
         
         // Return success to avoid lots of errors. It's not really an error case, as this is expected during early ops.
         return 0;
@@ -104,7 +114,7 @@ uint8_t AX100_downlink_bytes(uint8_t *data, uint16_t data_len) {
     // Any network layer (CSP) things should be done here (e.g., XTEA, CRC, etc.)
 
     // Debugging write to UART.
-    if (COMMS_enable_ax100_downlink_uart_logs) {
+    if (AX100_enable_downlink_uart_logs) {
         DEBUG_uart_print_mixed_array(
             packet_buffer_including_csp_header, data_len + AX100_CSP_HEADER_LENGTH_BYTES,
             ((COMMS_active_rf_switch_antenna == 1) ? "AX100 Down [ANT1]" : "AX100 Down [ANT2]")

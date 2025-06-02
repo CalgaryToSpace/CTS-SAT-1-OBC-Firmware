@@ -46,7 +46,7 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
         .variable_name = "TCMD_require_valid_sha256",
         .num_config_var = &TCMD_require_valid_sha256,
     },
-    //Background Timer Config
+    // Background Timer Config
     {
         .variable_name = "EPS_monitor_interval_ms",
         .num_config_var = &EPS_monitor_interval_ms,
@@ -55,7 +55,7 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
         .variable_name = "STM32_system_reset_interval_ms",
         .num_config_var = &STM32_system_reset_interval_ms,
     },
-    //End Background Timer config
+    // End Background Timer config
     {
         .variable_name = "TCMD_require_unique_tssent",
         .num_config_var = &TCMD_require_unique_tssent,
@@ -66,11 +66,18 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
         .num_config_var = &CONFIG_EPS_enable_uart_debug_print,
     },
 
-    // ******** COMMS Configuration ********
+    // ******** AX100 Configuration ********
     {
-        .variable_name = "COMMS_enable_ax100_downlink_uart_logs",
-        .num_config_var = &COMMS_enable_ax100_downlink_uart_logs,
+        .variable_name = "AX100_enable_downlink_uart_logs",
+        .num_config_var = &AX100_enable_downlink_uart_logs,
     },
+    {
+        .variable_name = "AX100_enable_downlink_inhibited_uart_logs",
+        .num_config_var = &AX100_enable_downlink_inhibited_uart_logs,
+    },
+    // ******** END AX100 Configuration ********
+
+    // ******** COMMS Configuration ********
     {
         .variable_name = "COMMS_bulk_downlink_delay_per_packet_ms",
         .num_config_var = &COMMS_bulk_downlink_delay_per_packet_ms,
