@@ -73,6 +73,9 @@ extern volatile uint8_t MPI_science_buffer_two[];
 extern volatile MPI_buffer_state_enum_t MPI_buffer_one_state;
 extern volatile MPI_buffer_state_enum_t MPI_buffer_two_state;
 
+extern volatile uint32_t MPI_buffer_one_last_filled_uptime_ms;
+extern volatile uint32_t MPI_buffer_two_last_filled_uptime_ms;
+
 
 #define AX100_MAX_KISS_FRAMES_IN_RX_QUEUE  8
 #define AX100_MAX_KISS_FRAME_SIZE_BYTES    500 // Could be as low as 256, probably.

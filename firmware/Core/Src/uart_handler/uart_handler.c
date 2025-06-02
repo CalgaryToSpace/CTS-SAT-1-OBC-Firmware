@@ -85,6 +85,9 @@ volatile uint8_t MPI_science_buffer_two[20480];
 volatile MPI_buffer_state_enum_t MPI_buffer_one_state = MPI_MEMORY_WRITE_STATUS_READY_TO_FILL;
 volatile MPI_buffer_state_enum_t MPI_buffer_two_state = MPI_MEMORY_WRITE_STATUS_READY_TO_FILL;
 
+volatile uint32_t MPI_buffer_one_last_filled_uptime_ms = 0; // Last time the buffer was filled
+volatile uint32_t MPI_buffer_two_last_filled_uptime_ms = 0; // Last time the buffer was filled
+
 /// @brief Index into a virtual array that is `MPI_science_buffer_one` and
 ///        `MPI_science_buffer_two` concatenated.
 volatile uint16_t UART_MPI_science_buffer_index = 0;
@@ -206,12 +209,15 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
                 }
                 UART_MPI_science_buffer_index += UART_mpi_rx_dma_buffer_len;
 
-                // Reset the index when needed and change flags when buffer filled
+                // When a buffer is filled, mark it as such.
+                // Reset the write index when needed. Identify the time it was fully filled.
                 if (UART_MPI_science_buffer_index == MPI_science_buffer_len) {
                     MPI_buffer_one_state = MPI_MEMORY_WRITE_STATUS_AWAITING_WRITE;
+                    MPI_buffer_one_last_filled_uptime_ms = HAL_GetTick();
                 }
                 else if (UART_MPI_science_buffer_index == (2 * MPI_science_buffer_len)) {
                     MPI_buffer_two_state = MPI_MEMORY_WRITE_STATUS_AWAITING_WRITE;
+                    MPI_buffer_two_last_filled_uptime_ms = HAL_GetTick();
                     UART_MPI_science_buffer_index = 0;
                 }
             }

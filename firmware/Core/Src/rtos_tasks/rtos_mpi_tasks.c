@@ -5,47 +5,45 @@
 #include "cmsis_os.h"
 #include "log/log.h"
 #include "uart_handler/uart_handler.h"
+#include "timekeeping/timekeeping.h"
+#include "transforms/arrays.h"
 
 #include <stdio.h>
 
-void write_mpi_data_to_memory(volatile uint8_t* large_buffer) {
+static void write_mpi_data_to_memory(volatile uint8_t* large_buffer, uint32_t buffer_filled_uptime_ms) {
     // Store the current time for this iteration
     const uint32_t start_time = HAL_GetTick();
 
-    // Mount LittleFS to memory (Shouldn't generally happen)
-    if (!LFS_is_lfs_mounted) {
-        const int8_t mount_result = LFS_mount();
+    // Ensure LFS is mounted. Steamroll.
+    LFS_ensure_mounted();
+
+    // Write science data to file.
+    const lfs_ssize_t write_data_result = lfs_file_write(
+        &LFS_filesystem, &MPI_science_data_file_pointer,
+        (uint8_t*)large_buffer, MPI_science_buffer_len
+    );
+    if (write_data_result < 0) {
         LOG_message(
-            LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_SINK_ALL, 
-            "MPI Task: Had to mount LFS. LFS_mount->%d. Took %lu ms",
-            mount_result,
+            LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "MPI Task: Error writing to file: %ld", write_data_result
+        );
+    }
+    else {
+        LOG_message(
+            LOG_SYSTEM_MPI, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+            "MPI Task: Successfully wrote %ld bytes to file in %lums",
+            write_data_result,
             HAL_GetTick() - start_time
         );
     }
 
-    // Write data to file
-    const lfs_ssize_t write_result = lfs_file_write(
-        &LFS_filesystem, &MPI_science_data_file_pointer,
-        (uint8_t*)large_buffer, MPI_science_buffer_len
+    // Write timestamp data to file.
+    const uint64_t buffer_filled_timestamp_ms = TIME_convert_uptime_to_unix_epoch_time_ms(
+        buffer_filled_uptime_ms
     );
-    if (write_result < 0) {
-        LOG_message(
-            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "MPI Task: Error writing to file: %ld", write_result
-        );
-    }
-    LOG_message(
-        LOG_SYSTEM_MPI, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
-        "MPI Task: Successfully wrote %ld bytes to file",
-        write_result
-    );
-    MPI_buffer_one_state = MPI_MEMORY_WRITE_STATUS_READY_TO_FILL;
-
-    // Log the time it took to write the data
-    LOG_message(
-        LOG_SYSTEM_MPI, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
-        "MPI Task: Write Time: %lu", HAL_GetTick() - start_time
-    );
+    char timestamp_ms_str[32];
+    // char timestamp_log_fmt_str[60]; // TODO: Use timekeeping string format also.
+    GEN_uint64_to_str(buffer_filled_uptime_ms, timestamp_ms_str);    
 }
 
 
@@ -54,14 +52,21 @@ void TASK_service_write_mpi_data(void *argument) {
     osDelay(5000);
 
     while(1) {
-
         // If the first large buffer contains data to write
         if (MPI_buffer_one_state == MPI_MEMORY_WRITE_STATUS_AWAITING_WRITE) {
-            write_mpi_data_to_memory(MPI_science_buffer_one);
+            write_mpi_data_to_memory(
+                MPI_science_buffer_one,
+                MPI_buffer_one_last_filled_uptime_ms
+            );
+
             MPI_buffer_one_state = MPI_MEMORY_WRITE_STATUS_READY_TO_FILL;
         }
         else if (MPI_buffer_two_state == MPI_MEMORY_WRITE_STATUS_AWAITING_WRITE) {
-            write_mpi_data_to_memory(MPI_science_buffer_two);
+            write_mpi_data_to_memory(
+                MPI_science_buffer_two,
+                MPI_buffer_one_last_filled_uptime_ms
+            );
+
             MPI_buffer_two_state = MPI_MEMORY_WRITE_STATUS_READY_TO_FILL;
         }
         
