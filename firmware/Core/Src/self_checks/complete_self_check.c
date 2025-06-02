@@ -61,9 +61,7 @@ uint8_t CTS1_check_is_adcs_alive() {
     if (id_struct.major_firmware_version != 7) {
         return 0;
     }
-    if (id_struct.minor_firmware_version != 12) {
-        return 0;
-    }
+    // Minor firmware version: 12 for engg model, 14 for flight model. Unchecked.
     return 1;
 }
 

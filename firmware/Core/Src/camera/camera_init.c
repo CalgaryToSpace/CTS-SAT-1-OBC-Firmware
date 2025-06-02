@@ -75,6 +75,18 @@ uint8_t CAM_change_baudrate(uint32_t new_baud_rate) {
     return 0; // Success
 }
 
+static void camera_clean_up() {
+    // Power off the camera.
+    const uint8_t eps_status = EPS_set_channel_enabled(EPS_CHANNEL_3V3_CAMERA, 0);
+    if (eps_status != 0) {
+        // Continue anyway. Just log a warning.
+        LOG_message(
+            LOG_SYSTEM_EPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "Error disabling camera EPS channel: status=%d. Continuing.",
+            eps_status
+        );
+    }
+}
 
 /// @brief Set up the camera by powering on and changing the baudrate to 230400.
 /// @return 0 on success. The error code from the `CAM_change_baudrate` function, or >100 if an EPS error occurred.
@@ -82,7 +94,7 @@ uint8_t CAM_change_baudrate(uint32_t new_baud_rate) {
 uint8_t CAM_setup() {
     // First, set baudrate to 115200 to reset the camera and OBC UART baud rate.
     // When the camera boots up, it defaults to 115200 baud. In order to command it
-    // past that, we need to set the baud rate to 115200 first, then change it to 230400.
+    // past that, we need to set the STM32 port's baud rate to 115200 first, then change it to 230400.
     // This is to avoid the camera stalling and being in a weird state where
     // the OBC UART handler's baudrate and the camera's baudrate are different.
     const uint8_t baudrate_reset_status = CAM_change_baudrate(115200);
@@ -119,15 +131,7 @@ uint8_t CAM_setup() {
         );
 
         // Turn off camera before exiting
-        const uint8_t eps_off_status = EPS_set_channel_enabled(EPS_CHANNEL_3V3_CAMERA, 0);
-        if (eps_off_status != 0) {
-            // Continue anyway. Just log a warning.
-            LOG_message(
-                LOG_SYSTEM_EPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-                "Error disabling camera power channel in CAM_capture_image: status=%d. Continuing.",
-                eps_off_status
-            );
-        }
+        camera_clean_up();
         return 2;
     }
     return 0; // Success
@@ -145,6 +149,7 @@ uint8_t CAM_test() {
         UART_camera_port_handle, (uint8_t*)"t", 1, 1000
     );
     if (tx_status != HAL_OK) {
+        camera_clean_up();
         return 1; // Error
     }
 
@@ -168,7 +173,7 @@ uint8_t CAM_test() {
             "Error receiving camera test response: HAL_UART_Receive status=%d",
             rx_status
         );
-
+        camera_clean_up();
         return 3; // Error
     }
 
@@ -182,11 +187,13 @@ uint8_t CAM_test() {
     );
 
     if (UART_test_str[0] == 0) {
+        camera_clean_up();
         return 5;
     }
 
     // Should contain string "piCAM/FM Test String Transmission".
     if (strstr(UART_test_str, "piCAM/FM Test String Transmission") == NULL) {
+        camera_clean_up();
         return 6;
     }
 
@@ -194,11 +201,13 @@ uint8_t CAM_test() {
 
     // Ensure string starts with the `test_resp_border_str`.
     if (strncmp(UART_test_str, test_resp_border_str, strlen(test_resp_border_str)) != 0) {
+        camera_clean_up();
         return 7;
     }
 
     // Ensure there's a second border string in the response.
     if (strstr(UART_test_str + strlen(test_resp_border_str), test_resp_border_str) == NULL) {
+        camera_clean_up();
         return 8;
     }
 
