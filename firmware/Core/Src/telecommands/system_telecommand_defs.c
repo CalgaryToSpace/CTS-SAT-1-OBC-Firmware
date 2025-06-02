@@ -46,7 +46,7 @@ uint8_t TCMDEXEC_core_system_stats(
     // TODO: Add beacon sent count
 
     char timestamp_string_ms[20];
-    GEN_uint64_to_str(TIM_get_current_unix_epoch_time_ms(), timestamp_string_ms);
+    GEN_uint64_to_str(TIME_get_current_unix_epoch_time_ms(), timestamp_string_ms);
 
     const char* STM32_reset_cause_name = STM32_reset_cause_enum_to_str(STM32_get_reset_cause());
 
@@ -79,13 +79,13 @@ uint8_t TCMDEXEC_core_system_stats(
         "\"eps_battery_percent\":%s"
         "}\n",
         timestamp_string_ms, // timestamp_ms
-        TIM_get_current_system_uptime_ms(), // uptime_ms
-        TIM_system_uptime_at_last_time_resync_ms, // last_resync_ms
-        TIM_get_current_system_uptime_ms() - TIM_system_uptime_at_last_time_resync_ms, // time_synced_ms_ago
+        TIME_get_current_system_uptime_ms(), // uptime_ms
+        TIME_system_uptime_at_last_time_resync_ms, // last_resync_ms
+        TIME_get_current_system_uptime_ms() - TIME_system_uptime_at_last_time_resync_ms, // time_synced_ms_ago
         time_of_last_tcmd_sent_ms_string, // time_of_last_tcmd_sent_ms
         TCMD_total_tcmd_queued_count, // total_tcmd_count
         LFS_is_lfs_mounted, // is_lfs_mounted
-        TIME_sync_source_enum_to_letter_char(TIM_last_synchronization_source), // last_time_sync_source
+        TIME_sync_source_enum_to_letter_char(TIME_last_synchronization_source), // last_time_sync_source
         STM32_reset_cause_name, // reboot_reason
         eps_battery_percent_str // eps_battery_percent
     ); 

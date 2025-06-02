@@ -6,9 +6,11 @@
 #include <stdio.h>
 #include <string.h>
 
-uint8_t TCMDEXEC_get_system_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
-    TIM_get_timestamp_string(response_output_buf, response_output_buf_len);
+uint8_t TCMDEXEC_get_system_time(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    TIME_get_current_timestamp_str(response_output_buf, response_output_buf_len);
     return 0;
 }
 
@@ -25,8 +27,8 @@ uint8_t TCMDEXEC_set_system_time(const char *args_str, TCMD_TelecommandChannel_e
     if (result != 0) {
         return 1;
     }
-    TIM_set_current_unix_epoch_time_ms(
-        ms, TIM_SOURCE_TELECOMMAND_ABSOLUTE
+    TIME_set_current_unix_epoch_time_ms(
+        ms, TIME_SYNC_SOURCE_TELECOMMAND_ABSOLUTE
     );
     snprintf(response_output_buf, response_output_buf_len, "Updated system time");
     return 0;
@@ -47,9 +49,9 @@ uint8_t TCMDEXEC_correct_system_time(const char *args_str, TCMD_TelecommandChann
         return 1;
     }
 
-    TIM_set_current_unix_epoch_time_ms(
-        TIM_get_current_unix_epoch_time_ms() + correction_time_ms,
-        TIM_SOURCE_TELECOMMAND_CORRECTION
+    TIME_set_current_unix_epoch_time_ms(
+        TIME_get_current_unix_epoch_time_ms() + correction_time_ms,
+        TIME_SYNC_SOURCE_TELECOMMAND_CORRECTION
     );
     snprintf(response_output_buf, response_output_buf_len, "Updated system time");
     

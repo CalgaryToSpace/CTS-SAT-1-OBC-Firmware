@@ -106,7 +106,7 @@ uint8_t TCMDEXEC_freertos_demo_stack_usage(
     // Force the compiler to not optimize out the memset calls.
     uint32_t sum = 0;
     for (uint32_t i = 0; i < num_bytes; i++) {
-        sum += vla[i] * TIM_get_current_system_uptime_ms();
+        sum += vla[i] * TIME_get_current_system_uptime_ms();
     }
     
     return 0;

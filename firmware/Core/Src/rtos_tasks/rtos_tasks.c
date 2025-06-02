@@ -50,7 +50,7 @@ void TASK_DEBUG_print_heartbeat(void *argument) {
 
     while (1) {
         if ((TASK_heartbeat_period_ms > 0)) {
-            unix_time_ms = TIM_get_current_unix_epoch_time_ms();
+            unix_time_ms = TIME_get_current_unix_epoch_time_ms();
             seconds = (time_t)(unix_time_ms/ 1000U);
             ms = unix_time_ms - 1000U * seconds;
             time_info = gmtime(&seconds);

@@ -10,7 +10,7 @@
 uint8_t EPS_set_eps_time_based_on_obc_time() {
     // If the OBC's time is less than 2010-01-01T00:00:00Z, then raise an error.
     // The EPS doesn't like it when you give pre-2000 timestamps.
-    if (TIM_get_current_unix_epoch_time_ms() < 1262329200000) {
+    if (TIME_get_current_unix_epoch_time_ms() < 1262329200000) {
         return 3;
     }
 
@@ -21,7 +21,7 @@ uint8_t EPS_set_eps_time_based_on_obc_time() {
     }
     
     // +500ms has the same effect as rounding properly in a float division.
-    const int32_t delta_seconds = ((TIM_get_current_unix_epoch_time_ms() + 500) / 1000) - ((int64_t) status.unix_time_sec);
+    const int32_t delta_seconds = ((TIME_get_current_unix_epoch_time_ms() + 500) / 1000) - ((int64_t) status.unix_time_sec);
 
     const uint8_t result_sync = EPS_CMD_correct_time(delta_seconds);
     LOG_message(
@@ -45,9 +45,9 @@ uint8_t EPS_set_obc_time_based_on_eps_time() {
         return result_status;
     }
 
-    TIM_set_current_unix_epoch_time_ms(
+    TIME_set_current_unix_epoch_time_ms(
         ((uint64_t) status.unix_time_sec) * 1000,
-        TIM_SOURCE_EPS_RTC
+        TIME_SYNC_SOURCE_EPS_RTC
     );
     return 0;
 }

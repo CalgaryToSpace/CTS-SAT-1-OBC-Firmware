@@ -41,7 +41,7 @@ following uppercase identifiers to indicate which subsystem/region of code it be
 * `CTS1_`: related to CTS-SAT-1/FrontierSat as a whole
 
 ## Other Categories
-* `TIM_`: related to the timer peripheral, or timing in general
+* `TIME_`: related to the timer peripheral, or time-keeping in general
 
 ## Libraries, External, etc.
 
