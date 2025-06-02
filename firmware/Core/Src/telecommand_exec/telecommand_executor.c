@@ -129,7 +129,7 @@ uint16_t TCMD_get_agenda_used_slots_count() {
 int16_t TCMD_get_next_tcmd_agenda_slot_to_execute() {
     // TODO: benchmark this, and consider an O(1) optimization by keeping track of the timestamp of the next upcoming telecommand timestamp.
     
-    const uint64_t current_timestamp_ms = TIM_get_current_unix_epoch_time_ms();
+    const uint64_t current_timestamp_ms = TIME_get_current_unix_epoch_time_ms();
 
     int16_t earliest_slot_num = -1;
     uint64_t earliest_timestamp = UINT64_MAX;
@@ -204,7 +204,7 @@ static int8_t TCMD_store_resp_to_file(
     char timestamp_sent_str[30];
     GEN_uint64_to_str(timestamp_sent, timestamp_sent_str);
     char timestamp_done_str[30];
-    GEN_uint64_to_str(TIM_get_current_unix_epoch_time_ms(), timestamp_done_str);
+    GEN_uint64_to_str(TIME_get_current_unix_epoch_time_ms(), timestamp_done_str);
 
     char header_msg[100 + TCMD_ARGS_STR_NO_PARENS_SIZE];
     snprintf(

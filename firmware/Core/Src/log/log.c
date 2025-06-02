@@ -131,7 +131,7 @@ void LOG_message(LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_
     }
 
     // Get the system time
-    TIM_get_timestamp_string(LOG_timestamp_string, LOG_TIMESTAMP_MAX_LENGTH);
+    TIME_get_current_timestamp_str(LOG_timestamp_string, LOG_TIMESTAMP_MAX_LENGTH);
 
     // Get pointer to next storage slot in circular memory table
     LOG_memory_index_of_current_log_entry++;

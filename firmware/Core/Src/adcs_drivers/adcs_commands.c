@@ -1195,7 +1195,7 @@ uint8_t ADCS_save_image_to_sd(ADCS_camera_select_enum_t camera_select, ADCS_imag
 /// @brief Instruct the ADCS to synchronize its Unix epoch time to the current OBC Unix time.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_synchronize_unix_time() {
-    uint64_t current_unix_time_ms = TIM_get_current_unix_epoch_time_ms();
+    uint64_t current_unix_time_ms = TIME_get_current_unix_epoch_time_ms();
     
     uint32_t s_component = current_unix_time_ms  / 1000;
     uint16_t ms_component = current_unix_time_ms % 1000;
