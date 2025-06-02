@@ -36,7 +36,7 @@ typedef struct {
 } LOG_system_t;
 
 typedef struct {
-    LOG_system_enum_t source;
+    LOG_system_enum_t system;
     LOG_severity_enum_t severity;
     uint32_t sink_mask;
     char full_message[LOG_FULL_MESSAGE_MAX_LENGTH];
@@ -99,7 +99,7 @@ static const uint16_t LOG_NUMBER_OF_SYSTEMS = sizeof(LOG_systems) / sizeof(LOG_s
 // External interfaces 
 
 /// @brief Log a message to several destinations (sinks)
-/// @param source source of log message (i.e., satellite subsystem)
+/// @param system the system sending the log message (i.e., satellite subsystem)
 /// @param severity message severity
 /// @param sink_mask bitfield representing desired log sinks
 /// @param fmt printf-link format
@@ -107,14 +107,14 @@ static const uint16_t LOG_NUMBER_OF_SYSTEMS = sizeof(LOG_systems) / sizeof(LOG_s
 /// @return void
 /// @details Normally the message should not end with a newline (\n).
 ///     Exclude one or more sinks using LOG_all_sinks_except(...)
-void LOG_message(LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_t sink_mask, const char fmt[], ...)
+void LOG_message(LOG_system_enum_t system, LOG_severity_enum_t severity, uint32_t sink_mask, const char fmt[], ...)
 {
     // Ensure quick return if debugging is disabled
     // Needed to maintain good hot-path performance
     if (severity == LOG_SEVERITY_DEBUG) {
         // Return early if debugging is not enabled for this system
-        // Use __builtin_ctz to count trailing zeros in source to convert bitshifted enum to array index
-        if (!(severity & LOG_systems[__builtin_ctz(source)].severity_mask)) { 
+        // Use __builtin_ctz to count trailing zeros in system to convert bitshifted enum to array index
+        if (!(severity & LOG_systems[__builtin_ctz(system)].severity_mask)) { 
             return;
         }
         // Return early if debugging is not enabled for ALL of the requested sinks
@@ -139,7 +139,7 @@ void LOG_message(LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_
         LOG_memory_index_of_current_log_entry = 0;
     }
     LOG_memory_entry_t *current_log_entry = &LOG_memory_table[LOG_memory_index_of_current_log_entry];
-    current_log_entry->source = source;
+    current_log_entry->system = system;
     current_log_entry->severity = severity;
     current_log_entry->sink_mask = sink_mask;
 
@@ -154,7 +154,7 @@ void LOG_message(LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_
     const char *severity_text = LOG_get_severity_name(severity);
     LOG_system_t *system_config = &LOG_systems[LOG_NUMBER_OF_SYSTEMS - 1];
     for (uint16_t i = 0; i < LOG_NUMBER_OF_SYSTEMS; i++) {
-        if (LOG_systems[i].system == source) {
+        if (LOG_systems[i].system == system) {
             system_config = &LOG_systems[i];
             break;
         }
@@ -167,7 +167,8 @@ void LOG_message(LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_
             LOG_formatted_log_message
     );
 
-    // Send message to each enabled sink.
+    // If the subsystem is configured to emit the given severity, 
+    // send the message to each enabled sink.
     for (uint16_t i = 0; i < LOG_NUMBER_OF_SINKS; i++) {
         const LOG_sink_t *sink_config = &LOG_sinks[i];
         if (
@@ -308,6 +309,7 @@ void LOG_set_system_severity_mask(LOG_system_enum_t system, uint32_t severity_ma
     for (uint16_t i = 0; i < LOG_NUMBER_OF_SYSTEMS; i++) {
         if (LOG_systems[i].system == system) {
             LOG_systems[i].severity_mask = severity_mask;
+            LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, "LOG_set_system_severity_mask(): updated severity");
             return;
         }
     }
