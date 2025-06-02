@@ -19,6 +19,7 @@ static void mpi_firmware_upgrade_fail_cleanup() {
 /// @details Power on the MPI, enter bootloader mode, stream the firmware file to the MPI.
 /// @note Does NOT power off the MPI at the end.
 /// @return 0 on success, >0 on failure.
+/// @note Details discussed in https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/pull/467
 uint8_t MPI_firmware_upgrade(const char firmware_file_path[]) {
     // Power on the MPI
     const uint8_t power_on_12v_result = EPS_set_channel_enabled(EPS_CHANNEL_12V_MPI, 1);
@@ -74,12 +75,23 @@ uint8_t MPI_firmware_upgrade(const char firmware_file_path[]) {
         return 4; // Error sending bootloader command
     }
 
-    // Read the firmware data
-    uint8_t buffer[2048];
+    HAL_Delay(250); // Wait for the MPI to enter bootloader mode.
+
+    // Read the firmware data and send it to the MPI.
+    const uint16_t chunk_size = 512; // Based on MPI's configuration.
+    uint8_t buffer[chunk_size];
     int32_t bytes_read;
     uint32_t total_bytes_sent = 0;
-    while ((bytes_read = lfs_file_read(&LFS_filesystem, &file, buffer, sizeof(buffer))) > 0) {
-        // Send the read data to the MPI
+    uint16_t chunk_count = 0;
+    while ((bytes_read = lfs_file_read(&LFS_filesystem, &file, buffer, chunk_size)) > 0) {
+        // For the last chunk, if it's smaller than chunk_size, we must pad it with 0xFF bytes.
+        if (bytes_read < chunk_size) {
+            for (int32_t i = bytes_read; i < chunk_size; i++) {
+                buffer[i] = 0xFF; // Pad with 0xFF
+            }
+        }
+
+        // Send the read data to the MPI.
         const HAL_StatusTypeDef send_result = HAL_UART_Transmit(
             UART_mpi_port_handle, buffer, bytes_read, 1000
         );
@@ -93,14 +105,17 @@ uint8_t MPI_firmware_upgrade(const char firmware_file_path[]) {
             return 5;
         }
         total_bytes_sent += bytes_read;
+        chunk_count++;
 
         DEBUG_uart_print_str("."); // Print a dot for each chunk sent, for progress indication.
+        HAL_Delay(100);
     }
 
     LOG_message(
         LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
-        "MPI_firmware_upgrade: Firmware upgrade executed. Sent %ld bytes.",
-        total_bytes_sent
+        "MPI_firmware_upgrade: Firmware upgrade executed. Sent %ld bytes in %d chunks.",
+        total_bytes_sent,
+        chunk_count
     );
 
     // Close the file
