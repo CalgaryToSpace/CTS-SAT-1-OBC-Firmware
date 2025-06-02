@@ -80,30 +80,38 @@ void TIM_set_current_unix_epoch_time_ms(uint64_t current_unix_epoch_time_ms, TIM
     );
 }
 
+/// @brief Convert the system uptime to a unix epoch time in ms.
+/// @param uptime_ms System uptime in ms, as returned by HAL_GetTick().
+/// @return The unix epoch time in ms (ms since 1970-01-01).
+/// @note This function still works fine even if you store the uptime, resync the system time, and then call this function.
+uint64_t TIME_convert_uptime_to_unix_epoch_time_ms(uint32_t uptime_ms) {
+    return (uptime_ms - TIM_system_uptime_at_last_time_resync_ms) + TIM_unix_epoch_time_at_last_time_resync_ms;
+}
+
 /// @brief Returns the current unix timestamp, in milliseconds
 uint64_t TIM_get_current_unix_epoch_time_ms() {
-    return (HAL_GetTick() - TIM_system_uptime_at_last_time_resync_ms) + TIM_unix_epoch_time_at_last_time_resync_ms;
+    return TIME_convert_uptime_to_unix_epoch_time_ms(TIM_get_current_system_uptime_ms());
 }
 
 /// @brief Returns a computer-friendly timestamp string. 
-/// @param log_str - Pointer to buffer that stores the log string 
-/// @param max_len - Maximum length of log_str buffer
-/// @detail The string identifies the timestamp of the last time synchronization,
+/// @param dest_str - Pointer to buffer that stores the destination string.
+/// @param max_len - Maximum length of log_str buffer.
+/// @param uptime_ms - System uptime in ms, as returned by HAL_GetTick().
+/// @details The string identifies the timestamp of the last time synchronization,
 /// the synchronization source (N - none; G - GNSS/GPS; T - telecommand), 
 /// and the time passed in ms since the last synchronization.
-/// Added together, the two numbers represent the current timestamp in ms.
+/// Added together, the two numbers represent the unix timestamp in ms.
 /// Example: "1719169299720+0000042000_N"
-void TIM_get_timestamp_string(char *log_str, size_t max_len) {
+void TIME_format_timestamp_str(char dest_str[], size_t max_len, uint32_t uptime_ms) {
     if (max_len < TIM_EPOCH_DECIMAL_STRING_LEN) {
         return;
     }
     const char source = TIME_sync_source_enum_to_letter_char(TIM_last_synchronization_source);
     const uint32_t delta_uptime = (
-        TIM_get_current_system_uptime_ms()
-        - TIM_system_uptime_at_last_time_resync_ms
+        uptime_ms - TIM_system_uptime_at_last_time_resync_ms
     );
     snprintf(
-        log_str,
+        dest_str,
         max_len,
         "%s+%010lu_%c",
         TIM_unix_epoch_time_at_last_time_resync_ms_str,
@@ -112,6 +120,18 @@ void TIM_get_timestamp_string(char *log_str, size_t max_len) {
     );
 
     return;
+}
+
+/// @brief Returns a computer-friendly timestamp string. 
+/// @param log_str - Pointer to buffer that stores the log string 
+/// @param max_len - Maximum length of log_str buffer
+/// @details The string identifies the timestamp of the last time synchronization,
+/// the synchronization source (N - none; G - GNSS/GPS; T - telecommand), 
+/// and the time passed in ms since the last synchronization.
+/// Added together, the two numbers represent the current unix timestamp in ms.
+/// Example: "1719169299720+0000042000_N"
+void TIM_get_timestamp_string(char *log_str, size_t max_len) {
+    TIME_format_timestamp_str(log_str, max_len, TIM_get_current_system_uptime_ms());
 }
 
 

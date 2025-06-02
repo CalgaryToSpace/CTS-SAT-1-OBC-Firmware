@@ -17,6 +17,7 @@ typedef enum TIM_SYNC_SOURCE {
 uint32_t TIM_get_current_system_uptime_ms(void);
 void TIM_set_current_unix_epoch_time_ms(uint64_t current_unix_epoch_time_ms, TIM_sync_source_t source);
 uint64_t TIM_get_current_unix_epoch_time_ms();
+uint64_t TIME_convert_uptime_to_unix_epoch_time_ms(uint32_t uptime_ms);
 
 void TIM_get_timestamp_string(char *log_str, size_t max_len); 
 void TIM_get_timestamp_string_datetime(char *log_str, size_t max_len);
