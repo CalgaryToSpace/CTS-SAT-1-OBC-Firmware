@@ -26,11 +26,10 @@ void LOG_to_file(const char filename[], const char msg[])
     lfs_file_t file;
     const int8_t open_result = lfs_file_opencfg(
         &LFS_filesystem, &file, filename,
-        LFS_O_RDWR | LFS_O_CREAT | LFS_O_APPEND,
+        LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND,
         &LFS_file_cfg
     );
-	if (open_result < 0)
-	{
+	if (open_result < 0) {
         // This error cannot be logged, except via UART or during an overpass 
         // of the ground station
         LOG_to_umbilical_uart("\nError opening system log file\n");
@@ -38,13 +37,6 @@ void LOG_to_file(const char filename[], const char msg[])
         // FIXME(Issue #398): log to memory buffer
 		return;
 	}
-    const lfs_soff_t offset = lfs_file_seek(&LFS_filesystem, &file, 0, LFS_SEEK_END);
-    if (offset < 0) {
-        LOG_to_umbilical_uart("\nError seeking to end of system log file\n");
-        LOG_to_uhf_radio("\nError seeking to end of system log file\n");
-        // FIXME(Issue #398): log to memory buffer
-        return;
-    }
 
 	const lfs_ssize_t bytes_written = lfs_file_write(&LFS_filesystem, &file, msg, strlen(msg));
 	if (bytes_written < 0) {
