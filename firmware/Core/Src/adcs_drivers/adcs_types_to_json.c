@@ -1187,14 +1187,22 @@ uint8_t ADCS_unix_time_ms_TO_json(const uint64_t *data, char json_output_str[], 
 
     uint16_t ms = *data % 1000;
     const time_t time_s = *data / 1000;
-    struct tm  time_struct;
-    char       buf[80];
+    struct tm time_struct;
+    char buf[80];
 
     // Format time, "ddd yyyy-mm-dd hh:mm:ss"
     time_struct = *localtime(&time_s);
     strftime(buf, sizeof(buf), "%a %Y-%m-%d %H:%M:%S", &time_struct);
 
-    int16_t snprintf_ret = snprintf(json_output_str, json_output_str_size,"{\"current_adcs_unix_time\":%s.%d}",buf, ms);
+    char timestamp_str[30];
+    GEN_uint64_to_str(*data, timestamp_str);
+
+    const int16_t snprintf_ret = snprintf(
+        json_output_str, json_output_str_size,
+        "{\"current_adcs_unix_time\":\"%s.%d\",\"timestamp_ms\":%s}",
+        buf, ms,
+        timestamp_str
+    );
 
     if (snprintf_ret < 0) {
         return 2; // Error: snprintf encoding error
