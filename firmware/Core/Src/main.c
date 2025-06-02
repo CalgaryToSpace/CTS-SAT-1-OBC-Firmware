@@ -152,7 +152,7 @@ const osThreadAttr_t TASK_bootup_operation_fsm_Attributes = {
 osThreadId_t TASK_service_write_mpi_data_Handle;
 const osThreadAttr_t TASK_service_write_mpi_data_Attributes = {
   .name = "TASK_service_write_mpi_data",
-  .stack_size = 512, //in bytes
+  .stack_size = 2048,
   .priority = (osPriority_t) osPriorityNormal, //TODO: Figure out which priority makes sense for this task
 };
 
