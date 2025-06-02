@@ -859,6 +859,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
+        .tcmd_name = "log_set_system_severity_mask",
+        .tcmd_func = TCMDEXEC_log_set_system_severity_mask,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
         .tcmd_name = "log_set_system_debugging_messages_state",
         .tcmd_func = TCMDEXEC_log_set_system_debugging_messages_state,
         .number_of_args = 2,

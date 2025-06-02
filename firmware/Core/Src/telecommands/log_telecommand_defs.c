@@ -52,7 +52,7 @@ uint8_t TCMDEXEC_log_set_sink_enabled_state(
 /// @param args_str
 /// - Arg 0: Subsystem enum value
 /// - Arg 1: Enabled? 0: disable file logging, 1: enable file logging
-/// @details FrontierSat LOG sinks
+/// @details FrontierSat LOG subsystems
 ///    LOG_SYSTEM_OBC = 1
 ///    LOG_SYSTEM_UHF_RADIO = 2
 ///    LOG_SYSTEM_UMBILICAL_UART = 4
@@ -238,6 +238,65 @@ uint8_t TCMDEXEC_log_set_system_debugging_messages_state(
 
     return 0;
 }
+
+/// @brief Telecommand: set the severity levels that a system will log
+/// @param args_str
+/// - Arg 0: Subsystem enum
+/// - Arg 1: severity mask
+/// @details Allows fine-grained control over what severities a subsystem will log
+///    FrontierSat subsystems
+///    LOG_SYSTEM_OBC = 1
+///    LOG_SYSTEM_UHF_RADIO = 2
+///    LOG_SYSTEM_UMBILICAL_UART = 4
+///    LOG_SYSTEM_GNSS = 8
+///    LOG_SYSTEM_MPI = 16
+///    LOG_SYSTEM_EPS = 32
+///    LOG_SYSTEM_BOOM = 64
+///    LOG_SYSTEM_ADCS = 128
+///    LOG_SYSTEM_LFS = 256
+///    LOG_SYSTEM_FLASH = 512
+///    LOG_SYSTEM_ANTENNA_DEPLOY = 1024
+///    LOG_SYSTEM_LOG = 2048
+///    LOG_SYSTEM_TELECOMMAND = 4096
+///    LOG_SYSTEM_UNIT_TEST = 8192
+///
+///    LOG severity
+///    LOG_SEVERITY_DEBUG = 1
+///    LOG_SEVERITY_NORMAL = 2
+///    LOG_SEVERITY_WARNING = 4
+///    LOG_SEVERITY_ERROR = 8
+///    LOG_SEVERITY_CRITICAL = 16
+///
+uint8_t TCMDEXEC_log_set_system_severity_mask(
+        const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, 
+        char *response_output_buf, uint16_t response_output_buf_len
+) {
+    uint64_t system = 0;
+    uint8_t system_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &system);
+    if (system_result) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Unable to parse system from first telecommand argument"
+        );
+        return 1;
+    }
+    
+    uint64_t severity_mask = 0;
+    uint8_t severity_mask_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &severity_mask);
+    if (severity_mask_result) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Unable to parse severity mask from second telecommand argument"
+        );
+        return 2;
+    }
+
+    // Response is logged by log system
+    LOG_set_system_severity_mask((uint32_t)system, (uint32_t)severity_mask);
+
+    return 0;
+}
+
 
 /// @brief Telecommand: Report the N latest log messages into response_output_buf
 /// @param args_str
