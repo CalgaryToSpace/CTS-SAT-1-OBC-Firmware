@@ -71,6 +71,7 @@ uint8_t TCMDEXEC_uart_send_hex_get_response_hex(
     LOG_system_enum_t LOG_source = LOG_SYSTEM_TELECOMMAND;
     
     // UART 1 selected (MPI)
+    // TODO: Use `UART_get_port_handle_by_name` to get the port handle by name instead of this if-statement.
     if(strcasecmp(arg_uart_port_name, "MPI") == 0) {
 
         // Set log source
@@ -405,7 +406,7 @@ uint8_t TCMDEXEC_uart_get_last_rx_times_json(
 
 /// @brief Set the STM32 UART peripheral's baud rate to a different value.
 /// @param args_str
-/// - Arg 0: UART port name to set the baud rate for: GNSS, CAMERA, EPS, AX100, DEBUG (case insensitive)
+/// - Arg 0: UART port name to set the baud rate for: MPI, GNSS, CAMERA, EPS, AX100, DEBUG (case insensitive)
 /// - Arg 1: Baud rate to set the STM32 UART peripheral to (in bits per second). Common values are 9600, 115200, 230400, etc.
 /// @note This does not command the subsystem device to change its baud rate. This only updates the STM32.
 /// @example If the GNSS receiver does a factory reset, its baud rate is set to a different value. This command
