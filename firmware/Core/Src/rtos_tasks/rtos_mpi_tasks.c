@@ -26,7 +26,7 @@ void write_mpi_data_to_memory(volatile uint8_t* large_buffer) {
     // Write data to file
     const lfs_ssize_t write_result = lfs_file_write(
         &LFS_filesystem, &MPI_science_data_file_pointer,
-        (uint8_t*)large_buffer, MPI_science_data_buffer_len
+        (uint8_t*)large_buffer, MPI_science_buffer_len
     );
     if (write_result < 0) {
         LOG_message(
@@ -39,7 +39,7 @@ void write_mpi_data_to_memory(volatile uint8_t* large_buffer) {
         "MPI Task: Successfully wrote %ld bytes to file",
         write_result
     );
-    MPI_buffer_one_state = MPI_MEMORY_WRITE_STATUS_READY;
+    MPI_buffer_one_state = MPI_MEMORY_WRITE_STATUS_READY_TO_FILL;
 
     // Log the time it took to write the data
     LOG_message(
@@ -56,13 +56,13 @@ void TASK_service_write_mpi_data(void *argument) {
     while(1) {
 
         // If the first large buffer contains data to write
-        if (MPI_buffer_one_state == MPI_MEMORY_WRITE_STATUS_PENDING) {
-            write_mpi_data_to_memory(MPI_science_data_buffer_first);
-            MPI_buffer_one_state = MPI_MEMORY_WRITE_STATUS_READY;
+        if (MPI_buffer_one_state == MPI_MEMORY_WRITE_STATUS_AWAITING_WRITE) {
+            write_mpi_data_to_memory(MPI_science_buffer_one);
+            MPI_buffer_one_state = MPI_MEMORY_WRITE_STATUS_READY_TO_FILL;
         }
-        else if (MPI_buffer_two_state == MPI_MEMORY_WRITE_STATUS_PENDING) {
-            write_mpi_data_to_memory(MPI_science_data_buffer_second);
-            MPI_buffer_two_state = MPI_MEMORY_WRITE_STATUS_READY;
+        else if (MPI_buffer_two_state == MPI_MEMORY_WRITE_STATUS_AWAITING_WRITE) {
+            write_mpi_data_to_memory(MPI_science_buffer_two);
+            MPI_buffer_two_state = MPI_MEMORY_WRITE_STATUS_READY_TO_FILL;
         }
         
         // Do a short delay to allow recording to start right away once enabled.

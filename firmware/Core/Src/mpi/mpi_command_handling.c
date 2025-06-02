@@ -21,9 +21,6 @@ static const uint16_t MPI_RX_TIMEOUT_DURATION_MS = 2000;
 
 volatile MPI_rx_mode_t MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
 
-/// @brief Current state of the `MPI_active_data_median_buffer` (pending write vs. written).
-volatile MPI_buffer_state_enum_t MPI_buffer_one_state = MPI_MEMORY_WRITE_STATUS_READY;
-volatile MPI_buffer_state_enum_t MPI_buffer_two_state = MPI_MEMORY_WRITE_STATUS_READY;
 
 uint8_t MPI_science_data_file_is_open = 0;
 uint32_t MPI_science_data_bytes_lost = 0;
@@ -172,7 +169,7 @@ static void MPI_power_on() {
 
 /// @brief Turns on MPI and prepares a LFS file to store MPI data in.
 /// @return 0: System successfully prepared for MPI data, < 0: Error
-int8_t MPI_prepare_receive_data(const char output_file_path[]) {
+static int8_t MPI_prepare_receive_data(const char output_file_path[]) {
     MPI_power_on();
 
     // Start the timer to track time past since we powered on MPI
@@ -235,7 +232,6 @@ int8_t MPI_prepare_receive_data(const char output_file_path[]) {
 /// @brief Turns on MPI science mode and Enables DMA interrupt for MPI channel.
 /// @return 0: MPI and DMA successfully enabled, < 0: Error
 uint8_t MPI_enable_active_mode(const char output_file_path[]) {
-    
     // Turn on the MPI and setup LFS
     const uint8_t prepare_result = MPI_prepare_receive_data(output_file_path);
     if (prepare_result != 0) {
@@ -276,7 +272,7 @@ uint8_t MPI_enable_active_mode(const char output_file_path[]) {
 
     // Receive MPI response actively with 8192 buffer size.
     const HAL_StatusTypeDef rx_status = HAL_UART_Receive_DMA(
-        UART_mpi_port_handle, (uint8_t*) UART_mpi_data_rx_buffer, UART_mpi_data_rx_buffer_len);
+        UART_mpi_port_handle, (uint8_t*) UART_mpi_rx_dma_buffer, UART_mpi_rx_dma_buffer_len);
 
     if (rx_status != HAL_OK) {
         // Note: Saksham's original code didn't call HAL_UART_DMAStop here if HAL_BUSY.

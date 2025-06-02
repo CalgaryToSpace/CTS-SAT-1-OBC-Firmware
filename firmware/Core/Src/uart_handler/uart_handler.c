@@ -72,14 +72,22 @@ volatile uint32_t UART_gnss_last_write_time_ms = 0; // extern
 volatile uint8_t UART_gnss_buffer_last_rx_byte = 0; // extern
 volatile uint8_t UART_gnss_uart_interrupt_enabled = 0; //extern
 
-const uint8_t UART_mpi_data_rx_buffer_len = 160;
-volatile uint8_t UART_mpi_data_rx_buffer[160];     // extern
+// Section: MPI data buffers.
+const uint8_t UART_mpi_rx_dma_buffer_len = 160;
+volatile uint8_t UART_mpi_rx_dma_buffer[160];
 
-const uint16_t MPI_science_data_buffer_len = 20480;
-volatile uint8_t MPI_science_data_buffer_first[20480];       
-volatile uint8_t MPI_science_data_buffer_second[20480];      
+/// @brief Length of the `MPI_science_buffer_one` and `MPI_science_buffer_two` arrays.
+const uint16_t MPI_science_buffer_len = 20480;
+volatile uint8_t MPI_science_buffer_one[20480];
+volatile uint8_t MPI_science_buffer_two[20480];
 
-uint16_t UART_mpi_science_data_buffer_index = 0;
+/// @brief Current state of the `MPI_active_data_median_buffer` (pending write vs. written).
+volatile MPI_buffer_state_enum_t MPI_buffer_one_state = MPI_MEMORY_WRITE_STATUS_READY_TO_FILL;
+volatile MPI_buffer_state_enum_t MPI_buffer_two_state = MPI_MEMORY_WRITE_STATUS_READY_TO_FILL;
+
+/// @brief Index into a virtual array that is `MPI_science_buffer_one` and
+///        `MPI_science_buffer_two` concatenated.
+volatile uint16_t UART_MPI_science_buffer_index = 0;
 
 
 #define KISS_FEND  0xC0
@@ -162,47 +170,54 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     }
     else if (huart->Instance == UART_mpi_port_handle->Instance) {        
         // DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> MPI Data\n");
-        UART_mpi_last_write_time_ms = HAL_GetTick();
 
         if (MPI_current_uart_rx_mode == MPI_RX_MODE_COMMAND_MODE) {
             // Command mode is blocking. Nothing to do here.
         }
         else if (MPI_current_uart_rx_mode == MPI_RX_MODE_SENSING_MODE) {
-
             // Pointer to copy the data to
-            uint8_t *write_ptr = NULL;
+            volatile uint8_t *write_ptr = NULL; // Pointer to volatile buffer.
 
             // Decide which buffer to fill
-            if (UART_mpi_science_data_buffer_index < 20480
-                && MPI_buffer_one_state == MPI_MEMORY_WRITE_STATUS_READY) {
-                    write_ptr = (uint8_t*)&MPI_science_data_buffer_first[UART_mpi_science_data_buffer_index];
+            if (
+                (UART_MPI_science_buffer_index < 20480)
+                && (MPI_buffer_one_state == MPI_MEMORY_WRITE_STATUS_READY_TO_FILL)
+            ) {
+                write_ptr = &MPI_science_buffer_one[UART_MPI_science_buffer_index];
             } 
-            else if (UART_mpi_science_data_buffer_index < 40960
-                && MPI_buffer_two_state == MPI_MEMORY_WRITE_STATUS_READY) {
-                    write_ptr = (uint8_t*)&MPI_science_data_buffer_second[UART_mpi_science_data_buffer_index - MPI_science_data_buffer_len];
-            } else {
+            else if (
+                (UART_MPI_science_buffer_index < 40960)
+                && (MPI_buffer_two_state == MPI_MEMORY_WRITE_STATUS_READY_TO_FILL)
+            ) {
+                write_ptr = &MPI_science_buffer_two[UART_MPI_science_buffer_index - MPI_science_buffer_len];
+            }
+            else {
                 UART_error_mpi_error_info.handler_buffer_full_error_count++;
-                MPI_science_data_bytes_lost += UART_mpi_data_rx_buffer_len;
+                MPI_science_data_bytes_lost += UART_mpi_rx_dma_buffer_len;
 
-                DEBUG_uart_print_str("MPI Full ISR - Data too fast!\n");
+                // DEBUG_uart_print_str("MPI Full ISR - Data too fast!\n");
             }
 
             // Once decided, copy the data to large buffer
             if (write_ptr != NULL) {
-                memcpy(write_ptr, (uint8_t*)UART_mpi_data_rx_buffer, 160);
-                UART_mpi_science_data_buffer_index += 160;
+                // Volatile-safe: memcpy(write_ptr, UART_mpi_rx_dma_buffer, UART_mpi_rx_dma_buffer_len);
+                for (uint16_t i = 0; i < UART_mpi_rx_dma_buffer_len; i++) {
+                    write_ptr[i] = UART_mpi_rx_dma_buffer[i];
+                }
+                UART_MPI_science_buffer_index += UART_mpi_rx_dma_buffer_len;
 
                 // Reset the index when needed and change flags when buffer filled
-                if (UART_mpi_science_data_buffer_index == MPI_science_data_buffer_len) {
-                    MPI_buffer_one_state = MPI_MEMORY_WRITE_STATUS_PENDING;
-                } else if (UART_mpi_science_data_buffer_index == 2 * MPI_science_data_buffer_len) {
-                    MPI_buffer_two_state = MPI_MEMORY_WRITE_STATUS_PENDING;
-                    UART_mpi_science_data_buffer_index = 0;
+                if (UART_MPI_science_buffer_index == MPI_science_buffer_len) {
+                    MPI_buffer_one_state = MPI_MEMORY_WRITE_STATUS_AWAITING_WRITE;
+                }
+                else if (UART_MPI_science_buffer_index == (2 * MPI_science_buffer_len)) {
+                    MPI_buffer_two_state = MPI_MEMORY_WRITE_STATUS_AWAITING_WRITE;
+                    UART_MPI_science_buffer_index = 0;
                 }
             }
         }
         else {
-            DEBUG_uart_print_str("MPI Full ISR - Received MPI Data, rx_mode != SENSING though!\n");
+            DEBUG_uart_print_str("Unhandled MPI Mode\n");
         }
 
         UART_mpi_last_write_time_ms = HAL_GetTick();
