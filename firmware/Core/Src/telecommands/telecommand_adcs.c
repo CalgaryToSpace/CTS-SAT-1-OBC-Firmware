@@ -2056,7 +2056,7 @@ uint8_t TCMDEXEC_adcs_get_sd_log_config(const char *args_str,
         return 1;
     }
 
-    ADCS_sd_log_config_struct result_struct;
+    ADCS_sd_log_config_struct_t result_struct;
     const uint8_t status = ADCS_get_sd_log_config((uint8_t) which_log, &result_struct); 
     
     if (status != 0) {
@@ -2065,7 +2065,7 @@ uint8_t TCMDEXEC_adcs_get_sd_log_config(const char *args_str,
         return 1;
     }
 
-    const uint8_t result_json = ADCS_sd_log_config_struct_TO_json(
+    const uint8_t result_json = ADCS_sd_log_config_struct_t_TO_json(
         &result_struct, response_output_buf, response_output_buf_len);
 
     if (result_json != 0) {
@@ -2905,4 +2905,101 @@ uint8_t TCMDEXEC_adcs_exit_bootloader(const char *args_str,
 
     return 0;
 
+}
+
+/// @brief Telecommand: Instruct the ADCS to convert an SD card file to JPG format
+/// @param args_str 
+///     - Arg 0: Index of the file to erase
+///     - Arg 1: Quailty factor (1 is the most compressed and lossy, 100 is the least)
+///     - Arg 2: White balance
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_convert_to_jpg(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    // parse file index argument
+    uint64_t arguments[3];
+    for (uint8_t i = 0; i < 3; i++) {
+        uint8_t extract_status = TCMD_extract_uint64_arg(args_str, strlen(args_str), i, &arguments[i]);
+        if (extract_status != 0) {
+            snprintf(response_output_buf, response_output_buf_len,
+                "Telecommand argument extraction failed in position %d (err %d)", i, extract_status);
+            return 1;
+        }
+    }
+
+    const uint8_t status = ADCS_convert_sd_file_bmp_to_jpg_by_index((uint16_t) arguments[0], (uint8_t) arguments[1], (uint8_t) arguments[2]);
+
+    return status;
+}
+
+uint8_t TCMDEXEC_adcs_get_wheel_currents(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    ADCS_wheel_currents_struct_t packed_struct;
+    const uint8_t status = ADCS_get_wheel_currents(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_wheel_currents_struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
+    return status;
+}                    
+                        
+uint8_t TCMDEXEC_adcs_get_cubesense_currents(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    ADCS_cubesense_currents_struct_t packed_struct;
+    const uint8_t status = ADCS_get_cubesense_currents(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_cubesense_currents_struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
+    return status;
+}                    
+                        
+uint8_t TCMDEXEC_adcs_get_misc_currents(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    ADCS_misc_currents_struct_t packed_struct;
+    const uint8_t status = ADCS_get_misc_currents(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_misc_currents_struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
+    return status;
 }
