@@ -1783,7 +1783,10 @@ uint8_t TCMDEXEC_adcs_download_index_file(const char *args_str,
     TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &index_offset);
 
     if (num_to_read > 32) {
-        LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Number of files requested is greater than 32. Requesting 32 to avoid watchdog.");
+        LOG_message(
+            LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
+            "Number of files requested is greater than 32. Requesting 32 to avoid watchdog."
+        );
         num_to_read = 32;
     }
 
