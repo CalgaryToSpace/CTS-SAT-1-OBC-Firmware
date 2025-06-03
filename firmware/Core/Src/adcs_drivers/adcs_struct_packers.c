@@ -780,7 +780,7 @@ uint8_t ADCS_pack_to_unix_time_ms(uint8_t *data_received, uint64_t *output_data)
 /// @param[in] which_log Which of the two concurrent logging task configurations is requested (1 or 2). 
 /// @param[out] config Pointer to the struct to store parsed telemetry data.
 /// @return 0 once the function is finished running.
-uint8_t ADCS_pack_to_sd_log_config_struct(uint8_t *data_received, uint8_t which_log, ADCS_sd_log_config_struct *config) {
+uint8_t ADCS_pack_to_sd_log_config_struct(uint8_t *data_received, uint8_t which_log, ADCS_sd_log_config_struct_t *config) {
     
     for (uint8_t i = 0; i < 10; i++) {
         (config->log_bitmask)[i] = data_received[i];
@@ -788,6 +788,62 @@ uint8_t ADCS_pack_to_sd_log_config_struct(uint8_t *data_received, uint8_t which_
     config->which_log = which_log;
     config->log_period_s = (data_received[11] << 8) | data_received[10];
     config->which_sd = data_received[12];
+
+    return 0;
+}
+
+/// @brief Parse Wheel Currents data into a struct.
+/// @param[in] data_received Pointer to the raw telemetry data buffer.
+/// @param[out] output Pointer to the struct to store parsed telemetry data.
+/// @return 0 once the function is finished running.
+uint8_t ADCS_pack_to_wheel_currents_struct(const uint8_t *data_received, ADCS_wheel_currents_struct_t *output) {
+
+    uint16_t raw1 = (data_received[1] << 8) | data_received[0];
+    uint16_t raw2 = (data_received[3] << 8) | data_received[2];
+    uint16_t raw3 = (data_received[5] << 8) | data_received[4];
+
+    output->wheel1_current_microamps = (uint32_t)raw1 * 10;
+    output->wheel2_current_microamps = (uint32_t)raw2 * 10;
+    output->wheel3_current_microamps = (uint32_t)raw3 * 10;
+
+    return 0; 
+}
+
+/// @brief Unpacks CubeSense1 and CubeSense2 current measurements into a struct.
+/// @param[in] input Pointer to 8-byte array (4 bytes for each CubeSense).
+/// @param[out] output Pointer to the output struct.
+/// @return 0 once the function is finished running.
+uint8_t ADCS_pack_to_cubesense_currents_struct(const uint8_t *input, ADCS_cubesense_currents_struct_t *output) {
+
+    // CubeSense1
+    uint16_t raw_3v3_1  = (input[1] << 8) | input[0];
+    uint16_t raw_sram_1 = (input[3] << 8) | input[2];
+
+    // CubeSense2
+    uint16_t raw_3v3_2  = (input[5] << 8) | input[4];
+    uint16_t raw_sram_2 = (input[7] << 8) | input[6];
+
+    output->cubesense1_3v3_current_microamps  = raw_3v3_1  * 100;
+    output->cubesense1_sram_current_microamps = raw_sram_1 * 100;
+    output->cubesense2_3v3_current_microamps  = raw_3v3_2  * 100;
+    output->cubesense2_sram_current_microamps = raw_sram_2 * 100;
+
+    return 0;
+}
+
+/// @brief Unpacks ADCS Misc Current Measurements from telemetry bytes.
+/// @param[in] input Pointer to 6-byte input buffer.
+/// @param[out] output Pointer to output struct.
+/// @return 0 once the function is finished running.
+uint8_t ADCS_pack_to_misc_currents_struct(const uint8_t *input, ADCS_misc_currents_struct_t *output) {
+
+    uint16_t raw_cubestar = (input[1] << 8) | input[0];
+    uint16_t raw_torquer  = (input[3] << 8) | input[2];
+    int16_t  raw_temp     = (input[5] << 8) | input[4];
+
+    output->cubestar_current_microamps = raw_cubestar * 10;   // mA * 1000 = µA
+    output->torquer_current_microamps  = raw_torquer * 100;   // mA * 1000 = µA 
+    output->cubestar_mcu_temperature_mdeg_celsius = raw_temp * 10; // centi°C * 10 = milli°C
 
     return 0;
 }
