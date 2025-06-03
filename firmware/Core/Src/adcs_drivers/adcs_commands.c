@@ -1521,8 +1521,7 @@ uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) 
     }
 
     for (uint16_t i = index_offset; i < (num_to_read + index_offset); i++) {
-        
-        // get info about the current file
+        // Get info about the current file.
         const uint8_t file_info_status = ADCS_get_file_info_telemetry(&file_info);
         if (file_info_status != 0) {
             LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE), "Failed to get file information (index %d).", i);
@@ -1530,7 +1529,7 @@ uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) 
         }
 
         if (file_info.file_crc16 == 0 && file_info.file_date_time_msdos == 0 && file_info.file_size == 0) {
-            // if all the file_info parameters are zero, we've reached the end of the file list.
+            // If all the file_info parameters are zero, we've reached the end of the file list.
             LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "End of file list reached.");
             break;
         }
@@ -1543,12 +1542,14 @@ uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) 
         const uint16_t month = (file_info.file_date_time_msdos >> 21) & 0x0f; // 4bits – 16
         const uint16_t year = (file_info.file_date_time_msdos >> 25) + 1980; // 7bits – 128 (1980 to 21..)
 
-        // now pack it into a string 
-        // TODO: check to see where the log should be sent
-        LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
-            "Index:%d,Type:%d,Busy Updating:%d,Counter:%d,Size:%ld,Datetime:%04d-%02d-%02d %02d:%02d:%02d,CRC16:0x%x",
-            i, file_info.file_type, file_info.busy_updating, file_info.file_counter, file_info.file_size, year, 
-            month, day, hour, minutes, seconds, file_info.file_crc16);
+        // Now pack it into a JSON string.
+        LOG_message(
+            LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
+            "{\"index\":%d,\"type\":\"%d\",\"is_busy_updating\":%d,\"counter\":%d,\"size\":%ld,"
+            "\"datetime\":\"%04d-%02d-%02d %02d:%02d:%02d\",\"crc16\":\"0x%x\"}",
+            i, file_info.file_type, file_info.busy_updating, file_info.file_counter, file_info.file_size,
+            year, month, day, hour, minutes, seconds, file_info.file_crc16
+        );
 
         // now advance the file list read pointer to do it all again
         const uint8_t advance_pointer_status = ADCS_advance_file_list_read_pointer();
