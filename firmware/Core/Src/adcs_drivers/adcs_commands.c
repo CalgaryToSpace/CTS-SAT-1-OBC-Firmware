@@ -1471,7 +1471,6 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
 /// @param[in] index_offset The index (starting at 0) from which to start reading files.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission, negative if an LFS or snprintf error code occurred. 
 uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) {
-
     const uint32_t function_start_time = HAL_GetTick();
     
     const uint8_t reset_pointer_status = ADCS_reset_file_list_read_pointer();
@@ -1520,6 +1519,8 @@ uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) 
         }
     }
 
+    uint8_t busy_updating_count = 0;
+
     for (uint16_t i = index_offset; i < (num_to_read + index_offset); i++) {
         // Get info about the current file.
         const uint8_t file_info_status = ADCS_get_file_info_telemetry(&file_info);
@@ -1534,7 +1535,11 @@ uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) 
             break;
         }
 
-        // convert the MS-DOS time from the file info struct into human-readable time; code from Firmware Reference Manual Section 6.2.2
+        if (file_info.busy_updating) {
+            busy_updating_count++;
+        }
+
+        // Convert the MS-DOS time from the file info struct into human-readable time; code from Firmware Reference Manual Section 6.2.2.
         const uint16_t seconds = (file_info.file_date_time_msdos & 0x1f) << 1; // 5bits – 32
         const uint16_t minutes = (file_info.file_date_time_msdos >> 5) & 0x3f; // 6bits – 64
         const uint16_t hour = (file_info.file_date_time_msdos >> 11) & 0x1f; // 5bits – 32
@@ -1551,7 +1556,7 @@ uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) 
             year, month, day, hour, minutes, seconds, file_info.file_crc16
         );
 
-        // now advance the file list read pointer to do it all again
+        // Now advance the file list read pointer to do it all again.
         const uint8_t advance_pointer_status = ADCS_advance_file_list_read_pointer();
         HAL_Delay(100);
         if (advance_pointer_status != 0) {
@@ -1562,6 +1567,14 @@ uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) 
                 return ack_status.error_flag;
             }
         }
+    }
+
+    if (busy_updating_count > 0) {
+        LOG_message(
+            LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
+            "There are %d files currently being updated. Thus, the indexes may shift between now and when you try to copy files from ADCS SD to LittleFS.",
+            busy_updating_count
+        );
     }
     
     return 0;
