@@ -1769,23 +1769,32 @@ uint8_t TCMDEXEC_adcs_measurements(const char *args_str,
     return status;
 }
 
-/// @brief Telecommand: Get the list of downloadable files from the ADCS SD card (alternate method)
+/// @brief Telecommand: Get the list of downloadable files from the ADCS SD card as log messages.
 /// @param args_str 
-///     - Arg 0: The number of files to get (should be less than 70 to avoid the watchdog)
-///     - Arg 1: The offset index to start reading (starts at 0)
+///     - Arg 0: Offset: The offset index to start reading (starts at 0).
+///     - Arg 1: Length: The number of files to get (limited to 32). 0 to request the max.
 /// @return 0 on success, >0 on error
+/// @note Despite its name, this telecommand does not download any files nor write to LittleFS.
 uint8_t TCMDEXEC_adcs_download_index_file(const char *args_str,
                                    char *response_output_buf, uint16_t response_output_buf_len) {
-    uint64_t num_to_read;
     uint64_t index_offset;
+    const uint8_t arg0_status = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &index_offset);
 
-    TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &num_to_read);
-    TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &index_offset);
+    uint64_t num_to_read;
+    const uint8_t arg1_status = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &num_to_read);
 
-    if (num_to_read > 32) {
+    if (arg0_status != 0 || arg1_status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "Telecommand argument extraction failed (err: arg0=%d, arg1=%d)",
+            arg0_status, arg1_status
+        );
+        return 1;
+    }
+
+    if (num_to_read > 32 || num_to_read == 0) {
         LOG_message(
-            LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
-            "Number of files requested is greater than 32. Requesting 32 to avoid watchdog."
+            LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
+            "Number of files requested is greater than 32. Requesting 32 (the maximum)."
         );
         num_to_read = 32;
     }
@@ -1793,7 +1802,6 @@ uint8_t TCMDEXEC_adcs_download_index_file(const char *args_str,
     const uint8_t status = ADCS_get_sd_card_file_list((uint16_t) num_to_read, (uint16_t) index_offset);
     
     return status;
-
 }
 
 /// @brief Telecommand: Download a specific file from the ADCS SD card
