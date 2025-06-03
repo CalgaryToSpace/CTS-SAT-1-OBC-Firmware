@@ -1175,7 +1175,7 @@ uint8_t ADCS_get_raw_star_tracker_data(ADCS_raw_star_tracker_struct_t *output_st
 }
 
 /// @brief Instruct the ADCS to save an image to the SD card.
-/// @param[in] camera_select (int) Which camera to save the image from; can be Camera 1 (0), Camera 2 (1), or Star (2)
+/// @param[in] camera_select (int) Which camera to save the image from; can be Camera 1 (0) [sun], Camera 2 (1) [nadir, boom-side], or Star (2) [not on CTS-SAT-1]
 /// @param[in] image_size (int) Resolution of the image to save; can be 1024x1024 (0), 512x512 (1), 256x256 (2), 128x128 (3), or 64x64 (4)
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_save_image_to_sd(ADCS_camera_select_enum_t camera_select, ADCS_image_size_enum_t image_size) {
