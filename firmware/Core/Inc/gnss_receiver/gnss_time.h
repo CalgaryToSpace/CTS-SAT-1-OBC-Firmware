@@ -4,11 +4,9 @@
 #include <stdint.h>
 #include <time.h>
 
-uint64_t GNSS_format_and_convert_to_unix_epoch(char* input_str);
+uint64_t GNSS_parse_timea_response_and_convert_to_unix_time_ms(char* input_str);
 
 uint8_t GNSS_set_obc_time_based_on_gnss_time();
-
-time_t portable_timegm(struct tm *tm);
 
 #endif // INCLUDE_GUARD__GNSS_TIME_H__
 
