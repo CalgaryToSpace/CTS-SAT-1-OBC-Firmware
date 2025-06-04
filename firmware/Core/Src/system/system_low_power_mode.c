@@ -4,6 +4,7 @@
 #include "eps_drivers/eps_calculations.h"
 #include "adcs_drivers/adcs_commands.h"
 #include "boom_deploy_drivers/boom_deploy_drivers.h"
+#include "mpi/mpi_command_handling.h"
 #include "log/log.h"
 
 #include <stdio.h>
@@ -64,6 +65,18 @@ uint8_t SYS_enter_low_power_mode()
     
     if (pin1_state == GPIO_PIN_SET || pin2_state == GPIO_PIN_SET) {
         error_ret |= SYS_LOW_POWER_MODE_ERROR_BOOM_PINS;
+    }
+
+    // Disable active mode for MPI
+
+    // This will:
+    // Turn off the pins for the MPI (which is already done above)
+    // Set the transceiver state to inactive
+    // Stop the DMA for the MPI UART
+    // Close the file if it is open.
+    const uint8_t disable_mpi_active_mode = MPI_disable_active_mode();
+    if (disable_mpi_active_mode != 0) {
+        error_ret |= SYS_LOW_POWER_MODE_ERROR_MPI_DISABLE_ACTIVE_MODE;
     }
 
     return error_ret;
@@ -176,6 +189,8 @@ char *SYS_low_power_mode_error_enum_to_string(SYS_low_power_mode_error_enum_t er
             return "BOOM_12V";
         case SYS_LOW_POWER_MODE_ERROR_BOOM_PINS:
             return "BOOM_PINS";
+        case SYS_LOW_POWER_MODE_ERROR_MPI_DISABLE_ACTIVE_MODE:
+            return "MPI_DISABLE_ACTIVE_MODE";
         default:
             return "Unknown"; // Unknown error
     }
@@ -202,16 +217,23 @@ uint8_t SYS_low_power_mode_result_to_json(SYS_low_power_mode_error_enum_t error,
         const char *shutdown_status = (error & error_mask) ? "Error Disabling" : "Successfully Disabled";
 
         if (i != 0) {
-            offset += snprintf(buffer + offset, buffer_size - offset, ", ");
+            offset += snprintf(buffer + offset, buffer_size - offset, ",");
         }
 
         offset += snprintf(buffer + offset, buffer_size - offset, "\"%s\":\"%s\"", subsystem, shutdown_status);
     }
+    const uint8_t MPI_disable_active_mode_error = (error & SYS_LOW_POWER_MODE_ERROR_MPI_DISABLE_ACTIVE_MODE);
+    offset += snprintf(buffer + offset, 
+                       buffer_size - offset, 
+                       ",\"MPI_DISABLE_ACTIVE_MODE\":\"%s\"",
+                       MPI_disable_active_mode_error ? 
+                       "Error Disabling Active Mode" :
+                       "Successfully Disabled Active Mode");
 
     const uint8_t BOOM_pins_error = (error & SYS_LOW_POWER_MODE_ERROR_BOOM_PINS);
     offset += snprintf(buffer + offset, 
                        buffer_size - offset, 
-                       ", \"BOOM_PINS\":\"%s\"",
+                       ",\"BOOM_PINS\":\"%s\"",
                        BOOM_pins_error ? 
                        "Error Disabling Boom Pins" :
                        "Successfully Disabled Boom Pins");
@@ -219,7 +241,7 @@ uint8_t SYS_low_power_mode_result_to_json(SYS_low_power_mode_error_enum_t error,
     const uint8_t ADCS_error = (error & SYS_LOW_POWER_MODE_ERROR_ADCS);
     offset += snprintf(buffer + offset, 
                        buffer_size - offset,
-                       ", \"ADCS\":\"%s\"",
+                       ",\"ADCS\":\"%s\"",
                        ADCS_error ? 
                        "Error Setting Low Power Mode" :
                        "Successfully Set Low Power Mode");

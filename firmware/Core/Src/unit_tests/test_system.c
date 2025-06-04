@@ -7,7 +7,7 @@
 
 uint8_t TEST_EXEC__SYS_low_power_mode_error_enum_to_string(void)
 {
-    // GPS
+    // GNSS
     SYS_low_power_mode_error_enum_t gps_error = SYS_LOW_POWER_MODE_ERROR_GNSS_3V3;
     const char* gps_expected_string = "GNSS_3V3";
     const char* gps_str = SYS_low_power_mode_error_enum_to_string(gps_error);
@@ -63,12 +63,13 @@ uint8_t TEST_EXEC__SYS_low_power_mode_result_to_json(void)
 
     // Test case 1: All systems successfully disabled
     const char *all_success_json = 
-    "{\"MPI_5V\":\"Successfully Disabled\", "
-    "\"MPI_12V\":\"Successfully Disabled\", "
-    "\"CAMERA_3V3\":\"Successfully Disabled\", "
-    "\"GNSS_3V3\":\"Successfully Disabled\", "
-    "\"BOOM_12V\":\"Successfully Disabled\", "
-    "\"BOOM_PINS\":\"Successfully Disabled Boom Pins\", "
+    "{\"CAMERA_3V3\":\"Successfully Disabled\","
+    "\"GNSS_3V3\":\"Successfully Disabled\","
+    "\"MPI_5V\":\"Successfully Disabled\","
+    "\"MPI_12V\":\"Successfully Disabled\","
+    "\"BOOM_12V\":\"Successfully Disabled\","
+    "\"MPI_DISABLE_ACTIVE_MODE\":\"Successfully Disabled Active Mode\","
+    "\"BOOM_PINS\":\"Successfully Disabled Boom Pins\","
     "\"ADCS\":\"Successfully Set Low Power Mode\"}";
 
     SYS_low_power_mode_error_enum_t all_success = 0;
@@ -80,12 +81,13 @@ uint8_t TEST_EXEC__SYS_low_power_mode_result_to_json(void)
 
     // Test case 2: All systems failed
     const char *all_error_json = 
-    "{\"MPI_5V\":\"Error Disabling\", "
-    "\"MPI_12V\":\"Error Disabling\", "
-    "\"CAMERA_3V3\":\"Error Disabling\", "
-    "\"GNSS_3V3\":\"Error Disabling\", "
-    "\"BOOM_12V\":\"Error Disabling\", "
-    "\"BOOM_PINS\":\"Error Disabling Boom Pins\", "
+    "{\"CAMERA_3V3\":\"Error Disabling\","
+    "\"GNSS_3V3\":\"Error Disabling\","
+    "\"MPI_5V\":\"Error Disabling\","
+    "\"MPI_12V\":\"Error Disabling\","
+    "\"BOOM_12V\":\"Error Disabling\","
+    "\"MPI_DISABLE_ACTIVE_MODE\":\"Error Disabling Active Mode\","
+    "\"BOOM_PINS\":\"Error Disabling Boom Pins\","
     "\"ADCS\":\"Error Setting Low Power Mode\"}";
 
     SYS_low_power_mode_error_enum_t all_error = SYS_LOW_POWER_MODE_ERROR_MPI_5V | 
@@ -94,7 +96,9 @@ uint8_t TEST_EXEC__SYS_low_power_mode_result_to_json(void)
                                                SYS_LOW_POWER_MODE_ERROR_GNSS_3V3 | 
                                                SYS_LOW_POWER_MODE_ERROR_BOOM_12V | 
                                                SYS_LOW_POWER_MODE_ERROR_BOOM_PINS | 
-                                               SYS_LOW_POWER_MODE_ERROR_ADCS;
+                                               SYS_LOW_POWER_MODE_ERROR_ADCS |
+                                               SYS_LOW_POWER_MODE_ERROR_MPI_DISABLE_ACTIVE_MODE;
+
     uint8_t all_error_result = SYS_low_power_mode_result_to_json(all_error, buffer, sizeof(buffer));
     TEST_ASSERT(all_error_result == 0);
     TEST_ASSERT(strcmp(buffer, all_error_json) == 0);
@@ -103,14 +107,15 @@ uint8_t TEST_EXEC__SYS_low_power_mode_result_to_json(void)
 
     // Test case 3.0: Mixed results, ADCS and MPI 12V failed
     const char *adcs_mpi12v_error_json = 
-    "{\"MPI_5V\":\"Successfully Disabled\", "
-    "\"MPI_12V\":\"Error Disabling\", "
-    "\"CAMERA_3V3\":\"Successfully Disabled\", "
-    "\"GNSS_3V3\":\"Successfully Disabled\", "
-    "\"BOOM_12V\":\"Successfully Disabled\", "
-    "\"BOOM_PINS\":\"Successfully Disabled Boom Pins\", "
+    "{\"CAMERA_3V3\":\"Successfully Disabled\","
+    "\"GNSS_3V3\":\"Successfully Disabled\","
+    "\"MPI_5V\":\"Successfully Disabled\","
+    "\"MPI_12V\":\"Error Disabling\","
+    "\"BOOM_12V\":\"Successfully Disabled\","
+    "\"MPI_DISABLE_ACTIVE_MODE\":\"Successfully Disabled Active Mode\","
+    "\"BOOM_PINS\":\"Successfully Disabled Boom Pins\","
     "\"ADCS\":\"Error Setting Low Power Mode\"}";
-
+    
     SYS_low_power_mode_error_enum_t adcs_mpi12v_error = SYS_LOW_POWER_MODE_ERROR_ADCS | SYS_LOW_POWER_MODE_ERROR_MPI_12V;
     uint8_t adcs_mpi12v_result = SYS_low_power_mode_result_to_json(adcs_mpi12v_error, buffer, sizeof(buffer));
     TEST_ASSERT(adcs_mpi12v_result == 0);
@@ -118,14 +123,15 @@ uint8_t TEST_EXEC__SYS_low_power_mode_result_to_json(void)
 
     memset(buffer, 0, sizeof(buffer));
 
-    // Test case 3.1: Mixed results, BOOM Pins, and GPS failed
+    // Test case 3.1: Mixed results, BOOM Pins, and GNSS failed
     const char *boom_gps_error_json = 
-    "{\"MPI_5V\":\"Successfully Disabled\", "
-    "\"MPI_12V\":\"Successfully Disabled\", "
-    "\"CAMERA_3V3\":\"Successfully Disabled\", "
-    "\"GNSS_3V3\":\"Error Disabling\", "
-    "\"BOOM_12V\":\"Successfully Disabled\", "
-    "\"BOOM_PINS\":\"Error Disabling Boom Pins\", "
+    "{\"CAMERA_3V3\":\"Successfully Disabled\","
+    "\"GNSS_3V3\":\"Error Disabling\","
+    "\"MPI_5V\":\"Successfully Disabled\","
+    "\"MPI_12V\":\"Successfully Disabled\","
+    "\"BOOM_12V\":\"Successfully Disabled\","
+    "\"MPI_DISABLE_ACTIVE_MODE\":\"Successfully Disabled Active Mode\","
+    "\"BOOM_PINS\":\"Error Disabling Boom Pins\","
     "\"ADCS\":\"Successfully Set Low Power Mode\"}";
 
     SYS_low_power_mode_error_enum_t boom_gps_error = SYS_LOW_POWER_MODE_ERROR_BOOM_PINS | SYS_LOW_POWER_MODE_ERROR_GNSS_3V3;
