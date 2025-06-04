@@ -56,7 +56,7 @@ This packet type has sequence numbers.
 
 All multi-byte integers in these packets are in little-endian format.
 
-For example, a uint16_t value of 1013 (0x03F5) would be sent as [0xF5, 0x03]
+For example, a uint16_t value of 1013 (0x03F5) would be sent as [0xF5, 0x03].
 
 ### Packet Length
 

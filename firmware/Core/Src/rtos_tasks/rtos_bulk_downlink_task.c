@@ -68,6 +68,7 @@ static void do_bulk_downlink_task_action(void) {
     // Update all the downlink stats.
     COMMS_bulk_file_downlink_bytes_downlinked += byte_count;
     COMMS_bulk_file_downlink_next_seq_num++;
+    COMMS_bulk_file_downlink_next_start_offset += byte_count;
 
     // Check next-state logic if we're done.
     if (COMMS_bulk_file_downlink_bytes_downlinked == COMMS_bulk_file_downlink_total_bytes) {
