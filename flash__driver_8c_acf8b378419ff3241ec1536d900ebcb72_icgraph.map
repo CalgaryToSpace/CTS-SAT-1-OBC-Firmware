@@ -1,0 +1,90 @@
+<map id="FLASH_deactivate_chip_select" name="FLASH_deactivate_chip_select">
+<area shape="rect" id="Node000001" title="Deactivates the chip select for all lines." alt="" coords="1390,541,1554,582"/>
+<area shape="rect" id="Node000002" href="$complete__self__check_8c.html#a8bb426c47d721c2dcfb23e918f3dae85" title=" " alt="" coords="731,45,896,70"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1463,527,1448,425,1422,294,1405,229,1386,170,1364,124,1340,93,1314,73,1285,56,1222,32,1155,19,1087,16,1021,19,959,26,861,47,860,42,959,21,1021,13,1087,10,1156,14,1224,27,1287,51,1317,68,1344,89,1369,121,1391,169,1410,227,1427,293,1453,424,1469,526"/>
+<area shape="rect" id="Node000006" href="$flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="1193,541,1342,582"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="1375,564,1343,564,1343,559,1375,559"/>
+<area shape="rect" id="Node000007" href="$flash__driver_8c.html#ab2e0bef2e1c3f98c03a435938bd1f795" title="Sends Block Erase Command." alt="" coords="528,452,632,477"/>
+<area shape="poly" id="edge44_Node000001_Node000007" title=" " alt="" coords="1459,527,1444,480,1420,424,1385,368,1364,343,1341,321,1293,291,1250,280,1145,271,1049,259,1008,261,955,271,886,294,835,322,786,355,722,393,607,453,605,449,719,389,783,350,832,317,883,289,954,266,1007,256,1049,254,1145,266,1251,274,1295,287,1344,317,1368,339,1390,365,1424,421,1449,478,1464,525"/>
+<area shape="rect" id="Node000012" href="$flash__driver_8c.html#a6bc165243d2ad49f688a477a644f4186" title="Checks if the FLASH chip is reachable by checking it&#39;s ID." alt="" coords="977,137,1122,162"/>
+<area shape="poly" id="edge45_Node000001_Node000012" title=" " alt="" coords="1468,526,1462,452,1443,358,1427,309,1405,262,1377,220,1341,184,1317,168,1290,156,1233,141,1176,137,1123,140,1123,135,1176,132,1234,136,1292,150,1319,163,1344,180,1381,216,1410,260,1432,307,1448,357,1467,451,1473,526"/>
+<area shape="rect" id="Node000013" href="$flash__telecommand__defs_8c.html#a447d306bb6ec33d39ac84323de6aa88a" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="733,104,894,145"/>
+<area shape="poly" id="edge56_Node000001_Node000013" title=" " alt="" coords="1462,527,1445,434,1418,318,1402,261,1383,210,1362,169,1341,142,1288,109,1229,88,1167,76,1103,73,1040,76,981,84,882,106,881,101,980,79,1040,71,1103,68,1167,71,1230,83,1290,104,1344,138,1367,166,1388,207,1407,259,1424,317,1451,433,1468,526"/>
+<area shape="rect" id="Node000014" href="$flash__driver_8c.html#a58201d7c60a31f131bbfb21bde40a388" title="Read Block Lock Register and store the values in given buffer." alt="" coords="967,339,1133,379"/>
+<area shape="poly" id="edge46_Node000001_Node000014" title=" " alt="" coords="1413,537,1093,382,1095,377,1415,532"/>
+<area shape="rect" id="Node000015" href="$flash__driver_8c.html#ac8eda1346ed63993ba67af316b2d1139" title="Unblocks all blocked blocks of memory on the NAND flash memory module." alt="" coords="720,404,907,429"/>
+<area shape="poly" id="edge50_Node000001_Node000015" title=" " alt="" coords="1453,528,1409,451,1378,409,1341,373,1292,339,1250,320,1204,308,1144,298,1091,287,1048,281,1007,283,956,297,914,320,877,349,827,405,823,401,873,345,911,315,954,293,1006,278,1048,275,1092,282,1146,292,1205,303,1252,315,1295,335,1344,369,1382,406,1414,448,1458,526"/>
+<area shape="rect" id="Node000016" href="$flash__driver_8c.html#a5231aa78550b4076f9fbf923f000fe6d" title="Sends Page Program Command." alt="" coords="514,566,646,592"/>
+<area shape="poly" id="edge51_Node000001_Node000016" title=" " alt="" coords="1474,598,1469,673,1462,720,1451,770,1435,819,1412,867,1382,910,1344,945,1319,959,1289,971,1213,987,1124,995,1029,994,934,984,846,968,772,944,742,929,719,913,702,896,691,878,683,843,681,804,670,760,625,664,586,593,591,591,629,661,675,758,686,804,689,842,696,876,706,892,722,909,745,925,774,939,847,963,934,979,1029,988,1124,989,1212,982,1287,966,1317,955,1341,941,1378,906,1408,864,1430,817,1446,768,1457,719,1464,673,1469,597"/>
+<area shape="rect" id="Node000020" href="$flash__driver_8c.html#a395c5684cb8c564403e3fa68dcae299d" title="Sends Page Read Command." alt="" coords="749,821,878,846"/>
+<area shape="poly" id="edge47_Node000001_Node000020" title=" " alt="" coords="1472,598,1464,666,1444,751,1428,794,1406,836,1378,874,1344,905,1310,922,1264,933,1210,939,1152,941,1038,934,991,925,954,913,937,902,928,889,919,875,905,863,876,849,879,845,908,858,923,872,932,886,941,898,956,909,992,920,1039,929,1152,936,1210,934,1263,928,1308,917,1341,901,1374,870,1402,833,1423,792,1439,749,1459,665,1467,597"/>
+<area shape="rect" id="Node000024" href="$flash__driver_8c.html#ad86ddde592dfea7dd3c6129ca311923a" title="Read Status Register and store the values in given buffer." alt="" coords="955,606,1145,632"/>
+<area shape="poly" id="edge48_Node000001_Node000024" title=" " alt="" coords="1381,589,1343,596,1241,610,1146,617,1145,612,1241,604,1342,591,1380,583"/>
+<area shape="rect" id="Node000025" href="$flash__driver_8c.html#a40465bf4bb4cdce119638ad6f36158b9" title="Sends Write Disable Command." alt="" coords="739,772,888,797"/>
+<area shape="poly" id="edge52_Node000001_Node000025" title=" " alt="" coords="1452,597,1406,658,1377,691,1344,720,1294,756,1252,780,1206,797,1145,812,1070,822,995,820,925,811,867,800,868,795,926,806,995,815,1070,816,1145,807,1204,792,1249,776,1291,752,1341,716,1373,687,1402,654,1448,593"/>
+<area shape="rect" id="Node000026" href="$flash__driver_8c.html#aedefd1fa550b34fc7c57465aa5c5874b" title="Sends Write Enable Command." alt="" coords="741,505,886,530"/>
+<area shape="poly" id="edge53_Node000001_Node000026" title=" " alt="" coords="1440,532,1390,482,1320,423,1280,394,1237,368,1191,346,1144,330,1090,314,1045,304,1025,303,1003,307,981,315,956,329,943,341,935,353,928,380,924,410,919,426,909,443,874,480,838,506,835,502,870,476,905,440,914,424,919,409,923,379,930,351,939,337,953,325,979,310,1002,301,1024,298,1046,298,1091,308,1146,324,1193,341,1239,363,1283,390,1324,419,1394,478,1444,528"/>
+<area shape="rect" id="Node000029" href="$flash__driver_8c.html#a36fd271549f3c71b6ae2049094ada075" title="Resets the NAND flash memory module." alt="" coords="999,873,1100,898"/>
+<area shape="poly" id="edge49_Node000001_Node000029" title=" " alt="" coords="1469,598,1457,656,1435,727,1419,763,1398,798,1374,829,1344,856,1315,873,1284,886,1219,899,1155,901,1101,897,1101,892,1155,896,1218,894,1283,881,1313,868,1341,852,1370,826,1394,795,1414,761,1430,725,1452,655,1464,597"/>
+<area shape="rect" id="Node000031" href="$flash__telecommand__defs_8c.html#abe48337a0d7cf85f21941a23ad028493" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="960,757,1140,798"/>
+<area shape="poly" id="edge55_Node000001_Node000031" title=" " alt="" coords="1423,593,1299,663,1146,741,1106,759,1104,754,1144,737,1297,658,1421,588"/>
+<area shape="rect" id="Node000032" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="1243,1025,1292,1050"/>
+<area shape="poly" id="edge54_Node000001_Node000032" title=" " alt="" coords="1473,598,1467,679,1448,787,1431,846,1409,903,1381,958,1344,1008,1320,1025,1294,1035,1292,1030,1318,1021,1340,1004,1376,955,1404,901,1426,844,1442,786,1461,678,1468,597"/>
+<area shape="rect" id="Node000003" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="502,37,658,78"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="716,60,658,60,658,55,716,55"/>
+<area shape="rect" id="Node000004" href="$system__telecommand__defs_8c.html#ab5d9cbdf1fd0c01f5a10f20d39971092" title="System self&#45;check of all peripherals and systems." alt="" coords="260,5,430,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="486,48,430,40,430,35,487,42"/>
+<area shape="rect" id="Node000005" href="$system__telecommand__defs_8c.html#ad62425492ed28fac500f9c495fe7d4ba" title="System self&#45;check of all peripherals and systems." alt="" coords="260,71,430,111"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="487,74,430,82,430,76,486,68"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="1196,539,1144,524,1000,498,856,482,728,472,632,468,632,463,728,467,857,476,1001,493,1146,519,1197,533"/>
+<area shape="poly" id="edge11_Node000006_Node000012" title=" " alt="" coords="1246,529,1143,328,1056,164,1061,162,1147,326,1251,526"/>
+<area shape="poly" id="edge14_Node000006_Node000014" title=" " alt="" coords="1243,530,1192,456,1165,422,1143,400,1114,382,1117,378,1147,396,1169,418,1196,453,1247,527"/>
+<area shape="poly" id="edge39_Node000006_Node000015" title=" " alt="" coords="1240,531,1198,487,1172,467,1144,451,1085,430,1023,418,963,413,907,412,907,407,963,408,1024,413,1087,425,1146,446,1175,463,1202,483,1244,527"/>
+<area shape="poly" id="edge40_Node000006_Node000016" title=" " alt="" coords="1177,567,646,580,646,575,1177,561"/>
+<area shape="poly" id="edge22_Node000006_Node000020" title=" " alt="" coords="1244,596,1194,658,1168,686,1146,704,1119,717,1095,723,1049,725,1005,728,982,734,956,748,941,763,933,779,925,796,908,812,880,825,877,821,905,807,920,792,928,776,937,759,953,744,980,730,1004,722,1049,720,1094,718,1118,712,1144,699,1164,682,1190,655,1240,593"/>
+<area shape="poly" id="edge27_Node000006_Node000024" title=" " alt="" coords="1179,588,1102,608,1101,603,1177,583"/>
+<area shape="poly" id="edge41_Node000006_Node000025" title=" " alt="" coords="1230,594,1191,621,1146,647,1093,666,1050,675,1007,684,956,704,932,721,908,740,846,773,843,769,905,735,929,717,953,699,1006,679,1049,670,1092,661,1144,642,1188,617,1227,589"/>
+<area shape="poly" id="edge42_Node000006_Node000026" title=" " alt="" coords="1177,555,1145,552,886,527,887,522,1145,547,1178,550"/>
+<area shape="poly" id="edge37_Node000006_Node000029" title=" " alt="" coords="1257,598,1216,698,1184,757,1147,811,1111,848,1074,874,1071,870,1107,843,1143,808,1180,754,1211,696,1252,596"/>
+<area shape="poly" id="edge43_Node000006_Node000031" title=" " alt="" coords="1253,598,1211,669,1181,707,1147,741,1117,759,1115,755,1143,737,1177,704,1206,666,1248,595"/>
+<area shape="rect" id="Node000008" href="$flash__benchmark_8c.html#a9485023a9a54cf461dba878ce4d013fb" title="Benchmarks the erase/read/write operations on the flash memory module." alt="" coords="257,612,432,653"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="514,477,489,492,477,505,470,518,465,545,460,573,453,588,441,602,425,614,422,609,437,598,448,585,455,572,460,544,465,516,473,502,485,488,512,472"/>
+<area shape="rect" id="Node000010" href="$littlefs__driver_8c.html#ac92d3429222f40c34643f2969b93060a" title="LittleFS erase function." alt="" coords="261,410,429,436"/>
+<area shape="poly" id="edge9_Node000007_Node000010" title=" " alt="" coords="512,455,421,439,422,434,513,450"/>
+<area shape="rect" id="Node000011" href="$flash__telecommand__defs_8c.html#abf1a62ec4474e4584deb50c95c7800c4" title="Telecommand: Erase a block of flash memory containing the given page number." alt="" coords="262,460,428,485"/>
+<area shape="poly" id="edge10_Node000007_Node000011" title=" " alt="" coords="512,469,428,472,428,467,512,464"/>
+<area shape="rect" id="Node000009" href="$flash__telecommand__defs_8c.html#aeb4bfdf0b416966258a378a382f529ce" title="Telecommand: Benchmarks the erase/write/read operations on the flash memory module." alt="" coords="5,612,203,653"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="241,635,203,635,203,630,241,630"/>
+<area shape="poly" id="edge12_Node000012_Node000002" title=" " alt="" coords="1001,133,906,95,850,74,852,69,908,90,1003,128"/>
+<area shape="poly" id="edge13_Node000012_Node000013" title=" " alt="" coords="962,143,894,136,895,130,962,138"/>
+<area shape="poly" id="edge15_Node000014_Node000015" title=" " alt="" coords="952,385,870,405,869,400,951,380"/>
+<area shape="poly" id="edge16_Node000015_Node000007" title=" " alt="" coords="733,436,633,456,632,451,732,430"/>
+<area shape="poly" id="edge17_Node000015_Node000016" title=" " alt="" coords="783,441,722,494,709,511,700,526,691,541,674,556,647,569,645,564,671,551,687,538,696,524,704,508,718,490,780,437"/>
+<area shape="poly" id="edge19_Node000016_Node000008" title=" " alt="" coords="506,598,433,615,432,610,504,593"/>
+<area shape="rect" id="Node000017" href="$flash__testing__demos_8c.html#a195fe65949096932e071ddb8f4ff0dd6" title=" " alt="" coords="284,513,406,538"/>
+<area shape="poly" id="edge18_Node000016_Node000017" title=" " alt="" coords="504,565,404,542,405,537,505,560"/>
+<area shape="rect" id="Node000018" href="$littlefs__driver_8c.html#a6979423f6b81b4ac02cd878f0a93cc69" title="LittleFS write function." alt="" coords="264,562,426,588"/>
+<area shape="poly" id="edge20_Node000016_Node000018" title=" " alt="" coords="498,580,426,579,426,574,498,575"/>
+<area shape="rect" id="Node000019" href="$flash__telecommand__defs_8c.html#ad09f175c2e7126e812bfaeebcd17c172" title="Telecommand: Write a hex string of bytes to a page number." alt="" coords="251,677,439,702"/>
+<area shape="poly" id="edge21_Node000016_Node000019" title=" " alt="" coords="550,603,500,636,440,667,406,679,405,674,438,662,497,631,547,599"/>
+<area shape="poly" id="edge24_Node000020_Node000008" title=" " alt="" coords="733,819,719,812,703,799,694,787,685,774,671,761,610,726,559,705,506,689,438,667,407,656,409,651,440,662,507,684,561,700,613,721,674,757,689,770,698,783,707,796,722,807,736,814"/>
+<area shape="rect" id="Node000021" href="$flash__testing__demos_8c.html#a8b820d5639e3201ec967af242a24a521" title=" " alt="" coords="520,772,639,797"/>
+<area shape="poly" id="edge23_Node000020_Node000021" title=" " alt="" coords="734,820,639,799,640,794,735,814"/>
+<area shape="rect" id="Node000022" href="$littlefs__driver_8c.html#ac0f31450af1dca02021baa7111548662" title="LittleFS read function." alt="" coords="499,821,660,846"/>
+<area shape="poly" id="edge25_Node000020_Node000022" title=" " alt="" coords="733,836,661,836,661,831,733,831"/>
+<area shape="rect" id="Node000023" href="$flash__telecommand__defs_8c.html#aaad387e58757cce93fe46c8eb25cc822" title="Telecommand: Read bytes as hex from a page number." alt="" coords="487,870,672,896"/>
+<area shape="poly" id="edge26_Node000020_Node000023" title=" " alt="" coords="735,853,645,872,644,867,733,848"/>
+<area shape="poly" id="edge28_Node000024_Node000007" title=" " alt="" coords="939,613,886,604,829,591,772,571,719,545,703,532,694,518,685,505,671,492,631,476,633,471,674,487,689,501,698,515,707,528,722,541,774,566,830,585,887,599,940,608"/>
+<area shape="poly" id="edge30_Node000024_Node000016" title=" " alt="" coords="981,640,956,653,942,667,934,683,925,698,908,711,857,730,814,735,771,729,719,711,666,663,593,594,597,591,669,659,722,706,772,723,814,730,856,725,905,706,921,694,929,680,938,664,953,649,978,635"/>
+<area shape="poly" id="edge29_Node000024_Node000020" title=" " alt="" coords="1019,643,987,670,957,703,942,732,937,759,929,786,908,812,880,827,877,823,905,808,924,783,931,758,937,731,952,700,983,666,1015,639"/>
+<area shape="poly" id="edge31_Node000024_Node000025" title=" " alt="" coords="974,641,956,653,946,665,939,677,933,702,927,728,920,741,908,754,877,773,874,769,905,750,916,738,922,726,928,701,934,675,941,662,953,649,971,637"/>
+<area shape="poly" id="edge32_Node000024_Node000026" title=" " alt="" coords="1003,602,845,533,847,529,1005,597"/>
+<area shape="rect" id="Node000028" href="$flash__telecommand__defs_8c.html#acdb77863dccc091d8e541e83e5363d83" title="Telecommand: Read and print Status Register value as hex from the flash memory module." alt="" coords="734,656,893,697"/>
+<area shape="poly" id="edge36_Node000024_Node000028" title=" " alt="" coords="980,639,894,660,893,655,979,633"/>
+<area shape="poly" id="edge33_Node000026_Node000007" title=" " alt="" coords="739,503,632,479,633,474,740,498"/>
+<area shape="poly" id="edge34_Node000026_Node000016" title=" " alt="" coords="748,538,632,568,631,563,746,532"/>
+<area shape="rect" id="Node000027" href="$flash__telecommand__defs_8c.html#a433fa04a701bd8560513d2c72496ed17" title="Telecommand: Set the write enable lath to high on the flash memory module." alt="" coords="499,501,660,542"/>
+<area shape="poly" id="edge35_Node000026_Node000027" title=" " alt="" coords="725,522,661,523,661,518,725,517"/>
+<area shape="rect" id="Node000030" href="$flash__telecommand__defs_8c.html#ab1f133dc22842f3fcdfeb446998d0dd6" title="Telecommand: Reset the flash memory module." alt="" coords="732,873,895,898"/>
+<area shape="poly" id="edge38_Node000029_Node000030" title=" " alt="" coords="984,888,895,888,895,883,984,883"/>
+</map>

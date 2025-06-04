@@ -1,0 +1,11 @@
+<map id="ANT_CMD_start_automated_sequential_deployment" name="ANT_CMD_start_automated_sequential_deployment">
+<area shape="rect" id="Node000001" title="deploys all antennas one by one sequentially." alt="" coords="605,39,791,79"/>
+<area shape="rect" id="Node000002" href="$rtos__bootup__operation__fsm__task_8c.html#ab2eda5d81c07b81254f9ff57e3e7e372" title=" " alt="" coords="371,5,528,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="590,47,528,39,529,34,590,42"/>
+<area shape="rect" id="Node000005" href="$antenna__telecommand__defs_8c.html#a3324fa3a66d69734ce5a7cf2fd507fb2" title="begins deployment of all antennas, one by one." alt="" coords="342,71,557,111"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="590,76,558,80,557,74,590,70"/>
+<area shape="rect" id="Node000003" href="$rtos__bootup__operation__fsm__task_8c.html#a6d56b04a815b7769ed167bbd4a1921d6" title="FreeRTOS task &#45; FSM which handles the bootup and operation state/state." alt="" coords="103,13,294,38"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="355,28,294,28,294,23,355,23"/>
+<area shape="rect" id="Node000004" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,13,55,38"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="87,28,55,28,55,23,87,23"/>
+</map>

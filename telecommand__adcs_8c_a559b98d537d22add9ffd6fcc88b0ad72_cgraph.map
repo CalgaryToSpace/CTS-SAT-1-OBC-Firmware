@@ -1,0 +1,17 @@
+<map id="TCMDEXEC_adcs_get_current_unix_time" name="TCMDEXEC_adcs_get_current_unix_time">
+<area shape="rect" id="Node000001" title="Telecommand: Retrieve the current ADCS Unix epoch time." alt="" coords="5,88,205,129"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a4119f53137daee2b797d5f3166055ac7" title="Instruct the ADCS to execute the ADCS_get_current_unix_time command." alt="" coords="257,70,448,96"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="205,95,241,92,242,97,205,101"/>
+<area shape="rect" id="Node000007" href="$adcs__types__to__json_8c.html#a554029afadc2e74a1e80c65baac59539" title=" " alt="" coords="253,120,453,145"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="205,115,237,118,237,124,205,121"/>
+<area shape="rect" id="Node000003" href="$adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="504,5,695,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="411,67,494,48,495,53,412,72"/>
+<area shape="rect" id="Node000006" href="$adcs__struct__packers_8c.html#a0bfa18b3765f5b901c25eb5da9a0e5da" title="Parse Unix Time telemetry data into a uint64." alt="" coords="501,70,698,96"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="449,80,485,80,485,86,449,86"/>
+<area shape="rect" id="Node000004" href="$adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="746,5,923,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="696,23,731,23,731,28,696,28"/>
+<area shape="rect" id="Node000005" href="$adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="971,5,1119,46"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="923,23,955,23,955,28,923,28"/>
+<area shape="rect" id="Node000008" href="$arrays_8c.html#a4d9146ce5234948adb9b3845f4e91b53" title="Converts a uint64_t to a string." alt="" coords="534,120,665,145"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="453,130,519,130,519,135,453,135"/>
+</map>

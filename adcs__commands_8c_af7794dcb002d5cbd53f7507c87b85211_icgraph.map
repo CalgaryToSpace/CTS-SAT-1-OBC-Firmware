@@ -1,0 +1,15 @@
+<map id="ADCS_get_estimated_attitude_angles" name="ADCS_get_estimated_attitude_angles">
+<area shape="rect" id="Node000001" title="Instruct the ADCS to execute the ADCS_Estimated_Attitude_Angles command." alt="" coords="791,59,937,100"/>
+<area shape="rect" id="Node000002" href="$rf__antenna__switch_8c.html#a27cac05fe317e6b8b7912518b887e67b" title="Determines the optimal antenna to use based on the satellite&#39;s attitude angles." alt="" coords="573,26,721,66"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="775,69,721,60,722,55,776,63"/>
+<area shape="rect" id="Node000007" href="$telecommand__adcs_8c.html#ac48b8eb0601644db2e267e1b24311348" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="551,91,743,132"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="776,95,744,100,743,95,775,90"/>
+<area shape="rect" id="Node000003" href="$rtos__background__upkeep_8c.html#abe5172bdcb8d715e36f109000499ef33" title="Update the RF switch state based on the current mode." alt="" coords="330,5,503,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="558,38,504,31,504,26,559,33"/>
+<area shape="rect" id="Node000006" href="$comms__telecommand__defs_8c.html#adf4c158ebd75cfad2ae9bd4bac4772c3" title="Gets the current RF switch control mode and the current antenna state." alt="" coords="333,55,500,96"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="558,60,501,67,500,62,558,55"/>
+<area shape="rect" id="Node000004" href="$rtos__background__upkeep_8c.html#a6e9290aa86044f925c753a48224e083f" title=" " alt="" coords="103,5,282,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="315,21,282,21,282,16,315,16"/>
+<area shape="rect" id="Node000005" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,5,55,31"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="87,21,55,21,55,16,87,16"/>
+</map>

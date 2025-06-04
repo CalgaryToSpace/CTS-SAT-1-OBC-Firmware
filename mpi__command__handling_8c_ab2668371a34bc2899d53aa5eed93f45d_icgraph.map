@@ -1,0 +1,15 @@
+<map id="MPI_send_command_get_response" name="MPI_send_command_get_response">
+<area shape="rect" id="Node000001" title="Sends commandcode+params to the MPI as bytes." alt="" coords="694,104,864,145"/>
+<area shape="rect" id="Node000002" href="$complete__self__check_8c.html#a69e42b25a674c78c4b0bd7d93ed2eefa" title=" " alt="" coords="458,39,615,79"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="686,102,614,83,616,77,687,97"/>
+<area shape="rect" id="Node000006" href="$mpi__telecommand__defs_8c.html#a74a15909de626b62b9710fd560db550a" title="Send a configuration command &amp; params (IF ANY) to the MPI encoded in hex." alt="" coords="427,104,646,145"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="679,127,647,127,647,122,679,122"/>
+<area shape="rect" id="Node000007" href="$uart__telelecommand__defs_8c.html#a559929acf5cfc4bdde97856c88c93f7d" title="Send arbitrary commands to a UART peripheral, and receive the response." alt="" coords="456,169,617,210"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="687,152,616,171,614,166,686,147"/>
+<area shape="rect" id="Node000003" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="223,39,379,79"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="443,62,379,62,379,56,443,56"/>
+<area shape="rect" id="Node000004" href="$system__telecommand__defs_8c.html#ab5d9cbdf1fd0c01f5a10f20d39971092" title="System self&#45;check of all peripherals and systems." alt="" coords="5,5,175,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="207,47,175,42,176,36,208,42"/>
+<area shape="rect" id="Node000005" href="$system__telecommand__defs_8c.html#ad62425492ed28fac500f9c495fe7d4ba" title="System self&#45;check of all peripherals and systems." alt="" coords="5,71,175,111"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="208,76,176,81,175,75,207,70"/>
+</map>

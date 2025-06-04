@@ -1,0 +1,15 @@
+<map id="TCMDEXEC_adcs_exit_bootloader" name="TCMDEXEC_adcs_exit_bootloader">
+<area shape="rect" id="Node000001" title="Telecommand: If the ADCS is currently stuck in the bootloader, run the internal flash program (CubeAC..." alt="" coords="5,35,160,75"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#ad0b1a92a37b0af64f12572dce9444e61" title="Run the internal flash (CubeACP) program, exiting the bootloader. If CubeACP is already running,..." alt="" coords="214,5,363,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="160,41,197,36,198,41,160,47"/>
+<area shape="rect" id="Node000003" href="$adcs__commands_8c.html#afd4d41668b881b9ab99ef0dec931daae" title="Instruct the ADCS to execute the ADCS_Identification command." alt="" coords="208,70,369,96"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="160,63,193,67,192,73,160,68"/>
+<area shape="rect" id="Node000004" href="$adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="417,29,608,70"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="369,68,401,64,402,69,369,74"/>
+<area shape="rect" id="Node000007" href="$adcs__struct__packers_8c.html#a0294c7dc02c7599b3d6d45d3973c2a34" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="418,95,607,135"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="369,92,403,97,402,102,369,97"/>
+<area shape="rect" id="Node000005" href="$adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="656,29,833,70"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="609,47,641,47,641,52,609,52"/>
+<area shape="rect" id="Node000006" href="$adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="881,29,1029,70"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="833,47,865,47,865,52,833,52"/>
+</map>

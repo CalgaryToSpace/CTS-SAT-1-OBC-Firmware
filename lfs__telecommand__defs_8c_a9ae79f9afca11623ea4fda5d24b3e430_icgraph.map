@@ -1,0 +1,9 @@
+<map id="parse_arg_str_for_file_offset_length" name="parse_arg_str_for_file_offset_length">
+<area shape="rect" id="Node000001" title="Parse a telecommand argument str for the standard filename/offset/length arguments for reading files." alt="" coords="247,55,392,96"/>
+<area shape="rect" id="Node000002" href="$lfs__telecommand__defs_8c.html#adcd5c5bb896cd90680be830952d3ae65" title="Reads a file from LittleFS, and responds with its contents as 2&#45;digit hex bytes (no spaces)." alt="" coords="6,5,198,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="231,55,198,46,153,34,154,29,199,41,232,50"/>
+<area shape="rect" id="Node000003" href="$lfs__telecommand__defs_8c.html#a780bcc91a7c663653c16de1a5b006544" title="Calculates the SHA256 hash of a file in LittleFS and returns it as a little&#45;endian hex string." alt="" coords="19,55,185,96"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="232,78,185,78,185,73,232,73"/>
+<area shape="rect" id="Node000004" href="$lfs__telecommand__defs_8c.html#a3987d15fbe2d9a0e39633747d99aebe1" title="Reads a file from LittleFS, and responds with its contents as a string." alt="" coords="5,120,199,146"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="232,101,199,110,154,122,153,117,198,105,231,96"/>
+</map>

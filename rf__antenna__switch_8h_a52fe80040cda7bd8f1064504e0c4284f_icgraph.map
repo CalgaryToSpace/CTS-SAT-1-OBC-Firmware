@@ -1,0 +1,16 @@
+<map id="COMMS_set_rf_switch_state" name="COMMS_set_rf_switch_state">
+<area shape="rect" id="Node000001" title="Sets the state of the dipole switch on the OBC to either Antenna 1 or Antenna 2." alt="" coords="773,63,929,103"/>
+<area shape="rect" id="Node000002" href="$rf__antenna__switch_8c.html#ade73dfe481703e9cdc28fc1ef9b6e52f" title="Toggles the active antenna (selected by RF switch), from 1 to 2 or from 2 to 1." alt="" coords="551,5,725,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="758,61,715,49,717,44,759,56"/>
+<area shape="rect" id="Node000006" href="$rtos__background__upkeep_8c.html#abe5172bdcb8d715e36f109000499ef33" title="Update the RF switch state based on the current mode." alt="" coords="330,66,503,92"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="757,85,504,82,504,77,757,79"/>
+<area shape="rect" id="Node000007" href="$comms__telecommand__defs_8c.html#ad2ccb9d8dff6e350b7eb92946bad9d64" title="Sets the state of the dipole switch on the OBC to either Antenna 1 or Antenna 2." alt="" coords="554,120,722,161"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="759,110,717,122,715,117,758,105"/>
+<area shape="rect" id="Node000003" href="$rtos__background__upkeep_8c.html#ac2cb91e97e47f67688df04494adf42de" title=" " alt="" coords="341,16,492,41"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="536,30,493,30,493,25,536,24"/>
+<area shape="rect" id="Node000004" href="$rtos__background__upkeep_8c.html#a6e9290aa86044f925c753a48224e083f" title=" " alt="" coords="103,42,282,68"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="326,42,283,47,282,42,325,36"/>
+<area shape="rect" id="Node000005" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,42,55,68"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="87,58,55,58,55,52,87,52"/>
+<area shape="poly" id="edge6_Node000006_Node000004" title=" " alt="" coords="314,71,282,67,283,62,315,65"/>
+</map>

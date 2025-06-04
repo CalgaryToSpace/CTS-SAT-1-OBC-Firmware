@@ -1,0 +1,7 @@
+<map id="GEN_byte_array_to_hex_str" name="GEN_byte_array_to_hex_str">
+<area shape="rect" id="Node000001" title="Writes a byte array to a hex string (no spaces between bytes)." alt="" coords="246,35,428,60"/>
+<area shape="rect" id="Node000002" href="$lfs__telecommand__defs_8c.html#adcd5c5bb896cd90680be830952d3ae65" title="Reads a file from LittleFS, and responds with its contents as 2&#45;digit hex bytes (no spaces)." alt="" coords="5,5,198,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="230,37,198,33,199,28,231,32"/>
+<area shape="rect" id="Node000003" href="$lfs__telecommand__defs_8c.html#a780bcc91a7c663653c16de1a5b006544" title="Calculates the SHA256 hash of a file in LittleFS and returns it as a little&#45;endian hex string." alt="" coords="19,55,184,96"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="231,63,185,68,184,63,230,58"/>
+</map>

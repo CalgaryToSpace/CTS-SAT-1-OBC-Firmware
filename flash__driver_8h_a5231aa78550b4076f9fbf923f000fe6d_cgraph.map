@@ -1,0 +1,32 @@
+<map id="FLASH_write_data" name="FLASH_write_data">
+<area shape="rect" id="Node000001" title="Sends Page Program Command." alt="" coords="5,193,138,218"/>
+<area shape="rect" id="Node000002" href="$debug__uart_8c.html#ae1143c61f5fad27b50053b03673b9501" title="Print an array of bytes in hex format, like 00 01 02 ..." alt="" coords="420,91,610,117"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="131,189,440,118,442,123,132,195"/>
+<area shape="rect" id="Node000003" href="$debug__uart_8c.html#a50bda81315799872455980023a8fbfe8" title=" " alt="" coords="658,91,809,117"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="90,190,132,163,185,136,299,93,347,80,393,71,439,67,489,67,611,76,665,85,664,90,610,81,489,72,439,73,393,77,348,85,300,98,187,141,135,168,93,194"/>
+<area shape="rect" id="Node000004" href="$flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="659,341,808,382"/>
+<area shape="poly" id="edge4_Node000001_Node000004" title=" " alt="" coords="91,217,133,247,187,276,245,298,306,316,430,340,546,354,643,359,643,364,546,359,429,346,305,321,244,303,185,281,130,251,88,221"/>
+<area shape="rect" id="Node000005" href="$flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="857,313,1020,354"/>
+<area shape="poly" id="edge6_Node000001_Node000005" title=" " alt="" coords="90,190,132,163,185,136,357,62,432,32,504,12,575,3,611,4,648,9,686,18,726,33,810,77,838,98,861,124,881,153,897,184,921,245,934,297,929,299,916,247,893,186,877,156,857,127,834,102,807,81,723,38,684,24,647,14,611,9,575,8,505,17,434,37,359,67,187,141,135,168,93,194"/>
+<area shape="rect" id="Node000006" href="$flash__driver_8c.html#ad86ddde592dfea7dd3c6129ca311923a" title="Read Status Register and store the values in given buffer." alt="" coords="420,294,610,320"/>
+<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="132,216,442,287,440,293,131,221"/>
+<area shape="rect" id="Node000007" href="$flash__driver_8c.html#ac8eda1346ed63993ba67af316b2d1139" title="Unblocks all blocked blocks of memory on the NAND flash memory module." alt="" coords="186,423,372,449"/>
+<area shape="poly" id="edge10_Node000001_Node000007" title=" " alt="" coords="82,217,121,289,152,333,188,374,213,395,240,413,237,417,210,400,184,378,148,336,117,291,77,220"/>
+<area shape="rect" id="Node000009" href="$flash__driver_8c.html#aedefd1fa550b34fc7c57465aa5c5874b" title="Sends Write Enable Command." alt="" coords="206,193,352,218"/>
+<area shape="poly" id="edge16_Node000001_Node000009" title=" " alt="" coords="138,203,191,203,191,208,138,208"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="610,101,643,101,643,107,610,107"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="808,349,841,344,842,349,809,354"/>
+<area shape="poly" id="edge8_Node000006_Node000004" title=" " alt="" coords="570,318,644,336,643,342,569,323"/>
+<area shape="poly" id="edge9_Node000006_Node000005" title=" " alt="" coords="611,310,841,325,841,330,611,315"/>
+<area shape="poly" id="edge11_Node000007_Node000004" title=" " alt="" coords="361,420,643,373,644,379,362,425"/>
+<area shape="poly" id="edge12_Node000007_Node000005" title=" " alt="" coords="304,447,356,473,421,495,473,504,515,506,610,495,713,478,755,464,807,439,861,403,906,363,909,367,865,407,810,444,757,469,714,483,611,500,515,511,473,509,419,500,354,478,301,452"/>
+<area shape="rect" id="Node000008" href="$flash__driver_8c.html#a58201d7c60a31f131bbfb21bde40a388" title="Read Block Lock Register and store the values in given buffer." alt="" coords="432,445,598,486"/>
+<area shape="poly" id="edge13_Node000007_Node000008" title=" " alt="" coords="373,445,417,451,416,456,372,450"/>
+<area shape="poly" id="edge14_Node000008_Node000004" title=" " alt="" coords="569,442,609,424,682,387,684,392,611,429,571,447"/>
+<area shape="poly" id="edge15_Node000008_Node000005" title=" " alt="" coords="598,447,699,423,808,391,883,359,885,364,810,396,701,429,600,452"/>
+<area shape="poly" id="edge17_Node000009_Node000002" title=" " alt="" coords="303,190,419,134,455,120,457,125,421,139,306,195"/>
+<area shape="poly" id="edge18_Node000009_Node000003" title=" " alt="" coords="340,189,657,118,658,123,341,195"/>
+<area shape="poly" id="edge19_Node000009_Node000004" title=" " alt="" coords="353,212,476,236,545,255,611,279,657,303,696,330,693,334,654,307,609,284,543,260,474,241,351,217"/>
+<area shape="poly" id="edge20_Node000009_Node000005" title=" " alt="" coords="352,205,473,214,611,233,747,267,866,305,864,310,746,272,610,239,473,220,351,211"/>
+<area shape="poly" id="edge21_Node000009_Node000006" title=" " alt="" coords="306,216,421,272,457,286,455,291,419,277,303,221"/>
+</map>

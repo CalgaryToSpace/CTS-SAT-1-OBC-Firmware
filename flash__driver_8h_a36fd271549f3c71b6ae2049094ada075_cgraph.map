@@ -1,0 +1,8 @@
+<map id="FLASH_reset" name="FLASH_reset">
+<area shape="rect" id="Node000001" title="Resets the NAND flash memory module." alt="" coords="5,42,107,68"/>
+<area shape="rect" id="Node000002" href="$flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="155,5,304,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="107,44,139,38,140,44,108,49"/>
+<area shape="rect" id="Node000003" href="$flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="352,35,515,75"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="107,54,155,55,304,55,336,55,336,60,304,60,155,60,107,59"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="305,34,337,38,336,44,304,39"/>
+</map>

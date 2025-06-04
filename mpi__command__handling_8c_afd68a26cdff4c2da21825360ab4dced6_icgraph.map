@@ -1,0 +1,9 @@
+<map id="MPI_power_on" name="MPI_power_on">
+<area shape="rect" id="Node000001" title="Turns on MPI by setting the corresponding EPS channel." alt="" coords="662,13,771,38"/>
+<area shape="rect" id="Node000002" href="$mpi__command__handling_8c.html#a55a08329a47eb7cc33598fb73d0346a8" title="Turns on MPI and prepares a LFS file to store MPI data in." alt="" coords="438,13,614,38"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="647,28,615,28,615,23,647,23"/>
+<area shape="rect" id="Node000003" href="$mpi__command__handling_8c.html#ab22f1e40960cb57109912b9856d6ce0e" title="Turns on MPI science mode and Enables DMA interrupt for MPI channel." alt="" coords="219,13,390,38"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="423,28,390,28,390,23,423,23"/>
+<area shape="rect" id="Node000004" href="$mpi__telecommand__defs_8c.html#a9710a989a2e429deaae3ce5f4d877e40" title="Enables systems to start receiving data actively from MPI and storing using LFS." alt="" coords="5,5,171,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="203,28,171,28,171,23,203,23"/>
+</map>

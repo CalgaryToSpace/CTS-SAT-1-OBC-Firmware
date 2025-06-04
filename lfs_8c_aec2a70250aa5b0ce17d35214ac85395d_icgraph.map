@@ -1,0 +1,27 @@
+<map id="lfs_file_size" name="lfs_file_size">
+<area shape="rect" id="Node000001" title=" " alt="" coords="1055,186,1143,212"/>
+<area shape="rect" id="Node000002" href="$bulk__file__downlink_8c.html#afcebb6cce86f43d32e7bde4ae0e76102" title="Initiate a bulk file downlink over the UHF radio." alt="" coords="824,49,1007,90"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1065,179,944,93,947,88,1068,175"/>
+<area shape="rect" id="Node000004" href="$littlefs__helper_8c.html#ab023cc2f985c4102f9af88af7e832a03" title="Returns the file size." alt="" coords="866,157,965,182"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="1039,192,965,180,966,175,1040,187"/>
+<area shape="rect" id="Node000010" href="$littlefs__helper_8c.html#a9fa734c723031b43247eaa177c24db0e" title="Creates / Opens LittleFS File and writes data at a specific offset." alt="" coords="848,207,983,247"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="1040,211,984,219,983,214,1039,205"/>
+<area shape="rect" id="Node000012" href="$mpi__command__handling_8c.html#a18350b36750056a408fd821476185cef" title=" " alt="" coords="828,272,1002,297"/>
+<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="1071,223,1041,243,1008,261,976,273,974,268,1006,257,1039,239,1068,219"/>
+<area shape="rect" id="Node000003" href="$comms__telecommand__defs_8c.html#aa4994f70273caf18ffa3b7dc48c80208" title="Initiate a bulk file downlink over the UHF radio." alt="" coords="591,5,765,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="808,52,765,44,766,39,809,47"/>
+<area shape="rect" id="Node000005" href="$rtos__bootup__operation__fsm__task_8c.html#a82da930bbd6588a7cd64503dfe4df708" title="Check if the filesystem has the file &quot;/bypass_deployment_and_enable_radio.txt&quot;." alt="" coords="593,70,763,126"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="855,154,763,126,764,121,857,149"/>
+<area shape="rect" id="Node000009" href="$lfs__telecommand__defs_8c.html#a780bcc91a7c663653c16de1a5b006544" title="Calculates the SHA256 hash of a file in LittleFS and returns it as a little&#45;endian hex string." alt="" coords="595,149,761,190"/>
+<area shape="poly" id="edge8_Node000004_Node000009" title=" " alt="" coords="850,172,761,172,761,167,850,167"/>
+<area shape="rect" id="Node000006" href="$rtos__bootup__operation__fsm__task_8c.html#a247e169d6de2ab3a01ac64796b2ef083" title="State machine for the bootup operation state." alt="" coords="342,70,532,126"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="577,100,533,100,533,95,577,95"/>
+<area shape="rect" id="Node000007" href="$rtos__bootup__operation__fsm__task_8c.html#a6d56b04a815b7769ed167bbd4a1921d6" title="FreeRTOS task &#45; FSM which handles the bootup and operation state/state." alt="" coords="103,85,294,110"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="326,100,295,100,295,95,326,95"/>
+<area shape="rect" id="Node000008" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,85,55,110"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="87,100,55,100,55,95,87,95"/>
+<area shape="rect" id="Node000011" href="$lfs__telecommand__defs_8c.html#af5483cafc404e3179c3a236747cc99ac" title="Telecommand: Write hex data to a file in LittleFS with offset support." alt="" coords="580,214,776,240"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="832,230,776,230,776,224,832,224"/>
+<area shape="rect" id="Node000013" href="$mpi__telecommand__defs_8c.html#a3ffbca3b8be611b65a7f096972ab3d37" title="Sets the state to not send or receive data from MPI." alt="" coords="594,264,762,305"/>
+<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="813,287,763,287,763,282,813,282"/>
+</map>

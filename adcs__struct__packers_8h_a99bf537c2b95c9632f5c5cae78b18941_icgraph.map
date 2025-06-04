@@ -1,0 +1,9 @@
+<map id="ADCS_pack_to_fine_angular_rates_struct" name="ADCS_pack_to_fine_angular_rates_struct">
+<area shape="rect" id="Node000001" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="466,41,652,82"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a8ef00b896a55801bb8d08ca6d7222bab" title="Instruct the ADCS to execute the ADCS_Estimate_Fine_Angular_Rates command." alt="" coords="245,5,411,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="450,47,411,41,412,36,451,42"/>
+<area shape="rect" id="Node000004" href="$test__adcs_8c.html#a41e5ddd2e287af6205e5ade811d56737" title=" " alt="" coords="238,70,418,126"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="451,81,419,86,418,81,450,76"/>
+<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#ac86f92ada68c451e7b042544c98b36bd" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,190,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="229,28,190,28,190,23,229,23"/>
+</map>
