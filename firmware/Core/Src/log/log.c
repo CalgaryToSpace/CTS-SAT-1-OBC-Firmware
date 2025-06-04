@@ -20,6 +20,8 @@
 // Includes prefix, with cushion for delimiters, newline, and null terminator
 #define LOG_FULL_MESSAGE_MAX_LENGTH ( LOG_FORMATTED_MESSAGE_MAX_LENGTH + LOG_TIMESTAMP_MAX_LENGTH + LOG_SINK_NAME_MAX_LENGTH + LOG_SYSTEM_NAME_MAX_LENGTH + 1 )
 
+LOG_context_enum_t LOG_current_log_context = LOG_CONTEXT_AUTONOMOUS; // Default context is autonomous
+
 typedef struct {
     LOG_sink_enum_t sink;
     const char name[LOG_SINK_NAME_MAX_LENGTH];
@@ -98,6 +100,21 @@ static const uint16_t LOG_NUMBER_OF_SYSTEMS = sizeof(LOG_systems) / sizeof(LOG_s
 
 // External interfaces 
 
+static char LOG_context_enum_to_char(LOG_context_enum_t context) {
+    if (context == LOG_CONTEXT_AUTONOMOUS) {
+        return 'A'; // Autonomous context
+    }
+    else if (context == LOG_CONTEXT_IMMEDIATE_TELECOMMAND) {
+        return 'T'; // Immediate telecommand context
+    }
+    else if (context == LOG_CONTEXT_SCHEDULED_TELECOMMAND) {
+        return 'S'; // Scheduled telecommand context
+    }
+    else {
+        return '?'; // Unknown context
+    }
+}
+
 /// @brief Log a message to several destinations (sinks)
 /// @param system the system sending the log message (i.e., satellite subsystem)
 /// @param severity message severity
@@ -160,8 +177,9 @@ void LOG_message(LOG_system_enum_t system, LOG_severity_enum_t severity, uint32_
         }
     }
     snprintf(current_log_entry->full_message, LOG_FULL_MESSAGE_MAX_LENGTH, 
-            "%s [%s:%s]: %s\n", 
+            "%s [%c:%s:%s]: %s\n", 
             LOG_timestamp_string, 
+            LOG_context_enum_to_char(LOG_current_log_context),
             system_config->name, 
             severity_text, 
             LOG_formatted_log_message

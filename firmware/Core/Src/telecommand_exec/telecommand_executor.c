@@ -399,8 +399,15 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
         (resp_fname_len > 0) ? TCMD_agenda[tcmd_agenda_slot_num].resp_fname : "None"
     );
 
+    if (TCMD_agenda[tcmd_agenda_slot_num].timestamp_to_execute > 0) {
+        LOG_current_log_context = LOG_CONTEXT_SCHEDULED_TELECOMMAND;
+    }
+    else {
+        LOG_current_log_context = LOG_CONTEXT_IMMEDIATE_TELECOMMAND;
+    }
+
     // Execute the telecommand.
-    return TCMD_execute_parsed_telecommand_now(
+    const uint8_t exec_result = TCMD_execute_parsed_telecommand_now(
         TCMD_agenda[tcmd_agenda_slot_num].tcmd_idx,
         TCMD_agenda[tcmd_agenda_slot_num].args_str_no_parens,
         TCMD_agenda[tcmd_agenda_slot_num].timestamp_sent,
@@ -409,6 +416,11 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
         response_output_buf,
         response_output_buf_size
     );
+
+    // Reset the log context back to the default.
+    LOG_current_log_context = LOG_CONTEXT_AUTONOMOUS;
+
+    return exec_result;
 }
 
 

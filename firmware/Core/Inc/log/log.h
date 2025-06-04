@@ -47,6 +47,15 @@ typedef enum {
     LOG_SYSTEM_ALL = (1 << 15) - 1,
 } LOG_system_enum_t;
 
+typedef enum {
+    LOG_CONTEXT_AUTONOMOUS, // Character: 'A' -> For logs that originate in background tasks
+    LOG_CONTEXT_IMMEDIATE_TELECOMMAND, // Character: 'T'
+    LOG_CONTEXT_SCHEDULED_TELECOMMAND // Character: 'S'
+} LOG_context_enum_t;
+
+
+extern LOG_context_enum_t LOG_current_log_context;
+
 enum {
     LOG_SYSTEM_OFF = 0,
     LOG_SYSTEM_ON = 1,
