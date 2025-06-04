@@ -3,6 +3,6 @@
 
 #include <stdint.h>
 
-uint8_t TEST_EXEC__GNSS_format_and_convert_to_unix_epoch();
+uint8_t TEST_EXEC__GNSS_parse_timea_response_and_convert_to_unix_time_ms();
 
 #endif

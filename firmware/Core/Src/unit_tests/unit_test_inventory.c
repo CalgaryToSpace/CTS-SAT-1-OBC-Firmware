@@ -84,9 +84,9 @@ const TEST_Definition_t TEST_definitions[] = {
     },
     // ****************** SECTION: test_gnss_time ******************
     {
-        .test_func = TEST_EXEC__GNSS_format_and_convert_to_unix_epoch,
+        .test_func = TEST_EXEC__GNSS_parse_timea_response_and_convert_to_unix_time_ms,
         .test_file = "gnss_receiver/gnss_time",
-        .test_func_name = "GNSS_format_and_convert_to_unix_epoch"
+        .test_func_name = "GNSS_parse_timea_response_and_convert_to_unix_time_ms"
     },
     // ****************** END SECTION: test_gnss_time ******************
     // ****************** SECTION: test_adcs ******************

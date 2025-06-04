@@ -11,17 +11,18 @@
 /// @param tm Pointer to a struct tm that represents UTC time.
 /// @return time_t The Unix epoch time, or (time_t)-1 on error.
 
-time_t portable_timegm(struct tm *tm) {
+static time_t portable_timegm(struct tm *tm) {
     char *tz = getenv("TZ");
     setenv("TZ", "", 1);  // Temporarily set timezone to UTC
     tzset();
 
     time_t t = mktime(tm);  // mktime now interprets as UTC
 
-    if (tz)
+    if (tz) {
         setenv("TZ", tz, 1); // Restore original timezone
-    else
+    } else {
         unsetenv("TZ");
+    }
     tzset();
 
     return t;
@@ -37,7 +38,7 @@ time_t portable_timegm(struct tm *tm) {
  * @param input_str The GNSS response string (e.g., from a TIMEA log).
  * @return uint64_t Unix timestamp in milliseconds, or >0 on failure.
  */
-uint64_t GNSS_format_and_convert_to_unix_epoch(char* input_str) {
+uint64_t GNSS_parse_timea_response_and_convert_to_unix_time_ms(char* input_str) {
     
     if (!input_str) return 1;
 
@@ -48,7 +49,7 @@ uint64_t GNSS_format_and_convert_to_unix_epoch(char* input_str) {
 
     // Tokenize input using both comma and semicolon as delimiters
     char* tokens[25];  
-    int count = 0;
+    uint8_t count = 0;
     char* token = strtok(copy_of_input_str, ",;*");
     while (token != NULL && count < 25) {
         tokens[count++] = token;
@@ -56,13 +57,12 @@ uint64_t GNSS_format_and_convert_to_unix_epoch(char* input_str) {
     }
 
     // Extract UTC date/time components
-    // TODO: Might be better to use tokens[x] instead of tokens[count - y], Note: check if 8-13 works
-    int year       = atoi(tokens[14]);
-    int month      = atoi(tokens[15]);
-    int day        = atoi(tokens[16]);
-    int hour       = atoi(tokens[17]);
-    int minute     = atoi(tokens[18]);
-    int m_second   = atoi(tokens[19]); // TODO: Fix milliseconds.
+    int32_t year       = atoi(tokens[14]);
+    int32_t month      = atoi(tokens[15]);
+    int32_t day        = atoi(tokens[16]);
+    int32_t hour       = atoi(tokens[17]);
+    int32_t minute     = atoi(tokens[18]);
+    int32_t m_second   = atoi(tokens[19]);
     char* utc_status = tokens[20];
     
 
@@ -139,9 +139,9 @@ uint8_t GNSS_set_obc_time_based_on_gnss_time() {
 
     // Parse and convert GNSS time string to epoch
     char* response_str = (char*)rx_buffer;
-    const uint64_t formatted_time = GNSS_format_and_convert_to_unix_epoch(response_str);
+    const uint64_t formatted_time = GNSS_parse_timea_response_and_convert_to_unix_time_ms(response_str);
 
-    // Error check to make sure GNSS_format_and_convert_to_unix_epoch executed successfully
+    // Error check to make sure GNSS_parse_timea_response_and_convert_to_unix_time_ms executed successfully
     if (formatted_time == 1) {
         LOG_message(
             LOG_SYSTEM_GNSS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
