@@ -1,5 +1,5 @@
-#ifndef TEST_GNSS_RECEIVER_H
-#define TEST_GNSS_RECEIVER_H
+#ifndef INCLUDE_GUARD__TEST_GNSS_TIME_H
+#define INCLUDE_GUARD__TEST_GNSS_TIME_H
 
 #include <stdint.h>
 

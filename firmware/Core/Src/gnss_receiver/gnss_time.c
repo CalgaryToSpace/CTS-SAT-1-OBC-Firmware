@@ -40,7 +40,10 @@ static time_t portable_timegm(struct tm *tm) {
  */
 uint64_t GNSS_parse_timea_response_and_convert_to_unix_time_ms(char* input_str) {
     
-    if (!input_str) return 1;
+    // Null pointer check
+    if (!input_str) {
+        return 1;
+    }
 
     // Create a safe, modifiable copy of the input
     char copy_of_input_str[512];
@@ -57,26 +60,18 @@ uint64_t GNSS_parse_timea_response_and_convert_to_unix_time_ms(char* input_str) 
     }
 
     // Extract UTC date/time components
-    int32_t year       = atoi(tokens[14]);
-    int32_t month      = atoi(tokens[15]);
-    int32_t day        = atoi(tokens[16]);
-    int32_t hour       = atoi(tokens[17]);
-    int32_t minute     = atoi(tokens[18]);
-    int32_t m_second   = atoi(tokens[19]);
+    int32_t year         = atoi(tokens[14]);
+    int32_t month        = atoi(tokens[15]);
+    int32_t day          = atoi(tokens[16]);
+    int32_t hour         = atoi(tokens[17]);
+    int32_t minute       = atoi(tokens[18]);
+    int32_t milliseconds = atoi(tokens[19]);
     char* utc_status = tokens[20];
     
-
-    // Clean up any trailing newlines in the status field
-    char* newline = strchr(utc_status, '\n');
-    if (newline) *newline = '\0';
-
     // Reject invalid UTC status
     if (strcmp(utc_status, "VALID") != 0) {
         return 1;  // UTC time is not valid
     }
-
-    int second = m_second / 1000;
-    int millisecond = m_second % 1000;
 
     struct tm t = {0};
     t.tm_year = year - 1900;
@@ -84,7 +79,7 @@ uint64_t GNSS_parse_timea_response_and_convert_to_unix_time_ms(char* input_str) 
     t.tm_mday = day;
     t.tm_hour = hour;
     t.tm_min  = minute;
-    t.tm_sec  = second;
+    t.tm_sec  = 0;
 
     // Convert to Unix epoch time (UTC)
     time_t epoch_seconds = portable_timegm(&t);
@@ -93,7 +88,7 @@ uint64_t GNSS_parse_timea_response_and_convert_to_unix_time_ms(char* input_str) 
     }
     
     // Combine seconds and milliseconds
-    return (uint64_t)epoch_seconds * 1000 + millisecond;
+    return (uint64_t)epoch_seconds * 1000 + milliseconds;
 }
 
 /**
