@@ -1617,6 +1617,8 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index) {
                     return ack_status.error_flag;
                 }
             }
+
+            LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_FILE), "Current index: %d.", i);
             
             if (i % 70 == 0) {
                 // pet the watchdog every 70 files so we don't run out of time
