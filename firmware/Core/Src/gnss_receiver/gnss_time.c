@@ -10,7 +10,6 @@
 /// @brief Portable version of timegm(). Converts a struct tm (UTC) to Unix epoch time. This function temporarily sets the environment timezone to UTC and uses mktime(), which normally interprets the struct tm as local time.
 /// @param tm Pointer to a struct tm that represents UTC time.
 /// @return time_t The Unix epoch time, or (time_t)-1 on error.
-
 static time_t portable_timegm(struct tm *tm) {
     char *tz = getenv("TZ");
     setenv("TZ", "", 1);  // Temporarily set timezone to UTC
@@ -28,16 +27,12 @@ static time_t portable_timegm(struct tm *tm) {
     return t;
 }
 
-/**
- * @brief Parses a GNSS receiver TIMEA message and converts it into Unix epoch time in milliseconds.
- *
- * The function expects a full TIMEA log string as input (e.g., starting with "#TIMEA,...").
- * It tokenizes the string, extracts UTC date and time fields, validates their integrity,
- * and converts them to a Unix timestamp in milliseconds.
- *
- * @param input_str The GNSS response string (e.g., from a TIMEA log).
- * @return uint64_t Unix timestamp in milliseconds, or >0 on failure.
- */
+/// @brief Parses a GNSS receiver TIMEA message and converts it into Unix epoch time in milliseconds.
+/// The function expects a full TIMEA log string as input (e.g., starting with "#TIMEA,...").
+/// It tokenizes the string, extracts UTC date and time fields, validates their integrity,
+/// and converts them to a Unix timestamp in milliseconds.
+/// @param input_str The GNSS response string (e.g., from a TIMEA log).
+/// @return uint64_t Unix timestamp in milliseconds, or >0 on failure.
 uint64_t GNSS_parse_timea_response_and_convert_to_unix_time_ms(char* input_str) {
     
     // Null pointer check
@@ -91,15 +86,11 @@ uint64_t GNSS_parse_timea_response_and_convert_to_unix_time_ms(char* input_str) 
     return (uint64_t)epoch_seconds * 1000 + milliseconds;
 }
 
-/**
- * @brief Sets the OBC's time, based on the GNSS receiver's current time.
- *
- * This function sends a command to the GNSS receiver to fetch the current time,
- * parses the TIMEA response to extract UTC time, converts it to Unix epoch time,
- * and sets the system clock accordingly.
- *
- * @return 0 on success, >0 on failure.
- */
+/// @brief Sets the OBC's time, based on the GNSS receiver's current time.
+/// This function sends a command to the GNSS receiver to fetch the current time,
+/// parses the TIMEA response to extract UTC time, converts it to Unix epoch time,
+/// and sets the system clock accordingly.
+/// @return 0 on success, >0 on failure.
 uint8_t GNSS_set_obc_time_based_on_gnss_time() {
 
     // Initialize GNSS command "log timea once"
