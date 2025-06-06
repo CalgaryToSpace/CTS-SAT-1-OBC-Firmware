@@ -9,7 +9,7 @@
 
 /// @brief Portable version of timegm(). Converts a struct tm (UTC) to Unix epoch time. This function temporarily sets the environment timezone to UTC and uses mktime(), which normally interprets the struct tm as local time.
 /// @param tm Pointer to a struct tm that represents UTC time.
-/// @return time_t The Unix epoch time, or (time_t)-1 on error.
+/// @return time_t The Unix epoch time in seconds, or (time_t)-1 on error.
 static time_t portable_timegm(struct tm *tm) {
     char *tz = getenv("TZ");
     setenv("TZ", "", 1);  // Temporarily set timezone to UTC
