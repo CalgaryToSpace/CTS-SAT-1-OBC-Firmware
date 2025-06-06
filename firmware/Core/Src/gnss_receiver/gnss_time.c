@@ -32,8 +32,8 @@ static time_t portable_timegm(struct tm *tm) {
 /// It tokenizes the string, extracts UTC date and time fields, validates their integrity,
 /// and converts them to a Unix timestamp in milliseconds.
 /// @param input_str The GNSS response string (e.g., from a TIMEA log).
-/// @return uint64_t Unix timestamp in milliseconds, or >0 on failure.
-uint64_t GNSS_parse_timea_response_and_convert_to_unix_time_ms(char* input_str) {
+/// @return uint8_t returning 0 for success and 1 for error.
+uint8_t GNSS_parse_timea_response_and_convert_to_unix_time_ms(char* input_str, uint64_t* unix_time_ms) {
     
     // Null pointer check
     if (!input_str) {
@@ -52,6 +52,11 @@ uint64_t GNSS_parse_timea_response_and_convert_to_unix_time_ms(char* input_str) 
     while (token != NULL && count < 25) {
         tokens[count++] = token;
         token = strtok(NULL, ",;*");
+    }
+
+    // Ensure at least 20 tokens to safely access tokens[20]
+    if (count < 20) {
+        return 1;
     }
 
     // Extract UTC date/time components
@@ -83,7 +88,9 @@ uint64_t GNSS_parse_timea_response_and_convert_to_unix_time_ms(char* input_str) 
     }
     
     // Combine seconds and milliseconds
-    return (uint64_t)epoch_seconds * 1000 + milliseconds;
+    *unix_time_ms = (uint64_t)epoch_seconds * 1000 + milliseconds;
+
+    return 0;
 }
 
 /// @brief Sets the OBC's time, based on the GNSS receiver's current time.
@@ -125,10 +132,11 @@ uint8_t GNSS_set_obc_time_based_on_gnss_time() {
 
     // Parse and convert GNSS time string to epoch
     char* response_str = (char*)rx_buffer;
-    const uint64_t formatted_time = GNSS_parse_timea_response_and_convert_to_unix_time_ms(response_str);
+    uint64_t formatted_time = 0;
+    uint8_t parse_status = GNSS_parse_timea_response_and_convert_to_unix_time_ms(response_str, &formatted_time);
 
     // Error check to make sure GNSS_parse_timea_response_and_convert_to_unix_time_ms executed successfully
-    if (formatted_time == 1) {
+    if (parse_status != 0) {
         LOG_message(
             LOG_SYSTEM_GNSS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "Failed to parse GNSS TIMEA response: %s", response_str
@@ -141,5 +149,6 @@ uint8_t GNSS_set_obc_time_based_on_gnss_time() {
         formatted_time,
         TIM_SOURCE_GNSS
     );
+    
     return 0;
 }
