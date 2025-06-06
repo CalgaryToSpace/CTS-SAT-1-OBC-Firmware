@@ -9,50 +9,71 @@
 #include <stdint.h>
 #include <string.h>
 
-/// @brief Unit test for GNSS_parse_timea_response_and_convert_to_unix_time_ms
-uint8_t TEST_EXEC__GNSS_parse_timea_response_and_convert_to_unix_time_ms() {
-    // Example valid GNSS TIMEA message
-    char test_str_valid_1[] = "<OK[COM1]#TIMEA,COM1,0,80.0,FINESTEERING,2367,411646.000,02040000,9924,17402;VALID,-4.474795457e-08,9.384349250e-09,-18.00000000000,2025,5,22,9,0,28526,VALID*a2ff113a";
-    char test_str_valid_2[] = "<OK[COM1]#TIMEA,COM1,0,80.0,FINESTEERING,2367,411646.000,02040000,9924,17402;VALID,-4.474795457e-08,9.384349250e-09,-18.00000000000,2027,10,10,11,9,19000,VALID*a2ff113a";
+/// Expected error code for invalid messages
+const uint8_t error_response = 1;
 
-    const uint64_t expected_ms_1 = 1747947628526;
-    const uint64_t expected_ms_2 = 1823166559000;
+/// @brief Test: Valid TIMEA message, case 1
+uint8_t TEST_EXEC__GNSS_timea_valid_case_1() {
+    char test_str[] = "<OK[COM1]#TIMEA,COM1,0,80.0,FINESTEERING,2367,411646.000,02040000,9924,17402;VALID,-4.474795457e-08,9.384349250e-09,-18.00000000000,2025,5,22,21,0,28526,VALID*a2ff113a";
+    const uint64_t expected_ms = 1747947628526;
 
-    // Invalid/partially invalid GNSS TIMEA messages
-    char test_str_invalid_1[] = "<OK[COM1]#TIMEA,COM1,0,80.0,FINESTEERING,2367,411646.000,02040000,9924,17402;VALID,-4.474795457e-08,9.384349250e-09,-18.00000000000,2025,5,22,9,0,28526,INVALID*a2ff113a";
-    char test_str_invalid_2[] = "<OK[COM1]#TIMEA,COM1,0,80.0,FINESTEERING,2367,411646.000,02040000,9924,17402;INVALID,-4.474795457e-08,9.384349250e-09,-18.00000000000,2025,5,22,9,0,28526,VALID*a2ff113a";
-    char test_str_invalid_3[] = "<OK[COM1]n/#TIMEA,COM1,0,80.0,HI,0,2367,411646.000,02040000,9924,17402;INVALID,-4.474795457e-08,9.384349250e-09,-18.00000000000,2025,5,22,9,0,28526,VALID*a2ff113a";
+    uint64_t result = 0;
+    uint8_t status = GNSS_parse_timea_response_and_convert_to_unix_time_ms(test_str, &result);
 
-    // Expected error code
-    const uint8_t error_response = 1;
+    TEST_ASSERT_TRUE(status == 0);
+    TEST_ASSERT_TRUE(result == expected_ms);
 
-    // Test valid case 1
-    uint64_t result_1 = 0;
-    uint8_t status_1 = GNSS_parse_timea_response_and_convert_to_unix_time_ms(test_str_valid_1, &result_1);
-    TEST_ASSERT_TRUE(status_1 == 0);
-    TEST_ASSERT_TRUE(result_1 == expected_ms_1);
+    return 0;
+}
 
-    // Test valid case 2
-    uint64_t result_2 = 0;
-    uint8_t status_2 = GNSS_parse_timea_response_and_convert_to_unix_time_ms(test_str_valid_2, &result_2);
-    TEST_ASSERT_TRUE(status_2 == 0);
-    TEST_ASSERT_TRUE(result_2 == expected_ms_2);
+/// @brief Test: Valid TIMEA message, case 2
+uint8_t TEST_EXEC__GNSS_timea_valid_case_2() {
+    char test_str[] = "<OK[COM1]#TIMEA,COM1,0,80.0,FINESTEERING,2367,411646.000,02040000,9924,17402;VALID,-4.474795457e-08,9.384349250e-09,-18.00000000000,2027,10,10,11,9,19000,VALID*a2ff113a";
+    const uint64_t expected_ms = 1823166559000;
 
-    // Test invalid case 1
-    uint64_t result_invalid_1 = 0;
-    uint8_t status_invalid_1 = GNSS_parse_timea_response_and_convert_to_unix_time_ms(test_str_invalid_1, &result_invalid_1);
-    TEST_ASSERT_TRUE(status_invalid_1 == error_response);
+    uint64_t result = 0;
+    uint8_t status = GNSS_parse_timea_response_and_convert_to_unix_time_ms(test_str, &result);
 
-    // Test invalid case 2 (invalid UTC status early, should parse as valid)
-    uint64_t result_invalid_2 = 0;
-    uint8_t status_invalid_2 = GNSS_parse_timea_response_and_convert_to_unix_time_ms(test_str_invalid_2, &result_invalid_2);
-    TEST_ASSERT_TRUE(status_invalid_2 == 0);
-    TEST_ASSERT_TRUE(result_invalid_2 == expected_ms_1);
+    TEST_ASSERT_TRUE(status == 0);
+    TEST_ASSERT_TRUE(result == expected_ms);
 
-    // Test invalid case 3 (malformed message)
-    uint64_t result_invalid_3 = 0;
-    uint8_t status_invalid_3 = GNSS_parse_timea_response_and_convert_to_unix_time_ms(test_str_invalid_3, &result_invalid_3);
-    TEST_ASSERT_TRUE(status_invalid_3 == error_response);
+    return 0;
+}
 
-    return 0;  // Indicate test passed
+/// @brief Test: Invalid UTC status at end of TIMEA message
+uint8_t TEST_EXEC__GNSS_timea_invalid_utc_status() {
+    char test_str[] = "<OK[COM1]#TIMEA,COM1,0,80.0,FINESTEERING,2367,411646.000,02040000,9924,17402;VALID,-4.474795457e-08,9.384349250e-09,-18.00000000000,2025,5,22,21,0,28526,INVALID*a2ff113a";
+
+    uint64_t result = 0;
+    uint8_t status = GNSS_parse_timea_response_and_convert_to_unix_time_ms(test_str, &result);
+
+    TEST_ASSERT_TRUE(status == error_response);
+
+    return 0;
+}
+
+/// @brief Test: Invalid UTC status early in TIMEA message (should still parse as valid)
+uint8_t TEST_EXEC__GNSS_timea_invalid_status_early() {
+    char test_str[] = "<OK[COM1]#TIMEA,COM1,0,80.0,FINESTEERING,2367,411646.000,02040000,9924,17402;INVALID,-4.474795457e-08,9.384349250e-09,-18.00000000000,2025,5,22,21,0,28526,VALID*a2ff113a";
+    const uint64_t expected_ms = 1747947628526;
+
+    uint64_t result = 0;
+    uint8_t status = GNSS_parse_timea_response_and_convert_to_unix_time_ms(test_str, &result);
+
+    TEST_ASSERT_TRUE(status == 0);
+    TEST_ASSERT_TRUE(result == expected_ms);
+
+    return 0;
+}
+
+/// @brief Test: Malformed TIMEA message
+uint8_t TEST_EXEC__GNSS_timea_malformed() {
+    char test_str[] = "<OK[COM1]n/#TIMEA,COM1,0,80.0,HI,0,2367,411646.000,02040000,9924,17402;INVALID,-4.474795457e-08,9.384349250e-09,-18.00000000000,2025,5,22,21,0,28526,VALID*a2ff113a";
+
+    uint64_t result = 0;
+    uint8_t status = GNSS_parse_timea_response_and_convert_to_unix_time_ms(test_str, &result);
+
+    TEST_ASSERT_TRUE(status == error_response);
+
+    return 0;
 }

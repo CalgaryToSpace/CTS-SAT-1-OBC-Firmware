@@ -82,13 +82,35 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_file = "transforms/arrays",
         .test_func_name = "GEN_int64_to_str"
     },
+    
     // ****************** SECTION: test_gnss_time ******************
     {
-        .test_func = TEST_EXEC__GNSS_parse_timea_response_and_convert_to_unix_time_ms,
+        .test_func = TEST_EXEC__GNSS_timea_valid_case_1,
         .test_file = "gnss_receiver/gnss_time",
-        .test_func_name = "GNSS_parse_timea_response_and_convert_to_unix_time_ms"
+        .test_func_name = "GNSS_timea_valid_case_1"
+    },
+    {
+        .test_func = TEST_EXEC__GNSS_timea_valid_case_2,
+        .test_file = "gnss_receiver/gnss_time",
+        .test_func_name = "GNSS_timea_valid_case_2"
+    },
+    {
+        .test_func = TEST_EXEC__GNSS_timea_invalid_utc_status,
+        .test_file = "gnss_receiver/gnss_time",
+        .test_func_name = "GNSS_timea_invalid_utc_status"
+    },
+    {
+        .test_func = TEST_EXEC__GNSS_timea_invalid_status_early,
+        .test_file = "gnss_receiver/gnss_time",
+        .test_func_name = "GNSS_timea_invalid_status_early"
+    },
+    {
+        .test_func = TEST_EXEC__GNSS_timea_malformed,
+        .test_file = "gnss_receiver/gnss_time",
+        .test_func_name = "GNSS_timea_malformed"
     },
     // ****************** END SECTION: test_gnss_time ******************
+
     // ****************** SECTION: test_adcs ******************
     
     {

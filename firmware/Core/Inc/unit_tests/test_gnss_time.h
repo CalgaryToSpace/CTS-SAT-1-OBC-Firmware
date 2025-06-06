@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
-uint8_t TEST_EXEC__GNSS_parse_timea_response_and_convert_to_unix_time_ms();
+uint8_t TEST_EXEC__GNSS_timea_valid_case_1();
+uint8_t TEST_EXEC__GNSS_timea_valid_case_2();
+uint8_t TEST_EXEC__GNSS_timea_invalid_utc_status();
+uint8_t TEST_EXEC__GNSS_timea_invalid_status_early();
+uint8_t TEST_EXEC__GNSS_timea_malformed();
 
 #endif
