@@ -7,26 +7,6 @@
 #include <stdint.h>
 #include <string.h>
 
-/// @brief Portable version of timegm(). Converts a struct tm (UTC) to Unix epoch time. This function temporarily sets the environment timezone to UTC and uses mktime(), which normally interprets the struct tm as local time.
-/// @param tm Pointer to a struct tm that represents UTC time.
-/// @return time_t The Unix epoch time in seconds, or (time_t)-1 on error.
-static time_t portable_timegm(struct tm *tm) {
-    char *tz = getenv("TZ");
-    setenv("TZ", "", 1);  // Temporarily set timezone to UTC
-    tzset();
-
-    time_t t = mktime(tm);  // mktime now interprets as UTC
-
-    if (tz) {
-        setenv("TZ", tz, 1); // Restore original timezone
-    } else {
-        unsetenv("TZ");
-    }
-    tzset();
-
-    return t;
-}
-
 /// @brief Parses a GNSS receiver TIMEA message and converts it into Unix epoch time in milliseconds.
 /// The function expects a full TIMEA log string as input (e.g., starting with "#TIMEA,...").
 /// It tokenizes the string, extracts UTC date and time fields, validates their integrity,
@@ -60,13 +40,13 @@ uint8_t GNSS_parse_timea_response_and_convert_to_unix_time_ms(char* input_str, u
     }
 
     // Extract UTC date/time components
-    int32_t year         = atoi(tokens[14]);
-    int32_t month        = atoi(tokens[15]);
-    int32_t day          = atoi(tokens[16]);
-    int32_t hour         = atoi(tokens[17]);
-    int32_t minute       = atoi(tokens[18]);
-    int32_t milliseconds = atoi(tokens[19]);
-    char* utc_status = tokens[20];
+    const int32_t year         = atoi(tokens[14]);
+    const int32_t month        = atoi(tokens[15]);
+    const int32_t day          = atoi(tokens[16]);
+    const int32_t hour         = atoi(tokens[17]);
+    const int32_t minute       = atoi(tokens[18]);
+    const int32_t milliseconds = atoi(tokens[19]);
+    const char* utc_status = tokens[20];
     
     // Reject invalid UTC status
     if (strcmp(utc_status, "VALID") != 0) {
@@ -82,7 +62,7 @@ uint8_t GNSS_parse_timea_response_and_convert_to_unix_time_ms(char* input_str, u
     t.tm_sec  = 0;
 
     // Convert to Unix epoch time (UTC)
-    time_t epoch_seconds = portable_timegm(&t);
+    const time_t epoch_seconds = mktime(&t);
     if (epoch_seconds == -1) {
         return 1;
     }
@@ -105,7 +85,7 @@ uint8_t GNSS_set_obc_time_based_on_gnss_time() {
     const uint8_t full_command_len = strlen(full_command);
 
     // The following buffer will have data written into from the response from GNSS Transmitter
-    const uint16_t rx_buffer_max_size = 512;
+    const uint16_t rx_buffer_max_size = 230; // The timea response is ~169 characters such that added a bit extra to the unit test string case
     uint16_t rx_buffer_len = 0;
     uint8_t rx_buffer[rx_buffer_max_size];
     memset(rx_buffer, 0, rx_buffer_max_size);
@@ -133,7 +113,7 @@ uint8_t GNSS_set_obc_time_based_on_gnss_time() {
     // Parse and convert GNSS time string to epoch
     char* response_str = (char*)rx_buffer;
     uint64_t formatted_time = 0;
-    uint8_t parse_status = GNSS_parse_timea_response_and_convert_to_unix_time_ms(response_str, &formatted_time);
+    const uint8_t parse_status = GNSS_parse_timea_response_and_convert_to_unix_time_ms(response_str, &formatted_time);
 
     // Error check to make sure GNSS_parse_timea_response_and_convert_to_unix_time_ms executed successfully
     if (parse_status != 0) {
