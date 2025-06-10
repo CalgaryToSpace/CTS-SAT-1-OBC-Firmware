@@ -46,7 +46,9 @@ uint8_t TCMDEXEC_correct_system_time(const char *args_str, TCMD_TelecommandChann
 
     // Convert args_str to signed int and checks if arguement is correct
     if (TCMD_ascii_to_int64(args_str, strlen(args_str), &correction_time_ms) != 0) {
-        snprintf(response_output_buf, response_output_buf_len, "Incorrect argument entered. Please enter a signed integer number of milliseconds");
+        snprintf(response_output_buf, response_output_buf_len, 
+            "Incorrect argument entered. Please enter a signed integer number of milliseconds"
+        );
         return 1;
     }
 
@@ -66,26 +68,30 @@ uint8_t TCMDEXEC_set_obc_time_based_on_eps_time(const char *args_str, TCMD_Telec
     const uint8_t result = EPS_set_obc_time_based_on_eps_time();
     if (result != 0 ) {
         snprintf(response_output_buf, response_output_buf_len,
-        "syncing obc time failed");
+            "Syncing obc time failed"
+        );
         return 1;
     }
     snprintf(response_output_buf, response_output_buf_len,
-    "success syncing obc time");
+        "Success syncing obc time"
+    );
     return 0;
 }
 
-/// @brief Sync's obc time to gnss time (+/- 1 second)
+/// @brief Sync's OBC time to gnss time (+/- ~100ms)
 /// @return 0 on success, >0 on failure.
 uint8_t TCMDEXEC_set_obc_time_based_on_gnss_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     const uint8_t result = GNSS_set_obc_time_based_on_gnss_time();
     if (result != 0 ) {
         snprintf(response_output_buf, response_output_buf_len,
-        "syncing obc time based on gnss time failed");
-        return 1;
+            "Syncing obc time based on gnss time failed"
+        );
+        return result;
     }
     snprintf(response_output_buf, response_output_buf_len,
-    "success syncing obc time based on gnss time");
+        "Success syncing obc time based on gnss time"
+    );
     return 0;
 }            
 
@@ -95,14 +101,12 @@ uint8_t TCMDEXEC_set_eps_time_based_on_obc_time(const char *args_str, TCMD_Telec
                         char *response_output_buf, uint16_t response_output_buf_len) {
     const uint8_t result = EPS_set_eps_time_based_on_obc_time();
     if (result != 0 ) {
-        snprintf(
-            response_output_buf, response_output_buf_len,
+        snprintf(response_output_buf, response_output_buf_len,
             "Syncing eps time failed."
         );
         return 1;
     }
-    snprintf(
-        response_output_buf, response_output_buf_len,
+    snprintf(response_output_buf, response_output_buf_len,
         "Success syncing eps time."
     );
     return 0;
