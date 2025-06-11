@@ -15,7 +15,7 @@
 /// @brief A demo telecommand that echoes back the argument it received.
 /// @param args_str
 /// - Arg 0: The string to echo back.
-uint8_t TCMDEXEC_echo_back_args(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_echo_back_args(const char *args_str,  ,
                         char *response_output_buf, uint16_t response_output_buf_len) {
 
     snprintf(response_output_buf, response_output_buf_len, "SUCCESS: Echo Args: '%s'\n", args_str);
@@ -29,7 +29,7 @@ uint8_t TCMDEXEC_echo_back_args(const char *args_str, TCMD_TelecommandChannel_en
 /// - Arg 1: The second integer to echo back.
 /// - Arg 2: The third integer to echo back.
 /// @return 0 if all ints are parsed successfully, otherwise the error code of the first failed parse.
-uint8_t TCMDEXEC_echo_back_uint32_args(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_echo_back_uint32_args(const char *args_str,  ,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     response_output_buf[0] = '\0'; // clear the response buffer
 
@@ -57,7 +57,7 @@ uint8_t TCMDEXEC_echo_back_uint32_args(const char *args_str, TCMD_TelecommandCha
 }
 
 
-uint8_t TCMDEXEC_run_all_unit_tests(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_run_all_unit_tests(const char *args_str,  ,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     TEST_run_all_unit_tests_and_log(response_output_buf, response_output_buf_len);
     return 0;
@@ -69,7 +69,7 @@ uint8_t TCMDEXEC_run_all_unit_tests(const char *args_str, TCMD_TelecommandChanne
 /// @return 0 on success, 1 on error
 /// @note This is most useful for testing/triggering the watchdog timer.
 uint8_t TCMDEXEC_demo_blocking_delay(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,  ,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     uint64_t delay_ms;

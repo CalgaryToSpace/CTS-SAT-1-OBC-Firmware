@@ -13,7 +13,7 @@
 /// @note This telecommand is only for testing purposes, it is purposfully not fully fleshed out
 /// as there is no intention on using this. Update as needed
 //// @return 0 on success, > 0 on error
-uint8_t TCMDEXEC_stm32_internal_flash_write(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
+uint8_t TCMDEXEC_stm32_internal_flash_write(const char *args_str, char *response_output_buf, uint16_t response_output_buf_len)
 {
     uint8_t write_hex_buffer[PAGESIZE] = {0};
     uint16_t write_hex_buffer_len = 0;
@@ -47,7 +47,7 @@ uint8_t TCMDEXEC_stm32_internal_flash_write(const char *args_str, TCMD_Telecomma
 /// - Arg 0: The address to start reading from
 /// - Arg 1: The number of bytes to read as a uint64_t
 //// @return 0 on success, > 0 on error
-uint8_t TCMDEXEC_stm32_internal_flash_read(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
+uint8_t TCMDEXEC_stm32_internal_flash_read(const char *args_str, char *response_output_buf, uint16_t response_output_buf_len)
 {
 
     uint64_t address = 0;
@@ -87,7 +87,7 @@ uint8_t TCMDEXEC_stm32_internal_flash_read(const char *args_str, TCMD_Telecomman
 /// - Arg 0: The starting page to erase as a uint64_t
 /// - Arg 1: The number of pages to erase as a uint64_t
 //// @return 0 on success, > 0 on error
-uint8_t TCMDEXEC_stm32_internal_flash_erase(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
+uint8_t TCMDEXEC_stm32_internal_flash_erase(const char *args_str, char *response_output_buf, uint16_t response_output_buf_len)
 {
     uint64_t start_page_erase = 0;
 
@@ -119,7 +119,7 @@ uint8_t TCMDEXEC_stm32_internal_flash_erase(const char *args_str, TCMD_Telecomma
 /// @brief Get the option bytes configuration from the stm32 internal flash memory
 /// @param args_str No args
 /// @return 0 on success, > 0 on error
-uint8_t TCMDEXEC_stm32_internal_flash_get_option_bytes(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
+uint8_t TCMDEXEC_stm32_internal_flash_get_option_bytes(const char *args_str, char *response_output_buf, uint16_t response_output_buf_len)
 {
     FLASH_OBProgramInitTypeDef option_bytes;
     const uint8_t res = STM32_internal_flash_get_option_bytes(&option_bytes);
@@ -154,7 +154,7 @@ uint8_t TCMDEXEC_stm32_internal_flash_get_option_bytes(const char *args_str, TCM
 /// - Arg 0: A 1 or 2. 1 to switch to the application present in Flash Bank 1, 2 to switch to the application present in Flash Bank 2
 /// @param response_output_buf Prints error if it occurs
 /// @return 0 on success, > 0 otherwise
-uint8_t TCMDEXEC_stm32_internal_flash_set_active_flash_bank(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
+uint8_t TCMDEXEC_stm32_internal_flash_set_active_flash_bank(const char *args_str, char *response_output_buf, uint16_t response_output_buf_len)
 {
     uint64_t desired_active_flash_bank = 0;
     const uint8_t arg_res = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &desired_active_flash_bank);
@@ -175,7 +175,7 @@ uint8_t TCMDEXEC_stm32_internal_flash_set_active_flash_bank(const char *args_str
 
 /// @brief Prints the active flash bank where the firmware boots from
 /// @param response_output_buf Prints the active bank
-uint8_t TCMDEXEC_stm32_internal_flash_get_active_flash_bank(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
+uint8_t TCMDEXEC_stm32_internal_flash_get_active_flash_bank(const char *args_str, char *response_output_buf, uint16_t response_output_buf_len)
 {
     const uint8_t stm32_internal_active_flash_bank = STM32_internal_flash_get_active_flash_bank();
 

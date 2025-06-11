@@ -36,11 +36,11 @@ const char* freertos_eTaskState_to_str(eTaskState state) {
 
 /// @brief Telecommand that return metadata regarding Tasks from FreeRTOS
 /// @param args_str No arguments expected
-/// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
+/// @param  The channel on which the telecommand was received, and on which the response should be sent
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0 if successful, >0 if an error occurred (but hello_world can't return an error)
-uint8_t TCMDEXEC_freetos_list_tasks_jsonl(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_freetos_list_tasks_jsonl(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     const UBaseType_t number_of_tasks = uxTaskGetNumberOfTasks();
     uint32_t total_run_time;
@@ -82,7 +82,7 @@ uint8_t TCMDEXEC_freetos_list_tasks_jsonl(const char *args_str, TCMD_Telecommand
 /// - Arg 0: num_bytes (uint64_t) - The number of elements to allocate in the VLA. <=1_000_000.
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_freertos_demo_stack_usage(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     uint64_t num_bytes;

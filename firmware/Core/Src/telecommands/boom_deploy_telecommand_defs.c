@@ -28,8 +28,9 @@
 /// @note If you need longer than the max duration, you can of course call this function
 /// multiple times back-to-back, relying on the heat capacity of the resistors to stay hot.
 uint8_t TCMDEXEC_boom_deploy_timed(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-    char *response_output_buf, uint16_t response_output_buf_len
+    const char *args_str,
+    char *response_output_buf,
+    uint16_t response_output_buf_len
 ) {
     uint64_t channel_u64;
     const uint8_t arg0_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &channel_u64);
@@ -168,7 +169,7 @@ static void boom_self_check_cleanup() {
 /// @return 0 on success, >0 on error.
 /// @note If this function glitches (which it shouldn't/doesn't), it has the potential to deploy the boom.
 uint8_t TCMDEXEC_boom_self_check(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     const uint16_t boom_on_duration_ms = 1000;

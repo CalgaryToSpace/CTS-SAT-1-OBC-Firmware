@@ -284,7 +284,7 @@ uint8_t TCMD_get_suffix_tag_str(const char *str, const char *tag_name, char *val
 ///     Not modified if an error occurs.
 /// @return 0 on success, >0 on error.
 uint8_t TCMD_parse_full_telecommand(
-    const char tcmd_str[], TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char tcmd_str[],
     TCMD_parsed_tcmd_to_execute_t *parsed_tcmd_output
 ) {
     size_t tcmd_str_len = strlen(tcmd_str);
@@ -468,7 +468,7 @@ uint8_t TCMD_parse_full_telecommand(
     memcpy(parsed_tcmd_output->args_str_no_parens, args_str_no_parens, arg_len + 1);
     parsed_tcmd_output->timestamp_sent = timestamp_sent;
     parsed_tcmd_output->timestamp_to_execute = timestamp_to_execute;
-    parsed_tcmd_output->tcmd_channel = tcmd_channel;
+    parsed_tcmd_output-> = ;
     memcpy(parsed_tcmd_output->resp_fname, tcmd_suffix_resp_fname, TCMD_MAX_RESP_FNAME_LEN);
 
     return 0;

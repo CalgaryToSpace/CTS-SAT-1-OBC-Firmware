@@ -1316,5 +1316,5 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
 const int16_t TCMD_NUM_TELECOMMANDS = sizeof(TCMD_telecommand_definitions) / sizeof(TCMD_TelecommandDefinition_t);
 
 // Each telecommand function must have the following signature:
-// uint8_t <function_name>(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+// uint8_t <function_name>(const char *args_str,  ,
 //                          char *response_output_buf, uint16_t response_output_buf_len)

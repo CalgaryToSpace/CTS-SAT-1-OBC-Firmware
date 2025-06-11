@@ -7,7 +7,7 @@
 #include <string.h>
 
 uint8_t TCMDEXEC_get_system_time(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,  ,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     TIME_get_current_timestamp_str(response_output_buf, response_output_buf_len);
@@ -18,7 +18,7 @@ uint8_t TCMDEXEC_get_system_time(
 /// @param args_str
 /// - Arg 0: Unix epoch time in milliseconds (uint64_t)
 /// @return 0 if successful, 1 if error
-uint8_t TCMDEXEC_set_system_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_set_system_time(const char *args_str,  ,
                         char *response_output_buf, uint16_t response_output_buf_len) {
   
     uint64_t ms = 0;
@@ -38,7 +38,7 @@ uint8_t TCMDEXEC_set_system_time(const char *args_str, TCMD_TelecommandChannel_e
 /// @param args_str
 /// - Arg 0: Correction time in milliseconds (int64_t). Positive = forward in time, negative = backward in time.
 /// @return 0 if successful, 1 if error
-uint8_t TCMDEXEC_correct_system_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_correct_system_time(const char *args_str,  ,
                         char *response_output_buf, uint16_t response_output_buf_len){
 
     int64_t correction_time_ms = 0;
@@ -60,7 +60,7 @@ uint8_t TCMDEXEC_correct_system_time(const char *args_str, TCMD_TelecommandChann
 
 /// @brief Sync's obc time to eps time (+/- 1 second)
 /// @return 0 on success, >0 on failure.
-uint8_t TCMDEXEC_set_obc_time_based_on_eps_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_set_obc_time_based_on_eps_time(const char *args_str,  ,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     const uint8_t result = EPS_set_obc_time_based_on_eps_time();
     if (result != 0 ) {
@@ -76,7 +76,7 @@ uint8_t TCMDEXEC_set_obc_time_based_on_eps_time(const char *args_str, TCMD_Telec
 
 /// @brief Sync's eps time to obc time (+/- 1 second)
 /// @return 0 on success, >0 on failure.
-uint8_t TCMDEXEC_set_eps_time_based_on_obc_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_set_eps_time_based_on_obc_time(const char *args_str,  ,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     const uint8_t result = EPS_set_eps_time_based_on_obc_time();
     if (result != 0 ) {

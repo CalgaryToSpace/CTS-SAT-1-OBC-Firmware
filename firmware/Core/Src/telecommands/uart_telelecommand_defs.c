@@ -25,7 +25,7 @@ static uint8_t rx_buffer[5120];
 /// @param args_str 
 /// - Arg 0: UART port name to send data to: MPI, GNSS, CAMERA, EPS (case insensitive)
 /// - Arg 1: Data to be sent (bytes specified as hex - Max 5KiB buffer)
-/// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
+/// @param  The channel on which the telecommand was received, and on which the response should be sent
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0: Success, 1: Error parsing args, 2: Invalid uart port requested, 3: Error transmitting data, 
@@ -35,7 +35,7 @@ static uint8_t rx_buffer[5120];
 ///       using this function.
 /// @note The camera UART port does not support receiving data in the function. TX only.
 uint8_t TCMDEXEC_uart_send_hex_get_response_hex(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,  ,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     // Parse UART port argument
@@ -365,7 +365,7 @@ uint8_t TCMDEXEC_uart_send_hex_get_response_hex(
 /// @note Intended for debugging and testing purposes, but safe to use in flight also.
 uint8_t TCMDEXEC_uart_get_last_rx_times_json(
     const char *args_str,
-    TCMD_TelecommandChannel_enum_t tcmd_channel,
+     ,
     char *response_output_buf,
     uint16_t response_output_buf_len
 ) {
@@ -413,7 +413,7 @@ uint8_t TCMDEXEC_uart_get_last_rx_times_json(
 ///        can be used to change the STM32's UART baud rate to match the GNSS receiver's default baud rate to recover it.
 uint8_t TCMDEXEC_uart_set_baud_rate(
     const char *args_str,
-    TCMD_TelecommandChannel_enum_t tcmd_channel,
+     ,
     char *response_output_buf,
     uint16_t response_output_buf_len
 ) {
