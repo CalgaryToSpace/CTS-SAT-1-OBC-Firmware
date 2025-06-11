@@ -96,6 +96,13 @@ const osThreadAttr_t defaultTask_attributes = {
 // 512 may work okay, but 1024 is a safe bet.
 #define TASK_MINIMUM_STACK_SIZE_BYTES 1024
 
+osThreadId_t TASK_service_eps_watchdog_Handle;
+const osThreadAttr_t TASK_service_eps_watchdog_Attributes = {
+  .name = "TASK_service_eps_watchdog",
+  .stack_size = TASK_MINIMUM_STACK_SIZE_BYTES,
+  .priority = (osPriority_t) osPriorityBelowNormal,
+};
+
 osThreadId_t TASK_DEBUG_print_heartbeat_Handle;
 const osThreadAttr_t TASK_DEBUG_print_heartbeat_Attributes = {
   .name = "TASK_DEBUG_print_heartbeat",
@@ -117,25 +124,19 @@ const osThreadAttr_t TASK_background_upkeep_Attributes = {
   .priority = (osPriority_t) osPriorityBelowNormal3,
 };
 
-osThreadId_t TASK_bootup_operation_fsm_Handle;
-const osThreadAttr_t TASK_bootup_operation_fsm_Attributes = {
-  .name = "TASK_bootup_operation_fsm",
-  .stack_size = 4096,
-  .priority = (osPriority_t) osPriorityBelowNormal4,
-};
 
 osThreadId_t TASK_time_sync_Handle;
 const osThreadAttr_t TASK_time_sync_Attributes = {
   .name = "TASK_time_sync",
   .stack_size = TASK_MINIMUM_STACK_SIZE_BYTES,
-  .priority = (osPriority_t) osPriorityBelowNormal5,
+  .priority = (osPriority_t) osPriorityBelowNormal4,
 };
 
-osThreadId_t TASK_service_eps_watchdog_Handle;
-const osThreadAttr_t TASK_service_eps_watchdog_Attributes = {
-  .name = "TASK_service_eps_watchdog",
-  .stack_size = TASK_MINIMUM_STACK_SIZE_BYTES,
-  .priority = (osPriority_t) osPriorityAboveNormal1,
+osThreadId_t TASK_bootup_operation_fsm_Handle;
+const osThreadAttr_t TASK_bootup_operation_fsm_Attributes = {
+  .name = "TASK_bootup_operation_fsm",
+  .stack_size = 4096,
+  .priority = (osPriority_t) osPriorityBelowNormal5,
 };
 
 osThreadId_t TASK_bulk_downlink_Handle;
@@ -152,16 +153,17 @@ const osThreadAttr_t TASK_handle_uart_telecommands_Attributes = {
   .priority = (osPriority_t) osPriorityAboveNormal3,
 };
 
-osThreadId_t TASK_handle_ax100_kiss_telecommands_Handle;
-const osThreadAttr_t TASK_handle_ax100_kiss_telecommands_Attributes = {
-  .name = "TASK_handle_ax100_kiss_telecommands",
+osThreadId_t TASK_execute_telecommands_Handle;
+const osThreadAttr_t TASK_execute_telecommands_Attributes = {
+  .name = "TASK_execute_telecommands",
   .stack_size = 8192,
   .priority = (osPriority_t) osPriorityAboveNormal4,
 };
 
-osThreadId_t TASK_execute_telecommands_Handle;
-const osThreadAttr_t TASK_execute_telecommands_Attributes = {
-  .name = "TASK_execute_telecommands",
+
+osThreadId_t TASK_handle_ax100_kiss_telecommands_Handle;
+const osThreadAttr_t TASK_handle_ax100_kiss_telecommands_Attributes = {
+  .name = "TASK_handle_ax100_kiss_telecommands",
   .stack_size = 8192,
   .priority = (osPriority_t) osPriorityAboveNormal5,
 };
