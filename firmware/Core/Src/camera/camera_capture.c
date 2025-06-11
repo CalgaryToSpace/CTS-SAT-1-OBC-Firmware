@@ -15,7 +15,7 @@
 #include "main.h"
 
 /// @brief Timeout duration for camera receive in milliseconds
-static const uint32_t CAMERA_RX_TOTAL_TIMEOUT_DURATION_MS = 12000;
+static const uint32_t CAMERA_RX_TOTAL_TIMEOUT_DURATION_MS = 20000;
 
 
 static void CAM_end_camera_receive_due_to_error(lfs_file_t* img_file) {
