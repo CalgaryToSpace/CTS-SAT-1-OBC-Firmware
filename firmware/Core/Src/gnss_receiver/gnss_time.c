@@ -34,8 +34,8 @@ uint8_t GNSS_parse_timea_response_and_convert_to_unix_time_ms(char* input_str, u
         token = strtok(NULL, ",;*");
     }
 
-    // Ensure at least 20 tokens to safely access tokens[20]
-    if (count < 20) {
+    // Ensure at least 21 tokens to safely access tokens[20]
+    if (count < 21) {
         return 1;
     }
 
@@ -121,7 +121,7 @@ uint8_t GNSS_set_obc_time_based_on_gnss_time() {
             LOG_SYSTEM_GNSS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "Failed to parse GNSS TIMEA response: %s", response_str
         );
-        return 1;
+        return 2;
     }
 
     // Set the system time based on GNSS time
