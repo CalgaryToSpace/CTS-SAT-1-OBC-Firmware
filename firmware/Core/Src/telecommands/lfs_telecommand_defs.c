@@ -7,13 +7,19 @@
 #include "littlefs/littlefs_helper.h"
 #include "littlefs/littlefs_telecommands.h"
 #include "littlefs/littlefs_benchmark.h"
+#include "littlefs/littlefs_checksums.h"
 #include "log/log.h"
 #include "telecommands/lfs_telecommand_defs.h"
 #include "telecommand_exec/telecommand_definitions.h"
 #include "telecommand_exec/telecommand_args_helpers.h"
+#include "transforms/arrays.h"
 
-uint8_t TCMDEXEC_fs_format_storage(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
+uint8_t TCMDEXEC_fs_format_storage(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+        char *response_output_buf, uint16_t response_output_buf_len
+) {
+    LFS_ensure_unmounted();
+
     const int8_t result = LFS_format();
     if (result != 0) {
         snprintf(response_output_buf, response_output_buf_len, "Error: LFS_format() -> %d", result);
@@ -356,107 +362,200 @@ uint8_t TCMDEXEC_fs_delete_dir(const char *args_str, TCMD_TelecommandChannel_enu
     return 0;
 }
 
-/// @brief Reads a file from LittleFS, and responds with its contents as 2-digit hex bytes.
+/// @brief Parse a telecommand argument str for the standard filename/offset/length arguments for reading files.
+/// @param args_str 
+/// @param dest_filename 
+/// @param dest_filename_size 
+/// @param dest_offset 
+/// @param dest_length 
+/// @return 0 on success, >0 on error
+static uint8_t parse_arg_str_for_file_offset_length(
+    const char args_str[], char *dest_filename, uint16_t dest_filename_size, uint32_t *dest_offset, uint32_t *dest_length
+) {
+    // Extract the file name
+    const uint8_t parse_file_name_result = TCMD_extract_string_arg(args_str, 0, dest_filename, dest_filename_size);
+    if (parse_file_name_result != 0) {
+        // error parsing
+        return parse_file_name_result;
+    }
+
+    // Extract the offset parameter
+    uint64_t offset_u64;
+    const uint8_t parse_offset_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &offset_u64);
+    if (parse_offset_result != 0) {
+        // error parsing
+        return parse_offset_result;
+    }
+    if (offset_u64 > UINT32_MAX) {
+        // offset too large
+        return 40;
+    }
+    *dest_offset = (uint32_t)offset_u64;
+
+    // Extract the length parameter
+    uint64_t length_u64;
+    const uint8_t parse_length_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 2, &length_u64);
+    if (parse_length_result != 0) {
+        // error parsing
+        return parse_length_result;
+    }
+    if (length_u64 > UINT32_MAX) {
+        // length too large
+        return 41;
+    }
+    *dest_length = (uint32_t)length_u64;
+
+    return 0;
+}
+
+/// @brief Reads a file from LittleFS, and responds with its contents as 2-digit hex bytes (no spaces).
 /// @param args_str
 /// - Arg 0: File path as string
+/// - Arg 1: Start offset (bytes). Nominally, pick 0.
+/// - Arg 2: Length to read (bytes). 0 to read max.
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_fs_read_file_hex(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
-    uint8_t rx_buffer[512] = {0};
-
     char arg_file_name[LFS_MAX_PATH_LENGTH];
-    const uint8_t parse_file_name_result = TCMD_extract_string_arg(args_str, 0, arg_file_name, sizeof(arg_file_name));
-    if (parse_file_name_result != 0) {
-        // error parsing
+    uint32_t file_offset = 0;
+    uint32_t max_length_bytes;
+
+    const uint8_t parse_result = parse_arg_str_for_file_offset_length(
+        args_str, arg_file_name, sizeof(arg_file_name), &file_offset, &max_length_bytes
+    );
+    if (parse_result != 0) {
         snprintf(
             response_output_buf,
             response_output_buf_len,
-            "Error parsing file name arg: Error %d", parse_file_name_result);
+            "Error parsing file name/offset/length args: Error %d", parse_result);
         return 1;
-    }
-
-    const lfs_ssize_t file_size = LFS_file_size(arg_file_name);
-    if (file_size < 0) {
-        snprintf(response_output_buf, response_output_buf_len, "LittleFS error getting file size '%s': %ld", arg_file_name, file_size);
-        return 1;
-    }
-    lfs_ssize_t last_bytes_read = 1;
-    lfs_ssize_t total_bytes_read = 0;
-    while (total_bytes_read < file_size && last_bytes_read > 0) {
-        last_bytes_read = LFS_read_file(arg_file_name, total_bytes_read, rx_buffer, sizeof(rx_buffer));
-        if (last_bytes_read < 0) {
-            snprintf(response_output_buf, response_output_buf_len, "LittleFS error reading file '%s': %ld", arg_file_name, last_bytes_read);
-            return 1;
-        }
-        total_bytes_read += last_bytes_read;
-        // Print to uart and radio.
-        DEBUG_uart_print_array_hex(rx_buffer, last_bytes_read);
-        // TODO: send to radio
-        DEBUG_uart_print_str("TODO: send data to radio from TCMD_fs_read_file_hex()\n");
     }
     
-    snprintf(
-        response_output_buf, response_output_buf_len,
-        "LittleFS successfully read file '%s': %ld bytes read",
-        arg_file_name,
-        total_bytes_read
+    // Restrict the read length.
+    if ((max_length_bytes > (response_output_buf_len/2 - 1u)) || (max_length_bytes == 0)) {
+        // Ensure we have space for null-termination.
+        max_length_bytes = response_output_buf_len/2 - 1u;
+    }
+
+    uint8_t read_buf[max_length_bytes];
+    const int32_t read_result = LFS_read_file(
+        arg_file_name, file_offset, read_buf, max_length_bytes
     );
+    if (read_result < 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Error reading file: %ld", read_result);
+        return 10;
+    }
+
+    // Note: `read_result` is now the number of bytes read into `read_buf`.
+    GEN_byte_array_to_hex_str(read_buf, read_result, response_output_buf, response_output_buf_len);
     return 0;
 }
 
-/// @brief Reads a file from LittleFS, and responds with its contents as 2-digit hex bytes.
+/// @brief Reads a file from LittleFS, and responds with its contents as a string.
 /// @param args_str
 /// - Arg 0: File path as string
+/// - Arg 1: Start offset (bytes). Nominally, pick 0.
+/// - Arg 2: Length to read (bytes). 0 to read max.
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_fs_read_text_file(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
-    uint8_t rx_buffer[512] = {0};
-
     char arg_file_name[LFS_MAX_PATH_LENGTH];
-    const uint8_t parse_file_name_result = TCMD_extract_string_arg(
-        args_str, 0, arg_file_name, sizeof(arg_file_name)
+    uint32_t file_offset = 0;
+    uint32_t max_length;
+
+    const uint8_t parse_result = parse_arg_str_for_file_offset_length(
+        args_str, arg_file_name, sizeof(arg_file_name), &file_offset, &max_length
     );
-    if (parse_file_name_result != 0) {
-        // error parsing
+    if (parse_result != 0) {
         snprintf(
             response_output_buf,
             response_output_buf_len,
-            "Error parsing file name arg: Error %d", parse_file_name_result);
+            "Error parsing file name/offset/length args: Error %d", parse_result);
         return 1;
     }
 
-    const lfs_ssize_t file_size = LFS_file_size(arg_file_name);
-    if (file_size < 0) {
-        snprintf(response_output_buf, response_output_buf_len, "LittleFS error getting file size '%s': %ld", arg_file_name, file_size);
+    // Restrict the read length.
+    if ((max_length > (response_output_buf_len - 1u)) || (max_length == 0)) {
+        // Ensure we have space for null-termination.
+        max_length = response_output_buf_len - 1;
+    }
+
+    // Read the file directly into the response buffer.
+    const int32_t read_result = LFS_read_file(arg_file_name, file_offset, (uint8_t*)response_output_buf, response_output_buf_len-1);
+    if (read_result < 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Error reading file: %ld", read_result);
+        return 10;
+    }
+
+    // Ensure null-termination.
+    response_output_buf[response_output_buf_len - 1] = '\0';
+    
+    return 0;
+}
+
+/// @brief Calculates the SHA256 hash of a file in LittleFS and returns it as a little-endian hex string.
+/// @param args_str
+/// - Arg 0: File path as string
+/// - Arg 1: Start offset (bytes). Nominally, pick 0.
+/// - Arg 2: Length to read (bytes). 0 to read max.
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_fs_read_file_sha256_hash_json(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    char arg_file_name[LFS_MAX_PATH_LENGTH];
+    uint32_t file_offset = 0;
+    uint32_t max_length;
+
+    const uint8_t parse_result = parse_arg_str_for_file_offset_length(
+        args_str, arg_file_name, sizeof(arg_file_name), &file_offset, &max_length
+    );
+    if (parse_result != 0) {
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing file name/offset/length args: Error %d",
+            parse_result
+        );
         return 1;
     }
-    lfs_ssize_t last_bytes_read = 1;
-    lfs_ssize_t total_bytes_read = 0;
-    while (total_bytes_read < file_size && last_bytes_read > 0) {
-        last_bytes_read = LFS_read_file(arg_file_name, total_bytes_read, rx_buffer, sizeof(rx_buffer) - 1);
-        if (last_bytes_read < 0) {
-            snprintf(response_output_buf, response_output_buf_len, "LittleFS error reading file '%s': %ld", arg_file_name, last_bytes_read);
-            return 1;
-        }
-        total_bytes_read += last_bytes_read;
-        rx_buffer[last_bytes_read] = '\0';
-        // Print to uart and radio.
-        DEBUG_uart_print_str((char*)rx_buffer);
-        // TODO: send to radio
-        DEBUG_uart_print_str("TODO: send data to radio from TCMD_fs_read_text_file()\n");
 
+    // Prepare the SHA256 destination buffer.
+    uint8_t sha256_dest[32] = {0}; // 32 bytes for SHA256
+
+    // Calculate the SHA256 hash of the file.
+    const int8_t sha256_result = LFS_read_file_checksum_sha256(
+        arg_file_name, file_offset, max_length, sha256_dest
+    );
+
+    if (sha256_result != 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Error calculating SHA256: Err=%d", sha256_result);
+        return 2;
     }
-    
-    
+
+    // Fetch the full file size.
+    const int32_t file_size_bytes = LFS_file_size(arg_file_name);
+    if (file_size_bytes < 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Error getting file size: Err=%ld", file_size_bytes);
+        return 3;
+    }
+    const uint32_t real_length_hashed = (max_length == 0 || max_length >= (uint32_t)file_size_bytes) ? (uint32_t)file_size_bytes : max_length;
+
+    // Convert the SHA256 hash to a little-endian hex string.
+    char hex_hash_str[100]; // Should be 64 chars.
+    GEN_byte_array_to_hex_str(sha256_dest, sizeof(sha256_dest), hex_hash_str, sizeof(hex_hash_str));
+
+    // Format like JSON.
     snprintf(
         response_output_buf, response_output_buf_len,
-        "LittleFS successfully read file '%s': %ld bytes read",
-        arg_file_name,
-        total_bytes_read
+        "{\"sha256\":\"%s\",\"offset\":%lu,\"length\":%lu,\"file_size\": %ld}",
+        hex_hash_str,
+        file_offset, real_length_hashed,
+        file_size_bytes
     );
     return 0;
 }

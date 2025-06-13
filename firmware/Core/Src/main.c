@@ -31,11 +31,14 @@
 #include "rtos_tasks/rtos_tasks_rx_telecommands.h"
 #include "rtos_tasks/rtos_bulk_downlink_task.h"
 #include "rtos_tasks/rtos_bootup_operation_fsm_task.h"
+#include "rtos_tasks/rtos_mpi_tasks.h"
 #include "uart_handler/uart_handler.h"
 #include "adcs_drivers/adcs_types.h"
 #include "adcs_drivers/adcs_commands.h"
 #include "littlefs/flash_driver.h"
+#include "littlefs/littlefs_helper.h"
 #include "system/system_bootup.h"
+#include "eps_drivers/eps_time.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -146,6 +149,13 @@ const osThreadAttr_t TASK_bootup_operation_fsm_Attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 
+osThreadId_t TASK_service_write_mpi_data_Handle;
+const osThreadAttr_t TASK_service_write_mpi_data_Attributes = {
+  .name = "TASK_service_write_mpi_data",
+  .stack_size = 2048,
+  .priority = (osPriority_t) osPriorityNormal, //TODO: Figure out which priority makes sense for this task
+};
+
 osThreadId_t TASK_time_sync_Handle;
 const osThreadAttr_t TASK_time_sync_Attributes = {
   .name = "TASK_time_sync",
@@ -206,6 +216,11 @@ FREERTOS_task_info_struct_t FREERTOS_task_handles_array [] = {
   {
     .task_handle = &TASK_bootup_operation_fsm_Handle,
     .task_attribute = &TASK_bootup_operation_fsm_Attributes,
+    .lowest_stack_bytes_remaining = UINT32_MAX
+  },
+  {
+    .task_handle = &TASK_service_write_mpi_data_Handle,
+    .task_attribute = &TASK_service_write_mpi_data_Attributes,
     .lowest_stack_bytes_remaining = UINT32_MAX
   },
   {
@@ -315,14 +330,19 @@ int main(void)
   
   FLASH_deactivate_chip_select();
 
+  LFS_ensure_mounted();
+  
+  EPS_set_obc_time_based_on_eps_time(); // Sync approx time for ADCS.
+
   // Initialize the ADCS CRC8 checksum, clock, and LittleFS directory (required for ADCS operation).
-  ADCS_initialize(); // TODO: LittleFS must be formatted and mounted, and system time must be set, before this command is run
+  ADCS_initialize(); // Note: LittleFS must be formatted and mounted, and system time must be set, before this command is run
 
   // Always leave the Camera enable signal enabled. Easier to control it through just the EPS.
   HAL_GPIO_WritePin(PIN_CAM_EN_OUT_GPIO_Port, PIN_CAM_EN_OUT_Pin, GPIO_PIN_SET);
 
   // Disable systems on bootup
   SYS_disable_systems_bootup();
+
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -364,6 +384,8 @@ int main(void)
   TASK_service_eps_watchdog_Handle = osThreadNew(TASK_service_eps_watchdog, NULL, &TASK_service_eps_watchdog_Attributes);
   
   TASK_bootup_operation_fsm_Handle = osThreadNew(TASK_bootup_operation_fsm, NULL, &TASK_bootup_operation_fsm_Attributes);
+
+  TASK_service_write_mpi_data_Handle = osThreadNew(TASK_service_write_mpi_data, NULL, &TASK_service_write_mpi_data_Attributes);
 
   TASK_time_sync_Handle = osThreadNew(TASK_time_sync, NULL, &TASK_time_sync_Attributes);
 

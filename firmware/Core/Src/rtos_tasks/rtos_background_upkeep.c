@@ -48,7 +48,7 @@ static void subtask_monitor_eps_power(void) {
 ///       that isn't caught by the watchdog timer. The configuration can be extended to even longer if
 ///       necessary.
 static void subtask_reset_system_after_very_long_uptime(void) {
-    if (TIM_get_current_system_uptime_ms() > STM32_system_reset_interval_ms) {
+    if (TIME_get_current_system_uptime_ms() > STM32_system_reset_interval_ms) {
         LOG_message(
             LOG_SYSTEM_OBC,
             LOG_SEVERITY_NORMAL,
@@ -65,7 +65,7 @@ static void subtask_reset_system_after_very_long_uptime(void) {
 /// @brief Update the RF switch state based on the current mode.
 /// @note Implemented per https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/228
 static void subtask_update_rf_switch(void) {
-    const uint32_t duration_since_last_uplink_sec = (TIM_get_current_system_uptime_ms() - AX100_uptime_at_last_received_kiss_tcmd_ms) / 1000;
+    const uint32_t duration_since_last_uplink_sec = (TIME_get_current_system_uptime_ms() - AX100_uptime_at_last_received_kiss_tcmd_ms) / 1000;
 
     if ((COMMS_rf_switch_control_mode != COMMS_RF_SWITCH_CONTROL_MODE_TOGGLE_BEFORE_EVERY_BEACON) // Log minimiation condition.
         && (duration_since_last_uplink_sec > COMMS_max_duration_without_uplink_before_setting_default_rf_switch_mode_sec)

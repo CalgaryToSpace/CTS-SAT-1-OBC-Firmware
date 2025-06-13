@@ -41,9 +41,7 @@ static uint8_t does_filesystem_have_bypass_deployment_and_enable_radio_file(void
     // Check if the file exists in the filesystem.
     const char* filename = "/bypass_deployment_and_enable_radio.txt";
     
-    if (!LFS_is_lfs_mounted) {
-        LFS_mount(); // Steamroll on error.
-    }
+    LFS_ensure_mounted(); // Steamroll on error.
 
     // Check if the file exists.
     lfs_soff_t file_size = LFS_file_size(filename);
@@ -132,7 +130,7 @@ static inline void SUBTASK_bootup_operation_state_check_for_state_transitions(vo
     if (CTS1_operation_state == CTS1_OPERATION_STATE_BOOTED_AND_WAITING) {
         // Condition 4: If (RBF_STATE == FLYING) && (uptime > 30 minutes) -> DEPLOYING
         // Reason: Nominal post-ejection transition
-        if ((OBC_get_rbf_state() == OBC_RBF_STATE_FLYING) && (TIM_get_current_system_uptime_ms() > (COMMS_uptime_to_start_ant_deployment_sec * 1000))) {
+        if ((OBC_get_rbf_state() == OBC_RBF_STATE_FLYING) && (TIME_get_current_system_uptime_ms() > (COMMS_uptime_to_start_ant_deployment_sec * 1000))) {
             set_operation_state_and_log_if_changed(
                 CTS1_OPERATION_STATE_DEPLOYING,
                 "Condition 4: RBF == DEPLOY AND uptime > 30 minutes"
@@ -179,7 +177,7 @@ static inline void SUBTASK_bootup_operation_state_check_for_state_transitions(vo
 
         // Condition 7: If uptime > 4 hours -> NOMINAL_WITH_RADIO_TX
         // Reason: If deployment goes wrong for 3.5 hours, assume the issue is that the "is deployed" sensors failed.
-        if (TIM_get_current_system_uptime_ms() > (4 * 60 * 60 * 1000)) {
+        if (TIME_get_current_system_uptime_ms() > (4 * 60 * 60 * 1000)) {
             set_operation_state_and_log_if_changed(
                 CTS1_OPERATION_STATE_NOMINAL_WITH_RADIO_TX,
                 "Condition 7: Uptime > 4 hours"
@@ -224,7 +222,7 @@ static void pulse_external_led_blocking(uint32_t pulse_duration_ms) {
 
 static inline void SUBTASK_bootup_operation_state_do_led_indication_action(void) {
     if (CTS1_operation_state == CTS1_OPERATION_STATE_BOOTED_AND_WAITING) {
-        if ((TIM_get_current_system_uptime_ms() / 1000) < (COMMS_uptime_to_start_ant_deployment_sec - (5 * 60))) {
+        if ((TIME_get_current_system_uptime_ms() / 1000) < (COMMS_uptime_to_start_ant_deployment_sec - (5 * 60))) {
             // LED Indicator: From boot until 25 minutes uptime (5 minutes before COMMS_uptime_to_start_ant_deployment_sec), external LED pulses 40ms per 1000ms.
             pulse_external_led_blocking(40);
             

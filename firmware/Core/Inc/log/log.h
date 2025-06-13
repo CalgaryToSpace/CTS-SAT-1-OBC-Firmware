@@ -47,6 +47,15 @@ typedef enum {
     LOG_SYSTEM_ALL = (1 << 15) - 1,
 } LOG_system_enum_t;
 
+typedef enum {
+    LOG_CONTEXT_AUTONOMOUS, // Character: 'A' -> For logs that originate in background tasks
+    LOG_CONTEXT_IMMEDIATE_TELECOMMAND, // Character: 'T'
+    LOG_CONTEXT_SCHEDULED_TELECOMMAND // Character: 'S'
+} LOG_context_enum_t;
+
+
+extern LOG_context_enum_t LOG_current_log_context;
+
 enum {
     LOG_SYSTEM_OFF = 0,
     LOG_SYSTEM_ON = 1,
@@ -75,6 +84,5 @@ const char* LOG_get_severity_name(LOG_severity_enum_t severity);
 uint8_t LOG_memory_table_max_entries(void);
 uint8_t LOG_get_memory_table_index_of_most_recent_log_entry(void);
 const char *LOG_get_memory_table_full_message_at_index(uint8_t index);
-const char *LOG_get_most_recent_log_message_text(void);
 
 #endif // __INCLUDE__GUARD__LOG_H_

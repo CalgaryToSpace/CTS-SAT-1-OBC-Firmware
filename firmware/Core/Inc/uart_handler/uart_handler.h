@@ -4,6 +4,8 @@
 
 #include "stm32l4xx_hal.h"
 #include <stdint.h>
+#include "mpi/mpi_types.h"
+
 
 typedef enum {
     CAMERA_UART_WRITE_STATE_IDLE,
@@ -60,6 +62,19 @@ extern volatile uint16_t UART_gnss_buffer_write_idx;
 extern volatile uint32_t UART_gnss_last_write_time_ms; 
 extern volatile uint8_t UART_gnss_buffer_last_rx_byte;  
 extern volatile uint8_t UART_gnss_uart_interrupt_enabled; // Flag to enable or disable the UART GNSS ISR
+
+// UART MPI Science data buffers.
+extern const uint8_t UART_mpi_rx_dma_buffer_len;
+extern volatile uint8_t UART_mpi_rx_dma_buffer[];
+extern const uint16_t MPI_science_buffer_len;
+extern volatile uint8_t MPI_science_buffer_one[];
+extern volatile uint8_t MPI_science_buffer_two[];
+
+extern volatile MPI_buffer_state_enum_t MPI_buffer_one_state;
+extern volatile MPI_buffer_state_enum_t MPI_buffer_two_state;
+
+extern volatile uint32_t MPI_buffer_one_last_filled_uptime_ms;
+extern volatile uint32_t MPI_buffer_two_last_filled_uptime_ms;
 
 
 #define AX100_MAX_KISS_FRAMES_IN_RX_QUEUE  8

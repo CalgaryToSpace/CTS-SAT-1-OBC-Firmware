@@ -46,14 +46,11 @@ def main():
         sys.exit(1)
     text_file_in = sys.argv[1]
     jpg_file_out = sys.argv[2]
-    if not text_file_in.endswith(".txt"):
-        print("Error: Input file must be a .txt file.")
-        main()
-        sys.exit(1)
+    
     if not jpg_file_out.endswith(".jpg"):
         print("Error: Output file must be a .jpg file.")
-        main()
         sys.exit(1)
+
     read_and_parse_image(text_file_in, jpg_file_out)
 
 

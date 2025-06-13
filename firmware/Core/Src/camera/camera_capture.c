@@ -271,16 +271,12 @@ CAM_capture_status_enum CAM_capture_image(char filename_str[], char lighting_mod
         return CAM_CAPTURE_STATUS_WRONG_INPUT;
     }
 
-    // If lfs not mounted, mount.
-    if (!LFS_is_lfs_mounted) {
-        if (LFS_mount() != 0) {
-            LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_SINK_ALL, "Error mounting LFS filesystem");
-            return CAM_CAPTURE_STATUS_LFS_NOT_MOUNTED;
-        }
+    const int8_t mount_result = LFS_ensure_mounted();
+    if (mount_result != 0) {
+        return CAM_CAPTURE_STATUS_LFS_NOT_MOUNTED;
     }
 
     // Create and open file before receive loop.
-    
     // Open LFS file for writing.
     lfs_file_t img_file;
     const int8_t open_result = lfs_file_opencfg(

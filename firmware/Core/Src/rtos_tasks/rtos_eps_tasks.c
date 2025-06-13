@@ -71,12 +71,12 @@ void TASK_time_sync(void *argument) {
         osDelay(sleep_duration_ms);
 
         // First, try to sync EPS-to-OBC for the initial boot (or in case stuff gets funky later).
-        if (TIM_last_synchronization_source == TIM_SOURCE_NONE) {
+        if (TIME_last_synchronization_source == TIME_SYNC_SOURCE_NONE) {
             LOG_message(
                 LOG_SYSTEM_EPS,
                 LOG_SEVERITY_NORMAL,
                 LOG_SINK_ALL,
-                "Setting OBC time based on EPS time because last_source == TIM_SOURCE_NONE"
+                "Setting OBC time based on EPS time because last_source == TIME_SYNC_SOURCE_NONE"
             );
 
             const uint8_t result = EPS_set_obc_time_based_on_eps_time();
@@ -96,7 +96,7 @@ void TASK_time_sync(void *argument) {
         // 1999 is selected as the initial bootup time will be 1970. Then, after setting to the EPS's time,
         // the OBC's time will be >=2000. Don't want to keep resyncing the OBC time to the EPS time
         // if the OBC's time is already set to a valid time.
-        if (TIM_get_current_unix_epoch_time_ms() < 915148800000) {
+        if (TIME_get_current_unix_epoch_time_ms() < 915148800000) {
             const uint8_t result = EPS_set_obc_time_based_on_eps_time();
 
             LOG_message(
@@ -135,7 +135,7 @@ void TASK_time_sync(void *argument) {
 
         // Use uint32_t for these values in seconds, as int32_t won't overflow until 2038.
         const uint32_t eps_time_sec = status.unix_time_sec;
-        const uint32_t obc_time_sec = TIM_get_current_unix_epoch_time_ms() / 1000;
+        const uint32_t obc_time_sec = TIME_get_current_unix_epoch_time_ms() / 1000;
         const int32_t delta_seconds = ((int32_t)obc_time_sec) - ((int32_t)eps_time_sec);
         if (abs(delta_seconds) > 10) {
             LOG_message(

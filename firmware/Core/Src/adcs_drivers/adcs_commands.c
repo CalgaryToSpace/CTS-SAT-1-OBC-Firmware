@@ -351,9 +351,10 @@ uint8_t ADCS_get_llh_position(ADCS_llh_position_struct_t *output_struct) {
 /// @brief Instruct the ADCS to execute the ADCS_Bootloader_Clear_Errors command.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_bootloader_clear_errors() {
-    uint8_t data_send[1]; // 0-byte data (from manual) input into wrapper, but one-byte here to avoid warnings
-    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_BOOTLOADER_CLEAR_ERRORS, data_send, 0, ADCS_INCLUDE_CHECKSUM);
-    return cmd_status;
+    uint8_t data_send[1] = {ADCS_COMMAND_BOOTLOADER_CLEAR_ERRORS}; // 0-byte data (from manual) input into wrapper, but one-byte here to avoid warnings
+    const uint8_t hal_status = HAL_I2C_Master_Transmit(ADCS_i2c_HANDLE, ADCS_i2c_ADDRESS << 1, data_send, 1, ADCS_HAL_TIMEOUT);
+        // The bootloader doesn't support checksum, and this is a zero-parameter command, so HAL_I2C_Mem_Write can't be used (zero length message).
+    return hal_status;
 }
 
 /// @brief Instruct the ADCS to execute the ADCS_Set_Unix_Time_Save_Mode command.
@@ -1174,7 +1175,7 @@ uint8_t ADCS_get_raw_star_tracker_data(ADCS_raw_star_tracker_struct_t *output_st
 }
 
 /// @brief Instruct the ADCS to save an image to the SD card.
-/// @param[in] camera_select (int) Which camera to save the image from; can be Camera 1 (0), Camera 2 (1), or Star (2)
+/// @param[in] camera_select (int) Which camera to save the image from; can be Camera 1 (0) [sun], Camera 2 (1) [nadir, boom-side], or Star (2) [not on CTS-SAT-1]
 /// @param[in] image_size (int) Resolution of the image to save; can be 1024x1024 (0), 512x512 (1), 256x256 (2), 128x128 (3), or 64x64 (4)
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_save_image_to_sd(ADCS_camera_select_enum_t camera_select, ADCS_image_size_enum_t image_size) {
@@ -1194,7 +1195,7 @@ uint8_t ADCS_save_image_to_sd(ADCS_camera_select_enum_t camera_select, ADCS_imag
 /// @brief Instruct the ADCS to synchronize its Unix epoch time to the current OBC Unix time.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_synchronize_unix_time() {
-    uint64_t current_unix_time_ms = TIM_get_current_unix_epoch_time_ms();
+    uint64_t current_unix_time_ms = TIME_get_current_unix_epoch_time_ms();
     
     uint32_t s_component = current_unix_time_ms  / 1000;
     uint16_t ms_component = current_unix_time_ms % 1000;

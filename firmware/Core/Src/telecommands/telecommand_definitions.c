@@ -149,7 +149,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
-
+    {
+        .tcmd_name = "uart_set_baud_rate",
+        .tcmd_func = TCMDEXEC_uart_set_baud_rate,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
     // ****************** SECTION: testing_telecommand_defs ******************
 
     {
@@ -333,13 +338,19 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "fs_read_file_hex",
         .tcmd_func = TCMDEXEC_fs_read_file_hex,
-        .number_of_args = 1,
+        .number_of_args = 3,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
         .tcmd_name = "fs_read_text_file",
         .tcmd_func = TCMDEXEC_fs_read_text_file,
-        .number_of_args = 1,
+        .number_of_args = 3,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "fs_read_file_sha256_hash_json",
+        .tcmd_func = TCMDEXEC_fs_read_file_sha256_hash_json,
+        .number_of_args = 3,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
@@ -854,15 +865,15 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
-        .tcmd_name = "log_set_system_debugging_messages_state",
-        .tcmd_func = TCMDEXEC_log_set_system_debugging_messages_state,
+        .tcmd_name = "log_set_system_severity_mask",
+        .tcmd_func = TCMDEXEC_log_set_system_severity_mask,
         .number_of_args = 2,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
-        .tcmd_name = "log_report_latest_message_from_memory",
-        .tcmd_func = TCMDEXEC_log_report_latest_message_from_memory,
-        .number_of_args = 0,
+        .tcmd_name = "log_set_system_debugging_messages_state",
+        .tcmd_func = TCMDEXEC_log_set_system_debugging_messages_state,
+        .number_of_args = 2,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
@@ -1074,6 +1085,18 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_func = TCMDEXEC_mpi_demo_set_transceiver_mode,
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY, // Not useful in space.
+    },
+    {
+        .tcmd_name = "mpi_enable_active_mode",
+        .tcmd_func = TCMDEXEC_mpi_enable_active_mode,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "mpi_disable_active_mode",
+        .tcmd_func = TCMDEXEC_mpi_disable_active_mode,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     // ****************** END: MPI_telecommand_definitions ********************
     // ****************** START SECTION: stm32_internal_flash_telecommand_defs ******************

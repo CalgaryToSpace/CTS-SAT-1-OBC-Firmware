@@ -9,6 +9,11 @@
 
 #include <string.h>
 
+/// @brief The period to wait between downlink packets.
+/// @note A 250-byte packet at 9600 baud takes about 208 ms to transmit.
+/// @example If you reconfigure the AX100 and increase the baudrate of the radio, decrease this value.
+uint32_t COMMS_bulk_downlink_delay_per_packet_ms = 208;
+
 static uint8_t bulk_file_data[COMMS_BULK_FILE_DOWNLINK_PACKET_MAX_DATA_BYTES_PER_PACKET];
 
 /// @brief Downlink task action.
@@ -63,6 +68,7 @@ static void do_bulk_downlink_task_action(void) {
     // Update all the downlink stats.
     COMMS_bulk_file_downlink_bytes_downlinked += byte_count;
     COMMS_bulk_file_downlink_next_seq_num++;
+    COMMS_bulk_file_downlink_next_start_offset += byte_count;
 
     // Check next-state logic if we're done.
     if (COMMS_bulk_file_downlink_bytes_downlinked == COMMS_bulk_file_downlink_total_bytes) {
@@ -90,7 +96,10 @@ void TASK_bulk_downlink(void *argument) {
         }
         else if (COMMS_bulk_file_downlink_state == COMMS_BULK_FILE_DOWNLINK_STATE_DOWNLINKING) {
             do_bulk_downlink_task_action();
-            osDelay(10); // Short delay - allow other tasks to run, but then keep going.
+
+            // Delay to avoid flooding the radio with packets.
+            // The AX100 seems to have a small queue, but can be overwhelmed easily.
+            osDelay(COMMS_bulk_downlink_delay_per_packet_ms);
         }
         else {
             LOG_message(

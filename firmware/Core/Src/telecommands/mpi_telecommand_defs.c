@@ -3,6 +3,7 @@
 #include "mpi/mpi_command_handling.h"
 #include "transforms/arrays.h"
 #include "mpi/mpi_transceiver.h"
+#include "littlefs/littlefs_helper.h"
 #include "log/log.h"
 #include "uart_handler/uart_handler.h"
 
@@ -84,6 +85,54 @@ uint8_t TCMDEXEC_mpi_send_command_get_response_hex(
 
     // Return response code from the MPI
     return cmd_response;
+}
+
+/// @brief Enables systems to start receiving data actively from MPI and storing using LFS.
+/// @param args_str
+/// - Arg 0: File name as a string
+/// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
+/// @param response_output_buf The buffer to write the response to
+/// @param response_output_buf_len The maximum length of the response_output_buf (its size)
+/// @return 0: Success, >0: Failure
+uint8_t TCMDEXEC_mpi_enable_active_mode(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len) {
+    // Get the file name from the telecommand argument
+    char arg_file_name[LFS_MAX_PATH_LENGTH];
+    const uint8_t parse_file_name_result = TCMD_extract_string_arg(args_str, 0, arg_file_name, sizeof(arg_file_name));
+    if (parse_file_name_result != 0) {
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing file name arg: Error %d", parse_file_name_result);
+        return 1;
+    }
+    
+    // Enable MPI Science Mode
+    const uint8_t enable_result = MPI_enable_active_mode(arg_file_name);
+    if (enable_result != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "MPI enable active mode Failed! Error Code: %d", enable_result);
+        return enable_result;
+    }
+
+    return 0;
+}
+
+/// @brief Sets the state to not send or receive data from MPI.
+/// @param args_str No args.
+/// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
+/// @param response_output_buf The buffer to write the response to
+/// @param response_output_buf_len The maximum length of the response_output_buf (its size)
+/// @return 0: Success, >0: Failure
+uint8_t TCMDEXEC_mpi_disable_active_mode(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len) {
+    const uint8_t disable_result = MPI_disable_active_mode();
+
+    if (disable_result != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "MPI disable active mode Failed! Error Code: %d", disable_result);
+        return disable_result;
+    }
+
+    return 0;
 }
 
 
