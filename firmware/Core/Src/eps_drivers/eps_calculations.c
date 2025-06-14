@@ -36,33 +36,6 @@ int32_t EPS_calculate_total_fault_count(EPS_struct_pdu_overcurrent_fault_state_t
     return fault_count;
 }
 
-/// @brief Calculate the difference in overcurrent fault counts for a specific channel between two fault states.
-/// @param before Pointer to the fault state before the event.
-/// @param after Pointer to the fault state after the event.
-/// @param channel The channel number to check.
-/// @param difference Output pointer to hold the difference value.
-/// @return 0 on success, 1 on invalid input, 2 if no difference.
-// uint8_t EPS_calculate_overcurrent_difference_single_channel(const EPS_struct_pdu_overcurrent_fault_state_t *before, const EPS_struct_pdu_overcurrent_fault_state_t *after, uint8_t channel, uint16_t *difference) {
-//     if (before == NULL || after == NULL || difference == NULL) {
-//         return 1; // invalid input
-//     }
-
-//     if (channel >= EPS_TOTAL_CHANNEL_COUNT) {
-//         return 1; // invalid channel
-//     }
-
-//     uint16_t before_count = before->overcurrent_fault_count_each_channel[channel];
-//     uint16_t after_count  = after->overcurrent_fault_count_each_channel[channel];
-
-//     if (after_count > before_count) {
-//         *difference = after_count - before_count;
-//         return 0; // success, difference found
-//     } else {
-//         *difference = 0;
-//         return 2; // no difference
-//     }
-// }
-
 /// @brief Calculate the difference in overcurrent fault counts for all channels.
 /// @param before Pointer to the fault state before the event.
 /// @param after Pointer to the fault state after the event.
