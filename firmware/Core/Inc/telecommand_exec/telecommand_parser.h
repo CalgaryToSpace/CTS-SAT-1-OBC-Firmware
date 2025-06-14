@@ -29,7 +29,7 @@ uint8_t TCMD_get_suffix_tag_uint64(const char *str, const char *tag_name, uint64
 uint8_t TCMD_get_suffix_tag_hex_array(const char *str, const char *tag_name, uint8_t *value_dest);
 uint8_t TCMD_get_suffix_tag_str(const char *str, const char *tag_name, char *value_dest, uint16_t value_dest_max_len);
 
-uint8_t TCMD_parse_full_telecommand(const char tcmd_str[], TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMD_parse_full_telecommand(const char tcmd_str[],
                                     TCMD_parsed_tcmd_to_execute_t *parsed_tcmd_output);
 
 

@@ -209,36 +209,34 @@ uint8_t TEST_EXEC__TCMD_ascii_to_double() {
 uint8_t TEST_EXEC_TCMD_parse_full_telecommand() {
     TCMD_parsed_tcmd_to_execute_t parsed_tcmd;
     // Testing correct usage of 0 argument telecommand 
-    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+hello_world()!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 0);
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+hello_world()!", &parsed_tcmd) == 0);
     TEST_ASSERT_TRUE(strcmp(parsed_tcmd.args_str_no_parens, "") == 0);
-    TEST_ASSERT_TRUE(parsed_tcmd.tcmd_channel == TCMD_TelecommandChannel_DEBUG_UART);
     TEST_ASSERT_TRUE(strcmp(TCMD_telecommand_definitions[parsed_tcmd.tcmd_idx].tcmd_name, "hello_world") == 0);
 
     // Tesing incorrect usage of 0 argument telecommand
-    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+hello_world(a)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 130);
-    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+hello_world(a,1)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 130);
-    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+hello_world(,)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 130);
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+hello_world(a)!", &parsed_tcmd) == 130);
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+hello_world(a,1)!", &parsed_tcmd) == 130);
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+hello_world(,)!", &parsed_tcmd) == 130);
 
     // Testing correct usage of 1 argument telecommand 
-    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+set_system_time(10)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 0); 
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+set_system_time(10)!", &parsed_tcmd) == 0); 
     TEST_ASSERT_TRUE(strcmp(parsed_tcmd.args_str_no_parens, "10") == 0);
-    TEST_ASSERT_TRUE(parsed_tcmd.tcmd_channel == TCMD_TelecommandChannel_DEBUG_UART);
     TEST_ASSERT_TRUE(strcmp(TCMD_telecommand_definitions[parsed_tcmd.tcmd_idx].tcmd_name, "set_system_time") == 0);
 
 
     // Tesing incorrect usage of 1 argument telecommand
-    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+set_system_time()!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 130);
-    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+set_system_time(10,1)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 130);
-    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+set_system_time(10,)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 130);
-    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+set_system_time(,10)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 130);
-    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+set_system_time(,)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 130);
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+set_system_time()!", &parsed_tcmd) == 130);
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+set_system_time(10,1)!", &parsed_tcmd) == 130);
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+set_system_time(10,)!", &parsed_tcmd) == 130);
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+set_system_time(,10)!", &parsed_tcmd) == 130);
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+set_system_time(,)!", &parsed_tcmd) == 130);
 
     // Testing correct usage of 3 3 argument telecommand
-    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+flash_read_hex(0,0,0)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 0);
-    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+flash_read_hex(0,0,0,)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 130);
-    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+flash_read_hex(,0,0,0)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 130);
-    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+flash_read_hex(,0,0,0)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 130);
-    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+flash_read_hex(0,0)!", TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd) == 130);
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+flash_read_hex(0,0,0)!", &parsed_tcmd) == 0);
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+flash_read_hex(0,0,0,)!", &parsed_tcmd) == 130);
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+flash_read_hex(,0,0,0)!", &parsed_tcmd) == 130);
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+flash_read_hex(,0,0,0)!", &parsed_tcmd) == 130);
+    TEST_ASSERT_TRUE(TCMD_parse_full_telecommand("CTS1+flash_read_hex(0,0)!", &parsed_tcmd) == 130);
 
     return 0;
 }
