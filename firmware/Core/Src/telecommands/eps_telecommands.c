@@ -289,13 +289,39 @@ uint8_t TCMDEXEC_eps_get_pdu_overcurrent_fault_state_json(
 
 
 /// @brief Get the EPS PDU (Power Distribution Unit) overcurrent fault status before/after, calculate and display comparison as JSON.
-/// @param args_str 
-/// - TODO: add channels as an argument.
+/// - Arg 0: The channel name or number (case-insensitive string).
 /// @return 0 on success, >0 on failure.
+/// @note Channel name argument: A lowercase c-string of the channel name (e.g., "mpi"), or a number
+/// representing the channel number (e.g., "1" or "16").
+/// Valid string values: "vbatt_stack", "stack_5v", "stack_3v3", "camera", "uhf_antenna_deploy",
+/// "gnss", "mpi_5v", "mpi_12v", "boom".
 uint8_t TCMDEXEC_eps_pdu_overcurrent_fault_channel_stats(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
+
+    // Extract Arg 0: The channel name/number.
+    char channel_str[30];
+    const uint8_t arg_0_result = TCMD_extract_string_arg(args_str, 0, channel_str, sizeof(channel_str));
+    if (arg_0_result != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error parsing channel arg: Error %d", arg_0_result);
+        return 1;
+    }
+
+    // Convert the channel string to an enum value.
+    const EPS_CHANNEL_enum_t eps_channel = EPS_channel_from_str(channel_str);
+    if (eps_channel == EPS_CHANNEL_UNKNOWN) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Unknown channel: %s", channel_str);
+        return 2;
+    }
+
+    // Convert to a nice channel number
+    const uint8_t eps_channel_num = (uint8_t) eps_channel;
+
     EPS_struct_pdu_overcurrent_fault_state_t status_before;
     EPS_struct_pdu_overcurrent_fault_state_t status_after;
     EPS_struct_pdu_overcurrent_fault_comparison_t comparison;
@@ -306,10 +332,27 @@ uint8_t TCMDEXEC_eps_pdu_overcurrent_fault_channel_stats(
     if (result_before != 0) {
         snprintf(response_output_buf, response_output_buf_len,
             "EPS_CMD_get_pdu_overcurrent_fault_state (before) failed (err %d)", result_before);
-        return 1;
+        return 3;
     }
 
-    // TODO: Add method for powering on a channel/checking if systems experienced overcurrent
+    // Power on the channel
+    const uint8_t on_result = EPS_set_channel_enabled(eps_channel_num, 1);
+    if (on_result != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+                 "Failed to turn ON channel %s (err %d)", channel_str, on_result);
+        return 4;
+    }
+
+    // Delay between powering on and off a channel
+    HAL_Delay(1000);
+
+    // Power off the channel
+    const uint8_t off_result = EPS_set_channel_enabled(eps_channel_num, 0);
+    if (off_result != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+                 "Failed to turn OFF channel %s (err %d)", channel_str, off_result);
+        return 5;
+    }
 
     // Get the updated state
     const uint8_t result_after = EPS_CMD_get_pdu_overcurrent_fault_state(&status_after);
@@ -317,7 +360,7 @@ uint8_t TCMDEXEC_eps_pdu_overcurrent_fault_channel_stats(
     if (result_after != 0) {
         snprintf(response_output_buf, response_output_buf_len,
             "EPS_CMD_get_pdu_overcurrent_fault_state (after) failed (err %d)", result_after);
-        return 2;
+        return 6;
     }
 
     // Calculate difference
@@ -327,7 +370,7 @@ uint8_t TCMDEXEC_eps_pdu_overcurrent_fault_channel_stats(
     if (result_calc != 0 && result_calc != 2) {
         snprintf(response_output_buf, response_output_buf_len,
             "EPS_calculate_overcurrent_difference failed (err %d)", result_calc);
-        return 3;
+        return 7;
     }
 
     // Convert comparison result to JSON
@@ -337,7 +380,7 @@ uint8_t TCMDEXEC_eps_pdu_overcurrent_fault_channel_stats(
     if (result_json != 0) {
         snprintf(response_output_buf, response_output_buf_len,
             "EPS_struct_pdu_overcurrent_fault_comparison_TO_json failed (err %d)", result_json);
-        return 4;
+        return 8;
     }
 
     return 0; // Success
