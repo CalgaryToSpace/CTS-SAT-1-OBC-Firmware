@@ -9,4 +9,7 @@ float EPS_convert_battery_voltage_to_percent(EPS_battery_pack_datatype_eng_t bat
 
 int32_t EPS_calculate_total_fault_count(EPS_struct_pdu_overcurrent_fault_state_t *fault_state);
 
+// uint8_t EPS_calculate_overcurrent_difference_single_channel(const EPS_struct_pdu_overcurrent_fault_state_t *before, const EPS_struct_pdu_overcurrent_fault_state_t *after, uint8_t channel, uint16_t *difference);
+uint8_t EPS_calculate_overcurrent_difference(const EPS_struct_pdu_overcurrent_fault_state_t *before, const EPS_struct_pdu_overcurrent_fault_state_t *after, EPS_struct_pdu_overcurrent_fault_comparison_t *result);
+
 #endif // INCLUDE_GUARD__EPS_CALCULATIONS

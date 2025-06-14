@@ -205,6 +205,49 @@ uint8_t EPS_struct_pdu_overcurrent_fault_state_TO_json(const EPS_struct_pdu_over
     return 0; // Success
 }
 
+
+uint8_t EPS_struct_pdu_overcurrent_fault_comparison_TO_json(
+    const EPS_struct_pdu_overcurrent_fault_comparison_t *data,
+    char json_output_str[], uint16_t json_output_str_size)
+{
+    if (data == NULL || json_output_str == NULL || json_output_str_size < 32) {
+        return 1; // Error: Invalid input
+    }
+
+    // Prepare a string buffer for the per-channel differences
+    char differences_str[512] = {0};
+    size_t offset = 0;
+
+    offset += snprintf(differences_str + offset, sizeof(differences_str) - offset, "[");
+    for (int i = 0; i < 32; i++) {
+        offset += snprintf(differences_str + offset, sizeof(differences_str) - offset,
+                           "%u%s", data->difference_each_channel[i], (i < 31) ? "," : "");
+    }
+    offset += snprintf(differences_str + offset, sizeof(differences_str) - offset, "]");
+
+    if (offset >= sizeof(differences_str)) {
+        return 2; // Error: overflow encoding per-channel differences
+    }
+
+    // Now create the final JSON output string
+    const int snprintf_ret = snprintf(
+        json_output_str, json_output_str_size,
+        "{\"total_difference\":%u,\"channels_with_new_faults\":%u,\"difference_each_channel\":%s}",
+        data->total_difference,
+        data->channels_with_new_faults,
+        differences_str
+    );
+
+    if (snprintf_ret < 0) {
+        return 3; // Error: snprintf failure
+    }
+    if (snprintf_ret >= json_output_str_size) {
+        return 4; // Error: output string too short
+    }
+
+    return 0; // Success
+}
+
 uint8_t EPS_struct_pbu_abf_placed_state_TO_json(const EPS_struct_pbu_abf_placed_state_t *data, char json_output_str[], uint16_t json_output_str_size) {
     if (data == NULL || json_output_str == NULL || json_output_str_size < 10) {
         return 1; // Error: Invalid input
@@ -227,6 +270,7 @@ uint8_t EPS_struct_pbu_abf_placed_state_TO_json(const EPS_struct_pbu_abf_placed_
     }
     return 0; // Success
 }
+
 
 
 uint8_t EPS_struct_pdu_housekeeping_data_eng_TO_json(const EPS_struct_pdu_housekeeping_data_eng_t *data, char json_output_str[], uint16_t json_output_str_size) {

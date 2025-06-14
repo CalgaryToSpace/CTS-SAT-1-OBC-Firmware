@@ -1,4 +1,6 @@
 #include "eps_drivers/eps_calculations.h"
+#include "eps_drivers/eps_types.h"
+#include <stddef.h>
 
 /// @brief Calculate the current EPS battery voltage from a PBU telemetry struct.
 /// @param battery Telemetry struct
@@ -32,4 +34,78 @@ int32_t EPS_calculate_total_fault_count(EPS_struct_pdu_overcurrent_fault_state_t
     }
 
     return fault_count;
+}
+
+/// @brief Calculate the difference in overcurrent fault counts for a specific channel between two fault states.
+/// @param before Pointer to the fault state before the event.
+/// @param after Pointer to the fault state after the event.
+/// @param channel The channel number to check.
+/// @param difference Output pointer to hold the difference value.
+/// @return 0 on success, 1 on invalid input, 2 if no difference.
+// uint8_t EPS_calculate_overcurrent_difference_single_channel(const EPS_struct_pdu_overcurrent_fault_state_t *before, const EPS_struct_pdu_overcurrent_fault_state_t *after, uint8_t channel, uint16_t *difference) {
+//     if (before == NULL || after == NULL || difference == NULL) {
+//         return 1; // invalid input
+//     }
+
+//     if (channel >= EPS_TOTAL_CHANNEL_COUNT) {
+//         return 1; // invalid channel
+//     }
+
+//     uint16_t before_count = before->overcurrent_fault_count_each_channel[channel];
+//     uint16_t after_count  = after->overcurrent_fault_count_each_channel[channel];
+
+//     if (after_count > before_count) {
+//         *difference = after_count - before_count;
+//         return 0; // success, difference found
+//     } else {
+//         *difference = 0;
+//         return 2; // no difference
+//     }
+// }
+
+/// @brief Calculate the difference in overcurrent fault counts for all channels.
+/// @param before Pointer to the fault state before the event.
+/// @param after Pointer to the fault state after the event.
+/// @param result Pointer to the struct where the difference result will be stored.
+/// @return 0 on success, 1 on invalid input, 2 if no difference.
+uint8_t EPS_calculate_overcurrent_difference(
+    const EPS_struct_pdu_overcurrent_fault_state_t *before,
+    const EPS_struct_pdu_overcurrent_fault_state_t *after,
+    EPS_struct_pdu_overcurrent_fault_comparison_t *result)
+{
+    if (before == NULL || after == NULL || result == NULL) {
+        return 1;  // Invalid input
+    }
+
+    result->before_power_on = *before;
+    result->after_power_on  = *after;
+
+    result->total_difference = 0;
+    result->channels_with_new_faults = 0;
+
+    for (int i = 0; i < 32; i++) {
+        uint16_t before_count = before->overcurrent_fault_count_each_channel[i];
+        uint16_t after_count  = after->overcurrent_fault_count_each_channel[i];
+
+        // Avoid underflow: if after < before, set difference to 0
+        uint16_t difference;
+        if (after_count >= before_count) {
+            difference = after_count - before_count;
+        } else {
+            difference = 0;
+        }
+
+        result->difference_each_channel[i] = difference;
+        result->total_difference += difference;
+
+        if (difference > 0) {
+            result->channels_with_new_faults++;
+        }
+    }
+
+    if (result->total_difference == 0) {
+        return 2;  // No difference
+    }
+
+    return 0;  // Success
 }

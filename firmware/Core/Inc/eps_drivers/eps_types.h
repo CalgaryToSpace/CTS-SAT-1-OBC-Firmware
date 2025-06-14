@@ -105,6 +105,15 @@ typedef struct {
     uint16_t overcurrent_fault_count_each_channel[32];
 } EPS_struct_pdu_overcurrent_fault_state_t;
 
+// Modified Command Response: 0x42: Get Overcurrent Fault State Channel Comparison=
+typedef struct {
+    EPS_struct_pdu_overcurrent_fault_state_t before_power_on;
+    EPS_struct_pdu_overcurrent_fault_state_t after_power_on;
+    uint16_t difference_each_channel[32];
+    uint16_t total_difference;
+    uint8_t channels_with_new_faults;
+} EPS_struct_pdu_overcurrent_fault_comparison_t;
+
 // Command Response: 0x44: Get PBU ABF Placed State
 typedef enum {
     EPS_ABF_PIN_NOT_APPLIED = 0x00,

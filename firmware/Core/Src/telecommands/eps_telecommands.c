@@ -288,6 +288,136 @@ uint8_t TCMDEXEC_eps_get_pdu_overcurrent_fault_state_json(
 }
 
 
+/// @brief Get the EPS PDU (Power Distribution Unit) overcurrent fault status before/after, calculate and display comparison as JSON.
+/// @param args_str 
+/// - TODO: add channels as an argument.
+/// @return 0 on success, >0 on failure.
+uint8_t TCMDEXEC_eps_pdu_overcurrent_fault_channel_stats(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    EPS_struct_pdu_overcurrent_fault_state_t status_before;
+    EPS_struct_pdu_overcurrent_fault_state_t status_after;
+    EPS_struct_pdu_overcurrent_fault_comparison_t comparison;
+
+    // Get before state
+    const uint8_t result_before = EPS_CMD_get_pdu_overcurrent_fault_state(&status_before);
+
+    if (result_before != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS_CMD_get_pdu_overcurrent_fault_state (before) failed (err %d)", result_before);
+        return 1;
+    }
+
+    // TODO: Add method for powering on a channel/checking if systems experienced overcurrent
+
+    // Get the updated state
+    const uint8_t result_after = EPS_CMD_get_pdu_overcurrent_fault_state(&status_after);
+
+    if (result_after != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS_CMD_get_pdu_overcurrent_fault_state (after) failed (err %d)", result_after);
+        return 2;
+    }
+
+    // Calculate difference
+    const uint8_t result_calc = EPS_calculate_overcurrent_difference(
+        &status_before, &status_after, &comparison);
+
+    if (result_calc != 0 && result_calc != 2) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS_calculate_overcurrent_difference failed (err %d)", result_calc);
+        return 3;
+    }
+
+    // Convert comparison result to JSON
+    const uint8_t result_json = EPS_struct_pdu_overcurrent_fault_comparison_TO_json(
+        &comparison, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS_struct_pdu_overcurrent_fault_comparison_TO_json failed (err %d)", result_json);
+        return 4;
+    }
+
+    return 0; // Success
+}
+
+
+// /// @brief Get the EPS PDU (Power Distribution Unit) overcurrent fault status, and display the overcurrent 
+// /// fault count, power on, get overcurrent fault count, and compare values for each channel.
+// /// @param args_str 
+// /// - Arg 0: The channel name or number (case-insensitive string). Type 'all' for all channels.
+// /// @return 0 on success, >0 on failure.
+// /// @note Channel name argument: A lowercase c-string of the channel name (e.g., "mpi"), or a number
+// /// representing the channel number (e.g., "1" or "16").
+// /// Valid string values: "vbatt_stack", "stack_5v", "stack_3v3", "camera", "uhf_antenna_deploy",
+// /// "gnss", "mpi_5v", "mpi_12v", "boom", "all".
+// uint8_t TCMDEXEC_eps_pdu_overcurrent_fault_channel_stats(
+//     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+//     char *response_output_buf, uint16_t response_output_buf_len
+// ) {
+
+//     // Fetch initial state
+//     EPS_struct_pdu_overcurrent_fault_state_t status_before;
+//     if (EPS_CMD_get_pdu_overcurrent_fault_state(&status_before) != 0) {
+//         snprintf(response_output_buf, response_output_buf_len, "Error fetching fault state (before)");
+//         return 1;
+//     }
+
+//     // Check if command is for "all"
+//     if (strcasecmp(args_str, "all") == 0) {
+//         snprintf(response_output_buf, response_output_buf_len, "[");
+//         for (uint8_t i = 0; i <= EPS_MAX_ACTIVE_CHANNEL_NUMBER; i++) {
+//             if (i != 0) strncat(response_output_buf, ", ", response_output_buf_len - strlen(response_output_buf) - 1);
+
+//             strncat(response_output_buf, "{ ", response_output_buf_len - strlen(response_output_buf) - 1);
+            
+//             char tmp[100];
+//             snprintf(tmp, sizeof(tmp),
+//                 "\"channel\": \"%s\", \"fault_count\": %u, \"power_on_count\": %u",
+//                 EPS_channel_to_str(i),
+//                 status_before.channel_fault_count[i],
+//                 status_before.channel_power_on_count[i]
+//             );
+//             strncat(response_output_buf, tmp, response_output_buf_len - strlen(response_output_buf) - 1);
+
+//             strncat(response_output_buf, " }", response_output_buf_len - strlen(response_output_buf) - 1);
+//         }
+//         strncat(response_output_buf, "]", response_output_buf_len - strlen(response_output_buf) - 1);
+//         return 0;
+//     }
+
+//     // Otherwise treat as single channel
+//     char channel_str[30];
+//     const uint8_t arg_0_result = TCMD_extract_string_arg(args_str, 0, channel_str, sizeof(channel_str));
+//     if (arg_0_result != 0) {
+//         snprintf(response_output_buf, response_output_buf_len,
+//                  "Error parsing channel arg: Error %d", arg_0_result);
+//         return 2;
+//     }
+
+//     const EPS_CHANNEL_enum_t eps_channel = EPS_channel_from_str(channel_str);
+//     if (eps_channel == EPS_CHANNEL_UNKNOWN) {
+//         snprintf(response_output_buf, response_output_buf_len,
+//                  "Unknown channel: %s", channel_str);
+//         return 3;
+//     }
+
+//     const uint8_t eps_channel_num = (uint8_t)eps_channel;
+
+//     uint8_t fault_count = status_before.channel_fault_count[eps_channel_num];
+//     uint8_t power_on_count = status_before.channel_power_on_count[eps_channel_num];
+
+//     snprintf(response_output_buf, response_output_buf_len,
+//         "{ \"channel\": \"%s\", \"fault_count\": %u, \"power_on_count\": %u }",
+//         EPS_channel_to_str(eps_channel_num), fault_count, power_on_count
+//     );
+
+//     return 0;
+// }
+
+
 /// @brief Get the EPS PBU (Power Battery Unit) ABF placed status, and display it as a JSON string.
 /// @return 0 on success, >0 on failure.
 uint8_t TCMDEXEC_eps_get_pbu_abf_placed_state_json(
@@ -314,8 +444,6 @@ uint8_t TCMDEXEC_eps_get_pbu_abf_placed_state_json(
     }
     return 0;
 }
-
-
 
 
 /// @brief Get the EPS PDU (Power Distribution Unit) housekeeping data, and display it as a JSON string.
