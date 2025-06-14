@@ -15,7 +15,7 @@
 /// @param response_output_buf Buffer to write the response to
 /// @param response_output_buf_len Max length of the buffer
 /// @return 0 if successful, >0 if an error occurred
-uint8_t TCMDEXEC_config_set_int_var(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_config_set_int_var(const char *args_str,
                                          char *response_output_buf, uint16_t response_output_buf_len)
 {
     const int args_str_len = strlen(args_str);
@@ -52,7 +52,7 @@ uint8_t TCMDEXEC_config_set_int_var(const char *args_str, TCMD_TelecommandChanne
 /// - Arg 0: variable name
 /// - Arg 1: new value
 /// @return 0 if successful, >0 if an error occurred
-uint8_t TCMDEXEC_config_set_str_var(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_config_set_str_var(const char *args_str,
                                          char *response_output_buf, uint16_t response_output_buf_len)
 
 {
@@ -91,7 +91,7 @@ uint8_t TCMDEXEC_config_set_str_var(const char *args_str, TCMD_TelecommandChanne
 /// @param args_str
 /// - Arg 0: variable name
 /// @return 0 if successful, >0 if an error occurred
-uint8_t TCMDEXEC_config_get_int_var_json(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_config_get_int_var_json(const char *args_str,
                                                     char *response_output_buf, uint16_t response_output_buf_len)
 {
     const uint16_t res = CONFIG_int_var_to_json(args_str, response_output_buf, response_output_buf_len);
@@ -109,7 +109,7 @@ uint8_t TCMDEXEC_config_get_int_var_json(const char *args_str, TCMD_TelecommandC
 /// - Arg 0: variable name
 /// @return 0 if successful, >0 if an error occurred
 uint8_t TCMDEXEC_config_get_str_var_json(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     const uint16_t res = CONFIG_str_var_to_json(args_str, response_output_buf, response_output_buf_len);
@@ -126,7 +126,7 @@ uint8_t TCMDEXEC_config_get_str_var_json(
 /// @param args_str No arguments.
 /// @return 0 if successful, >0 if an error occurred
 uint8_t TCMDEXEC_config_get_all_vars_jsonl(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     char json_str[CONFIG_MAX_JSON_STRING_LENGTH];

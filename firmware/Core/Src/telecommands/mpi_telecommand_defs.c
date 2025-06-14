@@ -19,12 +19,11 @@
 /// @brief Send a configuration command & params (IF ANY) to the MPI encoded in hex
 /// @param args_str 
 /// - Arg 0: Hex-encoded string representing the configuration command + arguments (IF ANY) to send to the MPI, INCLUDING 'TC' (0x54 0x43)
-/// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0: Success, >0 error code
 uint8_t TCMDEXEC_mpi_send_command_get_response_hex(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {    
     // Parse hex-encoded string to bytes
@@ -90,11 +89,10 @@ uint8_t TCMDEXEC_mpi_send_command_get_response_hex(
 /// @brief Enables systems to start receiving data actively from MPI and storing using LFS.
 /// @param args_str
 /// - Arg 0: File name as a string
-/// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0: Success, >0: Failure
-uint8_t TCMDEXEC_mpi_enable_active_mode(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len) {
+uint8_t TCMDEXEC_mpi_enable_active_mode(const char *args_str, char *response_output_buf, uint16_t response_output_buf_len) {
     // Get the file name from the telecommand argument
     char arg_file_name[LFS_MAX_PATH_LENGTH];
     const uint8_t parse_file_name_result = TCMD_extract_string_arg(args_str, 0, arg_file_name, sizeof(arg_file_name));
@@ -119,11 +117,10 @@ uint8_t TCMDEXEC_mpi_enable_active_mode(const char *args_str, TCMD_TelecommandCh
 
 /// @brief Sets the state to not send or receive data from MPI.
 /// @param args_str No args.
-/// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0: Success, >0: Failure
-uint8_t TCMDEXEC_mpi_disable_active_mode(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len) {
+uint8_t TCMDEXEC_mpi_disable_active_mode(const char *args_str, char *response_output_buf, uint16_t response_output_buf_len) {
     const uint8_t disable_result = MPI_disable_active_mode();
 
     if (disable_result != 0) {
@@ -139,12 +136,11 @@ uint8_t TCMDEXEC_mpi_disable_active_mode(const char *args_str, TCMD_TelecommandC
 
 /// @brief Sends a message over UART to the MPI.
 /// @param args_str No args.
-/// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0: Success, >0: Failure
 uint8_t TCMDEXEC_mpi_demo_tx_to_mpi(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     // First, set transceiver state.
@@ -184,12 +180,11 @@ uint8_t TCMDEXEC_mpi_demo_tx_to_mpi(
 /// @brief Sends a message over UART to the MPI.
 /// @param args_str
 /// - Arg 0: The target mode - "MISO" (from MPI), "MOSI" (to MPI), "DUPLEX", or anything else disables it
-/// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0: Success, >0: Failure
 uint8_t TCMDEXEC_mpi_demo_set_transceiver_mode(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     if (strcasecmp(args_str, "MISO") == 0) {

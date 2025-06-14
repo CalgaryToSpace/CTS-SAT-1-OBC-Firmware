@@ -7,11 +7,6 @@
 #define TCMD_MAX_RESP_FNAME_LEN 64
 
 typedef enum {
-    TCMD_TelecommandChannel_DEBUG_UART,
-    TCMD_TelecommandChannel_RADIO1
-} TCMD_TelecommandChannel_enum_t;
-
-typedef enum {
     TCMD_READINESS_LEVEL_IDEA_PHASE, 
     TCMD_READINESS_LEVEL_NOT_IMPLEMENTED, 
     TCMD_READINESS_LEVEL_IN_PROGRESS, 
@@ -26,7 +21,7 @@ typedef enum {
     TCMD_READINESS_LEVEL_FOR_OPERATION
 } TCMD_readiness_level_enum_t;
 
-typedef uint8_t (*TCMD_TCMDEXEC_Function_Ptr)(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+typedef uint8_t (*TCMD_TCMDEXEC_Function_Ptr)(const char *args_str,
                                          char *response_output_buf, uint16_t response_output_buf_len);
 
 typedef struct {
@@ -50,7 +45,6 @@ typedef struct {
     /// @brief Name of file that response should be written to, empty string otherwise
     char resp_fname[TCMD_MAX_RESP_FNAME_LEN];
     /// @brief The channel on which the telecommand was received, and on which the response should be sent.
-    TCMD_TelecommandChannel_enum_t tcmd_channel;
 } TCMD_parsed_tcmd_to_execute_t;
 
 #endif // INCLUDE_GUARD__TELECOMMAND_TYPES_H

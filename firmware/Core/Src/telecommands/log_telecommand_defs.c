@@ -19,7 +19,7 @@
 ///    LOG_SINK_FILE = 2 
 ///    LOG_SINK_UMBILICAL_UART = 4
 uint8_t TCMDEXEC_log_set_sink_enabled_state(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     uint64_t sink;
@@ -68,7 +68,7 @@ uint8_t TCMDEXEC_log_set_sink_enabled_state(
 ///    LOG_SYSTEM_TELECOMMAND = 4096
 ///    LOG_SYSTEM_UNIT_TEST = 8192
 uint8_t TCMDEXEC_log_set_system_file_logging_enabled_state(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     uint64_t system;
@@ -101,7 +101,7 @@ uint8_t TCMDEXEC_log_set_system_file_logging_enabled_state(
 /// @param args_str
 /// - Arg 0: Sink enum
 uint8_t TCMDEXEC_log_report_sink_enabled_state(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     uint64_t sink;
@@ -122,7 +122,7 @@ uint8_t TCMDEXEC_log_report_sink_enabled_state(
 
 /// @brief Telecommand: Report all LOG sink enable states
 uint8_t TCMDEXEC_log_report_all_sink_enabled_states(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     // Response is logged by log system
@@ -138,7 +138,7 @@ uint8_t TCMDEXEC_log_report_all_sink_enabled_states(
 /// @param args_str
 /// - Arg 0: Subsystem enum
 uint8_t TCMDEXEC_log_report_system_file_logging_state(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     uint64_t system;
@@ -159,7 +159,7 @@ uint8_t TCMDEXEC_log_report_system_file_logging_state(
 
 /// @brief Telecommand: Report all LOG subsystem file logging states
 uint8_t TCMDEXEC_log_report_all_system_file_logging_states(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     // Response is logged by log system.
@@ -176,7 +176,7 @@ uint8_t TCMDEXEC_log_report_all_system_file_logging_states(
 /// - Arg 0: Sink enum
 /// - Arg 1: State 0: disable debug messages, 1: enable debug messages
 uint8_t TCMDEXEC_log_set_sink_debugging_messages_state(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     uint64_t sink = 0;
@@ -210,7 +210,7 @@ uint8_t TCMDEXEC_log_set_sink_debugging_messages_state(
 /// - Arg 0: Subsystem enum
 /// - Arg 1: State 0: disable debug messages, 1: enable debug messages
 uint8_t TCMDEXEC_log_set_system_debugging_messages_state(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     uint64_t system = 0;
@@ -268,7 +268,7 @@ uint8_t TCMDEXEC_log_set_system_debugging_messages_state(
 ///    LOG_SEVERITY_CRITICAL = 16
 ///
 uint8_t TCMDEXEC_log_set_system_severity_mask(
-        const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, 
+        const char *args_str, 
         char *response_output_buf, uint16_t response_output_buf_len
 ) {
     uint64_t system = 0;
@@ -302,7 +302,7 @@ uint8_t TCMDEXEC_log_set_system_severity_mask(
 /// @param args_str
 /// - Arg 0: Number of latest log messages to report
 uint8_t TCMDEXEC_log_report_n_latest_messages_from_memory(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     uint64_t requested_number_of_entries = 0;

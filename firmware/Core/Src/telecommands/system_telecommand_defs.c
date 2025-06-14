@@ -19,12 +19,11 @@
 
 /// @brief A simple telecommand that responds with "Hello, world!" (log message and TCMD response)
 /// @param args_str No arguments expected
-/// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0 if successful, >0 if an error occurred (but hello_world can't return an error)
 uint8_t TCMDEXEC_hello_world(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     LOG_message(
@@ -39,7 +38,7 @@ uint8_t TCMDEXEC_hello_world(
 }
 
 uint8_t TCMDEXEC_core_system_stats(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     // TODO: Add temperatures (EPS, OBC, antenna, etc.)
@@ -94,7 +93,7 @@ uint8_t TCMDEXEC_core_system_stats(
 }
 
 uint8_t TCMDEXEC_available_telecommands(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     char *p = response_output_buf;
@@ -128,7 +127,7 @@ uint8_t TCMDEXEC_available_telecommands(
 
 
 uint8_t TCMDEXEC_reboot(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     LFS_ensure_unmounted();
@@ -151,7 +150,7 @@ uint8_t TCMDEXEC_reboot(
 /// @return 0 regardless; see the response_output_buf for the results of the self-check.
 /// @note Output is a JSON list of the failing checks (as strings). Returns 0 regardless.
 uint8_t TCMDEXEC_system_self_check_failures_as_json(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     CTS1_system_self_check_result_struct_t self_check_result;
@@ -169,7 +168,7 @@ uint8_t TCMDEXEC_system_self_check_failures_as_json(
 /// @return 0 regardless; see the response_output_buf for the results of the self-check.
 /// @note Output is a JSON list of the failing checks (as strings). Returns 0 regardless.
 uint8_t TCMDEXEC_system_self_check_as_json(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     CTS1_system_self_check_result_struct_t self_check_result;
@@ -182,7 +181,7 @@ uint8_t TCMDEXEC_system_self_check_as_json(
 }
 
 uint8_t TCMDEXEC_obc_get_rbf_state(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     const OBC_rbf_state_enum_t rbf_state = OBC_get_rbf_state();

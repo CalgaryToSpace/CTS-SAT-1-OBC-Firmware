@@ -16,7 +16,7 @@
 /// @param args_str No arguments.
 /// @return 0 on success, 1 on failure.
 uint8_t TCMDEXEC_eps_watchdog(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     const uint8_t result = EPS_CMD_watchdog();
@@ -36,7 +36,7 @@ uint8_t TCMDEXEC_eps_watchdog(
 /// @param args_str No arguments.
 /// @return 0 on success, 1 on failure.
 uint8_t TCMDEXEC_eps_system_reset(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     const uint8_t result = EPS_CMD_system_reset();
@@ -56,7 +56,7 @@ uint8_t TCMDEXEC_eps_system_reset(
 /// @param args_str No arguments.
 /// @return 0 on success, 1 on failure.
 uint8_t TCMDEXEC_eps_no_operation(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) { 
     const uint8_t result = EPS_CMD_no_operation();
@@ -78,7 +78,7 @@ uint8_t TCMDEXEC_eps_no_operation(
 /// @note This command likely isn't useful, as telecommands cannot be trigger simultaneously, and
 ///     thus another command to the EPS cannot really be cancelled from here.
 uint8_t TCMDEXEC_eps_cancel_operation(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     const uint8_t result = EPS_CMD_cancel_operation();
@@ -100,7 +100,7 @@ uint8_t TCMDEXEC_eps_cancel_operation(
 /// @return 0 on success, 1 on failure.
 /// @note See EPS Software ICD, Page 12, Section 3 (Functional Description) for state/mode definitions.
 uint8_t TCMDEXEC_eps_switch_to_mode(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     uint8_t result = 42;
@@ -143,7 +143,7 @@ uint8_t TCMDEXEC_eps_switch_to_mode(
 /// Valid string values: "vbatt_stack", "stack_5v", "stack_3v3", "camera", "uhf_antenna_deploy",
 /// "gnss", "mpi_5v", "mpi_12v", "boom".
 uint8_t TCMDEXEC_eps_set_channel_enabled(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     // Extract Arg 0: The channel name/number.
@@ -234,7 +234,7 @@ uint8_t TCMDEXEC_eps_set_channel_enabled(
 /// @brief Get the EPS system status, and display it as a JSON string.
 /// @return 0 on success, >0 on failure.
 uint8_t TCMDEXEC_eps_get_system_status_json(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     
@@ -263,7 +263,7 @@ uint8_t TCMDEXEC_eps_get_system_status_json(
 /// @brief Get the EPS PDU (Power Distribution Unit) overcurrent fault status, and display it as a JSON string.
 /// @return 0 on success, >0 on failure.
 uint8_t TCMDEXEC_eps_get_pdu_overcurrent_fault_state_json(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     
@@ -291,7 +291,7 @@ uint8_t TCMDEXEC_eps_get_pdu_overcurrent_fault_state_json(
 /// @brief Get the EPS PBU (Power Battery Unit) ABF placed status, and display it as a JSON string.
 /// @return 0 on success, >0 on failure.
 uint8_t TCMDEXEC_eps_get_pbu_abf_placed_state_json(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     
@@ -321,7 +321,7 @@ uint8_t TCMDEXEC_eps_get_pbu_abf_placed_state_json(
 /// @brief Get the EPS PDU (Power Distribution Unit) housekeeping data, and display it as a JSON string.
 /// @return 0 on success, >0 on failure.
 uint8_t TCMDEXEC_eps_get_pdu_housekeeping_data_eng_json(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     
@@ -355,7 +355,7 @@ uint8_t TCMDEXEC_eps_get_pdu_housekeeping_data_eng_json(
 /// Valid string values: "vbatt_stack", "stack_5v", "stack_3v3", "camera", "uhf_antenna_deploy",
 /// "gnss", "mpi_5v", "mpi_12v", "boom".
 uint8_t TCMDEXEC_eps_get_pdu_data_for_channel_json(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     // Extract Arg 0: The channel name/number.
@@ -407,7 +407,7 @@ uint8_t TCMDEXEC_eps_get_pdu_data_for_channel_json(
 /// @brief Get the EPS PDU (Power Distribution Unit) housekeeping data (running average), and display it as a JSON string.
 /// @return 0 on success, >0 on failure.
 uint8_t TCMDEXEC_eps_get_pdu_housekeeping_data_run_avg_json(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     
@@ -436,7 +436,7 @@ uint8_t TCMDEXEC_eps_get_pdu_housekeeping_data_run_avg_json(
 /// @brief Get the EPS PBU (Power Battery Unit) housekeeping data, and display it as a JSON string.
 /// @return 0 on success, >0 on failure.
 uint8_t TCMDEXEC_eps_get_pbu_housekeeping_data_eng_json(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     
@@ -465,7 +465,7 @@ uint8_t TCMDEXEC_eps_get_pbu_housekeeping_data_eng_json(
 /// @brief Get the EPS PBU (Power Battery Unit) housekeeping data (running average), and display it as a JSON string.
 /// @return 0 on success, >0 on failure.
 uint8_t TCMDEXEC_eps_get_pbu_housekeeping_data_run_avg_json(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     
@@ -494,7 +494,7 @@ uint8_t TCMDEXEC_eps_get_pbu_housekeeping_data_run_avg_json(
 /// @brief Get the EPS PCU (Power Conditioning Unit, solar panel MPPT) housekeeping data, and display it as a JSON string.
 /// @return 0 on success, >0 on failure.
 uint8_t TCMDEXEC_eps_get_pcu_housekeeping_data_eng_json(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     
@@ -523,7 +523,7 @@ uint8_t TCMDEXEC_eps_get_pcu_housekeeping_data_eng_json(
 /// @brief Get the EPS PCU (Power Conditioning Unit, solar panel MPPT) housekeeping data (running average), and display it as a JSON string.
 /// @return 0 on success, >0 on failure.
 uint8_t TCMDEXEC_eps_get_pcu_housekeeping_data_run_avg_json(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     
@@ -551,7 +551,7 @@ uint8_t TCMDEXEC_eps_get_pcu_housekeeping_data_run_avg_json(
 /// @brief Gets the EPS PIU (Power Integrated Unit, info about all systems) housekeeping data, and returns it as a JSON string.
 /// @return 0 on success, >0 on failure.
 uint8_t TCMDEXEC_eps_get_piu_housekeeping_data_eng_json(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     
@@ -580,7 +580,7 @@ uint8_t TCMDEXEC_eps_get_piu_housekeeping_data_eng_json(
 /// @brief Get the EPS PIU (Power Integrated Unit, info about all systems) housekeeping data (running average), and display it as a JSON string.
 /// @return 0 on success, >0 on failure.
 uint8_t TCMDEXEC_eps_get_piu_housekeeping_data_run_avg_json(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     
@@ -606,7 +606,7 @@ uint8_t TCMDEXEC_eps_get_piu_housekeeping_data_run_avg_json(
 
 /// @brief Get current battery voltage percent from PBU
 uint8_t TCMDEXEC_eps_get_current_battery_percent(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len) {
 
     EPS_struct_pbu_housekeeping_data_eng_t data;
@@ -628,7 +628,7 @@ uint8_t TCMDEXEC_eps_get_current_battery_percent(
 }
 
 uint8_t TCMDEXEC_eps_get_enabled_channels_json(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len) {
 
     EPS_struct_pdu_housekeeping_data_eng_t status;
@@ -655,7 +655,7 @@ uint8_t TCMDEXEC_eps_get_enabled_channels_json(
 /// @note Valid string values (Arg 0): "vbatt_stack", "stack_5v", "stack_3v3", "camera",
 /// "uhf_antenna_deploy", "gnss", "mpi_5v", "mpi_12v", "boom".
 uint8_t TCMDEXEC_eps_power_management_set_current_threshold(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     // Extract Arg 0: The channel name/number.
