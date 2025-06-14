@@ -17,7 +17,7 @@ uint8_t bytes_to_write[FLASH_MAX_BYTES_PER_PAGE];
 /// @brief Telecommand: Read bytes as hex from a flash address
 /// @param args_str No args.
 /// @return 0 always
-uint8_t TCMDEXEC_flash_activate_each_cs(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_flash_activate_each_cs(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     const uint16_t delay_time_ms = 500;
 
@@ -47,7 +47,7 @@ uint8_t TCMDEXEC_flash_activate_each_cs(const char *args_str, TCMD_TelecommandCh
 /// @brief Telecommand: Read bytes as hex from a flash address
 /// @param args_str No args.
 /// @return 0 always
-uint8_t TCMDEXEC_flash_each_is_reachable(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_flash_each_is_reachable(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     uint8_t fail_count = 0;
 
@@ -100,7 +100,7 @@ uint8_t TCMDEXEC_flash_each_is_reachable(const char *args_str, TCMD_TelecommandC
 /// - Arg 1: Page number as uint
 /// - Arg 2: Number of bytes to read as uint
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_flash_read_hex(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_flash_read_hex(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     uint64_t chip_num_u64, page_num_u64, num_bytes_u64;
 
@@ -179,7 +179,7 @@ uint8_t TCMDEXEC_flash_read_hex(const char *args_str, TCMD_TelecommandChannel_en
 /// - Arg 1: Page number as uint
 /// - Arg 2: Hex string of bytes to write (any case, allows space/underscore separators)
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_flash_write_hex(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_flash_write_hex(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     uint16_t num_bytes;
     uint64_t chip_num_u64, page_num_u64;
@@ -239,7 +239,7 @@ uint8_t TCMDEXEC_flash_write_hex(const char *args_str, TCMD_TelecommandChannel_e
 /// - Arg 0: Chip Number (CS number) as uint
 /// - Arg 1: Page number as uint
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_flash_erase(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_flash_erase(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     uint64_t chip_num_u64, page_num_u64;
 
@@ -297,7 +297,7 @@ uint8_t TCMDEXEC_flash_erase(const char *args_str, TCMD_TelecommandChannel_enum_
 /// - Arg 1: Test Data Address as uint
 /// - Arg 2: Test Data Length as uint
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_flash_benchmark_erase_write_read(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_flash_benchmark_erase_write_read(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     uint64_t chip_num, test_data_address, test_data_length;
 
@@ -330,7 +330,7 @@ uint8_t TCMDEXEC_flash_benchmark_erase_write_read(const char *args_str, TCMD_Tel
 /// @param args_str 
 /// - Arg 0: Chip Number (CS number) as uint
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_flash_reset(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_flash_reset(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     uint64_t chip_num_u64;
 
@@ -374,7 +374,7 @@ uint8_t TCMDEXEC_flash_reset(const char *args_str, TCMD_TelecommandChannel_enum_
 /// @param args_str
 /// - Arg 0: Chip Number (CS number) as uint
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_flash_read_status_register(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_flash_read_status_register(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     uint64_t chip_num_u64;
 
@@ -419,7 +419,7 @@ uint8_t TCMDEXEC_flash_read_status_register(const char *args_str, TCMD_Telecomma
 /// @param args_str
 /// - Arg 0: Chip Number (CS number) as uint
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_flash_write_enable(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_flash_write_enable(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     uint64_t chip_num_u64;
 
