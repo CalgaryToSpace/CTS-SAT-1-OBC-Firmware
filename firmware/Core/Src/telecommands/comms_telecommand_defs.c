@@ -13,7 +13,7 @@
 /// - Arg 0: Enum: "toggle_before_beacon" (default), "ant1", "ant2", "adcs", "adcs_flipped". Case-insensitive.
 /// @return 0 on success, 1 on error.
 uint8_t TCMDEXEC_comms_set_rf_switch_control_mode(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     // Parse the arguments.
@@ -63,7 +63,7 @@ uint8_t TCMDEXEC_comms_set_rf_switch_control_mode(
 /// @param args_str No args.
 /// @return 
 uint8_t TCMDEXEC_comms_get_rf_switch_info(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     const uint8_t adcs_antenna_num = COMMS_find_optimal_antenna_using_adcs();
@@ -98,7 +98,7 @@ uint8_t TCMDEXEC_comms_get_rf_switch_info(
 /// @note This function is safe to call at any point (including mid-downlink, or mid-pause).
 ///       It will close the previous file and start a new downlink.
 uint8_t TCMDEXEC_comms_bulk_file_downlink_start(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     const uint8_t args_str_len = strlen(args_str);
@@ -180,7 +180,7 @@ uint8_t TCMDEXEC_comms_bulk_file_downlink_start(
 /// @brief Telecommand: Pause bulk file downlink
 /// @param args_str (unused)
 uint8_t TCMDEXEC_comms_bulk_file_downlink_pause(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     const uint8_t result = COMMS_bulk_file_downlink_pause();
@@ -202,7 +202,7 @@ uint8_t TCMDEXEC_comms_bulk_file_downlink_pause(
 
 
 uint8_t TCMDEXEC_comms_bulk_file_downlink_resume(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     const uint8_t result = COMMS_bulk_file_downlink_resume();

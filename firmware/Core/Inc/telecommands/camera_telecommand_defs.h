@@ -6,21 +6,21 @@
 
 
 uint8_t TCMDEXEC_camera_setup(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 );
     
 uint8_t TCMDEXEC_camera_test(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 );
 
 uint8_t TCMDEXEC_camera_change_baud_rate(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 );
 
-uint8_t TCMDEXEC_camera_capture(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_camera_capture(const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 );
 
