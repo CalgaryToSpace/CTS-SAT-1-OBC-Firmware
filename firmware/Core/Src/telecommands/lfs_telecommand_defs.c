@@ -15,7 +15,7 @@
 #include "transforms/arrays.h"
 
 uint8_t TCMDEXEC_fs_format_storage(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
         char *response_output_buf, uint16_t response_output_buf_len
 ) {
     LFS_ensure_unmounted();
@@ -30,7 +30,7 @@ uint8_t TCMDEXEC_fs_format_storage(
     return 0;
 }
 
-uint8_t TCMDEXEC_fs_mount(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_fs_mount(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     const int8_t result = LFS_mount();
     if (result != 0) {
@@ -42,7 +42,7 @@ uint8_t TCMDEXEC_fs_mount(const char *args_str, TCMD_TelecommandChannel_enum_t t
     return 0;
 }
 
-uint8_t TCMDEXEC_fs_unmount(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_fs_unmount(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     const int8_t result = LFS_unmount();
     if (result != 0) {
@@ -59,7 +59,7 @@ uint8_t TCMDEXEC_fs_unmount(const char *args_str, TCMD_TelecommandChannel_enum_t
 /// - Arg 0: Root Directory path as string
 /// - Arg 1: (Offset) Number of entries to skip at the beginning
 /// - Arg 2: (Count) Number entries to display
-uint8_t TCMDEXEC_fs_list_directory(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_fs_list_directory(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len) {
 
     char arg_root_directory_path[LFS_MAX_PATH_LENGTH];
@@ -122,7 +122,7 @@ uint8_t TCMDEXEC_fs_list_directory(const char *args_str, TCMD_TelecommandChannel
 /// - Arg 2: (Count) Number entries to display
 /// @note In the resulting JSON, the JSON value of directories is "null".
 uint8_t TCMDEXEC_fs_list_directory_json(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     char arg_root_directory_path[LFS_MAX_PATH_LENGTH];
@@ -182,7 +182,7 @@ uint8_t TCMDEXEC_fs_list_directory_json(
 /// @brief Telecommand: Create a directory
 /// @param args_str
 /// - Arg 0: Directory Name as string (e.g., "/dir1", "/dir1/subdir1")
-uint8_t TCMDEXEC_fs_make_directory(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_fs_make_directory(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len
 ) {
     char arg_root_directory_path[LFS_MAX_PATH_LENGTH];
@@ -211,7 +211,7 @@ uint8_t TCMDEXEC_fs_make_directory(const char *args_str, TCMD_TelecommandChannel
 /// @param args_str
 /// - Arg 0: File path as string
 /// - Arg 1: String to write to file (up to 512 bytes)
-uint8_t TCMDEXEC_fs_write_file_str(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_fs_write_file_str(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len) {
 
     char arg_file_name[LFS_MAX_PATH_LENGTH];
@@ -252,7 +252,7 @@ uint8_t TCMDEXEC_fs_write_file_str(const char *args_str, TCMD_TelecommandChannel
 /// - Arg 1: Offset within the file to start writing (uint64)
 /// - Arg 2: Hex string to write to file (e.g., "DEADBEEF" or "DE AD BE EF")
 /// @note The maximum number of bytes that can be written is 105 bytes
-uint8_t TCMDEXEC_fs_write_file_hex(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_fs_write_file_hex(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     char arg_file_name[LFS_MAX_PATH_LENGTH];
     const uint8_t parse_file_name_result = TCMD_extract_string_arg(args_str, 0, arg_file_name, sizeof(arg_file_name));
@@ -312,7 +312,7 @@ uint8_t TCMDEXEC_fs_write_file_hex(const char *args_str, TCMD_TelecommandChannel
 /// @param args_str
 /// - Arg 0: File name to be deleted
 /// @note Do not add quotations around the argument, write as is.
-uint8_t TCMDEXEC_fs_delete_file(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_fs_delete_file(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     char arg_file_name[LFS_MAX_PATH_LENGTH];
     const uint8_t parse_file_name_result = TCMD_extract_string_arg(args_str, 0, arg_file_name, sizeof(arg_file_name));
@@ -388,7 +388,7 @@ static uint8_t parse_arg_str_for_file_offset_length(
 /// - Arg 2: Length to read (bytes). 0 to read max.
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_fs_read_file_hex(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     char arg_file_name[LFS_MAX_PATH_LENGTH];
@@ -433,7 +433,7 @@ uint8_t TCMDEXEC_fs_read_file_hex(
 /// - Arg 2: Length to read (bytes). 0 to read max.
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_fs_read_text_file(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     char arg_file_name[LFS_MAX_PATH_LENGTH];
@@ -477,7 +477,7 @@ uint8_t TCMDEXEC_fs_read_text_file(
 /// - Arg 2: Length to read (bytes). 0 to read max.
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_fs_read_file_sha256_hash_json(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     char arg_file_name[LFS_MAX_PATH_LENGTH];
@@ -534,7 +534,7 @@ uint8_t TCMDEXEC_fs_read_file_sha256_hash_json(
 }
 
 
-uint8_t TCMDEXEC_fs_demo_write_then_read(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_fs_demo_write_then_read(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len) {
 
     char file_name[] = "demo_test.txt";
@@ -577,7 +577,7 @@ uint8_t TCMDEXEC_fs_demo_write_then_read(const char *args_str, TCMD_TelecommandC
 /// - Arg 1: Write chunk count
 /// @return 0 on success, 1 if error parsing args, 2 if benchmark failed
 /// @note The maximum write chunk size is 127 bytes, apparently; need to investigate why so small.
-uint8_t TCMDEXEC_fs_benchmark_write_read(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_fs_benchmark_write_read(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     
     uint64_t arg_write_chunk_size, arg_write_chunk_count;
