@@ -15,7 +15,7 @@
 /// @param args_str
 /// - Arg 0: specifies which mcu on the antenna deployment system to transmit to, and which i2c bus to use. Pass either "A" or "B"
 /// @return 0 on success, > 0 otherwise
-uint8_t TCMDEXEC_ant_reset(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_ant_reset(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len) 
 {
     char i2c_bus_str [2];
@@ -52,7 +52,7 @@ uint8_t TCMDEXEC_ant_reset(const char *args_str, TCMD_TelecommandChannel_enum_t 
 /// @param args_str 
 /// - Arg 0: specifies which mcu on the antenna deployment system to transmit to, and which i2c bus to use. Pass either "A" or "B"
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_ant_arm_antenna_system(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_ant_arm_antenna_system(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     char i2c_bus_str [2];
     if(TCMD_extract_string_arg(args_str, 0, i2c_bus_str, 2) != 0 ) {
@@ -89,7 +89,7 @@ uint8_t TCMDEXEC_ant_arm_antenna_system(const char *args_str, TCMD_TelecommandCh
 /// @param args_str 
 /// - Arg 0: specifies which mcu on the antenna deployment system to disarm, and which i2c bus to use 
 /// @return 0 on success, 0 > otherwise
-uint8_t TCMDEXEC_ant_disarm_antenna_system(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_ant_disarm_antenna_system(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     char i2c_bus_str [2];
     if(TCMD_extract_string_arg(args_str, 0, i2c_bus_str, 2) != 0 ) {
@@ -128,7 +128,7 @@ uint8_t TCMDEXEC_ant_disarm_antenna_system(const char *args_str, TCMD_Telecomman
 /// - Arg 1: antenna number. between 1-4
 /// - Arg 2: Activation time in seconds
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_ant_deploy_antenna(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_ant_deploy_antenna(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     char i2c_bus_str [2];
     if(TCMD_extract_string_arg(args_str, 0, i2c_bus_str, 2) != 0 ) {
@@ -203,7 +203,7 @@ uint8_t TCMDEXEC_ant_deploy_antenna(const char *args_str, TCMD_TelecommandChanne
 /// - Arg 0: specifies which mcu on the antenna deployment system to transmit to, and which i2c bus to use. Pass either "A" or "B"
 /// - Arg 1: Activation time in seconds
 /// @return returns 0 on success, > 0 otherwise
-uint8_t TCMDEXEC_ant_start_automated_antenna_deployment(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_ant_start_automated_antenna_deployment(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len) 
 {
     char i2c_bus_str [2];
@@ -253,7 +253,7 @@ uint8_t TCMDEXEC_ant_start_automated_antenna_deployment(const char *args_str, TC
 /// - Arg 1: antenna number. between 1-4
 /// - Arg 2: Activation time in seconds
 /// @return 0 on successful communication, >0 on communications error 
-uint8_t TCMDEXEC_ant_deploy_antenna_with_override(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_ant_deploy_antenna_with_override(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     char i2c_bus_str [2];
     if(TCMD_extract_string_arg(args_str, 0, i2c_bus_str, 2) != 0 ) {
@@ -328,7 +328,7 @@ uint8_t TCMDEXEC_ant_deploy_antenna_with_override(const char *args_str, TCMD_Tel
 /// @param args_str 
 /// - Arg 0: specifies which mcu on the antenna deployment system to transmit to, and which i2c bus to use. Pass either "A" or "B"
 /// @return 0 on successful communication, > 0 on communications error
-uint8_t TCMDEXEC_ant_cancel_deployment_system_activation(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_ant_cancel_deployment_system_activation(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     char i2c_bus_str [2];
     if(TCMD_extract_string_arg(args_str, 0, i2c_bus_str, 2) != 0 ) {
@@ -366,7 +366,7 @@ uint8_t TCMDEXEC_ant_cancel_deployment_system_activation(const char *args_str, T
 /// @param args_str 
 /// - Arg 0: specifies which mcu on the antenna deployment system to transmit to, and which i2c bus to use. Pass either "A" or "B"
 /// @return 0 on successful communication, > 0 on communications error
-uint8_t TCMDEXEC_ant_report_deployment_status(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_ant_report_deployment_status(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     char i2c_bus_str [2];
     if(TCMD_extract_string_arg(args_str, 0, i2c_bus_str, 2) != 0 ) {
@@ -448,7 +448,7 @@ uint8_t TCMDEXEC_ant_report_deployment_status(const char *args_str, TCMD_Telecom
 /// - Arg 0: specifies which mcu on the antenna deployment system to transmit to, and which i2c bus to use. Pass either "A" or "B"
 /// - Arg 1: the antenna to check, between 1-4 
 /// @return 0 on successful communication, > 0 on communications error
-uint8_t TCMDEXEC_ant_report_antenna_deployment_activation_count(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_ant_report_antenna_deployment_activation_count(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     char i2c_bus_str [2];
     if(TCMD_extract_string_arg(args_str, 0, i2c_bus_str, 2) != 0 ) {
@@ -512,7 +512,7 @@ uint8_t TCMDEXEC_ant_report_antenna_deployment_activation_count(const char *args
 /// - Arg 0: specifies which mcu on the antenna deployment system to transmit to, and which i2c bus to use. Pass either "A" or "B"
 /// - Arg 1: the antenna to check, between 1-4 
 /// @return 0 on successful communication, > 0 on communications error
-uint8_t TCMDEXEC_ant_report_antenna_deployment_activation_time(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_ant_report_antenna_deployment_activation_time(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     char i2c_bus_str [2];
     if(TCMD_extract_string_arg(args_str, 0, i2c_bus_str, 2) != 0 ) {
@@ -574,7 +574,7 @@ uint8_t TCMDEXEC_ant_report_antenna_deployment_activation_time(const char *args_
 /// @param args_str
 /// - Arg 0: specifies which mcu on the antenna deployment system to transmit to, and which i2c bus to use. Pass either "A" or "B"
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_ant_measure_temp(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_ant_measure_temp(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     char i2c_bus_str [2];
     if(TCMD_extract_string_arg(args_str, 0, i2c_bus_str, 2) != 0 ) {
