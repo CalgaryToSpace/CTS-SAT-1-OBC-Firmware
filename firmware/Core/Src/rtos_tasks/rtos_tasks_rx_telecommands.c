@@ -129,7 +129,7 @@ static TCMD_check_result_enum_t check_for_and_handle_new_uart_tcmds() {
     // Parse the telecommand
     TCMD_parsed_tcmd_to_execute_t parsed_tcmd;
     uint8_t parse_result = TCMD_parse_full_telecommand(
-        latest_tcmd, TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd
+        latest_tcmd, &parsed_tcmd
     );
     if (parse_result != 0) {
         LOG_message(
@@ -266,7 +266,7 @@ static TCMD_check_result_enum_t check_for_and_handle_new_ax100_kiss_tcmd(
     // Parse the telecommand
     TCMD_parsed_tcmd_to_execute_t parsed_tcmd;
     uint8_t parse_result = TCMD_parse_full_telecommand(
-        latest_tcmd, TCMD_TelecommandChannel_DEBUG_UART, &parsed_tcmd
+        latest_tcmd, &parsed_tcmd
     );
     if (parse_result != 0) {
         LOG_message(
