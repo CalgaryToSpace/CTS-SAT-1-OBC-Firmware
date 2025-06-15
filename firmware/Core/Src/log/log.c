@@ -71,7 +71,7 @@ static const uint8_t LOG_SEVERITY_MASK_DEFAULT = LOG_SEVERITY_MASK_ALL;
 // array of sinks.
 static LOG_sink_t LOG_sinks[] = {
     {LOG_SINK_UHF_RADIO, "UHF radio", LOG_SINK_ON, LOG_SEVERITY_MASK_DEFAULT},
-    {LOG_SINK_FILE, "log files", LOG_SINK_OFF, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SINK_FILE, "log files", LOG_SINK_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SINK_UMBILICAL_UART, "umbilical UART", LOG_SINK_ON, LOG_SEVERITY_MASK_DEFAULT},
 };
 static const uint16_t LOG_NUMBER_OF_SINKS = sizeof(LOG_sinks) / sizeof(LOG_sink_t);
@@ -87,7 +87,7 @@ static LOG_system_t LOG_systems[] = {
     {LOG_SYSTEM_EPS, "EPS", "/logs/eps_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_BOOM, "BOOM", "/logs/boom_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_ADCS, "ADCS", "/logs/adcs_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
-    {LOG_SYSTEM_LFS, "LFS", "/logs/lfs_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SYSTEM_LFS, "LFS", "/logs/lfs_system.log", LOG_SYSTEM_OFF, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_FLASH, "FLASH", "/logs/flash_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_ANTENNA_DEPLOY, "ANTENNA_DEPLOY", "/logs/antenna_deploy_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_LOG, "LOG", "/logs/log_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
