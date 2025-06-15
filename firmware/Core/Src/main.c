@@ -329,8 +329,11 @@ int main(void)
   UART_init_uart_handlers();
   
   FLASH_deactivate_chip_select();
+  
+
 
   LFS_ensure_mounted();
+  lfs_mkdir(&LFS_filesystem, "logs"); // ./logs directory must exist for logging to work.
   
   EPS_set_obc_time_based_on_eps_time(); // Sync approx time for ADCS.
 
