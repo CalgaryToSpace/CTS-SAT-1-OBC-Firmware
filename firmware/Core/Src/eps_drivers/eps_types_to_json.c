@@ -114,6 +114,7 @@ uint8_t EPS_conditioning_channel_datatype_eng_TO_json(const EPS_conditioning_cha
     return 0; // Success
 }
 
+
 uint8_t EPS_conditioning_channel_short_datatype_eng_TO_json(const EPS_conditioning_channel_short_datatype_eng_t *data, char json_output_str[], uint16_t json_output_str_size) {
     if (data == NULL || json_output_str == NULL || json_output_str_size < 10) {
         return 1; // Error: Invalid input
@@ -208,18 +209,19 @@ uint8_t EPS_struct_pdu_overcurrent_fault_state_TO_json(const EPS_struct_pdu_over
 
 uint8_t EPS_struct_pdu_overcurrent_fault_comparison_TO_json(
     const EPS_struct_pdu_overcurrent_fault_comparison_t *data,
+    EPS_CHANNEL_enum_t selected_channel,
     char json_output_str[], uint16_t json_output_str_size)
 {
     if (data == NULL || json_output_str == NULL || json_output_str_size < 32) {
         return 1; // Error: Invalid input
     }
 
-    // Prepare a string buffer for the per-channel differences
+    // Prepare a string buffer for the per channel differences
     char differences_str[512] = {0};
     size_t offset = 0;
 
     offset += snprintf(differences_str + offset, sizeof(differences_str) - offset, "[");
-    for (int i = 0; i < 32; i++) {
+    for (size_t i = 0; i < 32; i++) {
         offset += snprintf(differences_str + offset, sizeof(differences_str) - offset,
                            "%u%s", data->difference_each_channel[i], (i < 31) ? "," : "");
     }
@@ -229,24 +231,39 @@ uint8_t EPS_struct_pdu_overcurrent_fault_comparison_TO_json(
         return 2; // Error: overflow encoding per-channel differences
     }
 
+    // Get selected channel's difference
+    if (selected_channel >= 32) {
+        return 3; // Error: invalid selected channel
+    }
+    uint16_t selected_difference = data->difference_each_channel[selected_channel];
+
+    // Get selected channel's name string
+    const char *selected_channel_name = EPS_channel_to_str(selected_channel);
+
     // Now create the final JSON output string
     const int snprintf_ret = snprintf(
         json_output_str, json_output_str_size,
-        "{\"total_difference\":%u,\"channels_with_new_faults\":%u,\"difference_each_channel\":%s}",
+        "{\"total_difference\":%u,"
+        "\"channels_with_new_faults\":%u,"
+        "\"difference_each_channel\":%s,"
+        "\"selected_channel\":{\"name\":\"%s\",\"difference\":%u}}",
         data->total_difference,
         data->channels_with_new_faults,
-        differences_str
+        differences_str,
+        selected_channel_name,
+        selected_difference
     );
 
     if (snprintf_ret < 0) {
-        return 3; // Error: snprintf failure
+        return 4; // Error: snprintf failure
     }
     if (snprintf_ret >= json_output_str_size) {
-        return 4; // Error: output string too short
+        return 5; // Error: output string too short
     }
 
     return 0; // Success
 }
+
 
 uint8_t EPS_struct_pbu_abf_placed_state_TO_json(const EPS_struct_pbu_abf_placed_state_t *data, char json_output_str[], uint16_t json_output_str_size) {
     if (data == NULL || json_output_str == NULL || json_output_str_size < 10) {
@@ -270,7 +287,6 @@ uint8_t EPS_struct_pbu_abf_placed_state_TO_json(const EPS_struct_pbu_abf_placed_
     }
     return 0; // Success
 }
-
 
 
 uint8_t EPS_struct_pdu_housekeeping_data_eng_TO_json(const EPS_struct_pdu_housekeeping_data_eng_t *data, char json_output_str[], uint16_t json_output_str_size) {
@@ -364,7 +380,6 @@ uint8_t EPS_struct_pdu_housekeeping_data_eng_TO_json(const EPS_struct_pdu_housek
     }
     return 0;
 }
-
 
 
 uint8_t EPS_struct_single_channel_data_eng_TO_json(const EPS_struct_pdu_housekeeping_data_eng_t *data, const uint8_t eps_channel, char json_output_str[], uint16_t json_output_str_size) {
@@ -501,7 +516,6 @@ uint8_t EPS_struct_pcu_housekeeping_data_eng_TO_json(const EPS_struct_pcu_housek
 
     return 0; // Success
 }
-
 
 
 uint8_t EPS_struct_piu_housekeeping_data_eng_TO_json(

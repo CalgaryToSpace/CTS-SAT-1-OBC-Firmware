@@ -374,9 +374,9 @@ uint8_t TCMDEXEC_eps_pdu_overcurrent_fault_channel_stats(
         return 7;
     }
 
-    // Convert comparison result to JSON
+    // Convert comparison result to JSON including selected channel info
     const uint8_t result_json = EPS_struct_pdu_overcurrent_fault_comparison_TO_json(
-        &comparison, response_output_buf, response_output_buf_len);
+        &comparison, eps_channel, response_output_buf, response_output_buf_len);
 
     if (result_json != 0) {
         snprintf(response_output_buf, response_output_buf_len,

@@ -25,7 +25,7 @@ uint8_t EPS_struct_system_status_TO_json(
 );
 
 uint8_t EPS_struct_pdu_overcurrent_fault_state_TO_json(const EPS_struct_pdu_overcurrent_fault_state_t *data, char json_output_str[], uint16_t json_output_str_size);
-uint8_t EPS_struct_pdu_overcurrent_fault_comparison_TO_json(const EPS_struct_pdu_overcurrent_fault_comparison_t *data, char json_output_str[], uint16_t json_output_str_size);
+uint8_t EPS_struct_pdu_overcurrent_fault_comparison_TO_json(const EPS_struct_pdu_overcurrent_fault_comparison_t *data, EPS_CHANNEL_enum_t selected_channel, char json_output_str[], uint16_t json_output_str_size);
 uint8_t EPS_struct_pbu_abf_placed_state_TO_json(const EPS_struct_pbu_abf_placed_state_t *data, char json_output_str[], uint16_t json_output_str_size);
 
 uint8_t EPS_struct_pdu_housekeeping_data_eng_TO_json(const EPS_struct_pdu_housekeeping_data_eng_t *data, char json_output_str[], uint16_t json_output_str_size);
