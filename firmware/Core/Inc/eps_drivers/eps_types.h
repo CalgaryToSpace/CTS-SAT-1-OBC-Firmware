@@ -112,6 +112,12 @@ typedef struct {
     uint16_t difference_each_channel[32];
     uint16_t total_difference;
     uint8_t channels_with_new_faults;
+    uint32_t channels_with_new_faults_bitfield;
+    char powered_channels_before_json[256]; 
+    char powered_channels_after_json[256];
+    char power_channel_status[8];
+    uint16_t total_fault_count_before;
+    uint16_t total_fault_count_after;
 } EPS_struct_pdu_overcurrent_fault_comparison_t;
 
 // Command Response: 0x44: Get PBU ABF Placed State

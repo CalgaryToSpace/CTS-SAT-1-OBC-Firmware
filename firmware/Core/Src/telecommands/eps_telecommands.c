@@ -287,20 +287,17 @@ uint8_t TCMDEXEC_eps_get_pdu_overcurrent_fault_state_json(
     return 0;
 }
 
-
-/// @brief Get the EPS PDU (Power Distribution Unit) overcurrent fault status before/after, calculate and display comparison as JSON.
+/// @brief Set a channel enabled and checks for overcurrent faults and displays as JSON.
 /// @param args_str 
 /// - Arg 0: The channel name or number (case-insensitive string).
 /// @return 0 on success, >0 on failure.
 /// @note Channel name argument: A lowercase c-string of the channel name (e.g., "mpi"), or a number
-/// representing the channel number (e.g., "1" or "16").
-/// Valid string values: "vbatt_stack", "stack_5v", "stack_3v3", "camera", "uhf_antenna_deploy",
+/// representing the channel number (e.g., "1" or "16"). Valid string values: "vbatt_stack", "stack_5v", "stack_3v3", "camera", "uhf_antenna_deploy",
 /// "gnss", "mpi_5v", "mpi_12v", "boom".
-uint8_t TCMDEXEC_eps_pdu_overcurrent_fault_channel_stats(
+uint8_t TCMDEXEC_eps_power_on_channel_and_validate(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
-
     // Extract Arg 0: The channel name/number.
     char channel_str[30];
     const uint8_t arg_0_result = TCMD_extract_string_arg(args_str, 0, channel_str, sizeof(channel_str));
@@ -329,7 +326,6 @@ uint8_t TCMDEXEC_eps_pdu_overcurrent_fault_channel_stats(
 
     // Get before state
     const uint8_t result_before = EPS_CMD_get_pdu_overcurrent_fault_state(&status_before);
-
     if (result_before != 0) {
         snprintf(response_output_buf, response_output_buf_len,
             "EPS_CMD_get_pdu_overcurrent_fault_state (before) failed (err %d)", result_before);
@@ -345,43 +341,33 @@ uint8_t TCMDEXEC_eps_pdu_overcurrent_fault_channel_stats(
     }
 
     // Delay between powering on and off a channel
-    HAL_Delay(1000);
-
-    // Power off the channel
-    const uint8_t off_result = EPS_set_channel_enabled(eps_channel_num, 0);
-    if (off_result != 0) {
-        snprintf(response_output_buf, response_output_buf_len,
-                 "Failed to turn OFF channel %s (err %d)", channel_str, off_result);
-        return 5;
-    }
+    HAL_Delay(1000); 
 
     // Get the updated state
     const uint8_t result_after = EPS_CMD_get_pdu_overcurrent_fault_state(&status_after);
-
     if (result_after != 0) {
         snprintf(response_output_buf, response_output_buf_len,
             "EPS_CMD_get_pdu_overcurrent_fault_state (after) failed (err %d)", result_after);
-        return 6;
+        return 5;
     }
 
     // Calculate difference
     const uint8_t result_calc = EPS_calculate_overcurrent_difference(
         &status_before, &status_after, &comparison);
-
     if (result_calc != 0 && result_calc != 2) {
         snprintf(response_output_buf, response_output_buf_len,
             "EPS_calculate_overcurrent_difference failed (err %d)", result_calc);
-        return 7;
+        return 6;
     }
 
     // Convert comparison result to JSON including selected channel info
     const uint8_t result_json = EPS_struct_pdu_overcurrent_fault_comparison_TO_json(
-        &comparison, eps_channel, response_output_buf, response_output_buf_len);
+        &comparison, &status_before, &status_after, response_output_buf, response_output_buf_len);
 
     if (result_json != 0) {
         snprintf(response_output_buf, response_output_buf_len,
             "EPS_struct_pdu_overcurrent_fault_comparison_TO_json failed (err %d)", result_json);
-        return 8;
+        return 7;
     }
 
     return 0; // Success

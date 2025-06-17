@@ -1,6 +1,8 @@
 #include "eps_drivers/eps_calculations.h"
+#include "eps_drivers/eps_channel_control.h"
 #include "eps_drivers/eps_types.h"
 #include <stddef.h>
+#include <stdio.h>
 
 /// @brief Calculate the current EPS battery voltage from a PBU telemetry struct.
 /// @param battery Telemetry struct
@@ -36,49 +38,75 @@ int32_t EPS_calculate_total_fault_count(EPS_struct_pdu_overcurrent_fault_state_t
     return fault_count;
 }
 
-/// @brief Calculate the difference in overcurrent fault counts for all channels.
+/// @brief Calculate the difference in overcurrent fault counts for all channels and determine powered channels.
 /// @param before Pointer to the fault state before the event.
 /// @param after Pointer to the fault state after the event.
-/// @param result Pointer to the struct where the difference result will be stored.
+/// @param comparison Pointer to the struct where the difference result will be stored.
 /// @return 0 on success, 1 on invalid input, 2 if no difference.
 uint8_t EPS_calculate_overcurrent_difference(
     const EPS_struct_pdu_overcurrent_fault_state_t *before,
     const EPS_struct_pdu_overcurrent_fault_state_t *after,
-    EPS_struct_pdu_overcurrent_fault_comparison_t *result)
+    EPS_struct_pdu_overcurrent_fault_comparison_t *comparison)
 {
-    if (before == NULL || after == NULL || result == NULL) {
+    if (!before || !after || !comparison) {
         return 1;  // Invalid input
     }
 
-    result->before_power_on = *before;
-    result->after_power_on  = *after;
+    // Initialize comparison struct
+    comparison->total_difference = 0;
+    comparison->channels_with_new_faults = 0;
+    comparison->channels_with_new_faults_bitfield = 0;
 
-    result->total_difference = 0;
-    result->channels_with_new_faults = 0;
+    // Initialize powered channel JSON strings
+    comparison->powered_channels_before_json[0] = '\0';
+    comparison->powered_channels_after_json[0] = '\0';
 
+    // Get powered channels before and after
+    char powered_before_json[256] = {0};
+    char powered_after_json[256] = {0};
+
+    EPS_get_enabled_channels_json(before->stat_ch_on_bitfield, before->stat_ch_ext_on_bitfield, powered_before_json, sizeof(powered_before_json));
+    EPS_get_enabled_channels_json(after->stat_ch_on_bitfield, after->stat_ch_ext_on_bitfield, powered_after_json, sizeof(powered_after_json));
+
+    // Store the powered channels in the comparison struct
+    snprintf(comparison->powered_channels_before_json, sizeof(comparison->powered_channels_before_json), "%s", powered_before_json);
+    snprintf(comparison->powered_channels_after_json, sizeof(comparison->powered_channels_after_json), "%s", powered_after_json);
+
+    // Initialize total fault counts
+    uint16_t total_fault_count_before = 0;
+    uint16_t total_fault_count_after = 0;
+
+    // Calculate differences for each channel
     for (int i = 0; i < 32; i++) {
         uint16_t before_count = before->overcurrent_fault_count_each_channel[i];
-        uint16_t after_count  = after->overcurrent_fault_count_each_channel[i];
+        uint16_t after_count = after->overcurrent_fault_count_each_channel[i];
 
-        // Avoid underflow: if after < before, set difference to 0
-        uint16_t difference;
-        if (after_count >= before_count) {
-            difference = after_count - before_count;
-        } else {
-            difference = 0;
-        }
+        uint16_t difference = (after_count >= before_count) ? (after_count - before_count) : 0;
 
-        result->difference_each_channel[i] = difference;
-        result->total_difference += difference;
+        comparison->difference_each_channel[i] = difference;
+        comparison->total_difference += difference;
 
         if (difference > 0) {
-            result->channels_with_new_faults++;
+            comparison->channels_with_new_faults++;
+            comparison->channels_with_new_faults_bitfield |= (1 << i);
         }
+
+        // Update the total fault counts
+        total_fault_count_before += before_count;
+        total_fault_count_after += after_count;
     }
 
-    if (result->total_difference == 0) {
-        return 2;  // No difference
+    // Store the total fault counts in the comparison struct
+    comparison->total_fault_count_before = total_fault_count_before;
+    comparison->total_fault_count_after = total_fault_count_after;
+
+    // Determine power channel status
+    if (comparison->channels_with_new_faults > 0) {
+        snprintf(comparison->power_channel_status, sizeof(comparison->power_channel_status), "FAILED");
+    } else {
+        snprintf(comparison->power_channel_status, sizeof(comparison->power_channel_status), "OK");
     }
 
-    return 0;  // Success
+    // Return 0 for success
+    return 0;
 }

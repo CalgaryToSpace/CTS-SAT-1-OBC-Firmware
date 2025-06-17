@@ -46,7 +46,7 @@ uint8_t TCMDEXEC_eps_get_pdu_overcurrent_fault_state_json(
     char *response_output_buf, uint16_t response_output_buf_len
 );
 
-uint8_t TCMDEXEC_eps_pdu_overcurrent_fault_channel_stats(
+uint8_t TCMDEXEC_eps_power_on_channel_and_validate(
     const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
     char *response_output_buf, uint16_t response_output_buf_len
 );

@@ -208,60 +208,64 @@ uint8_t EPS_struct_pdu_overcurrent_fault_state_TO_json(const EPS_struct_pdu_over
 
 
 uint8_t EPS_struct_pdu_overcurrent_fault_comparison_TO_json(
-    const EPS_struct_pdu_overcurrent_fault_comparison_t *data,
-    EPS_CHANNEL_enum_t selected_channel,
-    char json_output_str[], uint16_t json_output_str_size)
-{
-    if (data == NULL || json_output_str == NULL || json_output_str_size < 32) {
-        return 1; // Error: Invalid input
+    const EPS_struct_pdu_overcurrent_fault_comparison_t *comparison, 
+    const EPS_struct_pdu_overcurrent_fault_state_t *status_before, 
+    const EPS_struct_pdu_overcurrent_fault_state_t *status_after, 
+    char json_output_str[], 
+    uint16_t json_output_str_size
+) {
+    if (!comparison || !json_output_str || json_output_str_size < 128) {
+        return 1;  // Invalid input
     }
 
-    // Prepare a string buffer for the per channel differences
-    char differences_str[512] = {0};
-    size_t offset = 0;
+    // Buffers for holding intermediate JSON components
+    char new_faults_json[512] = {0};  
 
-    offset += snprintf(differences_str + offset, sizeof(differences_str) - offset, "[");
-    for (size_t i = 0; i < 32; i++) {
-        offset += snprintf(differences_str + offset, sizeof(differences_str) - offset,
-                           "%u%s", data->difference_each_channel[i], (i < 31) ? "," : "");
+    // Directly integrate the logic for getting new faults
+    int fault_count = 0; 
+    const int max_faults = 32; 
+    char new_faults_buffer[128]; 
+    new_faults_json[0] = '\0'; 
+
+    // Loop through the faults (up to 32 channels)
+    for (int i = 0; i < max_faults; i++) {
+        if (comparison->channels_with_new_faults_bitfield & (1 << i)) { // Check if the fault is active for this channel
+            snprintf(new_faults_buffer, sizeof(new_faults_buffer), "\"channel_%d\"", i + 1); // TODO: correct for actual channel name
+            if (fault_count > 0) {
+                strncat(new_faults_json, ",", json_output_str_size - strlen(new_faults_json) - 1); // Add comma if not the first item
+            }
+            strncat(new_faults_json, new_faults_buffer, json_output_str_size - strlen(new_faults_json) - 1);
+            fault_count++;
+        }
     }
-    offset += snprintf(differences_str + offset, sizeof(differences_str) - offset, "]");
 
-    if (offset >= sizeof(differences_str)) {
-        return 2; // Error: overflow encoding per-channel differences
-    }
-
-    // Get selected channel's difference
-    if (selected_channel >= 32) {
-        return 3; // Error: invalid selected channel
-    }
-    uint16_t selected_difference = data->difference_each_channel[selected_channel];
-
-    // Get selected channel's name string
-    const char *selected_channel_name = EPS_channel_to_str(selected_channel);
-
-    // Now create the final JSON output string
-    const int snprintf_ret = snprintf(
-        json_output_str, json_output_str_size,
-        "{\"total_difference\":%u,"
-        "\"channels_with_new_faults\":%u,"
-        "\"difference_each_channel\":%s,"
-        "\"selected_channel\":{\"name\":\"%s\",\"difference\":%u}}",
-        data->total_difference,
-        data->channels_with_new_faults,
-        differences_str,
-        selected_channel_name,
-        selected_difference
+    // Format the JSON output string using the comparison data
+    int snprintf_ret = snprintf(json_output_str, json_output_str_size,
+        "{"
+        "\"power_channel_status\":\"%s\","
+        "\"powered_channels_before\":%s,"
+        "\"powered_channels_after\":%s,"
+        "\"channels_with_new_overcurrent_faults\":[%s],"
+        "\"total_fault_count_before\":%u,"
+        "\"total_fault_count_after\":%u"
+        "}",
+        comparison->power_channel_status, 
+        comparison->powered_channels_before_json, 
+        comparison->powered_channels_after_json,
+        new_faults_json,
+        comparison->total_fault_count_before, 
+        comparison->total_fault_count_after
     );
 
+    // Check for errors in snprintf
     if (snprintf_ret < 0) {
-        return 4; // Error: snprintf failure
+        return 2;  // Error: snprintf encoding error
     }
     if (snprintf_ret >= json_output_str_size) {
-        return 5; // Error: output string too short
+        return 3;  // Error: json_output_str too short
     }
 
-    return 0; // Success
+    return 0;  // Success
 }
 
 
