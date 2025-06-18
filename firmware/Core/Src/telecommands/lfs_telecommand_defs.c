@@ -13,6 +13,7 @@
 #include "telecommand_exec/telecommand_definitions.h"
 #include "telecommand_exec/telecommand_args_helpers.h"
 #include "transforms/arrays.h"
+#include "stm32/stm32_internal_flash_drivers.h"
 
 uint8_t TCMDEXEC_fs_format_storage(
     const char *args_str,
@@ -633,4 +634,130 @@ uint8_t TCMDEXEC_fs_benchmark_write_read(const char *args_str,
         return 2;
     }
     return 0;
+}
+
+
+/// @brief Telecommand: Write a file to internal flash memory from LittleFS.
+/// @param args_str
+/// - Arg 0: File name to read from LittleFS
+/// - Arg 1: Length to read from the file (in bytes, number)
+/// - Arg 2: Offset within the file to start reading (in bytes, hex value)
+/// - Arg 3: Address in internal flash memory to write to (in hex, 8 characters for 32-bit address)
+/// @note The maximum length to read is 1024 bytes (1kB).
+uint8_t TCMDEXEC_fs_write_file_to_internal_flash(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
+{
+    char arg_file_name[LFS_MAX_PATH_LENGTH];
+    const uint8_t parse_file_name_result = TCMD_extract_string_arg(args_str, 0, arg_file_name, sizeof(arg_file_name));
+    if (parse_file_name_result != 0) {
+        // error parsing
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing file name arg: Error %d", parse_file_name_result);
+        return 1;
+    }
+    
+    // Get length to data to read
+    uint64_t read_length = 0;
+    const uint8_t parse_length_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &read_length);
+    if (parse_length_result != 0) {
+        // error parsing
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing write length arg: Error %d", parse_length_result);
+        return 2;
+    }
+ 
+    // Ensure the write length is not too large
+    if (read_length > 1024) { // 1kB max
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error: Write length too large. Max is 64kB.");
+        return 4;
+    }
+    // Get offset (in hex)
+    uint8_t write_offset_arr[4] = {0}; // 4 bytes for 32-bit address
+    uint16_t offset_arr_result_len = 0;
+    const uint8_t parse_offset_result = TCMD_extract_hex_array_arg(
+        args_str, 2, write_offset_arr, sizeof(write_offset_arr), &offset_arr_result_len
+    );
+    if (parse_offset_result != 0) {
+        // error parsing
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing write offset arg: Error %d", parse_offset_result);
+        return 3;
+    }
+
+    const uint32_t offset = write_offset_arr[0] << 24 |
+                            write_offset_arr[1] << 16 |
+                            write_offset_arr[2] << 8 |
+                            write_offset_arr[3]; // Convert to 32-bit address
+
+    // Get address to write to (in hex)
+    uint8_t write_address_arr[4] = {0}; // 4 bytes for 32-bit address
+    uint16_t address_arr_result_len = 0;
+    const uint8_t parse_address_result = TCMD_extract_hex_array_arg(
+        args_str, 3, write_address_arr, sizeof(write_address_arr), &address_arr_result_len
+    );
+    if (parse_address_result != 0) {
+        // error parsing
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing write address arg: Error %d", parse_address_result);
+        return 4;
+    }
+    const uint32_t write_address = write_address_arr[0] << 24 |
+                                   write_address_arr[1] << 16 |
+                                   write_address_arr[2] << 8 |
+                                   write_address_arr[3]; // Convert to 32-bit address
+        
+        LOG_message(LOG_SYSTEM_ALL, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+                    "TCMDEXEC_fs_write_file_to_internal_flash: Writing %lu bytes from file '%s' to internal flash at address 0x%08lX, offset %lu",
+        (unsigned long)read_length, arg_file_name, (unsigned long)write_address, (unsigned long)offset);
+    
+    // Read the file from LittleFS
+    uint8_t read_buf[read_length];
+    const int32_t read_result = LFS_read_file(arg_file_name, offset, read_buf, read_length);
+    if (read_result < 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Error reading file: %ld", read_result);
+        return 5;
+    }
+    // Write the data to internal flash
+    STM32_Internal_Flash_Write_Status_t write_status = {0};
+    const uint8_t write_result = STM32_internal_flash_write(write_address, read_buf, read_length, &write_status);
+    LOG_message(LOG_SYSTEM_ALL, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+                "Write status: Write Status=%d, Lock Status=%d",
+        write_status.write_status, write_status.lock_status);
+    // Handle specific error codes
+    switch (write_result)
+    {
+        case 0:
+            snprintf(response_output_buf, response_output_buf_len, "Successfully wrote %lu bytes from file '%s' to internal flash at address 0x%08lX", (uint32_t)read_length, arg_file_name, (uint32_t)write_address);
+            return 0;
+        case 1:
+            snprintf(response_output_buf, response_output_buf_len, "Error: Address too low for internal flash write.");
+            break;
+        case 2:
+            snprintf(response_output_buf, response_output_buf_len, "Error: Write exceeds internal flash memory bounds.");
+            break;
+        case 3:
+            snprintf(response_output_buf, response_output_buf_len, "Error: Failed to unlock internal flash for writing.");
+            break;
+        case 4:
+            snprintf(response_output_buf, response_output_buf_len, "Error: Failed to lock internal flash after writing.");
+            break;
+        case 5:
+            snprintf(response_output_buf, response_output_buf_len, "Error: Internal flash write operation failed.");
+            break;
+        default:
+            snprintf(response_output_buf, response_output_buf_len, "Error: Unknown error during internal flash write.");
+            break;
+    }
+    return write_result <= 5 ? write_result : 6; // Return the error code if it's within the known range, otherwise return 6 for unknown error.
+
 }

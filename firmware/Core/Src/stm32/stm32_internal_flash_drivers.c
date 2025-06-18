@@ -43,24 +43,35 @@ uint8_t STM32_internal_flash_write(uint32_t address, uint8_t *data, uint32_t len
     // Clear all FLASH flags before starting the operation
     __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
 
-    for (uint32_t current_address = address; current_address < end_address; current_address += 8)
+    uint32_t offset = 0;
+
+    while (offset < length)
     {
-        uint8_t data_to_write[8] = {0};
+        uint8_t double_word_buf[8];
+        
+        uint32_t bytes_to_copy = (length - offset >= 8) ? 8 : (length - offset);
 
-        // TODO: what to do if data is not 8 bytes long
-        // Currently, it will set the rest of the values to 0
+        memcpy(double_word_buf, data + offset, bytes_to_copy);
+        if (bytes_to_copy < 8)
+        {
+            // Pad the rest with 0xFF (safe default for flash)
+            memset(double_word_buf + bytes_to_copy, 0xFF, 8 - bytes_to_copy);
+        }
 
-        // current_address - address is the number of bytes we have written
-        // since the beginning of the function
-        memcpy(data_to_write, data + (current_address - address), 8);
+        uint64_t double_word = *(uint64_t *)double_word_buf;
 
-        const uint64_t double_word = *(uint64_t *)(data_to_write);
+        status->write_status = HAL_FLASH_Program(
+            FLASH_TYPEPROGRAM_DOUBLEWORD,
+            address + offset,
+            double_word
+        );
 
-        status->write_status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, current_address, double_word);
         if (status->write_status != HAL_OK)
         {
             break;
         }
+
+        offset += 8;
     }
 
     status->lock_status = HAL_FLASH_Lock();

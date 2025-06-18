@@ -49,9 +49,10 @@ uint8_t TCMDEXEC_stm32_internal_flash_write(const char *args_str, char *response
 //// @return 0 on success, > 0 on error
 uint8_t TCMDEXEC_stm32_internal_flash_read(const char *args_str, char *response_output_buf, uint16_t response_output_buf_len)
 {
+    uint8_t address_buf[4] = {0};
+    uint16_t address_len = 0;
+    const uint8_t parse_address_res = TCMD_extract_hex_array_arg(args_str, 0, address_buf, sizeof(address_buf), &address_len);
 
-    uint64_t address = 0;
-    const uint8_t parse_address_res = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &address);
     if (parse_address_res != 0)
     {
         snprintf(response_output_buf, response_output_buf_len, "Error Parsing Arg 0: %u", parse_address_res);
@@ -63,19 +64,24 @@ uint8_t TCMDEXEC_stm32_internal_flash_read(const char *args_str, char *response_
     if (parse_res != 0)
     {
         snprintf(response_output_buf, response_output_buf_len, "Error Parsing Arg 1: %u", parse_res);
-        return 1;
+        return 2;
     }
 
     uint8_t read_buffer[number_of_bytes_to_read];
+    const uint32_t address = (address_buf[0] << 24) |
+                             (address_buf[1] << 16) |
+                             (address_buf[2] << 8) |
+                             address_buf[3]; // Convert to 32-bit address
     const uint8_t res = STM32_internal_flash_read(address, read_buffer, sizeof(read_buffer));
     if (res != 0)
     {
         snprintf(response_output_buf, response_output_buf_len, "Error: %u", res);
-        return 1;
+        return 3;
     }
-    for (uint64_t i = 0; i < number_of_bytes_to_read; i++)
+    char *p = response_output_buf;
+    for (uint64_t i = 0; i < number_of_bytes_to_read && (p - response_output_buf + 2 < response_output_buf_len); i++)
     {
-        snprintf(response_output_buf + (i * 2), response_output_buf_len - (i * 2), "%02X", read_buffer[i]);
+        p += snprintf(p, response_output_buf_len - (p - response_output_buf), "%02X", read_buffer[i]);
     }
 
     return 0;
