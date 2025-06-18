@@ -44,7 +44,6 @@ typedef struct {
     uint64_t timestamp_to_execute;
     /// @brief Name of file that response should be written to, empty string otherwise
     char resp_fname[TCMD_MAX_RESP_FNAME_LEN];
-    /// @brief The channel on which the telecommand was received, and on which the response should be sent.
 } TCMD_parsed_tcmd_to_execute_t;
 
 #endif // INCLUDE_GUARD__TELECOMMAND_TYPES_H
