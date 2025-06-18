@@ -61,16 +61,8 @@ uint8_t EPS_calculate_overcurrent_difference(
     comparison->powered_channels_before_json[0] = '\0';
     comparison->powered_channels_after_json[0] = '\0';
 
-    // Get powered channels before and after
-    char powered_before_json[256] = {0};
-    char powered_after_json[256] = {0};
-
-    EPS_get_enabled_channels_json(before->stat_ch_on_bitfield, before->stat_ch_ext_on_bitfield, powered_before_json, sizeof(powered_before_json));
-    EPS_get_enabled_channels_json(after->stat_ch_on_bitfield, after->stat_ch_ext_on_bitfield, powered_after_json, sizeof(powered_after_json));
-
-    // Store the powered channels in the comparison struct
-    snprintf(comparison->powered_channels_before_json, sizeof(comparison->powered_channels_before_json), "%s", powered_before_json);
-    snprintf(comparison->powered_channels_after_json, sizeof(comparison->powered_channels_after_json), "%s", powered_after_json);
+    EPS_get_enabled_channels_json(before->stat_ch_on_bitfield, before->stat_ch_ext_on_bitfield, comparison->powered_channels_before_json, sizeof(comparison->powered_channels_before_json));
+    EPS_get_enabled_channels_json(after->stat_ch_on_bitfield, after->stat_ch_ext_on_bitfield, comparison->powered_channels_after_json, sizeof(comparison->powered_channels_after_json));
 
     // Initialize total fault counts
     uint16_t total_fault_count_before = 0;

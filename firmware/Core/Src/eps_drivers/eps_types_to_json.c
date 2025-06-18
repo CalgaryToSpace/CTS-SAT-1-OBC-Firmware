@@ -240,7 +240,9 @@ uint8_t EPS_struct_pdu_overcurrent_fault_comparison_TO_json(
     }
 
     // Format the JSON output string using the comparison data
-    int snprintf_ret = snprintf(json_output_str, json_output_str_size,
+    int snprintf_ret = snprintf(
+        json_output_str, 
+        json_output_str_size,
         "{"
         "\"power_channel_status\":\"%s\","
         "\"powered_channels_before\":%s,"
