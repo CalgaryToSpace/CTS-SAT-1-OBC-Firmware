@@ -4,6 +4,7 @@
 #include "transforms/arrays.h"
 #include "mpi/mpi_transceiver.h"
 #include "littlefs/littlefs_helper.h"
+#include "mpi/mpi_firmware_upgrade.h"
 #include "log/log.h"
 #include "uart_handler/uart_handler.h"
 
@@ -206,4 +207,32 @@ uint8_t TCMDEXEC_mpi_demo_set_transceiver_mode(
         snprintf(response_output_buf, response_output_buf_len, "Disabled MPI transceiver.");
     }
     return 0;
+}
+
+/// @brief Sends a firmware upgrade command to the MPI.
+/// @param args_str
+/// - Arg 0: LFS filename to read the firmware from
+/// @note This command powers on the MPI at start, but does NOT power it off at the end.
+uint8_t TCMDEXEC_mpi_send_firmware_upgrade(
+    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    // Parse the LFS filename from the args_str
+    char lfs_filename[250] = {0};
+    const uint8_t parse_result = TCMD_extract_string_arg(args_str, 0, lfs_filename, sizeof(lfs_filename));
+    if (parse_result > 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Invalid LFS filename argument: %s", args_str);
+        return 1; // Error code: Invalid input
+    }
+
+    const uint8_t cmd_response = MPI_firmware_upgrade(lfs_filename);
+    
+    // Check the response and prepare the output message
+    if (cmd_response == 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Firmware upgrade command sent successfully.");
+    } else {
+        snprintf(response_output_buf, response_output_buf_len, "Failed to send firmware upgrade command. Error code: %d", cmd_response);
+    }
+
+    return cmd_response;
 }
