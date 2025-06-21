@@ -11,6 +11,7 @@
 #include "adcs_drivers/adcs_types_to_json.h"
 #include "adcs_drivers/adcs_commands.h"
 #include "adcs_drivers/adcs_internal_drivers.h"
+#include "adcs_drivers/adcs_types_enum_to_str.h"
 #include "timekeeping/timekeeping.h"
 #include "log/log.h"
 #include "stm32/stm32_watchdog.h"
@@ -1550,10 +1551,10 @@ uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) 
         // Now pack it into a JSON string.
         LOG_message(
             LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
-            "{\"index\":%d,\"type\":\"%d\",\"is_busy_updating\":%d,\"counter\":%d,\"size\":%ld,"
+            "{\"index\":%d,\"type\":\"%s\",\"is_busy_updating\":%d,\"counter\":%d,\"size\":%ld,"
             "\"datetime\":\"%04d-%02d-%02d %02d:%02d:%02d\",\"crc16\":\"0x%x\"}",
-            i, file_info.file_type, file_info.busy_updating, file_info.file_counter, file_info.file_size,
-            year, month, day, hour, minutes, seconds, file_info.file_crc16
+            i, ADCS_file_type_enum_to_str(file_info.file_type), file_info.busy_updating, file_info.file_counter, 
+            file_info.file_size, year, month, day, hour, minutes, seconds, file_info.file_crc16
         );
 
         // Now advance the file list read pointer to do it all again.
@@ -1576,7 +1577,7 @@ uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) 
             busy_updating_count
         );
     }
-    
+ 
     return 0;
 }
 
