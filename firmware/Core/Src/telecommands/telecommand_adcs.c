@@ -65,6 +65,55 @@ uint8_t TCMDEXEC_adcs_generic_command(const char *args_str,
     return status;
 }
 
+/// @brief Telecommand: execute a generic command on the ADCS bootloader
+/// @param args_str 
+///     - Arg 0: ID of the telecommand to send (see Firmware Reference Manual)
+///     - Arg 1: hex array of data bytes of length up to 504 (longest command is almost ADCS Configuration (ID 26/204) at 504 bytes)
+/// @note All hex bytes must be two-digit (e.g. 00 instead of 0); for zero-parameter commands, use 00
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_bootloader_generic_command(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    // parse command ID argument: first into uint64_t, then convert to correct form for input
+    uint64_t command_id;
+    uint8_t extract_status = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &command_id);
+    if (extract_status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "Telecommand argument extraction failed (err %d)", extract_status);
+        return 1;
+    }
+
+    if (command_id > 255) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "Invalid ADCS command or telemetry request ID (err 6)");
+        return 6; // invalid ID
+    } else if (command_id > 127) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request ID received, not command ID (err 5)");
+        return 5; // command_id is a telemetry request, not a command
+    }
+    
+    // parse hex array arguments
+    uint8_t hex_data_array[504]; 
+    uint16_t data_length;
+    extract_status = TCMD_extract_hex_array_arg(args_str, 1, &hex_data_array[0], 504, &data_length);
+    if (extract_status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "Telecommand argument extraction failed (err %d)", extract_status);
+        return 1;
+    }
+    
+    uint8_t status = ADCS_i2c_send_command_and_check((uint8_t) command_id, &hex_data_array[0], (uint32_t) data_length, ADCS_NO_CHECKSUM);
+    if (status == ADCS_ERROR_FLAG_WRONG_LENGTH && data_length == 1) {
+        // for zero-parameter commands, do this instead
+        uint8_t data_send[1] = {command_id}; 
+        status = HAL_I2C_Master_Transmit(ADCS_i2c_HANDLE, ADCS_i2c_ADDRESS << 1, data_send, 1, ADCS_HAL_TIMEOUT);
+            // The bootloader doesn't support checksum, and this is a zero-parameter command, so HAL_I2C_Mem_Write can't be used (zero length message).
+    }
+    
+    return status;
+}
+
 /// @brief Telecommand: obtain generic telemetry from the ADCS
 /// @param args_str 
 ///     - Arg 0: ID of the telemetry request to send (see Firmware Reference Manual)

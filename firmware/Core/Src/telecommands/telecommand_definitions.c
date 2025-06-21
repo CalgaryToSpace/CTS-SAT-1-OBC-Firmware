@@ -735,6 +735,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
+        .tcmd_name = "adcs_bootloader_generic_command",
+        .tcmd_func = TCMDEXEC_adcs_bootloader_generic_command,
+        .number_of_args = 2, 
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
         .tcmd_name = "adcs_generic_telemetry_request",
         .tcmd_func = TCMDEXEC_adcs_generic_telemetry_request,
         .number_of_args = 2,
