@@ -71,7 +71,7 @@ uint8_t TCMDEXEC_adcs_generic_command(const char *args_str,
 ///     - Arg 1: hex array of data bytes of length up to 504 (longest command is almost ADCS Configuration (ID 26/204) at 504 bytes)
 /// @note All hex bytes must be two-digit (e.g. 00 instead of 0); for zero-parameter commands, use 00
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_adcs_bootloader_generic_command(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_adcs_generic_bootloader_command(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
                         char *response_output_buf, uint16_t response_output_buf_len) {
     
     // parse command ID argument: first into uint64_t, then convert to correct form for input
@@ -80,7 +80,7 @@ uint8_t TCMDEXEC_adcs_bootloader_generic_command(const char *args_str, TCMD_Tele
     if (extract_status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
             "Telecommand argument extraction failed (err %d)", extract_status);
-        return 1;
+        return 7;
     }
 
     if (command_id > 255) {
@@ -100,7 +100,7 @@ uint8_t TCMDEXEC_adcs_bootloader_generic_command(const char *args_str, TCMD_Tele
     if (extract_status != 0) {
         snprintf(response_output_buf, response_output_buf_len,
             "Telecommand argument extraction failed (err %d)", extract_status);
-        return 1;
+        return 8;
     }
     
     uint8_t status = ADCS_i2c_send_command_and_check((uint8_t) command_id, &hex_data_array[0], (uint32_t) data_length, ADCS_NO_CHECKSUM);
