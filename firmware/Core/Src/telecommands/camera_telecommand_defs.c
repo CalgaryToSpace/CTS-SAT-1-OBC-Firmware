@@ -15,7 +15,7 @@
 /// @param response_output_buf_len Max length of the buffer
 /// @return 0 if successful, >0 if an error occurred
 uint8_t TCMDEXEC_camera_setup(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     const uint8_t setup_status = CAM_setup();
@@ -40,7 +40,7 @@ uint8_t TCMDEXEC_camera_setup(
 /// @param response_output_buf_len Max length of the buffer
 /// @return 0 if successful, >0 if an error occurred
 uint8_t TCMDEXEC_camera_test(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len)
 {
     uint8_t test_return = CAM_test();
@@ -64,7 +64,7 @@ uint8_t TCMDEXEC_camera_test(
 /// - Arg 1: Baudrate to change to (bits per second). 10 options from 1200 to 921600.
 /// @return 0 if successful, >0 if an error occurred
 uint8_t TCMDEXEC_camera_change_baud_rate(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len)
 {
     const uint32_t new_baud_rate = atoi(args_str);
@@ -96,7 +96,7 @@ uint8_t TCMDEXEC_camera_change_baud_rate(
 /// @param response_output_buf Buffer to write the response to
 /// @param response_output_buf_len Max length of the buffer
 /// @return 0 if successful, >0 if an error occurred
-uint8_t TCMDEXEC_camera_capture(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_camera_capture(const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len)
 {
     // Extract arg 0 - filename

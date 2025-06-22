@@ -12,7 +12,7 @@ const uint32_t I2C_scan_timeout_ms = 5;
 /// - Arg 0: I2C bus to scan (1-4)
 /// @return 0 if successful, 1 if error.
 uint8_t TCMDEXEC_scan_i2c_bus_verbose(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     I2C_HandleTypeDef* hi2c;
@@ -101,7 +101,7 @@ uint8_t TCMDEXEC_scan_i2c_bus_verbose(
 /// - Arg 0: I2C bus to scan (1-4)
 /// @return 0 if successful, 1 if error.
 uint8_t TCMDEXEC_scan_i2c_bus(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     I2C_HandleTypeDef* hi2c;

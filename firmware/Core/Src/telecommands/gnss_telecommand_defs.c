@@ -13,12 +13,11 @@
 /// @brief Telecommand: Transmit a log command to the GNSS receiver through UART
 /// @param args_str
 /// - Arg 0: Log command to be sent to GNSS eg "log bestxyza once" (string)
-/// @param tcmd_channel The channel on which the telecommand was received, and on which the response should be sent
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0 on success, > 0 error
 uint8_t TCMDEXEC_gnss_send_cmd_ascii(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     // Adding a new line character to the log command
