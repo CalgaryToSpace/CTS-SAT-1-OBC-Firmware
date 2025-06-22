@@ -71,7 +71,7 @@ uint8_t TCMDEXEC_adcs_generic_command(const char *args_str,
 ///     - Arg 1: hex array of data bytes of length up to 504 (longest command is almost ADCS Configuration (ID 26/204) at 504 bytes)
 /// @note All hex bytes must be two-digit (e.g. 00 instead of 0); for zero-parameter commands, use 00
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_adcs_generic_bootloader_command(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_adcs_generic_bootloader_command(const char *args_str, 
                         char *response_output_buf, uint16_t response_output_buf_len) {
     
     // parse command ID argument: first into uint64_t, then convert to correct form for input
