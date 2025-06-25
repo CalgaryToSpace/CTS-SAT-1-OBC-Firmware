@@ -33,18 +33,6 @@ TCMD_parsed_tcmd_to_execute_t TCMD_agenda[TCMD_AGENDA_SIZE];
 ///         (i.e., filled with a not-yet-executed command).
 uint8_t TCMD_agenda_is_valid[TCMD_AGENDA_SIZE] = {0};
 
-/// @brief Converts a TCMD_TelecommandChannel_enum_t to a string representation.
-/// @param channel Input TCMD_TelecommandChannel_enum_t
-/// @return A pointer to a C-string representing the TCMD_TelecommandChannel_enum_t.
-const char* telecommand_channel_enum_to_str(TCMD_TelecommandChannel_enum_t channel) {
-    switch (channel) {
-        case TCMD_TelecommandChannel_DEBUG_UART     :return "DEBUG_UART";
-        case TCMD_TelecommandChannel_RADIO1         :return "RADIO1";
-        default                                     :return "UNKNOWN_CHANNEL";
-    }
-}
-
-
 
 /// @brief Adds a telecommand to the agenda (schedule/queue) of telecommands to execute.
 /// @param parsed_tcmd The parsed telecommand to add to the agenda.
@@ -84,7 +72,6 @@ uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd
 
         // Copy the parsed telecommand into the agenda.
         TCMD_agenda[slot_num].tcmd_idx = parsed_tcmd->tcmd_idx;
-        TCMD_agenda[slot_num].tcmd_channel = parsed_tcmd->tcmd_channel;
         TCMD_agenda[slot_num].timestamp_sent = parsed_tcmd->timestamp_sent;
         TCMD_agenda[slot_num].timestamp_to_execute = parsed_tcmd->timestamp_to_execute;
 
@@ -293,7 +280,6 @@ static uint8_t TCMD_execute_parsed_telecommand_now(
     const uint16_t tcmd_idx,
     const char args_str_no_parens[],
     const uint64_t timestamp_sent,
-    TCMD_TelecommandChannel_enum_t tcmd_channel,
     const char * tcmd_resp_fname,
     char *response_output_buf, uint16_t response_output_buf_size
 ) {
@@ -319,7 +305,6 @@ static uint8_t TCMD_execute_parsed_telecommand_now(
     const uint32_t uptime_before_tcmd_exec_ms = HAL_GetTick();
     const uint8_t tcmd_result = tcmd_def.tcmd_func(
         args_str_no_parens,
-        tcmd_channel,
         response_output_buf,
         response_output_buf_size);
     const uint32_t uptime_after_tcmd_exec_ms = HAL_GetTick();
@@ -399,16 +384,27 @@ uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
         (resp_fname_len > 0) ? TCMD_agenda[tcmd_agenda_slot_num].resp_fname : "None"
     );
 
+    if (TCMD_agenda[tcmd_agenda_slot_num].timestamp_to_execute > 0) {
+        LOG_current_log_context = LOG_CONTEXT_SCHEDULED_TELECOMMAND;
+    }
+    else {
+        LOG_current_log_context = LOG_CONTEXT_IMMEDIATE_TELECOMMAND;
+    }
+
     // Execute the telecommand.
-    return TCMD_execute_parsed_telecommand_now(
+    const uint8_t exec_result = TCMD_execute_parsed_telecommand_now(
         TCMD_agenda[tcmd_agenda_slot_num].tcmd_idx,
         TCMD_agenda[tcmd_agenda_slot_num].args_str_no_parens,
         TCMD_agenda[tcmd_agenda_slot_num].timestamp_sent,
-        TCMD_agenda[tcmd_agenda_slot_num].tcmd_channel,
         TCMD_agenda[tcmd_agenda_slot_num].resp_fname,
         response_output_buf,
         response_output_buf_size
     );
+
+    // Reset the log context back to the default.
+    LOG_current_log_context = LOG_CONTEXT_AUTONOMOUS;
+
+    return exec_result;
 }
 
 
@@ -503,9 +499,8 @@ uint8_t TCMD_agenda_fetch() {
 
             LOG_message(
                 LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, 
-                "{\"slot_num\":\"%u\",\"telecommand_channel\":\"%s\",\"timestamp_sent\":%s,\"timestamp_to_execute\":%s}\n",
+                "{\"slot_num\":\"%u\",\"timestamp_sent\":%s,\"timestamp_to_execute\":%s}\n",
                 slot_num,
-                telecommand_channel_enum_to_str(TCMD_agenda[slot_num].tcmd_channel),
                 tssent_str,
                 tsexec_str
             );

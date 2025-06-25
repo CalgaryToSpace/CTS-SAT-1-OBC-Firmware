@@ -100,7 +100,7 @@ The system time is stored in "unix timestamp format" (seconds since 1970-01-01).
 
 In the log printouts, each log is shown in the format of the following example:
 ```
-1723331067154+0000018056_T [TELECOMMAND:NORMAL]: Hello, world!
+1723331067154+0000018056_T [T:TELECOMMAND:NORMAL]: Hello, world!
 ```
 
 The timestamp on logs is stored in "sync time + source + offset" format. In the example above, the fields are:
@@ -114,3 +114,24 @@ By adding together the sync time and the offset, the absolute order of the log m
 The timestamp for each log message could be stored as just a single number of ms since 1970-01-01, but the "sync time + source + offset" format is used to allow absolute chronological sorting of the logs, even if the satellite's time moves "backwards" during a time sync.
 
 For more information about the timestamp format, see the [Timestamp Format Rationale docs](/docs/Non-Critical_Notes/Timestamp_Format_Rationale.md).
+
+## Log Context Format
+
+In the log printouts, each log is shown in the format of the following example:
+```
+1723331067154+0000018056_T [T:TELECOMMAND:NORMAL]: Hello, world!
+0000000000000+0000202427_N [A:EPS:ERROR]: EPS->OBC: timeout before first byte received
+
+```
+
+In the first log example, `T:` indicates that the "log context" (the reason the log call was executed) is an immediate telecommand. In the second example, `A:` indicates that the attempted EPS communication was autonomous.
+
+The following "log contexts" exist:
+
+```c
+typedef enum {
+    LOG_CONTEXT_AUTONOMOUS, // Character: 'A' -> For logs that originate in background tasks
+    LOG_CONTEXT_IMMEDIATE_TELECOMMAND, // Character: 'T'
+    LOG_CONTEXT_SCHEDULED_TELECOMMAND // Character: 'S'
+} LOG_context_enum_t;
+```

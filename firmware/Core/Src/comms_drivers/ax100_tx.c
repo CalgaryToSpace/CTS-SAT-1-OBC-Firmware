@@ -66,7 +66,7 @@ static uint8_t send_bytes_to_ax100(uint8_t *packet, uint16_t packet_size) {
         // The Bootup Operation FSM task will set the operation mode to NOMINAL_WITH_RADIO_TX
         // when the antenna is deployed.
         if (AX100_enable_downlink_inhibited_uart_logs) {
-            DEBUG_uart_print_str("AX100 downlink inhibited: CTS1_operation_state != NOMINAL_WITH_RADIO_TX.\n");
+            DEBUG_uart_print_str("AX100 downlink inhibited because antenna not deployed.\n");
         }
         
         // Return success to avoid lots of errors. It's not really an error case, as this is expected during early ops.

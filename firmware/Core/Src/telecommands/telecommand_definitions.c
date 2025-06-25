@@ -88,6 +88,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
+        .tcmd_name = "set_obc_time_based_on_gnss_time",
+        .tcmd_func = TCMDEXEC_set_obc_time_based_on_gnss_time,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
         .tcmd_name = "available_telecommands",
         .tcmd_func = TCMDEXEC_available_telecommands,
         .number_of_args = 0,
@@ -729,6 +735,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
+        .tcmd_name = "adcs_generic_bootloader_command",
+        .tcmd_func = TCMDEXEC_adcs_generic_bootloader_command,
+        .number_of_args = 2, 
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
         .tcmd_name = "adcs_generic_telemetry_request",
         .tcmd_func = TCMDEXEC_adcs_generic_telemetry_request,
         .number_of_args = 2,
@@ -1340,5 +1352,5 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
 const int16_t TCMD_NUM_TELECOMMANDS = sizeof(TCMD_telecommand_definitions) / sizeof(TCMD_TelecommandDefinition_t);
 
 // Each telecommand function must have the following signature:
-// uint8_t <function_name>(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+// uint8_t <function_name>(const char *args_str,
 //                          char *response_output_buf, uint16_t response_output_buf_len)

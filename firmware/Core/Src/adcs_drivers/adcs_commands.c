@@ -11,6 +11,7 @@
 #include "adcs_drivers/adcs_types_to_json.h"
 #include "adcs_drivers/adcs_commands.h"
 #include "adcs_drivers/adcs_internal_drivers.h"
+#include "adcs_drivers/adcs_types_enum_to_str.h"
 #include "timekeeping/timekeeping.h"
 #include "log/log.h"
 #include "stm32/stm32_watchdog.h"
@@ -1177,7 +1178,7 @@ uint8_t ADCS_get_raw_star_tracker_data(ADCS_raw_star_tracker_struct_t *output_st
 }
 
 /// @brief Instruct the ADCS to save an image to the SD card.
-/// @param[in] camera_select (int) Which camera to save the image from; can be Camera 1 (0), Camera 2 (1), or Star (2)
+/// @param[in] camera_select (int) Which camera to save the image from; can be Camera 1 (0) [sun], Camera 2 (1) [nadir, boom-side], or Star (2) [not on CTS-SAT-1]
 /// @param[in] image_size (int) Resolution of the image to save; can be 1024x1024 (0), 512x512 (1), 256x256 (2), 128x128 (3), or 64x64 (4)
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
 uint8_t ADCS_save_image_to_sd(ADCS_camera_select_enum_t camera_select, ADCS_image_size_enum_t image_size) {
@@ -1473,7 +1474,6 @@ int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info,
 /// @param[in] index_offset The index (starting at 0) from which to start reading files.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission, negative if an LFS or snprintf error code occurred. 
 uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) {
-
     const uint32_t function_start_time = HAL_GetTick();
     
     const uint8_t reset_pointer_status = ADCS_reset_file_list_read_pointer();
@@ -1522,9 +1522,10 @@ uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) 
         }
     }
 
+    uint8_t busy_updating_count = 0;
+
     for (uint16_t i = index_offset; i < (num_to_read + index_offset); i++) {
-        
-        // get info about the current file
+        // Get info about the current file.
         const uint8_t file_info_status = ADCS_get_file_info_telemetry(&file_info);
         if (file_info_status != 0) {
             LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE), "Failed to get file information (index %d).", i);
@@ -1532,12 +1533,16 @@ uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) 
         }
 
         if (file_info.file_crc16 == 0 && file_info.file_date_time_msdos == 0 && file_info.file_size == 0) {
-            // if all the file_info parameters are zero, we've reached the end of the file list.
+            // If all the file_info parameters are zero, we've reached the end of the file list.
             LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "End of file list reached.");
             break;
         }
 
-        // convert the MS-DOS time from the file info struct into human-readable time; code from Firmware Reference Manual Section 6.2.2
+        if (file_info.busy_updating) {
+            busy_updating_count++;
+        }
+
+        // Convert the MS-DOS time from the file info struct into human-readable time; code from Firmware Reference Manual Section 6.2.2.
         const uint16_t seconds = (file_info.file_date_time_msdos & 0x1f) << 1; // 5bits – 32
         const uint16_t minutes = (file_info.file_date_time_msdos >> 5) & 0x3f; // 6bits – 64
         const uint16_t hour = (file_info.file_date_time_msdos >> 11) & 0x1f; // 5bits – 32
@@ -1545,14 +1550,16 @@ uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) 
         const uint16_t month = (file_info.file_date_time_msdos >> 21) & 0x0f; // 4bits – 16
         const uint16_t year = (file_info.file_date_time_msdos >> 25) + 1980; // 7bits – 128 (1980 to 21..)
 
-        // now pack it into a string 
-        // TODO: check to see where the log should be sent
-        LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
-            "Index:%d,Type:%d,Busy Updating:%d,Counter:%d,Size:%ld,Datetime:%04d-%02d-%02d %02d:%02d:%02d,CRC16:0x%x",
-            i, file_info.file_type, file_info.busy_updating, file_info.file_counter, file_info.file_size, year, 
-            month, day, hour, minutes, seconds, file_info.file_crc16);
+        // Now pack it into a JSON string.
+        LOG_message(
+            LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
+            "{\"index\":%d,\"type\":\"%s\",\"is_busy_updating\":%d,\"counter\":%d,\"size\":%ld,"
+            "\"datetime\":\"%04d-%02d-%02d %02d:%02d:%02d\",\"crc16\":\"0x%x\"}",
+            i, ADCS_file_type_enum_to_str(file_info.file_type), file_info.busy_updating, file_info.file_counter, 
+            file_info.file_size, year, month, day, hour, minutes, seconds, file_info.file_crc16
+        );
 
-        // now advance the file list read pointer to do it all again
+        // Now advance the file list read pointer to do it all again.
         const uint8_t advance_pointer_status = ADCS_advance_file_list_read_pointer();
         HAL_Delay(100);
         if (advance_pointer_status != 0) {
@@ -1564,7 +1571,15 @@ uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) 
             }
         }
     }
-    
+
+    if (busy_updating_count > 0) {
+        LOG_message(
+            LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
+            "There are %d files currently being updated. Thus, the indexes may shift between now and when you try to copy files from ADCS SD to LittleFS.",
+            busy_updating_count
+        );
+    }
+ 
     return 0;
 }
 

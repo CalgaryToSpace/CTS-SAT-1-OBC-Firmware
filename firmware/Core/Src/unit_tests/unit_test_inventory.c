@@ -17,6 +17,7 @@
 #include "unit_tests/test_eps_struct_packers.h"
 #include "unit_tests/test_eps_calculations.h"
 #include "unit_tests/test_sha256.h"
+#include "unit_tests/test_gnss_time.h"
 
 // extern
 const TEST_Definition_t TEST_definitions[] = {
@@ -82,6 +83,34 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_func_name = "GEN_int64_to_str"
     },
     
+    // ****************** SECTION: test_gnss_time ******************
+    {
+        .test_func = TEST_EXEC__GNSS_timea_valid_case_1,
+        .test_file = "gnss_receiver/gnss_time",
+        .test_func_name = "GNSS_timea_valid_case_1"
+    },
+    {
+        .test_func = TEST_EXEC__GNSS_timea_valid_case_2,
+        .test_file = "gnss_receiver/gnss_time",
+        .test_func_name = "GNSS_timea_valid_case_2"
+    },
+    {
+        .test_func = TEST_EXEC__GNSS_timea_invalid_utc_status,
+        .test_file = "gnss_receiver/gnss_time",
+        .test_func_name = "GNSS_timea_invalid_utc_status"
+    },
+    {
+        .test_func = TEST_EXEC__GNSS_timea_invalid_status_early,
+        .test_file = "gnss_receiver/gnss_time",
+        .test_func_name = "GNSS_timea_invalid_status_early"
+    },
+    {
+        .test_func = TEST_EXEC__GNSS_timea_malformed,
+        .test_file = "gnss_receiver/gnss_time",
+        .test_func_name = "GNSS_timea_malformed"
+    },
+    // ****************** END SECTION: test_gnss_time ******************
+
     // ****************** SECTION: test_adcs ******************
     
     {
