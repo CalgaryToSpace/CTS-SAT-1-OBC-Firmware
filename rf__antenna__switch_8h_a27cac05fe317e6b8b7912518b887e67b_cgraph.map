@@ -1,0 +1,13 @@
+<map id="COMMS_find_optimal_antenna_using_adcs" name="COMMS_find_optimal_antenna_using_adcs">
+<area shape="rect" id="Node000001" title="Determines the optimal antenna to use based on the satellite&#39;s attitude angles." alt="" coords="5,39,153,79"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#af7794dcb002d5cbd53f7507c87b85211" title="Instruct the ADCS to execute the ADCS_Estimated_Attitude_Angles command." alt="" coords="201,39,347,79"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="153,56,185,56,185,62,153,62"/>
+<area shape="rect" id="Node000003" href="$adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="395,5,586,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="347,45,379,40,380,45,347,50"/>
+<area shape="rect" id="Node000006" href="$adcs__struct__packers_8c.html#a5681417518c0eaec21b84e8b9dfbe02f" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="404,71,578,111"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="347,67,389,73,388,79,347,72"/>
+<area shape="rect" id="Node000004" href="$adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="634,5,811,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="587,23,619,23,619,28,587,28"/>
+<area shape="rect" id="Node000005" href="$adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="859,5,1007,46"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="811,23,843,23,843,28,811,28"/>
+</map>

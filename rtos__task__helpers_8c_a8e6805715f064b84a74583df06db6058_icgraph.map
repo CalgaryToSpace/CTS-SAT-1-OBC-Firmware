@@ -1,0 +1,37 @@
+<map id="TASK_HELP_start_of_task" name="TASK_HELP_start_of_task">
+<area shape="rect" id="Node000001" title=" " alt="" coords="373,260,554,286"/>
+<area shape="rect" id="Node000002" href="$rtos__background__upkeep_8c.html#a6e9290aa86044f925c753a48224e083f" title=" " alt="" coords="124,5,304,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="452,246,435,201,408,146,371,91,349,66,323,44,302,33,305,28,327,40,352,62,375,87,413,144,440,199,457,244"/>
+<area shape="rect" id="Node000004" href="$rtos__bootup__operation__fsm__task_8c.html#a6d56b04a815b7769ed167bbd4a1921d6" title="FreeRTOS task &#45; FSM which handles the bootup and operation state/state." alt="" coords="118,55,310,80"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="448,248,428,212,401,170,365,128,324,94,303,83,305,79,326,89,369,125,405,167,433,209,452,245"/>
+<area shape="rect" id="Node000005" href="$rtos__bulk__downlink__task_8c.html#ab5f343c1ea1448758dde372ea37c1e5e" title=" " alt="" coords="141,104,286,130"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="441,249,392,195,360,167,324,143,286,129,288,124,326,138,363,162,396,191,445,246"/>
+<area shape="rect" id="Node000006" href="$rtos__tasks_8c.html#a7cf23bbdce878a0b7c41607751423179" title=" " alt="" coords="113,153,315,179"/>
+<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="431,253,382,222,324,193,291,182,293,177,326,188,385,217,434,249"/>
+<area shape="rect" id="Node000007" href="$rtos__tasks_8c.html#a04172000ecfd61309b0b9a892c0839ea" title=" " alt="" coords="114,203,314,228"/>
+<area shape="poly" id="edge9_Node000001_Node000007" title=" " alt="" coords="389,258,324,243,273,231,274,226,326,238,390,253"/>
+<area shape="rect" id="Node000008" href="$rtos__tasks__rx__telecommands_8c.html#a2e20de6bd195e8f23688ec86a6504b54" title=" " alt="" coords="127,252,300,293"/>
+<area shape="poly" id="edge11_Node000001_Node000008" title=" " alt="" coords="357,276,301,276,301,270,357,270"/>
+<area shape="rect" id="Node000009" href="$rtos__tasks__rx__telecommands_8c.html#a8dcebcb92690e2abce2b7ecb96e411c4" title=" " alt="" coords="103,317,325,343"/>
+<area shape="poly" id="edge13_Node000001_Node000009" title=" " alt="" coords="390,292,326,307,274,319,273,314,324,302,389,287"/>
+<area shape="rect" id="Node000010" href="$rtos__tasks_8c.html#a65b8e3815e64b441f35e0271bfd5b690" title=" " alt="" coords="135,367,292,408"/>
+<area shape="poly" id="edge15_Node000001_Node000010" title=" " alt="" coords="433,297,384,328,326,358,294,370,292,365,324,353,381,323,430,293"/>
+<area shape="rect" id="Node000011" href="$rtos__eps__tasks_8c.html#a32949062e454d45c5ab1f1480f359a12" title="periodically sends a command to the eps to reset the watchdog timer" alt="" coords="116,432,312,458"/>
+<area shape="poly" id="edge17_Node000001_Node000011" title=" " alt="" coords="447,301,398,362,364,395,326,422,299,434,297,429,324,417,361,391,394,359,443,297"/>
+<area shape="rect" id="Node000012" href="$rtos__mpi__tasks_8c.html#a2f86da9d03c9a3a77d8c0e79bf4dbf28" title=" " alt="" coords="144,482,284,522"/>
+<area shape="poly" id="edge19_Node000001_Node000012" title=" " alt="" coords="453,301,434,340,406,386,370,432,326,472,285,492,283,487,324,468,366,429,402,383,429,337,448,299"/>
+<area shape="rect" id="Node000013" href="$rtos__eps__tasks_8c.html#ad27bdbe0e838d3705b754e9af4c449b2" title=" " alt="" coords="153,547,275,572"/>
+<area shape="poly" id="edge21_Node000001_Node000013" title=" " alt="" coords="458,302,443,353,417,416,379,481,355,511,327,536,303,550,276,558,275,552,300,545,323,532,351,507,374,478,412,414,438,351,453,300"/>
+<area shape="rect" id="Node000003" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,260,55,286"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="112,38,105,44,83,69,66,97,54,128,45,159,36,218,34,260,28,259,31,217,40,158,49,126,62,95,79,66,101,40,109,34"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="108,91,104,93,87,112,72,133,52,181,40,226,35,260,30,259,35,225,47,179,68,131,83,109,101,90,104,87"/>
+<area shape="poly" id="edge6_Node000005_Node000003" title=" " alt="" coords="128,130,104,143,78,170,58,203,37,260,32,259,54,200,74,167,101,139,125,126"/>
+<area shape="poly" id="edge8_Node000006_Node000003" title=" " alt="" coords="112,188,104,192,84,208,66,226,41,261,37,258,62,223,80,204,101,188,110,183"/>
+<area shape="poly" id="edge10_Node000007_Node000003" title=" " alt="" coords="131,235,104,243,56,263,54,258,102,238,129,230"/>
+<area shape="poly" id="edge12_Node000008_Node000003" title=" " alt="" coords="112,276,55,276,55,270,112,270"/>
+<area shape="poly" id="edge14_Node000009_Node000003" title=" " alt="" coords="129,316,102,307,54,287,56,283,104,302,131,310"/>
+<area shape="poly" id="edge16_Node000010_Node000003" title=" " alt="" coords="120,368,101,358,81,342,63,323,37,288,41,285,67,319,84,338,104,353,122,363"/>
+<area shape="poly" id="edge18_Node000011_Node000003" title=" " alt="" coords="108,427,101,421,72,389,52,352,38,315,31,287,36,286,44,314,56,349,76,386,104,418,111,422"/>
+<area shape="poly" id="edge20_Node000012_Node000003" title=" " alt="" coords="128,490,101,472,82,450,66,426,45,373,34,323,29,286,35,286,39,322,50,371,71,423,86,447,104,468,131,485"/>
+<area shape="poly" id="edge22_Node000013_Node000003" title=" " alt="" coords="136,556,118,548,101,536,76,507,58,473,45,437,36,400,28,333,28,286,33,286,34,333,41,399,50,435,63,471,81,504,104,532,120,544,139,551"/>
+</map>

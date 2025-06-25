@@ -1,0 +1,9 @@
+<map id="ADCS_pack_to_rated_sensor_rates_struct" name="ADCS_pack_to_rated_sensor_rates_struct">
+<area shape="rect" id="Node000001" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="438,41,584,82"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#ae08b8aabfcc3cee79ef9a15dd5b1bb1b" title="Instruct the ADCS to execute the ADCS_Rate_Sensor_Rates command." alt="" coords="221,5,378,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="422,49,379,42,380,36,423,44"/>
+<area shape="rect" id="Node000004" href="$test__adcs_8c.html#ae20b7532ea8566aeada0204d6be075dd" title=" " alt="" coords="210,70,390,126"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="423,79,391,85,390,80,422,74"/>
+<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#aed513d97c1559578670281918cd6adc7" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,162,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="206,28,162,28,162,23,206,23"/>
+</map>

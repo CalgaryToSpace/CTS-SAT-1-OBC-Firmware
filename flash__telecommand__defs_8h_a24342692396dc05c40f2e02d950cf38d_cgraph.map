@@ -1,0 +1,14 @@
+<map id="TCMDEXEC_flash_reset" name="TCMDEXEC_flash_reset">
+<area shape="rect" id="Node000001" title="Telecommand: Reset the flash memory module." alt="" coords="5,96,168,121"/>
+<area shape="rect" id="Node000002" href="$flash__driver_8c.html#a36fd271549f3c71b6ae2049094ada075" title="Resets the NAND flash memory module." alt="" coords="251,70,352,96"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="168,96,235,88,236,93,168,101"/>
+<area shape="rect" id="Node000005" href="$telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="216,120,387,145"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="168,115,200,118,200,124,168,120"/>
+<area shape="rect" id="Node000003" href="$flash__driver_8c.html#aaaeb3d0b88da2a9d8f8e4b25252f34fa" title="Activates the chip select for the given flash module number." alt="" coords="436,5,586,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="351,67,421,48,422,53,352,72"/>
+<area shape="rect" id="Node000004" href="$flash__driver_8c.html#acf8b378419ff3241ec1536d900ebcb72" title="Deactivates the chip select for all lines." alt="" coords="635,35,799,75"/>
+<area shape="poly" id="edge4_Node000002_Node000004" title=" " alt="" coords="352,77,619,59,620,64,353,82"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="587,34,620,39,619,44,586,39"/>
+<area shape="rect" id="Node000006" href="$telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="435,121,587,146"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="388,130,419,130,419,136,388,136"/>
+</map>

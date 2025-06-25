@@ -1,0 +1,46 @@
+<map id="firmware/Core/Src/littlefs/littlefs_checksums.c" name="firmware/Core/Src/littlefs/littlefs_checksums.c">
+<area shape="rect" id="Node000001" title=" " alt="" coords="288,5,452,46"/>
+<area shape="rect" id="Node000002" href="$littlefs__checksums_8h.html" title=" " alt="" coords="37,241,216,267"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="288,34,252,41,216,53,182,71,154,96,136,126,127,161,124,196,125,226,120,226,119,196,121,160,131,124,150,92,179,67,214,48,251,36,287,29"/>
+<area shape="rect" id="Node000004" href="$lfs_8h.html" title=" " alt="" coords="386,241,470,267"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="378,46,423,225,418,227,373,47"/>
+<area shape="rect" id="Node000009" href="$littlefs__helper_8h.html" title=" " alt="" coords="443,94,591,120"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="408,44,483,84,480,89,406,49"/>
+<area shape="rect" id="Node000015" href="$sha256_8h.html" title=" " alt="" coords="164,94,276,120"/>
+<area shape="poly" id="edge19_Node000001_Node000015" title=" " alt="" coords="334,49,257,89,255,84,331,44"/>
+<area shape="rect" id="Node000017" href="$log_8h.html" title=" " alt="" coords="300,94,369,120"/>
+<area shape="poly" id="edge22_Node000001_Node000017" title=" " alt="" coords="364,48,349,81,344,78,359,45"/>
+<area shape="rect" id="Node000018" href="$debug__uart_8h.html" title=" " alt="" coords="706,168,875,193"/>
+<area shape="poly" id="edge24_Node000001_Node000018" title=" " alt="" coords="449,44,524,65,603,92,685,125,754,158,752,163,682,130,601,96,523,70,448,49"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="316,404,379,429"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="139,265,180,306,236,354,272,376,307,394,305,399,269,380,233,358,176,310,135,269"/>
+<area shape="rect" id="Node000005" href="$lfs__util_8h.html" title=" " alt="" coords="96,322,165,348"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="386,269,181,323,180,318,384,264"/>
+<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="165,346,302,396,300,401,163,351"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="192,404,266,429"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="147,347,204,392,201,396,144,351"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="5,404,69,429"/>
+<area shape="poly" id="edge7_Node000005_Node000007" title=" " alt="" coords="118,351,65,395,61,391,114,347"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="92,404,168,429"/>
+<area shape="poly" id="edge8_Node000005_Node000008" title=" " alt="" coords="133,349,133,388,128,388,128,349"/>
+<area shape="poly" id="edge10_Node000009_Node000003" title=" " alt="" coords="519,120,511,185,501,227,485,268,461,307,432,342,376,395,373,392,428,338,456,303,480,266,496,226,506,184,514,120"/>
+<area shape="poly" id="edge18_Node000009_Node000004" title=" " alt="" coords="512,121,445,229,441,227,507,119"/>
+<area shape="rect" id="Node000010" href="$flash__driver_8h.html" title=" " alt="" coords="545,168,681,193"/>
+<area shape="poly" id="edge11_Node000009_Node000010" title=" " alt="" coords="535,118,587,156,583,161,532,122"/>
+<area shape="poly" id="edge12_Node000010_Node000003" title=" " alt="" coords="613,195,604,227,588,271,563,317,528,358,497,379,462,395,395,412,394,407,460,390,494,374,525,354,558,314,583,268,599,225,608,193"/>
+<area shape="poly" id="edge17_Node000010_Node000004" title=" " alt="" coords="583,196,474,238,472,233,581,191"/>
+<area shape="rect" id="Node000011" href="$main_8h.html" title=": Header for main.c file. This file contains the common defines of the application." alt="" coords="693,241,752,267"/>
+<area shape="poly" id="edge13_Node000010_Node000011" title=" " alt="" coords="633,192,693,230,690,235,630,196"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="596,322,710,348"/>
+<area shape="poly" id="edge14_Node000011_Node000012" title=" " alt="" coords="714,269,676,312,672,309,710,266"/>
+<area shape="rect" id="Node000013" href="$rtos__task__helpers_8h.html" title=" " alt="" coords="734,315,874,356"/>
+<area shape="poly" id="edge15_Node000011_Node000013" title=" " alt="" coords="737,266,775,302,771,306,733,269"/>
+<area shape="rect" id="Node000014" title=" " alt="" coords="760,404,847,429"/>
+<area shape="poly" id="edge16_Node000013_Node000014" title=" " alt="" coords="806,356,806,388,801,388,801,356"/>
+<area shape="poly" id="edge21_Node000015_Node000003" title=" " alt="" coords="223,120,226,153,234,193,256,250,283,304,334,389,329,392,279,307,252,252,229,194,220,154,217,120"/>
+<area shape="rect" id="Node000016" title=" " alt="" coords="243,168,311,193"/>
+<area shape="poly" id="edge20_Node000015_Node000016" title=" " alt="" coords="231,118,260,154,256,157,227,122"/>
+<area shape="poly" id="edge23_Node000017_Node000003" title=" " alt="" coords="338,120,349,388,344,389,332,120"/>
+<area shape="poly" id="edge26_Node000018_Node000003" title=" " alt="" coords="808,192,843,223,880,265,894,288,902,312,900,336,888,358,862,371,814,382,676,399,520,410,395,416,395,411,520,405,675,394,813,377,860,366,884,354,895,334,896,313,889,290,876,268,840,226,805,196"/>
+<area shape="poly" id="edge25_Node000018_Node000011" title=" " alt="" coords="781,195,746,232,742,228,777,192"/>
+</map>

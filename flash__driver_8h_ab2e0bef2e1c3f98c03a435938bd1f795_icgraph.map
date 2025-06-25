@@ -1,0 +1,11 @@
+<map id="FLASH_erase" name="FLASH_erase">
+<area shape="rect" id="Node000001" title="Sends Block Erase Command." alt="" coords="474,70,578,96"/>
+<area shape="rect" id="Node000002" href="$flash__benchmark_8c.html#a9485023a9a54cf461dba878ce4d013fb" title="Benchmarks the erase/read/write operations on the flash memory module." alt="" coords="251,5,426,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="466,68,407,49,408,44,468,63"/>
+<area shape="rect" id="Node000004" href="$littlefs__driver_8c.html#ac92d3429222f40c34643f2969b93060a" title="LittleFS erase function." alt="" coords="254,70,422,96"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="458,86,423,86,423,80,458,80"/>
+<area shape="rect" id="Node000005" href="$flash__telecommand__defs_8c.html#a1bbb7fc912ecb05434ef594bc0e96431" title="Telecommand: Erase a block of flash memory containing the given page number." alt="" coords="256,120,421,145"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="460,103,391,121,390,116,459,98"/>
+<area shape="rect" id="Node000003" href="$flash__telecommand__defs_8c.html#a16773e1b72efde502834a5b2b323be8b" title="Telecommand: Benchmarks the erase/write/read operations on the flash memory module." alt="" coords="5,5,203,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="235,28,203,28,203,23,235,23"/>
+</map>

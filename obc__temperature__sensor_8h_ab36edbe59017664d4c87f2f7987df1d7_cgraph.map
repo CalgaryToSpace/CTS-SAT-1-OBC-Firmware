@@ -1,0 +1,5 @@
+<map id="OBC_TEMP_SENSOR_read_temperature" name="OBC_TEMP_SENSOR_read_temperature">
+<area shape="rect" id="Node000001" title="Reads the temperature from the STDS75DS2F and stores it in the provided variable pointer result...." alt="" coords="5,5,192,46"/>
+<area shape="rect" id="Node000002" href="$obc__temperature__sensor_8c.html#ac14775c099c95483ad42b8638530317e" title="Converts the raw bytes provided to a temperature in celsius and multiplied by a scaling factor based ..." alt="" coords="240,5,444,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="192,23,224,23,224,28,192,28"/>
+</map>

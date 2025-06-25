@@ -1,0 +1,32 @@
+<map id="EPS_pack_eps_result_system_status" name="EPS_pack_eps_result_system_status">
+<area shape="rect" id="Node000001" title=" " alt="" coords="913,173,1062,214"/>
+<area shape="rect" id="Node000002" href="$eps__commands_8c.html#a4e3a6aaad0b31d4d42f7f540dd3ea0bc" title=" " alt="" coords="707,173,865,214"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="897,196,865,196,865,191,897,191"/>
+<area shape="rect" id="Node000003" href="$complete__self__check_8c.html#ac0c76300da6dcc6c29c7fbc390b23cfe" title=" " alt="" coords="448,41,659,66"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="757,164,713,120,687,98,658,80,633,69,635,65,661,75,690,94,717,116,761,160"/>
+<area shape="rect" id="Node000007" href="$complete__self__check_8c.html#a034650729877a551e8919e536ae032e8" title=" " alt="" coords="458,90,649,116"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="736,168,658,131,620,119,622,114,660,126,738,163"/>
+<area shape="rect" id="Node000008" href="$eps__time_8c.html#aedd81259d3135d49f95b34346f6fde61" title="Sets the EPS&#39;s time, based on the OBC&#39;s current time." alt="" coords="466,140,641,181"/>
+<area shape="poly" id="edge8_Node000002_Node000008" title=" " alt="" coords="691,183,641,176,642,170,692,178"/>
+<area shape="rect" id="Node000010" href="$eps__time_8c.html#a5a66b7a8cc792b4c410f66673b244442" title="Sets the OBC&#39;s time, based on the EPS&#39;s current time." alt="" coords="466,205,641,246"/>
+<area shape="poly" id="edge10_Node000002_Node000010" title=" " alt="" coords="692,209,642,216,641,211,691,204"/>
+<area shape="rect" id="Node000012" href="$rtos__eps__tasks_8c.html#ad27bdbe0e838d3705b754e9af4c449b2" title=" " alt="" coords="250,278,372,304"/>
+<area shape="poly" id="edge15_Node000002_Node000012" title=" " alt="" coords="740,225,702,244,660,260,584,278,506,288,373,295,373,289,506,283,583,272,659,255,700,239,738,220"/>
+<area shape="rect" id="Node000014" href="$eps__telecommands_8c.html#a7dad13c8c5294dc3cccaf43b09c810ae" title="Get the EPS system status, and display it as a JSON string." alt="" coords="456,320,651,361"/>
+<area shape="poly" id="edge16_Node000002_Node000014" title=" " alt="" coords="756,227,713,267,661,304,623,322,621,317,658,299,710,262,753,223"/>
+<area shape="rect" id="Node000004" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="233,33,390,74"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="432,56,390,56,390,51,432,51"/>
+<area shape="rect" id="Node000005" href="$system__telecommand__defs_8c.html#a3de9d85c9ac70337b7ea2d12ae8e1431" title="System self&#45;check of all peripherals and systems." alt="" coords="5,5,175,46"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="217,45,175,39,176,34,218,39"/>
+<area shape="rect" id="Node000006" href="$system__telecommand__defs_8c.html#a0c74e93dcffe027962e3e9015c3fd364" title="System self&#45;check of all peripherals and systems." alt="" coords="5,71,175,111"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="219,72,176,79,175,74,218,67"/>
+<area shape="poly" id="edge7_Node000007_Node000004" title=" " alt="" coords="472,89,389,72,391,67,473,84"/>
+<area shape="rect" id="Node000009" href="$timekeeping__telecommand__defs_8c.html#a63a984dc726edd02ab0bd8a58c646924" title="Sync&#39;s eps time to obc time (+/&#45; 1 second)" alt="" coords="223,99,400,139"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="451,146,400,137,401,132,452,140"/>
+<area shape="rect" id="Node000011" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="65,193,115,218"/>
+<area shape="poly" id="edge11_Node000010_Node000011" title=" " alt="" coords="451,210,400,204,311,202,223,204,115,207,115,202,223,199,311,196,400,199,452,205"/>
+<area shape="poly" id="edge12_Node000010_Node000012" title=" " alt="" coords="462,253,363,280,361,275,460,248"/>
+<area shape="rect" id="Node000013" href="$timekeeping__telecommand__defs_8c.html#a2e02e699400d7369f09ed29047b5d300" title="Sync&#39;s obc time to eps time (+/&#45; 1 second)" alt="" coords="223,213,400,254"/>
+<area shape="poly" id="edge14_Node000010_Node000013" title=" " alt="" coords="451,232,401,233,400,228,451,226"/>
+<area shape="poly" id="edge13_Node000012_Node000011" title=" " alt="" coords="244,276,222,268,114,220,116,215,224,263,245,271"/>
+</map>

@@ -1,0 +1,41 @@
+<map id="FLASH_read_status_register" name="FLASH_read_status_register">
+<area shape="rect" id="Node000001" title="Read Status Register and store the values in given buffer." alt="" coords="927,219,1117,244"/>
+<area shape="rect" id="Node000002" href="$flash__driver_8c.html#ab2e0bef2e1c3f98c03a435938bd1f795" title="Sends Block Erase Command." alt="" coords="528,29,632,55"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="999,208,947,155,914,127,877,105,814,79,748,62,685,52,632,47,632,42,686,47,749,57,816,74,880,100,917,123,951,151,1003,205"/>
+<area shape="rect" id="Node000007" href="$flash__driver_8c.html#a395c5684cb8c564403e3fa68dcae299d" title="Sends Page Read Command." alt="" coords="735,244,864,270"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="911,247,865,252,864,247,911,241"/>
+<area shape="rect" id="Node000011" href="$flash__driver_8c.html#a5231aa78550b4076f9fbf923f000fe6d" title="Sends Page Program Command." alt="" coords="514,195,646,220"/>
+<area shape="poly" id="edge11_Node000001_Node000011" title=" " alt="" coords="911,228,646,214,646,208,911,223"/>
+<area shape="rect" id="Node000015" href="$flash__driver_8c.html#a40465bf4bb4cdce119638ad6f36158b9" title="Sends Write Disable Command." alt="" coords="725,293,874,319"/>
+<area shape="poly" id="edge16_Node000001_Node000015" title=" " alt="" coords="971,253,880,285,847,295,845,290,878,280,969,248"/>
+<area shape="rect" id="Node000016" href="$flash__driver_8c.html#aedefd1fa550b34fc7c57465aa5c5874b" title="Sends Write Enable Command." alt="" coords="727,115,872,140"/>
+<area shape="poly" id="edge17_Node000001_Node000016" title=" " alt="" coords="977,214,828,143,830,139,980,209"/>
+<area shape="rect" id="Node000018" href="$flash__telecommand__defs_8c.html#a6ca29afbeaedddfb95adcd75ac578299" title="Telecommand: Read and print Status Register value as hex from the flash memory module." alt="" coords="720,343,879,384"/>
+<area shape="poly" id="edge21_Node000001_Node000018" title=" " alt="" coords="994,256,942,295,880,334,857,345,855,340,877,329,939,290,991,252"/>
+<area shape="rect" id="Node000003" href="$flash__benchmark_8c.html#a9485023a9a54cf461dba878ce4d013fb" title="Benchmarks the erase/read/write operations on the flash memory module." alt="" coords="257,118,432,158"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="513,61,488,70,440,95,391,120,389,115,438,90,486,65,512,56"/>
+<area shape="rect" id="Node000005" href="$littlefs__driver_8c.html#ac92d3429222f40c34643f2969b93060a" title="LittleFS erase function." alt="" coords="261,5,429,31"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="512,38,429,29,430,24,513,33"/>
+<area shape="rect" id="Node000006" href="$flash__telecommand__defs_8c.html#a1bbb7fc912ecb05434ef594bc0e96431" title="Telecommand: Erase a block of flash memory containing the given page number." alt="" coords="262,55,428,80"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="513,52,428,61,428,56,512,47"/>
+<area shape="rect" id="Node000004" href="$flash__telecommand__defs_8c.html#a16773e1b72efde502834a5b2b323be8b" title="Telecommand: Benchmarks the erase/write/read operations on the flash memory module." alt="" coords="5,118,203,158"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="241,141,203,141,203,136,241,136"/>
+<area shape="poly" id="edge8_Node000007_Node000003" title=" " alt="" coords="767,237,723,209,671,185,611,167,548,155,433,143,433,138,549,150,612,162,673,180,726,204,770,232"/>
+<area shape="rect" id="Node000008" href="$flash__testing__demos_8c.html#a8b820d5639e3201ec967af242a24a521" title=" " alt="" coords="520,244,639,270"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="719,260,640,260,640,254,719,254"/>
+<area shape="rect" id="Node000009" href="$littlefs__driver_8c.html#ac0f31450af1dca02021baa7111548662" title="LittleFS read function." alt="" coords="499,293,660,319"/>
+<area shape="poly" id="edge9_Node000007_Node000009" title=" " alt="" coords="725,276,641,295,640,290,723,271"/>
+<area shape="rect" id="Node000010" href="$flash__telecommand__defs_8c.html#a51a759730f31a2871fde3e866a2d668d" title="Telecommand: Read bytes as hex from a page number." alt="" coords="487,343,672,368"/>
+<area shape="poly" id="edge10_Node000007_Node000010" title=" " alt="" coords="730,279,722,283,707,295,699,308,689,321,674,334,651,344,648,340,671,329,685,317,694,305,703,292,719,279,727,274"/>
+<area shape="poly" id="edge13_Node000011_Node000003" title=" " alt="" coords="518,192,416,162,417,157,520,187"/>
+<area shape="rect" id="Node000012" href="$flash__testing__demos_8c.html#a195fe65949096932e071ddb8f4ff0dd6" title=" " alt="" coords="284,183,406,208"/>
+<area shape="poly" id="edge12_Node000011_Node000012" title=" " alt="" coords="498,206,406,201,407,196,498,201"/>
+<area shape="rect" id="Node000013" href="$littlefs__driver_8c.html#a6979423f6b81b4ac02cd878f0a93cc69" title="LittleFS write function." alt="" coords="264,232,426,258"/>
+<area shape="poly" id="edge14_Node000011_Node000013" title=" " alt="" coords="498,223,426,235,425,229,498,218"/>
+<area shape="rect" id="Node000014" href="$flash__telecommand__defs_8c.html#a357ba0b1b1fde91e5956bba5fd5da730" title="Telecommand: Write a hex string of bytes to a page number." alt="" coords="251,281,439,307"/>
+<area shape="poly" id="edge15_Node000011_Node000014" title=" " alt="" coords="500,229,488,234,474,243,465,253,455,263,440,273,413,283,411,278,438,268,452,259,461,249,471,239,486,229,498,224"/>
+<area shape="poly" id="edge18_Node000016_Node000002" title=" " alt="" coords="759,110,671,70,631,57,633,52,673,65,761,105"/>
+<area shape="poly" id="edge19_Node000016_Node000011" title=" " alt="" coords="749,149,618,197,617,192,747,144"/>
+<area shape="rect" id="Node000017" href="$flash__telecommand__defs_8c.html#a7e421a481622cdfbf1594988f2211641" title="Telecommand: Set the write enable lath to high on the flash memory module." alt="" coords="499,79,660,120"/>
+<area shape="poly" id="edge20_Node000016_Node000017" title=" " alt="" coords="711,119,661,112,661,107,712,114"/>
+</map>

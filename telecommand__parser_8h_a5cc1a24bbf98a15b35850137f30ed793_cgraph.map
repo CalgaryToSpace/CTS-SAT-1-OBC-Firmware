@@ -1,0 +1,11 @@
+<map id="TCMD_get_suffix_tag_hex_array" name="TCMD_get_suffix_tag_hex_array">
+<area shape="rect" id="Node000001" title="Searches for a str like \@tag_name=xxxx, and sets uint8_t array xxxx into value_dest." alt="" coords="5,63,150,103"/>
+<area shape="rect" id="Node000002" href="$arrays_8c.html#af6f2987b63d15c0cc889ac8c2ea0d072" title="Returns the index of the first character of the first occurrence of a substring in an array." alt="" coords="199,5,388,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="149,61,199,48,200,53,151,66"/>
+<area shape="rect" id="Node000003" href="$telecommand__args__helpers_8c.html#a3f4c71ad48b16b79e4bb91ffb13111d7" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a hex string." alt="" coords="198,70,389,96"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="150,80,182,80,182,86,150,86"/>
+<area shape="rect" id="Node000004" href="$telecommand__parser_8c.html#a94afb6a62e1b5afb772aaffbae8bcded" title="Returns whether a character is a valid character in a telecommand name." alt="" coords="205,120,382,161"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="151,100,200,113,199,118,149,105"/>
+<area shape="rect" id="Node000005" href="$telecommand__parser_8c.html#a99398160cef3734514e623985c0589b4" title="Returns whether a character is alphanumeric (0&#45;9, A&#45;Z, a&#45;z)." alt="" coords="437,128,628,153"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="382,138,421,138,421,143,382,143"/>
+</map>
