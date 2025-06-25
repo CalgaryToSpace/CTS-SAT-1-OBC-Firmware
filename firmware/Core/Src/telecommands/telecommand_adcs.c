@@ -389,7 +389,7 @@ uint8_t TCMDEXEC_adcs_run_once(const char *args_str,
 
 /// @brief Telecommand: Set the magnetometer mode of the ADCS
 /// @param args_str 
-///     - Arg 0: magnetometer mode to set
+///     - Arg 0: magnetometer mode to set (0 = main sampled by Signal MCU, 1 = redundant sampled by Signal MCU, 2 = main sampled by Motor MCU, 3 = none)
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_set_magnetometer_mode(const char *args_str,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
@@ -905,7 +905,8 @@ uint8_t TCMDEXEC_adcs_get_magnetorquer_command(const char *args_str,
     return status;
 }                                    
 
-/// @brief Telecommand: Request the given telemetry data from the ADCS
+/// @brief Telecommand: Request the raw magnetometer values from the ADCS.
+/// @note Values are given as raw ADC values; use adcs_get_magnetic_field_vector for calibrated values
 /// @param args_str 
 ///     - No arguments for this command
 /// @return 0 on success, >0 on error
