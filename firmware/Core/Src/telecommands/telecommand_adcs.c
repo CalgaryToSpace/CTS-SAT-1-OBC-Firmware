@@ -1877,7 +1877,7 @@ uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str,
 ///     - Arg 0: The index of the file to download
 ///     - Arg 1: The CRC16 checksum of the file as two hex bytes in order (e.g. "07 ff" becomes 0x07ff)
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_adcs_download_sd_file_with_checksum(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_adcs_download_sd_file_with_checksum(const char *args_str, 
                                    char *response_output_buf, uint16_t response_output_buf_len) {
 
     // parse file index argument
