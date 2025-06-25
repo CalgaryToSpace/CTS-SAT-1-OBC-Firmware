@@ -712,11 +712,30 @@ typedef struct ADCS_raw_star_tracker_struct_t {
     int32_t q2_micro;
 } ADCS_raw_star_tracker_struct_t;
 
-typedef struct ADCS_sd_log_config_struct {
+typedef struct ADCS_sd_log_config_struct_t {
     uint8_t which_log;
     uint8_t log_bitmask[ADCS_SD_LOG_BITFIELD_LENGTH_BYTES];
     uint16_t log_period_s; 
     ADCS_sd_log_destination_enum_t which_sd;
-} ADCS_sd_log_config_struct;
+} ADCS_sd_log_config_struct_t;
+
+typedef struct ADCS_wheel_currents_struct_t {
+    uint32_t wheel1_current_microamps; 
+    uint32_t wheel2_current_microamps; 
+    uint32_t wheel3_current_microamps; 
+} ADCS_wheel_currents_struct_t;
+
+typedef struct ADCS_cubesense_currents_struct_t {
+    uint32_t cubesense1_3v3_current_microamps;
+    uint32_t cubesense1_sram_current_microamps;
+    uint32_t cubesense2_3v3_current_microamps;
+    uint32_t cubesense2_sram_current_microamps;
+} ADCS_cubesense_currents_struct_t;
+
+typedef struct ADCS_misc_currents_struct_t {
+    uint32_t cubestar_current_microamps;
+    uint32_t torquer_current_microamps;
+    int32_t cubestar_mcu_temperature_mdeg_celsius;
+} ADCS_misc_currents_struct_t;
 
 #endif /* INC_ADCS_TYPES_H_ */

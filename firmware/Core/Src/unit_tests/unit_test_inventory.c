@@ -406,6 +406,25 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_file = "unit_tests/test_adcs",
         .test_func_name = "ADCS_combine_sd_log_bitmasks"
     },
+
+    {
+        .test_func = TEST_EXEC__ADCS_pack_to_wheel_currents_struct,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_pack_to_wheel_currents_struct"
+    },  
+
+    {
+        .test_func = TEST_EXEC__ADCS_pack_to_cubesense_currents_struct,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_pack_to_cubesense_currents_struct"
+    },  
+
+    {
+        .test_func = TEST_EXEC__ADCS_pack_to_misc_currents_struct,
+        .test_file = "unit_tests/test_adcs",
+        .test_func_name = "ADCS_pack_to_misc_currents_struct"
+    },  
+
     // ****************** END SECTION: test_adcs ******************
 
     {
