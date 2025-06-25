@@ -2913,7 +2913,7 @@ uint8_t TCMDEXEC_adcs_exit_bootloader(const char *args_str,
 ///     - Arg 1: Quailty factor (1 is the most compressed and lossy, 100 is the least)
 ///     - Arg 2: White balance
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_adcs_convert_to_jpg(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_adcs_convert_to_jpg(const char *args_str, 
                         char *response_output_buf, uint16_t response_output_buf_len) {
     
     // parse file index argument
@@ -2932,7 +2932,7 @@ uint8_t TCMDEXEC_adcs_convert_to_jpg(const char *args_str, TCMD_TelecommandChann
     return status;
 }
 
-uint8_t TCMDEXEC_adcs_get_wheel_currents(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_adcs_get_wheel_currents(const char *args_str, 
                         char *response_output_buf, uint16_t response_output_buf_len) {
     
     ADCS_wheel_currents_struct_t packed_struct;
@@ -2956,7 +2956,7 @@ uint8_t TCMDEXEC_adcs_get_wheel_currents(const char *args_str, TCMD_TelecommandC
     return status;
 }                    
                         
-uint8_t TCMDEXEC_adcs_get_cubesense_currents(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_adcs_get_cubesense_currents(const char *args_str, 
                         char *response_output_buf, uint16_t response_output_buf_len) {
     
     ADCS_cubesense_currents_struct_t packed_struct;
@@ -2980,7 +2980,7 @@ uint8_t TCMDEXEC_adcs_get_cubesense_currents(const char *args_str, TCMD_Telecomm
     return status;
 }                    
                         
-uint8_t TCMDEXEC_adcs_get_misc_currents(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+uint8_t TCMDEXEC_adcs_get_misc_currents(const char *args_str, 
                         char *response_output_buf, uint16_t response_output_buf_len) {
     
     ADCS_misc_currents_struct_t packed_struct;
