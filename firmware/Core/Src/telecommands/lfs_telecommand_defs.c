@@ -644,7 +644,7 @@ uint8_t TCMDEXEC_fs_benchmark_write_read(const char *args_str,
 /// - Arg 2: Offset within the file to start reading (in bytes, hex value)
 /// - Arg 3: Address in internal flash memory to write to (in hex, 8 characters for 32-bit address)
 /// @note The maximum length to read is 1024 bytes (1kB).
-uint8_t TCMDEXEC_fs_write_file_to_internal_flash(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel, char *response_output_buf, uint16_t response_output_buf_len)
+uint8_t TCMDEXEC_fs_write_file_to_internal_flash(const char *args_str, char *response_output_buf, uint16_t response_output_buf_len)
 {
     char arg_file_name[LFS_MAX_PATH_LENGTH];
     const uint8_t parse_file_name_result = TCMD_extract_string_arg(args_str, 0, arg_file_name, sizeof(arg_file_name));
