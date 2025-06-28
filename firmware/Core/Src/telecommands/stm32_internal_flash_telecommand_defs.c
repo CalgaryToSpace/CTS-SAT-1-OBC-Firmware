@@ -8,32 +8,38 @@
 
 /// @brief Write data to the internal flash bank starting from address 0x08100000
 /// @param args_str
-/// - Arg 0: The data in hex format to write
-/// - Arg 1: The offset to start writing from
+/// - Arg 0: Address to start writing from in hex format 
+/// - Arg 1: The data in hex format to write up to PAGESIZE bytes (0x1000 bytes)
 /// @note This telecommand is only for testing purposes, it is purposfully not fully fleshed out
 /// as there is no intention on using this. Update as needed
 //// @return 0 on success, > 0 on error
 uint8_t TCMDEXEC_stm32_internal_flash_write(const char *args_str, char *response_output_buf, uint16_t response_output_buf_len)
 {
+    uint8_t address_buf[4] = {0};
+    uint16_t address_len = 0;
+    const uint8_t parse_address_res = TCMD_extract_hex_array_arg(args_str, 0, address_buf, sizeof(address_buf), &address_len);
+    if (parse_address_res != 0)
+    {
+        snprintf(response_output_buf, response_output_buf_len, "Error Parsing Arg 0: %u", parse_address_res);
+        return 1;
+    }
+
     uint8_t write_hex_buffer[PAGESIZE] = {0};
     uint16_t write_hex_buffer_len = 0;
-    const uint8_t parse_hex_buffer_res = TCMD_extract_hex_array_arg(args_str, 0, write_hex_buffer, sizeof(write_hex_buffer), &write_hex_buffer_len);
+    const uint8_t parse_hex_buffer_res = TCMD_extract_hex_array_arg(args_str, 1, write_hex_buffer, sizeof(write_hex_buffer), &write_hex_buffer_len);
     if (parse_hex_buffer_res != 0)
     {
-        snprintf(response_output_buf, response_output_buf_len, "Error Parsing Arg 0: %u", parse_hex_buffer_res);
-        return 1;
+        snprintf(response_output_buf, response_output_buf_len, "Error Parsing Arg 1: %u", parse_hex_buffer_res);
+        return 2;
     }
-
-    uint64_t offset = 0;
-    const uint8_t parse_offset_res = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &offset);
-    if (parse_offset_res != 0)
-    {
-        snprintf(response_output_buf, response_output_buf_len, "Error Parsing Arg 1: %u", parse_offset_res);
-        return 1;
-    }
+    
+    const uint32_t address = (address_buf[0] << 24) |
+                             (address_buf[1] << 16) |
+                             (address_buf[2] << 8) |
+                             address_buf[3]; // Convert to 32-bit address
 
     STM32_Internal_Flash_Write_Status_t status;
-    const uint8_t write_res = STM32_internal_flash_write(STM32_INTERNAL_FLASH_MEMORY_REGION_GOLDEN_COPY_ADDRESS + offset, write_hex_buffer, write_hex_buffer_len, &status);
+    const uint8_t write_res = STM32_internal_flash_write(address, write_hex_buffer, write_hex_buffer_len, &status);
     if (write_res != 0)
     {
         snprintf(response_output_buf, response_output_buf_len, "Error writing to flash: %u\nLock Status: %u\nUnlock Status: %u\nWrite Status: %u", write_res, status.lock_status, status.unlock_status, status.write_status);
@@ -44,7 +50,7 @@ uint8_t TCMDEXEC_stm32_internal_flash_write(const char *args_str, char *response
 
 /// @brief Read data from the internal flash bank
 /// @param args_str
-/// - Arg 0: The address to start reading from
+/// - Arg 0: The address to start reading from in hex
 /// - Arg 1: The number of bytes to read as a uint64_t
 //// @return 0 on success, > 0 on error
 uint8_t TCMDEXEC_stm32_internal_flash_read(const char *args_str, char *response_output_buf, uint16_t response_output_buf_len)
@@ -90,37 +96,81 @@ uint8_t TCMDEXEC_stm32_internal_flash_read(const char *args_str, char *response_
 /// @brief Erase a range of pages in the internal flash bank.
 /// Only Erases for Flash Bank 2.
 /// @param args_str
-/// - Arg 0: The starting page to erase as a uint64_t
-/// - Arg 1: The number of pages to erase as a uint64_t
+/// - Arg 0: Flash Bank to erase 
+/// - Arg 1: The starting page to erase as a uint64_t
+/// - Arg 2: The number of pages to erase as a uint64_t
 //// @return 0 on success, > 0 on error
-uint8_t TCMDEXEC_stm32_internal_flash_erase(const char *args_str, char *response_output_buf, uint16_t response_output_buf_len)
+uint8_t TCMDEXEC_stm32_internal_flash_page_erase(const char *args_str, char *response_output_buf, uint16_t response_output_buf_len)
 {
+    uint64_t flash_bank_to_erase = 0;
+    const uint8_t flash_bank_to_erase_parse_res = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &flash_bank_to_erase);
+    if (flash_bank_to_erase_parse_res != 0)
+    {
+        snprintf(response_output_buf, response_output_buf_len, "Error Parsing arg 0: %u", flash_bank_to_erase_parse_res);
+        return 1;
+    }
+    if (flash_bank_to_erase != 1 && flash_bank_to_erase != 2)
+    {
+        snprintf(response_output_buf, response_output_buf_len, "Error: Only valid options for flash banks: 1 or 2, got: %u", (uint8_t)flash_bank_to_erase);
+        return 1;
+    }
     uint64_t start_page_erase = 0;
 
-    const uint8_t start_page_erase_parse_res = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &start_page_erase);
+    const uint8_t start_page_erase_parse_res = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &start_page_erase);
     if (start_page_erase_parse_res != 0)
     {
-        snprintf(response_output_buf, response_output_buf_len, "Error Parsing arg 0: %u", start_page_erase_parse_res);
+        snprintf(response_output_buf, response_output_buf_len, "Error Parsing arg 1: %u", start_page_erase_parse_res);
         return 1;
     }
 
     uint64_t number_of_pages_to_erase = 0;
-    const uint8_t number_of_pages_to_erase_parse_res = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &number_of_pages_to_erase);
+    const uint8_t number_of_pages_to_erase_parse_res = TCMD_extract_uint64_arg(args_str, strlen(args_str), 2, &number_of_pages_to_erase);
     if (number_of_pages_to_erase_parse_res != 0)
     {
-        snprintf(response_output_buf, response_output_buf_len, "Error Parsing arg 1: %u", number_of_pages_to_erase_parse_res);
+        snprintf(response_output_buf, response_output_buf_len, "Error Parsing arg 2: %u", number_of_pages_to_erase_parse_res);
         return 1;
     }
 
     uint32_t page_error = 0;
-    const uint8_t erase_res = STM32_internal_flash_erase((uint16_t)start_page_erase, (uint16_t)number_of_pages_to_erase, &page_error);
+    const uint8_t erase_res = STM32_internal_flash_page_erase((uint8_t)flash_bank_to_erase, (uint16_t)start_page_erase, (uint16_t)number_of_pages_to_erase, &page_error);
     if (erase_res != 0)
     {
-        snprintf(response_output_buf, response_output_buf_len, "Error erasing pages: %u - %u, error: %u, page error: %lu", (uint16_t)start_page_erase, (uint16_t)start_page_erase + (uint16_t)number_of_pages_to_erase, erase_res, page_error);
+        snprintf(response_output_buf, response_output_buf_len, "Error erasing pages: %u -> %u, error: %u, page error: %lu", (uint16_t)start_page_erase, (uint16_t)start_page_erase + (uint16_t)number_of_pages_to_erase, erase_res, page_error);
         return 1;
     }
     return 0;
 }
+
+/// @brief Erase an entire flash bank
+/// @param args_str
+/// - Arg 0: Flash Bank to erase 
+/// @return 0 on success, > 0 on error
+uint8_t TCMDEXEC_stm32_internal_flash_bank_erase(const char *args_str, char *response_output_buf, uint16_t response_output_buf_len)
+{
+    uint64_t flash_bank_to_erase = 0;
+    const uint8_t flash_bank_to_erase_parse_res = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &flash_bank_to_erase);
+    if (flash_bank_to_erase_parse_res != 0)
+    {
+        snprintf(response_output_buf, response_output_buf_len, "Error Parsing arg 0: %u", flash_bank_to_erase_parse_res);
+        return 1;
+    }
+
+    if (flash_bank_to_erase != 1 && flash_bank_to_erase != 2)
+    {
+        snprintf(response_output_buf, response_output_buf_len, "Error: Only valid options for flash banks: 1 or 2, got: %u", (uint8_t)flash_bank_to_erase);
+        return 2;
+    }
+    uint32_t bank_erase_error = 0;
+    const uint8_t erase_res = STM32_internal_flash_bank_erase((uint8_t)flash_bank_to_erase, &bank_erase_error);
+    if (erase_res != 0)
+    {
+        snprintf(response_output_buf, response_output_buf_len, "Error erasing bank: %u", (uint8_t)flash_bank_to_erase);
+        return 3;
+    }
+    snprintf(response_output_buf, response_output_buf_len, "Successfully erased flash bank: %u", (uint8_t)flash_bank_to_erase);
+    return 0;
+}
+
 
 /// @brief Get the option bytes configuration from the stm32 internal flash memory
 /// @param args_str No args

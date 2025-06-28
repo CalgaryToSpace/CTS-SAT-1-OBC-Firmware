@@ -1117,7 +1117,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "stm32_internal_flash_read",
         .tcmd_func = TCMDEXEC_stm32_internal_flash_read,
         .number_of_args = 2,
-        .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
 
     {
@@ -1128,12 +1128,17 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     },
 
     {
-        .tcmd_name = "stm32_internal_flash_erase",
-        .tcmd_func = TCMDEXEC_stm32_internal_flash_erase,
-        .number_of_args = 2,
-        .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
+        .tcmd_name = "stm32_internal_flash_page_erase",
+        .tcmd_func = TCMDEXEC_stm32_internal_flash_page_erase,
+        .number_of_args = 3,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
-
+    {
+        .tcmd_name = "stm32_internal_flash_bank_erase",
+        .tcmd_func = TCMDEXEC_stm32_internal_flash_bank_erase,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
     {
         .tcmd_name = "stm32_internal_flash_get_option_bytes",
         .tcmd_func = TCMDEXEC_stm32_internal_flash_get_option_bytes,
