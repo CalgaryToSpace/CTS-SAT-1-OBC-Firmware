@@ -13,6 +13,8 @@
 #include "unit_tests/test_obc_temperature_sensor.h"
 #include "unit_tests/unit_test_gnss.h"
 #include "unit_tests/test_uart_error_tracking.h"
+#include "unit_tests/test_system.h"
+
 #include "unit_tests/test_eps_drivers.h"
 #include "unit_tests/test_eps_struct_packers.h"
 #include "unit_tests/test_eps_calculations.h"
@@ -588,6 +590,21 @@ const TEST_Definition_t TEST_definitions[] = {
         .test_file = "unit_tests/test_uart_error_tracking",
         .test_func_name = "UART_single_subsystem_error_info_to_json"
     },
+    // ****************** END SECTION: unit_test_uart_error_tracking ******************
+
+
+    // ****************** START SECTION: test_system ******************
+    {
+        .test_func = TEST_EXEC__SYS_low_power_mode_error_enum_to_string,
+        .test_file = "system/system_low_power_mode",
+        .test_func_name = "low_power_mode_error_enum_to_string"
+    },
+    {
+        .test_func = TEST_EXEC__SYS_low_power_mode_result_to_json,
+        .test_file = "system/system_low_power_mode",
+        .test_func_name = "low_power_mode_result_to_json"
+    },
+    // ****************** END SECTION: test_system ******************
 };
 
 // extern
