@@ -94,11 +94,10 @@ uint8_t TCMDEXEC_stm32_internal_flash_read(const char *args_str, char *response_
 }
 
 /// @brief Erase a range of pages in the internal flash bank.
-/// Only Erases for Flash Bank 2.
 /// @param args_str
-/// - Arg 0: Flash Bank to erase 
-/// - Arg 1: The starting page to erase as a uint64_t
-/// - Arg 2: The number of pages to erase as a uint64_t
+/// - Arg 0: Flash Bank to erase (1 or 2)
+/// - Arg 1: The starting page to erase (0-255 for bank 1, 256-511 for bank 2)
+/// - Arg 2: The number of pages to erase (1-256)
 //// @return 0 on success, > 0 on error
 uint8_t TCMDEXEC_stm32_internal_flash_page_erase(const char *args_str, char *response_output_buf, uint16_t response_output_buf_len)
 {
