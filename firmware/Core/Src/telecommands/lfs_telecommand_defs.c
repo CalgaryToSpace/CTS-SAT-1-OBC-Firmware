@@ -644,6 +644,9 @@ uint8_t TCMDEXEC_fs_benchmark_write_read(const char *args_str,
 /// - Arg 2: Offset within the file to start reading (in bytes, hex value)
 /// - Arg 3: Address in internal flash memory to write to (in hex, 8 characters for 32-bit address)
 /// @note The maximum length to read is 1024 bytes (1kB).
+/// @note To use properly:
+///       - The internal flash memory region must be erased before writing.
+///       - The address must be in the main flash memory region (0x08000000 to 0x081FFFFF).
 uint8_t TCMDEXEC_fs_write_file_to_internal_flash(const char *args_str, char *response_output_buf, uint16_t response_output_buf_len)
 {
     char arg_file_name[LFS_MAX_PATH_LENGTH];
@@ -670,18 +673,18 @@ uint8_t TCMDEXEC_fs_write_file_to_internal_flash(const char *args_str, char *res
     }
  
     // Ensure the write length is not too large
-    if (read_length > 1024) { // 1kB max
+    if (read_length > FLASH_PAGE_SIZE) { // 1kB max
         snprintf(
             response_output_buf,
             response_output_buf_len,
-            "Error: Write length too large. Max is 64kB.");
-        return 4;
+            "Error: Write length too large. Max is %lu bytes.", (unsigned long)FLASH_PAGE_SIZE);
+        return 3;
     }
     // Get offset (in hex)
-    uint8_t write_offset_arr[4] = {0}; // 4 bytes for 32-bit address
+    uint8_t read_offset_arr[4] = {0}; // 4 bytes for 32-bit address
     uint16_t offset_arr_result_len = 0;
     const uint8_t parse_offset_result = TCMD_extract_hex_array_arg(
-        args_str, 2, write_offset_arr, sizeof(write_offset_arr), &offset_arr_result_len
+        args_str, 2, read_offset_arr, sizeof(read_offset_arr), &offset_arr_result_len
     );
     if (parse_offset_result != 0) {
         // error parsing
@@ -689,13 +692,13 @@ uint8_t TCMDEXEC_fs_write_file_to_internal_flash(const char *args_str, char *res
             response_output_buf,
             response_output_buf_len,
             "Error parsing write offset arg: Error %d", parse_offset_result);
-        return 3;
+        return 4;
     }
 
-    const uint32_t offset = write_offset_arr[0] << 24 |
-                            write_offset_arr[1] << 16 |
-                            write_offset_arr[2] << 8 |
-                            write_offset_arr[3]; // Convert to 32-bit address
+    const uint32_t read_offset = read_offset_arr[0] << 24 |
+                                 read_offset_arr[1] << 16 |
+                                 read_offset_arr[2] << 8 |
+                                 read_offset_arr[3]; // Convert to 32-bit address
 
     // Get address to write to (in hex)
     uint8_t write_address_arr[4] = {0}; // 4 bytes for 32-bit address
@@ -709,27 +712,34 @@ uint8_t TCMDEXEC_fs_write_file_to_internal_flash(const char *args_str, char *res
             response_output_buf,
             response_output_buf_len,
             "Error parsing write address arg: Error %d", parse_address_result);
-        return 4;
+        return 5;
     }
     const uint32_t write_address = write_address_arr[0] << 24 |
                                    write_address_arr[1] << 16 |
                                    write_address_arr[2] << 8 |
                                    write_address_arr[3]; // Convert to 32-bit address
-        
-        LOG_message(LOG_SYSTEM_ALL, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
-                    "TCMDEXEC_fs_write_file_to_internal_flash: Writing %lu bytes from file '%s' to internal flash at address 0x%08lX, offset %lu",
-        (unsigned long)read_length, arg_file_name, (unsigned long)write_address, (unsigned long)offset);
-    
-    // Read the file from LittleFS
-    uint8_t read_buf[read_length];
-    const int32_t read_result = LFS_read_file(arg_file_name, offset, read_buf, read_length);
-    if (read_result < 0) {
-        snprintf(response_output_buf, response_output_buf_len, "Error reading file: %ld", read_result);
-        return 5;
+
+    if (IS_FLASH_MAIN_MEM_ADDRESS(write_address) == false) {
+        // Address is not in the main flash memory region
+        snprintf(response_output_buf, response_output_buf_len, "Error: Address 0x%08lX is not in the main flash memory region.", (unsigned long)write_address);
+        return 6;
     }
-    // Write the data to internal flash
+
+    LOG_message(LOG_SYSTEM_ALL, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+                "TCMDEXEC_fs_write_file_to_internal_flash: Writing %lu bytes from file '%s' to internal flash at address 0x%08lX, read_offset %lu",
+                (unsigned long)read_length, arg_file_name, (unsigned long)write_address, (unsigned long)read_offset);
+
+    // Read the file from LittleFS
+    uint8_t file_content[read_length];
+    const int32_t bytes_read = LFS_read_file(arg_file_name, read_offset, file_content, read_length);
+    if (bytes_read < 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Error reading file: %ld", bytes_read);
+        return 7;
+    }
+
+    // If region is not erased, it will fail
     STM32_Internal_Flash_Write_Status_t write_status = {0};
-    const uint8_t write_result = STM32_internal_flash_write(write_address, read_buf, read_length, &write_status);
+    const uint8_t write_result = STM32_internal_flash_write(write_address, file_content, read_length, &write_status);
     LOG_message(LOG_SYSTEM_ALL, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
                 "Write status: Write Status=%d, Lock Status=%d",
         write_status.write_status, write_status.lock_status);
@@ -737,7 +747,10 @@ uint8_t TCMDEXEC_fs_write_file_to_internal_flash(const char *args_str, char *res
     switch (write_result)
     {
         case 0:
-            snprintf(response_output_buf, response_output_buf_len, "Successfully wrote %lu bytes from file '%s' to internal flash at address 0x%08lX", (uint32_t)read_length, arg_file_name, (uint32_t)write_address);
+            snprintf(response_output_buf,
+                     response_output_buf_len,
+                     "Successfully wrote %lu bytes from file '%s' to internal flash at address 0x%08lX",
+                     (uint32_t)read_length, arg_file_name, (uint32_t)write_address);
             return 0;
         case 1:
             snprintf(response_output_buf, response_output_buf_len, "Error: Address too low for internal flash write.");
@@ -758,6 +771,6 @@ uint8_t TCMDEXEC_fs_write_file_to_internal_flash(const char *args_str, char *res
             snprintf(response_output_buf, response_output_buf_len, "Error: Unknown error during internal flash write.");
             break;
     }
-    return write_result <= 5 ? write_result : 6; // Return the error code if it's within the known range, otherwise return 6 for unknown error.
+    return write_result <= 5 ? write_result : 8; // Return the error code if it's within the known range, otherwise return 8 for unknown error.
 
 }
