@@ -12,7 +12,6 @@
 /// @param data uint8_t buffer containing the data to be written.
 /// @param length Length of the data to be written.
 /// @return 0 on success, > 0 on error
-/// @note Currently, only allowed to write to flash banks region addresses
 /// @note Writes data in chunks of 8 bytes.
 /// Ex: Suppose we wanted to write to address 0x00, and suppose that at address 0x00, the first 8 bytes looks like the following:
 /// [1,2,3,4,5,6,7,8]. If we wanted to write [25,26,27,28], it would result in the following: [25,26,27,28,0,0,0,0], clearing the rest of the bytes.
@@ -24,20 +23,24 @@ uint8_t STM32_internal_flash_write(uint32_t address, uint8_t *data, uint32_t len
 
     if (address < STM32_INTERNAL_FLASH_MEMORY_REGION_FLASH_BANK_1_ADDRESS)
     {
-        return 1;
+        return 10;
     }
 
     const uint32_t end_address = address + length;
-
+    if ((address < STM32_INTERNAL_FLASH_MEMORY_REGION_FLASH_BANK_2_ADDRESS)
+     && (end_address > STM32_INTERNAL_FLASH_MEMORY_REGION_FLASH_BANK_2_ADDRESS))
+    {
+        return 11; // Address range overlaps both flash banks, which we should not allow
+    }
     if (end_address > FLASH_BANK2_END)
     {
-        return 2;
+        return 20;
     }
 
     status->unlock_status = HAL_FLASH_Unlock();
     if (status->unlock_status != HAL_OK)
     {
-        return 3;
+        return 30;
     }
 
     // Clear all FLASH flags before starting the operation
@@ -77,12 +80,12 @@ uint8_t STM32_internal_flash_write(uint32_t address, uint8_t *data, uint32_t len
     status->lock_status = HAL_FLASH_Lock();
     if (status->lock_status != HAL_OK)
     {
-        return 4;
+        return 40;
     }
 
     if (status->write_status != HAL_OK)
     {
-        return 5;
+        return 50;
     }
 
     return 0;
@@ -111,7 +114,7 @@ uint8_t STM32_internal_flash_read(uint32_t address, uint8_t *buffer, uint32_t le
 /// @brief Erase pages from provided flash bank of flash memory
 /// @param flash_bank 1 or 2, which flash bank to erase 
 /// @param start_page_erase what page to start erasing from (0-255 for bank 1, 256-511 for bank 2, inclusive)
-/// @param number_of_pages_to_erase how many pages to erase
+/// @param number_of_pages_to_erase how many pages to erase. MAX is 256, MIN is 1.
 /// @param page_error address of page which failed on error, defaults to UINT32_MAX on success
 /// @return 0 on success, 1 if HAL_FLASH_Unlock() failed, 2 if HAL_FLASH_Lock() failed
 uint8_t STM32_internal_flash_page_erase(uint8_t flash_bank, uint16_t start_page_erase, uint16_t number_of_pages_to_erase, uint32_t *page_error)
@@ -121,18 +124,22 @@ uint8_t STM32_internal_flash_page_erase(uint8_t flash_bank, uint16_t start_page_
         return 1; // Invalid flash bank
     }
 
-    if (number_of_pages_to_erase < 1 || number_of_pages_to_erase > NUMBER_OF_PAGES_PER_FLASH_BANK)
+    if (flash_bank == 1 && (start_page_erase > FLASH_BANK_1_END_PAGE))
     {
-        return 2; // Invalid number of pages to erase
+        return 2; // Invalid page range for flash bank 1
     }
+    
+    if (flash_bank == 2 && (start_page_erase < FLASH_BANK_2_START_PAGE || start_page_erase > FLASH_BANK_2_END_PAGE))
+    {
+        return 3; // Invalid page range for flash bank 2
+    }
+    // Start page and flash bank are valid from this point
 
-    if (flash_bank == 1 && (start_page_erase >= FLASH_BANK_1_END_PAGE))
+    if ((number_of_pages_to_erase < 1)
+     || (number_of_pages_to_erase > NUMBER_OF_PAGES_PER_FLASH_BANK)
+     || (start_page_erase + number_of_pages_to_erase > NUMBER_OF_PAGES_PER_FLASH_BANK))
     {
-        return 3; // Invalid page range for flash bank 1
-    }
-    else if (flash_bank == 2 && (start_page_erase < FLASH_BANK_2_START_PAGE || start_page_erase > FLASH_BANK_2_END_PAGE))
-    {
-        return 4; // Invalid page range for flash bank 2
+        return 4; // Trying to erase more pages than available in the bank
     }
     
     __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
