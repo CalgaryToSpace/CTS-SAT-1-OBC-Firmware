@@ -134,19 +134,24 @@ uint8_t STM32_internal_flash_page_erase(uint8_t flash_bank, uint16_t start_page_
         return 3; // Invalid page range for flash bank 2
     }
     // Start page and flash bank are valid from this point
-
     if ((number_of_pages_to_erase < 1)
-     || (number_of_pages_to_erase > NUMBER_OF_PAGES_PER_FLASH_BANK)
-     || (start_page_erase + number_of_pages_to_erase > NUMBER_OF_PAGES_PER_FLASH_BANK))
+     || (number_of_pages_to_erase > NUMBER_OF_PAGES_PER_FLASH_BANK))
     {
         return 4; // Trying to erase more pages than available in the bank
+    }
+
+    const uint16_t end_page = start_page_erase + number_of_pages_to_erase - 1;
+    if ((flash_bank == 1 && end_page > FLASH_BANK_1_END_PAGE)
+     || (flash_bank == 2 && end_page > FLASH_BANK_2_END_PAGE))
+    {
+        return 5; // Trying to erase pages that are out of range for the flash bank
     }
     
     __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
 
     if (HAL_FLASH_Unlock() != HAL_OK)
     {
-        return 5;
+        return 6;
     }
 
     FLASH_EraseInitTypeDef EraseInitStruct =
@@ -163,17 +168,17 @@ uint8_t STM32_internal_flash_page_erase(uint8_t flash_bank, uint16_t start_page_
 
     if (HAL_FLASH_Lock() != HAL_OK)
     {
-        return 6;
+        return 7;
     }
 
     switch (erase_status)
     {
     case HAL_ERROR:
-        return 7;
-    case HAL_BUSY:
         return 8;
-    case HAL_TIMEOUT:
+    case HAL_BUSY:
         return 9;
+    case HAL_TIMEOUT:
+        return 10;
     // must be HAL_OK
     default:
         return 0;
