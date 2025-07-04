@@ -640,7 +640,7 @@ uint8_t TCMDEXEC_fs_benchmark_write_read(const char *args_str,
 /// @brief Telecommand: Write a file to internal flash memory from LittleFS.
 /// @param args_str
 /// - Arg 0: File name to read from LittleFS
-/// - Arg 1: Length to read from the file (in bytes). The maximum length to read is 1024 bytes (1kB).
+/// - Arg 1: Length to read from the file (in bytes). The maximum length to read is 4096 bytes (4kB).
 /// - Arg 2: Offset within the file to start reading (in bytes)
 /// - Arg 3: Address in internal flash memory to write to (in hex, 8 characters for 32-bit address)
 /// @note To use properly:
@@ -670,9 +670,9 @@ uint8_t TCMDEXEC_fs_write_file_to_internal_flash(const char *args_str, char *res
     }
  
     // Ensure the read length is not too large
-    // Limiting it to 1kB (1024 bytes)
+    // Limiting it to 4kB (4096 bytes)
     // because the smallest amount of flash memory we can erase is a page, which is 1kB
-    if (read_length > FLASH_PAGE_SIZE) { // 1kB max
+    if (read_length > FLASH_PAGE_SIZE) { // 4kB max
         snprintf(
             response_output_buf,
             response_output_buf_len,
@@ -729,38 +729,42 @@ uint8_t TCMDEXEC_fs_write_file_to_internal_flash(const char *args_str, char *res
 
     // If region is not erased, it will fail
     STM32_Internal_Flash_Write_Status_t write_status = {0};
-    const uint8_t write_result = STM32_internal_flash_write(write_address, file_content, read_length, &write_status);
+    const STM32_Internal_Flash_Write_Return_t write_result = STM32_internal_flash_write(write_address, file_content, read_length, &write_status);
     LOG_message(LOG_SYSTEM_ALL, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
-                "Write status: Write Status=%d, Lock Status=%d",
-        write_status.write_status, write_status.lock_status);
+                "Write Status=%d, Lock Status=%d, Unlock Status=%d",
+        write_status.write_status, write_status.lock_status, write_status.unlock_status);
     // Handle specific error codes
     switch (write_result)
     {
-        case 0:
+        case STM32_INTERNAL_FLASH_WRITE_SUCCESS:
             snprintf(response_output_buf,
                      response_output_buf_len,
                      "Successfully wrote %lu (0x%08lX) bytes from file '%s' to internal flash at address 0x%08lX",
                      (uint32_t)read_length, (uint32_t)read_length, arg_file_name, (uint32_t)write_address);
             return 0;
-        case 1:
+        case STM32_INTERNAL_FLASH_WRITE_ADDRESS_TOO_LOW:
             snprintf(response_output_buf, response_output_buf_len, "Error: Address too low for internal flash write.");
             break;
-        case 2:
+        case STM32_INTERNAL_FLASH_WRITE_ADDRESS_OVERLAPS_BOTH_FLASH_BANKS:
+            snprintf(response_output_buf, response_output_buf_len, "Error: Write address overlaps both flash banks, which is not allowed.");
+            break;
+        case STM32_INTERNAL_FLASH_WRITE_ADDRESS_TOO_HIGH:
             snprintf(response_output_buf, response_output_buf_len, "Error: Write exceeds internal flash memory bounds.");
             break;
-        case 3:
+        case STM32_INTERNAL_FLASH_WRITE_UNLOCK_FAILED:
             snprintf(response_output_buf, response_output_buf_len, "Error: Failed to unlock internal flash for writing.");
             break;
-        case 4:
+        case STM32_INTERNAL_FLASH_WRITE_LOCK_FAILED:
             snprintf(response_output_buf, response_output_buf_len, "Error: Failed to lock internal flash after writing.");
             break;
-        case 5:
+        case STM32_INTERNAL_FLASH_WRITE_OPERATION_FAILED:
             snprintf(response_output_buf, response_output_buf_len, "Error: Internal flash write operation failed.");
             break;
         default:
             snprintf(response_output_buf, response_output_buf_len, "Error: Unknown error during internal flash write.");
             break;
     }
-    return write_result <= 5 ? write_result : 8; // Return the error code if it's within the known range, otherwise return 8 for unknown error.
+    // Must be error
+    return 8;
 
 }
