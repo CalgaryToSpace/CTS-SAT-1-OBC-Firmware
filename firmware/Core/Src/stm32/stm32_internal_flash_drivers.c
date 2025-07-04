@@ -15,7 +15,7 @@
 /// @note Writes data in chunks of 8 bytes.
 /// Ex: Suppose we wanted to write to address 0x00, and suppose that at address 0x00, the first 8 bytes looks like the following:
 /// [1,2,3,4,5,6,7,8]. If we wanted to write [25,26,27,28], it would result in the following: [25,26,27,28,0,0,0,0], clearing the rest of the bytes.
-uint8_t STM32_internal_flash_write(uint32_t address, uint8_t *data, uint32_t length, STM32_Internal_Flash_Write_Status_t *status)
+STM32_Internal_Flash_Write_Return_t STM32_internal_flash_write(uint32_t address, uint8_t *data, uint32_t length, STM32_Internal_Flash_Write_Status_t *status)
 {
     status->lock_status = HAL_OK;
     status->unlock_status = HAL_OK;
@@ -23,24 +23,24 @@ uint8_t STM32_internal_flash_write(uint32_t address, uint8_t *data, uint32_t len
 
     if (address < STM32_INTERNAL_FLASH_MEMORY_REGION_FLASH_BANK_1_ADDRESS)
     {
-        return 10;
+        return STM32_INTERNAL_FLASH_WRITE_ADDRESS_TOO_LOW;
     }
 
     const uint32_t end_address = address + length;
     if ((address < STM32_INTERNAL_FLASH_MEMORY_REGION_FLASH_BANK_2_ADDRESS)
      && (end_address > STM32_INTERNAL_FLASH_MEMORY_REGION_FLASH_BANK_2_ADDRESS))
     {
-        return 11; // Address range overlaps both flash banks, which we should not allow
+        return STM32_INTERNAL_FLASH_WRITE_ADDRESS_OVERLAPS_BOTH_FLASH_BANKS; // Address range overlaps both flash banks, which we should not allow
     }
     if (end_address > FLASH_BANK2_END)
     {
-        return 20;
+        return STM32_INTERNAL_FLASH_WRITE_ADDRESS_TOO_HIGH;
     }
 
     status->unlock_status = HAL_FLASH_Unlock();
     if (status->unlock_status != HAL_OK)
     {
-        return 30;
+        return STM32_INTERNAL_FLASH_WRITE_UNLOCK_FAILED;
     }
 
     // Clear all FLASH flags before starting the operation
@@ -80,15 +80,15 @@ uint8_t STM32_internal_flash_write(uint32_t address, uint8_t *data, uint32_t len
     status->lock_status = HAL_FLASH_Lock();
     if (status->lock_status != HAL_OK)
     {
-        return 40;
+        return STM32_INTERNAL_FLASH_WRITE_LOCK_FAILED;
     }
 
     if (status->write_status != HAL_OK)
     {
-        return 50;
+        return STM32_INTERNAL_FLASH_WRITE_OPERATION_FAILED;
     }
 
-    return 0;
+    return STM32_INTERNAL_FLASH_WRITE_SUCCESS;
 }
 
 /// @brief Reads data from the flash memory

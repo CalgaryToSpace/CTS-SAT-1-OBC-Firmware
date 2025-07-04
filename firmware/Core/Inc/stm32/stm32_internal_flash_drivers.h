@@ -31,7 +31,18 @@ typedef struct
     HAL_StatusTypeDef write_status;
 } STM32_Internal_Flash_Write_Status_t;
 
-uint8_t STM32_internal_flash_write(uint32_t address, uint8_t *data, uint32_t length, STM32_Internal_Flash_Write_Status_t *status);
+typedef enum
+{
+    STM32_INTERNAL_FLASH_WRITE_SUCCESS,
+    STM32_INTERNAL_FLASH_WRITE_ADDRESS_TOO_LOW,
+    STM32_INTERNAL_FLASH_WRITE_ADDRESS_TOO_HIGH,
+    STM32_INTERNAL_FLASH_WRITE_ADDRESS_OVERLAPS_BOTH_FLASH_BANKS,
+    STM32_INTERNAL_FLASH_WRITE_UNLOCK_FAILED,
+    STM32_INTERNAL_FLASH_WRITE_LOCK_FAILED,
+    STM32_INTERNAL_FLASH_WRITE_OPERATION_FAILED,
+} STM32_Internal_Flash_Write_Return_t;
+
+STM32_Internal_Flash_Write_Return_t STM32_internal_flash_write(uint32_t address, uint8_t *data, uint32_t length, STM32_Internal_Flash_Write_Status_t *status);
 
 uint8_t STM32_internal_flash_read(uint32_t address, uint8_t *buffer, uint32_t length);
 
