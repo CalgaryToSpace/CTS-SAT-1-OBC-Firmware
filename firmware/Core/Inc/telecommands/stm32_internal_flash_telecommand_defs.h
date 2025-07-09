@@ -9,7 +9,10 @@ uint8_t TCMDEXEC_stm32_internal_flash_write(const char *args_str,
 uint8_t TCMDEXEC_stm32_internal_flash_read(const char *args_str,
                                            char *response_output_buf, uint16_t response_output_buf_len);
 
-uint8_t TCMDEXEC_stm32_internal_flash_erase(const char *args_str,
+uint8_t TCMDEXEC_stm32_internal_flash_page_erase(const char *args_str,
+                                            char *response_output_buf, uint16_t response_output_buf_len);
+
+uint8_t TCMDEXEC_stm32_internal_flash_bank_erase(const char *args_str,
                                             char *response_output_buf, uint16_t response_output_buf_len);
 
 uint8_t TCMDEXEC_stm32_internal_flash_get_option_bytes(const char *args_str,
