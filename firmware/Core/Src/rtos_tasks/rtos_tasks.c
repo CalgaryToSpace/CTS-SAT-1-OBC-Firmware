@@ -20,6 +20,9 @@
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
+#include <lfs.h>
+
+extern lfs_file_t current_log_file;
 
 /// @brief The period of the heartbeat task, in milliseconds. 0 to disable.
 uint32_t TASK_heartbeat_period_ms = 10990;
