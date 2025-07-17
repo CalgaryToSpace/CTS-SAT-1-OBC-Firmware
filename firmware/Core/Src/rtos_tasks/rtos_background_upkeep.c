@@ -126,7 +126,9 @@ static void subtask_send_beacon(void) {
     // TOOD: If complex beacon packet is enabled, also send that too.
 }
 
-extern lfs_file_t current_log_file;
+#define LOG_FILE_SYNC_INTERVAL_MS 15000 // 60,000 is 1 minute.
+extern lfs_file_t current_log_file; // Defined in log/log_sinks.c
+extern int8_t log_file_is_open; // Defined in log/log_sinks.c
 int64_t last_log_file_sync_timestamp = 0;
 static void subtask_set_and_sync_current_log_file() {
     if (!LFS_is_lfs_mounted) {
@@ -134,24 +136,23 @@ static void subtask_set_and_sync_current_log_file() {
             "Error syncing current log file: LFS not mounted");// FIXME(Issue #398): log to memory buffer
         return;
     }
-
-    int64_t file_not_yet_open = last_log_file_sync_timestamp== 0;
-    int64_t sync_interval_has_not_passed = (TIME_get_current_system_uptime_ms() - last_log_file_sync_timestamp < 15000);
-    if (file_not_yet_open || sync_interval_has_not_passed) {
+    int64_t sync_interval_has_not_passed = (TIME_get_current_system_uptime_ms() - last_log_file_sync_timestamp < LOG_FILE_SYNC_INTERVAL_MS);
+    if (!log_file_is_open || sync_interval_has_not_passed) {
         return;
     }
 
     LOG_message(LOG_SYSTEM_EPS, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_FILE),
-        "-------------------------Syncing current log file--------------------");
+        "-------------------------Syncing log file--------------------");
     
     int32_t sync_result = lfs_file_sync(&LFS_filesystem, &current_log_file);
     if (sync_result < 0) {
         LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE),
-            "Failed to sync log file: %d", sync_result);
+            "Failed to sync log file: %ld", sync_result);
+        return;
     }
-
     last_log_file_sync_timestamp = TIME_get_current_system_uptime_ms();
 }
+#undef LOG_FILE_SYNC_INTERVAL_MS
 
 void TASK_background_upkeep(void *argument) {
     TASK_HELP_start_of_task();
