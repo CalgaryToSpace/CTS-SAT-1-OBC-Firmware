@@ -11,8 +11,12 @@
 #include "cmsis_os.h"
 
 #include "eps_drivers/eps_power_management.h"
+#include <lfs.h>
+#include <littlefs_helper.h>
+#include <stdio.h>
 
 static uint32_t EPS_monitor_last_uptime_ms = 0;
+
 
 static void subtask_monitor_eps_power(void) {
     // EPS overcurrent monitor upkeep
@@ -122,6 +126,33 @@ static void subtask_send_beacon(void) {
     // TOOD: If complex beacon packet is enabled, also send that too.
 }
 
+extern lfs_file_t current_log_file;
+int64_t last_log_file_sync_timestamp = 0;
+static void subtask_set_and_sync_current_log_file() {
+    if (!LFS_is_lfs_mounted) {
+        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE),
+            "Error syncing current log file: LFS not mounted");// FIXME(Issue #398): log to memory buffer
+        return;
+    }
+
+    int64_t file_not_yet_open = last_log_file_sync_timestamp== 0;
+    int64_t sync_interval_has_not_passed = (TIME_get_current_system_uptime_ms() - last_log_file_sync_timestamp < 15000);
+    if (file_not_yet_open || sync_interval_has_not_passed) {
+        return;
+    }
+
+    LOG_message(LOG_SYSTEM_EPS, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_FILE),
+        "-------------------------Syncing current log file--------------------");
+    
+    int32_t sync_result = lfs_file_sync(&LFS_filesystem, &current_log_file);
+    if (sync_result < 0) {
+        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE),
+            "Failed to sync log file: %d", sync_result);
+    }
+
+    last_log_file_sync_timestamp = TIME_get_current_system_uptime_ms();
+}
+
 void TASK_background_upkeep(void *argument) {
     TASK_HELP_start_of_task();
     while(1) {
@@ -135,6 +166,9 @@ void TASK_background_upkeep(void *argument) {
         osDelay(10); // Yield.
 
         subtask_update_rf_switch();
+        osDelay(10); // Yield.
+
+        subtask_set_and_sync_current_log_file();
         osDelay(10); // Yield.
         
         osDelay(3000);
