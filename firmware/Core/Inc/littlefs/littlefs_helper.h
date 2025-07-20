@@ -25,6 +25,7 @@ extern uint8_t LFS_is_lfs_mounted;
 #define LFS_MAX_PATH_LENGTH 250
 
 /*---------------------------FUNCTIONS---------------------------*/
+uint8_t LFS_init();
 int8_t LFS_format();
 int8_t LFS_mount();
 int8_t LFS_unmount();
