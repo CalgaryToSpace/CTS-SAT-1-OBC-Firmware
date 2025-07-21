@@ -23,6 +23,16 @@
 
 #define FLASH_CHIP_BLOCK_SIZE_BYTES FLASH_CHIP_PAGE_SIZE_BYTES * FLASH_CHIP_PAGES_PER_BLOCK
 
+/*----------------------------- FLASH DATA TYPES -----------------------------*/
+
+/// @brief A struct representing the the location of a block, page and byte within that page. 
+///        More compact representations are available (uint32_t) but this is easier to use.
+typedef struct {
+    uint32_t block_address; // Address of the start of the block in bytes.
+    uint32_t row_address; //Address to the start of a page within the block in bytes.
+    uint32_t col_address; // Address to a byte within the page in bytes.
+} FLASH_Physical_Address_t;
+
 
 
 /*-------------------------------FLASH FEATURES-------------------------------*/
@@ -50,9 +60,9 @@ static const uint8_t FLASH_SR1_ERASE_ERROR_MASK = (1 << 2);
 
 /*-----------------------------DRIVER FUNCTIONS-----------------------------*/
 FLASH_error_enum_t FLASH_init(uint8_t chip_number);
-FLASH_error_enum_t FLASH_erase(uint8_t chip_number, lfs_block_t block);
-FLASH_error_enum_t FLASH_program_block_region(uint8_t chip_number, lfs_block_t block, lfs_off_t offset, uint8_t *data, lfs_size_t data_len);
-FLASH_error_enum_t FLASH_read_page(uint8_t chip_number, lfs_block_t block,lfs_off_t offset, uint8_t *rx_buffer, lfs_size_t rx_buffer_len);
+FLASH_error_enum_t FLASH_erase_block(uint8_t chip_number, FLASH_Physical_Address_t address);
+FLASH_error_enum_t FLASH_program_page(uint8_t chip_number, FLASH_Physical_Address_t address, uint8_t *data, lfs_size_t data_len);
+FLASH_error_enum_t FLASH_read_page(uint8_t chip_number, FLASH_Physical_Address_t address, uint8_t *rx_buffer, lfs_size_t rx_buffer_len);
 
 FLASH_error_enum_t FLASH_is_reachable(uint8_t chip_number);
 FLASH_error_enum_t FLASH_reset(uint8_t chip_number);
