@@ -40,7 +40,7 @@ cleanup:
 
 
 
-FLASH_error_enum_t FLASH_program_page(uint8_t chip_number, FLASH_Physical_Address_t address, uint8_t *data, lfs_size_t data_len) {
+FLASH_error_enum_t FLASH_program_page(uint8_t chip_number, FLASH_Physical_Address_t address, uint8_t *data, uint32_t data_len) {
 
     // FLASH_disable_block_lock(chip_number); // TODO: why do we need to disable block lock? it's never turned back on?
     FLASH_write_enable(chip_number);
@@ -81,7 +81,7 @@ cleanup:
 
 
 
-FLASH_error_enum_t FLASH_read_page(uint8_t chip_number, FLASH_Physical_Address_t address, uint8_t *rx_buffer, lfs_size_t rx_buffer_len) {
+FLASH_error_enum_t FLASH_read_page(uint8_t chip_number, FLASH_Physical_Address_t address, uint8_t *rx_buffer, uint32_t rx_buffer_len) {
 
     uint64_t row_address = address.row_address;
 

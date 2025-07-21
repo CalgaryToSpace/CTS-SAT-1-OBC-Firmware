@@ -1,5 +1,5 @@
-#ifndef __FLASH_INTERNAL_SPI_H__
-#define __FLASH_INTERNAL_SPI_H__
+#ifndef __INCLUDE_GUARD__FLASH_INTERNAL_SPI_H__
+#define __INCLUDE_GUARD__FLASH_INTERNAL_SPI_H__
 #include <stdint.h>
 #include "main.h"
 

@@ -1,10 +1,9 @@
-#ifndef INCLUDE_GUARD__FLASH_DRIVER_H__
-#define INCLUDE_GUARD__FLASH_DRIVER_H__
+#ifndef __INCLUDE_GUARD__FLASH_DRIVER_H__
+#define __INCLUDE_GUARD__FLASH_DRIVER_H__
 
 /*-----------------------------INCLUDES-----------------------------*/
 #include <stdint.h>
 
-#include "littlefs/lfs.h"
 #include "littlefs/flash_internal_spi.h"
 
 /*----------------------------- CONFIG VARIABLES ----------------------------- */
@@ -26,7 +25,7 @@
 /*----------------------------- FLASH DATA TYPES -----------------------------*/
 
 /*
-A struct representing the the location of a block, page and byte within that page. More compact representations are available (uint32_t) but this is easier to use.
+A struct representing the the location of a block, page and byte within that page. More compact representations are available (uint64_t) but this is easier to use.
 - block_address: address to the start of a block in pages (NOT bytes or blocks).
 - row_address: address to the start of a page in pages (NOT bytes)
 - col_address: address to the specific byte in the page (in bytes, between 0 and 2047)
@@ -67,11 +66,11 @@ FLASH_error_enum_t FLASH_init(uint8_t chip_number);
 FLASH_error_enum_t FLASH_read_status_register(uint8_t chip_number, uint8_t *response);
 
 FLASH_error_enum_t FLASH_erase_block(uint8_t chip_number, FLASH_Physical_Address_t address);
-FLASH_error_enum_t FLASH_program_page(uint8_t chip_number, FLASH_Physical_Address_t address, uint8_t *data, lfs_size_t data_len);
-FLASH_error_enum_t FLASH_read_page(uint8_t chip_number, FLASH_Physical_Address_t address, uint8_t *rx_buffer, lfs_size_t rx_buffer_len);
+FLASH_error_enum_t FLASH_program_page(uint8_t chip_number, FLASH_Physical_Address_t address, uint8_t *data, uint32_t data_len);
+FLASH_error_enum_t FLASH_read_page(uint8_t chip_number, FLASH_Physical_Address_t address, uint8_t *rx_buffer, uint32_t rx_buffer_len);
 
 
 FLASH_error_enum_t FLASH_is_reachable(uint8_t chip_number);
 FLASH_error_enum_t FLASH_reset(uint8_t chip_number);
 
-#endif /* INCLUDE_GUARD__FLASH_DRIVER_H__ */
+#endif /* __INCLUDE_GUARD__FLASH_DRIVER_H__ */
