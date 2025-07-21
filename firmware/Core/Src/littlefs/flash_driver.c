@@ -150,7 +150,7 @@ FLASH_error_enum_t FLASH_reset(uint8_t chip_number) {
 
 
 static FLASH_error_enum_t FLASH_wait_until_ready(uint8_t chip_number){
-    const uint8_t max_attempts = 10; //TODO: Decide on what this should be.
+    const uint8_t max_attempts = 20; //TODO: Decide on what this should be. Probably too low right now.
     uint8_t attempts = 0;
     
 

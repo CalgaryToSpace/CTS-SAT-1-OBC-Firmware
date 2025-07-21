@@ -28,9 +28,9 @@
 /// @brief A struct representing the the location of a block, page and byte within that page. 
 ///        More compact representations are available (uint32_t) but this is easier to use.
 typedef struct {
-    uint32_t block_address; // Address of the start of the block in bytes.
-    uint32_t row_address; //Address to the start of a page within the block in bytes.
-    uint32_t col_address; // Address to a byte within the page in bytes.
+    uint32_t block_address;
+    uint32_t row_address;
+    uint32_t col_address;
 } FLASH_Physical_Address_t;
 
 
