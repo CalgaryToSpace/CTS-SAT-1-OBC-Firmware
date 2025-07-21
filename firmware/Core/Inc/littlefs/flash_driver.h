@@ -64,9 +64,12 @@ static const uint8_t FLASH_SR1_ERASE_ERROR_MASK = (1 << 2);
 
 /*-----------------------------DRIVER FUNCTIONS-----------------------------*/
 FLASH_error_enum_t FLASH_init(uint8_t chip_number);
+FLASH_error_enum_t FLASH_read_status_register(uint8_t chip_number, uint8_t *response);
+
 FLASH_error_enum_t FLASH_erase_block(uint8_t chip_number, FLASH_Physical_Address_t address);
 FLASH_error_enum_t FLASH_program_page(uint8_t chip_number, FLASH_Physical_Address_t address, uint8_t *data, lfs_size_t data_len);
 FLASH_error_enum_t FLASH_read_page(uint8_t chip_number, FLASH_Physical_Address_t address, uint8_t *rx_buffer, lfs_size_t rx_buffer_len);
+
 
 FLASH_error_enum_t FLASH_is_reachable(uint8_t chip_number);
 FLASH_error_enum_t FLASH_reset(uint8_t chip_number);

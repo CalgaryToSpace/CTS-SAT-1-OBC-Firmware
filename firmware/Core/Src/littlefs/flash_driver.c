@@ -3,7 +3,6 @@
 
 // static functions which are defined at the bottom of this file.
 static FLASH_error_enum_t FLASH_disable_block_lock(uint8_t chip_number);
-static FLASH_error_enum_t FLASH_read_status_register(uint8_t chip_number, uint8_t *response);
 static FLASH_error_enum_t FLASH_write_enable(uint8_t chip_number);
 // static FLASH_error_enum_t FLASH_read_block_lock_register(uint8_t chip_number, uint8_t *response);
 static FLASH_error_enum_t FLASH_write_disable(uint8_t chip_number);
@@ -149,8 +148,20 @@ FLASH_error_enum_t FLASH_reset(uint8_t chip_number) {
 
 
 
+FLASH_error_enum_t FLASH_read_status_register(uint8_t chip_number, uint8_t *response) {
+
+    uint8_t cmd_buff[] = {FLASH_CMD_GET_FEATURES, FLASH_FEAT_STATUS};
+    FLASH_SPI_Data_t cmd = {.data = cmd_buff, .len = sizeof(cmd_buff)};
+
+    return FLASH_SPI_send_command_receive_response(&cmd, response, sizeof(uint8_t), chip_number);
+}
+
+
+
+
+
 static FLASH_error_enum_t FLASH_wait_until_ready(uint8_t chip_number){
-    const uint8_t max_attempts = 20; //TODO: Decide on what this should be. Probably too low right now.
+    const uint8_t max_attempts = 20; //TODO: Decide on what this should be. 10 was too low, 20 seems to work well.
     uint8_t attempts = 0;
     
 
@@ -188,18 +199,6 @@ static FLASH_error_enum_t FLASH_disable_block_lock(uint8_t chip_number) {
 
     return FLASH_SPI_send_command(&cmd, chip_number);
 }  
-
-
-
-
-
-static FLASH_error_enum_t FLASH_read_status_register(uint8_t chip_number, uint8_t *response) {
-
-    uint8_t cmd_buff[] = {FLASH_CMD_GET_FEATURES, FLASH_FEAT_STATUS};
-    FLASH_SPI_Data_t cmd = {.data = cmd_buff, .len = sizeof(cmd_buff)};
-
-    return FLASH_SPI_send_command_receive_response(&cmd, response, sizeof(uint8_t), chip_number);
-}
 
 
 
