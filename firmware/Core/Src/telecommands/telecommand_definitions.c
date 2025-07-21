@@ -225,40 +225,10 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
 
     // ****************** SECTION: flash_telecommand_defs ******************
     {
-        .tcmd_name = "flash_activate_each_cs",
-        .tcmd_func = TCMDEXEC_flash_activate_each_cs,
-        .number_of_args = 0,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },
-    {
         .tcmd_name = "flash_each_is_reachable",
         .tcmd_func = TCMDEXEC_flash_each_is_reachable,
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },
-    {
-        .tcmd_name = "flash_read_hex",
-        .tcmd_func = TCMDEXEC_flash_read_hex,
-        .number_of_args = 3,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },
-    {
-        .tcmd_name = "flash_write_hex",
-        .tcmd_func = TCMDEXEC_flash_write_hex,
-        .number_of_args = 3,
-        .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
-    },
-    {
-        .tcmd_name = "flash_erase",
-        .tcmd_func = TCMDEXEC_flash_erase,
-        .number_of_args = 2,
-        .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
-    },
-    {
-        .tcmd_name = "flash_benchmark_erase_write_read",
-        .tcmd_func = TCMDEXEC_flash_benchmark_erase_write_read,
-        .number_of_args = 3,
-        .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
     },
     {
         .tcmd_name = "flash_reset",
@@ -266,18 +236,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_IN_PROGRESS,
     },
-    {
-        .tcmd_name = "flash_read_status_register",
-        .tcmd_func = TCMDEXEC_flash_read_status_register,
-        .number_of_args = 1,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },
-    {
-        .tcmd_name = "flash_write_enable",
-        .tcmd_func = TCMDEXEC_flash_write_enable,
-        .number_of_args = 1,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },
+    // {
+    //     .tcmd_name = "flash_read_status_register",
+    //     .tcmd_func = TCMDEXEC_flash_read_status_register,
+    //     .number_of_args = 1,
+    //     .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    // },
     // ****************** END SECTION: flash_telecommand_defs ******************
 
     // ****************** SECTION: lfs_telecommand_defs ******************
