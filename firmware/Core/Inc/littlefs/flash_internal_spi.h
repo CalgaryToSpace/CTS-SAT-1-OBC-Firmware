@@ -1,7 +1,6 @@
 #ifndef __INCLUDE_GUARD__FLASH_INTERNAL_SPI_H__
 #define __INCLUDE_GUARD__FLASH_INTERNAL_SPI_H__
 #include <stdint.h>
-#include "main.h"
 
 
 /*-----------------------------FLASH ERROR CODES-----------------------------*/
@@ -55,4 +54,4 @@ FLASH_error_enum_t FLASH_SPI_send_command_with_data(FLASH_SPI_Data_t *cmd,FLASH_
 FLASH_error_enum_t FLASH_SPI_send_command_receive_response(FLASH_SPI_Data_t *cmd, uint8_t *response, uint16_t response_len, uint8_t chip_number);
 
 
-#endif // __FLASH_INTERNAL_SPI_H__
+#endif // __INCLUDE_GUARD__FLASH_INTERNAL_SPI_H__

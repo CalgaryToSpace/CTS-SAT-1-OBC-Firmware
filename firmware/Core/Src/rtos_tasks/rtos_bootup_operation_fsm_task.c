@@ -6,6 +6,7 @@
 #include "antenna_deploy_drivers/ant_commands.h"
 #include "timekeeping/timekeeping.h"
 #include "log/log.h"
+#include "main.h"
 
 /// @brief The uptime, as defined in the Launch Provider ICD, at which the antennas should be deployed.
 uint32_t COMMS_uptime_to_start_ant_deployment_sec = 30 * 60;
