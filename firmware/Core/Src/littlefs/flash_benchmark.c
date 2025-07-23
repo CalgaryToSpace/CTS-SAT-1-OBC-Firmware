@@ -10,7 +10,7 @@
 /// @brief Benchmarks the erase/read/write operations on the flash memory module.
 /// @param chip_num Chip number to use.
 /// @param test_data_address Address to erase, write, and then read back from.
-/// @param test_data_length Must be <= 512. Otherwise, the verification will fail.
+/// @param test_data_length Must be <= 2048 byte (the size of a page) since only one page is read in the benchmark.
 /// @param response_str 
 /// @param response_str_len 
 /// @return 0 on success. 1 if erase failed. 2 if write failed. 3 if read failed. 4 if verify failed.
@@ -18,6 +18,14 @@
 ///       The test data is a sequence of bytes from 0 to 255. The response_str is valid whether or not there are errors.
 uint8_t FLASH_benchmark_erase_write_read(uint8_t chip_num, uint32_t test_data_address, uint16_t test_data_length, char* response_str, uint16_t response_str_len) {
     response_str[0] = '\0';
+
+    if (test_data_length > 2048) {
+        snprintf(
+            &response_str[strlen(response_str)],
+            response_str_len - strlen(response_str),
+            "Error: test_data_length must be <= 2048 bytes\n");
+        return 5;
+    }
 
     FLASH_Physical_Address_t physical_address = {
         .block_address = test_data_address, 
