@@ -6,7 +6,6 @@
 #include <string.h>
 #include <stdio.h>
 
-SPI_HandleTypeDef *hspi_ptr = &hspi1;
 
 /// @brief Benchmarks the erase/read/write operations on the flash memory module.
 /// @param chip_num Chip number to use.
@@ -20,9 +19,13 @@ SPI_HandleTypeDef *hspi_ptr = &hspi1;
 uint8_t FLASH_benchmark_erase_write_read(uint8_t chip_num, uint32_t test_data_address, uint16_t test_data_length, char* response_str, uint16_t response_str_len) {
     response_str[0] = '\0';
 
+    FLASH_Physical_Address_t physical_address = {
+        .block_address = test_data_address, 
+        .row_address = test_data_address, 
+        .col_address = 0};
     // Erase
     const uint32_t erase_start_time = HAL_GetTick();
-    const FLASH_error_enum_t erase_result = FLASH_erase(hspi_ptr, chip_num, 0);
+    const FLASH_error_enum_t erase_result = FLASH_erase_block(chip_num, physical_address);
     if (erase_result != 0) {
         snprintf(
             &response_str[strlen(response_str)],
@@ -45,7 +48,7 @@ uint8_t FLASH_benchmark_erase_write_read(uint8_t chip_num, uint32_t test_data_ad
     }
     // TODO: for very large writes, split into multiple writes (instead of allocating the whole amount on the stack)
     const uint32_t write_send_start_time = HAL_GetTick();
-    const FLASH_error_enum_t write_result = FLASH_write_data(hspi_ptr, chip_num, test_data_address, write_buffer, test_data_length);
+    const FLASH_error_enum_t write_result = FLASH_program_page(chip_num, physical_address, write_buffer, test_data_length);
     if (write_result != 0) {
         snprintf(
             &response_str[strlen(response_str)],
@@ -63,7 +66,7 @@ uint8_t FLASH_benchmark_erase_write_read(uint8_t chip_num, uint32_t test_data_ad
     // Read
     const uint32_t read_start_time = HAL_GetTick();
     uint8_t read_buffer[test_data_length];
-    const FLASH_error_enum_t read_result = FLASH_read_data(hspi_ptr, chip_num, test_data_address, read_buffer, test_data_length);
+    const FLASH_error_enum_t read_result = FLASH_read_page(chip_num, physical_address, read_buffer, test_data_length);
     if (read_result != 0) {
         snprintf(
             &response_str[strlen(response_str)],
