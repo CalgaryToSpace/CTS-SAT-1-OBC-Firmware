@@ -6,7 +6,7 @@ SPI_HandleTypeDef *hspi_lfs_ptr = &hspi1;
 
 // -----------------------------LITTLEFS CONFIG FUNCTIONS-----------------------------
 
-static FLASH_Physical_Address_t _block_plus_offset_to_address(lfs_block_t block, lfs_off_t offset) {
+inline static FLASH_Physical_Address_t _block_plus_offset_to_address(lfs_block_t block, lfs_off_t offset) {
 	FLASH_Physical_Address_t address = {
 		.block_address = (block * FLASH_CHIP_BLOCK_SIZE_BYTES)/ FLASH_CHIP_PAGE_SIZE_BYTES,
 		.row_address = ((block * FLASH_CHIP_BLOCK_SIZE_BYTES) + (offset - (offset % FLASH_CHIP_PAGE_SIZE_BYTES))) / FLASH_CHIP_PAGE_SIZE_BYTES, 
