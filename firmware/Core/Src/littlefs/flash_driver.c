@@ -169,32 +169,24 @@ void FLASH_enable_then_disable_chip_select(uint8_t chip_number) {
 
 
 
-static FLASH_error_enum_t FLASH_wait_until_ready(uint8_t chip_number){
+static FLASH_error_enum_t FLASH_wait_until_ready(uint8_t chip_number) {
     const uint8_t max_attempts = 20; //TODO: Decide on what this should be. 10 was too low, 20 seems to work well.
-    uint8_t attempts = 0;
     
 
-    uint8_t status_register;
-    FLASH_error_enum_t result = FLASH_read_status_register(chip_number, &status_register);
-    if (result != FLASH_ERR_OK) {
-        return result;
-    }
+    for (uint16_t attempts = 0; attempts < max_attempts; attempts++) {
 
-    uint8_t flash_is_busy = (status_register & FLASH_OP_IN_PROGRESS_MASK);
-    while (flash_is_busy && attempts < max_attempts) {
-
-        result = FLASH_read_status_register(chip_number, &status_register);
-        if (result != FLASH_ERR_OK) { return result; }
+        uint8_t status_register; 
+        FLASH_error_enum_t result = FLASH_read_status_register(chip_number, &status_register);
+        if (result != FLASH_ERR_OK) {
+            return result;
+        }
             
-        flash_is_busy = (status_register & FLASH_OP_IN_PROGRESS_MASK);
-        attempts++;
+        uint8_t flash_is_busy = (status_register & FLASH_OP_IN_PROGRESS_MASK);
+        if (!flash_is_busy) { 
+            return FLASH_ERR_OK; }
     }
 
-    if (flash_is_busy) {
-        return FLASH_ERR_DEVICE_BUSY_TIMEOUT;
-    } else {
-        return FLASH_ERR_OK;
-    }
+    return FLASH_ERR_DEVICE_BUSY_TIMEOUT;
 }
 
 
