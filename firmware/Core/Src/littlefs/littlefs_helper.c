@@ -10,10 +10,6 @@
 // Variables to track LittleFS on Flash Memory Module
 uint8_t LFS_is_lfs_mounted = 0;
 
-// NAND Flash Memory Datasheet https://www.farnell.com/datasheets/3151163.pdf
-// Each page is divided into a 2048-byte data storage region, and a 128 bytes spare area (2176 bytes total).
-#define FLASH_CHIP_PAGE_SIZE_BYTES 2048
-#define FLASH_CHIP_BLOCK_SIZE_BYTES FLASH_CHIP_PAGE_SIZE_BYTES * FLASH_CHIP_PAGES_PER_BLOCK
 #define FLASH_LOOKAHEAD_SIZE 16
 
 // LittleFS Buffers for reading and writing
@@ -52,6 +48,17 @@ struct lfs_file_config LFS_file_cfg = {
     .attrs = NULL};
 
 // ----------------------------- LittleFS Functions -----------------------------
+lfs_file_t LFS_file; // TODO: remove later.
+
+uint8_t LFS_init() {
+   FLASH_init(0); // TODO: probably need initialize all other chips.
+   LFS_ensure_mounted();
+
+   // Create directories which must exist here.
+   LFS_make_directory("./logs");
+
+   return 0;
+}
 
 /// @brief Formats Memory Module so it can successfully mount LittleFS
 /// @param None
