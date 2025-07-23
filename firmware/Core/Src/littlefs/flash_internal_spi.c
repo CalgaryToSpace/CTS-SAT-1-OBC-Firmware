@@ -10,7 +10,7 @@ static void _chip_select_high();
 SPI_HandleTypeDef *hspi_flash_ptr = &hspi1;
 
 // TODO: double check what this should be.
-#define FLASH_SPI_TIMEOUT_MS 25
+const uint16_t FLASH_SPI_TIMEOUT_MS =  25;
 
 
 FLASH_error_enum_t FLASH_SPI_send_command(FLASH_SPI_Data_t* cmd, uint8_t chip_number) {
@@ -70,7 +70,20 @@ FLASH_error_enum_t FLASH_SPI_send_command_receive_response(FLASH_SPI_Data_t *cmd
 
 
 
-static void _chip_select_low(uint8_t chip_number)
+void FLASH_SPI_enable_then_disable_chip_select(uint8_t chip_number) {
+
+    _chip_select_high();
+
+    _chip_select_low(chip_number);
+    HAL_Delay(1000);
+    _chip_select_high();
+}
+
+
+
+
+
+void _chip_select_low(uint8_t chip_number)
 {
     _chip_select_high();
     // NOTE: the "reset low" activate action must be AFTER all other pins are "set high"
@@ -98,7 +111,7 @@ static void _chip_select_low(uint8_t chip_number)
 
 
 /// @brief Deactivates the chip select for all lines.
-static void _chip_select_high() {
+void _chip_select_high() {
     HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_0_GPIO_Port, PIN_MEM_NCS_FLASH_0_Pin, GPIO_PIN_SET);
     HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_1_GPIO_Port, PIN_MEM_NCS_FLASH_1_Pin, GPIO_PIN_SET);
     HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_2_GPIO_Port, PIN_MEM_NCS_FLASH_2_Pin, GPIO_PIN_SET);
@@ -107,6 +120,3 @@ static void _chip_select_high() {
     HAL_GPIO_WritePin(PIN_MEM_NCS_FRAM_0_GPIO_Port, PIN_MEM_NCS_FRAM_0_Pin, GPIO_PIN_SET);
     HAL_GPIO_WritePin(PIN_MEM_NCS_FRAM_1_GPIO_Port, PIN_MEM_NCS_FRAM_1_Pin, GPIO_PIN_SET);
 }
-
-
-#undef FLASH_SPI_TIMEOUT_MS

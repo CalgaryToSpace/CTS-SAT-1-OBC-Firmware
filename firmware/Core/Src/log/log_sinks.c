@@ -3,9 +3,10 @@
 #include "littlefs/lfs.h"
 #include "littlefs/littlefs_helper.h"
 #include "comms_drivers/comms_tx.h"
-#include "timekeeping/timekeeping.h"
+// #include "timekeeping/timekeeping.h"
 #include <stdio.h>
 
+#include "main.h"
 
 extern UART_HandleTypeDef hlpuart1;
 extern uint8_t LFS_is_lfs_mounted;

@@ -3,7 +3,6 @@
 
 // static functions which are defined at the bottom of this file.
 static FLASH_error_enum_t FLASH_disable_block_lock(uint8_t chip_number);
-static FLASH_error_enum_t FLASH_read_status_register(uint8_t chip_number, uint8_t *response);
 static FLASH_error_enum_t FLASH_write_enable(uint8_t chip_number);
 // static FLASH_error_enum_t FLASH_read_block_lock_register(uint8_t chip_number, uint8_t *response);
 static FLASH_error_enum_t FLASH_write_disable(uint8_t chip_number);
@@ -19,9 +18,8 @@ FLASH_error_enum_t FLASH_erase_block(uint8_t chip_number, FLASH_Physical_Address
 
     FLASH_write_enable(chip_number);
 
-    //TODO: not sure if I'm doing the memory mapping correctly. 
     // Send erase command along with the address of the block.
-    uint16_t block_address = address.block_address;
+    uint32_t block_address = address.block_address;
     uint8_t cmd_buff[] = {FLASH_CMD_BLOCK_ERASE, ((block_address >> 16) & 0xFF), ((block_address >> 8) & 0xFF), (block_address & 0xFF)};
     FLASH_SPI_Data_t cmd = {.data = cmd_buff, .len = sizeof(cmd_buff)};
 
@@ -41,7 +39,7 @@ cleanup:
 
 
 
-FLASH_error_enum_t FLASH_program_page(uint8_t chip_number, FLASH_Physical_Address_t address, uint8_t *data, lfs_size_t data_len) {
+FLASH_error_enum_t FLASH_program_page(uint8_t chip_number, FLASH_Physical_Address_t address, uint8_t *data, uint32_t data_len) {
 
     // FLASH_disable_block_lock(chip_number); // TODO: why do we need to disable block lock? it's never turned back on?
     FLASH_write_enable(chip_number);
@@ -49,7 +47,7 @@ FLASH_error_enum_t FLASH_program_page(uint8_t chip_number, FLASH_Physical_Addres
     // TODO: not sure if I'm doing the memory mapping correctly. maybe should be offset as the address?
     // Send the program load command along with the address of where in the page to start writing the data.  (always 0 since we always write a full page).
     
-    uint16_t col_address = address.col_address;
+    uint32_t col_address = address.col_address;
     uint8_t program_load_command_bytes[] = {FLASH_CMD_PROGRAM_LOAD, (col_address >> 8) & 0xFF, (col_address & 0xFF)}; 
 
     FLASH_SPI_Data_t load_command = {.data = program_load_command_bytes, .len = sizeof(program_load_command_bytes)};
@@ -82,7 +80,7 @@ cleanup:
 
 
 
-FLASH_error_enum_t FLASH_read_page(uint8_t chip_number, FLASH_Physical_Address_t address, uint8_t *rx_buffer, lfs_size_t rx_buffer_len) {
+FLASH_error_enum_t FLASH_read_page(uint8_t chip_number, FLASH_Physical_Address_t address, uint8_t *rx_buffer, uint32_t rx_buffer_len) {
 
     uint64_t row_address = address.row_address;
 
@@ -102,7 +100,7 @@ FLASH_error_enum_t FLASH_read_page(uint8_t chip_number, FLASH_Physical_Address_t
 
 
     // Read the data from the cache into the buffer.
-    uint16_t col_address = address.col_address;
+    uint32_t col_address = address.col_address;
 
     uint8_t read_from_cache_cmd_bytes[] = {FLASH_CMD_READ_FROM_CACHE, (col_address >> 8) & 0xFF, (col_address & 0xFF), 0x00}; // send col address along with one dummy byte (see pg. 18 of the datasheet).
     FLASH_SPI_Data_t read_from_cache_cmd = {.data = read_from_cache_cmd_bytes, .len = sizeof(read_from_cache_cmd_bytes)};
@@ -149,32 +147,46 @@ FLASH_error_enum_t FLASH_reset(uint8_t chip_number) {
 
 
 
-static FLASH_error_enum_t FLASH_wait_until_ready(uint8_t chip_number){
-    const uint8_t max_attempts = 20; //TODO: Decide on what this should be. Probably too low right now.
-    uint8_t attempts = 0;
-    
+FLASH_error_enum_t FLASH_read_status_register(uint8_t chip_number, uint8_t *response) {
 
-    uint8_t status_register;
-    FLASH_error_enum_t result = FLASH_read_status_register(chip_number, &status_register);
-    if (result != FLASH_ERR_OK) {
-        return result;
-    }
+    uint8_t cmd_buff[] = {FLASH_CMD_GET_FEATURES, FLASH_FEAT_STATUS};
+    FLASH_SPI_Data_t cmd = {.data = cmd_buff, .len = sizeof(cmd_buff)};
 
-    uint8_t flash_is_busy = (status_register & FLASH_OP_IN_PROGRESS_MASK);
-    while (flash_is_busy && attempts < max_attempts) {
+    return FLASH_SPI_send_command_receive_response(&cmd, response, sizeof(uint8_t), chip_number);
+}
 
-        result = FLASH_read_status_register(chip_number, &status_register);
-        if (result != FLASH_ERR_OK) { return result; }
+
+
+
+
+/// @brief Here for testing purposes.
+/// @param chip_number the chip select line to enable.
+void FLASH_enable_then_disable_chip_select(uint8_t chip_number) {
+    FLASH_SPI_enable_then_disable_chip_select(chip_number);
+}
+
+
+
+
+
+static FLASH_error_enum_t FLASH_wait_until_ready(uint8_t chip_number) {
+    const uint16_t max_attempts = 20; //TODO: Decide on what this should be. 10 was too low, 20 seems to work well.
+    uint8_t status_register; 
+    uint8_t flash_is_busy;
+
+    for (uint16_t attempts = 0; attempts < max_attempts; attempts++) {
+
+        FLASH_error_enum_t result = FLASH_read_status_register(chip_number, &status_register);
+        if (result != FLASH_ERR_OK) {
+            return result;
+        }
             
         flash_is_busy = (status_register & FLASH_OP_IN_PROGRESS_MASK);
-        attempts++;
+        if (!flash_is_busy) { 
+            return FLASH_ERR_OK; }
     }
 
-    if (flash_is_busy) {
-        return FLASH_ERR_DEVICE_BUSY_TIMEOUT;
-    } else {
-        return FLASH_ERR_OK;
-    }
+    return FLASH_ERR_DEVICE_BUSY_TIMEOUT;
 }
 
 
@@ -188,18 +200,6 @@ static FLASH_error_enum_t FLASH_disable_block_lock(uint8_t chip_number) {
 
     return FLASH_SPI_send_command(&cmd, chip_number);
 }  
-
-
-
-
-
-static FLASH_error_enum_t FLASH_read_status_register(uint8_t chip_number, uint8_t *response) {
-
-    uint8_t cmd_buff[] = {FLASH_CMD_GET_FEATURES, FLASH_FEAT_STATUS};
-    FLASH_SPI_Data_t cmd = {.data = cmd_buff, .len = sizeof(cmd_buff)};
-
-    return FLASH_SPI_send_command_receive_response(&cmd, response, sizeof(uint8_t), chip_number);
-}
 
 
 
