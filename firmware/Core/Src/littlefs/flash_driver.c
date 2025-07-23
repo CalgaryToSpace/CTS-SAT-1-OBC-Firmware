@@ -18,9 +18,8 @@ FLASH_error_enum_t FLASH_erase_block(uint8_t chip_number, FLASH_Physical_Address
 
     FLASH_write_enable(chip_number);
 
-    //TODO: not sure if I'm doing the memory mapping correctly. 
     // Send erase command along with the address of the block.
-    uint16_t block_address = address.block_address;
+    uint32_t block_address = address.block_address;
     uint8_t cmd_buff[] = {FLASH_CMD_BLOCK_ERASE, ((block_address >> 16) & 0xFF), ((block_address >> 8) & 0xFF), (block_address & 0xFF)};
     FLASH_SPI_Data_t cmd = {.data = cmd_buff, .len = sizeof(cmd_buff)};
 
@@ -48,7 +47,7 @@ FLASH_error_enum_t FLASH_program_page(uint8_t chip_number, FLASH_Physical_Addres
     // TODO: not sure if I'm doing the memory mapping correctly. maybe should be offset as the address?
     // Send the program load command along with the address of where in the page to start writing the data.  (always 0 since we always write a full page).
     
-    uint16_t col_address = address.col_address;
+    uint32_t col_address = address.col_address;
     uint8_t program_load_command_bytes[] = {FLASH_CMD_PROGRAM_LOAD, (col_address >> 8) & 0xFF, (col_address & 0xFF)}; 
 
     FLASH_SPI_Data_t load_command = {.data = program_load_command_bytes, .len = sizeof(program_load_command_bytes)};
@@ -101,7 +100,7 @@ FLASH_error_enum_t FLASH_read_page(uint8_t chip_number, FLASH_Physical_Address_t
 
 
     // Read the data from the cache into the buffer.
-    uint16_t col_address = address.col_address;
+    uint32_t col_address = address.col_address;
 
     uint8_t read_from_cache_cmd_bytes[] = {FLASH_CMD_READ_FROM_CACHE, (col_address >> 8) & 0xFF, (col_address & 0xFF), 0x00}; // send col address along with one dummy byte (see pg. 18 of the datasheet).
     FLASH_SPI_Data_t read_from_cache_cmd = {.data = read_from_cache_cmd_bytes, .len = sizeof(read_from_cache_cmd_bytes)};
