@@ -160,6 +160,16 @@ FLASH_error_enum_t FLASH_read_status_register(uint8_t chip_number, uint8_t *resp
 
 
 
+/// @brief Here for testing purposes.
+/// @param chip_number the chip select line to enable.
+void FLASH_enable_then_disable_chip_select(uint8_t chip_number) {
+    FLASH_SPI_enable_then_disable_chip_select(chip_number);
+}
+
+
+
+
+
 static FLASH_error_enum_t FLASH_wait_until_ready(uint8_t chip_number){
     const uint8_t max_attempts = 20; //TODO: Decide on what this should be. 10 was too low, 20 seems to work well.
     uint8_t attempts = 0;

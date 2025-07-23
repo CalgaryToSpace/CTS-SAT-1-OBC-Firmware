@@ -53,5 +53,6 @@ FLASH_error_enum_t FLASH_SPI_send_command(FLASH_SPI_Data_t *cmd, uint8_t chip_nu
 FLASH_error_enum_t FLASH_SPI_send_command_with_data(FLASH_SPI_Data_t *cmd,FLASH_SPI_Data_t *data, uint8_t chip_number);
 FLASH_error_enum_t FLASH_SPI_send_command_receive_response(FLASH_SPI_Data_t *cmd, uint8_t *response, uint16_t response_len, uint8_t chip_number);
 
+void FLASH_SPI_enable_then_disable_chip_select(uint8_t chip_number);
 
 #endif // __INCLUDE_GUARD__FLASH_INTERNAL_SPI_H__

@@ -26,7 +26,7 @@
 
 /*
 A struct representing the the location of a block, page and byte within that page. More compact representations are available (uint64_t) but this is easier to use.
-- block_address: address to the start of a block in pages (NOT bytes or blocks).
+- block_address: address to the start of a block in pages (NOT bytes or blocks). This should be equal to the row_address.
 - row_address: address to the start of a page in pages (NOT bytes)
 - col_address: address to the specific byte in the page (in bytes, between 0 and 2047)
 */
@@ -72,5 +72,7 @@ FLASH_error_enum_t FLASH_read_page(uint8_t chip_number, FLASH_Physical_Address_t
 
 FLASH_error_enum_t FLASH_is_reachable(uint8_t chip_number);
 FLASH_error_enum_t FLASH_reset(uint8_t chip_number);
+void FLASH_enable_then_disable_chip_select(uint8_t chip_number);
+
 
 #endif /* __INCLUDE_GUARD__FLASH_DRIVER_H__ */

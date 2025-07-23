@@ -254,12 +254,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 2,
         .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
     },
-    {
-        .tcmd_name = "flash_benchmark_erase_write_read",
-        .tcmd_func = TCMDEXEC_flash_benchmark_erase_write_read,
-        .number_of_args = 3,
-        .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
-    },
+    // {
+    //     .tcmd_name = "flash_benchmark_erase_write_read",
+    //     .tcmd_func = TCMDEXEC_flash_benchmark_erase_write_read,
+    //     .number_of_args = 3,
+    //     .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
+    // },
     {
         .tcmd_name = "flash_reset",
         .tcmd_func = TCMDEXEC_flash_reset,
@@ -269,12 +269,6 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "flash_read_status_register",
         .tcmd_func = TCMDEXEC_flash_read_status_register,
-        .number_of_args = 1,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },
-    {
-        .tcmd_name = "flash_write_enable",
-        .tcmd_func = TCMDEXEC_flash_write_enable,
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
