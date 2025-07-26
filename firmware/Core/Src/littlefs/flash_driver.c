@@ -59,8 +59,7 @@ FLASH_error_enum_t FLASH_program_page(uint8_t chip_number, FLASH_Physical_Addres
     }
 
     // Now we write the data in the cache to the flash array at the specified address.
-    //TODO: not sure if I'm doing the memory mapping correctly.
-    uint64_t row_address =  address.row_address;;//(block << 6) + (offset / FLASH_CHIP_PAGE_SIZE_BYTES);  // left shift 6 to multiply by 64 since each block has 64 pages.
+    uint64_t row_address =  address.row_address;
     uint8_t program_execute_command_bytes[] = {FLASH_CMD_PROGRAM_EXECUTE, ((row_address >> 16) & 0xFF), ((row_address >> 8) & 0xFF), (row_address & 0xFF)};
     FLASH_SPI_Data_t program_execute_cmd = {.data = program_execute_command_bytes, .len = sizeof(program_execute_command_bytes)};
 
@@ -168,7 +167,7 @@ void FLASH_enable_then_disable_chip_select(uint8_t chip_number) {
 
 
 
-
+// Should not Delay here. leads to slower execution.
 static FLASH_error_enum_t FLASH_wait_until_ready(uint8_t chip_number) {
     const uint8_t max_attempts = 20; //TODO: Decide on what this should be. 10 was too low, 20 seems to work well.
     
