@@ -9,7 +9,6 @@ static void _chip_select_high();
 //The spi handle used for by the flash driver.
 SPI_HandleTypeDef *hspi_flash_ptr = &hspi1;
 
-// TODO: double check what this should be.
 const uint16_t FLASH_SPI_TIMEOUT_MS =  25;
 
 
@@ -83,7 +82,7 @@ void FLASH_SPI_enable_then_disable_chip_select(uint8_t chip_number) {
 
 
 
-void _chip_select_low(uint8_t chip_number)
+static inline void _chip_select_low(uint8_t chip_number)
 {
     _chip_select_high();
     // NOTE: the "reset low" activate action must be AFTER all other pins are "set high"
@@ -111,7 +110,7 @@ void _chip_select_low(uint8_t chip_number)
 
 
 /// @brief Deactivates the chip select for all lines.
-void _chip_select_high() {
+static inline void _chip_select_high() {
     HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_0_GPIO_Port, PIN_MEM_NCS_FLASH_0_Pin, GPIO_PIN_SET);
     HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_1_GPIO_Port, PIN_MEM_NCS_FLASH_1_Pin, GPIO_PIN_SET);
     HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_2_GPIO_Port, PIN_MEM_NCS_FLASH_2_Pin, GPIO_PIN_SET);
