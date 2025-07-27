@@ -169,6 +169,7 @@ void FLASH_enable_then_disable_chip_select(uint8_t chip_number) {
 
 // Should not Delay here. leads to slower execution.
 static FLASH_error_enum_t FLASH_wait_until_ready(uint8_t chip_number) {
+    // TODO: this will need to be changed if we change the clock speed.
     const uint8_t max_attempts = 20; //TODO: Decide on what this should be. 10 was too low, 20 seems to work well.
     
 
