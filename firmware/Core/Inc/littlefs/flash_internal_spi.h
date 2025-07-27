@@ -1,5 +1,5 @@
-#ifndef __INCLUDE_GUARD__FLASH_INTERNAL_SPI_H__
-#define __INCLUDE_GUARD__FLASH_INTERNAL_SPI_H__
+#ifndef INCLUDE_GUARD__FLASH_INTERNAL_SPI_H__
+#define INCLUDE_GUARD__FLASH_INTERNAL_SPI_H__
 #include <stdint.h>
 
 
@@ -55,4 +55,4 @@ FLASH_error_enum_t FLASH_SPI_send_command_receive_response(FLASH_SPI_Data_t *cmd
 
 void FLASH_SPI_enable_then_disable_chip_select(uint8_t chip_number);
 
-#endif // __INCLUDE_GUARD__FLASH_INTERNAL_SPI_H__
+#endif // INCLUDE_GUARD__FLASH_INTERNAL_SPI_H__
