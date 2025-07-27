@@ -126,33 +126,45 @@ static void subtask_send_beacon(void) {
     // TOOD: If complex beacon packet is enabled, also send that too.
 }
 
-#define LOG_FILE_SYNC_INTERVAL_MS 15000 // 60,000 is 1 minute.
-extern lfs_file_t current_log_file; // Defined in log/log_sinks.c
-extern int8_t log_file_is_open; // Defined in log/log_sinks.c
-int64_t last_log_file_sync_timestamp = 0;
-static void subtask_set_and_sync_current_log_file() {
-    if (!LFS_is_lfs_mounted) {
-        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE),
-            "Error syncing current log file: LFS not mounted");// FIXME(Issue #398): log to memory buffer
-        return;
-    }
-    int64_t sync_interval_has_not_passed = (TIME_get_current_system_uptime_ms() - last_log_file_sync_timestamp < LOG_FILE_SYNC_INTERVAL_MS);
-    if (!log_file_is_open || sync_interval_has_not_passed) {
-        return;
+const uint32_t LOG_FILE_SYNC_INTERVAL_MS = 15000; // 60,000 is 1 minute.
+const uint32_t LOG_FILE_CLOSE_INTERVAL_MS = 30000; // 300,0000 is 5 minutes
+extern LOG_File_Context_t current_log_file_ctx; // Defined in log/log_sinks.c
+static void subtask_handle_sync_and_close_of_current_log_file() {
+
+    LOG_ensure_current_log_file_is_open();
+
+    int64_t sync_interval_has_elapsed = (
+        (TIME_get_current_unix_epoch_time_ms() - current_log_file_ctx.timestamp_of_last_sync) > LOG_FILE_SYNC_INTERVAL_MS
+    );
+
+    if (sync_interval_has_elapsed) {
+        // TODO: benchmarking stuff to delete here.
+        
+        uint32_t start_time = HAL_GetTick();
+        
+        LOG_sync_current_log_file();
+
+        LOG_message(LOG_SYSTEM_EPS, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_FILE),
+            "Log file synced in %ld ms", (HAL_GetTick() - start_time));
     }
 
-    LOG_message(LOG_SYSTEM_EPS, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_FILE),
-        "-------------------------Syncing log file--------------------");
-    
-    int32_t sync_result = lfs_file_sync(&LFS_filesystem, &current_log_file);
-    if (sync_result < 0) {
-        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE),
-            "Failed to sync log file: %ld", sync_result);
-        return;
+    int64_t close_interval_has_elapsed = (
+        (TIME_get_current_system_uptime_ms() - current_log_file_ctx.timestamp_of_last_open) > LOG_FILE_CLOSE_INTERVAL_MS
+    );
+
+    if (close_interval_has_elapsed) {
+        // TODO: benchmarking stuff to delete here.
+
+        uint32_t start_time = HAL_GetTick();
+
+        LOG_close_current_log_file();
+
+        LOG_message(LOG_SYSTEM_EPS, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_FILE),
+            "Log file closed in %ld ms", (HAL_GetTick() - start_time));
+
+        LOG_open_new_log_file_and_set_as_current();
     }
-    last_log_file_sync_timestamp = TIME_get_current_system_uptime_ms();
 }
-#undef LOG_FILE_SYNC_INTERVAL_MS
 
 void TASK_background_upkeep(void *argument) {
     TASK_HELP_start_of_task();
@@ -169,7 +181,7 @@ void TASK_background_upkeep(void *argument) {
         subtask_update_rf_switch();
         osDelay(10); // Yield.
 
-        subtask_set_and_sync_current_log_file();
+        subtask_handle_sync_and_close_of_current_log_file();
         osDelay(10); // Yield.
         
         osDelay(3000);

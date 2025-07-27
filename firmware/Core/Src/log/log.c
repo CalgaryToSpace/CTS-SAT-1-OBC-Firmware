@@ -2,6 +2,7 @@
 #include "log/log_sinks.h"
 #include "debug_tools/debug_uart.h"
 #include "timekeeping/timekeeping.h"
+#include "littlefs/littlefs_helper.h"
 
 #include <complex.h>
 #include <stdint.h>
@@ -472,4 +473,109 @@ uint8_t LOG_get_memory_table_index_of_most_recent_log_entry(void)
 const char *LOG_get_memory_table_full_message_at_index(uint8_t index)
 {
     return LOG_memory_table[index].full_message;
+}
+
+
+
+/// @brief Writes to the current log file.
+int8_t LOG_write_to_current_log_file(const char *msg, uint16_t msg_length) {
+    extern LOG_File_Context_t current_log_file_ctx; // from log_sinks.c
+
+    LFS_ensure_mounted();
+
+    if (!current_log_file_ctx.is_open) {
+        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE), 
+        "LOG_write_to_current_log_file(): current log file is not open");
+        return 1;
+    }
+
+    return lfs_file_write(&LFS_filesystem, &current_log_file_ctx.file, msg, msg_length);
+}
+
+
+
+
+/// @brief Syncs the current log file.
+int8_t LOG_sync_current_log_file(void) {
+    extern LOG_File_Context_t current_log_file_ctx; // from log_sinks.c
+
+    LFS_ensure_mounted();
+
+    if (!current_log_file_ctx.is_open) {
+        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE), 
+        "LOG_sync_current_log_file(): current log file is not open");
+        return 1;
+    }
+
+    TIME_get_current_unix_epoch_time_ms(&current_log_file_ctx.timestamp_of_last_sync);
+    return lfs_file_sync(&LFS_filesystem, &current_log_file_ctx.file);
+}
+
+
+
+/// @brief  Closed the current log file. 
+int8_t LOG_close_current_log_file(void) {
+    extern LOG_File_Context_t current_log_file_ctx; // from log_sinks.c
+
+    LFS_ensure_mounted();
+
+    if (!current_log_file_ctx.is_open) {
+        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE), 
+        "LOG_close_current_log_file(): current log file is not open");
+    }
+
+    current_log_file_ctx.is_open = 0;
+    return lfs_file_close(&LFS_filesystem, &current_log_file_ctx.file);
+}
+
+
+
+
+/// @brief  Sets the file.filename to a filename with the current timestamp.
+/// @param file the file context of which the .filename is to be set.
+static void LOG_generate_and_set_timestamped_filename(LOG_File_Context_t *file) {
+    char timestamp_str[20];
+    TIME_get_current_utc_datetime_str(timestamp_str, sizeof(timestamp_str)); 
+    snprintf(file->filename, sizeof(file->filename), "logs/%s.log", timestamp_str);
+}
+
+
+
+
+/// @brief Opens a new timestamped log file, and sets it as the current log file.
+int8_t LOG_open_new_log_file_and_set_as_current(void) {
+    extern LOG_File_Context_t current_log_file_ctx; // from log_sinks.c
+
+    LFS_ensure_mounted();
+
+    if (current_log_file_ctx.is_open) {
+        if (LOG_close_current_log_file() != 0) { return -1;}
+    }
+
+    LOG_generate_and_set_timestamped_filename(&current_log_file_ctx);
+
+    LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_FILE), 
+        " opening new log file: %s", current_log_file_ctx.filename);
+
+    const int16_t open_result = lfs_file_opencfg(&LFS_filesystem, &current_log_file_ctx.file, current_log_file_ctx.filename,
+                                            LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND, &LFS_file_cfg);
+    if (open_result != 0) {
+        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE), 
+            "LOG_open_new_log_file_and_set_as_current(): failed to open new log file: %d", open_result);
+        return open_result;
+    }
+
+    TIME_get_current_unix_epoch_time_ms(&current_log_file_ctx.timestamp_of_last_open);
+    TIME_get_current_unix_epoch_time_ms(&current_log_file_ctx.timestamp_of_last_sync);
+    current_log_file_ctx.is_open = 1;
+    return 0;
+}
+
+int8_t LOG_ensure_current_log_file_is_open() {
+    extern LOG_File_Context_t current_log_file_ctx; // from log_sinks.c
+
+    if (!current_log_file_ctx.is_open) {
+        return LOG_open_new_log_file_and_set_as_current();
+    }
+    return 0;
 }

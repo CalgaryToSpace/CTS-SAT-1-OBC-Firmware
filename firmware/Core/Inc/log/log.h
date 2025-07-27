@@ -2,6 +2,7 @@
 #define __INCLUDE__GUARD__LOG_H_
 
 #include <stdint.h>
+#include "littlefs/lfs.h"
 
 // Restricted by radio packet length
 #define LOG_FORMATTED_MESSAGE_MAX_LENGTH 185
@@ -61,6 +62,15 @@ enum {
     LOG_SYSTEM_ON = 1,
 };
 
+#define LOG_FILENAME_MAX_LENGTH 32 // TODO: figure out what this should be.
+typedef struct {
+    lfs_file_t file;
+    char filename[LOG_FILENAME_MAX_LENGTH];
+    uint64_t timestamp_of_last_sync;
+    uint64_t timestamp_of_last_open;
+    uint8_t is_open;
+} LOG_File_Context_t; 
+
 void LOG_message(
     LOG_system_enum_t source, LOG_severity_enum_t severity, uint32_t sink_mask,
     const char fmt[], ...
@@ -84,5 +94,13 @@ const char* LOG_get_severity_name(LOG_severity_enum_t severity);
 uint8_t LOG_memory_table_max_entries(void);
 uint8_t LOG_get_memory_table_index_of_most_recent_log_entry(void);
 const char *LOG_get_memory_table_full_message_at_index(uint8_t index);
+
+
+int8_t LOG_write_to_current_log_file(const char *msg, uint16_t msg_length);
+int8_t LOG_sync_current_log_file();
+int8_t LOG_close_current_log_file();
+int8_t LOG_open_new_log_file_and_set_as_current();
+int8_t LOG_ensure_current_log_file_is_open();
+
 
 #endif // __INCLUDE__GUARD__LOG_H_
