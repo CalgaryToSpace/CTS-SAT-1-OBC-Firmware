@@ -10,7 +10,7 @@
 // Variables to track LittleFS on Flash Memory Module
 uint8_t LFS_is_lfs_mounted = 0;
 
-#define FLASH_LOOKAHEAD_SIZE 16
+#define FLASH_LOOKAHEAD_SIZE 256
 
 // LittleFS Buffers for reading and writing
 uint8_t LFS_read_buffer[FLASH_CHIP_PAGE_SIZE_BYTES];
@@ -33,7 +33,7 @@ struct lfs_config LFS_cfg = {
     .prog_size = FLASH_CHIP_PAGE_SIZE_BYTES,
     .block_size = FLASH_CHIP_BLOCK_SIZE_BYTES,
     .block_count = (FLASH_CHIP_SIZE_BYTES / FLASH_CHIP_BLOCK_SIZE_BYTES),
-    .block_cycles = 100, // TODO: ASK ABOUT THIS (HOW FREQUENT ARE WE USING THE MODULE),
+    .block_cycles = 500, // TODO: ASK ABOUT THIS (HOW FREQUENT ARE WE USING THE MODULE),
     .cache_size = FLASH_CHIP_PAGE_SIZE_BYTES,
     .lookahead_size = FLASH_LOOKAHEAD_SIZE,
     .compact_thresh = -1, // Defaults to ~88% block_size when zero (lfs.h, line 232)
