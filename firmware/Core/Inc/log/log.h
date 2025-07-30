@@ -65,7 +65,7 @@ enum {
 typedef struct {
     lfs_file_t file;
     uint64_t timestamp_of_last_sync;
-    uint64_t timestamp_of_last_open;
+    uint64_t timestamp_of_last_close;
     uint8_t is_open;
 } LOG_File_Context_t; 
 

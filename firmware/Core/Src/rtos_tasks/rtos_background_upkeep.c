@@ -126,17 +126,17 @@ static void subtask_send_beacon(void) {
     // TOOD: If complex beacon packet is enabled, also send that too.
 }
 
-const uint32_t LOG_FILE_SYNC_INTERVAL_MS = 15000; // 60,000 is 1 minute.
-const uint32_t LOG_FILE_CLOSE_INTERVAL_MS = 30000; // 300,0000 is 5 minutes
-extern LOG_File_Context_t current_log_file_ctx; // Defined in log/log_sinks.c
 static void subtask_handle_sync_and_close_of_current_log_file() {
+    const uint32_t LOG_FILE_SYNC_INTERVAL_MS = 15000; // 60,000 is 1 minute.
+    const uint32_t LOG_FILE_CLOSE_INTERVAL_MS = 30000; // 300,0000 is 5 minutes
+
+    extern LOG_File_Context_t current_log_file_ctx; // Defined in log/log_sinks.c
 
     LOG_ensure_current_log_file_is_open();
 
     int64_t sync_interval_has_elapsed = (
         (TIME_get_current_unix_epoch_time_ms() - current_log_file_ctx.timestamp_of_last_sync) > LOG_FILE_SYNC_INTERVAL_MS
     );
-
     if (sync_interval_has_elapsed) {
         // TODO: benchmarking stuff to delete here.
         
@@ -148,10 +148,10 @@ static void subtask_handle_sync_and_close_of_current_log_file() {
             "Log file synced in %ld ms", (HAL_GetTick() - start_time));
     }
 
-    int64_t close_interval_has_elapsed = (
-        (TIME_get_current_system_uptime_ms() - current_log_file_ctx.timestamp_of_last_open) > LOG_FILE_CLOSE_INTERVAL_MS
-    );
 
+    int64_t close_interval_has_elapsed = (
+        (TIME_get_current_unix_epoch_time_ms() - current_log_file_ctx.timestamp_of_last_close) > LOG_FILE_CLOSE_INTERVAL_MS
+    );
     if (close_interval_has_elapsed) {
         // TODO: benchmarking stuff to delete here.
 
@@ -161,6 +161,7 @@ static void subtask_handle_sync_and_close_of_current_log_file() {
 
         LOG_message(LOG_SYSTEM_EPS, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_FILE),
             "Log file closed in %ld ms", (HAL_GetTick() - start_time));
+        
 
         LOG_open_new_log_file_and_set_as_current();
     }

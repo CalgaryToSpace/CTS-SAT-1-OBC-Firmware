@@ -499,7 +499,7 @@ int8_t LOG_sync_current_log_file(void) {
     LFS_ensure_mounted();
     LOG_ensure_current_log_file_is_open();
 
-    TIME_get_current_unix_epoch_time_ms(&current_log_file_ctx.timestamp_of_last_sync);
+    current_log_file_ctx.timestamp_of_last_sync = TIME_get_current_unix_epoch_time_ms();
     return lfs_file_sync(&LFS_filesystem, &current_log_file_ctx.file);
 }
 
@@ -510,11 +510,14 @@ int8_t LOG_close_current_log_file(void) {
 
     extern LOG_File_Context_t current_log_file_ctx; // from log_sinks.c
 
-    LFS_ensure_mounted();
-    LOG_ensure_current_log_file_is_open();
+    if(!current_log_file_ctx.is_open) {
+        return 0;
+    }
 
+    LFS_ensure_mounted();
 
     current_log_file_ctx.is_open = 0;
+    current_log_file_ctx.timestamp_of_last_close =TIME_get_current_unix_epoch_time_ms();
     return lfs_file_close(&LFS_filesystem, &current_log_file_ctx.file);
 }
 
@@ -558,8 +561,7 @@ int8_t LOG_open_new_log_file_and_set_as_current(void) {
     }
 
     // Set metadata for the new log file.
-    TIME_get_current_unix_epoch_time_ms(&current_log_file_ctx.timestamp_of_last_open);
-    TIME_get_current_unix_epoch_time_ms(&current_log_file_ctx.timestamp_of_last_sync);
+    current_log_file_ctx.timestamp_of_last_sync = TIME_get_current_unix_epoch_time_ms();
     current_log_file_ctx.is_open = 1;
     return 0;
 }
