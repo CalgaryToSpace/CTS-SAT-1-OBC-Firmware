@@ -62,10 +62,8 @@ enum {
     LOG_SYSTEM_ON = 1,
 };
 
-#define LOG_FILENAME_MAX_LENGTH 32 // TODO: figure out what this should be.
 typedef struct {
     lfs_file_t file;
-    char filename[LOG_FILENAME_MAX_LENGTH];
     uint64_t timestamp_of_last_sync;
     uint64_t timestamp_of_last_open;
     uint8_t is_open;
