@@ -39,9 +39,16 @@ struct lfs_config LFS_cfg = {
     .lookahead_size = FLASH_LOOKAHEAD_SIZE,
     .compact_thresh = -1, // Defaults to ~88% block_size when zero (lfs.h, line 232)
 
+
+    //
     .read_buffer = LFS_read_buffer,
     .prog_buffer = LFS_prog_buffer,
-    .lookahead_buffer = LFS_lookahead_buf};
+    .lookahead_buffer = LFS_lookahead_buf,
+
+    //required to prevent watchdog trigger loop.
+    //See: https://github.com/littlefs-project/littlefs/issues/1079#issuecomment-2720048008
+    .metadata_max = 1024 * 8,
+};
 
 struct lfs_file_config LFS_file_cfg = {
     .buffer = LFS_file_buffer,
