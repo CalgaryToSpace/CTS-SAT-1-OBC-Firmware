@@ -9,6 +9,9 @@
 
 static const uint8_t MPI_COMMAND_SUCCESS_RESPONSE_VALUE = 0xFE; // 0xFE = 254
 
+// Command codes: Send {0x54, 0x43, command_code} to the MPI
+static const uint8_t MPI_COMMAND_CODE_BL_ENTER_BOOTLOADER = 0x08;
+
 /// @brief Current mode under which the MPI is being operated.
 extern volatile MPI_rx_mode_t MPI_current_uart_rx_mode;
 
