@@ -4,7 +4,7 @@
 // Static functions are defined at the bottom of this file.
 static void _chip_select_low(uint8_t chip_number);
 static void _chip_select_high();
-static HAL_StatusTypeDef _SPI_fast_receive(SPI_HandleTypeDef *hspi, uint8_t *response, uint16_t response_len);
+static HAL_StatusTypeDef _SPI_fast_receive(SPI_HandleTypeDef *hspi, uint8_t *response, uint16_t response_size);
 
 // The spi handle used by the flash driver.
 SPI_HandleTypeDef *hspi_flash_ptr = &hspi1;
@@ -51,7 +51,7 @@ FLASH_error_enum_t FLASH_SPI_send_command_with_data(
 
 
 FLASH_error_enum_t FLASH_SPI_send_command_receive_response(
-    const FLASH_SPI_Data_t cmd[], uint8_t *response, uint16_t response_len, uint8_t chip_number
+    const FLASH_SPI_Data_t cmd[], uint8_t *response, uint16_t response_size, uint8_t chip_number
 ) {
     HAL_StatusTypeDef  rx_result;
 
@@ -59,7 +59,7 @@ FLASH_error_enum_t FLASH_SPI_send_command_receive_response(
 
     const HAL_StatusTypeDef tx_result = HAL_SPI_Transmit(hspi_flash_ptr, cmd->data, cmd->len, FLASH_SPI_TIMEOUT_MS);
     if (tx_result == HAL_OK) {
-        rx_result = _SPI_fast_receive(hspi_flash_ptr, response, response_len);
+        rx_result = _SPI_fast_receive(hspi_flash_ptr, response, response_size);
     }
 
     _chip_select_high();
@@ -87,7 +87,7 @@ void FLASH_SPI_enable_then_disable_chip_select(uint8_t chip_number) {
 }
 
 /// @brief Use DMA to speed up receiving. At least 3x faster than HAL_SPI_Receive when transferring 2048 bytes.
-static HAL_StatusTypeDef _SPI_fast_receive(SPI_HandleTypeDef *hspi, uint8_t *response, uint16_t response_len) {
+static HAL_StatusTypeDef _SPI_fast_receive(SPI_HandleTypeDef *hspi, uint8_t *response, uint16_t response_size) {
     const uint32_t start_time = HAL_GetTick();
     uint32_t time_elapsed_ms = 0;
 
@@ -95,7 +95,7 @@ static HAL_StatusTypeDef _SPI_fast_receive(SPI_HandleTypeDef *hspi, uint8_t *res
     SPI_DMA_receive_complete = 0;
 
     // Start the receiving with DMA.
-    const HAL_StatusTypeDef rx_result = HAL_SPI_Receive_DMA(hspi_flash_ptr, response, response_len);
+    const HAL_StatusTypeDef rx_result = HAL_SPI_Receive_DMA(hspi_flash_ptr, response, response_size);
 
 
     // Be careful here, we are writing into stack memory with DMA. This function should not return until the transfer is complete.

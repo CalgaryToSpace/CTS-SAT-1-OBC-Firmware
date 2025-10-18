@@ -67,7 +67,9 @@ FLASH_error_enum_t FLASH_read_status_register(uint8_t chip_number, uint8_t *resp
 
 FLASH_error_enum_t FLASH_erase_block(uint8_t chip_number, FLASH_Physical_Address_t address);
 FLASH_error_enum_t FLASH_program_page(uint8_t chip_number, FLASH_Physical_Address_t address, uint8_t *data, uint32_t data_len);
-FLASH_error_enum_t FLASH_read_page(uint8_t chip_number, FLASH_Physical_Address_t address, uint8_t *rx_buffer, uint32_t rx_buffer_len);
+FLASH_error_enum_t FLASH_read_page(
+    uint8_t chip_number, FLASH_Physical_Address_t address, uint8_t *rx_buffer, uint32_t rx_buffer_size
+);
 
 
 FLASH_error_enum_t FLASH_is_reachable(uint8_t chip_number);

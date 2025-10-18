@@ -80,7 +80,9 @@ cleanup:
 
 
 
-FLASH_error_enum_t FLASH_read_page(uint8_t chip_number, FLASH_Physical_Address_t address, uint8_t *rx_buffer, uint32_t rx_buffer_len) {
+FLASH_error_enum_t FLASH_read_page(
+    uint8_t chip_number, FLASH_Physical_Address_t address, uint8_t *rx_buffer, uint32_t rx_buffer_size
+) {
     const uint64_t row_address = address.row_address;
 
     const uint8_t cmd_buff[] = {FLASH_CMD_PAGE_READ, ((row_address >> 16) & 0xFF), ((row_address >> 8) & 0xFF), (row_address & 0xFF)};
@@ -107,7 +109,7 @@ FLASH_error_enum_t FLASH_read_page(uint8_t chip_number, FLASH_Physical_Address_t
     };
     const FLASH_SPI_Data_t read_from_cache_cmd = {.data = read_from_cache_cmd_bytes, .len = sizeof(read_from_cache_cmd_bytes)};
 
-    return FLASH_SPI_send_command_receive_response(&read_from_cache_cmd, rx_buffer, rx_buffer_len, chip_number);
+    return FLASH_SPI_send_command_receive_response(&read_from_cache_cmd, rx_buffer, rx_buffer_size, chip_number);
 }
 
 
@@ -153,7 +155,7 @@ FLASH_error_enum_t FLASH_read_status_register(uint8_t chip_number, uint8_t *resp
     const uint8_t cmd_buff[] = {FLASH_CMD_GET_FEATURES, FLASH_FEAT_STATUS};
     const FLASH_SPI_Data_t cmd = {.data = cmd_buff, .len = sizeof(cmd_buff)};
 
-    return FLASH_SPI_send_command_receive_response(&cmd, response, sizeof(uint8_t), chip_number);
+    return FLASH_SPI_send_command_receive_response(&cmd, response, 1, chip_number);
 }
 
 
