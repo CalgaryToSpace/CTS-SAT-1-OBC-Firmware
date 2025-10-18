@@ -1,20 +1,19 @@
 #include "main.h"
 #include "littlefs/flash_internal_spi.h"
 
-// defined at the bottom of this file.
+// Static functions are defined at the bottom of this file.
 static void _chip_select_low(uint8_t chip_number);
 static void _chip_select_high();
 static HAL_StatusTypeDef _SPI_fast_receive(SPI_HandleTypeDef *hspi, uint8_t *response, uint16_t response_len);
 
-//The spi handle used by the flash driver.
+// The spi handle used by the flash driver.
 SPI_HandleTypeDef *hspi_flash_ptr = &hspi1;
-const uint16_t FLASH_SPI_TIMEOUT_MS =  25;
+const uint16_t FLASH_SPI_TIMEOUT_MS = 25;
 
 // Used by SPI1 RxCpltCallback to indicate that the transfer is complete.
 volatile uint8_t SPI_DMA_receive_complete = 0;
 
-FLASH_error_enum_t FLASH_SPI_send_command(FLASH_SPI_Data_t* cmd, uint8_t chip_number) {
-
+FLASH_error_enum_t FLASH_SPI_send_command(const FLASH_SPI_Data_t cmd[], uint8_t chip_number) {
     _chip_select_low(chip_number);
     const HAL_StatusTypeDef tx_result = HAL_SPI_Transmit(hspi_flash_ptr, cmd->data, cmd->len, FLASH_SPI_TIMEOUT_MS);
     _chip_select_high();
@@ -30,8 +29,9 @@ FLASH_error_enum_t FLASH_SPI_send_command(FLASH_SPI_Data_t* cmd, uint8_t chip_nu
 
 
 
-FLASH_error_enum_t FLASH_SPI_send_command_with_data(FLASH_SPI_Data_t *cmd, FLASH_SPI_Data_t *data, uint8_t chip_number){
-
+FLASH_error_enum_t FLASH_SPI_send_command_with_data(
+    const FLASH_SPI_Data_t cmd[], FLASH_SPI_Data_t *data, uint8_t chip_number
+) {
     _chip_select_low(chip_number);
     HAL_StatusTypeDef tx_result = HAL_SPI_Transmit(hspi_flash_ptr, cmd->data, cmd->len, FLASH_SPI_TIMEOUT_MS);
     if (tx_result == HAL_OK) {
@@ -50,7 +50,9 @@ FLASH_error_enum_t FLASH_SPI_send_command_with_data(FLASH_SPI_Data_t *cmd, FLASH
 
 
 
-FLASH_error_enum_t FLASH_SPI_send_command_receive_response(FLASH_SPI_Data_t *cmd, uint8_t *response, uint16_t response_len, uint8_t chip_number) {
+FLASH_error_enum_t FLASH_SPI_send_command_receive_response(
+    const FLASH_SPI_Data_t cmd[], uint8_t *response, uint16_t response_len, uint8_t chip_number
+) {
     HAL_StatusTypeDef  rx_result;
 
     _chip_select_low(chip_number);
@@ -84,7 +86,7 @@ void FLASH_SPI_enable_then_disable_chip_select(uint8_t chip_number) {
     _chip_select_high();
 }
 
-/// @brief use DMA to speed up receiving. At least 3x faster than HAL_SPI_Receive when transferring 2048 bytes.
+/// @brief Use DMA to speed up receiving. At least 3x faster than HAL_SPI_Receive when transferring 2048 bytes.
 static HAL_StatusTypeDef _SPI_fast_receive(SPI_HandleTypeDef *hspi, uint8_t *response, uint16_t response_len) {
     const uint32_t start_time = HAL_GetTick();
     uint32_t time_elapsed_ms = 0;
@@ -115,8 +117,7 @@ static HAL_StatusTypeDef _SPI_fast_receive(SPI_HandleTypeDef *hspi, uint8_t *res
 }
 
 
-static inline void _chip_select_low(uint8_t chip_number)
-{
+static inline void _chip_select_low(uint8_t chip_number) {
     _chip_select_high();
     // NOTE: the "reset low" activate action must be AFTER all other pins are "set high"
     // TODO: Should be a switch statement but I'm lazy right now.
