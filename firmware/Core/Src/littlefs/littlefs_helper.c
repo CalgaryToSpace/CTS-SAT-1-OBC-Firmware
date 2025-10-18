@@ -39,24 +39,24 @@ struct lfs_config LFS_cfg = {
     .lookahead_size = FLASH_LOOKAHEAD_SIZE,
     .compact_thresh = -1, // Defaults to ~88% block_size when zero (lfs.h, line 232)
 
-
-    //
     .read_buffer = LFS_read_buffer,
     .prog_buffer = LFS_prog_buffer,
     .lookahead_buffer = LFS_lookahead_buf,
 
-    //required to prevent watchdog trigger loop.
-    //See: https://github.com/littlefs-project/littlefs/issues/1079#issuecomment-2720048008
+    // Decrease the time metadata compaction operations take (operation is very slow).
+    // Required to prevent watchdog trigger loop (i.e., prevents extremely-long writes).
+    // See: https://github.com/littlefs-project/littlefs/issues/1079#issuecomment-2720048008
+    // Alternative/additional option described in issue: Call `lfs_fs_gc()` periodically during idle.
     .metadata_max = 1024 * 8,
 };
 
 struct lfs_file_config LFS_file_cfg = {
     .buffer = LFS_file_buffer,
     .attr_count = 0,
-    .attrs = NULL};
+    .attrs = NULL
+};
 
 // ----------------------------- LittleFS Functions -----------------------------
-lfs_file_t LFS_file; // TODO: remove later.
 
 uint8_t LFS_init() {
    FLASH_init(0); // TODO: probably need initialize all other chips.
@@ -71,8 +71,7 @@ uint8_t LFS_init() {
 /// @brief Formats Memory Module so it can successfully mount LittleFS
 /// @param None
 /// @return 0 on success, 1 if LFS is already mounted, negative LFS error codes on failure
-int8_t LFS_format()
-{
+int8_t LFS_format() {
     if (LFS_is_lfs_mounted) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), 
         "FLASH Memory cannot be formatted while LFS is mounted!");
