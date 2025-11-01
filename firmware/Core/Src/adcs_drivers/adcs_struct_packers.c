@@ -847,3 +847,16 @@ uint8_t ADCS_pack_to_misc_currents_struct(const uint8_t *input, ADCS_misc_curren
 
     return 0;
 }
+
+/// @brief Unpacks ADCS JPG conversion progress from telemetry bytes.
+/// @param[in] input Pointer to 3-byte input buffer.
+/// @param[out] output Pointer to output struct.
+/// @return 0 once the function is finished running.
+uint8_t ADCS_pack_to_conversion_progress_struct(const uint8_t *input, ADCS_conversion_progress_struct_t *output) {
+
+    output->progress_percentage = input[0];
+    output->conversion_result = (ADCS_conversion_result_enum_t) input[1]; 
+    output->output_file_counter = input[2];
+
+    return 0;
+}

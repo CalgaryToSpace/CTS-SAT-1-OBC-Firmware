@@ -1996,3 +1996,17 @@ uint8_t ADCS_get_misc_currents(ADCS_misc_currents_struct_t *output_struct) {
 
     return tlm_status;
 }
+
+/// @brief Instruct the ADCS to execute the ADCS_get_jpg_conversion_progress command.
+/// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_get_jpg_conversion_progress(ADCS_conversion_progress_struct_t *output_struct) {
+    uint8_t data_length = 6;
+    uint8_t data_received[data_length]; 
+
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_JPG_CONVERSION_PROGRESS, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
+
+    ADCS_pack_to_conversion_progress_struct(data_received, output_struct);
+
+    return tlm_status;
+}

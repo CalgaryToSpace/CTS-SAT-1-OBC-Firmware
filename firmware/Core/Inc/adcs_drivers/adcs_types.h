@@ -42,6 +42,9 @@ static const uint16_t ADCS_HAL_TIMEOUT = 1000;
 // define for HAL delay (ms) in commissioning mode setter function
 #define ADCS_COMMISSIONING_HAL_DELAY_MS 300
 
+// define for JPG conversion delay (ms)
+#define ADCS_JPG_CONVERSION_DELAY_MS 50
+
 /* Enumerated Values */
 
 // Telecommand Error Flags - Section 5.2.2 Figure 6 of Firmware Manual
@@ -274,6 +277,13 @@ typedef enum ADCS_commissioning_step_enum_t {
     ADCS_COMMISSIONING_STEP_GROUND_TARGET_TRACKING_CONTROLLER = 17,
     ADCS_COMMISSIONING_STEP_GPS_RECEIVER = 18
 } ADCS_commissioning_step_enum_t;
+
+typedef enum ADCS_conversion_result_enum_t {
+    ADCS_CONVERSION_RESULT_NOT_CONVERTED_YET = 0,   
+    ADCS_CONVERSION_RESULT_SUCCESS = 1,
+    ADCS_CONVERSION_RESULT_FILE_LOAD_ERROR = 2,
+    ADCS_CONVERSION_RESULT_BUSY = 3
+} ADCS_conversion_result_enum_t;
 
 /* Command Structs */
 
@@ -737,5 +747,11 @@ typedef struct ADCS_misc_currents_struct_t {
     uint32_t torquer_current_microamps;
     int32_t cubestar_mcu_temperature_mdeg_celsius;
 } ADCS_misc_currents_struct_t;
+
+typedef struct ADCS_conversion_progress_struct_t {
+    uint8_t progress_percentage;
+    ADCS_conversion_result_enum_t conversion_result;
+    uint8_t output_file_counter;
+} ADCS_conversion_progress_struct_t;
 
 #endif /* INC_ADCS_TYPES_H_ */

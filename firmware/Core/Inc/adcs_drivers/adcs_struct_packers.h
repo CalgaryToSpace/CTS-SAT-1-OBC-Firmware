@@ -92,5 +92,6 @@ uint8_t ADCS_pack_to_sd_log_config_struct(uint8_t *data_received, uint8_t which_
 uint8_t ADCS_pack_to_wheel_currents_struct(const uint8_t *data_received, ADCS_wheel_currents_struct_t *output);
 uint8_t ADCS_pack_to_cubesense_currents_struct(const uint8_t *input, ADCS_cubesense_currents_struct_t *output);
 uint8_t ADCS_pack_to_misc_currents_struct(const uint8_t *input, ADCS_misc_currents_struct_t *output);
+uint8_t ADCS_pack_to_conversion_progress_struct(const uint8_t *input, ADCS_conversion_progress_struct_t *output);
 
 #endif /* INC_ADCS_STRUCT_PACKERS_H_ */
