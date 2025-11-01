@@ -2909,7 +2909,7 @@ uint8_t TCMDEXEC_adcs_exit_bootloader(const char *args_str,
 
 /// @brief Telecommand: Instruct the ADCS to convert an SD card file to JPG format
 /// @param args_str 
-///     - Arg 0: Index of the file to erase
+///     - Arg 0: Index of the file to convert
 ///     - Arg 1: Quailty factor (1 is the most compressed and lossy, 100 is the least)
 ///     - Arg 2: White balance
 /// @return 0 on success, >0 on error
@@ -2928,6 +2928,31 @@ uint8_t TCMDEXEC_adcs_convert_to_jpg(const char *args_str,
     }
 
     const uint8_t status = ADCS_convert_sd_file_bmp_to_jpg_by_index((uint16_t) arguments[0], (uint8_t) arguments[1], (uint8_t) arguments[2]);
+    if (status != 0) {
+        return status;
+    }
+
+    ADCS_conversion_progress_struct_t conversion_progress;
+    uint8_t tries = 0;
+    do {
+        // keep checking to see if the conversion has finished
+        const uint8_t progress_status = ADCS_get_jpg_conversion_progress(&conversion_progress);
+        if (progress_status != 0) {
+            return progress_status;
+        }
+        if (tries >= ADCS_JPG_CONVERT_TIMEOUT_TRIES) {
+            LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
+                "ADCS timed out waiting for conversion to complete."); 
+            break;
+        }
+        tries++;
+        HAL_Delay(ADCS_JPG_CONVERSION_DELAY_MS);
+    } while (conversion_progress.conversion_result == ADCS_CONVERSION_RESULT_BUSY || 
+            conversion_progress.conversion_result == ADCS_CONVERSION_RESULT_NOT_CONVERTED_YET);
+    
+    LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
+        "File successfully converted and saved to index %d.", 
+        conversion_progress.output_file_counter); 
 
     return status;
 }

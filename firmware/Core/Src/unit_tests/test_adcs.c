@@ -963,3 +963,16 @@ uint8_t TEST_EXEC__ADCS_pack_to_misc_currents_struct() {
 
     return 0;
 }
+
+uint8_t TEST_EXEC__ADCS_pack_to_conversion_progress_struct() {
+    uint8_t input[3] = {0x51, 0x02, 0xa1};
+
+    ADCS_conversion_progress_struct_t result;
+    ADCS_pack_to_conversion_progress_struct(input, &result);
+
+    TEST_ASSERT_TRUE(result.progress_percentage == 81);
+    TEST_ASSERT_TRUE(result.conversion_result == ADCS_CONVERSION_RESULT_FILE_LOAD_ERROR);
+    TEST_ASSERT_TRUE(result.output_file_counter == 161);
+
+    return 0;
+}

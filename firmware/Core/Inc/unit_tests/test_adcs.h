@@ -57,5 +57,6 @@ uint8_t TEST_EXEC__ADCS_combine_sd_log_bitmasks();
 uint8_t TEST_EXEC__ADCS_pack_to_wheel_currents_struct();
 uint8_t TEST_EXEC__ADCS_pack_to_cubesense_currents_struct();
 uint8_t TEST_EXEC__ADCS_pack_to_misc_currents_struct(); 
+uint8_t TEST_EXEC__ADCS_pack_to_conversion_progress_struct();
 
 #endif // INCLUDE_GUARD__ADCS_TEST_PROTOTYPES_H__
