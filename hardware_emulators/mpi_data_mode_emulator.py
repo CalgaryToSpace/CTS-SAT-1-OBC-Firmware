@@ -118,6 +118,12 @@ def send_data(com_port: str) -> None:
                 if "54 43 13" in received_hex:
                     is_mpi_active = True
                     logger.info("MPI ON now. Starting data transmission.")
+
+                    start_time = time.time()  # Record start time
+                    last_log_time = start_time
+                    total_bytes_sent = 0
+                    total_frames_sent = 0
+
                 elif "54 43 14" in received_hex:  # Note: This branch is never used/run.
                     is_mpi_active = False
                     logger.info("MPI OFF now. Stopping data transmission.")
