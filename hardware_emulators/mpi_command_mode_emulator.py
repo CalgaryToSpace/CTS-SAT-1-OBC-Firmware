@@ -3,14 +3,15 @@ import time
 
 from loguru import logger
 
+
 def listen_and_respond(com_port, baudrate=230400, receive_timeout=0.2):
     # Set a shorter serial timeout to avoid unnecessary delays
     with serial.Serial(com_port, baudrate, timeout=0.05) as ser:
         logger.info(f"Listening on {com_port} at {baudrate} baudrate.")
-        
+
         buffer = bytearray()  # Buffer to hold incoming data
         last_receive_time = time.time()  # Time when the last byte was received
-        
+
         while True:
             if ser.in_waiting > 0:
                 # Read in available incoming data
@@ -35,6 +36,7 @@ def listen_and_respond(com_port, baudrate=230400, receive_timeout=0.2):
                 time_elapsed = time.time() - last_receive_time
                 if time_elapsed > 0.3:
                     logger.info("MPI_COMPUTER -> OBC: Warning: Response time exceeded 300ms!")
+
 
 if __name__ == "__main__":
     # Specify the COM port to listen on
