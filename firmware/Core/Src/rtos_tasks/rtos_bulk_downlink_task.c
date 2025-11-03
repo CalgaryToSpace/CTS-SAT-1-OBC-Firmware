@@ -99,7 +99,13 @@ void TASK_bulk_downlink(void *argument) {
 
             // Delay to avoid flooding the radio with packets.
             // The AX100 seems to have a small queue, but can be overwhelmed easily.
-            osDelay(COMMS_bulk_downlink_delay_per_packet_ms);
+            if (COMMS_bulk_downlink_delay_per_packet_ms > 0) {
+                osDelay(COMMS_bulk_downlink_delay_per_packet_ms);
+            }
+            else {
+                // Optimization for on the ground (zero delay). Must yield otherwise this task starves others.
+                osThreadYield();
+            }
         }
         else {
             LOG_message(
