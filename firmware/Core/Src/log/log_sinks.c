@@ -3,67 +3,26 @@
 #include "littlefs/lfs.h"
 #include "littlefs/littlefs_helper.h"
 #include "comms_drivers/comms_tx.h"
+// #include "timekeeping/timekeeping.h"
+#include <stdio.h>
+#include "main.h"
 
 extern UART_HandleTypeDef hlpuart1;
-extern uint8_t LFS_is_lfs_mounted;
 
-// Cannot use LOG_message here, since it would overwrite the caller's message
-// due to statically allocated log message buffers
+// A context for the current log file. Externed in log.c and rtos_background_upkeep.c
+LOG_File_Context_t current_log_file_ctx;
 
-/// @brief Sends a log message to a log file
-/// @param filename full path of the log file
+//FIXME: need to do a soak test te ensure this doesn't break anything.
+/// @brief Write a log message to an lfs log file. 
 /// @param msg The message to be logged
-void LOG_to_file(const char filename[], const char msg[])
+/// @note lfs files are not updated util the file is closed or synced. syncing is done periodically in the rtos_background_upkeep task.
+void LOG_to_file(const char msg[])
 {
-    if (!LFS_is_lfs_mounted) {
-        LOG_to_umbilical_uart("\nError writing to system log file: LFS not mounted\n");
-        LOG_to_uhf_radio("\nError writing to system log file: LFS not mounted\n");
-        // FIXME(Issue #398): log to memory buffer
-        return;
-    }
+    LFS_ensure_mounted();
 
-    // We cannot use LFS_append_file due to recursion of the logging system
-    lfs_file_t file;
-    const int8_t open_result = lfs_file_opencfg(
-        &LFS_filesystem, &file, filename,
-        LFS_O_RDWR | LFS_O_CREAT | LFS_O_APPEND,
-        &LFS_file_cfg
-    );
-	if (open_result < 0)
-	{
-        // This error cannot be logged, except via UART or during an overpass 
-        // of the ground station
-        LOG_to_umbilical_uart("\nError opening system log file\n");
-        LOG_to_uhf_radio("\nError opening system log file\n");
-        // FIXME(Issue #398): log to memory buffer
-		return;
-	}
-    const lfs_soff_t offset = lfs_file_seek(&LFS_filesystem, &file, 0, LFS_SEEK_END);
-    if (offset < 0) {
-        LOG_to_umbilical_uart("\nError seeking to end of system log file\n");
-        LOG_to_uhf_radio("\nError seeking to end of system log file\n");
-        // FIXME(Issue #398): log to memory buffer
-        return;
-    }
+    LOG_ensure_current_log_file_is_open();
 
-	const lfs_ssize_t bytes_written = lfs_file_write(&LFS_filesystem, &file, msg, strlen(msg));
-	if (bytes_written < 0) {
-        LOG_to_umbilical_uart("\nError writing to system log file\n");
-        LOG_to_uhf_radio("\nError writing to system log file\n");
-        // FIXME(Issue #398): log to memory buffer
-		return;
-	}
-	
-	// Close the File, the storage is not updated until the file is closed successfully
-	const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
-	if (close_result < 0) {
-        LOG_to_umbilical_uart("\nError closing system log file\n");
-        LOG_to_uhf_radio("\nError closing system log file\n");
-        // FIXME(Issue #398): log to memory buffer
-		return;
-	}
-	
-	return;
+    LOG_write_to_current_log_file(msg, strlen(msg));
 }
 
 /// @brief Sends a log message to the umbilical UART

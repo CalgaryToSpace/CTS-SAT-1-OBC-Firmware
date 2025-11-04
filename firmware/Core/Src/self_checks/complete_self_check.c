@@ -337,11 +337,9 @@ uint8_t CTS1_check_is_camera_responsive() {
 }
 
 uint8_t CTS1_check_flash_alive(uint8_t flash_chip_number) {
-    FLASH_deactivate_chip_select();
 
-    const FLASH_error_enum_t result = FLASH_is_reachable(&hspi1, flash_chip_number);
+    const FLASH_error_enum_t result = FLASH_is_reachable(flash_chip_number);
 
-    FLASH_deactivate_chip_select();
     return (result == FLASH_ERROR_NONE);
 }
 

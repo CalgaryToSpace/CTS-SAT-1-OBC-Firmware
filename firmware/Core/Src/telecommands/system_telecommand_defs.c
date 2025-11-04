@@ -1,3 +1,4 @@
+#include "main.h"
 #include "log/log.h"
 #include "eps_drivers/eps_types.h"
 #include "eps_drivers/eps_calculations.h"

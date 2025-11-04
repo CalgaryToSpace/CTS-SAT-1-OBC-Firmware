@@ -3,7 +3,7 @@
 
 #define LOG_UART_TRANSMIT_TIMEOUT 200
 
-void LOG_to_file(const char filename[], const char msg[]);
+void LOG_to_file(const char msg[]);
 void LOG_to_umbilical_uart(const char msg[]);
 void LOG_to_uhf_radio(const char msg[]);
 

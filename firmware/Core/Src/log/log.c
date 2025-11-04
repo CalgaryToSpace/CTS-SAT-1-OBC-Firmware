@@ -2,6 +2,7 @@
 #include "log/log_sinks.h"
 #include "debug_tools/debug_uart.h"
 #include "timekeeping/timekeeping.h"
+#include "littlefs/littlefs_helper.h"
 
 #include <complex.h>
 #include <stdint.h>
@@ -70,8 +71,8 @@ static const uint8_t LOG_SEVERITY_MASK_DEFAULT = LOG_SEVERITY_MASK_ALL;
 // least one channel. It cannot be turned off. It is not included in the
 // array of sinks.
 static LOG_sink_t LOG_sinks[] = {
-    {LOG_SINK_UHF_RADIO, "UHF radio", LOG_SINK_ON, LOG_SEVERITY_MASK_DEFAULT},
-    {LOG_SINK_FILE, "log files", LOG_SINK_OFF, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SINK_UHF_RADIO, "UHF radio", LOG_SINK_OFF, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SINK_FILE, "log files", LOG_SINK_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SINK_UMBILICAL_UART, "umbilical UART", LOG_SINK_ON, LOG_SEVERITY_MASK_DEFAULT},
 };
 static const uint16_t LOG_NUMBER_OF_SINKS = sizeof(LOG_sinks) / sizeof(LOG_sink_t);
@@ -84,13 +85,13 @@ static LOG_system_t LOG_systems[] = {
     {LOG_SYSTEM_UMBILICAL_UART, "UMBILICAL_UART", "/logs/umbilical_uart_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_GNSS, "GNSS", "/logs/gnss_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_MPI, "MPI", "/logs/mpi_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
-    {LOG_SYSTEM_EPS, "EPS", "/logs/eps_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SYSTEM_EPS, "EPS", "/logs/eps_system.log", LOG_SYSTEM_OFF, LOG_SEVERITY_MASK_DEFAULT}, 
     {LOG_SYSTEM_BOOM, "BOOM", "/logs/boom_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_ADCS, "ADCS", "/logs/adcs_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
-    {LOG_SYSTEM_LFS, "LFS", "/logs/lfs_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SYSTEM_LFS, "LFS", "/logs/lfs_system.log", LOG_SYSTEM_OFF, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_FLASH, "FLASH", "/logs/flash_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_ANTENNA_DEPLOY, "ANTENNA_DEPLOY", "/logs/antenna_deploy_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
-    {LOG_SYSTEM_LOG, "LOG", "/logs/log_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SYSTEM_LOG, "LOG", "/logs/log_system.log", LOG_SYSTEM_OFF, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_TELECOMMAND, "TELECOMMAND", "/logs/telecommand_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_UNIT_TEST, "UNIT_TEST", "/logs/unit_test_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     // LOG_SYSTEM_UNKNOWN must be the LAST entry to make it easy to find below.
@@ -199,7 +200,7 @@ void LOG_message(LOG_system_enum_t system, LOG_severity_enum_t severity, uint32_
                 case LOG_SINK_FILE:
                     // Send to log file if subsystem logging is enabled
                     if (system_config->file_logging_enabled) {
-                        LOG_to_file(system_config->log_file_path, current_log_entry->full_message);
+                        LOG_to_file(current_log_entry->full_message);
                     }
                     break;
                 case LOG_SINK_UHF_RADIO:
@@ -472,4 +473,105 @@ uint8_t LOG_get_memory_table_index_of_most_recent_log_entry(void)
 const char *LOG_get_memory_table_full_message_at_index(uint8_t index)
 {
     return LOG_memory_table[index].full_message;
+}
+
+
+
+/// @brief Writes to the current log file.
+int8_t LOG_write_to_current_log_file(const char *msg, uint16_t msg_length) {
+
+    extern LOG_File_Context_t current_log_file_ctx; // from log_sinks.c
+
+    LFS_ensure_mounted();
+    LOG_ensure_current_log_file_is_open();
+
+    return lfs_file_write(&LFS_filesystem, &current_log_file_ctx.file, msg, msg_length);
+}
+
+
+
+
+/// @brief Syncs the current log file.
+int8_t LOG_sync_current_log_file(void) {
+
+    extern LOG_File_Context_t current_log_file_ctx; // from log_sinks.c
+
+    LFS_ensure_mounted();
+    LOG_ensure_current_log_file_is_open();
+
+    current_log_file_ctx.timestamp_of_last_sync = TIME_get_current_unix_epoch_time_ms();
+    return lfs_file_sync(&LFS_filesystem, &current_log_file_ctx.file);
+}
+
+
+
+/// @brief  Closed the current log file. 
+int8_t LOG_close_current_log_file(void) {
+
+    extern LOG_File_Context_t current_log_file_ctx; // from log_sinks.c
+
+    if(!current_log_file_ctx.is_open) {
+        return 0;
+    }
+
+    LFS_ensure_mounted();
+
+    current_log_file_ctx.is_open = 0;
+    current_log_file_ctx.timestamp_of_last_close =TIME_get_current_unix_epoch_time_ms();
+    return lfs_file_close(&LFS_filesystem, &current_log_file_ctx.file);
+}
+
+
+
+
+
+/// @brief Opens a new timestamped log file, and sets it as the current log file.
+int8_t LOG_open_new_log_file_and_set_as_current(void) {
+
+    extern LOG_File_Context_t current_log_file_ctx; // from log_sinks.c
+
+    LFS_ensure_mounted();
+
+    // Close the current log file if open.
+    if (current_log_file_ctx.is_open) {
+        int8_t result = LOG_close_current_log_file();
+        if (result != 0) {return result;}
+    }
+
+
+    // Generate a timestamped filename.
+    char timestamp_str[20];
+    TIME_get_current_utc_datetime_str(timestamp_str, sizeof(timestamp_str)); 
+    char filename[32];
+    snprintf(filename, sizeof(filename), "logs/%s.log", timestamp_str);
+
+    LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_FILE), 
+        " opening new log file: %s", filename
+    );
+
+    // Open the new log file.
+    const int16_t result = lfs_file_opencfg(
+        &LFS_filesystem, &current_log_file_ctx.file, filename, 
+        LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND, &LFS_file_cfg
+    );
+    if (result != 0) {
+        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE), 
+            "failed to open new log file: %d", result);
+        return result;
+    }
+
+    // Set metadata for the new log file.
+    current_log_file_ctx.timestamp_of_last_sync = TIME_get_current_unix_epoch_time_ms();
+    current_log_file_ctx.is_open = 1;
+    return 0;
+}
+
+int8_t LOG_ensure_current_log_file_is_open() {
+
+    extern LOG_File_Context_t current_log_file_ctx; // from log_sinks.c
+
+    if (!current_log_file_ctx.is_open) {
+        return LOG_open_new_log_file_and_set_as_current();
+    }
+    return 0;
 }

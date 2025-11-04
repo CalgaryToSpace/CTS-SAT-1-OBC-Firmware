@@ -16,7 +16,7 @@ typedef enum {
 
 uint32_t TIME_get_current_system_uptime_ms(void);
 void TIME_set_current_unix_epoch_time_ms(uint64_t current_unix_epoch_time_ms, TIME_sync_source_enum_t source);
-uint64_t TIME_get_current_unix_epoch_time_ms();
+uint64_t TIME_get_current_unix_epoch_time_ms(void);
 uint64_t TIME_convert_uptime_to_unix_epoch_time_ms(uint32_t uptime_ms);
 
 void TIME_format_timestamp_str(
