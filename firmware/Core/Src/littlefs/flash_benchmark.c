@@ -28,7 +28,6 @@ uint8_t FLASH_benchmark_erase_write_read(uint8_t chip_num, uint32_t test_data_ad
     }
 
     FLASH_Physical_Address_t physical_address = {
-        .block_address = test_data_address, 
         .row_address = test_data_address, 
         .col_address = 0};
     // Erase

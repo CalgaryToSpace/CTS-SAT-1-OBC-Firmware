@@ -7,7 +7,6 @@ static FLASH_error_enum_t FLASH_write_enable(uint8_t chip_number);
 static FLASH_error_enum_t FLASH_write_disable(uint8_t chip_number);
 static FLASH_error_enum_t FLASH_wait_until_ready(uint8_t chip_number);
 
-//TODO: this is not compelete.
 FLASH_error_enum_t FLASH_init(uint8_t chip_number) {
     return FLASH_disable_block_lock(chip_number);
 }
@@ -17,9 +16,9 @@ FLASH_error_enum_t FLASH_erase_block(uint8_t chip_number, FLASH_Physical_Address
     FLASH_write_enable(chip_number);
 
     // Send erase command along with the address of the block.
-    const uint32_t block_address = address.block_address;
-    const uint8_t cmd_buff[] = {FLASH_CMD_BLOCK_ERASE, ((block_address >> 16) & 0xFF), ((block_address >> 8) & 0xFF), (block_address & 0xFF)};
-    const FLASH_SPI_Data_t cmd = {.data = cmd_buff, .len = sizeof(cmd_buff)};
+    uint32_t block_address = address.row_address; // Address to the start of the block.
+    uint8_t cmd_buff[] = {FLASH_CMD_BLOCK_ERASE, ((block_address >> 16) & 0xFF), ((block_address >> 8) & 0xFF), (block_address & 0xFF)};
+    FLASH_SPI_Data_t cmd = {.data = cmd_buff, .len = sizeof(cmd_buff)};
 
     FLASH_error_enum_t result = FLASH_SPI_send_command(&cmd, chip_number);
     if (result != FLASH_ERR_OK) { 
@@ -37,10 +36,8 @@ cleanup:
 
 
 
-FLASH_error_enum_t FLASH_program_page(
-    uint8_t chip_number, FLASH_Physical_Address_t address, uint8_t *data, uint32_t data_len
-) {
-    // FLASH_disable_block_lock(chip_number); // TODO: why do we need to disable block lock? it's never turned back on?
+FLASH_error_enum_t FLASH_program_page(uint8_t chip_number, FLASH_Physical_Address_t address, uint8_t *data, uint32_t data_len) {
+
     FLASH_write_enable(chip_number);
     
     // TODO: not sure if I'm doing the memory mapping correctly. maybe should be offset as the address?

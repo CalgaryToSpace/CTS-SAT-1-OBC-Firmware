@@ -26,12 +26,10 @@
 
 /*
 A struct representing the the location of a block, page and byte within that page. More compact representations are available (uint64_t) but this is easier to use.
-- block_address: address to the start of a block in pages (NOT bytes or blocks). This should be equal to the row_address.
-- row_address: address to the start of a page in pages (NOT bytes)
-- col_address: address to the specific byte in the page (in bytes, between 0 and 2047)
+- row_address: address to the start of a page in pages (NOT bytes). 
+- col_address: address to a specific byte in the page (in bytes, between [0, 2047]). If you are writing a full page, this should be 0.
 */
 typedef struct {
-    uint32_t block_address;
     uint32_t row_address;
     uint32_t col_address;
 } FLASH_Physical_Address_t;

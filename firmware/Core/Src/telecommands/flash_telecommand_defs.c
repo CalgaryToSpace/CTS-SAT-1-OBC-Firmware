@@ -133,7 +133,6 @@ uint8_t TCMDEXEC_flash_read_hex(const char *args_str,
     const uint32_t num_bytes = (uint32_t)num_bytes_u64;
 
     FLASH_Physical_Address_t address = {
-        .block_address = page_num,
         .row_address = page_num,
         .col_address = 0,
     };
@@ -212,7 +211,6 @@ uint8_t TCMDEXEC_flash_write_hex(const char *args_str,
     const uint32_t page_num = (uint32_t)page_num_u64;
 
     FLASH_Physical_Address_t address = {
-        .block_address = page_num,
         .row_address = page_num,
         .col_address = 0,
     };
@@ -273,7 +271,6 @@ uint8_t TCMDEXEC_flash_erase(const char *args_str,
     const uint32_t page_num = (uint32_t)page_num_u64;
 
     FLASH_Physical_Address_t address = {
-        .block_address = page_num,
         .row_address = page_num,
         .col_address = 0,
     };
