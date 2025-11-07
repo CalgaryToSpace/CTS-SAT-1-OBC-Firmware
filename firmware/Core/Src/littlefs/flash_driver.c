@@ -40,7 +40,6 @@ FLASH_error_enum_t FLASH_program_page(uint8_t chip_number, FLASH_Physical_Addres
 
     FLASH_write_enable(chip_number);
     
-    // TODO: not sure if I'm doing the memory mapping correctly. maybe should be offset as the address?
     // Send the program load command along with the address of where in the page to start writing the data.  (always 0 since we always write a full page).
     
     const uint32_t col_address = address.col_address;
