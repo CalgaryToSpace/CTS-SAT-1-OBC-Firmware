@@ -121,15 +121,13 @@ FLASH_error_enum_t FLASH_is_reachable(uint8_t chip_number) {
         &read_id_cmd, response, sizeof(response), chip_number
     );
     
-    // TODO: something like this is probably worth having.
     // See pg. 25 of the datasheet for the expected response.
-    // if (response[0] == 0x2C && response[1] == 0x14) {
-    //     return FLASH_ERR_UNKNOWN;
-    // } else {
-    //     return result;
-    // }
+    if (response[0] == 0x2C && response[1] == 0x14 && result == FLASH_ERR_OK) {
+        return FLASH_ERR_OK;
+    } else {
+        return FLASH_ERR_UNKNOWN;
+    }
 
-    return result;
 }
 
 
