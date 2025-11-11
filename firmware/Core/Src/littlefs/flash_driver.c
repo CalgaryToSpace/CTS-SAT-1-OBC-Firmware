@@ -16,7 +16,7 @@ FLASH_error_enum_t FLASH_erase_block(uint8_t chip_number, FLASH_Physical_Address
     FLASH_write_enable(chip_number);
 
     // Send erase command along with the address of the block.
-    uint32_t block_address = address.row_address; // Address to the start of the block.
+    const uint32_t block_address = address.row_address; // Address to the start of the block.
     uint8_t cmd_buff[] = {FLASH_CMD_BLOCK_ERASE, ((block_address >> 16) & 0xFF), ((block_address >> 8) & 0xFF), (block_address & 0xFF)};
     FLASH_SPI_Data_t cmd = {.data = cmd_buff, .len = sizeof(cmd_buff)};
 
