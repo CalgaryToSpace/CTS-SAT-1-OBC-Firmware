@@ -10,11 +10,8 @@
 // Variables to track LittleFS on Flash Memory Module
 uint8_t LFS_is_lfs_mounted = 0;
 
-// NAND Flash Memory Datasheet https://www.farnell.com/datasheets/3151163.pdf
-// Each page is divided into a 2048-byte data storage region, and a 128 bytes spare area (2176 bytes total).
-#define FLASH_CHIP_PAGE_SIZE_BYTES 2048
-#define FLASH_CHIP_BLOCK_SIZE_BYTES FLASH_CHIP_PAGE_SIZE_BYTES * FLASH_CHIP_PAGES_PER_BLOCK
-#define FLASH_LOOKAHEAD_SIZE 16
+// Should be at least (BLOCK_COUNT / 8). 
+#define FLASH_LOOKAHEAD_SIZE 128
 
 // LittleFS Buffers for reading and writing
 uint8_t LFS_read_buffer[FLASH_CHIP_PAGE_SIZE_BYTES];
@@ -37,27 +34,44 @@ struct lfs_config LFS_cfg = {
     .prog_size = FLASH_CHIP_PAGE_SIZE_BYTES,
     .block_size = FLASH_CHIP_BLOCK_SIZE_BYTES,
     .block_count = (FLASH_CHIP_SIZE_BYTES / FLASH_CHIP_BLOCK_SIZE_BYTES),
-    .block_cycles = 100, // TODO: ASK ABOUT THIS (HOW FREQUENT ARE WE USING THE MODULE),
+    .block_cycles = 500, 
     .cache_size = FLASH_CHIP_PAGE_SIZE_BYTES,
     .lookahead_size = FLASH_LOOKAHEAD_SIZE,
     .compact_thresh = -1, // Defaults to ~88% block_size when zero (lfs.h, line 232)
 
     .read_buffer = LFS_read_buffer,
     .prog_buffer = LFS_prog_buffer,
-    .lookahead_buffer = LFS_lookahead_buf};
+    .lookahead_buffer = LFS_lookahead_buf,
+
+    // Decrease the time metadata compaction operations take (operation is very slow).
+    // Required to prevent watchdog trigger loop (i.e., prevents extremely-long writes).
+    // See: https://github.com/littlefs-project/littlefs/issues/1079#issuecomment-2720048008
+    // Alternative/additional option described in issue: Call `lfs_fs_gc()` periodically during idle.
+    .metadata_max = 1024 * 8,
+};
 
 struct lfs_file_config LFS_file_cfg = {
     .buffer = LFS_file_buffer,
     .attr_count = 0,
-    .attrs = NULL};
+    .attrs = NULL
+};
 
 // ----------------------------- LittleFS Functions -----------------------------
+
+uint8_t LFS_init() {
+   FLASH_init(0); // TODO: probably need initialize all other chips.
+   LFS_ensure_mounted();
+
+   // Create directories which must exist here.
+   LFS_make_directory("./logs");
+
+   return 0;
+}
 
 /// @brief Formats Memory Module so it can successfully mount LittleFS
 /// @param None
 /// @return 0 on success, 1 if LFS is already mounted, negative LFS error codes on failure
-int8_t LFS_format()
-{
+int8_t LFS_format() {
     if (LFS_is_lfs_mounted) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), 
         "FLASH Memory cannot be formatted while LFS is mounted!");
