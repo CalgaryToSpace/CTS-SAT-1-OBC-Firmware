@@ -1,0 +1,13 @@
+<map id="TCMDEXEC_eps_power_management_set_current_threshold" name="TCMDEXEC_eps_power_management_set_current_threshold">
+<area shape="rect" id="Node000001" title="Sets the EPS power managements max sustained current for the specified channel." alt="" coords="5,77,181,133"/>
+<area shape="rect" id="Node000002" href="$eps__channel__control_8c.html#a70f2c11717a0e7352ed1c727053e0c2d" title="Converts an EPS channel name to a channel enum." alt="" coords="255,5,410,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="149,74,228,41,253,33,255,38,230,46,151,79"/>
+<area shape="rect" id="Node000003" href="$eps__power__management_8c.html#a7f75b82960f5fff2d2a87490c5b4b22c" title=" " alt="" coords="229,55,436,96"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="181,91,213,87,213,93,181,97"/>
+<area shape="rect" id="Node000004" href="$telecommand__args__helpers_8c.html#a0fa1c206f35d62f732c8ca95067fb36c" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a string." alt="" coords="248,120,416,146"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="181,112,233,119,233,124,181,118"/>
+<area shape="rect" id="Node000005" href="$telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="247,169,418,195"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="161,131,229,156,253,162,252,168,228,161,159,136"/>
+<area shape="rect" id="Node000006" href="$telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="484,169,636,195"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="418,180,468,180,468,185,418,185"/>
+</map>

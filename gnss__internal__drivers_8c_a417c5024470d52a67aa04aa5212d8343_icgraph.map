@@ -1,0 +1,17 @@
+<map id="GNSS_send_cmd_get_response" name="GNSS_send_cmd_get_response">
+<area shape="rect" id="Node000001" title="Sends a log command to the GNSS, and receives the response." alt="" coords="682,110,894,136"/>
+<area shape="rect" id="Node000002" href="$complete__self__check_8c.html#a82ad8e5243469f7636ca7833d4b27266" title=" " alt="" coords="467,37,615,78"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="721,108,615,80,616,75,723,103"/>
+<area shape="rect" id="Node000006" href="$gnss__time_8c.html#a8a845a240a4720fe0052e9b6763b4be3" title="Sets the OBC&#39;s time, based on the GNSS receiver&#39;s current time. This function sends a command to the ..." alt="" coords="448,103,634,143"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="667,126,635,126,635,120,667,120"/>
+<area shape="rect" id="Node000008" href="$gnss__telecommand__defs_8c.html#a20c22b4133619e23e9f520a6b9decdf8" title="Telecommand: Transmit a log command to the GNSS receiver through UART." alt="" coords="460,168,622,209"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="723,143,621,170,620,165,721,138"/>
+<area shape="rect" id="Node000003" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="233,37,390,78"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="451,60,390,60,390,55,451,55"/>
+<area shape="rect" id="Node000004" href="$system__telecommand__defs_8c.html#a3de9d85c9ac70337b7ea2d12ae8e1431" title="System self&#45;check of all peripherals and systems." alt="" coords="5,5,175,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="217,47,175,41,176,35,218,42"/>
+<area shape="rect" id="Node000005" href="$system__telecommand__defs_8c.html#a0c74e93dcffe027962e3e9015c3fd364" title="System self&#45;check of all peripherals and systems." alt="" coords="5,71,175,111"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="218,74,176,81,175,76,217,69"/>
+<area shape="rect" id="Node000007" href="$timekeeping__telecommand__defs_8c.html#a9713a6d4da8586acb8096499dc1375e2" title="Sync&#39;s OBC time to gnss time (+/&#45; ~100ms)" alt="" coords="223,103,400,143"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="432,126,401,126,401,120,432,120"/>
+</map>

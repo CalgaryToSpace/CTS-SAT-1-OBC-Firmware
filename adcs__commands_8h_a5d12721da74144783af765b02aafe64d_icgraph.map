@@ -1,0 +1,9 @@
+<map id="ADCS_attitude_control_mode" name="ADCS_attitude_control_mode">
+<area shape="rect" id="Node000001" title="Instruct the ADCS to execute the titular command." alt="" coords="300,78,492,104"/>
+<area shape="rect" id="Node000002" href="$telecommand__adcs_8c.html#ab1c9157a4fd526fe6badbb20911d2fdc" title="Telecommand: Set the attitude control mode of the ADCS; needs Power Control to be set before working." alt="" coords="40,5,217,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="325,77,214,49,215,44,326,71"/>
+<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#af079ef7b45b002243e8eb998f1458917" title="Telecommand: Set the run, power control, estimation, and control parameters for a given commissioning..." alt="" coords="5,71,252,111"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="284,94,252,94,252,88,284,88"/>
+<area shape="rect" id="Node000004" href="$telecommand__adcs_8c.html#a370bd5cb05641bfe1d8bdf6bf9e679b0" title="Telecommand: Automatically track the sun with the ADCS." alt="" coords="33,136,224,161"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="321,110,252,126,196,137,195,132,251,120,320,105"/>
+</map>

@@ -1,0 +1,38 @@
+<map id="TCMDEXEC_flash_write_hex" name="TCMDEXEC_flash_write_hex">
+<area shape="rect" id="Node000001" title="Telecommand: Write a hex string of bytes to a page number." alt="" coords="5,185,194,210"/>
+<area shape="rect" id="Node000002" href="$flash__driver_8c.html#a1824e6c227d8d7d295ebea03e266d4ca" title=" " alt="" coords="260,136,414,161"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="165,182,256,162,258,168,166,187"/>
+<area shape="rect" id="Node000013" href="$telecommand__args__helpers_8c.html#a3f4c71ad48b16b79e4bb91ffb13111d7" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a hex string." alt="" coords="242,185,433,210"/>
+<area shape="poly" id="edge19_Node000001_Node000013" title=" " alt="" coords="194,195,226,195,226,200,194,200"/>
+<area shape="rect" id="Node000014" href="$telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="252,234,423,260"/>
+<area shape="poly" id="edge20_Node000001_Node000014" title=" " alt="" coords="166,209,258,228,256,233,165,214"/>
+<area shape="rect" id="Node000003" href="$flash__internal__spi_8c.html#ae0572774132a5866fed34b44c565fa25" title=" " alt="" coords="694,110,888,136"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="366,132,419,112,481,95,543,89,606,90,717,104,717,109,605,95,543,94,481,100,420,117,368,137"/>
+<area shape="rect" id="Node000006" href="$flash__internal__spi_8c.html#a456e38bcf7dfce2fb3a0e70dbd4f2fc6" title=" " alt="" coords="936,5,1129,46"/>
+<area shape="poly" id="edge6_Node000002_Node000006" title=" " alt="" coords="358,133,411,102,480,74,596,48,713,32,824,24,920,21,920,26,825,29,714,37,597,53,482,79,414,107,360,137"/>
+<area shape="rect" id="Node000007" href="$flash__driver_8c.html#afeacce5c8f0e578c02ba5abd0ce67270" title="Wait until the flash chip is ready for the next command." alt="" coords="481,209,646,234"/>
+<area shape="poly" id="edge9_Node000002_Node000007" title=" " alt="" coords="401,159,434,170,458,182,482,195,498,201,496,206,480,200,456,187,432,175,399,164"/>
+<area shape="rect" id="Node000011" href="$flash__driver_8c.html#acafafa4ab0d6a00ce8717b0bfe04f872" title=" " alt="" coords="490,110,638,136"/>
+<area shape="poly" id="edge15_Node000002_Node000011" title=" " alt="" coords="415,137,474,130,475,136,415,142"/>
+<area shape="rect" id="Node000012" href="$flash__driver_8c.html#a2f88b6dbc3273f1baf8150129f3ca318" title=" " alt="" coords="491,160,636,185"/>
+<area shape="poly" id="edge17_Node000002_Node000012" title=" " alt="" coords="415,154,476,160,475,166,415,159"/>
+<area shape="rect" id="Node000004" href="$flash__internal__spi_8c.html#a6ef8dcea63afd51b1abc927f1b9c7a8c" title="Deactivates the chip select for all lines." alt="" coords="1353,96,1479,121"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="888,118,1338,107,1338,113,888,123"/>
+<area shape="rect" id="Node000005" href="$flash__internal__spi_8c.html#aceee333622c828dc554196c66302b044" title=" " alt="" coords="1180,70,1302,96"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="888,112,1165,87,1165,92,889,117"/>
+<area shape="poly" id="edge5_Node000005_Node000004" title=" " alt="" coords="1303,89,1338,94,1337,100,1302,94"/>
+<area shape="poly" id="edge7_Node000006_Node000004" title=" " alt="" coords="1130,27,1216,36,1306,55,1345,69,1379,86,1377,90,1343,74,1305,60,1215,42,1129,32"/>
+<area shape="poly" id="edge8_Node000006_Node000005" title=" " alt="" coords="1109,44,1178,63,1176,68,1108,49"/>
+<area shape="rect" id="Node000008" href="$flash__driver_8c.html#a4578cb366491fb297297143531415840" title=" " alt="" coords="696,204,886,229"/>
+<area shape="poly" id="edge10_Node000007_Node000008" title=" " alt="" coords="647,217,680,216,680,222,647,222"/>
+<area shape="rect" id="Node000009" href="$flash__internal__spi_8c.html#ad5ed7577f49d1b019690750f3e341cb4" title=" " alt="" coords="936,179,1129,219"/>
+<area shape="poly" id="edge11_Node000008_Node000009" title=" " alt="" coords="886,207,920,204,920,210,887,212"/>
+<area shape="poly" id="edge12_Node000009_Node000004" title=" " alt="" coords="1129,185,1215,171,1305,150,1371,125,1373,130,1306,155,1216,176,1130,190"/>
+<area shape="poly" id="edge13_Node000009_Node000005" title=" " alt="" coords="1069,176,1202,101,1204,106,1072,181"/>
+<area shape="rect" id="Node000010" href="$flash__internal__spi_8c.html#aba407f4312efb41c24ed7c3584d491f9" title="Use DMA to speed up receiving. At least 3x faster than HAL_SPI_Receive when transferring 2048 bytes." alt="" coords="1177,222,1305,248"/>
+<area shape="poly" id="edge14_Node000009_Node000010" title=" " alt="" coords="1130,213,1162,219,1161,224,1129,218"/>
+<area shape="poly" id="edge16_Node000011_Node000003" title=" " alt="" coords="638,120,679,120,679,126,638,126"/>
+<area shape="poly" id="edge18_Node000012_Node000003" title=" " alt="" coords="626,156,713,137,714,142,627,161"/>
+<area shape="rect" id="Node000015" href="$telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="488,258,640,284"/>
+<area shape="poly" id="edge21_Node000014_Node000015" title=" " alt="" coords="424,253,472,259,471,264,423,259"/>
+</map>

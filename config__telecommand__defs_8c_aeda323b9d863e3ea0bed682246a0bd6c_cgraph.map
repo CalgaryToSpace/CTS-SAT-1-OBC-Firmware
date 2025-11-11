@@ -1,0 +1,13 @@
+<map id="TCMDEXEC_config_set_int_var" name="TCMDEXEC_config_set_int_var">
+<area shape="rect" id="Node000001" title="Set an integer configuration variable." alt="" coords="5,55,164,95"/>
+<area shape="rect" id="Node000002" href="$configuration_8c.html#a4b5e2d889d0c5ee08065dc64e6237d1b" title="Assigns a new value to an integer configuration variable." alt="" coords="212,13,382,38"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="163,54,224,40,225,45,165,59"/>
+<area shape="rect" id="Node000004" href="$telecommand__args__helpers_8c.html#a0fa1c206f35d62f732c8ca95067fb36c" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a string." alt="" coords="213,62,382,88"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="164,72,198,72,198,78,164,78"/>
+<area shape="rect" id="Node000005" href="$telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="212,112,383,137"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="165,91,225,105,224,110,163,96"/>
+<area shape="rect" id="Node000003" href="$configuration_8c.html#a4eda81199e5bb807b7aa1dbb8ace221d" title="Finds an int config variable in CONFIG_int_config_variables and returns its index." alt="" coords="436,5,579,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="383,23,420,23,420,28,383,28"/>
+<area shape="rect" id="Node000006" href="$telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="431,112,583,137"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="384,122,415,122,415,127,384,127"/>
+</map>

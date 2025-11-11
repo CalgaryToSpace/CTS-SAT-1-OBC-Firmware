@@ -1,0 +1,22 @@
+<map id="ADCS_combine_sd_log_bitmasks" name="ADCS_combine_sd_log_bitmasks">
+<area shape="rect" id="Node000001" title="Take an arbitrary number (up to 63) of 10&#45;byte uint8 arrays and return a single array which is the bi..." alt="" coords="984,157,1142,198"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#afad12ab1d20dbb4d7d2d2f534e26f5f2" title="Instruct the ADCS to execute the ADCS_set_sd_log_config command." alt="" coords="751,136,919,161"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="968,168,919,162,920,157,969,163"/>
+<area shape="rect" id="Node000010" href="$test__adcs_8c.html#a8319975b9c6fde5d3d77018d7a443b2a" title=" " alt="" coords="734,185,936,226"/>
+<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="969,192,936,196,936,191,968,187"/>
+<area shape="rect" id="Node000003" href="$adcs__commands_8c.html#a97ee5ec87812d9c34ad86b85834e688c" title="Disable all active ADCS SD card logs." alt="" coords="502,45,680,70"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="792,131,685,86,647,74,649,69,687,80,794,126"/>
+<area shape="rect" id="Node000007" href="$telecommand__adcs_8c.html#a30694131b649cf588641083d3c1b4f3a" title="Telecommand: Request commissioning telemetry from the ADCS and save it to the onboard SD card." alt="" coords="502,95,679,135"/>
+<area shape="poly" id="edge7_Node000002_Node000007" title=" " alt="" coords="735,137,679,130,680,124,736,132"/>
+<area shape="rect" id="Node000008" href="$telecommand__adcs_8c.html#a03eb5d9d3ad1a01f0b69b1620fd97a38" title="Telecommand: Repeatedly log given data from an SD card." alt="" coords="504,160,677,201"/>
+<area shape="poly" id="edge8_Node000002_Node000008" title=" " alt="" coords="736,164,678,172,677,166,735,159"/>
+<area shape="rect" id="Node000009" href="$telecommand__adcs_8c.html#a370bd5cb05641bfe1d8bdf6bf9e679b0" title="Telecommand: Automatically track the sun with the ADCS." alt="" coords="495,225,686,250"/>
+<area shape="poly" id="edge9_Node000002_Node000009" title=" " alt="" coords="752,169,736,176,722,185,712,195,702,205,688,215,657,227,655,222,685,210,699,201,708,191,718,181,733,171,750,164"/>
+<area shape="rect" id="Node000004" href="$adcs__commands_8c.html#a440ef61b27cd8228c1e2600758e9d207" title="Disable all ADCS peripherals and active SD card logs except the CubeSense Motor and Signal power,..." alt="" coords="226,5,438,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="486,47,438,41,439,36,487,42"/>
+<area shape="rect" id="Node000006" href="$adcs__commands_8c.html#a4693b9a170e342e3f5bb908be0462f8f" title="Disable all ADCS peripherals and active SD card logs." alt="" coords="217,71,447,111"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="487,74,448,79,447,74,486,68"/>
+<area shape="rect" id="Node000005" href="$telecommand__adcs_8c.html#a90adc47346ed3b1ca6f2d66e8380e797" title="Telecommand: Put the ADCS in low&#45;power mode, with only essential component power." alt="" coords="5,39,169,79"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="211,45,169,51,169,45,210,40"/>
+<area shape="poly" id="edge6_Node000006_Node000005" title=" " alt="" coords="201,77,169,72,169,67,202,71"/>
+</map>

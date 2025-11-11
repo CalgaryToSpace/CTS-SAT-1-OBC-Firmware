@@ -1,0 +1,27 @@
+<map id="TCMDEXEC_flash_read_hex" name="TCMDEXEC_flash_read_hex">
+<area shape="rect" id="Node000001" title="Telecommand: Read bytes as hex from a page number." alt="" coords="5,107,191,132"/>
+<area shape="rect" id="Node000002" href="$flash__driver_8c.html#a20affc3393fac2c0a65a61f5d10266fe" title=" " alt="" coords="258,81,390,107"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="191,106,242,101,243,106,191,112"/>
+<area shape="rect" id="Node000010" href="$telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="239,131,410,156"/>
+<area shape="poly" id="edge13_Node000001_Node000010" title=" " alt="" coords="191,127,223,130,223,135,191,132"/>
+<area shape="rect" id="Node000003" href="$flash__internal__spi_8c.html#ae0572774132a5866fed34b44c565fa25" title=" " alt="" coords="910,5,1103,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="390,81,458,72,691,45,894,25,895,31,692,50,458,77,391,86"/>
+<area shape="rect" id="Node000006" href="$flash__internal__spi_8c.html#ad5ed7577f49d1b019690750f3e341cb4" title=" " alt="" coords="910,76,1103,117"/>
+<area shape="poly" id="edge6_Node000002_Node000006" title=" " alt="" coords="391,91,862,92,894,92,894,97,862,97,391,96"/>
+<area shape="rect" id="Node000008" href="$flash__driver_8c.html#afeacce5c8f0e578c02ba5abd0ce67270" title="Wait until the flash chip is ready for the next command." alt="" coords="458,107,623,132"/>
+<area shape="poly" id="edge10_Node000002_Node000008" title=" " alt="" coords="391,99,443,105,442,111,391,105"/>
+<area shape="rect" id="Node000004" href="$flash__internal__spi_8c.html#a6ef8dcea63afd51b1abc927f1b9c7a8c" title="Deactivates the chip select for all lines." alt="" coords="1327,33,1453,59"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="1104,11,1189,12,1280,18,1327,27,1326,32,1279,23,1189,17,1104,17"/>
+<area shape="rect" id="Node000005" href="$flash__internal__spi_8c.html#aceee333622c828dc554196c66302b044" title=" " alt="" coords="1154,33,1276,59"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="1104,29,1140,33,1139,39,1103,34"/>
+<area shape="poly" id="edge5_Node000005_Node000004" title=" " alt="" coords="1276,44,1311,44,1311,49,1276,49"/>
+<area shape="poly" id="edge7_Node000006_Node000004" title=" " alt="" coords="1103,88,1189,81,1279,69,1322,60,1323,66,1280,74,1190,86,1104,94"/>
+<area shape="poly" id="edge8_Node000006_Node000005" title=" " alt="" coords="1092,73,1144,61,1145,66,1093,79"/>
+<area shape="rect" id="Node000007" href="$flash__internal__spi_8c.html#aba407f4312efb41c24ed7c3584d491f9" title="Use DMA to speed up receiving. At least 3x faster than HAL_SPI_Receive when transferring 2048 bytes." alt="" coords="1151,135,1279,160"/>
+<area shape="poly" id="edge9_Node000006_Node000007" title=" " alt="" coords="1093,115,1145,128,1144,133,1092,120"/>
+<area shape="rect" id="Node000009" href="$flash__driver_8c.html#a4578cb366491fb297297143531415840" title=" " alt="" coords="671,107,862,132"/>
+<area shape="poly" id="edge11_Node000008_Node000009" title=" " alt="" coords="624,117,656,117,656,122,624,122"/>
+<area shape="poly" id="edge12_Node000009_Node000006" title=" " alt="" coords="862,108,894,105,895,110,863,113"/>
+<area shape="rect" id="Node000011" href="$telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="464,156,617,182"/>
+<area shape="poly" id="edge14_Node000010_Node000011" title=" " alt="" coords="410,151,449,155,449,161,410,156"/>
+</map>

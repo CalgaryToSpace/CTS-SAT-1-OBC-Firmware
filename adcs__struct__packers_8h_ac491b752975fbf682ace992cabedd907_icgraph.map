@@ -1,0 +1,9 @@
+<map id="ADCS_pack_to_magnetic_field_vector_struct" name="ADCS_pack_to_magnetic_field_vector_struct">
+<area shape="rect" id="Node000001" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="469,41,639,82"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a0ef96d5237a334d0daa277e99bf824d2" title="Instruct the ADCS to execute the ADCS_Magnetic_Field_Vector command." alt="" coords="245,5,417,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="454,48,417,42,418,37,454,43"/>
+<area shape="rect" id="Node000004" href="$test__adcs_8c.html#af46be455c3f7a5e547c66723cf95a344" title=" " alt="" coords="241,70,421,126"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="454,80,422,86,421,80,453,75"/>
+<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#a53724a03c04b68c27b46ddcec61dea51" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,193,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="229,28,193,28,193,23,229,23"/>
+</map>

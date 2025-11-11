@@ -1,0 +1,7 @@
+<map id="ADCS_i2c_request_telemetry_and_check" name="ADCS_i2c_request_telemetry_and_check">
+<area shape="rect" id="Node000001" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="5,5,197,46"/>
+<area shape="rect" id="Node000002" href="$adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="245,5,421,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="197,23,229,23,229,28,197,28"/>
+<area shape="rect" id="Node000003" href="$adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="469,5,617,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="422,23,454,23,454,28,422,28"/>
+</map>
