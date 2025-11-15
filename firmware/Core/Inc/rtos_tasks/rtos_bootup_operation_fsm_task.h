@@ -6,7 +6,7 @@
 extern uint32_t COMMS_uptime_to_start_ant_deployment_sec;
 
 typedef enum {
-    // Entry point. Booted, and awaiting a trigger to deployment. Emulate a 30-minute countdown to antenna deployment.
+    // Entry point. Booted, and awaiting a trigger to deployment. Emulate a 60-minute countdown to antenna deployment.
     CTS1_OPERATION_STATE_BOOTED_AND_WAITING,
 
     // Intermediate state. Very short-lived nominally. Deploy deployable antennas here.
