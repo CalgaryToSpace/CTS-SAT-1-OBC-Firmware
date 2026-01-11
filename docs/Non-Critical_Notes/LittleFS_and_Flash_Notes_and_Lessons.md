@@ -8,7 +8,7 @@ The LittleFS filesystem is used to provide a layer on top of the raw flash memor
     * NAND FLASH
     * Datasheet: https://www.farnell.com/datasheets/3151163.pdf
 * SPI DMA is faster.
-* The MT29F1G chip requires that the CS line be driven to inactive between writes, otherwise the system goes inactive.
+* The MT29F1G chip requires that the CS line be driven to inactive between writes, otherwise the chip/system goes unresponsive.
 
 ## LittleFS
 
