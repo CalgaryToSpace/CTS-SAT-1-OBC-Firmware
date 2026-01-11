@@ -339,8 +339,10 @@ uint8_t TCMDEXEC_fs_delete_file(const char *args_str,
 /// @param args_str
 /// - Arg 0: Directory name to be deleted
 /// @note Do not add quotations around the argument, write as is.
-uint8_t TCMDEXEC_fs_delete_dir(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
+uint8_t TCMDEXEC_fs_delete_dir(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
     char arg_file_name[LFS_MAX_PATH_LENGTH];
     const uint8_t parse_dir_name_result = TCMD_extract_string_arg(args_str, 0, arg_file_name, sizeof(arg_file_name));
     if (parse_dir_name_result != 0) {
