@@ -7,16 +7,14 @@
 
 
 int32_t LFS_search_count_occurrences(
-    lfs_t *lfs,
-    lfs_file_t *file,
+    const char *filename,
     const uint8_t *needle,
     size_t needle_len
 );
 
 
 int32_t LFS_search_find_nth_occurrence(
-    lfs_t *lfs,
-    lfs_file_t *file,
+    const char *filename,
     const uint8_t *needle,
     size_t needle_len,
     uint16_t n,
