@@ -335,6 +335,33 @@ uint8_t TCMDEXEC_fs_delete_file(const char *args_str,
     return 0;
 }
 
+/// @brief Telecommand: Deletes a specified directory in LittleFS
+/// @param args_str
+/// - Arg 0: Directory name to be deleted
+/// @note Do not add quotations around the argument, write as is.
+uint8_t TCMDEXEC_fs_delete_dir(const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    char arg_file_name[LFS_MAX_PATH_LENGTH];
+    const uint8_t parse_dir_name_result = TCMD_extract_string_arg(args_str, 0, arg_file_name, sizeof(arg_file_name));
+    if (parse_dir_name_result != 0) {
+        // error parsing
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing dir name arg: Error %d", parse_dir_name_result);
+        return 1;
+    }
+
+    const int8_t result = LFS_recursively_delete_directory(arg_file_name);
+    if (result != 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Error: LFS_recursively_delete_directory() -> %d", result);
+        return 2;
+    }
+
+    snprintf(response_output_buf, response_output_buf_len, "LittleFS successfully deleted directory!");
+    return 0;
+}
+
 /// @brief Parse a telecommand argument str for the standard filename/offset/length arguments for reading files.
 /// @param args_str 
 /// @param dest_filename 
