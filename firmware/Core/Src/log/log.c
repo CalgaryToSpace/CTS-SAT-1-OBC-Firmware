@@ -15,7 +15,7 @@
 // Internal interfaces and variables
 #define LOG_TIMESTAMP_MAX_LENGTH 30
 #define LOG_SINK_NAME_MAX_LENGTH 20
-#define LOG_SYSTEM_NAME_MAX_LENGTH 5
+#define LOG_SYSTEM_NAME_MAX_LENGTH 6
 
 // Includes prefix, with cushion for delimiters, newline, and null terminator
 #define LOG_FULL_MESSAGE_MAX_LENGTH ( LOG_FORMATTED_MESSAGE_MAX_LENGTH + LOG_TIMESTAMP_MAX_LENGTH + LOG_SINK_NAME_MAX_LENGTH + LOG_SYSTEM_NAME_MAX_LENGTH + 1 )
@@ -89,7 +89,7 @@ static LOG_system_t LOG_systems[] = {
     {LOG_SYSTEM_ADCS, "ADCS", "/logs/adcs_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_LFS, "LFS", "/logs/lfs_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_FLASH, "FLASH", "/logs/flash_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
-    {LOG_SYSTEM_ANTENNA_DEPLOY, "ANT", "/logs/antenna_deploy_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SYSTEM_ANTENNA_DEPLOY, "ANTS", "/logs/antenna_deploy_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_LOG, "LOG", "/logs/log_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_TELECOMMAND, "TCMD", "/logs/telecommand_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_UNIT_TEST, "TEST", "/logs/unit_test_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
