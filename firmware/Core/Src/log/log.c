@@ -15,7 +15,7 @@
 // Internal interfaces and variables
 #define LOG_TIMESTAMP_MAX_LENGTH 30
 #define LOG_SINK_NAME_MAX_LENGTH 20
-#define LOG_SYSTEM_NAME_MAX_LENGTH 20
+#define LOG_SYSTEM_NAME_MAX_LENGTH 6
 
 // Includes prefix, with cushion for delimiters, newline, and null terminator
 #define LOG_FULL_MESSAGE_MAX_LENGTH ( LOG_FORMATTED_MESSAGE_MAX_LENGTH + LOG_TIMESTAMP_MAX_LENGTH + LOG_SINK_NAME_MAX_LENGTH + LOG_SYSTEM_NAME_MAX_LENGTH + 1 )
@@ -80,8 +80,8 @@ static const uint16_t LOG_NUMBER_OF_SINKS = sizeof(LOG_sinks) / sizeof(LOG_sink_
 // entries.
 static LOG_system_t LOG_systems[] = {
     {LOG_SYSTEM_OBC, "OBC", "/logs/obc_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
-    {LOG_SYSTEM_UHF_RADIO, "UHF_RADIO", "/logs/uhf_radio_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
-    {LOG_SYSTEM_UMBILICAL_UART, "UMBILICAL_UART", "/logs/umbilical_uart_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SYSTEM_UHF_RADIO, "RADIO", "/logs/uhf_radio_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SYSTEM_UMBILICAL_UART, "UART", "/logs/umbilical_uart_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_GNSS, "GNSS", "/logs/gnss_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_MPI, "MPI", "/logs/mpi_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_EPS, "EPS", "/logs/eps_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
@@ -89,12 +89,12 @@ static LOG_system_t LOG_systems[] = {
     {LOG_SYSTEM_ADCS, "ADCS", "/logs/adcs_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_LFS, "LFS", "/logs/lfs_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_FLASH, "FLASH", "/logs/flash_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
-    {LOG_SYSTEM_ANTENNA_DEPLOY, "ANTENNA_DEPLOY", "/logs/antenna_deploy_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SYSTEM_ANTENNA_DEPLOY, "ANTS", "/logs/antenna_deploy_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     {LOG_SYSTEM_LOG, "LOG", "/logs/log_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
-    {LOG_SYSTEM_TELECOMMAND, "TELECOMMAND", "/logs/telecommand_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
-    {LOG_SYSTEM_UNIT_TEST, "UNIT_TEST", "/logs/unit_test_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SYSTEM_TELECOMMAND, "TCMD", "/logs/telecommand_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SYSTEM_UNIT_TEST, "TEST", "/logs/unit_test_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
     // LOG_SYSTEM_UNKNOWN must be the LAST entry to make it easy to find below.
-    {LOG_SYSTEM_UNKNOWN, "UNKNOWN", "/logs/unknown_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SYSTEM_UNKNOWN, "UNK", "/logs/unknown_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
 };
 static const uint16_t LOG_NUMBER_OF_SYSTEMS = sizeof(LOG_systems) / sizeof(LOG_system_t);
 
@@ -439,15 +439,15 @@ const char* LOG_get_severity_name(LOG_severity_enum_t severity)
         case LOG_SEVERITY_DEBUG:
             return "DEBUG";
         case LOG_SEVERITY_NORMAL:
-            return "NORMAL";
+            return "INFO";
         case LOG_SEVERITY_WARNING:
-            return "WARNING";
+            return "WARN";
         case LOG_SEVERITY_ERROR:
-            return "ERROR";
+            return "ERR";
         case LOG_SEVERITY_CRITICAL:
-            return "CRITICAL";
+            return "CRIT";
         default:
-            return "UNKNOWN SEVERITY";
+            return "UNK";
     }
 }
 
