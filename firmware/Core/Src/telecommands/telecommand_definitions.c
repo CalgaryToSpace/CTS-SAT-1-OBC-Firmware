@@ -1273,6 +1273,30 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
+    {
+        .tcmd_name = "comms_bulk_uplink_open_file",
+        .tcmd_func = TCMDEXEC_comms_bulk_uplink_open_file,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "comms_bulk_uplink_close_file",
+        .tcmd_func = TCMDEXEC_comms_bulk_uplink_close_file,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "comms_bulk_uplink_write_bytes_hex",
+        .tcmd_func = TCMDEXEC_comms_bulk_uplink_write_bytes_hex,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "comms_bulk_uplink_seek",
+        .tcmd_func = TCMDEXEC_comms_bulk_uplink_seek,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
     // ****************** END SECTION: comms_telecommand_defs ******************
     // ****************** SECTION: gnss_telecommand_defs ******************
     {
