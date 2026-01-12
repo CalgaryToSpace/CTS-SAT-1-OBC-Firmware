@@ -4,6 +4,11 @@ Run with:
 
 ```bash
 uv run misc_tools/bulk_uplink_to_devkit.py ./firmware/build/debug/CTS-SAT-1_FW.elf -o firmware.elf --port <uart_port>
+
+# Current fastest working settings on UART:
+--chunk-size 150 --delay 0.4
+
+# 2.23MB file at that speed takes 1h45m (which is 11x 10-minute passes). <2 weeks isn't horrible...
 ```
 
 """
@@ -29,7 +34,7 @@ from loguru import logger
 from tqdm import tqdm
 
 
-def _send_open_close_command(ser: serial.Serial, command: str) -> None:
+def _send_simple_slow_command(ser: serial.Serial, command: str) -> bytes:
     ser.write(command.encode("ascii"))
     logger.debug(f"Sending: {command}")
     time.sleep(1)
@@ -41,6 +46,8 @@ def _send_open_close_command(ser: serial.Serial, command: str) -> None:
         logger.debug("Response: " + str(response_bytes))
 
     time.sleep(0.25)
+
+    return response_bytes
 
 
 def send_file_over_uart(
@@ -64,16 +71,18 @@ def send_file_over_uart(
         time.sleep(1)
         logger.debug(f"Purging incoming serial buffer: {ser.read(ser.in_waiting)}")
 
-        _send_open_close_command(ser, "CTS1+comms_bulk_uplink_close_file()!")
+        _send_simple_slow_command(ser, "CTS1+comms_bulk_uplink_close_file()!")
 
-        _send_open_close_command(ser, f"CTS1+comms_bulk_uplink_open_file({output_file},truncate)!")
+        _send_simple_slow_command(
+            ser, f"CTS1+comms_bulk_uplink_open_file({output_file},truncate)!"
+        )
 
         # Find ways to increase execution speed.
-        _send_open_close_command(
+        _send_simple_slow_command(
             ser, "CTS1+config_set_int_var(AX100_enable_downlink_inhibited_uart_logs,0)!"
         )
-        _send_open_close_command(ser, "CTS1+config_set_int_var(TASK_heartbeat_period_ms,0)!")
-        _send_open_close_command(ser, "CTS1+log_set_sink_enabled_state(4,0)!")  # Disable UART.
+        _send_simple_slow_command(ser, "CTS1+config_set_int_var(TASK_heartbeat_period_ms,0)!")
+        _send_simple_slow_command(ser, "CTS1+log_set_sink_enabled_state(4,0)!")  # Disable UART.
 
         with (
             input_file_path.open("rb") as f,
@@ -130,14 +139,19 @@ def send_file_over_uart(
 
                 chunk_index += 1
 
-        _send_open_close_command(ser, "CTS1+comms_bulk_uplink_close_file()!")
+        _send_simple_slow_command(ser, "CTS1+comms_bulk_uplink_close_file()!")
 
-        _send_open_close_command(ser, f"CTS1+fs_read_file_sha256_hash_json({output_file},0,0)!")
+        hash_on_satellite = _send_simple_slow_command(
+            ser, f"CTS1+fs_read_file_sha256_hash_json({output_file},0,0)!"
+        )
 
         hash_on_disk = hashlib.sha256(input_file_path.read_bytes()).hexdigest()
-        logger.info(
-            f"SHA256 hash of input file (computer-side): {hash_on_disk} = {hash_on_disk.upper()}"
-        )
+        logger.info(f"SHA256 hash of input file (computer-side): {hash_on_disk}")
+
+        if hash_on_disk.lower().encode() in hash_on_satellite.lower():
+            logger.success("SHA256 hash of input file matches hash on satellite.")
+        else:
+            logger.error("SHA256 hash of input file does NOT match hash on satellite.")
 
 
 def main():
