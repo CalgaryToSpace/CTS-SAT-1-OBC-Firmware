@@ -327,13 +327,18 @@ uint8_t TCMD_extract_hex_array_arg(const char *args_str, uint8_t arg_index, uint
 }
 
 
-static int8_t base64_char_to_value(char c)
-{
+static int8_t base64_char_to_value(char c) {
     if (c >= 'A' && c <= 'Z') return c - 'A';
     if (c >= 'a' && c <= 'z') return c - 'a' + 26;
     if (c >= '0' && c <= '9') return c - '0' + 52;
+    
+    // Standard Base64.
     if (c == '+') return 62;
     if (c == '/') return 63;
+
+    // Alternative common Base64 style: URL-safe/YouTube-style Base64.
+    if (c == '-') return 62;
+    if (c == '_') return 63;
     return -1;
 }
 
@@ -344,7 +349,7 @@ static int8_t base64_char_to_value(char c)
 /// @param result_array_size Size of the result array
 /// @param result_length Pointer to variable that will contain the length of the result after converting
 /// @return 0 if successful, >0 for error
-/// @note Whitespace and '_' are ignored between Base64 characters, but invalid placement is not allowed.
+/// @note Whitespace is ignored between Base64 characters, but invalid placement is not allowed.
 uint8_t TCMD_extract_base64_array_arg(
     const char *args_str, uint8_t arg_index,
     uint8_t result_array[], uint16_t result_array_size, uint16_t *result_length
@@ -368,10 +373,10 @@ uint8_t TCMD_extract_base64_array_arg(
     }
 
     if (arg_count < arg_index) {
-        return 11; // Not enough arguments
+        return 11; // Not enough arguments.
     }
 
-    // Find end of argument
+    // Find end of argument.
     uint32_t end_index = start_index;
     while (args_str[end_index] != ',' && args_str[end_index] != '\0') {
         end_index++;
@@ -385,15 +390,15 @@ uint8_t TCMD_extract_base64_array_arg(
     for (size_t i = start_index; i < end_index; i++) {
         char c = args_str[i];
 
-        if (c == ' ' || c == '_') {
-            // Allow separators only between complete quartets
+        if (c == ' ') {
+            // Allow separators only between complete quartets.
             if (quartet_count != 0 && quartet_count != 4) {
                 return 4;
             }
             continue;
         }
 
-        if (c == '=') {
+        if (c == '=') { // Padding.
             quartet[quartet_count++] = 0;
             padding_count++;
         } else {
@@ -428,7 +433,7 @@ uint8_t TCMD_extract_base64_array_arg(
     }
 
     if (quartet_count != 0) {
-        // Incomplete Base64 quartet
+        // Incomplete Base64 quartet.
         return 4;
     }
 
