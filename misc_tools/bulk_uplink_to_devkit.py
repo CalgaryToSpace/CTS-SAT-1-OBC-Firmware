@@ -3,12 +3,13 @@
 Run with:
 
 ```bash
-uv run misc_tools/bulk_uplink_to_devkit.py ./firmware/build/debug/CTS-SAT-1_FW.elf -o firmware.elf --port <uart_port>
+uv run misc_tools/bulk_uplink_to_devkit.py ./firmware/build/debug/CTS-SAT-1_FW.bin -o firmware.elf --port <uart_port>
 
-# Current fastest working settings on UART:
+# Current fastest working settings on UART yields 357 B/s:
 --chunk-size 150 --delay 0.4
 
-# 2.23MB file at that speed takes 1h45m (which is 11x 10-minute passes). <2 weeks isn't horrible...
+# ELF: 2.23MB file at that speed takes 1h45m (which is 11x 10-minute passes). <2 weeks.
+# BIN: 277kB file at that speed takes 13 minutes (only 2 passes). Very good.
 ```
 
 """
