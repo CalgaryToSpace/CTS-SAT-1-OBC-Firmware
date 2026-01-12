@@ -120,7 +120,11 @@ int32_t COMMS_bulk_file_uplink_seek(uint32_t new_position) {
 
 int32_t COMMS_bulk_file_uplink_close_file(void) {
     if (COMMS_bulk_file_uplink_state != COMMS_BULK_FILE_UPLINK_STATE_OPEN) {
-        return 0; // Idempotent close. No file is open.
+        LOG_message(
+            LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
+            "bulk_uplink_close_file: no file is open"
+        );
+        return 1; // If no file is open, indicate as such.
     }
 
     const int32_t close_result =
