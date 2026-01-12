@@ -1298,6 +1298,18 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
+        .tcmd_name = "comms_bulk_uplink_write_bytes_base64",
+        .tcmd_func = TCMDEXEC_comms_bulk_uplink_write_bytes_base64,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "bulkup64",
+        .tcmd_func = TCMDEXEC_bulkup64,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
         .tcmd_name = "comms_bulk_uplink_seek",
         .tcmd_func = TCMDEXEC_comms_bulk_uplink_seek,
         .number_of_args = 1,

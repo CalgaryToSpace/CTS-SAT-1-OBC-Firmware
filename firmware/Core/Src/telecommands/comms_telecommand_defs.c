@@ -399,6 +399,67 @@ uint8_t TCMDEXEC_comms_bulk_uplink_write_bytes_hex(
     return 0;
 }
 
+
+/// @brief Telecommand: Write Base64 bytes to the currently open bulk uplink file.
+/// @param args_str
+/// - Arg 0: Base64 string (e.g. "SGVsbG8=" converts to ASCII "Hello")
+/// @note This telecommand has a short-form alias "bulkup64".
+uint8_t TCMDEXEC_comms_bulk_uplink_write_bytes_base64(
+    const char *args_str,
+    char *response_output_buf,
+    uint16_t response_output_buf_len
+) {
+    uint8_t binary_data[200] = {0};
+    uint16_t binary_data_length = 0;
+
+    const uint8_t parse_base64_result = TCMD_extract_base64_array_arg(
+        args_str,
+        0,
+        binary_data,
+        sizeof(binary_data),
+        &binary_data_length
+    );
+
+    if (parse_base64_result != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error parsing base64 bytes arg: TCMD_extract_base64_array_arg() -> %d",
+            parse_base64_result
+        );
+        return 1;
+    }
+
+    const int32_t result = COMMS_bulk_file_uplink_write_bytes(
+        binary_data,
+        binary_data_length
+    );
+
+    if (result < 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Bulk uplink write failed (LFS error): %ld",
+            result
+        );
+        return 10;
+    }
+    else if (result > 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Bulk uplink write failed (logical error): %ld",
+            result
+        );
+        return 11;
+    }
+
+    // Keep this bit short. Just send the number of bytes written. This is on the hot-path.
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "%u",
+        binary_data_length
+    );
+    return 0;
+}
+
 /// @brief Telecommand: Write hex bytes to the currently open bulk uplink file
 /// @param args_str
 /// - Arg 0: Hex string (e.g. "DEADBEEF" or "DE AD BE EF")
@@ -410,6 +471,24 @@ uint8_t TCMDEXEC_bulkup16(
     uint16_t response_output_buf_len
 ) {
     return TCMDEXEC_comms_bulk_uplink_write_bytes_hex(
+        args_str,
+        response_output_buf,
+        response_output_buf_len
+    );
+}
+
+
+/// @brief Telecommand: Write Base64 bytes to the currently open bulk uplink file.
+/// @param args_str
+/// - Arg 0: Base64 string (e.g. "SGVsbG8=" converts to ASCII "Hello")
+/// @note This is an alias for the `comms_bulk_uplink_write_bytes_base64` telecommand.
+///     This is one of very few telecommands with short aliases, as it allows more data per command.
+uint8_t TCMDEXEC_bulkup64(
+    const char *args_str,
+    char *response_output_buf,
+    uint16_t response_output_buf_len
+) {
+    return TCMDEXEC_comms_bulk_uplink_write_bytes_base64(
         args_str,
         response_output_buf,
         response_output_buf_len
