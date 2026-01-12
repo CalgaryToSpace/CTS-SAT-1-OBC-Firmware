@@ -46,6 +46,11 @@ uint8_t TCMDEXEC_comms_bulk_uplink_write_bytes_hex(
     char *response_output_buf,
     uint16_t response_output_buf_len
 );
+uint8_t TCMDEXEC_bulkup16(
+    const char *args_str,
+    char *response_output_buf,
+    uint16_t response_output_buf_len
+);
 uint8_t TCMDEXEC_comms_bulk_uplink_close_file(
     const char *args_str,
     char *response_output_buf,

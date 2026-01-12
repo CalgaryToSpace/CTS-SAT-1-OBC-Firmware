@@ -339,10 +339,10 @@ uint8_t TCMDEXEC_comms_bulk_uplink_close_file(
     return 0;
 }
 
-/// @brief Telecommand: Write hex bytes to the currently open bulk uplink file
+/// @brief Telecommand: Write hex bytes to the currently open bulk uplink file.
 /// @param args_str
 /// - Arg 0: Hex string (e.g. "DEADBEEF" or "DE AD BE EF")
-/// @note Maximum write size is limited by TCMD_extract_hex_array_arg()
+/// @note This telecommand has a short-form alias "bulkup16".
 uint8_t TCMDEXEC_comms_bulk_uplink_write_bytes_hex(
     const char *args_str,
     char *response_output_buf,
@@ -397,6 +397,23 @@ uint8_t TCMDEXEC_comms_bulk_uplink_write_bytes_hex(
         binary_data_length
     );
     return 0;
+}
+
+/// @brief Telecommand: Write hex bytes to the currently open bulk uplink file
+/// @param args_str
+/// - Arg 0: Hex string (e.g. "DEADBEEF" or "DE AD BE EF")
+/// @note This is an alias for the `comms_bulk_uplink_write_bytes_hex` telecommand.
+///     This is one of very few telecommands with short aliases, as it allows more data per command.
+uint8_t TCMDEXEC_bulkup16(
+    const char *args_str,
+    char *response_output_buf,
+    uint16_t response_output_buf_len
+) {
+    return TCMDEXEC_comms_bulk_uplink_write_bytes_hex(
+        args_str,
+        response_output_buf,
+        response_output_buf_len
+    );
 }
 
 
