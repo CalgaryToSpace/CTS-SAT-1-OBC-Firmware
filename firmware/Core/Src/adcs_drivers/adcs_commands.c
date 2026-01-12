@@ -1585,11 +1585,11 @@ uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) 
 /// @brief Save a specified file from the ADCS SD card to the ADCS subfolder in LittleFS.
 /// @param[in] index_file_bool Whether this is the index file or not
 /// @param[in] file_index Index of the file in the SD card; only used if index_file_bool is false
-/// @param[in] include_checksum_bool Whether to check the checksum or not
+/// @param[in] enable_checksum_validation_bool Whether to check the checksum or not
 /// @param[in] checksum CRC16 checksum of the file
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission, negative if an LFS or snprintf error code occurred. 
 /// Specifically, assuming no HAL or LFS error: bytes 0-2 are the ADCS error, bytes 3-10 are which command failed, bytes 11-16 are the index of the failure if applicable
-int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index, bool include_checksum_bool, uint16_t checksum) {
+int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index, bool enable_checksum_validation_bool, uint16_t checksum) {
 
     const uint32_t function_start_time = HAL_GetTick();
 
@@ -1656,7 +1656,7 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index, bool
             return file_info_status;
         }
 
-        if (include_checksum_bool && (file_info.file_crc16 != checksum)) {
+        if (enable_checksum_validation_bool && (file_info.file_crc16 != checksum)) {
             // check the CRC16 checksum
             LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE), "CRC16 checksum incorrect at file index. (got %x)", file_info.file_crc16);
             return 12;
@@ -1750,6 +1750,175 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index, bool
 
     return timeout_err;
 }
+
+
+/// @brief Save a file, specified by its CRC16 checksum, from the ADCS SD card to the ADCS subfolder in LittleFS.
+/// @param[in] index_file_bool Whether this is the index file or not
+/// @param[in] file_checksum CRC16 checksum of the file in the SD card; only used if index_file_bool is false
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission, negative if an LFS or snprintf error code occurred. 
+/// Specifically, assuming no HAL or LFS error: bytes 0-2 are the ADCS error, bytes 3-10 are which command failed, bytes 11-16 are the index of the failure if applicable
+int16_t ADCS_save_sd_file_to_lfs_by_checksum(bool index_file_bool, uint16_t file_checksum) {
+// TODO: TEST THIS
+    const uint32_t function_start_time = HAL_GetTick();
+
+    ADCS_file_info_struct_t file_info;
+    int16_t snprintf_ret;
+
+    uint16_t file_index = 0; // Files are characterised by their indices
+
+    char filename_string[17];
+
+    if (!index_file_bool) {
+        // get the data about the file to download
+
+        /*
+        The file is uniquely identified by the File Type and Counter parameters. The Offset and Block
+        Length parameters indicate which part of the file to buffer in memory. The maximum Block Length is [20 KiB]. 
+        [20480 bytes (20 bytes * 1024 packets). Some files may require multiple blocks, such as image files]
+        */
+            
+        const uint8_t reset_pointer_status = ADCS_reset_file_list_read_pointer();
+        HAL_Delay(200);
+        if (reset_pointer_status != 0) {
+            // to avoid interference from the EPS, do a separate ack for these commands
+            ADCS_cmd_ack_struct_t ack_status;
+            ADCS_cmd_ack(&ack_status);
+            if (ack_status.error_flag != 0) {
+                return ack_status.error_flag;
+            }
+        }
+
+        for (uint16_t i = 0; i < 255; i++) {
+            const uint8_t advance_pointer_status = ADCS_advance_file_list_read_pointer();
+            HAL_Delay(200);
+            if (advance_pointer_status != 0) {
+                // to avoid interference from the EPS, do a separate ack for these commands
+                ADCS_cmd_ack_struct_t ack_status;
+                ADCS_cmd_ack(&ack_status);
+                if (ack_status.error_flag != 0) {
+                    return ack_status.error_flag;
+                }
+            }
+            
+            if (i % 70 == 0) {
+                // pet the watchdog every 70 files so we don't run out of time
+                STM32_pet_watchdog(); 
+            }
+
+            const uint8_t temp_file_info_status = ADCS_get_file_info_telemetry(&file_info);
+            if (temp_file_info_status != 0) {
+                return temp_file_info_status;
+            }
+            if (file_info.file_crc16 == 0 && file_info.file_date_time_msdos == 0 && file_info.file_size == 0) {
+                // if all the file_info parameters are zero, we've reached the end of the file list.
+                LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "End of file list reached at index %d.", i);
+                return 6;
+            }
+            if (file_info.file_crc16 == file_checksum) {
+                break; // we've found the file! Move on and download it.
+            }
+
+            file_index++;
+            if (file_index > 255) {
+                LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE), "File index is greater than 255. Aborting...");
+                return 73;
+            }
+        }
+        
+        const uint8_t file_info_status = ADCS_get_file_info_telemetry(&file_info);
+        if (file_info_status != 0) {
+            return file_info_status;
+        }
+
+        // name file based on type and timestamp
+        switch(file_info.file_type) {
+
+            case ADCS_FILE_TYPE_TELEMETRY_LOG:
+                snprintf_ret = snprintf(filename_string, 17, "ADCS/log%d.TLM", file_index);
+                if (snprintf_ret < 0) {
+                    return snprintf_ret;
+                };
+                break;
+            case ADCS_FILE_TYPE_JPG_IMAGE:
+                snprintf_ret = snprintf(filename_string, 17, "ADCS/img%d.jpg", file_index);
+                if (snprintf_ret < 0) {
+                    return snprintf_ret;
+                };
+                break;    
+            case ADCS_FILE_TYPE_BMP_IMAGE:
+                snprintf_ret = snprintf(filename_string, 17, "ADCS/img%d.bmp", file_index);
+                if (snprintf_ret < 0) {
+                    return snprintf_ret;
+                };
+                break;    
+            case ADCS_FILE_TYPE_INDEX:
+                snprintf_ret = snprintf(filename_string, 17, "ADCS/index_file");
+                if (snprintf_ret < 0) {
+                    return snprintf_ret;
+                };
+                break;    
+            default:
+                return 1;
+        }
+
+    } else {
+        snprintf_ret = snprintf(filename_string, 16, "ADCS/index_file");
+        if (snprintf_ret < 0) {
+            return snprintf_ret;
+        };
+        file_info.file_size = 20479; // for the index file, we should only need a single block
+        file_info.file_type = ADCS_FILE_TYPE_INDEX;
+    }
+
+    // Check that LittleFS is mounted
+    if (!LFS_is_lfs_mounted) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "LittleFS not mounted."); 
+        return 43;
+    }
+
+    // Now that we have the filename string, we can create the file (any existing file will be overwritten)
+    lfs_file_t file;
+    const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, filename_string, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC, &LFS_file_cfg);
+    if (open_result < 0) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening/creating file: %s", filename_string);
+        return open_result;
+    }
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully created file: %s", filename_string);
+
+
+    uint8_t total_blocks = ceil(file_info.file_size / 20480.0);
+    uint8_t current_block = 0; 
+
+    uint8_t timeout_err = 0;
+
+    while (current_block < total_blocks) {
+
+        LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, "Loading block %d from ADCS to LittleFS", current_block);
+        const uint8_t load_block_status = ADCS_load_sd_file_block_to_filesystem(file_info, current_block, &file); // load the block
+        if (load_block_status != 0) {
+            return load_block_status;
+        }
+
+        current_block++;
+
+        if (HAL_GetTick() - function_start_time > ADCS_FILE_DOWNLOAD_TIMEOUT_MS) {
+            // if we've timed out, exit the loop to close the file and then return an error
+            timeout_err = 7;
+            break;
+        }
+    }
+
+    // Once we've written all the blocks, close the file; it won't be updated in LittleFS until the file is closed.
+    const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
+    if (close_result < 0) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing file.");
+        return close_result;
+    }
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully wrote data to file: %s", filename_string);
+
+    return timeout_err;
+}
+
 
 /// @brief Disable all active ADCS SD card logs.
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred.

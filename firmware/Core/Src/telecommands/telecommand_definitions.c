@@ -757,9 +757,15 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
-        .tcmd_name = "adcs_download_sd_file_with_checksum",
-        .tcmd_func = TCMDEXEC_adcs_download_sd_file_with_checksum,
+        .tcmd_name = "adcs_download_sd_file_by_index_with_checksum",
+        .tcmd_func = TCMDEXEC_adcs_download_sd_file_by_index_with_checksum,
         .number_of_args = 2, 
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "adcs_download_sd_file_by_checksum",
+        .tcmd_func = TCMDEXEC_adcs_download_sd_file_by_checksum,
+        .number_of_args = 1, 
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },  
     {
