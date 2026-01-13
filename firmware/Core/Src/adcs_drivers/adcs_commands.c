@@ -1758,7 +1758,6 @@ int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index, bool
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission, negative if an LFS or snprintf error code occurred. 
 /// Specifically, assuming no HAL or LFS error: bytes 0-2 are the ADCS error, bytes 3-10 are which command failed, bytes 11-16 are the index of the failure if applicable
 int16_t ADCS_save_sd_file_to_lfs_by_checksum(bool index_file_bool, uint16_t file_checksum) {
-// TODO: TEST THIS
     const uint32_t function_start_time = HAL_GetTick();
 
     ADCS_file_info_struct_t file_info;
@@ -1789,21 +1788,6 @@ int16_t ADCS_save_sd_file_to_lfs_by_checksum(bool index_file_bool, uint16_t file
         }
 
         for (uint16_t i = 0; i < 255; i++) {
-            const uint8_t advance_pointer_status = ADCS_advance_file_list_read_pointer();
-            HAL_Delay(200);
-            if (advance_pointer_status != 0) {
-                // to avoid interference from the EPS, do a separate ack for these commands
-                ADCS_cmd_ack_struct_t ack_status;
-                ADCS_cmd_ack(&ack_status);
-                if (ack_status.error_flag != 0) {
-                    return ack_status.error_flag;
-                }
-            }
-            
-            if (i % 70 == 0) {
-                // pet the watchdog every 70 files so we don't run out of time
-                STM32_pet_watchdog(); 
-            }
 
             const uint8_t temp_file_info_status = ADCS_get_file_info_telemetry(&file_info);
             if (temp_file_info_status != 0) {
@@ -1822,6 +1806,22 @@ int16_t ADCS_save_sd_file_to_lfs_by_checksum(bool index_file_bool, uint16_t file
             if (file_index > 255) {
                 LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE), "File index is greater than 255. Aborting...");
                 return 73;
+            }
+
+            const uint8_t advance_pointer_status = ADCS_advance_file_list_read_pointer();
+            HAL_Delay(200);
+            if (advance_pointer_status != 0) {
+                // to avoid interference from the EPS, do a separate ack for these commands
+                ADCS_cmd_ack_struct_t ack_status;
+                ADCS_cmd_ack(&ack_status);
+                if (ack_status.error_flag != 0) {
+                    return ack_status.error_flag;
+                }
+            }
+            
+            if (i % 70 == 0) {
+                // pet the watchdog every 70 files so we don't run out of time
+                STM32_pet_watchdog(); 
             }
         }
         
