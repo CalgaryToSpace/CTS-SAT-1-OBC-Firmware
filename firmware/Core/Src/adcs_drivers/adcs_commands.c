@@ -1948,6 +1948,82 @@ uint8_t ADCS_convert_sd_file_bmp_to_jpg_by_index(uint16_t file_index, uint8_t qu
     return convert_status;
 }
 
+/// @brief Given the CRC16 checksum of a file on the SD card, convert that file to a JPG image.
+/// @param[in] file_checksum The checksum of the file.
+/// @param[in] quality_factor Amount of compression and data loss; 1 is the most, 100 is the least
+/// @param[in] white_balance White balance
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred.
+uint8_t ADCS_convert_sd_file_bmp_to_jpg_by_checksum(uint16_t file_checksum, uint8_t quality_factor, uint8_t white_balance) {
+
+    const uint32_t function_start_time = HAL_GetTick();
+    
+    ADCS_file_info_struct_t file_info;
+
+    // get the required File Type and Counter parameters about the file to erase
+
+    const uint8_t reset_pointer_status = ADCS_reset_file_list_read_pointer();
+    HAL_Delay(200);
+    if (reset_pointer_status != 0) {
+        // to avoid interference from the EPS, do a separate ack for these commands
+        ADCS_cmd_ack_struct_t ack_status;
+        ADCS_cmd_ack(&ack_status);
+        if (ack_status.error_flag != 0) {
+            return ack_status.error_flag;
+        }
+    }
+
+    for (uint16_t i = 0; i < 255; i++) {
+        const uint8_t temp_file_info_status = ADCS_get_file_info_telemetry(&file_info);
+        if (temp_file_info_status != 0) {
+            return temp_file_info_status;
+        }
+        if (file_info.file_crc16 == 0 && file_info.file_date_time_msdos == 0 && file_info.file_size == 0) {
+            // if all the file_info parameters are zero, we've reached the end of the file list.
+            LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "End of file list reached at index %d.", i);
+            return 6;
+        }
+        if (file_info.file_crc16 == file_checksum) {
+            // this is the correct file, so continue onwards
+            break;
+        }
+
+        const uint8_t advance_pointer_status = ADCS_advance_file_list_read_pointer();
+        
+        if (HAL_GetTick() - function_start_time > ADCS_FILE_POINTER_TIMEOUT_MS) {
+            return 7;
+        }
+        
+        HAL_Delay(200);
+        if (advance_pointer_status != 0) {
+            // to avoid interference from the EPS, do a separate ack for these commands
+            ADCS_cmd_ack_struct_t ack_status;
+            ADCS_cmd_ack(&ack_status);
+            if (ack_status.error_flag != 0) {
+                return ack_status.error_flag;
+            }
+        }
+
+        if (i % 70 == 0) {
+            // pet the watchdog every 70 files so we don't run out of time
+            STM32_pet_watchdog(); 
+        }
+
+        if (i > 255) {
+            LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE), "File index is greater than 255. Aborting...");
+            return 73;
+        }
+    }
+
+    const uint8_t file_info_status = ADCS_get_file_info_telemetry(&file_info);
+    if (file_info_status != 0) {
+        return file_info_status;
+    }
+
+    const uint8_t convert_status = ADCS_convert_to_jpg(file_info.file_counter, quality_factor, white_balance);
+
+    return convert_status;
+}
+
 
 /// @brief Instruct the ADCS to execute the ADCS_get_wheel_currents command.
 /// @param output_struct Pointer to struct in which to place packed ADCS telemetry data

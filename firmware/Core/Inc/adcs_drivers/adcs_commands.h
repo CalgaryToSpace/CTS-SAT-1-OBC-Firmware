@@ -154,6 +154,7 @@ uint8_t ADCS_bootloader_run_program();
 uint8_t ADCS_convert_to_jpg(uint8_t file_counter, uint8_t quality_factor, uint8_t white_balance);
 uint8_t ADCS_get_jpg_conversion_progress(ADCS_conversion_progress_struct_t *output_struct);
 uint8_t ADCS_convert_sd_file_bmp_to_jpg_by_index(uint16_t file_index, uint8_t quality_factor, uint8_t white_balance);
+uint8_t ADCS_convert_sd_file_bmp_to_jpg_by_checksum(uint16_t file_checksum, uint8_t quality_factor, uint8_t white_balance);
 uint8_t ADCS_get_wheel_currents(ADCS_wheel_currents_struct_t *output_struct);
 uint8_t ADCS_get_cubesense_currents(ADCS_cubesense_currents_struct_t *output_struct);
 uint8_t ADCS_get_misc_currents(ADCS_misc_currents_struct_t *output_struct);
