@@ -240,8 +240,11 @@ uint8_t TCMDEXEC_adcs_erase_sd_file(const char *args_str,
 uint8_t TCMDEXEC_adcs_exit_bootloader(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len);
 
-uint8_t TCMDEXEC_adcs_convert_to_jpg(const char *args_str, 
+uint8_t TCMDEXEC_adcs_convert_to_jpg_by_index(const char *args_str, 
                         char *response_output_buf, uint16_t response_output_buf_len);
+
+uint8_t TCMDEXEC_adcs_convert_to_jpg_by_checksum(const char *args_str, 
+                        char *response_output_buf, uint16_t response_output_buf_len);                        
 
 uint8_t TCMDEXEC_adcs_get_wheel_currents(const char *args_str, 
                         char *response_output_buf, uint16_t response_output_buf_len);
