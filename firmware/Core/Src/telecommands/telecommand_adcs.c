@@ -2910,7 +2910,7 @@ uint8_t TCMDEXEC_adcs_exit_bootloader(const char *args_str,
 /// @brief Telecommand: Instruct the ADCS to convert an SD card file to JPG format
 /// @param args_str 
 ///     - Arg 0: Index of the file to convert
-///     - Arg 1: Quailty factor (1 is the most compressed and lossy, 100 is the least)
+///     - Arg 1: Quality factor (1 is the most compressed and lossy, 100 is the least)
 ///     - Arg 2: White balance
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_convert_to_jpg_by_index(const char *args_str, 
@@ -2951,7 +2951,7 @@ uint8_t TCMDEXEC_adcs_convert_to_jpg_by_index(const char *args_str,
             conversion_progress.conversion_result == ADCS_CONVERSION_RESULT_NOT_CONVERTED_YET);
     
     LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
-        "File successfully converted and saved to index %d.", 
+        "File successfully converted and saved. File counter: %d.", 
         conversion_progress.output_file_counter); 
 
     return status;
@@ -2960,7 +2960,7 @@ uint8_t TCMDEXEC_adcs_convert_to_jpg_by_index(const char *args_str,
 /// @brief Telecommand: Instruct the ADCS to convert an SD card file to JPG format
 /// @param args_str 
 ///     - Arg 0: The CRC16 checksum of the file as two hex bytes in order (e.g. "07 ff" becomes 0x07ff)
-///     - Arg 1: Quailty factor (1 is the most compressed and lossy, 100 is the least)
+///     - Arg 1: Quality factor (1 is the most compressed and lossy, 100 is the least)
 ///     - Arg 2: White balance
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_convert_to_jpg_by_checksum(const char *args_str, 
@@ -3010,7 +3010,7 @@ uint8_t TCMDEXEC_adcs_convert_to_jpg_by_checksum(const char *args_str,
             conversion_progress.conversion_result == ADCS_CONVERSION_RESULT_NOT_CONVERTED_YET);
     
     LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
-        "File successfully converted and saved to index %d.", 
+        "File successfully converted and saved. File counter: %d.", 
         conversion_progress.output_file_counter); 
 
     return status;
