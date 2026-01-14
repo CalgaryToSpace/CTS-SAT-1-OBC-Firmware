@@ -1803,7 +1803,7 @@ int16_t ADCS_save_sd_file_to_lfs_by_checksum(bool index_file_bool, uint16_t file
             }
 
             file_index++;
-            if (file_index > 255) {
+            if (file_index > 254) {
                 LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE), "File index is greater than 255. Aborting...");
                 return 73;
             }
@@ -2015,6 +2015,82 @@ uint8_t ADCS_erase_sd_file_by_index(uint16_t file_index) {
             LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "End of file list reached at index %d.", i);
             return 6;
         }
+    }
+
+    const uint8_t file_info_status = ADCS_get_file_info_telemetry(&file_info);
+    if (file_info_status != 0) {
+        return file_info_status;
+    }
+
+    const uint8_t erase_status = ADCS_erase_file(file_info.file_type, file_info.file_counter, false);
+
+    return erase_status;
+}
+
+/// @brief Given the checksum on the SD card of a file, erase that file.
+/// @param[in] file_checksum The checksum of the file.
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred.
+uint8_t ADCS_erase_sd_file_by_checksum(uint16_t file_checksum) {
+
+    const uint32_t function_start_time = HAL_GetTick();
+    
+    ADCS_file_info_struct_t file_info;
+
+    // get the required File Type and Counter parameters about the file to erase
+
+    const uint8_t reset_pointer_status = ADCS_reset_file_list_read_pointer();
+    HAL_Delay(200);
+    if (reset_pointer_status != 0) {
+        // to avoid interference from the EPS, do a separate ack for these commands
+        ADCS_cmd_ack_struct_t ack_status;
+        ADCS_cmd_ack(&ack_status);
+        if (ack_status.error_flag != 0) {
+            return ack_status.error_flag;
+        }
+    }
+
+    for (uint16_t i = 0; i < 255; i++) {
+        
+        const uint8_t temp_file_info_status = ADCS_get_file_info_telemetry(&file_info);
+        if (temp_file_info_status != 0) {
+            return temp_file_info_status;
+        }
+        if (file_info.file_crc16 == 0 && file_info.file_date_time_msdos == 0 && file_info.file_size == 0) {
+            // if all the file_info parameters are zero, we've reached the end of the file list.
+            LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "End of file list reached at index %d.", i);
+            return 6;
+        }
+        if (file_info.file_crc16 == file_checksum) {
+            // file found successfully
+            break;
+        }
+
+        const uint8_t advance_pointer_status = ADCS_advance_file_list_read_pointer();
+        
+        if (HAL_GetTick() - function_start_time > ADCS_FILE_POINTER_TIMEOUT_MS) {
+            return 7;
+        }
+        
+        HAL_Delay(200);
+        if (advance_pointer_status != 0) {
+            // to avoid interference from the EPS, do a separate ack for these commands
+            ADCS_cmd_ack_struct_t ack_status;
+            ADCS_cmd_ack(&ack_status);
+            if (ack_status.error_flag != 0) {
+                return ack_status.error_flag;
+            }
+        }
+
+        if (i > 254) {
+            LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE), "File index is greater than 255. Aborting...");
+            return 73;
+        }
+
+        if (i % 70 == 0) {
+            // pet the watchdog every 70 files so we don't run out of time
+            STM32_pet_watchdog(); 
+        }
+
     }
 
     const uint8_t file_info_status = ADCS_get_file_info_telemetry(&file_info);

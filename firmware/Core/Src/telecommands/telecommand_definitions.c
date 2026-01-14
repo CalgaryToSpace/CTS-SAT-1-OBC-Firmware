@@ -825,8 +825,14 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
-        .tcmd_name = "adcs_erase_sd_file",
-        .tcmd_func = TCMDEXEC_adcs_erase_sd_file,
+        .tcmd_name = "adcs_erase_sd_file_by_index",
+        .tcmd_func = TCMDEXEC_adcs_erase_sd_file_by_index,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    }, 
+    {
+        .tcmd_name = "adcs_erase_sd_file_by_checksum",
+        .tcmd_func = TCMDEXEC_adcs_erase_sd_file_by_checksum,
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     }, 

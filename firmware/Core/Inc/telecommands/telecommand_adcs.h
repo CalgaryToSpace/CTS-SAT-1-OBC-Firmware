@@ -240,7 +240,10 @@ uint8_t TCMDEXEC_adcs_download_index_file(const char *args_str,
 uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len);
 
-uint8_t TCMDEXEC_adcs_erase_sd_file(const char *args_str,
+uint8_t TCMDEXEC_adcs_erase_sd_file_by_index(const char *args_str,
+                        char *response_output_buf, uint16_t response_output_buf_len);
+
+uint8_t TCMDEXEC_adcs_erase_sd_file_by_checksum(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len);
 
 uint8_t TCMDEXEC_adcs_exit_bootloader(const char *args_str,
