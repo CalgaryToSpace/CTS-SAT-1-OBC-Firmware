@@ -1875,7 +1875,7 @@ uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str,
 /// @brief Telecommand: Download a specific file from the ADCS SD card by the index
 /// @param args_str 
 ///     - Arg 0: The index of the file to download
-///     - Arg 1: The CRC16 checksum of the file as two hex bytes in order (e.g. "07 ff" becomes 0x07ff)
+///     - Arg 1: CRC16 checksum of the file as two hex bytes in order (e.g. "07 ff" becomes 0x07ff)
 /// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_download_sd_file_by_index_with_checksum(const char *args_str, 
                                    char *response_output_buf, uint16_t response_output_buf_len) {
@@ -2910,7 +2910,7 @@ uint8_t TCMDEXEC_adcs_format_sd(const char *args_str,
 /// @param args_str 
 ///     - Arg 0: Index of the file to erase
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_adcs_erase_sd_file(const char *args_str,
+uint8_t TCMDEXEC_adcs_erase_sd_file_by_index(const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len) {
     
     // parse file index argument
@@ -2918,6 +2918,29 @@ uint8_t TCMDEXEC_adcs_erase_sd_file(const char *args_str,
     TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &file_index);
 
     const int16_t status = ADCS_erase_sd_file_by_index(file_index);
+
+    return status;
+}
+
+/// @brief Telecommand: Instruct the ADCS to erase a file from the SD card
+/// @param args_str 
+///     - Arg 0: CRC16 checksum of the file as two hex bytes in order (e.g. "07 ff" becomes 0x07ff)
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_erase_sd_file_by_checksum(const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    // parse checksum
+    uint8_t checksum[2];
+    uint16_t checksum_length;
+    TCMD_extract_hex_array_arg(args_str, 0, &checksum[0], 2, &checksum_length);
+
+    if (checksum_length != 2) {
+        return 5;
+    }
+
+    uint16_t crc16 = (checksum[0] << 8) | checksum[1];
+
+    const int16_t status = ADCS_erase_sd_file_by_checksum(crc16);
 
     return status;
 }
