@@ -38,8 +38,8 @@ uint8_t TCMDEXEC_stm32_internal_flash_write(const char *args_str, char *response
                              (address_buf[2] << 8) |
                              address_buf[3]; // Convert to 32-bit address
 
-    STM32_Internal_Flash_Write_Status_t status;
-    const STM32_Internal_Flash_Write_Return_t write_res = STM32_internal_flash_write(address, write_hex_buffer, write_hex_buffer_len, &status);
+    STM32_internal_flash_write_status_t status;
+    const STM32_internal_flash_write_return_t write_res = STM32_internal_flash_write(address, write_hex_buffer, write_hex_buffer_len, &status);
     if (write_res != 0)
     {
         snprintf(response_output_buf, response_output_buf_len, "Error writing to flash: %u\nLock Status: %u\nUnlock Status: %u\nWrite Status: %u", write_res, status.lock_status, status.unlock_status, status.write_status);

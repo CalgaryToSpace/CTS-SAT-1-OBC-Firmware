@@ -29,7 +29,7 @@ typedef struct
     HAL_StatusTypeDef lock_status;
     HAL_StatusTypeDef unlock_status;
     HAL_StatusTypeDef write_status;
-} STM32_Internal_Flash_Write_Status_t;
+} STM32_internal_flash_write_status_t;
 
 typedef enum
 {
@@ -40,9 +40,9 @@ typedef enum
     STM32_INTERNAL_FLASH_WRITE_UNLOCK_FAILED,
     STM32_INTERNAL_FLASH_WRITE_LOCK_FAILED,
     STM32_INTERNAL_FLASH_WRITE_OPERATION_FAILED,
-} STM32_Internal_Flash_Write_Return_t;
+} STM32_internal_flash_write_return_t;
 
-STM32_Internal_Flash_Write_Return_t STM32_internal_flash_write(uint32_t address, uint8_t *data, uint32_t length, STM32_Internal_Flash_Write_Status_t *status);
+STM32_internal_flash_write_return_t STM32_internal_flash_write(uint32_t address, uint8_t *data, uint32_t length, STM32_internal_flash_write_status_t *status);
 
 uint8_t STM32_internal_flash_read(uint32_t address, uint8_t *buffer, uint32_t length);
 

@@ -728,8 +728,8 @@ uint8_t TCMDEXEC_fs_write_file_to_internal_flash(const char *args_str, char *res
     }
 
     // If region is not erased, it will fail
-    STM32_Internal_Flash_Write_Status_t write_status = {0};
-    const STM32_Internal_Flash_Write_Return_t write_result = STM32_internal_flash_write(write_address, file_content, read_length, &write_status);
+    STM32_internal_flash_write_status_t write_status = {0};
+    const STM32_internal_flash_write_return_t write_result = STM32_internal_flash_write(write_address, file_content, read_length, &write_status);
     LOG_message(LOG_SYSTEM_ALL, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
                 "Write Status=%d, Lock Status=%d, Unlock Status=%d",
         write_status.write_status, write_status.lock_status, write_status.unlock_status);
