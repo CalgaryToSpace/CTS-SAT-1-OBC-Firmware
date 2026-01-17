@@ -315,7 +315,11 @@ uint8_t TCMDEXEC_stm32_internal_flash_write_file_to_internal_flash(const char *a
 
     if (IS_FLASH_MAIN_MEM_ADDRESS(write_address) == false) {
         // Address is not in the main flash memory region
-        snprintf(response_output_buf, response_output_buf_len, "Error: Address 0x%08lX is not in the main flash memory region.", (unsigned long)write_address);
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error: Address 0x%08lX is not in the main flash memory region.",
+            (unsigned long)write_address
+        );
         return 6;
     }
 
