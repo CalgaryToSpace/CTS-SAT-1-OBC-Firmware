@@ -1,0 +1,25 @@
+<map id="TIME_get_current_utc_datetime_str" name="TIME_get_current_utc_datetime_str">
+<area shape="rect" id="Node000001" title=" " alt="" coords="847,86,996,126"/>
+<area shape="rect" id="Node000002" href="$rtos__tasks_8c.html#a7cf23bbdce878a0b7c41607751423179" title=" " alt="" coords="596,9,799,35"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="850,82,733,38,735,33,852,77"/>
+<area shape="rect" id="Node000004" href="$timekeeping_8c.html#a56deebaf14dfbeb962060b8387738ea9" title="Use this function in a telecommand, or upon receiving a time update from the GNSS." alt="" coords="620,114,775,154"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="832,120,776,127,775,122,831,115"/>
+<area shape="rect" id="Node000003" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,5,55,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="581,21,359,18,103,18,55,20,55,14,103,13,359,12,581,16"/>
+<area shape="rect" id="Node000005" href="$eps__time_8c.html#a5a66b7a8cc792b4c410f66673b244442" title="Sets the OBC&#39;s time, based on the EPS&#39;s current time." alt="" coords="351,48,525,89"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="604,114,521,92,522,87,606,108"/>
+<area shape="rect" id="Node000008" href="$gnss__time_8c.html#a8a845a240a4720fe0052e9b6763b4be3" title="Sets the OBC&#39;s time, based on the GNSS receiver&#39;s current time. This function sends a command to the ..." alt="" coords="345,114,531,154"/>
+<area shape="poly" id="edge9_Node000004_Node000008" title=" " alt="" coords="605,137,532,137,532,132,605,132"/>
+<area shape="rect" id="Node000010" href="$timekeeping__telecommand__defs_8c.html#aedcfb7fdd0de305c758505a0374df4b7" title="Adjust the system time with a signed int." alt="" coords="328,179,548,204"/>
+<area shape="poly" id="edge11_Node000004_Node000010" title=" " alt="" coords="606,157,500,181,499,175,605,152"/>
+<area shape="rect" id="Node000011" href="$timekeeping__telecommand__defs_8c.html#a6bf5f2dc78c441c9273d137328193f04" title="Set the system time to the provided Unix epoch time in milliseconds." alt="" coords="339,228,537,254"/>
+<area shape="poly" id="edge12_Node000004_Node000011" title=" " alt="" coords="654,165,605,194,549,219,515,230,513,225,547,214,602,189,651,161"/>
+<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="336,54,280,46,55,23,55,17,280,41,336,49"/>
+<area shape="rect" id="Node000006" href="$rtos__eps__tasks_8c.html#ad27bdbe0e838d3705b754e9af4c449b2" title=" " alt="" coords="130,56,252,82"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="335,72,253,72,253,66,335,66"/>
+<area shape="rect" id="Node000007" href="$timekeeping__telecommand__defs_8c.html#a2e02e699400d7369f09ed29047b5d300" title="Sync&#39;s obc time to eps time (+/&#45; 1 second)" alt="" coords="103,106,280,146"/>
+<area shape="poly" id="edge8_Node000005_Node000007" title=" " alt="" coords="336,95,281,108,280,103,335,90"/>
+<area shape="poly" id="edge7_Node000006_Node000003" title=" " alt="" coords="133,53,54,28,56,23,134,48"/>
+<area shape="rect" id="Node000009" href="$timekeeping__telecommand__defs_8c.html#a9713a6d4da8586acb8096499dc1375e2" title="Sync&#39;s OBC time to gnss time (+/&#45; ~100ms)" alt="" coords="103,171,280,212"/>
+<area shape="poly" id="edge10_Node000008_Node000009" title=" " alt="" coords="334,161,281,173,280,168,332,156"/>
+</map>

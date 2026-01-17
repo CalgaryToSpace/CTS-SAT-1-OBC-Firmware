@@ -1,0 +1,14 @@
+<map id="FLASH_wait_until_ready" name="FLASH_wait_until_ready">
+<area shape="rect" id="Node000001" title="Wait until the flash chip is ready for the next command." alt="" coords="5,31,171,56"/>
+<area shape="rect" id="Node000002" href="$flash__driver_8c.html#a4578cb366491fb297297143531415840" title=" " alt="" coords="219,31,409,56"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="171,41,203,41,203,46,171,46"/>
+<area shape="rect" id="Node000003" href="$flash__internal__spi_8c.html#ad5ed7577f49d1b019690750f3e341cb4" title=" " alt="" coords="457,23,650,64"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="410,41,442,41,442,46,410,46"/>
+<area shape="rect" id="Node000004" href="$flash__internal__spi_8c.html#a6ef8dcea63afd51b1abc927f1b9c7a8c" title="Deactivates the chip select for all lines." alt="" coords="875,5,1000,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="650,22,698,16,781,12,859,12,859,17,781,17,699,21,651,27"/>
+<area shape="rect" id="Node000005" href="$flash__internal__spi_8c.html#aceee333622c828dc554196c66302b044" title=" " alt="" coords="702,31,823,56"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="651,41,686,41,686,46,651,46"/>
+<area shape="rect" id="Node000006" href="$flash__internal__spi_8c.html#aba407f4312efb41c24ed7c3584d491f9" title="Use DMA to speed up receiving. At least 3x faster than HAL_SPI_Receive when transferring 2048 bytes." alt="" coords="698,80,827,106"/>
+<area shape="poly" id="edge6_Node000003_Node000006" title=" " alt="" coords="643,62,691,73,690,79,642,67"/>
+<area shape="poly" id="edge5_Node000005_Node000004" title=" " alt="" coords="823,32,859,27,860,32,824,37"/>
+</map>

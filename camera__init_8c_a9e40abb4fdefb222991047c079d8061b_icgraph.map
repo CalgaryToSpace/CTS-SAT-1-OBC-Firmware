@@ -1,0 +1,19 @@
+<map id="camera_clean_up" name="camera_clean_up">
+<area shape="rect" id="Node000001" title=" " alt="" coords="794,39,917,64"/>
+<area shape="rect" id="Node000002" href="$camera__init_8c.html#adfa3d3b239068192490d519d4452cfee" title="Set up the camera by powering on and changing the baudrate to 230400." alt="" coords="656,9,746,35"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="778,39,745,33,746,28,779,34"/>
+<area shape="rect" id="Node000004" href="$camera__init_8c.html#a5907417f5cd0e54e69a2be090bee7b3e" title="Send the &#39;t&#39; test command to the camera, and check if the response is valid." alt="" coords="661,63,741,88"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="779,66,741,72,740,67,778,61"/>
+<area shape="rect" id="Node000003" href="$camera__telecommand__defs_8c.html#ae1178a2fd050587def48f88105a64164" title="Set up the camera by powering on and changing the baudrate to 230400." alt="" coords="427,5,608,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="641,24,609,23,609,17,641,18"/>
+<area shape="rect" id="Node000005" href="$complete__self__check_8c.html#a55d4f769a9d77ec139334ba21af7e5f0" title=" " alt="" coords="436,55,599,96"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="646,78,600,78,600,73,646,73"/>
+<area shape="rect" id="Node000009" href="$camera__telecommand__defs_8c.html#ad397e68fb376696ba5da544a87057056" title="Send the &#39;t&#39; test command to the camera, and check if the response is valid." alt="" coords="432,120,603,146"/>
+<area shape="poly" id="edge8_Node000004_Node000009" title=" " alt="" coords="650,97,609,110,569,122,568,117,608,105,648,91"/>
+<area shape="rect" id="Node000006" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="223,55,379,96"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="420,78,379,78,379,73,420,73"/>
+<area shape="rect" id="Node000007" href="$system__telecommand__defs_8c.html#a3de9d85c9ac70337b7ea2d12ae8e1431" title="System self&#45;check of all peripherals and systems." alt="" coords="5,22,175,62"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="207,63,175,58,176,53,208,58"/>
+<area shape="rect" id="Node000008" href="$system__telecommand__defs_8c.html#a0c74e93dcffe027962e3e9015c3fd364" title="System self&#45;check of all peripherals and systems." alt="" coords="5,87,175,128"/>
+<area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="208,92,176,97,175,92,207,87"/>
+</map>

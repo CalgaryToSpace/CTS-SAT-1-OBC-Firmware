@@ -1,0 +1,17 @@
+<map id="TCMDEXEC_adcs_get_sgp4_orbit_params" name="TCMDEXEC_adcs_get_sgp4_orbit_params">
+<area shape="rect" id="Node000001" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,104,193,145"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a253104b6bb15d12c84648f84cb5b5d46" title="Instruct the ADCS to execute the ADCS_Get_SGP4_Orbit_Params command." alt="" coords="256,71,405,111"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="192,108,240,101,241,107,193,114"/>
+<area shape="rect" id="Node000007" href="$adcs__types__to__json_8c.html#a317e5237875af24f4b790d5acf5b74fb" title="Converts ADCS_Orbit_Params_Struct to a JSON string." alt="" coords="241,136,420,177"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="193,135,225,139,225,144,192,140"/>
+<area shape="rect" id="Node000003" href="$adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="468,5,659,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="405,68,473,48,474,53,406,73"/>
+<area shape="rect" id="Node000006" href="$adcs__struct__packers_8c.html#a831293eb235d8a2d67236c1ad1e2f831" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="492,71,635,111"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="405,88,477,88,477,94,405,94"/>
+<area shape="rect" id="Node000004" href="$adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="707,5,884,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="660,23,692,23,692,28,660,28"/>
+<area shape="rect" id="Node000005" href="$adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (p...." alt="" coords="932,5,1080,46"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="884,23,916,23,916,28,884,28"/>
+<area shape="rect" id="Node000008" href="$adcs__internal__drivers_8c.html#a37228af04b248067199e7f79a90cfd7a" title="Convert a double into a string with a given decimal precision." alt="" coords="488,136,640,177"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="420,154,472,154,472,159,420,159"/>
+</map>

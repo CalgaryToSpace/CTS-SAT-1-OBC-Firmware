@@ -1,0 +1,11 @@
+<map id="ADCS_pack_to_comms_status_struct" name="ADCS_pack_to_comms_status_struct">
+<area shape="rect" id="Node000001" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="504,71,664,111"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a226045a81ddd667651031e234db60f49" title="Instruct the ADCS to execute the ADCS_Communication_Status command." alt="" coords="277,37,454,78"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="488,79,455,74,455,69,489,74"/>
+<area shape="rect" id="Node000005" href="$test__adcs_8c.html#a48fdc9974a39ed145ef03b2926371a59" title=" " alt="" coords="276,103,456,143"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="489,108,457,112,456,107,488,102"/>
+<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#a5b3ee2f6da151e64c977abb09f994104" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,5,228,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="261,47,228,43,228,37,262,42"/>
+<area shape="rect" id="Node000004" href="$telecommand__adcs_8c.html#a805d498fcdd87b1d84fc528508353138" title="Telecommand: obtain generic telemetry from the ADCS." alt="" coords="28,71,205,111"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="262,74,206,82,205,77,262,69"/>
+</map>

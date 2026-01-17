@@ -1,0 +1,16 @@
+<map id="ADCS_set_power_control" name="ADCS_set_power_control">
+<area shape="rect" id="Node000001" title="Set the power control mode of each component of the ADCS; for each, 0 turns the component off,..." alt="" coords="511,144,681,169"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a440ef61b27cd8228c1e2600758e9d207" title="Disable all ADCS peripherals and active SD card logs except the CubeSense Motor and Signal power,..." alt="" coords="234,5,446,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="567,135,520,97,462,61,431,49,433,44,464,57,523,93,571,131"/>
+<area shape="rect" id="Node000004" href="$adcs__commands_8c.html#a4693b9a170e342e3f5bb908be0462f8f" title="Disable all ADCS peripherals and active SD card logs." alt="" coords="225,71,455,111"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="527,142,422,115,423,109,529,137"/>
+<area shape="rect" id="Node000005" href="$telecommand__adcs_8c.html#af079ef7b45b002243e8eb998f1458917" title="Telecommand: Set the run, power control, estimation, and control parameters for a given commissioning..." alt="" coords="217,136,463,177"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="495,159,463,159,463,154,495,154"/>
+<area shape="rect" id="Node000006" href="$telecommand__adcs_8c.html#ac15060ca9be5f91fb099a4a9605d43b0" title="Telecommand: Set the power control mode of each component of the ADCS; for each, 0 turns the componen..." alt="" coords="243,201,437,242"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="529,176,423,203,422,198,527,171"/>
+<area shape="rect" id="Node000007" href="$telecommand__adcs_8c.html#a370bd5cb05641bfe1d8bdf6bf9e679b0" title="Telecommand: Automatically track the sun with the ADCS." alt="" coords="244,266,436,292"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="572,182,524,221,464,256,429,268,428,263,462,251,521,216,568,178"/>
+<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#a90adc47346ed3b1ca6f2d66e8380e797" title="Telecommand: Put the ADCS in low&#45;power mode, with only essential component power." alt="" coords="5,39,169,79"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="218,44,170,51,169,46,218,39"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="209,77,169,72,169,67,210,72"/>
+</map>

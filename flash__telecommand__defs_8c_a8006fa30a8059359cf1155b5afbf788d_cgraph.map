@@ -1,0 +1,14 @@
+<map id="TCMDEXEC_flash_each_is_reachable" name="TCMDEXEC_flash_each_is_reachable">
+<area shape="rect" id="Node000001" title="Telecommand: Read bytes as hex from a flash address." alt="" coords="5,23,167,64"/>
+<area shape="rect" id="Node000002" href="$flash__driver_8c.html#aaba58b7afcb9b41e47e54059ae4f8496" title=" " alt="" coords="215,31,360,56"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="167,41,199,41,199,46,167,46"/>
+<area shape="rect" id="Node000003" href="$flash__internal__spi_8c.html#ad5ed7577f49d1b019690750f3e341cb4" title=" " alt="" coords="408,23,601,64"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="360,41,393,41,393,46,360,46"/>
+<area shape="rect" id="Node000004" href="$flash__internal__spi_8c.html#a6ef8dcea63afd51b1abc927f1b9c7a8c" title="Deactivates the chip select for all lines." alt="" coords="826,5,951,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="601,22,649,16,732,12,810,12,810,17,732,17,650,21,602,27"/>
+<area shape="rect" id="Node000005" href="$flash__internal__spi_8c.html#aceee333622c828dc554196c66302b044" title=" " alt="" coords="653,31,774,56"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="602,41,637,41,637,46,602,46"/>
+<area shape="rect" id="Node000006" href="$flash__internal__spi_8c.html#aba407f4312efb41c24ed7c3584d491f9" title="Use DMA to speed up receiving. At least 3x faster than HAL_SPI_Receive when transferring 2048 bytes." alt="" coords="649,80,778,106"/>
+<area shape="poly" id="edge6_Node000003_Node000006" title=" " alt="" coords="594,62,642,73,641,79,593,67"/>
+<area shape="poly" id="edge5_Node000005_Node000004" title=" " alt="" coords="774,32,810,27,811,32,775,37"/>
+</map>

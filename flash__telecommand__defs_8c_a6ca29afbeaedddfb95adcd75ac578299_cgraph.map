@@ -1,0 +1,18 @@
+<map id="TCMDEXEC_flash_read_status_register" name="TCMDEXEC_flash_read_status_register">
+<area shape="rect" id="Node000001" title="Telecommand: Read and print Status Register value as hex from the flash memory module." alt="" coords="5,52,164,93"/>
+<area shape="rect" id="Node000002" href="$flash__driver_8c.html#a4578cb366491fb297297143531415840" title=" " alt="" coords="212,33,402,59"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="164,61,196,57,196,62,164,66"/>
+<area shape="rect" id="Node000007" href="$telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="221,84,392,110"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="164,79,206,83,205,89,164,84"/>
+<area shape="rect" id="Node000003" href="$flash__internal__spi_8c.html#ad5ed7577f49d1b019690750f3e341cb4" title=" " alt="" coords="450,23,643,64"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="403,42,435,42,435,47,403,48"/>
+<area shape="rect" id="Node000004" href="$flash__internal__spi_8c.html#a6ef8dcea63afd51b1abc927f1b9c7a8c" title="Deactivates the chip select for all lines." alt="" coords="868,5,993,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="643,22,691,16,774,12,852,12,852,17,774,17,692,21,644,27"/>
+<area shape="rect" id="Node000005" href="$flash__internal__spi_8c.html#aceee333622c828dc554196c66302b044" title=" " alt="" coords="695,31,816,56"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="644,41,679,41,679,46,644,46"/>
+<area shape="rect" id="Node000006" href="$flash__internal__spi_8c.html#aba407f4312efb41c24ed7c3584d491f9" title="Use DMA to speed up receiving. At least 3x faster than HAL_SPI_Receive when transferring 2048 bytes." alt="" coords="691,80,820,106"/>
+<area shape="poly" id="edge6_Node000003_Node000006" title=" " alt="" coords="636,62,684,73,683,79,635,67"/>
+<area shape="poly" id="edge5_Node000005_Node000004" title=" " alt="" coords="816,32,852,27,853,32,817,37"/>
+<area shape="rect" id="Node000008" href="$telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="470,88,623,114"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="393,96,455,97,455,102,393,101"/>
+</map>

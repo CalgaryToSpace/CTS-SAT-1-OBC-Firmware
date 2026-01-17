@@ -1,0 +1,20 @@
+<map id="lfs_dir_read_" name="lfs_dir_read_">
+<area shape="rect" id="Node000001" title=" " alt="" coords="825,79,920,104"/>
+<area shape="rect" id="Node000002" href="$lfs_8c.html#a0ab8a92efafa0feb1720c64c65b5995d" title=" " alt="" coords="688,79,777,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="809,94,777,94,777,89,809,89"/>
+<area shape="rect" id="Node000003" href="$littlefs__helper_8c.html#a80075216a1e7055afc50c4f23256b10c" title="Removes / deletes the directory specified with all subdirectories and files." alt="" coords="496,29,640,55"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="672,76,613,58,614,53,674,71"/>
+<area shape="rect" id="Node000006" href="$littlefs__helper_8c.html#ae67160266b1c194a1e2f8cc8afcc6685" title="Lists contents of LittleFS Directory, where each entry is sent as a log message." alt="" coords="505,79,631,104"/>
+<area shape="poly" id="edge6_Node000002_Node000006" title=" " alt="" coords="673,94,632,94,632,89,673,89"/>
+<area shape="rect" id="Node000008" href="$littlefs__telecommands_8c.html#a95cb249de35b25dc239afd581f76ffc2" title=" " alt="" coords="505,128,631,169"/>
+<area shape="poly" id="edge8_Node000002_Node000008" title=" " alt="" coords="680,112,630,130,628,125,678,107"/>
+<area shape="poly" id="edge3_Node000003_Node000003" title=" " alt="" coords="596,16,586,10,568,8,551,10,542,15,540,20,545,28,540,30,535,21,538,11,550,5,568,3,588,5,599,12"/>
+<area shape="rect" id="Node000004" href="$littlefs__helper_8c.html#adb68fcc2e28770c2bcc28e9cd588d2df" title="Removes / deletes the file specified." alt="" coords="259,18,416,58"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="481,43,416,42,416,37,481,38"/>
+<area shape="rect" id="Node000005" href="$lfs__telecommand__defs_8c.html#ab1f7e293874cf64d40d33f908dd40c8e" title="Telecommand: Deletes a specified directory in LittleFS." alt="" coords="5,25,179,51"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="243,41,179,41,179,36,243,36"/>
+<area shape="rect" id="Node000007" href="$lfs__telecommand__defs_8c.html#a14026b64cbaddfc5fa396ff735516ab5" title="Telecommand: List all the files and directories within a given directory." alt="" coords="242,83,432,108"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="490,96,433,97,433,91,490,90"/>
+<area shape="rect" id="Node000009" href="$lfs__telecommand__defs_8c.html#a6f616fa81e002272cb83ad1e60a881ae" title="Telecommand: List all the files and directories within a given directory, as a JSON dict (key are pat..." alt="" coords="227,136,448,162"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="489,152,448,152,448,146,489,146"/>
+</map>

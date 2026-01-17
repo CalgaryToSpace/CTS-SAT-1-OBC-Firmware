@@ -1,0 +1,36 @@
+<map id="LFS_block_device_prog" name="LFS_block_device_prog">
+<area shape="rect" id="Node000001" title="LittleFS write function, memory is mapped to a physical address here." alt="" coords="5,118,167,144"/>
+<area shape="rect" id="Node000002" href="$littlefs__driver_8c.html#a5f6429c30d4167d4b7cd9d4f9aa069f0" title=" " alt="" coords="227,54,356,94"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="134,115,211,93,213,99,136,120"/>
+<area shape="rect" id="Node000003" href="$flash__driver_8c.html#a1824e6c227d8d7d295ebea03e266d4ca" title=" " alt="" coords="215,118,369,144"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="167,129,199,129,199,134,167,134"/>
+<area shape="rect" id="Node000014" href="$littlefs__driver_8c.html#ac54becf2a06dc9a90f281df70e34d857" title=" " alt="" coords="216,168,368,193"/>
+<area shape="poly" id="edge20_Node000001_Node000014" title=" " alt="" coords="143,142,221,161,220,166,142,147"/>
+<area shape="rect" id="Node000004" href="$flash__internal__spi_8c.html#ae0572774132a5866fed34b44c565fa25" title=" " alt="" coords="630,118,824,144"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="347,142,417,154,500,159,582,154,648,145,648,150,583,159,500,164,417,159,347,147"/>
+<area shape="rect" id="Node000007" href="$flash__internal__spi_8c.html#a456e38bcf7dfce2fb3a0e70dbd4f2fc6" title=" " alt="" coords="872,15,1065,56"/>
+<area shape="poly" id="edge7_Node000003_Node000007" title=" " alt="" coords="343,115,368,104,381,91,390,78,399,65,416,54,471,34,529,19,587,10,646,5,759,5,856,14,856,19,759,10,647,10,588,15,530,24,473,39,418,59,403,69,394,81,386,95,370,108,346,120"/>
+<area shape="rect" id="Node000008" href="$flash__driver_8c.html#afeacce5c8f0e578c02ba5abd0ce67270" title="Wait until the flash chip is ready for the next command." alt="" coords="417,220,582,245"/>
+<area shape="poly" id="edge10_Node000003_Node000008" title=" " alt="" coords="347,142,370,153,386,164,395,176,404,187,418,198,443,211,440,216,416,203,401,191,391,179,382,168,368,157,345,147"/>
+<area shape="rect" id="Node000012" href="$flash__driver_8c.html#acafafa4ab0d6a00ce8717b0bfe04f872" title=" " alt="" coords="426,69,574,95"/>
+<area shape="poly" id="edge16_Node000003_Node000012" title=" " alt="" coords="349,115,427,96,428,101,350,120"/>
+<area shape="rect" id="Node000013" href="$flash__driver_8c.html#a2f88b6dbc3273f1baf8150129f3ca318" title=" " alt="" coords="427,118,572,144"/>
+<area shape="poly" id="edge18_Node000003_Node000013" title=" " alt="" coords="370,129,412,129,412,134,370,134"/>
+<area shape="rect" id="Node000005" href="$flash__internal__spi_8c.html#a6ef8dcea63afd51b1abc927f1b9c7a8c" title="Deactivates the chip select for all lines." alt="" coords="1289,105,1415,131"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="824,119,872,117,1090,112,1274,113,1274,119,1090,117,872,122,824,125"/>
+<area shape="rect" id="Node000006" href="$flash__internal__spi_8c.html#aceee333622c828dc554196c66302b044" title=" " alt="" coords="1116,130,1238,156"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="824,131,1101,139,1101,144,824,136"/>
+<area shape="poly" id="edge6_Node000006_Node000005" title=" " alt="" coords="1238,132,1273,127,1274,132,1239,137"/>
+<area shape="poly" id="edge8_Node000007_Node000005" title=" " alt="" coords="1065,40,1152,52,1242,71,1310,96,1308,101,1241,76,1151,57,1065,46"/>
+<area shape="poly" id="edge9_Node000007_Node000006" title=" " alt="" coords="1011,54,1138,120,1136,125,1008,58"/>
+<area shape="rect" id="Node000009" href="$flash__driver_8c.html#a4578cb366491fb297297143531415840" title=" " alt="" coords="632,202,822,228"/>
+<area shape="poly" id="edge11_Node000008_Node000009" title=" " alt="" coords="583,224,616,221,616,226,583,229"/>
+<area shape="rect" id="Node000010" href="$flash__internal__spi_8c.html#ad5ed7577f49d1b019690750f3e341cb4" title=" " alt="" coords="872,186,1065,226"/>
+<area shape="poly" id="edge12_Node000009_Node000010" title=" " alt="" coords="823,209,856,208,856,213,823,214"/>
+<area shape="poly" id="edge13_Node000010_Node000005" title=" " alt="" coords="1065,197,1151,186,1241,166,1278,152,1313,136,1315,141,1280,157,1242,171,1152,191,1066,202"/>
+<area shape="poly" id="edge14_Node000010_Node000006" title=" " alt="" coords="1038,182,1116,159,1118,164,1039,188"/>
+<area shape="rect" id="Node000011" href="$flash__internal__spi_8c.html#aba407f4312efb41c24ed7c3584d491f9" title="Use DMA to speed up receiving. At least 3x faster than HAL_SPI_Receive when transferring 2048 bytes." alt="" coords="1113,232,1241,257"/>
+<area shape="poly" id="edge15_Node000010_Node000011" title=" " alt="" coords="1066,221,1098,227,1097,232,1065,226"/>
+<area shape="poly" id="edge17_Node000012_Node000004" title=" " alt="" coords="563,93,650,112,649,117,562,98"/>
+<area shape="poly" id="edge19_Node000013_Node000004" title=" " alt="" coords="573,129,615,129,615,134,573,134"/>
+</map>
