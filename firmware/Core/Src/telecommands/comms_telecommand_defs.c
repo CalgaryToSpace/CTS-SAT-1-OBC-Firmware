@@ -3,6 +3,7 @@
 #include "telecommand_exec/telecommand_args_helpers.h"
 #include "littlefs/littlefs_helper.h"
 #include "comms_drivers/bulk_file_downlink.h"
+#include "comms_drivers/bulk_file_uplink.h"
 #include "log/log.h"
 
 #include <string.h>
@@ -87,6 +88,8 @@ uint8_t TCMDEXEC_comms_get_rf_switch_info(
 
     return 0;
 }
+
+// MARK: Bulk Downlink
 
 /// @brief Initiate a bulk file downlink over the UHF radio.
 /// @param args_str
@@ -218,6 +221,336 @@ uint8_t TCMDEXEC_comms_bulk_file_downlink_resume(
     snprintf(
         response_output_buf, response_output_buf_len,
         "Bulk file downlink resumed."
+    );
+    return 0;
+}
+
+// MARK: Bulk Uplink
+
+/// @brief Telecommand: Open a file for bulk uplink
+/// @param args_str
+/// - Arg 0: File path as string
+/// - Arg 1: Mode enum as string: "truncate" or "append" (case-insensitive)
+uint8_t TCMDEXEC_comms_bulk_uplink_open_file(
+    const char *args_str,
+    char *response_output_buf,
+    uint16_t response_output_buf_len
+) {
+    char arg_file_path[LFS_MAX_PATH_LENGTH];
+    const uint8_t parse_path_result = TCMD_extract_string_arg(
+        args_str, 0,
+        arg_file_path, sizeof(arg_file_path)
+    );
+    if (parse_path_result != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error parsing file path arg: TCMD_extract_string_arg() -> %d",
+            parse_path_result
+        );
+        return 1;
+    }
+
+    char arg_mode_str[16];
+    const uint8_t parse_mode_result = TCMD_extract_string_arg(
+        args_str, 1,
+        arg_mode_str, sizeof(arg_mode_str)
+    );
+    if (parse_mode_result != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error parsing mode arg: TCMD_extract_string_arg() -> %d",
+            parse_mode_result
+        );
+        return 2;
+    }
+
+    COMMS_bulk_file_uplink_mode_enum_t mode;
+    if (strcasecmp(arg_mode_str, "truncate") == 0) {
+        mode = COMMS_BULK_FILE_UPLINK_MODE_TRUNCATE;
+    }
+    else if (strcasecmp(arg_mode_str, "append") == 0) {
+        mode = COMMS_BULK_FILE_UPLINK_MODE_APPEND;
+    }
+    else {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error: Invalid mode \"%s\". Must be \"truncate\" or \"append\".",
+            arg_mode_str
+        );
+        return 3;
+    }
+
+    const int32_t result = COMMS_bulk_file_uplink_open_file(arg_file_path, mode);
+    if (result < 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Bulk uplink open failed (LFS error): %ld",
+            result
+        );
+        return 10;
+    }
+    else if (result > 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Bulk uplink open failed (logical error): %ld",
+            result
+        );
+        return 11;
+    }
+
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "Bulk uplink file opened successfully: \"%s\" (%s).",
+        arg_file_path,
+        (mode == COMMS_BULK_FILE_UPLINK_MODE_TRUNCATE) ? "truncate" : "append"
+    );
+    return 0;
+}
+
+/// @brief Telecommand: Close the currently open bulk uplink file
+/// @param args_str No arguments
+uint8_t TCMDEXEC_comms_bulk_uplink_close_file(
+    const char *args_str,
+    char *response_output_buf,
+    uint16_t response_output_buf_len
+) {
+    const int32_t result = COMMS_bulk_file_uplink_close_file();
+    if (result < 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Bulk uplink close failed (LFS error): %ld",
+            result
+        );
+        return 1;
+    }
+    else if (result > 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Bulk uplink close failed (logical error): %ld",
+            result
+        );
+        return 2;
+    }
+
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "Bulk uplink file closed successfully."
+    );
+    return 0;
+}
+
+/// @brief Telecommand: Write hex bytes to the currently open bulk uplink file.
+/// @param args_str
+/// - Arg 0: Hex string (e.g. "DEADBEEF" or "DE AD BE EF")
+/// @note This telecommand has a short-form alias "bulkup16".
+uint8_t TCMDEXEC_comms_bulk_uplink_write_bytes_hex(
+    const char *args_str,
+    char *response_output_buf,
+    uint16_t response_output_buf_len
+) {
+    uint8_t binary_data[200] = {0};
+    uint16_t binary_data_length = 0;
+
+    const uint8_t parse_hex_result = TCMD_extract_hex_array_arg(
+        args_str,
+        0,
+        binary_data,
+        sizeof(binary_data),
+        &binary_data_length
+    );
+
+    if (parse_hex_result != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error parsing hex bytes arg: TCMD_extract_hex_array_arg() -> %d",
+            parse_hex_result
+        );
+        return 1;
+    }
+
+    const int32_t result = COMMS_bulk_file_uplink_write_bytes(
+        binary_data,
+        binary_data_length
+    );
+
+    if (result < 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Bulk uplink write failed (LFS error): %ld",
+            result
+        );
+        return 10;
+    }
+    else if (result > 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Bulk uplink write failed (logical error): %ld",
+            result
+        );
+        return 11;
+    }
+
+    // Keep this bit short. Just send the number of bytes written. This is on the hot-path.
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "%u",
+        binary_data_length
+    );
+    return 0;
+}
+
+
+/// @brief Telecommand: Write Base64 bytes to the currently open bulk uplink file.
+/// @param args_str
+/// - Arg 0: Base64 string (e.g. "SGVsbG8=" converts to ASCII "Hello")
+/// @note This telecommand has a short-form alias "bulkup64".
+uint8_t TCMDEXEC_comms_bulk_uplink_write_bytes_base64(
+    const char *args_str,
+    char *response_output_buf,
+    uint16_t response_output_buf_len
+) {
+    uint8_t binary_data[200] = {0};
+    uint16_t binary_data_length = 0;
+
+    const uint8_t parse_base64_result = TCMD_extract_base64_array_arg(
+        args_str,
+        0,
+        binary_data,
+        sizeof(binary_data),
+        &binary_data_length
+    );
+
+    if (parse_base64_result != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error parsing base64 bytes arg: TCMD_extract_base64_array_arg() -> %d",
+            parse_base64_result
+        );
+        return 1;
+    }
+
+    const int32_t result = COMMS_bulk_file_uplink_write_bytes(
+        binary_data,
+        binary_data_length
+    );
+
+    if (result < 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Bulk uplink write failed (LFS error): %ld",
+            result
+        );
+        return 10;
+    }
+    else if (result > 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Bulk uplink write failed (logical error): %ld",
+            result
+        );
+        return 11;
+    }
+
+    // Keep this bit short. Just send the number of bytes written. This is on the hot-path.
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "%u",
+        binary_data_length
+    );
+    return 0;
+}
+
+/// @brief Telecommand: Write hex bytes to the currently open bulk uplink file
+/// @param args_str
+/// - Arg 0: Hex string (e.g. "DEADBEEF" or "DE AD BE EF")
+/// @note This is an alias for the `comms_bulk_uplink_write_bytes_hex` telecommand.
+///     This is one of very few telecommands with short aliases, as it allows more data per command.
+uint8_t TCMDEXEC_bulkup16(
+    const char *args_str,
+    char *response_output_buf,
+    uint16_t response_output_buf_len
+) {
+    return TCMDEXEC_comms_bulk_uplink_write_bytes_hex(
+        args_str,
+        response_output_buf,
+        response_output_buf_len
+    );
+}
+
+
+/// @brief Telecommand: Write Base64 bytes to the currently open bulk uplink file.
+/// @param args_str
+/// - Arg 0: Base64 string (e.g. "SGVsbG8=" converts to ASCII "Hello")
+/// @note This is an alias for the `comms_bulk_uplink_write_bytes_base64` telecommand.
+///     This is one of very few telecommands with short aliases, as it allows more data per command.
+uint8_t TCMDEXEC_bulkup64(
+    const char *args_str,
+    char *response_output_buf,
+    uint16_t response_output_buf_len
+) {
+    return TCMDEXEC_comms_bulk_uplink_write_bytes_base64(
+        args_str,
+        response_output_buf,
+        response_output_buf_len
+    );
+}
+
+
+/// @brief Telecommand: Seek to a new position in the currently open bulk uplink file
+/// @param args_str
+/// - Arg 0: New byte offset from start of file (uint64, must fit uint32)
+uint8_t TCMDEXEC_comms_bulk_uplink_seek(
+    const char *args_str,
+    char *response_output_buf,
+    uint16_t response_output_buf_len
+) {
+    uint64_t new_position = 0;
+    const uint8_t parse_result = TCMD_extract_uint64_arg(
+        args_str,
+        strlen(args_str),
+        0,
+        &new_position
+    );
+
+    if (parse_result != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error parsing seek position arg: TCMD_extract_uint64_arg() -> %d",
+            parse_result
+        );
+        return 1;
+    }
+
+    if (new_position > UINT32_MAX) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error: Seek position too large (must fit uint32)."
+        );
+        return 2;
+    }
+
+    const int32_t result = COMMS_bulk_file_uplink_seek((uint32_t)new_position);
+    if (result < 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Bulk uplink seek failed (LFS error): %ld",
+            result
+        );
+        return 10;
+    }
+    else if (result > 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Bulk uplink seek failed (logical error): %ld",
+            result
+        );
+        return 11;
+    }
+
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "Bulk uplink seeked to byte offset %lu successfully.",
+        (unsigned long)new_position
     );
     return 0;
 }
