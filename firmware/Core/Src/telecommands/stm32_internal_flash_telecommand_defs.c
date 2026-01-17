@@ -146,7 +146,7 @@ uint8_t TCMDEXEC_stm32_internal_flash_page_erase(const char *args_str, char *res
 
 /// @brief Erase an entire flash bank
 /// @param args_str
-/// - Arg 0: Flash Bank to erase 
+/// - Arg 0: Flash Bank to erase (1 or 2)
 /// @return 0 on success, > 0 on error
 uint8_t TCMDEXEC_stm32_internal_flash_bank_erase(const char *args_str, char *response_output_buf, uint16_t response_output_buf_len)
 {
