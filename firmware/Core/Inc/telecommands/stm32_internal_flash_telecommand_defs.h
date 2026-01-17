@@ -10,17 +10,21 @@ uint8_t TCMDEXEC_stm32_internal_flash_read(const char *args_str,
                                            char *response_output_buf, uint16_t response_output_buf_len);
 
 uint8_t TCMDEXEC_stm32_internal_flash_page_erase(const char *args_str,
-                                            char *response_output_buf, uint16_t response_output_buf_len);
+                                                 char *response_output_buf, uint16_t response_output_buf_len);
 
 uint8_t TCMDEXEC_stm32_internal_flash_bank_erase(const char *args_str,
-                                            char *response_output_buf, uint16_t response_output_buf_len);
+                                                 char *response_output_buf, uint16_t response_output_buf_len);
 
 uint8_t TCMDEXEC_stm32_internal_flash_get_option_bytes(const char *args_str,
                                                        char *response_output_buf, uint16_t response_output_buf_len);
 
 uint8_t TCMDEXEC_stm32_internal_flash_set_active_flash_bank(const char *args_str,
-                                                       char *response_output_buf, uint16_t response_output_buf_len);
+                                                            char *response_output_buf, uint16_t response_output_buf_len);
 
 uint8_t TCMDEXEC_stm32_internal_flash_get_active_flash_bank(const char *args_str,
-                                                       char *response_output_buf, uint16_t response_output_buf_len);                                                       
+                                                            char *response_output_buf, uint16_t response_output_buf_len);
+
+uint8_t TCMDEXEC_stm32_internal_flash_write_file_to_internal_flash(const char *args_str,
+                                                                   char *response_output_buf, uint16_t response_output_buf_len);
+
 #endif /* INCLUDE_GUARD_STM32_INTERNAL_FLASH_TELECOMMAND_DEFS_H */
