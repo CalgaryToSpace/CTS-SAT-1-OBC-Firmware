@@ -6,6 +6,12 @@
 #include "stm32l4xx_hal.h"
 #include "stm32l4xx_hal_flash.h"
 
+#define FLASH_BANK_1_START_PAGE 0u
+#define FLASH_BANK_1_END_PAGE 255u
+#define FLASH_BANK_2_START_PAGE 256u
+#define FLASH_BANK_2_END_PAGE 511u
+#define NUMBER_OF_PAGES_PER_FLASH_BANK 256u
+
 /// @brief  Flash Partitions
 /// @note look in the STM32L4R5ZITx_FLASH.ld file
 /// to see the address of each partition, update this as needed
@@ -14,8 +20,8 @@ typedef enum
     STM32_INTERNAL_FLASH_MEMORY_REGION_RAM_ADDRESS = 0x20000000,
     STM32_INTERNAL_FLASH_MEMORY_REGION_RAM_2_ADDRESS = 0x10000000,
     STM32_INTERNAL_FLASH_MEMORY_REGION_RAM_3_ADDRESS = 0x20040000,
-    STM32_INTERNAL_FLASH_MEMORY_REGION_FLASH_ADDRESS = 0x8000000, // default boot address
-    STM32_INTERNAL_FLASH_MEMORY_REGION_GOLDEN_COPY_ADDRESS = 0x08100000
+    STM32_INTERNAL_FLASH_MEMORY_REGION_FLASH_BANK_1_ADDRESS = 0x08000000, // default boot address
+    STM32_INTERNAL_FLASH_MEMORY_REGION_FLASH_BANK_2_ADDRESS = 0x08100000
 } STM32_INTERNAL_FLASH_memory_region_addresses_t;
 
 typedef struct
@@ -23,13 +29,26 @@ typedef struct
     HAL_StatusTypeDef lock_status;
     HAL_StatusTypeDef unlock_status;
     HAL_StatusTypeDef write_status;
-} STM32_Internal_Flash_Write_Status_t;
+} STM32_internal_flash_write_status_t;
 
-uint8_t STM32_internal_flash_write(uint32_t address, uint8_t *data, uint32_t length, STM32_Internal_Flash_Write_Status_t *status);
+typedef enum
+{
+    STM32_INTERNAL_FLASH_WRITE_SUCCESS,
+    STM32_INTERNAL_FLASH_WRITE_ADDRESS_TOO_LOW,
+    STM32_INTERNAL_FLASH_WRITE_ADDRESS_TOO_HIGH,
+    STM32_INTERNAL_FLASH_WRITE_ADDRESS_OVERLAPS_BOTH_FLASH_BANKS,
+    STM32_INTERNAL_FLASH_WRITE_UNLOCK_FAILED,
+    STM32_INTERNAL_FLASH_WRITE_LOCK_FAILED,
+    STM32_INTERNAL_FLASH_WRITE_OPERATION_FAILED,
+} STM32_internal_flash_write_return_t;
+
+STM32_internal_flash_write_return_t STM32_internal_flash_write(uint32_t address, uint8_t *data, uint32_t length, STM32_internal_flash_write_status_t *status);
 
 uint8_t STM32_internal_flash_read(uint32_t address, uint8_t *buffer, uint32_t length);
 
-uint8_t STM32_internal_flash_erase(uint16_t start_page_erase, uint16_t number_of_pages_to_erase, uint32_t *page_error);
+uint8_t STM32_internal_flash_page_erase(uint8_t flash_bank, uint16_t start_page_erase, uint16_t number_of_pages_to_erase, uint32_t *page_error);
+
+uint8_t STM32_internal_flash_bank_erase(uint8_t flash_bank, uint32_t *bank_erase_error);
 
 uint8_t STM32_internal_flash_get_option_bytes(FLASH_OBProgramInitTypeDef *ob_data);
 
