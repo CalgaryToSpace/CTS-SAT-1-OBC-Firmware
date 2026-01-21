@@ -6,7 +6,7 @@
 #include "littlefs/littlefs_helper.h"
 
 /// @brief Count the number of occurrences of a string/byte pattern in an LFS file.
-/// @param filename File name/path to open.
+/// @param filename File name/path of the "haystack" file to open and search within.
 /// @param needle Pattern to search for.
 /// @param needle_len Length of pattern to search for.
 /// @return The number of matches. 0 if no matches. Negative LFS error code on error.
@@ -66,7 +66,7 @@ int32_t LFS_search_count_occurrences(
 
 /// @brief Find the byte offset of the nth occurrence of a string/byte pattern in an LFS file.
 /// @param lfs Filesystem.
-/// @param filename File name/path to open.
+/// @param filename File name/path of the "haystack" file to open and search within.
 /// @param needle Pattern to search for.
 /// @param needle_len Length of pattern to search for.
 /// @param n Nth occurrence to find.

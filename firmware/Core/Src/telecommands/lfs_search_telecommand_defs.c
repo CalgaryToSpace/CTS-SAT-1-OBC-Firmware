@@ -9,8 +9,8 @@
 
 /// @brief Count string occurrences in a file
 /// @param args_str
-/// - Arg 0: File path as string
-/// - Arg 1: Needle string
+/// - Arg 0: File path as string (haystack)
+/// - Arg 1: Needle string to search for
 uint8_t TCMDEXEC_fs_count_str_occurrences(
     const char *args_str,
     char *response_output_buf,
@@ -49,14 +49,14 @@ uint8_t TCMDEXEC_fs_count_str_occurrences(
         return 3;
     }
 
-    snprintf(response_output_buf, response_output_buf_len, "%ld", count);
+    snprintf(response_output_buf, response_output_buf_len, "Found %ld occurrences", count);
     return 0;
 }
 
 /// @brief Find Nth string occurrence in a file
 /// @param args_str
-/// - Arg 0: File path as string
-/// - Arg 1: Needle string
+/// - Arg 0: File path as string (haystack)
+/// - Arg 1: Needle string to search for
 /// - Arg 2: N (1-based)
 uint8_t TCMDEXEC_fs_find_nth_str_occurrence(
     const char *args_str,
@@ -109,14 +109,18 @@ uint8_t TCMDEXEC_fs_find_nth_str_occurrence(
         return 4;
     }
 
-    snprintf(response_output_buf, response_output_buf_len, "Occurence #%d found at Offset %ld", (uint16_t)n, output_offset);
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "Occurrence #%d found at Offset %ld",
+        (uint16_t)n, output_offset
+    );
     return 0;
 }
 
 /// @brief Count hex byte sequence occurrences in a file
 /// @param args_str
-/// - Arg 0: File path as string
-/// - Arg 1: Hex string (e.g. "DEADBEEF")
+/// - Arg 0: File path as string (haystack)
+/// - Arg 1: Hex string to search for (e.g. "DEADBEEF")
 uint8_t TCMDEXEC_fs_count_hex_occurrences(
     const char *args_str,
     char *response_output_buf,
@@ -156,14 +160,14 @@ uint8_t TCMDEXEC_fs_count_hex_occurrences(
         return 3;
     }
 
-    snprintf(response_output_buf, response_output_buf_len, "%ld", count);
+    snprintf(response_output_buf, response_output_buf_len, "Found %ld occurrences", count);
     return 0;
 }
 
 /// @brief Find Nth hex byte sequence occurrence in a file
 /// @param args_str
-/// - Arg 0: File path as string
-/// - Arg 1: Hex string
+/// - Arg 0: File path as string (haystack)
+/// - Arg 1: Hex string to search for
 /// - Arg 2: N (1-based)
 uint8_t TCMDEXEC_fs_find_nth_hex_occurrence(
     const char *args_str,
@@ -202,13 +206,13 @@ uint8_t TCMDEXEC_fs_find_nth_hex_occurrence(
         return 3;
     }
 
-    lfs_soff_t offset = 0;
+    lfs_soff_t output_offset = 0;
     const int32_t result = LFS_search_find_nth_occurrence(
         arg_file_path,
         needle,
         needle_len,
         (uint16_t)n,
-        &offset
+        &output_offset
     );
 
     if (result < 0) {
@@ -217,6 +221,10 @@ uint8_t TCMDEXEC_fs_find_nth_hex_occurrence(
         return 4;
     }
 
-    snprintf(response_output_buf, response_output_buf_len, "%ld", offset);
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "Occurrence #%d found at Offset %ld",
+        (uint16_t)n, output_offset
+    );
     return 0;
 }
