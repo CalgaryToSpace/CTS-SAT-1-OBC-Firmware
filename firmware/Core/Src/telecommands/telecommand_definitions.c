@@ -8,12 +8,14 @@
 #include "uart_handler/uart_handler.h"
 #include "mpi/mpi_command_handling.h"
 #include "log/log.h"
+#include "telecommand_exec/telecommand_executor.h"
 
 // Additional telecommand definitions files:
 #include "telecommands/system_telecommand_defs.h"
 #include "telecommands/freertos_telecommand_defs.h"
 #include "telecommands/flash_telecommand_defs.h"
 #include "telecommands/lfs_telecommand_defs.h"
+#include "telecommands/lfs_search_telecommand_defs.h"
 #include "telecommands/log_telecommand_defs.h"
 #include "telecommands/timekeeping_telecommand_defs.h"
 #include "telecommands/antenna_telecommand_defs.h"
@@ -23,7 +25,6 @@
 #include "telecommands/uart_error_tracking_telecommands.h"
 #include "telecommands/config_telecommand_defs.h"
 #include "telecommands/testing_telecommand_defs.h"
-#include "telecommand_exec/telecommand_executor.h"
 #include "telecommands/agenda_telecommands_defs.h"
 #include "telecommands/mpi_telecommand_defs.h"
 #include "telecommands/boom_deploy_telecommand_defs.h"
@@ -366,6 +367,33 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     // ****************** END SECTION: lfs_telecommand_defs ******************
+
+    // MARK: lfs_search
+    {
+        .tcmd_name = "fs_count_str_occurrences",
+        .tcmd_func = TCMDEXEC_fs_count_str_occurrences,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "fs_find_nth_str_occurrence",
+        .tcmd_func = TCMDEXEC_fs_find_nth_str_occurrence,
+        .number_of_args = 3,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "fs_count_hex_occurrences",
+        .tcmd_func = TCMDEXEC_fs_count_hex_occurrences,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "fs_find_nth_hex_occurrence",
+        .tcmd_func = TCMDEXEC_fs_find_nth_hex_occurrence,
+        .number_of_args = 3,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+
     
     // ****************** SECTION: telecommand_adcs ******************
     {
