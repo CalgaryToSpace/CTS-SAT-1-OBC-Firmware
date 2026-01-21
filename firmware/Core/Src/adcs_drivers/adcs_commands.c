@@ -1589,7 +1589,7 @@ uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset) 
 /// @param[in] checksum CRC16 checksum of the file
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission, negative if an LFS or snprintf error code occurred. 
 /// Specifically, assuming no HAL or LFS error: bytes 0-2 are the ADCS error, bytes 3-10 are which command failed, bytes 11-16 are the index of the failure if applicable
-int16_t ADCS_save_sd_file_to_lfs(bool index_file_bool, uint16_t file_index, bool enable_checksum_validation_bool, uint16_t checksum) {
+int16_t ADCS_save_sd_file_to_lfs_by_index(bool index_file_bool, uint16_t file_index, bool enable_checksum_validation_bool, uint16_t checksum) {
 
     const uint32_t function_start_time = HAL_GetTick();
 
