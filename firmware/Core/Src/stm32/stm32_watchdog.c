@@ -17,6 +17,7 @@ volatile uint32_t STM32_watchdog_total_pets_since_boot = 0;
 /// @note Also, updates tracking variables and logs warnings if the petting took too long or too short.
 /// @note The watchdog must be petted at least once every 16 seconds, and no more than once every 200ms.
 /// @note A warning is issued if the time since the last pet is more than 15 seconds or less than 240ms.
+/// @note Recall that the EPS has a ~5 minute watchdog as well (nothing to do with this one).
 void STM32_pet_watchdog() {
     // Actually pet the watchdog.
     HAL_IWDG_Refresh(&hiwdg);

@@ -81,6 +81,8 @@ void TASK_execute_telecommands(void *argument) {
     while (1) {
         // DEBUG_uart_print_str("TASK_execute_telecommands -> top of while(1)\n");
         // Pet the watchdog. Has min and max intervals. This is the nominal place the watchdog is petted.
+        // This is a good place to pet, because it basically says "if the satellite stops responding
+        // (executing telecommands), reboot it".
         STM32_pet_watchdog();
 
         // Execute [potentially] several commands back-to-back if several are available.
