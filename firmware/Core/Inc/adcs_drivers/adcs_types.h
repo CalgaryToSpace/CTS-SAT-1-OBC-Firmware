@@ -40,10 +40,10 @@ static const uint16_t ADCS_HAL_TIMEOUT = 1000;
 #define ADCS_SD_LOG_BITFIELD_LENGTH_BYTES 10
 
 // define for HAL delay (ms) in commissioning mode setter function
-#define ADCS_COMMISSIONING_HAL_DELAY_MS 300
+static const uint16_t ADCS_COMMISSIONING_HAL_DELAY_MS = 300;
 
 // define for JPG conversion delay (ms)
-#define ADCS_JPG_CONVERSION_DELAY_MS 50
+static const uint8_t ADCS_JPG_CONVERSION_POLLING_INTERVAL_MS = 50;
 
 /* Enumerated Values */
 
