@@ -198,11 +198,8 @@ uint8_t TCMDEXEC_adcs_generic_bootloader_command(const char *args_str,
 uint8_t TCMDEXEC_adcs_generic_telemetry_request(const char *args_str, 
                         char *response_output_buf, uint16_t response_output_buf_len);
 
-uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str,
+uint8_t TCMDEXEC_adcs_download_sd_file_by_index(const char *args_str,
             char *response_output_buf, uint16_t response_output_buf_len);
-
-uint8_t TCMDEXEC_adcs_download_sd_file_by_index_with_checksum(const char *args_str, 
-                                   char *response_output_buf, uint16_t response_output_buf_len);
 
 uint8_t TCMDEXEC_adcs_download_sd_file_by_checksum(const char *args_str, 
                                    char *response_output_buf, uint16_t response_output_buf_len);                                   
