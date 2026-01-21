@@ -2943,10 +2943,10 @@ uint8_t TCMDEXEC_adcs_convert_to_jpg_by_index(const char *args_str,
         if (tries >= ADCS_JPG_CONVERT_TIMEOUT_TRIES) {
             LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
                 "ADCS timed out waiting for conversion to complete."); 
-            break;
+            return 7;
         }
         tries++;
-        HAL_Delay(ADCS_JPG_CONVERSION_DELAY_MS);
+        HAL_Delay(ADCS_JPG_CONVERSION_POLLING_INTERVAL_MS);
     } while (conversion_progress.conversion_result == ADCS_CONVERSION_RESULT_BUSY || 
             conversion_progress.conversion_result == ADCS_CONVERSION_RESULT_NOT_CONVERTED_YET);
     
@@ -3002,10 +3002,10 @@ uint8_t TCMDEXEC_adcs_convert_to_jpg_by_checksum(const char *args_str,
         if (tries >= ADCS_JPG_CONVERT_TIMEOUT_TRIES) {
             LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
                 "ADCS timed out waiting for conversion to complete."); 
-            break;
+            return 7;
         }
         tries++;
-        HAL_Delay(ADCS_JPG_CONVERSION_DELAY_MS);
+        HAL_Delay(ADCS_JPG_CONVERSION_POLLING_INTERVAL_MS);
     } while (conversion_progress.conversion_result == ADCS_CONVERSION_RESULT_BUSY || 
             conversion_progress.conversion_result == ADCS_CONVERSION_RESULT_NOT_CONVERTED_YET);
     
@@ -3016,6 +3016,10 @@ uint8_t TCMDEXEC_adcs_convert_to_jpg_by_checksum(const char *args_str,
     return status;
 }
 
+/// @brief Telecommand: Request the reaction wheel current values from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_get_wheel_currents(const char *args_str, 
                         char *response_output_buf, uint16_t response_output_buf_len) {
     
@@ -3040,6 +3044,10 @@ uint8_t TCMDEXEC_adcs_get_wheel_currents(const char *args_str,
     return status;
 }                    
                         
+/// @brief Telecommand: Request the CubeSense current values from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_get_cubesense_currents(const char *args_str, 
                         char *response_output_buf, uint16_t response_output_buf_len) {
     
@@ -3063,7 +3071,11 @@ uint8_t TCMDEXEC_adcs_get_cubesense_currents(const char *args_str,
 
     return status;
 }                    
-                        
+                  
+/// @brief Telecommand: Request the CubeStar (unused) and magnetorquer current values as well as the microcontroller temperature value from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
 uint8_t TCMDEXEC_adcs_get_misc_currents(const char *args_str, 
                         char *response_output_buf, uint16_t response_output_buf_len) {
     
