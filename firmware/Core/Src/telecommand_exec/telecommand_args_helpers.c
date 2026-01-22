@@ -325,6 +325,123 @@ uint8_t TCMD_extract_hex_array_arg(const char *args_str, uint8_t arg_index, uint
     *result_length = byte_index;
     return 0;
 }
+
+
+static int8_t base64_char_to_value(char c) {
+    if (c >= 'A' && c <= 'Z') return c - 'A';
+    if (c >= 'a' && c <= 'z') return c - 'a' + 26;
+    if (c >= '0' && c <= '9') return c - '0' + 52;
+    
+    // Standard Base64.
+    if (c == '+') return 62;
+    if (c == '/') return 63;
+
+    // Alternative common Base64 style: URL-safe/YouTube-style Base64.
+    if (c == '-') return 62;
+    if (c == '_') return 63;
+    return -1;
+}
+
+/// @brief Extracts the nth comma-separated argument from the input string, assuming it's a Base64 string.
+/// @param args_str Input string containing comma-separated arguments (null-terminated)
+/// @param arg_index Index of the argument to extract (0-based)
+/// @param result Pointer to the result; a byte array containing the decoded Base64 bytes
+/// @param result_array_size Size of the result array
+/// @param result_length Pointer to variable that will contain the length of the result after converting
+/// @return 0 if successful, >0 for error
+/// @note Whitespace is ignored between Base64 characters, but invalid placement is not allowed.
+uint8_t TCMD_extract_base64_array_arg(
+    const char *args_str, uint8_t arg_index,
+    uint8_t result_array[], uint16_t result_array_size, uint16_t *result_length
+) {
+    const size_t args_str_len = strlen(args_str);
+    if (args_str_len == 0) {
+        return 10; // Empty string
+    }
+
+    // Find the start index of the argument.
+    uint32_t arg_count = 0;
+    uint32_t start_index = 0;
+    for (uint32_t i = 0; i < args_str_len; i++) {
+        if (args_str[i] == ',') {
+            if (arg_count == arg_index) {
+                break;
+            }
+            arg_count++;
+            start_index = i + 1;
+        }
+    }
+
+    if (arg_count < arg_index) {
+        return 11; // Not enough arguments.
+    }
+
+    // Find end of argument.
+    uint32_t end_index = start_index;
+    while (args_str[end_index] != ',' && args_str[end_index] != '\0') {
+        end_index++;
+    }
+
+    uint16_t byte_index = 0;
+    uint8_t quartet[4];
+    uint8_t quartet_count = 0;
+    uint8_t padding_count = 0;
+
+    for (size_t i = start_index; i < end_index; i++) {
+        char c = args_str[i];
+
+        if (c == ' ') {
+            // Allow separators only between complete quartets.
+            if (quartet_count != 0 && quartet_count != 4) {
+                return 4;
+            }
+            continue;
+        }
+
+        if (c == '=') { // Padding.
+            quartet[quartet_count++] = 0;
+            padding_count++;
+        } else {
+            int8_t val = base64_char_to_value(c);
+            if (val < 0) {
+                return 2; // Invalid character
+            }
+            quartet[quartet_count++] = (uint8_t)val;
+        }
+
+        if (quartet_count == 4) {
+            if (byte_index + 3 > result_array_size) {
+                return 3; // Output buffer too small
+            }
+
+            result_array[byte_index++] =
+                (quartet[0] << 2) | (quartet[1] >> 4);
+
+            if (padding_count < 2) {
+                result_array[byte_index++] =
+                    (quartet[1] << 4) | (quartet[2] >> 2);
+            }
+
+            if (padding_count == 0) {
+                result_array[byte_index++] =
+                    (quartet[2] << 6) | quartet[3];
+            }
+
+            quartet_count = 0;
+            padding_count = 0;
+        }
+    }
+
+    if (quartet_count != 0) {
+        // Incomplete Base64 quartet.
+        return 4;
+    }
+
+    *result_length = byte_index;
+    return 0;
+}
+
+
 /// @brief Extracts the longest substring of double characters, starting from the beginning of the
 ///     string, to a maximum length or until the first non-double character is found.
 /// @param str Input string, starting with a double

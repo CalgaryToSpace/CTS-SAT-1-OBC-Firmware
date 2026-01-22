@@ -1,5 +1,6 @@
 /*-----------------------------INCLUDES-----------------------------*/
 #include <stdint.h>
+#include <stdio.h>
 
 #include "littlefs/littlefs_helper.h"
 #include "littlefs/lfs.h"
@@ -10,11 +11,8 @@
 // Variables to track LittleFS on Flash Memory Module
 uint8_t LFS_is_lfs_mounted = 0;
 
-// NAND Flash Memory Datasheet https://www.farnell.com/datasheets/3151163.pdf
-// Each page is divided into a 2048-byte data storage region, and a 128 bytes spare area (2176 bytes total).
-#define FLASH_CHIP_PAGE_SIZE_BYTES 2048
-#define FLASH_CHIP_BLOCK_SIZE_BYTES FLASH_CHIP_PAGE_SIZE_BYTES * FLASH_CHIP_PAGES_PER_BLOCK
-#define FLASH_LOOKAHEAD_SIZE 16
+// Should be at least (BLOCK_COUNT / 8). 
+#define FLASH_LOOKAHEAD_SIZE 128
 
 // LittleFS Buffers for reading and writing
 uint8_t LFS_read_buffer[FLASH_CHIP_PAGE_SIZE_BYTES];
@@ -37,34 +35,51 @@ struct lfs_config LFS_cfg = {
     .prog_size = FLASH_CHIP_PAGE_SIZE_BYTES,
     .block_size = FLASH_CHIP_BLOCK_SIZE_BYTES,
     .block_count = (FLASH_CHIP_SIZE_BYTES / FLASH_CHIP_BLOCK_SIZE_BYTES),
-    .block_cycles = 100, // TODO: ASK ABOUT THIS (HOW FREQUENT ARE WE USING THE MODULE),
+    .block_cycles = 500, 
     .cache_size = FLASH_CHIP_PAGE_SIZE_BYTES,
     .lookahead_size = FLASH_LOOKAHEAD_SIZE,
     .compact_thresh = -1, // Defaults to ~88% block_size when zero (lfs.h, line 232)
 
     .read_buffer = LFS_read_buffer,
     .prog_buffer = LFS_prog_buffer,
-    .lookahead_buffer = LFS_lookahead_buf};
+    .lookahead_buffer = LFS_lookahead_buf,
+
+    // Decrease the time metadata compaction operations take (operation is very slow).
+    // Required to prevent watchdog trigger loop (i.e., prevents extremely-long writes).
+    // See: https://github.com/littlefs-project/littlefs/issues/1079#issuecomment-2720048008
+    // Alternative/additional option described in issue: Call `lfs_fs_gc()` periodically during idle.
+    .metadata_max = 1024 * 8,
+};
 
 struct lfs_file_config LFS_file_cfg = {
     .buffer = LFS_file_buffer,
     .attr_count = 0,
-    .attrs = NULL};
+    .attrs = NULL
+};
 
 // ----------------------------- LittleFS Functions -----------------------------
+
+uint8_t LFS_init() {
+   FLASH_init(0); // TODO: probably need initialize all other chips.
+   LFS_ensure_mounted();
+
+   // Create directories which must exist here.
+   LFS_make_directory("./logs");
+
+   return 0;
+}
 
 /// @brief Formats Memory Module so it can successfully mount LittleFS
 /// @param None
 /// @return 0 on success, 1 if LFS is already mounted, negative LFS error codes on failure
-int8_t LFS_format()
-{
+int8_t LFS_format() {
     if (LFS_is_lfs_mounted) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), 
         "FLASH Memory cannot be formatted while LFS is mounted!");
         return 1;
     }
     
-    int8_t format_result = lfs_format(&LFS_filesystem, &LFS_cfg);
+    const int8_t format_result = lfs_format(&LFS_filesystem, &LFS_cfg);
     if (format_result < 0) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error formatting FLASH memory!");
         return format_result;
@@ -269,11 +284,132 @@ int8_t LFS_delete_file(const char file_name[]) {
     const int8_t remove_result = lfs_remove(&LFS_filesystem, file_name);
     if (remove_result < 0)
     {
-        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error removing file/directory: %s", file_name);
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error removing file: %s", file_name);
         return remove_result;
     }
 
-    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully removed file/directory: %s", file_name);
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully removed file: %s", file_name);
+    return 0;
+}
+
+/// @brief Removes / deletes the directory specified with all subdirectories and files
+/// @param file_name Pointer to cstring holding the directory name to remove
+/// @return 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
+int8_t LFS_delete_directory(const char directory[]) {
+    if (!LFS_is_lfs_mounted)
+    {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "LittleFS not mounted.");
+        return 1;
+    }
+    
+    if (directory == NULL) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Directory name is NULL");
+        return -1; // Invalid argument
+    }
+
+    lfs_dir_t dir;
+    const int8_t open_dir_result = lfs_dir_open(&LFS_filesystem, &dir, directory);
+    if (open_dir_result < 0) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening directory: %s", directory);
+        return open_dir_result; // Return the error code from lfs_dir_open
+    }
+
+    struct lfs_info info;
+    char dir_content[LFS_MAX_PATH_LENGTH * 3];
+    int8_t read_dir_result;
+
+    // Iterate through the directory contents
+    while ((read_dir_result = lfs_dir_read(&LFS_filesystem, &dir, &info)) > 0) {
+        // Skip the "." and ".." entries
+        if (strcmp(info.name, ".") == 0 || strcmp(info.name, "..") == 0) {
+            continue;
+        }
+
+        // Construct the full path of the entry
+        snprintf(dir_content, sizeof(dir_content), "%s/%s", directory, info.name);
+
+        if (info.type == LFS_TYPE_REG) {
+            // Delete the file
+            int8_t delete_file_ret = LFS_delete_file(dir_content);
+            if (delete_file_ret < 0) {
+                LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error deleting file: %s", dir_content);
+                lfs_dir_close(&LFS_filesystem, &dir); // Ensure the directory is closed
+                return delete_file_ret; // Return the error code
+            }
+            LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully deleted file: %s", dir_content);
+        } else if (info.type == LFS_TYPE_DIR) {
+            // Recursively delete the subdirectory
+            int8_t delete_dir_ret = LFS_delete_directory(dir_content);
+            if (delete_dir_ret < 0) {
+                LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error deleting directory: %s", dir_content);
+                lfs_dir_close(&LFS_filesystem, &dir); // Ensure the directory is closed
+                return delete_dir_ret; // Return the error code
+            }
+            // LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully deleted directory: %s", dir_content);
+        }
+    }
+
+    if (read_dir_result < 0) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error reading directory: %s", directory);
+        lfs_dir_close(&LFS_filesystem, &dir); // Ensure the directory is closed
+        return read_dir_result; // Return the error code
+    }
+
+    // Close the directory
+    const int8_t close_dir_result = lfs_dir_close(&LFS_filesystem, &dir);
+    if (close_dir_result < 0) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing directory: %s", directory);
+        return close_dir_result; // Return the error code
+    }
+
+    // Finally, delete the directory itself
+    const int8_t remove_result = lfs_remove(&LFS_filesystem, directory);
+    if (remove_result < 0) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error removing directory: %s", directory);
+        return remove_result; // Return the error code
+    }
+
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully deleted directory: %s", directory);
+    return 0; // Success
+}
+
+
+/// @brief Removes / deletes the file specified
+/// @param file_name Pointer to cstring holding the file name to remove
+/// @return 0 on success, 1 if LFS is unmounted, negative LFS error codes on failure
+int8_t LFS_recursively_delete_directory(const char directory_path[])
+{
+    if (!LFS_is_lfs_mounted)
+    {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "LittleFS not mounted.");
+        return 1;
+    }
+
+    // Open the directory
+    lfs_dir_t dir;
+    const int8_t open_dir_result = lfs_dir_open(&LFS_filesystem, &dir, directory_path);
+    if (open_dir_result < 0)
+    {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening directory: %s", directory_path);
+        return open_dir_result;
+    }
+
+    // close the directory to prepare for deletion
+    const int8_t close_dir_result = lfs_dir_close(&LFS_filesystem, &dir);
+    if (close_dir_result < 0)
+    {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing directory: %s", directory_path);
+        return close_dir_result;
+    }
+
+    const int8_t delete_dir_result = LFS_delete_directory(directory_path);
+    if (delete_dir_result < 0)
+    {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error deleting directory: %s", directory_path);
+        return delete_dir_result;
+    }
+
+    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Recursively deleted directory: %s", directory_path);
     return 0;
 }
 
@@ -389,8 +525,10 @@ int8_t LFS_write_file_with_offset(const char file_name[], lfs_soff_t offset, uin
                "Opened file for writing at offset: %s", file_name);
 
     // Get the current file size to determine if we need to extend it
-    lfs_soff_t current_size = lfs_file_size(&LFS_filesystem, &file);
-    if (current_size < 0) {
+
+    const lfs_soff_t current_size = lfs_file_size(&LFS_filesystem, &file);
+    if (current_size < 0)
+    {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), 
                    "Error getting file size: %s (error: %ld)", file_name, current_size);
         lfs_file_close(&LFS_filesystem, &file);

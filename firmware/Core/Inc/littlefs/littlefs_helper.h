@@ -25,6 +25,7 @@ extern uint8_t LFS_is_lfs_mounted;
 #define LFS_MAX_PATH_LENGTH 250
 
 /*---------------------------FUNCTIONS---------------------------*/
+uint8_t LFS_init();
 int8_t LFS_format();
 int8_t LFS_mount();
 int8_t LFS_unmount();
@@ -33,6 +34,7 @@ int8_t LFS_ensure_unmounted();
 int8_t LFS_list_directory(const char root_directory[], uint16_t offset, int16_t count);
 int8_t LFS_make_directory(const char dir_name[]);
 int8_t LFS_delete_file(const char file_name[]);
+int8_t LFS_recursively_delete_directory(const char directory_path[]);
 int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t write_buffer_len);
 int8_t LFS_write_file_with_offset(const char file_name[], lfs_soff_t offset, uint8_t *write_buffer, uint32_t write_buffer_len);
 int8_t LFS_append_file(const char file_name[], uint8_t *write_buffer, uint32_t write_buffer_len);

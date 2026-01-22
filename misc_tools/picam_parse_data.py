@@ -1,6 +1,23 @@
-import sys
-from loguru import logger
+"""Convert an image in the PiCAM ASCII format to a JPG file.
+
+Run with:
+
+```bash
+uv run misc_tools/picam_parse_data.py <input_text_file> <output_jpg_file>
+```
+
+"""
+
+# /// script
+# dependencies = [
+#   "loguru",
+# ]
+# ///
+
 import binascii
+import sys
+
+from loguru import logger
 
 
 def read_and_parse_image(text_file_in, jpg_file_out):
@@ -46,7 +63,7 @@ def main():
         sys.exit(1)
     text_file_in = sys.argv[1]
     jpg_file_out = sys.argv[2]
-    
+
     if not jpg_file_out.endswith(".jpg"):
         print("Error: Output file must be a .jpg file.")
         sys.exit(1)

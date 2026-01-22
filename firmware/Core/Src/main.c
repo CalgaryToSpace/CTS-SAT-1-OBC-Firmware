@@ -76,6 +76,8 @@ DMA_HandleTypeDef hdma_uart4_rx;
 DMA_HandleTypeDef hdma_usart1_rx;
 
 SPI_HandleTypeDef hspi1;
+DMA_HandleTypeDef hdma_spi1_rx;
+DMA_HandleTypeDef hdma_spi1_tx;
 
 TIM_HandleTypeDef htim16;
 
@@ -96,86 +98,85 @@ const osThreadAttr_t defaultTask_attributes = {
 // 512 may work okay, but 1024 is a safe bet.
 #define TASK_MINIMUM_STACK_SIZE_BYTES 1024
 
+osThreadId_t TASK_service_eps_watchdog_Handle;
+const osThreadAttr_t TASK_service_eps_watchdog_Attributes = {
+  .name = "TASK_service_eps_watchdog",
+  .stack_size = TASK_MINIMUM_STACK_SIZE_BYTES,
+  .priority = (osPriority_t) osPriorityBelowNormal,
+};
+
 osThreadId_t TASK_DEBUG_print_heartbeat_Handle;
 const osThreadAttr_t TASK_DEBUG_print_heartbeat_Attributes = {
   .name = "TASK_DEBUG_print_heartbeat",
   .stack_size = TASK_MINIMUM_STACK_SIZE_BYTES,
-  .priority = (osPriority_t) osPriorityBelowNormal5,
-};
-
-osThreadId_t TASK_handle_uart_telecommands_Handle;
-const osThreadAttr_t TASK_handle_uart_telecommands_Attributes = {
-  .name = "TASK_handle_uart_telecommands",
-  // Size 2048 doesn't work with LFS settings, but 8192 does.
-  // TODO: confirm stack size
-  .stack_size = 8192,
-  .priority = (osPriority_t) osPriorityNormal,
-};
-
-osThreadId_t TASK_handle_ax100_kiss_telecommands_Handle;
-const osThreadAttr_t TASK_handle_ax100_kiss_telecommands_Attributes = {
-  .name = "TASK_handle_ax100_kiss_telecommands",
-  // Presumably applicable: size 2048 doesn't work with LFS settings, but 8192 does.
-  // TODO: confirm stack size
-  .stack_size = 8192,
-  .priority = (osPriority_t) osPriorityNormal,
-};
-
-osThreadId_t TASK_bulk_downlink_Handle;
-const osThreadAttr_t TASK_bulk_downlink_Attributes = {
-  .name = "TASK_bulk_downlink",
-  .stack_size = 4096,
-  .priority = (osPriority_t) osPriorityNormal,
-};
-
-osThreadId_t TASK_execute_telecommands_Handle;
-const osThreadAttr_t TASK_execute_telecommands_Attributes = {
-  .name = "TASK_execute_telecommands",
-  .stack_size = 8192,
-  .priority = (osPriority_t) osPriorityNormal,
-};
-
-osThreadId_t TASK_service_eps_watchdog_Handle;
-const osThreadAttr_t TASK_service_eps_watchdog_Attributes = {
-  .name = "TASK_service_eps_watchdog",
-  .stack_size = TASK_MINIMUM_STACK_SIZE_BYTES, //in bytes
-  .priority = (osPriority_t) osPriorityNormal, //TODO: Figure out which priority makes sense for this task
-};
-
-osThreadId_t TASK_bootup_operation_fsm_Handle;
-const osThreadAttr_t TASK_bootup_operation_fsm_Attributes = {
-  .name = "TASK_bootup_operation_fsm",
-  .stack_size = 4096,
-  .priority = (osPriority_t) osPriorityNormal,
-};
-
-osThreadId_t TASK_service_write_mpi_data_Handle;
-const osThreadAttr_t TASK_service_write_mpi_data_Attributes = {
-  .name = "TASK_service_write_mpi_data",
-  .stack_size = 2048,
-  .priority = (osPriority_t) osPriorityNormal, //TODO: Figure out which priority makes sense for this task
-};
-
-osThreadId_t TASK_time_sync_Handle;
-const osThreadAttr_t TASK_time_sync_Attributes = {
-  .name = "TASK_time_sync",
-  .stack_size = TASK_MINIMUM_STACK_SIZE_BYTES, //in bytes
-  .priority = (osPriority_t) osPriorityNormal, //TODO: Figure out which priority makes sense for this task
+  .priority = (osPriority_t) osPriorityBelowNormal1,
 };
 
 osThreadId_t TASK_monitor_freertos_memory_Handle;
 const osThreadAttr_t TASK_monitor_freertos_memory_Attributes = {
   .name = "TASK_monitor_freertos_memory",
   .stack_size = 2048,
-  .priority = (osPriority_t) osPriorityBelowNormal6,
+  .priority = (osPriority_t) osPriorityBelowNormal2,
 };
 
 osThreadId_t TASK_background_upkeep_Handle;
 const osThreadAttr_t TASK_background_upkeep_Attributes = {
   .name = "TASK_background_upkeep",
   .stack_size = 4096,
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityBelowNormal3,
 };
+
+
+osThreadId_t TASK_time_sync_Handle;
+const osThreadAttr_t TASK_time_sync_Attributes = {
+  .name = "TASK_time_sync",
+  .stack_size = TASK_MINIMUM_STACK_SIZE_BYTES,
+  .priority = (osPriority_t) osPriorityBelowNormal4,
+};
+
+osThreadId_t TASK_bootup_operation_fsm_Handle;
+const osThreadAttr_t TASK_bootup_operation_fsm_Attributes = {
+  .name = "TASK_bootup_operation_fsm",
+  .stack_size = 4096,
+  .priority = (osPriority_t) osPriorityBelowNormal5,
+};
+
+osThreadId_t TASK_bulk_downlink_Handle;
+const osThreadAttr_t TASK_bulk_downlink_Attributes = {
+  .name = "TASK_bulk_downlink",
+  .stack_size = 4096,
+  .priority = (osPriority_t) osPriorityAboveNormal2,
+};
+
+osThreadId_t TASK_handle_uart_telecommands_Handle;
+const osThreadAttr_t TASK_handle_uart_telecommands_Attributes = {
+  .name = "TASK_handle_uart_telecommands",
+  .stack_size = 8192,
+  .priority = (osPriority_t) osPriorityAboveNormal3,
+};
+
+osThreadId_t TASK_execute_telecommands_Handle;
+const osThreadAttr_t TASK_execute_telecommands_Attributes = {
+  .name = "TASK_execute_telecommands",
+  .stack_size = 8192,
+  .priority = (osPriority_t) osPriorityAboveNormal4,
+};
+
+
+osThreadId_t TASK_handle_ax100_kiss_telecommands_Handle;
+const osThreadAttr_t TASK_handle_ax100_kiss_telecommands_Attributes = {
+  .name = "TASK_handle_ax100_kiss_telecommands",
+  .stack_size = 8192,
+  .priority = (osPriority_t) osPriorityAboveNormal5,
+};
+
+osThreadId_t TASK_service_write_mpi_data_Handle;
+const osThreadAttr_t TASK_service_write_mpi_data_Attributes = {
+  .name = "TASK_service_write_mpi_data",
+  .stack_size = 2048,
+  .priority = (osPriority_t) osPriorityAboveNormal6,
+};
+
 
 FREERTOS_task_info_struct_t FREERTOS_task_handles_array [] = {
   {
@@ -328,9 +329,8 @@ int main(void)
   // Start the callback interrupts for the UART channels.
   UART_init_uart_handlers();
   
-  FLASH_deactivate_chip_select();
-
-  LFS_ensure_mounted();
+  LFS_init();
+  
   
   EPS_set_obc_time_based_on_eps_time(); // Sync approx time for ADCS.
 
@@ -1048,7 +1048,7 @@ static void MX_SPI1_Init(void)
   hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
   hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -1114,6 +1114,12 @@ static void MX_DMA_Init(void)
   /* DMA1_Channel2_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Channel2_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel2_IRQn);
+  /* DMA1_Channel3_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel3_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel3_IRQn);
+  /* DMA1_Channel4_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel4_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel4_IRQn);
 
 }
 
