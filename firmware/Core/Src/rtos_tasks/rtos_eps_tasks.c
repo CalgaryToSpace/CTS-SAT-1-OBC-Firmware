@@ -12,6 +12,11 @@
 #include <stdint.h>
 
 
+/// How frequently to check the OBC time vs. the EPS time and log a warning during operation.
+/// Run on boot after 5000ms, but only run every 45 seconds in normal operation.
+/// This configuration variable is automatically set to 10 minutes after a successful sync.
+uint32_t EPS_time_sync_period_ms = 5000;
+
 
 /// @brief periodically sends a command to the eps to reset the watchdog timer
 /// @note The eps has two watchdog timers: The "watchdog reset" and the "peripheral reset".
@@ -57,18 +62,15 @@ void TASK_service_eps_watchdog(void *argument) {
     }
 }
 
-/*
-* @brief on boot this thread sets the obc time to the eps time. After that it periodically
-* checks the obc time against the eps time and logs when they diverge by more than 10 seconds.
-*/
+/// On boot, this thread sets the OBC time to the value of the EPS time.
+/// After that, it periodically checks the OBC time against the EPS time and logs when
+/// they diverge by more than 10 seconds.
 void TASK_time_sync(void *argument) {
     TASK_HELP_start_of_task();
 
-    // Run on boot after 5000ms, but only run every 45 seconds in normal operation.
-    uint32_t sleep_duration_ms = 5000;
     while(1) {
         // osDelay must be at the top of the while(1) loop so that `continue;` doesn't skip it.
-        osDelay(sleep_duration_ms);
+        osDelay(EPS_time_sync_period_ms);
 
         // First, try to sync EPS-to-OBC for the initial boot (or in case stuff gets funky later).
         if (TIME_last_synchronization_source == TIME_SYNC_SOURCE_NONE) {
@@ -93,7 +95,7 @@ void TASK_time_sync(void *argument) {
         }
 
         // If the OBC's time is ever somehow less than 1999-01-01T00:00:00Z, set OBC based on EPS.
-        // 1999 is selected as the initial bootup time will be 1970. Then, after setting to the EPS's time,
+        // Using 1999 because the initial bootup time will be 1970. Then, after setting to the EPS's time,
         // the OBC's time will be >=2000. Don't want to keep resyncing the OBC time to the EPS time
         // if the OBC's time is already set to a valid time.
         if (TIME_get_current_unix_epoch_time_ms() < 915148800000) {
@@ -118,7 +120,7 @@ void TASK_time_sync(void *argument) {
         }
 
         // For all subsequent runs, sleep for 10 mins.
-        sleep_duration_ms = 600000;
+        EPS_time_sync_period_ms = 600000;
       
         EPS_struct_system_status_t status;
         const uint8_t result_status = EPS_CMD_get_system_status(&status);

@@ -20,6 +20,16 @@
 /// @brief The system uptime, as of the last time a telecommand was received by the AX100 (and sent to OBC via KISS)
 uint32_t AX100_uptime_at_last_received_kiss_tcmd_ms = 0;
 
+/// @brief The interval between handling telecommands (parsing and adding to agenda) from the umbilical UART.
+/// Note: Does not include execution.
+uint32_t TCMD_handle_umbilical_tcmds_interval_ms = 400;
+
+/// @brief The interval between handling telecommands (parsing and adding to agenda) uplinked via the UHF radio.
+/// Note: Does not include execution.
+/// Decrease this to 200ms-250ms (or lower) if bulk uplinking large amounts of data (e.g., firmware).
+uint32_t TCMD_handle_ax100_tcmds_interval_ms = 400;
+
+
 typedef enum {
     TCMD_CHECK_STATUS_NO_TCMD = 0,
     TCMD_CHECK_STATUS_TCMD_SCHEDULED = 1,
@@ -151,7 +161,7 @@ void TASK_handle_uart_telecommands(void *argument) {
 
     while (1) {
         // Place the main delay at the top to avoid a "continue" statement skipping it.
-        osDelay(400);
+        osDelay(TCMD_handle_umbilical_tcmds_interval_ms);
 
         // Continue checking and scheduling telecommands until there are no more to process.
         while (1) {
@@ -290,7 +300,7 @@ void TASK_handle_ax100_kiss_telecommands(void *argument) {
 
     while (1) {
         // Place the main delay at the top to avoid a "continue" statement skipping it.
-        osDelay(400);
+        osDelay(TCMD_handle_ax100_tcmds_interval_ms);
 
         // Continue checking and scheduling telecommands until there are no more to process.
         while (UART_AX100_kiss_frame_queue_tail != UART_AX100_kiss_frame_queue_head) {
