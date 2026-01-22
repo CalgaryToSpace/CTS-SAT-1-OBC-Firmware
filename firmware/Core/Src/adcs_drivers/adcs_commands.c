@@ -1666,25 +1666,25 @@ int16_t ADCS_save_sd_file_to_lfs_by_index(bool index_file_bool, uint16_t file_in
         switch(file_info.file_type) {
 
             case ADCS_FILE_TYPE_TELEMETRY_LOG:
-                snprintf_ret = snprintf(filename_string, 17, "ADCS/log%d.TLM", file_index);
+                snprintf_ret = snprintf(filename_string, 18, "ADCS/log_%x.TLM", file_info.file_crc16);
                 if (snprintf_ret < 0) {
                     return snprintf_ret;
                 };
                 break;
             case ADCS_FILE_TYPE_JPG_IMAGE:
-                snprintf_ret = snprintf(filename_string, 17, "ADCS/img%d.jpg", file_index);
+                snprintf_ret = snprintf(filename_string, 18, "ADCS/img_%x.jpg", file_info.file_crc16);
                 if (snprintf_ret < 0) {
                     return snprintf_ret;
                 };
                 break;    
             case ADCS_FILE_TYPE_BMP_IMAGE:
-                snprintf_ret = snprintf(filename_string, 17, "ADCS/img%d.bmp", file_index);
+                snprintf_ret = snprintf(filename_string, 18, "ADCS/img_%x.bmp", file_info.file_crc16);
                 if (snprintf_ret < 0) {
                     return snprintf_ret;
                 };
                 break;    
             case ADCS_FILE_TYPE_INDEX:
-                snprintf_ret = snprintf(filename_string, 17, "ADCS/index_file");
+                snprintf_ret = snprintf(filename_string, 18, "ADCS/index_file");
                 if (snprintf_ret < 0) {
                     return snprintf_ret;
                 };
@@ -1834,25 +1834,25 @@ int16_t ADCS_save_sd_file_to_lfs_by_checksum(bool index_file_bool, uint16_t file
         switch(file_info.file_type) {
 
             case ADCS_FILE_TYPE_TELEMETRY_LOG:
-                snprintf_ret = snprintf(filename_string, 17, "ADCS/log%d.TLM", file_index);
+                snprintf_ret = snprintf(filename_string, 18, "ADCS/log_%x.TLM", file_info.file_crc16);
                 if (snprintf_ret < 0) {
                     return snprintf_ret;
                 };
                 break;
             case ADCS_FILE_TYPE_JPG_IMAGE:
-                snprintf_ret = snprintf(filename_string, 17, "ADCS/img%d.jpg", file_index);
+                snprintf_ret = snprintf(filename_string, 18, "ADCS/img_%x.jpg", file_info.file_crc16);
                 if (snprintf_ret < 0) {
                     return snprintf_ret;
                 };
                 break;    
             case ADCS_FILE_TYPE_BMP_IMAGE:
-                snprintf_ret = snprintf(filename_string, 17, "ADCS/img%d.bmp", file_index);
+                snprintf_ret = snprintf(filename_string, 18, "ADCS/img_%x.bmp", file_info.file_crc16);
                 if (snprintf_ret < 0) {
                     return snprintf_ret;
                 };
                 break;    
             case ADCS_FILE_TYPE_INDEX:
-                snprintf_ret = snprintf(filename_string, 17, "ADCS/index_file");
+                snprintf_ret = snprintf(filename_string, 18, "ADCS/index_file");
                 if (snprintf_ret < 0) {
                     return snprintf_ret;
                 };
