@@ -328,7 +328,7 @@ uint8_t TCMDEXEC_stm32_internal_flash_write_file_to_internal_flash(const char *a
                 (unsigned long)read_length, arg_file_name, (unsigned long)write_address, (unsigned long)read_offset);
 
     // Read the file from LittleFS
-    uint8_t file_content[read_length];
+    static uint8_t file_content[FLASH_PAGE_SIZE]; // Max size is 4kB
     memset(file_content, 0, read_length);
     const int32_t bytes_read = LFS_read_file(arg_file_name, read_offset, file_content, read_length);
     if (bytes_read < 0) {
