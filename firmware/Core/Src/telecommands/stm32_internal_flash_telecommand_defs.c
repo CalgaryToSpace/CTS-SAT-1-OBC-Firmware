@@ -338,7 +338,7 @@ uint8_t TCMDEXEC_stm32_internal_flash_write_file_to_internal_flash(const char *a
 
     // If region is not erased, it will fail
     STM32_internal_flash_write_status_t write_status = {0};
-    const STM32_internal_flash_write_return_t write_result = STM32_internal_flash_write(write_address, file_content, read_length, &write_status);
+    const STM32_internal_flash_write_return_t write_result = STM32_internal_flash_write(write_address, file_content, bytes_read, &write_status);
     LOG_message(LOG_SYSTEM_ALL, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
                 "Write Status=%d, Lock Status=%d, Unlock Status=%d",
         write_status.write_status, write_status.lock_status, write_status.unlock_status);
@@ -349,7 +349,7 @@ uint8_t TCMDEXEC_stm32_internal_flash_write_file_to_internal_flash(const char *a
             snprintf(response_output_buf,
                      response_output_buf_len,
                      "Successfully wrote %lu (0x%08lX) bytes from file '%s' to internal flash at address 0x%08lX",
-                     (uint32_t)read_length, (uint32_t)read_length, arg_file_name, (uint32_t)write_address);
+                     (uint32_t)bytes_read, (uint32_t)bytes_read, arg_file_name, (uint32_t)write_address);
             return 0;
         case STM32_INTERNAL_FLASH_WRITE_ADDRESS_TOO_LOW:
             snprintf(response_output_buf, response_output_buf_len, "Error: Address too low for internal flash write.");
