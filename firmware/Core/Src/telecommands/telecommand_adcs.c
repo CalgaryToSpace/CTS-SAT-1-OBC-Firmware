@@ -1854,20 +1854,44 @@ uint8_t TCMDEXEC_adcs_download_index_file(const char *args_str,
     return status;
 }
 
-/// @brief Telecommand: Download a specific file from the ADCS SD card
+/// @brief Telecommand: Download a specific file from the ADCS SD card by its index
 /// @param args_str 
 ///     - Arg 0: The index of the file to download
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_adcs_download_sd_file(const char *args_str,
+uint8_t TCMDEXEC_adcs_download_sd_file_by_index(const char *args_str,
                                    char *response_output_buf, uint16_t response_output_buf_len) {
 
     // parse file index argument
     uint64_t file_index;
     TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &file_index);
 
-    const int16_t status = ADCS_save_sd_file_to_lfs(false, file_index);
+    const int16_t status = ADCS_save_sd_file_to_lfs_by_index(false, file_index, false, 0);
 
     // To read the file via telecommand, we can do: CTS1+fs_read_text_file(ADCS/test_file)!
+
+    return status;
+}
+
+/// @brief Telecommand: Download a specific file from the ADCS SD card by its checksum.
+/// @param args_str 
+///     - Arg 0: The CRC16 checksum of the file as two hex bytes in order (e.g. "07 ff" becomes 0x07ff)
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_download_sd_file_by_checksum(const char *args_str, 
+                                   char *response_output_buf, uint16_t response_output_buf_len) {
+
+    uint8_t checksum[2];
+    uint16_t checksum_length;
+    TCMD_extract_hex_array_arg(args_str, 0, &checksum[0], 2, &checksum_length);
+
+    if (checksum_length != 2) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "Incorrect checksum length of %d (should be 2)", checksum_length);
+        return 5;
+    }
+
+    uint16_t crc16 = (checksum[0] << 8) | checksum[1];
+
+    const int16_t status = ADCS_save_sd_file_to_lfs_by_checksum(false, crc16);
 
     return status;
 }
@@ -2861,7 +2885,7 @@ uint8_t TCMDEXEC_adcs_format_sd(const char *args_str,
 /// @param args_str 
 ///     - Arg 0: Index of the file to erase
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_adcs_erase_sd_file(const char *args_str,
+uint8_t TCMDEXEC_adcs_erase_sd_file_by_index(const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len) {
     
     // parse file index argument
@@ -2869,6 +2893,31 @@ uint8_t TCMDEXEC_adcs_erase_sd_file(const char *args_str,
     TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &file_index);
 
     const int16_t status = ADCS_erase_sd_file_by_index(file_index);
+
+    return status;
+}
+
+/// @brief Telecommand: Instruct the ADCS to erase a file from the SD card
+/// @param args_str 
+///     - Arg 0: CRC16 checksum of the file as two hex bytes in order (e.g. "07 ff" becomes 0x07ff)
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_erase_sd_file_by_checksum(const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    // parse checksum
+    uint8_t checksum[2];
+    uint16_t checksum_length;
+    TCMD_extract_hex_array_arg(args_str, 0, &checksum[0], 2, &checksum_length);
+
+    if (checksum_length != 2) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "Incorrect checksum length of %d (should be 2)", checksum_length);
+        return 5;
+    }
+
+    uint16_t crc16 = (checksum[0] << 8) | checksum[1];
+
+    const uint8_t status = ADCS_erase_sd_file_by_checksum(crc16);
 
     return status;
 }
