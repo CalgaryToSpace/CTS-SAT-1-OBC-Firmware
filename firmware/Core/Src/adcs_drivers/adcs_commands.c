@@ -2158,7 +2158,8 @@ uint8_t ADCS_convert_sd_file_bmp_to_jpg_by_index(uint16_t file_index, uint8_t qu
         }
     }
 
-    for (uint16_t i = 0; i < file_index; i++) {
+    uint16_t i = 0;
+    for (i = 0; i < file_index; i++) {
         const uint8_t advance_pointer_status = ADCS_advance_file_list_read_pointer();
         
         if (HAL_GetTick() - function_start_time > ADCS_FILE_POINTER_TIMEOUT_MS) {
@@ -2194,6 +2195,10 @@ uint8_t ADCS_convert_sd_file_bmp_to_jpg_by_index(uint16_t file_index, uint8_t qu
     const uint8_t file_info_status = ADCS_get_file_info_telemetry(&file_info);
     if (file_info_status != 0) {
         return file_info_status;
+    }
+    if (file_info.file_type != ADCS_FILE_TYPE_BMP_IMAGE) {
+        LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Index %d does not refer to a BMP image.", i);
+        return 7;
     }
 
     const uint8_t convert_status = ADCS_convert_to_jpg(file_info.file_counter, quality_factor, white_balance);
@@ -2236,7 +2241,11 @@ uint8_t ADCS_convert_sd_file_bmp_to_jpg_by_checksum(uint16_t file_checksum, uint
             return 6;
         }
         if (file_info.file_crc16 == file_checksum) {
-            // this is the correct file, so continue onwards
+            // this is the correct file
+            if (file_info.file_type != ADCS_FILE_TYPE_BMP_IMAGE) {
+                LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Checksum %x does not refer to a BMP image.", file_checksum);
+                return 7;
+            }
             break;
         }
 
