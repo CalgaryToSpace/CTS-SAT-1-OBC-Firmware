@@ -1,0 +1,39 @@
+<map id="lfs_file_read" name="lfs_file_read">
+<area shape="rect" id="Node000001" title=" " alt="" coords="733,252,824,278"/>
+<area shape="rect" id="Node000002" href="$rtos__bulk__downlink__task_8c.html#ac4da897c1d300608976abe4c1e2961cf" title="Downlink task action." alt="" coords="502,11,659,52"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="766,239,736,166,713,126,683,89,660,70,633,55,636,50,663,66,687,86,717,123,741,164,771,236"/>
+<area shape="rect" id="Node000005" href="$littlefs__benchmark_8c.html#aad7b70d9138d629a5902f97637e9af52" title="Benchmarks the write/read operations on the LittleFS file system." alt="" coords="488,100,673,126"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="750,244,684,188,600,128,603,124,687,184,753,239"/>
+<area shape="rect" id="Node000008" href="$littlefs__helper_8c.html#a5faf267faf01c3ddc98fd9240f298816" title="Opens LittleFS File to read from the Memory Module." alt="" coords="530,199,631,224"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="718,251,631,228,632,222,719,246"/>
+<area shape="rect" id="Node000012" href="$littlefs__checksums_8c.html#a7352505d34218d2e095c447755298dd9" title="Computes the SHA256 checksum of a file in LittleFS." alt="" coords="496,272,665,313"/>
+<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="719,276,666,284,665,278,718,271"/>
+<area shape="rect" id="Node000014" href="$littlefs__searching_8c.html#a92b34e33f8bcba3258c94906acdf9e4f" title="Count the number of occurrences of a string/byte pattern in an LFS file." alt="" coords="476,357,685,383"/>
+<area shape="poly" id="edge13_Node000001_Node000014" title=" " alt="" coords="748,289,687,327,617,359,615,354,684,322,745,284"/>
+<area shape="rect" id="Node000017" href="$littlefs__searching_8c.html#a73aed2e92382e088f2df85646437352a" title="Find the byte offset of the nth occurrence of a string/byte pattern in an LFS file." alt="" coords="508,480,653,521"/>
+<area shape="poly" id="edge16_Node000001_Node000017" title=" " alt="" coords="763,292,729,342,687,397,645,444,606,482,603,478,641,440,683,394,725,339,758,289"/>
+<area shape="rect" id="Node000003" href="$rtos__bulk__downlink__task_8c.html#ab5f343c1ea1448758dde372ea37c1e5e" title=" " alt="" coords="259,5,404,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="487,29,404,25,404,19,487,24"/>
+<area shape="rect" id="Node000004" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="71,5,121,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="243,21,121,21,121,16,243,16"/>
+<area shape="rect" id="Node000006" href="$littlefs__benchmark_8c.html#ae604e8b7da31b3a607f0c03f2fa44ecd" title="Benchmarks the write/read operations on the LittleFS file system for both cases: writing to a new fil..." alt="" coords="255,55,408,96"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="475,100,408,90,409,84,476,95"/>
+<area shape="rect" id="Node000007" href="$lfs__telecommand__defs_8c.html#a4490c6617eb3b720f2103a9e18058611" title="Telecommand: Benchmark LittleFS write and read operations." alt="" coords="5,55,187,96"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="240,78,187,78,187,73,240,73"/>
+<area shape="rect" id="Node000009" href="$lfs__telecommand__defs_8c.html#a3f798e84c562c185f3e02c4e2f46a4f8" title=" " alt="" coords="239,120,424,161"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="517,196,405,164,406,159,519,191"/>
+<area shape="rect" id="Node000010" href="$lfs__telecommand__defs_8c.html#a46db576db9f64f8d3dc16c0f8f13b3ce" title="Reads a file from LittleFS, and responds with its contents as 2&#45;digit hex bytes (no spaces)." alt="" coords="235,185,428,211"/>
+<area shape="poly" id="edge9_Node000008_Node000010" title=" " alt="" coords="514,211,428,206,428,201,515,205"/>
+<area shape="rect" id="Node000011" href="$lfs__telecommand__defs_8c.html#aecaacc038ed500aa61401add712db92c" title="Reads a file from LittleFS, and responds with its contents as a string." alt="" coords="235,235,428,260"/>
+<area shape="poly" id="edge10_Node000008_Node000011" title=" " alt="" coords="515,224,425,237,425,231,514,218"/>
+<area shape="rect" id="Node000013" href="$lfs__telecommand__defs_8c.html#a473e45239264ee0ff99e938c5d928348" title="Calculates the SHA256 hash of a file in LittleFS and returns it as a little&#45;endian hex string." alt="" coords="249,284,414,325"/>
+<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="481,300,415,304,415,298,481,295"/>
+<area shape="rect" id="Node000015" href="$lfs__search__telecommand__defs_8c.html#ae846940340e87a5e91ff498aad294f06" title="Count hex byte sequence occurrences in a file." alt="" coords="243,350,420,390"/>
+<area shape="poly" id="edge14_Node000014_Node000015" title=" " alt="" coords="460,373,420,373,420,368,460,368"/>
+<area shape="rect" id="Node000016" href="$lfs__search__telecommand__defs_8c.html#a9ca70f566e7b18175239cad07dcf6acb" title="Count string occurrences in a file." alt="" coords="246,415,417,456"/>
+<area shape="poly" id="edge15_Node000014_Node000016" title=" " alt="" coords="515,390,412,417,411,412,513,385"/>
+<area shape="rect" id="Node000018" href="$lfs__search__telecommand__defs_8c.html#a4f77c487eac834da033a967828ededf8" title="Find Nth hex byte sequence occurrence in a file." alt="" coords="250,480,412,521"/>
+<area shape="poly" id="edge17_Node000017_Node000018" title=" " alt="" coords="493,504,413,504,413,498,493,498"/>
+<area shape="rect" id="Node000019" href="$lfs__search__telecommand__defs_8c.html#ac050c6708dbc992664b23c50ffd84370" title="Find Nth string occurrence in a file." alt="" coords="250,546,412,586"/>
+<area shape="poly" id="edge18_Node000017_Node000019" title=" " alt="" coords="494,526,412,548,411,543,493,521"/>
+</map>

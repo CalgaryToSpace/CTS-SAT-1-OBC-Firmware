@@ -1,0 +1,27 @@
+<map id="ADCS_pack_to_file_info_struct" name="ADCS_pack_to_file_info_struct">
+<area shape="rect" id="Node000001" title="Parse File Information telemetry data into a struct." alt="" coords="701,169,863,210"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a74bd85d79adcad17e1cda6a638a5bf53" title="Request file information telemetry from the ADCS." alt="" coords="496,136,630,177"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="685,178,630,169,631,164,686,172"/>
+<area shape="rect" id="Node000013" href="$test__adcs_8c.html#ac718f64a2b353283a4c781b2f75105b3" title=" " alt="" coords="473,201,653,242"/>
+<area shape="poly" id="edge12_Node000001_Node000013" title=" " alt="" coords="686,206,654,211,653,206,686,201"/>
+<area shape="rect" id="Node000003" href="$adcs__commands_8c.html#a49057d9b5b50b817b1709cfa9a020eba" title="Given the checksum on the SD card of a file, erase that file." alt="" coords="264,8,404,49"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="521,128,476,96,424,65,394,52,396,47,426,61,479,92,525,124"/>
+<area shape="rect" id="Node000005" href="$adcs__commands_8c.html#a9dfcfaad39b58870a163fa98aa633a20" title="Given the index on the SD card of a file, erase that file." alt="" coords="264,75,404,115"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="481,137,404,116,405,111,482,132"/>
+<area shape="rect" id="Node000007" href="$adcs__commands_8c.html#ae3631d808de5cd484902090f6fe92026" title="Get the list of files from the SD card." alt="" coords="243,144,425,169"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="481,159,425,159,425,154,481,154"/>
+<area shape="rect" id="Node000009" href="$adcs__commands_8c.html#a5690b636af8345da66e8f1643e35c20b" title="Save a file, specified by its CRC16 checksum, from the ADCS SD card to the ADCS subfolder in LittleFS..." alt="" coords="257,195,411,235"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="482,180,412,198,411,193,481,175"/>
+<area shape="rect" id="Node000011" href="$adcs__commands_8c.html#ab3bfaf422a651607a358de024a75b236" title="Save a specified file from the ADCS SD card to the ADCS subfolder in LittleFS." alt="" coords="257,264,411,305"/>
+<area shape="poly" id="edge10_Node000002_Node000011" title=" " alt="" coords="484,186,475,192,460,206,451,220,442,234,427,249,398,266,395,261,423,245,438,231,447,217,456,202,471,188,481,181"/>
+<area shape="rect" id="Node000004" href="$telecommand__adcs_8c.html#af92171d34a0940b1328dafa6f6d3d8a3" title="Telecommand: Instruct the ADCS to erase a file from the SD card." alt="" coords="17,5,183,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="248,30,184,29,184,24,248,25"/>
+<area shape="rect" id="Node000006" href="$telecommand__adcs_8c.html#a3b92f772fa4cf3959ae0fdd5d0911a36" title="Telecommand: Instruct the ADCS to erase a file from the SD card." alt="" coords="17,71,183,111"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="248,96,184,95,184,90,248,91"/>
+<area shape="rect" id="Node000008" href="$telecommand__adcs_8c.html#a1f2ef57c1cb49e145eacdfb6dfcb9b77" title="Telecommand: Get the list of downloadable files from the ADCS SD card as log messages." alt="" coords="5,136,195,177"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="227,159,195,159,195,154,227,154"/>
+<area shape="rect" id="Node000010" href="$telecommand__adcs_8c.html#abbf86684a78813a0948844484d90a1d2" title="Telecommand: Download a specific file from the ADCS SD card by its checksum." alt="" coords="5,201,195,242"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="241,220,195,222,195,216,241,215"/>
+<area shape="rect" id="Node000012" href="$telecommand__adcs_8c.html#ae9f2856f6087e190007be9c0ba49e87b" title="Telecommand: Download a specific file from the ADCS SD card by its index." alt="" coords="5,267,195,307"/>
+<area shape="poly" id="edge11_Node000011_Node000012" title=" " alt="" coords="241,288,195,289,195,283,241,283"/>
+</map>

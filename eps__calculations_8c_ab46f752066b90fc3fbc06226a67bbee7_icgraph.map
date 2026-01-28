@@ -1,0 +1,17 @@
+<map id="EPS_convert_battery_voltage_to_percent" name="EPS_convert_battery_voltage_to_percent">
+<area shape="rect" id="Node000001" title="Calculate the current EPS battery voltage from a PBU telemetry struct." alt="" coords="667,129,811,170"/>
+<area shape="rect" id="Node000002" href="$complete__self__check_8c.html#a034650729877a551e8919e536ae032e8" title=" " alt="" coords="428,46,618,72"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="691,124,618,87,583,75,585,70,620,82,694,119"/>
+<area shape="rect" id="Node000006" href="$system__telecommand__defs_8c.html#a28f4f277b8dcca8a94bdcbbb1e6a7379" title=" " alt="" coords="436,96,610,137"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="651,139,610,132,611,127,652,134"/>
+<area shape="rect" id="Node000007" href="$eps__telecommands_8c.html#a691161fa6dabaec5a79bf56fb53a3ea3" title="Get current battery voltage percent from PBU." alt="" coords="427,161,619,202"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="652,165,620,170,619,165,651,160"/>
+<area shape="rect" id="Node000008" href="$test__eps__calculations_8c.html#aec06b10b0beb89edebc94bc3e2bd40e8" title=" " alt="" coords="430,227,616,267"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="691,180,620,216,589,229,587,224,618,211,688,176"/>
+<area shape="rect" id="Node000003" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="223,39,379,79"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="412,62,380,62,380,56,412,56"/>
+<area shape="rect" id="Node000004" href="$system__telecommand__defs_8c.html#a3de9d85c9ac70337b7ea2d12ae8e1431" title="System self&#45;check of all peripherals and systems." alt="" coords="5,5,175,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="207,47,175,42,176,36,208,42"/>
+<area shape="rect" id="Node000005" href="$system__telecommand__defs_8c.html#a0c74e93dcffe027962e3e9015c3fd364" title="System self&#45;check of all peripherals and systems." alt="" coords="5,71,175,111"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="208,76,176,81,175,75,207,70"/>
+</map>

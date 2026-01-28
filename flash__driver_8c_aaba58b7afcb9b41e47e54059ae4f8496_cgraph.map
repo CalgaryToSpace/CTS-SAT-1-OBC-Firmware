@@ -1,0 +1,12 @@
+<map id="FLASH_is_reachable" name="FLASH_is_reachable">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,31,151,56"/>
+<area shape="rect" id="Node000002" href="$flash__internal__spi_8c.html#ad5ed7577f49d1b019690750f3e341cb4" title=" " alt="" coords="199,23,392,64"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="151,41,183,41,183,46,151,46"/>
+<area shape="rect" id="Node000003" href="$flash__internal__spi_8c.html#a6ef8dcea63afd51b1abc927f1b9c7a8c" title="Deactivates the chip select for all lines." alt="" coords="616,5,742,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="392,22,440,16,523,12,601,12,601,17,523,17,440,21,393,27"/>
+<area shape="rect" id="Node000004" href="$flash__internal__spi_8c.html#aceee333622c828dc554196c66302b044" title=" " alt="" coords="444,31,565,56"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="393,41,428,41,428,46,393,46"/>
+<area shape="rect" id="Node000005" href="$flash__internal__spi_8c.html#aba407f4312efb41c24ed7c3584d491f9" title="Use DMA to speed up receiving. At least 3x faster than HAL_SPI_Receive when transferring 2048 bytes." alt="" coords="440,80,568,106"/>
+<area shape="poly" id="edge5_Node000002_Node000005" title=" " alt="" coords="385,62,433,73,432,79,383,67"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="565,32,600,27,601,32,566,37"/>
+</map>

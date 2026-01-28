@@ -1,0 +1,15 @@
+<map id="TCMDEXEC_adcs_commanded_wheel_speed" name="TCMDEXEC_adcs_commanded_wheel_speed">
+<area shape="rect" id="Node000001" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,71,211,111"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a2b6feff1dc11c35a570e0cb3415acfd5" title="Instruct the ADCS to execute the ADCS_Commanded_Wheel_Speed command." alt="" coords="269,37,429,78"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="211,74,253,68,254,73,211,79"/>
+<area shape="rect" id="Node000007" href="$adcs__types__to__json_8c.html#ac0d64d2c2aaf57a081263b9cdfa1dc29" title="Converts ADCS_Wheel_Speed_Struct to a JSON string." alt="" coords="259,103,439,143"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="211,102,244,106,243,112,211,107"/>
+<area shape="rect" id="Node000003" href="$adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="487,5,678,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="429,44,471,38,472,44,429,49"/>
+<area shape="rect" id="Node000006" href="$adcs__struct__packers_8c.html#ab3e360bd1f82e385a7933bce1882b48f" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="488,71,677,111"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="429,66,474,73,473,78,429,72"/>
+<area shape="rect" id="Node000004" href="$adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="726,5,903,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="679,23,711,23,711,28,679,28"/>
+<area shape="rect" id="Node000005" href="$adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (Section 5...." alt="" coords="951,5,1099,46"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="903,23,935,23,935,28,903,28"/>
+</map>

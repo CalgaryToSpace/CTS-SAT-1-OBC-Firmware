@@ -1,0 +1,32 @@
+<map id="LFS_block_device_erase" name="LFS_block_device_erase">
+<area shape="rect" id="Node000001" title="LittleFS erase function, memory is mapped to a physical address here." alt="" coords="5,70,174,96"/>
+<area shape="rect" id="Node000002" href="$littlefs__driver_8c.html#a5f6429c30d4167d4b7cd9d4f9aa069f0" title=" " alt="" coords="233,5,362,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="138,67,217,45,219,50,140,72"/>
+<area shape="rect" id="Node000003" href="$flash__driver_8c.html#a8bb1024a5c66e9cf271824fc69ce9f39" title=" " alt="" coords="227,70,369,96"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="174,80,211,80,211,86,174,86"/>
+<area shape="rect" id="Node000013" href="$littlefs__driver_8c.html#ac54becf2a06dc9a90f281df70e34d857" title=" " alt="" coords="222,120,374,145"/>
+<area shape="poly" id="edge17_Node000001_Node000013" title=" " alt="" coords="148,94,226,113,225,118,146,99"/>
+<area shape="rect" id="Node000004" href="$flash__internal__spi_8c.html#ae0572774132a5866fed34b44c565fa25" title=" " alt="" coords="635,45,829,70"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="342,67,373,55,396,41,421,30,486,20,552,21,615,28,668,38,667,43,614,33,552,26,487,26,423,35,399,46,375,60,344,72"/>
+<area shape="rect" id="Node000007" href="$flash__driver_8c.html#afeacce5c8f0e578c02ba5abd0ce67270" title="Wait until the flash chip is ready for the next command." alt="" coords="422,144,587,169"/>
+<area shape="poly" id="edge7_Node000003_Node000007" title=" " alt="" coords="346,94,375,105,423,130,439,136,437,141,421,135,373,109,345,99"/>
+<area shape="rect" id="Node000011" href="$flash__driver_8c.html#acafafa4ab0d6a00ce8717b0bfe04f872" title=" " alt="" coords="430,45,579,70"/>
+<area shape="poly" id="edge13_Node000003_Node000011" title=" " alt="" coords="369,72,415,66,415,71,370,77"/>
+<area shape="rect" id="Node000012" href="$flash__driver_8c.html#a2f88b6dbc3273f1baf8150129f3ca318" title=" " alt="" coords="432,94,577,120"/>
+<area shape="poly" id="edge15_Node000003_Node000012" title=" " alt="" coords="370,89,417,94,416,99,369,94"/>
+<area shape="rect" id="Node000005" href="$flash__internal__spi_8c.html#a6ef8dcea63afd51b1abc927f1b9c7a8c" title="Deactivates the chip select for all lines." alt="" coords="1294,86,1420,112"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="829,52,1023,54,1135,60,1247,71,1292,79,1292,85,1246,76,1135,65,1022,59,829,58"/>
+<area shape="rect" id="Node000006" href="$flash__internal__spi_8c.html#aceee333622c828dc554196c66302b044" title=" " alt="" coords="1122,86,1243,112"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="830,64,1106,89,1106,95,829,69"/>
+<area shape="poly" id="edge6_Node000006_Node000005" title=" " alt="" coords="1243,96,1278,96,1278,102,1243,102"/>
+<area shape="rect" id="Node000008" href="$flash__driver_8c.html#a4578cb366491fb297297143531415840" title=" " alt="" coords="637,144,827,169"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="588,154,621,154,621,159,588,159"/>
+<area shape="rect" id="Node000009" href="$flash__internal__spi_8c.html#ad5ed7577f49d1b019690750f3e341cb4" title=" " alt="" coords="877,136,1070,177"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="828,154,861,154,861,159,828,159"/>
+<area shape="poly" id="edge10_Node000009_Node000005" title=" " alt="" coords="1070,145,1246,122,1288,113,1289,118,1247,127,1071,150"/>
+<area shape="poly" id="edge11_Node000009_Node000006" title=" " alt="" coords="1049,133,1117,114,1119,119,1050,138"/>
+<area shape="rect" id="Node000010" href="$flash__internal__spi_8c.html#aba407f4312efb41c24ed7c3584d491f9" title="Use DMA to speed up receiving. At least 3x faster than HAL_SPI_Receive when transferring 2048 bytes." alt="" coords="1118,188,1246,213"/>
+<area shape="poly" id="edge12_Node000009_Node000010" title=" " alt="" coords="1071,174,1103,181,1102,186,1070,179"/>
+<area shape="poly" id="edge14_Node000011_Node000004" title=" " alt="" coords="579,55,620,55,620,60,579,60"/>
+<area shape="poly" id="edge16_Node000012_Node000004" title=" " alt="" coords="567,91,654,72,655,77,568,96"/>
+</map>

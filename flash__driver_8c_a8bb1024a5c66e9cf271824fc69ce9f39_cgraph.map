@@ -1,0 +1,26 @@
+<map id="FLASH_erase_block" name="FLASH_erase_block">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,52,148,77"/>
+<area shape="rect" id="Node000002" href="$flash__internal__spi_8c.html#ae0572774132a5866fed34b44c565fa25" title=" " alt="" coords="409,26,602,52"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="100,49,143,28,195,11,259,4,323,4,384,11,437,20,436,25,383,16,323,10,259,9,196,16,145,33,102,53"/>
+<area shape="rect" id="Node000005" href="$flash__driver_8c.html#afeacce5c8f0e578c02ba5abd0ce67270" title="Wait until the flash chip is ready for the next command." alt="" coords="196,125,361,151"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="109,75,197,111,215,117,213,122,195,116,107,80"/>
+<area shape="rect" id="Node000009" href="$flash__driver_8c.html#acafafa4ab0d6a00ce8717b0bfe04f872" title=" " alt="" coords="204,26,352,52"/>
+<area shape="poly" id="edge11_Node000001_Node000009" title=" " alt="" coords="148,53,188,48,189,53,148,58"/>
+<area shape="rect" id="Node000010" href="$flash__driver_8c.html#a2f88b6dbc3273f1baf8150129f3ca318" title=" " alt="" coords="206,76,351,101"/>
+<area shape="poly" id="edge13_Node000001_Node000010" title=" " alt="" coords="148,70,190,75,190,81,148,76"/>
+<area shape="rect" id="Node000003" href="$flash__internal__spi_8c.html#a6ef8dcea63afd51b1abc927f1b9c7a8c" title="Deactivates the chip select for all lines." alt="" coords="1068,68,1193,93"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="603,34,796,35,909,41,1020,53,1066,61,1065,66,1020,58,908,46,796,41,603,39"/>
+<area shape="rect" id="Node000004" href="$flash__internal__spi_8c.html#aceee333622c828dc554196c66302b044" title=" " alt="" coords="895,68,1016,93"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="603,45,880,71,880,76,603,51"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="1017,78,1052,78,1052,83,1017,83"/>
+<area shape="rect" id="Node000006" href="$flash__driver_8c.html#a4578cb366491fb297297143531415840" title=" " alt="" coords="410,125,601,151"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="361,135,395,135,395,140,361,140"/>
+<area shape="rect" id="Node000007" href="$flash__internal__spi_8c.html#ad5ed7577f49d1b019690750f3e341cb4" title=" " alt="" coords="650,117,844,158"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="601,135,635,135,635,140,601,140"/>
+<area shape="poly" id="edge8_Node000007_Node000003" title=" " alt="" coords="844,126,1020,103,1062,95,1063,100,1020,108,845,132"/>
+<area shape="poly" id="edge9_Node000007_Node000004" title=" " alt="" coords="823,114,891,95,892,100,824,120"/>
+<area shape="rect" id="Node000008" href="$flash__internal__spi_8c.html#aba407f4312efb41c24ed7c3584d491f9" title="Use DMA to speed up receiving. At least 3x faster than HAL_SPI_Receive when transferring 2048 bytes." alt="" coords="892,169,1020,195"/>
+<area shape="poly" id="edge10_Node000007_Node000008" title=" " alt="" coords="845,156,877,163,876,168,844,161"/>
+<area shape="poly" id="edge12_Node000009_Node000002" title=" " alt="" coords="353,36,393,36,393,42,353,42"/>
+<area shape="poly" id="edge14_Node000010_Node000002" title=" " alt="" coords="340,72,428,53,429,58,342,78"/>
+</map>

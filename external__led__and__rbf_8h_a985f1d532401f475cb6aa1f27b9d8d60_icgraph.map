@@ -1,0 +1,13 @@
+<map id="OBC_set_external_led" name="OBC_set_external_led">
+<area shape="rect" id="Node000001" title="Set the state of the LED visible from the outside of the satellite (on solar panel)." alt="" coords="773,70,923,96"/>
+<area shape="rect" id="Node000002" href="$rtos__bootup__operation__fsm__task_8c.html#a3695b7733fef7ecdfe91f10c46117017" title=" " alt="" coords="596,5,725,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="788,68,724,48,726,43,790,63"/>
+<area shape="rect" id="Node000003" href="$rtos__bootup__operation__fsm__task_8c.html#a35b5c290266c125c7e9524720f280973" title=" " alt="" coords="342,56,548,97"/>
+<area shape="poly" id="edge5_Node000001_Node000003" title=" " alt="" coords="757,84,549,81,549,75,757,79"/>
+<area shape="rect" id="Node000004" href="$rtos__bootup__operation__fsm__task_8c.html#a6d56b04a815b7769ed167bbd4a1921d6" title="FreeRTOS task &#45; FSM which handles the bootup and operation state/state." alt="" coords="103,93,294,118"/>
+<area shape="poly" id="edge6_Node000001_Node000004" title=" " alt="" coords="758,95,548,111,445,113,342,111,295,110,295,105,342,106,445,107,548,106,757,90"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="582,47,535,58,534,53,580,42"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="327,93,295,97,294,92,326,88"/>
+<area shape="rect" id="Node000005" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="5,93,55,118"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="87,108,55,108,55,103,87,103"/>
+</map>

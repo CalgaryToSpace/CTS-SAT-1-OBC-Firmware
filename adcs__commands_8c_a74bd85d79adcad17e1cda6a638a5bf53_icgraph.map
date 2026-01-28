@@ -1,0 +1,23 @@
+<map id="ADCS_get_file_info_telemetry" name="ADCS_get_file_info_telemetry">
+<area shape="rect" id="Node000001" title="Request file information telemetry from the ADCS." alt="" coords="473,136,606,177"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a49057d9b5b50b817b1709cfa9a020eba" title="Given the checksum on the SD card of a file, erase that file." alt="" coords="264,8,404,49"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="504,127,467,95,424,65,396,52,398,47,426,61,470,91,508,123"/>
+<area shape="rect" id="Node000004" href="$adcs__commands_8c.html#a9dfcfaad39b58870a163fa98aa633a20" title="Given the index on the SD card of a file, erase that file." alt="" coords="264,75,404,115"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="457,135,404,119,405,113,459,129"/>
+<area shape="rect" id="Node000006" href="$adcs__commands_8c.html#ae3631d808de5cd484902090f6fe92026" title="Get the list of files from the SD card." alt="" coords="243,144,425,169"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="457,159,426,159,426,154,457,154"/>
+<area shape="rect" id="Node000008" href="$adcs__commands_8c.html#a5690b636af8345da66e8f1643e35c20b" title="Save a file, specified by its CRC16 checksum, from the ADCS SD card to the ADCS subfolder in LittleFS..." alt="" coords="257,197,411,238"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="459,183,405,199,404,194,457,178"/>
+<area shape="rect" id="Node000010" href="$adcs__commands_8c.html#ab3bfaf422a651607a358de024a75b236" title="Save a specified file from the ADCS SD card to the ADCS subfolder in LittleFS." alt="" coords="257,263,411,303"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="508,190,470,222,426,252,401,264,399,260,424,247,467,218,505,186"/>
+<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#af92171d34a0940b1328dafa6f6d3d8a3" title="Telecommand: Instruct the ADCS to erase a file from the SD card." alt="" coords="17,5,183,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="248,30,184,29,184,24,248,25"/>
+<area shape="rect" id="Node000005" href="$telecommand__adcs_8c.html#a3b92f772fa4cf3959ae0fdd5d0911a36" title="Telecommand: Instruct the ADCS to erase a file from the SD card." alt="" coords="17,71,183,111"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="248,96,184,95,184,90,248,91"/>
+<area shape="rect" id="Node000007" href="$telecommand__adcs_8c.html#a1f2ef57c1cb49e145eacdfb6dfcb9b77" title="Telecommand: Get the list of downloadable files from the ADCS SD card as log messages." alt="" coords="5,136,195,177"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="227,159,195,159,195,154,227,154"/>
+<area shape="rect" id="Node000009" href="$telecommand__adcs_8c.html#abbf86684a78813a0948844484d90a1d2" title="Telecommand: Download a specific file from the ADCS SD card by its checksum." alt="" coords="5,201,195,242"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="241,222,195,223,195,217,241,217"/>
+<area shape="rect" id="Node000011" href="$telecommand__adcs_8c.html#ae9f2856f6087e190007be9c0ba49e87b" title="Telecommand: Download a specific file from the ADCS SD card by its index." alt="" coords="5,267,195,307"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="241,287,195,288,195,283,241,282"/>
+</map>

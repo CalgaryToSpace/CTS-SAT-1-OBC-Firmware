@@ -1,0 +1,20 @@
+<map id="FLASH_write_disable" name="FLASH_write_disable">
+<area shape="rect" id="Node000001" title=" " alt="" coords="689,115,838,140"/>
+<area shape="rect" id="Node000002" href="$flash__driver_8c.html#a8bb1024a5c66e9cf271824fc69ce9f39" title=" " alt="" coords="493,85,635,111"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="674,117,635,111,636,106,674,112"/>
+<area shape="rect" id="Node000007" href="$flash__driver_8c.html#a1824e6c227d8d7d295ebea03e266d4ca" title=" " alt="" coords="487,139,641,164"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="674,141,642,145,641,140,673,136"/>
+<area shape="rect" id="Node000003" href="$flash__benchmark_8c.html#a9485023a9a54cf461dba878ce4d013fb" title="Benchmarks the erase/read/write operations on the flash memory module." alt="" coords="257,104,432,145"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="478,111,433,117,433,112,477,106"/>
+<area shape="rect" id="Node000005" href="$littlefs__driver_8c.html#ac92d3429222f40c34643f2969b93060a" title="LittleFS erase function, memory is mapped to a physical address here." alt="" coords="261,5,429,31"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="522,81,438,45,404,34,405,29,440,40,524,76"/>
+<area shape="rect" id="Node000006" href="$flash__telecommand__defs_8c.html#a1bbb7fc912ecb05434ef594bc0e96431" title="Telecommand: Erase a block of flash memory containing the given page number." alt="" coords="262,55,428,80"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="477,89,427,82,428,76,478,83"/>
+<area shape="rect" id="Node000004" href="$flash__telecommand__defs_8c.html#a16773e1b72efde502834a5b2b323be8b" title="Telecommand: Benchmarks the erase/write/read operations on the flash memory module." alt="" coords="5,104,203,145"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="241,128,203,128,203,122,241,122"/>
+<area shape="poly" id="edge7_Node000007_Node000003" title=" " alt="" coords="471,143,433,138,433,133,472,138"/>
+<area shape="rect" id="Node000008" href="$littlefs__driver_8c.html#a6979423f6b81b4ac02cd878f0a93cc69" title="LittleFS write function, memory is mapped to a physical address here." alt="" coords="264,169,426,195"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="472,167,426,174,426,168,471,162"/>
+<area shape="rect" id="Node000009" href="$flash__telecommand__defs_8c.html#a357ba0b1b1fde91e5956bba5fd5da730" title="Telecommand: Write a hex string of bytes to a page number." alt="" coords="251,219,439,244"/>
+<area shape="poly" id="edge9_Node000007_Node000009" title=" " alt="" coords="524,174,440,210,405,221,404,215,438,205,522,169"/>
+</map>

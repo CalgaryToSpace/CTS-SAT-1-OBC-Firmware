@@ -1,0 +1,15 @@
+<map id="TCMDEXEC_adcs_igrf_magnetic_field_vector" name="TCMDEXEC_adcs_igrf_magnetic_field_vector">
+<area shape="rect" id="Node000001" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,71,160,111"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a2499644ca56d3bfee3171a9ce957395e" title="Instruct the ADCS to execute the ADCS_IGRF_Magnetic_Field_Vector command." alt="" coords="208,37,375,78"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="160,76,192,71,193,76,160,81"/>
+<area shape="rect" id="Node000007" href="$adcs__types__to__json_8c.html#a5cb7470f7d1637f0c2fc0530203e76ea" title="Converts ADCS_Magnetic_Field_Vector_Struct to a JSON string." alt="" coords="211,103,372,143"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="160,100,196,106,195,111,160,105"/>
+<area shape="rect" id="Node000003" href="$adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="425,5,616,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="375,43,409,39,410,44,376,49"/>
+<area shape="rect" id="Node000006" href="$adcs__struct__packers_8c.html#a6edec543d9c13b1e0beab5f01dfd1182" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="423,71,618,111"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="376,67,408,72,407,77,375,72"/>
+<area shape="rect" id="Node000004" href="$adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="666,5,843,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="617,23,650,23,650,28,617,28"/>
+<area shape="rect" id="Node000005" href="$adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (Section 5...." alt="" coords="891,5,1039,46"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="843,23,875,23,875,28,843,28"/>
+</map>

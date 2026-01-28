@@ -1,0 +1,13 @@
+<map id="ADCS_get_file_download_buffer" name="ADCS_get_file_download_buffer">
+<area shape="rect" id="Node000001" title="Retrieve the File Download Buffer telemetry from the ADCS." alt="" coords="663,39,831,79"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a99fbcd4000d29b26c5dbf7c922503186" title="Save one block of the ADCS SD card file pointed to by the file pointer into the ADCS download buffer,..." alt="" coords="445,39,615,79"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="648,62,616,62,616,56,648,56"/>
+<area shape="rect" id="Node000003" href="$adcs__commands_8c.html#a5690b636af8345da66e8f1643e35c20b" title="Save a file, specified by its CRC16 checksum, from the ADCS SD card to the ADCS subfolder in LittleFS..." alt="" coords="243,5,397,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="429,46,397,41,398,35,430,40"/>
+<area shape="rect" id="Node000005" href="$adcs__commands_8c.html#ab3bfaf422a651607a358de024a75b236" title="Save a specified file from the ADCS SD card to the ADCS subfolder in LittleFS." alt="" coords="243,71,397,111"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="430,77,398,82,397,77,429,72"/>
+<area shape="rect" id="Node000004" href="$telecommand__adcs_8c.html#abbf86684a78813a0948844484d90a1d2" title="Telecommand: Download a specific file from the ADCS SD card by its checksum." alt="" coords="5,5,195,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="227,28,195,28,195,23,227,23"/>
+<area shape="rect" id="Node000006" href="$telecommand__adcs_8c.html#ae9f2856f6087e190007be9c0ba49e87b" title="Telecommand: Download a specific file from the ADCS SD card by its index." alt="" coords="5,71,195,111"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="227,94,195,94,195,88,227,88"/>
+</map>

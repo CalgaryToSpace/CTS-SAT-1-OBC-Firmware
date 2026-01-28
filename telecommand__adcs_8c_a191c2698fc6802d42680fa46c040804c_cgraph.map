@@ -1,0 +1,9 @@
+<map id="TCMDEXEC_adcs_reset" name="TCMDEXEC_adcs_reset">
+<area shape="rect" id="Node000001" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,13,169,38"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#aede64efdb08acf89df5ac15de7906e58" title="Instruct the ADCS to execute the ADCS_Reset command." alt="" coords="217,13,310,38"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="169,23,201,23,201,28,169,28"/>
+<area shape="rect" id="Node000003" href="$adcs__internal__drivers_8c.html#a4fd725dd59fc5c6d0304751c2a08baa4" title="Sends a telecommand over I2C to the ADCS." alt="" coords="358,13,559,38"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="310,23,343,23,343,28,310,28"/>
+<area shape="rect" id="Node000004" href="$adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (Section 5...." alt="" coords="607,5,756,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="560,23,592,23,592,28,560,28"/>
+</map>

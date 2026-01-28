@@ -1,0 +1,15 @@
+<map id="OBC_TEMP_SENSOR_read_temperature" name="OBC_TEMP_SENSOR_read_temperature">
+<area shape="rect" id="Node000001" title="Reads the temperature from the STDS75DS2F and stores it in the provided variable pointer result...." alt="" coords="775,99,962,139"/>
+<area shape="rect" id="Node000002" href="$obc__temperature__sensor_8c.html#a034c03979b5a3d762425556fef1d2b97" title="The simplest and most foolproof way to get the OBC temperature in centi&#45;celsius." alt="" coords="524,65,703,106"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="760,107,703,100,704,95,760,102"/>
+<area shape="rect" id="Node000007" href="$obc__systems__telecommand__defs_8c.html#abdf8ae254ab5a5485d91d1fbaf293504" title="Reads the temperature from the STDS75DS2F and stores it in the provided variable temperature...." alt="" coords="499,131,727,171"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="760,135,728,139,727,134,760,130"/>
+<area shape="rect" id="Node000003" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="259,37,415,78"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="508,78,415,68,416,63,508,72"/>
+<area shape="rect" id="Node000006" href="$obc__systems__telecommand__defs_8c.html#a0d7e50b2ef17d8c8b77ba04517d0c091" title="Reads the temperature from the STDS75DS2F in centi&#45;Celsius." alt="" coords="223,102,451,128"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="508,99,452,105,451,100,507,94"/>
+<area shape="rect" id="Node000004" href="$system__telecommand__defs_8c.html#a3de9d85c9ac70337b7ea2d12ae8e1431" title="System self&#45;check of all peripherals and systems." alt="" coords="5,5,175,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="243,48,175,39,176,34,243,43"/>
+<area shape="rect" id="Node000005" href="$system__telecommand__defs_8c.html#a0c74e93dcffe027962e3e9015c3fd364" title="System self&#45;check of all peripherals and systems." alt="" coords="5,71,175,111"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="243,73,176,82,175,77,243,68"/>
+</map>

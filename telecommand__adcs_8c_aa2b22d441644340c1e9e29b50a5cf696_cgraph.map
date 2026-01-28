@@ -1,0 +1,19 @@
+<map id="TCMDEXEC_adcs_get_sd_log_config" name="TCMDEXEC_adcs_get_sd_log_config">
+<area shape="rect" id="Node000001" title="Telecommand: Retrieve the current ADCS SD log configuration." alt="" coords="5,99,179,139"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#aa09b0d343b9884169f1a179d4dc9a435" title="Instruct the ADCS to execute the ADCS_get_sd_log_config command." alt="" coords="228,49,396,74"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="172,96,245,76,246,82,173,101"/>
+<area shape="rect" id="Node000007" href="$adcs__types__to__json_8c.html#a56f0cbe4bad7b1ee8ddfd39aeabfd1eb" title=" " alt="" coords="241,99,384,139"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="179,116,225,116,225,122,179,122"/>
+<area shape="rect" id="Node000008" href="$telecommand__args__helpers_8c.html#aa11f06d167f7dbbd4360df4d179d0791" title="Extracts the nth comma&#45;separated argument from the input string, assuming it&#39;s a uint64." alt="" coords="227,164,398,189"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="173,137,246,156,245,162,172,142"/>
+<area shape="rect" id="Node000003" href="$adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="446,5,637,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="396,46,430,40,431,46,397,51"/>
+<area shape="rect" id="Node000006" href="$adcs__struct__packers_8c.html#a49fa95f1c212405624d20cd5a4ebf2c1" title="Parse SD Log Config telemetry data into a struct." alt="" coords="464,71,619,111"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="397,70,449,77,448,82,396,75"/>
+<area shape="rect" id="Node000004" href="$adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="685,5,862,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="638,23,670,23,670,28,638,28"/>
+<area shape="rect" id="Node000005" href="$adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (Section 5...." alt="" coords="910,5,1058,46"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="862,23,894,23,894,28,862,28"/>
+<area shape="rect" id="Node000009" href="$telecommand__args__helpers_8c.html#aeeb7af1211280043fdbd8392dbd3c283" title="Extracts a uint64, starting from the beginning of str, to a maximum length of str_len." alt="" coords="466,164,618,189"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="398,174,450,174,450,179,398,179"/>
+</map>

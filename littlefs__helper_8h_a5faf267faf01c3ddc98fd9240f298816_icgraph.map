@@ -1,0 +1,9 @@
+<map id="LFS_read_file" name="LFS_read_file">
+<area shape="rect" id="Node000001" title="Opens LittleFS File to read from the Memory Module." alt="" coords="247,70,348,96"/>
+<area shape="rect" id="Node000002" href="$lfs__telecommand__defs_8c.html#a3f798e84c562c185f3e02c4e2f46a4f8" title=" " alt="" coords="10,5,194,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="236,68,173,49,175,44,237,63"/>
+<area shape="rect" id="Node000003" href="$lfs__telecommand__defs_8c.html#a46db576db9f64f8d3dc16c0f8f13b3ce" title="Reads a file from LittleFS, and responds with its contents as 2&#45;digit hex bytes (no spaces)." alt="" coords="6,70,198,96"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="231,86,199,86,199,80,231,80"/>
+<area shape="rect" id="Node000004" href="$lfs__telecommand__defs_8c.html#aecaacc038ed500aa61401add712db92c" title="Reads a file from LittleFS, and responds with its contents as a string." alt="" coords="5,120,199,145"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="232,102,199,111,157,122,156,116,198,106,231,97"/>
+</map>

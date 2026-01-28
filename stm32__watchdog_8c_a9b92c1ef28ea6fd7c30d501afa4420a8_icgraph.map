@@ -1,0 +1,37 @@
+<map id="STM32_pet_watchdog" name="STM32_pet_watchdog">
+<area shape="rect" id="Node000001" title="Pet the STM32 Independent Watchdog (IWDG)." alt="" coords="708,229,860,254"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a49057d9b5b50b817b1709cfa9a020eba" title="Given the checksum on the SD card of a file, erase that file." alt="" coords="490,7,630,47"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="769,216,751,181,727,140,696,99,659,64,630,47,632,43,662,60,700,96,731,137,756,179,773,213"/>
+<area shape="rect" id="Node000004" href="$adcs__commands_8c.html#a9dfcfaad39b58870a163fa98aa633a20" title="Given the index on the SD card of a file, erase that file." alt="" coords="490,73,630,114"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="758,220,714,179,659,139,617,117,619,112,662,134,717,175,761,216"/>
+<area shape="rect" id="Node000006" href="$adcs__commands_8c.html#a99fbcd4000d29b26c5dbf7c922503186" title="Save one block of the ADCS SD card file pointed to by the file pointer into the ADCS download buffer,..." alt="" coords="475,192,645,233"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="693,232,645,226,646,221,693,227"/>
+<area shape="rect" id="Node000007" href="$adcs__commands_8c.html#a5690b636af8345da66e8f1643e35c20b" title="Save a file, specified by its CRC16 checksum, from the ADCS SD card to the ADCS subfolder in LittleFS..." alt="" coords="250,136,404,177"/>
+<area shape="poly" id="edge10_Node000001_Node000007" title=" " alt="" coords="748,223,707,201,660,183,594,169,526,161,405,156,405,151,526,155,594,164,661,178,709,196,751,218"/>
+<area shape="rect" id="Node000009" href="$adcs__commands_8c.html#ab3bfaf422a651607a358de024a75b236" title="Save a specified file from the ADCS SD card to the ADCS subfolder in LittleFS." alt="" coords="250,201,404,242"/>
+<area shape="poly" id="edge11_Node000001_Node000009" title=" " alt="" coords="693,247,660,247,560,250,460,247,405,240,405,234,460,242,560,245,660,242,693,241"/>
+<area shape="rect" id="Node000011" href="$complete__self__check_8c.html#aca251395551fa77b80c3e22894583c13" title="Perform the system self&#45;check and store the results in the provided result struct." alt="" coords="482,307,638,347"/>
+<area shape="poly" id="edge12_Node000001_Node000011" title=" " alt="" coords="735,263,617,309,615,304,733,258"/>
+<area shape="rect" id="Node000014" href="$rtos__tasks_8c.html#a04172000ecfd61309b0b9a892c0839ea" title=" " alt="" coords="460,385,660,410"/>
+<area shape="poly" id="edge15_Node000001_Node000014" title=" " alt="" coords="764,268,720,315,662,361,608,387,605,382,659,357,716,311,760,265"/>
+<area shape="rect" id="Node000016" href="$unit__test__executor_8c.html#add7aebbb80a438c4fc5371001842e05f" title=" " alt="" coords="478,435,642,475"/>
+<area shape="poly" id="edge17_Node000001_Node000016" title=" " alt="" coords="774,270,757,305,732,347,700,389,662,425,643,436,641,432,659,421,696,385,728,344,752,302,769,267"/>
+<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#af92171d34a0940b1328dafa6f6d3d8a3" title="Telecommand: Instruct the ADCS to erase a file from the SD card." alt="" coords="244,5,410,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="475,29,411,29,411,23,475,24"/>
+<area shape="rect" id="Node000005" href="$telecommand__adcs_8c.html#a3b92f772fa4cf3959ae0fdd5d0911a36" title="Telecommand: Instruct the ADCS to erase a file from the SD card." alt="" coords="244,71,410,111"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="475,95,411,95,411,89,475,90"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="459,191,404,178,406,172,461,186"/>
+<area shape="poly" id="edge8_Node000006_Node000009" title=" " alt="" coords="459,219,405,221,405,216,459,214"/>
+<area shape="rect" id="Node000008" href="$telecommand__adcs_8c.html#abbf86684a78813a0948844484d90a1d2" title="Telecommand: Download a specific file from the ADCS SD card by its checksum." alt="" coords="5,136,195,177"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="235,159,195,159,195,154,235,154"/>
+<area shape="rect" id="Node000010" href="$telecommand__adcs_8c.html#ae9f2856f6087e190007be9c0ba49e87b" title="Telecommand: Download a specific file from the ADCS SD card by its index." alt="" coords="5,201,195,242"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="235,224,195,224,195,219,235,219"/>
+<area shape="rect" id="Node000012" href="$system__telecommand__defs_8c.html#a3de9d85c9ac70337b7ea2d12ae8e1431" title="System self&#45;check of all peripherals and systems." alt="" coords="243,267,412,307"/>
+<area shape="poly" id="edge13_Node000011_Node000012" title=" " alt="" coords="466,314,412,304,413,299,467,308"/>
+<area shape="rect" id="Node000013" href="$system__telecommand__defs_8c.html#a0c74e93dcffe027962e3e9015c3fd364" title="System self&#45;check of all peripherals and systems." alt="" coords="243,332,412,373"/>
+<area shape="poly" id="edge14_Node000011_Node000013" title=" " alt="" coords="467,340,413,346,412,340,466,334"/>
+<area shape="rect" id="Node000015" href="$main_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="The application entry point." alt="" coords="303,397,352,422"/>
+<area shape="poly" id="edge16_Node000014_Node000015" title=" " alt="" coords="445,406,352,411,352,406,444,401"/>
+<area shape="rect" id="Node000017" href="$testing__telecommand__defs_8c.html#ab6db7016ffee1ce52000fe5c9f342642" title=" " alt="" coords="245,447,410,487"/>
+<area shape="poly" id="edge18_Node000016_Node000017" title=" " alt="" coords="463,463,410,465,410,460,463,457"/>
+</map>

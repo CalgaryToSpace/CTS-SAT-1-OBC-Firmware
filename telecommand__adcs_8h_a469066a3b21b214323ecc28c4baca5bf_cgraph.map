@@ -1,0 +1,15 @@
+<map id="TCMDEXEC_adcs_raw_coarse_sun_sensor_1_to_6" name="TCMDEXEC_adcs_raw_coarse_sun_sensor_1_to_6">
+<area shape="rect" id="Node000001" title="Telecommand: Request the given telemetry data from the ADCS." alt="" coords="5,73,207,114"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a4c92dcfcfeb46679168dab20cc6fa5da" title="Instruct the ADCS to execute the ADCS_Raw_Coarse_Sun_Sensor_1_to_6 command." alt="" coords="256,37,412,78"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="207,75,240,70,241,75,207,80"/>
+<area shape="rect" id="Node000007" href="$adcs__types__to__json_8c.html#a7b034a53d4d79fee1fc7bfcaf6cbe4fd" title="Converts ADCS_Raw_Coarse_Sun_Sensor_1_to_6_Struct to a JSON string." alt="" coords="255,102,414,158"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="207,107,240,112,239,117,207,112"/>
+<area shape="rect" id="Node000003" href="$adcs__internal__drivers_8c.html#a3fd48d4eaf17a6b5135637e23c729a07" title="Sends a telemetry request over I2C to the ADCS, and resends repeatedly if the checksums don&#39;t match." alt="" coords="462,5,653,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="412,44,446,39,447,44,413,49"/>
+<area shape="rect" id="Node000006" href="$adcs__struct__packers_8c.html#acab027b55e2baff7018933d6977ab5e6" title="Packs the ADCS received raw data into the appropriate structure for this command." alt="" coords="466,71,650,111"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="413,67,451,72,450,78,412,72"/>
+<area shape="rect" id="Node000004" href="$adcs__internal__drivers_8c.html#ac028a4552d4001793e670fdce885d9c3" title="Sends a telemetry request over I2C to the ADCS." alt="" coords="701,5,878,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="654,23,686,23,686,28,654,28"/>
+<area shape="rect" id="Node000005" href="$adcs__internal__drivers_8c.html#a50a560e303b2d90b39c7b4131ccdb0ad" title="Calculates an 8&#45;bit CRC value. Code provided by ADCS Firmware Reference Manual (Section 5...." alt="" coords="926,5,1074,46"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="878,23,910,23,910,28,878,28"/>
+</map>

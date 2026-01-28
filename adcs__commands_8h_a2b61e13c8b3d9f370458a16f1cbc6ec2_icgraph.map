@@ -1,0 +1,11 @@
+<map id="ADCS_erase_file" name="ADCS_erase_file">
+<area shape="rect" id="Node000001" title="Send the Erase File command to the ADCS." alt="" coords="408,46,527,72"/>
+<area shape="rect" id="Node000002" href="$adcs__commands_8c.html#a49057d9b5b50b817b1709cfa9a020eba" title="Given the checksum on the SD card of a file, erase that file." alt="" coords="220,5,360,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="392,48,360,41,361,36,393,42"/>
+<area shape="rect" id="Node000004" href="$adcs__commands_8c.html#a9dfcfaad39b58870a163fa98aa633a20" title="Given the index on the SD card of a file, erase that file." alt="" coords="220,71,360,111"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="393,75,361,81,360,76,392,70"/>
+<area shape="rect" id="Node000003" href="$telecommand__adcs_8c.html#af92171d34a0940b1328dafa6f6d3d8a3" title="Telecommand: Instruct the ADCS to erase a file from the SD card." alt="" coords="5,5,172,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="204,28,172,28,172,23,204,23"/>
+<area shape="rect" id="Node000005" href="$telecommand__adcs_8c.html#a3b92f772fa4cf3959ae0fdd5d0911a36" title="Telecommand: Instruct the ADCS to erase a file from the SD card." alt="" coords="5,71,172,111"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="204,94,172,94,172,88,204,88"/>
+</map>
