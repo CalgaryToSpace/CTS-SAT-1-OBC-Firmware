@@ -142,7 +142,7 @@ uint8_t ADCS_save_image_to_sd(ADCS_camera_select_enum_t camera_select, ADCS_imag
 uint8_t ADCS_get_current_unix_time(uint64_t* epoch_time_ms);
 uint8_t ADCS_synchronize_unix_time();
 uint8_t ADCS_set_sd_log_config(uint8_t which_log, const uint8_t **log_array, uint8_t log_array_size, uint16_t log_period, ADCS_sd_log_destination_enum_t which_sd);
-uint8_t ADCS_get_sd_log_config(uint8_t which_log, ADCS_sd_log_config_struct* config);
+uint8_t ADCS_get_sd_log_config(uint8_t which_log, ADCS_sd_log_config_struct_t* config);
 int16_t ADCS_load_sd_file_block_to_filesystem(ADCS_file_info_struct_t file_info, uint8_t current_block, lfs_file_t* file);
 int16_t ADCS_save_sd_file_to_lfs_by_index(bool index_file_bool, uint16_t file_index, bool enable_checksum_validation_bool, uint16_t checksum);
 int16_t ADCS_save_sd_file_to_lfs_by_checksum(bool index_file_bool, uint16_t file_checksum);
@@ -153,5 +153,12 @@ uint8_t ADCS_get_sd_card_file_list(uint16_t num_to_read, uint16_t index_offset);
 uint8_t ADCS_erase_sd_file_by_index(uint16_t file_index);
 uint8_t ADCS_erase_sd_file_by_checksum(uint16_t file_checksum);
 uint8_t ADCS_bootloader_run_program();
+uint8_t ADCS_convert_to_jpg(uint8_t file_counter, uint8_t quality_factor, uint8_t white_balance);
+uint8_t ADCS_get_jpg_conversion_progress(ADCS_conversion_progress_struct_t *output_struct);
+uint8_t ADCS_convert_sd_file_bmp_to_jpg_by_index(uint16_t file_index, uint8_t quality_factor, uint8_t white_balance);
+uint8_t ADCS_convert_sd_file_bmp_to_jpg_by_checksum(uint16_t file_checksum, uint8_t quality_factor, uint8_t white_balance);
+uint8_t ADCS_get_wheel_currents(ADCS_wheel_currents_struct_t *output_struct);
+uint8_t ADCS_get_cubesense_currents(ADCS_cubesense_currents_struct_t *output_struct);
+uint8_t ADCS_get_misc_currents(ADCS_misc_currents_struct_t *output_struct);
 
 #endif /* INC_ADCS_COMMANDS_H_ */

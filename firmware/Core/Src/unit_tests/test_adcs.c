@@ -864,7 +864,7 @@ uint8_t TEST_EXEC__ADCS_pack_to_file_download_buffer_struct() {
 }
 uint8_t TEST_EXEC__ADCS_pack_to_sd_log_config_struct() {
     uint8_t input_params[13] = {0x56, 0x8b, 0x21, 0x67, 0x62, 0x02, 0x8c, 0x11, 0x62, 0x02, 0x8c, 0x11, 0x01};
-    ADCS_sd_log_config_struct result_struct;
+    ADCS_sd_log_config_struct_t result_struct;
 
     ADCS_pack_to_sd_log_config_struct(input_params, 1, &result_struct);
 
@@ -922,4 +922,57 @@ uint8_t TEST_EXEC__ADCS_combine_sd_log_bitmasks() {
 
     return 0;
 
+}
+
+uint8_t TEST_EXEC__ADCS_pack_to_wheel_currents_struct() {
+    uint8_t input_data[6] = {0x10, 0x27, 0x20, 0x4E, 0x30, 0x75};
+    ADCS_wheel_currents_struct_t result;
+
+    ADCS_pack_to_wheel_currents_struct(input_data, &result);
+
+    TEST_ASSERT_TRUE(result.wheel1_current_microamps == 100000);
+    TEST_ASSERT_TRUE(result.wheel2_current_microamps == 200000);
+    TEST_ASSERT_TRUE(result.wheel3_current_microamps == 300000);
+
+    return 0;
+}
+
+uint8_t TEST_EXEC__ADCS_pack_to_cubesense_currents_struct() {
+    uint8_t input[8] = {0x10, 0x27, 0x20, 0x4E, 0x30, 0x75, 0x40, 0x9C};
+
+    ADCS_cubesense_currents_struct_t result;
+    ADCS_pack_to_cubesense_currents_struct(input, &result);
+
+    TEST_ASSERT_TRUE(result.cubesense1_3v3_current_microamps == 1000000);
+    TEST_ASSERT_TRUE(result.cubesense1_sram_current_microamps == 2000000);
+    TEST_ASSERT_TRUE(result.cubesense2_3v3_current_microamps == 3000000);
+    TEST_ASSERT_TRUE(result.cubesense2_sram_current_microamps == 4000000);
+
+    return 0;
+}
+
+uint8_t TEST_EXEC__ADCS_pack_to_misc_currents_struct() {
+    uint8_t input[6] = {0x10, 0x27, 0x20, 0x4E, 0x18, 0xFC};
+
+    ADCS_misc_currents_struct_t result;
+    ADCS_pack_to_misc_currents_struct(input, &result);
+
+    TEST_ASSERT_TRUE(result.cubestar_current_microamps == 100000);
+    TEST_ASSERT_TRUE(result.torquer_current_microamps == 2000000);
+    TEST_ASSERT_TRUE(result.cubestar_mcu_temperature_mdeg_celsius == -10000);
+
+    return 0;
+}
+
+uint8_t TEST_EXEC__ADCS_pack_to_conversion_progress_struct() {
+    uint8_t input[3] = {0x51, 0x02, 0xa1};
+
+    ADCS_conversion_progress_struct_t result;
+    ADCS_pack_to_conversion_progress_struct(input, &result);
+
+    TEST_ASSERT_TRUE(result.progress_percentage == 81);
+    TEST_ASSERT_TRUE(result.conversion_result == ADCS_CONVERSION_RESULT_FILE_LOAD_ERROR);
+    TEST_ASSERT_TRUE(result.output_file_counter == 161);
+
+    return 0;
 }
