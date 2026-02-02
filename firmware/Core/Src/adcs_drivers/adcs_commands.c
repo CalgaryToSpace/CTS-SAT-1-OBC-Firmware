@@ -245,7 +245,9 @@ uint8_t ADCS_get_power_control(ADCS_power_control_struct_t *output_struct) {
     ADCS_pack_to_power_control_struct(data_received, output_struct);
 
     return tlm_status;
-}/// @brief Instruct the ADCS to set the magnetometer configuration.
+}
+
+/// @brief Instruct the ADCS to set the magnetometer configuration.
 /// @param mounting_transform_alpha_angle Mounting transform alpha angle [deg] 
 /// @param mounting_transform_beta_angle Mounting transform beta angle [deg]
 /// @param mounting_transform_gamma_angle Mounting transform gamma angle [deg]
@@ -1256,7 +1258,7 @@ uint8_t ADCS_set_sd_log_config(uint8_t which_log, const uint8_t **log_array, uin
 /// @param[in] config Pointer to struct to store the config data
 /// @param[in] which_log 1 or 2; which specific log number to log to the SD card
 /// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
-uint8_t ADCS_get_sd_log_config(uint8_t which_log, ADCS_sd_log_config_struct* config) {
+uint8_t ADCS_get_sd_log_config(uint8_t which_log, ADCS_sd_log_config_struct_t* config) {
     uint8_t data_length = 13;
     uint8_t data_received[data_length]; 
 
@@ -2111,4 +2113,238 @@ uint8_t ADCS_bootloader_run_program() {
     const uint8_t hal_status = HAL_I2C_Master_Transmit(ADCS_i2c_HANDLE, ADCS_i2c_ADDRESS << 1, data_send, 1, ADCS_HAL_TIMEOUT);
         // The bootloader doesn't support checksum, and this is a zero-parameter command, so HAL_I2C_Mem_Write can't be used (zero length message).
     return hal_status;
+}
+
+/// @brief Send the Convert to JPG command to the ADCS.
+/// @param[in] file_counter The counter of the file.
+/// @param[in] quality_factor Amount of compression and data loss; 1 is the most, 100 is the least
+/// @param[in] white_balance White balance
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_convert_to_jpg(uint8_t file_counter, uint8_t quality_factor, uint8_t white_balance) {
+
+    uint8_t data_send[3] = {file_counter, quality_factor, white_balance};
+
+    const uint8_t cmd_status = ADCS_i2c_send_command_and_check(ADCS_COMMAND_CONVERT_TO_JPG_FILE, data_send, sizeof(data_send), ADCS_INCLUDE_CHECKSUM);
+
+    return cmd_status; 
+}
+
+/// @brief Given the index on the SD card of a file, convert that file to a JPG image.
+/// @param[in] file_index The index of the file.
+/// @param[in] quality_factor Amount of compression and data loss; 1 is the most, 100 is the least
+/// @param[in] white_balance White balance
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred.
+uint8_t ADCS_convert_sd_file_bmp_to_jpg_by_index(uint16_t file_index, uint8_t quality_factor, uint8_t white_balance) {
+
+    const uint32_t function_start_time = HAL_GetTick();
+    
+    ADCS_file_info_struct_t file_info;
+
+    if (file_index > 255) {
+        LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE), "File index is greater than 255. Aborting...");
+        return 73;
+    }
+
+    // get the required File Type and Counter parameters about the file to erase
+
+    const uint8_t reset_pointer_status = ADCS_reset_file_list_read_pointer();
+    HAL_Delay(200);
+    if (reset_pointer_status != 0) {
+        // to avoid interference from the EPS, do a separate ack for these commands
+        ADCS_cmd_ack_struct_t ack_status;
+        ADCS_cmd_ack(&ack_status);
+        if (ack_status.error_flag != 0) {
+            return ack_status.error_flag;
+        }
+    }
+
+    uint16_t i = 0;
+    for (i = 0; i < file_index; i++) {
+        const uint8_t advance_pointer_status = ADCS_advance_file_list_read_pointer();
+        
+        if (HAL_GetTick() - function_start_time > ADCS_FILE_POINTER_TIMEOUT_MS) {
+            return 7;
+        }
+        
+        HAL_Delay(200);
+        if (advance_pointer_status != 0) {
+            // to avoid interference from the EPS, do a separate ack for these commands
+            ADCS_cmd_ack_struct_t ack_status;
+            ADCS_cmd_ack(&ack_status);
+            if (ack_status.error_flag != 0) {
+                return ack_status.error_flag;
+            }
+        }
+
+        if (i % 70 == 0) {
+            // pet the watchdog every 70 files so we don't run out of time
+            STM32_pet_watchdog(); 
+        }
+
+        const uint8_t temp_file_info_status = ADCS_get_file_info_telemetry(&file_info);
+        if (temp_file_info_status != 0) {
+            return temp_file_info_status;
+        }
+        if (file_info.file_crc16 == 0 && file_info.file_date_time_msdos == 0 && file_info.file_size == 0) {
+            // if all the file_info parameters are zero, we've reached the end of the file list.
+            LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "End of file list reached at index %d.", i);
+            return 6;
+        }
+    }
+
+    const uint8_t file_info_status = ADCS_get_file_info_telemetry(&file_info);
+    if (file_info_status != 0) {
+        return file_info_status;
+    }
+    if (file_info.file_type != ADCS_FILE_TYPE_BMP_IMAGE) {
+        LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Index %d does not refer to a BMP image.", i);
+        return 7;
+    }
+
+    const uint8_t convert_status = ADCS_convert_to_jpg(file_info.file_counter, quality_factor, white_balance);
+
+    return convert_status;
+}
+
+/// @brief Given the CRC16 checksum of a file on the SD card, convert that file to a JPG image.
+/// @param[in] file_checksum The checksum of the file.
+/// @param[in] quality_factor Amount of compression and data loss; 1 is the most, 100 is the least
+/// @param[in] white_balance White balance
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred.
+uint8_t ADCS_convert_sd_file_bmp_to_jpg_by_checksum(uint16_t file_checksum, uint8_t quality_factor, uint8_t white_balance) {
+
+    const uint32_t function_start_time = HAL_GetTick();
+    
+    ADCS_file_info_struct_t file_info;
+
+    // get the required File Type and Counter parameters about the file to erase
+
+    const uint8_t reset_pointer_status = ADCS_reset_file_list_read_pointer();
+    HAL_Delay(200);
+    if (reset_pointer_status != 0) {
+        // to avoid interference from the EPS, do a separate ack for these commands
+        ADCS_cmd_ack_struct_t ack_status;
+        ADCS_cmd_ack(&ack_status);
+        if (ack_status.error_flag != 0) {
+            return ack_status.error_flag;
+        }
+    }
+
+    for (uint16_t i = 0; i < 255; i++) {
+        const uint8_t temp_file_info_status = ADCS_get_file_info_telemetry(&file_info);
+        if (temp_file_info_status != 0) {
+            return temp_file_info_status;
+        }
+        if (file_info.file_crc16 == 0 && file_info.file_date_time_msdos == 0 && file_info.file_size == 0) {
+            // if all the file_info parameters are zero, we've reached the end of the file list.
+            LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "End of file list reached at index %d.", i);
+            return 6;
+        }
+        if (file_info.file_crc16 == file_checksum) {
+            // this is the correct file
+            if (file_info.file_type != ADCS_FILE_TYPE_BMP_IMAGE) {
+                LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Checksum %x does not refer to a BMP image.", file_checksum);
+                return 7;
+            }
+            break;
+        }
+
+        const uint8_t advance_pointer_status = ADCS_advance_file_list_read_pointer();
+        
+        if (HAL_GetTick() - function_start_time > ADCS_FILE_POINTER_TIMEOUT_MS) {
+            return 7;
+        }
+        
+        HAL_Delay(200);
+        if (advance_pointer_status != 0) {
+            // to avoid interference from the EPS, do a separate ack for these commands
+            ADCS_cmd_ack_struct_t ack_status;
+            ADCS_cmd_ack(&ack_status);
+            if (ack_status.error_flag != 0) {
+                return ack_status.error_flag;
+            }
+        }
+
+        if (i % 70 == 0) {
+            // pet the watchdog every 70 files so we don't run out of time
+            STM32_pet_watchdog(); 
+        }
+
+        if (i > 255) {
+            LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE), "File index is greater than 255. Aborting...");
+            return 73;
+        }
+    }
+
+    const uint8_t file_info_status = ADCS_get_file_info_telemetry(&file_info);
+    if (file_info_status != 0) {
+        return file_info_status;
+    }
+
+    const uint8_t convert_status = ADCS_convert_to_jpg(file_info.file_counter, quality_factor, white_balance);
+
+    return convert_status;
+}
+
+
+/// @brief Instruct the ADCS to execute the ADCS_get_wheel_currents command.
+/// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_get_wheel_currents(ADCS_wheel_currents_struct_t *output_struct) {
+    uint8_t data_length = 6;
+    uint8_t data_received[data_length]; 
+
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_WHEEL_CURRENTS_XYZ, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
+
+    ADCS_pack_to_wheel_currents_struct(data_received, output_struct);
+
+    return tlm_status;
+}
+
+/// @brief Instruct the ADCS to execute the ADCS_get_cubesense_currents command.
+/// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_get_cubesense_currents(ADCS_cubesense_currents_struct_t *output_struct) {
+    uint8_t data_length = 8;
+    uint8_t data_received[data_length]; 
+
+    const uint8_t tlm_status_1 = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_CUBESENSE1_CURRENT_MEASUREMENTS, &data_received[0], data_length, ADCS_INCLUDE_CHECKSUM);
+
+    if (tlm_status_1 != 0) {
+        return tlm_status_1;
+    }
+
+    const uint8_t tlm_status_2 = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_CUBESENSE2_CURRENT_MEASUREMENTS, &data_received[data_length / 2], data_length, ADCS_INCLUDE_CHECKSUM);
+
+    ADCS_pack_to_cubesense_currents_struct(data_received, output_struct);
+
+    return tlm_status_2;
+}
+
+/// @brief Instruct the ADCS to execute the ADCS_get_misc_currents command.
+/// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_get_misc_currents(ADCS_misc_currents_struct_t *output_struct) {
+    uint8_t data_length = 6;
+    uint8_t data_received[data_length]; 
+
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_ADCS_MISC_CURRENT_MEASUREMENTS, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
+
+    ADCS_pack_to_misc_currents_struct(data_received, output_struct);
+
+    return tlm_status;
+}
+
+/// @brief Instruct the ADCS to execute the ADCS_get_jpg_conversion_progress command.
+/// @param output_struct Pointer to struct in which to place packed ADCS telemetry data
+/// @return 0 if successful, non-zero if a HAL or ADCS error occurred in transmission.
+uint8_t ADCS_get_jpg_conversion_progress(ADCS_conversion_progress_struct_t *output_struct) {
+    uint8_t data_length = 6;
+    uint8_t data_received[data_length]; 
+
+    const uint8_t tlm_status = ADCS_i2c_request_telemetry_and_check(ADCS_TELEMETRY_CUBEACP_JPG_CONVERSION_PROGRESS, data_received, data_length, ADCS_INCLUDE_CHECKSUM);
+
+    ADCS_pack_to_conversion_progress_struct(data_received, output_struct);
+
+    return tlm_status;
 }

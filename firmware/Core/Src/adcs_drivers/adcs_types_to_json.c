@@ -1214,8 +1214,8 @@ uint8_t ADCS_unix_time_ms_TO_json(const uint64_t *data, char json_output_str[], 
     return 0;
 }
 
-uint8_t ADCS_sd_log_config_struct_TO_json(const ADCS_sd_log_config_struct *data, char json_output_str[], uint16_t json_output_str_size) {
-        if (data == NULL || json_output_str == NULL || json_output_str_size < 152) {
+uint8_t ADCS_sd_log_config_struct_t_TO_json(const ADCS_sd_log_config_struct_t *data, char json_output_str[], uint16_t json_output_str_size) {
+    if (data == NULL || json_output_str == NULL || json_output_str_size < 152) {
         return 1; // Error: invalid input
     }
     int16_t snprintf_ret = snprintf(json_output_str, json_output_str_size,
@@ -1231,5 +1231,69 @@ uint8_t ADCS_sd_log_config_struct_TO_json(const ADCS_sd_log_config_struct *data,
         return 3; // Error: string buffer too short
     }
     
+    return 0;
+}
+
+uint8_t ADCS_wheel_currents_struct_TO_json(const ADCS_wheel_currents_struct_t *data, char json_output_str[], uint16_t json_output_str_size) {
+    if (data == NULL || json_output_str == NULL || json_output_str_size < 50) {
+        return 1; // invalid input
+    }
+
+    const int16_t snprintf_ret = snprintf(json_output_str, json_output_str_size,
+        "{\"wheel1_current_uA\":%lu,\"wheel2_current_uA\":%lu,\"wheel3_current_uA\":%lu}",
+        (uint32_t)data->wheel1_current_microamps,
+        (uint32_t)data->wheel2_current_microamps,
+        (uint32_t)data->wheel3_current_microamps);
+
+    if (snprintf_ret < 0) {
+        return 2; // snprintf encoding error
+    }
+    if (snprintf_ret >= json_output_str_size) {
+        return 3; // output buffer too short
+    }
+
+    return 0;
+}
+
+uint8_t ADCS_cubesense_currents_struct_TO_json(const ADCS_cubesense_currents_struct_t *data, char json_output_str[], uint16_t json_output_str_size) {
+    if (data == NULL || json_output_str == NULL || json_output_str_size < 150) {
+        return 1;
+    }
+
+    const int16_t snprintf_ret = snprintf(json_output_str, json_output_str_size,
+        "{\"csense1_3v3_uA\":%lu,\"csense1_sram_uA\":%lu,\"csense2_3v3_uA\":%lu,\"csense2_sram_uA\":%lu}",
+        (uint32_t)data->cubesense1_3v3_current_microamps,
+        (uint32_t)data->cubesense1_sram_current_microamps,
+        (uint32_t)data->cubesense2_3v3_current_microamps,
+        (uint32_t)data->cubesense2_sram_current_microamps);
+
+    if (snprintf_ret < 0) {
+        return 2; // snprintf encoding error
+    }
+    if (snprintf_ret >= json_output_str_size) {
+        return 3; // output buffer too short
+    }
+
+    return 0;
+}
+
+uint8_t ADCS_misc_currents_struct_TO_json(const ADCS_misc_currents_struct_t *data, char json_output_str[], uint16_t json_output_str_size) {
+    if (data == NULL || json_output_str == NULL || json_output_str_size < 150) {
+        return 1;
+    }
+
+    const int16_t snprintf_ret = snprintf(json_output_str, json_output_str_size,
+        "{\"cubestar_current_uA\":%lu,\"torquer_current_uA\":%lu,\"cubestar_temp_mC\":%d}",
+        (uint32_t)data->cubestar_current_microamps,
+        (uint32_t)data->torquer_current_microamps,
+        (int)data->cubestar_mcu_temperature_mdeg_celsius);
+
+    if (snprintf_ret < 0) {
+        return 2; // snprintf encoding error
+    }
+    if (snprintf_ret >= json_output_str_size) {
+        return 3; // output buffer too short
+    }
+
     return 0;
 }

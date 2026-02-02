@@ -52,6 +52,9 @@ uint8_t ADCS_acp_execution_struct_TO_json(const ADCS_acp_execution_state_struct_
 uint8_t ADCS_current_state_1_struct_TO_json(const ADCS_current_state_1_struct_t *data, char json_output_str[], uint16_t json_output_str_size);
 uint8_t ADCS_raw_star_tracker_struct_TO_json(const ADCS_raw_star_tracker_struct_t *data, char json_output_str[], uint16_t json_output_str_size);
 uint8_t ADCS_unix_time_ms_TO_json(const uint64_t *data, char json_output_str[], uint16_t json_output_str_size);
-uint8_t ADCS_sd_log_config_struct_TO_json(const ADCS_sd_log_config_struct *data, char json_output_str[], uint16_t json_output_str_size);
+uint8_t ADCS_sd_log_config_struct_t_TO_json(const ADCS_sd_log_config_struct_t *data, char json_output_str[], uint16_t json_output_str_size);
+uint8_t ADCS_wheel_currents_struct_TO_json(const ADCS_wheel_currents_struct_t *data, char json_output_str[], uint16_t json_output_str_size);
+uint8_t ADCS_cubesense_currents_struct_TO_json(const ADCS_cubesense_currents_struct_t *data, char json_output_str[], uint16_t json_output_str_size);
+uint8_t ADCS_misc_currents_struct_TO_json(const ADCS_misc_currents_struct_t *data, char json_output_str[], uint16_t json_output_str_size);
 
 #endif /* INC_ADCS_TYPES_TO_JSON_H_ */

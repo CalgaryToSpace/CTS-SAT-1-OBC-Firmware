@@ -2080,7 +2080,7 @@ uint8_t TCMDEXEC_adcs_get_sd_log_config(const char *args_str,
         return 1;
     }
 
-    ADCS_sd_log_config_struct result_struct;
+    ADCS_sd_log_config_struct_t result_struct;
     const uint8_t status = ADCS_get_sd_log_config((uint8_t) which_log, &result_struct); 
     
     if (status != 0) {
@@ -2089,7 +2089,7 @@ uint8_t TCMDEXEC_adcs_get_sd_log_config(const char *args_str,
         return 1;
     }
 
-    const uint8_t result_json = ADCS_sd_log_config_struct_TO_json(
+    const uint8_t result_json = ADCS_sd_log_config_struct_t_TO_json(
         &result_struct, response_output_buf, response_output_buf_len);
 
     if (result_json != 0) {
@@ -2954,4 +2954,197 @@ uint8_t TCMDEXEC_adcs_exit_bootloader(const char *args_str,
 
     return 0;
 
+}
+
+/// @brief Telecommand: Instruct the ADCS to convert an SD card file to JPG format
+/// @param args_str 
+///     - Arg 0: Index of the file to convert
+///     - Arg 1: Quality factor (1 is the most compressed and lossy, 100 is the least)
+///     - Arg 2: White balance
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_convert_to_jpg_by_index(const char *args_str, 
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    // parse file index argument
+    uint64_t arguments[3];
+    for (uint8_t i = 0; i < 3; i++) {
+        uint8_t extract_status = TCMD_extract_uint64_arg(args_str, strlen(args_str), i, &arguments[i]);
+        if (extract_status != 0) {
+            snprintf(response_output_buf, response_output_buf_len,
+                "Telecommand argument extraction failed in position %d (err %d)", i, extract_status);
+            return 1;
+        }
+    }
+
+    const uint8_t status = ADCS_convert_sd_file_bmp_to_jpg_by_index((uint16_t) arguments[0], (uint8_t) arguments[1], (uint8_t) arguments[2]);
+    if (status != 0) {
+        return status;
+    }
+
+    ADCS_conversion_progress_struct_t conversion_progress;
+    uint8_t tries = 0;
+    do {
+        // keep checking to see if the conversion has finished
+        const uint8_t progress_status = ADCS_get_jpg_conversion_progress(&conversion_progress);
+        if (progress_status != 0) {
+            return progress_status;
+        }
+        if (tries >= ADCS_JPG_CONVERT_TIMEOUT_TRIES) {
+            LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
+                "ADCS timed out waiting for conversion to complete."); 
+            return 7;
+        }
+        tries++;
+        HAL_Delay(ADCS_JPG_CONVERSION_POLLING_INTERVAL_MS);
+    } while (conversion_progress.conversion_result == ADCS_CONVERSION_RESULT_BUSY || 
+            conversion_progress.conversion_result == ADCS_CONVERSION_RESULT_NOT_CONVERTED_YET);
+    
+    LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
+        "File successfully converted and saved. File counter: %d.", 
+        conversion_progress.output_file_counter); 
+
+    return status;
+}
+
+/// @brief Telecommand: Instruct the ADCS to convert an SD card file to JPG format
+/// @param args_str 
+///     - Arg 0: The CRC16 checksum of the file as two hex bytes in order (e.g. "07 ff" becomes 0x07ff)
+///     - Arg 1: Quality factor (1 is the most compressed and lossy, 100 is the least)
+///     - Arg 2: White balance
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_convert_to_jpg_by_checksum(const char *args_str, 
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+
+    // parse checksum argument
+    uint8_t checksum[2];
+    uint16_t checksum_length;
+    TCMD_extract_hex_array_arg(args_str, 0, &checksum[0], 2, &checksum_length);
+    if (checksum_length != 2) {
+        return 5;
+    }
+    uint16_t crc16 = (checksum[0] << 8) | checksum[1];
+
+    uint64_t arguments[2];
+    // parse integer arguments
+    for (uint8_t i = 0; i < 2; i++) {
+        uint8_t extract_status = TCMD_extract_uint64_arg(args_str, strlen(args_str), i + 1, &arguments[i]);
+        if (extract_status != 0) {
+            snprintf(response_output_buf, response_output_buf_len,
+                "Telecommand argument extraction failed in position %d (err %d)", i + 1, extract_status);
+            return 1;
+        }
+    }
+
+    const uint8_t status = ADCS_convert_sd_file_bmp_to_jpg_by_checksum(crc16, (uint8_t) arguments[0], (uint8_t) arguments[1]);
+    if (status != 0) {
+        return status;
+    }
+
+    ADCS_conversion_progress_struct_t conversion_progress;
+    uint8_t tries = 0;
+    do {
+        // keep checking to see if the conversion has finished
+        const uint8_t progress_status = ADCS_get_jpg_conversion_progress(&conversion_progress);
+        if (progress_status != 0) {
+            return progress_status;
+        }
+        if (tries >= ADCS_JPG_CONVERT_TIMEOUT_TRIES) {
+            LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
+                "ADCS timed out waiting for conversion to complete."); 
+            return 7;
+        }
+        tries++;
+        HAL_Delay(ADCS_JPG_CONVERSION_POLLING_INTERVAL_MS);
+    } while (conversion_progress.conversion_result == ADCS_CONVERSION_RESULT_BUSY || 
+            conversion_progress.conversion_result == ADCS_CONVERSION_RESULT_NOT_CONVERTED_YET);
+    
+    LOG_message(LOG_SYSTEM_ADCS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
+        "File successfully converted and saved. File counter: %d.", 
+        conversion_progress.output_file_counter); 
+
+    return status;
+}
+
+/// @brief Telecommand: Request the reaction wheel current values from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_get_wheel_currents(const char *args_str, 
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    ADCS_wheel_currents_struct_t packed_struct;
+    const uint8_t status = ADCS_get_wheel_currents(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_wheel_currents_struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
+    return status;
+}                    
+                        
+/// @brief Telecommand: Request the CubeSense current values from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_get_cubesense_currents(const char *args_str, 
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    ADCS_cubesense_currents_struct_t packed_struct;
+    const uint8_t status = ADCS_get_cubesense_currents(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_cubesense_currents_struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
+    return status;
+}                    
+                  
+/// @brief Telecommand: Request the CubeStar (unused) and magnetorquer current values as well as the microcontroller temperature value from the ADCS
+/// @param args_str 
+///     - No arguments for this command
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_adcs_get_misc_currents(const char *args_str, 
+                        char *response_output_buf, uint16_t response_output_buf_len) {
+    
+    ADCS_misc_currents_struct_t packed_struct;
+    const uint8_t status = ADCS_get_misc_currents(&packed_struct);
+    
+    if (status != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request failed (err %d)", status);
+        return 1;
+    }
+
+    const uint8_t result_json = ADCS_misc_currents_struct_TO_json(
+        &packed_struct, response_output_buf, response_output_buf_len);
+
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "ADCS telemetry request JSON failed (err %d)", result_json);
+        return 2;
+    }
+
+    return status;
 }
