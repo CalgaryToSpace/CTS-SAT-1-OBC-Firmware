@@ -7,6 +7,11 @@
 uint8_t TCMDEXEC_hello_world(const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len);
 
+uint8_t TCMDEXEC_obc_firmware_version(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+);
+
 uint8_t TCMDEXEC_core_system_stats(const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len);
 
