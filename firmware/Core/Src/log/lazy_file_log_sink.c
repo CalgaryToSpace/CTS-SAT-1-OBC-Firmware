@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include "log/log_a_logging_error.h"
 #include "log/lazy_file_log_sink.h"
 #include "log/log.h"
 #include "timekeeping/timekeeping.h"
@@ -42,9 +43,6 @@ static int8_t LOG_close_current_log_file(void) {
 
 /// @brief Opens a new timestamped log file, and sets it as the current log file.
 static int8_t LOG_open_new_log_file_and_set_as_current(void) {
-
-    extern LOG_file_context_struct_t LOG_current_log_file_ctx; // from log_sinks.c
-
     LFS_ensure_mounted();
 
     // Close the current log file if open.
@@ -60,19 +58,13 @@ static int8_t LOG_open_new_log_file_and_set_as_current(void) {
     char filename[32];
     snprintf(filename, sizeof(filename), "logs/%s.log", timestamp_str);
 
-    LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_FILE), 
-        " opening new log file: %s", filename
-    );
-
     // Open the new log file.
     const int16_t result = lfs_file_opencfg(
         &LFS_filesystem, &LOG_current_log_file_ctx.file, filename, 
         LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND, &LFS_file_cfg
     );
     if (result != 0) {
-        LOG_message(LOG_SYSTEM_LOG, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE), 
-            "failed to open new log file: %d", result);
-        return result;
+        LOG_log_a_logging_error_if_file_is_broken("Error opening new log file.");
     }
 
     // Set metadata for the new log file.
@@ -84,9 +76,6 @@ static int8_t LOG_open_new_log_file_and_set_as_current(void) {
 
 
 static int8_t LOG_ensure_current_log_file_is_open() {
-
-    extern LOG_file_context_struct_t LOG_current_log_file_ctx; // from log_sinks.c
-
     if (!LOG_current_log_file_ctx.is_open) {
         return LOG_open_new_log_file_and_set_as_current();
     }
@@ -120,9 +109,6 @@ void LOG_to_file_lazy(const char filename[], const char msg[]) {
 
 /// @brief Syncs the current log file.
 int8_t LOG_sync_current_log_file(void) {
-
-    extern LOG_file_context_struct_t LOG_current_log_file_ctx; // from log_sinks.c
-
     LFS_ensure_mounted();
     LOG_ensure_current_log_file_is_open();
 
@@ -145,14 +131,17 @@ void LOG_subtask_handle_sync_and_close_of_current_log_file() {
         (TIME_get_current_unix_epoch_time_ms() - LOG_current_log_file_ctx.timestamp_of_last_sync) > LOG_FILE_SYNC_INTERVAL_MS
     );
     if (sync_interval_has_elapsed) {
-        // TODO: benchmarking stuff to delete here.
-        
-        uint32_t start_time = HAL_GetTick();
+        // Log file flushing benchmarking here.
+        const uint32_t start_time = HAL_GetTick();
         
         LOG_sync_current_log_file();
 
-        LOG_message(LOG_SYSTEM_EPS, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_FILE),
-            "Log file synced in %ld ms", (HAL_GetTick() - start_time));
+        // Note: This log message is safe because it occurs in an RTOS task, and not as a sub-log
+        // of a failed logging procedure.
+        LOG_message(
+            LOG_SYSTEM_LOG, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_FILE),
+            "Log file synced in %ld ms", (HAL_GetTick() - start_time)
+        );
     }
 
 
@@ -160,14 +149,17 @@ void LOG_subtask_handle_sync_and_close_of_current_log_file() {
         (TIME_get_current_unix_epoch_time_ms() - LOG_current_log_file_ctx.timestamp_of_last_close) > LOG_FILE_CLOSE_INTERVAL_MS
     );
     if (close_interval_has_elapsed) {
-        // TODO: benchmarking stuff to delete here.
-
-        uint32_t start_time = HAL_GetTick();
+        // Log file closing benchmarking here.
+        const uint32_t start_time = HAL_GetTick();
 
         LOG_close_current_log_file();
 
-        LOG_message(LOG_SYSTEM_EPS, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_FILE),
-            "Log file closed in %ld ms", (HAL_GetTick() - start_time));
+        // Note: This log message is safe because it occurs in an RTOS task, and not as a sub-log
+        // of a failed logging procedure.
+        LOG_message(
+            LOG_SYSTEM_LOG, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_FILE),
+            "Log file closed in %ld ms", (HAL_GetTick() - start_time)
+        );
 
         LOG_open_new_log_file_and_set_as_current();
     }
