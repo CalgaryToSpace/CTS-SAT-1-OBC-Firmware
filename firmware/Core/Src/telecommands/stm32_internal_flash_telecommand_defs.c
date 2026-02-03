@@ -201,8 +201,7 @@ uint8_t TCMDEXEC_stm32_internal_flash_calculate_sha256(
     uint16_t response_output_buf_len
 ) {
     uint64_t address_u64 = 0;
-    const uint8_t parse_address_res =
-        TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &address_u64);
+    const uint8_t parse_address_res = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &address_u64);
     if (parse_address_res != 0) {
         snprintf(response_output_buf, response_output_buf_len,
                  "Error Parsing Arg 0: %u", parse_address_res);
@@ -210,18 +209,17 @@ uint8_t TCMDEXEC_stm32_internal_flash_calculate_sha256(
     }
 
     uint64_t length_u64 = 0;
-    const uint8_t parse_length_res =
-        TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &length_u64);
+    const uint8_t parse_length_res = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &length_u64);
     if (parse_length_res != 0) {
         snprintf(response_output_buf, response_output_buf_len,
                  "Error Parsing Arg 1: %u", parse_length_res);
-        return 1;
+        return 2;
     }
 
     if (address_u64 > UINT32_MAX || length_u64 > UINT32_MAX) {
         snprintf(response_output_buf, response_output_buf_len,
                  "Error: Address or length exceeds 32-bit limit");
-        return 1;
+        return 3;
     }
 
     const uint32_t address = (uint32_t)address_u64;
@@ -231,7 +229,7 @@ uint8_t TCMDEXEC_stm32_internal_flash_calculate_sha256(
     if (bank_num == 0) {
         snprintf(response_output_buf, response_output_buf_len,
                  "Error: Address range spans multiple banks or is out of range");
-        return 11;
+        return 9;
     }
 
     uint8_t sha256_dest[32] = {0};
