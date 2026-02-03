@@ -247,12 +247,14 @@ uint8_t TCMDEXEC_stm32_internal_flash_get_active_flash_bank(const char *args_str
 /// - Arg 0: File name to read from LittleFS
 /// - Arg 1: Length to read from the file (in bytes). The maximum length to read is 4096 bytes (4kB).
 /// - Arg 2: Offset within the file to start reading (in bytes)
-/// - Arg 3: Address in internal flash memory to write to (in hex, 8 characters for 32-bit address)
+/// - Arg 3: Address in internal flash memory to write to (in base 10)
 /// @note To use properly:
 ///       - The internal flash memory region must be erased before writing.
 ///       - The address must be in the main flash memory region (0x08000000 to 0x081FFFFF).
 uint8_t TCMDEXEC_stm32_internal_flash_write_file_to_internal_flash(const char *args_str, char *response_output_buf, uint16_t response_output_buf_len)
 {
+    const uint32_t args_str_len = strlen(args_str);
+
     char arg_file_name[LFS_MAX_PATH_LENGTH];
     const uint8_t parse_file_name_result = TCMD_extract_string_arg(args_str, 0, arg_file_name, sizeof(arg_file_name));
     if (parse_file_name_result != 0) {
@@ -265,7 +267,7 @@ uint8_t TCMDEXEC_stm32_internal_flash_write_file_to_internal_flash(const char *a
 
     // Get length of data to read
     uint64_t read_length = 0;
-    const uint8_t parse_length_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &read_length);
+    const uint8_t parse_length_result = TCMD_extract_uint64_arg(args_str, args_str_len, 1, &read_length);
     if (parse_length_result != 0) {
         snprintf(
             response_output_buf,
@@ -286,7 +288,7 @@ uint8_t TCMDEXEC_stm32_internal_flash_write_file_to_internal_flash(const char *a
     }
     // Get offset to read from in file
     uint64_t read_offset = 0;
-    const uint8_t parse_offset_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 2, &read_offset);
+    const uint8_t parse_offset_result = TCMD_extract_uint64_arg(args_str, args_str_len, 2, &read_offset);
     if (parse_offset_result != 0) {
         snprintf(
             response_output_buf,
@@ -295,12 +297,10 @@ uint8_t TCMDEXEC_stm32_internal_flash_write_file_to_internal_flash(const char *a
         return 4;
     }
 
-    // Get address to write to (in hex)
-    uint8_t write_address_arr[4] = {0}; // 4 bytes for 32-bit address
-    uint16_t address_arr_result_len = 0;
-    const uint8_t parse_address_result = TCMD_extract_hex_array_arg(
-        args_str, 3, write_address_arr, sizeof(write_address_arr), &address_arr_result_len
-    );
+    // Get address to write to
+    uint64_t write_address = 0;
+    const uint8_t parse_address_result = TCMD_extract_uint64_arg(args_str, args_str_len, 3, &write_address);
+    
     if (parse_address_result != 0) {
         snprintf(
             response_output_buf,
@@ -308,10 +308,6 @@ uint8_t TCMDEXEC_stm32_internal_flash_write_file_to_internal_flash(const char *a
             "Error parsing write address arg: Error %d", parse_address_result);
         return 5;
     }
-    const uint32_t write_address = write_address_arr[0] << 24 |
-                                   write_address_arr[1] << 16 |
-                                   write_address_arr[2] << 8 |
-                                   write_address_arr[3]; // Convert to 32-bit address
 
     if (IS_FLASH_MAIN_MEM_ADDRESS(write_address) == false) {
         // Address is not in the main flash memory region
@@ -329,9 +325,9 @@ uint8_t TCMDEXEC_stm32_internal_flash_write_file_to_internal_flash(const char *a
 
     // Read the file from LittleFS
     static uint8_t file_content[FLASH_PAGE_SIZE]; // Max size is 4kB
-    memset(file_content, 0, read_length);
+    memset(file_content, 0, sizeof(file_content));
     const int32_t bytes_read = LFS_read_file(arg_file_name, read_offset, file_content, read_length);
-    if (bytes_read < 0) {
+    if (bytes_read <= 0) { // consider empty file as invalid
         snprintf(response_output_buf, response_output_buf_len, "Error reading file: %ld", bytes_read);
         return 7;
     }
