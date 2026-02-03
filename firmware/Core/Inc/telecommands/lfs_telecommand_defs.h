@@ -53,5 +53,4 @@ uint8_t TCMDEXEC_fs_demo_write_then_read(const char *args_str,
 uint8_t TCMDEXEC_fs_benchmark_write_read(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len);
 
-
 #endif /* INCLUDE_GUARD__LFS_TELECOMMAND_DEFS_H__ */

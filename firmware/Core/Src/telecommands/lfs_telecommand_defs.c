@@ -13,6 +13,7 @@
 #include "telecommand_exec/telecommand_definitions.h"
 #include "telecommand_exec/telecommand_args_helpers.h"
 #include "transforms/arrays.h"
+#include "stm32/stm32_internal_flash_drivers.h"
 
 uint8_t TCMDEXEC_fs_format_storage(
     const char *args_str,
