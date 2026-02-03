@@ -1,6 +1,7 @@
 #include <string.h>
 
 #include "stm32/stm32_internal_flash_drivers.h"
+#include "crypto/sha256.h"
 
 #include "stm32l4r5xx.h"
 #include "stm32l4xx_hal.h" // must include this before stm32l4xx_hal_flash.h
@@ -221,4 +222,68 @@ uint8_t STM32_internal_flash_set_active_flash_bank(uint8_t wanted_active_flash_b
 uint8_t STM32_internal_flash_get_active_flash_bank()
 {
     return (READ_BIT(FLASH->OPTR, FLASH_OPTR_BFB2) >> FLASH_OPTR_BFB2_Pos) + 1;
+}
+
+
+/// @brief Data-only operation to determine what bank (1 or 2) the address is in.
+/// @param address 
+/// @param length 
+/// @return 1 if the range is completely in BANK_1. 2 if the range is completely in BANK_2.
+///     0 if the range falls outside of the banks, or overlaps the two banks.
+uint8_t STM32_internal_flash_what_bank_is_this_address(uint32_t address, uint32_t length) {
+    // Chunk must be entirely within a single flash bank.
+    const uint32_t end_address = address + length - 1;
+    const uint8_t in_bank1 =
+        (address >= FLASH_BASE) &&
+        (end_address <= FLASH_BANK1_END);
+
+    const uint8_t in_bank2 =
+        (address >= (FLASH_BANK1_END+1)) &&
+        (end_address <= FLASH_BANK2_END);
+
+    if (in_bank1 && !in_bank2) {
+        return 1;
+    }
+    if (!in_bank1 && in_bank2) {
+        return 2;
+    }
+    return 0; // Overlaps boundaries or outside of range.
+}
+
+/// @brief Calculates the SHA256 hash of a chunk of STM32 internal flash
+/// @param address Start address in flash memory
+/// @param length Number of bytes to hash
+/// @param hash Output buffer (must be 32 bytes)
+/// @return 0 on success, >0 on error. 30 on invalid ranges.
+uint8_t STM32_internal_flash_calculate_sha256(
+    uint32_t address,
+    uint32_t length,
+    uint8_t hash[32]
+) {
+    if (hash == NULL) {
+        return 1;
+    }
+
+    if (length == 0) {
+        return 2;
+    }
+    
+    // Chunk must be entirely within a single flash bank.
+    const uint8_t bank_num = STM32_internal_flash_what_bank_is_this_address(address, length);
+    if (bank_num == 0) {
+        return 30;
+    }
+
+    SHA256_CTX ctx;
+    sha256_init(&ctx);
+
+    // Flash is memory-mapped; read directly.
+    const uint8_t *flash_ptr = (const uint8_t *)address;
+
+    // Feed the data incrementally to avoid large RAM usage.
+    sha256_update(&ctx, flash_ptr, length);
+
+    sha256_final(&ctx, hash);
+
+    return 0;
 }

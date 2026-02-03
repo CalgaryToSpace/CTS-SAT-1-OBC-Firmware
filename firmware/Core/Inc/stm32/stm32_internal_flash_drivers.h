@@ -37,4 +37,12 @@ uint8_t STM32_internal_flash_set_active_flash_bank(uint8_t wanted_active_flash_b
 
 uint8_t STM32_internal_flash_get_active_flash_bank();
 
+uint8_t STM32_internal_flash_what_bank_is_this_address(uint32_t address, uint32_t length);
+
+uint8_t STM32_internal_flash_calculate_sha256(
+    uint32_t address,
+    uint32_t length,
+    uint8_t hash[32]
+);
+
 #endif // INCLUDE_GUARD__STM32_INTERNAL_FLASH_DRIVERS_H__

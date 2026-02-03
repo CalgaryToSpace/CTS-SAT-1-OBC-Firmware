@@ -1224,8 +1224,14 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
-    
 
+    {
+        .tcmd_name = "stm32_internal_flash_calculate_sha256",
+        .tcmd_func = TCMDEXEC_stm32_internal_flash_calculate_sha256,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
+    },
+    
     // ****************** END SECTION: stm32_internal_flash_telecommand_defs ******************
 
     // ****************** SECTION: antenna_telecommand_defs ******************

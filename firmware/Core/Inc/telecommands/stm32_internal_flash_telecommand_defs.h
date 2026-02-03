@@ -19,5 +19,13 @@ uint8_t TCMDEXEC_stm32_internal_flash_set_active_flash_bank(const char *args_str
                                                        char *response_output_buf, uint16_t response_output_buf_len);
 
 uint8_t TCMDEXEC_stm32_internal_flash_get_active_flash_bank(const char *args_str,
-                                                       char *response_output_buf, uint16_t response_output_buf_len);                                                       
+                                                       char *response_output_buf, uint16_t response_output_buf_len);
+
+uint8_t TCMDEXEC_stm32_internal_flash_calculate_sha256(
+    const char *args_str,
+    char *response_output_buf,
+    uint16_t response_output_buf_len
+);
+
+
 #endif /* INCLUDE_GUARD_STM32_INTERNAL_FLASH_TELECOMMAND_DEFS_H */

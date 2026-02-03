@@ -1,6 +1,7 @@
 #include "telecommands/stm32_internal_flash_telecommand_defs.h"
 #include "telecommand_exec/telecommand_args_helpers.h"
 #include "stm32/stm32_internal_flash_drivers.h"
+#include "transforms/arrays.h"
 
 #include "stm32l4xx_hal.h"
 #include <stdio.h>
@@ -180,5 +181,81 @@ uint8_t TCMDEXEC_stm32_internal_flash_get_active_flash_bank(const char *args_str
     const uint8_t stm32_internal_active_flash_bank = STM32_internal_flash_get_active_flash_bank();
 
     snprintf(response_output_buf, response_output_buf_len, "Active Bank: %u", stm32_internal_active_flash_bank);
+    return 0;
+}
+
+
+/// @brief Calculates the SHA256 hash of a range of STM32 internal flash.
+/// @param args_str
+/// - Arg 0: Start address in flash memory as uint32_t
+/// - Arg 1: Number of bytes to hash as uint32_t
+/// @param response_output_buf Outputs the SHA256 hash as hex (wrapped in JSON)
+/// @return 0 on success, >0 on error
+uint8_t TCMDEXEC_stm32_internal_flash_calculate_sha256(
+    const char *args_str,
+    char *response_output_buf,
+    uint16_t response_output_buf_len
+) {
+    uint64_t address_u64 = 0;
+    const uint8_t parse_address_res =
+        TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &address_u64);
+    if (parse_address_res != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+                 "Error Parsing Arg 0: %u", parse_address_res);
+        return 1;
+    }
+
+    uint64_t length_u64 = 0;
+    const uint8_t parse_length_res =
+        TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &length_u64);
+    if (parse_length_res != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+                 "Error Parsing Arg 1: %u", parse_length_res);
+        return 1;
+    }
+
+    if (address_u64 > UINT32_MAX || length_u64 > UINT32_MAX) {
+        snprintf(response_output_buf, response_output_buf_len,
+                 "Error: Address or length exceeds 32-bit limit");
+        return 1;
+    }
+
+    const uint32_t address = (uint32_t)address_u64;
+    const uint32_t length = (uint32_t)length_u64;
+
+    const uint8_t bank_num = STM32_internal_flash_what_bank_is_this_address(address, length);
+    if (bank_num == 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+                 "Error: Address range spans multiple banks or is out of range");
+        return 11;
+    }
+
+    uint8_t sha256_dest[32] = {0};
+    const uint8_t res =
+        STM32_internal_flash_calculate_sha256(
+            address,
+            length,
+            sha256_dest
+        );
+
+    if (res != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+                 "Error calculating SHA256: %u", res);
+        return 10;
+    }
+
+    // Convert the SHA256 hash to a little-endian hex string.
+    char hex_hash_str[100]; // Should be 64 chars.
+    GEN_byte_array_to_hex_str(sha256_dest, sizeof(sha256_dest), hex_hash_str, sizeof(hex_hash_str));
+
+    // Format like JSON.
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "{\"sha256\":\"%s\",\"offset\":%lu,\"length\":%lu,\"bank\":%u}",
+        hex_hash_str,
+        address,
+        length,
+        bank_num
+    );
     return 0;
 }
