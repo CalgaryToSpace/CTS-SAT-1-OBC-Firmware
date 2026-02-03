@@ -7,6 +7,7 @@
 #include "rtos_tasks/rtos_tasks_rx_telecommands.h"
 #include "comms_drivers/rf_antenna_switch.h"
 #include "comms_drivers/comms_tx.h"
+#include "log/lazy_file_log_sink.h"
 
 #include "cmsis_os.h"
 
@@ -135,6 +136,9 @@ void TASK_background_upkeep(void *argument) {
         osDelay(10); // Yield.
 
         subtask_update_rf_switch();
+        osDelay(10); // Yield.
+
+        LOG_subtask_handle_sync_and_close_of_current_log_file();
         osDelay(10); // Yield.
         
         osDelay(3000);

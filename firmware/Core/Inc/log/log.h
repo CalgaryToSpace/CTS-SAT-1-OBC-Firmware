@@ -17,7 +17,8 @@ typedef enum {
 typedef enum {
     LOG_SINK_NONE = 0,
     LOG_SINK_UHF_RADIO = 1 << 0,
-    LOG_SINK_FILE = 1 << 1,
+    // TODO: Could test and add a LOG_SINK_FILE_EAGER.
+    LOG_SINK_FILE = 1 << 1, // This is now the LAZY file sink option.
     LOG_SINK_UMBILICAL_UART = 1 << 2,
     LOG_SINK_UNKNOWN = 1 << 3,
     LOG_SINK_ALL = (1 << 4) - 1,
