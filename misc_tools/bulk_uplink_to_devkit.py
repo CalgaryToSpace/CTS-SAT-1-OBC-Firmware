@@ -3,7 +3,7 @@
 Run with:
 
 ```bash
-uv run misc_tools/bulk_uplink_to_devkit.py ./firmware/build/debug/CTS-SAT-1_FW.bin -o firmware.elf --port <uart_port>
+uv run misc_tools/bulk_uplink_to_devkit.py ./firmware/build/debug/CTS-SAT-1_FW.bin -o firmware.bin --port <uart_port>
 
 # Current fastest working settings on UART yields 526 B/s (default settings).
 
