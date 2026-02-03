@@ -38,6 +38,47 @@ uint8_t TCMDEXEC_hello_world(
     return 0;
 }
 
+/// @brief Get the currently-running OBC Firmware Version (build date/time, comment).
+/// @param args_str No arguments.
+/// @return 0 on success (cannot fail).
+uint8_t TCMDEXEC_obc_firmware_version(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+#ifdef __OPTIMIZE__
+    const char* optimize_str = "O";
+#else
+    const char* optimize_str = "O0";
+#endif
+
+#ifdef NDEBUG
+    const char* asserts_str = "off";
+#else
+    const char* asserts_str = "on";
+#endif
+
+    snprintf(
+        response_output_buf,
+        response_output_buf_len,
+        "{"
+        "\"build_date\":\"%s\","
+        "\"build_time\":\"%s\","
+        "\"compiler\":\"%s\","
+        "\"optimize\":\"%s\","
+        "\"asserts\":\"%s\","
+        "\"comment\":\"%s\""
+        "}",
+        __DATE__, // "build_date"
+        __TIME__, // "build_time"
+        __VERSION__, // "compiler"
+        optimize_str, // "optimize"
+        asserts_str, // "asserts" (least-useful one)
+        "dev" // "comment"
+    );
+
+    return 0;
+}
+
 uint8_t TCMDEXEC_core_system_stats(
     const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
