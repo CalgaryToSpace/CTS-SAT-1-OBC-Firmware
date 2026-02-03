@@ -191,6 +191,10 @@ uint8_t TCMDEXEC_stm32_internal_flash_get_active_flash_bank(const char *args_str
 /// - Arg 1: Number of bytes to hash as uint32_t
 /// @param response_output_buf Outputs the SHA256 hash as hex (wrapped in JSON)
 /// @return 0 on success, >0 on error
+/// @note Common useful values:
+/// - Start of BANK_1 (address): 0x08000000 = 134217728
+/// - Start of BANK_2 (address): 0x08100000 = 135266304
+/// - Length of each bank: 0x100000 = 1048576
 uint8_t TCMDEXEC_stm32_internal_flash_calculate_sha256(
     const char *args_str,
     char *response_output_buf,
