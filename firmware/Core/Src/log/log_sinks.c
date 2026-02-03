@@ -12,10 +12,9 @@ extern uint8_t LFS_is_lfs_mounted;
 // due to statically allocated log message buffers
 
 /// @brief Sends a log message to a log file
-/// @param filename full path of the log file
+/// @param filename full path of the system-specific log file - currently not used
 /// @param msg The message to be logged
-void LOG_to_file(const char filename[], const char msg[])
-{
+void LOG_to_file_eager(const char filename[], const char msg[]) {
     if (!LFS_is_lfs_mounted) {
         LOG_to_umbilical_uart("\nError writing to system log file: LFS not mounted\n");
         LOG_to_uhf_radio("\nError writing to system log file: LFS not mounted\n");
