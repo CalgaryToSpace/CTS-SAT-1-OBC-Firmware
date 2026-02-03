@@ -1,5 +1,6 @@
 #include "log/log.h"
 #include "log/log_sinks.h"
+#include "log/lazy_file_log_sink.h"
 #include "debug_tools/debug_uart.h"
 #include "timekeeping/timekeeping.h"
 
@@ -197,9 +198,9 @@ void LOG_message(LOG_system_enum_t system, LOG_severity_enum_t severity, uint32_
         ) {
             switch (sink_config->sink) {
                 case LOG_SINK_FILE:
-                    // Send to log file if subsystem logging is enabled
+                    // Send to log file if subsystem logging is enabled.
                     if (system_config->file_logging_enabled) {
-                        LOG_to_file(system_config->log_file_path, current_log_entry->full_message);
+                        LOG_to_file_lazy(system_config->log_file_path, current_log_entry->full_message);
                     }
                     break;
                 case LOG_SINK_UHF_RADIO:
