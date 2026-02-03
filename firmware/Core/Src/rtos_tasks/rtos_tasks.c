@@ -81,24 +81,33 @@ void TASK_execute_telecommands(void *argument) {
     while (1) {
         // DEBUG_uart_print_str("TASK_execute_telecommands -> top of while(1)\n");
         // Pet the watchdog. Has min and max intervals. This is the nominal place the watchdog is petted.
+        // This is a good place to pet, because it basically says "if the satellite stops responding
+        // (executing telecommands), reboot it".
         STM32_pet_watchdog();
 
-        // Get the next telecommand to execute.
-        const int16_t next_tcmd_slot = TCMD_get_next_tcmd_agenda_slot_to_execute();
-        if (next_tcmd_slot == -1) {
-            // No telecommands to execute.
-            // DEBUG_uart_print_str("No telecommands to execute.\n");
-            osDelay(task_period_for_watchdog_pet_ms);
-            continue;
-        }
+        // Execute [potentially] several commands back-to-back if several are available.
+        // Normally we want to execute a single command, then yield. However, if several commands
+        // are available to execute, then execute them back-to-back with only a very brief yield.
+        // Useful optimization specifically for bulk data uplink (e.g., OTA firmware upgrades).
+        for (uint8_t consecutive_cmd_num = 0; consecutive_cmd_num < 3; consecutive_cmd_num++) {
+            // Get the next telecommand to execute.
+            const int16_t next_tcmd_slot = TCMD_get_next_tcmd_agenda_slot_to_execute();
+            if (next_tcmd_slot == -1) {
+                // No telecommands to execute.
+                // DEBUG_uart_print_str("No telecommands to execute.\n");
+                break;
+            }
 
-        // Execute the telecommand.
-        char response_output_buf[TCMD_MAX_RESPONSE_BUFFER_LENGTH] = {0};
-        TCMD_execute_telecommand_in_agenda(
-            next_tcmd_slot,
-            response_output_buf,
-            sizeof(response_output_buf)
-        );
+            // Execute the telecommand.
+            char response_output_buf[TCMD_MAX_RESPONSE_BUFFER_LENGTH] = {0};
+            TCMD_execute_telecommand_in_agenda(
+                next_tcmd_slot,
+                response_output_buf,
+                sizeof(response_output_buf)
+            );
+
+            osDelay(1); // Very brief yield with consecutive telecommands.
+        }
 
         // Note: Short yield here only; execute all pending telecommands back-to-back.
         osDelay(task_period_for_watchdog_pet_ms);
