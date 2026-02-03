@@ -21,6 +21,7 @@
 uint32_t AX100_uptime_at_last_received_kiss_tcmd_ms = 0;
 
 /// @brief The interval between handling telecommands (parsing and adding to agenda) from the umbilical UART.
+/// @details Any value from 1ms to millions is reasonable. 20ms is a good value for optimized bulk uplink.
 /// Note: Does not include execution.
 uint32_t TCMD_handle_umbilical_tcmds_interval_ms = 400;
 
