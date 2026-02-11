@@ -540,7 +540,7 @@ uint8_t TCMDEXEC_fs_read_file_sha256_hash_json(
     }
 
     // Fetch the full file size.
-    const int32_t file_size_bytes = LFS_file_size(arg_file_name);
+    const int32_t file_size_bytes = LFS_file_size(arg_file_name, 1);
     if (file_size_bytes < 0) {
         snprintf(response_output_buf, response_output_buf_len, "Error getting file size: Err=%ld", file_size_bytes);
         return 3;

@@ -671,7 +671,7 @@ lfs_ssize_t LFS_read_file(const char file_name[], lfs_soff_t offset, uint8_t *re
 /// @param file_name - Pointer to buffer holding the file name to open
 /// @return Returns negative values if read or file open failed, else the
 /// number of bytes in the file
-lfs_ssize_t LFS_file_size(const char file_name[]) {
+lfs_ssize_t LFS_file_size(const char file_name[], uint8_t enable_log_messages) {
     const int8_t mount_result = LFS_ensure_mounted();
     if (mount_result < 0) {
         return mount_result;
@@ -680,18 +680,37 @@ lfs_ssize_t LFS_file_size(const char file_name[]) {
     lfs_file_t file;
     const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_RDONLY, &LFS_file_cfg);
     if (open_result < 0) {
-        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening file: %s", file_name);
+        if (enable_log_messages) {
+            LOG_message(
+                LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE),
+                "Error opening file: %s", file_name
+            );
+        }
         return open_result;
     }
-    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully opened file: %s", file_name);
-
+    if (enable_log_messages) {
+        LOG_message(
+            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
+            "Successfully opened file: %s", file_name
+        );
+    }
     const lfs_ssize_t size = lfs_file_size(&LFS_filesystem, &file);
 
     const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
     if (close_result < 0) {
-        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error closing file: %s", file_name);
+        if (enable_log_messages) {
+            LOG_message(
+                LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE),
+                "Error closing file: %s", file_name
+            );
+        }
         return close_result;
     }
-    LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE), "Successfully closed file: %s", file_name);
+    if (enable_log_messages) {
+        LOG_message(
+            LOG_SYSTEM_LFS, LOG_SEVERITY_NORMAL, LOG_all_sinks_except(LOG_SINK_FILE),
+            "Successfully closed file: %s", file_name
+        );
+    }
     return size;
 }
