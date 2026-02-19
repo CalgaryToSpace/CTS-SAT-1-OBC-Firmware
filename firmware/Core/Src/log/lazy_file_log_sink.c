@@ -11,6 +11,9 @@
 
 #include "main.h"
 
+uint32_t LOG_file_flush_interval_sec = 60; // Nominal: 60 seconds is 1 minute.
+uint32_t LOG_file_rotation_interval_sec = 1800; // Nominal: 1800 seconds is 30 minutes. 
+
 
 typedef struct {
     lfs_file_t file;
@@ -121,14 +124,12 @@ int8_t LOG_sync_current_log_file(void) {
 /// @note This function is meant to be called periodically in an RTOS task.
 /// @note This function can be called very frequently. It tracks its own internal configuration.
 void LOG_subtask_handle_sync_and_close_of_current_log_file() {
-    // TODO: Make these global configs.
-    const uint32_t LOG_FILE_SYNC_INTERVAL_MS = 15000; // 60,000 is 1 minute.
-    const uint32_t LOG_FILE_CLOSE_INTERVAL_MS = 30000; // 300,0000 is 5 minutes
-
     LOG_ensure_current_log_file_is_open();
 
+    // Periodic log file sync/flush.
     const int64_t sync_interval_has_elapsed = (
-        (TIME_get_current_unix_epoch_time_ms() - LOG_current_log_file_ctx.timestamp_of_last_sync) > LOG_FILE_SYNC_INTERVAL_MS
+        (TIME_get_current_unix_epoch_time_ms() - LOG_current_log_file_ctx.timestamp_of_last_sync)
+        > (((uint64_t)LOG_file_flush_interval_sec) * 1000)
     );
     if (sync_interval_has_elapsed) {
         // Log file flushing benchmarking here.
@@ -144,9 +145,10 @@ void LOG_subtask_handle_sync_and_close_of_current_log_file() {
         );
     }
 
-
+    // Periodic log file rotation.
     const int64_t close_interval_has_elapsed = (
-        (TIME_get_current_unix_epoch_time_ms() - LOG_current_log_file_ctx.timestamp_of_last_close) > LOG_FILE_CLOSE_INTERVAL_MS
+        (TIME_get_current_unix_epoch_time_ms() - LOG_current_log_file_ctx.timestamp_of_last_close)
+        > (((uint64_t)LOG_file_rotation_interval_sec) * 1000)
     );
     if (close_interval_has_elapsed) {
         // Log file closing benchmarking here.
