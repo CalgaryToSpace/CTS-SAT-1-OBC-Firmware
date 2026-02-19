@@ -15,16 +15,16 @@ static const uint16_t UART_TX_TIMEOUT_DURATION_MS = 200;
 /// @brief Timeout duration for receive in milliseconds. Same between bytes and at the start.
 static const uint16_t UART_RX_TIMEOUT_DURATION_MS = 300;
 
-// Allocate 5KiB of space for send and receive arrays
-const uint16_t tx_buffer_max_size = 5120;
+// Allocate space for send and receive arrays.
+const uint16_t tx_buffer_max_size = 500;
 const uint16_t rx_buffer_max_size = 5120;
-static uint8_t tx_buffer[5120];
+static uint8_t tx_buffer[500];
 static uint8_t rx_buffer[5120];
 
 /// @brief Send arbitrary commands to a UART peripheral, and receive the response.
 /// @param args_str 
 /// - Arg 0: UART port name to send data to: MPI, GNSS, CAMERA, EPS (case insensitive)
-/// - Arg 1: Data to be sent (bytes specified as hex - Max 5KiB buffer)
+/// - Arg 1: Data to be sent (bytes specified as hex)
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0: Success, 1: Error parsing args, 2: Invalid uart port requested, 3: Error transmitting data, 
@@ -353,6 +353,130 @@ uint8_t TCMDEXEC_uart_send_hex_get_response_hex(
             // Move the offset forward by the chunk size
             log_buffer_offset += chunk_len;
         }  
+    }
+
+    return 0;   // Success
+}
+
+
+/// @brief Send arbitrary commands to a UART peripheral.
+/// @param args_str 
+/// - Arg 0: UART port name to send data to: MPI, GNSS, CAMERA, EPS (case insensitive)
+/// - Arg 1: Data to be sent (bytes specified as hex)
+/// @param response_output_buf The buffer to write the response to
+/// @param response_output_buf_len The maximum length of the response_output_buf (its size)
+/// @return 0: Success
+/// @note This function doesn't toggle the EPS power lines for peripherals. Ensure they are powered on before 
+///       using this function.
+uint8_t TCMDEXEC_uart_send_hex(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    // Parse UART port argument
+    char arg_uart_port_name[10] = "";
+    const uint8_t uart_port_name_parse_result = TCMD_extract_string_arg(args_str, 0, arg_uart_port_name, 10);
+
+    // Parse hex-encoded config command (string to bytes)
+    uint16_t tx_buffer_len = 0; // Variable to store the length of the converted byte array
+    const uint8_t bytes_to_send_parse_result = TCMD_extract_hex_array_arg(
+        args_str, 1, tx_buffer, tx_buffer_max_size, &tx_buffer_len
+    );
+
+    // Check for argument parsing errors
+    if(uart_port_name_parse_result != 0 || bytes_to_send_parse_result !=0) {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error parsing uart port/data to send arg: Arg 0 Err=%d, Arg 1 Err=%d", 
+            uart_port_name_parse_result, 
+            bytes_to_send_parse_result
+        );
+        return 1;    // Error code: Error parsing args
+    }
+
+    // Select the UART handle.
+    UART_HandleTypeDef *UART_handle_ptr = UART_get_port_handle_by_name(arg_uart_port_name);
+
+    if (UART_handle_ptr == NULL) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Invalid UART port: %s", arg_uart_port_name
+        );
+        return 2;    // Error code: Invalid uart port requested
+    }
+
+    const HAL_StatusTypeDef transmit_status = HAL_UART_Transmit(
+        UART_handle_ptr, tx_buffer, tx_buffer_len, UART_TX_TIMEOUT_DURATION_MS
+    );
+
+    if (transmit_status != HAL_OK) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error transmitting data. HAL_UART_Transmit->%d",
+            transmit_status
+        );
+        return 3;    // Error code: Error transmitting data
+    }
+
+    return 0;   // Success
+}
+
+
+/// @brief Send arbitrary commands to a UART peripheral.
+/// @param args_str 
+/// - Arg 0: UART port name to send data to: MPI, GNSS, CAMERA, EPS (case insensitive)
+/// - Arg 1: Data to be sent (bytes specified as a string)
+/// @param response_output_buf The buffer to write the response to
+/// @param response_output_buf_len The maximum length of the response_output_buf (its size)
+/// @return 0: Success
+/// @note This function doesn't toggle the EPS power lines for peripherals. Ensure they are powered on before 
+///       using this function.
+uint8_t TCMDEXEC_uart_send_str(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    // Parse UART port argument
+    char arg_uart_port_name[10] = "";
+    const uint8_t uart_port_name_parse_result = TCMD_extract_string_arg(args_str, 0, arg_uart_port_name, 10);
+
+    // Parse string-encoded config command (string to bytes)
+    const uint8_t bytes_to_send_parse_result = TCMD_extract_string_arg(
+        args_str, 1, (char *)tx_buffer, tx_buffer_max_size
+    );
+
+    // Check for argument parsing errors
+    if(uart_port_name_parse_result != 0 || bytes_to_send_parse_result !=0) {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error parsing uart port/data to send arg: Arg 0 Err=%d, Arg 1 Err=%d", 
+            uart_port_name_parse_result, 
+            bytes_to_send_parse_result
+        );
+        return 1;    // Error code: Error parsing args
+    }
+
+    // Select the UART handle.
+    UART_HandleTypeDef *UART_handle_ptr = UART_get_port_handle_by_name(arg_uart_port_name);
+
+    if (UART_handle_ptr == NULL) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Invalid UART port: %s", arg_uart_port_name
+        );
+        return 2;    // Error code: Invalid uart port requested
+    }
+
+    const uint16_t tx_buffer_len = strlen((const char *)tx_buffer);
+    const HAL_StatusTypeDef transmit_status = HAL_UART_Transmit(
+        UART_handle_ptr, tx_buffer, tx_buffer_len, UART_TX_TIMEOUT_DURATION_MS
+    );
+
+    if (transmit_status != HAL_OK) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error transmitting data. HAL_UART_Transmit->%d",
+            transmit_status
+        );
+        return 3;    // Error code: Error transmitting data
     }
 
     return 0;   // Success
