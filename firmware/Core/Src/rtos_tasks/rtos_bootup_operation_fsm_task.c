@@ -45,7 +45,10 @@ static uint8_t does_filesystem_have_bypass_deployment_and_enable_radio_file(void
     LFS_ensure_mounted(); // Steamroll on error.
 
     // Check if the file exists.
-    lfs_soff_t file_size = LFS_file_size(filename);
+    const lfs_soff_t file_size = LFS_file_size(
+        filename,
+        0 // Disable log messages because we nominally expect an error here (before file is created).
+    );
     if (file_size > 0) {
         return 1; // File exists.
     }
