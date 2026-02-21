@@ -17,13 +17,14 @@ const uint32_t GNSS_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS = 800;
 const uint32_t GNSS_RX_TIMEOUT_BETWEEN_BYTES_MS = 2500; // Lots of commands pause in the middle (e.g., BESTXYZA) as it contemplates its position in the universe.
 
 /// @brief Sends a log command to the GNSS, and receives the response.
-/// @param cmd_buf log command string to send to the GNSS.
+/// @param cmd_buf Log command string to send to the GNSS, without EOL characters.
 /// @param cmd_buf_len Exact length of the log command string.
 /// @param rx_buf Buffer to store the response (not necessarily null terminated).
-/// @param rx_buf_max_size Maximum length of the response buffer.
+/// @param rx_buf_max_size Size of the response buffer.
 /// @param rx_buf_len_dest Pointer to place to store the length of the response buffer (not necessarily null terminated).
 /// @return 0 on success, >0 if error.
-/// @note This function is intended for "once" log commands
+/// @note This function is intended for "once" log commands and control commands.
+/// @note This function does not validate the response, as related to the request.
 uint8_t GNSS_send_cmd_get_response(
     const char *cmd_buf, uint8_t cmd_buf_len,
     uint8_t rx_buf[],
