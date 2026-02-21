@@ -127,7 +127,7 @@ uint8_t GNSS_set_obc_time_based_on_gnss_time() {
     // Set the system time based on GNSS time
     TIME_set_current_unix_epoch_time_ms(
         formatted_time,
-        TIME_SYNC_SOURCE_GNSS
+        TIME_SYNC_SOURCE_GNSS_UART
     );
     
     return 0;
