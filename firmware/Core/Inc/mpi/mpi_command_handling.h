@@ -20,7 +20,7 @@ extern uint32_t MPI_recording_start_uptime_ms;
 typedef enum {
     MPI_REASON_FOR_STOPPING_TEMPERATURE_EXCEEDED,
     MPI_REASON_FOR_STOPPING_TELECOMMAND,
-    MPI_REASON_FOR_STOPPING_MAX_TIME_EXCEEDED // TODO: Use this https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/488
+    MPI_REASON_FOR_STOPPING_MAX_TIME_EXCEEDED
 } MPI_reason_for_stopping_active_mode;
 
 uint8_t MPI_send_command_get_response(
