@@ -215,8 +215,10 @@ void TIME_get_current_utc_datetime_str(char *dest_str, size_t dest_str_size) {
 
 char TIME_sync_source_enum_to_letter_char(TIME_sync_source_enum_t source) {
     switch (TIME_last_synchronization_source) {
-        case TIME_SYNC_SOURCE_GNSS:
+        case TIME_SYNC_SOURCE_GNSS_UART:
             return 'G';
+        case TIME_SYNC_SOURCE_GNSS_PPS:
+            return 'P';
         case TIME_SYNC_SOURCE_TELECOMMAND_ABSOLUTE:
             return 'T';
         case TIME_SYNC_SOURCE_TELECOMMAND_CORRECTION:
