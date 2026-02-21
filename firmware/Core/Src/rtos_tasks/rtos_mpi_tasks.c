@@ -14,6 +14,13 @@
 /// @note Set this value to 0 (via configuration) to disable the temperature shutoff feature.
 uint32_t MPI_max_temperature_shutoff_celcius = 60;
 
+/// @brief Maximum duration for MPI data recording in seconds.
+/// @note Set this value to 0 (via configuration) to disable the duration limit.
+/// @note This configuration variable is designed to prevent against an operator failing to
+///        schedule a stop telecommand for MPI data recording.
+uint32_t MPI_max_recording_duration_sec = 900;
+
+
 static int8_t write_mpi_timestamp_to_file(uint32_t buffer_filled_uptime_ms) {
     // Write timestamp data (the time the buffer finished filling) to file.
     const uint32_t uptime_ms = TIME_get_current_system_uptime_ms();
@@ -190,6 +197,26 @@ void TASK_service_write_mpi_data(void *argument) {
 
                 // Major action here - disable recording:
                 MPI_disable_active_mode(MPI_REASON_FOR_STOPPING_TEMPERATURE_EXCEEDED);
+            }
+        }
+
+        // Check for exceeding the start time.
+        if (MPI_current_uart_rx_mode == MPI_RX_MODE_SENSING_MODE) {
+            const uint32_t current_recording_duration_sec = (
+                TIME_get_current_system_uptime_ms() - MPI_recording_start_uptime_ms
+            ) / 1000;
+            if (
+                (MPI_max_recording_duration_sec > 0)
+                && (current_recording_duration_sec > MPI_max_recording_duration_sec)
+            ) {
+                LOG_message(
+                    LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+                    "MPI Task: Recording duration exceeded maximum limit (%lu s > %lu s), stopping.",
+                    current_recording_duration_sec, MPI_max_recording_duration_sec
+                );
+
+                // Major action here - disable recording:
+                MPI_disable_active_mode(MPI_REASON_FOR_STOPPING_MAX_TIME_EXCEEDED);
             }
         }
 
