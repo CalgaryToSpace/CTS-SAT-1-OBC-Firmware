@@ -78,8 +78,10 @@ uint8_t TCMDEXEC_set_obc_time_based_on_eps_time(const char *args_str,
     return 0;
 }
 
-/// @brief Sync's OBC time to gnss time (+/- ~100ms)
+/// @brief Sync OBC time based on the GNSS time report (+/- ~100ms, based on system latency).
+/// @param args_str No arguments.
 /// @return 0 on success, >0 on failure.
+/// @note Requires that the GNSS receiver's EPS channel is already powered on, and that a time fix is ready.
 uint8_t TCMDEXEC_set_obc_time_based_on_gnss_time(
     const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
@@ -95,7 +97,21 @@ uint8_t TCMDEXEC_set_obc_time_based_on_gnss_time(
         "Success syncing obc time based on gnss time"
     );
     return 0;
-}            
+}
+
+/// @brief Corrects the OBC time based on the GNSS PPS signal. Very precise.
+/// @param args_str No arguments.
+/// @return 0 on success, >0 on failure.
+/// @note Requires that the GNSS receiver's EPS channel is already powered on, and that a time fix is ready.
+/// @note Requires an accurate GNSS time fix, and requires that `set_obc_time_based_on_gnss_time` has been
+///     run recently (or that the OBC time is correct within 500ms based on another time source).
+uint8_t TCMDEXEC_set_obc_time_based_on_gnss_pps(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    return GNSS_set_obc_time_based_on_gnss_pps();
+}
+
 
 /// @brief Sync's eps time to obc time (+/- 1 second)
 /// @return 0 on success, >0 on failure.
