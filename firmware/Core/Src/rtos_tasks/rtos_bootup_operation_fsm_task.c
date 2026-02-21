@@ -9,7 +9,7 @@
 #include "main.h"
 
 /// @brief The uptime, as defined in the Launch Provider ICD, at which the antennas should be deployed.
-uint32_t COMMS_uptime_to_start_ant_deployment_sec = 30 * 60;
+uint32_t COMMS_uptime_to_start_ant_deployment_sec = 60 * 60;
 
 CTS1_operation_state_enum_t CTS1_operation_state = CTS1_OPERATION_STATE_BOOTED_AND_WAITING;
 
@@ -132,12 +132,12 @@ static inline void SUBTASK_bootup_operation_state_check_for_state_transitions(vo
 
     // Second group: Conditions checked only in the BOOTED_AND_WAITING state.
     if (CTS1_operation_state == CTS1_OPERATION_STATE_BOOTED_AND_WAITING) {
-        // Condition 4: If (RBF_STATE == FLYING) && (uptime > 30 minutes) -> DEPLOYING
+        // Condition 4: If (RBF_STATE == FLYING) && (uptime > 60 minutes) -> DEPLOYING
         // Reason: Nominal post-ejection transition
         if ((OBC_get_rbf_state() == OBC_RBF_STATE_FLYING) && (TIME_get_current_system_uptime_ms() > (COMMS_uptime_to_start_ant_deployment_sec * 1000))) {
             set_operation_state_and_log_if_changed(
                 CTS1_OPERATION_STATE_DEPLOYING,
-                "Condition 4: RBF == DEPLOY AND uptime > 30 minutes"
+                "Condition 4: RBF == DEPLOY AND uptime > 60 minutes"
             );
             return;
         }
@@ -233,7 +233,7 @@ static inline void SUBTASK_bootup_operation_state_do_led_indication_action(void)
             osDelay(960);
         }
         else {
-            // LED Indicator: From 25 minutes uptime to 30 minutes uptime, external LED blinks 40ms per 333ms
+            // LED Indicator: From 55 minutes uptime to 60 minutes uptime, external LED blinks 40ms per 333ms
             // (warning indicator that the satellite is about to deploy its antenna).
             pulse_external_led_blocking(40);
 
@@ -264,7 +264,7 @@ static inline void SUBTASK_bootup_operation_state_do_led_indication_action(void)
 
 /// @brief FreeRTOS task - FSM which handles the bootup and operation state/state.
 /// @details During LEOPS (launch and early operations), it deploys the comms antennas and permits radio TX.
-///          During the rest of the mission, it bypasses the 30 minute deployment wait time, and also
+///          During the rest of the mission, it bypasses the 60 minute deployment wait time, and also
 ///          blinks the LED to indicate the current state.
 /// @note Implemented per https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/420
 void TASK_bootup_operation_fsm(void *argument) {
