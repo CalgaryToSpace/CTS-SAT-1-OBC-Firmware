@@ -39,6 +39,7 @@
 #include "littlefs/littlefs_helper.h"
 #include "system/system_bootup.h"
 #include "eps_drivers/eps_time.h"
+#include "lua/lua_runner.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -330,7 +331,9 @@ int main(void)
   UART_init_uart_handlers();
   
   LFS_init();
-  
+
+  LUA_test();
+
   
   EPS_set_obc_time_based_on_eps_time(); // Sync approx time for ADCS.
 
