@@ -370,7 +370,7 @@ static void MPI_power_off() {
     }
 }
 
-uint8_t MPI_disable_active_mode() {
+uint8_t MPI_disable_active_mode(MPI_reason_for_stopping_active_mode reason_for_stopping) {
     MPI_power_off();
 
     // Set the MPI State to not handle any receiving data
@@ -424,11 +424,25 @@ uint8_t MPI_disable_active_mode() {
     // Log MPI science data stats  
     LOG_message(
         LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "{\"data_stored_bytes\": %ld, \"data_lost_bytes\": %lu, \"time_taken_ms\": %lu }",
+        "{\"data_stored_bytes\": %ld, \"data_lost_bytes\": %lu, \"time_taken_ms\": %lu, \"reason_for_stopping\": \"%s\" }",
         file_size,
         MPI_science_data_bytes_lost,
-        HAL_GetTick() - MPI_recording_start_uptime_ms 
+        HAL_GetTick() - MPI_recording_start_uptime_ms,
+        MPI_reason_for_stopping_active_mode_enum_to_str(reason_for_stopping)
     );
 
     return 0;
+}
+
+char *MPI_reason_for_stopping_active_mode_enum_to_str(MPI_reason_for_stopping_active_mode reason) {
+    switch (reason) {
+        case MPI_REASON_FOR_STOPPING_TEMPERATURE_EXCEEDED:
+            return "TEMPERATURE_EXCEEDED";
+        case MPI_REASON_FOR_STOPPING_TELECOMMAND:
+            return "TELECOMMAND";
+        case MPI_REASON_FOR_STOPPING_MAX_TIME_EXCEEDED:
+            return "MAX_TIME_EXCEEDED";
+        default:
+            return "UNKNOWN_REASON";
+    }
 }
