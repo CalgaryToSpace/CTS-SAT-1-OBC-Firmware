@@ -1,6 +1,7 @@
 #include "gnss_receiver/gnss_internal_drivers.h"
 #include "timekeeping/timekeeping.h"
 #include "log/log.h"
+#include "uart_handler/uart_handler.h"
 
 #include <stdio.h>
 #include <time.h>
@@ -153,21 +154,19 @@ uint8_t GNSS_set_obc_time_based_on_gnss_pps() {
     const uint32_t max_polling_time_ms = 5000;
 
     // Enable PPS mode.
-    const char *pps_command = "PPSCONTROL ENABLE NEGATIVE";
-    uint16_t pps_response_len = 0;
-    uint8_t pps_response[230];
-    memset(pps_response, 0, sizeof(pps_response));
-    const uint8_t pps_cmd_response = GNSS_send_cmd_get_response(
-        pps_command, strlen(pps_command),
-        pps_response, sizeof(pps_response), &pps_response_len
+    const char *pps_command = "PPSCONTROL ENABLE NEGATIVE\r\n";
+    const HAL_StatusTypeDef tx_status = HAL_UART_Transmit(
+        UART_gnss_port_handle,
+        (uint8_t *)pps_command, strlen(pps_command),
+        100
     );
-    if (pps_cmd_response != 0) {
+    if (tx_status != HAL_OK) {
         LOG_message(
-            LOG_SYSTEM_GNSS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "GNSS PPS command failed (cmd_response=%u) -> %s",
-            pps_cmd_response, pps_response
+            LOG_SYSTEM_GNSS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "GNSS PPS command failed (UART tx_status=%d)", tx_status
         );
-        return 10;
+        // Streamroll. If GNSS control is having issues (very unlikely), we could try to enable PPS
+        // via a different command.
     }
 
     HAL_Delay(250); // Arbitrary delay, in case it takes the OEM7 a sec.
