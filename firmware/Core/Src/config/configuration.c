@@ -14,6 +14,8 @@ extern uint32_t TCMD_require_valid_sha256;
 extern uint32_t CONFIG_EPS_enable_uart_debug_print;
 extern uint32_t TCMD_handle_ax100_tcmds_interval_ms;
 extern uint32_t TCMD_handle_umbilical_tcmds_interval_ms;
+extern uint32_t MPI_max_temperature_shutoff_celcius;
+extern uint32_t MPI_max_recording_duration_sec;
 
 
 uint32_t CONFIG_int_demo_var_1 = 13345;
@@ -108,6 +110,15 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
         .num_config_var = &COMMS_max_duration_without_uplink_before_setting_default_rf_switch_mode_sec,
     },
     // ******** END COMMS Configuration ********
+    // MPI Configuration
+    {
+        .variable_name = "MPI_max_temperature_shutoff_celcius",
+        .num_config_var = &MPI_max_temperature_shutoff_celcius,
+    },
+    {
+        .variable_name = "MPI_max_recording_duration_sec",
+        .num_config_var = &MPI_max_recording_duration_sec,
+    },
 };
 
 // extern
