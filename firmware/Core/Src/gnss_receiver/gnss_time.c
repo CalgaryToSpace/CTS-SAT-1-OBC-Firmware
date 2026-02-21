@@ -78,8 +78,7 @@ uint8_t GNSS_parse_timea_response_and_convert_to_unix_time_ms(char* input_str, u
 /// parses the TIMEA response to extract UTC time, converts it to Unix epoch time,
 /// and sets the system clock accordingly.
 /// @return 0 on success, >0 on failure.
-uint8_t GNSS_set_obc_time_based_on_gnss_time() {
-
+uint8_t GNSS_set_obc_time_based_on_gnss_time_uart() {
     // Initialize GNSS command "log timea once"
     const char *full_command = "log timea once";
     const uint8_t full_command_len = strlen(full_command);
