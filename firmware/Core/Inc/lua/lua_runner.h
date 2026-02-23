@@ -4,5 +4,6 @@
 
 void LUA_test();
 
+void LUA_test_out_of_memory();
 
 #endif

@@ -5,6 +5,8 @@
 // #include "lua/lualib.h"
 // #include "lua/lauxlib.h"
 int l_print(lua_State *L);
+int l_LFS_write_file(lua_State *L);
+int l_LFS_read_file(lua_State *L);
 
 
 #endif // INCLUDE_GUARD_LUA_BINDINGS_H

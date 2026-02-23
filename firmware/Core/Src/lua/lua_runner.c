@@ -56,7 +56,7 @@ static void *l_alloc(void *ud, void *ptr, size_t osize, size_t nsize) {
 
     // if freeing.
     if (nsize == 0) {
-  if (ptr) {
+        if (ptr) {
             // block_t *block = (block_t *)ptr - 1; 
             block_t *block = container_of(ptr, block_t, data);
             usage->in_use -= block->size;
@@ -114,6 +114,10 @@ lua_State* LUA_init(lua_mem_usage_t *usage) {
     // Register our custom functions
     // print(str:str)
     lua_register(L, "print", l_print);
+    // lfs_read_file(path:str, offset:int, len:int)
+    lua_register(L, "lfs_read_file", l_LFS_read_file);
+    // lfs_write_file(path:str, str:str) 
+    lua_register(L, "lfs_write_file", l_LFS_write_file);
     return L;
 }
 
@@ -142,6 +146,27 @@ void LUA_run_script(const char *script) {
     );
 }
 
+
+void LUA_test() {
+    static const char *script = 
+        "print('testing lfs bindings')\n"
+        "lfs_write_file('./hello.txt', 'hello world from lua file!')\n"
+        "text = lfs_read_file('./hello.txt', 0, 100)\n"
+        "print(text)\n";
+
+    LUA_run_script(script);
+}
+
+/// @brief attempts to write a string to a file, then attempts to read it back.
+void LUA_test_lfs_read_write_bindings() {
+    static const char *script = 
+        "print('testing lfs bindings')\n"
+        "lfs_write_file('./hello.txt', 'hello world from lua file!')\n"
+        "text = lfs_read_file('./hello.txt', 0, 100)\n"
+        "print(text)\n";
+
+    LUA_run_script(script);
+}
 
 /// @brief attempts to overflow the heap via repeated string allocations.
 void LUA_test_out_of_memory() {
