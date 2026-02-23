@@ -4,64 +4,158 @@
 #include "FreeRTOS.h"
 #include "log/log.h"
 #include <string.h>
+#include <stdlib.h>
 
 #include "lua/lua_bindings.h"
 
+/*
+// Simple implementation of lua_alloc function.
+// Reference: 'https://www.lua.org/manual/5.1/manual.html' search for 'lua_Alloc'
+// Does not track memory usage.
+static void *l_alloc (void *ud, void *ptr, size_t osize, size_t nsize) {
+    if (nsize == 0) {
+        free(ptr);
+        return NULL;
+    }
+    else {
+        return realloc(ptr, nsize);
+    }
+}
+*/
 
+/*
+container_of - Cast a member of a structure out to the containing structure.
+This is how it is done in the linux kernel.
+see: https://github.com/torvalds/linux/blob/master/include/linux/container_of.h
+*/
+#define container_of(ptr, type, member) ({                      \
+    const __typeof__(((type *)0)->member) *__mptr = (ptr);      \
+    (type *)((char *)__mptr - offsetof(type, member));          \
+})
 
-// TODO: not used yet. Some more thought is needed with respect to
-//       memory management.
-// TODO: implement a memory analyzer to evaluate memory usage.
-typedef struct { size_t in_use, limit; } lua_mem_limit_t;
+// Struct representing a allocated block of memory.
+typedef struct {
+    size_t size;
+    uint8_t data[];
+} block_t;
 
-static void *rtos_alloc(void *ud, void *ptr, size_t osize, size_t nsize) {
-  (void)osize;
-  lua_mem_limit_t *lim = (lua_mem_limit_t*)ud;
-  if (nsize == 0) { vPortFree(ptr); return NULL; }
+// Used to track lua memory usage.
+typedef struct { 
+    int32_t in_use;
+    int32_t limit;
+    int32_t min;
+    int32_t max; 
+    int32_t blocks_currently_allocated;
+    int32_t total_blocks_allocated;
+} lua_mem_usage_t;
+// An implementation of lua_Alloc that tracks memory usage by keeping a header in front of the allocated buffer.
+// This is required since osize is not always reliable and thus we cannot use it to track memory usage.
+// verified empirically.
+static void *l_alloc(void *ud, void *ptr, size_t osize, size_t nsize) {
+    lua_mem_usage_t *usage = (lua_mem_usage_t*)ud;
 
-  void *np = pvPortMalloc(nsize);
-  if (!np) return NULL;
-
+    // if freeing.
+    if (nsize == 0) {
   if (ptr) {
-    // best-effort realloc
-    size_t copy = nsize; // unknown old size; copy min if you track it elsewhere
-    memcpy(np, ptr, copy);
-    vPortFree(ptr);
-  }
-  if (lim) {
-    lim->in_use += nsize;
-    if (lim->limit && lim->in_use > lim->limit) { vPortFree(np); return NULL; }
-  }
-  return np;
+            // block_t *block = (block_t *)ptr - 1; 
+            block_t *block = container_of(ptr, block_t, data);
+            usage->in_use -= block->size;
+            usage->blocks_currently_allocated--;
+            free(block);
+        }
+
+        if (usage->in_use < usage->min) {
+            usage->min = usage->in_use;
+        }
+
+        return NULL;
+    }
+
+    // if a new allocation.
+    if (ptr == NULL) {
+        block_t *block = malloc(sizeof(block_t) + nsize);
+        if (block == NULL) return NULL; // Failed to allocate.
+
+        block->size = nsize;
+
+        usage->in_use += nsize;
+        usage->blocks_currently_allocated++;
+        usage->total_blocks_allocated++;
+
+        return block->data;
+    } 
+    // else if realloc.
+    else {
+        // block_t *h = (block_t *)ptr - 1;
+        block_t *block = container_of(ptr, block_t, data);
+        size_t old_size = block->size;
+
+        block_t *new_block = realloc(block, sizeof(block_t) + nsize);
+        if (new_block == NULL) return NULL;
+
+        new_block->size = nsize;
+
+        usage->in_use += nsize - old_size;
+        return new_block->data;
+    }
 }
 
-lua_State* LUA_init() {
-    // Create the lua state
-    lua_State *L = lua_newstate(rtos_alloc, NULL);
+/// @brief Initialize a lua state.
+/// @param usage a pointer to a struct that tracks lua memory usage, and limits it.
+/// @return An initialized lua state.
+lua_State* LUA_init(lua_mem_usage_t *usage) {
+    lua_State *L = lua_newstate(l_alloc, usage);
+
+    // TODO: Include what we need/want.
     // Open standard libraries
-    //TODO: only include what we need/want.
-    // luaL_openlibs(L);
+    luaL_requiref(L, "string", luaopen_string, 1);
+    lua_pop(L, 1); // String library is in global table, so remove it from the stack.
 
     // Register our custom functions
+    // print(str:str)
     lua_register(L, "print", l_print);
     return L;
 }
 
-void LUA_test() {
-    lua_State *L = LUA_init();
+void LUA_run_script(const char *script) {
+    lua_mem_usage_t usage = {.in_use=0, .limit=10000, .min=0, .max = 0};
+    lua_State *L = LUA_init(&usage);
 
-    if (luaL_dostring(L, "print(1+1.5)") != LUA_OK){
+    if (luaL_dostring(L, script) != LUA_OK){
+        // If an error occurs, pop the error message off the stack and log.
+        const char *msg = lua_tostring(L, -1);
         LOG_message(
             LOG_SYSTEM_OBC, LOG_SEVERITY_ERROR,
             LOG_all_sinks_except(LOG_SINK_FILE),
-            "lua error" 
+            "Error occurred while running lua script: %s", msg
         );
+        
     }
+
+    lua_close(L);
+
     LOG_message(
         LOG_SYSTEM_OBC, LOG_SEVERITY_DEBUG,
         LOG_all_sinks_except(LOG_SINK_FILE),
-        "lua Success!" 
+        "lua script ran successfully! in_use: %ld, min: %ld, max: %ld, blocks_currently_allocated: %ld, total_blocks_allocated: %ld", 
+        usage.in_use, usage.min, usage.max, usage.blocks_currently_allocated, usage.total_blocks_allocated
     );
-    lua_close(L);
+}
+
+
+/// @brief attempts to overflow the heap via repeated string allocations.
+void LUA_test_out_of_memory() {
+    static const char *lua_oom_test_script =
+        "print(\"OOM test starting...\")\n"
+        "\n"
+        "local big = {}\n"
+        "local i = 1\n"
+        "\n"
+        "while true do\n"
+        "    big[i] = string.rep(\"X\", 1024 * 1024) -- 1MB chunks\n"
+        "    i = i + 1\n"
+        "end\n";
+
+    LUA_run_script(lua_oom_test_script);
 }
 
