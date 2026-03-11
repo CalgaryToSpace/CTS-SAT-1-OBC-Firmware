@@ -218,6 +218,34 @@ static int8_t MPI_write_file_header() {
     return 0; // Success.
 }
 
+
+/// @brief Write the end-of-recording JSON data to the file.
+/// @return 
+/// @note The normal timestamp function is called right before this function, so no need to include timestamps in here.
+int8_t MPI_write_file_footer(MPI_reason_for_stopping_active_mode reason_for_stopping) {
+    char buffer_footer_str[200];
+    snprintf(
+        buffer_footer_str, sizeof(buffer_footer_str),
+        "{\"data_lost_bytes\": %lu, \"time_taken_ms\": %lu, \"reason_for_stopping\": \"%s\" }",
+        MPI_science_data_bytes_lost,
+        (TIME_get_current_system_uptime_ms() - MPI_recording_start_uptime_ms),
+        MPI_reason_for_stopping_active_mode_enum_to_str(reason_for_stopping)
+    );
+
+    const lfs_ssize_t write_timestamp_result = lfs_file_write(
+        &LFS_filesystem, &MPI_science_data_file_pointer,
+        buffer_footer_str, strlen(buffer_footer_str)
+    );
+    if (write_timestamp_result < 0) {
+        LOG_message(
+            LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+            "MPI Header: Error writing footer to file: %ld", write_timestamp_result
+        );
+        return write_timestamp_result;
+    }
+    return 0; // Success
+}
+
 /// @brief Turns on MPI and prepares a LFS file to store MPI data in.
 /// @return 0: System successfully prepared for MPI data, < 0: Error
 static int8_t MPI_prepare_receive_data(const char output_file_path[]) {
@@ -370,7 +398,7 @@ static void MPI_power_off() {
     }
 }
 
-uint8_t MPI_disable_active_mode() {
+uint8_t MPI_disable_active_mode(MPI_reason_for_stopping_active_mode reason_for_stopping) {
     MPI_power_off();
 
     // Set the MPI State to not handle any receiving data
@@ -394,6 +422,8 @@ uint8_t MPI_disable_active_mode() {
     }
 
     MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI; // Set UART mode to not listening.
+
+    MPI_write_file_footer(reason_for_stopping);
 
     // Close the file. The file in storage is not updated until the file is closed successfully.
     const int8_t close_result = lfs_file_close(&LFS_filesystem, &MPI_science_data_file_pointer);
@@ -424,11 +454,25 @@ uint8_t MPI_disable_active_mode() {
     // Log MPI science data stats  
     LOG_message(
         LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "{\"data_stored_bytes\": %ld, \"data_lost_bytes\": %lu, \"time_taken_ms\": %lu }",
+        "{\"data_stored_bytes\": %ld, \"data_lost_bytes\": %lu, \"time_taken_ms\": %lu, \"reason_for_stopping\": \"%s\" }",
         file_size,
         MPI_science_data_bytes_lost,
-        HAL_GetTick() - MPI_recording_start_uptime_ms 
+        HAL_GetTick() - MPI_recording_start_uptime_ms,
+        MPI_reason_for_stopping_active_mode_enum_to_str(reason_for_stopping)
     );
 
     return 0;
+}
+
+char *MPI_reason_for_stopping_active_mode_enum_to_str(MPI_reason_for_stopping_active_mode reason) {
+    switch (reason) {
+        case MPI_REASON_FOR_STOPPING_TEMPERATURE_EXCEEDED:
+            return "TEMPERATURE_EXCEEDED";
+        case MPI_REASON_FOR_STOPPING_TELECOMMAND:
+            return "TELECOMMAND";
+        case MPI_REASON_FOR_STOPPING_MAX_TIME_EXCEEDED:
+            return "MAX_TIME_EXCEEDED";
+        default:
+            return "UNKNOWN_REASON";
+    }
 }

@@ -121,7 +121,7 @@ uint8_t TCMDEXEC_mpi_enable_active_mode(const char *args_str, char *response_out
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0: Success, >0: Failure
 uint8_t TCMDEXEC_mpi_disable_active_mode(const char *args_str, char *response_output_buf, uint16_t response_output_buf_len) {
-    const uint8_t disable_result = MPI_disable_active_mode();
+    const uint8_t disable_result = MPI_disable_active_mode(MPI_REASON_FOR_STOPPING_TELECOMMAND);
 
     if (disable_result != 0) {
         snprintf(response_output_buf, response_output_buf_len,
