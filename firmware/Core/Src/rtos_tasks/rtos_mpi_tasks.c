@@ -187,7 +187,7 @@ void TASK_service_write_mpi_data(void *argument) {
             );
             
             if ((MPI_max_temperature_shutoff_celcius > 0) &&
-                (last_mpi_temperature_cC > (MPI_max_temperature_shutoff_celcius * 100)))
+                (last_mpi_temperature_cC > ((int32_t)MPI_max_temperature_shutoff_celcius * 100)))
             {
                 LOG_message(
                     LOG_SYSTEM_MPI, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
