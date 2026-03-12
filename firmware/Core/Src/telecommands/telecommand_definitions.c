@@ -145,6 +145,18 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     
     // ****************** SECTION: uart_telecommand_defs ******************
     {
+        .tcmd_name = "uart_send_hex",
+        .tcmd_func = TCMDEXEC_uart_send_hex,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "uart_send_str",
+        .tcmd_func = TCMDEXEC_uart_send_str,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
         .tcmd_name = "uart_send_hex_get_response_hex",
         .tcmd_func = TCMDEXEC_uart_send_hex_get_response_hex,
         .number_of_args = 2,
@@ -1163,8 +1175,8 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY, // Not useful in space.
     },
     {
-        .tcmd_name = "mpi_demo_set_transceiver_mode",
-        .tcmd_func = TCMDEXEC_mpi_demo_set_transceiver_mode,
+        .tcmd_name = "mpi_set_transceiver_mode",
+        .tcmd_func = TCMDEXEC_mpi_set_transceiver_mode,
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY, // Not useful in space.
     },

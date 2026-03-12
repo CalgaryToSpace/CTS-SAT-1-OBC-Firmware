@@ -8,6 +8,16 @@ uint8_t TCMDEXEC_uart_send_hex_get_response_hex(
     char *response_output_buf, uint16_t response_output_buf_len
 );
 
+uint8_t TCMDEXEC_uart_send_hex(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+);
+
+uint8_t TCMDEXEC_uart_send_str(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+);
+
 uint8_t TCMDEXEC_uart_get_last_rx_times_json(
     const char *args_str,
     char *response_output_buf,
