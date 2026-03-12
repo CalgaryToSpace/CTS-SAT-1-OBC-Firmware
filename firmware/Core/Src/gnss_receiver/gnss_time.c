@@ -11,13 +11,13 @@
 #include "main.h"
 
 /// @brief Parses a GNSS receiver TIMEA message and converts it into Unix epoch time in milliseconds.
-/// The function expects a full TIMEA log string as input (e.g., starting with "#TIMEA,...").
+/// @details The function expects a full TIMEA log string as input (e.g., starting with "#TIMEA,...").
 /// It tokenizes the string, extracts UTC date and time fields, validates their integrity,
 /// and converts them to a Unix timestamp in milliseconds.
 /// @param input_str The GNSS response string (e.g., from a TIMEA log).
 /// @return uint8_t returning 0 for success and 1 for error.
+/// @note Has unit tests.
 uint8_t GNSS_parse_timea_response_and_convert_to_unix_time_ms(char* input_str, uint64_t* unix_time_ms) {
-    
     // Null pointer check
     if (!input_str) {
         return 1;
@@ -77,7 +77,7 @@ uint8_t GNSS_parse_timea_response_and_convert_to_unix_time_ms(char* input_str, u
 }
 
 /// @brief Sets the OBC's time, based on the GNSS receiver's current time.
-/// This function sends a command to the GNSS receiver to fetch the current time,
+/// @details This function sends a command to the GNSS receiver to fetch the current time,
 /// parses the TIMEA response to extract UTC time, converts it to Unix epoch time,
 /// and sets the system clock accordingly.
 /// @return 0 on success, >0 on failure.
@@ -115,7 +115,9 @@ uint8_t GNSS_set_obc_time_based_on_gnss_time_uart() {
     // Parse and convert GNSS time string to epoch
     char* response_str = (char*)rx_buffer;
     uint64_t formatted_time = 0;
-    const uint8_t parse_status = GNSS_parse_timea_response_and_convert_to_unix_time_ms(response_str, &formatted_time);
+    const uint8_t parse_status = GNSS_parse_timea_response_and_convert_to_unix_time_ms(
+        response_str, &formatted_time
+    );
 
     // Error check to make sure GNSS_parse_timea_response_and_convert_to_unix_time_ms executed successfully
     if (parse_status != 0) {

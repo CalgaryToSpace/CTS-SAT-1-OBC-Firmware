@@ -318,7 +318,7 @@ uint8_t TEST_EXEC__GNSS_bestxyza_data_parser(){
 }
 
 
-uint8_t TEST_EXEC__GNSS_timea_data_parser(){
+uint8_t TEST_EXEC__GNSS_timea_data_parser() {
     char gnss_data[600] = "#TIMEA,COM1,0,86.5,FINESTEERING,1930,428348.000,02000020,9924,32768;VALID,"
                         "1.667187222e-10,9.641617960e-10,-18.00000000000,2017,1,5,22,58,50000,VALID*2a066e78";
 
