@@ -14,7 +14,11 @@
 extern UART_HandleTypeDef *UART_gnss_port_handle;
 
 const uint32_t GNSS_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS = 800;
-const uint32_t GNSS_RX_TIMEOUT_BETWEEN_BYTES_MS = 2500; // Lots of commands pause in the middle (e.g., BESTXYZA) as it contemplates its position in the universe.
+
+// Lots of commands pause in the middle (e.g., BESTXYZA) as it contemplates its position in the universe.
+// GNSS takes time to respond, first section of log response ie <OK\n [COM1] is quick but the rest of
+// the data response takes a while.
+const uint32_t GNSS_RX_TIMEOUT_BETWEEN_BYTES_MS = 2500;
 
 /// @brief Sends a log command to the GNSS, and receives the response.
 /// @param cmd_buf Log command string to send to the GNSS, without EOL characters.
@@ -68,10 +72,6 @@ uint8_t GNSS_send_cmd_get_response(
 
     GNSS_set_uart_interrupt_state(1);	// We are now expecting a response
 
-    // FIXME: Update the timeouts with the actual times, it currently works with 800 ms and 500ms does not work
-    // GNSS takes time to respond, first section of log response ie <OK\n [COM1] is quick but the rest of the data response takes a while
-    
-
     // RX FROM GNSS, into UART_gnss_buffer
     const uint32_t start_rx_time = HAL_GetTick();
     while (1) {
@@ -105,8 +105,35 @@ uint8_t GNSS_send_cmd_get_response(
                 break;
             }
 
-            // TODO: Add an "end of message" check here, probably.
-            
+            // Check for "end of message" section:
+            // (asterisk, followed by 8 CRC-ish hex chars, followed by a newline).
+            // Critical to end communication as fast as possible, especially for time-related and
+            // time-sensitive commands.
+            // End of message example: ...,38000,VALID*5ea733a7[\r or \n]
+            // Index offset from write_idx:   -10  -9  -8  -7  -6  -5  -4  -3  -2  -1
+            // Character:                       *   H   H   H   H   H   H   H   H  \n|r
+            if (
+                (UART_gnss_buffer_write_idx > 12) // Semi-arbitrary minimum length (>10).
+                && (
+                    (UART_gnss_buffer[UART_gnss_buffer_write_idx - 1] == '\r')
+                    || (UART_gnss_buffer[UART_gnss_buffer_write_idx - 1] == '\n')
+                )
+                && (UART_gnss_buffer[UART_gnss_buffer_write_idx - 10] == '*')
+            ) {
+                // Validate the 8 chars between '*' and EOL are all hex digits.
+                uint8_t is_valid_hex = 1;
+                for (int i = 2; i <= 9; i++) {
+                    const uint8_t c = UART_gnss_buffer[UART_gnss_buffer_write_idx - i];
+                    if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f'))) {
+                        is_valid_hex = 0;
+                        break;
+                    }
+                }
+                if (is_valid_hex) {
+                    break;
+                }
+            }
+
             // Exit if we've received all the buffer can hold.
             if (UART_gnss_buffer_write_idx >= rx_buf_max_size) {
                 break;
