@@ -16,7 +16,7 @@ const uint8_t error_response = 1;
 uint8_t TEST_EXEC__GNSS_timea_valid_case_1() {
     // https://www.epochconverter.com
     // 2025-05-22 21:00:28.xxx UTC
-    const char test_str[] = "<OK[COM1]#TIMEA,COM1,0,80.0,FINESTEERING,2367,411646.000,02040000,9924,17402;VALID,-4.474795457e-08,9.384349250e-09,-18.00000000000,2025,5,22,21,0,28526,VALID*a2ff113a";
+    char test_str[] = "<OK[COM1]#TIMEA,COM1,0,80.0,FINESTEERING,2367,411646.000,02040000,9924,17402;VALID,-4.474795457e-08,9.384349250e-09,-18.00000000000,2025,5,22,21,0,28526,VALID*a2ff113a";
     const uint64_t expected_ms = 1747947628526;
 
     uint64_t unix_time_ms = 0;
@@ -30,7 +30,7 @@ uint8_t TEST_EXEC__GNSS_timea_valid_case_1() {
 
 /// @brief Test: Valid TIMEA message, case 2
 uint8_t TEST_EXEC__GNSS_timea_valid_case_2() {
-    const char test_str[] = "<OK[COM1]#TIMEA,COM1,0,80.0,FINESTEERING,2367,411646.000,02040000,9924,17402;VALID,-4.474795457e-08,9.384349250e-09,-18.00000000000,2027,10,10,11,9,19000,VALID*a2ff113a";
+    char test_str[] = "<OK[COM1]#TIMEA,COM1,0,80.0,FINESTEERING,2367,411646.000,02040000,9924,17402;VALID,-4.474795457e-08,9.384349250e-09,-18.00000000000,2027,10,10,11,9,19000,VALID*a2ff113a";
     const uint64_t expected_ms = 1823166559000;
 
     uint64_t unix_time_ms = 0;
@@ -44,7 +44,7 @@ uint8_t TEST_EXEC__GNSS_timea_valid_case_2() {
 
 /// @brief Test: Invalid UTC status at end of TIMEA message
 uint8_t TEST_EXEC__GNSS_timea_invalid_utc_status() {
-    const char test_str[] = "<OK[COM1]#TIMEA,COM1,0,80.0,FINESTEERING,2367,411646.000,02040000,9924,17402;VALID,-4.474795457e-08,9.384349250e-09,-18.00000000000,2025,5,22,21,0,28526,INVALID*a2ff113a";
+    char test_str[] = "<OK[COM1]#TIMEA,COM1,0,80.0,FINESTEERING,2367,411646.000,02040000,9924,17402;VALID,-4.474795457e-08,9.384349250e-09,-18.00000000000,2025,5,22,21,0,28526,INVALID*a2ff113a";
 
     uint64_t unix_time_ms = 0;
     const uint8_t status = GNSS_parse_timea_response_and_convert_to_unix_time_ms(test_str, &unix_time_ms);
@@ -56,7 +56,7 @@ uint8_t TEST_EXEC__GNSS_timea_invalid_utc_status() {
 
 /// @brief Test: Invalid UTC status early in TIMEA message (should still parse as valid)
 uint8_t TEST_EXEC__GNSS_timea_invalid_status_early() {
-    const char test_str[] = "<OK[COM1]#TIMEA,COM1,0,80.0,FINESTEERING,2367,411646.000,02040000,9924,17402;INVALID,-4.474795457e-08,9.384349250e-09,-18.00000000000,2025,5,22,21,0,28526,VALID*a2ff113a";
+    char test_str[] = "<OK[COM1]#TIMEA,COM1,0,80.0,FINESTEERING,2367,411646.000,02040000,9924,17402;INVALID,-4.474795457e-08,9.384349250e-09,-18.00000000000,2025,5,22,21,0,28526,VALID*a2ff113a";
     const uint64_t expected_ms = 1747947628526;
 
     uint64_t unix_time_ms = 0;
@@ -70,7 +70,7 @@ uint8_t TEST_EXEC__GNSS_timea_invalid_status_early() {
 
 /// @brief Test: Malformed TIMEA message
 uint8_t TEST_EXEC__GNSS_timea_malformed() {
-    const char test_str[] = "<OK[COM1]n/#TIMEA,COM1,0,80.0,HI,0,2367,411646.000,02040000,9924,17402;INVALID,-4.474795457e-08,9.384349250e-09,-18.00000000000,2025,5,22,21,0,28526,VALID*a2ff113a";
+    char test_str[] = "<OK[COM1]n/#TIMEA,COM1,0,80.0,HI,0,2367,411646.000,02040000,9924,17402;INVALID,-4.474795457e-08,9.384349250e-09,-18.00000000000,2025,5,22,21,0,28526,VALID*a2ff113a";
 
     uint64_t unix_time_ms = 0;
     const uint8_t status = GNSS_parse_timea_response_and_convert_to_unix_time_ms(test_str, &unix_time_ms);

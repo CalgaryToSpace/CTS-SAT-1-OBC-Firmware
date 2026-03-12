@@ -80,7 +80,7 @@ uint8_t CTS1_check_is_gnss_responsive() {
             eps_status
         );
         EPS_set_channel_enabled(EPS_CHANNEL_3V3_GNSS, 0); // Power off the GNSS.
-        return 0;
+        return 0; // For non-EPS bench testing, comment out this line.
     }
 
     LOG_message(
