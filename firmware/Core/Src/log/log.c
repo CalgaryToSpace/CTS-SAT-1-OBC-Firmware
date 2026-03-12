@@ -14,11 +14,12 @@
 
 // Internal interfaces and variables
 #define LOG_TIMESTAMP_MAX_LENGTH 30
-#define LOG_SINK_NAME_MAX_LENGTH 20
+#define LOG_SINK_NAME_MAX_LENGTH 10
 #define LOG_SYSTEM_NAME_MAX_LENGTH 6
+#define LOG_SEVERITY_NAME_MAX_LENGTH 6
 
 // Includes prefix, with cushion for delimiters, newline, and null terminator
-#define LOG_FULL_MESSAGE_MAX_LENGTH ( LOG_FORMATTED_MESSAGE_MAX_LENGTH + LOG_TIMESTAMP_MAX_LENGTH + LOG_SINK_NAME_MAX_LENGTH + LOG_SYSTEM_NAME_MAX_LENGTH + 1 )
+#define LOG_FULL_MESSAGE_MAX_LENGTH ( LOG_FORMATTED_MESSAGE_MAX_LENGTH + LOG_TIMESTAMP_MAX_LENGTH + LOG_SEVERITY_NAME_MAX_LENGTH + LOG_SYSTEM_NAME_MAX_LENGTH + 1 )
 
 LOG_context_enum_t LOG_current_log_context = LOG_CONTEXT_AUTONOMOUS; // Default context is autonomous
 
@@ -38,9 +39,10 @@ typedef struct {
 } LOG_system_t;
 
 typedef struct {
-    LOG_system_enum_t system;
-    LOG_severity_enum_t severity;
-    uint32_t sink_mask;
+    // Previously stored these unused fields:
+    // LOG_system_enum_t system;
+    // LOG_severity_enum_t severity;
+    // uint32_t sink_mask;
     char full_message[LOG_FULL_MESSAGE_MAX_LENGTH];
 } LOG_memory_entry_t;
 
@@ -70,9 +72,9 @@ static const uint8_t LOG_SEVERITY_MASK_DEFAULT = LOG_SEVERITY_MASK_ALL;
 // least one channel. It cannot be turned off. It is not included in the
 // array of sinks.
 static LOG_sink_t LOG_sinks[] = {
-    {LOG_SINK_UHF_RADIO, "UHF radio", LOG_SINK_ON, LOG_SEVERITY_MASK_DEFAULT},
-    {LOG_SINK_FILE, "log files", LOG_SINK_OFF, LOG_SEVERITY_MASK_DEFAULT},
-    {LOG_SINK_UMBILICAL_UART, "umbilical UART", LOG_SINK_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SINK_UHF_RADIO, "UHF_RADIO", LOG_SINK_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SINK_FILE, "FILE", LOG_SINK_OFF, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SINK_UMBILICAL_UART, "UMBILICAL", LOG_SINK_ON, LOG_SEVERITY_MASK_DEFAULT},
 };
 static const uint16_t LOG_NUMBER_OF_SINKS = sizeof(LOG_sinks) / sizeof(LOG_sink_t);
 
@@ -156,9 +158,6 @@ void LOG_message(LOG_system_enum_t system, LOG_severity_enum_t severity, uint32_
         LOG_memory_index_of_current_log_entry = 0;
     }
     LOG_memory_entry_t *current_log_entry = &LOG_memory_table[LOG_memory_index_of_current_log_entry];
-    current_log_entry->system = system;
-    current_log_entry->severity = severity;
-    current_log_entry->sink_mask = sink_mask;
 
     // Prepare the message according to the requested format
     va_list ap;
