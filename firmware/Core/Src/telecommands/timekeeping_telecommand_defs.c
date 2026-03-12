@@ -35,13 +35,15 @@ uint8_t TCMDEXEC_set_system_time(const char *args_str,
     return 0;
 }
 
-/// @brief Adjust the system time with a signed int
+/// @brief Adjust the system time by a correction offset in ms.
 /// @param args_str
 /// - Arg 0: Correction time in milliseconds (int64_t). Positive = forward in time, negative = backward in time.
 /// @return 0 if successful, 1 if error
-uint8_t TCMDEXEC_correct_system_time(const char *args_str,
-                        char *response_output_buf, uint16_t response_output_buf_len){
-
+/// @note Math: new_system_time_ms = current_system_time_ms + correction_time_ms
+uint8_t TCMDEXEC_correct_system_time(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
     int64_t correction_time_ms = 0;
 
     // Convert args_str to signed int and checks if arguement is correct
