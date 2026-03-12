@@ -14,11 +14,21 @@
 #include "telecommand_exec/telecommand_args_helpers.h"
 #include "transforms/arrays.h"
 
+/// @brief Format the LittleFS storage. ERASES ALL FILES. Unmounts the filesystem if necessary.
+/// @return LFS errror code from LFS_format().
 uint8_t TCMDEXEC_fs_format_storage(
     const char *args_str,
         char *response_output_buf, uint16_t response_output_buf_len
 ) {
-    LFS_ensure_unmounted();
+    const int8_t unmount_result = LFS_ensure_unmounted();
+    if (unmount_result != 0) {
+        LOG_message(
+            LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE),
+            "Error unmounting LittleFS before format. LFS_ensure_unmounted() -> %d. Steamrolling.",
+            unmount_result
+        );
+        // Steamroll.
+    }
 
     const int8_t result = LFS_format();
     if (result != 0) {
