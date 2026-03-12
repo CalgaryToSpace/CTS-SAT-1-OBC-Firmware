@@ -366,8 +366,8 @@ uint8_t TCMDEXEC_uart_send_hex_get_response_hex(
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0: Success
-/// @note This function doesn't toggle the EPS power lines for peripherals. Ensure they are powered on before 
-///       using this function.
+/// @note This function doesn't toggle the EPS power lines for peripherals nor
+///       the MPI's UART transceiver. Ensure they are powered on before using this function.
 uint8_t TCMDEXEC_uart_send_hex(
     const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
@@ -384,8 +384,8 @@ uint8_t TCMDEXEC_uart_send_hex(
 
     // Check for argument parsing errors
     if(uart_port_name_parse_result != 0 || bytes_to_send_parse_result !=0) {
-        LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+        snprintf(
+            response_output_buf, response_output_buf_len,
             "Error parsing uart port/data to send arg: Arg 0 Err=%d, Arg 1 Err=%d", 
             uart_port_name_parse_result, 
             bytes_to_send_parse_result
@@ -417,6 +417,12 @@ uint8_t TCMDEXEC_uart_send_hex(
         return 3;    // Error code: Error transmitting data
     }
 
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "Successfully transmitted %u byte(s)",
+        tx_buffer_len
+    );
+
     return 0;   // Success
 }
 
@@ -428,8 +434,8 @@ uint8_t TCMDEXEC_uart_send_hex(
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0: Success
-/// @note This function doesn't toggle the EPS power lines for peripherals. Ensure they are powered on before 
-///       using this function.
+/// @note This function doesn't toggle the EPS power lines for peripherals nor
+///       the MPI's UART transceiver. Ensure they are powered on before using this function.
 uint8_t TCMDEXEC_uart_send_str(
     const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
@@ -445,8 +451,8 @@ uint8_t TCMDEXEC_uart_send_str(
 
     // Check for argument parsing errors
     if(uart_port_name_parse_result != 0 || bytes_to_send_parse_result !=0) {
-        LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+        snprintf(
+            response_output_buf, response_output_buf_len,
             "Error parsing uart port/data to send arg: Arg 0 Err=%d, Arg 1 Err=%d", 
             uart_port_name_parse_result, 
             bytes_to_send_parse_result

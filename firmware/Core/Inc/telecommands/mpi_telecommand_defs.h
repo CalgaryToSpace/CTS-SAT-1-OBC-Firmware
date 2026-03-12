@@ -14,7 +14,7 @@ uint8_t TCMDEXEC_mpi_demo_tx_to_mpi(
     char *response_output_buf, uint16_t response_output_buf_len
 );
 
-uint8_t TCMDEXEC_mpi_demo_set_transceiver_mode(
+uint8_t TCMDEXEC_mpi_set_transceiver_mode(
     const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 );

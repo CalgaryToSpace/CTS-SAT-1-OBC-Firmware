@@ -177,13 +177,14 @@ uint8_t TCMDEXEC_mpi_demo_tx_to_mpi(
     return 0;
 }
 
-/// @brief Sends a message over UART to the MPI.
+/// @brief Manually sets the MPI's UART transceiver state.
 /// @param args_str
 /// - Arg 0: The target mode - "MISO" (from MPI), "MOSI" (to MPI), "DUPLEX", or anything else disables it
 /// @param response_output_buf The buffer to write the response to
 /// @param response_output_buf_len The maximum length of the response_output_buf (its size)
 /// @return 0: Success, >0: Failure
-uint8_t TCMDEXEC_mpi_demo_set_transceiver_mode(
+/// @note Nominally, not required. Useful for manually sending UART messages with `uart_send_hex()` tcmd.
+uint8_t TCMDEXEC_mpi_set_transceiver_mode(
     const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
