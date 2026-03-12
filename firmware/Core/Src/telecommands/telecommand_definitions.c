@@ -929,21 +929,9 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
-        .tcmd_name = "log_report_sink_enabled_state",
-        .tcmd_func = TCMDEXEC_log_report_sink_enabled_state,
-        .number_of_args = 1,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },
-    {
         .tcmd_name = "log_report_all_sink_enabled_states",
         .tcmd_func = TCMDEXEC_log_report_all_sink_enabled_states,
         .number_of_args = 0,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
-    },
-    {
-        .tcmd_name = "log_report_system_file_logging_state",
-        .tcmd_func = TCMDEXEC_log_report_system_file_logging_state,
-        .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
