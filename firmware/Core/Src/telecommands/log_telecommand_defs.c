@@ -97,28 +97,6 @@ uint8_t TCMDEXEC_log_set_system_file_logging_enabled_state(
     return 0;
 }
 
-/// @brief Telecommand: Report a LOG sink's enabled state
-/// @param args_str
-/// - Arg 0: Sink enum
-uint8_t TCMDEXEC_log_report_sink_enabled_state(
-    const char *args_str,
-    char *response_output_buf, uint16_t response_output_buf_len
-) {
-    uint64_t sink;
-    const uint8_t result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &sink);
-    if (result) {
-        snprintf(
-            response_output_buf, response_output_buf_len,
-            "Unable to parse sink from telecommand argument"
-        );
-        return 1;
-    }
-
-    // Response is logged by log system
-    LOG_report_sink_enabled_state(sink);
-
-    return 0;
-}
 
 /// @brief Telecommand: Report all LOG sink enable states
 uint8_t TCMDEXEC_log_report_all_sink_enabled_states(
@@ -133,29 +111,7 @@ uint8_t TCMDEXEC_log_report_all_sink_enabled_states(
     return 0;
 }
 
-/// @brief Telecommand: Report LOG subsystem's file logging state (and show
-///     logging filename)
-/// @param args_str
-/// - Arg 0: Subsystem enum
-uint8_t TCMDEXEC_log_report_system_file_logging_state(
-    const char *args_str,
-    char *response_output_buf, uint16_t response_output_buf_len
-) {
-    uint64_t system;
-    const uint8_t result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &system);
-    if (result) {
-        snprintf(
-            response_output_buf, response_output_buf_len,
-            "Unable to parse system from telecommand argument"
-        );
-        return 1;
-    }
 
-    // Response is logged by log system
-    LOG_report_system_file_logging_state(system);
-
-    return 0;
-}
 
 /// @brief Telecommand: Report all LOG subsystem file logging states
 uint8_t TCMDEXEC_log_report_all_system_file_logging_states(
