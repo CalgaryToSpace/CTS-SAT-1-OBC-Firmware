@@ -3,20 +3,19 @@
 #include "stdio.h"
 #include <stdint.h>
 
+#include "obc_systems/obc_temperature_sensor.h"
 #include "system/system_temperature.h"
-#include "obc_temperature_sensor/obc_temperature_sensor.h"
 #include "antenna_deploy_drivers/ant_commands.h"
 #include "eps_drivers/eps_calculations.h"
 #include "eps_drivers/eps_commands.h"
 #include "eps_drivers/eps_channel_control.h"
-#include "obc_temperature_sensor/obc_temperature_sensor.h"
+
 
 /// @brief Grabs required data/data structures from drivers containing thermal information.
 /// @param result Struct that contains various raw thermal data.
 /// @param error_ret Initial input should be 0. Contains bit information on error status for ANT A, ANT B, PBU and PCU
 /// @return 0 if data was successfully stored, anything else if error.
-uint8_t SYS_TEMP_get_raw_thermal_info(SYS_TEMP_raw_thermal_info_t* result, uint8_t* error_ret){
-
+uint8_t SYS_TEMP_get_raw_thermal_info(SYS_TEMP_raw_thermal_info_t* result, uint8_t* error_ret) {
     const uint8_t eps_status = EPS_set_channel_enabled(EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY, 1);
     HAL_Delay(2000);
 

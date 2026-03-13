@@ -9,7 +9,6 @@
 #include "transforms/arrays.h"
 #include "self_checks/complete_self_check.h"
 #include "obc_systems/external_led_and_rbf.h"
-#include "system/obc_internal_drivers.h"
 #include "system/system_temperature.h"
 
 #include "telecommands/system_telecommand_defs.h"
@@ -238,7 +237,7 @@ uint8_t TCMDEXEC_obc_get_rbf_state(
     return 0;
 }
 uint8_t TCMDEXEC_get_all_system_thermal_info(
-    const char *args_str, TCMD_TelecommandChannel_enum_t tcmd_channel,
+    const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     SYS_TEMP_raw_thermal_info_t raw_temp_info;
