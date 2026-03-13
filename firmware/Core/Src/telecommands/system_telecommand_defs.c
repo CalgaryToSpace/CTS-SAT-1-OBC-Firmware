@@ -111,23 +111,23 @@ uint8_t TCMDEXEC_core_system_stats(
         "{"
         "\"timestamp_ms\":%s,"
         "\"uptime_ms\":%lu,"
-        "\"last_resync_ms\":%lu,"
+        "\"last_time_resync_ms\":%lu,"
         "\"time_synced_ms_ago\":%lu,"
+        "\"last_time_sync_source\":\"%c\","
         "\"time_of_last_tcmd_sent_ms\":%s,"
         "\"total_tcmd_count\":%lu,"
         "\"is_lfs_mounted\":%u,"
-        "\"last_time_sync_source\":\"%c\","
         "\"reboot_reason\":\"%s\","
         "\"eps_battery_percent\":%s"
         "}\n",
         timestamp_string_ms, // timestamp_ms
         TIME_get_current_system_uptime_ms(), // uptime_ms
-        TIME_system_uptime_at_last_time_resync_ms, // last_resync_ms
+        TIME_system_uptime_at_last_time_resync_ms, // last_time_resync_ms
         TIME_get_current_system_uptime_ms() - TIME_system_uptime_at_last_time_resync_ms, // time_synced_ms_ago
+        TIME_sync_source_enum_to_letter_char(TIME_last_synchronization_source), // last_time_sync_source
         time_of_last_tcmd_sent_ms_string, // time_of_last_tcmd_sent_ms
         TCMD_total_tcmd_queued_count, // total_tcmd_count
         LFS_is_lfs_mounted, // is_lfs_mounted
-        TIME_sync_source_enum_to_letter_char(TIME_last_synchronization_source), // last_time_sync_source
         STM32_reset_cause_name, // reboot_reason
         eps_battery_percent_str // eps_battery_percent
     ); 
