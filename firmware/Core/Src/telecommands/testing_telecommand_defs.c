@@ -15,11 +15,11 @@
 /// @brief A demo telecommand that echoes back the argument it received.
 /// @param args_str
 /// - Arg 0: The string to echo back.
-uint8_t TCMDEXEC_echo_back_args(const char *args_str,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
-
+uint8_t TCMDEXEC_echo_back_args(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
     snprintf(response_output_buf, response_output_buf_len, "SUCCESS: Echo Args: '%s'\n", args_str);
-    // TODO: handle args_str being too long
     return 0;
 }
 

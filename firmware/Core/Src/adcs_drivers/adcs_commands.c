@@ -25,9 +25,9 @@
 
 /// @brief Initialize the ADCS CRC, timestamp, and file system directory. 
 /// @return 0 when successful
+/// @note LittleFS must be mounted, power must be provided to the ADCS, and
+///       OBC time must be set in order to initialize the ADCS.
 uint8_t ADCS_initialize() {
-
-    // TODO: LittleFS must be mounted, power must be provided to the ADCS, and OBC time must be set in order to initialize the ADCS
     ADCS_synchronize_unix_time();
     ADCS_initialize_crc8_checksum();
     LFS_make_directory("ADCS");

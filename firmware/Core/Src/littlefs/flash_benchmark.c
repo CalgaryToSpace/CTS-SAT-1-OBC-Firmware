@@ -53,7 +53,7 @@ uint8_t FLASH_benchmark_erase_write_read(uint8_t chip_num, uint32_t test_data_ad
         // so this avoids having a 0/255 right on a power of 2 boundary.
         write_buffer[i] = (i + 42) % 256;
     }
-    // TODO: for very large writes, split into multiple writes (instead of allocating the whole amount on the stack)
+    
     const uint32_t write_send_start_time = HAL_GetTick();
     const FLASH_error_enum_t write_result = FLASH_program_page(chip_num, physical_address, write_buffer, test_data_length);
     if (write_result != 0) {

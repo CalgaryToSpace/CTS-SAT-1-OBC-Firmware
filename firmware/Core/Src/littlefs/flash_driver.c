@@ -168,8 +168,8 @@ void FLASH_enable_then_disable_chip_select(uint8_t chip_number) {
 /// @param chip_number the chip select line to enable.
 /// @return FLASH_ERR_OK on success, or an error code on failure.
 static FLASH_error_enum_t FLASH_wait_until_ready(uint8_t chip_number) {
-    // TODO: this will need to be changed if we change the clock speed.
-    const uint8_t max_attempts = 20; //TODO: Decide on what this should be. 10 was too low, 20 seems to work well.
+    // TODO: This will need to be changed if we change the clock speed.
+    const uint8_t max_attempts = 20; // 10 was too low, 20 seems to work well.
 
     for (uint16_t attempts = 0; attempts < max_attempts; attempts++) {
         uint8_t status_register;

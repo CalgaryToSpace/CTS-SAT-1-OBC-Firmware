@@ -2107,8 +2107,10 @@ uint8_t TCMDEXEC_adcs_get_sd_log_config(const char *args_str,
 ///     - Arg 0: Which commissioning step to set the modes for (1-18)
 ///     - Arg 1: Timeout in seconds before reverting to no control (0 = indefinite)
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
+uint8_t TCMDEXEC_adcs_set_commissioning_modes(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
     uint64_t arguments[2];
     for (uint8_t i = 0; i < 2; i++) {
         const uint8_t extract_status = TCMD_extract_uint64_arg(args_str, strlen(args_str), i, &(arguments[i]));
@@ -2309,8 +2311,15 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(const char *args_str,
                 return 1;
             }
             HAL_Delay(ADCS_COMMISSIONING_HAL_DELAY_MS); // delay to set run mode: 250ms of buffer time to match the others
-            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
-            if (power_control_status != 0) {                            // TODO: once we receive the configuration from CubeSpace, we can confirm which wheel we need to power for this command
+            const uint8_t power_control_status = ADCS_set_power_control(
+                ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON,
+                ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF,
+                ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF,
+                ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF,
+                ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF
+            );
+            // TODO: once we receive the configuration from CubeSpace, we can confirm which wheel we need to power for this command.
+            if (power_control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS power control command failed (err %d)", power_control_status);
                 return 1;

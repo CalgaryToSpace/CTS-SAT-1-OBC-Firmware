@@ -48,8 +48,8 @@ uint8_t TCMDEXEC_mpi_send_command_get_response_hex(
     // Allocate space to receive incoming MPI response.
     // Max possible MPI response buffer size allocated to 256 bytes (Considering for the telecommand echo response,
     // NOT science data. MPI command + arguments can be 7 bytes + 2^N bytes of variable payload). 
-    const size_t rx_buffer_max_size = 256;          // TODO: Verify once commands are finalized with payload limits
-    uint16_t rx_buffer_len = 0;                     // Length of MPI response buffer
+    const size_t rx_buffer_max_size = 256;      // Functional max is closer to <10 bytes.
+    uint16_t rx_buffer_len = 0;                 // Length of MPI response received and stored in rx_buffer
     uint8_t rx_buffer[rx_buffer_max_size];      // Buffer to store incoming response from the MPI
     memset(rx_buffer, 0, rx_buffer_max_size);   // Initialize all elements to 0
 

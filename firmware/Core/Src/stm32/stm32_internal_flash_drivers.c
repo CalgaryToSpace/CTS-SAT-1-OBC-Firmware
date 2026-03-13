@@ -48,8 +48,7 @@ uint8_t STM32_internal_flash_write(uint32_t address, uint8_t *data, uint32_t len
     {
         uint8_t data_to_write[8] = {0};
 
-        // TODO: what to do if data is not 8 bytes long
-        // Currently, it will set the rest of the values to 0
+        // If data is not 8 bytes long, it will set the rest of the values to 0.
 
         // current_address - address is the number of bytes we have written
         // since the beginning of the function

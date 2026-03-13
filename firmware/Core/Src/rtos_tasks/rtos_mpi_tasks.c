@@ -180,7 +180,6 @@ void TASK_service_write_mpi_data(void *argument) {
 
         // If we have a valid averaged temperature value available:
         if (last_mpi_temperature_cC != -99999) {
-            // TODO: Maybe disable this log message - it's pretty verbose.
             LOG_message(
                 LOG_SYSTEM_MPI, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
                 "MPI Task: Last avg temperature: %ld cC", last_mpi_temperature_cC

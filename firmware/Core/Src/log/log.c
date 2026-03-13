@@ -63,9 +63,9 @@ static uint8_t LOG_memory_index_of_current_log_entry = LOG_MEMORY_NUMBER_OF_ENTR
 
 // Severity masking.
 static const uint8_t LOG_SEVERITY_MASK_ALL = 0xFF;
-// TODO: Set mask to: No debugging messages by default.
-// static const uint8_t LOG_SEVERITY_MASK_DEFAULT = LOG_SEVERITY_MASK_ALL & ~(uint8_t)LOG_SEVERITY_DEBUG;
-static const uint8_t LOG_SEVERITY_MASK_DEFAULT = LOG_SEVERITY_MASK_ALL;
+
+// Set default mask to: No debugging messages by default. They're too spammy in real deployment.
+static const uint8_t LOG_SEVERITY_MASK_DEFAULT = LOG_SEVERITY_MASK_ALL & ~(uint8_t)LOG_SEVERITY_DEBUG;
 
 // Note: LOG_sinks entries must have same order as LOG_sink_enum_t entries.
 // The in-memory log table is a combination of working memory for constructing

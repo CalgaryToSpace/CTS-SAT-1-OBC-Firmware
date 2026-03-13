@@ -27,7 +27,7 @@ uint64_t TCMD_timestamp_sent_store[TCMD_TIMESTAMP_RECORD_SIZE] = {0};
 
 /// @brief  The agenda (schedule queue) of telecommands to execute.
 TCMD_parsed_tcmd_to_execute_t TCMD_agenda[TCMD_AGENDA_SIZE];
-// TODO: consider an optimization to store the args_str_no_parens in a separate buffer, to save a ton of memory.
+// TODO: Consider an optimization to store the args_str_no_parens in a separate buffer (or on the heap), to save a ton of memory.
 
 /// @brief  A flag indicating whether a given index in `TCMD_agenda` is valid
 ///         (i.e., filled with a not-yet-executed command).
@@ -99,7 +99,7 @@ uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd
 /// @return The number of currently-filled slots in the agenda.
 /// @note This function is mostly intended for "system stats" telecommands and logging.
 uint16_t TCMD_get_agenda_used_slots_count() {
-    // TODO: consider an easy O(1) optimization by keeping track of the number of used slots.
+    // TODO: Consider an easy O(1) optimization by keeping track of the number of used slots.
     uint16_t count = 0;
     for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
         if (TCMD_agenda_is_valid[slot_num]) {
@@ -114,7 +114,7 @@ uint16_t TCMD_get_agenda_used_slots_count() {
 /// @note This function will return the `slot_num` which has the lowest `timestamp_to_execute` value.
 ///      If multiple slots have the same `timestamp_to_execute`, the lowest `slot_num` will be returned.
 int16_t TCMD_get_next_tcmd_agenda_slot_to_execute() {
-    // TODO: benchmark this, and consider an O(1) optimization by keeping track of the timestamp of the next upcoming telecommand timestamp.
+    // TODO: Benchmark this, and consider an O(1) optimization by keeping track of the timestamp of the next upcoming telecommand timestamp.
     
     const uint64_t current_timestamp_ms = TIME_get_current_unix_epoch_time_ms();
 
@@ -131,7 +131,10 @@ int16_t TCMD_get_next_tcmd_agenda_slot_to_execute() {
             return slot_num;
         }
         
-        if (TCMD_agenda[slot_num].timestamp_to_execute < earliest_timestamp && TCMD_agenda[slot_num].timestamp_to_execute <= current_timestamp_ms) {
+        if (
+            (TCMD_agenda[slot_num].timestamp_to_execute < earliest_timestamp)
+            && (TCMD_agenda[slot_num].timestamp_to_execute <= current_timestamp_ms)
+        ) {
             earliest_slot_num = slot_num;
             earliest_timestamp = TCMD_agenda[slot_num].timestamp_to_execute;
         }
