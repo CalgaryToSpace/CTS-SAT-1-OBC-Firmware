@@ -39,3 +39,10 @@ Configuration variable: `STM32_system_reset_interval_sec`. If the system uptime 
 Configuration variable: `STM32_system_reset_no_uplink_interval_sec`. If the duration since an AX100 uplink telecommand exceeds this value, the system will reset (reboot).
 
 * https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/547
+
+## UHF Radio Communication
+
+### Dipole Switch Reset
+
+* Configuration Variable: `COMMS_max_duration_without_uplink_before_setting_default_rf_switch_mode_sec`
+* If a short duration passes without an uplink, the dipole/antenna switch configuration is reset.
