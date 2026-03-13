@@ -21,11 +21,11 @@ uint8_t SYS_TEMP_get_raw_thermal_info(SYS_TEMP_raw_thermal_info_t* result, uint8
 
     uint16_t ANT_raw_temp_A;
     uint16_t ANT_raw_temp_B;
-    if (eps_status !=0) {
+    if (eps_status != 0) {
         *error_ret |= SYS_TEMP_ANT_A_STATUS;
         *error_ret |= SYS_TEMP_ANT_B_STATUS;
-    } else {
-
+    }
+    else {
         const uint8_t ANT_A_status = ANT_CMD_measure_temp(ANT_I2C_BUS_A_MCU_A, &ANT_raw_temp_A);
         if (ANT_A_status!=0) {
             *error_ret |= SYS_TEMP_ANT_A_STATUS;
@@ -40,7 +40,7 @@ uint8_t SYS_TEMP_get_raw_thermal_info(SYS_TEMP_raw_thermal_info_t* result, uint8
     
     const int32_t obc_temp_result = OBC_TEMP_SENSOR_get_temperature_cC();
 
-    //get solar panel (PCU, mppt)
+    // get solar panel (PCU, mppt)
     EPS_struct_pcu_housekeeping_data_eng_t pcu_data;
     const uint8_t pcu_status = EPS_CMD_get_pcu_housekeeping_data_run_avg(&pcu_data);
     if (pcu_status!=0){

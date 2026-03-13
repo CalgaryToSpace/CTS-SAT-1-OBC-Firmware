@@ -236,6 +236,14 @@ uint8_t TCMDEXEC_obc_get_rbf_state(
     );
     return 0;
 }
+
+
+/// @brief Get a variety of system thermal info as JSON.
+/// @param args_str No arguments.
+/// @return 0 on success.
+/// @note Fields include OBC temp, antenna temps, solar panel generation, battery info.
+/// @note The EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY channel is powered off after,
+///       even if it was powered on previously. Totally safe, but just an FYI.
 uint8_t TCMDEXEC_get_all_system_thermal_info(
     const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
@@ -244,11 +252,11 @@ uint8_t TCMDEXEC_get_all_system_thermal_info(
     SYS_TEMP_thermal_info_t output_temp_info;
     uint8_t error_ret = 0;
 
-    uint8_t result = SYS_TEMP_get_raw_thermal_info(&raw_temp_info, &error_ret);
+    const uint8_t result = SYS_TEMP_get_raw_thermal_info(&raw_temp_info, &error_ret);
     if (result != 0) {
         snprintf(response_output_buf, response_output_buf_len,
             "SYS_TEMP_get_raw_thermal_info (err %d)", result);
-        return 1;
+        return result;
     }
 
     SYS_TEMP_pack_to_system_thermal_info(&raw_temp_info, &output_temp_info, error_ret);
