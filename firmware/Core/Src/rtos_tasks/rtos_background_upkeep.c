@@ -34,8 +34,14 @@ uint32_t COMMS_total_beacon_count_since_boot = 0;
 
 /// @brief How frequently to set the OBC time based on the EPS time if the time divergence is >2 seconds.
 /// @note Default: 600 seconds = 10 minutes.
+/// @note Set to 0 to disable time syncing.
 uint32_t EPS_time_sync_period_sec = 600;
 
+/// @brief If the OBC time and EPS time differ by more than this value, the OBC time will be set based on the EPS time.
+/// @note Default: 2000 ms = 2 seconds.
+/// @note Strongly related to EPS_time_sync_period_sec.
+/// @note Recommendation: Do not set to < 1500-2000ms, as the EPS time is only granular to 1 second.
+uint32_t EPS_max_time_deviation_for_sync_ms = 2000;
 
 static uint32_t EPS_monitor_last_uptime_ms = 0;
 
@@ -190,11 +196,14 @@ static void subtask_send_beacon(void) {
 static uint32_t uptime_of_last_eps_time_sync_ms = 0;
 
 /// Periodically check the OBC time against the EPS time, and then set the OBC time based on the
-/// EPS time if they diverge by more than 2000ms.
+/// EPS time if they diverge by more than 2000ms (or as configured).
 /// We make an assumption here that the EPS's time is going to be more reliable/accurate than the OBC's time,
 /// since the EPS uses a high-quality RTC.
 static void subtask_sync_obc_time_based_on_eps_time(void) {
-    if (((TIME_get_current_system_uptime_ms() - uptime_of_last_eps_time_sync_ms) / 1000) >= EPS_time_sync_period_sec) {
+    if (
+        (EPS_time_sync_period_sec > 0) // Allow disabling this feature.
+        && (((TIME_get_current_system_uptime_ms() - uptime_of_last_eps_time_sync_ms) / 1000) >= EPS_time_sync_period_sec)
+     ) {
         uptime_of_last_eps_time_sync_ms = TIME_get_current_system_uptime_ms();
 
         EPS_struct_system_status_t status;
@@ -213,10 +222,14 @@ static void subtask_sync_obc_time_based_on_eps_time(void) {
         const uint64_t eps_time_ms = ((uint64_t)status.unix_time_sec) * 1000;
         const uint64_t obc_time_ms = TIME_get_current_unix_epoch_time_ms();
         const int64_t delta_ms = ((int64_t)obc_time_ms) - ((int64_t)eps_time_ms);
-        if ((delta_ms > 2000) || (delta_ms < -2000)) { // Abs value greater than threshold.
+        if (  // Abs value greater than threshold.
+            (delta_ms > EPS_max_time_deviation_for_sync_ms)
+            || (delta_ms < -EPS_max_time_deviation_for_sync_ms)
+        ) {
             LOG_message(
                 LOG_SYSTEM_EPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-                "EPS vs. OBC time differ by more than 2000ms. Setting OBC time based on EPS time."
+                "EPS vs. OBC time differ by more than %ldms. Setting OBC time based on EPS time.",
+                EPS_max_time_deviation_for_sync_ms
             );
 
             const uint8_t sync_result = EPS_set_obc_time_based_on_eps_time(); // Emits log message!

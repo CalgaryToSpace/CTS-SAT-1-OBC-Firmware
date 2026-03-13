@@ -9,6 +9,7 @@
 #include <string.h>
 
 extern uint32_t EPS_time_sync_period_sec;
+extern uint32_t EPS_max_time_deviation_for_sync_ms;
 extern uint32_t TASK_heartbeat_period_ms;
 extern uint32_t TCMD_require_valid_sha256;
 extern uint32_t CONFIG_EPS_enable_uart_debug_print;
@@ -57,6 +58,10 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
     {
         .variable_name = "EPS_time_sync_period_sec",
         .num_config_var = &EPS_time_sync_period_sec,
+    },
+    {
+        .variable_name = "EPS_max_time_deviation_for_sync_ms",
+        .num_config_var = &EPS_max_time_deviation_for_sync_ms,
     },
     {
         .variable_name = "STM32_system_reset_interval_sec",
