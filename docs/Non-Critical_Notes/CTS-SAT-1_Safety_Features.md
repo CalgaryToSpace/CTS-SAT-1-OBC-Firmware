@@ -32,6 +32,10 @@ These logical features are implemented in the OBC's firmware.
 
 Configuration variable: `STM32_system_reset_interval_sec`. If the system uptime exceeds this value, the system will reset (reboot).
 
+* https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/282
+
 ## Duration Since Uplink
 
 Configuration variable: `STM32_system_reset_no_uplink_interval_sec`. If the duration since an AX100 uplink telecommand exceeds this value, the system will reset (reboot).
+
+* https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/547
