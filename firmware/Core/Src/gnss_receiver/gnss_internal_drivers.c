@@ -91,10 +91,10 @@ uint8_t GNSS_send_cmd_get_response(
                 return 2; // Error: Timeout before receiving any data.
             }
         }
-        else { // thus, UART_eps_buffer_write_idx > 0
+        else { // thus, UART_gnss_buffer_write_idx > 0
             // Check if we've timed out (between bytes)
             const uint32_t cur_time = HAL_GetTick();
-            // Note: Sometimes, because ISRs and C are fun, the UART_eps_last_write_time_ms is
+            // Note: Sometimes, because ISRs and C are fun, the UART_gnss_last_write_time_ms is
             // greater than `cur_time`. Thus, we must do a safety check that the time difference
             // is positive.
             if (
