@@ -23,6 +23,8 @@ static const uint16_t MPI_RX_TIMEOUT_DURATION_MS = 2000;
 
 volatile MPI_rx_mode_enum_t MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
 
+MPI_reason_for_stopping_active_mode MPI_last_reason_for_stopping_active_mode = MPI_REASON_FOR_STOPPING_NOT_SET;
+
 
 uint8_t MPI_science_data_file_is_open = 0;
 uint32_t MPI_science_data_bytes_lost = 0;
@@ -400,6 +402,7 @@ static void MPI_power_off() {
 
 uint8_t MPI_disable_active_mode(MPI_reason_for_stopping_active_mode reason_for_stopping) {
     MPI_power_off();
+    MPI_last_reason_for_stopping_active_mode = reason_for_stopping;
 
     // Set the MPI State to not handle any receiving data
     MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE); // Set the MPI transceiver to inactive
@@ -466,6 +469,8 @@ uint8_t MPI_disable_active_mode(MPI_reason_for_stopping_active_mode reason_for_s
 
 char *MPI_reason_for_stopping_active_mode_enum_to_str(MPI_reason_for_stopping_active_mode reason) {
     switch (reason) {
+        case MPI_REASON_FOR_STOPPING_NOT_SET:
+            return "NOT_SET";
         case MPI_REASON_FOR_STOPPING_TEMPERATURE_EXCEEDED:
             return "TEMPERATURE_EXCEEDED";
         case MPI_REASON_FOR_STOPPING_TELECOMMAND:
@@ -473,6 +478,6 @@ char *MPI_reason_for_stopping_active_mode_enum_to_str(MPI_reason_for_stopping_ac
         case MPI_REASON_FOR_STOPPING_MAX_TIME_EXCEEDED:
             return "MAX_TIME_EXCEEDED";
         default:
-            return "UNKNOWN_REASON";
+            return "UNKNOWN";
     }
 }

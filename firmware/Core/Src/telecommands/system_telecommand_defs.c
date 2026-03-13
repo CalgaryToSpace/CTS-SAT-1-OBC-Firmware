@@ -22,6 +22,7 @@
 
 extern uint32_t COMMS_total_beacon_count_since_boot;
 extern MPI_transceiver_state_enum_t MPI_current_transceiver_state;
+extern MPI_reason_for_stopping_active_mode MPI_last_reason_for_stopping_active_mode;
 
 /// @brief A simple telecommand that responds with "Hello, world!" (log message and TCMD response)
 /// @param args_str No arguments expected
@@ -124,6 +125,7 @@ uint8_t TCMDEXEC_core_system_stats(
         "\"reboot_reason\":\"%s\","
         "\"mpi_rx_mode\":\"%s\","
         "\"mpi_transceiver_state\":\"%s\","
+        "\"mpi_last_reason_for_stopping\":\"%s\","
         "\"eps_battery_percent\":%s"
         "}\n",
         timestamp_string_ms, // timestamp_ms
@@ -138,6 +140,7 @@ uint8_t TCMDEXEC_core_system_stats(
         STM32_reset_cause_name, // reboot_reason
         MPI_rx_mode_enum_to_str(MPI_current_uart_rx_mode), // mpi_rx_mode
         MPI_transceiver_state_enum_to_str(MPI_current_transceiver_state), // mpi_transceiver_state
+        MPI_reason_for_stopping_active_mode_enum_to_str(MPI_last_reason_for_stopping_active_mode), // mpi_last_reason_for_stopping
         eps_battery_percent_str // eps_battery_percent
     ); 
 

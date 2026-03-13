@@ -18,6 +18,7 @@ extern lfs_file_t MPI_science_data_file_pointer;
 extern uint32_t MPI_recording_start_uptime_ms;
 
 typedef enum {
+    MPI_REASON_FOR_STOPPING_NOT_SET,
     MPI_REASON_FOR_STOPPING_TEMPERATURE_EXCEEDED,
     MPI_REASON_FOR_STOPPING_TELECOMMAND,
     MPI_REASON_FOR_STOPPING_MAX_TIME_EXCEEDED
