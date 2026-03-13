@@ -345,7 +345,7 @@ uint8_t TCMDEXEC_fs_delete_file(const char *args_str,
     return 0;
 }
 
-/// @brief Telecommand: Deletes a specified directory in LittleFS
+/// @brief Telecommand: Deletes a specified directory, including all subfolders/subfiles.
 /// @param args_str
 /// - Arg 0: Directory name to be deleted
 /// @note Do not add quotations around the argument, write as is.

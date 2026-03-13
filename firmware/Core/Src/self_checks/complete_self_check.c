@@ -14,6 +14,7 @@
 #include "antenna_deploy_drivers/ant_commands.h"
 #include "antenna_deploy_drivers/ant_internal_drivers.h"
 #include "camera/camera_init.h"
+#include "timekeeping/timekeeping.h"
 
 #include "uart_handler/uart_handler.h"
 #include "obc_systems/obc_temperature_sensor.h"
@@ -190,23 +191,39 @@ static uint8_t CTS1_check_is_eps_thriving() {
 /// @brief Check if the MPI is dumping science data by using the nominal active mode enabling/disabling functions.
 /// @return 1 if the MPI is dumping science data, 0 otherwise.
 static uint8_t CTS1_check_mpi_science_rx() {
-    const char* test_file_path = "mpi_self_check.dat";
+    // Ensure the directory exists for the test file. Steamroll on error.
+    LFS_make_directory("mpi_self_checks");
+
+    // Make a timestamped filename with path.
+    char file_date[25];
+    TIME_get_current_utc_datetime_str(file_date, sizeof(file_date)); // TODO: Use _no_ms version.
+    char test_file_path[65];
+    snprintf(
+        test_file_path, sizeof(test_file_path),
+        "mpi_self_checks/mpi_self_check_%s.dat",
+        file_date
+    );
 
     // Section: Collect the science data.
     {
-        uint8_t return_result = 1;
+        uint8_t mpi_success = 1;
         const uint8_t enable_result = MPI_enable_active_mode(test_file_path);
         if (enable_result != 0) {
             LOG_message(
                 LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
                 "MPI_enable_active_mode() -> %d", enable_result
             );
-            return_result = 0;
+            mpi_success = 0;
             // Steamroll: Attempt to disable, even if it failed.
         }
 
         // Wait for MPI to collect some science data.
-        HAL_Delay(10000);
+        STM32_pet_watchdog();
+        // Must use an OS delay (yield to other tasks).
+        // This is the only non-blocking delay in the middle of a telecommand.
+        // Important because we must let the MPI data collection thread run.
+        osDelay(10000);
+        STM32_pet_watchdog();
 
         // Put the MPI back in passive/inactive mode.
         const uint8_t disable_result = MPI_disable_active_mode(MPI_REASON_FOR_STOPPING_SELF_CHECK_DONE);
@@ -215,10 +232,10 @@ static uint8_t CTS1_check_mpi_science_rx() {
                 LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
                 "MPI_disable_active_mode() -> %d", disable_result
             );
-            return_result = 0;
+            mpi_success = 0;
         }
 
-        if (return_result == 0) {
+        if (!mpi_success) {
             // Skip the rest of the validations, since we already know the MPI isn't responsive.
             return 0;
         }
@@ -356,7 +373,8 @@ void CTS1_run_system_self_check(CTS1_system_self_check_result_struct_t *result) 
         result->is_eps_thriving
     );
 
-    // MPI
+    // MPI.
+    // Note: Contains watchdog pet and osDelay!
     result->mpi_science_rx = CTS1_check_mpi_science_rx();
     EPS_set_channel_enabled(EPS_CHANNEL_12V_MPI, 0); // Should already be disabled, but fine to check.
     EPS_set_channel_enabled(EPS_CHANNEL_5V_MPI, 0); // Should already be disabled, but fine to check.
@@ -365,9 +383,6 @@ void CTS1_run_system_self_check(CTS1_system_self_check_result_struct_t *result) 
         "mpi_science_rx: %d",
         result->mpi_science_rx
     );
-
-    // The MPI self-check takes a long time (collects data for a bit). Pet the watchdog here to keep it happy.
-    STM32_pet_watchdog();
 
     // Camera
     result->is_camera_responsive = CTS1_check_is_camera_responsive();
