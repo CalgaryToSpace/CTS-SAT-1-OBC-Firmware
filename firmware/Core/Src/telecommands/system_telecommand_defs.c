@@ -9,6 +9,7 @@
 #include "transforms/arrays.h"
 #include "self_checks/complete_self_check.h"
 #include "obc_systems/external_led_and_rbf.h"
+#include "system/system_temperature.h"
 
 #include "telecommands/system_telecommand_defs.h"
 #include "telecommand_exec/telecommand_definitions.h"
@@ -233,5 +234,55 @@ uint8_t TCMDEXEC_obc_get_rbf_state(
         "{\"rbf_state\":\"%s\"}",
         rbf_state_str
     );
+    return 0;
+}
+
+
+/// @brief Get a variety of system thermal info as JSON.
+/// @param args_str No arguments.
+/// @return 0 on success.
+/// @note Fields include OBC temp, antenna temps, solar panel generation, battery info.
+/// @note The EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY channel is powered off after,
+///       even if it was powered on previously. Totally safe, but just an FYI.
+uint8_t TCMDEXEC_get_all_system_thermal_info(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    SYS_TEMP_raw_thermal_info_t raw_temp_info;
+    SYS_TEMP_thermal_info_t output_temp_info;
+    uint8_t error_ret = 0;
+
+    const uint8_t result = SYS_TEMP_get_raw_thermal_info(&raw_temp_info, &error_ret);
+    if (result != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "SYS_TEMP_get_raw_thermal_info (err %d)", result);
+        return result;
+    }
+
+    SYS_TEMP_pack_to_system_thermal_info(&raw_temp_info, &output_temp_info, error_ret);
+
+    snprintf(
+        response_output_buf, response_output_buf_len, 
+        "{"
+        "\"obc_temperature_cC\":%ld,"
+        "\"ant_temperature_cC\":[%ld,%ld]," // Bus A, Bus B
+        "\"solar_panel_power_gen_mW\": [%ld,%ld,%ld,%ld],"
+        "\"eps_battery_percent\":%0.02f,"
+        "\"battery_heater_active\":%d,"
+        "\"battery_sensor_temp_cC\": [%d,%d]"
+        "}\n", 
+        output_temp_info.system_OBC_temperature_cC,
+        output_temp_info.system_ANT_temperature_i2c_bus_A_cC,
+        output_temp_info.system_ANT_temperature_i2c_bus_B_cC,
+        output_temp_info.system_solar_panel_power_generation_mW[0],
+        output_temp_info.system_solar_panel_power_generation_mW[1],
+        output_temp_info.system_solar_panel_power_generation_mW[2],
+        output_temp_info.system_solar_panel_power_generation_mW[3],
+        output_temp_info.system_eps_battery_percent,
+        output_temp_info.system_eps_battery_heater_status_bit,
+        output_temp_info.system_eps_battery_each_sensor_temperature_cC[1],
+        output_temp_info.system_eps_battery_each_sensor_temperature_cC[2]
+    );
+
     return 0;
 }
