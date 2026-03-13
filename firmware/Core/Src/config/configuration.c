@@ -19,8 +19,10 @@ extern uint32_t MPI_max_recording_duration_sec;
 extern uint32_t STM32_system_reset_interval_sec;
 extern uint32_t STM32_system_reset_no_uplink_interval_sec;
 
+extern uint32_t LOG_file_flush_interval_sec;
+extern uint32_t LOG_file_rotation_interval_sec;
+
 uint32_t CONFIG_int_demo_var_1 = 13345;
-uint32_t CONFIG_int_demo_var_2 = 242344;
 
 // extern
 uint32_t EPS_monitor_interval_ms = 20000;
@@ -40,19 +42,14 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
         .num_config_var = &CONFIG_int_demo_var_1,
     },
     {
-        .variable_name = "CONFIG_int_demo_var_2",
-        .num_config_var = &CONFIG_int_demo_var_2,
+        .variable_name = "CONFIG_EPS_enable_uart_debug_print",
+        .num_config_var = &CONFIG_EPS_enable_uart_debug_print,
     },
-
+    // Background Timer Config
     {
         .variable_name = "TASK_heartbeat_period_ms",
         .num_config_var = &TASK_heartbeat_period_ms,
     },
-    {
-        .variable_name = "TCMD_require_valid_sha256",
-        .num_config_var = &TCMD_require_valid_sha256,
-    },
-    // Background Timer Config
     {
         .variable_name = "EPS_monitor_interval_ms",
         .num_config_var = &EPS_monitor_interval_ms,
@@ -69,17 +66,14 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
         .variable_name = "STM32_system_reset_no_uplink_interval_sec",
         .num_config_var = &STM32_system_reset_no_uplink_interval_sec,
     },
-    // End Background Timer config
     {
-        .variable_name = "TCMD_require_unique_tssent",
-        .num_config_var = &TCMD_require_unique_tssent,
+        .variable_name = "LOG_file_flush_interval_sec",
+        .num_config_var = &LOG_file_flush_interval_sec,
     },
-
     {
-        .variable_name = "CONFIG_EPS_enable_uart_debug_print",
-        .num_config_var = &CONFIG_EPS_enable_uart_debug_print,
+        .variable_name = "LOG_file_rotation_interval_sec",
+        .num_config_var = &LOG_file_rotation_interval_sec,
     },
-
     // ******** AX100 Configuration ********
     {
         .variable_name = "AX100_enable_downlink_uart_logs",
@@ -99,7 +93,14 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
         .variable_name = "TCMD_handle_ax100_tcmds_interval_ms",
         .num_config_var = &TCMD_handle_ax100_tcmds_interval_ms,
     },
-
+    {
+        .variable_name = "TCMD_require_valid_sha256",
+        .num_config_var = &TCMD_require_valid_sha256,
+    },
+    {
+        .variable_name = "TCMD_require_unique_tssent",
+        .num_config_var = &TCMD_require_unique_tssent,
+    },
     // ******** COMMS Configuration ********
     {
         .variable_name = "COMMS_bulk_downlink_delay_per_packet_ms",
