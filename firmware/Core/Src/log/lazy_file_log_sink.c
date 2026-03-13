@@ -57,7 +57,7 @@ static int8_t LOG_open_new_log_file_and_set_as_current(void) {
 
     // Generate a timestamped filename.
     char timestamp_str[20];
-    TIME_get_current_utc_datetime_str(timestamp_str, sizeof(timestamp_str)); 
+    TIME_get_current_utc_datetime_str_no_ms(timestamp_str, sizeof(timestamp_str)); 
     char filename[32];
     snprintf(filename, sizeof(filename), "logs/%s.log", timestamp_str);
 

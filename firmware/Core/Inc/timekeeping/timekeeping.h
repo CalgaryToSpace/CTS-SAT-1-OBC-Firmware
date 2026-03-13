@@ -30,7 +30,13 @@ void TIME_format_utc_datetime_str(
     char *dest_str, size_t dest_str_size,
     uint64_t timestamp_ms, TIME_sync_source_enum_t sync_source
 );
+void TIME_format_utc_datetime_str_no_ms(
+    char *dest_str, size_t dest_str_size,
+    uint64_t timestamp_ms
+);
+
 void TIME_get_current_utc_datetime_str(char *dest_str, size_t dest_str_size);
+void TIME_get_current_utc_datetime_str_no_ms(char *dest_str, size_t dest_str_size);
 
 char TIME_sync_source_enum_to_letter_char(TIME_sync_source_enum_t source);
 

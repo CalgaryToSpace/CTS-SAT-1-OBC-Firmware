@@ -186,6 +186,36 @@ void TIME_format_utc_datetime_str(
 }
 
 
+/// @brief Returns a human-friendly UTC datetime string in roughly ISO 8601 format, without milliseconds nor sync source.
+/// @param dest_str - Pointer to buffer that stores the log string 
+/// @param dest_str_size - Maximum length of dest_str buffer
+/// @details The string identifies the current Unix time, and number of 
+/// milliseconds since the time was last synchronized to a reference source.
+/// String format:
+/// yyyy-mm-ddTHHMMSSZ
+/// @example Example output: 2024-06-23T180132Z
+/// @note This function is very useful for log file names.
+void TIME_format_utc_datetime_str_no_ms(
+    char *dest_str, size_t dest_str_size,
+    uint64_t timestamp_ms
+) {
+    const time_t seconds = (time_t)(timestamp_ms / 1000U);
+    struct tm *time_info = gmtime(&seconds);
+
+    snprintf(
+        dest_str, 
+        dest_str_size, 
+        "%d-%02d-%02dT%02d%02d%02dZ",
+        time_info->tm_year + 1900, 
+        time_info->tm_mon + 1, 
+        time_info->tm_mday, 
+        time_info->tm_hour, 
+        time_info->tm_min, 
+        time_info->tm_sec
+    );
+}
+
+
 /// @brief Returns a human-friendly UTC datetime string in roughly ISO 8601 format.
 /// @param dest_str - Pointer to buffer that stores the log string 
 /// @param dest_str_size - Maximum length of dest_str buffer
@@ -212,6 +242,24 @@ void TIME_get_current_utc_datetime_str(char *dest_str, size_t dest_str_size) {
         TIME_last_synchronization_source
     );
 }
+
+
+/// @brief Returns a human-friendly UTC datetime string in roughly ISO 8601 format, without milliseconds nor sync source.
+/// @param dest_str - Pointer to buffer that stores the log string 
+/// @param dest_str_size - Maximum length of dest_str buffer
+/// @details The string identifies the current Unix time, and number of 
+/// milliseconds since the time was last synchronized to a reference source.
+/// String format:
+/// yyyy-mm-ddTHHMMSSZ
+/// @example Example output: 2024-06-23T180132Z
+/// @note This function is very useful for log file names.
+void TIME_get_current_utc_datetime_str_no_ms(char *dest_str, size_t dest_str_size) {
+    TIME_format_utc_datetime_str_no_ms(
+        dest_str, dest_str_size,
+        TIME_get_current_unix_epoch_time_ms()
+    );
+}
+
 
 char TIME_sync_source_enum_to_letter_char(TIME_sync_source_enum_t source) {
     switch (TIME_last_synchronization_source) {
