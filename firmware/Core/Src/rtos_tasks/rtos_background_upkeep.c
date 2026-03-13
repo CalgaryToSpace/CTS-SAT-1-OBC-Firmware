@@ -27,6 +27,7 @@ uint32_t STM32_system_reset_interval_sec = 604800;
 /// @note Set to 0 to disable this feature.
 uint32_t STM32_system_reset_no_uplink_interval_sec = 216000;
 
+uint32_t COMMS_total_beacon_count_since_boot = 0;
 
 static uint32_t EPS_monitor_last_uptime_ms = 0;
 
@@ -171,8 +172,9 @@ static void subtask_send_beacon(void) {
         HAL_Delay(20); // Wait for the RF switch to settle. Should only take <100 nanoseconds.
     }
 
-    // TODO: Add configuration for beacon interval.
+    // TODO: Add configuration for beacon interval (https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/554).
     COMMS_downlink_beacon_basic_packet();
+    COMMS_total_beacon_count_since_boot += 1;
 
     // TOOD: If complex beacon packet is enabled, also send that too.
 }

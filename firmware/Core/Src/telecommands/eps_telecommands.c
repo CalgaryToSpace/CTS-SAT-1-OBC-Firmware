@@ -604,7 +604,7 @@ uint8_t TCMDEXEC_eps_get_piu_housekeeping_data_run_avg_json(
     return 0;
 }
 
-/// @brief Get current battery voltage percent from PBU
+/// @brief Get current battery voltage and percent from EPS's PBU.
 uint8_t TCMDEXEC_eps_get_current_battery_percent(
     const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len) {
@@ -618,11 +618,14 @@ uint8_t TCMDEXEC_eps_get_current_battery_percent(
         return 1;
     }
 
+    const int16_t battery_voltage_mV = data.battery_pack_info_each_pack[0].vip_bp_input.voltage_mV;
+
     const float battery_percent = EPS_convert_battery_voltage_to_percent(data.battery_pack_info_each_pack[0]);
 
-    snprintf(response_output_buf, response_output_buf_len, 
-             "Battery Percentage: %0.2f%%", battery_percent);
-
+    snprintf(
+        response_output_buf, response_output_buf_len, 
+        "Battery Percentage: %0.2f%% = %d mV", battery_percent, battery_voltage_mV
+    );
     
     return 0;    
 }

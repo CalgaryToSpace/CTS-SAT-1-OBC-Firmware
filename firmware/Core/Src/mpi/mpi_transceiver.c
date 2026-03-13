@@ -2,8 +2,8 @@
 
 #include "mpi/mpi_types.h"
 
+// MPI transceiver is disabled on bootup in `SYS_disable_systems_bootup()`.
 MPI_transceiver_state_enum_t MPI_current_transceiver_state = MPI_TRANSCEIVER_MODE_INACTIVE;
-// TODO: Add a startup action to put it in INACTIVE mode.
 
 
 /// @brief Sets the transceiver state.

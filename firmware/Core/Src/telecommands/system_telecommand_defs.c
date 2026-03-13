@@ -10,6 +10,9 @@
 #include "self_checks/complete_self_check.h"
 #include "obc_systems/external_led_and_rbf.h"
 #include "system/system_temperature.h"
+#include "mpi/mpi_command_handling.h"
+#include "mpi/mpi_types.h"
+#include "uart_handler/uart_handler.h"
 
 #include "telecommands/system_telecommand_defs.h"
 #include "telecommand_exec/telecommand_definitions.h"
@@ -18,6 +21,9 @@
 #include <stdio.h>
 #include <string.h>
 
+extern uint32_t COMMS_total_beacon_count_since_boot;
+extern MPI_transceiver_state_enum_t MPI_current_transceiver_state;
+extern MPI_reason_for_stopping_active_mode MPI_last_reason_for_stopping_active_mode;
 
 /// @brief A simple telecommand that responds with "Hello, world!" (log message and TCMD response)
 /// @param args_str No arguments expected
@@ -80,13 +86,13 @@ uint8_t TCMDEXEC_obc_firmware_version(
     return 0;
 }
 
+/// @brief Get many essential system stats as a JSON dict.
+/// @param args_str No arguments.
+/// @return 0 on success. Cannot fail.
 uint8_t TCMDEXEC_core_system_stats(
     const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
-    // TODO: Add temperatures (EPS, OBC, antenna, etc.)
-    // TODO: Add beacon sent count
-
     char timestamp_string_ms[20];
     GEN_uint64_to_str(TIME_get_current_unix_epoch_time_ms(), timestamp_string_ms);
 
@@ -111,24 +117,34 @@ uint8_t TCMDEXEC_core_system_stats(
         "{"
         "\"timestamp_ms\":%s,"
         "\"uptime_ms\":%lu,"
-        "\"last_resync_ms\":%lu,"
+        "\"last_time_resync_ms\":%lu,"
         "\"time_synced_ms_ago\":%lu,"
+        "\"last_time_sync_source\":\"%c\","
         "\"time_of_last_tcmd_sent_ms\":%s,"
         "\"total_tcmd_count\":%lu,"
+        "\"total_beacon_count\":%lu,"
         "\"is_lfs_mounted\":%u,"
-        "\"last_time_sync_source\":\"%c\","
         "\"reboot_reason\":\"%s\","
+        "\"mpi_rx_mode\":\"%s\","
+        "\"mpi_transceiver_state\":\"%s\","
+        "\"mpi_last_reason_for_stopping\":\"%s\","
+        "\"gnss_uart_interrupt_enabled\":%u,"
         "\"eps_battery_percent\":%s"
         "}\n",
         timestamp_string_ms, // timestamp_ms
         TIME_get_current_system_uptime_ms(), // uptime_ms
-        TIME_system_uptime_at_last_time_resync_ms, // last_resync_ms
+        TIME_system_uptime_at_last_time_resync_ms, // last_time_resync_ms
         TIME_get_current_system_uptime_ms() - TIME_system_uptime_at_last_time_resync_ms, // time_synced_ms_ago
+        TIME_sync_source_enum_to_letter_char(TIME_last_synchronization_source), // last_time_sync_source
         time_of_last_tcmd_sent_ms_string, // time_of_last_tcmd_sent_ms
         TCMD_total_tcmd_queued_count, // total_tcmd_count
+        COMMS_total_beacon_count_since_boot, // total_beacon_count
         LFS_is_lfs_mounted, // is_lfs_mounted
-        TIME_sync_source_enum_to_letter_char(TIME_last_synchronization_source), // last_time_sync_source
         STM32_reset_cause_name, // reboot_reason
+        MPI_rx_mode_enum_to_str(MPI_current_uart_rx_mode), // mpi_rx_mode
+        MPI_transceiver_state_enum_to_str(MPI_current_transceiver_state), // mpi_transceiver_state
+        MPI_reason_for_stopping_active_mode_enum_to_str(MPI_last_reason_for_stopping_active_mode), // mpi_last_reason_for_stopping
+        UART_gnss_uart_interrupt_enabled, // gnss_uart_interrupt_enabled
         eps_battery_percent_str // eps_battery_percent
     ); 
 
