@@ -472,6 +472,8 @@ char *MPI_reason_for_stopping_active_mode_enum_to_str(MPI_reason_for_stopping_ac
             return "TELECOMMAND";
         case MPI_REASON_FOR_STOPPING_MAX_TIME_EXCEEDED:
             return "MAX_TIME_EXCEEDED";
+        case MPI_REASON_FOR_STOPPING_SELF_CHECK_DONE:
+            return "SELF_CHECK_DONE";
         default:
             return "UNKNOWN_REASON";
     }
