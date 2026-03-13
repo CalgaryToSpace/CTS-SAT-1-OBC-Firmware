@@ -14,7 +14,7 @@ typedef enum {
     MPI_RX_MODE_COMMAND_MODE,               // MPI is in command mode
     MPI_RX_MODE_SENSING_MODE,               // MPI is science data is being collected mode
     MPI_RX_MODE_NOT_LISTENING_TO_MPI        // MPI is recording science data but it is not being collected mode
-} MPI_rx_mode_t;
+} MPI_rx_mode_enum_t;
 
 typedef enum {
     MPI_MEMORY_WRITE_STATUS_AWAITING_WRITE, // MPI buffer is waiting to be fully wrote to memory
@@ -56,5 +56,9 @@ typedef struct
     uint16_t pixels[67];                     // Array of 67 image pixels    (Not a typo: It is actually 67!)
     uint16_t cyclic_redundancy_check;        // CRC for data integrity check
 } MPI_dataframe_t;
+
+const char* MPI_rx_mode_enum_to_str(MPI_rx_mode_enum_t mode);
+
+const char* MPI_transceiver_state_enum_to_str(MPI_transceiver_state_enum_t state);
 
 #endif // INCLUDE_GUARD__MPI_TYPES_H

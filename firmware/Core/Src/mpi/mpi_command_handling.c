@@ -21,7 +21,7 @@ static const uint16_t MPI_TX_TIMEOUT_DURATION_MS = 100;
 /// @brief Timeout duration for receive in milliseconds. Same between bytes and at the start.
 static const uint16_t MPI_RX_TIMEOUT_DURATION_MS = 2000;
 
-volatile MPI_rx_mode_t MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
+volatile MPI_rx_mode_enum_t MPI_current_uart_rx_mode = MPI_RX_MODE_NOT_LISTENING_TO_MPI;
 
 
 uint8_t MPI_science_data_file_is_open = 0;

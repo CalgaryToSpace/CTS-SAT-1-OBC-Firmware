@@ -10,6 +10,8 @@
 #include "self_checks/complete_self_check.h"
 #include "obc_systems/external_led_and_rbf.h"
 #include "system/system_temperature.h"
+#include "mpi/mpi_command_handling.h"
+#include "mpi/mpi_types.h"
 
 #include "telecommands/system_telecommand_defs.h"
 #include "telecommand_exec/telecommand_definitions.h"
@@ -19,6 +21,7 @@
 #include <string.h>
 
 extern uint32_t COMMS_total_beacon_count_since_boot;
+extern MPI_transceiver_state_enum_t MPI_current_transceiver_state;
 
 /// @brief A simple telecommand that responds with "Hello, world!" (log message and TCMD response)
 /// @param args_str No arguments expected
@@ -119,6 +122,8 @@ uint8_t TCMDEXEC_core_system_stats(
         "\"total_beacon_count\":%lu,"
         "\"is_lfs_mounted\":%u,"
         "\"reboot_reason\":\"%s\","
+        "\"mpi_rx_mode\":\"%s\","
+        "\"mpi_transceiver_state\":\"%s\","
         "\"eps_battery_percent\":%s"
         "}\n",
         timestamp_string_ms, // timestamp_ms
@@ -131,6 +136,8 @@ uint8_t TCMDEXEC_core_system_stats(
         COMMS_total_beacon_count_since_boot, // total_beacon_count
         LFS_is_lfs_mounted, // is_lfs_mounted
         STM32_reset_cause_name, // reboot_reason
+        MPI_rx_mode_enum_to_str(MPI_current_uart_rx_mode), // mpi_rx_mode
+        MPI_transceiver_state_enum_to_str(MPI_current_transceiver_state), // mpi_transceiver_state
         eps_battery_percent_str // eps_battery_percent
     ); 
 
