@@ -3,7 +3,7 @@
     "configurations": [
         {
             "cwd": "${workspaceFolder}",
-            "executable": "./build/CTS-SAT-1_FW.elf",
+            "executable": "./build/debug/CTS-SAT-1_FW.elf",
             "name": "Debug with ST-Link",
             "request": "launch",
             "type": "cortex-debug",
@@ -35,7 +35,7 @@
         {
             "showDevDebugOutput": "parsed",
             "cwd": "${workspaceRoot}",
-            "executable": "./build/CTS-SAT-1_FW.elf",
+            "executable": "./build/debug/CTS-SAT-1_FW.elf",
             "name": "Attach STM32",
             "request": "attach",
             "type": "cortex-debug",

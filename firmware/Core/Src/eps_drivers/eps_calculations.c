@@ -6,8 +6,11 @@
 ///     However, the battery percentage can exceed 100% if the battery voltage is above the maximum
 ///     voltage, and can be less than 0% if the battery voltage is below the minimum voltage.
 float EPS_convert_battery_voltage_to_percent(EPS_battery_pack_datatype_eng_t battery) {
-
-    const uint16_t min_total_voltage_mV = 12000;
+    // Source (low side) - 12.4V:
+    // SAFETY_VOLT_LOTHR on Page 93 of EPS Software ICD.
+    // EMLOPO_VOLT_HITHR on Page 99 of EPS Software ICD.
+    const uint16_t min_total_voltage_mV = 12400;
+    
     const uint16_t max_total_voltage_mV = 16000;
 
     const int16_t battery_total_voltage_mV = battery.vip_bp_input.voltage_mV; 
