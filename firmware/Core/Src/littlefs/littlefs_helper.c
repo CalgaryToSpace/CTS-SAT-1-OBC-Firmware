@@ -157,7 +157,13 @@ int8_t LFS_ensure_unmounted() {
         return 0;
     }
     
-    return LFS_unmount();
+    const int8_t result = LFS_unmount();
+
+    // Even if "unmounting fails" (e.g., due to corruption, due to an implicit unmount earlier),
+    // we can reasonably confidently say it's unmounted here, and thus update the state variable.
+    LFS_is_lfs_mounted = 0;
+
+    return result;
 }
 
 /// @brief Lists contents of LittleFS Directory, where each entry is sent as a log message.
