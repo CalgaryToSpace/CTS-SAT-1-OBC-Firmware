@@ -26,7 +26,7 @@
 #include "debug_tools/debug_i2c.h"
 #include "debug_tools/debug_uart.h"
 #include "rtos_tasks/rtos_tasks.h"
-#include "rtos_tasks/rtos_eps_tasks.h"
+#include "rtos_tasks/rtos_eps_watchdog.h"
 #include "rtos_tasks/rtos_background_upkeep.h"
 #include "rtos_tasks/rtos_tasks_rx_telecommands.h"
 #include "rtos_tasks/rtos_bulk_downlink_task.h"
@@ -386,8 +386,6 @@ int main(void)
   TASK_bootup_operation_fsm_Handle = osThreadNew(TASK_bootup_operation_fsm, NULL, &TASK_bootup_operation_fsm_Attributes);
 
   TASK_service_write_mpi_data_Handle = osThreadNew(TASK_service_write_mpi_data, NULL, &TASK_service_write_mpi_data_Attributes);
-
-  TASK_time_sync_Handle = osThreadNew(TASK_time_sync, NULL, &TASK_time_sync_Attributes);
 
   TASK_background_upkeep_Handle = osThreadNew(TASK_background_upkeep, NULL, &TASK_background_upkeep_Attributes);
 

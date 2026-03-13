@@ -1,13 +1,12 @@
 #include "eps_drivers/eps_power_management.h"
 
-#include <string.h>
-#include <stdint.h>
-#include <stdio.h>
-
-#include "rtos_tasks/rtos_eps_tasks.h"
 #include "eps_drivers/eps_types_to_json.h"
 #include "eps_drivers/eps_commands.h"
 #include "log/log.h"
+
+#include <string.h>
+#include <stdint.h>
+#include <stdio.h>
 
 
 uint16_t EPS_current_mA_threshhold[32]= 

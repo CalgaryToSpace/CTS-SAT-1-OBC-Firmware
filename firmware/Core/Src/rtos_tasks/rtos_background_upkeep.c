@@ -8,11 +8,14 @@
 #include "comms_drivers/rf_antenna_switch.h"
 #include "comms_drivers/comms_tx.h"
 #include "log/lazy_file_log_sink.h"
+#include "eps_drivers/eps_power_management.h"
+#include "eps_drivers/eps_time.h"
+#include "eps_drivers/eps_commands.h"
 
 #include "cmsis_os.h"
 
-#include "eps_drivers/eps_power_management.h"
-
+#include <inttypes.h>
+#include <stdint.h>
 
 /// @brief If the system uptime exceeds this value, the system will reset (reboot).
 /// @note This is to recover the system in case of a radiation-induced hang or other invalid state.
@@ -28,6 +31,11 @@ uint32_t STM32_system_reset_interval_sec = 604800;
 uint32_t STM32_system_reset_no_uplink_interval_sec = 216000;
 
 uint32_t COMMS_total_beacon_count_since_boot = 0;
+
+/// @brief How frequently to set the OBC time based on the EPS time if the time divergence is >2 seconds.
+/// @note Default: 600 seconds = 10 minutes.
+uint32_t EPS_time_sync_period_sec = 600;
+
 
 static uint32_t EPS_monitor_last_uptime_ms = 0;
 
@@ -179,9 +187,83 @@ static void subtask_send_beacon(void) {
     // TOOD: If complex beacon packet is enabled, also send that too.
 }
 
+static uint32_t uptime_of_last_eps_time_sync_ms = 0;
+
+/// On boot, this thread sets the OBC time to the value of the EPS time.
+/// After that, it periodically checks the OBC time against the EPS time and logs when
+/// they diverge by more than 10 seconds.
+static void subtask_sync_obc_time_based_on_eps_time(void) {
+    // First, try to sync EPS-to-OBC for the initial boot (or in case stuff gets funky later).
+    if (TIME_last_synchronization_source == TIME_SYNC_SOURCE_NONE) {
+        LOG_message(
+            LOG_SYSTEM_EPS,
+            LOG_SEVERITY_NORMAL,
+            LOG_SINK_ALL,
+            "Setting OBC time based on EPS time because last_source == TIME_SYNC_SOURCE_NONE"
+        );
+
+        const uint8_t result = EPS_set_obc_time_based_on_eps_time();
+        if (result != 0) {
+            LOG_message(
+                LOG_SYSTEM_EPS,
+                LOG_SEVERITY_ERROR,
+                LOG_SINK_ALL,
+                "In time syncing, EPS_set_obc_time_based_on_eps_time() -> Error %d",
+                result
+            );
+        }
+        return;
+    }
+
+    // In an ongoing manner, check if the OBC time and EPS time diverge significantly, and sync the OBC to the EPS time if they do.
+    // We make an assumption here that the EPS's time is going to be more reliable/accurate than the OBC's time,
+    // since the EPS uses a high-quality RTC.
+    if (((TIME_get_current_system_uptime_ms() - uptime_of_last_eps_time_sync_ms) / 1000) > EPS_time_sync_period_sec) {
+        uptime_of_last_eps_time_sync_ms = TIME_get_current_system_uptime_ms();
+
+        EPS_struct_system_status_t status;
+        const uint8_t result_status = EPS_CMD_get_system_status(&status);
+        if (result_status != 0) {
+            LOG_message(
+                LOG_SYSTEM_EPS,
+                LOG_SEVERITY_ERROR,
+                LOG_SINK_ALL,
+                "In time syncing, EPS_CMD_get_system_status() -> Error: %d",
+                result_status
+            );
+            return;
+        }
+
+        // Use uint32_t for these values in seconds, as int32_t won't overflow until 2038.
+        const uint64_t eps_time_ms = ((uint64_t)status.unix_time_sec) * 1000;
+        const uint64_t obc_time_ms = TIME_get_current_unix_epoch_time_ms();
+        const int64_t delta_ms = ((int64_t)obc_time_ms) - ((int64_t)eps_time_ms);
+        if ((delta_ms > 2000) || (delta_ms < -2000)) {
+            LOG_message(
+                LOG_SYSTEM_EPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+                "EPS vs. OBC time differ by more than 2000ms. Setting OBC time based on EPS time."
+            );
+
+            const uint8_t sync_result = EPS_set_obc_time_based_on_eps_time(); // Emits log message!
+            if (sync_result != 0) {
+                LOG_message(
+                    LOG_SYSTEM_EPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+                    "EPS_set_obc_time_based_on_eps_time() -> %d",
+                    sync_result
+                );
+            }
+        }
+    }
+}
+
+
 void TASK_background_upkeep(void *argument) {
     TASK_HELP_start_of_task();
     while(1) {
+        // Set the OBC time accurately first. Important step on boot.
+        subtask_sync_obc_time_based_on_eps_time();
+        osDelay(10); // Yield.
+
         subtask_send_beacon();
         osDelay(10); // Yield.
 
