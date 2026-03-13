@@ -12,6 +12,7 @@
 #include "system/system_temperature.h"
 #include "mpi/mpi_command_handling.h"
 #include "mpi/mpi_types.h"
+#include "uart_handler/uart_handler.h"
 
 #include "telecommands/system_telecommand_defs.h"
 #include "telecommand_exec/telecommand_definitions.h"
@@ -85,12 +86,13 @@ uint8_t TCMDEXEC_obc_firmware_version(
     return 0;
 }
 
+/// @brief Get many essential system stats as a JSON dict.
+/// @param args_str No arguments.
+/// @return 0 on success. Cannot fail.
 uint8_t TCMDEXEC_core_system_stats(
     const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
-    // TODO: Add temperatures (EPS, OBC, antenna, etc.)
-
     char timestamp_string_ms[20];
     GEN_uint64_to_str(TIME_get_current_unix_epoch_time_ms(), timestamp_string_ms);
 
@@ -126,6 +128,7 @@ uint8_t TCMDEXEC_core_system_stats(
         "\"mpi_rx_mode\":\"%s\","
         "\"mpi_transceiver_state\":\"%s\","
         "\"mpi_last_reason_for_stopping\":\"%s\","
+        "\"gnss_uart_interrupt_enabled\":%u,"
         "\"eps_battery_percent\":%s"
         "}\n",
         timestamp_string_ms, // timestamp_ms
@@ -141,6 +144,7 @@ uint8_t TCMDEXEC_core_system_stats(
         MPI_rx_mode_enum_to_str(MPI_current_uart_rx_mode), // mpi_rx_mode
         MPI_transceiver_state_enum_to_str(MPI_current_transceiver_state), // mpi_transceiver_state
         MPI_reason_for_stopping_active_mode_enum_to_str(MPI_last_reason_for_stopping_active_mode), // mpi_last_reason_for_stopping
+        UART_gnss_uart_interrupt_enabled, // gnss_uart_interrupt_enabled
         eps_battery_percent_str // eps_battery_percent
     ); 
 
