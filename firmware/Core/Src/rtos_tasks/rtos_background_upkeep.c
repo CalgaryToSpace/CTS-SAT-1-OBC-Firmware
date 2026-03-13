@@ -48,15 +48,21 @@ static void subtask_monitor_eps_power(void) {
 ///       that isn't caught by the watchdog timer. The configuration can be extended to even longer if
 ///       necessary.
 static void subtask_reset_system_after_very_long_uptime(void) {
-    if (TIME_get_current_system_uptime_ms() > STM32_system_reset_interval_ms) {
+    if (
+        (STM32_system_reset_interval_sec > 0) // Allow disabling this feature.
+        && (TIME_get_current_system_uptime_ms() > (STM32_system_reset_interval_sec * 1000))
+    ) {
         LOG_message(
             LOG_SYSTEM_OBC,
             LOG_SEVERITY_NORMAL,
             LOG_SINK_ALL,
-            "System reset triggered due to max uptime exceeded: %ld ms",
-            STM32_system_reset_interval_ms
+            "System reset triggered due to max uptime exceeded: %ld ms > %ld sec",
+            TIME_get_current_system_uptime_ms(),
+            STM32_system_reset_interval_sec
         );
         HAL_Delay(1000); // Give time for the log to be sent.
+
+        // Considered doing an LFS unmount here, but what if LFS is the cause of problems?
         
         NVIC_SystemReset();
     }
