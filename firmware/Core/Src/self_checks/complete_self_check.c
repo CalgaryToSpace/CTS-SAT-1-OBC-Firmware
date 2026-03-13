@@ -196,7 +196,7 @@ static uint8_t CTS1_check_mpi_science_rx() {
 
     // Make a timestamped filename with path.
     char file_date[25];
-    TIME_get_current_utc_datetime_str(file_date, sizeof(file_date)); // TODO: Use _no_ms version.
+    TIME_get_current_utc_datetime_str_no_ms(file_date, sizeof(file_date));
     char test_file_path[65];
     snprintf(
         test_file_path, sizeof(test_file_path),
