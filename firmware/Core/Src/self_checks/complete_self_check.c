@@ -10,13 +10,16 @@
 #include "eps_drivers/eps_calculations.h"
 #include "mpi/mpi_transceiver.h"
 #include "mpi/mpi_command_handling.h"
+#include "mpi/mpi_data_files.h"
 #include "antenna_deploy_drivers/ant_commands.h"
 #include "antenna_deploy_drivers/ant_internal_drivers.h"
 #include "camera/camera_init.h"
+#include "timekeeping/timekeeping.h"
 
 #include "uart_handler/uart_handler.h"
 #include "obc_systems/obc_temperature_sensor.h"
 #include "littlefs/flash_driver.h"
+#include "littlefs/littlefs_searching.h"
 #include "log/log.h"
 #include "debug_tools/debug_uart.h"
 #include "stm32/stm32_watchdog.h"
@@ -25,13 +28,8 @@
 #include <string.h>
 #include <stdint.h>
 
-// TODO: Create separate self-check for the boom.
 
-// MPI takes 3-4 seconds to boot. Wait 5 seconds to be safe.
-static const uint16_t MPI_boot_duration_ms = 5000;
-
-
-uint8_t CTS1_check_is_i2c_addr_alive(I2C_HandleTypeDef* hi2c, uint8_t i2c_addr) {
+static uint8_t CTS1_check_is_i2c_addr_alive(I2C_HandleTypeDef* hi2c, uint8_t i2c_addr) {
     const uint8_t I2C_scan_number_of_trials = 2;
     const uint32_t I2C_scan_timeout_ms = 40;
 
@@ -42,7 +40,7 @@ uint8_t CTS1_check_is_i2c_addr_alive(I2C_HandleTypeDef* hi2c, uint8_t i2c_addr) 
     return (i2c_device_status == HAL_OK);
 }
 
-uint8_t CTS1_check_is_adcs_alive() {
+static uint8_t CTS1_check_is_adcs_alive() {
     ADCS_id_struct_t id_struct;
     const uint8_t status = ADCS_get_identification(&id_struct);
     if (status != 0) {
@@ -66,7 +64,7 @@ uint8_t CTS1_check_is_adcs_alive() {
 }
 
 
-uint8_t CTS1_check_is_gnss_responsive() {
+static uint8_t CTS1_check_is_gnss_responsive() {
     // Use versiona command instead of bestxyza, as bestxyza takes a variable duration, whereas
     // versiona appears to respond very quickly reliably.
     const char cmd[] = "log versiona once\n";
@@ -144,7 +142,7 @@ uint8_t CTS1_check_is_gnss_responsive() {
     return 1; // Success.
 }
 
-uint8_t CTS1_check_is_eps_responsive() {
+static uint8_t CTS1_check_is_eps_responsive() {
     EPS_struct_system_status_t status;
     const uint8_t result = EPS_CMD_get_system_status(&status);
 
@@ -152,7 +150,7 @@ uint8_t CTS1_check_is_eps_responsive() {
     return (result == 0);
 }
 
-uint8_t CTS1_check_is_eps_thriving() {
+static uint8_t CTS1_check_is_eps_thriving() {
     // Block: Check that the EPS is in "normal" mode.
     {
         EPS_struct_system_status_t status;
@@ -190,132 +188,84 @@ uint8_t CTS1_check_is_eps_thriving() {
     return 1;
 }
 
-/// @brief Check if the MPI is dumping science data by using the lazy blocking receive method.
+/// @brief Check if the MPI is dumping science data by using the nominal active mode enabling/disabling functions.
 /// @return 1 if the MPI is dumping science data, 0 otherwise.
-uint8_t CTS1_check_mpi_science_rx() {
-    // First, cancel any ongoing DMA transfers.
-    const HAL_StatusTypeDef abort_status = HAL_UART_AbortReceive(UART_mpi_port_handle);
-    if (abort_status != HAL_OK) {
-        LOG_message(
-            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "Failed to abort MPI DMA listening: HAL_Status=%d", abort_status
-        );
-        MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
-        return 0;
-    }
+static uint8_t CTS1_check_mpi_science_rx() {
+    // Ensure the directory exists for the test file. Steamroll on error.
+    LFS_make_directory("mpi_self_checks");
 
-    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_DUPLEX); // Send to MPI.
-    HAL_Delay(50);
-
-    // MPI boots up in "command" mode, so we need to send a command to switch it to "dumping science" mode.
-    const uint8_t start_dumping_science_cmd[] = {0x54, 0x43, 0x19};
-    const HAL_StatusTypeDef send_status = HAL_UART_Transmit(
-        UART_mpi_port_handle,
-        start_dumping_science_cmd, sizeof(start_dumping_science_cmd),
-        100 // Timeout: 100ms is plenty.
+    // Make a timestamped filename with path.
+    char file_date[25];
+    TIME_get_current_utc_datetime_str(file_date, sizeof(file_date)); // TODO: Use _no_ms version.
+    char test_file_path[65];
+    snprintf(
+        test_file_path, sizeof(test_file_path),
+        "mpi_self_checks/mpi_self_check_%s.dat",
+        file_date
     );
-    if (send_status != HAL_OK) {
-        LOG_message(
-            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "Failed to send MPI command: HAL_Status=%d", send_status
-        );
-        MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
-        return 0;
-    }
 
-    // Note: We would set the MPI transceiver to MISO mode here, if not using duplex above.
+    // Section: Collect the science data.
+    {
+        uint8_t mpi_success = 1;
+        const uint8_t enable_result = MPI_enable_active_mode(test_file_path);
+        if (enable_result != 0) {
+            LOG_message(
+                LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+                "MPI_enable_active_mode() -> %d", enable_result
+            );
+            mpi_success = 0;
+            // Steamroll: Attempt to disable, even if it failed.
+        }
 
-    // Start listening in blocking mode.
-    uint8_t rx_buffer[350];
-    const HAL_StatusTypeDef rx_status = HAL_UART_Receive(
-        UART_mpi_port_handle,
-        rx_buffer, sizeof(rx_buffer),
-        400 // Timeout: 400ms is plenty.
-    );
-    if (rx_status != HAL_OK) {
-        LOG_message(
-            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "Failed to receive MPI data (probably timeout). HAL_Status=%d", rx_status
-        );
-        MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
-        return 0;
-    }
-    
-    // Validate the response. Should contain {0x0c, 0xff, 0xff, 0x0c} (sync bytes) in it.
-    uint8_t return_val = 0;
-    for (uint16_t i = 0; i < sizeof(rx_buffer) - 3; i++) {
-        if (
-            rx_buffer[i] == 0x0c &&
-            rx_buffer[i + 1] == 0xff &&
-            rx_buffer[i + 2] == 0xff &&
-            rx_buffer[i + 3] == 0x0c
-        ) {
-            return_val = 1;
-            break;
+        // Wait for MPI to collect some science data.
+        STM32_pet_watchdog();
+        // Must use an OS delay (yield to other tasks).
+        // This is the only non-blocking delay in the middle of a telecommand.
+        // Important because we must let the MPI data collection thread run.
+        osDelay(10000);
+        STM32_pet_watchdog();
+
+        // Put the MPI back in passive/inactive mode.
+        const uint8_t disable_result = MPI_disable_active_mode(MPI_REASON_FOR_STOPPING_SELF_CHECK_DONE);
+        if (disable_result != 0) {
+            LOG_message(
+                LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+                "MPI_disable_active_mode() -> %d", disable_result
+            );
+            mpi_success = 0;
+        }
+
+        if (!mpi_success) {
+            // Skip the rest of the validations, since we already know the MPI isn't responsive.
+            return 0;
         }
     }
-    
-    return return_val;
-}
 
-uint8_t CTS1_check_mpi_cmd_works() {
-    MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_DUPLEX); // MPI is listening.
-
-    // First, cancel any ongoing DMA transfers.
-    const HAL_StatusTypeDef abort_status = HAL_UART_AbortReceive(UART_mpi_port_handle);
-    if (abort_status != HAL_OK) {
-        LOG_message(
-            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "Failed to abort MPI DMA listening: HAL_Status=%d", abort_status
-        );
-        MPI_set_transceiver_state(MPI_TRANSCEIVER_MODE_INACTIVE);
-        return 0;
-    }
-
-    // Send random command: "TC" + command_2 + scan_mode_off
-    // Not certain what it does, but we power the MPI off anyway, so it gets reset anyway.
-    // Dr. B approves this as a reasonable testing command.
-    const uint8_t cmd[] = {0x54, 0x43, 0x02, 0x00};
-
-    uint8_t MPI_rx_buffer[100];
-    uint16_t MPI_buffer_len = 0;
-    const uint8_t result = MPI_send_command_get_response(
-        cmd, sizeof(cmd),
-        MPI_rx_buffer, sizeof(MPI_rx_buffer), &MPI_buffer_len
+    LOG_message(
+        LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "MPI active mode collection passed. Checking science data file..."
     );
 
-    if (result != 0) {
+    // Valdiate the science data file. This checks that the file is well-formed.
+    const uint8_t validation_result = MPI_validate_science_data_file(test_file_path);
+    if (validation_result != 0) {
         LOG_message(
             LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "MPI_send_command_get_response() -> %d", result
+            "MPI_validate_science_data_file() -> %d", validation_result
         );
         return 0;
     }
 
-    if (MPI_buffer_len < 2 || MPI_buffer_len > 10) {
-        LOG_message(
-            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "MPI_send_command_get_response() -> Received %d bytes (expected 2 <= x <= 10).",
-            MPI_buffer_len
-        );
-        return 0;
-    }
+    LOG_message(
+        LOG_SYSTEM_MPI, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "MPI science data file is valid."
+    );
 
-    if (MPI_rx_buffer[0] != 0x02 || MPI_rx_buffer[1] != MPI_COMMAND_SUCCESS_RESPONSE_VALUE) {
-        // The success response should be the TC number followed by the success code.
-        LOG_message(
-            LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "MPI_send_command_get_response() response was %d bytes. Starting with: [d%d, d%d]",
-            MPI_buffer_len,
-            MPI_rx_buffer[0], MPI_rx_buffer[1]
-        );
-        return 0;
-    }
-
-    return 1;
+    return 1; // Success.
 }
 
-uint8_t CTS1_check_is_camera_responsive() {
+
+static uint8_t CTS1_check_is_camera_responsive() {
     const uint8_t test_result = CAM_test();
     if (test_result != 0) {
         return 0;
@@ -336,14 +286,13 @@ uint8_t CTS1_check_is_camera_responsive() {
     return 1; // Success.
 }
 
-uint8_t CTS1_check_flash_alive(uint8_t flash_chip_number) {
-
+static uint8_t CTS1_check_flash_alive(uint8_t flash_chip_number) {
     const FLASH_error_enum_t result = FLASH_is_reachable(flash_chip_number);
 
     return (result == FLASH_ERROR_NONE);
 }
 
-uint8_t CTS1_check_antenna_alive(enum ANT_i2c_bus_mcu antenna_number) {
+static uint8_t CTS1_check_antenna_alive(enum ANT_i2c_bus_mcu antenna_number) {
     uint16_t raw_temperature = 0;
     const uint8_t status = ANT_CMD_measure_temp(antenna_number, &raw_temperature);
     
@@ -424,19 +373,15 @@ void CTS1_run_system_self_check(CTS1_system_self_check_result_struct_t *result) 
         result->is_eps_thriving
     );
 
-    // MPI
-    EPS_set_channel_enabled(EPS_CHANNEL_12V_MPI, 1);
-    EPS_set_channel_enabled(EPS_CHANNEL_5V_MPI, 1);
-    HAL_Delay(MPI_boot_duration_ms); // Wait for the MPI to boot up.
-    // result->mpi_science_rx = CTS1_check_mpi_science_rx(); // TODO: Re-enable once implemented.
-    result->mpi_cmd_works = CTS1_check_mpi_cmd_works();
-    EPS_set_channel_enabled(EPS_CHANNEL_12V_MPI, 0);
-    EPS_set_channel_enabled(EPS_CHANNEL_5V_MPI, 0);
+    // MPI.
+    // Note: Contains watchdog pet and osDelay!
+    result->mpi_science_rx = CTS1_check_mpi_science_rx();
+    EPS_set_channel_enabled(EPS_CHANNEL_12V_MPI, 0); // Should already be disabled, but fine to check.
+    EPS_set_channel_enabled(EPS_CHANNEL_5V_MPI, 0); // Should already be disabled, but fine to check.
     LOG_message(
         LOG_SYSTEM_OBC, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
-        "mpi_science_rx: %d, mpi_cmd_works: %d",
-        result->mpi_science_rx,
-        result->mpi_cmd_works
+        "mpi_science_rx: %d",
+        result->mpi_science_rx
     );
 
     // Camera
@@ -505,7 +450,6 @@ const char *CTS1_system_self_check_result_struct_field_names[] = {
     "is_eps_responsive",
     "is_eps_thriving",
     "mpi_science_rx",
-    "mpi_cmd",
     "is_camera_responsive",
     "is_antenna_i2c_addr_a",
     "is_antenna_i2c_addr_b",
@@ -537,7 +481,6 @@ void CTS1_self_check_struct_TO_json_list(
         &self_check_struct.is_eps_responsive,
         &self_check_struct.is_eps_thriving,
         &self_check_struct.mpi_science_rx,
-        &self_check_struct.mpi_cmd_works,
         &self_check_struct.is_camera_responsive,
         &self_check_struct.is_antenna_i2c_addr_a_alive,
         &self_check_struct.is_antenna_i2c_addr_b_alive,
