@@ -12,6 +12,21 @@
 
 #include "eps_drivers/eps_power_management.h"
 
+
+/// @brief If the system uptime exceeds this value, the system will reset (reboot).
+/// @note This is to recover the system in case of a radiation-induced hang or other invalid state.
+/// @note Default: 604800 sec = 7 days.
+/// @note Set to 0 to disable this feature.
+uint32_t STM32_system_reset_interval_sec = 604800;
+
+
+/// @brief If the duration since an AX100 uplink telecommand exceeds this value, the system will reset (reboot).
+/// @note This is to recover the system in case of a radiation-induced hang or other invalid state.
+/// @note Default: 216000 sec = 2.5 days.
+/// @note Set to 0 to disable this feature.
+uint32_t STM32_system_reset_no_uplink_interval_sec = 216000;
+
+
 static uint32_t EPS_monitor_last_uptime_ms = 0;
 
 static void subtask_monitor_eps_power(void) {
@@ -48,19 +63,58 @@ static void subtask_monitor_eps_power(void) {
 ///       that isn't caught by the watchdog timer. The configuration can be extended to even longer if
 ///       necessary.
 static void subtask_reset_system_after_very_long_uptime(void) {
-    if (TIME_get_current_system_uptime_ms() > STM32_system_reset_interval_ms) {
+    if (
+        (STM32_system_reset_interval_sec > 0) // Allow disabling this feature.
+        && (TIME_get_current_system_uptime_ms() > (STM32_system_reset_interval_sec * 1000))
+    ) {
         LOG_message(
             LOG_SYSTEM_OBC,
             LOG_SEVERITY_NORMAL,
             LOG_SINK_ALL,
-            "System reset triggered due to max uptime exceeded: %ld ms",
-            STM32_system_reset_interval_ms
+            "System reset triggered due to max uptime exceeded: %ld ms > %ld sec",
+            TIME_get_current_system_uptime_ms(),
+            STM32_system_reset_interval_sec
         );
         HAL_Delay(1000); // Give time for the log to be sent.
+
+        // Considered doing an LFS unmount here, but what if LFS is the cause of problems?
         
         NVIC_SystemReset();
     }
 }
+
+
+/// @brief If the system has not received an uplink in a very long time, reset the system.
+/// @param  
+/// @note Associated issue: https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/547
+/// @note The intenion of this function is to recover the system in case of a radiation-induced hang
+///       that isn't caught by the watchdog timer. The configuration can be extended to even longer if
+///       necessary.
+static void subtask_reset_system_after_no_recent_uplinks(void) {
+    const uint32_t time_since_last_uplink_sec = (
+        (TIME_get_current_system_uptime_ms() - AX100_uptime_at_last_received_kiss_tcmd_ms) / 1000
+    );
+
+    if (
+        (STM32_system_reset_no_uplink_interval_sec > 0) // Allow disabling this feature.
+        && (time_since_last_uplink_sec > STM32_system_reset_no_uplink_interval_sec)
+    ) {
+        LOG_message(
+            LOG_SYSTEM_OBC,
+            LOG_SEVERITY_NORMAL,
+            LOG_SINK_ALL,
+            "System reset triggered due to no recent uplinks: %ld sec > %ld sec",
+            time_since_last_uplink_sec,
+            STM32_system_reset_no_uplink_interval_sec
+        );
+        HAL_Delay(1000); // Give time for the log to be sent.
+
+        // Considered doing an LFS unmount here, but what if LFS is the cause of problems?
+        
+        NVIC_SystemReset();
+    }
+}
+
 
 /// @brief Update the RF switch state based on the current mode.
 /// @note Implemented per https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/228
@@ -129,6 +183,9 @@ void TASK_background_upkeep(void *argument) {
         osDelay(10); // Yield.
 
         subtask_monitor_eps_power();
+        osDelay(10); // Yield.
+
+        subtask_reset_system_after_no_recent_uplinks();
         osDelay(10); // Yield.
 
         subtask_reset_system_after_very_long_uptime();
