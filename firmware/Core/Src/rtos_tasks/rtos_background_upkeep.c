@@ -189,36 +189,12 @@ static void subtask_send_beacon(void) {
 
 static uint32_t uptime_of_last_eps_time_sync_ms = 0;
 
-/// On boot, this thread sets the OBC time to the value of the EPS time.
-/// After that, it periodically checks the OBC time against the EPS time and logs when
-/// they diverge by more than 10 seconds.
+/// Periodically check the OBC time against the EPS time, and then set the OBC time based on the
+/// EPS time if they diverge by more than 2000ms.
+/// We make an assumption here that the EPS's time is going to be more reliable/accurate than the OBC's time,
+/// since the EPS uses a high-quality RTC.
 static void subtask_sync_obc_time_based_on_eps_time(void) {
-    // First, try to sync EPS-to-OBC for the initial boot (or in case stuff gets funky later).
-    if (TIME_last_synchronization_source == TIME_SYNC_SOURCE_NONE) {
-        LOG_message(
-            LOG_SYSTEM_EPS,
-            LOG_SEVERITY_NORMAL,
-            LOG_SINK_ALL,
-            "Setting OBC time based on EPS time because last_source == TIME_SYNC_SOURCE_NONE"
-        );
-
-        const uint8_t result = EPS_set_obc_time_based_on_eps_time();
-        if (result != 0) {
-            LOG_message(
-                LOG_SYSTEM_EPS,
-                LOG_SEVERITY_ERROR,
-                LOG_SINK_ALL,
-                "In time syncing, EPS_set_obc_time_based_on_eps_time() -> Error %d",
-                result
-            );
-        }
-        return;
-    }
-
-    // In an ongoing manner, check if the OBC time and EPS time diverge significantly, and sync the OBC to the EPS time if they do.
-    // We make an assumption here that the EPS's time is going to be more reliable/accurate than the OBC's time,
-    // since the EPS uses a high-quality RTC.
-    if (((TIME_get_current_system_uptime_ms() - uptime_of_last_eps_time_sync_ms) / 1000) > EPS_time_sync_period_sec) {
+    if (((TIME_get_current_system_uptime_ms() - uptime_of_last_eps_time_sync_ms) / 1000) >= EPS_time_sync_period_sec) {
         uptime_of_last_eps_time_sync_ms = TIME_get_current_system_uptime_ms();
 
         EPS_struct_system_status_t status;
@@ -234,11 +210,10 @@ static void subtask_sync_obc_time_based_on_eps_time(void) {
             return;
         }
 
-        // Use uint32_t for these values in seconds, as int32_t won't overflow until 2038.
         const uint64_t eps_time_ms = ((uint64_t)status.unix_time_sec) * 1000;
         const uint64_t obc_time_ms = TIME_get_current_unix_epoch_time_ms();
         const int64_t delta_ms = ((int64_t)obc_time_ms) - ((int64_t)eps_time_ms);
-        if ((delta_ms > 2000) || (delta_ms < -2000)) {
+        if ((delta_ms > 2000) || (delta_ms < -2000)) { // Abs value greater than threshold.
             LOG_message(
                 LOG_SYSTEM_EPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
                 "EPS vs. OBC time differ by more than 2000ms. Setting OBC time based on EPS time."
