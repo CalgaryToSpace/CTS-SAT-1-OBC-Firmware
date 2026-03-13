@@ -78,8 +78,10 @@ uint8_t SYS_TEMP_get_raw_thermal_info(SYS_TEMP_raw_thermal_info_t* result, uint8
 /// @param result The structure containing the processed thermal data. 
 /// @param error_ret Bitfield containing error status on collecting data for the ANT A, ANT B, PCU and PBU
 /// @return 0 on successful conversion, otherwise failed.
-uint8_t SYS_TEMP_pack_to_system_thermal_info(SYS_TEMP_raw_thermal_info_t* input, SYS_TEMP_thermal_info_t* result, uint8_t error_ret) {
-
+uint8_t SYS_TEMP_pack_to_system_thermal_info(
+    SYS_TEMP_raw_thermal_info_t* input, SYS_TEMP_thermal_info_t* result,
+    uint8_t error_ret
+) {
     result->system_OBC_temperature_cC = input->system_OBC_temperature_cC ;
 
     result->system_ANT_temperature_i2c_bus_A_cC = ((error_ret) & 1) ? -99999 : ANT_convert_raw_temp_to_cCelsius(input->system_ANT_temperature_i2c_bus_A_raw);

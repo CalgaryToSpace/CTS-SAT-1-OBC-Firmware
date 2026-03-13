@@ -257,8 +257,7 @@ uint8_t TCMDEXEC_get_all_system_thermal_info(
         response_output_buf, response_output_buf_len, 
         "{"
         "\"obc_temperature_cC\":%ld,"
-        "\"ant_temperature_i2c_bus_A_cC\":%ld,"
-        "\"ant_temperature_i2c_bus_B_cC\":%ld,"
+        "\"ant_temperature_cC\":[%ld,%ld]," // Bus A, Bus B
         "\"solar_panel_power_gen_mW\": [%ld,%ld,%ld,%ld],"
         "\"eps_battery_percent\":%0.02f,"
         "\"battery_heater_active\":%d,"
