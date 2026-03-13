@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <string.h>
 
+extern uint32_t COMMS_total_beacon_count_since_boot;
 
 /// @brief A simple telecommand that responds with "Hello, world!" (log message and TCMD response)
 /// @param args_str No arguments expected
@@ -85,7 +86,6 @@ uint8_t TCMDEXEC_core_system_stats(
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
     // TODO: Add temperatures (EPS, OBC, antenna, etc.)
-    // TODO: Add beacon sent count
 
     char timestamp_string_ms[20];
     GEN_uint64_to_str(TIME_get_current_unix_epoch_time_ms(), timestamp_string_ms);
@@ -116,6 +116,7 @@ uint8_t TCMDEXEC_core_system_stats(
         "\"last_time_sync_source\":\"%c\","
         "\"time_of_last_tcmd_sent_ms\":%s,"
         "\"total_tcmd_count\":%lu,"
+        "\"total_beacon_count\":%lu,"
         "\"is_lfs_mounted\":%u,"
         "\"reboot_reason\":\"%s\","
         "\"eps_battery_percent\":%s"
@@ -127,6 +128,7 @@ uint8_t TCMDEXEC_core_system_stats(
         TIME_sync_source_enum_to_letter_char(TIME_last_synchronization_source), // last_time_sync_source
         time_of_last_tcmd_sent_ms_string, // time_of_last_tcmd_sent_ms
         TCMD_total_tcmd_queued_count, // total_tcmd_count
+        COMMS_total_beacon_count_since_boot, // total_beacon_count
         LFS_is_lfs_mounted, // is_lfs_mounted
         STM32_reset_cause_name, // reboot_reason
         eps_battery_percent_str // eps_battery_percent

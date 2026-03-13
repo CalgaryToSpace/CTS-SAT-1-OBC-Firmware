@@ -54,8 +54,6 @@ void TASK_DEBUG_print_heartbeat(void *argument) {
                 current_time_str,
                 HAL_GetTick()
             );
-
-            // TODO: Radio beacon here, probably.
         }
 
         osDelay(TASK_heartbeat_period_ms > 0 ? TASK_heartbeat_period_ms : 1000);
