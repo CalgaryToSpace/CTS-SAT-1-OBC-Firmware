@@ -3,6 +3,7 @@
 #include "config/configuration.h"
 #include "timekeeping/timekeeping.h"
 #include "rtos_tasks/rtos_task_helpers.h"
+#include "transforms/arrays.h"
 #include "main.h"
 #include "rtos_tasks/rtos_tasks_rx_telecommands.h"
 #include "comms_drivers/rf_antenna_switch.h"
@@ -222,13 +223,17 @@ static void subtask_sync_obc_time_based_on_eps_time(void) {
         const uint64_t eps_time_ms = ((uint64_t)status.unix_time_sec) * 1000;
         const uint64_t obc_time_ms = TIME_get_current_unix_epoch_time_ms();
         const int64_t delta_ms = ((int64_t)obc_time_ms) - ((int64_t)eps_time_ms);
+        const int64_t configured_delta_threshold_ms = (int64_t)EPS_max_time_deviation_for_sync_ms;
         if (  // Abs value greater than threshold.
-            (delta_ms > EPS_max_time_deviation_for_sync_ms)
-            || (delta_ms < -EPS_max_time_deviation_for_sync_ms)
+            (delta_ms > configured_delta_threshold_ms)
+            || (delta_ms < -configured_delta_threshold_ms)
         ) {
+            char delta_ms_str[50];
+            GEN_int64_to_str(delta_ms, delta_ms_str);
             LOG_message(
                 LOG_SYSTEM_EPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
-                "EPS vs. OBC time differ by more than %ldms. Setting OBC time based on EPS time.",
+                "EPS vs. OBC time differ by %s (> %ldms). Setting OBC time based on EPS time.",
+                delta_ms_str,
                 EPS_max_time_deviation_for_sync_ms
             );
 
