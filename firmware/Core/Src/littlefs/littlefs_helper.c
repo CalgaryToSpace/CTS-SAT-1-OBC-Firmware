@@ -642,8 +642,7 @@ lfs_ssize_t LFS_read_file(const char file_name[], lfs_soff_t offset, uint8_t *re
     lfs_file_t file;
     const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_RDONLY, &LFS_file_cfg);
     if (open_result < 0) {
-        // TODO: confirm behaviour is desired: this assumes filesystem as a
-        // whole as an issue, so does not send log message to file
+        // This assumes filesystem as a whole as an issue, so does not send log message to file.
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening file to read: %s", file_name);
         return open_result;
     }

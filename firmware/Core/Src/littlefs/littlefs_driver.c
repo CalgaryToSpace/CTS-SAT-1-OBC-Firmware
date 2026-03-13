@@ -15,17 +15,16 @@ inline static FLASH_Physical_Address_t _block_plus_offset_to_address(lfs_block_t
 }
 
 uint8_t LFS_get_chip_number(lfs_block_t block_num) {
-	// FIXME: add a conversion here
+	// TODO: Add a conversion here to partition across multiple chips, if desired.
 	return 0;
 }
 
 /// @brief LittleFS read function, memory is mapped to a physical address here.
 /// @param LittleFS Configurations, Block to write, offset, buffer, buffer size
 /// @return int - any error codes that happened in littlefs
-
-int LFS_block_device_read(const struct lfs_config *c, lfs_block_t block, lfs_off_t off, void *buffer, lfs_size_t size)
-{
-
+int LFS_block_device_read(
+	const struct lfs_config *c, lfs_block_t block, lfs_off_t off, void *buffer, lfs_size_t size
+) {
 	return FLASH_read_page(
 		LFS_get_chip_number(block),
 		_block_plus_offset_to_address(block, off),
@@ -37,9 +36,10 @@ int LFS_block_device_read(const struct lfs_config *c, lfs_block_t block, lfs_off
 /// @brief LittleFS write function, memory is mapped to a physical address here.
 /// @param LittleFS Configurations, Block to read, offset, buffer, buffer size
 /// @return int - any error codes that happened in littlefs
-
-int LFS_block_device_prog(const struct lfs_config *c, lfs_block_t block, lfs_off_t off, const void *buffer, lfs_size_t size)
-{
+int LFS_block_device_prog(
+	const struct lfs_config *c, lfs_block_t block, lfs_off_t off,
+	const void *buffer, lfs_size_t size
+) {
 	return FLASH_program_page(
 		LFS_get_chip_number(block),
 		_block_plus_offset_to_address(block, off),
@@ -51,9 +51,7 @@ int LFS_block_device_prog(const struct lfs_config *c, lfs_block_t block, lfs_off
 /// @brief LittleFS erase function, memory is mapped to a physical address here.
 /// @param LittleFS Configurations, Block to erase
 /// @return int - any error codes that happened in littlefs
-
-int LFS_block_device_erase(const struct lfs_config *c, lfs_block_t block)
-{
+int LFS_block_device_erase(const struct lfs_config *c, lfs_block_t block) {
 	return FLASH_erase_block(
 		LFS_get_chip_number(block),
 		_block_plus_offset_to_address(block, 0)
@@ -63,10 +61,9 @@ int LFS_block_device_erase(const struct lfs_config *c, lfs_block_t block)
 /// @brief LittleFS sync function
 /// @param c - LittleFS Configuration
 /// @return int - 0 since we are not caching reads or writes
-
-int LFS_block_device_sync(const struct lfs_config *c)
-{
-	// Per the README:
-	// If the write function does not perform caching, and therefore each read or write call hits the memory, the sync function can simply return 0.
+int LFS_block_device_sync(const struct lfs_config *c) {
+	// Per the LittleFS README:
+	// If the write function does not perform caching, and therefore each read or write call hits
+	// the memory, the sync function can simply return 0.
 	return 0;
 }

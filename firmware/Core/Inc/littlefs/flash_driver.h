@@ -7,11 +7,11 @@
 #include "littlefs/flash_internal_spi.h"
 
 /*----------------------------- CONFIG VARIABLES ----------------------------- */
-// Number of CS pins available
-#define FLASH_NUMBER_OF_FLASH_DEVICES 8 // TODO: update to 8, or 10 with FRAM maybe
+// Number of CS pins available. 8 FLASH + 2 optional FRAM, if used. FRAM not used.
+#define FLASH_NUMBER_OF_FLASH_DEVICES 8
 
 // Total size of a singular Memory Module in bytes
-#define FLASH_CHIP_SIZE_BYTES 134217728  // 128MiB // TODO: update
+#define FLASH_CHIP_SIZE_BYTES 134217728  // 128MiB
 
 // Number of pages contained within a single block of memory module
 #define FLASH_CHIP_PAGES_PER_BLOCK 64

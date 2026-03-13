@@ -20,18 +20,10 @@ UART_HandleTypeDef *UART_eps_port_handle = &huart5;
 
 // UART telecommand buffer
 const uint16_t UART_telecommand_buffer_len = 256;           // extern
-volatile uint8_t UART_telecommand_buffer[256];              // extern       // TODO: confirm that this volatile means that the contents are volatile but the pointer is not
+volatile uint8_t UART_telecommand_buffer[256];              // extern
 volatile uint16_t UART_telecommand_buffer_write_idx = 0;    // extern
 volatile uint32_t UART_telecommand_last_write_time_ms = 0;  // extern
 volatile uint8_t UART_telecommand_buffer_last_rx_byte = 0;  // not an extern
-
-// UART MPI buffer
-// TODO: Update buffer sizes to accommodate for incoming science data. Currently only configured for config commands
-const uint16_t UART_mpi_buffer_len = 256;                   // extern       //Note: Max possible MPI response buffer size allocated to 50 bytes (Considering for the telecommand echo response, NOT science data.
-volatile uint8_t UART_mpi_buffer[256];                      // extern
-volatile uint8_t UART_mpi_last_rx_byte = 0;                 // extern
-volatile uint32_t UART_mpi_last_write_time_ms = 0;          // extern
-volatile uint16_t UART_mpi_buffer_write_idx = 0;            // extern
 
 // UART AX100 buffer
 volatile uint16_t UART_ax100_buffer_write_idx = 0;          // extern
@@ -39,30 +31,30 @@ volatile uint32_t UART_ax100_last_write_time_ms = 0;        // extern
 volatile uint8_t UART_ax100_buffer_last_rx_byte = 0;       // extern
 
 // UART CAMERA buffer
-// TODO: Configure with peripheral required specifications
-const uint16_t UART_camera_dma_buffer_len = CAM_BYTES_TO_RECEIVE_PER_HALF_CALLBACK*2; // extern       // TODO: Set based on expected size requirements for reception
-const uint16_t UART_camera_dma_buffer_len_half = CAM_BYTES_TO_RECEIVE_PER_HALF_CALLBACK; // extern       // TODO: Set based on expected size requirements for reception
-volatile uint8_t UART_camera_dma_buffer[CAM_BYTES_TO_RECEIVE_PER_HALF_CALLBACK*2];   // extern       
-volatile uint8_t UART_camera_pending_fs_write_half_1_buf[CAM_BYTES_TO_RECEIVE_PER_HALF_CALLBACK];   // extern       // half-size buffer for writing to LFS in half/cplt callback
-volatile uint8_t UART_camera_pending_fs_write_half_2_buf[CAM_BYTES_TO_RECEIVE_PER_HALF_CALLBACK];   // extern       // half-size buffer for writing to LFS in half/cplt callback
-volatile uint32_t UART_camera_last_write_time_ms = 0;       // extern
+const uint16_t UART_camera_dma_buffer_len = CAM_BYTES_TO_RECEIVE_PER_HALF_CALLBACK*2; // extern
+const uint16_t UART_camera_dma_buffer_len_half = CAM_BYTES_TO_RECEIVE_PER_HALF_CALLBACK; // extern
+volatile uint8_t UART_camera_dma_buffer[CAM_BYTES_TO_RECEIVE_PER_HALF_CALLBACK*2];   // extern
+// Half-size buffers for writing to LFS in half/cplt callback:
+volatile uint8_t UART_camera_pending_fs_write_half_1_buf[CAM_BYTES_TO_RECEIVE_PER_HALF_CALLBACK]; // extern
+volatile uint8_t UART_camera_pending_fs_write_half_2_buf[CAM_BYTES_TO_RECEIVE_PER_HALF_CALLBACK]; // extern
+volatile uint32_t UART_camera_last_write_time_ms = 0; // extern
 volatile CAMERA_uart_write_state_enum_t CAMERA_uart_half_1_state = CAMERA_UART_WRITE_STATE_IDLE; // extern
 volatile CAMERA_uart_write_state_enum_t CAMERA_uart_half_2_state = CAMERA_UART_WRITE_STATE_IDLE; // extern
 
 // UART EPS buffer
-const uint16_t UART_eps_buffer_len = 310;                   // extern       // Note: 286 bytes max response, plus a bit for safety and tags is expected
-volatile uint8_t UART_eps_buffer[310];                      // extern
-volatile uint16_t UART_eps_buffer_write_idx = 0;            // extern
-volatile uint32_t UART_eps_last_write_time_ms = 0;          // extern
-volatile uint8_t UART_eps_is_expecting_data = 0;            // extern       // Note: set to 1 when a command is sent, and we're awaiting a response
-volatile uint8_t UART_eps_buffer_last_rx_byte = 0;          // not an extern
+const uint16_t UART_eps_buffer_len = 310;           // extern   // Note: 286 bytes max response, plus a bit for safety and tags is expected.
+volatile uint8_t UART_eps_buffer[310];              // extern
+volatile uint16_t UART_eps_buffer_write_idx = 0;    // extern
+volatile uint32_t UART_eps_last_write_time_ms = 0;  // extern
+volatile uint8_t UART_eps_is_expecting_data = 0;    // extern  // Set to 1 when a command is sent, and we're awaiting a response.
+volatile uint8_t UART_eps_buffer_last_rx_byte = 0;  // not an extern
 
-// UART MPI cmd response buffer
-const uint16_t UART_mpi_rx_buffer_len = 50; // extern
-volatile uint8_t UART_mpi_rx_buffer[50]; // extern
-volatile uint8_t UART_mpi_rx_last_byte = 0; // extern
-volatile uint32_t UART_mpi_rx_last_byte_write_time_ms = 0; // extern
-volatile uint16_t UART_mpi_rx_buffer_write_idx = 0; // extern
+// UART MPI command mode buffer
+const uint16_t UART_mpi_buffer_len = 256;                   // extern
+volatile uint8_t UART_mpi_buffer[256];                      // extern
+volatile uint8_t UART_mpi_last_rx_byte = 0;                 // extern
+volatile uint32_t UART_mpi_last_write_time_ms = 0;          // extern
+volatile uint16_t UART_mpi_buffer_write_idx = 0;            // extern
 
 // UART GNSS buffer
 const uint16_t UART_gnss_buffer_len = 512; // extern
@@ -72,7 +64,7 @@ volatile uint32_t UART_gnss_last_write_time_ms = 0; // extern
 volatile uint8_t UART_gnss_buffer_last_rx_byte = 0; // extern
 volatile uint8_t UART_gnss_uart_interrupt_enabled = 0; //extern
 
-// Section: MPI data buffers.
+// Section: MPI science data buffers.
 const uint8_t UART_mpi_rx_dma_buffer_len = 160;
 volatile uint8_t UART_mpi_rx_dma_buffer[160];
 
@@ -354,8 +346,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     }
 
     else {
-        // FIXME: add the rest (camera, MPI, maybe others)
-        DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> unknown UART instance\n"); // FIXME: remove
+        // Should never be reached.
+        DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> unknown UART instance\n");
     }
 }
 
@@ -384,7 +376,7 @@ void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
         // DEBUG_uart_print_str("Half callback being called!");
 
         if (MPI_current_uart_rx_mode == MPI_RX_MODE_SENSING_MODE) {
-            // Current not being used
+            // Current not being used - data already in buffer.
         }
         else {
             DEBUG_uart_print_str("MPI Half ISR - Received MPI Data, rx_mode != SENSING though!\n");
@@ -469,15 +461,18 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
     }
 }
 
+/// @brief Enable the UART interrupts for always-enabled systems.
+/// @note Should be called very early in system init. Called in `main.c`.
 void UART_init_uart_handlers(void) {
-    // Enable the UART interrupt
+    // Fear: What if transients cause spam/noise on the telecommand UART? OBC has a pull-up
+    // resistor on this floating line, so it is fine to be enabled for "fly-as-you-test" purposes.
     HAL_UART_Receive_IT(UART_telecommand_port_handle, (uint8_t*) &UART_telecommand_buffer_last_rx_byte, 1);
+
+    // Enable the always-on UARTs.
     HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t*) &UART_eps_buffer_last_rx_byte, 1);
     HAL_UART_Receive_IT(UART_ax100_port_handle, (uint8_t*) &UART_ax100_buffer_last_rx_byte, 1);
 
     // GNSS is not initialized as always-listening. It is enabled by the GNSS telecommands.
     // Reason: The GNSS has a mode where it spams null bytes, which can lock up the entire system.
     // Thus, its interrupt is disabled by default.
-
-    // TODO: Verify these when peripheral implementations are added
 }

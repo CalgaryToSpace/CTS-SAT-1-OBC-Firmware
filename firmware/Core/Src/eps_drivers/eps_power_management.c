@@ -70,7 +70,7 @@ uint8_t EPS_monitor_and_disable_overcurrent_channels() {
         return 2;
     }
 
-    const uint8_t logging_status = EPS_log_pdu_json(&EPS_pdu_housekeeping_data_eng); // TODO: Rework EPS Logging
+    const uint8_t logging_status = EPS_log_pdu_json(&EPS_pdu_housekeeping_data_eng);
 
     EPS_channel_management(&EPS_pdu_housekeeping_data_eng);
 
@@ -83,11 +83,14 @@ uint8_t EPS_monitor_and_disable_overcurrent_channels() {
 ///     If the conversion to JSON fails, it will log an error with the error status.    
 ///     Otherwise, it will log the JSON string to the error log.
 uint8_t EPS_log_pdu_json(const EPS_struct_pdu_housekeeping_data_eng_t *EPS_pdu_housekeeping_data_eng) {
-    char json_str[1000];
+    char json_str[350];
 
     // Power Logging                                                        
     const int8_t to_json_status = EPS_struct_pdu_housekeeping_data_eng_TO_json(
-        EPS_pdu_housekeeping_data_eng, json_str, 1000);
+        EPS_pdu_housekeeping_data_eng, json_str, sizeof(json_str)
+    );
+
+    // TODO: Should shrink the length of this to avoid truncation (https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/557).
 
     if (to_json_status != 0) {
         LOG_message(

@@ -88,8 +88,13 @@ uint8_t TCMDEXEC_flash_each_is_reachable(const char *args_str,
 /// - Arg 1: Page number as uint
 /// - Arg 2: Number of bytes to read as uint
 /// @return 0 on success, >0 on error
-uint8_t TCMDEXEC_flash_read_hex(const char *args_str,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
+uint8_t TCMDEXEC_flash_read_hex(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    // FIXME: This can't print a whole page of data because TCMD_MAX_RESPONSE_BUFFER_LENGTH=2048.
+    // One solution: Best to include an offset-into-page argument as well. Was removed in Marko's flash refactor.
+
     uint64_t chip_num_u64, page_num_u64, num_bytes_u64;
 
     uint8_t arg0_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &chip_num_u64);
@@ -120,11 +125,13 @@ uint8_t TCMDEXEC_flash_read_hex(const char *args_str,
         return 3;
     }
 
-    if (num_bytes_u64 > FLASH_CHIP_PAGE_SIZE_BYTES || num_bytes_u64 == 0) {
+    if ((num_bytes_u64 > FLASH_CHIP_PAGE_SIZE_BYTES) || (num_bytes_u64 == 0)) {
         snprintf(
             response_output_buf, response_output_buf_len,
             "Invalid number of bytes to read: %lu. Must be 1 to %d.",
-            (uint32_t)num_bytes_u64, FLASH_CHIP_PAGE_SIZE_BYTES); // TODO: fix this cast
+            (uint32_t)num_bytes_u64, // Technically could overflow, but not a huge deal in a msg.
+            FLASH_CHIP_PAGE_SIZE_BYTES
+        );
         return 3;
     }
 
@@ -141,25 +148,30 @@ uint8_t TCMDEXEC_flash_read_hex(const char *args_str,
     if (read_result != 0) {
         snprintf(
             response_output_buf, response_output_buf_len,
-            "Error reading flash: %d", read_result);
+            "Error reading flash: %d", read_result
+        );
         return 4;
     }
 
-    // Convert read data to hex
-    // FIXME: This can't print whole page of data (2048 bytes). Fix so that it can.
+    // Convert data to hex.
     for (uint16_t i = 0; i < num_bytes; i++) {
         snprintf(
             &response_output_buf[strlen(response_output_buf)],
             response_output_buf_len - strlen(response_output_buf) - 1,
-            "%02X ", read_buf[i]);
+            "%02X", read_buf[i]
+        );
 
-        // add newline separator every 16 bytes
+#if 0 // Disable to save output space.
+        // Add newline separator every 16 bytes.
         if (i > 0 && (i + 1) % 16 == 0) {
             snprintf(
                 &response_output_buf[strlen(response_output_buf)],
                 response_output_buf_len - strlen(response_output_buf) - 1,
-                "\n");
+                "\n"
+            );
         }
+#endif
+
     }
 
     return 0;

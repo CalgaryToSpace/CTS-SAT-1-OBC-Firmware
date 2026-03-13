@@ -101,7 +101,7 @@ static HAL_StatusTypeDef _SPI_fast_receive(SPI_HandleTypeDef *hspi, uint8_t *res
     // Be careful here, we are writing into stack memory with DMA. This function should not return until the transfer is complete.
     // TODO: We could use a static buffer then memcpy to the response buffer, but that adds 1ms overhead. Probably not necessary.
     // Wait for DMA transfer to complete.
-    while ((rx_result == HAL_OK) && !SPI_DMA_receive_complete && time_elapsed_ms < 10) {
+    while ((rx_result == HAL_OK) && !SPI_DMA_receive_complete && (time_elapsed_ms < 10)) {
         time_elapsed_ms = HAL_GetTick() - start_time;
     }
 
@@ -131,7 +131,6 @@ static inline void _chip_select_low(uint8_t chip_number) {
         HAL_GPIO_WritePin(PIN_MEM_NCS_FLASH_3_GPIO_Port, PIN_MEM_NCS_FLASH_3_Pin, GPIO_PIN_RESET);
     }
     
-    // TODO: check if this is how we want to access the FRAM chips
     else if (chip_number == 8) {
         HAL_GPIO_WritePin(PIN_MEM_NCS_FRAM_0_GPIO_Port, PIN_MEM_NCS_FRAM_0_Pin, GPIO_PIN_RESET);
     } else if (chip_number == 9) {

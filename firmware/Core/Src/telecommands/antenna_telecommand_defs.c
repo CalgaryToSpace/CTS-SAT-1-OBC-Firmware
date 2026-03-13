@@ -603,11 +603,11 @@ uint8_t TCMDEXEC_ant_measure_temp(const char *args_str,
         snprintf(response_output_buf, response_output_buf_len, "Error: %d", comms_err);
         return comms_err;
     }
-    // TODO: remove the newline in between the strings to get a JSON string
+    
     snprintf(
         response_output_buf, 
         response_output_buf_len, 
-        "{\"raw_temp\":%d," "\n" "\"temp_cC\":%d}", 
+        "{\"raw_temp\":%d, \"temp_cC\":%d}", 
         measurement,
         ANT_convert_raw_temp_to_cCelsius(measurement)
     );

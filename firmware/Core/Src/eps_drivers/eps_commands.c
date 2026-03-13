@@ -29,7 +29,7 @@ uint8_t EPS_CMD_system_reset() {
 }
 
 uint8_t EPS_CMD_no_operation() {
-	// FIXME: it appears that the no_operation command does not return it's own CC+1 in the RC field
+	// Note: It appears that the no_operation command does not return it's own CC+1 in the RC field.
 	const uint8_t CC = 0x02;
 	return EPS_run_argumentless_cmd(CC);
 }

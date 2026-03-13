@@ -14,7 +14,6 @@
 
 extern UART_HandleTypeDef *UART_eps_port_handle;
 
-// TODO: please verify these numbers in the Software ICD, and remove this comment when satisfied.
 static const uint32_t EPS_TX_TIMEOUT_MS = 1000;
 static const uint32_t EPS_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS = 50;
 static const uint32_t EPS_RX_TIMEOUT_BETWEEN_BYTES_MS = 25;
@@ -123,7 +122,7 @@ uint8_t EPS_send_cmd_get_response(
             }
         }
 
-        // TODO: also end when we receive the end tag
+        // TODO: Could also end when we receive the end tag (though unnecessary in practice, it seems).
     }
 
     // End Receiving
@@ -136,8 +135,8 @@ uint8_t EPS_send_cmd_get_response(
         DEBUG_uart_print_str("\n");
     }
 
-    // Check that we've received what we're expecting
-    // TODO: if the following cases happen ever during testing, consider allowing them and treating them as WARNINGs
+    // Check that we've received what we're expecting.
+    // Note: The ERROR-level logs could feasibly be non-fatal warnings.
     if (UART_eps_buffer_write_idx == 0) {
         LOG_message(
             LOG_SYSTEM_EPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
@@ -172,7 +171,7 @@ uint8_t EPS_send_cmd_get_response(
         return 15;
     }
 
-    // FIXME: pack the rx_buf less-naively (check/confirm the start tag location)
+    // TODO: Could pack the rx_buf less-naively (check/confirm the start tag location). Unnecessary in practice.
 
     // Copy the received bytes into the rx_buf.
     // Can't use memcpy because UART_eps_buffer is volatile.

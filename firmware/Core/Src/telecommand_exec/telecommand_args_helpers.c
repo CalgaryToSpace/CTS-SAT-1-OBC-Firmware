@@ -17,9 +17,7 @@
 /// @note Result is not written to if an error occurs. The max digit length that can be store in the result
 /// is 19. If the input string is longer than 19 characters, an error will be returned.
 uint8_t TCMD_ascii_to_uint64(const char *str, uint32_t str_len, uint64_t *result) {
-    // TODO: consider removing the str_len parameter and using strlen(str) instead (requires refactor in caller)
-
-    // Error: the input string is empty
+    // Error: the input string is empty.
     if (str_len == 0) {
         return 1;
     }
