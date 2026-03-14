@@ -44,8 +44,8 @@ uint32_t EPS_time_sync_period_sec = 600;
 uint32_t EPS_max_time_deviation_for_sync_ms = 2000;
 
 /// @brief Interval between basic beacon packets, in ms.
-/// @note Default: 30000 ms = 30 seconds.
-uint32_t COMMS_beacon_interval_ms = 30000;
+/// @note Default: 20000 ms = 20 seconds (fastest rate we're globally authorized for).
+uint32_t COMMS_beacon_interval_ms = 20000;
 
 uint32_t COMMS_total_beacon_count_since_boot = 0;
 
