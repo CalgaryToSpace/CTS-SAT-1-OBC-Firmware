@@ -13,6 +13,7 @@
 #include "mpi/mpi_command_handling.h"
 #include "mpi/mpi_types.h"
 #include "uart_handler/uart_handler.h"
+#include "rtos_tasks/rtos_bootup_operation_fsm_task.h"
 
 #include "telecommands/system_telecommand_defs.h"
 #include "telecommand_exec/telecommand_definitions.h"
@@ -125,6 +126,7 @@ uint8_t TCMDEXEC_core_system_stats(
         "\"total_beacon_count\":%lu,"
         "\"is_lfs_mounted\":%u,"
         "\"reboot_reason\":\"%s\","
+        "\"operation_state\":\"%s\","
         "\"mpi_rx_mode\":\"%s\","
         "\"mpi_transceiver_state\":\"%s\","
         "\"mpi_last_reason_for_stopping\":\"%s\","
@@ -141,6 +143,7 @@ uint8_t TCMDEXEC_core_system_stats(
         COMMS_total_beacon_count_since_boot, // total_beacon_count
         LFS_is_lfs_mounted, // is_lfs_mounted
         STM32_reset_cause_name, // reboot_reason
+        CTS1_operation_state_enum_TO_str(CTS1_operation_state), // operation_state
         MPI_rx_mode_enum_to_str(MPI_current_uart_rx_mode), // mpi_rx_mode
         MPI_transceiver_state_enum_to_str(MPI_current_transceiver_state), // mpi_transceiver_state
         MPI_reason_for_stopping_active_mode_enum_to_str(MPI_last_reason_for_stopping_active_mode), // mpi_last_reason_for_stopping
