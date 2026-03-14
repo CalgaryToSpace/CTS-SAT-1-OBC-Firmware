@@ -6,11 +6,15 @@
 #include <string.h>
 #include <stdint.h>
 #include <inttypes.h>
-
+#include <stdbool.h>
 
 // TODO: Determine how long each of these are, add to docs, add checks to each function at the start.
 
-
+/// @brief Convert the EPS_vpid_eng_t struct to a JSON string and write it to json_output_str.
+/// @param data Input struct of voltage/current/power.
+/// @param json_output_str Destination buffer.
+/// @param json_output_str_size Size of `json_output_str`. Recommended: 37 characters, or a couple extra.
+/// @return 0 on success.
 uint8_t EPS_vpid_eng_TO_json(const EPS_vpid_eng_t *data, char json_output_str[], uint16_t json_output_str_size) {
     if (data == NULL || json_output_str == NULL || json_output_str_size < 10) {
         return 1; // Error: Invalid input
@@ -85,7 +89,10 @@ uint8_t EPS_battery_pack_datatype_eng_TO_json(
 }
 
 
-uint8_t EPS_conditioning_channel_datatype_eng_TO_json(const EPS_conditioning_channel_datatype_eng_t *data, char json_output_str[], uint16_t json_output_str_size) {
+uint8_t EPS_conditioning_channel_datatype_eng_TO_json(
+    const EPS_conditioning_channel_datatype_eng_t *data,
+    char json_output_str[], uint16_t json_output_str_size
+) {
     if (data == NULL || json_output_str == NULL || json_output_str_size < 10) {
         return 1; // Error: Invalid input
     }
@@ -114,7 +121,10 @@ uint8_t EPS_conditioning_channel_datatype_eng_TO_json(const EPS_conditioning_cha
     return 0; // Success
 }
 
-uint8_t EPS_conditioning_channel_short_datatype_eng_TO_json(const EPS_conditioning_channel_short_datatype_eng_t *data, char json_output_str[], uint16_t json_output_str_size) {
+uint8_t EPS_conditioning_channel_short_datatype_eng_TO_json(
+    const EPS_conditioning_channel_short_datatype_eng_t *data,
+    char json_output_str[], uint16_t json_output_str_size
+) {
     if (data == NULL || json_output_str == NULL || json_output_str_size < 10) {
         return 1; // Error: Invalid input
     }
@@ -229,7 +239,10 @@ uint8_t EPS_struct_pbu_abf_placed_state_TO_json(const EPS_struct_pbu_abf_placed_
 }
 
 
-uint8_t EPS_struct_pdu_housekeeping_data_eng_TO_json(const EPS_struct_pdu_housekeeping_data_eng_t *data, char json_output_str[], uint16_t json_output_str_size) {
+uint8_t EPS_struct_pdu_housekeeping_data_eng_TO_json(
+    const EPS_struct_pdu_housekeeping_data_eng_t *data,
+    char json_output_str[], uint16_t json_output_str_size
+) {
     if (data == NULL || json_output_str == NULL || json_output_str_size < 10) {
         return 1; // Error: Invalid input
     }
@@ -559,3 +572,86 @@ uint8_t EPS_struct_piu_housekeeping_data_eng_TO_json(
 
     return 0; // Success
 }
+
+
+/// @brief Convert PDU struct to store JSON for periodic logging.
+/// @note Emphasizes total info, and enabled channels.
+uint8_t EPS_struct_pdu_housekeeping_data_eng_TO_short_json(
+    const EPS_struct_pdu_housekeeping_data_eng_t *data,
+    char json_output_str[], uint16_t json_output_str_size
+) {
+    if (data == NULL || json_output_str == NULL || json_output_str_size < 10) {
+        return 1; // Error: Invalid input
+    }
+    int ret, offset = 0;
+
+    // Start the JSON string
+    offset = snprintf(json_output_str, json_output_str_size, "{");
+
+    // Add voltage_internal_board_supply_mV and temperature_mcu_cC
+    ret = snprintf(
+        json_output_str + offset, json_output_str_size - offset,
+        "\"voltage_internal_mV\":%" PRIu16 ",\"temperature_mcu_cC\":%" PRId16 ",",
+        data->voltage_internal_board_supply_mV, data->temperature_mcu_cC
+    );
+    if (ret < 0 || ret >= (json_output_str_size - offset)) return 3;
+    offset += ret;
+
+    // Add vip_total_input as JSON
+    char vip_json[128];
+    ret = EPS_vpid_eng_TO_json(&data->vip_total_input, vip_json, sizeof(vip_json));
+    if (ret != 0) return 4;
+
+    ret = snprintf(
+        json_output_str + offset, json_output_str_size - offset,
+        "\"vip_total_input\":%s,", vip_json
+    );
+    if (ret < 0 || ret >= (json_output_str_size - offset)) return 3;
+    offset += ret;
+
+    // Add vip_each_channel as a JSON object, keyed by channel name, only for enabled channels!
+    ret = snprintf(json_output_str + offset, json_output_str_size - offset, "\"channels\":{");
+    if (ret < 0 || ret >= (json_output_str_size - offset)) return 3;
+    offset += ret;
+
+    bool first_channel = true;
+    for (uint8_t ch = 0; ch <= EPS_MAX_ACTIVE_CHANNEL_NUMBER; ch++) {
+        // Skip channels that are not enabled in the bitfield
+        if (!(data->stat_ch_on_bitfield & (1U << ch))) {
+            continue;
+        }
+
+        const char *eps_channel_name = EPS_channel_to_str(ch);
+
+        char vip_channel_json[40];
+        ret = EPS_vpid_eng_TO_json(&data->vip_each_channel[ch], vip_channel_json, sizeof(vip_channel_json));
+        if (ret != 0) return 5;
+
+        ret = snprintf(
+            json_output_str + offset, json_output_str_size - offset,
+            "%s\"%s\":%s",
+            first_channel ? "" : ",",
+            eps_channel_name,
+            vip_channel_json
+        );
+        if (ret < 0 || ret >= (json_output_str_size - offset)) return 3;
+        offset += ret;
+
+        first_channel = false;
+    }
+
+    ret = snprintf(json_output_str + offset, json_output_str_size - offset, "}");
+    if (ret < 0 || ret >= (json_output_str_size - offset)) return 3;
+    offset += ret;
+
+    // End the JSON string
+    ret = snprintf(json_output_str + offset, json_output_str_size - offset, "}");
+    if (ret < 0 || ret >= (json_output_str_size - offset)) return 3;
+    offset += ret;
+
+    if (offset >= json_output_str_size) {
+        return 3; // Output json_output_str too small
+    }
+    return 0;
+}
+
