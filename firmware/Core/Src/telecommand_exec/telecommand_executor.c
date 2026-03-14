@@ -471,11 +471,11 @@ uint8_t TCMD_agenda_fetch() {
     for (uint16_t slot_num = 0; slot_num < TCMD_AGENDA_SIZE; slot_num++) {
         if (TCMD_agenda_is_valid[slot_num]) {
             active_agendas++;
-            }
+        }
     }
 
-    // if no active agendas, return 1
-    if (active_agendas == 0){
+    // If no active agendas, return 1.
+    if (active_agendas == 0) {
         LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "TCMD_agenda_fetch: No entries in the agenda."
@@ -502,7 +502,7 @@ uint8_t TCMD_agenda_fetch() {
 
             LOG_message(
                 LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL, 
-                "{\"slot_num\":\"%u\",\"timestamp_sent\":%s,\"timestamp_to_execute\":%s}\n",
+                "{\"slot_num\":\"%u\",\"timestamp_sent\":%s,\"timestamp_to_execute\":%s}",
                 slot_num,
                 tssent_str,
                 tsexec_str

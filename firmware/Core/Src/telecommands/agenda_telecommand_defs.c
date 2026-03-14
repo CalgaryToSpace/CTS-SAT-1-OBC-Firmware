@@ -68,13 +68,12 @@ uint8_t TCMDEXEC_agenda_delete_by_tssent(const char *args_str,
 }
 
 /// @brief Telecommand: Fetch all pending agenda items, and log them each as JSONL
-/// @param args_str No arguments needed
-/// @param response_output_buf The buffer to write the response to
-/// @param response_output_buf_len The maximum length of the response_output_buf (its size)
-/// @return 0 on success, 1 if there are no active agendas.
-uint8_t TCMDEXEC_agenda_fetch_jsonl(const char *args_str,
-                        char *response_output_buf, uint16_t response_output_buf_len) {
-     
+/// @param args_str No arguments.
+/// @return 0 on success, 1 if there are no active pending agenda items.
+uint8_t TCMDEXEC_agenda_fetch_jsonl(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
     const uint8_t result = TCMD_agenda_fetch();
     return result;
 }

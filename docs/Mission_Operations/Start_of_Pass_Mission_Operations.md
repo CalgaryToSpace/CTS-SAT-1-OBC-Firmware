@@ -12,6 +12,9 @@ At the start of a pass over the ground station, the following telecommands are m
     * `uart_get_last_rx_times_json`
     * `uart_get_errors_json`
     * ADCS commands TBD
+    * If the system uptime is >24h, consider:
+        * `config_get_all_int_vars_json` and/or `config_get_all_vars_jsonl`
+        * `agenda_fetch_jsonl`
 * Third Priority:
     * Count errors in logs
 
