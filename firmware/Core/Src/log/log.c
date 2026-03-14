@@ -63,9 +63,9 @@ static uint8_t LOG_memory_index_of_current_log_entry = LOG_MEMORY_NUMBER_OF_ENTR
 
 // Severity masking.
 static const uint8_t LOG_SEVERITY_MASK_ALL = 0xFF;
-
-// Set default mask to: No debugging messages by default. They're too spammy in real deployment.
-static const uint8_t LOG_SEVERITY_MASK_DEFAULT = LOG_SEVERITY_MASK_ALL & ~(uint8_t)LOG_SEVERITY_DEBUG;
+static const uint8_t LOG_SEVERITY_MASK_ALL_EXCEPT_DEBUG = (
+    LOG_SEVERITY_MASK_ALL & ~(uint8_t)LOG_SEVERITY_DEBUG
+);
 
 // Note: LOG_sinks entries must have same order as LOG_sink_enum_t entries.
 // The in-memory log table is a combination of working memory for constructing
@@ -73,31 +73,31 @@ static const uint8_t LOG_SEVERITY_MASK_DEFAULT = LOG_SEVERITY_MASK_ALL & ~(uint8
 // least one channel. It cannot be turned off. It is not included in the
 // array of sinks.
 static LOG_sink_t LOG_sinks[] = {
-    {LOG_SINK_UHF_RADIO, "UHF_RADIO", LOG_SINK_ON, LOG_SEVERITY_MASK_DEFAULT},
-    {LOG_SINK_FILE, "FILE", LOG_SINK_OFF, LOG_SEVERITY_MASK_DEFAULT},
-    {LOG_SINK_UMBILICAL_UART, "UMBILICAL", LOG_SINK_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SINK_UHF_RADIO, "UHF_RADIO", LOG_SINK_OFF, LOG_SEVERITY_MASK_ALL_EXCEPT_DEBUG},
+    {LOG_SINK_FILE, "FILE", LOG_SINK_OFF, LOG_SEVERITY_MASK_ALL_EXCEPT_DEBUG},
+    {LOG_SINK_UMBILICAL_UART, "UMBILICAL", LOG_SINK_ON, LOG_SEVERITY_MASK_ALL_EXCEPT_DEBUG},
 };
 static const uint16_t LOG_NUMBER_OF_SINKS = sizeof(LOG_sinks) / sizeof(LOG_sink_t);
 
 // Note: LOG_systems entries must have same order as LOG_system_enum_t
 // entries.
 static LOG_system_t LOG_systems[] = {
-    {LOG_SYSTEM_OBC, "OBC", "/logs/obc_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
-    {LOG_SYSTEM_UHF_RADIO, "RADIO", "/logs/uhf_radio_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
-    {LOG_SYSTEM_UMBILICAL_UART, "UART", "/logs/umbilical_uart_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
-    {LOG_SYSTEM_GNSS, "GNSS", "/logs/gnss_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
-    {LOG_SYSTEM_MPI, "MPI", "/logs/mpi_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
-    {LOG_SYSTEM_EPS, "EPS", "/logs/eps_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
-    {LOG_SYSTEM_BOOM, "BOOM", "/logs/boom_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
-    {LOG_SYSTEM_ADCS, "ADCS", "/logs/adcs_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
-    {LOG_SYSTEM_LFS, "LFS", "/logs/lfs_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
-    {LOG_SYSTEM_FLASH, "FLASH", "/logs/flash_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
-    {LOG_SYSTEM_ANTENNA_DEPLOY, "ANTS", "/logs/antenna_deploy_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
-    {LOG_SYSTEM_LOG, "LOG", "/logs/log_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
-    {LOG_SYSTEM_TELECOMMAND, "TCMD", "/logs/telecommand_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
-    {LOG_SYSTEM_UNIT_TEST, "TEST", "/logs/unit_test_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SYSTEM_OBC, "OBC", "/logs/obc_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_ALL},
+    {LOG_SYSTEM_UHF_RADIO, "RADIO", "/logs/uhf_radio_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_ALL},
+    {LOG_SYSTEM_UMBILICAL_UART, "UART", "/logs/umbilical_uart_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_ALL},
+    {LOG_SYSTEM_GNSS, "GNSS", "/logs/gnss_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_ALL},
+    {LOG_SYSTEM_MPI, "MPI", "/logs/mpi_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_ALL},
+    {LOG_SYSTEM_EPS, "EPS", "/logs/eps_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_ALL},
+    {LOG_SYSTEM_BOOM, "BOOM", "/logs/boom_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_ALL},
+    {LOG_SYSTEM_ADCS, "ADCS", "/logs/adcs_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_ALL},
+    {LOG_SYSTEM_LFS, "LFS", "/logs/lfs_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_ALL},
+    {LOG_SYSTEM_FLASH, "FLASH", "/logs/flash_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_ALL},
+    {LOG_SYSTEM_ANTENNA_DEPLOY, "ANTS", "/logs/antenna_deploy_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_ALL},
+    {LOG_SYSTEM_LOG, "LOG", "/logs/log_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_ALL},
+    {LOG_SYSTEM_TELECOMMAND, "TCMD", "/logs/telecommand_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_ALL},
+    {LOG_SYSTEM_UNIT_TEST, "TEST", "/logs/unit_test_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_ALL},
     // LOG_SYSTEM_UNKNOWN must be the LAST entry to make it easy to find below.
-    {LOG_SYSTEM_UNKNOWN, "UNK", "/logs/unknown_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_DEFAULT},
+    {LOG_SYSTEM_UNKNOWN, "UNK", "/logs/unknown_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_ALL},
 };
 static const uint16_t LOG_NUMBER_OF_SYSTEMS = sizeof(LOG_systems) / sizeof(LOG_system_t);
 
