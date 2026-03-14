@@ -4,7 +4,7 @@
 #include "system/system_temperature.h"
 #include "unit_tests/test_system_temperature.h"
 
-uint8_t TEST_EXEC__SYS_TEMP_get_processed_thermal_info(){
+uint8_t TEST_EXEC__SYS_TEMP_get_processed_thermal_info() {
 
     SYS_TEMP_thermal_info_t result;
     
@@ -16,7 +16,7 @@ uint8_t TEST_EXEC__SYS_TEMP_get_processed_thermal_info(){
     case1.system_ANT_temperature_i2c_bus_A_raw=500;
     case1.system_ANT_temperature_i2c_bus_B_raw=500;
 
-    EPS_vpid_eng_t vpid_case1 = (EPS_vpid_eng_t) {15000,0,0};
+    EPS_vpid_eng_t vpid_case1 = (EPS_vpid_eng_t) {15100,0,0}; // Battery voltage here.
     // 0b1001_0001_1110_0001 = 37345 the bit string for batter pack bitfield
     case1.system_eps_battery_datatype_struct = (EPS_battery_pack_datatype_eng_t) {vpid_case1, 37345 ,{0,0,0,0},{400,0,550}};
     case1.system_eps_conditioning_channel_info_each_channel[0] = (EPS_conditioning_channel_datatype_eng_t) {vpid_case1, 1000,1000,300,1000};
@@ -48,7 +48,7 @@ uint8_t TEST_EXEC__SYS_TEMP_get_processed_thermal_info(){
     case2.system_ANT_temperature_i2c_bus_A_raw=450;
     case2.system_ANT_temperature_i2c_bus_B_raw=500;
     
-    EPS_vpid_eng_t vpid_case2 = (EPS_vpid_eng_t) {15500,0,0};
+    EPS_vpid_eng_t vpid_case2 = (EPS_vpid_eng_t) {15550,0,0};
     // 0b1110_1111_1110_0001 = 61409 the bit string for batter pack bitfield
     case2.system_eps_battery_datatype_struct = (EPS_battery_pack_datatype_eng_t) {vpid_case2, 61409 ,{0,0,0,0},{100,20,320}};
     case2.system_eps_conditioning_channel_info_each_channel[0] = (EPS_conditioning_channel_datatype_eng_t) {vpid_case2, 50,1,300,1000};
