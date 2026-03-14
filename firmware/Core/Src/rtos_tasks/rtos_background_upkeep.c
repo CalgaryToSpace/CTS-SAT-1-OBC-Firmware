@@ -31,7 +31,6 @@ uint32_t STM32_system_reset_interval_sec = 604800;
 /// @note Set to 0 to disable this feature.
 uint32_t STM32_system_reset_no_uplink_interval_sec = 216000;
 
-uint32_t COMMS_total_beacon_count_since_boot = 0;
 
 /// @brief How frequently to set the OBC time based on the EPS time if the time divergence is >2 seconds.
 /// @note Default: 600 seconds = 10 minutes.
@@ -43,6 +42,12 @@ uint32_t EPS_time_sync_period_sec = 600;
 /// @note Strongly related to EPS_time_sync_period_sec.
 /// @note Recommendation: Do not set to < 1500-2000ms, as the EPS time is only granular to 1 second.
 uint32_t EPS_max_time_deviation_for_sync_ms = 2000;
+
+/// @brief Interval between basic beacon packets, in ms.
+/// @note Default: 20000 ms = 20 seconds (fastest rate we're globally authorized for).
+uint32_t COMMS_beacon_interval_ms = 20000;
+
+uint32_t COMMS_total_beacon_count_since_boot = 0;
 
 static uint32_t EPS_monitor_last_uptime_ms = 0;
 
@@ -180,18 +185,23 @@ static void subtask_update_rf_switch(void) {
     }
 }
 
-static void subtask_send_beacon(void) {
-    if (COMMS_rf_switch_control_mode == COMMS_RF_SWITCH_CONTROL_MODE_TOGGLE_BEFORE_EVERY_BEACON) {
-        COMMS_toggle_rf_switch_state();
+static uint32_t last_beacon_send_time_ms = 0;
 
-        HAL_Delay(20); // Wait for the RF switch to settle. Should only take <100 nanoseconds.
+static void subtask_send_beacon(void) {
+    if ((TIME_get_current_system_uptime_ms() - last_beacon_send_time_ms) > COMMS_beacon_interval_ms) {
+        if (COMMS_rf_switch_control_mode == COMMS_RF_SWITCH_CONTROL_MODE_TOGGLE_BEFORE_EVERY_BEACON) {
+            COMMS_toggle_rf_switch_state();
+
+            HAL_Delay(20); // Wait for the RF switch to settle. Should only take <100 nanoseconds.
+        }
+
+        COMMS_downlink_beacon_basic_packet();
+        // TODO: If complex beacon packet is enabled, also send that too.
+        COMMS_total_beacon_count_since_boot += 1;
+
+        last_beacon_send_time_ms = TIME_get_current_system_uptime_ms();
     }
 
-    // TODO: Add configuration for beacon interval (https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/554).
-    COMMS_downlink_beacon_basic_packet();
-    COMMS_total_beacon_count_since_boot += 1;
-
-    // TOOD: If complex beacon packet is enabled, also send that too.
 }
 
 static uint32_t uptime_of_last_eps_time_sync_ms = 0;
