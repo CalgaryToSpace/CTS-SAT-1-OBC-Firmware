@@ -20,5 +20,9 @@ uint8_t TCMDEXEC_config_get_str_var_json(const char *args_str,
 uint8_t TCMDEXEC_config_get_all_vars_jsonl(const char *args_str,
                         char *response_output_buf, uint16_t response_output_buf_len);
 
+uint8_t TCMDEXEC_config_get_all_int_vars_json(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+);
 
 #endif // INCLUDE_GUARD_CONFIG_TELECOMMAND_DEFS_H

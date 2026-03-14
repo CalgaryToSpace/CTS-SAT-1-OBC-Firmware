@@ -252,6 +252,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
+    {
+        .tcmd_name = "config_get_all_int_vars_json",
+        .tcmd_func = TCMDEXEC_config_get_all_int_vars_json,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
     // ****************** END SECTION: config_telecommand_defs ******************
 
     // ****************** SECTION: flash_telecommand_defs ******************

@@ -237,23 +237,58 @@ uint8_t CONFIG_set_str_variable(const char *var_name, const char *new_value)
     return 0;
 }
 
-/// @brief Converts an integer configuration variable to a JSON string
+/// @brief Converts an integer configuration variable to a JSON string.
 /// @param var_name Name of the variable
 /// @param json_str Buffer to write the JSON string to
 /// @param json_str_max_len Max length of the buffer
 /// @return Length of the JSON string
-/// @note The JSON string is in the format: {"name":"var_name","value":value}\n
-uint16_t CONFIG_int_var_to_json(const char *var_name, char *json_str, const uint16_t json_str_max_len)
-{
+/// @note The JSON string is in the format: {"name":"var_name","value":value}
+uint16_t CONFIG_int_var_to_json(const char *var_name, char *json_str, const uint16_t json_str_max_len) {
     const int16_t index = CONFIG_get_int_var_index(var_name);
-    if (index < 0)
-    {
+    if (index < 0) {
         return 1; // the base string for json is at least 27 chars, so this works
     }
     CONFIG_integer_config_entry_t config_var = CONFIG_int_config_variables[index];
     return snprintf(
-        json_str, json_str_max_len, "{\"name\":\"%s\",\"value\":%lu}\n",
-        config_var.variable_name, *config_var.num_config_var);
+        json_str, json_str_max_len, "{\"name\":\"%s\",\"value\":%lu}",
+        config_var.variable_name, *config_var.num_config_var
+    );
+}
+
+/// @brief Converts ALL integer configuration variables to a tightly-packed JSON dictionary string.
+/// @param json_str Buffer to write the JSON string to
+/// @param json_str_size Max length of the buffer
+/// @return Length of the JSON string
+/// @note The JSON string is in the format: {"var1":value,"var2":value,...}
+uint16_t CONFIG_all_int_vars_to_json(char *json_str, const uint16_t json_str_size) {
+    uint16_t written = 0;
+
+    if (json_str_size == 0) {
+        return 0;
+    }
+
+    written += snprintf(json_str + written, json_str_size - written, "{");
+
+    for (uint16_t i = 0; i < CONFIG_int_config_variables_count; i++) {
+        const CONFIG_integer_config_entry_t config_var = CONFIG_int_config_variables[i];
+
+        written += snprintf(
+            json_str + written,
+            json_str_size - written,
+            "%s\"%s\":%lu",
+            (i == 0) ? "" : ",",
+            config_var.variable_name,
+            *config_var.num_config_var
+        );
+
+        if (written >= json_str_size) {
+            return json_str_size;
+        }
+    }
+
+    written += snprintf(json_str + written, json_str_size - written, "}");
+
+    return written;
 }
 
 /// @brief Converts a string configuration variable to a JSON string

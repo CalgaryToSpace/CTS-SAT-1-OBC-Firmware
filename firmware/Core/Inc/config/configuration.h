@@ -51,6 +51,8 @@ uint8_t CONFIG_set_str_variable(const char *var_name, const char *new_value);
 
 uint16_t CONFIG_int_var_to_json(const char *config_var, char *json_str, const uint16_t json_str_max_len);
 
+uint16_t CONFIG_all_int_vars_to_json(char *json_str, const uint16_t json_str_size);
+
 uint16_t CONFIG_str_var_to_json(const char *var_name, char *json_str, const uint16_t json_str_max_len);
 
 #endif //  INCLUDE_GUARD__CONFIGURATION_H

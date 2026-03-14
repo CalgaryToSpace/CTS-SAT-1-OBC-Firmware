@@ -165,3 +165,15 @@ uint8_t TCMDEXEC_config_get_all_vars_jsonl(
 
     return 0;
 }
+
+
+/// @brief Get all int configuration variables, as JSON. Each variable is a key-value pair in a single JSON dict.
+/// @param args_str No arguments.
+/// @return 0 if successful, >0 if an error occurred
+uint8_t TCMDEXEC_config_get_all_int_vars_json(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    CONFIG_all_int_vars_to_json(response_output_buf, response_output_buf_len);
+    return 0;
+}
