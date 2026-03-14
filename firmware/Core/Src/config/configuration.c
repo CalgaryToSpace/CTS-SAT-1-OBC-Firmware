@@ -19,6 +19,7 @@ extern uint32_t MPI_max_temperature_shutoff_celcius;
 extern uint32_t MPI_max_recording_duration_sec;
 extern uint32_t STM32_system_reset_interval_sec;
 extern uint32_t STM32_system_reset_no_uplink_interval_sec;
+extern uint32_t COMMS_beacon_interval_ms;
 
 extern uint32_t LOG_file_flush_interval_sec;
 extern uint32_t LOG_file_rotation_interval_sec;
@@ -78,6 +79,10 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
     {
         .variable_name = "LOG_file_rotation_interval_sec",
         .num_config_var = &LOG_file_rotation_interval_sec,
+    },
+    {
+        .variable_name = "COMMS_beacon_interval_ms",
+        .num_config_var = &COMMS_beacon_interval_ms,
     },
     // ******** AX100 Configuration ********
     {
