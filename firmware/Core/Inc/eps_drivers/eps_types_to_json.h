@@ -33,4 +33,9 @@ uint8_t EPS_struct_pbu_housekeeping_data_eng_TO_json(const EPS_struct_pbu_housek
 uint8_t EPS_struct_pcu_housekeeping_data_eng_TO_json(const EPS_struct_pcu_housekeeping_data_eng_t *data, char json_output_str[], uint16_t json_output_str_size);
 uint8_t EPS_struct_piu_housekeeping_data_eng_TO_json(const EPS_struct_piu_housekeeping_data_eng_t *data, char json_output_str[], uint16_t json_output_str_size);
 
+uint8_t EPS_struct_pdu_housekeeping_data_eng_TO_short_json(
+    const EPS_struct_pdu_housekeeping_data_eng_t *data,
+    char json_output_str[], uint16_t json_output_str_size
+);
+
 #endif // INCLUDE_GUARD__EPS_TYPES_TO_JSON_H__

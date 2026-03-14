@@ -83,21 +83,19 @@ uint8_t EPS_monitor_and_disable_overcurrent_channels() {
 ///     If the conversion to JSON fails, it will log an error with the error status.    
 ///     Otherwise, it will log the JSON string to the error log.
 uint8_t EPS_log_pdu_json(const EPS_struct_pdu_housekeeping_data_eng_t *EPS_pdu_housekeeping_data_eng) {
-    char json_str[350];
+    char json_str[255];
 
-    // Power Logging                                                        
-    const int8_t to_json_status = EPS_struct_pdu_housekeeping_data_eng_TO_json(
+    // Power Logging
+    const int8_t to_json_status = EPS_struct_pdu_housekeeping_data_eng_TO_short_json(
         EPS_pdu_housekeeping_data_eng, json_str, sizeof(json_str)
     );
-
-    // TODO: Should shrink the length of this to avoid truncation (https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/557).
 
     if (to_json_status != 0) {
         LOG_message(
             LOG_SYSTEM_EPS,
             LOG_SEVERITY_ERROR,
             LOG_SINK_ALL,
-            "EPS_struct_pdu_housekeeping_data_eng_TO_json() -> Error: %d",
+            "EPS_struct_pdu_housekeeping_data_eng_TO_short_json() -> Error: %d",
             to_json_status
         );
         return to_json_status;
@@ -107,7 +105,7 @@ uint8_t EPS_log_pdu_json(const EPS_struct_pdu_housekeeping_data_eng_t *EPS_pdu_h
             LOG_SYSTEM_EPS,
             LOG_SEVERITY_NORMAL,
             LOG_SINK_ALL,
-            "EPS PDU housekeeping data: %s",
+            "EPS PDU: %s",
             json_str
         );
     }
@@ -120,11 +118,15 @@ uint8_t EPS_log_pdu_json(const EPS_struct_pdu_housekeeping_data_eng_t *EPS_pdu_h
 /// @note This function will iterate over each channel and check if the power consumption has increased or decreased by more than a certain threshold.
 ///       If the power consumption has increased or decreased by more than the threshold, the channel will be disabled.
 ///       The function will log an error message if the channel is disabled due to a power issue.
-void EPS_channel_management(const EPS_struct_pdu_housekeeping_data_eng_t *EPS_pdu_housekeeping_data_eng) {
+void EPS_channel_management(
+    const EPS_struct_pdu_housekeeping_data_eng_t *EPS_pdu_housekeeping_data_eng
+) {
+    const uint32_t ch_bitfield = (
+        (EPS_pdu_housekeeping_data_eng->stat_ch_ext_on_bitfield << 16)
+        | EPS_pdu_housekeeping_data_eng->stat_ch_on_bitfield
+    );
 
-    const uint32_t ch_bitfield = (EPS_pdu_housekeeping_data_eng->stat_ch_ext_on_bitfield << 16) | EPS_pdu_housekeeping_data_eng->stat_ch_on_bitfield; 
-
-    //Power Monitoring
+    // Power Monitoring
     for (uint8_t channel = 0; channel < 32; channel++) {
         if ((ch_bitfield & (1 << channel)) == 0) { // Check if channel is enabled.
             // LOG_message(
@@ -135,7 +137,7 @@ void EPS_channel_management(const EPS_struct_pdu_housekeeping_data_eng_t *EPS_pd
             // );
             continue;
         }
-        if (EPS_current_mA_threshhold[channel] == 0) {
+        if (EPS_current_mA_threshhold[channel] == 0) { // If threshold check is disabled.
             // LOG_message(
             //     LOG_SYSTEM_EPS,
             //     LOG_SEVERITY_DEBUG,
@@ -154,25 +156,24 @@ void EPS_channel_management(const EPS_struct_pdu_housekeeping_data_eng_t *EPS_pd
             continue;
         }
 
-            const uint8_t disable_result = EPS_CMD_output_bus_channel_off(channel);
+        const uint8_t disable_result = EPS_CMD_output_bus_channel_off(channel);
 
-            if (disable_result != 0) {
-                LOG_message(
-                    LOG_SYSTEM_EPS,
-                    LOG_SEVERITY_ERROR,
-                    LOG_SINK_ALL,
-                    "EPS_CMD_output_bus_channel_off(%d) -> Error: %d", channel, disable_result
-                );
-            } 
-            else {
-                LOG_message(
-                    LOG_SYSTEM_EPS,
-                    LOG_SEVERITY_ERROR,
-                    LOG_SINK_ALL,
-                    "Channel %d was turned off. Due to a overcurrent oveflow.", channel
-                );
-            }       
-
+        if (disable_result != 0) {
+            LOG_message(
+                LOG_SYSTEM_EPS,
+                LOG_SEVERITY_ERROR,
+                LOG_SINK_ALL,
+                "EPS_CMD_output_bus_channel_off(%d) -> Error: %d", channel, disable_result
+            );
+        } 
+        else {
+            LOG_message(
+                LOG_SYSTEM_EPS,
+                LOG_SEVERITY_ERROR,
+                LOG_SINK_ALL,
+                "Channel %d was turned off. Due to a overcurrent oveflow.", channel
+            );
+        }
     }
 }
 
