@@ -145,7 +145,7 @@ uint8_t TCMDEXEC_core_system_stats(
         "\"gnss_uart_interrupt_enabled\":%u,"
         "\"eps_total_fault_count\":%lu,"
         "\"eps_battery_percent\":%s"
-        "}\n",
+        "}",
         timestamp_string_ms, // timestamp_ms
         TIME_get_current_system_uptime_ms(), // uptime_ms
         TIME_system_uptime_at_last_time_resync_ms, // last_time_resync_ms

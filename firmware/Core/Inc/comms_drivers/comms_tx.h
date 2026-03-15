@@ -7,7 +7,7 @@
 /// @details This is the first byte (after the CSP header) of the downlink packets.
 typedef enum {
     COMMS_PACKET_TYPE_BEACON_BASIC = 0x01,
-    COMMS_PACKET_TYPE_BEACON_PERIPHERAL = 0x02,
+    COMMS_PACKET_TYPE_BEACON_PERIPHERAL = 0x02, // Unused, currently.
     COMMS_PACKET_TYPE_LOG_MESSAGE = 0x03,
     COMMS_PACKET_TYPE_TCMD_RESPONSE = 0x04,
     COMMS_PACKET_TYPE_BULK_FILE_DOWNLINK = 0x10,
@@ -65,6 +65,7 @@ typedef struct {
     uint16_t eps_error_code;
     uint16_t eps_battery_voltage_mV;
     uint8_t eps_battery_percent;
+    // TODO: eps_battery_temperature
     int32_t eps_total_fault_count;
     uint32_t eps_enabled_channels_bitfield;
     int32_t eps_total_pcu_power_input_cW;
@@ -75,6 +76,8 @@ typedef struct {
     uint8_t reboot_reason; // Enum: STM32_reset_cause_t
     
     uint8_t cts1_operation_state; // Enum: CTS1_operation_state_enum_t
+
+    // TODO: obc_temperature
 
     uint8_t mpi_rx_mode_enum; // Enum: MPI_rx_mode_enum_t
     uint8_t mpi_transceiver_state_enum; // Enum: MPI_current_transceiver_state_enum_t
