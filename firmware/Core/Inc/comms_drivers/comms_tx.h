@@ -59,6 +59,10 @@ typedef struct {
 
     uint32_t total_beacon_count_since_boot;
 
+    uint8_t eps_mode_enum; // 0=startup, 1=nominal, 2=safety, 3=emergency_low_power
+    uint8_t eps_reset_cause_enum; // 0=power_on, 1=watchdog, 2=commanded, 3=control_system_reset, 4=emergency_low_power
+    uint32_t eps_uptime_sec;
+    uint16_t eps_error_code;
     uint16_t eps_battery_voltage_mV;
     uint8_t eps_battery_percent;
     int32_t eps_total_fault_count;
