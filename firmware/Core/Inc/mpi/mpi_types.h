@@ -7,13 +7,14 @@
 
 #ifndef INCLUDE_GUARD__MPI_TYPES_H
 #define INCLUDE_GUARD__MPI_TYPES_H
+
 #include <stdint.h>
 
 /// @brief Enumerates the different modes under which the satellite can operate the MPI
 typedef enum {
-    MPI_RX_MODE_COMMAND_MODE,               // MPI is in command mode
-    MPI_RX_MODE_SENSING_MODE,               // MPI is science data is being collected mode
-    MPI_RX_MODE_NOT_LISTENING_TO_MPI        // MPI is recording science data but it is not being collected mode
+    MPI_RX_MODE_COMMAND_MODE,        // MPI is in command mode
+    MPI_RX_MODE_SENSING_MODE,        // MPI is science data is being collected mode
+    MPI_RX_MODE_NOT_LISTENING_TO_MPI // MPI may be sending science data, but it is not being collected by OBC.
 } MPI_rx_mode_enum_t;
 
 typedef enum {
