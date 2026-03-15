@@ -58,6 +58,10 @@ void COMMS_fill_beacon_basic_packet(
 
     // EPS fields here (EPS is the only peripheral in the basic beacon).
     // Set the default here, then conditionally fill them below if the EPS is successful.
+    beacon_packet->eps_mode_enum = 255;
+    beacon_packet->eps_reset_cause_enum = 255;
+    beacon_packet->eps_uptime_sec = 9999;
+    beacon_packet->eps_error_code = 9999;
     beacon_packet->eps_battery_voltage_mV = 0;
     beacon_packet->eps_battery_percent = 0;
     beacon_packet->eps_total_fault_count = -1;
@@ -76,6 +80,17 @@ void COMMS_fill_beacon_basic_packet(
     beacon_packet->gnss_uart_interrupt_enabled = UART_gnss_uart_interrupt_enabled;
     beacon_packet->gnss_rx_mode_enum = 0; // FIXME: Fill during PR #567 review.
     
+    // Try to fetch the EPS system status, and store it in the beacon packet if successful.
+    {
+        EPS_struct_system_status_t eps_status_data;
+        if (EPS_CMD_get_system_status(&eps_status_data) == 0) {
+            beacon_packet->eps_mode_enum = eps_status_data.mode;
+            beacon_packet->eps_reset_cause_enum = eps_status_data.reset_cause;
+            beacon_packet->eps_uptime_sec = eps_status_data.uptime_sec;
+            beacon_packet->eps_error_code = eps_status_data.error_code;
+        }
+    }
+
     // Try to fetch the EPS battery data, and store it in the beacon packet if successful.
     {
         EPS_struct_pbu_housekeeping_data_eng_t eps_pbu_data;
