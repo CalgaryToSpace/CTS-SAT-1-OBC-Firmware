@@ -299,7 +299,8 @@ uint8_t TCMDEXEC_get_all_system_thermal_info(
         "{"
         "\"obc_temperature_cC\":%ld,"
         "\"ant_temperature_cC\":[%ld,%ld]," // Bus A, Bus B
-        "\"solar_panel_power_gen_mW\": [%ld,%ld,%ld,%ld],"
+        "\"solar_panel_input_cW\": [%ld,%ld,%ld,%ld],"
+        "\"solar_panel_output_total_cW\":%ld,"
         "\"eps_battery_percent\":%0.02f,"
         "\"battery_heater_active\":%d,"
         "\"battery_sensor_temp_cC\": [%d,%d]"
@@ -307,10 +308,11 @@ uint8_t TCMDEXEC_get_all_system_thermal_info(
         output_temp_info.system_OBC_temperature_cC,
         output_temp_info.system_ANT_temperature_i2c_bus_A_cC,
         output_temp_info.system_ANT_temperature_i2c_bus_B_cC,
-        output_temp_info.system_solar_panel_power_generation_mW[0],
-        output_temp_info.system_solar_panel_power_generation_mW[1],
-        output_temp_info.system_solar_panel_power_generation_mW[2],
-        output_temp_info.system_solar_panel_power_generation_mW[3],
+        output_temp_info.solar_panel_power_input_cW[0],
+        output_temp_info.solar_panel_power_input_cW[1],
+        output_temp_info.solar_panel_power_input_cW[2],
+        output_temp_info.solar_panel_power_input_cW[3],
+        output_temp_info.solar_panel_power_output_total_cW,
         output_temp_info.system_eps_battery_percent,
         output_temp_info.system_eps_battery_heater_status_bit,
         output_temp_info.system_eps_battery_each_sensor_temperature_cC[1],
