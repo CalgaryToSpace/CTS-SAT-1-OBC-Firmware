@@ -40,10 +40,9 @@ uint8_t SYS_TEMP_get_raw_thermal_info(SYS_TEMP_raw_thermal_info_t* result, uint8
     
     const int32_t obc_temp_result = OBC_TEMP_SENSOR_get_temperature_cC();
 
-    // get solar panel (PCU, mppt)
-    EPS_struct_pcu_housekeeping_data_eng_t pcu_data;
-    const uint8_t pcu_status = EPS_CMD_get_pcu_housekeeping_data_run_avg(&pcu_data);
-    if (pcu_status!=0){
+    // Get solar panel data (PCU, MPPT).
+    const uint8_t pcu_status = EPS_CMD_get_pcu_housekeeping_data_run_avg(&result->eps_pcu_data);
+    if (pcu_status !=0 ) {
         *error_ret |= SYS_TEMP_PCU_STATUS;
     }
 
@@ -60,10 +59,6 @@ uint8_t SYS_TEMP_get_raw_thermal_info(SYS_TEMP_raw_thermal_info_t* result, uint8
     result->system_ANT_temperature_i2c_bus_B_raw = ANT_raw_temp_B;
 
     result->system_eps_battery_datatype_struct = pbu_data.battery_pack_info_each_pack[0];
-    
-    for (int i =0; i< EPS_COND_CHANNEL_SIZE; i++){
-        result->system_eps_conditioning_channel_info_each_channel[i] = pcu_data.conditioning_channel_info_each_channel[i];
-    }
 
     const uint8_t eps_status_off = EPS_set_channel_enabled(EPS_CHANNEL_3V3_UHF_ANTENNA_DEPLOY, 0);
     if (eps_status_off !=0){
@@ -87,15 +82,28 @@ uint8_t SYS_TEMP_pack_to_system_thermal_info(
     result->system_ANT_temperature_i2c_bus_A_cC = ((error_ret) & 1) ? -99999 : ANT_convert_raw_temp_to_cCelsius(input->system_ANT_temperature_i2c_bus_A_raw);
     result->system_ANT_temperature_i2c_bus_B_cC = ((error_ret >> 1) & 1) ? -99999 : ANT_convert_raw_temp_to_cCelsius(input->system_ANT_temperature_i2c_bus_B_raw);
 
-    for (int i = 0; i < EPS_COND_CHANNEL_SIZE; i++) { 
-        result->system_solar_panel_power_generation_mW[i] = ((error_ret >> 2) & 1) ? -99999 : (int32_t) (input->system_eps_conditioning_channel_info_each_channel[i].volt_in_mppt_mV * input->system_eps_conditioning_channel_info_each_channel[i].curr_in_mppt_mA );
-    } 
+    // Each PCU channel.
+    for (int i = 0; i < EPS_TOTAL_PCU_CHANNEL_COUNT; i++) {
+        const EPS_conditioning_channel_datatype_eng_t *pcu_channel_data = (
+            &input->eps_pcu_data.conditioning_channel_info_each_channel[i]
+        );
+        result->solar_panel_power_input_cW[i] = ((error_ret >> 2) & 1) ? -99999 : (
+            (int32_t) ((float)pcu_channel_data->volt_in_mppt_mV * (float)pcu_channel_data->curr_in_mppt_mA * 1e-4)
+        );
+    }
+
+    // Total PCU output.
+    result->solar_panel_power_output_total_cW = ((error_ret >> 2) & 1) ? -99999 : (
+        EPS_calculate_total_pcu_power_output_cW(&input->eps_pcu_data)
+    );
 
     result->system_eps_battery_percent = ((error_ret >> 3) & 1) ? -99999 : EPS_convert_battery_voltage_to_percent(input->system_eps_battery_datatype_struct);
     const uint16_t bp_status_bitfield = input->system_eps_battery_datatype_struct.bp_status_bitfield;
     result->system_eps_battery_heater_status_bit = ((error_ret >> 3) & 1) ? 2 : (bp_status_bitfield >> 12) & 1;
     for (int i = 0; i < EPS_BATTERY_PACK_SENSOR_SIZE; i++) { 
-        result->system_eps_battery_each_sensor_temperature_cC[i] = ((error_ret >> 3) & 1) ? -9999 : input->system_eps_battery_datatype_struct.battery_temperature_each_sensor_cC[i];
+        result->system_eps_battery_each_sensor_temperature_cC[i] =
+            ((error_ret >> 3) & 1) ? -9999 : 
+            input->system_eps_battery_datatype_struct.battery_temperature_each_sensor_cC[i];
     }
 
     return 0;

@@ -62,6 +62,10 @@ void COMMS_fill_beacon_basic_packet(
     beacon_packet->eps_battery_percent = 0;
     beacon_packet->eps_total_fault_count = -1;
     beacon_packet->eps_enabled_channels_bitfield = 0;
+    beacon_packet->eps_total_pcu_power_input_cW = -99999; // Placeholder for error.
+    beacon_packet->eps_total_pcu_power_output_cW = -99999; // Placeholder for error.
+    beacon_packet->eps_total_avg_pcu_power_input_cW = -99999; // Placeholder for error.
+    beacon_packet->eps_total_avg_pcu_power_output_cW = -99999; // Placeholder for error.
 
     beacon_packet->cts1_operation_state = CTS1_operation_state;
 
@@ -75,8 +79,7 @@ void COMMS_fill_beacon_basic_packet(
     // Try to fetch the EPS battery data, and store it in the beacon packet if successful.
     {
         EPS_struct_pbu_housekeeping_data_eng_t eps_pbu_data;
-        const uint8_t eps_pbu_data_failed = EPS_CMD_get_pbu_housekeeping_data_eng(&eps_pbu_data);
-        if (eps_pbu_data_failed == 0) {
+        if (EPS_CMD_get_pbu_housekeeping_data_eng(&eps_pbu_data) == 0) {
             beacon_packet->eps_battery_voltage_mV = (
                 eps_pbu_data.battery_pack_info_each_pack[0].vip_bp_input.voltage_mV
             );
@@ -90,10 +93,35 @@ void COMMS_fill_beacon_basic_packet(
     // Try to fetch the EPS PDU data, and store it in the beacon packet if successful.
     {
         EPS_struct_pdu_housekeeping_data_eng_t eps_pdu_data;
-        const uint8_t eps_pdu_data_failed = EPS_CMD_get_pdu_housekeeping_data_eng(&eps_pdu_data);
-        if (eps_pdu_data_failed == 0) {
+        if (EPS_CMD_get_pdu_housekeeping_data_eng(&eps_pdu_data) == 0) {
             beacon_packet->eps_enabled_channels_bitfield = (
                 (eps_pdu_data.stat_ch_ext_on_bitfield << 16) | eps_pdu_data.stat_ch_on_bitfield
+            );
+        }
+    }
+
+    // Try to fetch the EPS PCU data (INSTANTANEOUS), and store it in the beacon packet if successful.
+    {
+        EPS_struct_pcu_housekeeping_data_eng_t eps_pcu_data;
+        if (EPS_CMD_get_pcu_housekeeping_data_eng(&eps_pcu_data) == 0) {
+            beacon_packet->eps_total_pcu_power_input_cW = (
+                EPS_calculate_total_pcu_power_input_cW(&eps_pcu_data)
+            );
+            beacon_packet->eps_total_pcu_power_output_cW = (
+                EPS_calculate_total_pcu_power_output_cW(&eps_pcu_data)
+            );
+        }
+    }
+
+    // Try to fetch the EPS PCU data (RUNNING AVERAGE), and store it in the beacon packet if successful.
+    {
+        EPS_struct_pcu_housekeeping_data_eng_t eps_pcu_data;
+        if (EPS_CMD_get_pcu_housekeeping_data_run_avg(&eps_pcu_data) == 0) {
+            beacon_packet->eps_total_avg_pcu_power_input_cW = (
+                EPS_calculate_total_pcu_power_input_cW(&eps_pcu_data)
+            );
+            beacon_packet->eps_total_avg_pcu_power_output_cW = (
+                EPS_calculate_total_pcu_power_output_cW(&eps_pcu_data)
             );
         }
     }
@@ -102,8 +130,7 @@ void COMMS_fill_beacon_basic_packet(
     {
         // Get EPS total fault count.
         EPS_struct_pdu_overcurrent_fault_state_t eps_pdu_fault_data;
-        const uint8_t eps_pdu_result = EPS_CMD_get_pdu_overcurrent_fault_state(&eps_pdu_fault_data);
-        if (eps_pdu_result == 0) {
+        if (EPS_CMD_get_pdu_overcurrent_fault_state(&eps_pdu_fault_data) == 0) {
             beacon_packet->eps_total_fault_count = EPS_calculate_total_fault_count(&eps_pdu_fault_data);
         }
     }

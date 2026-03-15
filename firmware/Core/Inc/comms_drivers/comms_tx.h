@@ -63,7 +63,10 @@ typedef struct {
     uint8_t eps_battery_percent;
     int32_t eps_total_fault_count;
     uint32_t eps_enabled_channels_bitfield;
-    // TODO: EPS total generation
+    int32_t eps_total_pcu_power_input_cW;
+    int32_t eps_total_pcu_power_output_cW;
+    int32_t eps_total_avg_pcu_power_input_cW;
+    int32_t eps_total_avg_pcu_power_output_cW;
 
     uint8_t reboot_reason; // Enum: STM32_reset_cause_t
     
