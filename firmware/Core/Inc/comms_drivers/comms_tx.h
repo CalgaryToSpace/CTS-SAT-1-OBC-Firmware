@@ -7,7 +7,7 @@
 /// @details This is the first byte (after the CSP header) of the downlink packets.
 typedef enum {
     COMMS_PACKET_TYPE_BEACON_BASIC = 0x01,
-    COMMS_PACKET_TYPE_BEACON_PERIPHERAL = 0x02,
+    COMMS_PACKET_TYPE_BEACON_PERIPHERAL = 0x02, // Unused, currently.
     COMMS_PACKET_TYPE_LOG_MESSAGE = 0x03,
     COMMS_PACKET_TYPE_TCMD_RESPONSE = 0x04,
     COMMS_PACKET_TYPE_BULK_FILE_DOWNLINK = 0x10,
@@ -51,12 +51,45 @@ typedef struct {
 
     uint32_t duration_since_last_uplink_ms;
     uint64_t unix_epoch_time_ms;
+    uint8_t last_time_sync_source_enum; // Enum: TIME_sync_source_enum_t
 
     uint8_t is_fs_mounted;
 
-    // TODO: LEOPS operation mode
+    uint16_t total_tcmd_queued_count;
 
-    // TODO: Many more from https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/338
+    uint32_t total_beacon_count_since_boot;
+
+    uint8_t eps_mode_enum; // 0=startup, 1=nominal, 2=safety, 3=emergency_low_power
+    uint8_t eps_reset_cause_enum; // 0=power_on, 1=watchdog, 2=commanded, 3=control_system_reset, 4=emergency_low_power
+    uint32_t eps_uptime_sec;
+    uint16_t eps_error_code;
+    uint16_t eps_battery_voltage_mV;
+    uint8_t eps_battery_percent;
+    // TODO: eps_battery_temperature
+    int32_t eps_total_fault_count;
+    uint32_t eps_enabled_channels_bitfield;
+    int32_t eps_total_pcu_power_input_cW;
+    int32_t eps_total_pcu_power_output_cW;
+    int32_t eps_total_avg_pcu_power_input_cW;
+    int32_t eps_total_avg_pcu_power_output_cW;
+
+    uint8_t reboot_reason; // Enum: STM32_reset_cause_t
+    
+    uint8_t cts1_operation_state; // Enum: CTS1_operation_state_enum_t
+
+    // TODO: obc_temperature
+
+    uint8_t mpi_rx_mode_enum; // Enum: MPI_rx_mode_enum_t
+    uint8_t mpi_transceiver_state_enum; // Enum: MPI_current_transceiver_state_enum_t
+
+    uint8_t mpi_last_reason_for_stopping_enum; // Enum: MPI_reason_for_stopping_active_mode_enum_t
+    
+    uint8_t gnss_uart_interrupt_enabled;
+
+    uint8_t gnss_rx_mode_enum; // Enum: GNSS_rx_mode_enum_t
+
+    // TODO: Total log message counts (esp. for warning/error levels)
+
     
 } COMMS_beacon_basic_packet_t;
 
@@ -91,11 +124,7 @@ typedef struct {
     uint8_t data[COMMS_BULK_FILE_DOWNLINK_PACKET_MAX_DATA_BYTES_PER_PACKET];
 } COMMS_bulk_file_downlink_packet_t;
 
-// TODO: Add sizeof assertions in unit tests related to the packets above.
-// assert(sizeof(COMMS_log_message_packet_t) == AX100_DOWNLINK_MAX_BYTES);
-// assert(sizeof(COMMS_tcmd_response_packet_t) == AX100_DOWNLINK_MAX_BYTES);
-// assert(sizeof(COMMS_bulk_file_downlink_packet_t) == AX100_DOWNLINK_MAX_BYTES);
-// assert(sizeof(COMMS_beacon_basic_packet_t) <= AX100_DOWNLINK_MAX_BYTES);
+// Unit tests contain assertions like: assert(sizeof(COMMS_log_message_packet_t) == AX100_DOWNLINK_MAX_BYTES);
 
 #pragma pack(pop)
 

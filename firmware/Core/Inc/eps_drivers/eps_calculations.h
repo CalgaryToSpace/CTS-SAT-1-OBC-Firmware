@@ -9,4 +9,7 @@ float EPS_convert_battery_voltage_to_percent(EPS_battery_pack_datatype_eng_t bat
 
 int32_t EPS_calculate_total_fault_count(EPS_struct_pdu_overcurrent_fault_state_t *fault_state);
 
+int32_t EPS_calculate_total_pcu_power_input_cW(EPS_struct_pcu_housekeeping_data_eng_t *pcu_data);
+int32_t EPS_calculate_total_pcu_power_output_cW(EPS_struct_pcu_housekeeping_data_eng_t *pcu_data);
+
 #endif // INCLUDE_GUARD__EPS_CALCULATIONS
