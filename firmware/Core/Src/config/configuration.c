@@ -20,6 +20,7 @@ extern uint32_t MPI_max_recording_duration_sec;
 extern uint32_t STM32_system_reset_interval_sec;
 extern uint32_t STM32_system_reset_no_uplink_interval_sec;
 extern uint32_t COMMS_beacon_interval_ms;
+extern uint32_t GNSS_write_cmd_mode_data_to_firehose_file;
 
 extern uint32_t LOG_file_flush_interval_sec;
 extern uint32_t LOG_file_rotation_interval_sec;
@@ -133,6 +134,11 @@ CONFIG_integer_config_entry_t CONFIG_int_config_variables[] = {
     {
         .variable_name = "MPI_max_recording_duration_sec",
         .num_config_var = &MPI_max_recording_duration_sec,
+    },
+    // GNSS Configuration
+    {
+        .variable_name = "GNSS_write_cmd_mode_data_to_firehose_file",
+        .num_config_var = &GNSS_write_cmd_mode_data_to_firehose_file,
     },
 };
 

@@ -3,6 +3,7 @@
 #include "debug_tools/debug_uart.h"
 #include "debug_tools/debug_i2c.h"
 #include "gnss_receiver/gnss_internal_drivers.h"
+#include "gnss_receiver/gnss_firehose_storage.h"
 #include "uart_handler/uart_handler.h"
 #include "stm32/stm32_timing_helpers.h"
 #include "uart_handler/uart_handler.h"
@@ -14,6 +15,17 @@
 extern UART_HandleTypeDef *UART_gnss_port_handle;
 
 const uint32_t GNSS_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS = 800;
+
+
+GNSS_rx_mode_enum_t GNSS_current_rx_mode = GNSS_RX_MODE_DISABLED;
+
+
+/// @brief Whether to store command-mode GNSS data to the firehose file.
+/// @details If GNSS firehose storage mode is enabled, and the send_cmd_get_response
+///          function is used, this config variable controls whether the command-mode
+///          response data is written to the firehose file.
+uint32_t GNSS_write_cmd_mode_data_to_firehose_file = 1;
+
 
 // Lots of commands pause in the middle (e.g., BESTXYZA) as it contemplates its position in the universe.
 // GNSS takes time to respond, first section of log response ie <OK\n [COM1] is quick but the rest of
@@ -29,7 +41,7 @@ const uint32_t GNSS_RX_TIMEOUT_BETWEEN_BYTES_MS = 2500;
 /// @return 0 on success, >0 if error.
 /// @note This function is intended for "once" log commands and control commands.
 /// @note This function does not validate the response, as related to the request.
-uint8_t GNSS_send_cmd_get_response(
+static uint8_t GNSS_send_cmd_get_response_when_firehose_storage_disabled(
     const char *cmd_buf, uint8_t cmd_buf_len,
     uint8_t rx_buf[],
     const uint16_t rx_buf_max_size,
@@ -37,10 +49,10 @@ uint8_t GNSS_send_cmd_get_response(
 ) {
     // Reset the GNSS UART interrupt variables
     GNSS_set_uart_interrupt_state(0); // Lock writing to the UART_gnss_buffer while we memset it
-    for (uint16_t i = 0; i < UART_gnss_buffer_len; i++)
-    {
-        // Clear the buffer
-        // Can't use memset because UART_gnss_buffer is volatile
+    for (uint16_t i = 0; i < UART_gnss_buffer_len; i++) {
+        // Clear the buffer.
+        // Can't use memset because UART_gnss_buffer is volatile.
+        // Review comment: I think just setting the UART_gnss_buffer_write_idx to the start is good enough, but we'll keep this.
         UART_gnss_buffer[i] = 0;
     }
     
@@ -172,4 +184,70 @@ uint8_t GNSS_send_cmd_get_response(
     rx_buf[*rx_buf_len_dest] = '\0';
 
     return 0;
+}
+
+
+/// @brief Sends a log command to the GNSS, and receives the response.
+/// @param cmd_buf Log command string to send to the GNSS, without EOL characters.
+/// @param cmd_buf_len Exact length of the log command string.
+/// @param rx_buf Buffer to store the response (not necessarily null terminated).
+/// @param rx_buf_max_size Size of the response buffer.
+/// @param rx_buf_len_dest Pointer to place to store the length of the response buffer (not necessarily null terminated).
+/// @return 0 on success, >0 if error.
+/// @note This function is intended for "once" log commands and control commands.
+/// @note This function does not validate the response, as related to the request.
+/// @note This function properly handles interactions with the firehose file, if enabled.
+uint8_t GNSS_send_cmd_get_response(
+    const char *cmd_buf, uint8_t cmd_buf_len,
+    uint8_t rx_buf[],
+    const uint16_t rx_buf_max_size,
+    uint16_t* rx_buf_len_dest
+) {
+    const GNSS_rx_mode_enum_t rx_mode_at_start = GNSS_current_rx_mode;
+    
+    // We must first store any pending data in the UART_gnss_buffer to the file,
+    // before clearing the buffer.
+    if (rx_mode_at_start == GNSS_RX_MODE_FIREHOSE_MODE) {
+        GNSS_subtask_store_firehose_data_to_file();
+    }
+
+    GNSS_current_rx_mode = GNSS_RX_MODE_COMMAND_MODE;
+
+    // This is the main action! The rest is a wrapper to handle the 
+    const uint8_t ret = GNSS_send_cmd_get_response_when_firehose_storage_disabled(
+        cmd_buf, cmd_buf_len, rx_buf, rx_buf_max_size, rx_buf_len_dest
+    );
+
+    // Reset back to the original RX mode.
+    GNSS_current_rx_mode = rx_mode_at_start;
+
+    // Write the data to the firehose file, or effectively discard it by resetting the buffer.
+    if (rx_mode_at_start == GNSS_RX_MODE_FIREHOSE_MODE) {
+        if (GNSS_write_cmd_mode_data_to_firehose_file) {
+            GNSS_subtask_store_firehose_data_to_file();
+        }
+
+        // Reset the buffer. Could do this outside of the firehose mode conditional,
+        // but the main point is that it's to reset the buffer when we're in firehose mode.
+        UART_gnss_buffer_write_idx = 0;
+
+        // If we're in firehose mode, and the interrupt isn't currently enabled, we must enable it.
+        GNSS_set_uart_interrupt_state(1);
+    }
+
+    return ret;
+}
+
+
+
+const char* GNSS_rx_mode_enum_to_str(GNSS_rx_mode_enum_t rx_mode) {
+    switch (rx_mode) {
+        case GNSS_RX_MODE_COMMAND_MODE:
+            return "COMMAND_MODE";
+        case GNSS_RX_MODE_FIREHOSE_MODE:
+            return "FIREHOSE_MODE";
+        case GNSS_RX_MODE_DISABLED:
+            return "DISABLED";
+    }
+    return "UNKNOWN";
 }
