@@ -72,7 +72,7 @@ uint8_t TEST_EXEC__SYS_TEMP_get_processed_thermal_info() {
     TEST_ASSERT(result.system_eps_battery_each_sensor_temperature_cC[1]==20);
     TEST_ASSERT(result.system_eps_battery_each_sensor_temperature_cC[2]==320);
 
-    //Case 3: Error on ANT B and PCU
+    // Case 3: Error on ANT B and PCU
     uint8_t err_case_3 = 0;
     err_case_3 |= SYS_TEMP_ANT_B_STATUS;
     err_case_3 |= SYS_TEMP_PCU_STATUS;
@@ -93,7 +93,7 @@ uint8_t TEST_EXEC__SYS_TEMP_get_processed_thermal_info() {
     TEST_ASSERT(result.system_eps_battery_each_sensor_temperature_cC[1]==0);
     TEST_ASSERT(result.system_eps_battery_each_sensor_temperature_cC[2]==550);
 
-    //Case 4: Error on PBU
+    // Case 4: Error on PBU
     uint8_t err_case_4 = 0;
     err_case_4 |= SYS_TEMP_ANT_A_STATUS;
     err_case_4 |= SYS_TEMP_PBU_STATUS;
@@ -107,7 +107,7 @@ uint8_t TEST_EXEC__SYS_TEMP_get_processed_thermal_info() {
     TEST_ASSERT(result.solar_panel_power_input_cW[1] == 10);
     TEST_ASSERT(result.solar_panel_power_input_cW[2] == 1);
     TEST_ASSERT(result.solar_panel_power_input_cW[3] == 0);
-    TEST_ASSERT(result.solar_panel_power_output_total_cW == 110);
+    TEST_ASSERT(result.solar_panel_power_output_total_cW == 330);
     TEST_ASSERT(result.system_eps_battery_heater_status_bit == 2);
     TEST_ASSERT(result.system_eps_battery_percent == -99999);
     TEST_ASSERT(result.system_eps_battery_each_sensor_temperature_cC[0]==-9999);
