@@ -15,6 +15,10 @@ extern UART_HandleTypeDef *UART_gnss_port_handle;
 
 const uint32_t GNSS_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS = 800;
 
+
+GNSS_rx_mode_enum_t GNSS_current_rx_mode = GNSS_RX_MODE_DISABLED;
+
+
 // Lots of commands pause in the middle (e.g., BESTXYZA) as it contemplates its position in the universe.
 // GNSS takes time to respond, first section of log response ie <OK\n [COM1] is quick but the rest of
 // the data response takes a while.
@@ -35,12 +39,20 @@ uint8_t GNSS_send_cmd_get_response(
     const uint16_t rx_buf_max_size,
     uint16_t* rx_buf_len_dest
 ) {
+    if (GNSS_current_rx_mode == GNSS_RX_MODE_FIREHOSE_MODE) {
+        LOG_message(
+            LOG_SYSTEM_GNSS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "GNSS is currently in firehose mode. Cannot use GNSS_send_cmd_get_response."
+        );
+        return 50;
+    }
+
     // Reset the GNSS UART interrupt variables
     GNSS_set_uart_interrupt_state(0); // Lock writing to the UART_gnss_buffer while we memset it
-    for (uint16_t i = 0; i < UART_gnss_buffer_len; i++)
-    {
-        // Clear the buffer
-        // Can't use memset because UART_gnss_buffer is volatile
+    for (uint16_t i = 0; i < UART_gnss_buffer_len; i++) {
+        // Clear the buffer.
+        // Can't use memset because UART_gnss_buffer is volatile.
+        // Review comment: I think just setting the UART_gnss_buffer_write_idx to the start is good enough, but we'll keep this.
         UART_gnss_buffer[i] = 0;
     }
     

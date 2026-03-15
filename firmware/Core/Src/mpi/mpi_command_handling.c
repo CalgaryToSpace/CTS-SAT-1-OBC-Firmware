@@ -27,7 +27,7 @@ MPI_reason_for_stopping_active_mode MPI_last_reason_for_stopping_active_mode = M
 
 
 uint8_t MPI_science_data_file_is_open = 0;
-uint32_t MPI_science_data_bytes_lost = 0;
+volatile uint32_t MPI_science_data_bytes_lost = 0;
 lfs_file_t MPI_science_data_file_pointer;
 uint32_t MPI_recording_start_uptime_ms;
 
@@ -250,7 +250,7 @@ int8_t MPI_write_file_footer(MPI_reason_for_stopping_active_mode reason_for_stop
 
 /// @brief Turns on MPI and prepares a LFS file to store MPI data in.
 /// @return 0: System successfully prepared for MPI data, < 0: Error
-static int8_t MPI_prepare_receive_data(const char output_file_path[]) {
+static int8_t MPI_prepare_to_receive_data(const char output_file_path[]) {
     MPI_power_on();
 
     // Start the timer to track time past since we powered on MPI
@@ -324,10 +324,10 @@ static int8_t MPI_prepare_receive_data(const char output_file_path[]) {
 /// @return 0: MPI and DMA successfully enabled, < 0: Error
 uint8_t MPI_enable_active_mode(const char output_file_path[]) {
     // Turn on the MPI and setup LFS
-    const uint8_t prepare_result = MPI_prepare_receive_data(output_file_path);
+    const uint8_t prepare_result = MPI_prepare_to_receive_data(output_file_path);
     if (prepare_result != 0) {
         LOG_message(LOG_SYSTEM_MPI, LOG_SEVERITY_ERROR, LOG_SINK_ALL, 
-            "MPI could not be powered on (MPI_prepare_receive_data err: %d)", prepare_result);
+            "MPI could not be powered on (MPI_prepare_to_receive_data err: %d)", prepare_result);
         return 5;
     }
 

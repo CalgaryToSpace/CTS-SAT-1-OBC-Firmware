@@ -299,7 +299,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         // Note: If the GNSS is not enabled, the interrupt is not re-enabled via HAL_UART_Receive_IT().
         // This is a safety feature against the GNSS spamming null bytes, which can lock up the system.
         if (UART_gnss_uart_interrupt_enabled == 1) {
-
             // Add the byte to the buffer
             if (UART_gnss_buffer_write_idx >= UART_gnss_buffer_len) {
                 // Tracking error
@@ -391,13 +390,15 @@ void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
 ///       mode, spam null bytes, which can lock up the entire system. Thus, the interrupt is disabled
 ///       by default, and must be enabled explicitly by the GNSS telecommands.
 void GNSS_set_uart_interrupt_state(uint8_t new_enabled) {
-    if (new_enabled == 1)
-    {
+    if (new_enabled == 1) {
         UART_gnss_uart_interrupt_enabled = 1;
         HAL_UART_Receive_IT(UART_gnss_port_handle, (uint8_t*) &UART_gnss_buffer_last_rx_byte, 1);
     }
     else {
         UART_gnss_uart_interrupt_enabled = 0;
+        // The interrupt is re-registered inside the ISR by calling `HAL_UART_Receive_IT` again.
+        // No need to disable the HAL interrupt here - the ISR will trigger one last time, do a no-op
+        // (guarded by if-statement), then not re-enable the interrupt.
     }
 }
 
