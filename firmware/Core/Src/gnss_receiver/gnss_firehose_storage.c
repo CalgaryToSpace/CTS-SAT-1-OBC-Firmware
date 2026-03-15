@@ -244,3 +244,67 @@ uint8_t GNSS_disable_firehose_storage_mode(const char reason_for_stopping[]) {
 
     return 0;
 }
+
+static uint32_t last_gnss_flush_uptime_ms = 0;
+
+// We don't have an auto-stop on the GNSS storage, so we'll full it periodically in case of crash.
+uint32_t GNSS_firehose_flush_interval_ms = 30000;
+
+
+/// @brief Store pending data in the UART_gnss_buffer to the GNSS firehose file.
+/// @return 0 on success or no-op. Non-zero: Error.
+/// @note Intended to be called in a periodic background loop, but also can be called from telecommand.
+uint8_t GNSS_subtask_store_firehose_data_to_file() {
+    // This function is intended to only run when in firehose mode.
+    if (GNSS_current_rx_mode != GNSS_RX_MODE_FIREHOSE_MODE) {
+        return 0;
+    }
+
+    // If there's no data to write, early exit.
+    if (UART_gnss_buffer_write_idx == 0) {
+        return 0;
+    }
+
+    // If there's no file to write to, early exit.
+    if (!GNSS_firehose_file_is_open) {
+        return 0;
+    }
+
+    // Copy the volatile UART_gnss_buffer into a local buffer.
+    uint8_t gnss_rx_data[UART_gnss_buffer_len]; // Always allocate the full size, esp. for testing.
+    uint16_t gnss_rx_data_len = UART_gnss_buffer_write_idx;
+    for (uint16_t i = 0; i < gnss_rx_data_len; i++) { // Memcpy.
+        gnss_rx_data[i] = UART_gnss_buffer[i];
+    }
+    // Now use gnss_rx_data and gnss_rx_data_len instead of the `UART_gnss_xxx` globals!
+
+    // Write to the file.
+    const int8_t write_result = lfs_file_write(
+        &LFS_filesystem, &GNSS_firehose_file_pointer,
+        gnss_rx_data, gnss_rx_data_len
+    );
+    if (write_result < 0) {
+        LOG_message(
+            LOG_SYSTEM_GNSS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "GNSS firehose: Error writing to file: %d", write_result
+        );
+        return 10;
+    }
+
+    // Conditionally, flush the file to storage.
+    if (HAL_GetTick() - last_gnss_flush_uptime_ms > GNSS_firehose_flush_interval_ms) {
+        last_gnss_flush_uptime_ms = HAL_GetTick();
+        const int8_t flush_result = lfs_file_sync(&LFS_filesystem, &GNSS_firehose_file_pointer);
+        if (flush_result < 0) {
+            LOG_message(
+                LOG_SYSTEM_GNSS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+                "GNSS firehose: Error flushing file: %d", flush_result
+            );
+            return 11;
+        }
+    }
+
+    // Success.
+    return 0;
+}
+

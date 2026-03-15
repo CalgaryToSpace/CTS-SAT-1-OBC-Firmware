@@ -1,8 +1,11 @@
 #include "telecommand_exec/telecommand_definitions.h"
+#include "telecommand_exec/telecommand_args_helpers.h"
 #include "uart_handler/uart_handler.h"
 #include "telecommands/eps_telecommands.h"
 #include "gnss_receiver/gnss_internal_drivers.h"
+#include "gnss_receiver/gnss_firehose_storage.h"
 #include "log/log.h"
+#include "littlefs/littlefs_helper.h"
 #include "main.h"
 
 #include <stdio.h>
@@ -10,7 +13,7 @@
 #include <stdint.h>
 #include <string.h>
 
-/// @brief Telecommand: Transmit a log command to the GNSS receiver through UART
+/// @brief Send a command to the GNSS and receive the response as ASCII.
 /// @param args_str
 /// - Arg 0: Log command to be sent to GNSS eg "log bestxyza once" (string)
 /// @param response_output_buf The buffer to write the response to
@@ -56,4 +59,55 @@ uint8_t TCMDEXEC_gnss_send_cmd_ascii(
     );
 
     return gnss_cmd_status;
+}
+
+
+/// @brief Enables storing data from GNSS into a file.
+/// @param args_str
+/// - Arg 0: File name as a string
+/// @return 0: Success, >0: Failure
+/// @details This feature is meant to be used in combination with the "log bestxyza ontime <seconds>" GNSS commands.
+/// @example Enable power, enable "ontime" logs in the GNSS (using gnss_send_cmd_ascii), then enable this mode.
+uint8_t TCMDEXEC_gnss_enable_firehose_storage_mode(
+    const char *args_str, char *response_output_buf, uint16_t response_output_buf_len
+) {
+    // Get the file name from the telecommand argument.
+    char arg_file_name[LFS_MAX_PATH_LENGTH];
+    const uint8_t parse_file_name_result = TCMD_extract_string_arg(args_str, 0, arg_file_name, sizeof(arg_file_name));
+    if (parse_file_name_result != 0) {
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing file name arg: Error %d", parse_file_name_result);
+        return 1;
+    }
+    
+    // Enable GNSS firehose mode (store to file).
+    const uint8_t enable_result = GNSS_enable_firehose_storage_mode(arg_file_name);
+    if (enable_result != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "GNSS firehose storage enable failed! Error Code: %d", enable_result
+        );
+        return enable_result;
+    }
+
+    return 0;
+}
+
+/// @brief Disables the GNSS firehose storage mode (closes the firehose file).
+/// @param args_str No args.
+/// @return 0: Success, >0: Failure
+uint8_t TCMDEXEC_gnss_disable_firehose_storage_mode(
+    const char *args_str, char *response_output_buf, uint16_t response_output_buf_len
+) {
+    const uint8_t disable_result = GNSS_disable_firehose_storage_mode("TCMD");
+
+    if (disable_result != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "GNSS firehose storage disable failed! Error Code: %d", disable_result
+        );
+        return disable_result;
+    }
+
+    return 0;
 }

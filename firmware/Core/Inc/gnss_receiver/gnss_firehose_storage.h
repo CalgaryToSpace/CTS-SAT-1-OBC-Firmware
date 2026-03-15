@@ -13,5 +13,7 @@ uint8_t GNSS_enable_firehose_storage_mode(const char output_file_path[]);
 
 uint8_t GNSS_disable_firehose_storage_mode(const char reason_for_stopping[]);
 
+uint8_t GNSS_subtask_store_firehose_data_to_file();
+
 
 #endif // INCLUDE_GUARD__GNSS_RECEIVER_GNSS_FIREHOSE_STORAGE_H
