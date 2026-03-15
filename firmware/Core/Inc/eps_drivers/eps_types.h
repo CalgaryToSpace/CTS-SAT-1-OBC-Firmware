@@ -13,6 +13,8 @@ static const uint8_t EPS_MAX_ACTIVE_CHANNEL_NUMBER = 16;
 /// @brief The number of EPS channels, including those not really present on our model.
 static const uint8_t EPS_TOTAL_CHANNEL_COUNT = 32;
 
+static const uint8_t EPS_TOTAL_PCU_CHANNEL_COUNT = 4;
+
 #pragma pack(push, 1)
 
 typedef enum {
