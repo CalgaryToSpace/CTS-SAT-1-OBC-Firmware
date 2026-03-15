@@ -7,7 +7,7 @@
 #include "stm32l4xx_hal_flash.h"
 
 /// @brief  Flash Partitions
-/// @note look in the STM32L4R5ZITx_FLASH.ld file
+/// @note look in the STM32L4R5XX_FLASH.ld file
 /// to see the address of each partition, update this as needed
 typedef enum
 {
