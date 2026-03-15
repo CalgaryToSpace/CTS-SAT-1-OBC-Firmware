@@ -68,6 +68,7 @@ uint8_t TCMDEXEC_gnss_send_cmd_ascii(
 /// @return 0: Success, >0: Failure
 /// @details This feature is meant to be used in combination with the "log bestxyza ontime <seconds>" GNSS commands.
 /// @example Enable power, enable "ontime" logs in the GNSS (using gnss_send_cmd_ascii), then enable this mode.
+/// @note This telecommand does not control EPS power. You must enable the GNSS power first.
 uint8_t TCMDEXEC_gnss_enable_firehose_storage_mode(
     const char *args_str, char *response_output_buf, uint16_t response_output_buf_len
 ) {
@@ -97,6 +98,7 @@ uint8_t TCMDEXEC_gnss_enable_firehose_storage_mode(
 /// @brief Disables the GNSS firehose storage mode (closes the firehose file).
 /// @param args_str No args.
 /// @return 0: Success, >0: Failure
+/// @note This telecommand does not control EPS power. You must disable the GNSS power afterwards.
 uint8_t TCMDEXEC_gnss_disable_firehose_storage_mode(
     const char *args_str, char *response_output_buf, uint16_t response_output_buf_len
 ) {
