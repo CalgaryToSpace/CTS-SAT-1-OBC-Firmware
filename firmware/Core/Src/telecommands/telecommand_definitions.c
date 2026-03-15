@@ -1429,6 +1429,18 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
+    {
+        .tcmd_name = "gnss_enable_firehose_storage_mode",
+        .tcmd_func = TCMDEXEC_gnss_enable_firehose_storage_mode,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
+        .tcmd_name = "gnss_disable_firehose_storage_mode",
+        .tcmd_func = TCMDEXEC_gnss_disable_firehose_storage_mode,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION
+    },
     // ****************** END SECTION: gnss_telecommand_defs ******************
     // ****************** SECTION: camera_telecommand_defs *******************
     {

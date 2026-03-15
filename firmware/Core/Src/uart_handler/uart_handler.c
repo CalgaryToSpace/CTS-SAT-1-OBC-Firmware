@@ -389,10 +389,13 @@ void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
 /// @note This function must be called very carefully. This type of GNSS is known to, in the wrong
 ///       mode, spam null bytes, which can lock up the entire system. Thus, the interrupt is disabled
 ///       by default, and must be enabled explicitly by the GNSS telecommands.
+/// @note Function is idempotent. Calling it when already in the desired state is a no-op.
 void GNSS_set_uart_interrupt_state(uint8_t new_enabled) {
-    if (new_enabled == 1) {
-        UART_gnss_uart_interrupt_enabled = 1;
-        HAL_UART_Receive_IT(UART_gnss_port_handle, (uint8_t*) &UART_gnss_buffer_last_rx_byte, 1);
+    if (new_enabled) {
+        if (!UART_gnss_uart_interrupt_enabled) {
+            UART_gnss_uart_interrupt_enabled = 1;
+            HAL_UART_Receive_IT(UART_gnss_port_handle, (uint8_t*) &UART_gnss_buffer_last_rx_byte, 1);
+        }
     }
     else {
         UART_gnss_uart_interrupt_enabled = 0;
