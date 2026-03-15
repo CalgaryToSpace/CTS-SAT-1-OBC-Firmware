@@ -107,15 +107,27 @@ uint8_t TCMDEXEC_core_system_stats(
 
     // Get EPS battery percentage as float, or null if error.
     char eps_battery_percent_str[10] = "null";
-    EPS_struct_pbu_housekeeping_data_eng_t eps_pbu_data;
-    const uint8_t eps_pbu_result = EPS_CMD_get_pbu_housekeeping_data_eng(&eps_pbu_data);
-    if (eps_pbu_result == 0) {
-        const float battery_percent = EPS_convert_battery_voltage_to_percent(
-            eps_pbu_data.battery_pack_info_each_pack[0]
-        );
-        snprintf(eps_battery_percent_str, sizeof(eps_battery_percent_str), "%0.2f", battery_percent);
+    {
+        EPS_struct_pbu_housekeeping_data_eng_t eps_pbu_data;
+        const uint8_t eps_pbu_result = EPS_CMD_get_pbu_housekeeping_data_eng(&eps_pbu_data);
+        if (eps_pbu_result == 0) {
+            const float battery_percent = EPS_convert_battery_voltage_to_percent(
+                eps_pbu_data.battery_pack_info_each_pack[0]
+            );
+            snprintf(eps_battery_percent_str, sizeof(eps_battery_percent_str), "%0.2f", battery_percent);
+        }
     }
-    
+
+    // Get EPS total fault count.
+    int32_t eps_total_fault_count = -1;
+    {
+        EPS_struct_pdu_overcurrent_fault_state_t eps_pdu_fault_data;
+        const uint8_t eps_pdu_result = EPS_CMD_get_pdu_overcurrent_fault_state(&eps_pdu_fault_data);
+        if (eps_pdu_result == 0) {
+            eps_total_fault_count = EPS_calculate_total_fault_count(&eps_pdu_fault_data);
+        }
+    }
+
     snprintf(
         response_output_buf, response_output_buf_len, 
         "{"
@@ -135,6 +147,7 @@ uint8_t TCMDEXEC_core_system_stats(
         "\"mpi_last_reason_for_stopping\":\"%s\","
         "\"gnss_uart_interrupt_enabled\":%u,"
         "\"gnss_rx_mode\":\"%s\","
+        "\"eps_total_fault_count\":%lu,"
         "\"eps_battery_percent\":%s"
         "}\n",
         timestamp_string_ms, // timestamp_ms
@@ -153,6 +166,7 @@ uint8_t TCMDEXEC_core_system_stats(
         MPI_reason_for_stopping_active_mode_enum_to_str(MPI_last_reason_for_stopping_active_mode), // mpi_last_reason_for_stopping
         UART_gnss_uart_interrupt_enabled, // gnss_uart_interrupt_enabled
         GNSS_rx_mode_enum_to_str(GNSS_current_rx_mode), // gnss_rx_mode
+        eps_total_fault_count, // eps_total_fault_count
         eps_battery_percent_str // eps_battery_percent
     ); 
 
