@@ -14,6 +14,7 @@
 #include "mpi/mpi_types.h"
 #include "uart_handler/uart_handler.h"
 #include "rtos_tasks/rtos_bootup_operation_fsm_task.h"
+#include "gnss_receiver/gnss_internal_drivers.h"
 
 #include "telecommands/system_telecommand_defs.h"
 #include "telecommand_exec/telecommand_definitions.h"
@@ -131,6 +132,7 @@ uint8_t TCMDEXEC_core_system_stats(
         "\"mpi_transceiver_state\":\"%s\","
         "\"mpi_last_reason_for_stopping\":\"%s\","
         "\"gnss_uart_interrupt_enabled\":%u,"
+        "\"gnss_rx_mode\":\"%s\","
         "\"eps_battery_percent\":%s"
         "}\n",
         timestamp_string_ms, // timestamp_ms
@@ -148,6 +150,7 @@ uint8_t TCMDEXEC_core_system_stats(
         MPI_transceiver_state_enum_to_str(MPI_current_transceiver_state), // mpi_transceiver_state
         MPI_reason_for_stopping_active_mode_enum_to_str(MPI_last_reason_for_stopping_active_mode), // mpi_last_reason_for_stopping
         UART_gnss_uart_interrupt_enabled, // gnss_uart_interrupt_enabled
+        GNSS_rx_mode_enum_to_str(GNSS_current_rx_mode), // gnss_rx_mode
         eps_battery_percent_str // eps_battery_percent
     ); 
 
