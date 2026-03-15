@@ -29,8 +29,8 @@ const char* freertos_eTaskState_to_str(eTaskState state) {
         case eSuspended:  return "eSuspended";
         case eDeleted:    return "eDeleted";
         case eInvalid:    return "eInvalid";
-        default:          return "Other";
     }
+    return "Other";
 }
 
 

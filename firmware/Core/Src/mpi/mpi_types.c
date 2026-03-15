@@ -8,9 +8,8 @@ const char* MPI_rx_mode_enum_to_str(MPI_rx_mode_enum_t mode) {
             return "SENSING_MODE";
         case MPI_RX_MODE_NOT_LISTENING_TO_MPI:
             return "NOT_LISTENING_TO_MPI";
-        default:
-            return "UNKNOWN_MODE";
     }
+    return "UNKNOWN_MODE";
 }
 
 const char* MPI_transceiver_state_enum_to_str(MPI_transceiver_state_enum_t state) {
@@ -23,7 +22,6 @@ const char* MPI_transceiver_state_enum_to_str(MPI_transceiver_state_enum_t state
             return "MISO";
         case MPI_TRANSCEIVER_MODE_DUPLEX:
             return "DUPLEX";
-        default:
-            return "UNKNOWN";
     }
+    return "UNKNOWN";
 }

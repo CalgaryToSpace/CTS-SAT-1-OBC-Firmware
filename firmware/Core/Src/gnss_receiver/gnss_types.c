@@ -63,9 +63,8 @@ const char* GNSS_reference_time_status_enum_to_str(GNSS_reference_time_status_t 
             return "FINESTEERING";
         case GNSS_REF_TIME_SATTIME:
             return "SATTIME";
-        default:
-            return "UNKNOWN STATUS";  // If status is unrecognized
     }
+    return "UNKNOWN";
 }
 
 
@@ -201,9 +200,10 @@ const char* GNSS_solution_status_enum_to_str(GNSS_solution_status_enum_t status)
             return "RESIDUALS";
         case GNSS_SOL_STATUS_INTEGRITY_WARNING:
             return "INTEGRITY_WARNING";
-        default:
-            return "UNKNOWN STATUS";  // For unrecognized enum values
+        case GNSS_SOL_STATUS_RESERVED_10_12:
+            return "RESERVED_10_12";
     }
+    return "UNKNOWN";
 }
 
 /// @brief Assigns a string value based on the provided GNSS position type.
@@ -271,9 +271,20 @@ const char* GNSS_position_type_enum_to_string(GNSS_position_type_enum_t type) {
             return "INS_PPP_BASIC_CONVERGING";
         case GNSS_TYPE_INS_PPP_BASIC:
             return "INS_PPP_BASIC";
-        default:
-            return "UNKNOWN TYPE";  // If type is unrecognized
+        case GNSS_TYPE_RESERVED_3_7:
+            return "RESERVED_3_7";
+        case GNSS_TYPE_RESERVED_9_15:
+            return "RESERVED_9_15";
+        case GNSS_TYPE_RESERVED_20_31:
+            return "RESERVED_20_31";
+        case GNSS_TYPE_RESERVED_33:
+            return "RESERVED_33";
+        case GNSS_TYPE_RESERVED_35_47:
+            return "RESERVED_35_47";
+        case GNSS_TYPE_RESERVED_57_67:
+            return "RESERVED_57_67";
     }
+    return "UNKNOWN";
 }
 
 
@@ -326,9 +337,8 @@ const char* GNSS_clock_model_status_enum_to_string(GNSS_clock_model_status_enum_
             return "ITERATING";
         case GNSS_CLOCK_INVALID:
             return "INVALID";
-        default:
-            return "UNKNOWN STATUS";  // For unrecognized enum values
     }
+    return "UNKNOWN";
 }
 
 /// @brief Assigns a string value based on the provided GNSS UTC status.
@@ -342,7 +352,6 @@ const char* GNSS_utc_status_enum_to_string(GNSS_utc_status_enum_t status) {
             return "VALID";
         case GNSS_UTC_WARNING:
             return "WARNING";
-        default:
-            return "UNKNOWN STATUS";  // For unrecognized enum values
     }
+    return "UNKNOWN";
 }
