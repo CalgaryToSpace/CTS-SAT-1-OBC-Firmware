@@ -19,5 +19,6 @@ uint8_t GNSS_send_cmd_get_response(
     uint16_t* rx_buf_len_dest
 );
 
+const char* GNSS_rx_mode_enum_to_str(GNSS_rx_mode_enum_t rx_mode);
 
 #endif /* INCLUDE_GUARD__GNSS_INTERNAL_DRIVERS_H__ */

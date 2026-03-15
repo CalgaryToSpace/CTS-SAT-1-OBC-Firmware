@@ -185,3 +185,15 @@ uint8_t GNSS_send_cmd_get_response(
 
     return 0;
 }
+
+const char* GNSS_rx_mode_enum_to_str(GNSS_rx_mode_enum_t rx_mode) {
+    switch (rx_mode) {
+        case GNSS_RX_MODE_COMMAND_MODE:
+            return "COMMAND_MODE";
+        case GNSS_RX_MODE_FIREHOSE_MODE:
+            return "FIREHOSE_MODE";
+        case GNSS_RX_MODE_DISABLED:
+            return "DISABLED";
+    }
+    return "UNKNOWN";
+}
