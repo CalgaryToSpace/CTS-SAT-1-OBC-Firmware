@@ -304,7 +304,6 @@ char* CTS1_operation_state_enum_TO_str(CTS1_operation_state_enum_t state) {
             return "NOMINAL_WITH_RADIO_TX";
         case CTS1_OPERATION_STATE_NOMINAL_WITHOUT_RADIO_TX:
             return "NOMINAL_WITHOUT_RADIO_TX";
-        default:
-            return "UNKNOWN";
     }
+    return "UNKNOWN";
 }

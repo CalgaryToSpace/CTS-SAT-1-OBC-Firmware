@@ -446,9 +446,8 @@ const char* LOG_get_severity_name(LOG_severity_enum_t severity)
             return "ERR";
         case LOG_SEVERITY_CRITICAL:
             return "CRIT";
-        default:
-            return "UNK";
     }
+    return "UNK";
 }
 
 /// @brief Get the size in entries of the in-memory log table
