@@ -1,5 +1,6 @@
 #include "unit_tests/unit_test_helpers.h"
 #include "unit_tests/unit_test_inventory.h"
+
 #include "unit_tests/test_ant_commands.h"
 #include "unit_tests/test_assorted_prototypes.h"
 #include "unit_tests/test_byte_transforms.h"
@@ -14,7 +15,7 @@
 #include "unit_tests/unit_test_gnss.h"
 #include "unit_tests/test_uart_error_tracking.h"
 #include "unit_tests/test_system_temperature.h"
-
+#include "unit_tests/test_comms.h"
 #include "unit_tests/test_eps_drivers.h"
 #include "unit_tests/test_eps_struct_packers.h"
 #include "unit_tests/test_eps_calculations.h"
@@ -473,52 +474,52 @@ const TEST_Definition_t TEST_definitions[] = {
     {
         .test_func = TEST_EXEC__LOG_enable_disable_LOG_SINK_FILE,
         .test_file = "log/log",
-        .test_func_name = "TEST_EXEC__LOG_enable_disable_LOG_SINK_FILE"
+        .test_func_name = "LOG_enable_disable_LOG_SINK_FILE"
     },
     {
         .test_func = TEST_EXEC__LOG_enable_disable_LOG_SINK_UHF_RADIO,
         .test_file = "log/log",
-        .test_func_name = "TEST_EXEC__LOG_enable_disable_LOG_SINK_UHF_RADIO"
+        .test_func_name = "LOG_enable_disable_LOG_SINK_UHF_RADIO"
     },
     {
         .test_func = TEST_EXEC__LOG_enable_disable_LOG_SINK_UMBILICAL_UART,
         .test_file = "log/log",
-        .test_func_name = "TEST_EXEC__LOG_enable_disable_LOG_SINK_UMBILICAL_UART"
+        .test_func_name = "LOG_enable_disable_LOG_SINK_UMBILICAL_UART"
     },
     {
         .test_func = TEST_EXEC__LOG_enable_disable_LOG_FILE_LOGGING_FOR_SYSTEM_MPI,
         .test_file = "log/log",
-        .test_func_name = "TEST_EXEC__LOG_enable_disable_LOG_FILE_LOGGING_FOR_SYSTEM_MPI"
+        .test_func_name = "LOG_enable_disable_LOG_FILE_LOGGING_FOR_SYSTEM_MPI"
     },
     {
         .test_func = TEST_EXEC__LOG_all_sinks_except,
         .test_file = "log/log",
-        .test_func_name = "TEST_EXEC__LOG_all_sinks_except"
+        .test_func_name = "LOG_all_sinks_except"
     },
     {
         .test_func = TEST_EXEC__setup_configuration_variables,
         .test_file = "configuration/configuration_variables",
-        .test_func_name = "TEST_EXEC__setup_configuration_variables"
+        .test_func_name = "setup_configuration_variables"
     },
     {
         .test_func = TEST_EXEC__get_int_var_index,
         .test_file = "configuration/configuration_variables",
-        .test_func_name = "TEST_EXEC__get_int_var_index"
+        .test_func_name = "get_int_var_index"
     },
     {
         .test_func = TEST_EXEC__get_str_var_index,
         .test_file = "configuration/configuration_variables",
-        .test_func_name = "TEST_EXEC__get_str_var_index"
+        .test_func_name = "get_str_var_index"
     },
     {
         .test_func = TEST_EXEC__set_int_variable,
         .test_file = "configuration/configuration_variables",
-        .test_func_name = "TEST_EXEC__set_int_variable"
+        .test_func_name = "set_int_variable"
     },
     {
         .test_func = TEST_EXEC__set_str_variable,
         .test_file = "configuration/configuration_variables",
-        .test_func_name = "TEST_EXEC__set_str_variable"
+        .test_func_name = "set_str_variable"
     },
     {
         .test_func = TEST_EXEC__TCMD_ascii_to_int64,
@@ -533,37 +534,37 @@ const TEST_Definition_t TEST_definitions[] = {
     {
         .test_func = TEST_EXEC__OBC_TEMP_SENSOR_configure_precision_values,
         .test_file = "temperature_sensor/obc_temperature_sensor_driver",
-        .test_func_name = "TEST_EXEC__TEMP_configure_precision_values"
+        .test_func_name = "TEMP_configure_precision_values"
     },
     {
         .test_func = TEST_EXEC__OBC_TEMP_SENSOR_convert_raw_to_deg_c,
         .test_file = "temperature_sensor/obc_temperature_sensor_driver",
-        .test_func_name = "TEST_EXEC__TEMP_convert_raw_to_deg_c"
+        .test_func_name = "TEMP_convert_raw_to_deg_c"
     },
     {
         .test_func = TEST_EXEC__EPS_channel_from_str,
         .test_file = "unit_tests/test_eps_drivers",
-        .test_func_name = "TEST_EXEC__EPS_channel_from_str",
+        .test_func_name = "EPS_channel_from_str",
     },
     {
         .test_func = TEST_EXEC__EPS_channel_to_str,
         .test_file = "unit_tests/test_eps_drivers",
-        .test_func_name = "TEST_EXEC__EPS_channel_to_str",
+        .test_func_name = "EPS_channel_to_str",
     },
     {
         .test_func = TEST_EXEC__EPS_check_status_bit_of_channel,
         .test_file = "unit_tests/test_eps_drivers",
-        .test_func_name = "TEST_EXEC__EPS_check_status_bit_of_channel",
+        .test_func_name = "EPS_check_status_bit_of_channel",
     },
     {
         .test_func = TEST_EXEC__EPS_check_type_sizes,
         .test_file = "unit_tests/test_eps_struct_packers",
-        .test_func_name = "TEST_EXEC__EPS_check_type_sizes",
+        .test_func_name = "EPS_check_type_sizes",
     },
     {
         .test_func = TEST_EXEC__EPS_convert_battery_voltage_to_percent,
         .test_file = "unit_tests/test_eps_calculations",
-        .test_func_name = "TEST_EXEC__EPS_convert_battery_voltage_to_percent"
+        .test_func_name = "EPS_convert_battery_voltage_to_percent"
     },
     {
         .test_func = TEST_EXEC__ANT_convert_raw_temp_to_cCelsius,
@@ -573,7 +574,7 @@ const TEST_Definition_t TEST_definitions[] = {
     {
         .test_func = TEST_EXEC__CRYPT_compute_sha256_hash,
         .test_file = "unit_tests/test_sha256",
-        .test_func_name = "TEST_EXEC__CRYPT_compute_sha256_hash",
+        .test_func_name = "CRYPT_compute_sha256_hash",
     },
     // ****************** SECTION: unit_test_gnss ******************
  
@@ -618,7 +619,13 @@ const TEST_Definition_t TEST_definitions[] = {
     {
         .test_func = TEST_EXEC__SYS_TEMP_get_processed_thermal_info,
         .test_file = "unit_tests/test_system_temperature",
-        .test_func_name = "TEST_EXEC__SYS_TEMP_get_processed_thermal_info"
+        .test_func_name = "SYS_TEMP_get_processed_thermal_info"
+    },
+    // Section: test_comms
+    {
+        .test_func = TEST_EXEC__validate_packet_sizes,
+        .test_file = "unit_tests/test_comms",
+        .test_func_name = "validate_packet_sizes"
     },
 };
 

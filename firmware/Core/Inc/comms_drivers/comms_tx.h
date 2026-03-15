@@ -117,11 +117,7 @@ typedef struct {
     uint8_t data[COMMS_BULK_FILE_DOWNLINK_PACKET_MAX_DATA_BYTES_PER_PACKET];
 } COMMS_bulk_file_downlink_packet_t;
 
-// TODO: Add sizeof assertions in unit tests related to the packets above.
-// assert(sizeof(COMMS_log_message_packet_t) == AX100_DOWNLINK_MAX_BYTES);
-// assert(sizeof(COMMS_tcmd_response_packet_t) == AX100_DOWNLINK_MAX_BYTES);
-// assert(sizeof(COMMS_bulk_file_downlink_packet_t) == AX100_DOWNLINK_MAX_BYTES);
-// assert(sizeof(COMMS_beacon_basic_packet_t) <= AX100_DOWNLINK_MAX_BYTES);
+// Unit tests contain assertions like: assert(sizeof(COMMS_log_message_packet_t) == AX100_DOWNLINK_MAX_BYTES);
 
 #pragma pack(pop)
 
