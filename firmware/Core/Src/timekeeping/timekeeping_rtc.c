@@ -72,7 +72,7 @@ static inline uint32_t ms_to_rtc_subseconds(uint32_t ms, uint32_t second_fractio
 
 
 uint64_t TIME_hal_rtc_to_unix_epoch_time_ms(RTC_DateTypeDef *date, RTC_TimeTypeDef *time) {
-    struct tm t;
+    struct tm t = {0};
     t.tm_year = date->Year + 100;
     t.tm_mon  = date->Month - 1;
     t.tm_mday = date->Date;
@@ -80,9 +80,7 @@ uint64_t TIME_hal_rtc_to_unix_epoch_time_ms(RTC_DateTypeDef *date, RTC_TimeTypeD
     t.tm_min  = time->Minutes;
     t.tm_sec  = time->Seconds;
 
-    const uint32_t ms =
-        ((time->SecondFraction - time->SubSeconds) * 1000) /
-        (time->SecondFraction + 1);
+    const uint32_t ms = rtc_subseconds_to_ms(time);
 
     return (utc_tm_to_unix_seconds(&t) * 1000ULL) + ms;
 }
