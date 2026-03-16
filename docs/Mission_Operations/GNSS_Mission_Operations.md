@@ -52,4 +52,7 @@ This feature works alongside MPI data collection.
 4. Enable "firehose storage mode": `CTS1+gnss_enable_firehose_storage_mode(filename)`
 5. Nominally, leave data collection running for a long time (e.g., while the satellite passes over the poles).
 6. Disable firehose storage mode: `CTS1+gnss_disable_firehose_storage_mode()`
-7. Power off the GNSS receiver.
+7. Optionally, disable periodic GNSS logging: `CTS1+gnss_send_cmd_ascii(unlogall)!`
+8. Optionally, power off the GNSS receiver.
+
+Note that you can also enable/disable GNSS message types after starting data recording.
