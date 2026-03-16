@@ -1,4 +1,6 @@
 #include "timekeeping/timekeeping.h"
+
+#include "timekeeping/timekeeping_rtc.h"
 #include "debug_tools/debug_uart.h"
 #include "transforms/arrays.h"
 #include "log/log.h"
@@ -7,7 +9,10 @@
 #include <stdio.h>
 #include <inttypes.h>
 #include <string.h>
+#include <stdlib.h>
 #include <time.h>
+
+extern RTC_HandleTypeDef hrtc;
 
 uint64_t TIME_unix_epoch_time_at_last_time_resync_ms = 0;
 // 13 digits, plus terminator. Represents TIME_unix_epoch_time_at_last_time_resync_ms. Updated every
@@ -20,35 +25,43 @@ uint32_t TIME_get_current_system_uptime_ms(void) {
     return HAL_GetTick();
 }
 
-/// @brief Use this function in a telecommand, or upon receiving a time update from the GNSS. 
-void TIME_set_current_unix_epoch_time_ms(uint64_t current_unix_epoch_time_ms, TIME_sync_source_enum_t source) {
-    // Determine whether the current sync time is before the last sync time.
-    // It would be a warning scenario which makes logs difficult to decipher.
-    // Don't log it right away; update the time info, then log after.
-    const uint8_t is_this_sync_before_the_last_sync = current_unix_epoch_time_ms < TIME_unix_epoch_time_at_last_time_resync_ms;
 
-    // Compute time before applying sync
-    const uint64_t unix_epoch_time_before_sync_ms = TIME_get_current_unix_epoch_time_ms();
-    const int64_t correction_time_ms = (int64_t)(current_unix_epoch_time_ms - unix_epoch_time_before_sync_ms);
-    
-    // Get timestamp string for "before"
+void TIME_set_current_unix_epoch_time_ms(
+    uint64_t current_unix_epoch_time_ms,
+    TIME_sync_source_enum_t source
+) {
+    const uint64_t unix_epoch_time_before_sync_ms =
+        TIME_get_current_unix_epoch_time_ms();
+
+    const uint8_t is_this_sync_before_the_last_sync =
+        current_unix_epoch_time_ms < TIME_unix_epoch_time_at_last_time_resync_ms;
+
+    const int64_t correction_time_ms =
+        (int64_t)(current_unix_epoch_time_ms - unix_epoch_time_before_sync_ms);
+
     char old_time_str[48];
-    TIME_get_current_utc_datetime_str(old_time_str, sizeof(old_time_str));    
+    TIME_get_current_utc_datetime_str(old_time_str, sizeof(old_time_str));
 
-    // Update the time.
+    // Convert unix ms to RTC date/time.
+    RTC_TimeTypeDef rtc_time = {0};
+    RTC_DateTypeDef rtc_date = {0};
+
+    TIME_unix_epoch_time_ms_to_rtc_hal(current_unix_epoch_time_ms, &rtc_time, &rtc_date);
+
+    HAL_RTC_SetTime(&hrtc, &rtc_time, RTC_FORMAT_BIN);
+    HAL_RTC_SetDate(&hrtc, &rtc_date, RTC_FORMAT_BIN);
+
+    // Update sync tracking (for logs).
     TIME_system_uptime_at_last_time_resync_ms = HAL_GetTick();
     TIME_unix_epoch_time_at_last_time_resync_ms = current_unix_epoch_time_ms;
     TIME_last_synchronization_source = source;
 
-    // Convert the time into a string, zero-padded.
-    // Format: 13 digits, plus terminator
     GEN_uint64_to_padded_str(
         TIME_unix_epoch_time_at_last_time_resync_ms,
         TIME_EPOCH_DECIMAL_STRING_LEN,
         TIME_unix_epoch_time_at_last_time_resync_ms_str
     );
 
-    // Log a warning if the current sync time is before the last sync time.
     if (is_this_sync_before_the_last_sync) {
         LOG_message(
             LOG_SYSTEM_OBC, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
@@ -57,21 +70,20 @@ void TIME_set_current_unix_epoch_time_ms(uint64_t current_unix_epoch_time_ms, TI
         );
     }
 
-    // Log a warning if the time sync changes the time by more than 2 seconds.
     char correction_time_ms_str[21];
     GEN_int64_to_str(correction_time_ms, correction_time_ms_str);
-    if (correction_time_ms>=2000 || correction_time_ms<=-2000) {
+
+    if (correction_time_ms >= 2000 || correction_time_ms <= -2000) {
         LOG_message(
             LOG_SYSTEM_OBC, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
             "Synchronization has changed system time by 2000ms or more. Time deviation was %s ms.",
             correction_time_ms_str
         );
     }
-    // Get timestamp string for "after"
-    char new_time_str[48];
-    TIME_get_current_utc_datetime_str(new_time_str, sizeof(new_time_str));    
 
-    // Log both times and the correction
+    char new_time_str[48];
+    TIME_get_current_utc_datetime_str(new_time_str, sizeof(new_time_str));
+
     LOG_message(
         LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
         "Time synchronized. Old time: %s, New time: %s, Clock shift: %s ms.",
@@ -87,9 +99,16 @@ uint64_t TIME_convert_uptime_to_unix_epoch_time_ms(uint32_t uptime_ms) {
     return (uptime_ms - TIME_system_uptime_at_last_time_resync_ms) + TIME_unix_epoch_time_at_last_time_resync_ms;
 }
 
-/// @brief Returns the current unix timestamp, in milliseconds
+/// @brief Returns the current unix timestamp, in milliseconds.
 uint64_t TIME_get_current_unix_epoch_time_ms() {
-    return TIME_convert_uptime_to_unix_epoch_time_ms(TIME_get_current_system_uptime_ms());
+    RTC_TimeTypeDef time;
+    RTC_DateTypeDef date;
+
+    // Note: Must fetch time BEFORE date!
+    HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);
+    HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN);
+
+    return TIME_hal_rtc_to_unix_epoch_time_ms(&date, &time);
 }
 
 /// @brief Returns a computer-friendly timestamp string, ideal for chronological ordering. 
@@ -262,7 +281,7 @@ void TIME_get_current_utc_datetime_str_no_ms(char *dest_str, size_t dest_str_siz
 
 
 char TIME_sync_source_enum_to_letter_char(TIME_sync_source_enum_t source) {
-    switch (TIME_last_synchronization_source) {
+    switch (source) {
         case TIME_SYNC_SOURCE_GNSS_UART:
             return 'G';
         case TIME_SYNC_SOURCE_GNSS_PPS:
