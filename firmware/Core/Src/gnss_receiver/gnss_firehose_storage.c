@@ -273,7 +273,7 @@ uint8_t GNSS_subtask_store_firehose_data_to_file() {
     // Copy the volatile UART_gnss_buffer into a local buffer.
     uint8_t gnss_rx_data[UART_gnss_buffer_len]; // Always allocate the full size, esp. for testing.
     const uint16_t gnss_rx_data_len = UART_gnss_buffer_write_idx;
-    for (uint16_t i = 0; i < gnss_rx_data_len; i++) { // Memcpy.
+    for (uint16_t i = 0; i < gnss_rx_data_len; i++) { // Memcpy out of volatile.
         gnss_rx_data[i] = UART_gnss_buffer[i];
     }
     // Now use gnss_rx_data and gnss_rx_data_len instead of the `UART_gnss_xxx` globals!
@@ -282,21 +282,21 @@ uint8_t GNSS_subtask_store_firehose_data_to_file() {
     UART_gnss_buffer_write_idx = 0;
 
     // Write to the file.
-    const int8_t write_result = lfs_file_write(
+    const lfs_ssize_t write_result = lfs_file_write(
         &LFS_filesystem, &GNSS_firehose_file_pointer,
         gnss_rx_data, gnss_rx_data_len
     );
     if (write_result < 0) {
         LOG_message(
             LOG_SYSTEM_GNSS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "GNSS firehose: Error writing to file: %d", write_result
+            "GNSS firehose: Error writing to file: %ld", write_result
         );
         return 10;
     }
 
     LOG_message(
         LOG_SYSTEM_GNSS, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
-        "GNSS firehose: Successfully wrote %d bytes.",
+        "GNSS firehose: Successfully wrote %ld bytes.",
         write_result
     );
 
