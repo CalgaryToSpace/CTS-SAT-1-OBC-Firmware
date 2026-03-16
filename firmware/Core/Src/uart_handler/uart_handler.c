@@ -1,6 +1,7 @@
 #include "uart_handler/uart_handler.h"
 #include "debug_tools/debug_uart.h"
 #include "mpi/mpi_command_handling.h"
+#include "gnss_receiver/gnss_firehose_storage.h"
 #include "uart_handler/uart_error_tracking.h"
 #include "camera/camera_capture.h"
 #include "log/log.h"
