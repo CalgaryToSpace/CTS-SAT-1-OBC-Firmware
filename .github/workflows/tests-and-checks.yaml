@@ -1,12 +1,15 @@
 name: Tests and Checks
 
-on: [push]
+on:
+  push: [main]
+  pull_request:
+  workflow_dispatch:
 
 jobs:
   c-firmware-build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Setup C build dependencies
         run: |
           sudo apt-get update
