@@ -15,6 +15,7 @@
 #include "transforms/arrays.h"
 #include "self_checks/complete_self_check.h"
 #include "obc_systems/external_led_and_rbf.h"
+#include "obc_systems/obc_temperature_sensor.h"
 #include "system/system_temperature.h"
 #include "mpi/mpi_command_handling.h"
 #include "mpi/mpi_types.h"
@@ -58,20 +59,26 @@ void COMMS_fill_beacon_basic_packet(
 
     // EPS fields here (EPS is the only peripheral in the basic beacon).
     // Set the default here, then conditionally fill them below if the EPS is successful.
+    // This section is all placeholders for EPS communication errors.
     beacon_packet->eps_mode_enum = 255;
     beacon_packet->eps_reset_cause_enum = 255;
     beacon_packet->eps_uptime_sec = 9999;
     beacon_packet->eps_error_code = 9999;
     beacon_packet->eps_battery_voltage_mV = 0;
     beacon_packet->eps_battery_percent = 0;
+    beacon_packet->eps_battery_temperature_0_cC = -9999;
+    beacon_packet->eps_battery_temperature_1_cC = -9999;
     beacon_packet->eps_total_fault_count = -1;
     beacon_packet->eps_enabled_channels_bitfield = 0;
-    beacon_packet->eps_total_pcu_power_input_cW = -99999; // Placeholder for error.
-    beacon_packet->eps_total_pcu_power_output_cW = -99999; // Placeholder for error.
-    beacon_packet->eps_total_avg_pcu_power_input_cW = -99999; // Placeholder for error.
-    beacon_packet->eps_total_avg_pcu_power_output_cW = -99999; // Placeholder for error.
+    beacon_packet->eps_total_pcu_power_input_cW = -99999;
+    beacon_packet->eps_total_pcu_power_output_cW = -99999;
+    beacon_packet->eps_total_avg_pcu_power_input_cW = -99999;
+    beacon_packet->eps_total_avg_pcu_power_output_cW = -99999;
+
+    beacon_packet->obc_temperature_cC = OBC_TEMP_SENSOR_get_temperature_cC();
 
     beacon_packet->cts1_operation_state = CTS1_operation_state;
+    beacon_packet->rbf_pin_state = OBC_get_rbf_state();
 
     beacon_packet->mpi_rx_mode_enum = MPI_current_uart_rx_mode;
     beacon_packet->mpi_transceiver_state_enum = MPI_current_transceiver_state;
@@ -101,6 +108,12 @@ void COMMS_fill_beacon_basic_packet(
             beacon_packet->eps_battery_percent = (
                 // Badly cast float to uint8. Adequate for the beacon.
                 (uint8_t)EPS_convert_battery_voltage_to_percent(eps_pbu_data.battery_pack_info_each_pack[0])
+            );
+            beacon_packet->eps_battery_temperature_0_cC = (
+                eps_pbu_data.battery_pack_info_each_pack[0].battery_temperature_each_sensor_cC[0]
+            );
+            beacon_packet->eps_battery_temperature_1_cC = (
+                eps_pbu_data.battery_pack_info_each_pack[0].battery_temperature_each_sensor_cC[1]
             );
         }
     }

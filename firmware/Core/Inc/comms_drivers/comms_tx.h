@@ -65,7 +65,9 @@ typedef struct {
     uint16_t eps_error_code;
     uint16_t eps_battery_voltage_mV;
     uint8_t eps_battery_percent;
-    // TODO: eps_battery_temperature
+    int16_t eps_battery_temperature_0_cC;
+    int16_t eps_battery_temperature_1_cC;
+    // Note: Third battery temperature sensor doesn't work on our model.
     int32_t eps_total_fault_count;
     uint32_t eps_enabled_channels_bitfield;
     int32_t eps_total_pcu_power_input_cW;
@@ -73,11 +75,12 @@ typedef struct {
     int32_t eps_total_avg_pcu_power_input_cW;
     int32_t eps_total_avg_pcu_power_output_cW;
 
+    int32_t obc_temperature_cC;
+
     uint8_t reboot_reason; // Enum: STM32_reset_cause_t
     
     uint8_t cts1_operation_state; // Enum: CTS1_operation_state_enum_t
-
-    // TODO: obc_temperature
+    uint8_t rbf_pin_state; // Enum: OBC_rbf_state_enum_t
 
     uint8_t mpi_rx_mode_enum; // Enum: MPI_rx_mode_enum_t
     uint8_t mpi_transceiver_state_enum; // Enum: MPI_current_transceiver_state_enum_t
