@@ -272,11 +272,14 @@ uint8_t GNSS_subtask_store_firehose_data_to_file() {
 
     // Copy the volatile UART_gnss_buffer into a local buffer.
     uint8_t gnss_rx_data[UART_gnss_buffer_len]; // Always allocate the full size, esp. for testing.
-    uint16_t gnss_rx_data_len = UART_gnss_buffer_write_idx;
+    const uint16_t gnss_rx_data_len = UART_gnss_buffer_write_idx;
     for (uint16_t i = 0; i < gnss_rx_data_len; i++) { // Memcpy.
         gnss_rx_data[i] = UART_gnss_buffer[i];
     }
     // Now use gnss_rx_data and gnss_rx_data_len instead of the `UART_gnss_xxx` globals!
+
+    // Reset the write index so subsequent writes go back to the start.
+    UART_gnss_buffer_write_idx = 0;
 
     // Write to the file.
     const int8_t write_result = lfs_file_write(
@@ -291,6 +294,12 @@ uint8_t GNSS_subtask_store_firehose_data_to_file() {
         return 10;
     }
 
+    LOG_message(
+        LOG_SYSTEM_GNSS, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+        "GNSS firehose: Successfully wrote %d bytes.",
+        write_result
+    );
+
     // Conditionally, flush the file to storage.
     if (HAL_GetTick() - last_gnss_flush_uptime_ms > GNSS_firehose_flush_interval_ms) {
         last_gnss_flush_uptime_ms = HAL_GetTick();
@@ -302,6 +311,11 @@ uint8_t GNSS_subtask_store_firehose_data_to_file() {
             );
             return 11;
         }
+
+        LOG_message(
+            LOG_SYSTEM_GNSS, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+            "GNSS firehose: Flushed file."
+        );
     }
 
     // Success.
