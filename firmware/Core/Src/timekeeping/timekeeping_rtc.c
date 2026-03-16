@@ -54,19 +54,6 @@ static inline uint32_t rtc_subseconds_to_ms(const RTC_TimeTypeDef *time) {
 }
 
 
-static inline uint32_t ms_to_rtc_subseconds(uint32_t ms, uint32_t second_fraction) {
-    const uint32_t denom = second_fraction + 1;
-
-    uint32_t ticks = (ms * denom + 500) / 1000;  // rounded
-
-    if (ticks > second_fraction) {
-        ticks = second_fraction;
-    }
-
-    return second_fraction - ticks;
-}
-
-
 uint64_t TIME_hal_rtc_to_unix_epoch_time_ms(RTC_DateTypeDef *date, RTC_TimeTypeDef *time) {
     struct tm t = {0};
     t.tm_year = date->Year + 100;
