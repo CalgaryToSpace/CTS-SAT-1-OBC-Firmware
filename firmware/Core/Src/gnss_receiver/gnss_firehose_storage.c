@@ -46,7 +46,7 @@ static int8_t GNSS_write_firehose_file_header() {
     char header_str[200];
     snprintf(
         header_str, sizeof(header_str),
-        "{\"gnss_start\":1,\"uptime_ms\":%ld,\"timestamp\":\"%s\",\"datetime\":\"%s\",\"timestamp_ms\":%s}",
+        "{\"gnss_start\":1,\"uptime_ms\":%ld,\"timestamp\":\"%s\",\"datetime\":\"%s\",\"timestamp_ms\":%s}\n",
         uptime_ms,
         timestamp_fmt_str,
         datetime_fmt_str,
