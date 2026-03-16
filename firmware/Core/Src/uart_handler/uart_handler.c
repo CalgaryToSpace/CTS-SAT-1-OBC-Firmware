@@ -303,6 +303,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
             if (UART_gnss_buffer_write_idx >= UART_gnss_buffer_len) {
                 // Tracking error
                 UART_error_gnss_error_info.handler_buffer_full_error_count++;
+                GNSS_firehose_bytes_lost++;
                 DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART gnss buffer is full\n");
                 
                 // Shift all bytes left by 1
