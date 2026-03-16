@@ -4,12 +4,23 @@
 
 All OEM7 ASCII responses contain the GPS Week and GPS Seconds fields in the header (e.g., the `log bestxyza once` command). Those fields can easily be converted to a timestamp/date.
 
+Decoding:
+
 ```python
 from datetime import datetime, timedelta, timezone
 
 def gps_to_datetime(gps_week: int, gps_seconds: float):
     gps_epoch = datetime(1980, 1, 6, tzinfo=timezone.utc)
     return gps_epoch + timedelta(weeks=gps_week, seconds=gps_seconds)
+
+print(gps_to_datetime(2410, 167615.000))
+```
+
+Example:
+
+```
+2026-03-16 16:34:45.135: #BESTXYZA,COM1,0,88.5,FINESTEERING,2410,167615.000,02000020,44cf,16807;SOL_COMPUTED,SINGLE,...
+                                                gps_week -> ^^^^,^^^^^^^^^^ <- gps_seconds
 ```
 
 ## Task: Fetch GNSS data once
