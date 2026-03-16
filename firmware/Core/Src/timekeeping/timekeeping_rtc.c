@@ -113,7 +113,7 @@ void TIME_unix_epoch_time_sec_to_rtc_hal(
 
     // Date.
     rtc_date->Year  = tm_time.tm_year - 100; // tm_year = years since 1900 -> RTC expects since 2000.
-    rtc_date->Month = tm_time.tm_mon + 1;    // tm_mon = 0–11 // TODO: Says it's encoded in BCD.
+    rtc_date->Month = tm_time.tm_mon + 1;    // tm_mon = 0-11
     rtc_date->Date  = tm_time.tm_mday;
 
     /* tm_wday = 0–6 (Sun–Sat), RTC = 1–7 */
