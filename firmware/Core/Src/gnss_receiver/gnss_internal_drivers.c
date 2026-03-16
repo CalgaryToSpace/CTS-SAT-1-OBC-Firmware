@@ -213,7 +213,7 @@ uint8_t GNSS_send_cmd_get_response(
 
     GNSS_current_rx_mode = GNSS_RX_MODE_COMMAND_MODE;
 
-    // This is the main action! The rest is a wrapper to handle the 
+    // This is the main action! The rest is a wrapper to handle interactions with firehose storage mode.
     const uint8_t ret = GNSS_send_cmd_get_response_when_firehose_storage_disabled(
         cmd_buf, cmd_buf_len, rx_buf, rx_buf_max_size, rx_buf_len_dest
     );
@@ -223,15 +223,11 @@ uint8_t GNSS_send_cmd_get_response(
 
     // Write the data to the firehose file, or effectively discard it by resetting the buffer.
     if (rx_mode_at_start == GNSS_RX_MODE_FIREHOSE_MODE) {
-        if (GNSS_write_cmd_mode_data_to_firehose_file) {
-            GNSS_subtask_store_firehose_data_to_file();
-        }
+        // You may be tempted to call GNSS_subtask_store_firehose_data_to_file() here, but you shouldn't.
+        // This function must return ASAP in order to provide the data to caller quickly, in case the caller
+        // is doing a time sync.
 
-        // Reset the buffer. Could do this outside of the firehose mode conditional,
-        // but the main point is that it's to reset the buffer when we're in firehose mode.
-        UART_gnss_buffer_write_idx = 0;
-
-        // If we're in firehose mode, and the interrupt isn't currently enabled, we must enable it.
+        // If we're in firehose mode, and the interrupt isn't currently enabled, we must ensure it's enabled.
         GNSS_set_uart_interrupt_state(1);
     }
 
