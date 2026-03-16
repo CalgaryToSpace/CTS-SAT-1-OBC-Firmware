@@ -18,10 +18,6 @@ extern RTC_HandleTypeDef hrtc;
 static const uint16_t days_before_month[12] =
     {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334};
 
-static const uint8_t days_in_month[] = {
-    31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
-};
-
 
 static uint8_t is_leap_year(uint16_t year) {
     return ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0));
@@ -85,53 +81,41 @@ uint64_t TIME_hal_rtc_to_unix_epoch_time_ms(RTC_DateTypeDef *date, RTC_TimeTypeD
     return (utc_tm_to_unix_seconds(&t) * 1000ULL) + ms;
 }
 
-
-void TIME_unix_epoch_time_ms_to_rtc_hal(
-    uint64_t unix_ms,
-    RTC_TimeTypeDef *time,
-    RTC_DateTypeDef *date
+/// @brief Converts a unix epoch time in sec to a HAL RTC time.
+/// @param unix_sec Unix timestamp in seconds.
+/// @param rtc_time Destination for HAL RTC time.
+/// @param rtc_date Destination for HAL RTC date.
+/// @note It is not possible to write a ms version of this function,
+//        as the RTC subseconds are always set to 0 when the time is synced.
+void TIME_unix_epoch_time_sec_to_rtc_hal(
+    uint64_t unix_sec,
+    RTC_TimeTypeDef *rtc_time,
+    RTC_DateTypeDef *rtc_date
 ) {
-    uint64_t unix_sec = unix_ms / 1000;
-    uint32_t ms = unix_ms % 1000;
+    // Clear the structs.
+    memset(rtc_time, 0, sizeof(RTC_TimeTypeDef));
+    memset(rtc_date, 0, sizeof(RTC_DateTypeDef));
 
-    uint32_t days = unix_sec / SECONDS_PER_DAY;
-    uint32_t secs_of_day = unix_sec % SECONDS_PER_DAY;
+    const time_t unix_sec_time_t = unix_sec;
+    struct tm tm_time;
+    gmtime_r(&unix_sec_time_t, &tm_time);
 
-    time->Hours   = secs_of_day / 3600;
-    secs_of_day  %= 3600;
-    time->Minutes = secs_of_day / 60;
-    time->Seconds = secs_of_day % 60;
+    // Time.
+    rtc_time->Hours   = tm_time.tm_hour;
+    rtc_time->Minutes = tm_time.tm_min;
+    rtc_time->Seconds = tm_time.tm_sec;
 
-    time->DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-    time->StoreOperation = RTC_STOREOPERATION_RESET;
+    rtc_time->DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+    rtc_time->StoreOperation = RTC_STOREOPERATION_RESET;
 
-    /* Convert ms → subseconds */
-    const uint32_t second_fraction = hrtc.Init.SynchPrediv;
-    time->SubSeconds = ms_to_rtc_subseconds(ms, second_fraction);
+    // Subseconds are always set to 0 when the time is synced.
+    // Cannot set to anything else here.
 
-    /* Date calculation */
-    uint16_t year = 1970;
+    // Date.
+    rtc_date->Year  = tm_time.tm_year - 100; // tm_year = years since 1900 -> RTC expects since 2000.
+    rtc_date->Month = tm_time.tm_mon + 1;    // tm_mon = 0–11 // TODO: Says it's encoded in BCD.
+    rtc_date->Date  = tm_time.tm_mday;
 
-    while (1) {
-        const uint16_t days_in_year = is_leap_year(year) ? 366 : 365;
-        if (days < days_in_year) break;
-        days -= days_in_year;
-        year++;
-    }
-
-    uint8_t month = 0;
-    while (1) {
-        uint8_t dim = days_in_month[month];
-        if (month == 1 && is_leap_year(year)) dim++;
-
-        if (days < dim) break;
-        days -= dim;
-        month++;
-    }
-
-    date->Year  = year - 2000;
-    date->Month = month + 1;
-    date->Date  = days + 1;
-
-    date->WeekDay = ((unix_sec / SECONDS_PER_DAY) + 4) % 7 + 1;
+    /* tm_wday = 0–6 (Sun–Sat), RTC = 1–7 */
+    rtc_date->WeekDay = tm_time.tm_wday + 1;
 }

@@ -7,10 +7,10 @@
 #include <stdint.h>
 
 
-void TIME_unix_epoch_time_ms_to_rtc_hal(
-    uint64_t unix_ms,
-    RTC_TimeTypeDef *time,
-    RTC_DateTypeDef *date
+void TIME_unix_epoch_time_sec_to_rtc_hal(
+    uint64_t unix_sec,
+    RTC_TimeTypeDef *rtc_time,
+    RTC_DateTypeDef *rtc_date
 );
 
 uint64_t TIME_hal_rtc_to_unix_epoch_time_ms(RTC_DateTypeDef *date, RTC_TimeTypeDef *time);

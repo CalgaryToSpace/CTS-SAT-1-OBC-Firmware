@@ -42,12 +42,22 @@ void TIME_set_current_unix_epoch_time_ms(
     char old_time_str[48];
     TIME_get_current_utc_datetime_str(old_time_str, sizeof(old_time_str));
 
+    // RTC always gets set to the top of a second, so we must delay to the top of a second here.
+    const uint16_t ms = current_unix_epoch_time_ms % 1000;
+    const uint16_t delay_to_next_second = (ms == 0) ? 0 : (1000 - ms);
+    if (delay_to_next_second > 0) {
+        HAL_Delay(delay_to_next_second);
+    }
+
     // Convert unix ms to RTC date/time.
     RTC_TimeTypeDef rtc_time = {0};
     RTC_DateTypeDef rtc_date = {0};
+    TIME_unix_epoch_time_sec_to_rtc_hal(
+        (current_unix_epoch_time_ms + delay_to_next_second) / 1000,
+        &rtc_time, &rtc_date
+    );
 
-    TIME_unix_epoch_time_ms_to_rtc_hal(current_unix_epoch_time_ms, &rtc_time, &rtc_date);
-
+    // Order here matters! Must do Time then Date.
     HAL_RTC_SetTime(&hrtc, &rtc_time, RTC_FORMAT_BIN);
     HAL_RTC_SetDate(&hrtc, &rtc_date, RTC_FORMAT_BIN);
 
