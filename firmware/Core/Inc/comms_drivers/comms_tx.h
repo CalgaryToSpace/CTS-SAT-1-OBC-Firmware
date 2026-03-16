@@ -37,6 +37,8 @@ typedef enum {
 #error "COMMS_BULK_FILE_DOWNLINK_PACKET_MAX_DATA_BYTES_PER_PACKET is incorrect"
 #endif
 
+#define COMMS_BEACON_FRIENDLY_MESSAGE_SIZE 42
+
 #pragma pack(push, 1)
 
 
@@ -93,6 +95,10 @@ typedef struct {
 
     // TODO: Total log message counts (esp. for warning/error levels)
 
+    // End with a null-terminated configurable friendly message.
+    char friendly_message[COMMS_BEACON_FRIENDLY_MESSAGE_SIZE];
+
+    char end_message[4]; // "END\0"
     
 } COMMS_beacon_basic_packet_t;
 

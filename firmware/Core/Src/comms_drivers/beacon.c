@@ -33,6 +33,9 @@ extern MPI_transceiver_state_enum_t MPI_current_transceiver_state;
 extern MPI_reason_for_stopping_active_mode MPI_last_reason_for_stopping_active_mode;
 
 
+char COMMS_beacon_friendly_message_str[COMMS_BEACON_FRIENDLY_MESSAGE_SIZE] = "Hello from CalgaryToSpace FrontierSat";
+
+
 void COMMS_fill_beacon_basic_packet(
     COMMS_beacon_basic_packet_t *beacon_packet
 ) {
@@ -86,6 +89,14 @@ void COMMS_fill_beacon_basic_packet(
 
     beacon_packet->gnss_uart_interrupt_enabled = UART_gnss_uart_interrupt_enabled;
     beacon_packet->gnss_rx_mode_enum = 0; // FIXME: Fill during PR #567 review.
+
+    // The destination is already zero-filled, so we only copy in the friendly message.
+    memcpy(
+        beacon_packet->friendly_message,
+        COMMS_beacon_friendly_message_str,
+        strlen(COMMS_beacon_friendly_message_str)
+    );
+    memcpy(beacon_packet->end_message, "END", 4);
     
     // Try to fetch the EPS system status, and store it in the beacon packet if successful.
     {

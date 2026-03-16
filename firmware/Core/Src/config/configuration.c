@@ -1,5 +1,6 @@
 #include "config/configuration.h"
 #include "comms_drivers/ax100_tx.h"
+#include "comms_drivers/comms_tx.h"
 #include "rtos_tasks/rtos_bootup_operation_fsm_task.h"
 #include "comms_drivers/rf_antenna_switch.h"
 #include "rtos_tasks/rtos_bulk_downlink_task.h"
@@ -147,6 +148,9 @@ const uint8_t CONFIG_int_config_variables_count = sizeof(CONFIG_int_config_varia
 
 char CONFIG_str_demo_var_1[25] = "CONFIG_str_demo_var_1";
 char CONFIG_str_demo_var_2[50] = "CONFIG_str_demo_var_2";
+
+extern char COMMS_beacon_friendly_message_str[COMMS_BEACON_FRIENDLY_MESSAGE_SIZE];
+
 // extern
 CONFIG_string_config_entry_t CONFIG_str_config_variables[] = {
     {
@@ -158,8 +162,12 @@ CONFIG_string_config_entry_t CONFIG_str_config_variables[] = {
         .variable_name = "CONFIG_str_demo_var_2",
         .variable_pointer = CONFIG_str_demo_var_2,
         .max_length = sizeof(CONFIG_str_demo_var_2)
-    }
-
+    },
+    {
+        .variable_name = "COMMS_beacon_friendly_message_str",
+        .variable_pointer = COMMS_beacon_friendly_message_str,
+        .max_length = sizeof(COMMS_beacon_friendly_message_str)
+    },
 };
 
 // extern
