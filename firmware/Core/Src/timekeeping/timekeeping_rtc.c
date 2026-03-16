@@ -47,10 +47,10 @@ static int64_t utc_tm_to_unix_seconds(const struct tm *tm) {
 }
 
 static inline uint32_t rtc_subseconds_to_ms(const RTC_TimeTypeDef *time) {
-    const uint32_t ticks = time->SecondFraction - time->SubSeconds;
-    const uint32_t denom = time->SecondFraction + 1;
-
-    return (ticks * 1000ULL + denom / 2) / denom;  // rounded
+    const uint32_t frac = time->SecondFraction;
+    const uint32_t sub  = time->SubSeconds;
+    const uint32_t ticks = frac - sub;
+    return (ticks * 1000ULL) / (frac + 1);
 }
 
 
