@@ -6,13 +6,14 @@
 
 1. ✅ Telecommand Execution (`TCMDEXEC_`) function names match their registrations in the table.
     * Implemented in `check_tcmd_function_names_match_registration_names()`.
-2. No malloc usage.
+2. No malloc usage (via `malloc(...)`).
+    * FreeRTOS malloc operations via `pvPortMalloc` and `pvPortCalloc` may be acceptable, assuming the use cases were audited and approved during implementation.
 3. ✅ Are all `TEST_EXEC_` functions registered in the test table?
     * Implemented in `validate_test_exec_registration()`.
 4. ✅ Are all `TCMDEXEC_` functions registered in the telecommand table?
     * Implemented in `validate_tcmdexec_registration()`.
 
-✅ = Automated test now exists.
+✅ = Automated validations now exists.
 
 ## Manual Execution Checks
 
@@ -45,7 +46,7 @@ The following checks involve executing code and/or telecommands.
 7. Ensure the BOOT0 pin configuration is applied using STM32CubeProgrammer.
     * nSWBOOT0 = Unchecked (use software config)
     * nBOOT0 = Checked (boot from system memory)
-8. Check that the sum of the stack sizes of all the tasks (in `main.c`) sums to less than the `configTOTAL_HEAP_SIZE` in `FreeRTOSConfig.h` (plus a margin).
+8. Check that the sum of the stack sizes of all the tasks (in `main.c`, measured in bytes) sums to less than the `configTOTAL_HEAP_SIZE` (in bytes) in `FreeRTOSConfig.h` (plus a margin).
 
 ## Management Checks
 
@@ -54,3 +55,5 @@ The following checks involve executing code and/or telecommands.
 3. Are all PRs merged?
 4. Are all branches merged?
 5. Ctrl+Shift+F for `TODO` and `FIXME` in the codebase.
+6. Upload the final flashed firmware `.bin` and `.elf` files to a GitHub Release.
+    * Critical for referencing in the `exec_blob` feature, which may call functions at specific memory addresses as they exist in the firmware.
