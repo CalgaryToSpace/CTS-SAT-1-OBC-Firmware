@@ -319,6 +319,13 @@ typedef uint8_t (*blob_entry_t)(
 );
 
 
+/// @brief Executes an arbitrary blob/program from the filesystem.
+/// @param args_str
+/// - Arg 0: File name of the blob
+/// - Arg 1: Arguments to pass to the blob (e.g., another filename)
+/// @param response_output_buf The blob optionally writes its intermediate workings and results to this buffer.
+/// @return 99 on pre-blob execution error. Otherwise, blob return value (presumably 0 on success).
+/// @details Refer to `misc_tools/exec_blob/README.md` for more information on how to use this complex telecommand.
 uint8_t TCMDEXEC_exec_blob_from_fs(
     const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
@@ -333,7 +340,7 @@ uint8_t TCMDEXEC_exec_blob_from_fs(
             response_output_buf_len,
             "Error parsing file name arg: Error %d", parse_dir_name_result
         );
-        return 1;
+        return 99;
     }
     const uint8_t arg_file_name_len = strlen(arg_file_name);
 
@@ -351,7 +358,7 @@ uint8_t TCMDEXEC_exec_blob_from_fs(
             response_output_buf, response_output_buf_len,
             "ERR: lfs_read_file failed (%ld)", bytes_read
         );
-        return 1;
+        return 99;
     }
 
     // Flush caches before executing from SRAM.
@@ -362,6 +369,7 @@ uint8_t TCMDEXEC_exec_blob_from_fs(
     const blob_entry_t blob_entry = (blob_entry_t)((uint32_t)blob_buffer | 0x1U);
     const uint8_t blob_result = blob_entry(args_str_to_blob, response_output_buf, response_output_buf_len);
 
+    // Safety: Ensure that the buffer is null-terminated, in case the blob forgot to.
     response_output_buf[response_output_buf_len - 1] = '\0';
 
     return blob_result;
