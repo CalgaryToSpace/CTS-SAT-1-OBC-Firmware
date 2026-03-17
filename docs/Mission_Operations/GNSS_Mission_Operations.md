@@ -56,3 +56,5 @@ This feature works alongside MPI data collection.
 8. Optionally, power off the GNSS receiver.
 
 Note that you can also enable/disable GNSS message types after starting data recording.
+
+You can enable as many logs as you would like, up to 2000 bytes of data (`UART_gnss_buffer_len`) per 5 seconds.
