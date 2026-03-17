@@ -45,9 +45,9 @@ uint16_t EPS_current_mA_threshhold[32]=
         0       //EPS_CHANNEL_UNKNOWN = 255
     };
 
-/// @brief Monitors the power consumption of each channel and logs the data in JSON format.
+/// @brief Monitors the power consumption of each channel.
 ///
-/// @details This function will obtain the PDU housekeeping data and log the data in JSON format.
+/// @details This function will obtain the PDU housekeeping data.
 ///          If this is the first time the function is called, it will save the data for future comparisons.
 ///          It will then check if the power consumption has increased or decreased by more than a certain threshold.
 ///          If it has, it will disable the channel and log an error message.
@@ -70,47 +70,11 @@ uint8_t EPS_monitor_and_disable_overcurrent_channels() {
         return 2;
     }
 
-    const uint8_t logging_status = EPS_log_pdu_json(&EPS_pdu_housekeeping_data_eng);
-
     EPS_channel_management(&EPS_pdu_housekeeping_data_eng);
 
-    return logging_status;
-}
-
-/// @brief Logs the PDU housekeeping data in JSON format
-/// @param[in] EPS_pdu_housekeeping_data_eng PDU housekeeping data to be logged
-/// @note This function will log the PDU housekeeping data in JSON format to the error log.   
-///     If the conversion to JSON fails, it will log an error with the error status.    
-///     Otherwise, it will log the JSON string to the error log.
-uint8_t EPS_log_pdu_json(const EPS_struct_pdu_housekeeping_data_eng_t *EPS_pdu_housekeeping_data_eng) {
-    char json_str[255];
-
-    // Power Logging
-    const int8_t to_json_status = EPS_struct_pdu_housekeeping_data_eng_TO_short_json(
-        EPS_pdu_housekeeping_data_eng, json_str, sizeof(json_str)
-    );
-
-    if (to_json_status != 0) {
-        LOG_message(
-            LOG_SYSTEM_EPS,
-            LOG_SEVERITY_ERROR,
-            LOG_SINK_ALL,
-            "EPS_struct_pdu_housekeeping_data_eng_TO_short_json() -> Error: %d",
-            to_json_status
-        );
-        return to_json_status;
-    }
-    else {
-        LOG_message(
-            LOG_SYSTEM_EPS,
-            LOG_SEVERITY_NORMAL,
-            LOG_SINK_ALL,
-            "EPS PDU: %s",
-            json_str
-        );
-    }
     return 0;
 }
+
 
 /// @brief Monitor the power consumption of each channel and disable any channels that exceed a certain threshold
 /// @param[in] EPS_pdu_housekeeping_data_eng PDU housekeeping data with the current power consumption of each channel
@@ -133,7 +97,7 @@ void EPS_channel_management(
             //     LOG_SYSTEM_EPS,
             //     LOG_SEVERITY_DEBUG,
             //     LOG_SINK_ALL,
-            //     "Channel %d is disabled.", channel
+            //     "Channel %d is already disabled.", channel
             // );
             continue;
         }
@@ -142,7 +106,7 @@ void EPS_channel_management(
             //     LOG_SYSTEM_EPS,
             //     LOG_SEVERITY_DEBUG,
             //     LOG_SINK_ALL,
-            //     "Channel %d is has threshold 0.", channel
+            //     "Channel %d has threshold 0 (monitoring disabled).", channel
             // );
             continue;
         } 
@@ -151,7 +115,7 @@ void EPS_channel_management(
             //     LOG_SYSTEM_EPS,
             //     LOG_SEVERITY_DEBUG,
             //     LOG_SINK_ALL,
-            //     "Channel %d is has not exceeded the threshold.", channel
+            //     "Channel %d has not exceeded the threshold.", channel
             // );
             continue;
         }
