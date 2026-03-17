@@ -87,11 +87,21 @@ static int8_t LOG_ensure_current_log_file_is_open() {
 
 
 /// @brief Writes to the current log file.
+/// @return 0 on success, negative LFS error codes on failure.
 static int8_t LOG_write_to_current_log_file(const char *msg, uint16_t msg_length) {
     LFS_ensure_mounted();
     LOG_ensure_current_log_file_is_open();
 
-    return lfs_file_write(&LFS_filesystem, &LOG_current_log_file_ctx.file, msg, msg_length);
+    const lfs_ssize_t write_result = lfs_file_write(
+        &LFS_filesystem, &LOG_current_log_file_ctx.file, msg, msg_length
+    );
+
+    if (write_result < 0) {
+        LOG_log_a_logging_error_if_file_is_broken("Log write: lfs_file_write() failed.");
+        return write_result;
+    }
+
+    return 0; // 0 on success.
 }
 
 
