@@ -584,8 +584,7 @@ int8_t LFS_write_file_with_offset(const char file_name[], lfs_soff_t offset, uin
             }
         }
     }
-    else 
-    {
+    else {
         // Seek to the specified offset
         const lfs_soff_t seek_result_2 = lfs_file_seek(&LFS_filesystem, &file, offset, LFS_SEEK_SET);
         if (seek_result_2 < 0)
@@ -601,8 +600,7 @@ int8_t LFS_write_file_with_offset(const char file_name[], lfs_soff_t offset, uin
 
     // Write data to file at the specified offset
     const lfs_ssize_t write_result = lfs_file_write(&LFS_filesystem, &file, write_buffer, write_buffer_len);
-    if (write_result < 0)
-    {
+    if (write_result < 0) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), 
                    "Error writing to file: %s at offset %ld (error: %ld)", file_name, offset, write_result);
         
