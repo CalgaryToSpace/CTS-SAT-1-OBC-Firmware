@@ -588,15 +588,6 @@ uint8_t EPS_struct_pdu_housekeeping_data_eng_TO_short_json(
     // Start the JSON string
     offset = snprintf(json_output_str, json_output_str_size, "{");
 
-    // Add voltage_internal_board_supply_mV and temperature_mcu_cC
-    ret = snprintf(
-        json_output_str + offset, json_output_str_size - offset,
-        "\"voltage_internal_mV\":%" PRIu16 ",\"temperature_mcu_cC\":%" PRId16 ",",
-        data->voltage_internal_board_supply_mV, data->temperature_mcu_cC
-    );
-    if (ret < 0 || ret >= (json_output_str_size - offset)) return 3;
-    offset += ret;
-
     // Add vip_total_input as JSON
     char vip_json[128];
     ret = EPS_vpid_eng_TO_json(&data->vip_total_input, vip_json, sizeof(vip_json));
