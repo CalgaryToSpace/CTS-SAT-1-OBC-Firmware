@@ -38,4 +38,10 @@ uint8_t TCMDEXEC_get_all_system_thermal_info(
     char *response_output_buf, uint16_t response_output_buf_len
 );
 
+uint8_t TCMDEXEC_exec_blob_from_fs(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+);
+
+
 #endif /* INCLUDE_GUARD__SYSTEM_TELECOMMAND_DEFINITIONS_H */
