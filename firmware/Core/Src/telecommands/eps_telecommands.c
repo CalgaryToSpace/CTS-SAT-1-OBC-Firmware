@@ -349,7 +349,7 @@ uint8_t TCMDEXEC_eps_get_pdu_housekeeping_data_eng_json(
 /// @brief Get the EPS PDU (Power Distribution Unit) housekeeping data, and display it as a short JSON string.
 /// @return 0 on success, >0 on failure.
 /// @note Emphasizes total info, and enabled channels only.
-uint8_t TCMDEXEC_eps_get_pdu_housekeeping_data_eng_short_json(
+uint8_t TCMDEXEC_eps_get_pdu_active_channels_data_json(
     const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
@@ -379,7 +379,7 @@ uint8_t TCMDEXEC_eps_get_pdu_housekeeping_data_eng_short_json(
 /// @brief Get the EPS PDU (Power Distribution Unit) housekeeping data running average, and display it as a short JSON string.
 /// @return 0 on success, >0 on failure.
 /// @note Emphasizes total info, and enabled channels only.
-uint8_t TCMDEXEC_eps_get_pdu_housekeeping_data_run_avg_short_json(
+uint8_t TCMDEXEC_eps_get_pdu_active_channels_data_run_avg_json(
     const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
