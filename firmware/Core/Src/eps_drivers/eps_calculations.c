@@ -36,3 +36,45 @@ int32_t EPS_calculate_total_fault_count(EPS_struct_pdu_overcurrent_fault_state_t
 
     return fault_count;
 }
+
+
+/// @brief Sum the total solar panel input for all channels.
+/// @return Total input of all PCU channels in cW.
+int32_t EPS_calculate_total_pcu_power_input_cW(EPS_struct_pcu_housekeeping_data_eng_t *pcu_data) {
+    int32_t total_cW = 0;
+
+    for (uint8_t ch_num = 0; ch_num < EPS_TOTAL_PCU_CHANNEL_COUNT; ch_num++) {
+        const EPS_conditioning_channel_datatype_eng_t *pcu_channel_data = (
+            &pcu_data->conditioning_channel_info_each_channel[ch_num]
+        );
+
+        // Convert to cW.
+        // Example: 5000 mV x 1000 mA = 5,000,000 ==> 5,000,000 x 10^-4 = 500 cW = 5 W
+        total_cW += (
+            (float)pcu_channel_data->volt_in_mppt_mV * (float)pcu_channel_data->curr_in_mppt_mA * 1e-4
+        );
+    }
+
+    return total_cW;
+}
+
+
+/// @brief Sum the total solar panel output for all channels.
+/// @return Total output of all PCU channels in cW.
+int32_t EPS_calculate_total_pcu_power_output_cW(EPS_struct_pcu_housekeeping_data_eng_t *pcu_data) {
+    int32_t total_cW = 0;
+
+    for (uint8_t ch_num = 0; ch_num < EPS_TOTAL_PCU_CHANNEL_COUNT; ch_num++) {
+        const EPS_conditioning_channel_datatype_eng_t *pcu_channel_data = (
+            &pcu_data->conditioning_channel_info_each_channel[ch_num]
+        );
+
+        // Convert to cW.
+        // Example: 5000 mV x 1000 mA = 5,000,000 ==> 5,000,000 x 10^-4 = 500 cW = 5 W
+        total_cW += (
+            (float)pcu_channel_data->volt_ou_mppt_mV * (float)pcu_channel_data->curr_ou_mppt_mA * 1e-4
+        );
+    }
+
+    return total_cW;
+}

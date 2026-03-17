@@ -9,6 +9,7 @@
 #include "transforms/arrays.h"
 #include "self_checks/complete_self_check.h"
 #include "obc_systems/external_led_and_rbf.h"
+#include "obc_systems/obc_temperature_sensor.h"
 #include "system/system_temperature.h"
 #include "mpi/mpi_command_handling.h"
 #include "mpi/mpi_types.h"
@@ -107,15 +108,27 @@ uint8_t TCMDEXEC_core_system_stats(
 
     // Get EPS battery percentage as float, or null if error.
     char eps_battery_percent_str[10] = "null";
-    EPS_struct_pbu_housekeeping_data_eng_t eps_pbu_data;
-    const uint8_t eps_pbu_result = EPS_CMD_get_pbu_housekeeping_data_eng(&eps_pbu_data);
-    if (eps_pbu_result == 0) {
-        const float battery_percent = EPS_convert_battery_voltage_to_percent(
-            eps_pbu_data.battery_pack_info_each_pack[0]
-        );
-        snprintf(eps_battery_percent_str, sizeof(eps_battery_percent_str), "%0.2f", battery_percent);
+    {
+        EPS_struct_pbu_housekeeping_data_eng_t eps_pbu_data;
+        const uint8_t eps_pbu_result = EPS_CMD_get_pbu_housekeeping_data_eng(&eps_pbu_data);
+        if (eps_pbu_result == 0) {
+            const float battery_percent = EPS_convert_battery_voltage_to_percent(
+                eps_pbu_data.battery_pack_info_each_pack[0]
+            );
+            snprintf(eps_battery_percent_str, sizeof(eps_battery_percent_str), "%0.2f", battery_percent);
+        }
     }
-    
+
+    // Get EPS total fault count.
+    int32_t eps_total_fault_count = -1;
+    {
+        EPS_struct_pdu_overcurrent_fault_state_t eps_pdu_fault_data;
+        const uint8_t eps_pdu_result = EPS_CMD_get_pdu_overcurrent_fault_state(&eps_pdu_fault_data);
+        if (eps_pdu_result == 0) {
+            eps_total_fault_count = EPS_calculate_total_fault_count(&eps_pdu_fault_data);
+        }
+    }
+
     snprintf(
         response_output_buf, response_output_buf_len, 
         "{"
@@ -130,13 +143,15 @@ uint8_t TCMDEXEC_core_system_stats(
         "\"is_lfs_mounted\":%u,"
         "\"reboot_reason\":\"%s\","
         "\"operation_state\":\"%s\","
+        "\"obc_temperature_cC\":%ld,"
         "\"mpi_rx_mode\":\"%s\","
         "\"mpi_transceiver_state\":\"%s\","
         "\"mpi_last_reason_for_stopping\":\"%s\","
         "\"gnss_uart_interrupt_enabled\":%u,"
         "\"gnss_rx_mode\":\"%s\","
+        "\"eps_total_fault_count\":%lu,"
         "\"eps_battery_percent\":%s"
-        "}\n",
+        "}",
         timestamp_string_ms, // timestamp_ms
         TIME_get_current_system_uptime_ms(), // uptime_ms
         TIME_system_uptime_at_last_time_resync_ms, // last_time_resync_ms
@@ -148,11 +163,13 @@ uint8_t TCMDEXEC_core_system_stats(
         LFS_is_lfs_mounted, // is_lfs_mounted
         STM32_reset_cause_name, // reboot_reason
         CTS1_operation_state_enum_TO_str(CTS1_operation_state), // operation_state
+        OBC_TEMP_SENSOR_get_temperature_cC(), // obc_temperature_cC
         MPI_rx_mode_enum_to_str(MPI_current_uart_rx_mode), // mpi_rx_mode
         MPI_transceiver_state_enum_to_str(MPI_current_transceiver_state), // mpi_transceiver_state
         MPI_reason_for_stopping_active_mode_enum_to_str(MPI_last_reason_for_stopping_active_mode), // mpi_last_reason_for_stopping
         UART_gnss_uart_interrupt_enabled, // gnss_uart_interrupt_enabled
         GNSS_rx_mode_enum_to_str(GNSS_current_rx_mode), // gnss_rx_mode
+        eps_total_fault_count, // eps_total_fault_count
         eps_battery_percent_str // eps_battery_percent
     ); 
 
@@ -290,7 +307,8 @@ uint8_t TCMDEXEC_get_all_system_thermal_info(
         "{"
         "\"obc_temperature_cC\":%ld,"
         "\"ant_temperature_cC\":[%ld,%ld]," // Bus A, Bus B
-        "\"solar_panel_power_gen_mW\": [%ld,%ld,%ld,%ld],"
+        "\"solar_panel_input_cW\": [%ld,%ld,%ld,%ld],"
+        "\"solar_panel_output_total_cW\":%ld,"
         "\"eps_battery_percent\":%0.02f,"
         "\"battery_heater_active\":%d,"
         "\"battery_sensor_temp_cC\": [%d,%d]"
@@ -298,10 +316,11 @@ uint8_t TCMDEXEC_get_all_system_thermal_info(
         output_temp_info.system_OBC_temperature_cC,
         output_temp_info.system_ANT_temperature_i2c_bus_A_cC,
         output_temp_info.system_ANT_temperature_i2c_bus_B_cC,
-        output_temp_info.system_solar_panel_power_generation_mW[0],
-        output_temp_info.system_solar_panel_power_generation_mW[1],
-        output_temp_info.system_solar_panel_power_generation_mW[2],
-        output_temp_info.system_solar_panel_power_generation_mW[3],
+        output_temp_info.solar_panel_power_input_cW[0],
+        output_temp_info.solar_panel_power_input_cW[1],
+        output_temp_info.solar_panel_power_input_cW[2],
+        output_temp_info.solar_panel_power_input_cW[3],
+        output_temp_info.solar_panel_power_output_total_cW,
         output_temp_info.system_eps_battery_percent,
         output_temp_info.system_eps_battery_heater_status_bit,
         output_temp_info.system_eps_battery_each_sensor_temperature_cC[1],

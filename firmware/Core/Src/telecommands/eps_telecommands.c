@@ -668,8 +668,8 @@ uint8_t TCMDEXEC_eps_get_piu_housekeeping_data_run_avg_json(
 /// @brief Get current battery voltage and percent from EPS's PBU.
 uint8_t TCMDEXEC_eps_get_current_battery_percent(
     const char *args_str,
-    char *response_output_buf, uint16_t response_output_buf_len) {
-
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
     EPS_struct_pbu_housekeeping_data_eng_t data;
     const uint8_t result = EPS_CMD_get_pbu_housekeeping_data_eng(&data);
 
