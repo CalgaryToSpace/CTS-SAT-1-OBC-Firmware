@@ -15,10 +15,12 @@
 #include "uart_handler/uart_handler.h"
 #include "rtos_tasks/rtos_bootup_operation_fsm_task.h"
 #include "gnss_receiver/gnss_internal_drivers.h"
+#include "uart_handler/uart_handler.h"
 
 #include "telecommands/system_telecommand_defs.h"
 #include "telecommand_exec/telecommand_definitions.h"
 #include "telecommand_exec/telecommand_executor.h"
+#include "telecommand_exec/telecommand_args_helpers.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -307,4 +309,68 @@ uint8_t TCMDEXEC_get_all_system_thermal_info(
     );
 
     return 0;
+}
+
+
+typedef uint8_t (*blob_entry_t)(
+    const char *args_str,
+    char       *response_buf,
+    uint16_t    response_buf_len
+);
+
+
+/// @brief Executes an arbitrary blob/program from the filesystem.
+/// @param args_str
+/// - Arg 0: File name of the blob
+/// - Arg 1: Arguments to pass to the blob (e.g., another filename)
+/// @param response_output_buf The blob optionally writes its intermediate workings and results to this buffer.
+/// @return 99 on pre-blob execution error. Otherwise, blob return value (presumably 0 on success).
+/// @details Refer to `misc_tools/exec_blob/README.md` for more information on how to use this complex telecommand.
+uint8_t TCMDEXEC_exec_blob_from_fs(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    char arg_file_name[LFS_MAX_PATH_LENGTH];
+    const uint8_t parse_dir_name_result = TCMD_extract_string_arg(
+        args_str, 0, arg_file_name, sizeof(arg_file_name)
+    );
+    if (parse_dir_name_result != 0) {
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing file name arg: Error %d", parse_dir_name_result
+        );
+        return 99;
+    }
+    const uint8_t arg_file_name_len = strlen(arg_file_name);
+
+    const char *args_str_to_blob = args_str + arg_file_name_len + 1; // Past the comma.
+
+    uint8_t* blob_buffer = (uint8_t*)MPI_science_buffer_two;
+    uint32_t blob_buffer_size = MPI_science_buffer_len;
+
+    memset(blob_buffer, 0, blob_buffer_size);
+    const int32_t bytes_read = LFS_read_file(
+        arg_file_name, 0, blob_buffer, blob_buffer_size
+    );
+    if (bytes_read <= 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "ERR: lfs_read_file failed (%ld)", bytes_read
+        );
+        return 99;
+    }
+
+    // Flush caches before executing from SRAM.
+    __DSB();
+    __ISB();
+
+    // Execute from offset 0, +1 for Thumb mode.
+    const blob_entry_t blob_entry = (blob_entry_t)((uint32_t)blob_buffer | 0x1U);
+    const uint8_t blob_result = blob_entry(args_str_to_blob, response_output_buf, response_output_buf_len);
+
+    // Safety: Ensure that the buffer is null-terminated, in case the blob forgot to.
+    response_output_buf[response_output_buf_len - 1] = '\0';
+
+    return blob_result;
 }
