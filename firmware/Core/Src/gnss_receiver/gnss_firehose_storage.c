@@ -270,13 +270,25 @@ uint8_t GNSS_subtask_store_firehose_data_to_file() {
         return 0;
     }
 
-    // Copy the volatile UART_gnss_buffer into a local buffer.
-    uint8_t gnss_rx_data[UART_gnss_buffer_len]; // Always allocate the full size, esp. for testing.
+
+    // If the response is short (bestxyza, versiona, etc.), copy to a buffer. If it's too large,
+    // (e.g., ephema), then we'll just read it right out of the UART buffer, and make the assumption
+    // that there's a low chance the buffer will change while we're reading out of it.
+    const uint16_t gnss_rx_data_len_max_for_copy = 512; // Max stack-allocated buffer.
     const uint16_t gnss_rx_data_len = UART_gnss_buffer_write_idx;
-    for (uint16_t i = 0; i < gnss_rx_data_len; i++) { // Memcpy out of volatile.
-        gnss_rx_data[i] = UART_gnss_buffer[i];
+    uint8_t gnss_rx_data_if_short[gnss_rx_data_len_max_for_copy]; // Unused if data is long.
+    uint8_t* gnss_rx_data_ptr;
+    if (gnss_rx_data_len <= gnss_rx_data_len_max_for_copy) {
+        // memcpy from the volatile:
+        for (uint16_t i = 0; i < gnss_rx_data_len; i++) { // Memcpy out of volatile.
+            gnss_rx_data_if_short[i] = UART_gnss_buffer[i];
+        }
+        gnss_rx_data_ptr = gnss_rx_data_if_short;
     }
-    // Now use gnss_rx_data and gnss_rx_data_len instead of the `UART_gnss_xxx` globals!
+    else {
+        // Too long to copy to the stack.
+        gnss_rx_data_ptr = (uint8_t*) UART_gnss_buffer; // Discard volatile.
+    }
 
     // Reset the write index so subsequent writes go back to the start.
     UART_gnss_buffer_write_idx = 0;
@@ -284,7 +296,8 @@ uint8_t GNSS_subtask_store_firehose_data_to_file() {
     // Write to the file.
     const lfs_ssize_t write_result = lfs_file_write(
         &LFS_filesystem, &GNSS_firehose_file_pointer,
-        gnss_rx_data, gnss_rx_data_len
+        gnss_rx_data_ptr, // Either `UART_gnss_buffer` directly, or a stack-allocated buffer.
+        gnss_rx_data_len // Copy of UART_gnss_buffer_write_idx
     );
     if (write_result < 0) {
         LOG_message(

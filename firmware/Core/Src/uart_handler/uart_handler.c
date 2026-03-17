@@ -58,8 +58,8 @@ volatile uint32_t UART_mpi_last_write_time_ms = 0;          // extern
 volatile uint16_t UART_mpi_buffer_write_idx = 0;            // extern
 
 // UART GNSS buffer
-const uint16_t UART_gnss_buffer_len = 512; // extern
-volatile uint8_t UART_gnss_buffer[512]; // extern
+const uint16_t UART_gnss_buffer_len = 2048; // extern
+volatile uint8_t UART_gnss_buffer[2048]; // extern
 volatile uint16_t UART_gnss_buffer_write_idx = 0; // extern
 volatile uint32_t UART_gnss_last_write_time_ms = 0; // extern
 volatile uint8_t UART_gnss_buffer_last_rx_byte = 0; // extern
