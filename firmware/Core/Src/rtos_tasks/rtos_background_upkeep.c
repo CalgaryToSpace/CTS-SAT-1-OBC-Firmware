@@ -12,6 +12,7 @@
 #include "eps_drivers/eps_power_management.h"
 #include "eps_drivers/eps_time.h"
 #include "eps_drivers/eps_commands.h"
+#include "gnss_receiver/gnss_firehose_storage.h"
 
 #include "cmsis_os.h"
 
@@ -46,6 +47,7 @@ uint32_t EPS_max_time_deviation_for_sync_ms = 2000;
 /// @brief Interval between basic beacon packets, in ms.
 /// @note Default: 20000 ms = 20 seconds (fastest rate we're globally authorized for).
 uint32_t COMMS_beacon_interval_ms = 20000;
+static const uint32_t COMMS_beacon_interval_ms_default_value = 20000; // Used for reset if no uplinks received.
 
 uint32_t COMMS_total_beacon_count_since_boot = 0;
 
@@ -147,6 +149,11 @@ static void subtask_update_rf_switch(void) {
         && (duration_since_last_uplink_sec > COMMS_max_duration_without_uplink_before_setting_default_rf_switch_mode_sec)
     ) {
         COMMS_rf_switch_control_mode = COMMS_RF_SWITCH_CONTROL_MODE_TOGGLE_BEFORE_EVERY_BEACON;
+
+        // Paranoid action - also reset the beacon period. If the beacon period was set to way too long,
+        // then the satellite could go unresponsive because the RF switch never gets flipped.
+        COMMS_beacon_interval_ms = COMMS_beacon_interval_ms_default_value;
+        
         LOG_message(
             LOG_SYSTEM_UHF_RADIO, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
             "RF switch control mode set to default due to no uplinks: %ld sec > %ld sec",
@@ -284,7 +291,12 @@ void TASK_background_upkeep(void *argument) {
 
         LOG_subtask_handle_sync_and_close_of_current_log_file();
         osDelay(10); // Yield.
+
+        // In theory, this one could be a good command to run more frequently in a separate task.
+        // This period is probably reasonable though.
+        GNSS_subtask_store_firehose_data_to_file(); // Steamroll return - nothing we can do about it.
+        osDelay(10); // Yield.
         
-        osDelay(3000);
+        osDelay(1000);
     }
 }

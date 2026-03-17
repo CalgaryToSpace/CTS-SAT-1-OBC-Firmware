@@ -1,6 +1,7 @@
 #include "uart_handler/uart_handler.h"
 #include "debug_tools/debug_uart.h"
 #include "mpi/mpi_command_handling.h"
+#include "gnss_receiver/gnss_firehose_storage.h"
 #include "uart_handler/uart_error_tracking.h"
 #include "camera/camera_capture.h"
 #include "log/log.h"
@@ -57,8 +58,8 @@ volatile uint32_t UART_mpi_last_write_time_ms = 0;          // extern
 volatile uint16_t UART_mpi_buffer_write_idx = 0;            // extern
 
 // UART GNSS buffer
-const uint16_t UART_gnss_buffer_len = 512; // extern
-volatile uint8_t UART_gnss_buffer[512]; // extern
+const uint16_t UART_gnss_buffer_len = 2048; // extern
+volatile uint8_t UART_gnss_buffer[2048]; // extern
 volatile uint16_t UART_gnss_buffer_write_idx = 0; // extern
 volatile uint32_t UART_gnss_last_write_time_ms = 0; // extern
 volatile uint8_t UART_gnss_buffer_last_rx_byte = 0; // extern
@@ -299,11 +300,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         // Note: If the GNSS is not enabled, the interrupt is not re-enabled via HAL_UART_Receive_IT().
         // This is a safety feature against the GNSS spamming null bytes, which can lock up the system.
         if (UART_gnss_uart_interrupt_enabled == 1) {
-
             // Add the byte to the buffer
             if (UART_gnss_buffer_write_idx >= UART_gnss_buffer_len) {
                 // Tracking error
                 UART_error_gnss_error_info.handler_buffer_full_error_count++;
+                GNSS_firehose_bytes_lost++;
                 DEBUG_uart_print_str("HAL_UART_RxCpltCallback() -> UART gnss buffer is full\n");
                 
                 // Shift all bytes left by 1
@@ -390,14 +391,19 @@ void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
 /// @note This function must be called very carefully. This type of GNSS is known to, in the wrong
 ///       mode, spam null bytes, which can lock up the entire system. Thus, the interrupt is disabled
 ///       by default, and must be enabled explicitly by the GNSS telecommands.
+/// @note Function is idempotent. Calling it when already in the desired state is a no-op.
 void GNSS_set_uart_interrupt_state(uint8_t new_enabled) {
-    if (new_enabled == 1)
-    {
-        UART_gnss_uart_interrupt_enabled = 1;
-        HAL_UART_Receive_IT(UART_gnss_port_handle, (uint8_t*) &UART_gnss_buffer_last_rx_byte, 1);
+    if (new_enabled) {
+        if (!UART_gnss_uart_interrupt_enabled) {
+            UART_gnss_uart_interrupt_enabled = 1;
+            HAL_UART_Receive_IT(UART_gnss_port_handle, (uint8_t*) &UART_gnss_buffer_last_rx_byte, 1);
+        }
     }
     else {
         UART_gnss_uart_interrupt_enabled = 0;
+        // The interrupt is re-registered inside the ISR by calling `HAL_UART_Receive_IT` again.
+        // No need to disable the HAL interrupt here - the ISR will trigger one last time, do a no-op
+        // (guarded by if-statement), then not re-enable the interrupt.
     }
 }
 
