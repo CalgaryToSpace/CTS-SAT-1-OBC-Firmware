@@ -360,7 +360,9 @@ uint8_t TCMDEXEC_exec_blob_from_fs(
 
     // Execute from offset 0, +1 for Thumb mode.
     const blob_entry_t blob_entry = (blob_entry_t)((uint32_t)blob_buffer | 0x1U);
-    blob_entry(args_str_to_blob, response_output_buf, response_output_buf_len);
+    const uint8_t blob_result = blob_entry(args_str_to_blob, response_output_buf, response_output_buf_len);
 
-    return 0;
+    response_output_buf[response_output_buf_len - 1] = '\0';
+
+    return blob_result;
 }
