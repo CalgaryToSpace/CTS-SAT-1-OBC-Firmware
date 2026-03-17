@@ -348,7 +348,7 @@ uint8_t TCMDEXEC_eps_get_pdu_housekeeping_data_eng_json(
 
 /// @brief Get the EPS PDU (Power Distribution Unit) housekeeping data, and display it as a short JSON string.
 /// @return 0 on success, >0 on failure.
-/// @note Emphasizes total info, and enabled channels.
+/// @note Emphasizes total info, and enabled channels only.
 uint8_t TCMDEXEC_eps_get_pdu_housekeeping_data_eng_short_json(
     const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
@@ -374,6 +374,37 @@ uint8_t TCMDEXEC_eps_get_pdu_housekeeping_data_eng_short_json(
     }
     return 0;
 }
+
+
+/// @brief Get the EPS PDU (Power Distribution Unit) housekeeping data running average, and display it as a short JSON string.
+/// @return 0 on success, >0 on failure.
+/// @note Emphasizes total info, and enabled channels only.
+uint8_t TCMDEXEC_eps_get_pdu_housekeeping_data_run_avg_short_json(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    EPS_struct_pdu_housekeeping_data_eng_t status;
+    const uint8_t result = EPS_CMD_get_pdu_housekeeping_data_run_avg(&status);
+
+    if (result != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "EPS_CMD_get_pdu_housekeeping_data_eng (err %d)", result
+        );
+        return 1;
+    }
+
+    const uint8_t result_json = EPS_struct_pdu_housekeeping_data_eng_TO_short_json(
+        &status, response_output_buf, response_output_buf_len
+    );
+    if (result_json != 0) {
+        snprintf(response_output_buf, response_output_buf_len,
+            "EPS_struct_pdu_housekeeping_data_eng_TO_short_json failed (err %d)", result_json);
+        return 2;
+    }
+    return 0;
+}
+
 
 
 /// @brief Gets the Voltage, Current, and Power for a single channel on the EPS.
