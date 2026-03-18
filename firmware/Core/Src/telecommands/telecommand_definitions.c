@@ -995,6 +995,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
+        .tcmd_name = "log_report_messages_from_memory",
+        .tcmd_func = TCMDEXEC_log_report_messages_from_memory,
+        .number_of_args = 2,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
         .tcmd_name = "log_report_n_latest_messages_from_memory",
         .tcmd_func = TCMDEXEC_log_report_n_latest_messages_from_memory,
         .number_of_args = 1,
