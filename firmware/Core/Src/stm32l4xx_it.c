@@ -24,6 +24,9 @@
 /* USER CODE BEGIN Includes */
 #include <string.h>
 #include <stdio.h>
+
+#include "log/log.h"
+#include "log/lazy_file_log_sink.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -104,9 +107,33 @@ void HardFault_Handler(void)
   while (1)
   {
     /* USER CODE BEGIN W1_HardFault_IRQn 0 */
-    char msg[64];
-    snprintf(msg, sizeof(msg), "HardFault_Handler() -> Hard fault\n");
-    HAL_UART_Transmit(&hlpuart1, (uint8_t *)msg, strlen(msg), 1000); // TODO: check flight-readiness
+    const TaskHandle_t t = xTaskGetCurrentTaskHandle();
+
+    char msg[128];
+    snprintf(
+      msg, sizeof(msg),
+      "HardFault_Handler() -> Hard fault in task %s\n",
+      pcTaskGetName(t)
+    );
+    for (uint8_t i = 0; i < 50; i++) {
+      HAL_UART_Transmit(&hlpuart1, (uint8_t *)msg, strlen(msg), 1000);
+    }
+
+    // Attempt to log the hard fault.
+    // Could do this part nicer and with less external dependency, but will do this for now.
+    // Logging to UHF Radio appears to work well here. Logs to file are hit-and-miss.
+    LOG_message(
+      LOG_SYSTEM_OBC, LOG_SEVERITY_CRITICAL, LOG_SINK_ALL, msg
+    );
+    LOG_emergency_sync_current_log_file();
+
+    // Send the message another 50 times. Acts as a delay while the log is sent too.
+    for (uint8_t i = 0; i < 50; i++) {
+      HAL_UART_Transmit(&hlpuart1, (uint8_t *)msg, strlen(msg), 1000);
+    }
+
+    // If this part isn't reached, the watchdog will reset after 15 seconds anyway.
+    NVIC_SystemReset();
     
     /* USER CODE END W1_HardFault_IRQn 0 */
   }
@@ -123,9 +150,34 @@ void MemManage_Handler(void)
   while (1)
   {
     /* USER CODE BEGIN W1_MemoryManagement_IRQn 0 */
-    char msg[64];
-    snprintf(msg, sizeof(msg), "MemManage_Handler() -> Memory management fault\n");
-    HAL_UART_Transmit(&hlpuart1, (uint8_t *)msg, strlen(msg), 1000); // TODO: check flight-readiness
+    const TaskHandle_t t = xTaskGetCurrentTaskHandle();
+
+    char msg[128];
+    snprintf(
+      msg, sizeof(msg),
+      "MemManage_Handler() -> Memory management fault in task %s\n",
+      pcTaskGetName(t)
+    );
+    for (uint8_t i = 0; i < 50; i++) {
+      HAL_UART_Transmit(&hlpuart1, (uint8_t *)msg, strlen(msg), 1000);
+    }
+
+    // Attempt to log the hard fault.
+    // Could do this part nicer and with less external dependency, but will do this for now.
+    // Logging to UHF Radio appears to work well here. Logs to file are hit-and-miss.
+    LOG_message(
+      LOG_SYSTEM_OBC, LOG_SEVERITY_CRITICAL, LOG_SINK_ALL, msg
+    );
+    LOG_emergency_sync_current_log_file();
+
+    // Send the message another 50 times. Acts as a delay while the log is sent too.
+    for (uint8_t i = 0; i < 50; i++) {
+      HAL_UART_Transmit(&hlpuart1, (uint8_t *)msg, strlen(msg), 1000);
+    }
+
+    // If this part isn't reached, the watchdog will reset after 15 seconds anyway.
+    NVIC_SystemReset();
+    
     
     /* USER CODE END W1_MemoryManagement_IRQn 0 */
   }
@@ -142,9 +194,34 @@ void BusFault_Handler(void)
   while (1)
   {
     /* USER CODE BEGIN W1_BusFault_IRQn 0 */
-    char msg[64];
-    snprintf(msg, sizeof(msg), "BusFault_Handler() -> Bus fault\n");
-    HAL_UART_Transmit(&hlpuart1, (uint8_t *)msg, strlen(msg), 1000); // TODO: check flight-readiness
+    const TaskHandle_t t = xTaskGetCurrentTaskHandle();
+
+    char msg[128];
+    snprintf(
+      msg, sizeof(msg),
+      "BusFault_Handler() -> Bus fault in task %s\n",
+      pcTaskGetName(t)
+    );
+    for (uint8_t i = 0; i < 50; i++) {
+      HAL_UART_Transmit(&hlpuart1, (uint8_t *)msg, strlen(msg), 1000);
+    }
+
+    // Attempt to log the hard fault.
+    // Could do this part nicer and with less external dependency, but will do this for now.
+    // Logging to UHF Radio appears to work well here. Logs to file are hit-and-miss.
+    LOG_message(
+      LOG_SYSTEM_OBC, LOG_SEVERITY_CRITICAL, LOG_SINK_ALL, msg
+    );
+    LOG_emergency_sync_current_log_file();
+
+    // Send the message another 50 times. Acts as a delay while the log is sent too.
+    for (uint8_t i = 0; i < 50; i++) {
+      HAL_UART_Transmit(&hlpuart1, (uint8_t *)msg, strlen(msg), 1000);
+    }
+
+    // If this part isn't reached, the watchdog will reset after 15 seconds anyway.
+    NVIC_SystemReset();
+    
     
     /* USER CODE END W1_BusFault_IRQn 0 */
   }
@@ -161,9 +238,33 @@ void UsageFault_Handler(void)
   while (1)
   {
     /* USER CODE BEGIN W1_UsageFault_IRQn 0 */
-    char msg[64];
-    snprintf(msg, sizeof(msg), "UsageFault_Handler() -> Usage fault\n");
-    HAL_UART_Transmit(&hlpuart1, (uint8_t *)msg, strlen(msg), 1000); // TODO: check flight-readiness
+    const TaskHandle_t t = xTaskGetCurrentTaskHandle();
+
+    char msg[128];
+    snprintf(
+      msg, sizeof(msg),
+      "UsageFault_Handler() -> Usage fault in task %s\n",
+      pcTaskGetName(t)
+    );
+    for (uint8_t i = 0; i < 50; i++) {
+      HAL_UART_Transmit(&hlpuart1, (uint8_t *)msg, strlen(msg), 1000);
+    }
+
+    // Attempt to log the hard fault.
+    // Could do this part nicer and with less external dependency, but will do this for now.
+    // Logging to UHF Radio appears to work well here. Logs to file are hit-and-miss.
+    LOG_message(
+      LOG_SYSTEM_OBC, LOG_SEVERITY_CRITICAL, LOG_SINK_ALL, msg
+    );
+    LOG_emergency_sync_current_log_file();
+
+    // Send the message another 50 times. Acts as a delay while the log is sent too.
+    for (uint8_t i = 0; i < 50; i++) {
+      HAL_UART_Transmit(&hlpuart1, (uint8_t *)msg, strlen(msg), 1000);
+    }
+
+    // If this part isn't reached, the watchdog will reset after 15 seconds anyway.
+    NVIC_SystemReset();
     
     /* USER CODE END W1_UsageFault_IRQn 0 */
   }
