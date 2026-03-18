@@ -301,7 +301,7 @@ static void subtask_write_boot_time_to_lfs(void) {
         GEN_uint64_to_str(boot_unix_epoch_time_ms, boot_unix_time_ms_str);
         snprintf(
             boot_log_msg, sizeof(boot_log_msg),
-            "{\"boot_datetime\":\"%s\",\"boot_unix_time_ms\":\"%s\",\"uptime_ms\":\"%lu\",\"reset_reason\":\"%s\"}\n",
+            "{\"boot_datetime\":\"%s\",\"boot_unix_time_ms\":%s,\"uptime_ms\":%lu,\"reset_reason\":\"%s\"}\n",
             boot_datetime_str,
             boot_unix_time_ms_str,
             current_uptime_ms,
