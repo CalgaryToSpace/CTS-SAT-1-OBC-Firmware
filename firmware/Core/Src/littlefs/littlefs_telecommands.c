@@ -5,6 +5,12 @@
 #include <stdint.h>
 #include <stdio.h>
 
+
+uint32_t LFS_debug_malloc_total_count = 0;
+uint32_t LFS_debug_malloc_failed_count = 0;
+uint32_t LFS_debug_free_total_count = 0;
+
+
 int32_t LFS_list_directory_json_dict(
     const char root_directory[],
     uint16_t offset, int16_t count,
@@ -108,3 +114,9 @@ int32_t LFS_list_directory_json_dict(
     return 0;
 }
 
+int8_t LFS_get_filesystem_stats_json(
+    char *json_output_buf, uint16_t json_output_buf_size
+) {
+
+
+}
