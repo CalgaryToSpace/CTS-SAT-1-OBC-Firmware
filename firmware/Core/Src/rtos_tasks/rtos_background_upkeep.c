@@ -307,7 +307,7 @@ static void subtask_write_boot_time_to_lfs(void) {
             current_uptime_ms,
             STM32_reset_cause_enum_to_str(STM32_get_reset_cause())
         );
-        LFS_write_file( // Has internal logs on failure.
+        LFS_append_file( // Has internal logs on failure.
             LFS_BOOT_LOG_FILE_NAME,
             (uint8_t *)boot_log_msg,
             strlen(boot_log_msg)
