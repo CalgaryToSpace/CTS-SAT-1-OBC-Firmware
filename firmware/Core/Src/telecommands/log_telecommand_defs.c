@@ -257,6 +257,7 @@ uint8_t TCMDEXEC_log_set_system_severity_mask(
 /// @brief Telecommand: Report the N latest log messages into response_output_buf
 /// @param args_str
 /// - Arg 0: Number of latest log messages to report
+/// @note Recommended to use `log_report_messages_from_memory` instead.
 uint8_t TCMDEXEC_log_report_n_latest_messages_from_memory(
     const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
@@ -308,6 +309,92 @@ uint8_t TCMDEXEC_log_report_n_latest_messages_from_memory(
         }
         written += n;
     }
+
+    return 0;
+}
+
+
+/// @brief Telecommand: Report log messages from memory into response_output_buf (offset + count style)
+/// @param args_str
+/// - Arg 0: Offset of first log message to report (0 = most recent)
+/// - Arg 1: Number of log messages to report (or 0 for all messages)
+/// @note If offset is >= memory table size, offset is set to 0. If count is > memory table size, count is set to memory table size.
+uint8_t TCMDEXEC_log_report_messages_from_memory(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    uint64_t arg_offset = 0;
+    const uint8_t arg0_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 0, &arg_offset);
+    uint64_t arg_count = 0;
+    const uint8_t arg1_result = TCMD_extract_uint64_arg(args_str, strlen(args_str), 1, &arg_count);
+    if (arg0_result || arg1_result) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "Error parsing args: arg0=%d, arg1=%d",
+            arg0_result, arg1_result
+        );
+        return 1;
+    }
+
+    // Handle ranging.
+    uint32_t requested_offset = arg_offset;
+    uint32_t requested_count = arg_count;
+    const uint8_t max_entries = LOG_memory_table_max_entries();
+    if (requested_offset > max_entries) {
+        requested_offset = 0;
+    }
+    if ((requested_count > max_entries) || (requested_count == 0)) {
+        requested_count = max_entries;
+    }
+
+    uint16_t write_offset = 0;
+    uint8_t current_index = LOG_get_memory_table_index_of_most_recent_log_entry();
+
+    uint32_t fetched_message_count = 0;
+
+    for (uint32_t i = 0; i < requested_count; i++) {
+        uint32_t logical_offset = requested_offset + i;
+
+        // Stop if we exceed buffer
+        if (logical_offset >= max_entries) {
+            break;
+        }
+
+        // Compute circular index safely
+        int32_t raw_index = (int32_t)current_index - (int32_t)logical_offset;
+        if (raw_index < 0) {
+            raw_index += max_entries;
+        }
+        uint8_t index = (uint8_t)raw_index;
+
+        const char *msg = LOG_get_memory_table_full_message_at_index(index);
+
+        // Append to output buffer
+        int written = snprintf(
+            response_output_buf + write_offset,
+            response_output_buf_len - write_offset,
+            "%s",
+            msg
+        );
+        fetched_message_count++;
+
+        // Handle truncation / overflow
+        if (written < 0 || written >= (int)(response_output_buf_len - write_offset)) {
+            // Ensure null-termination
+            response_output_buf[response_output_buf_len - 1] = '\0';
+            return 1; // Indicate truncation
+        }
+
+        write_offset += written;
+    }
+
+    // Add on the `fetched_message_count`
+    snprintf(
+        response_output_buf + write_offset,
+        response_output_buf_len - write_offset,
+        "\nFetched %ld messages",
+        fetched_message_count
+    );
 
     return 0;
 }
