@@ -63,7 +63,7 @@ volatile uint8_t UART_gnss_buffer[2048]; // extern
 volatile uint16_t UART_gnss_buffer_write_idx = 0; // extern
 volatile uint32_t UART_gnss_last_write_time_ms = 0; // extern
 volatile uint8_t UART_gnss_buffer_last_rx_byte = 0; // extern
-volatile uint8_t UART_gnss_uart_interrupt_enabled = 0; //extern
+volatile uint8_t UART_gnss_uart_interrupt_enabled = 0; // extern
 
 // Section: MPI science data buffers.
 const uint8_t UART_mpi_rx_dma_buffer_len = 160;
@@ -316,10 +316,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
                 UART_gnss_buffer_write_idx = UART_gnss_buffer_len - 1;
             }
 
-            if (UART_gnss_buffer_last_rx_byte != '\0') {
-                UART_gnss_buffer[UART_gnss_buffer_write_idx++] = UART_gnss_buffer_last_rx_byte;
-                UART_gnss_last_write_time_ms = HAL_GetTick();
-            }
+            UART_gnss_buffer[UART_gnss_buffer_write_idx++] = UART_gnss_buffer_last_rx_byte;
+            UART_gnss_last_write_time_ms = HAL_GetTick();
 
             HAL_UART_Receive_IT(UART_gnss_port_handle, (uint8_t*) &UART_gnss_buffer_last_rx_byte, 1);
         }
