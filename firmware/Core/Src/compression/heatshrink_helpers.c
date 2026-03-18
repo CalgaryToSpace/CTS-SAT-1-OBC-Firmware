@@ -60,6 +60,11 @@ int8_t LFS_compress_lfs_file_with_heatshrink(
     uint8_t in_buf[INPUT_CHUNK_SIZE];
     uint8_t out_buf[OUTPUT_CHUNK_SIZE];
 
+    LOG_message(
+        LOG_SYSTEM_LFS, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+        "Compression: Starting compression of file"
+    );
+
     size_t sunk = 0;
     size_t polled = 0;
 
@@ -106,8 +111,11 @@ int8_t LFS_compress_lfs_file_with_heatshrink(
                 }
 
                 if (polled > 0) {
-                    if (lfs_file_write(lfs, &out_file, out_buf, polled) < 0) {
-                        err = 3;
+                    const lfs_ssize_t write_result = lfs_file_write(
+                        lfs, &out_file, out_buf, polled
+                    );
+                    if (write_result < 0) {
+                        err = write_result;
                         goto cleanup;
                     }
                 }
@@ -119,6 +127,11 @@ int8_t LFS_compress_lfs_file_with_heatshrink(
             break;
         }
     }
+
+    LOG_message(
+        LOG_SYSTEM_LFS, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+        "Compression: Past polling section"
+    );
 
     // Finish encoding
     heatshrink_encoder_finish(&hse);
@@ -138,8 +151,11 @@ int8_t LFS_compress_lfs_file_with_heatshrink(
         }
 
         if (polled > 0) {
-            if (lfs_file_write(lfs, &out_file, out_buf, polled) < 0) {
-                err = -5;
+            const lfs_ssize_t write_result = lfs_file_write(
+                lfs, &out_file, out_buf, polled
+            );
+            if (write_result < 0) {
+                err = write_result;
                 goto cleanup;
             }
         }
