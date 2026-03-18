@@ -20,6 +20,7 @@ extern uint32_t LFS_debug_free_total_count;
 
 
 static inline void *lfs_port_impl_malloc(size_t size) {
+    // Note: When investigated, the allocated size for the main operation is 2048 bytes (LFS_CACHE_SIZE).
     LFS_debug_malloc_total_count++;
     void *ptr = pvPortMalloc(size);
     if (ptr == NULL) {
