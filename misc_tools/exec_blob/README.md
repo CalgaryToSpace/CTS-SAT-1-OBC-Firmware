@@ -20,11 +20,11 @@ Basic demo blobs work reliably and safely, so this feature will be included in t
 5. Convert the `blob.bin` output file to hex and upload it using `fs_write_file_hex(...)`, or use the bulk file uplink procedure.
 6. Verify the hash with the SHA256 telecommand.
 7. Run the `exec_blob_from_fs` telecommand to run the new blob.
-    * The blob is triggered with the remaining/unused argument: `exec_blob_from_fs(blob_filename.bin,this_argument_is_passed_as_arg_str_to_blob)`
+    * The blob is triggered with the remaining/unused argument: `exec_blob_from_fs(blob_filename.bin,0,this_argument_is_passed_as_arg_str_to_blob)`
 
 
 ## Other Notes
 
-* MPI data collection may not work well while using this feature (though will return to normal after the completion of `exec_blob_from_fs`), as we use the giant MPI buffer to store the blob/program.
-    * Last-last-resort workaround: Bootstrap using the MPI buffer, load program into a different region, then execute it from there.
+* When using `where_to_load_arg_1=1` or `2`, MPI data collection may not work well while using this feature (though will return to normal after the completion of `exec_blob_from_fs`), as we use the giant MPI buffer to store the blob/program.
+    * Using `where_to_load_arg_1=0` allows MPI operations to work as normal.
 * This feature is "secure" because uplinks are validated/authenticated by HMAC in the AX100 transceiver.
