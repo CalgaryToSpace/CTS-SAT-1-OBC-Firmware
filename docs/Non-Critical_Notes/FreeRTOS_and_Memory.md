@@ -21,4 +21,5 @@ Memory region         Used Size  Region Size  %age Used
 * On CTS-SAT-1, we use heap allocation in the following places:
     * FreeRTOS, for the task stacks
     * LittleFS, when opening a file
+    * `exec_blob_from_fs` telecommand, with certain argument
 * We must ensure the size of the FreeRTOS heap, allocated in the BSS RAM segment as a global byte array, is less than the sum of the stacks, and all other expected heap allocation uses.
