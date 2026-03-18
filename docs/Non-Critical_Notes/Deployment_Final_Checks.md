@@ -47,6 +47,7 @@ The following checks involve executing code and/or telecommands.
     * nSWBOOT0 = Unchecked (use software config)
     * nBOOT0 = Checked (boot from system memory)
 8. Check that the sum of the stack sizes of all the tasks (in `main.c`, measured in bytes) sums to less than the `configTOTAL_HEAP_SIZE` (in bytes) in `FreeRTOSConfig.h` (plus a margin).
+    * See `docs/Non-Critical_Notes/FreeRTOS_and_Memory.md` for more details regarding all uses of the FreeRTOS heap.
 
 ## Management Checks
 

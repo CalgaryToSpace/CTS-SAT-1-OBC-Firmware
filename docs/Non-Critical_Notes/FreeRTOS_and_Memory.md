@@ -14,3 +14,11 @@
 Memory region         Used Size  Region Size  %age Used
              RAM:      600104 B       640 KB     91.57%
 ```
+
+## Heap Allocation
+
+* In general, we avoid heap allocation on embedded systems. Easy to make errors with it, makes code tougher to audit, non-constant allocation time can be challenging, etc.
+* On CTS-SAT-1, we use heap allocation in the following places:
+    * FreeRTOS, for the task stacks
+    * LittleFS, when opening a file
+* We must ensure the size of the FreeRTOS heap, allocated in the BSS RAM segment as a global byte array, is less than the sum of the stacks, and all other expected heap allocation uses.
