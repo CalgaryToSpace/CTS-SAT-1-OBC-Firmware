@@ -36,17 +36,16 @@ int32_t COMMS_bulk_file_uplink_open_file(
         flags |= LFS_O_APPEND;
     }
 
-    const int32_t open_result = lfs_file_opencfg(
+    const int32_t open_result = lfs_file_open(
         &LFS_filesystem,
         &COMMS_bulk_file_uplink_file,
         file_path,
-        flags,
-        &LFS_file_cfg
+        flags
     );
     if (open_result < 0) {
         LOG_message(
             LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE),
-            "bulk_uplink_open_file: lfs_file_opencfg() -> %ld",
+            "bulk_uplink_open_file: lfs_file_open() -> %ld",
             open_result
         );
         return open_result;

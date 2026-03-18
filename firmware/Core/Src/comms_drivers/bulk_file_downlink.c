@@ -50,13 +50,13 @@ int32_t COMMS_bulk_file_downlink_start(char *file_path, uint32_t start_offset, u
     }
 
     // Open the new file. Implicitly checks if it exists.
-    const int32_t open_result = lfs_file_opencfg(
-        &LFS_filesystem, &COMMS_bulk_file_downlink_file, file_path, LFS_O_RDONLY, &LFS_file_cfg
+    const int32_t open_result = lfs_file_open(
+        &LFS_filesystem, &COMMS_bulk_file_downlink_file, file_path, LFS_O_RDONLY
     );
     if (open_result == LFS_ERR_NOENT) {
         LOG_message(
             LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE),
-            "COMMS_bulk_file_downlink_start lfs_file_opencfg() -> %ld (FILE NOT FOUND)",
+            "COMMS_bulk_file_downlink_start lfs_file_open() -> %ld (FILE NOT FOUND)",
             open_result
         );
         return open_result;
@@ -64,7 +64,7 @@ int32_t COMMS_bulk_file_downlink_start(char *file_path, uint32_t start_offset, u
     else if (open_result < 0) {
         LOG_message(
             LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_all_sinks_except(LOG_SINK_FILE),
-            "COMMS_bulk_file_downlink_start lfs_file_opencfg() -> %ld",
+            "COMMS_bulk_file_downlink_start lfs_file_open() -> %ld",
             open_result
         );
         return open_result;

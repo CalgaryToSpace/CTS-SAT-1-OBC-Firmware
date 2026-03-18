@@ -51,11 +51,6 @@ struct lfs_config LFS_cfg = {
     .metadata_max = 1024 * 8,
 };
 
-struct lfs_file_config LFS_file_cfg = {
-    .buffer = LFS_file_buffer,
-    .attr_count = 0,
-    .attrs = NULL
-};
 
 // ----------------------------- LittleFS Functions -----------------------------
 
@@ -432,7 +427,9 @@ int8_t LFS_write_file(const char file_name[], uint8_t *write_buffer, uint32_t wr
 
     // Create or Open a file with Write only flag
     lfs_file_t file;
-    const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC, &LFS_file_cfg);
+    const int8_t open_result = lfs_file_open(
+        &LFS_filesystem, &file, file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC
+    );
 
     if (open_result < 0)
     {
@@ -475,8 +472,9 @@ int8_t LFS_append_file(const char file_name[], uint8_t *write_buffer, uint32_t w
     }
 
     lfs_file_t file;
-    const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND, &LFS_file_cfg);
-
+    const int8_t open_result = lfs_file_open(
+        &LFS_filesystem, &file, file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND
+    );
     if (open_result < 0)
     {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening file: %s", file_name);
@@ -519,9 +517,10 @@ int8_t LFS_write_file_with_offset(const char file_name[], lfs_soff_t offset, uin
 
     // Open the file with read-write access, create if it doesn't exist
     lfs_file_t file;
-    const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_RDWR | LFS_O_CREAT, &LFS_file_cfg);
-    if (open_result < 0)
-    {
+    const int8_t open_result = lfs_file_open(
+        &LFS_filesystem, &file, file_name, LFS_O_RDWR | LFS_O_CREAT
+    );
+    if (open_result < 0) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), 
                    "Error opening file: %s (error: %d)", file_name, open_result);
         return open_result;
@@ -638,7 +637,9 @@ lfs_ssize_t LFS_read_file(const char file_name[], lfs_soff_t offset, uint8_t *re
     }
 
     lfs_file_t file;
-    const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_RDONLY, &LFS_file_cfg);
+    const int8_t open_result = lfs_file_open(
+        &LFS_filesystem, &file, file_name, LFS_O_RDONLY
+    );
     if (open_result < 0) {
         // This assumes filesystem as a whole as an issue, so does not send log message to file.
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening file to read: %s", file_name);
@@ -681,7 +682,9 @@ lfs_ssize_t LFS_file_size(const char file_name[], uint8_t enable_log_messages) {
     }
 
     lfs_file_t file;
-    const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_RDONLY, &LFS_file_cfg);
+    const int8_t open_result = lfs_file_open(
+        &LFS_filesystem, &file, file_name, LFS_O_RDONLY
+    );
     if (open_result < 0) {
         if (enable_log_messages) {
             LOG_message(

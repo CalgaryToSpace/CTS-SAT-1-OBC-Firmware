@@ -8,17 +8,38 @@
 #ifndef LFS_UTIL_H
 #define LFS_UTIL_H
 
-// ================ Configuration =================
-#define LFS_NO_MALLOC 1
+// ================ CTS-SAT-1 Custom Configuration =================
 
-// TODO: try setting these macros to write to debug UART or logs, maybe
+#include "FreeRTOS.h"
+#include <stddef.h>
+
+static inline void *lfs_port_impl_malloc(size_t size) {
+    void *ptr = pvPortMalloc(size);
+    return ptr;
+}
+
+static inline void lfs_port_impl_free(void *ptr) {
+    vPortFree(ptr);
+}
+
+// Route allocations to FreeRTOS heap.
+#define LFS_MALLOC(size) lfs_port_impl_malloc(size)
+#define LFS_FREE(ptr)    lfs_port_impl_free(ptr)
+
+
+// TODO: Try using FreeRTOS asserts
+// #define LFS_ASSERT(x) configASSERT(x)
+
+// Disable logging.  // TODO: Try setting these macros to write to debug UART or logs, maybe.
 #define LFS_NO_DEBUG 1
 #define LFS_NO_WARN 1
 #define LFS_NO_ERROR 1
 #define LFS_NO_ASSERT 1
 // #define LFS_NO_INTRINSICS // Use the default for this.
 
-// ============= END Configuration ================
+// ================ End CTS-SAT-1 Custom Configuration =================
+
+
 
 #define LFS_STRINGIZE(x) LFS_STRINGIZE2(x)
 #define LFS_STRINGIZE2(x) #x

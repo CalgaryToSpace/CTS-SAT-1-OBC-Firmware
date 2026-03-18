@@ -20,9 +20,8 @@ int32_t LFS_search_count_occurrences(
     }
 
     lfs_file_t file;
-    const int32_t err_open = lfs_file_opencfg(
-        &LFS_filesystem, &file, filename, LFS_O_RDONLY, 
-        &LFS_file_cfg
+    const int32_t err_open = lfs_file_open(
+        &LFS_filesystem, &file, filename, LFS_O_RDONLY
     );
     if (err_open < 0) {
         return err_open;
@@ -85,9 +84,8 @@ int32_t LFS_search_find_nth_occurrence(
     }
 
     lfs_file_t file;
-    const int32_t err_open = lfs_file_opencfg(
-        &LFS_filesystem, &file, filename, LFS_O_RDONLY, 
-        &LFS_file_cfg
+    const int32_t err_open = lfs_file_open(
+        &LFS_filesystem, &file, filename, LFS_O_RDONLY
     );
     if (err_open < 0) {
         return err_open;

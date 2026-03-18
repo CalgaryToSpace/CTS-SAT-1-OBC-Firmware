@@ -24,10 +24,9 @@ void LOG_to_file_eager(const char filename[], const char msg[]) {
 
     // We cannot use LFS_append_file due to recursion of the logging system
     lfs_file_t file;
-    const int8_t open_result = lfs_file_opencfg(
+    const int8_t open_result = lfs_file_open(
         &LFS_filesystem, &file, filename,
-        LFS_O_RDWR | LFS_O_CREAT | LFS_O_APPEND,
-        &LFS_file_cfg
+        LFS_O_RDWR | LFS_O_CREAT | LFS_O_APPEND
     );
 	if (open_result < 0) {
         // This error cannot be logged, except via UART or during an overpass 
