@@ -17,8 +17,8 @@ uint32_t LOG_file_rotation_interval_sec = 1800; // Nominal: 1800 seconds is 30 m
 
 typedef struct {
     lfs_file_t file;
-    uint64_t timestamp_of_last_sync;
-    uint64_t timestamp_of_last_close;
+    uint64_t timestamp_of_last_sync; // Last sync/flush.
+    uint64_t timestamp_of_last_close; // Last close/rotate.
     uint8_t is_open;
 } LOG_file_context_struct_t;
 
@@ -69,8 +69,9 @@ static int8_t LOG_open_new_log_file_and_set_as_current(void) {
         LOG_log_a_logging_error_if_file_is_broken("Error opening new log file.");
     }
 
-    // Set metadata for the new log file.
+    // Set metadata for the new log file. Update both these times right away to prevent immediate rotation.
     LOG_current_log_file_ctx.timestamp_of_last_sync = TIME_get_current_unix_epoch_time_ms();
+    LOG_current_log_file_ctx.timestamp_of_last_close = TIME_get_current_unix_epoch_time_ms();
     LOG_current_log_file_ctx.is_open = 1;
     return 0;
 }
