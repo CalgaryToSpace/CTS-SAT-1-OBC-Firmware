@@ -24,7 +24,7 @@
 /// @brief The period of the heartbeat task, in milliseconds. 0 to disable.
 uint32_t TASK_heartbeat_period_ms = 10990;
 
-char TASK_heartbeat_timing_str[128] = {0};
+static char current_time_str[48] = {0};
 
 void TASK_DEBUG_print_heartbeat(void *argument) {
     TASK_HELP_start_of_task();
@@ -45,7 +45,6 @@ void TASK_DEBUG_print_heartbeat(void *argument) {
 
     while (1) {
         if ((TASK_heartbeat_period_ms > 0)) {
-            char current_time_str[48] = {0};
             TIME_get_current_utc_datetime_str(current_time_str, sizeof(current_time_str));
             
             LOG_message(
