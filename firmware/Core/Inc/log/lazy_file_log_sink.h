@@ -9,4 +9,6 @@ void LOG_to_file_lazy(const char filename[], const char msg[]);
 
 void LOG_subtask_handle_sync_and_close_of_current_log_file();
 
+int8_t LOG_emergency_sync_current_log_file(void);
+
 #endif // INCLUDE_GUARD__LAZY_FILE_LOG_SINK_H

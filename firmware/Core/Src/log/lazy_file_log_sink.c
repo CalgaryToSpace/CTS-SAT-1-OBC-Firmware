@@ -14,6 +14,15 @@
 uint32_t LOG_file_flush_interval_sec = 60; // Nominal: 60 seconds is 1 minute.
 uint32_t LOG_file_rotation_interval_sec = 1800; // Nominal: 1800 seconds is 30 minutes. 
 
+// Statically allocate the log file LFS cache buffer.
+// Important so this log file can be written to from within exception handlers.
+static uint8_t lfs_log_cache_buffer[FLASH_CHIP_PAGE_SIZE_BYTES];
+static struct lfs_attr lfs_log_file_attr;
+static struct lfs_file_config lfs_log_file_config = {
+    .buffer = lfs_log_cache_buffer,
+    .attrs = &lfs_log_file_attr,
+    .attr_count = 0
+};
 
 typedef struct {
     lfs_file_t file;
@@ -61,9 +70,12 @@ static int8_t LOG_open_new_log_file_and_set_as_current(void) {
     snprintf(filename, sizeof(filename), "logs/%s.log", timestamp_str);
 
     // Open the new log file.
-    const int16_t result = lfs_file_open(
+    // We use the "opencfg" variant to provide a static buffer (no malloc) so that this
+    // logging can be used from within exception handlers (e.g., HardFault).
+    const int16_t result = lfs_file_opencfg(
         &LFS_filesystem, &LOG_current_log_file_ctx.file, filename, 
-        LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND
+        LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND,
+        &lfs_log_file_config
     );
     if (result != 0) {
         LOG_log_a_logging_error_if_file_is_broken("Error opening new log file.");
@@ -126,6 +138,12 @@ int8_t LOG_sync_current_log_file(void) {
     LOG_ensure_current_log_file_is_open();
 
     LOG_current_log_file_ctx.timestamp_of_last_sync = TIME_get_current_unix_epoch_time_ms();
+    return lfs_file_sync(&LFS_filesystem, &LOG_current_log_file_ctx.file);
+}
+
+/// @brief Syncs the current log file as minimally as possible.
+/// @note Intended to be used in exception handlers (recovery) and similar.
+int8_t LOG_emergency_sync_current_log_file(void) {
     return lfs_file_sync(&LFS_filesystem, &LOG_current_log_file_ctx.file);
 }
 
