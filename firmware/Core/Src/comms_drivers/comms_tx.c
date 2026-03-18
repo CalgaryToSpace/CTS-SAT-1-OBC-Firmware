@@ -84,16 +84,15 @@ uint8_t COMMS_downlink_log_message(const char log_message_str[]) {
 }
 
 uint8_t COMMS_downlink_bulk_file_downlink(
-    uint8_t file_seq_num,
-    uint8_t file_max_seq_num,
+    uint16_t file_seq_num,
     uint32_t file_offset,
     uint8_t data[],
     uint16_t data_len
 ) {
+    // Note: Used to include file_seq_num in the packet, but not necessary. Was just a waste of space.
+
     COMMS_bulk_file_downlink_packet_t packet;
     packet.packet_type = COMMS_PACKET_TYPE_BULK_FILE_DOWNLINK;
-    packet.file_seq_num = file_seq_num;
-    packet.file_max_seq_num = file_max_seq_num;
     packet.file_offset = file_offset;
 
     const uint8_t header_len = (

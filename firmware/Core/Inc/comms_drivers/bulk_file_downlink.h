@@ -18,8 +18,8 @@ extern uint32_t COMMS_bulk_file_downlink_absolute_start_offset;
 extern uint32_t COMMS_bulk_file_downlink_next_start_offset;
 extern uint32_t COMMS_bulk_file_downlink_total_bytes;
 extern uint32_t COMMS_bulk_file_downlink_bytes_downlinked;
-extern uint8_t COMMS_bulk_file_downlink_next_seq_num;
-extern uint8_t COMMS_bulk_file_downlink_total_seq_num;
+extern uint16_t COMMS_bulk_file_downlink_next_seq_num;
+extern uint16_t COMMS_bulk_file_downlink_total_seq_num;
 extern COMMS_bulk_file_downlink_state_enum_t COMMS_bulk_file_downlink_state;
 extern lfs_file_t COMMS_bulk_file_downlink_file;
 
