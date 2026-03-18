@@ -25,6 +25,7 @@ Please add your name to the list below in your first Pull Request!
 * Shaan Samresh
 * Kevin Hoang
 * Celina Hy
+* Meagan D.
 
 ## License and Libraries
 
