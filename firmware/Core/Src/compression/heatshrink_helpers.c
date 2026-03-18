@@ -57,8 +57,8 @@ int8_t LFS_compress_lfs_file_with_heatshrink(
         heatshrink_encoder_free(hse);
         lfs_file_close(lfs, &in_file);
         lfs_file_close(lfs, &out_file);
-        free(in_buf);
-        free(out_buf);
+        vPortFree(in_buf);
+        vPortFree(out_buf);
         return 2;
     }
 
