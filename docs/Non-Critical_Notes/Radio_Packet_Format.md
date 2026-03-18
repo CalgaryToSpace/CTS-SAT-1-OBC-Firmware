@@ -42,12 +42,8 @@ This packet type has sequence numbers.
 
 ### Bytes 1-200 of Bulk File Downlink Packets (Packet Type `0x10`)
 
-This packet type has sequence numbers.
-
-* Byte 1: sequence number of file downlink packet (starting from 1)
-* Byte 2: total number of file downlink packets (e.g., 1 if <183 bytes)
-* Bytes 3,4,5,6: uint32_t of byte offset within file
-* Bytes 7-200: Content of file
+* Bytes 1,2,3,4: uint32_t of starting byte offset within file (index of Byte 5)
+* Bytes 5-200: Content of file
 
 
 ## Other Details

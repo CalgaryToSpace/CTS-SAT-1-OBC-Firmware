@@ -125,9 +125,6 @@ typedef struct {
 typedef struct {
     uint8_t packet_type; // COMMS_packet_type_enum_t - Always COMMS_PACKET_TYPE_BULK_FILE_DOWNLINK for this packet
 
-    uint8_t file_seq_num;   // 1 byte
-    uint8_t file_max_seq_num;   // 1 byte
-
     uint32_t file_offset;   // 4 bytes
 
     uint8_t data[COMMS_BULK_FILE_DOWNLINK_PACKET_MAX_DATA_BYTES_PER_PACKET];
@@ -149,8 +146,7 @@ uint8_t COMMS_downlink_tcmd_response(
 uint8_t COMMS_downlink_log_message(const char log_message_str[]);
 
 uint8_t COMMS_downlink_bulk_file_downlink(
-    uint8_t file_seq_num,
-    uint8_t file_max_seq_num,
+    uint16_t file_seq_num,
     uint32_t file_offset,
     uint8_t data[],
     uint16_t data_len

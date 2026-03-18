@@ -50,7 +50,6 @@ static void do_bulk_downlink_task_action(void) {
     // Downlink the data.
     const uint8_t tx_result = COMMS_downlink_bulk_file_downlink(
         COMMS_bulk_file_downlink_next_seq_num,
-        COMMS_bulk_file_downlink_total_seq_num,
         COMMS_bulk_file_downlink_next_start_offset,
         bulk_file_data,
         byte_count
