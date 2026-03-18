@@ -14,6 +14,7 @@
 #include "telecommand_exec/telecommand_args_helpers.h"
 #include "transforms/arrays.h"
 #include "compression/heatshrink_helpers.h"
+#include "compression/heatshrink_lib/heatshrink_common.h"
 
 
 
@@ -674,7 +675,8 @@ uint8_t TCMDEXEC_fs_get_filesystem_stats_json(
 /// @param args_str 
 /// - Arg 0: Input file path
 /// - Arg 1: Output file path (e.g., suffix with ".hs")
-/// - Arg 2: Compression level
+/// - Arg 2: window_sz2 (min 4, max 15)
+/// - Arg 3: lookahead_sz2 (min 3, max ~255)
 /// @param response_output_buf 
 /// @param response_output_buf_len 
 /// @return 0 on success. 1 on arg parsing errors.
@@ -701,8 +703,34 @@ uint8_t TCMDEXEC_fs_compress_file_with_heatshrink(
         return 1;
     }
 
+    uint64_t arg_window_sz2;
+    uint64_t arg_lookahead_sz2;
+    const uint8_t parse_window_sz2_result = TCMD_extract_uint64_arg(
+        args_str, strlen(args_str), 2, &arg_window_sz2
+    );
+    const uint8_t parse_lookahead_sz2_result = TCMD_extract_uint64_arg(
+        args_str, strlen(args_str), 3, &arg_lookahead_sz2
+    );
+    const uint8_t is_out_of_range = (
+        arg_window_sz2 < HEATSHRINK_MIN_WINDOW_BITS
+        || arg_window_sz2 > HEATSHRINK_MAX_WINDOW_BITS
+        || arg_lookahead_sz2 < HEATSHRINK_MIN_LOOKAHEAD_BITS
+        || arg_lookahead_sz2 > 255
+    );
+    if (parse_lookahead_sz2_result || parse_window_sz2_result || is_out_of_range) {
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing lookahead_sz2 and window_sz2 args: arg2_err=%d, arg3_err=%d, is_out_of_range=%d",
+            parse_lookahead_sz2_result,
+            parse_window_sz2_result, is_out_of_range
+        );
+        return 2;
+    }
+
     const int8_t err = LFS_compress_lfs_file_with_heatshrink(
-        &LFS_filesystem, arg_file_in, arg_file_out
+        &LFS_filesystem, arg_file_in, arg_file_out,
+        (uint8_t)arg_window_sz2, (uint8_t)arg_lookahead_sz2
     );
     if (err != 0) {
         snprintf(
@@ -719,10 +747,12 @@ uint8_t TCMDEXEC_fs_compress_file_with_heatshrink(
     snprintf(
         response_output_buf,
         response_output_buf_len,
-        "Compression succeeded. %ld bytes -> %ld bytes (%.3fx)",
+        "Compression succeeded. %ld bytes -> %ld bytes (%.3fx) with window_sz2=%ld, lookahead_sz2=%ld",
         file_size_in,
         file_size_out,
-        (float)file_size_in / (float)file_size_out
+        (float)file_size_out / (float)file_size_in,
+        (uint32_t)arg_window_sz2,
+        (uint32_t)arg_lookahead_sz2
     );
 
     return 0; // Success.
