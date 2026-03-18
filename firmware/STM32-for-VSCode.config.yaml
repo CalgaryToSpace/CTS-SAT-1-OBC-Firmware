@@ -10,7 +10,7 @@ target: CTS-SAT-1_FW
 # Can be C or C++
 language: C
 
-optimization: Og
+optimization: O1
 
 # MCU settings
 targetMCU: stm32l4x

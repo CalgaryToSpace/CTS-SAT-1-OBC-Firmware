@@ -20,9 +20,9 @@ TARGET = CTS-SAT-1_FW
 # building variables
 ######################################
 # debug build?
-DEBUG = 1
+DEBUG = 0
 # optimization
-OPT = -Og
+OPT = -O1
 
 
 #######################################
