@@ -75,9 +75,16 @@ typedef struct {
     int16_t curr_ou_mppt_mA;
 } EPS_conditioning_channel_short_datatype_eng_t;
 
+typedef enum {
+    EPS_MODE_STARTUP = 0,
+    EPS_MODE_NOMINAL = 1,
+    EPS_MODE_SAFETY = 2,
+    EPS_MODE_EMERGENCY_LOW_POWER = 3
+} EPS_mode_enum_t;
+
 // Command Response: 0x40: Get System Status
 typedef struct {
-    uint8_t mode; // 0=startup, 1=nominal, 2=safety, 3=emergency_low_power
+    uint8_t mode; // EPS_mode_enum_t: 0=startup, 1=nominal, 2=safety, 3=emergency_low_power
     uint8_t config_changed_since_boot; // 0=not_altered, 1=changed_since_boot
     uint8_t reset_cause; // 0=power_on, 1=watchdog, 2=commanded, 3=control_system_reset, 4=emergency_low_power
     uint32_t uptime_sec;
