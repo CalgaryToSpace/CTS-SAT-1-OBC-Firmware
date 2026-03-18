@@ -313,7 +313,7 @@ static void subtask_write_boot_time_to_lfs(void) {
             strlen(boot_log_msg)
         );
 
-        if (write_result != 0) {
+        if (write_result == 0) {
             LOG_message(
                 LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL,
                 LOG_SINK_ALL,
@@ -325,7 +325,8 @@ static void subtask_write_boot_time_to_lfs(void) {
             LOG_message(
                 LOG_SYSTEM_OBC, LOG_SEVERITY_ERROR,
                 LOG_SINK_ALL,
-                "Failed writing boot log: %s",
+                "Failed (LFS error %d) writing boot log: %s",
+                write_result,
                 boot_log_msg // No harm including the message again here.
             );
         }
