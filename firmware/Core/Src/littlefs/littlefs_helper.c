@@ -481,6 +481,7 @@ int8_t LFS_append_file(const char file_name[], uint8_t *write_buffer, uint32_t w
         return open_result;
     }
     
+    // Note: I think this seek is unnecessary. Validation would be required.
     const lfs_soff_t seek_result = lfs_file_seek(&LFS_filesystem, &file, 0, LFS_SEEK_END);
     if (seek_result < 0) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_CRITICAL, LOG_all_sinks_except(LOG_SINK_FILE), "Error seeking within file: %s", file_name);

@@ -307,11 +307,28 @@ static void subtask_write_boot_time_to_lfs(void) {
             current_uptime_ms,
             STM32_reset_cause_enum_to_str(STM32_get_reset_cause())
         );
-        LFS_append_file( // Has internal logs on failure.
+        const int8_t write_result = LFS_append_file( // Has internal logs on failure.
             LFS_BOOT_LOG_FILE_NAME,
             (uint8_t *)boot_log_msg,
             strlen(boot_log_msg)
         );
+
+        if (write_result != 0) {
+            LOG_message(
+                LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL,
+                LOG_SINK_ALL,
+                "Success writing boot log: %s",
+                boot_log_msg // No harm including the message again here.
+            );
+        }
+        else {
+            LOG_message(
+                LOG_SYSTEM_OBC, LOG_SEVERITY_ERROR,
+                LOG_SINK_ALL,
+                "Failed writing boot log: %s",
+                boot_log_msg // No harm including the message again here.
+            );
+        }
     }
 }
 
