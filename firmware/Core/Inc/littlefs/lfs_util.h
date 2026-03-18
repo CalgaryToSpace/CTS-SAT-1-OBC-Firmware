@@ -11,10 +11,21 @@
 // ================ CTS-SAT-1 Custom Configuration =================
 
 #include "FreeRTOS.h"
+#include <stddef.h>
 
-// Route allocations to FreeRTOS heap
-#define LFS_MALLOC(size) pvPortMalloc(size)
-#define LFS_FREE(ptr)    vPortFree(ptr)
+static inline void *lfs_port_impl_malloc(size_t size) {
+    void *ptr = pvPortMalloc(size);
+    return ptr;
+}
+
+static inline void lfs_port_impl_free(void *ptr) {
+    vPortFree(ptr);
+}
+
+// Route allocations to FreeRTOS heap.
+#define LFS_MALLOC(size) lfs_port_impl_malloc(size)
+#define LFS_FREE(ptr)    lfs_port_impl_free(ptr)
+
 
 // TODO: Try using FreeRTOS asserts
 // #define LFS_ASSERT(x) configASSERT(x)
