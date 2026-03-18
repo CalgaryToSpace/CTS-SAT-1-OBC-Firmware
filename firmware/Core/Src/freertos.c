@@ -24,6 +24,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "log/log.h"
+#include "log/lazy_file_log_sink.h"
 
 /* USER CODE END Includes */
 
@@ -78,6 +80,15 @@ void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName)
    /* Run time stack overflow checking is performed if
    configCHECK_FOR_STACK_OVERFLOW is defined to 1 or 2. This hook function is
    called if a stack overflow is detected. */
+
+   LOG_message(
+    LOG_SYSTEM_OBC, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+    "vApplicationStackOverflowHook() -> FreeRTOS Stack Overflow in task %s",
+    pcTaskName
+   );
+   LOG_emergency_sync_current_log_file();
+
+   // Optionally, we could reboot here.
 }
 /* USER CODE END 4 */
 
@@ -94,6 +105,14 @@ void vApplicationMallocFailedHook(void)
    FreeRTOSConfig.h, and the xPortGetFreeHeapSize() API function can be used
    to query the size of free heap space that remains (although it does not
    provide information on how the remaining heap might be fragmented). */
+
+   // This means that, somewhere in the program, a null pointer was returned by a call to pvPortMalloc().
+   // These cases should be handled somewhat-gracefully by code, so only a warning.
+   LOG_message(
+    LOG_SYSTEM_OBC, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+    "vApplicationMallocFailedHook() -> FreeRTOS malloc failed"
+   );
+   LOG_emergency_sync_current_log_file();
 }
 /* USER CODE END 5 */
 
