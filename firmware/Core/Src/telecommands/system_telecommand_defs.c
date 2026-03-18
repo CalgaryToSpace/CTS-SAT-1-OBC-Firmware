@@ -341,7 +341,8 @@ typedef uint8_t (*blob_entry_t)(
 /// @brief Executes an arbitrary blob/program from the filesystem.
 /// @param args_str
 /// - Arg 0: File name of the blob
-/// - Arg 1: Arguments to pass to the blob (e.g., another filename)
+/// - Arg 1: Where to load blob (0=malloc, 1=mpi_buffer_one, 2=mpi_buffer_two)
+/// - Arg 2: Argument to pass to the blob function (e.g., another filename)
 /// @param response_output_buf The blob optionally writes its intermediate workings and results to this buffer.
 /// @return 99 on pre-blob execution error. Otherwise, blob return value (presumably 0 on success).
 /// @details Refer to `misc_tools/exec_blob/README.md` for more information on how to use this complex telecommand.
@@ -353,20 +354,63 @@ uint8_t TCMDEXEC_exec_blob_from_fs(
     const uint8_t parse_dir_name_result = TCMD_extract_string_arg(
         args_str, 0, arg_file_name, sizeof(arg_file_name)
     );
-    if (parse_dir_name_result != 0) {
+    uint64_t arg_where_to_load;
+    const uint8_t parse_int_arg_result = TCMD_extract_uint64_arg(
+        args_str, strlen(args_str), 1, &arg_where_to_load
+    );
+    if ((parse_dir_name_result != 0) || (parse_int_arg_result != 0) || (arg_where_to_load > 2)) {
         snprintf(
             response_output_buf,
             response_output_buf_len,
-            "Error parsing file name arg: Error %d", parse_dir_name_result
+            "Error parsing args: err_filename=%d, err_num=%d, number_invalid=%d",
+            parse_dir_name_result, parse_int_arg_result,
+            (arg_where_to_load > 2)
         );
         return 99;
     }
     const uint8_t arg_file_name_len = strlen(arg_file_name);
 
-    const char *args_str_to_blob = args_str + arg_file_name_len + 1; // Past the comma.
+    const char *args_str_to_blob = args_str + arg_file_name_len + 3; // Past comma, num_arg, comma:
 
-    uint8_t* blob_buffer = (uint8_t*)MPI_science_buffer_two;
-    uint32_t blob_buffer_size = MPI_science_buffer_len;
+    uint8_t* blob_buffer;
+    uint32_t blob_buffer_size = 0;
+    if (arg_where_to_load == 0) {
+        // Determine buffer size from file size.
+        blob_buffer_size = LFS_file_size(arg_file_name, 1) + 20; // Add 20 bytes because it feels reasonable.
+        if (blob_buffer_size <= 0) {
+            snprintf(
+                response_output_buf, response_output_buf_len,
+                "ERR: LFS_file_size failed (%ld)", blob_buffer_size
+            );
+            return 99;
+        }
+
+        // Malloc the buffer.
+        blob_buffer = (uint8_t*)pvPortMalloc(blob_buffer_size);
+        if (blob_buffer == NULL) {
+            snprintf(
+                response_output_buf, response_output_buf_len,
+                "ERR: pvPortMalloc failed (%ld bytes)", blob_buffer_size
+            );
+            return 99;
+        }
+    }
+    else if (arg_where_to_load == 1) {
+        blob_buffer = (uint8_t*)MPI_science_buffer_one;
+        blob_buffer_size = MPI_science_buffer_len;
+    }
+    else if (arg_where_to_load == 2) {
+        blob_buffer = (uint8_t*)MPI_science_buffer_two;
+        blob_buffer_size = MPI_science_buffer_len;
+    }
+    else {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "ERR: Invalid arg_where_to_load=%d",
+            (uint8_t)arg_where_to_load
+        );
+        return 99;
+    }
 
     memset(blob_buffer, 0, blob_buffer_size);
     const int32_t bytes_read = LFS_read_file(
@@ -390,6 +434,11 @@ uint8_t TCMDEXEC_exec_blob_from_fs(
 
     // Safety: Ensure that the buffer is null-terminated, in case the blob forgot to.
     response_output_buf[response_output_buf_len - 1] = '\0';
+
+    // Free the buffer, if we used malloc for it.
+    if (arg_where_to_load == 0) {
+        vPortFree(blob_buffer);
+    }
 
     return blob_result;
 }

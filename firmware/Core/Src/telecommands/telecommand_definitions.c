@@ -133,7 +133,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "exec_blob_from_fs",
         .tcmd_func = TCMDEXEC_exec_blob_from_fs,
-        .number_of_args = 2,
+        .number_of_args = 3,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
