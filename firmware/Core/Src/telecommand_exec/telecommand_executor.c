@@ -176,10 +176,9 @@ static int8_t TCMD_store_resp_to_file(
     }
 
     lfs_file_t file;
-    const int8_t open_result = lfs_file_opencfg(
+    const int8_t open_result = lfs_file_open(
         &LFS_filesystem, &file, resp_fname,
-        LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND,
-        &LFS_file_cfg
+        LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND
     );
     if (open_result < 0) {
         LOG_message(

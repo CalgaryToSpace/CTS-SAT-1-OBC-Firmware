@@ -1712,7 +1712,9 @@ int16_t ADCS_save_sd_file_to_lfs_by_index(bool index_file_bool, uint16_t file_in
 
     // Now that we have the filename string, we can create the file (any existing file will be overwritten)
     lfs_file_t file;
-    const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, filename_string, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC, &LFS_file_cfg);
+    const int8_t open_result = lfs_file_open(
+        &LFS_filesystem, &file, filename_string, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC
+    );
     if (open_result < 0) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening/creating file: %s", filename_string);
         return open_result;
@@ -1880,7 +1882,9 @@ int16_t ADCS_save_sd_file_to_lfs_by_checksum(bool index_file_bool, uint16_t file
 
     // Now that we have the filename string, we can create the file (any existing file will be overwritten)
     lfs_file_t file;
-    const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, filename_string, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC, &LFS_file_cfg);
+    const int8_t open_result = lfs_file_open(
+        &LFS_filesystem, &file, filename_string, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC
+    );
     if (open_result < 0) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_WARNING, LOG_all_sinks_except(LOG_SINK_FILE), "Error opening/creating file: %s", filename_string);
         return open_result;

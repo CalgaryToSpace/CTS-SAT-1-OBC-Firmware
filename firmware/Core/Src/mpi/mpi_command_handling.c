@@ -279,10 +279,10 @@ static int8_t MPI_prepare_to_receive_data(const char output_file_path[]) {
     }
 
     // Open / Create the file
-    const int8_t open_result = lfs_file_opencfg(
+    const int8_t open_result = lfs_file_open(
         &LFS_filesystem, &MPI_science_data_file_pointer,
         output_file_path,
-        LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND, &LFS_file_cfg
+        LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND
     );
     
     // Check if open successful

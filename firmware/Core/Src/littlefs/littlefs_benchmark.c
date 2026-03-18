@@ -53,7 +53,9 @@ uint8_t LFS_benchmark_write_read(
     // Open file for writing
     const uint32_t write_open_start_time = HAL_GetTick();
     lfs_file_t file;
-    const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC, &LFS_file_cfg);
+    const int8_t open_result = lfs_file_open(
+        &LFS_filesystem, &file, file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC
+    );
 	if (open_result != 0)
 	{
 		snprintf(
@@ -109,7 +111,9 @@ uint8_t LFS_benchmark_write_read(
 
     // Re-open the file for reading
     const uint32_t read_open_start_time = HAL_GetTick();
-    const int8_t read_open_result = lfs_file_opencfg(&LFS_filesystem, &file, file_name, LFS_O_RDONLY, &LFS_file_cfg);
+    const int8_t read_open_result = lfs_file_open(
+        &LFS_filesystem, &file, file_name, LFS_O_RDONLY
+    );
     if (read_open_result < 0) {
         snprintf(
             &response_str[strlen(response_str)],

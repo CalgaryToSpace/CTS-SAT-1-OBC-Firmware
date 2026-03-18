@@ -23,7 +23,9 @@ int8_t LFS_read_file_checksum_sha256(
     sha256_init(&sha256_ctx);
 
     lfs_file_t file;
-    const int8_t open_result = lfs_file_opencfg(&LFS_filesystem, &file, filepath, LFS_O_RDONLY, &LFS_file_cfg);
+    const int8_t open_result = lfs_file_open(
+        &LFS_filesystem, &file, filepath, LFS_O_RDONLY
+    );
     if (open_result < 0) {
         return open_result;
     }

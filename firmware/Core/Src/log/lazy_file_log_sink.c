@@ -61,9 +61,9 @@ static int8_t LOG_open_new_log_file_and_set_as_current(void) {
     snprintf(filename, sizeof(filename), "logs/%s.log", timestamp_str);
 
     // Open the new log file.
-    const int16_t result = lfs_file_opencfg(
+    const int16_t result = lfs_file_open(
         &LFS_filesystem, &LOG_current_log_file_ctx.file, filename, 
-        LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND, &LFS_file_cfg
+        LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND
     );
     if (result != 0) {
         LOG_log_a_logging_error_if_file_is_broken("Error opening new log file.");
