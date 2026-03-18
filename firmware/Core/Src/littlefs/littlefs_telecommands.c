@@ -5,7 +5,6 @@
 #include <stdint.h>
 #include <stdio.h>
 
-
 uint32_t LFS_debug_malloc_total_count = 0;
 uint32_t LFS_debug_malloc_failed_count = 0;
 uint32_t LFS_debug_free_total_count = 0;
@@ -114,9 +113,65 @@ int32_t LFS_list_directory_json_dict(
     return 0;
 }
 
+/// @brief Generate a JSON string containing filesystem stats and debugging info.
+/// @param json_output_buf 
+/// @param json_output_buf_size 
+/// @return 0 on success. Negative LFS error codes. Positive other error codes.
+/// @note Used space may be approximate, due to the nature of LittleFS Copy-on-Write (COW).
 int8_t LFS_get_filesystem_stats_json(
     char *json_output_buf, uint16_t json_output_buf_size
 ) {
+    // Get filesystem info.
+    struct lfs_fsinfo fs_info;
+    const int err = lfs_fs_stat(&LFS_filesystem, &fs_info);
+    if (err < 0) {
+        return (int8_t)err;
+    }
 
+    // Get filesystem size (allocated blocks)
+    const lfs_ssize_t fs_used_size_blocks = lfs_fs_size(&LFS_filesystem);
+    if (fs_used_size_blocks < 0) {
+        return fs_used_size_blocks;
+    }
 
+    // Format JSON
+    const int written = snprintf(
+        json_output_buf,
+        json_output_buf_size,
+        "{"
+            "\"fs_used_size_bytes\":%ld,"
+            "\"fs_total_size_bytes\":%ld,"
+            "\"used_percent\":%.2f,"
+            "\"count_malloc_total\":%" PRIu32 ","
+            "\"count_malloc_failed\":%" PRIu32 ","
+            "\"count_free_total\":%" PRIu32 ","
+            "\"fs_used_size_blocks\":%ld,"
+            "\"disk_version\":%" PRIu32 ","
+            "\"block_size\":%lu,"
+            "\"block_count\":%lu,"
+            "\"name_max\":%lu,"
+            "\"file_max\":%lu,"
+            "\"attr_max\":%lu"
+        "}",
+        fs_used_size_blocks * fs_info.block_size, // fs_used_size_bytes
+        fs_info.block_count * fs_info.block_size, // fs_total_size_bytes
+        fs_used_size_blocks * 100.0 / fs_info.block_count, // used_percent
+        LFS_debug_malloc_total_count, // count_malloc_total
+        LFS_debug_malloc_failed_count, // count_malloc_failed
+        LFS_debug_free_total_count, // count_free_total
+        fs_used_size_blocks, // fs_used_size_blocks
+        fs_info.disk_version,
+        fs_info.block_size,
+        fs_info.block_count,
+        fs_info.name_max,
+        fs_info.file_max,
+        fs_info.attr_max
+    );
+
+    // Check for truncation or encoding error
+    if (written < 0 || written >= json_output_buf_size) {
+        return 2; // buffer too small or encoding error
+    }
+
+    return 0; // Success.
 }

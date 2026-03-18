@@ -9,5 +9,9 @@ int32_t LFS_list_directory_json_dict(
     char *json_output_buf, uint16_t json_output_buf_size
 );
 
+int8_t LFS_get_filesystem_stats_json(
+    char *json_output_buf, uint16_t json_output_buf_size
+);
+
 
 #endif // INCLUDE_GUARD__LITTLEFS_TELECOMMANDS_H
