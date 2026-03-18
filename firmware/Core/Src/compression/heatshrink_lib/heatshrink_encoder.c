@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include "heatshrink_encoder.h"
+#include "compression/heatshrink_lib/heatshrink_encoder.h"
 
 typedef enum {
     HSES_NOT_FULL,              /* input buffer not full enough */

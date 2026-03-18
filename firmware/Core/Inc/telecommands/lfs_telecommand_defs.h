@@ -58,4 +58,9 @@ uint8_t TCMDEXEC_fs_get_filesystem_stats_json(
     char *response_output_buf, uint16_t response_output_buf_len
 );
 
+uint8_t TCMDEXEC_fs_compress_file_with_heatshrink(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+);
+
 #endif /* INCLUDE_GUARD__LFS_TELECOMMAND_DEFS_H__ */

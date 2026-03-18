@@ -13,6 +13,9 @@
 #include "telecommand_exec/telecommand_definitions.h"
 #include "telecommand_exec/telecommand_args_helpers.h"
 #include "transforms/arrays.h"
+#include "compression/heatshrink_helpers.h"
+
+
 
 /// @brief Format the LittleFS storage. ERASES ALL FILES. Unmounts the filesystem if necessary.
 /// @return LFS errror code from LFS_format().
@@ -663,6 +666,64 @@ uint8_t TCMDEXEC_fs_get_filesystem_stats_json(
         );
         return 1;
     }
+
+    return 0; // Success.
+}
+
+/// @brief Compress a file using heatshrink.
+/// @param args_str 
+/// - Arg 0: Input file path
+/// - Arg 1: Output file path (e.g., suffix with ".hs")
+/// - Arg 2: Compression level
+/// @param response_output_buf 
+/// @param response_output_buf_len 
+/// @return 0 on success. 1 on arg parsing errors.
+uint8_t TCMDEXEC_fs_compress_file_with_heatshrink(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    char arg_file_in[LFS_MAX_PATH_LENGTH];
+    const uint8_t parse_file_name_in_result = TCMD_extract_string_arg(
+        args_str, 0, arg_file_in, sizeof(arg_file_in)
+    );
+    char arg_file_out[LFS_MAX_PATH_LENGTH];
+    const uint8_t parse_file_name_out_result = TCMD_extract_string_arg(
+        args_str, 1, arg_file_out, sizeof(arg_file_out)
+    );
+    if (parse_file_name_in_result || parse_file_name_out_result) {
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error parsing file name args: arg0_err=%d, arg1_err=%d",
+            parse_file_name_in_result,
+            parse_file_name_out_result
+        );
+        return 1;
+    }
+
+    const int8_t err = LFS_compress_lfs_file_with_heatshrink(
+        &LFS_filesystem, arg_file_in, arg_file_out
+    );
+    if (err != 0) {
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "LFS_compress_lfs_file_with_heatshrink() failed. Error: %d",
+            err
+        );
+        return 2;
+    }
+
+    const lfs_ssize_t file_size_in = LFS_file_size(arg_file_in, 1);
+    const lfs_ssize_t file_size_out = LFS_file_size(arg_file_out, 1);
+    snprintf(
+        response_output_buf,
+        response_output_buf_len,
+        "Compression succeeded. %ld bytes -> %ld bytes (%.3fx)",
+        file_size_in,
+        file_size_out,
+        (float)file_size_in / (float)file_size_out
+    );
 
     return 0; // Success.
 }
