@@ -22,8 +22,18 @@ int8_t LFS_compress_lfs_file_with_heatshrink(
     uint8_t lookahead_sz2
 ) {
     int err = 0;
-    lfs_file_t in_file, out_file;
 
+    // Allocate encoder (CLI style)
+    size_t window_sz = 1 << window_sz2;
+    heatshrink_encoder *hse = heatshrink_encoder_alloc(window_sz2, lookahead_sz2);
+    if (!hse) {
+        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+                    "Compression: failed to allocate heatshrink encoder");
+        return 1;
+    }
+
+    // Open input file.
+    lfs_file_t in_file;
     if ((err = lfs_file_open(lfs, &in_file, input_path, LFS_O_RDONLY)) < 0) {
         LOG_message(
             LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
@@ -32,23 +42,14 @@ int8_t LFS_compress_lfs_file_with_heatshrink(
         return err;
     }
 
+    // Open output file.
+    lfs_file_t out_file;
     if ((err = lfs_file_open(lfs, &out_file, output_path,
                               LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC)) < 0) {
         LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
                     "Compression: cannot open output %s: %d", output_path, err);
         lfs_file_close(lfs, &in_file);
         return err;
-    }
-
-    // Allocate encoder (CLI style)
-    size_t window_sz = 1 << window_sz2;
-    heatshrink_encoder *hse = heatshrink_encoder_alloc(window_sz2, lookahead_sz2);
-    if (!hse) {
-        lfs_file_close(lfs, &in_file);
-        lfs_file_close(lfs, &out_file);
-        LOG_message(LOG_SYSTEM_LFS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-                    "Compression: failed to allocate heatshrink encoder");
-        return 1;
     }
 
     uint8_t *in_buf = pvPortMalloc(window_sz);

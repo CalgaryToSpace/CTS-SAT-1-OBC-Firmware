@@ -675,11 +675,12 @@ uint8_t TCMDEXEC_fs_get_filesystem_stats_json(
 /// @param args_str 
 /// - Arg 0: Input file path
 /// - Arg 1: Output file path (e.g., suffix with ".hs")
-/// - Arg 2: window_sz2 (min 4, max 15)
-/// - Arg 3: lookahead_sz2 (min 3, max ~255)
+/// - Arg 2: window_sz2 (min 4, recommended 8, max 15, like CLI -w arg)
+/// - Arg 3: lookahead_sz2 (min 3, recommended 4, max window_sz2 argument)
 /// @param response_output_buf 
 /// @param response_output_buf_len 
 /// @return 0 on success. 1 on arg parsing errors.
+/// @note Can cause system to crash and reboot. Safe to use, but just be aware.
 uint8_t TCMDEXEC_fs_compress_file_with_heatshrink(
     const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
@@ -716,6 +717,7 @@ uint8_t TCMDEXEC_fs_compress_file_with_heatshrink(
         || arg_window_sz2 > HEATSHRINK_MAX_WINDOW_BITS
         || arg_lookahead_sz2 < HEATSHRINK_MIN_LOOKAHEAD_BITS
         || arg_lookahead_sz2 > 255
+        || arg_lookahead_sz2 > arg_window_sz2
     );
     if (parse_lookahead_sz2_result || parse_window_sz2_result || is_out_of_range) {
         snprintf(
