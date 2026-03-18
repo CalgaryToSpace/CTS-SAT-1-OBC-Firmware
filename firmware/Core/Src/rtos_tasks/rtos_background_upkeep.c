@@ -15,6 +15,7 @@
 #include "gnss_receiver/gnss_firehose_storage.h"
 #include "littlefs/littlefs_helper.h"
 #include "stm32/stm32_reboot_reason.h"
+#include "adcs_drivers/adcs_commands.h"
 
 #include "cmsis_os.h"
 
@@ -38,6 +39,11 @@ uint32_t STM32_system_reset_interval_sec = 604800;
 uint32_t STM32_system_reset_no_uplink_interval_sec = 216000;
 
 
+/// @brief Check whether the EPS is in safety mode. If it's in safety mode, disable all EPS power channels.
+/// @note Default: 20000 ms = 20 seconds
+/// @note Set to 0 to disable this feature.
+uint32_t EPS_monitor_safety_adcs_interval_ms = 20000;
+
 /// @brief How frequently to set the OBC time based on the EPS time if the time divergence is >2 seconds.
 /// @note Default: 600 seconds = 10 minutes.
 /// @note Set to 0 to disable time syncing.
@@ -57,6 +63,60 @@ static const uint32_t COMMS_beacon_interval_ms_default_value = 20000; // Used fo
 uint32_t COMMS_total_beacon_count_since_boot = 0;
 
 static uint32_t EPS_monitor_last_uptime_ms = 0;
+
+
+static uint32_t monitor_eps_to_control_adcs_last_checked_uptime_ms = 0;
+
+static void subtask_disable_adcs_if_eps_enters_safety_mode(void) {
+    // Check disabled?
+    if (EPS_monitor_safety_adcs_interval_ms == 0) {
+        return;
+    }
+
+    // Check enabled and overdue.
+    const uint64_t current_time = HAL_GetTick();
+    if (monitor_eps_to_control_adcs_last_checked_uptime_ms + EPS_monitor_safety_adcs_interval_ms < current_time) {
+        monitor_eps_to_control_adcs_last_checked_uptime_ms = current_time;
+
+        EPS_struct_system_status_t eps_status;
+        const uint8_t eps_result = EPS_CMD_get_system_status(&eps_status);
+
+        if (eps_result != 0) {
+            LOG_message(
+                LOG_SYSTEM_EPS,
+                LOG_SEVERITY_ERROR,
+                LOG_SINK_ALL,
+                "EPS/ADCS Safety: EPS_CMD_get_system_status() -> Error: %d",
+                eps_result
+            );
+            return;
+        }
+        
+        if ((eps_status.mode == EPS_MODE_SAFETY) || (eps_status.mode == EPS_MODE_EMERGENCY_LOW_POWER)) {
+            LOG_message(
+                LOG_SYSTEM_EPS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+                "EPS/ADCS Safety: EPS is in safety mode, disabling ADCS power channels!"
+            );
+
+            // Disable ADCS power channels.
+            const uint8_t adcs_result = ADCS_set_power_control(
+                ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF,
+                ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF,
+                ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF
+            );
+            if (adcs_result != 0) {
+                LOG_message(
+                    LOG_SYSTEM_EPS,
+                    LOG_SEVERITY_ERROR,
+                    LOG_SINK_ALL,
+                    "EPS/ADCS Safety: ADCS_set_power_control() -> Error: %d",
+                    adcs_result
+                );
+            }
+        }
+    }
+}
+
 
 static void subtask_monitor_eps_power(void) {
     // EPS overcurrent monitor upkeep
@@ -342,6 +402,9 @@ void TASK_background_upkeep(void *argument) {
         osDelay(10); // Yield.
 
         subtask_send_beacon();
+        osDelay(10); // Yield.
+
+        subtask_disable_adcs_if_eps_enters_safety_mode();
         osDelay(10); // Yield.
 
         subtask_monitor_eps_power();
