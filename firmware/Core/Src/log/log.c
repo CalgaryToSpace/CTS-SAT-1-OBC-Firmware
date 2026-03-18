@@ -82,6 +82,7 @@ static const uint16_t LOG_NUMBER_OF_SINKS = sizeof(LOG_sinks) / sizeof(LOG_sink_
 // Note: LOG_systems entries must have same order as LOG_system_enum_t
 // entries.
 static LOG_system_t LOG_systems[] = {
+    // Note: The log file names here are unused.
     {LOG_SYSTEM_OBC, "OBC", "/logs/obc_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_ALL},
     {LOG_SYSTEM_UHF_RADIO, "RADIO", "/logs/uhf_radio_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_ALL},
     {LOG_SYSTEM_UMBILICAL_UART, "UART", "/logs/umbilical_uart_system.log", LOG_SYSTEM_ON, LOG_SEVERITY_MASK_ALL},

@@ -17,8 +17,8 @@ uint32_t LOG_file_rotation_interval_sec = 1800; // Nominal: 1800 seconds is 30 m
 
 typedef struct {
     lfs_file_t file;
-    uint64_t timestamp_of_last_sync;
-    uint64_t timestamp_of_last_close;
+    uint64_t timestamp_of_last_sync; // Last sync/flush.
+    uint64_t timestamp_of_last_close; // Last close/rotate.
     uint8_t is_open;
 } LOG_file_context_struct_t;
 
@@ -29,9 +29,6 @@ static LOG_file_context_struct_t LOG_current_log_file_ctx;
 
 /// @brief  Closed the current log file.
 static int8_t LOG_close_current_log_file(void) {
-
-    extern LOG_file_context_struct_t LOG_current_log_file_ctx; // from log_sinks.c
-
     if(!LOG_current_log_file_ctx.is_open) {
         return 0;
     }
@@ -50,8 +47,10 @@ static int8_t LOG_open_new_log_file_and_set_as_current(void) {
 
     // Close the current log file if open.
     if (LOG_current_log_file_ctx.is_open) {
-        int8_t result = LOG_close_current_log_file();
-        if (result != 0) {return result;}
+        const int8_t result = LOG_close_current_log_file();
+        if (result != 0) {
+            return result;
+        }
     }
 
 
@@ -70,8 +69,9 @@ static int8_t LOG_open_new_log_file_and_set_as_current(void) {
         LOG_log_a_logging_error_if_file_is_broken("Error opening new log file.");
     }
 
-    // Set metadata for the new log file.
+    // Set metadata for the new log file. Update both these times right away to prevent immediate rotation.
     LOG_current_log_file_ctx.timestamp_of_last_sync = TIME_get_current_unix_epoch_time_ms();
+    LOG_current_log_file_ctx.timestamp_of_last_close = TIME_get_current_unix_epoch_time_ms();
     LOG_current_log_file_ctx.is_open = 1;
     return 0;
 }
@@ -134,7 +134,11 @@ int8_t LOG_sync_current_log_file(void) {
 /// @note This function is meant to be called periodically in an RTOS task.
 /// @note This function can be called very frequently. It tracks its own internal configuration.
 void LOG_subtask_handle_sync_and_close_of_current_log_file() {
-    LOG_ensure_current_log_file_is_open();
+    // Note: Do not LOG_ensure_current_log_file_is_open(), otherwise it creates a ton of empty log files.
+    // Return early if the log file is not open - no need to create log files when not enabled.
+    if (!LOG_current_log_file_ctx.is_open) {
+        return;
+    }
 
     // Periodic log file sync/flush.
     const int64_t sync_interval_has_elapsed = (

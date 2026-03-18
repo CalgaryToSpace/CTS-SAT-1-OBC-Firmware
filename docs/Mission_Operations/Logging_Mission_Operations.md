@@ -18,7 +18,8 @@ Do not fear enabling it, but understand that you may experience more system rest
 ### Procedure: Enable Logging to File
 
 1. Enable the FILE (2) log sink: `CTS1+log_set_sink_enabled_state(2,1)!`
-2. For each `LOG_SYSTEM` you want enabled logs, enable file logging: `CTS1+log_set_system_file_logging_enabled_state(32,1)!`
+2. Optionally, disable any `LOG_SYSTEM` you don't want logs for: `CTS1+log_set_system_file_logging_enabled_state(32,0)!`
+    * All logs to file are enabled by default.
 3. You will see timestamped files appear in the `/logs/` folder.
 
 A new log file is started periodically, based on configuration variable `LOG_file_rotation_interval_sec`.

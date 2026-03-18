@@ -126,14 +126,6 @@ const osThreadAttr_t TASK_background_upkeep_Attributes = {
   .priority = (osPriority_t) osPriorityBelowNormal3,
 };
 
-
-osThreadId_t TASK_time_sync_Handle;
-const osThreadAttr_t TASK_time_sync_Attributes = {
-  .name = "TASK_time_sync",
-  .stack_size = TASK_MINIMUM_STACK_SIZE_BYTES,
-  .priority = (osPriority_t) osPriorityBelowNormal4,
-};
-
 osThreadId_t TASK_bootup_operation_fsm_Handle;
 const osThreadAttr_t TASK_bootup_operation_fsm_Attributes = {
   .name = "TASK_bootup_operation_fsm",
@@ -222,11 +214,6 @@ FREERTOS_task_info_struct_t FREERTOS_task_handles_array [] = {
   {
     .task_handle = &TASK_service_write_mpi_data_Handle,
     .task_attribute = &TASK_service_write_mpi_data_Attributes,
-    .lowest_stack_bytes_remaining = UINT32_MAX
-  },
-  {
-    .task_handle = &TASK_time_sync_Handle,
-    .task_attribute = &TASK_time_sync_Attributes,
     .lowest_stack_bytes_remaining = UINT32_MAX
   },
   {
