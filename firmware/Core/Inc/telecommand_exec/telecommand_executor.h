@@ -7,7 +7,7 @@
 
 // Max number of telecommands that can be stored in the agenda (schedule/queue).
 // Memory-constrained.
-#define TCMD_AGENDA_SIZE 1000
+#define TCMD_AGENDA_SIZE 750
 
 /// Max number of timestamps that can be stored in the record at at time (for unique telecommand tssent validation).
 #define TCMD_TIMESTAMP_RECORD_SIZE 500

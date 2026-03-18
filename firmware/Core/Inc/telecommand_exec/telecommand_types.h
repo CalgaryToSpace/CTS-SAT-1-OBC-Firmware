@@ -6,6 +6,10 @@
 
 #define TCMD_MAX_RESP_FNAME_LEN 64
 
+// Max len of `args_str_no_parens` in `TCMD_parsed_tcmd_to_execute_t`, including null terminator.
+#define TCMD_ARGS_STR_NO_PARENS_SIZE 240
+
+
 typedef enum {
     TCMD_READINESS_LEVEL_IDEA_PHASE, 
     TCMD_READINESS_LEVEL_NOT_IMPLEMENTED, 
@@ -37,7 +41,7 @@ typedef struct {
 typedef struct {
     /// @brief The index of the telecommand in the `TCMD_telecommand_definitions` array.
     uint8_t tcmd_idx;
-    char args_str_no_parens[255]; // TODO: consider changing this to a pointer, and storing the args somewhere else to save memory
+    char args_str_no_parens[TCMD_ARGS_STR_NO_PARENS_SIZE]; // TODO: consider changing this to a pointer, and storing the args somewhere else to save memory
     /// @brief The value of the `@tssent` field when the telecommand was received.
     uint64_t timestamp_sent;
     /// @brief The value of the `@tsexec` field when the telecommand was received.

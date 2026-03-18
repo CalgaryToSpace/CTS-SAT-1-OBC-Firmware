@@ -5,8 +5,6 @@
 #include "telecommand_exec/telecommand_types.h"
 #include "telecommand_exec/telecommand_definitions.h"
 
-// Max len of `args_str_no_parens` in `TCMD_parsed_tcmd_to_execute_t`, including null terminator.
-#define TCMD_ARGS_STR_NO_PARENS_SIZE 255
 
 #define TCMD_PREFIX_STR "CTS1+"
 #define TCMD_PREFIX_STR_LEN 5
