@@ -12,13 +12,26 @@
 
 #include "FreeRTOS.h"
 #include <stddef.h>
+#include <stdint.h>
+
+extern uint32_t LFS_debug_malloc_total_count;
+extern uint32_t LFS_debug_malloc_failed_count;
+extern uint32_t LFS_debug_free_total_count;
+
 
 static inline void *lfs_port_impl_malloc(size_t size) {
+    // Note: When investigated, the allocated size for the main operation (opening a file)
+    // is 2048 bytes (LFS_CACHE_SIZE).
+    LFS_debug_malloc_total_count++;
     void *ptr = pvPortMalloc(size);
+    if (ptr == NULL) {
+        LFS_debug_malloc_failed_count++;
+    }
     return ptr;
 }
 
 static inline void lfs_port_impl_free(void *ptr) {
+    LFS_debug_free_total_count++;
     vPortFree(ptr);
 }
 

@@ -644,3 +644,25 @@ uint8_t TCMDEXEC_fs_benchmark_write_read(const char *args_str,
     }
     return 0;
 }
+
+
+/// @brief Generate a JSON string containing filesystem stats and debugging info.
+/// @param args_str No arguments.
+/// @return 0 on success, 1 on error.
+/// @note Used space may be approximate, due to the nature of LittleFS Copy-on-Write (COW).
+uint8_t TCMDEXEC_fs_get_filesystem_stats_json(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    const int8_t err = LFS_get_filesystem_stats_json(response_output_buf, response_output_buf_len);
+    if (err != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "LFS_get_filesystem_stats_json() failed. Error: %d",
+            err
+        );
+        return 1;
+    }
+
+    return 0; // Success.
+}
