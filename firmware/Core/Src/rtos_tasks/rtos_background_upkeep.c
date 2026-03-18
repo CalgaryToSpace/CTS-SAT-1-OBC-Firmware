@@ -13,11 +13,16 @@
 #include "eps_drivers/eps_time.h"
 #include "eps_drivers/eps_commands.h"
 #include "gnss_receiver/gnss_firehose_storage.h"
+#include "littlefs/littlefs_helper.h"
+#include "stm32/stm32_reboot_reason.h"
 
 #include "cmsis_os.h"
 
 #include <inttypes.h>
 #include <stdint.h>
+#include <stdio.h>
+
+static const char* LFS_BOOT_LOG_FILE_NAME = "obc_boot_log.jsonl";
 
 /// @brief If the system uptime exceeds this value, the system will reset (reboot).
 /// @note This is to recover the system in case of a radiation-induced hang or other invalid state.
@@ -267,6 +272,68 @@ static void subtask_sync_obc_time_based_on_eps_time(void) {
 }
 
 
+static void subtask_write_boot_time_to_lfs(void) {
+    static uint8_t has_writting_boot_log_yet = 0; // Persist across runs.
+
+    if (has_writting_boot_log_yet) {
+        return;
+    }
+
+    const uint32_t current_uptime_ms = TIME_get_current_system_uptime_ms();
+
+    // Don't write the boot record right away, in case LFS writes are causing system crashes.
+    // Instead, wait a minute (3 beacons, plus a tiny margin), then do the write.
+    const uint32_t uptime_to_write_boot_log_ms = 68000;
+    if (current_uptime_ms >= uptime_to_write_boot_log_ms) {
+        has_writting_boot_log_yet = 1;
+
+        const uint64_t current_unix_epoch_time_ms = TIME_get_current_unix_epoch_time_ms();
+        const uint64_t boot_unix_epoch_time_ms = current_unix_epoch_time_ms - current_uptime_ms;
+        
+        // Attempt to write boot log.
+        char boot_log_msg[200];
+        char boot_datetime_str[40];
+        TIME_format_utc_datetime_str(
+            boot_datetime_str, sizeof(boot_datetime_str),
+            boot_unix_epoch_time_ms, TIME_last_synchronization_source
+        );
+        char boot_unix_time_ms_str[25];
+        GEN_uint64_to_str(boot_unix_epoch_time_ms, boot_unix_time_ms_str);
+        snprintf(
+            boot_log_msg, sizeof(boot_log_msg),
+            "{\"boot_datetime\":\"%s\",\"boot_unix_time_ms\":%s,\"uptime_ms\":%lu,\"reset_reason\":\"%s\"}\n",
+            boot_datetime_str,
+            boot_unix_time_ms_str,
+            current_uptime_ms,
+            STM32_reset_cause_enum_to_str(STM32_get_reset_cause())
+        );
+        const int8_t write_result = LFS_append_file( // Has internal logs on failure.
+            LFS_BOOT_LOG_FILE_NAME,
+            (uint8_t *)boot_log_msg,
+            strlen(boot_log_msg)
+        );
+
+        if (write_result == 0) {
+            LOG_message(
+                LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL,
+                LOG_SINK_ALL,
+                "Success writing boot log: %s",
+                boot_log_msg // No harm including the message again here.
+            );
+        }
+        else {
+            LOG_message(
+                LOG_SYSTEM_OBC, LOG_SEVERITY_ERROR,
+                LOG_SINK_ALL,
+                "Failed (LFS error %d) writing boot log: %s",
+                write_result,
+                boot_log_msg // No harm including the message again here.
+            );
+        }
+    }
+}
+
+
 void TASK_background_upkeep(void *argument) {
     TASK_HELP_start_of_task();
     while(1) {
@@ -296,6 +363,9 @@ void TASK_background_upkeep(void *argument) {
         // This period is probably reasonable though.
         GNSS_subtask_store_firehose_data_to_file(); // Steamroll return - nothing we can do about it.
         osDelay(10); // Yield.
+
+        subtask_write_boot_time_to_lfs();
+        osDelay(10);
         
         osDelay(1000);
     }
