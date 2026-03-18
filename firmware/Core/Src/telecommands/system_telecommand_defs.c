@@ -386,6 +386,8 @@ uint8_t TCMDEXEC_exec_blob_from_fs(
         }
 
         // Malloc the buffer.
+        // Note: portBYTE_ALIGNMENT must be 4 (or a multiple of 4) to ensure
+        // instructions are aligned to half-words.
         blob_buffer = (uint8_t*)pvPortMalloc(blob_buffer_size);
         if (blob_buffer == NULL) {
             snprintf(
