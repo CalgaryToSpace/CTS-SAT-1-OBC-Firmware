@@ -7,7 +7,7 @@
 
 /// @brief When `TCMD_active_agenda_filename` is set to this value, agenda loading is disabled.
 char *TCMD_active_agenda_filename_disabled_sentinel = "DISABLED";
-
+char *TCMD_active_agenda_filename_default_file = "default_tcmd_agenda.txt";
 
 /// @brief The file path of the agenda file to load upcoming telecommands from.
 /// @warning While a default agenda is set, it is critical to understand that you SHOULD NOT
@@ -49,8 +49,16 @@ uint8_t TCMD_parse_tcmds_from_file_and_enqueue(
     );
     if (open_result < 0) {
         LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "Error opening agenda file: %d", open_result
+            LOG_SYSTEM_TELECOMMAND,
+            (
+                // If it's the default agenda file, make this a debug log because it's quite
+                // expected that this file doesn't exist.
+                (strcmp(file_path, TCMD_active_agenda_filename_default_file) == 0) ?
+                LOG_SEVERITY_DEBUG : LOG_SEVERITY_ERROR
+            ),
+            LOG_SINK_ALL,
+            "LFS error attempting to open agenda file: %d",
+            open_result
         );
         return 5;
     }
