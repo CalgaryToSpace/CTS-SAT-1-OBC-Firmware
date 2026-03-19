@@ -51,12 +51,23 @@ uint8_t TCMDEXEC_gnss_send_cmd_ascii(
         );
     }
 
-    snprintf(
+    int32_t written_count = snprintf(
         response_output_buf, response_output_buf_len,
-        "GNSS Response (%d bytes): %s",
-        rx_buffer_len,
-        rx_buffer
+        "GNSS Response (%d bytes): ",
+        rx_buffer_len
     );
+    
+    // Copy in the response, skipping null bytes.
+    for (uint16_t i = 0; i < rx_buffer_len; i++) {
+        if (written_count >= response_output_buf_len) {
+            break;
+        }
+
+        if (rx_buffer[i] != '\0') {
+            response_output_buf[written_count] = rx_buffer[i];
+            written_count++;
+        }
+    }
 
     return gnss_cmd_status;
 }
