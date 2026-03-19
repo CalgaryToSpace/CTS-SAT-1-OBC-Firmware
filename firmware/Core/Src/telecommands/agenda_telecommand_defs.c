@@ -150,23 +150,27 @@ uint8_t TCMDEXEC_agenda_enqueue_from_file(
         max_tsexec_exclusive,
         100 // Max number of telecommands to enqueue (safety).
     );
+    
+    const uint16_t pending_cmd_count_after = TCMD_get_agenda_used_slots_count();
 
     if (enqueue_result != 0) {
         snprintf(
             response_output_buf,
             response_output_buf_len,
-            "Error enqueuing telecommands from file: Error %d",
-            enqueue_result
+            "Error enqueuing telecommands from file: Error %d. Pending Commands: %d -> %d (%d added).",
+            enqueue_result,
+            // Even if the error is non-zero, some of the telecommands may have been enqueued.
+            pending_cmd_count_before,
+            pending_cmd_count_after,
+            pending_cmd_count_after - pending_cmd_count_before
         );
         return enqueue_result;
     }
 
-    const uint16_t pending_cmd_count_after = TCMD_get_agenda_used_slots_count();
-
     snprintf(
         response_output_buf,
         response_output_buf_len,
-        "Successfully enqueued telecommands from file. Pending Commands: %d -> %d (%d added)",
+        "Successfully enqueued telecommands from file. Pending Commands: %d -> %d (%d added).",
         pending_cmd_count_before,
         pending_cmd_count_after,
         pending_cmd_count_after - pending_cmd_count_before

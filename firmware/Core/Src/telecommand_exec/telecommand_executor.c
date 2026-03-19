@@ -356,7 +356,8 @@ static uint8_t TCMD_execute_parsed_telecommand_now(
 /// @param response_output_buf A buffer to store the response from the telecommand.
 /// @param response_output_buf_size The size of the `response_output_buf`.
 /// @return 0 on success, 253/254 if an error occurs in the callers, otherwise the error code from the telecommand function.
-uint8_t TCMD_execute_telecommand_in_agenda(const uint16_t tcmd_agenda_slot_num,
+uint8_t TCMD_execute_telecommand_in_agenda(
+    const uint16_t tcmd_agenda_slot_num,
     char *response_output_buf, uint16_t response_output_buf_size
 ) {
     if (! TCMD_agenda_is_valid[tcmd_agenda_slot_num]) {

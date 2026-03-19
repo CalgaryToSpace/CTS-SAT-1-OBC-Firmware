@@ -458,7 +458,8 @@ uint8_t TCMD_parse_full_telecommand(
     if (!correct_number_of_args_provided) {
         LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-            "TCMD_parse_full_telecommand: %s() accepts %d argument(s).\n", tcmd_name, num_args_expected
+            "TCMD_parse_full_telecommand: %s() accepts %d argument(s).",
+            tcmd_name, num_args_expected
         );
         return 130;
     }
