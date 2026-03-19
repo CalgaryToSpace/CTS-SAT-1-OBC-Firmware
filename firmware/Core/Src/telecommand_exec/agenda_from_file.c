@@ -25,13 +25,15 @@ char TCMD_active_agenda_filename[LFS_MAX_PATH_LENGTH] = "default_tcmd_agenda.txt
 /// @param file_path Path to file with one telecommand per line.
 /// @param min_tsexec_inclusive Filter to only telecommands with `tsexec` greater than or equal to this value.
 /// @param max_tsexec_inclusive Filter to only telecommands with `tsexec` less than or equal to this value.
+/// @param max_enqueue_count Maximum number of telecommands to enqueue. Stop after this many successes. Mostly for safety.
 /// @return 0 on success.
 /// @details The file should have one telecommand per line, like so: `CTS1+xxx(...)!\nCTS1+yyy(...)!\n`
 /// @note Obeys all the rules about enqueuing duplicate tssent telecommands. Recommend having unique @tssent values
 ///     for each telecommand, and enabling the `TCMD_require_unique_tssent` config option.
 uint8_t TCMD_parse_tcmds_from_file_and_enqueue(
     const char *file_path,
-    uint64_t min_tsexec_inclusive, uint64_t max_tsexec_inclusive
+    uint64_t min_tsexec_inclusive, uint64_t max_tsexec_inclusive,
+    uint16_t max_enqueue_count
 ) {
     if (strcmp(file_path, TCMD_active_agenda_filename_disabled_sentinel) == 0) {
         return 0; // Success.
@@ -151,6 +153,11 @@ uint8_t TCMD_parse_tcmds_from_file_and_enqueue(
         if (start_idx > 0) {
             memmove(line_buf, &line_buf[start_idx], line_len - start_idx);
             line_len -= start_idx;
+        }
+
+        // Check if we've hit the limit.
+        if (tcmd_count_success_enqueued >= max_enqueue_count) {
+            break;
         }
     }
 
