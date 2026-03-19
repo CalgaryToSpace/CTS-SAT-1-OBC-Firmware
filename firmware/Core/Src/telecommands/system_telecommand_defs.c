@@ -1,5 +1,6 @@
 #include "main.h"
 #include "log/log.h"
+#include "log/lazy_file_log_sink.h"
 #include "eps_drivers/eps_types.h"
 #include "eps_drivers/eps_calculations.h"
 #include "timekeeping/timekeeping.h"
@@ -210,22 +211,35 @@ uint8_t TCMDEXEC_available_telecommands(
 }
 
 
+/// @brief Reboot the OBC. Unmounts the filesystem first for safety.
+/// @param args_str 
+/// @param response_output_buf 
+/// @param response_output_buf_len 
+/// @return 
 uint8_t TCMDEXEC_reboot(
     const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
-    LFS_ensure_unmounted();
-
     LOG_message(
         LOG_SYSTEM_OBC, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-        "Rebooting by telecommand request"
+        "Rebooting by telecommand request."
     );
 
-    // Delay to flush UART buffer
+    // If logging to file is enabled, flush the current log file.
+    // Not an emergency, but the "emergency" one is good for a pending reboot.
+    LOG_emergency_sync_current_log_file();
+    
+    // Delay to flush log sinks if enabled.
+    HAL_Delay(500);
+
+    LFS_ensure_unmounted();
+
+    // Delay to flush UART buffer.
     HAL_Delay(100);
 
+    // Actually reboot.
     NVIC_SystemReset();
-    return 0;
+    return 0; // Never reached.
 }
 
 /// @brief System self-check of all peripherals and systems.
