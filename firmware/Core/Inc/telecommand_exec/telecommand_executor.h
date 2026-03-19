@@ -12,11 +12,17 @@
 /// Max number of tssent timestamp values that can be stored at a time (for unique telecommand tssent validation).
 #define TCMD_TIMESTAMP_RECORD_SIZE 750
 
+
+typedef enum {
+    TCMD_AGENDA_ENTRY_INVALID = 0, // Initial state.
+    TCMD_AGENDA_ENTRY_VALID_AND_PENDING = 1,
+    TCMD_AGENDA_ENTRY_EXECUTING = 2,
+} TCMD_agenda_entry_state_enum_t;
+
+
 uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd);
 
 uint16_t TCMD_get_agenda_used_slots_count();
-
-int16_t TCMD_get_last_tcmd_agenda_slot_sent();
 
 int16_t TCMD_get_next_tcmd_agenda_slot_to_execute();
 
