@@ -26,7 +26,7 @@ void LOG_to_file_eager(const char filename[], const char msg[]) {
     lfs_file_t file;
     const int8_t open_result = lfs_file_open(
         &LFS_filesystem, &file, filename,
-        LFS_O_RDWR | LFS_O_CREAT | LFS_O_APPEND
+        LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND
     );
 	if (open_result < 0) {
         // This error cannot be logged, except via UART or during an overpass 
