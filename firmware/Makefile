@@ -77,7 +77,15 @@ Core/Src/sysmem.c \
 Core/Src/syscalls.c \
 Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_iwdg.c \
 Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_adc.c \
-Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_adc_ex.c
+Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_adc_ex.c \
+lua/lapi.c lua/lcode.c lua/lctype.c lua/ldebug.c lua/ldo.c \
+lua/ldump.c lua/lfunc.c lua/lgc.c lua/llex.c lua/lmem.c \
+lua/lobject.c lua/lopcodes.c lua/lparser.c lua/lstate.c \
+lua/lstring.c lua/ltable.c lua/ltm.c lua/lundump.c lua/lvm.c \
+lua/lzio.c \ lua/lauxlib.c lua/lbaselib.c lua/lcorolib.c \
+lua/lmathlib.c lua/lstrlib.c lua/ltablib.c lua/lutf8lib.c
+
+
 
 # ASM sources
 ASM_SOURCES =  \
@@ -145,7 +153,8 @@ C_INCLUDES =  \
 -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 \
 -IMiddlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F \
 -IDrivers/CMSIS/Device/ST/STM32L4xx/Include \
--IDrivers/CMSIS/Include
+-IDrivers/CMSIS/Include \
+-Ilua
 
 
 # compile gcc flags
