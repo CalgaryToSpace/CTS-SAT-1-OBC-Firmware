@@ -58,6 +58,7 @@ typedef struct {
     uint8_t is_fs_mounted;
 
     uint16_t total_tcmd_queued_count;
+    uint16_t pending_queued_tcmd_count;
 
     uint32_t total_beacon_count_since_boot;
 
