@@ -159,6 +159,11 @@ uint8_t TCMD_parse_tcmds_from_file_and_enqueue(
 
         // Check if we've hit the limit.
         if (tcmd_count_success_enqueued >= max_enqueue_count) {
+            LOG_message(
+                LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+                "Agenda File: Reached max enqueue count (%lu). Shouldn't normally happen.",
+                tcmd_count_success_enqueued
+            );
             break;
         }
     }
