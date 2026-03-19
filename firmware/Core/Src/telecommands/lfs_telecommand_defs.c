@@ -681,6 +681,8 @@ uint8_t TCMDEXEC_fs_get_filesystem_stats_json(
 /// @return 0 on success. 1 on arg parsing errors.
 /// @note Can cause system to crash and reboot. Safe to use, but just be aware.
 /// @note Requires that `window_sz2 > lookahead_sz2`.
+/// @note Heatshrink does NOT embed the window sizes in the data.
+///       You must remember them, and use them when decompressing.
 uint8_t TCMDEXEC_fs_compress_file_with_heatshrink(
     const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
