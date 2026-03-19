@@ -22,4 +22,5 @@ Memory region         Used Size  Region Size  %age Used
     * FreeRTOS, for the task stacks
     * LittleFS, when opening a file
     * `exec_blob_from_fs` telecommand, with certain argument
+    * `fs_compress_file_with_heatshrink` telecommand
 * We must ensure the size of the FreeRTOS heap, allocated in the BSS RAM segment as a global byte array, is less than the sum of the stacks, and all other expected heap allocation uses.
