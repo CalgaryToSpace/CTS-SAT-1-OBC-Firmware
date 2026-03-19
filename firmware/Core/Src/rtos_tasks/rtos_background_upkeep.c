@@ -328,7 +328,8 @@ static void subtask_sync_obc_time_based_on_eps_time(void) {
     }
 }
 
-
+/// @brief A minute after bootup, append a JSONL line to `LFS_BOOT_LOG_FILE_NAME` with the latest boot timestamp.
+/// @note We wait a minute after boot in case LFS writes are the cause of the reset to allow for debugging/formatting/etc.
 static void subtask_write_boot_time_to_lfs(void) {
     static uint8_t has_writting_boot_log_yet = 0; // Persist across runs.
 
