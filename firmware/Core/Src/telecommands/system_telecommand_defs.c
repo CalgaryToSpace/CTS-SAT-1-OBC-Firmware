@@ -139,6 +139,7 @@ uint8_t TCMDEXEC_core_system_stats(
         "\"last_time_sync_source\":\"%c\","
         "\"time_of_last_tcmd_sent_ms\":%s,"
         "\"total_tcmd_count\":%lu,"
+        "\"pending_tcmd_count\":%u,"
         "\"total_beacon_count\":%lu,"
         "\"is_lfs_mounted\":%u,"
         "\"reboot_reason\":\"%s\","
@@ -159,6 +160,7 @@ uint8_t TCMDEXEC_core_system_stats(
         TIME_sync_source_enum_to_letter_char(TIME_last_synchronization_source), // last_time_sync_source
         time_of_last_tcmd_sent_ms_string, // time_of_last_tcmd_sent_ms
         TCMD_total_tcmd_queued_count, // total_tcmd_count
+        TCMD_get_agenda_used_slots_count(), // pending_tcmd_count
         COMMS_total_beacon_count_since_boot, // total_beacon_count
         LFS_is_lfs_mounted, // is_lfs_mounted
         STM32_reset_cause_name, // reboot_reason
