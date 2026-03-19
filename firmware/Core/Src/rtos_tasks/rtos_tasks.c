@@ -59,6 +59,8 @@ void TASK_DEBUG_print_heartbeat(void *argument) {
     }
 }
 
+static char main_response_output_buffer[TCMD_MAX_RESPONSE_BUFFER_LENGTH];
+
 void TASK_execute_telecommands(void *argument) {
     TASK_HELP_start_of_task();
 
@@ -96,11 +98,11 @@ void TASK_execute_telecommands(void *argument) {
             }
 
             // Execute the telecommand.
-            char response_output_buf[TCMD_MAX_RESPONSE_BUFFER_LENGTH] = {0};
+            memset(main_response_output_buffer, 0, TCMD_MAX_RESPONSE_BUFFER_LENGTH);
             TCMD_execute_telecommand_in_agenda(
                 next_tcmd_slot,
-                response_output_buf,
-                sizeof(response_output_buf)
+                main_response_output_buffer,
+                sizeof(main_response_output_buffer)
             );
 
             osDelay(1); // Very brief yield with consecutive telecommands.
