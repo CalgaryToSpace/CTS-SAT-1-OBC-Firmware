@@ -1208,7 +1208,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     },
 
     {
-        .tcmd_name = "TCMDEXEC_agenda_enqueue_from_file",
+        .tcmd_name = "agenda_enqueue_from_file",
         .tcmd_func = TCMDEXEC_agenda_enqueue_from_file,
         .number_of_args = 3,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION

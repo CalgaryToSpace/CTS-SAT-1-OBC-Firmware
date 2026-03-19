@@ -49,7 +49,7 @@ uint8_t TCMD_parse_tcmds_from_file_and_enqueue(
     );
     if (open_result < 0) {
         LOG_message(
-            LOG_SYSTEM_GNSS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
             "Error opening agenda file: %d", open_result
         );
         return 5;
@@ -71,7 +71,7 @@ uint8_t TCMD_parse_tcmds_from_file_and_enqueue(
         );
         if (read_result < 0) {
             LOG_message(
-                LOG_SYSTEM_GNSS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+                LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
                 "Error reading agenda file: %ld", read_result
             );
             return 6;
@@ -84,7 +84,7 @@ uint8_t TCMD_parse_tcmds_from_file_and_enqueue(
         // Append chunk to buffer (with overflow protection).
         if (line_len + read_result >= sizeof(line_buf)) {
             LOG_message(
-                LOG_SYSTEM_GNSS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+                LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
                 "TCMD buffer overflow while parsing agenda file (maybe line too long)."
             );
             return 7;
@@ -110,7 +110,7 @@ uint8_t TCMD_parse_tcmds_from_file_and_enqueue(
             char tcmd_str[TCMD_MAX_FULL_LENGTH];
             if (tcmd_len >= sizeof(tcmd_str)) {
                 LOG_message(
-                    LOG_SYSTEM_GNSS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+                    LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
                     "TCMD too long in agenda file."
                 );
                 return 8;

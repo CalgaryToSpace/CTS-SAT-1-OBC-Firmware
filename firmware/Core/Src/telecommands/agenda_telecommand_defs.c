@@ -106,6 +106,8 @@ uint8_t TCMDEXEC_agenda_enqueue_from_file(
     const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
+    const uint16_t pending_cmd_count_before = TCMD_get_agenda_used_slots_count();
+
     char arg_file_name[LFS_MAX_PATH_LENGTH];
 
     // Parse filename argument.
@@ -149,5 +151,26 @@ uint8_t TCMDEXEC_agenda_enqueue_from_file(
         100 // Max number of telecommands to enqueue (safety).
     );
 
-    return enqueue_result;
+    if (enqueue_result != 0) {
+        snprintf(
+            response_output_buf,
+            response_output_buf_len,
+            "Error enqueuing telecommands from file: Error %d",
+            enqueue_result
+        );
+        return enqueue_result;
+    }
+
+    const uint16_t pending_cmd_count_after = TCMD_get_agenda_used_slots_count();
+
+    snprintf(
+        response_output_buf,
+        response_output_buf_len,
+        "Successfully enqueued telecommands from file. Pending Commands: %d -> %d (%d added)",
+        pending_cmd_count_before,
+        pending_cmd_count_after,
+        pending_cmd_count_after - pending_cmd_count_before
+    );
+
+    return 0; // Success.
 }
