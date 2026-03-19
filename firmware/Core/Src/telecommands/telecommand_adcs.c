@@ -693,7 +693,7 @@ uint8_t TCMDEXEC_adcs_track_sun(const char *args_str,
     const uint8_t set_power_control_status = ADCS_set_power_control(
         ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON,
         ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, // Fine sensors on.
-        ADCS_POWER_SELECT_OFF, // Cube Start always off.
+        ADCS_POWER_SELECT_OFF, // CubeStar always off.
         ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, // Wheels on.
         ADCS_POWER_SELECT_OFF, // Motor off. // TODO: Confirm.
         ADCS_POWER_SELECT_OFF // GPS always off.
