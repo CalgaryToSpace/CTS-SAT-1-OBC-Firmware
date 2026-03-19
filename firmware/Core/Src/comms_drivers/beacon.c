@@ -20,6 +20,7 @@
 #include "mpi/mpi_command_handling.h"
 #include "mpi/mpi_types.h"
 #include "uart_handler/uart_handler.h"
+#include "gnss_receiver/gnss_internal_drivers.h"
 #include "rtos_tasks/rtos_bootup_operation_fsm_task.h"
 
 #include "telecommands/system_telecommand_defs.h"
@@ -88,7 +89,7 @@ void COMMS_fill_beacon_basic_packet(
     beacon_packet->mpi_last_reason_for_stopping_enum = MPI_last_reason_for_stopping_active_mode;
 
     beacon_packet->gnss_uart_interrupt_enabled = UART_gnss_uart_interrupt_enabled;
-    beacon_packet->gnss_rx_mode_enum = 0; // FIXME: Fill during PR #567 review.
+    beacon_packet->gnss_rx_mode_enum = GNSS_current_rx_mode;
 
     // The destination is already zero-filled, so we only copy in the friendly message.
     memcpy(
