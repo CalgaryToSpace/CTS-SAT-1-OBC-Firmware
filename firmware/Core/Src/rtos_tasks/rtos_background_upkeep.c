@@ -99,17 +99,14 @@ static void subtask_disable_adcs_if_eps_enters_safety_mode(void) {
             );
 
             // Disable ADCS power channels.
-            const uint8_t adcs_result = ADCS_set_power_control(
-                ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF,
-                ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF,
-                ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF
-            );
+            // Note: A naive implementation may use `ADCS_set_power_control()`.
+            // Note though that setting power control is disabled if run_mode ever gets set to non-zero.
+            // Instead, we do the foolproof `ADCS_reset()` here.
+            const uint8_t adcs_result = ADCS_reset();
             if (adcs_result != 0) {
                 LOG_message(
-                    LOG_SYSTEM_EPS,
-                    LOG_SEVERITY_ERROR,
-                    LOG_SINK_ALL,
-                    "EPS/ADCS Safety: ADCS_set_power_control() -> Error: %d",
+                    LOG_SYSTEM_EPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+                    "EPS/ADCS Safety: ADCS_reset() -> Error: %d",
                     adcs_result
                 );
             }
