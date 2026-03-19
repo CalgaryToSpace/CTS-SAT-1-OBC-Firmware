@@ -9,9 +9,8 @@
 // Memory-constrained.
 #define TCMD_AGENDA_SIZE 750
 
-/// Max number of timestamps that can be stored in the record at at time (for unique telecommand tssent validation).
-#define TCMD_TIMESTAMP_RECORD_SIZE 500
-
+/// Max number of tssent timestamp values that can be stored at a time (for unique telecommand tssent validation).
+#define TCMD_TIMESTAMP_RECORD_SIZE 750
 
 uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd);
 

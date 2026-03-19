@@ -5,7 +5,9 @@
 #include "littlefs/littlefs_helper.h"
 #include "log/log.h"
 
-static char *TCMD_active_agenda_filename_disabled_sentinel = "DISABLED";
+/// @brief When `TCMD_active_agenda_filename` is set to this value, agenda loading is disabled.
+char *TCMD_active_agenda_filename_disabled_sentinel = "DISABLED";
+
 
 /// @brief The file path of the agenda file to load upcoming telecommands from.
 /// @warning While a default agenda is set, it is critical to understand that you SHOULD NOT
@@ -24,7 +26,7 @@ char TCMD_active_agenda_filename[LFS_MAX_PATH_LENGTH] = "default_tcmd_agenda.txt
 /// @brief Parses a file of telecommands and enqueues them into the agenda.
 /// @param file_path Path to file with one telecommand per line.
 /// @param min_tsexec_inclusive Filter to only telecommands with `tsexec` greater than or equal to this value.
-/// @param max_tsexec_inclusive Filter to only telecommands with `tsexec` less than or equal to this value.
+/// @param max_tsexec_exclusive Filter to only telecommands with `tsexec` less than this value.
 /// @param max_enqueue_count Maximum number of telecommands to enqueue. Stop after this many successes. Mostly for safety.
 /// @return 0 on success.
 /// @details The file should have one telecommand per line, like so: `CTS1+xxx(...)!\nCTS1+yyy(...)!\n`
@@ -32,7 +34,7 @@ char TCMD_active_agenda_filename[LFS_MAX_PATH_LENGTH] = "default_tcmd_agenda.txt
 ///     for each telecommand, and enabling the `TCMD_require_unique_tssent` config option.
 uint8_t TCMD_parse_tcmds_from_file_and_enqueue(
     const char *file_path,
-    uint64_t min_tsexec_inclusive, uint64_t max_tsexec_inclusive,
+    uint64_t min_tsexec_inclusive, uint64_t max_tsexec_exclusive,
     uint16_t max_enqueue_count
 ) {
     if (strcmp(file_path, TCMD_active_agenda_filename_disabled_sentinel) == 0) {
@@ -126,7 +128,7 @@ uint8_t TCMD_parse_tcmds_from_file_and_enqueue(
             if (parse_result == 0) {
                 // Apply tsexec filter.
                 if (parsed.timestamp_to_execute >= min_tsexec_inclusive &&
-                    parsed.timestamp_to_execute <= max_tsexec_inclusive
+                    parsed.timestamp_to_execute < max_tsexec_exclusive
                 ) {
                     // Enqueue the command.
                     TCMD_add_tcmd_to_agenda(&parsed);

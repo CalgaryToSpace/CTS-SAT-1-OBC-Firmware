@@ -12,6 +12,7 @@
 
 #include <stdint.h>
 
+#include "littlefs/littlefs_constants.h"
 #include "littlefs/flash_driver.h"
 #include "littlefs/lfs.h"
 
@@ -20,9 +21,6 @@ extern struct lfs_config LFS_cfg;
 extern struct lfs_file_config LFS_file_cfg;
 extern uint8_t LFS_is_lfs_mounted;
 
-/// @brief The maximum path length supported by CTS-SAT-1, including the null terminator.
-/// @note LittleFS supports up to 255 bytes by default, but we'll restrict a bit under.
-#define LFS_MAX_PATH_LENGTH 200
 
 /*---------------------------FUNCTIONS---------------------------*/
 uint8_t LFS_init();

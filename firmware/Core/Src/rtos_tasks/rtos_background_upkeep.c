@@ -16,6 +16,8 @@
 #include "littlefs/littlefs_helper.h"
 #include "stm32/stm32_reboot_reason.h"
 #include "adcs_drivers/adcs_commands.h"
+#include "transforms/number_comparisons.h"
+#include "telecommand_exec/agenda_from_file.h"
 
 #include "cmsis_os.h"
 
@@ -59,6 +61,16 @@ uint32_t EPS_max_time_deviation_for_sync_ms = 2000;
 /// @note Default: 20000 ms = 20 seconds (fastest rate we're globally authorized for).
 uint32_t COMMS_beacon_interval_ms = 20000;
 static const uint32_t COMMS_beacon_interval_ms_default_value = 20000; // Used for reset if no uplinks received.
+
+/// @brief Interval between enqueuing telecommands from the agenda file, in ms.
+/// @note Default: 45000 ms = 45 seconds
+uint32_t TCMD_enqueue_from_agenda_file_interval_ms = 45000;
+
+/// @brief When enqueuing telecommands from a file, gracefully handle time resync values <= this value.
+/// @note Default: 15000 ms = 15 seconds
+/// @note If the time resync is more than this value, then a chunk of the agenda file will be discarded,
+///       or commands may be re-enqueued and re-executed.
+uint32_t TCMD_enqueue_grace_period_ms = 15000;
 
 uint32_t COMMS_total_beacon_count_since_boot = 0;
 
@@ -392,6 +404,77 @@ static void subtask_write_boot_time_to_lfs(void) {
 }
 
 
+/// @brief Enqueue telecommands from the `TCMD_active_agenda_filename` file.
+/// @param  
+/// @details On each run, enqueue telecommands from the agenda file.
+///       - Nominally (no large time resyncs), enqueue telecommands with tsexec from the last enqueue runtime
+///         until <run interval> in the future.
+///       - In case of large time resyncs fordward in time (including the first run), enqueue telecommands
+///         with tsexec within the last 15 seconds max, potentially discarding older chunks of the agenda.
+///       - In case of large time resyncs backward in time (rare, off-nominal), commands maybe be re-enqueued
+///         and re-executed (unless tssent unique enforcement is enabled).
+static void subtask_enqueue_tcmds_from_agenda_file(void) {
+    static uint32_t subtask_last_ran_ms = 0;
+    static uint64_t last_enqueue_max_filter_unix_timestamp_ms = 0;
+
+    if (HAL_GetTick() < 65000) { // Hard-coded startup grace period.
+        // Safety: Avoid running this part for the first 65 seconds.
+        // Has the potential to break the system a bit (e.g., bad agenda file with default name),
+        // so we give a grace period here before used this feature.
+        return;
+    }
+
+    // Run the main subtask.
+    if ((HAL_GetTick() - subtask_last_ran_ms) > TCMD_enqueue_from_agenda_file_interval_ms) {
+        subtask_last_ran_ms = HAL_GetTick();
+
+        // Start working out the filter settings.
+        const uint64_t current_unix_epoch_time_ms = TIME_get_current_unix_epoch_time_ms();
+
+        // Nominally, the last "filter max" becomes this run's "filter min".
+        uint64_t min_filter_unix_timestamp_ms = last_enqueue_max_filter_unix_timestamp_ms;
+        // Safety: Must restrict to no longer ago than "TCMD_enqueue_from_agenda_file_interval_ms + 15 sec time resync allowance".
+        // Basically, allow small time resyncs since the last run, but skip a chunk of the agenda if the resync was too large.
+        const int64_t apparent_time_since_last_run_ms = (
+            (int64_t)current_unix_epoch_time_ms - ((int64_t)last_enqueue_max_filter_unix_timestamp_ms)
+        );
+        if (
+            GEN_abs_int64(apparent_time_since_last_run_ms)
+            > (TCMD_enqueue_from_agenda_file_interval_ms + TCMD_enqueue_grace_period_ms)
+        ) {
+            // Shouldn't happen too much. Could maybe think harder about whether we want to add/subtract 15 sec leeway here,
+            // but we'll just set it to the nominal value.
+            min_filter_unix_timestamp_ms = current_unix_epoch_time_ms;
+
+            if (last_enqueue_max_filter_unix_timestamp_ms != 0) { // Skip warning on first run (which expects this case).
+                LOG_message(
+                    LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+                    "Enqueue from agenda file: Large time resync/delay detected. Potentially skipping or re-enqueuing an agenda file chunk."
+                );
+            }
+        }
+
+        // The max filter is the current time, plus the subtask interval.
+        uint64_t max_filter_unix_timestamp_ms = (
+            current_unix_epoch_time_ms + TCMD_enqueue_from_agenda_file_interval_ms
+            // Right now, enqueue even further into the future in case this task runs late.
+            + TCMD_enqueue_grace_period_ms
+        );
+
+        // Scan the file, filter, and enqueue from the file.
+        TCMD_parse_tcmds_from_file_and_enqueue(
+            TCMD_active_agenda_filename,
+            min_filter_unix_timestamp_ms,
+            max_filter_unix_timestamp_ms,
+            100 // Allow up to 100 per run.
+        );
+        
+        // Store this value for next time so that we can enqueue the next chunk.
+        last_enqueue_max_filter_unix_timestamp_ms = max_filter_unix_timestamp_ms;
+    }
+}
+
+
 void TASK_background_upkeep(void *argument) {
     TASK_HELP_start_of_task();
     while(1) {
@@ -426,6 +509,9 @@ void TASK_background_upkeep(void *argument) {
         osDelay(10); // Yield.
 
         subtask_write_boot_time_to_lfs();
+        osDelay(10);
+
+        subtask_enqueue_tcmds_from_agenda_file();
         osDelay(10);
         
         osDelay(1000);
