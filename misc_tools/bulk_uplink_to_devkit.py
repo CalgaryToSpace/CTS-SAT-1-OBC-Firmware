@@ -237,7 +237,7 @@ def main():
 
     send_file_over_uart(
         input_file_path=input_file_path,
-        output_file=args.output_file,
+        output_file=args.output_file or input_file_path.name,
         uart_port=args.port,
         baudrate=int(args.baudrate),
         chunk_size=int(args.chunk_size),
