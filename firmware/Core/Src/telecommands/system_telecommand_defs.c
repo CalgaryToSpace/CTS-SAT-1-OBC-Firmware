@@ -138,7 +138,7 @@ uint8_t TCMDEXEC_core_system_stats(
         "\"last_time_resync_ms\":%lu,"
         "\"time_synced_ms_ago\":%lu,"
         "\"last_time_sync_source\":\"%c\","
-        "\"time_of_last_tcmd_sent_ms\":%s,"
+        "\"last_tcmd_tssent_ms\":%s,"
         "\"total_tcmd_count\":%lu,"
         "\"pending_tcmd_count\":%u,"
         "\"total_beacon_count\":%lu,"
@@ -159,7 +159,7 @@ uint8_t TCMDEXEC_core_system_stats(
         TIME_system_uptime_at_last_time_resync_ms, // last_time_resync_ms
         TIME_get_current_system_uptime_ms() - TIME_system_uptime_at_last_time_resync_ms, // time_synced_ms_ago
         TIME_sync_source_enum_to_letter_char(TIME_last_synchronization_source), // last_time_sync_source
-        time_of_last_tcmd_sent_ms_string, // time_of_last_tcmd_sent_ms
+        time_of_last_tcmd_sent_ms_string, // last_tcmd_tssent_ms (not actually that useful - as-reported from the ground)
         TCMD_total_tcmd_queued_count, // total_tcmd_count
         TCMD_get_agenda_used_slots_count(), // pending_tcmd_count
         COMMS_total_beacon_count_since_boot, // total_beacon_count
