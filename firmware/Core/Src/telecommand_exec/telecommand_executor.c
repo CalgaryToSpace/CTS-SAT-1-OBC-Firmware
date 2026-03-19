@@ -214,7 +214,7 @@ static int8_t TCMD_store_resp_to_file(
     );
 
     const lfs_ssize_t header_write_result = lfs_file_write(
-        &LFS_filesystem, &file, (const uint8_t *)header_msg, strlen(header_msg)
+        &LFS_filesystem, &file, header_msg, strlen(header_msg)
     );
     if (header_write_result < 0) {
         LOG_message(
@@ -271,19 +271,19 @@ static int8_t TCMD_store_resp_to_file(
 }
 
 /// @brief Executes a telecommand immediately, based on the minimum info required to execute a telecommand.
-/// @param tcmd_idx The index into `TCMD_telecommand_definitions` for the telecommand to execute.
-/// @param args_str_no_parens A cstring containing the arguments for the telecommand. Null-terminated.
-/// @param timestamp_sent The value of the `@tssent` field when the telecommand was received.
+/// @param parsed_tcmd The parsed telecommand to execute (index, args, timestamp sent, destination file).
 /// @param response_output_buf A buffer to store the response from the telecommand.
 /// @param response_output_buf_size The size of the `response_output_buf`.
 /// @return 0 on success, 254 if `tcmd_idx` is out of bounds, otherwise the error code from the telecommand function.
 static uint8_t TCMD_execute_parsed_telecommand_now(
-    const uint16_t tcmd_idx,
-    const char args_str_no_parens[],
-    const uint64_t timestamp_sent,
-    const char * tcmd_resp_fname,
+    const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd,
     char *response_output_buf, uint16_t response_output_buf_size
 ) {
+    const uint16_t tcmd_idx = parsed_tcmd->tcmd_idx;
+    const char *args_str_no_parens = parsed_tcmd->args_str_no_parens;
+    const uint64_t timestamp_sent = parsed_tcmd->timestamp_sent;
+    const char *tcmd_resp_fname = parsed_tcmd->resp_fname;
+    
     // Get the telecommand definition.
     if (tcmd_idx >= TCMD_NUM_TELECOMMANDS) {
         LOG_message(
@@ -394,10 +394,7 @@ uint8_t TCMD_execute_telecommand_in_agenda(
 
     // Execute the telecommand.
     const uint8_t exec_result = TCMD_execute_parsed_telecommand_now(
-        TCMD_agenda[tcmd_agenda_slot_num].tcmd_idx,
-        TCMD_agenda[tcmd_agenda_slot_num].args_str_no_parens,
-        TCMD_agenda[tcmd_agenda_slot_num].timestamp_sent,
-        TCMD_agenda[tcmd_agenda_slot_num].resp_fname,
+        &TCMD_agenda[tcmd_agenda_slot_num],
         response_output_buf,
         response_output_buf_size
     );
