@@ -4,6 +4,7 @@
 #include "rtos_tasks/rtos_bootup_operation_fsm_task.h"
 #include "comms_drivers/rf_antenna_switch.h"
 #include "rtos_tasks/rtos_bulk_downlink_task.h"
+#include "littlefs/littlefs_helper.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -161,6 +162,7 @@ char CONFIG_str_demo_var_1[25] = "CONFIG_str_demo_var_1";
 char CONFIG_str_demo_var_2[50] = "CONFIG_str_demo_var_2";
 
 extern char COMMS_beacon_friendly_message_str[COMMS_BEACON_FRIENDLY_MESSAGE_SIZE];
+extern char TCMD_active_agenda_filename[LFS_MAX_PATH_LENGTH];
 
 // extern
 CONFIG_string_config_entry_t CONFIG_str_config_variables[] = {
@@ -178,6 +180,11 @@ CONFIG_string_config_entry_t CONFIG_str_config_variables[] = {
         .variable_name = "COMMS_beacon_friendly_message_str",
         .variable_pointer = COMMS_beacon_friendly_message_str,
         .max_length = sizeof(COMMS_beacon_friendly_message_str)
+    },
+    {
+        .variable_name = "TCMD_active_agenda_filename",
+        .variable_pointer = TCMD_active_agenda_filename,
+        .max_length = sizeof(TCMD_active_agenda_filename)
     },
 };
 

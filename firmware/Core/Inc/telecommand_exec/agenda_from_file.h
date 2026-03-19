@@ -1,0 +1,8 @@
+#ifndef INCLUDE_GUARD__AGENDA_FROM_FILE_H
+#define INCLUDE_GUARD__AGENDA_FROM_FILE_H
+
+#include <stdint.h>
+
+
+
+#endif // INCLUDE_GUARD__AGENDA_FROM_FILE_H
