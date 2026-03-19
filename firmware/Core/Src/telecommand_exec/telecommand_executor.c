@@ -46,8 +46,8 @@ uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd
             continue;
         }
 
-        // Skip if timstamps are not needed.
-        if(TCMD_require_unique_tssent) {
+        // If this is a duplicate telecommand, and we're enforcing that, skip it.
+        if (TCMD_require_unique_tssent) {
             // Check to see if timestamp is in the circular buffer.
             for (uint32_t i = 0; i < TCMD_timestamp_sent_head; i++) {
                 if(parsed_tcmd->timestamp_sent == TCMD_timestamp_sent_store[i]) {
