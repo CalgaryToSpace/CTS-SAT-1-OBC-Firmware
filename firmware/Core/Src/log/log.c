@@ -13,6 +13,16 @@
 
 // Inspired by uLog: https://github.com/rdpoor/ulog
 
+/// @brief Format for the timestamp prefix.
+/// @details Options:
+///   - 0=synctime+offset
+///   - 1=ISO8601-like datetime with ms
+///   - 2=ISO8601-like datetime without ms
+///   - other=synctime+offset (fallback)
+/// @note Configurable with the configuration telecommand.
+/// @note Could be an enum in a perfect world, but using int for speed of implementation.
+uint32_t LOG_timestamp_prefix_format = 0;
+
 // Internal interfaces and variables
 #define LOG_TIMESTAMP_MAX_LENGTH 30
 #define LOG_SINK_NAME_MAX_LENGTH 10
@@ -151,8 +161,21 @@ void LOG_message(LOG_system_enum_t system, LOG_severity_enum_t severity, uint32_
         }
     }
 
-    // Get the system time
-    TIME_get_current_timestamp_str(LOG_timestamp_string, LOG_TIMESTAMP_MAX_LENGTH);
+    // Get the system time.
+    switch (LOG_timestamp_prefix_format) {
+        case 0:
+            TIME_get_current_timestamp_str(LOG_timestamp_string, LOG_TIMESTAMP_MAX_LENGTH);
+            break;
+        case 1:
+            TIME_get_current_utc_datetime_str(LOG_timestamp_string, LOG_TIMESTAMP_MAX_LENGTH);
+            break;
+        case 2:
+            TIME_get_current_utc_datetime_str_no_ms(LOG_timestamp_string, LOG_TIMESTAMP_MAX_LENGTH);
+            break;
+        default:
+            TIME_get_current_timestamp_str(LOG_timestamp_string, LOG_TIMESTAMP_MAX_LENGTH);
+            break;
+    }
 
     // Get pointer to next storage slot in circular memory table
     LOG_memory_index_of_current_log_entry++;
