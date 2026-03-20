@@ -11,18 +11,21 @@
 
 
 typedef enum {
-    TCMD_READINESS_LEVEL_IDEA_PHASE, 
-    TCMD_READINESS_LEVEL_NOT_IMPLEMENTED, 
-    TCMD_READINESS_LEVEL_IN_PROGRESS, 
+    // For commands which are intended for normal operation in flight.
+    TCMD_READINESS_LEVEL_FOR_OPERATION = 0,
 
-    // Especially for commands which only work over the umbilical UART 
-    TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
+    // For commands which are generally safe to use in flight, but which shouldn't regularly be used,
+    // and which require expert knowledge on the mechanism of operation.
+    TCMD_READINESS_LEVEL_FOR_RECOVERY_OR_EXPERT = 10,
 
-    // For commands like "test the flash memory", which corrupts the filesystem but is flight safe
-    TCMD_READINESS_LEVEL_FLIGHT_TESTING,
+    // For commands like "test the flash memory", which corrupts the filesystem but is flight-safe.
+    TCMD_READINESS_LEVEL_FLIGHT_TESTING = 20,
 
-    // For commands which are intended for normal operation in flight
-    TCMD_READINESS_LEVEL_FOR_OPERATION
+    // Especially for commands which only work over the umbilical UART.
+    TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY = 30,
+
+    // For commands which are high risk and unsafe.
+    TCMD_READINESS_LEVEL_HIGH_RISK_AND_UNSAFE = 40,
 } TCMD_readiness_level_enum_t;
 
 typedef uint8_t (*TCMD_TCMDEXEC_Function_Ptr)(const char *args_str,
