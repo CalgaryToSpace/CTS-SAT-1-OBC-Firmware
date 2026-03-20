@@ -64,7 +64,7 @@ uint8_t TCMD_parse_tcmds_from_file_and_enqueue(
     }
 
     char file_chunk[TCMD_MAX_FULL_LENGTH];
-    char line_buf[TCMD_MAX_FULL_LENGTH * 2]; // allow spillover across chunks
+    char line_buf[TCMD_MAX_FULL_LENGTH * 2];
     size_t line_len = 0;
 
     uint32_t tcmd_count_success_enqueued = 0;
@@ -82,6 +82,7 @@ uint8_t TCMD_parse_tcmds_from_file_and_enqueue(
                 LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
                 "Error reading agenda file: %ld", read_result
             );
+            lfs_file_close(&LFS_filesystem, &agenda_file);
             return 6;
         }
         if (read_result == 0) {
@@ -95,6 +96,7 @@ uint8_t TCMD_parse_tcmds_from_file_and_enqueue(
                 LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
                 "TCMD buffer overflow while parsing agenda file (maybe line too long)."
             );
+            lfs_file_close(&LFS_filesystem, &agenda_file);
             return 7;
         }
 
@@ -105,7 +107,7 @@ uint8_t TCMD_parse_tcmds_from_file_and_enqueue(
         size_t start_idx = 0;
 
         for (size_t i = 0; i + 1 < line_len; i++) {
-            // Skip over any positions that aren't "!\n". Specifically looking to locate the full end.
+            // Skip over any positions that aren't "!\n". Specifically looking to locate the end.
             if (!(line_buf[i] == '!' && line_buf[i + 1] == '\n')) {
                 continue;
             }
@@ -116,18 +118,19 @@ uint8_t TCMD_parse_tcmds_from_file_and_enqueue(
 
             // Copy into null-terminated string.
             char tcmd_str[TCMD_MAX_FULL_LENGTH];
-            if (tcmd_len >= sizeof(tcmd_str)) {
+            if (tcmd_len + 1 >= sizeof(tcmd_str)) { // +1 for '\0'
                 LOG_message(
                     LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
                     "TCMD too long in agenda file."
                 );
+                lfs_file_close(&LFS_filesystem, &agenda_file);
                 return 8;
             }
 
             memcpy(tcmd_str, &line_buf[start_idx], tcmd_len);
             tcmd_str[tcmd_len] = '\0';
 
-            // Parse telecommand
+            // Parse telecommand.
             TCMD_parsed_tcmd_to_execute_t parsed;
             const uint8_t parse_result = TCMD_parse_full_telecommand(
                 tcmd_str, &parsed
@@ -140,7 +143,6 @@ uint8_t TCMD_parse_tcmds_from_file_and_enqueue(
                 ) {
                     // Enqueue the command.
                     TCMD_add_tcmd_to_agenda(&parsed);
-
                     tcmd_count_success_enqueued++;
                 }
                 else {
@@ -149,7 +151,7 @@ uint8_t TCMD_parse_tcmds_from_file_and_enqueue(
             } else {
                 LOG_message(
                     LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
-                    "Failed to parse TCMD: %s (err=%u)", tcmd_str, parse_result
+                    "Agenda File: Failed to parse TCMD: %s (err=%u)", tcmd_str, parse_result
                 );
                 tcmd_count_failed_parsing++;
             }
@@ -176,6 +178,15 @@ uint8_t TCMD_parse_tcmds_from_file_and_enqueue(
         }
     }
 
+    const int8_t close_result = lfs_file_close(&LFS_filesystem, &agenda_file);
+    if (close_result != 0) {
+        LOG_message(
+            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
+            "Error closing agenda file: %d", close_result
+        );
+        // Streamroll to print logs.
+    }
+
     if (tcmd_count_failed_parsing > 0) {
         LOG_message(
             LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
@@ -185,16 +196,14 @@ uint8_t TCMD_parse_tcmds_from_file_and_enqueue(
         );
     }
 
-    if (tcmd_count_failed_parsing > 0) {
-        LOG_message(
-            LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
-            "Agenda File: Parsed %lu telecommands and enqueued %lu. Failed to parse %lu/%lu telecommands.",
-            tcmd_count_success_enqueued + tcmd_count_success_but_filtered,
-            tcmd_count_success_enqueued,
-            tcmd_count_failed_parsing,
-            tcmd_count_success_enqueued + tcmd_count_success_but_filtered + tcmd_count_failed_parsing
-        );
-    }
+    LOG_message(
+        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_NORMAL, LOG_SINK_ALL,
+        "Agenda File: Parsed %lu telecommands and enqueued %lu. Failed to parse %lu/%lu telecommands.",
+        tcmd_count_success_enqueued + tcmd_count_success_but_filtered,
+        tcmd_count_success_enqueued,
+        tcmd_count_failed_parsing,
+        tcmd_count_success_enqueued + tcmd_count_success_but_filtered + tcmd_count_failed_parsing
+    );
 
     return 0; // Success.
 }
