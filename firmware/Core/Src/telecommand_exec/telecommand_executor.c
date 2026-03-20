@@ -21,7 +21,10 @@ uint64_t TCMD_latest_received_tcmd_timestamp_sent = 0;
 
 
 ///@brief  The head of the circular buffer of timestamps of telecommands that have been sent.
+/// @note This is an index into `TCMD_timestamp_sent_store`.
 uint16_t  TCMD_timestamp_sent_head = 0;
+/// @brief Counter of the number of used slots at the start of `TCMD_timestamp_sent_store`.
+uint16_t  TCMD_timestamp_sent_used_slots = 0;
 /// @brief The circular buffer of timestamps of telecommands that have been sent.
 uint64_t TCMD_timestamp_sent_store[TCMD_TIMESTAMP_RECORD_SIZE] = {0};
 
@@ -50,11 +53,13 @@ uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd
         // If this is a duplicate telecommand, and we're enforcing that, skip it.
         if (TCMD_require_unique_tssent) {
             // Check to see if timestamp is in the circular buffer.
-            for (uint32_t i = 0; i < TCMD_timestamp_sent_head; i++) {
+            // Loop upperbound: Search to the end, because it's circular. It's initialized with zeros,
+            // so tssent=0 will cause a rejection/error here (which is good/as planned).
+            for (uint32_t i = 0; i < TCMD_timestamp_sent_used_slots; i++) {
                 if (parsed_tcmd->timestamp_sent == TCMD_timestamp_sent_store[i]) {
                     // Skip this telecommand.
                     LOG_message(
-                        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
+                        LOG_SYSTEM_TELECOMMAND, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
                         "Telecommand skipped due to repeated tssent."
                     );
                     return 20;
@@ -67,6 +72,12 @@ uint8_t TCMD_add_tcmd_to_agenda(const TCMD_parsed_tcmd_to_execute_t *parsed_tcmd
         if (parsed_tcmd->timestamp_sent > 0) {
             TCMD_timestamp_sent_store[TCMD_timestamp_sent_head] = parsed_tcmd->timestamp_sent;
             TCMD_timestamp_sent_head = (TCMD_timestamp_sent_head + 1) % TCMD_TIMESTAMP_RECORD_SIZE;
+
+            // Increase the used slots count up until it hits TCMD_TIMESTAMP_RECORD_SIZE, then
+            // leave it equal to TCMD_TIMESTAMP_RECORD_SIZE.
+            if (TCMD_timestamp_sent_used_slots < (TCMD_TIMESTAMP_RECORD_SIZE - 1)) {
+                TCMD_timestamp_sent_used_slots++;
+            }
         }
 
         // Copy the parsed telecommand into the agenda.
