@@ -89,7 +89,14 @@ def main() -> None:
     print(f"Reconstructed file saved to: {output_file_path}")
 
     print(f"Output file size: {output_file_path.stat().st_size:,} bytes")
-    print(f"SHA-256 hash: {calculate_sha256(output_file_path)}")
+
+    sha256_hash = calculate_sha256(output_file_path)
+    print(f"SHA-256 hash: {sha256_hash}")
+
+    if sha256_hash.lower() in log_file_path.read_text().lower():
+        print("🟢🟢 SHA-256 hash matches a value in the log file! Very good! 🟢🟢")
+    else:
+        print("🟡 SHA-256 hash not found in the input log file. Maybe the command wasn't run?")
 
 
 if __name__ == "__main__":
