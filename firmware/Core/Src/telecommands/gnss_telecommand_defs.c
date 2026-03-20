@@ -7,6 +7,7 @@
 #include "log/log.h"
 #include "littlefs/littlefs_helper.h"
 #include "main.h"
+#include "transforms/arrays.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,7 +38,8 @@ uint8_t TCMDEXEC_gnss_send_cmd_ascii(
     // Send log command to GNSS and receive response
     const uint8_t gnss_cmd_status = GNSS_send_cmd_get_response(
         gnss_log_cmd, gnss_log_cmd_len, rx_buffer, rx_buffer_max_size,
-        &rx_buffer_len // Will be mutated.
+        &rx_buffer_len, // Will be mutated.
+        1 // Remove null bytes in the middle.
     );
 
     // Handle the gnss_cmd_status: Perform the error checks
@@ -51,25 +53,62 @@ uint8_t TCMDEXEC_gnss_send_cmd_ascii(
         );
     }
 
-    int32_t written_count = snprintf(
+    snprintf(
         response_output_buf, response_output_buf_len,
-        "GNSS Response (%d bytes): ",
-        rx_buffer_len
+        "GNSS Response (%d chars): %s",
+        rx_buffer_len,
+        rx_buffer
     );
-    
-    // Copy in the response, skipping null bytes.
-    for (uint16_t i = 0; i < rx_buffer_len; i++) {
-        if (written_count >= response_output_buf_len) {
-            break;
-        }
-
-        if (rx_buffer[i] != '\0') {
-            response_output_buf[written_count] = rx_buffer[i];
-            written_count++;
-        }
-    }
 
     return gnss_cmd_status;
+}
+
+
+/// @brief Send a command to the GNSS (text) and receive the response as hex.
+/// @param args_str
+/// - Arg 0: Log command to be sent to GNSS eg "log bestxyzb once" (string)
+/// @param response_output_buf The buffer to write the response to (output as hex)
+/// @param response_output_buf_len The maximum length of the response_output_buf (its size)
+/// @return 0 on success, > 0 error
+uint8_t TCMDEXEC_gnss_send_cmd_ascii_get_response_hex(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    // Adding a new line character to the log command
+    char gnss_log_cmd[128];
+    snprintf(gnss_log_cmd, sizeof(gnss_log_cmd), "%s\n", args_str);
+    const uint16_t gnss_log_cmd_len = strlen(gnss_log_cmd);
+
+    // Allocate space to receive incoming GNSS response.
+    const uint16_t rx_buffer_max_size = 512;
+    uint16_t rx_buffer_len = 0;
+    uint8_t rx_buffer[rx_buffer_max_size];
+    memset(rx_buffer, 0, rx_buffer_max_size); // Initialize all elements to 0
+
+    // Send log command to GNSS and receive response
+    const uint8_t gnss_cmd_status = GNSS_send_cmd_get_response(
+        gnss_log_cmd, gnss_log_cmd_len, rx_buffer, rx_buffer_max_size,
+        &rx_buffer_len, // Will be mutated.
+        0 // KEEP null bytes in the response.
+    );
+
+    // Handle the gnss_cmd_status: Perform the error checks
+    // TODO: Potentially add GNSS_validate_log_response function in here to validate response from the gnss receiver
+
+    if (gnss_cmd_status != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "GNSS_send_cmd_get_response failed -> %d",
+            gnss_cmd_status
+        );
+    }
+
+    GEN_byte_array_to_hex_str(
+        rx_buffer, rx_buffer_len,
+        response_output_buf, response_output_buf_len
+    );
+
+    return 0; // Success.
 }
 
 

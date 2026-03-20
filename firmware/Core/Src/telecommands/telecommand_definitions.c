@@ -1460,6 +1460,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
+        .tcmd_name = "gnss_gnss_send_cmd_ascii_get_response_hex",
+        .tcmd_func = TCMDEXEC_gnss_send_cmd_ascii_get_response_hex,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+    {
         .tcmd_name = "gnss_enable_firehose_storage_mode",
         .tcmd_func = TCMDEXEC_gnss_enable_firehose_storage_mode,
         .number_of_args = 1,

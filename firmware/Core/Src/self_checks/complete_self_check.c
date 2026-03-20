@@ -94,7 +94,8 @@ static uint8_t CTS1_check_is_gnss_responsive() {
         cmd, strlen(cmd),
         rx_buf,
         sizeof(rx_buf),
-        &rx_buf_received_len
+        &rx_buf_received_len,
+        1 // remove_null_bytes_in_middle = true
     );
 
     // Clean up: Disable the GNSS UART interrupt.
