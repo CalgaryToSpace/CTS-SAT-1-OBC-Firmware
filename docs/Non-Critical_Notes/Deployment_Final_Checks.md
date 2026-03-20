@@ -36,12 +36,12 @@ The following checks involve executing code and/or telecommands.
 2. Are there any large VLA allocations? Can/should any be replaced with static allocations?
     * Maybe enable `-Wvla` or `-Wstack-usage`? Not sure what they are yet.
 3. Maybe enable compiler optimizations?
-4. Ensure that the Golden Copy is mapped in STM32L4R5ZITx_FLASH.ld file as such:
+4. Ensure that the Golden Copy is mapped in STM32L4R5XX_FLASH.ld file as such:
     ```
-    GOLDEN_COPY (xrw) : ORIGIN = 0x8100000, LENGTH = 1024K
+    FLASH_BANK_2 (xrw) : ORIGIN = 0x8100000, LENGTH = 1024K
     ```
     This is the linker script. The length can change.
-5. Ensure that we have flashed the golden copy of the OS to the GOLDEN_COPY address defined in the linker script ```STM32L4R5ZITx_FLASH.ld```
+5. Ensure that we have flashed the golden copy of the OS to the `FLASH_BANK_2` address defined in the linker script ```STM32L4R5XX_FLASH.ld```
 6. Ensure all tasks are registered in the `FREERTOS_task_info_struct_t FREERTOS_task_handles_array []` array. Consider a unit test for this check, maybe.
 7. Ensure the BOOT0 pin configuration is applied using STM32CubeProgrammer.
     * nSWBOOT0 = Unchecked (use software config)
