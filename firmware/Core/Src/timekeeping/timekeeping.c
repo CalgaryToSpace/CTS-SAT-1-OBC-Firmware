@@ -16,10 +16,10 @@ static char TIME_unix_epoch_time_at_last_time_resync_ms_str[14] = "0000000000000
 uint32_t TIME_system_uptime_at_last_time_resync_ms = 0;
 TIME_sync_source_enum_t TIME_last_synchronization_source = TIME_SYNC_SOURCE_NONE;
 
-uint32_t TIME_uptime_ms(void) {
-    // return HAL_GetTick(); -> Slow to call that function. Instead, inline it here.
-    return uwTick;
-}
+volatile uint32_t TIME_uptime_ms_from_tim6 = 0;
+
+// Note: Inline function defined in header.
+extern uint32_t TIME_uptime_ms(void);
 
 /// @brief Use this function in a telecommand, or upon receiving a time update from the GNSS. 
 void TIME_set_current_unix_epoch_time_ms(uint64_t current_unix_epoch_time_ms, TIME_sync_source_enum_t source) {

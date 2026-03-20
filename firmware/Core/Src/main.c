@@ -314,6 +314,9 @@ int main(void)
   MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
 
+  // Enable the TIM6 callback to provide 1ms timebase.
+  HAL_TIM_Base_Start_IT(&htim6);
+
   DEBUG_uart_print_str("\n\nMX_Init() done\n");
 
   // Start the callback interrupts for the UART channels.
@@ -1281,11 +1284,17 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   /* USER CODE BEGIN Callback 0 */
 
+  extern uint32_t TIME_uptime_ms_from_tim6;
+
   /* USER CODE END Callback 0 */
   if (htim->Instance == TIM1) {
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
+
+  if (htim->Instance == TIM6) {
+    TIME_uptime_ms_from_tim6++;
+  }
 
   /* USER CODE END Callback 1 */
 }
