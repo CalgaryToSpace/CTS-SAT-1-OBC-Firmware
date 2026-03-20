@@ -134,7 +134,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "exec_blob_from_fs",
         .tcmd_func = TCMDEXEC_exec_blob_from_fs,
         .number_of_args = 3,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_RECOVERY_OR_EXPERT,
     },
     {
         .tcmd_name = "scan_i2c_bus",
@@ -277,7 +277,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "flash_activate_each_cs",
         .tcmd_func = TCMDEXEC_flash_activate_each_cs,
         .number_of_args = 0,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+        .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
     },
     {
         .tcmd_name = "flash_each_is_reachable",
@@ -313,7 +313,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "flash_reset",
         .tcmd_func = TCMDEXEC_flash_reset,
         .number_of_args = 1,
-        .readiness_level = TCMD_READINESS_LEVEL_IN_PROGRESS,
+        .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
     },
     {
         .tcmd_name = "flash_read_status_register",
@@ -328,7 +328,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "fs_format_storage",
         .tcmd_func = TCMDEXEC_fs_format_storage,
         .number_of_args = 0,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_RECOVERY_OR_EXPERT,
     },
     {
         .tcmd_name = "fs_mount",
@@ -406,13 +406,13 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "fs_demo_write_then_read",
         .tcmd_func = TCMDEXEC_fs_demo_write_then_read,
         .number_of_args = 0,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+        .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
     },
     {
         .tcmd_name = "fs_benchmark_write_read",
         .tcmd_func = TCMDEXEC_fs_benchmark_write_read,
         .number_of_args = 2,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+        .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING,
     },
     {
         .tcmd_name = "fs_get_filesystem_stats_json",
@@ -1045,7 +1045,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "eps_system_reset",
         .tcmd_func = TCMDEXEC_eps_system_reset,
         .number_of_args = 0,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_RECOVERY_OR_EXPERT,
     },
     {
         .tcmd_name = "eps_no_operation",
@@ -1226,7 +1226,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "mpi_set_transceiver_mode",
         .tcmd_func = TCMDEXEC_mpi_set_transceiver_mode,
         .number_of_args = 1,
-        .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY, // Not useful in space.
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },
     {
         .tcmd_name = "mpi_enable_active_mode",
@@ -1247,60 +1247,60 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "stm32_internal_flash_read",
         .tcmd_func = TCMDEXEC_stm32_internal_flash_read,
         .number_of_args = 2,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_RECOVERY_OR_EXPERT,
     },
 
     {
         .tcmd_name = "stm32_internal_flash_write",
         .tcmd_func = TCMDEXEC_stm32_internal_flash_write,
         .number_of_args = 2,
-        .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
+        .readiness_level = TCMD_READINESS_LEVEL_HIGH_RISK_AND_UNSAFE,
     },
 
     {
         .tcmd_name = "stm32_internal_flash_page_erase",
         .tcmd_func = TCMDEXEC_stm32_internal_flash_page_erase,
         .number_of_args = 3,
-        .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
+        .readiness_level = TCMD_READINESS_LEVEL_HIGH_RISK_AND_UNSAFE,
     },
     {
         .tcmd_name = "stm32_internal_flash_bank_erase",
         .tcmd_func = TCMDEXEC_stm32_internal_flash_bank_erase,
         .number_of_args = 1,
-        .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
+        .readiness_level = TCMD_READINESS_LEVEL_HIGH_RISK_AND_UNSAFE,
     },
     {
         .tcmd_name = "stm32_internal_flash_get_option_bytes",
         .tcmd_func = TCMDEXEC_stm32_internal_flash_get_option_bytes,
         .number_of_args = 0,
-        .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
+        .readiness_level = TCMD_READINESS_LEVEL_HIGH_RISK_AND_UNSAFE,
     },
 
     {
         .tcmd_name = "stm32_internal_flash_get_active_flash_bank",
         .tcmd_func = TCMDEXEC_stm32_internal_flash_get_active_flash_bank,
         .number_of_args = 0,
-        .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
+        .readiness_level = TCMD_READINESS_LEVEL_HIGH_RISK_AND_UNSAFE,
     },
     
     {
         .tcmd_name = "stm32_internal_flash_set_active_flash_bank",
         .tcmd_func = TCMDEXEC_stm32_internal_flash_set_active_flash_bank,
         .number_of_args = 1,
-        .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
+        .readiness_level = TCMD_READINESS_LEVEL_HIGH_RISK_AND_UNSAFE,
     },
     {
         .tcmd_name = "stm32_internal_flash_write_file_to_internal_flash",
         .tcmd_func = TCMDEXEC_stm32_internal_flash_write_file_to_internal_flash,
         .number_of_args = 4,
-        .readiness_level = TCMD_READINESS_LEVEL_GROUND_USAGE_ONLY,
+        .readiness_level = TCMD_READINESS_LEVEL_HIGH_RISK_AND_UNSAFE,
     },
 
     {
         .tcmd_name = "stm32_internal_flash_calculate_sha256",
         .tcmd_func = TCMDEXEC_stm32_internal_flash_calculate_sha256,
         .number_of_args = 2,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_RECOVERY_OR_EXPERT,
     },
 
     // ****************** END SECTION: stm32_internal_flash_telecommand_defs ******************
@@ -1500,13 +1500,13 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "camera_test",
         .tcmd_func = TCMDEXEC_camera_test,
         .number_of_args = 0,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_RECOVERY_OR_EXPERT,
     },
     {
         .tcmd_name = "camera_change_baud_rate",
         .tcmd_func = TCMDEXEC_camera_change_baud_rate,
         .number_of_args = 1,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_RECOVERY_OR_EXPERT,
     },
     {
         .tcmd_name = "camera_capture",
@@ -1520,7 +1520,7 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .tcmd_name = "boom_deploy_timed",
         .tcmd_func = TCMDEXEC_boom_deploy_timed,
         .number_of_args = 2,
-        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_RECOVERY_OR_EXPERT,
     },
     {
         .tcmd_name = "boom_self_check",
