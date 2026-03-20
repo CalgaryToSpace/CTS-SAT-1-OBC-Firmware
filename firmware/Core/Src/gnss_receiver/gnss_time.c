@@ -94,7 +94,9 @@ uint8_t GNSS_set_obc_time_based_on_gnss_time_uart() {
 
     // Send the command to the GNSS receiver to get UTC time (and other data)
     const uint8_t gnss_cmd_response = GNSS_send_cmd_get_response(
-        full_command, full_command_len, rx_buffer, rx_buffer_max_size, &rx_buffer_len);
+        full_command, full_command_len, rx_buffer, rx_buffer_max_size, &rx_buffer_len,
+        1 // Remove null bytes in the middle.
+    );
 
     // Error check to make sure we've even received a response from the GNSS receiver
     if (gnss_cmd_response != 0 ) {

@@ -46,7 +46,8 @@ static uint8_t GNSS_send_cmd_get_response_when_firehose_storage_disabled(
     const char *cmd_buf, uint8_t cmd_buf_len,
     uint8_t rx_buf[],
     const uint16_t rx_buf_max_size,
-    uint16_t* rx_buf_len_dest
+    uint16_t* rx_buf_len_dest,
+    uint8_t remove_null_bytes_in_middle
 ) {
     // Reset the GNSS UART interrupt variables
     GNSS_set_uart_interrupt_state(0); // Lock writing to the UART_gnss_buffer while we memset it
@@ -157,9 +158,11 @@ static uint8_t GNSS_send_cmd_get_response_when_firehose_storage_disabled(
     // End Receiving
     GNSS_set_uart_interrupt_state(0); // We are no longer expecting a response
 
-    UART_gnss_buffer[UART_gnss_buffer_write_idx] = '\0'; // Null-terminate the string
+    // Review comment: This next line doesn't seem necessary.
+    UART_gnss_buffer[UART_gnss_buffer_write_idx] = '\0'; // Null-terminate the string.
 
-    // Check that we've received what we're expecting
+    // Check that we've received what we're expecting.
+    uint16_t bytes_received_count = 0; // Includes null bytes.
     if (UART_gnss_buffer_write_idx >= rx_buf_max_size) {
         LOG_message(
             LOG_SYSTEM_GNSS, LOG_SEVERITY_WARNING, LOG_SINK_ALL,
@@ -168,16 +171,35 @@ static uint8_t GNSS_send_cmd_get_response_when_firehose_storage_disabled(
             rx_buf_max_size
         );
         
-        *rx_buf_len_dest = rx_buf_max_size - 1;
+        bytes_received_count = rx_buf_max_size - 1;
         // No need to return here. We can still pass back the data we have.
     }
     else {
-        *rx_buf_len_dest = UART_gnss_buffer_write_idx;
+        bytes_received_count = UART_gnss_buffer_write_idx;
     }
 
     // Copy the log response from the UART gnss buffer to the rx_buf[] and clear the buffer.
-    for (uint16_t i = 0; i < (*rx_buf_len_dest); i++) {
-        rx_buf[i] = UART_gnss_buffer[i];
+    uint16_t dest_write_idx = 0;
+    uint16_t remove_nulls_count = 0;
+    for (uint16_t i = 0; i < bytes_received_count; i++) {
+        if (remove_null_bytes_in_middle) {
+            if (UART_gnss_buffer[i] == '\0') {
+                remove_nulls_count++;
+                continue;
+            }
+        }
+
+        rx_buf[dest_write_idx++] = UART_gnss_buffer[i];
+    }
+    *rx_buf_len_dest = dest_write_idx;
+
+    if (remove_nulls_count > 0) {
+        LOG_message(
+            LOG_SYSTEM_GNSS, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
+            "GNSS: Removed %d null bytes from response, %d bytes remain",
+            remove_nulls_count,
+            dest_write_idx
+        );
     }
 
     // Ensure the final output buffer (rx_buf) is null-terminated, no matter what.
@@ -194,6 +216,7 @@ static uint8_t GNSS_send_cmd_get_response_when_firehose_storage_disabled(
 /// @param rx_buf Buffer to store the response (not necessarily null terminated).
 /// @param rx_buf_max_size Size of the response buffer.
 /// @param rx_buf_len_dest Pointer to place to store the length of the response buffer (not necessarily null terminated).
+/// @param remove_null_bytes_in_middle If non-zero, remove any null bytes in the middle of the response.
 /// @return 0 on success, >0 if error.
 /// @note This function is intended for "once" log commands and control commands.
 /// @note This function does not validate the response, as related to the request.
@@ -202,7 +225,8 @@ uint8_t GNSS_send_cmd_get_response(
     const char *cmd_buf, uint8_t cmd_buf_len,
     uint8_t rx_buf[],
     const uint16_t rx_buf_max_size,
-    uint16_t* rx_buf_len_dest
+    uint16_t* rx_buf_len_dest,
+    uint8_t remove_null_bytes_in_middle
 ) {
     const GNSS_rx_mode_enum_t rx_mode_at_start = GNSS_current_rx_mode;
     
@@ -216,7 +240,8 @@ uint8_t GNSS_send_cmd_get_response(
 
     // This is the main action! The rest is a wrapper to handle interactions with firehose storage mode.
     const uint8_t ret = GNSS_send_cmd_get_response_when_firehose_storage_disabled(
-        cmd_buf, cmd_buf_len, rx_buf, rx_buf_max_size, rx_buf_len_dest
+        cmd_buf, cmd_buf_len, rx_buf, rx_buf_max_size, rx_buf_len_dest,
+        remove_null_bytes_in_middle
     );
 
     // Reset back to the original RX mode.
