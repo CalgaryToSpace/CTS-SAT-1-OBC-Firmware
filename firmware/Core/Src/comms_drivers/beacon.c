@@ -55,6 +55,7 @@ void COMMS_fill_beacon_basic_packet(
     beacon_packet->is_fs_mounted = LFS_is_lfs_mounted;
 
     beacon_packet->total_tcmd_queued_count = TCMD_total_tcmd_queued_count;
+    beacon_packet->pending_queued_tcmd_count = TCMD_get_agenda_used_slots_count();
 
     beacon_packet->total_beacon_count_since_boot = COMMS_total_beacon_count_since_boot;
 
