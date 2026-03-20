@@ -146,7 +146,7 @@ int8_t LFS_ensure_mounted() {
     return LFS_mount();
 }
 
-/// @brief Mounts LFS filesystem if not already mounted. Does nothing if LFS is already mounted.
+/// @brief Unmounts LFS filesystem if mounted. Does nothing if LFS is already unmounted.
 int8_t LFS_ensure_unmounted() {
     if (!LFS_is_lfs_mounted) {
         return 0;
