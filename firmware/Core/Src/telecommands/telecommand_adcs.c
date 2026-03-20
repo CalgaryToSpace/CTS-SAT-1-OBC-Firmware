@@ -2557,7 +2557,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(
                 return 1;
             }
             HAL_Delay(ADCS_COMMISSIONING_HAL_DELAY_MS); // delay to set run mode: 250ms of buffer time to match the others
-            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME);
             if (power_control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS power control command failed (err %d)", power_control_status);
@@ -2587,7 +2587,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(
                 return 1;
             }
             HAL_Delay(ADCS_COMMISSIONING_HAL_DELAY_MS); // delay to set run mode: 250ms of buffer time to match the others
-            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME);
             if (power_control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS power control command failed (err %d)", power_control_status);
@@ -2617,7 +2617,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(
                 return 1;
             }
             HAL_Delay(ADCS_COMMISSIONING_HAL_DELAY_MS); // delay to set run mode: 250ms of buffer time to match the others
-            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME);
             if (power_control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS power control command failed (err %d)", power_control_status);
@@ -2647,7 +2647,7 @@ uint8_t TCMDEXEC_adcs_set_commissioning_modes(
                 return 1;
             }
             HAL_Delay(ADCS_COMMISSIONING_HAL_DELAY_MS); // delay to set run mode: 250ms of buffer time to match the others
-            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+            const uint8_t power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_SAME, ADCS_POWER_SELECT_SAME);
             if (power_control_status != 0) {
                  snprintf(response_output_buf, response_output_buf_len,
                     "ADCS power control command failed (err %d)", power_control_status);
