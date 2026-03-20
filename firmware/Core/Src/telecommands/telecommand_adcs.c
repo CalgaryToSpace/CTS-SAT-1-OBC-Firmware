@@ -391,6 +391,23 @@ uint8_t TCMDEXEC_adcs_clear_errors(const char *args_str,
 ///     - Arg 0: Control mode to set (Table 77 in Firmware Manual)
 ///     - Arg 1: Timeout to set control mode
 /// @return 0 on success, >0 on error
+/// @details ADCS_control_mode_enum_t
+///    ADCS_CONTROL_MODE_NONE = 0,
+///    ADCS_CONTROL_MODE_DETUMBLING = 1,
+///    ADCS_CONTROL_MODE_Y_THOMSON_SPIN = 2,
+///    ADCS_CONTROL_MODE_Y_WHEEL_MOMENTUM_STABILIZED_INITIAL_PITCH_ACQUISITION = 3,
+///    ADCS_CONTROL_MODE_Y_WHEEL_MOMENTUM_STABILIZED_STEADY_STATE = 4,
+///    ADCS_CONTROL_MODE_XYZ_WHEEL = 5,
+///    ADCS_CONTROL_MODE_RWHEEL_SUN_TRACKING = 6,
+///    ADCS_CONTROL_MODE_RWHEEL_TARGET_TRACKING = 7,
+///    ADCS_CONTROL_MODE_VERY_FAST_SPIN_DETUMBLING = 8,
+///    ADCS_CONTROL_MODE_FAST_SPIN_DETUMBLING = 9,
+///    ADCS_CONTROL_MODE_USER_SPECIFIC_1 = 10,
+///    ADCS_CONTROL_MODE_USER_SPECIFIC_2 = 11,
+///    ADCS_CONTROL_MODE_STOP_R_WHEELS = 12,
+///    ADCS_CONTROL_MODE_USER_CODED = 13,
+///    ADCS_CONTROL_MODE_SUN_TRACKING_YAW_OR_ROLL_ONLY_WHEEL = 14,
+///    ADCS_CONTROL_MODE_TARGET_TRACKING_YAW_ONLY_WHEEL = 15
 uint8_t TCMDEXEC_adcs_attitude_control_mode(const char *args_str,
                                             char *response_output_buf, uint16_t response_output_buf_len) {
     // parse arguments into uint64_t
@@ -413,6 +430,15 @@ uint8_t TCMDEXEC_adcs_attitude_control_mode(const char *args_str,
 /// @param args_str 
 ///     - Arg 0: Attitude estimation mode to set (Table 79 in Firmware Manual)
 /// @return 0 on success, >0 on error
+/// @details ADCS_estimation_mode_enum_t
+///    ADCS_ESTIMATION_MODE_NONE = 0,
+///    ADCS_ESTIMATION_MODE_MEMS_RATE_SENSING = 1,
+///    ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER = 2,
+///    ADCS_ESTIMATION_MODE_MAGNETOMETER_RATE_FILTER_WITH_PITCH_ESTIMATION = 3,
+///    ADCS_ESTIMATION_MODE_MAGNETOMETER_AND_FINE_SUN_TRIAD_ALGORITHM = 4,
+///    ADCS_ESTIMATION_MODE_FULL_STATE_EXTENDED_KALMAN_FILTER = 5,
+///    ADCS_ESTIMATION_MODE_MEMS_GYRO_EXTENDED_KALMAN_FILTER = 6,
+///    ADCS_ESTIMATION_MODE_USER_CODED_ESTIMATION_MODE = 7
 uint8_t TCMDEXEC_adcs_attitude_estimation_mode(const char *args_str,
                                                char *response_output_buf, uint16_t response_output_buf_len) {
     uint64_t estimation_mode;
@@ -664,7 +690,14 @@ uint8_t TCMDEXEC_adcs_track_sun(const char *args_str,
         return 12;
     }
 
-    const uint8_t set_power_control_status = ADCS_set_power_control(ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_OFF, ADCS_POWER_SELECT_OFF);
+    const uint8_t set_power_control_status = ADCS_set_power_control(
+        ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON,
+        ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, // Fine sensors on.
+        ADCS_POWER_SELECT_OFF, // CubeStar always off.
+        ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, ADCS_POWER_SELECT_ON, // Wheels on.
+        ADCS_POWER_SELECT_OFF, // Motor microcontroller off. 
+        ADCS_POWER_SELECT_OFF // GPS always off.
+    );
     if (set_power_control_status != 0) {
         snprintf(response_output_buf, response_output_buf_len, "Failed to disable ADCS peripherals"); 
         return set_power_control_status;
