@@ -9,7 +9,7 @@
 // Max len of `args_str_no_parens` in `TCMD_parsed_tcmd_to_execute_t`, including null terminator.
 #define TCMD_ARGS_STR_NO_PARENS_SIZE 240
 
-
+/// @brief The permission/risk level of a telecommand.
 typedef enum {
     // For commands which are intended for normal operation in flight.
     TCMD_READINESS_LEVEL_FOR_OPERATION = 0,
