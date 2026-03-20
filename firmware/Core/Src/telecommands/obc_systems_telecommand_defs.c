@@ -132,7 +132,7 @@ static uint8_t SystemClock_Config_with_hse(void)
   }
 
   DEBUG_uart_print_str("HAL_PWREx_ControlVoltageScaling() successful.\n");
-  HAL_Delay(1500);
+  HAL_Delay(500);
   DEBUG_uart_print_str("Waited.\n");
 
   /** Initializes the RCC Oscillators according to the specified parameters
@@ -151,7 +151,7 @@ static uint8_t SystemClock_Config_with_hse(void)
   }
 
   DEBUG_uart_print_str("HAL_RCC_OscConfig() successful.\n");
-  HAL_Delay(1500);
+  HAL_Delay(500);
   DEBUG_uart_print_str("Waited.\n");
 
   /** Initializes the CPU, AHB and APB buses clocks
@@ -169,7 +169,7 @@ static uint8_t SystemClock_Config_with_hse(void)
   }
 
   DEBUG_uart_print_str("HAL_RCC_ClockConfig() successful.\n");
-  HAL_Delay(1500);
+  HAL_Delay(500);
   DEBUG_uart_print_str("Waited.\n");
 
   return 0; // Success.
@@ -190,6 +190,8 @@ uint8_t TCMDEXEC_obc_set_stm32_sysclk_to_hse(
     const char *args_str,
     char *response_output_buf, uint16_t response_output_buf_len
 ) {
+    const uint32_t SystemCoreClock_at_start = SystemCoreClock;
+
     if (HSE_VALUE != 25000000) {
         snprintf(
             response_output_buf, response_output_buf_len,
@@ -198,7 +200,7 @@ uint8_t TCMDEXEC_obc_set_stm32_sysclk_to_hse(
         return 1;
     }
 
-    HAL_Delay(1500); // Wait so we don't pet the watchdog right away.
+    HAL_Delay(500); // Wait so we don't pet the watchdog right away.
 
     const uint8_t config_err = SystemClock_Config_with_hse();
     if (config_err != 0) {
@@ -209,6 +211,41 @@ uint8_t TCMDEXEC_obc_set_stm32_sysclk_to_hse(
         );
         return config_err;
     }
+
+    HAL_Delay(500);
+
+    // Configure the source of time base considering new system clocks settings.
+    SystemCoreClockUpdate();
+
+    DEBUG_uart_print_str("SystemCoreClockUpdate() ran.\n");
+    const HAL_StatusTypeDef init_tick_status = HAL_InitTick(uwTickPrio);
+    if(init_tick_status != HAL_OK) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "HAL_InitTick() failed - HAL error %d",
+            init_tick_status
+        );
+        return 60 + init_tick_status;
+    }
+
+    // Reconfigure SysTick for the new clock speed.
+    // Critical to make osDelay() work at the new rate (related to HAL_TIM_PeriodElapsedCallback).
+    const uint32_t err = HAL_SYSTICK_Config(SystemCoreClock / configTICK_RATE_HZ);
+    if (err != 0) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "HAL_SYSTICK_Config() failed - error %ld",
+            err
+        );
+        return 70 + err;
+    }
+
+    snprintf(
+        response_output_buf, response_output_buf_len,
+        "Clock update successful. SystemCoreClock (Hz): %ld -> %ld",
+        SystemCoreClock_at_start,
+        SystemCoreClock
+    );
     
     return 0; // Success.
 }
