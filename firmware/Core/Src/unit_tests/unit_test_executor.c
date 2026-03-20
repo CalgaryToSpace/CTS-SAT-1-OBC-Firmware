@@ -3,6 +3,7 @@
 #include "debug_tools/debug_uart.h"
 #include "log/log.h"
 #include "stm32/stm32_watchdog.h"
+#include "timekeeping/timekeeping.h"
 
 #include <string.h>
 #include <stdio.h>

@@ -5,6 +5,7 @@
 #include "crypto/sha256.h"
 #include "log/log.h"
 #include "debug_tools/debug_uart.h"
+#include "timekeeping/timekeeping.h"
 
 /// @brief Computes the SHA256 checksum of a file in LittleFS.
 /// @param filepath Path to the file to read and compute the checksum for.

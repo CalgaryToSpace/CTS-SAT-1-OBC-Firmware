@@ -6,6 +6,7 @@
 #include "log/log.h"
 #include "debug_tools/debug_uart.h"
 #include "uart_handler/uart_control.h"
+#include "timekeeping/timekeeping.h"
 
 #include <string.h>
 #include <stdio.h>

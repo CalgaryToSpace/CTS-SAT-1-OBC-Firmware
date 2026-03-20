@@ -10,6 +10,7 @@
 #include "transforms/arrays.h"
 #include "log/log.h"
 #include "debug_tools/debug_uart.h"
+#include "timekeeping/timekeeping.h"
 
 #include "cmsis_os.h"
 

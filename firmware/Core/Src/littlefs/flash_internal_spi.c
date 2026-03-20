@@ -1,5 +1,6 @@
 #include "main.h"
 #include "littlefs/flash_internal_spi.h"
+#include "timekeeping/timekeeping.h"
 
 // Static functions are defined at the bottom of this file.
 static void _chip_select_low(uint8_t chip_number);

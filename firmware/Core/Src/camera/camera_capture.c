@@ -6,6 +6,7 @@
 #include "uart_handler/uart_handler.h"
 #include "log/log.h"
 #include "eps_drivers/eps_channel_control.h"
+#include "timekeeping/timekeeping.h"
 
 #include <stdlib.h>
 #include <stdbool.h>

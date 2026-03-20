@@ -5,6 +5,7 @@
 #include "uart_handler/uart_error_tracking.h"
 #include "camera/camera_capture.h"
 #include "log/log.h"
+#include "timekeeping/timekeeping.h"
 
 #include "mpi/mpi_transceiver.h"
 #include "main.h"

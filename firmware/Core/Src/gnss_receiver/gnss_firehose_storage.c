@@ -25,7 +25,7 @@ uint32_t GNSS_recording_start_uptime_ms = 0;
 
 static int8_t GNSS_write_firehose_file_header() {
     // Write timestamp data (the time the buffer finished filling) to file.
-    const uint32_t uptime_ms = TIME_get_current_system_uptime_ms();
+    const uint32_t uptime_ms = TIME_uptime_ms();
 
     const uint64_t timestamp_ms = TIME_convert_uptime_to_unix_epoch_time_ms(uptime_ms);
     char timestamp_ms_str[32];
@@ -82,7 +82,7 @@ static int8_t GNSS_write_firehose_file_footer(const char reason_for_stopping[]) 
         buffer_footer_str, sizeof(buffer_footer_str),
         "\n{\"data_lost_bytes\": %lu, \"time_taken_ms\": %lu, \"reason_for_stopping\": \"%s\" }",
         GNSS_firehose_bytes_lost,
-        (TIME_get_current_system_uptime_ms() - GNSS_recording_start_uptime_ms),
+        (TIME_uptime_ms() - GNSS_recording_start_uptime_ms),
         reason_for_stopping
     );
 

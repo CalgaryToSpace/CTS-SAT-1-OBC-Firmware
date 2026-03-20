@@ -2,6 +2,7 @@
 #include "main.h"
 #include "littlefs/littlefs_benchmark.h"
 #include "littlefs/littlefs_helper.h"
+#include "timekeeping/timekeeping.h"
 
 #include <string.h>
 #include <stdio.h>

@@ -23,7 +23,7 @@ uint32_t MPI_max_recording_duration_sec = 900;
 
 static int8_t write_mpi_timestamp_to_file(uint32_t buffer_filled_uptime_ms) {
     // Write timestamp data (the time the buffer finished filling) to file.
-    const uint32_t uptime_ms = TIME_get_current_system_uptime_ms();
+    const uint32_t uptime_ms = TIME_uptime_ms();
 
     const uint64_t timestamp_ms = TIME_convert_uptime_to_unix_epoch_time_ms(uptime_ms);
     char timestamp_ms_str[32];
@@ -202,7 +202,7 @@ void TASK_service_write_mpi_data(void *argument) {
         // Check for exceeding the start time.
         if (MPI_current_uart_rx_mode == MPI_RX_MODE_SENSING_MODE) {
             const uint32_t current_recording_duration_sec = (
-                TIME_get_current_system_uptime_ms() - MPI_recording_start_uptime_ms
+                TIME_uptime_ms() - MPI_recording_start_uptime_ms
             ) / 1000;
             if (
                 (MPI_max_recording_duration_sec > 0)

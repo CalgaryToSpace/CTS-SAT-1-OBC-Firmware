@@ -4,6 +4,7 @@
 #include "debug_tools/debug_uart.h"
 #include "time.h"
 #include "log/log.h"
+#include "timekeeping/timekeeping.h"
 
 #include <string.h>
 #include <stdint.h>

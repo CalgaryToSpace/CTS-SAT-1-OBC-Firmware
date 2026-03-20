@@ -2,6 +2,7 @@
 #include "main.h"
 #include "littlefs/flash_benchmark.h"
 #include "littlefs/flash_driver.h"
+#include "timekeeping/timekeeping.h"
 
 #include <string.h>
 #include <stdio.h>

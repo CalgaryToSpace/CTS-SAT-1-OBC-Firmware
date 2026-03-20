@@ -7,7 +7,7 @@
 #include "eps_drivers/eps_types_to_json.h"
 #include "eps_drivers/eps_types.h"
 #include "eps_drivers/eps_channel_control.h"
-
+#include "timekeeping/timekeeping.h"
 #include "telecommands/boom_deploy_telecommand_defs.h"
 
 #include "log/log.h"

@@ -8,6 +8,7 @@
 #include "stm32/stm32_timing_helpers.h"
 #include "uart_handler/uart_handler.h"
 #include "log/log.h"
+#include "timekeeping/timekeeping.h"
 
 #include <stdint.h>
 #include <string.h>

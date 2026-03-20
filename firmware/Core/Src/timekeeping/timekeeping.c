@@ -16,8 +16,9 @@ static char TIME_unix_epoch_time_at_last_time_resync_ms_str[14] = "0000000000000
 uint32_t TIME_system_uptime_at_last_time_resync_ms = 0;
 TIME_sync_source_enum_t TIME_last_synchronization_source = TIME_SYNC_SOURCE_NONE;
 
-uint32_t TIME_get_current_system_uptime_ms(void) {
-    return TIME_uptime_ms();
+uint32_t TIME_uptime_ms(void) {
+    // return HAL_GetTick(); -> Slow to call that function. Instead, inline it here.
+    return uwTick;
 }
 
 /// @brief Use this function in a telecommand, or upon receiving a time update from the GNSS. 
@@ -89,7 +90,7 @@ uint64_t TIME_convert_uptime_to_unix_epoch_time_ms(uint32_t uptime_ms) {
 
 /// @brief Returns the current unix timestamp, in milliseconds
 uint64_t TIME_get_current_unix_epoch_time_ms() {
-    return TIME_convert_uptime_to_unix_epoch_time_ms(TIME_get_current_system_uptime_ms());
+    return TIME_convert_uptime_to_unix_epoch_time_ms(TIME_uptime_ms());
 }
 
 /// @brief Returns a computer-friendly timestamp string, ideal for chronological ordering. 
@@ -136,7 +137,7 @@ void TIME_format_timestamp_str(
 void TIME_get_current_timestamp_str(char *dest_str, size_t dest_str_size) {
     TIME_format_timestamp_str(
         dest_str, dest_str_size,
-        TIME_get_current_system_uptime_ms(),
+        TIME_uptime_ms(),
         TIME_last_synchronization_source
     );
 }

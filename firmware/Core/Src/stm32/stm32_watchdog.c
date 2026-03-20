@@ -1,6 +1,7 @@
 #include "stm32/stm32_watchdog.h"
 
 #include "log/log.h"
+#include "timekeeping/timekeeping.h"
 
 #include "main.h"
 
