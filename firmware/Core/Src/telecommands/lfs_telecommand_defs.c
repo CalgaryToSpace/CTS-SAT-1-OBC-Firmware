@@ -583,7 +583,7 @@ uint8_t TCMDEXEC_fs_demo_write_then_read(const char *args_str,
     char file_name[] = "demo_test.txt";
 
     char file_content[200];
-    snprintf(file_content, sizeof(file_content), "Hello, World! Write timestamp: %lu", HAL_GetTick());
+    snprintf(file_content, sizeof(file_content), "Hello, World! Write timestamp: %lu", TIME_uptime_ms());
 
     const int8_t mount_result = LFS_mount();
     if (mount_result != 0) {
@@ -610,7 +610,7 @@ uint8_t TCMDEXEC_fs_demo_write_then_read(const char *args_str,
     snprintf(
         response_output_buf, response_output_buf_len,
         "LittleFS Successfully Read File '%s'. System uptime: %lu, File Content: '%s'!",
-        file_name, HAL_GetTick(), (char*)read_buffer);
+        file_name, TIME_uptime_ms(), (char*)read_buffer);
     return 0;
 }
 

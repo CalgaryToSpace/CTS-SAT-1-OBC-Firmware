@@ -48,9 +48,9 @@ int8_t LFS_read_file_checksum_sha256(
         const uint32_t bytes_to_read = (read_bytes_remaining < chunk_size) ? read_bytes_remaining : chunk_size;
 
         // Read the data from the file.
-        const int32_t read_start_time = HAL_GetTick();
+        const int32_t read_start_time = TIME_uptime_ms();
         const int32_t bytes_read = lfs_file_read(&LFS_filesystem, &file, read_buffer, bytes_to_read);
-        total_read_time_ms += HAL_GetTick() - read_start_time;
+        total_read_time_ms += TIME_uptime_ms() - read_start_time;
 
         if (bytes_read < 0) {
             lfs_file_close(&LFS_filesystem, &file);
@@ -63,9 +63,9 @@ int8_t LFS_read_file_checksum_sha256(
         }
 
         // Update the SHA256 context with the read data.
-        const int32_t sha256_start_time = HAL_GetTick();
+        const int32_t sha256_start_time = TIME_uptime_ms();
         sha256_update(&sha256_ctx, read_buffer, bytes_read);
-        total_calc_time_ms += HAL_GetTick() - sha256_start_time;
+        total_calc_time_ms += TIME_uptime_ms() - sha256_start_time;
 
         // Decrease the remaining bytes to read.
         read_bytes_remaining -= bytes_read;
@@ -78,9 +78,9 @@ int8_t LFS_read_file_checksum_sha256(
     }
 
     // Finalize the SHA256 hash.
-    const int32_t sha256_final_start_time = HAL_GetTick();
+    const int32_t sha256_final_start_time = TIME_uptime_ms();
     sha256_final(&sha256_ctx, sha256_dest);
-    total_calc_time_ms += HAL_GetTick() - sha256_final_start_time;
+    total_calc_time_ms += TIME_uptime_ms() - sha256_final_start_time;
 
     // Log the time taken for reading and calculating the checksum.
     LOG_message(

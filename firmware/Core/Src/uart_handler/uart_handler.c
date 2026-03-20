@@ -159,7 +159,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
         // Add the received byte to the buffer
         UART_telecommand_buffer[UART_telecommand_buffer_write_idx++] = UART_telecommand_buffer_last_rx_byte;
-        UART_telecommand_last_write_time_ms = HAL_GetTick();
+        UART_telecommand_last_write_time_ms = TIME_uptime_ms();
 
         // Restart reception for next byte
         HAL_UART_Receive_IT(UART_telecommand_port_handle, (uint8_t*) &UART_telecommand_buffer_last_rx_byte, 1);
@@ -206,11 +206,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
                 // Reset the write index when needed. Identify the time it was fully filled.
                 if (UART_MPI_science_buffer_index == MPI_science_buffer_len) {
                     MPI_buffer_one_state = MPI_MEMORY_WRITE_STATUS_AWAITING_WRITE;
-                    MPI_buffer_one_last_filled_uptime_ms = HAL_GetTick();
+                    MPI_buffer_one_last_filled_uptime_ms = TIME_uptime_ms();
                 }
                 else if (UART_MPI_science_buffer_index == (2 * MPI_science_buffer_len)) {
                     MPI_buffer_two_state = MPI_MEMORY_WRITE_STATUS_AWAITING_WRITE;
-                    MPI_buffer_two_last_filled_uptime_ms = HAL_GetTick();
+                    MPI_buffer_two_last_filled_uptime_ms = TIME_uptime_ms();
                     UART_MPI_science_buffer_index = 0;
                 }
             }
@@ -219,7 +219,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
             DEBUG_uart_print_str("Unhandled MPI Mode\n");
         }
 
-        UART_mpi_last_write_time_ms = HAL_GetTick();
+        UART_mpi_last_write_time_ms = TIME_uptime_ms();
     }
 
     else if (huart->Instance == UART_ax100_port_handle->Instance) {
@@ -261,7 +261,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
             }
         }
 
-        UART_ax100_last_write_time_ms = HAL_GetTick();
+        UART_ax100_last_write_time_ms = TIME_uptime_ms();
     
         HAL_UART_Receive_IT(UART_ax100_port_handle, (uint8_t*) &UART_ax100_buffer_last_rx_byte, 1);
     }
@@ -290,7 +290,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
         // Add the byte to the buffer
         UART_eps_buffer[UART_eps_buffer_write_idx++] = UART_eps_buffer_last_rx_byte;
-        UART_eps_last_write_time_ms = HAL_GetTick();
+        UART_eps_last_write_time_ms = TIME_uptime_ms();
 
         // Restart reception for next byte
         HAL_UART_Receive_IT(UART_eps_port_handle, (uint8_t*) &UART_eps_buffer_last_rx_byte, 1);
@@ -317,7 +317,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
             }
 
             UART_gnss_buffer[UART_gnss_buffer_write_idx++] = UART_gnss_buffer_last_rx_byte;
-            UART_gnss_last_write_time_ms = HAL_GetTick();
+            UART_gnss_last_write_time_ms = TIME_uptime_ms();
 
             HAL_UART_Receive_IT(UART_gnss_port_handle, (uint8_t*) &UART_gnss_buffer_last_rx_byte, 1);
         }
@@ -339,7 +339,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
             UART_camera_dma_buffer[i] = 0;
         }
 
-        UART_camera_last_write_time_ms = HAL_GetTick();
+        UART_camera_last_write_time_ms = TIME_uptime_ms();
         CAMERA_uart_half_2_state = CAMERA_UART_WRITE_STATE_HALF_FILLED_WAITING_FS_WRITE;
         CAMERA_uart_half_1_state = CAMERA_UART_WRITE_STATE_HALF_FILLING;
     }
@@ -365,7 +365,7 @@ void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
             // Clear the DMA buffer so that the len of the final read can be detected easily.
             UART_camera_dma_buffer[i] = 0;
         }
-        UART_camera_last_write_time_ms = HAL_GetTick();
+        UART_camera_last_write_time_ms = TIME_uptime_ms();
 
         CAMERA_uart_half_1_state = CAMERA_UART_WRITE_STATE_HALF_FILLED_WAITING_FS_WRITE;
         CAMERA_uart_half_2_state = CAMERA_UART_WRITE_STATE_HALF_FILLING;
@@ -428,7 +428,7 @@ uint8_t CAMERA_set_expecting_data(uint8_t new_enabled) {
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
     // Docs for error codes: https://community.st.com/t5/stm32-mcus-products/identifying-and-solving-uart-error/td-p/135754
     const uint32_t error_code = huart->ErrorCode;
-    const uint32_t up_time_ms = HAL_GetTick();
+    const uint32_t up_time_ms = TIME_uptime_ms();
     // if the error code is no error or it has been less than 100 ms since start up, ignore
     if ((error_code == HAL_UART_ERROR_NONE) || up_time_ms < 100) {
         return;

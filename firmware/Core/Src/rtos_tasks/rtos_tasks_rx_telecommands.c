@@ -73,7 +73,7 @@ static TCMD_check_result_enum_t check_for_and_handle_new_uart_tcmds() {
         ) < 0
     ) {
         // If timed out on reception:
-        if (HAL_GetTick() - UART_telecommand_last_write_time_ms > timeout_duration_ms) {
+        if (TIME_uptime_ms() - UART_telecommand_last_write_time_ms > timeout_duration_ms) {
             // If the telecommand is not complete, discard it.
 
             // Null-terminate the string, then log it.
@@ -290,7 +290,7 @@ static TCMD_check_result_enum_t check_for_and_handle_new_ax100_kiss_tcmd(
     // Add the telecommand to the agenda (regardless of whether it's in the future).
     TCMD_add_tcmd_to_agenda(&parsed_tcmd);
 
-    AX100_uptime_at_last_received_kiss_tcmd_ms = HAL_GetTick();
+    AX100_uptime_at_last_received_kiss_tcmd_ms = TIME_uptime_ms();
 
     return TCMD_CHECK_STATUS_TCMD_SCHEDULED;
 }

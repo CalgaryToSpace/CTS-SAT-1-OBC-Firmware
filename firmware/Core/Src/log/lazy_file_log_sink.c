@@ -165,7 +165,7 @@ void LOG_subtask_handle_sync_and_close_of_current_log_file() {
     );
     if (sync_interval_has_elapsed) {
         // Log file flushing benchmarking here.
-        const uint32_t start_time = HAL_GetTick();
+        const uint32_t start_time = TIME_uptime_ms();
         
         LOG_sync_current_log_file();
 
@@ -173,7 +173,7 @@ void LOG_subtask_handle_sync_and_close_of_current_log_file() {
         // of a failed logging procedure.
         LOG_message(
             LOG_SYSTEM_LOG, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_FILE),
-            "Log file synced in %ld ms", (HAL_GetTick() - start_time)
+            "Log file synced in %ld ms", (TIME_uptime_ms() - start_time)
         );
     }
 
@@ -184,7 +184,7 @@ void LOG_subtask_handle_sync_and_close_of_current_log_file() {
     );
     if (close_interval_has_elapsed) {
         // Log file closing benchmarking here.
-        const uint32_t start_time = HAL_GetTick();
+        const uint32_t start_time = TIME_uptime_ms();
 
         LOG_close_current_log_file();
 
@@ -192,7 +192,7 @@ void LOG_subtask_handle_sync_and_close_of_current_log_file() {
         // of a failed logging procedure.
         LOG_message(
             LOG_SYSTEM_LOG, LOG_SEVERITY_DEBUG, LOG_all_sinks_except(LOG_SINK_FILE),
-            "Log file closed in %ld ms", (HAL_GetTick() - start_time)
+            "Log file closed in %ld ms", (TIME_uptime_ms() - start_time)
         );
 
         LOG_open_new_log_file_and_set_as_current();

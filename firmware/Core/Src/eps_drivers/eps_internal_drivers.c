@@ -82,7 +82,7 @@ uint8_t EPS_send_cmd_get_response(
 
     // RX FROM EPS, into UART_eps_buffer
     // End when we timeout, when we receive the expected number of bytes.
-    const uint32_t start_rx_time = HAL_GetTick();
+    const uint32_t start_rx_time = TIME_uptime_ms();
     while (1) {
         // Check if we've received the expected number of bytes
         if (UART_eps_buffer_write_idx >= rx_len_with_tags) {
@@ -92,7 +92,7 @@ uint8_t EPS_send_cmd_get_response(
 
         if ((UART_eps_buffer_write_idx == 0)) {
             // Check if we've timed out (before the first byte)
-            if ((HAL_GetTick() - start_rx_time) > EPS_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS) {
+            if ((TIME_uptime_ms() - start_rx_time) > EPS_RX_TIMEOUT_BEFORE_FIRST_BYTE_MS) {
                 LOG_message(
                     LOG_SYSTEM_EPS, LOG_SEVERITY_ERROR, LOG_SINK_ALL,
                     "EPS->OBC: timeout before first byte received"
@@ -103,7 +103,7 @@ uint8_t EPS_send_cmd_get_response(
         }
         else { // thus, UART_eps_buffer_write_idx > 0
             // Check if we've timed out (between bytes)
-            const uint32_t cur_time = HAL_GetTick();
+            const uint32_t cur_time = TIME_uptime_ms();
             // Note: Sometimes, because ISRs and C are fun, the UART_eps_last_write_time_ms is
             // greater than `cur_time`. Thus, we must do a safety check that the time difference
             // is positive.

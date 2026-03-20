@@ -86,7 +86,7 @@ static void subtask_disable_adcs_if_eps_enters_safety_mode(void) {
     }
 
     // Check enabled and overdue.
-    const uint64_t current_time = HAL_GetTick();
+    const uint64_t current_time = TIME_uptime_ms();
     if (monitor_eps_to_control_adcs_last_checked_uptime_ms + EPS_monitor_safety_adcs_interval_ms < current_time) {
         monitor_eps_to_control_adcs_last_checked_uptime_ms = current_time;
 
@@ -129,7 +129,7 @@ static void subtask_disable_adcs_if_eps_enters_safety_mode(void) {
 
 static void subtask_monitor_eps_power(void) {
     // EPS overcurrent monitor upkeep
-    const uint64_t current_time = HAL_GetTick();
+    const uint64_t current_time = TIME_uptime_ms();
     if (EPS_monitor_last_uptime_ms + EPS_monitor_interval_ms < current_time) {
 
         const uint8_t EPS_monitor_result = EPS_monitor_and_disable_overcurrent_channels();
@@ -417,7 +417,7 @@ static void subtask_enqueue_tcmds_from_agenda_file(void) {
     static uint32_t subtask_last_ran_ms = 0;
     static uint64_t last_enqueue_max_filter_unix_timestamp_ms = 0;
 
-    if (HAL_GetTick() < 65000) { // Hard-coded startup grace period.
+    if (TIME_uptime_ms() < 65000) { // Hard-coded startup grace period.
         // Safety: Avoid running this part for the first 65 seconds.
         // Has the potential to break the system a bit (e.g., bad agenda file with default name),
         // so we give a grace period here before used this feature.
@@ -425,8 +425,8 @@ static void subtask_enqueue_tcmds_from_agenda_file(void) {
     }
 
     // Run the main subtask.
-    if ((HAL_GetTick() - subtask_last_ran_ms) > TCMD_enqueue_from_agenda_file_interval_ms) {
-        subtask_last_ran_ms = HAL_GetTick();
+    if ((TIME_uptime_ms() - subtask_last_ran_ms) > TCMD_enqueue_from_agenda_file_interval_ms) {
+        subtask_last_ran_ms = TIME_uptime_ms();
 
         // Start working out the filter settings.
         const uint64_t current_unix_epoch_time_ms = TIME_get_current_unix_epoch_time_ms();

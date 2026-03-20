@@ -30,7 +30,7 @@ uint8_t LFS_benchmark_write_read(
             sizeof(file_name),
             "%s/benchmark_test_%lu.txt",
             dir_name,
-            HAL_GetTick()
+            TIME_uptime_ms()
         );
     } else {
         // Default to single file mode
@@ -51,7 +51,7 @@ uint8_t LFS_benchmark_write_read(
     }
 
     // Open file for writing
-    const uint32_t write_open_start_time = HAL_GetTick();
+    const uint32_t write_open_start_time = TIME_uptime_ms();
     lfs_file_t file;
     const int8_t open_result = lfs_file_open(
         &LFS_filesystem, &file, file_name, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC
@@ -64,14 +64,14 @@ uint8_t LFS_benchmark_write_read(
             "Open failed. LFS_file_open return: %d\n", open_result);
 		return 1;
 	}
-    const uint32_t open_end_time = HAL_GetTick();
+    const uint32_t open_end_time = TIME_uptime_ms();
     snprintf(
         &response_str[strlen(response_str)],
         response_str_len - strlen(response_str),
         "Write open: %lu ms\n", open_end_time - write_open_start_time);
 
     // Write
-    const uint32_t write_send_start_time = HAL_GetTick();
+    const uint32_t write_send_start_time = TIME_uptime_ms();
     for (uint32_t chunk_num = 0; chunk_num < write_chunk_count; chunk_num++) {
         const ssize_t write_result = lfs_file_write(&LFS_filesystem, &file, write_buffer, write_chunk_size);
         for (uint32_t i = 0; i < write_chunk_size; i++) {
@@ -86,7 +86,7 @@ uint8_t LFS_benchmark_write_read(
             return 1;
         }
     }
-    const uint32_t write_send_end_time = HAL_GetTick();
+    const uint32_t write_send_end_time = TIME_uptime_ms();
     snprintf(
         &response_str[strlen(response_str)],
         response_str_len - strlen(response_str),
@@ -94,7 +94,7 @@ uint8_t LFS_benchmark_write_read(
         write_send_end_time - write_send_start_time);
 
     // Close the file
-    const uint32_t close_start_time = HAL_GetTick();
+    const uint32_t close_start_time = TIME_uptime_ms();
     const int8_t close_result = lfs_file_close(&LFS_filesystem, &file);
     if (close_result < 0) {
         snprintf(
@@ -103,14 +103,14 @@ uint8_t LFS_benchmark_write_read(
             "Close failed. LFS_file_close return: %d\n", close_result);
         return 1;
     }
-    const uint32_t close_end_time = HAL_GetTick();
+    const uint32_t close_end_time = TIME_uptime_ms();
     snprintf(
         &response_str[strlen(response_str)],
         response_str_len - strlen(response_str),
         "Write close: %lu ms\n", close_end_time - close_start_time);
 
     // Re-open the file for reading
-    const uint32_t read_open_start_time = HAL_GetTick();
+    const uint32_t read_open_start_time = TIME_uptime_ms();
     const int8_t read_open_result = lfs_file_open(
         &LFS_filesystem, &file, file_name, LFS_O_RDONLY
     );
@@ -121,14 +121,14 @@ uint8_t LFS_benchmark_write_read(
             "Read open failed. LFS_file_open return: %d\n", read_open_result);
         return 1;
     }
-    const uint32_t read_open_end_time = HAL_GetTick();
+    const uint32_t read_open_end_time = TIME_uptime_ms();
     snprintf(
         &response_str[strlen(response_str)],
         response_str_len - strlen(response_str),
         "Read open: %lu ms\n", read_open_end_time - read_open_start_time);
 
     // Read
-    const uint32_t read_start_time = HAL_GetTick();
+    const uint32_t read_start_time = TIME_uptime_ms();
     uint8_t read_buffer[write_chunk_size];
     uint8_t read_checksum = 0;
     for (uint32_t chunk_num = 0; chunk_num < write_chunk_count; chunk_num++) {
@@ -145,14 +145,14 @@ uint8_t LFS_benchmark_write_read(
             read_checksum ^= read_buffer[i];
         }
     }
-    const uint32_t read_end_time = HAL_GetTick();
+    const uint32_t read_end_time = TIME_uptime_ms();
     snprintf(
         &response_str[strlen(response_str)],
         response_str_len - strlen(response_str),
         "Read: %lu ms\n", read_end_time - read_start_time);
 
     // Close the file
-    const uint32_t read_close_start_time = HAL_GetTick();
+    const uint32_t read_close_start_time = TIME_uptime_ms();
     const int8_t read_close_result = lfs_file_close(&LFS_filesystem, &file);
     if (read_close_result < 0) {
         snprintf(
@@ -161,7 +161,7 @@ uint8_t LFS_benchmark_write_read(
             "Read close failed. LFS_file_close return: %d\n", read_close_result);
         return 1;
     }
-    const uint32_t read_close_end_time = HAL_GetTick();
+    const uint32_t read_close_end_time = TIME_uptime_ms();
     snprintf(
         &response_str[strlen(response_str)],
         response_str_len - strlen(response_str),

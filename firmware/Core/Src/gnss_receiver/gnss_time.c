@@ -174,8 +174,8 @@ uint8_t GNSS_set_obc_time_based_on_gnss_pps() {
     HAL_Delay(250); // Arbitrary delay, in case it takes the OEM7 a sec.
 
     // Validate that the PPS pin is high (indicating it's enabled correctly).
-    const uint32_t start_time_validation_phase = HAL_GetTick();
-    while ((HAL_GetTick() - start_time_validation_phase) < 250) {
+    const uint32_t start_time_validation_phase = TIME_uptime_ms();
+    while ((TIME_uptime_ms() - start_time_validation_phase) < 250) {
         if (GNSS_get_pps_pin_state() == 0) {
             // If it's low, then wait a sec, and check again. Ensures we don't confuse a legit PPS
             // signal for a validation failure.
@@ -195,8 +195,8 @@ uint8_t GNSS_set_obc_time_based_on_gnss_pps() {
     }
 
     // Begin the adjustment.
-    const uint32_t start_time_adjustment_phase = HAL_GetTick();
-    while (HAL_GetTick() - start_time_adjustment_phase < max_polling_time_ms) {
+    const uint32_t start_time_adjustment_phase = TIME_uptime_ms();
+    while (TIME_uptime_ms() - start_time_adjustment_phase < max_polling_time_ms) {
         if (GNSS_get_pps_pin_state() == 0) {
             // Nominal case. It is at this point precisely that we must
             // round the current OBC time to the nearest 1000ms (nearest top of a second).

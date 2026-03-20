@@ -51,7 +51,7 @@ static uint8_t CAM_receive_image(lfs_file_t* img_file) {
     CAMERA_uart_half_2_state = CAMERA_UART_WRITE_STATE_IDLE;
 
     // Set start time and start receiving.
-    const uint32_t UART_camera_rx_start_time_ms = HAL_GetTick();
+    const uint32_t UART_camera_rx_start_time_ms = TIME_uptime_ms();
     const uint8_t receive_status = CAMERA_set_expecting_data(1);
     // Check for UART reception errors
     if (receive_status == 3) {
@@ -136,7 +136,7 @@ static uint8_t CAM_receive_image(lfs_file_t* img_file) {
         }
 
         // Timeout condition: If the total time has exceeded CAMERA_RX_TOTAL_TIMEOUT_DURATION_MS.
-        if ((HAL_GetTick() - UART_camera_rx_start_time_ms) > CAMERA_RX_TOTAL_TIMEOUT_DURATION_MS) {
+        if ((TIME_uptime_ms() - UART_camera_rx_start_time_ms) > CAMERA_RX_TOTAL_TIMEOUT_DURATION_MS) {
             LOG_message(
                 LOG_SYSTEM_BOOM, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
                 "Camera receiving exceeded CAMERA_RX_TOTAL_TIMEOUT_DURATION_MS duration (%ldms). Breaking out of loop.",
@@ -160,7 +160,7 @@ static uint8_t CAM_receive_image(lfs_file_t* img_file) {
         // (indicating that the camera is not sending data).
         // Break out of the loop.
         // This is the nominal exit condition.
-        const uint32_t current_time = HAL_GetTick();
+        const uint32_t current_time = TIME_uptime_ms();
         if (((current_time - UART_camera_rx_start_time_ms) > 6000) && // Allow 6000ms for the first message
             ((current_time - UART_camera_last_write_time_ms) > 2000)
         ) {

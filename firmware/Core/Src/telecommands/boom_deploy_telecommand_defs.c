@@ -61,7 +61,7 @@ uint8_t TCMDEXEC_boom_deploy_timed(
     }
 
     const uint32_t duration_ms = (uint32_t)duration_ms_u64;
-    const uint32_t start_time_ms = HAL_GetTick();
+    const uint32_t start_time_ms = TIME_uptime_ms();
     
 
     if (channel_u64 == 0) { // 0 = Both channels
@@ -95,7 +95,7 @@ uint8_t TCMDEXEC_boom_deploy_timed(
     }
 
     while (1) {
-        const uint32_t current_running_time_ms = HAL_GetTick() - start_time_ms;
+        const uint32_t current_running_time_ms = TIME_uptime_ms() - start_time_ms;
         if (current_running_time_ms >= duration_ms) {
             break;
         }

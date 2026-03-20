@@ -11,5 +11,5 @@ void TIM_delay_blocking_ms(uint32_t delay_time_ms) {
 /// @brief Get the uptime of the system in milliseconds.
 /// @return The number of milliseconds since the system started/booted.
 uint32_t TIM_get_uptime_ms() {
-	return HAL_GetTick();
+	return TIME_uptime_ms();
 }

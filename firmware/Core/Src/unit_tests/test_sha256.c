@@ -34,7 +34,7 @@ uint8_t TEST_EXEC__CRYPT_compute_sha256_hash() {
     CRYPT_compute_sha256_hash(symbol_message, 13, digest);
     TEST_ASSERT_TRUE(memcmp(digest, symbol_expected, 32) == 0);
 
-    const int32_t start_time = (int32_t) HAL_GetTick();
+    const int32_t start_time = (int32_t) TIME_uptime_ms();
     
     // Random tests.
     // Disabling to save 100_000 bytes of flash space.
@@ -81,7 +81,7 @@ uint8_t TEST_EXEC__CRYPT_compute_sha256_hash() {
     TEST_ASSERT_TRUE(memcmp(digest, random_expected_19, SHA256_BLOCK_SIZE) == 0);
     #endif
 
-    const int32_t end_time = (int32_t) HAL_GetTick();
+    const int32_t end_time = (int32_t) TIME_uptime_ms();
     const int32_t time_elapsed_ms = (end_time - start_time);
     LOG_message(
         LOG_SYSTEM_OBC,

@@ -11,11 +11,11 @@ uint8_t TEST_run_all_unit_tests_and_log(char log_buffer[], uint16_t log_buffer_s
     uint16_t total_exec_count = 0;
     uint16_t total_pass_count = 0;
     uint16_t total_fail_count = 0;
-    const uint32_t start_time_ms = HAL_GetTick();
+    const uint32_t start_time_ms = TIME_uptime_ms();
 
     log_buffer[0] = '\0';
 
-    uint32_t last_wdog_reset_time_ms = HAL_GetTick();
+    uint32_t last_wdog_reset_time_ms = TIME_uptime_ms();
 
     for (uint8_t test_num = 0; test_num < TEST_definitions_count; test_num++) {
         const TEST_Function_Ptr test_function = TEST_definitions[test_num].test_func;
@@ -41,12 +41,12 @@ uint8_t TEST_run_all_unit_tests_and_log(char log_buffer[], uint16_t log_buffer_s
         }
 
         // Hack to prevent the watchdog from resetting the STM32 during long test runs.
-        if (HAL_GetTick() - last_wdog_reset_time_ms > 5000) {
+        if (TIME_uptime_ms() - last_wdog_reset_time_ms > 5000) {
             STM32_pet_watchdog();
-            last_wdog_reset_time_ms = HAL_GetTick();
+            last_wdog_reset_time_ms = TIME_uptime_ms();
         }
     }
-    const uint32_t end_time_ms = HAL_GetTick();
+    const uint32_t end_time_ms = TIME_uptime_ms();
 
     snprintf(
         log_buffer,

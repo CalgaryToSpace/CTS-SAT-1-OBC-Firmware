@@ -67,7 +67,7 @@ static int8_t write_mpi_timestamp_to_file(uint32_t buffer_filled_uptime_ms) {
 
 static void write_mpi_data_to_memory(volatile uint8_t* large_buffer, uint32_t buffer_filled_uptime_ms) {
     // Store the current time for this iteration
-    const uint32_t start_time = HAL_GetTick();
+    const uint32_t start_time = TIME_uptime_ms();
 
     // Ensure LFS is mounted. Steamroll.
     LFS_ensure_mounted();
@@ -98,7 +98,7 @@ static void write_mpi_data_to_memory(volatile uint8_t* large_buffer, uint32_t bu
         LOG_SYSTEM_MPI, LOG_SEVERITY_DEBUG, LOG_SINK_ALL,
         "MPI Task: Successfully wrote %ld bytes to file in %lums",
         write_data_result,
-        HAL_GetTick() - start_time
+        TIME_uptime_ms() - start_time
     );
 }
 

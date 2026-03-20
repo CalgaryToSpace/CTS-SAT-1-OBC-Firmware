@@ -199,7 +199,7 @@ static inline void SUBTASK_deployment_state_execute(void) {
 
     // Select a bus to use.
     enum ANT_i2c_bus_mcu bus;
-    if (HAL_GetTick() % 60000 < 30000) { // Cycle back and forth every 30 seconds.
+    if (TIME_uptime_ms() % 60000 < 30000) { // Cycle back and forth every 30 seconds.
         bus = ANT_I2C_BUS_A_MCU_A;
     }
     else {

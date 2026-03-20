@@ -314,12 +314,12 @@ static uint8_t TCMD_execute_parsed_telecommand_now(
 
     // Handle the telecommand by calling the appropriate function.
     // Null-terminate the args string.
-    const uint32_t uptime_before_tcmd_exec_ms = HAL_GetTick();
+    const uint32_t uptime_before_tcmd_exec_ms = TIME_uptime_ms();
     const uint8_t tcmd_result = tcmd_def.tcmd_func(
         args_str_no_parens,
         response_output_buf,
         response_output_buf_size);
-    const uint32_t uptime_after_tcmd_exec_ms = HAL_GetTick();
+    const uint32_t uptime_after_tcmd_exec_ms = TIME_uptime_ms();
     const uint32_t tcmd_exec_duration_ms = uptime_after_tcmd_exec_ms - uptime_before_tcmd_exec_ms;
 
     // Print back the response.
