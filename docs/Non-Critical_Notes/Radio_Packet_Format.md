@@ -6,7 +6,6 @@ The first byte of the packet (after the 4-byte CSP header) is the packet type. T
 
 ### Byte 0: Enum packet type
     * `0x01` - beacon (basic telemetry, no peripherals)
-    * `0x02` - beacon (peripheral telemetry)
     * `0x03` - log message
     * `0x04` - telecommand response
     * `0x10` - bulk file downlink
@@ -15,12 +14,7 @@ The first byte of the packet (after the 4-byte CSP header) is the packet type. T
 
 ### Byte 1-200 of Basic Telemetry Beacon Packets (Packet Type `0x01`)
 
-TODO: Fill in the format here. For now, see https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/338.
-
-
-### Byte 1-200 of Peripheral Telemetry Beacon Packets (Packet Type `0x02`)
-
-TODO: Fill in the format here. For now, see https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/issues/338.
+See the beacon packet format in [the firmware at `/comms_drivers/comms_tx.h`](https://github.com/CalgaryToSpace/CTS-SAT-1-OBC-Firmware/blob/main/firmware/Core/Inc/comms_drivers/comms_tx.h), in `COMMS_beacon_basic_packet_t`.
 
 ### Bytes 1-200 of Log Message Packets (Packet Type `0x03`)
 
