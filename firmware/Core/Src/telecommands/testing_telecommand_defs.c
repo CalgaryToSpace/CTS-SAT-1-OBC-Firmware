@@ -63,7 +63,7 @@ uint8_t TCMDEXEC_run_all_unit_tests(const char *args_str,
     return 0;
 }
 
-/// @brief Delay for a specified number of milliseconds, for testing purposes.
+/// @brief Delay for a specified number of milliseconds, for testing purposes, using HAL_Delay.
 /// @param args_str 1 argument: delay_ms (uint64_t)
 /// - Arg 0: delay_ms (uint64_t) - The number of milliseconds to delay for. <=300_000ms.
 /// @return 0 on success, 1 on error
@@ -89,6 +89,38 @@ uint8_t TCMDEXEC_demo_blocking_delay(
     const uint32_t delay_ms_u32 = (uint32_t)delay_ms;
     
     HAL_Delay(delay_ms_u32);
+
+    snprintf(response_output_buf, response_output_buf_len, "Delayed for %" PRIu32 " ms", delay_ms_u32);
+    return 0;
+}
+
+
+/// @brief Delay for a specified number of milliseconds, for testing purposes, using osDelay.
+/// @param args_str 1 argument: delay_ms (uint64_t)
+/// - Arg 0: delay_ms (uint64_t) - The number of milliseconds to delay for. <=300_000ms.
+/// @return 0 on success, 1 on error
+/// @note This is most useful for testing/triggering the watchdog timer.
+uint8_t TCMDEXEC_demo_os_delay(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+) {
+    uint64_t delay_ms;
+    const uint8_t parse_result = TCMD_extract_uint64_arg(
+        args_str, strlen(args_str), 0, &delay_ms
+    );
+    if (parse_result > 0) {
+        snprintf(response_output_buf, response_output_buf_len, "Error parsing delay_ms: Err=%d", parse_result);
+        return 1;
+    }
+    
+    if (delay_ms > 300000) {
+        snprintf(response_output_buf, response_output_buf_len, "Delay too long. Must be <=300_000 ms.");
+        return 1;
+    }
+
+    const uint32_t delay_ms_u32 = (uint32_t)delay_ms;
+    
+    osDelay(delay_ms_u32);
 
     snprintf(response_output_buf, response_output_buf_len, "Delayed for %" PRIu32 " ms", delay_ms_u32);
     return 0;

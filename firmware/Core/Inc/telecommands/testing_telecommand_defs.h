@@ -19,4 +19,9 @@ uint8_t TCMDEXEC_demo_blocking_delay(
     char *response_output_buf, uint16_t response_output_buf_len
 );
 
+uint8_t TCMDEXEC_demo_os_delay(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+);
+
 #endif // INCLUDE_GUARD__TESTING_TELECOMMAND_DEFINITIONS_H

@@ -230,6 +230,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING, // Can cause crash via Watchdog reset.
     },
+    {
+        .tcmd_name = "demo_os_delay",
+        .tcmd_func = TCMDEXEC_demo_os_delay,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING, // Can cause crash via Watchdog reset.
+    },
 
     // ****************** END SECTION: testing_telecommand_defs ******************
 
@@ -1398,6 +1404,13 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
     {
         .tcmd_name = "obc_adc_read_vbat_voltage",
         .tcmd_func = TCMDEXEC_obc_adc_read_vbat_voltage,
+        .number_of_args = 0,
+        .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
+    },
+
+    {
+        .tcmd_name = "obc_set_stm32_sysclk_to_hse",
+        .tcmd_func = TCMDEXEC_obc_set_stm32_sysclk_to_hse,
         .number_of_args = 0,
         .readiness_level = TCMD_READINESS_LEVEL_FOR_OPERATION,
     },

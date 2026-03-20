@@ -144,6 +144,7 @@ uint8_t TCMDEXEC_core_system_stats(
         "\"total_beacon_count\":%lu,"
         "\"is_lfs_mounted\":%u,"
         "\"reboot_reason\":\"%s\","
+        "\"sys_clock_speed_hz\":%lu,"
         "\"operation_state\":\"%s\","
         "\"obc_temperature_cC\":%ld,"
         "\"mpi_rx_mode\":\"%s\","
@@ -165,6 +166,7 @@ uint8_t TCMDEXEC_core_system_stats(
         COMMS_total_beacon_count_since_boot, // total_beacon_count
         LFS_is_lfs_mounted, // is_lfs_mounted
         STM32_reset_cause_name, // reboot_reason
+        SystemCoreClock, // sys_clock_speed_hz
         CTS1_operation_state_enum_TO_str(CTS1_operation_state), // operation_state
         OBC_TEMP_SENSOR_get_temperature_cC(), // obc_temperature_cC
         MPI_rx_mode_enum_to_str(MPI_current_uart_rx_mode), // mpi_rx_mode

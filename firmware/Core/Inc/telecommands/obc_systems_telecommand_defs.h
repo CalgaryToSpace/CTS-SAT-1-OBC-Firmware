@@ -19,5 +19,9 @@ uint8_t TCMDEXEC_obc_adc_read_vbat_voltage(
     char *response_output_buf, uint16_t response_output_buf_len
 );
 
+uint8_t TCMDEXEC_obc_set_stm32_sysclk_to_hse(
+    const char *args_str,
+    char *response_output_buf, uint16_t response_output_buf_len
+);
 
 #endif // INCLUDE_GUARD__TEMPERATURE_SENSOR_TELECOMMAND_DEFS_H__
