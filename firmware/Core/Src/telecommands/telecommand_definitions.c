@@ -230,6 +230,12 @@ const TCMD_TelecommandDefinition_t TCMD_telecommand_definitions[] = {
         .number_of_args = 1,
         .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING, // Can cause crash via Watchdog reset.
     },
+    {
+        .tcmd_name = "demo_os_delay",
+        .tcmd_func = TCMDEXEC_demo_os_delay,
+        .number_of_args = 1,
+        .readiness_level = TCMD_READINESS_LEVEL_FLIGHT_TESTING, // Can cause crash via Watchdog reset.
+    },
 
     // ****************** END SECTION: testing_telecommand_defs ******************
 

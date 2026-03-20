@@ -1,6 +1,7 @@
 #include "telecommands/obc_systems_telecommand_defs.h"
 #include "obc_systems/obc_temperature_sensor.h"
 #include "obc_systems/adc_vbat_monitor.h"
+#include "debug_tools/debug_uart.h"
 
 #include "stm32l4xx_hal_rcc.h"
 
@@ -130,6 +131,10 @@ static uint8_t SystemClock_Config_with_hse(void)
     return 10 + err;
   }
 
+  DEBUG_uart_print_str("HAL_PWREx_ControlVoltageScaling() successful.\n");
+  HAL_Delay(1500);
+  DEBUG_uart_print_str("Waited.\n");
+
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
@@ -145,6 +150,10 @@ static uint8_t SystemClock_Config_with_hse(void)
     return 20 + err;
   }
 
+  DEBUG_uart_print_str("HAL_RCC_OscConfig() successful.\n");
+  HAL_Delay(1500);
+  DEBUG_uart_print_str("Waited.\n");
+
   /** Initializes the CPU, AHB and APB buses clocks
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
@@ -158,6 +167,10 @@ static uint8_t SystemClock_Config_with_hse(void)
   {
     return 30 + err;
   }
+
+  DEBUG_uart_print_str("HAL_RCC_ClockConfig() successful.\n");
+  HAL_Delay(1500);
+  DEBUG_uart_print_str("Waited.\n");
 
   return 0; // Success.
 }
@@ -184,6 +197,8 @@ uint8_t TCMDEXEC_obc_set_stm32_sysclk_to_hse(
         );
         return 1;
     }
+
+    HAL_Delay(1500); // Wait so we don't pet the watchdog right away.
 
     const uint8_t config_err = SystemClock_Config_with_hse();
     if (config_err != 0) {
