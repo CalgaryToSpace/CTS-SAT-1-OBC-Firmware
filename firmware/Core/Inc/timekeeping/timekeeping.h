@@ -15,7 +15,11 @@ typedef enum {
     TIME_SYNC_SOURCE_EPS_RTC // Electrical Power System's Real-Time Clock (precise to 1 second only)
 } TIME_sync_source_enum_t;
 
-uint32_t TIME_uptime_ms(void);
+extern volatile uint32_t TIME_uptime_ms_from_tim6;
+inline uint32_t TIME_uptime_ms(void) {
+    return TIME_uptime_ms_from_tim6;
+}
+
 void TIME_set_current_unix_epoch_time_ms(uint64_t current_unix_epoch_time_ms, TIME_sync_source_enum_t source);
 uint64_t TIME_get_current_unix_epoch_time_ms();
 uint64_t TIME_convert_uptime_to_unix_epoch_time_ms(uint32_t uptime_ms);

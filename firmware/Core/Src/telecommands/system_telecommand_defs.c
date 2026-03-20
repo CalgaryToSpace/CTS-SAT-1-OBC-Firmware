@@ -135,6 +135,7 @@ uint8_t TCMDEXEC_core_system_stats(
         "{"
         "\"timestamp_ms\":%s,"
         "\"uptime_ms\":%lu,"
+        "\"systick_ms\":%lu,"
         "\"last_time_resync_ms\":%lu,"
         "\"time_synced_ms_ago\":%lu,"
         "\"last_time_sync_source\":\"%c\","
@@ -157,6 +158,7 @@ uint8_t TCMDEXEC_core_system_stats(
         "}",
         timestamp_string_ms, // timestamp_ms
         TIME_uptime_ms(), // uptime_ms
+        HAL_GetTick(), // systick_ms (like uptime, but prone to running slowly)
         TIME_system_uptime_at_last_time_resync_ms, // last_time_resync_ms
         TIME_uptime_ms() - TIME_system_uptime_at_last_time_resync_ms, // time_synced_ms_ago
         TIME_sync_source_enum_to_letter_char(TIME_last_synchronization_source), // last_time_sync_source

@@ -175,6 +175,48 @@ static uint8_t SystemClock_Config_with_hse(void)
   return 0; // Success.
 }
 
+extern TIM_HandleTypeDef htim6;
+
+/// @brief TIM6 Initialization Function
+/// @details Re-init the TIM6 timer with a period of 1ms, with the new 25MHz clock.
+/// @brief This is a version of the `MX_TIM6_Init` function in main.c, with the Prescaler line changed.
+static HAL_StatusTypeDef MX_TIM6_Init_with_new_25MHz_speed(void)
+{
+
+  /* USER CODE BEGIN TIM6_Init 0 */
+
+  /* USER CODE END TIM6_Init 0 */
+
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM6_Init 1 */
+
+  HAL_StatusTypeDef err;
+
+  /* USER CODE END TIM6_Init 1 */
+  htim6.Instance = TIM6;
+  htim6.Init.Prescaler = 24; // Changes from (16-1 = 15) to (25-1 = 24)
+  htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim6.Init.Period = 999;
+  htim6.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if ((err=HAL_TIM_Base_Init(&htim6)) != HAL_OK)
+  {
+    return err;
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if ((err=HAL_TIMEx_MasterConfigSynchronization(&htim6, &sMasterConfig)) != HAL_OK)
+  {
+    return err;
+  }
+  /* USER CODE BEGIN TIM6_Init 2 */
+
+  return HAL_OK;
+
+  /* USER CODE END TIM6_Init 2 */
+
+}
+
 /// @brief Change the STM32 SYSCLK clock from the HSI to the HSE.
 /// @param args_str No arguments.
 /// @return 0 on success.
@@ -238,6 +280,17 @@ uint8_t TCMDEXEC_obc_set_stm32_sysclk_to_hse(
             err
         );
         return 70 + err;
+    }
+
+    // Reconfigure the TIM6 timebase for the new clock speed.
+    const HAL_StatusTypeDef init_tim6_status = MX_TIM6_Init_with_new_25MHz_speed();
+    if(init_tim6_status != HAL_OK) {
+        snprintf(
+            response_output_buf, response_output_buf_len,
+            "MX_TIM6_Init_with_new_25MHz_speed() failed - HAL error %d",
+            init_tim6_status
+        );
+        return 80 + init_tim6_status;
     }
 
     snprintf(
