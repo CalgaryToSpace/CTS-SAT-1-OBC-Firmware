@@ -45,6 +45,9 @@ def reconstruct_bulk_downlinked_file(log_file_path: Path, output_file_path: Path
             # Write the packet to the output file.
             output_file.write(packet[9:])
 
+            if len(byte_offset_list) == 1:
+                print(f"First packet data: offset_bytes={offset}, length_bytes={len(packet[9:])}")
+
     # Check if all packets are present
     if len(byte_offset_list) != len(set(byte_offset_list)):
         print("Warning: Duplicate packet byte offsets found.")
